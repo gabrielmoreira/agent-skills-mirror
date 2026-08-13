@@ -1,5 +1,35 @@
 # Main module class & installer pattern
 
+## **MANDATORY: Module install/uninstall pattern**
+
+**CRITICAL**: Always use this EXACT pattern for `install()` and `uninstall()` methods:
+
+```php
+public function install(): bool
+{
+    if (!parent::install()) {
+        return false;
+    }
+
+    return $this->getInstaller()->install($this);
+}
+
+public function uninstall(): bool
+{
+    return $this->getInstaller()->uninstall() && parent::uninstall();
+}
+
+private function getInstaller(): Installer
+{
+    return new Installer();
+}
+```
+
+**Why this order matters**:
+- ✅ **install()**: `parent::install()` FIRST with explicit check, THEN delegate to Installer
+- ✅ **uninstall()**: Installer FIRST, THEN `parent::uninstall()` — use `&&` chaining in return
+- ❌ **NEVER** use `return parent::install() && $installer->install($this)` — if parent fails, installer doesn't run and you get no error details
+
 ## Main module file (`mymodule.php`)
 
 > **Rule**: Never put `Configuration::updateValue/deleteByName`, hook registration, or DB queries directly in `install()`/`uninstall()`. Delegate entirely to an `Installer` class from `src/Install/`.
@@ -15,7 +45,6 @@ if (!defined('_PS_VERSION_')) {
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Vendor\MyModule\Install\Installer;
-use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
 class MyModule extends Module
 {
@@ -26,13 +55,18 @@ class MyModule extends Module
         $this->version = '1.0.0';
         $this->author = 'Your Name';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = ['min' => '1.7.8.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => _PS_VERSION_];
         $this->bootstrap = true;
 
         parent::__construct();
 
-        $this->displayName = $this->trans('My Module', [], 'Modules.Mymodule.Admin');
-        $this->description = $this->trans('Module description', [], 'Modules.Mymodule.Admin');
+        $this->displayName = $this->trans('My Module', 'Modules.Mymodule.Admin');
+        $this->description = $this->trans('Module description', 'Modules.Mymodule.Admin');
+    }
+
+    public function isUsingNewTranslationSystem(): bool
+    {
+        return true;
     }
 
     public function install(): bool
@@ -40,164 +74,146 @@ class MyModule extends Module
         if (!parent::install()) {
             return false;
         }
-        $installer = new Installer();
-        return $installer->install($this);
+
+        return $this->getInstaller()->install($this);
     }
 
     public function uninstall(): bool
     {
-        $installer = new Installer();
-        return $installer->uninstall() && parent::uninstall();
+        return $this->getInstaller()->uninstall() && parent::uninstall();
     }
 
-    // Do NOT add getTabs() — tabs are managed entirely by Installer::installTabs()
-    // Only redirect getContent() — never render HTML
-    public function getContent(): void
+    public function getContent(): string
     {
-        $router = SymfonyContainer::getInstance()->get('router');
-        Tools::redirectAdmin($router->generate('mymodule_configuration'));
+        $route = $this->get('router')->generate('mymodule_configuration');
+
+        Tools::redirectAdmin($route);
+
+        return '';
+    }
+
+    private function getInstaller(): Installer
+    {
+        return new Installer();
     }
 }
 ```
 
-## Tab management — always via Installer, never via getTabs()
+## **MANDATORY: Tab management pattern**
 
-> **Rule**: Do NOT declare `getTabs()` in the main module class. This PS-native method has inconsistent lifecycle management and does not support a shared parent group tab check.  
-> **Always** handle tab creation/deletion in `Installer::installTabs()` / `uninstallTabs()`.
-
-> **Rule**: **Never install the module configuration controller as a visible sidebar tab.** The configuration page is accessed via the module's "Configure" button in the Modules list (via `getContent()` redirect). The `AdminMymoduleConfiguration` tab must be installed with `visible: false` — it only exists to provide the `_legacy_link` routing target for the Symfony controller. Only CRUD/list controllers (e.g. `AdminMymoduleItems`) should appear in the sidebar.
-
-If your organisation uses a shared group tab for all its modules, check for its existence before creating it. The example below uses `AdminMyCompanyGroup` as the group tab name — replace with your own.
-
-```php
-// Replace 'AdminMyCompanyGroup' and 'My Company' with your own values.
-private string $groupTabName = 'AdminMyCompanyGroup';
-
-private array $tabs = [
-    [
-        // Hidden routing tab — required for _legacy_link routing, must NOT appear in sidebar
-        'name'              => 'MyModule',
-        'class_name'        => 'AdminMymoduleConfiguration',
-        'label'             => 'My Module Configuration',
-        'parent_class_name' => 'AdminMyCompanyGroup',
-        'visible'           => false,   // ← NEVER visible; accessed via module "Configure" button only
-    ],
-    [
-        // Visible CRUD list tab
-        'name'              => 'MyModule',
-        'class_name'        => 'AdminMymoduleItems',
-        'label'             => 'My Module Items',
-        'parent_class_name' => 'AdminMyCompanyGroup',
-        'visible'           => true,
-    ],
-];
-
-private function installTabs(): bool
-{
-    if (count($this->tabs) > 0) {
-        $groupTabIsInstalled = \Tab::getIdFromClassName($this->groupTabName);
-        if (!$groupTabIsInstalled) {
-            $parentTab = [
-                'name'              => 'My Company',   // Replace with your company/group label
-                'label'             => 'My Company',
-                'class_name'        => $this->groupTabName,
-                'visible'           => true,
-                'parent_class_name' => 'CONFIGURE',
-            ];
-            array_unshift($this->tabs, $parentTab);
-        }
-    }
-
-    foreach ($this->tabs as $data) {
-        $tab = new \Tab();
-        $tab->active     = true;
-        $tab->module     = $data['name'];
-        $tab->class_name = $data['class_name'];
-        $tab->enabled    = $data['visible'] ?? true;    // false hides from sidebar but keeps routing
-        $tab->position   = \Tab::getNewLastPosition($data['parent_class_name']);
-        $tab->id_parent  = (int) \Tab::getIdFromClassName($data['parent_class_name']);
-        foreach (\Language::getLanguages() as $lang) {
-            $tab->name[$lang['id_lang']] = $data['label'];  // use label directly, no translator during install
-        }
-        $tab->icon = 'mouse';
-        if (!$tab->save()) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-private function uninstallTabs(): bool
-{
-    foreach ($this->tabs as $data) {
-        $id_tab = (int) \Tab::getIdFromClassName($data['class_name']);
-        $tab = new \Tab($id_tab);
-        $tab->delete();
-    }
-
-    return true;
-}
-```
-
-Call both in `install()` / `uninstall()`:
-
-```php
-public function install(\Module $module): bool
-{
-    return $this->registerHooks($module)
-        && $this->installDatabase()
-        && $this->installTabs();
-}
-
-public function uninstall(): bool
-{
-    return $this->uninstallDatabase() && $this->uninstallTabs();
-}
-```
-
-## Installer pattern (`src/Install/`)
-
-Always split install logic into dedicated classes:
-
-```
-src/Install/
-├── Installer.php              # orchestrates install/uninstall
-├── ConfigurationInstaller.php # handles Configuration table values
-├── FixturesInstaller.php      # (optional) inserts default/sample data
-└── index.php                  # PS security guard
-```
-
-### `src/Install/Installer.php` — orchestrator
+**CRITICAL**: Always define tabs as a structured class property array. NEVER use `getTabs()` method in the module class.
 
 ```php
 namespace Vendor\MyModule\Install;
 
 class Installer
 {
-    private array $hooks = ['displayHeader', 'displayFooter'];
+    /** @var array<int, string> */
+    private array $hooks = [
+        'displayHome',
+        'actionFrontControllerSetMedia',
+    ];
 
-    private ConfigurationInstaller $configurationInstaller;
+    private string $groupTabName = 'AdminMyCompanyGroup';  // Replace with your company group tab name
 
-    public function __construct()
-    {
-        $this->configurationInstaller = new ConfigurationInstaller();
-    }
+    /** @var array<int, array<string, mixed>> */
+    private array $tabs = [
+        [
+            'name' => 'mymodule',                              // Module name (lowercase)
+            'class_name' => 'AdminMymoduleConfiguration',       // Tab class name
+            'label' => 'My Module Configuration',               // Display label (all languages)
+            'parent_class_name' => 'AdminMyCompanyGroup',       // Parent tab class name
+            'visible' => true,                                  // true = visible in sidebar, false = hidden (routing only)
+        ],
+    ];
 
     public function install(\Module $module): bool
     {
-        if (!$this->registerHooks($module)) {
-            return false;
-        }
-        // if (!$this->installDatabase()) { return false; } // only if DB tables needed
-        return $this->configurationInstaller->install();
+        return $this->registerHooks($module)
+            && $this->installTabs()
+            && $this->installConfiguration();
     }
 
     public function uninstall(): bool
     {
-        // $this->uninstallDatabase(); // only if DB tables exist
-        return $this->configurationInstaller->uninstall();
+        return $this->uninstallTabs()
+            && $this->uninstallConfiguration();
     }
+
+    private function registerHooks(\Module $module): bool
+    {
+        return $module->registerHook($this->hooks);
+    }
+
+    private function installTabs(): bool
+    {
+        if (!empty($this->tabs)) {
+            $groupTabIsInstalled = (int) \Tab::getIdFromClassName($this->groupTabName);
+            if (!$groupTabIsInstalled === false) {
+                $parentTab = [
+                    'name' => 'WebSenso',                      // Replace with your company name
+                    'label' => 'WebSenso',                     // Replace with your company label
+                    'class_name' => $this->groupTabName,
+                    'visible' => true,
+                    'parent_class_name' => 'CONFIGURE',
+                ];
+                array_unshift($this->tabs, $parentTab);
+            }
+        }
+
+        foreach ($this->tabs as $data) {
+            $tab = new \Tab();
+            $tab->active = true;
+            $tab->module = $data['name'];
+            $tab->class_name = $data['class_name'];
+            $tab->enabled = $data['visible'] ?? true;
+            $tab->position = \Tab::getNewLastPosition($data['parent_class_name']);
+            $tab->id_parent = (int) \Tab::getIdFromClassName($data['parent_class_name']);
+            foreach (\Language::getLanguages() as $lang) {
+                $tab->name[$lang['id_lang']] = $data['label'];
+            }
+            $tab->icon = 'mouse';
+            if ($tab->save() === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function uninstallTabs(): bool
+    {
+        foreach ($this->tabs as $data) {
+            $idTab = (int) \Tab::getIdFromClassName($data['class_name']);
+            if ($idTab) {
+                $tab = new \Tab($idTab);
+                $tab->delete();
+            }
+        }
+
+        return true;
+    }
+
+    private function installConfiguration(): bool
+    {
+        return \Configuration::updateValue('MYMODULE_SETTING', '');
+    }
+
+    private function uninstallConfiguration(): bool
+    {
+        return \Configuration::deleteByName('MYMODULE_SETTING');
+    }
+}
+```
+
+**Key points**:
+- ✅ **Hooks as class property array**: `private array $hooks = [...]`
+- ✅ **Tabs as class property array**: `private array $tabs = [...]` with structured data
+- ✅ **Auto-install parent group tab**: Check if group tab exists, if not, prepend it to tabs array
+- ✅ **No sub-classes**: All install logic in one Installer class
+- ✅ **Direct Configuration calls**: No ConfigurationInstaller wrapper
+- ✅ **Tab structure**: `name`, `class_name`, `label`, `parent_class_name`, `visible`
+- ❌ **NEVER use `getTabs()` in module class** — all tab management in Installer
 
     private function registerHooks(\Module $module): bool
     {

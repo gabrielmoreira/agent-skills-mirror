@@ -43,13 +43,14 @@ For writing style, tone, and voice guidance, use `Skill(ce:writer)` with **The E
 
 安全类正式报告 **MUST** 读取 `references/vendor-report-rules.md`（只取结构，不抄厂商原文）。仅在任务证据或用户明确要求时选择厂商 flavor；普通逆向和其他任务使用 `flavor = null`。
 
-| Flavor | 何时用 | 主参考骨架 |
-|--------|--------|------------|
+| Flavor / Overlay | 何时用 | 主参考骨架 |
+|------------------|--------|------------|
 | `malware` | 明确恶意样本、木马、白加黑、钓鱼投毒 | 火绒式：概述→流程→样本分析→应急处置→IOC |
 | `apt` | APT/战役/团伙/多阶段感染链/行业定向 | 卡巴斯基 Securelist 式：摘要→感染链→调查叙事→Interesting findings→技术分析→检测缓解→IOC |
 | `flavor = null` | 普通 APK/ELF/PE/Mach-O 逆向、算法/固件分析、渗透 / CTF / JS 签名 | 原任务模板 + Base 通用元素；不套 malware/APT 专属章节 |
+| thin `vuln` | 用户明确要求漏洞/补丁/CVE 技术分析 | 概述→影响/复现→崩溃与补丁分析→防护建议（叠加在 null 上，非第 3 默认全文 flavor） |
 
-原则：**模板在精不在多** —— 仅上述 2 个厂商 flavor，不另建第三套全文模板。
+原则：**模板在精不在多** —— 仅 2 个厂商全文 flavor；`vuln` 仅为可选 thin overlay，不另建第三套默认全文模板。
 与 §0 Evidence→Finding→Path **同时生效**；冲突时 Evidence 契约优先。
 
 ### 输出规范
@@ -68,7 +69,7 @@ For writing style, tone, and voice guidance, use `Skill(ce:writer)` with **The E
 - 复现步骤必须让第三方能独立重现
 - 敏感信息（真实 token、密码、内部 URL）用占位符替代
 - **MUST** 包含 Evidence → Finding → Path 链（见 `../ops/evidence-finding-path.md` 与模板 §0）
-- **MUST** 读取 `references/vendor-report-rules.md`：选定 `malware` / `apt` 或 `flavor = null`；无 flavor 时只输出原任务模板和适用的 Base 元素，不强制 IOC/ATT&CK
+- **MUST** 读取 `references/vendor-report-rules.md`：选定 `malware` / `apt` 或 `flavor = null`（漏洞任务可叠加 thin `vuln`）；无 flavor 时只输出原任务模板和适用的 Base 元素，不强制 IOC/ATT&CK
 - **SHOULD** 引用 case `scope.md` / `timeline.md`（`../scripts/case-init.ps1`）
 
 ### 图表集成
@@ -177,7 +178,7 @@ For README, API endpoint, and file organization templates, see [references/templ
 - `field-journal/` — 报告内容同时作为进化日志的数据来源
 
 **安全报告模板**: `references/security-report-templates.md`
-**厂商报告规则**: `references/vendor-report-rules.md`（flavor: malware | apt | null）
+**厂商报告规则**: `references/vendor-report-rules.md`（flavor: malware | apt | null；optional overlay: vuln）
 **通用文档模板**: `references/templates.md`
 
 

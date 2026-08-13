@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -126,3 +127,146 @@ def test_historical_cases_use_v21_score_model() -> None:
     assert "15/16 points" not in text
     assert "16/16 points" not in text
     assert "14/16 points" not in text
+
+
+def test_bubble_scorer_covers_every_risk_band_and_minsky_boundary() -> None:
+    module = _load_bubble_scorer_module()
+    scorer = module.BubbleScorer()
+
+    expectations = (
+        (0, "Normal", "Displacement/Early Boom"),
+        (5, "Caution", "Displacement/Early Boom"),
+        (8, "Elevated Risk", "Late Boom/Elevated Risk"),
+        (10, "Euphoria", "Late Boom/Early Euphoria"),
+        (13, "Critical", "Peak Euphoria/Profit Taking"),
+    )
+    for total, phase, minsky_phase in expectations:
+        quantitative = {key: 0 for key in scorer.quantitative_indicators}
+        qualitative = {key: 0 for key in scorer.qualitative_adjustments}
+        remaining = total
+        for key in quantitative:
+            assigned = min(2, remaining)
+            quantitative[key] = assigned
+            remaining -= assigned
+        for key in qualitative:
+            assigned = min(1, remaining)
+            qualitative[key] = assigned
+            remaining -= assigned
+
+        result = scorer.calculate_score(quantitative, qualitative)
+
+        assert result["total_score"] == total
+        assert result["phase"] == phase
+        assert result["minsky_phase"] == minsky_phase
+
+
+def test_bubble_scorer_distinguishes_boom_and_euphoria_components() -> None:
+    module = _load_bubble_scorer_module()
+    scorer = module.BubbleScorer()
+    quantitative = {key: 0 for key in scorer.quantitative_indicators}
+    qualitative = {key: 0 for key in scorer.qualitative_adjustments}
+
+    quantitative.update(price_acceleration=1, volatility_suppression=1, leverage=2, ipo_heat=1)
+    assert scorer.calculate_score(quantitative, qualitative)["minsky_phase"] == "Boom"
+
+    quantitative.update(
+        put_call_ratio=1,
+        price_acceleration=2,
+        breadth_anomaly=2,
+        leverage=2,
+        ipo_heat=2,
+    )
+    result = scorer.calculate_score(quantitative, qualitative)
+    assert result["total_score"] == 10
+    assert result["minsky_phase"] == "Euphoria"
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    (
+        (lambda scores: scores.pop("put_call_ratio"), "Missing score"),
+        (lambda scores: scores.update(unknown=0), "Unknown score"),
+        (lambda scores: scores.update(put_call_ratio=True), "must be an integer"),
+        (lambda scores: scores.update(put_call_ratio=1.5), "must be an integer"),
+    ),
+)
+def test_bubble_scorer_rejects_incomplete_or_ambiguous_scores(mutation, message) -> None:
+    module = _load_bubble_scorer_module()
+    scorer = module.BubbleScorer()
+    scores = {key: 0 for key in scorer.indicators}
+    mutation(scores)
+
+    with pytest.raises(ValueError, match=message):
+        scorer.calculate_score(scores)
+
+
+def test_bubble_scorer_formats_low_medium_and_high_indicator_states() -> None:
+    module = _load_bubble_scorer_module()
+    scorer = module.BubbleScorer()
+    quantitative = {key: 0 for key in scorer.quantitative_indicators}
+    qualitative = {key: 0 for key in scorer.qualitative_adjustments}
+    quantitative.update(put_call_ratio=2, volatility_suppression=1)
+
+    result = scorer.calculate_score(quantitative, qualitative)
+    output = scorer.format_output(result)
+    statuses = {
+        item["indicator"]: item["status"] for item in result["detailed_quantitative_indicators"]
+    }
+
+    assert statuses["Put/Call Ratio"] == "high"
+    assert statuses["Volatility Suppression + New Highs"] == "medium"
+    assert statuses["Leverage"] == "low"
+    assert "Final score: 3/15" in output
+    assert "Qualitative adjustments:" in output
+
+
+def test_scores_json_supports_flat_and_nested_contracts() -> None:
+    module = _load_bubble_scorer_module()
+    scorer = module.BubbleScorer()
+    quantitative = {key: 0 for key in scorer.quantitative_indicators}
+    qualitative = {key: 0 for key in scorer.qualitative_adjustments}
+    flat = {**quantitative, **qualitative}
+
+    assert module._scores_from_json(json.dumps(flat)) == (flat, None)
+    assert module._scores_from_json(
+        json.dumps({"quantitative": quantitative, "qualitative": qualitative})
+    ) == (quantitative, qualitative)
+    with pytest.raises(ValueError, match="JSON object"):
+        module._scores_from_json("[]")
+    with pytest.raises(ValueError, match="nested scores"):
+        module._scores_from_json('{"quantitative": []}')
+
+
+def test_manual_assessment_reprompts_invalid_values(monkeypatch, capsys) -> None:
+    module = _load_bubble_scorer_module()
+    answers = iter(["not-a-number", "3", "2", *(["0"] * 8)])
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(answers))
+
+    scores = module.manual_assessment()
+
+    assert scores["put_call_ratio"] == 2
+    assert len(scores) == 9
+    output = capsys.readouterr().out
+    assert "Enter a numeric value" in output
+    assert "Enter a value between 0 and 2" in output
+
+
+def test_cli_emits_json_and_fails_closed_on_invalid_input(monkeypatch, capsys) -> None:
+    module = _load_bubble_scorer_module()
+    scorer = module.BubbleScorer()
+    scores = {key: 0 for key in scorer.indicators}
+    monkeypatch.setattr(
+        "sys.argv",
+        ["bubble_scorer.py", "--scores", json.dumps(scores), "--output", "json"],
+    )
+
+    assert module.main() == 0
+    assert json.loads(capsys.readouterr().out)["total_score"] == 0
+
+    monkeypatch.setattr("sys.argv", ["bubble_scorer.py", "--scores", "not-json"])
+    assert module.main() == 1
+    assert "Error:" in capsys.readouterr().out
+
+    monkeypatch.setattr("sys.argv", ["bubble_scorer.py"])
+    assert module.main() == 1
+    assert "specify --manual or --scores" in capsys.readouterr().out

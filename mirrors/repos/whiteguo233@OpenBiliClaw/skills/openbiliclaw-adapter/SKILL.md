@@ -1,5 +1,5 @@
 ---
-name: openbiliclaw_adapter
+name: openbiliclaw-adapter
 description: Use OpenBiliClaw's versioned Agent Bridge CLI to read multi-source recommendations, profile state, dialogue, probes, saved lists, and submit explicit feedback.
 user-invocable: true
 ---

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 3 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`core/skills/builtin/skill-creator/SKILL.md`](core/skills/builtin/skill-creator/SKILL.md) |
-| 2 | ✓ | [`prompts/__init__.py`](prompts/__init__.py) |
-| 3 | ✓ | [`prompts/code_prompts.py`](prompts/code_prompts.py) |
+| 1 | ✓ | [`core/skills/builtin/frontend-design/SKILL.md`](core/skills/builtin/frontend-design/SKILL.md) |
+| 2 | ✓ | [`core/skills/builtin/mcp-builder/SKILL.md`](core/skills/builtin/mcp-builder/SKILL.md) |
+| 3 | ✓ | [`core/skills/builtin/review-agent/SKILL.md`](core/skills/builtin/review-agent/SKILL.md) |
+| 4 | ✓ | [`core/skills/builtin/security-best-practices/SKILL.md`](core/skills/builtin/security-best-practices/SKILL.md) |
+| 5 | ✓ | [`core/skills/builtin/security-ownership-map/SKILL.md`](core/skills/builtin/security-ownership-map/SKILL.md) |
+| 6 | ✓ | [`core/skills/builtin/security-threat-model/SKILL.md`](core/skills/builtin/security-threat-model/SKILL.md) |
+| 7 | ✓ | [`core/skills/builtin/skill-creator/SKILL.md`](core/skills/builtin/skill-creator/SKILL.md) |
+| 8 | ✓ | [`core/skills/builtin/webapp-testing/SKILL.md`](core/skills/builtin/webapp-testing/SKILL.md) |
+| 9 | ✓ | [`prompts/__init__.py`](prompts/__init__.py) |
+| 10 | ✓ | [`prompts/code_prompts.py`](prompts/code_prompts.py) |
 
 ---
 

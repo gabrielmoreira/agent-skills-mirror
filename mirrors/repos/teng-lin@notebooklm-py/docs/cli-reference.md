@@ -1,7 +1,7 @@
 # CLI Reference
 
 **Status:** Active
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-08-12
 
 Complete command reference for the `notebooklm` CLI—providing full programmatic access to all NotebookLM features, including capabilities not exposed in the web UI.
 
@@ -1026,7 +1026,7 @@ notebooklm research wait [OPTIONS]
 
 **Options:**
 - `-n, --notebook ID` - Notebook ID (uses current if not set)
-- `--timeout SECONDS` - Maximum seconds to wait (default: 300)
+- `--timeout SECONDS` - Per-phase budget (default: 1800, matching `source add-research`). Deep runs regularly exceed the former 300s default — 374s live, 358s in the `research_deep_poll_long` cassette; fast runs settle in seconds, so the cap only ever binds on deep. With `--import-all` the poll loop and the import-retry loop each get the full budget independently, so worst-case wall time is up to 2× this value.
 - `--interval SECONDS` - Seconds between status checks (default: 5)
 - `--import-all` - Import all found sources when done
 - `--cited-only` - With `--import-all`, import only cited sources
@@ -1706,7 +1706,7 @@ notebooklm source add-research "climate change policy 2024" --mode deep --no-wai
 # Returns immediately
 
 # 4. In a subagent, wait for research and import
-notebooklm research wait --import-all --timeout 300
+notebooklm research wait --import-all
 # Blocks until complete, then imports sources
 
 # 5. Continue with podcast generation...

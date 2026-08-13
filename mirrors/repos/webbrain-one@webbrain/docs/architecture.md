@@ -264,6 +264,17 @@ to the older full `processMessageStream()` loop. Attachments, detached-run
 ownership, reconnect replay, persistence, traces, tool guards, and completion
 invariants therefore keep one production lifecycle.
 
+### Selected-text source scopes
+
+Selected-text runs always carry an explicit, durable `source_grounding` policy.
+Fixed actions and custom questions default to `selection_only`, which limits the
+answer to the selected text. A custom question can explicitly opt into
+`selection_context`, which also permits the model's intrinsic general knowledge.
+Both policies treat the selection as untrusted data and exclude live page
+context, screenshots, tools, attachments, and conversation history from before
+the selection. The policy is stored with the per-tab conversation, survives
+follow-up turns and retries, and is shown in the side-panel scope banner.
+
 ### Step 6: Tool Execution
 
 `executeTool(tabId, name, args, onUpdate)` dispatches by name:

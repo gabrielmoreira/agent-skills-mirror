@@ -127,17 +127,22 @@ Before writing any config or touching git:
    This gate is a hard STOP: if any must-ask field lacks an explicit user answer, do not write
    `config.json`, do not create the scratch branch, do not run the harness — ask (use
    `AskUserQuestion`) and wait.
-2. Fill the **default** fields (`max_iterations`, `max_runs`, `model`, `base_branch`,
-   `domain_notes`) with their defaults above. `datadog_backend` is **not** among them — it is
-   must-ask, per step 1. Do **not** touch
-   `runs`/`min_delta` here — they are derived in Step 2.4, not intake params (`max_runs` only caps
-   that derivation).
+2. Fill the **default** fields (`max_iterations`, `max_runs`, `model`, `base_branch`) with their
+   defaults above. `datadog_backend` is **not** among them — it is must-ask, per step 1. Do **not**
+   touch `runs`/`min_delta` here — they are derived in Step 2.4, not intake params (`max_runs` only
+   caps that derivation).
 
-   `domain_notes` defaults to empty and an empty value is fine — but **offer it**: when you show the
-   resolved config, invite the user to add any product context the code does not carry (what a term
-   of art means, which behaviours are intended, what a reference row represents). Agents reliably
-   misread domain vocabulary, and the misread propagates silently into every census description and
-   judge call. See **Domain notes** below for how it is used and how it grows mid-run.
+   **`domain_notes` gets its own explicit question — never just a mention in the config review.**
+   An empty list is a fine answer, but the question must actually be asked: use `AskUserQuestion`
+   with something like *"Is there any product/domain context the code wouldn't tell an agent —
+   intended behaviours that look like bugs, terms of art, what a reference value represents? This
+   is optional, and empty is fine, but agents reliably misread domain vocabulary and that misread
+   propagates silently into every census description and judge call."*, with a "Nothing to add"
+   option alongside free text. Ask this **before** the all-params validation in step 3, not as part
+   of it — burying it in a list of already-filled-in defaults during that review reads as "here's
+   what's already decided," not as an invitation, and the field silently stays `[]` forever if the
+   user never notices it's a live prompt rather than a settled default. See **Domain notes** below
+   for how the answer is used and how it grows mid-run.
 3. **Show ALL parameters back to the user — must-ask and defaulted alike — and get explicit
    validation before starting the run.** Present the full resolved config (including the concrete
    expanded `files_to_optimize` list and each default value) and let the user confirm or override

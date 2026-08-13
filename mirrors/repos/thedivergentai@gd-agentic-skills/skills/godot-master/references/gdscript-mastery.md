@@ -136,7 +136,7 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 - [godot-autoload-architecture](autoload-architecture.md) — Contrasts heavy Autoloads with the `static var` singleton alternatives shown here.
 - [godot-resource-data-patterns](resource-data-patterns.md) — Prefer Resources for shared config; keep GDScript modules thin and typed around Resource payloads.
 - [godot-scene-management](scene-management.md) — `@onready`, unique names, and await sequences must stay valid across scene swaps and loaders.
-- [godot-testing-patterns](testing-patterns.md) — Typed signals and Callables make `watch_signals` / spies reliable in unit tests.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Typed signals and Callables make `watch_signals` / spies reliable in unit tests.
 - [godot-debugging-profiling](debugging-profiling.md) — Pair style/perf smells from this skill with profiler and custom monitors when hot paths remain slow.
 - [godot-state-machine-advanced](state-machine-advanced.md) — FSM enter/exit handlers should follow the same typed-signal and await sequencing conventions.
 

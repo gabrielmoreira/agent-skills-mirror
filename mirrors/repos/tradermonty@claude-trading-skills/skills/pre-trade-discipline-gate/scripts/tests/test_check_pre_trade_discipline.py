@@ -6,6 +6,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 from check_pre_trade_discipline import (
     evaluate_pre_trade_gate,
@@ -13,8 +14,19 @@ from check_pre_trade_discipline import (
     load_candidates,
     main,
     parse_as_of,
+    write_journal,
     write_reports,
 )
+
+MISSING = object()
+HUGE_RISK_INTEGER = int("9" * 401)
+
+
+def strict_json_loads(text: str):
+    def reject_constant(value: str):
+        raise ValueError(f"non-standard JSON constant: {value}")
+
+    return json.loads(text, parse_constant=reject_constant)
 
 
 def load_thesis_store_module():
@@ -158,10 +170,150 @@ def test_actual_risk_above_plan_blocks_order(tmp_path: Path):
     result = evaluate(tmp_path, [base_candidate(planned_risk_dollars=500, actual_risk_dollars=501)])
 
     assert result["overall_decision"] == "NO_GO"
-    assert (
-        "actual risk 501.00 exceeds planned risk 500.00"
-        in result["candidate_results"][0]["reasons"]
+    assert "actual risk 501 exceeds planned risk 500" in result["candidate_results"][0]["reasons"]
+
+
+@pytest.mark.parametrize("field", ["planned_risk_dollars", "actual_risk_dollars"])
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        MISSING,
+        None,
+        "",
+        True,
+        False,
+        "not-a-number",
+        float("nan"),
+        float("inf"),
+        float("-inf"),
+        1e309,
+        -1,
+        "-1e-400",
+    ],
+    ids=[
+        "missing-key",
+        "null",
+        "empty-string",
+        "true",
+        "false",
+        "non-numeric-string",
+        "nan",
+        "positive-infinity",
+        "negative-infinity",
+        "overflow-number",
+        "negative",
+        "underflowing-negative-string",
+    ],
+)
+def test_invalid_risk_inputs_require_review_and_are_normalized(
+    tmp_path: Path, field: str, invalid_value: object
+):
+    candidate = base_candidate()
+    if invalid_value is MISSING:
+        del candidate[field]
+    else:
+        candidate[field] = invalid_value
+
+    result = evaluate(tmp_path, [candidate])
+    candidate_result = result["candidate_results"][0]
+
+    assert result["overall_decision"] == "REVIEW_REQUIRED"
+    assert candidate_result["decision"] == "REVIEW_REQUIRED"
+    assert candidate_result["checklist_answers"][field] is None
+    assert any(field in reason for reason in candidate_result["reasons"])
+
+
+@pytest.mark.parametrize(
+    ("planned", "actual", "expected"),
+    [
+        (0, 0, "GO"),
+        ("500", "500", "GO"),
+        ("1e309", "1e309", "GO"),
+        (0, 1, "NO_GO"),
+        ("500", "501", "NO_GO"),
+        ("9007199254740992", "9007199254740993", "NO_GO"),
+        (HUGE_RISK_INTEGER, HUGE_RISK_INTEGER, "GO"),
+    ],
+)
+def test_valid_risk_boundaries_and_numeric_strings(
+    tmp_path: Path, planned: object, actual: object, expected: str
+):
+    result = evaluate(
+        tmp_path,
+        [base_candidate(planned_risk_dollars=planned, actual_risk_dollars=actual)],
     )
+
+    assert result["overall_decision"] == expected
+    answers = result["candidate_results"][0]["checklist_answers"]
+    assert answers["planned_risk_dollars"] == planned
+    assert answers["actual_risk_dollars"] == actual
+
+
+@pytest.mark.parametrize(
+    ("planned", "actual", "expected_fragment", "max_reason_length"),
+    [
+        ("0", "0.001", "actual risk 0.001 exceeds planned risk 0", 100),
+        ("0", "1e1000000", "actual risk 1E+1000000 exceeds planned risk 0", 100),
+    ],
+)
+def test_oversize_reason_is_exact_and_compact(
+    tmp_path: Path,
+    planned: str,
+    actual: str,
+    expected_fragment: str,
+    max_reason_length: int,
+):
+    result = evaluate(
+        tmp_path,
+        [base_candidate(planned_risk_dollars=planned, actual_risk_dollars=actual)],
+    )
+
+    assert result["overall_decision"] == "NO_GO"
+    reason = next(
+        reason
+        for reason in result["candidate_results"][0]["reasons"]
+        if "exceeds planned risk" in reason
+    )
+    assert reason == expected_fragment
+    assert len(reason) < max_reason_length
+
+
+def test_explicit_rule_violation_outranks_invalid_risk_review(tmp_path: Path):
+    result = evaluate(
+        tmp_path,
+        [base_candidate(stop_predefined=False, planned_risk_dollars=float("nan"))],
+    )
+
+    candidate_result = result["candidate_results"][0]
+    assert result["overall_decision"] == "NO_GO"
+    assert candidate_result["decision"] == "NO_GO"
+    assert "stop is not predefined" in candidate_result["reasons"]
+    assert any("planned_risk_dollars" in reason for reason in candidate_result["reasons"])
+
+
+def test_non_actionable_candidate_keeps_decision_and_normalizes_invalid_risk(tmp_path: Path):
+    result = evaluate_pre_trade_gate(
+        [
+            base_candidate(
+                order_intent="WATCHLIST",
+                planned_risk_dollars=float("nan"),
+                actual_risk_dollars=float("inf"),
+            )
+        ],
+        as_of=parse_as_of("2026-07-03"),
+        state_dir=None,
+        revenge_window_hours=24,
+        market_regime_decision=None,
+        circuit_breaker_decision=None,
+        output_dir=tmp_path / "reports",
+        json_only=False,
+    )
+
+    candidate_result = result["candidate_results"][0]
+    assert result["overall_decision"] == "NO_ACTIONABLE_ORDERS"
+    assert candidate_result["decision"] == "NO_ACTIONABLE_ORDERS"
+    assert candidate_result["checklist_answers"]["planned_risk_dollars"] is None
+    assert candidate_result["checklist_answers"]["actual_risk_dollars"] is None
 
 
 def test_watchlist_only_is_no_actionable_orders_even_without_external_artifacts(tmp_path: Path):
@@ -537,6 +689,66 @@ def test_cli_writes_json_markdown_and_journal(tmp_path: Path):
     assert journal_files
     journal_row = json.loads(journal_files[0].read_text().splitlines()[0])
     assert journal_row["candidate_results"][0]["checklist_answers"]["entry_in_written_plan"] is True
+
+
+def test_cli_normalizes_nonfinite_risk_and_writes_strict_json(tmp_path: Path):
+    answers = write_json(
+        tmp_path / "answers.json",
+        {
+            "candidates": [
+                base_candidate(
+                    planned_risk_dollars=float("nan"),
+                    actual_risk_dollars=float("inf"),
+                )
+            ]
+        },
+    )
+    market, circuit = allowed_artifacts(tmp_path)
+    output_dir = tmp_path / "reports"
+    journal_dir = tmp_path / "journal"
+
+    exit_code = main(
+        [
+            "--answers-file",
+            str(answers),
+            "--market-regime-decision",
+            str(market),
+            "--circuit-breaker-decision",
+            str(circuit),
+            "--output-dir",
+            str(output_dir),
+            "--journal-dir",
+            str(journal_dir),
+            "--as-of",
+            "2026-07-03",
+        ]
+    )
+
+    assert exit_code == 0
+    report_text = next(output_dir.glob("pre_trade_discipline_decision_*.json")).read_text()
+    report = strict_json_loads(report_text)
+    journal_lines = next(journal_dir.glob("pre_trade_discipline_*.jsonl")).read_text().splitlines()
+    journal = strict_json_loads(journal_lines[0])
+    for payload in (report, journal):
+        assert payload["overall_decision"] == "REVIEW_REQUIRED"
+        answers = payload["candidate_results"][0]["checklist_answers"]
+        assert answers["planned_risk_dollars"] is None
+        assert answers["actual_risk_dollars"] is None
+
+
+def test_json_writers_reject_unexpected_nonfinite_payload_without_artifacts(tmp_path: Path):
+    result = evaluate(tmp_path, [base_candidate()])
+    result["metrics"]["unexpected_nonfinite"] = float("nan")
+    report_path = Path(result["artifact_paths"]["json"])
+
+    with pytest.raises(ValueError, match="Out of range float values"):
+        write_reports(result, tmp_path / "reports", json_only=False)
+    assert not report_path.exists()
+
+    journal_dir = tmp_path / "strict-journal"
+    with pytest.raises(ValueError, match="Out of range float values"):
+        write_journal(result, journal_dir)
+    assert not list(journal_dir.glob("*.jsonl"))
 
 
 def test_fail_on_non_go_returns_two(tmp_path: Path):

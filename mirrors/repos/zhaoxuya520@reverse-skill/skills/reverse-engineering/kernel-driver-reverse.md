@@ -275,6 +275,16 @@ lx-dmesg             # 内核日志
 
 ---
 
+## Agent 动作锚点（Issue #65 U–AV）
+
+与 `references/nonpe-format-cookbook.md` §5 对齐（短表，不替代上文流程）：
+
+| ID | 动作 | Evidence |
+|----|------|----------|
+| AG | `DriverEntry` 短 → 扫 `MajorFunction` 非空槽，优先 DEVICE_CONTROL/CREATE | `E-driver-irp-handlers` |
+| AH | 建立 IOCTL 控制码 → handler 表与 METHOD_* | `E-driver-ioctl` |
+| AI | 疑 BYOVD：对照公开脆弱驱动列表；记名/哈希/签名与调用意图；**不写 exploit 步骤** | `E-driver-byovd` |
+
 ## 参考资源
 
 | 资源 | 说明 | 链接 |

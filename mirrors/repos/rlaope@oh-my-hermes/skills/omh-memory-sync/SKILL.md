@@ -75,7 +75,11 @@ Use lifecycle words literally: expire removes influence only; retire archives re
 
 An attention tier is not a lifecycle state, and the two uses of "archive" are different: the `archive` tier only stops a record from occupying the default working context, leaving it in the store, readable, and answerable by `omh memory recall --include-archived`, while `retire` moves an expired revision into the local archive directory. Neither is deletion; never describe either as one.
 
-Legacy v1 material is migration/review-required. Present `memory inventory` counts and the report-first per-artifact `memory reactivate ... --apply` path; inventory and reactivation never silently grant replay eligibility. Dreaming remains reminder-only: it prepares reminders for `stale_review_required` and `expired_volatile_records`, never consolidation, retirement, restore, or prune.
+Legacy v1 material is migration/review-required. Present `memory inventory` counts and the report-first per-artifact `memory reactivate ... --apply` path; inventory and reactivation never silently grant replay eligibility.
+
+Dreaming runs automatically in reminder mode at five scheduler points: `turn` when the interval is due (default five turns), `compaction` before compression discards messages, `session_end` after a productive session, `shutdown` as the final process opportunity, and `session_start_recovery` when the prior session ended without consolidation. It prepares reminders for duplicate clusters, records at or near their deadline, headroom below the configured floor, `stale_review_required`, and `expired_volatile_records`; an unchanged standing condition is suppressed until its value changes. Anything whose source OMH cannot explain is not a candidate. Dreaming never invokes a model or performs consolidation, retirement, restore, or prune.
+
+Treat ranking signals within their limits: pins guarantee inclusion but never override expiry, scope, perspective, or review eligibility; attention tiers control working-context occupancy, not truth; `approved_manual` has 100% veracity weight and `approved_auto_safe` 90%, while an unknown approval mode fails closed to the lower weight; age only breaks ties within an equal relevance rank; and usage uses saturating buckets so repeated delivery cannot compound into a permanent lead.
 
 Normal users use natural-language Hermes chat. `omh memory ...` commands are agent/operator control-plane references, not normal-user setup.
 

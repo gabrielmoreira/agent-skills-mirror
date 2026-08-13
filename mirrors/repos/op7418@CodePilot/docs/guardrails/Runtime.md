@@ -141,6 +141,9 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | Claude SDK model cache | `src/app/api/providers/models/route.ts` `mergeEnvCatalogWithSdkModels()` | `supportedModels()` 只补充 runtime convenience entries，不能整表替换 `ENV_CLAUDE_CODE_MODELS`、删除显式 canonical route，或用移动 alias 描述覆盖固定版本标签/upstream |
 | Hook contract | `src/hooks/useProviderModels.ts` | 暴露 `fetchState / resolvedProviderId / resolvedModel / providerWasFilteredOut / noCompatibleProvider` 五字段；区分 `providerId === undefined`（fallback chain）vs `providerId === ''`（env 历史会话）vs 显式值 |
 | Codex model warm-up | `src/lib/codex/model-catalog-warmup.ts` + `src/hooks/useProviderModels.ts` | 全量目录继续只读 Codex cache；chat mount 以独立 bounded endpoint 非阻塞预热，成功后只通知模型 hook refetch，并在 renderer 内 memo 成功避免会话切换 churn；Codex login start/complete/logout 必须在 Settings 侧显式失效 memo（此时 chat hook 通常未挂载）。禁止恢复全量目录内同步 spawn，也禁止依赖进入 Settings 才预热 |
+| Codex model discovery containment | `bounded-ndjson-reader.ts` + `app-server-client.ts` + `models.ts` | stdout frame 按 UTF-8 bytes 在 copy/concat 前执行 32 MiB hard cap；`model/list` 调用方 deadline 同步 abort client pending；同 generation 单航班、失败 cooldown，显式 retry 才 bypass |
+| Codex wedged instance recovery | `app-server-manager.ts` | spawn promise 去重保持不变；连续内部 refresh timeout/`model/list` failure 只标记当前 generation unhealthy，确认无 active turn 时才 dispose/rebuild，无法证明 idle 时不热杀 |
+| Main-owned recovery safe mode | Main env + model routes + warmup/hook/ChatView | server 端强制 cache-only 且 `getCodexAppServer()` fail closed；scheduler 不启动；Renderer 显示暂停并 gate Codex Runtime，不能把空 catalog 伪装成“账号无模型”或只清客户端状态假装恢复 |
 | Composer send | `src/components/chat/ChatView.tsx` `doStartStream` / `sendMessage` | 三道 gate：`fetchState === 'idle'` / `noCompatibleProvider` / `loaded && (!resolvedProviderId \|\| !resolvedModel)`；wire 用 resolved pair 而非 raw |
 | Composer disabled | `src/components/chat/ChatView.tsx` `MessageInput.disabled` | `noCompatibleProvider \|\| providerFetchState === 'idle'` —— idle 也禁用，避免 send 按钮看似可用但底层吞 |
 | New session init | `src/app/chat/page.tsx` | 两处 init handler 必须用 `?runtime=auto`；空集合 → `setNoCompatibleProvider(true)`，不走 localStorage fallback |
@@ -174,6 +177,8 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 - 新增 chat 入口（除现有 chat-route / bridge 外）：
   - 调 `resolveProvider()` 时**必须**传 `runtime: getActiveChatRuntime()`
   - send 路径前必须 gate `noCompatibleProvider` + `fetchState`
+- 改 Codex model discovery / transport：覆盖 frame chunk/CRLF/multibyte/exact-cap/oversize/no-newline、RPC deadline、10 caller single-flight、cooldown/force 与 unhealthy-idle recycle；日志 fixture 中不得出现 frame/prompt/path/token 内容。
+- 新增任何 Codex app-server 直达入口时必须复用 `getCodexAppServer()` 的 recovery-safe-mode gate，不得自行 spawn 绕过 Main owner。
 - 新增 sub-agent adapter：必须定义 model allowlist / alias canonicalization / effective provenance，并消费共同 workflow/task/dependency compiler；未证明的能力 fail closed，不得实现第四套 queued/依赖等待语义
 
 ## 5. 常见坑
@@ -188,6 +193,8 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 8. **父模型在一个 turn 内同时生成 A/B tool input，SDK 随后按 A→B 串行执行** → B 的 prompt 仍在 A 结果产生前冻结，不能据此宣称 B 获得 A 输出。依赖必须走 `workflow_id/task_key/depends_on` 与 app-side durable handoff。
 9. **AI SDK 不认识第三方 Responses 模型就静默丢 reasoning** → 对 preset-verified transport 显式 `forceReasoning`，并用真实 outbound body 测试；不能只断言 providerOptions 内存对象。
 10. **把 OpenAI Responses 附加字段原样发给兼容端点** → 供应商只承诺的子集才保留。DeepSeek 当前不声明 reasoning summary，fetch 边界必须剥离 SDK 自动生成的 `reasoning.summary`。
+11. **只给 HTTP warmup 加 2.5s timeout** → client pending 仍会活到内部 30s timer。调用方 deadline 必须向下 abort 对应 JSON-RPC id，late response 只能被丢弃。
+12. **把一次 refresh warning 当成僵死进程热杀** → 可能中断 active turn/approval。必须按 generation+窗口累计并仅在 idle recycle。
 
 ## 6. 测试覆盖
 
@@ -208,6 +215,8 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | `src/__tests__/unit/agent-loop-anthropic-wire.test.ts` | Anthropic 官方 model×effort-tier wire allowlist；Auto 不冒充显式 High；第三方代理保留原始 requested tier；Sonnet 4.6 max/xhigh 正反例 |
 | `src/__tests__/unit/codex-proxy-translators.test.ts` | Codex proxy 对 Anthropic resolved upstream model 使用共享 sanitizer；adaptive 家族禁止 manual budget thinking，支持档位 xhigh 保真、Sonnet 4.6 非法 xhigh 省略 |
 | `src/__tests__/unit/deepseek-v4-flash-adaptation.test.ts` | Codex Runtime exact-model Responses dispatch、production factory outbound body、DeepSeek max/xhigh 映射、Anthropic output_config 与 aggregator fail-closed |
+| `codex-bounded-ndjson-reader.test.ts` + `codex-app-server-client.test.ts` + `codex-models-decoupling.test.ts` | frame byte cap、deadline pending cleanup、model/list single-flight/cooldown/safe-mode cache-only |
+| `codex-binary-discovery.test.ts` | internal refresh-timeout signature、health window threshold 与 app-server spawn compatibility |
 
 加新 runtime gate 行为的功能时，至少加一组 unit test 覆盖三场景：(1) loaded + 兼容 → 通过；(2) loaded + 不兼容 → gate 拦；(3) idle → gate 拦。
 
@@ -219,6 +228,7 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 - **2026-04-26** API 空集合 server-side drop（不返回 `models: []`）。理由：hook 兜底逻辑会把空 group fallback 到 `DEFAULT_MODEL_OPTIONS`，相当于偷渡 sonnet/opus/haiku 进 picker
 - **2026-04-26** Hook 加 `fetchState`、`AbortController`、`requestedProviderId vs preferredProviderId` 拆分，全部因 Codex review 指出竞态 / 语义错位
 - **2026-08-03** chat 非阻塞预热 Codex model catalog。全量目录保留 cache-only 防卡顿；显式 discovery 从 Settings 副作用迁到 chat mount，成功后用窄事件刷新模型 hook
+- **2026-08-11** Codex model discovery 增加 transport byte cap、RPC 同 deadline abort、server-side single-flight/cooldown 与 unhealthy-idle recycle；utility crash 后由 Main safe mode 禁止 Codex/scheduler 自动重触发，Renderer 只读展示并 gate 发送。
 - **2026-04-26** `chat-runtime.ts` 必须 import barrel（`./runtime`）。理由：runtime/index.ts 的 `registerRuntime` 副作用是注册唯一入口，跳过 → empty registry → 500
 - **2026-07-22—23** 子 Agent 首版保持 same-runtime，但用户复测纠正了“same-runtime = same-provider”的错误假设。CodePilot Native、Claude managed subprocess、Codex CodePilot-Provider proxy child 都必须使用 Runtime-compatible exact Provider+Model route；合法集合与 picker 未置灰状态同源。AgentDefinition full model string 与 Codex 原生 spawn 都不能承担 CodePilot 跨 Provider 路由，因为它们不能可靠切换父 endpoint/provider config。Codex Account 只展示原生 collab，不冒充跨 CodePilot Provider 成功。
 - **2026-07-23** 用户真实 smoke 发现 SDK `success` envelope 可携带 `is_error=true` 的 403，且父 Agent 把 one-shot subprocess 当作待命/续跑 worker，造成 3 个逻辑 Agent 产生 6 次调用。终态收口到结构化 SDK 字段；managed tool 加 one-shot 与 capability 声明，unsupported 能力 fail closed。

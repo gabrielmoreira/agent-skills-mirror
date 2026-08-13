@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `flutter/flutter` — 26 default patterns, 0 followed patterns, 43 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,15 +93,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
 | 33 | ✓ | [`.agents/skills/rebuilding-flutter-tool/scripts/rebuild.dart`](.agents/skills/rebuilding-flutter-tool/scripts/rebuild.dart) |
 | 34 | ✓ | [`.agents/skills/rebuilding-flutter-tool/SKILL.md`](.agents/skills/rebuilding-flutter-tool/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/shepherd-prs/SKILL.md`](.agents/skills/shepherd-prs/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/updating-android-sdk/SKILL.md`](.agents/skills/updating-android-sdk/SKILL.md) |
-| 37 | ✓ | [`.agents/skills/upgrade-browser/scripts/fetch_versions.dart`](.agents/skills/upgrade-browser/scripts/fetch_versions.dart) |
-| 38 | ✓ | [`.agents/skills/upgrade-browser/SKILL.md`](.agents/skills/upgrade-browser/SKILL.md) |
-| 39 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
-| 40 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
-| 41 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
-| 42 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
-| 43 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
+| 35 | ✓ | [`.agents/skills/run-devicelab-with-led/SKILL.md`](.agents/skills/run-devicelab-with-led/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/shepherd-prs/SKILL.md`](.agents/skills/shepherd-prs/SKILL.md) |
+| 37 | ✓ | [`.agents/skills/updating-android-sdk/SKILL.md`](.agents/skills/updating-android-sdk/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/upgrade-browser/scripts/fetch_versions.dart`](.agents/skills/upgrade-browser/scripts/fetch_versions.dart) |
+| 39 | ✓ | [`.agents/skills/upgrade-browser/SKILL.md`](.agents/skills/upgrade-browser/SKILL.md) |
+| 40 | ✓ | [`dev/a11y_assessments/GEMINI.md`](dev/a11y_assessments/GEMINI.md) |
+| 41 | ✓ | [`engine/src/flutter/GEMINI.md`](engine/src/flutter/GEMINI.md) |
+| 42 | ✓ | [`engine/src/flutter/impeller/GEMINI.md`](engine/src/flutter/impeller/GEMINI.md) |
+| 43 | ✓ | [`engine/src/flutter/lib/web_ui/GEMINI.md`](engine/src/flutter/lib/web_ui/GEMINI.md) |
+| 44 | ✓ | [`engine/src/flutter/tools/licenses_cpp/GEMINI.md`](engine/src/flutter/tools/licenses_cpp/GEMINI.md) |
 
 ---
 

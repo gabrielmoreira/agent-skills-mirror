@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,14 +77,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/skills/autoresearch/references/security-checklist.md`](.agents/skills/autoresearch/references/security-checklist.md) |
 | 17 | ✓ | [`.agents/skills/autoresearch/regression.md`](.agents/skills/autoresearch/regression.md) |
 | 18 | ✓ | [`.agents/skills/autoresearch/scenario.md`](.agents/skills/autoresearch/scenario.md) |
-| 19 | ✓ | [`.agents/skills/autoresearch/security.md`](.agents/skills/autoresearch/security.md) |
-| 20 | ✓ | [`.agents/skills/autoresearch/ship.md`](.agents/skills/autoresearch/ship.md) |
-| 21 | ✓ | [`.agents/skills/autoresearch/SKILL.md`](.agents/skills/autoresearch/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/autoresearch/SKILL.md`](.claude/skills/autoresearch/SKILL.md) |
-| 23 | ✓ | [`.opencode/skills/autoresearch/SKILL.md`](.opencode/skills/autoresearch/SKILL.md) |
-| 24 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 25 | ✓ | [`claude-plugin/skills/autoresearch/SKILL.md`](claude-plugin/skills/autoresearch/SKILL.md) |
-| 26 | ✓ | [`plugins/autoresearch/skills/autoresearch/SKILL.md`](plugins/autoresearch/skills/autoresearch/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/autoresearch/scripts/orchestrate.sh`](.agents/skills/autoresearch/scripts/orchestrate.sh) |
+| 20 | ✓ | [`.agents/skills/autoresearch/scripts/score-regression.sh`](.agents/skills/autoresearch/scripts/score-regression.sh) |
+| 21 | ✓ | [`.agents/skills/autoresearch/security.md`](.agents/skills/autoresearch/security.md) |
+| 22 | ✓ | [`.agents/skills/autoresearch/ship.md`](.agents/skills/autoresearch/ship.md) |
+| 23 | ✓ | [`.agents/skills/autoresearch/SKILL.md`](.agents/skills/autoresearch/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/autoresearch/SKILL.md`](.claude/skills/autoresearch/SKILL.md) |
+| 25 | ✓ | [`.opencode/skills/autoresearch/SKILL.md`](.opencode/skills/autoresearch/SKILL.md) |
+| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 27 | ✓ | [`claude-plugin/skills/autoresearch/SKILL.md`](claude-plugin/skills/autoresearch/SKILL.md) |
+| 28 | ✓ | [`plugins/autoresearch/skills/autoresearch/SKILL.md`](plugins/autoresearch/skills/autoresearch/SKILL.md) |
 
 ---
 

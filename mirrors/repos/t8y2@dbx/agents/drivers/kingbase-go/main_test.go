@@ -1084,31 +1084,151 @@ func TestListDatabasesFallsBackToPostgresCatalog(t *testing.T) {
 }
 
 func TestListTablesPreservesKingbaseObjectTypesAndComments(t *testing.T) {
+	tests := []struct {
+		name            string
+		postgresCatalog bool
+		mysqlCompat     bool
+		wantCatalog     string
+	}{
+		{name: "modern system catalog", wantCatalog: "sys_catalog.sys_class c"},
+		{name: "PostgreSQL catalog", postgresCatalog: true, wantCatalog: "pg_catalog.pg_class c"},
+		{name: "MySQL compatibility mode", mysqlCompat: true, wantCatalog: "sys_catalog.sys_class c"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			state := &metadataDriverState{query: func(query string) (driver.Rows, error) {
+				if !strings.Contains(query, "FROM "+test.wantCatalog) || !strings.Contains(query, "c.relkind IN ('r','p','v','m','f')") || !strings.Contains(query, "obj_description(c.oid)") {
+					return nil, errors.New("unexpected query: " + query)
+				}
+				return &valueRows{
+					columns: []string{"relname", "relkind", "comment"},
+					rows: [][]driver.Value{
+						{"orders", "TABLE", "orders table"},
+						{"sales_view", "VIEW", nil},
+						{"sales_cache", "MATERIALIZED_VIEW", "cached sales"},
+					},
+				}, nil
+			}}
+			server := newServer()
+			server.db = openMetadataDB(t, state)
+			server.mode.postgresCatalog = test.postgresCatalog
+			server.mode.mysqlCompat = test.mysqlCompat
+
+			tables, err := server.listTables("public", metadataListConstraints{Filter: "sales", ObjectTypes: []string{"VIEW", "MATERIALIZED_VIEW"}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(tables) != 2 || tables[0].TableType != "VIEW" || tables[1].TableType != "MATERIALIZED_VIEW" {
+				t.Fatalf("unexpected tables: %#v", tables)
+			}
+			if tables[1].Comment == nil || *tables[1].Comment != "cached sales" {
+				t.Fatalf("materialized view comment was lost: %#v", tables[1])
+			}
+			if queries := state.snapshotQueries(); len(queries) != 1 {
+				t.Fatalf("supported catalog must use one request, got %d: %v", len(queries), queries)
+			}
+		})
+	}
+}
+
+func TestListTablesCachesMissingCatalogOIDCapability(t *testing.T) {
+	for _, test := range []struct {
+		name            string
+		postgresCatalog bool
+		wantCatalog     string
+	}{
+		{name: "system catalog", wantCatalog: "sys_catalog.sys_class c"},
+		{name: "PostgreSQL catalog", postgresCatalog: true, wantCatalog: "pg_catalog.pg_class c"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			state := &metadataDriverState{query: func(query string) (driver.Rows, error) {
+				if !strings.Contains(query, "FROM "+test.wantCatalog) {
+					return nil, errors.New("fallback changed catalog: " + query)
+				}
+				if strings.Contains(query, "c.oid") {
+					return nil, &gokb.Error{Code: gokb.ErrorCode("42703"), Message: "kb: column c.oid does not exist"}
+				}
+				if !strings.Contains(query, "NULL AS table_comment") {
+					return nil, errors.New("fallback must return a NULL comment: " + query)
+				}
+				return &valueRows{
+					columns: []string{"relname", "relkind", "table_comment"},
+					rows:    [][]driver.Value{{"orders", "TABLE", nil}},
+				}, nil
+			}}
+			server := newServer()
+			server.db = openMetadataDB(t, state)
+			server.mode.postgresCatalog = test.postgresCatalog
+
+			for call := 0; call < 2; call++ {
+				tables, err := server.listTables("public", metadataListConstraints{})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(tables) != 1 || tables[0].Name != "orders" || tables[0].Comment != nil {
+					t.Fatalf("unexpected fallback result: %#v", tables)
+				}
+			}
+
+			queries := state.snapshotQueries()
+			if len(queries) != 3 {
+				t.Fatalf("missing OID must be probed only once, got %d queries: %v", len(queries), queries)
+			}
+			if !strings.Contains(queries[0], "c.oid") || strings.Contains(queries[1], "c.oid") || strings.Contains(queries[2], "c.oid") {
+				t.Fatalf("unexpected capability fallback sequence: %v", queries)
+			}
+		})
+	}
+}
+
+func TestTableCommentCachesMissingCatalogOIDCapability(t *testing.T) {
 	state := &metadataDriverState{query: func(query string) (driver.Rows, error) {
-		if !strings.Contains(query, "FROM sys_catalog.sys_class c") || !strings.Contains(query, "c.relkind IN ('r','p','v','m','f')") {
-			return nil, errors.New("unexpected query: " + query)
-		}
-		return &valueRows{
-			columns: []string{"relname", "relkind", "comment"},
-			rows: [][]driver.Value{
-				{"orders", "TABLE", "orders table"},
-				{"sales_view", "VIEW", nil},
-				{"sales_cache", "MATERIALIZED_VIEW", "cached sales"},
-			},
-		}, nil
+		return nil, &gokb.Error{Code: gokb.ErrorCode("42703"), Message: "kb: column c.oid does not exist"}
 	}}
 	server := newServer()
 	server.db = openMetadataDB(t, state)
 
-	tables, err := server.listTables("public", metadataListConstraints{Filter: "sales", ObjectTypes: []string{"VIEW", "MATERIALIZED_VIEW"}})
-	if err != nil {
-		t.Fatal(err)
+	comment, err := server.getTableComment("public", "orders")
+	if err != nil || comment != nil {
+		t.Fatalf("missing OID comment must degrade to nil: comment=%v err=%v", comment, err)
 	}
-	if len(tables) != 2 || tables[0].TableType != "VIEW" || tables[1].TableType != "MATERIALIZED_VIEW" {
-		t.Fatalf("unexpected tables: %#v", tables)
+	comment, err = server.getTableComment("", "events")
+	if err != nil || comment != nil {
+		t.Fatalf("cached missing OID comment must return nil: comment=%v err=%v", comment, err)
 	}
-	if tables[1].Comment == nil || *tables[1].Comment != "cached sales" {
-		t.Fatalf("materialized view comment was lost: %#v", tables[1])
+	if queries := state.snapshotQueries(); len(queries) != 1 {
+		t.Fatalf("cached capability must avoid all later comment requests, got %d: %v", len(queries), queries)
+	}
+}
+
+func TestTableOIDFallbackRejectsUnrelatedErrors(t *testing.T) {
+	tests := []struct {
+		name string
+		err  error
+	}{
+		{name: "different missing column", err: &gokb.Error{Code: gokb.ErrorCode("42703"), Message: "kb: column c.other_column does not exist"}},
+		{name: "connection error", err: errors.New("metadata connection reset")},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			state := &metadataDriverState{query: func(query string) (driver.Rows, error) {
+				return nil, test.err
+			}}
+			server := newServer()
+			server.db = openMetadataDB(t, state)
+
+			if _, err := server.listTables("public", metadataListConstraints{}); !errors.Is(err, test.err) {
+				t.Fatalf("listTables swallowed unrelated error: %v", err)
+			}
+			if _, err := server.getTableComment("public", "orders"); !errors.Is(err, test.err) {
+				t.Fatalf("getTableComment swallowed unrelated error: %v", err)
+			}
+			if queries := state.snapshotQueries(); len(queries) != 2 {
+				t.Fatalf("unrelated errors must not trigger retries, got %d: %v", len(queries), queries)
+			}
+		})
 	}
 }
 
@@ -2390,6 +2510,28 @@ func TestDisconnectResetsInformationSchemaCapabilityCache(t *testing.T) {
 	}
 	if server.infoColumnTypeUnsupported || server.infoUdtNameUnsupported {
 		t.Fatal("disconnect must reset cached information_schema capabilities")
+	}
+}
+
+func TestConnectionLifecycleResetsCatalogOIDCapability(t *testing.T) {
+	state := &connectionAttemptState{pingErrors: map[string]error{}}
+	server := newServer()
+	server.openDatabase = state.open
+	server.catalogOIDUnsupported = true
+
+	if err := server.connect(connectParams{MySQLCompatMode: true, URLParams: "sslmode=disable"}); err != nil {
+		t.Fatal(err)
+	}
+	if server.catalogOIDUnsupported {
+		t.Fatal("connect must reset the cached catalog OID capability")
+	}
+
+	server.catalogOIDUnsupported = true
+	if err := server.disconnect(); err != nil {
+		t.Fatal(err)
+	}
+	if server.catalogOIDUnsupported {
+		t.Fatal("disconnect must reset the cached catalog OID capability")
 	}
 }
 

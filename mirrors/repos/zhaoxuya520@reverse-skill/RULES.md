@@ -216,7 +216,11 @@ After task completion (vulnerability verified / reverse complete / flag captured
 | "Task is basically done, don't need checklist" | **Task completion = ALL Checklist items checked.** Unchecked checklist = task NOT complete. |
 | "I'll reply to user first, continue after confirmation" | **Don't wait for confirmation on deterministic steps.** Execute while informing user. Only pause at genuine decision points. |
 | "I understand the rules, please tell me your task" | **This is the WORST failure mode.** Correct behavior: proactively match user intent to routing table, output analysis, start executing. |
-| "User asked to redo import-table / step X, but I did something else more useful" | **Redo = redo the named step.** When user asks to redo X (e.g. import table check), MUST re-execute X and refresh its Evidence. FORBIDDEN to substitute another step or silently skip X. |
+| "User asked to redo import-table / step X, but I did something else more useful" | **Redo = redo the named step** (or the user-confirmed prerequisite path). MUST refresh Evidence for X. FORBIDDEN to substitute an unrelated step or silently skip X. Unpacking is a **prerequisite** for readable IAT, not a substitute for import Evidence. |
+| "User said skip unpack and read IAT on a packed sample; I'll just dump the garbage table as done" | **Feasibility gate:** if X is blocked (packed/unreadable IAT), MUST state the blocker, recommend order (unpack/repair IAT or go dynamic), and **ask confirm**. If user forces X, do it and mark `quality=unreadable/packed`; FORBIDDEN to draw capability-negative conclusions from garbage IAT. |
+| "Self-check crash after unpack; keep patching the file on disk" | **Patch 6:** record E-self-check-crash / E-iat-repair-fail, switch to dynamic (bp CreateFile/GetFileSize). FORBIDDEN endless static file thrash. |
+| "IAT repair keeps failing; I'll grind more static unpackers" | **IAT repair iron rule:** try auto/semi-auto repair first; on tool error or unreable binary after repair, STOP static IAT, record E-iat-repair-fail, switch to dynamic API breakpoints. FORBIDDEN infinite static IAT thrash. |
+| "No import table (.NET) so the hard gate does not apply" | **Equivalent anchor still MUST:** .NET → dnSpy/IL/metadata summary into E-imports slot; DLL/SYS → E-exports alongside imports. FORBIDDEN to skip the gate. |
 
 
 ---

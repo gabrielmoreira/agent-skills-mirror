@@ -476,6 +476,50 @@ except NonIdempotentRetryError:
 
 `client.sources.add_file(...)` and `client.sources.add_drive(...)` are now also covered by the probe-then-create wrapper: the create RPC runs with `disable_internal_retries=True` and, on transport failure, the wrapper probes the server-side source list (via `idempotent_create`) before deciding whether to retry — so transient failures no longer produce duplicate sources. See `_source/add.py` (`SourceAddService.add_drive`) and `_source/upload.py` (`SourceUploadPipeline.register_file_source`) for the implementation.
 
+**Partial file uploads.** File registration creates the source row before the
+resumable HTTP upload starts. If session setup or the combined upload/finalize
+request then fails, the source row is **retained** — the client never deletes it
+automatically.
+
+The failure is raised as **its own type, unwrapped**: `AuthError` on an expired
+session, `RateLimitError` on a 429, `ServerError` on a 5xx, `NetworkError` on a
+dropped connection, `ValidationError` on a rejected file, or a bare
+`SourceAddError`. An existing `except ValidationError:` around `add_file()` keeps
+working unchanged — there is no new exception type to catch.
+
+To identify the retained row, read the `source_id` and `stage` attributes the
+client attaches to that exception. They are present *only* on a
+post-registration upload failure, so read them defensively:
+
+```python
+try:
+    source = await client.sources.add_file(nb_id, "report.pdf")
+except NotebookLMError as error:
+    source_id = getattr(error, "source_id", None)
+    if source_id is not None:
+        # A row was registered and left behind; reconcile it, then remove it with
+        # client.sources.delete(nb_id, source_id) if it is unusable.
+        print(source_id, error.stage)  # stage: "start_session" | "upload_finalize"
+    raise
+```
+
+`stage` says **where** the failure happened, not whether any bytes were sent: it
+advances to `"upload_finalize"` before the body request is issued, so a
+connection that drops before the first byte still reports that stage.
+Cancellation still propagates as `CancelledError`, with no attributes attached.
+
+A raw transport failure is the one case where the raised exception is not the
+original object: an `httpx.RequestError` is normalised to a library
+`NetworkError` first (the httpx exception on its `original_error`, and
+`__cause__` still the raw `httpx.RequestError`), so a dropped connection reaches
+you as a library exception rather than a raw `httpx` error — which is what makes
+it classify as retryable infrastructure instead of a rejected input.
+
+Everything else propagates as itself. The post-registration handler catches
+`Exception`, so a local file-read `OSError` or an exception raised by your own
+`on_progress` callback also arrives carrying `source_id` / `stage`; give any
+`isinstance` chain over the caught exception a fallback branch.
+
 ---
 
 ## Concurrency contract
@@ -800,7 +844,7 @@ compatibility shim was removed in v0.5.0.
 | `_kernel` | Concrete `Kernel` transport core; owns the `httpx.AsyncClient` (constructed in `Kernel.__init__`, closed in `Kernel.aclose()`) and the cookie jar. | Pure transport surface (see `Kernel` Protocol in `_runtime/contracts.py`). |
 | `_runtime/init.py` | Client composition root helpers: constructor validation, collaborator construction, `RuntimeTransport`, middleware chain, and `RpcExecutor` wiring. | `NotebookLMClient` calls this during construction and stores the result directly. |
 | `_runtime/transport.py` | Authenticated transport leg used by `RpcExecutor` and the middleware chain terminal. | Routes through `Kernel.post` and centralizes request-envelope materialization. |
-| `_runtime/config.py` | Module-level constants: `DEFAULT_TIMEOUT`, `DEFAULT_CHAT_TIMEOUT`, `DEFAULT_KEEPALIVE_MIN_INTERVAL`, `DEFAULT_MAX_CONCURRENT_RPCS`, `DEFAULT_MAX_CONCURRENT_UPLOADS`, `CORE_LOGGER_NAME`, `normalize_max_concurrent_uploads`. | Pure constants; importable without side effects. |
+| `_runtime/config.py` | Module-level constants: `DEFAULT_TIMEOUT`, `DEFAULT_CHAT_TIMEOUT`, `DEFAULT_IMPORT_RESEARCH_BASE_TIMEOUT`/`_PER_SOURCE_TIMEOUT`/`_MAX_TIMEOUT`, `DEFAULT_KEEPALIVE_MIN_INTERVAL`, `DEFAULT_MAX_CONCURRENT_RPCS`, `DEFAULT_MAX_CONCURRENT_UPLOADS`, `CORE_LOGGER_NAME`, `normalize_max_concurrent_uploads`. | Pure constants; importable without side effects. |
 | `_runtime/helpers.py` | `is_auth_error`, `AUTH_ERROR_PATTERNS`, `_resolve_keepalive_interval`. | Cross-seam pure helpers; behaviour-bearing (and therefore unit-tested). |
 | `_error_injection` | `ERROR_INJECT_ENV_VAR`, `_get_error_injection_mode`, `_refuse_synthetic_error_outside_test_context`. | Env-var resolver + startup guard for the synthetic-error harness. |
 | `_runtime/auth.py` | `AuthRefreshCoordinator`: refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. | Lazy `asyncio.Lock` construction; never instantiated outside a running loop. |
@@ -915,13 +959,17 @@ class NotebookLMClient:
         allow_null: bool = False,
         *,
         disable_internal_retries: bool = False,
+        read_timeout: float | None = None,
     ) -> Any:
 ```
 
 `RPCMethod` is imported from `notebooklm.rpc` for raw-RPC calls; `Any` is
 `typing.Any`. The default-shape call (`client.rpc_call(method, params)`)
 forwards to the underlying `RpcExecutor.rpc_call` with its canonical
-defaults.
+defaults. `read_timeout` (added in #2187) overrides the client-wide read
+timeout for this one call — internal callers use it for RPCs known to run
+long (e.g. `ResearchAPI.import_sources`'s batch-scaled IMPORT_RESEARCH
+timeout); `None` (the default) inherits the client's configured `timeout`.
 
 **Cookie persistence override:** `cookie_saver=None` (the default) uses the
 canonical typed `ProfileStore` merge for close, refresh, and keepalive saves.
@@ -1161,7 +1209,7 @@ print(f"Keywords: {guide.keywords}")
 | `rename(notebook_id, artifact_id, new_title, *, return_object=True)` | `str, str, str` | `Artifact \| None` | Rename artifact (re-fetched; raises `ArtifactNotFoundError` if missing). `return_object=False` skips the re-fetch and returns `None`. |
 | `poll_status(notebook_id, task_id)` | `str, str` | `GenerationStatus` | Check generation status |
 | `wait_for_completion(notebook_id, task_id, ...)` | `str, str, ...` | `GenerationStatus` | Wait for generation. Pass `on_status_change(status)` for sync or async progress callbacks. |
-| `retry_failed(notebook_id, artifact_id)` | `str, str` | `GenerationStatus` | Retry a failed Studio artifact in place (the UI "Retry"). Same `artifact_id` preserved; accepted → `status="in_progress"`; a synchronous refusal (rate limit / quota / not-retryable) **raises** `RateLimitError`/`RPCError`. See below. |
+| `retry_failed(notebook_id, artifact_id)` | `str, str` | `GenerationStatus` | Retry a failed Studio artifact in place (the UI "Retry"). Same `artifact_id` preserved; accepted → `status="pending"` (re-queued; advances to `in_progress` on a later poll); a synchronous refusal (rate limit / quota / not-retryable) **raises** `RateLimitError`/`RPCError`. See below. |
 
 #### Type-Specific List Methods
 
@@ -1208,7 +1256,9 @@ not deleted first; the same `artifact_id` is preserved and returned as the task
 id, so `poll_status()` / `wait_for_completion()` keep working against it.
 
 It follows the ADR-0019 "async kickoff" contract: an accepted retry returns
-`GenerationStatus(status="in_progress")`, while a **synchronous refusal**
+`GenerationStatus(status="pending")` — the response row carries wire code 1
+(`ARTIFACT_STATUS_INITIALIZED`), i.e. re-queued but not yet picked up, advancing
+to `in_progress` on a later poll — while a **synchronous refusal**
 (`USER_DISPLAYABLE_ERROR` — rate limit, quota, or a non-retryable artifact)
 **raises** the underlying `RateLimitError` / `RPCError` rather than returning a
 `status="failed"` handle. (As a brand-new method it is born on the right side
@@ -1219,7 +1269,7 @@ callers decide whether to re-invoke.
 
 ```python
 status = await client.artifacts.retry_failed(nb_id, failed_artifact_id)
-# status.task_id == failed_artifact_id, status.status == "in_progress"
+# status.task_id == failed_artifact_id, status.status == "pending"
 final = await client.artifacts.wait_for_completion(nb_id, status.task_id)
 
 # Auto-retry on a rate-limited refusal with the public helper. Because
@@ -1409,7 +1459,7 @@ status = await client.artifacts.generate_quiz(
     notebook_id,
     source_ids=None,
     instructions="...",
-    quantity=QuizQuantity.MORE,        # FEWER, STANDARD, MORE (MORE aliases STANDARD)
+    quantity=QuizQuantity.MORE,        # FEWER, STANDARD, MORE
     difficulty=QuizDifficulty.MEDIUM,  # EASY, MEDIUM, HARD
 )
 ```
@@ -1891,9 +1941,30 @@ print(f"Language set to: {result}")
 | `get_status(notebook_id)` | `str` | `ShareStatus` | Get current sharing configuration |
 | `set_public(notebook_id, public)` | `str, bool` | `ShareStatus` | Enable/disable public link sharing |
 | `set_view_level(notebook_id, level)` | `str, ShareViewLevel` | `ShareStatus` | Set what viewers can access |
-| `add_user(notebook_id, email, permission, notify, welcome_message)` | `str, str, SharePermission, bool, str` | `ShareStatus` | Share with a user |
-| `update_user(notebook_id, email, permission)` | `str, str, SharePermission` | `ShareStatus` | Update user's permission |
+| `set_users(notebook_id, grants, notify, welcome_message)` | `str, list[tuple[str, SharePermission]], bool, str` | `ShareStatus` | Set several users' permissions in one request (upsert) |
+| `add_user(notebook_id, email, permission, notify, welcome_message)` | `str, str, SharePermission, bool, str` | `ShareStatus` | Share with a user (wrapper over `set_users`) |
+| `update_user(notebook_id, email, permission)` | `str, str, SharePermission` | `ShareStatus` | Update user's permission (wrapper over `set_users`) |
 | `remove_user(notebook_id, email)` | `str, str` | `ShareStatus` | Remove user's access |
+
+**User permissions are an upsert, not an add.** One `SHARE_NOTEBOOK` call sets the
+permission for each email in the batch: an address that is not shared yet is added,
+and one that already has access has its permission replaced. `add_user()` and
+`update_user()` are intent wrappers over the same `set_users()` operation and differ
+only in their default `notify` — `update_user()` will happily add an absent user, and
+`add_user()` will happily change an existing one. Two backend preconditions are worth
+knowing before you build on this:
+
+- **Duplicate grantees are rejected client-side.** A batch that names one email twice
+  comes back *successful* from the backend while that user's permission stays
+  unchanged. There is no first-wins or last-wins rule to rely on, so `set_users()`
+  raises `ValueError` instead of sending the request. The comparison is **exact**:
+  addresses differing only in case are passed through, because RFC 5321 makes the
+  local part case-sensitive and no probe has shown that NotebookLM collapses them.
+- **Removal stays singular.** A batch of removals only applies when *every* target is
+  currently shared; if any requested address is already absent, the backend drops the
+  whole request — including the users that are present — and reports no failure.
+  A plural removal therefore needs a share-status preflight and post-verification,
+  not a wider entry list, so it is deliberately not offered as a one-liner.
 
 **Example:**
 ```python
@@ -1918,6 +1989,19 @@ status = await client.sharing.add_user(
     SharePermission.VIEWER,
     notify=True,
     welcome_message="Check out my research!"
+)
+
+# Set several users' permissions in one RPC. Notifications and the welcome
+# message apply to the whole call, not per grant. Existing grantees are updated
+# rather than duplicated; repeating one email raises ValueError.
+status = await client.sharing.set_users(
+    notebook_id,
+    [
+        ("viewer@example.com", SharePermission.VIEWER),
+        ("editor@example.com", SharePermission.EDITOR),
+    ],
+    notify=True,
+    welcome_message="Welcome, team!",
 )
 
 # Update user permission
@@ -2080,9 +2164,75 @@ class Notebook:
     title: str
     created_at: Optional[datetime]   # creation time (tz-aware UTC)
     sources_count: int
-    is_owner: bool
-    modified_at: Optional[datetime]  # last-modified time (tz-aware UTC)
+    is_owner: bool                     # role is SharePermission.OWNER
+    modified_at: Optional[datetime]    # DEPRECATED alias for last_viewed_at
+    role: Optional[SharePermission]    # your own level: OWNER / EDITOR / VIEWER
+    last_viewed_at: Optional[datetime] # when YOU last opened it (tz-aware UTC)
 ```
+
+#### `last_viewed_at` is not a modification time — and `GET_NOTEBOOK` mutates it
+
+`last_viewed_at` decodes the backend's `lastViewedTime` field. Two things follow
+that regularly surprise callers:
+
+1. **It does not track edits.** It advances when *this account* opens the
+   notebook, so an untouched notebook keeps getting a newer `last_viewed_at`,
+   and a notebook a collaborator just rewrote does not. There is no
+   modification timestamp on the wire; do not try to derive one from this
+   field.
+2. **`GET_NOTEBOOK` is not read-only.** `lastViewedTime` is the sort key the
+   backend uses for `ListRecentlyViewedProjects`, and it *writes* the field on
+   every notebook fetch. The [#2126](https://github.com/teng-lin/notebooklm-py/issues/2126)
+   audit saw three consecutive pure reads, with no mutation of any kind, advance
+   it `1786105463 → 1786105467 → 1786105471`, and a single bare `GET_NOTEBOOK`
+   move that notebook to index 0 of the recency list.
+
+So `notebooks.get()` — plus everything built on `GET_NOTEBOOK` in the table
+below — reorders the "Recent" list the human sees in the NotebookLM web UI.
+`notebooks.list()` does **not**: a follow-up probe held a notebook's
+`last_viewed_at` pinned across 15 seconds of repeated `LIST_NOTEBOOKS`, so
+listing reads the ordering without touching it.
+
+There is no read-without-touching notebook fetch, so if this matters for your
+automation, budget your `GET_NOTEBOOK`s.
+`client.notebooks.remove_from_recent(notebook_id)` is the only way to take a
+notebook back out of the list.
+
+Internal call paths that issue a recency-bumping `GET_NOTEBOOK` as a side
+effect of doing something else:
+
+| Path | Notes |
+|------|-------|
+| `chat.ask()` when `source_ids` is not passed | **Most frequent by far** — `get_source_ids()` runs on every ask that does not pin sources explicitly. |
+| `sources.list()` / `sources.get()` / `sources.wait_until_ready()` / `wait_all_until_ready()` | Sources are only exposed inside the notebook payload. The waiters re-read **once per poll iteration**, so a slow upload bumps recency a dozen times. |
+| `notebooks.get_metadata()` | **Two** `GET_NOTEBOOK`s — it gathers `notebooks.get()` and `sources.list()` concurrently. |
+| `notebooks.get_source_ids()` / `get_raw()` | Also reached by every `artifacts.generate_*`, `mind_maps.generate()`, and `notebooks.suggest_prompts()` that does not pin source ids. |
+| `notebooks.rename()` | Re-reads after the mutation to return the updated `Notebook`. |
+| `notebooks.create()` (CLI/MCP/REST path) | One best-effort re-read to backfill the timestamps `CREATE_NOTEBOOK` leaves null; skipped when both are already populated. |
+| `chat.get_settings()` | Chat config lives in the notebook payload. |
+| `sources.add_file()` / `add_drive()` | An **unconditional** pre-create baseline of existing source ids, on every call — the idempotency probe needs it to tell a source it created from one that was already there. |
+| `sources.add_url()` | Only **on a retry**: its idempotency probe runs after a transport failure, not on the happy path. (`add_text()` is `NON_IDEMPOTENT_NO_RETRY` and runs no probe at all, so it never bumps recency.) |
+| REST `POST /v1/notebooks/{id}/sources/batch` preflight | One shared existence/auth check before the per-URL loop. |
+
+> **`sources.add_drive()` moved rows in
+> [#2113](https://github.com/teng-lin/notebooklm-py/issues/2113).** It used to
+> probe only on a retry; it now takes an **unconditional** pre-create baseline,
+> the same shape `add_file` already uses. A Drive `documentId` turns out not to
+> be unique within a notebook (the repo's own cassette holds two source ids
+> sharing one `documentId`), so matching on `documentId` alone could return a
+> pre-existing copy and report success for a create that never landed. The
+> baseline is the correct fix — this table records the recency cost it carries,
+> not an objection to it.
+
+Paths that issue `LIST_NOTEBOOKS` — listed for completeness, since they cost an
+RPC but, per the probe above, **do not perturb recency**: `notebooks.create()`
+(an unconditional idempotency baseline before every create, plus a re-probe and
+a quota diagnosis on failure), MCP notebook-name resolution, and the auth
+master-token validation probe.
+
+Where a call only needs to know a notebook *exists*, it already uses the
+narrowest RPC available — the backend exposes no lighter-weight existence or
+status probe than `GET_NOTEBOOK`.
 
 ### Source
 
@@ -2094,6 +2244,8 @@ class Source:
     url: Optional[str]
     created_at: Optional[datetime]
     status: SourceStatus                 # UNKNOWN when the wire status is missing or unmapped
+    drive_document_id: Optional[str]     # Drive file id for Drive-backed sources; None otherwise
+    drive_status: Optional[DriveSourceStatus]  # Drive-side health; None when the row makes no claim
 
     @property
     def kind(self) -> SourceType:
@@ -2110,10 +2262,63 @@ class Source:
     @property
     def is_error(self) -> bool:
         """status == SourceStatus.ERROR"""
+
+    @property
+    def is_drive_degraded(self) -> bool:
+        """drive_status is one of INACCESSIBLE / SYNCING / DELETED / GEN_AI_ACCESS_DENIED"""
 ```
 
 > **Removed in v0.5.0:** `Source.source_type` was replaced by `Source.kind`.
 > See [stability.md → Removed in v0.5.0](stability.md#removed-in-v050).
+
+**Drive-backed sources: `is_ready` is not the whole story.**
+
+`status` (and therefore `is_ready` / `wait_until_ready`) reports **NotebookLM's
+own ingestion pipeline**. For a source backed by a Google Drive file, ingestion
+completes once and stays complete — even after the file is deleted, unshared, or
+starts re-syncing. Drive-side health is a separate wire field
+(`SourceSettings.userDriveSourceStatus`) surfaced as `drive_status`:
+
+```python
+from notebooklm import DriveSourceStatus
+
+for src in await client.sources.list(nb_id):
+    if src.is_drive_degraded:
+        print(f"{src.title}: Drive says {src.drive_status.name} — answers may be stale")
+
+    # Or branch on the member directly when you need the specific state:
+    if src.drive_status is DriveSourceStatus.DELETED:
+        await client.sources.delete(nb_id, src.id)
+```
+
+`drive_status` is `None` for every non-Drive source (and for a Drive source the
+backend made no claim about — proto3 omits the zero-valued default), so absence
+is not proof that a source is not Drive-backed; `drive_document_id` answers that
+question. A code this client does not model decodes to `DriveSourceStatus.UNKNOWN`
+(distinct from `None`) and logs one warning.
+
+`is_drive_degraded` reports only an **explicit** backend degradation signal. A
+`False` therefore means "nothing degraded was reported" — for a non-Drive source,
+for `ACTIVE`, and for an unreadable `UNKNOWN` code alike — not "the Drive file is
+confirmed present and readable". Note also that `SYNCING` is transient and
+self-healing; exclude it if you are driving an alert.
+
+The MCP and REST source views carry the same two signals as
+`drive_status_label` (a string, `null` when there is no claim) and
+`is_drive_degraded`.
+
+`is_ready` deliberately does **not** fold `drive_status` in: it is a public
+field whose meaning callers already depend on, and folding a permanently-dead
+Drive file into it would turn `wait_until_ready` into a guaranteed timeout
+instead of a signal. Check `is_drive_degraded` alongside `is_ready` when the
+freshness of a Drive-backed source matters.
+
+> **Caveat, stated plainly:** only `DriveSourceStatus.ACTIVE` has been observed
+> on the wire (4 Drive rows out of a 409-row live capture). The degraded members
+> are read off the backend enum recovered from the official Android app; nobody
+> has deliberately broken access to a real Drive file to confirm which value
+> arrives when. The slot being live, populated and previously unread is
+> confirmed; the specific degraded values are not.
 
 **Type Identification:**
 
@@ -2158,7 +2363,7 @@ class Artifact:
     id: str
     title: str
     _artifact_type: int             # Internal type code; field order matters. Access via .kind.
-    status: int                     # 1=processing, 2=pending, 3=completed, 4=failed
+    status: int                     # See the ArtifactStatus table below. Access via .status_str / .is_* .
     created_at: Optional[datetime]
     url: Optional[str]
     _variant: int | None = None     # Internal variant for type-4 artifacts (1=flashcards, 2=quiz, 4=interactive mind map).
@@ -2170,7 +2375,23 @@ class Artifact:
 
     @property
     def is_completed(self) -> bool:
-        """Check if artifact generation is complete."""
+        """Check if artifact generation is complete (status code 3)."""
+
+    @property
+    def is_pending(self) -> bool:
+        """Queued: the row exists but the worker has not started (status code 1)."""
+
+    @property
+    def is_processing(self) -> bool:
+        """Actively generating (status code 2)."""
+
+    @property
+    def is_failed(self) -> bool:
+        """Generation failed (status code 4)."""
+
+    @property
+    def status_str(self) -> str:
+        """Human-readable status; see the table below."""
 
     @property
     def is_quiz(self) -> bool:
@@ -2189,6 +2410,30 @@ class Artifact:
 ```
 
 **Note on `_artifact_type` / `_variant`:** these are private (leading-underscore) fields with `repr=False` and are part of the dataclass for `from_api_response()` round-tripping. Always consume them via the public `.kind`, `.is_quiz`, `.is_flashcards`, and `.report_subtype` accessors.
+
+**Status codes** (`Artifact.status`, also available as the `ArtifactStatus` enum from `notebooklm.types`):
+
+| Code | `ArtifactStatus` | `status_str` | Meaning |
+|---|---|---|---|
+| 0 | `UNKNOWN` | `"unknown"` | Status unset or unrecognized |
+| 1 | `PENDING` | `"pending"` | Queued — the row exists, the worker has not started |
+| 2 | `PROCESSING` | `"in_progress"` | Actively generating |
+| 3 | `COMPLETED` | `"completed"` | Ready for use/download |
+| 4 | `FAILED` | `"failed"` | Generation failed |
+| 5 | `SUGGESTED` | `"suggested"` | A suggestion row, not a real artifact; filtered out of listings server-side |
+| 6 | `PENDING_REVIEW` | `"pending_review"` | Backend state whose semantics are unconfirmed; modeled so it stays distinguishable from `"unknown"` |
+
+**Corrected in [#2127](https://github.com/teng-lin/notebooklm-py/issues/2127):**
+codes 1 and 2 were transposed relative to the backend — the library read 1 as
+`"in_progress"` and 2 as `"pending"`. `Artifact.is_pending` therefore returned
+`True` for an artifact that was mid-generation, and `is_processing` returned
+`False` for it. No member name or existing status string was renamed; what moved
+is the wire code behind each, and codes 0/5/6 gained members where they had
+previously all decoded to `"unknown"` (so `"suggested"` and `"pending_review"`
+are new strings an exhaustive match must now handle). Callers that hard-coded
+the integers (`artifact.status == 1` to mean "generating") must flip them;
+callers using `.is_pending` / `.is_processing` / `.status_str` get the correct
+answer with no change.
 
 > **Removed in v0.5.0:** `Artifact.artifact_type` and `Artifact.variant`
 > were replaced by `Artifact.kind` plus `.is_quiz` / `.is_flashcards`.
@@ -2224,7 +2469,7 @@ Returned by `poll_status`, `wait_for_completion`, and most artifact generation m
 @dataclass
 class GenerationStatus:
     task_id: str                          # Same value as Artifact.id once complete
-    status: GenerationState               # str-Enum: "pending" | "in_progress" | "completed" | "failed" | "not_found" | "removed" | "unknown"
+    status: GenerationState               # str-Enum; see the member table below for all nine values
     url: str | None = None                # Populated for media artifacts when status == "completed"
     error: str | None = None
     error_code: str | None = None         # e.g. "USER_DISPLAYABLE_ERROR" for rate limits
@@ -2295,8 +2540,30 @@ working unchanged. **Prefer the `.is_*` predicates** (`status.is_complete`,
 | `COMPLETED` | `"completed"` | poll / generation parsers |
 | `FAILED` | `"failed"` | poll / generation parsers; synthesized rate-limit retry events |
 | `NOT_FOUND` | `"not_found"` | `poll_status` when the artifact is absent from the list |
-| `UNKNOWN` | `"unknown"` | unrecognized status codes (future-proofing) |
+| `UNKNOWN` | `"unknown"` | status code 0, plus any code outside the backend enum (future-proofing) |
+| `SUGGESTED` | `"suggested"` | status code 5 — a suggestion row; listings filter these out server-side |
+| `PENDING_REVIEW` | `"pending_review"` | status code 6 — backend state with unconfirmed semantics ([#2127](https://github.com/teng-lin/notebooklm-py/issues/2127)) |
 | `REMOVED` | `"removed"` | `wait_for_completion` after a sustained delisting |
+
+`GenerationState.is_terminal` is the single authority for "generation ended":
+it is `True` for exactly `COMPLETED`, `FAILED` and `REMOVED`. Everything else —
+including `NOT_FOUND`, `UNKNOWN`, and the `SUGGESTED` / `PENDING_REVIEW` states
+added in #2127 — means *keep waiting*, so `wait_for_completion` keeps polling
+and the REST poll route keeps the task in its pending registry. Prefer it over
+enumerating members yourself — and since `GenerationStatus.is_terminal`
+delegates to it, branch on the status object:
+
+```python
+status = await client.artifacts.poll_status(nb_id, task_id)
+if not status.is_terminal:
+    ...  # still running; poll again
+```
+
+`NOT_FOUND` is non-terminal but is *not* interchangeable with the others: it
+means the artifact is absent from the listing (post-create lag, or a delisting)
+rather than reporting an outcome, and `wait_for_completion` escalates a
+sustained run of it to the terminal `REMOVED`. Branch on `is_not_found` when
+that difference matters.
 
 > **Note:** because `status` is now typed `GenerationState`, constructing
 > `GenerationStatus(..., status="completed")` with a bare string literal is a
@@ -2509,7 +2776,7 @@ class VideoStyle(Enum):
 class QuizQuantity(Enum):
     FEWER = 1
     STANDARD = 2
-    MORE = 2  # Alias of STANDARD used by the CLI/web UI
+    MORE = 3
 
 class QuizDifficulty(Enum):
     EASY = 1
@@ -2599,6 +2866,7 @@ class SourceType(str, Enum):
     YOUTUBE = "youtube"
     MARKDOWN = "markdown"
     DOCX = "docx"
+    POWERPOINT = "powerpoint"
     CSV = "csv"
     EPUB = "epub"
     IMAGE = "image"
@@ -2628,6 +2896,19 @@ class SourceStatus(Enum):
     READY = 2       # Source is ready for use
     ERROR = 3       # Source processing failed
     PREPARING = 5   # Source is being prepared/uploaded (pre-processing stage)
+
+class DriveSourceStatus(Enum):
+    """Drive-side health of a Drive-backed source — NOT ingestion status."""
+    UNKNOWN = -1              # Client sentinel: slot populated with a code we cannot map
+    INACCESSIBLE = 1          # The account can no longer read the Drive file
+    SYNCING = 2               # The Drive file is being (re-)synced (transient)
+    ACTIVE = 3                # In sync — the only value observed live
+    DELETED = 4               # The Drive file has been deleted
+    GEN_AI_ACCESS_DENIED = 5  # AI access to the file is denied (e.g. Workspace policy)
+
+# The backend's DRIVE_SOURCE_STATUS_UNSPECIFIED (0) is deliberately not modelled:
+# it means "no claim", which is what `drive_status is None` already means, so an
+# explicit 0 is normalized to None rather than giving one state two spellings.
 ```
 
 **Usage Example:**

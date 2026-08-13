@@ -217,6 +217,12 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / リンク → テキスト
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling ステルスブラウザ URL / リンク → テキスト
 
+### コンテンツパッケージ
+
+実行コードを含まないデータ専用パッケージ（インストール方法はプラグインと同じ）：
+
+- [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills) — テキスト生成ノード用のスキル（再利用可能なプロンプトパック）：ライティングスキル（推敲 / 翻訳 / 拡張 / 要約…）+ モデル別プロンプト作成ガイド（MiniMax-H3、Seedance、Veo、Seedream、FLUX…）
+
 ## ソースコードから起動
 
 ```bash

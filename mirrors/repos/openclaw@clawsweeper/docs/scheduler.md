@@ -86,6 +86,17 @@ parked inventory is uploaded beside the publication dead-letter inventory.
 Parked records carrying maintainer-command context remain visible with an
 exclusion reason but cannot be resolved or fresh-recovered by this background
 reconciliation path.
+Publication dead letters whose recorded pull-request head no longer matches the
+live head are never replayed or resolved from head drift alone. The reconciler
+may resolve them as superseded only when the existing HMAC-authenticated
+canonical-record read for the same target contains a complete review at that
+live head, then rechecks the same open GitHub node and head immediately before
+the guarded resolution. Each cycle checks at most ten such targets and resolves at most 20
+rows per target; missing or mismatched evidence remains open as
+`head_mismatch_unproven`. `tuple_protocol_invalid` and `workflow_cancelled`
+rows are excluded from this path. Executed resolutions retain an audit note
+with the newer head and canonical endpoint and increment the publication
+completed and superseded totals; dry runs perform no mutation.
 This drains the existing queue state and does not add a dashboard health input
 or an OpenClaw Bay action: Bay remains observer-only.
 GitHub throttle deferrals use the same per-item jitter band when the queue turns
@@ -112,10 +123,11 @@ Batch admission is additionally gated by persisted GitHub credential circuits.
 Every batch needs the `actions:openclaw/clawsweeper` pool for producer artifact
 download, while target App circuits are owner-scoped so one exhausted
 installation does not stop healthy owners. A blocked pool prevents workflow
-dispatch, state hydration, and artifact download until its reported reset; the
-alarm wakes at the earliest circuit deadline. The current batch collapses after
-the first pool failure, and unattempted members return without advancing their
-retry budget. Reset recovery is spread by deterministic item jitter.
+dispatch, state hydration, and artifact download for each matching member until
+its reset-plus-deterministic-jitter recovery boundary; the alarm wakes at the
+earliest pending member boundary. The current batch collapses after the first
+pool failure, and unattempted members return without advancing their retry
+budget. Recovery is staggered rather than released as one cohort.
 An owner-scoped target App circuit also defers new exact-review admission for
 that owner, because review and publication share the installation quota; other
 owners remain admissible.

@@ -100,6 +100,7 @@ Stores the current CLI context, such as the active notebook:
   "notebook_id": "abc123def456",
   "title": "Quarterly review notes",
   "is_owner": true,
+  "role": "owner",
   "created_at": "2026-05-01T17:43:21Z"
 }
 ```
@@ -107,7 +108,7 @@ Stores the current CLI context, such as the active notebook:
 Field summary:
 
 - `notebook_id` — currently selected notebook, written by `notebooklm use` and read by every command that takes `-n/--notebook`.
-- `title`, `is_owner`, `created_at` — optional notebook metadata captured at selection time so `status` / display commands don't need an extra round-trip. Omitted when the CLI didn't have the values to write (see `set_current_notebook` in `src/notebooklm/cli/context.py`).
+- `title`, `is_owner`, `role`, `created_at` — optional notebook metadata captured at selection time so `status` / display commands don't need an extra round-trip. Omitted when the CLI didn't have the values to write (see `set_current_notebook` in `src/notebooklm/cli/context.py`). `role` is `"owner"` / `"editor"` / `"viewer"`; `is_owner` is the `role == "owner"` shorthand and is retained for backward compatibility. Contexts written before `role` existed carry only `is_owner`, and `status` falls back to it.
 
 This file is managed automatically by `notebooklm use`, `notebooklm clear`, and the `auth` commands.
 

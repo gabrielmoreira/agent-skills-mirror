@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 11 followed patterns, 26 file(s) materialized.
+Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 12 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 11 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 26 |
+| Followed pats | 12 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,8 +54,9 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 11 followed 
 - `specification/v2_cli_tui_launcher.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
-- `README.md`
 - `clients/web/README.md`
+- `README.md`
+- `docs/v1-to-v2-migration.md`
 - `clients/cli/README.md`
 - `clients/tui/README.md`
 - `clients/launcher/README.md`
@@ -92,9 +93,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | → | [`docs/launcher-config-consolidation-plan.md`](docs/launcher-config-consolidation-plan.md) |
 | 22 | → | [`docs/mcp-app-review.md`](docs/mcp-app-review.md) |
 | 23 | → | [`docs/mcp-server-configuration.md`](docs/mcp-server-configuration.md) |
-| 24 | → | [`README.md`](README.md) |
-| 25 | → | [`SECURITY.md`](SECURITY.md) |
-| 26 | → | [`specification/v2_cli_tui_launcher.md`](specification/v2_cli_tui_launcher.md) |
+| 24 | → | [`docs/v1-to-v2-migration.md`](docs/v1-to-v2-migration.md) |
+| 25 | → | [`README.md`](README.md) |
+| 26 | → | [`SECURITY.md`](SECURITY.md) |
+| 27 | → | [`specification/v2_cli_tui_launcher.md`](specification/v2_cli_tui_launcher.md) |
 
 ---
 

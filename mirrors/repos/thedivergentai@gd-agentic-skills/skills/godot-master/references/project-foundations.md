@@ -133,7 +133,7 @@ Full naming table, typed-GDScript migration, EventBus/SceneManager/metadata samp
 
 #### Downstream / consumers
 - [godot-export-builds](export-builds.md) — Export presets and feature tags assume a clean folder layout, `.gitignore`, and build metadata hooks.
-- [godot-testing-patterns](testing-patterns.md) — Feature-based scenes and deterministic Autoloads make unit/integration harnesses easier to mount.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Feature-based scenes and deterministic Autoloads make unit/integration harnesses easier to mount.
 - [godot-debugging-profiling](debugging-profiling.md) — Custom Logger telemetry and dependency audits feed editor-time diagnostics once structure is stable.
 - [godot-performance-optimization](performance-optimization.md) — Node pools, WorkerThreadPool, and runtime profiles escalate here when foundations hit CPU/memory ceilings.
 

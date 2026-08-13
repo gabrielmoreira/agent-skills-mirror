@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
+Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 87 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 87 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,22 +130,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`.agents/skills/python-sdk/good-code.md`](.agents/skills/python-sdk/good-code.md) |
 | 70 | ✓ | [`.agents/skills/python-sdk/SKILL.md`](.agents/skills/python-sdk/SKILL.md) |
 | 71 | ✓ | [`.agents/skills/python-sdk/testing.md`](.agents/skills/python-sdk/testing.md) |
-| 72 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
-| 73 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
-| 74 | ✓ | [`.agents/skills/typescript-sdk/testing.md`](.agents/skills/typescript-sdk/testing.md) |
-| 75 | ✓ | [`.agents/skills/write-docs/SKILL.md`](.agents/skills/write-docs/SKILL.md) |
-| 76 | ✓ | [`.agents/skills/writing-e2e-tests/conventions.md`](.agents/skills/writing-e2e-tests/conventions.md) |
-| 77 | ✓ | [`.agents/skills/writing-e2e-tests/SKILL.md`](.agents/skills/writing-e2e-tests/SKILL.md) |
-| 78 | ✓ | [`.agents/skills/writing-visual-tests/SKILL.md`](.agents/skills/writing-visual-tests/SKILL.md) |
-| 79 | ✓ | [`.claude/rules/sdks/python/testing.md`](.claude/rules/sdks/python/testing.md) |
-| 80 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 81 | ✓ | [`.github/instructions/python_sdk.instructions.md`](.github/instructions/python_sdk.instructions.md) |
-| 82 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 83 | ✓ | [`apps/opik-backend/AGENTS.md`](apps/opik-backend/AGENTS.md) |
-| 84 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
-| 85 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
-| 86 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
-| 87 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
+| 72 | ✓ | [`.agents/skills/query-performance/environments.md`](.agents/skills/query-performance/environments.md) |
+| 73 | ✓ | [`.agents/skills/query-performance/instrumentation.md`](.agents/skills/query-performance/instrumentation.md) |
+| 74 | ✓ | [`.agents/skills/query-performance/rendering.md`](.agents/skills/query-performance/rendering.md) |
+| 75 | ✓ | [`.agents/skills/query-performance/SKILL.md`](.agents/skills/query-performance/SKILL.md) |
+| 76 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 77 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
+| 78 | ✓ | [`.agents/skills/typescript-sdk/testing.md`](.agents/skills/typescript-sdk/testing.md) |
+| 79 | ✓ | [`.agents/skills/write-docs/SKILL.md`](.agents/skills/write-docs/SKILL.md) |
+| 80 | ✓ | [`.agents/skills/writing-e2e-tests/conventions.md`](.agents/skills/writing-e2e-tests/conventions.md) |
+| 81 | ✓ | [`.agents/skills/writing-e2e-tests/SKILL.md`](.agents/skills/writing-e2e-tests/SKILL.md) |
+| 82 | ✓ | [`.agents/skills/writing-visual-tests/SKILL.md`](.agents/skills/writing-visual-tests/SKILL.md) |
+| 83 | ✓ | [`.claude/rules/sdks/python/testing.md`](.claude/rules/sdks/python/testing.md) |
+| 84 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 85 | ✓ | [`.github/instructions/python_sdk.instructions.md`](.github/instructions/python_sdk.instructions.md) |
+| 86 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 87 | ✓ | [`apps/opik-backend/AGENTS.md`](apps/opik-backend/AGENTS.md) |
+| 88 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
+| 89 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
+| 90 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
+| 91 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
 
 ---
 

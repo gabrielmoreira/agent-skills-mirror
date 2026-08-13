@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 8 followed patterns, 360 file(s) materialized.
+Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 8 followed patterns, 361 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 8 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 360 |
+| Files         | 361 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -372,60 +372,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 304 | ✓ | [`skills/reverse-engineering/platforms-hardware.md`](skills/reverse-engineering/platforms-hardware.md) |
 | 305 | ✓ | [`skills/reverse-engineering/platforms.md`](skills/reverse-engineering/platforms.md) |
 | 306 | ✓ | [`skills/reverse-engineering/references/ai-assisted-re.md`](skills/reverse-engineering/references/ai-assisted-re.md) |
-| 307 | ✓ | [`skills/reverse-engineering/references/ollvm-deobfuscation.md`](skills/reverse-engineering/references/ollvm-deobfuscation.md) |
-| 308 | ✓ | [`skills/reverse-engineering/references/re-agent-workflow.md`](skills/reverse-engineering/references/re-agent-workflow.md) |
-| 309 | ✓ | [`skills/reverse-engineering/SKILL.md`](skills/reverse-engineering/SKILL.md) |
-| 310 | ✓ | [`skills/reverse-engineering/tools-advanced.md`](skills/reverse-engineering/tools-advanced.md) |
-| 311 | ✓ | [`skills/reverse-engineering/tools-dynamic.md`](skills/reverse-engineering/tools-dynamic.md) |
-| 312 | ✓ | [`skills/reverse-engineering/tools.md`](skills/reverse-engineering/tools.md) |
-| 313 | ✓ | [`skills/routing_zh.md`](skills/routing_zh.md) |
-| 314 | ✓ | [`skills/routing.md`](skills/routing.md) |
-| 315 | ✓ | [`skills/scripts/append-evidence.ps1`](skills/scripts/append-evidence.ps1) |
-| 316 | ✓ | [`skills/scripts/bootstrap-manifest.json`](skills/scripts/bootstrap-manifest.json) |
-| 317 | ✓ | [`skills/scripts/bootstrap-reverse.ps1`](skills/scripts/bootstrap-reverse.ps1) |
-| 318 | ✓ | [`skills/scripts/bootstrap-reverse.sh`](skills/scripts/bootstrap-reverse.sh) |
-| 319 | ✓ | [`skills/scripts/case-guard.ps1`](skills/scripts/case-guard.ps1) |
-| 320 | ✓ | [`skills/scripts/case-guard.sh`](skills/scripts/case-guard.sh) |
-| 321 | ✓ | [`skills/scripts/case-init.ps1`](skills/scripts/case-init.ps1) |
-| 322 | ✓ | [`skills/scripts/case-init.sh`](skills/scripts/case-init.sh) |
-| 323 | ✓ | [`skills/scripts/extract-summaries.ps1`](skills/scripts/extract-summaries.ps1) |
-| 324 | ✓ | [`skills/scripts/lib/ToolDiscovery.ps1`](skills/scripts/lib/ToolDiscovery.ps1) |
-| 325 | ✓ | [`skills/scripts/lib/WorkRoot.ps1`](skills/scripts/lib/WorkRoot.ps1) |
-| 326 | ✓ | [`skills/scripts/master-route.ps1`](skills/scripts/master-route.ps1) |
-| 327 | ✓ | [`skills/scripts/master-route.sh`](skills/scripts/master-route.sh) |
-| 328 | ✓ | [`skills/scripts/refresh-tool-index.ps1`](skills/scripts/refresh-tool-index.ps1) |
-| 329 | ✓ | [`skills/scripts/refresh-tool-index.sh`](skills/scripts/refresh-tool-index.sh) |
-| 330 | ✓ | [`skills/scripts/scan-leaks.ps1`](skills/scripts/scan-leaks.ps1) |
-| 331 | ✓ | [`skills/scripts/smoke.ps1`](skills/scripts/smoke.ps1) |
-| 332 | ✓ | [`skills/scripts/test-p0-friction.ps1`](skills/scripts/test-p0-friction.ps1) |
-| 333 | ✓ | [`skills/scripts/test-routing.ps1`](skills/scripts/test-routing.ps1) |
-| 334 | ✓ | [`skills/scripts/test-routing.sh`](skills/scripts/test-routing.sh) |
-| 335 | ✓ | [`skills/scripts/test-workflow-title-safety.ps1`](skills/scripts/test-workflow-title-safety.ps1) |
-| 336 | ✓ | [`skills/scripts/update-star-history.ps1`](skills/scripts/update-star-history.ps1) |
-| 337 | ✓ | [`skills/scripts/verify-doc-facts.ps1`](skills/scripts/verify-doc-facts.ps1) |
-| 338 | ✓ | [`skills/scripts/verify-routing-coherence.ps1`](skills/scripts/verify-routing-coherence.ps1) |
-| 339 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 340 | ✓ | [`skills/supply-chain-security/references/cicd-pipeline-security.md`](skills/supply-chain-security/references/cicd-pipeline-security.md) |
-| 341 | ✓ | [`skills/supply-chain-security/references/sbom-sca-methodology.md`](skills/supply-chain-security/references/sbom-sca-methodology.md) |
-| 342 | ✓ | [`skills/supply-chain-security/SKILL.md`](skills/supply-chain-security/SKILL.md) |
-| 343 | ✓ | [`skills/tests/routing-benchmark.json`](skills/tests/routing-benchmark.json) |
-| 344 | ✓ | [`skills/thick-client/references/thick-client-checklist.md`](skills/thick-client/references/thick-client-checklist.md) |
-| 345 | ✓ | [`skills/thick-client/SKILL.md`](skills/thick-client/SKILL.md) |
-| 346 | ✓ | [`skills/threat-hunting/references/hunting-loop.md`](skills/threat-hunting/references/hunting-loop.md) |
-| 347 | ✓ | [`skills/threat-hunting/SKILL.md`](skills/threat-hunting/SKILL.md) |
-| 348 | ✓ | [`skills/tool-index.md.template`](skills/tool-index.md.template) |
-| 349 | ✓ | [`skills/wifi-wireless/references/wireless-lab-rules.md`](skills/wifi-wireless/references/wireless-lab-rules.md) |
-| 350 | ✓ | [`skills/wifi-wireless/SKILL.md`](skills/wifi-wireless/SKILL.md) |
-| 351 | ✓ | [`skills/windows-ad/references/ad-attack-paths.md`](skills/windows-ad/references/ad-attack-paths.md) |
-| 352 | ✓ | [`skills/windows-ad/SKILL.md`](skills/windows-ad/SKILL.md) |
-| 353 | → | [`docs/PLATFORMS.md`](docs/PLATFORMS.md) |
-| 354 | → | [`docs/platforms/linux.md`](docs/platforms/linux.md) |
-| 355 | → | [`docs/platforms/macos.md`](docs/platforms/macos.md) |
-| 356 | → | [`kali/README-kali.md`](kali/README-kali.md) |
-| 357 | → | [`README_AI.md`](README_AI.md) |
-| 358 | → | [`README_zh.md`](README_zh.md) |
-| 359 | → | [`README.md`](README.md) |
-| 360 | → | [`RULES.md`](RULES.md) |
+| 307 | ✓ | [`skills/reverse-engineering/references/nonpe-format-cookbook.md`](skills/reverse-engineering/references/nonpe-format-cookbook.md) |
+| 308 | ✓ | [`skills/reverse-engineering/references/ollvm-deobfuscation.md`](skills/reverse-engineering/references/ollvm-deobfuscation.md) |
+| 309 | ✓ | [`skills/reverse-engineering/references/re-agent-workflow.md`](skills/reverse-engineering/references/re-agent-workflow.md) |
+| 310 | ✓ | [`skills/reverse-engineering/SKILL.md`](skills/reverse-engineering/SKILL.md) |
+| 311 | ✓ | [`skills/reverse-engineering/tools-advanced.md`](skills/reverse-engineering/tools-advanced.md) |
+| 312 | ✓ | [`skills/reverse-engineering/tools-dynamic.md`](skills/reverse-engineering/tools-dynamic.md) |
+| 313 | ✓ | [`skills/reverse-engineering/tools.md`](skills/reverse-engineering/tools.md) |
+| 314 | ✓ | [`skills/routing_zh.md`](skills/routing_zh.md) |
+| 315 | ✓ | [`skills/routing.md`](skills/routing.md) |
+| 316 | ✓ | [`skills/scripts/append-evidence.ps1`](skills/scripts/append-evidence.ps1) |
+| 317 | ✓ | [`skills/scripts/bootstrap-manifest.json`](skills/scripts/bootstrap-manifest.json) |
+| 318 | ✓ | [`skills/scripts/bootstrap-reverse.ps1`](skills/scripts/bootstrap-reverse.ps1) |
+| 319 | ✓ | [`skills/scripts/bootstrap-reverse.sh`](skills/scripts/bootstrap-reverse.sh) |
+| 320 | ✓ | [`skills/scripts/case-guard.ps1`](skills/scripts/case-guard.ps1) |
+| 321 | ✓ | [`skills/scripts/case-guard.sh`](skills/scripts/case-guard.sh) |
+| 322 | ✓ | [`skills/scripts/case-init.ps1`](skills/scripts/case-init.ps1) |
+| 323 | ✓ | [`skills/scripts/case-init.sh`](skills/scripts/case-init.sh) |
+| 324 | ✓ | [`skills/scripts/extract-summaries.ps1`](skills/scripts/extract-summaries.ps1) |
+| 325 | ✓ | [`skills/scripts/lib/ToolDiscovery.ps1`](skills/scripts/lib/ToolDiscovery.ps1) |
+| 326 | ✓ | [`skills/scripts/lib/WorkRoot.ps1`](skills/scripts/lib/WorkRoot.ps1) |
+| 327 | ✓ | [`skills/scripts/master-route.ps1`](skills/scripts/master-route.ps1) |
+| 328 | ✓ | [`skills/scripts/master-route.sh`](skills/scripts/master-route.sh) |
+| 329 | ✓ | [`skills/scripts/refresh-tool-index.ps1`](skills/scripts/refresh-tool-index.ps1) |
+| 330 | ✓ | [`skills/scripts/refresh-tool-index.sh`](skills/scripts/refresh-tool-index.sh) |
+| 331 | ✓ | [`skills/scripts/scan-leaks.ps1`](skills/scripts/scan-leaks.ps1) |
+| 332 | ✓ | [`skills/scripts/smoke.ps1`](skills/scripts/smoke.ps1) |
+| 333 | ✓ | [`skills/scripts/test-p0-friction.ps1`](skills/scripts/test-p0-friction.ps1) |
+| 334 | ✓ | [`skills/scripts/test-routing.ps1`](skills/scripts/test-routing.ps1) |
+| 335 | ✓ | [`skills/scripts/test-routing.sh`](skills/scripts/test-routing.sh) |
+| 336 | ✓ | [`skills/scripts/test-workflow-title-safety.ps1`](skills/scripts/test-workflow-title-safety.ps1) |
+| 337 | ✓ | [`skills/scripts/update-star-history.ps1`](skills/scripts/update-star-history.ps1) |
+| 338 | ✓ | [`skills/scripts/verify-doc-facts.ps1`](skills/scripts/verify-doc-facts.ps1) |
+| 339 | ✓ | [`skills/scripts/verify-routing-coherence.ps1`](skills/scripts/verify-routing-coherence.ps1) |
+| 340 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 341 | ✓ | [`skills/supply-chain-security/references/cicd-pipeline-security.md`](skills/supply-chain-security/references/cicd-pipeline-security.md) |
+| 342 | ✓ | [`skills/supply-chain-security/references/sbom-sca-methodology.md`](skills/supply-chain-security/references/sbom-sca-methodology.md) |
+| 343 | ✓ | [`skills/supply-chain-security/SKILL.md`](skills/supply-chain-security/SKILL.md) |
+| 344 | ✓ | [`skills/tests/routing-benchmark.json`](skills/tests/routing-benchmark.json) |
+| 345 | ✓ | [`skills/thick-client/references/thick-client-checklist.md`](skills/thick-client/references/thick-client-checklist.md) |
+| 346 | ✓ | [`skills/thick-client/SKILL.md`](skills/thick-client/SKILL.md) |
+| 347 | ✓ | [`skills/threat-hunting/references/hunting-loop.md`](skills/threat-hunting/references/hunting-loop.md) |
+| 348 | ✓ | [`skills/threat-hunting/SKILL.md`](skills/threat-hunting/SKILL.md) |
+| 349 | ✓ | [`skills/tool-index.md.template`](skills/tool-index.md.template) |
+| 350 | ✓ | [`skills/wifi-wireless/references/wireless-lab-rules.md`](skills/wifi-wireless/references/wireless-lab-rules.md) |
+| 351 | ✓ | [`skills/wifi-wireless/SKILL.md`](skills/wifi-wireless/SKILL.md) |
+| 352 | ✓ | [`skills/windows-ad/references/ad-attack-paths.md`](skills/windows-ad/references/ad-attack-paths.md) |
+| 353 | ✓ | [`skills/windows-ad/SKILL.md`](skills/windows-ad/SKILL.md) |
+| 354 | → | [`docs/PLATFORMS.md`](docs/PLATFORMS.md) |
+| 355 | → | [`docs/platforms/linux.md`](docs/platforms/linux.md) |
+| 356 | → | [`docs/platforms/macos.md`](docs/platforms/macos.md) |
+| 357 | → | [`kali/README-kali.md`](kali/README-kali.md) |
+| 358 | → | [`README_AI.md`](README_AI.md) |
+| 359 | → | [`README_zh.md`](README_zh.md) |
+| 360 | → | [`README.md`](README.md) |
+| 361 | → | [`RULES.md`](RULES.md) |
 
 ---
 

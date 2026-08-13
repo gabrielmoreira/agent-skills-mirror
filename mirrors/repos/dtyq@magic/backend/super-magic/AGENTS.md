@@ -347,7 +347,13 @@ finally:
 
 ## 17. MagicFS 工作区不是临时目录
 
-`.workspace/` 是 MagicFS 接管的云端持久工作区，写入可能产生对象同步、checkpoint 和文件版本；即使随后删除本地文件，也不能视为已释放云端存储。临时脚本、中间文件、缓存、下载暂存和其它可重建数据不得写入 `.workspace/`，包括 `.workspace/.tmp` 等隐藏目录；应在 `tempfile.gettempdir()` 选择的操作系统临时根目录下创建语义明确的 `super-magic/<capability>/` 子目录，通过 `async_mkstemp` 等异步入口创建文件，并在 `finally` 中清理。不要把文件散落在系统临时根目录，也不要自行写死 `/tmp`。只有用户需要长期保留、下载、展示或继续编辑的最终文件才写入 `.workspace/`。不要因为路径以点开头、应用层不展示或会执行删除，就假设 MagicFS 不会记录或计费。
+`.workspace/` 是 MagicFS 接管的云端持久工作区，写入可能产生对象同步、checkpoint 和文件版本；即使随后删除本地文件，也不能视为已释放云端存储。临时脚本、中间文件、缓存、后台日志、自动大结果和其它可重建数据不得写入 `.workspace/`，包括 `.workspace/.tmp` 等隐藏目录。
+
+项目根 `.runtime/` 与 `.workspace/` 同级，是 sandbox 本地、应用管理、可清理的运行数据目录。需要短期续读、跨应用进程恢复或人工排查的运行文件统一写入 `.runtime/<capability>/`：目录使用 `0700`，文件使用 `0600`；可即时删除的文件在 `finally` 清理，其余文件由 owner 在下一次同类执行时按数量、容量和宽松最长存活时间机会式淘汰。不要依赖操作系统临时目录的清理时间，也不要把本项目运行文件散落到系统临时根目录。
+
+`.runtime/` 不承诺跨 sandbox 重建保留，sandbox 重建时其中内容会被整体清除；但 Claw 等运行形态可能让同一个 sandbox 持续运行数月甚至更久，因此不能把 sandbox 重建当作日常清理机制。每类运行文件仍必须实现代码层面的即时删除或机会式淘汰，防止长期运行期间持续积累。
+
+`.runtime/` 不得作为用户交付或业务持久存储。只有用户需要长期保留、下载、展示或继续编辑的最终文件才写入当前 `.workspace/`。不要因为路径以点开头、应用层不展示或会执行删除，就假设 MagicFS 不会记录或计费。
 
 ## 18. 工作区文件转 URL 必须走统一入口
 
@@ -399,6 +405,7 @@ xattr 缺失说明文件尚未与对象存储同步完成，应直接抛错让�
 | Skill + Tool 双活机制 | `agents/guides/TOOL_OR_SKILL.md` | 将工具迁移到 Skill 范式时、理解工具层与 Skill 层信息隔离规则、preload 机制时 |
 | Skill 概念与加载链路 | `agents/guides/SKILLS_OVERVIEW.md` | 快速了解 Skill 是什么、加载方式、来源与模型使用规则时 |
 | Skill 开发指南 | `agents/guides/SKILLS_DEVELOPMENT_GUIDE.md` | 新建或修改 Skill、需要了解 SKILL.md 规范和最佳实践时 |
+| Magic 文件系统与目录边界 | `agents/guides/MAGIC_FILE_SYSTEM_GUIDE.md` | 新增运行文件、聊天记录、checkpoint、workspace 或 runtime 数据时，确认目录归属和持久化边界 |
 
 ## 20. 每次改动前自检
 

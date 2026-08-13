@@ -38,10 +38,13 @@ continued with its exact returned `continuationArgs` until the required
 coverage is complete. See
 [adaptive read windows](accessibility-tree-and-refs.md#adaptive-read-windows).
 
-For Gmail, complete coverage additionally requires a fresh root read after the
-conversation is expanded, with **Collapse all** visible as evidence. Ask cannot
-expand collapsed messages and returns a clear limitation; Act/Dev can use
-**Expand all** and then re-read the root.
+For Gmail, the first accessibility result identifies the trusted active
+conversation with `conversationRootRefId`. Complete coverage pages only that
+anchored subtree with `filter:"all"` and `maxDepth:15`; document-root page 2+
+contains unrelated inbox rows and does not count. Expansion is independent:
+**Collapse all** must be visible as evidence. Ask cannot expand collapsed
+messages and returns a clear limitation; Act/Dev can use **Expand all** and then
+re-read the trusted conversation subtree from page 1.
 
 ## Tool matrix
 

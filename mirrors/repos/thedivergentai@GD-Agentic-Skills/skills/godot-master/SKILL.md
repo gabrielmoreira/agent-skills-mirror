@@ -93,6 +93,7 @@ Expert systems are defined not by their isolation, but by their **Payload Synthe
 | **Rectangular Area Lights** | AreaLight3D | **READ**: [3D Lighting](references/3d-lighting.md) → [3D Materials](references/3d-materials.md). Prefer AreaLight3D over emissive+GI hacks. | Forward+ renderer required for full quality |
 | **Mobile Touch Controls** | Native Joystick | **READ**: [Platform Mobile](references/platform-mobile.md) → [Adapt Desk→Mobile](references/adapt-desktop-to-mobile.md). Use built-in virtual joystick (4.7+). | Less plugin dependency |
 | **Addon / Asset Discovery** | Asset Store | **READ**: [Project Foundations](references/project-foundations.md) → [Export Builds](references/export-builds.md). Asset Store replaces Asset Library. | Beta store UI — verify licensing per addon |
+| **Agent Eyes / Visual QA** | Capture → WebP → Rubric | **READ**: [Agent Vision](references/agent-vision.md). Screenshot assets, window/region/screen, or TEMP editor bridge — then structured review. **Do NOT load** genre refs. | Host-side only; never Autoload / never leave staged addon |
 
 ### The "When NOT to Use a Node" Decision
 One of the most impactful expert-only decisions. The Godot docs explicitly say "avoid using nodes for everything":
@@ -415,7 +416,7 @@ Expert implementations of common architectural and gameplay systems.
 
 ---
 
-## 📂 Part 9: Module Directory (97 Blueprints)
+## 📂 Part 9: Module Directory (99 Blueprints)
 
 > [!IMPORTANT]
 > Load ONLY the modules needed for your current workflow. Use the Decision Matrix in Part 2 to determine which chain to follow.
@@ -438,7 +439,7 @@ Expert implementations of common architectural and gameplay systems.
 [Abilities](references/ability-system.md) | [Combat](references/combat-system.md) | [Dialogue](references/dialogue-system.md) | [Economy](references/economy-system.md) | [Inventory](references/inventory-system.md) | [Questing](references/quest-system.md) | [RPG Stats](references/rpg-stats.md) | [Turn System](references/turn-system.md) | [Audio](references/audio-systems.md) | [Scene Transitions](references/scene-management.md) | [Save/Load](references/save-load-systems.md) | [Secrets](references/mechanic-secrets.md) | [Collections](references/game-loop-collection.md) | [Waves](references/game-loop-waves.md) | [Harvesting](references/game-loop-harvest.md) | [Time Trials](references/game-loop-time-trial.md) | [Revival](references/mechanic-revival.md) | [Monte Carlo Balancer](references/monte-carlo-balancer.md)
 
 ### UI & UX
-[UI Containers](references/ui-containers.md) | [Rich Text](references/ui-rich-text.md) | [Theming](references/ui-theming.md) | [Input Handling](references/input-handling.md) | [Seasonal Theming](references/theme-easter.md)
+[UI Containers](references/ui-containers.md) | [Rich Text](references/ui-rich-text.md) | [Theming](references/ui-theming.md) | [Input Handling](references/input-handling.md) | [Seasonal Theming](references/theme-easter.md) | [Agent Vision](references/agent-vision.md)
 
 ### Connectivity & Platforms
 [Multiplayer](references/multiplayer-networking.md) | [Server Logic](references/server-architecture.md) | [Export Builds](references/export-builds.md) | [Desktop](references/platform-desktop.md) | [Mobile](references/platform-mobile.md) | [Web](references/platform-web.md) | [Console](references/platform-console.md) | [VR](references/platform-vr.md)

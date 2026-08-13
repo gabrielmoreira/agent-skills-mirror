@@ -53,6 +53,8 @@ Create a JSON or YAML file with candidate answers. Only actionable manual-order 
 
 Actionable intents are `ENTRY_READY`, `ACTIONABLE`, `ACTIONABLE_DAY1`, and `MANUAL_ORDER`. Non-actionable intents such as `WATCHLIST`, `DELAYED_EP_WATCH`, `PEAD_HANDOFF`, `IGNORE`, and `REJECTED` are recorded but do not create an order permission.
 
+Provide both `planned_risk_dollars` and `actual_risk_dollars` for every actionable candidate. Use a finite, non-negative number or numeric string; zero is valid. Treat missing values, booleans, non-numeric strings, `NaN`, infinities, and negative values as `REVIEW_REQUIRED` inputs and review them before placing an order.
+
 ### Step 2: Run the Gate
 
 ```bash
@@ -91,6 +93,7 @@ The gate blocks an actionable candidate when:
 - The entry is not confirmed in the written plan
 - The stop is not predefined
 - The size is not confirmed within plan
+- Either risk-dollar field is missing or is not a finite, non-negative number (`REVIEW_REQUIRED`)
 - `actual_risk_dollars` exceeds `planned_risk_dollars`
 - trader-memory-core has a losing exit or partial loss inside the revenge window
 - exposure-coach recommendation is `REDUCE_ONLY` or `CASH_PRIORITY`
@@ -106,7 +109,7 @@ The script writes:
 - A matching markdown report unless `--json-only` is set
 - A JSONL journal row under `state/journal/pre-trade-discipline/` when `--journal-dir` is provided
 
-Each candidate result includes a `checklist_answers` object with the written-plan, stop, size, risk-dollar, and notes answers used for the decision, so later reviews can audit what was answered at order time.
+Each candidate result includes a `checklist_answers` object with the written-plan, stop, size, risk-dollar, and notes answers used for the decision, so later reviews can audit what was answered at order time. Invalid risk-dollar values are stored as JSON `null`, while valid values retain their original representation.
 
 If a candidate includes `thesis_id` and `--state-dir` is provided, the JSON report is linked into the thesis `linked_reports` list using trader-memory-core `link_report`. The skill does not call `mark_reviewed` and does not change monitoring review dates.
 

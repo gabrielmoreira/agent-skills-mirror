@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 217 file(s) materialized.
+Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 219 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 217
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 217 |
+| Files         | 219 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -185,100 +185,102 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 121 | ✓ | [`.github/skills/design-thinking/dt-curriculum/SKILL.md`](.github/skills/design-thinking/dt-curriculum/SKILL.md) |
 | 122 | ✓ | [`.github/skills/design-thinking/dt-methods/SKILL.md`](.github/skills/design-thinking/dt-methods/SKILL.md) |
 | 123 | ✓ | [`.github/skills/design-thinking/dt-rpi-integration/SKILL.md`](.github/skills/design-thinking/dt-rpi-integration/SKILL.md) |
-| 124 | ✓ | [`.github/skills/experimental/caveman/SKILL.md`](.github/skills/experimental/caveman/SKILL.md) |
-| 125 | ✓ | [`.github/skills/experimental/copilot-otel-metrics/SECURITY.md`](.github/skills/experimental/copilot-otel-metrics/SECURITY.md) |
-| 126 | ✓ | [`.github/skills/experimental/copilot-otel-metrics/SKILL.md`](.github/skills/experimental/copilot-otel-metrics/SKILL.md) |
-| 127 | ✓ | [`.github/skills/experimental/customer-card-render/SECURITY.md`](.github/skills/experimental/customer-card-render/SECURITY.md) |
-| 128 | ✓ | [`.github/skills/experimental/customer-card-render/SKILL.md`](.github/skills/experimental/customer-card-render/SKILL.md) |
-| 129 | ✓ | [`.github/skills/experimental/demo-video/SKILL.md`](.github/skills/experimental/demo-video/SKILL.md) |
-| 130 | ✓ | [`.github/skills/experimental/mural/SECURITY.md`](.github/skills/experimental/mural/SECURITY.md) |
-| 131 | ✓ | [`.github/skills/experimental/mural/SKILL.md`](.github/skills/experimental/mural/SKILL.md) |
-| 132 | ✓ | [`.github/skills/experimental/powerpoint/content-extra-py-template.md`](.github/skills/experimental/powerpoint/content-extra-py-template.md) |
-| 133 | ✓ | [`.github/skills/experimental/powerpoint/content-yaml-template.md`](.github/skills/experimental/powerpoint/content-yaml-template.md) |
-| 134 | ✓ | [`.github/skills/experimental/powerpoint/SECURITY.md`](.github/skills/experimental/powerpoint/SECURITY.md) |
-| 135 | ✓ | [`.github/skills/experimental/powerpoint/SKILL.md`](.github/skills/experimental/powerpoint/SKILL.md) |
-| 136 | ✓ | [`.github/skills/experimental/powerpoint/style-yaml-template.md`](.github/skills/experimental/powerpoint/style-yaml-template.md) |
-| 137 | ✓ | [`.github/skills/experimental/tts-voiceover/SECURITY.md`](.github/skills/experimental/tts-voiceover/SECURITY.md) |
-| 138 | ✓ | [`.github/skills/experimental/tts-voiceover/SKILL.md`](.github/skills/experimental/tts-voiceover/SKILL.md) |
-| 139 | ✓ | [`.github/skills/experimental/video-to-gif/SECURITY.md`](.github/skills/experimental/video-to-gif/SECURITY.md) |
-| 140 | ✓ | [`.github/skills/experimental/video-to-gif/SKILL.md`](.github/skills/experimental/video-to-gif/SKILL.md) |
-| 141 | ✓ | [`.github/skills/experimental/vscode-playwright/SKILL.md`](.github/skills/experimental/vscode-playwright/SKILL.md) |
-| 142 | ✓ | [`.github/skills/hve-core/architecture-diagrams/SKILL.md`](.github/skills/hve-core/architecture-diagrams/SKILL.md) |
-| 143 | ✓ | [`.github/skills/hve-core/documentation/SKILL.md`](.github/skills/hve-core/documentation/SKILL.md) |
-| 144 | ✓ | [`.github/skills/hve-core/hve-builder-tester/SKILL.md`](.github/skills/hve-core/hve-builder-tester/SKILL.md) |
-| 145 | ✓ | [`.github/skills/hve-core/hve-builder/SKILL.md`](.github/skills/hve-core/hve-builder/SKILL.md) |
-| 146 | ✓ | [`.github/skills/hve-core/prompt-analyze/SKILL.md`](.github/skills/hve-core/prompt-analyze/SKILL.md) |
-| 147 | ✓ | [`.github/skills/hve-core/prompt-builder/SKILL.md`](.github/skills/hve-core/prompt-builder/SKILL.md) |
-| 148 | ✓ | [`.github/skills/hve-core/prompt-refactor/SKILL.md`](.github/skills/hve-core/prompt-refactor/SKILL.md) |
-| 149 | ✓ | [`.github/skills/hve-core/vally-tests/references/eval-suite-routing.md`](.github/skills/hve-core/vally-tests/references/eval-suite-routing.md) |
-| 150 | ✓ | [`.github/skills/hve-core/vally-tests/references/grader-catalog.md`](.github/skills/hve-core/vally-tests/references/grader-catalog.md) |
-| 151 | ✓ | [`.github/skills/hve-core/vally-tests/references/instructions.md`](.github/skills/hve-core/vally-tests/references/instructions.md) |
-| 152 | ✓ | [`.github/skills/hve-core/vally-tests/references/prompts.md`](.github/skills/hve-core/vally-tests/references/prompts.md) |
-| 153 | ✓ | [`.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md`](.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md) |
-| 154 | ✓ | [`.github/skills/hve-core/vally-tests/references/skills.md`](.github/skills/hve-core/vally-tests/references/skills.md) |
-| 155 | ✓ | [`.github/skills/hve-core/vally-tests/SKILL.md`](.github/skills/hve-core/vally-tests/SKILL.md) |
-| 156 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
-| 157 | ✓ | [`.github/skills/project-planning/adr-author/SKILL.md`](.github/skills/project-planning/adr-author/SKILL.md) |
-| 158 | ✓ | [`.github/skills/project-planning/backlog-execute/SKILL.md`](.github/skills/project-planning/backlog-execute/SKILL.md) |
-| 159 | ✓ | [`.github/skills/project-planning/backlog-management/SKILL.md`](.github/skills/project-planning/backlog-management/SKILL.md) |
-| 160 | ✓ | [`.github/skills/project-planning/backlog-plan/SKILL.md`](.github/skills/project-planning/backlog-plan/SKILL.md) |
-| 161 | ✓ | [`.github/skills/project-planning/functional-planner/SKILL.md`](.github/skills/project-planning/functional-planner/SKILL.md) |
-| 162 | ✓ | [`.github/skills/project-planning/gitlab/SECURITY.md`](.github/skills/project-planning/gitlab/SECURITY.md) |
-| 163 | ✓ | [`.github/skills/project-planning/gitlab/SKILL.md`](.github/skills/project-planning/gitlab/SKILL.md) |
-| 164 | ✓ | [`.github/skills/project-planning/jira/SECURITY.md`](.github/skills/project-planning/jira/SECURITY.md) |
-| 165 | ✓ | [`.github/skills/project-planning/jira/SKILL.md`](.github/skills/project-planning/jira/SKILL.md) |
-| 166 | ✓ | [`.github/skills/project-planning/performance-slo-planner/SKILL.md`](.github/skills/project-planning/performance-slo-planner/SKILL.md) |
-| 167 | ✓ | [`.github/skills/project-planning/privacy-standards/SKILL.md`](.github/skills/project-planning/privacy-standards/SKILL.md) |
-| 168 | ✓ | [`.github/skills/project-planning/rai-planner/references/security-model.md`](.github/skills/project-planning/rai-planner/references/security-model.md) |
-| 169 | ✓ | [`.github/skills/project-planning/rai-planner/SKILL.md`](.github/skills/project-planning/rai-planner/SKILL.md) |
-| 170 | ✓ | [`.github/skills/project-planning/requirements-author/SKILL.md`](.github/skills/project-planning/requirements-author/SKILL.md) |
-| 171 | ✓ | [`.github/skills/project-planning/security-planning/SKILL.md`](.github/skills/project-planning/security-planning/SKILL.md) |
-| 172 | ✓ | [`.github/skills/rai/rai-standards/SKILL.md`](.github/skills/rai/rai-standards/SKILL.md) |
-| 173 | ✓ | [`.github/skills/rpi/rpi-challenger/SKILL.md`](.github/skills/rpi/rpi-challenger/SKILL.md) |
-| 174 | ✓ | [`.github/skills/rpi/rpi-implement/SKILL.md`](.github/skills/rpi/rpi-implement/SKILL.md) |
-| 175 | ✓ | [`.github/skills/rpi/rpi-plan-critique/SKILL.md`](.github/skills/rpi/rpi-plan-critique/SKILL.md) |
-| 176 | ✓ | [`.github/skills/rpi/rpi-plan/SKILL.md`](.github/skills/rpi/rpi-plan/SKILL.md) |
-| 177 | ✓ | [`.github/skills/rpi/rpi-quick/SKILL.md`](.github/skills/rpi/rpi-quick/SKILL.md) |
-| 178 | ✓ | [`.github/skills/rpi/rpi-research/SKILL.md`](.github/skills/rpi/rpi-research/SKILL.md) |
-| 179 | ✓ | [`.github/skills/rpi/rpi-review/SKILL.md`](.github/skills/rpi/rpi-review/SKILL.md) |
-| 180 | ✓ | [`.github/skills/rpi/rpi-walkthrough/SKILL.md`](.github/skills/rpi/rpi-walkthrough/SKILL.md) |
-| 181 | ✓ | [`.github/skills/security/gh-code-scanning/SECURITY.md`](.github/skills/security/gh-code-scanning/SECURITY.md) |
-| 182 | ✓ | [`.github/skills/security/gh-code-scanning/SKILL.md`](.github/skills/security/gh-code-scanning/SKILL.md) |
-| 183 | ✓ | [`.github/skills/security/mcsb/SKILL.md`](.github/skills/security/mcsb/SKILL.md) |
-| 184 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
-| 185 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
-| 186 | ✓ | [`.github/skills/security/owasp-docker/SKILL.md`](.github/skills/security/owasp-docker/SKILL.md) |
-| 187 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
-| 188 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
-| 189 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
-| 190 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
-| 191 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
-| 192 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
-| 193 | ✓ | [`.github/skills/security/supply-chain-security/SKILL.md`](.github/skills/security/supply-chain-security/SKILL.md) |
-| 194 | ✓ | [`.github/skills/security/vex/SECURITY.md`](.github/skills/security/vex/SECURITY.md) |
-| 195 | ✓ | [`.github/skills/security/vex/SKILL.md`](.github/skills/security/vex/SKILL.md) |
-| 196 | ✓ | [`.github/skills/shared/backlog-templates/SKILL.md`](.github/skills/shared/backlog-templates/SKILL.md) |
-| 197 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
-| 198 | ✓ | [`.github/skills/shared/telemetry-foundations/SKILL.md`](.github/skills/shared/telemetry-foundations/SKILL.md) |
-| 199 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
-| 200 | ✓ | [`docs/contributing/branch-protection.md`](docs/contributing/branch-protection.md) |
-| 201 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
-| 202 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
-| 203 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
-| 204 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
-| 205 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
-| 206 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
-| 207 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
-| 208 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
-| 209 | ✓ | [`docs/security/branch-protection.md`](docs/security/branch-protection.md) |
-| 210 | ✓ | [`docs/security/dangerous-workflow-detection.md`](docs/security/dangerous-workflow-detection.md) |
-| 211 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
-| 212 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
-| 213 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
-| 214 | → | [`docs/security/README.md`](docs/security/README.md) |
-| 215 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
-| 216 | → | [`docs/security/vex-verification.md`](docs/security/vex-verification.md) |
-| 217 | → | [`SECURITY.md`](SECURITY.md) |
+| 124 | ✓ | [`.github/skills/design-thinking/ux-artifacts/SKILL.md`](.github/skills/design-thinking/ux-artifacts/SKILL.md) |
+| 125 | ✓ | [`.github/skills/design-thinking/ux-coaching/SKILL.md`](.github/skills/design-thinking/ux-coaching/SKILL.md) |
+| 126 | ✓ | [`.github/skills/experimental/caveman/SKILL.md`](.github/skills/experimental/caveman/SKILL.md) |
+| 127 | ✓ | [`.github/skills/experimental/copilot-otel-metrics/SECURITY.md`](.github/skills/experimental/copilot-otel-metrics/SECURITY.md) |
+| 128 | ✓ | [`.github/skills/experimental/copilot-otel-metrics/SKILL.md`](.github/skills/experimental/copilot-otel-metrics/SKILL.md) |
+| 129 | ✓ | [`.github/skills/experimental/customer-card-render/SECURITY.md`](.github/skills/experimental/customer-card-render/SECURITY.md) |
+| 130 | ✓ | [`.github/skills/experimental/customer-card-render/SKILL.md`](.github/skills/experimental/customer-card-render/SKILL.md) |
+| 131 | ✓ | [`.github/skills/experimental/demo-video/SKILL.md`](.github/skills/experimental/demo-video/SKILL.md) |
+| 132 | ✓ | [`.github/skills/experimental/mural/SECURITY.md`](.github/skills/experimental/mural/SECURITY.md) |
+| 133 | ✓ | [`.github/skills/experimental/mural/SKILL.md`](.github/skills/experimental/mural/SKILL.md) |
+| 134 | ✓ | [`.github/skills/experimental/powerpoint/content-extra-py-template.md`](.github/skills/experimental/powerpoint/content-extra-py-template.md) |
+| 135 | ✓ | [`.github/skills/experimental/powerpoint/content-yaml-template.md`](.github/skills/experimental/powerpoint/content-yaml-template.md) |
+| 136 | ✓ | [`.github/skills/experimental/powerpoint/SECURITY.md`](.github/skills/experimental/powerpoint/SECURITY.md) |
+| 137 | ✓ | [`.github/skills/experimental/powerpoint/SKILL.md`](.github/skills/experimental/powerpoint/SKILL.md) |
+| 138 | ✓ | [`.github/skills/experimental/powerpoint/style-yaml-template.md`](.github/skills/experimental/powerpoint/style-yaml-template.md) |
+| 139 | ✓ | [`.github/skills/experimental/tts-voiceover/SECURITY.md`](.github/skills/experimental/tts-voiceover/SECURITY.md) |
+| 140 | ✓ | [`.github/skills/experimental/tts-voiceover/SKILL.md`](.github/skills/experimental/tts-voiceover/SKILL.md) |
+| 141 | ✓ | [`.github/skills/experimental/video-to-gif/SECURITY.md`](.github/skills/experimental/video-to-gif/SECURITY.md) |
+| 142 | ✓ | [`.github/skills/experimental/video-to-gif/SKILL.md`](.github/skills/experimental/video-to-gif/SKILL.md) |
+| 143 | ✓ | [`.github/skills/experimental/vscode-playwright/SKILL.md`](.github/skills/experimental/vscode-playwright/SKILL.md) |
+| 144 | ✓ | [`.github/skills/hve-core/architecture-diagrams/SKILL.md`](.github/skills/hve-core/architecture-diagrams/SKILL.md) |
+| 145 | ✓ | [`.github/skills/hve-core/documentation/SKILL.md`](.github/skills/hve-core/documentation/SKILL.md) |
+| 146 | ✓ | [`.github/skills/hve-core/hve-builder-tester/SKILL.md`](.github/skills/hve-core/hve-builder-tester/SKILL.md) |
+| 147 | ✓ | [`.github/skills/hve-core/hve-builder/SKILL.md`](.github/skills/hve-core/hve-builder/SKILL.md) |
+| 148 | ✓ | [`.github/skills/hve-core/prompt-analyze/SKILL.md`](.github/skills/hve-core/prompt-analyze/SKILL.md) |
+| 149 | ✓ | [`.github/skills/hve-core/prompt-builder/SKILL.md`](.github/skills/hve-core/prompt-builder/SKILL.md) |
+| 150 | ✓ | [`.github/skills/hve-core/prompt-refactor/SKILL.md`](.github/skills/hve-core/prompt-refactor/SKILL.md) |
+| 151 | ✓ | [`.github/skills/hve-core/vally-tests/references/eval-suite-routing.md`](.github/skills/hve-core/vally-tests/references/eval-suite-routing.md) |
+| 152 | ✓ | [`.github/skills/hve-core/vally-tests/references/grader-catalog.md`](.github/skills/hve-core/vally-tests/references/grader-catalog.md) |
+| 153 | ✓ | [`.github/skills/hve-core/vally-tests/references/instructions.md`](.github/skills/hve-core/vally-tests/references/instructions.md) |
+| 154 | ✓ | [`.github/skills/hve-core/vally-tests/references/prompts.md`](.github/skills/hve-core/vally-tests/references/prompts.md) |
+| 155 | ✓ | [`.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md`](.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md) |
+| 156 | ✓ | [`.github/skills/hve-core/vally-tests/references/skills.md`](.github/skills/hve-core/vally-tests/references/skills.md) |
+| 157 | ✓ | [`.github/skills/hve-core/vally-tests/SKILL.md`](.github/skills/hve-core/vally-tests/SKILL.md) |
+| 158 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
+| 159 | ✓ | [`.github/skills/project-planning/adr-author/SKILL.md`](.github/skills/project-planning/adr-author/SKILL.md) |
+| 160 | ✓ | [`.github/skills/project-planning/backlog-execute/SKILL.md`](.github/skills/project-planning/backlog-execute/SKILL.md) |
+| 161 | ✓ | [`.github/skills/project-planning/backlog-management/SKILL.md`](.github/skills/project-planning/backlog-management/SKILL.md) |
+| 162 | ✓ | [`.github/skills/project-planning/backlog-plan/SKILL.md`](.github/skills/project-planning/backlog-plan/SKILL.md) |
+| 163 | ✓ | [`.github/skills/project-planning/functional-planner/SKILL.md`](.github/skills/project-planning/functional-planner/SKILL.md) |
+| 164 | ✓ | [`.github/skills/project-planning/gitlab/SECURITY.md`](.github/skills/project-planning/gitlab/SECURITY.md) |
+| 165 | ✓ | [`.github/skills/project-planning/gitlab/SKILL.md`](.github/skills/project-planning/gitlab/SKILL.md) |
+| 166 | ✓ | [`.github/skills/project-planning/jira/SECURITY.md`](.github/skills/project-planning/jira/SECURITY.md) |
+| 167 | ✓ | [`.github/skills/project-planning/jira/SKILL.md`](.github/skills/project-planning/jira/SKILL.md) |
+| 168 | ✓ | [`.github/skills/project-planning/performance-slo-planner/SKILL.md`](.github/skills/project-planning/performance-slo-planner/SKILL.md) |
+| 169 | ✓ | [`.github/skills/project-planning/privacy-standards/SKILL.md`](.github/skills/project-planning/privacy-standards/SKILL.md) |
+| 170 | ✓ | [`.github/skills/project-planning/rai-planner/references/security-model.md`](.github/skills/project-planning/rai-planner/references/security-model.md) |
+| 171 | ✓ | [`.github/skills/project-planning/rai-planner/SKILL.md`](.github/skills/project-planning/rai-planner/SKILL.md) |
+| 172 | ✓ | [`.github/skills/project-planning/requirements-author/SKILL.md`](.github/skills/project-planning/requirements-author/SKILL.md) |
+| 173 | ✓ | [`.github/skills/project-planning/security-planning/SKILL.md`](.github/skills/project-planning/security-planning/SKILL.md) |
+| 174 | ✓ | [`.github/skills/rai/rai-standards/SKILL.md`](.github/skills/rai/rai-standards/SKILL.md) |
+| 175 | ✓ | [`.github/skills/rpi/rpi-challenger/SKILL.md`](.github/skills/rpi/rpi-challenger/SKILL.md) |
+| 176 | ✓ | [`.github/skills/rpi/rpi-implement/SKILL.md`](.github/skills/rpi/rpi-implement/SKILL.md) |
+| 177 | ✓ | [`.github/skills/rpi/rpi-plan-critique/SKILL.md`](.github/skills/rpi/rpi-plan-critique/SKILL.md) |
+| 178 | ✓ | [`.github/skills/rpi/rpi-plan/SKILL.md`](.github/skills/rpi/rpi-plan/SKILL.md) |
+| 179 | ✓ | [`.github/skills/rpi/rpi-quick/SKILL.md`](.github/skills/rpi/rpi-quick/SKILL.md) |
+| 180 | ✓ | [`.github/skills/rpi/rpi-research/SKILL.md`](.github/skills/rpi/rpi-research/SKILL.md) |
+| 181 | ✓ | [`.github/skills/rpi/rpi-review/SKILL.md`](.github/skills/rpi/rpi-review/SKILL.md) |
+| 182 | ✓ | [`.github/skills/rpi/rpi-walkthrough/SKILL.md`](.github/skills/rpi/rpi-walkthrough/SKILL.md) |
+| 183 | ✓ | [`.github/skills/security/gh-code-scanning/SECURITY.md`](.github/skills/security/gh-code-scanning/SECURITY.md) |
+| 184 | ✓ | [`.github/skills/security/gh-code-scanning/SKILL.md`](.github/skills/security/gh-code-scanning/SKILL.md) |
+| 185 | ✓ | [`.github/skills/security/mcsb/SKILL.md`](.github/skills/security/mcsb/SKILL.md) |
+| 186 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
+| 187 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
+| 188 | ✓ | [`.github/skills/security/owasp-docker/SKILL.md`](.github/skills/security/owasp-docker/SKILL.md) |
+| 189 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
+| 190 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
+| 191 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
+| 192 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
+| 193 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
+| 194 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
+| 195 | ✓ | [`.github/skills/security/supply-chain-security/SKILL.md`](.github/skills/security/supply-chain-security/SKILL.md) |
+| 196 | ✓ | [`.github/skills/security/vex/SECURITY.md`](.github/skills/security/vex/SECURITY.md) |
+| 197 | ✓ | [`.github/skills/security/vex/SKILL.md`](.github/skills/security/vex/SKILL.md) |
+| 198 | ✓ | [`.github/skills/shared/backlog-templates/SKILL.md`](.github/skills/shared/backlog-templates/SKILL.md) |
+| 199 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
+| 200 | ✓ | [`.github/skills/shared/telemetry-foundations/SKILL.md`](.github/skills/shared/telemetry-foundations/SKILL.md) |
+| 201 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
+| 202 | ✓ | [`docs/contributing/branch-protection.md`](docs/contributing/branch-protection.md) |
+| 203 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
+| 204 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
+| 205 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
+| 206 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
+| 207 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
+| 208 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
+| 209 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
+| 210 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
+| 211 | ✓ | [`docs/security/branch-protection.md`](docs/security/branch-protection.md) |
+| 212 | ✓ | [`docs/security/dangerous-workflow-detection.md`](docs/security/dangerous-workflow-detection.md) |
+| 213 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
+| 214 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
+| 215 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
+| 216 | → | [`docs/security/README.md`](docs/security/README.md) |
+| 217 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
+| 218 | → | [`docs/security/vex-verification.md`](docs/security/vex-verification.md) |
+| 219 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

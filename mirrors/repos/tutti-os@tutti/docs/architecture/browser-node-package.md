@@ -106,6 +106,14 @@ releases every Browser route for that workspace. A weak lookup does not replace
 this lifecycle: a route that still strongly owns its lookup key would also keep
 the obsolete feature and tab store alive.
 
+Host-level URL launches reuse Browser pages, not the active page's navigation
+slot. Tutti searches eligible Browser surfaces in recent-use order and selects
+an existing tab when its live URL matches, then uses its requested URL as an
+alias when the page redirected. If no page matches, it creates a tab in the most
+recent initialized Browser surface. If that surface's tab state is not
+available, it launches a new Browser surface instead of replacing the active
+page. Explicit non-reuse requests continue to launch a new surface.
+
 ## Package Entry Points
 
 The package uses multiple exports from one package rather than several small

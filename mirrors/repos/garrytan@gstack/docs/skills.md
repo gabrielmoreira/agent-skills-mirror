@@ -229,6 +229,8 @@ That is `/plan-eng-review`.
 Not "make the idea smaller."
 **Make the idea buildable.**
 
+One note on invocation: in plan mode, the skill skips the "what should I review?" scope question and reviews your active plan automatically, announcing its pick in one line ("Scope gate: plan mode — auto-selected B") so you can redirect it. Name a target explicitly ("review PLAN.md") and your choice wins in any mode. Outside plan mode with nothing named, it asks first — that gate is a hard stop.
+
 ### Review Readiness Dashboard
 
 Every review (CEO, Eng, Design) logs its result. At the end of each review, you see a dashboard:
@@ -263,7 +265,7 @@ Most plans describe what the backend does but never specify what the user actual
 
 `/plan-design-review` catches all of this during planning, when it's cheap to fix.
 
-It works like `/plan-ceo-review` and `/plan-eng-review` — interactive, one issue at a time, with the **STOP + AskUserQuestion** pattern. It rates each design dimension 0-10, explains what a 10 looks like, then edits the plan to get there. The rating drives the work: rate low = lots of fixes, rate high = quick pass.
+It works like `/plan-ceo-review` and `/plan-eng-review` — interactive, one issue at a time, with the **STOP + AskUserQuestion** pattern. It rates each design dimension 0-10, explains what a 10 looks like, then edits the plan to get there. The rating drives the work: rate low = lots of fixes, rate high = quick pass. Like `/plan-eng-review`, it skips the "what should I review?" scope question in plan mode and targets your active plan automatically (announced in one line so you can redirect); an explicitly named target wins in any mode.
 
 Seven passes over the plan: information architecture, interaction state coverage, user journey, AI slop risk, design system alignment, responsive/accessibility, and unresolved design decisions. For each pass, it finds gaps and either fixes them directly (obvious ones) or asks you to make a design choice (genuine tradeoffs).
 

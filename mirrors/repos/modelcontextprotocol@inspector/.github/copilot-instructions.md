@@ -72,6 +72,14 @@ Both exist and do different jobs. Theme files (`src/theme/<Component>.ts`) custo
 - `src/types/` is only for ambient `.d.ts` module stubs — not a home for new domain types.
 - ⚠️ The coverage `include` is a **whitelist** naming `components` / `hooks` / `theme` / `lib` / `utils` / `server` (plus the `core/*` runtime). A module placed outside those directories silently falls out of the ≥90% gate. Flag new top-level files or new grab-bag directories.
 
+## Dependency placement
+
+- **The MCP SDK packages (`@modelcontextprotocol/client`, `core`, `server`, `server-legacy`, `ext-apps`) belong in the root `package.json` only.** Adding one to a `clients/*/package.json` is a review finding: Node resolution walks up, so the root install already serves every client, and a per-client entry installs a second copy that drifts (it produced two versions of `ext-apps`, and of the transitive v1 SDK, at once — #1970) and reintroduces the duplicate-copy failure `vitest.shared.mts` has a `dedupe` workaround for.
+- **The v1 `@modelcontextprotocol/sdk` is not a dependency of this repo** and must not become one. It is a peer of `ext-apps`, present in lock files only.
+- Dependencies reached only through **root-owned code with no manifest** (`test-servers/src`, `core/`) are declared at the root and aliased to the **repo root** in `vitest.shared.mts` — as `express` and `yaml` are — not to `<client>/node_modules` like the other pins there.
+- **A dependency that renders React components must be bundled into the client that uses it, and is then not a root dependency.** An externalized package resolves its own `react` from wherever npm placed it in the *consumer's* tree, beside a React satisfying *its* peer range — looser than ours, which is all it takes to split React. `ink-form`/`ink-scroll-view` declare `">=18"`, so a consumer's React 18 satisfies them, the TUI ends up with two React instances, and it crashes on the first hook (#1952). Both are inlined via `noExternal` in `clients/tui/tsup.config.ts`. **`ink` is the one exemption, justified by cost (~1.4MB) — never by a peer range**: flag any claim that `">=19"` keeps npm from misplacing it, which is false and was in this repo once. What keeps it safe is the **root `react` range staying open to the whole major (`^19.0.0`)** so npm can dedupe with a consumer's pinned React 19; treat narrowing that range as reopening the bug. `clients/tui/__tests__/tsupConfig.test.ts` enforces the split, the root-declaration of exempt packages, and that range.
+- **Which section is a separate question from which manifest.** A package `core/` imports at runtime must be in root **`dependencies`**: client builds externalize npm packages, so a published install resolves them from the root manifest and devDependencies are absent there. Only test/build-only packages (`express`) belong in `devDependencies`. Flag a runtime `core/` import added to `devDependencies` — it passes every local check and breaks the published package.
+
 ## Tests and the coverage gate
 
 - **All new or modified code needs tests.** The per-file gate is **≥ 90% on all four dimensions** — lines, statements, functions, **and branches** — enforced in CI for `clients/{web,cli,tui,launcher}` and the gated `core/` runtime.
@@ -85,15 +93,18 @@ Both exist and do different jobs. Theme files (`src/theme/<Component>.ts`) custo
 
 ### Rendering components in tests
 
-- **Always render through `renderWithMantine`** from `src/test/renderWithMantine.tsx`. Never hand-roll a bare `MantineProvider` — that reintroduces a real failure class where a `Transition`/`Modal` timer fires after happy-dom tears down `window` and fails the entire run.
+- **Always render through `renderWithMantine`** from `src/test/renderWithMantine.tsx`. A hand-rolled bare `MantineProvider` skips the project theme and the helper's options, and drifts from every other test. (It does *not* reintroduce the timer-leak class — an older version of this rule said so; the leaked-timer net in `setup.ts` is global and covers every unit test regardless of how it renders.)
 - For a forced color scheme, pass the option — `renderWithMantine(ui, { colorScheme: "dark" })` — rather than a hand-rolled `defaultColorScheme` provider.
 - Only when asserting _mid-flight_ transition state, use `renderWithMantineTransitions`, passing `settleMs` derived from the component's real animation duration. Do **not** combine it with `vi.useFakeTimers()`, and use the `unmount()` it returns if the test unmounts the tree itself.
 
 ## Gates and PR hygiene
 
 - `npm run format` before committing; **`npm run ci` before pushing** (`validate` → `coverage` → `verify:build-gate` → `smoke` → Storybook). `npm run validate` is the fast inner-loop check and is **not** a substitute — it runs `test`, not `test:coverage`, so it does zero coverage gating.
+- **A dependency bump must land in every install that declares it.** v2 is not a workspace — the root and each `clients/*` have their own `node_modules`, and a client's test project compiles `core/` and `test-servers/src` (which resolve from the **root**) alongside the client's own sources. Bumping a shared dependency in one manifest only puts two versions of it in one `tsc` program; for a recursive-generic surface like zod that exhausts the tsc heap (#1896). `verify:dep-lockstep` fails the build on this, so a PR bumping a package that the shared sources import should update the root **and every client that already lists it** — not every client unconditionally, since a package absent from an install can't skew and adding it there would be a spurious dependency.
+- **A test or smoke must not touch real user state.** The web smokes run against a throwaway catalog via the shared `scripts/lib/prod-web-server.mjs` helper, never the developer's `~/.mcp-inspector/mcp.json` (#1977); the cli/tui smokes drive a temp `--catalog`. A new smoke spawning its own server, or teardown that removes a work dir without first awaiting `stopChild` (the #1801 race — `child-cleanup.mjs` exports both halves and both are required), should be flagged.
 - **Every PR references an issue**, first body line `Closes #<ISSUE_NUMBER>`.
 - **Every PR carries exactly one version label**, `v1` or `v2`, matching its base branch.
+- **Commits carry a `Signed-off-by:` trailer.** The DCO check is a hard merge gate and fails on a single unsigned commit; it matches the trailer against the author *or* committer, and skips only merge and bot commits. Use `git commit -s` — note `format.signOff` does *not* sign `git commit` (only `format-patch`). Repairing pushed commits means `git rebase HEAD~<n> --signoff` + `git push --force-with-lease`; remediation commits are not enabled on this repo.
 - Update the relevant `README.md` / `AGENTS.md` when a change adds, removes, renames, or repurposes a file or folder, changes the structure or tech stack, or introduces a command, dependency, or architectural pattern.
 
 ## What to prioritize in review

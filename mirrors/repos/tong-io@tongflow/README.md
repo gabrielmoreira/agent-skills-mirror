@@ -225,6 +225,12 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / link → text
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling stealth-browser URL / link → text
 
+### Content packages
+
+Data-only packages (no executable code), installed the same way as plugins:
+
+- [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills) — skills (reusable prompt packs) for the text-generation node: writing skills (polish / translate / expand / condense…) plus model-specific prompt-crafting guides (MiniMax-H3, Seedance, Veo, Seedream, FLUX…)
+
 ## Run from source
 
 ```bash

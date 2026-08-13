@@ -4,7 +4,7 @@
 - Owner: ClawSweeper maintainers and the designated Cloudflare operator
 - Source of truth: `dashboard/worker.ts`, `dashboard/exact-review-queue.ts`,
   `dashboard/wrangler.toml`, dashboard tests, and deployed read-only endpoints
-- Last verified: `openclaw/clawsweeper@9c32c14c65b0551b43a10c2086c0031338ae41e7`
+- Last verified: `openclaw/clawsweeper@a1795973a9e6bb00b73cd6adc21a4ea02ca78ced`
 - Update when: routes, public fields, queue projections, capacity, alerts,
   deployment, or state-writer telemetry changes
 
@@ -367,18 +367,35 @@ publication with retry/batch fallback. Document effective production values from
 The publication lane exposes two additional observer-only surfaces:
 
 - `credential_circuits` lists the redacted pool class, optional target owner,
-  observation time, `blocked_until`, reset source, authority flag, active state,
-  and affected pending count. `active: true` with free publication slots means
-  credential-blocked, not capacity-starved or healthy-idle.
+  observation time, raw credential reset as `blocked_until`, latest
+  per-member reset-plus-jitter boundary as `recovery_until`, reset source,
+  authority flag, active state, and affected pending count. A circuit remains
+  active through `recovery_until`; `active: true` with free publication slots
+  means credential-blocked, not capacity-starved or healthy-idle.
 - `github_request_metrics` contains cumulative redacted counters keyed by pool
   class, endpoint category, operation class, outcome, and whether the item
   revision was already retried. These counters are for request-budget analysis;
   they never contain raw URLs, item content, credentials, or local paths.
 
+The durable handoff's `handoff_health.recovery_reasons` counts bounded
+`claim_timeout`, `execution_timeout`, `workflow_cancelled`, and
+`workflow_failed` recovery causes. These are observed queue and workflow facts;
+they do not infer why GitHub or a runner cancelled or failed a workflow.
+
+`GET /api/github-egress-observability?hours=6` adds the publication transport
+denominator without changing those version-1 fields. It separates durable
+members, `gh` invocations, and observed HTTP wire attempts; attributes the
+selected credential pool, method, normalized route, page, source, stage, claim
+generation, and first/repeat revision; and includes sanitized 403/429 reset
+header observations. See
+[GitHub publication egress telemetry](github-egress-telemetry.md) for exact
+semantics, retention, privacy, and known opaque boundaries.
+
 Bay renders these fields as health context only. It has no circuit reset,
 workflow dispatch, queue retry, replay, acknowledgement, or gate control.
 Expired circuit observations remain visible as `active: false` for diagnosis;
-new work resumes automatically after the deadline and bounded item jitter.
+matching work resumes automatically at its deterministic per-member jitter
+boundary, with all currently matching work eligible by `recovery_until`.
 
 The standalone **State writer** panel separates the repo-wide serialization
 boundary from exact-review materialization telemetry. After the coordinator

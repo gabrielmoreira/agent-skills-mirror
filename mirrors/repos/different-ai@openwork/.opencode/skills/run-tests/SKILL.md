@@ -47,6 +47,8 @@ pnpm evals:spec specs/<name>.test.ts
 - Run one app/Den-driving stack-lane spec:
 
 ```bash
+pnpm evals <name>
+# Fallback:
 OPENWORK_EVAL_APP_SPECS=1 pnpm --dir evals exec vitest run --config vitest.config.ts --project stack specs/<name>.slow.test.ts
 ```
 

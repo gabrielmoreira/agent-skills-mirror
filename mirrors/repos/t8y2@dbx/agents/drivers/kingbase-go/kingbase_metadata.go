@@ -275,13 +275,12 @@ func (s *server) listTables(schema string, constraints metadataListConstraints) 
 	if s.mode.postgresCatalog {
 		catalog = "pg_catalog"
 	}
-	query := fmt.Sprintf(`SELECT c.relname,
-CASE c.relkind WHEN 'r' THEN 'TABLE' WHEN 'p' THEN 'TABLE' WHEN 'v' THEN 'VIEW' WHEN 'm' THEN 'MATERIALIZED_VIEW' WHEN 'f' THEN 'FOREIGN_TABLE' ELSE 'TABLE' END,
-obj_description(c.oid)
-FROM %s.%s_class c
-JOIN %s.%s_namespace n ON n.oid = c.relnamespace
-WHERE n.nspname = %s AND c.relkind IN ('r','p','v','m','f') ORDER BY c.relname`, catalog, catalogPrefix(catalog), catalog, catalogPrefix(catalog), quoteLiteral(effective))
-	rows, err := s.metadataQuery(query)
+	includeComment := !s.catalogOIDUnsupported
+	rows, err := s.queryTables(effective, catalog, includeComment)
+	if err != nil && includeComment && isUndefinedColumn(err, "c.oid") {
+		s.catalogOIDUnsupported = true
+		rows, err = s.queryTables(effective, catalog, false)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -301,7 +300,24 @@ WHERE n.nspname = %s AND c.relkind IN ('r','p','v','m','f') ORDER BY c.relname`,
 	return pageTables(result, constraints), rows.Err()
 }
 
+func (s *server) queryTables(schema, catalog string, includeComment bool) (*sql.Rows, error) {
+	commentExpression := "NULL AS table_comment"
+	if includeComment {
+		commentExpression = "obj_description(c.oid) AS table_comment"
+	}
+	query := fmt.Sprintf(`SELECT c.relname,
+CASE c.relkind WHEN 'r' THEN 'TABLE' WHEN 'p' THEN 'TABLE' WHEN 'v' THEN 'VIEW' WHEN 'm' THEN 'MATERIALIZED_VIEW' WHEN 'f' THEN 'FOREIGN_TABLE' ELSE 'TABLE' END,
+%s
+FROM %s.%s_class c
+JOIN %s.%s_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = %s AND c.relkind IN ('r','p','v','m','f') ORDER BY c.relname`, commentExpression, catalog, catalogPrefix(catalog), catalog, catalogPrefix(catalog), quoteLiteral(schema))
+	return s.metadataQuery(query)
+}
+
 func (s *server) getTableComment(schema, table string) (*string, error) {
+	if s.catalogOIDUnsupported {
+		return nil, nil
+	}
 	effective, err := s.effectiveSchema(schema)
 	if err != nil {
 		return nil, err
@@ -319,6 +335,10 @@ LIMIT 1`, catalog, prefix, catalog, prefix, quoteLiteral(effective), quoteLitera
 	var comment sql.NullString
 	if err := s.requireDBQueryRow(query, &comment); err != nil {
 		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		if isUndefinedColumn(err, "c.oid") {
+			s.catalogOIDUnsupported = true
 			return nil, nil
 		}
 		return nil, err

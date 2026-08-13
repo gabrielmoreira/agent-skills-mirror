@@ -4,6 +4,35 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.229](https://github.com/Piebald-AI/claude-code-system-prompts/commit/37fb9dc)
+
+_+24,422 tokens_
+
+- **NEW:** Agent Prompt: Pull request creation and Agent Prompt: Quick git commit — Add focused workflows for opening one GitHub pull request from existing commits and creating one local commit, with preloaded repository context, platform-correct multiline formatting, attribution hooks, pre-commit checks, and explicit git-safety boundaries.
+- **NEW:** Data: Command plugin source command field — Defines command-backed plugin sources as platform-shell commands that emit exactly one absolute plugin-directory path, finish populating it before exit, and are re-resolved for installs, updates, and once-per-session background checks before being copied into cache.
+- **NEW:** Data: Sandbox network domain spelling warning — Explains canonical domain and bracketed-IPv6 spellings and the conservative allow/deny behavior applied to malformed sandbox network entries until they are corrected.
+- **NEW:** Skill: Artifact slides — Adds live, editable presentation-deck artifacts with a slide rail, direct editing, speaker notes, comments, presentation and print modes, projection-oriented composition rules, and template-preservation requirements.
+- **NEW:** Skill: Design and Skill: Design description — Add Claude Design canvas artifacts for editable multi-artboard UI, marketing, social, and print layouts, including source-grounded design-system matching, reusable components, canvas organization, explicit save/export capability handling, and safe updates to existing canvases.
+- **NEW:** Skill: Prototype description — Adds a dedicated trigger for working proof-of-concept artifacts, including explicitly requested demonstrations of a new feature in place on an existing app.
+- **NEW:** System Reminder: Queued notifications delivery and Tool Description: ReadNotifications — Add authoritative, oldest-first draining of queued GitHub activity, scheduled triggers, and cross-session messages; require prompt handling when notified, pagination until the queue is empty, sender-based trust decisions, and verification of surprising relayed content.
+- **NEW:** Tool Description: Artifact unsupported supporting file error — Explains why an unsupported supporting-file media type prevents publication, distinguishes page-served assets from viewer downloads, and points file handoff to an available runtime capability instead of inert download links.
+- **NEW:** Tool Description: PowerShell (git guidance) — Adds reusable PowerShell git guidance to prefer new commits, seek safer alternatives before destructive operations, and never bypass hooks or signing without an explicit user request.
+- **REMOVED:** Skill: Artifact PR review description — Removes the standalone PR-review trigger description; the full Artifact PR review skills remain.
+- **REMOVED:** Skill: Code walkthrough, Skill: PR explainer, and Skill: PR explainer artifact-template mode — Remove the dedicated interactive code-walkthrough and pull-request walkthrough artifact workflows.
+- Agent Prompt: Quick PR creation — Requires `gh pr edit` to omit a pull-request number or URL so `gh` resolves and updates the current branch's pull request.
+- Data: Claude Code gateway protocol — Requires gateways to emit their own `event: ping` during silent streaming gaps because SDK iterators drop upstream pings and Bedrock sends none, preventing long thinking pauses from tripping client or proxy idle timeouts.
+- Data: Code change published event schema — Broadens the event framing from a session-associated pull or merge request to any code change sent for review, including other providers in internal builds, while retaining its repeatable, best-effort, verify-before-trust semantics.
+- Data: SDK protocol capabilities field — Adds the `queued_notifications` capability so backends can detect whether the CLI accepts queued-notification stream messages and drains them through `ReadNotifications`.
+- Data: Self-hosted runner command help — Marks `--base-dir` as required on Windows, where the runner has no default checkout directory.
+- Skill: Artifact PR review, Skill: Artifact PR review (composed publish flow), and Skill: Artifact PR review description (composed publish flow) — Remove routing to the retired `pr-explainer` workflow while preserving the distinction between structured review briefings and narrative walkthroughs.
+- Skill: Prototype and Skill: Prototype runtime capabilities guidance — Introduce sketch, clickable, and wired fidelity levels with a clickable default; support privacy-checked screenshot overlays or source-matched shells for explicitly requested in-app concepts; allow per-region promotion; classify live data, actions, and file saving as wired capabilities; and require an approved must-have/nice-to-have/cut brief before turning an accepted prototype into production code.
+- System Prompt: Artifact comment list framing — Adds optional file/page anchor guidance alongside selected-text and anchor-path context while preserving the untrusted-viewer-data boundary.
+- Tool Description: Artifact database guidance — Adds private per-viewer storage under `data/users/`, with `me` resolving to the current viewer's user ID and requiring the published artifact to declare both `user` and `db` capabilities.
+- Tool Description: Artifact publishing and update guidance and Tool Description: Artifact runtime capabilities guidance — Make remote-session watches durable wake subscriptions for republishes and, where granted, comments; warn that viewer sandboxes block page-initiated downloads; and route files intended for viewers to save through an available runtime capability.
+- Tool Description: Bash (Git commit and PR creation instructions) — Applies the full commit and pull-request safety workflow consistently instead of switching to abbreviated git guidance when the commit command is loaded, retaining explicit commit and push consent, targeted staging, new-commit recovery after hook failures, and limits on unrelated exploration.
+- Tool Description: PowerShell — Replaces generic command notes with PowerShell-edition-specific syntax and detected developer-tool context, adds background-execution and sleep-avoidance guidance, and separates reusable git safety guidance from the main tool prompt.
+- Tool Description: Workflow — Clarifies that concurrent agent capacity is calculated from available CPUs rather than raw CPU-core count.
+
 # [2.1.228](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b718060)
 
 _+7,141 tokens_

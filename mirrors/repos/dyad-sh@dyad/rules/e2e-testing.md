@@ -210,6 +210,7 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **Enter key vs send button are different code paths**: Pressing Enter in the Lexical chat input goes through `EnterKeyPlugin` in `LexicalChatInput.tsx`, not the send-button click handler, and the two have diverged before (Enter once cleared the editor even when the submit was rejected, wiping the pending first prompt). "Unreliable" user repros of submit bugs may just be Enter-vs-button divergence. Tests of submit behavior — especially setup/pending-prompt flows — should cover `chatInput.press("Enter")`, not only the "Send message" button.
 - **Custom model setup dialog**: When adding a custom model in Settings helpers, scope inputs to the "Add Custom Model" dialog, assert `#model-id` and `#model-name` values before clicking `Add Model`, and wrap the fill/click in `expect.toPass()`. Fast repeats can otherwise leave the name field empty or append text to the wrong field.
 - **Local model picker assertions**: Ollama/LM Studio menu items can expose accessible names that combine display name and model id (for example `Testollama testollama` or `lmstudio-model-1 lmstudio-model-1`). Exact test locators should account for this duplicated label/id shape.
+- **Version-prefix model picker selections**: Match model rows by stable provider/model attributes when possible. If an accessible-name fallback is required, include the delimiter after the model name (for example the period followed by whitespace before effort metadata), so `GPT 5` cannot select `GPT 5.2` and `Claude Sonnet 4` cannot select `Claude Sonnet 4.6`. After clicking a model, wait for the picker trigger to show the selected `Model (Effort)` before sending a prompt; persistence and request routing update asynchronously.
 - **Settings-dependent prompts**: After toggling a setting that affects the next chat request (for example Smart Context mode), wait for the persisted settings state with `expect.poll(() => po.settings.recordSettings().someKey)` before sending the prompt. UI clicks can return before the main-process settings write is visible to the request path.
 - **Home Build-mode setup**: If a shared E2E helper expects home-screen prompts to run in Build mode, pin both `selectedChatMode: "build"` and `defaultChatMode: "build"` before returning to home. Otherwise the home page's effective-default mode effect can restore Basic Agent/local-agent and suppress proposal controls even after a Build-mode click.
 - **Setup flows that intentionally switch away from Build**: Keep the Build default pinned until the setup dialog proves the pending prompt was queued, then restore `defaultChatMode: "local-agent"` before completing provider/Pro setup. Leaving Build as the persistent default overrides the post-setup Agent selection.
@@ -264,6 +265,7 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **Deleting freshly generated apps**: Prompt completion can precede background preview dependency installation. Before bulk deletion, wait for the latest app's `preview-iframe-element`; otherwise deletion can spend its whole timeout interrupting still-installing runtimes one by one.
 - **Fake Anthropic engine routes**: When app code uses Anthropic direct passthrough, the fake LLM server must handle `/v1/messages` (and provider-prefixed variants like `/engine/v1/messages`), not just `/chat/completions`. Anthropic tool results come back as user messages with `tool_result` content blocks, so fixture turn counting must skip those as user prompts.
 - **Fake LLM fixture routing**: If a `tc=...` prompt unexpectedly returns the canned fallback and proposal buttons never appear, inspect `testing/fake-llm-server` routing. OpenAI-compatible requests can send user content as text parts or end with a non-user message, so fixture and `[sleep=...]` checks should use the extracted last user text, not raw `messages[messages.length - 1].content`.
+- **Fake LLM streamed tool calls**: watch for the client giving up on `res`, never on `req`. Since Node 16 an `IncomingMessage` emits `close` as soon as the request itself is complete — for a POST whose body express already parsed, that is before the first SSE chunk goes out — so a `req.on("close")` guard trips on every call and the fixture bails mid-stream without ever calling `res.end()`. The symptom is a turn that streams forever with an empty assistant message: the tool never runs, and the E2E times out waiting on a locator that only exists after it does. `curl -N` the fixture directly and count the `data:` chunks to tell a hung fixture apart from an app bug.
 - **Local-agent fixture `delayMs`**: Reserve `delayMs` for cancellation/connection tests that intentionally keep a response open. An ordinary fixture can treat the completed request as an abort and send no response, leaving the UI on the streaming animation; when waiting for background work such as a debounced indexer, wait after the prerequisite turn settles in the E2E instead.
 - **Legacy local-agent `code_search` coverage**: `code_search` is hidden when code explorer is enabled and ready, so specs that explicitly test `code_search` should set `enableCodeExplorer: false` and poll persisted settings before sending the fixture prompt. Otherwise local and CI can render different snapshots depending on code-explorer readiness.
 - **Local-agent request-dump snapshots and code explorer**: If a request-dump spec is not testing `explore_code`, pin `enableCodeExplorer: false` and poll `po.settings.recordSettings().enableCodeExplorer` before sending the prompt. Otherwise the serialized prompt/tool list can flip between `code_search` and `explore_code` depending on whether indexing finished first.
@@ -319,6 +321,18 @@ This pattern provides a more reliable signal that the async operation has comple
 3. It avoids race conditions where the button might briefly be in the DOM but not yet updated
 
 For streamed progress indicators that may complete quickly, allow the assertion to match either the transient in-progress text or the final completed text, then assert the final state after the operation completes.
+
+## `toBeDisabled()` passes for free — assert the enabled baseline too
+
+A control's `disabled` prop is usually an OR of several preconditions, so
+`toBeDisabled()` can pass for a reason that has nothing to do with the gate
+under test, and stays green if that gate is deleted. Real example: asserting the
+annotator button is disabled during a recording passed in the `recorder`
+fixture, but only because that minimal fixture never initializes the component
+selector and `!isComponentSelectorInitialized` is in the same list — the button
+is disabled for the whole test. Always assert `toBeEnabled()` in the state
+before the gate applies. If that baseline fails, the disabled assertion proves
+nothing and needs a different fixture (or no E2E at all).
 
 ## E2E test fixtures with .dyad directories
 

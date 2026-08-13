@@ -60,7 +60,28 @@ print(result.content)
 - `limit`: choose based on the task. The default is `5`; valid values are `1` through `20`.
 
 Read `result.content`, choose by `code`, `name`, and `description`, then pass the selected `SMA-...` code directly as `call_subagent.agent_name`.
-Do not automatically split or retry the same search intent when no candidates are returned. Use `keywords=[]` only when the user explicitly asks to browse all currently available marketplace Agents.
+Do not automatically split or retry the same search intent when no candidates are returned.
+
+### Browsing The Full Agent List
+
+When the user asks which Agents are available rather than asking to get something done, browse instead of searching: pass `keywords=[]` and `query=None`. Results come back in a stable order with no relevance filtering, so the first entry is not necessarily the best fit.
+
+```python
+from sdk.tool import tool
+
+result = tool.call("find_agents", {
+    "keywords": [],
+    "query": None,
+    "limit": 20,
+})
+print(result.content)
+```
+
+Read `has_more` and `next_page` from `result.content`. To read the following page, keep every other argument unchanged and set `page` to `next_page`. Page order is stable and pages do not overlap.
+
+Do not page through the whole directory to see everything — each page costs context. Read further pages only when the user asked for the complete list, or when the current page contains no suitable Agent.
+
+Paging is not available for keyword search, because ranked order is not stable across pages. When a keyword search returns too few results, raise `limit` or change `keywords` instead.
 
 ## Tool: call_subagent
 
@@ -114,6 +135,8 @@ For a new session, provide a human-readable base ID such as `market-research`.
 - New session inheriting the current context: `fork=True, resume=False`
 - Continue an existing session: `fork=False, resume=True`
 - `fork=True, resume=True` is invalid
+
+Completed sub-agent histories can be inspected later with the `chat-history` skill. Parent identity is stored explicitly in each new sub-agent's `.session.json`; do not infer parent-child relationships from directory nesting.
 
 Fork creates a new independent session and never overwrites an existing one. Resume is always explicit because the caller may not know that an older session used the same name.
 

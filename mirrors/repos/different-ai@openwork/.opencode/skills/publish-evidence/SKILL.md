@@ -19,22 +19,23 @@ test.
 
 ## Publish the PR head
 
-After a multi-spec run, publish every tape whose `gitSha` matches the PR head:
+After a multi-spec run, publish each tape whose `gitSha` matches the PR head,
+once per roll:
 
 ```bash
-pnpm fraimz:publish -- --pr <n> --all
+pnpm evals --publish --pr <n> --roll <dir|name>
 ```
 
-`fraimz:publish` is an implementation-compatibility command name. It publishes
-existing `@openwork/testkit` tapes, not legacy flows.
+`evals --publish` judges pending vision claims on the selected tape, then
+publishes it. It publishes existing `@openwork/testkit` tapes, not legacy
+flows, and never reruns tests.
 
-- `--all` processes matching rolls chronologically and prints why stale or
-  malformed rolls were skipped.
-- Do not combine `--all` with `--roll`, `--force`, `--dry-run`, or `--open`.
-- Publishing accumulates sections in one sticky comment. Publishing a new spec
-  preserves existing sections; republishing the same spec replaces only that
-  spec's section. Confirm the summary lists every spec and verdict.
-- Use `--roll <dir|name>` only to publish one selected existing tape.
+- Omitting `--roll` selects the most recent roll; pass `--roll` explicitly
+  when several rolls exist so each spec's tape is published deliberately.
+- Publishing replaces the sticky comment with the selected roll. Confirm the
+  final comment shows the spec and verdict you intend reviewers to see.
+- Exit codes: `0` published, `1` failed claims published (or publish failed),
+  `2` pending claims still need judging (set a vision key and rerun).
 
 ## Refuse misleading evidence
 

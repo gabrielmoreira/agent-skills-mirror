@@ -50,6 +50,8 @@ An actionable candidate is `NO_GO` when:
 
 Market-regime recommendation `NEW_ENTRY_ALLOWED` and circuit-breaker recommendation `TRADING_ALLOWED` are the only explicit pass values. Unknown or missing upstream artifacts produce `REVIEW_REQUIRED` for actionable orders.
 
+Both `planned_risk_dollars` and `actual_risk_dollars` are required for an actionable candidate. Each field accepts a finite, non-negative number or numeric string, including zero. A missing value, boolean, non-numeric string, `NaN`, infinity, or negative value produces `REVIEW_REQUIRED`; the audit copy is normalized to JSON `null`. When both fields are valid and actual risk exceeds planned risk, the candidate is `NO_GO`. An explicit `NO_GO` rule remains higher priority than a simultaneous invalid-risk review.
+
 ## Trader Memory Integration
 
 Revenge-risk detection reads trader-memory-core thesis YAML files:
@@ -61,7 +63,7 @@ Revenge-risk detection reads trader-memory-core thesis YAML files:
 
 When `thesis_id` and `--state-dir` are provided, the skill links the generated JSON report with trader-memory-core `link_report`. It never uses `mark_reviewed`, because pre-trade checklist logging must not advance monitoring review dates.
 
-The JSON report and JSONL journal retain candidate-level `checklist_answers` for `entry_in_written_plan`, `stop_predefined`, `size_within_plan`, `planned_risk_dollars`, `actual_risk_dollars`, and `notes`. This keeps GO decisions reviewable later instead of recording only failures.
+The JSON report and JSONL journal retain candidate-level `checklist_answers` for `entry_in_written_plan`, `stop_predefined`, `size_within_plan`, `planned_risk_dollars`, `actual_risk_dollars`, and `notes`. Invalid risk-dollar values are stored as JSON `null`; valid values keep their original representation. This keeps GO decisions reviewable later instead of recording only failures.
 
 ## Workflow Integration
 

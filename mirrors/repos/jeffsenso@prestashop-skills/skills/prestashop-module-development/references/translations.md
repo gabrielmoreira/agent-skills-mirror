@@ -88,8 +88,59 @@ $this->trans('Front text', [], 'Modules.Mymodule.Shop');
 
 ```smarty
 {* In Smarty templates *}
-{l s='Text to translate' d='Modules.Mymodule.Shop'}
+{l s='Text to translate' d='Modules.Mymodule.Front'}
 ```
+
+## **CRITICAL: Front-office Smarty translations — Use `{l}` directly, NOT translated variables**
+
+**MANDATORY**: For static translatable text in front-office Smarty templates (`.tpl` files), **ALWAYS use the `{l}` Smarty function directly in the template**. **NEVER pass pre-translated strings as Smarty variables** from PHP.
+
+```smarty
+{* ✅ CORRECT: Use {l} directly in the template *}
+<h3 class="title">{l s='Customer Reviews' d='Modules.Wsgooglereviews.Front'}</h3>
+<p class="description">{l s='See what our customers say' d='Modules.Wsgooglereviews.Front'}</p>
+```
+
+```php
+// ❌ WRONG: DO NOT translate in PHP and pass as variable
+public function getWidgetVariables($hookName, array $configuration): array
+{
+    return [
+        'title' => $this->trans('Customer Reviews', 'Modules.Wsgooglereviews.Shop'),  // WRONG!
+        'description' => $this->trans('See what our customers say', 'Modules.Wsgooglereviews.Shop'),  // WRONG!
+    ];
+}
+```
+
+```smarty
+{* ❌ WRONG: Using pre-translated variables *}
+<h3 class="title">{$title}</h3>  {* WRONG! *}
+<p class="description">{$description}</p>  {* WRONG! *}
+```
+
+**Why use `{l}` directly in templates?**
+- ✅ PrestaShop's translation extraction tools scan `.tpl` files for `{l}` tags
+- ✅ Translators can see the exact context where text appears
+- ✅ Better separation of concerns — translations belong in templates, not PHP logic
+- ✅ Translation cache works correctly per language
+- ✅ Standard PrestaShop pattern used by all core modules
+
+**When to pass variables from PHP:**
+- ✅ **Dynamic data** (product names, prices, quantities, user names, etc.)
+- ✅ **Configuration values** (URLs, API keys, module settings)
+- ✅ **Formatted dates/numbers** that require server-side logic
+- ❌ **NOT for static translatable interface text** — use `{l}` in template instead
+
+**`{l}` function syntax:**
+```smarty
+{l s='String to translate' d='Modules.Modulename.Front'}
+```
+- `s=` Source string (English)
+- `d=` Domain (use `.Front` for front-office templates)
+
+**Domain naming for front-office:**
+- Use `Modules.Modulename.Front` (NOT `.Shop`)
+- The domain is case-sensitive and must match the module name exactly
 
 ## Declaring the new translation system
 

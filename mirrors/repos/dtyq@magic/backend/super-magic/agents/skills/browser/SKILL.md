@@ -12,7 +12,7 @@ Use Browser tools through `run_sdk_snippet`. Pass only fields required by the ta
 For most tasks, use this four-step path:
 
 1. Open a new URL with `browser_open_page`.
-2. Read with `browser_read_page`, or take one `browser_snapshot` when interaction is needed.
+2. Read with `browser_read_page`, or take one `browser_list_elements` when interaction is needed.
 3. Find the exact ref, perform the action, and keep using the same `page_id`.
 4. If the next step depends on a specific result, wait for that text, URL, ref, or download; otherwise verify once with a read or changes snapshot.
 
@@ -46,7 +46,7 @@ A ref record is an accessibility record, not a DOM element. It has no `tag_name`
 Use all returned refs when locating a target. Do not truncate `snapshot.content`, inspect only the first N refs, guess a ref, or repeatedly retry different elements. The normal path is to print the snapshot content, read its hierarchy, then use the exact ref in the next snippet.
 
 ```python
-snapshot = tool.call("browser_snapshot", {"page_id": page_id})
+snapshot = tool.call("browser_list_elements", {"page_id": page_id})
 print(snapshot.content)
 ```
 
@@ -131,17 +131,22 @@ Use:
 - `condition="ref"` with the exact ref in `value`.
 - `condition="time"` with `duration_ms` only when no observable condition exists.
 
-For a quick post-action check, use `browser_snapshot(scope="changes")`. After navigation, take a normal fresh snapshot instead; old refs no longer belong to the current document.
+For a quick post-action check, use `browser_list_elements(scope="changes")`. After navigation, take a normal fresh snapshot instead; old refs no longer belong to the current document.
 
-## Choose the right observation
+## Choosing how to look at a page
 
-- Use `browser_read_page` for rendered text and links. Read its `content` to answer the user; do not parse `data["markdown"]` by default.
-- Use `browser_snapshot` to find controls and inspect interaction state. Read its tree from `content`; use structured refs only for exact chaining or deterministic filtering.
-- Use `browser_visual_query(page_id=..., query=...)` for layout, images, charts, maps, canvas, or other visual questions. Its answer is in `content`.
-- Use `browser_find_visual(page_id=..., target=...)` only when a control cannot be identified from the snapshot.
-- Use `browser_screenshot` only when the user explicitly asks for a screenshot, asks to save an image, or a visual question cannot be answered by the automatic operation snapshot. State-changing Browser operations already publish a temporary Tool Detail snapshot; do not capture another screenshot merely to report that the task is finished.
+| You want | Use |
+|----------|-----|
+| Read an article, document, or post | `browser_read_page` |
+| Find one control to click or fill | `browser_find` |
+| `browser_read_page` returned nearly nothing | `browser_read_html` |
+| Pull many values from a list or table | `browser_read_html`, then `browser_evaluate` |
+| See every control at once | `browser_list_elements` |
+| Understand layout, images, charts, maps, or canvas | `browser_visual_query` |
 
-Visual model calls are expensive. Do not run multiple `browser_visual_query` or `browser_find_visual` calls concurrently, and do not call both for the same question. Put a required visual call in a dedicated snippet or set the snippet timeout to at least 120 seconds when it follows other Browser work.
+`browser_find` never picks for you. If it returns several matches, choose one by ref. Never write a selector you have not seen in `browser_read_html` output.
+
+`browser_visual_query` captures and analyzes in one call and writes no file. Never take a screenshot and analyze it separately. Run at most one visual-model call at a time, and give a snippet at least 120 seconds when it follows other Browser work. Use `browser_find_visual` only when a control cannot be identified from text or structure. Use `browser_screenshot` only when the user asks to see or save an image.
 
 Exact visual calls:
 
@@ -201,16 +206,22 @@ When a page shows a CAPTCHA, unusual-traffic warning, or human-verification step
 
 Do not wait only for the final URL on sites that may insert verification. After the triggering action, read the current page first; if verification is present, stop immediately instead of retrying the wait.
 
+## When a site blocks automation
+
+If a page redirects away on its own, blanks out, or reports that developer tools are open, stop repeating the action. Read [references/blocked-pages.md](references/blocked-pages.md) and follow it. This is different from a CAPTCHA: a CAPTCHA asks a human to prove something and must not be bypassed.
+
 ## Boundaries
 
 - Operate only pages authorized for the current Browser session.
 - Do not expose endpoints, pairing or resume tokens, cookies, passwords, or browser history.
 - Do not print raw protocol payloads, full DOM/accessibility dumps, or screenshot bytes.
-- Use `browser_evaluate` only for focused application-specific inspection. Do not replace normal reading, snapshots, or ref interaction with JavaScript.
+- Use `browser_evaluate` to read focused application-specific data, never to interact with the page. Clicking, filling, and navigating must use ref-based tools so the runtime can report what changed.
 
 ## References
 
 - Sessions, pages, navigation, waiting, lifecycle, and capabilities: [references/sessions.md](references/sessions.md)
-- Snapshot scopes, ref lifetime, screenshots, and visual tools: [references/snapshots.md](references/snapshots.md)
+- Element-list scopes and ref lifetime: [references/elements.md](references/elements.md)
+- Screenshots, visual queries, and visual labels: [references/screenshots.md](references/screenshots.md)
 - Console, network, JavaScript, and troubleshooting: [references/debugging.md](references/debugging.md)
 - Authorized user Chrome sessions: [references/remote-chrome.md](references/remote-chrome.md)
+- Automation-tool detection and blocked-page handling: [references/blocked-pages.md](references/blocked-pages.md)

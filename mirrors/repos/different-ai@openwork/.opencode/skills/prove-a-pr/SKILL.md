@@ -51,10 +51,10 @@ pnpm dev:den:mysql
 ## Publish human verification
 
 - The orchestrator owns publishing after the verdict. After a multi-spec run,
-  publish every head-matching tape with:
+  publish each head-matching tape (once per roll):
 
 ```bash
-pnpm fraimz:publish -- --pr <n> --all
+pnpm evals --publish --pr <n> --roll <dir|name>
 ```
 
 - Confirm the sticky PR comment shows one section for every claimed spec.

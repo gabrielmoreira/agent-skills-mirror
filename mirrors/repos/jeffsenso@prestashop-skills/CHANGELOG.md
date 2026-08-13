@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-08-12
+
+### Added
+
+- `references/configuration-page.md` — new mandatory FormHandler pattern with constructor dependency injection; expanded section explaining controller's limited service locator problem and why DI is required instead of `$this->get()`.
+- `references/services-and-di.md` — new section on controller's limited service locator; explains why controllers can only access core Symfony services and not custom module services via `$this->get()`; includes complete constructor DI pattern and controller service registration requirements (`public: true` + `controller.service_arguments` tag).
+- `references/translations.md` — new critical section on front-office Smarty translations; mandates using `{l}` directly in templates instead of passing pre-translated strings as variables from PHP; includes rationale (translation extraction, context visibility, standard pattern) and examples of correct vs incorrect approaches.
+
+### Changed
+
+- `SKILL.md` — **MANDATORY installer pattern rules**: install() must call `parent::install()` FIRST with explicit check, then delegate to Installer; uninstall() must call Installer FIRST, then `parent::uninstall()` with `&&` chaining; hooks and tabs must be defined as class property arrays (`private array $hooks = [...]`, `private array $tabs = [...]`); parent group tab auto-installation logic added; NEVER use `getTabs()` method in module class — all tab management in Installer only.
+- `references/module-class-and-installer.md` — complete rewrite: new **MANDATORY install/uninstall pattern** section at the top; tabs management pattern now uses structured class property array with parent group tab auto-check; hooks defined as class property array; simplified Installer class without ConfigurationInstaller sub-class; removed `getTabs()` pattern; all tab logic consolidated in Installer class.
+- `SKILL.md` — configuration page pattern updated from 4 to 5 classes (added FormHandler); now mandates constructor dependency injection in controllers instead of `$this->get()` service locator access.
+- `SKILL.md` — added controller registration requirements: must be `public: true` with `controller.service_arguments` tag.
+- `SKILL.md` — added FormType registration requirements: must have `parent: 'form.type.translatable.aware'` and `tags: [{ name: form.type }]`.
+- `SKILL.md` — added critical rule for front-office CSS/JS registration: ALWAYS use `actionFrontControllerSetMedia` hook (NEVER `header` or `displayHeader`); use `$this->context->controller->registerStylesheet()` and `->registerJavascript()`.
+- `SKILL.md` — WidgetInterface implementation rule: DO NOT define explicit hook methods like `hookDisplayHome()` — PrestaShop automatically calls `renderWidget()` for all registered display hooks.
+- `SKILL.md` — front-office Smarty template translation rule: use `{l s='Text' d='Modules.Modulename.Front'}` directly in template, NEVER pass pre-translated strings as Smarty variables from `getWidgetVariables()`.
+- `references/hooks-and-front-office.md` — expanded with front-office media registration rules and WidgetInterface implementation patterns.
+
 ## 2026-08-10
 
 ### Changed

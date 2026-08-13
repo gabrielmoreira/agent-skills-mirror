@@ -73,7 +73,7 @@ NotebookLMClient.rpc_call()
 
 # Types
 Notebook, Source, Artifact, Note, Label, MindMap, Collection
-GenerationState, GenerationStatus, AskResult
+GenerationState, GenerationStatus, AskResult   # incl. the .is_terminal predicate on both
 NotebookDescription, ConversationTurn
 ShareStatus, SharedUser, SourceFulltext, SourceGuide
 NotebookMetadata, SourceSummary
@@ -100,6 +100,13 @@ NonIdempotentRetryError            # Raised by idempotent=True calls on a non-id
 # WaitTimeoutError` catches source/artifact/research wait timeouts uniformly,
 # while `except TimeoutError` keeps working — see docs/python-api.md#waittimeouterror.
 SourceError, SourceAddError, SourceProcessingError, SourceTimeoutError, SourceNotFoundError
+# A post-registration add_file() failure keeps raising its own type (AuthError /
+# RateLimitError / ServerError / NetworkError / ValidationError / bare
+# SourceAddError), so existing `except` clauses around add_file() are unaffected.
+# It additionally carries `source_id` and `stage` attributes identifying the
+# source row the failure left behind; the library does not delete that row
+# automatically. Read them with getattr(exc, "source_id", None) — they are absent
+# on every other failure. See docs/python-api.md#partial-file-uploads.
 NotebookError, NotebookNotFoundError
 ArtifactError, ArtifactDownloadError, ArtifactFeatureUnavailableError, ArtifactNotFoundError, ArtifactNotReadyError, ArtifactParseError
 ArtifactTimeoutError, ArtifactPendingTimeoutError, ArtifactInProgressTimeoutError
@@ -120,10 +127,11 @@ QuizQuantity, QuizDifficulty
 InfographicOrientation, InfographicDetail, InfographicStyle
 SlideDeckFormat, SlideDeckLength
 ReportFormat
-SourceType, ArtifactType, SourceStatus
+SourceType, ArtifactType, SourceStatus, DriveSourceStatus
 ShareAccess, SharePermission, ShareViewLevel
 ChatGoal, ChatResponseLength, ChatMode
 DriveMimeType, ExportType
+ArtifactStatus, artifact_status_to_str     # notebooklm.types.<X> only — NOT top-level (see below)
 
 # Auth
 AuthTokens                # also re-exported as notebooklm.auth.AuthTokens
@@ -153,6 +161,46 @@ notebooklm.auth.OPTIONAL_COOKIE_DOMAINS_BY_LABEL
 # Storage-writer failure - imported from notebooklm.auth
 notebooklm.auth.LockUnavailableError  # canonical home: notebooklm.exceptions; also an OSError via TimeoutError (ADR-0029)
 ```
+
+> **`ArtifactStatus` / `artifact_status_to_str` import path.** Unlike every other
+> enum listed above, these two are **not** re-exported at top level — import them
+> as `from notebooklm.types import ArtifactStatus`, never `from notebooklm import
+> ArtifactStatus`. Their canonical module `notebooklm.rpc` is marked internal
+> below; the `notebooklm.types` spelling is the blessed public one (see
+> [deprecations.md](deprecations.md)).
+>
+> **Wire-value correction in the Unreleased line
+> ([#2127](https://github.com/teng-lin/notebooklm-py/issues/2127)).** `ArtifactStatus`
+> was added to this list *after* its member integers were corrected: codes 1 and
+> 2 had been transposed relative to the backend, so the old values were simply
+> wrong about the wire rather than a contract worth preserving. The stability
+> promise applies from that correction forward. Note the general caveat that
+> applies to every wire-derived value here — see
+> [What Happens When Google Breaks Things](#what-happens-when-google-breaks-things).
+>
+> **What these two promise, precisely.** The guarantee is *"these codes keep
+> these meanings"*, **not** *"this enum covers every code the backend emits"*.
+> Three consequences worth writing down, because they are the ways a caller can
+> be surprised without the promise being broken:
+>
+> 1. **The status-string set is open.** `artifact_status_to_str` went from five
+>    strings to seven in #2127 and will widen again whenever the backend gains a
+>    state. Treat an unrecognized return value as "unknown" — do **not** write an
+>    exhaustive `if`/`elif` or `match` over it. The same applies to
+>    `GenerationState`: it is stable in the sense that existing members keep
+>    their values, not in the sense that the member list is frozen.
+> 2. **The enum is fail-closed; the function is fail-open.** `ArtifactStatus(7)`
+>    raises `ValueError`, while `artifact_status_to_str(7)` returns `"unknown"`.
+>    That asymmetry is deliberate — the raising constructor is what surfaces
+>    backend drift instead of silently swallowing it — but it means
+>    `ArtifactStatus(...)` is the brittle way to parse a raw wire code. Prefer
+>    `artifact_status_to_str`, or the `Artifact.status_str` / `.is_*` accessors,
+>    for anything decoding live responses.
+> 3. **`is_terminal` tracks the wire.** A state added later is non-terminal by
+>    default, which is the safe direction. But if the backend ever ships a
+>    genuinely terminal state, classifying it correctly will *flip* what
+>    `is_terminal` returns for that state — the same kind of wire-tracking
+>    correction as the #2127 value fix above, and not a break of this promise.
 
 Every `notebooklm.auth.<name>` above is **exactly** the `__all__` of the
 `notebooklm.auth` module: `test_auth_all_matches_documented_public_surface`

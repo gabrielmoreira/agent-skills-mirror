@@ -5,21 +5,58 @@
 Register hooks via the `Installer`:
 
 ```php
-private array $hooks = ['displayHeader', 'displayFooter', 'displayProductAdditionalInfo'];
+private array $hooks = ['displayHome', 'displayFooter', 'actionFrontControllerSetMedia'];
 ```
+
+## **CRITICAL: Asset registration — Use `actionFrontControllerSetMedia`**
+
+**MANDATORY**: For front-office CSS/JS registration, **ALWAYS use `actionFrontControllerSetMedia` hook**, **NEVER use `header` or `displayHeader`**:
+
+```php
+// ✅ CORRECT: Use actionFrontControllerSetMedia for front-office assets
+public function hookActionFrontControllerSetMedia(): void
+{
+    $this->context->controller->registerStylesheet(
+        'mymodule-front-css',
+        'modules/' . $this->name . '/views/css/front.css',
+        [
+            'media' => 'all',
+            'priority' => 200,
+        ]
+    );
+
+    $this->context->controller->registerJavascript(
+        'mymodule-front-js',
+        'modules/' . $this->name . '/views/js/front.js',
+        [
+            'position' => 'bottom',
+            'priority' => 200,
+        ]
+    );
+}
+
+// ❌ WRONG: DO NOT use header or displayHeader for assets
+public function hookHeader() // WRONG!
+{
+    $this->context->controller->registerStylesheet(...);
+}
+
+public function hookDisplayHeader() // WRONG!
+{
+    $this->context->controller->addCSS(...);
+}
+```
+
+**Why `actionFrontControllerSetMedia`?**
+- ✅ Designed specifically for asset registration
+- ✅ Executes at the correct point in the page lifecycle
+- ✅ PrestaShop best practice and modern standard
+- ✅ Better performance — assets are collected before page rendering
+- ❌ `header`/`displayHeader` are display hooks meant for HTML output, not asset registration
 
 ## Hook method patterns
 
 ```php
-// Load CSS/JS only when needed
-public function hookDisplayHeader($params)
-{
-    if ($this->context->controller instanceof ProductController) {
-        $this->context->controller->addCSS($this->_path . 'views/css/front.css');
-        $this->context->controller->addJS($this->_path . 'views/js/front.js');
-    }
-}
-
 // Render a Smarty template from a hook
 public function hookDisplayProductAdditionalInfo($params)
 {
@@ -34,29 +71,53 @@ public function hookDisplayProductAdditionalInfo($params)
 
 ## Widget interface (front office data provider)
 
-Implement `WidgetInterface` when the module exposes a widget to themes:
+**CRITICAL**: When implementing `WidgetInterface`, **DO NOT define explicit hook methods** like `hookDisplayHome()` or `hookDisplayFooter()` that just call `renderWidget()`. PrestaShop automatically handles this for all registered hooks.
 
 ```php
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 class MyModule extends Module implements WidgetInterface
 {
-    public function renderWidget($hookName = null, array $configuration = []): string
+    // ✅ CORRECT: Only implement the two WidgetInterface methods
+    public function renderWidget($hookName, array $configuration): string
     {
-        if (!$this->isCached($this->templateFile, $this->getCacheId($hookName))) {
+        if (!$this->isCached($this->getTemplatePath(), $this->getCacheId())) {
             $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
         }
-        return $this->fetch($this->templateFile, $this->getCacheId($hookName));
+        
+        return $this->fetch($this->getTemplatePath(), $this->getCacheId());
     }
 
-    public function getWidgetVariables($hookName = null, array $configuration = []): array
+    public function getWidgetVariables($hookName, array $configuration): array
     {
         return [
             'items' => $this->getSomeData(),
+            'script_url' => Configuration::get('MYMODULE_SCRIPT_URL', ''),
         ];
     }
+    
+    // ❌ WRONG: DO NOT create explicit hook methods for widgets
+    // public function hookDisplayHome(array $params): string
+    // {
+    //     return $this->renderWidget('displayHome', $params); // PrestaShop does this automatically!
+    // }
+    
+    // ❌ WRONG: DO NOT create explicit hook methods for widgets  
+    // public function hookDisplayFooter(array $params): string
+    // {
+    //     return $this->renderWidget('displayFooter', $params); // PrestaShop does this automatically!
+    // }
 }
 ```
+
+**Why this works**: When you implement `WidgetInterface` and register a display hook (e.g., `displayHome`, `displayFooter`, `displayProductAdditionalInfo`), PrestaShop **automatically calls `renderWidget($hookName, $configuration)` for that hook**. You don't need to create explicit `hook*()` methods.
+
+**When to create explicit hook methods**: Only when you need hook-specific logic that differs from the standard widget rendering. For example:
+- Different data for different hooks
+- Hook-specific conditions
+- Special handling for a particular hook
+
+But for simple widget display, let PrestaShop handle it automatically.
 
 ## Passing Configuration values to JavaScript (Data-Attribute Pattern)
 

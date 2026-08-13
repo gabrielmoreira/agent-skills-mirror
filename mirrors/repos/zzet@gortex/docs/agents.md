@@ -9,8 +9,9 @@ machine. Nineteen adapters ship today.
   `~/.gemini/antigravity/` Knowledge Items, and user-level hooks.
 - `gortex init` writes per-repo machinery: `.mcp.json`, per-agent
   MCP configs (`.cursor/mcp.json`, `.vscode/mcp.json`, …), repo-local
-  hooks where supported, per-agent marker-guarded community-routing
-  blocks, and `.claude/skills/generated/` per-community SKILL.md.
+  hooks where supported, marker-guarded community-routing surfaces
+  (`AGENTS.md` is canonical for Claude Code), and
+  `.claude/skills/generated/` per-community SKILL.md.
 
 Run `gortex doctor` to see what's currently configured — and, past what a
 config file can prove, whether the hooks it declares are actually running. Both
@@ -21,7 +22,7 @@ commands accept `--agents=<csv>` to constrain setup and
 
 | Name            | What gets written                                                                               | Mode       | Docs link                                                           |
 | --------------- | ----------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------- |
-| `claude-code`   | `.mcp.json`, `.claude/*`, `CLAUDE.md`, `.claude/skills/generated/*`, `~/.claude/skills/gortex-*`, `~/.claude/commands/gortex-*.md`, `~/.claude.json` | both       | https://docs.claude.com/en/docs/claude-code/overview                |
+| `claude-code`   | `.mcp.json`, `.claude/*`, `AGENTS.md` communities block, `CLAUDE.md` import/overview, `.claude/skills/generated/*`, `~/.claude/skills/gortex-*`, `~/.claude/commands/gortex-*.md`, `~/.claude.json` | both       | https://docs.claude.com/en/docs/claude-code/overview                |
 | `aider`         | `.aiderignore` block, `CONVENTIONS.md` communities block                                        | project    | https://aider.chat/docs/config/aider_conf.html                      |
 | `antigravity`   | `~/.gemini/antigravity/mcp_config.json` + Knowledge Item                                        | user       | https://antigravity.google/docs/mcp                                 |
 | `cline`         | `cline_mcp_settings.json` (per VS Code / Cursor globalStorage), `.clinerules/gortex-communities.md` | both     | https://docs.cline.bot/mcp/mcp-overview                             |
@@ -194,10 +195,12 @@ The primary integration, split across the two commands.
   (`mcp__gortex__*` allowlist)
 - `.claude/settings.local.json` — repo-local hooks (unless
   `--no-hooks`)
-- `CLAUDE.md` — marker-guarded block (`<!-- gortex:communities:start -->`
-  / `<!-- gortex:communities:end -->`) carrying the codebase overview
-  (via `--analyze`) and the community routing (via `--skills`,
-  default on); if neither flag produces content, no block is written
+- `AGENTS.md` — canonical marker-guarded community-routing block
+  (`<!-- gortex:communities:start -->` /
+  `<!-- gortex:communities:end -->`) when `--skills` is enabled
+- `CLAUDE.md` — imports `@AGENTS.md` exactly once when community routing
+  is generated; its marker-guarded block carries only the Claude-specific
+  codebase overview from `--analyze`
 - `.claude/skills/generated/<DirName>/SKILL.md` — one per detected
   community, regenerated each run so the content tracks the graph
 

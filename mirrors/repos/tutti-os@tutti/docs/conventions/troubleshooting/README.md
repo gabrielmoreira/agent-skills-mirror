@@ -174,6 +174,7 @@ Android app login, native bridge, secure identity, and mobile transport diagnost
 - [Browser login completes but leaves the browser in front](./mobile.md#browser-login-completes-but-leaves-the-browser-in-front)
 - [Browser login returns to the App but remains signed out](./mobile.md#browser-login-returns-to-the-app-but-remains-signed-out)
 - [Android DeviceLink opens a session and then repeatedly restarts](./mobile.md#android-devicelink-opens-a-session-and-then-repeatedly-restarts)
+- [Mobile direct DeviceLink consistently takes about ten seconds](./mobile.md#mobile-direct-devicelink-consistently-takes-about-ten-seconds)
 - [Mobile shows output from a completed Session after foreground resume](./mobile.md#mobile-shows-output-from-a-completed-session-after-foreground-resume)
 - [Mobile stays connected after a long lock-screen interval but sends fail](./mobile.md#mobile-stays-connected-after-a-long-lock-screen-interval-but-sends-fail)
 - [iOS App crashes after loading the JavaScript bundle](./mobile.md#ios-app-crashes-after-loading-the-javascript-bundle)

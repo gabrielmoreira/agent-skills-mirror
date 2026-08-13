@@ -124,14 +124,17 @@ ERROR: Cannot find ...\share\format\dll\*.sdb
 
 对 PE/ELF/Mach-O 等含导入表的二进制，**MUST** 先完成导入表检查并落成 Evidence，再进入函数级分析或动态步骤：
 
-1. 执行 `rabin2 -i <sample>`（或 `recon.ps1` 输出中的 imports 段）
+1. 执行 `rabin2 -i <sample>`（或 `recon.ps1` 输出中的 imports 段）；DLL/SYS 另 MUST `rabin2 -E` 并记 `E-exports`
 2. 将完整/分类后的导入表结果写入 Evidence（建议 id：`E-imports` 或 `E-triage-imports`），至少包含：
    - 复现命令（`repro_command`）
    - 关键导入分类摘要：网络 / 文件 / 加密 / 进程注入 / 注册表 / 其他可疑 API
    - 若导入表为空、解析失败或工具报错：仍 MUST 记录失败现象与原始输出为 Evidence，**不得静默跳过**
-3. 用户明确要求「重做导入表检查 / 重新检查导入表」时：MUST 重做本硬门步骤本身，**禁止改换为其他步骤冒充完成**
+   - 导入表「过干净」（仅基础 DLL）：MUST 注明动态加载嫌疑，SHOULD 转入动态抓 API
+3. .NET 等无传统 IAT：MUST 走等价锚点（dnSpy/IL/元数据摘要）写入同一 Evidence 语义槽，禁止空过
+4. 加壳样本 IAT 修复：x86 用 ImportREC（或等价）、x64 用 Scylla（或等价）。修复失败 MUST 记 `E-iat-repair-fail` 后转动态 API 断点；**禁止**在静态 IAT 上无限死磕（见 `reverse-engineering/references/re-agent-workflow.md` §1.2）
+5. 用户明确要求「重做导入表检查 / 重新检查导入表 / 重做 IAT」时：MUST 重做被点名步骤本身（阻塞时先走可行性门闩：说明前提+请确认；强制则标 quality=unreadable），**禁止改换为无关步骤冒充完成**
 
-未记录导入表 Evidence 前：MUST NOT 声称「基础侦察完成」，MUST NOT 进入工作流 2+ 的深挖结论。
+未记录导入表（或合法等价锚点 / IAT 失败旁路）Evidence 前：MUST NOT 声称「基础侦察完成」，MUST NOT 进入工作流 2+ 的深挖结论。
 
 优先直接运行内置脚本：
 
@@ -370,6 +373,7 @@ rax2 -s hello
 - 不要在未说明风险时直接写模式打开用户文件
 - 不要在还没做基础侦察前就下结论
 - **禁止跳过导入表检查**（`rabin2 -i` / recon imports）：未写入 Evidence 不得进入下一步；用户要求重做导入表时禁止改做其他步骤
+- **禁止 IAT 修复失败后静态死磕**：记 `E-iat-repair-fail` 后转动态；禁止 64 位样本只用 ImportREC
 - 不要把网页 JS 逆向误导到这个 skill；那是 `reverse-engineering` 的范围
 
 ## 参考资料
@@ -421,7 +425,8 @@ rax2 -s hello
 ## 任务完成自检（声称完成前 MUST 通过）
 
 - [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
-- [ ] 导入表检查是否已执行且写入 Evidence（E-imports / E-triage-imports）？若用户要求重做，是否重做了同一步而非换步骤？
+- [ ] 导入表检查是否已执行且写入 Evidence（E-imports / E-triage-imports 或 .NET 等价）？DLL/SYS 是否含 E-exports？
+- [ ] IAT 修复失败是否记录 E-iat-repair-fail 并转动态？重做请求是否回到同一步？
 - [ ] 我是否基于 `tool-index` 使用了真实工具路径？
 - [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
 - [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？

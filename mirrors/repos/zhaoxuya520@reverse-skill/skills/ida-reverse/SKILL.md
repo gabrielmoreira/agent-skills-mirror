@@ -244,9 +244,12 @@ idapro_survey_binary(detail_level="minimal")
 - 入口点（main/WinMain/DllMain）
 - 有趣的字符串（URL、路径、错误消息）
 - **导入分类（MUST）**：加密函数 / 网络 API / 文件操作 / 进程注入 / 注册表 — 必须落成 Evidence（建议 id：`E-imports`），可用 `idapro_entity_query(kind="imports")` 或 survey 输出中的 imports 段
+- **DLL/SYS**：导出表与导入表并列（Evidence `E-exports`）
+- **.NET**：无传统 IAT 时用模块/元数据/托管引用摘要作为等价锚点写入 E-imports 语义槽
+- **干净导入表**：注明动态加载嫌疑，推动动态 API 断点验证
 - 热门函数（高 xref 计数的函数通常是关键逻辑）
 
-**硬门禁**：未将 imports 视图/分类摘要写入 Evidence 前，MUST NOT 进入 Step 4 深挖结论，MUST NOT 声称 survey 完成。导入表为空或查询失败时仍 MUST 记录失败现象。用户要求重做导入表检查时 MUST 重做本步骤，禁止改换其他步骤。
+**硬门禁**：未将 imports 视图/分类摘要（或合法等价锚点）写入 Evidence 前，MUST NOT 进入 Step 4 深挖结论，MUST NOT 声称 survey 完成。导入表为空或查询失败时仍 MUST 记录失败现象。加壳 IAT 修复失败时 MUST 记 `E-iat-repair-fail` 并转动态调试抓 API，禁止静态死磕。用户要求重做导入表/IAT 检查时 MUST 重做被点名步骤（阻塞时可行性门闩：说明+确认；强制则标 quality=unreadable），禁止改换无关步骤。
 
 ### Step 4: 深入关键函数
 ```
@@ -349,7 +352,8 @@ ida-pro-mcp --config
 ## 任务完成自检（声称完成前 MUST 通过）
 
 - [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
-- [ ] survey/imports 是否已写入 Evidence（E-imports）？用户若要求重做导入表，是否重做了同一步？
+- [ ] survey/imports 是否已写入 Evidence（E-imports 或等价）？DLL/SYS 是否含 E-exports？IAT 失败是否记 E-iat-repair-fail？
+- [ ] 用户若要求重做导入表/IAT，是否重做了同一步？
 - [ ] 我是否基于 `tool-index` 使用了真实工具路径？
 - [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
 - [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？

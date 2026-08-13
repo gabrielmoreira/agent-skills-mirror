@@ -131,6 +131,9 @@ class BubbleScorer:
         return sum(item["max_score"] for item in self.indicators.values())
 
     def _split_flat_scores(self, scores: dict[str, int]) -> tuple[dict[str, int], dict[str, int]]:
+        unknown = sorted(set(scores) - set(self.indicators))
+        if unknown:
+            raise ValueError(f"Unknown score(s): {', '.join(unknown)}")
         quantitative = {
             key: value for key, value in scores.items() if key in self.quantitative_indicators
         }

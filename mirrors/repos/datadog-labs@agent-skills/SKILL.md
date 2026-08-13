@@ -13,6 +13,7 @@ Essential Datadog skills for AI agents.
 
 | Skill | Description |
 |-------|-------------|
+| **dd-account-setup** | Ensure an authenticated Datadog account with a valid API key on the right region; validates keys, fixes wrong-region 403s, signs in or creates an account |
 | **dd-pup** | Primary CLI - all pup commands, auth, PATH setup |
 | **dd-monitors** | Create, manage, mute monitors and alerts |
 | **dd-logs** | Search logs, pipelines, archives |

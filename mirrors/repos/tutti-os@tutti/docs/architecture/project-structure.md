@@ -258,6 +258,21 @@ probing. It also owns generic Relay byte-stream dialing and the reusable
 reference-counted WebSocket/yamux owner-tunnel mechanics, including liveness,
 readiness ordering, reconnect backoff, stream dispatch, and close ordering.
 
+Its `candidateexchange` subpackage also owns the Trickle ICE application
+mechanics shared by Go and gomobile consumers: immediate credential snapshots,
+candidate change coalescing, acknowledgement-bound exact-snapshot publication
+retry, gathering completion, and push-hint plus authoritative-poll remote
+refresh. Consumers provide rendezvous callbacks or execute facade actions and
+retain product retry classification; account authorization, attempt state,
+request signing, room/pairing semantics, and wire DTOs stay in their product
+adapter. The callback-free Go `ActionPump` owns both candidate workers and
+allows at most one unresolved action per worker, so a slow rendezvous read does
+not block local publication. The gomobile facade exports scalar/JSON start,
+next-action, resolve-action, notify, and stop/cancel operations. Mobile uses two
+identical action drainers to execute signed authoritative reads/writes without
+reimplementing ICE retry timing, wake cursors, polling, or worker cancellation
+in TypeScript, Kotlin, or Objective-C.
+
 It exposes authenticated bidirectional streams and generic Relay byte streams,
 and must remain independent of Agent, Session, Workspace, account, pairing,
 rendezvous, Relay authorization, and Relay product policy. Peer and owner keys

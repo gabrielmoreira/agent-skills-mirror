@@ -36,13 +36,14 @@
 > 全文规则：`references/vendor-report-rules.md`（Issue #65）  
 > **MUST** 在生成安全类正式报告时读取并选型；**只抽结构，禁止抄录厂商原文/IOC 实例**。
 
-| Flavor | 场景 | 骨架一句话 |
-|--------|------|------------|
+| Flavor / Overlay | 场景 | 骨架一句话 |
+|------------------|------|------------|
 | `malware` | 明确恶意样本/普通木马/白加黑 | 火绒式：概述→流程→样本分析→应急处置→IOC |
 | `apt` | APT/战役/多阶段链 | 卡巴式：摘要→感染链→调查→Interesting findings→技术分析→检测缓解→IOC |
 | `flavor = null` | 普通逆向/渗透/CTF/JS 签名 | 本节任务模板 + 适用的 Base 通用元素 |
+| thin `vuln` | 漏洞/补丁/CVE 技术分析（显式） | 概述→影响/复现→崩溃与补丁分析→防护建议 |
 
-**通用元素（G1–G7）摘要**：G1 执行摘要 MUST · G2 Scope MUST · G3 E/F/P MUST · G4 IOC 仅 `malware`/`apt` MUST · G5 建议仅 `malware`/`apt` MUST · G6 附录 SHOULD · G7 ATT&CK 在 `apt` MUST
+**通用元素（G1–G7）摘要**：G1 执行摘要 MUST · G2 Scope MUST · G3 E/F/P MUST · G4 IOC 仅 `malware`/`apt` MUST · G5 建议在 `malware`/`apt`/`vuln` MUST · G6 附录 SHOULD · G7 ATT&CK 在 `apt` MUST
 
 选型与章节顺序以 `vendor-report-rules.md` 为准；与 §0.1–0.5 冲突时 **Evidence 契约优先**。
 
@@ -129,6 +130,15 @@
 2. 按对应章节顺序输出
 3. 仍 **MUST** 含 §0 Evidence 链；`malware` / `apt` flavor 另 **MUST** 含 IOC 表
 4. 二进制样本的静态分析 **MUST** 含导入表 Evidence（与 radare2/ida/malware 硬门一致）
+
+## 1c. 漏洞技术分析报告（thin `vuln` overlay）
+
+当任务为 **OS/组件漏洞、补丁对比、CVE 技术分析**，或用户明确要求「漏洞技术分析报告」时：
+
+1. 读 `vendor-report-rules.md` §3b，使用 thin `vuln` 章节顺序（**不是** malware/apt 全文 flavor）
+2. **MUST** 含：影响范围、授权内复现或明确 n/a、崩溃/根因或补丁差异 Evidence、防护/补丁建议
+3. **MUST** 含 §0 Evidence→Finding→Path
+4. **MUST NOT** 在未授权目标上扩展 PoC，或抄录外部利用武器化细节
 
 ## 2. 渗透测试报告模板
 

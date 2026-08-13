@@ -775,3 +775,62 @@ Many CTF challenges stack multiple checks:
 | Frida detection | Both | Early-load gadget, hook strstr |
 | CPUID hypervisor | Both | Patch CPUID result, bare metal |
 | Thread hiding | Windows | Hook NtSetInformationThread |
+
+
+---
+
+## Agent 响应菜谱 A–T（Issue #65）
+
+> 检测类长文仍见 `malware-analysis/references/anti-analysis-techniques.md`；OLLVM 长流程见 `references/ollvm-deobfuscation.md`。  
+> 本节是 **触发 → 动作 → Evidence** 短菜谱，供 agent 在 Dynamic/Static 旁路选用。  
+> **授权隔离 lab 默认**；静态 patch / 改 PEB / 改返回值不是未授权目标上的默认动作。
+
+### 使用规则
+
+1. 先 **识别并记录** 检测点（地址/API/字符串），再决定绕过或换环境。  
+2. 绕过尝试（成功或失败）MUST 写 Evidence；禁止把反调试退出写成「样本无害」。  
+3. H/S 不在此展开长文 → 跳转 OLLVM 专章。  
+4. L 仅 Linux/ELF 强制；Windows PE 主路径不因缺 TracerPid 判失败。  
+5. E 的 VT 对照为 **可选**；无外部情报源时写 n/a，不编造首次提交时间。
+
+### 全表 A–T
+
+| ID | 触发 | 处理动作 | Evidence | 优先级 |
+|----|------|----------|----------|--------|
+| **A** | `cpuid` 后条件跳（jz/jnz） | 识别 hypervisor 检测；lab 改标志位或 patch 跳转走恶意/真实业务分支；或换物理机 | `E-anti-debug-cpuid` | P0 |
+| **B** | `rdtsc` + sub/cmp 时间差 | bp `rdtsc` / hook 时间 API；或 patch 比较；避免只靠「等沙箱超时」 | `E-anti-debug-rdtsc` | P0 |
+| **C** | 字符串含 x64dbg/olly/windbg 等，或 Toolhelp 枚举 | bp `CreateToolhelp32Snapshot`→`Process32First/Next`；改匹配或跳过扫描分支 | `E-anti-debug-procscan` | P1 |
+| **D** | `AddVectoredExceptionHandler` + 故意访问违例 | bp 注册点；定位 VEH handler 分析；调试器可忽略特定异常 | `E-anti-debug-veh` | P1 |
+| **E** | TimeDateStamp 未来/0/荒谬；版本信息像合法厂商 | 与发现时间对照；**可选** VT 首次提交；`SigCheck` 看版本资源是否配合签名；无 VT → n/a | `E-meta-timestamp` | P2 |
+| **F** | 显示有数字签名但来源可疑 | `SigCheck`：链有效？吊销？签名时间 vs 编译时间；**无效/吊销不得降低**威胁等级 | `E-sig-forge` | P0 |
+| **G** | 多 PE 头、重叠节、节名伪装 | CFF/PE-bear/LoadPE 看真实映射与 EP 节；熵区分加密 vs 代码；不信节名 | `E-pe-anomaly` | P1 |
+| **H** | F5 大量 `while(1)+switch`、星形 CFG | **See** `ollvm-deobfuscation.md`（d810/deflat 等）；插件不全则动态记录块序重构 | `E-cff` | P1 指针 |
+| **I** | strings 无域名/IP 但有网/文件行为 | 找 Base64/XOR/自定义 decode；xref 解密函数；解密后 dump 回注 IDA | `E-string-decrypt` | P0 |
+| **J** | 文件大小 ≫ 节原始数据之和（Overlay） | 提 overlay；`file`/熵；IDA 搜偏移引用；加密则动态抓密钥 | `E-overlay` | P1 |
+| **K** | `fs:[0x30]`/`gs:[0x60]` → BeingDebugged / NtGlobalFlag | 改 PEB 标志或 ScyllaHide；或 patch 条件跳 | `E-anti-debug-peb` | P0 |
+| **L** | 读 `/proc/self/status` 查 TracerPid≠0 | **Linux/ELF**：hook fopen/read 或 patch；Windows 不强制 | `E-anti-debug-tracerpid` | P2 平台 |
+| **M** | `int3`(0xCC) 或读 DR0–DR7 | int3→nop；硬件 BP 检测用 ScyllaHide/软 BP；CRC 自检见补丁 6 | `E-anti-debug-bp` | P1 |
+| **N** | IAT 空/极少 + 自写哈希解析 API | bp `GetProcAddress`/`Ldr*`；哈希反查导出表；回注符号；与「干净 IAT」铁律协同 | `E-api-hash` | P0 |
+| **O** | 线性反汇编大量 db、花指令致错位 | F5/Hex-Rays；动态确认真流；junk nop 后 reanalyze；静还不全以动态为准 | `E-junk-code` | P2 |
+| **P** | `NtQueryInformationProcess` class 7/30/31 | ScyllaHide 或 hook 返回；记 InformationClass | `E-anti-debug-ntqip` | P0 |
+| **Q** | `.rsrc` 过大/高熵/非标准 RT_RCDATA | Resource Hacker/CFF 提取；`FindResource`/`LoadResource` xref；解密后 dump | `E-rsrc-payload` | P1 |
+| **R** | 静态 IAT 无某 DLL，运行时才用 | 查 Delay Import Table；bp `__delayLoadHelper2` 或首次调用；纳入能力评估 | `E-delay-import` | P1 |
+| **S** | 恒真/恒假条件、大片死代码 | **See** ollvm / angr 等；patch 唯一可达分支或动态路径回注 | `E-opaque-pred` | P1 指针 |
+| **T** | ASCII strings 无结果，数据区像 UTF-16 | `strings -el` 或 `-encoding=utf-16le`；IDA Alt+A unicode；纳入 IOC | `E-wide-strings` | P0 |
+
+### 与主 workflow 的挂接
+
+| 阶段 | 菜谱 |
+|------|------|
+| Triage | E, F, G, T（元数据/签名/节/宽串） |
+| Static | H, I, J, N 线索, O, Q, R, S |
+| Dynamic | A–D, K, L, M, N, P + 既有断点四级火箭与无行为应急 |
+| 失败 | 任何绕不过的检测 → Evidence + 换工具/环境；不静默降威胁 |
+
+### 工具注记（非强制安装清单）
+
+- Windows 用户态：x64dbg + **ScyllaHide**（PEB/NtQuery/硬件 BP 等批量隐藏）  
+- 签名：Sysinternals **SigCheck**  
+- PE 结构：PE-bear / CFF Explorer  
+- 平坦化：见 ollvm 专章工具表（d810-ng 等）  
+- 无某工具时：等价命令 + 记失败，禁止假装已验证签名/已脱平坦化

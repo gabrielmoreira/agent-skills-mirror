@@ -300,8 +300,11 @@ The Alpha workflow is intentionally separate from the formal desktop release:
   `.github/workflows/windows-daemon-adapters.yml` provide focused pull-request
   coverage and maintain reusable caches on matching `main` pushes; they do not
   produce desktop packages;
-- `.github/workflows/windows-desktop-alpha.yml` builds and tests Windows x64;
-- the output is an unsigned NSIS installer uploaded as a workflow artifact;
+- `.github/workflows/windows-desktop-alpha.yml` always tests Windows x64 and
+  builds the Desktop bundles for pull requests;
+- pull requests build, smoke-test, and upload an unsigned NSIS installer only
+  when Desktop packaging inputs change; manual runs always produce the
+  installer;
 - the workflow does not publish a GitHub Release or mutate stable/prerelease
   update metadata;
 - `.github/workflows/desktop-release.yml` currently stages only macOS assets.

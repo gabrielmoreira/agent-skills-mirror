@@ -15,7 +15,7 @@ After `gortex install` (once per machine) and `gortex init` (once per repo), Cla
 - **PreToolUse hook:** automatic graph context + graph-tool suggestions on Read/Grep/Glob. The posture is selectable via `gortex install --hook-mode` — `deny` (default), `enrich`, `consult-unlock` (deny fallback reads only until the graph has been queried once this session), or `nudge` (a rate-limited soft reminder instead of a hard deny). Gortex's own MCP tools are auto-approved under the host's permissive permission modes
 - **PreCompact hook:** condensed orientation snapshot injected before context compaction so the agent resumes without re-exploring
 - **Stop hook:** post-task diagnostics — tests to run, guard violations, dead code, and contract issues on the changed symbols — injected as context before the agent hands off
-- **CLAUDE.md:** per-repo codebase overview (via `--analyze`) plus a marker-guarded community routing block written by `gortex init --skills`
+- **AGENTS.md + CLAUDE.md:** `gortex init --skills` writes the marker-guarded community routing once to canonical `AGENTS.md`; Claude Code consumes it through one `@AGENTS.md` import in `CLAUDE.md`, whose managed block remains reserved for the per-repo `--analyze` overview
 
 ## The `gortex-cli` skill — a zero-schema consumption path
 
@@ -60,4 +60,4 @@ Each generated skill includes:
 - **Cross-community connections** — which other areas this community interacts with
 - **MCP tool invocations** — pre-written `get_communities`, `smart_context`, `find_usages` calls
 
-For Claude Code, skills are written to `.claude/skills/generated/<DirName>/SKILL.md`, and a routing table is inserted into `CLAUDE.md` between `<!-- gortex:communities:start/end -->` markers. Every other detected agent gets the same routing table inside its per-repo instructions surface (`AGENTS.md` for Codex/OpenCode, `.windsurfrules` for Windsurf, `GEMINI.md` for Gemini CLI, `.cursor/rules/gortex-communities.mdc` for Cursor, etc.) — so the routing is consistent across tools on the same repo.
+For Claude Code, skills are written to `.claude/skills/generated/<DirName>/SKILL.md`, while the routing table is inserted once into canonical `AGENTS.md` between `<!-- gortex:communities:start/end -->` markers. `CLAUDE.md` imports that file with `@AGENTS.md`. Every other detected agent gets the same routing table inside its per-repo instructions surface (`AGENTS.md` for Codex/OpenCode, `.windsurfrules` for Windsurf, `GEMINI.md` for Gemini CLI, `.cursor/rules/gortex-communities.mdc` for Cursor, etc.) — so the routing is consistent across tools on the same repo without duplicating the Claude copy.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `danny-avila/LibreChat` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md`](e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md) |
-| 4 | ✓ | [`skill/README.md`](skill/README.md) |
+| 1 | ✓ | [`.claude/skills/codebase-design/DEEPENING.md`](.claude/skills/codebase-design/DEEPENING.md) |
+| 2 | ✓ | [`.claude/skills/codebase-design/DESIGN-IT-TWICE.md`](.claude/skills/codebase-design/DESIGN-IT-TWICE.md) |
+| 3 | ✓ | [`.claude/skills/codebase-design/SKILL.md`](.claude/skills/codebase-design/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/improve-codebase-architecture/HTML-REPORT.md`](.claude/skills/improve-codebase-architecture/HTML-REPORT.md) |
+| 5 | ✓ | [`.claude/skills/improve-codebase-architecture/SKILL.md`](.claude/skills/improve-codebase-architecture/SKILL.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md`](e2e/fixtures/deployment-skills/e2e-deployment-skill/SKILL.md) |
+| 9 | ✓ | [`skill/README.md`](skill/README.md) |
 
 ---
 

@@ -17,6 +17,7 @@ from get_economic_calendar import (
     fetch_economic_calendar,
     format_event_output,
     get_api_key,
+    main,
     validate_date_range,
 )
 
@@ -149,6 +150,31 @@ class TestFetchEconomicCalendar:
             with pytest.raises(urllib.error.HTTPError):
                 fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
+    def test_non_200_response_fails_closed(self):
+        with patch(
+            "get_economic_calendar.urllib.request.urlopen",
+            side_effect=lambda request: _fake_response(503, b"[]"),
+        ):
+            with pytest.raises(ValueError, match="status code 503"):
+                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+
+    def test_non_list_payload_fails_closed(self):
+        payload = json.dumps({"events": SAMPLE_EVENTS}).encode("utf-8")
+        with patch(
+            "get_economic_calendar.urllib.request.urlopen",
+            side_effect=lambda request: _fake_response(200, payload),
+        ):
+            with pytest.raises(ValueError, match="Unexpected API response format"):
+                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+
+    def test_transport_error_has_clear_network_message(self):
+        with patch(
+            "get_economic_calendar.urllib.request.urlopen",
+            side_effect=urllib.error.URLError("offline"),
+        ):
+            with pytest.raises(ValueError, match="Network error: offline"):
+                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+
 
 # ---------------------------------------------------------------------------
 # validate_date_range tests
@@ -245,3 +271,63 @@ class TestFormatEventOutput:
     def test_unknown_format_raises(self):
         with pytest.raises(ValueError, match="Unknown output format"):
             format_event_output([], "csv")
+
+
+class TestMain:
+    def test_missing_key_exits_without_fetching(self, monkeypatch, capsys):
+        monkeypatch.delenv("FMP_API_KEY", raising=False)
+        monkeypatch.setattr(sys, "argv", ["get_economic_calendar.py"])
+
+        with pytest.raises(SystemExit) as exc:
+            main()
+
+        assert exc.value.code == 1
+        assert "FMP API key is required" in capsys.readouterr().err
+
+    def test_success_writes_requested_output(self, monkeypatch, tmp_path, capsys):
+        output_path = tmp_path / "calendar.json"
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "get_economic_calendar.py",
+                "--api-key",
+                "test-key",
+                "--from",
+                "2026-08-11",
+                "--to",
+                "2026-08-12",
+                "--output",
+                str(output_path),
+            ],
+        )
+
+        with patch("get_economic_calendar.fetch_economic_calendar", return_value=SAMPLE_EVENTS):
+            with pytest.raises(SystemExit) as exc:
+                main()
+
+        assert exc.value.code == 0
+        assert json.loads(output_path.read_text(encoding="utf-8")) == SAMPLE_EVENTS
+        assert "Retrieved 2 events" in capsys.readouterr().err
+
+    def test_fetch_failure_exits_one(self, monkeypatch, capsys):
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "get_economic_calendar.py",
+                "--api-key",
+                "test-key",
+                "--from",
+                "2026-08-11",
+                "--to",
+                "2026-08-12",
+            ],
+        )
+
+        with patch("get_economic_calendar.fetch_economic_calendar", side_effect=ValueError("bad")):
+            with pytest.raises(SystemExit) as exc:
+                main()
+
+        assert exc.value.code == 1
+        assert "Error: bad" in capsys.readouterr().err

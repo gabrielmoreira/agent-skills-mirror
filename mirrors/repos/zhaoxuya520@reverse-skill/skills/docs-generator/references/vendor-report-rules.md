@@ -11,7 +11,7 @@
 | `malware` | 火绒安全病毒/技术分析报告 | 明确的普通木马、白加黑、钓鱼投毒、恶意样本 |
 | `apt` | 卡巴斯基 Securelist / APT 战役报告（如 MATA） | APT、团伙战役、多阶段感染链、行业定向 |
 
-原则：**模板在精不在多** —— 仅 2 个厂商 flavor + 1 份通用专业元素；普通逆向、渗透、CTF 和 JS 报告保持任务模板，不默认伪装成恶意软件报告。
+原则：**模板在精不在多** —— 仅 2 个厂商全文 flavor（`malware` / `apt`）+ Base 通用元素 + **可选 thin overlay**（如 `vuln` 漏洞技术分析）。普通逆向、渗透、CTF 和 JS 报告保持任务模板，不默认伪装成恶意软件报告；`vuln` **不是** 第 3 个默认全文 flavor。
 
 ---
 
@@ -19,13 +19,15 @@
 
 在 `docs-generator` 生成**安全类**报告时（逆向 / 恶意软件 / 渗透收尾 / 用户明确要求「专业报告」「厂商风格」）**MUST** 读取本文件。只有任务证据或用户明确要求支持时才选择厂商 flavor；否则使用 `flavor = null`，仅叠加通用专业元素和原任务模板。
 
-| 信号 | Flavor |
-|------|--------|
+| 信号 | Flavor / Overlay |
+|------|------------------|
 | APT / 团伙 / 战役 / 多阶段 C2 / 行业定向 / ICS / spear-phish 战役 | `apt` |
 | 明确恶意样本、木马、窃密、白加黑、仿冒站点 | `malware` |
+| 用户明确要求漏洞/补丁/CVE 技术分析，或任务证据为 OS/组件漏洞研究 | `flavor = null` + **thin overlay `vuln`**（见 §3b） |
 | 普通 APK/ELF/PE/Mach-O 逆向、算法分析、固件分析、渗透测试、CTF、JS 签名 | `flavor = null`；使用原任务模板和通用专业元素最小集 |
 
-用户显式指定「按卡巴/APT」「按火绒/病毒报告」时，覆盖自动选型。
+用户显式指定「按卡巴/APT」「按火绒/病毒报告」「按漏洞技术分析」时，覆盖自动选型。  
+**禁止** 把普通 malware/APT/普通逆向默认套进 `vuln` 目录。
 
 ---
 
@@ -160,6 +162,42 @@
 
 ---
 
+
+## 3b. Thin overlay：`vuln`（漏洞技术分析 · 可选）
+
+> Issue #65 补充。结构参考公开「操作系统/组件漏洞技术分析」类报告目录，**只抽章节骨架**，禁止抄录截图/正文中的 PoC 报文、利用细节或未授权攻击步骤。  
+> **不是** 第 3 个默认厂商全文 flavor；仅在漏洞研究任务或用户明确要求时叠加。
+
+**叙事目标**：读者能快速看到「影响谁 → 如何确认/复现（授权内）→ 根因与补丁差异 → 如何缓解」。
+
+### 建议章节顺序
+
+```markdown
+## 1. 漏洞概述
+### 1.1 影响范围（版本/组件/配置前提）
+### 1.2 漏洞复现（授权环境；步骤可第三方重复；无武器化教程口吻）
+
+## 2. 漏洞分析
+### 2.1 崩溃 / 异常分析（Evidence：崩溃日志、触发条件）
+### 2.2 补丁分析（diff/守卫条件/修复点 — 挂 E-*）
+### 2.3 PoC 或触发器分析（仅授权范围内已有材料；协议/输入构造层次说明即可）
+
+## 3. 防护建议
+### 3.1 缓解措施（配置/缓解开关等）
+### 3.2 官方补丁与验证
+
+## 4. Evidence → Finding → Path（可并入各节或独立表）
+```
+
+### 硬约束
+
+- **MUST** scope/授权：未授权目标禁止复现与 PoC 扩展
+- **MUST** E/F/P：复现、崩溃、补丁结论均挂 evidence_ids
+- **MUST NOT** 把 `vuln` 当作 malware/APT 默认壳
+- **MUST NOT** 抄录外部报告/截图中的利用代码或完整攻击武器化步骤
+- IOC 表：仅当存在网络/文件指示器时出现；否则 n/a 或省略
+
+---
 ## 4. 与现有任务模板的挂接
 
 | 任务模板（`security-report-templates.md`） | 叠加方式 |
@@ -183,9 +221,14 @@ elif user_requests_huorong or vir_report or explicit_malware:
     flavor = malware
 else:
     flavor = null  # 原任务模板 + Base 中适用的元素
+overlay = null
+if user_requests_vuln_tech_report or cve_patch_analysis:
+    overlay = vuln  # thin only; never a third default full flavor
 emit(base_report)
 if flavor in (malware, apt):
     emit(report with flavor outline)
+elif overlay == vuln:
+    emit(report with vuln thin outline)
 ```
 
 ---
@@ -198,6 +241,7 @@ if flavor in (malware, apt):
 - [ ] `malware` / `apt` 报告有 IOC 表（或 n/a+原因）
 - [ ] `malware` / `apt` 报告有可执行建议/处置
 - [ ] 无 flavor 的任务没有被套入 malware/APT 专属章节
+- [ ] uln 仅在漏洞任务启用；含概述/分析/防护骨架与 E/F/P；无未授权 PoC 武器化
 - [ ] 无厂商原文粘贴、无 placeholder/TODO
 - [ ] 导入表等硬门 Evidence 已进入静态/技术分析（若本任务做过二进制分析）
 
@@ -213,6 +257,7 @@ if flavor in (malware, apt):
 
 ## 8. 非目标
 
-- 不维护 Mandiant/CrowdStrike/奇安信等额外全文模板（结构已由双 flavor 覆盖常见需求）。
+- 不维护 Mandiant/CrowdStrike/奇安信等额外全文模板（结构已由双 flavor + 可选 thin overlay 覆盖常见需求）。
+- 不把 `vuln` 升级为与 malware/apt 并列的默认全文 flavor。
 - 不自动爬取厂商站点填报告。
 - 不因 flavor 降低 Evidence 契约或授权范围。

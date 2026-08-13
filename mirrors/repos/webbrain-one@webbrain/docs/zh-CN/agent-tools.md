@@ -21,6 +21,14 @@ WebBrain 将**模型层级**与**对话模式**分开。
 层级默认值与解析规则记录在
 [提供商与模型](providers-and-models.md#提示工具层级和模式)。
 
+## 完整读取 Gmail 会话
+
+Gmail 会话的第一个无障碍结果会提供活动会话可信的
+`conversationRootRefId`。完整读取必须仅对该锚定子树使用
+`filter:"all"`、`maxDepth:15`，并逐次原样复用 `continuationArgs`，直到
+`hasMore:false`。文档根节点的第 2 页及后续页面会进入无关的收件箱行，
+不能算作会话覆盖。还必须由 **Collapse all** 单独确认 Gmail 已展开整个会话。
+
 ## 工具矩阵
 
 图例：**是** = 可用 · **-** = 不可用 · **C** = 仅 Chrome ·

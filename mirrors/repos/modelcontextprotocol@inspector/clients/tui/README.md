@@ -102,7 +102,93 @@ The repo-root `validate:tui` just delegates here. `eslint.config.js` registers
 stricter react-hooks@7 rules are not enforced on the interim component surface
 (#1501).
 
-Tests live in `__tests__/`. The coverage gate currently covers the TUI's
-non-React logic (server resolution, logger, tab metadata, and the `utils/`
-form/URL helpers); the Ink components and `App.tsx` are an interim exclusion in
-`vitest.config.ts` pending a renderer-based follow-up.
+Tests live in `__tests__/`. The coverage gate covers **all of `src/**`**, React
+surface included — the Ink components mount through `ink-testing-library` (with
+the `ink-scroll-view` / `ink-form` passthrough doubles in `__tests__/helpers/`),
+`App.tsx` mounts against a mock of the `@inspector/core` surface, and keypresses
+are driven through stdin. The former interim exclusion of the components and
+`App.tsx` was lifted in #1501; the only exclusion left in `vitest.config.ts` is
+`src/tui-servers.ts`, a pure re-export of core's server resolver with no runtime
+statements of its own (its logic is measured in `core/` via the web suite, and
+`tui-servers.test.ts` still exercises it behaviorally — it is excluded only so it
+doesn't surface as a misleading 0/0 row).
+
+### Bundling: React-rendering dependencies must be inlined (#1952)
+
+`tsup.config.ts` splits the TUI's dependencies into bundled (`noExternal`) and
+externalized (`external`). For anything that **renders React components**, that
+choice decides which React instance it gets at runtime, and getting it wrong
+crashes the TUI in a way nothing in this repo can see.
+
+An external package's `import "react"` resolves from wherever npm placed **that
+package** — and npm places it beside a React satisfying *its* peer range, which
+is looser than ours in every case here:
+
+| Package | Its `react` peer | Placed beside a different React when… |
+| --- | --- | --- |
+| `ink-form`, `ink-scroll-view` | `">=18"` | the consumer has React 18 |
+| `ink` | `">=19"` | the consumer pins React 19.0 (our `^19.2.4` then nests) |
+
+Either way the bundle renders through one React while the external package calls
+hooks on another, whose dispatcher is null — so opening a tool test form (or any
+scroll view, or in `ink`'s case simply starting the TUI) dies with
+`TypeError: Cannot read properties of null (reading 'useState')`.
+
+`ink-form` and `ink-scroll-view` are therefore **inlined**, which removes npm
+from the decision: an inlined package's `import "react"` is emitted into
+`build/index.js`, so it resolves from the build directory exactly like the
+bundle's own. Inlining also pins transitive deps to what *this* install
+resolved, notably `ink-select-input@6` via the `overrides` entry — npm ignores a
+dependency's `overrides`, so a consumer install would otherwise pull the
+React-18-era v5 that `ink-form` asks for.
+
+#### Why `ink` itself is the exception
+
+`ink` is external for **cost**, not because its `">=19"` peer makes it safe — it
+does not, and an earlier revision of this section wrongly claimed it did.
+Bundling `ink` works (it was built and verified against both consumer repros)
+but adds ~1.4 MB, since `react-reconciler` and `yoga-layout` come with it, plus
+a `createRequire` banner: inlined CJS calls `require` at runtime
+(`react-reconciler` for `"react"`, `signal-exit@3` for `"assert"`) and esbuild's
+interop shim throws `Dynamic require of "x" is not supported` without a real
+`require` in scope. A 602 KB bundle beat a 2 MB one.
+
+What makes the exemption tolerable is a **separate lever**: the root manifest
+declares `react: "^19.0.0"` — open to the whole major, rather than pinned at the
+version we happen to develop against. That lets npm satisfy our React and a
+consumer's pinned React 19.x with a single copy, so an external `ink` resolves
+*ours*. Verified against a consumer pinning `react@19.0.0` alongside `ink@6.8.0`
+— the case that splits under a narrower range:
+
+```
+bundle react   node_modules/react/index.js
+ink -> react   node_modules/react/index.js   # same copy
+```
+
+Narrow that range and the exemption turns straight back into #1952, one level
+up — breaking TUI startup rather than just its forms. `tsupConfig.test.ts` pins
+the root range to `ink`'s own peer floor so it can't drift silently. The
+residual after all this is a React **20**-era consumer that also depends on
+`ink`; that gets revisited when the Inspector moves to React 20.
+
+`__tests__/tsupConfig.test.ts` enforces the whole split: every dependency
+declaring a `react` peer must be in `noExternal` unless it is listed as external
+by design, each exempt package must also be a root dependency (external means
+consumers install it), and the root `react` range must stay open to the major.
+Add a React-rendering dependency, and that test tells you to bundle it.
+
+### The `ink-form` label patch
+
+Bundling `ink-form` also makes it patchable, which one label needs: the hint
+under an incomplete form reads "you have not **competed** yet". It is upstream's
+string, hardcoded in `ink-form/lib/SubmitButton.js` with no prop to override,
+and `ink-form` was last published in 2024 — so `tsup.config.ts` corrects it with
+an esbuild `onLoad` hook as the file enters the bundle. It is reported upstream
+as [lukasbach/ink-form#14](https://github.com/lukasbach/ink-form/issues/14); if
+a release ever carries the fix, drop the patch.
+
+The hook **throws** when the string isn't found rather than passing the source
+through. A silent no-op would let an `ink-form` upgrade retire the patch without
+anyone noticing it had stopped applying — or leave a patch aimed at a string
+that no longer exists. If the build fails there, check whether upstream fixed
+the typo and delete the patch instead of re-targeting it.

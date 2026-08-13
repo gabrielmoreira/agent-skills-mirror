@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
+Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 4 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 4 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
-| 4 | → | [`SECURITY.md`](SECURITY.md) |
+| 2 | ✓ | [`archetypes/camel-archetype-api-component/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-api-component/src/main/resources/archetype-resources/AGENTS.md) |
+| 3 | ✓ | [`archetypes/camel-archetype-component/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-component/src/main/resources/archetype-resources/AGENTS.md) |
+| 4 | ✓ | [`archetypes/camel-archetype-dataformat/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-dataformat/src/main/resources/archetype-resources/AGENTS.md) |
+| 5 | ✓ | [`archetypes/camel-archetype-java/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-java/src/main/resources/archetype-resources/AGENTS.md) |
+| 6 | ✓ | [`archetypes/camel-archetype-main/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-main/src/main/resources/archetype-resources/AGENTS.md) |
+| 7 | ✓ | [`archetypes/camel-archetype-spring/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-spring/src/main/resources/archetype-resources/AGENTS.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
+| 10 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

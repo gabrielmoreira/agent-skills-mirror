@@ -148,9 +148,9 @@ OmniRoute exposes 6 A2A skills wired in `src/lib/a2a/taskExecution.ts::A2A_SKILL
 | Provider Discovery | `provider-discovery` | Lists installed providers with capabilities, free-tier flags, OAuth status                                      | providers, discovery       | "What providers are available?"        |
 | Cost Analysis      | `cost-analysis`      | Estimates cost of a request/conversation given the catalog + recent usage                                       | cost, usage                | "Estimate cost for this conversation"  |
 | Health Report      | `health-report`      | Aggregates circuit breaker, cooldown, lockout state per provider                                                | health, resilience         | "Show health status of all providers"  |
-| List Capabilities  | `list-capabilities`  | Returns the full 42-entry Agent Skills catalog as a markdown table with raw SKILL.md URLs for context injection | catalog, discovery, skills | "List all OmniRoute capabilities"      |
+| List Capabilities  | `list-capabilities`  | Returns the full 45-entry Agent Skills catalog (23 API + 21 CLI + 1 config) as a markdown table with raw SKILL.md URLs for context injection | catalog, discovery, skills | "List all OmniRoute capabilities"      |
 
-> Note: the Agent Card description currently advertises "36+ providers" (`src/app/.well-known/agent.json/route.ts:26` and `:55`). The actual catalog has grown to 180+ providers — the string should be updated in a follow-up change (tracked as a separate doc/code TODO; not modified here).
+> The Agent Card should be kept aligned with the live 329-provider catalog; provider counts and free/no-auth metadata are sourced from the runtime registry.
 
 ### `list-capabilities` Skill Detail
 
@@ -178,6 +178,9 @@ The JSON-RPC endpoint `/a2a` is the canonical A2A entry point. The REST endpoint
 | `/api/a2a/tasks/[id]`        | GET    | Get task by ID                   | management             |
 | `/api/a2a/tasks/[id]/cancel` | POST   | Cancel running task              | management             |
 | `/.well-known/agent.json`    | GET    | Agent Card (A2A discovery)       | (public, cached 3600s) |
+| `/api/a2a/tasks`             | POST   | Inbound delegation to the OmniConductor fleet (Conductor PRD RF5) | Bearer vs `OMNIROUTE_API_KEY` + `a2aEnabled` |
+
+**Inbound Conductor delegation (`POST /api/a2a/tasks`):** external A2A agents delegate coding work to the OmniConductor fleet through OmniRoute. Body: `{ skill: "conductor" | "conductor-cli-<profile>", messages: [{role, content}], metadata: { conductor: { repo: { url, base_ref? }, mode?, cli?, model? } } }` — only Conductor fleet skills (the ones announced on the Agent Card) are delegable; `metadata.conductor.repo.url` is required (the fleet works on git repos). The route translates to the hub's `POST /v1/tasks` using the server-side `CONDUCTOR_ORCHESTRATOR_TOKEN` (fallback `CONDUCTOR_HUB_TOKEN`) and returns `201 { conductor_task_id, state: "submitted" }`; task states flow back through the SSE→A2A mirror (RF1) and are visible via `GET /api/a2a/tasks?skill=conductor`.
 
 ---
 

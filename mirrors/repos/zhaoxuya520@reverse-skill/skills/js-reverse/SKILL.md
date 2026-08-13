@@ -132,6 +132,7 @@ description: 在使用 js-reverse-mcp 做前端 JavaScript 逆向时使用，适
 
 - 如果当前任务只是出签名，这一阶段可以降级
 - 如果要长期复用算法链路，这一阶段必须做
+- Issue #65 混淆旁路（U–AV §4）：JSVMP（AD）→ `E-js-vmp`；CFF+字符串数组（AE）→ `E-js-deobf`；DevTools/debugger 反调试（AF）→ `E-js-anti-debug`。完整触发表见 `../reverse-engineering/references/nonpe-format-cookbook.md`；AST 细节仍用 `references/ast-deobfuscation.md`
 
 ## 执行要求
 
@@ -153,6 +154,7 @@ description: 在使用 js-reverse-mcp 做前端 JavaScript 逆向时使用，适
 - Node 复现：`references/node-env-rebuild.md`
 - 插桩：`references/instrumentation.md`
 - AST 去混淆：`references/ast-deobfuscation.md`
+- 非 PE/JS 混淆菜谱 U–AV：`../reverse-engineering/references/nonpe-format-cookbook.md`（AD/AE/AF）
 - 回退：`references/fallbacks.md`
 - 输出契约：`references/output-contract.md`
 

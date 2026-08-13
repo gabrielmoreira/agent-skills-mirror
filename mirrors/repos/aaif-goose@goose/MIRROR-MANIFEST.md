@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`documentation/AGENTS.md`](documentation/AGENTS.md) |
 | 5 | ✓ | [`documentation/CLAUDE.md`](documentation/CLAUDE.md) |
 | 6 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
-| 7 | ✓ | [`evals/harbor/.agents/skills/compare_tasks/SKILL.md`](evals/harbor/.agents/skills/compare_tasks/SKILL.md) |
+| 7 | ✓ | [`evals/harbor/.agents/skills/compare-tasks/SKILL.md`](evals/harbor/.agents/skills/compare-tasks/SKILL.md) |
 
 ---
 

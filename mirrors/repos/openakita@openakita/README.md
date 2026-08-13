@@ -717,6 +717,7 @@ Tracing  ─── AgentTracer(12 SpanTypes) · DecisionTrace · TokenStats
 - [ChineseBQB](https://github.com/zhaoolee/ChineseBQB) — 5700+ stickers that give AI a soul
 - [browser-use](https://github.com/browser-use/browser-use) — AI browser automation
 - [AGENTS.md](https://agentsmd.io/) / [Agent Skills](https://agentskills.io/) — Open standards
+- Free code signing on Windows provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/)
 
 ### Community Contributors
 
@@ -729,16 +730,6 @@ OpenAkita source code is licensed under the GNU Affero General Public License v3
 The `OpenAkita` name, logos, icons, screenshots, and other brand assets are not licensed under AGPL-3.0-only. See [TRADEMARK.md](TRADEMARK.md) for brand usage rules.
 
 Third-party licenses: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
-
-## Star History
-
-<a href="https://star-history.com/#openakita/openakita&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=openakita/openakita&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=openakita/openakita&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=openakita/openakita&type=Date" />
- </picture>
-</a>
 
 ---
 

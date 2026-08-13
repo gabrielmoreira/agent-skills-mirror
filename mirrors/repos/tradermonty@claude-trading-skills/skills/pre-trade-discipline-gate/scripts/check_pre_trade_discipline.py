@@ -16,6 +16,7 @@ import re
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, time, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -39,6 +40,7 @@ CHECKLIST_ANSWER_FIELDS = (
     "actual_risk_dollars",
     "notes",
 )
+RISK_DOLLAR_FIELDS = ("planned_risk_dollars", "actual_risk_dollars")
 DECISION_RANK = {
     "GO": 0,
     "NO_ACTIONABLE_ORDERS": 1,
@@ -146,13 +148,21 @@ def _is_true(value: Any) -> bool:
     return value is True
 
 
-def _to_float_or_none(value: Any) -> float | None:
-    if value is None or value == "":
+def _nonnegative_finite_decimal_or_none(value: Any) -> Decimal | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return None
+    text = value.strip() if isinstance(value, str) else str(value)
+    if not text:
         return None
     try:
-        return float(value)
-    except (TypeError, ValueError):
+        parsed = Decimal(text)
+    except (InvalidOperation, OverflowError, TypeError, ValueError):
         return None
+    if not parsed.is_finite() or parsed < 0:
+        return None
+    return parsed
 
 
 def _load_thesis_file(path: Path) -> dict[str, Any]:
@@ -302,6 +312,9 @@ def _candidate_base_result(candidate: dict[str, Any]) -> CandidateResult:
     thesis_id = str(thesis_id) if thesis_id else None
     intent = _normalize_token(candidate.get("order_intent") or candidate.get("intent") or "")
     checklist_answers = {key: candidate.get(key) for key in CHECKLIST_ANSWER_FIELDS}
+    for field_name in RISK_DOLLAR_FIELDS:
+        if _nonnegative_finite_decimal_or_none(checklist_answers[field_name]) is None:
+            checklist_answers[field_name] = None
     actionable = intent in ACTIONABLE_INTENTS
     if not actionable:
         if intent in NON_ACTIONABLE_INTENTS:
@@ -338,13 +351,25 @@ def _evaluate_candidate_checklist(candidate: dict[str, Any], result: CandidateRe
     if not _is_true(candidate.get("size_within_plan")):
         _raise_candidate_decision(result, "NO_GO", "size is not confirmed within plan")
 
-    planned_risk = _to_float_or_none(candidate.get("planned_risk_dollars"))
-    actual_risk = _to_float_or_none(candidate.get("actual_risk_dollars"))
+    planned_risk = _nonnegative_finite_decimal_or_none(candidate.get("planned_risk_dollars"))
+    actual_risk = _nonnegative_finite_decimal_or_none(candidate.get("actual_risk_dollars"))
+    if planned_risk is None:
+        _raise_candidate_decision(
+            result,
+            "REVIEW_REQUIRED",
+            "planned_risk_dollars is required and must be a finite non-negative number",
+        )
+    if actual_risk is None:
+        _raise_candidate_decision(
+            result,
+            "REVIEW_REQUIRED",
+            "actual_risk_dollars is required and must be a finite non-negative number",
+        )
     if planned_risk is not None and actual_risk is not None and actual_risk > planned_risk:
         _raise_candidate_decision(
             result,
             "NO_GO",
-            f"actual risk {actual_risk:.2f} exceeds planned risk {planned_risk:.2f}",
+            f"actual risk {actual_risk} exceeds planned risk {planned_risk}",
         )
 
 
@@ -592,12 +617,13 @@ def generate_markdown_report(result: dict[str, Any]) -> str:
 def write_reports(
     result: dict[str, Any], output_dir: Path, json_only: bool
 ) -> tuple[Path, Path | None]:
+    json_text = json.dumps(result, indent=2, allow_nan=False) + "\n"
     output_dir.mkdir(parents=True, exist_ok=True)
     json_path = Path(result["artifact_paths"]["json"])
     md_path = (
         Path(result["artifact_paths"]["markdown"]) if result["artifact_paths"]["markdown"] else None
     )
-    json_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    json_path.write_text(json_text, encoding="utf-8")
     if not json_only and md_path is not None:
         md_path.write_text(generate_markdown_report(result), encoding="utf-8")
     return json_path, md_path
@@ -606,12 +632,13 @@ def write_reports(
 def write_journal(result: dict[str, Any], journal_dir: Path | None) -> Path | None:
     if journal_dir is None:
         return None
-    journal_dir.mkdir(parents=True, exist_ok=True)
     generated_at = _parse_datetime(result["generated_at"]).astimezone(timezone.utc)
     journal_path = journal_dir / f"pre_trade_discipline_{generated_at.strftime('%Y-%m-%d')}.jsonl"
     result["artifact_paths"]["journal"] = str(journal_path)
+    journal_row = json.dumps(result, sort_keys=True, allow_nan=False) + "\n"
+    journal_dir.mkdir(parents=True, exist_ok=True)
     with journal_path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(result, sort_keys=True) + "\n")
+        f.write(journal_row)
     return journal_path
 
 

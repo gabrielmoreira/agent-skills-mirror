@@ -224,6 +224,10 @@ adb pull /data/local/tmp/file .
    - 主 `package`
    - `application`、`activity`、`service`、`receiver`
    - `lib/` 目录里是否有 `.so`
+4. Issue #65 威胁形态速查（授权样本/设备；详见 `../reverse-engineering/references/nonpe-format-cookbook.md` §7–8）：
+   - 透明/隐藏图标（AU）：`aapt dump badging` + manifest theme/label/icon → `E-android-hidden-icon-manifest`
+   - Magisk/脚本格机特征与远程 curl|sh（AR/AS）→ 特征与 URL 入证，**不执行**破坏命令
+   - 持久化路径（AT）：`service.d` / `priv-app` 等 → `E-android-persistence`
 
 ### 2. Java 逻辑观察
 
@@ -408,3 +412,4 @@ frida -U -f com.example.app -l hook.js
 - [ ] 我是否基于 `tool-index` 使用了真实工具路径？
 - [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
 - [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？
+- [ ] 若命中隐藏图标/格机/持久化线索：是否按 U–AV cookbook 记录 E-android-* Evidence（授权范围内）？

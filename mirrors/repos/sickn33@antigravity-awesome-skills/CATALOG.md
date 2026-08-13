@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-08-09T06:51:55.000Z
+Generated at: 2026-08-12T14:15:39.000Z
 
-Total skills: 2007
+Total skills: 2009
 
 ## agent-behavior (5)
 
@@ -231,7 +231,7 @@ Total skills: 2007
 | `10-andruia-skill-smith` | Ingeniero de Sistemas de Andru.ia. Diseña, redacta y despliega nuevas habilidades (skills) dentro del repositorio siguiendo el Estándar de Diamante. | safe | personal | 10, andruia, skill, smith | 10, andruia, skill, smith, ingeniero, de, sistemas, andru, ia, dise, redacta, despliega |
 | `20-andruia-niche-intelligence` | Estratega de Inteligencia de Dominio de Andru.ia. Analiza el nicho específico de un proyecto para inyectar conocimientos, regulaciones y estándares únicos de... | safe | personal | 20, andruia, niche, intelligence | 20, andruia, niche, intelligence, estratega, de, inteligencia, dominio, andru, ia, analiza, el |
 
-## api-integration (28)
+## api-integration (29)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -261,6 +261,7 @@ Total skills: 2007
 | `telegram-bot-builder` | Expert in building Telegram bots that solve real problems - from simple automation to complex AI-powered bots. Covers bot architecture, the Telegram Bot API,... | critical | vibeship-spawner-skills (Apache 2.0) | telegram, bot, builder | telegram, bot, builder, building, bots, solve, real, problems, simple, automation, complex, ai |
 | `twilio-communications` | Build communication features with Twilio: SMS messaging, voice calls, WhatsApp Business API, and user verification (2FA). Covers the full spectrum from simpl... | critical | vibeship-spawner-skills (Apache 2.0) | twilio, communications | twilio, communications, communication, features, sms, messaging, voice, calls, whatsapp, business, api, user |
 | `unsplash-integration` | Integration skill for searching and fetching high-quality, free-to-use professional photography from Unsplash. | safe | community | unsplash, integration | unsplash, integration, skill, searching, fetching, high, quality, free, professional, photography |
+| `us-property-data` | Use when a task needs real U.S. residential property data: valuation, listings, price or tax history, schools, or a zillow.com URL. | safe | ZeroPointRepo/zillow-skills | property-data, real-estate, api, zillow | property-data, real-estate, api, zillow, us, property, data, task, real, residential, valuation, listings |
 | `whatsapp-automation` | Automate WhatsApp Business tasks via Rube MCP (Composio): send messages, manage templates, upload media, and handle contacts. Always search tools first for c... | critical | community | whatsapp | whatsapp, automation, automate, business, tasks, via, rube, mcp, composio, send, messages, upload |
 | `youtube-full` | Fetch YouTube transcripts, search videos, browse channels, and extract playlists via TranscriptAPI — no yt-dlp, no Google API key, works from any cloud server. | safe | ZeroPointRepo/youtube-skills | youtube, transcripts, video-search, channels, playlists, api, transcriptapi | youtube, transcripts, video-search, channels, playlists, api, transcriptapi, full, fetch, search, videos, browse |
 
@@ -1547,10 +1548,11 @@ Total skills: 2007
 | `ai-dev-jobs-mcp` | Search 8,400+ AI and ML jobs across 489 companies, inspect listings and employers, match roles, and view salary and market stats via AI Dev Jobs MCP | safe | https://aidevboard.com | mcp, jobs, ai-jobs, ml-jobs, recruiting, job-search, career | mcp, jobs, ai-jobs, ml-jobs, recruiting, job-search, career, ai, dev, search, 400, ml |
 | `not-human-search-mcp` | Search AI-ready websites, inspect indexed site details, verify MCP endpoints, and discover tools and APIs using the Not Human Search MCP server | safe | https://nothumansearch.ai | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools | mcp, search, ai-discovery, api-discovery, mcp-verification, agent-tools, human, ai, websites, inspect, indexed, site |
 
-## media (8)
+## media (9)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `atlas-cloud-media` | Generate Atlas Cloud images and videos through its asynchronous media API with schema-first model selection and credential-safe polling. | safe | self | atlas-cloud, image-generation, video-generation, media-api | atlas-cloud, image-generation, video-generation, media-api, atlas, cloud, media, generate, images, videos, through, asynchronous |
 | `generate-nanobanana` | Generate and edit images/video with Google's Gemini media models (Nano Banana 2/Pro, Gemini Omni Flash), with cost-approval gates, reference-image support, a... | critical | AntonioCardenas/generate-nanobanana | nanobanana, gemini, google-ai-studio, image-generation, video-generation | nanobanana, gemini, google-ai-studio, image-generation, video-generation, generate, edit, images, video, google, media, models |
 | `image-generator` | Generate and edit images using Gemini's Nano Banana Pro model (gemini-3-pro-image-preview). Use this skill when the user asks you to generate images, create ... | safe | dair-ai/dair-academy-plugins | dair-academy, ai, workflow | dair-academy, ai, workflow, image, generator, generate, edit, images, gemini, nano, banana, pro |
 | `remotion` | Generate walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays | critical | community | remotion | remotion, generate, walkthrough, videos, stitch, smooth, transitions, zooming, text, overlays |

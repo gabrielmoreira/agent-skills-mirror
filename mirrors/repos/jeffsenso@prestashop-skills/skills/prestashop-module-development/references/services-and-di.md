@@ -1,5 +1,68 @@
 # Services & dependency injection
 
+## **CRITICAL: Controllers have a limited service locator**
+
+**❌ PROBLEM**: Controllers extending `FrameworkBundleAdminController` have a **limited service locator** that only knows about core Symfony services:
+
+```
+Service "mymodule.form.configuration_data_provider" not found: even though it exists 
+in the app's container, the container inside "Vendor\MyModule\Controller\Admin\ConfigurationController" 
+is a smaller service locator that only knows about the "form.factory", "http_kernel", 
+"parameter_bag", "request_stack", "router", "security.authorization_checker", 
+"security.csrf.token_manager", "security.token_storage", "serializer", "twig" 
+and "web_link.http_header_serializer" services.
+```
+
+**✅ SOLUTION**: Use **constructor dependency injection** instead of `$this->get()`:
+
+```php
+// ❌ WRONG: Trying to access service from limited service locator
+class ConfigurationController extends FrameworkBundleAdminController
+{
+    public function indexAction(Request $request): Response
+    {
+        $formDataProvider = $this->get('mymodule.form.configuration_data_provider');
+        // This will fail with "Service not found" error
+    }
+}
+
+// ✅ CORRECT: Use constructor dependency injection
+class ConfigurationController extends FrameworkBundleAdminController
+{
+    private FormHandlerInterface $formHandler;
+
+    public function __construct(FormHandlerInterface $formHandler)
+    {
+        $this->formHandler = $formHandler;
+    }
+
+    public function indexAction(Request $request): Response
+    {
+        $form = $this->formHandler->getForm();
+        // Works correctly!
+    }
+}
+```
+
+**Controller service registration** (in `config/components/*/services.yml`):
+
+```yaml
+Vendor\MyModule\Controller\Admin\ConfigurationController:
+  public: true
+  arguments:
+    - '@prestashop.module.mymodule.form.configuration_data_handler'
+  tags:
+    - { name: controller.service_arguments }
+```
+
+**Key points**:
+- Controller must be registered as **`public: true`**
+- Must have **`controller.service_arguments`** tag
+- All dependencies injected via constructor
+- **NEVER use `$this->get('service.id')` in controllers** — it will fail for custom module services
+
+---
+
 ## **CRITICAL: `SymfonyContainer::getInstance()` is null in console context**
 
 `PrestaShop\PrestaShop\Adapter\SymfonyContainer::getInstance()` relies on reading `global $kernel`.

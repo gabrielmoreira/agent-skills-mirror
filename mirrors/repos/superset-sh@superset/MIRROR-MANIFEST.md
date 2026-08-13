@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,28 +78,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`.agents/skills/redesign/SKILL.md`](.agents/skills/redesign/SKILL.md) |
 | 18 | ✓ | [`.agents/skills/ticket-format/SKILL.md`](.agents/skills/ticket-format/SKILL.md) |
 | 19 | ✓ | [`.github/prompts/beautify-screenshot.ts`](.github/prompts/beautify-screenshot.ts) |
-| 20 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
-| 21 | ✓ | [`.github/prompts/update-roadmap.md`](.github/prompts/update-roadmap.md) |
-| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
-| 24 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
-| 25 | ✓ | [`apps/docs/src/app/llms.txt/route.ts`](apps/docs/src/app/llms.txt/route.ts) |
-| 26 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts) |
-| 27 | ✓ | [`apps/marketing/src/app/api/llms.txt/route.ts`](apps/marketing/src/app/api/llms.txt/route.ts) |
-| 28 | ✓ | [`apps/marketing/src/app/blog/llms.txt/route.ts`](apps/marketing/src/app/blog/llms.txt/route.ts) |
-| 29 | ✓ | [`apps/marketing/src/app/compare/llms.txt/route.ts`](apps/marketing/src/app/compare/llms.txt/route.ts) |
-| 30 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
-| 31 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 32 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 34 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
-| 35 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
-| 36 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
-| 37 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
-| 38 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
-| 39 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
-| 40 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
-| 41 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
+| 20 | ✓ | [`.github/prompts/readme-hero-film.md`](.github/prompts/readme-hero-film.md) |
+| 21 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
+| 22 | ✓ | [`.github/prompts/update-roadmap.md`](.github/prompts/update-roadmap.md) |
+| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 24 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
+| 25 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
+| 26 | ✓ | [`apps/docs/src/app/llms.txt/route.ts`](apps/docs/src/app/llms.txt/route.ts) |
+| 27 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts) |
+| 28 | ✓ | [`apps/marketing/src/app/api/llms.txt/route.ts`](apps/marketing/src/app/api/llms.txt/route.ts) |
+| 29 | ✓ | [`apps/marketing/src/app/blog/llms.txt/route.ts`](apps/marketing/src/app/blog/llms.txt/route.ts) |
+| 30 | ✓ | [`apps/marketing/src/app/compare/llms.txt/route.ts`](apps/marketing/src/app/compare/llms.txt/route.ts) |
+| 31 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
+| 32 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 33 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 34 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 35 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
+| 36 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
+| 37 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
+| 38 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
+| 39 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
+| 40 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
+| 41 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
+| 42 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
 
 ---
 

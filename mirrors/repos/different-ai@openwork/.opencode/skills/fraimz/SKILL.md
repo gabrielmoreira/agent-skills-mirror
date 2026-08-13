@@ -20,11 +20,11 @@ For current verification, use `prove-a-pr` → `write-a-spec` → `run-tests` �
 
 ## Run an existing flow
 
-Confirm the requested ID already exists with `pnpm evals --list`, launch the app
+Confirm the requested ID already exists with `pnpm evals:legacy --list`, launch the app
 if that existing flow requires it, then run:
 
 ```bash
-pnpm fraimz --flow <existing-id> --cdp-url <electron-cdp-url>
+pnpm evals:legacy:demo --flow <existing-id> --cdp-url <electron-cdp-url>
 ```
 
 Report the legacy runner result honestly. If the flow itself is broken or no

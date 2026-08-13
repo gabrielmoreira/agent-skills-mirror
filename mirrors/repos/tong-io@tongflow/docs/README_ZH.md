@@ -217,6 +217,12 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / 链接 → 文本
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling 隐身浏览器 URL / 链接 → 文本
 
+### 内容包
+
+纯数据包（不含可执行代码），安装方式与插件相同：
+
+- [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills) — 文本生成节点的技能包（可复用提示词）：写作技能（润色 / 翻译 / 扩写 / 缩写……）+ 各模型家族的提示词写作指南（MiniMax-H3、Seedance、Veo、Seedream、FLUX……）
+
 ## 从源代码启动
 
 ```bash

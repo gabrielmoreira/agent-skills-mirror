@@ -31,6 +31,44 @@ from screen_pead import (
     validate_input_json,
 )
 
+
+def test_breakout_boundary_scores_and_volume_fail_closed_paths():
+    red = {"high": 100.0, "low": 95.0}
+    confirmed = [{"volume": 200}, {"volume": 100}, {"volume": 100}]
+
+    assert calculate_breakout(confirmed, {"high": 0}, 103)["score"] == 0.0
+    assert calculate_breakout(confirmed, red, 103)["score"] == 100.0
+    assert calculate_breakout(confirmed, red, 102)["score"] == 85.0
+    assert calculate_breakout([{"volume": 200}], red, 101)["score"] == 70.0
+    assert calculate_breakout([{"volume": 200}], red, 100.5)["score"] == 55.0
+    no_prior_volume = [{"volume": 200}, {"volume": 0}, {}]
+    assert calculate_breakout(no_prior_volume, red, 103)["volume_confirmation"] is False
+
+
+def test_liquidity_boundary_scores_and_dollar_volume_fallback():
+    assert calculate_liquidity([], 100)["score"] == 15.0
+    assert calculate_liquidity([{"volume": 1_000_000, "close": 60}], 60)["score"] == 85.0
+    assert calculate_liquidity([{"volume": 1_000_000, "close": 30}], 30)["score"] == 70.0
+
+    fallback = calculate_liquidity([{"volume": 1_000_000, "close": 0}], 30)
+    assert fallback["adv20_dollar"] == 30_000_000
+    assert fallback["score"] == 70.0
+
+    two_of_three = calculate_liquidity([{"volume": 500_000, "close": 100}], 100)
+    assert two_of_three["score"] == 40.0
+    assert two_of_three["passes_all"] is False
+
+
+def test_risk_reward_scores_every_contract_boundary():
+    red = {"high": 100.0, "low": 90.0}
+
+    assert calculate_risk_reward(100, red, target_multiplier=3.0)["score"] == 100.0
+    assert calculate_risk_reward(100, red, target_multiplier=2.5)["score"] == 85.0
+    assert calculate_risk_reward(100, red, target_multiplier=2.0)["score"] == 70.0
+    assert calculate_risk_reward(100, red, target_multiplier=1.5)["score"] == 50.0
+    assert calculate_risk_reward(100, red, target_multiplier=1.0)["score"] == 25.0
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

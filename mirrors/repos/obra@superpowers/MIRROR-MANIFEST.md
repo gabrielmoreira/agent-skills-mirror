@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `obra/superpowers` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `obra/superpowers` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `obra/superpowers` — 26 default patterns, 0 followed patterns, 54 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 54 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,18 +101,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`skills/using-superpowers/references/antigravity-tools.md`](skills/using-superpowers/references/antigravity-tools.md) |
 | 41 | ✓ | [`skills/using-superpowers/references/codex-tools.md`](skills/using-superpowers/references/codex-tools.md) |
 | 42 | ✓ | [`skills/using-superpowers/references/gemini-tools.md`](skills/using-superpowers/references/gemini-tools.md) |
-| 43 | ✓ | [`skills/using-superpowers/references/pi-tools.md`](skills/using-superpowers/references/pi-tools.md) |
-| 44 | ✓ | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) |
-| 45 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
-| 46 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
-| 47 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
-| 48 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
-| 49 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
-| 50 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
-| 51 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
-| 52 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
-| 53 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 54 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 43 | ✓ | [`skills/using-superpowers/references/hermes-tools.md`](skills/using-superpowers/references/hermes-tools.md) |
+| 44 | ✓ | [`skills/using-superpowers/references/pi-tools.md`](skills/using-superpowers/references/pi-tools.md) |
+| 45 | ✓ | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) |
+| 46 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
+| 47 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
+| 48 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
+| 49 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
+| 50 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
+| 51 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
+| 52 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
+| 53 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
+| 54 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 55 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

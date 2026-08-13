@@ -22,6 +22,16 @@ WebBrain sépare le **niveau du modèle** du **mode de conversation**.
 Les valeurs par défaut et les règles de résolution des niveaux sont documentées
 dans [fournisseurs et modèles](providers-and-models.md#niveaux-de-promptoutils-et-modes).
 
+## Lecture complète d'un fil Gmail
+
+Le premier résultat d'accessibilité d'un fil Gmail expose le
+`conversationRootRefId` fiable de la conversation active. Une lecture complète
+doit paginer uniquement ce sous-arbre ancré avec `filter:"all"`, `maxDepth:15`
+et chaque `continuationArgs` exact jusqu'à `hasMore:false`. Les pages 2 et
+suivantes de la racine du document contiennent des lignes de boîte de réception
+sans rapport et ne comptent pas. **Collapse all** doit aussi confirmer séparément
+que Gmail a développé la conversation.
+
 ## Matrice des outils
 
 Légende : **Oui** = disponible · **-** = indisponible · **C** = Chrome

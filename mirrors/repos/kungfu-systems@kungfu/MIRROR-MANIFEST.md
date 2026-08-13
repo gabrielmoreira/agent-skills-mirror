@@ -7,7 +7,7 @@ ref: dev/v4/v4.0
 
 # Mirror Manifest
 
-Mirror of `kungfu-systems/kungfu` — 26 default patterns, 44 followed patterns, 226 file(s) materialized.
+Mirror of `kungfu-systems/kungfu` — 26 default patterns, 45 followed patterns, 227 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `kungfu-systems/kungfu` — 26 default patterns, 44 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `dev/v4/v4.0` |
 | Default pats  | 26 |
-| Followed pats | 44 |
-| Files         | 226 |
+| Followed pats | 45 |
+| Files         | 227 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,6 +87,7 @@ Mirror of `kungfu-systems/kungfu` — 26 default patterns, 44 followed patterns,
 - `THIRD_PARTY_NOTICES.md`
 - `docs/guides/installing-cli.md`
 - `docs/qualification/auditable-demo-artifact-pipeline.md`
+- `docs/guides/agent-work-lab.md`
 - `docs/concepts/system-overview.md`
 - `docs/concepts/runtime-surface-provenance.md`
 - `docs/qualification/contracts.md`
@@ -307,27 +308,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 203 | → | [`docs/evolution/current-authority.md`](docs/evolution/current-authority.md) |
 | 204 | → | [`docs/evolution/README.md`](docs/evolution/README.md) |
 | 205 | → | [`docs/evolution/timeline.md`](docs/evolution/timeline.md) |
-| 206 | → | [`docs/guides/alpha-status.md`](docs/guides/alpha-status.md) |
-| 207 | → | [`docs/guides/exit-and-version-compatibility.md`](docs/guides/exit-and-version-compatibility.md) |
-| 208 | → | [`docs/guides/installing-cli.md`](docs/guides/installing-cli.md) |
-| 209 | → | [`docs/guides/known-issues.md`](docs/guides/known-issues.md) |
-| 210 | → | [`docs/guides/upgrading.md`](docs/guides/upgrading.md) |
-| 211 | → | [`docs/guides/xinfa-agent-context.md`](docs/guides/xinfa-agent-context.md) |
-| 212 | → | [`docs/MAP.md`](docs/MAP.md) |
-| 213 | → | [`docs/qualification/auditable-demo-artifact-pipeline.md`](docs/qualification/auditable-demo-artifact-pipeline.md) |
-| 214 | → | [`docs/qualification/contracts.md`](docs/qualification/contracts.md) |
-| 215 | → | [`docs/qualification/invariant-verification.md`](docs/qualification/invariant-verification.md) |
-| 216 | → | [`docs/qualification/kfd-support-matrix.md`](docs/qualification/kfd-support-matrix.md) |
-| 217 | → | [`docs/qualification/known-limits.md`](docs/qualification/known-limits.md) |
-| 218 | → | [`docs/qualification/trademark-public-use.md`](docs/qualification/trademark-public-use.md) |
-| 219 | → | [`docs/README.md`](docs/README.md) |
-| 220 | → | [`docs/shifu/README.md`](docs/shifu/README.md) |
-| 221 | → | [`LICENSE-POLICY.md`](LICENSE-POLICY.md) |
-| 222 | → | [`PROVIDER_COMPLIANCE.md`](PROVIDER_COMPLIANCE.md) |
-| 223 | → | [`README.md`](README.md) |
-| 224 | → | [`SECURITY.md`](SECURITY.md) |
-| 225 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 226 | → | [`TRADEMARK.md`](TRADEMARK.md) |
+| 206 | → | [`docs/guides/agent-work-lab.md`](docs/guides/agent-work-lab.md) |
+| 207 | → | [`docs/guides/alpha-status.md`](docs/guides/alpha-status.md) |
+| 208 | → | [`docs/guides/exit-and-version-compatibility.md`](docs/guides/exit-and-version-compatibility.md) |
+| 209 | → | [`docs/guides/installing-cli.md`](docs/guides/installing-cli.md) |
+| 210 | → | [`docs/guides/known-issues.md`](docs/guides/known-issues.md) |
+| 211 | → | [`docs/guides/upgrading.md`](docs/guides/upgrading.md) |
+| 212 | → | [`docs/guides/xinfa-agent-context.md`](docs/guides/xinfa-agent-context.md) |
+| 213 | → | [`docs/MAP.md`](docs/MAP.md) |
+| 214 | → | [`docs/qualification/auditable-demo-artifact-pipeline.md`](docs/qualification/auditable-demo-artifact-pipeline.md) |
+| 215 | → | [`docs/qualification/contracts.md`](docs/qualification/contracts.md) |
+| 216 | → | [`docs/qualification/invariant-verification.md`](docs/qualification/invariant-verification.md) |
+| 217 | → | [`docs/qualification/kfd-support-matrix.md`](docs/qualification/kfd-support-matrix.md) |
+| 218 | → | [`docs/qualification/known-limits.md`](docs/qualification/known-limits.md) |
+| 219 | → | [`docs/qualification/trademark-public-use.md`](docs/qualification/trademark-public-use.md) |
+| 220 | → | [`docs/README.md`](docs/README.md) |
+| 221 | → | [`docs/shifu/README.md`](docs/shifu/README.md) |
+| 222 | → | [`LICENSE-POLICY.md`](LICENSE-POLICY.md) |
+| 223 | → | [`PROVIDER_COMPLIANCE.md`](PROVIDER_COMPLIANCE.md) |
+| 224 | → | [`README.md`](README.md) |
+| 225 | → | [`SECURITY.md`](SECURITY.md) |
+| 226 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 227 | → | [`TRADEMARK.md`](TRADEMARK.md) |
 
 ---
 

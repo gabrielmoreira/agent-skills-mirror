@@ -161,11 +161,11 @@ The detection helper lives in `src/lib/combos/modelNameCollision.ts`.
 
 ## How It Works (Persisted Auto-Combos)
 
-The Auto-Combo Engine dynamically selects the best provider/model for each request using a **13-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). All weights sum to **1.0**.
+The Auto-Combo Engine dynamically selects the best provider/model for each request using a **14-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). Weights form a normalized distribution (custom weights are renormalized by `normalizeScoringWeights()`).
 
-![Auto-Combo 12-factor scoring](../diagrams/exported/auto-combo-12factor.svg)
+![Auto-Combo 14-factor scoring](../diagrams/exported/auto-combo-12factor.svg)
 
-> Source: [diagrams/auto-combo-12factor.mmd](../diagrams/auto-combo-12factor.mmd) (regenerate via `npm run docs:render-diagrams`). Diagram/filename predate the `cacheAffinity` factor added by #8008 and still show 12 factors.
+> Source: [diagrams/auto-combo-12factor.mmd](../diagrams/auto-combo-12factor.mmd) (regenerate via `npm run docs:render-diagrams`). The filename predates the current factor set; the diagram shows 13 of the 14 factors (missing `sessionAvailability`).
 
 | Factor                | Default Weight | Description                                                                                                                                                                                 |
 | :-------------------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -179,11 +179,12 @@ The Auto-Combo Engine dynamically selects the best provider/model for each reque
 | `tierAffinity`        | 0.05           | Affinity between the candidate's tier and the manifest-recommended tier                                                                                                                     |
 | `specificityMatch`    | 0.05           | Match between request specificity (manifest hint) and model tier                                                                                                                            |
 | `contextAffinity`     | 0.05           | Affinity between the request's context-window need and the model's context window                                                                                                           |
+| `sessionAvailability` | 0.05           | OAuth session availability of the candidate connection for this session (`getOAuthSessionAvailability()`; non-OAuth connections score 1.0)                                                  |
 | `connectionDensity`   | 0.05           | Spreads load across connections of the same provider (anti-concentration)                                                                                                                   |
 | `cacheAffinity`       | 0.00           | Rendezvous-hash affinity toward the connection likeliest to already hold this request's prompt-cache prefix (`open-sse/services/combo/promptCacheAffinity.ts`); disabled by default (#8008) |
 | `resetWindowAffinity` | 0.00           | Bias toward connections whose quota reset window is favorable (disabled by default)                                                                                                         |
 
-**Sum:** `0.20 + 0.15 + 0.15 + 0.12 + 0.08 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.00 + 0.00 = 1.0` (validated by `validateWeights()`).
+**Sum:** `0.20 + 0.15 + 0.15 + 0.12 + 0.08 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.05 + 0.00 + 0.00 = 1.05` as literally declared in `DEFAULT_WEIGHTS`; user-configured weights are renormalized into a distribution by `normalizeScoringWeights()` before scoring.
 
 ## Mode Packs
 
@@ -654,7 +655,7 @@ Including the bare `auto` (default) plus the 6 `AutoVariant` values declared in 
 
 ## How tiers fit Auto-Combo
 
-The 12-factor scoring function (`open-sse/services/autoCombo/scoring.ts`) treats tier
+The 14-factor scoring function (`open-sse/services/autoCombo/scoring.ts`) treats tier
 membership as two signals: `tierPriority` (0.05) and `tierAffinity` (0.05). See the
 canonical [scoring factor table](#how-it-works-persisted-auto-combos) above for the full
 `DEFAULT_WEIGHTS` set — the per-pack overrides (ship-fast/cost-saver/quality-first/

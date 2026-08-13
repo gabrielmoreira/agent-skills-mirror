@@ -1,7 +1,7 @@
 # RPC & UI Reference
 
 **Status:** Active
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-08-12
 **Source of Truth:** `src/notebooklm/rpc/types.py` for method IDs; payload builders in `src/notebooklm/` and golden tests under `tests/unit/`
 **Purpose:** Complete reference for RPC methods, UI selectors, and payload structures
 
@@ -96,6 +96,7 @@ Internal integer codes returned by `GET_NOTEBOOK` / `LIST_SOURCES` and consumed 
 | 3 | `PDF` | PDF upload |
 | 4 | `PASTED_TEXT` | Inline pasted text |
 | 5 | `WEB_PAGE` | Web URL source |
+| 6 | `POWERPOINT` | PowerPoint upload (`.pptx`) |
 | 8 | `MARKDOWN` | Markdown file |
 | 9 | `YOUTUBE` | YouTube URL |
 | 10 | `MEDIA` | Audio / video upload |
@@ -107,7 +108,39 @@ Internal integer codes returned by `GET_NOTEBOOK` / `LIST_SOURCES` and consumed 
 
 > Codes outside this map are surfaced as `SourceType.UNKNOWN` and emit `UnknownTypeWarning` on first occurrence so unmapped types don't crash callers.
 
-> **Code `14` is overloaded** (live-captured #1828/#1832): the backend returns `14` for a native Google Sheet *and* for a Drive-hosted PDF. Drive sources carry no URL (`metadata[0]/[5]/[7]` are all null), so the two are disambiguated by the MIME at `metadata[19]` (fallback `metadata[9][2]`): `application/vnd.google-apps.spreadsheet` → `GOOGLE_SPREADSHEET`, `application/pdf` → `PDF`. See `_disambiguate_type_code` in `src/notebooklm/_types/sources.py`.
+> **Code `14` is overloaded** (live-captured #1828/#1832): the backend returns `14` for a native Google Sheet *and* for a Drive-hosted PDF. Drive sources carry no URL (`metadata[5]/[7]` are null and `metadata[0]` holds the Drive metadata block, not a URL — see `SourceRow.drive_document_id`), so the two are disambiguated by the MIME at `metadata[19]` (fallback `metadata[9][2]`): `application/vnd.google-apps.spreadsheet` → `GOOGLE_SPREADSHEET`, `application/pdf` → `PDF`. See `_disambiguate_type_code` in `src/notebooklm/_types/sources.py`.
+
+### Source Settings Block (`source[3]`)
+
+`Source.settings` (`SourceSettings`) carries **two independent status codes**, and
+they answer different questions:
+
+| Index | Proto tag | Field | Decoded as |
+|-------|-----------|-------|------------|
+| 1 | 2 | `status` | `SourceStatus` — NotebookLM's own ingestion pipeline (`SourceRow.status`) |
+| 3 | 4 | `userDriveSourceStatus` | `DriveSourceStatus` — Drive-side health, Drive-backed rows only (`SourceRow.drive_status`) |
+
+Shapes observed across 409 live source rows (2026-08-07 audit): `[null, 2]` ×402,
+`[null, 2, null, 3]` ×4 (all Drive-backed, all `ACTIVE`), and
+`[null, 2, [null,null,null,[]]]` ×3.
+
+| Code | `DriveSourceStatus` | Backend member |
+|------|---------------------|----------------|
+| 0 | *(normalized to `None`)* | `DRIVE_SOURCE_STATUS_UNSPECIFIED` |
+| 1 | `INACCESSIBLE` | `DRIVE_SOURCE_STATUS_INACCESSIBLE` |
+| 2 | `SYNCING` | `DRIVE_SOURCE_STATUS_SYNCING` |
+| 3 | `ACTIVE` | `DRIVE_SOURCE_STATUS_ACTIVE` |
+| 4 | `DELETED` | `DRIVE_SOURCE_STATUS_DELETED` |
+| 5 | `GEN_AI_ACCESS_DENIED` | `DRIVE_SOURCE_STATUS_GEN_AI_ACCESS_DENIED` |
+
+> Index 3 is absent on 405/409 rows — and proto3 omits zero-valued fields, so an
+> absent slot means "no Drive claim", not "not a Drive source". The backend's
+> `0` means the same thing, so the decoder normalizes it to `None` rather than
+> modelling it (recorded in `ENUM_GAPS`). Only `ACTIVE` has
+> been observed live; the degraded members come from the backend enum recovered
+> from the official Android app (`docs/mobile/enums.txt`) and are pinned in
+> `tests/_guardrails/_wire_contract.py`. A populated-but-unmapped code decodes to
+> `DriveSourceStatus.UNKNOWN` (never `None`) and warns once (#2111).
 
 ---
 
@@ -132,7 +165,7 @@ or local convenience that has no stable web-control equivalent in the capture.
 | `NotesAPI.list/get/create/update/delete` | UI covered/partial | Add note, note row, note view close/title input, and note menu delete are documented. Rich body editing uses NotebookLM's internal editor; keep selectors conservative. |
 | `MindMapsAPI.list/generate/rename/delete/get_tree` | UI covered/partial | Interactive mind map generation is the live Studio tile. Note-backed mind maps are a synthetic/library backing; tree extraction via `GET_INTERACTIVE_HTML` is programmatic. |
 | `ResearchAPI.start/poll/wait/import_sources` | UI covered for start only | Source discovery corpus/mode/submit selectors map to fast/deep web/Drive research. Polling and import verification are backend workflow helpers. |
-| `SettingsAPI.get/set_output_language`, `SharingAPI.get_status/set_public/set_view_level/add_user/update_user/remove_user` | UI covered/partial | Settings and Share dialogs are covered at entry/save/copy selectors. Programmatic user-permission mutations go beyond the captured UI selectors. |
+| `SettingsAPI.get/set_output_language`, `SharingAPI.get_status/set_public/set_view_level/add_user/set_users/update_user/remove_user` | UI covered/partial | Settings and Share dialogs are covered at entry/save/copy selectors. Programmatic user-permission mutations go beyond the captured UI selectors. |
 | UI-only note operations | UI-only | Note menus expose `Convert to source`, `Convert all notes to source`, `Export to Docs`, and `Export to Sheets`; keep them documented as selectors unless/until a public library method owns those flows. |
 
 ---
@@ -1146,7 +1179,7 @@ result = [
         title,            # [0][1]
         artifact_type,    # [0][2]
         None,             # [0][3]
-        status_code,      # [0][4]: 1=in_progress in both captures
+        status_code,      # [0][4]: 1 in both captures = ARTIFACT_STATUS_INITIALIZED ("pending")
         # ... additional artifact metadata slots; first row len was 20
     ]
 ]
@@ -1315,7 +1348,7 @@ params = [
 
 #### Quiz (Type 4, Variant 2)
 
-**Source:** `_artifacts.py::generate_quiz()`
+**Source:** `_artifact/payloads.py::build_quiz_artifact_params()`
 
 ```python
 params = [
@@ -1341,7 +1374,7 @@ params = [
                 None,
                 None,
                 None,
-                [quantity_code, difficulty_code],  # quantity: 1=FEWER, 2=STANDARD
+                [quantity_code, difficulty_code],  # quantity: 1=FEWER, 2=STANDARD, 3=MORE
             ],                                     # difficulty: 1=EASY, 2=MEDIUM, 3=HARD
         ],                            # [9]
     ],
@@ -1350,7 +1383,7 @@ params = [
 
 #### Flashcards (Type 4, Variant 1)
 
-**Source:** `_artifacts.py::generate_flashcards()`
+**Source:** `_artifact/payloads.py::build_flashcards_artifact_params()`
 
 ```python
 params = [
@@ -1375,9 +1408,9 @@ params = [
                 None,
                 None,
                 None,
-                [difficulty_code, quantity_code],  # Note: reversed order from quiz!
-            ],
-        ],                            # [9]
+                [quantity_code, difficulty_code],  # Same order as quiz (#2116).
+            ],                                     # quantity: 1=FEWER, 2=STANDARD, 3=MORE
+        ],                            # [9]         # difficulty: 1=EASY, 2=MEDIUM, 3=HARD
     ],
 ]
 ```
@@ -1543,14 +1576,18 @@ params = [
     'NOT artifact.status = "ARTIFACT_STATUS_SUGGESTED"',
 ]
 
-# Response contains artifacts array with status:
-# status = 1 → Processing
-# status = 2 → Pending
-# status = 3 → Completed
+# Response contains artifacts array with an ArtifactStatus code:
+# status = 0 → Unknown
+# status = 1 → Pending    (ARTIFACT_STATUS_INITIALIZED — queued, worker not started)
+# status = 2 → In progress (ARTIFACT_STATUS_PROCESSING — actively generating)
+# status = 3 → Completed  (ARTIFACT_STATUS_READY)
 # status = 4 → Failed
+# status = 5 → Suggested  (excluded by the filter above)
+# status = 6 → ARTIFACT_PENDING_REVIEW (semantics unconfirmed; never observed here)
+# Codes 1 and 2 were transposed in this client before #2127.
 ```
 
-**Python API Note:** `artifacts.list()` also fetches mind maps from GET_NOTES_AND_MIND_MAPS and includes them as Artifact objects (type=5). This provides a unified list of all AI-generated content. Mind maps with status=2 (deleted) are filtered out.
+**Python API Note:** `artifacts.list()` also fetches mind maps from GET_NOTES_AND_MIND_MAPS and includes them as Artifact objects (type=5). This provides a unified list of all AI-generated content. Mind maps with status=2 (deleted) are filtered out — note that this is the *note* row's own status field, unrelated to the `ArtifactStatus` table above.
 
 ---
 
@@ -1876,7 +1913,8 @@ await rpc_call(
 
 ### RPC: SHARE_NOTEBOOK (QDyure)
 
-**Source:** `_sharing.py::set_public()`, `_sharing.py::add_user()`, `_sharing.py::remove_user()`
+**Source:** `_sharing.py::set_public()`, `_sharing.py::add_user()`,
+`_sharing.py::set_users()`, `_sharing.py::remove_user()`
 
 Multi-purpose RPC for managing notebook sharing: toggle public access, add/update users, or remove users.
 
@@ -1900,17 +1938,22 @@ params = [
 # Response: [] (empty on success)
 ```
 
-**Add/update user:**
+**Add/update users:**
 ```python
 # permission: 2=editor, 3=viewer, 4=remove
 # notify_flag: 0=no email, 1=send notification
 # message_flag: 0=has message, 1=no message
+# entries may mix editor and viewer grants in one request
+entries = [
+    ["viewer@example.com", None, 3],
+    ["editor@example.com", None, 2],
+]
 params = [
     [
         [
             notebook_id,
-            [[email, None, permission]],  # user to add/update
-            None,                          # None = no public access change
+            entries,                       # users to add/update
+            None,                          # no public access change
             [message_flag, welcome_message]
         ]
     ],
@@ -1920,7 +1963,38 @@ params = [
 ]
 
 # Response: [] (empty on success)
+
+# SharingAPI.set_users() sends the SHARE_NOTEBOOK call above once, then calls
+# GET_SHARE_STATUS once and returns the refreshed ShareStatus. notify_flag and
+# welcome_message apply to every entry in this call. Batching collapses N
+# RPC + status-refresh round trips into one; it is NOT established to change
+# how many notification emails recipients receive.
 ```
+
+**Entry-list semantics (live-probed 2026-08-11, two scratch notebooks, `notify=False`).**
+The entry list is a general batch **set/upsert** keyed by email, not an add:
+
+| Sent | Observed |
+|---|---|
+| Two distinct users, mixed VIEWER/EDITOR | Both granted; both grantees could open the notebook |
+| Two existing users with flipped permissions | Both permissions changed |
+| One existing update batched with one absent add | Both applied |
+| Singular update for an absent user | User was added |
+| The same email twice, conflicting permissions | RPC returned success, permission **unchanged** — a silent no-op |
+| Remove two users, both present | Both removed |
+| Remove several where any target is absent | **Whole request silently did nothing**, even with the present user listed first |
+| Remove one user and update another in one request | Both applied |
+
+Two consequences the client encodes: `set_users()` rejects duplicate emails before
+issuing the RPC (there is no first/last-wins rule to honour), and plural removal is
+not offered — it would need a `GET_SHARE_STATUS` preflight, an intersection with the
+currently-shared set, and post-verification to avoid the silent all-or-nothing trap.
+
+The duplicate check compares addresses **exactly**, because that is what the probe
+covered. Whether two addresses differing only in case resolve to one account is
+**not established** — RFC 5321 keeps the local part case-sensitive — so the client
+passes them through rather than raising on an unobserved rule. Worth a probe row if
+anyone runs this again.
 
 **Remove user:**
 ```python
@@ -1993,6 +2067,15 @@ status = await client.sharing.get_status(notebook_id)
 await client.sharing.set_public(notebook_id, True)
 await client.sharing.set_view_level(notebook_id, ShareViewLevel.CHAT_ONLY)
 await client.sharing.add_user(notebook_id, "user@example.com", SharePermission.VIEWER)
+await client.sharing.set_users(
+    notebook_id,
+    [
+        ("viewer@example.com", SharePermission.VIEWER),
+        ("editor@example.com", SharePermission.EDITOR),
+    ],
+    notify=True,
+    welcome_message="Welcome, team!",
+)
 ```
 
 **Share URLs:**
@@ -2080,7 +2163,7 @@ Start a fast research session.
 params = [
     [query, source_type],  # 0: Query and source type
     None,                   # 1
-    1,                      # 2: Fixed value
+    1,                      # 2: DiscoveryMode — 1 = DEFAULT_LLM_SEARCH
     notebook_id,            # 3: Notebook ID
 ]
 
@@ -2091,7 +2174,14 @@ await rpc_call(
     source_path=f"/notebook/{notebook_id}",
 )
 
-# Response: [task_id, report_id, ...]
+# Response: [task_id]
+#
+# A ONE-element list, in 4/4 captured fast starts. Only deep research returns a
+# second slot (2/2 captured deep starts); a fast start never carries a report_id
+# (`research_start_fast.yaml` → `['ac0bc757-…']`, `research_start_deep.yaml` →
+# `['e9b7cb1c-…', '24f83c74-…']`). `start()` returns both ids as-is; the
+# adapters that poll/import/cancel select the mode-specific handle — slot 0 for
+# fast, slot 1 for deep (`_app/source_research.py`).
 ```
 
 ### RPC: START_DEEP_RESEARCH (QA9ei)
@@ -2106,7 +2196,7 @@ params = [
     None,                   # 0
     [1],                    # 1: Fixed flag
     [query, source_type],   # 2: Query and source type
-    5,                      # 3: Fixed value
+    5,                      # 3: DiscoveryMode — 5 = DEEP_RESEARCH
     notebook_id,            # 4: Notebook ID
 ]
 
@@ -2117,7 +2207,10 @@ await rpc_call(
     source_path=f"/notebook/{notebook_id}",
 )
 
-# Response: [task_id, report_id, ...]
+# Response: [task_id, report_id]
+#
+# Exactly two elements in 2/2 captured deep starts. The FIRST is an unpollable
+# sessionId; POLL_RESEARCH / IMPORT_RESEARCH / CANCEL_RESEARCH key off the second.
 ```
 
 Deep research is not complete after `QA9ei` alone. In the observed browser/client
@@ -2148,22 +2241,62 @@ await rpc_call(
     source_path=f"/notebook/{notebook_id}",
 )
 
-# Response structure:
+# Response structure. The envelope is either [[task, ...]] or a flat [task, ...]
+# (`unwrap_poll_tasks` probes both). Slot inventory below is from 9 task rows in
+# 10 POLL frames across six cassettes — five carry rows (3 deep / 6 fast), one is
+# empty-only:
 # [
-#     [task_id, [
-#         ...,
-#         query_info,           # [1]: [query_text, source_type]  (1=web, 2=drive)
-#         ...,
-#         sources_and_summary,  # [3]: [[sources], summary_text]
-#         status_code,          # [4]: see the status-code table below
-#     ]],
+#     [
+#         task_id,              # [0]: str — the poll/import/cancel handle
+#         task_info,            # [1]: see below
+#         updated_like,         # [2]: [seconds, nanos], 9/9 rows — advanced across
+#                               #      all 3 within-cassette repeated-row transitions
+#         created_like,         # [3]: [seconds, nanos], 9/9 rows — constant across
+#                               #      all 4 repeated-row transitions
+#         stable_id,            # [4]: str in 6/9 rows, always '400237754469' — one
+#                               #      capture environment, so "not task-scoped" is
+#                               #      supported (3 cassettes, both modes) but the
+#                               #      ownership reading is NOT. Unread.
+#     ],
 #     ...
+# ]
+#
+# task_info (len 5 on fast, 6 on deep):
+# [
+#     None,                     # [0]
+#     query_info,               # [1]: [query_text, source_type]  (1=web, 2=drive)
+#     discovery_mode,           # [2]: DiscoveryMode — 1 = DEFAULT_LLM_SEARCH (6/6
+#                               #      fast rows), 5 = DEEP_RESEARCH (3/3 deep rows).
+#                               #      The same enum the start params carry, so mode
+#                               #      is two-sided confirmable. Unread today.
+#     sources_and_summary,      # [3]: [[sources], summary_text] — None until results
+#     status_code,              # [4]: see the status-code table below
+#     deep_run_block,           # [5]: DEEP ONLY (3/3 deep rows, 0/6 fast):
+#                               #      [id, base64_blob | None, int, None, model_tag].
+#                               #      [0] is NOT the poll handle: in the one cassette
+#                               #      that links a start to its polls, [0] is the deep
+#                               #      start's slot-0 id (the unpollable sessionId)
+#                               #      while task[0] is slot 1. [1] is None on the
+#                               #      first poll, then 888 and 222596 base64 chars as
+#                               #      the run progresses. [2] was 1, 1, 5 — not fixed.
+#                               #      model_tag was 'deep_research.flash.prod'.
+#                               #      All unread.
 # ]
 #
 # sources_and_summary[0] can contain a mix of:
 #
 # Fast research web source:
-# [url, title, desc, type, ...]
+# [url, title, desc, type]                       # len 4 in 20/46 captured rows
+#
+# A deep row is the SAME row type carrying three more populated slots, so a
+# reader that stops at [3] silently drops them (46 source rows captured):
+#   [4]  unpopulated in every captured row
+#   [5]  favicon URL — 25/46 rows, every value a `t*.gstatic.com/faviconV2?…`
+#        `type=FAVICON` URL; unread
+#   [6]  typed content block — 26/46 rows; see the kind discriminator below
+#   [8]  1-based integer source ordinal, 1..24 — 24/46 rows. Whether it equals
+#        the report's citation numbering is unverified here (see #2141)
+# Row lengths seen: 4 (x20), 7 (x2), 9 (x24).
 #
 # Deep research report source (captured shape):
 # [None, title, None, type, None, None,
@@ -2190,7 +2323,8 @@ await rpc_call(
 #### Task status codes (`task_info[4]`)
 
 Captured live against the serving backend for issue #1964 — except code `6`,
-which was already known. `ResearchStatus` coarsens these into `in_progress` /
+which is inherited from an earlier undocumented claim and has **never** appeared
+in a capture (see the note below). `ResearchStatus` coarsens these into `in_progress` /
 `completed` / `failed`; `ResearchTask.termination_reason` keeps the distinction
 the coarse status loses, and is derived from the same table so the two can never
 disagree.
@@ -2198,10 +2332,10 @@ disagree.
 | Code | Meaning | Termination reason | Observed in |
 | --- | --- | --- | --- |
 | `1` | Run in flight | `in_progress` | Every run, before it settles |
-| `2` | Completed with results | `completed` | Fast web and fast Drive runs |
+| `2` | Completed with results | `completed` | Fast web, fast Drive, **and deep** runs |
 | `3` | **No matches** — terminal, zero sources | `no_results` | Drive runs (only place observed) |
 | `4` | Cancelled via `CANCEL_RESEARCH` | `cancelled` | A deep run cancelled mid-flight |
-| `6` | Completed (deep research) | `completed` | Deep research |
+| `6` | Completed (assumed) | `completed` | **Never observed** — see note |
 
 Notes:
 
@@ -2217,6 +2351,17 @@ Notes:
 - **A cancelled run is code `4`, distinct from `3`.** Confirmed by cancelling a
   deep run mid-flight. Fast runs finish server-side before a cancel can land, so
   a fast run cancelled immediately after start still completes with code `2`.
+- **Code `6` has no captured support, and deep research completes with `2`.**
+  Across the repo's own POLL cassettes — 9 task rows in 10 frames, 3 deep and 6
+  fast — the only codes present are `1` (6 rows, in flight) and `2` (3 rows,
+  completed). All three completed rows carry `2`, including the deep run in
+  `research_deep_poll_long.yaml` (`task_info[2] == 5`), which is what refutes the
+  old "code 6 = deep completion" attribution. The `6 → completed` coarsening is
+  KEPT — an absent observation is not a refutation, and the fallback is free —
+  but it is forward-compat, not observed behaviour. The unit fixtures that used
+  `6` to stand for "a completed deep run" now use the captured `2`; the two
+  dedicated `6` tests (one parser-level, one through `poll()`) say in their names
+  that the code is unobserved.
 - Any other terminal code maps to the `unknown` reason rather than being guessed
   at — these codes are undocumented Google internals in the same volatility class
   as the RPC method ids.
@@ -2289,6 +2434,20 @@ await rpc_call(
 #   not just the URL sources.
 # - The browser/client flow uses the later polled deep-research task ID here rather
 #   than blindly reusing the original task ID returned by START_DEEP_RESEARCH.
+# - This call commonly runs long on large batches (the server fetches/parses/
+#   embeds every entry before responding), so the client sends a batch-scaled
+#   `read_timeout` here rather than the shared 30s default — see
+#   `_research_import.py::_import_research_read_timeout` (#2187).
+# - A client-side timeout can still land AFTER the server partially commits.
+#   Retrying with the same task_id then gets rejected with gRPC 9
+#   (FAILED_PRECONDITION) — documented backend behavior (#1926 item F2b), not
+#   a novel failure. `import_sources_with_verification` re-probes
+#   `sources.list` on this error: if it verifies every requested URL already
+#   landed, that's treated as success; otherwise the error surfaces
+#   immediately rather than retrying blindly against the same rejected
+#   task_id (unlike a timeout, this attempt's payload was rejected outright,
+#   so a filtered-subset retry isn't evidence-based) — see
+#   `_research_import.py::_is_import_research_failed_precondition`.
 ```
 
 ### RPC: CANCEL_RESEARCH (Zbrupe)
@@ -2516,9 +2675,9 @@ propagates as `RateLimitError` / `RPCError`; a null result raises
 Retry a failed Studio artifact in place — the equivalent of the NotebookLM web
 UI "Retry" button. The failed artifact is **not** deleted first; the same
 `artifact_id` is preserved and the artifact moves from `failed` back to
-`in_progress`, so existing `poll_status()` / `wait_for_completion()` flows keep
-working against it. Captured/validated across video, audio, and infographic
-artifacts (issue #1319).
+`pending` (re-queued), so existing `poll_status()` / `wait_for_completion()`
+flows keep working against it. Captured/validated across video, audio, and
+infographic artifacts (issue #1319).
 
 ```python
 params = [
@@ -2548,10 +2707,11 @@ await rpc_call(
 
 **Response:** payload index `0` is a standard artifact row (positionally
 identical to a `LIST_ARTIFACTS` row): `row[0]` is the same `artifact_id`
-(returned as the task id) and `row[4] == 1` (`PROCESSING` → `in_progress`).
+(returned as the task id) and `row[4] == 1` (`ARTIFACT_STATUS_INITIALIZED` →
+`"pending"`; this was mislabelled `PROCESSING`/`in_progress` before #2127).
 
 Contract (ADR-0019 "async kickoff"): an accepted retry returns
-`GenerationStatus(status="in_progress")`; a synchronous server refusal
+`GenerationStatus(status="pending")`; a synchronous server refusal
 (`USER_DISPLAYABLE_ERROR` — rate limit, quota, or non-retryable artifact)
 **raises** the underlying `RateLimitError` / `RPCError`; a null / missing-id
 result raises `ArtifactFeatureUnavailableError`. A retry may still fail again

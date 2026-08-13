@@ -12,6 +12,8 @@ npx @modelcontextprotocol/inspector --cli node build/index.js
 
 Supports tools, resources, and prompts (plus `--method servers/list` / `servers/show` for catalog entries without connecting).
 
+> Coming from the v1 CLI? See the [v1 → v2 migration guide](../../docs/v1-to-v2-migration.md) — every v1 flag still exists, but exit codes, argument ordering, and the `--` separator changed.
+
 ### Examples
 
 **Basic usage**

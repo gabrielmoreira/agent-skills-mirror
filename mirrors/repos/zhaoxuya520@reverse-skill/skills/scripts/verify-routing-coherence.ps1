@@ -178,7 +178,7 @@ Assert-Fields (Join-Path $skillsRoot 'ops/timeline-workitem.md') @('timeline.md'
 Assert-Fields (Join-Path $skillsRoot 'ops/role-map.md') @('lead', 'cie', 'cpe', 'cre', 'Handoff')
 Assert-Fields (Join-Path $skillsRoot 'ops/skill-supply-chain.md') @('AST10', 'MCP', 'bootstrap', 'MUST')
 Assert-Fields (Join-Path $skillsRoot 'references/community-security-skills.md') @('trailofbits', 'agentskills.io', 'MUST', '2026-07')
-Assert-Fields (Join-Path $skillsRoot 'reverse-engineering/references\re-agent-workflow.md') @('Triage', 'Static', 'Dynamic', 'Synthesis')
+Assert-Fields (Join-Path $skillsRoot 'reverse-engineering/references\re-agent-workflow.md') @('Triage', 'Static', 'Dynamic', 'Synthesis', 'IAT 修复铁律', 'E-iat-repair-fail', 'E-exports', 'dnSpy', '可行性门闩', 'E-self-check-crash', 'ExitProcess', '时间盒', 'E-api-hash', 'E-anti-debug-peb', 'E-wide-strings', 'A–T', 'U–AV', 'nonpe-format-cookbook')
 Assert-Fields (Join-Path $skillsRoot 'pentest-tools/references\recon-pipeline.md') @('auth.status', 'network_profile', 'Evidence', 'nuclei')
 Assert-Fields (Join-Path $skillsRoot 'docs-generator/references\security-report-templates.md') @('Evidence Chain', 'Findings', 'Path')
 Assert-Fields (Join-Path $skillsRoot 'field-journal/_template.md') @('Scope', 'Evidence', 'Finding')
@@ -202,7 +202,22 @@ if ($vendorRulesText -match '(?m)JS/Web 签名逆向报告\s*\|[^\r\n]*malware')
 } else {
     Ok 'vendor rules keep JS signature reports flavor-neutral'
 }
-Assert-Fields $vendorRulesPath @('skills/ops/evidence-finding-path.md', '来源证据', 'securelist.com/updated-mata', 'www.huorong.cn')
+Assert-Fields $vendorRulesPath @('skills/ops/evidence-finding-path.md', '来源证据', 'securelist.com/updated-mata', 'www.huorong.cn', 'thin overlay', 'vuln')
+Assert-Fields (Join-Path $skillsRoot 'malware-analysis/SKILL.md') @('IAT 修复铁律', 'E-iat-repair-fail', 'E-exports', 'E-self-check-crash', 'ExitProcess', '时间盒', '可行性', 'E-api-hash', 'E-sig-forge', 'A–T', 'U–AV', 'E-batch-deobf', 'E-vba-pcode')
+Assert-Fields (Join-Path $skillsRoot 'reverse-engineering\anti-analysis.md') @('Agent 响应菜谱 A–T', 'E-anti-debug-cpuid', 'E-api-hash', 'SigCheck', 'ollvm-deobfuscation')
+Assert-Fields (Join-Path $skillsRoot 'reverse-engineering/references\nonpe-format-cookbook.md') @('U–AV', 'E-batch-deobf', 'E-ps-decode-layer-N', 'E-vba-pcode', 'E-js-vmp', 'E-driver-irp-handlers', 'E-dll-tls-dllmain', 'E-android-hidden-icon-manifest', 'E-delay-import')
+Assert-Fields (Join-Path $skillsRoot 'js-reverse/SKILL.md') @('E-js-vmp', 'E-js-deobf', 'nonpe-format-cookbook')
+Assert-Fields (Join-Path $skillsRoot 'apk-reverse/SKILL.md') @('E-android-hidden-icon-manifest', 'nonpe-format-cookbook')
+Assert-Fields (Join-Path $skillsRoot 'reverse-engineering\kernel-driver-reverse.md') @('E-driver-irp-handlers', 'E-driver-ioctl', 'E-driver-byovd')
+Assert-Fields (Join-Path $skillsRoot 'docs-generator/references\security-report-templates.md') @('thin `vuln`', '1c. 漏洞技术分析')
+if ($vendorRulesText -match '(?m)vuln.*默认全文' -or $vendorRulesText -match '第 3 个默认全文 flavor') {
+    # presence of explicit "not third default" language is OK; flag only if it claims vuln IS a third default full flavor
+}
+if ($vendorRulesText -match '仅 2 个厂商全文 flavor' -or $vendorRulesText -match '不是.*第 3 个默认全文 flavor') {
+    Ok 'vendor rules keep vuln as thin overlay not third default flavor'
+} else {
+    Bad 'vendor rules missing vuln thin-overlay constraint'
+}
 $fieldLog | Set-Content -LiteralPath (Join-Path $ScratchDir 'template-fields.txt') -Encoding UTF8
 
 # --- role map skills exist for primary rows ---

@@ -14,6 +14,8 @@
 - **native editing context menu**：主进程通过 Electron `role` 为 input / textarea / contenteditable 提供复制、粘贴等系统编辑动作。
 - **native delivery owner**：始终由 Electron Main 领取 `electron-native` delivery；窗口可见性不会把 ownership 转给 Renderer。
 - **OS accepted**：Electron `Notification` 发出 `show` lifecycle event。它证明系统接受展示请求，不等于用户看见或已读。
+- **server recovery safe mode**：Electron Main 在 packaged Next utility 意外退出后持有的跨 generation 状态；通过只读 child env 注入，Renderer 无权自行清除。
+- **descendant registry**：当前 utility generation 通过窄 lifecycle channel 登记其直接 child 的 role、PID、start identity、可执行文件 basename 与后代可验证性；Main 只用它决定能否重启，不凭不完整身份杀进程。
 
 ## 不变量 / 契约表
 
@@ -45,6 +47,15 @@
 | 24 | 浏览器可触发的 HTML preview URL 只接受本机 POSIX 或 Windows drive 路径；UNC、SMB 与 Windows device namespace 必须在任何 `stat/realpath/readFile` 前拒绝，避免任意网页通过 loopback GET 诱发网络认证出站 | `html-preview-url.ts` + preview route |
 | 25 | macOS 默认钥匙串缺失/未配置时，不得直接进入 Claude Code 的凭据 item 探测或 Electron `safeStorage`，避免系统 modal 阻塞会话。探测只能读取 default-keychain 配置与文件存在性；仅在确认不可用时给 Claude subprocess 前置窄 `security` shim，且只拒绝 `Claude Code*` service 与无参数 `show-keychain-info`，其他 argv 必须原样转发 `/usr/bin/security` | `macos-keychain-guard.ts` + packaged shim + Main/SDK env |
 | 26 | 所有 `shell.openExternal` 返回的 Promise 必须由同一个边界消费。失败时只记稳定 reason code，不得记录 URL/query 或原始 OS 文本；用户必须收到按系统 locale 选择的默认浏览器修复提示，提示本身失败也不得产生 unhandled rejection | `external-navigation.ts` + `electron/main.ts` |
+| 27 | packaged Next utility 的 unexpected exit 必须立即暂停 native poll，并切到不依赖 Next 的本地恢复页；intentional quit 不得触发恢复 | `server-supervisor.ts` + `electron/main.ts` |
+| 28 | 自动恢复固定使用原 stable port，按 1s/2s/4s 退避，10 分钟最多 3 次；`/api/health` 成功前不得 reload route 或恢复 poll，持续健康 60s 才重置预算 | supervisor + Main |
+| 29 | recovery safe mode 只由 Main 持有并经 `CODEPILOT_RECOVERY_SAFE_MODE` 注入。safe child 不得启动 Codex app-server 或 scheduler；Codex Runtime composer 必须显示原因并禁用发送 | Main + instrumentation + Runtime UI |
+| 30 | descendant lifecycle 消息只接受当前 utility generation，register/unregister 必须精确匹配 PID + start identity + role + basename。live、PID 复用或更深树不可验证时 fail-closed 停在错误页；不得仅凭 PID/basename自动 kill | lifecycle contract + registry |
+| 31 | Utility fatal report 原文不得写日志或复制诊断；只允许 reason、退出码、heap/RSS/private/host memory 等纯数值。恢复页 IPC 只接受当前 data: recovery renderer | Main + preload + recovery tests |
+| 32 | blocked（ownership 不可证明）状态**不得提供任何可成功调用的 relaunch 入口**：descendant registry 是 per-Main 内存态，relaunch 后为空，会绕过 single-owner 门禁。blocked 页只渲染「退出应用」；Main restart handler 必须显式拒绝 blocked，quit handler 必须反向限定只接受 blocked，source-pin 断言状态门禁位于 `app.relaunch()` 前。给 blocked 加回自动/一键重开前必须先落地跨 relaunch 的持久化 registry 重验证（tech-debt #85） | `server-recovery-page.ts` + Main IPC + recovery tests |
+| 33 | packaged Next utility 的运行期 fatal/error/unexpected exit 在 stable opt-in telemetry 中每个 generation 最多捕获一次；只传稳定枚举、平台定义的有界整数退出码与 utility/host memory 数值。负 POSIX/launch-failure sentinel 不得被当作无效内存指标丢弃；Electron diagnostic report 原文必须在 Main 边界丢弃，不得进入日志、Sentry 或恢复页 | `utility-process-failure.ts` + Main + telemetry/recovery tests |
+| 34 | stable/preview macOS distributable 必须是 Developer ID Application 签名且 `TeamIdentifier` 精确匹配发布配置；证书打包步骤使用 `CSC_LINK` 时必须允许 electron-builder 发现并选择导入的身份，除非同时配置了显式 identity。缺证书、ad-hoc、Team ID 不一致、最终 bundle deep/strict 失败都必须阻断上传。最终 `codesign` inspect/deep verify 自身必须有进程级硬超时，不能只依赖 CI step timeout；ad-hoc 只允许显式本地包，不能作为发布证据 | `after-sign.js` + `verify-macos-developer-id.mjs` + workflows |
+| 35 | packaged recovery smoke 跳过 provider Safe Storage 只允许 exact flag + packaged app + canonical realpath 位于 `os.tmpdir()/codepilot-packaged-recovery-*`；flag 不得传给 Next/Agent child。真实 userData、dev mode、symlink/不存在路径和近似 flag 全部 fail closed | `provider-secret-startup-policy.ts` + Main + recovery smoke/tests |
 
 ## 关键文件 + 责任
 
@@ -67,6 +78,9 @@
 | `electron/notification-lifecycle.ts` | 平台 notification options 与 show/error/timeout 终态 |
 | `electron/notification-click-queue.ts` | 点击 action 校验、有界 pending queue 与 event-id 去重 |
 | `electron/external-navigation.ts` | HTTP(S) system-browser Promise 所有权、本地化失败提示与隐私边界 |
+| `electron/server-supervisor.ts` | crash window、有限 backoff、safe-mode ownership 与健康重置 |
+| `electron/server-descendant-registry.ts` + `src/lib/server-lifecycle-contract.ts` | generation/identity 校验与 single-owner restart gate |
+| `electron/server-recovery-page.ts` | 不依赖 Next 的本地化错误面与 CSP |
 | `src/lib/macos-keychain-guard.ts` + `resources/macos-keychain-guard/security` | default-keychain 只读探测、Claude credential 非交互降级与 packaged shim |
 
 ## 改动检查表
@@ -91,7 +105,12 @@
 - [ ] 默认助理 fixed-path IPC 保持无参数，路径 fixture 覆盖 macOS/Windows/Linux 分隔符
 - [ ] HTML preview wire 变更覆盖 forged workspace token 与 Windows root token；`\\server\share`、`//server/share`（Windows）和 `\\?\` 必须在文件 I/O 前 fail closed
 - [ ] 改 macOS 凭据启动链时覆盖：健康 default keychain 不改 PATH；缺失/未配置时不调用 `safeStorage`；shim 只拦 `Claude Code*` credential service、其余命令固定 `exec /usr/bin/security "$@"`；不得用 `password-store=basic` 或 `CLAUDE_CODE_SIMPLE` 扩大降级面
+- [ ] 改 macOS 打包签名时验证最终 `.app` 的 Developer ID + exact Team ID + deep/strict；`CSC_LINK` 证书步骤不得在未配置显式 identity 时关闭 `CSC_IDENTITY_AUTO_DISCOVERY`；不得用 afterSign 中间态或 ad-hoc 包冒充正式发布证据
+- [ ] 最终 artifact verifier 的每次 `codesign` 调用都有显式 timeout + kill signal；超时必须 fail closed，不能进入 checksum/upload
+- [ ] recovery smoke 的 Safe Storage bypass 必须保留 packaged + canonical temp userData 双门禁，并覆盖 symlink/真实 userData 反例；flag 不得进入 child env
 - [ ] 改外链导航时两个入口（`setWindowOpenHandler` / `will-navigate`）都走 `openExternalSafely`；拒绝 Promise 与失败 dialog 自身拒绝均必须被消费，日志/提示不得回显目标 URL 或 OS error。
+- [ ] 改 packaged server lifecycle 时覆盖 intentional quit、单次/连续 crash、health-before-reload、poll pause/resume、stable port、safe-mode env 与 descendant fail-closed。
+- [ ] 运行期 crash recovery 的发布证据必须来自 packaged app；Node source-pin/单测只能证明状态机和接线，不能标 `Smoke passed`。
 
 ## 常见坑
 
@@ -109,7 +128,10 @@
 - 不要根据 `mainWindow.isVisible()` 在 Renderer 和 Main 间切换 native consumer；切换窗口会产生重复或漏投。
 - 不要在调用 `notification.show()` 后立刻写 delivered；生命周期终态来自 `show` event，且需要有界 timeout。
 - 不要只调大 native notification 的 show timeout；它必须始终短于 stale claim lease，否则同一 delivery 可能在首次消费尚未结束时被再次领取。
+- 不要只依赖 CI job/step timeout 兜底 `codesign`；final artifact verifier 应在命令边界终止卡死进程并返回非零。
 - 不要用 Web Notification 或 renderer toast 作为 packaged Electron native notification 的成功证据。
+- 不要在 utility `exit` 后直接 `startServer()`：先停 poll、核对 generation registry，再走 bounded supervisor。无法证明孙进程已退出时宁可停在错误页。
+- 不要记录 Electron UtilityProcess diagnostic report 原文；它可能含 argv、环境和绝对路径。
 
 ## 测试覆盖
 
@@ -128,6 +150,7 @@
 | HTML preview 本机路径限制、UNC/device token 拒绝 | `html-preview-url.test.ts` + `html-preview-route.test.ts` |
 | macOS default-keychain 探测、Claude credential shim、safeStorage 前置门禁、packaged resource | `macos-keychain-guard.test.ts` + `provider-secret-electron-contract.test.ts` + `electron-packaging-hygiene.test.ts` |
 | 外链默认应用失败、反馈失败与隐私日志边界 | `electron-external-navigation.test.ts` + `electron-main-security.test.ts` |
+| utility supervisor、offline page、safe mode、descendant identity、poll/reload 顺序 | `electron-server-recovery.test.ts` + `scripts/smoke-packaged-server-recovery.mjs` |
 
 ## 设计决策日志
 
@@ -145,3 +168,6 @@
 - 2026-08-03 — 默认助理路径改为无输入的 fixed-path IPC；native notification 改为 Main 单 owner 的 durable claim/ack。`show` 只表示 OS accepted，点击通过有界 pending queue 等待 Renderer ready，提示音服从系统设置且仍以各平台 packaged smoke 为发布证据。
 - 2026-08-07 — 独立安全审查确认 preview token 能表达 UNC/device root，跨站页面虽读不到响应仍可诱发 loopback 文件探测与 SMB/NTLM 出站。Preview wire 收紧为 local-only；UNC workspace 的 HTML 预览暂不支持，普通文件能力不受影响。
 - 2026-08-07 — B-018 再次收到真实截图后推翻旧 Chromium 归因：当前 Claude CLI 会在每个 subprocess 启动时用用户名探测 `Claude Code*` Keychain item，且 v0.65+ Electron 还会初始化 `safeStorage`。采用 default-keychain 配置的只读前置探测；确认缺失时跳过 safeStorage，并用 packaged 窄 shim 让 Claude 走既有回退。拒绝 `password-store=basic`（macOS 无效且会误导安全边界）和 `CLAUDE_CODE_SIMPLE`（会关闭正常 hooks/插件/项目指令能力）。
+- 2026-08-11 — Next utility OOM containment 改为 Main-owned safe mode + 本地 recovery page + bounded supervisor。自动重启受 production descendant registry 硬门禁；未知/残留 owner fail-closed，不以无限重启换表面可用。
+- 2026-08-12 — B-030 用户日志证明 utility fatal 只落本地主日志、Sentry 无对应事件。Main 新增 generation one-shot 的 normalized fatal capture，且继续在 API 入口丢弃 diagnostic report 原文；Electron 从 40.2.1 更新到同主版本 40.10.6，吸收后续 Chromium/Electron 补丁，不以全局关闭 GPU 规避旧 Graphite crash。
+- 2026-08-12 — 第二台 Mac 的 `codepilot Safe Storage` 授权框与本机 `SecItemCopyMatching` 阻塞揭示 stable/preview CI 也在静默产出 ad-hoc 包。macOS distributable 改为 Developer ID + exact Team ID fail-closed，并在最终产物后置复核；本地 recovery smoke 只能在 canonical 临时 userData 隔离跳过 Safe Storage。
