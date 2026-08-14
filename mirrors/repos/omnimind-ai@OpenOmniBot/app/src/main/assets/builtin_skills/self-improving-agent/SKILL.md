@@ -9,7 +9,7 @@ This built-in skill is fixed-injected for Omnibot agent runs.
 
 Use it to maintain a lightweight learning loop without interrupting the user's main task.
 
-The runtime may auto-read this skill after a tool failure and auto-record the failure into `data/ERRORS.md`.
+The runtime may auto-read this skill after a tool failure and auto-record the failure into `data/ERRORS.md`. Repeated failures with the same signature are merged into one bounded entry. If an argument/schema failure is followed by a successful call to the same tool in the same Agent run, the runtime closes that pending entry and distills the verified recovery into short-term memory.
 
 ## When To Record
 
@@ -44,6 +44,8 @@ Do not record ordinary chat, tiny one-off slips, or anything the user asked not 
 ## Memory Promotion
 
 As soon as you actually fix a failure — or the same failure recurs — write one short "遇到 X 先 Y" rule to memory (`memory_write_daily`, or `memory_upsert_longterm` when it is broadly stable) and back-fill the ERRORS entry's 建议修复 and 状态 (pending → resolved). Do not leave a resolved failure sitting as pending with an empty fix.
+
+The runtime can automatically close a same-run argument/schema failure after verified success. An execution/runtime failure remains pending and still needs a concrete fix from you before promotion. Do not promote a generic “retry succeeded” observation as a stable rule.
 
 Promote a lesson into memory only when it is stable, short, and broadly reusable.
 

@@ -166,6 +166,10 @@ Real backends reject task files that remain unreviewed. Never include raw
 transcripts, credentials, secrets, or sensitive task content in messages,
 commits, or generated summaries.
 
+`gate_no_regression` is a config-only safeguard in
+`~/.skillopt-sleep/config.json`. It defaults to `false`; set it to `true` to
+reject a candidate when any validation task's configured gate score decreases.
+
 ## Scheduling
 
 Scheduling is opt-in. The scheduler persists project, backend, time, and the

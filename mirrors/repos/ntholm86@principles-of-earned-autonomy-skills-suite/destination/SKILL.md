@@ -1,7 +1,7 @@
 ---
 name: destination
-version: 2.6.0
-description: 'Surface the agent''s in-progress guesses about where the operator is heading — what they care about, what they are circling, what the implicit destination might be — and turn those guesses into questions the operator can confirm, correct, or reject. Closes the gap between the destination the operator has explicitly stated and what the agent has picked up from their conversation, reactions, and emphasis. USE WHEN: the destination feels thin or stale, the operator is exploring rather than executing, the agent suspects it is missing implicit direction, or before a long autonomous run that will drift if the destination is unclear.'
+version: 2.7.1
+description: 'Triggered direction-consolidation service. Surface the agent''s sourced guesses about durable direction and turn them into questions the operator can confirm, correct, or reject. Improve schedules it when accumulated work makes cross-run direction useful; manual invocation remains available when the operator wants to explore or revise direction.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
 
@@ -31,19 +31,13 @@ Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it 
 
 ## Artifact name
 
-The operator-held destination artifact is `.acm/destination.md`. If it does not exist, the repo has no operator-held destination yet — run this skill to produce one.
+The operator-held destination artifact is `.acm/destination.md`. If it does not exist, the repo has no durable cross-run destination yet. That is a valid early state: Intent can establish a visible mandate for each Improve run until evidence makes consolidation useful.
 
 ## When to invoke
 
-Destination is **not** part of the autonomous loop. It is invoked deliberately by the operator (or by another skill that has detected a need) at moments where direction is more valuable than action:
+Improve schedules Destination with evidence of a named durable choice the operator has not settled. Destination accepts that question; it does not maintain a second trigger taxonomy. The operator may also invoke it directly to explore or revise direction. Absence, age, or brevity of `.acm/destination.md` and raw iteration count are not reasons to run it.
 
-- **Work on a target is beginning.** Establish the destination before the first Improve iteration so autonomous work has somewhere explicit to aim.
-- **The destination changed or feels thin.** The operator-held `.acm/destination.md` is missing, terse, or no longer matches what the operator has been talking about.
-- **The operator is exploring, not executing.** Recent sessions show the operator turning ideas over rather than narrowing toward a decision.
-- **A long autonomous run is about to start.** The destination is the input that determines whether the run will produce useful work or precisely-executed wrong work.
-- **The agent suspects it is missing something.** During Improve, Orient, or any other skill, an agent that finds itself uncertain about *what the operator actually wants* should be able to pause and run Destination rather than guess silently.
-
-Destination is fast, conversational, and stops as soon as the operator says "yes, that's right" or "no, I don't want to do this now."
+Destination stops as soon as the operator confirms, corrects, or declines the proposed direction.
 
 ## The work
 
@@ -62,6 +56,8 @@ Before forming any hunches, look at what is available in the **target repo's `.a
 - The current conversation — what the operator has been emphasising, dismissing, returning to.
 
 The point is not to summarise these. The point is to notice what the operator has *not* said directly but that the signal points to.
+
+When Improve scheduled this run, begin from its stated trigger evidence. Treat prior unopposed Intent narrations as accepted mandates for their completed runs and synthesize what they already establish. Do not ask the operator to restate the project from zero; ask only about direction that remains unresolved across those mandates.
 
 ### 2. Form sourced inferences
 

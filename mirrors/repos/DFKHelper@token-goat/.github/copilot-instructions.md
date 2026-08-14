@@ -7,18 +7,23 @@ This gate decides *whether* to reach for a read tool at all. VS Code’s support
 
 Fallback clauses may name your harness's own native read, search, and edit tools, or its shell helpers. Shell binaries and editor programs are commands invoked through the shell tool, never tool identifiers, and must never appear in an agent's tools frontmatter or an allowed-tools list. This paragraph deliberately names no specific tool or binary: instruction-file loaders harvest such names into a tool allowlist and then warn that every one of them is unknown.
 
-Exemptions (gate passes, read directly): the file is under ~200 lines and you need all of it; it was never indexed (new, untracked, or generated this turn); it is binary or an image; the target has no symbol handle (e.g. a literal mid-function).
+Exemptions (gate passes, read directly): the file is under ~200 lines and you need all of it; it was never indexed (new, untracked, or generated this turn); it is a genuinely opaque binary (not an image); the target has no symbol handle (e.g. a literal mid-function).
 
 Failure shapes to catch yourself in, and the command that replaces each:
 - a shell text search with context flags to find a function body → `read "file::symbol"`
 - paging one function with view/view_range → `read "file::symbol"`
+- reading a symbol plus chasing its callers and containing doc section as separate reads → `brief "file::symbol"`
 - reading one heading of a large doc → `section "file::Heading"`
 - searching for a symbol's callers → `refs file::symbol --callers`
 - searching for a *concept* rather than a literal string → `semantic "description"`
-- re-reading output you already captured → `bash-output`/`web-output` by ID
+- re-reading output you already captured → `bash-output`/`web-output`/`mcp-output` by ID
 - a directory listing or recursive wildcard walk to orient in an unfamiliar repo → `map --compact`
+- pulling one value or subtree out of a JSON/YAML file (manifest, lockfile, spec, config) → `json-query file 'a.b.c'` / `yaml-query file 'a.b.c'`
+- opening an image to check its dimensions, format, or size → `image-meta file`
+- opening a screenshot, diagram, or scan to read the text in it → `image-text file`
+- opening a PDF or Office document → inspect its format first, then read a narrow slice: PDF `pdf-meta`/`pdf-outline` then `pdf-extract`; Word `docx-outline` then `docx-text`; PowerPoint `pptx-outline` then `pptx-slide`/`pptx-notes`; Excel `xlsx-sheets` then `xlsx-head`/`xlsx-range`/`xlsx-query`
 
-Commands: `symbol NAME`, `read "file::symbol"`, `section "file::Heading"`, `semantic "description"`, `outline file`/`skeleton file`, `map --compact`, `refs file::symbol --callers`, `changed --symbol`, `config-get file KEY`, `bash-output`/`web-output`, `gdrive-sections <file-id>`.
+Commands: `symbol NAME`, `read "file::symbol"`, `brief "file::symbol"`, `section "file::Heading"`, `semantic "description"`, `outline file`/`skeleton file`, `map --compact`, `refs file::symbol --callers`, `changed --symbol`, `config-get file KEY`, `json-query file 'a.b.c'`/`yaml-query`, `json-outline file`/`yaml-outline`, `bash-output`/`web-output`/`mcp-output`, `gdrive-sections <file-id>`, `image-meta file`/`image-text file`, `pdf-meta`/`pdf-outline`/`pdf-extract`, `docx-outline`/`docx-text`, `pptx-outline`/`pptx-slide`/`pptx-notes`/`pptx-text`, `xlsx-sheets`/`xlsx-head`/`xlsx-range`/`xlsx-query`.
 
 Sub-agent briefs must carry this gate verbatim: a sub-agent inherits none of this context and its reads spend the same token budget.
 
@@ -26,5 +31,5 @@ Sub-agent briefs must carry this gate verbatim: a sub-agent inherits none of thi
 
 **Compressed payloads:** a message containing a token-goat payload block (recognizable by a `recovery: token-goat retrieve <id>` line) is compressed text, not an answer. Call the MCP tool `retrieve_text` with that id to recover the original text, then answer the question the message asks using the recovered text. Never present the raw payload to the user as the response; if the `retrieve_text` tool is unavailable (the MCP server is not running, or the chat is not in Agent mode), say so plainly and ask the user to switch to Agent mode or run `token-goat install --vscode`.
 
-VS Code support: token-goat install --vscode configures a project-local stdio MCP server in .vscode/mcp.json under the servers root key. VS Code may call these MCP tools when selected; MCP does not intercept VS Code’s built-in file reads.
+VS Code support: token-goat install --vscode configures a stdio MCP server under the servers root key in your user-profile mcp.json by default (add --project for the workspace .vscode/mcp.json instead). VS Code may call these MCP tools when selected; MCP does not intercept VS Code’s built-in file reads.
 <!-- token-goat-vscode-end -->

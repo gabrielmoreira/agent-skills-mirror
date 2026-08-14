@@ -1,5 +1,6 @@
 ---
 name: flow-parallel
+disable-model-invocation: true
 effort: high
 aliases:
   - parallel
@@ -14,7 +15,6 @@ validation_gates:
   - instructions_written
   - processes_launched
   - all_work_packages_complete
-invocation: human_only
 ---
 
 # STOP - SKILL ALREADY LOADED

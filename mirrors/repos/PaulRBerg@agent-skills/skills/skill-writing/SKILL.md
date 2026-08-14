@@ -2,14 +2,15 @@
 argument-hint: <skill-name>
 name: skill-writing
 description:
-  Use to create/scaffold/init a new agent skill under `.agents/skills` in the working directory where invoked.
+  Create/scaffold/init a project-local agent skill under `.agents/skills` in an ordinary repository; defer to repository
+  instructions that define a source catalog and lifecycle.
 ---
 
 # Skill Writing
 
-Bootstrap a skill with a small observable contract, then symlink it into `.claude/skills/` so Claude Code can discover
-it. Keep invariant workflow guidance in `SKILL.md`; move deterministic mechanics and conditional detail into scripts and
-references.
+Bootstrap a project-local skill with a small observable contract, then symlink it into `.claude/skills/` so Claude Code
+can discover it. Keep invariant workflow guidance in `SKILL.md`; move deterministic mechanics and conditional detail
+into scripts and references.
 
 ## Model Optimization
 
@@ -32,6 +33,12 @@ orchestration-heavy skill because their recommendations may evolve.
 
 Reject `--global`, explicit destination paths, and other scope overrides. The invocation working directory is the only
 supported scope.
+
+## Repository Catalog Guard
+
+Before resolving project-local paths, read the repository instructions applicable to the invocation working directory.
+If they define a source catalog and lifecycle for skill creation, stop this workflow and follow that repository-owned
+workflow. Do not create `.agents/skills/` or `.claude/skills/` paths in that repository.
 
 ## Resolved Paths
 
@@ -74,6 +81,12 @@ Before choosing a layout, separate the content into:
 Define the outcome, authority boundaries, stopping conditions, and completion evidence. Do not prescribe an identical
 execution path when several safe paths satisfy the same contract. For user-facing workflows, also define which kickoff,
 progress, decision, blocker, and completion events deserve a message and the smallest useful shape for each.
+
+Express outcomes, invariants, and completion evidence as positive, observable acceptance criteria; when affirmative
+evidence is available, require it instead of accepting only the absence of listed failures or adding negative examples,
+inverse restatements, or long blacklists. Retain a negative instruction only for an explicit user-requested exclusion or
+when it is the clearest concise guard for a consequential safety, authority, destructive-action, scope, or likely model
+failure boundary that positive criteria cannot enforce equivalently.
 
 ## When to Split Content
 

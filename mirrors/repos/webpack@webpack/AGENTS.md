@@ -102,7 +102,7 @@ The directory listings below are the canonical map of the repository. **Whenever
 
 **Tests** — see [TESTING_DOCS.md](TESTING_DOCS.md) for directory structure, naming, and how to run a single case.
 
-- `test/` — All test suites (`cases/`, `configCases/`, `watchCases/`, `hotCases/`, `statsCases/`, `typesCases/`, `test262-cases/`, `html5lib-tests/`, `css-parsing-tests/`, `benchmarkCases/`, `memoryLimitCases/`, etc.). `RoundTripConfigCases` re-bundles the output of `configCases` marked with a `roundTrip.js` file.
+- `test/` — All test suites (`cases/`, `configCases/`, `watchCases/`, `hotCases/`, `statsCases/`, `typesCases/`, `test262-cases/`, `html5lib-tests/`, `wpt/`, `css-parsing-tests/`, `benchmarkCases/`, `memoryLimitCases/`, etc.). `RoundTripConfigCases` re-bundles the output of `configCases` marked with a `roundTrip.js` file. `wpt/` is web-platform-tests, checked out one commit deep by the `html5lib` job alone — it is where the HTML tree-construction corpus lives since html5lib-tests dropped it.
 
 **Examples & changesets**
 
@@ -132,6 +132,7 @@ The directory listings below are the canonical map of the repository. **Whenever
    - `test/__snapshots__/Cli.basictest.js.snap` — the CLI flags are derived from the schema, so every new property adds one.
    - `test/configCases/ecmaVersion/browserslist*/webpack.config.js` — these carry an **inline** snapshot of the resolved `output.environment`, so an entry there must be added to nine config files.
    - `test/__snapshots__/target-browserslist.unittest.js.snap` — same, per browserslist query.
+   - `test/Validation.test.js` — its **inline** snapshots quote the "these properties are valid" list, so a new property under `module.rules` changes one. It runs in the `integration` matrix, not `basic`.
 
 Skipping any layer silently breaks the option. After editing schemas, run `yarn fix:special` so `lib/` code can reference the updated types. If you added or modified options, consider updating `examples/` and run `yarn build:examples` to verify.
 
@@ -452,16 +453,17 @@ Required answer per section — **one sentence each is the target, two or three 
 
 After every `git push` of a new branch, check whether a PR was auto-created (webpack has this webhook). If so, `update_pull_request` to install the full template — the auto-created body never matches.
 
-### Watching a PR, and updating its branch — ask first
+### Watching a PR, and updating its branch
 
 > [!REQUIRED]
 
-Two things an agent reaches for by reflex are **not** defaults here, because webpack's maintainers usually land a PR through their own pipeline:
+**Subscribe to every pull request you open** (`subscribe_pr_activity`), as the last step of opening it. Not a question to put to the requester: a PR you opened is one you own until it lands, and [every check ends green](#after-opening-the-pr--every-check-ends-green) and [the automated reviews](#after-opening-the-pr--wait-for-the-automated-reviews) both need the session awake to be honoured at all. Stay subscribed until the PR is merged or closed, or the requester says to stop.
 
-- **Subscribing to a PR's activity** (`subscribe_pr_activity`), which keeps the session attached and wakes it on every check and review. Worth it when the requester wants the PR driven to green; wasted attention when they are about to merge it themselves. Offer it, name what it will do, and let them answer — then `unsubscribe_pr_activity` as soon as they say they are done.
+What an agent reaches for by the same reflex and must **not** do unasked, because webpack's maintainers usually land a PR through their own pipeline:
+
 - **Rebasing, or merging the base branch into the PR branch.** A branch merely behind `main` is not a defect to fix, and doing it unasked rewrites history someone else's pipeline was about to handle, restarts every check, and can drop an approval. Do it when the requester asks, or when the PR is reported genuinely un-mergeable — and say which of the two applies before pushing.
 
-Pushing your own commits to your own branch stays free. What needs asking is anything that changes how the PR gets landed, or how long the session stays attached to it.
+Pushing your own commits to your own branch stays free. What needs asking is anything that changes how the PR gets landed.
 
 ### Writing on GitHub — ask first
 
@@ -505,7 +507,7 @@ Once those suites are in, read the report; only then is a genuine patch gap wort
 
 Every webpack PR is reviewed automatically on the initial commit and on every subsequent push, by whichever automated reviewers the repository has enabled. You must always wait for them and address every comment from each. A finding from a bot is judged on the claim, never on the author: reproduce it before you decide.
 
-1. After `create_pull_request`, ask whether to subscribe to the PR (`subscribe_pr_activity`) — see [Watching a PR, and updating its branch](#watching-a-pr-and-updating-its-branch--ask-first); it is not automatic. Once subscribed, a review wakes the session, so do **not** poll.
+1. After `create_pull_request`, subscribe to the PR (`subscribe_pr_activity`) — see [Watching a PR, and updating its branch](#watching-a-pr-and-updating-its-branch). Once subscribed, a review wakes the session, so do **not** poll.
 2. When a review arrives, read every comment:
    - If correct, push a fix in a new commit — **including when the bug is one your own PR introduced**, which is the common case for a bot flagging a line you just wrote.
    - If wrong, draft the reply and ask the requester before posting it (see [Writing on GitHub — ask first](#writing-on-github--ask-first)) — never ignore silently.

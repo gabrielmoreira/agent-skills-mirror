@@ -10,6 +10,7 @@ from datetime import date
 from urllib.parse import urlparse
 
 from . import (
+    amazon,
     dates,
     health,
     hiring_signals,
@@ -226,6 +227,7 @@ SOURCE_LABELS = {
     "arxiv": "arXiv",
     "techmeme": "Techmeme",
     "trustpilot": "Trustpilot",
+    "amazon": "Amazon",
     "perplexity": "Perplexity",
     "jobs": "Jobs",
     "corpus": "Your files",
@@ -1795,6 +1797,18 @@ def render_full(report: schema.Report, save_path: str | None = None) -> str:
         "perplexity",
         "jobs",
     ]
+    # The list above fixes the display order for the sources it names, but it
+    # is not the source registry and drifts every time one is added: amazon,
+    # arxiv, techmeme, trustpilot, linkedin, and dripstack were all silently
+    # absent from this dump while appearing normally in the ranked section
+    # above, so the saved artifact -- the copy users keep -- was missing
+    # evidence the run actually collected. Append whatever else the report
+    # carries, sorted for determinism, so a new source is visible here the
+    # day it lands rather than the day someone notices.
+    source_order += sorted(
+        source for source in evidence_report.items_by_source
+        if source not in source_order
+    )
     for source in source_order:
         items = evidence_report.items_by_source.get(source, [])
         if not items:
@@ -1926,10 +1940,21 @@ def _format_item_engagement(item: schema.SourceItem) -> str:
         "digg_count",
         "share_count",
         "num_comments",
+        "ratings",
     ]:
         val = eng.get(key)
         if val is not None and val != 0:
             parts.append(f"{val} {key}")
+    # Same drift as the source list above: this allowlist silently blanks the
+    # engagement of any source whose metric is not on it (trustpilot's
+    # `reviews`/`trustScore` today), so the item renders an empty `[]` in the
+    # saved dump. Fall through only when nothing matched, which fixes the
+    # blank case without adding previously-unshown keys to sources that
+    # already render fine.
+    if not parts:
+        for key, val in sorted(eng.items()):
+            if val not in (None, 0, ""):
+                parts.append(f"{val} {key}")
     return ", ".join(parts) if parts else ""
 
 
@@ -2793,6 +2818,10 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
             line += f" │ ⚠ {_format_outcome(outcome)}"
         out.append(line)
 
+    amazon_line = _amazon_footer_line(report)
+    if amazon_line:
+        out.append(amazon_line)
+
     # Web (sources from grounding)
     web_items = report.items_by_source.get("grounding") or []
     if web_items:
@@ -2816,6 +2845,100 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
     # ## Partial Coverage / ## Source Coverage evidence blocks, so nothing is
     # silently lost; the conclusion surface just stays clean.
     return out
+
+
+def _amazon_footer_line(report: schema.Report) -> str | None:
+    """Build the 📦 Amazon emoji-footer line (R1c).
+
+    Follows the Polymarket shape -- unit count, then *named products
+    carrying their own numbers* -- rather than the three-count inventory
+    shape every social source uses. ``3 products │ 611 ratings │ 56
+    reviews`` fits the box and says nothing; a named product with the
+    direction its rating moved this month is the whole reason the source
+    exists.
+
+    Three renderings:
+
+    * **Default/deep** -- per-product drift entries (see
+      ``amazon.footer_entry``).
+    * **Quick depth** -- no review pulls means no recent window, so the
+      inventory form is the honest one here and only here. Never render a
+      ``→`` against a null window.
+    * **Empty search** -- name the keyword rather than suppressing the
+      line. Observability, not spend: an empty result means the model's
+      keyword or its relevance judgment was wrong, and a hidden line means
+      nobody ever finds out.
+    """
+    items = report.items_by_source.get("amazon") or []
+    keyword = str((report.artifacts or {}).get("amazon_query") or "").strip()
+    outcome = report.source_status.get("amazon")
+    failed = bool(outcome and outcome.state != health.OK)
+
+    if not items:
+        if not keyword:
+            return None
+        # An empty result is only a keyword problem when the search actually
+        # ran and came back empty. On an expired token or a CLI failure,
+        # "no products matched" sends the user to fix the wrong thing --
+        # so lead with the real outcome, same as every other footer branch.
+        if failed:
+            return f'📦 Amazon: no results for "{keyword}" │ ⚠ {_format_outcome(outcome)}'
+        return f'📦 Amazon: no products matched "{keyword}"'
+
+    count = len(items)
+    plural = "products" if count != 1 else "product"
+    all_stats = [amazon.stats_from_item(item) for item in items]
+
+    # Quick depth pulls no reviews at all, so nothing has a recent window.
+    if not any(s.get("reviews_pulled") for s in all_stats):
+        rated = [s["all_time"] for s in all_stats if s.get("all_time") is not None]
+        total_ratings = sum(s.get("ratings_total") or 0 for s in all_stats)
+        parts = [f"{count} {plural}"]
+        if rated:
+            parts.append(f"{sum(rated) / len(rated):.1f}★ average")
+        if total_ratings:
+            parts.append(f"{total_ratings:,} ratings")
+        line = f"📦 Amazon: {' │ '.join(parts)}"
+        if failed:
+            line += f" │ ⚠ {_format_outcome(outcome)}"
+        return line
+
+    # Only the *sampled* products earn a slot. A run can carry a dozen
+    # discovered products, but only the two or three that got a review pull
+    # have a recent window at all -- rendering the rest appends a string of
+    # `quiet` entries that push the line past every other source in the box
+    # while adding nothing (observed live: 12 entries, 9 of them padding).
+    # The count still reports everything found, so nothing is hidden.
+    sampled = [
+        (s, item) for s, item in zip(all_stats, items) if s.get("reviews_pulled")
+    ]
+    # Variants of one product share a short name; showing both reads as a
+    # rendering bug even though the ASINs differ.
+    stats, shown_items, seen_names = [], [], set()
+    for stat, item in sampled:
+        key = (stat.get("short_name") or "").strip().lower()
+        if key and key in seen_names:
+            continue
+        if key:
+            seen_names.add(key)
+        stats.append(stat)
+        shown_items.append(item)
+    items = shown_items
+
+    # Deliberately no quote fragment here. The design called for one
+    # model-written phrase on the sharpest negative drift ("... ↓ \"the lid
+    # jams\""), but this footer is rendered by the engine *before* the model
+    # ever sees the report, and the model passes it through verbatim -- so
+    # there is no weave-time write path for the model to supply one. Rather
+    # than ship a branch that can never fire, the quote is deferred: the
+    # same evidence reaches the reader through the body section's
+    # Loved/Gripes/Watch line, which the model does author. `footer_entry`
+    # still accepts a quote so a future writer can supply one.
+    entries = [amazon.footer_entry(s) for s in stats]
+    line = f"📦 Amazon: {count} {plural} │ {', '.join(entries)}"
+    if failed:
+        line += f" │ ⚠ {_format_outcome(outcome)}"
+    return line
 
 
 def _top_voices_footer_line(report: schema.Report) -> str | None:
@@ -3021,6 +3144,7 @@ ENGAGEMENT_DISPLAY: dict[str, list[tuple[str, str]]] = {
     "perplexity": [("citations", "cite")],
     "digg": [("postCount", "posts"), ("uniqueAuthors", "auth")],
     "trustpilot": [("reviews", "reviews")],
+    "amazon": [("ratings", "ratings")],
 }
 
 

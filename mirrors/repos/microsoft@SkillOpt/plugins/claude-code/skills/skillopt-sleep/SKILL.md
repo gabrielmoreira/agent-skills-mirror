@@ -109,6 +109,7 @@ Beyond the CLI flags, advanced behavior is controlled via config:
 - **`preferences`** — free-text house rules injected into the optimizer's reflect step (e.g. "Always use async/await", "Answers in `\boxed{}`").
 - **`gate_mode`** — `on` (default, validation-gated) or `off` (greedy, accept all edits).
 - **`gate_metric`** — `hard`, `soft`, or `mixed` (default). Controls how the held-out gate scores.
+- **`gate_no_regression`** — `false` by default. Set to `true` to reject a candidate when any validation task's configured gate score decreases.
 - **`dream_rollouts`** — >1 enables multi-rollout contrastive reflection per task.
 - **`recall_k`** — >0 recalls K similar past tasks into the dream (long-term memory).
 - **`evolve_memory`** / **`evolve_skill`** — independently toggle CLAUDE.md vs SKILL.md consolidation.

@@ -1,62 +1,107 @@
 ---
 name: dbs-bridge
-description: 将单个 Skill 或 Skill 集合桥接到 Claude Code、Codex、WorkBuddy、Grok 和通用 Agents。用户要求跨 Agent 安装、同步、查看或取消 Skill 链接时使用。
+description: 将单个 Skill 或 Skill 集合自动桥接到通用 Agents、Claude Code、Codex、WorkBuddy、Grok、Hermes Agent、Kiro、Qwen Code、Cline 等 Agent。用户要求跨 Agent 安装、同步、查看、去重或取消 Skill 链接时使用。
 ---
 
-# dbs-bridge：多端 skill 桥接
+# dbs-bridge：多端 Skill 自动桥接
 
-把任意包含 `SKILL.md` 的 skill 源目录，或包含多个 skill 子目录的集合目录，用软链同时挂到：
+把任意包含 `SKILL.md` 的 Skill 源目录，或包含多个 Skill 子目录的集合目录，桥接到本机已经安装的 Agent。
 
-- `~/.claude/skills/<skill-name>`
-- `~/.codex/skills/<skill-name>`
-- `~/.workbuddy/skills/<skill-name>`
+用户始终使用同一条命令。脚本自动选择公共入口或专属入口，用户无需判断宿主类型，也无需添加模式参数。
 
-同时为 Grok 生成薄 bridge：
+---
+
+## 自动路由
+
+### 公共入口
+
+脚本始终把 Skill 软链写入：
+
+- 通用 Agents：`~/.agents/skills/<skill-name>`
+
+以下客户端可以读取该公共入口，因此不再写入各自的专属目录：
+
+- Codex；
+- GitHub Copilot；
+- Gemini CLI；
+- Cursor；
+- Augment；
+- Roo Code；
+- OpenCode；
+- OpenHands。
+
+同一个 Skill 不会同时出现在 `~/.agents/skills` 和上述客户端的专属目录中。这样可以避免 Codex 等客户端重复显示。
+
+### 专属入口
+
+以下客户端当前仍使用专属目录。只有对应主目录已经存在时，脚本才创建软链：
+
+- Claude Code：`~/.claude/skills/<skill-name>`；
+- WorkBuddy：`~/.workbuddy/skills/<skill-name>`；
+- Hermes Agent：`~/.hermes/skills/<skill-name>`；
+- Kiro：`~/.kiro/skills/<skill-name>`；
+- Qwen Code：`~/.qwen/skills/<skill-name>`；
+- Cline：`~/.cline/skills/<skill-name>`。
+
+### Grok 薄 bridge
+
+本机存在 `~/.grok` 时，脚本生成：
 
 - `~/.grok/skills/<skill-name>/SKILL.md`
 
-这样 Claude Code、Codex、WorkBuddy、Grok 等 Agent 都能通过同一个源目录调用该 skill。源目录改动后，各端自动同步。源目录可以在 dbskill 仓库内，也可以在外部项目、`~/.claude/skills` / `~/.codex/skills` / `~/.workbuddy/skills` / `~/.grok/skills` 以外的本地目录、iCloud 目录或其他工作区。
+该文件必须包含 `user_invocable: true`，并指向真源 `SKILL.md`。
 
-`~/.agents/skills` 是通用 Agents 目录，但当前 Codex 也会读取它。如果同一个 skill 同时出现在 `~/.codex/skills` 和 `~/.agents/skills`，Codex 的 skill 列表会重复显示。默认桥接不写 `~/.agents/skills`；用户明确要求豆包 Mac App、Trae Solo 或通用 Agents 时，才加 `--with-agents`。
+### 自动清理
+
+每次执行 `link` 时，脚本同时处理历史遗留项：
+
+1. 删除公共入口兼容客户端专属目录中指向同一真源的冗余软链；
+2. 删除旧版脚本曾写入、当前已停止维护的宿主软链；
+3. 删除同一宿主中指向同一真源、且规范名称已经存在的旧别名；
+4. 集合桥接时删除指向集合内已失效源目录的断裂软链和 Grok bridge；
+5. 保留真实目录、真实文件以及指向其他来源的软链，并报告冲突；
+6. 不删除源 Skill。
 
 ---
 
 ## 核心原则
 
-1. **Claude / Codex / WorkBuddy 只用软链。** 不复制 skill 文件，避免多端出现版本分叉。
-2. **源目录可以在任何位置。** 桥接目录只指向源目录。
-3. **绝不覆盖真实目录。** 如果目标位置已有同名真实目录，停下来报告，让用户手动处理。
-4. **Grok 生成薄 bridge。** Grok bridge 必须包含 `user_invocable: true` 并指向真源。
-5. **默认避开 `~/.agents/skills`。** 只有用户明确要求通用 Agents 时才使用 `--with-agents`，避免 Codex 重复显示。
-6. **拆桥只删派生产物。** 取消桥接时只移除目标目录下的软链和 `~/.grok/skills` 下由本工具生成的 bridge，不删除源目录。
-7. **优先用脚本执行。** 使用本 skill 自带脚本 `scripts/bridge-skill.sh`，不要临场重写桥接命令。
+1. **一个公共入口。** 支持通用 Agents 目录的客户端统一读取 `~/.agents/skills`。
+2. **必要时补专属入口。** 仅给当前仍依赖原生目录的客户端创建软链。
+3. **用户无需选择模式。** 脚本不要求用户提供路由参数。
+4. **公共兼容客户端只保留一份。** Codex 等客户端不能同时存在公共入口和专属入口。
+5. **各宿主只使用软链。** Grok 是唯一使用薄 bridge 的宿主。
+6. **不创建不存在的 Agent 主目录。** `~/.agents` 是公共桥接基础设施，可以由脚本创建；其他 Agent 主目录不存在时直接跳过。
+7. **不覆盖真实目录。** 目标位置已有真实目录或文件时，保留并报告。
+8. **拆桥只删派生产物。** `unlink` 只删除指向指定真源的软链，以及本工具生成的 Grok bridge。
+9. **优先使用脚本。** 使用本 Skill 自带的 `scripts/bridge-skill.sh`，不要临场重写桥接命令。
 
 ---
 
-## 确定源 skill
+## 确定源 Skill
 
-用户可能给：
+用户可能提供：
 
-- skill 名称：`dbs-hook`
-- 相对路径：`skills/dbs-hook`
-- 绝对路径：`/Users/.../dbskill/skills/dbs-hook`
-- 外部绝对路径：`/Users/.../.agents/skills/lark-doc`
-- skill 集合目录：`/Users/.../dbskill/skills`
-- 当前上下文刚创建或刚修改的 skill
+- Skill 名称：`dbs-hook`；
+- 相对路径：`skills/dbs-hook`；
+- 绝对路径：`/Users/.../dbskill/skills/dbs-hook`；
+- 外部 Skill：`/Users/.../external-skills/lark-doc`；
+- Skill 集合目录：`/Users/.../dbskill/skills`；
+- 当前上下文刚创建或刚修改的 Skill。
 
-按优先级判断：
+按以下优先级判断：
 
-1. 用户明确给了绝对路径，直接使用该路径。
-2. 用户给了相对路径，先按当前工作目录解析，再按 dbskill 仓库根目录解析。
-3. 用户只给 skill 名称，优先查当前工作目录下的同名目录，再查 dbskill 仓库 `skills/<name>`。
-4. 用户只说“这个 skill”，使用当前对话里刚创建、刚改名或刚讨论的 skill。
-5. 仍不确定时，查看当前工作目录和仓库 `skills/` 下最近修改的 skill。
-6. 还是无法确定时，只问一句：`桥接哪个 skill？给我 skill 名称或路径。`
+1. 用户给了绝对路径，直接使用；
+2. 用户给了相对路径，先按当前工作目录解析，再按 dbskill 仓库根目录解析；
+3. 用户只给 Skill 名称，先查当前工作目录，再查 dbskill 仓库 `skills/<name>`；
+4. 用户只说“这个 Skill”，使用当前对话刚创建、改名或讨论的 Skill；
+5. 仍不确定时，查看当前工作目录和仓库 `skills/` 下最近修改的 Skill；
+6. 仍无法确定时，只问一句：`桥接哪个 Skill？给我 Skill 名称或路径。`
 
-源目录必须满足其中一种条件：
+源目录必须满足以下任一条件：
 
 - 目录本身包含 `SKILL.md`；
-- 目录的一级子目录里包含多个 `SKILL.md`，用于批量桥接。
+- 目录的一级子目录中包含一个或多个 `SKILL.md`。
 
 ---
 
@@ -68,36 +113,39 @@ description: 将单个 Skill 或 Skill 集合桥接到 Claude Code、Codex、Wor
 skills/dbs-bridge/scripts/bridge-skill.sh link <skill-name-or-path>
 ```
 
-例子：
+示例：
 
 ```bash
 skills/dbs-bridge/scripts/bridge-skill.sh link dbs-hook
 skills/dbs-bridge/scripts/bridge-skill.sh link skills/my-custom-skill
 skills/dbs-bridge/scripts/bridge-skill.sh link skills
 skills/dbs-bridge/scripts/bridge-skill.sh link "/absolute/path/to/skill"
-skills/dbs-bridge/scripts/bridge-skill.sh link "/Users/me/external-skills/my-skill"
 skills/dbs-bridge/scripts/bridge-skill.sh link "/Users/me/external-skills"
 ```
 
-执行后把脚本输出里的各宿主桥接结果回给用户。
-
-如果用户明确要求豆包 Mac App、Trae Solo 或通用 Agents，也写入 `~/.agents/skills`：
-
-```bash
-skills/dbs-bridge/scripts/bridge-skill.sh link --with-agents <skill-name-or-path>
-```
+执行完成后，根据脚本输出回报公共入口、专属入口、Grok bridge 和冗余清理结果。
 
 ---
 
 ## 查看状态
 
-用户问“桥好了没”“查看桥接状态”时运行：
+用户问“桥好了没”“有没有重复”“查看桥接状态”时运行：
 
 ```bash
 skills/dbs-bridge/scripts/bridge-skill.sh status <skill-name-or-path>
 ```
 
-默认状态检查说明 Claude Code、Codex、WorkBuddy 和 Grok 四个位置；只有使用 `--with-agents` 时才额外检查 `~/.agents/skills`。
+状态正常时，脚本必须输出：
+
+```text
+✓ 未发现冗余入口
+```
+
+公共兼容客户端的专属目录中仍有同源软链时，状态返回失败并报告：
+
+```text
+✗ 发现冗余入口：<target> -> <source>
+```
 
 ---
 
@@ -109,43 +157,45 @@ skills/dbs-bridge/scripts/bridge-skill.sh status <skill-name-or-path>
 skills/dbs-bridge/scripts/bridge-skill.sh unlink <skill-name-or-path>
 ```
 
-拆桥完成后告诉用户：源 skill 没有被删除，只移除了各端派生产物。
+完成后告诉用户：源 Skill 没有被删除，只移除了公共入口、专属入口和 Grok bridge 等派生产物。
 
 ---
 
 ## 输出规范
 
-桥接完成后，简短回报：
+桥接完成后简短回报：
 
 ```markdown
 已桥接 `<skill-name>`：
 
-- Claude Code：`~/.claude/skills/<skill-name>` -> `<source-path>`
-- Codex：`~/.codex/skills/<skill-name>` -> `<source-path>`
-- WorkBuddy：`~/.workbuddy/skills/<skill-name>` -> `<source-path>`
-- Grok：`~/.grok/skills/<skill-name>` -> `<source-path>/SKILL.md`
+- 公共入口：`~/.agents/skills/<skill-name>`；
+- 专属入口：仅写入本机已安装且仍需要专属目录的 Agent；
+- Grok：`~/.grok/skills/<skill-name>/SKILL.md`（本机已安装时）；
+- 去重：已清理指向同一真源的历史冗余软链。
 ```
 
-如果遇到同名真实目录：
+遇到真实目录或其他来源时：
 
 ```markdown
-没有覆盖 `<target-path>`，因为那里已经是一个真实目录。需要你先手动确认这个目录能否移走。
+已保留 `<target-path>`，因为它是一个真实目录、真实文件或指向其他来源。需要你手动确认后再处理。
 ```
 
 ---
 
 ## 自检
 
-每次执行前确认：
+每次执行前后确认：
 
 - 源目录存在；
-- 源目录含 `SKILL.md`，或其一级子目录包含 `SKILL.md`；
-- 外部路径必须使用绝对路径，或能从当前工作目录解析；
-- Claude / Codex / WorkBuddy 目标位置如果存在，必须是软链才允许更新；
-- 只有用户明确要求通用 Agents 时才写 `~/.agents/skills`，且目标位置如果存在，必须是软链才允许更新；
-- Grok 目标位置如果存在，必须是本工具生成的 Grok Bridge 才允许更新；
-- 不能删除源目录；
-- 不能把 `skills/dbs-bridge` 自身复制到各端；Grok 只能生成薄 bridge。
+- 源目录包含 `SKILL.md`，或其一级子目录包含 `SKILL.md`；
+- 外部路径使用绝对路径，或能从当前工作目录解析；
+- `~/.agents/skills/<name>` 是公共规范入口；
+- Codex 等公共兼容客户端的专属目录中没有同源软链；
+- 专属宿主目标位置若存在，必须是软链才允许更新；
+- Grok 目标位置若存在，必须是本工具生成的 Grok bridge 才允许更新；
+- 真实目录、真实文件和其他来源软链没有被删除；
+- 源目录没有被删除；
+- `private/` 与 `.private/` 没有被读取、复制、暂存或桥接。
 
 ---
 

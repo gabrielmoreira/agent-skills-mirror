@@ -104,12 +104,20 @@ PR without the chat history.
   bridge (`omh coding fanout dispatch`, 2026-07 owner approval): an explicit
   operator command that spawns LOCAL agent CLIs (the CLIs make their own
   network calls; omh still makes none) in per-unit worktrees against a frozen
-  `fanout_contract/v1`, recording every spawn and exit as observed journal
+  `fanout_contract/v2`, recording every spawn and exit as observed journal
   evidence. It never runs by default, never merges branches, never persists
   raw prompts under `.omh`, and never executes anything outside an explicit
   `dispatch` invocation. Bridge dispatch is a separate axis from chat
   prompt-handoff semantics: chat-prepared handoffs remain prompt-only for
   prompt-only profiles.
+- The approved Hermes-native child boundary (`omh coding hermes-child dispatch`,
+  2026-08 owner approval) is a second explicit operator/maintainer surface for
+  one isolated local `hermes --oneshot` process. It requires
+  `--confirm-dispatch`, accepts prompts only through stdin/files, enforces a
+  depth-one recursion limit and safe-mode file tools, records authenticated
+  `routing_observation/v1` evidence, and never runs automatically. This
+  boundary supports observed Hermes execution and the explicit benchmark
+  controller; it does not make core OMH a provider client or hidden runtime.
 - No Hermes core patching.
 - Runtime artifacts are local, deterministic, schema-versioned, and
   metadata-only by default.

@@ -43,9 +43,13 @@ L'utilisateur choisit son fournisseur dans les Paramètres. Les options incluent
   Google Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, etc. — les requêtes
   sont envoyées directement au fournisseur avec les identifiants de l'utilisateur
   et ne sont jamais collectées par WebBrain
-- **Fournisseurs locaux** : llama.cpp, Ollama, LM Studio, Jan, vLLM, SGLang,
-  LocalAI —
-  les données restent sur la machine de l'utilisateur
+- **Moteurs de modèles locaux** : llama.cpp, Ollama, LM Studio, Jan, vLLM,
+  SGLang, LocalAI et GPT4All — les requêtes d'inférence restent sur la machine
+  de l'utilisateur
+- **Proxy local compatible OpenAI** : WebBrain contacte seulement la passerelle
+  locale configurée, mais celle-ci peut transmettre le contexte à un compte en
+  amont. Sa configuration et sa politique de confidentialité déterminent le
+  trajet des données.
 
 Les requêtes vers un modèle local ou une API configurée par l'utilisateur ne
 sont jamais collectées par WebBrain. Les requêtes WebBrain Cloud sont traitées

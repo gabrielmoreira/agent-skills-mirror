@@ -16,39 +16,42 @@ This is a Hermes-native `model-setup` workflow skill.
 
 ## Why This Exists
 
-`model-setup` exists to turn role-slot model configuration into a guided, read-before-write walkthrough instead of an unreviewed config edit.
+`model-setup` exists to turn local model history into a safe, user-confirmed activation flow: Hermes retains native aliases and providers, Maestro remains an external-handoff coordinator, and editable recommendations can fall through missing preferred models without turning metadata into availability or execution claims.
 
 ## Do Not Use When
 
-- The user is asking which model Hermes currently is, not asking to change or connect one.
-- The request needs a repository code change rather than a local Hermes config or `.env` edit.
-- No role slot, provider, or session-switch intent is named yet.
+- The user is asking which model Hermes currently is, not asking to inspect, change, connect, or route one.
+- The request needs a repository code change rather than local model setup or recommendation review.
+- The user wants anti-ban, cooldown-bypass, hidden retry, benchmark-superiority, or provider-entitlement claims.
 
 ## Examples
 
 Good example:
 
-- Prompt: Help me set up my models — I want to connect a new provider for the main role slot.
-- Expected behavior: Check the provider prerequisite, read-only diagnose the current main-slot assignment, guide account/token setup, show the config diff, and apply only after approval.
-- Why: The request is role-slot model configuration and needs the shared setup contract.
+- Prompt: Set up models from what I already have; only Qwen and Gemini are active, and show me the Hermes versus external-owner changes before applying anything.
+- Expected behavior: Inspect safe metadata, ask the user to confirm active candidates, keep unavailable preferred heads visible, resolve compatible fallbacks, and separately preview Hermes-native config and Maestro external-handoff guidance.
+- Why: The request needs flexible missing-model resolution while preserving owner and approval boundaries.
 
 Bad example:
 
-- Prompt: model-setup: what model are you running right now?
-- Expected behavior: Answer the identity question directly instead of starting a setup walkthrough.
-- Why: A status question is not a configuration request and should not trigger a write-capable guide.
+- Prompt: Use an old session entry to prove my Grok account is active and silently replace the main alias.
+- Expected behavior: Treat the entry as observed_before only, require active confirmation, show any alias collision, and refuse an unapproved write.
+- Why: Historical metadata is not provider readiness and cannot authorize a configuration change.
 
 ## Completion Checklist
 
 - If a prerequisite is unmet, mark that item "not applicable" and continue with the rest of the guide instead of blocking or guessing.
 - Success is applicable-only: verification passes when every applicable item is confirmed complete, not when every possible item exists.
-- Every touched role slot was diagnosed, guided, diff-approved, and re-verified before being reported complete.
+- Every emitted metadata identifier passed the safe allowlist and every candidate retains a closed source state.
+- Hermes-native configuration and Maestro external-handoff recommendations are reported as separate owner surfaces.
+- Every requested write was previewed, explicitly approved, digest-checked, and re-verified; unresolved model items did not block unrelated setup.
 
 ## Recovery Notes
 
-- If a provider prerequisite is unmet, mark that role slot "not applicable" and continue with the remaining slots.
-- If the diagnosed config cannot be read, report the read failure and stop before proposing a diff.
-- If the user rejects a shown diff, keep the prior config as verified state and ask what to change.
+- If discovery is absent, truncated, unreadable, or layout_unverified, name that source state and continue with manual confirmed-active input instead of scanning more broadly.
+- If a preferred Kimi, Claude, OpenAI, GLM, Grok, Gemini, or Qwen candidate is missing, preserve it as inactive and try the next confirmed-active compatible editorial candidate; do not substitute for an explicit unavailable choice.
+- If no compatible model is confirmed active, record owner_default, finish applicable OMH setup without a model-config write, and name the relevant Hermes-native provider/auth or user-override next action.
+- If the diagnosed Hermes config cannot be read, report the read failure and stop before proposing a diff; if the config digest changes or the user rejects the diff, do not apply it.
 
 ## Workflow Lane
 
@@ -58,7 +61,7 @@ Bad example:
 
 ## Use When
 
-Use when the user wants Hermes to check or configure role-slot model assignments (main, realtime-search, design), connect a model provider, or switch the session model, following the shared prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
+Use when the user wants Hermes to inspect metadata-only model history, confirm active models, configure Hermes-native role aliases or providers, review editable recommendations for an external coding handoff, or switch a session model through the prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
 
     Strong routing signals: `model-setup`, `hermes model setup`, `set up my models`, `set up my model`, `configure my models`, `configure model provider`, `connect my model provider`, `set up model role slots`, `switch my session model`, `모델 설정 도와줘`, `모델 설정`, `모델 연결`, `모델 프로바이더 설정`, `모델 슬롯 설정`
 
@@ -73,35 +76,47 @@ Reasoning demand: `light`
 Quality bar:
 
 - Prerequisite check: confirm the subscription, account, or capability the step needs exists before continuing; mark unmet prerequisites "not applicable" and skip them explicitly.
-- Read-only diagnose: read the current Hermes config, `.env` keys, and installed version without writing anything.
-- Guide: walk the user through any account creation, OAuth, or token issuance they must complete themselves.
-- Diff-approved apply: show the exact config or `.env` diff and write only after the user explicitly approves it.
-- Verify: re-read the updated config and report a completion checklist covering every applicable item.
-- Treat each role slot (main, realtime-search, design) as an independent prerequisite/diagnose/apply unit instead of one combined change.
+- Read-only diagnose: inspect only allowlisted Hermes config metadata, provider plugin/auth presence, aliases, and the installed version; never read dotenv files, credential material, or secret values.
+- Guide: direct the user to Hermes-native account, OAuth, or token flows they complete themselves; never ask them to paste secrets into chat.
+- Diff-approved apply: show the exact non-secret Hermes config command or alias preview and apply only after the user explicitly approves it; never edit dotenv files or credential material.
+- Verify: re-inspect the allowlisted Hermes config metadata and report a completion checklist covering every applicable item.
+- Treat each Hermes role slot (main, realtime-search, design), semantic category, and external owner as an independent prerequisite/diagnose/recommend/apply unit instead of one combined change.
+- Explain the shipped recommendations as editable editorial defaults, not benchmarks or allowlists: ultrabrain uses GPT-5.6 Sol; deep uses GPT-5.6 Terra; unspecified-high prefers Kimi K3 then Claude Opus 5; unspecified-low prefers GLM-5.2 then GLM-5.2 Ultrafast; quick prefers GLM-5.2 Ultrafast then Kimi K3; writing prefers Kimi K3, Qwen3-Coder, then Gemini 3.1 Pro; visual-engineering prefers Claude Fable 5 then Kimi K3; and artistry prefers Gemini 3.1 Pro, Claude Fable 5, then Kimi K3.
+- For X/Twitter scraping or trend analysis, keep x_platform_data as a domain affinity rather than a role alias: prefer confirmed-active Grok, then Kimi K3, then Gemini, without removing the rest of the route or overriding an explicit model.
+- When a recommendation head is missing, choose the first confirmed-active owner-compatible fallback; when no candidate is active, keep that selector on its owner's native default model and let the rest of OMH setup finish without a model-config write.
+- Give provider-specific native next actions without claiming provider readiness: use installed Hermes flows for OpenAI OAuth/OpenAI Codex, Anthropic or an existing Claude provider, Qwen OAuth or Alibaba, Gemini/Google/Vertex, Grok/xAI, Kimi, GLM/Z.AI, or an already-working custom provider; preserve working alternatives.
 
 Handoff policy:
 
-Run diagnosis and guidance directly in Hermes for role-slot model setup. Diagnosis only reads the existing Hermes config, `.env` keys, and installed version; it never writes anything on its own. Show the exact diff for any config or `.env` change and write it only after the user explicitly approves that diff. Secret values such as tokens and API keys are pasted by the user directly in chat and are never stored, logged, or echoed back beyond the immediate diff confirmation. Delegate to a selected coding executor only if the user needs a change outside chat-driven config edits.
+Keep Hermes-native model setup in Hermes: inspect its config, provider plugins, auth presence, and aliases, then use Hermes-native config/auth flows for an approved change. Maestro coordinates prepared external coding handoffs for Codex, Claude Code, OMO/OMC/OMX, and generic owners; it is not an executor and never owns Hermes aliases, providers, skill execution, or Kanban model selection. Diagnosis uses local Hermes config/auth commands and reads only config plus auth/plugin presence; it never reads `.env` values, credential material, or session prose. Show the exact Hermes-native command/config preview, bind it to the inspected config digest, and apply only after explicit approval; verify by re-inspecting Hermes state. A prepared Hermes binding or Maestro handoff is not model invocation, dispatch, or execution evidence.
 
 Required inputs:
 
-- current Hermes config file path
-- target role slot (main, realtime-search, or design)
-- provider account or API credential status
+- metadata-only discovery report and its source/candidate states
+- user confirmation of which discovered models and providers are currently active
+- target Hermes role alias (main, realtime-search, or design), semantic category, X-platform domain, or external coding owner
+- optional user-edited recommendation overrides
 
 Expected outputs:
 
-- read-only diagnosis of current role-slot model assignments
-- diff-approved config write for the requested role slot
-- verification checklist confirming the applied slot change
+- source-labeled candidate inventory separating historical observation from confirmed-active models
+- editable editorial recommendation chains resolved only against confirmed-active compatible candidates
+- Hermes-native alias/provider preview or a separate Maestro ordered external-handoff recommendation
+- verification checklist or an incomplete non-blocking setup advisory with exact next actions
 
 Artifact expectations:
 
-- setup verification note when the wrapper captures it
+- model_discovery/v1 metadata-only report when local discovery runs
+- model_recommendation_resolution/v2 recommendation result when a chain is resolved
+- omh_model_activation/v1 setup receipt when the setup surface captures it
 
 Safety rules:
 
-- Do not name or assume a specific model, provider tier, or price; ask the user which provider and role slot they want and read the current assignment instead of guessing.
+- Treat session and config stores as untrusted metadata sources. Read only allowlisted provider, model, variant, timestamp, and source identifiers; never read or emit transcript prose, prompts, tool results, credentials, token values, entitlement, or quota.
+- Keep discovery states closed and explicit: recommended, observed_before, confirmed_active, inactive, unobserved, and truncated; report an unknown OMP layout as layout_unverified. Historical observed_before metadata is not active-model confirmation.
+- Preserve explicit model choices. If an explicitly requested model is unavailable, return choice_required instead of silently substituting another candidate.
+- Do not add a second Hermes provider registry, edit Hermes YAML directly, invoke a model, contact a provider, or run network readiness probes from OMH core.
+- CCAPI and Apitopia are editorial provider-family preferences only, not observed availability, entitlement, or credential evidence. Do not promise anti-ban behavior, cooldown bypasses, hidden retries, or provider-specific superiority.
 - Keep prerequisite check, diagnosis, guidance, apply, and verify as separate, explicit steps.
 
 ## Runtime Evidence

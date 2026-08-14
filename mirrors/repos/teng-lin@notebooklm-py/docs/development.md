@@ -329,8 +329,13 @@ bounded store lock. `_auth/profile_migration.py` owns the path-shaped
 `LegacyAccountMigrator` performs lossless in-band/legacy/in-band two-read resolution, typed legacy
 sanitization, only-if-absent promotion, and embed-before-scrub ordering;
 `LegacyAccountContext` owns the sibling file and lock. `LegacyPromotionScheduler` owns the
-canonical process one-shot registry and daemon workers. Reads only schedule and return; the
-process-default exit hook drains for two seconds per snapshot worker.
+canonical per-path active-work registry and daemon workers. Reads only schedule and return; the
+path becomes eligible again after a worker settles, and an in-band record with a stale legacy copy
+schedules the privacy scrub, making lock failures and write-then-scrub interruption self-healing.
+Concurrent readers still share one active worker; the
+process-default exit hook drains outstanding workers within one shared budget
+(30 seconds by default, configurable via `NOTEBOOKLM_PROMOTION_EXIT_TIMEOUT`),
+warning if any is still running when it expires.
 
 First-party app and CLI flows pass primitive account modes to `replace_profile_from_login` and
 consume `ReplaceResult`; `storage.replace_from_login` keeps its v0.x signature and projects that
@@ -361,9 +366,9 @@ token persistence; a missing-storage leader remains shielded to settlement
 before its bootstrap lock is released. At the extraction freeze the coordinator
 is 373 lines and the compatibility adapter is 463 lines.
 
-The current measured persistence boundary is 1,090 lines in `_auth/storage.py`, 419 in
+The current measured persistence boundary is 1,090 lines in `_auth/storage.py`, 602 in
 `_auth/profile_migration.py`, 876 in `_auth/profile_store.py`, 96 in
-`_auth/cookie_filter.py`, and 89 in `_auth/master_token_file.py` (2,570 total). `storage.py`
+`_auth/cookie_filter.py`, and 89 in `_auth/master_token_file.py` (2,753 total). `storage.py`
 remains the v0.x signature/result facade; the extracted owners do not create a second facade.
 
 `_auth/tokens.py` now owns the Phase 9 stored-auth composition: captured-inline/file sources,
@@ -634,6 +639,60 @@ any cell runs. `--interactive-timeout` is forwarded into each CLI browser wait;
 the matrix gives the child process 30 additional seconds to report failure and
 tear down. Workspace/SSO, regional-account, and long-duration-expiry cases remain
 account-specific manual validation.
+
+#### The extras above are load-bearing — especially `headless`
+
+Run the matrix with the full set shown in the commands above
+(`browser`, `cookies`, `headless`, `mcp`, `server`). They are not
+interchangeable with the contributor install in
+[CLAUDE.md](../CLAUDE.md), which deliberately mirrors CI's test job and
+includes neither `cookies` nor `headless` — CI never runs this matrix.
+
+`headless` (`gpsoauth`) is load-bearing. Without it, master-token cells now
+stop with an actionable `MissingDependencyError`:
+
+```text
+Master-token auth needs gpsoauth. Install: pip install 'notebooklm-py[headless]'
+```
+
+The dependency fault bypasses `MasterTokenError` and the recovery rung's
+ordinary `False` decline. MCP/REST adapters classify it as `DEPENDENCY`; the CLI
+reports the actionable configuration error. A genuinely revoked token still
+reports the authentication failure. This distinction is pinned by
+[#2239](https://github.com/teng-lin/notebooklm-py/issues/2239).
+
+Similarly, without `cookies` (`rookiepy`) the browser discovery/login and
+browser-refresh cells cannot run at all; use `--skip-browser` rather than
+reading their absence as a pass.
+
+#### Where a cell's code lives
+
+`scripts/live_auth_matrix.py` owns isolation, execution, and reporting only. The
+realistic recovery cells — storage reload, sibling re-mint, master-token
+fallback, REST recovery, MCP recovery, browser refresh, and the crash-safety
+writer — live in `scripts/_live_auth_scenarios/` as ordinary modules and are
+launched one per child process:
+
+```bash
+python -m scripts._live_auth_scenarios.<cell>
+```
+
+Each cell exports `async def scenario() -> ScenarioResult` plus a `main()`, and
+prints exactly one JSON object on stdout (the orchestrator parses it verbatim).
+Assertions go through `require(...)`, never `assert`, because these programs may
+run under `python -O`. Adding or renaming a cell means updating
+`SCENARIO_MODULES` in `tests/unit/test_live_auth_matrix.py`, which pins the
+module list, its profile constants, and child-process importability.
+
+To run one cell by hand against a disposable home:
+
+```bash
+PYTHONPATH="$PWD/src:$PWD" NOTEBOOKLM_HOME=/tmp/live-cell \
+  uv run python -m scripts._live_auth_scenarios.storage_reload
+```
+
+These modules are excluded from the shipped package on purpose and are
+type-checked by the `Run type checking` CI step alongside `src/notebooklm`.
 
 ### Selecting a profile for E2E tests
 

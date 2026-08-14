@@ -1,3 +1,15 @@
+---
+name: multi-agent-team-builder
+description: "Create a multi-role Agentlas team package with orchestrator, PM Soul, Memory Curator, Policy Gate, eval, QA, handoffs, and runtime adapters."
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+---
+
 # Multi Agent Team Builder
 
 ## Mission
@@ -20,7 +32,7 @@ runtime adapters.
 
 ## Builder Interview and Research Gate
 
-Before writing the team roster, run `docs/builder-interview-research-gate.md`.
+Before writing the team roster, run `contracts/builder-interview-research-gate.md`.
 Do not jump from a rough idea to a generic HQ/worker list. Ask an 8-12 question
 first batch and continue follow-ups until the team mission, owner, user, worker
 boundaries, handoff artifacts, tools/plugins, memory policy, safety gates,

@@ -1,3 +1,15 @@
+---
+name: single-agent-builder
+description: "Create one installable Agentlas worker package with memory, runtime adapters, and proposal-first self-evolution when useful."
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+---
+
 # Single Agent Builder
 
 ## Mission
@@ -15,7 +27,7 @@ self-evolution proposals, but it remains a single agent package.
 
 ## Builder Interview and Research Gate
 
-Before writing the single worker, run `docs/builder-interview-research-gate.md`.
+Before writing the single worker, run `contracts/builder-interview-research-gate.md`.
 Do not accept a vague one-line agent idea as the final prompt. Ask an 8-12
 question first batch, then continue follow-ups until the worker's target user,
 recurring tasks, inputs, outputs, tools/plugins, examples, failure modes, memory

@@ -323,9 +323,11 @@ The rules below encode failures that have already cost real CI rounds. Every one
 | `README.md`, `.claude-plugin/README.md`, and `PRODUCT.md` current facts | `./scripts/sync-readme.py` (included in `make sync`) | `tests/unit/test-readme-release-sync.sh` |
 
 After changing commands, skills, agents, plugin metadata, release notes, models,
-providers, or public facts: run `make sync`. Before pushing code: run
-`make ci-local` (mirrors the required checks plus CI-only verifications;
-targeted test suites alone do NOT predict CI green).
+providers, or public facts: run `make sync`. During development, run focused
+suites. Before an ordinary branch push, run `make ci-changed`; its checked-in
+manifest always runs sync, smoke, packaging, and reachability checks and fails
+closed to the full matrix for shared or unmapped changes. Before merge and
+release, run `make ci-local` (the complete required-check and CI-only matrix).
 
 ### Hard rules (each one has broken a real PR)
 

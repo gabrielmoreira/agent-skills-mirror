@@ -117,5 +117,5 @@ Every tool returns `{"error": "...", ...}` on failure — they never raise. Alwa
 
 - `get_daily_prices` — cross-reference X sentiment with price action
 - `get_sec_filing` — pair chatter with official disclosures
-- `scrapling` `get` / `fetch` — fallback for public pages when the API is blocked
+- `scrape` `scrape_page` / `scrape_pages` — fallback for public pages when the API is blocked
 - `web_search` — broader news search that also indexes X posts

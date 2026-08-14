@@ -1,6 +1,6 @@
 ---
 name: opentag
-description: Set up, run, and troubleshoot OpenTag with the published CLI across Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, OpenClaw, local config, platform credentials, and callback delivery.
+description: Set up, run, and troubleshoot OpenTag with the published CLI across Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, OpenClaw, local config, platform credentials, and unified delivery.
 ---
 
 # OpenTag
@@ -34,7 +34,7 @@ Read only the reference needed for the user's path:
 - Slack setup: `references/slack-setup.md`
 - GitHub setup: `references/github-setup.md`
 - ACP coding-agent execution: `references/codex-runner.md`
-- Broken setup, missing callbacks, rejected runs, or auth errors: `references/troubleshooting.md`
+- Broken setup, missing provider delivery, rejected runs, or auth errors: `references/troubleshooting.md`
 
 For platform credential steps, use the repository docs as the source of truth:
 

@@ -183,6 +183,7 @@ remains an unconditional forced re-mint.
 | `NOTEBOOKLM_REFRESH_PROFILE` | Child-process hint set for `NOTEBOOKLM_REFRESH_CMD`; names the resolved profile being refreshed | resolved profile |
 | `NOTEBOOKLM_REFRESH_STORAGE_PATH` | Child-process hint set for `NOTEBOOKLM_REFRESH_CMD`; path to the `storage_state.json` file the command must rewrite | resolved storage path |
 | `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` | Disable the proactive `accounts.google.com/RotateCookies` poke that refreshes `__Secure-1PSIDTS` ahead of expiry | `0` |
+| `NOTEBOOKLM_PROMOTION_EXIT_TIMEOUT` | Seconds the process waits at exit for an in-flight one-time migration of a pre-`v0.x` `context.json` account into `storage_state.json`. It is a ceiling, not a delay: a finished migration exits immediately. Raise it on a machine where the write is slow (antivirus, network storage); set `0` to never wait. An incomplete wait is always reported at `WARNING`, so note that `--quiet` (which raises the floor to `ERROR`) suppresses that signal. Non-numeric, negative, and non-finite values are refused with a warning and the default is used; a finite value above the platform join limit is clamped. | `30` |
 | `NOTEBOOKLM_HEADLESS_REAUTH` | Opt in to layer-3 headless re-auth during cold construction and automatic refresh paths. Explicit `from_storage(allow_headless=True)`, `client.refresh_auth(allow_headless=True)`, or `auth refresh --allow-headless` does not require this env var. | `0` |
 | `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` | Optional loopback Chrome DevTools endpoint for layer-3 headless re-auth, e.g. `http://127.0.0.1:9222`. Non-loopback endpoints are ignored for credential safety. | - |
 | `NOTEBOOKLM_MCP_TRANSPORT` | MCP server transport for `notebooklm-mcp`: `stdio` or `http` | `stdio` |
@@ -252,6 +253,7 @@ be audited from one location.
 | `NOTEBOOKLM_REFRESH_PROFILE` | Child env var injected into `NOTEBOOKLM_REFRESH_CMD`; names the resolved NotebookLM profile that is being refreshed. Refresh scripts may read it, but setting it in the parent shell does not select the profile. | Set by `auth` refresh-spawn helper from the resolved profile. | `auth._run_refresh_cmd` |
 | `NOTEBOOKLM_REFRESH_STORAGE_PATH` | Child env var injected into `NOTEBOOKLM_REFRESH_CMD`; points to the `storage_state.json` file the command must rewrite before exiting `0`. Refresh scripts may read it, but setting it in the parent shell does not select storage. | Set by `auth` refresh-spawn helper from the explicit storage path or profile-aware storage path. | `auth._run_refresh_cmd` |
 | `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` | When `1`, disable the proactive `accounts.google.com/RotateCookies` poke that refreshes `__Secure-1PSIDTS` ahead of expiry. Useful when running behind a proxy that rejects the extra request, or in offline test fixtures. | Process env on every keepalive check. | `auth` keepalive guards (constant `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE_ENV` in `notebooklm.auth`) |
+| `NOTEBOOKLM_PROMOTION_EXIT_TIMEOUT` | Seconds the process waits at exit for an in-flight one-time migration of a pre-`v0.x` `context.json` account into `storage_state.json`. A ceiling shared by all outstanding writers, not a delay — a finished migration exits immediately. `0` never waits. Unset, empty, or whitespace-only falls back to the default; non-numeric, negative, and non-finite (`inf`/`nan`) values are refused with a `WARNING` and the default is used; a finite value above `threading.TIMEOUT_MAX` is clamped. An incomplete wait is always reported at `WARNING` (so `--quiet`, which forces `ERROR`, suppresses it). | Process env, read once per process at exit → `30.0` | `_auth.profile_migration._promotion_exit_timeout` |
 | `NOTEBOOKLM_HEADLESS_REAUTH` | Opt in to layer-3 headless re-auth for cold construction and automatic refresh paths. Explicit Python/CLI `allow_headless` flags do not require the env var. | Literal `1` enables; all other values disabled. | `_auth.headless_reauth.headless_reauth_env_enabled` |
 | `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` | Optional Chrome DevTools Protocol endpoint for layer-3 headless re-auth. Must be loopback (`127.0.0.1`, `::1`, or `localhost`); remote endpoints are ignored because CDP is account-equivalent. | Explicit function argument → env var → no CDP arm. | `_auth.headless_reauth.resolve_cdp_url` |
 | `NOTEBOOKLM_MCP_TRANSPORT` | Default transport for `notebooklm-mcp`: `stdio` or `http`. CLI `--transport` wins. | `--transport` flag → env var → `stdio` | `mcp.__main__._build_parser` |
@@ -462,13 +464,63 @@ tune it per-workload — see the `DEFAULT_TIMEOUT` / `DEFAULT_CONNECT_TIMEOUT`
 constants in `src/notebooklm/_runtime/config.py`.
 
 The chat streaming endpoint (`ChatAPI.ask`) also exposes a separate per-read
-silence window (`chat_timeout=`). It defaults to **180 seconds** because shared
-notebooks can be slow to send the first streamed chat byte; fast metadata RPCs
-stay on the normal **30-second** timeout. A chat read timeout means the server
+silence window (`chat_timeout=`). Left unset it is **`max(180 s, timeout=)`** —
+180 seconds because shared notebooks can be slow to send the first streamed chat
+byte, floored at `timeout=` so a larger configured budget still reaches chat (see
+[below](#how-the-per-rpc-windows-compose-with-timeout)); fast metadata RPCs stay
+on the normal **30-second** timeout. A chat read timeout means the server
 sent no stream bytes for that window, either before the first byte or between
 chunks; it does not mean total generation time exceeded 30 seconds. Pass
 `chat_timeout=None` to inherit the normal client timeout for chat. The CLI
 `ask --request-timeout N` flag overrides both values for that invocation.
+
+`IMPORT_RESEARCH` (`research.import_sources`) has a third window: the server
+ingests every requested entry before answering one RPC, so the window scales
+with batch size — **60 s + 3 s per requested source, capped at 240 s** — and is
+tunable outright via `import_research_timeout=`.
+
+#### How the per-RPC windows compose with `timeout=`
+
+`timeout=` is the *base* read budget for every RPC. The two built-in per-RPC
+windows above are **defaults, not caps**: they only ever lengthen that base,
+never shorten it. So `NotebookLMClient(auth, timeout=600)` really does buy 600
+seconds everywhere, including chat and IMPORT_RESEARCH (before this rule landed
+they silently clamped such a client back to 180 s / 240 s — issue #2205).
+
+| Construction | chat window | IMPORT_RESEARCH window (1 source) |
+| --- | --- | --- |
+| `NotebookLMClient(auth)` | 180 s | 63 s |
+| `NotebookLMClient(auth, timeout=600)` | 600 s | 600 s |
+| `NotebookLMClient(auth, timeout=600, chat_timeout=10)` | 10 s | 600 s |
+| `NotebookLMClient(auth, import_research_timeout=900)` | 180 s | 900 s |
+
+An explicitly passed `chat_timeout=` / `import_research_timeout=` is the
+caller's final word and is used as given — including a value *below* `timeout=`,
+so deliberately fast failure stays expressible. Only the untouched defaults
+compose. Both kwargs read identically:
+
+| value | meaning |
+| --- | --- |
+| unset | the built-in window, floored at `timeout=` |
+| a number | exactly that window, replacing the built-in and the floor |
+| `None` | inherit `timeout=` verbatim, with no per-RPC window at all |
+
+A non-positive or non-finite value for either raises `ValueError` at
+construction rather than silently producing a window that times out instantly.
+
+Independently, an IMPORT_RESEARCH attempt made by
+`import_sources_with_verification` is clamped to whatever is left of that call's
+own `max_elapsed` retry budget, so a late retry cannot be *granted* a window
+larger than the budget it has left. Note what that does and does not promise:
+every timeout here is an `httpx` slot, and the read slot is an inactivity limit
+between socket reads — so `max_elapsed` bounds when a new attempt may *start*,
+not the wall-clock duration of one already in flight. Enforcing the latter would
+mean cancelling an in-flight non-idempotent POST, which risks duplicated sources
+the client can no longer see. When less than 10 seconds of that budget remains — too little for an
+attempt to outlast connection establishment — the loop stops instead of sending
+one: `IMPORT_RESEARCH` is non-idempotent, so an attempt whose result the client
+cannot observe can still commit sources server-side and duplicate them. The
+first attempt is exempt, so `max_elapsed=0` still means "try once".
 
 ### Decoder strictness
 

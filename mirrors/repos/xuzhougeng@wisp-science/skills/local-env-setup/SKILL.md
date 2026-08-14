@@ -13,7 +13,7 @@ wisp-science needs three **independent** local toolchains:
 |---|---|---|
 | **Core** | `uv` + managed Python venv | App bootstrap, `python` tool, bundled MCP servers |
 | **Literature** | Node >= 20, `npm`, `sci` (scimaster-cli) | Bundled `bear-*` skills (real paper search) |
-| **Bioinformatics** | `pixi` | Per-project conda/pip multi-env analysis (scanpy, nextflow-adjacent stacks, etc.) |
+| **Bioinformatics** | `pixi` | Per-project conda/pip multi-env analysis (scanpy, workflow engines like snakemake/nextflow/oxo-flow) |
 
 Core is **required** for the app. Literature and bioinformatics layers are optional until the user runs those skills — but Capabilities shows all of them; install what's missing for the user's goal.
 
@@ -215,6 +215,16 @@ Settings -> Credentials -> SCIMaster. Wisp will sync that key into
 ## Layer 3 — Bioinformatics: pixi
 
 **pixi** manages isolated per-project environments (conda + pip) — use for scanpy/single-cell, variant calling stacks, etc. The wisp **`python` tool** uses the core uv venv; run bioinfo code via **`shell`**: `pixi run python …` or `pixi run …` in the project directory.
+
+### Workflow engines
+
+For **multi-step analysis pipelines** (many rules, parallel execution, resume after failure), pair pixi with a dedicated workflow engine — pixi manages the environments, the engine schedules the steps. Run engines from **`shell`** in the project directory.
+
+| Engine | What it is | When to choose |
+|---|---|---|
+| [snakemake](https://snakemake.github.io) | Python-defined rules, mature conda/mamba integration | Established rules; Python-centric teams |
+| [nextflow](https://www.nextflow.io) | Groovy DSL, container-first | nf-core ecosystem; HPC/cloud portability |
+| [oxo-flow](https://github.com/Traitome/oxo-flow) | Rust-native, TOML-defined DAG engine; CLI + web UI | Lightweight single-binary install; rule-level conda/mamba/pixi/docker/singularity backends; checkpoint/resume |
 
 ### Install pixi
 

@@ -1,6 +1,6 @@
 ---
 name: improve
-version: 3.16.0
+version: 3.17.1
 description: 'The improvement skill. Understand the ask, examine the target, challenge the first read, decide on one change (or argue for redesign, or declare silence), act, reflect on the target, and record. Combines incremental refinement, structural rethinking, and reflection on the target itself. USE WHEN: improve, audit, review, fix, refactor, redesign, evaluate, what would make this better, am I missing something.'
 argument-hint: 'The target to improve, and optionally the concern (correctness, simplicity, performance, etc.)'
 ---
@@ -11,7 +11,7 @@ argument-hint: 'The target to improve, and optionally the concern (correctness, 
 
 *ACM role: Reads the governing current surfaces and relevant evidence before every run; extends the memory layer with each iteration's findings.*
 
-This is the only skill you need for most autonomous work. It combines what v2 split into Kaizen (incremental), Kaikaku (radical), and Hansei (reflection) — because in practice the agent should pick which mode the situation calls for, not be told.
+This is the suite's single entry point for normal work. The operator invokes Improve; Improve applies Intent and Trail every run, and schedules Destination and Orient only when their evidence-based triggers fire. It combines what v2 split into Kaizen (incremental), Kaikaku (radical), and Hansei (reflection) — because in practice the agent should pick which mode the situation calls for, not be told.
 
 *Lineage:* Kaizen and Kaikaku both trace to PDCA (Plan-Do-Check-Act, Deming/Toyota) and Boyd's OODA loop — cited explicitly in this skill's own v1 ancestor but dropped when v2's three skills merged into this one. Restored here rather than left implicit.
 
@@ -31,6 +31,8 @@ Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it 
 
 **Apply [Intent](../intent/SKILL.md) automatically now.** Intent is an ingress service of the full suite, not a command the operator must remember to invoke. Do not ask the operator to run it separately. Continue to step 2 when done.
 
+Tell the operator what is happening in one useful sentence: Intent is interpreting this prompt as the mandate for the current run, and Improve will proceed under that interpretation unless corrected. A repository-level `.acm/destination.md` is not required for the first run. When no durable Destination exists, the narrated interpretation, current conversation, and target evidence govern this iteration.
+
 If this is a standalone Improve installation and Intent is unavailable: before examining anything, narrate your interpretation of what you've been asked to do, in your own words. State what you believe the destination is and what would count as success. If your interpretation diverges from a literal reading of the request, say so explicitly so the operator can correct course before you act.
 
 If the ask is about convergence or publication readiness, read the repo's convergence-scope protocol before proceeding if it has one, then declare which layer (problem, principles, skills, cross-layer coherence) this run is evaluating.
@@ -47,6 +49,8 @@ Before examining the target, check the **target repo's** `.acm/` folder for orie
 **Bounded destination reads.** If a destination contains the exact comments `<!-- current-destination: complete -->` and `<!-- destination-history -->` in that order, the content between them is the operator-confirmed complete current mandate. Read that bounded section for routine work. Read the full file when running Destination, when the current section is ambiguous or conflicts with other evidence, or when historical provenance is material to the request. If either comment is absent, malformed, or out of order, read the full file. Never infer a boundary from headings, dates, horizontal rules, or file position.
 
 The destination is where you are going, orientation.md is the current location, the trail is the path. If destination and orientation.md disagree, destination wins (the operator holds the destination); if orientation.md and trail disagree, the trail wins (the trail is the evidence).
+
+If Intent cannot form a defensible current-run mandate because materially different interpretations would produce different outcomes, or because a long autonomous scope would compound an unresolved directional assumption, pause and apply [Destination](../destination/SKILL.md) before acting. Explain which unresolved direction makes the conversation necessary. Missing `.acm/destination.md` alone is never sufficient evidence to trigger Destination.
 
 If the ask is underspecified (for example: "continue", "keep going", "next", or equivalent), do not wait for the operator to inject a topic. Generate one agent-initiated direction question before step 2:
 
@@ -158,18 +162,16 @@ For an arc-read that runs outside an improve iteration, use [Orient](../orient/S
 
 ### 7. Record
 
-Before applying Trail, evaluate whether this completed iteration has made `.acm/orientation.md` stale enough to require a new arc-read. This is an automatic scheduling decision; do not ask the operator to remember or invoke `/orient`.
+Before applying Trail, answer two questions from current evidence:
 
-Schedule [Orient](../orient/SKILL.md) automatically when any of these evidence-bearing triggers fires:
+1. **Does the next work depend on durable direction the operator has not settled?** If yes, schedule [Destination](../destination/SKILL.md). Name the unresolved choice; missing files, age, and iteration count are never reasons by themselves.
+2. **Does the current Orientation still explain the governing Destination and the material trail?** If no, or if a multi-run convergence claim now depends on that arc-read, schedule [Orient](../orient/SKILL.md). Name the evidence the current map misses; cadence is never a reason by itself.
 
-- **Destination changed:** a Destination run since the last Orient materially revised direction, constraints, priorities, or quality bars. (Destination normally handles this immediately; this trigger catches an interrupted or missed handoff.)
-- **Meaningful arc accumulated:** Improve entries since the last Orient now form a cluster whose sequence matters — repeated finding classes, reversals, failed predictions, diverging candidate moves, or sustained attention in one area. Raw count alone is insufficient.
-- **Orientation no longer explains the trail:** recent evidence contradicts an active orientation claim or operational rule, or substantial work now lies outside its stated scope.
-- **Convergence is approaching:** the loop is about to rely on silence, readiness, or convergence across more than one iteration. Orient must test the arc before that claim carries weight.
-
-Do not schedule Orient merely because one more iteration completed. There is no universal numeric interval. A long sequence can trigger the check because it provides enough evidence to form an arc, but "N iterations elapsed" is never sufficient rationale by itself; state what accumulated evidence now requires synthesis.
+These are purpose tests, not trigger checklists. Do not make the operator orchestrate the services.
 
 Include one line in the Trail entry: `Orientation freshness: current` or `Orientation freshness: STALE — <evidence>; automatic Orient scheduled.` This evaluation must be inside the entry before it becomes append-only history.
+
+Include one line beside it: `Destination need: not triggered` or `Destination need: TRIGGERED — <evidence>; automatic Destination scheduled.`
 
 **Apply [Trail](../trail/SKILL.md) automatically now.** Trail is an egress service of the full suite, not a command the operator must remember to invoke. Do not ask the operator to run it separately.
 
@@ -189,9 +191,11 @@ If this is a standalone Improve installation and Trail is unavailable: create th
 
 The format spec is in [trail/SKILL.md](../trail/SKILL.md). If you have the skills repository clone, its optional `<skills-repo>/harness/tools/record.py` helper can stub a new entry for you; the one-line skill installer does not copy this helper.
 
-### 8. Run scheduled orientation
+### 8. Run scheduled services
 
-After the Trail entry is durable, apply Orient if step 7 marked orientation stale. Orient writes its own Trail entry and refreshes `.acm/orientation.md`; it never changes the target. If orientation was current, stop without ceremony.
+After the Trail entry is durable, apply Destination first if step 7 scheduled it. Destination synthesizes the accepted prompt-level mandates and accumulated evidence instead of asking the operator to describe the project from zero. It asks only the highest-priority unresolved sourced question, waits for confirmation or correction, and records the result. A confirmed Destination governs the next Improve iteration; it does not retroactively authorize or rewrite the completed one.
+
+Then apply Orient if needed. When Improve already scheduled Orient and Destination materially changes direction, the post-Destination Orient satisfies both needs: run it once, against the changed Destination and full trail. Orient writes its own Trail entry and refreshes `.acm/orientation.md`; it never changes the target. If neither service was scheduled, stop without ceremony.
 
 ## Self-targeting
 
@@ -200,5 +204,5 @@ This skill must be runnable on itself. If running Improve on `improve/SKILL.md` 
 ## What this skill does not do
 
 - It does not score the target on a numerical rubric. v2 did this and the question "who made up these metrics?" never went away. Convergence — diverse independent evaluators finding nothing to change — is the only honest measure of done.
-- It does not make the operator orchestrate support skills. In the full suite, Improve automatically applies Intent at ingress (step 1), Trail at egress (step 7), and Orient when the evidence-based freshness check fires (step 8). A standalone Improve installation retains local fallback behavior when a sibling is unavailable.
+- It does not make the operator orchestrate support skills. In the full suite, Improve automatically applies Intent at ingress, Trail at egress, Destination when durable direction becomes necessary, and Orient when accumulated evidence makes Orientation stale. A standalone Improve installation retains local fallback behavior when a sibling is unavailable.
 - It does not tell you when to stop. The convergence protocol in PRINCIPLES.md does.

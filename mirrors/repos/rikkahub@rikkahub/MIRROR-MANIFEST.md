@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
+Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 81 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 81 |
+| Files         | 77 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,16 +130,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`.agents/skills/gemini-interactions-api/references/migration.md`](.agents/skills/gemini-interactions-api/references/migration.md) |
 | 70 | ✓ | [`.agents/skills/gemini-interactions-api/SKILL.md`](.agents/skills/gemini-interactions-api/SKILL.md) |
 | 71 | ✓ | [`.agents/skills/locale-tui-localization/SKILL.md`](.agents/skills/locale-tui-localization/SKILL.md) |
-| 72 | ✓ | [`.claude/skills/claude-api/SKILL.md`](.claude/skills/claude-api/SKILL.md) |
-| 73 | ✓ | [`.claude/skills/find-hugeicons/SKILL.md`](.claude/skills/find-hugeicons/SKILL.md) |
-| 74 | ✓ | [`.claude/skills/gemini-api-dev/SKILL.md`](.claude/skills/gemini-api-dev/SKILL.md) |
-| 75 | ✓ | [`.claude/skills/gemini-interactions-api/SKILL.md`](.claude/skills/gemini-interactions-api/SKILL.md) |
-| 76 | ✓ | [`.claude/skills/locale-tui-localization/SKILL.md`](.claude/skills/locale-tui-localization/SKILL.md) |
-| 77 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 78 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 79 | ✓ | [`locale-tui/CLAUDE.md`](locale-tui/CLAUDE.md) |
-| 80 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
-| 81 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
+| 72 | ✓ | [`.agents/skills/publish-release/SKILL.md`](.agents/skills/publish-release/SKILL.md) |
+| 73 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 74 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 75 | ✓ | [`locale-tui/CLAUDE.md`](locale-tui/CLAUDE.md) |
+| 76 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
+| 77 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
 
 ---
 

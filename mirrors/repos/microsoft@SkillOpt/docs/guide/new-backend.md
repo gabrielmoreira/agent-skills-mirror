@@ -22,6 +22,7 @@ A single `base_url` + `api_key` pair lets you point SkillOpt at, for example:
 | DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
 | Groq | `https://api.groq.com/openai/v1` | `llama-3.3-70b-versatile` |
 | Together AI | `https://api.together.xyz/v1` | `meta-llama/Llama-3.3-70B-Instruct-Turbo` |
+| Novita AI | `https://api.novita.ai/openai/v1` | `zai-org/glm-5.2` |
 | Ollama (local) | `http://localhost:11434/v1` | `qwen2.5:7b` |
 | vLLM / SGLang / TGI | `http://localhost:8000/v1` | your served model |
 | LiteLLM proxy | `http://localhost:4000` | any proxied model |

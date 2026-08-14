@@ -1,3 +1,15 @@
+---
+name: agentlas-packager
+description: "Convert or repair an existing local/external agent or team into Agentlas architecture and prepare local install, Claude adapter, Codex plugin, or open-source release surfaces."
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+---
+
 # Agentlas Packager
 
 ## Mission
@@ -44,7 +56,7 @@ Conformance runs are safe to parallelise: packages do not read each other.
 
 Skip this section entirely in Conformance Rebuild Mode.
 
-Before wrapping an existing source, run `docs/builder-interview-research-gate.md`
+Before wrapping an existing source, run `contracts/builder-interview-research-gate.md`
 when the source behavior, target users, tools/plugins, output artifacts, or
 quality bar are unclear. Packaging must not turn a shallow prompt into a
 well-structured but weak package.

@@ -42,6 +42,45 @@ Check `executor_readiness/v1` for Codex, Claude Code, Hermes, or oh-my runtime p
 
 With `--record`, Codex-selected real executor handoffs create `.omh/runtime/runs/<run-id>/` prepared runtime runs with `observation_status: prepared_not_observed`. Executor-choice, prompt-only, runtime-handoff, clarify, and fallback responses remain wrapper/session state.
 
+### Code-Mode Batching
+
+Use code-mode batching only when the selected profile's declared `code_mode_batching` capability is `supported`. When it is `unsupported` or `unknown`, skip this paragraph entirely and issue one tool call per step; an undeclared capability is not a permission.
+
+Under that condition, plan the wave first and then run the independent reads, searches, and metadata lookups of that wave in a single evaluated cell instead of one call per turn. Batch only calls that do not consume each other's output, keep every call's target explicit so a failure names the call that failed, and never batch a mutation with the reads that justify it. The batch is a call-shape choice; it is not execution, verification, review, CI, or merge evidence, and it changes nothing about which stages are observed.
+
+### Edit-Format Steering
+
+Handoff prompts choose an edit format. Steer it from the profile's declared capability metadata, and name the capability that justified the choice — never a vendor, and never a promised improvement.
+
+- When a profile declares `unsupported` or `unknown` for strict patch/diff application, ask for whole-function or whole-block replacements with surrounding anchors instead of a patch or unified-diff grammar. A rejected patch hunk costs a retry that a block replacement does not.
+- After any accepted edit, require re-grounding: re-read the changed region before the next edit rather than reasoning from the pre-edit copy in context.
+- Prefer narrow reads with search-before-edit — locate the symbol or string, read only the region around it, then edit — over whole-file reads that push the rest of the handoff out of context.
+
+These are capability-conditioned prompt shapes, not performance claims. Do not tell the user an edit format will make an executor faster, cheaper, or more accurate; the profile metadata is descriptive, and only observed run evidence can say what happened.
+
+### Resource References In Prepared Handoffs
+
+A prepared handoff names resources; it does not paste them. Every named resource carries four parts:
+
+- **Canonical locator** — the stable identifier the resource is addressed by (path, artifact ref, URL, or record id), written once and reused verbatim.
+- **Read/search capability** — how the executor is expected to obtain it: read the whole thing, search within it, or fetch a named region.
+- **Provenance** — where the locator came from and when it was observed, so a stale reference is visible as stale rather than as truth.
+- **Local-path fallback** — the on-disk path to use when the canonical locator is unreachable, plus what to report when neither resolves.
+
+A resource reference is not the resource. An unresolved reference is a blocked input to report, never a gap to fill by guessing the content.
+
+### Commit Planning
+
+When a handoff is expected to produce more than one commit, plan the commits before the edits start:
+
+- **Overview first.** State the full change set and its ordering before the first commit, so no commit is invented mid-stream to hold leftovers.
+- **Bounded diffs.** Each commit is one reviewable idea; a diff that cannot be described in one sentence is two commits.
+- **Complete, non-overlapping coverage.** Every changed file belongs to exactly one commit in the plan. No file appears twice; no changed file is unassigned.
+- **Dependency order.** A commit that depends on another comes after it, and each commit is expected to build and test on its own.
+- **Lockfile-manifest pairing.** A dependency-manifest change and its lockfile update land in the same commit, never split across two.
+
+A commit plan is preparation. Commits, review, CI, and merge stay separately observed.
+
 ## Large Output And Context Safety
 
 Wrappers must keep raw Codex JSONL, tool output, process logs, and oversized

@@ -1,6 +1,7 @@
 ---
 name: skill-parallel-agents
 description: "Decompose large tasks across parallel agents — use for migrations, multi-file refactors, or batch work"
+disable-model-invocation: true
 ---
 
 > **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
@@ -228,7 +229,7 @@ If the detect-providers command shows both Codex and AGY are missing, this is li
 >
 > **Option 2: Google Antigravity CLI** (best for analysis)
 > ```
-> agy login
+> agy  # complete the browser sign-in when prompted
 > ```
 > Install `agy` from Google Antigravity first if it is not already present.
 >
@@ -323,7 +324,7 @@ AGY_AUTH=none
 >
 > **Option 2: Install Antigravity CLI**
 > ```
-> agy login
+> agy  # complete the browser sign-in when prompted
 > ```
 >
 > After installing one, run `/octo:setup` to verify everything works."

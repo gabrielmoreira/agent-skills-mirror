@@ -1,19 +1,44 @@
 ---
 name: paid-ads-linkedin
-description: Plan and review LinkedIn Ads with B2B targeting, lead-quality, and budget guardrails. Use for LinkedIn advertising, sponsored content, lead-generation forms, job-title or company targeting, or LinkedIn campaign performance.
-argument-hint: "<B2B goal, audience, or LinkedIn export>"
+description: Audit, diagnose, plan, and safely operate connected LinkedIn Ads accounts through the NotFair MCP, with an export-based fallback. Use for LinkedIn advertising, sponsored content, lead-generation forms, job-title or company targeting, campaign groups, creatives, conversions, lead quality, budgets, bids, or approved LinkedIn campaign changes.
+argument-hint: "<B2B goal, audience, account, or date range>"
 ---
 
-# LinkedIn Ads Planning
+# LinkedIn Ads
 
-Read `../shared/operating-contract.md` and `../shared/measurement-framework.md`. This plugin does not declare a first-party NotFair LinkedIn MCP mutation surface; work from a verified connector or supplied export and produce an operator-ready brief.
+Read `../shared/operating-contract.md` and `../shared/measurement-framework.md` before acting. Prefer the live NotFair LinkedIn Ads MCP at `https://notfair.co/api/mcp/linkedin_ads`; use a supplied export only when no verified connector is available.
 
-## Build around qualified demand
+## Establish access and qualified-demand context
 
-Define the sales-qualified conversion and feedback loop before optimizing for a form fill. Create a targeting hypothesis from job function, seniority, company, industry, and account list only when the user provides a defensible audience rationale. Avoid overly narrow targeting that cannot learn; document exclusions and expected audience constraints rather than guessing platform reach.
+1. Resolve `~~linkedin-ads` to the actual LinkedIn connector and inspect its current tools. Confirm the selected account with a harmless account/setup read. Do not infer access from another NotFair connector.
+2. If the connector is missing or unauthorized, request re-authorization or a current export and keep the result plan/review-only.
+3. Define the sales-qualified conversion, CRM feedback loop, account currency, attribution basis, target CPA or pipeline outcome, and complete date window before diagnosing performance.
 
-For each proposal, include campaign objective, campaign-group/naming convention if supplied by the operator, audience logic, lead-form versus landing-page decision, daily and monthly budget, creative concept, destination or follow-up owner, and a quality metric beyond CTR. Higher CPMs and lower conversion volume make a single well-specified test more useful than many thin ad groups.
+Keep lead quantity separate from lead quality. Build targeting hypotheses from job function, seniority, company, industry, or account lists only when the business rationale and audience constraints are defensible.
 
-## Review and handoff
+## Read and diagnose
 
-Read reported spend, impressions, link CTR, leads, qualified leads, CPA, and CRM outcome by a complete period. Keep lead quantity separate from lead quality. Mark all changes `ready_for_review` until an authorized operator confirms them in LinkedIn Campaign Manager or a verified connector reads them back.
+Use `runScript` for correlated read-only work across campaign groups, campaigns, creatives, and analytics. Prefer a single broad read. Use specialized point tools for individual objects, conversion rules, lead forms, targeting lookup, or lead-form responses.
+
+Interpret the platform correctly:
+
+- Hierarchy is account → campaign group → campaign → creative.
+- Money is returned as a major-unit object such as `{ amount: "50", currencyCode: "USD" }`, not micros or cents.
+- Targeting is a whole tree on the campaign. Preserve existing criteria unless the user explicitly approves replacement.
+- Campaign type and cost type are immutable after creation.
+- Lead-form responses contain personal data. Retrieve only when necessary, minimize exposure in the response, and never copy raw lead PII into unrelated artifacts.
+
+For reviews, report spend, impressions, link CTR, leads, qualified leads, CPA, and downstream pipeline or revenue by a complete equivalent period. Name the likely driver only when the data supports it.
+
+## Execute approved changes safely
+
+Use dedicated write tools, never the read-only script surface. Show the exact object, current and proposed state, currency exposure, expected effect, and rollback first. Use dry-run previews for spend-affecting creates, budgets, bids, and targeting when available.
+
+- Prefer pause/activate over hard deletion; conversion rules and matched audiences may not be deletable through the API.
+- Create campaign groups, campaigns, and creatives in draft, then review targeting, budget, conversion association, and creative before activation.
+- Use a stable client request ID only to retry the same uncertain create.
+- Resolve targeting names to LinkedIn URNs before setting the full targeting tree.
+- Hashing and event-shape enforcement belong to the connector. Do not expose raw customer identifiers in the final report.
+- Verify the mutation through returned before/after evidence or a fresh read and report any partial failure.
+
+Finish with the confirmed action, quality metric, observation window, and rollback trigger. If operating from an export, mark recommendations `ready_for_review`, never `published`.

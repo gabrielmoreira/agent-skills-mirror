@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 104 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 64 |
+| Files         | 104 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,33 +96,73 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`skills/levelplay-unity-integration/references/privacy-settings.md`](skills/levelplay-unity-integration/references/privacy-settings.md) |
 | 36 | ✓ | [`skills/levelplay-unity-integration/references/rewarded-api.md`](skills/levelplay-unity-integration/references/rewarded-api.md) |
 | 37 | ✓ | [`skills/levelplay-unity-integration/SKILL.md`](skills/levelplay-unity-integration/SKILL.md) |
-| 38 | ✓ | [`skills/new-unity-project/SKILL.md`](skills/new-unity-project/SKILL.md) |
-| 39 | ✓ | [`skills/ui-imgui/references/gui-elements.md`](skills/ui-imgui/references/gui-elements.md) |
-| 40 | ✓ | [`skills/ui-imgui/references/templates.md`](skills/ui-imgui/references/templates.md) |
-| 41 | ✓ | [`skills/ui-imgui/SKILL.md`](skills/ui-imgui/SKILL.md) |
-| 42 | ✓ | [`skills/ui-ugui/references/scrollview-setup.md`](skills/ui-ugui/references/scrollview-setup.md) |
-| 43 | ✓ | [`skills/ui-ugui/SKILL.md`](skills/ui-ugui/SKILL.md) |
-| 44 | ✓ | [`skills/ui-uitk/references/common-issues.md`](skills/ui-uitk/references/common-issues.md) |
-| 45 | ✓ | [`skills/ui-uitk/references/custom-elements.md`](skills/ui-uitk/references/custom-elements.md) |
-| 46 | ✓ | [`skills/ui-uitk/references/painter2d.md`](skills/ui-uitk/references/painter2d.md) |
-| 47 | ✓ | [`skills/ui-uitk/references/pointermanipulator-guide.md`](skills/ui-uitk/references/pointermanipulator-guide.md) |
-| 48 | ✓ | [`skills/ui-uitk/references/svg-icons.md`](skills/ui-uitk/references/svg-icons.md) |
-| 49 | ✓ | [`skills/ui-uitk/references/ui-runtime-binding.md`](skills/ui-uitk/references/ui-runtime-binding.md) |
-| 50 | ✓ | [`skills/ui-uitk/references/uss-guide.md`](skills/ui-uitk/references/uss-guide.md) |
-| 51 | ✓ | [`skills/ui-uitk/SKILL.md`](skills/ui-uitk/SKILL.md) |
-| 52 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
-| 53 | ✓ | [`skills/unity-cli/CHANGELOG.md`](skills/unity-cli/CHANGELOG.md) |
-| 54 | ✓ | [`skills/unity-cli/references/auth-license-cloud.md`](skills/unity-cli/references/auth-license-cloud.md) |
-| 55 | ✓ | [`skills/unity-cli/references/build-run-test.md`](skills/unity-cli/references/build-run-test.md) |
-| 56 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
-| 57 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
-| 58 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
-| 59 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
-| 60 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
-| 61 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
-| 62 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
-| 63 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
-| 64 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
+| 38 | ✓ | [`skills/localization/references/api-notes.md`](skills/localization/references/api-notes.md) |
+| 39 | ✓ | [`skills/localization/resources/L10nBatchProcessor.cs`](skills/localization/resources/L10nBatchProcessor.cs) |
+| 40 | ✓ | [`skills/localization/resources/LocalizedFontAsset.cs`](skills/localization/resources/LocalizedFontAsset.cs) |
+| 41 | ✓ | [`skills/localization/SKILL.md`](skills/localization/SKILL.md) |
+| 42 | ✓ | [`skills/new-unity-project/SKILL.md`](skills/new-unity-project/SKILL.md) |
+| 43 | ✓ | [`skills/optimize-audio/resources/audio-import-api.md`](skills/optimize-audio/resources/audio-import-api.md) |
+| 44 | ✓ | [`skills/optimize-audio/resources/platform-settings.md`](skills/optimize-audio/resources/platform-settings.md) |
+| 45 | ✓ | [`skills/optimize-audio/SKILL.md`](skills/optimize-audio/SKILL.md) |
+| 46 | ✓ | [`skills/optimize-text-mesh-pro/SKILL.md`](skills/optimize-text-mesh-pro/SKILL.md) |
+| 47 | ✓ | [`skills/optimize-web/resources/toktx-examples.sh`](skills/optimize-web/resources/toktx-examples.sh) |
+| 48 | ✓ | [`skills/optimize-web/resources/WebOptimizer.cs`](skills/optimize-web/resources/WebOptimizer.cs) |
+| 49 | ✓ | [`skills/optimize-web/SKILL.md`](skills/optimize-web/SKILL.md) |
+| 50 | ✓ | [`skills/physics-3d-collision/references/troubleshooting.md`](skills/physics-3d-collision/references/troubleshooting.md) |
+| 51 | ✓ | [`skills/physics-3d-collision/resources/CollisionDebugger.cs`](skills/physics-3d-collision/resources/CollisionDebugger.cs) |
+| 52 | ✓ | [`skills/physics-3d-collision/SKILL.md`](skills/physics-3d-collision/SKILL.md) |
+| 53 | ✓ | [`skills/setup-multiplayer-services/references/dgs-entrypoint.md`](skills/setup-multiplayer-services/references/dgs-entrypoint.md) |
+| 54 | ✓ | [`skills/setup-multiplayer-services/references/entrypoints.md`](skills/setup-multiplayer-services/references/entrypoints.md) |
+| 55 | ✓ | [`skills/setup-multiplayer-services/references/examples.md`](skills/setup-multiplayer-services/references/examples.md) |
+| 56 | ✓ | [`skills/setup-multiplayer-services/references/implementation-fit.md`](skills/setup-multiplayer-services/references/implementation-fit.md) |
+| 57 | ✓ | [`skills/setup-multiplayer-services/references/underlying-services.md`](skills/setup-multiplayer-services/references/underlying-services.md) |
+| 58 | ✓ | [`skills/setup-multiplayer-services/references/workflows-prerequisites.md`](skills/setup-multiplayer-services/references/workflows-prerequisites.md) |
+| 59 | ✓ | [`skills/setup-multiplayer-services/SKILL.md`](skills/setup-multiplayer-services/SKILL.md) |
+| 60 | ✓ | [`skills/setup-vivox-voice-chat/evals/.env.example`](skills/setup-vivox-voice-chat/evals/.env.example) |
+| 61 | ✓ | [`skills/setup-vivox-voice-chat/evals/.gitignore`](skills/setup-vivox-voice-chat/evals/.gitignore) |
+| 62 | ✓ | [`skills/setup-vivox-voice-chat/evals/promptfooconfig.yaml`](skills/setup-vivox-voice-chat/evals/promptfooconfig.yaml) |
+| 63 | ✓ | [`skills/setup-vivox-voice-chat/evals/README.md`](skills/setup-vivox-voice-chat/evals/README.md) |
+| 64 | ✓ | [`skills/setup-vivox-voice-chat/evals/tests/init-and-login.yaml`](skills/setup-vivox-voice-chat/evals/tests/init-and-login.yaml) |
+| 65 | ✓ | [`skills/setup-vivox-voice-chat/evals/tests/text-chat.yaml`](skills/setup-vivox-voice-chat/evals/tests/text-chat.yaml) |
+| 66 | ✓ | [`skills/setup-vivox-voice-chat/evals/tests/voice-channels.yaml`](skills/setup-vivox-voice-chat/evals/tests/voice-channels.yaml) |
+| 67 | ✓ | [`skills/setup-vivox-voice-chat/references/events-and-participants.md`](skills/setup-vivox-voice-chat/references/events-and-participants.md) |
+| 68 | ✓ | [`skills/setup-vivox-voice-chat/references/init-and-login.md`](skills/setup-vivox-voice-chat/references/init-and-login.md) |
+| 69 | ✓ | [`skills/setup-vivox-voice-chat/references/text-chat.md`](skills/setup-vivox-voice-chat/references/text-chat.md) |
+| 70 | ✓ | [`skills/setup-vivox-voice-chat/references/troubleshooting.md`](skills/setup-vivox-voice-chat/references/troubleshooting.md) |
+| 71 | ✓ | [`skills/setup-vivox-voice-chat/references/voice-channels.md`](skills/setup-vivox-voice-chat/references/voice-channels.md) |
+| 72 | ✓ | [`skills/setup-vivox-voice-chat/SKILL.md`](skills/setup-vivox-voice-chat/SKILL.md) |
+| 73 | ✓ | [`skills/shader-graph-create-custom-node/resources/all_hints.hlsl`](skills/shader-graph-create-custom-node/resources/all_hints.hlsl) |
+| 74 | ✓ | [`skills/shader-graph-create-custom-node/SKILL.md`](skills/shader-graph-create-custom-node/SKILL.md) |
+| 75 | ✓ | [`skills/ui-imgui/references/gui-elements.md`](skills/ui-imgui/references/gui-elements.md) |
+| 76 | ✓ | [`skills/ui-imgui/references/templates.md`](skills/ui-imgui/references/templates.md) |
+| 77 | ✓ | [`skills/ui-imgui/SKILL.md`](skills/ui-imgui/SKILL.md) |
+| 78 | ✓ | [`skills/ui-ugui/references/scrollview-setup.md`](skills/ui-ugui/references/scrollview-setup.md) |
+| 79 | ✓ | [`skills/ui-ugui/SKILL.md`](skills/ui-ugui/SKILL.md) |
+| 80 | ✓ | [`skills/ui-uitk/references/common-issues.md`](skills/ui-uitk/references/common-issues.md) |
+| 81 | ✓ | [`skills/ui-uitk/references/custom-elements.md`](skills/ui-uitk/references/custom-elements.md) |
+| 82 | ✓ | [`skills/ui-uitk/references/painter2d.md`](skills/ui-uitk/references/painter2d.md) |
+| 83 | ✓ | [`skills/ui-uitk/references/pointermanipulator-guide.md`](skills/ui-uitk/references/pointermanipulator-guide.md) |
+| 84 | ✓ | [`skills/ui-uitk/references/svg-icons.md`](skills/ui-uitk/references/svg-icons.md) |
+| 85 | ✓ | [`skills/ui-uitk/references/ui-runtime-binding.md`](skills/ui-uitk/references/ui-runtime-binding.md) |
+| 86 | ✓ | [`skills/ui-uitk/references/uss-guide.md`](skills/ui-uitk/references/uss-guide.md) |
+| 87 | ✓ | [`skills/ui-uitk/SKILL.md`](skills/ui-uitk/SKILL.md) |
+| 88 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
+| 89 | ✓ | [`skills/unity-cli/CHANGELOG.md`](skills/unity-cli/CHANGELOG.md) |
+| 90 | ✓ | [`skills/unity-cli/references/auth-license-cloud.md`](skills/unity-cli/references/auth-license-cloud.md) |
+| 91 | ✓ | [`skills/unity-cli/references/build-run-test.md`](skills/unity-cli/references/build-run-test.md) |
+| 92 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
+| 93 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
+| 94 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
+| 95 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
+| 96 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
+| 97 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
+| 98 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
+| 99 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
+| 100 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
+| 101 | ✓ | [`skills/urp-postprocessing/references/code-templates.md`](skills/urp-postprocessing/references/code-templates.md) |
+| 102 | ✓ | [`skills/urp-postprocessing/references/effect-reference.md`](skills/urp-postprocessing/references/effect-reference.md) |
+| 103 | ✓ | [`skills/urp-postprocessing/SKILL.md`](skills/urp-postprocessing/SKILL.md) |
+| 104 | ✓ | [`skills/validate-urp-render-graph-renderer-feature/SKILL.md`](skills/validate-urp-render-graph-renderer-feature/SKILL.md) |
 
 ---
 

@@ -12,7 +12,7 @@ Read `../shared/operating-contract.md` and `../shared/measurement-framework.md`.
 
 Verify the conversion signal, period completeness, spend volume, attribution model, and recent account changes. Spend with no recorded conversion can indicate broken tracking or immature data; treat it as a hypothesis until the signal and volume support an intervention. Check landing-page or operational failures before blaming targeting.
 
-Classify the bottleneck as query/audience quality, creative fatigue, delivery/rank, budget constraint, landing-page mismatch, tracking, or economics. Use Google and Meta's specialized skills for live diagnosis. For other platforms, analyze only the supplied or verified data.
+Classify the bottleneck as query/audience quality, creative fatigue, delivery/rank, budget constraint, landing-page mismatch, tracking, or economics. Use the specialized Google, Meta, X, or LinkedIn skill for live diagnosis. For other platforms, analyze only the supplied or verified data.
 
 ## Rank reversible moves
 

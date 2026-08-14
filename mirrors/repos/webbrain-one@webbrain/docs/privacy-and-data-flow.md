@@ -41,7 +41,11 @@ The user chooses their provider in Settings. Options include:
 
 - **WebBrain Cloud**: requests go through `api.webbrain.one`; selected interactions may be retained and used for evaluation, improvement, fine-tuning, and training while Help Improve WebBrain is enabled
 - **Bring-your-own cloud providers**: OpenAI, Anthropic, Google Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, etc. — requests go directly to the provider using the user's credentials and are never collected by WebBrain
-- **Local providers**: llama.cpp, Ollama, LM Studio, Jan, vLLM, SGLang, LocalAI — data stays on the user's machine
+- **Local model runtimes**: llama.cpp, Ollama, LM Studio, Jan, vLLM, SGLang,
+  LocalAI, and GPT4All — inference requests stay on the user's machine
+- **Local OpenAI-compatible Proxy**: WebBrain connects only to the configured
+  local gateway, but the gateway may forward the request context to an upstream
+  account. Its configuration and privacy policy determine where data goes.
 
 Local-model and bring-your-own API requests are never collected by WebBrain. WebBrain Cloud requests are processed and may be retained as described below.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 29 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,25 +69,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`agents/prompts/create-bug-test.md`](agents/prompts/create-bug-test.md) |
 | 9 | ✓ | [`agents/prompts/diagnose-workflow-failure.md`](agents/prompts/diagnose-workflow-failure.md) |
 | 10 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
-| 11 | ✓ | [`agents/prompts/pull-request-labels.md`](agents/prompts/pull-request-labels.md) |
-| 12 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
-| 13 | ✓ | [`agents/prompts/rebase-pull-request.md`](agents/prompts/rebase-pull-request.md) |
-| 14 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
-| 15 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
-| 16 | ✓ | [`agents/prompts/update-issue-context.md`](agents/prompts/update-issue-context.md) |
-| 17 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
-| 18 | ✓ | [`agents/schemas/create-bug-test.json`](agents/schemas/create-bug-test.json) |
-| 19 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
-| 20 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
-| 21 | ✓ | [`agents/schemas/pull-request-labels.json`](agents/schemas/pull-request-labels.json) |
-| 22 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
-| 23 | ✓ | [`agents/schemas/workflow-failure.json`](agents/schemas/workflow-failure.json) |
-| 24 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
-| 25 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
-| 26 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
-| 27 | ✓ | [`agents/scripts/load-github-action-thread.sh`](agents/scripts/load-github-action-thread.sh) |
-| 28 | ✓ | [`agents/templates/issue-context-template.md`](agents/templates/issue-context-template.md) |
-| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`agents/prompts/fix-reproduced-bug.md`](agents/prompts/fix-reproduced-bug.md) |
+| 12 | ✓ | [`agents/prompts/pull-request-labels.md`](agents/prompts/pull-request-labels.md) |
+| 13 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
+| 14 | ✓ | [`agents/prompts/rebase-pull-request.md`](agents/prompts/rebase-pull-request.md) |
+| 15 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
+| 16 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
+| 17 | ✓ | [`agents/prompts/update-issue-context.md`](agents/prompts/update-issue-context.md) |
+| 18 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
+| 19 | ✓ | [`agents/schemas/create-bug-test.json`](agents/schemas/create-bug-test.json) |
+| 20 | ✓ | [`agents/schemas/fix-reproduced-bug.json`](agents/schemas/fix-reproduced-bug.json) |
+| 21 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
+| 22 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
+| 23 | ✓ | [`agents/schemas/pull-request-labels.json`](agents/schemas/pull-request-labels.json) |
+| 24 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
+| 25 | ✓ | [`agents/schemas/workflow-failure.json`](agents/schemas/workflow-failure.json) |
+| 26 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
+| 27 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
+| 28 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
+| 29 | ✓ | [`agents/scripts/load-github-action-thread.sh`](agents/scripts/load-github-action-thread.sh) |
+| 30 | ✓ | [`agents/templates/issue-context-template.md`](agents/templates/issue-context-template.md) |
+| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

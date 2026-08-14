@@ -125,6 +125,43 @@ unity editors upgrade 2022.3.10f1 --no-modules
 unity editors upgrade 2022.3.10f1 --module android --module ios
 ```
 
+#### editors prune
+
+Finds installed editors that **no registered project uses** and, optionally, uninstalls them. Report-only by default — it never deletes anything unless you pass `--remove`.
+
+```bash
+# Report only: which editors are unused, and how much they'd reclaim
+unity editors prune
+
+# Uninstall the unused editors (prompts to confirm)
+unity editors prune --remove
+
+# Non-interactive: --yes is REQUIRED alongside --remove in a script or CI
+unity editors prune --remove --yes
+
+# Machine output
+unity editors prune --format json
+```
+
+The report lists version, architecture, path, size, and status, then the total reclaimable size. With `--remove` in a non-interactive shell and no `-y, --yes`, it refuses rather than deleting unprompted. "Unused" is judged against the **project registry** (`unity projects list`), so an editor used only by a project you never registered counts as unused — register it first, or verify with `unity editors prune` before adding `--remove`.
+
+#### editors verify
+
+Structurally verifies an installed editor: checks that its files and modules are actually present on disk. It's the command to reach for when an editor launches oddly, a module seems half-installed, or a download was interrupted.
+
+```bash
+# Verify an installed editor
+unity editors verify 6000.1.0f1
+
+# Disambiguate when the same version is installed for two architectures
+unity editors verify 6000.1.0f1 --architecture arm64
+
+# Machine output
+unity editors verify 6000.1.0f1 --json
+```
+
+Reports each component as `ok`, `missing`, or `skipped`, and names the exact `unity install-modules` command to repair anything missing. A clean editor exits 0; missing or empty files fail the check. This is a **structural** check — it confirms files exist, not that they are uncorrupted or correctly signed. `--architecture` is inherited from the `editors` parent, so `unity editors --architecture arm64 verify <version>` works too.
+
 #### editors module / editor module
 
 Module management is exposed under **both** `editors module` and the `editor` (singular) command group. Both share the same subcommands:
@@ -202,9 +239,11 @@ unity install 6000.0.47f1 --list-components --format json
 unity install 6000.0.47f1 -m android ios          # space-separated
 unity install 6000.0.47f1 -m android -m ios       # repeated flag (same effect)
 
-# Windows: skip the elevated (UAC) install helper — for user-writable install locations
-# and CI shells where a UAC prompt can't be answered (installing into a protected path then
-# fails with a permission error instead of prompting). Also via UNITY_NO_ELEVATE=1.
+# Windows: keep the install service unelevated. The Editor's NSIS installer is manifested
+# `highestAvailable`, so it runs unelevated for a STANDARD user (the supported unprivileged
+# install — it reports any dependencies an admin must finish) but still asks for elevation on
+# demand under an administrator account. In CI, where a prompt can't be answered, run the
+# agent elevated instead. Also via UNITY_NO_ELEVATE=1.
 unity install 6000.0.47f1 --no-elevate --yes --accept-eula
 ```
 

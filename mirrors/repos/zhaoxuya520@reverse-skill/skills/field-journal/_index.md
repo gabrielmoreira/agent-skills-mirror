@@ -6,9 +6,10 @@
 
 ## 统计
 
-- 真实项目数：17
+- 真实项目数：18
 - 种子参考数：17
-- 总条目数：34
+- 总条目数：35
+- 最近更新：2026-08-14
 
 ## 按场景分类
 
@@ -60,6 +61,7 @@
 
 ### 工具链与环境
 
+- [2026-08-14 Windows PowerShell 原生命令退出码 PR 审查](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
 - [2026-08-08 平台无关结构化路由 PR 集成](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
 - [2026-07-20_reverse-toolchain-windows-bootstrap](./2026-07-20_reverse-toolchain-windows-bootstrap.md)
 
@@ -72,6 +74,7 @@
 
 ### 平台无关路由与供应链门禁
 
+- [原生命令后立即保存退出码、Windows PowerShell 5.1 实宿主复现、PR head 固定](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
 - [单一 routing.json、多入口 parity、实际安装命令 pin](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
 
 ### 固件自定义封装
@@ -83,6 +86,10 @@
 ### 多宿主安全技能路由包
 
 - [核心/适配器边界与大 PR 选择性集成](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
+
+### Windows PowerShell 供应链引导脚本
+
+- [原生命令输出经过对象管道后退出码失真](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
 
 ### Cortex-M USB MSC 升级器
 

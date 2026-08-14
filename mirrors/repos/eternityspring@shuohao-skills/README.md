@@ -11,15 +11,16 @@
 
 # shuohao-skills
 
-**AI 短剧制作的 skill 集合**：从一本小说到能开拍的制作素材——拆角色、排大纲、出场景与道具设定。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
+**AI 短剧制作的 skill 集合**：从一本小说到能开拍的制作素材——拆角色、排大纲、出场景与道具设定、写剧本。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
 
 | Skill | 做什么 |
 | --- | --- |
 | [**novel-characters**](skills/novel-characters) | 把一篇小说拆成角色设定集：人物画像、形象提示词、音色提示词、角色设定图。报告语言与出图风格可选 |
 | [**novel-outline**](skills/novel-outline) | 把一本小说改编成短剧大纲五件套：改编说明、人物表、爽点表、分集梗概、资产清单。13 道质量门全部脚本检查，支持已有大纲的体检模式 |
 | [**novel-art**](skills/novel-art) | 给 AI 短剧出美术设定集（场景 + 叙事道具）：一致性锚点、光照与状态变体、尺度参照、无人无手白底提示词。吃 outline.json 预填清单，11 道质量门全部脚本检查 |
+| [**novel-script**](skills/novel-script) | 给 AI 短剧写剧本：场次 + 节拍流（动作与台词交替），逐集时长按语速确定性折算，台词本按角色聚合直接对接 TTS。9 道质量门全部脚本检查 |
 
-丢一本小说进去，出这三套：
+丢一本小说进去，出这四套：
 
 **novel-characters · 角色设定集**
 
@@ -32,6 +33,10 @@
 **novel-art · 美术设定集（场景 + 道具，设定图为 skill 实际生成）**
 
 ![美术设定集报告](skills/novel-art/assets/report.webp)
+
+**novel-script · 剧本（时长仪表 + 分集剧本 + 台词本）**
+
+![剧本报告](skills/novel-script/assets/report.webp)
 
 ## 安装
 

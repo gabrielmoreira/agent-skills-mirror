@@ -228,12 +228,14 @@ interface WorkspaceAccess {
 
 `rootPath` 是 [`WorkspaceScope`](../../../crates/ha-core/src/filesystem/workspace.rs) 按 session override → project explicit root → project default workspace 裁定并 canonicalize 后的权威根目录。Composer、文件选择器和文件操作必须消费该值，不能在前端重建 `projects/<id>/workspace`，从而保持 Tauri/HTTP 与执行层同源。
 
+项目辅助源文件夹使用 `project_folder` scope：客户端只携带基础 project/session scope、`linked_dirs` 索引与期望路径，后端每次从 live Project 重新解析并要求索引和 canonical 路径精确匹配。它复用同一套 capability、CAS、越界检查与远程写闸门，不是通用绝对路径入口；项目删除、目录移除或换序后旧 scope 立即 fail closed。
+
 后端 [`WorkspaceScope`](../../../crates/ha-core/src/filesystem/workspace.rs) 是唯一判定点，写状态的推导规则是：
 
 - 本地桌面默认可写。
 - HTTP（含桌面远程和 Web）受 `filesystem.allowRemoteWrites` 约束。
 - `path` worktree 跳转固定只读。
-- archived project 及其 session workspace 固定只读。
+- archived project、其 session workspace 及其辅助源文件夹固定只读。
 - 知识空间外部目录继续服从 `allow_external_writes`；后台自主维护永不写外部。
 
 其中**固有只读原因（`scope_read_only` / `project_archived`）永远优先**，服务器侧的远程写开关在其之后叠加——这正是 §2 能力优先级在后端的对应实现。
@@ -343,7 +345,7 @@ stateDiagram-v2
 
 [`FilePreviewPane`](../../../src/components/chat/project/file-browser/FilePreviewPane.tsx) 是统一预览视图，按 `fileKindOf` 结果分派（外壳 `FilePreviewPanel.tsx` 负责 target 切换与全屏，两者不是同一文件）：
 
-- code/text/Markdown：文本与语法高亮；Markdown 可切换渲染/源码。
+- code/text/Markdown：文本与语法高亮；Markdown 与普通 HTML 可切换渲染/源码。普通 HTML 默认显示高亮源码，渲染视图会先移除脚本、refresh、外部资源和导航属性，再放进无脚本 sandbox 并注入与 Canvas 静态页面一致的离线 CSP；受管 Artifact HTML 仍走独立的 `allow-scripts` 预览链路。
 - image/PDF/audio/video：浏览器原生预览。
 - Office：docx-preview / SheetJS / pptxviewjs 富预览，失败时回退后端抽取文本。
 - 二进制/失败状态：显示原因，并从同一能力层提供打开或下载。

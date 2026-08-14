@@ -29,6 +29,12 @@ Fit cheat-sheet for the recommendation (NOT an auto-decision):
 
 **Motion-required deliverables**: if `delivery_promise.motion_required=true`, the chosen runtime is a commitment. Silent downgrade to FFmpeg Ken Burns or still-led animatic is forbidden. If the chosen runtime becomes unavailable at render time, compose must escalate, not substitute.
 
+For an explicit 3D-world promise, query `3d_world_generation`. When
+`threejs_world` and HyperFrames are available, this is a real motion path even
+if cloud video generation is unavailable: it authors a continuous editable
+scene graph with a deterministic camera. Record the tool, local $0 generation
+cost, HyperFrames runtime, and atelier mode in the proposal.
+
 A `render_runtime_selection` decision with only one option considered when both were available is a CRITICAL reviewer finding.
 
 ## Prerequisites

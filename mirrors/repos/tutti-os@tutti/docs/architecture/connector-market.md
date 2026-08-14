@@ -351,15 +351,31 @@ Remote Connector authorization uses that account projection for Start,
 observation, presentation, and route publication; the device Connector's
 authorization field is not remote authorization truth. A completed Start
 operation may retain a private authorization-session receipt while provider
-work is pending. Each receipt has a terminal resolution, and only unresolved
+work is pending. The Start response preserves the current session's `pending`
+state when the durable account projection is still missing, disconnected,
+expired, or failed; this ephemeral response state lets the caller continue the
+same idempotent session and does not replace the projection as durable truth.
+An already connected projection wins a race with a stale pending session. Each
+receipt has a terminal resolution, and only unresolved
 receipts for the daemon's current account are polled. Applying an authoritative
 connected Snapshot atomically writes its monotonic Projection and surfaces all
 matching account-and-Connector receipts. The daemon holds the account lifecycle
-fence, awaits Runtime Reconcile, and only then resolves them as
+fence and is the single runtime scheduler for receipt recovery. Host projection
+does not enqueue a second operation. The daemon atomically creates or joins the
+active Reconcile for the same Connector and account scope, awaits it, and only
+then resolves the receipts as
 `account_state_converged`. A same-revision Snapshot still surfaces a receipt created
 after an earlier Snapshot does not cause permanent polling. WebSocket hints and
 the five-minute calibration both fetch Snapshot; runtime reconcile is
 level-triggered and can safely repeat after restart or an interrupted pass.
+The external mutation API continues to use the global Snapshot revision for
+CAS. Internal level-triggered repair reads current durable state inside its
+transaction, so unrelated Connector operations cannot create false revision
+conflicts.
+An existing active Reconcile may have resolved its binding before a newer
+Projection was persisted. Joining it therefore drains older work but is not a
+convergence proof; the daemon ensures and awaits one follow-up Reconcile from
+current durable state before resolving the receipt.
 
 Authorization execution is selected from the exact release frozen into the
 durable operation. `managed_stdio` delegates to the local implementation host;

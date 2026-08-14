@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 38 file(s) materialized.
+Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 38 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,8 +96,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`skills/novel-outline/scripts/novel-outline.mjs`](skills/novel-outline/scripts/novel-outline.mjs) |
 | 35 | ✓ | [`skills/novel-outline/scripts/selftest.mjs`](skills/novel-outline/scripts/selftest.mjs) |
 | 36 | ✓ | [`skills/novel-outline/SKILL.md`](skills/novel-outline/SKILL.md) |
-| 37 | → | [`README.en.md`](README.en.md) |
-| 38 | → | [`README.md`](README.md) |
+| 37 | ✓ | [`skills/novel-script/assets/report.webp`](skills/novel-script/assets/report.webp) |
+| 38 | ✓ | [`skills/novel-script/README.en.md`](skills/novel-script/README.en.md) |
+| 39 | ✓ | [`skills/novel-script/README.md`](skills/novel-script/README.md) |
+| 40 | ✓ | [`skills/novel-script/references/report-style.md`](skills/novel-script/references/report-style.md) |
+| 41 | ✓ | [`skills/novel-script/references/schema.md`](skills/novel-script/references/schema.md) |
+| 42 | ✓ | [`skills/novel-script/references/script-pass.md`](skills/novel-script/references/script-pass.md) |
+| 43 | ✓ | [`skills/novel-script/scripts/novel-script.mjs`](skills/novel-script/scripts/novel-script.mjs) |
+| 44 | ✓ | [`skills/novel-script/scripts/selftest.mjs`](skills/novel-script/scripts/selftest.mjs) |
+| 45 | ✓ | [`skills/novel-script/SKILL.md`](skills/novel-script/SKILL.md) |
+| 46 | → | [`README.en.md`](README.en.md) |
+| 47 | → | [`README.md`](README.md) |
 
 ---
 

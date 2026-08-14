@@ -1,6 +1,6 @@
 ---
 name: video-prompting
-description: Draft and refine prompts for video generation models (including text-to-video, image/keyframe-to-video, and reference-driven generation), and create character-sheet prompts for image models when the goal is character consistency before image-to-video. Use when a user asks for a "video prompt", a model-specific prompt such as MiniMax H3, Seedance 2.0, Ovi, Sora, Veo 3, Wan 2.2, LTX-2, or LTX-2.3, or a consistent-character prompt such as "character sheet prompt", "character turnaround", "character reference sheet", or "photographic identity sheet".
+description: Draft and refine prompts for video generation models (including text-to-video, image/keyframe-to-video, and reference-driven generation), and create character-sheet prompts for image models when the goal is character consistency before image-to-video. Use when a user asks for a "video prompt", a model-specific prompt such as MiniMax H3, Seedance 2.0, Seedance 2.5, Ovi, Veo 3, Wan 2.2, Wan Animate 2, LTX-2, LTX-2.3, or LTX-2.5, or a consistent-character prompt such as "character sheet prompt", "character turnaround", "character reference sheet", or "photographic identity sheet".
 ---
 
 # Video Prompting
@@ -18,13 +18,15 @@ This file is the entry point: route to the right path, ask the minimum clarifyin
 ## Model Index
 
 - Ovi: `references/models/ovi/prompting.md`
-- Sora (Sora 2): `references/models/sora/prompting.md`
 - Veo 3 / 3.1: `references/models/veo3/prompting.md`
 - Wan 2.2: `references/models/wan22/prompting.md`
+- Wan Animate 2: `references/models/wan-animate-2/prompting.md`
 - Seedance 2.0: `references/models/seedance2/prompting.md`
+- Seedance 2.5: `references/models/seedance2-5/prompting.md`
 - MiniMax H3: `references/models/minimax-h3/prompting.md`
 - LTX-2: `references/models/ltx2/prompting.md`
 - LTX-2.3: `references/models/ltx2-3/prompting.md`
+- LTX-2.5: `references/models/ltx2-5/prompting.md`
 
 ## Workflow Index
 
@@ -68,10 +70,14 @@ Then confirm the input mode. Start with text-to-video (t2v) or image-to-video (i
 
 For MiniMax H3, distinguish T2VA, I2VA, first-and-last-frame-to-video (FL2VA), last-frame-to-video (L2VA), and full-reference mode. Ask for the effective duration when a final-frame alignment or timed cuts require it.
 
+For Seedance 2.5, distinguish text-to-video, image-to-video, reference-to-video, edit, and extend. Ask for the effective duration when a multi-beat timeline is needed, and ask for the intended ending state on long or continuity-sensitive shots. Recommend the shortest duration that fits the action instead of defaulting every request to the model's maximum.
+
 If i2v: ask the user to share the image (optional, but it will help you generate a better prompt). Use the image as an anchor according to the chosen model’s guidance (e.g., keep identity/wardrobe/composition stable; focus your text on motion/camera/what changes).
 
 If the chosen model has versions, duration constraints, or required parameters, ask the minimum questions needed to select the right format (see the model guide).
 For LTX-2.3 specifically: default to 10 seconds as the external duration setting when duration is missing, ask if the user wants shorter or longer, and scale motion complexity to match that duration. Do not write the duration into the prompt itself.
+
+For LTX-2.5 specifically: distinguish a continuous single shot from a native multi-shot scene, screenplay-style dialogue, Dub-It speech replacement, and Video Editing IC-LoRA. When the user asks for settings, no fixed length is required, and the interface supports it, recommend automatic duration as an external setting. Use a fixed external duration when last-frame conditioning is supplied. Do not write duration or setting names into the prompt itself.
 
 ### Step 3 — Load the correct reference and follow its format
 
@@ -91,7 +97,7 @@ For character sheets: follow `references/workflows/character-sheets.md` exactly,
 ### Step 5 — Output
 
 Default: output only the final prompt text.
-Default formatting: output prompts as a single line with no line breaks unless the user explicitly requests multiline formatting or the selected model guide requires a structured multiline schema. MiniMax H3 is such an exception: preserve its required field names, line order, and blank-line separation.
+Default formatting: output prompts as a single line with no line breaks unless the user explicitly requests multiline formatting or the selected model guide requires a structured multiline schema. MiniMax H3 is such an exception: preserve its required field names, line order, and blank-line separation. Seedance 2.5 is another exception for complex timed or reference-driven shots: preserve the guide's production-note sections and timeline line breaks. For LTX-2.5, preserve multiline screenplay formatting when dialogue or beat clarity benefits from it; keep single-shot, image-to-video, and multi-shot prose as one paragraph by default.
 
 If the user asks for options: provide 2–3 distinct prompt variants, each fully self-contained and compliant with the model’s formatting.
 

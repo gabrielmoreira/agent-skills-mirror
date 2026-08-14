@@ -434,16 +434,16 @@ For any non-trivial change, read the matching deep-dive first:
 
 ## Testing
 
-| What                    | Command                                                                     |
-| ----------------------- | --------------------------------------------------------------------------- |
-| Unit tests              | `npm run test:unit`                                                         |
-| Single file             | `node --import tsx/esm --test tests/unit/your-file.test.ts`                 |
-| Vitest (MCP, autoCombo) | `npm run test:vitest`                                                       |
-| E2E (Playwright)        | `npm run test:e2e`                                                          |
-| Protocol E2E (MCP+A2A)  | `npm run test:protocols:e2e`                                                |
-| Ecosystem               | `npm run test:ecosystem`                                                    |
-| Coverage gate           | `npm run test:coverage` (60/60/60/60 — statements/lines/functions/branches) |
-| Coverage report         | `npm run coverage:report`                                                   |
+| What                    | Command                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------- |
+| Unit tests              | `npm run test:unit`                                                           |
+| Single file             | `node --import tsx/esm --test tests/unit/your-file.test.ts`                   |
+| Vitest (MCP, autoCombo) | `npm run test:vitest`                                                         |
+| E2E (Playwright)        | `npm run test:e2e`                                                            |
+| Protocol E2E (MCP+A2A)  | `npm run test:protocols:e2e` (CI job `test-protocols-e2e`, advisory — #10049) |
+| Ecosystem               | `npm run test:ecosystem` (CI job `test-ecosystem`, blocking)                  |
+| Coverage gate           | `npm run test:coverage` (60/60/60/60 — statements/lines/functions/branches)   |
+| Coverage report         | `npm run coverage:report`                                                     |
 
 **PR rule**: If you change production code in `src/`, `open-sse/`, `electron/`, or `bin/`, you must include or update tests in the same PR.
 

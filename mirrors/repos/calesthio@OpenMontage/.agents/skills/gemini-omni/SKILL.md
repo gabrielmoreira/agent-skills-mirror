@@ -17,6 +17,20 @@ Gemini Omni is Google DeepMind's video generation **and editing** model family, 
 
 OpenMontage wraps it as `gemini_omni_video` (native Gemini API, no gateway). It shares `GOOGLE_API_KEY`/`GEMINI_API_KEY` with `google_imagen` and `google_tts` — one key, three capabilities. Paid tier only: ~$0.10 per second of output video (billed as 5,792 output tokens/sec at $17.50/1M).
 
+Other documented routes are available when the direct Google key is not the
+chosen provider:
+
+| Route | OpenMontage call | Important limitation |
+|-------|------------------|----------------------|
+| fal.ai | `gemini_omni_fal` | T2V, I2V, reference video, and edit endpoints; no Google interaction ID is returned |
+| Runway | `runway_video`, `model: "gemini_omni_flash"` | T2V/I2V/V2V; video edits accept up to five image references |
+| ComfyUI Partner Node | `comfyui_video`, `model_family: "gemini_omni_flash"` | Hosted paid node; requires network, Comfy login, and credits |
+
+Use the direct `gemini_omni_video` route for stateful conversational editing.
+Gateway routes return ordinary provider tasks and cannot preserve Google's
+`previous_interaction_id` workflow. The fal edit endpoint can still be iterated
+by feeding each output video URL into the next edit call.
+
 ## When to pick it (and when not)
 
 | Use it for | Prefer another provider for |

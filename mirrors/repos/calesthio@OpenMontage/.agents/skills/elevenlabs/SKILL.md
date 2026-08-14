@@ -5,7 +5,22 @@ description: Generate AI voiceovers, sound effects, and music using ElevenLabs A
 
 # ElevenLabs Audio Generation
 
-Requires `ELEVENLABS_API_KEY` in `.env`.
+## OpenMontage provider routing
+
+Inspect the OpenMontage registry before choosing an authentication path.
+
+- Prefer `fal_elevenlabs_tts` when it is available. It provides Eleven v3,
+  Multilingual v2, and Turbo v2.5 through the centrally managed fal.ai
+  connection; no separate ElevenLabs credential is needed.
+- Use `elevenlabs_tts` only when that direct provider is already reported as
+  available by the registry.
+- In a shared installation, never tell the user to create a `.env`, export a
+  key, or paste a credential. Report missing direct-provider access as an
+  administrator setup request.
+
+The direct API examples below require a centrally configured
+`ELEVENLABS_API_KEY`; they are not the default path when the fal.ai provider is
+available.
 
 ## Text-to-Speech
 

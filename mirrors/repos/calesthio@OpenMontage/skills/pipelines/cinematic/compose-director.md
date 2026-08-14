@@ -9,8 +9,12 @@ Render the cinematic piece with careful attention to grade, audio dynamics, and 
 Read `edit_decisions.render_runtime`. Cinematic work routes to:
 
 - **`render_runtime="remotion"`** — default for video-led trailers using `CinematicRenderer`. Keeps video clips, transitions, and ambient overlays in one React-based pass.
-- **`render_runtime="hyperframes"`** — for kinetic title cards, HTML/GSAP-driven trailers, or launch-reel-style compositions where the visual grammar is HTML/CSS. See `skills/core/hyperframes.md`. `hyperframes lint` and `hyperframes validate` must both pass before render.
+- **`render_runtime="hyperframes"`** — for kinetic title cards, HTML/GSAP-driven trailers, launch-reel-style compositions, or explicit Three.js world fly-throughs. See `skills/core/hyperframes.md`. `hyperframes check` must pass before render.
 - **`render_runtime="ffmpeg"`** — simple source-footage concat with no composition.
+
+For a Blender world film, FFmpeg is the approved packager for the numbered
+Blender image sequence and audio. It must not synthesize camera motion or replace
+missing Blender frames with pan/zoom effects.
 
 `delivery_promise.motion_required=true` means the locked runtime is a commitment. Silent swap to another runtime (including FFmpeg Ken Burns) is a CRITICAL governance violation. If the locked runtime fails, escalate per AGENT_GUIDE.md > "Escalate Blockers Explicitly."
 

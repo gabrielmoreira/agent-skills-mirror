@@ -51,7 +51,8 @@ Identify doc coverage gaps and inaccuracies by comparing main branch features an
    - Do **not** edit `docs/ja`, `docs/ko`, or `docs/zh`.
    - Keep changes aligned with the existing docs style and navigation.
    - Update `mkdocs.yml` when adding or renaming pages.
-   - Build docs with `make build-docs` after edits to verify the docs site still builds.
+   - Classify the complete diff with the Documentation Verification Tiers in `AGENTS.md` and run only the checks required by that tier.
+   - For content or structural changes, run `make build-docs` once after the edits and required review are stable. Do not run it for editorial-only changes.
 
 ## Output format
 

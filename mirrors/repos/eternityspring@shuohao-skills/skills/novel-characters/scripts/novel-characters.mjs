@@ -11,8 +11,12 @@ import { fileURLToPath } from 'node:url';
 /* chunk                                                               */
 /* ------------------------------------------------------------------ */
 
-export const CHUNK_SIZE = 14_000;
-export const CHUNK_OVERLAP = 600;
+// 块大小的权衡：块越大，单块阅读越重；块越小，块数越多，跨块归并
+// （全管线语义最难的一步）的接缝就越多。现在的模型读 4 万字符毫无压力，
+// 所以往大取——接缝少三倍，漏归并的机会也少三倍。
+// 上限 24 块，扣掉 23 段重叠净覆盖约 93 万字符。
+export const CHUNK_SIZE = 40_000;
+export const CHUNK_OVERLAP = 1_200;
 export const MAX_CHUNKS = 24;
 
 /**
@@ -97,6 +101,78 @@ export function mergeRoster(batches) {
   for (const value of byKey.values()) unique.set(keyOf(value.name), value);
   // More chunks mentioning a character == more screen time.
   return [...unique.values()].sort((a, b) => b.notes.length - a.notes.length);
+}
+
+/**
+ * 疑似同人候选。跨块身份消解是语义问题，确定性代码只能做廉价的那一半：
+ * 名字包含（「陆」⊂「陆行远」）是很强的合并信号，精确匹配却收敛不了它——
+ * 除非某块恰好把「陆」列成了「陆行远」的别名。「陆先生」和「行远」是不是
+ * 同一个人则连包含都测不出，所以候选只是嫌疑名单，判断留给模型，
+ * 复核结果写成 merges.json 再用 --apply 确定性落地。
+ */
+export function mergeCandidates(cast) {
+  const keysOf = (c) => [c.name, ...(c.aliases ?? [])].map((s) => String(s).trim()).filter(Boolean);
+  const candidates = [];
+  for (let i = 0; i < cast.length; i++) {
+    for (let j = i + 1; j < cast.length; j++) {
+      let reason = null;
+      for (const a of keysOf(cast[i])) {
+        for (const b of keysOf(cast[j])) {
+          const [short, long] = a.length <= b.length ? [a, b] : [b, a];
+          if (short.toLowerCase() === long.toLowerCase()) continue; // 相等的键 mergeRoster 已经收敛了
+          // 拉丁文字短侧至少 3 个字符，否则「Al」⊂「Alex」这类噪音太多；CJK 单字就有信息量
+          const min = CJK.test(short) ? 1 : 3;
+          if (short.length >= min && long.toLowerCase().includes(short.toLowerCase())) {
+            reason = `「${short}」⊂「${long}」`;
+            break;
+          }
+        }
+        if (reason) break;
+      }
+      if (reason) candidates.push({ a: cast[i].name, b: cast[j].name, reason });
+    }
+  }
+  return candidates;
+}
+
+/**
+ * 把模型复核后的合并决定落地。merges: [{ keep, absorb: [...] }]，
+ * keep / absorb 用 name 或任一 alias 定位都行。找不到就整体报错——
+ * 静默跳过会让调用方以为合并成功了。
+ * 不改动传入的 cast：全程在副本上操作，抛错后入参照常可用。
+ */
+export function applyMerges(cast, merges) {
+  cast = cast.map((c) => ({ ...c, aliases: [...c.aliases], notes: [...c.notes], quotes: [...c.quotes] }));
+  const keyOf = (s) => String(s).trim().toLowerCase();
+  const index = new Map();
+  for (const c of cast) for (const k of [c.name, ...c.aliases]) index.set(keyOf(k), c);
+
+  const removed = new Set();
+  const problems = [];
+  for (const m of merges ?? []) {
+    const target = index.get(keyOf(m?.keep ?? ''));
+    if (!target) {
+      problems.push(`keep「${m?.keep}」在归并结果里找不到`);
+      continue;
+    }
+    for (const name of m?.absorb ?? []) {
+      const victim = index.get(keyOf(name));
+      if (!victim) {
+        problems.push(`absorb「${name}」在归并结果里找不到`);
+        continue;
+      }
+      if (victim === target) continue; // 本来就是同一个人，不算错
+      for (const alias of [victim.name, ...victim.aliases]) {
+        if (alias !== target.name && !target.aliases.includes(alias)) target.aliases.push(alias);
+      }
+      target.notes.push(...victim.notes);
+      for (const q of victim.quotes) if (!target.quotes.includes(q)) target.quotes.push(q);
+      for (const k of [victim.name, ...victim.aliases]) index.set(keyOf(k), target);
+      removed.add(victim);
+    }
+  }
+  if (problems.length) throw new Error(problems.join('\n'));
+  return cast.filter((c) => !removed.has(c)).sort((a, b) => b.notes.length - a.notes.length);
 }
 
 /* ------------------------------------------------------------------ */
@@ -529,6 +605,37 @@ export function validateCast(characters, sourceText, lang = DEFAULT_LANG, style 
   }
 
   return problems;
+}
+
+/* ------------------------------------------------------------------ */
+/* assemble                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 把第二趟的角色卡合成 cast.json 的顶层结构。纯机械活——之前留给模型
+ * 手拼，手拼会丢字段、写错顶层键。
+ *
+ * 排序：importance 分档，同档按 order（merge 输出的名字顺序，即戏份
+ * 顺序）。不给 order 就保持传入顺序——CLI 按文件名读卡，那是 slug
+ * 字典序不是戏份序，所以报告要「按戏份排序」就必须给 order。
+ */
+export function assembleCast(cards, { source, lang = DEFAULT_LANG, style = DEFAULT_STYLE, summary = '', ui = null, order = null } = {}) {
+  const rank = (c) => {
+    const i = IMPORTANCE.indexOf(c?.importance);
+    return i < 0 ? IMPORTANCE.length : i; // 越界的排最后，让 validate 去报，这里不崩
+  };
+  const orderIndex = new Map((order ?? []).map((name, i) => [String(name).trim().toLowerCase(), i]));
+  // 不在 order 里的排到同档末尾（保持传入顺序），不报错——卡是从 merge 结果生成的，正常对得上
+  const byOrder = (c) => orderIndex.get(String(c?.name ?? '').trim().toLowerCase()) ?? orderIndex.size;
+  const characters = cards
+    .map((card, i) => [card, i])
+    .sort((a, b) => rank(a[0]) - rank(b[0]) || byOrder(a[0]) - byOrder(b[0]) || a[1] - b[1])
+    .map(([card]) => card);
+  const cast = { source, lang, style };
+  if (ui) cast.ui = ui;
+  cast.summary = summary;
+  cast.characters = characters;
+  return cast;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1441,7 +1548,11 @@ document.addEventListener('click', async (e) => {
 const USAGE = `novel-characters.mjs — novel-characters skill 的确定性工具
 
   chunk <book.txt> <workdir>       段落感知重叠切块，写 chunk-NN.txt，打印块数
-  merge <workdir>                  归并 roster-*.json，打印 cast JSON
+  merge <workdir>                  归并 roster-*.json，打印 {characters, mergeCandidates}
+        [--apply merges.json]      落地复核后的合并决定：{"merges":[{"keep":…,"absorb":[…]}]}
+  assemble <workdir> --source <书名>
+        [--lang] [--style] [--out] 把 card-*.json + summary.txt（+ ui.json）合成 cast.json
+        [--order merged.json]      同档角色的戏份顺序（默认自动找 <workdir>/merged.json）
   validate <cast.json> <book.txt>  校验；有违规逐条打印并 exit 1
   render <cast.json> [--html|--md] 渲染报告到 stdout（默认 --md）
   slug <name>                      角色名转安全文件名
@@ -1513,7 +1624,7 @@ function main(argv) {
 
   if (cmd === 'merge') {
     const [workdir] = rest;
-    if (!workdir) throw new Error('用法：merge <workdir>');
+    if (!workdir || workdir.startsWith('--')) throw new Error('用法：merge <workdir> [--apply merges.json]');
     const dir = resolve(workdir);
     const files = readdirSync(dir).filter((f) => /^roster-.*\.json$/.test(f)).sort();
     if (!files.length) throw new Error(`${dir} 里没有 roster-*.json`);
@@ -1521,7 +1632,92 @@ function main(argv) {
       const raw = readJson(join(dir, f));
       return Array.isArray(raw) ? raw : (raw.characters ?? []);
     });
-    console.log(JSON.stringify(mergeRoster(batches), null, 2));
+    let cast = mergeRoster(batches);
+    const applyPath = flag(rest, '--apply');
+    if (applyPath) {
+      const raw = readJson(applyPath);
+      cast = applyMerges(cast, Array.isArray(raw) ? raw : (raw.merges ?? []));
+    }
+    // mergeCandidates 是嫌疑名单不是判决：由调用方复核后写 merges.json 再 --apply
+    console.log(JSON.stringify({ characters: cast, mergeCandidates: mergeCandidates(cast) }, null, 2));
+    return;
+  }
+
+  if (cmd === 'assemble') {
+    const [workdir] = rest;
+    if (!workdir || workdir.startsWith('--')) {
+      throw new Error('用法：assemble <workdir> --source <书名> [--lang zh] [--style realistic] [--out cast.json]');
+    }
+    const dir = resolve(workdir);
+    const sourceName = flag(rest, '--source');
+    if (!sourceName) throw new Error('assemble 需要 --source <书名>');
+    const lang = flag(rest, '--lang', DEFAULT_LANG);
+    const style = flag(rest, '--style', DEFAULT_STYLE);
+
+    const files = readdirSync(dir).filter((f) => /^card-.*\.json$/.test(f)).sort();
+    if (!files.length) throw new Error(`${dir} 里没有 card-*.json`);
+
+    // 宽容解析：一份坏卡不废整批——逐个点名，重跑坏的那个角色就行
+    const problems = [];
+    const cards = [];
+    const seen = new Map();
+    for (const f of files) {
+      let card;
+      try {
+        card = readJson(join(dir, f));
+      } catch (error) {
+        problems.push(`${f} 不是合法 JSON（${error.message}）——重跑这个角色即可`);
+        continue;
+      }
+      if (!card || typeof card !== 'object' || Array.isArray(card) || !card.name) {
+        problems.push(`${f} 不是单张角色卡（缺 name）——重跑这个角色即可`);
+        continue;
+      }
+      if (seen.has(card.name)) {
+        problems.push(`「${card.name}」有两份卡（${seen.get(card.name)} 和 ${f}），删掉多余的那份`);
+        continue;
+      }
+      seen.set(card.name, f);
+      cards.push(card);
+    }
+
+    const summaryPath = join(dir, 'summary.txt');
+    const summary = existsSync(summaryPath) ? readFileSync(summaryPath, 'utf8').trim() : '';
+    if (!summary) problems.push(`缺 ${summaryPath}（故事摘要）——用报告语言写 3–5 句进去`);
+
+    const uiPath = join(dir, 'ui.json');
+    const ui = existsSync(uiPath) ? readJson(uiPath) : null;
+    if (needsUiTranslation(lang) && !ui) {
+      problems.push(`lang=${lang} 不在内置界面语言里，缺 ${uiPath}——用 ui-template 生成骨架翻译后放进去`);
+    }
+
+    // 同档角色的戏份顺序来自 merge 的输出——卡按文件名读入是 slug 字典序，
+    // 不给顺序的话「按戏份排序」就名存实亡
+    const orderPath = flag(rest, '--order', existsSync(join(dir, 'merged.json')) ? join(dir, 'merged.json') : null);
+    let order = null;
+    if (orderPath) {
+      const raw = readJson(orderPath);
+      const list = Array.isArray(raw) ? raw : (raw.characters ?? []);
+      order = list.map((e) => (typeof e === 'string' ? e : e?.name)).filter(Boolean);
+    } else {
+      console.error(`⚠️ 没有 --order 也没有 ${join(dir, 'merged.json')}，同档角色将按文件名序而不是戏份序`);
+    }
+
+    if (problems.length) {
+      console.error(`✗ ${problems.length} 处问题：\n`);
+      for (const p of problems) console.error('  ' + p);
+      process.exit(1);
+    }
+
+    const cast = assembleCast(cards, { source: sourceName, lang, style, summary, ui, order });
+    const json = JSON.stringify(cast, null, 2) + '\n';
+    const out = flag(rest, '--out');
+    if (out) {
+      writeFileSync(resolve(out), json, 'utf8');
+      console.log(`✓ ${cast.characters.length} 个角色 → ${resolve(out)}`);
+    } else {
+      process.stdout.write(json);
+    }
     return;
   }
 

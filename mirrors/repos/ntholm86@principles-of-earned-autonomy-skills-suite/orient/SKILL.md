@@ -1,6 +1,6 @@
 ---
 name: orient
-version: 2.7.0
+version: 2.7.1
 description: 'Passive orientation service. Automatically read the trail as a single document when Destination changes or Improve determines that accumulated evidence has made the current orientation stale. Form arc-level claims and refresh .acm/orientation.md without changing the target. Manual invocation remains available for diagnostics or an explicit "how are we doing?" request.'
 argument-hint: 'The target and its trail, and optionally the specific arc-question to answer'
 ---
@@ -15,7 +15,7 @@ The Improve loop is optimised for one iteration at a time. Orient is optimised f
 
 *Lineage:* this split mirrors Boyd's OODA loop (Observe-Orient-Decide-Act) — Boyd's own insight was that Orientation, not Decision, is the phase that shapes everything downstream and the one most commonly neglected. Cited explicitly in this suite's v1 ancestor but dropped when v2's skills merged into v3; restored here since it is this skill's own namesake.
 
-Orient is normally scheduled automatically, not invoked as an operator workflow step. Destination schedules it after a material direction change. Improve schedules it when accumulated evidence makes the current orientation stale: a meaningful cluster has emerged, orientation claims no longer explain the trail, or convergence is approaching. There is no universal iteration count — cadence follows evidence, not a fixed timer. Manual `/orient` remains available as a diagnostic override or when the operator explicitly asks "how are we doing?"
+Improve schedules Orient with evidence that the current Orientation no longer explains the governing Destination and material trail. A material Destination change is such evidence. Orient accepts that arc-question; it does not maintain a second trigger taxonomy. Manual `/orient` remains available as a diagnostic override or when the operator explicitly asks "how are we doing?"
 
 **Passive-service contract:** Orient observes and refreshes derived orientation. It never changes the target, chooses work on the operator's behalf, or revises `.acm/destination.md`. Automatic scheduling changes when the arc is read, not what authority Orient has.
 

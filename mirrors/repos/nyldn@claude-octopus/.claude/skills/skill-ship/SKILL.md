@@ -1,12 +1,12 @@
 ---
 name: skill-ship
+disable-model-invocation: true
 user-invocable: true
 description: "Package and finalize completed work for delivery — use when a feature is done and ready to ship"
 trigger: |
-  AUTOMATICALLY ACTIVATE when user mentions:
+  EXPLICITLY USE when user mentions:
   - "ship" or "deliver" or "finalize"
   - "done" or "complete the project"
-invocation: human_only
 ---
 
 # Ship Project - Multi-AI Delivery Validation

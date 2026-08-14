@@ -1,6 +1,6 @@
 ---
 name: paid-ads-setup
-description: Connect NotFair paid-ad accounts and establish reusable campaign context. Use when setting up paid media in a new workspace, connecting Google or Meta, refreshing brand context, or preparing an agent to work on ads safely.
+description: Connect NotFair paid-ad accounts and establish reusable campaign context. Use when setting up paid media in a new workspace, connecting Google, Meta, X, or LinkedIn Ads, refreshing brand context, or preparing an agent to work on ads safely.
 argument-hint: "<connect accounts, workspace, or brand>"
 ---
 
@@ -10,9 +10,9 @@ Read `../shared/operating-contract.md`. Do not alter campaigns during setup.
 
 ## Establish access
 
-1. Detect the current NotFair Google Ads and Meta Ads MCP surfaces using their existing shared preambles. If either is missing, give the connection path from the relevant preamble and stop before claiming access.
+1. Detect the requested NotFair platform surface. Use the existing shared preambles for Google Ads and Meta Ads; use `https://notfair.co/api/mcp/x_ads` for X Ads and `https://notfair.co/api/mcp/linkedin_ads` for LinkedIn Ads. If the requested connector is missing, give its connection path and stop before claiming access.
 2. List only accounts actually returned by the connected surface. Let the user select the intended account when more than one is available; never infer it from an account name.
-3. For LinkedIn, TikTok, Amazon, and ChatGPT Ads, check the available tools before proposing a connection. If no verified connector exists, request a current export or describe the plan-only boundary.
+3. For TikTok, Amazon, and ChatGPT Ads, check the available tools before proposing a connection. If no verified connector exists, request a current export or describe the plan-only boundary.
 
 ## Capture decision-quality context
 
@@ -24,7 +24,7 @@ Read project documents that are clearly marketing-relevant, then ask only for ga
 - monthly budget, launch constraints, seasonality, and competitors;
 - landing-page URLs and analytics/tracking owner.
 
-Use the Google and Meta audit skills to persist account-specific business context where supported. Do not overwrite an existing `AGENTS.md`, `CLAUDE.md`, or project instructions as a side effect of setup. Offer a clearly marked paid-media context file only after the user approves the exact location and content.
+Use the Google and Meta audit skills to persist account-specific business context where supported. For X and LinkedIn, report the selected account and context without inventing a persistence surface. Do not overwrite an existing `AGENTS.md`, `CLAUDE.md`, or project instructions as a side effect of setup. Offer a clearly marked paid-media context file only after the user approves the exact location and content.
 
 ## Finish with a gap register
 

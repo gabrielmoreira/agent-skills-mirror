@@ -126,7 +126,7 @@ Self-check after writing `signal_engine.py`:
   "optimizer": null,
   "optimizer_params": {},
   "engine": "daily",
-  "position_adjustment": "hold",
+  "position_adjustment": "rebalance",
   "validation": null
 }
 ```
@@ -142,7 +142,7 @@ Self-check after writing `signal_engine.py`:
 - `optimizer`: optional, one of `"equal_volatility"` / `"risk_parity"` / `"mean_variance"` / `"max_diversification"` / `"turnover_aware"` / `null` (equal-weight by default)
 - `optimizer_params`: optimizer parameters, such as `{"lookback": 60}`. `mean_variance` additionally supports `{"risk_free": 0.0}`; `turnover_aware` supports `{"risk_aversion": 1.0, "turnover_penalty": 0.5}` (L1 penalty on weight changes; tune to data frequency)
 - `engine`: backtest engine, default `"daily"`. For options strategies, set `"options"` (requires `OptionsSignalEngine`)
-- `position_adjustment`: `"hold"` (default) preserves an open same-direction position until close/reversal; opt in to `"rebalance"` to scale or reduce it toward each target weight using market fills and weighted-average entry accounting
+- `position_adjustment`: use `"rebalance"` for target-weight strategies so every target change is executed using market fills and weighted-average entry accounting; use `"hold"` only when the strategy explicitly intends to preserve a same-direction position until close/reversal
 - `initial_cash`: default 1,000,000
 - `commission`: default 0.1%
 - `validation`: optional statistical validation after backtest completes. Omit to skip. Example:

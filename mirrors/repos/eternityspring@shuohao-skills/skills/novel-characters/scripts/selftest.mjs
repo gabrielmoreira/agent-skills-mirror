@@ -11,8 +11,11 @@ import {
   CHUNK_SIZE,
   MAX_CHUNKS,
   SUPPORTED_UI_LANGS,
+  applyMerges,
+  assembleCast,
   buildGraph,
   chunkText,
+  mergeCandidates,
   mergeRoster,
   renderHtml,
   renderMarkdown,
@@ -40,6 +43,10 @@ function eq(actual, expected, label) {
   assert.equal(actual, expected, `${label} — 期望 ${expected}，实际 ${actual}`);
   passed += 1;
 }
+function throws(fn, re, label) {
+  assert.throws(fn, re, label);
+  passed += 1;
+}
 
 /* ---------------- chunkText ---------------- */
 
@@ -47,7 +54,7 @@ eq(chunkText('').length, 0, '空文本不产生块');
 eq(chunkText('   \n  ').length, 0, '纯空白不产生块');
 eq(chunkText(SOURCE).length, 1, '短故事只有一块');
 
-const long = SOURCE.repeat(40);
+const long = SOURCE.repeat(150);
 const chunks = chunkText(long);
 ok(chunks.length > 1, '长文本会切成多块');
 ok(chunks.every((c) => c.length <= CHUNK_SIZE), `没有块超过 CHUNK_SIZE(${CHUNK_SIZE})`);
@@ -58,7 +65,7 @@ ok(chunks[1].includes(chunks[0].slice(-100).slice(0, 40)), '相邻块有重叠')
 const covered = chunks.reduce((sum, c) => sum + c.length, 0);
 ok(covered >= long.length, '所有块加起来覆盖全文（含重叠）');
 
-const huge = SOURCE.repeat(500);
+const huge = SOURCE.repeat(1500);
 ok(chunkText(huge).length <= MAX_CHUNKS, `超长文本被 MAX_CHUNKS(${MAX_CHUNKS}) 截断而不是无限切`);
 
 /* ---------------- mergeRoster ---------------- */
@@ -102,6 +109,139 @@ eq(ranked[0].name, '乙', '按出现块数降序排列');
 eq(mergeRoster([[]]).length, 0, '空批次不报错');
 eq(mergeRoster([[{ name: '甲' }]]).length, 1, '缺 aliases/notes/quotes 字段也能处理');
 eq(mergeRoster([[{ note: '没名字' }]]).length, 0, '没有 name 的条目被丢弃');
+
+/* ---------------- mergeCandidates / applyMerges ---------------- */
+
+// 精确匹配的盲区：两块用了不同称呼、没有共同键，机械归并留成两个人
+const twoLu = mergeRoster([
+  [{ name: '陆行远', aliases: [], note: '瘦，颧骨高。', quotes: ['q1'] }],
+  [{ name: '陆', aliases: [], note: '眉骨有疤。', quotes: ['q2'] }],
+  [{ name: '沈知微', aliases: [], note: '两条辫子。', quotes: [] }],
+]);
+eq(twoLu.length, 3, '没有共同键归并不了——这就是候选机制要兜的洞');
+const cands = mergeCandidates(twoLu);
+eq(cands.length, 1, '名字包含关系被标成候选');
+ok(cands[0].reason.includes('⊂'), '候选带理由');
+ok(
+  [cands[0].a, cands[0].b].includes('陆行远') && [cands[0].a, cands[0].b].includes('陆'),
+  '候选指向正确的两个人',
+);
+
+// 别名也参与候选
+eq(
+  mergeCandidates([
+    { name: '老周', aliases: ['摆渡人'], notes: [], quotes: [] },
+    { name: '渡口的摆渡人', aliases: [], notes: [], quotes: [] },
+  ]).length,
+  1,
+  '别名的包含关系也算候选',
+);
+
+// 拉丁文字短侧要 3 个字符起，否则噪音太多；CJK 单字就有信息量
+eq(
+  mergeCandidates([
+    { name: 'Al', aliases: [], notes: [], quotes: [] },
+    { name: 'Alexander', aliases: [], notes: [], quotes: [] },
+  ]).length,
+  0,
+  '拉丁两字符不算候选',
+);
+eq(
+  mergeCandidates([
+    { name: 'Ish', aliases: [], notes: [], quotes: [] },
+    { name: 'ishmael', aliases: [], notes: [], quotes: [] },
+  ]).length,
+  1,
+  '拉丁三字符起算候选，大小写不敏感',
+);
+eq(mergeCandidates([twoLu[0]]).length, 0, '单人不产生候选');
+
+// 复核结果落地
+const applied = applyMerges(twoLu, [{ keep: '陆行远', absorb: ['陆'] }]);
+eq(applied.length, 2, '合并后少一个人');
+const luMerged = applied.find((c) => c.name === '陆行远');
+ok(luMerged.aliases.includes('陆'), '被吸收的名字变成别名');
+eq(luMerged.notes.length, 2, '被吸收的 notes 并入');
+eq(luMerged.quotes.length, 2, '被吸收的 quotes 并入');
+eq(mergeCandidates(applied).length, 0, '合并后候选清空');
+
+// keep 用别名定位也行
+const viaAlias = applyMerges(
+  [
+    { name: '老周', aliases: ['老伯'], notes: ['a'], quotes: [] },
+    { name: '摆渡人', aliases: [], notes: ['b'], quotes: [] },
+  ],
+  [{ keep: '老伯', absorb: ['摆渡人'] }],
+);
+eq(viaAlias.length, 1, 'keep 用别名定位');
+eq(viaAlias[0].name, '老周', '规范名不变');
+eq(viaAlias[0].notes.length, 2, '两边 notes 都在');
+
+// 找不到的人必须报错——静默跳过会让调用方以为合并成功了
+throws(() => applyMerges(twoLu, [{ keep: '不存在', absorb: ['陆'] }]), /找不到/, 'keep 找不到要报错');
+throws(() => applyMerges(twoLu, [{ keep: '陆行远', absorb: ['不存在'] }]), /找不到/, 'absorb 找不到要报错');
+// 抛错前不许污染入参：部分合并成功、后面才发现找不到的人，入参也要原样
+const pristine = JSON.stringify(twoLu);
+throws(
+  () => applyMerges(twoLu, [{ keep: '陆行远', absorb: ['陆'] }, { keep: '不存在', absorb: ['沈知微'] }]),
+  /找不到/,
+  '部分成功再失败也要报错',
+);
+eq(JSON.stringify(twoLu), pristine, '抛错后入参没有被改动');
+eq(JSON.stringify(mergeRoster([[{ name: '甲', aliases: [], note: 'a', quotes: [] }]])),
+  JSON.stringify(applyMerges(mergeRoster([[{ name: '甲', aliases: [], note: 'a', quotes: [] }]]), [])),
+  '空 merges 是无操作');
+// absorb 指向 keep 自己不算错——两个键早就是同一个人
+eq(
+  applyMerges([{ name: '甲', aliases: ['小甲'], notes: [], quotes: [] }], [{ keep: '甲', absorb: ['小甲'] }]).length,
+  1,
+  'absorb 已经是同一个人时不报错',
+);
+
+/* ---------------- assembleCast ---------------- */
+
+const asm = assembleCast(
+  [
+    { name: 'A', importance: 'supporting' },
+    { name: 'B', importance: 'protagonist' },
+    { name: 'C', importance: 'major' },
+    { name: 'D', importance: 'major' },
+  ],
+  { source: '书', lang: 'zh', style: 'ghibli', summary: '摘要' },
+);
+eq(asm.source, '书', 'assemble 带书名');
+eq(asm.lang, 'zh', 'assemble 带语言');
+eq(asm.style, 'ghibli', 'assemble 带画风');
+eq(asm.summary, '摘要', 'assemble 带摘要');
+eq(asm.characters.map((c) => c.name).join(''), 'BCDA', '按 importance 排序，同档保持传入顺序');
+ok(!('ui' in asm), '没有 ui 就不写这个键');
+
+// 同档要按戏份序——CLI 按文件名读卡是 slug 字典序，order 就是用来纠正它的
+const byFilename = [
+  { name: '老周', importance: 'major' },      // 文件名序在前
+  { name: '沈知微', importance: 'protagonist' },
+  { name: '陆行远', importance: 'major' },     // 但戏份比老周重
+];
+const ordered = assembleCast(byFilename, { source: 'x', order: ['沈知微', '陆行远', '老周'] });
+eq(ordered.characters.map((c) => c.name).join('→'), '沈知微→陆行远→老周', '同档按 order 的戏份顺序');
+eq(
+  assembleCast(byFilename, { source: 'x' }).characters.map((c) => c.name).join('→'),
+  '沈知微→老周→陆行远',
+  '不给 order 才退回传入顺序——这正是要修的文件名序',
+);
+// order 里没有的名字排同档末尾，不报错
+eq(
+  assembleCast(byFilename, { source: 'x', order: ['沈知微', '陆行远'] }).characters.map((c) => c.name).join('→'),
+  '沈知微→陆行远→老周',
+  'order 缺名字的排同档末尾',
+);
+ok('ui' in assembleCast([{ name: 'A' }], { source: 'x', ui: { copy: 'Copier' } }), '有 ui 翻译就带上');
+eq(
+  assembleCast([{ name: 'X', importance: 'sidekick' }, { name: 'B', importance: 'protagonist' }], { source: 'x' })
+    .characters[0].name,
+  'B',
+  'importance 越界的排最后而不是崩掉',
+);
 
 /* ---------------- slug ---------------- */
 

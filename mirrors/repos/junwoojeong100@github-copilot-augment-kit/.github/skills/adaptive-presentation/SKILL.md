@@ -114,7 +114,7 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
   - `상태/조건:` GA/Preview/가정, API·portal·source·tool별 적용 범위와 예외
   - `질문/전환:` 고객 질문, 다음 장 연결 또는 다음 행동
   - `발표 한 문장:` 발표자가 그대로 말할 수 있는 짧은 결론
-  - `출처:` Fact ID·발행자·문서명·확인일
+  - `출처:` Fact ID·발행자·문서명·확인일. Fact ID는 speaker notes와 machine contract에만 기록한다.
 - 노트는 슬라이드 문구를 낭독하는 원고가 아니라 발표자가 필요한 설명을 선택할 수 있는
   **상세 설명형 reference**로 작성한다. 한국어 기본 목표는 약 3분, 1,000~2,600자다. `전체 흐름`은
   220자·3문장 이상, `실제 예시` 100자 이상, `검증 기준` 70자 이상, `상태/조건` 120자 이상으로
@@ -127,7 +127,8 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 - 핵심 도형·차트·텍스트는 편집 가능한 PowerPoint 객체로 만든다.
 - 같은 역할의 본문 제목 크기와 색상 의미를 덱 전체에서 일관되게 유지한다.
 - 작은 글씨로 과밀 문제를 숨기지 않는다. 주요 본문은 원칙적으로 15pt 이상을 유지한다.
-- 차트는 실제 데이터와 축·단위·기준일을 사용한다. 외부 사실이 있는 슬라이드에는 footer 출처를 표시한다.
+- 차트는 실제 데이터와 축·단위·기준일을 사용한다. 외부 사실이 있는 슬라이드에는 사람이 이해할 수 있는
+  발행자·문서명·확인일을 footer에 표시하고 `[F-001]` 같은 내부 Fact ID는 노출하지 않는다.
 - 권한이 불분명한 로고·인물·브랜드 자산을 임의 생성하지 않는다.
 
 관계형 레이아웃 아이디어는 [`reference/slide-blueprints.md`](./reference/slide-blueprints.md)를 선택적으로
@@ -143,7 +144,8 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 python3 -B .github/skills/adaptive-presentation/scripts/verify_deck.py <deck>.pptx --out <work> \
   --deck-spec <work>/deck-spec.json
 ```
-외부 사실 슬라이드와 `[Fact ID]` 출처는 deck spec에서 자동 도출한다.
+외부 사실 슬라이드는 deck spec의 `claimIds`에서 자동 도출한다. Verifier는 Fact Ledger의 발행자가
+사람이 읽을 수 있는 footer 출처에 표시되는지 확인하고, 내부 Fact ID가 화면에 노출되면 실패한다.
 
 1. 동일한 최초 PPTX에 대해 구조 감사와 전체 렌더를 실행한다.
 2. compact contact sheet를 확인하고 위험 슬라이드만 상세 확인한다.

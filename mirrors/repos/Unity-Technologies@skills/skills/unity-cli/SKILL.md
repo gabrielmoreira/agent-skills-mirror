@@ -21,6 +21,8 @@ unity command eval 'new UnityEngine.GameObject("Joe");'
 
 Requires the project's `com.unity.pipeline` package (Unity 6.0+) — add it once with `unity pipeline install`. Full details — launching a headless Editor to drive, `unity list` tool discovery, and authoring custom `[CliCommand]` tools — are in [integration-advanced.md](references/integration-advanced.md).
 
+> **Can't connect / commands time out? Check for Safe Mode first.** When a project has C# compile errors, the Editor boots into **Safe Mode**, where the Pipeline package doesn't load — so `unity command`, `unity status`, and `unity list` can't connect at all. Don't fall back to blind file-editing: run `unity pipeline list` to confirm, then fix the compile errors and restart Unity. Full recovery loop in [integration-advanced.md → Recovering from Safe Mode](references/integration-advanced.md#recovering-from-safe-mode-connection-fails-because-of-compile-errors).
+
 ## Step 1: Install the CLI (if not already installed)
 
 First check if the CLI is available:
@@ -68,6 +70,7 @@ These work on every command:
 | `--format <fmt>` | Output format: `human` (default), `json`, `tsv`, `ndjson`. Also via `UNITY_FORMAT` env var. |
 | `--json` | Global shorthand for `--format json`, accepted on every command (e.g. `unity status --json`, `unity doctor --json`). `--format` takes precedence when both are supplied. |
 | `--no-banner` | Suppress the branded header — use in scripts |
+| `--no-pager` | Disable the pager for long human output. Also via `UNITY_NO_PAGER` (presence-based — any value, including `0`, disables it). |
 | `--non-interactive` | Disable all interactive prompts — use in CI |
 | `--quiet` | Suppress non-essential output |
 | `--verbose` | Print full error details (stack trace + cause chain) on failure. Also via `UNITY_VERBOSE`. |
@@ -77,6 +80,10 @@ These work on every command:
 | `--no-log-proxy` | Opt a single invocation out of proxy request logging when it's enabled globally. |
 
 **Always use `--format json` when you need to parse output programmatically.**
+
+**Long human output is paged, on the `git log` model.** The long listing surfaces — `unity command`, `unity releases`, `unity editors`, `unity changelog`, `unity logs` — route stdout through a pager. The default is `less -RFX`, which quits immediately when the content fits one screen, so short output shows no pager UI at all. Resolution order is `$UNITY_PAGER` → `$PAGER` → `less -RFX` → `more.com` on Windows; when none can be spawned, output falls back to a direct write.
+
+**It never pages when output isn't a human reading a terminal**, so scripts need no special handling: paging is off for non-TTY stdout (pipes, redirects), for every machine format (`json`, `tsv`, `ndjson`), under `--quiet`, under `--no-pager` / `UNITY_NO_PAGER`, when `TERM=dumb`, and inside `unity shell`. Quitting the pager early (`q`) is silent and leaves the command's exit code untouched.
 
 A branded Unity header (logo, wordmark, CLI version) renders on the landing surfaces — bare `unity`, `unity --help` / `-h`, `unity help`, and above the first-run consent prompt. It's shown only on a TTY, prints at most once, and degrades to compact, uncolored text on narrow terminals, without Unicode, or under `NO_COLOR`. Piped output is unaffected. Use `--no-banner` to suppress it in scripts. Bare `unity` prints usage and exits 0.
 
@@ -94,6 +101,8 @@ All CLI env vars use the `UNITY_` prefix. A CLI flag always overrides the corres
 | `UNITY_VERBOSE` | `--verbose` | Show full error details on failure. |
 | `UNITY_NON_INTERACTIVE` | `--non-interactive` | Disable interactive prompts. |
 | `UNITY_NO_BANNER` | `--no-banner` | Suppress the branded banner. |
+| `UNITY_NO_PAGER` | `--no-pager` | Disable the pager for long human output. Presence-based: any value disables it, including `0`. |
+| `UNITY_PAGER` | — | Pager command to use, taking precedence over `$PAGER` (e.g. `less -S`). Honors flags and quoting; falls back to `less -RFX`, then `more.com` on Windows. |
 | `UNITY_RUN_TIMEOUT` | `--timeout` | Timeout for `unity run` in seconds. |
 | `UNITY_TEST_TIMEOUT` | `--timeout` | Timeout for `unity test` in seconds. |
 | `UNITY_CLOUD_ORG` | `--cloud-org` | Active Unity Cloud organization id or name for a single call. |
@@ -104,7 +113,7 @@ All CLI env vars use the `UNITY_` prefix. A CLI flag always overrides the corres
 | `UNITY_NO_CONSENT_PROMPT` | — | Suppress the one-time first-run analytics consent prompt *without* recording a choice — for wrapper scripts on an interactive terminal that must never absorb the prompt. Analytics stay off until you run `unity analytics opt-in`. Unlike `UNITY_NON_INTERACTIVE`, it changes nothing else about command behavior. |
 | `UNITY_NO_CRASH_REPORT` | — | Disable anonymous crash/error reporting (Sentry) entirely. |
 | `UNITY_LOG_PROXY` | `--log-proxy` | Log one redacted entry per outbound request to `proxy-request.json`. Truthy values: `1`, `true`. |
-| `UNITY_NO_ELEVATE` | `--no-elevate` | Windows: skip the elevated (UAC) install helper for `install` / `install-modules` — for user-writable locations and CI shells that can't answer a UAC prompt. |
+| `UNITY_NO_ELEVATE` | `--no-elevate` | Windows: skip the elevated (UAC) install helper for `install` / `install-modules`, so the install service runs unelevated. The Editor's NSIS installer still asks for elevation on demand if Windows requires it for your account — an administrator token always does; a standard user never does. |
 | `UNITY_INSTALL_RETRIES` | `--retries` | Number of times `install-modules` retries a module whose download/validation fails. `0` disables retries. |
 
 **CI service account auth:** Set both `UNITY_SERVICE_ACCOUNT_ID` and `UNITY_SERVICE_ACCOUNT_SECRET` to skip the browser OAuth flow — this keeps the secret out of the process argument list and shell history. These map to the `--client-id` / `--secret-from-stdin` inputs of `unity auth login`, but reading the credentials from the environment isn't a full login: it doesn't run the interactive flow or persist credentials to the keyring.
@@ -148,13 +157,13 @@ flags, environment variables, and exit codes above apply throughout. Every comma
 
 | Commands | Reference file |
 |---|---|
-| `auth` (login / logout / status), `license` (activate / return / server), `cloud` (org / project) | [auth-license-cloud.md](references/auth-license-cloud.md) |
-| `editors` (list / running / add / default / path / install-path / info / upgrade / module), `install`, `uninstall`, `modules`, `install-modules` | [editors-install.md](references/editors-install.md) |
-| `projects` (list / create / new / clone / open / link / require / upgrade / export / import / pin / size / close), `releases`, `templates` | [projects-templates.md](references/projects-templates.md) |
+| `auth` (login / logout / status / list / switch / default), `license` (activate / return / server), `cloud` (org / project) | [auth-license-cloud.md](references/auth-license-cloud.md) |
+| `editors` (list / running / add / default / path / install-path / info / upgrade / prune / verify / module), `install`, `uninstall`, `modules`, `install-modules` | [editors-install.md](references/editors-install.md) |
+| `projects` (list / create / new / clone / open / link / require / upgrade / export / import / pin / size / clean / exec), `releases`, `templates` (list / info / create / pack / delete) | [projects-templates.md](references/projects-templates.md) |
 | `config` (proxy / update-check), `hub install` | [config-hub.md](references/config-hub.md) |
 | `run`, `test`, `build` | [build-run-test.md](references/build-run-test.md) |
 | `logs`, `doctor`, `env`, `cache`, `analytics`, `changelog`, `language`, `completion`, `bug`, `upgrade`, `self-uninstall`, `diagnose proxy` | [diagnostics-maintenance.md](references/diagnostics-maintenance.md) |
-| `mcp` (+ `configure`), connected editors (`pipeline` / `command` / `status` / `list`), `shell` | [integration-advanced.md](references/integration-advanced.md) |
+| `mcp` (+ `configure`), `skill` (install / refresh), connected editors (`pipeline` / `command` / `status` / `list`), `shell` | [integration-advanced.md](references/integration-advanced.md) |
 
 ## Common workflows
 
@@ -178,6 +187,8 @@ Command names are defined by the Editor, so run `unity command` (or `unity list`
 > - **prone to hitting the wrong file** — e.g. writing to `SampleScene.unity` while the Editor's active scene is actually `Demo2.unity`, producing valid-looking YAML that changes nothing the user sees.
 
 Only fall back to editing files directly when `unity status` shows **no** reachable Editor — and say so explicitly ("no live Editor detected, editing the file directly").
+
+**One exception worth ruling out first:** if an Editor *is* running for this project but `unity status` / `unity command` won't connect, it may be stuck in **Safe Mode** from a compile error rather than genuinely absent. Run `unity pipeline list` — if it reports Safe Mode, editing the C# source to fix the compile errors (and then restarting Unity) *is* the correct move, not a fallback. See [integration-advanced.md → Recovering from Safe Mode](references/integration-advanced.md#recovering-from-safe-mode-connection-fails-because-of-compile-errors).
 
 ### Bootstrap a new project from scratch
 
@@ -350,11 +361,14 @@ echo "Exit code: $?"
 unity test /path/to/MyProject \
   --editor-version 6000.0.47f1 \
   --mode EditMode \
+  --report-format junit \
   --output ./test-results.xml \
   --allow-install \
   --timeout 600
 echo "Exit code: $?"   # 0 = pass, 6 = test failures
 ```
+
+`--report-format junit` makes `--output` a JUnit-schema report, which GitHub Actions and GitLab ingest as native test results with no converter step. It is written even when tests fail. Drop the flag for the NUnit3 default, or use `--report-format nunit,junit` to get both from one run. Add `--coverage` to collect coverage via the Unity Code Coverage package — it warns and carries on if the project doesn't have the package. See [build-run-test.md](references/build-run-test.md).
 
 ### Debug the CLI
 
@@ -372,10 +386,11 @@ unity logs --follow --level info
 
 - `--non-interactive` and `--yes` together suppress all prompts — use both in CI.
 - `--format json` always produces machine-readable output; prefer it over parsing human text. Error envelopes are pretty-printed with the same 2-space indent as success envelopes.
+- **Read failures from stdout, not stderr.** A failed command still writes a complete document to stdout: under `--format json` an envelope with `success: false` and a populated `errors` array (`errors[0].code` is the stable token to branch on); under `--format ndjson` the usual terminal `{"type":"result","success":false,…}` frame. **Branch on `success`, never on `data`** — `data` is usually `null` on a failure, but not always: a partial `unity editors add` failure carries a row per path, and an ambiguous `unity auth switch` carries `data.candidates` for you to disambiguate with. Check `success` and the exit code — never treat empty stdout as a failure signal, and do not parse stderr, which carries only human diagnostics in these formats. A handful of commands have not migrated yet and still print `{"error": "…"}` to stderr with empty stdout; if stdout is empty on a non-zero exit, that is a known bug in that command rather than a shape you should code against.
 - `unity <version> [path]` is a shorthand for `unity open [path] --editor-version <version>`. Works with `lts`, `latest`, or a full version string like `6000.0.47f1`.
 - The CLI supports kubectl-style plugins: any `unity-<name>` binary on PATH is callable as `unity <name>`.
 - Terminal output is hardened against control-character / escape-sequence injection from server-provided values (project titles, editor versions, module names) — C0 controls and non-SGR escape sequences are stripped from table/list/tree output, and now also from Commander usage errors, the `unity bug` log-archive warning, and `unity projects add`/`remove` machine (tsv) output, while SGR color/style codes are preserved.
 - The CLI reports anonymous crashes and errors via Sentry to help fix bugs (no IP address or hostname; home-directory paths and token-like values scrubbed before send), aligned with the Unity Hub. Opting in to analytics additionally attaches an anonymized machine id; opted-out users stay fully anonymous. Set `UNITY_NO_CRASH_REPORT` to disable reporting entirely.
-- The CLI is currently in **beta** (latest: `1.0.0-beta.3`). It moved to 1.0 versioning at `1.0.0-beta.1`; it's still a beta, so keep `UNITY_CLI_CHANNEL=beta` in the install command until GA ships, after which that part can be dropped.
+- The CLI is currently in **beta** (latest: `1.0.0-beta.5`). It moved to 1.0 versioning at `1.0.0-beta.1`; it's still a beta, so keep `UNITY_CLI_CHANNEL=beta` in the install command until GA ships, after which that part can be dropped.
 - As of `0.1.0-beta.8` the CLI checks in the background for a newer version and prints an unobtrusive "update available" notice (interactive sessions only; never delays a command). Turn it off with `unity config update-check off` or the `UNITY_NO_UPDATE_CHECK` env var.
 - Outbound HTTP from every CLI command honors the resolved proxy (see `unity config proxy`). An invalid `--proxy` value (malformed URL or unsupported scheme) fails with a usage error (exit 2) instead of being silently ignored. Inspect what the CLI actually resolved with `unity env --format json` or `unity doctor --format json` — both surface the active proxy URL, its source, and auth source.

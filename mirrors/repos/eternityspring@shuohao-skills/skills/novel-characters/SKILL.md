@@ -1,6 +1,6 @@
 ---
 name: novel-characters
-version: 1.6.0
+version: 1.7.0
 description: |
   从小说或短故事里拆出角色表、人物画像、形象提示词、音色提示词，
   并给每个角色出角色设定图（左半身像 + 右全身三视图 + 细节条），产出 JSON + Markdown + 可交互的 report.html。
@@ -108,13 +108,29 @@ node {baseDir}/scripts/novel-characters.mjs chunk <book.txt> <workdir>
 3. 把 roster JSON 写到 `<workdir>/roster-NN.json`
 4. 只回一句「done NN，抽到 X 个角色」
 
-### Step 4 — 归并
+### Step 4 — 归并 + 复核
 
 ```bash
-node {baseDir}/scripts/novel-characters.mjs merge <workdir>
+node {baseDir}/scripts/novel-characters.mjs merge <workdir> | tee <workdir>/merged.json
 ```
 
-按名字+别名收敛（`陆行远`/`陆`/`姑娘` 会收敛成一个人），notes 累加、quotes 去重，按出现块数降序——出现的块越多戏份越重。
+落到 `merged.json` 不只是留档：Step 6 的 assemble 靠它拿同档角色的戏份顺序。
+
+按名字+别名精确收敛（某块把「陆」列成「陆行远」的别名，两条就并成一个人），notes 累加、quotes 去重，按出现块数降序——出现的块越多戏份越重。
+
+输出是 `{ "characters": [...], "mergeCandidates": [...] }`。**`mergeCandidates` 要逐条复核**：精确匹配只能收敛两块恰好写了相同称呼的情况，剩下的是语义判断，脚本做不了。候选来自名字包含关系（`「陆」⊂「陆行远」`）——是强信号不是判决，同姓的父子、兄弟就不能合。候选之外你自己看出来的同人（「陆先生」和「行远」没有包含关系，不会进候选）也要合。
+
+要合并就写一份 merges.json 再落地：
+
+```json
+{ "merges": [{ "keep": "陆行远", "absorb": ["陆", "陆先生"] }] }
+```
+
+```bash
+node {baseDir}/scripts/novel-characters.mjs merge <workdir> --apply merges.json | tee <workdir>/merged.json
+```
+
+`keep`/`absorb` 用名字或任一别名定位都行，找不到会直接报错。输出仍带 `mergeCandidates`，剩下的都确认是不同的人（或清空）再进下一步。没有要合的就直接往下走——但 `merged.json` 必须留着。
 
 ### Step 5 — 选角
 
@@ -130,15 +146,21 @@ node {baseDir}/scripts/novel-characters.mjs merge <workdir>
 - 该角色归并后的 `name` / `aliases` / `notes` / `quotes`
 - **同批其他角色的名字**（避免长相声线撞车）
 
-角色卡 JSON 写到 `<workdir>/card-<slug>.json`。
+角色卡 JSON 写到 `<workdir>/card-<slug>.json`。**断点续跑**：`card-<slug>.json` 已存在的角色不必重跑。
 
-**同时写一段故事摘要**：用 `lang` 指定的语言，3–5 句，交代时空背景、核心情境、这几个人聚在一起的由头。短篇直接从原文写；长篇从各块的 roster note 归纳。不剧透结局，不写成推荐语。
+**同时写一段故事摘要**：用 `lang` 指定的语言，3–5 句，交代时空背景、核心情境、这几个人聚在一起的由头。短篇直接从原文写；长篇从各块的 roster note 归纳。不剧透结局，不写成推荐语。写到 `<workdir>/summary.txt`。非内置语言的话，把 Step 0 翻好的 ui 整块存成 `<workdir>/ui.json`。
 
-合成 `<输出目录>/<书名>-cast.json`：
+然后合成 cast.json——**用 assemble，不要手拼**（手拼会丢字段、写错顶层键）：
 
-```json
-{ "source": "书名", "lang": "zh", "style": "realistic", "summary": "……", "characters": [ ... ] }
+```bash
+node {baseDir}/scripts/novel-characters.mjs assemble <workdir> \
+  --source <书名> --lang <lang> --style <style> \
+  --out <输出目录>/<书名>-cast.json
 ```
+
+坏卡会被逐个点名——哪份 `card-*.json` 坏了就只重跑那个角色，其他不用动。
+
+同档角色的先后是戏份顺序，来自 Step 4 留下的 `<workdir>/merged.json`（assemble 自动读，也可用 `--order` 指别的文件）。报告左栏「按戏份排序」的序号就靠它——看到「同档角色将按文件名序」的警告说明 merged.json 丢了，回 Step 4 重新生成。
 
 ### Step 7 — 校验 ⛔ 不能跳
 
@@ -171,6 +193,7 @@ node {baseDir}/scripts/novel-characters.mjs validate <cast.json> <book.txt>
 - 跑在 codex 里就直接用 `$imagegen`；跑在别处就 shell 调 codex，先按那里的脚本探测版本最高的 binary（旧版会直接报错）
 - **一个角色一次调用，绝不批量**
 - 单个失败就跳过，不阻断；最后汇总说明
+- **断点续跑**：`images/<slug>-sheet.png` 已存在就跳过，失败重来时只补缺的
 
 **不按 `importance` 筛，选中的角色全都出。** 一个角色一次调用，30 个就是 30 次——这是整条管线里最慢的一步，开始前跟用户说一声要出多少张。用户想省就让他给个数，或者明说只要 `protagonist` / `major`。
 
@@ -207,7 +230,7 @@ report.html 的样式约定见 `{baseDir}/references/report-style.md`——要�
 
 ## 边界
 
-- 单次上限 24 块（约 33 万字符），超了会明确报 `truncated`，不静默截断
+- 单次上限 24 块（净覆盖约 93 万字符），超了会明确报 `truncated`，不静默截断
 - 人类可读字段跟随 `--lang`（默认中文）；出图和 TTS 提示词**永远英文**，那些引擎吃英文最稳
 - 设定图最容易出的两个问题：**一张图里两个长相**、**为了塞细节把人物压扁**。拿到图先扫一眼，见 `references/sheet.md`
 - 出图只走 codex built-in `$imagegen`。**不用它的 CLI fallback**（要 `OPENAI_API_KEY`）
@@ -219,7 +242,7 @@ report.html 的样式约定见 `{baseDir}/references/report-style.md`——要�
 node {baseDir}/scripts/selftest.mjs
 ```
 
-274 项断言，不调模型、不花额度，覆盖分块 / 归并 / 多语言 / 校验 / 渲染的全部确定性逻辑。改完脚本先跑这个。
+307 项断言，不调模型、不花额度，覆盖分块 / 归并 / 合成 / 多语言 / 校验 / 渲染的全部确定性逻辑。改完脚本先跑这个。
 
 ## 自带样例
 

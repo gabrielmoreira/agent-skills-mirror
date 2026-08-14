@@ -47,7 +47,7 @@ Coordinate specialist agents, design the minimum viable chain, execute safely. `
 - **Finish what the contract covers** (every recipe): the bar never moves to meet the output, `BLOCKED` is earned by a named failed alternative, hard core precedes easy polish, no artifact ships with `TODO`/stub residue, every deferral carries a class, DELIVER reports a scanned sweep. Finishing raises effort, never scope or permission — two identical failures ⇒ diagnose, not retry. → `reference/autonomy-quality-protocol.md` §0 + §7 (Q16-Q22).
 - Adapt routing from execution evidence under safety constraints; track OE per chain type.
 - Leverage standardized inter-agent protocols where available (MCP, A2A, ACP).
-- Apply Plan-and-Execute: capable models plan, cheaper models execute (Claude Code plans on Opus/Fable-5 and executes on Sonnet 5; Codex uses `gpt-5.6` variants by role; **agy is always Gemini 3.6 Flash (High)**). Per-engine map → `reference/hub-authoring.md` § Model Selection.
+- Apply Plan-and-Execute: capable models plan, cheaper models execute (Claude Code plans on Opus/Fable-5 and executes on Sonnet 5; Codex uses `gpt-5.6` variants by role; **agy is always Gemini 3.7 Flash (High)**). Per-engine map → `reference/hub-authoring.md` § Model Selection.
 - Use **Managed Agents** vocabulary and recommend escalation in `NEXUS_COMPLETE` when the workload justifies the managed platform; prefer **Dynamic Workflows** for large homogeneous parallel sweeps (`reference/managed-agents-mapping.md` §5).
 - Output language follows the CLI global config; identifiers and technical terms stay English.
 
@@ -62,7 +62,7 @@ Coordinate specialist agents, design the minimum viable chain, execute safely. `
 7. **Learn only from evidence.** Routing adaptation requires execution data, verification, and journaled results.
 8. **Prevent circular handoffs.** Enforce max-hop limits (default: 2 round-trips per agent pair) to prevent A→B→A loops.
 9. **Hierarchical decomposition for scale.** At 6+ agents, spawn feature-leads that each coordinate 2-3 specialists.
-10. **Author for the active orchestrator engine.** Detect which CLI drives the hub (**Execution Model → Orchestrator Detection**) and apply the matching protocol per `reference/hub-authoring.md` — Claude Code P-principles (plus F on a Fable 5 hub), Codex C-principles, agy A-principles with the Gemini 3.6 Flash (High) mandate.
+10. **Author for the active orchestrator engine.** Detect which CLI drives the hub (**Execution Model → Orchestrator Detection**) and apply the matching protocol per `reference/hub-authoring.md` — Claude Code P-principles (plus F on a Fable 5 hub), Codex C-principles, agy A-principles with the Gemini 3.7 Flash (High) mandate.
 
 ## Boundaries
 
@@ -125,7 +125,7 @@ Agent boundaries → `_common/BOUNDARIES.md` · disambiguation → `reference/ag
 
 Families group the flat registry by the axis that separates confusable siblings. **When an input fits a family but not a specific recipe, pick by the axis — or, for an overloaded anchor (`improve`/`polish`/`enhance`, `evolve a feature`), run the one-question REDIRECT (`reference/intent-clarification.md`).**
 
-Four families hold confusable siblings, disambiguated by an explicit axis: **Improve** (`refactor`/`optimize`/`kaizen`/`anneal`/`restyle`), **Loop** (`goal`/`converge`/`quell` — the axis is *what the completion oracle is*; every loop passes `_common/LOOP_PRECONDITIONS.md` first), **Reproduce, Synthesize & Invent** (`clone`/`fuse`/`graft`/`transmute`/`migrate`/`eureka` — the axis is source count; shared `_common/DIFFERENTIAL_PARITY.md`), and **Quality-Max** (expensive, confirm — one question each). Those axes, the remaining families, and the full prose → `reference/recipes-detail.md` § Recipe Families.
+Four families hold confusable siblings, disambiguated by an explicit axis: **Improve** (`refactor`/`optimize`/`kaizen`/`anneal`/`restyle`), **Loop** (`goal`/`converge`/`quell`/`burnish` — the axis is *what the completion oracle is*; `quell` and `burnish` share one machinery split by object: code diff vs rendered UI surface; every loop passes `_common/LOOP_PRECONDITIONS.md` first), **Reproduce, Synthesize & Invent** (`clone`/`fuse`/`graft`/`transmute`/`migrate`/`eureka` — the axis is source count; shared `_common/DIFFERENTIAL_PARITY.md`), and **Quality-Max** (expensive, confirm — one question each). Those axes, the remaining families, and the full prose → `reference/recipes-detail.md` § Recipe Families.
 
 ### Recipe Registry
 
@@ -135,7 +135,7 @@ Four families hold confusable siblings, disambiguated by an explicit axis: **Imp
 classify* · bug · feature · security · refactor · optimize · kaizen · anneal · restyle · converge · proactive · apex
 charter · enact · layer · goal · gedanken · delve · cartograph · chronicle · spec · essential · killer · trim
 acceptance · summit · podium · newsroom · wish · eureka · runway · hallmark · rebrand · crucible · silhouette
-lattice · chorus · assay · migrate · transmute · clone · fuse · graft · package · pack · quell
+lattice · chorus · assay · migrate · transmute · clone · fuse · graft · package · pack · quell · burnish
 ```
 
 `*` = default when no subcommand is given. Named preset aliases (`venture` / `marquee` / `growth-acceptance`) → **Subcommand Dispatch** below.

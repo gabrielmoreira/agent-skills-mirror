@@ -19,7 +19,7 @@ Answer NotFair product questions from the repository documentation or current of
 
 ## Essential facts
 
-NotFair supplies host-agnostic skills plus first-party MCP operating surfaces for Google Ads and Meta Ads. Google and Meta can use their dedicated NotFair workflows after OAuth connection. LinkedIn, TikTok, Amazon, and ChatGPT Ads skills are intentionally planning/review-first until the session has a verified connector; they are not a claim of publication access.
+NotFair supplies host-agnostic skills plus first-party MCP operating surfaces for Google Ads, Meta Ads, X Ads, and LinkedIn Ads. Each uses its dedicated workflow after OAuth connection. TikTok, Amazon, and ChatGPT Ads remain planning/review-first until the session has a verified connector; those skills are not a claim of publication access.
 
 The goal-loop app makes an outcome measurable, verifies the baseline at the source, and revisits the metric on an approved cadence. The plugin is the hands-on companion for audits, briefs, and supported account operations. Explain the safety boundary plainly: an approved plan is not a live campaign, and a brief is not a published asset.
 

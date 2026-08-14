@@ -133,8 +133,17 @@ bun run privacy:scan   # credential/privacy scan used by CI
 bun run build:gui      # Vite GUI build
 ```
 
-Run `bun run typecheck` and `bun run test` before proposing or approving any
-non-trivial change. CI runs these on Linux, Windows, and macOS.
+During implementation, use the smallest focused checks that directly cover the
+changed subsystem. Do not run repository-wide `bun run typecheck` or
+`bun run test` for a scoped change unless the change affects shared runtime,
+routing, config, server behavior, a focused result is failed or ambiguous, or
+the user explicitly asks for full validation.
+
+Before creating or updating a non-trivial PR as review-ready, or before
+approving such a PR, run `bun run typecheck` and `bun run test`. CI runs these
+on Linux, Windows, and macOS.
+
+Do not rerun passing checks on unchanged code merely for additional confidence.
 
 ## Issues and pull requests (agents)
 

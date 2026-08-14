@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `feiskyer/codex-settings` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,15 +93,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`skills/grill-me/SKILL.md`](skills/grill-me/SKILL.md) |
 | 33 | ✓ | [`skills/handoff/agents/openai.yaml`](skills/handoff/agents/openai.yaml) |
 | 34 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
-| 35 | ✓ | [`skills/nanobanana-skill/agents/openai.yaml`](skills/nanobanana-skill/agents/openai.yaml) |
-| 36 | ✓ | [`skills/nanobanana-skill/nanobanana.py`](skills/nanobanana-skill/nanobanana.py) |
-| 37 | ✓ | [`skills/nanobanana-skill/requirements.txt`](skills/nanobanana-skill/requirements.txt) |
-| 38 | ✓ | [`skills/nanobanana-skill/SKILL.md`](skills/nanobanana-skill/SKILL.md) |
-| 39 | ✓ | [`skills/nanobanana-skill/tests/test_nanobanana.py`](skills/nanobanana-skill/tests/test_nanobanana.py) |
-| 40 | ✓ | [`skills/youtube-transcribe-skill/agents/openai.yaml`](skills/youtube-transcribe-skill/agents/openai.yaml) |
-| 41 | ✓ | [`skills/youtube-transcribe-skill/scripts/transcribe_youtube.py`](skills/youtube-transcribe-skill/scripts/transcribe_youtube.py) |
-| 42 | ✓ | [`skills/youtube-transcribe-skill/SKILL.md`](skills/youtube-transcribe-skill/SKILL.md) |
-| 43 | ✓ | [`skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py`](skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py) |
+| 35 | ✓ | [`skills/minimax-image-skill/agents/openai.yaml`](skills/minimax-image-skill/agents/openai.yaml) |
+| 36 | ✓ | [`skills/minimax-image-skill/minimax_image.py`](skills/minimax-image-skill/minimax_image.py) |
+| 37 | ✓ | [`skills/minimax-image-skill/SKILL.md`](skills/minimax-image-skill/SKILL.md) |
+| 38 | ✓ | [`skills/minimax-image-skill/tests/test_minimax_image.py`](skills/minimax-image-skill/tests/test_minimax_image.py) |
+| 39 | ✓ | [`skills/nanobanana-skill/agents/openai.yaml`](skills/nanobanana-skill/agents/openai.yaml) |
+| 40 | ✓ | [`skills/nanobanana-skill/nanobanana.py`](skills/nanobanana-skill/nanobanana.py) |
+| 41 | ✓ | [`skills/nanobanana-skill/requirements.txt`](skills/nanobanana-skill/requirements.txt) |
+| 42 | ✓ | [`skills/nanobanana-skill/SKILL.md`](skills/nanobanana-skill/SKILL.md) |
+| 43 | ✓ | [`skills/nanobanana-skill/tests/test_nanobanana.py`](skills/nanobanana-skill/tests/test_nanobanana.py) |
+| 44 | ✓ | [`skills/youtube-transcribe-skill/agents/openai.yaml`](skills/youtube-transcribe-skill/agents/openai.yaml) |
+| 45 | ✓ | [`skills/youtube-transcribe-skill/scripts/transcribe_youtube.py`](skills/youtube-transcribe-skill/scripts/transcribe_youtube.py) |
+| 46 | ✓ | [`skills/youtube-transcribe-skill/SKILL.md`](skills/youtube-transcribe-skill/SKILL.md) |
+| 47 | ✓ | [`skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py`](skills/youtube-transcribe-skill/tests/test_transcribe_youtube.py) |
 
 ---
 

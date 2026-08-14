@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Q00/ouroboros` — 26 default patterns, 1 followed patterns, 55 file(s) materialized.
+Mirror of `Q00/ouroboros` — 26 default patterns, 1 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Q00/ouroboros` — 26 default patterns, 1 followed patterns, 55 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 55 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,33 +87,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`docs/architecture.md`](docs/architecture.md) |
 | 27 | ✓ | [`docs/auto-live-kanban/architecture.md`](docs/auto-live-kanban/architecture.md) |
 | 28 | ✓ | [`docs/config-reference.md`](docs/config-reference.md) |
-| 29 | ✓ | [`docs/hidden-checklist-convergence/architecture.md`](docs/hidden-checklist-convergence/architecture.md) |
-| 30 | ✓ | [`docs/runtime-guides/gemini.md`](docs/runtime-guides/gemini.md) |
-| 31 | ✓ | [`llms.txt`](llms.txt) |
-| 32 | ✓ | [`skills/auto/SKILL.md`](skills/auto/SKILL.md) |
-| 33 | ✓ | [`skills/brownfield/SKILL.md`](skills/brownfield/SKILL.md) |
-| 34 | ✓ | [`skills/cancel/SKILL.md`](skills/cancel/SKILL.md) |
-| 35 | ✓ | [`skills/config/SKILL.md`](skills/config/SKILL.md) |
-| 36 | ✓ | [`skills/evaluate/SKILL.md`](skills/evaluate/SKILL.md) |
-| 37 | ✓ | [`skills/evolve/SKILL.md`](skills/evolve/SKILL.md) |
-| 38 | ✓ | [`skills/help/SKILL.md`](skills/help/SKILL.md) |
-| 39 | ✓ | [`skills/interview/SKILL.md`](skills/interview/SKILL.md) |
-| 40 | ✓ | [`skills/ooo/SKILL.md`](skills/ooo/SKILL.md) |
-| 41 | ✓ | [`skills/pm/SKILL.md`](skills/pm/SKILL.md) |
-| 42 | ✓ | [`skills/publish/SKILL.md`](skills/publish/SKILL.md) |
-| 43 | ✓ | [`skills/qa/SKILL.md`](skills/qa/SKILL.md) |
-| 44 | ✓ | [`skills/ralph/SKILL.md`](skills/ralph/SKILL.md) |
-| 45 | ✓ | [`skills/resume-session/SKILL.md`](skills/resume-session/SKILL.md) |
-| 46 | ✓ | [`skills/run/SKILL.md`](skills/run/SKILL.md) |
-| 47 | ✓ | [`skills/seed/SKILL.md`](skills/seed/SKILL.md) |
-| 48 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
-| 49 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
-| 50 | ✓ | [`skills/tutorial/SKILL.md`](skills/tutorial/SKILL.md) |
-| 51 | ✓ | [`skills/unstuck/SKILL.md`](skills/unstuck/SKILL.md) |
-| 52 | ✓ | [`skills/update/SKILL.md`](skills/update/SKILL.md) |
-| 53 | ✓ | [`skills/welcome/SKILL.md`](skills/welcome/SKILL.md) |
-| 54 | ✓ | [`tests/fixtures/router/skills/frontmatter-body/run/SKILL.md`](tests/fixtures/router/skills/frontmatter-body/run/SKILL.md) |
-| 55 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 29 | ✓ | [`docs/first-command-activation/architecture.md`](docs/first-command-activation/architecture.md) |
+| 30 | ✓ | [`docs/hidden-checklist-convergence/architecture.md`](docs/hidden-checklist-convergence/architecture.md) |
+| 31 | ✓ | [`docs/runtime-guides/gemini.md`](docs/runtime-guides/gemini.md) |
+| 32 | ✓ | [`docs/workflow-failure-reason/architecture.md`](docs/workflow-failure-reason/architecture.md) |
+| 33 | ✓ | [`llms.txt`](llms.txt) |
+| 34 | ✓ | [`skills/auto/SKILL.md`](skills/auto/SKILL.md) |
+| 35 | ✓ | [`skills/brownfield/SKILL.md`](skills/brownfield/SKILL.md) |
+| 36 | ✓ | [`skills/cancel/SKILL.md`](skills/cancel/SKILL.md) |
+| 37 | ✓ | [`skills/config/SKILL.md`](skills/config/SKILL.md) |
+| 38 | ✓ | [`skills/evaluate/SKILL.md`](skills/evaluate/SKILL.md) |
+| 39 | ✓ | [`skills/evolve/SKILL.md`](skills/evolve/SKILL.md) |
+| 40 | ✓ | [`skills/help/SKILL.md`](skills/help/SKILL.md) |
+| 41 | ✓ | [`skills/interview/SKILL.md`](skills/interview/SKILL.md) |
+| 42 | ✓ | [`skills/ooo/SKILL.md`](skills/ooo/SKILL.md) |
+| 43 | ✓ | [`skills/pm/SKILL.md`](skills/pm/SKILL.md) |
+| 44 | ✓ | [`skills/publish/SKILL.md`](skills/publish/SKILL.md) |
+| 45 | ✓ | [`skills/qa/SKILL.md`](skills/qa/SKILL.md) |
+| 46 | ✓ | [`skills/ralph/SKILL.md`](skills/ralph/SKILL.md) |
+| 47 | ✓ | [`skills/resume-session/SKILL.md`](skills/resume-session/SKILL.md) |
+| 48 | ✓ | [`skills/run/SKILL.md`](skills/run/SKILL.md) |
+| 49 | ✓ | [`skills/seed/SKILL.md`](skills/seed/SKILL.md) |
+| 50 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
+| 51 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
+| 52 | ✓ | [`skills/tutorial/SKILL.md`](skills/tutorial/SKILL.md) |
+| 53 | ✓ | [`skills/unstuck/SKILL.md`](skills/unstuck/SKILL.md) |
+| 54 | ✓ | [`skills/update/SKILL.md`](skills/update/SKILL.md) |
+| 55 | ✓ | [`skills/welcome/SKILL.md`](skills/welcome/SKILL.md) |
+| 56 | ✓ | [`tests/fixtures/router/skills/frontmatter-body/run/SKILL.md`](tests/fixtures/router/skills/frontmatter-body/run/SKILL.md) |
+| 57 | → | [`docs/getting-started.md`](docs/getting-started.md) |
 
 ---
 

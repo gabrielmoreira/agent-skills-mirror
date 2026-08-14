@@ -392,6 +392,40 @@ except NotFoundError as e:
     print(f"Missing resource: {e}")
 ```
 
+#### Processing failures vs. timeouts
+
+`SourceProcessingError` means *this source will not become ready*; `SourceTimeoutError` means *it had not become ready yet*. The distinction matters because only the second is worth waiting on again.
+
+A source whose `type_code` is audio (`10`) or still unclassified (`0` / `None`) may report `status=ERROR` briefly while it is being transcribed or classified, so the waiters tolerate that rather than failing fast. That tolerance is bounded by your `timeout`: if the last status observed was `ERROR` and the poll then ran out of time, the waiters raise **`SourceProcessingError`**, not `SourceTimeoutError` ([#2138](https://github.com/teng-lin/notebooklm-py/issues/2138)). The source answered `ERROR` repeatedly until the deadline; reporting that as a timeout would invite an endless retry.
+
+This is the route a file whose *processing* fails takes. `add_file()` returns as soon as the bytes are transferred — with `wait=False` (the default) it does not poll at all, and the `status=PROCESSING` on the returned `Source` is a placeholder, not an observation. So a post-transfer processing failure is only ever visible through a wait:
+
+```python
+from notebooklm import SourceProcessingError, SourceTimeoutError
+
+source = await client.sources.add_file(nb_id, "recording.wav")
+try:
+    ready = await client.sources.wait_until_ready(nb_id, source.id, timeout=300)
+except SourceProcessingError as exc:
+    # Terminal: the format was rejected, the content was unreadable, etc.
+    # The row is retained server-side; see the reconciliation note below.
+    print(f"will not become ready: {exc}")
+except SourceTimeoutError:
+    print("still processing; poll again later")
+```
+
+Pass `wait=True` to have `add_file()` do this for you.
+
+**Reconciling what a failed add left behind.** A row registered by an add that then failed is deliberately *not* deleted — it is the evidence, and it still counts against the notebook's source quota. It sits at `SourceStatus.PREPARING`, not `ERROR`, so filtering for error status will not find it:
+
+```python
+from notebooklm import SourceStatus
+
+stuck = [s for s in await client.sources.list(nb_id) if s.status is SourceStatus.PREPARING]
+```
+
+(or `notebooklm source list --status preparing` from the CLI). Rows genuinely mid-upload also report `PREPARING`, so re-read before deleting. When the failing add raised in your own process you do not need to search: the exception carries the id directly, as `getattr(exc, "source_id", None)`.
+
 Methods that *raise* a `*NotFoundError` on not-found include every namespace
 `get()` (as of v0.8.0 — `client.notebooks.get`, `client.sources.get`,
 `client.artifacts.get`, `client.notes.get`, `client.mind_maps.get`),
@@ -458,9 +492,9 @@ The following methods are idempotent under retry:
 
 | Method | Probe |
 |---|---|
-| `client.notebooks.create(title)` | Snapshot notebook IDs *before*, list *after* a transport failure, return the single new notebook with the matching title (or raise on ambiguity). |
-| `client.sources.add_url(notebook_id, url)` | List the notebook's sources, return the existing source whose `url` exactly matches. |
-| `client.sources.add_url(notebook_id, youtube_url)` | Same probe via canonical YouTube URL. |
+| `client.notebooks.create(title)` | Snapshot notebook IDs *before*, list *after* a transport failure, return the single **new** notebook with the matching title (or raise on ambiguity). Titles are not unique, so an unfiltered match could hand back a notebook that predates the call — and every later `sources.add_*` / `chat.ask` in the session would then target it ([#2232](https://github.com/teng-lin/notebooklm-py/issues/2232)). |
+| `client.sources.add_url(notebook_id, url)` | Snapshot source IDs *before*, list *after* a transport failure, return the single **new** source whose `url` exactly matches (or raise on ambiguity). The same URL can legitimately appear twice in one notebook, so an unfiltered match could hand back a source that predates the call ([#2204](https://github.com/teng-lin/notebooklm-py/issues/2204)). |
+| `client.sources.add_url(notebook_id, youtube_url)` | Same probe; the backend echoes the requested YouTube URL back verbatim, short (`youtu.be/…`) forms included. |
 
 `client.sources.add_text(notebook_id, title, content)` is **not** retry-safe: text sources lack a reliable server-side dedupe key (titles aren't unique; content isn't exposed in the source list). The default behavior is unchanged from previous releases. If you want explicit failure rather than possible silent duplication on retry, opt in:
 
@@ -475,6 +509,59 @@ except NonIdempotentRetryError:
 ```
 
 `client.sources.add_file(...)` and `client.sources.add_drive(...)` are now also covered by the probe-then-create wrapper: the create RPC runs with `disable_internal_retries=True` and, on transport failure, the wrapper probes the server-side source list (via `idempotent_create`) before deciding whether to retry — so transient failures no longer produce duplicate sources. See `_source/add.py` (`SourceAddService.add_drive`) and `_source/upload.py` (`SourceUploadPipeline.register_file_source`) for the implementation.
+
+**When the probe itself fails, the call fails ([#2220](https://github.com/teng-lin/notebooklm-py/issues/2220)).** The probe is what makes the retry safe, so it is never allowed to guess. If its own list RPC fails for a non-transport reason — realistically, wire drift making the strict decoder raise `RPCError` — no **further** attempt is made, and you get `SourceAddError` (source paths) or `RPCError` (`notebooks.create`) saying the create could not be confirmed. Note "further": the wrapper allows two attempts, so if an *earlier* probe returned a clean "no match" one retry may already have gone out before this one failed — reconcile for more than one row.
+
+Such an error carries an **`unconfirmed` attribute**. Test that, not the message text and not the exception type — it is the supported discriminator, and the same one the MCP and REST adapters use to keep these out of the "retry me" and "just this item failed" buckets.
+
+**Type is the wrong discriminator here**, which is why the example below catches broadly. A probe whose list fails at the transport level re-raises that failure *unchanged*, so an unconfirmed create can reach you as `SourceAddError`, `RPCError`, `ServerError`, `NetworkError`, `RateLimitError`, or `AuthError`. Only the attribute is common to all of them.
+
+```python
+# Capture the ids BEFORE the add. A URL is not unique within a notebook, so a
+# post-hoc match alone cannot tell "my create landed" from "a copy was already
+# here" — adopting one blindly is the very bug #2204 fixed inside the library.
+before = {s.id for s in await client.sources.list(nb_id)}
+
+try:
+    source = await client.sources.add_url(nb_id, url)
+except Exception as exc:
+    if not getattr(exc, "unconfirmed", False):
+        raise  # a rejection, an auth failure, a plain outage — handle as usual
+    # The create may or may not have landed. Only a source that is BOTH new
+    # since the snapshot and matching the URL is attributable to this call.
+    new = [s for s in await client.sources.list(nb_id) if s.id not in before and s.url == url]
+    if len(new) == 1:
+        source = new[0]                       # attributable to this call
+    elif not new:
+        # NOT proof the create failed — the source list lags the write, so a
+        # committed source can be missing here and appear moments later. Re-read
+        # before concluding anything; see the caveat below.
+        raise
+    else:
+        raise  # several new matches — cannot attribute. Resolve by hand.
+```
+
+Three caveats on that reconciliation, all inherent to a list-based probe rather than to this example:
+
+- **An empty result is not proof the create failed.** Source-list visibility lags the write: the library's own `test_add_url_probe_matches_on_the_second_attempt` models a committed source that is absent from the first post-create `GET_NOTEBOOK` and appears only on the next one. Re-issuing on a single empty read is how a duplicate gets made — poll the list a few times before deciding, and if it stays empty, prefer surfacing the situation over an automatic re-add.
+- **A single new match is *attributable*, not *proven*.** A snapshot establishes *when* a source appeared, not *who* created it. If another client adds the same URL after your snapshot while your own create never lands, you will see exactly one new match and adopt their source — the two-match branch never fires. `add_url`'s own docstring carries the same warning: the wire has no client-supplied idempotency key, so serialize concurrent adds of the same URL into one notebook if you need that guarantee, or treat the single-match case as unresolved too.
+- **The reconciling `sources.list()` can itself fail.** If the outage that broke the probe is still going, this whole block raises, which is the correct outcome — still unresolved.
+
+The attribute is set on more than just the "probe raised" case. It marks every way a probe fails to settle whether the create landed: a match it cannot attribute because the pre-create baseline was unavailable, several new matches it cannot choose between, or a create that returned success with no trustworthy id whose recovery probe then came up empty. Those raise without anything having thrown inside the probe, so they look like ordinary rejections — but the server may hold a row either way.
+
+It is absent on every other failure, so `getattr(exc, "unconfirmed", False)` is safe to call unconditionally.
+
+**The exception chain has three shapes** — worth knowing before diagnostic code goes looking in a fixed place:
+
+| how it arose | the exception you catch | the create's transport failure |
+|---|---|---|
+| probe failed with a non-transport error (e.g. a decode `RPCError`) | a wrapper naming the source, with the probe's failure as `__cause__` | at `__context__.__context__` |
+| probe failed with a transport/auth error (`ServerError`, `NetworkError`, `RateLimitError`, `AuthError`) | **that same error, re-raised unchanged and marked** | at `__context__` |
+| `add_file` only: the register RPC returned **200** but carried no trustworthy `SOURCE_ID`, so the recovery probe ran directly | a wrapper naming the file | **none — no create failure exists**; a probe error, if any, is at `__cause__` |
+
+The third shape breaks a fixed-depth assumption outright: `_create` calls the probe itself rather than being driven by the retry wrapper, so no transport failure exists anywhere in the chain, and a no-match or ambiguity yields a marked `SourceAddError` with no `__cause__` at all. In the second shape there is no wrapper either, so `__cause__` is whatever the transport layer already set (often absent). Walk the `__context__` chain rather than assuming a depth, and treat both `__cause__` and `__context__` as optional.
+
+The alternative — retrying on an unanswered probe — is what this replaced. It recovered silently in the common case, at the cost of occasionally handing back a duplicate, or the wrong source id, with nothing to signal it. A raised error is actionable; an unreported duplicate is not.
 
 **Partial file uploads.** File registration creates the source row before the
 resumable HTTP upload starts. If session setup or the combined upload/finalize
@@ -790,6 +877,17 @@ a large file should not have to widen the global HTTP timeout to
 succeed; pass `upload_timeout=600.0` (or larger) to the relevant call
 sites instead.
 
+**Per-RPC read windows compose with `timeout=`.** Chat (`chat_timeout=`,
+built-in 180 s) and IMPORT_RESEARCH (`import_research_timeout=`, built-in
+batch-scaled 60 s + 3 s/source capped at 240 s) carry longer read windows than
+the shared 30 s one. Those built-ins are defaults, not caps: they only lengthen
+the configured `timeout=`, so `NotebookLMClient(auth, timeout=600)` gets 600 s
+on chat and IMPORT_RESEARCH too. Both kwargs read identically — left unset the
+built-in composes, a number wins outright (including a *shorter* one, for
+deliberately fast failure), and `None` inherits `timeout=` verbatim. A
+non-positive or non-finite value raises at construction. Full table:
+[configuration.md](configuration.md#how-the-per-rpc-windows-compose-with-timeout).
+
 ### Single-process multi-tenant guidance
 
 For a service that handles multiple NotebookLM tenants (different
@@ -918,8 +1016,9 @@ class NotebookLMClient:
         max_concurrent_rpcs: int | None = DEFAULT_MAX_CONCURRENT_RPCS,        # 16
         upload_timeout: httpx.Timeout | None = None,
         on_rpc_event: Callable[[RpcTelemetryEvent], object] | None = None,
-        chat_timeout: float | None = DEFAULT_CHAT_TIMEOUT,                   # 180
+        chat_timeout: float | None = ...,      # unset -> max(180, timeout)
         chat_response_max_bytes: int | None = DEFAULT_CHAT_RESPONSE_MAX_BYTES, # 256 MiB
+        import_research_timeout: float | None = ...,  # unset -> batch-scaled
         *,
         allow_headless: bool = False,
     ) -> "_FromStorageContext":
@@ -942,8 +1041,9 @@ class NotebookLMClient:
         on_rpc_event: Callable[[RpcTelemetryEvent], object] | None = None,
         cookie_saver: CookieSaver | None = None,
         cookie_rotator: CookieRotator | None = None,
-        chat_timeout: float | None = DEFAULT_CHAT_TIMEOUT,                   # 180
+        chat_timeout: float | None = ...,      # unset -> max(180, timeout)
         chat_response_max_bytes: int | None = DEFAULT_CHAT_RESPONSE_MAX_BYTES, # 256 MiB
+        import_research_timeout: float | None = ...,  # unset -> batch-scaled
     ):
 
     async def refresh_auth(self, *, allow_headless: bool = False) -> AuthTokens:
@@ -960,6 +1060,7 @@ class NotebookLMClient:
         *,
         disable_internal_retries: bool = False,
         read_timeout: float | None = None,
+        raise_on_null_status: bool = False,
     ) -> Any:
 ```
 
@@ -970,6 +1071,13 @@ defaults. `read_timeout` (added in #2187) overrides the client-wide read
 timeout for this one call — internal callers use it for RPCs known to run
 long (e.g. `ResearchAPI.import_sources`'s batch-scaled IMPORT_RESEARCH
 timeout); `None` (the default) inherits the client's configured `timeout`.
+`raise_on_null_status` (added in #2188) pairs with `allow_null=True`: a null
+result the server tagged with a recognized non-OK `google.rpc.Status` raises
+with that status instead of decoding to `None`, so a rejection is reported
+with the server's own code rather than a client-invented reason. It is opt-in
+because several RPCs are recorded answering a status on flows this client
+treats as successful — see
+[rpc-reference.md](rpc-reference.md#rejection-frames-googlerpcstatus-at-wrbfr-index-5).
 
 **Cookie persistence override:** `cookie_saver=None` (the default) uses the
 canonical typed `ProfileStore` merge for close, refresh, and keepalive saves.
@@ -1071,6 +1179,8 @@ async with NotebookLMClient.from_storage(rate_limit_max_retries=0) as client:
 | `get(notebook_id)` | `notebook_id: str` | `Notebook` | Get notebook details |
 | `delete(notebook_id)` | `notebook_id: str` | `None` | Delete a notebook (idempotent; returns `None` whether or not it existed) |
 | `rename(notebook_id, new_title)` | `notebook_id: str, new_title: str` | `Notebook` | Rename a notebook (re-fetched; raises `NotebookNotFoundError` if missing) |
+| `set_emoji(notebook_id, emoji)` | `notebook_id: str, emoji: str` | `Notebook` | Set (or clear with `""`) the notebook display emoji and re-fetch it |
+| `update(notebook_id, *, title=None, emoji=None)` | `str, str \| None, str \| None` | `Notebook` | Set title and/or emoji in one `MutateProject`; raises `ValidationError` when both are `None` |
 | `get_description(notebook_id)` | `notebook_id: str` | `NotebookDescription` | Get AI summary and topics |
 | `suggest_prompts(notebook_id, *, source_ids=None, mode=4, query=None)` | `str, list[str] \| None, int, str \| None` | `list[PromptSuggestion]` | Get AI-suggested prompts for the notebook. `source_ids=None` uses all sources; `mode` is the required `1..10` "mode/surface" int (default `4` suggests chat questions; other modes target other surfaces); `query` optionally steers the suggestions. Each `PromptSuggestion.prompt` is a ready-to-send instruction for `ask()`. |
 | `get_metadata(notebook_id)` | `notebook_id: str` | `NotebookMetadata` | Get notebook metadata and sources |
@@ -1088,7 +1198,7 @@ for nb in notebooks:
 
 # Create and rename
 nb = await client.notebooks.create("Draft")
-nb = await client.notebooks.rename(nb.id, "Final Version")
+nb = await client.notebooks.update(nb.id, title="Final Version", emoji="📖")
 
 # Get AI-generated description (parsed with suggested topics)
 desc = await client.notebooks.get_description(nb.id)
@@ -1122,7 +1232,7 @@ print(url)
 
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
-| `list(notebook_id, strict=False)` | `notebook_id: str, strict: bool = False` | `list[Source]` | List sources |
+| `list(notebook_id, *, strict=False, statuses=None, types=None)` | `str, *, bool, Collection[SourceStatus] \| None, Collection[SourceType] \| None` | `list[Source]` | List sources, optionally filtered after normalization |
 | `get(notebook_id, source_id)` | `str, str` | `Source` | Get source details; raises `SourceNotFoundError` on a miss |
 | `get_or_none(notebook_id, source_id)` | `str, str` | `Source \| None` | Optional lookup; returns `None` when absent |
 | `get_fulltext(notebook_id, source_id, *, output_format="text")` | `str, str, *, output_format: Literal["text", "markdown"]` | `SourceFulltext` | Get full content; `"markdown"` requires the optional `markdownify` extra |
@@ -1135,7 +1245,7 @@ print(url)
 | `refresh(notebook_id, source_id)` | `str, str` | `None` | Refresh URL/Drive source |
 | `check_freshness(notebook_id, source_id)` | `str, str` | `bool` | Check if source needs refresh |
 | `delete(notebook_id, source_id)` | `str, str` | `None` | Delete source (idempotent; returns `None` whether or not it existed) |
-| `wait_until_ready(notebook_id, source_id, timeout=120.0, ...)` | `str, str, float, ...` | `Source` | Poll until `status == READY` (fully processed). Raises `SourceTimeoutError`/`SourceProcessingError`/`SourceNotFoundError`. |
+| `wait_until_ready(notebook_id, source_id, timeout=120.0, ...)` | `str, str, float, ...` | `Source` | Poll until `status == READY` (fully processed). Raises `SourceTimeoutError`/`SourceProcessingError`/`SourceNotFoundError` — see [Processing failures vs. timeouts](#processing-failures-vs-timeouts). |
 | `wait_until_registered(notebook_id, source_id, timeout=30.0, ...)` | `str, str, float, ...` | `Source` | Poll until the source is visible server-side (any non-ERROR status). Completes quickly (seconds for typical sources); intended for narrow follow-up RPCs (e.g. `UPDATE_SOURCE`) that only require registration, not full processing. |
 | `wait_for_sources(notebook_id, source_ids, timeout=120.0, **kwargs)` | `str, list[str], float, ...` | `list[Source]` | Wait for multiple sources to become ready **in parallel**. Per-source timeout; `**kwargs` are forwarded to `wait_until_ready`. |
 | `wait_all_until_ready(notebook_id, source_ids, timeout=120.0, initial_interval=1.0, max_interval=10.0, backoff_factor=1.5, transient_error_types=None)` | `str, list[str], float, ...` | `list[SourceWaitResult]` | Wait for many sources with **one notebook snapshot per poll tick** (cheaper than `wait_for_sources`'s per-source polling for large batches). Terminal per-source failures (`SourceNotFoundError` / `SourceProcessingError` / `SourceTimeoutError`) are **returned**, not raised — one result per id, in input order. |
@@ -1172,6 +1282,21 @@ sources = await client.sources.list(nb_id)
 for src in sources:
     print(f"{src.id}: {src.title} ({src.kind})")
 
+# Filters are ORed within an axis and ANDed across axes. Backend order is
+# preserved; an explicitly empty filter matches no sources.
+from notebooklm import SourceStatus, SourceType
+
+ready_documents = await client.sources.list(
+    nb_id,
+    statuses={SourceStatus.READY},
+    types={SourceType.PDF, SourceType.DOCX, SourceType.GOOGLE_DOCS},
+)
+
+# The backend does not expose a separate authoritative count endpoint. For an
+# exact count of uniquely addressable sources, request a strict normalized
+# snapshot and count it locally.
+actual_source_count = len(await client.sources.list(nb_id, strict=True))
+
 await client.sources.rename(nb_id, src.id, "Better Title")
 await client.sources.refresh(nb_id, src.id)  # Re-fetch URL content
 
@@ -1190,6 +1315,34 @@ print(f"Summary: {guide.summary}")
 print(f"Keywords: {guide.keywords}")
 # SourceGuide is a typed value; prefer attribute access.
 ```
+
+`sources.list()` performs one `GET_NOTEBOOK` read. `statuses` and `types` do
+not trigger extra RPCs: each collection is snapshotted before the read, then
+matched against normalized `Source.status` and `Source.kind` values. Multiple
+members within `statuses` or `types` are alternatives (OR); supplying both
+axes requires both to match (AND). `None` means no filter on that axis, while
+an explicitly empty collection matches nothing.
+
+The `strict` option is for callers that need a trustworthy count. Response-
+envelope drift always raises `RPCError`, regardless of this option. At the row
+level, the default `strict=False` keeps backward-compatible recovery: malformed
+or id-less rows are skipped and duplicate IDs keep their first normalized
+value. `strict=True` instead raises on malformed/id-less rows, on ID-bearing
+rows whose type or status discriminant is missing/malformed, and on duplicate
+IDs whose normalized values conflict. Duplicate rows that normalize to the
+same `Source` still collapse to one resource because the count is of unique,
+addressable sources—not raw wire rows. Therefore the canonical exact-count
+operation is:
+
+```python
+actual_count = len(await client.sources.list(notebook_id, strict=True))
+```
+
+Apply `statuses=` / `types=` to that same call when the desired count is for a
+filtered subset. There is intentionally no separate `sources.count()` or
+inventory object: the backend already returns the source rows needed to count,
+so another public surface would imply authority or efficiency that does not
+exist.
 
 ---
 
@@ -1213,7 +1366,7 @@ print(f"Keywords: {guide.keywords}")
 
 #### Type-Specific List Methods
 
-**CLI equivalent:** `notebooklm artifact list --type <audio|video|slide-deck|quiz|flashcard|infographic|data-table|mind-map|report>` (see [Artifact Commands](cli-reference.md#artifact-commands-notebooklm-artifact-cmd)).
+**CLI equivalent:** `notebooklm artifact list --type <audio|video|slide-deck|quiz|flashcard|infographic|data-table|mind-map|report|fantasy-map|file>` (see [Artifact Commands](cli-reference.md#artifact-commands-notebooklm-artifact-cmd)).
 
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
@@ -1464,6 +1617,18 @@ status = await client.artifacts.generate_quiz(
 )
 ```
 
+**Omitting an option does not mean "let the server choose."** `quantity=None` /
+`difficulty=None` (the defaults) are resolved to `QuizQuantity.STANDARD` and
+`QuizDifficulty.MEDIUM` and sent **explicitly**, matching the web UI and every
+other `generate_*` method here. The backend does accept an omitted option
+message, but then stores nothing, so neither you nor this client can see what it
+picked — the artifact echoes the pair back only when it was sent (#2196). Pass
+the member you want if you need a specific setting.
+
+Anything other than an enum member or `None` raises `ValidationError`, including
+the *other* option enum: `quantity=QuizDifficulty.HARD` used to encode silently
+as `MORE`, because both are `3`.
+
 **Rate-limit retry for generation:**
 
 ```python
@@ -1537,10 +1702,12 @@ async def ask(
 - `conversation_id=None` matches the web UI's default: the server attaches the
   question to your current conversation on this notebook (or creates one if
   none exists). Repeated `ask()` calls without `conversation_id` extend the
-  same conversation; they do not start fresh ones. The SDK fetches the
-  server-recorded conversation_id via `hPTbtc` after each new-conversation
-  ask and surfaces it on `AskResult.conversation_id`, so passing it back as
-  `conversation_id=` for follow-ups works as expected.
+  same conversation; they do not start fresh ones. The SDK resolves the
+  server-recorded conversation id through `hPTbtc` when needed and surfaces it
+  on `AskResult.conversation_id`, so passing it back as `conversation_id=` for
+  follow-ups works. The first ask after `notebooks.create()` binds to the
+  server-issued `ChatSession` id in the create response instead, avoiding that
+  redundant lookup while keeping the POST target and returned id identical.
 - `conversation_id=<existing-id>` is a follow-up: the question is appended
   to the named conversation.
 - To force a brand-new conversation, call
@@ -1558,7 +1725,7 @@ from notebooklm import ChatGoal, ChatResponseLength
 # Ask questions (uses all sources)
 result = await client.chat.ask(nb_id, "What are the main themes?")
 print(result.answer)
-print(result.conversation_id)  # server-recorded id, fetched via hPTbtc
+print(result.conversation_id)  # server-recorded id (CREATE hint or hPTbtc)
 
 # Access source references (cited in answer as [1], [2], etc.)
 for ref in result.references:
@@ -1612,7 +1779,7 @@ if result.references:
 
 ### ResearchAPI (`client.research`)
 
-**CLI equivalent:** [Research Commands](cli-reference.md#research-commands-notebooklm-research-cmd) (`notebooklm research status`, `wait`, `cancel`) plus `notebooklm source add-research` ([Source: `add-research`](cli-reference.md#source-add-research)) for the combined start-and-import workflow.
+**CLI equivalent:** [Research Commands](cli-reference.md#research-commands-notebooklm-research-cmd) (`notebooklm research status`, `wait`, `import`, `cancel`) plus `notebooklm source add-research` ([Source: `add-research`](cli-reference.md#source-add-research)) for the combined start-and-import workflow.
 
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
@@ -1620,6 +1787,7 @@ if result.references:
 | `poll(notebook_id, task_id=None)` | `str, str \| None = None` | `ResearchTask` | Check research status. If multiple tasks are in flight and `task_id` is omitted, raises `AmbiguousResearchTaskError` |
 | `wait_for_completion(notebook_id, task_id=None, *, timeout=1800, initial_interval=5)` | `str, str \| None, float, float` | `ResearchTask` | Wait for research to complete, pinning the discovered task ID between polls. Raises `ResearchTimeoutError` (a `WaitTimeoutError`/`TimeoutError`) and `AmbiguousResearchTaskError` when unpinned polling is ambiguous. |
 | `import_sources(notebook_id, task_id, sources)` | `str, str, Sequence[dict[str, Any] \| ResearchSource]` | `list[dict]` | Import findings. Accepts plain dicts **or** the typed `ResearchSource` objects from `poll().sources`. |
+| `import_sources_with_verification(notebook_id, task_id, sources, *, max_elapsed=1800, initial_delay=5, backoff_factor=2, max_delay=60, allow_duplicate=False)` | `str, str, Sequence[ResearchSourceInput], float, float, float, float, bool` | `list[dict[str, str]]` | **Preferred for deep research.** Timeout-tolerant: `IMPORT_RESEARCH` commonly outlives one client timeout on deep payloads, so on `RPCTimeoutError` it probes `sources.list` and reconciles what actually committed instead of raising as if nothing imported, retrying the remainder with backoff until `max_elapsed`. Also **idempotent**: requested sources whose URL already exists are skipped unless `allow_duplicate=True`, and are reported on the returned list's `already_present` attribute. |
 | `cancel(notebook_id, run_id)` | `str, str` | `None` | Cancel an in-flight run. **Fire-and-forget** — returns `None`, never raises on an unknown id; confirm by polling. `run_id` is `poll().task_id` (for deep research the `report_id` from `start`, **not** the deep `start().task_id` sessionId). |
 
 > **Typed returns.** `start` / `poll` / `wait_for_completion` return the typed
@@ -1628,6 +1796,15 @@ if result.references:
 > (`status == "completed"` still holds). Use attribute access. `import_sources`
 > still accepts `list[dict]` **or** `ResearchSource` objects, so feeding
 > `result.sources` straight back in works.
+
+**Which import to call.** `import_sources` is the one-shot RPC; a client-side
+timeout on a slow (usually deep) import raises even though the server may have
+committed. `import_sources_with_verification` wraps it with reconcile-and-retry
+plus URL-level idempotency, and is what the MCP `research_import` tool and the
+CLI `research import` / `research wait --import-all` drive. The REST route
+(`POST /v1/research/{run_id}/import`) deliberately stays on the one-shot form so
+a synchronous web request cannot block on a multi-minute reconcile loop. They are
+**not** interchangeable — pick by whether your caller can afford to wait.
 
 **Method Signatures:**
 
@@ -1681,6 +1858,27 @@ async def poll(notebook_id: str, task_id: str | None = None) -> ResearchTask:
                                      Drive / web (both False when the tag is absent or
                                      unrecognised, in which case the wording and hint
                                      stay source-agnostic)
+      - discovery_mode: DiscoveryMode | None
+                                   — the mode the run is EXECUTING under (task_info[2]),
+                                     echoed back from the start params: DEFAULT_LLM_SEARCH
+                                     for a fast run, DEEP_RESEARCH for a deep one. None
+                                     when the poll made no claim; UNKNOWN (distinct from
+                                     None) when it named a mode this client cannot map.
+      - created_at / updated_at: datetime | None
+                                   — UTC-aware start and last-progress instants
+                                     (task[3] / task[2]). The backend advances
+                                     updated_at while a run is in flight; whether it
+                                     stops once the run settles was not observed.
+      - duration:  timedelta | None — updated_at - created_at: how long a settled run
+                                     took, or how long an in-flight one has been going
+                                     as of this poll. None when either timestamp is
+                                     missing, and None (with a warning) if the interval
+                                     is negative — that means the two positional slots
+                                     have moved, not that a run went backwards.
+      - account_id: str | None     — opaque account id the run belongs to (task[4]).
+                                     Account-scoped (two live accounts, two distinct
+                                     stable values); whether it names the run's starter
+                                     or the notebook's owner is NOT established.
 
     Backend status codes are documented in docs/rpc-reference.md (POLL_RESEARCH).
 
@@ -1694,6 +1892,11 @@ async def poll(notebook_id: str, task_id: str | None = None) -> ResearchTask:
                             NOT verified to resolve the report's citation markers:
                             research_deep_poll_long.yaml carries 24 ordinals and
                             its report has no `[cite: N]` markers at all.
+      - hint:               str — the backend's own one-line "why this source" note
+                            (`DiscoveredSource.hint`, `src[2]`), e.g. "Practical
+                            walkthrough for managing I/O-bound tasks within a single
+                            execution thread." Empty string when the row carried none
+                            (the deep-research report row does not carry one).
     """
 
 async def wait_for_completion(
@@ -2168,7 +2371,30 @@ class Notebook:
     modified_at: Optional[datetime]    # DEPRECATED alias for last_viewed_at
     role: Optional[SharePermission]    # your own level: OWNER / EDITOR / VIEWER
     last_viewed_at: Optional[datetime] # when YOU last opened it (tz-aware UTC)
+    emoji: Optional[str]               # Project.emoji; None when unstated
+    premium_features: Optional[PremiumFeatureInfo]
+    chat_sessions: list[ChatSession]   # populated by CREATE; GET omits it
+    chat_settings: Optional[ChatSettings] # current goal/length/persona on get()
+
+@dataclass(frozen=True)
+class PremiumFeatureInfo:
+    can_edit_advanced_settings: bool | None
+    can_edit_guidebook_config: bool | None
+    can_view_analytics: bool | None
+
+@dataclass(frozen=True)
+class ChatSession:
+    id: str
 ```
+
+The three premium flags are tri-state: `None` means the response made no usable
+claim. `chat_sessions` is normally populated only on the object returned by
+`create()`; the client consumes its first id once when the first `chat.ask()` is
+made, avoiding a redundant `hPTbtc` lookup. `chat_settings` is populated by
+`notebooks.get()`; it stays `None` on `list()` because the listing RPC does not
+project the configuration (its null slot cannot distinguish default from a
+configured notebook). These richer Project fields are Python API data and do
+not silently widen the established CLI/MCP/REST notebook JSON contracts.
 
 #### `last_viewed_at` is not a modification time — and `GET_NOTEBOOK` mutates it
 
@@ -2210,19 +2436,24 @@ effect of doing something else:
 | `notebooks.rename()` | Re-reads after the mutation to return the updated `Notebook`. |
 | `notebooks.create()` (CLI/MCP/REST path) | One best-effort re-read to backfill the timestamps `CREATE_NOTEBOOK` leaves null; skipped when both are already populated. |
 | `chat.get_settings()` | Chat config lives in the notebook payload. |
-| `sources.add_file()` / `add_drive()` | An **unconditional** pre-create baseline of existing source ids, on every call — the idempotency probe needs it to tell a source it created from one that was already there. |
-| `sources.add_url()` | Only **on a retry**: its idempotency probe runs after a transport failure, not on the happy path. (`add_text()` is `NON_IDEMPOTENT_NO_RETRY` and runs no probe at all, so it never bumps recency.) |
-| REST `POST /v1/notebooks/{id}/sources/batch` preflight | One shared existence/auth check before the per-URL loop. |
+| `sources.add_file()` / `add_drive()` / `add_url()` | An **unconditional** pre-create baseline of existing source ids, on every call — the idempotency probe needs it to tell a source it created from one that was already there. (`add_text()` is `NON_IDEMPOTENT_NO_RETRY` and runs no probe at all, so it never bumps recency.) |
+| REST `POST /v1/notebooks/{id}/sources/batch` | One shared existence/auth check before one multi-URL `ADD_SOURCE`; omitted failures trigger one reconciliation `GET_NOTEBOOK`. It never blindly replays a transport-uncertain batch. |
 
-> **`sources.add_drive()` moved rows in
-> [#2113](https://github.com/teng-lin/notebooklm-py/issues/2113).** It used to
-> probe only on a retry; it now takes an **unconditional** pre-create baseline,
-> the same shape `add_file` already uses. A Drive `documentId` turns out not to
-> be unique within a notebook (the repo's own cassette holds two source ids
-> sharing one `documentId`), so matching on `documentId` alone could return a
-> pre-existing copy and report success for a create that never landed. The
-> baseline is the correct fix — this table records the recency cost it carries,
-> not an objection to it.
+> **`sources.add_drive()` and `sources.add_url()` moved rows**, in
+> [#2113](https://github.com/teng-lin/notebooklm-py/issues/2113) and
+> [#2204](https://github.com/teng-lin/notebooklm-py/issues/2204) respectively.
+> Both used to probe only on a retry; both now take an **unconditional**
+> pre-create baseline, the same shape `add_file` already uses. Neither probe key
+> is unique within a notebook — the repo's own cassette holds two source ids
+> sharing one Drive `documentId`, and a live probe added the same URL twice and
+> got two distinct source ids — so matching on the key alone could return a
+> pre-existing copy and report success for a create that never landed. (The
+> #2204 probe caught exactly that: a create that *did* land as `df618843-…`
+> returned the pre-existing `0d2c15a1-…`.) The baseline is the correct fix —
+> this table records the recency cost it carries, not an objection to it. The
+> cost is real for `add_url` specifically: `ADD_SOURCE` alone does **not** bump
+> `lastViewedTime` (live-verified), so the baseline read is a genuinely new
+> side effect on the highest-traffic add path.
 
 Paths that issue `LIST_NOTEBOOKS` — listed for completeness, since they cost an
 RPC but, per the probe above, **do not perturb recency**: `notebooks.create()`
@@ -2246,6 +2477,13 @@ class Source:
     status: SourceStatus                 # UNKNOWN when the wire status is missing or unmapped
     drive_document_id: Optional[str]     # Drive file id for Drive-backed sources; None otherwise
     drive_status: Optional[DriveSourceStatus]  # Drive-side health; None when the row makes no claim
+    download_url: Optional[str]          # Original uploaded file; None when unavailable
+    viewer_url: Optional[str]            # Drive viewer for the uploaded file; None when unavailable
+    content_mime: Optional[str]          # True MIME from the original-content blob descriptor
+    word_count: Optional[int]            # Inferred source word count
+    revision_id: Optional[str]           # Opaque source revision identifier
+    revision_timestamp: Optional[datetime]  # Timestamp paired with revision_id (tz-aware UTC)
+    last_modified_at: Optional[datetime] # Last source content update/refresh (tz-aware UTC)
 
     @property
     def kind(self) -> SourceType:
@@ -2270,6 +2508,18 @@ class Source:
 
 > **Removed in v0.5.0:** `Source.source_type` was replaced by `Source.kind`.
 > See [stability.md → Removed in v0.5.0](stability.md#removed-in-v050).
+
+Uploaded-file sources may carry `download_url`, `viewer_url`, and
+`content_mime`. These describe the retained original file, not the indexed text:
+`download_url` retrieves the original bytes, `viewer_url` opens the backend's
+Drive viewer, and `content_mime` is the MIME stored with that original-content
+blob. They are `None` for source kinds whose rows do not include that blob.
+
+`word_count`, `revision_id`, `revision_timestamp`, and `last_modified_at` expose
+metadata already returned by `GET_NOTEBOOK`. The slots and shapes are confirmed
+live, but the recovered mobile schema does not name them; `word_count`, the
+revision-handle interpretation, and the meaning of `last_modified_at` are
+therefore evidence-based names rather than recovered protobuf names.
 
 **Drive-backed sources: `is_ready` is not the whole story.**
 
@@ -2368,6 +2618,15 @@ class Artifact:
     url: Optional[str]
     _variant: int | None = None     # Internal variant for type-4 artifacts (1=flashcards, 2=quiz, 4=interactive mind map).
     generation_prompt: str | None = None  # Free-text prompt this artifact was generated from, if any (see get_prompt()).
+    media_urls: tuple[ArtifactMedia, ...] = ()
+    duration_seconds: float | None = None
+    slides: tuple[ArtifactSlide, ...] = ()
+    infographics: tuple[ArtifactInfographic, ...] = ()
+    report_kind: str | None = None
+    source_ids: tuple[str, ...] = ()
+    last_modified_at: datetime | None = None
+    etag: str | None = None
+    user_state: ArtifactUserState | None = None
 
     @property
     def kind(self) -> ArtifactType:
@@ -2407,7 +2666,21 @@ class Artifact:
         'blog_post', or 'report' for type-2 artifacts; None otherwise.
         Use this instead of parsing titles in caller code.
         """
+
+    @property
+    def report_format(self) -> ReportFormat | None:
+        """Typed format for a known report_kind; None for unknown labels."""
 ```
+
+`media_urls` contains all returned progressive, HLS, DASH, and download
+variants; the historical `url` remains the preferred single download URL.
+`slides` and `infographics` retain image dimensions, alt text, and full text.
+The `ArtifactMedia`, `ArtifactSlide`, `ArtifactInfographic`,
+`AudioArtifactUserState`, `FlashcardArtifactUserState`, and
+`UnknownArtifactUserState` records are frozen dataclasses exported from
+`notebooklm`. Unknown media type codes and user-state shapes preserve their raw
+identity instead of being discarded. `report_kind` likewise retains an unknown
+backend label verbatim while `report_format` maps labels the client recognizes.
 
 **Note on `_artifact_type` / `_variant`:** these are private (leading-underscore) fields with `repr=False` and are part of the dataclass for `from_api_response()` round-tripping. Always consume them via the public `.kind`, `.is_quiz`, `.is_flashcards`, and `.report_subtype` accessors.
 
@@ -2594,36 +2867,160 @@ class AskResult:
     is_follow_up: bool                 # Explicit ID => True; implicit => prior server turns exist
     references: list[ChatReference]    # Source references cited in the answer
     raw_response: str                  # First 1000 chars of raw API response
+    answer_document: StructuredDocument  # The answer's own parsed document (#2120)
+    turn_key: ConversationTurnKey | None  # Backend key for THIS turn (#2122)
+    next_steps: list[NextStepSuggestion]  # Backend-suggested follow-ups (#2119)
+
+@dataclass(frozen=True)
+class NextStepSuggestion:
+    question: str
+    type_code: int                     # raw MagicArtifactType code, preserved
+    kind: MagicArtifactType | None     # typed property; None for a new code
+
+@dataclass(frozen=True)
+class ConversationTurnKey:
+    """The backend's three-part identifier for one chat turn (#2122).
+
+    Decoded from ``AnswerResponse.conversationTurnKey``, which the streamed-chat
+    endpoint sends on every chunk. ``SubmitFeedbackRequest.conversationTurnKey``
+    is its one consumer in the recovered schema, so a caller wanting to build
+    that call no longer needs a separate round trip. ``None`` on an
+    ``AskResult`` whose stream carried no usable key.
+    """
+    session_id: str                  # wire slot 0 — required; NOT a conversation id
+    turn_id: str | None              # wire slot 1 — changes per turn
+    turn_code: int | None            # wire slot 2 — carried verbatim, not interpreted
 
 @dataclass
 class ChatReference:
     source_id: str                     # UUID of the source
     citation_number: int | None        # Citation number in answer (1, 2, etc.)
-    cited_text: str | None             # Actual text passage being cited
-    start_char: int | None             # Start position in source content
-    end_char: int | None               # End position in source content
-    chunk_id: str | None               # ID of the chunk / internal chunk ID (for debugging)
+    cited_text: str | None             # The cited source passage, verbatim
+    start_char: int | None             # Start offset in the SOURCE document
+    end_char: int | None               # End offset in the SOURCE document
+    chunk_id: str | None               # The citation's DocumentObject.objectId
     passage_id: str | None             # ID of the passage
-    answer_start_char: int | None      # Start character offset in the answer
-    answer_end_char: int | None        # End character offset in the answer
+    answer_start_char: int | None      # DEPRECATED alias for fragment_start_char
+    answer_end_char: int | None        # DEPRECATED alias for fragment_end_char
     score: float | None                # Citation score or relevance
+    fragment_start_char: int | None    # Server-declared source-side range, start
+    fragment_end_char: int | None      # ...and end
+    answer_anchor_start: int | None  # Range OF THE ANSWER this citation backs
+    answer_anchor_end: int | None    # ...and end
 ```
 
-**Important:** The `cited_text` field often contains only a snippet or section header, not the full quoted passage. The `start_char`/`end_char` positions reference NotebookLM's internal chunked index, which does not directly correspond to positions in the raw fulltext returned by `get_fulltext()`.
+`next_steps` decodes the `NextStepSuggestions` block the backend includes with
+live answers. A normal chat follow-up uses
+`MagicArtifactType.CONVERSATIONAL_TEXT_CHIP` (`9`). The raw `type_code` remains
+available even when a newer backend sends an enum value this client does not
+yet know; in that case `kind` is `None` rather than dropping the suggestion.
+MCP and REST ask responses serialize each item as `{question, type_code}`.
 
-Use `SourceFulltext.find_citation_context()` to locate citations in the fulltext:
+> **`session_id` is not a conversation id.** It is the same wire slot issue
+> #659 established is a *per-stream* identifier (`khqZz` returns 0 turns for
+> it). The evidence is mixed — a live two-turn probe saw the `hPTbtc`-resolved
+> conversation id there, while this repo's recorded cassettes show it differing
+> from the recorded `hPTbtc` id in 4/4 chat captures — so it is exposed under
+> its proto name with nothing claimed for it. Use `AskResult.conversation_id`
+> for follow-ups. `ask()` normally resolves that through `hPTbtc`; immediately
+> after `notebooks.create()`, it binds the first ask to the create response's
+> server-issued `ChatSession` instead of fetching the same id again.
+>
+> `turn_id` deliberately does **not** take its proto name (`conversationId`),
+> which contradicts every observation: it changes on each turn of one
+> conversation. The full wire↔attribute mapping is tabulated in
+> [rpc-reference.md](rpc-reference.md).
+
+#### Three coordinate spaces, and which field lives in which
+
+Citations carry offsets into three different strings. Mixing them up was
+[#2120](https://github.com/teng-lin/notebooklm-py/issues/2120); the field names
+now say which is which.
+
+| Field | Resolve against | Notes |
+|-------|-----------------|-------|
+| `start_char` / `end_char` | `SourceFulltext.document.slice(...)` | The cited fragment's span in the **source** document, derived from its blocks. UTF-16 code units, like every offset here. |
+| `fragment_start_char` / `fragment_end_char` | same | The same span as the **server** declares it, rather than derived. The two have agreed on every capture so far; a divergence means the server and this client no longer read the fragment the same way. |
+| `answer_anchor_start` / `answer_anchor_end` | `AskResult.answer_document.slice(...)` | Where **in the answer** this citation applies, from the answer's annotation map. |
+
+None of them index `AskResult.answer` or `SourceFulltext.content`. `answer`
+carries markdown emphasis and the inline `[N]` markers the document does not;
+`content` is a legacy newline-joined rendering whose separators the backend
+never counted.
 
 ```python
-fulltext = await client.sources.get_fulltext(notebook_id, ref.source_id)
-matches = fulltext.find_citation_context(ref.cited_text)  # Returns list[(context, position)]
-
-if matches:
-    context, pos = matches[0]  # First match
-    if len(matches) > 1:
-        print(f"Warning: {len(matches)} matches found, using first")
-else:
-    context = None  # Not found - may occur if source was modified
+result = await client.chat.ask(notebook_id, question)
+for ref in result.references:
+    # Which part of the answer does this citation back? (None when the answer
+    # carried no anchor for it — slice() absorbs that and returns "".)
+    supported = result.answer_document.slice(
+        ref.answer_anchor_start, ref.answer_anchor_end
+    )
+    # ...and what does it quote from the source?
+    fulltext = await client.sources.get_fulltext(notebook_id, ref.source_id)
+    quoted = fulltext.document.slice(ref.start_char, ref.end_char)
+    # `quoted` and `ref.cited_text` normally agree; see the note below on when
+    # they don't.
 ```
+
+An `answer_anchor_*` pair is frequently zero-width — the backend anchors a
+citation at its `[N]` marker's insertion point rather than over a span — which
+is why it is named "anchor" rather than "range". A reference the answer did not
+annotate keeps `None` on both.
+
+> **Deprecated:** `answer_start_char` / `answer_end_char` were never answer-text
+> positions — they are the fragment's source-side range, and on one live capture
+> reported `[1130, 1695]` for that answer's *third* citation while the answer
+> itself was 536 characters. They remain aliases of `fragment_start_char` /
+> `fragment_end_char` through v1.0 and keep returning exactly what they always
+> did. Despite the shared prefix they are **not** the predecessor of
+> `answer_anchor_*`, which is a different coordinate space. See
+> [deprecations.md](deprecations.md).
+
+`cited_text` is what the fragment says, verbatim — every block's text
+concatenated. Before #2120 it stopped at the fragment's first block: 37
+characters of an available 556 in that same capture (a different citation from
+the `[1130, 1695]` one above). Its length equals `end_char - start_char` for an
+ordinary prose fragment, but comes out *short* when the fragment spans
+positions this client does not render as text, and can run a few characters
+*long* when a span's text length disagrees with its declared range. Use
+`document.slice(ref.start_char, ref.end_char)` when you need a string whose
+length is guaranteed — it pads and clips to the declared range; `cited_text` is
+the reading that stays readable.
+
+`SourceFulltext.find_citation_context()` remains for fuzzy lookup against the
+flat `content`, but prefer `document.slice()`: it is exact, and it needs no
+search.
+
+`resolve_chat_reference_passage()` now does that for you
+([#2211](https://github.com/teng-lin/notebooklm-py/issues/2211)). It reads the
+passage out of the citation's own range and returns it in the readable
+rendering, falling back to the `content` search only for a reference with no
+usable range or a source whose document did not decode:
+
+```python
+from notebooklm import resolve_chat_reference_passage
+
+passage = await resolve_chat_reference_passage(client, notebook_id, ref)
+```
+
+Three checks stand the range down, all of them falling back to the search
+rather than returning a passage that only looks right:
+
+- it must **fit** the document (`end <= document.extent`), which catches a
+  source re-indexed shorter;
+- it must **render something** on its own, before any context window is added,
+  so a citation covering only an image is not handed its neighbours' prose;
+- when the reference also carries `cited_text`, the two must **agree** — a
+  bounded prefix of `cited_text` has to appear in `document.slice(start, end)`.
+  This is the case `extent` cannot see: a source re-indexed *longer* leaves the
+  stale range fitting and resolving, to the wrong passage. `cited_text` is used
+  as a cross-check here, never as a locator.
+
+A reference carrying neither a range nor `cited_text` — a citation whose
+fragment decoded no blocks at all — still raises `ChatResponseParseError`
+without issuing a request. A fragment holding only an image *does* carry a
+range, so resolving it takes the fetch and then raises.
 
 **Tip:** Cache `fulltext` when processing multiple citations from the same source to avoid repeated API calls.
 
@@ -2638,7 +3035,74 @@ class ShareStatus:
     view_level: ShareViewLevel         # FULL_NOTEBOOK or CHAT_ONLY
     shared_users: list[SharedUser]     # List of users with access
     share_url: str | None              # Public URL if is_public=True
+    max_individuals_share_limit: int | None   # Collaborator cap; None = no claim
+    is_public_sharing_allowed: bool | None    # Policy gate; None = no claim
 ```
+
+**Collaborator cap and public-sharing policy.**
+
+`GET_SHARE_STATUS` reports two fields this client read for a long time as
+nothing at all (the parser docstring described the cap as the bare literal
+`1000`):
+
+* `max_individuals_share_limit` — the per-notebook collaborator cap the backend
+  enforces. Without it a bulk-share caller discovers the ceiling only as a
+  failed RPC.
+* `is_public_sharing_allowed` — the tenant/policy gate on making a notebook
+  public.
+
+Both use `None` for "the response made no claim", but they are not the same
+shape. `max_individuals_share_limit` is `int | None` — a cap, or no cap stated.
+`is_public_sharing_allowed` is the genuinely **tri-state** one, `bool | None`,
+where the third state is what makes it easy to misread:
+
+```python
+status = await client.sharing.get_status(nb_id)
+
+if status.is_public_sharing_denied:
+    print("This tenant forbids public sharing.")
+elif status.is_public_sharing_allowed is None:
+    print("The backend did not say; attempting anyway.")
+
+if status.max_individuals_share_limit is not None:
+    print(f"Backend-enforced collaborator cap: {status.max_individuals_share_limit}")
+```
+
+`None` means *the response made no claim* — it is deliberately not collapsed
+into `False` / `0`, because "the backend did not say" and "the backend said no"
+lead a caller to opposite decisions.
+
+Prefer the `is_public_sharing_denied` property over hand-writing the
+comparison. The idiomatic spelling `not status.is_public_sharing_allowed` is
+**wrong**: it is also `True` for the unknown case, so it reports a denial the
+backend never made. `is_public_sharing_denied` is `True` only for an explicit
+wire `False`; a `False` from it means "no denial was reported", not "public
+sharing is confirmed available". The MCP and REST views ship the same verdict
+as an `is_public_sharing_denied` key.
+
+> **How the cap is counted is NOT established.** `shared_users` includes the
+> **owner** (live-confirmed: an owner row is present on every notebook
+> observed), and whether the owner counts against `maxIndividualsShareLimit` was
+> never tested — no account was taken anywhere near 1000 collaborators. So
+> `max_individuals_share_limit - len(shared_users)` is plausible but unverified,
+> and plausibly off by one. Treat the cap as the backend's stated ceiling, not
+> as an operand in arithmetic this project has confirmed.
+
+> **`set_public` deliberately does not consult the gate.** Making it pre-check
+> `is_public_sharing_allowed` would add an RPC round-trip to every call and
+> change a public method's failure mode on the strength of a consequence that
+> has **not** been observed: the audit records the silent-no-op as *plausible*,
+> and no tenant with public sharing disabled was available to exercise it. The
+> field is surfaced so a caller can make that decision with the evidence in
+> hand; wiring it into the mutation path is a separate change that needs a
+> tenant where the branch can actually be tested.
+>
+> **Caveat, stated plainly:** every notebook sampled (10/10, 2026-08) returned
+> `1000` and `True`. The `False` branch of `is_public_sharing_allowed` has never
+> been observed on the wire — only its decoding is pinned by tests.
+
+The MCP and REST share views and `notebooklm share status --json` carry both
+fields under the same names.
 
 ### SharedUser
 
@@ -2700,13 +3164,18 @@ class UserSettings:
 class SourceFulltext:
     source_id: str                     # UUID of the source
     title: str                         # Source title
-    content: str                       # Full indexed text content
+    content: str                       # Flat text (legacy rendering; see below)
     url: str | None                    # Original URL (if applicable)
-    char_count: int                    # Character count
+    char_count: int                    # len(content)
+    document: StructuredDocument       # Parsed document tree (#2128)
 
     @property
     def kind(self) -> SourceType:
         """Get source type as SourceType enum."""
+
+    @property
+    def rendered_content(self) -> str:
+        """Readable rendering derived from `document`: one line per block."""
 
     def find_citation_context(
         self,
@@ -2719,6 +3188,108 @@ class SourceFulltext:
 > **Removed in v0.5.0:** `SourceFulltext.source_type` was replaced by
 > `SourceFulltext.kind`. See
 > [stability.md → Removed in v0.5.0](stability.md#removed-in-v050).
+
+#### `content` vs `document` vs `rendered_content`
+
+The backend returns a source's text as a `TailwindDoc` tree — headings, list
+structure, per-run styling, and a character offset on every node. `content` is
+the flat rendering of that tree this client has always produced: every text run
+joined with `"\n"` in traversal order. It is unchanged and will stay unchanged.
+It is also **not** the backend's coordinate space, because those joins insert
+separators the wire's offsets never accounted for, which is why a citation's
+`start_char` could never be used against it
+([#2128](https://github.com/teng-lin/notebooklm-py/issues/2128)).
+
+`document` is the same response parsed instead of flattened. It costs no extra
+request, and it is populated for both `output_format` values — that flag picks
+which flat rendering fills `content`, not what the payload contains:
+
+```python
+fulltext = await client.sources.get_fulltext(notebook_id, source_id)
+ref = (await client.chat.ask(notebook_id, question)).references[0]
+
+for block in fulltext.document.blocks:
+    if block.heading_level:
+        print("#" * block.heading_level, block.text)
+    elif block.is_list_item:
+        print(f"{'  ' * block.list_info.nesting_level}{block.list_info.glyph} {block.text}")
+    else:
+        print(block.text)
+
+# The coordinate space citations index:
+fulltext.document.slice(ref.start_char, ref.end_char)
+```
+
+`rendered_content` is the third reading, and the one meant for a human
+([#2211](https://github.com/teng-lin/notebooklm-py/issues/2211)). `content`
+joins every text *run* with `"\n"`, and a run is a sub-paragraph fragment — so
+a paragraph the backend split into three runs becomes three lines. On the
+captured source in `tests/unit/fixtures/source_fulltext_tailwind_doc.json`
+that turns 13 blocks into 17 lines. Since the tree is parsed,
+`rendered_content` renders from it instead: runs joined *within* a block,
+blocks separated, blocks with nothing to read (an image, a rule) omitted. It
+costs no extra request, `content` does not move, and like `content` it is
+deliberately **not** offset-addressable — its separators are its own. It is
+also marker-free: list glyphs and heading levels stay on `blocks` rather than
+being rendered, so this is the flat rendering `content` should have been, not
+a markdown one. A **table** is the one block that is not one line: it renders
+one line per row with its cells tab-separated, read from the cell offsets the
+parse carries on `DocumentBlock.table_rows`
+([#2230](https://github.com/teng-lin/notebooklm-py/issues/2230)). Those are
+offsets only — `document.text`, `DocumentBlock.text` and `cited_text` are
+byte-for-byte what they were, and the tab lives in the rendering alone.
+
+With `output_format="markdown"` the two are not the same material: `content`
+is then built from the response's HTML rendition while `document` — and so
+`rendered_content` — is still parsed from its text blocks.
+
+```python
+fulltext.content            # 17 lines: "…light energy into\n \nchemical energy."
+fulltext.rendered_content   # 13 lines: "…light energy into chemical energy."
+fulltext.document.text      # 532 units, no separators at all — the offset space
+```
+
+`document` and `rendered_content` are Python-API surfaces: the CLI `--json`,
+MCP and REST fulltext payloads stay pinned to their existing key sets. Those
+payloads do carry `char_count`, which counts Python characters of `content` —
+and `source read --offset` keeps windowing `content` in those same units, not
+in the document's.
+
+`StructuredDocument` exposes `blocks` (`DocumentBlock`: `start_index`,
+`end_index`, `spans`, `style`, `list_info`, `kind`, `table_rows` — a tuple of
+rows of `TableCell` ranges, non-empty only for a `BlockKind.TABLE`),
+`annotations`
+(`DocumentAnnotation`: `object_id`, `start_index`, `end_index`), `text`,
+`extent`, `slice()`, `render()` and `annotations_for()`. Each `TextSpan`
+carries its own range plus `bold` / `italic` / `underline` / `url`.
+`render(start, end)` is `rendered_content` over one range — the readable
+counterpart of `slice(start, end)`, though it takes both bounds or neither and
+raises on a half-specified range, where `slice` absorbs a `None` bound and
+returns `""`. `extent` is the document's total width in UTF-16 units, i.e. the
+upper bound of the coordinate space: a range is *in range* when
+`0 <= start < end <= extent`. That is necessary and not sufficient — a range
+inside it can still cover only positions that decoded no text.
+
+`text` is laid out at the backend's own offsets, so `slice(n, m)` is exactly
+what the backend meant by `[n, m)`. Positions the document occupies but whose
+text this client cannot render carry `"\ufffc"` (OBJECT REPLACEMENT CHARACTER,
+the same placeholder Google's own document APIs use) rather than collapsing —
+collapsing them is what would pull every later character out of alignment. Use
+`block.text` when you want only what actually decoded.
+
+> **Use `slice()`, not `text[n:m]`.** Every offset on the wire is a **UTF-16
+> code unit** — the JavaScript convention — while Python indexes code points.
+> The two agree until the document's first astral character and then differ by
+> one position per such character, so an answer containing a single emoji makes
+> plain indexing return neighbouring text from there on. `slice()` does the
+> translation; `notebooklm.types.utf16_len()` is exported for callers doing
+> their own offset arithmetic.
+
+Tables *are* decoded — their cell text is flattened into the table block's
+spans, so an infobox does not become filler. `BlockKind` tells you what any
+remaining filler is: `IMAGE` and `HORIZONTAL_RULE` genuinely carry no text,
+while `CODE_BLOCK` and `THOUGHT` carry text on the wire that this client does
+not decode yet.
 
 **Type Identification:**
 
@@ -2791,8 +3362,13 @@ class ReportFormat(str, Enum):
     BRIEFING_DOC = "briefing_doc"
     STUDY_GUIDE = "study_guide"
     BLOG_POST = "blog_post"
+    CONCEPT_EXPLANATION = "concept_explanation"
     CUSTOM = "custom"
 ```
+
+`CONCEPT_EXPLANATION` is currently read-only: it can be returned by artifact
+listings, but generation rejects it until NotebookLM's creation directive is
+known.
 
 ### Infographics
 
@@ -2888,6 +3464,8 @@ class ArtifactType(str, Enum):
     INFOGRAPHIC = "infographic"
     SLIDE_DECK = "slide_deck"
     DATA_TABLE = "data_table"
+    FANTASY_MAP = "fantasy_map"
+    FILE = "file"
     UNKNOWN = "unknown"
 
 class SourceStatus(Enum):
@@ -2909,14 +3487,36 @@ class DriveSourceStatus(Enum):
 # The backend's DRIVE_SOURCE_STATUS_UNSPECIFIED (0) is deliberately not modelled:
 # it means "no claim", which is what `drive_status is None` already means, so an
 # explicit 0 is normalized to None rather than giving one state two spellings.
+
+
+class DiscoveryMode(Enum):
+    """How a research run searched for sources — `ResearchTask.discovery_mode`."""
+
+    UNKNOWN = -1             # Client sentinel: slot populated with a code we cannot map
+    DEFAULT_LLM_SEARCH = 1   # Sent + observed for mode="fast"
+    RAW_SEARCH = 2           # Never sent by this client
+    CURIOUS_SEARCH = 3       # Never sent by this client
+    CURIOUS_RAW_SEARCH = 4   # Never sent by this client
+    DEEP_RESEARCH = 5        # Sent + observed for mode="deep"
+    LITE_LLM_SEARCH = 6      # Never sent by this client
+
+
+# Same UNSPECIFIED(0) treatment as DriveSourceStatus above. Only 1 and 5 have been
+# observed — they are the two this client sends, and the poll echoes them back, so
+# the mode a run is executing under is confirmable rather than merely remembered.
+# `notebooklm.types.discovery_mode_to_str` maps a member to its lower-snake label.
 ```
 
 **Usage Example:**
 ```python
-from notebooklm import SourceType, ArtifactType
+from notebooklm import ArtifactType, SourceStatus, SourceType
 
-# List sources by type using .kind property
-sources = await client.sources.list(nb_id)
+# Request the source families and states you need directly.
+sources = await client.sources.list(
+    nb_id,
+    statuses={SourceStatus.READY},
+    types={SourceType.PDF, SourceType.MEDIA, SourceType.IMAGE, SourceType.UNKNOWN},
+)
 for src in sources:
     if src.kind == SourceType.PDF:
         print(f"PDF: {src.title}")
@@ -3022,6 +3622,8 @@ The following public APIs are available under the top-level `notebooklm` namespa
 #### `notebooklm.utils.resolve_chat_reference_passage`
 
 Locates the surrounding paragraph/passage of source text for a specific `ChatReference` citation. Since chat streaming returns only the matching citation fragment, this helper performs a single round-trip to pull the full source text and extract the surrounding context.
+
+It reads the citation's own `start_char` / `end_char` range out of the source document and returns that window in the readable rendering, falling back to the `content` prefix search only when the range is unusable — absent, zero-width, past `document.extent`, or against a source whose document did not decode. A reference with neither a range nor `cited_text` raises `ChatResponseParseError` without issuing a request. See [`content` vs `document` vs `rendered_content`](#content-vs-document-vs-rendered_content).
 
 ```python
 async def resolve_chat_reference_passage(

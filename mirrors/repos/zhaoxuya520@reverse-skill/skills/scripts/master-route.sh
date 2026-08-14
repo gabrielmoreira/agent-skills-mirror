@@ -44,7 +44,9 @@ if [[ ! -f "$CONFIG_PATH" ]]; then
   exit 2
 fi
 
-if [[ -z "$PROJECT_ROOT" ]]; then PROJECT_ROOT="$PACKAGE_ROOT"; fi
+# Match the PowerShell entrypoint: by default, route artifacts belong to the
+# caller's current project rather than the installed reverse-skill package.
+if [[ -z "$PROJECT_ROOT" ]]; then PROJECT_ROOT="$(pwd -P)"; fi
 if [[ -z "$OUT_DIR" ]]; then
   OUT_DIR="$PROJECT_ROOT/work/master-route-$(date +%Y%m%d-%H%M%S)"
 fi

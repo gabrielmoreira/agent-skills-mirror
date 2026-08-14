@@ -1,90 +1,137 @@
 ---
 name: web-scraping
-description: "Web scraping with Scrapling: MCP tool wrappers for quick fetching, plus direct Python API for advanced scraping with selectors, sessions, and spiders"
+description: "Web scraping: scrape_page / scrape_pages MCP tools for fetching pages as markdown, HTML, or text (fast HTTP, browser rendering, anti-bot stealth), plus the direct Scrapling Python API for selectors, sessions, and spiders"
 license: MIT
 ---
 
-# Web Scraping with Scrapling
+# Web Scraping
 
 ## Overview
 
 Two ways to scrape in the sandbox:
 
-1. **MCP tool wrappers** (recommended for simple fetches) — call `get()`, `fetch()`, `stealthy_fetch()` directly. Synchronous, returns dicts.
-2. **Direct Python API** (for advanced use) — import Scrapling classes for selectors, sessions, spiders. Async, returns Page objects.
-
-## MCP Tool Wrappers (via Python)
-
-Auto-registered as top-level functions in the sandbox. No imports needed. **Synchronous** — no `await`.
+1. **MCP tools** (`scrape_page`, `scrape_pages`) — recommended for straight "give me this page's content". Synchronous, return dicts.
+2. **Direct Scrapling Python API** — for CSS/XPath selectors, sessions, logins, and multi-page spiders. Async, returns Page objects with `.css()` / `.xpath()`.
 
 Quick fetches can run inline via `ExecuteCode`. For spiders, multi-URL crawls, or anything you'll iterate on, write the scraper to `work/<task_name>/scraper.py` and run it via `Bash` — edit-and-rerun beats resubmitting code.
 
-### Basic Usage
+## MCP Tools
+
+Import from `tools.scrape`. **Synchronous** — no `await`.
 
 ```python
-# Fast HTTP fetch → markdown
-result = get(url="https://example.com", extraction_type="markdown")
-print(result["status"])      # 200
-print(result["url"])         # "https://example.com"
-print(result["content"][0])  # markdown string (first element of list)
-
-# Browser fetch for JS-rendered pages
-result = fetch(url="https://spa-site.com", extraction_type="markdown", network_idle=True)
-
-# Anti-bot bypass (Cloudflare, etc.)
-result = stealthy_fetch(url="https://protected-site.com", extraction_type="markdown", solve_cloudflare=True)
+from tools.scrape import scrape_page, scrape_pages
 ```
 
-### Response Format
+### Signatures
 
-All MCP tools return a **dict** (not a Page object):
+```python
+scrape_page(url: str, mode: str = "fast", extraction: str = "markdown",
+            timeout: float = 30.0, solve_cloudflare: bool = False) -> dict
+
+scrape_pages(urls: list[str], mode: str = "fast", extraction: str = "markdown",
+             timeout: float = 30.0, solve_cloudflare: bool = False) -> dict
+```
+
+### Parameters
+
+| Param | Default | Notes |
+|---|---|---|
+| `mode` | `"fast"` | `"fast"` plain HTTP · `"browser"` JS rendering · `"stealth"` bot-protected sites |
+| `extraction` | `"markdown"` | `"markdown"` (article text, cleaned) · `"html"` (raw) · `"text"` (plain) |
+| `timeout` | `30.0` | Per-fetch **seconds**, 1–60 — seconds in every mode, not ms |
+| `solve_cloudflare` | `False` | Only meaningful with `mode="stealth"` |
+| `urls` | — | `scrape_pages` only; **max 10** per call |
+
+Escalate modes only as needed: start `fast`, go to `browser` when the page needs JavaScript, `stealth` when you're getting blocked, and add `solve_cloudflare=True` only if `stealth` still returns a challenge page.
+
+### Return shape
+
+`scrape_page` returns a flat dict:
 
 ```python
 {
-    "status": 200,
     "url": "https://example.com",
-    "content": ["<markdown or html text>", ""]  # list, use [0] for content
+    "status": 200,
+    "title": "Example Domain",
+    "content": "# Example Domain\n\nThis domain is for use in...",  # str
+    "extraction": "markdown",
+    "mode": "fast",
 }
 ```
 
-- No `.css()`, `.xpath()`, `.find_all()` methods — use BeautifulSoup to parse if needed
-- No `.body`, `.headers`, `.cookies` — only `status`, `url`, `content`
-- `content` is always a **list**; the actual text is `content[0]`
+- **`content` is a plain string**, not a list — use it directly, never `content[0]` (that yields a single character).
+- `content` is truncated to **400,000 chars**.
+- No `.css()` / `.xpath()` / `.body` / `.headers` / `.cookies` — for selectors use the direct Python API below, or parse `extraction="html"` with BeautifulSoup.
 
-### CSS Selector with MCP Tools
-
-The `css_selector` param returns **raw HTML** of matched elements, not parsed text:
+`scrape_pages` wraps them:
 
 ```python
-# Returns HTML of matched elements — must parse manually
-result = get(url="https://example.com", css_selector="h1", extraction_type="HTML")
-html_fragment = result["content"][0]
+{
+    "results": [ ... ],  # one entry per input URL, in input order
+    "count": 3,
+}
+```
 
-# Parse with BeautifulSoup if you need text/attributes
+### Errors
+
+Errors are returned, never raised. **Always check for `"error"` before reading `content`.**
+
+```python
+res = scrape_page(url="https://example.com")
+if "error" in res:
+    print(res["error"], res["detail"])
+else:
+    print(res["content"])
+```
+
+Per-URL errors — appear as `{"error", "detail", "url"}` entries inside `scrape_pages["results"]`, or as the whole return of `scrape_page`:
+
+| Code | Meaning |
+|---|---|
+| `invalid_url` | Not an `http://` / `https://` URL |
+| `fetch_failed` | Network, DNS, timeout, or browser failure |
+| `extract_failed` | Page fetched but the extractor failed on the markup; the entry still carries `status` |
+| `scrape_failed` | Unexpected internal failure for that one URL |
+
+Whole-call errors — the entire return is `{"error", "detail"}`, no `results`:
+
+| Code | Meaning |
+|---|---|
+| `invalid_mode` / `invalid_extraction` / `invalid_timeout` | Bad argument value |
+| `invalid_urls` | `scrape_pages` got an empty list or more than 10 URLs |
+
+**One bad URL never sinks a batch.** `scrape_pages` always returns one entry per input URL, in input order — failures come back as error entries alongside the successes.
+
+### Examples
+
+```python
+from tools.scrape import scrape_page, scrape_pages
+
+# Single page → markdown
+res = scrape_page(url="https://example.com")
+if "error" not in res:
+    print(res["title"], res["status"], len(res["content"]))
+
+# JS-rendered page
+res = scrape_page(url="https://spa-site.com", mode="browser", timeout=60)
+
+# Bot-protected page
+res = scrape_page(url="https://protected-site.com", mode="stealth", solve_cloudflare=True)
+
+# Batch — split successes from failures
+batch = scrape_pages(urls=[...], mode="fast")   # <= 10 URLs
+pages = [r for r in batch["results"] if "error" not in r]
+failed = [(r["url"], r["error"]) for r in batch["results"] if "error" in r]
+
+# Raw HTML when you need to parse structure yourself
+res = scrape_page(url="https://example.com", extraction="html")
 from bs4 import BeautifulSoup
-soup = BeautifulSoup(html_fragment, "html.parser")
+soup = BeautifulSoup(res["content"], "html.parser")
 titles = [h1.get_text() for h1 in soup.find_all("h1")]
 ```
 
-### Available Tools
-
-| Function | Use case | Key params |
-|----------|----------|------------|
-| `get(url, ...)` | Static pages, APIs | `impersonate`, `stealthy_headers`, `timeout` (seconds) |
-| `fetch(url, ...)` | JS-rendered SPAs | `headless`, `network_idle`, `wait_selector`, `disable_resources`, `timeout` (ms) |
-| `stealthy_fetch(url, ...)` | Anti-bot sites | All `fetch` params + `solve_cloudflare`, `hide_canvas` |
-| `bulk_get(urls, ...)` | Parallel HTTP | `urls: list[str]`, same params as `get` |
-| `bulk_fetch(urls, ...)` | Parallel browser | `urls: list[str]`, same params as `fetch` |
-| `bulk_stealthy_fetch(urls, ...)` | Parallel stealth | `urls: list[str]`, same params as `stealthy_fetch` |
-
-### Common Parameters
-
-| Param | Default | Notes |
-|-------|---------|-------|
-| `extraction_type` | `"markdown"` | `"markdown"`, `"HTML"`, or `"text"` |
-| `css_selector` | `None` | Returns raw HTML of matched elements |
-| `main_content_only` | `True` | Extract `<body>` only |
-| `proxy` | `None` | Proxy URL |
+Batches run concurrently — 8 at a time in `fast` mode, 2 at a time in `browser` / `stealth` (browser sessions are memory-heavy). More than 10 URLs means more than one call.
 
 ---
 
@@ -123,7 +170,7 @@ page = await DynamicFetcher.async_fetch(
     headless=True,
     network_idle=True,
     disable_resources=True,
-    timeout=30000,
+    timeout=30000,          # milliseconds here, unlike the MCP tools
     wait_selector=".data-table",
 )
 rows = page.css("table.data-table tr")
@@ -182,21 +229,29 @@ result.items.to_json("results/prices.json")
 
 ## Converting HTML to Markdown
 
-```python
-import html2text
+Only needed when you fetched HTML yourself — `scrape_page(extraction="markdown")` already does this.
 
-converter = html2text.HTML2Text()
-converter.body_width = 0  # No line wrapping
-markdown = converter.handle(html_string)
+```python
+import html_to_markdown
+
+markdown = html_to_markdown.convert(
+    html_string, html_to_markdown.ConversionOptions(extract_metadata=False)
+).content
+
+# Article-only extraction (strips nav/ads/boilerplate)
+import trafilatura
+
+article = trafilatura.extract(html_string, output_format="markdown", favor_recall=True)
 ```
 
 ## When to Use Which
 
 | Need | Use |
 |------|-----|
-| Quick page content as markdown | MCP `get()` or `fetch()` |
+| Quick page content as markdown | `scrape_page()` |
+| Several known URLs at once | `scrape_pages()` (≤10 per call) |
 | Extract specific elements (CSS/XPath) | Direct Python API with selectors |
 | Login + scrape authenticated pages | Direct Python API with sessions |
 | Crawl many pages with pagination | Direct Python API with Spider |
-| Bypass Cloudflare | MCP `stealthy_fetch()` or direct `StealthyFetcher` |
+| Bypass Cloudflare | `scrape_page(mode="stealth", solve_cloudflare=True)` or direct `StealthyFetcher` |
 | Save results to file | Direct Python API (spider `.to_json()`) |

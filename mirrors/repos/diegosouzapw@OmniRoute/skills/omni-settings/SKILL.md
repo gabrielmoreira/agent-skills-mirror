@@ -386,3 +386,30 @@ curl -X POST https://localhost:20128/api/settings/purge-usage-history \
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.
+
+<!-- skill:custom-start -->
+<!-- Thinking budget behavior (preserved curated content — #10169) -->
+
+### GET /api/settings/thinking-budget — behavior
+
+Returns proxy-level thinking/reasoning **request rewrite** settings:
+
+| Field | Meaning |
+|-------|---------|
+| `mode` | `passthrough` (leave client reasoning alone — **required for Codex visible thinking**), `auto` (**strips** all client thinking fields), `custom`, `adaptive` |
+| `customBudget` | Fixed budget when `mode=custom` |
+| `effortLevel` | Base effort when `mode=adaptive` |
+
+**Not** compression and **not** "decrypt encrypted reasoning". Full guide: `docs/guides/THINKING_BUDGET.md`.
+
+Example — keep client-controlled reasoning (Codex/Desktop):
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/thinking-budget \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"passthrough","customBudget":10240,"effortLevel":"medium"}'
+```
+
+Warning: `mode=auto` deletes `reasoning` / `reasoning_effort` / Claude `thinking` from the outbound body before upstream. That can empty thinking panels even when the client requested Ultra + summary.
+<!-- skill:custom-end -->

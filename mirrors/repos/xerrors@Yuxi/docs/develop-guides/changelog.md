@@ -10,6 +10,8 @@
 1. 升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
 :::
 
+- 完善 Agent Token 用量统计：state 同时保留近似上下文与主 Agent 模型返回的 Provider `usage_metadata`，实际用量拆分为最近调用、当前 Run 和线程累计；前端只读取 state，终态 chunk 不传递用量，worker 在 Run 终态时将父线程中 Run ID 匹配的 state 快照写入 AgentRun。支持 OpenAI priority/flex 缓存明细；L2 摘要内部调用暂未计入完整账单口径。
+- 修复公开图片上传的存储型 XSS 风险：头像与用户图片不再信任客户端 MIME 或文件名后缀，服务端校验真实图片内容且仅接受 PNG、JPEG、WebP、GIF，对象名使用识别出的固定安全后缀，拒绝伪装成图片的 SVG。
 
 - 优化知识库文档列表性能：根目录虚拟目录分组改用部分索引（`idx_kf_kb_parent_segment` 按路径首段聚合），平铺文件筛选与排序用 `idx_kf_kb_parent_flat` 支撑，避免大知识库全表扫描与 46MB 磁盘排序溢出；文件统计聚合结果增加 10 秒 Redis 短缓存，列表、统计、子目录计数与创建人查询并行执行，前端自动刷新轮询间隔同步调整为 10 秒。36 万文件知识库列表接口耗时由约 1.3s 降至约 300ms。
 - 修复 MCP 管理接口可通过 stdio 启动任意本地进程的问题：用户配置仅允许 SSE/Streamable HTTP，运行时拒绝加载历史用户 stdio 记录，系统内置 stdio 的连接参数改为仅由代码维护；前端移除用户 stdio 配置入口，文档补充内置 stdio 的代码添加与验证方式。
@@ -51,6 +53,9 @@
 - 收敛 Ruff CI 行为：Pull Request 与 push 到 main 均只检查、不修改仓库内容，发现问题直接标红并提示本地运行 `make format`；工作流仅保留 `contents: read` 权限，不再自动提交或创建修复 PR。
 - 优化知识库详情页自动轮询：轮询从固定 1s `setInterval` 改为链式调度，等上一轮知识库信息与文件列表请求全部返回后再排下一轮，慢接口下不再出现请求堆积重叠；全库 `processing_count` 持续不变时按退避因子拉长间隔（上限 30s），连续多轮无进展即自动停止轮询；离开详情页时 `onUnmounted` 主动清理定时器。
 - 统一工具调用展示名称映射：知识库工具显示名改为后端 `display_name` 定义，前端拉取完整工具元数据；工具卡片与折叠摘要按「工具列表 display name → middleware 兜底映射 → 工具 id」统一展示。
+- 侧边栏对话列表新增 Thread 运行状态：以 `AgentRun` 为事实来源，后端把每个线程最新顶层 chat/resume Run 聚合成 `thread_status`（进行中显示 loading、已终态未查看显示 ready 点、已查看或无 Run 为 done），列表接口一次窗口查询完成聚合、不逐项请求；`Conversation` 新增 `last_viewed_run_id` 持久化查看边界，`POST /api/chat/thread/{id}/viewed` 幂等标记已读。前端打开线程、当前线程收到终态/中断事件时自动标记已读，发送或恢复 Run 时置为 loading，侧边栏可见时低频轮询刷新后台线程状态；历史线程上线时按各自最新顶层 Run 一次性回填为已读，新建线程写入未读哨兵避免回填误清新产生的未读点。
+- 修复 Thread 运行状态两个正确性问题：终态/中断事件仅在事件线程等于当前打开线程时才自动标记已读，后台线程完成保留 ready 点直至用户打开；无 chat/resume Run 的历史会话（agent_call / agent_evaluation 调用、从未对话过的线程）在回填时写入未读哨兵，使回填探测条件收敛为 false，避免每次启动都重复对 `agent_runs` 做全表聚合。
+- 优化侧边栏对话列表操作渐隐：`.actions-mask` 三态（默认/悬浮/激活）渐隐统一为线性延伸至操作按钮左边缘（距右缘 28px）再转为实色，修复悬浮时渐隐铺满整条遮罩导致按钮下方文字残留鬼影、以及三处渐隐宽度不一致的问题。
 
 
 ## v0.7.1 (2026-07-17)

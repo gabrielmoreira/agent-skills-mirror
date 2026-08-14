@@ -155,7 +155,7 @@ Supported source types: URLs, YouTube videos, files (PDF, text, Markdown, Word, 
 
 | Command | Arguments | Options | Example |
 |---------|-----------|---------|---------|
-| `list` | - | `--json`, `--limit N`, `--no-truncate` | `source list --limit 20 --no-truncate` |
+| `list` | - | `--json`, `--limit N`, `--no-truncate`, `--label`, `--status` | `source list --limit 20 --no-truncate` |
 | `add <content>` | URL/file/text (use `-` for stdin) | `--title`, `--type`, `--timeout`, `--follow-symlinks`, `--allow-internal` (URL sources only), `--json` (file-source `--mime-type` overrides extension inference — see [detailed section](#source-add-mime-type-file-sources)) | `source add "https://..." --timeout 90` |
 | `add-drive <id> <title>` | Drive file ID, title | `--mime-type [google-doc\|google-slides\|google-sheets\|pdf]`, `--json` | `source add-drive abc123 "Doc" --mime-type google-slides` |
 | `add-drive-file <id>` | Drive file ID or share URL | `--title`, `--wait`, `--json` | `source add-drive-file abc123 --title "Notes" --wait` |
@@ -182,6 +182,56 @@ All `source` subcommands also accept `-n/--notebook ID` (resolves via flag > `NO
 `source stale` reports whether a URL/Drive source needs a refresh. By default it follows the standard CLI exit convention (`0` on success, `1` on error); branch on the JSON `stale`/`fresh` fields (or stdout text) for the freshness verdict. Pass `--exit-on-stale` to opt into the back-compat inverted predicate (`0` = stale, `1` = fresh) for shell idioms like `if notebooklm source stale --exit-on-stale ID; then refresh; fi`.
 
 `source list` also accepts `--label <id|name>` to list only the sources in a given label (a saved selection). The selector resolves a label id (or partial prefix) **or** an exact label name; see [Label Commands](#label-commands-notebooklm-label-cmd).
+
+`source list --status <state>` restricts the listing to one ingestion status — `ready`, `processing`, `error`, `preparing`, or `unknown`. The choices are derived from `SourceStatus`, so they cannot drift from the labels the Status column renders, and the filter is applied inside the fetch, so `count` in `--json` always matches the rows shown. It composes with `--label`.
+
+#### Finding orphaned sources (`--status preparing`)
+
+A file add that fails *after* its source row is registered leaves that row in place deliberately — it is the evidence of what happened, and it still counts against the notebook's source quota. The row sits at `preparing`, **not** `error`, so the status a caller reaches for first finds nothing ([#2138](https://github.com/teng-lin/notebooklm-py/issues/2138)):
+
+```bash
+notebooklm source list --status preparing        # the reconciliation query
+notebooklm source delete <id>                    # once you have confirmed it is stuck
+```
+
+Rows that are genuinely mid-upload also report `preparing`, so this filter cannot by itself tell "abandoned" from "in flight" — re-run it a minute apart and act only on rows that persist. Nothing is deleted automatically; that posture is deliberate (see [#2110](https://github.com/teng-lin/notebooklm-py/issues/2110)).
+
+When the failing add raised in your own process, you do not need to search at all: the exception carries the retained row's id directly, via `getattr(exc, "source_id", None)`.
+
+#### Drive-backed sources in `source list` / `source get`
+
+Both commands emit the same `--json` source row:
+
+```json
+{
+  "id": "ef72c03c-…", "title": "Rubisco Research", "type": "google_docs", "url": null,
+  "status": "ready", "status_id": 2, "created_at": "2026-01-23T18:42:00",
+  "drive_document_id": "1oAk_INJ…", "drive_status": "deleted", "is_drive_degraded": true
+}
+```
+
+(`source list` prefixes each row with a 1-based `index`.)
+
+- **`drive_document_id`** — the Google Drive file id. A Drive source carries no `url`, so this is the only field tying it back to the file it was created from; `source add-drive` matches on it to stay idempotent.
+- **`drive_status`** — Drive-side health: `inaccessible` / `syncing` / `active` / `deleted` / `gen_ai_access_denied`, or `unknown` for a code this client cannot map. **`null` means the row made no Drive-health claim at all**, which is a different answer from `"unknown"`.
+- **`is_drive_degraded`** — `true` only when the backend explicitly reported a non-healthy Drive state. `false` means "nothing degraded was reported" — equally true for a non-Drive source, for `active`, and for an unreadable code — not "the file is confirmed present".
+
+All three keys are present on **every** row (null/false on non-Drive sources), so `jq '.sources[] | select(.drive_status == "deleted")'` needs no `// empty` guard.
+
+**Which rows are Drive-backed?** `drive_document_id` and `drive_status` are decoded from structurally independent parts of the response, so **either one being non-null** means the row is Drive-backed — neither alone is the authoritative test. In particular, the common case is an id with **no** health claim (`{"drive_document_id": "1oAk…", "drive_status": null}`), so filtering on `drive_status != null` will miss most Drive sources.
+
+Unlike the MCP/REST surfaces, the CLI ships **no raw Drive status code** beside the label. It would carry no extra information (an unmappable code is replaced by a client-side sentinel before it reaches output), and its code space collides adversarially with `status_id`'s — `2`/`3` mean `ready`/`error` for ingestion but `syncing`/`active` for Drive, so a consumer reasoning by analogy would select exactly the wrong rows.
+
+### `status` and `drive_status` are different axes
+
+`status` reports NotebookLM's own ingestion, which completes and **stays** complete after the Drive file is deleted or unshared. A source therefore reads `"status": "ready"` while `"drive_status": "deleted"` — answers grounded on it may be stale.
+
+Human (non-`--json`) output reflects this without adding a column:
+
+- **`source list`** appends the Drive verdict to the Status cell — `ready (drive: deleted)` — but only for a row the backend reports as degraded (`is_drive_degraded`), whatever that row's ingestion status is. An unreadable code (`unknown`) is not flagged here; it is not evidence of degradation, and the table should not cry wolf on protocol drift. Note that Rich sizes columns table-wide, so a single annotated row does re-flow the whole table; that cost is only paid when something is actually wrong.
+- **`source get`** adds `Drive File ID:` and `Drive Status:` lines, each shown only when that field is present.
+
+> **Cross-surface naming.** MCP and REST spell this axis `drive_status` (raw code) + `drive_status_label` (string); the CLI uses `drive_status` for the **string**, matching its own long-standing `status` (label) / `status_id` (code) pairing. So `select(.drive_status == "deleted")` is right for the CLI and wrong for MCP/REST, where that key holds an integer. Both surfaces resolve the label through the same mapping helper, so the vocabulary never diverges — only the key name.
 
 ### Label Commands (`notebooklm label <cmd>`)
 
@@ -225,6 +275,7 @@ Collections are account-level, so — unlike `label` — the `collection` comman
 |---------|-----------|---------|---------|
 | `status` | - | `-n/--notebook`, `--json` | `research status` |
 | `wait` | - | `-n/--notebook`, `--timeout`, `--interval`, `--import-all`, `--cited-only`, `--json` | `research wait --import-all --cited-only` |
+| `import` | - | `-n/--notebook`, `--run-id`, `--cited-only`, `--timeout`, `--max-sources`, `--allow-duplicate`, `--json` | `research import` |
 | `cancel` | `RUN_ID` | `-n/--notebook`, `--json` | `research cancel <run_id>` |
 
 ### Generate Commands (`notebooklm generate <type>`)
@@ -264,7 +315,7 @@ Language-aware generate commands (`audio`, `video`, `cinematic-video`, `report`,
 
 | Command | Arguments | Options | Example |
 |---------|-----------|---------|---------|
-| `list` | - | `--type [all\|audio\|video\|slide-deck\|quiz\|flashcard\|infographic\|data-table\|mind-map\|report]`, `--limit N`, `--no-truncate`, `--json` | `artifact list --type audio --limit 5` |
+| `list` | - | `--type [all\|audio\|video\|slide-deck\|quiz\|flashcard\|infographic\|data-table\|mind-map\|report\|fantasy-map\|file]`, `--limit N`, `--no-truncate`, `--json` | `artifact list --type audio --limit 5` |
 | `get <id>` | Artifact ID | `--json` | `artifact get art123` |
 | `get-prompt <id>` | Artifact ID | `--json` | `artifact get-prompt art123` |
 | `rename <id> <title>` | Artifact ID, title | `--json` | `artifact rename art123 "Title"` |
@@ -889,6 +940,40 @@ For `-s` and `-a` the active notebook is resolved with the same precedence the c
 
 **Print-only by design:** the command never writes to your shell config; you decide where the script lands. This keeps the install path discoverable and avoids surprising shutdowns of existing completion setups.
 
+### Source: `add` — how an argument is classified
+
+With no `--type`, `source add` decides in this order:
+
+1. **URL-shaped** (contains `://`) → a `url` or `youtube` source.
+2. **The path exists on disk** → a `file` source, uploaded. This is an existence
+   check, not an extension check, so a real file is uploaded whatever it is
+   named — `deck.pptx`, `./deck.pptx` and `notes` all work.
+3. **Otherwise** → a `text` source, ingesting the argument itself as content.
+
+Step 3 is where a typo bites: `source add dekc.pptx` adds a source whose entire
+content is the string `dekc.pptx`. To make that visible, an argument that *looks*
+like a file but does not exist is added with a warning:
+
+```console
+$ notebooklm source add dekc.pptx
+warning: 'dekc.pptx' looks like a path but does not exist; ingesting as inline
+text. Pass --type text to suppress this warning, or check the path for typos.
+```
+
+An argument looks like a file when it contains a slash, or when its extension is
+one the upload accepts — `.pdf` `.txt` `.md` `.markdown` `.doc` `.docx` `.pptx`
+`.rtf` `.odt` `.csv` `.tsv` `.epub` — or is HTML-family (`.html` `.htm` `.xhtml`
+`.xht`, which the upload endpoint rejects with convert-first guidance), or is
+`.ppt` (file-shaped, but legacy PowerPoint has never been proven uploadable, so
+it earns the warning without being routed to the uploader). That list is derived
+from the single upload-support declaration the Drive download-and-upload router
+also reads, so a newly supported file type earns its warning at the same time it
+becomes uploadable, rather than drifting behind it (#2202).
+
+Pass `--type text` to opt out of detection entirely, or `--type file` to require
+the upload path (which then fails loudly on a missing file instead of falling
+back to text).
+
 ### Source: `add` — `--follow-symlinks` security gate
 
 File-source uploads reject symlinks by default. If the path you pass (or any ancestor directory) is a symbolic link, `source add` refuses the upload rather than silently following it — a workspace symlink could otherwise exfiltrate the file it points at (e.g. `~/Downloads/foo.pdf -> /etc/passwd`). Pass `--follow-symlinks` to opt in explicitly.
@@ -1051,6 +1136,51 @@ notebooklm research wait --json --import-all
 ```
 
 **Use case:** Primarily for LLM agents that need to wait for non-blocking deep research started with `source add-research --no-wait`.
+
+### Research: `import`
+
+Import a completed research run's sources — without blocking.
+
+> **Python equivalent:** [`client.research.import_sources_with_verification(nb_id, run_id, sources)`](python-api.md#researchapi-clientresearch), after polling the run to `completed` yourself.
+
+```bash
+notebooklm research import [OPTIONS]
+```
+
+**Options:**
+- `-n, --notebook ID` - Notebook ID (uses current if not set)
+- `--run-id ID` - Run to import. Omit it and the notebook's single research run is used; when a
+  notebook has **more than one** run this errors rather than guessing which you meant, so pass
+  the id (`research status` shows it)
+- `--cited-only` - Import only report-cited sources (all of them, if no citation resolves — `cited_only_fallback` says which happened)
+- `--timeout SECONDS` - Seconds budget for the import retry loop (default: 1800)
+- `--max-sources N` - Import at most N sources (applied *after* `--cited-only` narrows)
+- `--allow-duplicate` - Re-add sources whose URL is already in the notebook
+- `--json` - Output as JSON
+
+**Never waits for the run.** This is the counterpart to `research wait --import-all`: if the run is still in progress (or failed, or found nothing), the command exits 1 with an explanation instead of polling. The import RPC itself is not instant — `IMPORT_RESEARCH` commonly outlives a single client timeout on deep payloads and is retried with reconciliation, bounded by `--timeout` (default 1800s, same vocabulary as `research wait --timeout`). That makes the fully composable flow expressible for the first time — you own the cadence:
+
+```bash
+notebooklm source add-research "AI safety" --mode deep --no-wait   # returns immediately
+notebooklm research status                                         # your loop, your interval
+notebooklm research import                                         # imports, returns
+```
+
+**Idempotent — with two documented limits.** A source whose URL is already in the notebook is reported as already-present rather than duplicated, so a repeat import reads as "0 new, N already present" instead of looking like a no-op. Under `--json` that split is `imported` / `imported_sources` versus `already_present` / `already_present_sources`, and `status` is `already_imported` when nothing new landed.
+
+The dedupe is by URL against a snapshot taken just before the import, so: a deep run's **report row has no URL** and is re-imported on every run, and if the snapshot call itself fails the filter is **skipped entirely** (the import still proceeds). Both are properties of `import_sources_with_verification`, shared with `research wait --import-all` and the MCP tool. If you interrupt an import, check `source list` before re-running it rather than assuming the re-run is a no-op.
+
+**Examples:**
+```bash
+# Import the notebook's current completed run
+notebooklm research import
+
+# Pin a specific run and take only the cited sources
+notebooklm research import --run-id <run_id> --cited-only
+
+# Cap the import, JSON output for agent workflows
+notebooklm research import --max-sources 10 --json
+```
 
 ### Research: `cancel`
 
@@ -1267,7 +1397,7 @@ notebooklm artifact <list|get|get-prompt|rename|delete|export|poll|wait|retry|su
 
 | Subcommand | Required arguments | Options |
 |---|---|---|
-| `list` | (none) | `--type [all\|audio\|video\|slide-deck\|quiz\|flashcard\|infographic\|data-table\|mind-map\|report]`, `--limit N` (default: unlimited), `--no-truncate`, `--json` |
+| `list` | (none) | `--type [all\|audio\|video\|slide-deck\|quiz\|flashcard\|infographic\|data-table\|mind-map\|report\|fantasy-map\|file]`, `--limit N` (default: unlimited), `--no-truncate`, `--json` |
 | `get` | `ARTIFACT_ID` | `--json` |
 | `get-prompt` | `ARTIFACT_ID` | `--json` |
 | `rename` | `ARTIFACT_ID NEW_TITLE` | `--json` |
@@ -1604,7 +1734,7 @@ notebooklm source add-drive 1AbcD...XyZ "Whitepaper" --mime-type pdf --json
 
 ### Source: `add-drive-file`
 
-Add an upload-only Google Drive file (`epub`/`docx`/`txt`/`md`/`rtf`/`odt`/`csv`/`tsv`/`pdf`) by id or share URL. NotebookLM's native Drive import (`source add-drive`) only ingests Google-native Docs/Slides/Sheets + PDF by reference; for every other Drive-hosted file type, this command downloads the file server-side (using your session) and uploads it through the resumable-upload path — a Drive PDF can go either way.
+Add an upload-only Google Drive file (`epub`/`docx`/`pptx`/`txt`/`md`/`rtf`/`odt`/`csv`/`tsv`/`pdf`) by id or share URL. NotebookLM's native Drive import (`source add-drive`) only ingests Google-native Docs/Slides/Sheets + PDF by reference; for every other Drive-hosted file type, this command downloads the file server-side (using your session) and uploads it through the resumable-upload path — a Drive PDF can go either way.
 
 ```bash
 notebooklm source add-drive-file [OPTIONS] DOCUMENT_ID

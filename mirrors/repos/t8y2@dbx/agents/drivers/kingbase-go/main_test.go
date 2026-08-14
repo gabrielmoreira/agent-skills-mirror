@@ -35,6 +35,7 @@ type fakeDriverState struct {
 	rowCount       int
 	execStatements []string
 	execConnIDs    []int
+	execErrors     map[string]error
 }
 
 type fakeDriver struct{}
@@ -144,6 +145,9 @@ func (connection fakeConn) ExecContext(_ context.Context, query string, _ []driv
 	defer state.mu.Unlock()
 	state.execStatements = append(state.execStatements, query)
 	state.execConnIDs = append(state.execConnIDs, connection.id)
+	if err := state.execErrors[query]; err != nil {
+		return nil, err
+	}
 	return driver.RowsAffected(1), nil
 }
 
@@ -1791,7 +1795,7 @@ func TestKingbaseDomainConstraintReadFailuresMarkDDLIncomplete(t *testing.T) {
 	if len(warnings) != 1 || !strings.Contains(warnings[0], "domain constraints could not be decoded") {
 		t.Fatalf("constraint scan failures must be retained as warnings: %v", warnings)
 	}
-	ddl := buildCustomTypeDDL("app", "email", customTypeKindDomain, sql.NullString{}, &[]customTypeMember{}, &properties, warnings)
+	ddl := server.buildCustomTypeDDL("app", "email", customTypeKindDomain, sql.NullString{}, &[]customTypeMember{}, &properties, warnings)
 	if ddl.Complete {
 		t.Fatalf("domain DDL must be incomplete after a constraint scan failure: %+v", ddl)
 	}
@@ -1849,12 +1853,13 @@ func TestKingbaseSystemSchemasAreRejectedForCustomTypeDetails(t *testing.T) {
 }
 
 func TestKingbaseCustomTypeDDL(t *testing.T) {
+	srv := newServer()
 	nullInput := sql.NullString{}
 	enumMembers := []customTypeMember{
 		{Ordinal: 1, EnumValue: stringPtr("draft")},
 		{Ordinal: 2, EnumValue: stringPtr("已归档")},
 	}
-	enumDDL := buildCustomTypeDDL("app", "status", customTypeKindEnum, nullInput, &enumMembers, &customTypeProperties{}, nil)
+	enumDDL := srv.buildCustomTypeDDL("app", "status", customTypeKindEnum, nullInput, &enumMembers, &customTypeProperties{}, nil)
 	if enumDDL.SQL != "CREATE TYPE \"app\".\"status\" AS ENUM ('draft', '已归档');" || !enumDDL.Complete {
 		t.Fatalf("unexpected enum DDL: %+v", enumDDL)
 	}
@@ -1862,34 +1867,34 @@ func TestKingbaseCustomTypeDDL(t *testing.T) {
 	compositeMembers := []customTypeMember{
 		{Name: "city", DataType: "text", Ordinal: 1, Comment: stringPtr("city name")},
 	}
-	compositeDDL := buildCustomTypeDDL("app", "address", customTypeKindComposite, nullInput, &compositeMembers, &customTypeProperties{}, nil)
+	compositeDDL := srv.buildCustomTypeDDL("app", "address", customTypeKindComposite, nullInput, &compositeMembers, &customTypeProperties{}, nil)
 	if !strings.Contains(compositeDDL.SQL, "\"city\" text") || !strings.Contains(compositeDDL.SQL, "COMMENT ON COLUMN \"app\".\"address\".\"city\" IS 'city name';") {
 		t.Fatalf("unexpected composite DDL: %+v", compositeDDL)
 	}
 
 	notNull := true
 	domainProps := customTypeProperties{BaseType: stringPtr("text"), NotNull: &notNull, DomainConstraints: []customTypeDomainConstraint{{Name: "email_valid", Definition: "CHECK ((VALUE <> ''::text))"}}}
-	domainDDL := buildCustomTypeDDL("app", "email", customTypeKindDomain, nullInput, &[]customTypeMember{}, &domainProps, nil)
+	domainDDL := srv.buildCustomTypeDDL("app", "email", customTypeKindDomain, nullInput, &[]customTypeMember{}, &domainProps, nil)
 	if !strings.Contains(domainDDL.SQL, "CREATE DOMAIN \"app\".\"email\" AS text") || !strings.Contains(domainDDL.SQL, "NOT NULL") || !strings.Contains(domainDDL.SQL, "CHECK ((VALUE <> ''::text))") {
 		t.Fatalf("unexpected domain DDL: %+v", domainDDL)
 	}
 
 	rangeProps := customTypeProperties{RangeSubtype: stringPtr("numeric"), RangeCanonicalFunction: stringPtr("\"extensions\".\"numeric_range_canonical\"")}
-	rangeDDL := buildCustomTypeDDL("app", "price_range", customTypeKindRange, nullInput, &[]customTypeMember{}, &rangeProps, nil)
+	rangeDDL := srv.buildCustomTypeDDL("app", "price_range", customTypeKindRange, nullInput, &[]customTypeMember{}, &rangeProps, nil)
 	if !rangeDDL.Complete || !strings.Contains(rangeDDL.SQL, "subtype = numeric") || !strings.Contains(rangeDDL.SQL, "canonical = \"extensions\".\"numeric_range_canonical\"") {
 		t.Fatalf("unexpected range DDL: %+v", rangeDDL)
 	}
-	missingSubtype := buildCustomTypeDDL("app", "price_range", customTypeKindRange, nullInput, &[]customTypeMember{}, &customTypeProperties{RangeMultirangeName: stringPtr("price_multirange")}, nil)
+	missingSubtype := srv.buildCustomTypeDDL("app", "price_range", customTypeKindRange, nullInput, &[]customTypeMember{}, &customTypeProperties{RangeMultirangeName: stringPtr("price_multirange")}, nil)
 	if missingSubtype.Complete || missingSubtype.SQL != "CREATE TYPE \"app\".\"price_range\" AS RANGE (subtype = unknown);" {
 		t.Fatalf("range DDL without subtype must be incomplete: %+v", missingSubtype)
 	}
 
-	multirangeDDL := buildCustomTypeDDL("app", "_price_range", customTypeKindMultirange, nullInput, &[]customTypeMember{}, &customTypeProperties{}, nil)
+	multirangeDDL := srv.buildCustomTypeDDL("app", "_price_range", customTypeKindMultirange, nullInput, &[]customTypeMember{}, &customTypeProperties{}, nil)
 	if multirangeDDL.Complete || len(multirangeDDL.Warnings) == 0 {
 		t.Fatalf("multirange DDL must be incomplete with warnings: %+v", multirangeDDL)
 	}
 
-	baseDDL := buildCustomTypeDDL("app", "point2d", customTypeKindBase, nullInput, &[]customTypeMember{}, &customTypeProperties{}, nil)
+	baseDDL := srv.buildCustomTypeDDL("app", "point2d", customTypeKindBase, nullInput, &[]customTypeMember{}, &customTypeProperties{}, nil)
 	if baseDDL.Complete || len(baseDDL.Warnings) == 0 {
 		t.Fatalf("base DDL must be incomplete with warnings: %+v", baseDDL)
 	}
@@ -2136,6 +2141,7 @@ func TestColumnsFallbackWhenCatalogHasNoAttidentityAndCacheChoice(t *testing.T) 
 }
 
 func TestKingbaseIdentityClausesAreExposedAndRendered(t *testing.T) {
+	srv := newServer()
 	tests := []struct {
 		name     string
 		code     string
@@ -2151,7 +2157,7 @@ func TestKingbaseIdentityClausesAreExposedAndRendered(t *testing.T) {
 			if extra == nil || *extra != test.expected {
 				t.Fatalf("unexpected identity clause for %q: %#v", test.code, extra)
 			}
-			definition := columnDDLDefinition(columnInfo{Name: "id", DataType: "integer", IsNullable: false, Extra: extra})
+			definition := srv.columnDDLDefinition(columnInfo{Name: "id", DataType: "integer", IsNullable: false, Extra: extra})
 			expected := `"id" integer ` + test.expected + " NOT NULL"
 			if definition != expected {
 				t.Fatalf("unexpected column DDL: %s", definition)
@@ -2199,10 +2205,11 @@ func TestTableDDLIncludesIdentityIndexesTriggersAndComments(t *testing.T) {
 }
 
 func TestRenderTableDDLIncludesEscapedComments(t *testing.T) {
+	srv := newServer()
 	primaryComment := "主键'编号"
 	emptyComment := "  "
 	tableComment := "订单'表"
-	ddl := renderTableDDL(
+	ddl := srv.renderTableDDL(
 		`app"schema`,
 		`order"items`,
 		[]columnInfo{
@@ -2228,12 +2235,13 @@ func TestRenderTableDDLIncludesEscapedComments(t *testing.T) {
 }
 
 func TestColumnDDLDefinitionPreservesCompatibilityExtras(t *testing.T) {
+	srv := newServer()
 	identity := "IDENTITY(1,1)"
 	defaultValue := "0"
-	if definition := columnDDLDefinition(columnInfo{Name: "id", DataType: "integer", IsNullable: false, Extra: &identity}); definition != `"id" integer IDENTITY(1,1) NOT NULL` {
+	if definition := srv.columnDDLDefinition(columnInfo{Name: "id", DataType: "integer", IsNullable: false, Extra: &identity}); definition != `"id" integer IDENTITY(1,1) NOT NULL` {
 		t.Fatalf("unexpected SQL Server-compatible DDL: %s", definition)
 	}
-	if definition := columnDDLDefinition(columnInfo{Name: "count", DataType: "integer", IsNullable: true, ColumnDefault: &defaultValue}); definition != `"count" integer DEFAULT 0` {
+	if definition := srv.columnDDLDefinition(columnInfo{Name: "count", DataType: "integer", IsNullable: true, ColumnDefault: &defaultValue}); definition != `"count" integer DEFAULT 0` {
 		t.Fatalf("unexpected regular column DDL: %s", definition)
 	}
 	if extra := kingbaseIdentityClause(""); extra != nil {
@@ -2241,7 +2249,25 @@ func TestColumnDDLDefinitionPreservesCompatibilityExtras(t *testing.T) {
 	}
 }
 
+func TestRenderTableDDLUsesBacktickIdentifiersInMySQLCompatMode(t *testing.T) {
+	srv := newServer()
+	srv.mode.mysqlCompat = true
+	ddl := srv.renderTableDDL(
+		"audit-schema",
+		"events",
+		[]columnInfo{
+			{Name: "id", DataType: "integer", IsNullable: false, IsPrimaryKey: true},
+		},
+		nil,
+	)
+	expected := "CREATE TABLE `audit-schema`.`events` (\n  `id` integer NOT NULL,\n  PRIMARY KEY (`id`)\n);"
+	if ddl != expected {
+		t.Fatalf("MySQL-compat DDL must use backtick identifiers:\ngot:  %s\nwant: %s", ddl, expected)
+	}
+}
+
 func TestColumnDDLDefinitionRestoresMySQLCompatibilityTypeModifiers(t *testing.T) {
+	srv := newServer()
 	length := 64
 	precision := 12
 	scale := 4
@@ -2261,7 +2287,7 @@ func TestColumnDDLDefinitionRestoresMySQLCompatibilityTypeModifiers(t *testing.T
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if got := columnDDLDefinition(test.column); got != test.want {
+			if got := srv.columnDDLDefinition(test.column); got != test.want {
 				t.Fatalf("unexpected column DDL: got %q, want %q", got, test.want)
 			}
 		})
@@ -2293,7 +2319,7 @@ func TestInformationSchemaColumnsPreserveFullTypesInDDL(t *testing.T) {
 	if len(columns) != 4 || columns[0].DataType != "integer" || columns[0].FullDataType != "integer unsigned" {
 		t.Fatalf("unexpected metadata columns: %#v", columns)
 	}
-	ddl := renderTableDDL("public", "orders", columns, nil)
+	ddl := server.renderTableDDL("public", "orders", columns, nil)
 	for _, expected := range []string{
 		`"count" integer unsigned`,
 		`"status" enum('new','done')`,
@@ -2336,7 +2362,7 @@ func TestInformationSchemaColumnsResolveUserDefinedTypeWithoutColumnType(t *test
 	if !strings.Contains(string(payload), `"data_type":"datetime"`) || strings.Contains(string(payload), "USER-DEFINED") {
 		t.Fatalf("unresolved user-defined type leaked into get_columns payload: %s", payload)
 	}
-	if ddl := renderTableDDL("public", "orders", columns, nil); !strings.Contains(ddl, `"created_at" datetime`) || strings.Contains(ddl, "USER-DEFINED") {
+	if ddl := server.renderTableDDL("public", "orders", columns, nil); !strings.Contains(ddl, `"created_at" datetime`) || strings.Contains(ddl, "USER-DEFINED") {
 		t.Fatalf("unexpected user-defined type DDL:\n%s", ddl)
 	}
 
@@ -2398,7 +2424,7 @@ func TestInformationSchemaColumnsPreserveColumnTypeWithoutUdtName(t *testing.T) 
 		if len(columns) != 1 || columns[0].FullDataType != "enum('new','done')" {
 			t.Fatalf("unexpected metadata columns: %#v", columns)
 		}
-		if ddl := renderTableDDL("public", table, columns, nil); !strings.Contains(ddl, `"status" enum('new','done')`) {
+		if ddl := server.renderTableDDL("public", table, columns, nil); !strings.Contains(ddl, `"status" enum('new','done')`) {
 			t.Fatalf("unexpected table DDL:\n%s", ddl)
 		}
 	}
@@ -2434,7 +2460,7 @@ func TestInformationSchemaColumnsFallbackWithoutExtendedTypeColumns(t *testing.T
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(columns) != 1 || columnDDLDefinition(columns[0]) != `"label" varchar(64)` {
+		if len(columns) != 1 || server.columnDDLDefinition(columns[0]) != `"label" varchar(64)` {
 			t.Fatalf("unexpected fallback columns: %#v", columns)
 		}
 	}
@@ -2479,7 +2505,7 @@ func TestInformationSchemaColumnsRetriesOnlyForMissingTypeMetadataColumns(t *tes
 				if err != nil {
 					t.Fatal(err)
 				}
-				if len(columns) != 1 || columnDDLDefinition(columns[0]) != `"label" varchar(64)` {
+				if len(columns) != 1 || server.columnDDLDefinition(columns[0]) != `"label" varchar(64)` {
 					t.Fatalf("unexpected fallback columns: %#v", columns)
 				}
 			} else if !errors.Is(err, test.firstError) {
@@ -2779,6 +2805,124 @@ func TestExecuteQueryUsesSimpleProtocolAndReleasesContext(t *testing.T) {
 		t.Fatalf("unexpected result or bound arguments: rows=%v args=%d", result.Rows, state.queryArgs)
 	}
 	assertContextCanceled(t, state.queryCtx)
+}
+
+func TestExecuteStatementsPreserveSessionSearchPathWithoutSchema(t *testing.T) {
+	db, state := openFakeDB(t, 0)
+	server := newServer()
+	server.db = db
+
+	statements := []string{
+		"SET search_path TO app_data",
+		"CREATE TABLE issue_6134 (id integer)",
+	}
+	for _, statement := range statements {
+		if _, err := server.executeQuery(queryOptions{SQL: statement}); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	if strings.Join(state.execStatements, "\n") != strings.Join(statements, "\n") {
+		t.Fatalf("schema-less statements changed session search_path: %v", state.execStatements)
+	}
+	if len(state.execConnIDs) != len(statements) || state.execConnIDs[0] != state.execConnIDs[1] {
+		t.Fatalf("session statements used different connections: %v", state.execConnIDs)
+	}
+}
+
+func TestSchemaConnSkipsInitialAndRepeatedEmptySchema(t *testing.T) {
+	db, state := openFakeDB(t, 0)
+	server := newServer()
+	server.db = db
+
+	for range 2 {
+		conn, err := server.schemaConn(context.Background(), "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := conn.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	if len(state.execStatements) != 0 {
+		t.Fatalf("empty schema unexpectedly reset search_path: %v", state.execStatements)
+	}
+}
+
+func TestSchemaConnResetsOnceAfterExplicitSchema(t *testing.T) {
+	db, state := openFakeDB(t, 0)
+	server := newServer()
+	server.db = db
+
+	for _, schema := range []string{"app_data", "", ""} {
+		conn, err := server.schemaConn(context.Background(), schema)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := conn.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	expected := []string{`SET search_path TO "app_data"`, "RESET search_path"}
+	state.mu.Lock()
+	defer state.mu.Unlock()
+	if strings.Join(state.execStatements, "\n") != strings.Join(expected, "\n") {
+		t.Fatalf("unexpected schema transition statements: %v", state.execStatements)
+	}
+	if len(state.execConnIDs) != len(expected) || state.execConnIDs[0] != state.execConnIDs[1] {
+		t.Fatalf("schema transitions used different connections: %v", state.execConnIDs)
+	}
+}
+
+func TestSchemaConnPropagatesSchemaErrors(t *testing.T) {
+	tests := []struct {
+		name          string
+		initialSchema string
+		schemaSet     bool
+		requested     string
+		statement     string
+	}{
+		{
+			name:      "set",
+			requested: "app_data",
+			statement: `SET search_path TO "app_data"`,
+		},
+		{
+			name:          "reset",
+			initialSchema: "app_data",
+			schemaSet:     true,
+			statement:     "RESET search_path",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			expectedErr := errors.New(test.name + " search_path failed")
+			db, state := openFakeDB(t, 0)
+			state.execErrors = map[string]error{test.statement: expectedErr}
+			server := newServer()
+			server.db = db
+			server.currentSchema = test.initialSchema
+			server.schemaSet = test.schemaSet
+
+			conn, err := server.schemaConn(context.Background(), test.requested)
+			if conn != nil {
+				t.Fatal("schemaConn returned a connection after schema setup failed")
+			}
+			if !errors.Is(err, expectedErr) {
+				t.Fatalf("unexpected schema error: %v", err)
+			}
+			if server.currentSchema != test.initialSchema || server.schemaSet != test.schemaSet {
+				t.Fatalf("failed schema setup changed server state: schema=%q set=%v", server.currentSchema, server.schemaSet)
+			}
+		})
+	}
 }
 
 func TestExecuteQueryReappliesSchemaForRepeatedRequests(t *testing.T) {

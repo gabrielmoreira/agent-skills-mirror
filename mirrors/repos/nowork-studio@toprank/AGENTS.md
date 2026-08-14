@@ -12,7 +12,7 @@ If you are an agent and a user mentions Google Ads, Meta Ads, SEO, GEO, or anyth
 2. **Read the named skill's `SKILL.md`** from the path shown.
 3. **Follow the procedure** in that SKILL.md exactly.
 
-Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `gemini/`, and `notfair-upgrade-skill/` are **host-agnostic** — they work the same on every supported agent host.
+Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `gemini/`, and `notfair-upgrade-skill/` are **host-agnostic** — they work the same on every supported agent host.
 
 ---
 
@@ -53,10 +53,18 @@ Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `gemini/`, and `no
 | Weekly/monthly performance report, scorecard, pacing, or tracking health | `paid-ads-review` | `paid-ads/paid-ads-review/SKILL.md` |
 | Wasted spend, budget allocation, overspend, or safe optimization proposal | `paid-ads-optimize` | `paid-ads/paid-ads-optimize/SKILL.md` |
 | Cross-channel copy, creative concepts, fatigue diagnosis, or test briefs | `paid-ads-creative` | `paid-ads/paid-ads-creative/SKILL.md` |
-| LinkedIn Ads plan or export-based review | `paid-ads-linkedin` | `paid-ads/paid-ads-linkedin/SKILL.md` |
+| X Ads performance, campaigns, line items, targeting, creative, or writes | `paid-ads-x` | `paid-ads/paid-ads-x/SKILL.md` |
+| LinkedIn Ads performance, campaigns, targeting, leads, creative, or writes | `paid-ads-linkedin` | `paid-ads/paid-ads-linkedin/SKILL.md` |
 | TikTok Ads plan, creator brief, or export-based review | `paid-ads-tiktok` | `paid-ads/paid-ads-tiktok/SKILL.md` |
 | Amazon Ads plan, ACoS review, ASIN targeting, or export-based review | `paid-ads-amazon` | `paid-ads/paid-ads-amazon/SKILL.md` |
 | ChatGPT Ads experiment plan or verified-export review | `paid-ads-chatgpt` | `paid-ads/paid-ads-chatgpt/SKILL.md` |
+
+## Analytics
+
+| Intent | Skill | Path |
+|---|---|---|
+| GA4 traffic, acquisition, engagement, conversions, realtime, or measurement configuration | `google-analytics` | `analytics/google-analytics/SKILL.md` |
+| Live Search Console queries/pages, traffic changes, URL inspection, or sitemaps | `search-console` | `analytics/search-console/SKILL.md` |
 
 ## Google Ads
 
@@ -90,12 +98,15 @@ Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `gemini/`, and `no
 
 ## External dependencies
 
-- **Google Search Console** — required for all SEO skills that read live data.
+- **Google Search Console (NotFair MCP)** — `https://notfair.co/api/mcp/google_search_console`, OAuth. Required for live Search Console analysis; existing local GSC workflows may also use Google OAuth directly.
+- **Google Analytics (NotFair MCP)** — `https://notfair.co/api/mcp/google_analytics`, OAuth. Required for live GA4 analysis and supported measurement configuration.
 - **Google Ads (NotFair MCP)** — `https://notfair.co/api/mcp/google_ads`, OAuth. Required for Google Ads skills.
 - **Meta Marketing API (NotFair MCP)** — required for Meta Ads skills.
+- **X Ads (NotFair MCP)** — `https://notfair.co/api/mcp/x_ads`, OAuth. Required for live X Ads work.
+- **LinkedIn Ads (NotFair MCP)** — `https://notfair.co/api/mcp/linkedin_ads`, OAuth. Required for live LinkedIn Ads work.
 - **Google Gemini API key** — required for `gemini`.
 
-LinkedIn, TikTok, Amazon, and ChatGPT Ads skills are planning/review workflows unless the current session exposes a verified connector. They do not imply account or mutation access.
+TikTok, Amazon, and ChatGPT Ads skills are planning/review workflows unless the current session exposes a verified connector. They do not imply account or mutation access.
 
 Skills check for missing credentials at startup and walk the user through setup. Do not invent credentials or skip skills silently — surface the gap.
 

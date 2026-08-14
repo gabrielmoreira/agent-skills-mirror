@@ -620,6 +620,7 @@ Deep dives, benchmarks, and guides from the [K-Dense blog](https://www.k-dense.a
 
 - **[Agent Skills: The Final Piece for AI-Powered Scientific Research](https://www.k-dense.ai/blog/agent-skills-final-piece-for-ai-powered-research)** — What Agent Skills are, why curated domain guidance beats raw model capability, and an introduction to this repository.
 - **[K-Dense Web vs Scientific Agent Skills: Why We Built Both (And Which One You Should Use)](https://www.k-dense.ai/blog/k-dense-web-vs-scientific-agent-skills)** — When the open-source skills are the right tool, and when a hosted platform with managed compute makes more sense.
+- **[AI Co-Scientists, Answered: 20 Questions from a Live Session with a University Research Center](https://www.k-dense.ai/blog/ai-co-scientists-answered-20-questions)** — Practical questions from a research center evaluating AI co-scientists: what stays open source and MIT-licensed, how local and desktop deployments work, how data is handled, and how to choose between the hosted platform and the BYOK setup that runs these skills.
 
 ### Skill benchmarks and deep dives
 
@@ -630,6 +631,13 @@ Deep dives, benchmarks, and guides from the [K-Dense blog](https://www.k-dense.a
 - **[Towards Smarter Scientific Search: Exa Joins the Scientific Agent Skills Library](https://www.k-dense.ai/blog/towards-smarter-scientific-search-exa-scientific-agent-skills)** — What [exa-search](skills/exa-search/) adds: neural semantic search and URL extraction tuned for scholarly discovery instead of keyword matching.
 - **[Benchmarking Nano Banana 2 Lite for Scientific Image Generation](https://www.k-dense.ai/blog/benchmarking-nano-banana-2-lite-scientific-image-model)** — A 240-image comparison of scientific-diagram models, useful when choosing a backend for [generate-image](skills/generate-image/): 3.8 s median latency for Nano Banana 2 Lite against 49 s for GPT Image 2, with a quality tradeoff.
 - **[Benchmarking NVIDIA BioNeMo Agent Toolkit Skills for NIM microservices](https://www.k-dense.ai/blog/benchmarking-nvidia-bionemo-nim-skill)** — A separate NVIDIA skill set rather than one of these, but the findings generalize: skills help most with routing to non-obvious endpoints and with weak-model reliability, and do not improve the underlying scientific model's accuracy.
+
+### Why the workflow layer matters
+
+- **[The Model Is No Longer the Bottleneck](https://www.k-dense.ai/blog/the-model-is-no-longer-the-bottleneck)** — The case for why a repository like this one exists: frontier models now match specialized scientific software on raw capability (±0.079 ppm on NMR hydrogen shift prediction), so the limiting factor has moved to the workflow around the model — data access, code execution, verification, and auditable output.
+- **[The AI Co-Scientist Is Here. The Bottleneck Is Verification.](https://www.k-dense.ai/blog/ai-co-scientist-verification-bottleneck)** — A 10-point checklist for evaluating a research agent, built around exposing sources, code, data provenance, and intermediate work rather than a polished final answer — the same reasoning behind the provenance and retrieval-contract requirements in skills like [database-lookup](skills/database-lookup/) and [scientific-writing](skills/scientific-writing/).
+- **[Reproduction, Not Generation, Is AI's Killer App for Science](https://www.k-dense.ai/blog/reproduction-not-generation-ai-for-science)** — Why re-running published analyses is the highest-value use of an agent: 78% of papers and 93% of individual analysis tasks reproduced across a 221-study benchmark, because a reproduction can be checked against known numbers while a generated claim cannot.
+- **[Introducing K-Bench 01: Nine Frontier Models, 178 Real Scientific Tasks, and a Lot of Confident Wrong Answers](https://www.k-dense.ai/blog/introducing-k-bench-01-internal-benchmark)** — Nine frontier models on 178 real user tasks, with overclaiming in 40% of runs. Useful calibration for what to check when an agent reports success, and context for the verification boundaries written into the clinical, regulatory, and research-methodology skills above.
 
 ### Security and safe deployment
 

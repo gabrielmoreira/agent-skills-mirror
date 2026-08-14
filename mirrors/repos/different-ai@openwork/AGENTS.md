@@ -39,6 +39,10 @@ even before a dedicated UI exists.
 
 ## Pull requests
 
+- Do not default to draft PRs. A request to create or make a PR means a
+  ready-for-review PR once the required proof is published. Use a draft only
+  when the requester explicitly asks for one or the current verdict is
+  `Incomplete` or `Failed`, and state exactly what proof is missing.
 - Run tests and report commands + results. A runtime-observable change is not
   done until its testkit tape is visible on the PR. If validation cannot run,
   say why and give exact repro steps.
@@ -46,6 +50,17 @@ even before a dedicated UI exists.
   is approved — then a fresh worktree (never the user's checkout), spec from the
   narration, PR against `dev` with the tape. The `voiceover` skill owns the
   journey.
+
+## Local headless web (agents)
+
+- `pnpm dev:headless-web --detach` launches an isolated browser UI + local
+ `openwork-server` without Electron, detached from the invoking shell. Read
+ `tmp/dev-headless-web.json` for `webUrl`, tokens, logs, and Den proxy URLs.
+ It does not use `~/.config/openwork/server.json`. Re-running reuses a healthy
+ instance; `--replace` restarts it with fresh tokens (`--keep-tokens` to
+ keep the previous ones). Cloud sign-in is copy/paste handoff (Den cannot
+ redirect grants to localhost): Account → Sign in → copy OpenWork link on Den
+ → Paste sign-in code in Settings.
 
 ## Coding
 

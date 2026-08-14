@@ -77,6 +77,16 @@ If isolation or a different checkout is needed, explain why and ask the user bef
 
 When a feature or bug fix introduces behavior that is not yet available in the latest published release, do not include `docs/` changes that describe that unreleased behavior in the feature or bug-fix pull request, and do not expect those changes as part of that pull request. Handle them in a separate docs-only pull request so maintainers can coordinate its merge timing with the release that makes the documentation accurate. This exception applies only when the documentation would be incorrect for the latest published release; documentation that is already accurate for released behavior remains part of the normal change scope.
 
+### Documentation Verification Tiers
+
+Classify documentation changes before choosing review and verification work. Use the narrowest tier that covers the complete diff, and move to a higher tier when any changed file or claim requires it.
+
+- **Editorial:** Terminology, spelling, punctuation, formatting, or link-label changes that do not change documented behavior, runnable code, navigation, link targets, anchors, or generated reference content. Inspect the diff, run targeted searches for the corrected text, and run `git diff --check`. Check a link or anchor directly only when the edit can affect it. Skip `$implementation-final-review`, cross-language review, and `make build-docs` for this tier.
+- **Content:** New or materially rewritten behavioral guidance, migration instructions, or runnable snippets that do not change documentation structure or tooling. Verify claims against the implementation and authoritative sources, execute or otherwise validate changed snippets when practical, perform the required focused cross-language review, and run `make build-docs` once after the content and review are stable. Do not repeat the full site build after edits that cannot affect its result.
+- **Structural:** Added, removed, renamed, or moved pages; changes to `mkdocs.yml`, generated API reference inputs, documentation scripts, plugins, or build configuration. Run the relevant generators or focused tooling checks and `make build-docs` after the structure is stable. Apply `$code-change-verification` when the changed file is build or test configuration covered by that skill.
+
+Existing warnings from a successful documentation build are not findings for an unrelated docs change. Evaluate the exit status and identify new errors, broken references, or warnings caused by the diff instead of reviewing the complete warning stream line by line. Reserve `make build-full-docs` and generated translation output for translation-tooling changes, explicit localization work, or a specifically requested broad localization audit.
+
 ### Scope Discipline and Complexity Reset
 
 - Implement the narrowest explicitly stated set of behaviors that satisfies the request. Do not interpret every shape accepted by a host-language protocol, third-party library, or reflection API unless those shapes are required by the task or supported behavior shipped in the latest release.
@@ -176,10 +186,7 @@ The OpenAI Agents Python repository provides the Python Agents SDK, examples, an
 3. If dependencies changed or you are setting up the repo, run `make sync`.
 4. Implement changes and add or update tests alongside code updates.
 5. Highlight compatibility or API risks in your plan before implementing changes that alter the latest released behavior or a released or explicitly supported durable external state boundary.
-6. Build docs when you touch documentation:
-   ```bash
-   make build-docs
-   ```
+6. Verify documentation changes according to [Documentation Verification Tiers](#documentation-verification-tiers). Do not run a full documentation build for an editorial-only change.
 7. When `$code-change-verification` applies, run it to execute the full verification stack before marking work complete.
 8. Commit with concise, imperative messages; keep commits small and focused, then open a pull request.
 9. Before reporting eligible code changes as complete, invoke `$pr-draft-summary` as the final handoff step unless the task falls under the documented skip cases. Do not omit it based on perceived change size or because the work remains local or uncommitted.
@@ -261,9 +268,9 @@ make tests
   ```
 - Documentation workflows:
   ```bash
-  make build-docs      # build docs after editing docs
+  make build-docs      # build stable content or structural docs changes
   make serve-docs      # preview docs locally
-  make build-full-docs # run translations and build
+  make build-full-docs # run translations and build when explicitly required
   ```
 - Snapshot helpers:
   ```bash

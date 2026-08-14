@@ -1,5 +1,6 @@
 ---
 name: skill-factory
+disable-model-invocation: true
 aliases:
   - factory
   - dark-factory
@@ -11,7 +12,6 @@ validation_gates:
   - spec_file_validated
   - orchestrate_sh_executed
   - factory_report_exists
-invocation: human_only
 ---
 
 # STOP - SKILL ALREADY LOADED

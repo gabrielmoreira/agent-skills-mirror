@@ -172,6 +172,20 @@ _enrichUserMessageWithCurrentPage(tabId, messages, userMessage)
   5. Return enriched user message
 ```
 
+#### Page context reduction
+
+WebBrain does not send raw HTML or a raw DOM dump to the model by default. The
+initial page context is the sanitized URL and title, matching site-adapter
+guidance, and an optional viewport screenshot when vision is available. When a
+task needs page content, the agent requests it on demand as a reduced semantic
+accessibility tree or as extracted text.
+
+These reads use visibility filters where appropriate, enforce character
+budgets, and paginate larger results instead of placing the entire rendered
+document into one model request. See [accessibility read budgets](agent-tools.md#accessibility-read-budgets)
+and [adaptive read windows](accessibility-tree-and-refs.md#adaptive-read-windows).
+Raw page-source access through `read_page_source` is available only in Dev mode.
+
 ### Step 4: Plan-before-Act Gate
 
 Manual action-mode runs (Act or Dev) call the active provider once before the tool loop with `planner.js`'s structured JSON prompt. Off uses the compact intent schema; Try and Strict use the full plan schema. Unset storage defaults to Try, while explicit Off remains Off. The planner sees the user task, sanitized URL/title, and a short recent-history digest; page context is wrapped as untrusted data and image blocks are dropped.

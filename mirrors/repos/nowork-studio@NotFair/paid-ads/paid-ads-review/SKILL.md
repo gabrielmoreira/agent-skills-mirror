@@ -12,7 +12,7 @@ Read `../shared/operating-contract.md` and `../shared/measurement-framework.md`.
 
 Check which sources are actually connected, request the missing export rather than reporting a failed call, and use the most recent complete equivalent window. For every source, keep currency, conversion definition, attribution window, and reporting lag visible. Verify tracking before treating CPA, ROAS, or revenue as a decision-grade metric.
 
-For live Google and Meta accounts, hand data collection and platform-specific diagnostics to `/notfair:google-ads` and `/notfair:meta-ads`. Keep LinkedIn, TikTok, Amazon, and ChatGPT Ads review grounded in a verified connector or supplied platform export.
+For live platform accounts, hand data collection and diagnostics to `/notfair:google-ads`, `/notfair:meta-ads`, `/notfair:paid-ads-x`, or `/notfair:paid-ads-linkedin`. Keep TikTok, Amazon, and ChatGPT Ads review grounded in a verified connector or supplied platform export.
 
 ## Report the decision, not a dashboard transcription
 

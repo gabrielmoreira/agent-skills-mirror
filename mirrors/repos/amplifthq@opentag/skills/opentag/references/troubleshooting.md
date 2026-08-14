@@ -1,6 +1,7 @@
 # Troubleshooting
 
-Use this path when OpenTag setup, startup, platform delivery, execution, or callbacks do not work.
+Use this path when OpenTag setup, startup, platform delivery, or execution does
+not work.
 
 ## Start With The CLI
 
@@ -27,7 +28,8 @@ Check one layer at a time. Stop at the first failing layer and explain the concr
 6. The platform can deliver the mention or webhook.
 7. The runner is bound to the selected project.
 8. The selected executor is available.
-9. Callback credentials can post the reply.
+9. The exact provider-instance delivery adapter is active and authorized to
+   post the reply.
 
 ## Common Platform Checks
 
@@ -59,12 +61,17 @@ Lark / Feishu:
 - `actor_not_allowed_for_write`: the actor is not allowed to request write-capable work.
 - `No OpenTag run available`: no pending run is claimable by this runner.
 
-## Callback Debugging
+## Delivery Debugging
 
-Execution success and callback delivery are separate.
+Execution success, durable enqueue, and provider acceptance are separate facts.
 
-- Slack callbacks need the Slack bot token.
-- GitHub callbacks need the GitHub token.
-- Lark / Feishu callbacks need saved app credentials.
+- `delivery.activation_blocked` means no provider I/O was attempted. Activate
+  the exact provider-instance adapter before retrying.
+- `delivery.intent.queued` proves only durable enqueue; inspect the delivery
+  journal for lease and settlement state.
+- Treat a provider result as accepted only when the journal or a signed
+  provider observation records it.
 
-If the executor completed but the platform did not receive a reply, focus on callback credentials, platform permissions, and listener logs rather than executor behavior.
+If the executor completed but the platform did not receive a reply, inspect
+adapter activation, provider-instance identity, permissions, journal state, and
+listener logs rather than executor behavior.

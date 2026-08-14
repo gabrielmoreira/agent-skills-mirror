@@ -71,6 +71,9 @@ silently treated as a declined heal.
 `notebooklm._auth.master_token` module and pickle identity. The same is true for `Account` and
 `PlaywrightAccountRepairResult` with `notebooklm._auth.account`. Facade, storage, and compatibility
 imports resolve to those exact objects; adapters do not wrap or translate unexpected exceptions.
+A missing optional `gpsoauth` install is deliberately not a `MasterTokenError`: it propagates as
+`MissingDependencyError`, preserving the shared dependency/install-hint classification instead of
+being flattened into a credential rejection.
 
 Account repair extracts the active email before its handled-error region, offloads only cookie
 loading, and performs typed write/clear operations synchronously. Only `OSError`, `ValueError`,
