@@ -4,7 +4,7 @@ description: 查询 AIHOT 的中文 AI 资讯、精选、当前热点和日报�
 license: MIT. See LICENSE
 metadata:
   author: Virxact
-  version: "1.5.2"
+  version: "1.5.3"
 ---
 
 # AIHOT
@@ -39,7 +39,8 @@ metadata:
 | “最近／最近一周有什么” | `/api/v1/items?mode=selected&window=7d&limit=10` |
 | “当前最热／最近在爆什么” | `/api/v1/hot-topics` |
 | “这件事的来龙去脉／后续进展” | 先查 hot-topics；若实际返回 `links.story`，从其 `/story/{publicId}` 路径提取 `publicId`，再调用 `/api/v1/stories/{publicId}`；否则用 items 的 `q` 查询 |
-| 明确说“日报” | `/api/v1/dailies/latest` 或 `/api/v1/dailies/{YYYY-MM-DD}` |
+| 明确说“最新／今天的日报” | 先 `/api/v1/dailies?limit=1`，再请求返回日期对应的 `/api/v1/dailies/{YYYY-MM-DD}` |
+| 明确指定日期的日报 | `/api/v1/dailies/{YYYY-MM-DD}` |
 | “有哪些日报／日报归档” | `/api/v1/dailies?limit=N` |
 | 模型／产品／论文／行业／技巧 | `/api/v1/items?mode=selected&category=<slug>&window=<24h|7d>` |
 | 公司、产品或主题关键词 | `/api/v1/items?mode=selected&q=<关键词>&window=<24h|7d>` |
@@ -53,7 +54,7 @@ metadata:
 - 时间窗默认按 AIHOT 时间轴（`by=timeline`），与网站看到的一致：慢推信源（官方博客、公众号、HuggingFace Daily）原文两三天前发、今天才收录的，仍算「今天」；三天以上的历史回填则归位到原发布日，不会冒充最近。需要严格按第三方原文发布时间对账时才显式加 `by=published`，并向用户说明口径不同。
 - 只取用户需要的条数：默认 `limit=50` 是给客户端用的，做简报时 7 天窗口传 `limit=10` 就够，不要默认拉满。
 - 只有用户明确说“日报”才用 dailies；日报是固定日切成品，不等同滚动时间窗。
-- 最新日报返回 404 时，只查询一次有界的 `/api/v1/dailies?limit=7`；索引有结果时，再用其中实际返回的最近日期请求一次 `/api/v1/dailies/{date}`，索引为空就停止。绝不猜“昨天”或自行拼日期。
+- 最新或今天的日报先查询一次 `/api/v1/dailies?limit=1`；索引有结果时，只使用其中实际返回的日期请求 `/api/v1/dailies/{date}`，索引为空就停止。不要把稳定 URL `/api/v1/dailies/latest` 作为 Agent 的默认入口：部分第三方工具可能在 HTTP 缓存之外长期复用同一 URL 的旧结果。`/latest` 仍是兼容的公开 REST 端点。绝不猜“今天”“昨天”或自行拼日期。
 - “现在最热／热点榜”只用 hot-topics；items 按时间倒序，不能替代热点榜。按 `rank` 从小到大展示「第 N 名」，不得展示、推算或索要内部热度值，也不得拿信源数冒充热度。
 - 用户追问某个热点的来龙去脉、时间线或最新进展时，只有 hot-topics 条目实际含 `links.story` 才继续：确认 URL 属于 `https://aihot.virxact.com/story/{publicId}`，从路径末段提取实际 `publicId`，再请求 `/api/v1/stories/{publicId}`。`links.story` 本身是给人阅读的 HTML 网页，不得直接请求，也不得把网页响应当 API 数据。事件 API 响应含逆序报道时间线、AI 综述（`digest`，随事件演化更新，矛盾会显式标注）与最新进展一句话（`latest`）。字段缺失、URL 不符合上述格式或事件 API 返回 404，表示事件层当前不可用；改用标题关键词查询 items。除此之外没有获取 story id 的检索端点，不得猜测或拼造 id。
 - v1 原生时间窗是 `24h` 或 `7d`。用户指定其它七天内范围时，取最小覆盖窗后本地收窄，并如实写明范围。收窄要用与服务端一致的时间轴值，可由返回字段直接算出：`publishedAt` 为空时取 `discoveredAt`；`discoveredAt - publishedAt > 72 小时`（历史回填）时取 `publishedAt`；其余取 `discoveredAt`。直接拿 `publishedAt` 收窄会把慢推信源误删。
@@ -67,7 +68,7 @@ metadata:
 
 ## 请求
 
-- API 匿名、只读、无需 Key。发起请求前，若本 Skill 目录中的 `.aihot-actor-id` 存在、可读、内容是合法 UUID v4，且客户端能设置 User-Agent，则必须读取并把 `aihot-actor/<uuid>` 追加到 `User-Agent: aihot-skill/1.5.2 (+https://aihot.virxact.com/aihot-skill/)`。这个随机值只用于把同一直接消费实例跨渠道去重，不是账号、密钥或授权；不得向用户展示。文件缺失、不可读、值无效或客户端不能设置 User-Agent 时，使用不带 Actor 的基础 UA 继续请求，不得拒绝查询或伪装浏览器。
+- API 匿名、只读、无需 Key。发起请求前，若本 Skill 目录中的 `.aihot-actor-id` 存在、可读、内容是合法 UUID v4，且客户端能设置 User-Agent，则必须读取并把 `aihot-actor/<uuid>` 追加到 `User-Agent: aihot-skill/1.5.3 (+https://aihot.virxact.com/aihot-skill/)`。这个随机值只用于把同一直接消费实例跨渠道去重，不是账号、密钥或授权；不得向用户展示。文件缺失、不可读、值无效或客户端不能设置 User-Agent 时，使用不带 Actor 的基础 UA 继续请求，不得拒绝查询或伪装浏览器。
 - 普通查询不做版本检查，也不访问旧兼容层。后端在稳定 v1 契约内升级时，用户无需更新本 Skill。
 - 反复查询同一个 URL 时保存响应的 `ETag`，下次带 `If-None-Match` 发出；`304` 表示内容没变，直接复用上次结果，不要重新总结。
 - 定时任务对同一端点至少间隔 60 秒；资讯类内容没有秒级新鲜度，更密的轮询只是浪费双方带宽。

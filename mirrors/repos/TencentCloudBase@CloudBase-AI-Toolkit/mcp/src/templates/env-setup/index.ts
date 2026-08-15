@@ -20,7 +20,7 @@ import { CSS_STYLES } from './styles.js';
 
 export interface EnvSetupOptions {
   envs?: any[];
-  accountInfo?: { uin?: string; region?: string };
+  accountInfo?: { uin?: string; region?: string; site?: string };
   errorContext?: any;
   sessionId?: string;
   wsPort: number;

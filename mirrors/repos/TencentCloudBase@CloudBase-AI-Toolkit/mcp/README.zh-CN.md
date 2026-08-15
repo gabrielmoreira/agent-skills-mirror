@@ -85,7 +85,7 @@ IDE 支持时优先用 Plugin；只需 MCP 配置时用本包即可。
 }
 ```
 
-托管 URL 可用 `enable_plugins` / `disable_plugins`（逗号分隔）。插件名见本包 `src/server.ts`（如 `env`、`database`、`functions`、`hosting`、`storage`、`pg_database`、`cloudrun`、`logs`）。
+托管 URL 可用 `site=domestic` 指定登录站点（国内站新加坡需 `site=domestic`），也可用 `enable_plugins` / `disable_plugins`（逗号分隔）裁剪工具集。插件名见本包 `src/server.ts`（如 `env`、`database`、`functions`、`hosting`、`storage`、`pg_database`、`cloudrun`、`logs`）。
 
 **自建 Cloud Mode**：设置 `CLOUDBASE_MCP_CLOUD_MODE=true`（或 `MCP_CLOUD_MODE=true`），禁用面向远程调用方的本地文件/进程类工具。
 

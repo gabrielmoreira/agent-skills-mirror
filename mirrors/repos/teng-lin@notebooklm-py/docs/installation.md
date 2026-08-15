@@ -207,6 +207,7 @@ Embedding `notebooklm-py` in a Python application.
 
 ```python
 import notebooklm
+
 print(notebooklm.__version__)
 ```
 

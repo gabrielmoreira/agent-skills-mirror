@@ -16,12 +16,14 @@
 # on extra-high; composer's -fast tier is its ceiling (accepted exceptions).
 #
 # Usage:
-#   cross-model-doc-review.sh <host-provider> <candidates> <reviewer-name> \
+#   cross-model-doc-review.sh <host-serving-family> <candidates> <reviewer-name> \
 #                             <document-path> <document-type> <origin> <run-dir>
 #
-#   <host-provider> the peer-key of the host's OWN serving provider, attested by
-#                   the calling skill (it knows its harness): openai->codex,
-#                   anthropic->claude, xai->grok, cursor/composer->composer.
+#   <host-serving-family>
+#                   the peer-key of the host's OWN serving family, attested by
+#                   the calling skill (it knows its harness). A peer-key, never
+#                   a provider name: openai->codex, anthropic->claude,
+#                   xai->grok, cursor/composer->composer.
 #                   Excluded from selection when attested. `unknown` is allowed,
 #                   but any returned review remains non-independent and cannot
 #                   promote agreement.
@@ -84,8 +86,8 @@ skip() { log "$*"; exit 0; }   # non-blocking: announce reason, exit clean, no o
 # tier principle and the single maintenance point when model families change.
 M_CODEX="gpt-5.6-luna"         # codex CLI            (-c model_reasoning_effort="xhigh")
 M_CLAUDE="opus"                # claude CLI, Opus 4.8 (--effort high)
-M_GROK="grok-4.5"              # grok CLI             (--effort high)
-M_GROK_CURSOR="cursor-grok-4.5-high"  # fixed cursor-agent Grok route (current id)
+M_GROK="grok-4.6"              # grok CLI             (--effort high)
+M_GROK_CURSOR="cursor-grok-4.6-high"  # fixed cursor-agent Grok route (current id)
 M_COMPOSER="composer-2.5-fast" # cursor-agent composer (no high tier; -fast is the ceiling)
 
 # --- model-identity receipt (R7/R8) -----------------------------------------

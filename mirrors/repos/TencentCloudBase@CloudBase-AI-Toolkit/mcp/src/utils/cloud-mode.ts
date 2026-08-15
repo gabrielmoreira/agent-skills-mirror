@@ -76,7 +76,6 @@ export function shouldRegisterTool(toolName: string): boolean {
 
     // Download tools - local file downloads
     'downloadTemplate',
-    'downloadRemoteFile',
 
     // Setup tools - local config file operations
     'setupEnvironmentId',

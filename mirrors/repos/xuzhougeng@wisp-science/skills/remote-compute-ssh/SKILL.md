@@ -74,26 +74,54 @@ running without a wall-time limit. Wisp maps the supervisor timeout marker to
 
 ## Results
 
-SSH-direct v1 does not expand remote output globs or automatically download a
-remote directory. Do not promise that relative `output_specs` will be
-harvested. When the command writes a result to a known durable server path, it
-may register that exact path as a remote Artifact reference:
+Declare `output_specs` with workdir-relative globs for the final products.
+After the Run succeeds, Wisp collects the matches on the server, checksums
+them, pulls them back through a persisted transfer Run, places them under the
+project's configured results directory, and registers each as an
+ArtifactVersion. The Run records `harvested_at` once registration completes;
+`harvest_run({"run_id":"..."})` retries a failed or interrupted harvest.
+
+Selection is the database boundary: only spec-matched outputs are transferred
+and recorded. Point globs at final products (for example `Trinity.fasta`),
+never at intermediate trees. A non-bundle glob may match at most 500 files.
+For a many-file output that must be kept, set `bundle: true` so the matches
+(or a whole directory) arrive as one tar.gz archive registered as a single
+artifact:
 
 ```json
 {
   "output_specs": [
-    {
-      "glob": "ssh://gpu-box/home/me/project/results/motif_enrichment_all.tsv",
-      "kind": "table",
-      "residency": "remote"
-    }
+    { "glob": "results/*.tsv", "kind": "table", "residency": "auto" },
+    { "glob": "assembly_out", "kind": "archive", "residency": "local", "bundle": true }
   ]
 }
 ```
 
-For a small result that must become local, wait until the Run is terminal,
-then transfer it as a separate quick operation and register the local file.
-Large outputs should remain remote references.
+Files over the size caps (or `residency: "remote"`) are moved out of the run
+workdir into the project's persistent remote data area and registered as
+`ssh://` references with checksum and size, so workspace cleanup can never
+orphan them. Explicit `ssh://…` URIs in `output_specs` still register a
+remote reference without any download.
+
+## Cleanup: servers are disposable
+
+Tasks and artifacts belong to the project; the server only computes. After the
+results are harvested (or knowingly abandoned), reclaim the workspace:
+
+- `cleanup_run_workspace({"run_id":"..."})` deletes the Run's
+  `~/.wisp-science/runs/<run-id>` directory (inputs, logs, intermediates). A
+  succeeded Run with declared `output_specs` must be harvested first; the tool
+  refuses otherwise so results are never lost. Registered artifacts and the
+  Run's logs in the project are unaffected.
+- `list_remote_files({"context_id":"ssh:<alias>"})` shows every file this
+  project placed on the server (staged inputs and uploads) classified as
+  active, replaced, or orphan; `remove_remote_files` deletes retracted ones.
+- Project settings can enable retention windows that automatically clean
+  succeeded+harvested and failed run workspaces after N days.
+
+Intermediate files (for example Trinity's hundreds of thousands of read
+partitions) should never be enumerated, downloaded, or registered — leave them
+in the workdir and let cleanup reclaim them in one deletion.
 
 ## Transfers between local and SSH contexts
 
@@ -101,10 +129,18 @@ Use `transfer_between_contexts` for one exact remote file or directory. The
 destination may be another selected SSH context or `local`. Never compose
 nested `ssh`, `scp`, or `rsync -e ssh` inside `run_in_context`.
 
-For a local upload, set `source_context_id` to `local`, provide the exact
-existing absolute local file or directory, and select an SSH destination.
-Wisp rejects globs, symlinks, special files, and existing remote destinations.
-Call `monitor_run` once with the returned Run id.
+Users can also upload from the Files panel: select the SSH context, open the
+destination folder, then use **Upload** or drop local files. That UI path
+submits the same `file_transfer` Run and does not require this tool.
+
+For a local upload via the agent, set `source_context_id` to `local`, provide
+the exact existing absolute local file or directory, and select an SSH
+destination.
+Omit `destination_path` to place the file under the project's configured
+remote data directory for that server. Wisp rejects globs, symlinks, special
+files, and existing remote destinations, and ledgers every successful upload
+so retracted files can be found and removed later. Call `monitor_run` once
+with the returned Run id.
 
 For a local download, set `destination_context_id` to `local` and provide the
 exact new absolute local path. Ask the user when that path is unspecified.

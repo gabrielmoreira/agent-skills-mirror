@@ -1226,7 +1226,7 @@ Use `%`-style log calls, not f-strings:
 
 ```python
 logger.warning("Failed for %s in %.2fs", name, elapsed)  # OK
-logger.warning(f"Failed for {name} in {elapsed:.2f}s")    # BAD
+logger.warning(f"Failed for {name} in {elapsed:.2f}s")  # BAD
 ```
 
 f-string eager evaluation defeats lazy formatting and (although the filter would still scrub via `record.getMessage()`) makes profile-time cost unconditional.
@@ -1241,6 +1241,7 @@ If you also want those loggers to *emit* through notebooklm-py's default handler
 
 ```python
 from notebooklm.log import install_redaction
+
 install_redaction("httpx", "urllib3")
 ```
 

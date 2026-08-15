@@ -2,9 +2,13 @@
  * Reusable UI components for env setup page
  */
 
-export function renderHeader(accountInfo?: { uin?: string; region?: string }, ide?: string) {
+export function renderHeader(accountInfo?: { uin?: string; region?: string; site?: string }, ide?: string) {
   const hasAccount = !!accountInfo?.uin;
   const isCodeBuddy = ide === "CodeBuddy";
+  // 国际站不支持切换账号：优先按 site 判定，兼容未传 site 的旧调用方按 region 兜底
+  const site = accountInfo?.site;
+  const isIntl = site === "intl" ? true : site === "domestic" ? false : accountInfo?.region === "ap-singapore";
+  const siteLabel = site === "intl" ? "国际站" : site === "domestic" ? "国内站" : undefined;
 
   return `
     <div class="header">
@@ -12,7 +16,7 @@ export function renderHeader(accountInfo?: { uin?: string; region?: string }, id
         <img class="logo" src="https://7463-tcb-advanced-a656fc-1257967285.tcb.qcloud.la/mcp/cloudbase-logo.svg" alt="CloudBase Logo" />
         <span class="title">CloudBase</span>
       </div>
-      ${(hasAccount && accountInfo.region !== 'ap-singapore') ? /** 国际站不支持切 */ `
+      ${(hasAccount && !isIntl) ? `
         <div class="header-right">
           <div class="account-section">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -20,6 +24,7 @@ export function renderHeader(accountInfo?: { uin?: string; region?: string }, id
               <circle cx="12" cy="7" r="4"/>
             </svg>
             <span class="account-uin">${accountInfo.uin}</span>
+            ${siteLabel ? `<span class="account-site">${siteLabel}</span>` : ''}
             ${accountInfo.region ? `<span class="account-region">${accountInfo.region}</span>` : ''}
             ${!isCodeBuddy ? `
               <button class="btn-switch" onclick="switchAccount()" title="切换账号">

@@ -215,6 +215,17 @@ The daemon DTO mapper belongs to
 `@tutti-os/agent-activity-tuttid-adapter`, so Desktop and Mobile do not keep
 separate parser implementations for Composer capabilities or option catalogs.
 
+## Performance Failure Events
+
+`AgentGUIPerformanceEvent` failure settlements carry a bounded `errorCode` and
+`failureStage` when the operation fails. `errorCode` comes from a stable
+machine-readable error field and falls back to `unknown`; raw error messages
+are never included. Composer option failures use `options_load`, Session
+activation uses `session_activation`, Prompt admission uses `prompt_admission`,
+and Turn failures use `turn_settlement`. Each settlement keeps its existing
+`operationId`, so hosts can deduplicate repeated observations without using
+provider names, timestamps, or error text.
+
 ## Quick Composer
 
 `@tutti-os/agent-gui/quick-composer` renders the canonical DOM Composer for a

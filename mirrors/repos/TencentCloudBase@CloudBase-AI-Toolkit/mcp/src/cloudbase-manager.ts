@@ -8,6 +8,7 @@ import {
 import { CloudBaseOptions, Logger } from './types.js';
 import { debug, error } from './utils/logger.js';
 import { buildAuthNextStep, throwToolPayloadError } from './utils/tool-result.js';
+import { resolveSiteAndRegion } from './utils/site-map.js';
 
 // Timeout for envId auto-resolution flow.
 // 10 minutes (600 seconds) - matches InteractiveServer timeout
@@ -44,7 +45,7 @@ function createManagerFromLoginState(loginState: any, region?: string): CloudBas
         envId: loginState.envId,
         token: loginState.token,
         proxy: process.env.http_proxy,
-        region: region ?? process.env.TCB_REGION ?? 'ap-shanghai',
+        region: region ?? resolveSiteAndRegion().region,
     });
 }
 
@@ -78,7 +79,7 @@ export async function listAvailableEnvCandidates(options?: {
         if (!loginState?.secretId || !loginState?.secretKey) {
             return [];
         }
-        const region = cloudBaseOptions?.region ?? process.env.TCB_REGION ?? 'ap-shanghai';
+        const region = resolveSiteAndRegion(cloudBaseOptions ?? {}).region;
         cloudbase = createManagerFromLoginState(loginState, region);
     }
 
@@ -327,7 +328,10 @@ function buildDatabaseInstanceIdCacheKey(options?: {
     cloudBaseOptions?: CloudBaseOptions;
 }) {
     const envId = options?.envId ?? options?.cloudBaseOptions?.envId ?? process.env.CLOUDBASE_ENV_ID ?? 'unknown';
-    const region = options?.region ?? options?.cloudBaseOptions?.region ?? process.env.TCB_REGION ?? 'ap-shanghai';
+    const region = resolveSiteAndRegion({
+        site: options?.cloudBaseOptions?.site,
+        region: options?.region ?? options?.cloudBaseOptions?.region,
+    }).region;
     return `${region}:${envId}`;
 }
 
@@ -458,11 +462,11 @@ export async function getCloudBaseManager(options: GetManagerOptions = {}): Prom
     }
 
     try {
-        // Region priority: explicit option > env var > ap-shanghai default
-        const fallbackRegion = cloudBaseOptions?.region ?? process.env.TCB_REGION ?? 'ap-shanghai';
+        // Region priority: explicit option > TCB_REGION/TCB_SITE env > .cloudbase/project.json > ap-shanghai default
+        const { region: fallbackRegion, site } = resolveSiteAndRegion(cloudBaseOptions ?? {});
         const loginState = authStrategy === 'ensure'
-            ? await getLoginState({ region: fallbackRegion })
-            : await peekLoginState();
+            ? await getLoginState({ region: fallbackRegion, site })
+            : await peekLoginState({ region: fallbackRegion, site });
 
         if (!loginState) {
             const authState = await getAuthProgressState();
@@ -514,7 +518,7 @@ export async function getCloudBaseManager(options: GetManagerOptions = {}): Prom
 
         // envId priority: explicit option > envManager cache > loginState.envId
         const resolvedEnvId = finalEnvId || loginEnvId;
-        // region 直接使用 fallbackRegion（来自 cloudBaseOptions?.region ?? TCB_REGION ?? 'ap-shanghai'）
+        // region 直接使用 fallbackRegion（resolveSiteAndRegion 统一解析）
         // 不再通过 DescribeEnvs 查询 region，以兼容 STS 临时密钥场景
         const region = fallbackRegion;
 
@@ -548,8 +552,8 @@ export function createCloudBaseManagerWithOptions(cloudBaseOptions: CloudBaseOpt
         hasToken: !!cloudBaseOptions.token,
     });
 
-    // Region priority: explicit option > env var > ap-shanghai default
-    const region = cloudBaseOptions.region ?? process.env.TCB_REGION ?? 'ap-shanghai';
+    // Region priority: explicit option > TCB_REGION/TCB_SITE env > .cloudbase/project.json > ap-shanghai default
+    const region = resolveSiteAndRegion(cloudBaseOptions).region;
     const manager = new CloudBase({
         ...cloudBaseOptions,
         proxy: cloudBaseOptions.proxy || process.env.http_proxy,

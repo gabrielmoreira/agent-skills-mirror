@@ -154,3 +154,7 @@ factor_panel.to_csv("factor_alpha101_001.csv")                # ready for factor
 
 For combining several validated alphas into one composite signal, see the `multi-factor` skill's `ZooSignalEngine` (it z-scores, weights, and ranks alphas for you, with per-alpha skip isolation). For browsing the catalogue and inspecting individual `__alpha_meta__` records, see the `alpha-zoo` skill.
 
+## Artifact Placement
+
+When `factor_analysis` runs inside a backtest or swarm run, set `output_dir` to `<run_dir>/artifacts/factor/<factor_name>/` so the Run Detail Factor tab can render the results. Use one subdirectory per factor (for example `artifacts/factor/momentum_20d/`), and keep the three standard output files (`ic_series.csv`, `ic_summary.json`, `group_equity.csv`) together inside it. Artifacts written elsewhere under `artifacts/` are still discovered by the recursive scan, but the canonical layout keeps runs comparable.
+

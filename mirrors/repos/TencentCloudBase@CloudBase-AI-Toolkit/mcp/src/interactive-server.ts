@@ -692,7 +692,7 @@ export class InteractiveServer {
 
   async collectEnvId(
     availableEnvs: any[],
-    accountInfo?: { uin?: string },
+    accountInfo?: { uin?: string; region?: string; site?: string },
     errorContext?: any, // EnvSetupContext
     manager?: any, // CloudBase manager instance for refreshing env list
     mcpServer?: any, // MCP server instance for IDE detection
@@ -870,7 +870,7 @@ export class InteractiveServer {
 
   private getEnvSetupHTML(
     envs?: any[],
-    accountInfo?: { uin?: string },
+    accountInfo?: { uin?: string; region?: string; site?: string },
     errorContext?: any, // EnvSetupContext
     sessionId?: string,
   ): string {
@@ -903,7 +903,7 @@ export class InteractiveServer {
   // Keep the old implementation for reference (can be removed later)
   private getEnvSetupHTML_OLD(
     envs?: any[],
-    accountInfo?: { uin?: string },
+    accountInfo?: { uin?: string; region?: string; site?: string },
     errorContext?: any,
     sessionId?: string,
   ): string {

@@ -2,7 +2,7 @@ import ParameterTable from '../../api-reference/components/ApiContainer';
 
 # MCP 工具
 
-当前包含 39 个工具，按功能分组如下。
+当前包含 38 个工具，按功能分组如下。
 
 源数据: [tools.json](https://github.com/TencentCloudBase/CloudBase-AI-ToolKit/blob/main/scripts/tools.json)
 
@@ -70,7 +70,6 @@ import ParameterTable from '../../api-reference/components/ApiContainer';
 ### 模板与文件
 
 - [`downloadTemplate`](#downloadtemplate)
-- [`downloadRemoteFile`](#downloadremotefile)
 
 ### 搜索与知识库
 
@@ -1028,6 +1027,11 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
 
 **定时任务 / cron / 定时跑**：使用 `listFunctionTriggers` 查询函数的 timer 触发器配置。
 
+**层（Layer）说明**：
+- 层为 SCF 账号级共享命名空间：不同环境创建同名层会共享同一层的版本序列；删除某版本会影响所有绑定该版本的环境的函数
+- 创建层必须用带环境标识的唯一层名，固定格式：`\{layerName\}_\{当前envId\}`（如 `common_cloud1-d9ghadgak3edf6b36`）。不要在不同环境使用相同裸层名，创建前先 `listLayers` 查重
+- `listLayers` / `listLayerVersions` / `getLayerVersionDetail` 返回账号级视图，可能含其他环境创建的层
+
 **区分 `queryLogs` 工具**：
 - 本工具用于查询特定 CloudBase 云函数的执行日志
 - `queryLogs` 工具用于搜索 CLS 日志服务（跨服务日志聚合）
@@ -1040,7 +1044,7 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
       name: "action",
       type: "string",
       required: true,
-      description: `只读操作类型： - \`listFunctions\`: 列出所有 CloudBase 云函数 - \`getFunctionDetail\`: 获取 CloudBase 云函数详情（需要 functionName） - \`listFunctionLogs\`: 查询 CloudBase 云函数执行日志（需要 functionName） - \`getFunctionLogDetail\`: 获取日志详情（需要 requestId） - \`listFunctionLayers\`: 列出函数绑定的层 - \`listLayers\`: 列出所有层 - \`listLayerVersions\`: 列出层的版本（注意：是 Versions 不是 Version） - \`getLayerVersionDetail\`: 获取层版本详情 - \`listFunctionTriggers\`: 列出函数触发器（用于查看定时任务 / cron / timer 配置） - \`getFunctionDownloadUrl\`: 获取函数代码下载地址 可填写的值: "listFunctions", "getFunctionDetail", "listFunctionLogs", "getFunctionLogDetail", "listFunctionLayers", "listLayers", "listLayerVersions", "getLayerVersionDetail", "listFunctionTriggers", "getFunctionDownloadUrl"`,
+      description: `只读操作类型： - \`listFunctions\`: 列出所有 CloudBase 云函数 - \`getFunctionDetail\`: 获取 CloudBase 云函数详情（需要 functionName） - \`listFunctionLogs\`: 查询 CloudBase 云函数执行日志（需要 functionName） - \`getFunctionLogDetail\`: 获取日志详情（需要 requestId） - \`listFunctionLayers\`: 列出函数绑定的层 - \`listLayers\`: 列出所有层（账号级视图，含其他环境创建的层） - \`listLayerVersions\`: 列出层的版本（注意：是 Versions 不是 Version；账号级视图） - \`getLayerVersionDetail\`: 获取层版本详情（账号级视图） - \`listFunctionTriggers\`: 列出函数触发器（用于查看定时任务 / cron / timer 配置） - \`getFunctionDownloadUrl\`: 获取函数代码下载地址 可填写的值: "listFunctions", "getFunctionDetail", "listFunctionLogs", "getFunctionLogDetail", "listFunctionLayers", "listLayers", "listLayerVersions", "getLayerVersionDetail", "listFunctionTriggers", "getFunctionDownloadUrl"`,
     },
     {
       name: "functionName",
@@ -1095,7 +1099,7 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
     {
       name: "layerName",
       type: "string",
-      description: `层名称。\`listLayerVersions\`、\`getLayerVersionDetail\` 操作必填`,
+      description: `层名称。\`listLayerVersions\`、\`getLayerVersionDetail\` 操作必填。层为账号级共享命名空间；推荐固定格式 \`{layerName}_{当前envId}\`（如 common_cloud1-d9ghadgak3edf6b36）`,
     },
     {
       name: "layerVersion",
@@ -1110,6 +1114,11 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
 ### `manageFunctions`
 CloudBase 云函数统一写入口。支持创建函数、更新代码、更新配置、调用函数、管理定时跑 / 定时任务 / scheduled job 的 timer 触发器和层绑定。如果要创建 cron 定时任务，先用 createFunction 创建函数，再用 createFunctionTrigger 创建 timer 触发器（支持7段cron表达式），deleteFunctionTrigger 删除触发器。镜像部署（Runtime=CustomImage）：先把代码经 zip→COS→CloudApp custom 构建→TCR 推镜像（这一阶段为裸腾讯云 API，本工具不覆盖），再用 createFunction(func.runtime="CustomImage", imageConfig) 基于 TCR 镜像创建 HTTP 函数；后续迭代用 updateFunctionCode + imageConfig 换镜像 tag。危险操作需要显式 confirm=true。
 
+**层（Layer）说明**：
+- 层为 SCF 账号级共享命名空间：不同环境创建同名层会共享同一层的版本序列；删除某版本会影响所有绑定该版本的环境的函数
+- 创建层必须用带环境标识的唯一层名，固定格式：`\{layerName\}_\{当前envId\}`（如 `common_cloud1-d9ghadgak3edf6b36`）。不要在不同环境使用相同裸层名，创建前先 `listLayers` 查重
+- 相关 action：`createLayerVersion` / `deleteLayerVersion` / `attachLayer` / `detachLayer` / `updateFunctionLayers`（只读查询见 queryFunctions 的 listLayers / listLayerVersions / getLayerVersionDetail）
+
 #### 参数
 
 <ParameterTable
@@ -1118,7 +1127,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
       name: "action",
       type: "string",
       required: true,
-      description: `写操作类型，例如 createFunction、updateFunctionCode、incrementalDeployFunction、invokeFunction、deleteFunction、createFunctionTrigger（定时任务 / cron / timer）、deleteFunctionTrigger、attachLayer、detachLayer 可填写的值: "createFunction", "updateFunctionCode", "updateFunctionConfig", "invokeFunction", "deleteFunction", "createFunctionTrigger", "deleteFunctionTrigger", "createLayerVersion", "deleteLayerVersion", "attachLayer", "detachLayer", "updateFunctionLayers", "incrementalDeployFunction"`,
+      description: `写操作类型，例如 createFunction、updateFunctionCode、incrementalDeployFunction、invokeFunction、deleteFunction、createFunctionTrigger（定时任务 / cron / timer）、deleteFunctionTrigger、createLayerVersion、deleteLayerVersion、attachLayer、detachLayer、updateFunctionLayers。层名推荐固定格式 \`{layerName}_{当前envId}\`（如 common_cloud1-d9ghadgak3edf6b36） 可填写的值: "createFunction", "updateFunctionCode", "updateFunctionConfig", "invokeFunction", "deleteFunction", "createFunctionTrigger", "deleteFunctionTrigger", "createLayerVersion", "deleteLayerVersion", "attachLayer", "detachLayer", "updateFunctionLayers", "incrementalDeployFunction"`,
     },
     {
       name: "func",
@@ -1371,7 +1380,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
     {
       name: "layerName",
       type: "string",
-      description: `层名称`,
+      description: `层名称。创建层推荐固定格式 \`{layerName}_{当前envId}\`（如 common_cloud1-d9ghadgak3edf6b36）；不要跨环境复用裸层名。层为账号级共享命名空间`,
     },
     {
       name: "layerVersion",
@@ -1828,7 +1837,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 - aider: Aider AI编辑器
 
 特别说明：
-- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.25.10），便于后续维护和版本追踪
+- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.27.0），便于后续维护和版本追踪
 - 下载 rules 模板时，如果项目中已存在 README.md 文件，系统会自动保护该文件不被覆盖（除非设置 overwrite=true）
 
 #### 参数
@@ -1879,17 +1888,17 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 文档名：cloud-functions 文档介绍：CloudBase function runtime guide for building, deploying, and debugging your own Event Functions or HTTP Functions. This skill should be used when users need application runtime code on CloudBase, not when they are merely calling CloudBase official platform APIs.
 文档名：cloud-storage-web 文档介绍：Complete guide for CloudBase cloud storage using Web SDK (@cloudbase/js-sdk) - upload, download, temporary URLs, file management, and best practices.
 文档名：cloudbase-agent 文档介绍：Build and deploy AI agents with CloudBase Agent SDK (TypeScript & Python). Implements the AG-UI protocol for streaming agent-UI communication. Use when deploying agent servers, using LangGraph/LangChain/CrewAI adapters, building custom adapters, understanding AG-UI protocol events, or building web/mini-program UI clients. Supports both TypeScript (@cloudbase/agent-server) and Python (cloudbase-agent-server via FastAPI).
-文档名：cloudbase-cli 文档介绍：CloudBase CLI (tcb, 云开发CLI, Tencent CloudBase命令行) resource management skill. This skill should be used when users need to deploy cloud functions, manage CloudRun apps, upload files to storage, query NoSQL/MySQL databases, deploy static hosting, set access permissions, or configure CORS/domains/routing via tcb commands. Also use for CI/CD pipeline scripting, batch operations, terminal-based CloudBase management, or when the user prefers CLI over SDK/MCP.
+文档名：cloudbase-cli 文档介绍：CloudBase CLI (tcb, 云开发CLI, Tencent CloudBase命令行) resource management skill. Use when deploying cloud functions, CloudRun, storage, NoSQL/MySQL, static hosting, permissions, CORS/domains via tcb; for CI/CD and batch ops; when the user prefers CLI; or as the first-session fallback when CloudBase MCP tools are not loaded yet (after install/config, before IDE restart). Covers tcb login (device code for Tencent Cloud accounts; --cloudbase-api-key -e for environment API Key without an account; --apiKeyId/--apiKey for CI) and domain commands (fn/hosting/cloudrun/…) as MCP auth/manage parity — do not default to tcb deploy.
 文档名：cloudbase-code-review 文档介绍："Code review and validation for CloudBase projects. After writing code for Web / miniprogram / CloudRun / cloud-function projects, call this skill to check for known pitfalls — auth guard misuse, missing database tables, RLS misconfiguration, storage domain setup, and SDK API misuse. Supports automated lint scripts (regex-based) + LLM semantic review."
 文档名：cloudbase-document-database-in-wechat-miniprogram 文档介绍：Use CloudBase document database WeChat MiniProgram SDK to query, create, update, and delete data. Supports complex queries, pagination, aggregation, and geolocation queries.
 文档名：cloudbase-document-database-web-sdk 文档介绍：Use CloudBase document database Web SDK only for confirmed NoSQL collection work. Query, create, update, and delete document data; if the task mentions PostgreSQL / CloudBase PG / app.rdb(), route to postgresql-development instead.
 文档名：cloudbase-platform 文档介绍：CloudBase platform overview and routing guide. This skill should be used when users need high-level capability selection, platform concepts, console navigation, or cross-platform best practices before choosing a more specific implementation skill.
 文档名：cloudbase-wechat-integration 文档介绍：CloudBase WeChat integration guide for Mini Program WeChat Pay, Official Account JSAPI Pay, Native QR-code Pay, Official Account OAuth, openid handling, payment callbacks, and CloudBase Integration Center generated functions. This skill should be used when users ask to add, debug, or extend WeChat payment or official-account flows on CloudBase.
-文档名：cloudrun-development 文档介绍：CloudBase Run backend development rules (Function mode/Container mode). Use this skill when deploying backend services that require long connections, multi-language support, custom environments, AI agent development, or migrating existing/GitHub apps that need VPC access to MySQL/PostgreSQL/Redis.
+文档名：cloudrun-development 文档介绍：CloudBase Run backend development rules (Function mode/Container mode). Use this skill when deploying backend services that require long connections, multi-language support, custom environments, AI agent development, or migrating existing/GitHub apps that need VPC access to MySQL/PostgreSQL/Redis. For stateless HTTP services, prefer HTTP cloud functions.
 文档名：data-model-creation 文档介绍："[Deprecated] Optional advanced tool for complex data modeling. For simple MySQL table creation, use relational-database-tool directly; for PostgreSQL / CloudBase PG schema work, use postgresql-development. New environments should use PostgreSQL DDL via queryPgDatabase/managePgDatabase — see postgresql-development skill instead."
 文档名：http-api-cloudbase 文档介绍：CloudBase official HTTP API client guide. This skill should be used when backends, scripts, or non-SDK clients must call CloudBase platform APIs over raw HTTP instead of using a platform SDK or MCP management tool.
 文档名：minimal-web-baas-demo 文档介绍："Fast path for a minimal CloudBase Web + database demo (最小前后端 / 最小可用 fullstack / Lovable-like BaaS). Defaults to @cloudbase/js-sdk client CRUD (NoSQL app.database / PG app.rdb), MCP-only schema, preview-first, and forbids cloud functions unless secrets, cron/background jobs, or logic that security rules/RLS cannot express. Use for 搭一套 demo、留言板、Todo、Notes、Kanban, or when users say 带云函数+云数据库 but only need CRUD. NOT for production multi-service backends, CloudRun, WeChat Mini Programs, or tasks that truly need server secrets."
-文档名：miniprogram-development 文档介绍：WeChat Mini Program development skill for building, debugging, previewing, testing, publishing, and optimizing mini program projects. This skill should be used when users ask to create, develop, modify, debug, preview, test, deploy, publish, launch, review, or optimize WeChat Mini Programs, mini program pages, components, `tabBar`, routing, navigation, icon assets, project structure, project configuration, `project.config.json`, `appid` setup, device preview, real-device validation, WeChat Developer Tools Nightly workflows, `wechatide` CLI, WeChat IDE Skills/MCP, console/network debugging, `miniprogram-ci` preview/upload flows, or mini program release processes. It should also be used when users explicitly mention CloudBase, `wx.cloud`, Tencent CloudBase, 腾讯云开发, 微信云开发, or 云开发 in a mini program project.
+文档名：miniprogram-development 文档介绍：WeChat Mini Program development skill for building, debugging, previewing, testing, publishing, optimizing, and promoting mini program projects. This skill should be used when users ask to create, develop, modify, debug, preview, test, deploy, publish, launch, review, optimize, or promote WeChat Mini Programs, mini program pages, components, `tabBar`, routing, navigation, icon assets, project structure, project configuration, `project.config.json`, `appid` setup, device preview, real-device validation, WeChat Developer Tools Nightly workflows, `wechatide` CLI, WeChat IDE Skills/MCP, console/network debugging, `miniprogram-ci` preview/upload flows, or mini program release processes. It should also be used when users ask about mini program SEO / search optimization / search promotion (小程序 SEO、搜索优化、微信搜索收录、搜索推广、页面收录、关键词排名、被搜索到) or page indexing by the WeChat search crawler (`mpcrawler`). Use it when users explicitly mention CloudBase, `wx.cloud`, Tencent CloudBase, 腾讯云开发, 微信云开发, or 云开发 in a mini program project.
 文档名：ops-inspector 文档介绍：AIOps-style one-click inspection skill for CloudBase resources. Use this skill when users need to diagnose errors, check resource health, inspect logs, or run a comprehensive health check across cloud functions, CloudRun services, databases, and other CloudBase resources.
 文档名：postgresql-development-cloudbase 文档介绍："Use when building, debugging, or evaluating CloudBase PostgreSQL / CloudBase PG / PG mode apps, including Postgres schema setup, queryPgDatabase/managePgDatabase, JS SDK v3 app.rdb() CRUD/RPC, PG HTTP API fallback, RLS-style permissions, username-password auth, and Web CMS/admin CRUD flows backed by CloudBase PG."
 文档名：relational-database-mcp-cloudbase 文档介绍："[Deprecated] This is the required documentation for agents operating on the CloudBase Relational Database through MCP. It defines the canonical SQL management flow with `queryMysqlDatabase`, `manageMysqlDatabase`, `queryPermissions`, and `managePermissions`, including MySQL provisioning, destroy flow, async status checks, safe query execution, schema initialization, and permission updates. New environments should use PostgreSQL — see postgresql-development skill instead."
@@ -1990,7 +1999,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 ---
 
 ### `queryCloudRun`
-查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表和部署日志。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。
+查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表、获取部署日志以及查询环境云托管开通状态（envStatus）。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。
 
 #### 参数
 
@@ -2000,7 +2009,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       name: "action",
       type: "string",
       required: true,
-      description: `查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取指定服务最近一次或指定构建的部署日志 可填写的值: "list", "detail", "templates", "getDeployLog"`,
+      description: `查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取指定服务最近一次或指定构建的部署日志，getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪 可填写的值: "list", "detail", "templates", "getDeployLog", "getDeployRecords", "envStatus"`,
     },
     {
       name: "pageSize",
@@ -2023,9 +2032,14 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       description: `服务类型筛选条件：function=函数型云托管（仅支持Node.js，有特殊的开发要求和限制，适合简单的API服务），container=容器型服务（推荐使用，支持任意语言和框架如Java/Go/Python/PHP/.NET等，适合大多数应用场景） 可填写的值: "function", "container"`,
     },
     {
+      name: "envId",
+      type: "string",
+      description: `环境 ID（action=envStatus 时使用；不传则使用当前配置的环境）。格式如 env-xxxxxx`,
+    },
+    {
       name: "detailServerName",
       type: "string",
-      description: `要查询详细信息或部署日志的服务名称。当action为detail或getDeployLog时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表`,
+      description: `要查询详细信息、部署记录或部署日志的服务名称。当action为detail、getDeployLog或getDeployRecords时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表`,
     },
     {
       name: "buildId",
@@ -2038,7 +2052,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 ---
 
 ### `manageCloudRun`
-管理云托管服务，按开发顺序支持：初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。
+管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。
 
 #### 参数
 
@@ -2048,18 +2062,48 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       name: "action",
       type: "string",
       required: true,
-      description: `云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体） 可填写的值: "init", "download", "run", "deploy", "delete", "createAgent", "updateConfig"`,
+      description: `云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；传 imageUrl 时改为已有镜像部署，走 DeployType=image 容器型，targetPath 可省略；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体），initEnv=开通当前环境的云托管（异步创建云托管环境，幂等：已开通直接返回；适合新环境首次部署前使用），traffic=流量管理与灰度发布（set=调整稳定版/灰度版流量比例，promote=将灰度版本升级为全量，rollback=回滚到上一个稳定版本；对应 tcb cloudrun traffic 命令） 可填写的值: "init", "download", "run", "deploy", "delete", "createAgent", "updateConfig", "initEnv", "traffic"`,
     },
     {
       name: "serverName",
       type: "string",
       required: true,
-      description: `云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名`,
+      description: `云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名。initEnv 操作不需要此参数`,
+    },
+    {
+      name: "trafficOp",
+      type: "string",
+      description: `流量管理子操作（action=traffic 时使用）：set=调整灰度流量比例（需先部署新版本至灰度，通过 stablePercent/canaryPercent 设置稳定版与灰度版流量比例，两者之和必须等于100）；promote=将灰度版本全量发布（灰度版本流量置为100%并关闭灰度发布，等价于 tcb cloudrun traffic promote）；rollback=回滚到上一个稳定版本（停止当前灰度/发布中的版本，回到稳定版本，等价于 tcb cloudrun traffic rollback） 可填写的值: "set", "promote", "rollback"`,
+    },
+    {
+      name: "stablePercent",
+      type: "number",
+      description: `稳定版本流量比例（trafficOp=set 时使用），取值范围0-100。与 canaryPercent 之和必须等于100。例如希望 90% 流量打到稳定版、10% 打到灰度版，则 stablePercent=90, canaryPercent=10`,
+    },
+    {
+      name: "canaryPercent",
+      type: "number",
+      description: `灰度版本流量比例（trafficOp=set 时使用），取值范围0-100。与 stablePercent 之和必须等于100。例如希望 90% 流量打到稳定版、10% 打到灰度版，则 stablePercent=90, canaryPercent=10`,
+    },
+    {
+      name: "envId",
+      type: "string",
+      description: `环境 ID（action=initEnv 时使用；不传则使用当前配置的环境）。格式如 env-xxxxxx`,
+    },
+    {
+      name: "packageType",
+      type: "string",
+      description: `云托管环境套餐类型（action=initEnv 时使用）：Trial=试用，Standard=标准，Professional=专业，Enterprise=企业。默认 Trial 可填写的值: "Trial", "Standard", "Professional", "Enterprise"`,
     },
     {
       name: "targetPath",
       type: "string",
-      description: `本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun`,
+      description: `本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun。使用 imageUrl 部署已有镜像时此参数可省略`,
+    },
+    {
+      name: "imageUrl",
+      type: "string",
+      description: `已有镜像部署（action=deploy 时使用）：直接指定容器镜像地址，如 ccr.ccs.tencentyun.com/ns/img:v1 或公网 registry 地址。传入后走 DeployType="image"（容器型）部署，无需本地源码目录（targetPath 可省略）。支持：1) 公网匿名可拉取的镜像直填地址；2) 私有/需登录的镜像（如 ghcr.io）需先在本地 docker pull → docker tag/push 到腾讯云 CCR → 填入 CCR 地址。不传则维持源码构建（本地代码打包上传）。注意：无论哪种部署方式，环境都需先开通云托管（未开通时先调用 initEnv，Status=normal 后再部署）`,
     },
     {
       name: "envParamsReplaceAll",
@@ -2774,7 +2818,7 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
     {
       name: "ignore",
       type: "array of string",
-      description: `上传时忽略的文件/目录 glob 模式，例如 **/node_modules/**。`,
+      description: `上传时忽略的文件/目录 glob 模式，例如 **/node_modules/**。 ⚠️ 打包的是项目根目录（filePath）而非 buildPath 产物目录：若项目根含 target/（Rust）、.next/、dist-old/、build/ 等大构建产物，必须加进 ignore（如 **/target/**），否则整个目录被打进上传 zip（实证 54GB target → 34GB zip）。默认已排除 node_modules/.git/.DS_Store/**/target/**/.next/**/.next.bak/**。`,
     },
     {
       name: "versionName",
@@ -3124,30 +3168,6 @@ CloudBase Agent 域统一写入口。支持创建、更新和删除远端 Agent�
 
 ---
 
-### `downloadRemoteFile`
-下载远程文件到项目根目录下的指定相对路径。例如：小程序的 Tabbar 等素材图片，必须使用 **png** 格式，可以从 Unsplash、wikimedia【一般选用 500 大小即可、Pexels、Apple 官方 UI 等资源中选择来下载。
-
-#### 参数
-
-<ParameterTable
-  parameters={[
-    {
-      name: "url",
-      type: "string",
-      required: true,
-      description: `远程文件的 URL 地址`,
-    },
-    {
-      name: "relativePath",
-      type: "string",
-      required: true,
-      description: `相对于项目根目录的路径，例如：'assets/images/logo.png' 或 'docs/api.md'。不允许使用 ../ 等路径遍历操作。`,
-    }
-  ]}
-/>
-
----
-
 ### `callCloudApi`
 通用的云 API 调用工具，主要用于 CloudBase / 腾讯云管控面与依赖资源相关 API 调用。调用前请先确认 service、Action 与 Param，避免猜测 Action 名称。如果你的目标是通过 HTTP 协议直接集成 auth/functions/cloudrun/storage/mysqldb 等 CloudBase 业务 API，请不要优先使用 callCloudApi，而应优先查看对应 OpenAPI / Swagger。现有 OpenAPI / Swagger 能力不是通用的管控面 Action 集合；管控面 API 请优先参考 CloudBase API 概览 https://cloud.tencent.com/document/product/876/34809 与云开发依赖资源接口指引 https://cloud.tencent.com/document/product/876/34808。对于 tcb service，常用 Action 分类如下：
 
@@ -3156,6 +3176,8 @@ CloudBase Agent 域统一写入口。支持创建、更新和删除远端 Agent�
 **认证配置**: `EditAuthConfig`、`DescribeAuthDomains`
 **云函数**: `DescribeFunctions`、`CreateFunction`、`UpdateFunctionCode`、`DeleteFunction`
 **数据库**: `CreateMySQLInstance`、`DescribeMySQLInstances`、`DestroyMySQLInstance`
+
+⚠️ 云托管（CloudBase Run）统一走 tcbr service（CreateCloudRunEnv / CreateCloudRunServer / DescribeEnvBaseInfo / DescribeCloudRunEnvs，version="2022-02-17"），tcb 旧小租户接口 CreateCloudBaseRunResource 等已被禁用；部署请用 manageCloudRun。查询单个环境基础信息/是否已开通云托管用 DescribeEnvBaseInfo（EnvId 必填），查询环境列表及资源信息用 DescribeCloudRunEnvs（EnvId 可选过滤）。
 
 销毁环境时，常见做法是至少带上 `EnvId` 和 `BypassCheck: true`，如果环境已经处于隔离期再按文档补 `IsForce: true`。
 
@@ -3167,13 +3189,18 @@ CloudBase Agent 域统一写入口。支持创建、更新和删除远端 Agent�
       name: "service",
       type: "string",
       required: true,
-      description: `选择要访问的服务。可选：tcb、scf、sts、cam、lowcode、cdn、vpc。对于 tcb / scf / lowcode 等 CloudBase 管控面 Action，请优先查官方文档，不要直接猜测 Action。 可填写的值: "tcb", "scf", "sts", "cam", "lowcode", "cdn", "vpc"`,
+      description: `选择要访问的服务。可选：tcb、tcbr、scf、sts、cam、lowcode、cdn、vpc。对于 tcb / scf / lowcode 等 CloudBase 管控面 Action，请优先查官方文档，不要直接猜测 Action。云托管统一走 tcbr（version 需传 2022-02-17）。 可填写的值: "tcb", "tcbr", "scf", "sts", "cam", "lowcode", "cdn", "vpc"`,
     },
     {
       name: "action",
       type: "string",
       required: true,
-      description: `具体 Action 名称，需符合对应服务的官方 API 定义。若不确定正确 Action，请先查官方文档；不要用近义词或历史命名进行猜测。tcb 常用 Action：环境管理 CreateEnv/ModifyEnv/DescribeEnvs/DestroyEnv、用户管理 CreateUser/ModifyUser/DescribeUserList/DeleteUsers、认证配置 EditAuthConfig、云函数 DescribeFunctions/CreateFunction、数据库 CreateMySQLInstance 等。`,
+      description: `具体 Action 名称，需符合对应服务的官方 API 定义。若不确定正确 Action，请先查官方文档；不要用近义词或历史命名进行猜测。tcb 常用 Action：环境管理 CreateEnv/ModifyEnv/DescribeEnvs/DestroyEnv、用户管理 CreateUser/ModifyUser/DescribeUserList/DeleteUsers、认证配置 EditAuthConfig、云函数 DescribeFunctions/CreateFunction、数据库 CreateMySQLInstance 等。tcbr 常用 Action：CreateCloudRunEnv（初始化云托管）、DescribeEnvBaseInfo（查询单个环境基础信息，EnvId 必填）、DescribeCloudRunEnvs（查询环境列表/资源信息，EnvId 可选过滤）、CreateCloudRunServer/DescribeCloudRunServers。`,
+    },
+    {
+      name: "version",
+      type: "string",
+      description: `API 版本（可选）。缺省时按 service 使用 SDK 内置默认版本；tcbr 必须传 "2022-02-17"（否则请求缺少 X-TC-Version 会失败）。示例：service="tcbr", version="2022-02-17", action="CreateCloudRunEnv", params={EnvId:"env-xxx",PackageType:"Standard"}。`,
     },
     {
       name: "params",

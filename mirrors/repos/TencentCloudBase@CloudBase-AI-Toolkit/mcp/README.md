@@ -85,7 +85,7 @@ You need a [CloudBase environment](https://tcb.cloud.tencent.com/dev) and should
 }
 ```
 
-Hosted URLs can use `enable_plugins` / `disable_plugins` (comma-separated). Canonical plugin names: see `src/server.ts` in this package (e.g. `env`, `database`, `functions`, `hosting`, `storage`, `pg_database`, `cloudrun`, `logs`).
+Hosted URLs can use `site=domestic` to pin the login site—domestic-site Singapore must pass `site=domestic`—plus `enable_plugins` / `disable_plugins` (comma-separated). Canonical plugin names: see `src/server.ts` in this package (e.g. `env`, `database`, `functions`, `hosting`, `storage`, `pg_database`, `cloudrun`, `logs`).
 
 **Self-hosted Cloud Mode**: set `CLOUDBASE_MCP_CLOUD_MODE=true` (or `MCP_CLOUD_MODE=true`) so local file and process tools are disabled for remote callers.
 
@@ -94,6 +94,12 @@ Hosted URLs can use `enable_plugins` / `disable_plugins` (comma-separated). Cano
 | Personal | Local `npx` |
 | Team / zero ops | Hosted HTTP |
 | Self-hosted MCP | Cloud Mode required |
+
+### Site & region
+
+Set `TCB_SITE` (`domestic` / `intl`) to select the login/credential site, and `TCB_REGION` for API routing. The domestic and international sites are separate account systems. `ap-singapore` exists on both, so **domestic-site Singapore users must set `TCB_SITE=domestic`**; otherwise it defaults to `intl`. Project-level `.cloudbase/project.json` (`{ site, region, envId }`) is also supported.
+
+In **hosted mode** there is no MCP `env` block for HTTP servers, so pass the site as a URL query parameter instead: `https://tcb-api.cloud.tencent.com/mcp/v1?env_id=<env_id>&site=domestic`. Self-hosted Cloud Mode deployments can still use the `TCB_SITE` environment variable.
 
 ## Capabilities
 

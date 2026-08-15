@@ -345,55 +345,154 @@ export function castNamesOf(cast) {
 /* ------------------------------------------------------------------ */
 /* render — 界面文案                                                    */
 /* ------------------------------------------------------------------ */
-/* v1 只有中文。全部收在这张表里，加语言时换成按 lang 取值的表。 */
+/*
+ * 内置 zh / en 两套，全部收在这张表里；zh 是基准，en 术语与 README.en.md 对齐。
+ * 只有报告界面走这张表——质量门文案、CLI 输出、art.json 里的数据都不在此列。
+ */
 
-const T = {
-  kicker: '美术设定集',
-  docTitle: (s) => `${s} · 美术设定集`,
-  styleLine: (label) => `画风：${label}`,
-  exportJson: '导出 JSON',
-  gates: '质量门',
-  gatesPass: '全部通过',
-  gatesFail: (n) => `${n} 项未过`,
-  gatePill: (okN, total) => `质量门 ${okN} / ${total}`,
-  kpi: {
-    scenes: '场景', scenesSub: (p2, v) => `主场景 ${p2}${v ? ` · 变体 ${v}` : ''}`,
-    propsK: '叙事道具', propsSub: (st) => `${st} 个状态变体`,
-    anchors: '一致性锚点', anchorsSub: '生成镜头的核对表（场景 + 道具）',
-    lighting: '光照状态', lightingSub: '换时段 = 重新生成',
+/* 门标签与「跳过」提示的英文映射：质量门面板是报告的一部分，出英文报告时
+ * 这里做展示层翻译——gateReport 的逻辑与中文诊断文案一行不动（CLI 仍是中文）。
+ * 动态阈值由门自己算，映射里只写固定语义；未命中的 id 回落到原标签。 */
+const GATE_LABELS_EN = {
+  'anchors': 'Consistency anchors, {0}–{1} per asset',
+  'lighting': 'At least one lighting state, written out as a prompt',
+  'no-people': 'No people in plates: negatives ban people (scenes and props)',
+  'english': 'All image prompts in English',
+  'no-names': 'Prompts carry no character names',
+  'variants': 'Variant references complete (variantOf exists and carries changes)',
+  'style-match': 'Style matches its negative prompt',
+  'prop-states': 'At least one prop state, written out as a prompt',
+  'prop-scale': 'Prop scale reference written into the prompt',
+  'prop-hands': 'No hands in prop plates: negatives ban hands',
+  'prop-white': 'Prop sheets on pure white background, cut-out ready',
+};
+const GATE_SKIPS_EN = {
+    '未提供 outline.json，本门跳过（视为通过）': 'outline.json not provided — gate skipped (treated as passing)',
+    '未提供 art.json，本门跳过（视为通过）': 'art.json not provided — gate skipped (treated as passing)',
+    '未提供 script.json，本门跳过（视为通过）': 'script.json not provided — gate skipped (treated as passing)',
+    '未提供 outline/cast，本门跳过（视为通过）': 'outline/cast not provided — gate skipped (treated as passing)',
+    '未提供 cast.json，本门跳过（视为通过）': 'cast.json not provided — gate skipped (treated as passing)',
+};
+/** 报告里的门文案：英文界面取映射，未命中或中文界面回落原文。 */
+const gateText = (g, lang) => {
+  if (lang !== 'en') return { label: g.label, detail: g.detail };
+  const en = GATE_LABELS_EN[g.id];
+  // 阈值仍由门自己算：把中文标签里出现的数字按序填进 {0} {1}
+  const nums = String(g.label).match(/\d+(?:\.\d+)?/g) ?? [];
+  const label = en ? en.replace(/\{(\d)\}/g, (m, i) => nums[Number(i)] ?? m) : g.label;
+  return { label, detail: GATE_SKIPS_EN[g.detail] ?? g.detail };
+};
+
+const I18N = {
+  zh: {
+    langCode: 'zh',
+    kicker: '美术设定集',
+    docTitle: (s) => `${s} · 美术设定集`,
+    styleLine: (id) => `画风：${scenePreset(id).label}`,
+    exportJson: '导出 JSON',
+    gates: '质量门',
+    gatesPass: '全部通过',
+    gatesFail: (n) => `${n} 项未过`,
+    gatePill: (okN, total) => `质量门 ${okN} / ${total}`,
+    kpi: {
+      scenes: '场景', scenesSub: (p2, v) => `主场景 ${p2}${v ? ` · 变体 ${v}` : ''}`,
+      propsK: '叙事道具', propsSub: (st) => `${st} 个状态变体`,
+      anchors: '一致性锚点', anchorsSub: '生成镜头的核对表（场景 + 道具）',
+      lighting: '光照状态', lightingSub: '换时段 = 重新生成',
+    },
+    secList: '场景清单',
+    secCards: '场景设定卡',
+    secPropList: '道具清单',
+    secPropCards: '道具设定卡',
+    secGates: '质量门',
+    propListCols: ['ID', '道具', '尺度', '状态', '关联场景', '出现集', '锚点'],
+    statesTitle: '状态变体',
+    scaleLabel: '尺度',
+    relatedScenesLabel: '关联场景',
+    carriedByLabel: '关联角色',
+    propSheetCaption: '主视角＋底部与右侧细节条 · 纯白背景',
+    listCols: ['ID', '场景', '类型', '出现集', '锚点', '光照', '变体'],
+    primaryScene: '主场景', onceScene: '一次性', variantScene: '变体',
+    anchorsTitle: '一致性锚点',
+    anchorsHint: '每次生成都必须出现的特征——认场景靠它，QC 也靠它',
+    lightingTitle: '光照与时段',
+    usageTitle: '出现集',
+    beatsTitle: '承载爽点',
+    variantTitle: '变体来源',
+    variantChanges: '改动',
+    promptsTitle: '出图提示词包',
+    promptMaster: '主视角 EN',
+    promptNegative: '反向提示词',
+    promptSheet: '设定图 EN',
+    copy: '复制', copied: '已复制', copyFailed: '复制失败', copyJson: '复制整个场景 JSON',
+    noImage: '尚未出图',
+    noImageHint: '用下方提示词生成',
+    zoomImage: '放大查看',
+    closeImage: '关闭',
+    sheetCaption: '主视角＋底部与右侧细节条',
+    none: '—',
+    listSep: '、',
+    pairSep: '　',
+    colon: '：',
+    colophon: '设定与提示词由模型依据大纲/原文生成，质量门由脚本确定性检查。参考图一律无人——人是另一层资产；道具参考图另加无手、纯白背景。',
   },
-  secList: '场景清单',
-  secCards: '场景设定卡',
-  secPropList: '道具清单',
-  secPropCards: '道具设定卡',
-  secGates: '质量门',
-  propListCols: ['ID', '道具', '尺度', '状态', '关联场景', '出现集', '锚点'],
-  statesTitle: '状态变体',
-  scaleLabel: '尺度',
-  relatedScenesLabel: '关联场景',
-  carriedByLabel: '关联角色',
-  propSheetCaption: '主视角＋底部与右侧细节条 · 纯白背景',
-  listCols: ['ID', '场景', '类型', '出现集', '锚点', '光照', '变体'],
-  primaryScene: '主场景', onceScene: '一次性', variantScene: '变体',
-  anchorsTitle: '一致性锚点',
-  anchorsHint: '每次生成都必须出现的特征——认场景靠它，QC 也靠它',
-  lightingTitle: '光照与时段',
-  usageTitle: '出现集',
-  beatsTitle: '承载爽点',
-  variantTitle: '变体来源',
-  variantChanges: '改动',
-  promptsTitle: '出图提示词包',
-  promptMaster: '主视角 EN',
-  promptNegative: '反向提示词',
-  promptSheet: '设定图 EN',
-  copy: '复制', copied: '已复制', copyFailed: '复制失败', copyJson: '复制整个场景 JSON',
-  noImage: '尚未出图',
-  noImageHint: '用下方提示词生成',
-  zoomImage: '放大查看',
-  closeImage: '关闭',
-  sheetCaption: '主视角＋底部与右侧细节条',
-  none: '—',
-  colophon: '设定与提示词由模型依据大纲/原文生成，质量门由脚本确定性检查。参考图一律无人——人是另一层资产；道具参考图另加无手、纯白背景。',
+  en: {
+    langCode: 'en',
+    kicker: 'Art Bible',
+    docTitle: (s) => `${s} · Art Bible`,
+    styleLine: (id) => `Style: ${({ realistic: 'semi-realistic painterly', ghibli: 'Ghibli-style animation' })[id] ?? id}`,
+    exportJson: 'Export JSON',
+    gates: 'Quality gates',
+    gatesPass: 'All passed',
+    gatesFail: (n) => `${n} gate${n === 1 ? '' : 's'} failed`,
+    gatePill: (okN, total) => `Quality gates ${okN} / ${total}`,
+    kpi: {
+      scenes: 'Scenes', scenesSub: (p2, v) => `${p2} primary${v ? ` · ${v} variant${v === 1 ? '' : 's'}` : ''}`,
+      propsK: 'Narrative props', propsSub: (st) => `${st} state variant${st === 1 ? '' : 's'}`,
+      anchors: 'Consistency anchors', anchorsSub: 'The checklist for generated shots (scenes + props)',
+      lighting: 'Lighting states', lightingSub: 'A time-of-day change is a regeneration',
+    },
+    secList: 'Scene list',
+    secCards: 'Scene sheets',
+    secPropList: 'Prop list',
+    secPropCards: 'Prop sheets',
+    secGates: 'Quality gates',
+    propListCols: ['ID', 'Prop', 'Scale', 'States', 'Related scenes', 'Episodes', 'Anchors'],
+    statesTitle: 'Prop states',
+    scaleLabel: 'Scale',
+    relatedScenesLabel: 'Related scenes',
+    carriedByLabel: 'Carried by',
+    propSheetCaption: 'Master view + bottom & right detail strips · pure white background',
+    listCols: ['ID', 'Scene', 'Type', 'Episodes', 'Anchors', 'Lighting', 'Variant'],
+    primaryScene: 'Primary', onceScene: 'One-off', variantScene: 'Variant',
+    anchorsTitle: 'Consistency anchors',
+    anchorsHint: 'Features that must appear in every generation — viewers recognize the place by them, and QC checks against them',
+    lightingTitle: 'Lighting states',
+    usageTitle: 'Episodes',
+    beatsTitle: 'Beats',
+    variantTitle: 'Variant of',
+    variantChanges: 'Changes',
+    promptsTitle: 'Prompt pack',
+    promptMaster: 'Master view (EN)',
+    promptNegative: 'Negative prompt',
+    promptSheet: 'Sheet (EN)',
+    copy: 'Copy', copied: 'Copied', copyFailed: 'Copy failed', copyJson: 'Copy full JSON',
+    noImage: 'no image yet',
+    noImageHint: 'generate with the prompts below',
+    zoomImage: 'Click to zoom',
+    closeImage: 'Close',
+    sheetCaption: 'Master view + bottom & right detail strips',
+    none: '—',
+    listSep: ', ',
+    pairSep: ' · ',
+    colon: ': ',
+    colophon: 'Designs and prompts are model-generated from the outline/source text; quality gates are checked deterministically by the script. Reference images never contain people — characters are a separate asset layer; prop plates additionally ban hands and sit on a pure white background.',
+  },
+};
+
+const tOf = (lang) => {
+  if (lang && !I18N[lang]) throw new Error('报告界面语言目前内置 zh / en');
+  return I18N[lang ?? 'zh'];
 };
 
 /* ------------------------------------------------------------------ */
@@ -410,17 +509,17 @@ const esc = (s) =>
 const mdRow = (cells) => `| ${cells.map((c) => String(c ?? '').replace(/\|/g, '\\|')).join(' | ')} |`;
 const mdHead = (cols) => [mdRow(cols), mdRow(cols.map(() => '---'))].join('\n');
 
-export function renderMarkdown(doc) {
-  const t = T;
+export function renderMarkdown(doc, lang = null) {
+  const t = tOf(lang ?? doc?.lang);
   const props = doc.props ?? [];
-  const out = [`# ${t.docTitle(doc.source)}`, '', `> ${t.styleLine(scenePreset(doc.style).label)}`, ''];
+  const out = [`# ${t.docTitle(doc.source)}`, '', `> ${t.styleLine(doc.style)}`, ''];
 
   out.push(`## ${t.secList}`, '', mdHead(t.listCols));
   for (const s of doc.scenes) {
     const type = s.variantOf ? `${t.variantScene} ← ${s.variantOf}` : s.primary ? t.primaryScene : t.onceScene;
     out.push(mdRow([
-      s.id, s.name, type, s.usage?.episodes?.join('、') ?? t.none,
-      s.anchors.length, s.lighting.map((l) => l.state).join('、'),
+      s.id, s.name, type, s.usage?.episodes?.join(t.listSep) ?? t.none,
+      s.anchors.length, s.lighting.map((l) => l.state).join(t.listSep),
       s.changes ?? t.none,
     ]));
   }
@@ -432,9 +531,9 @@ export function renderMarkdown(doc) {
     out.push(`### ${t.anchorsTitle}`, '');
     s.anchors.forEach((a, i) => out.push(`${i + 1}. **${a.name}** — ${a.desc}`));
     out.push('', `### ${t.lightingTitle}`, '');
-    for (const l of s.lighting) out.push(`- **${l.state}**：\`${l.prompt}\``);
+    for (const l of s.lighting) out.push(`- **${l.state}**${t.colon}\`${l.prompt}\``);
     out.push('');
-    if (s.variantOf) out.push(`> ${t.variantTitle}：${s.variantOf}　${t.variantChanges}：${s.changes}`, '');
+    if (s.variantOf) out.push(`> ${t.variantTitle}${t.colon}${s.variantOf}${t.pairSep}${t.variantChanges}${t.colon}${s.changes}`, '');
     out.push(`### ${t.promptsTitle}`, '');
     out.push(`**${t.promptMaster}**`, '', '```text', s.image.prompt, '```', '');
     out.push(`**${t.promptNegative}**`, '', '```text', s.image.negativePrompt, '```', '');
@@ -446,9 +545,9 @@ export function renderMarkdown(doc) {
     out.push('---', '', `## ${t.secPropList}`, '', mdHead(t.propListCols));
     for (const pr of props) {
       out.push(mdRow([
-        pr.id, pr.name, pr.scale, pr.states.map((st) => st.state).join('、'),
-        (pr.relatedScenes ?? []).join('、') || t.none,
-        pr.usage?.episodes?.join('、') ?? t.none, pr.anchors.length,
+        pr.id, pr.name, pr.scale, pr.states.map((st) => st.state).join(t.listSep),
+        (pr.relatedScenes ?? []).join(t.listSep) || t.none,
+        pr.usage?.episodes?.join(t.listSep) ?? t.none, pr.anchors.length,
       ]));
     }
     out.push('');
@@ -458,7 +557,7 @@ export function renderMarkdown(doc) {
       out.push(`### ${t.anchorsTitle}`, '');
       pr.anchors.forEach((a, i) => out.push(`${i + 1}. **${a.name}** — ${a.desc}`));
       out.push('', `### ${t.statesTitle}`, '');
-      for (const st of pr.states) out.push(`- **${st.state}**：\`${st.prompt}\``);
+      for (const st of pr.states) out.push(`- **${st.state}**${t.colon}\`${st.prompt}\``);
       out.push('');
       out.push(`### ${t.promptsTitle}`, '');
       out.push(`**${t.promptMaster}**`, '', '```text', pr.image.prompt, '```', '');
@@ -482,8 +581,9 @@ function embedDoc(doc) {
   return JSON.stringify(doc).replace(/</g, '\\u003c');
 }
 
-export function renderHtml(doc) {
-  const t = T;
+export function renderHtml(doc, lang = null) {
+  const code = lang ?? doc?.lang ?? 'zh';
+  const t = tOf(code);
   const gates = gateReport(doc);
   const failed = gates.filter((g) => !g.ok);
   const scenes = doc.scenes;
@@ -509,16 +609,16 @@ export function renderHtml(doc) {
   const listRows = scenes.map((s) => [
     esc(s.id), esc(s.name),
     esc(s.variantOf ? `${t.variantScene} ← ${s.variantOf}` : s.primary ? t.primaryScene : t.onceScene),
-    esc(s.usage?.episodes?.join('、') ?? t.none),
+    esc(s.usage?.episodes?.join(t.listSep) ?? t.none),
     String(s.anchors.length),
-    esc(s.lighting.map((l) => l.state).join('、')),
+    esc(s.lighting.map((l) => l.state).join(t.listSep)),
     esc(s.changes ?? t.none),
   ]);
 
   const propListRows = props.map((pr) => [
-    esc(pr.id), esc(pr.name), esc(pr.scale), esc(pr.states.map((st) => st.state).join('、')),
-    esc((pr.relatedScenes ?? []).join('、') || t.none),
-    esc(pr.usage?.episodes?.join('、') ?? t.none), String(pr.anchors.length),
+    esc(pr.id), esc(pr.name), esc(pr.scale), esc(pr.states.map((st) => st.state).join(t.listSep)),
+    esc((pr.relatedScenes ?? []).join(t.listSep) || t.none),
+    esc(pr.usage?.episodes?.join(t.listSep) ?? t.none), String(pr.anchors.length),
   ]);
 
   const propCards = props
@@ -536,11 +636,11 @@ export function renderHtml(doc) {
     <span class="sc-id">${esc(pr.id)}</span>
     <h3>${esc(pr.name)}</h3>
     <span class="badge">${esc(pr.scale)}</span>
-    ${pr.usage?.episodes?.length ? `<span class="sc-use">${esc(t.usageTitle)} ${esc(pr.usage.episodes.join('、'))}${pr.usage.beats?.length ? `　${esc(t.beatsTitle)} ${esc(pr.usage.beats.join(' · '))}` : ''}</span>` : ''}
+    ${pr.usage?.episodes?.length ? `<span class="sc-use">${esc(t.usageTitle)} ${esc(pr.usage.episodes.join(t.listSep))}${pr.usage.beats?.length ? `${esc(t.pairSep)}${esc(t.beatsTitle)} ${esc(pr.usage.beats.join(' · '))}` : ''}</span>` : ''}
   </header>
   <p class="sc-sum">${esc(pr.summary)}</p>
   ${plate}
-  ${(pr.relatedScenes ?? []).length || pr.carriedBy ? `<p class="variant">${(pr.relatedScenes ?? []).length ? `${esc(t.relatedScenesLabel)}：<b>${esc(pr.relatedScenes.join('、'))}</b>` : ''}${pr.carriedBy ? `　${esc(t.carriedByLabel)}：${esc([].concat(pr.carriedBy).join('、'))}` : ''}</p>` : ''}
+  ${(pr.relatedScenes ?? []).length || pr.carriedBy ? `<p class="variant">${(pr.relatedScenes ?? []).length ? `${esc(t.relatedScenesLabel)}${esc(t.colon)}<b>${esc(pr.relatedScenes.join(t.listSep))}</b>` : ''}${pr.carriedBy ? `${esc(t.pairSep)}${esc(t.carriedByLabel)}${esc(t.colon)}${esc([].concat(pr.carriedBy).join(t.listSep))}` : ''}</p>` : ''}
   <section class="blk">
     <h4>${esc(t.anchorsTitle)}<small>${esc(t.anchorsHint)}</small></h4>
     <ol class="anchors">${pr.anchors.map((a) => `<li><b>${esc(a.name)}</b><span>${esc(a.desc)}</span></li>`).join('')}</ol>
@@ -574,11 +674,11 @@ export function renderHtml(doc) {
     <span class="sc-id">${esc(s.id)}</span>
     <h3>${esc(s.name)}</h3>
     <span class="badge${s.primary ? '' : ' once'}">${esc(s.variantOf ? t.variantScene : s.primary ? t.primaryScene : t.onceScene)}</span>
-    ${s.usage?.episodes?.length ? `<span class="sc-use">${esc(t.usageTitle)} ${esc(s.usage.episodes.join('、'))}${s.usage.beats?.length ? `　${esc(t.beatsTitle)} ${esc(s.usage.beats.join(' · '))}` : ''}</span>` : ''}
+    ${s.usage?.episodes?.length ? `<span class="sc-use">${esc(t.usageTitle)} ${esc(s.usage.episodes.join(t.listSep))}${s.usage.beats?.length ? `${esc(t.pairSep)}${esc(t.beatsTitle)} ${esc(s.usage.beats.join(' · '))}` : ''}</span>` : ''}
   </header>
   <p class="sc-sum">${esc(s.summary)}</p>
   ${plate}
-  ${s.variantOf ? `<p class="variant">${esc(t.variantTitle)}：<b>${esc(s.variantOf)}</b>　${esc(t.variantChanges)}：${esc(s.changes)}</p>` : ''}
+  ${s.variantOf ? `<p class="variant">${esc(t.variantTitle)}${esc(t.colon)}<b>${esc(s.variantOf)}</b>${esc(t.pairSep)}${esc(t.variantChanges)}${esc(t.colon)}${esc(s.changes)}</p>` : ''}
   <section class="blk">
     <h4>${esc(t.anchorsTitle)}<small>${esc(t.anchorsHint)}</small></h4>
     <ol class="anchors">${s.anchors.map((a) => `<li><b>${esc(a.name)}</b><span>${esc(a.desc)}</span></li>`).join('')}</ol>
@@ -600,7 +700,7 @@ export function renderHtml(doc) {
   const gateList = `<ul class="gate">
   ${gates
     .map(
-      (g) => `<li class="${g.ok ? 'ok' : 'bad'}"><span class="m">${g.ok ? '✓' : '✗'}</span><span>${esc(g.label)}${
+      (g) => `<li class="${g.ok ? 'ok' : 'bad'}"><span class="m">${g.ok ? '✓' : '✗'}</span><span>${esc(gateText(g, t.langCode).label)}${
         !g.ok && g.detail ? `<small>${esc(g.detail)}</small>` : g.id === 'no-names' && g.detail ? `<small>${esc(g.detail)}</small>` : ''
       }</span></li>`,
     )
@@ -608,7 +708,7 @@ export function renderHtml(doc) {
 </ul>`;
 
   return `<!doctype html>
-<html lang="zh"><head>
+<html lang="${code}"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(t.docTitle(doc.source))}</title>
@@ -760,7 +860,7 @@ td:first-child{font-family:var(--mono);font-size:12px;color:var(--ink-2);white-s
 
 <header class="hd">
   <h1>${esc(doc.source)}</h1>
-  <span class="sub">${esc(t.kicker)} · ${esc(t.styleLine(scenePreset(doc.style).label))}</span>
+  <span class="sub">${esc(t.kicker)} · ${esc(t.styleLine(doc.style))}</span>
   <span class="right">
     <span class="gatepill ${failed.length ? 'fail' : 'pass'}">${failed.length ? '✗' : '✓'} ${esc(t.gatePill(gates.length - failed.length, gates.length))}</span>
     <button class="expo" data-name="${esc(slug(doc.source))}-art.json">${esc(t.exportJson)}</button>
@@ -773,7 +873,7 @@ td:first-child{font-family:var(--mono);font-size:12px;color:var(--ink-2);white-s
   <div class="kpi"><div class="l">${esc(t.kpi.anchors)}</div><div class="v">${anchorN}</div><div class="d">${esc(t.kpi.anchorsSub)}</div></div>
   <div class="kpi"><div class="l">${esc(t.kpi.lighting)}</div><div class="v">${lightN}</div><div class="d">${esc(t.kpi.lightingSub)}</div></div>
 </div>
-${failed.length ? `<div class="galert"><b>✗ ${esc(t.gatesFail(failed.length))}</b>${failed.map((g) => `<span>${esc(g.label)}${g.detail ? ` — ${esc(g.detail)}` : ''}</span>`).join('')}</div>` : ''}
+${failed.length ? `<div class="galert"><b>✗ ${esc(t.gatesFail(failed.length))}</b>${failed.map((g) => `<span>${esc(gateText(g, t.langCode).label)}${g.detail ? ` — ${esc(gateText(g, t.langCode).detail)}` : ''}</span>`).join('')}</div>` : ''}
 
 <section class="top-sec" id="sec-list">
   <div class="sec-h"><span class="no">01</span><h2>${esc(t.secList)}</h2></div>
@@ -815,7 +915,7 @@ ${propCards}
 
 <script type="application/json" id="art-data">${embedDoc(doc)}</script>
 <script>
-const L = ${JSON.stringify({ copied: T.copied, failed: T.copyFailed })};
+const L = ${JSON.stringify({ copied: t.copied, failed: t.copyFailed })};
 
 // 图片弹层：点图放大，点背景或 Esc 关闭
 const lb = document.querySelector('.lightbox');
@@ -869,7 +969,9 @@ const USAGE = `novel-art.mjs — novel-art skill 的确定性工具（场景 + �
   validate <art.json> [--cast c.json]    校验；有违规逐条打印并 exit 1
                                          给了 cast.json 才查「提示词不含角色名」
   checkup <art.json> [--cast c.json]     只打印质量门 ✓/✗，有未过项 exit 1
-  render <art.json> [--html|--md]        渲染报告到 stdout（默认 --md）
+  render <art.json> [--html|--md] [--lang zh|en]
+                                         渲染报告到 stdout（默认 --md）
+                                         界面语言优先级：--lang > art.json 顶层 lang 字段 > 中文
   styles [id]                            打印画风预设的完整内容
   slug <name>                            场景名转安全文件名
 
@@ -928,15 +1030,16 @@ function main(argv) {
 
   if (cmd === 'render') {
     const [path] = rest;
-    if (!path) throw new Error('用法：render <art.json> [--html|--md]');
+    if (!path) throw new Error('用法：render <art.json> [--html|--md] [--lang zh|en]');
     const doc = readJson(path);
+    const lang = flag(rest, '--lang');
     // 图存在才挂上去；没有就渲染成占位，不影响其余内容
     const outDir = resolve(path, '..');
     for (const item of [...doc.scenes, ...(doc.props ?? [])]) {
       const rel = `images/${slug(item.name)}-sheet.png`;
       if (existsSync(resolve(outDir, rel))) item.sheetImage = rel;
     }
-    process.stdout.write((rest.includes('--html') ? renderHtml(doc) : renderMarkdown(doc)) + '\n');
+    process.stdout.write((rest.includes('--html') ? renderHtml(doc, lang) : renderMarkdown(doc, lang)) + '\n');
     return;
   }
 

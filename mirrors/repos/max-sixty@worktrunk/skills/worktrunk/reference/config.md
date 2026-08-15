@@ -77,6 +77,7 @@ Controls where new worktrees are created.
 - `{{ repo_path }}` — absolute path to the repository root (e.g., `/Users/me/code/myproject`. Or for bare repos, the bare directory itself)
 - `{{ repo }}` — repository directory name (e.g., `myproject`)
 - `{{ owner }}` — primary remote owner path (may include subgroups like `group/subgroup`)
+- `{{ remote_repo }}` — repository name in the primary remote URL, without `.git` (e.g., `myproject`); differs from `{{ repo }}`, the directory on disk, when a clone was renamed
 - `{{ branch }}` — raw branch name (e.g., `feature/auth`)
 - `{{ branch | sanitize }}` — filesystem-safe: `/` and `\` become `-` (e.g., `feature-auth`)
 - `{{ branch | sanitize_db }}` — database-safe: lowercase, underscores, hash suffix (e.g., `feature_auth_x7k`)
@@ -823,6 +824,11 @@ Pre-approve all hook and alias commands for current project:
 $ wt config approvals add
 ```
 
+Pre-approve without prompting, for a container or CI job:
+```bash
+$ wt config approvals add --yes
+```
+
 Clear approvals for current project:
 ```bash
 $ wt config approvals clear
@@ -845,7 +851,9 @@ $ wt config approvals list --format=json | jq -r .state
 
 ### How approvals work
 
-Approved commands are saved to `~/.config/worktrunk/approvals.toml`. Re-approval is required when the command template changes or the project moves. Use `--yes` to bypass prompts in CI.
+Approved commands are saved to `~/.config/worktrunk/approvals.toml`. Re-approval is required when the command template changes or the project moves.
+
+`--yes` bypasses the prompt, and what it leaves behind depends on the command it is passed to. On a command that runs project commands it grants consent for that run alone and records nothing, so the next run asks again. On `wt config approvals add` the record is the whole point, so the approvals are written — which is how an unattended environment pre-approves a project it has just cloned.
 
 ### Reading approval state
 

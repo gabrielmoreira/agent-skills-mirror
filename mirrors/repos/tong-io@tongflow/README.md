@@ -142,6 +142,7 @@ Sign in with Google or WeChat and start creating — the cloud studio manages pl
 
 - ✅ **Image fusion**: blend or edit multiple references into one image.
 - ✅ **Lip sync**: audio + video → video (lip-sync); also audio + image → video and audio + text → video variants.
+- ✅ **Emotive speech**: text + voice reference → speech in that voice, with emotion control.
 - ✅ **Character swap**: video + reference (scene blend / character replacement), Animate Mix-style generation.
 - ✅ **Motion transfer**: video + reference (motion / retarget), Animate Move-style generation.
 - ✅ **Combine text**: merge multiple text nodes into one.
@@ -215,6 +216,7 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-gemma4](https://github.com/tong-io/tongflow-modal-gemma4) — Gemma-4 multimodal text (image / video understanding)
 - [tongflow-modal-qwen3asr](https://github.com/tong-io/tongflow-modal-qwen3asr) — Qwen3 speech recognition
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 text-to-speech
+- [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 emotive text-to-speech: zero-shot voice cloning (alternative) and emotion-controlled speech from a voice reference
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper speech recognition with timestamps (alternative)
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 music suite: text-to-music (sft / base / turbo selectable), repaint, cover, stem extraction, add-track, arrangement completion, music brief, and music understanding
 - [tongflow-modal-levo](https://github.com/tong-io/tongflow-modal-levo) — LeVo 2 / SongGeneration text-to-music (multilingual, commercial-grade)

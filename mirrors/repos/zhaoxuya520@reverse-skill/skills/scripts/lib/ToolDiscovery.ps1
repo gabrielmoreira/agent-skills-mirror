@@ -200,6 +200,66 @@ function Get-ReverseToolCatalog {
             )
         }
         [pscustomobject]@{
+            Name = 'r2pm'
+            Skill = 'radare2'
+            Purpose = 'radare2 插件管理'
+            VersionArgs = @('-v')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'r2pm' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2pm.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2pm.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2pm.exe' }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'r2xsql'
+            Skill = 'radare2'
+            Purpose = 'radare2 SQL 查询工具'
+            VersionArgs = @('--version')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'r2xsql' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2xsql.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2xsql.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2xsql.exe' }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'r2xsql-full'
+            Skill = 'radare2'
+            Purpose = 'radare2 SQL 查询工具（完整版）'
+            VersionArgs = @('--version')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'r2xsql-full' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2xsql-full.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2xsql-full.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2xsql-full.exe' }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'r2mcp'
+            Skill = 'radare2'
+            Purpose = 'radare2 MCP 协议分析'
+            VersionArgs = @('-v')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'r2mcp' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2mcp.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2mcp.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2mcp.exe' }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'radius2'
+            Skill = 'radare2'
+            Purpose = 'radare2 符号执行与动态分析'
+            VersionArgs = @('-v')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'radius2' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\radius2.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\radius2.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\radius2.exe' }
+            )
+        }
+        [pscustomobject]@{
             Name = 'python'
             Skill = 'reverse-engineering'
             Purpose = '辅助脚本执行'

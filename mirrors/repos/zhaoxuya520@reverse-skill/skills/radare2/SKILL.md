@@ -381,6 +381,27 @@ rax2 -s hello
 - 命令速查：`references/cheatsheet.md`
 - 标准侦察脚本：`scripts/recon.ps1`
 
+## radare2-skills 生态
+
+radare2-skills 项目（radareorg/radare2-skills）提供了更完整的生态工具和工作流：
+
+- **r2xsql**：SQL 查询二进制导入表 / 字符串 / 函数
+- **r2mcp / r2http**：MCP 工具与 HTTP 状态化命令通道
+- **radius2**：符号执行、符号动态分析
+- **r2pm**：插件管理、扩展
+- **decompiler plugins**：radare2 插件机制
+
+**使用策略**：
+- 当用户提到 `r2xsql`、`r2mcp`、`r2http`、`radius2`、`r2pm`、`rabin2`、`rasm2`、`radiff2`、`rahash2`、`rax2` 时，优先路由到本 skill（radare2/SKILL.md）
+- 这些工具只是生态加速器，**不能绕过**：授权门禁、`tool-index` 校验、Evidence 导入、写模式确认
+- 给出最小可复现命令示例：
+  - `r2xsql -s <file> -q "SELECT ..."`
+  - `curl.exe -sS --data-binary 'aaa' http://127.0.0.1:9393/cmd`
+  - `radius2 -p <binary> ...`
+  - `r2pm -ci <plugin>`
+
+本 skill 保持原有硬门禁和证据链完整性，不允许跳过任何授权或 Evidence 步骤。
+
 ---
 
 ## 路由上下文
@@ -393,8 +414,6 @@ rax2 -s hello
 - PAT 发现有趣字符串后需交叉引用 → `ida-reverse/`（IDA 的 xref 更强大）
 
 **同级关联模块**: `ida-reverse/`（互补：r2 侦察快，IDA 反编译深）
-
----
 
 ## 按需自举（On-Demand Bootstrap）
 

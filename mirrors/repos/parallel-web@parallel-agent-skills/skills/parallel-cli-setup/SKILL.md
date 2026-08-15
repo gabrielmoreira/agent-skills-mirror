@@ -26,7 +26,7 @@ If missing, install with any of these methods:
 3. Linux/macOS/Windows (npm): `npm install -g parallel-web-cli`
 4. Linux/macOS/Windows (pipx): `pipx install "parallel-web-tools[cli]" && pipx ensurepath`
 
-When `parallel-cli` is present, require version `>=0.8.1`. If older, identify the install method before advising an update. Use `command -v parallel-cli`, then inspect `readlink "$(command -v parallel-cli)"` if it is a symlink. Paths under `~/.local/share/uv/
+When `parallel-cli` is present, require version `>=0.9.2`. If older, identify the install method before advising an update. Use `command -v parallel-cli`, then inspect `readlink "$(command -v parallel-cli)"` if it is a symlink. Paths under `~/.local/share/uv/
   tools/` indicate `uv tool install`; paths under `~/.local/share/parallel-cli/` indicate the standalone installer.
 
 Upgrade commands (choose based on how it was installed):
@@ -109,13 +109,13 @@ Install the skills for the user:
 parallel-cli skills install
 ```
 
-The user may need to restart their agent if it doesn't support hot reloading (e.g. Claude).
+The user may need to restart their agent if it doesn't support hot reloading.
 
 ## Step 5: Suggest a first run
 
-Prompt the user to use the newly installed skills in `~/.agents/skills` to run a search or extract right away. Suggest one of:
+Prompt the user to use the newly installed skills to run a search or extract right away. Suggest one of (use `$` instead of `/` for Codex):
 
-- `/parallel:parallel-web-search <query>` — fast web search
-- `/parallel:parallel-web-extract <url>` — extract content from a URL
-- `/parallel:parallel-deep-research <topic>` — comprehensive research
-- `/parallel:parallel-data-enrichment <list>` — enrich a list of entities
+- `/parallel-web-search <query>` — fast web search
+- `/parallel-web-extract <url>` — extract content from a URL
+- `/parallel-deep-research <topic>` — comprehensive research
+- `/parallel-data-enrichment <list>` — enrich a list of entities

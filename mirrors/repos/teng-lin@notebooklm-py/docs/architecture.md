@@ -1409,7 +1409,7 @@ src/notebooklm/
         │   ├── outcomes.py
         │   ├── profile_targets.py
         │   ├── refresh.py
-        │   └── rookiepy_errors.py
+        │   └── rookie_cookies_errors.py
         ├── playwright_login.py  # Playwright-driven Google login service
         ├── playwright_redaction.py # Subprocess-output redaction helpers for the Playwright login service
         ├── polling.py           # Shared polling helpers for CLI wait commands

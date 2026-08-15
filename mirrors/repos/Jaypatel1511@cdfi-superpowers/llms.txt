@@ -1,0 +1,25 @@
+# cdfi-superpowers
+
+> An AI skill layer over Jay Patel's published CDFI Python portfolio (PyPI user
+> thejaypatel1511; GitHub Jaypatel1511). No new analytical code — skills that pip-install and call
+> already-published, independently versioned packages, so an AI answers CDFI
+> questions from audited tooling instead of hallucinating. Grounds NMTC
+> eligibility, bank-CDFI peer benchmarking, and descriptive HMDA analysis.
+
+Guiding rules for any AI using these skills: if a tool errors, report the error
+(never estimate NMTC eligibility from general knowledge); render NaN/None/N-A as
+N/A (never fabricate a number); hmda-analysis is descriptive only (no
+fair-lending inference, no CRA performance interpretation).
+
+## Skills
+
+- [nmtc-eligibility](.agents/skills/nmtc-eligibility/SKILL.md): Is an address/tract NMTC eligible? Distress tier, LIC status, project feasibility. Backed by nmtc-mapper >=0.5.0 + nmtc-screener 0.1.0.
+- [cdfi-peer-benchmark](.agents/skills/cdfi-peer-benchmark/SKILL.md): Benchmark a bank CDFI against FDIC peers (NIM, ROAA, ROAE, efficiency, Tier 1, NPL). Bank CDFIs only. Backed by cdfi-benchmark 0.2.1.
+- [hmda-analysis](.agents/skills/hmda-analysis/SKILL.md): Pull HMDA LAR data and produce descriptive cuts + a CRA-proxy income distribution. Descriptive only. Backed by hmda-analyzer >=0.6.0 (resolves to 0.6.1; Python >=3.9).
+
+## References
+
+- [cdfi-industry-primer](references/cdfi-industry-primer.md): Plain-language orientation — NMTC, LIHTC, CRA, HMDA, BEA, CMF; CDFI Fund, CDEs, QALICBs, QEIs.
+- [data-source-map](references/data-source-map.md): Which host backs what, which are cloud-blocked, and the honest-UA convention.
+- [package-index](references/package-index.md): All 22 portfolio packages — PyPI-verified version, dist/repo/import names, one-line purpose.
+- [caveats-and-limits](references/caveats-and-limits.md): What the plugin deliberately does NOT do — inferential fair lending, CRA ratings, credit-union benchmarking, pre-2018 TLR.

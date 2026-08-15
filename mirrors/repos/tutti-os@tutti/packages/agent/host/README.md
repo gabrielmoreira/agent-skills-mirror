@@ -153,6 +153,27 @@ and persists its opaque `SectionKey` exactly on first creation. An idempotent
 retry that supplies a placement must use the same placement; project deletion
 or another adapter-side view change never reassigns an existing session to
 `conversations`.
+By default, a new explicit project placement must still exist in the Host's
+local project registry, which fences a stale local selection after project
+deletion. A trusted adapter may set
+`CreateSessionInput.RailPlacementAuthoritative` when an external canonical
+authority already fixed the placement. That opt-in accepts a project absent
+from the local registry, but it applies only to first initialization and never
+allows an existing session's immutable placement to change.
+Before provider startup, Host resolves the final placement from the immutable
+existing session, an explicit caller placement, or the prepared cwd through the
+canonical store. It then installs the prepared cwd in `TUTTI_AGENT_CWD` and the
+normalized versioned `RailPlacement` JSON in
+`TUTTI_AGENT_RAIL_PLACEMENT`. Create, resume, runtime reprepare, and historical
+Session Fork sources all receive that same pair. Nested callers inherit it when
+they omit an explicit cwd; an explicit cwd is a new placement-selection request,
+not a request to reinterpret the caller's environment. Adapters must not derive
+placement from a session id, binding id, PeerCommand, or another view lookup.
+
+Host supplies the exact canonical assignments last; the runtime process adapter
+owns target-platform environment-key semantics when it materializes the child
+process environment.
+
 Cancellation exposes durable intent acceptance, provider confirmation, and
 canonical settlement as separate facts. `GoalControl`, `GetGoalState`, and
 `ReconcileGoal` are provider-neutral Host APIs; typed `/goal` commands enter the
@@ -366,7 +387,14 @@ provider code and diagnostic text remain local observations rather than a
 stable cross-service taxonomy; coordination layers persist only their own
 coarse product reason when needed. `NewProviderError` deliberately leaves
 cancellation and deadline failures unclassified because their delivery result
-is unknown and must remain recoverable.
+is unknown and must remain recoverable. The narrow
+`NewProviderStartTimeoutError` exception is used only after the runtime owner
+has observed the provider adapter's Start stage time out before establishing a
+runtime Session. The daemon keeps the existing `request_timed_out` AppError
+code for API and presentation behavior and carries that narrow verdict as
+`ErrProviderStartTimeout` in the error chain. The Host runtime adapter maps the
+marker to `provider_start_timeout` while preserving the deadline cause; callers
+must not infer that verdict from an arbitrary context deadline.
 `UpdateSettings` serializes with runtime resume:
 historical sessions persist settings only, while live sessions update the
 runtime first and persist the resulting settings only after the runtime

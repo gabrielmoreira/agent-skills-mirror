@@ -5,11 +5,23 @@ const {
   mockAuthLoginByWebAuth,
   mockAuthLoginByApiKey,
   mockAuthLogout,
+  mockAuthStore,
+  authStoreData,
 } = vi.hoisted(() => ({
   mockAuthGetLoginState: vi.fn(),
   mockAuthLoginByWebAuth: vi.fn(),
   mockAuthLoginByApiKey: vi.fn(),
   mockAuthLogout: vi.fn(),
+  authStoreData: {} as Record<string, any>,
+  mockAuthStore: {
+    get: vi.fn(async (key: string) => authStoreData[key]),
+    set: vi.fn(async (key: string, value: any) => {
+      authStoreData[key] = value;
+    }),
+    delete: vi.fn(async (key: string) => {
+      delete authStoreData[key];
+    }),
+  },
 }));
 
 vi.mock("@cloudbase/toolbox", () => ({
@@ -21,15 +33,42 @@ vi.mock("@cloudbase/toolbox", () => ({
       logout: mockAuthLogout,
     })),
   },
+  authStore: mockAuthStore,
+  resolveCredential: (data: any) => data,
+  refreshTmpToken: vi.fn(),
 }));
 
 vi.mock("./utils/logger.js", () => ({
   debug: vi.fn(),
 }));
 
+vi.mock("./utils/site-map.js", () => ({
+  normalizeSite: (v: unknown) =>
+    v === "intl" ? "intl" : v === "domestic" ? "domestic" : undefined,
+  resolveSite: (_region?: string, site?: string) => {
+    const normalized =
+      site === "intl" ? "intl" : site === "domestic" ? "domestic" : undefined;
+    return normalized ?? "domestic";
+  },
+  SITE_REGION_MAP: {
+    domestic: { authHost: "tcb.cloud.tencent.com" },
+    intl: { authHost: "tcb.tencentcloud.com" },
+  },
+}));
+
 vi.mock("./utils/tencent-cloud.js", () => ({
   isInternationalRegion: vi.fn(() => false),
 }));
+
+beforeEach(() => {
+  Object.keys(authStoreData).forEach((key) => delete authStoreData[key]);
+  vi.clearAllMocks();
+  mockAuthGetLoginState.mockResolvedValue(null);
+  mockAuthLoginByWebAuth.mockResolvedValue({
+    secretId: "sid",
+    secretKey: "skey",
+  });
+});
 
 describe("auth config resolution", () => {
   beforeEach(() => {
@@ -179,7 +218,7 @@ describe("auth config resolution", () => {
       }),
     );
 
-    const loginOptions = mockAuthLoginByWebAuth.mock.calls[0][0];
+    const loginOptions = mockAuthLoginByWebAuth.mock.calls.at(-1)![0];
     expect(loginOptions.getOAuthEndpoint("ignored")).toBe(
       "https://custom.example.com/oauth",
     );
@@ -318,5 +357,148 @@ describe("device auth challenge helpers", () => {
       verification_uri_complete: "https://example.com/device?user_code=WDJB-MJHT",
       expires_in: 600,
     });
+  });
+});
+
+describe("multi-site credential slots", () => {
+  it("should read credential from the intl slot when site=intl", async () => {
+    authStoreData.credential = {
+      domestic: { secretId: "dom-sid", secretKey: "dom-skey" },
+      intl: {
+        secretId: "intl-sid",
+        secretKey: "intl-skey",
+        envId: "booker-ai-i0gygeljs622ffd23",
+      },
+    };
+
+    const { peekLoginState } = await import("./auth.js");
+    const loginState = await peekLoginState({ site: "intl" });
+
+    expect(loginState).toMatchObject({
+      secretId: "intl-sid",
+      secretKey: "intl-skey",
+      envId: "booker-ai-i0gygeljs622ffd23",
+    });
+  });
+
+  it("should treat legacy flat credential as domestic slot", async () => {
+    authStoreData.credential = {
+      secretId: "legacy-sid",
+      secretKey: "legacy-skey",
+    };
+
+    const { peekLoginState } = await import("./auth.js");
+    const loginState = await peekLoginState();
+
+    expect(loginState).toMatchObject({
+      secretId: "legacy-sid",
+      secretKey: "legacy-skey",
+    });
+  });
+
+  it("should not fall back to intl credential when reading default domestic", async () => {
+    authStoreData.credential = {
+      intl: { secretId: "intl-sid", secretKey: "intl-skey" },
+    };
+    mockAuthGetLoginState.mockResolvedValue(null);
+
+    const { peekLoginState } = await import("./auth.js");
+    await expect(peekLoginState()).resolves.toBeNull();
+  });
+
+  it("should write login credential into resolved site slot preserving other slots", async () => {
+    mockAuthGetLoginState
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        secretId: "intl-sid",
+        secretKey: "intl-skey",
+      });
+    mockAuthLoginByWebAuth.mockImplementation(async () => {
+      authStoreData.credential = {
+        secretId: "new-intl-sid",
+        secretKey: "new-intl-skey",
+        refreshToken: "rt",
+      };
+      return {
+        secretId: "new-intl-sid",
+        secretKey: "new-intl-skey",
+        refreshToken: "rt",
+      };
+    });
+    authStoreData.credential = {
+      domestic: { secretId: "dom-sid", secretKey: "dom-skey" },
+    };
+
+    const { ensureLogin } = await import("./auth.js");
+    await ensureLogin({ site: "intl" });
+
+    expect(authStoreData.credential).toEqual({
+      domestic: { secretId: "dom-sid", secretKey: "dom-skey" },
+      intl: {
+        secretId: "new-intl-sid",
+        secretKey: "new-intl-skey",
+        refreshToken: "rt",
+      },
+    });
+  });
+
+  it("should delete only the intl slot on logout and keep domestic", async () => {
+    authStoreData.credential = {
+      domestic: { secretId: "dom-sid", secretKey: "dom-skey" },
+      intl: { secretId: "intl-sid", secretKey: "intl-skey" },
+    };
+
+    const { logout } = await import("./auth.js");
+    await logout({ site: "intl" });
+
+    expect(authStoreData.credential).toEqual({
+      domestic: { secretId: "dom-sid", secretKey: "dom-skey" },
+    });
+  });
+
+  it("should keep domestic auth host for domestic site with ap-singapore region", async () => {
+    mockAuthGetLoginState
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ secretId: "sid", secretKey: "skey" });
+
+    const { ensureLogin } = await import("./auth.js");
+    await ensureLogin({ authMode: "web", region: "ap-singapore", site: "domestic" });
+
+    const getAuthUrl = mockAuthLoginByWebAuth.mock.calls.at(-1)![0].getAuthUrl;
+    const url = getAuthUrl("https://tcb.cloud.tencent.com/oauth/authorize?client_id=x");
+    expect(url).toContain("cloud.tencent.com");
+    expect(url).not.toContain("tencentcloud.com");
+    expect(url).toContain("allowNoEnv=true");
+  });
+
+  it("should rewrite auth host to intl for intl site", async () => {
+    mockAuthGetLoginState
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ secretId: "sid", secretKey: "skey" });
+
+    const { ensureLogin } = await import("./auth.js");
+    await ensureLogin({ authMode: "web", region: "ap-singapore", site: "intl" });
+
+    const getAuthUrl = mockAuthLoginByWebAuth.mock.calls.at(-1)![0].getAuthUrl;
+    const url = getAuthUrl("https://tcb.cloud.tencent.com/oauth/authorize?client_id=x");
+    expect(url).toContain("tencentcloud.com");
+  });
+
+  it("should use domestic login page URL fromCloudBaseLoginPage on domestic site", async () => {
+    mockAuthGetLoginState
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ secretId: "sid", secretKey: "skey" });
+
+    const { ensureLogin } = await import("./auth.js");
+    await ensureLogin({
+      authMode: "web",
+      region: "ap-singapore",
+      site: "domestic",
+      fromCloudBaseLoginPage: true,
+    });
+
+    const getAuthUrl = mockAuthLoginByWebAuth.mock.calls.at(-1)![0].getAuthUrl;
+    const url = getAuthUrl("https://tcb.cloud.tencent.com/oauth/authorize?client_id=x");
+    expect(url).toContain("https://tcb.cloud.tencent.com/login?_redirect_uri=");
   });
 });

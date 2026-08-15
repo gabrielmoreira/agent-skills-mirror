@@ -336,7 +336,8 @@ export function registerAppTools(server: ExtendedMcpServer) {
           .optional()
           .describe("自定义部署命令。通常无需填写，默认自动生成 tcb hosting deploy 命令。" +
             "有 buildPath 时远端已 cd 到该目录，默认用 . 作为源码路径；无 buildPath 时默认用 dist。"),
-        ignore: z.array(z.string()).optional().describe("上传时忽略的文件/目录 glob 模式，例如 **/node_modules/**。"),
+        ignore: z.array(z.string()).optional().describe("上传时忽略的文件/目录 glob 模式，例如 **/node_modules/**。\n" +
+          "⚠️ 打包的是项目根目录（filePath）而非 buildPath 产物目录：若项目根含 target/（Rust）、.next/、dist-old/、build/ 等大构建产物，必须加进 ignore（如 **/target/**），否则整个目录被打进上传 zip（实证 54GB target → 34GB zip）。默认已排除 node_modules/.git/.DS_Store/**/target/**/.next/**/.next.bak/**。"),
         versionName: z
           .string()
           .optional()
@@ -386,6 +387,18 @@ export function registerAppTools(server: ExtendedMcpServer) {
           throw new Error("当前 manager 未提供 cloudAppService");
         }
 
+        // 默认排除的大目录（2026-08-14 实证：ato 项目 target/ 54GB 被整个打进 zip）
+        // tcb app deploy 打包的是项目根目录（localPath）而非 outputDir，必须排除构建产物
+        const defaultPackIgnore = [
+          "node_modules/**",
+          ".git/**",
+          ".DS_Store",
+          "**/.DS_Store",
+          "**/target/**",
+          "**/.next/**",
+          "**/.next.bak/**",
+        ];
+
         // getUploadUrl — 获取预签名上传 URL（cloud mode 专用）
         if (action === "getUploadUrl") {
           if (!serviceName) {
@@ -397,9 +410,9 @@ export function registerAppTools(server: ExtendedMcpServer) {
           });
           logCloudBaseResult(server.logger, cosInfoResult);
 
-          const defaultIgnore = ["node_modules/**", ".git/**", ".DS_Store", "**/.DS_Store"];
+          const defaultIgnore = defaultPackIgnore;
           // eslint-disable-next-line max-len
-          const zipCmd = "zip -r upload.zip . -x 'node_modules/**' -x '.git/**' -x '.DS_Store' -x '**/.DS_Store'";
+          const zipCmd = "zip -r upload.zip . -x 'node_modules/**' -x '.git/**' -x '.DS_Store' -x '**/.DS_Store' -x '**/target/**' -x '**/.next/**' -x '**/.next.bak/**'";
           const followupArgs: Record<string, unknown> = {
             action: "deployApp",
             serviceName,
@@ -452,11 +465,17 @@ export function registerAppTools(server: ExtendedMcpServer) {
           // 上传代码到 COS（仅本地模式需要，cloud mode 用 cosTimestamp 跳过）
           let cosTs = cosTimestamp;
           if (filePath && !cosTs) {
+            // 默认排除大目录（2026-08-14 实证：ato 项目 target/ 54GB 被整个打进 zip）
+            // 用户显式传 ignore 时合并，避免覆盖默认值
+            const mergedIgnore = Array.from(new Set([
+              ...defaultPackIgnore,
+              ...(ignore ?? []),
+            ]));
             const uploadResult = await appService.uploadCode({
               deployType: "static-hosting",
               serviceName,
               localPath: filePath,
-              ignore,
+              ignore: mergedIgnore,
             });
             logCloudBaseResult(server.logger, uploadResult);
             cosTs = uploadResult.cosTimestamp;

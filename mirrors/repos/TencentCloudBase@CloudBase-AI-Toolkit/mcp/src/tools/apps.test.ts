@@ -145,7 +145,13 @@ describe("app tools", () => {
       deployType: "static-hosting",
       serviceName: "demo-app",
       localPath: "/tmp/demo-app",
-      ignore: undefined,
+      ignore: expect.arrayContaining([
+        "node_modules/**",
+        ".git/**",
+        "**/target/**",
+        "**/.next/**",
+        "**/.next.bak/**",
+      ]),
     });
     expect(mockCreateApp).toHaveBeenCalledWith(
       expect.objectContaining({

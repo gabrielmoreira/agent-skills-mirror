@@ -40,10 +40,10 @@ The current Agent Relay MCP server registers flat tool names. Use the final
 tool name exactly as listed here.
 
 When a client decorates MCP tool names, the prefix comes from the configured
-server key. Workflow prompts commonly show forms like
-`mcp__relaycast__send_dm`; a server configured as `agent-relay` may expose
-`mcp__agent_relay__send_dm`. In every case, the canonical tool name is the flat
-suffix, such as `send_dm`.
+server key. Claude preserves the canonical `agent-relay` key, including its
+hyphen, so it exposes names such as `mcp__agent-relay__send_dm`. The old
+`mcp__relaycast__*` prefix belongs only to legacy configurations. In every case,
+the canonical tool name is the flat suffix, such as `send_dm`.
 
 Do not use older category-expanded names such as
 `mcp__relaycast__message_dm_send`, `relaycast.message.dm.send`, or
@@ -160,10 +160,19 @@ Prefer `send_dm` for lead/worker coordination. Use `post_message` when the
 whole channel needs the update. Use `reply_to_thread` for follow-ups on a
 specific message.
 
+Choose the injection mode deliberately. Omit `mode` (or use `mode: "wait"`)
+for normal coordination: Relay queues the message until the recipient reaches
+a safe idle boundary, so it can remain unread while that agent is busy. Use
+`mode: "steer"` only when immediate injection justifies interrupting active
+work. In either mode, a successful send and message ID confirm enqueue, not
+consumption; call `get_message_readers(message_id: "...")` before interpreting
+silence as acknowledgement or refusal.
+
 Examples:
 
 ```text
-send_dm(to: "Lead", text: "STATUS: Auth routes are implemented; running tests next.")
+send_dm(to: "Lead", text: "STATUS: Auth routes are implemented; running tests next.", mode: "wait")
+send_dm(to: "Lead", text: "URGENT: Stop the deploy.", mode: "steer")
 post_message(channel: "general", text: "The API endpoints are ready for review.")
 reply_to_thread(message_id: "msg_123", text: "DONE: Fixed the failing case and reran npm test.")
 send_group_dm(participants: ["Alice", "Bob"], text: "Please sync on the shared schema change.")

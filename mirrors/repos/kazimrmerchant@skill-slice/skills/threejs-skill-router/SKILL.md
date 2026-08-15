@@ -1,0 +1,75 @@
+---
+name: threejs-skill-router
+description: Routes ambitious Three.js graphics to the smallest specialist (camera, materials, ocean, atmosphere, VFX, shadows). Use when the request spans geometry, materials, atmosphere, shadows, temporal effects, or final image treatment. Not for scaffolding a first WebGL canvas (threejs-skills) and not for a playable Vite+TypeScript web-game (three-js-web-game).
+---
+
+# Three.js Visual Skill Router
+
+Treat the model's Three.js knowledge and official documentation as prerequisites. Load only the expertise that changes the visual result.
+
+Sibling `threejs-*` specialists are **not in this v1 pack** (see ROADMAP). After you pick a row in the table, Read that specialist if it is installed:
+
+`~/.cursor/skills/<folder>/SKILL.md` or this repo's later `skills/threejs/` pack.
+
+Example: `$threejs-camera-direction` → install/read `threejs-camera-direction`. Do not skip the specialist because it is missing from the always-on set.
+
+## Route by the visual system being authored
+
+| Required result | Load |
+| --- | --- |
+| shot composition, chase/side/orbit rigs, camera handoffs, projection ownership, pointer look, floating origins | `$threejs-camera-direction` |
+| launch and docking timelines, procedural transform phases, springs, staging, rotating-frame alignment, debris motion | `$threejs-procedural-animation` |
+| reusable scalar/vector fields, domain warping, causal masks, procedural normals | `$threejs-procedural-fields` |
+| atlas-filtered blocks, planetary surfaces, hybrid texture-backed PBR soil/moss with procedural displacement and masks, ground and model moss accumulation, terrain wetness, lava/emissive surfaces, authored frame PBR, specular AA | `$threejs-procedural-materials` |
+| height-field ray marching, silhouette-aware POM, curved relief shells, relief self-shadowing | `$threejs-parallax-occlusion-mapping` |
+| complete hard-surface object assemblies, procedural vehicles, parameter-curve section tracks, tilted shell lofts, UV-owned apertures, spanwise airfoil lofts, sculpted rails/frames, branch rings, fin lofts, semantic mesh writers, material slots and groups | `$threejs-procedural-geometry` |
+| trees, surface-following ivy, painted vines, stylized grass, GPU-computed grass, roots, foliage, rooted wind deformation | `$threejs-procedural-vegetation` |
+| buildings, façade grammars, profiles, ornaments, modular mesh writers | `$threejs-procedural-architecture` |
+| planets, terrain, craters, biome fields, coastlines, spherical detail | `$threejs-procedural-planets` |
+| sky scattering, planetary shells, depth-based aerial perspective | `$threejs-atmosphere-aerial-perspective` |
+| weather-driven raymarched clouds and cloud shadows | `$threejs-volumetric-clouds` |
+| FFT oceans, hybrid FFT/Gerstner clear water, stylized above/below ocean optics, submerged Snell windows, total internal reflection, forward-refracted structures, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, spectral cascades, choppy derivatives, Jacobian whitecaps | `$threejs-spectral-ocean` |
+| authored analytic waves, bounded heightfield pools, object ripples, differential-area caustics, ray-traced pool volume optics, shared normals, heuristic refraction, fallback absorption, crest foam | `$threejs-water-optics` |
+| falling snow, snow accumulation, model snow caps, wet asphalt puddles, procedural ripple normals, splash flipbooks, rain streaks, shared weather envelopes, surface wetness | `$threejs-precipitation-surfaces` |
+| curved-ray black holes, accretion disks, wormholes | `$threejs-raymarched-space-effects` |
+| raymarched aurora curtains, finite-footprint emissive slabs, uniform volume integration, equirectangular radiance probes, WebGPU voxel fire and smoke, volumetric fluid fields, mesh-surface emitters, SDF fire collisions, particles, trails, plasma, shockwaves, holographic projections, Fresnel rim shells, scanline banding, layered event effects | `$threejs-procedural-vfx` |
+| accumulated screen frost, touch clearing, wet-window rain, view-aligned droplet refraction and blur | `$threejs-temporal-surfaces` |
+| stable large-world shadows, cascades, clipmaps, cached updates | `$threejs-shadow-systems` |
+| GTAO, bent normals, bilateral reconstruction | `$threejs-screen-space-ambient-occlusion` |
+| HDR bloom and selective emission contribution | `$threejs-bloom` |
+| eye adaptation, tone mapping, LUT grading, output color | `$threejs-exposure-color-grading` |
+| shared depth/normal/velocity ownership and multi-pass ordering | `$threejs-image-pipeline` |
+| fixed-view diagnostics, seed sweeps, temporal and budget evidence | `$threejs-visual-validation` |
+
+## Execution order
+
+For a new procedural scene:
+
+1. Define a visual contract: subject, scale, camera distance, motion, and target frame budget.
+2. Load `$threejs-camera-direction` when framing, lens, camera frame, or mode transitions affect the target.
+3. Load the subject-generation skill.
+4. Add `$threejs-procedural-animation` when object motion requires authored phases, moving frames, or spring convergence.
+5. Add `$threejs-procedural-fields` when multiple visual channels must share coherent structure.
+6. Add lighting/shadows and atmosphere only after silhouette and material masks read without effects.
+7. Add `$threejs-image-pipeline` last.
+8. Load only the atomic image effects actually needed.
+9. Use `$threejs-visual-validation` for a deterministic evidence set.
+
+## Routing constraints
+
+- Do not load a skill for API setup alone. Inspect the installed Three.js version and use official docs.
+- Do not route “make it beautiful” directly to post-processing. Find the missing authored system.
+- Prefer one strong, inspectable visual rule over several independent noise layers.
+- When adapting a supplied reference, preserve the mechanism that creates its character. Do not reduce it to a generic effect category.
+- Keep object-space, world-space, and screen-space systems separate unless the composition explicitly requires coupling.
+- If no retained skill matches, state that the pack lacks expert coverage for that system. Do not stretch the nearest skill to cover it.
+
+## Acceptance gate
+
+A routed task is incomplete until the implementation exposes:
+
+- deterministic seed or reproducible inputs;
+- visual debug modes for its controlling fields;
+- parameters grouped by perceptual role;
+- an intentional mechanism-backed quality or resolution tier when the system defines one;
+- a no-post baseline that still reads.

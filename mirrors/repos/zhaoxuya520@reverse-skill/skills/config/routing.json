@@ -58,7 +58,8 @@
       "label": "radare2",
       "skill": "radare2/SKILL.md",
       "keywords": [
-        { "must": "radare|\\br2\\b" }
+        { "must": "radare|\\br2\\b" },
+        { "must": "r2xsql|r2mcp|r2http|radius2|r2pm|rabin2|rasm2|radiff2|rahash2|rax2" }
       ]
     },
     "R8": {

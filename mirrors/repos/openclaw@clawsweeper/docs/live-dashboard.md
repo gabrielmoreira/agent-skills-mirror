@@ -238,6 +238,21 @@ chart. `/api/status` classifies the already-fetched active workflow runs as:
 - `stalled`: at least one in-progress run is 150 minutes old;
 - `unknown`: one or more actionable-status reads failed.
 
+Webhook workflow snapshots retain a per-run delivery-or-poll confirmation
+time. An over-threshold queued run whose confirmation is older than the
+five-minute workflow TTL is re-read through the exact GitHub run endpoint
+before it can degrade health. One refresh checks at most the ten oldest stale
+rows, matching two waves of the five-way request fanout within the 20-second
+refresh cadence. Omitted unconfirmed rows cannot contribute to queue pressure
+and make health unknown until later refreshes reach them; batch telemetry
+records both the selected and omitted counts. Completed or missing runs are
+removed from the snapshot and emit structured eviction telemetry; a failed
+recheck makes the snapshot unknown. Until `workflow_run` subscription coverage
+has actually been observed, repair-fed rows remain unusable and this path uses
+the same bounded live status polls as before the webhook read model. Runs beyond
+the existing 24-hour zombie boundary remain separately visible and do not spend
+exact verification requests.
+
 Healthy status stays hidden. A non-zombie queued run at least 30 minutes old, an
 in-progress run at least 150 minutes old, or incomplete Actions telemetry opens the
 expandable “Work execution needs attention” alert. This live diagnostic reuses
@@ -376,6 +391,28 @@ The publication lane exposes two additional observer-only surfaces:
   class, endpoint category, operation class, outcome, and whether the item
   revision was already retried. These counters are for request-budget analysis;
   they never contain raw URLs, item content, credentials, or local paths.
+- `flow.last_15_minutes.causes` and `flow.last_60_minutes.causes` reconcile
+  publication retry, backoff, supersession, refresh, and dead-letter exhaustion
+  against durable flow counts. The surrounding flow window exposes `refreshed`
+  and `refreshed_rate_per_hour` as the independent refresh denominator. Cause
+  rows use only closed stage, completion, reason,
+  revision-relation, pool-class, recovery-cause, backoff, and attempt buckets.
+  `attribution_complete=false` or a failed per-transition `reconciliation`
+  explicitly marks a legacy or truncated denominator; the Worker never invents
+  attribution for an old aggregate.
+
+An unattempted credential-circuit member appears as `transition: backoff` and
+does not increment `retried`. A retry-exhausted dead letter preserves the
+underlying completion reason in the cause row while the operator-facing dead
+letter retains its established `retry_exhausted` reason. A terminal coverage
+deferral is reported as `transition: deferred`, never as a publication. When a
+batch publishes its owned revision while a newer local revision is already
+queued, the ledger records both the completed publication and the follow-on
+backoff; the published row still reconciles to the durable publication total.
+Cause rows persist in
+SQLite for the same 48-hour window as publication flow buckets, are capped at
+256 public dimension rows plus a truncation flag, and never expose repository,
+item, credential, lease, run, fingerprint, or exact revision identity.
 
 The durable handoff's `handoff_health.recovery_reasons` counts bounded
 `claim_timeout`, `execution_timeout`, `workflow_cancelled`, and

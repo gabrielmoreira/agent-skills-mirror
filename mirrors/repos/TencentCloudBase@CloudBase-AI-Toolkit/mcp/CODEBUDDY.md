@@ -358,7 +358,7 @@ Before starting work, suggest confirming with user:
    - This is NOT optional - you MUST read the file and follow the design thinking framework and frontend aesthetics guidelines
    - Avoid generating generic AI aesthetic style interfaces
 
-3. **Mini Program TabBar Material Download - Download Remote Material Links**: Mini program Tabbar and other material images must use **png** format, must use downloadRemoteFile tool to download files locally. Can select from Unsplash, wikimedia (generally choose 500 size), Pexels, Apple official UI and other resources
+3. **Mini Program TabBar Material Download - Download Remote Material Links**: Mini program Tabbar and other material images must use **png** format. Use shell commands to download files locally (`curl -L --fail -o <path> <url>` on macOS/Linux; `Invoke-WebRequest -Uri <url> -OutFile <path>` or `curl.exe -L -o <path> <url>` on Windows). The old downloadRemoteFile tool has been removed. Can select from Unsplash, wikimedia (generally choose 500 size), Pexels, Apple official UI and other resources
 
 If remote links are needed in the application, can continue to call uploadFile to upload and obtain temporary access links and cloud storage cloudId
 

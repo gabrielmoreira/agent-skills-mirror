@@ -101,3 +101,8 @@ close a tab mid-task that later steps still need.
 - **Downloads:** for multiple-file downloads, first surface the browser
   settings from `browser_setup` (`download_automation`) and wait for the
   user to confirm; until then trigger at most one download.
+- **Blocked sites:** if `web_open_tab` or a navigational `web_execute_js`
+  fails with `blocked by user URL filter`, do not retry that site. Read
+  `browser_setup.url_filters.block` for the current list. Prefer entries in
+  `url_filters.prefer` for literature search and similar retrieval; other
+  sites are still allowed.

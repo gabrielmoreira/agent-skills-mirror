@@ -18,6 +18,11 @@ coverage, opt into `macos_native_lifecycle.spec.ts` with
 multiple packaged Dyad instances are running. Post Command-Q directly to the
 Electron PID so another process cannot receive it.
 
+Keep each keyboard shortcut owned by one active listener. Duplicate global and
+feature-scoped listeners can make modifier guards or cleanup appear ineffective;
+packaged Electron E2E should exercise the chord with focus in every supported
+context and assert both the intended reload and non-reload paths.
+
 Do NOT write lots of e2e test cases for one feature. Each e2e test case adds a significant amount of overhead, so instead prefer just one or two E2E test cases that each have broad coverage of the feature in question.
 
 **IMPORTANT: You MUST run `npm run build` before running E2E tests.** E2E tests run against the built application binary, not the source code. If you make any changes to application code (anything outside of `e2e-tests/`), you MUST re-run `npm run build` before running E2E tests, otherwise you'll be testing the old version of the application.
@@ -57,6 +62,10 @@ await po.navigation.goToChatTab();
 ```
 
 Key sub-components: `po.appManagement`, `po.navigation`, `po.chatActions`, `po.previewPanel`, `po.codeEditor`, `po.githubConnector`, `po.toastNotifications`, `po.settings`, `po.securityReview`, `po.modelPicker`.
+
+Playwright's `FrameLocator` does not expose `evaluate()`. To run code in a
+preview frame, select an element first (for example,
+`frame.locator("body").evaluate(...)`) and evaluate through that locator.
 
 When an E2E assertion needs main-owned state after a legacy read IPC channel is
 deleted, read the authoritative remote-machine snapshot through
@@ -205,12 +214,13 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **Chat prompt submit retries**: A send-button click can time out after the prompt was already submitted. Before retrying `sendPrompt()` flows, check for the prompt in `messages-list` or an empty input with `Cancel generation`; otherwise the retry can race into an active stream/proposal and leave the next prompt disabled.
 - **Visual-editing saves that succeed and then fail**: If the trace shows the success toast followed by `Failed to create commit` and the source snapshot contains duplicated text/styles or growing whitespace, check for multiple `apply-visual-editing-changes` calls from a re-entered renderer effect. Keep the save single-flight across rerenders; retrying only the Playwright click does not prevent duplicate IPC mutations.
 - **Setup-screen tests and provider env vars**: E2E worker processes reuse `process.env`, so tests that set fake provider keys (for example `OPENAI_API_KEY`) can affect later tests in the same worker. When a fixture intentionally shows the setup screen, explicitly clear any env key that would make the provider appear configured.
+- **Pre-launch environment overrides**: Configuration set by a fixture's `preLaunchHook` must take precedence over shared launch defaults. Reset scenario-specific worker env before each hook, then assign shared launch defaults with `??=` (or pass them explicitly), so neither the launcher nor a previous test silently overrides the current scenario.
 - **AI setup dialog tests**: `showSetupScreen: true` only prevents the fixture from injecting an API key; the home page opens the AI setup dialog after submitting a prompt with no provider configured. The dialog contains both a hidden `DialogTitle` and visible banner heading with "You're almost ready to build", so assert unique body copy or provider option buttons instead of a broad heading locator.
 - **First-provider setup resume tests**: Saving the first provider key while a home prompt is pending now navigates home and auto-submits that prompt. E2E tests that only verify setup navigation should avoid saving a first key; tests that exercise the resume path should assert the prompt appears in `messages-list` and the selected app is set.
 - **Enter key vs send button are different code paths**: Pressing Enter in the Lexical chat input goes through `EnterKeyPlugin` in `LexicalChatInput.tsx`, not the send-button click handler, and the two have diverged before (Enter once cleared the editor even when the submit was rejected, wiping the pending first prompt). "Unreliable" user repros of submit bugs may just be Enter-vs-button divergence. Tests of submit behavior — especially setup/pending-prompt flows — should cover `chatInput.press("Enter")`, not only the "Send message" button.
 - **Custom model setup dialog**: When adding a custom model in Settings helpers, scope inputs to the "Add Custom Model" dialog, assert `#model-id` and `#model-name` values before clicking `Add Model`, and wrap the fill/click in `expect.toPass()`. Fast repeats can otherwise leave the name field empty or append text to the wrong field.
 - **Local model picker assertions**: Ollama/LM Studio menu items can expose accessible names that combine display name and model id (for example `Testollama testollama` or `lmstudio-model-1 lmstudio-model-1`). Exact test locators should account for this duplicated label/id shape.
-- **Version-prefix model picker selections**: Match model rows by stable provider/model attributes when possible. If an accessible-name fallback is required, include the delimiter after the model name (for example the period followed by whitespace before effort metadata), so `GPT 5` cannot select `GPT 5.2` and `Claude Sonnet 4` cannot select `Claude Sonnet 4.6`. After clicking a model, wait for the picker trigger to show the selected `Model (Effort)` before sending a prompt; persistence and request routing update asynchronously.
+- **Version-prefix model picker selections**: Match model rows by stable provider/model attributes when possible. If an accessible-name fallback is required, include the delimiter after the model name (for example the period followed by whitespace before effort metadata), so `GPT 5` cannot select `GPT 5.2` and `Claude Sonnet 4` cannot select `Claude Sonnet 4.6`. After clicking a model, wait for the picker trigger to show the exact selected model name before sending a prompt; the compact trigger intentionally omits effort. When effort matters, verify it through the menu's accessibility state or the outgoing request snapshot because persistence and request routing update asynchronously.
 - **Settings-dependent prompts**: After toggling a setting that affects the next chat request (for example Smart Context mode), wait for the persisted settings state with `expect.poll(() => po.settings.recordSettings().someKey)` before sending the prompt. UI clicks can return before the main-process settings write is visible to the request path.
 - **Home Build-mode setup**: If a shared E2E helper expects home-screen prompts to run in Build mode, pin both `selectedChatMode: "build"` and `defaultChatMode: "build"` before returning to home. Otherwise the home page's effective-default mode effect can restore Basic Agent/local-agent and suppress proposal controls even after a Build-mode click.
 - **Setup flows that intentionally switch away from Build**: Keep the Build default pinned until the setup dialog proves the pending prompt was queued, then restore `defaultChatMode: "local-agent"` before completing provider/Pro setup. Leaving Build as the persistent default overrides the post-setup Agent selection.
@@ -254,7 +264,7 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **Generated lockfile diff stats in message snapshots**: Package-manager resolution can change a generated `pnpm-lock.yaml` line count without changing the tested behavior. Normalize only that lockfile's `+N -N` button suffix and keep the file name, modification state, and all other changed-file entries in the snapshot.
 - **Version restore clean state**: If a restore/switch-version test fails with `Cannot revert: working tree has uncommitted changes` from a runtime `pnpm-workspace.yaml`, and exact version numbers are under test, amend that runtime file into the current generated commit instead of adding a new baseline commit that shifts `Version N`.
 - **Completion notifications for another chat**: When testing completion notifications while viewing a different chat, make the fake LLM response slow (for example `[sleep=medium]`) or otherwise prove navigation has settled before completion. Fast canned responses can complete while the route still points at the original chat, so the notification handler correctly treats it as the active chat.
-- **Updating E2E snapshots**: Pass the update flag directly to the project script, e.g. `PLAYWRIGHT_HTML_OPEN=never npm run e2e -- e2e-tests/<spec>.ts --update-snapshots`. Do not insert an extra `--` before `--update-snapshots`; Playwright will compare instead of updating.
+- **Updating E2E snapshots**: Pass the update flag directly to the project script, e.g. `PLAYWRIGHT_HTML_OPEN=never npm run e2e -- --update-snapshots=all e2e-tests/<spec>.ts`. Use the explicit `=all` value because Playwright's optional update mode otherwise consumes the following spec path as its argument. Do not insert another `--` before the flag; Playwright will compare instead of updating.
 - **Request-dump snapshot final newlines**: `snapshotServerDump("request")` snapshots raw `JSON.stringify(...)` output, which has no final newline. If formatting adds one to a committed `.txt`/extensionless baseline, regenerate it with `--update-snapshots`; do not hand-edit it or change the helper globally.
 - **Browser resource teardown**: Tests that start long-lived browser resources such as microphone recording must stop them before the test ends. Killing Electron while Chromium's audio service is active can leave Playwright's worker teardown waiting on a stale browser connection until the worker timeout, even when the test itself passed.
 - **Electron fixture teardown**: Call `electronApp.close()` before an OS-level process-group fallback. Do not treat the Electron application's `close` event as proof that Playwright cleanup finished: wait for both `electronApp.close()` and the launched child process to exit. Killing only the Electron PID can leave preview-server descendants or Playwright's protocol connection alive, causing a worker teardown timeout minutes after every test has passed.
@@ -273,6 +283,10 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 
 ## Triaging failures from a CI run's html-report
 
+- If the Playwright artifacts have expired, query failed job IDs from
+  `gh run view --json jobs`, then inspect each E2E job with `--job <id> --log`.
+  The final Playwright summary and inline snapshot diff usually preserve the
+  failing specs and assertion evidence even when traces are gone.
 - In the merged `html-report` artifact's `results.json`, failure screenshots are embedded as base64 in `attachments[].body` (the `path` field is empty or CI-side); decode the body to view them. Trace zips live in the artifact's `data/` directory, keyed by the hash in the CI-side path.
 - If a trace attachment's CI-side hash is absent from the merged report's `data/` directory, scan `data/*.zip` by grepping each archive's `test.trace` for the spec filename; some report merges rename resource hashes.
 - Before root-causing a failure on a PR branch, download the `html-report` from a recent main-branch CI run and check whether the same spec fails there — pre-existing main failures are out of scope for the PR's deflake.

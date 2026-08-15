@@ -79,6 +79,8 @@ export type CloudApiRequestFn = (params: {
 
 export type CloudBaseOptions = CloudBaseConfigBase & {
   requestFn?: CloudApiRequestFn
+  /** 站点：domestic（国内站）/ intl（国际站）。可选；缺省按 TCB_SITE / region 映射表 / 项目配置解析 */
+  site?: string
 }
 
 /**

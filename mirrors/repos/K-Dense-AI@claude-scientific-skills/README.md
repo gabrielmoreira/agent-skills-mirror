@@ -54,7 +54,7 @@ These skills enable your AI agent to seamlessly work with specialized scientific
 
 ## 📦 What's Included
 
-This repository provides **161 scientific and research skills** organized into the following categories:
+This repository provides **162 scientific and research skills** organized into the following categories:
 
 - **100+ Scientific & Financial Databases** - A unified database-lookup skill provides deterministic, provenance-rich access to 78 public databases (PubChem, ChEMBL, UniProt, COSMIC, ClinicalTrials.gov, FRED, USPTO, and more), plus dedicated skills for DepMap, Imaging Data Commons, PrimeKG, NCATS ARAX, U.S. Treasury Fiscal Data, Hugging Science, OneKGPd, and Genomic Intelligence. Multi-database packages like BioServices (~40 bioinformatics services), BioPython (39 NCBI sub-databases via Entrez), and gget (20+ genomics databases) add further coverage
 - **70+ Optimized Python Package Skills** - Explicitly defined, version-aware workflows for RDKit, Scanpy, PyTorch Lightning, scikit-learn, PyTDC, PathML, pydicom, NeuroKit2, PufferLib, QuTiP, GeoPandas, pymatgen, BioPython, Qiskit, Molecular Dynamics (OpenMM/MDAnalysis), and others. The agent can still use *any* Python package; these skills provide stronger, safer guidance for the packages listed
@@ -447,7 +447,7 @@ networks, and search GEO for similar patterns.
 
 ## 📚 Available Skills
 
-This repository contains **161 scientific and research skills** organized across multiple domains. Each skill provides comprehensive documentation, code examples, and best practices for working with scientific libraries, databases, and tools.
+This repository contains **162 scientific and research skills** organized across multiple domains. Each skill provides comprehensive documentation, code examples, and best practices for working with scientific libraries, databases, and tools.
 
 ### Skill Categories
 
@@ -511,7 +511,8 @@ This repository contains **161 scientific and research skills** organized across
 - Astronomy: Astropy
 - Quantum computing: Cirq, PennyLane, Qiskit, QuTiP 5.3
 
-#### ⚙️ **Engineering & Simulation** (5 skills)
+#### ⚙️ **Engineering & Simulation** (6 skills)
+- Lab hardware CAD: parametric build123d 0.11.1 models for microfluidic chips and molds, optomechanical mounts, microplate and cuvette adapters, and behavior rigs, checked against ANSI/SLAS and optical-table dimensional standards and reviewed with mandatory multi-view renders
 - Numerical computing: proprietary MATLAB R2026a and distinct GNU Octave 11.3 planning/review workflows
 - Computational fluid dynamics: bounded FluidSim 0.9 simulations with numerical-validity and HPC checks
 - Experimental flow measurement: OpenPIV (velocity fields from PIV image pairs, interrogation-window cross-correlation, spurious-vector validation, vorticity/strain-rate/turbulence statistics)

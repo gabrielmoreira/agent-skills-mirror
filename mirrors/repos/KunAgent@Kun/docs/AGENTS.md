@@ -7,9 +7,9 @@ time; neither client owns the runtime lifecycle or the canonical model
 configuration.
 
 Do not add a second live provider, provider switcher, runtime diagnostics panel,
-or legacy CodeWhale/Reasonix process path. Code, Design, Write, and Connect
-phone all enter the same Kun HTTP/SSE boundary. Connect phone still uses the
-internal `claw` name in code for compatibility.
+or legacy CodeWhale/Reasonix process path. Code (including Design tasks), Work,
+and Connect phone all enter the same Kun HTTP/SSE boundary. Connect phone still
+uses the internal `claw` name, and Work retains the internal `write` name, for compatibility.
 
 ## Client Surface Boundary
 
@@ -34,6 +34,33 @@ internal `claw` name in code for compatibility.
 4. Map the endpoint/event in `src/renderer/src/agent/kun-runtime.ts` and
    `src/renderer/src/agent/kun-mapper.ts`.
 5. Add settings only under `agents.kun`.
+
+## Prompt-Managed Plan Worktrees
+
+- `agents.kun.lab.planWorktree.enabled` gates this experiment and defaults to
+  false. It applies only to Direct plan builds; Graph keeps its normal current-
+  workspace flow and its own node isolation.
+- On execution, Renderer first saves the plan, then reads the exact local
+  repository root, checked-out branch, and dirty-file count through the generic
+  Git branch API. A non-Git workspace, unavailable Git, or detached HEAD blocks
+  the send with a concrete error.
+- Renderer injects a fixed Git lifecycle protocol and the authoritative plan
+  snapshot into the next user input on the current task. It does not fork or
+  select another task, change the task workspace, close the plan panel, create
+  a host run record, or monitor integration.
+- The Agent creates a uniquely named temporary branch/worktree, performs all
+  implementation and validation there, rebases when the target moved, uses
+  `merge --ff-only`, and cleans up only after ancestry or unchanged-work proof.
+- Uncommitted source-checkout changes remain exactly as-is and are excluded
+  from the worktree baseline. The Agent must never stash, reset, clean, switch,
+  commit, or otherwise manipulate them. If they block integration, preserve the
+  temporary worktree/branch and report the recovery details.
+- Repository paths, branch names, prefixes, titles, and plan Markdown are
+  structurally encoded inside the user input. None of this dynamic context may
+  enter the immutable system prefix, including when switching Code and Design.
+- Legacy `planBuildRunId` and admission fields may still be parsed from stored
+  history, but they are inert: they do not freeze input, recover a run, rebind a
+  workspace, or receive special task presentation.
 
 ## Forbidden Paths
 
@@ -79,9 +106,15 @@ Manual smoke:
   hit after the stable prefix is warm.
 - Immutable prefix drift and malformed tool-call/tool-result history must be
   caught before a request reaches DeepSeek.
-- Design can open the canvas, create or iterate an artifact, preview/export it,
-  and hand the approved design to a fresh Code thread.
-- Write can open the workspace, request inline completion, and use selected-text
+- A Code-workbench conversation can choose Code or Design for every next turn;
+  accepted turns freeze their own surface while the Code-owned thread and
+  timeline remain stable. The first accepted Design turn locks only its
+  document/output/style profile, and later Code turns remain valid.
+- With the Lab experiment enabled, a Direct plan build sends the prompt-managed
+  worktree protocol on the same task, leaves dirty source files untouched, and
+  preserves unresolved worktree/branch state for manual recovery. Graph does
+  not receive that protocol.
+- Work can open the workspace, request inline completion, and use selected-text
   assistant actions.
 - Connect phone can save settings and run a manual task through a Kun thread.
 - Settings -> Agents shows only Kun.

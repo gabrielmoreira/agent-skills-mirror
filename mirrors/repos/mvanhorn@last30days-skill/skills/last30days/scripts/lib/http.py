@@ -505,6 +505,12 @@ def classify_failure(*, status_code: Optional[int] = None, message: str = "") ->
             "forbidden",
             "authentication failed",
             "expired token",
+            "not signed in",
+            "not logged in",
+            "invalid_grant",
+            "refresh token",
+            "session expired",
+            "grok session expired",
         )
     ):
         return health.AUTH_FAILED

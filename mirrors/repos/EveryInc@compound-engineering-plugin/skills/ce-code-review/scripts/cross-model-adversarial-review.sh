@@ -13,11 +13,13 @@
 # runs on ONE editorially selected model and reasoning tier per provider.
 #
 # Usage:
-#   cross-model-adversarial-review.sh <host-provider> <candidates> <base-ref> <run-dir>
+#   cross-model-adversarial-review.sh <host-serving-family> <candidates> <base-ref> <run-dir>
 #
-#   <host-provider> the peer-key of the host's OWN serving provider, attested by
-#                   the calling skill (it knows its harness): openai->codex,
-#                   anthropic->claude, xai->grok, cursor/composer->composer.
+#   <host-serving-family>
+#                   the peer-key of the host's OWN serving family, attested by
+#                   the calling skill (it knows its harness). A peer-key, never
+#                   a provider name: openai->codex, anthropic->claude,
+#                   xai->grok, cursor/composer->composer.
 #                   Excluded from selection when attested. `unknown` is allowed,
 #                   but any returned review remains non-independent and cannot
 #                   promote agreement.
@@ -72,8 +74,8 @@ skip() { log "$*"; exit 0; }   # non-blocking: announce reason, exit clean, no o
 # Keep these in sync with ce-doc-review's script (parity-tested in CI).
 M_CODEX="gpt-5.6-luna"         # codex CLI            (-c model_reasoning_effort="xhigh")
 M_CLAUDE="opus"                # claude CLI, Opus 4.8 (--effort high)
-M_GROK="grok-4.5"              # grok CLI             (--effort high)
-M_GROK_CURSOR="cursor-grok-4.5-high"  # fixed cursor-agent Grok route (current id)
+M_GROK="grok-4.6"              # grok CLI             (--effort high)
+M_GROK_CURSOR="cursor-grok-4.6-high"  # fixed cursor-agent Grok route (current id)
 M_COMPOSER="composer-2.5-fast" # cursor-agent composer (no high tier; -fast is the ceiling)
 
 route_effort() {
@@ -908,14 +910,11 @@ run_provider() {
     log "wrote $n finding(s) to $OUT (reviewer adversarial-$provider)"
   else
     log "provider $provider produced no usable schema-shaped output; skipping fold-in"
-    # Surface bounded peer output so the orchestrator can
-    # reason about WHY it was skipped (quota/usage-limit exhaustion vs an ordinary
-    # empty review) and, in a repeated-pass session, deprioritize an exhausted
-    # route. Harness-agnostic: the agent classifies from the text; this only makes
-    # the evidence visible in out.log. Surface BOTH streams -- the error can be on
-    # stdout (grok's 402) or stderr (claude/cursor auth/quota). Bash builtins only
-    # (the route sandbox has no tail/tr). Prefer structured error fields because
-    # a raw tail can discard the actionable message in a large CLI envelope.
+    # Surface bounded peer output so the orchestrator can reason about WHY it
+    # was skipped (quota/usage-limit exhaustion vs an ordinary empty review).
+    # Prefer structured error fields because a raw tail can discard the
+    # actionable message in a large CLI envelope. Surface BOTH streams -- the
+    # error can be on stdout (grok's 402) or stderr (claude/cursor auth/quota).
     if [ -s "$PEERLOG" ]; then
       _pt="$(bounded_failure_evidence "$PEERLOG")"
       log "  peer skip evidence: $_pt"

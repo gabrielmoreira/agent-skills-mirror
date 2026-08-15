@@ -20,6 +20,8 @@ After reading this file, you MUST NOW (immediately) execute:
 4. NEXT: Initialize case scope (`skills/scripts/case-init.ps1` / `skills/ops/scope-contract.md`). MUST NOT ACT against targets until auth.status=granted and network_profile set
 5. ACT:  Open PRIMARY skill SKILL.md; use roles (`ops/role-map.md`), timeline/workitems, Evidence→Finding→Path (`ops/evidence-finding-path.md`). Identity: `ops/IDENTITY.md` (not a Z3r0 platform clone)
 
+> **Decision quality (Issue #77):** Follow skills/ops/analysis-decision-framework.md for hypothesis exits, validated sufficiency (R4*), grounded conclusions, and deadlock replan. Do **not** paste the full R1-R51 list into this file.
+
 IMPORTANT — Shared installation:
 - tool-index.md is the SINGLE SOURCE OF TRUTH for tool availability
 - If another CLI already installed tools (tool-index shows "yes"), DO NOT reinstall

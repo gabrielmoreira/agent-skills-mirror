@@ -134,6 +134,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 
 - ✅ **画像融合**: 複数の参照画像を1枚に融合または編集。
 - ✅ **リップシンク**: 音声 + 動画 → 動画（リップシンク）。音声 + 画像 → 動画、音声 + テキスト → 動画などのバリエーションにも対応。
+- ✅ **感情音声**: テキスト + 参照音声 → その声で読み上げ、感情制御に対応。
 - ✅ **キャラクター置換**: 動画 + 参照（シーン融合 / キャラクター置換）、Animate Mix スタイルの生成。
 - ✅ **モーション転送**: 動画 + 参照（モーション / リターゲット）、Animate Move スタイルの生成。
 - ✅ **テキスト結合**: 複数のテキストノードを1つに結合。
@@ -207,6 +208,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-gemma4](https://github.com/tong-io/tongflow-modal-gemma4) — Gemma-4 マルチモーダルテキスト（画像 / 動画理解）
 - [tongflow-modal-qwen3asr](https://github.com/tong-io/tongflow-modal-qwen3asr) — Qwen3 音声認識
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 テキストから音声
+- [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 感情表現テキスト読み上げ：ゼロショット音声クローン（代替）+ 参照音声による感情制御音声合成
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper 音声認識（タイムスタンプ付き、代替）
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 音楽スイート：テキストから音楽（sft / base / turbo 選択可）、リペイント、カバー、ステム抽出、トラック追加、編曲補完、音楽ブリーフ、音楽理解
 - [tongflow-modal-levo](https://github.com/tong-io/tongflow-modal-levo) — LeVo 2 / SongGeneration テキストから音楽生成（多言語・商用グレード）

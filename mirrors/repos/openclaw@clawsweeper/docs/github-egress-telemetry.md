@@ -4,7 +4,8 @@
 - Owner: ClawSweeper publication and dashboard maintainers
 - Source of truth: `src/github-egress-observer.ts`,
   `src/github-egress-telemetry-contract.ts`,
-  `dashboard/github-egress-telemetry.ts`, and the publication workflows
+  `src/review-activity-cursor.ts`, `dashboard/github-egress-telemetry.ts`, and
+  the publication workflows
 - Last verified: `openclaw/clawsweeper@a1795973a9e6bb00b73cd6adc21a4ea02ca78ced`
 - Update when: a publication request path, credential selection rule, telemetry
   dimension, retention limit, or public response changes
@@ -40,11 +41,13 @@ the operation, route, page, outcome, or rate-limit-header breakdown is needed.
 
 Do not add unlike units. Each row declares one of these units:
 
-| Unit           | What one count means                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------ |
-| `member`       | One durable publication member entering a direct, artifact, or batch publication boundary.       |
-| `invocation`   | One `gh` command invocation, including a pre-wire failure or an opaque artifact download action. |
-| `wire_attempt` | One HTTP request observed in a safe `GH_DEBUG=api` transport frame; each pagination page counts. |
+| Unit                   | What one count means                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| `member`               | One durable publication member entering a direct, artifact, or batch publication boundary.       |
+| `invocation`           | One `gh` command invocation, including a pre-wire failure or an opaque artifact download action. |
+| `wire_attempt`         | One HTTP request observed in a safe `GH_DEBUG=api` transport frame; each pagination page counts. |
+| `broker_lookup`        | One durable ETag broker lookup decision: hit, miss, or skip.                                     |
+| `conditional_response` | One GitHub 200 stored by the broker or one 304 whose durable body was confirmed and served.      |
 
 A paginated invocation therefore contributes one `invocation` and N
 `wire_attempt` rows. An artifact download whose binary redirect is unsafe to
@@ -52,6 +55,57 @@ debug contributes an incomplete `invocation` but no invented wire count.
 `attempted=false` is emitted only for a directly observed pre-wire condition or
 an existing batch circuit skip. Phase 0 does not manufacture requests that a
 future coordinator might have avoided.
+
+Do not equate a broker hit with a quota saving. `cache_hit` means only that an
+ETag was available for the next live request. The separate
+`cache_304_served` conditional-response row proves that GitHub returned 304 and
+the matching durable body was confirmed. A 304 costs zero REST quota points but
+still contributes a normal `wire_attempt`; the broker reduces quota charges,
+not wire requests. `cache_200_stored`, `cache_miss`, and `cache_skip` remain
+separate outcomes so operators can distinguish population, absence, and
+bounded/fail-open exclusions.
+
+## Durable ETag broker
+
+The first brokered surfaces are publication-apply issue/pull metadata and
+page-stable issue comments, pull comments, and pull reviews, plus the dashboard
+Actions run/job health reads. Publication reads continue to use the existing
+in-generation memoizer; the broker is consulted only when a real cross-run or
+new-generation GitHub request is about to be sent.
+
+The version-1 key is the canonical JSON tuple
+`[1, credential_pool, route_with_sorted_query, media_type]`. Collection routes
+materialize default `per_page` and `page=1`, so every page is independent and a
+page-1 304 never validates page 2. Credential pool remains one of
+`repository_actions`, `target_app`, or `public_read_fallback`; raw tokens and
+private pool identities are never persisted or exposed.
+
+Entries live in the exact-review queue Durable Object for 30 days, matching the
+artifact-receipt retention convention. The store is capped at 2,048 entries and
+512 KiB of UTF-8 JSON per body; missing ETags, malformed JSON, and larger bodies
+are counted as `cache_skip` and read normally. Each entry retains its response
+timestamp, last validation timestamp, ETag, body digest, and body. Automated
+runner access uses the publisher-scoped webhook HMAC because publication jobs
+already hold that narrowly scoped credential; the operator secret stays
+reserved for human recovery.
+
+Lookup returns only ETag and digest. After GitHub returns 304, a separate
+confirmation must still match that ETag/digest before the Worker returns the
+body. If lookup or confirmation fails, the caller performs an unconditional
+live read. Final pre/post-mutation guards therefore preserve their live
+authority: they may save quota with a 304, but they cannot consume a bare cached
+body.
+
+Stable pull-request activity validation uses the version-2 GraphQL cursor when
+reviews, review threads, and every nested inline review comment fit in the
+bounded query. The safety invariant remains two independent reads: a normal
+single-PR check therefore contributes two GraphQL invocations instead of two
+sets of reviews, inline-comment, and review-thread reads. The same query shape
+can alias up to eight PRs, so a bounded publication batch still contributes two
+GraphQL invocations. Any GraphQL error, pagination, partial connection, or
+missing required field activates the complete version-1 path for that PR and
+emits one `reviewed_pr_activity_cursor_v2_fallback` JSON line; the decoder never
+accepts a partial activity identity.
 
 Use the unit totals as a conservation check:
 
@@ -169,10 +223,27 @@ hourly bucket that overlaps the window's lower boundary, so totals can include a
 most one bucket of observations immediately before the exact cutoff. Raw
 rate-limit observations use the exact cutoff. `rows_truncated` and
 `rate_limit_rows_truncated` identify a bounded public response, while
-`rollup_window_complete` and
-`rate_limit_window_complete` identify any cap eviction during the requested
-window. `query_complete` is true only when neither condition applies. These
-query bounds are separate from transport `telemetry_complete`.
+`rollup_window_complete` and `rate_limit_window_complete` compare the requested
+lower boundary with the latest timestamp actually removed by a cap. Running a
+cap cleanup does not make a later intact window incomplete merely because the
+cleanup happened during that window. A missing legacy eviction boundary fails
+closed. `query_complete` is true only when neither retention boundary nor a
+public row cap affects the query. These query bounds are separate from transport
+`telemetry_complete`.
+
+`retention.last_rollup_evicted_bucket_start` and
+`retention.last_rate_limit_evicted_observed_at` expose those sanitized evidence
+boundaries alongside per-kind cumulative eviction counts. They are evidence
+timestamps, not the time cleanup ran. `rollup_eviction_count_exact=false`
+marks a legacy migration where the per-kind counts are conservative upper
+bounds; completeness still uses the per-kind evidence watermark and fails
+closed when that boundary is unavailable.
+
+No-traffic buckets are not materialized. Therefore `query_complete=true` means
+all stored evidence for the requested window is available; it is not a claim
+that every clock bucket had a workflow or publication member. Use durable queue
+starts, workflow results, and receipt timing to distinguish no qualifying
+traffic from a missing producer.
 
 The public view also returns full-window `units` totals for members,
 invocations, and wire attempts. These conservation denominators remain exact
@@ -219,7 +290,9 @@ The Durable Object validates every enum, digest length, timestamp window,
 numeric header, count, and chunk limit before committing a receipt. It stores
 both five-minute and hourly rollups transactionally and deduplicates upload
 retries by producer-run-scoped, content-derived receipt ID. Cap evictions are
-cumulative diagnostics and mark affected public windows incomplete.
+cumulative diagnostics. The highest timestamp actually evicted for each rollup
+kind and for sanitized rate-limit detail marks only overlapping public windows
+incomplete.
 
 The 15-minute view does not raise or bypass the public row cap. A collector
 must preserve `rows_truncated` and `query_complete` and record a gap if even the

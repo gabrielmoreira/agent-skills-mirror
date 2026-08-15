@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-08-14
+
+### Added
+
+- **Manual edge connections** (#145) — drag a connection between any two node
+  handles; the ABI contract is validated live during the drag (modality match,
+  single-value handle occupancy, add-node fan-out), so only valid edges can
+  land. Nodes display newly connected upstream data immediately, and a
+  connection can be dragged from either end.
+- **Skill packages** (#140) — `tongflow-package-*` content packages ship
+  reusable prompt packs (skills) instead of executable code. The Gen Text node
+  gains a skill picker; the selected skill's body is prepended to the prompt
+  at execution time. The official
+  [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills)
+  starter pack (12 skills) installs like any plugin.
+- **IndexTTS-2.5 emotive speech plugin**
+  ([tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2))
+  — zero-shot voice cloning and emotion-controlled speech from a voice
+  reference, adding the "Emotive speech" capability.
+- **Local plugin prefix** (#141) — `tongflow-local-*` registers on-device
+  engine plugins that run outside Modal, e.g. MiniMax-H3 through the native
+  h3.c Metal binary on Apple silicon.
+- **Omni-reference in more selections** (#137) — the multi-select smart island
+  now offers `refs-gen-video` for multiple videos (≤3), multiple images (≤9),
+  and text + single media combos.
+
+### Fixed
+
+- **Official router plugins failed to uninstall with a 400** — the plugin
+  installer now accepts the `tongflow-router-*` (and the new package/local)
+  prefixes (#140, #141).
+
 ## [0.3.1] - 2026-08-03
 
 ### Added

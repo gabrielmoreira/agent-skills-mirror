@@ -97,7 +97,7 @@ class MessageBus:
             f.write(json.dumps(msg) + "\n")
         return f"Sent {msg_type} to {to}"
 
-    def read_inbox(self, name: str) -> list:
+    def read_inbox(self, name: str, clear: bool = True) -> list:
         inbox_path = self.dir / f"{name}.jsonl"
         if not inbox_path.exists():
             return []
@@ -105,7 +105,8 @@ class MessageBus:
         for line in inbox_path.read_text().strip().splitlines():
             if line:
                 messages.append(json.loads(line))
-        inbox_path.write_text("")
+        if clear:
+            inbox_path.write_text("")
         return messages
 
     def broadcast(self, sender: str, content: str, teammates: list) -> str:
@@ -348,7 +349,7 @@ def agent_loop(messages: list):
         if inbox:
             messages.append({
                 "role": "user",
-                "content": f"<inbox>{json.dumps(inbox, indent=2)}</inbox>",
+                "content": f"<inbox>{json.dumps(inbox)}</inbox>",
             })
         response = client.messages.create(
             model=MODEL,
@@ -391,7 +392,7 @@ if __name__ == "__main__":
             print(TEAM.list_all())
             continue
         if query.strip() == "/inbox":
-            print(json.dumps(BUS.read_inbox("lead"), indent=2))
+            print(json.dumps(BUS.read_inbox("lead", False), indent=2))
             continue
         history.append({"role": "user", "content": query})
         agent_loop(history)

@@ -70,6 +70,7 @@ This guide is for AI agents working in this repository. It collects the project 
 - Unit tests: `npm run test`
 - Build: `npm run build`
 - Lint: `npm run lint`
+- File-size gate: `npm run check:file-lines` (every tracked non-binary, non-lockfile text file must be at most 700 physical lines)
 - Changes under `kun/` should pass `npm run build:kun`; top-level `dev` and `build` both run it first.
 - Before committing, run the smallest checks that cover the change. Cross-layer contracts, runtime behavior, settings, providers, and packaging changes usually need `npm run typecheck`, relevant `vitest` coverage, and `npm run build`.
 - If a check fails, separate newly introduced failures from existing baseline failures. Do not silently treat unrelated baseline failures as passing.
@@ -121,6 +122,7 @@ gh pr create --base develop --head <branch> --title "<title>" --body-file <file>
 
 ## Repository Hygiene
 
+- Keep every tracked authored text file at or below 700 physical lines. Split files by cohesive feature or operation before they cross the limit; do not bypass the gate with generated formatting or line compaction.
 - Do not commit build artifacts, extracted apps, temporary logs, or local investigation notes.
 - Keep changes local to the requested area. Do not reformat the whole repository, reorder unrelated files, or remove existing comments as drive-by cleanup.
 - New content should stay ASCII unless the surrounding file or user-facing requirement clearly needs otherwise.

@@ -4,6 +4,44 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.233](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2f5e820)
+
+_+27,728 tokens_
+
+- **NEW:** Data: Plugin eval and skill-doctor quick reference and Data: Plugin eval and skill-doctor reference — Add condensed and comprehensive offline guidance for early-access `claude plugin eval`, `eval init`, and `/skill-doctor`, covering enablement, suite authoring, graders, run options, result and report formats, sandboxing, CI, and troubleshooting.
+- **NEW:** System Prompt: Plugin eval enabled-session status — Announces when plugin eval is enabled and gives the exact `CLAUDE_CODE_WALNUT_SPIRE=1` fallback for clients and CI that cannot receive the organization rollout, with supported shell, user-settings, and managed-settings locations and a warning not to rely on project settings.
+- Agent Prompt: Claude Code guide, Agent Prompt: Claude guide agent, Data: Claude Code live documentation sources, Data: Claude Code recent changes reference, and Skill: Claude Code configuration guide — Route plugin-evaluation and skill-diagnostics questions through current-build checks and the new offline references, distinguish `/skill-doctor` from linting, and warn against stale-memory answers, guessed documentation URLs, or invented enablement variables.
+- Data: Artifact decision component script, Data: Workshop artifact HTML template, and Skill: Artifact components — Update decision controls to acquire artifact publishing through the asynchronous viewer 0.2 `claude.use('artifact')` API, retain viewer 0.1 `artifact`/`self` compatibility, arm only after capability availability, and refresh the verifier-pinned digest.
+- Data: Claude Code gateway protocol — Relays Anthropic 400/413 error messages needed for client recovery such as auto-compaction while continuing to sanitize other upstream messages and preserve error types.
+- Skill: Artifact document — No longer presents document artifacts as supporting selection-based comments or requires hidden comment-store machinery, while preserving live editing and reframing review language around feedback.
+- Skill: /doctor slash command and Skill: /doctor slash command description — Add diagnosis of malformed skill YAML frontmatter, explaining that parse failures drop every field and trigger fallback naming and descriptions while silently disabling tool, model, and invocation settings.
+- Skill: Plugin eval authoring interview — Keeps every calibration pilot and re-pilot private with `--no-publish` and tells users how to keep final full-suite reports local.
+- System Reminder: Team Coordination and Tool Description: SendMessage — Make task-list resources and coordination instructions conditional on available task tooling and allow legacy status updates in plain prose when those tools are absent.
+- Tool Description: WebFetch, Tool Description: WebFetch (concise), and Tool Description: WebFetch private URL warning — Derive cache-expiry text at render time instead of hard-coding 15 minutes.
+
+# [2.1.232](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a21a614)
+
+_+48,736 tokens_
+
+- **NEW:** Agent Prompt: Web fetch agent usage guidance and Agent Prompt: Web reading specialist — Add a dedicated WebFetch delegation flow that returns focused, source-grounded reports from untrusted pages, supports follow-up questions about already-read content, and confines binary-file handling to harness-reported tool-results paths.
+- **NEW:** Skill: Artifact components and Data: Artifact decision component assets — Add reusable, verifier-pinned decision blocks for non-workshop HTML artifacts, including canonical design tokens, styles, markup, and scripts for persisted selections and readback, plus composition and injection-safety constraints.
+- **NEW:** System Prompt: Artifact comment fast acknowledgement — Adds a no-tools, single-sentence acknowledgement under 160 characters before the full comment response, distinguishing change requests from questions while preserving plain-text and internal-handling restrictions.
+- **NEW:** System Reminder: Bound conversation activity authority warning — Treats bound-conversation edits and reactions as awareness-only, never as fresh instructions, approval, consent, or a way around a denial, while still allowing relevant activity to inform work in progress.
+- **NEW:** Tool Description: Background monitor push notification guidance — Directs background monitors to push only events that materially change what the user should do next, such as a new error or a status transition they were awaiting.
+- **REMOVED:** Agent Prompt: /code-review workflow routing and System Prompt: Code review artifact publishing instructions — Remove the standalone prompts for routing `/code-review` through a background workflow and publishing its findings as a shareable Artifact.
+- **REMOVED:** Agent Prompt: WebFetch summarizer — Removes the inline page-content summarizer superseded by the dedicated web-reading agent flow.
+- **REMOVED:** Data: VCS state changed event schema — Removes the standalone schema for best-effort repository-state cache-invalidation events emitted after detected foreground VCS mutations.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Extends real-browser protections to Chrome tools reached through the remote-device bridge and hard-blocks attacks on recognizable third-party systems outside the task's trust boundary unless an exercise or authorized engagement designates the target.
+- Agent Prompt: Worker fork — Updates the fork agent's availability description from the “fork experiment” to the “fork gate.”
+- Data: Managed Agents multiagent sessions — Removes the temporary exclusion of Fable advisors so valid pairings mirror the Messages advisor-tool pairing table.
+- Data: Workshop artifact HTML template; Skill: Artifact PR review, Skill: Artifact PR review (composed publish flow), Skill: Design, and Skill: Whiteboard — Migrate self-update guidance and clients to the `artifact` capability spelling while retaining legacy `self` compatibility, and clarify that design canvases open ready to edit but cannot retain changes when artifact publishing is unavailable.
+- Skill: Artifact design and Tool Description: Artifact — Require design calibration before writing both HTML and Markdown artifacts, treating format as a deliberate choice and forbidding Markdown as a speed shortcut while preserving the workshop-specific exceptions.
+- Skill: Prototype — Adds logic-first prototypes with full-state walkthroughs for behavior questions, requires every prototype to state one design question, verifies source-derived shell bytes against trusted registry digests before reuse, and keeps structurally distinct exploratory variants in one artifact until a direction is chosen.
+- System Prompt: Artifact comment edit composer — Aligns edit replies with the shared plain-text formatting and internal-handling nondisclosure restrictions used by comment replies and fast acknowledgements.
+- System Reminder: Artifact comment reply activation failure and Tool Parameter: Artifact comment actions guidance — Clarify that comment-thread activation survives artifact republishes and renames, while deactivation or thread deletion can clear it.
+- Tool Description: ListAgents and Tool Description: SendMessage cross-session guidance — Clarify that exact live names deliver across local, remote, and cloud sessions, that references are only for ambiguity or lookup failures, and that cloud sessions can receive messages but cannot yet reply to another session.
+- Tool Description: SendFeedback drafting guidance — Tightens feedback privacy by replacing personal identifiers with roles, excluding customer channel IDs and excerpts, constraining file-path evidence, and describing suspected vulnerabilities without working exploits or extraction steps.
+
 #### [2.1.231](https://github.com/Piebald-AI/claude-code-system-prompts/commit/fd3c642)
 
 <sub>_No changes to the system prompts in v2.1.231._</sub>

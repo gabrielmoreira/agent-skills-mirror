@@ -24,16 +24,20 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 
 ## Recent updates
 
+**v2.27.x** (2026-08)
+
+- Tools: `downloadRemoteFile` removed (high error rate) — download remote assets with shell `curl` / `Invoke-WebRequest` instead (#908, #909)
+- Cloud Run: `manageCloudRun` unifies tcbr init-check + deploy and drops legacy tcb cloudrun APIs; app deployment skips `target/.next` to avoid oversized zips
+- Skills: mini program SEO / search-optimization guidance merged into `miniprogram-development` (#906)
+- Gateway / hosting: route-level enable support with disabled access URL detection; hosting skips deploy notifications when `accessUrl` is empty
+- Docs: simplified quick start with externalized images (#905), `--cloudbase-api-key` CLI login, and CodeBuddy plugin marketplace install guide
+
 **v2.26.x** (2026-08)
 
 - Gateway: enable/disable HTTP routes (`enableRoute` / `disableRoute`); hosting/env surfaces detect disabled default-domain routes before returning access URLs (#901, #902, #903)
 - Auth: accept `CLOUDBASE_APIKEY` as an API Key environment-variable fallback (#900)
 - Skills: MCP-to-CLI tooling fallback for first sessions when MCP tools are not loaded yet (#889)
 - Templates / CI: shrink compat AGENTS guide under 40 KiB; harden ClawHub publish idempotency and upload-ticket retries (#895, #893, #894)
-
-**v2.25.x** (2026-08)
-
-- Skills / RAG: `minimal-web-baas-demo` in `searchKnowledgeBase`; CloudRun/Gateway VPC & custom-domain access; PG migration hardening — see [Releases][changelog] for the full list
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 
@@ -255,7 +259,7 @@ Others: [IDE setup guide](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/ide
 }
 ```
 
-Hosted URLs can use `enable_plugins` / `disable_plugins`. Canonical names live in `mcp/src/server.ts`.
+Hosted URLs can use `site` (`domestic` / `intl`) to pick the login site (e.g. domestic-site Singapore needs `site=domestic`), plus `enable_plugins` / `disable_plugins` to trim tools. Canonical names live in `mcp/src/server.ts`.
 
 **Self-hosted Cloud Mode**: set `CLOUDBASE_MCP_CLOUD_MODE=true` (or `MCP_CLOUD_MODE=true`) so local file and process tools are disabled for remote callers.
 
@@ -320,6 +324,21 @@ The Toolkit (including MCP) is open source under MIT. CloudBase has free quotas;
 <summary>Login says environment does not exist?</summary>
 
 Confirm an environment exists and is healthy in the [console](https://tcb.cloud.tencent.com/), then login again and pick the right one.
+
+</details>
+
+<details>
+<summary>Domestic site env at `ap-singapore` is treated as international?</summary>
+
+Both the domestic site (cloud.tencent.com) and the international site (tencentcloud.com) offer the `ap-singapore` region, so region alone is ambiguous. Without an explicit site, MCP defaults to `intl` for `ap-singapore` (backward compatible). Domestic-site Singapore users must set `TCB_SITE=domestic` (together with `TCB_REGION=ap-singapore`) in the MCP `env`, or add a `.cloudbase/project.json` at the project root:
+
+```json
+{ "site": "domestic", "region": "ap-singapore", "envId": "your-env-id" }
+```
+
+Credentials are stored per site (`credential.domestic` / `credential.intl`) so domestic and international logins can coexist; legacy single-slot `auth.json` is read as `domestic` and migrated on first write.
+
+**Hosted mode**: add `site=domestic` to the hosted URL (`https://tcb-api.cloud.tencent.com/mcp/v1?env_id=<env_id>&site=domestic`), since the URL is the only place hosted mode can carry the site (there is no MCP `env` block for HTTP servers).
 
 </details>
 

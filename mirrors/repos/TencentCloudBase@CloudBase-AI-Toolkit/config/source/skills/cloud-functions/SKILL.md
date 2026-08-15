@@ -1,7 +1,7 @@
 ---
 name: cloud-functions
 description: CloudBase function runtime guide for building, deploying, and debugging your own Event Functions or HTTP Functions. This skill should be used when users need application runtime code on CloudBase, not when they are merely calling CloudBase official platform APIs.
-version: 2.26.0
+version: 2.27.0
 alwaysApply: false
 ---
 
@@ -14,6 +14,7 @@ If a referenced sibling skill file is missing from this environment, ask the use
 **Cross-cutting protocols** (required before code changes or deployments):
 - Change Safety Protocol: `../cloudbase-platform/references/protocols/change-safety-protocol.md`
 - Deployment Gate: `../cloudbase-platform/references/protocols/deployment-gate.md`
+- Sensitive Runtime Data Protection: `../cloudbase-platform/references/protocols/sensitive-runtime-data-protection.md`
 
 # Cloud Functions Development
 
@@ -70,6 +71,8 @@ If a referenced sibling skill file is missing from this environment, ask the use
 - Assuming MCP covers the whole image pipeline. `manageFunctions` covers SCF image deploy (Stage B) via `runtime: "CustomImage"` + `imageConfig`, but the CloudApp custom build → TCR push (Stage A) is a raw Tencent Cloud API path — confirm action names and parameters from official docs before any `callCloudApi` fallback.
 - Making code or configuration changes without first following the Change Safety Protocol (`cloudbase-platform/references/protocols/change-safety-protocol.md`).
 - Exposing functions publicly or deploying without first completing the checks in `cloudbase-platform/references/protocols/deployment-gate.md`.
+- **Returning `req.headers`, `process.env`, `event`, or `context` wholesale** — gateways may inject `x-cloudbase-context` (base64 temporary credentials). Never echo that header or dump credential env vars to clients. Follow `../cloudbase-platform/references/protocols/sensitive-runtime-data-protection.md`.
+- **Using a bare layer name (e.g. `common`) across environments.** SCF LayerName is an account-scoped shared namespace: same name → shared version sequence. Create new layers with fixed format `{layerName}_{当前envId}` (e.g. `common_cloud1-d9ghadgak3edf6b36`). Pass the full name as `layerName` — do not invent automatic suffixes. Treat MCP layer `warnings` as soft advisories (operation still succeeds). Details: `./references/operations-and-config.md`.
 - **Defaulting new CRUD to TCP DB clients** (`DATABASE_URL` / `mysql2` / `pg` / Redis) instead of native `app.rdb()` / `app.database()` or MCP SQL. TCP is exception-only for existing ORM migrations — see `references/vpc-and-tcp-database.md` only then.
 
 ### Minimal checklist
@@ -91,6 +94,7 @@ Use this skill when developing, deploying, and operating CloudBase cloud functio
 - If the request is for REST APIs, browser-facing endpoints, SSE, or WebSocket, write an **HTTP Function** with `req` / `res` on port `9000`.
 - For Node.js HTTP Functions, default to the native `http` module unless the user explicitly asks for Express, Koa, NestJS, or another framework.
 - If the HTTP Function needs custom system libraries or an arbitrary runtime but should still be SCF request-driven and scale to zero, deploy it as a **Custom Image HTTP Function** (`Runtime: CustomImage`) from a TCR image. The container still listens on the fixed port `9000`. See `./references/http-functions-custom-image.md`. This is distinct from a CloudRun container, which listens on the injected `PORT` and runs long-lived.
+- **有 Dockerfile 的 HTTP 无状态服务可优先考虑 HTTP 云函数，不必上云托管** — a Dockerfile alone does not mean CloudRun. If the service is stateless, request-driven HTTP without long connections / custom runtime / VPC database access, prefer an HTTP Function (or Custom Image HTTP Function) — faster to deploy, cheaper, and no CloudRun environment initialization needed. Route to CloudRun (`../cloudrun-development/SKILL.md`) only for WebSocket/SSE long connections, stable independent processes, custom system dependencies, or VPC DB access.
 - If the user mentions HTTP access for an existing Event Function, keep the Event Function code shape and add gateway access separately.
 
 ## HTTP Function authoring contract
@@ -114,6 +118,7 @@ Use these rules whenever you are writing the function code itself:
 - Keep gateway setup and security-rule changes separate from the runtime code. They affect access, not the HTTP Function programming model.
 - Do not add HTTP access service configuration when the task is only to create an HTTP Function itself. Gateway paths or custom domains are separate access-layer work; public invocation requirements should be handled through the function security rule workflow (note: anonymous login is disabled by default).
 - If the HTTP Function calls CloudBase through `@cloudbase/node-sdk` or `@cloudbase/manager-node`, complete the explicit credential gate in `./references/http-function-credentials.md` before deployment. Never hardcode credentials in the function package.
+- **Never echo sensitive runtime data.** Do not return `req.headers`, `process.env`, or `x-cloudbase-context` in responses. Debug endpoints must use an explicit non-sensitive allowlist. See `../cloudbase-platform/references/protocols/sensitive-runtime-data-protection.md`.
 
 ## Quick decision table
 
@@ -123,6 +128,7 @@ Use these rules whenever you are writing the function code itself:
 | Needs browser-facing HTTP endpoint? | HTTP Function |
 | Needs SSE or WebSocket service? | HTTP Function |
 | Needs custom system libraries / arbitrary runtime, but still SCF request-driven + scale-to-zero? | HTTP Function with `Runtime: CustomImage` (deploy from a TCR image) |
+| Has a Dockerfile but is a stateless HTTP service (no long connections / custom runtime / VPC DB)? | HTTP Function (or Custom Image HTTP Function) — **not** CloudRun |
 | Needs long-lived container runtime or custom system environment? | CloudRun |
 | Only needs HTTP access for an existing Event Function? | Event Function + gateway access |
 
@@ -162,7 +168,7 @@ Use these rules whenever you are writing the function code itself:
    - HTTP Function details -> `./references/http-functions.md`
    - HTTP Function CloudBase SDK credentials -> `./references/http-function-credentials.md`
    - HTTP Function from a container image (`Runtime: CustomImage`, TCR image pipeline) -> `./references/http-functions-custom-image.md`
-   - Logs, gateway, env vars, and legacy mappings -> `./references/operations-and-config.md`
+   - Logs, gateway, env vars, layers (`{layerName}_{当前envId}`), and legacy mappings -> `./references/operations-and-config.md`
 
 ## Database write reminder
 
@@ -189,10 +195,11 @@ Use these rules whenever you are writing the function code itself:
 
 ```js
 exports.main = async (event, context) => {
+  // Do not return event/context/process.env — they may contain platform secrets.
+  const name = typeof event?.name === "string" ? event.name : "world";
   return {
     ok: true,
-    message: "hello from event function",
-    event,
+    message: `hello ${name} from event function`,
   };
 };
 ```
@@ -295,6 +302,17 @@ The `scf_bootstrap` binary path must match the runtime — see the full mapping 
 - `manageFunctions(action="createFunction")`
 - `manageFunctions(action="updateFunctionCode")`
 - `manageFunctions(action="updateFunctionConfig")`
+
+### Layers (SCF Layer)
+
+Layers are **account-scoped**, not env-scoped. Align with MCP `manageFunctions` / `queryFunctions` layer guidance:
+
+- **Naming (required for new layers):** `{layerName}_{当前envId}` — example `common_cloud1-d9ghadgak3edf6b36`. Do not reuse a bare name like `common` in another env.
+- **Create:** `manageFunctions(action="createLayerVersion", layerName="…_{envId}", …)` after `queryFunctions(action="listLayers")` to check duplicates. MCP may return a soft `warnings` entry if the name lacks the current `envId`; it does **not** rewrite the name.
+- **Read:** `queryFunctions(action="listLayers"|"listLayerVersions"|"getLayerVersionDetail"|"listFunctionLayers")` — list results are an account-level view and may include layers created in other envs.
+- **Bind / unbind / replace:** `manageFunctions(action="attachLayer"|"detachLayer"|"updateFunctionLayers")`
+- **Delete version:** `manageFunctions(action="deleteLayerVersion")` — deleting a version can affect every env that binds that version.
+- Full contract and warning semantics → `./references/operations-and-config.md`
 
 ### Logs
 

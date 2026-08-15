@@ -1272,6 +1272,7 @@ page URL, or better, on a successful library API call.**
 ```python
 from notebooklm import NotebookLMClient, AuthError
 
+
 async def verify_and_save(context, STORAGE):
     try:
         async with NotebookLMClient.from_storage() as client:

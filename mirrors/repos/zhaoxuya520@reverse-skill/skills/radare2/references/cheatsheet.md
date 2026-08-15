@@ -95,3 +95,35 @@ rax2 0x401000
 rax2 4198400
 rax2 -s hello
 ```
+
+## radare2-skills 生态命令
+
+### r2xsql 查询示例
+
+```powershell
+r2xsql -s sample.exe -q "SELECT name, module FROM imports WHERE name LIKE '%Crypt%'"
+r2xsql -s sample.exe -q "SELECT addr, content FROM strings WHERE content LIKE '%http%'"
+```
+
+### r2http / r2mcp 会话
+
+```powershell
+r2 -N -e http.bind=localhost -e http.port=9393 -e http.sandbox=false -q -c=h sample.exe
+curl.exe -sS --data-binary 'aaa' http://127.0.0.1:9393/cmd
+curl.exe -sS --data-binary 'aflj' http://127.0.0.1:9393/cmd
+```
+
+### radius2 符号执行
+
+```powershell
+radius2 -p sample.exe -s stdin 96 -X Incorrect
+radius2 -p sample.exe -s flag 256 -A . flag -B Correct -X Wrong -j
+```
+
+### r2pm 插件安装
+
+```powershell
+r2pm -ci r2ghidra
+r2pm -ci r2dec
+r2pm -l
+```

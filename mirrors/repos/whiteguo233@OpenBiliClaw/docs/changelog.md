@@ -6,8 +6,13 @@
 
 ## 未发布
 
+- **项目首页与 README 重新对齐**：补齐一直遗漏的 YouTube / X 来源卡，使首页明确展示 B 站、小红书、抖音、YouTube、X、知乎、Reddit、Linux.do、Bangumi、V2EX、微博与开放 Web；首屏补回“本地运行、只为一个人构建、反馈可调教”的定位，产品入口从过时的“只有浏览器侧边栏”更新为浏览器插件、桌面 Web、移动 Web、Flutter 与 DSH 五端，并修正中文微博文案误用英文、Firefox、架构分层、聚合 Release 说明以及静态 HTML / 中文词典漂移。
+- **README 新增 Linux.do 友情链接（折叠）**：主项目 README（中英）顶部原有的「LINUX DO Community」徽章移除，改在 README 底部新增可折叠的「友情链接」区块，内含指向 https://linux.do/ 的 LINUX DO 友情徽章；讨论帖徽章保留。DSH 插件仓库（dsh-openbiliclaw）README 底部同步新增同款折叠友情链接。
+- 修复 `scripts/install.ps1` 在原生 Windows 上的一键安装解析失败（issue #157）：双引号字符串内 `$InstallDir:` 会被解析为作用域限定变量引用，导致整个脚本在 PowerShell parse 阶段直接报错，改为 `${InstallDir}`；同时为脚本补充 UTF-8 BOM，确保 Windows PowerShell 5.1（脚本声明 `#requires -Version 5.1`）按 UTF-8 解码含中文注释与 here-string 的内容；`Invoke-Bootstrap` 内的 `$args` 改名 `$bootstrapArgs`，避免遮蔽自动变量（`PSAvoidAssignmentToAutomaticVariable`）。
+
 ## v0.3.205：证据驱动时效推荐与可靠性升级（2026-08-14）
 
+- **发布与市场状态**：`backend-v0.3.205`、`extension-v0.3.205`、`desktop-v0.3.205` 与聚合 `openbiliclaw-v0.3.205` 均指向提交 `a49af312`；聚合 Latest Release 已附两份扩展 ZIP 与四份桌面安装器。Chrome Web Store 已上传 `0.3.205` 并进入 `PENDING_REVIEW`；Firefox AMO 已接受 listed `0.3.205`，文件状态为 `unreviewed`。AMO `eula_policy` API 仍返回 HTTP 406，manifest 数据类别、reviewer notes、商店描述和随包隐私政策已提交。
 - **新增 DeepSeek Harness（DSH）客户端插件（独立仓库）**：OpenBiliClaw-dsh 插件把消费侧搬进 DSH Web GUI——DSH 界面常驻第四栏（aside 槽位），提供推荐 / 内容库 / 对话 / 画像 / 设置面板，并注册 22 个 `openbiliclaw_*` Agent Bridge 工具与 `openbiliclaw-adapter` skill，让 DSH 里的 Agent 也能读推荐、答探测、保存内容、参与学习闭环。插件只做消费侧，爬取 / 平台源管理 / 账号同步仍留在主项目。README（中英）顶部新增「重要更新」提示，核心入口由四个更新为五个（浏览器插件 / 桌面 Web / 移动 Web / Flutter 原生客户端 / DSH 插件）。
 - **修复 embedding L2 缓存无界增长（issue #153）**：`data/embedding_cache.db` 持久化向量从 JSON 文本改为版本化 little-endian float32 BLOB（`OBLV` 头 + dtype/dimension 元数据），4096 维向量从约 90 KiB/行降到约 16 KiB/行；读取对 legacy JSON、BLOB 与降级回写产生的 mixed-format 数据按内容自适应解码，单行损坏只降级为 miss。旧库启动时自动执行幂等、小批量、可中断续跑的 JSON→BLOB 迁移（进度即 `encoding` 列），schema 升级补齐 `dimension` / `created_at` / `last_accessed_at` 元数据。新增可配置磁盘预算 `[llm.embedding].cache_max_bytes`（默认 0 = 不设上限）与高低水位，超高位后按「非 active namespace（含 legacy 行）→ active namespace 最旧/最近未访问」顺序批量淘汰；`last_accessed_at` 命中刷新限频，写路径按节奏抽样检查。新增 CLI `embedding-cache-stats`（行数 / 逻辑载荷 / 文件与 WAL 大小 / namespace 分布 / 水位 / 最近维护）与 `embedding-cache-clean`（默认 dry-run，`--apply` 执行迁移 + 回收失效 namespace + WAL checkpoint / `VACUUM INTO` / `integrity_check` / 原子替换做物理回收，`--keep-model` / `--keep-legacy` / `--no-compact` / `--batch-size`）。四表面契约：CLI 与后端程序化接口覆盖；桌面 Web / 插件 / 移动 Web 暂未提供该维护入口（属运维面，PR 显式声明排除）。
 - **README Star 历史图表临时替换为 Star 徽章**：GitHub 自 2026-06-30 起将 stargazers API 限制为仅仓库管理员/协作者可读，star-history 实时图表对非协作者全部渲染为「GitHub restricted access to star data」错误占位图；README（中英）暂以 shields.io Star 徽章替代并保留说明，待上游恢复或配置新的加密 token 后换回实时图表。

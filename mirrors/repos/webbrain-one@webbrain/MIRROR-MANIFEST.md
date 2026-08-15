@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `webbrain-one/webbrain` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `webbrain-one/webbrain` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `webbrain-one/webbrain` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,17 +63,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.github/prompts/minor-release-changelog-user.txt`](.github/prompts/minor-release-changelog-user.txt) |
 | 3 | ✓ | [`.github/prompts/minor-release-changelog.prompt.yml`](.github/prompts/minor-release-changelog.prompt.yml) |
 | 4 | ✓ | [`docs/agent-tools.md`](docs/agent-tools.md) |
-| 5 | ✓ | [`docs/architecture.md`](docs/architecture.md) |
-| 6 | ✓ | [`docs/fr/agent-tools.md`](docs/fr/agent-tools.md) |
-| 7 | ✓ | [`docs/fr/architecture.md`](docs/fr/architecture.md) |
-| 8 | ✓ | [`docs/fr/privacy-and-data-flow.md`](docs/fr/privacy-and-data-flow.md) |
-| 9 | ✓ | [`docs/fr/skills.md`](docs/fr/skills.md) |
-| 10 | ✓ | [`docs/privacy-and-data-flow.md`](docs/privacy-and-data-flow.md) |
-| 11 | ✓ | [`docs/skills.md`](docs/skills.md) |
-| 12 | ✓ | [`docs/zh-CN/agent-tools.md`](docs/zh-CN/agent-tools.md) |
-| 13 | ✓ | [`docs/zh-CN/architecture.md`](docs/zh-CN/architecture.md) |
-| 14 | ✓ | [`docs/zh-CN/privacy-and-data-flow.md`](docs/zh-CN/privacy-and-data-flow.md) |
-| 15 | ✓ | [`docs/zh-CN/skills.md`](docs/zh-CN/skills.md) |
+| 5 | ✓ | [`docs/apocalypse-mode.md`](docs/apocalypse-mode.md) |
+| 6 | ✓ | [`docs/architecture.md`](docs/architecture.md) |
+| 7 | ✓ | [`docs/fr/agent-tools.md`](docs/fr/agent-tools.md) |
+| 8 | ✓ | [`docs/fr/architecture.md`](docs/fr/architecture.md) |
+| 9 | ✓ | [`docs/fr/privacy-and-data-flow.md`](docs/fr/privacy-and-data-flow.md) |
+| 10 | ✓ | [`docs/fr/skills.md`](docs/fr/skills.md) |
+| 11 | ✓ | [`docs/privacy-and-data-flow.md`](docs/privacy-and-data-flow.md) |
+| 12 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 13 | ✓ | [`docs/zh-CN/agent-tools.md`](docs/zh-CN/agent-tools.md) |
+| 14 | ✓ | [`docs/zh-CN/architecture.md`](docs/zh-CN/architecture.md) |
+| 15 | ✓ | [`docs/zh-CN/privacy-and-data-flow.md`](docs/zh-CN/privacy-and-data-flow.md) |
+| 16 | ✓ | [`docs/zh-CN/skills.md`](docs/zh-CN/skills.md) |
 
 ---
 

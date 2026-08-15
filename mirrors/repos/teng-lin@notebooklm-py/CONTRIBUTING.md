@@ -173,8 +173,9 @@ Content that should not be changed by agents...
 For code files:
 ```python
 # PROTECTED: Do not modify without approval
-class RPCMethod(Enum):
-    ...
+class RPCMethod(Enum): ...
+
+
 # END PROTECTED
 ```
 

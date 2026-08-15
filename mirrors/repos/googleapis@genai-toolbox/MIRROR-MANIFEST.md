@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `googleapis/genai-toolbox` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,9 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`docs/en/documentation/configuration/embedding-models/gemini.md`](docs/en/documentation/configuration/embedding-models/gemini.md) |
 | 4 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 5 | ✓ | [`skills/maintainer/review-prs/SKILL.md`](skills/maintainer/review-prs/SKILL.md) |
-| 6 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
-| 7 | ✓ | [`skills/README.md`](skills/README.md) |
+| 5 | ✓ | [`skills/maintainer/fix-failing-tests/references/ci-map.md`](skills/maintainer/fix-failing-tests/references/ci-map.md) |
+| 6 | ✓ | [`skills/maintainer/fix-failing-tests/SKILL.md`](skills/maintainer/fix-failing-tests/SKILL.md) |
+| 7 | ✓ | [`skills/maintainer/review-prs/SKILL.md`](skills/maintainer/review-prs/SKILL.md) |
+| 8 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
+| 9 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

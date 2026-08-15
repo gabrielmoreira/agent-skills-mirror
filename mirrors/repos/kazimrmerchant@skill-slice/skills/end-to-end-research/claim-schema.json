@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "file:///~/.cursor/skills/end-to-end-research/claim-schema.json",
+  "title": "ResearchClaimsPack",
+  "description": "Machine contract for structured findings produced by the end-to-end-research skill. A pack holds the research question metadata (including the coverage manifest and confidence ceiling), the source registry, and the claims table. Validate deep-tier output against this schema before handing off to research-report-synthesis or an optional obsidian vault write.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "sources", "claims"],
+  "properties": {
+    "meta": { "$ref": "#/$defs/meta" },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "claims": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question", "reason"],
+        "properties": {
+          "question": { "type": "string" },
+          "reason": {
+            "enum": ["no_source_found", "conflicting_evidence", "out_of_budget", "inaccessible", "too_fresh"],
+            "description": "Why it remains open. 'too_fresh' = only unvetted sources exist yet."
+          },
+          "recheck_after": { "$ref": "#/$defs/isoDate" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "isoDate": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question", "depth_tier", "as_of", "coverage"],
+      "properties": {
+        "question": {
+          "type": "string",
+          "description": "The one-sentence answerable question from the intake block."
+        },
+        "sub_questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "text"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^SQ[0-9]+$" },
+              "text": { "type": "string" },
+              "status": { "enum": ["answered", "partial", "open"] }
+            }
+          }
+        },
+        "depth_tier": { "enum": ["quick", "standard", "deep"] },
+        "as_of": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Date the pack was assembled. Claims carry their own as_of."
+        },
+        "recency_window": {
+          "type": "string",
+          "description": "Preferred source freshness, e.g. '12m', '30d', or 'none'."
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["confidence_ceiling"],
+          "properties": {
+            "source_classes_planned": { "type": "integer", "minimum": 0 },
+            "source_classes_ok": { "type": "integer", "minimum": 0 },
+            "degraded": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Failed or limited source classes with reason, e.g. 'reddit: rate-limited', 'analyst reports: paywalled'."
+            },
+            "confidence_ceiling": {
+              "enum": ["high", "moderate", "low"],
+              "description": "Computed, never asserted: high = >=80% planned coverage AND key claims multi-source; moderate = 50-80% or single-source key claims; low = <50%."
+            }
+          }
+        },
+        "tool_calls_used": { "type": "integer", "minimum": 0 },
+        "paid_apis_used": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Paid providers actually invoked (each requires prior user approval)."
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "url", "title", "tier", "type", "accessed_date", "independence_group", "fetch_status"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^S-[0-9]{3}$" },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "MUST have been returned by search or fetched this session. Never reconstructed from memory."
+        },
+        "title": { "type": "string" },
+        "publisher": { "type": "string" },
+        "author": { "type": "string" },
+        "published_date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Omit only if genuinely undated after checking page metadata and Wayback first-snapshot."
+        },
+        "accessed_date": { "$ref": "#/$defs/isoDate" },
+        "tier": {
+          "enum": ["T1", "T2", "T3", "T4", "T5"],
+          "description": "Reliability tier per SKILL.md scale. When unsure, tier down."
+        },
+        "type": {
+          "enum": ["official", "academic", "press", "docs", "code", "dataset", "social", "forum", "blog", "video", "archive", "other"]
+        },
+        "independence_group": {
+          "type": "string",
+          "pattern": "^G[0-9]+$",
+          "description": "Sources deriving from the same upstream origin share a group. Triangulation counts distinct groups, not sources."
+        },
+        "paywalled": { "type": "boolean", "default": false },
+        "conflict_of_interest": {
+          "type": "string",
+          "description": "e.g. 'vendor benchmark of own product', 'sponsored post'."
+        },
+        "fetch_status": {
+          "enum": ["fetched", "snippet_only", "archived_copy", "failed"],
+          "description": "snippet_only = judged from search snippet; quotes require 'fetched' or 'archived_copy'."
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "stance"],
+      "properties": {
+        "source_id": { "type": "string", "pattern": "^S-[0-9]{3}$" },
+        "stance": { "enum": ["supports", "contradicts", "contextualizes"] },
+        "quote": {
+          "type": "string",
+          "description": "Verbatim from fetched text. Omit only when support is structural (e.g. source code, a dataset column)."
+        },
+        "locator": {
+          "type": "string",
+          "description": "Section, heading, page, timestamp, or file path within the source."
+        },
+        "strength": {
+          "enum": ["direct", "indirect", "circumstantial"],
+          "description": "direct = states the claim; indirect = implies it; circumstantial = consistent with it."
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "type", "grade", "confidence", "as_of", "evidence", "verification"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^C-[0-9]{3}$" },
+        "statement": {
+          "type": "string",
+          "description": "One atomic, falsifiable sentence. Split compound claims into separate entries."
+        },
+        "sub_question": { "type": "string", "pattern": "^SQ[0-9]+$" },
+        "type": {
+          "enum": ["fact", "claim", "inference", "opinion", "prediction"],
+          "description": "fact = verified against primary evidence; claim = asserted by a source, not independently verified; inference = reasoned from evidence by the agent; opinion = a source's judgment; prediction = forward-looking."
+        },
+        "grade": {
+          "enum": ["A", "B", "C", "D", "E"],
+          "description": "Evidence strength per reference.md section 3. Upgrades require new evidence, never rewording."
+        },
+        "confidence": {
+          "enum": ["confirmed", "probable", "contested", "unverified", "refuted"]
+        },
+        "as_of": { "$ref": "#/$defs/isoDate" },
+        "volatile": {
+          "type": "boolean",
+          "default": false,
+          "description": "True for prices, versions, headcounts, market shares — anything that decays."
+        },
+        "recheck_after": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Required when volatile is true."
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evidence" }
+        },
+        "contradicted_by": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_id", "resolution"],
+            "properties": {
+              "source_id": { "type": "string", "pattern": "^S-[0-9]{3}$" },
+              "resolution": {
+                "type": "string",
+                "description": "How the conflict was resolved (per reference.md section 4), or the literal string 'disputed' if unresolved."
+              }
+            }
+          }
+        },
+        "independent_groups": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of distinct independence_groups among supporting evidence. Load-bearing claims need >=2 or an explicit single-source label."
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": {
+            "status": { "enum": ["verified", "spot_checked", "unverified"] },
+            "method": {
+              "enum": ["primary_source_fetch", "quote_recheck", "cross_source", "code_inspection", "dataset_check", "none"]
+            },
+            "verified_date": { "$ref": "#/$defs/isoDate" }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "volatile": { "const": true } },
+            "required": ["volatile"]
+          },
+          "then": { "required": ["recheck_after"] }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "fact" } }
+          },
+          "then": {
+            "properties": {
+              "verification": {
+                "properties": {
+                  "status": { "enum": ["verified", "spot_checked"] }
+                }
+              }
+            },
+            "description": "A finding may only be typed 'fact' if it was verified or spot-checked; otherwise it is a 'claim'."
+          }
+        }
+      ]
+    }
+  }
+}

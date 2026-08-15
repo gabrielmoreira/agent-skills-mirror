@@ -32,6 +32,7 @@ Default engine. Long-running subprocess with streaming JSON I/O. Tested with Cla
 - Real-time streaming (text, tool_use, tool_result, system events)
 - Session resume via `--resume`
 - Full cost tracking from API usage data
+- Cross-session peer messaging (`crossSessionInbound`): sets this session's policy for messages sent from other Claude Code sessions on the same machine — `accept` delivers straight in, `hold` waits for a human to approve it in that session's terminal, `refuse` rejects it. There is no CLI flag for this; it is a settings key, delivered through the `--settings` merge. Worth setting explicitly for orchestrated sessions: with no value the CLI decides from the two sides' permission modes and holds when they differ, and an orchestrated session (`bypassPermissions` / `acceptEdits`) versus a human terminal (prompting) is exactly that case — so the message parks waiting for approval in a terminal nobody is watching. Sessions started by the orchestrator do register as addressable peers and do receive messages (verified against 2.1.232 by sending to a live one and getting a reply). Note that a user-level `~/.claude/settings.json` value may take precedence over the per-session one; only the `accept` path has been confirmed end-to-end here.
 - Hook lifecycle events (`includeHookEvents`), subagent output forwarding (`forwardSubagentText`), permission delegation (`permissionPromptTool`), prompt cache optimization (`bare` + `excludeDynamicSystemPromptSections` + `enablePromptCaching1H`), debug control, `--from-pr` resume, and MCP channel subscriptions
 - Fork subagent (`forkSubagent`), tool search (`enableToolSearch`), OpenTelemetry logging toggles (`otelLogUserPrompts`, `otelLogRawApiBodies`), `xhigh` effort tier (Opus 4.7), and `stats.pluginErrors` capture — see [CLI 2.1.121 options in SKILL.md](../SKILL.md) and [tools.md](./tools.md)
 
@@ -158,6 +159,7 @@ await manager.startSession({
 
 Wraps the Cursor Agent CLI (`agent`) with `--print --output-format stream-json`. Write-enabled sessions use `--force`. Each `send()` spawns a new process.
 
+- Conversation continuity: the chat id from the first turn's `system` event is captured and passed back as `--resume <chatId>` on later sends, so the model sees prior turns. `--continue` is deliberately not used: it resumes "the latest chat", which collides between concurrent sessions.
 - One-shot execution per message (no persistent subprocess)
 - Working directory via `--workspace` flag
 - Real token counts from stream-json `result` events (camelCase: `inputTokens`, `outputTokens`, `cacheReadTokens`)
@@ -180,6 +182,7 @@ await manager.startSession({
 
 Wraps the [sst/opencode](https://github.com/sst/opencode) CLI with `run --format json`. Each `send()` spawns a new process.
 
+- Conversation continuity: the session id from the event envelope is captured and passed back as `--session <id>` on later sends, so the model sees prior turns. `--continue` is deliberately not used: it means "the last session on this machine", which collides between concurrent sessions.
 - One-shot execution per message (no persistent subprocess)
 - NDJSON event stream with envelope `{ type, timestamp, sessionID, ... }`
 - Event types: `text`, `reasoning`, `tool_use`, `step_start`, `step_finish`, `error`

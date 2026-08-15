@@ -17,7 +17,7 @@ The user's message, the current page content (AX tree, screenshot, or extracted 
 | Tool call history | Yes | Previous tool results are context for the next LLM call |
 | User memory | Yes, if enabled | Active records are injected into the system prompt; disabled memory is not sent |
 | User credentials (passwords, API keys) | Yes | If the user types them in chat or the agent fills them and they appear in tool results |
-| Provider API key | Yes | Sent as an HTTP header (Bearer token) to the provider's API endpoint |
+| Provider API key | Yes, when applicable | Sent as an HTTP header to endpoint-based providers; the in-browser WebGPU provider has no key or endpoint |
 
 When **Plan before Act** is enabled, action-mode turns (Act or Dev) make an additional planner
 call to the same configured provider before any browser tools run. That call
@@ -35,6 +35,13 @@ the extractor is skipped silently.
 
 **No separate analytics payload is added to provider requests.** The request data above is sent only as needed to run the selected provider and agent features.
 
+When either Chromium in-browser WebGPU path is used, first use downloads the
+public model, tokenizer, and configuration files from Hugging Face. That
+request contains only ordinary model-download metadata; screenshots, page
+content, and conversation data are not included. The downloaded files are
+cached by the browser, and both general text/tool inference and screenshot
+inference stay on-device.
+
 ### Which provider receives the data?
 
 The user chooses their provider in Settings. Options include:
@@ -43,6 +50,8 @@ The user chooses their provider in Settings. Options include:
 - **Bring-your-own cloud providers**: OpenAI, Anthropic, Google Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, etc. — requests go directly to the provider using the user's credentials and are never collected by WebBrain
 - **Local model runtimes**: llama.cpp, Ollama, LM Studio, Jan, vLLM, SGLang,
   LocalAI, and GPT4All — inference requests stay on the user's machine
+- **WebGPU (In-browser), Chromium only**: the selected text model runs in an extension
+  Worker with no API key, base URL, localhost server, or model endpoint
 - **Local OpenAI-compatible Proxy**: WebBrain connects only to the configured
   local gateway, but the gateway may forward the request context to an upstream
   account. Its configuration and privacy policy determine where data goes.
@@ -218,7 +227,9 @@ WebBrain Cloud or to the configured LLM provider.
 Active WebBrain Cloud subscribers may explicitly enable encrypted profile sync in
 Settings. The extension combines user memory, profile autofill, and provider
 configuration (including API keys, but excluding legacy OAuth access/refresh
-token stores) into one vault and
+token stores) into one vault. Chromium-only WebGPU provider configuration and
+selection remain device-local so a Firefox sync cannot replace that local choice.
+The extension
 encrypts it in the browser with AES-256-GCM. Its key is derived from the sync
 password with PBKDF2-HMAC-SHA-256 (600,000 iterations). The password and derived
 key are retained in memory only for the browser session.
@@ -358,6 +369,26 @@ responses as untrusted unless the manifest says otherwise. Removing or
 disabling a skill stops that data flow. See [Skills](skills.md#bundled-skills)
 for the full packaged catalog.
 
+The packaged Wikipedia skill does not silently create an offline corpus.
+Apocalypse Mode is disabled by default and requires a separate opt-in under
+Settings → Advanced. Catalog browsing sends the selected archive language to
+Kiwix; resolving an archive fetches its Metalink. Archive bytes are downloaded
+only after a second confirmation that displays the exact size, date, source,
+license notice, integrity pieces, and reported storage availability.
+
+Downloaded or imported `.zim` bytes live in extension-owned OPFS storage by
+default. Chromium users can instead select an external file through the File
+System Access API; Firefox uses OPFS. IndexedDB stores only settings, archive
+metadata, progress, retry state, and storage references (including a persisted
+file handle where supported). Each downloaded piece is checked before writing.
+Pause, cancellation, deletion, corruption, restart, and bounded retry states
+are durable. A ready archive that becomes unreadable is marked as an error and
+requires reinstall or re-import. Live Wikipedia results are not copied into this store. When an
+installed archive answers a later request, only the relevant extracted passage
+and its canonical Wikipedia attribution enter the normal untrusted tool-result
+path and are sent to the user's configured LLM. See
+[Apocalypse Mode](apocalypse-mode.md) for browser-specific limits.
+
 ---
 
 ## Data Flow Diagrams
@@ -409,7 +440,8 @@ All IndexedDB reads happen only when the user opens the Traces page.
 ```
 CDP capture → JPEG/PNG data URL
   │
-  ├─ If dedicated vision model configured → sub-call to describe → text description
+  ├─ If dedicated vision model configured → remote sub-call or local inference
+  │   → describe as text
   │   → only the description text is sent to the main provider
   │
   ├─ If main provider supports vision → image_url block attached to user message
@@ -427,7 +459,7 @@ CDP capture → JPEG/PNG data URL
 | Browser ↔ LLM provider | Chat messages, page content, screenshot | HTTPS; user chose the provider |
 | Browser ↔ LLM provider | Enabled user memory prompt block and optional extractor input | HTTPS; user chose the provider |
 | Browser ↔ CapSolver | CAPTCHA token requests | HTTPS; user opted in |
-| Extension ↔ Offscreen document | Fetch proxy requests | Same extension, same origin |
+| Extension ↔ Offscreen document | Fetch proxy, recording, and optional local model requests | Same extension, same origin |
 | Service worker ↔ IndexedDB | Trace data | Browser sandbox; never transmitted |
 | Service worker ↔ `chrome.storage.local` | API keys, settings | Browser sandbox (plaintext) |
 

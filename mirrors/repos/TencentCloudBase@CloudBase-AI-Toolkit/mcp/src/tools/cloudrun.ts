@@ -4,6 +4,7 @@ import path from 'path';
 import { z } from "zod";
 import { getCloudBaseManager, getEnvId } from '../cloudbase-manager.js';
 import { ExtendedMcpServer } from '../server.js';
+import type { CloudBaseOptions } from '../types.js';
 import { debug } from '../utils/logger.js';
 import { preferGatewayOrFallback, resolveGatewayAccessUrls } from '../utils/gateway-access-urls.js';
 import { sendDeployNotification } from '../utils/notification.js';
@@ -23,28 +24,43 @@ export type CloudRunServiceType = typeof CLOUDRUN_SERVICE_TYPES[number];
 export const CLOUDRUN_ACCESS_TYPES = ['OA', 'PUBLIC', 'MINIAPP', 'VPC'] as const;
 export type CloudRunAccessType = typeof CLOUDRUN_ACCESS_TYPES[number];
 
+// CloudRun env package types (CreateCloudRunEnv.PackageType)
+export const CLOUDRUN_PACKAGE_TYPES = ['Trial', 'Standard', 'Professional', 'Enterprise'] as const;
+export type CloudRunPackageType = typeof CLOUDRUN_PACKAGE_TYPES[number];
+
 // Input schema for queryCloudRun tool
 const queryCloudRunInputSchema = {
-  action: z.enum(['list', 'detail', 'templates', 'getDeployLog']).describe('查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取指定服务最近一次或指定构建的部署日志'),
+  action: z.enum(['list', 'detail', 'templates', 'getDeployLog', 'getDeployRecords', 'envStatus']).describe('查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取指定服务最近一次或指定构建的部署日志，getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪'),
 
   // List operation parameters
   pageSize: z.number().min(1).max(100).optional().default(10).describe('分页大小，控制每页返回的服务数量。取值范围：1-100，默认值：10。建议根据网络性能和显示需求调整'),
   pageNum: z.number().min(1).optional().default(1).describe('页码，用于分页查询。从1开始，默认值：1。配合pageSize使用可实现分页浏览'),
   serverName: z.string().optional().describe('服务名称筛选条件，支持模糊匹配。例如：输入"test"可匹配"test-service"、"my-test-app"等服务名称。留空则查询所有服务'),
   serverType: z.enum(CLOUDRUN_SERVICE_TYPES).optional().describe('服务类型筛选条件：function=函数型云托管（仅支持Node.js，有特殊的开发要求和限制，适合简单的API服务），container=容器型服务（推荐使用，支持任意语言和框架如Java/Go/Python/PHP/.NET等，适合大多数应用场景）'),
+  envId: z.string().optional().describe('环境 ID（action=envStatus 时使用；不传则使用当前配置的环境）。格式如 env-xxxxxx'),
 
   // Detail and log operation parameters
-  detailServerName: z.string().optional().describe('要查询详细信息或部署日志的服务名称。当action为detail或getDeployLog时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表'),
+  detailServerName: z.string().optional().describe('要查询详细信息、部署记录或部署日志的服务名称。当action为detail、getDeployLog或getDeployRecords时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表'),
   buildId: z.number().optional().describe('构建ID，仅在action=getDeployLog时使用。不传时默认返回最近一次部署的构建日志'),
 };
 
 // Input schema for manageCloudRun tool
 const ManageCloudRunInputSchema = {
-  action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent', 'updateConfig']).describe('云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体）'),
-  serverName: z.string().describe('云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名'),
+  action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent', 'updateConfig', 'initEnv', 'traffic']).describe('云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；传 imageUrl 时改为已有镜像部署，走 DeployType=image 容器型，targetPath 可省略；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体），initEnv=开通当前环境的云托管（异步创建云托管环境，幂等：已开通直接返回；适合新环境首次部署前使用），traffic=流量管理与灰度发布（set=调整稳定版/灰度版流量比例，promote=将灰度版本升级为全量，rollback=回滚到上一个稳定版本；对应 tcb cloudrun traffic 命令）'),
+  serverName: z.string().describe('云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名。initEnv 操作不需要此参数'),
+
+  // Traffic management operation parameters (action=traffic)
+  trafficOp: z.enum(['set', 'promote', 'rollback']).optional().describe('流量管理子操作（action=traffic 时使用）：set=调整灰度流量比例（需先部署新版本至灰度，通过 stablePercent/canaryPercent 设置稳定版与灰度版流量比例，两者之和必须等于100）；promote=将灰度版本全量发布（灰度版本流量置为100%并关闭灰度发布，等价于 tcb cloudrun traffic promote）；rollback=回滚到上一个稳定版本（停止当前灰度/发布中的版本，回到稳定版本，等价于 tcb cloudrun traffic rollback）'),
+  stablePercent: z.number().min(0).max(100).optional().describe('稳定版本流量比例（trafficOp=set 时使用），取值范围0-100。与 canaryPercent 之和必须等于100。例如希望 90% 流量打到稳定版、10% 打到灰度版，则 stablePercent=90, canaryPercent=10'),
+  canaryPercent: z.number().min(0).max(100).optional().describe('灰度版本流量比例（trafficOp=set 时使用），取值范围0-100。与 stablePercent 之和必须等于100。例如希望 90% 流量打到稳定版、10% 打到灰度版，则 stablePercent=90, canaryPercent=10'),
+
+  // InitEnv operation parameters
+  envId: z.string().optional().describe('环境 ID（action=initEnv 时使用；不传则使用当前配置的环境）。格式如 env-xxxxxx'),
+  packageType: z.enum(CLOUDRUN_PACKAGE_TYPES).optional().default('Trial').describe('云托管环境套餐类型（action=initEnv 时使用）：Trial=试用，Standard=标准，Professional=专业，Enterprise=企业。默认 Trial'),
 
   // Deploy operation parameters
-  targetPath: z.string().optional().describe('本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun'),
+  targetPath: z.string().optional().describe('本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun。使用 imageUrl 部署已有镜像时此参数可省略'),
+  imageUrl: z.string().optional().describe('已有镜像部署（action=deploy 时使用）：直接指定容器镜像地址，如 ccr.ccs.tencentyun.com/ns/img:v1 或公网 registry 地址。传入后走 DeployType="image"（容器型）部署，无需本地源码目录（targetPath 可省略）。支持：1) 公网匿名可拉取的镜像直填地址；2) 私有/需登录的镜像（如 ghcr.io）需先在本地 docker pull → docker tag/push 到腾讯云 CCR → 填入 CCR 地址。不传则维持源码构建（本地代码打包上传）。注意：无论哪种部署方式，环境都需先开通云托管（未开通时先调用 initEnv，Status=normal 后再部署）'),
   envParamsReplaceAll: z.boolean().optional().default(false).describe('EnvParams 合并策略（deploy / updateConfig）：false（默认）= 与远程按 key 合并（输入覆盖同名 key，远程其余 key 保留）；true= 用输入 EnvParams 整包替换远程。仅当显式传入 EnvParams 时生效'),
   serverConfig: z.object({
     OpenAccessTypes: z.array(z.enum(CLOUDRUN_ACCESS_TYPES)).optional().describe('公网访问类型配置，控制服务的访问权限：OA=办公网访问，PUBLIC=公网访问（默认，可通过HTTPS域名访问），MINIAPP=小程序访问，VPC=VPC访问（仅同VPC内可访问）。可配置多个类型'),
@@ -121,24 +137,31 @@ const ManageCloudRunInputSchema = {
 };
 
 type queryCloudRunInput = {
-  action: 'list' | 'detail' | 'templates' | 'getDeployLog';
+  action: 'list' | 'detail' | 'templates' | 'getDeployLog' | 'getDeployRecords' | 'envStatus';
   pageSize?: number;
   pageNum?: number;
   serverName?: string;
   serverType?: CloudRunServiceType;
   detailServerName?: string;
   buildId?: number;
+  envId?: string;
 };
 
 type ManageCloudRunInput = {
-  action: 'init' | 'download' | 'run' | 'deploy' | 'delete' | 'createAgent' | 'updateConfig';
+  action: 'init' | 'download' | 'run' | 'deploy' | 'delete' | 'createAgent' | 'updateConfig' | 'initEnv' | 'traffic';
   serverName: string;
   targetPath?: string;
+  imageUrl?: string;
   serverConfig?: any;
   envParamsReplaceAll?: boolean;
   template?: string;
   force?: boolean;
   serverType?: CloudRunServiceType;
+  envId?: string;
+  packageType?: CloudRunPackageType;
+  trafficOp?: 'set' | 'promote' | 'rollback';
+  stablePercent?: number;
+  canaryPercent?: number;
   runOptions?: {
     port?: number;
     envParams?: Record<string, string>;
@@ -220,7 +243,7 @@ function validateAndNormalizePath(inputPath: string): string {
   return normalizedPath;
 }
 
-function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"], serverName: string, error: unknown): string {
+function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"] | string, serverName: string, error: unknown): string {
   const baseMessage = error instanceof Error ? error.message : String(error);
   const suggestions: string[] = [];
 
@@ -248,6 +271,122 @@ export type CloudRunDbNetworkRisk = {
   matchedKeys: string[];
   remediation: string[];
 };
+
+/**
+ * 查询当前环境云托管（大租户）开通状态。
+ *
+ * 使用 tcbr DescribeEnvBaseInfo（2022-02-17）：
+ * - IsExist=false + 空 EnvBaseInfo → 未开通（unopened）
+ * - IsExist=true + Status="creating" → 开通中
+ * - IsExist=true + Status="normal" → 已开通
+ *
+ * 供 initEnv（幂等判断）与 envStatus（状态查询）共用。
+ */
+export type CloudRunEnvStatus =
+  | { isExist: true; status: "creating" | "normal" | "unknown"; baseInfo: Record<string, unknown> }
+  | { isExist: false; status: "unopened"; baseInfo: Record<string, unknown> };
+
+export async function queryCloudRunEnvStatus(options: {
+  cloudBaseOptions?: CloudBaseOptions;
+  envId: string;
+}): Promise<CloudRunEnvStatus> {
+  const manager = await getCloudBaseManager({ cloudBaseOptions: options.cloudBaseOptions });
+  if (!manager?.commonService) {
+    throw new Error(
+      "Current CloudBase Manager does not support commonService; cannot query CloudRun env status.",
+    );
+  }
+  return describeCloudRunEnvStatus(manager, options.envId);
+}
+
+/**
+ * 核心实现：用已获取的 manager 查询云托管开通状态（供 initEnv/envStatus 及
+ * ensureCloudRunEnvInitialized 复用，避免重复 getCloudBaseManager）。
+ */
+export async function describeCloudRunEnvStatus(
+  manager: { commonService: (service: string, version: string) => { call: (options: any) => Promise<any> } },
+  envId: string,
+): Promise<CloudRunEnvStatus> {
+  const result = await manager
+    .commonService("tcbr", "2022-02-17")
+    .call({
+      Action: "DescribeEnvBaseInfo",
+      Param: { EnvId: envId },
+    });
+  const data = (result ?? {}) as Record<string, unknown>;
+  const baseInfo = ((data.EnvBaseInfo ?? {}) as Record<string, unknown>) ?? {};
+  if (data.IsExist !== true) {
+    return { isExist: false, status: "unopened", baseInfo };
+  }
+  const rawStatus = typeof baseInfo.Status === "string" ? baseInfo.Status : "";
+  const status =
+    rawStatus === "creating" || rawStatus === "normal"
+      ? (rawStatus as "creating" | "normal")
+      : "unknown";
+  return { isExist: true, status, baseInfo };
+}
+
+/**
+ * 探测当前环境云托管（大租户）是否已初始化。
+ *
+ * 背景（2026-08-13 用户实测）：新环境未调 CreateCloudRunEnv 初始化云托管时，
+ * 直接 CreateCloudRunServer 会因"无大租户记录"被默认转入小租户，创建出小租户的
+ * 服务和版本——这是错误路径。本函数在 deploy 创建新服务前用 tcbr DescribeEnvBaseInfo
+ * 探测环境是否已开通云托管；未开通则抛错引导先初始化，而不是默默走到小租户路径。
+ *
+ * 实测（2026-08-13 真实凭据）：tcbr 不存在 DescribeCloudRunEnv（单数）Action，调用
+ * 恒返回 InvalidAction；正确的探测接口是 DescribeEnvBaseInfo。未开通云托管的环境返回
+ * IsExist=false 且 EnvBaseInfo 为空结构（不抛错）；已开通的环境（实测 ai-share-
+ * d2guukyxybb63b206）返回 IsExist=true 且 EnvBaseInfo 含完整字段（Status="normal"、
+ * PackageType/Region/EnvType/CreateTime 等已填充），两分支可明确区分。
+ *
+ * 双验证：DescribeCloudRunServers 未初始化与已初始化但无服务均返回 ServerList=[]，
+ * 无法区分，故不作为初始化判定依据。
+ *
+ * @returns 已初始化返回 true；探测到未初始化抛出带引导信息的 Error。
+ */
+export async function ensureCloudRunEnvInitialized(options: {
+  cloudBaseOptions?: CloudBaseOptions;
+  envId: string;
+  serverName: string;
+}): Promise<boolean> {
+  const manager = await getCloudBaseManager({ cloudBaseOptions: options.cloudBaseOptions });
+  if (!manager?.commonService) {
+    // 老 SDK 无 commonService 时退化为不拦截（保持既有行为，避免误伤）。
+    return true;
+  }
+  try {
+    const status = await describeCloudRunEnvStatus(manager, options.envId);
+    if (!status.isExist) {
+      throwCloudRunEnvNotInitialized(options.envId);
+    }
+    return true;
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    // 错误兜底：未初始化/未开通类错误码。
+    // 注意：裸 InvalidParameter 可能是普通参数错误，不拦截；仅当其带 Env/CloudRun
+    // 上下文（疑似 "EnvironmentId not found / CloudRun Env 未开通"）时才按未初始化处理。
+    if (
+      /ResourceNotFound|not.?initialized|未开通|未初始化/i.test(msg) ||
+      /InvalidParameter.*(?:Env|CloudRun)/i.test(msg)
+    ) {
+      throwCloudRunEnvNotInitialized(options.envId);
+    }
+    // 其他错误（网络/权限等）不拦截，让上层按原逻辑处理。
+    return true;
+  }
+}
+
+function throwCloudRunEnvNotInitialized(envId: string): never {
+  throw new Error(
+    `当前环境（${envId}）尚未初始化云托管（CloudRun Env）。` +
+      `不能直接创建服务（CreateCloudRunServer 在无大租户记录时会默认创建到小租户，产生错误的小租户服务与版本）。\n` +
+      `请先开通云托管环境，再重试部署：\n` +
+      `- MCP：manageCloudRun(action="initEnv", envId="${envId}")（异步开通，幂等；开通完成后可用 queryCloudRun(action="envStatus", envId="${envId}") 查询 Status=normal）\n` +
+      `- 或控制台：环境 → 云托管 → 开通（https://tcb.cloud.tencent.com/dev?envId=${envId}#/platform-run）\n` +
+      `初始化完成后重新调用 manageCloudRun(action="deploy")。`,
+  );
+}
 
 /**
  * Detect likely TCP database/cache env usage without VpcConf.
@@ -361,6 +500,41 @@ function normalizeCloudRunDomainUrl(input: unknown): string | undefined {
     : `https://${raw}`;
 }
 
+/**
+ * 从服务详情 / 最新部署记录中提取镜像信息（镜像部署时才有）。
+ * 镜像部署（DeployType=image）的服务详情与部署记录通常会携带 ImageUrl 等字段；
+ * 源码构建的服务无此字段，返回 undefined 表示无镜像信息。
+ */
+export function extractCloudRunImageInfo(
+  serviceDetail: any,
+  latestDeploy?: any,
+): { imageUrl?: string; deployType?: string } | undefined {
+  const candidates = [
+    latestDeploy,
+    serviceDetail?.ServerConfig,
+    serviceDetail?.BaseInfo,
+    serviceDetail,
+  ];
+  for (const source of candidates) {
+    if (!source || typeof source !== "object") continue;
+    const imageUrl =
+      source.ImageUrl ??
+      source.imageUrl ??
+      (typeof source.ImageInfo === "string" ? source.ImageInfo : undefined) ??
+      (typeof source.ImageInfo?.ImageUrl === "string" ? source.ImageInfo.ImageUrl : undefined);
+    if (typeof imageUrl === "string" && imageUrl.trim()) {
+      const deployType =
+        typeof source.DeployType === "string"
+          ? source.DeployType
+          : typeof source.deployType === "string"
+            ? source.deployType
+            : undefined;
+      return { imageUrl: imageUrl.trim(), ...(deployType ? { deployType } : {}) };
+    }
+  }
+  return undefined;
+}
+
 function resolveCloudRunFallbackAccess(details: any): {
   url?: string;
   source?:
@@ -404,7 +578,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
     "queryCloudRun",
     {
       title: "查询 CloudRun 服务信息",
-      description: "查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表和部署日志。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。",
+      description: "查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表、获取部署日志以及查询环境云托管开通状态（envStatus）。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。",
       inputSchema: queryCloudRunInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -528,6 +702,10 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
                     data: {
                       service: result,
                       latestDeploy,
+                      // 若最新部署记录带镜像信息（镜像部署），透出便于展示
+                      ...(extractCloudRunImageInfo(result, latestDeploy)
+                        ? { imageInfo: extractCloudRunImageInfo(result, latestDeploy) }
+                        : {}),
                       ...(deployRecordsWarning ? { deployRecordsWarning } : {})
                     },
                     message
@@ -637,6 +815,111 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
             };
           }
 
+          case 'getDeployRecords': {
+            const serverName = getCloudRunQueryServerName(input);
+
+            if (!serverName) {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: false,
+                      error: "detailServerName or serverName is required for getDeployRecords action",
+                      message: "Please provide detailServerName or serverName."
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            const deployRecordsResult: any = await cloudrunService.getDeployRecords({ serverName });
+            const deployRecords = Array.isArray(deployRecordsResult?.DeployRecords)
+              ? deployRecordsResult.DeployRecords
+              : [];
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: true,
+                    data: {
+                      serverName,
+                      deployRecords,
+                      // 部署记录按部署时间倒序（最新在前），首条为最近一次部署
+                      total: deployRecords.length,
+                      latestDeploy: deployRecords[0] ?? null
+                    },
+                    message: `Retrieved ${deployRecords.length} deploy records for service '${serverName}'`
+                  }, null, 2)
+                }
+              ]
+            };
+          }
+
+          case 'envStatus': {
+            const envId = input.envId?.trim() || (await getEnvId(cloudBaseOptions));
+
+            if (!manager.commonService) {
+              throw new Error(
+                "Current CloudBase Manager does not support commonService; cannot query CloudRun env status.",
+              );
+            }
+            let status: CloudRunEnvStatus;
+            try {
+              status = await describeCloudRunEnvStatus(manager, envId);
+            } catch (error) {
+              const baseMessage = error instanceof Error ? error.message : String(error);
+              if (
+                /ResourceNotFound|not.?initialized|未开通|未初始化/i.test(baseMessage) ||
+                /InvalidParameter.*(?:Env|CloudRun)/i.test(baseMessage)
+              ) {
+                status = { isExist: false, status: "unopened", baseInfo: {} };
+              } else {
+                throw new Error(`[queryCloudRun/envStatus] ${baseMessage}`);
+              }
+            }
+
+            let message: string;
+            if (!status.isExist) {
+              message = `环境 ${envId} 尚未开通云托管。请先调用 manageCloudRun(action="initEnv", envId="${envId}") 开通（异步、幂等），或前往控制台 环境 → 云托管 → 开通；Status=normal 后即可 deploy。`;
+            } else if (status.status === "creating") {
+              message = `环境 ${envId} 云托管正在开通中（Status=creating）。请稍后重试 manageCloudRun(action="deploy")，或用本 action 再次查询直到 Status=normal。`;
+            } else if (status.status === "normal") {
+              message = `环境 ${envId} 云托管已开通（Status=normal），可直接 manageCloudRun(action="deploy")。`;
+            } else {
+              message = `环境 ${envId} 云托管状态未知（Status=${status.status ?? "unknown"}），请稍后重试。`;
+            }
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: true,
+                    data: {
+                      envId,
+                      status: status.status,
+                      isExist: status.isExist,
+                      ...(status.isExist
+                        ? {
+                            envBaseInfo: {
+                              Status: status.baseInfo.Status ?? null,
+                              PackageType: status.baseInfo.PackageType ?? null,
+                              Region: status.baseInfo.Region ?? null,
+                              EnvType: status.baseInfo.EnvType ?? null,
+                            },
+                          }
+                        : {}),
+                    },
+                    message
+                  }, null, 2)
+                }
+              ]
+            };
+          }
+
         default:
           throw new Error(`Unsupported action: ${input.action}`);
       }
@@ -651,7 +934,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
     "manageCloudRun",
     {
       title: "管理 CloudRun 服务",
-      description: "管理云托管服务，按开发顺序支持：初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。",
+      description: "管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。",
       inputSchema: ManageCloudRunInputSchema,
       annotations: {
         readOnlyHint: false,
@@ -677,7 +960,219 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
       }
 
       switch (input.action) {
-        case 'createAgent': {
+        case 'initEnv': {
+            const envId = input.envId?.trim() || (await getEnvId(cloudBaseOptions));
+            const packageType = input.packageType || 'Trial';
+            if (!manager.commonService) {
+              throw new Error(
+                "Current CloudBase Manager does not support commonService; cannot initialize CloudRun env.",
+              );
+            }
+
+            // 幂等：先查当前开通状态，已开通 / 开通中不重复创建。
+            let current: CloudRunEnvStatus;
+            try {
+              current = await describeCloudRunEnvStatus(manager, envId);
+            } catch (error) {
+              const baseMessage = error instanceof Error ? error.message : String(error);
+              if (
+                /ResourceNotFound|not.?initialized|未开通|未初始化/i.test(baseMessage) ||
+                /InvalidParameter.*(?:Env|CloudRun)/i.test(baseMessage)
+              ) {
+                current = { isExist: false, status: "unopened", baseInfo: {} };
+              } else {
+                throw new Error(`[manageCloudRun/initEnv] ${baseMessage}`);
+              }
+            }
+
+            if (current.isExist && current.status === "normal") {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: true,
+                      data: {
+                        envId,
+                        status: "normal",
+                        packageType: current.baseInfo.PackageType ?? packageType,
+                        created: false
+                      },
+                      message: `环境 ${envId} 已开通云托管（Status=normal），无需重复开通。可直接 manageCloudRun(action="deploy")。`
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            if (current.isExist && current.status === "creating") {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: true,
+                      data: {
+                        envId,
+                        status: "creating",
+                        created: false
+                      },
+                      message: `环境 ${envId} 云托管正在开通中（Status=creating），无需重复开通。请稍后用 queryCloudRun(action="envStatus", envId="${envId}") 查询，Status=normal 后即可 deploy。`
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            // 未开通 → 发起异步开通（CreateCloudRunEnv 异步，不阻塞等待）。
+            let createResult: any;
+            try {
+              createResult = await manager
+                .commonService("tcbr", "2022-02-17")
+                .call({
+                  Action: "CreateCloudRunEnv",
+                  Param: { EnvId: envId, PackageType: packageType },
+                });
+            } catch (error) {
+              throw new Error(buildManageCloudRunErrorMessage('initEnv', envId, error));
+            }
+            const tranId =
+              createResult?.TranId ??
+              createResult?.Response?.TranId ??
+              createResult?.tranId;
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: true,
+                    data: {
+                      envId,
+                      status: "creating",
+                      packageType,
+                      created: true,
+                      ...(tranId ? { tranId } : {})
+                    },
+                    message: `已发起云托管开通（异步，Status=creating）。请稍后用 queryCloudRun(action="envStatus", envId="${envId}") 查询状态，Status=normal 后即可 manageCloudRun(action="deploy")。`
+                  }, null, 2)
+                }
+              ]
+            };
+          }
+
+          case 'traffic': {
+            const trafficOp = input.trafficOp;
+            if (!trafficOp) {
+              throw new Error(
+                "trafficOp is required for traffic operation (set | promote | rollback)",
+              );
+            }
+
+            if (trafficOp === 'set') {
+              const stable = input.stablePercent;
+              const canary = input.canaryPercent;
+              if (
+                typeof stable !== 'number' ||
+                typeof canary !== 'number'
+              ) {
+                throw new Error(
+                  "stablePercent and canaryPercent are required for trafficOp=set",
+                );
+              }
+              if (stable + canary !== 100) {
+                throw new Error(
+                  `stablePercent + canaryPercent must equal 100 (got ${stable} + ${canary} = ${stable + canary}). ` +
+                    `Example: 90/10 means 90% to stable version, 10% to canary version.`,
+                );
+              }
+              let setResult: unknown;
+              try {
+                setResult = await cloudrunService.setTraffic(
+                  input.serverName,
+                  stable,
+                  canary,
+                );
+              } catch (error) {
+                throw new Error(
+                  buildManageCloudRunErrorMessage('traffic/set', input.serverName, error),
+                );
+              }
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: true,
+                      data: {
+                        serverName: input.serverName,
+                        trafficOp: 'set',
+                        stablePercent: stable,
+                        canaryPercent: canary,
+                        result: setResult ?? null
+                      },
+                      message: `Set traffic for service '${input.serverName}': stable ${stable}% / canary ${canary}%`
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            if (trafficOp === 'promote') {
+              let promoteResult: unknown;
+              try {
+                promoteResult = await cloudrunService.promote(input.serverName);
+              } catch (error) {
+                throw new Error(
+                  buildManageCloudRunErrorMessage('traffic/promote', input.serverName, error),
+                );
+              }
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: true,
+                      data: {
+                        serverName: input.serverName,
+                        trafficOp: 'promote',
+                        result: promoteResult ?? null
+                      },
+                      message: `Promoted canary version to full release for service '${input.serverName}' (100% traffic). This is irreversible.`
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            // rollback
+            let rollbackResult: unknown;
+            try {
+              rollbackResult = await cloudrunService.rollback(input.serverName);
+            } catch (error) {
+              throw new Error(
+                buildManageCloudRunErrorMessage('traffic/rollback', input.serverName, error),
+              );
+            }
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: true,
+                    data: {
+                      serverName: input.serverName,
+                      trafficOp: 'rollback',
+                      result: rollbackResult ?? null
+                    },
+                    message: `Rolled back service '${input.serverName}' to the previous stable version.`
+                  }, null, 2)
+                }
+              ]
+            };
+          }
+
+          case 'createAgent': {
             if (!targetPath) {
               throw new Error("targetPath is required for createAgent operation");
             }
@@ -857,15 +1352,18 @@ for await (let x of res.textStream) {
           }
 
           case 'deploy': {
-            if (!targetPath) {
-              throw new Error("targetPath is required for deploy operation");
+            if (!targetPath && !input.imageUrl) {
+              throw new Error("targetPath (source build) or imageUrl (existing image) is required for deploy operation");
             }
 
             // Determine service type - use input.serverType if provided, otherwise auto-detect
             let serverType: 'function' | 'container';
             let remoteServerConfig: CloudRunServerConfigLike | null = null;
             let existingService = false;
-            if (input.serverType) {
+            if (input.imageUrl) {
+              // Image deploy is always container type (SDK: DeployInfo={DeployType:"image", ImageUrl}).
+              serverType = 'container';
+            } else if (input.serverType) {
               serverType = input.serverType;
             } else {
               try {
@@ -876,12 +1374,12 @@ for await (let x of res.textStream) {
                 existingService = true;
               } catch (e) {
                 // If service doesn't exist, determine by project structure
-                const dockerfilePath = path.join(targetPath, 'Dockerfile');
+                const dockerfilePath = path.join(targetPath!, 'Dockerfile');
                 if (fs.existsSync(dockerfilePath)) {
                   serverType = 'container';
                 } else {
                   // Check if it's a Node.js function project (has package.json with specific structure)
-                  const packageJsonPath = path.join(targetPath, 'package.json');
+                  const packageJsonPath = path.join(targetPath!, 'package.json');
                   if (fs.existsSync(packageJsonPath)) {
                     try {
                       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
@@ -914,6 +1412,18 @@ for await (let x of res.textStream) {
               }
             }
 
+            // 新环境必须先初始化云托管（大租户），否则 CreateCloudRunServer 会默认
+            // 创建小租户服务。仅创建新服务（非 existing）前探测一次。
+            // （2026-08-13 用户实测：luapi-v2 因未初始化云托管被创建到小租户）
+            if (!existingService) {
+              const currentEnvId = await getEnvId(cloudBaseOptions);
+              await ensureCloudRunEnvInitialized({
+                cloudBaseOptions,
+                envId: currentEnvId,
+                serverName: input.serverName,
+              });
+            }
+
             let mergedFromRemote: string[] = [];
             let effectiveServerConfig: CloudRunServerConfigLike | undefined = input.serverConfig;
 
@@ -933,6 +1443,10 @@ for await (let x of res.textStream) {
               force: input.force,
               serverType: serverType,
             };
+
+            if (input.imageUrl) {
+              deployParams.imageUrl = input.imageUrl;
+            }
 
             if (effectiveServerConfig && Object.keys(effectiveServerConfig).length > 0) {
               deployParams.serverConfig = effectiveServerConfig;
@@ -958,22 +1472,26 @@ for await (let x of res.textStream) {
               throw new Error(buildManageCloudRunErrorMessage('deploy', input.serverName, error));
             }
 
-            // Generate cloudbaserc.json configuration file
+            // Generate cloudbaserc.json configuration file (source-build only; image deploy has no local project dir)
             const currentEnvId = await getEnvId(cloudBaseOptions);
-            const cloudbasercPath = path.join(targetPath, 'cloudbaserc.json');
-            const cloudbasercContent = {
-              envId: currentEnvId,
-              cloudrun: {
-                name: input.serverName
-              }
-            };
-            const consoleUrl = `https://tcb.cloud.tencent.com/dev?envId=${currentEnvId}#/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`;
+            let cloudbasercGenerated = false;
+            if (targetPath) {
+              const cloudbasercPath = path.join(targetPath, 'cloudbaserc.json');
+              const cloudbasercContent = {
+                envId: currentEnvId,
+                cloudrun: {
+                  name: input.serverName
+                }
+              };
 
-            try {
-              fs.writeFileSync(cloudbasercPath, JSON.stringify(cloudbasercContent, null, 2));
-            } catch (error) {
-              debug('cloudbaserc.json creation skipped:', error instanceof Error ? error : new Error(String(error)));
+              try {
+                fs.writeFileSync(cloudbasercPath, JSON.stringify(cloudbasercContent, null, 2));
+                cloudbasercGenerated = true;
+              } catch (error) {
+                debug('cloudbaserc.json creation skipped:', error instanceof Error ? error : new Error(String(error)));
+              }
             }
+            const consoleUrl = `https://tcb.cloud.tencent.com/dev?envId=${currentEnvId}#/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`;
 
             let preferredAccessUrl: string | undefined;
             let preferredAccessUrls: string[] = [];
@@ -1013,7 +1531,7 @@ for await (let x of res.textStream) {
 
             // Send deployment notification to CodeBuddy IDE
             try {
-              const projectName = path.basename(targetPath);
+              const projectName = targetPath ? path.basename(targetPath) : input.serverName;
               await sendDeployNotification(server, {
                 deployType: 'cloudrun',
                 url: preferredAccessUrl ?? "",
@@ -1046,9 +1564,11 @@ for await (let x of res.textStream) {
                     data: {
                       serviceName: input.serverName,
                       status: 'deploying',
-                      deployPath: targetPath,
+                      deployType: input.imageUrl ? 'image' : 'source',
+                      ...(targetPath ? { deployPath: targetPath } : {}),
+                      ...(input.imageUrl ? { imageUrl: input.imageUrl } : {}),
                       serverType: serverType,
-                      cloudbasercGenerated: true,
+                      cloudbasercGenerated,
                       consoleUrl,
                       ...(existingService
                         ? {
@@ -1071,7 +1591,7 @@ for await (let x of res.textStream) {
                         : {}),
                       ...(warnings.length > 0 ? { warnings } : {}),
                     },
-                    message: `Triggered deployment for ${serverType} service '${input.serverName}' from ${targetPath}. You can follow the progress in ${consoleUrl}.${warningSuffix}`
+                    message: `Triggered deployment for ${serverType} service '${input.serverName}' ${input.imageUrl ? `from image ${input.imageUrl}` : `from ${targetPath}`}. You can follow the progress in ${consoleUrl}.${warningSuffix}`
                   }, null, 2)
                 }
               ]

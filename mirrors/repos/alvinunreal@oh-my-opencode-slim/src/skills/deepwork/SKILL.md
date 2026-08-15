@@ -19,15 +19,11 @@ features.
 When deepwork is active, the orchestrator must manage the work as a scheduler,
 not as the default implementation worker.
 
-Required behavior:
-
 ## Setup and Deepwork State
 
 - create and maintain a local markdown progress file under `.slim/deepwork/`;
 - save code/doc deliverables to project paths (e.g. `src/`, `docs/`); reserve
   `.slim/deepwork/` strictly for progress files;
-- write valuable research findings into that file as confirmed research context
-  when they are received and reconciled;
 
 ### Deepwork File
 
@@ -65,12 +61,9 @@ capture, as applicable:
 - validation results;
 - unresolved questions, blockers, and follow-ups.
 
-Update this file after major decisions, valuable specialist research, reviews,
-phase completions, validation results, and scope changes.
-When `@librarian` docs, code reads, or external references produce useful
-information, reconcile the result and record the accepted findings here so later
-planning and reviews share the same context instead of rediscovering it.
-Don't put actual contents of local files, reference them by path only.
+Update this file after major decisions, accepted research, reviews, phase
+completions, validation results, and scope changes. Record accepted findings and
+reference local files by path rather than copying their contents.
 
 ## Planning
 
@@ -79,25 +72,12 @@ Don't put actual contents of local files, reference them by path only.
 - before dispatch, choose a small number of coherent implementation phases from
   the work's dependencies and natural delivery boundaries; do not split work
   merely to reduce an Oracle review's scope;
-- before execution, show the user a compact overview containing only phase
-  titles and order, each delegated specialist with its ownership/scope, and the
-  total Oracle reviews with the gate after each phase and a short reason for it;
+- before execution, define coherent delivery phases and make an `@oracle` review
+  mandatory after each one; record the phase order, specialist ownership, gate
+  order, and one-line gate rationale in the deepwork file; share a compact
+  version with the user;
 - before starting each phase, replace the OpenCode todo list with actionable
   delivery todos for that phase only;
-
-### Planned Phase Reviews
-
-Oracle reviews are automatic gates between the planned implementation phases.
-Before dispatch, decide the phases from the task itself: its dependencies,
-integration boundaries, and meaningful delivery points. Record the phase order,
-the total review count, the review after each phase, and a short reason for each
-gate in the deepwork file and compact user overview.
-
-Avoid micro-phases created only to make reviews smaller or cheaper. Larger,
-complex tasks can have broader phases, broader patches, and correspondingly
-broader phase reviews. The goal is a sensible number of predictable review
-gates, not the smallest possible review scope. Never add an extra Oracle review
-merely to re-confirm a mechanical fixer change.
 
 ## Phase Execution
 
@@ -109,7 +89,6 @@ merely to re-confirm a mechanical fixer change.
 
 Use the scheduler model throughout:
 
-- follow Orchestrator delegations rules
 - record task/session IDs and ownership boundaries;
 - wait for hook-driven background completion before consuming background results;
 - avoid blocking Orchestrator lane while background jobs run; if no independent
@@ -119,24 +98,20 @@ Use the scheduler model throughout:
 
 ## Phase Gate and Commit
 
-- after each planned phase, validate and update the deepwork file, then ask
-  `@oracle` to review the phase result before continuing;
-- after phase validation, run the normal Oracle gate review and an `@explorer`
-  structure scan in parallel; reconcile both before continuing;
-- before an Oracle review, add relevant confirmed research findings and file
-  references to the deepwork file so Oracle can assess the decision or risk from
-  accepted context instead of redoing discovery;
-- triage and batch material actionable Oracle findings into one bounded
-  remediation pass, then validate it with focused evidence; request a follow-up
-  Oracle review only if that remediation changes the reviewed decision/risk or
-  the original concern cannot otherwise be verified;
-- do not continue review or refinement merely because further improvement is
-  possible; treat `impact × confidence ÷ cost`, discounted after each pass,
-  only as a qualitative reminder that additional cycles must earn their delay
-  and change risk. Once validation passes and no material blocker remains,
-  advance.
-- after a phase passes validation and its review findings are reconciled, create
-  a focused git commit before starting the next phase;
+- after each planned phase, run relevant validation, update the deepwork file,
+  then request its planned `@oracle` gate before continuing;
+- before its planned Oracle gate, record relevant accepted research and file
+  references so Oracle reviews established context rather than repeating
+  discovery;
+- record the phase goal, changed paths, validation evidence, and the specific
+  decision or risk to review in the deepwork file; provide this context to
+  Oracle with the accepted research and file references;
+- when the phase changes module boundaries, dependency direction, or file
+  placement, run an `@explorer` structure scan in parallel with the Oracle gate;
+- reconcile review findings, perform one bounded remediation pass for material
+  issues, and validate that pass with focused evidence;
+- create a focused commit when the phase is an independently valid delivery
+  boundary before starting the next phase;
 
 ### Oracle Re-Reviews
 
@@ -158,20 +133,6 @@ reopen accepted, unchanged, or resolved concerns. When the two re-reviews are
 exhausted, record any remaining material risk or blocker in the deepwork file
 and ask the user whether to accept the risk, change scope, or authorize an
 exceptional additional review.
-
-### Structure Scan
-
-Alongside each normal Oracle gate review, ask `@explorer` to factually scan the
-completed phase's changed paths and immediate dependencies for duplication
-candidates, dependency direction, responsibility overlap, and file or folder
-placement concerns. Explorer reports evidence only; it does not judge whether
-the structure is harmful.
-
-The orchestrator reconciles the Explorer evidence directly alongside Oracle's
-normal gate report. It decides whether the reported structural concerns require
-action, can be deferred, or do not warrant a change. Do not request another
-Oracle review for the structure scan. When cleanup or refactoring would expand
-scope, record the concern and ask the user before authorizing it.
 
 ## Designer Handoff Guardrail
 

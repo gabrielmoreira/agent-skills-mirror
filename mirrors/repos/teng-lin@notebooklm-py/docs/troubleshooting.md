@@ -309,6 +309,7 @@ Or in Python:
 
 ```python
 import os
+
 os.environ["NOTEBOOKLM_RPC_OVERRIDES"] = '{"LIST_NOTEBOOKS": "newId123"}'
 
 from notebooklm import NotebookLMClient
@@ -353,6 +354,7 @@ Or in Python, set the env var before instantiating the client:
 
 ```python
 import os
+
 os.environ["NOTEBOOKLM_DEBUG"] = "1"
 
 from notebooklm import NotebookLMClient
@@ -626,6 +628,7 @@ status = await with_rate_limit_retry(
     max_retries=3,
 )
 
+
 # For non-artifact RPC calls, retry by passing a fresh callable each attempt
 async def retry_rpc_call(make_call, max_retries=3):
     for attempt in range(max_retries + 1):
@@ -635,6 +638,7 @@ async def retry_rpc_call(make_call, max_retries=3):
             if attempt >= max_retries:
                 raise
             await asyncio.sleep(2**attempt)
+
 
 notebook = await retry_rpc_call(lambda: client.notebooks.create("Research Notes"))
 ```

@@ -25,7 +25,7 @@ if [ -z "$PY" ]; then
 fi
 [ -n "$PY" ] || { echo "no working Python 3 interpreter on PATH" >&2; exit 1; }
 
-M_GROK_CURSOR="cursor-grok-4.5-high"
+M_GROK_CURSOR="cursor-grok-4.6-high"
 M_COMPOSER="composer-2.5-fast"
 
 log() { printf '[cross-model-work] %s\n' "$*" >&2; }
@@ -602,6 +602,9 @@ while True:
 
 {
   cat "$PERSONA"
+  if [ "$ROUTE" = codex ]; then
+    printf '\n\nSocket binds, OS permission checks, peer credentials, and similar capability probes are host-owned. Preserve the host command and observed result; do not treat a sandbox EPERM as proof the host lacks the capability.\n'
+  fi
   printf '\n\nThe required final-result JSON schema is:\n\n'
   cat "$SCHEMA"
   printf '\n\n--- BOUNDED IMPLEMENTATION UNIT PACKET ---\n\n'

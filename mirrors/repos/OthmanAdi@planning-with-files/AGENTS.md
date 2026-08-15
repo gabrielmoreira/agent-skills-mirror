@@ -22,7 +22,7 @@ This file is the canonical, session-portable reference for how every agent worki
 4. Merge preserving contributor authorship: `git fetch origin pull/N/head:pr-N && git cherry-pick <pr-head-sha>`, or `gh pr merge --rebase`. Do NOT use `git merge --squash` — it collapses the contributor's commit and reassigns the `Author:` field to whoever runs the local commit, destroying their credit in `git log`.
 5. CHANGELOG — new version entry at top, `### Fixed`/`### Added`/`### Changed`, sachlich, no em-dashes.
 6. CONTRIBUTORS.md — add reporter/contributor, bump "Total Contributors: N+", update "Last updated" date.
-7. Version bump across all 19 files (see table below).
+7. Version bump across all 18 tracked targets plus the local ClawHub staging target when present (see table below).
 8. README — update version badge and add row to releases table.
 9. `git commit`, `git tag vX.Y.Z`, `git push origin master`, `git push origin vX.Y.Z`.
 10. `gh release create vX.Y.Z --title "vX.Y.Z - <short description>" --notes "<release notes>"`.
@@ -33,7 +33,7 @@ This file is the canonical, session-portable reference for how every agent worki
 
 ## Version bump scope
 
-All 19 files must be bumped to the same version string every release.
+The maintained release set has 19 entries: 18 tracked files plus the gitignored `clawhub-upload/SKILL.md` publish stage. Every present entry must use the same version string. `scripts/bump-version.py` reports the ClawHub stage as optional when it is absent from a fresh clone, but updates and validates it when present. Maintainer releases must rebuild and verify that stage separately before the manual upload.
 
 | File | Notes |
 |------|-------|
@@ -48,12 +48,11 @@ All 19 files must be bumped to the same version string every release.
 | `.cursor/skills/planning-with-files/SKILL.md` | Cursor IDE |
 | `.factory/skills/planning-with-files/SKILL.md` | Factory IDE |
 | `.hermes/skills/planning-with-files/SKILL.md` | Hermes adapter |
-| `.kiro/skills/planning-with-files/SKILL.md` | Kiro IDE |
 | `.mastracode/skills/planning-with-files/SKILL.md` | Mastra Code |
 | `.opencode/skills/planning-with-files/SKILL.md` | OpenCode IDE |
-| `.pi/skills/planning-with-files/SKILL.md` | Pi IDE |
+| `.pi/skills/planning-with-files/package.json` | npm package manifest |
 | `.agents/skills/planning-with-files/SKILL.md` | Agent Skills standard layout (Zed, Amp, Warp, Devin, Antigravity, Gemini CLI read this path natively; added v3.7.0) |
-| `clawhub-upload/SKILL.md` | ClawHub marketplace upload |
+| `clawhub-upload/SKILL.md` | Gitignored ClawHub marketplace staging; required for maintainer upload, optional in a fresh clone |
 | `.claude-plugin/plugin.json` | Plugin manifest |
 | `.claude-plugin/marketplace.json` | Marketplace metadata |
 | `CITATION.cff` | Citation file |
@@ -151,7 +150,7 @@ Thanks: @handle for reporting issue #N.
 ## Quick reference: what NOT to do
 
 - Do not add Co-Authored-By to any commit.
-- Do not bump .continue or .gemini without explicit instruction. .pi and .kiro track their own version schemes and are never bumped by `scripts/bump-version.py`.
+- Do not bump `.continue` or `.gemini` without explicit instruction. `.kiro` has its own version scheme, and `.pi/skills/planning-with-files/SKILL.md` has no version field. The Pi npm version in `.pi/skills/planning-with-files/package.json` is part of the canonical parity set.
 - Do not `git merge --squash` a contributor PR — it reassigns their commit authorship. Use cherry-pick or `gh pr merge --rebase`.
 - Do not edit `task_plan.md` or `DESIGN.md` directly (user-owned contracts).
 - Do not log subagent returns into `task_plan.md` — use `progress.md`.

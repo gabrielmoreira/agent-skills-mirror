@@ -10,7 +10,9 @@
 # Arguments:
 #   repo-name  Folder name of the repo (e.g., "my-repo"). Used for directory matching.
 #   days       Scan window in days (e.g., 7). Files older than this are skipped.
-#   --cwd      Absolute repo root. Used for exact Pi encoded-CWD discovery.
+#   --cwd      Absolute repo root. Used for exact Pi encoded-CWD discovery
+#              and the omp raw-bucket probe. Claude listing is unfiltered;
+#              extract-metadata.py --cwd-filter matches recorded cwd.
 #   --platform Restrict to a single platform. Omit to search all.
 
 set -euo pipefail
@@ -38,20 +40,20 @@ encode_pi_cwd() {
 }
 
 # --- Claude Code ---
+# List every recent jsonl under <config-dir>/projects. Folder names are an
+# undocumented encoder of session CWD; do not invert them. Repo attribution
+# is the recorded `cwd` field, applied by extract-metadata.py --cwd-filter.
+# CLAUDE_CONFIG_DIR relocates the whole config tree (official); unset -> ~/.claude.
 discover_claude() {
-    local base="$HOME/.claude/projects"
+    local base="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects"
     [ -d "$base" ] || return 0
-
-    # Find all project dirs matching repo name
-    for dir in "$base"/*"$REPO_NAME"*/; do
-        [ -d "$dir" ] || continue
-        find "$dir" -maxdepth 1 -name "*.jsonl" -mtime "-${DAYS}" 2>/dev/null
-    done
+    find "$base" -mindepth 2 -maxdepth 2 -type f -name "*.jsonl" -mtime "-${DAYS}" 2>/dev/null
 }
 
 # --- Codex ---
 discover_codex() {
-    for base in "$HOME/.codex/sessions" "$HOME/.agents/sessions"; do
+    local codex_home="${CODEX_HOME:-$HOME/.codex}"
+    for base in "$codex_home/sessions" "$HOME/.agents/sessions"; do
         [ -d "$base" ] || continue
 
         # Use mtime-based discovery (consistent with Claude/Cursor) so that

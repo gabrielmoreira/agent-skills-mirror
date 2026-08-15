@@ -1,5 +1,7 @@
 ---
 argument-hint: <skill-name>
+compatibility:
+  Requires curl and a writable user cache directory; network populates or refreshes the agentskills.io specification.
 name: skill-writing
 description:
   Create/scaffold/init a project-local agent skill under `.agents/skills` in an ordinary repository; defer to repository
@@ -82,6 +84,12 @@ Define the outcome, authority boundaries, stopping conditions, and completion ev
 execution path when several safe paths satisfy the same contract. For user-facing workflows, also define which kickoff,
 progress, decision, blocker, and completion events deserve a message and the smallest useful shape for each.
 
+When a workflow hands long-winded work to background jobs or agents, make polished progress monitoring part of the
+contract. Judge whether the work is long-winded from its expected runtime and uncertainty, fan-out or waves, meaningful
+milestones, and the visibility the host already provides rather than a universal time cutoff. Name the main agent as the
+reporting owner and follow the long-winded background-work guidance in
+[references/writing-great-skills.md](references/writing-great-skills.md).
+
 Express outcomes, invariants, and completion evidence as positive, observable acceptance criteria; when affirmative
 evidence is available, require it instead of accepting only the absence of listed failures or adding negative examples,
 inverse restatements, or long blacklists. Retain a negative instruction only for an explicit user-requested exclusion or
@@ -159,15 +167,21 @@ Inline the basic case in `SKILL.md`, link advanced files for edge cases (`tracke
 
 ## Workflow
 
-### 1. Fetch Format Docs
+### 1. Read Format Docs
 
-Always fetch the latest portable and Claude Code references before authoring frontmatter or content:
+Resolve `scripts/fetch-agentskills-spec.sh` relative to this skill directory, run it once, and read the returned file
+completely. The helper reuses an integrity-valid specification for 24 hours, conditionally revalidates older entries,
+and may return a cache validated within seven days when live retrieval fails. Set `AGENTSKILLS_CACHE_DIR` when the
+default user cache location is unavailable or unwritable.
 
-- https://agentskills.io/specification
-- https://code.claude.com/docs/en/skills#frontmatter-reference
+Use `--refresh` for explicitly latest or change-sensitive work, disputed portable-format guidance, or a conflict with
+validator behavior. A `stale` result is usable only after reading it; disclose its validation timestamp and retrieval
+failure in the completion report. If the helper cannot return a valid file, stop before writing. Never fetch the
+agentskills.io specification directly or create its cache in a repository or skill installation.
 
-Use `WebFetch` to confirm the current field shapes, naming rules, and progressive-disclosure conventions. Do not guess —
-the formats evolve.
+Fetch the current [Claude Code frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference) with
+`WebFetch`. Confirm field shapes, naming rules, and progressive-disclosure conventions from both sources; do not guess
+because the formats evolve.
 
 ### 2. Validate
 

@@ -134,6 +134,7 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 
 - ✅ **图像融合**: 将多张参考图融合或编辑为一张图。
 - ✅ **口型同步**: 音频 + 视频 → 视频（口型同步）；也支持音频 + 图片 → 视频、音频 + 文本 → 视频等变体。
+- ✅ **情感语音**: 文本 + 参考音色 → 用该音色朗读，支持情感控制。
 - ✅ **换角色**: 视频 + 参考（场景融合 / 角色替换），Animate Mix 风格生成。
 - ✅ **动作迁移**: 视频 + 参考（动作 / 重定向），Animate Move 风格生成。
 - ✅ **文本合并**: 将多个文本节点合并为一个。
@@ -207,6 +208,7 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - [tongflow-modal-gemma4](https://github.com/tong-io/tongflow-modal-gemma4) — Gemma-4 多模态文本（图像 / 视频理解）
 - [tongflow-modal-qwen3asr](https://github.com/tong-io/tongflow-modal-qwen3asr) — Qwen3 语音识别
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 文字转语音
+- [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 情感文字转语音：零样本声音克隆（备选）+ 参考音色的情感语音合成
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper 语音识别（带时间戳，备选）
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 音乐全家桶：文本生音乐（sft / base / turbo 可选）、重绘、翻唱、分轨提取、加轨、补全编曲、音乐企划与音乐理解
 - [tongflow-modal-levo](https://github.com/tong-io/tongflow-modal-levo) — LeVo 2 / SongGeneration 文本生音乐（多语言、商用级）

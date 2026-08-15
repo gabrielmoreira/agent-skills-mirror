@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,10 +77,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
 | 17 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
 | 18 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
-| 19 | ✓ | [`.cursor/skills/spec-coding/references/grilling.md`](.cursor/skills/spec-coding/references/grilling.md) |
-| 20 | ✓ | [`.cursor/skills/spec-coding/references/pseudocode-patterns.md`](.cursor/skills/spec-coding/references/pseudocode-patterns.md) |
-| 21 | ✓ | [`.cursor/skills/spec-coding/SKILL.md`](.cursor/skills/spec-coding/SKILL.md) |
-| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

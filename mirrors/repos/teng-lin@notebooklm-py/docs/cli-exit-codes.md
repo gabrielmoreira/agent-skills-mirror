@@ -272,7 +272,8 @@ import time
 
 result = subprocess.run(
     ["notebooklm", "ask", "-n", nb_id, prompt, "--json"],
-    capture_output=True, text=True,
+    capture_output=True,
+    text=True,
 )
 if result.returncode == 0:
     payload = json.loads(result.stdout)

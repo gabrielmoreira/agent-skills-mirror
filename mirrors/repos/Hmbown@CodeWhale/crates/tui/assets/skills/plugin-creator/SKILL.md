@@ -40,8 +40,10 @@ path = "skills"
    normalized endpoint host set in `[capabilities].network_hosts`. Never place
    credentials in the manifest.
 6. Declare commands, agents, hooks, LSP, native extensions, filesystem roots,
-   or lifecycle mutation only when inventorying future work. v0.9.1 will show
-   these declarations and refuse to activate the bundle.
+   or lifecycle mutation only when inventorying future work. Codewhale shows
+   them as inactive and still activates reviewed Skills and MCP from the same
+   bundle. A bundle that only declares those unsupported surfaces cannot be
+   enabled.
 7. Validate and review without executing bundle content:
    - `/plugin validate <plugin-name>`
    - `/plugin show <plugin-name>`

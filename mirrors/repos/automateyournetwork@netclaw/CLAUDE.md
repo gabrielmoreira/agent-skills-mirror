@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-08-13
+Auto-generated from all feature plans. Last updated: 2026-08-14
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -122,6 +122,8 @@ Auto-generated from all feature plans. Last updated: 2026-08-13
 - **NEW** — a single JSON file written by `server.js` at a fixed path, holding per-preset node positions and camera pose. First persistent state the HUD client has ever had. `/api/n2n` and `/api/graph` unchanged (FR-032). (102-hud-webgpu-interactive-layout)
 - Dart 3.x / Flutter, SDK constraint `^3.12.2` (from `pubspec.yaml`) + No new packages. Reuses `firebase_messaging ^16.4.3`, `firebase_core ^4.12.1`, `flutter_local_notifications ^22.2.0`, all already present. Continues the 066–073 and 099 precedent of adding no dependency a story does not strictly require. (107-push-render-deeplink)
 - Existing on-device stores, extended not replaced — `MessageFeedStore` (JSON-Lines) and, unchanged, `ConversationStore`. No migration of stored history. (107-push-render-deeplink)
+- Dart 3.x / Flutter (SDK per `mobile/netclaw-mobile/pubspec.yaml`), Swift 5.0 (`ios/Runner/*.swift`) — same stack as specs 066–103, unchanged. + None new. `local_auth` (already a dependency, already used by `approval_confirmation.dart`) covers US2's biometric gate. US1 is pure Flutter widget code. US3 uses Flutter's and Xcode's existing command-line toolchain (`flutter build ipa`, `xcrun altool`) — no package added. (105-ios-appstore-readiness)
+- No new storage. US1/US2 read/write the existing `EnrollmentStore` (`ncfed_enrollment.json`) exactly as today; nothing new is persisted. (105-ios-appstore-readiness)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -142,6 +144,7 @@ Python 3.10+: Follow standard conventions
 
 ## Recent Changes
 - 107-push-render-deeplink: Added Dart 3.x / Flutter, SDK constraint `^3.12.2` (from `pubspec.yaml`) + No new packages. Reuses `firebase_messaging ^16.4.3`, `firebase_core ^4.12.1`, `flutter_local_notifications ^22.2.0`, all already present. Continues the 066–073 and 099 precedent of adding no dependency a story does not strictly require.
+- 105-ios-appstore-readiness: Added Dart 3.x / Flutter (SDK per `mobile/netclaw-mobile/pubspec.yaml`), Swift 5.0 (`ios/Runner/*.swift`) — same stack as specs 066–103, unchanged. + None new. `local_auth` (already a dependency, already used by `approval_confirmation.dart`) covers US2's biometric gate. US1 is pure Flutter widget code. US3 uses Flutter's and Xcode's existing command-line toolchain (`flutter build ipa`, `xcrun altool`) — no package added.
 - 102-hud-webgpu-interactive-layout: Added JavaScript ES2022 (ESM), Node 22+ for tooling. No TypeScript. + `three@0.185.1` — **no new package**. New import surfaces: `three/webgpu` (`WebGPURenderer`, `PostProcessing`, `Lighting`), `three/tsl` (node functions), `three/addons/lighting/ClusteredLighting.js`, and `three/examples/jsm/tsl/display/*` (`BloomNode`, `RGBShiftNode`, `SMAANode`, `AfterImageNode`, `FilmNode`). Force-directed solver is hand-written, not a dependency (research R4).
 - 101-hud-threejs-modernization: Added JavaScript ES2022 (ESM), Node 22+ for tooling. No TypeScript in this package. + `three` 0.170.0 → **0.185.1** (the only dependency change); existing `gsap`, `lil-gui`, `vite` 5.4 unchanged. Addons consumed as-is: `OrbitControls`, `CSS2DRenderer`, `EffectComposer` + `RenderPass`/`UnrealBloomPass`/`ShaderPass`/`OutputPass`/`SMAAPass`/`AfterimagePass`/`FilmPass`/`GlitchPass`, `VignetteShader`, `RGBShiftShader`. **No new package.**
 

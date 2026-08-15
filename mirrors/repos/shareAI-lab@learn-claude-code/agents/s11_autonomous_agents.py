@@ -100,7 +100,7 @@ class MessageBus:
             f.write(json.dumps(msg) + "\n")
         return f"Sent {msg_type} to {to}"
 
-    def read_inbox(self, name: str) -> list:
+    def read_inbox(self, name: str, clear: bool = True) -> list:
         inbox_path = self.dir / f"{name}.jsonl"
         if not inbox_path.exists():
             return []
@@ -108,7 +108,8 @@ class MessageBus:
         for line in inbox_path.read_text().strip().splitlines():
             if line:
                 messages.append(json.loads(line))
-        inbox_path.write_text("")
+        if clear:
+            inbox_path.write_text("")
         return messages
 
     def broadcast(self, sender: str, content: str, teammates: list) -> str:
@@ -142,11 +143,9 @@ def claim_task(task_id: int, owner: str) -> str:
         if not path.exists():
             return f"Error: Task {task_id} not found"
         task = json.loads(path.read_text())
-        if task.get("owner"):
-            existing_owner = task.get("owner") or "someone else"
+        if existing_owner := task.get("owner"):
             return f"Error: Task {task_id} has already been claimed by {existing_owner}"
-        if task.get("status") != "pending":
-            status = task.get("status")
+        if (status := task.get("status")) != "pending":
             return f"Error: Task {task_id} cannot be claimed because its status is '{status}'"
         if task.get("blockedBy"):
             return f"Error: Task {task_id} is blocked by other task(s) and cannot be claimed yet"
@@ -523,7 +522,7 @@ def agent_loop(messages: list):
         if inbox:
             messages.append({
                 "role": "user",
-                "content": f"<inbox>{json.dumps(inbox, indent=2)}</inbox>",
+                "content": f"<inbox>{json.dumps(inbox)}</inbox>",
             })
         response = client.messages.create(
             model=MODEL,
@@ -566,7 +565,7 @@ if __name__ == "__main__":
             print(TEAM.list_all())
             continue
         if query.strip() == "/inbox":
-            print(json.dumps(BUS.read_inbox("lead"), indent=2))
+            print(json.dumps(BUS.read_inbox("lead", False), indent=2))
             continue
         if query.strip() == "/tasks":
             TASKS_DIR.mkdir(exist_ok=True)

@@ -8,7 +8,7 @@ Art bibles for **AI short-drama production**: scenes + narrative props. The prem
 
 **Props** (narrative props only — close-ups, cross-episode, plot-bearing; typically 3–8 per show): dramatic function first, **state variants** (a suitcase closed and open are two references), a **scale reference** written into every prompt (AI loves rendering a handheld prop at furniture size), and **white-background, no-hands plates** — prop references get composited into shots, and a hand holding the prop is the classic contamination. Set dressing stays in scene anchors; one-off hand props are handled at shot level — neither gets its own asset.
 
-Outputs `art.json`, a Markdown report, and a self-contained `art-report.html`:
+Outputs `art.json`, a Markdown report, and a self-contained `art-report.html`. Reports render with a Chinese UI by default; pass `--lang en` for a fully English report (or set a top-level `"lang": "en"` in art.json — `--lang` wins). Image prompts are always English either way: In English mode the quality-gate labels are translated too (thresholds kept as computed); failing-gate details and all data stay as authored.
 
 ![art-report.html](assets/report.webp)
 
@@ -32,7 +32,8 @@ novel-art        → art.json     (where & what they hold: art assets)
 node scripts/novel-art.mjs seed outline.json > art.json
 node scripts/novel-art.mjs validate art.json --cast cast.json
 node scripts/novel-art.mjs checkup art.json
-node scripts/novel-art.mjs render art.json --html
+node scripts/novel-art.mjs render art.json --html             # Chinese report UI (default)
+node scripts/novel-art.mjs render art.json --html --lang en   # English report UI
 node scripts/novel-art.mjs styles
 ```
 
@@ -46,6 +47,6 @@ Via codex's built-in `$imagegen`, zero API keys. One 16:9 sheet per scene and pe
 node scripts/selftest.mjs
 ```
 
-131 assertions — seeding, style presets, gate-defeating cases for all 11 gates, rendering, export. No model calls, runs in about a second.
+144 assertions — seeding, style presets, gate-defeating cases for all 11 gates, rendering (zh/en report UI), export. No model calls, runs in about a second.
 
 **Only tested on macOS + Node 24.**

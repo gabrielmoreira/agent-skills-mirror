@@ -1,4 +1,4 @@
 interface:
   display_name: "Three.js Procedural Geometry"
-  short_description: "Build complete procedural meshes and assemblies"
-  default_prompt: "Use $threejs-procedural-geometry to build a complete hard-surface assembly, tilted shell loft, sculpted rail, branch ring, or semantic mesh-writer pattern with deliberate skins, shared UV ownership, material groups, and topology diagnostics."
+  short_description: "Craft and audit production procedural meshes"
+  default_prompt: "Use $threejs-procedural-geometry to model a well-crafted procedural assembly with real profiles, thickness, bevels, semantic joins, topology checks, coplanar/clash audits, and direct visual inspection."

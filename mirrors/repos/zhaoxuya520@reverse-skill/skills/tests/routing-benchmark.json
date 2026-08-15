@@ -117,13 +117,28 @@
                       "quick":  false
                   },
                   {
+                      "hint":  "r2 disassemble",
+                      "expect":  "R6",
+                      "quick":  false
+                  },
+                  {
                       "hint":  "radare2 analyze binary",
                       "expect":  "R7",
                       "quick":  true
                   },
                   {
-                      "hint":  "r2 disassemble",
-                      "expect":  "R6",
+                      "hint":  "r2xsql query imports",
+                      "expect":  "R7",
+                      "quick":  false
+                  },
+                  {
+                      "hint":  "radius2 solve crackme",
+                      "expect":  "R7",
+                      "quick":  false
+                  },
+                  {
+                      "hint":  "r2mcp analyze binary",
+                      "expect":  "R7",
                       "quick":  false
                   },
                   {

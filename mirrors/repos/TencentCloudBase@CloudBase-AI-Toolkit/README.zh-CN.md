@@ -24,16 +24,20 @@
 
 ## 最近更新
 
+**v2.27.x**（2026-08）
+
+- 工具：移除 `downloadRemoteFile`（报错率高），远程资源改用 shell `curl` / `Invoke-WebRequest` 下载（#908、#909）
+- 云托管：`manageCloudRun` 统一 tcbr 初始化检查 + 部署，废弃旧 tcb 云托管 API；应用部署打包排除 `target/.next`，避免超大 zip
+- Skills：小程序 SEO / 搜索优化指引并入 `miniprogram-development`（#906）
+- 网关 / 托管：支持路由级启用并识别已禁用访问地址；`accessUrl` 为空时托管跳过部署通知
+- 文档：简化快速开始并外置图片（#905）、`--cloudbase-api-key` CLI 登录、CodeBuddy 插件市场安装指南
+
 **v2.26.x**（2026-08）
 
 - 网关：支持启用/禁用 HTTP 路由（`enableRoute` / `disableRoute`）；托管与环境查询在返回访问地址前会识别默认域名路由已禁用的情况（#901、#902、#903）
 - 认证：支持 `CLOUDBASE_APIKEY` 作为 API Key 环境变量回退（#900）
 - Skills：首次会话 MCP 工具尚未加载时，提供 MCP→CLI 工具回退指引（#889）
 - 模板 / CI：兼容 AGENTS 指南压缩至 40 KiB 内；加固 ClawHub 发布幂等与 upload-ticket 重试（#895、#893、#894）
-
-**v2.25.x**（2026-08）
-
-- Skills / RAG：`minimal-web-baas-demo`；云托管/网关 VPC 与自定义域名访问；PG 迁移加固等——完整列表见 [Releases][changelog]
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 
@@ -255,7 +259,7 @@ Skills 负责写法与结构；MCP 负责环境与资源操作。完成后应能
 }
 ```
 
-托管 URL 可用 `enable_plugins` / `disable_plugins` 裁剪工具集。名称以 `mcp/src/server.ts` 为准。
+托管 URL 可用 `site`（`domestic` / `intl`）指定登录站点（国内站新加坡需 `site=domestic`），也可用 `enable_plugins` / `disable_plugins` 裁剪工具集。名称以 `mcp/src/server.ts` 为准。
 
 **自建 Cloud Mode**：在自有服务器部署时设置 `CLOUDBASE_MCP_CLOUD_MODE=true`（或 `MCP_CLOUD_MODE=true`），禁用本地文件与本地进程类工具，避免远程调用方操作宿主机。
 

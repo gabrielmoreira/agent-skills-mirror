@@ -1514,6 +1514,17 @@ non-blocking error through the host toast capability, falling back to the UI
 System toast when that optional capability is absent. An unresolved empty Rail
 scope retains the centered error state and its retry action.
 
+AgentGUI owns one bounded retry for first-page and targeted membership reads so
+every host receives the same recovery behavior across daemon restarts, transient
+upstream failures, and transport loss. A fast transient failure retries once
+after a short deterministic jitter while publication remains pending. A request
+that already reached its timeout publishes the retained or empty failure state,
+releases the interaction lock, and performs its one retry after a longer
+background delay. Cancellation and permanent authorization, parameter, or other
+non-retryable client failures never retry. Scope replacement and surface detach
+abort both the active read and any scheduled retry; hosts must propagate the
+controller-owned `AbortSignal` while retaining their own request timeout.
+
 Presentation-invisible Sessions remain canonical engine entities and stay
 available through exact Session selectors for trusted open, reconcile, and
 command flows. Plural consumer selectors exclude them before Rail and Message
@@ -1784,6 +1795,13 @@ App-server-backed skill discovery follows the descriptor boundary. Tutti Agent
 requests only `skills/list` and retains the ordinary Skill projection through
 the shared app-server transport, capability contract, cache, and structured
 prompt-item submission path.
+
+Model-only app-server catalog probes are a separate read path: they request
+`model/list` without `skills/list` and pass the runtime launch preparation
+contract's `SkipSkills` flag. These probes do not create a live Session and
+must not resolve or materialize provider Skill directories. A Composer-options
+read that returns both models and Skills keeps the normal Skill preparation
+path.
 
 Tutti Desktop's slash connector section is a local catalog projection,
 not a Provider connector catalog. `services/tuttid/service/agent` reads the
@@ -2887,11 +2905,23 @@ Rail state writer because it has no Workbench node-state source. The callback
 contract contains no Tutti Desktop preference or product policy, so other hosts
 such as TSH may persist their own Rail state without adopting Desktop behavior.
 
-Attention state preserves explicit user intent: marking the currently selected
-Session unread keeps its unread indicator while that selection remains open.
-Selecting the Session again marks it read. A new live completion or a durable
-unread completion discovered by hydration is still marked read immediately when
-its Session is already selected.
+Attention state is unread-only: a live completion or explicit user unread
+request creates a durable unread completion, and real user exposure removes it.
+Absence of an unread completion means read; no separate durable read marker is
+authoritative. Historical list/detail reads own canonical content but never
+create, remove, or reconcile attention. Hydration restores only
+`completed.unreadIds` and `failed.unreadIds`; legacy `readIds` are ignored on
+read and every write payload explicitly empties both read buckets so stale read
+markers cannot survive migration.
+
+Selection is node-local while attention state is shared. An active Session may
+remove unread attention only while its AgentGUI surface is host-focused,
+host-visible, and the renderer document is visible and focused. A retained
+hidden, occluded, unfocused, or backgrounded node must preserve unread
+attention even when its local `activeConversationId` still names the Session.
+The read-decision diagnostic records the exact node, completion, host focus,
+document exposure, visibility, and decision reason without logging on stream
+updates.
 
 Read-only host surfaces reuse the complete workbench header and declare the
 session actions they support. Omitting that capability list preserves the full

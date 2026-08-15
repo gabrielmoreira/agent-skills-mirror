@@ -23,6 +23,18 @@ $ErrorActionPreference = 'Stop'
 $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 
 . (Join-Path $PSScriptRoot 'lib\ToolDiscovery.ps1')
+. (Join-Path $PSScriptRoot 'lib\BootstrapSupplyChain.ps1')
+
+function Get-BootstrapDependency {
+    param([Parameter(Mandatory = $true)][string]$Name)
+
+    $manifest = Get-Content -LiteralPath (Get-ReverseBootstrapManifestPath) -Raw -Encoding UTF8 | ConvertFrom-Json
+    $dependency = $manifest.bootstrapDependencies.PSObject.Properties[$Name].Value
+    if ($null -eq $dependency -or [string]::IsNullOrWhiteSpace([string]$dependency.package) -or [string]::IsNullOrWhiteSpace([string]$dependency.version)) {
+        throw "bootstrapDependencies.$Name must define package and version."
+    }
+    return $dependency
+}
 
 $Capability = @(
     foreach ($item in @($Capability)) {
@@ -150,20 +162,6 @@ function Ensure-PythonRuntime {
 function Ensure-JavaRuntime {
     if (-not (Get-FirstCommandPath -Names @('java'))) {
         Ensure-WingetPackage -Id 'Microsoft.OpenJDK.21' -Label 'OpenJDK 21'
-    }
-}
-
-function Ensure-Pnpm {
-    Ensure-NodeRuntime
-    if (-not (Get-NodeCommandPath -Name 'pnpm')) {
-        $npm = Get-NodeCommandPath -Name 'npm'
-        if ([string]::IsNullOrWhiteSpace($npm)) {
-            throw 'npm is not available after Node.js installation.'
-        }
-        & $npm install -g pnpm
-        if ($LASTEXITCODE -ne 0) {
-            throw 'Failed to install pnpm globally.'
-        }
     }
 }
 
@@ -341,33 +339,10 @@ function Set-AnythingAnalyzerPnpmBuildApprovals {
 
 function Approve-AnythingAnalyzerBuildScripts {
     param(
-        [Parameter(Mandatory = $true)][string]$RepoDir,
-        [Parameter(Mandatory = $true)][string]$PnpmPath
+        [Parameter(Mandatory = $true)][string]$RepoDir
     )
 
     $buildPackages = @('electron', 'esbuild', 'better-sqlite3')
-
-    Push-Location $RepoDir
-    try {
-        $approveExitCode = 1
-        try {
-            $approveOutput = & $PnpmPath approve-builds --all 2>&1
-            $approveExitCode = $LASTEXITCODE
-        }
-        catch {
-            $approveOutput = $_.Exception.Message
-            $approveExitCode = 1
-        }
-
-        if ($approveExitCode -eq 0) {
-            return
-        }
-
-        Write-Warning 'pnpm approve-builds --all is unavailable or failed; writing pnpm-workspace.yaml build approvals directly.'
-    }
-    finally {
-        Pop-Location
-    }
 
     Set-AnythingAnalyzerPnpmBuildApprovals -RepoDir $RepoDir -Packages $buildPackages
 }
@@ -777,6 +752,13 @@ function Start-AnythingAnalyzerService {
         $AuthToken = Ensure-AnythingAnalyzerMcpConfig -Port ([int]$Definition.servicePort)
     }
 
+    $repoDir = [string]$Definition.installDir
+    $checkoutDefinition = [pscustomobject]@{
+        repo         = [string]$Definition.repoUrl
+        pinnedCommit = [string]$Definition.pinnedCommit
+    }
+    Ensure-GitCloneInstall -Definition $checkoutDefinition -TargetPath $repoDir | Out-Null
+
     if (Test-ReverseTcpPort -Port ([int]$Definition.servicePort)) {
         return
     }
@@ -793,65 +775,13 @@ if (Test-ReverseIsWindows) {
     }
 }
 
-    $repoDir = @($Definition.startupDirCandidates) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
-    if ([string]::IsNullOrWhiteSpace($repoDir)) {
-        $installDir = $Definition.installDir
-        $gh = Get-FirstCommandPath -Names @('gh')
-        $git = Get-FirstCommandPath -Names @('git')
-        if ($gh) {
-            & $gh repo clone 'Mouseww/anything-analyzer' $installDir
-        }
-        elseif ($git) {
-            & $git clone $Definition.repoUrl $installDir
-        }
-        else {
-            throw 'Cannot clone anything-analyzer because neither gh nor git is available.'
-        }
-        if ($LASTEXITCODE -ne 0) {
-            throw 'Failed to clone anything-analyzer.'
-        }
-        $repoDir = $installDir
-    }
-
     $pnpm = Get-NodeCommandPath -Name 'pnpm'
     if ([string]::IsNullOrWhiteSpace($pnpm)) {
         throw 'pnpm is not available after installation.'
     }
-
-    Push-Location $repoDir
-    try {
-        Approve-AnythingAnalyzerBuildScripts -RepoDir $repoDir -PnpmPath $pnpm
-
-        if (-not (Test-AnythingAnalyzerElectronHealthy -RepoDir $repoDir -PnpmPath $pnpm)) {
-            $nodeModules = Join-Path $repoDir 'node_modules'
-            if (Test-Path -LiteralPath $nodeModules) {
-                Remove-Item -LiteralPath $nodeModules -Recurse -Force
-            }
-        }
-
-        & $pnpm install
-        if ($LASTEXITCODE -ne 0) {
-            if (-not [string]::IsNullOrWhiteSpace($vsBuildToolsError)) {
-                throw "pnpm install failed for anything-analyzer. Visual Studio Build Tools auto-install also failed earlier: $vsBuildToolsError"
-            }
-            throw 'pnpm install failed for anything-analyzer.'
-        }
-
-        & $pnpm rebuild electron esbuild better-sqlite3
-        if ($LASTEXITCODE -ne 0) {
-            if (-not [string]::IsNullOrWhiteSpace($vsBuildToolsError)) {
-                throw "pnpm rebuild failed for anything-analyzer. Visual Studio Build Tools auto-install also failed earlier: $vsBuildToolsError"
-            }
-            throw 'pnpm rebuild failed for anything-analyzer.'
-        }
-
-        if (-not (Test-AnythingAnalyzerElectronHealthy -RepoDir $repoDir -PnpmPath $pnpm)) {
-            throw 'Electron is still not healthy after reinstall/rebuild.'
-        }
-    }
-    finally {
-        Pop-Location
-    }
+    $git = Get-FirstCommandPath -Names @('git')
+    Invoke-AnythingAnalyzerPinnedInstall -RepoDir $repoDir -PnpmPath $pnpm -GitPath $git `
+        -PinnedCommit ([string]$Definition.pinnedCommit) -VsBuildToolsError $vsBuildToolsError
 
     $stdoutLog = Join-Path $repoDir 'anything-analyzer-dev.log'
     $stderrLog = Join-Path $repoDir 'anything-analyzer-dev.err.log'
@@ -892,55 +822,6 @@ function Ensure-AndroidPlatformTools {
     return (Resolve-ReverseToolSpec -Name 'adb')
 }
 
-function Ensure-GitCloneInstall {
-    param(
-        [Parameter(Mandatory = $true)]$Definition,
-        [Parameter(Mandatory = $true)][string]$TargetPath
-    )
-
-    $pinnedCommit = if ($Definition.PSObject.Properties['pinnedCommit']) { [string]$Definition.pinnedCommit } else { '' }
-    $git = Get-FirstCommandPath -Names @('git')
-    if ([string]::IsNullOrWhiteSpace($git)) {
-        throw "Cannot clone $($Definition.repo) because git is not available."
-    }
-
-    if ((Test-Path -LiteralPath $TargetPath -PathType Container) -and (Test-Path -LiteralPath (Join-Path $TargetPath '.git'))) {
-        if (-not [string]::IsNullOrWhiteSpace($pinnedCommit)) {
-            $currentCommit = (& $git -C $TargetPath rev-parse HEAD).Trim()
-            if ($LASTEXITCODE -ne 0 -or $currentCommit -ne $pinnedCommit) {
-                throw "Existing checkout is not at pinned commit $pinnedCommit. Move it aside explicitly, then retry: $TargetPath"
-            }
-        }
-        return $true
-    }
-
-    if (Test-Path -LiteralPath $TargetPath) {
-        $backupPath = "$TargetPath.bak-$([DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))"
-        Move-Item -LiteralPath $TargetPath -Destination $backupPath -Force
-    }
-
-    Ensure-DownloadDirectory -Path (Split-Path -Path $TargetPath -Parent)
-
-    if ([string]::IsNullOrWhiteSpace($pinnedCommit)) {
-        & $git clone --depth 1 $Definition.repo $TargetPath
-        if ($LASTEXITCODE -ne 0) {
-            throw "git clone failed for $($Definition.repo)"
-        }
-    }
-    else {
-        & $git init --quiet $TargetPath
-        & $git -C $TargetPath remote add origin $Definition.repo
-        & $git -C $TargetPath fetch --depth 1 origin $pinnedCommit
-        & $git -C $TargetPath checkout --quiet --detach FETCH_HEAD
-        $resolvedCommit = (& $git -C $TargetPath rev-parse HEAD).Trim()
-        if ($LASTEXITCODE -ne 0 -or $resolvedCommit -ne $pinnedCommit) {
-            throw "Pinned checkout verification failed for $($Definition.repo): expected $pinnedCommit, got $resolvedCommit"
-        }
-    }
-
-    return $true
-}
-
 function Ensure-Capability {
     param([Parameter(Mandatory = $true)][string]$Name)
 
@@ -961,7 +842,7 @@ function Ensure-Capability {
     }
 
     $existingState = Get-ReverseCapabilityState -Name $Name
-    if ($existingState -and -not $definition.PSObject.Properties['mcpNames']) {
+    if ($existingState -and -not $definition.PSObject.Properties['mcpNames'] -and $definition.bootstrapKind -ne 'git-clone') {
         $toolSpec = $null
         try {
             $toolSpec = Resolve-ReverseToolSpec -Name $Name
@@ -1172,6 +1053,12 @@ function Expand-CapabilityDependencies {
     return $ordered
 }
 
+function Test-BootstrapResultsSucceeded {
+    param([Parameter(Mandatory = $true)][object[]]$Results)
+
+    return (@($Results | Where-Object { $_.status -eq 'failed' }).Count -eq 0)
+}
+
 $expandedCapabilities = Expand-CapabilityDependencies -Names $Capability
 $results = @()
 
@@ -1231,3 +1118,6 @@ if (-not $SkipRefresh) {
 }
 
 $results | ConvertTo-Json -Depth 5
+if (-not (Test-BootstrapResultsSucceeded -Results $results)) {
+    exit 1
+}

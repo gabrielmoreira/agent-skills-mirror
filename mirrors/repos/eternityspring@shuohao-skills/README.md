@@ -11,16 +11,23 @@
 
 # shuohao-skills
 
-**AI 短剧制作的 skill 集合**：从一本小说到能开拍的制作素材——拆角色、排大纲、出场景与道具设定、写剧本。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
+**AI 短剧制作的 skill 集合**：从一本小说到直接喂生成管线的制作素材——拆角色、排大纲、出场景与道具设定、写剧本、切分镜。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
+
+整条管线长这样——**改编大纲收敛结构，剧本、场景、角色三者同步迭代，分镜只做输出不做新决定**：
+
+<img src="assets/pipeline.webp" alt="AI 短剧制作流程图" width="680">
 
 | Skill | 做什么 |
 | --- | --- |
 | [**novel-characters**](skills/novel-characters) | 把一篇小说拆成角色设定集：人物画像、形象提示词、音色提示词、角色设定图。报告语言与出图风格可选 |
 | [**novel-outline**](skills/novel-outline) | 把一本小说改编成短剧大纲五件套：改编说明、人物表、爽点表、分集梗概、资产清单。13 道质量门全部脚本检查，支持已有大纲的体检模式 |
 | [**novel-art**](skills/novel-art) | 给 AI 短剧出美术设定集（场景 + 叙事道具）：一致性锚点、光照与状态变体、尺度参照、无人无手白底提示词。吃 outline.json 预填清单，11 道质量门全部脚本检查 |
-| [**novel-script**](skills/novel-script) | 给 AI 短剧写剧本：场次 + 节拍流（动作与台词交替），逐集时长按语速确定性折算，台词本按角色聚合直接对接 TTS。9 道质量门全部脚本检查 |
+| [**novel-script**](skills/novel-script) | 给 AI 短剧写剧本：场次 + 节拍流（动作与台词交替），逐集时长按语速确定性折算，钩子前 3 拍冷开场兑现是门，台词本按角色聚合带音色提示词直接对接 TTS。10 道质量门全部脚本检查 |
+| [**novel-storyboard**](skills/novel-storyboard) | 给 AI 短剧出分镜：段（一次生成 ≤15 秒）→ 分镜（2–5 秒硬门）→ 分镜图（主图钉 0.00 秒、子图钉各自切点），MiniMax H3 提示词的对齐指令与切点时刻逐字对账；分镜图拿设定图当参考图真出图，export 一键出投产包。16 道质量门全部脚本检查 |
 
-丢一本小说进去，出这四套：
+**五个 skill 的报告都支持中英双语界面**：默认中文，`render --lang en` 出全英文报告（数据内容保持原文）。
+
+丢一本小说进去，出这五套：
 
 **novel-characters · 角色设定集**
 
@@ -37,6 +44,10 @@
 **novel-script · 剧本（时长仪表 + 分集剧本 + 台词本）**
 
 ![剧本报告](skills/novel-script/assets/report.webp)
+
+**novel-storyboard · 分镜（分镜节奏带 + 主/子分镜图为 skill 实际生成 + H3 提示词）**
+
+![分镜报告](skills/novel-storyboard/assets/report.webp)
 
 ## 安装
 

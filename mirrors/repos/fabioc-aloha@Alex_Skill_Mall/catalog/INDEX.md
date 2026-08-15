@@ -20,6 +20,7 @@ Search index across **4047 plugins** in **48 stores**. Plugins are ranked by tru
 | 95 | 🏆 `agent-tool-design` | plugin-mall | skill | This skill should be used for the tool-interface layer of an agent system speci… |
 | 95 | 🏆 `ai-agent-design` | plugin-mall | skill | Design autonomous AI agents that reason, plan, and execute tasks |
 | 95 | 🏆 `ai-writing-avoidance` | plugin-mall | skill | Help writers produce content that sounds genuinely human by avoiding telltale A… |
+| 95 | 🏆 `alex-act-ai-operations` | plugin-mall | mixed | Optional AI provider operations plugin for model discovery, explainable task pl… |
 | 95 | 🏆 `alex-banner-generation` | plugin-mall | skill | Generate branded SVG banners for documents (READMEs, plans, changelogs, release… |
 | 95 | 🏆 `allowlist-over-blocklist` | plugin-mall | skill | Validate input against an allowlist of permitted values -- reject everything el… |
 | 95 | 🏆 `anti-hallucination` | plugin-mall | skill | Recognize and prevent confabulation -- when you don't know, say so. |
@@ -60,7 +61,6 @@ Search index across **4047 plugins** in **48 stores**. Plugins are ranked by tru
 | 95 | 🏆 `cloud-storage-paths` | plugin-mall | skill | Cross-platform cloud storage path resolution -- OneDrive, iCloud, Dropbox path … |
 | 95 | 🏆 `coaching-techniques` | plugin-mall | skill | GROW model, active listening, developmental feedback, and team growth approaches |
 | 95 | 🏆 `code-review` | plugin-mall | skill | Systematic code review for correctness, security, and growth -- not just style … |
-| 95 | 🏆 `cognitive-load` | plugin-mall | skill | Don't overwhelm -- chunk, scaffold, summarize first. |
 
 ## All stores by trust
 

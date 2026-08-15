@@ -7,6 +7,7 @@ import {
 import { getInteractiveServer } from "../interactive-server.js";
 import { isCloudMode } from "../utils/cloud-mode.js";
 import { debug, error, warn } from "../utils/logger.js";
+import { resolveSiteAndRegion } from "../utils/site-map.js";
 import { telemetryReporter } from "../utils/telemetry.js";
 import {
   checkAndCreateFreeEnv,
@@ -133,11 +134,15 @@ export async function _promptAndSetEnvironmentId(
   // Get region from server options or environment variable for auth URL
   // Note: serverCloudBaseOptions will be declared later (line 282), so we get it here first
   const serverCloudBaseOptionsForAuth = server?.cloudBaseOptions;
-  const region = serverCloudBaseOptionsForAuth?.region || process.env.TCB_REGION;
+  const { region, site } = resolveSiteAndRegion({
+    site: serverCloudBaseOptionsForAuth?.site,
+    region: serverCloudBaseOptionsForAuth?.region,
+  });
   const loginState = await getLoginState({
     fromCloudBaseLoginPage: options?.loginFromCloudBaseLoginPage,
     ignoreEnvVars: options?.ignoreEnvVars,
     region,
+    site,
     authMode: options?.authMode,
     clientId: options?.clientId,
     serverAuthOptions: server?.authOptions,
@@ -604,7 +609,7 @@ export async function _promptAndSetEnvironmentId(
   // interactiveServer 已在前面声明，直接使用
   // 提取账号 UIN 用于显示
   // Try to get UIN from CAM API first, fallback to loginState
-  const accountInfo: { uin?: string; region?: string } = {};
+  const accountInfo: { uin?: string; region?: string; site?: string } = {};
 
   // Try to get user info from CAM API
   debug("[interactive] Attempting to get user info from CAM API...");
@@ -626,14 +631,15 @@ export async function _promptAndSetEnvironmentId(
     debug("[interactive] Using UIN from loginState:", { uin: accountInfo.uin });
   }
 
-  // Attach region from server options or environment variable fallback
+  // Attach region/site from server options or environment variable fallback
   // Reuse serverCloudBaseOptions declared earlier (line 278)
   const currentServerCloudBaseOptions = server?.cloudBaseOptions;
-  if (currentServerCloudBaseOptions?.region) {
-    accountInfo.region = currentServerCloudBaseOptions.region;
-  } else if (process.env.TCB_REGION) {
-    accountInfo.region = process.env.TCB_REGION;
-  }
+  const { region: resolvedRegion, site: resolvedSite } = resolveSiteAndRegion({
+    site: currentServerCloudBaseOptions?.site,
+    region: currentServerCloudBaseOptions?.region,
+  });
+  accountInfo.region = resolvedRegion;
+  accountInfo.site = resolvedSite;
 
   // Report display_env_selection event
   await telemetryReporter.report('toolkit_env_setup', {

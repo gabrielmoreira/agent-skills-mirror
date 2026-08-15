@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 47 file(s) materialized.
+Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 58 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 47 |
+| Files         | 58 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,8 +105,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`skills/novel-script/scripts/novel-script.mjs`](skills/novel-script/scripts/novel-script.mjs) |
 | 44 | ✓ | [`skills/novel-script/scripts/selftest.mjs`](skills/novel-script/scripts/selftest.mjs) |
 | 45 | ✓ | [`skills/novel-script/SKILL.md`](skills/novel-script/SKILL.md) |
-| 46 | → | [`README.en.md`](README.en.md) |
-| 47 | → | [`README.md`](README.md) |
+| 46 | ✓ | [`skills/novel-storyboard/assets/report.webp`](skills/novel-storyboard/assets/report.webp) |
+| 47 | ✓ | [`skills/novel-storyboard/README.en.md`](skills/novel-storyboard/README.en.md) |
+| 48 | ✓ | [`skills/novel-storyboard/README.md`](skills/novel-storyboard/README.md) |
+| 49 | ✓ | [`skills/novel-storyboard/references/frame.md`](skills/novel-storyboard/references/frame.md) |
+| 50 | ✓ | [`skills/novel-storyboard/references/h3-prompt.md`](skills/novel-storyboard/references/h3-prompt.md) |
+| 51 | ✓ | [`skills/novel-storyboard/references/report-style.md`](skills/novel-storyboard/references/report-style.md) |
+| 52 | ✓ | [`skills/novel-storyboard/references/schema.md`](skills/novel-storyboard/references/schema.md) |
+| 53 | ✓ | [`skills/novel-storyboard/references/storyboard-pass.md`](skills/novel-storyboard/references/storyboard-pass.md) |
+| 54 | ✓ | [`skills/novel-storyboard/scripts/novel-storyboard.mjs`](skills/novel-storyboard/scripts/novel-storyboard.mjs) |
+| 55 | ✓ | [`skills/novel-storyboard/scripts/selftest.mjs`](skills/novel-storyboard/scripts/selftest.mjs) |
+| 56 | ✓ | [`skills/novel-storyboard/SKILL.md`](skills/novel-storyboard/SKILL.md) |
+| 57 | → | [`README.en.md`](README.en.md) |
+| 58 | → | [`README.md`](README.md) |
 
 ---
 

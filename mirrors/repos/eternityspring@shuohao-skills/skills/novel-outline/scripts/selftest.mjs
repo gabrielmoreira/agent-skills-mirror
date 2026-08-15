@@ -564,6 +564,51 @@ ok(html.includes('prefers-reduced-motion'), '尊重减少动效');
 ok(html.includes('原文依据'), '改编说明的证据列渲染出来');
 ok(html.includes('雾一厚，连自己的手都看不清。'), '逐字证据进了报告');
 
+/* ---------------- render 英文界面 ---------------- */
+// 只翻译界面：数据（爽点类型、改编幅度、书名）和质量门 label 原样出
+
+ok(html.includes('<html lang="zh">'), '默认中文界面，lang="zh"');
+
+const enHtml = renderHtml(FIXTURE, 'en');
+ok(enHtml.includes('<html lang="en">'), '英文界面 lang="en"');
+ok(enHtml.includes('Export JSON'), 'EN 报告有 Export JSON 按钮');
+ok(enHtml.includes('Key decisions'), 'EN 报告有 Key decisions 区块');
+ok(enHtml.includes('Dispatch matrix'), 'EN 报告有 Dispatch matrix 区块');
+ok(enHtml.includes('Beat rhythm') && enHtml.includes('Scene overview'), 'EN 报告有 Beat rhythm 和 Scene overview');
+ok(enHtml.includes('Asset conversion') && enHtml.includes('Quality gates'), 'EN 报告有 Asset conversion 和 Quality gates');
+ok(!enHtml.includes('导出 JSON'), 'EN 报告不含中文导出按钮');
+ok(!enHtml.includes('关键决策'), 'EN 报告不含中文关键决策标题');
+ok(!enHtml.includes('每集调度矩阵') && !enHtml.includes('资产量折算'), 'EN 报告不含中文区块标题');
+ok(enHtml.includes('悬念钩'), 'EN 报告里爽点类型是数据，保持原样');
+ok(enHtml.includes('Leads 1–5'), 'EN 报告的质量门标签翻译且阈值原样保留');
+ok(!enHtml.includes('主角组 1–5 人'), 'EN 报告不再出现中文门标签');
+ok(enHtml.includes('Episode 1'), 'EN 分集卡标题');
+
+// outline.json 顶层 lang 字段生效，显式 --lang 优先
+{
+  const o = clone();
+  o.lang = 'en';
+  ok(renderHtml(o).includes('<html lang="en">'), 'outline.lang=en 时默认出英文界面');
+  ok(renderHtml(o, 'zh').includes('<html lang="zh">'), '显式 lang 参数优先于 outline.lang');
+}
+
+const enMd = renderMarkdown(FIXTURE, 'en');
+ok(enMd.startsWith('# 渡口 · Short-Drama Adaptation Outline'), 'EN MD 标题');
+ok(enMd.includes('1. Adaptation notes') && enMd.includes('5. Asset list'), 'EN MD 章节标题');
+// 质量门 label（含【钩子】字样）是数据不翻译，只查界面上的栏目标签
+ok(enMd.includes('**[Hook]**') && !enMd.includes('**【钩子】**'), 'EN MD 钩子栏用英文方括号');
+
+// 非法语言直接抛错，不静默回退
+{
+  let threw = '';
+  try {
+    renderHtml(FIXTURE, 'fr');
+  } catch (e) {
+    threw = e.message;
+  }
+  ok(threw.includes('zh / en'), '非法语言抛错——界面只内置 zh / en');
+}
+
 eq(DEFAULT_PER_VOLUME, 15, '默认每卷 15 章');
 
 console.log(`✓ ${passed} 项自测全部通过`);

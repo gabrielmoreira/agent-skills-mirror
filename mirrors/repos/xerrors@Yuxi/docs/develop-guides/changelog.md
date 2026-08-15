@@ -10,8 +10,17 @@
 1. 升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
 :::
 
+- 清理测试套件冗余：删除 5 个自证式/假绿/重复覆盖的测试文件（`test_hash_utils`、`test_skills_backend_error_handling`、`test_graph_router_list`、`test_agent_sync_e2e`、`test_viewer_filesystem_e2e`），合并约 50 个文件的重复场景与参数转发断言，抽取 eval 与 e2e 共享 helper；净减约 2,900 行测试代码，真实回归覆盖不变。
+
+
 - 完善 Agent Token 用量统计：state 同时保留近似上下文与主 Agent 模型返回的 Provider `usage_metadata`，实际用量拆分为最近调用、当前 Run 和线程累计；前端只读取 state，终态 chunk 不传递用量，worker 在 Run 终态时将父线程中 Run ID 匹配的 state 快照写入 AgentRun。支持 OpenAI priority/flex 缓存明细；L2 摘要内部调用暂未计入完整账单口径。
+- 对话输入草稿按线程保存：输入内容实时写入 localStorage（按线程 ID 区分），切换对话时保存旧线程草稿并还原新线程草稿，新建对话使用独立草稿、发送创建线程后自动清理，刷新页面后草稿仍可还原，删除对话时同步清理对应草稿。
+- 对话消息补充时间信息：历史接口为 assistant 消息附上关联 run 的 started_at/finished_at；复制按钮右侧以纯文本显示消息完成时间，点击切换为执行耗时（如"耗时 5s"）再点切回，无背景色块与时钟图标；时间按相对规则展示（今天 HH:mm、昨天、一周内周几、更早显示日期、跨年补全年份）。流式生成时 loading 旁实时显示已执行时长，loading 指示器去除背景色块并改为轻微呼吸的文字样式。
+- 修复 Agent 产物 Word 文件无法预览：查看器文件预览路径（outputs、uploads、沙盒文件）与工作区一致，docx/pptx 先经 LibreOffice 转换为 PDF 再预览，转换失败返回明确错误，不再判定为二进制文件拒绝预览。
+- Agent 文件预览的 HTML 预览新增缩放比例调节（默认 90%，范围 60%–150%，步进 10%）：内联、顶部工具栏与全屏预览均提供缩小/放大按钮并实时显示百分比，切换文件时重置为默认比例，预览/源码模式切换仅在预览态显示缩放控件。
 - 修复公开图片上传的存储型 XSS 风险：头像与用户图片不再信任客户端 MIME 或文件名后缀，服务端校验真实图片内容且仅接受 PNG、JPEG、WebP、GIF，对象名使用识别出的固定安全后缀，拒绝伪装成图片的 SVG。
+- 修复知识库图片公开访问风险：解析产生的知识库图片从 `public` bucket 迁移到私有 `kb-images` bucket，新增带知识库读权限校验的后端代理接口按需读取；Markdown 预览对代理图片携带鉴权头加载为 blob URL，未登录或无权限用户无法匿名访问图片，头像/Agent 图标等公开资源不受影响。
+- 修复个人 Skill 列表权限解析错误：个人工作区 Skill 不再进入共享配置解析，所有者获得管理权限，其他用户不可访问；同时修正数据库 UTC-naive 时间的序列化，子智能体运行时间不再错误偏移 8 小时。
 
 - 优化知识库文档列表性能：根目录虚拟目录分组改用部分索引（`idx_kf_kb_parent_segment` 按路径首段聚合），平铺文件筛选与排序用 `idx_kf_kb_parent_flat` 支撑，避免大知识库全表扫描与 46MB 磁盘排序溢出；文件统计聚合结果增加 10 秒 Redis 短缓存，列表、统计、子目录计数与创建人查询并行执行，前端自动刷新轮询间隔同步调整为 10 秒。36 万文件知识库列表接口耗时由约 1.3s 降至约 300ms。
 - 修复 MCP 管理接口可通过 stdio 启动任意本地进程的问题：用户配置仅允许 SSE/Streamable HTTP，运行时拒绝加载历史用户 stdio 记录，系统内置 stdio 的连接参数改为仅由代码维护；前端移除用户 stdio 配置入口，文档补充内置 stdio 的代码添加与验证方式。
@@ -34,7 +43,7 @@
 - 优化知识图谱构建：以持续队列并发执行 LLM 抽取、结构写入和向量索引，失败自动重试并持久化进度；已有结果支持断点恢复，新增按最近 Chunk 查询失败样例和向量 reconcile 接口，任务与前端分别展示抽取、结构、向量进度，索引面板支持键盘操作。
 - HTML 辅助可视化迁移为内置 `html-preview` Skill：默认 Chatbot Prompt 不再常驻注入 `html:preview` 专属说明，Agent 改为通过统一的 Skill 描述发现并按需读取静态 HTML/CSS 的适用场景、布局和安全边界；未显式配置 Skills 的 Agent 按现有默认规则自动获得该能力，使用显式 Skills 允许列表的 Agent 需选择 `html-preview`，内置 `deep-research` 已声明依赖；保留前端既有围栏清洗、sandboxed iframe、自适应高度和流式占位行为，普通 HTML 源码继续使用 `html` 代码块。
 - 模型供应商的单个 chat 模型配置新增“模型请求参数 JSON”：管理员可为每个模型独立保存、回显、修改和清空思考参数，未配置或空对象保持原行为；运行时模型缓存会携带该配置，测试模型连接与正式聊天/Agent 调用统一在模型加载入口合并。该字段仅面向 OpenAI/OpenRouter 等 OpenAI 兼容供应商，并通过 `extra_body` 透传；出于安全考虑，顶层字段采用白名单机制，当前支持 `enable_thinking`、`thinking_budget`、`thinking`、`reasoning` 和 `reasoning_effort`，对象内部结构交由供应商校验。
-- 新增通用管理员配置 Options 模块：使用 PostgreSQL `config_options` 保存系统维护的名称、说明、受控表单参数和管理员 JSON 值，核心定义、校验、显式 `sensitive` 字段脱敏及“数据库非空值 → 环境变量”解析集中在 `config/options.py`；每个 `Option.get()` 均直接查询数据库，不建立进程内缓存，接口仅管理员可用。OCR 作为首批消费者，不再建立专用配置表或维护逐引擎启停状态；数据库密钥只显示真实首尾字符的脱敏预览，环境变量只显示配置来源。设置页不集中陈列健康状态。
+- 新增通用管理员配置 Options 模块：系统运行时配置迁移到 PostgreSQL，API 与 worker 通过带版本失效的 Redis 短缓存共享最新值，Redis 故障时回源数据库；旧 `base.toml` 只补充缺失字段且读取失败后可重试。LangGraph checkpoint 默认使用 PostgreSQL，跨进程串行初始化且异常解锁时销毁持锁连接；附件正式文件迁移到 MinIO，本地按需缓存，Run 在提交数据库快照后恢复附件，避免重复查询和长事务。
 - 修复部署配置：开发与生产 Compose 中的 Milvus 现在复用对应环境文件里的自定义 MinIO 凭据，避免对象存储认证失败导致服务无法健康启动；Web 生产镜像会统一将静态资源目录设为 `755`、文件设为 `644`，避免 Nginx 因构建产物权限过严返回 403。
 - 丰富模型选型参考信息：接入 `@opencode-ai/models` 内置 snapshot，补充模型上下文、能力和价格等信息；模型选择器移除价格悬浮提示并关闭搜索自动完成，底部增加“配置模型”入口；模型供应商候选列表支持美元与人民币价格切换，默认美元，人民币按固定汇率 `1 USD = ¥7` 换算，并明确 models.dev 数据与固定汇率仅供参考；候选模型工具栏统一靠右排列搜索、币种和类型筛选控件，类型文案改为“对话 / 向量 / 重排”。DashScope 中国站内置标识修正为 `alibaba-cn`，`alibaba` 改为使用 `dashscope-intl.aliyuncs.com` 的国际站定义。
 - 优化 Agent 会话与设置页多项交互细节：修复文件侧栏重新展开丢失预览、审批模式改为本地记忆最近选择、下拉面板点击外部区域自动收起、输入框添加内容入口改为 `+` 并可直接引用知识库与 Skill、Skill 图标统一为 Lucide `WandSparkles`、账户设置合并 Memory 开关等；侧栏导航“智能体管理”简化为“智能体”，路由由 `/model-manage` 重命名为 `/agent-manage`；智能体卡片增加共享范围标签，并将“去对话”调整为紧凑文字入口；文件预览标签的关闭按钮补充紧凑圆角悬浮、按下和键盘聚焦状态；同步优化首页首屏视觉细节。

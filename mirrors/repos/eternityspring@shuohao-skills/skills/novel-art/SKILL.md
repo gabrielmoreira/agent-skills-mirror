@@ -1,6 +1,6 @@
 ---
 name: novel-art
-version: 1.0.0
+version: 1.1.0
 description: |
   给 AI 短剧出美术设定集（场景 + 叙事道具）：场景的设计意图、一致性锚点、光照时段变体、
   空景提示词；道具的戏剧功能、状态变体、尺度参照、白底无手提示词。
@@ -120,7 +120,7 @@ node {baseDir}/scripts/novel-art.mjs render <剧名>-art.json --md   > <剧名>-
 node {baseDir}/scripts/novel-art.mjs render <剧名>-art.json --html > art-report.html
 ```
 
-`render` 自动去 `images/<slug>-sheet.png` 找图（场景和道具都找），**先出图再 render**。报告含：KPI 带、场景清单、场景设定卡、道具清单、道具设定卡（锚点核对表 / 状态变体 / 提示词包全带复制按钮）、质量门面板、导出 JSON（下载的就是 art.json 原样）。
+报告界面默认中文；用户要英文界面就加 `--lang en`（或在 art.json 顶层写 `"lang": "en"`，`--lang` 优先）。`render` 自动去 `images/<slug>-sheet.png` 找图（场景和道具都找），**先出图再 render**。报告含：KPI 带、场景清单、场景设定卡、道具清单、道具设定卡（锚点核对表 / 状态变体 / 提示词包全带复制按钮）、质量门面板、导出 JSON（下载的就是 art.json 原样）。
 
 汇报一句话说清：几个场景（主场景/变体各几）、几件道具、锚点总数、出图数、报告路径；没过的门和没出的图明说。
 
@@ -149,7 +149,7 @@ seed 吃 outline.json（场景部分；道具表大纲里没有，模型从原�
 
 ## 边界
 
-- 报告界面 v1 只有中文；出图提示词永远英文
+- 报告界面内置中英（`--lang`，默认中文、或跟 art.json 的 `lang` 字段）；出图提示词永远英文
 - 画风要跟角色 skill 同档，别一半写实一半动画
 - 出图只走 codex built-in `$imagegen`，不碰要 API key 的 CLI fallback
 - 场景数量不设硬上限——上限在 novel-outline 的主场景门那里管；这里管的是每个资产的质量
@@ -161,7 +161,7 @@ seed 吃 outline.json（场景部分；道具表大纲里没有，模型从原�
 node {baseDir}/scripts/selftest.mjs
 ```
 
-131 项断言，不调模型、不花额度。11 道质量门每一道都有击穿用例。改完脚本先跑这个。
+144 项断言，不调模型、不花额度。11 道质量门每一道都有击穿用例。改完脚本先跑这个。
 
 ## 自带样例
 

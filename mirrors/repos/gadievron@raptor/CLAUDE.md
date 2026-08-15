@@ -45,7 +45,7 @@ When a `/command` fires:
 /agentic - Scan → dedup → analysis pipeline — `libexec/raptor-agentic --repo <path>`
 /exploit /patch - Generate PoCs and fixes (beta) — `python3 raptor.py agentic`
 /validate - Exploitability validation pipeline — `dispatch: skill`, see below
-/understand - Code understanding — `libexec/raptor-understand [args]`
+/understand - Code understanding — `dispatch: skill` (mode-routed: binary --map and multi-model --hunt/--trace go to `libexec/raptor-understand`; source-tree modes run in-session)
 /diagram - Mermaid visual maps — `libexec/raptor-render-diagrams <out-dir> [args]`
 /audit - Hypothesis-driven code audit — `dispatch: skill`, see below
 /review - Navigate audit results — `libexec/raptor-review $ARGUMENTS`

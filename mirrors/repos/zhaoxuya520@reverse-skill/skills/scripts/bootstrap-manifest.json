@@ -1,4 +1,14 @@
 {
+  "bootstrapDependencies": {
+    "pipx": {
+      "package": "pipx==1.16.5",
+      "version": "1.16.5"
+    },
+    "pnpm": {
+      "package": "pnpm@10.24.0",
+      "version": "10.24.0"
+    }
+  },
   "capabilities": [
     {
       "name": "jadx",
@@ -127,6 +137,7 @@
       "servicePort": 23816,
       "docsUrl": "https://github.com/Mouseww/anything-analyzer",
       "canAutoInstall": true,
+      "pinnedCommit": "0ed4791688e5186da051c85eb7ddfe4639e14fd2",
       "verificationMode": "service-or-registration"
     },
     {

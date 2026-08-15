@@ -414,4 +414,37 @@ eq(FIXTURE.props.length, 2, '样例带两件叙事道具');
   ok(html.includes('关联场景：<b>S01</b>'), 'HTML 道具卡带关联场景');
 }
 
+/* ---------------- render 英文界面（--lang en）---------------- */
+
+{
+  const en = renderHtml(FIXTURE, 'en');
+  ok(en.includes('lang="en"'), '英文报告 <html lang="en">');
+  ok(en.includes('Export JSON'), '英文报告有 Export JSON');
+  ok(en.includes('>Scene list<'), '英文报告有 Scene list');
+  ok(en.includes('>Quality gates<'), '英文报告有 Quality gates 区块');
+  ok(en.includes('Consistency anchors'), '英文报告有 Consistency anchors');
+  ok(!en.includes('导出 JSON'), '英文报告不含「导出 JSON」');
+  ok(!en.includes('场景清单'), '英文报告不含「场景清单」');
+  ok(!en.includes('质量门'), '英文报告不含「质量门」（门的中文 label 属于质量门层，不在界面表里）');
+  ok(html.includes('lang="zh"'), '默认报告仍是 <html lang="zh">');
+  ok(renderMarkdown(FIXTURE, 'en').includes('## Scene list'), 'MD 英文界面有 Scene list');
+}
+{
+  const d = clone();
+  d.lang = 'en';
+  ok(renderHtml(d).includes('lang="en"'), 'art.json 顶层 lang 字段生效');
+  ok(renderHtml(d, 'zh').includes('lang="zh"'), '--lang 优先于 lang 字段');
+}
+{
+  let threw = false;
+  try { renderHtml(FIXTURE, 'jp'); } catch { threw = true; }
+  ok(threw, '非内置语言直接抛错（目前内置 zh / en）');
+}
+
+// 质量门面板是报告的一部分：英文界面下门标签也要翻译（阈值由门自己算，原样保留）
+{
+  const gateEn = renderHtml(FIXTURE, 'en');
+  ok(gateEn.includes('Consistency anchors, 3–5'), 'EN 报告的质量门标签翻译且阈值原样保留');
+  ok(!gateEn.includes('一致性锚点 3–5 个'), 'EN 报告不再出现中文门标签');
+}
 console.log(`✓ ${passed} 项自测全部通过`);

@@ -13,19 +13,21 @@ declare const __MCP_VERSION__: string;
 
 /**
  * Parse command line arguments
- * Supports --cloud-mode, --integration-ide, --api-key, and --env-id flags
+ * Supports --cloud-mode, --integration-ide, --api-key, --env-id, and --site flags
  */
 function parseCommandLineArgs(): {
   cloudMode: boolean;
   ide?: string;
   apiKey?: string;
   envId?: string;
+  site?: string;
 } {
   const args = process.argv.slice(2);
   let cloudMode = false;
   let ide: string | undefined;
   let apiKey: string | undefined;
   let envId: string | undefined;
+  let site: string | undefined;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -47,10 +49,15 @@ function parseCommandLineArgs(): {
       i++;
     } else if (arg.startsWith("--env-id=")) {
       envId = arg.split("=")[1];
+    } else if (arg === "--site" && i + 1 < args.length) {
+      site = args[i + 1];
+      i++;
+    } else if (arg.startsWith("--site=")) {
+      site = arg.split("=")[1];
     }
   }
 
-  return { cloudMode, ide, apiKey, envId };
+  return { cloudMode, ide, apiKey, envId, site };
 }
 
 // 劫持 console.log/info/warn，防止污染 stdout 协议流
@@ -85,7 +92,7 @@ const isTestEnvironment =
 const enableTelemetry = !isTestEnvironment;
 
 // Parse command line arguments
-let { cloudMode, ide, apiKey, envId } = parseCommandLineArgs();
+let { cloudMode, ide, apiKey, envId, site } = parseCommandLineArgs();
 
 // Set API Key env vars from CLI flags (if provided)
 if (apiKey) {
@@ -93,6 +100,9 @@ if (apiKey) {
 }
 if (envId) {
   process.env.CLOUDBASE_ENV_ID = envId;
+}
+if (site) {
+  process.env.TCB_SITE = site;
 }
 
 // Log startup information

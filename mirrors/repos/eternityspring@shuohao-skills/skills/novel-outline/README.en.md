@@ -28,6 +28,12 @@ The skeleton (cut lines / merge characters / place beats) ships as a **quick dra
 
 ## The report
 
+Reports render with a Chinese UI by default; pass `--lang en` for a fully English report (or set a top-level `lang` field in `outline.json` — the flag wins). The UI and the quality-gate labels are translated; data content — beat types, synopses, names — stays exactly as authored, and so do the detail strings of a failing gate. In English mode the quality-gate labels are translated too (thresholds kept as computed); failing-gate details and all data stay as authored.
+
+```bash
+node scripts/novel-outline.mjs render outline.json --html --lang en > outline-report.html
+```
+
 A single-page, 1600px-wide review document — everything laid flat and Cmd+F-able:
 
 - **KPI band**: episodes, beats, tiered cast, primary scenes, production risks, adaptation mode — six stat tiles up front
@@ -39,6 +45,7 @@ A single-page, 1600px-wide review document — everything laid flat and Cmd+F-ab
 - **Asset conversion**: cast tiers, scene environments, and production risks converted into prep workload — all computed
 - **Quality gates**: header badge, a failure banner when anything fails, and the full ✓/✗ list at the end — baked in by the script
 - **Export JSON** downloads `outline.json` verbatim — edit and feed it straight back into `render` / `validate`
+- **Built-in Chinese and English UI** — Chinese by default, `--lang en` for English
 - All graphics are inline SVG/CSS with a validator-checked palette; zero external resources, opens offline
 
 ## Checkup mode
@@ -66,6 +73,6 @@ novel-characters owns character design (profiles, image/voice prompts, model she
 node scripts/selftest.mjs
 ```
 
-200 assertions — chunking, validation, gate-defeating cases, asset aggregation, rendering, export. No model calls, runs in about a second.
+219 assertions — chunking, validation, gate-defeating cases, asset aggregation, rendering (both UI languages), export. No model calls, runs in about a second.
 
 **Only tested on macOS + Node 24.**

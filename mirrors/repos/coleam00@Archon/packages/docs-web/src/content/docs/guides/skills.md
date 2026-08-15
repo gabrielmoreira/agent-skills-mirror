@@ -1,6 +1,6 @@
 ---
 title: Per-Node Skills
-description: Preload specialized knowledge into individual workflow nodes using the Claude Agent SDK skills system.
+description: Select specialized knowledge for individual workflow nodes using provider-native skill systems.
 category: guides
 area: workflows
 audience: [user]
@@ -61,34 +61,31 @@ scripts, and assets from the installed directory.
 
 ## How It Works
 
-When a node has `skills: [name, ...]`, the executor wraps it in an
-[AgentDefinition](https://platform.claude.com/docs/en/agent-sdk/subagents) — the
-Claude Agent SDK mechanism for scoping skills to subagents.
+Claude workflow nodes use the Agent SDK's native skill selector. Archon keeps
+Claude's normal project/user setting sources so `CLAUDE.md` and agents still
+load, while selecting only the skills named by the node.
 
 ```
 YAML: skills: [remotion-best-practices]
   ↓
-Executor builds AgentDefinition:
-  {
-    description: "DAG node 'generate'",
-    prompt: "You have preloaded skills: remotion-best-practices...",
-    skills: ["remotion-best-practices"],
-    tools: [...nodeTools, "Skill"]
-  }
+Claude SDK options:
+  skills: ["remotion-best-practices"]
+  strictMcpConfig: true
   ↓
-SDK loads skill content into agent context at startup
-  ↓
-Agent executes with full skill knowledge available
+SDK loads only the declared skill into the main-session system prompt
 ```
 
-The `Skill` tool is automatically added to `allowedTools` so the agent can invoke
-skills. You don't need to add it manually.
+The SDK's native selection also uses `Skill(name)` permission rules. When a node
+sets `allowed_tools`, Archon keeps the `Skill` tool enabled automatically so the
+declared selection remains usable. You don't need to add it manually.
 
-On Claude, `skills: []` is equivalent to omission and creates no wrapper agent.
-A non-empty list keeps the existing `AgentDefinition.skills` behavior. This does
-not change Claude's separate `settingSources` option: its default remains
-`['project', 'user']`, which can load project/user instructions and other SDK
-settings. This PR does not claim filesystem isolation for ambient Claude skills.
+On Claude, omission and `skills: []` both select no skills. A non-empty list is
+an exact allowlist of installed Claude-native skills for that node. The separate
+`settingSources` default remains `['project', 'user']`, preserving project/user
+instructions and agents without making their ambient skills available. A declared
+skill installed on disk must live under an enabled source: project skills require
+`project`, and user-global skills require `user`. Archon checks that before starting
+the provider — see [How Claude handles an unresolved name](#how-claude-handles-an-unresolved-name).
 
 ## Installing Skills
 
@@ -156,14 +153,16 @@ Skills are discovered from these locations (via the default
 | `~/.claude/skills/` | User-level (all projects) |
 
 Set `assistants.claude.settingSources: ['project']` in `.archon/config.yaml`
-to scope a workflow to project-level skills only.
+when you also want to exclude user-level instructions and agents. Skill selection
+itself remains exact per node, but a user-global declared skill is unavailable when
+the `user` source is disabled.
 
 Skills installed via `npx skills add` land in `.claude/skills/` by default.
 Use `-g` for global installation to `~/.claude/skills/`.
 
 ## Scoping: Installed vs Active
 
-**Installed** = the skill exists on disk. It's discoverable by the Claude subprocess.
+**Installed** = the skill exists under a provider-native directory on disk.
 
 **Active** = listed in `skills:` on a specific DAG node. Only THAT node gets the
 skill content injected into its context.
@@ -185,7 +184,8 @@ nodes:
     # Gets a different skill — review-focused expertise
 ```
 
-All three skills are installed on disk. But each node only loads what it needs.
+All three skills are installed on disk. But each node only advertises and loads
+what it declares.
 This follows the Stripe Minions principle: "agents perform best when given a
 smaller box with a tastefully curated set of tools."
 
@@ -212,9 +212,8 @@ A node can have multiple skills. All are injected:
       - api-design
 ```
 
-Keep it concise — each skill's full content is injected into context at startup
-(not progressive disclosure). The agentskills.io spec recommends keeping SKILL.md
-under 500 lines / 5000 tokens.
+Keep the list concise. Claude loads each selected skill into the main-session
+system prompt; unlisted installed skills are not exposed to that workflow node.
 
 ## Combining Skills with MCP
 
@@ -263,20 +262,35 @@ Normal repository instructions such as `AGENTS.md` remain active with the catalo
 
 ## Limitations
 
-- **Pre-installation required** — skills must exist on disk before the workflow runs.
-  There is no on-demand fetching (yet).
+- **Pre-installation required** — a skill installed on disk must exist before the
+  workflow runs. There is no on-demand fetching (yet).
+- **Provider-native paths** — Claude declarations resolve only from project/user
+  `.claude/skills/`; Archon does not copy `.agents/skills/` into Claude's roots.
+- **Container workflows** — only project-local `.claude/skills/` is visible in the
+  isolated runner. A host user-global skill must also be installed in the project
+  before a container node can declare it; Archon fails before provider spend otherwise.
 - **Provider semantics differ** — consult the capability matrix. Codex uses explicit
   `$skill-name` invocation rather than YAML list injection.
-- **Full injection** — skill content is fully injected at startup, not progressively
-  disclosed. Keep skills concise.
-- **No validation** — if a named skill doesn't exist, the SDK may fail silently.
-  Verify skills are installed with `npx skills list`.
+
+### How Claude handles an unresolved name
+
+Archon distinguishes two cases, because Claude's skill namespace is larger than the
+filesystem:
+
+| The declared name | Archon's response |
+|---|---|
+| Installed, but not in a `.claude/skills/` directory an enabled setting source covers — for example it only exists under `.agents/skills/`, or under `user` scope while `settingSources: ['project']` | **Error before spend.** Claude provably cannot load it, and the fix is a path change. |
+| Absent from every skills directory | **Warning, and the run continues.** Claude's own **built-in** skills and **plugin-qualified** names (`plugin:skill`) live outside any skills directory, so Archon lets the SDK resolve them. A misspelled name lands here too — it is reported, and Claude ignores an unknown name rather than loading it. |
+
+Built-in and plugin skills are therefore declarable on a Claude node, exactly like an
+installed one.
 
 ## Troubleshooting
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| Skill not found | Not installed | Run `npx skills add <source>` (or `archon skill install` for the bundled Archon skills) |
+| Claude skill not found (error) | Installed, but outside an enabled `.claude/skills/` root | Move it to `.claude/skills/<name>/SKILL.md`, or enable the setting source that holds it |
+| Claude skill not found (warning) | Absent from disk — normal for built-in and `plugin:skill` names | Ignore it for those; otherwise check the spelling or run `npx skills add <source>` |
 | Codex does not use a skill | Automatic catalogs are off in workflow nodes | Invoke it explicitly in the command/prompt with `$skill-name` and install it under a Codex-native root such as `.agents/skills/` |
 | Codex warns about `skills:` | Codex does not implement the YAML list | Keep the list only for other providers; use `$skill-name` for Codex |
 | Too many skills | Context budget exceeded | Reduce to 2-3 most relevant skills per node |
@@ -284,7 +298,7 @@ Normal repository instructions such as `AGENTS.md` remain active with the catalo
 
 ## Related
 
-- [Inline sub-agents](/guides/authoring-workflows/#inline-sub-agents) — `agents:` field for workflow-scoped sub-agents (composes with `skills:` on the same node; user-defined agents win on ID collision with the internal `dag-node-skills` wrapper)
+- [Inline sub-agents](/guides/authoring-workflows/#inline-sub-agents) — `agents:` field for workflow-scoped sub-agents (composes independently with native per-node skill selection)
 - [Per-Node MCP Servers](/guides/mcp-servers/) — `mcp:` field for external tool access
 - [Hooks](/guides/hooks/) — `hooks:` field for tool permission control
 - [skills.sh](https://skills.sh) — marketplace for discovering skills

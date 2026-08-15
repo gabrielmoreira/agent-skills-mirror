@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildCapiErrorMessage, removeEmptyStringParams } from "./capi.js";
+import {
+  assertTcbCloudRunActionAllowed,
+  buildCapiErrorMessage,
+  removeEmptyStringParams,
+} from "./capi.js";
 
 describe("buildCapiErrorMessage", () => {
   it("suggests likely tcb actions for invalid action names", () => {
@@ -35,6 +39,45 @@ describe("buildCapiErrorMessage", () => {
     );
 
     expect(message).not.toContain("可能的 tcb Action");
+  });
+});
+
+describe("assertTcbCloudRunActionAllowed", () => {
+  it("blocks tcb CreateCloudBaseRunResource with tcbr guidance", () => {
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "CreateCloudBaseRunResource")).toThrow(
+      /已禁用/,
+    );
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "CreateCloudBaseRunResource")).toThrow(
+      /CreateCloudRunEnv/,
+    );
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "CreateCloudBaseRunResource")).toThrow(
+      /tcbr/,
+    );
+  });
+
+  it("blocks the legacy tcb CloudRun resource family", () => {
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "DescribeCloudBaseRunResource")).toThrow(
+      /已禁用/,
+    );
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "DeleteCloudBaseRunResource")).toThrow(
+      /已禁用/,
+    );
+  });
+
+  it("does not block non-cloudrun tcb actions such as DescribeCloudBaseBuildService", () => {
+    expect(() =>
+      assertTcbCloudRunActionAllowed("tcb", "DescribeCloudBaseBuildService"),
+    ).not.toThrow();
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "CreateEnv")).not.toThrow();
+  });
+
+  it("does not block tcbr actions or non-tcb services", () => {
+    expect(() =>
+      assertTcbCloudRunActionAllowed("tcbr", "CreateCloudRunServer"),
+    ).not.toThrow();
+    expect(() =>
+      assertTcbCloudRunActionAllowed("scf", "CreateCloudBaseRunResource"),
+    ).not.toThrow();
   });
 });
 

@@ -92,6 +92,26 @@ describe prompt, steering the description toward what the user actually asked
 (codex-vision-proxy pattern) and asking the vision model to transcribe visible
 text. With the flag off — or no user text — the base prompt is used unchanged.
 
+#### Describe output cap (`modalityBridgeVisionMaxChars`)
+
+| Key                            | Default | Range            |
+| ------------------------------ | ------- | ---------------- |
+| `modalityBridgeVisionMaxChars` | `0`     | `0` or 100–50000 |
+
+`0` (default) means **no cap** — the description returned by
+`callVisionModel()` is passed through unmodified, preserving the existing
+behavior. Any value in the 100–50000 range truncates the description with a
+`…` suffix before it is spliced back as `[Image N]: <description>`
+(`VisionBridgeGuardrail.preCall()` in `src/lib/guardrails/visionBridge.ts`).
+Raise this for detail-heavy OCR tasks where the downstream model needs the
+full transcription; lower it to bound token usage on chatty vision models.
+The dashboard field lives on the Vision tab's Advanced panel
+(`modality-bridge-max-chars` in `ModalityBridgeVisionTab.tsx`) and clamps any
+value between 1 and 99 up to the 100 floor while leaving an explicit `0`
+untouched — `0` is a valid Zod value in its own right
+(`z.union([z.literal(0), z.number().int().min(100).max(50000)])`), not merely
+the "unset" default.
+
 #### Describe cache (`modalityBridge/bridgeCache.ts`)
 
 In-memory LRU + TTL cache for describe outputs, shared process-wide.
@@ -107,15 +127,36 @@ fragment the cache. Failed describes are never cached. Settings:
 | `modalityBridgeCacheTtlMinutes` | `60`    | 1–1440  |
 | `modalityBridgeCacheMaxEntries` | `200`   | 10–5000 |
 
+#### Remote image normalization (self-loop describe/base64 fetch)
+
+When the bridge fetches a **remote** image itself — the Anthropic describe
+self-call and the claude-wire-format base64 conversion
+(`ensureBase64ImagesForClaudeWire`), both via
+`fetchRemoteImageAsDataUri()` in `visionBridgeHelpers.ts` — the resulting data
+URI is passed through `normalizeDataUri()`
+(`open-sse/utils/imageNormalize.ts`) before being embedded in the vision-model
+request. Oversized images are downscaled to a **2048px long edge** (matching
+the resize cap OpenAI/Anthropic already apply server-side), which cuts
+upload bytes/latency without changing what the vision model sees. Resizing
+uses `sharp`, loaded via dynamic import: on a platform where its native
+binary fails to load, `normalizeDataUri()` **never throws** — it falls back
+to a passthrough of the original bytes, so the describe/base64-conversion
+path always keeps working. Non-image bytes (a fetch that did not return a
+decodable image) are also passed through untouched. This normalization is
+scoped to images the bridge fetches for its own self-call — it is never
+applied to the caller's raw passthrough payload, consistent with the
+opt-in-only mutation principle (Hard Rule #20).
+
 #### Settings schema + migration
 
 The new `modalityBridge*` keys are Zod-validated in `updateSettingsSchema`
 (`src/shared/validation/settingsSchemas.ts`): `modalityBridgeVisionEnabled`,
 `modalityBridgeVisionMode`, `modalityBridgeVisionModel`,
 `modalityBridgeVisionTaskAware`, `modalityBridgeVisionPrompt`,
-`modalityBridgeVisionTimeout`, `modalityBridgeVisionMaxImages`, the
-`modalityBridgeCache*` trio, and the `modalityBridgeAudio*` group used by the
-Audio Bridge. Migration `141_modality_bridge_settings.sql` copies existing legacy
+`modalityBridgeVisionTimeout`, `modalityBridgeVisionMaxImages`,
+`modalityBridgeVisionMaxChars`, the `modalityBridgeCache*` trio, and the
+`modalityBridgeAudio*` group used by the Audio Bridge. Migration
+`141_modality_bridge_settings.sql` copies existing legacy
 `visionBridge*` values to the matching new keys (idempotent, never overwrites
 an operator-set `modalityBridge*` value); the legacy keys stay accepted as a
 read fallback for one release cycle.
@@ -141,7 +182,8 @@ The dedicated dashboard page is
 `/dashboard/settings/modality-bridge`. Its URL-addressable `Vision`, `Audio`,
 and `Video` tabs preserve query parameters while switching the `tab` value.
 The Vision tab exposes enablement, mode, model selection (including the automatic
-default), task-aware prompting, advanced timeout/image/cache limits, runtime
+default), task-aware prompting, advanced timeout/image/description-length/cache
+limits, runtime
 counters, and a guarded sample request. The Audio tab is also live: it exposes
 enablement, an STT-only model picker with Auto, timeout/max-clip limits, audio
 counters, and an `input_audio` sample test. Video remains the explicit placeholder
@@ -435,8 +477,9 @@ store (`getSettings()`), not env vars. Vision's primary keys are
 `modalityBridgeVisionEnabled`, `modalityBridgeVisionMode`,
 `modalityBridgeVisionModel`, `modalityBridgeVisionTaskAware`,
 `modalityBridgeVisionPrompt`, `modalityBridgeVisionTimeout`,
-`modalityBridgeVisionMaxImages`, `modalityBridgeCacheEnabled`,
-`modalityBridgeCacheTtlMinutes`, and `modalityBridgeCacheMaxEntries`. The legacy
+`modalityBridgeVisionMaxImages`, `modalityBridgeVisionMaxChars`,
+`modalityBridgeCacheEnabled`, `modalityBridgeCacheTtlMinutes`, and
+`modalityBridgeCacheMaxEntries`. The legacy
 `visionBridge*` keys are accepted only as the documented one-cycle read
 fallback; dashboard writes use the primary keys. Defaults and the fallback
 resolver live in `src/shared/constants/modalityBridgeDefaults.ts`, with legacy

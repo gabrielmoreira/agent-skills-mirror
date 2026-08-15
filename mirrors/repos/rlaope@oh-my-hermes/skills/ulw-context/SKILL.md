@@ -53,6 +53,7 @@ Bad example:
 - If the optional source is absent, continue from repository evidence or reviewed profiles without warning, creating, or importing a file.
 - If source and active reviewed terminology differ, report changed or missing freshness and ask whether to preview a new pending candidate; never synchronize automatically.
 - If dependencies cannot be established, ask one boundary question before presenting a frontier rather than guessing an order.
+- If frontier round or decision identity cannot be recovered, close with a named recovery blocker instead of restarting or emitting another round.
 - If the user moves from terminology to implementation, summarize confirmed understanding and hand off to `ralplan`, `ulw-plan`, or the selected coding owner only after a separate go-ahead.
 
 ## Workflow Lane
@@ -80,8 +81,9 @@ Quality bar:
 - Read repository facts and reviewed terminology before asking the user for discoverable information.
 - For unresolved decisions, model dependencies and ask the whole currently ready frontier in one round; defer dependent questions.
 - Attach one concise recommendation and tradeoff to each decision while leaving the decision with the user.
+- Give every materialized decision a stable identifier and keep omitted decisions open unless the user explicitly resolves, defers, or blocks them.
 - Keep terminology sparse: canonical identity, short definition, expression guidance, distinct-from boundary, and optional localized display label.
-- Stop when every reachable branch is resolved and the user confirms shared understanding; planning and coding remain separate confirmed steps.
+- Stop on a terminal frontier, explicit user request, or the shared round ceiling; then confirm the summary separately from planning or coding.
 
 Handoff policy:
 
@@ -121,17 +123,20 @@ Safety rules:
 1. Classify the turn as a safe lookup, reviewed capture, terminology correction, unresolved decision frontier, or confirmed planning/handoff transition.
 2. For lookup, inspect the optional source and active reviewed profile on demand, answer directly, and name source/freshness status. File presence, profile match, or nomination is not proof that a model used the content.
 3. Before capture, show the exact machine-only projection and ask for confirmation. Staging creates pending candidates only; review and approval remain separate.
-4. Before interviewing, ask whether the user wants to enter the decision frontier. Research repository facts first, model dependencies, then ask every currently dependency-ready question in one round with a concise recommendation for each.
-5. Stop when every reachable branch is resolved and the user confirms shared understanding. Only then offer a separately confirmed `ulw-plan` or selected coding-owner handoff; never auto-execute it.
+4. Before interviewing, confirm frontier entry. Then present every currently dependency-ready decision in one numbered batch per round, using stable `D1`, `D2`, ... identifiers.
+5. The frontier is bounded at 6 rounds. Run a non-round consent check before Round 4. Lookup, research, entry consent, summary confirmation, and next-path consent do not consume rounds.
+6. Stop on the first matching condition: every reachable decision is resolved, deferred, or blocked; the user asks to stop or proceed; or the answer to Round 6 is recorded. Never emit Round 7.
+7. Omitted decisions stay open and recommendations require explicit acceptance. If round or decision identity cannot be recovered, close with a named recovery blocker instead of restarting.
+8. Read back the shared understanding for confirmation. Only after confirmation offer a separately confirmed `ulw-plan` or coding-owner handoff; never auto-execute it.
 
 Load `references/project-terms.md` for source grammar, authority, freshness, and capture boundaries. Load `references/decision-frontier.md` for dependency modeling, question rounds, stop conditions, and planning/handoff separation.
 
 ## Runtime Evidence
 
-Preferred harness for this skill: `deep-interview`.
+Preferred harness for this skill: `decision-frontier`.
 
 ```sh
-omh runtime record --skill context --harness deep-interview --status started
+omh runtime record --skill context --harness decision-frontier --status started
 ```
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.

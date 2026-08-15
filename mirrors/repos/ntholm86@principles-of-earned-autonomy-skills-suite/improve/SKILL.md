@@ -1,6 +1,6 @@
 ---
 name: improve
-version: 3.17.1
+version: 3.17.2
 description: 'The improvement skill. Understand the ask, examine the target, challenge the first read, decide on one change (or argue for redesign, or declare silence), act, reflect on the target, and record. Combines incremental refinement, structural rethinking, and reflection on the target itself. USE WHEN: improve, audit, review, fix, refactor, redesign, evaluate, what would make this better, am I missing something.'
 argument-hint: 'The target to improve, and optionally the concern (correctness, simplicity, performance, etc.)'
 ---
@@ -175,7 +175,9 @@ Include one line beside it: `Destination need: not triggered` or `Destination ne
 
 **Apply [Trail](../trail/SKILL.md) automatically now.** Trail is an egress service of the full suite, not a command the operator must remember to invoke. Do not ask the operator to run it separately.
 
-**High-Fidelity Mode (Writer Splitting):** If the highest level of anti-rationalization security is required, the agent running `Improve` DOES NOT write the trail. Instead, it halts here, outputting its diff, prediction, and internal reasoning. A *second, independent agent* must then be invoked to execute the `Trail` skill. This prevents a single agent from post-hoc rationalizing its own decisions.
+**High-Fidelity Mode (Writer Splitting):** Standard mode is the default: the Improve agent applies Trail automatically. High-Fidelity Mode is active only when the operator explicitly requests independent Trail authorship or an execution contract declared it before the run; task consequence alone does not activate it. Before step 5 (Act), confirm that the current host can invoke a separate agent and return control to this run. If that round trip cannot be established, treat the writer as unavailable: stop before acting and ask whether standard mode is acceptable.
+
+When active, the Improve agent pauses at this step without writing the entry and hands the independent writer its interpretation, examination, decision, pre-action prediction, action evidence, reflection, and exact Destination/Orientation evaluations. The writer applies Trail and commits the entry without recomputing Improve's decisions, then returns control. The Improve agent resumes at step 8. This separates writer from decider without changing who owns service scheduling.
 
 **In multi-iteration runs, this step executes after every iteration — not once at the end of all iterations.** The trail entry is the commit point for that iteration. Append it, regenerate `history.md`, and commit before starting the next iteration. A user who stops a 10-iteration run after iteration 4 must have 4 committed trail entries, not 0.
 

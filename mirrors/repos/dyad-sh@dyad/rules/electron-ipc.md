@@ -28,6 +28,13 @@ This project uses a **contract-driven IPC architecture**. Contracts in `src/ipc/
 5. Register the handler in `src/ipc/handlers/<domain>_handlers.ts` using `createTypedHandler(contract, handler)`.
 6. Import and call the registration function in `src/ipc/ipc_host.ts`.
 
+For a domain's first main-to-renderer event, also import its event-contract
+object in `src/ipc/preload/channels.ts` and include it with
+`getReceiveChannels(...)`. The receive allowlist is derived from imported event
+objects, so defining and exporting an event alone does not make its channel
+available through preload. Add the domain to `channels.test.ts` to prevent a
+runtime `Invalid channel` failure that TypeScript cannot detect.
+
 ## Renderer usage
 
 ```ts
@@ -156,6 +163,10 @@ pre-hydration atoms can erase unrelated restored entities.
 
 ## Handler expectations
 
+- Keep handler registration free of database-dependent startup work. Handlers
+  register before `onReady()` initializes SQLite; run restart reconciliation
+  immediately after `initializeDatabase()` instead, or the first access fails
+  once and is never retried.
 - Handlers should `throw new Error("...")` on failure instead of returning `{ success: false }` style payloads.
 - Entity-loading handlers that enrich a valid local row with optional external metadata must catch enrichment failures and return the base entity with nullable enrichment fields. Letting an OAuth/API failure reject the whole load can make renderer queries misreport an existing entity as missing.
 - For **non-bug** failures (validation, not found, auth, user refusal, etc.), prefer `DyadError` with the right `DyadErrorKind` so PostHog does not flood with `$exception` events — see [rules/dyad-errors.md](dyad-errors.md).

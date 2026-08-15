@@ -304,7 +304,7 @@ curl -X POST https://localhost:20128/api/v1/management/proxy-subscriptions/{id}/
 
 Document OCR
 
-Mistral OCR–compatible document OCR endpoint. Accepts a JSON body referencing a document/image and returns extracted text. Success responses carry the `X-OmniRoute-*` cost-telemetry headers.
+Multi-provider document OCR endpoint (Mistral OCR–compatible request and response shape). Accepts a JSON body referencing a document/image and returns extracted text. `model` selects the provider via a `provider/model` prefix (e.g. `mistral/mistral-ocr-latest`, `azure-document-intelligence/prebuilt-read`, `vertex-deepseek-ocr/deepseek-ocr-maas`); a bare model id (e.g. `mistral-ocr-latest`) resolves to its registered provider, and an omitted `model` defaults to Mistral. Azure Document Intelligence is asynchronous upstream — the handler polls the returned operation until it succeeds or fails before responding, so this endpoint can take longer to return for that provider. Success responses carry the `X-OmniRoute-*` cost-telemetry headers.
 
 ```bash
 curl -X POST https://localhost:20128/api/v1/ocr \

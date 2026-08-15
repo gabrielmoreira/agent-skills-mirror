@@ -20,7 +20,7 @@
 
 场景陈设归场景锚点、一次性手部道具镜头级提示词解决——都不单独建资产。
 
-产出 `art.json` + Markdown + 一个双击就能开的 `art-report.html`：
+产出 `art.json` + Markdown + 一个双击就能开的 `art-report.html`。报告界面默认中文；render 加 `--lang en` 输出全英文界面（或在 art.json 顶层写 `"lang": "en"`，`--lang` 优先）： 英文界面下质量门标签同样翻译（阈值原样），门的失败详情与数据内容保持原文。
 
 ![art-report.html](assets/report.webp)
 
@@ -62,7 +62,8 @@ novel-art        → art.json     （哪里 + 手里拿的：美术资产）
 node scripts/novel-art.mjs seed outline.json > art.json      # 从大纲预填场景骨架
 node scripts/novel-art.mjs validate art.json --cast cast.json
 node scripts/novel-art.mjs checkup art.json                  # 只跑质量门
-node scripts/novel-art.mjs render art.json --html            # 出报告
+node scripts/novel-art.mjs render art.json --html            # 出报告（界面默认中文）
+node scripts/novel-art.mjs render art.json --html --lang en  # 英文界面报告
 node scripts/novel-art.mjs styles                            # 看画风预设
 ```
 
@@ -76,7 +77,7 @@ node scripts/novel-art.mjs styles                            # 看画风预设
 SKILL.md                 给 agent 读的工作流
 scripts/
   novel-art.mjs          seed / validate / checkup / render / styles / slug
-  selftest.mjs           131 项断言，不调模型
+  selftest.mjs           144 项断言，不调模型
 references/
   schema.md              art.json 结构 + 硬规则
   scene-pass.md          怎么填场景设定（AI 短剧的思路）
@@ -95,6 +96,6 @@ assets/
 node scripts/selftest.mjs
 ```
 
-131 项断言，覆盖 seed / 画风预设 / 11 道门逐项击穿 / 渲染 / 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
+144 项断言，覆盖 seed / 画风预设 / 11 道门逐项击穿 / 渲染（中英界面）/ 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
 
 **只在 macOS + Node 24 上实测过。** 代码没有平台相关调用，Linux 和更低版本 Node 理论上没问题，但**没验过**。

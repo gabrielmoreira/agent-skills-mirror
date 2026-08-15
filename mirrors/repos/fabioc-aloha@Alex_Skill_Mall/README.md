@@ -162,7 +162,7 @@ npm run maintain -- --curated
 npm run admin:configure-approval
 npm run admin:configure-approval -- --apply
 
-# Full 42-store network refresh (requires SOURCES_DIR plus GH_TOKEN or GITHUB_TOKEN)
+# Full 48-store network refresh (requires SOURCES_DIR plus GH_TOKEN or GITHUB_TOKEN)
 npm run maintain -- --full
 ```
 

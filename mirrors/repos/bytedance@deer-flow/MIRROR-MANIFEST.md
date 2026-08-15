@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 21 followed patterns, 172 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 24 followed patterns, 175 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 21 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 21 |
-| Files         | 172 |
+| Followed pats | 24 |
+| Files         | 175 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 21 followed patterns, 1
 - `SECURITY.md`
 - `CHANGELOG.md`
 - `RELEASING.md`
+- `docs/ARCHITECTURE.md`
 - `.github/pull_request_template.md`
 - `backend/docs/CONFIGURATION.md`
 - `backend/docs/MCP_SERVER.md`
@@ -70,8 +71,10 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 21 followed patterns, 1
 - `docs/plans/2026-07-10-pluggable-authorization-rfc.md`
 - `docs/OPENVIKING.md`
 - `backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`
+- `backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`
 - `backend/docs/TUI.md`
 - `backend/README.md`
+- `backend/docs/ARCHITECTURE.md`
 
 ## File Index
 
@@ -231,26 +234,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 150 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
 | 151 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
 | 152 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 153 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
-| 154 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
-| 155 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
-| 156 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
-| 157 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
-| 158 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
-| 159 | → | [`backend/README.md`](backend/README.md) |
-| 160 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 161 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 162 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
-| 163 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
-| 164 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 165 | → | [`Install.md`](Install.md) |
-| 166 | → | [`README_fr.md`](README_fr.md) |
-| 167 | → | [`README_ja.md`](README_ja.md) |
-| 168 | → | [`README_ru.md`](README_ru.md) |
-| 169 | → | [`README_zh.md`](README_zh.md) |
-| 170 | → | [`README.md`](README.md) |
-| 171 | → | [`RELEASING.md`](RELEASING.md) |
-| 172 | → | [`SECURITY.md`](SECURITY.md) |
+| 153 | → | [`backend/docs/ARCHITECTURE.md`](backend/docs/ARCHITECTURE.md) |
+| 154 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
+| 155 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
+| 156 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
+| 157 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
+| 158 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
+| 159 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
+| 160 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
+| 161 | → | [`backend/README.md`](backend/README.md) |
+| 162 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 163 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 164 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
+| 165 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 166 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
+| 167 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 168 | → | [`Install.md`](Install.md) |
+| 169 | → | [`README_fr.md`](README_fr.md) |
+| 170 | → | [`README_ja.md`](README_ja.md) |
+| 171 | → | [`README_ru.md`](README_ru.md) |
+| 172 | → | [`README_zh.md`](README_zh.md) |
+| 173 | → | [`README.md`](README.md) |
+| 174 | → | [`RELEASING.md`](RELEASING.md) |
+| 175 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

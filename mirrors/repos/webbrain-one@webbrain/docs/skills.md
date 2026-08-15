@@ -128,11 +128,18 @@ enable. They are not seeded on by default.
 | Temporary file share (Litterbox) | Act, Dev | Uses browser upload tools; short-lived public link |
 | Open-Meteo weather | Ask, Act, Dev | Geocoding + forecast HTTPS |
 | Open Library | Ask, Act, Dev | Open Library search HTTPS |
-| Wikipedia | Ask, Act, Dev | Wikipedia REST search + Action API summary HTTPS |
+| Wikipedia | Ask, Act, Dev | Live Wikipedia APIs + explicitly installed Kiwix/ZIM archives |
 | Turkish deasciifier | Ask, Act, Dev | Instruction-only; uses ordinary verbatim form-entry tools |
 
 Enable a skill only when you want its tools and instructions available for
 `load_skill` on eligible runs.
+
+The optional [Apocalypse Mode](apocalypse-mode.md) management page lets users
+choose a Wikipedia language and Kiwix archive tier, review exact size and
+license metadata, install resumably, import an existing `.zim`, and manage its
+lifecycle. It is independent from the interface language, disabled by default,
+and never downloads an archive merely because the Wikipedia skill is enabled.
+Installed archive passages retain canonical attribution and remain untrusted.
 
 ## See also
 

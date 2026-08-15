@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nowork-studio/NotFair` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
+Mirror of `nowork-studio/NotFair` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nowork-studio/NotFair` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 48 |
+| Files         | 93 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,6 +107,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
 | 47 | ✓ | [`seo/sitemap-audit/SKILL.md`](seo/sitemap-audit/SKILL.md) |
 | 48 | ✓ | [`seo/sxo/SKILL.md`](seo/sxo/SKILL.md) |
+| 49 | ✓ | [`skills/backlink-audit/SKILL.md`](skills/backlink-audit/SKILL.md) |
+| 50 | ✓ | [`skills/broken-link-checker/SKILL.md`](skills/broken-link-checker/SKILL.md) |
+| 51 | ✓ | [`skills/competitor-pages/SKILL.md`](skills/competitor-pages/SKILL.md) |
+| 52 | ✓ | [`skills/content-planner/SKILL.md`](skills/content-planner/SKILL.md) |
+| 53 | ✓ | [`skills/content-writer/SKILL.md`](skills/content-writer/SKILL.md) |
+| 54 | ✓ | [`skills/ecommerce-seo/SKILL.md`](skills/ecommerce-seo/SKILL.md) |
+| 55 | ✓ | [`skills/gemini/SKILL.md`](skills/gemini/SKILL.md) |
+| 56 | ✓ | [`skills/geo-optimizer/SKILL.md`](skills/geo-optimizer/SKILL.md) |
+| 57 | ✓ | [`skills/google-ads-assets/SKILL.md`](skills/google-ads-assets/SKILL.md) |
+| 58 | ✓ | [`skills/google-ads-audit/SKILL.md`](skills/google-ads-audit/SKILL.md) |
+| 59 | ✓ | [`skills/google-ads-copy/SKILL.md`](skills/google-ads-copy/SKILL.md) |
+| 60 | ✓ | [`skills/google-ads-landing/SKILL.md`](skills/google-ads-landing/SKILL.md) |
+| 61 | ✓ | [`skills/google-ads/SKILL.md`](skills/google-ads/SKILL.md) |
+| 62 | ✓ | [`skills/google-analytics/SKILL.md`](skills/google-analytics/SKILL.md) |
+| 63 | ✓ | [`skills/hreflang-international/SKILL.md`](skills/hreflang-international/SKILL.md) |
+| 64 | ✓ | [`skills/image-seo/SKILL.md`](skills/image-seo/SKILL.md) |
+| 65 | ✓ | [`skills/keyword-research/SKILL.md`](skills/keyword-research/SKILL.md) |
+| 66 | ✓ | [`skills/local-seo/SKILL.md`](skills/local-seo/SKILL.md) |
+| 67 | ✓ | [`skills/meta-ads-audit/SKILL.md`](skills/meta-ads-audit/SKILL.md) |
+| 68 | ✓ | [`skills/meta-ads-creative/SKILL.md`](skills/meta-ads-creative/SKILL.md) |
+| 69 | ✓ | [`skills/meta-ads/SKILL.md`](skills/meta-ads/SKILL.md) |
+| 70 | ✓ | [`skills/meta-tags-optimizer/SKILL.md`](skills/meta-tags-optimizer/SKILL.md) |
+| 71 | ✓ | [`skills/paid-ads-amazon/SKILL.md`](skills/paid-ads-amazon/SKILL.md) |
+| 72 | ✓ | [`skills/paid-ads-chatgpt/SKILL.md`](skills/paid-ads-chatgpt/SKILL.md) |
+| 73 | ✓ | [`skills/paid-ads-creative/SKILL.md`](skills/paid-ads-creative/SKILL.md) |
+| 74 | ✓ | [`skills/paid-ads-guide/SKILL.md`](skills/paid-ads-guide/SKILL.md) |
+| 75 | ✓ | [`skills/paid-ads-integrations/SKILL.md`](skills/paid-ads-integrations/SKILL.md) |
+| 76 | ✓ | [`skills/paid-ads-launch/SKILL.md`](skills/paid-ads-launch/SKILL.md) |
+| 77 | ✓ | [`skills/paid-ads-linkedin/SKILL.md`](skills/paid-ads-linkedin/SKILL.md) |
+| 78 | ✓ | [`skills/paid-ads-optimize/SKILL.md`](skills/paid-ads-optimize/SKILL.md) |
+| 79 | ✓ | [`skills/paid-ads-review/SKILL.md`](skills/paid-ads-review/SKILL.md) |
+| 80 | ✓ | [`skills/paid-ads-setup/SKILL.md`](skills/paid-ads-setup/SKILL.md) |
+| 81 | ✓ | [`skills/paid-ads-tiktok/SKILL.md`](skills/paid-ads-tiktok/SKILL.md) |
+| 82 | ✓ | [`skills/paid-ads-x/SKILL.md`](skills/paid-ads-x/SKILL.md) |
+| 83 | ✓ | [`skills/paid-ads/SKILL.md`](skills/paid-ads/SKILL.md) |
+| 84 | ✓ | [`skills/programmatic-seo/SKILL.md`](skills/programmatic-seo/SKILL.md) |
+| 85 | ✓ | [`skills/schema-markup-generator/SKILL.md`](skills/schema-markup-generator/SKILL.md) |
+| 86 | ✓ | [`skills/search-console/SKILL.md`](skills/search-console/SKILL.md) |
+| 87 | ✓ | [`skills/seo-analysis/SKILL.md`](skills/seo-analysis/SKILL.md) |
+| 88 | ✓ | [`skills/seo-drift/SKILL.md`](skills/seo-drift/SKILL.md) |
+| 89 | ✓ | [`skills/seo-page/SKILL.md`](skills/seo-page/SKILL.md) |
+| 90 | ✓ | [`skills/setup-cms/SKILL.md`](skills/setup-cms/SKILL.md) |
+| 91 | ✓ | [`skills/sitemap-audit/SKILL.md`](skills/sitemap-audit/SKILL.md) |
+| 92 | ✓ | [`skills/sxo/SKILL.md`](skills/sxo/SKILL.md) |
+| 93 | ✓ | [`skills/upgrade/SKILL.md`](skills/upgrade/SKILL.md) |
 
 ---
 

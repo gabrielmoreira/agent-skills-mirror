@@ -59,6 +59,7 @@
 - **资产量折算**：角色三档、场景环境、生成难点各折算成备产工作量，全部自动汇总
 - **质量门**：页眉徽章 + 未过时的病灶横幅 + 文末完整清单，✓/✗ 由脚本算好烘进页面
 - **导出 JSON** 按钮：下载的就是 `outline.json` 原样，改完能直接喂回 `render` / `validate`
+- **报告界面内置中英**：默认中文，`--lang en` 出全英文界面（也可以跟 outline.json 顶层的 `lang` 字段，`--lang` 优先）。只翻译界面文案，数据内容——爽点类型、梗概、质量门文案——原样出 英文界面下质量门标签同样翻译（阈值原样），门的失败详情与数据内容保持原文。
 - 全部图形是内联 SVG/CSS，配色跑过可视化验证器，零外部依赖，离线双击能开
 
 ## 体检模式
@@ -84,7 +85,8 @@ node scripts/novel-outline.mjs render outline.json --html > outline-report.html
 node scripts/novel-outline.mjs chunk book.txt /tmp/wk           # 按章分卷
 node scripts/novel-outline.mjs validate outline.json            # 校验（--stage skeleton|beats|full）
 node scripts/novel-outline.mjs checkup outline.json             # 只跑质量门
-node scripts/novel-outline.mjs render outline.json --html       # 出报告
+node scripts/novel-outline.mjs render outline.json --html       # 出报告（界面默认中文）
+node scripts/novel-outline.mjs render outline.json --html --lang en > outline-report.html   # 英文界面报告
 node scripts/novel-outline.mjs assets outline.json              # 资产清单 JSON
 ```
 
@@ -98,7 +100,7 @@ node scripts/novel-outline.mjs assets outline.json              # 资产清单 J
 SKILL.md                 给 agent 读的工作流
 scripts/
   novel-outline.mjs      chunk / validate / checkup / render / assets
-  selftest.mjs           200 项断言，不调模型
+  selftest.mjs           219 项断言，不调模型
 references/
   schema.md              outline.json 结构 + 硬规则
   volume-pass.md         分卷摘要怎么写
@@ -117,6 +119,6 @@ assets/
 node scripts/selftest.mjs
 ```
 
-200 项断言，覆盖分卷 / 校验 / 质量门逐项击穿 / 资产汇总 / 渲染 / 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
+219 项断言，覆盖分卷 / 校验 / 质量门逐项击穿 / 资产汇总 / 渲染（中英两套界面）/ 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
 
 **只在 macOS + Node 24 上实测过。** 代码没有平台相关调用，Linux 和更低版本 Node 理论上没问题，但**没验过**。

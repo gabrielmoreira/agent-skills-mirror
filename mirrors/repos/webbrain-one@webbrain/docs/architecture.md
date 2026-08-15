@@ -48,7 +48,7 @@ This doc covers the shared architecture and calls out where the builds diverge.
 │                                                      │
 │  Chrome only:                                        │
 │    ├─ cdp/             — Chrome DevTools Protocol    │
-│    └─ offscreen/       — fetch proxy + tab recorder  │
+│    └─ offscreen/       — fetch proxy + recorder + local vision worker │
 └──────┬──────────────────────────────────────────────┘
        │ chrome.scripting.executeScript / CDP
        ▼
@@ -423,7 +423,7 @@ tracks as a successful video or hand ffmpeg work to the user.
 | Draft or rewrite an email reply, message, or post the user will send | Humanizer | Ask, Act, Dev | Prompt-only; preactivated on webmail adapters and on the explicit Humanize selected-text shortcut, otherwise routed by catalog. Returns final text only. |
 | Look up weather or a short forecast | Open-Meteo weather | Ask, Act, Dev | Read-only tools remain subject to their manifest filters. |
 | Find books, ISBNs, authors, or publication data | Open Library | Ask, Act, Dev | Read-only tools remain subject to their manifest filters. |
-| Search or summarize an encyclopedia topic | Wikipedia | Ask, Act, Dev | Read-only Wikipedia REST/Action API tools; results are untrusted. |
+| Search or summarize an encyclopedia topic | Wikipedia | Ask, Act, Dev | Live Wikipedia APIs plus explicitly installed local Kiwix/ZIM archives; all results are untrusted. |
 | Restore Turkish characters in ASCII Turkish text after an explicit user request | Turkish deasciifier | Ask, Act, Dev | Prompt-only and opt-in; ordinary form-entry tools continue to type their text argument verbatim. |
 | Upload one non-sensitive file to a short-lived public link | Temporary file share (Litterbox) | Act, Dev | Not shown to Ask; the skill uses existing browser upload tools. |
 
@@ -435,6 +435,16 @@ reinforced by WebBrain's untrusted-content wrappers and the loader description,
 not a deterministic intent classifier. Routing quality also depends on concise,
 distinct summaries; a broad skill such as FreeSkillz deliberately loads one
 instruction bundle for several related capabilities.
+
+The packaged Wikipedia skill keeps its existing `search_wikipedia` and
+`get_wikipedia_summary` interface. When a live request fails, the exact
+built-in tool may query archives that the user explicitly installed through
+the ☢ Apocalypse Mode link in the Settings header. `apocalypse-mode.js` owns catalog
+metadata, resumable piece verification, durable lifecycle state, OPFS or
+user-selected archive bytes, and the local openZIM reader. IndexedDB contains only configuration,
+archive metadata, and restart cursors—not multi-gigabyte archive bodies.
+Kiwix content remains on the dynamic skill's `resultPolicy: "untrusted"` path.
+See [Apocalypse Mode](apocalypse-mode.md) for storage and browser limits.
 
 The optional metadata format is a separate prompt-stripped fence:
 
@@ -816,7 +826,7 @@ Firefox uses `browser.storage.session`.
 | Events | CDP-trusted (`isTrusted=true`) | Synthetic (`isTrusted=false`) |
 | Screenshots | CDP `Page.captureScreenshot` with run-scoped focus emulation for background tabs | `browser.tabs.captureTab()` for direct inactive-tab capture |
 | Conversation/UI persistence | `chrome.storage.session` | `browser.storage.session` |
-| Offscreen document | Yes (fetch proxy + recorder) | Not available |
+| Offscreen document | Yes (fetch proxy + recorder + local WebGPU models) | Not available |
 | Trace recorder | IndexedDB (opt-in) | IndexedDB (opt-in) — same `trace/recorder.js` |
 | Duplicate-submit guard | Yes | Not available |
 | `execute_js` | Dev mode through CDP `Runtime.evaluate` | Dev mode through the MV2 content-script evaluator |
@@ -829,7 +839,9 @@ Firefox uses `browser.storage.session`.
 | Side panel | `sidePanel` API (MV3) | `sidebar_action` (MV2) |
 | File upload | CDP path or `downloadId` | `downloadId` re-fetch or WebBrain file picker; no arbitrary local path |
 
-Everything else (agent loop, tools, adapters, providers, loop detection, context management, system prompts) is architecturally identical between the two builds.
+Apart from the Chromium-only endpoint-free WebGPU provider and vision sidecar,
+the agent loop, tools, adapters, providers, loop detection, context management,
+and system prompts are architecturally identical between the two builds.
 
 ---
 
@@ -846,7 +858,7 @@ src/
 │       ├── cdp/      # CDP client (Chrome only)
 │       ├── content/  # accessibility-tree.js, content.js, ...
 │       ├── network/  # network-tools.js
-│       ├── offscreen/# Fetch proxy + slash-driven recorder (Chrome only)
+│       ├── offscreen/# Fetch proxy + recorder + local WebGPU models (Chrome only)
 │       ├── providers/# BaseLLMProvider + implementations
 │       ├── recorder/ # Recording orchestration
 │       ├── trace/    # IndexedDB recorder

@@ -1,7 +1,7 @@
 # API Stability and Versioning
 
 **Status:** Active
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-08-14
 
 This document describes the stability guarantees and versioning policy for `notebooklm-py`.
 
@@ -53,7 +53,7 @@ The following are considered **public API** and are subject to stability guarant
 
 ```python
 # Version
-__version__               # Package version string (read-only)
+__version__  # Package version string (read-only)
 
 # Client
 NotebookLMClient
@@ -84,13 +84,13 @@ ResearchStart, ResearchStatus, ResearchTask, ResearchSource, ResearchTermination
 ClientMetricsSnapshot, ConnectionLimits, RpcTelemetryEvent
 
 # Exceptions (all inherit from NotebookLMError)
-NotebookLMError                    # Base exception
-NotFoundError                      # Cross-domain umbrella for *NotFoundError
-WaitTimeoutError                   # Cross-domain umbrella for wait/poll timeouts (also a built-in TimeoutError)
+NotebookLMError  # Base exception
+NotFoundError  # Cross-domain umbrella for *NotFoundError
+WaitTimeoutError  # Cross-domain umbrella for wait/poll timeouts (also a built-in TimeoutError)
 RPCError, AuthError, RateLimitError, RPCTimeoutError, RPCResponseTooLargeError, ServerError
 NetworkError, DecodingError, UnknownRPCMethodError
 ClientError, ConfigurationError, ValidationError, MissingDependencyError
-NonIdempotentRetryError            # Raised by idempotent=True calls on a non-idempotent retry
+NonIdempotentRetryError  # Raised by idempotent=True calls on a non-idempotent retry
 # Domain-specific
 # Note: *NotFoundError classes mix in RPCError (catchable as either RPCError
 # or the domain base). v0.6.0 restored this symmetry across all three "not
@@ -108,9 +108,22 @@ SourceError, SourceAddError, SourceProcessingError, SourceTimeoutError, SourceNo
 # automatically. Read them with getattr(exc, "source_id", None) — they are absent
 # on every other failure. See docs/python-api.md#partial-file-uploads.
 NotebookError, NotebookNotFoundError
-ArtifactError, ArtifactDownloadError, ArtifactFeatureUnavailableError, ArtifactNotFoundError, ArtifactNotReadyError, ArtifactParseError
+(
+    ArtifactError,
+    ArtifactDownloadError,
+    ArtifactFeatureUnavailableError,
+    ArtifactNotFoundError,
+    ArtifactNotReadyError,
+    ArtifactParseError,
+)
 ArtifactTimeoutError, ArtifactPendingTimeoutError, ArtifactInProgressTimeoutError
-ResearchError, ResearchTimeoutError, ResearchTaskMismatchError, AmbiguousResearchTaskError, ResearchStartUnavailableError
+(
+    ResearchError,
+    ResearchTimeoutError,
+    ResearchTaskMismatchError,
+    AmbiguousResearchTaskError,
+    ResearchStartUnavailableError,
+)
 # Note: notes.get/update/delete and mind_maps.get/rename/delete now raise
 # their domain *NotFoundError on a missing target; use get_or_none() for
 # warning-free None-on-miss lookups.
@@ -134,7 +147,7 @@ DriveMimeType, ExportType
 ArtifactStatus, artifact_status_to_str     # notebooklm.types.<X> only — NOT top-level (see below)
 
 # Auth
-AuthTokens                # also re-exported as notebooklm.auth.AuthTokens
+AuthTokens  # also re-exported as notebooklm.auth.AuthTokens
 notebooklm.paths.get_storage_path()
 
 # Logging and Correlation
@@ -221,10 +234,10 @@ renamed, narrowed, or removed in a future minor release. Prefer the stable
 surface when possible.
 
 ```python
-CitedSourceSelection      # Chat citation payload — internal shape, exposed for typing
-AuthExtractionError       # Specialized AuthError raised by browser-based login
-NotebookLimitError        # Raised when account notebook quota is exhausted
-UnknownTypeWarning        # Warning category emitted when .kind falls back to UNKNOWN
+CitedSourceSelection  # Chat citation payload — internal shape, exposed for typing
+AuthExtractionError  # Specialized AuthError raised by browser-based login
+NotebookLimitError  # Raised when account notebook quota is exhausted
+UnknownTypeWarning  # Warning category emitted when .kind falls back to UNKNOWN
 ```
 
 ### Internal (May change without notice)
@@ -312,8 +325,8 @@ The following v0.3-era deprecations completed their removal cycle in v0.5.0:
 
 | Deprecated | Replacement | Notes |
 |------------|-------------|-------|
-| `AuthTokens.from_storage(...)` | `async with NotebookLMClient.from_storage(...) as client:` and use `client.auth` | Deprecated in v0.9.0; emits `DeprecationWarning`; scheduled for v1.0 removal |
-| `AuthTokens(..., storage_path=..., cookie_jar=None)` synchronous storage fallback | Managed `NotebookLMClient.from_storage(...)`, or an explicit `cookie_jar=` | Deprecated in v0.9.0; only the implicit synchronous-I/O branch warns; scheduled for v1.0 removal |
+| `AuthTokens.from_storage(...)` | `async with NotebookLMClient.from_storage(...) as client:` and use `client.auth` | Deprecated in v0.8.1; emits `DeprecationWarning`; scheduled for v1.0 removal |
+| `AuthTokens(..., storage_path=..., cookie_jar=None)` synchronous storage fallback | Managed `NotebookLMClient.from_storage(...)`, or an explicit `cookie_jar=` | Deprecated in v0.8.1; only the implicit synchronous-I/O branch warns; scheduled for v1.0 removal |
 | Awaiting `NotebookLMClient.from_storage(...)` | `async with NotebookLMClient.from_storage(...) as client:` | Emits `DeprecationWarning`; scheduled for v1.0 removal |
 
 ### Permanent aliases
