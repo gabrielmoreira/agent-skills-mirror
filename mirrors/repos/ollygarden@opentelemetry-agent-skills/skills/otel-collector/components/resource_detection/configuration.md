@@ -7,11 +7,12 @@
 | `detectors` | `[]string` | `[env]` | Ordered list of detectors to run. Valid values: `env`, `system`, `docker`, `heroku`, `gcp`, `ec2`, `ecs`, `elastic_beanstalk`, `eks`, `lambda`, `azure`, `aks`, `consul`, `kubeadm`, `oraclecloud`, `k8s_api`, `k8snode` (deprecated → `k8s_api`), `openshift`, `dynatrace`, `hetzner`, `akamai`, `scaleway`, `upcloud`, `vultr`, `digitalocean`, `nova`, `alibaba_ecs`, `tencent_cvm`, `ibmcloud_vpc`, `ibmcloud_classic`. |
 | `override` | `bool` | `true` | Whether detected attributes overwrite resource attributes already present on incoming telemetry. `true` overwrites; `false` keeps existing values and only adds missing ones. |
 | `refresh_interval` | `duration` | `0` | If `> 0`, re-runs all detectors on this interval. `0` (default) means detect once at startup and cache. |
+| `fail_on_missing_metadata` | `bool` | `false` | For supported network metadata detectors, make an unreachable metadata service a hard error that participates in processor retry instead of producing an empty resource. Added in v0.158.0. |
 | `timeout` | `duration` | `5s` | HTTP client timeout for detectors that call a metadata service. Inherited from the embedded `confighttp.ClientConfig`. |
 
 The component embeds the standard `confighttp.ClientConfig`, so other HTTP client knobs (proxy, TLS, headers) are available for the metadata-service detectors; `timeout` is the one you will usually touch.
 
-> Defaults verified against `factory.go` (`createDefaultConfig`) and `config.go` on contrib v0.157.0: `Detectors: [env]`, `Override: true`, `RefreshInterval: 0`, client `Timeout: 5s`.
+> Defaults verified against `factory.go` (`createDefaultConfig`) and `config.go` on contrib v0.158.0: `Detectors: [env]`, `Override: true`, `RefreshInterval: 0`, `FailOnMissingMetadata: false`, client `Timeout: 5s`.
 
 ## Per-detector configuration
 
@@ -60,7 +61,7 @@ Every detector reports `cloud.provider`/`cloud.platform` plus a platform-specifi
 | `env` | `OTEL_RESOURCE_ATTRIBUTES` env var (falls back to deprecated `OTEL_RESOURCE`), `k=v,k=v` format | whatever you put in the variable |
 | `system` | host machine | `host.name`, `os.type` (default); `host.id`, `host.arch`, `host.cpu.*`, `os.description`, … (opt-in). `hostname_sources` (`["dns","os"]` default; also `cname`, `lookup`) controls how `host.name` is resolved |
 | `docker` | Docker daemon (mount the socket) | `host.name`, `os.type`. Use instead of `system` when the Collector runs as a container; **does not work on macOS** |
-| `ec2` | EC2 IMDS | `cloud.*`, `host.id`, `host.name`, `host.type`. Optional `tags` (regex list; needs `ec2:DescribeTags` IAM, or `tags_from_imds: true`). `fail_on_missing_metadata`, `max_attempts`, `max_backoff` |
+| `ec2` | EC2 IMDS | `cloud.*`, `host.id`, `host.name`, `host.type`. Optional `tags` (regex list; needs `ec2:DescribeTags` IAM, or `tags_from_imds: true`). Deprecated per-detector `fail_on_missing_metadata` (use the top-level key), plus `max_attempts`, `max_backoff` |
 | `ecs` | ECS Task Metadata Endpoint (V4/V3) | `cloud.*`, `aws.ecs.*` |
 | `eks` | EC2 IMDS + k8s/EC2 API fallback | `cloud.*`; `k8s.cluster.name` opt-in (needs `EC2:DescribeInstances`). `node_from_env_var` |
 | `lambda` | Lambda runtime env vars | `cloud.*`, `faas.*` |
@@ -74,6 +75,6 @@ Every detector reports `cloud.provider`/`cloud.platform` plus a platform-specifi
 | `dynatrace` | `dt_host_metadata.properties` file | `dt.entity.host`, `host.name`, `dt.smartscape.host` |
 | `consul` | Consul agent | node + exploded `_node_meta` |
 
-Additional metadata-service detectors follow the same shape (a `fail_on_missing_metadata` flag, sometimes a `labels`/`tags` regex list): `hetzner`, `akamai`, `scaleway`, `upcloud`, `vultr`, `digitalocean`, `nova` (OpenStack), `alibaba_ecs`, `tencent_cvm`, `ibmcloud_vpc` (`protocol: http|https`), `ibmcloud_classic`, `oraclecloud`, `elastic_beanstalk`, `consul`.
+Additional metadata-service detectors have detector-specific settings, sometimes including a `labels`/`tags` regex list: `hetzner`, `akamai`, `scaleway`, `upcloud`, `vultr`, `digitalocean`, `nova` (OpenStack), `alibaba_ecs`, `tencent_cvm`, `ibmcloud_vpc` (`protocol: http|https`), `ibmcloud_classic`, `oraclecloud`, `elastic_beanstalk`, `consul`. The per-detector `fail_on_missing_metadata` fields on `upcloud`, `vultr`, `nova`, `alibaba_ecs`, and `tencent_cvm` are deprecated; use the top-level key instead.
 
 For the exact attribute list any detector emits, read its `internal/<detector>/documentation.md` in the upstream source — do not assume.

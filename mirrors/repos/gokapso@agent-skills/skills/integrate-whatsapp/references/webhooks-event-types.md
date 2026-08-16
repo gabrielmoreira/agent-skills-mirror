@@ -133,6 +133,11 @@ Use phone-number webhooks for `whatsapp.message.*` and `whatsapp.conversation.*`
 
     Fired when no messages (inbound/outbound) for configured minutes (1-1440, default 60)
   </Card>
+  <Card title="Contact identity changed" icon="id-card">
+    `whatsapp.contact.identity_changed`
+
+    Fired when a contact receives a new business-scoped user ID
+  </Card>
 </CardGroup>
 
 ## Payload structures
@@ -411,6 +416,35 @@ Use phone-number webhooks for `whatsapp.message.*` and `whatsapp.conversation.*`
   "phone_number_id": "123456789012345"
 }
 ```
+
+### whatsapp.contact.identity_changed
+
+```json
+{
+  "contact": {
+    "id": "contact_123",
+    "customer_id": "customer_456",
+    "wa_id": "15551234567",
+    "profile_name": "John Doe",
+    "display_name": "John Doe",
+    "business_scoped_user_id": "US.13491208655302741918",
+    "parent_business_scoped_user_id": "US.ENT.506847293015824",
+    "username": "@testusername",
+    "created_at": "2025-10-28T14:00:00Z",
+    "updated_at": "2025-10-28T15:10:45Z",
+    "sandbox": false,
+    "metadata": {}
+  },
+  "previous": {
+    "business_scoped_user_id": "US.OLD.13491208655302741918",
+    "parent_business_scoped_user_id": "US.OLD.ENT.506847293015824"
+  },
+  "phone_number_id": "123456789012345"
+}
+```
+
+`contact` holds the identity after the change; `previous` holds the business-scoped user IDs Meta
+reported before it. Either `previous` value can be `null` when Meta does not send it.
 
 ### Multiple inactivity timeouts
 

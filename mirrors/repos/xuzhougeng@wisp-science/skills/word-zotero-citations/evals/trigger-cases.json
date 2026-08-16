@@ -1,0 +1,58 @@
+[
+  {
+    "id": "trigger-static-docx-audit",
+    "kind": "trigger",
+    "prompt": "Audit this DOCX offline to confirm that its Zotero citation fields, bibliography field, item occurrences, and document preferences match the frozen manifest. Do not open Word.",
+    "should_trigger": true,
+    "expected_reason": "The request explicitly asks for a static Word–Zotero OOXML audit against a manifest."
+  },
+  {
+    "id": "trigger-refresh-authorization",
+    "kind": "trigger",
+    "prompt": "Create and verify a write-once authorization contract for one ZoteroRefresh attempt, binding the source, candidate, manifest, audit, destination, report, diagnostics, and expected counts. Do not execute it.",
+    "should_trigger": true,
+    "expected_reason": "The core task is the digest-bound Word–Zotero Refresh authorization gate."
+  },
+  {
+    "id": "trigger-recovery",
+    "kind": "trigger",
+    "prompt": "The citation run stopped after Refresh. Inspect its journal and hashes, recover only to the highest verified phase, and generate a non-destructive rollback proposal if needed.",
+    "should_trigger": true,
+    "expected_reason": "The request concerns Word–Zotero run lineage, recovery, and rollback proposal generation."
+  },
+  {
+    "id": "trigger-implementation",
+    "kind": "trigger",
+    "prompt": "Implement post-Refresh audit, UI-evidence persistence, finalization, and CLI package-boundary tests for the generic zotero_mcp.word_citations workflow using synthetic fixtures only.",
+    "should_trigger": true,
+    "expected_reason": "The request directly modifies and validates the generic Word–Zotero citation implementation."
+  },
+  {
+    "id": "nontrigger-style-advice",
+    "kind": "trigger",
+    "prompt": "What is the difference between APA 7 and Vancouver citation style?",
+    "should_trigger": false,
+    "expected_reason": "This is general citation-style advice and does not involve dynamic Word–Zotero fields or workflow artifacts."
+  },
+  {
+    "id": "nontrigger-zotero-library-cleanup",
+    "kind": "trigger",
+    "prompt": "Please merge duplicate items in my Zotero library and clean up all tags.",
+    "should_trigger": false,
+    "expected_reason": "This is Zotero library maintenance unrelated to Word citation-field conversion and its protected workflow."
+  },
+  {
+    "id": "nontrigger-manual-bibliography",
+    "kind": "trigger",
+    "prompt": "Format these ten references as plain text in Chicago style for an email.",
+    "should_trigger": false,
+    "expected_reason": "The request needs plain bibliography formatting, not dynamic Zotero fields in a DOCX."
+  },
+  {
+    "id": "nontrigger-installation",
+    "kind": "trigger",
+    "prompt": "Help me install the Zotero Word add-in.",
+    "should_trigger": false,
+    "expected_reason": "This is installation/setup rather than the protected Word–Zotero citation conversion workflow."
+  }
+]

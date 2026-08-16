@@ -80,6 +80,17 @@ skills-manager-cli skills check --all
 
 `check` is the dry-run partner of `update`. Local-only skills (no git source) are reported as `skipped: true`.
 
+**An update replaces the skill's directory wholesale**, so anything written inside it that the new version does not have would be destroyed. When the CLI detects that, it applies nothing and reports the paths instead:
+
+```jsonc
+{ "name": "ppt-master", "refreshed": false,
+  "held_back_removals": ["library: templates/mine.pptx"] }
+```
+
+The field is omitted entirely when nothing is held back, so test for its presence rather than for an empty array. `refreshed: false` *with* `held_back_removals` is **not a failure and not something to retry** — the skill is untouched and still on its old version. Show the user the listed paths and ask. There is no CLI flag to override this; only the desktop app can confirm and proceed, because only a person can say those files are expendable. The paths are prefixed with where they live (`library`, or an agent key for a deployed copy).
+
+Note what this does *not* cover: a file the user edited that the new version also ships is reported as surviving, because its path survives — the update overwrites their edits silently. Warn anyone keeping local modifications inside a skill folder.
+
 ## Remove
 
 ```bash

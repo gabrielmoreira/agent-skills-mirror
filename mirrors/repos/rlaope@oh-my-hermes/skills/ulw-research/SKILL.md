@@ -20,7 +20,7 @@ This is a Hermes-native `research` workflow skill.
 
 ## Do Not Use When
 
-- The user asks for a full plan-to-PR delivery cycle; use `ultraprocess` or a planning workflow after research instead.
+- The user asks for a full plan-to-PR delivery cycle; use `ultrawork` (its `delivery_boundary` capability) or a planning workflow after research instead.
 - The request is purely local repo inspection with no external, current, citation, or source-comparison need.
 - The study target is this repository itself rather than external references; use `codebase-onboarding`.
 - The user needs coding execution, review, CI, or merge evidence rather than research synthesis.

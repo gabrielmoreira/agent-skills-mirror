@@ -86,9 +86,19 @@ Projects are opt-in named workspaces that corral analysis runs into a shared dir
 /project binary list           # list persisted binaries on the active project
 /project binary remove <path>  # remove one
 /project binary clear          # clear all
+/project trust                 # list trust assertions (markers + binaries count)
+/project trust <marker>        # set a trust marker: config | build | dynamic
+/project untrust <marker>      # remove a trust marker
+/project set                   # list settings
+/project set <key> <value>     # registry-validated setting (description, notes,
+                               #   threat-model, target-kind, build-command[.<lang>])
+/project unset <key>           # remove a setting
+/project get <key>             # bare value on stdout; exit 1 if unset
 /project clean --keep 3        # delete old runs
 /project none                  # clear active project
 ```
+
+**Trust markers** are operator assertions persisted on the project (never auto-set, never read from the scanned repo): `config` = the `--trust-repo` umbrella (cc_trust + codeql_trust), `build` = traced-build CodeQL extraction (`--traced-build`), `dynamic` = dynamic validation (`config.dynamic_validation`). `/agentic` and `/codeql` consume them at start alongside the persisted binaries; the audit pipeline consumes `dynamic`. Per-run flags always win in both directions (`--no-trust-repo` / `--no-traced-build` / `--no-dynamic` > positive flag > marker > off), a banner line prints whenever a marker affects a run, and `build` does NOT imply `config`.
 
 See `/project help` for full command list.
 

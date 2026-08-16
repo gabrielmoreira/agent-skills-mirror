@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,11 +70,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`plugin/skills/commit-history/SKILL.md`](plugin/skills/commit-history/SKILL.md) |
 | 10 | ✓ | [`plugin/skills/forget/SKILL.md`](plugin/skills/forget/SKILL.md) |
 | 11 | ✓ | [`plugin/skills/handoff/SKILL.md`](plugin/skills/handoff/SKILL.md) |
-| 12 | ✓ | [`plugin/skills/recall/SKILL.md`](plugin/skills/recall/SKILL.md) |
-| 13 | ✓ | [`plugin/skills/recap/SKILL.md`](plugin/skills/recap/SKILL.md) |
-| 14 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
-| 15 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
-| 16 | ✓ | [`plugin/skills/write-agentmemory-skill/SKILL.md`](plugin/skills/write-agentmemory-skill/SKILL.md) |
+| 12 | ✓ | [`plugin/skills/lesson/SKILL.md`](plugin/skills/lesson/SKILL.md) |
+| 13 | ✓ | [`plugin/skills/memory-discipline/SKILL.md`](plugin/skills/memory-discipline/SKILL.md) |
+| 14 | ✓ | [`plugin/skills/recall/SKILL.md`](plugin/skills/recall/SKILL.md) |
+| 15 | ✓ | [`plugin/skills/recap/SKILL.md`](plugin/skills/recap/SKILL.md) |
+| 16 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
+| 17 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
+| 18 | ✓ | [`plugin/skills/write-agentmemory-skill/SKILL.md`](plugin/skills/write-agentmemory-skill/SKILL.md) |
 
 ---
 

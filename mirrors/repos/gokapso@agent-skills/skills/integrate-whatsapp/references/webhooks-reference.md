@@ -32,11 +32,20 @@ Conversation events:
 - `whatsapp.conversation.ended`
 - `whatsapp.conversation.inactive`
 
+Contact events:
+
+- `whatsapp.contact.identity_changed`
+
 Lifecycle events (project-level only):
 
 - `whatsapp.config.created`
 - `whatsapp.phone_number.created`
 - `whatsapp.phone_number.deleted`
+- `whatsapp.phone_number.offboarded`
+- `whatsapp.phone_number.disconnected`
+- `whatsapp.phone_number.reconnected`
+
+`offboarded`, `disconnected`, and `reconnected` require `payload_version: v2`.
 
 Workflow events:
 

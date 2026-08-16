@@ -22,7 +22,7 @@ This is a Hermes-native `product-brief` workflow skill.
 
 - The input is unprocessed feedback, bug reports, or feature asks that first need clustering and evidence boundaries; use `feedback-triage`.
 - The user needs a company or product strategy decision across high-level options rather than a requirements or roadmap artifact; use `strategy-brief`.
-- The request is an accepted, code-ready change with repository constraints and verification needs; use `ralplan` or `ultraprocess` rather than recreating a PRD.
+- The request is an accepted, code-ready change with repository constraints and verification needs; use `ralplan` or `ultrawork` rather than recreating a PRD.
 - The user asks to create or update Jira, Linear, Aha!, or a roadmap system directly; use `connector-operator` with explicit target, approval, and observed evidence.
 
 ## Examples
@@ -36,7 +36,7 @@ Good example:
 Bad example:
 
 - Prompt: Implement the accepted onboarding PRD and open a PR.
-- Expected behavior: Route to `ultraprocess` or `ralplan`, not `product-brief`.
+- Expected behavior: Route to `ultrawork` or `ralplan`, not `product-brief`.
 - Why: Accepted implementation work should move into planning or delivery rather than recreate a PRD.
 
 ## Completion Checklist
@@ -52,7 +52,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `codebase-onboarding`, `codegraph-refresh`, `+7 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `codebase-onboarding`, `codegraph-refresh`, `+4 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -96,7 +96,7 @@ Expected outputs:
 - problem, user, evidence, metric, goal, and non-goal brief
 - PRD with requirements, open questions, risks, dependencies, and acceptance shape
 - prioritization/roadmap options with tradeoffs and decision owner
-- explicit downstream route to ralplan, strategy-brief, or ultraprocess only when its prerequisite is satisfied
+- explicit downstream route to ralplan, strategy-brief, or ultrawork only when its prerequisite is satisfied
 
 Artifact expectations:
 

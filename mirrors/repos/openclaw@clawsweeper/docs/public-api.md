@@ -14,24 +14,24 @@ ingest, and the GitHub webhook are mutation or trust-boundary surfaces and are
 deliberately not public API. `ANY` records a current method-agnostic routing
 branch, not a promise that every method will remain supported.
 
-| Route                                    | Method | Purpose and authoritative source                                                            |
-| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
-| `/api/health`                            | `ANY`  | Service liveness and deployed source marker from the Worker environment.                    |
-| `/api/exact-review-queue`                | `GET`  | Exact-review queue statistics from the queue Durable Object.                                |
-| `/api/durable-lifecycle-bay`             | `GET`  | Durable lifecycle Bay projection from `durableLifecycleBaySnapshot`.                        |
-| `/api/live-activity-bay`                 | `GET`  | Live activity Bay projection from `liveActivityBaySnapshotForRequest`.                      |
-| `/api/recent-durable-publication-events` | `GET`  | Recent durable publication events from the queue Durable Object; forwards query parameters. |
-| `/api/exact-review-queue/item`           | `GET`  | One queue item's status; forwards query parameters.                                         |
-| `/api/exact-review-queue/reviews`        | `GET`  | Per-item review lookup used by observer surfaces.                                           |
-| `/api/review-observability`              | `GET`  | Review observability from the queue Durable Object; forwards query parameters.              |
-| `/api/github-egress-observability`       | `GET`  | Sanitized publication GitHub egress rollups for `hours=0.25`, `1`, `6`, or `24`.            |
-| `/api/review-coverage`                   | `GET`  | Review coverage from the queue Durable Object.                                              |
-| `/api/apply-observability`               | `GET`  | Apply-lane observability from `applyObservabilityJson`.                                     |
-| `/api/health-history`                    | `GET`  | Historical health from `healthHistoryJson`.                                                 |
-| `/api/automerge-metrics`                 | `GET`  | Automerge metrics from `automergeMetricsJson`.                                              |
-| `/api/status`                            | `ANY`  | Main dashboard status payload from `statusJson`.                                            |
-| `/api/triage`                            | `ANY`  | Issue-triage payload from `triageJson`.                                                     |
-| `/api/pr-proof-triage`                   | `ANY`  | Pull-request proof-triage payload from `prProofTriageJson`.                                 |
+| Route                                    | Method | Purpose and authoritative source                                                        |
+| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------- |
+| `/api/health`                            | `ANY`  | Service liveness and deployed source marker from the Worker environment.                |
+| `/api/exact-review-queue`                | `GET`  | Closed queue counts, capacities, ages, health, pressure, and Bay aggregates.            |
+| `/api/durable-lifecycle-bay`             | `GET`  | Aggregate lifecycle inventory and six closed lane counts; no target cards.              |
+| `/api/live-activity-bay`                 | `GET`  | Five closed live-activity kind counts; fails closed for an incomplete census.           |
+| `/api/recent-durable-publication-events` | `GET`  | Closed outcome counts in a normalized `6h`, `24h`, or `7d` window.                      |
+| `/api/exact-review-queue/item`           | `GET`  | Stable aggregate-only unavailable response; does not perform a per-item lookup.         |
+| `/api/exact-review-queue/reviews`        | `GET`  | Stable empty aggregate-only envelope; ignores identifying query parameters.             |
+| `/api/review-observability`              | `GET`  | Global closed lane aggregates for a normalized `6h`, `24h`, or `7d` range.              |
+| `/api/github-egress-observability`       | `GET`  | Revision-independent closed egress rollups for `hours=0.25`, `1`, `6`, or `24`.         |
+| `/api/review-coverage`                   | `GET`  | Fleet-wide coverage counts; repository rows are retained only in the private store.     |
+| `/api/apply-observability`               | `GET`  | Global closed apply-lane counts and failure categories without repository or run links. |
+| `/api/health-history`                    | `GET`  | Historical health from `healthHistoryJson`.                                             |
+| `/api/automerge-metrics`                 | `GET`  | Global automerge counts, rates, buckets, and outcomes without filters or session rows.  |
+| `/api/status`                            | `ANY`  | Closed main status projection, re-applied to fresh, stale, and durable cached bodies.   |
+| `/api/triage`                            | `ANY`  | Closed issue-triage view descriptors, bounded counts, and completeness only.            |
+| `/api/pr-proof-triage`                   | `ANY`  | Closed proof-triage view descriptors, bounded counts, and completeness only.            |
 
 `config/operator-documentation.json` is the checked route inventory. Adding or
 removing a literal observer route in `dashboard/worker.ts` requires updating
@@ -43,21 +43,34 @@ For egress field interpretation, use
 fields, use [Live dashboard](live-dashboard.md). For the rendered lane model,
 use [OpenClaw Bay](openclaw-bay-demo.md).
 
-`/api/exact-review-queue` keeps raw credential reset time in
-`lanes.publication.credential_circuits[].blocked_until` and reports the latest
-per-member jitter boundary as `recovery_until`. Its `handoff_health` includes
-bounded `recovery_reasons` counts for `claim_timeout`, `execution_timeout`,
-`workflow_cancelled`, and `workflow_failed`. These are objective durable queue
-facts; they do not infer why GitHub or a runner cancelled a workflow.
+Public observer routes are projections, not private-store serializers. Internal
+Durable Object state may retain item keys, repository selectors, workflow/job
+metadata, failure details, run links, revision digests, and sampled records for
+binding-authenticated workflows. The Worker allowlists fixed aggregate fields
+before an unauthenticated response is serialized. Unknown or malformed shapes
+fail closed and caught storage errors use fixed categories without interpolating
+the underlying exception.
 
-Publication flow windows include a bounded `causes` object. Their `refreshed`
-and `refreshed_rate_per_hour` fields provide the independent refresh denominator.
-Closed aggregate rows reconcile retry, backoff, supersession, refresh, and
-dead-letter causes without raw identifiers. Terminal deferrals are distinct from publications, and one batch
-completion may emit both a completed publication and a follow-on backoff when a
-newer local revision remains. Consumers must check `rows_truncated`,
-`attribution_complete`, and
-the per-transition `reconciliation` before treating the rows as a complete
-denominator. The GitHub-egress response similarly exposes sanitized retention
-watermarks; `query_complete` describes retained evidence, not the existence of
-traffic in every clock bucket.
+The two triage APIs use schema version 2 and expose only a normalized
+`generated_at`, `complete`, bounded `error_count`, a count map keyed by closed
+view IDs, and static view descriptors with bounded `total_count` and
+`item_limit`. Every compatibility `items` array is empty. Their private
+in-memory GitHub collection may use repository, item, title, URL, query, author,
+assignee, label, linked-item, proof-state, and diagnostic data, but the public
+projector drops those fields before fresh or stale cache serialization. The
+projector runs again on cache reads, including raw legacy cache bodies. Invalid
+or uncertain input returns a fixed incomplete projection with null counts; raw
+diagnostic text is never returned. The unauthenticated triage pages therefore
+have no per-item lists, filters, chips, or links. Those capabilities require a
+separately authenticated operator surface, which does not currently exist.
+
+`/api/exact-review-queue` retains closed recovery-reason counts for
+`claim_timeout`, `execution_timeout`, `workflow_cancelled`, and
+`workflow_failed`, but omits per-member, per-target, ownership, fingerprint,
+detail, sample, and raw timing records. Bay activity is producer-composed from a
+complete census so queue/live overlap is counted once; incomplete or legacy
+shapes cannot claim a complete activity aggregate.
+
+The GitHub-egress response exposes only revision-independent closed dimensions
+and sanitized retention watermarks. `query_complete` describes retained
+evidence, not the existence of traffic in every clock bucket.

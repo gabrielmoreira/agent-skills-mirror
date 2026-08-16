@@ -2,24 +2,34 @@
 
 - Status: active public observer guide
 - Owner: ClawSweeper maintainers
-- Source of truth: `dashboard/bay-page.ts`, Worker queue projections, Bay tests,
-  and the read-only `/bay` route
+- Source of truth: `dashboard/bay-page.ts`, public Worker and queue projectors,
+  Bay tests, and the read-only `/bay` route
 - Last verified: `openclaw/clawsweeper@71b16d208511700bb241ea06276c94f71c977d89`
-- Update when: lane names, stage mapping, projection bounds, control cards,
-  routes, or navigation changes
+- Update when: lane names, stage mapping, public projection or completeness
+  rules, private-state ownership, routes, or navigation changes
 
 OpenClaw Bay is a public, indexable, read-only visualisation of the live
 ClawSweeper pipeline. It lives at `/bay` on the existing dashboard Worker
-and turns active work into animated crustaceans moving across a shoreline. It
-is linked from the Overview, issue-triage, and PR-proof headers as a normal
-ClawSweeper web-page destination.
+and turns bounded aggregate activity into anonymous animated rows moving across
+a shoreline. The animation represents counts, not stable repository items or
+workflow runs. It is linked from the Overview, issue-triage, and PR-proof
+headers as a normal ClawSweeper web-page destination.
 
-![OpenClaw Bay running against the shared dashboard status feed](openclaw-bay-demo.jpg)
+Bay is an observer-only surface: it displays bounded public status but never
+triggers or offers queue, workflow, GitHub, DLQ, recovery, deploy, or rollback
+actions. Its public visibility is not an authorization boundary; any future
+restricted surface would require separate authentication or access-control
+design.
+
+## Historical Review Artifact
+
+![Historical OpenClaw Bay review artifact](openclaw-bay-demo.jpg)
 
 [Watch the 32-second browser recording](openclaw-bay-demo.mp4). It shows the
-live populated shoreline, master-sweeper movement between lanes, terminal
-pools, and the contextual crustacean chat behavior. The recording is a
-1280×720 H.264 review artifact with audio and capture metadata removed.
+historical shoreline, movement between lanes, and terminal pools from the
+earlier review-time UI. It does not describe or prove the current
+aggregate-only contract. The recording is a 1280×720 H.264 review artifact with
+audio and capture metadata removed.
 
 The lightweight records under `docs/proof/openclaw-bay` describe historical
 review-time evidence. The full-resolution trace and storyboard introduced in
@@ -31,15 +41,9 @@ proof. Current pull requests must publish exact-head proof and provenance in
 the PR body. The historical run used the real page and artwork with a fully
 synthetic, redacted status sequence and made no live dashboard reads.
 
-Bay is an observer-only surface: it displays bounded public status but never
-triggers or offers queue, workflow, GitHub, DLQ, recovery, deploy, or rollback
-actions. Its public visibility is not an authorization boundary; any future
-restricted surface would require separate authentication or access-control
-design.
-
 ## What It Shows
 
-The six active lanes group the current worker and durable queue state into:
+Bay uses one closed set of six active stages:
 
 - Arriving
 - Setting up
@@ -48,51 +52,73 @@ The six active lanes group the current worker and durable queue state into:
 - Repair cove
 - Applying & writing
 
-An item that advances raises a ready flag before the master sweeper moves it to
-the next reported lane. Any observed new run for the same GitHub item is
-represented by a tunnel, even when polling first sees that run in the same or a
-later lane. Completed, failed, and cancelled pools contain only explicit
-terminal evidence; a disappearing worker is never treated as successful.
-Because the completed-job evidence cache can trail the active feed, a worker
-that disappears remains in its last lane as **CHECKING** for up to 150 seconds.
-It is swept into a terminal pool only when explicit outcome evidence arrives.
+Each complete public activity snapshot contains exactly those six queue counts,
+the same six live counts, and a total equal to their sum. Counts are bounded
+non-negative integers; extra stage names and unexpected fields are discarded.
+The Worker privately correlates queue and live state long enough to subtract
+active overlaps from the queue counts. It drops that correlation material
+before serialization, so the two public maps are disjoint without publishing a
+join key.
+
+The page expands those counts into anonymous decorative rows. A row has no
+stable target identity and cannot expose or open a repository, item, workflow,
+failure detail, URL, or query. The public surface therefore has no repository
+filter, target finder, per-target card, link, or overflow-reference list.
+
+Completed, failed, and cancelled pools contain only anonymous, explicitly
+observed terminal outcomes. A disappearing worker is never treated as
+successful. Because completed-job evidence can trail the active feed, an
+unconfirmed disappearance remains in the checking state for up to 150 seconds
+and enters a terminal pool only after explicit outcome evidence arrives.
 
 The terminal buffer is deliberately small. At 20 proved outcomes, the tide
-animation clears the visible pools. The Durable Object record retains fewer
-than 20 buffered outcomes, the most recent 20 washed outcomes, and at most 256
-seen event identifiers under the existing seven-day event TTL. Stored content
-is rewritten only when that bounded state changes. If an item is retriggered,
-its prior terminal record no longer counts toward the visible tide while its
-event identifier remains deduplicated. The Preview tide button changes only the
-browser animation and does not mutate stored state.
-
-Repository filters and **Where's my crustacean?** operate entirely on the
-current snapshot. Selecting a crustacean opens the same GitHub and workflow-run
-links exposed by the source worker data.
+animation clears the visible pools. Private Bay state retains fewer than 20
+buffered outcomes, the most recent 20 washed outcomes, and at most 256
+deduplication entries under the existing seven-day event TTL. The public
+projector retains only bounded tide values, closed outcome categories, and safe
+timestamps. The Preview tide button changes only the browser animation and does
+not mutate stored state.
 
 The exact-review control board above the shoreline separates review admission
-from result publication. It shows current lane totals, bounded 6-hour, 24-hour,
-or 7-day history, and the durable handoff between them. When the handoff is
-recovering, Bay renders the bounded observed cause counts for claim timeout,
-execution timeout, workflow cancellation, and workflow failure. It does not
-infer the upstream reason for a cancellation or failure. A separate
-state-writer card reports the coordinator that serializes remaining Git-backed
-operational writes. These cards are observational: they expose no queue,
+from result publication. It shows aggregate lane totals, bounded 6-hour,
+24-hour, or 7-day history, and closed observed cause counts. It does not infer
+an upstream reason for a cancellation or failure and exposes no queue,
 recovery, deploy, or rollback controls.
 
-Lane totals may exceed the individually rendered crustaceans. The public queue
-projection intentionally bounds its item-reference sample; the overflow drawer
-shows known references and explains when additional counted items fall outside
-that sample. It never invents identities or performs a browser-side GitHub
-lookup to fill the gap.
+The durable lifecycle board is aggregate-only as well. A complete projection
+contains three inventory counts and six closed lifecycle-lane counts: pending,
+acknowledgement pending, completed, superseded, requeued, and terminal
+attention. Its public sample is always empty. Individual lifecycle cards,
+references, revisions, and links remain outside the public contract.
+
+## Completeness And Private State
+
+Combined queue/live activity is published only when the queue projection, the
+active-worker census, and their closed schemas are complete. An incomplete or
+over-cap worker census, a stale snapshot, malformed nested data, or an unsafe
+legacy cache shape yields an unknown aggregate: `activity.complete` is false
+and the queue map, live map, and total are unavailable. Bay does not substitute
+a partial count or recover detail from an unbounded field. Fresh responses,
+cached responses, and restart or legacy paths all pass through the same
+fail-closed public projection.
+
+The ExactReviewQueue Durable Object may retain the internal metadata required
+for ownership, deduplication, retries, and restart recovery. That state is
+binding-only and is not itself a public response. Before the Worker serves the
+durable lifecycle view, it validates the complete private shape and creates a
+new fixed aggregate object. Unknown, stale, malformed, mixed, or over-cap state
+produces an unavailable projection with no inventory, lane, or sample payload.
+This boundary preserves useful private operations state without making it a
+public or cache-serializable identity surface.
 
 ## Data And GitHub API Load
 
-Bay is a presentation over the existing cache-backed `/api/status` snapshot.
-It adds no browser-to-GitHub requests and no new GitHub REST or GraphQL query
-path. Active work, explicit terminal outcomes, and observed completion timing
-are derived from workflow-job and recent-close data already collected for the
-Overview page.
+Bay is a presentation over the cache-backed public `/api/status` snapshot and
+the aggregate `/api/durable-lifecycle-bay` projection. It adds no
+browser-to-GitHub requests and no new GitHub REST or GraphQL query path. Active
+stage counts, explicit terminal outcomes, and observed completion timing are
+derived from data already collected for the Overview page, but the private
+correlation fields used during collection are not part of either Bay response.
 
 Bay polls the Worker every 20 seconds, compared with Overview every 15 seconds:
 three rather than four browser status requests per minute after initial load.

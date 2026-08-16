@@ -28,9 +28,9 @@ Source files in `commands/` use Claude Code's slash-command shape. The Claude Co
 
 ## The AI-first rule (non-negotiable)
 
-Every command that writes to a user's vault MUST follow `references/ai-first-rules.md`. Vault notes are designed for **future-Claude retrieval**, not human reading. This means:
+Every command that writes to a user's vault MUST follow `references/ai-first-rules.md`. Vault notes are designed for **future agent retrieval**, not human reading. This means:
 
-- A `## For future Claude` preamble at the top of every note
+- A `## For future agent` preamble at the top of every note
 - Rich frontmatter: `type`, `date`, `tags`, `ai-first: true`, plus type-specific fields
 - `[[wikilinks]]` for every person, project, idea, decision referenced
 - External claims carry recency markers like `(as of 2026-04, source.com)`
@@ -50,7 +50,7 @@ If you are editing a command file in `commands/`, do not rewrite the AI-first pr
 
 1. Create `commands/<name>.md` with `description:` frontmatter and operating instructions.
 2. If it runs Python, add `scripts/research/<name>.py` (or appropriate subfolder).
-3. **Apply the AI-first rule to every vault write.** Reference `references/ai-first-rules.md` from the command body so future-Claude has the spec inline.
+3. **Apply the AI-first rule to every vault write.** Reference `references/ai-first-rules.md` from the command body so future agent has the spec inline.
 4. If the command produces a new note type, add its frontmatter schema to `references/ai-first-rules.md`.
 5. Update `SKILL.md` (Layer section + command list) and `README.md` (commands table).
 6. Add a `CHANGELOG.md` entry under "Unreleased".
@@ -84,8 +84,8 @@ If you change an adapter's output layout, update the matching assertion in `test
 
 ## What not to do
 
-- Do not rewrite vault output to be "more human-friendly." The vault is for future-Claude, not human readers.
-- Do not strip frontmatter or `## For future Claude` preambles from existing commands.
+- Do not rewrite vault output to be "more human-friendly." The vault is for future agent, not human readers.
+- Do not strip frontmatter or `## For future agent` preambles from existing commands.
 - Do not add emojis to command files or vault output (unless explicitly part of a UI element like a kanban column emoji).
 - Do not invent rates, dates, or relationships when writing project notes - mark unknowns as `TBD`.
 - **Contributors:** do not push to `main` directly - open a PR.

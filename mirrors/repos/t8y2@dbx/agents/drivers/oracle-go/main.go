@@ -48,6 +48,7 @@ var (
 	oracleNamedPlSQLBlockEndRegexp       = regexp.MustCompile(`(?is)\bEND\s+([A-Z0-9_$#]+)\s*;\s*$`)
 	oracleUnsupportedServerCharsetRegexp = regexp.MustCompile(`server use charset with id: ([0-9]+).*not supported by the driver`)
 	oracleVersionNumberRegexp            = regexp.MustCompile(`(?:^|[^0-9])([0-9]+)\.[0-9]+`)
+	oracleNotNullConstraintRegexp        = regexp.MustCompile(`(?i)^\s*\(*\s*(?:"((?:[^"]|"")*)"|([A-Z0-9_$#]+))\s+IS\s+NOT\s+NULL\s*\)*\s*$`)
 	oracleDatabaseVersionQueries         = []string{
 		oracleDatabaseVersionSQL,
 		`SELECT BANNER FROM V$VERSION WHERE BANNER LIKE 'Oracle Database%' AND ROWNUM = 1`,
@@ -452,6 +453,38 @@ type triggerInfo struct {
 	Statement *string `json:"statement,omitempty"`
 }
 
+// constraintInfo represents primary key, unique, and check constraints for a
+// table. Foreign keys are served separately by listForeignKeys, so this only
+// covers constraint types 'P', 'U', and 'C'.
+type constraintInfo struct {
+	Name              string   `json:"name"`
+	ConstraintType    string   `json:"constraint_type"`
+	Definition        string   `json:"definition"`
+	Columns           []string `json:"columns"`
+	RefSchema         *string  `json:"ref_schema,omitempty"`
+	RefTable          *string  `json:"ref_table,omitempty"`
+	RefColumns        []string `json:"ref_columns"`
+	MatchType         *string  `json:"match_type,omitempty"`
+	OnUpdate          *string  `json:"on_update,omitempty"`
+	OnDelete          *string  `json:"on_delete,omitempty"`
+	Deferrable        bool     `json:"deferrable"`
+	InitiallyDeferred bool     `json:"initially_deferred"`
+	Enabled           bool     `json:"enabled"`
+	Valid             bool     `json:"valid"`
+}
+
+func (c constraintInfo) MarshalJSON() ([]byte, error) {
+	type alias constraintInfo
+	value := alias(c)
+	if value.Columns == nil {
+		value.Columns = []string{}
+	}
+	if value.RefColumns == nil {
+		value.RefColumns = []string{}
+	}
+	return json.Marshal(value)
+}
+
 type server struct {
 	db                     *sql.DB
 	params                 connectParams
@@ -852,6 +885,11 @@ func (s *server) dispatch(method string, params map[string]json.RawMessage) (any
 		schema := stringParam(params, "schema")
 		table := stringParam(params, "table")
 		result, err := s.listForeignKeys(schema, table)
+		return result, false, err
+	case "list_constraints":
+		schema := stringParam(params, "schema")
+		table := stringParam(params, "table")
+		result, err := s.listConstraints(schema, table)
 		return result, false, err
 	case "list_triggers":
 		schema := stringParam(params, "schema")
@@ -2546,6 +2584,123 @@ ORDER BY ac.CONSTRAINT_NAME, acc.POSITION`, []any{schema, table})
 		result = append(result, item)
 	}
 	return emptyIfNil(result), rows.Err()
+}
+
+func oracleConstraintTypeName(kind string) string {
+	switch kind {
+	case "P":
+		return "PRIMARY KEY"
+	case "U":
+		return "UNIQUE"
+	case "C":
+		return "CHECK"
+	default:
+		return kind
+	}
+}
+
+func oracleSystemNotNullConstraint(kind string, generated sql.NullString, definition string, column, nullable sql.NullString) bool {
+	if kind != "C" || !generated.Valid || generated.String != "GENERATED NAME" || !column.Valid || !nullable.Valid || nullable.String != "N" {
+		return false
+	}
+	matches := oracleNotNullConstraintRegexp.FindStringSubmatch(definition)
+	if matches == nil {
+		return false
+	}
+	if matches[1] != "" {
+		return strings.ReplaceAll(matches[1], `""`, `"`) == column.String
+	}
+	return strings.EqualFold(matches[2], column.String)
+}
+
+// listConstraints returns primary key, unique, and check constraints for a
+// table. Oracle represents every NOT NULL column as a system-generated CHECK
+// constraint (e.g. "COL" IS NOT NULL); those are excluded here so the result
+// only contains constraints a user would recognize as such, matching how
+// tools like DBeaver/Navicat present Oracle constraints.
+func (s *server) listConstraints(schema, table string) ([]constraintInfo, error) {
+	schema, err := s.normalizeSchemaForIdentity(schema)
+	if err != nil {
+		return nil, err
+	}
+	table = strings.TrimSpace(table)
+	// SEARCH_CONDITION is a LONG column: Oracle rejects LONG values in WHERE
+	// clauses, functions, or ORDER BY (ORA-00932), so it can only appear in
+	// the SELECT list here. The NOT-NULL-check exclusion below is therefore
+	// applied in Go after scanning, not in SQL.
+	rows, err := s.queryRows(`
+SELECT ac.CONSTRAINT_NAME,
+       ac.CONSTRAINT_TYPE,
+       ac.SEARCH_CONDITION,
+       ac.GENERATED,
+       ac.STATUS,
+       ac.DEFERRABLE,
+       ac.DEFERRED,
+       ac.VALIDATED,
+       acc.COLUMN_NAME,
+       acc.POSITION,
+       atc.NULLABLE
+FROM ALL_CONSTRAINTS ac
+LEFT JOIN ALL_CONS_COLUMNS acc ON acc.OWNER = ac.OWNER AND acc.CONSTRAINT_NAME = ac.CONSTRAINT_NAME
+LEFT JOIN ALL_TAB_COLUMNS atc ON atc.OWNER = ac.OWNER AND atc.TABLE_NAME = ac.TABLE_NAME AND atc.COLUMN_NAME = acc.COLUMN_NAME
+WHERE ac.OWNER = :1
+  AND ac.TABLE_NAME = :2
+  AND ac.CONSTRAINT_TYPE IN ('P', 'U', 'C')
+ORDER BY ac.CONSTRAINT_NAME, acc.POSITION`, []any{schema, table})
+	if err != nil {
+		return nil, err
+	}
+	defer s.closeRows(rows)
+
+	byName := map[string]*constraintInfo{}
+	skipped := map[string]bool{}
+	order := []string{}
+	for rows.Next() {
+		var name, kind string
+		var condition, generated, status, deferrable, deferred, validated, column, nullable sql.NullString
+		var position sql.NullInt64
+		if err := rows.Scan(&name, &kind, &condition, &generated, &status, &deferrable, &deferred, &validated, &column, &position, &nullable); err != nil {
+			return nil, err
+		}
+		if skipped[name] {
+			continue
+		}
+		item := byName[name]
+		if item == nil {
+			definition := ""
+			if condition.Valid {
+				definition = strings.TrimSpace(condition.String)
+			}
+			if oracleSystemNotNullConstraint(kind, generated, definition, column, nullable) {
+				skipped[name] = true
+				continue
+			}
+			item = &constraintInfo{
+				Name:              name,
+				ConstraintType:    oracleConstraintTypeName(kind),
+				Definition:        definition,
+				Columns:           []string{},
+				RefColumns:        []string{},
+				Deferrable:        deferrable.Valid && deferrable.String == "DEFERRABLE",
+				InitiallyDeferred: deferred.Valid && deferred.String == "DEFERRED",
+				Enabled:           status.Valid && status.String == "ENABLED",
+				Valid:             validated.Valid && validated.String == "VALIDATED",
+			}
+			byName[name] = item
+			order = append(order, name)
+		}
+		if column.Valid && column.String != "" {
+			item.Columns = append(item.Columns, column.String)
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	result := make([]constraintInfo, 0, len(order))
+	for _, name := range order {
+		result = append(result, *byName[name])
+	}
+	return emptyIfNil(result), nil
 }
 
 func (s *server) listTriggers(schema, table string) ([]triggerInfo, error) {

@@ -117,7 +117,6 @@ gstack/
 │   ├── gen-skill-docs.ts  # Template → SKILL.md generator (config-driven)
 │   ├── host-config.ts     # HostConfig interface + validator
 │   ├── host-config-export.ts  # Shell bridge for setup script
-│   ├── host-adapters/     # Host-specific adapters (OpenClaw tool mapping)
 │   ├── resolvers/   # Template resolver modules (preamble, design, review, gbrain, etc.)
 │   ├── skill-check.ts     # Health dashboard
 │   ├── test-paid-shards.ts  # Sharded paid-tier runner (one Bun process per shard)
@@ -158,11 +157,11 @@ gstack/
 │   ├── test/        # Integration tests
 │   └── dist/        # Compiled binary
 ├── extension/       # Chrome extension (side panel + activity feed + CSS inspector)
-├── lib/             # Shared libraries (worktree.ts, egress-receipt.ts, context-bill.ts, redact-engine.ts)
+├── lib/             # Shared libraries (worktree.ts, egress-receipt.ts, context-bill.ts, redact-engine.ts, code-intelligence/)
 ├── docs/designs/    # Design documents
 ├── setup-deploy/    # /setup-deploy skill (one-time deploy config)
 ├── .github/         # CI workflows + Docker image
-│   ├── workflows/   # evals.yml (E2E on Ubicloud), skill-docs.yml, actionlint.yml
+│   ├── workflows/   # evals.yml (E2E on Ubicloud), quality-gate.yml (secret scan), dependency-review.yml, osv-scanner.yml, skill-docs.yml, actionlint.yml, and 7 more (windows, periodic evals, release gates, ci-image)
 │   └── docker/      # Dockerfile.ci (pre-baked toolchain + Playwright/Chromium)
 ├── contrib/         # Contributor-only tools (never installed for users)
 │   └── add-host/    # /gstack-contrib-add-host skill
@@ -391,47 +390,39 @@ every `git pull`.
 
 | Layer | Module | Lives in |
 |-------|--------|----------|
-| L1-L3 | `content-security.ts` | both server and agent — datamarking, hidden element strip, ARIA regex, URL blocklist, envelope wrapping |
-| L4 | `security-classifier.ts` (TestSavantAI ONNX) | **sidebar-agent only** |
-| L4b | `security-classifier.ts` (Claude Haiku transcript) | **sidebar-agent only** |
-| L5 | `security.ts` (canary) | both — inject in compiled, check in agent |
-| L6 | `security.ts` (combineVerdict ensemble) | both |
+| L1-L3 | `content-security.ts` | server + read path — datamarking, hidden element strip, ARIA regex, URL blocklist, envelope wrapping |
+| L4 | `security-classifier.ts` (TestSavantAI ONNX) | **security sidecar subprocess only** (`security-sidecar-entry.ts`, driven by `security-sidecar-client.ts` from server.ts) |
+| Canary | `security.ts` (generate/inject/detect) | pure utilities — no production injector today (the chat prompt-builder that injected them was ripped) |
+| Combiner | `security.ts` (combineVerdict + THRESHOLDS) | pure, tested; retains transcript/deberta vote handling for LayerSignal inputs no live layer produces anymore |
+
+History note: an L4b Haiku transcript classifier and an opt-in DeBERTa ensemble
+(`GSTACK_SECURITY_ENSEMBLE=deberta`) existed until the chat-path agent that
+invoked them was ripped; both were deleted as dead code (zero production
+callers). Do not re-document them as live.
 
 **Critical constraint:** `security-classifier.ts` CANNOT be imported from the
 compiled browse binary. `@huggingface/transformers` v4 requires `onnxruntime-node`
-which fails to `dlopen` from Bun compile's temp extract dir. Only `security.ts`
-(pure-string operations — canary, verdict combiner, attack log, status) is safe
-for `server.ts`. See `~/.gstack/projects/garrytan-gstack/ceo-plans/2026-04-19-prompt-injection-guard.md`
-§"Pre-Impl Gate 1 Outcome" for full architectural decision.
+which fails to `dlopen` from Bun compile's temp extract dir — hence the sidecar
+subprocess. Only `security.ts` (pure-string operations — canary utilities,
+verdict combiner, status) is safe for `server.ts`. See
+`~/.gstack/projects/garrytan-gstack/ceo-plans/2026-04-19-prompt-injection-guard.md`
+§"Pre-Impl Gate 1 Outcome" for the original architectural decision.
 
-**Thresholds** (in `security.ts`):
-- `BLOCK: 0.85` — single-layer score that would cause BLOCK if cross-confirmed
-- `WARN: 0.75` — cross-confirm threshold. When L4 AND L4b both >= 0.75 → BLOCK
-- `LOG_ONLY: 0.40` — gates transcript classifier (skip Haiku when all layers < 0.40)
-- `SOLO_CONTENT_BLOCK: 0.92` — single-layer threshold for label-less content classifiers
-  (testsavant, deberta). Intentionally higher than `BLOCK` because these layers can't
-  distinguish "this is an injection" from "this looks like phishing aimed at the user."
-  The transcript classifier keeps a separate, label-gated solo path at `BLOCK` (0.85).
-
-**Ensemble rule:** BLOCK only when the ML content classifier AND the transcript
-classifier both report >= WARN. Single-layer high confidence degrades to WARN —
-this is the Stack Overflow instruction-writing FP mitigation. Canary leak
-always BLOCKs (deterministic).
+**Thresholds** (in `security.ts`): `BLOCK: 0.85`, `WARN: 0.75`, `LOG_ONLY: 0.40`,
+`SOLO_CONTENT_BLOCK: 0.92` (label-less content classifiers can't distinguish
+"injection" from "phishing aimed at the user", so their solo bar is higher).
+The live L4 path applies these in server.ts's sidecar-scan handling; canary
+leak always BLOCKs (deterministic).
 
 **Env knobs:**
 - `GSTACK_SECURITY_OFF=1` — emergency kill switch. Classifier stays off even if
-  warmed. Canary is still injected; just the ML scan is skipped.
-- `GSTACK_SECURITY_ENSEMBLE=deberta` — opt-in DeBERTa-v3 ensemble. Adds
-  ProtectAI DeBERTa-v3-base-injection-onnx as L4c classifier for cross-model
-  agreement. 721MB first-run download. With ensemble enabled, BLOCK requires
-  2-of-3 ML classifiers agreeing at >= WARN (testsavant, deberta, transcript).
-  Without ensemble (default), BLOCK requires testsavant + transcript at >= WARN.
+  warmed; the L1-L3 filters keep running.
 - Classifier model cache: `~/.gstack/models/testsavant-small/` (112MB, first run only)
-  plus `~/.gstack/models/deberta-v3-injection/` (721MB, only when ensemble enabled)
-- Attack log: `~/.gstack/security/attempts.jsonl` (salted sha256 + domain only,
-  rotates at 10MB, 5 generations)
-- Per-device salt: `~/.gstack/security/device-salt` (0600)
-- Session state: `~/.gstack/security/session-state.json` (cross-process, atomic)
+- Attack log: `~/.gstack/security/attempts.jsonl` — written by
+  `tunnel-denial-log.ts` (tunnel-surface rejections; rotates at 10MB, 5 generations)
+- Session state: `~/.gstack/security/session-state.json` (cross-process, atomic;
+  NOTE: classifierStatus currently has no live writer — shield status derives
+  from what's on disk)
 
 ## Dev symlink awareness
 
@@ -502,7 +493,7 @@ determined leaker (a CHANGELOG line that does would fail a hostile screenshotter
   `--auto-redact`, `--repo-visibility`, `--from-file`). `bin/gstack-redact-prepush`
   is the opt-in git hook.
 - **Skill docs are generated** from `scripts/resolvers/redact-doc.ts`
-  (`{{REDACT_TAXONOMY_TABLE}}`, `{{REDACT_INVOCATION_BLOCK:<sink>}}`) so /spec,
+  (`{{REDACT_INVOCATION_BLOCK:<sink>}}`) so /spec,
   /cso, /ship, /document-release, /document-generate never drift from the engine.
 - **Scan-at-sink:** always scan the EXACT bytes that will be sent — write to a
   temp file, scan that file, pass the SAME file to `gh`/`git`. Never scan a string

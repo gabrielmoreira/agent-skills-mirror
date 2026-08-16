@@ -2,7 +2,7 @@
 
 `gortex install` (once per machine) and `gortex init` (once per repo)
 auto-configure Gortex for every AI coding assistant detected on your
-machine. Nineteen adapters ship today.
+machine. 20 adapters ship today.
 
 - `gortex install` writes user-level machinery: `~/.claude.json` MCP,
   `~/.claude/skills/gortex-*`, `~/.claude/commands/gortex-*.md`,
@@ -26,7 +26,8 @@ commands accept `--agents=<csv>` to constrain setup and
 | `aider`         | `.aiderignore` block, `CONVENTIONS.md` communities block                                        | project    | https://aider.chat/docs/config/aider_conf.html                      |
 | `antigravity`   | `~/.gemini/antigravity/mcp_config.json` + Knowledge Item                                        | user       | https://antigravity.google/docs/mcp                                 |
 | `cline`         | `cline_mcp_settings.json` (per VS Code / Cursor globalStorage), `.clinerules/gortex-communities.md` | both     | https://docs.cline.bot/mcp/mcp-overview                             |
-| `codex`         | `~/.codex/config.toml` (`[mcp_servers.gortex]` + `SessionStart`, `UserPromptSubmit`, Bash/Gortex-read `PreToolUse`, and Bash/`apply_patch` `PostToolUse` hooks), `~/.codex/AGENTS.md` rule block, repo `AGENTS.md` communities block | both       | https://developers.openai.com/codex/mcp                             |
+| `codex`         | `~/.codex/config.toml` (`[mcp_servers.gortex]` + `SessionStart`, `UserPromptSubmit`, Bash/Gortex-read `PreToolUse`, and Bash/`apply_patch` `PostToolUse` hooks), `~/.codex/AGENTS.md` rule block, `~/.agents/skills/gortex-*`, `~/.codex/agents/gortex-*.toml`, repo `AGENTS.md` communities block, repo `.agents/skills/gortex-*` | both       | https://learn.chatgpt.com/docs/extend/mcp                           |
+| `copilot-cli`   | `~/.copilot/mcp-config.json` (`mcpServers`), `~/.copilot/copilot-instructions.md` rule block, `~/.copilot/skills/gortex-*`, `~/.copilot/agents/gortex-*.agent.md`, `~/.copilot/hooks/gortex.json`, repo `.github/copilot-instructions.md` communities block, repo `.github/skills/gortex-*` | both       | https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers |
 | `continue`      | `.continue/mcpServers/gortex.json`, `.continue/rules/gortex-communities.md`                     | project    | https://docs.continue.dev/customize/deep-dives/mcp                  |
 | `cursor`        | `.cursor/mcp.json` (project) or `~/.cursor/mcp.json`, `.cursor/rules/gortex-communities.mdc`    | both       | https://docs.cursor.com/en/context/mcp                              |
 | `gemini`        | `.gemini/settings.json` or `~/.gemini/settings.json`, `GEMINI.md` communities block             | both       | https://geminicli.com/docs/tools/mcp-server/                        |
@@ -35,7 +36,7 @@ commands accept `--agents=<csv>` to constrain setup and
 | `kimi`          | `.kimi-code/mcp.json` (project) or `~/.kimi-code/mcp.json` + `~/.kimi-code/config.toml` (`UserPromptSubmit` / `PreToolUse` / `Stop` / `SubagentStart` hooks) | both       | https://www.kimi.com/code/docs/en/kimi-code-cli/customization/hooks.html |
 | `kiro`          | `.kiro/settings/mcp.json` + steering/hooks or user-level                                        | both       | https://kiro.dev/docs/mcp/configuration                             |
 | `oh-my-pi`      | `.omp/mcp.json`                                                                                 | project    | https://github.com/can1357/oh-my-pi/blob/main/docs/mcp-config.md   |
-| `opencode`      | `opencode.json` (or existing `opencode.jsonc`), `AGENTS.md` communities block                   | project    | https://opencode.ai/docs/mcp                                        |
+| `opencode`      | `opencode.json` (or existing `opencode.jsonc`) and `~/.config/opencode/opencode.json` MCP stanzas, `AGENTS.md` communities block, repo `.opencode/skills/gortex-*`, `~/.config/opencode/skills/gortex-*`, `~/.config/opencode/commands/gortex-*.md`, `~/.config/opencode/plugin/gortex.js` | both       | https://opencode.ai/docs/mcp                                        |
 | `openclaw`      | `~/.openclaw/openclaw.json` (`mcp.servers.gortex`)                                              | user       | https://docs.openclaw.ai/cli/mcp                                    |
 | `pi`            | `.pi/extensions/gortex/index.ts` (project) or `~/.pi/agent/extensions/gortex/index.ts`; `AGENTS.md` communities block only when `--skills` | both | https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/extensions.md |
 | `vscode`        | `.vscode/mcp.json` (`servers` key, 1.102+), `.github/copilot-instructions.md` communities block | project    | https://code.visualstudio.com/docs/copilot/chat/mcp-servers         |
@@ -46,6 +47,76 @@ Mode legend: **project** writes inside the repo (`gortex init` only);
 **user** writes under `$HOME` (`gortex install` only); **both** means
 the adapter splits: `gortex install` writes the user-level pieces and
 `gortex init` writes the repo-level pieces.
+
+Note that `copilot-cli` is the standalone `copilot` binary
+(`npm i -g @github/copilot`). Copilot inside VS Code is the separate
+`vscode` adapter, and the `copilot` LLM provider in `.gortex.yaml` is a
+third, unrelated thing — see [`llm.md`](llm.md).
+
+## Skill and hook surfaces per host
+
+Four hosts receive the same 21 skill bodies, each re-wrapped in that
+host's own frontmatter from one authoring source. The curated pack is
+always user-level, so `gortex init` never adds Gortex markdown to a
+repo that teammates have to review; only per-community skills, which
+describe that specific codebase, are written into the repo.
+
+| Host | Skills | Slash commands | Sub-agents | Enforcement hooks |
+| --- | --- | --- | --- | --- |
+| Claude Code | `~/.claude/skills/` | `~/.claude/commands/` | `~/.claude/agents/` | native, `deny` / `enrich` postures |
+| Codex CLI | `~/.agents/skills/` | **no** — see below | `~/.codex/agents/*.toml` | native, 4 events |
+| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/commands/` | not written | **no hook system** — JS plugin bridge |
+| GitHub Copilot CLI | `~/.copilot/skills/` | **no** — see below | `~/.copilot/agents/` | native, 4 of 14 events |
+
+The gaps are the hosts', not ours:
+
+- **Codex has no slash-command surface worth targeting.** `$CODEX_HOME/prompts`
+  is deprecated in favour of skills and is user-level only, with no
+  project directory. Skills are the substitute.
+- **Copilot CLI does not read prompt files.** `.github/prompts/*.prompt.md`
+  is a VS Code / Visual Studio surface; the CLI maintainers closed the
+  request as superseded by skills.
+- **OpenCode has no lifecycle-hook configuration at all.** Its only
+  extension point is a JS/TS plugin, so Gortex installs one that speaks
+  the same bridge protocol the Pi extension uses. It goes to the
+  user-level plugin directory rather than the repo: it is the only
+  executable artifact Gortex writes, and the repo-level directory is
+  committed.
+- **Copilot CLI's `agentStop` carries no context channel** (only a
+  decision and a reason), so there is no turn-end briefing on that host.
+- **OpenCode sub-agents are not written.** Their `tools` map is keyed by
+  tool name and the spelling for an MCP-served tool is unverified; a
+  wrong key silently grants nothing.
+- **No sub-agent gets a tool allowlist except Claude Code's.** Codex has
+  no per-agent allowlist at all, and Copilot's `tools` key expects names
+  that Claude's `mcp__gortex__*` spelling does not resolve to. An
+  unrecognised entry grants nothing rather than falling back to the full
+  toolbox, so both inherit the session's tools instead.
+
+Codex sub-agents are worth one extra note, because the file format has
+two ways to fail that leave no error behind. Codex rejects an agent file
+outright on a single unknown key, and its `mcp_servers` field is a table
+of full server definitions rather than a list of server names — the
+intuitive `mcp_servers = ["gortex"]` voids the whole agent. Gortex
+therefore emits four keys and no `mcp_servers`; omitting it inherits the
+session's servers, which is what we want anyway. Project-scoped
+`.codex/agents/` is skipped entirely unless the project is trusted, so
+these install user-level only.
+
+Verify a Codex install with `codex doctor`: a rejected agent file shows
+up there as a startup warning mentioning `agent role`, while the exit
+code stays 0 and everything else loads normally.
+
+`~/.agents/skills` is a shared cross-agent root that both Codex and
+OpenCode scan, so one write serves both. Copilot CLI dropped it in
+v1.0.66 and needs `~/.copilot/skills`; it also stopped reading
+home-level `~/.claude/*` in v1.0.36.
+
+Hook postures differ by host and are worth knowing before debugging a
+quiet integration: Codex gates every hook behind per-hook trust
+(`/hooks` inside Codex), Copilot CLI fails **closed** on a `preToolUse`
+non-zero exit but fails **open** on a timeout, and the OpenCode bridge
+fails open on any error so a broken plugin can never break a session.
 
 Tool-usage guidance is agent-neutral. Every named MCP connection receives the
 same mandatory, compact workflow in the server initialization response.
@@ -158,8 +229,19 @@ Every adapter under `internal/agents/<name>/` implements the
 - `Apply(env, opts)` — performs the writes, respecting
   `opts.DryRun` and `opts.Force`
 
-Every write funnels through `agents.WriteIfNotExists`,
-`agents.MergeJSON`, or `agents.MergeTOML`. Those helpers provide:
+Every write funnels through one of the shared helpers, never through
+`os.WriteFile` directly:
+
+| Helper | Use it for |
+| --- | --- |
+| `agents.WriteIfNotExists` | a file the user owns after we create it (never overwritten) |
+| `agents.WriteOwnedFile` | a file Gortex regenerates (skips when byte-identical) |
+| `agents.MergeJSON` / `MergeTOML` / `MergeYAML` | a config file shared with the host and the user |
+| `agents.UpsertMarkedBlock` | a marker-guarded block inside a human-edited markdown file |
+| `agents.UpsertMCPServer` / `RemoveMCPServer` | the `gortex` MCP stanza in any config shape |
+| `agents.UpsertMCPServerApprovalList` | a per-tool approval list, preserving a user-narrowed one |
+
+Those helpers provide:
 
 - Atomic temp-file-plus-rename — a partial failure can't leave a
   half-written config

@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-vegetation
-description: Generate authored procedural trees, grass, ivy, and vegetation in Three.js. Use for surface-following vines, painted ivy paths, stylized or GPU grass, trunks, recursive branches, roots, canopies, leaf cards, species presets, deterministic growth, and rooted blade or petiole-hinge wind.
+description: Generate authored procedural trees, grass, ivy, flowers, and vegetation in Three.js or raw WebGPU. Use for surface-following vines, painted ivy paths, stylized or GPU grass, GPU-culled virtual flower fields, trunks, recursive branches, roots, canopies, leaf cards, species presets, deterministic growth, distance-tiered plant geometry, and rooted blade, stem, or petiole-hinge wind.
 ---
 
 # Procedural Vegetation
@@ -41,6 +41,18 @@ for MRT blade-parameter generation, deterministic terrain-conforming placement,
 Voronoi clumps, Bezier blade folding, wind-facing yaw, distance LOD/culling,
 normal/color fading, translucency, and field diagnostics.
 
+Read [references/gpu-culled-flower-field.md](references/gpu-culled-flower-field.md)
+for the exact virtual-address, ecology, hierarchical-compaction, indirect-draw,
+distance-tier, atlas, wind, contact, resource, and diagnostic contracts.
+
+Read the
+[GPU-culled flower-field entry](examples/gpu-culled-flower-field/gpu-culled-flower-field.js)
+and its complete
+[raw WebGPU implementation](examples/gpu-culled-flower-field/source/gpu-culled-flower-field.ts)
+for zero-record integer candidate reconstruction, 32 by 32 tile culling,
+three visible-ID streams, indirect near/middle/far draws, curved textured
+petals, identity-preserving horizon heads, and rooted moving-contact response.
+
 Read the
 [procedural surface ivy entry](examples/procedural-surface-ivy/ivy-effect.js)
 and its complete
@@ -64,6 +76,10 @@ only implementation; the entry file only re-exports them.
 - surface-following stems are offset from the host or flip normals across seams;
 - ivy branches ignore the tangent plane while attached;
 - leaf wind rotates around the card center instead of the petiole.
+- a million-flower field allocates CPU transforms or per-candidate records;
+- distant flower LOD replaces species identity with one generic sprite;
+- compaction and direct rendering reconstruct different roots or acceptance;
+- flower heads stay world-up after their stems bend.
 
 ## Routing boundary
 

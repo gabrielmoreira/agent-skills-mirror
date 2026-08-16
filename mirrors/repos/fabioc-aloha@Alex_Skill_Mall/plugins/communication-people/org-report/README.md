@@ -2,7 +2,7 @@
 
 ![Org Report](https://raw.githubusercontent.com/fabioc-aloha/org-report/main/assets/banner.svg)
 
-[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Manager](https://github.com/fabioc-aloha/Alex_ACT_Manager) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise) · [Org Report](https://github.com/fabioc-aloha/org-report)
+[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise) · [Org Report](https://github.com/fabioc-aloha/org-report)
 
 Org Report turns one directory walk into a sourced, shareable executive brief. Given a target person, it walks the reporting tree exposed by your directory MCP, synthesizes a profile for every individual from accessible communication signals, and produces a Word + PDF report displayed live in a Copilot canvas.
 

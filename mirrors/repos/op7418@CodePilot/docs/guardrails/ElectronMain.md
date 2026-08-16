@@ -28,8 +28,8 @@
 | 5 | macOS/Windows 产物必须校验版本、native ABI 与 packaged server health 后才能上传 | build workflow |
 | 6 | 主窗口外部导航必须经过 `classifyNavigation`；非 http/https 协议不得交给系统 shell | `electron/main.ts` + tests |
 | 7 | Renderer 的 input / textarea / contenteditable 使用 Electron role 菜单；密码框不得启用复制、剪切 | `attachRendererEditingContextMenu` |
-| 8 | xAI browser OAuth callback 固定为 `127.0.0.1:56121/callback` 且只绑定 loopback | OAuth manager |
-| 9 | packaged 无法打开浏览器或端口被占用时必须明确提示 device-code 登录 | Settings UI + routes |
+| 8 | Grok Build browser OAuth callback 只绑定 `127.0.0.1`，生产由 OS 分配动态端口；authorize/token exchange 必须复用同一 redirect URI | OAuth manager |
+| 9 | packaged 无法打开浏览器或 loopback 不可用时必须明确提供 device-code 登录 | Settings UI + routes |
 | 10 | packaged Next server 的 xAI OAuth fetch 必须显式消费代理 dispatcher，不能假设 Node fetch 自动读取 env | `electron/main.ts` + env proxy fetch |
 | 11 | Electron → packaged Next child env 保留显式 proxy、缺省时补 system proxy，并合并 loopback `NO_PROXY`；Windows 不得传大小写重复 key | process proxy env |
 | 12 | bundled Codex 的 Windows system-proxy-only 路径必须以 packaged smoke 证明；静态 source pin 不能替代 | Windows release smoke |
@@ -157,7 +157,8 @@
 - 2026-07-20 — standalone 最小 root allowlist，并在打包边界 sanitize + fail-closed。
 - 2026-08-07 — Windows 0.64 真实 `shell.openExternal` association failure 被全局 unhandled-rejection 捕获；两个外链入口统一进入可测试 Promise owner，失败给本地化默认浏览器提示且不记录动态 URL/系统正文。
 - 2026-07-20 — Windows 重叠 FileSet 改为互斥资源组；packaged server health 升为发布门禁。
-- 2026-07-21 — xAI OAuth 采用固定 loopback browser PKCE + device-code 双路径。
+- 2026-07-21 — xAI OAuth 首版采用固定 loopback browser PKCE + device-code 双路径；固定端口已由 2026-08-13 Grok Build 动态 loopback 合同取代。
+- 2026-08-13 — Grok Build 生产 browser flow 改为 OS 动态 loopback 端口；pending flow 保存 redirect URI并供 token exchange 原样复用，旧 56121 占用不再阻断浏览器登录。
 - 2026-07-27 — Electron child env 改为显式 proxy 优先 + system fallback + loopback bypass。
 - 2026-07-29 — 输入框右键统一放在主进程 `webContents.context-menu`，业务对象右键仍由 Renderer 负责。
 - 2026-07-30 — 用户否决用 82% window / 88% sidebar renderer tint 解决深色可读性：它会遮住浅/深两种模式的原生磨砂。改为 app mode 经窄 IPC 同步 `nativeTheme.themeSource`，外围透明、侧栏只保留 40% tint；见 `569b117d`。

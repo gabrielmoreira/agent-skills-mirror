@@ -3,7 +3,7 @@
 Ingestion patterns for CSV, JSON, REST API, SQL, Excel, and Parquet. A decision
 framework that guides an LLM through loading data from any common source.
 
-**Status**: Published (v1.0.1)
+**Status**: Published (v2.0.1)
 
 ## What It Does
 
@@ -21,9 +21,7 @@ Fires after `storytelling-requirements`, before `data-preparation`.
 
 ## Install
 
-```bash
-cp -r plugins/datasource-connectors/ /your/project/.github/skills/local/datasource-connectors/
-```
+Install `datasource-connectors` from the Alex ACT Mall.
 
 ## Security
 

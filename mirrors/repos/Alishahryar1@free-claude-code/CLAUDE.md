@@ -18,7 +18,7 @@
 - Do not add `# type: ignore` or `# ty: ignore`; fix the underlying type issue.
 - Do not add `from __future__ import annotations`; Python 3.14 native lazy annotations are the project standard.
 - All 5 check IDs are represented in `scripts/ci.sh` / `scripts/ci.ps1` and enforced by `tests.yml` before each merge (parallel jobs: suppression grep, ruff-format, ruff-check, ty, pytest).
-- GitHub CI runs only for pull requests targeting `main`. Strict required checks keep each PR current with `main`, so the tested PR tree is the tree squash-merged without a duplicate post-merge run.
+- GitHub CI runs for every pull request, including stacked PRs targeting non-`main` branches. Head updates trigger fresh checks; strict required checks keep PRs targeting `main` current with `main`, so the tested PR tree is the tree squash-merged without a duplicate post-merge run.
 - Repository protection should use rulesets: a non-bypassable main integrity ruleset requires pull requests and strict required checks, keeps branches current, and blocks direct/force pushes to `main`; a separate review ruleset may allow `Alishahryar1`/admins to bypass review only.
 - Required status checks: set **required status checks** to **all** of those statuses (e.g. **Ban suppressions and legacy annotations**, **ruff-format**, **ruff-check**, **ty**, **pytest**—use the exact labels GitHub shows, which may be prefixed with **CI /**). Remove **ci** from required checks if it was previously added for the old gate job.
 
@@ -39,6 +39,7 @@
 - **Dead code**: Remove unused code, legacy systems, and hardcoded values. Use settings/config instead of literals (e.g. `settings.provider_type` not `"nvidia_nim"`).
 - **Performance**: Use list accumulation for strings (not `+=` in loops), cache env vars at init, prefer iterative over recursive when stack depth matters.
 - **Platform-agnostic naming**: Use generic names (e.g. `PLATFORM_EDIT`) not platform-specific ones (e.g. `TELEGRAM_EDIT`) in shared code.
+- **Precise types**: Avoid `typing.Any`. Use owner-defined domain types for known values, `JsonValue`/`JsonObject` for JSON, and `object` only at genuinely opaque boundaries where the value is narrowed before use. Enforce this through design review and type checking, not a mechanical text ban in CI.
 - **No type ignores**: Do not add `# type: ignore` or `# ty: ignore`. Fix the underlying type issue.
 - **Python 3.14 annotations**: Do not use `from __future__ import annotations`; rely on native lazy annotations and fix circular import boundaries instead of hiding them with annotation stringization.
 - **Imports**: Prefer top-level imports. Avoid `TYPE_CHECKING` and local imports for first-party or required dependencies; if a top-level import creates a cycle, move shared types/protocols to a neutral owner.

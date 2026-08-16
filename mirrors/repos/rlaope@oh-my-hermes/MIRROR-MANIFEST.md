@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 129 file(s) materialized.
+Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 12
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 129 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -177,17 +177,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 116 | ✓ | [`skills/ulw-context/references/decision-frontier.md`](skills/ulw-context/references/decision-frontier.md) |
 | 117 | ✓ | [`skills/ulw-context/references/project-terms.md`](skills/ulw-context/references/project-terms.md) |
 | 118 | ✓ | [`skills/ulw-context/SKILL.md`](skills/ulw-context/SKILL.md) |
-| 119 | ✓ | [`skills/ulw-goal/SKILL.md`](skills/ulw-goal/SKILL.md) |
-| 120 | ✓ | [`skills/ulw-interview/SKILL.md`](skills/ulw-interview/SKILL.md) |
-| 121 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
-| 122 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
-| 123 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
-| 124 | ✓ | [`skills/ulw-process/SKILL.md`](skills/ulw-process/SKILL.md) |
-| 125 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
-| 126 | ✓ | [`skills/ulw-ralph/SKILL.md`](skills/ulw-ralph/SKILL.md) |
-| 127 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
-| 128 | ✓ | [`skills/ulw-team/SKILL.md`](skills/ulw-team/SKILL.md) |
-| 129 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
+| 119 | ✓ | [`skills/ulw-interview/SKILL.md`](skills/ulw-interview/SKILL.md) |
+| 120 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
+| 121 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
+| 122 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
+| 123 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
+| 124 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
+| 125 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
 
 ---
 

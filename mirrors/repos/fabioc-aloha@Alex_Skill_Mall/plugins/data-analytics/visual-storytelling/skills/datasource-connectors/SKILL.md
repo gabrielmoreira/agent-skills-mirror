@@ -6,8 +6,8 @@ name: datasource-connectors
 description: "Ingestion patterns for CSV, JSON, REST API, SQL, Excel, and Parquet -- guides an LLM through loading data from any common source"
 tier: standard
 applyTo: "**/*data*,**/*ingest*,**/*connect*,**/*csv*,**/*json*,**/*sql*,**/*excel*,**/*parquet*,**/*api*"
-currency: 2026-08-06
-lastReviewed: 2026-08-06
+currency: 2026-08-15
+lastReviewed: 2026-08-15
 ---
 
 # Datasource Connectors

@@ -3,7 +3,7 @@
 Data cleaning, profiling, transformation, and quality gates. Prepares raw data
 for visualization and analysis.
 
-**Status**: Published (v1.0.1)
+**Status**: Published (v2.0.1)
 
 ## What It Does
 
@@ -14,13 +14,11 @@ for visualization and analysis.
 
 ## Pipeline Position
 
-Fires after `datasource-connectors`, before `visual-vocabulary`.
+Fires after `datasource-connectors`, before Illustrator chart selection.
 
 ## Install
 
-```bash
-cp -r plugins/data-preparation/ /your/project/.github/skills/local/data-preparation/
-```
+Install `data-preparation` from the Alex ACT Mall.
 
 ## Complements
 

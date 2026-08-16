@@ -79,7 +79,6 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-production-audit`: [omh] Hermes Production Audit workflow: evaluate release, deploy, security, observability, rollback, docs, and support readiness without claiming production access.
 - `omh-prompt-import-readiness`: [omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities.
 - `omh-provider-profile-posture`: [omh] Prepare provider-profile metadata without reading secrets or calling providers.
-- `ulw-ralph`: [omh] Ralph - one owner drives a concrete task to done: implement, verify, review, repeat until the gate passes; prefer over one-shot delegation when the task needs a verification loop.
 - `ulw-plan`: [omh] Hermes Ralplan workflow: consensus planning with review gates.
 - `omh-reliability-review`: [omh] Hermes Reliability Review workflow: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence.
 - `omh-report-package`: [omh] Hermes Report Package workflow: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages.
@@ -97,11 +96,8 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-source-finder`: [omh] Source candidate inventory - prepare typed source candidates and acquisition status before downstream work; use ulw-research to fetch and cite them, or research-brief to turn them into a decision-ready brief.
 - `omh-decide`: [omh] Decide between options: tradeoffs, a recommendation, and a decision note you can act on.
 - `omh-support-operations`: [omh] Turn a support case into a clear customer reply, severity path, and owned next step.
-- `ulw-team`: [omh] Team - run N coordinated workers on one shared task list with explicit lane ownership and merged verification; choose over raw subagents when lanes must not collide.
 - `omh-toolbelt-readiness`: [omh] Toolbelt readiness - inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner.
-- `ulw-goal`: [omh] Ultragoal - durable multi-session goal tracking: a checkpointed ledger survives context loss and resumes exactly where work stopped, with a final completion gate.
 - `ulw-perf`: [omh] Ultraperf - find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget.
-- `ulw-process`: [omh] Ultraprocess - one full task-to-PR cycle: codebase research, reviewed plan, coding handoff to the selected executor, code review, docs sync, and PR, tracked end to end.
 - `ulw-qa`: [omh] Hermes UltraQA workflow: adversarial QA and fix loops.
 - `ulw-work`: [omh] Ultrawork - split an accepted plan into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file.
 - `omh-verification-gate`: [omh] Hermes Verification Gate workflow: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge.

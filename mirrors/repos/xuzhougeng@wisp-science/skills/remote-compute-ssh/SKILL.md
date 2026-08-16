@@ -98,10 +98,13 @@ artifact:
 ```
 
 Files over the size caps (or `residency: "remote"`) are moved out of the run
-workdir into the project's persistent remote data area and registered as
-`ssh://` references with checksum and size, so workspace cleanup can never
-orphan them. Explicit `ssh://…` URIs in `output_specs` still register a
-remote reference without any download.
+workdir into the project's persistent remote data area, registered as
+`ssh://` references with checksum and size, and ledgered so they stay visible
+in `list_remote_files`. Workspace cleanup never orphans them. Delete a
+ledgered persist file with `remove_remote_files` only after the user confirms
+they no longer need it — that marks the artifact's source discarded. Explicit
+`ssh://…` URIs in `output_specs` still register a remote reference without
+any download.
 
 ## Cleanup: servers are disposable
 
@@ -114,8 +117,14 @@ results are harvested (or knowingly abandoned), reclaim the workspace:
   refuses otherwise so results are never lost. Registered artifacts and the
   Run's logs in the project are unaffected.
 - `list_remote_files({"context_id":"ssh:<alias>"})` shows every file this
-  project placed on the server (staged inputs and uploads) classified as
-  active, replaced, or orphan; `remove_remote_files` deletes retracted ones.
+  project placed on the server (staged inputs, uploads, and harvest-persisted
+  outputs) classified as active, replaced, or orphan; `remove_remote_files`
+  deletes retracted ones. Harvest-persisted outputs stay active while a live
+  External artifact still points at them.
+- Removing the SSH host from Settings audits remaining references and
+  ledgered files, then marks those External artifacts as source-discarded.
+  Later download, preview, or transfer of those URIs is refused even if the
+  same alias is re-registered.
 - Project settings can enable retention windows that automatically clean
   succeeded+harvested and failed run workspaces after N days.
 

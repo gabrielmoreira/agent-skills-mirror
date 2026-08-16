@@ -2,7 +2,7 @@
 
 ![Alex ACT AI Operations](assets/banner.svg)
 
-[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) | [Manager](https://github.com/fabioc-aloha/Alex_ACT_Manager) | [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) | [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) | [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
+[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) | [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) | [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) | [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
 
 Alex ACT AI Operations is an **optional** provider-routing plugin. It turns a
 task into an evidence-backed model plan, explains provider tradeoffs, obtains

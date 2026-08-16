@@ -65,9 +65,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`chapter10/multi-role-transfer/skills/triage/SKILL.md`](chapter10/multi-role-transfer/skills/triage/SKILL.md) |
 | 5 | ✓ | [`chapter10/multi-role-transfer/skills/writing/SKILL.md`](chapter10/multi-role-transfer/skills/writing/SKILL.md) |
 | 6 | ✓ | [`chapter2/agent-skills-ppt/skills/pptx/SKILL.md`](chapter2/agent-skills-ppt/skills/pptx/SKILL.md) |
-| 7 | ✓ | [`chapter7/curly-quote-sft/SKILL.md`](chapter7/curly-quote-sft/SKILL.md) |
-| 8 | ✓ | [`chapter8/ai-style-skill/skill/SKILL.md`](chapter8/ai-style-skill/skill/SKILL.md) |
-| 9 | ✓ | [`chapter8/browser-use-rpa/browser-use/CLAUDE.md`](chapter8/browser-use-rpa/browser-use/CLAUDE.md) |
+| 7 | ✓ | [`chapter8/curly-quote-sft/SKILL.md`](chapter8/curly-quote-sft/SKILL.md) |
+| 8 | ✓ | [`chapter9/ai-style-skill/skill/SKILL.md`](chapter9/ai-style-skill/skill/SKILL.md) |
+| 9 | ✓ | [`chapter9/browser-use-rpa/browser-use/CLAUDE.md`](chapter9/browser-use-rpa/browser-use/CLAUDE.md) |
 
 ---
 

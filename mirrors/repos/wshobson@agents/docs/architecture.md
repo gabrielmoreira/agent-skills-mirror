@@ -36,7 +36,7 @@ This marketplace follows industry best practices with a focus on granularity, co
 
 ### Plugin Distribution
 
-- **94 marketplace plugins** (90 local + 4 external via git-subdir) optimized for specific use cases
+- **91 marketplace plugins** (90 local + 1 external via git-subdir) optimized for specific use cases
 - **26 clear categories** with 1-10 plugins each for easy discovery
 - Organized by domain:
   - **Development**: 6 plugins (debugging, backend, frontend, UI, multi-platform, essentials)
@@ -48,7 +48,7 @@ This marketplace follows industry best practices with a focus on granularity, co
 
 ### Component Breakdown
 
-**203 Local Specialized Agents**
+**202 Local Specialized Agents**
 
 - Domain experts with deep knowledge
 - Organized across architecture, languages, infrastructure, quality, data/AI, documentation, business, and SEO
@@ -60,7 +60,7 @@ This marketplace follows industry best practices with a focus on granularity, co
 - Complex operations like full-stack development, security hardening, ML pipelines, incident response
 - Pre-configured agent workflows
 
-**109 Local Commands**
+**105 Local Commands**
 
 - Optimized utilities including:
   - Project scaffolding (Python, TypeScript, Rust)
@@ -69,11 +69,11 @@ This marketplace follows industry best practices with a focus on granularity, co
   - Component scaffolding (React, React Native)
   - Infrastructure setup (Terraform, Kubernetes)
 
-**175 Local Agent Skills**
+**180 Local Agent Skills**
 
 - Modular knowledge packages
 - Progressive disclosure architecture
-- Domain-specific expertise across 48 plugins
+- Domain-specific expertise across 49 plugins
 - Spec-compliant (Anthropic Agent Skills Specification)
 
 ## Repository Structure
@@ -81,7 +81,7 @@ This marketplace follows industry best practices with a focus on granularity, co
 ```
 claude-agents/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (94 plugins)
+│   └── marketplace.json          # Marketplace catalog (91 plugins)
 ├── plugins/                       # Isolated plugin directories
 │   ├── python-development/
 │   │   ├── agents/               # Python language agents
@@ -194,7 +194,7 @@ description: What the skill does. Use when [trigger]. # Required: < 1024 chars
 - **Composability**: Mix and match skills across workflows
 - **Maintainability**: Isolated updates don't affect other skills
 
-See [Agent Skills](./agent-skills.md) for complete details on the 175 skills.
+See [Agent Skills](./agent-skills.md) for complete details on the 180 skills.
 
 ## Model Configuration Strategy
 
@@ -204,10 +204,10 @@ The system uses Claude Fable, Opus, Sonnet, Haiku, and Inherit assignments strat
 
 | Model   | Count     | Use Case                                        |
 | ------- | --------- | ----------------------------------------------- |
-| Fable   | 0 agents  | Longest-horizon autonomous work (opt-in tier)   |
-| Opus    | 55 agents | Critical architecture, security, code review    |
-| Sonnet  | 71 agents | Complex tasks, support with intelligence        |
-| Haiku   | 25 agents | Fast operational tasks                          |
+| Fable   | 2 agents  | Longest-horizon autonomous work (opt-in tier)   |
+| Opus    | 54 agents | Critical architecture, security, code review    |
+| Sonnet  | 70 agents | Complex tasks, support with intelligence        |
+| Haiku   | 24 agents | Fast operational tasks                          |
 | Inherit | 52 agents | Defers model choice to the user at runtime      |
 
 ### Selection Criteria
@@ -263,7 +263,7 @@ code-reviewer (Sonnet) validates architecture
 ### Component Coverage
 
 - **100% agent coverage** - all plugins include at least one agent
-- **100% component availability** - all 203 local agents accessible across plugins
+- **100% component availability** - all 202 local agents accessible across plugins
 - **Efficient distribution** - 5.5 components per plugin average
 
 ### Discoverability
@@ -393,5 +393,5 @@ Feature Development Workflow:
 
 - [Agent Skills](./agent-skills.md) - Modular knowledge packages
 - [Agent Reference](./agents.md) - Complete agent catalog
-- [Plugin Reference](./plugins.md) - All 94 marketplace plugins
+- [Plugin Reference](./plugins.md) - All 91 marketplace plugins
 - [Usage Guide](./usage.md) - Commands and workflows

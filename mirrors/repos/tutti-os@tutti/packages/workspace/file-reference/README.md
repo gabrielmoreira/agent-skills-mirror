@@ -48,6 +48,15 @@ same page forever. A host that receives an expired backend cursor
 may throw `ReferenceSearchCursorExpiredError`; the picker clears the stale
 result set and restarts the same search from its first page.
 
+## Optional host actions and selection commands
+
+`ReferenceSourcePicker` accepts an optional `renderSidebarActions` slot for
+fixed Host-owned actions above the source tree. The slot is absent by default,
+so existing markup and interaction remain unchanged. Picker action contexts
+expose `selectTargets` for locating and selecting several authoritative source
+targets after a Host mutation; each located node still passes through the
+picker's active node-kind and single/multiple selection policy.
+
 ## Content error recovery
 
 `ReferenceSourcePicker` accepts `resolveContentErrorAction` when a host can

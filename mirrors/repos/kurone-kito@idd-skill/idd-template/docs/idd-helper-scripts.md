@@ -59,7 +59,17 @@ In the idd-skill source repository, the following optional helpers were adopted:
   including Check 4's high-confidence duplicate/superseded tier
   (closing-PR reference and same-candidate-files overlap, excluding
   high-contention files) (referenced in
-  [kurone-kito/idd-skill#1484](https://github.com/kurone-kito/idd-skill/issues/1484))
+  [kurone-kito/idd-skill#1484](https://github.com/kurone-kito/idd-skill/issues/1484)).
+  `--body-file <path>` / `--stdin`, mutually exclusive with `--issue`, run
+  a local/offline dry-run of six of the seven checks (every check except
+  `duplicate_or_superseded`, which needs a live search index) against a
+  drafted issue's text before it is ever published -- the same exported
+  check functions the live path uses, not a reimplementation. The output
+  carries `"mode": "local"` and no `outcome`/`passed`/`failedCheck` field
+  of any kind, so a local six-of-seven pass can never be mistaken for a
+  live `--issue <n>` verdict; `duplicate_or_superseded` always reports
+  `"not_evaluated"`, never omitted (referenced in
+  [kurone-kito/idd-skill#2102](https://github.com/kurone-kito/idd-skill/issues/2102))
 - `scripts/claim-approval-gate.mjs` for A5(a) issue-author approval
   verification; A5(d) open-PR conflict checks remain manual by design
   (referenced in
@@ -695,11 +705,50 @@ The adopted helper boundaries are intentionally narrow:
   unreplied comments, reviewer states, advisory state, CI, claim
   validation, and `waiverEvidence` (parsed external-check waiver comments
   classified as `valid`, `expired`, `wrongHead`, `wrongClaim`,
-  `unauthorized`, `malformed`, or `notConfigured` — the last for a valid
-  waiver naming a check the policy never declared waivable in
-  `ciGate.externalChecks.waivable`; only a `valid` waiver for a
+  `unauthorized`, `malformed`, `notConfigured`, or `modeDisabled` —
+  `notConfigured` for a valid waiver naming a check the policy never
+  declared waivable in `ciGate.externalChecks.waivable`, `modeDisabled`
+  (`#2046`) for an otherwise-valid, configured-waivable waiver while
+  `ciGate.externalCheckWaivers.mode` is not `maintainer-authorized`
+  (schema default: `disabled`) — mirroring `advisory-convergence.mjs`'s
+  own mode guard, so a `waivable` list left over from a prior
+  `maintainer-authorized` configuration can never make this gate report
+  a check covered on its own; only a `valid` waiver for a
   configured-waivable check is reported with `coveredByWaiver: true` and
   treated as passing by the CI gate)
+- (`#2021`) a `valid` waiver for the `idd-advisory-convergence` selector
+  specifically only becomes `coveredByWaiver: true` once the SAME
+  deadline/terminal precondition `advisory-convergence.mjs`'s own gate
+  enforces has also opened — a 24h deadline anchored on the current HEAD
+  commit's own `committedDate`, or proven terminal Copilot
+  unavailability. The output's `advisoryConvergenceWaiverPrecondition`
+  field always reports this evaluation (`deadlineMinutes`,
+  `headCommittedAt`, `elapsedMinutes`, `deadlinePassed`,
+  `terminalUnavailable`, `open`), so an agent never has to re-derive the
+  remaining time-to-deadline by hand when a `ci` blocker cites a posted
+  but not-yet-active waiver
+- (preventive; no observed incident yet — `#2034`) each
+  `waiverEvidence.valid` entry now also carries the waiver comment's
+  own `createdAt` (`'none'` when unparseable, which fails closed). A
+  matched check only becomes `coveredByWaiver: true`
+  once its own live run's `completedAt` is at or after the moment the
+  waiver became genuinely active — the waiver's `createdAt` alone for
+  a generic waivable check. For `idd-advisory-convergence`
+  specifically, that moment is the later of the waiver's `createdAt`
+  and the `#2021` deadline precondition-open moment when the
+  precondition opened via the 24h deadline (a real, computable
+  timestamp); when it opened via proven terminal Copilot
+  unavailability instead, there is no equivalent timestamp to compare
+  against, so the cutoff there is the waiver's `createdAt` alone, same
+  as the generic case. A check whose live run last completed before
+  its applicable cutoff stays reported as blocked even though a
+  `valid` waiver marker exists, since it was never actually re-run
+  since the waiver took effect — mirroring
+  `idd-advisory-wait.instructions.md`'s Terminal-routing guidance to
+  rerun the check after posting a waiver, instead of leaving that as
+  an unenforced manual step. When this is what withholds coverage for
+  `idd-advisory-convergence`, the `ci` blocker's detail names the
+  stale run's `completedAt` and the waiver's own `createdAt`
 - it does not replace the pre-merge or merge decision tables; it only
   reduces command-copy variance when collecting canonical merge-gate
   evidence
@@ -1500,6 +1549,45 @@ to post it is the consuming track's job.
   searched, so a mismatch names its own cause instead of only its
   symptom
 
+### Manual recovery: budget-held instance after a waiver rebind
+
+`rerun-advisory-convergence.mjs --apply` deliberately never touches a
+`bot-gated-skip`, `awaiting-fresh-review`, or `rerun-budget-held`
+instance (see above) -- that withholding is correct and load-bearing
+on its own, and this section does not change it: the script keeps
+withholding these instances from its own plan, and gains no
+`--override-budget` flag or equivalent. A specific combination sits
+outside what the withholding alone can resolve: an
+`idd-advisory-convergence` instance already went `rerun-budget-held`
+from a genuinely-failed attempt, and only afterward does a maintainer
+post a valid `idd-external-check-waiver:` marker covering the current
+HEAD and check. The held instance's recorded failure predates the
+waiver and has nothing left to say about current mergeability, but the
+waiver alone does not make GitHub re-evaluate an already-completed
+check-run.
+
+This is a maintainer-authorized manual override, not a helper flag and
+not something a worker performs unprompted -- the same deliberate
+human-judgment-gate philosophy as
+`ciGate.externalCheckWaivers.mode: "maintainer-authorized"` itself.
+Confirm all three before running it:
+
+1. The held instance's own run targets the PR's current HEAD SHA, not
+   a stale, already-superseded push.
+2. A maintainer-authorized `idd-external-check-waiver:` marker (see
+   the marker format above) now covers that same HEAD and check
+   selector, and is itself valid -- unexpired, correctly claim-bound,
+   posted by a trusted actor.
+3. The held instance's recorded failure reason (the rerun-plan
+   diagnosis's `rerunPolicyHoldNotice` for that instance, or the run's
+   own log) predates the waiver -- the waiver is the reason to
+   reconsider this instance, not an unrelated later development.
+
+Only once all three hold, issue `gh run rerun <run-id>` on that
+specific instance directly -- a one-time, visible, auditable exception
+to the budget withholding, not a config flag exercisable as
+reflexively as any other CLI option.
+
 ### Merge-gate evidence
 
 - When helper runtime is enabled, these commands are the preferred
@@ -1947,14 +2035,21 @@ structurally unable to disagree.
 | `review-item-count-not-positive`          | The latest review's `itemCount` is a known `0` AND `suppressedCount` (#1880) is also `0` -- already fully converged, nothing (posted or suppressed) to reroll for.                        |
 <!-- dprint-ignore-end -->
 
-When `review-item-count-not-positive` is absent but `converged` is still
-`false` with `threads.satisfied: true` (every visible Copilot-authored
-thread already resolved) and `review.itemCount > 0`, the top-level
-`reasons` array's item-count entry is itself extended with a pointer to
-check the review body directly -- the shape of the reported adopter
-incident: a "Comments suppressed due to low confidence" item embedded in
-the review's own body text counts toward `itemCount` but never surfaces
-as a review thread, so no thread query can ever explain it.
+**Updated by kurone-kito/idd-skill#2050** (revised after PR #2054 review --
+scoped to the LATEST review, not the PR-wide `copilotThreadCount`): when
+zero threads THIS review opened exist at all and `review.itemCount > 0`,
+the top-level `reasons` array's item-count entry is extended with a
+pointer to check the review body directly -- the shape of the reported
+adopter incident: a "Comments suppressed due to low confidence" item
+embedded in the review's own body text counts toward `itemCount` but never
+surfaces as a review thread, so no thread query can ever explain it. When
+this review's own threads exist, are all resolved/dispositioned, AND their
+count covers `itemCount` instead, Clause 1's `itemCount` half is satisfied
+directly via that review-scoped thread-disposition evidence -- the
+review-body pointer no longer applies to that case. An older review's
+already-resolved thread, or a count of review-scoped threads smaller than
+`itemCount`, both still block (see the two dedicated regression tests
+added for each shape).
 
 **`suppressedCount` (kurone-kito/idd-skill#1880).** A distinct,
 `itemCount === 0` shape of the same underlying problem: GitHub Copilot
@@ -1994,6 +2089,63 @@ anticipated outcome routed to the deadline/waiver backstop **or hold**
 step 5, including for adopters who keep the distributed
 `ciGate.externalCheckWaivers.mode: disabled` default), not a diagnosis
 failure.
+
+**Disposition-aware resolution (kurone-kito/idd-skill#2050).** A
+same-HEAD reroll (above) is not the only escape hatch for `suppressedCount`
+today. `resolveLatestCopilotReviewClause` (review-clause.mts) itself stays
+purely mechanical -- `computeAdvisoryConvergenceVerdict`
+(advisory-convergence.mts) now computes a disposition-aware OVERRIDE of its
+`satisfied` field as a thin caller-side wrapper (not inside
+`resolveLatestCopilotReviewClause`, since the override needs evidence --
+review-scoped thread data, PR comments, `trustedMarkerLogins` -- that pure
+function does not receive), reported on the verdict's own `review.satisfied`
+in place of the raw mechanical value:
+
+```text
+matchesHead
+  && (itemCount === 0 || (itemCount is known AND >= itemCount thread(s)
+      THIS review opened cover it AND all of them are resolved/dispositioned))
+  && (suppressedCount === 0 || hasValidReviewAck)
+```
+
+The `itemCount` half is bound to the LATEST review specifically
+(`classifyThreadIdsForReview`, matching each thread's originating comment's
+`pullRequestReview.id` against the review's own GraphQL node id, now also
+exposed as `review.reviewId`) -- NOT `threads.satisfied` (Clause 2's
+PR-WIDE, review-agnostic set) directly: an older, already-dispositioned
+thread from a DIFFERENT review must never stand in for the CURRENT
+review's own coverage, and `threads.satisfied` is additionally vacuous when
+zero Copilot-authored threads exist at all -- both variants of the same
+`#1719` incident shape above (a positive `itemCount` with no real thread
+evidence). `itemCount: null` (unknown count) also fails closed here rather
+than treating "at least one resolved thread exists" as sufficient, and the
+number of covering threads must be at least `itemCount` -- one dispositioned
+thread does not cover a review that posted two items (Copilot + CodeRabbit
+review, PR #2054). `hasValidReviewAck` is `true` when a trusted
+`review-ack:` marker's OWN `created_at` postdates the latest Copilot
+review's `submittedAt` (never the marker's embedded timestamp), so any
+later review automatically invalidates a pre-existing ack.
+
+The `review-ack:` marker matches `advisory-reroll:`'s field shape and
+posting path exactly (see
+[`idd-advisory-wait.instructions.md`](../.github/instructions/idd-advisory-wait.instructions.md)'s
+`suppressedCount`-unvalidated note in its AW6 section):
+
+```text
+review-ack: {agent-id} {PR_HEAD_SHA} {ISO8601-acknowledged-at}
+```
+
+Plain text, no HTML comment. Post via `post-idd-marker.mjs --type
+review-ack --target pr <pr-number> --agent-id <id> --head-sha
+<PR_HEAD_SHA> --timestamp <ISO8601> --apply` (or `--from-pr <pr-number>`
+to derive `--head-sha` live) once the review's findings are fixed or
+dispositioned. `post-idd-marker.mjs` itself performs no author gating (any
+caller with `gh` credentials can POST); only a marker authored by a
+`trustedMarkerActors` login is honored when `idd-advisory-convergence`
+later reads it back -- an untrusted poster's marker is ignored, not
+rejected at post time. `idd-advisory-convergence` re-checks
+live GitHub state, so re-run it (`gh run rerun <run-id>`) after posting --
+the marker itself does not retrigger the check.
 
 **AW6 procedure** (`idd-advisory-wait.instructions.md`), invoked only
 from F2 on a non-zero `--assert` exit:

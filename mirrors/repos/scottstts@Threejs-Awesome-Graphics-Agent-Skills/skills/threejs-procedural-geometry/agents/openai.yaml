@@ -1,4 +1,4 @@
 interface:
   display_name: "Three.js Procedural Geometry"
   short_description: "Craft and audit production procedural meshes"
-  default_prompt: "Use $threejs-procedural-geometry to model a well-crafted procedural assembly with real profiles, thickness, bevels, semantic joins, topology checks, coplanar/clash audits, and direct visual inspection."
+  default_prompt: "Use $threejs-procedural-geometry to model a well-crafted procedural assembly or humanoid robot with real profiles, lofts, panels, thickness, bevels, semantic joins, topology checks, and assembly diagnostics."

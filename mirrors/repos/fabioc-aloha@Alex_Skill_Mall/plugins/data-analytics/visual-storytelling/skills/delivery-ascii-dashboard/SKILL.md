@@ -6,8 +6,8 @@ name: delivery-ascii-dashboard
 description: Render data dashboards as pure ASCII art in monospace text -- the cheapest, most portable delivery method. No rendering engine, no SVG, no browser. LLM-native output with predictable character geometry.
 tier: standard
 applyTo: '**/*ascii*,**/*text*dashboard*,**/*terminal*,**/*console*,**/*plain*'
-currency: 2026-05-02
-lastReviewed: 2026-05-02
+currency: 2026-08-15
+lastReviewed: 2026-08-15
 ---
 
 # Delivery: ASCII Dashboard
@@ -26,7 +26,7 @@ This is the cheapest delivery method: zero dependencies, zero tokens spent on SV
 
 ## When NOT to Use
 
-- The audience expects polished visuals (use `delivery-svg-markdown` or `delivery-html-dashboard`)
+- The audience expects graphical output (install `alex-act-illustrator-plugin`)
 - Charts require color encoding for meaning (ASCII is monochrome)
 - More than 80 columns of data (wrapping breaks the layout)
 - Interactive filtering or drill-through is required
@@ -320,7 +320,6 @@ Do NOT write the output file until the measurement passes with zero failures. A 
 
 ## Cross-References
 
-- `visual-vocabulary` -- select chart types before rendering. ASCII supports: bar, KPI, sparkline, table.
+- `chart-vocabulary` from `alex-act-illustrator-plugin` -- select chart types before rendering. ASCII supports: bar, KPI, sparkline, table.
 - `storytelling-requirements` -- the brief determines whether ASCII is the right delivery target.
-- `delivery-svg-markdown` -- upgrade path when ASCII isn't enough (richer visuals, color, branding).
-- `delivery-html-dashboard` -- upgrade path when interactivity is needed.
+- `alex-act-illustrator-plugin` -- upgrade path when ASCII is not enough, including graphical and interactive output.

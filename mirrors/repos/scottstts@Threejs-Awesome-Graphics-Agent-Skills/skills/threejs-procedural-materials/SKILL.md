@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, reflective wave-optical diffraction gratings, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -70,6 +70,19 @@ body takes the image-space path, which tolerates inconsistent winding and
 authored normals pointing either way but cannot see a surface outside the
 frame.
 
+Read
+[references/physical-diffraction-grating.md](references/physical-diffraction-grating.md)
+for the exact embossed-field, CIE/blackbody spectral, phase-grating, Bessel
+order-efficiency, coherence-broadening, strip-emitter, additive-layer, stable
+object-frame, limitation, and diagnostic contracts.
+
+Read the
+[physical diffraction-grating implementation](examples/physical-diffraction-grating/physical-diffraction-grating.js)
+for a printed substrate plus additive HDR foil response whose star and stripe
+masks select local groove angle, pitch, and relief while wavelength alone owns
+spectral colour. Its complete optical model is expressed as a pure TSL graph
+with `Fn`, `If`, and `Loop`, without embedded native shader source.
+
 ## Required controls
 
 - real or perceptual texture scale;
@@ -105,6 +118,9 @@ shared moss PBR identity.
 - atlas padding is ignored under mipmapping;
 - custom lighting removes energy conservation without an explicit stylized goal;
 - post-processing is used to hide unstable highlights.
+- diffraction hue is painted from UV instead of derived from wavelength;
+- a groove frame follows the camera or world axes instead of the object;
+- a narrowed diffraction lobe loses energy because its density lacks sigma normalization.
 
 ## Routing boundary
 

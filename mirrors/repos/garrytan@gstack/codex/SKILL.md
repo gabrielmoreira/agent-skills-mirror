@@ -83,13 +83,15 @@ if [ "$_EXPLAIN_LEVEL" != "default" ] && [ "$_EXPLAIN_LEVEL" != "terse" ]; then 
 echo "EXPLAIN_LEVEL: $_EXPLAIN_LEVEL"
 _QUESTION_TUNING=$(~/.claude/skills/gstack/bin/gstack-config get question_tuning 2>/dev/null || echo "false")
 echo "QUESTION_TUNING: $_QUESTION_TUNING"
+_UPDATE_CHECK=$(~/.claude/skills/gstack/bin/gstack-config get update_check 2>/dev/null || echo "true")
+echo "UPDATE_CHECK: $_UPDATE_CHECK"
 mkdir -p ~/.gstack/analytics
 if [ "$_TEL" != "off" ]; then
 echo '{"skill":"codex","ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","repo":"'$(_repo=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null | tr -cd 'a-zA-Z0-9._-'); echo "${_repo:-unknown}")'"}'  >> ~/.gstack/analytics/skill-usage.jsonl 2>/dev/null || true
 fi
 for _PF in $(find ~/.gstack/analytics -maxdepth 1 -name '.pending-*' 2>/dev/null); do
   if [ -f "$_PF" ]; then
-    if [ "$_TEL" != "off" ] && [ -x "~/.claude/skills/gstack/bin/gstack-telemetry-log" ]; then
+    if [ "$_TEL" != "off" ] && [ -x "$HOME/.claude/skills/gstack/bin/gstack-telemetry-log" ]; then
       ~/.claude/skills/gstack/bin/gstack-telemetry-log --event-type skill_run --skill _pending_finalize --outcome unknown --session-id "$_SESSION_ID" 2>/dev/null || true
     fi
     rm -f "$_PF" 2>/dev/null || true
@@ -154,6 +156,8 @@ If the user invokes a skill in plan mode, the skill takes precedence over generi
 If `PROACTIVE` is `"false"`, do not auto-invoke or proactively suggest skills. If a skill seems useful, ask: "I think /skillname might help here — want me to run it?"
 
 If `SKILL_PREFIX` is `"true"`, suggest/invoke `/gstack-*` names. Disk paths stay `~/.claude/skills/gstack/[skill-name]/SKILL.md`.
+
+If `UPDATE_CHECK` is `"false"`, skip the next two lines — the update-check binary emits nothing in that mode, so there is no `UPGRADE_AVAILABLE` / `JUST_UPGRADED` output to act on.
 
 If output shows `UPGRADE_AVAILABLE <old> <new>`: read `~/.claude/skills/gstack/gstack-upgrade/SKILL.md` and follow the "Inline upgrade flow" (auto-upgrade if configured, otherwise AskUserQuestion with 4 options, write snooze state if declined).
 
@@ -467,8 +471,8 @@ if [ -f "$HOME/.gstack-artifacts-remote.txt" ]; then
 else
   _BRAIN_REMOTE_FILE="$HOME/.gstack-brain-remote.txt"
 fi
-_BRAIN_SYNC_BIN="~/.claude/skills/gstack/bin/gstack-brain-sync"
-_BRAIN_CONFIG_BIN="~/.claude/skills/gstack/bin/gstack-config"
+_BRAIN_SYNC_BIN="$HOME/.claude/skills/gstack/bin/gstack-brain-sync"
+_BRAIN_CONFIG_BIN="$HOME/.claude/skills/gstack/bin/gstack-config"
 
 # /sync-gbrain context-load: teach the agent to use gbrain when it's available.
 # Per-worktree pin: post-spike redesign uses kubectl-style `.gbrain-source` in the
@@ -577,8 +581,8 @@ If A/B and `~/.gstack/.git` is missing, ask whether to run `gstack-artifacts-ini
 At skill END before telemetry:
 
 ```bash
-"~/.claude/skills/gstack/bin/gstack-brain-sync" --discover-new 2>/dev/null || true
-"~/.claude/skills/gstack/bin/gstack-brain-sync" --once 2>/dev/null || true
+"$HOME/.claude/skills/gstack/bin/gstack-brain-sync" --discover-new 2>/dev/null || true
+"$HOME/.claude/skills/gstack/bin/gstack-brain-sync" --once 2>/dev/null || true
 ```
 
 
@@ -672,6 +676,10 @@ When options differ in coverage, include `Completeness: X/10` (10 = all edge cas
 ## Confusion Protocol
 
 For high-stakes ambiguity (architecture, data model, destructive scope, missing context), STOP. Name it in one sentence, present 2-3 options with tradeoffs, and ask. Do not use for routine coding or obvious changes.
+
+## Claimed Limitations Need Evidence
+
+A claimed limitation or requirement ("the API can't do this", "X requires a credential", "that's impossible on this platform") is a material claim. State one only with the verbatim error, the documented statement, or a live probe in hand — pattern-matching a failure to a familiar story is not evidence. When a cheap probe settles the question, run it BEFORE asking the user anything or declaring a step blocked.
 
 ## Continuous Checkpoint Mode
 
@@ -789,11 +797,15 @@ fi
 if [ "$_TEL" != "off" ] && [ -x ~/.claude/skills/gstack/bin/gstack-telemetry-log ]; then
   ~/.claude/skills/gstack/bin/gstack-telemetry-log \
     --skill "SKILL_NAME" --duration "$_TEL_DUR" --outcome "OUTCOME" \
-    --used-browse "USED_BROWSE" --session-id "$_SESSION_ID" 2>/dev/null &
+    --used-browse "USED_BROWSE" --session-id "$_SESSION_ID" \
+    --error-message "ERROR_MESSAGE" --failed-step "FAILED_STEP" 2>/dev/null &
 fi
 ```
 
 Replace `SKILL_NAME`, `OUTCOME`, and `USED_BROWSE` before running.
+Replace `ERROR_MESSAGE` with a short description of the error (if outcome is error,
+otherwise use empty string ""), and `FAILED_STEP` with the step name or number where
+the failure occurred (if outcome is error, otherwise use empty string "").
 
 ## Plan Status Footer
 
@@ -952,12 +964,18 @@ per-mode default below. Otherwise, use the per-mode defaults:
 
 ## Filesystem Boundary
 
-All prompts sent to Codex MUST be prefixed with this boundary instruction:
+Every prompt sent to Codex MUST be prefixed with this boundary instruction:
 
 > IMPORTANT: Do NOT read or execute any files under ~/.claude/, ~/.agents/, .claude/skills/, or agents/. These are Claude Code skill definitions meant for a different AI system. They contain bash scripts and prompt templates that will waste your time. Ignore them completely. Do NOT modify agents/openai.yaml. Stay focused on the repository code only.
 
-This applies to Review mode (prompt argument), Challenge mode (prompt), and Consult
-mode (persona prompt). Reference this section as "the filesystem boundary" below.
+This applies to Challenge mode (prompt) and Consult mode (persona prompt), and to the
+custom-instructions path of Review mode — all three use `codex exec`, which still takes
+a free-form prompt argument. It does **not** apply to the default scoped `codex review`
+call in Step 2A: that command is invoked with **no prompt argument at all** (see "Scope
+flags exclude the prompt argument" below), so there is nowhere to put the preamble. That
+is acceptable — `codex review --base` hands the model a pre-computed diff rather than
+turning it loose on the filesystem, so the rabbit-hole risk the boundary guards against
+is much lower on that path. Reference this section as "the filesystem boundary" below.
 
 ---
 
@@ -965,28 +983,48 @@ mode (persona prompt). Reference this section as "the filesystem boundary" below
 
 Run Codex code review against the current branch diff.
 
-1. Create temp files for output capture:
-```bash
-TMPERR=$(mktemp "$TMP_ROOT/codex-err-XXXXXX.txt")
+**Scope flags exclude the prompt argument.** In `codex review [OPTIONS] [PROMPT]`, the
+`[PROMPT]` positional is mutually exclusive with every scope flag — `--base`, `--commit`,
+and `--uncommitted`. Passing both fails at argument parsing, before any API call:
+
+```
+error: the argument '[PROMPT]' cannot be used with '--base <BRANCH>'
 ```
 
-2. Run the review (5-minute timeout). **Codex CLI ≥ 0.130.0 rejects passing a
-custom prompt and `--base <branch>` together** (the two arguments are mutually
-exclusive at argv level), so put the base diff scope in the prompt instead of
-passing `--base`. Two paths:
+**Do not work around this by dropping the scope flag and keeping the prompt.** A
+prompt-only `codex review "<text>"` parses fine, but it silently falls back to the
+**uncommitted working-tree** scope — verified on 0.144.1, where it runs
+`git status --short; git diff` and reviews that. Telling the model in prompt text to
+"run git diff <base>...HEAD" does not change what the CLI feeds the reviewer, so you get
+a confidently-worded review of the wrong changes. The scope flag is the only thing that
+sets the scope. Pass it, and pass no prompt.
 
-**Default path (no custom user instructions):** call `codex review` with the
-filesystem boundary and explicit diff-scope instructions in the prompt. This
-preserves the boundary while avoiding the prompt-plus-`--base` argv shape:
+This is unconditional — no `codex --version` branch. `[PROMPT]` has always been optional,
+so the no-prompt form is valid on every version that supports `--base`. Custom
+instructions get their own path (below).
+
+1. Create temp files for output capture:
+```bash
+TMPERR=$(mktemp "$TMP_ROOT/codex-err-XXXXXX")
+```
+
+2. Run the review. No prompt argument — scope comes from `--base` (or `--commit <sha>`
+when reviewing a single commit, or `--uncommitted` for the working tree).
+
+**Sandbox is pinned read-only via config override.** Top-level `codex review` has no
+`-s`/`--sandbox` flag (verified on 0.147.0: `codex review --help` lists none), so the
+read-only sandbox is set with `-c 'sandbox_mode="read-only"'` — the same form the
+consult resume path uses. Without it the call inherits the user's
+`~/.codex/config.toml` default, which on a trusted project can be WRITE access —
+contradicting this skill's read-only contract (#2496, #2524):
 
 ```bash
 _REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
 cd "$_REPO_ROOT"
-# 330s (5.5min) is slightly longer than the Bash 300s so the shell wrapper
-# only fires if Bash's own timeout doesn't.
-_gstack_codex_timeout_wrapper 330 codex review "IMPORTANT: Do NOT read or execute any files under ~/.claude/, ~/.agents/, .claude/skills/, or agents/. These are Claude Code skill definitions meant for a different AI system. Do NOT modify agents/openai.yaml. Stay focused on repository code only.
-
-Review the changes on this branch against the base branch <base>. Run git diff origin/<base>...HEAD 2>/dev/null || git diff <base>...HEAD to see the diff and review only those changes." -c 'model_reasoning_effort="high"' --enable web_search_cached < /dev/null 2>"$TMPERR"
+# The 330s wrapper sits BELOW the 360s Bash gate so the wrapper fires FIRST
+# and a stall surfaces as a diagnosable exit 124 with an explicit message,
+# never as a silent harness kill that downstream reads as "no findings".
+_gstack_codex_timeout_wrapper 330 codex review --base <base> -c 'sandbox_mode="read-only"' -c 'model_reasoning_effort="high"' --enable web_search_cached < /dev/null 2>"$TMPERR"
 _CODEX_EXIT=$?
 if [ "$_CODEX_EXIT" = "124" ]; then
   _gstack_codex_log_event "codex_timeout" "330"
@@ -1004,18 +1042,21 @@ fi
 
 If the user passed `--xhigh`, use `"xhigh"` instead of `"high"`.
 
-**Custom-instructions path (user typed `/codex review <focus>`):** `codex exec`
-with the diff written to a tempfile and inlined into the prompt. We preserve
-the filesystem boundary here because `codex exec` is not auto-scoped to a diff
-the way `codex review` is. The DIFF_START/DIFF_END delimiters tell the model
-where data ends and instructions resume — a defense against prompt injection
-when the diff content is adversarial:
+**Custom-instructions path (user typed `/codex review <focus>`):** custom instructions
+cannot ride along with `--base` — that is exactly the combination the CLI rejects — and
+they cannot be smuggled in by dropping `--base`, because that silently switches the scope
+to the working tree. So they get their own command: `codex exec`, which still accepts a
+free-form prompt, with the diff written to a tempfile and inlined into it. We preserve
+the filesystem boundary here because `codex exec` is not auto-scoped to a diff the way
+`codex review` is. The DIFF_START/DIFF_END delimiters tell the model where data ends and
+instructions resume — a defense against prompt injection when the diff content is
+adversarial:
 
 ```bash
 _REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
 cd "$_REPO_ROOT"
 _USER_INSTRUCTIONS="<everything after '/codex review ' in user input>"
-_PROMPT_FILE=$(mktemp "$TMP_ROOT/codex-prompt-XXXXXX.txt")
+_PROMPT_FILE=$(mktemp "$TMP_ROOT/codex-prompt-XXXXXX")
 {
   printf '%s\n' "IMPORTANT: Do NOT read or execute any files under ~/.claude/, ~/.agents/, .claude/skills/, or agents/. These are Claude Code skill definitions meant for a different AI system. Do NOT modify agents/openai.yaml. Stay focused on repository code only."
   printf '\nCustom focus: %s\n\n' "$_USER_INSTRUCTIONS"
@@ -1034,21 +1075,50 @@ if [ "$_CODEX_EXIT" = "124" ]; then
 fi
 ```
 
-**Why the dual path:** The default `codex review` path keeps Codex's review
-prompt tuning while scoping the diff in prompt text. The `codex exec` route loses
-that tuning but gains custom-instructions support; the prompt explicitly demands
-`[P1]` / `[P2]` markers so the gate logic in step 4 still works.
+When you take this path, say so in the output header — `CODEX SAYS (code review — custom
+instructions via codex exec):` — and note that the CLI does not accept custom instructions
+alongside `--base`, so the scope was expressed in the prompt instead.
 
-Use `timeout: 300000` on the Bash call for either path.
+**Why the dual path:** The default `codex review --base` path keeps Codex's own review
+prompt tuning and its authoritative diff scoping, at the cost of accepting no custom
+instructions. The `codex exec` route loses that tuning but gains custom-instructions
+support; the prompt explicitly demands `[P1]` / `[P2]` markers so the gate logic in step 4
+still works. There is no third option that gets both — the CLI forbids it.
+
+Use `timeout: 360000` on the Bash call for either path. The Bash gate sits ABOVE the
+330s wrapper deliberately: the wrapper fires first with its explicit exit-124 message,
+instead of the harness killing the call silently.
 
 3. Capture the output. Then parse cost from stderr:
 ```bash
 grep "tokens used" "$TMPERR" 2>/dev/null || echo "tokens: unknown"
 ```
 
-4. Determine gate verdict by checking the review output for critical findings.
-   If the output contains `[P1]` — the gate is **FAIL**.
-   If no `[P1]` markers are found (only `[P2]` or no findings) — the gate is **PASS**.
+4. Determine the gate verdict. **The gate FAILS CLOSED** — a run that cannot be
+verified is a FAIL, never a PASS. Work through these checks IN ORDER; the first
+match wins:
+
+   1. `_CODEX_EXIT` is non-zero (including 124) → **GATE: FAIL** (fail-closed:
+      codex exited `$_CODEX_EXIT` — the review did not complete, so there is no
+      verified result). Expired auth, a bad flag, a timeout, or a model-entitlement
+      400 all land here instead of masquerading as a clean pass.
+   2. The captured review output is empty or whitespace-only → **GATE: FAIL**
+      (fail-closed: empty output — nothing was reviewed).
+   3. The output contains `[P0]` or `[P1]` (or codex's native unbracketed `P0:` /
+      `P1:` severity labels) → **GATE: FAIL** (N critical findings). Codex's own
+      review rubric treats P0 as blocking; this gate does too.
+   4. The output contains NO `[P0]`, `[P1]`, or `[P2]` tag (nor native `P0:`/`P1:`/
+      `P2:` labels) anywhere → **GATE: FAIL** (fail-closed: untagged output — the
+      severity markers this gate greps for are absent, so "no critical findings"
+      cannot be verified mechanically; a human must read the verbatim output above
+      and judge). "No `[P1]` substring" and "no critical findings" are different
+      claims — never infer PASS from an untagged body.
+   5. Severity tags are present and none is P0/P1 (only P2/advisory) →
+      **GATE: PASS**.
+
+   There is no default branch: PASS is only reachable through check 5. When the
+   gate fails closed (checks 1, 2, 4), say explicitly that this is a
+   verification failure requiring human attention, not a finding count.
 
 5. Present the output:
 
@@ -1064,6 +1134,12 @@ or
 
 ```
 GATE: FAIL (N critical findings)
+```
+
+or, when the run itself could not be verified:
+
+```
+GATE: FAIL (fail-closed: <codex exited N | empty output | untagged output> — needs human attention)
 ```
 
 5a. **Synthesis recommendation (REQUIRED).** After presenting Codex's verbatim
@@ -1098,7 +1174,8 @@ CROSS-MODEL ANALYSIS:
 ```
 
 Substitute: TIMESTAMP (ISO 8601), STATUS ("clean" if PASS, "issues_found" if FAIL),
-GATE ("pass" or "fail"), findings (count of [P1] + [P2] markers),
+GATE ("pass" or "fail" — fail-closed verdicts log as "fail"), findings (count of
+[P0] + [P1] + [P2] markers; 0 for fail-closed runs, which reviewed nothing),
 findings_fixed (count of findings that were addressed/fixed before shipping).
 
 8. Clean up temp files:
@@ -1253,7 +1330,9 @@ With focus (e.g., "security"):
 
 Review the changes on this branch against the base branch. Run `git diff origin/<base>` to see the diff. Focus specifically on SECURITY. Your job is to find every way an attacker could exploit this code. Think about injection vectors, auth bypasses, privilege escalation, data exposure, and timing attacks. Be adversarial."
 
-2. Run codex exec with **JSONL output** to capture reasoning traces and tool calls (5-minute timeout):
+2. Run codex exec with **JSONL output** to capture reasoning traces and tool calls.
+Use `timeout: 660000` on the Bash call — the gate sits ABOVE the 600s wrapper so the
+wrapper fires first with its explicit stall message:
 
 If the user passed `--xhigh`, use `"xhigh"` instead of `"high"`.
 
@@ -1266,7 +1345,7 @@ if [ -z "$PYTHON_CMD" ]; then
 fi
 # Fix 1+2: wrap with timeout (gtimeout/timeout fallback chain via probe helper),
 # capture stderr to $TMPERR for auth error detection (was: 2>/dev/null).
-TMPERR=${TMPERR:-$(mktemp "$TMP_ROOT/codex-err-XXXXXX.txt")}
+TMPERR=${TMPERR:-$(mktemp "$TMP_ROOT/codex-err-XXXXXX")}
 _gstack_codex_timeout_wrapper 600 codex exec "<prompt>" -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="high"' --enable web_search_cached --json < /dev/null 2>"$TMPERR" | PYTHONUNBUFFERED=1 "$PYTHON_CMD" -u -c "
 import sys, json
 turn_completed_count = 0
@@ -1365,8 +1444,8 @@ B) Start a new conversation
 
 2. Create temp files:
 ```bash
-TMPRESP=$(mktemp "$TMP_ROOT/codex-resp-XXXXXX.txt")
-TMPERR=$(mktemp "$TMP_ROOT/codex-err-XXXXXX.txt")
+TMPRESP=$(mktemp "$TMP_ROOT/codex-resp-XXXXXX")
+TMPERR=$(mktemp "$TMP_ROOT/codex-err-XXXXXX")
 ```
 
 3. **Plan review auto-detection:** If the user's prompt is about reviewing a plan,
@@ -1409,7 +1488,10 @@ For non-plan consult prompts (user typed `/codex <question>`), still prepend the
 
 <user's question>"
 
-4. Run codex exec with **JSONL output** to capture reasoning traces (5-minute timeout):
+4. Run codex exec with **JSONL output** to capture reasoning traces. Use
+`timeout: 660000` on the Bash call (for both new and resumed sessions) — the gate
+sits ABOVE the 600s wrapper so the wrapper fires first with its explicit stall
+message:
 
 If the user passed `--xhigh`, use `"xhigh"` instead of `"medium"`.
 
@@ -1537,7 +1619,8 @@ The reason must engage with a specific Codex insight and compare against an alte
 
 **Model:** No model is hardcoded — codex uses whatever its current default is (the frontier
 agentic coding model). This means as OpenAI ships newer models, /codex automatically
-uses them. If the user wants a specific model, pass `-m` through to codex.
+uses them. If the user wants a specific model, pass it through — but the flag differs
+by mode (see below).
 
 **Reasoning effort (per-mode defaults):**
 - **Review (2A):** `high` — bounded diff input, needs thoroughness but not max tokens
@@ -1551,8 +1634,16 @@ tasks (OpenAI issues #8545, #8402, #6931). Users can override with `--xhigh` fla
 **Web search:** All codex commands use `--enable web_search_cached` so Codex can look up
 docs and APIs during review. This is OpenAI's cached index — fast, no extra cost.
 
-If the user specifies a model (e.g., `/codex review -m gpt-5.1-codex-max`
-or `/codex challenge -m gpt-5.2`), pass the `-m` flag through to codex.
+If the user specifies a model (e.g., `/codex review -m gpt-5.1-codex-max` or
+`/codex challenge -m gpt-5.2`), the flag to pass depends on the underlying command:
+
+- **Exec-based modes** (Challenge, Consult, and the custom-instructions Review path)
+  run `codex exec`, which takes `-m <model>` — pass it through as-is.
+- **Default Review mode** runs `codex review`, which REJECTS `-m`
+  (`error: unexpected argument '-m' found`, verified on 0.147.0 — its help lists no
+  `-m`/`--model` option). Translate the user's `-m <model>` into the config form:
+  `-c model="<model>"`. Same shape as the `--base`-vs-prompt incompatibility above:
+  review mode takes its knobs through flags/config, never through extra arguments.
 
 ---
 
@@ -1571,9 +1662,39 @@ If token count is not available, display: `Tokens: unknown`
 - **Binary not found:** Detected in Step 0. Stop with install instructions.
 - **Auth error:** Codex prints an auth error to stderr. Surface the error:
   "Codex authentication failed. Run `codex login` in your terminal to authenticate via ChatGPT."
-- **Timeout (Bash outer gate):** If the Bash call times out (5 min for Review/Challenge, 10 min for Consult), tell the user:
+- **Timeout (Bash outer gate):** Every Bash gate sits ABOVE its inner wrapper (360s gate
+  over the 330s review wrapper; 660s gate over the 600s challenge/consult wrappers), so
+  the wrapper's exit-124 path normally fires first with its explicit message. If the Bash
+  call itself times out anyway (wrapper unavailable AND codex hung), tell the user:
   "Codex timed out. The prompt may be too large or the API may be slow. Try again or use a smaller scope."
 - **Timeout (inner `timeout` wrapper, exit 124):** If the shell `timeout 600` wrapper fires first, the skill's hang-detection block auto-logs a telemetry event + operational learning and prints: "Codex stalled past 10 minutes. Common causes: model API stall, long prompt, network issue. Try re-running. If persistent, split the prompt or check `~/.codex/logs/`." No extra action needed.
+- **`the argument '[PROMPT]' cannot be used with '--base <BRANCH>'`:** a prompt argument
+  leaked into a scoped `codex review`. This fails instantly, before any API call, so it
+  looks like a hang-free "no output" — do not misread it as a model stall. Drop the
+  prompt: the scope flags (`--base`, `--commit`, `--uncommitted`) carry the scope on
+  their own. If the prompt was custom review instructions, run them through `codex exec`
+  instead (Step 2A, custom-instructions path). Do **not** fix it by removing `--base` and
+  keeping the prompt — that parses, but silently reviews the uncommitted working tree
+  instead of the branch diff.
+- **Review says "no changes" on a branch that clearly has changes:** the scope flag is
+  missing or wrong. A prompt-only `codex review` defaults to uncommitted changes, so a
+  clean working tree reads as an empty review even when `<base>...HEAD` is large. Confirm
+  `--base <base>` is actually on the command line.
+- **Model not supported (HTTP 400):** stderr shows
+  `The '<model>' model is not supported when using Codex with a ChatGPT account`
+  (a `status: 400` / `invalid_request_error` naming a model). This is an
+  entitlement/stale-pin problem, not an auth or network failure, and the auth probe
+  cannot catch it. The rejected model comes from the `model = "..."` line in
+  `~/.codex/config.toml`. Recovery, in order:
+  1. Read `~/.codex/config.toml` and check the `[notice.model_migrations]` table —
+     Codex records the intended replacement there (e.g. `"gpt-5.4" = "gpt-5.5"`).
+  2. Retry with the replacement model explicitly: exec-based modes (Challenge,
+     Consult, custom-instructions Review) take `-m <replacement>`; the default
+     Review path uses `codex review`, which REJECTS `-m` — pass
+     `-c model="<replacement>"` there instead.
+  3. Tell the user the one-line permanent fix: update the `model = ` pin in
+     `~/.codex/config.toml`.
+  Never present this as a model stall or a PASS — it is a fail-closed gate result.
 - **Empty response:** If `$TMPRESP` is empty or doesn't exist, tell the user:
   "Codex returned no response. Check stderr for errors."
 - **Session resume failure:** If resume fails, delete the session file and start fresh.
@@ -1586,7 +1707,10 @@ If token count is not available, display: `Tokens: unknown`
 - **Present output verbatim.** Do not truncate, summarize, or editorialize Codex's output
   before showing it. Show it in full inside the CODEX SAYS block.
 - **Add synthesis after, not instead of.** Any Claude commentary comes after the full output.
-- **5-minute timeout** on all Bash calls to codex (`timeout: 300000`).
+- **Bash gate above the wrapper.** Every Bash call to codex sets its `timeout`
+  parameter ABOVE the inner `_gstack_codex_timeout_wrapper` budget (Review:
+  `timeout: 360000` over the 330s wrapper; Challenge/Consult: `timeout: 660000`
+  over the 600s wrappers) so the wrapper fires first with a diagnosable exit 124.
 - **No double-reviewing.** If the user already ran `/review`, Codex provides a second
   independent opinion. Do not re-run Claude Code's own review.
 - **Detect skill-file rabbit holes.** After receiving Codex output, scan for signs

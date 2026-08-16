@@ -153,7 +153,7 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | Codex child process env | `src/lib/process-proxy-env.ts`, `src/lib/codex/app-server-manager.ts` | 保留外网 proxy、loopback 直连、Windows key 单一化 |
 | Codex proxy HTTP/SSE contract | `src/lib/codex/proxy/http-response.ts`, `src/app/api/codex/proxy/v1/responses/route.ts` | streaming structured error 走 HTTP 200 `response.failed`；non-stream 保留 status + JSON |
 | Codex network diagnosis | `src/lib/codex/error-diagnostics.ts`, `src/lib/codex/event-mapper.ts` | 只识别 CodePilot loopback transport 502，保留原文，不误判 managed upstream envelope |
-| Runtime-specific provider transport | `src/lib/provider-catalog.ts` wire capabilities → `provider-resolver.ts:toAiSdkConfig()` → `ai-provider.ts` | 只在 preset identity + exact model + runtime 都命中时换协议；不得用 hostname 特判；unsupported 回原协议 |
+| Runtime-specific provider transport | `src/lib/provider-catalog.ts` wire capabilities → `provider-resolver.ts:toAiSdkConfig()` → `ai-provider.ts` | 只在 preset identity + exact model + runtime 都命中时换协议；Anthropic / Responses 模型 ID 不同时由声明式 override 改写；effort compatibility alias 也必须由该 first-party preset 显式声明，不得用 hostname/品牌特判；unsupported 回原协议 |
 | Anthropic-compatible effort | `agent-loop-anthropic-wire.ts` + `claude-code-compat/request-builder.ts` | 未验证第三方继续省略 effort；verified model×tier 才生成 `output_config.effort` |
 | Codex provider Responses effort | `codex/proxy/unified-adapter.ts:buildProviderOptions()` | preset-verified third-party Responses 才可 `forceReasoning`；档位按 transport allowlist，未知档位省略 |
 
@@ -191,10 +191,12 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 6. **catch 合成 env synthetic 后下游 derivation 仍按"groups 空 = noCompatibleProvider"判** → 矛盾。`noCompatibleProvider = fetchState === 'loaded' && providerGroups.length === 0`，failed 状态里 groups.length=1 不算 noCompatibleProvider
 7. **MessageInput auto-correct fire `onProviderModelChange(currentProviderIdValue, fallback)` 时，`currentProviderIdValue` 是 hook 内部 fallback group 的 id 而非 prop providerId** → 写回 session 的是 fallback provider，正确。但 Composer 顶层那次 `useProviderModels` 必须返回**同步过的** resolved pair，不能让 ChatView 的 `currentProviderId` state 落后于 hook 的 resolved 信号 → ChatView 用 useEffect 监听 `providerWasFilteredOut` + PATCH session 同步
 8. **父模型在一个 turn 内同时生成 A/B tool input，SDK 随后按 A→B 串行执行** → B 的 prompt 仍在 A 结果产生前冻结，不能据此宣称 B 获得 A 输出。依赖必须走 `workflow_id/task_key/depends_on` 与 app-side durable handoff。
-9. **AI SDK 不认识第三方 Responses 模型就静默丢 reasoning** → 对 preset-verified transport 显式 `forceReasoning`，并用真实 outbound body 测试；不能只断言 providerOptions 内存对象。
+9. **AI SDK 不认识第三方 Responses 模型就静默丢 reasoning** → 对 preset-verified transport 显式 `forceReasoning`，并用真实 outbound body 测试；不能只断言 providerOptions 内存对象。若同一模型在 Anthropic / Responses 上使用不同 ID（例如 GLM-5.3），override 必须来自 exact-model wire capability；effort alias 也必须 provider-scoped，禁止把 DeepSeek 的 `xhigh→high` 变成所有端点的全局规则。
 10. **把 OpenAI Responses 附加字段原样发给兼容端点** → 供应商只承诺的子集才保留。DeepSeek 当前不声明 reasoning summary，fetch 边界必须剥离 SDK 自动生成的 `reasoning.summary`。
 11. **只给 HTTP warmup 加 2.5s timeout** → client pending 仍会活到内部 30s timer。调用方 deadline 必须向下 abort 对应 JSON-RPC id，late response 只能被丢弃。
 12. **把一次 refresh warning 当成僵死进程热杀** → 可能中断 active turn/approval。必须按 generation+窗口累计并仅在 idle recycle。
+13. **CodePilot Provider 的 Codex effort 复用 Codex Account 模型缓存** → GLM 等第三方目录的 Max 会被静默夹成 High，Auto 也无法采用供应商默认档。Codex Account 只信当前账号 `model/list`；CodePilot Provider 必须信精确 preset/model catalog 的 `supportedEffortLevels/defaultEffortLevel`。`xhigh/max` 的语法兼容证据可来自当前 app-server `model/list` vocabulary，或在账号未登录/目录冷缓存时来自已初始化本机 binary 的保守版本门（当前实际验证下限为稳定版 `0.144.2`）。版本门必须复用严格、prerelease-aware 的 `codex --version` 解析器；`0.144.2-alpha.*` 和仅在任意 user-agent 中夹带三元组的字符串都不得放行。不得为了使用 CodePilot Provider 要求登录或刷新 Codex Account；旧/未知 binary 必须可见失败，禁止静默降级。
+14. **把“没有 effort allowlist”误判成“不是原生 Responses”** → GLM-5-Turbo 这类已验证 Responses transport 会退回 generic path，丢 reasoning summary 或错误附带 effort。transport 能力与可选 effort 档位是两个字段：前者建立 Responses context，后者为空时仍走原生 Responses，但 body 不得出现 `reasoning.effort`。
 
 ## 6. 测试覆盖
 
@@ -214,7 +216,8 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | `src/__tests__/unit/opus-5-model.test.ts` | Opus 5 显式目录与旧 alias pin、1M context、adaptive/sampling/effort、disabled-thinking 上限、Auto compatibility-default provenance、本地化调整提示和 Claude managed Sub-agent route |
 | `src/__tests__/unit/agent-loop-anthropic-wire.test.ts` | Anthropic 官方 model×effort-tier wire allowlist；Auto 不冒充显式 High；第三方代理保留原始 requested tier；Sonnet 4.6 max/xhigh 正反例 |
 | `src/__tests__/unit/codex-proxy-translators.test.ts` | Codex proxy 对 Anthropic resolved upstream model 使用共享 sanitizer；adaptive 家族禁止 manual budget thinking，支持档位 xhigh 保真、Sonnet 4.6 非法 xhigh 省略 |
-| `src/__tests__/unit/deepseek-v4-flash-adaptation.test.ts` | Codex Runtime exact-model Responses dispatch、production factory outbound body、DeepSeek max/xhigh 映射、Anthropic output_config 与 aggregator fail-closed |
+| `src/__tests__/unit/deepseek-v4-flash-adaptation.test.ts` | Codex Runtime Flash/Pro exact-model Responses dispatch、Pro 0813 production factory outbound body、DeepSeek max/xhigh 映射、Anthropic output_config 与 suffix/aggregator fail-closed |
+| `src/__tests__/unit/glm-5-3-codeplan-adaptation.test.ts` | GLM-5.3 当前目录、Claude `[1m]` / Codex bare ID 分流、CN/Global Responses endpoint、provider-scoped effort alias、Codex catalog contract 的显式/Auto→Max 与旧 binary fail-visible、Turbo 原生 Responses 无 effort outbound body、production factory 与 aggregator fail-closed |
 | `codex-bounded-ndjson-reader.test.ts` + `codex-app-server-client.test.ts` + `codex-models-decoupling.test.ts` | frame byte cap、deadline pending cleanup、model/list single-flight/cooldown/safe-mode cache-only |
 | `codex-binary-discovery.test.ts` | internal refresh-timeout signature、health window threshold 与 app-server spawn compatibility |
 
@@ -240,3 +243,5 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 - **2026-07-27** Claude review 通过变异测试证明首版 Claude negative 是空断言，且 Codex proxy 仍复制 compat。现让 Claude 候选也消费共享 catalog 后再按 compat 过滤；测试直接锁定 xAI=`codepilot_only/xai`、OpenAI OAuth=`codepilot_only/openai-compatible`。Proxy registry 从共享定义生成，metadata parity 同时断言 id/compat/protocol，不再只比 id。
 - **2026-07-28** Opus 5 以显式 `opus-5 → claude-opus-5` 加入 first-party/env 单一目录，并自然进入 Claude managed Sub-agent route；既有 `opus → claude-opus-4-7` pin 不变，避免旧会话静默迁移。模型合同为 1M context + adaptive thinking + low/medium/high/xhigh/max effort；thinking disabled × xhigh/max 必须受控降到 high 并通过本地化结构化状态告知，Auto 也必须显式发 high，不能依赖 CLI 可变默认值。Codex proxy 的 Anthropic 请求必须用 resolved upstream model 经过同一 sanitizer/wire builder；禁止再把 adaptive 家族的 effort 翻译成 manual `budgetTokens`。CodePilot 生产路径使用系统 Claude binary，Opus 5 要求 Claude Code `2.1.219+`；Agent SDK 大版本升级和未经验证的 OpenRouter/Bedrock/Vertex slug 不与本次目录修复捆绑。
 - **2026-08-02** DeepSeek V4 Flash 在 Codex Runtime 使用第一方原生 Responses；同 credential 在 CodePilot Runtime 保持 Anthropic-compatible，Claude Code 保持官方 `/anthropic` env 路径。transport 由 preset 声明而非 hostname 分支；V4 Pro 暂不切 Responses。AI SDK 对未知模型的 reasoning heuristic 由 verified transport 的 `forceReasoning` 覆盖，DeepSeek 未支持的 summary 被移除。真实 API 已分别跑通 Responses High 与 Anthropic thinking+High；聚合渠道 effort 继续 fail closed。
+- **2026-08-15** CodePilot Provider 的扩展 effort 与 Codex Account entitlement 分轴：账号 `model/list` vocabulary 可作为当前 binary 证据，但未登录/冷缓存不能阻断第三方 Provider。runtime 在 app-server 已初始化后只读本机版本，`0.144.2+` 作为本仓库实测保守门；旧/未知版本可见失败，不静默夹档，也不提示用户刷新无关的 Codex Account 目录。
+- **2026-08-15** 扩展 effort 版本门改为复用 app-server auto-review 已使用的严格 semver/prerelease 比较器；只接受 bare release、锚定的 `codex-cli <release>`，或锚定的 `Codex Desktop/<release>` app-server user agent，稳定版 `0.144.2` 可用但同 core 的 alpha 不可用，避免无关 user-agent 中的版本误命中。production smoke 进一步钉住 ChatGPT.app 当前 `Codex Desktop/0.147.0-alpha.6.5 (...)` 格式，防止严格化时误拒真实 bundle。

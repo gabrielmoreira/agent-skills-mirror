@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 59 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 5
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 59 |
+| Followed pats | 4 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 5
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `apps/workspace-server/docs/packaging.md`
 - `CONTRIBUTING.md`
 - `README.md`
 - `LICENSE.md`
@@ -117,9 +118,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
 | 55 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
 | 56 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
-| 57 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 58 | → | [`LICENSE.md`](LICENSE.md) |
-| 59 | → | [`README.md`](README.md) |
+| 57 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
+| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 59 | → | [`LICENSE.md`](LICENSE.md) |
+| 60 | → | [`README.md`](README.md) |
 
 ---
 

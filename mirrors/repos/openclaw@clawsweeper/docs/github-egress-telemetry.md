@@ -27,15 +27,19 @@ curl --fail --silent --show-error \
 ```
 
 `hours` accepts only `0.25` (15 minutes), `1`, `6`, or `24`. Use the 15-minute
-view for periodic collection when a high-cardinality one-hour detail response
-would reach the public row cap. The response contains closed aggregate
-dimensions and sanitized rate-limit observations. It never contains private
-pool identities, repository or item identifiers, branches, raw SHAs, paths,
-queries, cursors, URLs, request IDs, ETags, bodies, tokens, or installation IDs.
+view for periodic collection when a high-cardinality one-hour aggregate would
+reach the public row cap. The response contains revision-independent closed
+rollup dimensions and aggregate rate-limit counts. It never contains private
+pool identities, repository or item identifiers, deployment or configuration
+revision digests, branches, raw SHAs, paths, queries, cursors, URLs, request
+IDs, ETags, bodies, tokens, installation IDs, individual rate-limit rows, or raw
+header/reset values.
 
-The exact-review queue status also includes a compact six-hour
-`publication.github_egress_metrics_v2` summary. Use the dedicated endpoint when
-the operation, route, page, outcome, or rate-limit-header breakdown is needed.
+The binding-only exact-review queue status retains a compact six-hour
+`publication.github_egress_metrics_v2` summary for internal workflows. The
+public `/api/exact-review-queue` projection omits it. Use the dedicated egress
+endpoint for the closed operation, route, page, outcome, and rate-limit count
+breakdowns.
 
 ## Counting units
 
@@ -55,6 +59,10 @@ debug contributes an incomplete `invocation` but no invented wire count.
 `attempted=false` is emitted only for a directly observed pre-wire condition or
 an existing batch circuit skip. Phase 0 does not manufacture requests that a
 future coordinator might have avoided.
+
+A public rollup row is an aggregate over these units, not a durable member or
+request record. Otherwise-identical closed rows from different deployment or
+configuration revisions are combined before serialization.
 
 Do not equate a broker hit with a quota saving. `cache_hit` means only that an
 ETag was available for the next live request. The separate
@@ -165,17 +173,20 @@ The remaining dimensions are closed allowlists:
 - `page_bucket`, `status_bucket`, and `latency_bucket`: bounded buckets rather
   than raw values.
 
-`deployment_revision` is a one-way 16-hex fingerprint derived from the exact
-checked-out deployment SHA. `config_revision` is a separate 16-hex fingerprint
-of a versioned allowlist of non-secret egress controls. Operators can correlate
-a known SHA or configuration locally without publishing a raw SHA or control
-payload.
+Private rollup and rate-limit records retain `deployment_revision`, a one-way
+16-hex fingerprint derived from the exact checked-out deployment SHA, and
+`config_revision`, a separate fingerprint of a versioned allowlist of
+non-secret egress controls. These digests support binding-only provenance and
+are not a public correlation surface. The public projector validates them,
+removes them from the grouping key, and combines otherwise-identical rows across
+revisions.
 
 ## Rate-limit observations
 
-Only HTTP 403 and 429 responses produce detail rows. The observer records the
-approximate response receive time (request timestamp plus measured duration),
-status, closed request dimensions, and presence plus bounded numeric values for:
+Only HTTP 403 and 429 responses produce private detail rows. The observer records
+the approximate response receive time (request timestamp plus measured
+duration), status, closed request dimensions, and presence plus bounded numeric
+values for:
 
 - `Retry-After`;
 - `X-RateLimit-Limit`;
@@ -187,6 +198,13 @@ status, closed request dimensions, and presence plus bounded numeric values for:
 `reset_authority_candidate` reports `retry_after`, `rate_limit_reset`, `absent`,
 or `invalid`. A present but non-numeric authority remains present and is
 classified `invalid`.
+
+The public response never serializes those rows or numeric header values. It
+returns a bounded `rate_limits` summary with the total, latest observation time,
+aggregate completeness, counts by status, pool class, operation,
+`reset_authority_candidate`, and resource category, plus counts indicating
+which header families were present. Deployment/configuration revisions and
+per-observation reset times remain private.
 
 The signed ingest path also reuses a narrowly attributable subset of complete
 observations as durable queue circuit evidence. `repository_actions` and
@@ -220,8 +238,9 @@ incomplete bounded marker. It never uploads a partially parsed raw frame.
 Completeness is computed independently for each requested 15-minute, one-,
 six-, or 24-hour window. Rollup queries include the complete five-minute or
 hourly bucket that overlaps the window's lower boundary, so totals can include at
-most one bucket of observations immediately before the exact cutoff. Raw
-rate-limit observations use the exact cutoff. `rows_truncated` and
+most one bucket of observations immediately before the exact cutoff. Private
+rate-limit source selection uses the exact cutoff before aggregation.
+`rows_truncated` and
 `rate_limit_rows_truncated` identify a bounded public response, while
 `rollup_window_complete` and `rate_limit_window_complete` compare the requested
 lower boundary with the latest timestamp actually removed by a cap. Running a
@@ -273,18 +292,18 @@ Known incomplete boundaries are explicit:
 
 ## Retention and cardinality
 
-| Boundary                         | Limit                                  |
-| -------------------------------- | -------------------------------------- |
-| Workflow JSONL input             | 2,000 lines per file                   |
-| Signed upload                    | 128 metrics and 16 rate rows per chunk |
-| Five-minute rollups              | 7 days                                 |
-| Hourly rollups                   | 30 days                                |
-| Sanitized 403/429 detail         | 24 hours                               |
-| Deduplication receipts           | 7 days                                 |
-| Durable rollup rows              | 50,000                                 |
-| Durable rate-limit detail rows   | 10,000                                 |
-| Public aggregate rows per query  | 2,000 plus a truncation flag           |
-| Public rate-limit rows per query | 256                                    |
+| Boundary                                             | Limit                                  |
+| ---------------------------------------------------- | -------------------------------------- |
+| Workflow JSONL input                                 | 2,000 lines per file                   |
+| Signed upload                                        | 128 metrics and 16 rate rows per chunk |
+| Five-minute rollups                                  | 7 days                                 |
+| Hourly rollups                                       | 30 days                                |
+| Sanitized 403/429 detail                             | 24 hours                               |
+| Deduplication receipts                               | 7 days                                 |
+| Durable rollup rows                                  | 50,000                                 |
+| Durable rate-limit detail rows                       | 10,000                                 |
+| Public aggregate rows per query                      | 2,000 plus a truncation flag           |
+| Private rate-limit observations aggregated per query | 256                                    |
 
 The Durable Object validates every enum, digest length, timestamp window,
 numeric header, count, and chunk limit before committing a receipt. It stores
@@ -294,9 +313,11 @@ cumulative diagnostics. The highest timestamp actually evicted for each rollup
 kind and for sanitized rate-limit detail marks only overlapping public windows
 incomplete.
 
-The 15-minute view does not raise or bypass the public row cap. A collector
-must preserve `rows_truncated` and `query_complete` and record a gap if even the
-smaller view exceeds the bound.
+The 15-minute view does not raise or bypass either source cap. A collector must
+preserve `rows_truncated`, `rate_limit_rows_truncated`, and `query_complete` and
+record a gap if even the smaller view exceeds a bound. A rate-limit truncation
+flag describes the private observations summarized into counts; it does not
+imply that individual rows were returned publicly.
 
 ## Rollback and Phase 1 boundary
 

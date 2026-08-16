@@ -9,7 +9,7 @@ Write a handoff summary of the current conversation so a fresh agent can continu
 
 Always pass `-n`/`--name` with a descriptive name (e.g. `--name "Fix login bug"`) — it sets the display name shown in the job list, session picker, and terminal title.
 
-Include a "suggested skills" section in the summary, which suggests skills that the agent should invoke.
+Include a "suggested skills" section in the summary, naming which skills the next agent should call the Skill tool for.
 
 Do not duplicate content already captured in other artifacts (specs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
 

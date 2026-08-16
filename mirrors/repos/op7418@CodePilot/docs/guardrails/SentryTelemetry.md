@@ -111,3 +111,4 @@
 - 2026-08-12：只读复核发现 v0.66 发布后 72 小时 official project 没有新 Issue；这不能单独证明 telemetry 失效，也不能替代 Release Health/session 分母。用户事故中的四次 Next utility exit 5 没有进入 Sentry，确认是 Main 只写本地日志的观测缺口；补充 ST-16，未来 stable opt-in 构建按 generation 上报一次脱敏 fatal event。
 - 2026-08-12：Claude 复审发现 Electron SDK 默认 `ChildProcess` 对 `abnormal-exit` 仍自动 `captureMessage`，会和 ST-16 自定义 event 双报。Main 改为显式替换 `childProcessIntegration({events:[]})`，保留 process breadcrumb，只让 normalized generation boundary 拥有 utility Issue。
 - 2026-08-12：复审 P3 follow-up 将 utility `exitCode` 从 memory-style 非负过滤中分离；保留 Electron 平台整数（signed int32 至 Windows DWORD），拒绝浮点、非有限与越界值，且 fingerprint 不变。
+- 2026-08-15：`telemetry-native-stream-loop.test.ts` 的 initial-503 exactly-once 阳性断言已在两台机器复现 0-event flake，登记 tech-debt #86。修复必须收敛 carrier/transport drain 与 terminal capture 的异步所有权；禁止用重跑、固定 sleep、降低 exactly-once 或移除阳性对照让门禁“变绿”。

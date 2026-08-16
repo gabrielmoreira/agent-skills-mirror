@@ -444,6 +444,14 @@ ok(html.includes('class="rseg"'), '节奏带按段分组（粗分隔）');
 ok(html.includes('#seg-E01-01'), '节奏带段可跳转');
 ok(html.includes('主分镜图 · #1 未生成'), '主分镜图缺图时显示占位不装有');
 ok(html.includes('#2 未生成'), '子分镜图缺图有小占位');
+// 主分镜图区：无图时每切各占一整行提示词卡 + 复制按钮（PR 核心目标）
+{
+  const nCuts = FIXTURE.episodes.reduce((n, e) => n + e.segments.reduce((m, s) => m + s.cuts.length, 0), 0);
+  ok((html.match(/class="frame ph fcell"/g) ?? []).length === nCuts, '无图时每切都是整宽提示词卡');
+  const c0 = FIXTURE.episodes[0].segments[0].cuts;
+  ok(html.includes(`data-copy="${c0[0].frame}"`), '主分镜格复制按钮带该切 frame 原文');
+  ok(html.includes(`data-copy="${c0[1].frame}"`), '子分镜格复制按钮同样带 frame 原文');
+}
 ok(html.includes('class="shots clip"'), '段卡区默认截断');
 ok(html.includes('展开全部段'), '每集自带展开按钮');
 ok(html.includes('H3 提示词'), '段卡带 H3 提示词面板');
@@ -462,6 +470,9 @@ ok(html.includes('老周'), 'html 里 ID 换成名字');
   ok(withImg.includes('"E01-01/f1.png"'), '主分镜图从段文件夹读');
   ok(withImg.includes('"E01-01/f2.png"'), '子分镜图同样从段文件夹读');
   ok(!withImg.includes('未生成'), '有图时不再显示占位');
+  ok(!withImg.includes('class="frame ph fcell"'), '图出全时不再走整宽提示词卡');
+  ok(withImg.includes('class="subs"'), '图出全时保留子分镜条');
+  ok(withImg.includes('class="subf"'), '子分镜条用小缩略图');
 }
 // 病灶横幅
 {

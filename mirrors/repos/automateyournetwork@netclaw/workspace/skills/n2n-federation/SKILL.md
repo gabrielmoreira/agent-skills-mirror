@@ -352,3 +352,38 @@ python3 scripts/in2n-services.py disable <member>   # tear a member's unit down 
 Single-owner: a member bound to a durable service is brought up via its unit, never
 double-launched by the Border's cold-start path. On a non-systemd host the generator
 degrades gracefully and posture reports the durable-runtime aspect accordingly.
+
+## Transport & Edge Gate (Feature 108)
+
+### Per-Peer Transport Metadata
+
+Every peer in `n2n_health` and `n2n_posture` now carries two display fields:
+
+| Field | Values | Meaning |
+|-------|--------|---------|
+| `transport` | `ngrok` \| `cloudflare_tunnel` \| `other` | Which carrier reaches this peer |
+| `edge_gate` | `none` \| `cloudflare_access` | Whether a Cloudflare Access policy gates connections |
+
+These are set via:
+- `transport`: supplied as an optional field on `/n2n/connect` (or `n2n_connect`)
+- `edge_gate`: set independently via `n2n_set_edge_gate`
+
+### When to use `n2n_set_edge_gate`
+
+Use after configuring a Cloudflare Access policy on the Cloudflare side:
+
+```
+n2n_set_edge_gate(peer="as65007-7.7.7.7", edge_gate="cloudflare_access")
+```
+
+- Default is `none` — never implied by `transport=cloudflare_tunnel`
+- Per-peer, not bulk — each peer must be explicitly opted in
+- Does NOT replace or weaken spec 060's peer-identity TLS (it's an additional layer)
+- To revert: `n2n_set_edge_gate(peer="...", edge_gate="none")`
+
+### Local Transport Health
+
+`n2n_health` includes `local_transport_healthy`:
+- `true` — this claw's own Cloudflare Tunnel is up and DNS resolves
+- `false` — tunnel process down or DNS failure (fault_class: "transport")
+- `"n/a"` — no peer uses `cloudflare_tunnel` (probe disabled/irrelevant)

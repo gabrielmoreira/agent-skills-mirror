@@ -95,7 +95,7 @@ node scripts/novel-storyboard.mjs export sb.json --script script.json   # per-se
 node scripts/selftest.mjs
 ```
 
-183 assertions — beat expansion, H3 skeleton derivation, stats and batching, gate-defeating cases, seed, rendering (both report UI languages), export. No model calls, runs in about a second.
+191 assertions — beat expansion, H3 skeleton derivation, stats and batching, gate-defeating cases, seed, rendering (both report UI languages), export. No model calls, runs in about a second.
 
 The bundled example (`examples/渡口-storyboard.json`) is a complete episode-1 storyboard — 10 segments, 34 cuts claiming all 35 script beats at ~3.5s per cut, 119s against a 120s target, 2 generation batches, every segment carrying a fully audited H3 prompt.
 

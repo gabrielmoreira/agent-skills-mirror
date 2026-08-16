@@ -19,6 +19,10 @@ task; each reference is self-contained.
 | [`references/breaking-changes.md`](references/breaking-changes.md) | Auditing existing code for deprecated calls, renamed semantic conventions, and removed APIs across recent SDK / contrib releases. |
 | [`references/compile-time-instrumentation.md`](references/compile-time-instrumentation.md) | Zero-code, compile-time instrumentation with `otelc`: usage modes (`otelc go build`, tool dependency, toolexec drop-in), subcommands, supported libraries, rule sources/precedence, and pinning via `otel.instrumentation.go`. |
 
+For upgrade reviews, always finish with a safe local verification path (`go mod tidy -diff`,
+`go build ./...`, and `go test ./...`). Test exporter URL or retry changes against a disposable
+local receiver, never a deployment endpoint.
+
 ## Module versioning — read before adding dependencies
 
 opentelemetry-go is split into **independently versioned module groups**. They do NOT
@@ -27,12 +31,12 @@ and version churn:
 
 | Module group | Example modules | Version line |
 |---|---|---|
-| Stable signals (traces, metrics) | `go.opentelemetry.io/otel`, `otel/sdk`, `otel/trace`, `otel/metric`, OTLP trace/metric exporters | **v1.x** (e.g. v1.44.0) |
+| Stable signals (traces, metrics) | `go.opentelemetry.io/otel`, `otel/sdk`, `otel/trace`, `otel/metric`, OTLP trace/metric exporters | **v1.x** (e.g. v1.45.0) |
 | Logs | `otel/log`, `otel/sdk/log`, `otel/exporters/otlp/otlplog/otlploghttp` | **v0.x** (separate, lower line) |
-| Contrib instrumentation | `contrib/instrumentation/net/http/otelhttp`, `.../otelgrpc` | **v0.x** (separate line, e.g. v0.69.0) |
+| Contrib instrumentation | `contrib/instrumentation/net/http/otelhttp`, `.../otelgrpc` | **v0.x** (separate line, e.g. v0.70.0) |
 | Contrib log bridges | `contrib/bridges/otelslog`, `otelzap`, `otellogrus`, `otellogr` | **v0.x** |
 
-**The trap:** pinning every module to the core version (e.g. `go get go.opentelemetry.io/otel/log@v1.44.0`)
+**The trap:** pinning every module to the core version (e.g. `go get go.opentelemetry.io/otel/log@v1.45.0`)
 fails — log and bridge modules have no v1.x tag. Hand-picking and re-guessing each `@vX`
 is the churn to avoid.
 

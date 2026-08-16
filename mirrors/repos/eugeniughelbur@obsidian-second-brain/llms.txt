@@ -4,7 +4,7 @@
 
 ## What this is
 
-obsidian-second-brain is an open-source skill (MIT license) for Obsidian users who use an AI CLI as their primary interface to their own knowledge. It treats the vault as a knowledge base optimized for AI retrieval rather than human reading. Every note follows an AI-first design rule: self-contained context, "For future Claude" preamble, rich machine-readable frontmatter, recency markers per claim, sources preserved verbatim, mandatory wikilinks, and confidence levels.
+obsidian-second-brain is an open-source skill (MIT license) for Obsidian users who use an AI CLI as their primary interface to their own knowledge. It treats the vault as a knowledge base optimized for AI retrieval rather than human reading. Every note follows an AI-first design rule: self-contained context, "For future agent" preamble, rich machine-readable frontmatter, recency markers per claim, sources preserved verbatim, mandatory wikilinks, and confidence levels.
 
 The skill is platform-neutral. The same 45 commands run in Claude Code, OpenAI Codex CLI (native Agent Skills), Google Gemini CLI, OpenCode, Google Antigravity (via the unified `.agents/skills/` Agent Skills build), Nous Research Hermes (native skills), and Pi. One codebase compiles into all seven via `bash scripts/build.sh`.
 
@@ -15,7 +15,7 @@ Owner: Eugeniu Ghelbur. AI Automation Engineer at Single Grain.
 - Claude sessions start from zero every time. This skill solves that by storing context in the Obsidian vault and letting the AI read, write, and reason over it across sessions.
 - Notes accumulate unconnected. This skill propagates every write across people, projects, kanban boards, and daily notes automatically.
 - Research findings get lost. The research toolkit (8 commands) saves every X read, X pulse, web research (key-less by default), YouTube and podcast transcript, and vault-grounded synthesis directly to the vault as structured notes.
-- Vaults are usually optimized for humans browsing in Obsidian. This skill treats the vault as an AI knowledge graph: future-Claude (or future-Codex/Gemini) is the primary reader.
+- Vaults are usually optimized for humans browsing in Obsidian. This skill treats the vault as an AI knowledge graph: the next compatible agent (Claude, Codex, Gemini, or another client) is the primary reader.
 - Different AI users use different CLIs. The same vault works whether the user is on Claude Code, Codex CLI, Gemini CLI, OpenCode, Antigravity, Hermes, or Pi - no rewriting commands per platform.
 
 ## How this extends Karpathy's LLM Wiki pattern
@@ -28,7 +28,7 @@ obsidian-second-brain implements this pattern and extends it on six axes:
 2. Contradictions get reconciled, not just flagged. The /obsidian-reconcile command finds conflicts between notes and resolves them by checking sources, dates, and confidence levels.
 3. Patterns get surfaced without prompting. The /obsidian-synthesize command scans the vault for unnamed recurring themes and writes synthesis pages on its own.
 4. Maintenance is scheduled, not manual. 4 scheduled agents run nightly close, weekly review, contradiction sweep, and vault-health check.
-5. Notes are written for AI retrieval. Every note has a "For future Claude" preamble, machine-readable frontmatter, mandatory wikilinks, and recency markers per claim. Karpathy's pattern produces human-readable wiki pages; this produces AI-first notes.
+5. Notes are written for AI retrieval. Every note has a "For future agent" preamble, machine-readable frontmatter, mandatory wikilinks, and recency markers per claim. Karpathy's pattern produces human-readable wiki pages; this produces AI-first notes.
 6. Write-time enforcement. A `PostToolUse` hook (`validate-ai-first.sh`) inspects every Write or Edit on a markdown file inside the vault and warns when the AI-first rule is broken (missing frontmatter fields, missing preamble, broken YAML). The vault stays AI-first because every write is checked, not because the AI remembers all seven rules every time.
 
 If Karpathy's LLM Wiki is a knowledge base you maintain with an LLM, obsidian-second-brain is a knowledge base that maintains itself across multiple AI CLIs.
@@ -89,8 +89,8 @@ Output goes to `dist/<platform>/` (gitignored). Each `dist/<platform>/INSTALL.md
 
 The single most important design principle. Every note Claude writes must satisfy seven rules:
 
-1. Self-contained context: each note explains itself; future-Claude may pull it via search with no surrounding context
-2. "For future Claude" preamble: 2-3 sentence summary so Claude can decide relevance in 10 seconds before parsing the note
+1. Self-contained context: each note explains itself; a future agent may pull it via search with no surrounding context
+2. "For future agent" preamble: 2-3 sentence summary so the next agent can decide relevance in 10 seconds before parsing the note
 3. Rich consistent frontmatter: type, date, tags, ai-first: true, plus type-specific fields per the schemas in `references/ai-first-rules.md`
 4. Recency markers per claim: "Mem0 raised $24M (as of 2026-04, mem0.ai)" so future-Claude knows what to verify
 5. Sources preserved verbatim: every external claim has its source URL inline
@@ -148,7 +148,7 @@ Then start your CLI from the vault root. Each build produces a platform-specific
 ## Common questions
 
 ### How does this compare to Karpathy's LLM Wiki pattern?
-This skill is an evolution of Karpathy's pattern. Karpathy's wiki appends new pages and cross-references on ingest. This skill rewrites existing pages, reconciles contradictions automatically (`/obsidian-reconcile`), surfaces unnamed patterns into synthesis pages (`/obsidian-synthesize`), runs 4 scheduled maintenance agents, writes notes in an AI-first format optimized for future-Claude retrieval rather than human reading, and runs across seven AI CLIs from one codebase. See https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f for Karpathy's original gist.
+This skill is an evolution of Karpathy's pattern. Karpathy's wiki appends new pages and cross-references on ingest. This skill rewrites existing pages, reconciles contradictions automatically (`/obsidian-reconcile`), surfaces unnamed patterns into synthesis pages (`/obsidian-synthesize`), runs 4 scheduled maintenance agents, writes notes in an AI-first format optimized for future-agent retrieval rather than human reading, and runs across seven AI CLIs from one codebase. See https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f for Karpathy's original gist.
 
 ### What is a Claude Code skill?
 A Claude Code skill is a reusable behavior package for Anthropic's Claude Code CLI. It bundles slash commands, scripts, references, and operating instructions that Claude loads automatically. Skills give Claude domain expertise without prompt-engineering each session. This particular skill also compiles to non-Claude CLIs (Codex CLI, Gemini CLI, OpenCode, Google Antigravity, Hermes, Pi - including one unified Agent Skills build for the .agents/skills harnesses) via the adapter pattern.
@@ -166,7 +166,7 @@ Mostly no. The 37 non-research commands work without any API keys, and `/researc
 Notion AI and Mem are closed-source SaaS products that own your data. This skill stores everything as plain markdown in your local Obsidian vault, with no vendor lock-in. The AI is on top of your data, not behind it.
 
 ### What is the AI-first design rule?
-The principle that vault notes are written for future-Claude to retrieve and reason over, not for human reading. Notes have machine-readable structure, recency markers, mandatory wikilinks, and source URLs preserved verbatim. See `references/ai-first-rules.md` for the canonical specification.
+The principle that vault notes are written for future agents to retrieve and reason over, not for human reading. Notes have machine-readable structure, recency markers, mandatory wikilinks, and source URLs preserved verbatim. See `references/ai-first-rules.md` for the canonical specification.
 
 ### Is this safe to run on my existing vault?
 Yes. The skill never deletes or modifies notes destructively without explicit confirmation. Existing notes are left as-is. New notes follow the AI-first rule. `/obsidian-health` flags pre-AI-first notes so you can update them on your own schedule.

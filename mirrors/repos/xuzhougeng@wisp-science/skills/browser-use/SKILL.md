@@ -17,9 +17,13 @@ design. Do not treat that as a bug to route around.
 
 ## Before anything: confirm the bridge is live
 
-Call `browser_setup`. If `status` is not `connected`, relay its `steps`
-(load the unpacked extension from `extension_path`, verbatim) and stop
-until the popup shows *Connected to Wisp*. Never invent the path.
+Call `browser_setup`. If `status` is not `connected` (or `live_retrieval`
+is false), relay its `steps` (load the unpacked extension from
+`extension_path`, verbatim) and **stop**. Do not answer live, latest,
+current, or URL-specific questions from prior knowledge. Tell the user
+this turn contains no live web retrieval and wait until the popup shows
+*Connected to Wisp*. Only continue from memory if they explicitly ask
+for a knowledge-only answer. Never invent the path.
 
 ## The loop
 

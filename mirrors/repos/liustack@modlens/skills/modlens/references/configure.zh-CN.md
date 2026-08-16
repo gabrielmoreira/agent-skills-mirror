@@ -6,7 +6,7 @@
 
 ## 配置放在哪
 
-`~/.modlens/config.json`，由 CLI 管理。优先级：CLI 参数 > 环境变量 > 配置文件 > 内置默认值。不设 `provider` 时按失败切换链依次尝试（有 `gemini-api` key 会先于 agent CLI 被试到），机器上什么都没配才会落在 `antigravity-cli`。
+`~/.modlens/config.json`，由 CLI 管理。优先级：CLI 参数 > 本文件 > 内置默认值。一个 provider 的设置整份来自单一来源：自 3.17.0 起，本文件提到过它就以本文件为准，只字未提才用绑定的环境变量。不设 `provider` 时按失败切换链依次尝试（有 `gemini-api` key 会先于 agent CLI 被试到），机器上什么都没配才会落在 `antigravity-cli`。
 
 ```bash
 modlens config init                     # 写入一份起步配置（已存在则拒绝，--force 重写）
@@ -58,16 +58,16 @@ modlens config set <provider>.<field> <value>   # 字段：apiKey、baseUrl、mo
 
 字段含义：
 
-- `provider`：不传 `-p` 时由哪个 provider 执行。标准名和别名都行（`agy`/`antigravity` 对应 `antigravity-cli`，`gemini` 对应 `gemini-api`，`openai-compat` 对应 `openai`，`claude` 对应 `anthropic`，`claude-code` 对应 `claude-cli`）。留空或缺失表示不钉任何一个：由失败切换链决定，已配置的 API provider 先于 agent CLI 被尝试。
+- `provider`：不传 `-p` 时由哪个 provider 执行。标准名和别名都行（`agy`/`antigravity` 对应 `antigravity-cli`，`gemini` 对应 `gemini-api`，`openai-compat` 对应 `openai`，`claude` 对应 `anthropic`，`kimi`/`kimi-code` 对应 `kimi-cli`，`claude-code` 对应 `claude-cli`）。留空或缺失表示不钉任何一个：由失败切换链决定，已配置的 API provider 先于 agent CLI 被尝试。
 - `providers.<name>.<field>`：共六个字段，`apiKey`、`baseUrl`、`model`、`proxy`、`extraBody`、`structuredOutput`（仅 openai 路线）。每个 provider 条目都可选，条目里的每个字段也都可选。别名键同样会被读取（存在 `gemini` 下的设置在解析到 `gemini-api` 时也能找到），冲突时标准键胜出。
-- `providers.<name>.extraBody`：一个 JSON 对象，合并进 API provider（`gemini-api`、`openai`、`anthropic`）的请求体，用来传厂商有而 modlens 没有对应参数的开关。最常见的用途是关掉思考，见下文小节。嵌套对象逐键合并，所以加一个开关不会动到该块里的其他内容。承载图片、提示词和各路线自身强制机制的字段会被拒绝，报错会点名该字段。`openai` 路线上的 `response_format` 不在此列：在那里设置它就是有意替换掉 modlens 本来会发的那份 schema。两个 CLI provider 不发请求体，所以在 `antigravity-cli` 或 `claude-cli` 上运行时它会被忽略，并在 `meta.warnings` 里说明。
+- `providers.<name>.extraBody`：一个 JSON 对象，合并进 API provider（`gemini-api`、`openai`、`anthropic`）的请求体，用来传厂商有而 modlens 没有对应参数的开关。最常见的用途是关掉思考，见下文小节。嵌套对象逐键合并，所以加一个开关不会动到该块里的其他内容。承载图片、提示词和各路线自身强制机制的字段会被拒绝，报错会点名该字段。`openai` 路线上的 `response_format` 不在此列：在那里设置它就是有意替换掉 modlens 本来会发的那份 schema。三个 CLI provider 不发请求体，所以在 `antigravity-cli`、`claude-cli` 或 `kimi-cli` 上运行时它会被忽略，并在 `meta.warnings` 里说明。
 - `providers.openai.structuredOutput`：设为 `true` 时，让 OpenAI 兼容网关自己强制执行视觉契约，以 `response_format: json_schema` 的严格形式发出。默认关闭，因为不支持结构化输出的网关会对这个字段返回 400。你在 `extraBody` 里设的 `response_format` 优先级更高。
 - `guards`：调用 guard，给在同一个客户端里既跑纯文本模型又跑视觉模型的人用。两个列表都放 glob 模式（支持 `*` 和 `?`，不区分大小写，同时匹配模型名和 `provider/model`），用 `modlens config set guards.denyModels '["gemini-3*"]'` 或 `guards.allowModels` 设置（JSON 数组或逗号分隔的列表都行，传空则清除）。两种写法表达同一个意图，选列表更短的那种：
   - 只用 `denyModels`：除了列出的视觉模型，其余全部运行引擎。适合你接入的模型大多是纯文本的情况。
   - `allowModels` 非空（白名单模式）：只有列出的模型运行引擎，其他所有已识别的模型一律拒绝。适合 2026 年的实际格局，纯文本模型才是那份短名单。deny 模式仍然优先于 allow 匹配，所以宽泛的 allow 可以把视觉变体剔出去，正如上面的示例：`glm-5.*` 放行文本系列，`glm-*v*` 抓住 `glm-5v-turbo`。allow 模式要锚定得紧一些（写 `deepseek-v4-*` 而不是 `deepseek*`），这样厂商下一代多模态型号会自动掉出名单，等你检查过再上场。
   - 按真正抵达模型的内容来列名单，而不是按它本来能看到什么：多模态模型如果躲在一个剥离图片的网关后面，照样需要 modlens，而你的会话记录里存的是网关上报的模型名。`modlens doctor` 的 Guard 一节会显示规则和一条实时判定，方便核对结果。
   - `denyWhenUnknown`（默认 `false`）决定在两种模式下，当没有任何信号能识别当前模型时怎么办：`false` 放行，`true` 拒绝。当前模型的检测来源从强到弱依次是：`MODLENS_MODEL` 环境变量（`none` 表示「按未知处理」）、harness 的会话存储、`--model` 自报。
-- 以下绑定上，环境变量会覆盖配置文件：`GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENAI_BASE_URL`、`ANTHROPIC_API_KEY`、`ANTHROPIC_BASE_URL`。除此之外，modlens 还读取 `MODLENS_HARNESS`（粘贴恢复和 guard 的作用范围）、`MODLENS_MODEL`（guard 覆盖，见 `guards`），以及各 harness 自己注入的指纹，它们把 guard 的存储查询钉在当前 session 上：`CLAUDE_CODE_SESSION_ID`、`CODEX_THREAD_ID`，加上 harness 检测依赖的存在性标记（`CLAUDECODE`、`PI_CODING_AGENT`、`CODEX_SANDBOX`）。
+- `GEMINI_API_KEY`、`OPENAI_API_KEY`、`OPENAI_BASE_URL`、`ANTHROPIC_API_KEY`、`ANTHROPIC_BASE_URL` 用来配置本文件只字未提的 provider；本文件提到过的，它们完全不生效。过去它们逐字段覆盖，拼出的组合在哪儿都不存在：地址和密钥本是一副凭据。modlens 仍然读取 `MODLENS_HARNESS`（粘贴恢复和 guard 的作用范围）、`MODLENS_MODEL`（guard 覆盖，见 `guards`），以及各 harness 自己注入的指纹，它们把 guard 的存储查询钉在当前 session 上：`CLAUDE_CODE_SESSION_ID`、`CODEX_THREAD_ID`，加上 harness 检测依赖的存在性标记（`CLAUDECODE`、`PI_CODING_AGENT`、`CODEX_SANDBOX`）。
 - `reuse.<claude|codex|opencode|pi|grok>`：按 harness 记录的授权，决定能否花费本机其他登录态，由引导对话（`references/onboard.md`）写入。`true` 允许读图时复用该 harness（pi 的凭据加入 inline 区且所有 guard 照常生效，已登录的 Codex、OpenCode 的视觉模型或直接驱动的 pi 加入 agent 区，排在 `claude-cli` 之前），`false` 记下一次拒绝，用户不会被再次询问，缺失表示从未问过，什么都不会运行。`claude` 缺失视为已授权：`claude-cli` 作为内置 provider 早于这套模型存在，`reuse.claude false` 会把它移出链条（`-p claude-cli` 仍可钉死）。复用来的引擎不比用户自己的优先：分区只按速度档次排序。每个复用得来的答案都会在 `meta.warnings` 里加一行，说明花的是谁的额度，`modlens doctor` 的 Reuse 一节会显示每个 harness 的决定和探测发现的结果（探测结果在 `~/.modlens/auto-cache.json` 里缓存 6 小时，doctor 每次都重新探测）。用 `modlens config set reuse.codex true` 设置（传空恢复为从未问过）。
 - 未知的顶层键和未知的 provider 名会被忽略而不是报错，所以敲错字会无声失败：手工编辑后跑一下 `modlens doctor`，它会显示哪些文件值和环境变量真正生效。
 
@@ -93,8 +93,11 @@ agy    # 用户需自己在浏览器完成登录，然后退出
 
 ```bash
 modlens config set gemini-api.apiKey <key>
-# 或走环境变量：export GEMINI_API_KEY=<key>
+# 省略值：进入隐藏输入，密钥不进 argv、不进 shell 历史，也不进这段对话
+modlens config set gemini-api.apiKey
 ```
+
+用户就在自己终端前时，先给隐藏输入这条。大多数人图方便还是会把 key 直接贴进对话，那也没问题：照收照存。隐藏输入是留给在乎的人的。
 
 默认模型 `gemini-3.6-flash` 在免费档就有视觉能力（约每分钟 10-15 次请求，每天 1500 次）。免费档的数据可能被 Google 用于改进产品，用户要处理敏感图片时请提醒这一点。
 
@@ -108,7 +111,7 @@ modlens config set openai.apiKey <sk-key>
 modlens config set openai.model qwen3.6-27b
 ```
 
-官方 OpenAI 的写法：baseUrl 用 `https://api.openai.com/v1`，配一个具备视觉能力的模型。对应的环境变量：`OPENAI_BASE_URL`、`OPENAI_API_KEY`。模型必须是多模态的，纯文本模型会失败或产生幻觉。
+`baseUrl` 必填，用官方 OpenAI 也要写（`https://api.openai.com/v1`）：这条路线服务任意兼容端点，替用户猜一个，就等于把本该发给别家的密钥连同图片一起送到用户从没指定过的地方。模型必须是多模态的，纯文本模型会失败或产生幻觉。
 
 这条路线默认在服务端不做任何约束，能力弱一些的模型可能只答出契约的一半，运行就会以明确报错失败。真遇到就让网关自己强制执行：
 
@@ -122,12 +125,26 @@ modlens config set openai.structuredOutput true
 
 ```bash
 modlens config set anthropic.apiKey <sk-ant-key>
-# 或：export ANTHROPIC_API_KEY=<key>
 ```
 
 默认模型是 Claude Haiku（`claude-haiku-4-5-20251001`）。schema 通过强制工具调用来约束。
 
-**`ANTHROPIC_BASE_URL` 陷阱。**modlens 把 `ANTHROPIC_BASE_URL` 绑定到 `anthropic.baseUrl`，所以这个变量指向哪它就继承哪。如果用户在 shell 里设过它，用来把 Claude Code 路由到某个纯文本网关（在 Claude Code 界面下跑非 Claude 模型的常见做法），那么 `-p anthropic` 也会把视觉请求无声地发到那个网关，要么失败，要么返回的结果像没看过图，而且没有任何端点被换掉的提示。anthropic 的视觉表现异常时，先 `echo $ANTHROPIC_BASE_URL` 查一下。解法：给 modlens 调用临时取消这个变量，或用 `modlens config set anthropic.baseUrl https://api.anthropic.com` 钉死真实端点，或改用 `-p gemini-api`。
+**`ANTHROPIC_BASE_URL` 陷阱已经拆掉了。**modlens 过去把这个变量按字段绑到 `anthropic.baseUrl`，于是一个为了把 Claude Code 路由到纯文本网关而设的变量，会让视觉请求也无声地发到那里，哪怕密钥是在配置文件里设的。现在只要文件里出现 `anthropic`，文件就是这条路线的全部来源，那个变量再也够不着它，确实想换端点就设 `anthropic.baseUrl`。而在文件对 `anthropic` 只字未提时，`ANTHROPIC_API_KEY` 和 `ANTHROPIC_BASE_URL` 仍然能独立配好这条路线，两半来自同一处。卡在中间的情况（变量设着、文件里有 `anthropic` 却没有 `baseUrl`）会直接报错，并给出保留原端点的那条命令。
+
+### kimi-cli（复用 Kimi Code 登录，无需密钥）
+
+搭在已有的 `kimi` 登录上，花的是用户的 Kimi Code 订阅而不是密钥。先从 https://moonshotai.github.io/kimi-code/ 安装，跑一次 `kimi` 并 `/login`，然后：
+
+```bash
+modlens config set provider kimi-cli
+modlens config set kimi-cli.model <alias>   # 可选，不设就用 kimi 自己的默认模型
+```
+
+点名它才会启用。和其他 CLI 路线不同，它不会自己加入故障转移链：它花的是订阅，而装了 CLI 不等于同意花它。
+
+模型别名用 kimi 自己的那套，形如 `<provider>/<model>`，`kimi provider list` 能看到，而且必须支持图片输入。这条路线没有服务端 schema 约束（该 CLI 没有 `--json-schema`），契约是以填好的 JSON 模板随提示词发过去的，能力弱的模型可能只答出一半，遇到就用 `-p gemini-api` 兜底。
+
+有一个实现细节，调试时值得知道：modlens 运行 `kimi` 时把 skill 发现指向了一个空目录。否则 kimi 可能在共享的 skill 目录里找到 modlens skill，然后通过调用 modlens 来读图，也就是 modlens 自己调自己。
 
 ### claude-cli（Claude Code 登录态，无需 key）
 

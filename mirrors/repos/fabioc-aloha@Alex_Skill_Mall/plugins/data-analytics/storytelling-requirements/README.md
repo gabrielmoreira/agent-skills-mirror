@@ -2,7 +2,7 @@
 
 Guided requirements template for data storytelling projects.
 
-**Status**: Published (v1.0.1)
+**Status**: Published (v2.0.1)
 
 ## What It Does
 
@@ -22,9 +22,7 @@ Before starting any dashboard, report, or data story. The brief is the contract 
 
 ## Install
 
-```bash
-cp -r plugins/storytelling-requirements/ /your/project/.github/skills/local/storytelling-requirements/
-```
+Install `storytelling-requirements` from the Alex ACT Mall.
 
 ## Pipeline Position
 
@@ -33,5 +31,5 @@ This plugin fires first. It produces the brief that drives every downstream plug
 1. **storytelling-requirements** (this) -- the brief
 2. `datasource-connectors` -- ingest data per the brief
 3. `data-preparation` -- clean per documented concerns
-4. `visual-vocabulary` -- select charts per communication goals
-5. `delivery-*` -- render per delivery target
+4. Illustrator `chart-vocabulary` -- select charts per communication goals
+5. `delivery-ascii-dashboard` or Illustrator -- render per delivery target

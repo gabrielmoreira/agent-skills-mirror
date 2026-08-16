@@ -48,7 +48,8 @@ corresponding Wisp tool instead.
 | Wait for a Run | `monitor_run` | Call exactly once with the Run id. Wisp waits without repeated model calls. |
 | Cancel a Run | `cancel_run` | Request cancellation through the persisted Run lifecycle. |
 | Record project research objects | `research_graph` | Desktop-only. Record data assets, papers, or decisions and link existing graph nodes; it is not a generic artifact browser. |
-| Create a specialist | `save_specialist` | Desktop-only and create-only. Editing and deletion remain in Settings. |
+| Read or change app preferences, or show disk storage | `configure` | Desktop-only. `get` / `set` cover allowlisted appearance and general settings (font size, theme, `custom_css`, locale, compaction). `storage` reports this project's workspace plus app-data usage in the conversation. Secrets, API keys, model profiles, workspace directory, and proxy are not writable. For a restyle, load `custom-theme` then set `custom_css`. |
+| Create or update a specialist | `save_specialist` | Desktop-only. Omit `id` to create; pass `id` from `configure` get `specialists` to update. Builtin instruction text stays pinned. Deletion remains in Settings. |
 | Make an extra model call from Python | Not available | Continue through the normal agent turn. For bounded delegated work, use `explore` or advertised `delegate_tasks`. |
 | Resolve artifact ids to paths, list a generic artifact store, or inspect lineage | Not available | Use ordinary project paths plus `read`/`search`/`grep`. Do not invent artifact ids, version ids, or lineage records. Run output registration is limited to the explicit `output_specs` contract of `run_in_context`. |
 | Read credentials from Python or an agent tool | Not available | Wisp keeps secrets outside SQLite in its keyring path; no credential accessor is exposed to the agent. |

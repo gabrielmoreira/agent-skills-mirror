@@ -18,6 +18,14 @@ description: Run the tests, run one spec, run e2e locally or on Daytona, investi
 - If Daytona is unavailable, run the same spec locally with
   `OPENWORK_EVAL_DAYTONA` unset. Missing Daytona access is an expected path for
   OSS contributors and does not make the verdict fail or incomplete.
+- Determine fallback eligibility before execution: use local only when Daytona
+  credentials, tooling, or service access are unavailable, or when the user
+  explicitly requires local.
+- Once Daytona is available and selected, a runtime, test, or product failure
+  does not make Daytona unavailable. Diagnose and repair any red or incomplete
+  Daytona run in Daytona; never switch lanes to turn the verdict green.
+- A local reproduction may aid diagnosis, but it is not fallback and cannot
+  replace the required Daytona verdict.
 - Record the selected lane. For local fallback, report which Daytona
   prerequisite was unavailable without printing secret values.
 

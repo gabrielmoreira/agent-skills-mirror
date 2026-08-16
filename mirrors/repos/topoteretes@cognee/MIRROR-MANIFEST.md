@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/prompts/docs_edit.md`](.github/prompts/docs_edit.md) |
-| 2 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
-| 6 | ✓ | [`examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
-| 7 | ✓ | [`examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/cognee-cli/SKILL.md`](.claude/skills/cognee-cli/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/cognee-community/SKILL.md`](.claude/skills/cognee-community/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/cognee-docker/SKILL.md`](.claude/skills/cognee-docker/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/cognee-install/SKILL.md`](.claude/skills/cognee-install/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/cognee-integrations/SKILL.md`](.claude/skills/cognee-integrations/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/cognee-permissions/SKILL.md`](.claude/skills/cognee-permissions/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/cognee-server/SKILL.md`](.claude/skills/cognee-server/SKILL.md) |
+| 8 | ✓ | [`.github/prompts/docs_edit.md`](.github/prompts/docs_edit.md) |
+| 9 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
+| 13 | ✓ | [`examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
+| 14 | ✓ | [`examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
 
 ---
 

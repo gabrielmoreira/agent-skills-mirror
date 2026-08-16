@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ageerle/ruoyi-ai` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `ageerle/ruoyi-ai` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ageerle/ruoyi-ai` — 26 default patterns, 0 followed patterns, 3 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`ruoyi-admin/src/main/resources/skills/docx/SKILL.md`](ruoyi-admin/src/main/resources/skills/docx/SKILL.md) |
 | 2 | ✓ | [`ruoyi-admin/src/main/resources/skills/pdf/SKILL.md`](ruoyi-admin/src/main/resources/skills/pdf/SKILL.md) |
 | 3 | ✓ | [`ruoyi-admin/src/main/resources/skills/xlsx/SKILL.md`](ruoyi-admin/src/main/resources/skills/xlsx/SKILL.md) |
+| 4 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/repository-investigation/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/repository-investigation/SKILL.md) |
+| 5 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/safe-refactoring/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/safe-refactoring/SKILL.md) |
+| 6 | ✓ | [`ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/verification/SKILL.md`](ruoyi-modules/ruoyi-chat/src/main/resources/coding-harness/skills/verification/SKILL.md) |
 
 ---
 

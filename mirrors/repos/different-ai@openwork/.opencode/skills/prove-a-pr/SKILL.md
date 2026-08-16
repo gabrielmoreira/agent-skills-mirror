@@ -25,6 +25,14 @@ description: Prove a PR, prepare merge verification, publish all evidence, check
   when its credentials and service access are available; otherwise run the same
   checks locally. Missing Daytona credentials, tooling, or service access is an
   expected OSS contributor fallback, not a failed check.
+- Determine fallback eligibility before execution: use local only when Daytona
+  credentials, tooling, or service access are unavailable, or when the user
+  explicitly requires local.
+- Once Daytona is available and selected, a runtime, test, or product failure
+  does not make Daytona unavailable. Diagnose and repair any red or incomplete
+  Daytona run in Daytona; never switch lanes to turn the verdict green.
+- A local reproduction may aid diagnosis, but it is not fallback and cannot
+  replace the required Daytona verdict.
 - Record whether each check ran on Daytona or locally. When falling back, state
   the unavailable Daytona prerequisite without exposing secret values.
 - Give every claim an observable assertion and a visible testkit tape.

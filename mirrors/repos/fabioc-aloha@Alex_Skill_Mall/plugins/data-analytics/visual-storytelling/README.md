@@ -2,7 +2,7 @@
 
 Turn raw data into visual stories. One plugin, full pipeline.
 
-**Status**: Complete (v1.0.1)
+**Status**: Complete (v2.0.1)
 
 ## What You Get
 
@@ -13,19 +13,18 @@ Install this bundle to get the complete Visual Storytelling pipeline:
 | 1. Brief | `storytelling-requirements` | 2,700 |
 | 2. Ingest | `datasource-connectors` | 2,800 |
 | 3. Clean | `data-preparation` | 2,300 |
-| 4. Select | `visual-vocabulary` | 4,400 |
-| 5a. Render | `delivery-ascii-dashboard` | 3,300 |
-| 5b. Render | `delivery-svg-markdown` | 4,400 |
-| 5c. Render | `delivery-html-dashboard` | 4,900 |
+| 4. Select | Illustrator `chart-vocabulary` | External |
+| 5. Render | `delivery-ascii-dashboard` | 3,300 |
 
 Plus an orchestrator agent that runs the full pipeline end-to-end.
 
-**Total**: 24,800 tokens (all 7 components loaded).
+**Total**: 11,100 tokens across four bundled components. Install
+`alex-act-illustrator-plugin` for SVG, HTML, and other graphical output.
 
 ## Usage
 
 ```text
-@visual-storytelling Show me sales trends from data.csv as an HTML dashboard
+@visual-storytelling Show me sales trends from data.csv as an ASCII dashboard
 ```
 
 The orchestrator reads a brief, selects chart types, and delivers the dashboard
@@ -37,5 +36,4 @@ dashboards can skip the HTML plugin.
 | Format | Use When |
 | --- | --- |
 | ASCII | Terminal, plain text, Markdown code blocks |
-| SVG | GitHub README, VS Code preview, static docs |
-| HTML | Browser, interactive exploration, presentations |
+| Graphical | Illustrator with Flint-backed chart selection and delivery |

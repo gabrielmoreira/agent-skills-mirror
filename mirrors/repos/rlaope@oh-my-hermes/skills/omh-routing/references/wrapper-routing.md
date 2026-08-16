@@ -20,7 +20,7 @@ Bare `./omh`, `/omh`, `./skills`, or `/skills` opens the workflow picker. A lead
 
 ## Skill Name Display Prefix
 
-Installed OMH skills render a prefixed frontmatter `name` so the host status line is distinguishable from a Hermes built-in: domain skills carry `omh-` and the workflow-engine skills carry `ulw-` (for example `Reading skill ulw-work` for `ultrawork`, `ulw-plan` for `ralplan`, `ulw-goal` for `ultragoal`). The router skill renders as `omh-routing`.
+Installed OMH skills render a prefixed frontmatter `name` so the host status line is distinguishable from a Hermes built-in: domain skills carry `omh-` and the workflow-engine skills carry `ulw-` (for example `Reading skill ulw-work` for `ultrawork`, `ulw-plan` for `ralplan`, `ulw-loop` for `loop`). The router skill renders as `omh-routing`.
 
 That label names the installed `skills/<label>/` directory and the host status line only. The canonical catalog name still owns the install manifest `name`, routing keys, and every `omh` CLI argument, so `omh recommend`, `omh runtime record --skill <name>`, and trigger strings keep using canonical names. Earlier label eras (`omh-ultrawork`, `ulw-ultrawork`) remain accepted as routing aliases of the same workflow, so text echoed from a stale install still resolves — but always render the current label.
 

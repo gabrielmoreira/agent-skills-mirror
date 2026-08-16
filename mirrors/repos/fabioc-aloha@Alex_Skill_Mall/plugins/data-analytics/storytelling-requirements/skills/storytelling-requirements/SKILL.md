@@ -6,8 +6,8 @@ name: storytelling-requirements
 description: Guided requirements template for data storytelling projects -- walks users through audience, Big Idea, questions, data sources, and delivery target before any chart is created
 tier: standard
 applyTo: "**/*story*,**/*requirements*,**/*brief*,**/*dashboard*,**/*report*"
-currency: 2026-08-06
-lastReviewed: 2026-08-06
+currency: 2026-08-15
+lastReviewed: 2026-08-15
 ---
 
 # Storytelling Requirements
@@ -20,7 +20,7 @@ The brief is the contract between the analyst and the audience. It answers: who 
 
 - Starting a new dashboard, report, or data story
 - A stakeholder asks "can you build me a dashboard?" (the brief prevents building the wrong one)
-- Before invoking `visual-vocabulary`, `data-visualization`, or any delivery plugin
+- Before invoking Illustrator's `chart-vocabulary` or any delivery workflow
 - When a project has data but no clear question
 
 ## The Requirements Template
@@ -79,7 +79,7 @@ List 3-5 questions, ranked by priority. Each question becomes one visual.
 | 4   |                                                   |                    |             |
 | 5   |                                                   |                    |             |
 
-Communication goals map to chart types via `visual-vocabulary` Module 1.
+Communication goals map to chart types through Illustrator's `chart-vocabulary`.
 
 ### Section 4: Data Sources
 
@@ -124,11 +124,11 @@ When a user says "build me a dashboard" or "make a report from this data", walk 
 
 2. **Fill Section 1 (Audience).** This determines the 5-visual rule budget, chart complexity, and delivery format.
 
-3. **Fill Section 3 (Questions).** Map each question to a communication goal using the heuristic table below. This is where `visual-vocabulary` fires.
+3. **Fill Section 3 (Questions).** Map each question to a communication goal using the heuristic table below. This is where Illustrator's `chart-vocabulary` fires.
 
 4. **Fill Sections 4-5 (Data).** This determines which `datasource-connectors` and `data-preparation` steps are needed.
 
-5. **Fill Sections 6-7 (Delivery).** This determines which `delivery-*` plugin to invoke.
+5. **Fill Sections 6-7 (Delivery).** Use `delivery-ascii-dashboard` for ASCII. For graphical output, require `alex-act-illustrator-plugin`.
 
 ### Communication Goal Heuristic
 
@@ -168,10 +168,10 @@ datasource-connectors      (ingest data per Section 4)
 data-preparation           (clean per Section 5 concerns)
          |
          v
-visual-vocabulary          (select charts per Section 3 goals)
+Illustrator chart-vocabulary (select charts per Section 3 goals)
          |
          v
-delivery-*                 (render per Section 6 target)
+ASCII delivery or Illustrator (render per Section 6 target)
 ```
 
 ## Anti-Patterns
@@ -186,9 +186,9 @@ delivery-*                 (render per Section 6 target)
 
 ## Cross-References
 
-- `visual-vocabulary` -- chart selection by communication goal (fires after Section 3)
+- `chart-vocabulary` from `alex-act-illustrator-plugin` -- chart selection by communication goal (fires after Section 3)
 - `data-storytelling` -- narrative arc and orchestration (fires after the brief is complete)
 - `data-visualization` -- chart design: color, annotation, decluttering (fires after chart selection)
 - `data-preparation` -- cleaning and profiling (fires after Section 4-5)
 - `datasource-connectors` -- data ingestion (fires after Section 4)
-- `delivery-*` -- rendering to target format (fires after Section 6)
+- `delivery-ascii-dashboard` or `alex-act-illustrator-plugin` -- rendering after Section 6

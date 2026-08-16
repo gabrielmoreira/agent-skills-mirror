@@ -83,7 +83,7 @@ Quality bar:
 - Treat each Hermes role slot (main, realtime-search, design), semantic category, and external owner as an independent prerequisite/diagnose/recommend/apply unit instead of one combined change.
 - Explain the shipped recommendations as editable editorial defaults, not benchmarks or allowlists: ultrabrain uses GPT-5.6 Sol; deep uses GPT-5.6 Terra; unspecified-high prefers Kimi K3 then Claude Opus 5; unspecified-low prefers GLM-5.2 then GLM-5.2 Ultrafast; quick prefers GLM-5.2 Ultrafast then Kimi K3; writing prefers Kimi K3, Qwen3-Coder, then Gemini 3.1 Pro; visual-engineering prefers Claude Fable 5 then Kimi K3; and artistry prefers Gemini 3.1 Pro, Claude Fable 5, then Kimi K3.
 - For X/Twitter scraping or trend analysis, keep x_platform_data as a domain affinity rather than a role alias: prefer confirmed-active Grok, then Kimi K3, then Gemini, without removing the rest of the route or overriding an explicit model.
-- When a recommendation head is missing, choose the first confirmed-active owner-compatible fallback; when no candidate is active, keep that selector on its owner's native default model and let the rest of OMH setup finish without a model-config write.
+- When a recommendation head is missing, choose the first confirmed-active owner-compatible candidate in that chain. Only after every selected category, role-slot, and domain chain is exhausted, consult the shared final order Claude Opus 5 then GPT-5.6 Sol. If no candidate is confirmed active anywhere, keep the selector on its owner's native default model and let the rest of OMH setup finish without a model-config write.
 - Give provider-specific native next actions without claiming provider readiness: use installed Hermes flows for OpenAI OAuth/OpenAI Codex, Anthropic or an existing Claude provider, Qwen OAuth or Alibaba, Gemini/Google/Vertex, Grok/xAI, Kimi, GLM/Z.AI, or an already-working custom provider; preserve working alternatives.
 
 Handoff policy:
@@ -107,7 +107,7 @@ Expected outputs:
 Artifact expectations:
 
 - model_discovery/v1 metadata-only report when local discovery runs
-- model_recommendation_resolution/v2 recommendation result when a chain is resolved
+- model_recommendation_resolution/v3 recommendation result when a chain is resolved
 - omh_model_activation/v1 setup receipt when the setup surface captures it
 
 Safety rules:

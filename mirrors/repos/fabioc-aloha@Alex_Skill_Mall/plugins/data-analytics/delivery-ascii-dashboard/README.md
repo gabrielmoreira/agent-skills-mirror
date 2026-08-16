@@ -2,11 +2,11 @@
 
 Pure ASCII art dashboards. The cheapest, most portable delivery method.
 
-**Status**: Published (v1.0.1)
+**Status**: Published (v2.0.1)
 
 ## Why ASCII
 
-- **Zero dependencies.** No SVG renderer, no browser, no Chart.js CDN.
+- **Zero dependencies.** No graphical renderer or browser.
 - **LLM-native.** An LLM can produce and validate the output in the same context window.
 - **Predictable geometry.** No emojis (variable width). Every character is exactly one cell.
 - **Universal rendering.** Terminals, code fences, log files, plain-text email, CI output.
@@ -23,14 +23,12 @@ Pure ASCII art dashboards. The cheapest, most portable delivery method.
 
 ## Install
 
-```bash
-cp -r plugins/delivery-ascii-dashboard/ .github/skills/local/delivery-ascii-dashboard/
-```
+Install `delivery-ascii-dashboard` from the Alex ACT Mall.
 
 ## Pipeline Position
 
-Final delivery step. Alternative to SVG/HTML/Power BI when simplicity and portability matter most.
+Final delivery step when simplicity and portability matter most.
 
 ## Upgrade Path
 
-When ASCII isn't enough: `delivery-svg-markdown` (color, branding) or `delivery-html-dashboard` (interactivity).
+When ASCII is not enough, install `alex-act-illustrator-plugin` for chart selection and graphical delivery.

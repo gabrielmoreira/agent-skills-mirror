@@ -20,8 +20,8 @@ This is a Hermes-native `loop` workflow skill.
 
 ## Do Not Use When
 
-- The user asks for one bounded delivery cycle; use `ultraprocess` or `ultragoal` instead.
-- Scope and milestones are already known and only durable checkpoint/resume tracking is needed; use `ultragoal`.
+- The user asks for one bounded delivery cycle; use `ultrawork`'s delivery-boundary capability instead.
+- Scope and milestones are already known and only durable checkpoint/resume tracking is needed; use `ultrawork`'s durable-checkpoint capability.
 - The user gives only a north-star outcome such as revenue, stars, or adoption and has not accepted a bounded first loop goal.
 - The goal is too vague to name an observable problem, next artifact, verification signal, or stop condition.
 - The goal depends mainly on external waiting, adoption, revenue, or community response without observable local next actions.
@@ -57,7 +57,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `codebase-onboarding`, `codegraph-refresh`, `+7 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `codebase-onboarding`, `codegraph-refresh`, `+4 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -82,7 +82,7 @@ Quality bar:
 - Expose core OMH roles: interviewer, planner, researcher, builder, reviewer, and loop controller.
 - Route tiny direct tasks to one-cycle delivery surfaces instead of forcing loop overhead.
 - Reframe a north-star ambition into a bounded arena, observable problem, next loop goal, and next verification without shrinking its ambition.
-- Separate task discovery, distribution, execution, verification, next-task decision, runtime tick queueing, ultragoal/handoff, feedback, waiting, and resume decisions.
+- Separate task discovery, distribution, execution, verification, next-task decision, runtime tick queueing, durable-checkpoint/handoff, feedback, waiting, and resume decisions.
 - Expose a permission profile before executor/runtime dispatch, repository mutation, PR, merge, or external publishing.
 - Expose the automation, worktree, skill, connector, and subagent building-block states without treating planned blocks as observed work.
 - Choose workflow patterns such as single-step, fan-out-and-synthesize, adversarial verification, tournament, or triage batch as orchestration metadata only.

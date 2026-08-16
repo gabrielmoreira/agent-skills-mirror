@@ -10,8 +10,7 @@ no control-plane SDK. Never invent profile, connector, or skill CRUD methods.
 
 ## Create a specialist
 
-Use `save_specialist` only when it is advertised in the current session. It is
-create-only.
+Use `save_specialist` only when it is advertised in the current session.
 
 1. Ask what single job the specialist owns and what it must not do.
 2. Draft a display name, one-line description, and concise instructions that
@@ -19,12 +18,15 @@ create-only.
 3. Decide whether to inherit project skills/connectors or use explicit
    whitelists. Use exact installed skill names returned by `search_skills`.
    Include connector names only when the user supplied or confirmed them.
-4. Show the complete proposal and obtain confirmation before creating it.
-5. Call `save_specialist` with `name` and `instructions`; add `description`,
+4. Show the complete proposal and obtain confirmation before creating or
+   updating it.
+5. To edit an existing specialist, call `configure` with `action=get` and
+   key `specialists`, then `save_specialist` with that `id`. Omit `id` to
+   create. Builtin instruction text cannot be replaced.
+6. Call `save_specialist` with `name` and `instructions`; add `description`,
    `model_id`, `skills`, or `connectors` only when intentionally chosen.
-6. Report the returned specialist id. Direct the user to
-   **Settings → Specialists** for edits, deletion, icons, or later loadout
-   changes; no Agent tool performs those mutations.
+7. Report the returned specialist id. Deletion, icons, and color still live
+   under **Settings → Specialists**.
 
 Omit `skills` and `connectors` to inherit project settings. An empty list is an
 explicit zero-access whitelist and is not equivalent to omission.
@@ -46,6 +48,13 @@ For a user-wide skill, create the folder in the project first, validate it, then
 ask the user to install that folder through **Settings → Skills**. Wisp copies
 installed skills to its user skill directory; there is no Agent-side publish or
 delete interface.
+
+## Custom appearance
+
+For a user stylesheet (hide the lead bar, restyle chat, override tokens), load
+`custom-theme`. Write CSS that uses documented tokens, then apply it with
+`configure` `set custom_css` or ask the user to import the file under
+**Settings → Appearance**.
 
 ## Boundaries
 

@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-geometry
-description: Build well-crafted production procedural meshes in Three.js. Use for complete hard-surface assemblies, profile extrusion, inset, loft, revolve, sweep, solidify, bevels and fillets, shell thickness, direct-topology apertures, semantic mesh writers, or diagnosing primitive-built forms, coplanar flicker, loose/non-manifold geometry, detached parts, interpenetration, support, clearance, and swept-envelope defects.
+description: Build well-crafted production procedural meshes in Three.js. Use for complete hard-surface assemblies and humanoid robots, profile extrusion, parameter-curve and spine lofts, pillow panels, exact polygon cuts, inset, revolve, sweep, solidify, bevels and fillets, shell thickness, direct-topology apertures, semantic mesh writers, or diagnosing primitive-built forms, coplanar flicker, loose/non-manifold geometry, detached parts, interpenetration, support, clearance, and swept-envelope defects.
 ---
 
 # Procedural Geometry
@@ -117,6 +117,21 @@ Read the
 for slot-tagged emission, revolve and upright-frame sweeps, offset panel shells,
 spoked wheels, a hanging chain path, and a volume-audited assembly.
 
+Read
+[references/procedural-optimus-humanoid-assembly.md](references/procedural-optimus-humanoid-assembly.md)
+for the exact coordinate, polygon/modifier, curve, loft, spine, pillow, CSG,
+bevel, semantic assembly, filtered material, emission, limitation, and
+diagnostic contracts of a complete human-scale robot.
+
+Read the
+[procedural Optimus humanoid entry](examples/procedural-optimus-humanoid/procedural-optimus-humanoid.js)
+and its complete
+[geometry and material system](examples/procedural-optimus-humanoid/source/optimus-humanoid-system.js)
+for a 176-object torso/head/arm/hand/hip/leg/foot assembly with five-finger
+hands, 891,809 emitted triangles, fourteen PBR identities, exact polygon cuts,
+angle-limited bevels, split corner normals, and derivative-filtered object-space
+roughness and bump.
+
 Read the
 [procedural financial tower compiler](../threejs-procedural-architecture/examples/procedural-financial-tower/building-system.js)
 for semantic placement compilation and material-slot instancing at building
@@ -137,6 +152,9 @@ scale.
 - material merging happens before named-part auditing;
 - triangle count is the only complexity evidence;
 - a script passes but fixed-view inspection still finds implausible modeling.
+- a complete humanoid is reduced to intersecting capsules and boxes;
+- mirrored hands or limbs keep inward winding;
+- high-frequency object-space material noise is emitted without footprint filtering.
 
 ## Routing boundary
 

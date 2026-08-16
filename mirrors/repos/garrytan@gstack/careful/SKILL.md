@@ -61,7 +61,9 @@ These patterns are allowed without warning:
 ## How it works
 
 The hook reads the command from the tool input JSON, checks it against the
-patterns above, and returns `permissionDecision: "ask"` with a warning message
-if a match is found. You can always override the warning and proceed.
+patterns above, and returns a `hookSpecificOutput` payload with
+`permissionDecision: "ask"` and a warning reason if a match is found (the
+decision must be nested under `hookSpecificOutput` — Claude Code ignores a
+top-level `permissionDecision`). You can always override the warning and proceed.
 
 To deactivate, end the conversation or start a new one. Hooks are session-scoped.

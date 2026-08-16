@@ -4,11 +4,11 @@
 
 After `gortex install` (once per machine) and `gortex init` (once per repo), Claude Code automatically starts Gortex via `.mcp.json`. The agent gets:
 
-- **Slash commands (19):** installed to `~/.claude/commands/` by `gortex install`. Three groups:
+- **Slash commands (20):** installed to `~/.claude/commands/` by `gortex install`. Three groups:
   - *Discovery & analysis (8)* — `/gortex-guide`, `/gortex-explore`, `/gortex-debug`, `/gortex-impact`, `/gortex-dataflow-trace`, `/gortex-cross-repo-usage`, `/gortex-co-change`, `/gortex-onboarding`
   - *Refactor & edit (enforce tool-call order) (6)* — `/gortex-refactor`, `/gortex-safe-edit`, `/gortex-rename`, `/gortex-extract-function`, `/gortex-fix-all`, `/gortex-add-test`. These wrap the speculative-execution (`preview_edit` / `simulate_chain`) and LSP code-actions (`get_code_actions` / `apply_code_action` / `fix_all_in_file`) paths so the agent does not bypass the safety steps by calling `Edit` / `Write` directly.
-  - *Review & operate (graph-grounded playbooks) (5)* — `/gortex-pr-review`, `/gortex-architecture-review`, `/gortex-quality-audit`, `/gortex-incident-investigation`, `/gortex-episode-replay`. These wrap the discovery + impact + memory surfaces into ordered playbooks so postmortems, audits, and PR reviews are graph-grounded.
-- **Tool-usage skills:** the same 19 are installed as model-invoked skills to `~/.claude/skills/` by `gortex install` — one copy per user, used across every repo
+  - *Review & operate (graph-grounded playbooks) (6)* — `/gortex-pr-review`, `/gortex-pr-review-agent`, `/gortex-architecture-review`, `/gortex-quality-audit`, `/gortex-incident-investigation`, `/gortex-episode-replay`. These wrap the discovery + impact + memory surfaces into ordered playbooks so postmortems, audits, and PR reviews are graph-grounded.
+- **Tool-usage skills (21):** the same 20 plus `gortex-cli` (skill only — it teaches the shell verbs for a harness with no MCP transport), installed as model-invoked skills to `~/.claude/skills/` by `gortex install` — one copy per user, used across every repo
 - **Sub-agents (2):** installed to `~/.claude/agents/` by `gortex install`. Claude Code auto-routes matching prompts to them; each runs in a fresh context window and returns a single summary, keeping the parent's context clean. Tool allowlists are pinned to gortex graph tools only — Bash / Grep / Glob are unavailable to the sub-agent by construction.
   - `gortex-search` — locate code, trace call paths, explore architecture
   - `gortex-impact` — assess blast radius before editing (`verify_change`, `simulate_chain`, `check_guards`, `get_test_targets`)
@@ -30,9 +30,9 @@ The trade-off versus an MCP install — push notifications and per-session overl
 
 ## Usage with other agents
 
-`gortex install` (user-level) and `gortex init` (repo-level) together auto-detect and configure 14 other AI coding assistants — Kiro, Cursor, VS Code / Copilot, Windsurf, Continue.dev, Cline, OpenCode, Antigravity, Codex CLI, Gemini CLI, Zed, Aider, Kilo Code, OpenClaw. Each adapter writes only when its host is present on the machine, and every re-run is idempotent.
+`gortex install` (user-level) and `gortex init` (repo-level) together auto-detect and configure 19 other AI coding assistants — Kiro, Cursor, VS Code / Copilot, GitHub Copilot CLI, Windsurf, Continue.dev, Cline, OpenCode, Antigravity, Codex CLI, Gemini CLI, Zed, Aider, Kilo Code, OpenClaw, Hermes, Kimi, Pi, oh-my-pi. Each adapter writes only when its host is present on the machine, and every re-run is idempotent.
 
-Tool-usage guidance for agents that have a user-level surface (Claude Code, Antigravity) lives once per user; for the rest, MCP tool descriptions carry the teaching and `gortex init` adds only a per-repo community-routing block — no more duplicated instructions blocks in every repo.
+Four hosts read the same skill bodies Claude Code gets, each re-wrapped in its own frontmatter: Claude Code, Codex CLI, OpenCode and GitHub Copilot CLI. Codex and OpenCode share the cross-agent `~/.agents/skills` root, so one write serves both. For the remaining hosts, MCP tool descriptions carry the teaching and `gortex init` adds only a per-repo community-routing block — no duplicated instructions blocks in every repo.
 
 - **Adapter matrix + per-agent schema notes:** [`agents.md`](agents.md)
 - **Audit what's currently configured:** `gortex doctor` (zero-op; `--json` for CI consumers)

@@ -21,7 +21,7 @@ This is a Hermes-native `codegraph-refresh` workflow skill.
 ## Do Not Use When
 
 - The user needs a narrative first-read tour of an unfamiliar repo; use `codebase-onboarding`.
-- The user already has accepted implementation criteria and wants code changes; use `ultraprocess` or a coding handoff.
+- The user already has accepted implementation criteria and wants code changes; use `ultrawork` or a coding handoff.
 - The user asks for visual, frontend, or rendered UI QA; use `frontend`, `design-quality-gate`, or `visual-qa`.
 
 ## Examples
@@ -53,7 +53,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `codebase-onboarding`, `codegraph-refresh`, `+7 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `codebase-onboarding`, `codegraph-refresh`, `+4 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -76,7 +76,7 @@ Quality bar:
 - Name repo root, refresh depth, task focus, artifact write policy, and stop condition.
 - Choose build, summary, handoff, `--write`, and `--json` deliberately instead of treating all codegraph commands as equivalent.
 - Separate prepared command plans from observed command outputs, generated artifacts, and executor-ready handoffs.
-- Route broader first-read orientation to codebase-onboarding and implementation to ultraprocess or the selected coding owner.
+- Route broader first-read orientation to codebase-onboarding and implementation to ultrawork or the selected coding owner.
 
 Handoff policy:
 
