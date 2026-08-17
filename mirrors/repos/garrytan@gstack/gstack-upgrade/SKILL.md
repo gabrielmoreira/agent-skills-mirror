@@ -128,12 +128,22 @@ Use the install type and directory detected in Step 2:
 **For git installs** (global-git, local-git):
 ```bash
 cd "$INSTALL_DIR"
+# Discard render-footprint dirt BEFORE stashing (#2569): pre-v1.67
+# gbrain-enabled installs ran gen:skill-docs:user IN PLACE, leaving
+# generated SKILL.md / sections/*.md files permanently modified. Stashing
+# that dirt poisons the stash: the post-upgrade `git stash pop` would
+# restore STALE generated markdown over the fresh checkout permanently.
+# These files are regenerable (setup re-renders brain-aware variants to
+# ~/.gstack/render), so discarding is lossless; anything else the user
+# changed still reaches the stash untouched. Same file classification as
+# migrations/v1.67.0.0.sh, which remains for manual git-pull flows.
+git checkout -- 'SKILL.md' '*/SKILL.md' '*/sections/*.md' 2>/dev/null || true
 STASH_OUTPUT=$(git stash 2>&1)
 git fetch origin
 git reset --hard origin/main
 ./setup
 ```
-If `$STASH_OUTPUT` contains "Saved working directory", warn the user: "Note: local changes were stashed. Run `git stash pop` in the skill directory to restore them."
+If `$STASH_OUTPUT` contains "Saved working directory", warn the user: "Note: local changes were stashed (any modified generated SKILL.md/sections files were discarded first — they regenerate on setup). Run `git stash pop` in the skill directory to restore your own changes."
 
 **For vendored installs** (vendored, vendored-global):
 ```bash
@@ -210,7 +220,10 @@ if [ -d "$MIGRATIONS_DIR" ]; then
     # (simple string compare works for dotted versions with same segment count)
     if [ "$OLD_VERSION" != "unknown" ] && [ "$(printf '%s\n%s' "$OLD_VERSION" "$m_ver" | sort -V | head -1)" = "$OLD_VERSION" ] && [ "$OLD_VERSION" != "$m_ver" ]; then
       echo "Running migration $m_ver..."
-      bash "$migration" || echo "  Warning: migration $m_ver had errors (non-fatal)"
+      # GSTACK_INSTALL_DIR: migrations that clean the INSTALL (not just
+      # ~/.gstack state) default to ~/.claude/skills/gstack when unset —
+      # a repo-local install would silently no-op without this.
+      GSTACK_INSTALL_DIR="$INSTALL_DIR" bash "$migration" || echo "  Warning: migration $m_ver had errors (non-fatal)"
     fi
   done
 fi
@@ -219,6 +232,50 @@ fi
 Migrations are idempotent bash scripts in `gstack-upgrade/migrations/`. Each is named
 `v{VERSION}.sh` and runs only when upgrading from an older version. See CONTRIBUTING.md
 for how to add new migrations.
+
+### Step 4.8: Stop any stale daemon (unconditional)
+
+A browse daemon started before the upgrade keeps serving the OLD binary's code
+until it is stopped — it survives `git reset --hard` and `./setup` because the
+running process holds the old executable (#2551). Always run this step, using
+the install directory detected in Step 2.
+
+```bash
+INSTALL_DIR_PLACEHOLDER="<install dir from Step 2>"
+NEW_HASH=$(cat "$INSTALL_DIR_PLACEHOLDER/browse/dist/.version" 2>/dev/null || echo "")
+_STATE_FILE="${BROWSE_STATE_FILE:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)/.gstack/browse.json}"
+if [ -z "$NEW_HASH" ] || [ ! -f "$_STATE_FILE" ]; then
+  echo "DAEMON_CHECK=none (no state file or no fresh build hash)"
+else
+  DAEMON_PID=$(sed -n 's/.*"pid"[[:space:]]*:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$_STATE_FILE" | head -1)
+  DAEMON_PORT=$(sed -n 's/.*"port"[[:space:]]*:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$_STATE_FILE" | head -1)
+  OLD_HASH=$(sed -n 's/.*"binaryVersion"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$_STATE_FILE" | head -1)
+  if [ -z "$DAEMON_PID" ] || ! kill -0 "$DAEMON_PID" 2>/dev/null; then
+    echo "DAEMON_CHECK=dead (no live daemon to stop)"
+  elif [ "$OLD_HASH" = "$NEW_HASH" ]; then
+    echo "DAEMON_CHECK=current (daemon already runs the new binary)"
+  elif curl -fsS --max-time 2 "http://127.0.0.1:$DAEMON_PORT/health" 2>/dev/null | grep -q '"status":"healthy"'; then
+    echo "DAEMON_CHECK=stale-responsive pid=$DAEMON_PID hash=${OLD_HASH:-unknown} -> $NEW_HASH"
+    "$INSTALL_DIR_PLACEHOLDER/browse/dist/browse" stop && echo "DAEMON_STOPPED=yes"
+  else
+    echo "DAEMON_CHECK=stale-busy pid=$DAEMON_PID hash=${OLD_HASH:-unknown} -> $NEW_HASH"
+  fi
+fi
+```
+
+Replace `<install dir from Step 2>` with the actual install directory before
+running. Interpret the `DAEMON_CHECK` result:
+
+1. **`stale-responsive` + `DAEMON_STOPPED=yes`:** Tell the user "Stopped the
+   old browse daemon (binary {OLD_HASH} → {NEW_HASH}). The next browse command
+   starts a fresh daemon on the new binary."
+2. **`stale-busy`:** The daemon runs the old binary but is mid-work — DEFER to
+   it, never kill a busy daemon during upgrade. Tell the user: "A browse daemon
+   is still running the pre-upgrade binary ({OLD_HASH} → {NEW_HASH}) but is
+   busy right now. When it finishes, stop it with `browse stop` — or force it
+   immediately with `browse --force-restart stop` (loses that session's
+   tabs/cookies/logins)."
+3. **`none` / `dead` / `current`:** Nothing to do — say nothing.
 
 ### Step 5: Write marker + clear cache
 

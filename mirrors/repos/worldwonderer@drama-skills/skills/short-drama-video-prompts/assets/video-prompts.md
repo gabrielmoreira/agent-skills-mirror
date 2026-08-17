@@ -7,7 +7,7 @@
 
 > 来源：`motion-specs.jsonl` 已接受快照 `<hash>`
 > 配方：`motion-generic@<version>` · 当前文本 `<hash>`
-> 范围：仅提示词，不生成视频/音频，不调用媒体服务
+> 范围：本文件仅提供提示词，不触发媒体服务；实际视频生产交 `$short-drama-produce`
 
 ## `SHOT-<id>` · <镜头目的短句>
 

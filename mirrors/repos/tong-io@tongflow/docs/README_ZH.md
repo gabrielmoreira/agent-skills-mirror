@@ -221,12 +221,6 @@ TongFlow **桌面版**是一个轻量（约 10 MB）的壳应用，直接加载�
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / 链接 → 文本
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling 隐身浏览器 URL / 链接 → 文本
 
-### 内容包
-
-纯数据包（不含可执行代码），安装方式与插件相同：
-
-- [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills) — 文本生成节点的技能包（可复用提示词）：写作技能（润色 / 翻译 / 扩写 / 缩写……）+ 各模型家族的提示词写作指南（MiniMax-H3、Seedance、Veo、Seedream、FLUX……）
-
 ## 从源代码启动
 
 ```bash
@@ -291,7 +285,7 @@ docker compose up -d
 
 ## 自定义插件
 
-画布上每一个能跑的节点，背后都是一份**契约**——ABI（[`config/tongflow.abi.json`](../config/tongflow.abi.json)），它定义「有哪些能力」以及「每个能力的输入输出长什么样」，而与「由谁实现」无关。一个插件就是一个小小的 Python 包，挑 ABI 里一个或多个槽，借助 tongflow Python SDK，用 ABI 生成的类型给出**怎么做**的那部分。
+画布上每一个能跑的节点，背后都是一份**契约**——ABI（[`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json)），它定义「有哪些能力」以及「每个能力的输入输出长什么样」，而与「由谁实现」无关。一个插件就是一个小小的 Python 包，挑 ABI 里一个或多个槽，借助 tongflow Python SDK，用 ABI 生成的类型给出**怎么做**的那部分。
 
 完整的开发流程——ABI、`@node_slot` 装饰器、SDK、目录结构以及如何发布，请见 **[docs/plugins.md](plugins.md)**。
 

@@ -196,9 +196,9 @@ The full license ships alongside the fonts in the bundle (`fonts/LICENSE`).
   install (scanpy, rdkit, PyMuPDF, foldseek, …). Those are installed by and
   licensed to the user in their own environment; each skill's text names the
   packages it uses.
-- Model weights fetched by the user's environment from their original sources
-  (ESM, AlphaFold, Evo 2, …). Anthropic does not distribute these weights;
-  their terms bind the user directly.
+- Model weights fetched by the user's environment from their original sources.
+  Anthropic does not distribute these weights; their terms bind the user
+  directly.
 
 ## Full license texts
 

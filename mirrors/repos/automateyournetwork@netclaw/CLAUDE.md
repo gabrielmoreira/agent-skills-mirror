@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-08-15
+Auto-generated from all feature plans. Last updated: 2026-08-16
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -134,6 +134,12 @@ Auto-generated from all feature plans. Last updated: 2026-08-15
 - N/A — no new persisted state. `ConversationStore`'s two new callbacks (`onAdded`, `onTerminal`, research.md R4) are settable function references, exactly like the existing `onCompleted`, not stored data. (113-live-activity-interactive-inflight)
 - Swift 5.0 (`ios/NetClawWidget/*.swift`, rewriting Xcode's placeholder template content; `ios/Runner/WidgetDataStore.swift`, `ios/Runner/WidgetBridgePlugin.swift`, new), Dart 3.x / Flutter (`lib/ncfed/widget_data.dart`, new; `lib/ncfed/device_deep_link.dart`, extended) — same stack as specs 099/109–113, unchanged. + None new. `WidgetKit`'s `ControlWidget`/`AppIntentControlConfiguration` (iOS 18+, system framework, already the reason `NetClawWidgetExtension`'s deployment target was bumped in this branch's setup commit) and `WidgetCenter` (system framework) ship with the SDK. (114-widgets-controlwidget)
 - One new App Group `UserDefaults` store (`group.ca.automateyournetwork.netclaw.mobile.ios`, already registered by the operator) — three keys (health summary/pushedAt/isAlarm, pending count, unread count), mirroring three values that already exist elsewhere on the phone (`DeviceHeartbeatStore`, `ApprovalClient.pending`, `MessageFeedStore.unreadCount`); no new source of truth. (114-widgets-controlwidget)
+- Dart 3.x / Flutter (SDK `^3.12.2` per `pubspec.yaml`); Swift 5.0 (`ios/Runner/*.swift`) — same stack as specs 066–114, unchanged. + No new dependencies. Reuses `AppIntents` (iOS 16+ system framework, already in place from spec 111), `FlutterEngineGroup` (Flutter SDK, already available, previously unused in this codebase), `flutter_secure_storage` (already a dependency, used for the new theme preference exactly as specs 109/110 already use it for other settings). (115-siri-reliability-fix)
+- `flutter_secure_storage` gains one new key (theme preference: `system` | `light` | `dark`). No other new persisted state — conversation-turn recording reuses the existing `ConversationStore` exactly as today. (115-siri-reliability-fix)
+- Python 3.10+ (matches `bgp/federation/*`, specs 052–115); no new language. + `websockets` (new — Border-side persistent WS client to the OpenClaw (116-border-turn-latency)
+- N/A (stateless; no new persistent state — this is a runtime dispatch/performance fix) (116-border-turn-latency)
+- Dart 3.x / Flutter (SDK `^3.12.2` per `mobile/netclaw-mobile/pubspec.yaml`); + None new. Reuses `EdgeAskClient`/`EdgeRpcSource` (Dart, `edge_ask_client.dart`), (117-siri-voice-tuning)
+- N/A — no new persisted state (data-model.md: value-only constant change, request-scoped (117-siri-voice-tuning)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -153,9 +159,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
-- 114-widgets-controlwidget: Added Swift 5.0 (`ios/NetClawWidget/*.swift`, rewriting Xcode's placeholder template content; `ios/Runner/WidgetDataStore.swift`, `ios/Runner/WidgetBridgePlugin.swift`, new), Dart 3.x / Flutter (`lib/ncfed/widget_data.dart`, new; `lib/ncfed/device_deep_link.dart`, extended) — same stack as specs 099/109–113, unchanged. + None new. `WidgetKit`'s `ControlWidget`/`AppIntentControlConfiguration` (iOS 18+, system framework, already the reason `NetClawWidgetExtension`'s deployment target was bumped in this branch's setup commit) and `WidgetCenter` (system framework) ship with the SDK.
-- 113-live-activity-interactive-inflight: Added Swift 5.0 (`ios/LiveActivityWidget/*.swift`, new + existing; `ios/Runner/LiveActivityBridge.swift`), Dart 3.x / Flutter (`lib/ncfed/live_activity.dart`, `lib/ncfed/conversation_store.dart`, `lib/ncfed/device_deep_link.dart`, `lib/screens/chat_screen.dart`) — same stack as specs 099/109–112, unchanged. + None new for the app itself. `ActivityKit`'s `LiveActivityIntent` protocol (iOS 17+, system framework) and `Text(timerInterval:)` (system SwiftUI API) — both ship with the SDK. Build-time only: the `xcodeproj` Ruby gem (already available in this environment, already used for the identical class of problem in spec 071) to add the three new Swift files to the correct Xcode target(s) (research.md R5).
-- 112-watch-double-tap-complication: Added Swift 5.0 (`ios/WatchApp Watch App/ApprovalsView.swift`, `AskView.swift`; `ios/WatchComplication/HeartbeatComplication.swift`, `PendingApprovalComplication.swift`) — same stack as specs 072/099, unchanged. No Dart/Flutter changes in this spec. + None new. `SwiftUI`'s `handGestureShortcut(_:)` (watchOS 11+, system framework) and `WidgetKit`'s `.accessoryCorner` `WidgetFamily` case (watchOS 9+, system framework) — both ship with the SDK, not package dependencies.
+- 117-siri-voice-tuning: Added Dart 3.x / Flutter (SDK `^3.12.2` per `mobile/netclaw-mobile/pubspec.yaml`); + None new. Reuses `EdgeAskClient`/`EdgeRpcSource` (Dart, `edge_ask_client.dart`),
+- 116-border-turn-latency: Added Python 3.10+ (matches `bgp/federation/*`, specs 052–115); no new language. + `websockets` (new — Border-side persistent WS client to the OpenClaw
+- 115-siri-reliability-fix: Added Dart 3.x / Flutter (SDK `^3.12.2` per `pubspec.yaml`); Swift 5.0 (`ios/Runner/*.swift`) — same stack as specs 066–114, unchanged. + No new dependencies. Reuses `AppIntents` (iOS 16+ system framework, already in place from spec 111), `FlutterEngineGroup` (Flutter SDK, already available, previously unused in this codebase), `flutter_secure_storage` (already a dependency, used for the new theme preference exactly as specs 109/110 already use it for other settings).
 
 
 <!-- MANUAL ADDITIONS START -->

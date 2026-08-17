@@ -229,12 +229,6 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / link → text
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling stealth-browser URL / link → text
 
-### Content packages
-
-Data-only packages (no executable code), installed the same way as plugins:
-
-- [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills) — skills (reusable prompt packs) for the text-generation node: writing skills (polish / translate / expand / condense…) plus model-specific prompt-crafting guides (MiniMax-H3, Seedance, Veo, Seedream, FLUX…)
-
 ## Run from source
 
 ```bash
@@ -299,7 +293,7 @@ Run the preloaded example node by node, or switch to Execute Mode and hit the ru
 
 ## Custom plugins
 
-Every runnable node is backed by a **contract** — the ABI ([`config/tongflow.abi.json`](config/tongflow.abi.json)) — that defines *what capabilities exist* and *what each one's input/output looks like*, independent of *who* implements it. A plugin is just a small Python package that picks one or more ABI slots and supplies the **how**, annotated against the ABI-generated types via the tongflow Python SDK.
+Every runnable node is backed by a **contract** — the ABI ([`packages/tongflow/abi/tongflow.abi.json`](packages/tongflow/abi/tongflow.abi.json)) — that defines *what capabilities exist* and *what each one's input/output looks like*, independent of *who* implements it. A plugin is just a small Python package that picks one or more ABI slots and supplies the **how**, annotated against the ABI-generated types via the tongflow Python SDK.
 
 The full development flow — the ABI, the `@node_slot` decorator, the SDK, directory layout, and how to publish — lives in **[docs/plugins.md](docs/plugins.md)**.
 

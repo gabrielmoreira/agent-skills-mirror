@@ -140,6 +140,7 @@ App Center, workspace-app lifecycle, App Factory, file references, and File Mana
 Connector catalog, installation, account authorization, and runtime convergence.
 
 - [OAuth opens once, then the desktop stays disconnected or a second attempt supersedes the first](./connector-market.md#oauth-opens-once-then-the-desktop-stays-disconnected-or-a-second-attempt-supersedes-the-first)
+- [OAuth finishes in the browser but does not return to the initiating desktop build](./connector-market.md#oauth-finishes-in-the-browser-but-does-not-return-to-the-initiating-desktop-build)
 
 ## [Toolchain, Browser, And Terminal](./toolchain-browser-terminal.md)
 

@@ -19,6 +19,8 @@
 
 修改不熟悉的模块前，请先阅读 [ARCHITECTURE.md](https://github.com/xerrors/Yuxi/blob/main/ARCHITECTURE.md)，了解前后端边界、主要运行链路和架构不变量，再通过代码搜索定位具体实现。
 
+开始实现前，先定位受影响行为的语义 Owner：实际写入代码、repository、数据约束或当前契约。高风险主张必须在 Owner 周围闭合到独立 oracle、负向案例和实际 gate；审计报告只是从这些材料派生，不建立中央主张清单或 claim ID。改变持久状态、权限、运行生命周期、模型可见输入、兼容承诺或既有重要主张的非平凡变更，需要在同一 PR 新增或更新 [工程决策记录](./decisions/README.md)。
+
 ## 贡献流程概览
 
 一次完整贡献通常包括：
@@ -189,6 +191,13 @@ backend/test/run_tests.sh all
 
 ### 格式化与静态检查
 
+先运行不会修改工作树的契约检查：
+
+```bash
+python3 scripts/verify_engineering_contracts.py
+python3 -m unittest scripts.test_verify_engineering_contracts
+```
+
 应用项目格式化规则：
 
 ```bash
@@ -205,10 +214,12 @@ docker compose exec api uv run ruff format package --check
 前端改动还应运行：
 
 ```bash
-docker compose exec web pnpm run lint
+docker compose exec web pnpm run lint:check
 docker compose exec web pnpm run test:unit
 docker compose exec web pnpm run build
 ```
+
+`pnpm run lint:check` 是 CI 使用的只读验收命令；`pnpm run lint` 会自动修改文件，只用于开发者明确执行修复，不作为自证式 gate。
 
 最后检查补丁是否包含空白错误：
 
@@ -234,7 +245,7 @@ Review 重点检查以下内容：
 2. **实现简单且低认知负担**：优先复用现有能力，减少重复开发和重复代码；避免过度设计、过度防御、不必要抽象、细碎 helper、冗余 fallback 和过长调用链；主流程应直接、清晰、易读。
 3. **风格一致且位置合理**：新代码与相邻实现保持一致，Python 代码符合 Python 3.12+ 和 Pythonic 风格；路由、服务、仓储、前端 API、测试等内容位于正确边界，并符合 `AGENTS.md`、[ARCHITECTURE.md](https://github.com/xerrors/Yuxi/blob/main/ARCHITECTURE.md)、[测试规范](./testing-guidelines.md) 和相关开发文档。
 
-发现影响功能、代码边界或明显增加冗余和认知负担的问题时，应在提交前修正。这个阶段用于提升代码质量，不要求在 PR 中记录 Review 过程或问题清单。
+发现影响功能、代码边界或明显增加冗余和认知负担的问题时，应在提交前修正。PR 只记录 Reviewer 覆盖的需求、完整 diff 与验证范围、结论以及未解决项，不记录推理流水账或冗长对话。独立 Review 是语义裁决记录，不能替代 oracle、负向案例或实际 gate。
 
 独立 Agent Review 用于提升代码质量，不改变代码作者的责任；作者仍需对最终实现、测试结果和维护成本负责。
 
@@ -291,7 +302,14 @@ compare branch:  当前任务分支
 
 由 Agent（Codex、Claude Code 等）创建的 PR，在调用创建命令前先向用户展示拟提交的标题和完整正文，等待明确确认后再创建。确认针对的是标题和正文，不代表跳过测试、敏感信息检查、Fork/远程目标检查和 CI 结果记录等提交前必做项。
 
-PR 标题直接表达变更目标。正文按照 [PR 模板](https://github.com/xerrors/Yuxi/blob/main/.github/PULL_REQUEST_TEMPLATE.md) 填写，并按实际改动补充对应章节：
+PR 标题直接表达变更目标。正文按创建方式选择模板：
+
+- Agent 创建的 PR 使用默认的 [Agent PR 模板](https://github.com/xerrors/Yuxi/blob/main/.github/PULL_REQUEST_TEMPLATE.md)，保留工程主张、证据矩阵、独立 Review 和未验证范围。
+- 人工或其他非 Agent 方式创建的 PR 可使用 [简化模板](https://github.com/xerrors/Yuxi/blob/main/.github/PULL_REQUEST_TEMPLATE/non-agent.md)。使用 GitHub compare 页面时增加 `template=non-agent.md` 查询参数，使用 GitHub CLI 时传入 `--template .github/PULL_REQUEST_TEMPLATE/non-agent.md`。
+
+模板复杂度不同，不改变下述非 trivial / 高风险变更的工程证据要求：
+
+所有非 trivial PR 都要用自然语言逐条列出受影响的工程主张、事实 Owner / commit point / 观察边界、决策记录、实际执行的 oracle 与负向案例，以及未执行检查和剩余风险。不要创建或引用中央 claim ID；提交者自述、测试数量或一次演示不能替代这些证据。
 
 **Fix（Bug 修复）**，至少包含：
 

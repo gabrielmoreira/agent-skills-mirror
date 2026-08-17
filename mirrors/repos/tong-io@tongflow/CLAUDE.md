@@ -6,7 +6,8 @@
 
 ## Directory conventions
 
-- **`src/lib/`** = business code, organized by domain subdirectory (`abi/`, `task/`, `workflow/`, `plugin-executor/`, `plugins/`, `file/`, `upload/`, `schema/`, `api/`, `runtime/`, `settings/`). May hold state, perform I/O, or be server-only. (Drizzle DB schema lives separately under [`src/db/`](src/db/), e.g. the `tasks` table in [`src/db/workspace.schema.ts`](src/db/workspace.schema.ts).)
+- **pnpm workspace:** the Next.js app lives at the repo root (`package.json` name `tongflow-app`, private). Publishable npm packages live under [`packages/`](packages/) — currently [`packages/tongflow`](packages/tongflow) (npm name **`tongflow`**, framework-free workflow core; a `./canvas` React entry follows). The app consumes it from source via `tsconfig.json` `paths` (`tongflow` → `packages/tongflow/src/core/index.ts`) + `next.config.ts` `transpilePackages`; publishing uses `dist/` built by `pnpm build:packages`. Root scripts `build:packages` / `test:packages` fan out to every package; CI runs them in the `packages` job.
+- **`src/lib/`** = app-side business code, organized by domain subdirectory (`task/`, `plugin-executor/`, `plugins/`, `file/`, `upload/`, `api/`, `runtime/`, `settings/`, `agent/`). The framework-free workflow core (ABI, node registry, connection validation, exporter, layout, canvas constants/types) lives in the `tongflow` package under [`packages/tongflow/src/core/`](packages/tongflow/src/core/) and is imported as `from "tongflow"`. May hold state, perform I/O, or be server-only. (Drizzle DB schema lives separately under [`src/db/`](src/db/), e.g. the `tasks` table in [`src/db/workspace.schema.ts`](src/db/workspace.schema.ts).)
 - **`src/utils/`** = pure helpers only (no I/O, no business concepts, ≤ a few small files). Anything stateful or domain-aware belongs in `src/lib/`.
 - **Server-only files** are suffixed `.server.ts` and live under a domain subdir (e.g. [`src/lib/plugins/plugins-registry.server.ts`](src/lib/plugins/plugins-registry.server.ts)).
 - **Node component subdirectories** under [`src/components/workspace/nodes/`](src/components/workspace/nodes/):
@@ -20,10 +21,10 @@
 
 ## Cross-layer changes (node inputs, new fields, fixing mismatches between UI and runtime)
 
-- **ABI first:** [`config/tongflow.abi.json`](config/tongflow.abi.json) is the contract. Prefer explicit `required` when the product guarantees a value (e.g. duration from a picker).
-- **Regenerate TS types:** `pnpm gen:abi` → [`src/generated/abi/index.ts`](src/generated/abi/index.ts).
+- **ABI first:** [`packages/tongflow/abi/tongflow.abi.json`](packages/tongflow/abi/tongflow.abi.json) is the contract. Prefer explicit `required` when the product guarantees a value (e.g. duration from a picker).
+- **Regenerate TS types:** `pnpm gen:abi` → [`packages/tongflow/src/core/generated/abi/index.ts`](packages/tongflow/src/core/generated/abi/index.ts).
 - **Python SDK:** Keep [`sdk/tongflow/models/`](sdk/tongflow/models/) in sync (e.g. [`sdk/tongflow/gen_models.py`](sdk/tongflow/gen_models.py) or hand-edits). Bump [`sdk/pyproject.toml`](sdk/pyproject.toml) and **publish** with `pnpm tongflow:publish` before Modal plugins depend on the new types or conventions.
-- **Next.js executable nodes:** ABI first → `pnpm gen:abi`. Implement UI with **`useAbiForm`**, **`useAbiExecution`** (via [`AbiNodeShell`](src/components/workspace/nodes/base/abi-node-shell.tsx)), and **`<AbiHandles>`** (auto-renders `in:<field>` / `out:<field>` handles). The exporter ([`exporter.ts`](src/lib/workflow/exporter.ts)) and connection validator both read directly from the ABI mount registry ([`node-registry.ts`](src/lib/abi/node-registry.ts)) + [`resolveSpec`](src/lib/abi/resolve.ts); a node's `sourceSpec` is the single source of truth — never hand-maintain `bindings` / `paramMappings` / `getPrompts` in node files.
+- **Next.js executable nodes:** ABI first → `pnpm gen:abi`. Implement UI with **`useAbiForm`**, **`useAbiExecution`** (via [`AbiNodeShell`](src/components/workspace/nodes/base/abi-node-shell.tsx)), and **`<AbiHandles>`** (auto-renders `in:<field>` / `out:<field>` handles). **Register the node type** in the static ABI registry [`node-feature-registry.ts`](packages/tongflow/src/core/abi/node-feature-registry.ts): `NODE_TYPE_TO_ABI_FEATURE[nodeType] = "<slot>"` plus any `sourceSpec` overrides in `NODE_TYPE_SOURCE_SPEC[nodeType]` (handle promotions, `batchOn` / `collectAll` / `configField`). That table is the single source of truth: components never carry a `sourceSpec` prop (`useAbiForm` / `useAbiExecution` / `AbiHandles` look it up by node type via `useNodeAbiSpec`), and the exporter ([`exporter.ts`](packages/tongflow/src/core/workflow/exporter.ts)) + connection validator resolve the same table headlessly, so a workflow exports identically with or without the canvas mounted. Never hand-maintain `bindings` / `paramMappings` / `getPrompts` in node files. A vitest drift guard ([`abi-registry-sync.test.ts`](src/components/workspace/nodes/abi-registry-sync.test.ts)) fails if a component and the table disagree.
 - **Add / Modality nodes** (`add/*`, `modality/*`): not ABI-driven. Each renders its own fixed `<Handle id="in:<modality>">` / `<Handle id="out:<modality>">` directly inside `<BaseNodeShell>`.
 - **Modal plugins:** Bump every plugin's `pip_install("tongflow==X.Y.Z")` pin to match the just-published SDK version. Plugin slot methods consume the new types directly (see "Plugin authoring rules" below); plugin-internal defaults are not a substitute for an ABI field. The SDK is **backend-neutral** (no `modal` dependency): a Modal plugin marks its handler class `@deploy`, builds its app with `modal.App(Path(__file__).resolve().parent.name)` (no SDK helper), ships a thin `entry.py` bridge (identical across Modal plugins), and declares `modal` in its own `requirements.txt`.
 
@@ -33,7 +34,7 @@
 
 **The ABI is enforced at compile time, never at runtime.** Bad shapes crash naturally; we do not run ajv / `model_validate` defensively. Static checking is the entire gate:
 
-- **TypeScript** types generated by `pnpm gen:abi` ([`src/generated/abi/index.ts`](src/generated/abi/index.ts)) are consumed by the canvas, prompt builder, and workflow exporter.
+- **TypeScript** types generated by `pnpm gen:abi` ([`packages/tongflow/src/core/generated/abi/index.ts`](packages/tongflow/src/core/generated/abi/index.ts)) are consumed by the canvas, prompt builder, and workflow exporter.
 - **Python `BaseModel`** classes generated by [`sdk/tongflow/gen_models.py`](sdk/tongflow/gen_models.py) annotate every plugin slot method's `input:` and `-> Output`. `pyright` / `mypy` flag typos and shape mismatches.
 - There is **no** server-side ABI validator; the previous `validateSlotInput` / `validateSlotOutput` are deleted. There is **no** runtime validation in the SDK — `@node_slot` deep-`model_construct`s without validating.
 
@@ -66,7 +67,7 @@
 
 - **Create-task API body:** `{feature, pluginId, prompt, nodeId, workflowId?}`. `pluginId` is top-level, **not** nested in `prompt`. `prompt` carries only ABI business fields. See [`src/app/api/task/create/route.ts`](src/app/api/task/create/route.ts).
 - **`tasks` table:** `feature`, `plugin_id`, `prompt` (JSON, business fields only) live in separate columns. Don't reintroduce a `routing.pluginId` envelope inside `prompt`.
-- **Workflow exporter:** [`ExecutableNode.pluginId`](src/lib/workflow/executable-workflow.ts) is a top-level field. Workflow `callApi(node, params)` reads it directly.
+- **Workflow exporter:** [`ExecutableNode.pluginId`](packages/tongflow/src/core/workflow/executable-workflow.ts) is a top-level field. Workflow `callApi(node, params)` reads it directly.
 
 ## ABI hygiene
 
@@ -78,7 +79,7 @@
 Run before every commit; CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) re-checks lint, typecheck, build, and SDK tests on a clean checkout.
 
 - [ ] **Scope** is narrow; follows existing patterns. Code comments in **English only**. No secrets — only [`.env.example`](.env.example) (placeholders) is tracked; real values stay in gitignored `.env`.
-- [ ] **If the ABI changed** ([`config/tongflow.abi.json`](config/tongflow.abi.json)): ran `pnpm gen:abi` and committed [`src/generated/abi/index.ts`](src/generated/abi/index.ts). Kept the Python SDK models in sync (see "Cross-layer changes").
+- [ ] **If the ABI changed** ([`packages/tongflow/abi/tongflow.abi.json`](packages/tongflow/abi/tongflow.abi.json)): ran `pnpm gen:abi` and committed [`packages/tongflow/src/core/generated/abi/index.ts`](packages/tongflow/src/core/generated/abi/index.ts). Kept the Python SDK models in sync (see "Cross-layer changes").
 - [ ] `pnpm lint:check` passes (Biome, `--error-on-warnings`). Use `pnpm lint` to auto-format.
 - [ ] `pnpm typecheck` passes (`tsc --noEmit`).
 - [ ] `pnpm build` passes (catches Next.js / server-boundary issues lint misses).

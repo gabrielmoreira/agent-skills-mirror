@@ -12,14 +12,15 @@
   - 优先使用 `monkeypatch`、fake repo、stub、`tmp_path`
 
 - `backend/test/integration`
-  - 真实 API 集成测试
+  - 真实服务集成测试
   - 依赖 `docker compose up -d` 后的运行环境
-  - 统一通过真实 HTTP 接口验证认证、权限、参数和副作用
+  - API 行为通过真实 HTTP 验证；事务、锁、schema、lease 等基础设施语义直接在真实 PostgreSQL / Redis 边界验证
 
 - `backend/test/e2e`
   - 关键链路端到端测试
   - 覆盖 run、viewer、附件、文件落盘等完整流程
   - 默认数量少、执行更慢
+  - PR 阻断优先使用无外部密钥的 deterministic assembled-path；真实 provider/browser 作为手工或周期探针
 
 其他子项目约定：
 
@@ -73,6 +74,10 @@
 - 不要只断言 `status_code == 200`
 - 要断言关键业务字段和副作用
 - 失败信息要能帮助定位问题
+- 每个新 guard 至少有一个负向案例：恢复目标缺陷后，测试必须在正确原因上失败
+- fixture、snapshot 与 expected output 不能由同一个 CI 步骤一边生成一边验收；更新必须显式进入 diff
+
+高风险测试必须贴近语义 Owner，并能从自然语言主张追踪到 oracle、负向案例和实际选择它的 workflow。`scripts/verify_engineering_contracts.py --report` 只从当前代码、测试、decision 与 workflow 派生临时审计视图；它不维护中央清单，也不能替代测试语义 Review。
 
 ## 5. fixture 规范
 
@@ -163,6 +168,8 @@ docker compose exec api uv run --group test pytest test/integration
 docker compose exec api uv run --group test pytest test/e2e -m e2e
 ```
 
+PR 的确定性 assembled-path 由 `system-tests.yml` 自动执行；需要仓库 `SILICONFLOW_API_KEY` secret 的真实 provider 校准通过 GitHub Actions 的 `Real Provider Agent Probe` 手工启动。探针缺少凭证会明确失败，不以 skip 冒充通过。
+
 运行全部测试：
 
 ```bash
@@ -181,8 +188,26 @@ backend/test/run_tests.sh all
 运行前端单元测试：
 
 ```bash
-docker compose exec web pnpm test:unit
+docker compose exec web pnpm run lint:check
+docker compose exec web pnpm run test:unit
+docker compose exec web pnpm run build
 ```
+
+运行工程信任与文档 gate：
+
+```bash
+python3 scripts/verify_engineering_contracts.py
+python3 -m unittest scripts.test_verify_engineering_contracts
+cd docs && pnpm run build
+```
+
+Windows 初始化安全契约由原生 PowerShell 负控执行；Windows 或安装了 PowerShell 7 的环境可运行：
+
+```powershell
+pwsh -NoProfile -File scripts/test_init_security.ps1
+```
+
+Backend workflow 会在 `windows-latest` 上阻断短值、密钥复用和首尾空白；不以 Bash 结果代替 PowerShell 语法与执行语义。
 
 ## 10. 推荐的日常开发流程
 
@@ -192,7 +217,7 @@ docker compose exec web pnpm test:unit
 2. 先跑相关单元测试
 3. 涉及接口时跑相关集成测试
 4. 涉及关键主链路时补跑对应 E2E
-5. 提交前至少完成“检查 -> 测试 -> Lint”
+5. 提交前至少完成“契约检查 -> 测试 -> 只读 Lint / build”
 
 ## 11. 当前落地原则
 
@@ -202,5 +227,7 @@ docker compose exec web pnpm test:unit
 - 改到旧测试时顺手迁移
 - 优先保持测试可执行和可信
 - 优先减少假绿和环境耦合
+
+CI 的 backend unit selector 固定执行 `test/unit -m "not slow"`，不能改回依赖可遗漏 marker 的 `-m unit`。Integration、deterministic E2E 与真实 provider 探针按风险和环境能力分开：deterministic E2E 必须经过 shipping Compose、API、worker、SSE 和最终持久化事实，不得在进程内 monkeypatch；真实 provider 未执行时必须在 PR 中记为 `Not run`，不能由 replay、unit、HTTP 200 或日志关键词代替。
 
 对当前 Yuxi 来说，这就是最务实、也最容易持续执行的测试标准。

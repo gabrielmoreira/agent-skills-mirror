@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 14 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 14 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 14 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,11 +52,11 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 14 file(s
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `ARCHITECTURE.md`
+- `docs/develop-guides/spec-loop.md`
+- `docs/develop-guides/engineering-trust.md`
 - `docs/develop-guides/testing-guidelines.md`
-- `docs/develop-guides/design.md`
-- `docs/develop-guides/changelog.md`
 - `docs/develop-guides/contributing.md`
-- `.github/PULL_REQUEST_TEMPLATE.md`
+- `docs/develop-guides/decisions/README.md`
 
 ## File Index
 
@@ -65,19 +65,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md) |
-| 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/html-preview/SKILL.md`](backend/package/yuxi/agents/skills/buildin/html-preview/SKILL.md) |
-| 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md`](backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md) |
-| 5 | ✓ | [`backend/package/yuxi/agents/skills/buildin/knowledge-base/SKILL.md`](backend/package/yuxi/agents/skills/buildin/knowledge-base/SKILL.md) |
-| 6 | ✓ | [`backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 9 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 10 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 11 | → | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
-| 12 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 13 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 14 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 2 | ✓ | [`backend/AGENTS.md`](backend/AGENTS.md) |
+| 3 | ✓ | [`backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md`](backend/package/yuxi/agents/skills/buildin/deep-research/SKILL.md) |
+| 4 | ✓ | [`backend/package/yuxi/agents/skills/buildin/html-preview/SKILL.md`](backend/package/yuxi/agents/skills/buildin/html-preview/SKILL.md) |
+| 5 | ✓ | [`backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md`](backend/package/yuxi/agents/skills/buildin/image-gen/SKILL.md) |
+| 6 | ✓ | [`backend/package/yuxi/agents/skills/buildin/knowledge-base/SKILL.md`](backend/package/yuxi/agents/skills/buildin/knowledge-base/SKILL.md) |
+| 7 | ✓ | [`backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md`](backend/package/yuxi/agents/skills/buildin/mysql-reporter/SKILL.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 10 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 11 | ✓ | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 12 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 13 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 14 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 15 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 16 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
+| 17 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
+| 18 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
+| 19 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

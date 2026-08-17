@@ -2,15 +2,11 @@
   "performance_arcs": [
     {
       "actor_ref": {
-        "owner": "short-drama-assets",
-        "artifact": "设定集/characters.jsonl",
-        "hash": "<sha256>",
+        "src": "characters",
         "record_id": "CHAR-<id>"
       },
       "trigger_ref": {
-        "owner": "short-drama-write",
-        "artifact": "剧集/<EP>/screenplay-index.jsonl",
-        "hash": "<sha256>",
+        "src": "screenplay-index",
         "record_id": "BLK-<EP>-<SC>-<kind><nn>"
       },
       "agenda": "<本镜需要读出的当前策略；无增益时删除>",
@@ -24,21 +20,15 @@
   "attention_handoffs": [
     {
       "from_ref": {
-        "owner": "<authoritative-owner-skill>",
-        "artifact": "<exact-versioned-attention-owner-artifact>",
-        "hash": "<sha256>",
+        "src": "<注意归属方产物的 sources key>",
         "record_id": "<exact-attention-owner-record-id>"
       },
       "trigger_ref": {
-        "owner": "short-drama-write",
-        "artifact": "剧集/<EP>/screenplay-index.jsonl",
-        "hash": "<sha256>",
+        "src": "screenplay-index",
         "record_id": "BLK-<EP>-<SC>-<kind><nn>"
       },
       "to_ref": {
-        "owner": "<authoritative-owner-skill>",
-        "artifact": "<exact-versioned-attention-owner-artifact>",
-        "hash": "<sha256>",
+        "src": "<注意归属方产物的 sources key>",
         "record_id": "<exact-attention-owner-record-id>"
       },
       "signal": "<使注意转移的可见或可听信号>",

@@ -30,6 +30,9 @@ if sys.version_info < MINIMUM_PYTHON:
     )
 
 SCHEMA_VERSION = "1.0.0"
+# A .jsonl file opens with a header record declaring the upstream snapshots its
+# references name. The header is a declaration, not one of the file's records.
+SOURCES_RECORD_TYPE = "sources"
 
 
 class CheckError(ValueError):
@@ -52,6 +55,8 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
         if not isinstance(record, dict):
             raise CheckError(f"JSONL needs one object per line: {path.name}:{number}")
         records.append(record)
+    if records and records[0].get("record_type") == SOURCES_RECORD_TYPE:
+        del records[0]
     return records
 
 

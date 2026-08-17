@@ -57,8 +57,8 @@
 - 它能否只写差异，而不篡改基础身份？新版本只写变化，不重写成另一个身份。
 
 同一 `looks.jsonl` 或 `location-views.jsonl` 内的基础关系，分别写 `base_look_id` 或
-`base_view_id`。只有基础记录在另一个文件时才用 `base_ref`；禁止让记录引用包含自身的
-文件 `hash`。
+`base_view_id`。只有基础记录在另一个文件时才用 `base_ref`，它的 `src` 指向那个文件在
+`sources` 中的声明。
 
 ### D. 只有持续身份不同才建新资产
 

@@ -1,218 +1,97 @@
-# 项目命令与审核记录
+# 项目命令
 
-## 目录
-
-1. 发布与创作者确认
-2. 独立审查记录
-3. 过期影响与依赖检查（含把共享文件的失效半径收窄到记录）
-4. 恢复与打包（含交付完整性枚举与交付后复核）
-5. Dashboard 启动
-
-只在实际调用 `project_tool.py`、诊断命令失败或核对审核记录时读取本文。
-从 `short-drama` 技能安装目录调用脚本，不依赖当前工作目录：
+从 `short-drama` 技能安装目录运行，不依赖当前工作目录：
 
 ```text
-python3 <short-drama-skill-dir>/scripts/project_tool.py init <project> --title <title>
-python3 <short-drama-skill-dir>/scripts/project_tool.py status <project>
-python3 <short-drama-skill-dir>/scripts/project_tool.py recover <project>
-python3 <short-drama-skill-dir>/scripts/project_tool.py publish <project> --owner short-drama-write --artifact-id EP001:script --output 剧集/EP001/screenplay.md=输入/EP001-screenplay.candidate.md [--input <upstream-path>=<sha256> ...] [--input-record <upstream-path>=<record-id> ...]
-python3 <short-drama-skill-dir>/scripts/project_tool.py accept <project> --artifact-id EP001:script --decision accepted --target 剧集/EP001/screenplay.md=<candidate-sha256> --evidence-artifact 创作者决策/EP001-script.json --evidence-hash <decision-file-sha256> --evidence-record-id <decision-id>
-python3 <short-drama-skill-dir>/scripts/project_tool.py review <project> --artifact-id EP001:script --verdict approve --target 剧集/EP001/screenplay.md=<accepted-sha256> --verdict-owner short-drama-review --verdict-artifact 审查/EP001-verdict.json --verdict-hash <verdict-file-sha256>
-python3 <short-drama-skill-dir>/scripts/project_tool.py package <project> --episode EP001 --include <accepted-path> [...] [--omit <accepted-path> ...]
-python3 <short-drama-skill-dir>/scripts/project_tool.py verify <project> --episode EP001
+python3 <core>/scripts/project_tool.py init <project> --title <title>
+python3 <core>/scripts/project_tool.py status <project>
+python3 <core>/scripts/project_tool.py publish <project> --owner short-drama-write --artifact-id EP001:script --output 剧集/EP001/screenplay.md=_work/screenplay.next.md --input 项目开发/episode-map.jsonl
+python3 <core>/scripts/project_tool.py accept <project> --artifact-id EP001:script --decision accepted [--note <note>]
+python3 <core>/scripts/project_tool.py review <project> --artifact-id EP001:script --verdict approve [--reviewer <label>] [--note <note>]
+python3 <core>/scripts/project_tool.py set-authority <project> --field /creator_authority/production_profile --decision-ref 创作者决策/decisions.jsonl#CD-PROFILE-001
+python3 <core>/scripts/project_tool.py package <project> --episode EP001 --include 剧集/EP001/screenplay.md [--omit <path>=<reason>]
+python3 <core>/scripts/project_tool.py verify <project> --episode EP001
 ```
+
+## 发布
+
+`publish --output <target>=<source>` 可重复。source 必须是项目内安全的 UTF-8 Markdown、
+JSON 或 JSONL；命令先验证全部 source，再逐文件用临时文件和原子替换发布。每个 artifact 的
+output 路径只能有一个 owner。
+
+`--input <path>` 只声明该产物实际读取的直接项目文件。工具内部保存当前摘要，用于之后判断
+`update_needed`；调用者不计算、不粘贴 hash，也不声明传递依赖。若 A 直接读 B，就声明 B；
+B 又读 C 不会让 A 自动过期，只有 A 下次实际重建时才读取当前 B。
+
+默认只允许发布到标准阶段目录。`输入/**`、`.short-drama/**`、`交付/**` 和任何
+`short-drama.json` 都不可作为 publish 目标；`short-drama.json` 里的 `creator_authority/*` 与
+`format/target_seconds_per_episode` 用 `set-authority` 写。`set-authority` 只认它所引用的那一个
+决策文件，同一条决策的撤回要写在同一个文件里。分集目录
+使用 `EP001` 形式。未登记的临时路径必须显式加 `--allow-unregistered-path`。
+
+发布逐个文件原子完成：进程中断最多留下未被采用的临时文件，已完成的每个目标都是完整文件。
+再次运行同一条发布命令即可继续。
+
+## 接受与复核
+
+发布后状态是 `needs_confirmation`。创作者决定当前版本：
+
+```text
+... accept <project> --artifact-id <id> --decision accepted
+... accept <project> --artifact-id <id> --decision rejected --note <reason>
+```
+
+接受不要求单独证据文件或 target hash。输出或直接输入已变化时命令拒绝沿用旧决定。
+
+接受后可记录复核：
+
+```text
+... review <project> --artifact-id <id> --verdict approve --reviewer 同事复核
+... review <project> --artifact-id <id> --verdict revise --note <bounded-fix>
+```
+
+`approve_with_notes` 也计为通过；`provisional` 保持未批准。reviewer 是创作质量实践，
+不是 CLI 身份认证协议：有独立上下文时使用，没有时诚实填写自检标签。
+
+重新 `publish` 会清除该 artifact 的旧接受与复核。`status` 在读取时检查当前输出和直接输入，
+只报告 `update_needed`，不修改状态文件，也不传播或保存“下游闭包”。
+
+## 写回创作者权威
+
+创作者定下制作形态、视觉方向、播放面或集长目标后，先把这条决定作为一条创作者决策记录
+发布到 `创作者决策/` 并 `accept`，再写回 `short-drama.json`：
+
+```text
+... set-authority <project> --field /creator_authority/delivery_surface --decision-ref 创作者决策/decisions.jsonl#CD-SURFACE-001
+... set-authority <project> --field /format/target_seconds_per_episode --decision-ref 创作者决策/decisions.jsonl#CD-LENGTH-001
+```
+
+`--field` 只接受 `/creator_authority/*` 与 `/format/target_seconds_per_episode`；
+`creator_authority/decisions_artifact` 是目录布局，由 `init` 定下。被引用的记录 `status`
+必须是 `accepted`，`target_locators` 必须含 `{"src":"short-drama","field":"<同一 field>"}`，
+命令写入它的 `accepted_value`，并只写进 manifest 已声明的槽位、保持该槽位原有的 JSON 类型。
+
+写到 `visual_direction`、`production_profile`、`delivery_surface` 这类带 `status` 的块时，
+`accepted_value` 的键并入该块的 `choices`（该块没有 `choices` 就并入块本身），`status` 置为
+`accepted`。直接写 `.../choices` 同样是并入，已记下的选择不会被这次写掉；写更深的单个选择
+（如 `.../choices/look_development`）会把它所在的块一并置为 `accepted`。集长目标写正数秒。
+下游读到的就是这里已 `accepted` 的值。
+
+## 打包与复核
+
+`package` 要求每个 `--include` 都属于本集并且当前为 `approved`。它把所选文本/JSON 复制到
+`交付/<EP>/artifacts/`，写入 manifest 与 checksums，并记录 `--omit` 的理由。再次打包用新目录
+原子替换旧包。
+
+`verify` 重新计算交付文件校验和，并报告缺失、篡改或未登记新增文件。校验和只服务于准确交付，
+不参与创作状态或依赖传播。
 
 ## Dashboard 启动
 
-`$short-drama dashboard` 将下列命令作为长时运行进程启动。`--port 0` 由操作系统选择
-未占用的回环端口，`--open` 在绑定成功后打开默认浏览器：
-
 ```text
-python3 <short-drama-skill-dir>/scripts/dashboard_server.py --workspace <workspace> --port 0 --open
+python3 <core>/scripts/dashboard_server.py --workspace <workspace> --port 0 --open
 ```
 
-如果需要固定地址，可省略 `--port 0`，默认端口为 `8765`。`--host` 只接受回环
-主机；服务会检查 Host 与 Origin，拒绝符号链接、路径越界和超出大小限制的文件。
-脚本打印的地址包含本次启动专属的会话片段；浏览器用它建立独立 API 路径及
-`HttpOnly`、`SameSite=Strict` 会话，所有项目 API 都要求该会话。
-Dashboard 只提供一个创作页面：左侧目录按项目与剧集整理故事、人物场景、分镜和生成
-文案，右侧正文始终可见并在打开项目后自动载入；不使用多页签或内容浮层，也不展示
-文件树、真实路径、结构化格式或生命周期轴。待办和导出只在正文下方给出简短提示。
-文本保存仍携带读取时的 SHA-256 版本；文件被其他页面或工具修改后，旧页面保存会
-返回冲突而不是覆盖。Markdown 预览不执行项目 HTML；结构化内容以卡片呈现，保存时仍由
-浏览器和服务端分别解析，任一层发现格式错误都拒绝替换原文件。媒体状态只使用“预演、
-待确认、已采用”等创作者语言。
-创作台要求运行平台支持安全目录文件描述符（macOS/Linux）；不支持时服务直接拒绝启动
-并说明原因，不使用存在符号链接竞态的降级路径。
-
-## 发布与创作者确认
-
-`publish --output <target>=<source>` 可以重复使用；来源文件必须是项目内的 UTF-8
-Markdown、JSON 或 JSONL。命令把来源文件和 `--input` 依赖的准确路径与 `hash` 写入
-预写日志，只发布 `candidate`，且只检查文件格式；`validation_state` 保持 `not_run`，不能同时写入创作者确认
-或独立审查结论。
-
-### `publish` 拒绝写入的目标
-
-以下目标在发布阶段直接报错，不进入预写日志，创作者文件保持原样。全部按**忽略大小写**
-比对：旧版工程常运行在大小写不敏感的文件系统上，`Delivery/x` 与 `delivery/x` 是同一个
-文件，区分大小写的判断在那里等于没有判断。
-
-| 目标 | 原因 |
-|---|---|
-| `输入/**` | 创作者交来的来源材料不可变 |
-| `.short-drama/**` | 机器状态，只由工具自身维护 |
-| 任意位置的 `short-drama.json` | 承载 `creator_authority`。按**文件名**拦截而不只是根目录那一份：`find_project` 向上查找，被放进子目录的同名文件会让该子目录冒充项目根 |
-| `交付/**` | 只由 `package` 闸门写入；否则已交付的 `manifest.json` 可被事后替换 |
-
-**只能发布到标准阶段目录**：`项目开发`、`设定集`、`剧集`、`创作者决策`、
-`审查`。旧版英文目录继续兼容。`status.layout.roots` 给出当前项目采用的完整目录映射；
-第一次阶段发布会固定布局，之后创建另一种语言的平行阶段树会被拒绝。`mode=mixed`
-表示已有平行树，需要先迁移合并。
-确实需要放在别处的临时文件加 `--allow-unregistered-path`：仍然可行，但不再是静默的。
-
-**分集目录必须写成 `剧集/<EP>/`，`<EP>` 是 `EP` + 三位数字**（`EP001`；超过
-`EP999` 之后不再补零，写 `EP1000`）。`ep1`、`EP1`、`EP0001` 都会被拒绝——`EP0001`
-被拒是因为它会成为 `EP001` 的第二种拼写，而交付完整性闸门按 `剧集/<EP>/` 前缀
-枚举本集产物，另一种拼写下的产物会被静默跳过，于是闸门在一个它从未清点过的分集上通过。
-`package --include` 同样按这条规则校验。同一形式也用于剧本的 `# EP001` 集标题。
-
-**结构化引用里的 `hash` 必须是 64 位小写十六进制**。直接发布还带 `<sha256>` 占位符的
-模板会报 `structured ref hash is unfilled or invalid`。此前这类引用被静默丢弃，导致
-填得越少、依赖检查越宽松——正好与 hash 绑定的目的相反。
-
-**已声明产物的负责技能是固定的**：`剧集/<EP>/screenplay.md` 只能由
-`short-drama-write` 发布，`storyboard/motion-specs.jsonl` 只能由
-`short-drama-video-prompts` 发布，其余见
-[contract-and-ownership.md](contract-and-ownership.md) 的单一负责人登记表。表里没有
-点名的路径不受此限——契约为自己的产物指定负责人，不为创作者可能放进去的每个文件指定。
-
-升级前先用当前旧版本完成一次 `recover`。0.3.0 不会用放宽规则重放带非便携路径的旧
-manifest，因为无法证明外部项目里的事务可信；这类事务会持久标为
-`NONPORTABLE_LEGACY_PATH` 并进入 `resolve_conflict`。用旧版本恢复，或人工迁移后再继续，
-不会让 `recover` 反复崩溃，也不会在 Windows 上用别名覆盖规范产物。
-
-**已有不合规目录的项目怎么迁移**：`剧集/ep1/` 里的产物仍可 `accept`，但不能再发布
-新版本，也不能打包交付。把内容按 `剧集/EP001/` 重新发布一次并重新接受即可；交付枚举
-按 `剧集/<EP>/` 前缀匹配，旧路径本来就不在 `EP001` 的清点范围内，磁盘上的旧文件
-不会被自动删除，确认新版本无误后自行清理。
-
-`accept` 使用创作者决定记录，把所有准确的 `candidate` 目标 `hash` 推进为
-`accepted`；记录的负责人固定为 `creator`。
-
-**决定与审查证据按产物分文件存放**：默认约定是 `创作者决策/<artifact-id>.json`
-与 `审查/<EP>-findings.jsonl`，**一个产物一份**。原因是证据引用绑定的是**整文件
-hash**：把全项目的决定追加进同一个 `creator-decisions.jsonl` 时，接受第二集会改变该
-文件的 hash，于是第一集那条已经冻结的证据引用永久指向一个不再存在的字节状态。
-
-后续 `review` 与 `package` 会重新校验存量引用，因此共享单文件在第二次追加后会让早期证据
-明确阻断，而不是静默通过。hash 绑定的意义正是可复核；一个产物一份证据文件能让其他接受
-决定新增时不改变既有字节。不要用共享单文件开新项目。
-
-JSONL 记录必须用 `--evidence-record-id` 唯一定位同名 `decision_id`；JSON 证据必须是对象；所定位记录的
-`status` 或 `decision` 必须与命令的 `accepted/rejected` 一致。用于产物生命周期的记录
-还必须声明 `decision_kind:"artifact_acceptance"`、当前 `artifact_id` 和与全部 `--target`
-完全相同的 `target_hashes`；其他已接受决定不能代替本次接受。
-
-## 独立审查记录
-
-`review` 的审查结论 JSON 必须列出同一组结构化的受审 `ArtifactRef`。`reviewer` 至少包含
-与审查结论负责人一致的 `owner`、`kind`、`independent:true`，并在
-`excluded_owner_skills` 中准确排除被审文件的负责人。`findings_ref` 必须由审查者所有，
-绑定当前有效的 `hash`，并指向可解析的 JSONL；其中所有未关闭的致命、错误或阻断问题 ID 必须与 `blocking_findings` 完全一致，
-`open_blocker_count` 再与之对齐。
-
-`structural_validation` 必须是 `pass | pass_with_warnings | fail`，并由这份准确的审查结论
-更新校验状态；结构校验未通过或仍有阻断问题时不能批准。后续目标文件或任一
-审核记录的 `hash` 改变，都要重新确认或审查。
-
-## 过期影响与依赖检查
-
-接受时把 `candidate` 的准确输入清单保存为 `accepted_inputs`。发布新 `candidate` 时，
-同一预写日志清单会找出直接和间接受影响的下游文件：保留旧的创作者确认记录，
-但把受影响的下游构建状态标为 `stale`，清空校验与审查就绪状态，并阻止交付。
-
-### 把共享文件的失效半径收窄到记录
-
-`设定集/*.jsonl` 这类文件是全项目共享输入。只按整文件 `hash` 绑定时，第 48 集新增一个
-配角会把此前 47 集引用过该文件的产物全部标为 `stale`——它们其实一个字都没受影响。
-
-发布时用 `--input-record <path>=<selector>` 声明**这份候选实际读了哪几条记录**
-（可重复；仍需同时用 `--input` 绑定该文件的整文件 `hash`）：
-
-```text
---input 设定集/characters.jsonl=<sha256> \
---input-record 设定集/characters.jsonl=CHAR-GUHE \
---input-record 设定集/characters.jsonl=CHAR-LINYE
-```
-
-此后该文件的其余部分怎么改都不影响这份产物；只有被绑定的记录本身变化、消失或变得
-不唯一时，它才会被标为 `stale`。`review` 与 `package` 的逐层复验同样改为核对这几条
-记录，所以文件 `hash` 前进之后产物依然可以交付。
-
-- **JSONL 选择器是记录 ID**：取值为某个以 `_id` 结尾的顶层字段，且在该文件中只出现
-  一次。出现零次或多次一律拒绝，不做猜测。
-- **JSON 选择器是 RFC 6901 指针**，例如 `/creator_authority/production_profile`。
-- 记录 `hash` 按键名排序后的规范形式计算，所以重排字段或改动缩进不会误判为变化。
-- **Markdown 不能做记录级绑定**：它没有可机器校验的记录身份，收窄只会变成一句无法
-  验证的承诺。剧本类依赖仍按整文件绑定，需要更小半径就先拆文件。
-
-`accepted_inputs` 中保留的整文件 `hash` 此时是**绑定当时的快照**，用于按 `hash` 取回
-那一版字节；判断是否仍然有效的依据是被绑定的那几条记录。
-
-`review` 和 `package` 会逐层复验输入的当前 `hash`、唯一且状态为 `accepted` 的提供方，
-以及提供方本身的构建、确认状态和输入。外部编辑、循环或含糊依赖不能靠手改状态字符串
-绕过。若多文件产物的新 `candidate` 不再包含旧的 `accepted/candidate` 目标，该路径也会
-被列入受影响的下游清单；旧文件不会被静默删除，但新版本接受后，它不再拥有已接受权限，
-也不能被单独打包。
-
-`publish` 会读取 JSON 或 JSONL 候选文件中带 `owner/artifact/hash` 的引用：
-指向同次输出时，`hash` 必须匹配该候选文件内容；其他引用必须以相同路径和 `hash` 出现在
-`--input`。遗漏或不一致会在写预写日志前被拒绝；Markdown 依赖无法可靠推断，仍必须由
-负责人明确声明。
-
-## 恢复与打包
-
-`recover --transaction <txid>` 只处理指定事务。`package` 会重新验证状态文件中保存的创作者
-决定和独立审查记录，只打包当前 `hash` 与已接受快照一致、并且各项交付状态都已就绪的
-Markdown、JSON 或 JSONL。
-
-### `verify`：复核已交付的包
-
-```text
-python3 <short-drama-skill-dir>/scripts/project_tool.py verify <project> --episode EP001
-```
-
-`package` 会写出 `checksums.sha256`，但在此之前没有任何命令再读它——交付目录被事后
-改动仍然"看起来已交付"。结果 `status` 为 `intact` 或 `tampered`，后者由四个字段说明原因：
-
-| 字段 | 含义 |
-|---|---|
-| `checksum_list_authentic` | 校验和清单本身是否仍等于打包时记录在 `.short-drama/state.json` 里的 hash。**能改产物的人同样能重算清单**，所以先验证清单，再信任其中任何一行；这一项单独为 `false` 时，其余三项可能全是空的。注意它只是同一棵树内的第二个锚点：连状态文件一起改仍能骗过它，要防这一类需要把 hash 留在项目之外 |
-| `mismatched` | 已登记文件的内容变了 |
-| `missing` | 已登记文件不在了，或被换成了符号链接（指向交付树之外的字节不予采信） |
-| `unlisted` | 交付目录里有清单上没有的文件或符号链接目录——**校验和清单对新增是盲的**，只核对已登记项永远发现不了它 |
-
-命令在 `tampered` 时退出码为 1，可以直接用在 `&&` 链或流水线闸门里。
-
-### 完整性由工具枚举，取舍由创作者声明
-
-手写的 `--include` 清单**漏了东西时和没漏时长得一模一样**。状态文件里已经记着本集有哪些
-已接受文件，所以这份枚举由 `package` 来做：本集 `剧集/<EP>/` 下每一个已接受路径，
-要么在 `--include` 里，要么在 `--omit` 里，否则拒绝打包并逐条列出。
-
-`--omit` 不是绕过，是留痕：清单的 `omitted` 段会记下每条被排除的路径、它的负责产物，
-以及排除原因是「已就绪但主动不交付」还是「尚未就绪」。后者尤其重要——正在返工的产物
-是最容易被无声绕过的，而收件方从一份看不出缺件的交付包里读不出这件事。
-
-`--omit` 只接受本集的已接受路径：多文件产物换掉旧目标后，旧路径不再有已接受负责人，
-既不能交付也不能被声明省略。其他分集的产物不进入本集的枚举范围。故事中确实需要交付屏显网址或屏显机器路径时，要有明确的例外
-文件，绑定准确的文字、路径、字段、来源和文字呈现方法；其他网址与机器路径默认阻断。
-例外只释放它逐字声明的那一个字符串：路径必须写到完整的那一条，只写盘符或目录开头会被
-拒绝，整段文档也不能当作一条例外。文件协议网址、私钥与结构化凭据字段无条件阻断，
-没有例外通道。
-
-每条例外必须写齐七个字段，缺一即整体拒绝：`exact_text`（逐字原文）、`path`（绑定到哪个
-交付文件）、`field`（该文字在产物中的字段位置）、`purpose`（固定为 `on_screen_text`）、
-`provenance`（`creator_supplied` 或 `story_world_authored`）、`text_policy`
-（`visible_on_screen` 或 `fictional_interface_text`）、`allow_delivery`（必须为 `true`）。
+`--host` 只接受回环主机。服务拒绝符号链接和路径越界，使用每次启动独立的本机会话。
+Dashboard 是展示与有限文本编辑层，不承担生成、接受、复核或打包编排。保存使用当前文件版本
+做冲突检查；项目文件已被其他工具修改时返回冲突，不覆盖新内容。

@@ -13,7 +13,7 @@ document is for plugin **authors**.
 ## 1. What a plugin is
 
 Every runnable node on the TongFlow canvas is backed by a **contract**, not by hard-wired
-code. That contract is [`config/tongflow.abi.json`](../config/tongflow.abi.json) — the ABI.
+code. That contract is [`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json) — the ABI.
 The ABI defines *what capabilities exist* and *what each one's input and output look like*.
 Each capability is a typed **node slot**: `gen-text`, `image-gen`, `gen-video`, `transcribe`,
 and so on. The ABI describes only the contract — text in, image out, which fields are
@@ -91,9 +91,6 @@ The naming convention the scanner enforces:
   tends to run (a local/API adapter vs. hosted compute).
 - It must **not** encode hardware (`gpu` / `cpu`) — that's the plugin's own concern, not part
   of the id.
-- `tongflow-package-…` directories are **content packages** (no executable code) and are
-  skipped by the plugin scanner entirely — see
-  [§3.1](#31-content-packages-tongflow-package-).
 
 One entry point per plugin, by convention:
 
@@ -106,42 +103,6 @@ One entry point per plugin, by convention:
   `modal`.
 
 Beyond that, your code can be laid out however you like.
-
-### 3.1 Content packages (`tongflow-package-*`)
-
-A content package ships **data, not code**: today that means **skills** — reusable prompt
-packs users pick on the text-generation node, where the skill body is prepended to the
-node's instruction at execution time. Distribution is identical to plugins (a git repo
-cloned into `plugins/`, installable from the plugins panel or by git URL), but discovery is
-different: the Python plugin scanner skips these directories, and the app's own skills
-registry (`GET /api/skills/registry`) scans them instead.
-
-Layout:
-
-```
-tongflow-package-skills/
-├── tongflow.plugin.json     # optional: { "plugin": { name, description, icon }, "env": [] }
-└── skills/
-    ├── polish.md            # one skill per file; the filename (minus .md) is the skill id
-    └── minimax-h3-prompt.md
-```
-
-Each skill file is markdown with a minimal frontmatter block — a leading `---` line,
-`key: value` pairs, a closing `---` line — followed by the prompt body:
-
-```md
----
-name: Polish                  # required; shown in the picker
-description: Tighten wording  # optional one-liner
-category: text                # optional: text | image-prompt | video-prompt (picker grouping)
----
-The prompt body. Everything after the frontmatter is used verbatim.
-```
-
-A file without a valid frontmatter (or missing `name`) is skipped and reported in the
-registry's `errors` — it never breaks the scan.
-
----
 
 ## 4. The SDK contract
 
@@ -394,7 +355,7 @@ two buckets:
 
 Workflow when you do change it:
 
-1. Edit [`config/tongflow.abi.json`](../config/tongflow.abi.json) — prefer explicit `required`
+1. Edit [`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json) — prefer explicit `required`
    when the product guarantees a value.
 2. Regenerate the TypeScript types: `pnpm gen:abi`.
 3. Regenerate and publish the Python SDK so plugins can import the new types:

@@ -8,7 +8,7 @@ Cross-tool agent instructions for this repository. Read by **Antigravity CLI (`a
 
 ## Repository Purpose
 
-`claude-skills` is a **prompt engineering repository** of 132 specialist skill agents. The deliverables are **`SKILL.md` files** (not application code). Each skill lives at `<skill-name>/SKILL.md` with optional `reference/`.
+`claude-skills` is a **prompt engineering repository** of 123 specialist skill agents. The deliverables are **`SKILL.md` files** (not application code). Each skill lives at `<skill-name>/SKILL.md` with optional `reference/`.
 
 ---
 
@@ -119,3 +119,21 @@ Full mapping → `_common/CLI_COMPATIBILITY.md`.
 - `AGENTS.md` (this file) takes precedence over silently-inherited tool defaults.
 - Tool-specific override files (`CLAUDE.md`, `GEMINI.md`) take precedence over `AGENTS.md` *only on the file's home tool* and *only for delta content*.
 - If a rule cannot be expressed cross-tool, document it here as "tool-specific" with a reference to the override file.
+
+## When Rules Disagree
+
+The order above resolves *which file* wins. It does not resolve *which rule* wins when two applicable rules
+conflict, and "most specific wins" is the wrong default there — it lets a task instruction override a safety
+constraint simply by being narrower. Resolve by rule class, highest first:
+
+1. **Enforced security control** — `_common/SECURITY.md`, `WEB_FETCH_SAFETY.md`, permission boundaries
+2. **Legal / licensing constraint**
+3. **Repository-wide architecture constraint** — `_common/` protocols, `AGENTS.md`, `CLAUDE.md`
+4. **Component rule** — an individual `SKILL.md` or its `reference/`
+5. **Task request** — what the user asked for in this session
+6. **Model-generated plan** — an agent's own intermediate decision, lowest of all
+
+A lower class never silently overrides a higher one. If two rules of the **same** class conflict and the
+sources do not settle it, do not pick one: stop and report `blocked_by_instruction_conflict`, naming both
+rules and what each would imply. Then log the collision itself — an unresolvable pair is a defect in the
+instruction corpus (`_common/HARNESS_DEBT.md`), not a decision for the agent to make on the user's behalf.

@@ -1,9 +1,21 @@
+"""Sidecar helpers for the figure-style skill.
+
+Definition-only module: importing it must not touch the network, filesystem
+(beyond font probing at call time), or draw anything. Heavy imports live
+inside function bodies so the kernel loads instantly.
+
+Public API (names are stable — other skills reference them):
+    apply_figure_style, set_frame, panel_letter, focal_palette,
+    bar_with_points, strip_with_median, goodness_arrow, two_tier_label,
+    end_of_line_labels, panel_crops
+"""
+
 META_GREY = "#888888"
 
-# Known CJK-capable fonts shipped with each OS, tried by path first (so we can
-# register the exact file with matplotlib) then by family name. Fixes Chinese/
-# Japanese/Korean labels rendering as tofu boxes (□□□) when matplotlib falls
-# back to DejaVu Sans, which has no CJK glyphs.
+# CJK-capable fonts each OS ships with, probed by file path first (so the
+# exact file gets registered with matplotlib) and by family name second.
+# Without this, Chinese/Japanese/Korean labels fall back to DejaVu Sans and
+# render as tofu boxes (□□□).
 _CJK_CANDIDATES = {
     "Windows": [
         ("Microsoft YaHei", r"C:\Windows\Fonts\msyh.ttc"),
@@ -28,9 +40,9 @@ _CJK_CANDIDATES = {
 def _find_cjk_font():
     """Return a CJK-capable family name registered with matplotlib, or None.
 
-    Tries the current OS's known font files first (registering the file so the
-    family becomes usable), then falls back to any CJK family already known to
-    the font manager. No bundled font needed — uses what's on the machine.
+    Probes the current OS's known font files first (registering the file so
+    the family becomes usable), then any CJK family the font manager already
+    knows. Uses whatever the machine has — nothing is bundled.
     """
     import os
     import platform
@@ -51,154 +63,184 @@ def _find_cjk_font():
     return None
 
 
+def _register_conda_fonts():
+    """Fonts installed via conda (e.g. mscorefonts) land in $CONDA_PREFIX/fonts,
+    which matplotlib never scans — register them so `font=` requests resolve."""
+    import glob
+    import os
+    import sys
+    import matplotlib.font_manager as fm
+    fdir = os.path.join(os.environ.get("CONDA_PREFIX") or sys.prefix, "fonts")
+    if not os.path.isdir(fdir):
+        return
+    known = {f.fname for f in fm.fontManager.ttflist}
+    for f in glob.glob(os.path.join(fdir, "*.ttf")):
+        if f not in known:
+            fm.fontManager.addfont(f)
+
+
+# ---------------------------------------------------------------- style setup
+
 def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
-    """Set matplotlib rcParams for publication-grade output. Call once before plotting.
+    """Install publication-output rcParams. Call once, before any plotting.
 
-    This sets mechanics (role-mapped font-size ladder, outward ticks, frameless
-    legends, 300-dpi save, Type-42 embedded fonts) — not a house aesthetic.
-    Frame, font and the size ladder are parameters.
+    What this sets is mechanics, not a house look: a three-step font-size
+    ladder mapped to text roles, outward ticks, frameless legends, left-flush
+    regular-weight titles, 300-dpi tight saves, and Type-42 (editable) fonts
+    in vector output. Frame shape, family, and the ladder are parameters.
 
-    frame : 'open' (bottom+left spines, default) | 'boxed' (all four) | 'none'
-    font  : sans-serif family name; None = system default sans-serif
-    sizes : (base, secondary, tick) — titles/axis-labels, legend/annotation, ticks
-    grid  : whether to draw axes.grid (default False)
+    frame : 'open' → bottom+left spines only (default); 'boxed' → all four;
+            'none' → no spines, no tick marks
+    font  : preferred sans-serif family; None keeps the platform default
+    sizes : (base, secondary, tick) point sizes — base covers titles, axis
+            labels and series identity; secondary covers legends/annotations;
+            tick covers tick labels
+    grid  : draw axes.grid when True
     """
     import matplotlib as mpl
     if frame not in ("open", "boxed", "none"):
         raise ValueError(f"frame must be 'open'|'boxed'|'none', got {frame!r}")
-    # Register conda-installed fonts (mscorefonts lands in $CONDA_PREFIX/fonts, off mpl's scan path)
     try:
-        import os, sys, glob, matplotlib.font_manager as fm
-        fdir = os.path.join(os.environ.get("CONDA_PREFIX") or sys.prefix, "fonts")
-        if os.path.isdir(fdir):
-            known = {f.fname for f in fm.fontManager.ttflist}
-            for f in glob.glob(os.path.join(fdir, "*.ttf")):
-                if f not in known:
-                    fm.fontManager.addfont(f)
+        _register_conda_fonts()
     except Exception:
         pass
     base, secondary, tick = sizes
     boxed = (frame == "boxed")
+    spined = (frame != "none")
     rc = {
         "font.family": "sans-serif",
         "font.size": base,
-        "axes.labelsize": base,
-        "axes.titlesize": base,
+        "axes.titlesize": base, "axes.labelsize": base,
         "legend.fontsize": secondary,
-        "xtick.labelsize": tick,
-        "ytick.labelsize": tick,
+        "xtick.labelsize": tick, "ytick.labelsize": tick,
+        "axes.titleweight": "normal", "axes.titlelocation": "left",
+        "axes.labelweight": "normal",
         "axes.linewidth": 0.6,
+        "axes.spines.top": boxed, "axes.spines.right": boxed,
+        "axes.spines.bottom": spined, "axes.spines.left": spined,
+        "axes.grid": bool(grid),
         "xtick.direction": "out", "ytick.direction": "out",
         "xtick.major.size": 3, "ytick.major.size": 3,
         "xtick.major.width": 0.6, "ytick.major.width": 0.6,
-        "axes.spines.top": boxed, "axes.spines.right": boxed,
-        "axes.spines.left": frame != "none", "axes.spines.bottom": frame != "none",
-        "axes.grid": bool(grid),
         "legend.frameon": False,
-        "figure.dpi": 200,
-        "savefig.dpi": 300,
-        "savefig.bbox": "tight",
-        "axes.titleweight": "normal",
-        "axes.titlelocation": "left",
-        "axes.labelweight": "normal",
         "lines.linewidth": 1.2,
         "patch.linewidth": 0.6,
+        "figure.dpi": 200,
+        "savefig.dpi": 300, "savefig.bbox": "tight",
         "pdf.fonttype": 42, "ps.fonttype": 42,
     }
-    # Build the sans-serif fallback chain. Always include a CJK font (if the OS
-    # has one) so Chinese/JP/KR labels render instead of tofu boxes; keep DejaVu
-    # for Latin. CJK goes first when no explicit `font` is given so it wins even
-    # on older matplotlib without per-glyph fallback.
-    sans = []
-    if font:
-        sans.append(font)
+    # Sans-serif fallback chain: explicit request first, then a CJK family
+    # (when the OS has one) so non-Latin labels never render as boxes, then
+    # the usual Latin families. Putting CJK ahead of DejaVu matters on older
+    # matplotlib versions that lack per-glyph fallback.
+    chain = [font] if font else []
     cjk = _find_cjk_font()
-    if cjk and cjk not in sans:
-        sans.append(cjk)
-    sans.extend(["DejaVu Sans", "Liberation Sans", "Arial"])
-    rc["font.sans-serif"] = sans
-    rc["axes.unicode_minus"] = False  # keep the minus sign from becoming a box too
+    if cjk and cjk not in chain:
+        chain.append(cjk)
+    chain += ["DejaVu Sans", "Liberation Sans", "Arial"]
+    rc["font.sans-serif"] = chain
+    rc["axes.unicode_minus"] = False  # a boxed minus sign is still tofu
     mpl.rcParams.update(rc)
 
 
 def set_frame(ax, style="open"):
-    """§3: set spine visibility on an existing axes. style ∈ {'open','boxed','none'}."""
-    show = {"open": (False, False, True, True),
-            "boxed": (True, True, True, True),
-            "none": (False, False, False, False)}[style]
-    for side, vis in zip(("top", "right", "bottom", "left"), show):
+    """Re-apply a frame shape to one existing axes. style ∈ {'open','boxed','none'}."""
+    visible = {
+        "open": {"bottom": True, "left": True, "top": False, "right": False},
+        "boxed": dict.fromkeys(("top", "right", "bottom", "left"), True),
+        "none": dict.fromkeys(("top", "right", "bottom", "left"), False),
+    }[style]
+    for side, vis in visible.items():
         ax.spines[side].set_visible(vis)
         if vis:
             ax.spines[side].set_linewidth(0.6)
     ax.tick_params(direction="out", length=0 if style == "none" else 3, width=0.6)
 
 
-def panel_letter(ax, letter, dx=-0.18, dy=1.02, case="lower", fontsize=None):
-    """§5.7: bold panel letter outside top-left of axes. case ∈ {'lower','upper'}."""
-    import matplotlib.pyplot as plt
-    if fontsize is None:
-        fontsize = plt.rcParams.get("font.size", 8) + 1  # §5.2: bold + one step above base
-    s = letter.lower() if case == "lower" else letter.upper()
-    ax.text(dx, dy, s, transform=ax.transAxes,
-            fontweight="bold", fontsize=fontsize, va="bottom", ha="left")
+# ------------------------------------------------------------------ palettes
+
+def _desaturate(color, keep=0.3):
+    """Pull a colour toward its own grey value, keeping `keep` of the hue."""
+    import matplotlib.colors as mcolors
+    r, g, b = mcolors.to_rgb(color)
+    grey = (r + g + b) / 3
+    return mcolors.to_hex(tuple(keep * c + (1 - keep) * grey for c in (r, g, b)))
 
 
 def focal_palette(labels, focal, focal_color, other="muted", base_colors=None):
-    """§4.2: map labels → colours with the focal series visually dominant.
+    """Colour list where the focal series dominates and the rest recede.
 
-    other='muted'   — desaturate base_colors (or a default cycle) toward grey
-    other='grey'    — uniform light grey for all non-focal
-    other='ordinal' — non-focal on a single light→dark grey ramp (input order)
+    labels      : ordered category labels
+    focal       : one label or an iterable of labels to emphasise
+    focal_color : the colour the focal series gets
+    other       : how non-focal entries are drawn —
+                  'muted'   desaturated versions of base_colors (default)
+                  'grey'    one uniform light grey
+                  'ordinal' a light→dark grey ramp in input order
+    base_colors : cycle to mute for 'muted'; defaults to the active prop cycle
     """
     import matplotlib.colors as mcolors
     import matplotlib.pyplot as plt
     focal_set = {focal} if isinstance(focal, str) else set(focal)
-    n = len(labels)
     if not focal_set & set(labels):
         raise ValueError(f"focal {focal!r} not found in labels")
+    n = len(labels)
     if base_colors is None:
         base_colors = plt.rcParams["axes.prop_cycle"].by_key().get("color", ["#444444"])
     base_colors = [base_colors[i % len(base_colors)] for i in range(n)]
+
     if other == "grey":
         rest = ["#BCBCBC"] * n
     elif other == "ordinal":
-        nf = max(1, n - len(focal_set))
-        ramp = [mcolors.to_hex((v, v, v)) for v in
-                ([0.55] if nf == 1 else [0.80 - 0.35 * i / (nf - 1) for i in range(nf)])]
+        n_rest = max(1, n - len(focal_set))
+        levels = ([0.55] if n_rest == 1
+                  else [0.80 - 0.35 * i / (n_rest - 1) for i in range(n_rest)])
+        ramp = [mcolors.to_hex((v, v, v)) for v in levels]
         rest, k = [], 0
-        for l in labels:
-            rest.append(ramp[min(k, nf - 1)]); k += (l not in focal_set)
+        for lab in labels:
+            rest.append(ramp[min(k, n_rest - 1)])
+            k += lab not in focal_set
     else:  # 'muted'
-        def mute(c):
-            r, g, b = mcolors.to_rgb(c)
-            m = (r + g + b) / 3
-            return mcolors.to_hex((0.3 * r + 0.7 * m, 0.3 * g + 0.7 * m, 0.3 * b + 0.7 * m))
-        rest = [mute(c) for c in base_colors]
-    return [focal_color if l in focal_set else rest[i] for i, l in enumerate(labels)]
+        rest = [_desaturate(c) for c in base_colors]
+
+    return [focal_color if lab in focal_set else rest[i]
+            for i, lab in enumerate(labels)]
+
+
+# ------------------------------------------------------------- chart builders
+
+def _ci95_halfwidth(values):
+    """t-based 95% CI half-width of the mean — valid at small n, where the
+    z shortcut 1.96·s/√n is noticeably too narrow."""
+    import numpy as np
+    from scipy.stats import t
+    values = np.asarray(values)
+    n = values.size
+    if n < 2:
+        return 0.0
+    return t.ppf(0.975, n - 1) * np.std(values, ddof=1) / np.sqrt(n)
 
 
 def bar_with_points(ax, x, ymat, labels, colors, jitter=0.08, show_points=True,
                     errorbar=None, point_alpha=0.5, point_size=8):
-    """§6.1: bar = mean; optionally overlay raw points or draw an interval.
+    """Mean bars with either raw-point overlay or an error interval (not both).
 
-    colors   : per-label colour list (e.g. from focal_palette)
-    errorbar : None | 'sd' | 'ci95' — drawn only when show_points is False.
-               'ci95' is the t-distribution 95% CI of the mean
-               (half-width t_{0.975,n-1} · s/√n); correct at small n where the
-               z-approximation (1.96·s/√n) is markedly too narrow.
+    x        : bar positions
+    ymat     : per-category arrays of raw observations
+    labels   : tick labels, aligned with x
+    colors   : per-category colours (e.g. from focal_palette)
+    errorbar : None | 'sd' | 'ci95', drawn only when show_points is False;
+               'ci95' uses the t-distribution interval (see _ci95_halfwidth)
     """
     import numpy as np
     means = np.array([np.mean(y) for y in ymat], float)
     err = None
     if errorbar and not show_points:
-        if errorbar == "sd":
-            err = np.array([np.std(y, ddof=1) if np.asarray(y).size > 1 else 0 for y in ymat])
-        elif errorbar == "ci95":
-            from scipy.stats import t
-            def _hw(y):
-                n = np.asarray(y).size
-                return t.ppf(0.975, n - 1) * np.std(y, ddof=1) / np.sqrt(n) if n > 1 else 0
-            err = np.array([_hw(y) for y in ymat])
+        err = np.array([
+            (np.std(y, ddof=1) if np.asarray(y).size > 1 else 0.0)
+            if errorbar == "sd" else _ci95_halfwidth(y)
+            for y in ymat
+        ])
     ax.bar(x, means, color=colors, width=0.7, edgecolor="none",
            yerr=err, error_kw={"elinewidth": 0.8, "capsize": 0})
     if show_points:
@@ -206,85 +248,133 @@ def bar_with_points(ax, x, ymat, labels, colors, jitter=0.08, show_points=True,
             ys = np.asarray(ys)
             if ys.ndim and ys.size > 1:
                 jit = (np.random.rand(ys.size) - 0.5) * 2 * jitter
-                ax.scatter(np.full(ys.size, xi) + jit, ys, s=point_size, color="black",
-                           alpha=point_alpha, zorder=3, linewidths=0)
-    ax.set_xticks(x); ax.set_xticklabels(labels)
+                ax.scatter(np.full(ys.size, xi) + jit, ys, s=point_size,
+                           color="black", alpha=point_alpha, zorder=3, linewidths=0)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
     return ax
 
 
 def strip_with_median(ax, groups, values, colors=None, jitter=0.12):
-    """§6.1: jittered points + bold horizontal median tick per group."""
+    """Jittered raw observations per group, each with a bold median tick."""
     import numpy as np
     labs = list(groups)
-    if colors is None:
-        colors = ["#444444"] * len(labs)
+    colors = colors or ["#444444"] * len(labs)
     for i, (ys, c) in enumerate(zip(values, colors)):
         ys = np.asarray(ys)
         jit = (np.random.rand(ys.size) - 0.5) * 2 * jitter
-        ax.scatter(np.full(ys.size, i) + jit, ys, s=10, color=c, alpha=0.6, linewidths=0, zorder=2)
-        m = np.median(ys)
-        ax.plot([i - 0.22, i + 0.22], [m, m], color="black", lw=1.6, zorder=3)
-    ax.set_xticks(range(len(labs))); ax.set_xticklabels(labs)
+        ax.scatter(np.full(ys.size, i) + jit, ys, s=10, color=c,
+                   alpha=0.6, linewidths=0, zorder=2)
+        med = np.median(ys)
+        ax.plot([i - 0.22, i + 0.22], [med, med], color="black", lw=1.6, zorder=3)
+    ax.set_xticks(range(len(labs)))
+    ax.set_xticklabels(labs)
     return ax
 
 
-def goodness_arrow(ax, text="higher = better", loc="upper left", axis="y", fontsize=None):
-    """§3.6: small upright direction-of-goodness cue in the margin."""
+# ------------------------------------------------------- annotation helpers
+
+def panel_letter(ax, letter, dx=-0.18, dy=1.02, case="lower", fontsize=None):
+    """Bold panel letter outside the axes' top-left corner.
+
+    case follows the target venue ('lower' or 'upper'). Size defaults to one
+    step above the base of the font ladder — the single sanctioned exception
+    to the three-size rule.
+    """
     import matplotlib.pyplot as plt
     if fontsize is None:
-        fontsize = plt.rcParams["legend.fontsize"]  # secondary / annotation role
+        fontsize = plt.rcParams.get("font.size", 8) + 1
+    s = letter.lower() if case == "lower" else letter.upper()
+    ax.text(dx, dy, s, transform=ax.transAxes,
+            fontweight="bold", fontsize=fontsize, va="bottom", ha="left")
+
+
+def goodness_arrow(ax, text="higher = better", loc="upper left", axis="y", fontsize=None):
+    """Small upright direction-of-goodness cue placed in the axes margin."""
+    import matplotlib.pyplot as plt
+    if fontsize is None:
+        fontsize = plt.rcParams["legend.fontsize"]  # annotation role
     pos = {"upper left": (0.02, 0.98), "upper right": (0.98, 0.98),
            "lower left": (0.02, 0.02), "lower right": (0.98, 0.02)}[loc]
-    ha = "left" if "left" in loc else "right"
-    va = "top" if "upper" in loc else "bottom"
-    arrow = "↑ " if axis == "y" else "→ "
-    ax.text(pos[0], pos[1], arrow + text, transform=ax.transAxes,
-            fontsize=fontsize, color=META_GREY, ha=ha, va=va)
+    ax.text(*pos, ("↑ " if axis == "y" else "→ ") + text,
+            transform=ax.transAxes, fontsize=fontsize, color=META_GREY,
+            ha="left" if "left" in loc else "right",
+            va="top" if "upper" in loc else "bottom")
 
 
 def two_tier_label(name, meta):
-    """§5: two-line label string (name / metadata). Meta line styled separately by caller."""
+    """Two-line label (name over metadata); the caller styles the meta line."""
     return f"{name}\n{meta}"
 
 
 def end_of_line_labels(ax, xs, ys, labels, colors=None, dx=0.01, fontsize=None):
-    """§6.3 / §7.3: label each line series at its right end instead of a legend box."""
+    """Direct-label each line series just past its right endpoint (in place of
+    a legend box)."""
     import matplotlib.pyplot as plt
     if fontsize is None:
-        fontsize = plt.rcParams["font.size"]  # base / series-identity role
-    if colors is None:
-        colors = [None] * len(labels)
+        fontsize = plt.rcParams["font.size"]  # series-identity role
+    colors = colors or [None] * len(labels)
     span = ax.get_xlim()[1] - ax.get_xlim()[0]
     for x, y, lab, c in zip(xs, ys, labels, colors):
-        ax.text(x[-1] + dx * span, y[-1], lab, color=c, va="center", ha="left", fontsize=fontsize)
+        ax.text(x[-1] + dx * span, y[-1], lab, color=c,
+                va="center", ha="left", fontsize=fontsize)
+
+
+# ---------------------------------------------------------------- QA helpers
+
+def _saved_frame(fig, renderer, bbox_inches, pad_inches):
+    """Origin and size, in inches, of the frame savefig will actually write."""
+    import matplotlib as mpl
+    if bbox_inches == "tight":
+        if pad_inches is None:
+            pad_inches = mpl.rcParams.get("savefig.pad_inches", 0.1)
+        tb = fig.get_tightbbox(renderer).padded(pad_inches)
+        return tb.x0, tb.y0, tb.width, tb.height
+    if isinstance(bbox_inches, mpl.transforms.BboxBase):
+        return bbox_inches.x0, bbox_inches.y0, bbox_inches.width, bbox_inches.height
+    w, h = fig.get_size_inches()
+    return 0.0, 0.0, w, h
+
+
+def _lettered_axes(fig):
+    """Map axes → panel letter, detected as the bold single-character Text
+    that panel_letter() places. Falls back to index keys when nothing is
+    lettered (standalone plots, or composer sub-agents told not to letter),
+    so the QA crop loop always has something to iterate."""
+    import matplotlib.text
+    found = {}
+    for ax in fig.axes:
+        for t in ax.findobj(matplotlib.text.Text):
+            s = (t.get_text() or "").strip()
+            if len(s) == 1 and s.isalpha() and t.get_fontweight() in ("bold", 700):
+                found[ax] = s
+                break
+    return found or {ax: str(i) for i, ax in enumerate(fig.axes)}
 
 
 def panel_crops(fig, dpi=None, pad_px=6, bbox_inches=None, pad_inches=None):
-    """§9.2: pixel-space crop boxes for each lettered panel in the SAVED PNG.
+    """Per-panel pixel crop boxes for the figure as saved to PNG.
 
-    Returns ``{letter: (x0, y0, x1, y1)}`` in image-space pixels (origin
-    top-left, matching PIL's
-    ``Image.crop``). Panels are detected as bold single-character ``Text``
-    objects placed by :func:`panel_letter`; each panel's crop is its axes'
-    tightbbox mapped into the saved file's pixel space, padded by ``pad_px``.
-    For §3.4 composites (abutting subplots sharing an axis, letter on the
-    leftmost only) the crop unions in letterless ``sharex``/``sharey`` siblings
-    on the same grid row/col so the whole composite is covered. When no axes
-    carries a panel letter (standalone plot, or a figure-composer sub-agent),
-    falls back to one crop per axes keyed by index.
+    Returns ``{letter: (x0, y0, x1, y1)}`` with a top-left pixel origin, i.e.
+    directly usable as ``PIL.Image.crop(box)``. Each panel is its axes'
+    tight bbox mapped into the saved file's pixel grid and padded by
+    ``pad_px``. A composite panel — abutting subplots that share an axis with
+    the letter drawn only on the leftmost — is unioned with its letterless
+    ``sharex``/``sharey`` siblings on the same grid row or column (and only
+    those: ``subplots(sharey=True)`` joins the whole grid transitively, which
+    must not merge distinct panels).
 
-    ``bbox_inches`` mirrors ``Figure.savefig`` semantics: ``None`` means
-    *consult rcParams* (so under :func:`apply_figure_style` it resolves to
-    ``'tight'``); pass an explicit ``Bbox`` only if you saved with one. The
-    boxes are clamped to the saved image extent regardless.
+    ``bbox_inches`` mirrors ``Figure.savefig``: ``None`` consults rcParams
+    (under :func:`apply_figure_style` that resolves to ``'tight'``); pass an
+    explicit ``Bbox`` only if you saved with one. Boxes are clamped to the
+    saved image regardless.
 
-        >>> fig.savefig("fig.png")            # bbox_inches='tight' via rcParams
+        >>> fig.savefig("fig.png")
         >>> from PIL import Image
         >>> for letter, box in panel_crops(fig).items():
         ...     Image.open("fig.png").crop(box).save(f"fig-{letter}.png")
     """
     import matplotlib as mpl
-    import matplotlib.text
     if dpi is None:
         dpi = mpl.rcParams.get("savefig.dpi", fig.dpi)
         if dpi == "figure":
@@ -294,39 +384,13 @@ def panel_crops(fig, dpi=None, pad_px=6, bbox_inches=None, pad_inches=None):
         bbox_inches = mpl.rcParams.get("savefig.bbox")
     fig.canvas.draw()
     r = fig.canvas.get_renderer()
-    # Saved-image frame in *inches*: origin (ox_in, oy_in), size (W_in, H_in).
-    if bbox_inches == "tight":
-        if pad_inches is None:
-            pad_inches = mpl.rcParams.get("savefig.pad_inches", 0.1)
-        tb = fig.get_tightbbox(r).padded(pad_inches)
-        ox_in, oy_in = tb.x0, tb.y0
-        W_in, H_in = tb.width, tb.height
-    elif isinstance(bbox_inches, mpl.transforms.BboxBase):
-        ox_in, oy_in = bbox_inches.x0, bbox_inches.y0
-        W_in, H_in = bbox_inches.width, bbox_inches.height
-    else:
-        ox_in, oy_in = 0.0, 0.0
-        W_in, H_in = fig.get_size_inches()
-    W_px, H_px = int(round(W_in * dpi)), int(round(H_in * dpi))
-    lettered = {}
-    for ax in fig.axes:
-        for t in ax.findobj(matplotlib.text.Text):
-            s = (t.get_text() or "").strip()
-            if len(s) == 1 and s.isalpha() and t.get_fontweight() in ("bold", 700):
-                lettered[ax] = s
-                break
-    # No panel letters (standalone plot, or a figure-composer sub-agent which is
-    # told NOT to draw its own letter): fall back to one crop per axes so the
-    # §9.2 loop still inspects something instead of silently iterating over {}.
-    if not lettered:
-        lettered = {ax: str(i) for i, ax in enumerate(fig.axes)}
+    ox_in, oy_in, w_in, h_in = _saved_frame(fig, r, bbox_inches, pad_inches)
+    w_px, h_px = int(round(w_in * dpi)), int(round(h_in * dpi))
+
+    lettered = _lettered_axes(fig)
     out = {}
     for ax, letter in lettered.items():
-        bbs = [ax.get_tightbbox(r)]  # display px at fig.dpi
-        # §3.4: a composite panel (abutting subplots sharing an axis, letter on
-        # the leftmost only) spans its letterless sharex/sharey siblings in the
-        # same grid row/col — NOT the whole grid that `subplots(sharey=True)`
-        # (== 'all') joins transitively.
+        boxes = [ax.get_tightbbox(r)]  # display px at fig.dpi
         ss = ax.get_subplotspec()
         for sib in fig.axes:
             if sib is ax or sib in lettered:
@@ -336,26 +400,27 @@ def panel_crops(fig, dpi=None, pad_px=6, bbox_inches=None, pad_inches=None):
             same_col = ss is None or ssib is None or ss.colspan == ssib.colspan
             if ((ax.get_shared_y_axes().joined(ax, sib) and same_row)
                     or (ax.get_shared_x_axes().joined(ax, sib) and same_col)):
-                bbs.append(sib.get_tightbbox(r))
-        bb = mpl.transforms.Bbox.union(bbs)
-        # display-px → inches → saved-frame inches → saved px (y flipped)
-        bx0 = (bb.x0 / fig.dpi - ox_in) * dpi
-        bx1 = (bb.x1 / fig.dpi - ox_in) * dpi
-        by0 = H_px - (bb.y1 / fig.dpi - oy_in) * dpi
-        by1 = H_px - (bb.y0 / fig.dpi - oy_in) * dpi
+                boxes.append(sib.get_tightbbox(r))
+        bb = mpl.transforms.Bbox.union(boxes)
+        # display px → inches → saved-frame inches → saved px, y flipped to
+        # image convention
+        x0 = (bb.x0 / fig.dpi - ox_in) * dpi
+        x1 = (bb.x1 / fig.dpi - ox_in) * dpi
+        y0 = h_px - (bb.y1 / fig.dpi - oy_in) * dpi
+        y1 = h_px - (bb.y0 / fig.dpi - oy_in) * dpi
         out[letter] = (
-            max(int(bx0) - pad_px, 0),
-            max(int(by0) - pad_px, 0),
-            min(int(bx1) + pad_px, W_px),
-            min(int(by1) + pad_px, H_px),
+            max(int(x0) - pad_px, 0),
+            max(int(y0) - pad_px, 0),
+            min(int(x1) + pad_px, w_px),
+            min(int(y1) + pad_px, h_px),
         )
     return out
 
 
 if __name__ == "__main__":
-    # ponytail: smoke-check the CJK font wiring — the sans-serif chain must be
-    # populated (so CJK glyphs have somewhere to resolve) and the minus sign
-    # must not be a unicode box. Run: `python kernel.py`.
+    # Smoke-check the CJK font wiring: the sans-serif chain must be populated
+    # (so CJK glyphs have somewhere to resolve) and the minus sign must not
+    # be a unicode box. Run: `python kernel.py`.
     import matplotlib
     matplotlib.use("Agg")
     apply_figure_style()

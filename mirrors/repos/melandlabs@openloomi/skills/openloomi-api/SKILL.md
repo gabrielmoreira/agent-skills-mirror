@@ -257,6 +257,14 @@ Each integration platform has its own `/api/<platform>/*` module:
 | `GET /api/loop/card/[id]` | Card |
 | `POST /api/loop/dev/reset` / `GET /api/loop/dev/scene` | Dev tooling |
 
+### Agent Goal Module (read-only highlights)
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/agent-goals/active` | Active, paused, and blocked Goals across the authenticated owner's chats |
+| `GET /api/agent-goals?runtimeSessionId=...` | Goals for one Runtime Session |
+| `GET /api/agent-goals/[goalId]?runtimeSessionId=...` | Ordered steps and progress for one Goal |
+
 ### Other Modules (single-route or paired)
 
 | Module | Endpoints |

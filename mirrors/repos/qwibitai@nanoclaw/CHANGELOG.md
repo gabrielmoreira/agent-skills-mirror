@@ -4,6 +4,8 @@ All notable changes to NanoClaw will be documented in this file.
 
 ## [Unreleased]
 
+- **New NanoClaw installs now use OneCLI gateway 1.41.0.** Existing 1.36.0 gateways remain compatible because NanoClaw does not depend on any 1.41-only behavior. See [the OneCLI upgrade guide](docs/onecli-upgrades.md) to upgrade an existing gateway.
+
 ## [2.2.0] - 2026-08-13
 
 - **Stamped plugins update in place through `ncl groups create --template <ref>`.** When a group already carries the template's plugin, the same command becomes an in-place update instead of minting a duplicate agent: a dry run prints a plan of every plugin-owned surface (plugin files, skills, MCP servers, persona, context files, tasks), flagging locally customized files whose edits would be lost; `--yes` applies, `--id` picks among several stamped groups, `--new` deliberately stamps another agent. Agent state the plugin does not own (memory, `plugin-data/`, user-added MCP servers, task pause/resume state, wiring) is never touched. Plugin-stamped MCP servers now carry an ownership marker and refuse direct edits via `ncl groups config add-mcp-server` / `remove-mcp-server` or the agent's `add_mcp_server` tool: update the plugin and restamp instead.

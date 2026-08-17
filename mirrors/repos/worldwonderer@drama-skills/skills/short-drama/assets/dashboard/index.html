@@ -24,6 +24,34 @@
   </header>
 
   <main id="mainContent" tabindex="-1">
+    <section id="projectOverview" class="project-overview" aria-labelledby="projectTitle">
+      <div class="overview-lead">
+        <span class="eyebrow">PROJECT OVERVIEW</span>
+        <div class="overview-title-row">
+          <div>
+            <h2 id="projectTitle">正在打开项目…</h2>
+            <p>浏览全剧内容、分集进度与已有媒体。创作和生产仍由 skills 完成。</p>
+          </div>
+          <button id="openScreenplay" class="secondary" disabled>阅读当前剧本</button>
+        </div>
+        <div id="overviewStats" class="overview-stats" aria-live="polite"></div>
+      </div>
+      <div class="overview-flow">
+        <div class="section-heading">
+          <div><span class="eyebrow">EPISODES</span><h3>分集进度</h3></div>
+          <span id="episodeHint" class="section-note"></span>
+        </div>
+        <div id="episodeStrip" class="episode-strip" aria-label="按分集浏览"></div>
+      </div>
+      <div id="mediaShowcase" class="media-showcase" hidden>
+        <div class="section-heading">
+          <div><span class="eyebrow">MEDIA</span><h3>已有制作成果</h3></div>
+          <span class="section-note">仅展示 · 生产需在 skill 中明确确认</span>
+        </div>
+        <div id="mediaGallery" class="media-gallery"></div>
+      </div>
+    </section>
+
     <section class="creator-desk" aria-label="创作内容">
       <aside class="content-nav">
         <div class="content-nav-heading">
@@ -74,6 +102,9 @@
     <svg data-icon="storyboard" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 5.5h17v13h-17v-13Z"/><path d="M3.5 12h17"/><path d="M9.5 5.5v13"/><path d="M15.5 5.5v13"/></svg>
     <svg data-icon="other" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 6.5h6l2 2.5h9v11h-17v-13.5Z"/></svg>
     <svg data-icon="media" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17Z"/><path d="M10.2 8.5l6 3.5-6 3.5v-7Z"/></svg>
+    <svg data-icon="image" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 5.5h15v13h-15v-13Z"/><path d="M4.5 15.5l4.2-4.2 3.3 3.3 3-3 4 4"/><path d="M9 9.7a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z"/></svg>
+    <svg data-icon="video" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 5.5h15v13h-15v-13Z"/><path d="M10 9l5 3-5 3V9Z"/></svg>
+    <svg data-icon="audio" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 13v-2"/><path d="M9 16V8"/><path d="M13 19V5"/><path d="M17 16V8"/><path d="M21 13v-2"/></svg>
     <svg data-icon="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 6.5l5.5 5.5-5.5 5.5"/></svg>
   </template>
 

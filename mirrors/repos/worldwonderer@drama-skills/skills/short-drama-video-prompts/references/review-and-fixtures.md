@@ -10,9 +10,10 @@
 
 ## 1. 审查顺序
 
-先验证 refs、显式时长、camera interval、音频否定与 end equality，再由独立 reviewer 看 performability、action feasibility、camera motivation 和 semantic invention。Reviewer 写 finding，不改 motion、shot 或 screenplay。
+先验证 refs、显式时长、camera interval、音频否定与 end equality，再由审查者看 performability、action feasibility、camera motivation 和 semantic invention。Reviewer 写 finding，不改 motion、shot 或 screenplay。
 
-Finding 必须含 artifact/hash、引用片段、影响、required fix、owner、severity、status。禁止用 prompt 长度、动词数量、固定动作/秒或“AI 味”替代证据。
+Finding 必须含被引用快照的 artifact/hash（从该文件 `sources` 声明里读出）、引用片段、影响、
+required fix、owner、severity、status。禁止用 prompt 长度、动词数量、固定动作/秒或“AI 味”替代证据。
 
 ## 2. 证据量表
 
@@ -38,7 +39,7 @@ Finding 必须含 artifact/hash、引用片段、影响、required fix、owner�
 
 | code | classification | enforcer | 默认 severity | owner | 含义 |
 |---|---|---|---|---|---|
-| VID_SOURCE_REF_UNRESOLVED | structural_invariant | validator | error | video-prompts | shot/keyframe/dialogue/audio ref 未解析 |
+| VID_SOURCE_REF_UNRESOLVED | structural_invariant | validator | error | video-prompts | shot/keyframe/dialogue/audio ref 未解析：`src` 在本文件 `sources` 里没有对应条目、引用没有给出任何上游绑定，或解析出的记录/字段在目标快照里不存在 |
 | VID_EXPLICIT_TIMING_OVERFLOW | structural_invariant | validator | error | video-prompts | 显式时间终点/非重叠总量超 duration |
 | VID_EXPLICIT_TIMING_SHORTFALL | structural_invariant | validator | error | video-prompts | 裁剪到镜头长度内的分段并集短于 duration；开头留空、中间留空与结尾留空都算，余量会被无来源动作填满 |
 | VID_TIMING_MODE_INCONSISTENT | structural_invariant | validator | error | video-prompts | `timing_plan.mode` 写 `relative` 却有分段标 `explicit`，两种计时同时声明 |

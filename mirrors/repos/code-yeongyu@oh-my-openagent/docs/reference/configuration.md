@@ -138,7 +138,7 @@ Here's a practical starting `~/.omo/omo.jsonc`. OpenCode plugin settings live in
       "quick": { "model": "kimi-for-coding/kimi-for-coding-highspeed" },
 
       // unspecified-low - moderate tasks
-      "unspecified-low": { "model": "openai/gpt-5.6-luna", "reasoning": "xhigh" },
+      "unspecified-low": { "model": "xai/grok-4.6", "reasoning": "xhigh" },
 
       // unspecified-high - complex work
       "unspecified-high": { "model": "kimi-for-coding/kimi-k3", "reasoning": "max" },
@@ -352,7 +352,7 @@ Domain-specific model delegation used by the `task()` tool. When Sisyphus delega
 | `deep`               | `openai/gpt-5.6-sol` (medium)   | Autonomous problem-solving, thorough research  |
 | `artistry`           | `anthropic/claude-fable-5` (xhigh) | Creative/unconventional approaches             |
 | `quick`              | `kimi-for-coding/kimi-for-coding-highspeed` | Trivial tasks, typo fixes, single-file changes |
-| `unspecified-low`    | `openai/gpt-5.6-luna` (xhigh)   | General tasks, low effort                      |
+| `unspecified-low`    | `xai/grok-4.6` (xhigh)          | General tasks, low effort                      |
 | `unspecified-high`   | `kimi-for-coding/kimi-k3` (max)  | General tasks, high effort                     |
 | `writing`            | `kimi-for-coding/kimi-k3` (low)  | Documentation, prose, technical writing        |
 
@@ -456,7 +456,7 @@ This table mirrors the authoritative hardcoded category fallback chains, includi
 | **Deep** | `gpt-5.6-sol` | `openai\|quotio-openai\|github-copilot\|opencode\|vercel/gpt-5.6-sol (medium)` |
 | **Artistry** | `claude-fable-5` | `anthropic\|anthropic-api\|github-copilot\|opencode\|vercel/claude-fable-5 (xhigh)` → `kimi-for-coding\|moonshotai\|opencode-go\|opencode\|vercel/kimi-k3 (max)` → `anthropic\|anthropic-api\|github-copilot\|opencode\|vercel/claude-opus-5 (xhigh)` |
 | **Quick** | `kimi-for-coding-highspeed` | `kimi-for-coding/kimi-for-coding-highspeed` → `quotio-openai/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (off)` → `qwen-token-plan\|alibaba-token-plan\|bailian-coding-plan\|opencode-go\|vercel/qwen3.6-flash (low)` → `opencode-go\|vercel/minimax-m3 (max)` → `opencode-go\|vercel/minimax-m2.7 (max)` → `xai/grok-4.20-0309-non-reasoning` → `anthropic\|anthropic-api\|github-copilot\|vercel/claude-haiku-4-5 (off)` |
-| **Unspecified Low** | `gpt-5.6-terra` | `openai\|quotio-openai\|github-copilot\|opencode\|vercel/gpt-5.6-terra (high)` → `anthropic\|anthropic-api\|github-copilot\|opencode\|vercel/claude-sonnet-5 (low)` → `qwen-token-plan\|alibaba-token-plan\|qwen-token-plan-cn\|alibaba-token-plan-cn/qwen3.8-max-preview (max)` → `deepseek\|opencode-go\|vercel/deepseek-v4-pro (max)` → `xiaomi\|opencode-go\|vercel/mimo-v2.5-pro (max)` |
+| **Unspecified Low** | `grok-4.6` | `xai\|github-copilot\|opencode\|vercel/grok-4.6 (xhigh)` → `openai\|quotio-openai\|github-copilot\|opencode\|vercel/gpt-5.6-terra (high)` → `anthropic\|anthropic-api\|github-copilot\|opencode\|vercel/claude-sonnet-5 (low)` → `qwen-token-plan\|alibaba-token-plan\|qwen-token-plan-cn\|alibaba-token-plan-cn/qwen3.8-max-preview (max)` → `deepseek\|opencode-go\|vercel/deepseek-v4-pro (max)` → `xiaomi\|opencode-go\|vercel/mimo-v2.5-pro (max)` |
 | **Unspecified High** | `kimi-k3` | `kimi-for-coding\|moonshotai\|opencode-go\|opencode\|vercel/kimi-k3 (max)` → `anthropic\|anthropic-api\|github-copilot\|opencode\|vercel/claude-opus-5 (xhigh)` → `openai\|quotio-openai\|github-copilot\|opencode\|vercel/gpt-5.6-sol (high)` |
 | **Writing** | `kimi-k3` | `kimi-for-coding\|moonshotai\|opencode-go\|opencode\|vercel/kimi-k3 (low)` → `anthropic\|anthropic-api\|github-copilot\|opencode\|vercel/claude-opus-5 (low)` → `google\|github-copilot\|opencode\|vercel/gemini-3.6-flash` |
 

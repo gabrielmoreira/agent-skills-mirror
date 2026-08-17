@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Check the two storyboard invariants that are pure bookkeeping.
+"""Check the storyboard invariants that are pure bookkeeping.
 
-`SHT-16` is arithmetic over shot durations and `SHT-17` is a structural claim
-about which boundary a keyframe freezes. Neither needs a reading of the drama,
-so leaving both to a reviewer spends judgment on work a script does exactly.
-Everything requiring judgment stays in the reference documents.
+`SHT-16` is arithmetic over shot durations, `SHT-17` is a structural claim about
+which boundary a keyframe freezes, and a boundary entry that only points back at
+an earlier shot states no fact at all. None of these needs a reading of the
+drama, so leaving them to a reviewer spends judgment on work a script does
+exactly. Everything requiring judgment stays in the reference documents.
 
 The script reads accepted creator files and writes nothing.
 """
@@ -16,7 +17,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 
 # Creators run these scripts on whatever interpreter their machine provides, so
@@ -29,9 +30,113 @@ if sys.version_info < MINIMUM_PYTHON:
         )
     )
 
+# ---------------------------------------------------------------------------
+# REFERENCE RESOLVER -- reference implementation.
+#
+# Each skill checker carries its own copy of this block. The suite has no shared
+# library on purpose: a skill must stay runnable after copying only its own
+# directory, so duplicating these few lines across skills is the correct shape.
+# Copy the block verbatim; do not import it.
+# ---------------------------------------------------------------------------
+
+SOURCES_RECORD_TYPE = "sources"
+SOURCES_SCHEMA_VERSION = "1.0.0"
+
+
+class ResolvedRef(NamedTuple):
+    """An upstream reference with its snapshot resolved, whichever form it used."""
+
+    owner: str
+    artifact: str
+    hash: str
+    record_id: str | None
+    field: str | None
+    authority: str | None
+
+
+class RefFinding(NamedTuple):
+    """A structural defect in a reference object."""
+
+    code: str
+    location: str
+    detail: str
+
+
+def load_sources(document: Any) -> dict[str, dict[str, Any]]:
+    """Return the ``sources`` declaration of a parsed file, or ``{}`` if absent.
+
+    Accepts a parsed ``.json`` document (a dict) or the parsed record list of a
+    ``.jsonl`` file, whose declaration lives on the first record.
+    """
+    if isinstance(document, list):
+        document = document[0] if document else None
+    if not isinstance(document, dict):
+        return {}
+    declared = document.get("sources")
+    if not isinstance(declared, dict):
+        return {}
+    return {key: value for key, value in declared.items() if isinstance(value, dict)}
+
+
+def resolve_ref(
+    ref: Any, sources: dict[str, dict[str, Any]], location: str
+) -> tuple[ResolvedRef | None, RefFinding | None]:
+    """Resolve a reference object written in either the compact or expanded form."""
+    if not isinstance(ref, dict):
+        return None, RefFinding("REF_IS_NOT_AN_OBJECT", location, f"got {type(ref).__name__}")
+    src = ref.get("src")
+    if isinstance(src, str):
+        entry = sources.get(src)
+        if entry is None:
+            return None, RefFinding(
+                "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
+            )
+        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
+        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+            return None, RefFinding(
+                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact/hash"
+            )
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
+        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    else:
+        return None, RefFinding(
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+        )
+    optional = {
+        key: ref[key] for key in ("record_id", "field", "authority") if isinstance(ref.get(key), str)
+    }
+    return (
+        ResolvedRef(
+            owner,
+            artifact,
+            digest,
+            optional.get("record_id"),
+            optional.get("field"),
+            optional.get("authority"),
+        ),
+        None,
+    )
+
+
+# ---------------------------------------------------------------------------
+# END REFERENCE RESOLVER
+# ---------------------------------------------------------------------------
+
 SCHEMA_VERSION = "1.0.0"
 BOUNDARY_FIELD = {"start": "/start_boundary", "end": "/end_boundary"}
 PLACEHOLDER = re.compile(r"^<.*>$")
+
+# A boundary entry is read on its own by whoever owns the next stage, so an
+# entry whose whole content points back at another shot leaves that field empty
+# in practice. Only a wholly referential entry is a defect: "站在柜台东侧（与上一
+# 镜相同）" still says where the character is.
+BACK_REFERENCE = re.compile(
+    r"^(同上一?镜?|同前一?镜?|同上镜|与上一?镜相同|照旧"
+    r"|(位置|朝向|目光|手部|状态|持物)?(保持)?不变|无变化"
+    r"|same as (above|before|previous( shot)?)|unchanged|no change)$",
+    re.IGNORECASE,
+)
+BACK_REFERENCE_TRIM = " \t　。，、；：（）()【】〔〕「」『』\"'·-—~…!！?？"
 
 
 class CheckError(ValueError):
@@ -45,7 +150,14 @@ def _load_json(path: Path) -> Any:
         raise CheckError(f"unreadable JSON: {path}") from error
 
 
-def _load_jsonl(path: Path) -> list[dict[str, Any]]:
+def _load_jsonl(path: Path) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
+    """Return the file's ``sources`` declaration and its data records.
+
+    A leading ``{"record_type": "sources"}`` header declares the upstream
+    snapshots of the whole file; it is a declaration, not a data record, so it
+    is kept out of the returned list.
+    """
+
     records: list[dict[str, Any]] = []
     try:
         text = path.read_text(encoding="utf-8")
@@ -61,7 +173,10 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
         if not isinstance(record, dict):
             raise CheckError(f"JSONL needs one object per line: {path.name}:{number}")
         records.append(record)
-    return records
+    sources = load_sources(records)
+    if records and records[0].get("record_type") == SOURCES_RECORD_TYPE:
+        records = records[1:]
+    return sources, records
 
 
 def _is_template(value: Any) -> bool:
@@ -81,18 +196,35 @@ def _duration_of(shot: dict[str, Any]) -> float | None:
     return float(value)
 
 
-def _covered_shot_ids(coverage: dict[str, Any]) -> list[str]:
+def _ref_finding(finding: RefFinding, **detail: Any) -> dict[str, Any]:
+    return _finding(finding.code, finding.detail, location=finding.location, **detail)
+
+
+def _covered_shot_ids(coverage: dict[str, Any]) -> tuple[list[str], list[dict[str, Any]]]:
+    """Return the shot IDs the coverage claims, and any unusable reference."""
+
     ids: list[str] = []
+    findings: list[dict[str, Any]] = []
+    sources = load_sources(coverage)
     dispositions = coverage.get("dispositions")
     if not isinstance(dispositions, list):
-        return ids
-    for disposition in dispositions:
+        return ids, findings
+    for index, disposition in enumerate(dispositions):
         if not isinstance(disposition, dict):
             continue
-        for ref in disposition.get("shot_refs") or []:
-            if isinstance(ref, dict) and isinstance(ref.get("record_id"), str):
-                ids.append(ref["record_id"])
-    return ids
+        refs = disposition.get("shot_refs")
+        if not isinstance(refs, list):
+            continue
+        for position, ref in enumerate(refs):
+            resolved, finding = resolve_ref(
+                ref, sources, f"/dispositions/{index}/shot_refs/{position}"
+            )
+            if finding is not None:
+                findings.append(_ref_finding(finding))
+                continue
+            if resolved is not None and resolved.record_id is not None:
+                ids.append(resolved.record_id)
+    return ids, findings
 
 
 def check_episode_duration(
@@ -102,10 +234,11 @@ def check_episode_duration(
 ) -> list[dict[str, Any]]:
     """SHT-16: the total is arithmetic, and no shot may leave it silently."""
 
-    findings: list[dict[str, Any]] = []
+    covered_ids, findings = _covered_shot_ids(coverage)
     duration = coverage.get("episode_duration")
     if not isinstance(duration, dict):
-        return [_finding("SHT16_RECORD_MISSING", "coverage carries no episode_duration")]
+        findings.append(_finding("SHT16_RECORD_MISSING", "coverage carries no episode_duration"))
+        return findings
 
     by_id = {
         shot["shot_id"]: shot
@@ -115,12 +248,13 @@ def check_episode_duration(
     counted = duration.get("counted_shot_ids")
     unresolved = duration.get("unresolved_durations")
     if not isinstance(counted, list) or not isinstance(unresolved, list):
-        return [
+        findings.append(
             _finding(
                 "SHT16_RECORD_INCOMPLETE",
                 "episode_duration needs counted_shot_ids and unresolved_durations",
             )
-        ]
+        )
+        return findings
     counted_ids = [value for value in counted if isinstance(value, str)]
     unresolved_ids = [value for value in unresolved if isinstance(value, str)]
 
@@ -135,7 +269,7 @@ def check_episode_duration(
         )
 
     accounted = set(counted_ids) | set(unresolved_ids)
-    missing = sorted(set(_covered_shot_ids(coverage)) - accounted)
+    missing = sorted(set(covered_ids) - accounted)
     if missing:
         findings.append(
             _finding(
@@ -238,9 +372,11 @@ def check_episode_duration(
 def check_keyframe_boundaries(
     keyframes: list[dict[str, Any]],
     shots: list[dict[str, Any]],
+    sources: dict[str, dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """SHT-17: say which boundary is frozen, and bind that shot's field."""
 
+    declared = sources or {}
     findings: list[dict[str, Any]] = []
     shot_ids = {
         shot["shot_id"] for shot in shots if isinstance(shot.get("shot_id"), str)
@@ -273,18 +409,23 @@ def check_keyframe_boundaries(
                 )
             )
             continue
-        if ref.get("field") != BOUNDARY_FIELD[role]:
+        resolved, ref_finding = resolve_ref(ref, declared, f"{keyframe_id}/boundary_ref")
+        if ref_finding is not None or resolved is None:
+            if ref_finding is not None:
+                findings.append(_ref_finding(ref_finding, keyframe_id=keyframe_id))
+            continue
+        if resolved.field != BOUNDARY_FIELD[role]:
             findings.append(
                 _finding(
                     "SHT17_BOUNDARY_REF_DISAGREES_WITH_ROLE",
                     "boundary_ref.field does not match the declared role",
                     keyframe_id=keyframe_id,
                     role=role,
-                    field=ref.get("field"),
+                    field=resolved.field,
                 )
             )
-        shot_id = ref.get("record_id")
-        if not isinstance(shot_id, str) or shot_id not in shot_ids:
+        shot_id = resolved.record_id
+        if shot_id is None or shot_id not in shot_ids:
             findings.append(
                 _finding(
                     "SHT17_BOUNDARY_REF_UNRESOLVABLE",
@@ -307,6 +448,41 @@ def check_keyframe_boundaries(
             )
             continue
         seen[(shot_id, role)] = keyframe_id
+    return findings
+
+
+def check_boundary_entries(shots: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """SHT-05: every boundary entry states a fact readable without the last shot."""
+
+    findings: list[dict[str, Any]] = []
+    for shot in shots:
+        shot_id = shot.get("shot_id")
+        for boundary in ("start_boundary", "end_boundary"):
+            fields = shot.get(boundary)
+            if isinstance(fields, str):
+                # A boundary written as one string carries the same defect. The
+                # empty key keeps the reported pointer at /<boundary>/0.
+                fields = {"": [fields]}
+            if not isinstance(fields, dict):
+                continue
+            for name, entries in sorted(fields.items()):
+                if isinstance(entries, str):
+                    entries = [entries]
+                if not isinstance(entries, list):
+                    continue
+                for index, entry in enumerate(entries):
+                    if not isinstance(entry, str) or _is_template(entry):
+                        continue
+                    if BACK_REFERENCE.match(entry.strip(BACK_REFERENCE_TRIM)):
+                        findings.append(
+                            _finding(
+                                "SHT05_BOUNDARY_ENTRY_IS_A_BACK_REFERENCE",
+                                "a boundary entry points back instead of stating the fact",
+                                shot_id=shot_id,
+                                location=f"/{boundary}/{name}/{index}" if name else f"/{boundary}/{index}",
+                                entry=entry,
+                            )
+                        )
     return findings
 
 
@@ -333,16 +509,19 @@ def check(
     coverage = _load_json(coverage_path)
     if not isinstance(coverage, dict):
         raise CheckError("coverage must be a JSON object")
-    shots = _load_jsonl(shots_path)
+    _, shots = _load_jsonl(shots_path)
     findings = check_episode_duration(coverage, shots, _declared_target(project_path))
+    findings.extend(check_boundary_entries(shots))
+    keyframes: list[dict[str, Any]] | None = None
     if keyframes_path is not None:
-        findings.extend(check_keyframe_boundaries(_load_jsonl(keyframes_path), shots))
+        keyframe_sources, keyframes = _load_jsonl(keyframes_path)
+        findings.extend(check_keyframe_boundaries(keyframes, shots, keyframe_sources))
     return {
         "schema_version": SCHEMA_VERSION,
         "episode_id": coverage.get("episode_id"),
         "checked": {
             "shots": len(shots),
-            "keyframes": None if keyframes_path is None else len(_load_jsonl(keyframes_path)),
+            "keyframes": None if keyframes is None else len(keyframes),
         },
         "findings": findings,
         "status": "pass" if not findings else "fail",

@@ -17,7 +17,9 @@
 ```yaml
 scene_handoff_capsule:
   authority: derived
-  screenplay_ref: {owner: short-drama-write, artifact: 剧集/<EP>/screenplay.md, hash: <sha256>}
+  sources:
+    screenplay: {owner: short-drama-write, artifact: 剧集/<EP>/screenplay.md, hash: <sha256>}
+  screenplay_ref: {src: screenplay}
   current_scene:
     scene_id: EPxxx-SCxxx
     agenda: 当前人物正在争取什么
@@ -40,10 +42,10 @@ accepted。
 
 ## 恢复步骤
 
-1. 先核对胶囊的 `screenplay_ref.hash` 与磁盘文件；不一致时丢弃胶囊，重新从当前剧本恢复。
+1. 先核对 `sources.screenplay.hash` 与磁盘文件；不一致时丢弃胶囊，重新从当前剧本恢复。
 2. 用 `tail_locator` 读最后一个块及其相邻上下文，确认语气、动作和状态确实对得上。
 3. 读取下一场直接依赖的单集契约、setup/payoff 与连续性引用；不预加载无关 reference。
 4. 写下一场前重新回答 agenda、opposition、turn、exit_state，不能把胶囊里的候选当既定剧情。
-5. 场景发布后重建或删除胶囊；不得手改旧 hash 让它“看起来仍有效”。
+5. 场景发布后重建或删除胶囊：重新从当前剧本派生 `sources` 与 `tail_locator`。
 
-胶囊帮助恢复注意力，不替代创作者接受、稳定索引或独立审查。
+胶囊帮助恢复注意力，不替代创作者接受、稳定索引或审查。

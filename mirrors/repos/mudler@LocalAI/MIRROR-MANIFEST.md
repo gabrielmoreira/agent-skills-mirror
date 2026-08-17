@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 19 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 19 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 19 |
+| Followed pats | 2 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 1 followed patterns, 19 file
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
+- `.impeccable.md`
 
 ## File Index
 
@@ -77,7 +78,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
 | 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 19 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | → | [`.impeccable.md`](.impeccable.md) |
+| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

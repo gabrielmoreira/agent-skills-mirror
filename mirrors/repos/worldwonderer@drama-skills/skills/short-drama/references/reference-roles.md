@@ -81,16 +81,22 @@
 
 ### 合成示例
 
-一张剧照要用来定"谁站在画面哪一侧、占多大"，但图里那个人不是本镜的角色：
+一张剧照要用来定"谁站在画面哪一侧、占多大"，但图里那个人不是本镜的角色。
+
+这条绑定所在的文件在第一行声明它引用到的上游快照：
+
+```json
+{"record_type":"sources","schema_version":"1.0.0","sources":{"keyframes":{"owner":"short-drama-storyboard","artifact":"剧集/EP001/storyboard/keyframes.jsonl","hash":"<sha256>"}}}
+```
+
+之后每条绑定只写快照键、记录 ID 和这一条自己的 `authority`：
 
 ```json
 {
   "slot_id": "REF-COMPOSITION-01",
   "order": 1,
   "artifact_ref": {
-    "owner": "short-drama-storyboard",
-    "artifact": "剧集/EP001/storyboard/keyframes.jsonl",
-    "hash": "<sha256>",
+    "src": "keyframes",
     "record_id": "KEY-012",
     "authority": "candidate"
   },

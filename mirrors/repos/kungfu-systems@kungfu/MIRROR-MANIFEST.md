@@ -56,7 +56,7 @@ Mirror of `kungfu-systems/kungfu` — 26 default patterns, 45 followed patterns,
 - `docs/evolution/README.md`
 - `CONTRIBUTING.md`
 - `docs/development/version-release-design.md`
-- `docs/development/publication-admission.md`
+- `docs/development/publication-closure.md`
 - `docs/MAP.md`
 - `SECURITY.md`
 - `PROVIDER_COMPLIANCE.md`
@@ -303,7 +303,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 198 | → | [`docs/development/alpha-attention-operations.md`](docs/development/alpha-attention-operations.md) |
 | 199 | → | [`docs/development/cpp-toolchain.md`](docs/development/cpp-toolchain.md) |
 | 200 | → | [`docs/development/document-metadata.md`](docs/development/document-metadata.md) |
-| 201 | → | [`docs/development/publication-admission.md`](docs/development/publication-admission.md) |
+| 201 | → | [`docs/development/publication-closure.md`](docs/development/publication-closure.md) |
 | 202 | → | [`docs/development/rust-adoption.md`](docs/development/rust-adoption.md) |
 | 203 | → | [`docs/development/version-release-design.md`](docs/development/version-release-design.md) |
 | 204 | → | [`docs/evolution/candidates.md`](docs/evolution/candidates.md) |

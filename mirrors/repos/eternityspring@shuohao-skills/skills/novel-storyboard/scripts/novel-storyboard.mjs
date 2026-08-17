@@ -892,8 +892,9 @@ export function renderMarkdown(board, ctx = {}) {
 /* ------------------------------------------------------------------ */
 /*
  * 与另外四份报告同一套视觉语言。设计约定见 references/report-style.md。
- * 分镜图从 ./images/<段号>-f<切序>.png 找（相对 render 时的工作目录），
- * 有就内嵌显示 + 点击放大，没有就显示占位——不猜、不骗。
+ * 分镜图从工作目录下 <段号>/f<切序>.png 找（imageExists 由 CLI 注入，
+ * render 时检查相对工作目录的路径），有就内嵌显示 + 点击放大，
+ * 没有就显示占位——不猜、不骗。
  */
 
 function embedDoc(doc) {

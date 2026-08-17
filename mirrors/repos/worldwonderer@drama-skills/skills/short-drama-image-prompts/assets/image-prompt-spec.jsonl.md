@@ -1,8 +1,52 @@
 # `image-prompt-specs.jsonl` 填写模板
 
-每行一个候选规格对象，用于接受前预览；示例值不是默认答案。删除不适用字段，不要添加
+首行是 `sources` 声明记录，之后每行一个候选规格对象，用于接受前预览；示例值不是默认答案。删除不适用字段，不要添加
 媒体任务、供应商或接口字段。上游引用默认绑定准确的已接受快照；只有与本对象同次发布的目标才写
 `authority:candidate`。对象接受状态由事务生命周期记录，不能靠改状态字样伪造。
+
+## 首行：`sources` 声明
+
+本文件用到的每个上游快照在这里声明一次，键取产物文件名（`characters`、`looks`、`props`），
+在本文件内唯一且稳定：
+
+```json
+{
+  "record_type": "sources",
+  "schema_version": "1.0.0",
+  "sources": {
+    "<identity-owner>": {
+      "owner": "short-drama-assets",
+      "artifact": "设定集/<identity-owner-file>.jsonl",
+      "hash": "<sha256>"
+    },
+    "<variant-owner>": {
+      "owner": "short-drama-assets",
+      "artifact": "设定集/<variant-owner-file>.jsonl",
+      "hash": "<sha256>"
+    },
+    "props": {
+      "owner": "short-drama-assets",
+      "artifact": "设定集/props.jsonl",
+      "hash": "<sha256>"
+    },
+    "<reference>": {
+      "owner": "<reference-owner>",
+      "artifact": "<project-relative-reference-record>",
+      "hash": "<sha256>"
+    },
+    "<edit-target>": {
+      "owner": "short-drama-image-prompts",
+      "artifact": "<精确目标>",
+      "hash": "<sha256>"
+    }
+  }
+}
+```
+
+引用用 `src` 指向声明键，再写本条引用自己的 `record_id` 和 `field`：
+`{"src": "<identity-owner>", "record_id": "CHAR-<id>"}`。
+
+## 规格行
 
 ```json
 {
@@ -11,26 +55,20 @@
   "purpose": "character_sheet | location_plate | prop_plate | look_state_variant | edit_delta",
   "asset_binding": {
     "identity_ref": {
-      "owner": "short-drama-assets",
-      "artifact": "设定集/<identity-owner-file>.jsonl",
-      "hash": "<sha256>",
+      "src": "<identity-owner>",
       "record_id": "CHAR/LOC/PROP-<id>"
     },
     "variant_ref": {
-      "owner": "short-drama-assets",
-      "artifact": "设定集/<variant-owner-file>.jsonl",
-      "hash": "<sha256>",
+      "src": "<variant-owner>",
       "record_id": "LOOK/VIEW/PSTATE-<id>"
     }
   },
   "source_refs": [
     {
-      "artifact": "设定集/<owner-file>.jsonl",
-      "hash": "<sha256>",
+      "src": "<identity-owner>",
+      "record_id": "<record>",
       "field": "/<field>",
-      "role": "identity_anchor | variant_delta | geography | scale | text_policy",
-      "owner": "short-drama-assets",
-      "record_id": "<record>"
+      "role": "identity_anchor | variant_delta | geography | scale | text_policy"
     }
   ],
   "reference_bindings": [
@@ -38,9 +76,7 @@
       "slot_id": "REF-<stable-slot>",
       "order": 1,
       "artifact_ref": {
-        "owner": "short-drama-assets",
-        "artifact": "设定集/<owner-file>.jsonl",
-        "hash": "<sha256>",
+        "src": "<reference>",
         "record_id": "<accepted-reference-record>"
       },
       "role": "composition",
@@ -99,11 +135,9 @@
   },
   "text_handling": {
     "source_policy_ref": {
-      "artifact": "设定集/props.jsonl",
-      "hash": "<sha256>",
-      "field": "/text_policy",
-      "owner": "short-drama-assets",
-      "record_id": "PROP-<id>"
+      "src": "props",
+      "record_id": "PROP-<id>",
+      "field": "/text_policy"
     },
     "source_mode": "exact_readable | graphic_only | no_readable_text | pending_creator_text",
     "render_treatment": {
@@ -129,9 +163,7 @@
     ],
     "continuity_impact": "<影响的 accepted variant/binding 或 none>",
     "target_ref": {
-      "owner": "short-drama-image-prompts",
-      "artifact": "<精确目标>",
-      "hash": "<sha256>",
+      "src": "<edit-target>",
       "record_id": "IMG-<target-id>",
       "field": "/generic_prompt"
     },
@@ -157,7 +189,7 @@
 ```
 
 
-复制后按 `purpose` 删除不适用字段和悬空引用。Look Development 不使用本超集模板，改读
+复制后按 `purpose` 删除不适用字段和悬空引用，`sources` 只保留仍被引用的键。Look Development 不使用本超集模板，改读
 [`lookdev-frame-spec.jsonl.md`](lookdev-frame-spec.jsonl.md)，避免普通人物、地点和道具规格加载
 风格帧专属字段。
 每条参考只声明一个用途，多参考的 `slot_id` 稳定且 `order` 显式。类型取舍、文字政策与

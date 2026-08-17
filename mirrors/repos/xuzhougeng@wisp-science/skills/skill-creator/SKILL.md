@@ -14,7 +14,7 @@ Agent file tools.
 
 ```text
 <skill-name>/
-├── SKILL.md
+├── SKILL.md               # frontmatter trigger + procedure body
 ├── kernel.py              # optional pure helper definitions
 ├── scripts/               # optional standalone deterministic programs
 ├── references/            # optional detailed domain material
@@ -77,18 +77,17 @@ Keep top-level code definition-only:
 Use `scripts/` instead when a helper is a standalone CLI, exceeds roughly one
 hundred lines, needs argument parsing, or should run through `run_in_context`.
 
-## Evaluation resources
+## Bundled scripts
 
-Use the bundled scripts only when their extra rigor is useful:
+- `scripts/quick_validate.py <skill-dir>` — checks frontmatter shape, kebab-case
+  naming, folder/name match, and length limits; prints every problem at once.
+- `scripts/package_skill.py <skill-dir> [out-dir]` — validates, then zips the
+  folder into `<name>.skill` for user-wide installation, skipping build junk
+  and a root-level `evals/` folder.
 
-- `scripts/run_eval.py` for test prompts;
-- `scripts/aggregate_benchmark.py` for repeated result aggregation;
-- `scripts/generate_report.py` and `eval-viewer/` for human review;
-- `scripts/improve_description.py` for trigger-description experiments;
-- `scripts/package_skill.py` to package a validated skill folder.
-
-Inspect each script's CLI help before running it. Keep evaluation artifacts out
-of the skill folder unless they are intentional reusable resources.
+To evaluate a skill, run it on realistic tasks yourself (step 8 above) and keep
+evaluation artifacts out of the skill folder unless they are intentional
+reusable resources.
 
 ## Wisp boundaries
 

@@ -8,12 +8,21 @@ license: MIT
 
 把单集意图写成可表演、可追踪且会改变故事状态的场景。`screenplay.md` 是唯一可编辑剧本源；卡片和节拍帮助推理，不是另一份正文。
 
-## 先定位套件
+## Quick Start
 
-从本技能目录读取 `suite-ref.json`，按其中相对 `core_manifest` 定位唯一同级主技能与
-套件清单；确认声明的 core、contract、recipe 和清单 hash 一致后再读写项目。
-随后执行 [阶段契约](references/stage-contract.md) 的运行时预检：先恢复事务、读取状态，再进入本阶段。
-该文件同时给出本阶段的所有权边界与规则表；本技能不读取其他技能的文件。
+离线验证剧本分块索引与录音表逐字投影：
+
+```bash
+python3 {技能目录}/scripts/selftest.py
+python3 {技能目录}/scripts/screenplay_index.py <screenplay.md> --output <screenplay-index.jsonl>
+```
+
+## 开始前
+
+本技能可独立安装和执行。先读取用户明确提供的单集材料与本任务直接输入；若当前目录是
+`short-drama` 项目且项目工具可用，可以读取 `status` 并使用其发布生命周期，但缺少 core
+或任何其他技能都不是写作工作的阻断条件。[阶段契约](references/stage-contract.md) 给出
+本阶段边界与规则表，无需读取其他技能的文件。
 
 ## 先判断入口
 
@@ -21,6 +30,17 @@ license: MIT
 2. **只有想法或口述大纲**：在本技能内制作最小单集卡与因果节拍；只有系列方向本身未定时才转 `$short-drama-develop`。
 3. **已有规范剧本**：保留作者语言，做定点修订；先说明改动意图和影响。
 4. **已有非规范文本，目的是进入后续制作**：保存原始字节；只提议场景标题、对白/动作分块、生产标签与索引所需的最小规范化。展示语义新增、删除、改写、未映射段落与不确定处，得到创作者接受后才能发布。不得补造故事引擎、节拍或新剧情。
+
+## 每轮的工作单元
+
+一轮写一个明确的场景或场景组。“把整集写完”也按场景边界拆成若干轮，每轮：
+
+1. 只读这个单元的直接输入，写或改它的正文，跑本地结构检查；
+2. 落盘这个单元，其余范围保持原样；
+3. 报告已覆盖范围、剩余范围、未决决定和下一个值得做的单元；
+4. 交还控制权，等创作者的下一次请求。
+
+资产拆解、生产和审查各自是独立的工作单元，由创作者明确请求时开始。
 
 ## 每次执行
 
@@ -31,8 +51,9 @@ license: MIT
 ### 2. 确定单集契约的唯一 owner
 
 - **有 accepted `项目开发/episode-map.jsonl` 记录**：复制
-  [episode-card.json](assets/episode-card.json)。它只保存上游 artifact/hash/record
-  pointer 和写作执行选择；不复制、不改写 incoming/objective/turn/payoff/handoff。
+  [episode-card.json](assets/episode-card.json)。它在 `sources` 里声明上游快照，用
+  `{"src": "episode-map", "record_id": "EP001"}` 指向那条记录，其余只保存写作执行选择；
+  不复制、不改写 incoming/objective/turn/payoff/handoff。
 - **没有 development map 的 script-first 项目**：复制
   [episode-card-standalone.json](assets/episode-card-standalone.json)，以 `write_standalone`
   模式拥有最小单集契约。
@@ -63,7 +84,14 @@ diff，让创作者明确选择 authority 迁移，将 standalone 契约标记 s
 关系字段遵守同一约定：同一 `beats.jsonl` 内的前因、铺垫与兑现只写稳定
 `because_of_ids`/`setup_ids`/`payoff_ids`，避免自引用文件哈希；来自 episode map、
 前集或其他 owner artifact 的关系写 canonical `because_of_refs`/`setup_refs`/
-`payoff_refs`。`*_refs` 不能放裸 ID、路径字符串或复述文本。
+`payoff_refs`。`*_refs` 只放引用对象。
+
+引用这样写：文件首行的 `{"record_type": "sources", "schema_version": "1.0.0",
+"sources": {...}}` 记录把每个上游快照声明一次，`sources` 的每个短键映射到
+`{"owner": ..., "artifact": ..., "hash": ...}`；每条引用写
+`{"src": "<sources 键>", "record_id": "<记录 ID>"}`，需要时再加 `field` 指向该记录内
+的 JSON pointer。指向整个 artifact 时只写 `{"src": "<sources 键>"}`。同一份文件里
+同一个键始终指同一个快照。`.json` 文件把同样的 `sources` 对象写在顶层。
 
 ### 4. 先定场景功能，再写正文
 
@@ -117,17 +145,23 @@ source issue 的 refs 都保持 candidate；accepted 剧本发布后再以默认
 
 修订时同时传 `--previous-index` 和 `--previous-source`。完全相同且唯一的邻近块复用 stable ID；拆分、合并或重复块歧义会写入 `mapping_review_request`，必须显式重映射。索引器绝不改写 `screenplay.md`。
 
+正文落定后做一次量级粗测：按项目已接受的语速/字数比把正文字数折成秒数（项目没有这个
+比值就向创作者要一个量级），与本集目标时长比一次。差出两倍以上就在报告里点名，由创作者
+决定改集长还是拆集；两倍以内不必提。
+
 ### 5b. 需要配音本时（可选）
 
 创作者要为录音准备台词表时，复制
 [voice-record-sheet.jsonl.md](assets/voice-record-sheet.jsonl.md)。它是**剧本的投影，
-不是第二份台词权威**：每行逐字等于对应剧本块并绑定其 `hash`，要改词就改剧本再重新投影。
+不是第二份台词权威**：首行声明所引 `screenplay-index.jsonl` 快照，其后每行用
+`source_ref` 绑定一个剧本块并逐字等于该块，要改词就改剧本再重新投影。
 
 录音顺序几乎从不是剧情顺序（通常按人物集中录），配音者失去的正是上下文，所以每行要补
 对谁说、接谁的话、此刻他知道什么、这一句要达成什么。写策略而不是情绪词——"愤怒"不可
 执行，"质问"可执行。多音字、生僻字与专名的读法在进棚前定完并留痕；棚里中断是最贵的。
 
-不需要录音时不生成这份文件。本套件不生成音频，也不从这份文本判断成品音质。
+不需要录音时不生成这份文件。本写作阶段不生成音频，也不从这份文本判断成品音质；
+实际 TTS 的确认后生产边界见文末。
 
 写完后用 [voice_sheet_check.py](scripts/voice_sheet_check.py) 核对它仍然是投影：
 
@@ -156,16 +190,17 @@ python3 <skill-dir>/scripts/voice_sheet_check.py 剧集/EP001/voice-record-sheet
 
 局部修订保留不相关段落。先展示语义差异与可能失效的下游产物，创作者接受后再发布。
 
-### 7. 交给独立审查
+### 7. 报告审查交接
 
-所有者可以发现并修正问题，但不能给自己签发通过结论。完成结构检查后，把当前文件与哈希交给 `$short-drama-review`；若收到带证据的修订请求，只修改本技能拥有的单集卡、节拍或剧本，再请求复审。
+完成结构检查后只报告当前范围是否适合单独复核，不自动启动复核。若之后收到带证据的修订请求，
+只修改本技能拥有的单集卡、节拍或剧本；完成该有界修订后再次交还控制权，复审需要新的明确请求。
 
 ## 规则分级
 
 - **`structural_invariant`**：场景/块 ID、引用、已有生产标签语法、来源哈希与明确矛盾；
   校验器可阻断。
 - **`reviewed_invariant`**：因果是否成立、场景是否真正转向、内心是否可表演、对白是否改变局面，
-  以及生产关键事实是否漏标；独立审查者须引用文本证据。
+  以及生产关键事实是否漏标；reviewer 须引用文本证据。
 - **`craft_default`**：进入得晚、退出得早、以选择和后果推动、用具体动作承载情绪；可说明理由覆盖。
 - **`taste_option`**：沉默、旁白、方言、打断、场景静动、句式节奏；遵从创作者选择。
 
@@ -183,3 +218,7 @@ python3 <skill-dir>/scripts/voice_sheet_check.py 剧集/EP001/voice-record-sheet
 - 规范化预览与语义修订差异
 
 资产身份、分镜边界、图片/视频提示词及终审结论属于其他技能。本技能不生成媒体。
+
+创作者要求实际合成已确认台词时，把当前录音表与声音绑定交给 `$short-drama-produce`。
+生产技能必须先展示本次 TTS 任务的原句、角色/声音、数量、参数和输出路径，并取得针对这份
+预览的明确确认；本技能不会替创作者确认，也不会把剧本接受状态当作付费生产授权。

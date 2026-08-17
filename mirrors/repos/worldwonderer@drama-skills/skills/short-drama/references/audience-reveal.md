@@ -30,14 +30,21 @@
 
 ### 合成示例
 
-一个镜头里，观众要听见有人叫出主角的旧称呼（说明来者认识他），但**不能**看到来者的脸：
+一个镜头里，观众要听见有人叫出主角的旧称呼（说明来者认识他），但**不能**看到来者的脸。
+
+`audience_visibility` 所在的 `shots.jsonl` 在第一行声明本文件引用到的上游快照：
+
+```json
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md","hash":"<sha256>"}}}
+```
+
+数组里每条只写快照键和记录 ID：
 
 ```json
 [
   {
     "fact": "来者认识主角的旧身份",
-    "source_ref": {"owner": "short-drama-write", "artifact": "剧集/EP001/screenplay.md",
-                   "hash": "<sha256>", "record_id": "BLK-EP001-SC003-A02"},
+    "source_ref": {"src": "screenplay", "record_id": "BLK-EP001-SC003-A02"},
     "permission": "show_now",
     "carrier": "画外一声旧称呼，主角闻声停手",
     "reveal_trigger": "对方开口",
@@ -45,8 +52,7 @@
   },
   {
     "fact": "来者是谁",
-    "source_ref": {"owner": "short-drama-write", "artifact": "剧集/EP001/screenplay.md",
-                   "hash": "<sha256>", "record_id": "BLK-EP001-SC003-A05"},
+    "source_ref": {"src": "screenplay", "record_id": "BLK-EP001-SC003-A05"},
     "permission": "withhold_now",
     "carrier": "只有门框边的一只手和影子",
     "protection_method": "来者留在景深之外，不进正面光",

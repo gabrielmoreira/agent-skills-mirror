@@ -33,30 +33,35 @@ Single-context layout: read root `CONTEXT.md` and root `docs/adr/` when present.
 
 ## Domain Knowledge: Site Types & Upstream Backends
 
-This repo's `siteType` values are compatibility buckets used by `src/services/apiService/*` and related UI routing.
+This repo models site support on three independent axes: account scope, managed-site scope, and adapter family/capabilities. Do not infer one axis from another.
+
+`src/services/accountSiteDefinitions/definitions.ts` is the source of truth for registered site types, scopes, adapter families, onboarding metadata, and product profiles. `src/services/apiAdapters/registry.ts` owns capability dispatch. `src/services/apiService/` contains provider-specific protocol transports used by those adapters.
 
 When working on a site type:
 
-1. Confirm current in-repo behavior first in `src/constants/siteType.ts`, `src/services/siteDetection/detectSiteType.ts`, and `src/services/apiService/index.ts`.
-2. Verify upstream behavior before making definitive claims when backend differences matter.
-3. If upstream behavior cannot be verified, state assumptions clearly and ask for the target deployment URL, fork, version, or a redacted network trace.
+1. Confirm registration and scope in `src/services/accountSiteDefinitions/identifiers.ts`, `definitions.ts`, and `registry.ts`.
+2. Confirm capability dispatch in `src/services/apiAdapters/registry.ts` and the provider-specific adapter. Use `src/services/siteDetection/detectSiteType.ts` only for onboarding and detection behavior.
+3. Verify upstream behavior before making definitive claims when backend differences matter.
+4. If upstream behavior cannot be verified, state assumptions clearly and ask for the target deployment URL, fork, version, or a redacted network trace.
 
 ### Relationships
 
-- **One API (`one-api`)** is the original upstream family; many compatible deployments use `src/services/apiService/common/`.
-- **New API (`new-api`)** is a One API downstream family with direct support in this repo and also relies heavily on `src/services/apiService/common/`.
-- **Veloera (`Veloera`)** is downstream of New API and keeps dedicated overrides in `src/services/apiService/veloera/`.
+- **One API (`one-api`)** is the original upstream family. One API/New API-family account types share capability construction under `src/services/apiAdapters/newApi/` and protocol transports under `src/services/apiService/newApiFamily/`.
+- **New API (`new-api`)** is a One API downstream family with both account-site and managed-site support.
+- **Veloera (`Veloera`)** is downstream of New API and uses the New API family plus Veloera-specific account and managed-site overrides.
 - **OneHub (`one-hub`)** is downstream of One API with a substantially different surface.
-- **DoneHub (`done-hub`)** is downstream of OneHub and currently layers `src/services/apiService/doneHub/` on top of `src/services/apiService/oneHub/` in `src/services/apiService/index.ts`.
-- **AnyRouter (`anyrouter`)** and **WONG公益站 (`wong-gongyi`)** have dedicated API overrides plus site-specific check-in handling; do not describe them as generic `new-api` aliases without verifying the target deployment.
+- **DoneHub (`done-hub`)** is downstream of OneHub and uses New API-family account capabilities plus a dedicated managed-site adapter.
+- **AnyRouter (`anyrouter`)** and **WONG公益站 (`wong-gongyi`)** use New API-family capabilities with provider-specific variants and check-in handling; verify the target deployment before describing their exact compatibility.
 - **`v-api`** documents its backend as based on One API with some New API functionality; treat it as a One-API derivative/New API-compatible bucket rather than a pure New API fork.
 - **`Super-API`, `Rix-Api`, and Neo-API (`neo-Api` in code)** are treated as New API-family variants or compatibility buckets, but their degree of downstream modification varies by deployment and should not be guessed without upstream docs or observed API behavior.
-- **VoAPI (`VoAPI`)** is supported as an account site type for older compatible deployments; older VoAPI support is treated as New API-family compatibility, while newer VoAPI should be treated as incompatible with the existing common adapter unless the target deployment proves otherwise.
-- **Octopus (`octopus`)** has dedicated managed-site logic and API overrides in `src/services/apiService/octopus/` plus related provider logic under `src/services/managedSites/providers/`.
-- **AxonHub (`axonhub`)** is not One-API/New-API compatible; it uses dedicated GraphQL admin integration in `src/services/apiService/axonHub/` plus a managed-site provider in `src/services/managedSites/providers/axonHub.ts`.
-- **Claude Code Hub (`claude-code-hub`)** is not One-API/New-API compatible; it uses dedicated admin/provider integration in `src/services/apiService/claudeCodeHub/` plus a managed-site provider in `src/services/managedSites/providers/claudeCodeHub.ts`.
-- **Sub2API (`sub2api`)** is not One-API/New-API compatible; it has a different auth model and API surface.
-- **AIHubMix (`AIHubMix`)** is an account-only site type with dedicated overrides in `src/services/apiService/aihubmix/`. Always use `https://aihubmix.com` as the API origin, including accounts imported from `console.aihubmix.com`. Auto-detect may use logged-in web endpoints (`/call/usr/self`, `/call/usr/tkn`) to obtain the account access token, but saved accounts should operate as access-token accounts. Token-authenticated AIHubMix API requests send raw `Authorization: <access_token>` without a `Bearer` prefix. AIHubMix does not support revealing a saved API key after creation; list/detail/search responses may contain masked keys, and `resolveApiTokenKey` must not fall back to common `/api/token/{id}/key` behavior.
+- **Legacy VoAPI (`VoAPI`)** remains a New API-family account compatibility bucket for older deployments. **Current VoAPI (`voapi-v2`)** is account-only and has dedicated adapters under `src/services/apiAdapters/voapiV2/` plus transports under `src/services/apiService/voapiV2/`; do not apply one generation's API assumptions to the other.
+- **Octopus (`octopus`)** is managed-only and has dedicated managed-site capabilities plus protocol transports under `src/services/apiService/octopus/`.
+- **AxonHub (`axonhub`)** is managed-only and not One-API/New-API compatible; it uses dedicated GraphQL admin integration and native managed-resource adapters.
+- **Claude Code Hub (`claude-code-hub`)** is managed-only and not One-API/New-API compatible; it uses dedicated admin/provider and managed-site adapters.
+- **Sub2API (`sub2api`)** is both an account site and a managed site. It has dedicated authentication-session, account, model-catalog, key-resource, and managed-resource integrations; it is not a New API-family alias.
+- **AIHubMix (`AIHubMix`)** is account-only and uses dedicated capabilities under `src/services/apiAdapters/aihubmix/`. Always use `https://aihubmix.com` as the API origin, including accounts imported from `console.aihubmix.com`. Auto-detect may use logged-in web endpoints (`/call/usr/self`, `/call/usr/tkn`) to obtain the account access token, but saved accounts operate as access-token accounts. Token-authenticated requests send raw `Authorization: <access_token>` without a `Bearer` prefix. Full API keys are one-time secrets; saved key responses may be masked and must not fall back to New API-family secret-resolution behavior.
+- **SharedChat (`sharedchat`)** is an account-only integration for the canonical `new.sharedchat.cc` deployment. It uses dedicated cookie-authenticated account, service-credential, invite, and model-catalog capabilities. Treat its observed deployment API as provider-specific; no verified public upstream source repository is currently recorded.
+- **OpenRouter (`openrouter`)** is an account-only platform integration, not a managed/self-hosted backend. It uses Management Keys for account access and provides native API-key resources plus provider-owned model catalogs.
 
 ### Managed Sites
 
@@ -68,17 +73,17 @@ When working on a site type:
 - `octopus`
 - `axonhub`
 - `claude-code-hub`
+- `sub2api`
 
-Do not assume `one-hub`, `anyrouter`, `wong-gongyi`, VoAPI, `v-api`, or the New API-family compatibility buckets above are managed sites without checking the current type definition.
+Do not assume `one-hub`, `anyrouter`, `wong-gongyi`, either VoAPI generation, `v-api`, AIHubMix, SharedChat, OpenRouter, or other account-site compatibility buckets are managed sites without checking the current definition registry.
 
 ### Backend Notes
 
-- Shared One-API/New-API-family helpers live in `src/services/apiService/common/`.
-- Compatible user-id headers are handled in `src/services/apiService/common/compatHeaders.ts` and related helpers.
-- AxonHub keeps its own admin integration under `src/services/apiService/axonHub/` and managed-site provider logic under `src/services/managedSites/providers/axonHub.ts`.
-- Claude Code Hub keeps its own admin/provider integration under `src/services/apiService/claudeCodeHub/` and managed-site provider logic under `src/services/managedSites/providers/claudeCodeHub.ts`.
-- AIHubMix keeps account-only API overrides under `src/services/apiService/aihubmix/`; do not alias it to `new-api` or add managed-site/provider integration unless upstream support is explicitly verified.
-- Some adapter directories under `src/services/apiService/` are provider-specific integrations rather than `siteType` values, so check `src/constants/siteType.ts` before documenting behavior.
+- Account-site membership, onboarding metadata, adapter family, product profiles, and managed-resource policy are centralized in `src/services/accountSiteDefinitions/`.
+- Site capability dispatch is centralized in `src/services/apiAdapters/registry.ts`; shared New API-family behavior lives under `src/services/apiAdapters/newApi/` and `src/services/apiService/newApiFamily/`.
+- Managed-site capabilities live under `src/services/apiAdapters/managedSites/`; provider-native managed resources live under `src/services/apiAdapters/managedResources/`.
+- Provider directories under `src/services/apiService/` are protocol transports, not necessarily `siteType` values or capability declarations.
+- `src/constants/siteType.ts` is a compatibility facade over the definition registry. Use the registry, not directory names or detection rules, to decide whether a type is account-scoped or managed-scoped.
 
 ### Default Upstream References
 
@@ -88,15 +93,18 @@ When the user names a backend without a deployment URL or fork, treat these as t
 - New API: `https://github.com/QuantumNous/new-api`
 - Veloera: `https://github.com/Veloera/Veloera`
 - V-API: `https://github.com/popjane/v-api`
-- VoAPI: `https://github.com/VoAPI/VoAPI`
+- Current VoAPI / `voapi-v2`: `https://github.com/VoAPI/VoAPI`; verify legacy `VoAPI` compatibility against the target deployment
 - Super-API: `https://github.com/SuperAI-Api/Super-API`
 - AnyRouter docs: `https://docs.anyrouter.top/`
 - OneHub: `https://github.com/MartialBE/one-hub`
 - DoneHub: `https://github.com/deanxv/done-hub`
+- Octopus: `https://github.com/bestruirui/octopus`
 - AxonHub: `https://github.com/looplj/axonhub`
 - Claude Code Hub: `https://github.com/ding113/claude-code-hub`
 - Sub2API: `https://github.com/Wei-Shaw/sub2api`
 - AIHubMix API docs: `https://docs.aihubmix.com/en/api/Cli` and `https://docs.aihubmix.com/en/api/Models-API`
+- SharedChat canonical deployment: `https://new.sharedchat.cc`; no verified public upstream source repository is currently recorded
+- OpenRouter: `https://openrouter.ai/`; docs: `https://openrouter.ai/docs`; OpenAPI source: `https://github.com/OpenRouterTeam/docs/blob/main/openapi/openapi.yaml`
 
 If the user's reported behavior differs from upstream, ask for the exact deployment, fork, or version before concluding the repo is wrong.
 

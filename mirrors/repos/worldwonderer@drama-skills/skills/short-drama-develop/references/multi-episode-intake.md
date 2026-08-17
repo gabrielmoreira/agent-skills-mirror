@@ -59,11 +59,10 @@ python3 <本技能目录>/scripts/episode_intake.py verify \
 python3 <core 技能目录>/scripts/project_tool.py publish <项目根> \
   --owner short-drama-develop --artifact-id series:episode-intake-index \
   --output 项目开发/episode-intake-index.json=项目开发/_work/episode-intake-index.next.json \
-  --input 输入/<完整剧本>=<索引中的 source_sha256>
+  --input 输入/<完整剧本>
 ```
 
-发布成功且下游命令已改读正式索引后再删除工作区候选。即使它只是可重建的机械索引，也必须
-通过 WAL 发布；“可重建”不等于可以绕过负责技能、prior snapshot 与失败恢复。
+发布成功且下游命令已改读正式索引后再删除工作区候选。可重建索引仍通过 owner 的 `publish` 发布，以保持路径所有权和原子替换。
 
 ## 2. 每次只读当前集
 
@@ -86,7 +85,7 @@ python3 <本技能目录>/scripts/episode_intake.py slice \
 局部结果和出去压力写 map 记录；需要连续性时只携带已接受的紧凑前情、上一集交接和已有 map
 相关记录，不回读整稿。每完成一集先落到短 batch JSONL，随后再处理下一集。
 
-## 3. 合并、发布与恢复
+## 3. 合并与发布
 
 `merge` 读取当前 map，但必须把结果写到另一个候选文件，绝不直接覆盖当前项目事实：
 
@@ -100,20 +99,20 @@ python3 <本技能目录>/scripts/episode_intake.py merge \
 
 它拒绝未知 ID、批内重号、超过本轮显式上限的记录和对已完成集的冲突重写；相同记录重放是
 no-op。合并成功后，通过 core 的公开生命周期把 `episode-map.next.jsonl` 作为同一 artifact
-的新候选发布，并绑定完整剧本与索引的精确 hash：
+的新候选发布，并声明它实际读取的完整剧本与索引：
 
 ```text
 python3 <core 技能目录>/scripts/project_tool.py publish <项目根> \
   --owner short-drama-develop --artifact-id series:episode-map \
   --output 项目开发/episode-map.jsonl=项目开发/episode-map.next.jsonl \
-  --input 输入/<完整剧本>=<索引中的 source_sha256> \
-  --input 项目开发/episode-intake-index.json=<索引文件的 sha256>
+  --input 输入/<完整剧本> \
+  --input 项目开发/episode-intake-index.json
 ```
 
 发布完成后再删除临时候选和单集切片。不要让 `merge` 直接覆盖
 `项目开发/episode-map.jsonl`，也不要绕过 `project_tool.py` 手工替换它。
 
-中断恢复时先运行 core `recover` / `status`，然后重新运行 `progress`。磁盘上的当前
+中断后先重新运行 `progress`；项目工具可用时也读取 `status`。磁盘上的当前
 `episode-map.jsonl` 是唯一完成真相；checkpoint 若需要只是由它重建的缓存，不能用
 `last_completed` 猜连续进度。已有 `EP001`、`EP003` 时，`EP002` 仍会出现在 pending，已完成
-记录不会重跑。全部 `pending` 清空后，再做所有者检查、创作者接受与独立审查。
+记录不会重跑。全部 `pending` 清空后，再做所有者检查、创作者接受与审查。

@@ -4,7 +4,7 @@
 
 Centralized tool factory and registry for the OpenCode plugin system. This directory defines all executable tools exposed to OpenCode agents, including:
 
-- **Agent orchestration tools**: Multi-LLM council synthesis, task cancellation, and ACP agent execution
+- **Agent orchestration tools**: Multi-LLM council synthesis, background task lifecycle controls, and ACP agent execution
 - **Code intelligence tools**: AST-grep pattern matching and transformation across languages
 - **Web capabilities**: Smart web fetching with caching and secondary model processing
 - **Runtime configuration**: Preset management for dynamic agent configuration switching
@@ -27,7 +27,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 | Tool Family | Purpose | Key Components |
 |------------|---------|----------------|
 | **Council** | Multi-LLM consensus synthesis (orchestrator dispatches councillors as subagents) | `agents/council.ts`, `agents/index.ts` |
-| **Task Management** | Background task lifecycle and HITL continuation control | `cancel-task.ts`, `wait-for-user.ts`, `background-job-board.ts` |
+| **Task Management** | Background task communication, cancellation, status, results, revival, and HITL continuation control | `task-message.ts`, `cancel-task.ts`, `task-status.ts`, `task-result.ts`, `task-revive.ts`, `wait-for-user.ts`, `background-job-board.ts` |
 | **ACP Integration** | External agent protocol execution | `acp-run.ts`, ACP client implementation |
 | **Code Intelligence** | AST-based code manipulation | `ast-grep/` directory, `tools.ts` |
 | **Web Fetching** | Intelligent web content retrieval | `smartfetch/` directory, `tool.ts` |
@@ -44,7 +44,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 
 - **Runtime Presets**: Preset state persists across plugin reloads via `RuntimeConfig` (`src/config/runtime.ts`)
 - **TUI Integration**: Preset changes persist to the config file only; the sidebar is NOT refreshed mid-session (the agent registry is unchanged until reload) — hot-swapping the agent tree during an active conversation risks context truncation, drifted prior turns, and stale subagent references
-- **Background Jobs**: Task cancellation uses a centralized job board for tracking and cleanup
+- **Background Jobs**: Task communication, cancellation, status, results, and revival use a centralized job board for tracking and lifecycle coordination
 
 ## Flow
 
@@ -68,16 +68,29 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
    └─> OpenCode presents result to agent
 ```
 
-### Task Cancellation Flow
+### Task Control Flows
 
 ```
-1. Orchestrator invokes cancel_task tool
+1. Orchestrator invokes task_cancel
    ├─> Validates calling agent is 'orchestrator'
    ├─> Resolves task_id to BackgroundJobBoard entry
    ├─> Calls abortSessionWithTimeout() to signal cancellation
    ├─> Verifies session stopped via status polling
    ├─> Marks job as cancelled in BackgroundJobBoard
-   └─> Returns cancellation confirmation
+   └─> Returns cancellation confirmation while retaining the child session
+
+2. Orchestrator invokes task_message
+   ├─> Resolves task_id to a live BackgroundJobBoard entry
+   ├─> Acquires a generation-scoped message lease
+   ├─> Queues a bounded no-reply message without interrupting or resuming the child
+   └─> Returns transport-confirmed queue status
+
+3. Orchestrator invokes task_revive
+   ├─> Resolves the retained BackgroundJobBoard entry
+   ├─> Cancels a running generation when necessary
+   ├─> Launches a new prompt in the existing child session
+   ├─> Registers the new generation and tracks its completion
+   └─> Returns the new running generation
 ```
 
 ### Explicit User-Wait Flow
@@ -162,8 +175,10 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 
 ```
 Tools Layer → Background Layer
-├─ cancel_task tool → BackgroundJobBoard.resolve() → abortSessionWithTimeout()
-└─> Returns cancellation status
+├─ task_cancel → BackgroundJobBoard.resolve() → abortSessionWithTimeout()
+├─ task_message → BackgroundJobBoard.resolve() → no-reply prompt transport
+├─ task_revive → BackgroundJobBoard.resolve() → retained-session relaunch
+└─> Returns lifecycle or transport status
 
 Tools Layer → Config Layer
 ├─ acp_run tool → AcpAgentsConfig from config system
@@ -204,6 +219,10 @@ export { ast_grep_replace, ast_grep_search } from './ast-grep';
 
 // Task management
 export { createCancelTaskTool } from './cancel-task';
+export { createTaskMessageTool } from './task-message';
+export { createTaskResultTool } from './task-result';
+export { createTaskReviveTool } from './task-revive';
+export { createTaskStatusTool } from './task-status';
 export { createWaitForUserTool } from './wait-for-user';
 
 // Preset management

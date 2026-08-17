@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alibaba/open-code-review` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `alibaba/open-code-review` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alibaba/open-code-review` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`plugins/open-code-review/skills/open-code-review-delegate/SKILL.md`](plugins/open-code-review/skills/open-code-review-delegate/SKILL.md) |
-| 4 | ✓ | [`plugins/open-code-review/skills/open-code-review/SKILL.md`](plugins/open-code-review/skills/open-code-review/SKILL.md) |
-| 5 | ✓ | [`skills/open-code-review-delegate/SKILL.md`](skills/open-code-review-delegate/SKILL.md) |
-| 6 | ✓ | [`skills/open-code-review/SKILL.md`](skills/open-code-review/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`plugins/open-code-review/skills/open-code-review-delegate/SKILL.md`](plugins/open-code-review/skills/open-code-review-delegate/SKILL.md) |
+| 5 | ✓ | [`plugins/open-code-review/skills/open-code-review/SKILL.md`](plugins/open-code-review/skills/open-code-review/SKILL.md) |
+| 6 | ✓ | [`skills/open-code-review-delegate/SKILL.md`](skills/open-code-review-delegate/SKILL.md) |
+| 7 | ✓ | [`skills/open-code-review/SKILL.md`](skills/open-code-review/SKILL.md) |
 
 ---
 

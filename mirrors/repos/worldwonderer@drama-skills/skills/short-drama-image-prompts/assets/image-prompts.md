@@ -7,7 +7,7 @@
 
 > 来源：`image-prompt-specs.jsonl` 已接受快照 `<hash>`
 > 配方：`<recipe>@<version>` · 当前文本 `<hash>`
-> 范围：仅提示词，不生成图片或调用媒体服务
+> 范围：本文件仅提供提示词，不触发媒体服务；实际图片生产交 `$short-drama-produce`
 
 ## `<display name>` · `<purpose>`
 

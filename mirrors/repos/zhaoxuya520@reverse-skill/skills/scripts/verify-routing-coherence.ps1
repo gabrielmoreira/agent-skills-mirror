@@ -442,6 +442,58 @@ $idCheck += "fastapi-in-ops-deps=false"
 $idCheck -join [Environment]::NewLine | Set-Content (Join-Path $ScratchDir 'identity-check.txt') -Encoding UTF8
 Ok 'identity-check written'
 
+# Issue #77 — analysis decision framework anchors (MUST run before fail gate)
+$adf = Join-Path $PackageRoot "skills\ops\analysis-decision-framework.md"
+if (Test-Path -LiteralPath $adf) { Ok "analysis-decision-framework.md present (issue #77)" } else { Bad "analysis-decision-framework.md missing (issue #77)" }
+if (Test-Path -LiteralPath $adf) {
+    $adfText = Get-Content -LiteralPath $adf -Raw -Encoding UTF8
+    foreach ($pair in @(
+        @("R4*", "ADF R4* validated sufficiency"),
+        @("E-insufficient-evidence", "ADF E-insufficient-evidence"),
+        @("E-hypothesis-confirmed", "ADF hypothesis evidence"),
+        @("ungrounded", "ADF ungrounded flag"),
+        @("Not** a second master", "ADF not second master workflow"),
+        @("analysis-blindspot-cookbook", "ADF links blindspot cookbook")
+    )) {
+        if ($adfText -like ("*" + $pair[0] + "*")) { Ok $pair[1] } else { Bad ("missing: " + $pair[1]) }
+    }
+}
+$efp77 = Join-Path $PackageRoot "skills\ops\evidence-finding-path.md"
+if (Test-Path -LiteralPath $efp77) {
+    $efpText = Get-Content -LiteralPath $efp77 -Raw -Encoding UTF8
+    if ($efpText -like "*analysis-decision-framework*") { Ok "evidence-finding-path hooks ADF" } else { Bad "evidence-finding-path missing ADF hook" }
+    if ($efpText -like "*E-insufficient-evidence*") { Ok "evidence-finding-path R4* id" } else { Bad "evidence-finding-path missing E-insufficient-evidence" }
+} else { Bad "evidence-finding-path.md missing" }
+$wf77 = Join-Path $PackageRoot "skills\reverse-engineering\references\re-agent-workflow.md"
+if (Test-Path -LiteralPath $wf77) {
+    $wfText = Get-Content -LiteralPath $wf77 -Raw -Encoding UTF8
+    if ($wfText -like "*analysis-decision-framework*") { Ok "re-agent-workflow hooks ADF" } else { Bad "re-agent-workflow missing ADF hook" }
+    if ($wfText -like "*analysis-blindspot-cookbook*") { Ok "re-agent-workflow hooks blindspot cookbook" } else { Bad "re-agent-workflow missing blindspot cookbook hook" }
+} else { Bad "re-agent-workflow.md missing" }
+$rules77 = Join-Path $PackageRoot "RULES.md"
+if (Test-Path -LiteralPath $rules77) {
+    $rulesText = Get-Content -LiteralPath $rules77 -Raw -Encoding UTF8
+    if ($rulesText -like "*analysis-decision-framework*") { Ok "RULES.md hooks ADF" } else { Bad "RULES.md missing ADF hook" }
+} else { Bad "RULES.md missing" }
+
+# Issue #77 batch 2 — blindspot cookbook anchors
+$bsc = Join-Path $PackageRoot "skills\ops\analysis-blindspot-cookbook.md"
+if (Test-Path -LiteralPath $bsc) { Ok "analysis-blindspot-cookbook.md present (issue77 R52-R81)" } else { Bad "analysis-blindspot-cookbook.md missing (issue77 R52-R81)" }
+if (Test-Path -LiteralPath $bsc) {
+    $bscText = Get-Content -LiteralPath $bsc -Raw -Encoding UTF8
+    foreach ($pair in @(
+        @("R52", "BSC R52 Rust"),
+        @("E-rust-identified", "BSC E-rust-identified"),
+        @("E-vmp-protected", "BSC E-vmp-protected"),
+        @("E-llm-hallucination", "BSC E-llm-hallucination"),
+        @("E-kernel-protect-tamper", "BSC kernel detect-only id"),
+        @("Not** a third master", "BSC not third master workflow"),
+        @("no bypass tutorial", "BSC no bypass tutorial")
+    )) {
+        if ($bscText -like ("*" + $pair[0] + "*")) { Ok $pair[1] } else { Bad ("missing: " + $pair[1]) }
+    }
+}
+
 Write-Host "Scratch=$ScratchDir"
 if ($fail.Count -gt 0) {
     Write-Host ("FAILED {0}" -f $fail.Count) -ForegroundColor Red
@@ -449,23 +501,6 @@ if ($fail.Count -gt 0) {
     $fail | Set-Content (Join-Path $ScratchDir 'failures.txt') -Encoding UTF8
     exit 1
 }
-Write-Host '
-# Issue #77 — analysis decision framework anchors
-$adf = Join-Path $PackageRoot "skills\ops\analysis-decision-framework.md"
-Assert-FileExists $adf "analysis-decision-framework.md (issue #77)"
-Assert-FileContains $adf "R4*" "ADF R4* validated sufficiency"
-Assert-FileContains $adf "E-insufficient-evidence" "ADF E-insufficient-evidence"
-Assert-FileContains $adf "E-hypothesis-confirmed" "ADF hypothesis evidence"
-Assert-FileContains $adf "ungrounded" "ADF ungrounded flag"
-Assert-FileContains $adf "Not** a second master" "ADF not second master workflow"
-$efp77 = Join-Path $PackageRoot "skills\ops\evidence-finding-path.md"
-Assert-FileContains $efp77 "analysis-decision-framework" "evidence-finding-path hooks ADF"
-Assert-FileContains $efp77 "E-insufficient-evidence" "evidence-finding-path R4* id"
-$wf77 = Join-Path $PackageRoot "skills\reverse-engineering\references\re-agent-workflow.md"
-Assert-FileContains $wf77 "analysis-decision-framework" "re-agent-workflow hooks ADF"
-$rules77 = Join-Path $PackageRoot "RULES.md"
-Assert-FileContains $rules77 "analysis-decision-framework" "RULES.md hooks ADF"
-
-ALL ROUTING COHERENCE CHECKS PASSED' -ForegroundColor Green
+Write-Host 'ALL ROUTING COHERENCE CHECKS PASSED' -ForegroundColor Green
 'ALL ROUTING COHERENCE CHECKS PASSED' | Set-Content (Join-Path $ScratchDir 'verify.txt') -Encoding UTF8
 exit 0

@@ -1,134 +1,88 @@
 ---
 name: indication-dossier
-description: >
-  Generate a therapeutic indication dossier. Covers the patient population,
-  epidemiology, disease biology, standard of care, regulatory precedent, and
-  landmark clinical trials.
+description: Build a sourced research dossier for one therapeutic indication — patient population, epidemiology, disease biology, standard of care, regulatory path, and landmark trials. Use when the user asks for an indication overview, disease landscape, or trial-design background.
 license: Apache-2.0
 ---
 
-# Indication Dossier
+# Indication dossier
 
-Produces a structured research dossier on a single indication, framed as a
-patient population: who they are, what's wrong, how they're treated today,
-and how clinical trials can be designed to help them. Runs as five phases
-that write resumable waypoint files; after a brief identity check at the end
-of Phase 1, the remaining phases run straight through.
+Five research phases, each writing one waypoint JSON under
+`<workdir>/waypoints/`, ending in a cited Markdown report. Waypoints make the
+run resumable: a later invocation reads which files exist and continues from
+the first missing one. The only pause for user input is after Phase 1.
 
-## Framing
+## The framing rule
 
-**Think of an indication as a patient population.** Frame everything
-from the patient perspective: "Who are these patients?" not "What is this
-disease?"; "How are these patients identified and managed?" not "What causes
-this condition?"; population nesting: "all patients in {child} are patients
-in {parent}".
+Treat the indication as a *patient population*, not a disease entry. Every
+section answers a population question — who are these patients, how are they
+identified and managed, which trials would help them — rather than a textbook
+question about the condition. Nesting is population nesting: everyone in the
+child indication is in the parent.
 
-Some indications don't map to ICD codes or standard disease definitions:
-"immunosenescence" is a biological state, not a billable diagnosis; "ageing"
-is not an FDA-accepted indication; "GLP-1 induced sarcopenia" is an
-iatrogenic population. Note these distinctions explicitly. They matter for
-regulatory path and trial design.
+Some inputs are not billable diagnoses at all: a biological state
+("immunosenescence"), a non-accepted indication ("ageing"), an iatrogenic
+population ("GLP-1 induced sarcopenia"). Detect and label this early — it
+changes the epidemiology evidence base, the regulatory path, and what a
+"complete" dossier even looks like.
 
 ## Inputs
 
-- **`indication`** (required) — indication name (e.g., "sarcopenia",
-  "idiopathic pulmonary fibrosis").
-- **`additional_context`** (optional) — areas to focus on, parent
-  indication, or other framing.
-- **`workdir`** (optional) — where to write waypoints and the final report.
-  Defaults to `./do_not_commit/indication-dossier-<slug>/`.
+| Input | Required | Meaning |
+|---|---|---|
+| `indication` | yes | e.g. "sarcopenia", "idiopathic pulmonary fibrosis" |
+| `additional_context` | no | focus areas, parent indication, framing |
+| `workdir` | no | waypoint/report location; default `./do_not_commit/indication-dossier-<slug>/` |
 
-## Tools this skill expects
+## Tooling
 
-| Purpose | Tool |
-|---|---|
-| ClinicalTrials.gov | `clinical-trials` MCP |
-| Literature | `pubmed` MCP |
-| Web | `WebSearch`, `WebFetch` — FDA guidance, treatment guidelines (NCCN, AASLD, specialty societies), CDC/WHO epidemiology data |
-| Documents | `WebFetch` for remote PDFs; `Read` for local PDFs |
-| Subagents | `Agent` for parallel evidence gathering |
+Preferred: `clinical-trials` MCP for CT.gov, `pubmed` MCP for literature,
+`WebSearch`/`WebFetch` for FDA guidance, specialty-society guidelines
+(NCCN, AASLD, …), and CDC/WHO data; `WebFetch` for remote PDFs, `Read` for
+local ones; `Agent` subagents for parallel evidence gathering. When a listed
+MCP is not connected, say so and fall back to `WebSearch` against the public
+site itself.
 
-If a listed MCP isn't connected, say so and fall back to `WebSearch` against
-the underlying public source (clinicaltrials.gov, pubmed.ncbi.nlm.nih.gov).
+## Run protocol
+
+Read `references/standards.md` first — it defines what counts as a citable
+finding, the anti-fabrication rules, and the report style. Phase-by-phase
+instructions live in `references/phases.md`; waypoint formats in
+`references/waypoints.md`.
+
+1. **Identity.** Resolve definition, ICD codes, aliases, parent, diagnostic
+   status; quick CT.gov landscape count. Write `meta.json`. Then show the
+   resolved identity and end the turn asking **Proceed / Revise identity /
+   Stop** — the expensive phases wait for the answer (Wisp has no separate
+   interactive-question tool, so this is a normal turn end).
+2. **Epidemiology.** Case definition, prevalence/incidence, demographics,
+   natural history → `epidemiology.json`.
+3. **Biology & standard of care.** Mechanism, biomarkers, approved
+   therapies, guidelines, unmet need → `biology_soc.json`.
+4. **Regulatory & trials.** Accepted endpoints, precedents, design
+   parameters, landmark trials, failures → `regulatory_trials.json`.
+5. **Synthesis.** No new research threads (single targeted gap-fills only).
+   Write `indication_dossier_report.md` and `research_output.json`, then
+   mark `progress.json` complete.
+
+After each of phases 2–5, write the waypoint, emit a ≤200-word summary of
+findings and open uncertainties, and continue directly.
+
+## Resuming
+
+When `workdir` already contains waypoints: list which phases are complete
+(file exists and is non-empty), show the meta summary, and ask which phase to
+run. Never overwrite an existing waypoint without confirmation.
 
 ## Output layout
 
 ```
-<workdir>/
-└── waypoints/
-    ├── progress.json                 # loop control
-    ├── meta.json                     # phase 1
-    ├── epidemiology.json             # phase 2
-    ├── biology_soc.json              # phase 3
-    ├── regulatory_trials.json        # phase 4
-    ├── sources_evaluated.json
-    ├── research_output.json          # phase 5 — structured output
-    └── indication_dossier_report.md  # phase 5 — the deliverable
+<workdir>/waypoints/
+├── progress.json                 # loop control, flipped last
+├── meta.json                     # phase 1
+├── epidemiology.json             # phase 2
+├── biology_soc.json              # phase 3
+├── regulatory_trials.json        # phase 4
+├── sources_evaluated.json        # appended by every phase
+├── research_output.json          # phase 5, structured
+└── indication_dossier_report.md  # phase 5, the deliverable
 ```
-
-Schemas for every waypoint file are in `references/waypoint-schemas.md`.
-Waypoints are the resumable state. If the workdir already has waypoints, read
-them, summarize what's done, and ask which phase to resume from.
-
-## Before starting
-
-Read `references/00-research-standards.md`. It governs sourcing and the
-anti-fabrication rules for every phase. Then create `<workdir>/waypoints/`.
-
-## Workflow
-
-The dossier is built in five phases. After each phase, write the waypoint
-file and emit a ≤200-word summary of what you found and what's uncertain,
-then proceed directly to the next phase. The one exception is Phase 1: after
-writing `meta.json`, show the resolved indication identity and end the turn
-with a concise request for **Proceed**, **Revise identity**, or **Stop**. Do
-not start the expensive phases until the user answers; Wisp has no separate
-interactive-question tool that can be called from the workflow.
-
-### Phase 1 — Meta initialization
-
-Read `references/01-meta-initialization.md`. Resolve the indication identity:
-clinical definition, ICD codes, aliases, parent indication, and whether it's
-a recognized diagnostic entity. Run a quick CT.gov landscape scan. Stand up
-`waypoints/meta.json`.
-
-### Phase 2 — Epidemiology research
-
-Read `references/02-epidemiology-research.md`. Characterize the population:
-diagnostic criteria, prevalence and incidence, demographics and risk factors,
-natural history. Use parallel subagents to search PubMed and the web
-simultaneously. Write `waypoints/epidemiology.json`.
-
-### Phase 3 — Biology & standard-of-care research
-
-Read `references/03-biology-soc-research.md`. Establish pathophysiology,
-biomarkers, approved therapies, treatment guidelines, and unmet need. Use
-parallel subagents: PubMed for biology, web for guidelines, FDA for
-approvals. Write `waypoints/biology_soc.json`.
-
-### Phase 4 — Regulatory & trials research
-
-Read `references/04-regulatory-trials-research.md`. Establish FDA/EMA
-accepted endpoints, regulatory precedents, typical trial design parameters,
-landmark trials, and notable failures. Use parallel subagents: FDA for
-guidance/approvals, CT.gov for trial patterns, PubMed for trial-history
-reviews. Write `waypoints/regulatory_trials.json`.
-
-### Phase 5 — Synthesis
-
-Read `references/05-synthesis.md` and `references/06-writing-style.md`. Read
-all four consolidated waypoint files. Write
-`waypoints/indication_dossier_report.md` — narrative sections in the order
-the synthesis reference specifies, with inline citations per the style guide
-— and `waypoints/research_output.json`. No new research threads in this
-phase. Targeted gap-fills are allowed: a single fetch to resolve a specific
-missing value in an existing waypoint field (an approval year, an NCT ID, a
-figure from a sponsor pipeline page). Anything broader than that, name as a
-gap rather than filling it.
-
-## Resuming
-
-If invoked with a `workdir` that already contains waypoints: list which phases
-are complete (waypoint file exists and is non-empty), show the meta summary,
-and ask the user which phase to run next. Never overwrite an existing waypoint
-without confirmation.

@@ -40,7 +40,22 @@ if sys.version_info < MINIMUM_PYTHON:
 
 TEXT_EXTENSIONS = frozenset({".md", ".json", ".jsonl", ".txt", ".srt", ".ass"})
 MEDIA_EXTENSIONS = frozenset(
-    {".png", ".jpg", ".jpeg", ".webp", ".gif", ".mp4", ".webm", ".mov"}
+    {
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+        ".gif",
+        ".mp4",
+        ".webm",
+        ".mov",
+        ".wav",
+        ".mp3",
+        ".m4a",
+        ".aac",
+        ".flac",
+        ".opus",
+    }
 )
 MEDIA_TYPES = {
     ".png": "image/png",
@@ -51,6 +66,12 @@ MEDIA_TYPES = {
     ".mp4": "video/mp4",
     ".webm": "video/webm",
     ".mov": "video/quicktime",
+    ".wav": "audio/wav",
+    ".mp3": "audio/mpeg",
+    ".m4a": "audio/mp4",
+    ".aac": "audio/aac",
+    ".flac": "audio/flac",
+    ".opus": "audio/ogg",
 }
 DEFAULT_MAX_DEPTH = 8
 DEFAULT_MAX_NODES = 2_000
@@ -605,10 +626,7 @@ class ProjectStore:
             ):
                 yield
         except Exception as exc:
-            if exc.__class__.__name__ in {
-                "StaleReadSetError",
-                "TransactionConflictError",
-            }:
+            if exc.__class__.__name__ == "ProjectConflictError":
                 raise DashboardError(HTTPStatus.CONFLICT, str(exc)) from exc
             if isinstance(exc, ValueError):
                 raise DashboardError(
@@ -648,18 +666,9 @@ class ProjectStore:
             self._pinned_project(project_id) as (directory_fd, _root),
             self._coordinated_edit(directory_fd, pure, expected_version),
         ):
-            # Two layers, each earning its place. `_write_lock` serializes this
-            # process's own threads, including the lock-directory setup that
-            # runs before any file lock can exist. `_coordinated_edit` then
-            # holds the project's transaction flock across the whole
-            # compare-and-replace, which is what excludes a second dashboard
-            # process and the publish/recover/accept/review commands. A third
-            # lock in the temp directory used to sit between them, keyed on
-            # `workspace / <project-hash> / path` — a path that names nothing on
-            # disk, so two dashboards over overlapping workspaces hashed the
-            # same file to different lock files and never actually excluded
-            # each other. Each parent directory is pinned so a concurrent
-            # symlink swap cannot redirect the replace outside the project.
+            # The in-process lock and the project's file lock keep the version
+            # check and atomic replace together. Pinned parent descriptors stop
+            # a concurrent symlink swap from redirecting the write.
             try:
                 with _open_parent_directory_at(directory_fd, pure) as (
                     parent_fd,
@@ -688,9 +697,14 @@ class ProjectStore:
             lifecycle = self.project_tool.project_path_lifecycle_at(
                 directory_fd, pure.as_posix()
             )
+        kind = "image"
+        if content_type.startswith("video/"):
+            kind = "video"
+        elif content_type.startswith("audio/"):
+            kind = "audio"
         result = {
             "path": pure.as_posix(),
-            "kind": "video" if content_type.startswith("video/") else "image",
+            "kind": kind,
             "contentType": content_type,
             "size": size,
             "readOnly": True,

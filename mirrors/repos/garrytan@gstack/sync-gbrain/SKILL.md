@@ -111,9 +111,11 @@ else
 fi
 ~/.claude/skills/gstack/bin/gstack-timeline-log '{"skill":"sync-gbrain","event":"started","branch":"'"$_BRANCH"'","session":"'"$_SESSION_ID"'"}' 2>/dev/null &
 _HAS_ROUTING="no"
-if [ -f CLAUDE.md ] && grep -q "## Skill routing" CLAUDE.md 2>/dev/null; then
-  _HAS_ROUTING="yes"
-fi
+for _RF in CLAUDE.md AGENTS.md; do
+  if [ -f "$_RF" ] && grep -q "## Skill routing" "$_RF" 2>/dev/null; then
+    _HAS_ROUTING="yes"
+  fi
+done
 _ROUTING_DECLINED=$(~/.claude/skills/gstack/bin/gstack-config get routing_declined 2>/dev/null || echo "false")
 echo "HAS_ROUTING: $_HAS_ROUTING"
 echo "ROUTING_DECLINED: $_ROUTING_DECLINED"
@@ -507,10 +509,13 @@ _BRAIN_SYNC_MODE=$("$_BRAIN_CONFIG_BIN" get artifacts_sync_mode 2>/dev/null || e
 # Detect remote-MCP mode (Path 4 of /setup-gbrain). Local artifacts sync is
 # a no-op in remote mode; the brain server pulls from GitHub/GitLab on its
 # own cadence. Read claude.json directly to keep this preamble fast (no
-# subprocess to claude CLI on every skill start).
+# subprocess to claude CLI on every skill start). Both registration scopes
+# are read (#2499): user scope, then the nearest-ancestor project scope.
 _GBRAIN_MCP_MODE="none"
+_GBRAIN_MCP_ENTRY=""
 if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.claude.json" ]; then
-  _GBRAIN_MCP_TYPE=$(jq -r '.mcpServers.gbrain.type // .mcpServers.gbrain.transport // empty' "$HOME/.claude.json" 2>/dev/null)
+  _GBRAIN_MCP_ENTRY=$(jq -c --arg cwd "$PWD" '.mcpServers.gbrain // ((.projects // {}) | to_entries | map(select((.key as $k | $cwd == $k or ($cwd | startswith($k + "/"))) and ((try .value.mcpServers.gbrain catch null) != null))) | sort_by(.key | length) | last | .value.mcpServers.gbrain) // empty' "$HOME/.claude.json" 2>/dev/null)
+  _GBRAIN_MCP_TYPE=$(printf '%s' "$_GBRAIN_MCP_ENTRY" | jq -r '.type // .transport // empty' 2>/dev/null)
   case "$_GBRAIN_MCP_TYPE" in
     url|http|sse) _GBRAIN_MCP_MODE="remote-http" ;;
     stdio) _GBRAIN_MCP_MODE="local-stdio" ;;
@@ -531,6 +536,7 @@ if [ -d "$_GSTACK_HOME/.git" ] && [ "$_BRAIN_SYNC_MODE" != "off" ]; then
   _BRAIN_DO_PULL=1
   if [ -f "$_BRAIN_LAST_PULL_FILE" ]; then
     _BRAIN_LAST=$(cat "$_BRAIN_LAST_PULL_FILE" 2>/dev/null || echo 0)
+    case "$_BRAIN_LAST" in ''|*[!0-9]*) _BRAIN_LAST=0 ;; esac
     _BRAIN_AGE=$(( _BRAIN_NOW - _BRAIN_LAST ))
     [ "$_BRAIN_AGE" -lt 86400 ] && _BRAIN_DO_PULL=0
   fi
@@ -544,7 +550,7 @@ fi
 if [ "$_GBRAIN_MCP_MODE" = "remote-http" ]; then
   # Remote-MCP mode: local artifacts sync is a no-op (brain admin's server
   # pulls from GitHub/GitLab). Show the user this is by design, not broken.
-  _GBRAIN_HOST=$(jq -r '.mcpServers.gbrain.url // empty' "$HOME/.claude.json" 2>/dev/null | sed -E 's|^https?://([^/:]+).*|\1|')
+  _GBRAIN_HOST=$(printf '%s' "${_GBRAIN_MCP_ENTRY:-}" | jq -r '.url // empty' 2>/dev/null | sed -E 's|^https?://([^/:]+).*|\1|' | head -1 | tr -cd 'A-Za-z0-9._-')
   echo "ARTIFACTS_SYNC: remote-mode (managed by brain server ${_GBRAIN_HOST:-remote})"
 elif [ -d "$_GSTACK_HOME/.git" ] && [ "$_BRAIN_SYNC_MODE" != "off" ]; then
   _BRAIN_QUEUE_DEPTH=0
@@ -629,8 +635,8 @@ eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
 _PROJ="${GSTACK_HOME:-$HOME/.gstack}/projects/${SLUG:-unknown}"
 if [ -d "$_PROJ" ]; then
   echo "--- RECENT ARTIFACTS ---"
-  find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -3
-  [ -f "$_PROJ/${_BRANCH}-reviews.jsonl" ] && echo "REVIEWS: $(wc -l < "$_PROJ/${_BRANCH}-reviews.jsonl" | tr -d ' ') entries"
+  find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
+  [ -f "$_PROJ/${BRANCH:-unknown}-reviews.jsonl" ] && echo "REVIEWS: $(wc -l < "$_PROJ/${BRANCH:-unknown}-reviews.jsonl" | tr -d ' ') entries"
   [ -f "$_PROJ/timeline.jsonl" ] && tail -5 "$_PROJ/timeline.jsonl"
   if [ -f "$_PROJ/timeline.jsonl" ]; then
     _LAST=$(grep "\"branch\":\"${_BRANCH}\"" "$_PROJ/timeline.jsonl" 2>/dev/null | grep '"event":"completed"' | tail -1)
@@ -638,7 +644,7 @@ if [ -d "$_PROJ" ]; then
     _RECENT_SKILLS=$(grep "\"branch\":\"${_BRANCH}\"" "$_PROJ/timeline.jsonl" 2>/dev/null | grep '"event":"completed"' | tail -3 | grep -o '"skill":"[^"]*"' | sed 's/"skill":"//;s/"//' | tr '\n' ',')
     [ -n "$_RECENT_SKILLS" ] && echo "RECENT_PATTERN: $_RECENT_SKILLS"
   fi
-  _LATEST_CP=$(find "$_PROJ/checkpoints" -name "*.md" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1)
+  _LATEST_CP=$(find "$_PROJ/checkpoints" -name "*.md" -type f 2>/dev/null | xargs -r ls -t 2>/dev/null | head -1)
   [ -n "$_LATEST_CP" ] && echo "LATEST_CHECKPOINT: $_LATEST_CP"
   if [ -f "$_PROJ/decisions.active.json" ]; then
     echo "--- ACTIVE DECISIONS (recent, scope-relevant) ---"
@@ -714,7 +720,7 @@ If you are looping on the same diagnostic, same file, or failed fix variants, ST
 
 ## Question Tuning (skip entirely if `QUESTION_TUNING: false`)
 
-Before each AskUserQuestion, choose `question_id` from `scripts/question-registry.ts` or `{skill}-{slug}`, then run `printf '%s' "<question summary>" | ~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>" --summary-stdin` (piped summary feeds the one-way keyword net, #2024). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
+Before each AskUserQuestion, choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `printf '%s' "<question summary>" | ~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>" --summary-stdin` (piped summary feeds the one-way keyword net, #2024). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
 
 **Embed the question_id as a marker in the question text** so hooks can identify it deterministically (plan-tune cathedral T14 / D18 progressive markers). Append `<gstack-qid:{question_id}>` somewhere in the rendered question (the leading line or trailing line is fine; the marker doesn't render visibly to the user when wrapped in HTML-style angle brackets, but the hook strips it). Without the marker the PreToolUse enforcement hook treats the AUQ as observed-only and never auto-decides — so always include it when the question matches a registered `question_id`.
 
@@ -1103,6 +1109,10 @@ if [ -f ~/.gbrain/config.json ] && \
   fi
 fi
 gbrain delete "$SLUG" 2>/dev/null || true
+# #2503: on worktree-pinned brains `gbrain put` can materialize the page as
+# <slug>.md in the CURRENT directory (the user's repo), and `gbrain delete`
+# removes the page, not the file. Remove the litter explicitly.
+rm -f "./${SLUG}.md" 2>/dev/null || true
 ```
 
 Then update CLAUDE.md based on capability state:

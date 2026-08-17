@@ -5,90 +5,92 @@ fold_cue: "instead_of=read use=pdf_pages/pdf_outline for PDFs — read cannot pa
 license: Apache-2.0
 ---
 
-# PDF Explore — navigate a PDF without flooding your context
+# Read PDFs page-by-page, not wholesale
 
-The `read` tool cannot parse PDFs (binary), and a 50-page PDF pasted
-wholesale is ~40K+ tokens. This skill parses the PDF **once** in the
-persistent python kernel (disk + memory cached) so you load only the
-pages that matter.
+`read` chokes on PDF binary, and pasting a 50-page document costs 40K+
+tokens. The sidecar parses once into the persistent Python kernel (memory +
+disk cached), after which you pull exactly the pages the question needs.
 
-**Load first (once per session):** run the `exec(...)` line from the
-"Python Kernel Sidecar" section this skill's `use_skill` output ends
-with. Definitions persist across cells; re-run only after a kernel
-restart. Requires `pypdfium2` (plus `pillow` for image mode) — if the
-first call raises ImportError, install per its hint and re-run.
+**Setup, once per session:** run the `exec(...)` line from the "Python
+Kernel Sidecar" section at the end of this skill's `use_skill` output.
+Definitions survive across cells until the kernel restarts. `pypdfium2` is
+required (`pillow` too for image mode); if the first call raises
+ImportError, follow its hint and re-run.
 
-## Which helper
+## Pick the entry point
 
-| | when | returns |
+| call | use for | gives |
 |---|---|---|
-| **`pdf_outline(path)`** | structured doc (paper, report, book) — try this first | `[{page, heading, level}, ...]` from embedded bookmarks; `[]` + hint if none |
-| **`pdf_pages(path, pages=[...], mode="text")`** | the pages/sections you actually need | `[{page, text, n_chars}, ...]` |
-| **`pdf_pages(path, mode="image", dpi=200, pages=[N])`** | figures, scanned pages | PNG per page under `.cache/pdf-explore/`; view via `view_image` |
-| `mode="auto"` (default) | unknown PDF | text; flips to image when pages have no text layer (scans) |
+| `pdf_outline(path)` | any structured document — start here | `[{page, heading, level}]` from embedded bookmarks, `[]` + hint when absent |
+| `pdf_pages(path, pages=[...], mode="text")` | the specific pages you need | `[{page, text, n_chars}]` |
+| `pdf_pages(path, mode="image", dpi=200, pages=[N])` | figures, scans | one PNG per page in `.cache/pdf-explore/`, for `view_image` |
+| default `mode="auto"` | unknown file | text, auto-switching to images when pages have no text layer |
 
-## Recipe — navigate by outline (try this first)
+## Map the document first
 
 ```python
-for e in pdf_outline("paper.pdf"):
-    print(f"p{e['page']:>3} {'  ' * (e['level'] - 1)}{e['heading']}")
+toc = pdf_outline("report.pdf")
+for entry in toc:
+    indent = "  " * (entry["level"] - 1)
+    print(f'p{entry["page"]:>3} {indent}{entry["heading"]}')
 ```
 
-Free and instant when the PDF has embedded bookmarks (most
-LaTeX-compiled papers do). No LLM fallback in this host: if it returns
-`[]`, skim `pdf_pages(path, mode="text")` first lines per page to build
-your own map.
+Costs nothing when bookmarks exist (LaTeX-compiled papers almost always
+have them). On `[]`, there is no LLM fallback here — print the opening
+lines of each page from `pdf_pages(path, mode="text")` and build the map
+yourself. Watch for the `[pdf_outline]` offset warning: some PDFs bookmark
+logical page numbers, which are shifted from file page numbers by the
+front matter.
 
-## Recipe — read a few pages (≤ ~5)
+## A handful of pages: print them
 
 ```python
-for p in pdf_pages("paper.pdf", pages=[3, 4, 5], mode="text"):
-    print(f"\n── page {p['page']} ──\n{p['text']}")
+hits = pdf_pages("report.pdf", pages=[12, 13], mode="text")
+for h in hits:
+    print(f'\n[page {h["page"]}]\n{h["text"]}')
 ```
 
-Printing is fine at this scale (~2–4KB/page). Python output beyond the
-context budget (~16KB) gets head/tail-truncated at ingestion — so for
-anything bigger, use the next recipe instead of printing.
+Fine up to roughly five pages (~2–4KB each). Kernel output past the
+~16KB context budget is head/tail-truncated at ingestion, so anything
+larger goes through a file instead.
 
-## Recipe — pull whole sections for synthesis
+## Whole sections: go through a file
 
-For "summarize the methods" / "compare section 3 and 5" / anything
-drawing on several page ranges, write the pages to a file in **one**
-call, then `read` that file — `read` results enter context whole:
+For "summarize the methods", cross-section comparisons, or any multi-range
+pull, write all wanted pages in one call and `read` the result — `read`
+output enters context untruncated:
 
 ```python
-wanted = [5, 21, 22, 23, 24, 25, 62, 63, 64]   # from pdf_outline
-with open("sections.txt", "w") as f:
-    for p in pdf_pages("paper.pdf", pages=wanted, mode="text"):
-        f.write(f"\n── page {p['page']} ──\n{p['text']}")
-import os; print(f"wrote {os.path.getsize('sections.txt'):,} bytes")
+section_pages = [5, *range(21, 26), 62, 63, 64]     # from the outline
+chunks = pdf_pages("report.pdf", pages=section_pages, mode="text")
+open("pull.txt", "w").write(
+    "".join(f'\n[page {c["page"]}]\n{c["text"]}' for c in chunks))
+print("bytes:", __import__("os").path.getsize("pull.txt"))
 ```
 
-Then `read` `sections.txt` (with `offset`/`limit` if it is large).
-~800 tokens/page as text vs ~8K tokens as an attached image — and you
-pay it once.
+Then `read` `pull.txt`, with `offset`/`limit` when it's long. As text a
+page runs ~800 tokens; as an attached image ~8K — and the parse is paid
+once.
 
-## Recipe — read a figure in detail
+## Figures: render high, crop tight
 
-A full page render is too low-res to read axis labels off a dense
-figure. Render high-DPI, crop the figure region with PIL, then view the
-crop:
+A whole-page render can't resolve axis labels on a dense figure. Render at
+high dpi, crop to the figure with PIL, and view the crop:
 
 ```python
-p = pdf_pages("paper.pdf", mode="image", pages=[5], dpi=200)[0]
+page = pdf_pages("report.pdf", mode="image", pages=[7], dpi=200)[0]
 from PIL import Image
-Image.open(p["image_path"]).crop((x0, y0, x1, y1)).save("fig_p5.png")
+Image.open(page["image_path"]).crop((x0, y0, x1, y1)).save("panel7.png")
 ```
 
-Then call `view_image` on `fig_p5.png` (or the full `image_path` once to
-locate the figure). Viewed images persist in context until `/compact`
-ages them — view the few crops that matter, not every page.
+`view_image` the crop (or the full `image_path` once, to locate the
+figure). Every viewed image stays in context until `/compact` ages it out —
+view the few crops that matter, never the whole render set.
 
-## Not available in this host
+## Boundaries
 
-The upstream skill's LLM fan-out helpers (`pdf_scan` semantic page
-ranking, `pdf_extract` structured sweeps, `pdf_map` per-page summaries)
-need an in-kernel model-call bridge wisp doesn't provide; they were
-removed rather than left to NameError. For an exhaustive sweep, dump all
-pages to files (recipe above, chunked) and work through them — or
-delegate the reading to the `explore` subagent once the text is on disk.
+The reference host's LLM helpers (`pdf_scan` page ranking, `pdf_extract`
+sweeps, `pdf_map` per-page summaries) require an in-kernel model bridge
+Wisp doesn't provide, so they don't exist here. For an exhaustive pass,
+dump pages to files in chunks (recipe above) and work through them, or hand
+the on-disk text to the `explore` subagent.

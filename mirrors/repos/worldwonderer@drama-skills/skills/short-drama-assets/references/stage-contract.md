@@ -2,36 +2,26 @@
 
 ## 目录
 
-- [运行时预检](#运行时预检)
+- [独立运行与项目集成](#独立运行与项目集成)
 - [所有权边界](#所有权边界)
+- [跨产物引用](#跨产物引用)
 - [制作形态需要什么](#制作形态需要什么)
 - [本阶段规则](#本阶段规则)
 
 本文件是本技能的自包含契约：预检、所有权、形态输入与规则表都在这里，
 不需要读取其他技能的文件。
 
-## 运行时预检
+## 独立运行与项目集成
 
-进入本阶段前先完成这套轻量预检。它只检查安装完整性、项目事务状态和已记录的精确引用，
-不评价创作内容。
+本技能可以单独安装并运行；下面几条说明项目工具存在时怎样集成。
 
-1. **验证安装**：从本技能目录的 `suite-ref.json` 解析到逻辑安装路径中的 core，用当前
-   环境可用的 Python 3 解释器运行 core 的 `scripts/suite_verify.py`。验证器沿逻辑安装
-   路径逐一检查清单中的技能；混装、缺件、额外可执行文件或 hash 不一致时停止写入，
-   也不要退回源码检出目录“借用”通过验证的兄弟技能。
-2. **先恢复事务，再读状态**：定位项目根目录后，先运行 core 的 `scripts/project_tool.py`
-   的 `recover`，再运行 `status`。`recover` 可重复执行；它报告 blocked 时保持创作者文件
-   原样并先处理冲突，不要绕过 WAL、手改状态文件或假定上次写入成功。`status` 中的
-   accepted/candidate 指针和阻断项是本阶段工作的当前事实。
-3. **只通过公开生命周期写入**：负责人用 `publish` 原子发布候选，并给每个外部结构化引用
-   提供精确 input hash。上游接受引用不继承候选状态。创作者接受、独立审查与内容修订是
-   不同动作。每次修订后重新运行适用的结构校验，并让下游刷新旧 hash。打包是最终交付闸门，
-   不是接受或审查命令；仍有阻断项时不打包。
-4. **读共享 JSON/JSONL 时同时声明读了哪几条记录**：`设定集/*.jsonl` 与项目文件是全项目
-   共享输入，只按整文件 hash 绑定会让后续任何一次增补把此前引用过它的产物全部标为
-   `stale`。发布时对这类输入补 `--input-record <path>=<selector>`（JSONL 用记录 ID，
-   JSON 用 RFC 6901 指针，每条一次），此后只有被绑定的记录变化才会影响本产物。
-   Markdown 没有可机器校验的记录身份，仍按整文件绑定。
+1. **读取直接输入**：只读取用户明确提供或当前任务实际需要的文件，不批量加载整个项目。
+2. **可选项目集成**：若存在 `short-drama.json` 且 core 项目工具可用，可以运行
+   `python3 <core>/scripts/project_tool.py status <project>`，使用返回的目录布局和语言设置；
+   core 不可用时，直接基于已提供输入产出本阶段文件。
+3. **可选发布生命周期**：项目工具可用时，用 `publish` 原子发布并用 `--input <path>`
+   声明直接输入；`accept`、`review` 与 `package` 继续承担确认、复核与交付。
+4. **保持职责分离**：创作者确认、内容修订和复核是不同动作；reviewer 提修改要求，负责人改文件。
 
 ## 所有权边界
 
@@ -40,6 +30,47 @@
 - **本阶段继承**：剧本给出的身份、地理与文字政策；故事状态条目是开发/剧本的只读投影。
 - **本阶段不越权**：不决定镜头构图与动作终态，不改写剧情事实。台账里的故事状态只带来源
   指针，不构成第二个取值权威。
+
+## 跨产物引用
+
+同一份上游快照被一个文件反复引用时，在开头声明一次，之后每条引用只写快照键和记录 ID。
+声明本身也占篇幅，所以只被引用一两次的快照直接把 `owner`、`artifact`、`hash` 写在那条引用里。
+
+`.jsonl` 的第一行是声明记录：
+
+```json
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/EP003/screenplay-index.jsonl","hash":"<sha256>"},"characters":{"owner":"short-drama-assets","artifact":"设定集/characters.jsonl","hash":"<sha256>"}}}
+```
+
+`.json` 用顶层 `"sources"` 对象，条目形状相同。
+
+`sources` 的键短、小写，由产物文件名派生（`characters`、`looks`、`locations`、
+`location-views`、`props`、`prop-states`、`occurrences`、`screenplay-index`），在本文件内
+唯一且稳定。同一文件内，一个产物只声明一个 `hash`。
+
+引用写成：
+
+```json
+{"src":"characters","record_id":"CHAR-GUHE"}
+```
+
+指向记录中某个字段时加 `field`（JSON pointer）；引用方需要区分权威等级时加 `authority`
+（`accepted` / `candidate`），它属于这一条引用，不属于快照。指向整份产物或产物级字段时
+省略 `record_id`。
+
+创作者的接受记录发布在 `创作者决策/` 下，一条决定一个文件或一份 `.jsonl` 里的一行，
+每条至少写 `decision_id`（`CD-` 前缀）、`decision_kind` 和 `status`。资产记录的
+`creator_acceptance.decision_ref` 先把那份决策文件写进本文件的 `sources`，再按快照键引用它：
+
+```json
+{"status":"accepted","decision_ref":{"src":"cd-char-001","record_id":"CD-CHAR-001"}}
+```
+
+`assets/*.example.jsonl` 是模板目录，每条记录各有自己的 `destination`。把一条记录复制进
+它的目标文件时，把这条记录用到的 `sources` 条目一并写进那个文件的声明行。
+
+尚未发布的下游产物写 locator：`owner`、项目相对路径、`selector` 和 `status`。它在真正
+发布并有 `hash` 之后才进入 `sources`，改写成 `src` 引用。
 
 ## 制作形态需要什么
 
@@ -70,7 +101,7 @@
 
 | ID | Class | Knowledge |
 |---|---|---|
-| AST-01 | structural_invariant | Extract occurrences with source block/hash before creating or binding an asset. |
+| AST-01 | structural_invariant | Extract occurrences with a declared source snapshot and block ID before creating or binding an asset. |
 | AST-02 | reviewed_invariant | Reconcile each occurrence as reuse, new identity, new variant, or unresolved—never guess an ambiguous name/pronoun. |
 | AST-03 | craft_default | Separate Character/Look, Location/View, and Prop/State. |
 | AST-04 | reviewed_invariant | Persistent identifying anchors and mutable state are not mixed. |

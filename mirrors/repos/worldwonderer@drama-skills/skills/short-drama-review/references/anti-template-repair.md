@@ -103,11 +103,12 @@ Reviewer 必须说明：重复是否是 creator choice、第二次新增了什�
 }
 ~~~
 
-真实 finding 还要使用 canonical ArtifactRef 与精确 hash/record。
+真实 finding 还要在 `evidence_refs` 和 `target_ref` 写出上游引用：
+`{"src": "<sources 键>", "record_id": "<记录 ID>"}`，快照由文件的 `sources` 声明绑定。
 
 ## 5. 分级
 
-- structural_invariant：finding 元数据、ArtifactRef、owner/status 可解析。
+- structural_invariant：finding 元数据、上游引用、owner/status 可解析。
 - reviewed_invariant：下游没有改写 source meaning；需证据判断。
 - craft_default：避免无意义的因果/策略/表达/镜头重复；可由创作者说明覆盖。
 - taste_option：类型惯例、仪式重复、running gag、固定镜头风格本身不阻断。

@@ -59,7 +59,7 @@
 | 分级 | 含义 | 谁能判定 |
 |---|---|---|
 | `structural_invariant` | 本地可证明的引用、ID、算术或显式状态矛盾 | 校验器可阻断 |
-| `reviewed_invariant` | 语义义务，需要引用证据判断 | 独立审查者 |
+| `reviewed_invariant` | 语义义务，需要引用证据判断 | reviewer |
 | `craft_default` | 通常有帮助的做法 | 创作者说明理由即可覆盖 |
 | `taste_option` | 创作者的表达选择 | 不得单独阻断交付 |
 

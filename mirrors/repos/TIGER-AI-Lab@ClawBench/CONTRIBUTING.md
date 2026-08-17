@@ -32,7 +32,7 @@ If no `good first issue` is currently open, just open one with your idea and we'
 
 ## Adding a new test case
 
-ClawBench currently has two full task corpora: V1 lives in `test-cases/v1/` with 153 tasks, and V2 lives in `test-cases/v2/` with 130 tasks. Both use `test-cases/task.schema.json`. Unless a maintainer asks for a V2-only contribution, add new tasks to V1.
+ClawBench currently has two full task corpora: V1 lives in `test-cases/v1/` with 152 tasks, and V2 lives in `test-cases/v2/` with 129 tasks. Both use `test-cases/task.schema.json`. Unless a maintainer asks for a V2-only contribution, add new tasks to V1.
 
 1. **Pick a task ID** — find the next available number by checking existing directories in the target corpus (`test-cases/v1/` for V1, or `test-cases/v2/` for V2).
 
@@ -125,9 +125,9 @@ Please use the [issue templates](https://github.com/reacher-z/ClawBench/issues/n
 
 Questions, task ideas, model submissions, or just want to chat about browser agents?
 
-- **Discord:** [discord.gg/clawbench](https://discord.gg/clawbench) — English, agent-builder-friendly, `#contributors` channel
+- **GitHub issues:** [open one](https://github.com/TIGER-AI-Lab/ClawBench/issues/new/choose) — fastest route to a maintainer
 - **微信群:** use the [QR code](./assets/community/wechat_grp_422.jpg)
-- **GitHub Discussions:** [github.com/reacher-z/ClawBench/discussions](https://github.com/reacher-z/ClawBench/discussions) — asynchronous, searchable
+- **Hugging Face:** [dataset discussions](https://huggingface.co/datasets/NAIL-Group/ClawBench/discussions) — asynchronous, searchable, next to the data
 - **Email:** open an issue; we respond there first
 
 ## Code of conduct

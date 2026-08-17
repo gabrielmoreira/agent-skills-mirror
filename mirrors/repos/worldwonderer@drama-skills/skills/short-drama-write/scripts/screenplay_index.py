@@ -17,7 +17,7 @@ import sys
 import tempfile
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 
 # Creators run these scripts on whatever interpreter their machine provides, so
@@ -30,7 +30,111 @@ if sys.version_info < MINIMUM_PYTHON:
         )
     )
 
+# ---------------------------------------------------------------------------
+# REFERENCE RESOLVER -- reference implementation.
+#
+# Each skill checker carries its own copy of this block. The suite has no shared
+# library on purpose: a skill must stay runnable after copying only its own
+# directory, so duplicating these few lines across skills is the correct shape.
+# Copy the block verbatim; do not import it.
+# ---------------------------------------------------------------------------
+
+SOURCES_RECORD_TYPE = "sources"
+SOURCES_SCHEMA_VERSION = "1.0.0"
+SOURCES_KEY = "sources"
+
+
+class ResolvedRef(NamedTuple):
+    """An upstream reference with its snapshot resolved, whichever form it used."""
+
+    owner: str
+    artifact: str
+    hash: str
+    record_id: str | None
+    field: str | None
+    authority: str | None
+
+
+class RefFinding(NamedTuple):
+    """A structural defect in a reference object."""
+
+    code: str
+    location: str
+    detail: str
+
+
+def load_sources(document: Any) -> dict[str, dict[str, Any]]:
+    """Return the ``sources`` declaration of a parsed file, or ``{}`` if absent.
+
+    Accepts a parsed ``.json`` document (a dict) or the parsed record list of a
+    ``.jsonl`` file, whose declaration lives on the first record.
+    """
+    if isinstance(document, list):
+        document = document[0] if document else None
+    if not isinstance(document, dict):
+        return {}
+    declared = document.get("sources")
+    if not isinstance(declared, dict):
+        return {}
+    return {key: value for key, value in declared.items() if isinstance(value, dict)}
+
+
+def resolve_ref(
+    ref: Any, sources: dict[str, dict[str, Any]], location: str
+) -> tuple[ResolvedRef | None, RefFinding | None]:
+    """Resolve a reference object written in either the compact or expanded form."""
+    if not isinstance(ref, dict):
+        return None, RefFinding("REF_IS_NOT_AN_OBJECT", location, f"got {type(ref).__name__}")
+    src = ref.get("src")
+    if isinstance(src, str):
+        entry = sources.get(src)
+        if entry is None:
+            return None, RefFinding(
+                "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
+            )
+        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
+        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+            return None, RefFinding(
+                "SOURCE_ENTRY_IS_INCOMPLETE",
+                location,
+                f"sources[{src!r}] needs owner/artifact/hash",
+            )
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
+        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    else:
+        return None, RefFinding(
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+        )
+    optional = {
+        key: ref[key]
+        for key in ("record_id", "field", "authority")
+        if isinstance(ref.get(key), str)
+    }
+    return (
+        ResolvedRef(
+            owner,
+            artifact,
+            digest,
+            optional.get("record_id"),
+            optional.get("field"),
+            optional.get("authority"),
+        ),
+        None,
+    )
+
+
+# ---------------------------------------------------------------------------
+# END REFERENCE RESOLVER
+# ---------------------------------------------------------------------------
+
 SCHEMA_VERSION = "1.0.0"
+
+# An index declares its upstream screenplay once, on the meta record, and every
+# reference in the file names it by key. A rebuild against a previous index adds
+# a second key only when the previous screenplay is a different snapshot.
+SCREENPLAY_SOURCE_KEY = "screenplay"
+PREVIOUS_SCREENPLAY_SOURCE_KEY = "previous-screenplay"
+
 SUPPORTED_TAGS = ("VO", "OS", "SFX", "画面文字", "连续性", "转场")
 KIND_CODES = {
     "scene_heading": "H",
@@ -426,10 +530,12 @@ def _load_previous(
 ) -> list[dict[str, Any]]:
     source_data = previous_source_path.read_bytes()
     records = _read_jsonl(previous_index_path)
-    if not records or records[0].get("record_type") != "screenplay_index_meta":
+    sources = load_sources(records)
+    body = [record for record in records if record.get("record_type") != SOURCES_RECORD_TYPE]
+    if not body or body[0].get("record_type") != "screenplay_index_meta":
         raise ValueError("previous index is missing screenplay_index_meta")
-    previous_ref = records[0].get("source_ref")
-    if not isinstance(previous_ref, dict) or previous_ref.get("hash") != _sha256(source_data):
+    resolved, _defect = resolve_ref(body[0].get("source_ref"), sources, "previous_index")
+    if resolved is None or resolved.hash != _sha256(source_data):
         raise ValueError("previous source hash does not match previous index")
     previous_speakers = frozenset(
         speaker
@@ -757,11 +863,14 @@ def build_index(
 
     source_data = source.read_bytes()
     source_sha256 = _sha256(source_data)
-    source_artifact_ref = {
-        "owner": "short-drama-write",
-        "artifact": _portable_source_ref(source, source_ref),
-        "hash": source_sha256,
+    declared_sources: dict[str, dict[str, str]] = {
+        SCREENPLAY_SOURCE_KEY: {
+            "owner": "short-drama-write",
+            "artifact": _portable_source_ref(source, source_ref),
+            "hash": source_sha256,
+        }
     }
+    source_artifact_ref: dict[str, str] = {"src": SCREENPLAY_SOURCE_KEY}
     if authority == "candidate":
         source_artifact_ref["authority"] = "candidate"
     current, source_issues = _parse_screenplay(source_data, speaker_names)
@@ -770,11 +879,16 @@ def build_index(
     previous_source_ref: dict[str, str] | None = None
     if previous_index_path is not None and previous_source_path is not None:
         previous_source = Path(previous_source_path)
-        previous_source_ref = {
+        previous_snapshot = {
             "owner": "short-drama-write",
             "artifact": _portable_source_ref(previous_source, source_ref),
             "hash": _sha256(previous_source.read_bytes()),
         }
+        previous_key = SCREENPLAY_SOURCE_KEY
+        if previous_snapshot != declared_sources[SCREENPLAY_SOURCE_KEY]:
+            previous_key = PREVIOUS_SCREENPLAY_SOURCE_KEY
+            declared_sources[previous_key] = previous_snapshot
+        previous_source_ref = {"src": previous_key}
         if authority == "candidate":
             previous_source_ref["authority"] = "candidate"
         previous = _load_previous(
@@ -829,6 +943,7 @@ def build_index(
         "source_issue_count": len(issue_records),
         "mapping_review_count": len(review_requests),
         "review_status": review_status,
+        SOURCES_KEY: declared_sources,
     }
     records = [meta]
     records.extend(_public_block(block, source_artifact_ref) for block in current)

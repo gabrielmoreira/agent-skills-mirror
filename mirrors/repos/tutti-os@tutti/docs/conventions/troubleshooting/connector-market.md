@@ -29,3 +29,19 @@ current session's `pending` state only in the Start command result so shared
 clients continue that idempotent session. Do not persist a synthetic connected
 projection, infer success from the Start operation's terminal state, or create a
 second external session to refresh the UI.
+
+### OAuth finishes in the browser but does not return to the initiating desktop build
+
+**Symptoms**
+
+- the authorization result page renders and its return link uses a valid desktop scheme
+- a development build started the flow, but the link targets the production scheme
+- the result page host is `tutti.sh`, so deriving the desktop environment from the web host selects the wrong application
+
+**Check**
+
+Inspect the server-owned authorization bridge URL before it leaves the renderer. It must carry both the client identity and an exact `openAppUrl` for the initiating build, such as `tutti-dev://open`. Confirm the web transition page stores that value before navigating to the provider and that the result page uses the same sanitized value for both automatic navigation and the manual link.
+
+**Rule**
+
+The initiating desktop build owns the callback environment. Do not infer a production or development desktop scheme from the authorization website hostname. Web code must accept only the exact supported `open` routes and keep the legacy client marker solely as compatibility for already released clients.

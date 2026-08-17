@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 64 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 64 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 64 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -109,20 +109,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`.github/skills/prompt-token-efficiency/SKILL.md`](.github/skills/prompt-token-efficiency/SKILL.md) |
 | 49 | ✓ | [`.github/skills/reporting/SKILL.md`](.github/skills/reporting/SKILL.md) |
 | 50 | ✓ | [`.github/skills/resolve-merge-conflicts/SKILL.md`](.github/skills/resolve-merge-conflicts/SKILL.md) |
-| 51 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
-| 52 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
-| 53 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
-| 54 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
-| 55 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
-| 56 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
-| 57 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 58 | ✓ | [`docs/src/content/docs/engines/claude.md`](docs/src/content/docs/engines/claude.md) |
-| 59 | ✓ | [`docs/src/content/docs/engines/gemini.md`](docs/src/content/docs/engines/gemini.md) |
-| 60 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
-| 61 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
-| 62 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
-| 63 | ✓ | [`SKILL.md`](SKILL.md) |
-| 64 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
+| 51 | ✓ | [`.github/skills/restricted-tool-triage/SKILL.md`](.github/skills/restricted-tool-triage/SKILL.md) |
+| 52 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
+| 53 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
+| 54 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
+| 55 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
+| 56 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
+| 57 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
+| 58 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 59 | ✓ | [`docs/src/content/docs/engines/claude.md`](docs/src/content/docs/engines/claude.md) |
+| 60 | ✓ | [`docs/src/content/docs/engines/gemini.md`](docs/src/content/docs/engines/gemini.md) |
+| 61 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
+| 62 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
+| 63 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
+| 64 | ✓ | [`SKILL.md`](SKILL.md) |
+| 65 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
 
 ---
 

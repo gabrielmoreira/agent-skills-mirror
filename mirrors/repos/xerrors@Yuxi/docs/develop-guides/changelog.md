@@ -10,16 +10,22 @@
 1. 升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
 :::
 
+- 建立 Agent-first 工程信任系统：高风险主张在语义 Owner 处绑定负向 oracle、CI gate 与决策记录，审计视图从当前代码、测试、workflow 和决策派生；补齐 Web gate 和完整 unit inventory。API 分离 liveness/readiness；Run 输出只允许当前 lease owner 绑定同 conversation、Run 与 request 的 assistant Message，缺失或非法输出不能进入 completed；worker 以 attempt lease/heartbeat 识别失联并收敛为带 `worker_lease_expired` 原因的失败，PostgreSQL 取消事实与终态不再被 Redis 事件故障绕过。LITE startup 不创建或宣告知识能力，Web 从 runtime discovery 同步隐藏并停止请求不存在的能力；checkpoint 初始化不再静默改变持久化语义。
+- API Key 创建支持并发与响应丢失后的安全重放；删除用户、OIDC 恢复和旧库升级均保留不可复活 tombstone，API/CLI 创建与删除按 User 行锁串行化。三项安全密钥不可复用，Bash/PowerShell 均有原生负控。Web 错误对象不再携带任意服务端上下文。
+
 - 清理测试套件冗余：删除 5 个自证式/假绿/重复覆盖的测试文件（`test_hash_utils`、`test_skills_backend_error_handling`、`test_graph_router_list`、`test_agent_sync_e2e`、`test_viewer_filesystem_e2e`），合并约 50 个文件的重复场景与参数转发断言，抽取 eval 与 e2e 共享 helper；净减约 2,900 行测试代码，真实回归覆盖不变。
 
 
 - 完善 Agent Token 用量统计：state 同时保留近似上下文与主 Agent 模型返回的 Provider `usage_metadata`，实际用量拆分为最近调用、当前 Run 和线程累计；前端只读取 state，终态 chunk 不传递用量，worker 在 Run 终态时将父线程中 Run ID 匹配的 state 快照写入 AgentRun。支持 OpenAI priority/flex 缓存明细；L2 摘要内部调用暂未计入完整账单口径。
 - 对话输入草稿按线程保存：输入内容实时写入 localStorage（按线程 ID 区分），切换对话时保存旧线程草稿并还原新线程草稿，新建对话使用独立草稿、发送创建线程后自动清理，刷新页面后草稿仍可还原，删除对话时同步清理对应草稿。
+- Agent 侧边栏文件面板与工作区新增文件搜索：按文件名递归匹配（Agent 面板限当前对话 viewer 命名空间，工作区限个人工作区），弹窗样式与对话搜索一致，支持关键词高亮与键盘操作，命中文件可直接打开预览；侧边栏 outputs/uploads 目录为空时不再展示，workspace 目录默认展开。
+- 统一全局搜索弹窗：对话搜索与工作区文件搜索合并为同一组件，侧边栏入口默认搜索对话并可在「对话 / 工作区文件」间切换，工作区与 Agent 面板入口默认搜索对应文件；侧边栏搜索到工作区文件后跳转工作区并自动打开预览。
 - 对话消息补充时间信息：历史接口为 assistant 消息附上关联 run 的 started_at/finished_at；复制按钮右侧以纯文本显示消息完成时间，点击切换为执行耗时（如"耗时 5s"）再点切回，无背景色块与时钟图标；时间按相对规则展示（今天 HH:mm、昨天、一周内周几、更早显示日期、跨年补全年份）。流式生成时 loading 旁实时显示已执行时长，loading 指示器去除背景色块并改为轻微呼吸的文字样式。
 - 修复 Agent 产物 Word 文件无法预览：查看器文件预览路径（outputs、uploads、沙盒文件）与工作区一致，docx/pptx 先经 LibreOffice 转换为 PDF 再预览，转换失败返回明确错误，不再判定为二进制文件拒绝预览。
 - Agent 文件预览的 HTML 预览新增缩放比例调节（默认 90%，范围 60%–150%，步进 10%）：内联、顶部工具栏与全屏预览均提供缩小/放大按钮并实时显示百分比，切换文件时重置为默认比例，预览/源码模式切换仅在预览态显示缩放控件。
 - 修复公开图片上传的存储型 XSS 风险：头像与用户图片不再信任客户端 MIME 或文件名后缀，服务端校验真实图片内容且仅接受 PNG、JPEG、WebP、GIF，对象名使用识别出的固定安全后缀，拒绝伪装成图片的 SVG。
 - 修复知识库图片公开访问风险：解析产生的知识库图片从 `public` bucket 迁移到私有 `kb-images` bucket，新增带知识库读权限校验的后端代理接口按需读取；Markdown 预览对代理图片携带鉴权头加载为 blob URL，未登录或无权限用户无法匿名访问图片，头像/Agent 图标等公开资源不受影响。
+- 登录新增 IP 级失败限速并修复锁定计数残留：`/auth/token` 按「IP+账号」与「IP 全局」在 Redis 滑动窗口内累计失败（10 分钟内 10/30 次，跨 worker 与重启有效），超限返回 429 与 Retry-After，与账号级锁定叠加；账号锁定到期后首次访问清零失败计数，解锁后首次失败不再立即重新锁定；登录成功清除对应 IP+账号失败记录。
 - 修复个人 Skill 列表权限解析错误：个人工作区 Skill 不再进入共享配置解析，所有者获得管理权限，其他用户不可访问；同时修正数据库 UTC-naive 时间的序列化，子智能体运行时间不再错误偏移 8 小时。
 
 - 优化知识库文档列表性能：根目录虚拟目录分组改用部分索引（`idx_kf_kb_parent_segment` 按路径首段聚合），平铺文件筛选与排序用 `idx_kf_kb_parent_flat` 支撑，避免大知识库全表扫描与 46MB 磁盘排序溢出；文件统计聚合结果增加 10 秒 Redis 短缓存，列表、统计、子目录计数与创建人查询并行执行，前端自动刷新轮询间隔同步调整为 10 秒。36 万文件知识库列表接口耗时由约 1.3s 降至约 300ms。

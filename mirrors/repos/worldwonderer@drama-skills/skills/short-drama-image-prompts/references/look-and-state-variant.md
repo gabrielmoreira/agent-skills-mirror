@@ -62,7 +62,7 @@
 ## 4. 变体 plate 与 edit 的区别
 
 - **Variant plate** 描述一个已接受、可被多个镜头复用的完整当前状态；它可以从零编写 generic prompt，不依赖某张待编辑图片。
-- **Edit-delta** 针对 exact existing artifact/hash/region，说明 change/preserve/continuity impact；用于“从现有参考改成 accepted variant”的提示词。
+- **Edit-delta** 针对 `target_ref` 指名的精确快照、记录与 region，说明 change/preserve/continuity impact；用于“从现有参考改成 accepted variant”的提示词。
 
 若创作者说“把袖子改湿”：
 

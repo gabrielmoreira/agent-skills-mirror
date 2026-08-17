@@ -1,7 +1,7 @@
 ---
 name: improve
-version: 3.17.2
-description: 'The improvement skill. Understand the ask, examine the target, challenge the first read, decide on one change (or argue for redesign, or declare silence), act, reflect on the target, and record. Combines incremental refinement, structural rethinking, and reflection on the target itself. USE WHEN: improve, audit, review, fix, refactor, redesign, evaluate, what would make this better, am I missing something.'
+version: 3.19.0
+description: 'The improvement skill. Understand the ask, examine the target, challenge the first read, decide on one change (or argue for redesign, or declare silence), honor the operator''s supervision or delegation boundary, act, reflect, record, and report the result clearly. USE WHEN: improve, audit, review, fix, refactor, redesign, evaluate, what would make this better, am I missing something.'
 argument-hint: 'The target to improve, and optionally the concern (correctness, simplicity, performance, etc.)'
 ---
 
@@ -31,7 +31,7 @@ Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it 
 
 **Apply [Intent](../intent/SKILL.md) automatically now.** Intent is an ingress service of the full suite, not a command the operator must remember to invoke. Do not ask the operator to run it separately. Continue to step 2 when done.
 
-Tell the operator what is happening in one useful sentence: Intent is interpreting this prompt as the mandate for the current run, and Improve will proceed under that interpretation unless corrected. A repository-level `.acm/destination.md` is not required for the first run. When no durable Destination exists, the narrated interpretation, current conversation, and target evidence govern this iteration.
+Tell the operator what is happening in one useful sentence: Intent is interpreting this prompt as the mandate for the current run, then will honor the explicit supervision or delegation boundary before Improve continues. A repository-level `.acm/destination.md` is not required for the first run. When no durable Destination exists, the confirmed interpretation, current conversation, and target evidence govern this iteration.
 
 If this is a standalone Improve installation and Intent is unavailable: before examining anything, narrate your interpretation of what you've been asked to do, in your own words. State what you believe the destination is and what would count as success. If your interpretation diverges from a literal reading of the request, say so explicitly so the operator can correct course before you act.
 
@@ -72,6 +72,7 @@ Several lenses are available as thinking tools — not a procedure, not a checkl
 - **Inconsistency.** Where does the target contradict itself? Mixed conventions, asymmetric handling of similar cases, naming patterns that diverge for no reason. Inconsistency is often a root cause whose symptoms surface elsewhere.
 - **Overburden.** Where is some component asked to do too much? Functions, modules, files, or processes that concentrate too many responsibilities. Overburden concentrates risk: the overburdened component is the one most likely to break and hardest to change.
 - **Waste.** Where does the target carry things that don't earn their existence? Dead code, abstractions with one consumer, validation that can never fire, documentation that restates the obvious. Waste creates cognitive load without contributing value.
+- **Capability leverage.** Has a change in available capability altered what is possible or worthwhile for this target? Determine what matters from the target's purpose and current evidence; availability alone is not evidence of improvement.
 
 If the target's problems don't fit these lenses, describe what you actually see. Add lenses as the target warrants (security posture, performance, type safety, accessibility, whatever applies). Name every lens you apply and what it revealed — including "nothing actionable."
 
@@ -86,9 +87,9 @@ The third question is the Kaikaku question. If the answer is yes, do not produce
 
 If you find nothing the first read missed, say so. Do not manufacture blind spots to appear thorough.
 
-### 4. Decide, Offer, and Predict
+### 4. Decide, Gate, Offer, and Predict
 
-This step has two parts. First, decide on the work for *this* iteration. Second, offer candidates for the *next* iteration. This is the operator-gate, where the human can steer the work.
+This step has three parts. Decide on the work for *this* iteration, honor its execution-authority boundary, then offer candidates for the *next* iteration.
 
 #### 4a. Decide and Predict
 
@@ -98,7 +99,21 @@ Pick one of:
 - **Argument for redesign.** A statement of why incremental work won't pay off here, and a sketch of what redesign would look like. Stop and surface the argument; do not redesign without confirmation.
 - **Silence.** Nothing actionable was found. State what was examined and why nothing warranted change. **Silence claims must be bounded.** Name the quality bar this iteration was testing against (e.g. internal text-layer consistency, comparative defensibility under hostile external review, comparator coverage, empirical replication, operational deployability), the surfaces in scope, and the bars *not* tested by this iteration. Unbounded silence ("nothing actionable found" without naming the bar) is the form most likely to be overturned by the next operator-initiated probe testing a different bar. This advances the convergence chain (Principle 3) and is a legitimate outcome. *Origin:* this requirement mirrors the named-boundary rule in `orient/SKILL.md` step 5a; both originate in the manifesto target's retro-v201 → retro-v202 transition (2026-06-04). Full provenance in this repo's `.acm/audit-trail.md` under entry slug `retro-named-boundary-rule-from-manifesto-arc` and follow-up slug `improve-destination-named-boundary-symmetric`.
 
-#### 4b. Offer Next Moves
+#### 4b. Honor Execution Authority
+
+Before Act, state the proposed change and its verification in one short sentence:
+
+> I want to <change> because <reason>, then verify it by <check>.
+
+Determine authority only from explicit evidence in the current prompt or confirmed Destination. Without explicit delegation of this routine gate, ask: **Proceed**, **Stop**, or **Specify**. Wait for the answer.
+
+- **Proceed:** continue to Act.
+- **Stop:** make no target change; record the stopped decision when it produced a material finding or authority signal.
+- **Specify:** return to Intent with the operator's additional information, then re-examine and decide again. Do not apply the old proposal under a patched mandate.
+
+When this routine gate was explicitly delegated, name the source and scope briefly and continue without waiting. Delegation never answers a Destination question, approves a direction change, bypasses an operator-declared consequential-action gate, or authorizes a deliberate reduction in reasoning, memory, learning, or evidence capability. Host-wide autopilot is not authority evidence because it cannot preserve those distinctions.
+
+#### 4c. Offer Next Moves
 
 After deciding on this iteration's work but before acting, surface a short ranked list of candidate next moves with one-sentence reasoning each. Two or three options is the typical shape; one is fine if only one stands out; zero is fine if convergence was declared.
 
@@ -199,6 +214,18 @@ After the Trail entry is durable, apply Destination first if step 7 scheduled it
 
 Then apply Orient if needed. When Improve already scheduled Orient and Destination materially changes direction, the post-Destination Orient satisfies both needs: run it once, against the changed Destination and full trail. Orient writes its own Trail entry and refreshes `.acm/orientation.md`; it never changes the target. If neither service was scheduled, stop without ceremony.
 
+### 9. Report the result
+
+End with exactly one crisp operator-facing result line. Use the matching shape:
+
+- **Changed:** `Changed <target>: <what changed and why>. Verification: <result>.`
+- **Silence:** `No change to <target>: tested <quality bar> across <scope>; nothing actionable found. Verification: <result>.`
+- **Redesign:** `No change to <target>: redesign recommended because <reason>. Evidence: <result>.`
+- **Stopped:** `Stopped before changing <target>: <proposal> was not authorized. Verification: no target change.`
+- **Failed:** `Could not complete <target>: <blocker or failure>. Verification: <what did and did not run>.`
+
+Link to detailed evidence instead of repeating the Trail.
+
 ## Self-targeting
 
 This skill must be runnable on itself. If running Improve on `improve/SKILL.md` and `probe/SKILL.md` produces nothing actionable, that is evidence the skills are simple enough. If it produces a list of fixes, do them. If it produces an argument for redesign, surface it.
@@ -207,4 +234,5 @@ This skill must be runnable on itself. If running Improve on `improve/SKILL.md` 
 
 - It does not score the target on a numerical rubric. v2 did this and the question "who made up these metrics?" never went away. Convergence — diverse independent evaluators finding nothing to change — is the only honest measure of done.
 - It does not make the operator orchestrate support skills. In the full suite, Improve automatically applies Intent at ingress, Trail at egress, Destination when durable direction becomes necessary, and Orient when accumulated evidence makes Orientation stale. A standalone Improve installation retains local fallback behavior when a sibling is unavailable.
+- It does not treat host-wide autopilot as blanket permission. Routine gates may be explicitly delegated; operator-owned direction and consequential gates remain blocking.
 - It does not tell you when to stop. The convergence protocol in PRINCIPLES.md does.

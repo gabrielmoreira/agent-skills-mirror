@@ -21,18 +21,24 @@ const ALLOWED_SERVICES = [
 type AllowedService = (typeof ALLOWED_SERVICES)[number];
 
 /**
- * tcb 旧版小租户云托管（CloudBase Run）API 族，统一禁用。
+ * Legacy tcb small-tenant CloudRun (CloudBase Run) API family — blocked.
  *
- * 云托管一律走 tcbr 新逻辑（CreateCloudRunEnv / CreateCloudRunServer）。tcb 的
- * CreateCloudBaseRunResource 是 2018 旧小租户开通接口：在无大租户记录的环境上调用
- * 会把服务创建到小租户，产生错误的服务与版本（2026-08-13 用户实测，ATO 调研
- * efec7cc5 结论）。同族 Describe/Delete 一并拦截，避免 AI 误以为与 tcbr 环境相关。
+ * CloudRun must use tcbr (CreateCloudRunEnv / CreateCloudRunServer). tcb
+ * CreateCloudBaseRunResource is the 2018 small-tenant open API and is no longer
+ * publicly listed; calling it on an env without a large-tenant record creates
+ * wrong small-tenant services/versions (user incident 2026-08-13; ATO research
+ * efec7cc5). Describe/Delete of the same family are blocked too. Matching is
+ * case-insensitive so Action casing variants cannot bypass the check.
  */
 const TCB_CLOUDRUN_FORBIDDEN_ACTIONS = [
     "CreateCloudBaseRunResource",
     "DescribeCloudBaseRunResource",
     "DeleteCloudBaseRunResource",
 ] as const;
+
+const TCB_CLOUDRUN_FORBIDDEN_ACTIONS_LOWER = new Set(
+    TCB_CLOUDRUN_FORBIDDEN_ACTIONS.map((name) => name.toLowerCase()),
+);
 
 const TCB_CLOUDRUN_FORBIDDEN_HINT =
     `云托管（CloudBase Run）统一走 tcbr 新逻辑（CreateCloudRunEnv / CreateCloudRunServer），` +
@@ -41,10 +47,10 @@ const TCB_CLOUDRUN_FORBIDDEN_HINT =
     `再通过 manageCloudRun(action="deploy") 创建服务；查询单个环境基础信息/是否已开通云托管用 callCloudApi(service="tcbr", version="2022-02-17", action="DescribeEnvBaseInfo", params={EnvId:"..."})，查询环境列表/资源信息用 DescribeCloudRunEnvs。`;
 
 /**
- * 拒绝 tcb 旧版小租户云托管 API。命中黑名单时抛出带 tcbr 引导的错误。
+ * Reject legacy tcb small-tenant CloudRun APIs; throw with tcbr guidance when blocked.
  */
 export function assertTcbCloudRunActionAllowed(service: string, action: string): void {
-    if (service === "tcb" && (TCB_CLOUDRUN_FORBIDDEN_ACTIONS as readonly string[]).includes(action)) {
+    if (service === "tcb" && TCB_CLOUDRUN_FORBIDDEN_ACTIONS_LOWER.has(action.toLowerCase())) {
         throw new Error(`[${service}/${action}] 已禁用：${TCB_CLOUDRUN_FORBIDDEN_HINT}`);
     }
 }
@@ -307,10 +313,14 @@ export function registerCapiTools(server: ExtendedMcpServer) {
                 }
                 if (service === 'tcb') {
                     const tcbCapiForbidList = [
-                        // 未明确对外的云API
+                        // Cloud APIs not clearly public
                         'DescribeStorageACL', 'ModifyStorageACL', 'DescribeSecurityRule',
+                        // Legacy small-tenant CloudRun open/query/delete (no longer public; also blocked by assertTcbCloudRunActionAllowed)
+                        "CreateCloudBaseRunResource",
+                        "DescribeCloudBaseRunResource",
+                        "DeleteCloudBaseRunResource",
 
-                        // 要下线的云API
+                        // Cloud APIs scheduled for retirement
                         "ListTables",
                         "DescribeCloudBaseGWAPI",
                         "DescribeCloudBaseGWService",

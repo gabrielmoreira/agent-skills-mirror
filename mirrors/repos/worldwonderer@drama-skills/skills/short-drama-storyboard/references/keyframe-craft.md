@@ -27,7 +27,10 @@ accepted shot. A keyframe is not a compressed video prompt.
 2. **Focal subject:** exact asset and variant IDs.
 3. **Frame:** shot size, angle, lens intent, aspect-aware composition.
 4. **Geography:** Location/View, fixed anchors, foreground/background zones.
-5. **Boundary projection:** exact start position, pose, gaze, hands, held props.
+5. **Boundary projection:** exact start position, body facing, pose, gaze, hands,
+   held props. Give body facing for every person — it fixes which screen side they
+   hold and which side the next reverse cuts from; `gaze` does not cover it. Add
+   head facing only when it differs from body facing.
 6. **Performance instant:** one visible expression/tension state, not an arc.
    Pick a channel the current shot size can actually read — gaze, breath, body
    set, object handling, or a held decision. A wide shot cannot carry an eyelid;

@@ -1,6 +1,6 @@
 # Architecture
 
-> **Capability counts** (map layers, services, protos, locales, CI workflows, freshness sources) are derived from code and CI-verified by `npm run docs:check` (`scripts/docs-stats.mjs`, source of truth `docs/generated/stats.json`). Do not hand-edit those numbers — change the code, run `npm run docs:stats`.
+> **Inventory ownership**: map layers, services, protos, locales, CI workflows, and freshness sources are defined by their registries. `npm run docs:check` verifies registry and fixed-contract documentation; generated snapshots are refreshed with `npm run docs:stats`.
 >
 > **Ownership rule**: When deployment topology, API surface, desktop runtime, or bootstrap keys change, this document must be updated in the same PR.
 
@@ -46,7 +46,7 @@ World Monitor is a real-time global intelligence dashboard built as a TypeScript
         │ CoinGeck│ │  FRED   │ │ FIRMS   │
         │   ...   │ │   ...   │ │   ...   │
         └─────────┘ └─────────┘ └─────────┘
-           559+ observed upstream hosts
+           578+ observed upstream hosts
 ```
 
 **Source files**: `package.json`, `vercel.json`

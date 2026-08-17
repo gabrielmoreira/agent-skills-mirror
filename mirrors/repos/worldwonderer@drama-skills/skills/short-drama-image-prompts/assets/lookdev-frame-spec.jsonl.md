@@ -1,7 +1,50 @@
 # `lookdev-frame` 填写模板
 
-只在 `purpose: lookdev_frame` 时读取。每行一个候选风格帧规格；它投影已接受视觉方向，
+只在 `purpose: lookdev_frame` 时读取。首行是 `sources` 声明记录，之后每行一个候选风格帧规格；它投影已接受视觉方向，
 不替普通人物、地点、道具规格增加字段。删除当前测试轴不需要的可选项。
+
+## 首行：`sources` 声明
+
+本文件用到的每个上游快照在这里声明一次，键取产物文件名，在本文件内唯一且稳定。视觉方向与
+制作形态同出于 `short-drama.json`，共用一个键：
+
+```json
+{
+  "record_type": "sources",
+  "schema_version": "1.0.0",
+  "sources": {
+    "short-drama": {
+      "owner": "creator",
+      "artifact": "short-drama.json",
+      "hash": "<sha256>"
+    },
+    "<identity-owner>": {
+      "owner": "short-drama-assets",
+      "artifact": "设定集/<identity-owner-file>.jsonl",
+      "hash": "<sha256>"
+    },
+    "<variant-owner>": {
+      "owner": "short-drama-assets",
+      "artifact": "设定集/<variant-owner-file>.jsonl",
+      "hash": "<sha256>"
+    },
+    "screenplay-index": {
+      "owner": "short-drama-write",
+      "artifact": "剧集/<EP>/screenplay-index.jsonl",
+      "hash": "<sha256>"
+    },
+    "<reference>": {
+      "owner": "<reference-owner>",
+      "artifact": "<project-relative-reference-record>",
+      "hash": "<sha256>"
+    }
+  }
+}
+```
+
+引用用 `src` 指向声明键，再写本条引用自己的 `record_id` 和 `field`。
+
+## 规格行
 
 ```json
 {
@@ -10,29 +53,21 @@
   "purpose": "lookdev_frame",
   "lookdev_axis": "character_expression | core_location | high_pressure_scene",
   "direction_ref": {
-    "owner": "creator",
-    "artifact": "short-drama.json",
-    "hash": "<sha256>",
+    "src": "short-drama",
     "field": "/creator_authority/visual_direction/choices/look_development"
   },
   "production_profile_ref": {
-    "owner": "creator",
-    "artifact": "short-drama.json",
-    "hash": "<sha256>",
+    "src": "short-drama",
     "field": "/creator_authority/production_profile"
   },
   "subject_bindings": [
     {
       "identity_ref": {
-        "owner": "short-drama-assets",
-        "artifact": "设定集/<identity-owner-file>.jsonl",
-        "hash": "<sha256>",
+        "src": "<identity-owner>",
         "record_id": "CHAR/LOC/PROP-<id>"
       },
       "variant_ref": {
-        "owner": "short-drama-assets",
-        "artifact": "设定集/<variant-owner-file>.jsonl",
-        "hash": "<sha256>",
+        "src": "<variant-owner>",
         "record_id": "LOOK/VIEW/PSTATE-<id>"
       },
       "role": "expression_subject | location | pressure_actor | evidence"
@@ -40,9 +75,7 @@
   ],
   "story_context_refs": [
     {
-      "owner": "short-drama-write",
-      "artifact": "剧集/<EP>/screenplay-index.jsonl",
-      "hash": "<sha256>",
+      "src": "screenplay-index",
       "record_id": "BLK-<EP>-<SC>-<kind><nn>",
       "field": "/<exact-source-field-if-needed>",
       "role": "scene_heading | action | dialogue | information_permission | story_state"
@@ -53,9 +86,7 @@
       "slot_id": "REF-<stable-slot>",
       "order": 1,
       "artifact_ref": {
-        "owner": "<reference-owner>",
-        "artifact": "<project-relative-reference-record>",
-        "hash": "<sha256>",
+        "src": "<reference>",
         "record_id": "<stable-record-id>"
       },
       "role": "style",
@@ -101,6 +132,6 @@
 }
 ```
 
-人物与地点测试没有剧情职责时删除 `story_context_refs`；高压力场景必须保留真实 `BLK-…`
+人物与地点测试没有剧情职责时删除 `story_context_refs` 及其 `sources` 键；高压力场景必须保留真实 `BLK-…`
 来源。单主体也使用一项 `subject_bindings[]`，不再与 `asset_binding` 二选一。无参考媒体时
 `reference_bindings` 为空；多参考的 `slot_id` 稳定、`order` 唯一。

@@ -1,7 +1,8 @@
 # `lookdev-prompts.md` 可复制输出模板
 
 此文件由已接受 Look Development 规格和配方 `hash` 派生。它展示视觉方向怎样跨测试轴保持，
-只复制引用块内的自然语言提示词；套件不生成图片，也不调用媒体服务。
+只复制引用块内的自然语言提示词；本文件不触发图片或媒体服务，实际生产交
+`$short-drama-produce` 并单独确认。
 
 ```markdown
 # 项目 Look Development 提示词

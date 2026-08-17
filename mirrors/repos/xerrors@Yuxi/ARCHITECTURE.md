@@ -14,7 +14,7 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 
 - `web-dev`：Vue 3 / Vite 前端，挂载 `web/src` 并热重载。
 - `api-dev`：FastAPI API 服务，挂载 `backend/server`、`backend/package` 和测试目录并热重载。
-- `worker-dev`：ARQ worker，执行已经派发的 AgentRun，并负责异常恢复扫描。
+- `worker-dev`：ARQ worker，执行已经派发的 AgentRun，通过 attempt ownership 与 heartbeat 维护运行租约，并周期收敛失联 Run。
 - `sandbox-provisioner`：为智能体工具执行提供隔离沙盒。
 - `postgres`：业务数据、知识库元数据、请求队列、AgentRun 与 LangGraph checkpoint。
 - `redis`：ARQ 投递、运行事件、取消信号以及跨进程配置和模型缓存。
@@ -34,7 +34,7 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 - `server/utils/lifespan.py` 管理数据库、内置模型/MCP/Skills、知识库、Redis、沙盒、LangGraph checkpoint 和通用 Tasker 的启动与关闭。
 - `server/worker_main.py` 是 ARQ worker 入口，实际执行设置位于 `yuxi.services.run_worker`。
 
-`LITE_MODE` 下保留认证、智能体、聊天、Skills、MCP、模型、工作区和系统管理接口，但不注册 `external_kb`、`knowledge`、`evaluation` 和 `graph` 路由，也不初始化知识库管理器。
+`LITE_MODE` 的解析由 `yuxi.config.runtime` 统一拥有。该模式保留认证、智能体、聊天、非知识类 Skills、MCP、模型、普通工作区和系统管理接口，但不注册 `external_kb`、`knowledge`、`evaluation`、`graph`、知识域 Dashboard 与 `/workspace/knowledge/*` 路由，不注册 `knowledge-base` Skill 或知识库工具，也不宣告客户端或 CLI 知识能力。该模式不导入知识解析重运行时、创建 knowledge schema 或初始化知识库管理器；Web 从运行时 discovery 获取同一能力投影，聊天附件只有在实际解析时才惰性加载 parser。
 
 ### `backend/package/yuxi`
 
@@ -47,7 +47,7 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 - `storage/neo4j` 管理共享 Neo4j Driver、生命周期和图查询辅助。
 - `knowledge` 是知识库、文档解析、评估和图谱领域。`runtime.py` 暴露运行时知识库管理器；`implementations` 放 Milvus、Dify、Notion 和只读连接器；`parser` 统一封装 OCR/文档解析；`chunking` 管理分块策略；`graphs` 管理 Milvus 与 Neo4j 图谱能力。
 - `models` 封装 chat、embedding 和 rerank 模型适配；`models/providers` 使用 PostgreSQL 保存模型供应商，并通过 Redis 缓存向 API 和 worker 提供一致视图。
-- `config` 区分系统级配置和用户级配置。系统配置写入 `base.toml` 并同步 Redis 快照，用户配置保存在 PostgreSQL。
+- `config` 区分系统级配置和用户级配置。PostgreSQL 持久化系统配置和用户配置；Redis 只保存带版本失效的短缓存，旧 `base.toml` 只作为一次性迁移来源。
 - `utils` 只放跨领域且足够通用的日志、时间、SSE 和轻量工具。
 
 ### 两类后台任务
@@ -82,9 +82,9 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 3. `server/routers/agent_router.py` 校验用户和智能体，将请求交给 `agent_request_queue_service`。
 4. 服务在同一数据库事务中创建用户消息和 AgentRunRequest，并按用户、智能体和线程检查活跃 Run 与 FIFO 队头。
 5. 请求可以立即派发、进入等待队列或按 `reject` 策略拒绝；只有数据库提交成功后才向 ARQ 投递 Run。
-6. `worker-dev` 中的 `run_worker` 加载 AgentRun、智能体配置和运行上下文，执行对应 LangGraph。
+6. `worker-dev` 中的 `run_worker` 使用进程 identity 与 job-attempt token 取得 AgentRun lease；未取得 ownership 的重复任务不会执行。执行期间 heartbeat 在独立事务中续租，再加载智能体配置和运行上下文执行对应 LangGraph。
 7. 智能体通过 middleware 组合沙盒文件系统、附件、Skills、MCP、SubAgent、审批、摘要和工具能力。知识库能力主要由内置 `knowledge-base` Skill 及其依赖工具按需开放。
-8. Run 事件写入 Redis Stream，取消通过 Redis key/pubsub 传递；AgentRun、消息投递状态和最终结果写入 PostgreSQL。
+8. Run 事件写入 Redis Stream，取消通过 Redis key/pubsub 传递；AgentRun、消息投递状态和最终结果写入 PostgreSQL。任何 assistant Message 发布前先在 Run 行锁内验证当前 attempt；正常输出、绑定和 `completed` 同事务提交。worker 失联后，过期 lease 会幂等收敛为带 `worker_lease_expired` 原因的 `failed`。该失败只证明执行 ownership 已丢失，外部副作用仍需按 at-least-once 语义核对。
 9. 前端在排队阶段消费 Request SSE，派发后切换到 Run SSE，并根据数据库状态处理断线恢复和终态补偿。
 10. 附件和对象数据保存在 MinIO；智能体需要操作的文件映射到线程隔离的沙盒路径，生成物写入用户可见的输出目录。
 
@@ -97,6 +97,11 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 - 请求接入与 Run 执行是两个阶段：先提交 PostgreSQL 事实，再投递 ARQ，不能让队列消息先于数据库状态可见。
 - 同一用户、智能体和线程的普通请求通过 FIFO 队列串行派发；排队请求与运行中的 Run 使用不同状态模型和 SSE。
 - PostgreSQL 保存业务事实状态；Redis 承担投递、事件、取消和缓存，不作为 AgentRun 最终状态的唯一来源。
+- `pending` Run 是持久化投递意图；`running` / `cancel_requested` Run 必须由唯一 attempt lease 拥有。Heartbeat 只能由当前 owner 续租，终态或 retry publication 清除 lease，过期 ownership 不能被另一个执行者静默接管。
+- Run 结果以 `output_message_id` 指向的同 Run assistant 消息为权威；只有历史 `completed` Run 可在缺少指针时兼容读取同 conversation、相同 `run_id` 的 assistant 消息，禁止从未完成或相邻 Run 猜测输出。
+- `/api/system/health` 只表达 API 进程 liveness；Compose 以 `/api/system/ready` 判断启动完成、PostgreSQL/Redis 可用且存在完成启动的兼容 worker。worker 同时续租短 TTL ARQ 消费健康与 lease reconciliation 成功事实；持久 key、超长 TTL、错误 Redis DSN 或持续无法收敛失联 Run 都不能维持 readiness。业务正确性仍由真实链路测试证明。
+- 内置 Skills 是默认 Agent shipping contract 的 required 组成，API/worker 通过 PostgreSQL advisory lock 串行同步；内置 MCP 定义是 optional，但失败必须形成可观测 degraded 而非被组件内部吞掉。
+- 跨 repository 的身份管理用例只有一个 service 事务 Owner；Department、User 与强制 OperationLog 同一提交。API Key 由独立服务端主密钥和客户端幂等 ID 确定性派生，只保存 hash；原始创建意图使用不可变指纹校验，撤销保留 request-id tombstone，同一请求可恢复响应但不能复活已撤销凭据。
 - 前端 API 调用集中在 `web/src/apis`，组件不要散落拼接普通 HTTP 接口。
 - 智能体能力通过 context、middleware、toolkits、Skills、MCP 和 backends 组合；不要把知识库、沙盒或扩展逻辑硬编码进单个页面或路由。
 - Skill 依赖工具只有在对应 Skill 激活后才对模型开放；基础工具与受 Skill 门控的工具要保持边界。
@@ -106,8 +111,8 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 
 ## 跨切面关注点
 
-- **配置**：Compose 和 `.env` 提供部署配置；管理员系统配置写入 `base.toml` 并通过 Redis 快照同步；用户配置与模型供应商以 PostgreSQL 为事实来源。
+- **配置**：Compose 和 `.env` 提供部署配置；管理员系统配置、用户配置与模型供应商以 PostgreSQL 为持久化 Owner，Redis 只提供可失效缓存；旧 `base.toml` 仅用于一次性迁移已有系统配置。
 - **权限**：前端路由和页面标签提供体验级约束，FastAPI 认证依赖和 repository 可见性查询提供最终授权。
-- **状态与存储**：PostgreSQL 保存请求、Run、消息、业务和知识库元数据；LangGraph checkpoint 使用 PostgreSQL，必要时可回退 SQLite/内存；Redis 保存短期事件、取消信号、ARQ 和跨进程缓存；MinIO、沙盒与本地 `saves` 分别承载不同生命周期的文件。
+- **状态与存储**：PostgreSQL 保存请求、Run、消息、业务和知识库元数据，也是 Compose 与 Python 默认路径的 LangGraph checkpoint Owner；SQLite 仅在显式选择时使用，初始化失败不会切换为内存语义。Redis 保存短期事件、取消信号、ARQ 和跨进程缓存；MinIO、沙盒与本地 `saves` 分别承载不同生命周期的文件。
 - **文档处理**：上传文件先进入对象存储和文件元数据边界，再经过解析、分块和知识库实现；解析器、分块策略和知识库连接器保持可替换。
 - **观测与调试**：优先查看 `api-dev`、`worker-dev` 和相关依赖日志；Langfuse 集中在服务层和 AgentRun 上下文；SSE 问题同时检查 Redis 事件与 PostgreSQL 终态。

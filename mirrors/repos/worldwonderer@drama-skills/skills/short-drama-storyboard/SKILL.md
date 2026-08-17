@@ -9,17 +9,26 @@ license: MIT
 先守住故事内容，再安排原文落实、空间和镜头，最后写冻结关键帧。不在这里写随时间
 变化的运动提示词，也不改写剧本或资产事实。
 
-镜头目的、边界说明与场次视觉计划是创作者读的，跟随 `short-drama.json#/language`；
-关键帧的**可复制提示词正文**跟随 `#/format/prompt_language`（默认 `en`）。
-两个值都由 core `project_tool.py` 的 `status` 报出，不要各自猜默认值，也不要用
+镜头目的、边界说明与场次视觉计划是创作者读的：项目内跟随 `short-drama.json#/language`，
+独立运行时跟随用户使用的语言。关键帧的**可复制提示词正文**在项目内跟随
+`#/format/prompt_language`，独立运行时由用户指定、未指定则为 `en`。不要用
 其中一个推断另一个。ID、规则编号和字段名在两者之下都保持原样。
 
-## 先定位套件
+## Quick Start
 
-从本技能目录读取 `suite-ref.json`，按其中相对 `core_manifest` 定位唯一同级主技能与
-套件清单；确认声明的 core、contract、recipe 和清单 hash 一致后再读写项目。
-随后执行 [阶段契约](references/stage-contract.md) 的运行时预检：先恢复事务、读取状态，再进入本阶段。
-该文件同时给出本阶段的所有权边界、需要从制作形态取得哪些输入，以及本阶段规则表；本技能不读取其他技能的文件。
+离线验证时长合计和关键帧边界绑定的正反例：
+
+```bash
+python3 {技能目录}/scripts/selftest.py
+python3 {技能目录}/scripts/storyboard_check.py <coverage.json> --shots <shots.jsonl> --keyframes <keyframes.jsonl>
+```
+
+## 开始前
+
+本技能可独立安装和执行。先读取用户明确提供的剧本、资产与本任务直接输入；若当前目录是
+`short-drama` 项目且项目工具可用，可以读取 `status` 并使用其发布生命周期，但缺少 core
+或任何其他技能都不是分镜工作的阻断条件。[阶段契约](references/stage-contract.md) 给出
+本阶段边界、制作形态输入与规则表，无需读取其他技能的文件。
 
 ## 按需读取资料
 
@@ -39,13 +48,24 @@ license: MIT
 [coverage-audition.md](references/coverage-audition.md)。
 涉及背影、裁切、遮挡、画外或延迟揭示时读
 [阶段契约](references/stage-contract.md) 的参考媒体与补拍一节。
-只有所有权或过期传播不清楚时，才读核心所有权契约。
+只有所有权或直接输入影响不清楚时，才读核心所有权契约。
 
 - 竖屏多人、单房对白、证据揭示、群体轴线或门内外视角：
   [blocking-playbooks.md](references/blocking-playbooks.md)
 - 需要查看“剧本 → 原文落实 → 镜头 → 关键帧”的完整正例，或对白表演括注
   `（情绪）` 怎样同源投影到本镜表演状态与下游 `delivery`：
   [screenplay-to-keyframe-example.md](references/screenplay-to-keyframe-example.md)
+
+## 每轮的工作单元
+
+一轮处理一个场次或一段连续镜头范围。整集请求按这些边界拆成若干轮，每轮：
+
+1. 只读这个范围的直接输入，做它的覆盖与镜头设计，跑本地结构检查；
+2. 落盘这个范围，其余范围保持原样；
+3. 报告已覆盖范围、剩余范围、未决 coverage 和下一个值得做的范围；
+4. 交还控制权，等创作者的下一次请求。
+
+视频提示词、生产和审查各自是独立的工作单元，由创作者明确请求时开始。
 
 ## 工作流
 
@@ -60,8 +80,9 @@ license: MIT
 - `nonvisual_context`：仅供理解、无需直接呈现的内容。
 
 对白、动作、画面文字、画外音或关键音效还没有着落时，不要先追求漂亮镜头。
-发布原文落实表时，`shot_refs` 必须逐条指向准确的镜头文件、已发布的 `hash` 和
-`record_id`。裸 `shot_id` 只可表示同一镜头文件内的关系，不能证明审的是哪一版。
+发布原文落实表时，先在文件的 `sources` 里为每个上游快照声明一次 `owner`、`artifact`
+和 `hash`，再让每条 `shot_refs` 用 `src` 指向该声明并写上 `record_id`。裸 `shot_id`
+只可表示同一镜头文件内的关系，不能证明审的是哪一版。
 
 ### 2. 关键场次先比较整场导演选择（可选）
 
@@ -108,7 +129,7 @@ license: MIT
 
 需要的资产或状态缺失、含混时，向资产或编剧环节提出修订，不要猜绑定关系。
 若创作者要求从头到尾预览，只能针对唯一且不是 `unresolved` 的提案建立临时的原文落实、
-镜头和关键帧。候选 `ArtifactRef` 要标明 `authority: candidate`，不得写成已接受的绑定，
+镜头和关键帧。候选引用要明确标为待确认，不得写成已接受的绑定，
 也不得获得最终批准。
 
 ### 5. 设计能够制作的镜头
@@ -153,8 +174,10 @@ python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage
 ```
 
 它只做算术和结构比对：本集时长总和是否等于各镜头 `duration_seconds` 之和、覆盖列出的
-镜头有没有既不计入也不挂起、每张关键帧是否声明了 `boundary_role` 并绑定对应边界字段、
-同一镜头的同一端有没有两张关键帧。有 `--project` 且项目声明了每集目标时长时，还会核对
+镜头有没有既不计入也不挂起、有没有边界条目整条写成「同上」「位置不变」这类回指、
+每张关键帧是否声明了 `boundary_role` 并绑定对应边界字段、
+同一镜头的同一端有没有两张关键帧、每条引用的 `src` 能否在本文件 `sources` 里解析到一个
+上游快照。有 `--project` 且项目声明了每集目标时长时，还会核对
 带符号差值。**差值不是缺陷**，脚本只检查它算得对不对。
 
 脚本报错时先修产物再继续；它不评价镜头好坏，也不决定该拆多少镜。需要逐条查诊断码
@@ -182,12 +205,14 @@ python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage
 4. 相对剧本原意发生的差异；
 5. 需要创作者接受的选择。
 
-本技能不能自行终审；终审交给 `$short-drama-review`。
+本技能不在本轮自动启动终审；需要 delivery verdict 时，把当前有界范围作为单独请求交给
+`$short-drama-review`。
 
 ## 修订
 
 若运动提示词环节要求修改镜头开始或结束边界，负责人仍是本技能。对照剧本原意审查
-提议，修改镜头，展示哪些旧产物已经关闭或刷新，并更新关键帧、运动提示词和终审。
+提议，修改当前有界范围的镜头与关键帧，并展示哪些旧产物已经关闭或需要刷新。运动提示词与
+终审属于后续的独立工作单元，本轮只报告它们的影响范围。
 运动提示词文件不得悄悄变成第二份边界事实。
 镜头重排、插入、拆分或合并时读取
 [shot-revision-identity.md](references/shot-revision-identity.md)，保留稳定身份、retire 被替代 ID，
@@ -202,6 +227,8 @@ python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage
 - 外部制作单位不等于创作镜头本身的编号。
 - 镜头数量、每次切镜秒数、焦段分布都不是通用定律。
 - 新增或删除故事事实，必须先由编剧环节修订。
+- 创作者要求把已接受关键帧实际生成图片时，连同绑定和参考文件交给
+  `$short-drama-produce`；由生产技能展示任务预览并取得明确确认，本技能不调用媒体服务。
 
 ## 所有产物
 

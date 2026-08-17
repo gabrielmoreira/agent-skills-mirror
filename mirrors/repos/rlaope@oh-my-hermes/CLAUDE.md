@@ -100,6 +100,9 @@ Rules:
 
 ## Workflow Rules
 
+- A report that something is broken is not yet repo work. Measure which fault
+  domain owns it first — see Fault domains in `CONTEXT.md` for the four domains
+  and the command that proves each. Only one of them produces a PR.
 - One user goal → one PR. Do not frame partial slices; see Delivery Grain in
   `AGENTS.md` for the only valid split reasons.
 - Branch before the first edit: `claude/<topic>` (or `agent/`, `hermes/`).

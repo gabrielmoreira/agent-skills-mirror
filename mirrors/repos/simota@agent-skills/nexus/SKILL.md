@@ -77,7 +77,7 @@ Agent boundaries → `_common/BOUNDARIES.md` · disambiguation → `reference/ag
 - Use the `NEXUS_HANDOFF` format from `_common/HANDOFF.md`.
 - Validate each step's result (schema, required fields, confidence) to catch semantic failures.
 - Journal routing corrections and user overrides.
-- Track orchestration efficiency (OE = successful tasks / compute cost) and token efficiency per chain; split the denominator with `thinking_tokens` where available — over-thinking and over-writing are distinct problems one total hides.
+- Track orchestration efficiency (OE = successful tasks / compute cost) and token efficiency per chain; split the denominator with `thinking_tokens` where available — over-thinking and over-writing are distinct problems one total hides. **The denominator is cost per *successful* task**: retries, fallback spawns, verification passes, and the user's own correction round-trips all belong to the chain that needed them, and "successful" means the acceptance criteria held (Q15), not that a step returned. A cheaper chain that lands in rework is not cheaper — `oracle/reference/cost-optimization.md` § Cost per Successful Task.
 
 ### Ask First
 
@@ -133,7 +133,7 @@ Four families hold confusable siblings, disambiguated by an explicit axis: **Imp
 
 ```
 classify* · bug · feature · security · refactor · optimize · kaizen · anneal · restyle · converge · proactive · apex
-charter · enact · layer · goal · gedanken · delve · cartograph · chronicle · spec · essential · killer · trim
+charter · enact · layer · goal · gedanken · delve · cartograph · chronicle · verity · spec · essential · killer · trim
 acceptance · summit · podium · newsroom · wish · eureka · runway · hallmark · rebrand · crucible · silhouette
 lattice · chorus · assay · migrate · transmute · clone · fuse · graft · package · pack · quell · burnish · whet
 ```
@@ -157,7 +157,7 @@ Inline Recipes (`kaizen`, `essential`, `killer`, `trim`) have no top-level refer
 
 | Phase | Purpose | Read When |
 |------|---------|-----------|
-| `CLASSIFY` | Task type, complexity, confidence, official category, guardrail needs; crystallize the intent contract (goal + ACs + non-goals) | `confidence-scoring.md`, `intent-clarification.md`, `official-skill-categories.md`, `autonomy-quality-protocol.md` (Q1-Q3) |
+| `CLASSIFY` | Task type, complexity, confidence, official category, guardrail needs; crystallize the intent contract (goal + ACs + non-goals + prohibited outcomes) | `confidence-scoring.md`, `intent-clarification.md`, `official-skill-categories.md`, `autonomy-quality-protocol.md` (Q1-Q3) |
 | `CHAIN` | Minimum viable chain, parallel branches, Plan-and-Execute (up to 90% cost reduction) | `routing-matrix.md`, `agent-chains.md`, `agent-disambiguation.md`, `task-routing-anti-patterns.md` |
 | `EXECUTE` | Spawn agents (L1/L2/L3) with checkpoints; pass state deltas only | `execution-phases.md`, `guardrails.md`, `error-handling.md`, `orchestration-patterns.md` |
 | `AGGREGATE` | Merge branch outputs, validate schema/fields, goal-alignment check vs the intent contract | `conflict-resolution.md`, `handoff-validation.md`, `agent-communication-anti-patterns.md`, `autonomy-quality-protocol.md` (Q7-Q8) |
@@ -171,7 +171,7 @@ Inline Recipes (`kaizen`, `essential`, `killer`, `trim`) have no top-level refer
 
 **Spawn decision** — Core Rule #3 decides: no spawn tool → internal (log the verified blocker); specialist expertise → spawn (mandatory); trivial edit → spawn only if overhead is justified. Bound the *upper* count, and **never spawn an agent to re-check another's output** — that is a sequential VERIFY step, not a sibling.
 
-**Spawn prompt non-negotiables** — front-load acceptance criteria (P1), an output length envelope (P2), a scope bound (P8), and a **completion bound** (Q16-Q17: finish every in-scope item or return `PARTIAL` + a typed residual, never `SUCCESS` over a stub). **Never include self-verification wording** — independent verification is a separate chain agent, never the producer's own prompt; a Fable 5 hub takes lighter directives still and must never request reasoning reproduction. Before each spawn, tailor the prompt to project + session context (`reference/adaptive-prompt-policy.md`): skip on single-spawn or trivial runs, apply at ≥3 spawns, loop recipes, or a repeated agent.
+**Spawn prompt non-negotiables** — front-load acceptance criteria (P1), an output length envelope (P2), a scope bound (P8), a **completion bound** (Q16-Q17: finish every in-scope item or return `PARTIAL` + a typed residual, never `SUCCESS` over a stub), and **`Prohibited outcomes` + `Authority`** (Q2/Q23 — narrowest grant, `redelegation: false`). **Never include self-verification wording** — independent verification is a separate chain agent, never the producer's own prompt; a Fable 5 hub takes lighter directives still and must never request reasoning reproduction. Before each spawn, tailor the prompt to project + session context (`reference/adaptive-prompt-policy.md`): skip on single-spawn or trivial runs, apply at ≥3 spawns, loop recipes, or a repeated agent.
 
 > **MANDATORY before spawning agy or codex as an agent** — read `_common/CLI_COMPATIBILITY.md §9.2` (agy headless MUST allocate a real pty via `python3 pty.spawn`; bare `agy -p` and `script -q /dev/null` **fail silently**, so capture via artifact/sentinel, never stdout) and §9.3 (codex `-o <abs path>` artifact is authoritative). These are silent-output regressions, not edge cases.
 
@@ -187,7 +187,7 @@ Inline Recipes (`kaizen`, `essential`, `killer`, `trim`) have no top-level refer
 
 ### LEARN Triggers and Safety
 
-Six triggers (`LT-01` → `LT-06`) and the Chain Effectiveness Score formula → `reference/routing-learning.md`. **Safety rules:** max 5 routing updates per session, snapshot before adapting, Lore sync mandatory before recording a change.
+Seven triggers (`LT-01` → `LT-07`, incl. near misses) and the Chain Effectiveness Score formula → `reference/routing-learning.md`. **Safety rules:** max 5 routing updates per session, snapshot before adapting, Lore sync mandatory before recording a change.
 
 ## Routing Quick Start
 
@@ -198,7 +198,7 @@ If context is unclear, inspect git state and `.agents/PROJECT.md`; if confidence
 ## Output Requirements
 
 Every deliverable carries the `## NEXUS_COMPLETE` header, task description and acceptance criteria, chain and mode used, per-step results (agent, status, output summary), verification results, and a summary status. Four ledgers are non-optional in substance:
-- **Acceptance Provenance** — every intent-contract criterion classified `verified`/`partial`/`missed`/`dropped(DEC-n)`, none silent (Q15).
+- **Acceptance Provenance** — every intent-contract criterion classified, none silent; prohibited outcomes on their own axis (Q15).
 - **Decision Ledger** — `DEC-n` judgment calls made without the user, interpretation entries first; omit only when empty (Q4-Q6).
 - **Residual Ledger** — each leftover as `RES-n` (class, blocker/owner, marker location, route), bound bidirectionally to any `#TODO(agent):` left behind, plus the completion-sweep line (`scanned, 0 hits` when clean — never omitted).
 - **`## Prompt Tuning`** — delta-only trace when a spawn's directives were adapted; omit entirely when none were.

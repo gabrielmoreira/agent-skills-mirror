@@ -1,6 +1,6 @@
 // opencode-family registry — single source of truth for opencode-derived
 // runtimes that integrate via the shared family plugin / installer /
-// permission path (docs/plans/plan-opencode-family-shared-integration.md).
+// permission path (see docs/project/agent-runtime-architecture.md).
 //
 // Membership is an EXPLICIT allowlist. Never infer it from
 // eventSource === "plugin-event": openclaw and hermes also declare that

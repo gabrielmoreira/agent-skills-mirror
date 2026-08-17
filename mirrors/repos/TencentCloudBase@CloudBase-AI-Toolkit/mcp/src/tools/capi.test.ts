@@ -64,6 +64,15 @@ describe("assertTcbCloudRunActionAllowed", () => {
     );
   });
 
+  it("blocks legacy CloudRun resource actions case-insensitively", () => {
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "createcloudbaserunresource")).toThrow(
+      /已禁用/,
+    );
+    expect(() => assertTcbCloudRunActionAllowed("tcb", "CREATECLOUDBASERUNRESOURCE")).toThrow(
+      /已禁用/,
+    );
+  });
+
   it("does not block non-cloudrun tcb actions such as DescribeCloudBaseBuildService", () => {
     expect(() =>
       assertTcbCloudRunActionAllowed("tcb", "DescribeCloudBaseBuildService"),

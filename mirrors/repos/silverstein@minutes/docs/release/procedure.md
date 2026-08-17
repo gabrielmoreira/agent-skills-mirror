@@ -173,10 +173,31 @@ followers' feeds and becomes "latest". If any release workflow fails, do not
 move or replace the tag; rerun an idempotent job where appropriate, or follow
 the immutable-tag recovery policy in `channels.md` and cut a new patch release.
 
-### 12. Build and upload .mcpb
+### 12. Confirm the .mcpb was built and attached
+
+The `Desktop Extension bundle` job in `Release CLI Binaries` packs it, runs the
+bundle guard, asserts the manifest version equals the tag, and attaches it to
+the draft. Its checksum lands in `SHA256SUMS.txt` like every other asset.
+
+**Confirm it, do not assume it.** This was a manual step until v0.25.1, where
+every other asset was attached automatically and the `.mcpb` was missing, in a
+release that existed specifically to fix the extension. Nothing failed; the step
+was simply skipped, and it was noticed only by counting assets against the
+previous release.
+
 ```bash
-./scripts/pack_mcpb.sh   # use this, not `mcpb pack .`; it swaps manifest.mcpb.json's Claude listing into the bundle
-./scripts/check_mcpb_bundle.sh minutes.mcpb   # same guard CI runs; catches manifest drift before upload
+gh release view vX.Y.Z --json assets --jq '.assets[].name' | grep mcpb
+grep mcpb SHA256SUMS.txt      # the bundle now has a published checksum
+```
+
+If you ever need to build it by hand, for a re-upload or a listing fix, note
+that the Claude Desktop listing renders `manifest.mcpb.json`, not
+`manifest.json`, and `pack_mcpb.sh` swaps the former into the bundle. Editing
+only `manifest.json` leaves the listing text unchanged.
+
+```bash
+./scripts/pack_mcpb.sh minutes.mcpb   # not `mcpb pack .`
+./scripts/check_mcpb_bundle.sh minutes.mcpb
 gh release upload vX.Y.Z minutes.mcpb --clobber
 ```
 

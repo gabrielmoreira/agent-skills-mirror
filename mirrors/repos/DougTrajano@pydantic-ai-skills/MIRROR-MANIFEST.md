@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 7 followed patterns, 15 file(s) materialized.
+Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 7 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 7 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 15 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,16 +70,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/api/registries.md`](docs/api/registries.md) |
 | 4 | ✓ | [`docs/patterns.md`](docs/patterns.md) |
 | 5 | ✓ | [`docs/quick-start.md`](docs/quick-start.md) |
-| 6 | ✓ | [`examples/skills/arxiv-search/SKILL.md`](examples/skills/arxiv-search/SKILL.md) |
-| 7 | ✓ | [`examples/skills/pydanticai-docs/SKILL.md`](examples/skills/pydanticai-docs/SKILL.md) |
-| 8 | ✓ | [`examples/skills/web-research/SKILL.md`](examples/skills/web-research/SKILL.md) |
-| 9 | → | [`docs/advanced.md`](docs/advanced.md) |
-| 10 | → | [`docs/concepts.md`](docs/concepts.md) |
-| 11 | → | [`docs/contributing.md`](docs/contributing.md) |
-| 12 | → | [`docs/creating-skills.md`](docs/creating-skills.md) |
-| 13 | → | [`docs/programmatic-skills.md`](docs/programmatic-skills.md) |
-| 14 | → | [`docs/registries.md`](docs/registries.md) |
-| 15 | → | [`docs/security.md`](docs/security.md) |
+| 6 | ✓ | [`docs/sandbox.md`](docs/sandbox.md) |
+| 7 | ✓ | [`examples/skills/arxiv-search/SKILL.md`](examples/skills/arxiv-search/SKILL.md) |
+| 8 | ✓ | [`examples/skills/data-analysis/SKILL.md`](examples/skills/data-analysis/SKILL.md) |
+| 9 | ✓ | [`examples/skills/pydanticai-docs/SKILL.md`](examples/skills/pydanticai-docs/SKILL.md) |
+| 10 | ✓ | [`examples/skills/web-research/SKILL.md`](examples/skills/web-research/SKILL.md) |
+| 11 | → | [`docs/advanced.md`](docs/advanced.md) |
+| 12 | → | [`docs/concepts.md`](docs/concepts.md) |
+| 13 | → | [`docs/contributing.md`](docs/contributing.md) |
+| 14 | → | [`docs/creating-skills.md`](docs/creating-skills.md) |
+| 15 | → | [`docs/programmatic-skills.md`](docs/programmatic-skills.md) |
+| 16 | → | [`docs/registries.md`](docs/registries.md) |
+| 17 | → | [`docs/security.md`](docs/security.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 75 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,43 +97,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`.agents/skills/piece-builder/new-piece-scaffold.md`](.agents/skills/piece-builder/new-piece-scaffold.md) |
 | 37 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
 | 38 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
-| 39 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
-| 40 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
-| 41 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
-| 42 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
-| 43 | ✓ | [`.agents/skills/piece-output-schema/capture-recipes.md`](.agents/skills/piece-output-schema/capture-recipes.md) |
-| 44 | ✓ | [`.agents/skills/piece-output-schema/schema-reference.md`](.agents/skills/piece-output-schema/schema-reference.md) |
-| 45 | ✓ | [`.agents/skills/piece-output-schema/SKILL.md`](.agents/skills/piece-output-schema/SKILL.md) |
-| 46 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
-| 47 | ✓ | [`.agents/skills/profile-worker-memory/SKILL.md`](.agents/skills/profile-worker-memory/SKILL.md) |
-| 48 | ✓ | [`.agents/skills/review-logging-patterns/references/code-review.md`](.agents/skills/review-logging-patterns/references/code-review.md) |
-| 49 | ✓ | [`.agents/skills/review-logging-patterns/references/drain-pipeline.md`](.agents/skills/review-logging-patterns/references/drain-pipeline.md) |
-| 50 | ✓ | [`.agents/skills/review-logging-patterns/references/structured-errors.md`](.agents/skills/review-logging-patterns/references/structured-errors.md) |
-| 51 | ✓ | [`.agents/skills/review-logging-patterns/references/wide-events.md`](.agents/skills/review-logging-patterns/references/wide-events.md) |
-| 52 | ✓ | [`.agents/skills/review-logging-patterns/SKILL.md`](.agents/skills/review-logging-patterns/SKILL.md) |
-| 53 | ✓ | [`.agents/skills/triage-dependabot-alerts/SKILL.md`](.agents/skills/triage-dependabot-alerts/SKILL.md) |
-| 54 | ✓ | [`.agents/skills/triage-image-cves/SKILL.md`](.agents/skills/triage-image-cves/SKILL.md) |
-| 55 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
-| 56 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
-| 57 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 58 | ✓ | [`brain/playbooks/AGENTS.md`](brain/playbooks/AGENTS.md) |
-| 59 | ✓ | [`brain/playbooks/CLAUDE.md`](brain/playbooks/CLAUDE.md) |
-| 60 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 61 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
-| 62 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
-| 63 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
-| 64 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
-| 65 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
-| 66 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
-| 67 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
-| 68 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
-| 69 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
-| 70 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 71 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 72 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 73 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 74 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 75 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 39 | ✓ | [`.agents/skills/piece-builder/property-ui-selection.md`](.agents/skills/piece-builder/property-ui-selection.md) |
+| 40 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
+| 41 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
+| 42 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
+| 43 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
+| 44 | ✓ | [`.agents/skills/piece-output-schema/capture-recipes.md`](.agents/skills/piece-output-schema/capture-recipes.md) |
+| 45 | ✓ | [`.agents/skills/piece-output-schema/schema-reference.md`](.agents/skills/piece-output-schema/schema-reference.md) |
+| 46 | ✓ | [`.agents/skills/piece-output-schema/SKILL.md`](.agents/skills/piece-output-schema/SKILL.md) |
+| 47 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
+| 48 | ✓ | [`.agents/skills/profile-worker-memory/SKILL.md`](.agents/skills/profile-worker-memory/SKILL.md) |
+| 49 | ✓ | [`.agents/skills/review-logging-patterns/references/code-review.md`](.agents/skills/review-logging-patterns/references/code-review.md) |
+| 50 | ✓ | [`.agents/skills/review-logging-patterns/references/drain-pipeline.md`](.agents/skills/review-logging-patterns/references/drain-pipeline.md) |
+| 51 | ✓ | [`.agents/skills/review-logging-patterns/references/structured-errors.md`](.agents/skills/review-logging-patterns/references/structured-errors.md) |
+| 52 | ✓ | [`.agents/skills/review-logging-patterns/references/wide-events.md`](.agents/skills/review-logging-patterns/references/wide-events.md) |
+| 53 | ✓ | [`.agents/skills/review-logging-patterns/SKILL.md`](.agents/skills/review-logging-patterns/SKILL.md) |
+| 54 | ✓ | [`.agents/skills/triage-dependabot-alerts/SKILL.md`](.agents/skills/triage-dependabot-alerts/SKILL.md) |
+| 55 | ✓ | [`.agents/skills/triage-image-cves/SKILL.md`](.agents/skills/triage-image-cves/SKILL.md) |
+| 56 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
+| 57 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
+| 58 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 59 | ✓ | [`brain/playbooks/AGENTS.md`](brain/playbooks/AGENTS.md) |
+| 60 | ✓ | [`brain/playbooks/CLAUDE.md`](brain/playbooks/CLAUDE.md) |
+| 61 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 62 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
+| 63 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
+| 64 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
+| 65 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
+| 66 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
+| 67 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
+| 68 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
+| 69 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
+| 70 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
+| 71 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 72 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 73 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 74 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 75 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 76 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

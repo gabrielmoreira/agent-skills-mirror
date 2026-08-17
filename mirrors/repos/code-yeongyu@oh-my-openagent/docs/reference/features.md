@@ -165,7 +165,7 @@ By combining these two concepts, you can generate optimal agents through `task`.
 | `deep`               | `openai/gpt-5.6-sol` (medium)   | Goal-oriented autonomous problem-solving on hairy problems requiring deep research. ONE goal + ONE deliverable per call — multiple goals must fan out as parallel `deep` calls, never bundled into one. |
 | `artistry`           | `anthropic/claude-fable-5` (xhigh) | Highly creative/artistic tasks, novel ideas                                                                                 |
 | `quick`              | `kimi-for-coding/kimi-for-coding-highspeed` | Trivial tasks - single file changes, typo fixes, simple modifications                                                  |
-| `unspecified-low`    | `openai/gpt-5.6-luna` (xhigh)   | Tasks that don't fit other categories, low effort required                                                                  |
+| `unspecified-low`    | `xai/grok-4.6` (xhigh)          | Tasks that don't fit other categories, low effort required                                                                  |
 | `unspecified-high`   | `kimi-for-coding/kimi-k3` (max) | Tasks that don't fit other categories, high effort required                                                               |
 | `writing`            | `kimi-for-coding/kimi-k3` (low) | Documentation, prose, technical writing                                                                                     |
 

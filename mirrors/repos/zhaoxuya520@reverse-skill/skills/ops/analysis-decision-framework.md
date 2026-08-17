@@ -144,3 +144,9 @@ Effort band + A-T pointers -> `E-anti-adversarial` (**no** A-T table copy).
 3. R1 low confidence -> dynamic
 4. R43 deadlock -> replan under feasibility gate
 5. R8/R23 no default malice/IOC
+
+---
+
+## 5. Blindspot appendix (Issue #77 batch 2)
+
+Language runtimes, heavy obfuscation, injection/detect chains, formats, and agent-meta blindspots: see [analysis-blindspot-cookbook.md](analysis-blindspot-cookbook.md) (**R52-R81**). Decision rules R1-R51 in this file remain superior.

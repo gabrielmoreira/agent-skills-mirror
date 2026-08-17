@@ -1,6 +1,6 @@
 ---
 name: destination
-version: 2.7.1
+version: 2.8.0
 description: 'Triggered direction-consolidation service. Surface the agent''s sourced guesses about durable direction and turn them into questions the operator can confirm, correct, or reject. Improve schedules it when accumulated work makes cross-run direction useful; manual invocation remains available when the operator wants to explore or revise direction.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
@@ -108,6 +108,8 @@ After the conversation, capture three things:
 - **What the agent now believes.** A short statement of the destination as the agent currently understands it, post-conversation. This is what would feed into `.acm/destination.md` (with operator approval) or into the agent's working context for the next run.
 - **What was rejected.** Any inferences the operator explicitly rejected — these are valuable, because they prevent the agent from converging on the same wrong reading again.
 - **What is still open.** Any question the operator did not answer, or any uncertainty that remained. Destination does not have to resolve everything; it has to make what is uncertain visible.
+
+Before writing, show the operator the complete durable meaning you intend to carry forward, clearly distinguishing their confirmed statements from implications you derived. Ask them to confirm or correct it, and wait. Earlier answers confirm only what they establish; they do not authorize unstated implications. If corrected, resynthesize and show it again. Without confirmation, do not write.
 
 **Before writing: create the `.acm/` directory in the target repo root if it does not already exist.** Then write `.acm/destination.md` with the agent's current understanding of the destination. Do not ask the operator to do this — write it as part of completing the run. The destination is operator-held in the sense that the *operator commits it to git* when it reads right, and revises it before committing if anything is off. The agent's job is to produce the file; the operator's job is to decide whether it is ready to commit.
 

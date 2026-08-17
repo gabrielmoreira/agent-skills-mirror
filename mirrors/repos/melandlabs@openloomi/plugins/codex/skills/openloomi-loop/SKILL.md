@@ -99,6 +99,10 @@ outside-sandbox retry also fails. See `openloomi` for the canonical
 | DELETE | `/api/loop/classifier-rules/[id]` | remove a rule |
 | POST | `/api/loop/classifier-rules/dry-run` `{signal}` | preview which rules would match a given signal (read-only). Returns `{matches,trace,totalRules}`. |
 
+`agent_goal` is opt-in for an explicit user custom type or classifier rule.
+After the user approves its pending decision with Run, the visible decision
+title becomes a durable Goal objective. Ordinary todos are never upgraded.
+
 ## Examples
 
 ```bash

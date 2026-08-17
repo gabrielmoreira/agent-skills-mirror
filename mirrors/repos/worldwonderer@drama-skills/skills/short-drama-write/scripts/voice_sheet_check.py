@@ -18,7 +18,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 
 # Creators run these scripts on whatever interpreter their machine provides, so
@@ -31,8 +31,112 @@ if sys.version_info < MINIMUM_PYTHON:
         )
     )
 
+# ---------------------------------------------------------------------------
+# REFERENCE RESOLVER -- reference implementation.
+#
+# Each skill checker carries its own copy of this block. The suite has no shared
+# library on purpose: a skill must stay runnable after copying only its own
+# directory, so duplicating these few lines across skills is the correct shape.
+# Copy the block verbatim; do not import it.
+# ---------------------------------------------------------------------------
+
+SOURCES_RECORD_TYPE = "sources"
+SOURCES_SCHEMA_VERSION = "1.0.0"
+
+
+class ResolvedRef(NamedTuple):
+    """An upstream reference with its snapshot resolved, whichever form it used."""
+
+    owner: str
+    artifact: str
+    hash: str
+    record_id: str | None
+    field: str | None
+    authority: str | None
+
+
+class RefFinding(NamedTuple):
+    """A structural defect in a reference object."""
+
+    code: str
+    location: str
+    detail: str
+
+
+def load_sources(document: Any) -> dict[str, dict[str, Any]]:
+    """Return the ``sources`` declaration of a parsed file, or ``{}`` if absent.
+
+    Accepts a parsed ``.json`` document (a dict) or the parsed record list of a
+    ``.jsonl`` file, whose declaration lives on the first record.
+    """
+    if isinstance(document, list):
+        document = document[0] if document else None
+    if not isinstance(document, dict):
+        return {}
+    declared = document.get("sources")
+    if not isinstance(declared, dict):
+        return {}
+    return {key: value for key, value in declared.items() if isinstance(value, dict)}
+
+
+def resolve_ref(
+    ref: Any, sources: dict[str, dict[str, Any]], location: str
+) -> tuple[ResolvedRef | None, RefFinding | None]:
+    """Resolve a reference object written in either the compact or expanded form."""
+    if not isinstance(ref, dict):
+        return None, RefFinding("REF_IS_NOT_AN_OBJECT", location, f"got {type(ref).__name__}")
+    src = ref.get("src")
+    if isinstance(src, str):
+        entry = sources.get(src)
+        if entry is None:
+            return None, RefFinding(
+                "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
+            )
+        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
+        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+            return None, RefFinding(
+                "SOURCE_ENTRY_IS_INCOMPLETE",
+                location,
+                f"sources[{src!r}] needs owner/artifact/hash",
+            )
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
+        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    else:
+        return None, RefFinding(
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+        )
+    optional = {
+        key: ref[key]
+        for key in ("record_id", "field", "authority")
+        if isinstance(ref.get(key), str)
+    }
+    return (
+        ResolvedRef(
+            owner,
+            artifact,
+            digest,
+            optional.get("record_id"),
+            optional.get("field"),
+            optional.get("authority"),
+        ),
+        None,
+    )
+
+
+# ---------------------------------------------------------------------------
+# END REFERENCE RESOLVER
+# ---------------------------------------------------------------------------
+
 SCHEMA_VERSION = "1.0.0"
 CHANNELS = {"sync", "dubbed", "VO", "OS"}
+# The resolver speaks the suite-wide reference vocabulary; this checker reports
+# in its own.
+REF_FINDING_CODES = {
+    "REF_IS_NOT_AN_OBJECT": "VOICE_SOURCE_REF_MISSING",
+    "REF_HAS_NO_UPSTREAM_BINDING": "VOICE_SOURCE_REF_MISSING",
+    "REF_SRC_IS_NOT_DECLARED": "VOICE_SOURCE_REF_UNDECLARED",
+    "SOURCE_ENTRY_IS_INCOMPLETE": "VOICE_SOURCE_REF_UNDECLARED",
+}
 # `角色（可表演提示）：台词` — the cue is optional and never part of the line.
 DIALOGUE = re.compile(
     r"^(?P<speaker>[^（(：:]+)(?:[（(](?P<cue>[^）)]*)[）)])?\s*[：:]\s*(?P<line>.*)$",
@@ -84,8 +188,12 @@ def check(
     findings: list[dict[str, Any]] = []
     blocks = _blocks_by_id(index)
     seen: set[str] = set()
+    # The first record declares the upstream snapshots this sheet references; the
+    # rest are voice lines.
+    sources = load_sources(sheet)
+    lines = [record for record in sheet if record.get("record_type") != SOURCES_RECORD_TYPE]
 
-    for record in sheet:
+    for record in lines:
         line_id = record.get("line_id")
         if not isinstance(line_id, str):
             findings.append(_finding("VOICE_LINE_HAS_NO_ID", "a line record has no id"))
@@ -108,8 +216,17 @@ def check(
                 )
             )
 
-        ref = record.get("source_ref")
-        if not isinstance(ref, dict) or not isinstance(ref.get("record_id"), str):
+        resolved, defect = resolve_ref(record.get("source_ref"), sources, line_id)
+        if defect is not None:
+            findings.append(
+                _finding(
+                    REF_FINDING_CODES[defect.code],
+                    f"source_ref does not name an upstream snapshot: {defect.detail}",
+                    line_id=line_id,
+                )
+            )
+            continue
+        if resolved is None or resolved.record_id is None:
             findings.append(
                 _finding(
                     "VOICE_SOURCE_REF_MISSING",
@@ -118,14 +235,15 @@ def check(
                 )
             )
             continue
-        block = blocks.get(ref["record_id"])
+        record_id = resolved.record_id
+        block = blocks.get(record_id)
         if block is None:
             findings.append(
                 _finding(
                     "VOICE_SOURCE_REF_UNRESOLVABLE",
                     "source_ref names a block that is not in the index",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                 )
             )
             continue
@@ -135,7 +253,7 @@ def check(
                     "VOICE_SOURCE_IS_NOT_DIALOGUE",
                     "a voice line must project a dialogue block",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                     kind=block.get("kind"),
                 )
             )
@@ -152,7 +270,7 @@ def check(
                     "VOICE_BLOCK_SPAN_INVALID",
                     "the indexed block span does not fit this screenplay",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                 )
             )
             continue
@@ -163,7 +281,7 @@ def check(
                     "VOICE_INDEX_IS_STALE_AGAINST_SCREENPLAY",
                     "the index no longer matches the screenplay bytes; rebuild it",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                 )
             )
             continue
@@ -175,7 +293,7 @@ def check(
                     "VOICE_BLOCK_IS_UNPARSEABLE",
                     "the dialogue block does not use the documented line grammar",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                 )
             )
             continue
@@ -185,7 +303,7 @@ def check(
                     "VOICE_LINE_TEXT_DIVERGED",
                     "line_text is not the screenplay wording; change the screenplay",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                 )
             )
         indexed_speaker = block.get("speaker")
@@ -198,26 +316,25 @@ def check(
                     "VOICE_SPEAKER_DIVERGED",
                     "speaker_display disagrees with the indexed speaker",
                     line_id=line_id,
-                    record_id=ref["record_id"],
+                    record_id=record_id,
                 )
             )
 
     dialogue_blocks = {
         block_id for block_id, block in blocks.items() if block.get("kind") == "dialogue"
     }
-    projected = {
-        record["source_ref"]["record_id"]
-        for record in sheet
-        if isinstance(record.get("source_ref"), dict)
-        and isinstance(record["source_ref"].get("record_id"), str)
-    }
+    projected: set[str] = set()
+    for record in lines:
+        covered, _defect = resolve_ref(record.get("source_ref"), sources, "")
+        if covered is not None and covered.record_id is not None:
+            projected.add(covered.record_id)
     # Reported, never a finding: a sheet may legitimately cover one actor or one
     # scene, so an incomplete sheet is a scope decision, not a defect.
     uncovered = sorted(dialogue_blocks - projected)
 
     return {
         "schema_version": SCHEMA_VERSION,
-        "lines": len(sheet),
+        "lines": len(lines),
         "dialogue_blocks": len(dialogue_blocks),
         "uncovered_dialogue_blocks": uncovered,
         "findings": findings,

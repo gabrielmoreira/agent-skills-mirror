@@ -18,7 +18,7 @@
 
 动作预算问的是：在 accepted duration 内，演员能否保持故事重点，清楚完成必要动作/反应/对白和 end state？它不是“每镜最多三个动词”或“每秒固定字数”。动作距离、接触复杂度、语言节奏、停顿、表演强度与相机是否需要等待，都比动词数量重要。
 
-**`reviewed_invariant`**：general feasibility 由独立 reviewer 用 shot、motion、对白和时长证据判断。只有显式 segment 数学超时才是 `structural_invariant`。
+**`reviewed_invariant`**：general feasibility 由审查者用 shot、motion、对白和时长证据判断。只有显式 segment 数学超时才是 `structural_invariant`。
 
 ## 2. 构造可演的动作链
 
@@ -100,7 +100,9 @@
 6. **landing**：选择落在 accepted end 状态。
 
 需要时从 [`performance.fragment.json`](../assets/performance.fragment.json) 复制统一结构；
-`actor_ref`、触发和注意交接对象都使用准确 `ArtifactRef`，不写裸角色名或另造引用形状。
+`actor_ref`、触发和注意交接对象都写成引用：`src` 指向文件头 `sources` 声明的那个快照，
+`record_id` 指向该快照里的记录；不写裸角色名或另造引用形状。注意归属方所在的产物
+（设定集、分镜或剧本）也在同一个 `sources` 里声明一个 key。
 只保留能让本镜更可演、更可读的字段。例如角色认出桌上印章后仍试图把原句说完，尾音降低、
 右手离桌，最后停止阻拦并让出通道；若没有掩饰，就删除 `mask` / `visible_leak`，不要填 `none`。
 
@@ -113,8 +115,8 @@
 
 只在注意真正交接时，用 `attention_handoffs[]` 简写“谁/什么拥有注意 → 哪个可见或可听触发 →
 注意转给谁/什么”；没有交接时省略该字段。
-交接两端可以是角色、道具、证据、声源或已建立的空间区域；分别指向拥有该事实的准确
-ArtifactRef，不要为了套片段把道具或空间伪装成 `CHAR-*`。
+交接两端可以是角色、道具、证据、声源或已建立的空间区域；分别指向拥有该事实的那个产物的
+`src` 与记录，不要为了套片段把道具或空间伪装成 `CHAR-*`。
 交接不是全员同步转头：例如说话者尾音降低 → 最近的听者先停手 → 群体让路 → 主角获得空间。
 每一跳说明为何当前景别、遮挡和声音能读到；细微眼神在远景不可读时，改成视线转移加手部停顿，
 而不是只增加情绪形容词。

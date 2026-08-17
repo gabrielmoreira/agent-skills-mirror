@@ -26,10 +26,10 @@ The north star: **don't stop at "code compiles." Stop at "verified working in pr
 > - **Before adding any poller/fetch, ask:** does this need to run on *every* tab? every *N* seconds? can it reuse an existing fetch or the snapshot?
 > - **Measure before shipping:** open the Network panel / Resource Timing and confirm no endpoint is fetched N× per cycle and no background poller fires off its own screen. "It works" is not enough — "it works without a request storm" is the bar.
 
-> ## Multi-runtime: ClawMetry observes 20 agent runtimes, not just OpenClaw (non-negotiable)
-> **ClawMetry is runtime-neutral. It observes 20 AI agent runtimes, not OpenClaw alone.** Free on every plan: **OpenClaw, NVIDIA NemoClaw**. Also supported: **Aider, Antigravity, Claude Code, Codex, Cursor, Deep Agents, DeepSeek Harness, GitHub Copilot, Goose, Grok, Hermes, n8n, NanoClaw, opencode, Pi, PicoClaw, QM, Qwen Code**. The enabled set is live at `GET /api/runtimes` (authed); read it, never hardcode a stale copy. The *count* in prose is derived from `FREE_RUNTIMES | PAID_RUNTIMES` and enforced by `scripts/sync_runtime_count.py` (see section 2a).
+> ## Multi-runtime: ClawMetry observes 21 agent runtimes, not just OpenClaw (non-negotiable)
+> **ClawMetry is runtime-neutral. It observes 21 AI agent runtimes, not OpenClaw alone.** Free on every plan: **OpenClaw, NVIDIA NemoClaw**. Also supported: **Aider, Antigravity, Claude Code, Codex, Cursor, Deep Agents, DeepSeek Harness, Exo, GitHub Copilot, Goose, Grok, Hermes, n8n, NanoClaw, opencode, Pi, PicoClaw, QM, Qwen Code**. The enabled set is live at `GET /api/runtimes` (authed); read it, never hardcode a stale copy. The *count* in prose is derived from `FREE_RUNTIMES | PAID_RUNTIMES` and enforced by `scripts/sync_runtime_count.py` (see section 2a).
 > - **User-facing copy and UI must never imply OpenClaw-only.** Framing like "designed for OpenClaw agents", "your OpenClaw machine", "No OpenClaw detected", or "Looking for OpenClaw activity" is a bug. Use runtime-neutral language ("your AI agent", "the machine your agent runs on") or name the runtimes ("OpenClaw, NVIDIA NemoClaw + 10 more runtimes", matching the homepage install card). Naming runtimes is public; pricing and tier internals stay private.
-> - **Verify across all 20 runtimes, end to end.** Never ship a change verified only on OpenClaw. Use a `/workflow` to fan out a per-runtime E2E check: one agent per runtime that installs or configures it, runs a real turn, and asserts it lands correctly (in Brain by agent_type, in the right tab, with cost and tokens). "Works on OpenClaw" is not "works".
+> - **Verify across all 21 runtimes, end to end.** Never ship a change verified only on OpenClaw. Use a `/workflow` to fan out a per-runtime E2E check: one agent per runtime that installs or configures it, runs a real turn, and asserts it lands correctly (in Brain by agent_type, in the right tab, with cost and tokens). "Works on OpenClaw" is not "works".
 > Burned 2026-06-01: the docs FAQ said "ClawMetry is designed for OpenClaw agents" and the cloud empty-states plus the radar assumed OpenClaw-only. Many surfaces still need this sweep; when you touch a screen, fix its runtime framing.
 
 ---
@@ -65,7 +65,7 @@ Founder call 2026-08-08: the desktop app (`desktop/`) is one of the highest-ROI 
 
 ## 1. The data-flow rule (this is the one that bites)
 
-ClawMetry is **read-only** and **DuckDB-first**:
+ClawMetry is **DuckDB-first** (and a control plane that defaults to observation — it is *not* read-only; see CLAUDE.md Conventions):
 
 - Every feature persists to and reads from the local **DuckDB** store. Reading raw JSONL, log files, `sessions.json`, or process stats *inside a request handler* is a violation — it works locally and silently returns empty in cloud (the cloud container has no `~/.openclaw` filesystem). Most "works locally, broken in cloud" bugs are exactly this.
 - The blessed path for anything the cloud needs to display:

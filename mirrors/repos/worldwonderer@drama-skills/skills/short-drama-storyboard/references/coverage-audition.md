@@ -31,9 +31,8 @@ Coverage audition 在正式 shots 前比较真正不同的导演方案，避免�
 
 不得固定四宫格、九宫格、二十五宫格或景别比例。宫格只是人工比较界面，不是镜头数量公式。
 audition 本体只保存方案与比较，**不把事后选择写回自身**。创作者选择与接受使用独立的
-`创作者决策/<artifact-id>.json`：它以 `decision_kind: artifact_acceptance` 绑定 audition 的准确
-candidate `target_hashes`，并额外记录 `selected_audition_record_id` 与 `selected_approach_id`。
-这样决定不会因写回 audition 而制造 hash 循环。
+`创作者决策/<artifact-id>.json`：它以 `decision_kind: artifact_acceptance` 指向当前 audition，并额外记录 `selected_audition_record_id` 与 `selected_approach_id`。
+这样选择不需要写回 audition 本体。
 
 正式 `scene_visual_plan` 同时绑定已接受的 `source_audition_ref` 与这份决定的
 `creator_selection_ref`，且只能投影 `selected_approach_id` 指向的方案。未选择时 audition 保持候选，

@@ -103,6 +103,11 @@ from the immutable connector release manifest. A browsed page is cached by the
 daemon so a newly observed connector is immediately installable, while the
 scheduled authoritative refresh still traverses every primary category for
 runtime reconciliation.
+The available segment requests `installation=not_installed`. Hosts must apply
+that installation projection before page boundaries and next-page calculation,
+draining upstream catalog pages as needed so an opaque cursor never advertises
+only already-installed Connectors. Omitting the filter preserves the complete
+catalog pagination contract for compatibility consumers.
 Initial section reads settle independently. Successful sections remain usable
 when another section fails, and the failed section exposes its own retry without
 moving the whole catalog into the global error state. A global error is reserved

@@ -114,13 +114,18 @@ results are harvested (or knowingly abandoned), reclaim the workspace:
 - `cleanup_run_workspace({"run_id":"..."})` deletes the Run's
   `~/.wisp-science/runs/<run-id>` directory (inputs, logs, intermediates). A
   succeeded Run with declared `output_specs` must be harvested first; the tool
-  refuses otherwise so results are never lost. Registered artifacts and the
-  Run's logs in the project are unaffected.
+  refuses otherwise so results are never lost. Registered artifacts stay in the
+  project. Before deletion Wisp pulls a trailing slice of stdout/stderr
+  (at most 4 MiB per stream) into `runs/<id>/` — not the complete remote logs.
 - `list_remote_files({"context_id":"ssh:<alias>"})` shows every file this
   project placed on the server (staged inputs, uploads, and harvest-persisted
   outputs) classified as active, replaced, or orphan; `remove_remote_files`
-  deletes retracted ones. Harvest-persisted outputs stay active while a live
-  External artifact still points at them.
+  deletes retracted ones. Current successful uploads stay active — they are
+  the user's dataset, not sweep fodder. Replaced rows are closed in the ledger
+  only (they share a path with the current file). Harvest-persisted outputs
+  stay active while a live External artifact still points at them. Uploads are
+  ledgered when the transfer attempt starts, so a failed or cancelled partial
+  is visible and can be removed.
 - Removing the SSH host from Settings audits remaining references and
   ledgered files, then marks those External artifacts as source-discarded.
   Later download, preview, or transfer of those URIs is refused even if the

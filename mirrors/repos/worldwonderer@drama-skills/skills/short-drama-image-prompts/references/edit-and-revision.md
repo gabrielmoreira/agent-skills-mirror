@@ -26,7 +26,7 @@ continuity impact。如果期望变更会改写 identity 或 accepted 上游事�
 四个问题缺一不可：
 
 ```text
-Target：哪个精确 artifact/hash、entity 和 region？
+Target：哪个精确来源快照（`sources` 键）、记录、entity 和 region？
 Change：哪些有边界、可观察的变化？
 Preserve：身份、构图、光线、空间以及哪些未影响 entity/region 必须不变？
 Continuity impact：预期对应哪个 accepted State/binding，有效到哪里？
@@ -50,7 +50,7 @@ Continuity impact：预期对应哪个 accepted State/binding，有效到哪里�
 
 引用 道具状态/Look/View 或提出 owner revision；记录受影响的 prompt/shot/keyframe，而非在 edit 中成为新的连续性权威。若没有影响，也明确 `none` 及理由。
 
-- **`structural_invariant`**：target/hash/region、changes、preserve 和 impact 必须存在且没有显式冲突。
+- **`structural_invariant`**：`target_ref`、region、changes、preserve 和 impact 必须存在且没有显式冲突。
 - **`reviewed_invariant`**：修改范围是否足够清楚、preserve 是否保护真正身份/地理，需要 reviewer 引用证据判断。
 - **`craft_default`**：一次 edit 聚焦少量相互关联的 delta；复杂重构改用新 variant/plate。
 - **`taste_option`**：变化的视觉强度由创作者决定，只要状态事实未变。
@@ -118,4 +118,5 @@ Continuity impact：预期对应哪个 accepted State/binding，有效到哪里�
 - 候选与 accepted 分离，diff 可读、可拒绝，预览可复制；
 - accept 顺序是 spec commit 后 rerender；reject 不变；
 - restore/adopt 都有预览，第三种 live hash 保留为冲突；
-- 全流程不调用媒体生成或 provider API。
+- 本提示词修订流程不调用媒体生成或 provider API；实际生产交 `$short-drama-produce`
+  并对精确任务预览单独确认。

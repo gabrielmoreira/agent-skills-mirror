@@ -49,6 +49,29 @@ assets stay in memory, and binary results come back as `{bytesBase64, mime, file
 — nothing is written for them. Pass `inline_outputs=False` (optionally with `out_dir=`)
 to spill binaries to disk and get `file_key` paths instead.
 
+### From another process (any language)
+
+`python -m tongflow engine` is the same engine behind an NDJSON bridge: write one JSON
+request to stdin, read events on stdout. This is how the TongFlow app — and any
+external host built on the `tongflow` npm package's exporter — runs workflows.
+
+```jsonc
+// stdin (one JSON document)
+{"workflow": {...executable workflow...},
+ "inputs": {"input_ab12cd34": {"texts": ["a cute cat"]}},
+ "options": {"auto_install": true, "inline_outputs": false, "out_dir": "./out",
+             "env": {"OPENAI_API_KEY": "..."}}}   // extra env for every plugin process
+// stdout (NDJSON)
+{"ready": {"version": "0.3.0"}}
+{"event": {"type": "workflow_started", ...}}
+{"event": {"type": "node_completed", "nodeId": "...", "output": {...}}}
+{"result": {"status": "success", "outputs": {...}, "outputs_by_name": {...}}}
+```
+
+Other subcommands: `python -m tongflow scan [--root plugins] [--abi file]` prints the
+plugin registry JSON (the ABI defaults to the copy bundled with the SDK) and
+`python -m tongflow version` prints the SDK version.
+
 ### Where it writes to disk
 
 Defaults follow the desktop app's per-user directory, so the SDK and the app **share**

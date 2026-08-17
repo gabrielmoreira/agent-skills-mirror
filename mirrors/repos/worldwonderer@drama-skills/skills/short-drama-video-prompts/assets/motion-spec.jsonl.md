@@ -1,61 +1,58 @@
 # `motion-specs.jsonl` 填写模板
 
-每行一个候选运动规格对象。`boundary_refs` 只读并绑定准确的已接受 `hash`；候选状态属于本运动规格，
-不向已经接受的上游引用传播。不要加入 `duration_override`、`end_override` 或
-`next_shot_write`。以下字符串只说明怎样填写，不是固定答案。
+文件第一行是 `sources` 声明：每个上游快照在这里写一次 `owner`、`artifact` 和已接受的
+`hash`，后面的记录用它的 key 引用。key 用产物文件名派生的短小写名字，在本文件内稳定且唯一。
+本阶段插入的片段（[`performance.fragment.json`](performance.fragment.json)、
+[`coverage-scope.fragment.json`](coverage-scope.fragment.json)）落进同一个文件，它们用到的 key
+也在这里声明。
+
+```jsonl
+{"record_type":"sources","schema_version":"1.0.0","sources":{"shots":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/shots.jsonl","hash":"<sha256>"},"keyframes":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/keyframes.jsonl","hash":"<sha256>"},"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/<EP>/screenplay-index.jsonl","hash":"<sha256>"},"characters":{"owner":"short-drama-assets","artifact":"设定集/characters.jsonl","hash":"<sha256>"},"short-drama":{"owner":"creator","artifact":"short-drama.json","hash":"<sha256>"}}}
+```
+
+其后每行一个候选运动规格对象。引用写 `src` 加它指向的记录 `record_id` 或字段 `field`；
+`boundary_refs` 只读，候选状态属于本运动规格，不向已经接受的上游引用传播。不要加入
+`duration_override`、`end_override` 或 `next_shot_write`。以下字符串只说明怎样填写，
+不是固定答案。
 
 ```json
 {
   "motion_id": "MOTION-<stable-id>",
   "status": "candidate",
   "shot_ref": {
-    "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-    "hash": "<sha256>",
-    "record_id": "SHOT-<id>",
-    "owner": "short-drama-storyboard"
+    "src": "shots",
+    "record_id": "SHOT-<id>"
   },
   "keyframe_ref": {
-    "artifact": "剧集/<EP>/storyboard/keyframes.jsonl",
-    "hash": "<sha256>",
-    "record_id": "KEY-<id>",
-    "owner": "short-drama-storyboard"
+    "src": "keyframes",
+    "record_id": "KEY-<id>"
   },
   "production_profile_ref": {
-    "owner": "creator",
-    "artifact": "short-drama.json",
-    "hash": "<sha256>",
+    "src": "short-drama",
     "field": "/creator_authority/production_profile"
   },
   "boundary_refs": {
     "duration": {
-      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-      "hash": "<sha256>",
+      "src": "shots",
       "record_id": "SHOT-<id>",
       "field": "/duration_seconds",
-      "value_seconds": 0.0,
-      "owner": "short-drama-storyboard"
+      "value_seconds": 0.0
     },
     "start": {
-      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-      "hash": "<sha256>",
+      "src": "shots",
       "record_id": "SHOT-<id>",
-      "field": "/start_boundary",
-      "owner": "short-drama-storyboard"
+      "field": "/start_boundary"
     },
     "end": {
-      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-      "hash": "<sha256>",
+      "src": "shots",
       "record_id": "SHOT-<id>",
-      "field": "/end_boundary",
-      "owner": "short-drama-storyboard"
+      "field": "/end_boundary"
     },
     "next_start": {
-      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-      "hash": "<sha256>",
+      "src": "shots",
       "record_id": "SHOT-<next-id>",
       "field": "/start_boundary",
-      "access": "comparison_only",
-      "owner": "short-drama-storyboard"
+      "access": "comparison_only"
     }
   },
   "reference_bindings": [
@@ -63,9 +60,7 @@
       "slot_id": "REF-<stable-slot>",
       "order": 1,
       "artifact_ref": {
-        "owner": "short-drama-storyboard",
-        "artifact": "剧集/<EP>/storyboard/keyframes.jsonl",
-        "hash": "<sha256>",
+        "src": "keyframes",
         "record_id": "KEY-<id>"
       },
       "role": "start_frame",
@@ -133,21 +128,15 @@
   "audio": [
     {
       "source_ref": {
-        "artifact": "剧集/<EP>/screenplay-index.jsonl",
-        "hash": "<sha256>",
-        "owner": "short-drama-write",
+        "src": "screenplay-index",
         "record_id": "BLK-<EP>-<SC>-D<nn>"
       },
       "speaker_ref": {
-        "artifact": "设定集/characters.jsonl",
-        "hash": "<sha256>",
-        "owner": "short-drama-assets",
+        "src": "characters",
         "record_id": "CHAR-<id>"
       },
       "voice_direction_ref": {
-        "artifact": "设定集/characters.jsonl",
-        "hash": "<sha256>",
-        "owner": "short-drama-assets",
+        "src": "characters",
         "record_id": "CHAR-<id>",
         "field": "/voice_direction"
       },
@@ -208,9 +197,9 @@
 ```
 
 
-运动规格**不带指回交付容器的引用**。依赖方向只有一条：容器 → 运动规格 → 镜头。两端互相
-携带对方的文件 `hash` 会形成循环——任一文件落盘都会改变对方需要写入的 hash，永远得不到
-可发布的稳定快照。要找某个镜头属于哪个容器，从容器记录的 `members[]` 反查，不在本文件里
+运动规格**不带指回交付容器的引用**。依赖方向只有一条：容器 → 运动规格 → 镜头。两端在各自
+`sources` 里互相声明对方的文件 `hash` 会形成循环——任一文件落盘都会改变对方需要声明的 hash，
+永远得不到可发布的稳定快照。要找某个镜头属于哪个容器，从容器记录的 `members[]` 反查，不在本文件里
 存副本。容器记录见 [delivery-container.jsonl.md](delivery-container.jsonl.md)。
 
 默认 master 不重复 `purpose_ref` 或 `coverage_scope`：镜头目的、场次计划与原文覆盖从准确
@@ -224,5 +213,5 @@
 转场和只有物理动作的镜头不编造 arc。多参考的 `slot_id` 稳定且 `order` 唯一。
 `reported_end` 只作比较；末镜没有真实下一镜时改用
 `next_start_locator`。附加参考为空时使用空数组；对白说话者与声音方向只有在已接受引用存在时才填写。
-母版、补拍和替代关系保留在同一规格文件内，替代决定由独立审查结论拥有。具体取舍按
+母版、补拍和替代关系保留在同一规格文件内，替代决定由审查结论拥有。具体取舍按
 `references/motion-recipe.md` 与 `references/review-and-fixtures.md` 判断。

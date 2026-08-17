@@ -31,6 +31,7 @@ Use the narrow OpenLoomi skill that matches the task:
 | Connect platforms, list accounts, check connector status, send replies | `openloomi-connectors` |
 | Use third-party OAuth apps such as Slack, Gmail, GitHub, Notion, Linear, or Jira | `composio`, paired with `openloomi-connectors` |
 | Inspect Loop state, run a tick, manage decisions, preferences, channels, or rules | `openloomi-loop` |
+| List active Goals or inspect ordered Goal progress | `openloomi-goals` |
 | Answer backend route, local API, auth, RAG, integrations, or workspace questions | `openloomi-api` |
 | Explain OpenLoomi concepts, product capabilities, or user workflows | `openloomi-feature-guide` |
 

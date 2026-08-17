@@ -59,12 +59,16 @@
     }
   ],
   "source_ref": {
-    "owner": "creator",
-    "artifact": "创作者决策/<artifact-id>.json",
-    "hash": "<sha256>",
+    "src": "creator-decision",
     "record_id": "<接受该声明的决定记录>"
   }
 }
+```
+
+`creator-decision` 是 `short-drama.json` 的 `sources` 为那份创作者决定声明的快照键：
+
+```json
+{"creator-decision": {"owner": "creator", "artifact": "创作者决策/<artifact-id>.json", "hash": "<sha256>"}}
 ```
 
 镜头与关键帧记录用 `delivery_surface_ref` 绑定该声明的**精确快照与字段**（模板已有该字段，

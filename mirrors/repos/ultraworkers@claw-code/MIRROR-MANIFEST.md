@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ultraworkers/claw-code` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `ultraworkers/claw-code` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ultraworkers/claw-code` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
+| 4 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
+| 5 | ✓ | [`rust/crates/api/AGENTS.md`](rust/crates/api/AGENTS.md) |
+| 6 | ✓ | [`rust/crates/commands/AGENTS.md`](rust/crates/commands/AGENTS.md) |
+| 7 | ✓ | [`rust/crates/plugins/AGENTS.md`](rust/crates/plugins/AGENTS.md) |
+| 8 | ✓ | [`rust/crates/runtime/AGENTS.md`](rust/crates/runtime/AGENTS.md) |
+| 9 | ✓ | [`rust/crates/rusty-claude-cli/AGENTS.md`](rust/crates/rusty-claude-cli/AGENTS.md) |
+| 10 | ✓ | [`rust/crates/tools/AGENTS.md`](rust/crates/tools/AGENTS.md) |
+| 11 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
 
 ---
 

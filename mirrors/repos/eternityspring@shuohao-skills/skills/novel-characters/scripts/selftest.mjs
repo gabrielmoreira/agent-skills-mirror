@@ -630,6 +630,23 @@ ok(
 );
 eq(validateCast(CAST, SOURCE, 'zh', 'realistic').length, 0, '样例按 realistic 校验通过');
 
+// 同剧角色画风必须一致——模型曾按各自服装/年龄写出四套画风，同框像四个画师
+// 样例已统一，应通过；故意改掉一个角色的 image.style 必须报错；仅空白差异不算不一致
+eq(validateCast(CAST, SOURCE, 'zh', 'realistic').length, 0, '样例四个角色画风统一，校验通过');
+{
+  const split = clone();
+  split[1].image.style = '吉卜力动画风，明快平涂';
+  ok(
+    validateCast(split, SOURCE, 'zh', 'realistic').some((x) => x.includes('画风不一致')),
+    '同剧角色 image.style 不一致会报错',
+  );
+}
+{
+  const ws = clone();
+  ws[0].image.style = '  半写实厚涂插画，冷调低饱和民国配色，晨雾柔光  ';
+  eq(validateCast(ws, SOURCE, 'zh', 'realistic').length, 0, 'image.style 仅空白差异不算不一致');
+}
+
 /* ---------------- 真实感 ---------------- */
 
 // 一边要真实感一边在反向提示词里禁真实感，是自相矛盾的

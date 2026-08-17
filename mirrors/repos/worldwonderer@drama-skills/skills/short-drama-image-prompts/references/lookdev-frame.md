@@ -14,8 +14,9 @@
 
 ## 写规格
 
-`purpose` 写 `lookdev_frame`，`lookdev_axis` 选择本次测试轴，`direction_ref` 绑定
-`short-drama.json#/creator_authority/visual_direction/choices/look_development` 的准确 hash，并用
+`purpose` 写 `lookdev_frame`，`lookdev_axis` 选择本次测试轴，`direction_ref` 用文件头 `sources` 中
+`short-drama.json` 的快照键，`field` 写
+`/creator_authority/visual_direction/choices/look_development`，并用同一个快照键的
 `production_profile_ref` 绑定本项目已接受制作配置。高压力场景还要用 `story_context_refs` 绑定
 真实 screenplay-index `BLK-…` 场次/动作/信息权限记录，不能从提示词发明剧情状态。再写：稳定项、
 允许变化项、要保护的身份/地理/剧情事实，以及删除风格标签后真正改变的材质、光、色、边缘、

@@ -101,7 +101,7 @@ Use Hephaestus when you need deep architectural reasoning, complex debugging acr
 
 - **Multi-model orchestration.** Pure Codex is single-model. OmO routes different tasks to different models automatically. Opus 5 for orchestration and visual work. GPT-5.6 Sol for deep reasoning. Kimi high-speed for quick tasks. The right brain for the right job.
 - **Background agents.** Fire 5+ agents in parallel. Something Codex simply cannot do. While one agent writes code, another researches patterns, another checks documentation. Like a real dev team.
-- **Category system.** Tasks are routed by intent, not model name. `visual-engineering` starts with Claude Opus 5 max, then Kimi K3 and GLM 5.2. `ultrabrain` prefers GPT-5.6 Sol xhigh, while `deep` uses GPT-5.6 Sol medium. `artistry` starts with Claude Fable 5, `quick` with Kimi high-speed, `unspecified-low` with GPT-5.6 Luna, and both `unspecified-high` and `writing` with Kimi K3. No manual juggling.
+- **Category system.** Tasks are routed by intent, not model name. `visual-engineering` starts with Claude Opus 5 max, then Kimi K3 and GLM 5.2. `ultrabrain` prefers GPT-5.6 Sol xhigh, while `deep` uses GPT-5.6 Sol medium. `artistry` starts with Claude Fable 5, `quick` with Kimi high-speed, `unspecified-low` with Grok 4.6, and both `unspecified-high` and `writing` with Kimi K3. No manual juggling.
 - **Accumulated wisdom.** Subagents learn from previous results. Conventions discovered in task 1 are passed to task 5. Mistakes made early aren't repeated. The system gets smarter as it works.
 
 ### Prometheus: The Strategic Planner
@@ -205,7 +205,7 @@ You can override specific agents or categories in your config:
     "quick": { "model": "kimi-for-coding/kimi-for-coding-highspeed" },
 
     // Low-effort fallback: GPT-5.6 Luna
-    "unspecified-low": { "model": "openai/gpt-5.6-luna", "variant": "xhigh" },
+    "unspecified-low": { "model": "xai/grok-4.6", "variant": "xhigh" },
 
     // High-effort fallback: Kimi K3, then Opus 5
     "unspecified-high": { "model": "kimi-for-coding/kimi-k3", "variant": "max" },
@@ -228,7 +228,7 @@ You can override specific agents or categories in your config:
 
 - GPT-5.6 Sol — preferred for Hephaestus and `ultrabrain`; the `deep` category uses it at medium effort
 - GPT-5.6 Terra — balanced mid-tier; preferred for Momus (high) and available as an explicit override elsewhere
-- GPT-5.6 Luna — light tier; default for the `unspecified-low` category (xhigh)
+- Grok 4.6 — default for the `unspecified-low` category (xhigh)
 - GPT-5.6 Sol override paths — deep coding powerhouse, default for Oracle and the first GPT fallback for GPT-5.6-native roles
 - GPT 5.6 Luna Fast — fast and cheap utility fallback after the Kimi high-speed quick default
 

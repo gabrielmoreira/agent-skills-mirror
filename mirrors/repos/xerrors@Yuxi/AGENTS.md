@@ -1,137 +1,77 @@
+# Yuxi Agent 开发约定
 
-# 项目目录结构 (Project Overview)
+Yuxi 是基于 LangGraph、FastAPI、Vue 和多种持久化服务构建的知识库与多智能体平台。Docker Compose 是开发拓扑的事实来源；修改不熟悉的模块前先阅读 [ARCHITECTURE.md](ARCHITECTURE.md)，再用符号搜索确认真实实现。
 
-Yuxi 是一个基于大模型的智能知识库与知识图谱智能体开发平台，融合了 RAG 技术与知识图谱技术，基于 LangGraph v1 + Vue.js + FastAPI + LightRAG 架构构建。项目完全通过 Docker Compose 进行管理，支持热重载开发。
+## 每次任务先加载什么
 
-架构代码地图见 [ARCHITECTURE.md](ARCHITECTURE.md)。修改不熟悉的模块前，先阅读其中的后端、前端、运行链路和架构不变量说明，再用符号搜索定位具体实现；该文档只维护相对稳定的系统边界，不替代细节文档或源码注释。
+- [ARCHITECTURE.md](ARCHITECTURE.md)：稳定边界、主链路和架构不变量。
+- [Yuxi Spec Loop](docs/develop-guides/spec-loop.md)：非平凡变更从提案、证据到收敛的流程。
+- [工程信任系统](docs/develop-guides/engineering-trust.md)：语义 Owner、证据、决策记录、派生审计和 gate 规则。
+- [测试规范](docs/develop-guides/testing-guidelines.md)：unit、integration、E2E 的职责与命令。
+- [贡献指南](docs/develop-guides/contributing.md)：分支、独立 Review、commit 和 PR 流程。
+- 用户在当前任务中的明确要求优先于本文件；修改 `backend/`、`web/` 或 `docs/` 时同时遵循该子树的 `AGENTS.md`。子树规则只补充本目录，不复制回根文件。
 
-## 开发准则
+## 任务与决策
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+1. 开始实现前，把请求压缩为可验证的目标、非目标和验收主张；多步任务先给出每步带验证方式的简短计划。
+2. 假设显式记录后继续；只有当不同解释会改变验收结果、数据、安全或外部状态时才阻塞询问，并把候选解释一并列出而不是默默选择其一。存在明显更简单的方案时，先说明取舍再动手。
+3. 把"可以""也可以""类似这样""例如"当作简单方向，不是设计更大机制、配置项或兼容层的许可。
+4. 在真实语义 Owner 处闭合受影响的工程主张：源码、数据约束或当前契约拥有事实；独立 oracle 与负向案例证明它；实际 workflow 或可问责 Reviewer 产生拒绝后果。不要建立可独立编辑的中央主张清单或 claim ID 体系。
+5. 非平凡变更必须新增或更新一份 tracked [决策记录](docs/develop-guides/decisions/README.md)。记录问题、当前决定、真实替代项、后果和验证，不保存推理流水账或实现过程叙事。
+6. `docs/vibe/` 只用于本地临时计划，被 Git 忽略，不是组织记忆，也不能作为已完成事实的唯一来源。
+7. 只修改验收标准需要的范围；不顺手重构、格式化或添加想象中的配置、兼容层和扩展点。
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+## 不能破坏的系统事实
 
-## 1. Think Before Coding
+- HTTP 路由保持薄；用例流程属于 `yuxi.services`，持久化查询属于 `yuxi.repositories`。
+- 普通请求先在 PostgreSQL 中持久化 Message 和 AgentRunRequest；只有 ready FIFO 队头创建 AgentRun，且每次投递 ARQ 前 owning transaction 都已提交。Redis 负责投递、短期事件、取消和缓存，不拥有最终业务状态。
+- 同一用户、Agent、线程的普通请求按 FIFO 串行派发；Request 和 Run 是不同状态模型。
+- AgentRun 的输出、事件、artifact 和错误必须绑定同一 request/run；禁止从相邻 Run 猜测结果。
+- 非终态 Run 必须有明确执行 Owner、lease/heartbeat 或等价机制，以及崩溃后的可观察结局。
+- `/api/system/health` 只表达进程 liveness；接流量前置条件由 `/api/system/ready` 证明，业务正确性仍由真实链路测试证明。
+- LangGraph checkpoint 在 Compose/Python 默认路径使用 PostgreSQL；SQLite 只能显式选择，配置错误或初始化失败不得静默降级为另一种持久化语义。
+- 权限在后端依赖与 repository 可见性查询处最终执行；前端守卫、prompt、schema omission 和 UI 隐藏不是授权边界。
+- LITE 的 shipping 启动、路由注册和能力发现不得导入或初始化知识库、图谱和评估的重运行时；仍保留的附件解析入口只在真实解析动作发生时惰性加载 parser。
+- 沙盒虚拟路径、对象 URL 和宿主机路径不可混用；所有用户路径必须在 owning filesystem boundary 校验。
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+## 证据规则
 
-Before implementing:
+- Agent 的完成报告、HTTP 200、日志关键词或 mock 调用次数都不是最终事实；重新读取数据库、文件、对象、DOM 或协议结果。
+- 每个新 guard 都要有一个能恢复目标缺陷并使其在正确原因上失败的负向测试。
+- 测试从最小相关集合开始，再按风险扩大；不要用 unit 结果替代真实 PostgreSQL、真实 HTTP、worker 或浏览器语义。
+- Expected output、snapshot 和 fixture 只能显式更新并审阅；CI 不得一边生成 oracle 一边验证 oracle。
+- 实际执行命令、结果和未执行原因写入 PR；未验证不能写成通过。
 
-- Restate the request as the smallest acceptance criteria you are about to satisfy. If you cannot state it simply, you do not understand the request yet.
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
-- Treat phrases like "可以", "也可以", "类似这样", or "for example" as acceptable simple directions, not permission to design a larger mechanism.
-
-## 2. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
----
-
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
-
-## 代码整洁规范 (Code Cleanliness)
-
-### 核心原则
-
-1. **简单直接**：使用能满足验收标准的最小实现，不增加未被要求的功能、配置、兼容层或扩展点。
-2. **职责完整**：相关逻辑应集中在最容易理解的位置，优先保持主流程线性、完整、可一眼读懂。
-3. **最小改动**：每一处变更都应能直接追溯到当前需求；不顺手重构、格式化或清理无关代码。
-4. **显式失败**：预设条件不成立时及时暴露错误，不使用静默回退、冗余保底或吞异常来掩盖设计问题。
-5. **阅读优先**：代码首先服务于维护者理解，其次才是抽象复用；抽象后调用链更绕时应选择更直接的写法。
-
-### 实现细则
-
-- 不为单次使用的逻辑创建抽象，不为想象中的未来需求预留“灵活性”或“可配置性”。
-- 不为简单线性逻辑拆出一组细碎 helper。拆函数必须用于明确复用、隔离副作用或实质降低认知负担。
-- 遵循向下规则（The Stepdown Rule）：公开、高层方法在上，实现细节逐层下沉；读者应能从上到下连续理解调用关系。
-- 优先使用早返回和清晰的主路径，避免不必要的嵌套、间接跳转、聚合层、优先级规则、协议解释器和多层 fallback。
-- 常量和具名值应放在最小合理作用域：跨函数复用、协议标识、配置约束或需要全局统一维护时使用模块级常量；仅服务单个函数的错误文案或局部规则，即使需要复用，也优先定义为函数内具名变量。不要为了减少变量而强行内联，也不要把局部实现细节提升为全局状态。
-- 命名应表达业务意图；注释用于说明原因、约束和非显然取舍，不复述代码表面行为。
-- 禁止导入其他模块以下划线 `_` 开头的私有标识（函数、变量、常量）；跨模块确有共享需求时，应将该符号改为公开命名，而不是从外部 import 私有符号。
-- 修改现有代码时匹配当前文件风格，不“顺便优化”相邻实现。发现无关坏味道可以说明，但不要擅自处理。
-- 删除由本次修改产生的未使用 import、变量、函数和分支；除非用户要求，不清理修改前已存在的无关死代码。
-- 对小型状态、进度或摘要需求，直接读取来源、选择必要字段并返回最小结果，不重建事件流或调试视图。
-- 如果实现明显长于问题本身，或 200 行可以清楚地写成 50 行，应停下来简化。
-- 新增函数/类 需要有明确的清晰凝练的 docstring（中文），重要的、关键的位置需要有额外的注释。
-- 代码要注重可读性，要有“段落”的概念，不同语义关联的代码之间可以留一个空行，方便阅读。
-
-自检问题：高级工程师是否会认为这段实现过度设计、过度防御、过度嵌套或过于零碎？如果会，先简化再提交。
-
-## 代码 Review 准则
-
-进行代码 Review 时，按以下顺序审查：
-
-1. 首先确认代码是否能够完成基本功能，并覆盖主要使用场景；如果主路径或关键场景没有验证清楚，应优先指出。
-2. 审查当前实施方案是否是上下文中的最优解，是否会增加用户或维护者的理解负担；如果存在更简洁、更容易理解但改动面更大的方案，不要直接重写，先向用户说明取舍并确认。
-3. 检查是否存在过度设计、过度防御或过度嵌套：过度设计通常表现为加入无关功能；过度防御通常表现为用非预期的回退或保底掩盖设计问题；过度嵌套通常表现为 helper 过多、调用链绕、没有遵循从上到下的阅读顺序。
-4. 认真评估测试脚本和测试用例的价值。对繁琐但只是在“给出靶子后评估靶子”的低价值测试，应建议清理或合并；保留能验证真实行为、关键路径和回归风险的测试。
-
-## 开发与调试工作流 (Development & Debugging Workflow)
-
-本项目完全通过 Docker Compose 进行管理。所有开发和调试都应在运行的容器环境中进行。使用 `docker compose up -d` 命令进行构建和启动。
-
-**核心原则**:
-
-1. 由于 Compose 服务 `api` / `web`（容器名 `api-dev` / `web-dev`）均配置了热重载 (hot-reloading)，本地修改代码后无需重启容器，服务会自动更新。应该先检查项目是否已经在后台启动（`docker ps`），查看日志（`docker logs api-dev --tail 100`）具体的可以阅读 [docker-compose.yml](docker-compose.yml).
-2. 开发完成之后必须按改动范围进行 检查 -> 测试 -> Lint：相关单元测试必跑；涉及接口时跑集成测试；涉及关键主链路时补跑端到端测试。测试脚本不完善时应完善脚本。
-3. 测试规范务必遵守 [testing-guidelines.md](docs/develop-guides/testing-guidelines.md) 中的规范，测试脚本务必放在 backend/test/unit、backend/test/integration 或 backend/test/e2e 对应目录下，并且在提交前确保测试通过。
-
-### 需求沟通规范
-
-在沟通需求的时候，当需求不明确的时候，需要主动挖掘需求细节，对齐需求的验收标准，明确需求的优先级和范围，避免模糊需求导致的过度设计和不必要的工作。
-
-- 需求/修改 明确之后，如果改动较大，则需要在 docs/vibe 目录下创建一个包含日期的文档，记录需求的细节和验收标准
-- 该需求文档中，还应该包括本次任务的目标以及 checklist（简要）
-
-### 前端开发规范
-
-- 使用 pnpm 管理
-- API 接口规范：所有的 API 接口都应该定义在 web/src/apis 下面
-- Icon 应该优先从 lucide-vue-next （推荐，但是需要注意尺寸）
-- 样式使用 less，非特殊情况必须使用 [base.css](web/src/assets/css/base.css) 中的颜色变量
-- UI 设计规范详见 [design](docs/develop-guides/design.md)
-
-### 后端开发规范
+提交前在仓库根目录至少运行：
 
 ```bash
-# 代码检查和格式化
-make format        # 格式化代码
+python3 scripts/verify_engineering_contracts.py
+python3 -m unittest scripts.test_verify_engineering_contracts
+docker compose exec api uv run --group test pytest test/unit -m "not slow"
 ```
 
-注意：
+改动面按下表选择最低证据，并按升级条件扩大；不要用低层级结果替代高风险语义。
 
-- Python 代码要符合 pythonic 风格
-- 尽量使用较新的语法，避免使用旧版本的语法（版本兼容到 3.12+）
-- 更新 [changelog.md](docs/develop-guides/changelog.md) 文档记录本次修改，多个类似的功能更新已经补充在一起
-- 开发完成后务必在 docker 中进行测试，可以读取 .env 获取管理员账户和密码；敏感值仅用于本地测试命令，不要输出到回复、日志摘录、测试文件或文档中
+| 改动面 | 最低证据 | 何时升级 |
+|---|---|---|
+| 纯 Python / JS 逻辑 | 相关 unit，断言业务结果 | 触及数据库、缓存或文件副作用时补 integration |
+| API / 权限 / 持久化 | 真实 HTTP integration | 跨 worker、队列或用户主链路时补 E2E |
+| Run / FIFO / SSE / 沙盒 / 恢复 | E2E，验证最终状态与产物 | 依赖外部可选服务时记录环境与未验证范围 |
+| 前端交互 | lint + unit（[web/AGENTS.md](web/AGENTS.md)） | 行为关键时补 build 与真实页面验证 |
+| 文档与导航 | 相对链接检查 + docs build | 公开行为变化时与代码验证一起执行 |
 
-**其他**：
+完整命令由 [测试规范](docs/develop-guides/testing-guidelines.md) 维护。
 
-- 如果需要新建说明文档（仅开发者可见，非必要不创建），则保存在 `docs/vibe` 文件夹下面
-- 代码更新后要检查文档部分是否有需要更新的地方，文档的目录定义在 `docs/.vitepress/config.mts` 中
-- 如果新增面向用户的正式文档，除了补正文档内容外，还需要同步更新 `docs/.vitepress/config.mts` 的导航；Langfuse 集成说明归档在 `docs/agents` 分组下维护，并同步更新 `docs/develop-guides/changelog.md`
+## 实现与安全
 
-## 提交规范
+- 使用满足验收标准的最小、线性实现。抽象、状态机、fallback、兼容路径和依赖都要有当前 consumer 与 Owner；仓库外用户、持久数据和部署承诺也算 consumer。
+- 实现明显长于问题本身，或一半行数可以清楚表达同样行为时，先简化再提交；自检"高级工程师是否会认为这段代码过度设计、过度防御或过于零碎"。
+- 不可信输入只在 parser、配置、模型/tool JSON、持久化、worker、process、wire 和用户路径等真实信任边界校验；授权与隔离在产生副作用的 executor/repository fail-closed，直接或替代调用路径都不能绕过。
+- 预设条件不成立时显式失败。可选能力可以降级，但必须结构化、可观察，且不把未就绪伪装为成功。
+- 新增函数/类使用简洁中文 docstring；注释只解释非显然约束、时序、Owner 和安全用法，不复述代码。
+- 不输出或提交 `.env`、账号、Token、用户数据、运行目录和构建产物。
+- 文件以一个换行结尾；提交前运行 `git diff --check`。
 
-1. 参考 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) 规范编写提交信息。
-2. 使用中文提交信息，标题简洁明了，描述具体改动内容和原因。
-3. 创建 PR 必须参考 [contributing.md](docs/develop-guides/contributing.md) 以及 PR 模板[PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)，并在提交前完成其中的检查项。
+## Review 与交付
+
+所有代码变更在 commit 前必须由不继承开发上下文的全新 Reviewer Agent 审查完整需求、diff、测试和规范；修复所有影响功能、边界、证据可信度或认知负担的问题。提交信息使用中文 Conventional Commit，PR 使用仓库模板，以自然语言列出受影响主张、语义 Owner、证据、风险和未验证范围，不引用中央 claim ID。

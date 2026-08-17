@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 0 followed patterns, 7 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`packages/@openmaic/importer/SKILL.md`](packages/@openmaic/importer/SKILL.md) |
 | 2 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
-| 3 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
-| 4 | ✓ | [`skills/openmaic/references/live-demo.md`](skills/openmaic/references/live-demo.md) |
-| 5 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
-| 6 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
-| 7 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
+| 3 | ✓ | [`skills/openmaic/references/extend-cookbook.md`](skills/openmaic/references/extend-cookbook.md) |
+| 4 | ✓ | [`skills/openmaic/references/extend-sdk.md`](skills/openmaic/references/extend-sdk.md) |
+| 5 | ✓ | [`skills/openmaic/references/extend.md`](skills/openmaic/references/extend.md) |
+| 6 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
+| 7 | ✓ | [`skills/openmaic/references/live-demo.md`](skills/openmaic/references/live-demo.md) |
+| 8 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
+| 9 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
+| 10 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
 
 ---
 

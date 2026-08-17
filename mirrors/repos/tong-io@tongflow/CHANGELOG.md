@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+
+- **In-app workspace agent** — the chat panel that built workflows on the
+  canvas (added in 0.3.0, #130) is gone, along with its `/api/agent/chat`
+  proxy, generated docs corpus and the `openai` dependency. TongFlow is a
+  pure workflow product again; agent-driven building moves to external hosts
+  that will consume the upcoming `tongflow` npm package + Python SDK engine.
+  `docs/agent-workflow-manual.md` stays as the reference for such hosts.
+- **Skill packages** (`tongflow-package-*`, added in 0.3.2, #140) — the Gen
+  Text skill picker, the skills registry / `/api/skills/registry` route and the
+  content-package install path are removed; the plugin scanner no longer
+  special-cases the prefix (scanner v5). Prompt packs belong to the agent host,
+  not to the workflow.
+
 ## [0.3.2] - 2026-08-14
 
 ### Added
@@ -34,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Official router plugins failed to uninstall with a 400** — the plugin
-  installer now accepts the `tongflow-router-*` (and the new package/local)
+  installer now accepts the `tongflow-router-*` (and the new local)
   prefixes (#140, #141).
 
 ## [0.3.1] - 2026-08-03

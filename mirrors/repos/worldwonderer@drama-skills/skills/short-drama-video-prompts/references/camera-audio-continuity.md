@@ -30,7 +30,19 @@ Camera behavior 要回答“观众注意为什么在此刻改变”。常见动�
 - **relationship**：重新组织两人距离/权力；
 - **transition**：把注意交给 accepted end 或出口。
 
-没有动机时 lock-off 也是积极选择。镜头稳定地等待角色完成一次艰难决定，可能比装饰性环绕更有力。
+没有动机时 lock-off 是积极选择：镜头稳定地等待角色完成一次艰难决定，比装饰性环绕更有力。
+
+### 描述 lock-off
+
+锁定和 movement 一样要被写出来。一次 lock-off 至少写：
+
+1. 写死的 framing：景别、机位高度、轴线哪一侧；
+2. 这段时间里画面内还有什么在动——通常只剩表演和环境，明确列出来；
+3. 保持多久。
+
+“固定特写，俯拍，轴线左侧，取她的头肩；画面内只有她的呼吸和身后帘子在动；保持约两秒半不动。”
+比只写“固定机位”可执行，也比什么都不写安全：摄影机一栏空着会被执行端读成可以自由漂移，
+于是本该稳住的镜头长出一次没人要过的推近或环绕。
 
 ### 描述 movement
 
@@ -98,7 +110,8 @@ pan 同时微调焦点、handheld 带自然呼吸、dolly 配合轻微 tilt 未�
 
 ### 精确引用
 
-Motion spec 存 dialogue/VO/SFX/audio 的 artifact/hash/field refs；copyable prompt 可呈现 exact accepted line 或引用标记，取决于交付需要，但不得改字、增删、交换说话人或把对白改 VO。
+Motion spec 存 dialogue/VO/SFX/audio 的引用：`src` 指向文件头 `sources` 声明的那个快照，
+再加记录与字段；copyable prompt 可呈现 exact accepted line 或引用标记，取决于交付需要，但不得改字、增删、交换说话人或把对白改 VO。
 
 同一句 accepted dialogue 跨镜延续时，把相邻提示词串读，说明它在本镜是开始、画外延续、
 被打断还是到此结束；不得在前镜声称已经说完，后镜又让同一句继续。没有逐字原句时只保留
@@ -212,7 +225,7 @@ Resolvable ref/显式否定可结构检查；delivery 是否语义背离则要 r
 
 ```markdown
 - **请求 owner**：`storyboard | write | assets`
-- **source evidence**：artifact/hash/field
+- **source evidence**：src + 记录/字段，以及该 `sources` 条目的 artifact/hash
 - **当前边界**：精确值
 - **motion 需要**：期望变化与原因
 - **影响**：purpose/feasibility/continuity

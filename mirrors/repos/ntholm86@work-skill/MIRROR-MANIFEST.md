@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`work/SKILL.md`](work/SKILL.md) |
+| 1 | ✓ | [`improve/SKILL.md`](improve/SKILL.md) |
 
 ---
 

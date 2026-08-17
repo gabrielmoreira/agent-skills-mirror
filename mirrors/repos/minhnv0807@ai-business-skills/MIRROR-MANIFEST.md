@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `minhnv0807/ai-business-skills` — 26 default patterns, 0 followed patterns, 317 file(s) materialized.
+Mirror of `minhnv0807/ai-business-skills` — 26 default patterns, 0 followed patterns, 325 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `minhnv0807/ai-business-skills` — 26 default patterns, 0 followed pa
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 317 |
+| Files         | 325 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -367,15 +367,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 306 | ✓ | [`skills/vi/70-lead-magnet/SKILL.md`](skills/vi/70-lead-magnet/SKILL.md) |
 | 307 | ✓ | [`skills/vi/71-sales-enablement/SKILL.md`](skills/vi/71-sales-enablement/SKILL.md) |
 | 308 | ✓ | [`skills/vi/72-hoi-dong-marketing/SKILL.md`](skills/vi/72-hoi-dong-marketing/SKILL.md) |
-| 309 | ✓ | [`skills/vi/product-marketing-context/SKILL.md`](skills/vi/product-marketing-context/SKILL.md) |
-| 310 | ✓ | [`skills/vi/references/ai-avatar-tools-vn.md`](skills/vi/references/ai-avatar-tools-vn.md) |
-| 311 | ✓ | [`skills/vi/references/ai-video-disclosure-vn.md`](skills/vi/references/ai-video-disclosure-vn.md) |
-| 312 | ✓ | [`skills/vi/references/copy-frameworks-vn.md`](skills/vi/references/copy-frameworks-vn.md) |
-| 313 | ✓ | [`skills/vi/references/export-benchmarks-vn.md`](skills/vi/references/export-benchmarks-vn.md) |
-| 314 | ✓ | [`skills/vi/references/hook-formulas-vn.md`](skills/vi/references/hook-formulas-vn.md) |
-| 315 | ✓ | [`skills/vi/references/mcp-ads-integration.md`](skills/vi/references/mcp-ads-integration.md) |
-| 316 | ✓ | [`skills/vi/references/quality-gates-vn.md`](skills/vi/references/quality-gates-vn.md) |
-| 317 | ✓ | [`skills/vi/references/voice-clone-prompts-vn.md`](skills/vi/references/voice-clone-prompts-vn.md) |
+| 309 | ✓ | [`skills/vi/74-copy-hai-lop/references/bien-gioi-va-nguon.md`](skills/vi/74-copy-hai-lop/references/bien-gioi-va-nguon.md) |
+| 310 | ✓ | [`skills/vi/74-copy-hai-lop/references/cong-thuc-hai-lop.md`](skills/vi/74-copy-hai-lop/references/cong-thuc-hai-lop.md) |
+| 311 | ✓ | [`skills/vi/74-copy-hai-lop/references/doi-am-tieng-viet.md`](skills/vi/74-copy-hai-lop/references/doi-am-tieng-viet.md) |
+| 312 | ✓ | [`skills/vi/74-copy-hai-lop/references/khung-visual-hai-lop.md`](skills/vi/74-copy-hai-lop/references/khung-visual-hai-lop.md) |
+| 313 | ✓ | [`skills/vi/74-copy-hai-lop/references/ngon-tu.md`](skills/vi/74-copy-hai-lop/references/ngon-tu.md) |
+| 314 | ✓ | [`skills/vi/74-copy-hai-lop/references/tim-moc-noi.md`](skills/vi/74-copy-hai-lop/references/tim-moc-noi.md) |
+| 315 | ✓ | [`skills/vi/74-copy-hai-lop/references/vi-du-spa.md`](skills/vi/74-copy-hai-lop/references/vi-du-spa.md) |
+| 316 | ✓ | [`skills/vi/74-copy-hai-lop/SKILL.md`](skills/vi/74-copy-hai-lop/SKILL.md) |
+| 317 | ✓ | [`skills/vi/product-marketing-context/SKILL.md`](skills/vi/product-marketing-context/SKILL.md) |
+| 318 | ✓ | [`skills/vi/references/ai-avatar-tools-vn.md`](skills/vi/references/ai-avatar-tools-vn.md) |
+| 319 | ✓ | [`skills/vi/references/ai-video-disclosure-vn.md`](skills/vi/references/ai-video-disclosure-vn.md) |
+| 320 | ✓ | [`skills/vi/references/copy-frameworks-vn.md`](skills/vi/references/copy-frameworks-vn.md) |
+| 321 | ✓ | [`skills/vi/references/export-benchmarks-vn.md`](skills/vi/references/export-benchmarks-vn.md) |
+| 322 | ✓ | [`skills/vi/references/hook-formulas-vn.md`](skills/vi/references/hook-formulas-vn.md) |
+| 323 | ✓ | [`skills/vi/references/mcp-ads-integration.md`](skills/vi/references/mcp-ads-integration.md) |
+| 324 | ✓ | [`skills/vi/references/quality-gates-vn.md`](skills/vi/references/quality-gates-vn.md) |
+| 325 | ✓ | [`skills/vi/references/voice-clone-prompts-vn.md`](skills/vi/references/voice-clone-prompts-vn.md) |
 
 ---
 

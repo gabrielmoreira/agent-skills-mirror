@@ -38,7 +38,7 @@ const HIDDEN_FILES = new Set([
 
 // Reading order inside one group: what the creator wrote, then what was built
 // from it. Raw directory order otherwise buries the screenplay below the prompts.
-const SECTION_ORDER = ["story", "project", "sources", "cast", "visual", "storyboard", "prompts", "other"];
+const SECTION_ORDER = ["story", "project", "sources", "cast", "visual", "storyboard", "prompts", "production", "other"];
 
 const CONTENT_META = {
   sources: { label: "原始资料", description: "故事原稿与参考内容" },
@@ -48,8 +48,14 @@ const CONTENT_META = {
   prompts: { label: "生成文案", description: "用于生成图片、关键帧与视频的文案" },
   visual: { label: "画面设计", description: "图片方案与视觉参考" },
   storyboard: { label: "分镜画面", description: "镜头、关键帧与运动" },
+  production: { label: "制作成果", description: "项目内已有的图片、视频与声音" },
   other: { label: "其他内容", description: "放在标准目录之外的创作文件" },
 };
+
+const IMAGE_SUFFIXES = new Set(["png", "jpg", "jpeg", "webp", "gif"]);
+const VIDEO_SUFFIXES = new Set(["mp4", "webm", "mov"]);
+const AUDIO_SUFFIXES = new Set(["wav", "mp3", "m4a", "aac", "flac", "opus"]);
+const GALLERY_IMAGE_LIMIT = 4 * 1024 * 1024;
 
 // Icons are drawn once in index.html's <template> and cloned here. Letting the
 // HTML parser own them keeps the SVG namespace out of this file, so the shipped
@@ -65,9 +71,9 @@ function iconElement(name, className = "icon") {
 }
 
 const INTERNAL_KEY_PARTS = [
-  "hash", "sha", "path", "ref", "owner", "schema", "artifact", "authority",
-  "lifecycle", "manifest", "checksum", "evidence", "transaction", "snapshot",
-  "candidate", "reviewer", "verdict",
+  "hash", "sha", "path", "ref", "src", "sources", "owner", "schema", "artifact",
+  "authority", "lifecycle", "manifest", "checksum", "evidence", "transaction",
+  "snapshot", "candidate", "reviewer", "verdict",
 ];
 
 const INTERNAL_INLINE_VALUE_PATTERNS = [
@@ -181,6 +187,7 @@ function creatorSection(path) {
   if (root === "bible") return "cast";
   if (root !== "episodes") return "other";
   const area = (parts[2] || "").toLowerCase();
+  if (["production", "制作成果"].includes(area)) return "production";
   if (/prompts?\.(?:md|jsonl?)$/i.test(filename) || filename.includes("prompt")) return "prompts";
   if (["assets", "资产"].includes(area)) return "visual";
   if (["storyboard", "分镜"].includes(area)) return "storyboard";
@@ -229,6 +236,15 @@ function axisOnly(axis, allowed) {
 
 function creatorStatus(lifecycle, recovery = null) {
   if (!lifecycle || typeof lifecycle !== "object") return ["创作中", "neutral"];
+  const simple = lifecycle.artifact_state;
+  if (typeof simple === "string" || (simple && typeof simple === "object")) {
+    if (valueIs(simple, "revise")) return ["需要修改", "danger"];
+    if (valueIs(simple, "update_needed")) return ["需要更新", "warning"];
+    if (valueIs(simple, "needs_confirmation")) return ["待你确认", "warning"];
+    if (axisOnly(simple, ["approved"])) return ["可以导出", "success"];
+    if (valueIs(simple, "accepted") || valueIs(simple, "approved")) return ["已采用", "success"];
+    return ["创作中", "neutral"];
+  }
   if (
     valueIs(lifecycle.build_state, "failed") ||
     valueIs(lifecycle.build_state, "fail") ||
@@ -261,7 +277,7 @@ function creatorStatus(lifecycle, recovery = null) {
 }
 
 function projectRecovery(status) {
-  return { needed: Boolean(status?.recovery?.needed || status?.layout?.mode === "mixed") };
+  return { needed: Boolean(status?.layout?.mode === "mixed") };
 }
 
 function collectEpisodes(files) {
@@ -276,6 +292,44 @@ function collectEpisodes(files) {
   return [...episodes.entries()]
     .map(([id, episodeFiles]) => ({ id, files: episodeFiles }))
     .sort((left, right) => left.id.localeCompare(right.id, "zh-CN", { numeric: true }));
+}
+
+function mediaKind(fileOrPath) {
+  const path = typeof fileOrPath === "string" ? fileOrPath : fileOrPath?.path;
+  const suffix = String(path || "").split(".").at(-1).toLowerCase();
+  if (IMAGE_SUFFIXES.has(suffix)) return "image";
+  if (VIDEO_SUFFIXES.has(suffix)) return "video";
+  if (AUDIO_SUFFIXES.has(suffix)) return "audio";
+  return "media";
+}
+
+function formatBytes(value) {
+  const bytes = Number(value) || 0;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(bytes < 10 * 1024 ? 1 : 0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(bytes < 10 * 1024 * 1024 ? 1 : 0)} MB`;
+}
+
+function episodePresentation(files) {
+  const names = files.map((file) => String(file.path || "").toLowerCase());
+  const media = files.filter((file) => file.type === "media").length;
+  if (media) return { label: "已有媒体", detail: `${media} 项成果` };
+  if (names.some((path) => path.endsWith("video-prompts.md"))) return { label: "提示词就绪", detail: "可在 skill 中确认投产" };
+  if (names.some((path) => /\/(?:shots|keyframes)\.jsonl$/.test(path))) return { label: "分镜中", detail: "镜头资料已建立" };
+  if (names.some((path) => path.endsWith("screenplay.md"))) return { label: "剧本就绪", detail: "可继续做资产与分镜" };
+  return { label: "筹备中", detail: `${files.length} 项内容` };
+}
+
+function projectOverviewModel(files, status) {
+  const visible = (files || []).filter((file) => creatorSection(file.path));
+  const episodes = collectEpisodes(visible);
+  const media = visible.filter((file) => file.type === "media");
+  return {
+    title: creatorTitle(status?.title),
+    episodes,
+    media,
+    documents: visible.filter((file) => file.type !== "media").length,
+  };
 }
 
 function savedContentIsCurrent(submitted, current) {
@@ -378,6 +432,84 @@ function clearNotice() {
 
 function renderProjectSummary() {
   $("workspaceStatus").replaceChildren(statusPill(state.status?.lifecycle, projectRecovery(state.status)));
+}
+
+function overviewStat(value, label) {
+  const card = element("div", "overview-stat");
+  card.append(element("strong", "", String(value)), element("span", "", label));
+  return card;
+}
+
+function mediaContentUrl(file) {
+  const path = `/api/media/content?project=${encodeURIComponent(state.project)}&path=${encodeURIComponent(file.path)}`;
+  return state.apiBase ? `${state.apiBase}${path}` : path;
+}
+
+function mediaCard(file) {
+  const kind = mediaKind(file);
+  const labels = { image: "图片", video: "视频", audio: "声音", media: "媒体" };
+  const card = button("", "media-card", () => openFile(file, true));
+  const visual = element("span", "media-card-visual");
+  if (kind === "image" && !file.oversize && Number(file.size) <= GALLERY_IMAGE_LIMIT) {
+    const image = document.createElement("img");
+    image.src = mediaContentUrl(file);
+    image.alt = "";
+    image.loading = "lazy";
+    visual.append(image);
+  } else {
+    visual.append(iconElement(kind, "icon"));
+  }
+  visual.append(element("span", "media-card-type", labels[kind]));
+  const copy = element("span", "media-card-copy");
+  copy.append(
+    element("strong", "", fileLabel(file.path)),
+    element("small", "", [episodeName(file.path) || "全剧", formatBytes(file.size)].join(" · ")),
+  );
+  card.append(visual, copy);
+  return card;
+}
+
+function episodeCard(episode, index) {
+  const presentation = episodePresentation(episode.files);
+  const card = button("", "episode-card", async () => {
+    state.expandedGroups.add(`episode:${episode.id}`);
+    const first = orderedForReading(episode.files)[0];
+    if (first) await openFile(first, true);
+  });
+  card.append(
+    element("span", "episode-number", String(index + 1).padStart(2, "0")),
+    (() => {
+      const copy = element("span", "episode-copy");
+      copy.append(element("strong", "", episode.id), element("small", "", presentation.detail));
+      return copy;
+    })(),
+    element("span", "episode-state", presentation.label),
+  );
+  return card;
+}
+
+function renderProjectOverview() {
+  const model = projectOverviewModel(state.visibleFiles, state.status);
+  const [statusLabel] = creatorStatus(state.status?.lifecycle, projectRecovery(state.status));
+  $("projectTitle").textContent = model.title;
+  $("overviewStats").replaceChildren(
+    overviewStat(model.episodes.length, "分集"),
+    overviewStat(model.documents, "创作文件"),
+    overviewStat(model.media.length, "已有媒体"),
+    overviewStat(statusLabel, "当前状态"),
+  );
+  $("episodeHint").textContent = model.episodes.length ? `${model.episodes.length} 集可浏览` : "尚未建立分集";
+  $("episodeStrip").replaceChildren(
+    ...(model.episodes.length
+      ? model.episodes.slice(0, 6).map(episodeCard)
+      : [element("p", "empty-copy", "项目级内容已就绪，分集建立后会显示在这里。")]),
+  );
+  const media = model.media.slice(0, 6);
+  $("mediaShowcase").hidden = media.length === 0;
+  $("mediaGallery").replaceChildren(...media.map(mediaCard));
+  const screenplay = state.visibleFiles.find((file) => /(?:^|\/)screenplay\.md$/i.test(file.path));
+  $("openScreenplay").disabled = !screenplay;
+  $("openScreenplay").onclick = screenplay ? () => openFile(screenplay, true) : null;
 }
 
 function navigationItem(file) {
@@ -493,6 +625,7 @@ async function copyExportRequest(requestName, scope) {
 
 function renderWorkspace() {
   renderProjectSummary();
+  renderProjectOverview();
   renderContentList();
   renderTaskSummary();
   renderExportSummary();
@@ -582,6 +715,19 @@ function readJsonLines(content) {
   });
 }
 
+// A .jsonl file declares the upstream snapshots it references on a header
+// record. That record is bookkeeping rather than one of the creator's items, so
+// it stays out of the preview and out of the item numbering: "第 1 项" must be
+// the first thing the creator actually wrote.
+function isSourcesHeader(record) {
+  return Boolean(record) && typeof record === "object" && !Array.isArray(record) &&
+    record.record_type === "sources";
+}
+
+function previewRecords(content) {
+  return readJsonLines(content).filter((row) => !isSourcesHeader(row.record));
+}
+
 function validateStructuredText(path, content) {
   if (/\.json$/i.test(path)) JSON.parse(content);
   else if (/\.jsonl$/i.test(path)) parseJsonLines(content);
@@ -668,7 +814,7 @@ function renderPreview() {
     if (/\.md$/i.test(path)) preview.append(renderMarkdown(content));
     else if (/\.json$/i.test(path)) preview.append(structuredCard(JSON.parse(content), null));
     else if (/\.jsonl$/i.test(path)) {
-      preview.append(...readJsonLines(content).map((row, index) => (
+      preview.append(...previewRecords(content).map((row, index) => (
         row.error
           ? element("div", "preview-warning", `第 ${row.line} 项内容还不完整，暂时无法展示。`)
           : structuredCard(row.record, index)
@@ -703,6 +849,8 @@ function clearLoadingSkeleton() {
 function cleanupMedia() {
   const video = $("media").querySelector("video");
   if (video) { video.pause(); video.removeAttribute("src"); video.load(); }
+  const audio = $("media").querySelector("audio");
+  if (audio) { audio.pause(); audio.removeAttribute("src"); audio.load(); }
   const image = $("media").querySelector("img");
   if (image) image.removeAttribute("src");
   $("media").replaceChildren();
@@ -723,15 +871,21 @@ function renderMedia(info) {
   cleanupMedia();
   const shell = element("div", "media-shell");
   const stage = element("div", "media-stage");
-  const mediaNode = document.createElement(info.kind === "video" ? "video" : "img");
+  const mediaNode = document.createElement(info.kind === "video" ? "video" : info.kind === "audio" ? "audio" : "img");
   mediaNode.src = info.contentUrl;
   mediaNode.setAttribute("aria-label", fileLabel(state.selected.path));
-  if (info.kind === "video") { mediaNode.controls = true; mediaNode.preload = "metadata"; mediaNode.playsInline = true; }
-  else mediaNode.alt = fileLabel(state.selected.path);
+  if (info.kind === "video" || info.kind === "audio") {
+    mediaNode.controls = true;
+    mediaNode.preload = "metadata";
+    if (info.kind === "video") mediaNode.playsInline = true;
+  } else {
+    mediaNode.alt = fileLabel(state.selected.path);
+  }
   mediaNode.onerror = () => setMessage("媒体加载失败或文件过大", "danger");
   stage.append(mediaNode);
   const facts = element("div", "media-facts");
-  facts.append(statusPill(info.lifecycle), element("span", "", info.kind === "video" ? "视频预览" : "图片预览"));
+  const labels = { image: "图片预览", video: "视频预览", audio: "声音预览" };
+  facts.append(statusPill(info.lifecycle), element("span", "", labels[info.kind] || "媒体预览"));
   shell.append(stage, facts);
   $("media").replaceChildren(shell);
   setMessage("媒体预览已载入。", "success");
@@ -964,9 +1118,14 @@ if (typeof module !== "undefined" && module.exports) {
     creatorStatus,
     creatorEditable,
     creatorTitle,
+    episodePresentation,
+    formatBytes,
     friendlyFailure,
     friendlyKey,
+    mediaKind,
     orderedForReading,
+    previewRecords,
+    projectOverviewModel,
     readJsonLines,
     renderMarkdown,
     savedContentIsCurrent,

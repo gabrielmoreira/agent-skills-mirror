@@ -1,7 +1,7 @@
 ---
 name: intent
-version: 1.7.0
-description: 'Automatic ingress service for substantive work. Apply Operator''s Intent to the user''s own prompt before acting: interpret what the user is trying to achieve, not what they literally wrote, and narrate it so the user can correct drift before work begins. The operator should never need to invoke this skill separately. SKIP WHEN: the request is unambiguous and mechanical (a specific file read, a one-line command, a yes/no confirmation).'
+version: 1.8.0
+description: 'Automatic ingress service for substantive work. Apply Operator''s Intent to the user''s own prompt before acting: interpret what the user is trying to achieve, narrate it, and honor the operator''s explicit supervision or delegation boundary. The operator should never need to invoke this skill separately. SKIP only for direct operations that require neither interpretation nor action authority (for example, reading a named file or answering yes/no); never skip when composed with Improve.'
 argument-hint: 'Triggered automatically by any substantive user prompt; can also be invoked explicitly: "apply intent to this request"'
 ---
 
@@ -56,7 +56,17 @@ The immediate prompt is the latest instruction. The trail and conversation histo
 
 State the interpretation before acting. Brief is fine; silent is not. The user cannot correct a misreading they cannot see.
 
-When Improve is the entry point, briefly name the handoff as well as the interpretation: Intent is establishing the mandate for this run; Improve will act under it unless the operator redirects. Explain later automatic handoffs at the moment they become relevant, not as an up-front tour of the suite.
+Determine routine execution authority only from explicit evidence in the current prompt or a confirmed Destination. Do not infer delegation from silence, familiarity, accumulated trust, prior autonomous behavior, or a host-wide autonomy setting.
+
+Without explicit delegation, pause after a concise narration:
+
+> I read your intent as: <interpreted outcome and why>. Is this correct? **Confirm** continues, **Stop** ends the run, and **Specify** lets you add or correct information.
+
+Wait for the answer. On **Confirm**, hand the accepted mandate to the calling skill. On **Stop**, end without acting. On **Specify**, incorporate the new information and restart Intent from Extract; do not patch the old interpretation in place and continue from the middle.
+
+When the operator explicitly delegated this routine gate, narrate the same interpretation, name the source and scope of delegation briefly, and continue without waiting. Delegation of routine confirmation does not let the agent resolve a material ambiguity, change Destination, or answer any question another skill reserves for the operator.
+
+When Improve is the entry point, briefly name the handoff as well as the interpretation. Explain later automatic handoffs at the moment they become relevant, not as an up-front tour of the suite.
 
 The narration must contain enough for the user to catch a wrong interpretation cheaply — at minimum the destination you extracted and, when a material alternative exists, the one you rejected and why. If the prompt was unambiguous, say so in one line and proceed — but say it.
 
@@ -80,7 +90,7 @@ Proceed with the interpreted task. If during the work the interpretation turns o
 
 ## What This Skill Is Not
 
-**Not a confirmation prompt.** "Are you sure you want me to X?" for every request turns the agent into a ticketing system. Narration is not the same as asking permission — most of the time the user wants the work done, not a dialogue.
+**Not a universal approval ceremony.** Supervision is the safe default when no authority agreement exists. Explicit delegation removes routine pauses without removing narration or operator-owned gates.
 
 **Not mind-reading.** If the prompt genuinely does not determine the task, ask. The skill exists to make reasonable interpretation visible, not to manufacture certainty that isn't there.
 

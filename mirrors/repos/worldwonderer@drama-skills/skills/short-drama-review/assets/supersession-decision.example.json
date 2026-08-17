@@ -1,26 +1,37 @@
 {
+  "sources": {
+    "motion-specs-alternate": {
+      "owner": "short-drama-video-prompts",
+      "artifact": "剧集/EP001/storyboard/motion-specs.jsonl",
+      "hash": "<candidate-sha256>"
+    },
+    "motion-specs-master": {
+      "owner": "short-drama-video-prompts",
+      "artifact": "剧集/EP001/storyboard/motion-specs.jsonl",
+      "hash": "<accepted-sha256>"
+    },
+    "shots": {
+      "owner": "short-drama-storyboard",
+      "artifact": "剧集/EP001/storyboard/shots.jsonl",
+      "hash": "<sha256>"
+    }
+  },
   "example_only": true,
   "decision_id": "SUPERSESSION-EXAMPLE",
   "alternate_ref": {
-    "owner": "short-drama-video-prompts",
-    "artifact": "剧集/EP001/storyboard/motion-specs.jsonl",
-    "hash": "<candidate-sha256>",
+    "src": "motion-specs-alternate",
     "record_id": "MOTION-ALTERNATE",
     "authority": "candidate"
   },
   "master_ref": {
-    "owner": "short-drama-video-prompts",
-    "artifact": "剧集/EP001/storyboard/motion-specs.jsonl",
-    "hash": "<accepted-sha256>",
+    "src": "motion-specs-master",
     "record_id": "MOTION-MASTER",
     "authority": "accepted"
   },
   "checked_obligations": [
     {
       "source_ref": {
-        "owner": "short-drama-storyboard",
-        "artifact": "剧集/EP001/storyboard/shots.jsonl",
-        "hash": "<sha256>",
+        "src": "shots",
         "record_id": "SHOT-EXAMPLE",
         "field": "/end_boundary",
         "authority": "accepted"

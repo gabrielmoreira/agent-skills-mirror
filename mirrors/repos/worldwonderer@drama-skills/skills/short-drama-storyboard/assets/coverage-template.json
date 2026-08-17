@@ -1,4 +1,21 @@
 {
+  "sources": {
+    "shots": {
+      "owner": "short-drama-storyboard",
+      "artifact": "剧集/EP001/storyboard/shots.jsonl",
+      "hash": "<sha256>"
+    },
+    "screenplay-index": {
+      "owner": "short-drama-write",
+      "artifact": "剧集/EP001/screenplay-index.jsonl",
+      "hash": "<sha256>"
+    },
+    "short-drama": {
+      "owner": "short-drama",
+      "artifact": "short-drama.json",
+      "hash": "<sha256>"
+    }
+  },
   "episode_id": "EP001",
   "dispositions": [
     {
@@ -7,9 +24,7 @@
       "reason": "Primary action and reaction remain continuous.",
       "shot_refs": [
         {
-          "owner": "short-drama-storyboard",
-          "artifact": "剧集/EP001/storyboard/shots.jsonl",
-          "hash": "<sha256>",
+          "src": "shots",
           "record_id": "SHOT-EXAMPLE",
           "authority": "candidate"
         }
@@ -21,9 +36,7 @@
     "counted_shot_ids": ["SHOT-EXAMPLE"],
     "unresolved_durations": [],
     "target_ref": {
-      "owner": "short-drama",
-      "artifact": "short-drama.json",
-      "hash": "<sha256>",
+      "src": "short-drama",
       "field": "/format/target_seconds_per_episode"
     },
     "target_seconds": null,
@@ -31,9 +44,7 @@
     "disposition": "no_target_declared | within_creator_tolerance | creator_accepted_overrun | to_revise"
   },
   "screenplay_ref": {
-    "owner": "short-drama-write",
-    "artifact": "剧集/EP001/screenplay-index.jsonl",
-    "hash": "<sha256>"
+    "src": "screenplay-index"
   },
   "status": "candidate"
 }

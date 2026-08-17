@@ -221,12 +221,6 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-crawl4ai](https://github.com/tong-io/tongflow-modal-crawl4ai) — Crawl4AI URL / リンク → テキスト
 - [tongflow-modal-scrapling](https://github.com/tong-io/tongflow-modal-scrapling) — Scrapling ステルスブラウザ URL / リンク → テキスト
 
-### コンテンツパッケージ
-
-実行コードを含まないデータ専用パッケージ（インストール方法はプラグインと同じ）：
-
-- [tongflow-package-skills](https://github.com/tong-io/tongflow-package-skills) — テキスト生成ノード用のスキル（再利用可能なプロンプトパック）：ライティングスキル（推敲 / 翻訳 / 拡張 / 要約…）+ モデル別プロンプト作成ガイド（MiniMax-H3、Seedance、Veo、Seedream、FLUX…）
-
 ## ソースコードから起動
 
 ```bash
@@ -291,7 +285,7 @@ docker compose up -d
 
 ## カスタムプラグイン
 
-キャンバス上で動作するすべてのノードの背後には、**契約**——ABI（[`config/tongflow.abi.json`](../config/tongflow.abi.json)）があります。これは「どんな能力があるか」と「各能力の入出力がどんな形か」を定義し、「誰が実装するか」とは無関係です。プラグインとは小さなPythonパッケージで、ABI の中の1つまたは複数のスロットを選び、tongflow Python SDK を使って、ABI から生成された型で**どう実装するか**の部分を提供します。
+キャンバス上で動作するすべてのノードの背後には、**契約**——ABI（[`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json)）があります。これは「どんな能力があるか」と「各能力の入出力がどんな形か」を定義し、「誰が実装するか」とは無関係です。プラグインとは小さなPythonパッケージで、ABI の中の1つまたは複数のスロットを選び、tongflow Python SDK を使って、ABI から生成された型で**どう実装するか**の部分を提供します。
 
 完全な開発フロー——ABI、`@node_slot` デコレータ、SDK、ディレクトリ構造、公開方法については **[docs/plugins.md](plugins.md)** を参照してください。
 

@@ -8,6 +8,14 @@
 本表存在的理由就是把上下文补回去：他此刻知道什么、对谁说、上一句是谁说的、这一句要
 达成什么。缺了这些，剩下的只是一串没有处境的句子。
 
+第一行声明本表引用的上游快照，一个快照只写一次：
+
+```json
+{"record_type": "sources", "schema_version": "1.0.0", "sources": {"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP001/screenplay-index.jsonl", "hash": "<sha256>"}}}
+```
+
+其后每行一条待录台词，`source_ref` 用 `src` 指向上面声明的快照，加 `record_id` 指向其中的剧本块：
+
 ```json
 {
   "line_id": "VLINE-EP001-SC001-003",
@@ -17,9 +25,7 @@
   "speaker_display": "<剧本里逐字写的那个名字>",
   "line_text": "<逐字等于剧本块原文的冒号之后部分>",
   "source_ref": {
-    "owner": "short-drama-write",
-    "artifact": "剧集/EP001/screenplay-index.jsonl",
-    "hash": "<sha256>",
+    "src": "screenplay-index",
     "record_id": "BLK-EP001-SC001-D03"
   },
   "channel": "sync | dubbed | VO | OS",
@@ -44,7 +50,7 @@
 
 | 字段 | 不写会怎样 |
 |---|---|
-| `source_ref` | 剧本改一句而表没跟上，录出来的是旧词；有 `hash` 才能被标 `stale` |
+| `source_ref` | 剧本改一句而表没跟上，录出来的是旧词；绑定了块 ID 才能切出剧本原字节逐字比对 |
 | `speaker` 与 `speaker_display` | 前者是资产身份用于绑定，后者是剧本里逐字写的名字；只留一个就必然有一处对不上 |
 | `channel` 与 `lip_sync_constrained` | 同期与配音、画内与 VO 的可改余地完全不同，混在一起就只能按最严的来 |
 | `addressed_to` / `preceding_line_id` | 集中录制时配音者不知道在对谁说、接谁的话，语气只能靠猜 |
@@ -59,4 +65,5 @@
   （空间化、层级、与画面的对位），那属于视频提示词环节，本表只引用不复制。
 - 表里出现与剧本不一致的文字时，**剧本为准**，把差异作为 `unresolved` 记下来交给
   负责人，不要就地"顺一下"。
-- 本套件不生成音频、不调用任何语音服务，也不从这份文本判断成品音质。
+- 本表不生成音频、不调用任何语音服务，也不从文字判断成品音质；实际 TTS 交给
+  `$short-drama-produce`，并须在看到本次任务预览后明确确认。

@@ -9,9 +9,7 @@
       {
         "kind": "action | reaction | dialogue | reveal | directive | end_boundary",
         "source_ref": {
-          "owner": "short-drama-write",
-          "artifact": "剧集/<EP>/screenplay-index.jsonl",
-          "hash": "<sha256>",
+          "src": "screenplay-index",
           "record_id": "BLK-<EP>-<SC>-<kind><nn>"
         },
         "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",

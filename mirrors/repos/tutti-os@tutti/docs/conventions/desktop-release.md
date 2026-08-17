@@ -182,6 +182,16 @@ is higher than the legacy AppX package that was previously accepted for the
 product, so a Store package built from this configuration may not be offered as
 an update to devices below that OS version.
 
+Store visual assets must retain transparent pixels, and the manifest must use
+`BackgroundColor="transparent"`; otherwise Windows composites the logo over the
+declared tile color even when the PNG has an alpha channel. The manifest also
+sets `AppListEntry="default"` explicitly so Tutti is registered in the Start
+menu's All Apps list. It declares a native `desktop7:Shortcut` targeting the
+user's desktop so supported Windows versions create `Tutti.lnk` during package
+registration. Because that extension requires Windows build `19645` or later,
+the `desktop7` namespace remains ignorable so older supported Windows releases
+still install the package and retain the Start menu entry.
+
 The desktop package description is the product tagline
 `Where people and agents build in tune.`. Electron-builder injects this value
 into the Store manifest description and the desktop package metadata. The

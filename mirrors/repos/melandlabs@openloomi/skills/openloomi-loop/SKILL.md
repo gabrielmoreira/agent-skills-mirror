@@ -70,7 +70,7 @@ Then pass `-H "Authorization: Bearer $TOKEN"` on every call below.
 | PUT  | `/api/loop/preferences` `{...patch}` | write prefs + sync the 3 `ScheduledJob` rows |
 | GET  | `/api/loop/connectors?refresh=1` | list integration health |
 | GET  | `/api/loop/types` | list user-defined decision types (per-user extension to the closed `DecisionType` union) |
-| PUT  | `/api/loop/types` `{id,label,icon,actionKind,description?}` | upsert a custom decision type. `actionKind` must be one of the 14 built-in `ActionKind` literals; `id` must not collide with a built-in `DecisionType`. |
+| PUT  | `/api/loop/types` `{id,label,icon,actionKind,description?}` | upsert a custom decision type. `actionKind` must be one of the 15 built-in `ActionKind` literals; `id` must not collide with a built-in `DecisionType`. |
 | DELETE | `/api/loop/types/[id]` | remove a custom decision type |
 | GET  | `/api/loop/channels` | list user-defined signal channels (Composio-backed pullers) |
 | PUT  | `/api/loop/channels` `{id,label,toolkit,toolSlug,pollIntervalSec,signalType,payloadShape?,eventFilter?}` | upsert a custom channel. `toolSlug` follows the `VENDOR_ACTION` convention (e.g. `STRIPE_LIST_CHARGES`); the watcher invokes it via the `composio` CLI on the registered cadence. |
@@ -182,13 +182,18 @@ curl -sS -X PUT "$BASE/api/loop/types" \
   `requirement_synthesis`, `linear_review`, `contact_update`,
   `doc_update`, `brief`, `wrap`, `quiet_digest`, `noop`,
   `tick_summary`, `unknown`).
-- `actionKind` — must be one of the 14 built-in `ActionKind` literals
+- `actionKind` — must be one of the 15 built-in `ActionKind` literals
   (`calendar_rsvp`, `email_reply`, `im_reply`, `github_review`,
   `deadline_notify`, `todo`, `linear_review`,
   `requirement_synthesis`, `release_plan`, `contact_update`,
-  `doc_update`, `brief`, `wrap`, `quiet_digest`). Custom types
+  `doc_update`, `brief`, `wrap`, `quiet_digest`, `agent_goal`). Custom types
   cannot register a new execution path — the runner only knows the
   built-ins.
+
+`agent_goal` is opt-in for a custom type or classifier rule. Its user-visible
+decision `title` becomes the Goal objective, and it starts only after the user
+approves the pending decision. Ordinary `todo` decisions are not promoted
+automatically.
 - `icon` — optional remix-icon class. Empty string falls back to
   `ri-question-line` everywhere.
 - `description` — optional, surfaces in tooltips and the tick

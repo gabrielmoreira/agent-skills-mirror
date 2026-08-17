@@ -53,15 +53,16 @@ A02（摊手与蓝线头）。
 - 构图：纵向双人中景，柜台横线分隔双方。
 - 摄影机：固定机位，让“不递”这个选择持续存在。
 
-来源：
+来源：`shots.jsonl` 首行先声明本文件用到的上游快照——
 
 ~~~json
-{
-  "owner": "short-drama-write",
-  "artifact": "剧集/EP004/screenplay-index.jsonl",
-  "hash": "<sha256>",
-  "record_id": "BLK-EP004-SC002-A01"
-}
+{"record_type": "sources", "schema_version": "1.0.0", "sources": {"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP004/screenplay-index.jsonl", "hash": "<sha256>"}}}
+~~~
+
+镜头记录里的每条来源引用只写这个快照键和记录 ID：
+
+~~~json
+{"src": "screenplay-index", "record_id": "BLK-EP004-SC002-A01"}
 ~~~
 
 若为了增加动作而让沈禾把取衣牌交出去，就改写了故事，必须拒绝这种改动。
@@ -135,15 +136,16 @@ A02（摊手与蓝线头）。
 | 本镜表演状态 | 本技能 | 边界里可见的收敛：下颌收紧、身体不前倾、音量压在楼道回声之下 | 不把“压着嗓子”升级成“低吼”或“怒斥” |
 | 下游 `delivery` | 视频提示词 | 由同一条来源取到的语气，再落成呼吸、停顿和音量走向 | 不新起情绪词，也不与本镜表演状态相反 |
 
-两处引用同一条来源：
+两处引用同一条来源。各自文件先在 `sources` 里声明这份剧本索引的快照：
 
 ~~~json
-{
-  "owner": "short-drama-write",
-  "artifact": "剧集/EP002/screenplay-index.jsonl",
-  "hash": "<sha256>",
-  "record_id": "BLK-EP002-SC004-D01"
-}
+{"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP002/screenplay-index.jsonl", "hash": "<sha256>"}}
+~~~
+
+镜头记录与运动规格里的引用都写成：
+
+~~~json
+{"src": "screenplay-index", "record_id": "BLK-EP002-SC004-D01"}
 ~~~
 
 - 角色乙的 `（笑）` 同样同源投影：本镜写“嘴角上扬、眼睛不动、重心后靠”，下游写

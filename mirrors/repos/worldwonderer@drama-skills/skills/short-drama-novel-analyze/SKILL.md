@@ -12,12 +12,21 @@ license: MIT
 分析永远是候选。哪条线保留、哪些人合并、从哪里开篇，是创作者的决定，由
 `$short-drama-develop` 立成改编契约。本技能不替它决定，也不批准自己的产物。
 
-## 先定位套件
+## Quick Start
 
-从本技能目录读取 `suite-ref.json`，按其中相对 `core_manifest` 定位唯一同级主技能与
-套件清单；确认声明的 core、contract、recipe 和清单 hash 一致后再读写项目。
-随后执行 [阶段契约](references/stage-contract.md) 的运行时预检：先恢复事务、读取状态，
-再进入本阶段。该文件同时给出本阶段的所有权边界与规则表；本技能不读取其他技能的文件。
+离线验证章节索引、采样和源文件变更检测：
+
+```bash
+python3 {技能目录}/scripts/selftest.py
+python3 {技能目录}/scripts/novel_index.py index <原著.txt> --out <chapter-index.json>
+```
+
+## 开始前
+
+本技能可独立安装和执行。先读取用户明确提供的原著与本任务直接输入；若当前目录是
+`short-drama` 项目且项目工具可用，可以读取 `status` 并使用其发布生命周期，但缺少 core
+或任何其他技能都不是分析工作的阻断条件。完整边界与规则见
+[阶段契约](references/stage-contract.md)，无需读取其他技能的文件。
 
 ## 材料前提
 
@@ -32,7 +41,10 @@ license: MIT
 
 1. **只有书名，没有原文**：请创作者提供文件路径或粘贴正文。不要凭书名回忆情节——
    没有字节就没有 span，没有 span 的分析无法被引用，也无法被反驳。
-2. **有原文，未建项目**：先由 `$short-drama` 初始化项目，把原文放进 `输入/`。
+2. **有原文，未建项目**：直接建立一个本技能自己的工作区，至少包含只读输入目录
+   `输入/` 与输出目录 `项目开发/source-analysis/_work/`；把原文字节复制到 `输入/` 后记录
+   原始文件位置与 hash，再用本技能的 `novel_index.py` 建索引。若 `$short-drama` 可用，可选用它
+   初始化同样的目录和发布生命周期，但不得把 core 安装变成开始分析的前提。
 3. **有原文，项目已在**：直接进入管道。
 4. **已有部分分析**：读 `项目开发/source-analysis/_progress.md` 从断点续跑，
    不重跑已完成阶段。
@@ -40,6 +52,7 @@ license: MIT
 ## 管道
 
 `输入/` 是不可变的创作者输入，本阶段只读它。全部产出落在 `项目开发/source-analysis/`。
+独立工作区与完整项目使用同一套相对路径，因此后续安装 core 时无需迁移分析产物。
 
 | 阶段 | 做什么 | 产出 | 停靠 |
 |---|---|---|---|
@@ -61,10 +74,11 @@ python3 {技能目录}/scripts/novel_index.py index 输入/{原文文件} \
   --out 项目开发/source-analysis/_work/_index.next.json
 python3 {技能目录}/scripts/novel_index.py verify \
   项目开发/source-analysis/_work/_index.next.json 输入/{原文文件}
+# 项目工具可用时可选：
 python3 {core 技能目录}/scripts/project_tool.py publish {项目根} \
   --owner short-drama-novel-analyze --artifact-id source-analysis:index \
   --output 项目开发/source-analysis/_index.json=项目开发/source-analysis/_work/_index.next.json \
-  --input 输入/{原文文件}=<索引中的 source.sha256>
+  --input 输入/{原文文件}
 ```
 
 脚本识别阿拉伯数字与中文数字章号（含 千 / 两，覆盖千章以上连载），**只认一种编号单位**
@@ -113,10 +127,10 @@ python3 {技能目录}/scripts/novel_index.py sample \
 
 停靠时把 `_progress.md` 的状态写成 `paused_after_triage`，断点写「下一步：S2 逐章提取」。
 
-S1–S5 的 Agent 创作产物同样先写到 `source-analysis/_work/`，完成本阶段机械检查后，再由
-core `project_tool.py publish` 以本技能 owner 和稳定 artifact-id 发布到上表中的正式路径；
-不要从脚本、编辑器或 shell 直接覆盖 `_index.json`、`_progress.md`、`chapters/*.md` 或聚合
-产物。`_work/` 是候选工作区，不是权威分析层，也不进入交付包。
+S1–S5 的 Agent 创作产物同样先写到 `source-analysis/_work/`，完成本阶段机械检查后再发布到
+上表中的正式路径。项目工具可用时用 `project_tool.py publish` 和稳定 artifact-id；独立运行时
+原子替换正式文件。不要用半成品覆盖 `_index.json`、`_progress.md`、`chapters/*.md` 或聚合产物。
+`_work/` 是候选工作区，不是权威分析层，也不进入交付包。
 
 ### S2 逐章功能提取
 
@@ -209,8 +223,8 @@ S5 完成后展示创作者可读的摘要，说明：拆了多少章、跳过�
 
 ## 语言
 
-分析产物是创作者读的，跟随项目 `short-drama.json#/language`，由 core `project_tool.py` 的
-`status` 报出，不在本技能内硬编码语言。本技能不产生提示词正文，与
+分析产物是创作者读的：项目内跟随 `short-drama.json#/language`，独立运行时跟随用户使用的
+语言，不在本技能内硬编码语言。本技能不产生提示词正文，与
 `#/format/prompt_language` 无关。
 
 ## 按需加载

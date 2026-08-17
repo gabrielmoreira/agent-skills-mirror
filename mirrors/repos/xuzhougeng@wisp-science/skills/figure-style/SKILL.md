@@ -1,320 +1,230 @@
 ---
 name: figure-style
-description: "Publication-grade figure correctness and legibility rules. Load before drawing any plot and call `apply_figure_style()` — sets a role-mapped font-size ladder, outward ticks, frameless legends, and 300-dpi output. The skill is a checklist, not a house look: data fidelity (claim-titles tested against every row, excluded data never enters summaries), label economy (floor and ceiling), colour threading, chart-choice-by-data-shape, layout, and a render-then-verify QA loop (bbox collision + per-panel perceptual check). Ships helpers: focal_palette, bar_with_points, strip_with_median, end_of_line_labels, panel_letter, set_frame, panel_crops. For multi-panel figures load `figure-composer`; for whole-paper figure arc load `paper-narrative`."
+description: "Correctness and legibility checklist for publication figures, plus a matplotlib sidecar. Load before plotting anything and call `apply_figure_style()` (role-mapped font ladder, outward ticks, frameless legends, 300-dpi saves, CJK-safe fonts). Covers data fidelity, label budgets, axis/colour/type rules, chart choice by data shape, composition, and a mandatory render-then-inspect QA pass (bbox collisions + per-panel visual crops). Helpers: focal_palette, bar_with_points, strip_with_median, end_of_line_labels, panel_letter, set_frame, panel_crops. Multi-panel assembly lives in figure-composer; whole-paper figure ordering in paper-narrative."
 license: Apache-2.0
 ---
 
+# Figure correctness checklist
+
+This skill makes one plot trustworthy and readable. It deliberately has no
+house aesthetic — frame, font family, and sizes are all parameters of
+`apply_figure_style()`, which must run before the first plotting call.
+Multi-panel assembly is `figure-composer`'s job; deciding what each figure in
+a paper should argue is `paper-narrative`'s.
+
+Two tiers of rule live below. **Hard rules** — everything under *Tell the
+truth*, *Never do*, and *Prove the render*, plus any rule stating a
+perceptual or factual invariant (semantic-zero centring, colour-vision
+safety, leader-line anchoring) — apply to every plot with no override.
+Everything else is a default: deviate when you have a deliberate reason, not
+by accident.
+
+## Tell the truth about the data
+
+- **Excluded means excluded.** A row the source data marks excluded either
+  disappears from the plot or appears as a clearly distinct open/hatched
+  marker named in the key — and it never contaminates a summary statistic
+  drawn next to included rows.
+- **Peers must be comparable.** Arms measured under different N, budget,
+  initialisation, or protocol don't sit side by side as if equivalent. Facet
+  them apart or mark the label, and state the difference once in the caption.
+- **The figure can't contradict itself.** Before saving, trace every
+  categorical label, threshold, and title back to the rule that defines it
+  and check each plotted row satisfies it. A row that contradicts its label
+  means the figure is wrong.
+- **A sentence-title is a claim — test it.** Check the claim against every
+  category on the axis. One counterexample means qualifying ("on 3 of 4
+  pairs") or demoting the title to a description.
+- **State n and what's held fixed.** Any summary mark comes with `n` and the
+  unit of replication; any small-multiple that fixes a variable names the
+  fixed value — in-panel, or in the caption when the label budget is tight.
+- **Context structure comes from references.** A tree, ordering, or topology
+  drawn as background (scale bar, category strip) uses an established
+  reference. Infer it from the plotted data only when the structure is
+  itself the finding.
+- **One claim, one number.** Each quantitative claim (accuracy, runtime,
+  count) has a single canonical value reused identically in every panel,
+  caption, and the abstract — with a definition of what it measures.
+
+## Say less, and say it in the right place
+
+The panel shows the pattern; the caption carries the context. Design for a
+general scientific reader, not for yourself.
+
+- **Floor.** Every visually distinct mark must be identifiable from the
+  figure alone. Deleting a label may only ever leave the reader asking "why
+  is that there?" — never "what is that?". Comparators are named for what
+  they are ("no joint training", "prior method"), not a role word
+  ("baseline"). Gloss any term a general scientist can't parse.
+- **Ceiling.** Per panel: title, axis labels, ticks, series identity
+  (labelled once per row of small multiples), and at most 2–3 narrative
+  annotations. More than ~6 strings beyond axes/ticks means over budget.
+  Identity labels are floor, not budget.
+- **Caption material:** n=, held-fixed values, abbreviation expansions,
+  exclusion rationale, non-comparability footnotes, methods caveats.
+- **Titles state takeaways.** "Robust to gene dropout" works; "Fewer genes"
+  doesn't — read it aloud and if a listener would ask "fewer genes *what*?",
+  rewrite. A row of small multiples varying one thing gets one row header,
+  not per-panel titles.
+- **Numbers on marks: headline only.** Print the one value a reader would
+  quote; the axis serves the rest.
+- **Tie-break: delete and re-read.** If the message survives without the
+  label, the label stays gone.
+
+## Axes and scales
+
+- Limits clear the data by at least a marker radius on every side —
+  `ax.margins(0.04)` — and no mark or text touches a spine.
+- Data using under 40% of an axis calls for a break or a data-floor start
+  with an explicit non-zero tick. Nothing may be drawn inside a break gap:
+  the gap has no coordinates.
+- Log ticks read as `10²`/`1k/10k/100k`, never raw exponents. Filled bars on
+  a log value axis are banned outright — bar length would encode the ratio
+  to an arbitrary floor. Points with a median tick replace them.
+- In a row/column of small multiples, tick *labels* appear once (leftmost or
+  bottommost); interior panels keep tick marks only. Panels sharing y and
+  differing only in x abut (`wspace≤0.06`) under one row header.
+- A panel's data envelope fills ≥75% of its rectangle; dead bands mean
+  reshaping the grid, not padding the panel.
+- When better-is-up/down isn't obvious from the axis label, put an upright
+  "higher = better" cue in the margin — once per row, never per panel, never
+  caption-only, and never rotated with rotated text (`goodness_arrow`).
+- The full-width figure must fit the venue's double-column width at 300 dpi,
+  and adding a schematic or label never squeezes the data panels narrower.
+
+## Colour
+
+- **A colour is a binding.** Once an entity gets a colour, every mark for
+  that entity — line, fill, marker, text, heatmap row — reuses it exactly.
+  Colour is the cross-reference; nobody should read a legend twice.
+- **Few hues, one dominant.** Use the minimum hue count. A focal series is
+  saturated and heavy; comparators desaturate and thin (`focal_palette`).
+  The focal hue may not collide with any categorical palette in the same
+  figure, and the focal series must stay identifiable even at zero width or
+  full overlap — outline, marker, or tinted band.
+- **Nested categories:** outer level chooses the hue family, inner level
+  samples within it.
+- **Continuous data:** perceptually uniform sequential map; single-hue ramp
+  for rank/size; diverging map for signed values, centred on the *semantic*
+  zero (0, 1.0, median) — never the data midpoint.
+- **Colour-vision safety.** No red/green binary. Every binary pair survives
+  a deuteranopia simulation. One alarm hue is reserved for
+  error/anomaly/perturbation and never doubles as a series colour.
+- **Two palettes ⇒ two legends,** each adjacent to the first panel using its
+  palette.
+
+## Type
+
+- Panel titles are plain-language sentences, regular weight, left-aligned;
+  metric names live on the axis.
+- **Three sizes, mapped to roles**: base for titles/axis labels/series
+  identity, one step down for legends/annotations, one more for ticks
+  (`apply_figure_style(sizes=(8,7,6))`). Panel letters alone break the rule
+  (bold, larger). A label that doesn't fit gets a layout fix or a shorter
+  string, never a fourth size.
+- Species, genes, and variables that convention italicises are italicised;
+  abbreviations inherit the style and expand once on first use.
+- Large numbers wear magnitude suffixes — `4.2B`, `120 kb` — not comma
+  grouping.
+- On-mark values: ≤2 significant figures, unless rounding would collapse two
+  distinct rows, in which case show the separating digit. Text on a fill
+  needs 4.5:1 contrast or it moves outside the mark.
+- No codebase identifiers as labels: readable name first, code in
+  parentheses or the caption.
+- Panel letters: bold, top-left, outside the axes box; case per venue
+  (`panel_letter(ax, 'a', case=...)`).
+
+## Match the chart to the data
+
+- **Category × number:** show the distribution. Small n → jittered strip
+  with median tick (`strip_with_median`); large n → box/violin; mean-as-
+  message → bar with raw points *or* interval (`bar_with_points`), not both.
+  `errorbar='ci95'` is the t-interval, valid at small n. A missing category
+  is marked `n.d.`/`—`/hatched ghost — an empty slot reads as zero — and a
+  true zero gets a visible stub.
+- **One observation per category:** lollipop (dot plus thin stem to the
+  semantic zero), value beside the dot.
+- **Series over a continuum:** mean line with markers, raw runs as thin
+  translucent traces behind it, series named by text at the line's right end
+  (`end_of_line_labels`) rather than a legend box. Per-bin summary glyphs
+  are unmistakable-for-raw, identical across series, and drawn under the raw
+  points.
+- **Overlapping distributions:** stacked panels with shared x, or a
+  ridgeline; overlay only when separation is obvious.
+- **Matrices:** under ~200 cells, print every value; state the threshold in
+  the colourbar label.
+- **Embedding scatters** (UMAP/t-SNE/PCA): no ticks or tick labels, a corner
+  arrow pair for axes, clusters labelled by thin leaders into whitespace.
+- **Prediction vs. observation:** adjacent tracks, identical x and colours,
+  alignment carries the comparison; target regions as translucent spans in
+  the legend.
+- **Insets** connect visibly to their source region: box plus connectors, or
+  a wedge.
+- **Named-point scatters** direct-label at least max, min, and every flagged
+  point via thin leaders — and after rendering, confirm each leader ends
+  within a marker radius of its row.
+
+## Composition
+
+- Show what is being measured before the result — plain title, labelled
+  schematic, or panel order — and any schematic reuses the exact words and
+  glyphs of the data panels.
+- A multi-panel figure exists to make one sentence true. Panels that neither
+  state, support, nor bound that sentence move to the supplement.
+- Legends are frameless, sit in natural whitespace or become direct labels,
+  read swatch-first left-aligned, and resolve every distinct glyph.
+- Grouped small multiples take one spanning header per group, not repeated
+  titles.
+- Across a paper, Figure 1 renders the pitch as data (scope, not
+  architecture); later figures carry mechanism, evidence, robustness,
+  application. Panels are judged against the paper's pitch and move between
+  figures when the story requires (`paper-narrative` runs that review).
+- Between revision rounds, a passing panel is left alone — decorating a
+  clean panel is a regression.
+
+## Never do
+
+Each of these is a correctness failure:
+
+- red vs. green as an opposing pair;
+- filled bars on a log value axis;
+- a diverging map centred on the data midpoint, or a colourbar whose ticks
+  skip the semantic centre;
+- an axis title that repeats the tick labels;
+- direction-of-goodness explained only in the caption;
+- a "reference" line at a value that is one of the plotted points;
+- an excluded row inside a plotted summary;
+- a leader line whose nearest mark is not its target.
+
+## Prove the render
+
+Run both checks after `fig.savefig(...)` and before presenting the file.
+
+**1. Collision scan.** Assert no visible text box overlaps another or a
+spine (a tick label touching its own spine doesn't count), and every text
+box sits inside `fig.bbox`:
 
-# Publication-Grade Figure Rules
-
-*A checklist for correct, legible, internally-consistent scientific figures. This
-skill does not impose a visual house style — frame, font, and palette are
-parameters. Load it and call `apply_figure_style()` before any plot.*
-
-## §0 Scope
-
-§1–§3, §8, and §9 are **correctness** — they apply to every plot, in every
-context, and have no aesthetic content. §4–§7 are **guidance** — defaults that
-produce a clean result but that a deliberate alternative can override
-(individual rules inside §4–§7 that state a factual/perceptual invariant — e.g.
-§4.4 semantic-zero centring, §4.5 CVD, §6.9 leader anchoring — still bind). On
-its own, this skill is the inner tier (make one plot good); `figure-composer`
-and `paper-narrative` supply multi-panel and whole-paper context.
-
----
-
-## §1 Data fidelity & self-consistency
-
-**1.1 Excluded rows.** A row marked excluded or flagged in the source data is
-either omitted entirely or drawn with a visually distinct open/hatched marker
-and named in the key. It **never** enters a summary statistic plotted alongside
-the included rows.
-
-**1.2 Comparable conditions only.** Arms measured under non-comparable
-conditions (different N, epoch budget, initialisation, protocol) are not plotted
-as visual peers. Separate them with a facet break or a marker on the label, and
-state the difference once in the caption.
-
-**1.3 Self-consistency.** Every key, threshold, and title inside the figure must
-be satisfied by every plotted row. Before saving, walk each categorical outcome
-label back to the rule that defines it; if a row's value contradicts its label
-or the title, the figure is wrong, not the data.
-
-**1.4 Claim-titles must be true.** A sentence-title (§5.1) is tested against
-every category on the axis before rendering. If any contradicts it, qualify the
-title ("on 3 of 4 pairs") or downgrade it to a description.
-
-**1.5 State n and what was held fixed.** Every panel that draws a summary mark
-states `n` and the unit of replication, and every small-multiple that holds a
-variable fixed states the fixed value — in the panel or, when §2 budget is
-tight, in the caption.
-
-**1.6 Reference structure is reference.** A tree, ordering, or topology drawn as
-*context* (a scale bar, a category strip) uses an established reference, not
-one inferred from the plotted data. Infer the structure only when the structure
-*is* the result.
-
-**1.7 One number per claim.** A quantitative claim (runtime, accuracy, count)
-has exactly one canonical value across every panel, caption, and the abstract.
-Define what it measures and use that value everywhere.
-
----
-
-## §2 Label economy — floor and ceiling
-
-The figure shows the pattern; the **caption** carries the context. Design for a
-general scientific reader, not the author.
-
-**2.1 Floor (non-removable).** Every distinct mark, series, glyph, or comparator
-must be identifiable from the figure alone. The caption explains *why it
-matters*, not *what it is*. A label is non-removable if deleting it leaves a
-reader asking "what is that?"; it is removable only if the question becomes "why
-is that there?". Comparator labels name the thing ("prior method", "no joint
-training"), never a bare role word ("baseline", "previous"). Any term a general
-scientist can't parse gets a one-word gloss.
-
-**2.2 Ceiling.** Per panel: title + axis labels + tick labels + series identity
-(labelled once per row of small multiples) + at most 2–3 result annotations.
-Count the strings; >6 beyond axes/ticks means you're over. The ceiling counts
-*narrative* annotations (callouts, value labels, brackets) — identity labels are
-floor, not budget.
-
-**2.3 Move to the caption:** n=, what's-held-fixed, abbreviation expansions,
-non-comparable footnotes, exclusion rationale, methodological caveats.
-
-**2.4 Titles are takeaways.** A reader seeing only the title knows what the
-panel shows. "Robust to gene dropout" passes; "Fewer genes" fails. Test: read it
-aloud cold — if the listener asks "fewer genes *what*?", rewrite. For a row of
-small multiples that vary one thing, drop per-panel titles for one row-header.
-
-**2.5 Value-on-mark only for the headline number** — the one a reader would
-quote. Everything else is read off the axis.
-
-**2.6 When in doubt, delete the label and re-read.** If the message survives, it
-stays deleted.
-
----
-
-## §3 Axes, scales, small multiples
-
-**3.1 Axis padding.** Axis limits clear the data by ≥ one marker radius on every
-side; markers and text never touch a spine. `ax.margins(0.04)` after plotting,
-or extend the limit past any annotation.
-
-**3.2 Axis breaks over wasted range.** When data occupy <40 % of an axis, break
-the axis or start it at the data floor with a clear non-zero tick. Never draw a
-reference line, threshold, or annotation inside a broken-axis gap — the gap has
-no coordinate.
-
-**3.3 Log axes get human-readable ticks** — `10²`, `10³`, or `1k / 10k / 100k`,
-not raw exponents. **Never** draw filled bars on a log-scaled value axis (bar
-length encodes ratio to an arbitrary floor); use points + median tick instead.
-
-**3.4 Shared axes across small multiples.** A row or column of small multiples
-shows tick labels once (leftmost / bottommost panel); interior panels keep ticks
-but drop labels. When the panels share a y-axis and differ only by x-variable,
-render them as abutting subplots (`wspace≤0.06`) with one row-header title.
-
-**3.5 Fill the box.** A panel's data envelope occupies ≥75 % of its allotted
-rectangle. If a panel's natural aspect leaves dead bands, reshape the grid
-(rowspan, stacked complementary panels) — don't pad the panel.
-
-**3.6 Direction of goodness.** When higher- or lower-is-better is not obvious
-from the axis label, place a small upright cue ("higher = better") in the
-margin — once per row of panels, never per panel, and never only in the caption.
-A directional glyph embedded in rotated text rotates with it; set the cue
-upright.
-
-**3.7 Physical width.** A single-row figure at 300 dpi fits the venue's
-double-column width. Adding a schematic or labels does not push data panels narrower than
-they were before.
-
----
-
-## §4 Colour
-
-**4.1 Threading.** Once a colour is bound to an entity (a method, a feature, a
-condition), reuse that exact colour for every mark representing that entity
-across the figure — line, fill, marker, text, heatmap row. Colour *is* the
-cross-reference; a reader should never have to consult a legend twice.
-
-**4.2 Limit hues.** Use as few distinct hues as the data require. When the
-figure compares a focal series against others, make the focal series visually
-dominant (saturated, heavier weight) and render comparators with lower visual
-weight (desaturated, lighter, or thinner). The focal hue must not coincide with
-any hue in a categorical palette used in the same figure. The focal series must
-remain identifiable even when its mark is zero-width or coincident with others —
-via outline, marker, or a light tinted band.
-
-**4.3 Hierarchical categories.** When categories nest (groups within groups),
-the outer level picks the hue family and the inner level samples within it.
-
-**4.4 Continuous and diverging.** Use a perceptually uniform sequential map for
-generic continuous values; a single-hue ramp for ordinal rank or size; a
-diverging map for signed quantities — **always** centred at the semantically
-meaningful zero (0, 1.0, or median), never the data midpoint.
-
-**4.5 CVD safety.** Never rely on a red/green contrast for a binary or opposing
-distinction. Any binary pair should remain distinguishable in deuteranopia
-simulation. Reserve one alarm hue for error/anomaly/perturbation marks and do
-not reuse it as a data-series colour.
-
-**4.6 Two palettes, two legends.** When a figure uses two categorical colour
-systems, each legend sits adjacent to the first panel where its palette applies.
-
----
-
-## §5 Typography
-
-**5.1 Sentence titles.** A panel title states the comparison in plain language,
-regular weight, left-aligned. Metric names go on the axis, not in the title.
-
-**5.2 Role-mapped size ladder.** A figure uses **at most three** font sizes,
-mapped to *role* not space: titles/axis-labels/series-identity at the base size;
-legend/annotation text one step down; tick labels one step further. Panel
-letters are the only exception (bold, larger). If a label doesn't fit at its
-role's size, fix the layout or shorten the text — don't reach for an
-intermediate size. `apply_figure_style(sizes=(8,7,6))` sets the ladder.
-
-**5.3 Nomenclature.** Species, gene, and variable names that scientific
-convention italicises are italicised. Abbreviated codes inherit the rule; expand
-once on first appearance.
-
-**5.4 Magnitude suffixes.** Large counts use `k / M / B` (`4.2B`, `120 kb`),
-not comma-grouped full numerals.
-
-**5.5 Numeric annotations.** On-mark numbers use at most 2 significant figures —
-unless 2-sf rounding would make two distinct rows print the same value, in which
-case show the digit that separates them. Text on a filled mark reaches ≥4.5:1
-contrast; if it doesn't, place the text outside the mark.
-
-**5.6 No internal codes.** Axis labels use plain-language names; codebase
-abbreviations appear only in parentheses after the readable name or in the
-caption. Comparator series are labelled with what they *are*, not a role word.
-
-**5.7 Panel letters.** Bold, top-left, outside the axes box. Case follows the
-target venue's convention; `panel_letter(ax, 'a', case=...)` handles either.
-
----
-
-## §6 Chart-family guidance (by data shape)
-
-**6.1 Categorical × numeric.** Show the distribution, not just the summary.
-Chart choice follows n: jittered strip with a median tick for small n; box or
-violin for large n; bar + overlaid raw points or bar + interval when the mean is
-the message. The `errorbar='ci95'` interval is the t-distribution 95% CI of the
-mean (half-width `t_{0.975,n−1}·s/√n`), so it is valid at small n. Error bars
-and raw-point overlays are alternatives — showing both is usually redundant. A
-category absent from a group is marked (`n.d.`, `—`, or a hatched ghost) at its
-slot; an empty slot reads as zero. A zero-valued bar
-gets a visible stub or dot at the baseline.
-
-**6.2 Single-observation categories.** A filled dot with a thin neutral stem to
-the semantic zero (lollipop). Value labels sit beside the dot.
-
-**6.3 Continuous series.** Mean-per-x as a line with markers; individual runs as
-thin translucent lines or points behind it. Label each series with direct text
-at the right end of its line in preference to a legend box. Summary glyphs
-(per-bin mean/median) use a shape that cannot be mistaken for a raw observation,
-identical across series, drawn below the raw points in z-order.
-
-**6.4 Distributions on shared support.** When two distributions overlap heavily,
-stack them as small panels with a shared x-axis or use a ridgeline. Overlay only
-when the separation is visually clear.
-
-**6.5 Matrices.** When a heatmap is small enough to read (< ~200 cells), print
-the value in every cell. State the threshold once in the colourbar label.
-
-**6.6 Embeddings.** Dimensionality-reduction scatters (UMAP, t-SNE, PCA) drop
-ticks and tick labels; a small corner arrow pair names the axes. Clusters are
-labelled by thin leader lines to text in surrounding whitespace.
-
-**6.7 Paired prediction vs. observation.** Stack the two as adjacent tracks with
-identical x and colour; let the alignment carry the comparison. Target regions
-are translucent spans registered in the legend.
-
-**6.8 Insets.** Connect a detail inset to its source region visibly — a bounding
-box with connector lines, or a translucent wedge.
-
-**6.9 Label the extremes.** On a scatter of named observations, direct-label at
-least the maximum, minimum, and any flagged point with a thin leader line. After
-rendering, verify every leader endpoint terminates within one marker radius of
-the row it names.
-
----
-
-## §7 Layout & narrative
-
-**7.1 Show what is measured before the result.** A reader should grasp what's
-being compared before seeing the comparison — via a plain-language title, a
-labelled schematic, or panel ordering. Any schematic uses the same words and
-glyphs as the data panels' labels.
-
-**7.2 One figure, one message.** A multi-panel figure has a single sentence it
-is trying to make true. Every panel either states it, supports it, or bounds it;
-panels that do none of these belong in supplement.
-
-**7.3 Legends live in whitespace.** Frameless, placed inside the figure's
-natural whitespace, or replaced by direct labelling. Legend entries are
-swatch-first, left-aligned, and resolve every visually distinct glyph on the
-panel.
-
-**7.4 Row-band headers for nested faceting.** When small multiples are grouped,
-each group gets one spanning header, not repeated per-panel titles.
-
-**7.5 The figure arc.** For a paper: Figure 1 renders the paper's one-sentence
-pitch as data — scope, not architecture. Subsequent figures cover mechanism,
-evidence, robustness, application. A panel is judged against the paper's pitch,
-not just its own figure's claim; content moves between figures if that's where
-the story needs it. (`paper-narrative` runs this review.)
-
-**7.6 Don't re-decorate a passing panel.** Between revision rounds, a panel that
-already passes is not made more visually complex to fix nothing. Adding marks or
-labels to a clean panel is a regression.
-
----
-
-## §8 Anti-patterns
-
-These are correctness failures, not style preferences:
-
-- Red and green as opposing categories.
-- Filled bars on a log-scaled value axis.
-- Colourbar ticks that are evenly spaced but miss the semantic centre.
-- A diverging colormap whose centre is the data midpoint, not the semantic zero.
-- An axis title that restates the tick labels.
-- Explaining the direction of goodness only in the caption.
-- A "reference" line drawn at a value that is itself one of the plotted points.
-- An excluded row that enters a plotted summary statistic.
-- A leader line whose nearest mark is not the row it labels.
-
----
-
-## §9 Render-then-verify
-
-After `fig.savefig(...)`, before presenting the file:
-
-**9.1 Geometric (bbox) check.**
 ```python
-r = fig.canvas.get_renderer()
-texts = [(t, t.get_window_extent(r)) for t in fig.findobj(mpl.text.Text)
-         if t.get_text().strip() and t.get_visible()]
-spines = [(s, s.get_window_extent(r)) for ax in fig.axes
+rend = fig.canvas.get_renderer()
+labels = [(t, t.get_window_extent(rend)) for t in fig.findobj(mpl.text.Text)
+          if t.get_text().strip() and t.get_visible()]
+frames = [(s, s.get_window_extent(rend)) for ax in fig.axes
           for s in ax.spines.values() if s.get_visible()]
-ticklabels = {ax: set(ax.get_xticklabels(which='both') + ax.get_yticklabels(which='both'))
-              for ax in fig.axes}
-overlaps  = [(a, b) for i, (a, ba) in enumerate(texts) for b, bb in texts[i+1:] if ba.overlaps(bb)]
-overlaps += [(t, s) for t, bt in texts for s, bs in spines
-             if bt.overlaps(bs) and t not in ticklabels[s.axes]]
-# assert: overlaps == [] and every text box lies within fig.bbox
+own_ticks = {ax: set(ax.get_xticklabels(which='both') + ax.get_yticklabels(which='both'))
+             for ax in fig.axes}
+hits  = [(a, b) for i, (a, ba) in enumerate(labels)
+         for b, bb in labels[i+1:] if ba.overlaps(bb)]
+hits += [(t, s) for t, bt in labels for s, bs in frames
+         if bt.overlaps(bs) and t not in own_ticks[s.axes]]
+assert not hits
 ```
-Overlap is defined between *visible* boxes, and a tick label sitting on its own
-spine is not a finding. Fix (move, shorten, stagger) and re-save until clean.
 
-**9.2 Perceptual check.** The bbox check is geometric, not perceptual — it will
-not catch a low-contrast label, a leader that crosses three others, or a series
-colour mistakable for another. Save every panel crop as a concrete file with
-Pillow, then inspect each crop with Wisp's `view_image` tool:
+Move, shorten, or stagger until the scan is clean, re-saving each time.
+
+**2. Visual pass.** Geometry can't see a low-contrast label, crossing
+leaders, or two confusable series colours. Crop each panel to its own file
+and inspect every crop with Wisp's `view_image` tool:
+
 ```python
 from PIL import Image
 
@@ -322,21 +232,18 @@ fig.savefig("figure.png")
 for letter, box in panel_crops(fig).items():
     Image.open("figure.png").crop(box).save(f"figure-{letter}.png")
 ```
-Leave Python after creating the files and call `view_image` once per crop.
-For each crop: Is every glyph and mark legible against its background? Does the
-smallest plotted element have a stroke or stub? Do any leaders cross? Could any
-series colour be mistaken for another? Does the legend sit beside what it keys?
-A perceptual defect that passes §9.1 is still a defect.
 
-**9.3 Reliable R export.** For ggplot objects, prefer an explicit
-`ggsave(filename, plot = p, dpi = 300, bg = "white", ...)` call over relying on
-the current graphics device. For base graphics or packages that draw only to an
-active device, open `png(..., bg = "white", res = 300)`, draw explicitly, and
-always call `dev.off()`. After either path, assert that the file exists and is
-non-empty, then inspect the saved image. A successful R call with a missing,
-zero-byte, transparent-on-transparent, or visually blank file is a failed
-render.
+Leave Python, then `view_image` each crop asking: every glyph legible
+against its background? smallest element still has a stroke or stub? leaders
+uncrossed? any two series colours confusable? legend beside what it keys?
+A visual defect that passed the collision scan is still a defect.
+
+**3. R output.** Prefer explicit `ggsave(filename, plot = p, dpi = 300,
+bg = "white", ...)` over the active device; for base graphics open
+`png(..., bg = "white", res = 300)`, draw, and always `dev.off()`. Then
+assert the file exists and is non-empty and inspect it — a "successful" R
+call with a missing, zero-byte, or blank file is a failed render.
 
 ---
-*When in doubt: fewer hues, more direct labels, raw data over summary stats, and
-state what is being measured before showing the result.*
+*Defaults when unsure: fewer hues, direct labels over legends, raw data over
+summaries, and name the measurement before showing its result.*
