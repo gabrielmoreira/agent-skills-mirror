@@ -11,7 +11,7 @@ support. Key source files:
 
 | File | Purpose |
 |------|---------|
-| `src/index.ts` | Plugin entry — registers all 63 canonical tools |
+| `src/index.ts` | Plugin entry — registers all 69 canonical tools |
 | `src/session-manager.ts` | Core orchestrator — session lifecycle, council, ultraplan/ultrareview |
 | `src/base-oneshot-session.ts` | Abstract base class for one-shot (process-per-send) engines |
 | `src/persistent-session.ts` | Claude Code CLI wrapper (spawn, JSON protocol, stream parsing) |
@@ -30,8 +30,10 @@ support. Key source files:
 | `src/inbox-manager.ts` | Cross-session messaging (inbox) manager |
 | `src/embedded-server.ts` | HTTP server for standalone/CLI usage |
 | `src/openai-compat.ts` | OpenAI-compatible `/v1/chat/completions` endpoint |
+| `src/acp-server.ts` | Agent Client Protocol adapter — runs the orchestrator as an ACP *agent* |
 | `src/proxy/` | Multi-model proxy (Gemini, GPT via Anthropic format translation) |
 | `bin/cli.ts` | CLI entry point (commander-based) |
+| `bin/acp-server.ts` | ACP stdio entry (`clawo-acp` / `clawo acp`) |
 
 ## Development
 
@@ -72,6 +74,7 @@ When you change functionality, update the corresponding reference file:
 | Tool parameters or behavior | `skills/references/tools.md` |
 | Engine invocation / flags | `skills/references/multi-engine.md` |
 | Session lifecycle | `skills/references/sessions.md` |
+| ACP agent behaviour | `skills/references/acp.md` |
 | Council protocol | `skills/references/council.md` |
 | Inbox messaging | `skills/references/inbox.md` |
 | Ultraplan/Ultrareview | `skills/references/ultra.md` |

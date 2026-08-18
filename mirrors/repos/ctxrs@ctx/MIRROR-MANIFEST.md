@@ -60,8 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`plugins/ctx-agent-history-search/skills/ctx-agent-history-search/SKILL.md`](plugins/ctx-agent-history-search/skills/ctx-agent-history-search/SKILL.md) |
-| 3 | ✓ | [`skills/ctx-agent-history-search/SKILL.md`](skills/ctx-agent-history-search/SKILL.md) |
+| 2 | ✓ | [`plugins/ctx/skills/ctx/SKILL.md`](plugins/ctx/skills/ctx/SKILL.md) |
+| 3 | ✓ | [`skills/ctx/SKILL.md`](skills/ctx/SKILL.md) |
 
 ---
 

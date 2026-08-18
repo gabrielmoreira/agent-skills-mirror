@@ -27,6 +27,8 @@ Or use directly by invoking `/skill-name` in Claude Code.
 - `/go-design-patterns` — Functional options, factory, strategy, decorator
 - `/go-dependency-injection` — Constructor injection, composition root, wire/fx
 - `/go-cli` — Flags, subcommands, exit codes, signals, Cobra
+- `/go-openapi` — Spec-first REST, oapi-codegen, request validation, contract tests
+- `/go-graphql` — gqlgen resolvers, dataloaders, N+1, complexity limits
 
 ### Data
 - `/go-database` — Connection pools, transactions, sqlc, migrations
@@ -37,6 +39,7 @@ Or use directly by invoking `/skill-name` in Claude Code.
 - `/go-performance-review` — Allocations, benchmarks, pprof
 - `/go-observability` — Structured logging, tracing, metrics, OpenTelemetry
 - `/go-troubleshooting` — Panics, deadlocks, leaks, pprof diffing, delve
+- `/go-defensive-coding` — Nil traps, slice aliasing, integer overflow, defensive copying
 
 ### Testing
 - `/go-test-quality` — Subtests, httptest, golden files, fuzz, testcontainers
@@ -48,3 +51,5 @@ Or use directly by invoking `/skill-name` in Claude Code.
 - `/go-refactoring` — Behavior-preserving changes, extract package, migrations
 - `/go-semantic-tools` — gopls navigation, go list graphs, semantic rename
 - `/git-commit` — Conventional Commits, atomic commits
+- `/go-binary-size` — Linker flags, CGO, build tags, dependency weight, image size
+- `/go-skills-router` — Task-to-skill routing table and boundaries between overlapping skills

@@ -650,6 +650,45 @@ TOOLS = [
 ]
 
 
+def append_user_notice(messages: list, text: str) -> None:
+    """Add an async notice without creating adjacent user messages."""
+    block = {"type": "text", "text": text}
+    if messages and messages[-1].get("role") == "user":
+        content = messages[-1].get("content", "")
+        if isinstance(content, list):
+            messages[-1]["content"] = [*content, block]
+        else:
+            messages[-1]["content"] = [
+                {"type": "text", "text": str(content)},
+                block,
+            ]
+        return
+    messages.append({"role": "user", "content": [block]})
+
+
+def inject_pending_notifications(messages: list) -> int:
+    count = 0
+    notifs = BG.drain()
+    if notifs:
+        text = "\n".join(
+            f"[bg:{n['task_id']}] {n['status']}: {n['result']}" for n in notifs
+        )
+        append_user_notice(
+            messages,
+            f"<background-results>\n{text}\n</background-results>",
+        )
+        count += len(notifs)
+
+    inbox = BUS.read_inbox("lead")
+    if inbox:
+        append_user_notice(
+            messages,
+            f"<inbox>{json.dumps(inbox, indent=2)}</inbox>",
+        )
+        count += len(inbox)
+    return count
+
+
 # === SECTION: agent_loop ===
 def agent_loop(messages: list):
     rounds_without_todo = 0
@@ -659,15 +698,8 @@ def agent_loop(messages: list):
         if estimate_tokens(messages) > TOKEN_THRESHOLD:
             print("[auto-compact triggered]")
             messages[:] = auto_compact(messages)
-        # s08: drain background notifications
-        notifs = BG.drain()
-        if notifs:
-            txt = "\n".join(f"[bg:{n['task_id']}] {n['status']}: {n['result']}" for n in notifs)
-            messages.append({"role": "user", "content": f"<background-results>\n{txt}\n</background-results>"})
-        # s10: check lead inbox
-        inbox = BUS.read_inbox("lead")
-        if inbox:
-            messages.append({"role": "user", "content": f"<inbox>{json.dumps(inbox, indent=2)}</inbox>"})
+        # s08/s10: fold asynchronous notices into one user turn.
+        inject_pending_notifications(messages)
         # LLM call
         response = client.messages.create(
             model=MODEL, system=SYSTEM, messages=messages,

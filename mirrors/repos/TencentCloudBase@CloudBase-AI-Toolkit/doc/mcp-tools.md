@@ -189,7 +189,11 @@ CloudBase（腾讯云开发）开发阶段登录与环境绑定。登录后即�
 ---
 
 ### `queryEnv`
-查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情和安全域名。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。
+查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情、安全域名、资源用量与监控指标。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。
+
+📊 action=usage 对齐 tcb env usage/info：透传 Manager SDK describeEnvAccountCircle + describeCreditsUsageDetail，返回计费周期与各模块资源点用量（FLEXDB/SCF/COS 等）。envId 必填；type 可选过滤模块；未传 startDate/endDate 时自动使用当前计费周期。
+
+📈 action=metrics 对齐 TCB DescribeCurveData（manager.monitor.describeCurveData，不是云监控 GetMonitorData）：查询环境/网关 QPS、云函数调用与错误、数据库 CPU/内存/磁盘、云托管 CPU/QPS 等时序。envId 与 metricName 必填；startTime/endTime 格式 YYYY-MM-DD HH:mm:ss，须成对传入，不传则默认最近 24 小时；period 仅 300/3600/86400。GatewayTraceEnvQPS 未传 resourceID 时自动填环境级 all|:|all|:|all|:|all；云托管 Tke* 指标必须传服务名 resourceID。禁止用 callCloudApi 猜测监控 Action。
 
 🔍 action=info 还会派生三个用于后端选型的字段：
 - `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。
@@ -208,7 +212,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       name: "action",
       type: "string",
       required: true,
-      description: `查询类型：list=环境列表/摘要筛选（按 DescribeEnvs 语义筛选，支持通过 envId 筛选，返回 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，不支持 expiry），info=指定环境的详细信息（必须传入 envId，返回资源字段和计费信息），domains=安全域名列表 可填写的值: "list", "info", "domains"`,
+      description: `查询类型：list=环境列表/摘要筛选（按 DescribeEnvs 语义筛选，支持通过 envId 筛选，返回 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，不支持 expiry），info=指定环境的详细信息（必须传入 envId，返回资源字段和计费信息），domains=安全域名列表，usage=环境资源用量（必须传入 envId，对齐 tcb env usage/info），metrics=环境监控时序（必须传入 envId 与 metricName，对齐 TCB DescribeCurveData） 可填写的值: "list", "info", "domains", "usage", "metrics"`,
     },
     {
       name: "alias",
@@ -223,7 +227,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "envId",
       type: "string",
-      description: `按环境 ID 筛选。action=list 时可选（仅按 DescribeEnvs 语义做筛选，仍返回摘要）；action=info 时必填（返回该环境的详细信息，包含资源字段和计费信息）。如果任务已经给出了明确的 EnvId 并要求查询详情，请直接使用 action=info + envId，而不是 action=list`,
+      description: `环境 ID。action=list 时可选（仅按 DescribeEnvs 语义做筛选，仍返回摘要）；action=info / action=usage / action=metrics 时必填。`,
     },
     {
       name: "limit",
@@ -239,6 +243,56 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       name: "fields",
       type: "array of string",
       description: `返回字段白名单。仅支持 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault。action=list 时可选`,
+    },
+    {
+      name: "type",
+      type: "array of string",
+      description: `用量模块过滤。仅 action=usage 时有效；不传则查询全部模块。可选值对齐 tcb CLI：FLEXDB、TDSQL、SCF、EKS、COS、AI、HOSTING、Auth、APIInvocation、HTTPInvocation、VM、Workflow、Other。`,
+    },
+    {
+      name: "startDate",
+      type: "string",
+      description: `用量开始日期（YYYY-MM-DD）。仅 action=usage 时有效；与 endDate 成对传入。不传则使用当前计费周期。`,
+    },
+    {
+      name: "endDate",
+      type: "string",
+      description: `用量结束日期（YYYY-MM-DD）。仅 action=usage 时有效；与 startDate 成对传入。不传则使用当前计费周期。`,
+    },
+    {
+      name: "needUsageDetails",
+      type: "boolean",
+      description: `是否返回每日用量明细。仅 action=usage 时有效；默认 true。`,
+    },
+    {
+      name: "metricName",
+      type: "string",
+      description: `监控指标名。仅 action=metrics 时有效且必填。GatewayTraceEnvQPS/EnvQPSAll=环境与网关 QPS；FunctionInvocation/FunctionError/FunctionTimeout/FunctionThrottle=云函数调用、错误、超时、限流；DbRead/DbWrite/DbSizepkg=文档库读写与容量；MysqlCpuUsageRate/MysqlMemoryUse/MysqlStorageUsage=SQL 库 CPU/内存/磁盘；TkeCpuUsedService/TkeQPSService/TkeHttpErrorService=云托管 CPU/QPS/错误。 可填写的值: "GatewayTraceEnvQPS", "EnvQPSAll", "FunctionInvocation", "FunctionError", "FunctionTimeout", "FunctionThrottle", "FunctionDuration", "FunctionConcurrentExecutions", "DbRead", "DbWrite", "DbSizepkg", "MysqlCpuUsageRate", "MysqlMemoryUse", "MysqlStorageUsage", "MysqlQps", "MysqlSlowQueries", "MysqlDbConnections", "TkeCpuUsedService", "TkeMemUsedService", "TkeQPSService", "TkeHttpErrorService", "TkeInvokeNumService"`,
+    },
+    {
+      name: "startTime",
+      type: "string",
+      description: `监控开始时间（YYYY-MM-DD HH:mm:ss）。仅 action=metrics 时有效；与 endTime 成对传入。不传则默认最近 24 小时。结束时间须晚于开始时间至少五分钟。`,
+    },
+    {
+      name: "endTime",
+      type: "string",
+      description: `监控结束时间（YYYY-MM-DD HH:mm:ss）。仅 action=metrics 时有效；与 startTime 成对传入。不传则默认最近 24 小时。`,
+    },
+    {
+      name: "period",
+      type: "number",
+      description: `统计周期（秒）。仅 action=metrics 时有效；仅支持 300、3600、86400。不传则由后端按时间范围自动选择。时间范围 ≤1 天不可用 86400；>3 天不可用 300。 可填写的值: 300, 3600, 86400`,
+    },
+    {
+      name: "resourceID",
+      type: "string",
+      description: `资源 ID。仅 action=metrics 时有效。云函数传函数名，文档库传集合名，云托管必须传服务名；GatewayTraceEnvQPS 不传则使用环境级 all|:|all|:|all|:|all。`,
+    },
+    {
+      name: "subresourceID",
+      type: "string",
+      description: `子资源 ID。仅 action=metrics 时有效；查询云托管某版本监控时传入版本名。`,
     }
   ]}
 />
@@ -246,7 +300,11 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
 ---
 
 ### `envQuery`
-查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情和安全域名。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。
+查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情、安全域名、资源用量与监控指标。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。
+
+📊 action=usage 对齐 tcb env usage/info：透传 Manager SDK describeEnvAccountCircle + describeCreditsUsageDetail，返回计费周期与各模块资源点用量（FLEXDB/SCF/COS 等）。envId 必填；type 可选过滤模块；未传 startDate/endDate 时自动使用当前计费周期。
+
+📈 action=metrics 对齐 TCB DescribeCurveData（manager.monitor.describeCurveData，不是云监控 GetMonitorData）：查询环境/网关 QPS、云函数调用与错误、数据库 CPU/内存/磁盘、云托管 CPU/QPS 等时序。envId 与 metricName 必填；startTime/endTime 格式 YYYY-MM-DD HH:mm:ss，须成对传入，不传则默认最近 24 小时；period 仅 300/3600/86400。GatewayTraceEnvQPS 未传 resourceID 时自动填环境级 all|:|all|:|all|:|all；云托管 Tke* 指标必须传服务名 resourceID。禁止用 callCloudApi 猜测监控 Action。
 
 🔍 action=info 还会派生三个用于后端选型的字段：
 - `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。
@@ -265,7 +323,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       name: "action",
       type: "string",
       required: true,
-      description: `查询类型：list=环境列表/摘要筛选（按 DescribeEnvs 语义筛选，支持通过 envId 筛选，返回 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，不支持 expiry），info=指定环境的详细信息（必须传入 envId，返回资源字段和计费信息），domains=安全域名列表 可填写的值: "list", "info", "domains"`,
+      description: `查询类型：list=环境列表/摘要筛选（按 DescribeEnvs 语义筛选，支持通过 envId 筛选，返回 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，不支持 expiry），info=指定环境的详细信息（必须传入 envId，返回资源字段和计费信息），domains=安全域名列表，usage=环境资源用量（必须传入 envId，对齐 tcb env usage/info），metrics=环境监控时序（必须传入 envId 与 metricName，对齐 TCB DescribeCurveData） 可填写的值: "list", "info", "domains", "usage", "metrics"`,
     },
     {
       name: "alias",
@@ -280,7 +338,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "envId",
       type: "string",
-      description: `按环境 ID 筛选。action=list 时可选（仅按 DescribeEnvs 语义做筛选，仍返回摘要）；action=info 时必填（返回该环境的详细信息，包含资源字段和计费信息）。如果任务已经给出了明确的 EnvId 并要求查询详情，请直接使用 action=info + envId，而不是 action=list`,
+      description: `环境 ID。action=list 时可选（仅按 DescribeEnvs 语义做筛选，仍返回摘要）；action=info / action=usage / action=metrics 时必填。`,
     },
     {
       name: "limit",
@@ -296,6 +354,56 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       name: "fields",
       type: "array of string",
       description: `返回字段白名单。仅支持 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault。action=list 时可选`,
+    },
+    {
+      name: "type",
+      type: "array of string",
+      description: `用量模块过滤。仅 action=usage 时有效；不传则查询全部模块。可选值对齐 tcb CLI：FLEXDB、TDSQL、SCF、EKS、COS、AI、HOSTING、Auth、APIInvocation、HTTPInvocation、VM、Workflow、Other。`,
+    },
+    {
+      name: "startDate",
+      type: "string",
+      description: `用量开始日期（YYYY-MM-DD）。仅 action=usage 时有效；与 endDate 成对传入。不传则使用当前计费周期。`,
+    },
+    {
+      name: "endDate",
+      type: "string",
+      description: `用量结束日期（YYYY-MM-DD）。仅 action=usage 时有效；与 startDate 成对传入。不传则使用当前计费周期。`,
+    },
+    {
+      name: "needUsageDetails",
+      type: "boolean",
+      description: `是否返回每日用量明细。仅 action=usage 时有效；默认 true。`,
+    },
+    {
+      name: "metricName",
+      type: "string",
+      description: `监控指标名。仅 action=metrics 时有效且必填。GatewayTraceEnvQPS/EnvQPSAll=环境与网关 QPS；FunctionInvocation/FunctionError/FunctionTimeout/FunctionThrottle=云函数调用、错误、超时、限流；DbRead/DbWrite/DbSizepkg=文档库读写与容量；MysqlCpuUsageRate/MysqlMemoryUse/MysqlStorageUsage=SQL 库 CPU/内存/磁盘；TkeCpuUsedService/TkeQPSService/TkeHttpErrorService=云托管 CPU/QPS/错误。 可填写的值: "GatewayTraceEnvQPS", "EnvQPSAll", "FunctionInvocation", "FunctionError", "FunctionTimeout", "FunctionThrottle", "FunctionDuration", "FunctionConcurrentExecutions", "DbRead", "DbWrite", "DbSizepkg", "MysqlCpuUsageRate", "MysqlMemoryUse", "MysqlStorageUsage", "MysqlQps", "MysqlSlowQueries", "MysqlDbConnections", "TkeCpuUsedService", "TkeMemUsedService", "TkeQPSService", "TkeHttpErrorService", "TkeInvokeNumService"`,
+    },
+    {
+      name: "startTime",
+      type: "string",
+      description: `监控开始时间（YYYY-MM-DD HH:mm:ss）。仅 action=metrics 时有效；与 endTime 成对传入。不传则默认最近 24 小时。结束时间须晚于开始时间至少五分钟。`,
+    },
+    {
+      name: "endTime",
+      type: "string",
+      description: `监控结束时间（YYYY-MM-DD HH:mm:ss）。仅 action=metrics 时有效；与 startTime 成对传入。不传则默认最近 24 小时。`,
+    },
+    {
+      name: "period",
+      type: "number",
+      description: `统计周期（秒）。仅 action=metrics 时有效；仅支持 300、3600、86400。不传则由后端按时间范围自动选择。时间范围 ≤1 天不可用 86400；>3 天不可用 300。 可填写的值: 300, 3600, 86400`,
+    },
+    {
+      name: "resourceID",
+      type: "string",
+      description: `资源 ID。仅 action=metrics 时有效。云函数传函数名，文档库传集合名，云托管必须传服务名；GatewayTraceEnvQPS 不传则使用环境级 all|:|all|:|all|:|all。`,
+    },
+    {
+      name: "subresourceID",
+      type: "string",
+      description: `子资源 ID。仅 action=metrics 时有效；查询云托管某版本监控时传入版本名。`,
     }
   ]}
 />
@@ -506,7 +614,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
 ---
 
 ### `readNoSqlDatabaseContent`
-查询 CloudBase NoSQL 数据库中的数据记录。支持按条件筛选、分页、排序，适用于管理端数据查询与运维。
+查询 CloudBase NoSQL 数据库中的数据记录。支持按条件筛选、分页、排序，适用于管理端数据查询与运维。limit 默认 100、最大 1000；超出请用 offset 分页。projection 仅支持 \{ field: 1|0 \} 对象（示例 \{"_id":1,"name":1,"createdAt":1\}），不要传字段数组。
 
 #### 参数
 
@@ -531,7 +639,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "projection",
       type: "union",
-      description: `返回字段投影(对象或字符串,推荐对象)`,
+      description: `返回字段投影，仅支持对象或对应 JSON 字符串，值只能是 1/0/true/false。合法示例：{"_id":1,"name":1,"createdAt":1}（包含）或 {"password":0}（排除）。不要传 ["name","age"] 这类字段数组，也不要混用包含与排除（_id 除外）。`,
     },
     {
       name: "sort",
@@ -541,7 +649,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "limit",
       type: "number",
-      description: `返回数量限制`,
+      description: `返回数量限制，整数，范围 1-1000，默认 100。超过 1000 会被 Cloud API MgoLimit lte 校验拒绝；请用 offset 分页。`,
     },
     {
       name: "offset",
@@ -747,7 +855,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "role",
       type: "string",
-      description: `可选的 PostgreSQL role，会传给 Manager SDK executePGSql；例如需要管理策略时可传 postgres。`,
+      description: `可选的 PostgreSQL role，传给 Manager SDK executePGSql 的 Role（平台会 SET ROLE）。默认 cloudbase_admin。推荐取值：cloudbase_admin / anon / authenticated / service_role。不要传 postgres、postgres_pgdb_* 或从环境名臆造的角色；不确定时省略本字段，或先用 cloudbase_admin 执行 SELECT rolname FROM pg_roles。`,
     },
     {
       name: "objectName",
@@ -1837,7 +1945,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 - aider: Aider AI编辑器
 
 特别说明：
-- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.27.0），便于后续维护和版本追踪
+- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.28.0），便于后续维护和版本追踪
 - 下载 rules 模板时，如果项目中已存在 README.md 文件，系统会自动保护该文件不被覆盖（除非设置 overwrite=true）
 
 #### 参数
@@ -1894,12 +2002,12 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 文档名：cloudbase-document-database-web-sdk 文档介绍：Use CloudBase document database Web SDK only for confirmed NoSQL collection work. Query, create, update, and delete document data; if the task mentions PostgreSQL / CloudBase PG / app.rdb(), route to postgresql-development instead.
 文档名：cloudbase-platform 文档介绍：CloudBase platform overview and routing guide. This skill should be used when users need high-level capability selection, platform concepts, console navigation, or cross-platform best practices before choosing a more specific implementation skill.
 文档名：cloudbase-wechat-integration 文档介绍：CloudBase WeChat integration guide for Mini Program WeChat Pay, Official Account JSAPI Pay, Native QR-code Pay, Official Account OAuth, openid handling, payment callbacks, and CloudBase Integration Center generated functions. This skill should be used when users ask to add, debug, or extend WeChat payment or official-account flows on CloudBase.
-文档名：cloudrun-development 文档介绍：CloudBase Run backend development rules (Function mode/Container mode). Use this skill when deploying backend services that require long connections, multi-language support, custom environments, AI agent development, or migrating existing/GitHub apps that need VPC access to MySQL/PostgreSQL/Redis. For stateless HTTP services, prefer HTTP cloud functions.
+文档名：cloudrun-development 文档介绍：CloudBase Run backend development rules (Function mode/Container mode). Use this skill when deploying backend services that require long connections, multi-language support, custom environments, AI agent development, or migrating existing/GitHub apps that need VPC access to MySQL/PostgreSQL/Redis. Also use when diagnosing CloudRun container deploy failures (deploy_failed, readiness/probe failed, image won't start, docker.io pull loops). For stateless HTTP services, prefer HTTP cloud functions.
 文档名：data-model-creation 文档介绍："[Deprecated] Optional advanced tool for complex data modeling. For simple MySQL table creation, use relational-database-tool directly; for PostgreSQL / CloudBase PG schema work, use postgresql-development. New environments should use PostgreSQL DDL via queryPgDatabase/managePgDatabase — see postgresql-development skill instead."
 文档名：http-api-cloudbase 文档介绍：CloudBase official HTTP API client guide. This skill should be used when backends, scripts, or non-SDK clients must call CloudBase platform APIs over raw HTTP instead of using a platform SDK or MCP management tool.
 文档名：minimal-web-baas-demo 文档介绍："Fast path for a minimal CloudBase Web + database demo (最小前后端 / 最小可用 fullstack / Lovable-like BaaS). Defaults to @cloudbase/js-sdk client CRUD (NoSQL app.database / PG app.rdb), MCP-only schema, preview-first, and forbids cloud functions unless secrets, cron/background jobs, or logic that security rules/RLS cannot express. Use for 搭一套 demo、留言板、Todo、Notes、Kanban, or when users say 带云函数+云数据库 but only need CRUD. NOT for production multi-service backends, CloudRun, WeChat Mini Programs, or tasks that truly need server secrets."
 文档名：miniprogram-development 文档介绍：WeChat Mini Program development skill for building, debugging, previewing, testing, publishing, optimizing, and promoting mini program projects. This skill should be used when users ask to create, develop, modify, debug, preview, test, deploy, publish, launch, review, optimize, or promote WeChat Mini Programs, mini program pages, components, `tabBar`, routing, navigation, icon assets, project structure, project configuration, `project.config.json`, `appid` setup, device preview, real-device validation, WeChat Developer Tools Nightly workflows, `wechatide` CLI, WeChat IDE Skills/MCP, console/network debugging, `miniprogram-ci` preview/upload flows, or mini program release processes. It should also be used when users ask about mini program SEO / search optimization / search promotion (小程序 SEO、搜索优化、微信搜索收录、搜索推广、页面收录、关键词排名、被搜索到) or page indexing by the WeChat search crawler (`mpcrawler`). Use it when users explicitly mention CloudBase, `wx.cloud`, Tencent CloudBase, 腾讯云开发, 微信云开发, or 云开发 in a mini program project.
-文档名：ops-inspector 文档介绍：AIOps-style one-click inspection skill for CloudBase resources. Use this skill when users need to diagnose errors, check resource health, inspect logs, or run a comprehensive health check across cloud functions, CloudRun services, databases, and other CloudBase resources.
+文档名：ops-inspector 文档介绍：AIOps-style CloudBase inspection skill (v3). Use when users need health checks, log diagnosis, alarm interpretation (CPU alert normal?, peak QPS), metrics via queryEnv(action=metrics), or fault playbooks for 429 / function 404 / ACCESS_TOKEN_INVALID / zero invocations. Triggers on 巡检, 诊断, 告警, 峰值 QPS, 限频, 调用量为 0, troubleshooting.
 文档名：postgresql-development-cloudbase 文档介绍："Use when building, debugging, or evaluating CloudBase PostgreSQL / CloudBase PG / PG mode apps, including Postgres schema setup, queryPgDatabase/managePgDatabase, JS SDK v3 app.rdb() CRUD/RPC, PG HTTP API fallback, RLS-style permissions, username-password auth, and Web CMS/admin CRUD flows backed by CloudBase PG."
 文档名：relational-database-mcp-cloudbase 文档介绍："[Deprecated] This is the required documentation for agents operating on the CloudBase Relational Database through MCP. It defines the canonical SQL management flow with `queryMysqlDatabase`, `manageMysqlDatabase`, `queryPermissions`, and `managePermissions`, including MySQL provisioning, destroy flow, async status checks, safe query execution, schema initialization, and permission updates. New environments should use PostgreSQL — see postgresql-development skill instead."
 文档名：relational-database-web-cloudbase 文档介绍："[Deprecated] Use when building frontend Web apps that talk to CloudBase Relational Database via @cloudbase/js-sdk – provides the canonical init pattern so you can then use Supabase-style queries from the browser. New environments should use PostgreSQL with app.rdb() — see postgresql-development skill instead."
@@ -1999,7 +2107,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 ---
 
 ### `queryCloudRun`
-查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表、获取部署日志以及查询环境云托管开通状态（envStatus）。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。
+查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表、获取构建日志（getDeployLog，仅云端源码构建/依赖 CODING）、获取运行日志（getProcessLog，镜像与源码部署均可/不依赖 CODING）、获取部署记录以及查询环境云托管开通状态（envStatus）。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。
 
 #### 参数
 
@@ -2009,7 +2117,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       name: "action",
       type: "string",
       required: true,
-      description: `查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取指定服务最近一次或指定构建的部署日志，getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪 可填写的值: "list", "detail", "templates", "getDeployLog", "getDeployRecords", "envStatus"`,
+      description: `查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取构建日志（仅云端源码构建有意义，走 CODING/DescribeCloudRunBuildLog；已有镜像部署无构建过程；未登录 CODING 的账号会报错），getProcessLog=获取运行日志（部署阶段步骤+容器启动/运行日志，走 tcbr/DescribeCloudRunProcessLog；镜像部署与源码构建均可用，不依赖 CODING；RunId 来自 detail/getDeployRecords 的 latestDeploy.RunId），getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪 可填写的值: "list", "detail", "templates", "getDeployLog", "getProcessLog", "getDeployRecords", "envStatus"`,
     },
     {
       name: "pageSize",
@@ -2039,12 +2147,17 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
     {
       name: "detailServerName",
       type: "string",
-      description: `要查询详细信息、部署记录或部署日志的服务名称。当action为detail、getDeployLog或getDeployRecords时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表`,
+      description: `要查询详细信息、部署记录、构建日志或运行日志的服务名称。当action为detail、getDeployLog、getProcessLog或getDeployRecords时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表`,
     },
     {
       name: "buildId",
       type: "number",
-      description: `构建ID，仅在action=getDeployLog时使用。不传时默认返回最近一次部署的构建日志`,
+      description: `构建ID，仅在action=getDeployLog时使用（构建日志，仅云端源码构建）。不传时默认返回最近一次部署的构建日志`,
+    },
+    {
+      name: "runId",
+      type: "string",
+      description: `运行ID（RunId），仅在action=getProcessLog时使用。不传时默认取该服务最近一次部署记录的 RunId（与 detail/getDeployRecords 的 latestDeploy.RunId 同源）。镜像部署与源码构建均可查询运行日志`,
     }
   ]}
 />
@@ -2052,7 +2165,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 ---
 
 ### `manageCloudRun`
-管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。
+管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 语义为「触发部署 + 轻量等待任务注册」（最多约 45s）。源码构建返回 buildId，用 getDeployLog 轮询构建进度后再 getProcessLog；镜像部署（imageUrl）BuildId 常为 0，跳过 getDeployLog，返回 runId/next_step 引导 getProcessLog（或先 getDeployRecords 取 RunId）。若用户明确指定镜像或无需重新构建，必须传 imageUrl，不要仅因本地有源码目录就回退到源码构建。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。
 
 #### 参数
 
@@ -2062,7 +2175,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       name: "action",
       type: "string",
       required: true,
-      description: `云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；传 imageUrl 时改为已有镜像部署，走 DeployType=image 容器型，targetPath 可省略；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体），initEnv=开通当前环境的云托管（异步创建云托管环境，幂等：已开通直接返回；适合新环境首次部署前使用），traffic=流量管理与灰度发布（set=调整稳定版/灰度版流量比例，promote=将灰度版本升级为全量，rollback=回滚到上一个稳定版本；对应 tcb cloudrun traffic 命令） 可填写的值: "init", "download", "run", "deploy", "delete", "createAgent", "updateConfig", "initEnv", "traffic"`,
+      description: `云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=触发部署并轻量等待任务注册（不会 hang 等完整构建）。源码构建（targetPath）返回 buildId，用 getDeployLog 轮询后再 getProcessLog；已有镜像部署（imageUrl，DeployType=image，BuildId 常为 0）跳过 getDeployLog，用 detail/getDeployRecords 取 RunId 后 getProcessLog。传 imageUrl 时 targetPath 可省略；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体），initEnv=开通当前环境的云托管（异步创建云托管环境，幂等：已开通直接返回；适合新环境首次部署前使用），traffic=流量管理与灰度发布（set=调整稳定版/灰度版流量比例，promote=将灰度版本升级为全量，rollback=回滚到上一个稳定版本；对应 tcb cloudrun traffic 命令） 可填写的值: "init", "download", "run", "deploy", "delete", "createAgent", "updateConfig", "initEnv", "traffic"`,
     },
     {
       name: "serverName",
@@ -2096,14 +2209,24 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       description: `云托管环境套餐类型（action=initEnv 时使用）：Trial=试用，Standard=标准，Professional=专业，Enterprise=企业。默认 Trial 可填写的值: "Trial", "Standard", "Professional", "Enterprise"`,
     },
     {
+      name: "vpcId",
+      type: "string",
+      description: `VPC 网络 ID（action=initEnv 时可选）。当平台拒绝系统创建网络时必填，格式如 vpc-xxxxxxxx。与 subnetIds 一起透传给 CreateCloudRunEnv 的 VpcId/SubNetIds。多数场景可不传（由系统创建网络）`,
+    },
+    {
+      name: "subnetIds",
+      type: "array of string",
+      description: `子网 ID 列表（action=initEnv 时可选）。当需指定自有 VPC 时必填，如 ["subnet-xxxxxxxx"]。与 vpcId 一起透传给 CreateCloudRunEnv 的 SubNetIds`,
+    },
+    {
       name: "targetPath",
       type: "string",
-      description: `本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun。使用 imageUrl 部署已有镜像时此参数可省略`,
+      description: `本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun。使用 imageUrl 部署已有镜像时此参数可省略。注意：本地有源码目录不等于必须走源码构建；若用户指定镜像请优先传 imageUrl，不要仅因存在 targetPath 就回退到源码构建`,
     },
     {
       name: "imageUrl",
       type: "string",
-      description: `已有镜像部署（action=deploy 时使用）：直接指定容器镜像地址，如 ccr.ccs.tencentyun.com/ns/img:v1 或公网 registry 地址。传入后走 DeployType="image"（容器型）部署，无需本地源码目录（targetPath 可省略）。支持：1) 公网匿名可拉取的镜像直填地址；2) 私有/需登录的镜像（如 ghcr.io）需先在本地 docker pull → docker tag/push 到腾讯云 CCR → 填入 CCR 地址。不传则维持源码构建（本地代码打包上传）。注意：无论哪种部署方式，环境都需先开通云托管（未开通时先调用 initEnv，Status=normal 后再部署）`,
+      description: `已有镜像部署（action=deploy 时使用）：直接指定容器镜像地址，如 ccr.ccs.tencentyun.com/ns/img:v1 或公网 registry 地址。传入后走 DeployType="image"（容器型）部署，无需本地源码目录（targetPath 可省略）。支持：1) 公网匿名可拉取的镜像直填地址；2) 私有/需登录的镜像（如 ghcr.io）需先在本地 docker pull → docker tag/push 到腾讯云 CCR → 填入 CCR 地址。不传则维持源码构建（本地代码打包上传）。约束：若用户明确提到使用某个镜像、或无需重新构建代码，则必须传 imageUrl 走镜像部署，不要回退到源码构建。注意：无论哪种部署方式，环境都需先开通云托管（未开通时先调用 initEnv，Status=normal 后再部署）`,
     },
     {
       name: "envParamsReplaceAll",
@@ -2207,7 +2330,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
         {
           name: "InitialDelaySeconds",
           type: "number",
-          description: `延迟检测时间（秒），用于配置服务启动后的健康检查延迟。在此期间内不会将请求路由到该实例，适用于启动时间较长的服务`,
+          description: `端口健康检查初始延迟（秒）。部署完成后先等待 N 秒才开始端口探测，之后约每 5s 检查一次、连续约 30 次；30 次全失败才判定部署失败（约 150s 探测窗口），不是「N 秒后立即失败」。启动耗时长的应用建议调到 60–120`,
         },
         {
           name: "LogType",
@@ -2831,14 +2954,16 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
 ---
 
 ### `queryPermissions`
-查询 CloudBase 权限与用户配置，支持查询资源权限（数据库/云函数/存储桶等）、角色列表/详情、应用用户列表/详情。
+查询 CloudBase 权限与用户配置，支持查询资源权限（数据库/云函数/存储桶等）、角色列表/详情、应用用户列表/详情，以及网关 OPA 授权策略（对齐 CLI `tcb policy list/get`）。
 
 示例：
 - 查询存储桶权限：`action="getResourcePermission", resourceType="storage", resourceId="bucket-name"`
+- 列出旧网关策略：`action="listPolicy"`（PG / OPA 引擎环境返回空列表，与 CLI 一致）
+- 读取用户 Rego：`action="getPolicy"`；平台扩展策略：`action="getPolicy", extension=true`
 
 📌 跨后端边界提示：调用前先用 `envQuery(action="info", envId=...)` 看 `EnvInfo.RuntimeBackends`。`resourceType="noSqlDatabase"` 查询的是 CloudBase NoSQL 集合规则，与 CloudBase PostgreSQL（PG）表的行级安全（RLS）是两套独立机制——同一个 PG 环境里 NoSQL 集合若仍在使用，对那些集合查询本工具结果**仍然有效**。要查 PG 表 RLS，请改用 `queryPgDatabase(action="sql", sql="SELECT * FROM pg_policies WHERE tablename=...")`。本工具不涉及 MySQL 权限。
 
-⚠️ PostgreSQL 环境：平台 `DescribeResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType="function"` 时，本工具会自动回退到 Manager SDK `describeEnvAuthzConfig`（与 CLI `tcb policy get` 一致，读取 `authz.user.rego`）。
+⚠️ PostgreSQL 环境：平台 `DescribeResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType="function"` 时，本工具会自动回退到 Manager SDK `describeEnvAuthzConfig`（与 CLI `tcb policy get` 一致，读取 `authz.user.rego`）。显式 OPA 策略请用 `listPolicy` / `getPolicy`。
 
 #### 参数
 
@@ -2848,7 +2973,7 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
       name: "action",
       type: "string",
       required: true,
-      description: ` 可填写的值: "getResourcePermission", "listResourcePermissions", "listRoles", "getRole", "listUsers", "getUser"`,
+      description: ` 可填写的值: "getResourcePermission", "listResourcePermissions", "listRoles", "getRole", "listUsers", "getUser", "listPolicy", "getPolicy"`,
     },
     {
       name: "resourceType",
@@ -2890,6 +3015,16 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
     {
       name: "pageSize",
       type: "number",
+    },
+    {
+      name: "extension",
+      type: "boolean",
+      description: `仅 action=getPolicy。true=读取平台为该环境单独配置的策略（authz.platform.extension.rego），默认 false=用户策略（authz.user.rego），对齐 CLI \`tcb policy get --extension\`。`,
+    },
+    {
+      name: "policyResourceType",
+      type: "string",
+      description: `仅 action=listPolicy。按资源类型过滤，当前仅支持 \`policy\`，对齐 CLI \`tcb policy list --resource-type policy\`。 可填写的值: "policy"`,
     }
   ]}
 />
@@ -2897,12 +3032,13 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
 ---
 
 ### `managePermissions`
-管理 CloudBase 权限与用户配置，支持修改资源权限（数据库/云函数/存储桶等）、角色管理、成员与策略增删、应用用户 CRUD。
+管理 CloudBase 权限与用户配置，支持修改资源权限（数据库/云函数/存储桶等）、角色管理、成员与策略增删、应用用户 CRUD，以及设置网关 OPA Rego 策略（对齐 CLI `tcb policy set`）。
 
 示例：
 - 设置存储桶为私有：`action="updateResourcePermission", resourceType="storage", resourceId="bucket-name", permission="PRIVATE"`
 - 创建角色：`action="createRole", roleName="admin", roleIdentity="admin"`
 - 放开云函数匿名/未登录访问（PG 会走 OPA，对齐 CLI `tcb policy set`）：`action="updateResourcePermission", resourceType="function", resourceId="myFn", permission="CUSTOM", securityRule='\{"invoke":true\}'`
+- 直接设置用户 Rego：`action="setPolicy", regoContent="package authz.user\n\ndefault allow := false\n", confirm=true`（⚠️ 立即禁用旧网关鉴权）
 
 注意：`createUser` / `updateUser` 是环境侧应用用户管理能力，适合测试账号、管理员或预置用户，不应替代浏览器里的 Web SDK 注册表单；前端用户名密码注册应使用 `auth.signUp(\{ username, password \})`，登录应使用 `auth.signInWithPassword(\{ username, password \})`。直接在浏览器里用 `auth.signUp` 创建用户名密码用户取决于 SDK/provider 支持，使用前必须验证；不支持时应走后端或管理端边界，不能在浏览器暴露密钥。`securityRule` 的详细语义取决于 `resourceType`：`doc._openid`、`auth.openid`、查询条件子集校验，以及 `create` / `update` / `delete` JSON 模板仅适用于 `resourceType="noSqlDatabase"` 的文档数据库安全规则；配置 `function` 或 `storage` 时，请参考各自官方安全规则文档，而不是复用 NoSQL 模板。
 
@@ -2911,7 +3047,7 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
 - `resourceType="storage"` 控制的是 NoSQL/COS 存储桶 ACL；PG 的 `pgstore` bucket 不在此 `resourceType` 覆盖范围内。
 - 本工具不涉及 MySQL；MySQL 数据库权限请走 MySQL 自身的 GRANT/REVOKE 语句（通过 `manageMysqlDatabase`）。
 
-⚠️ PostgreSQL 环境：平台 `ModifyResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType="function"` 时，本工具会自动回退到 Manager SDK `modifyEnvAuthzConfig`（与 CLI `tcb policy set` 一致，写入 `authz.user.rego`）。`securityRule` 可传完整 Rego（`package authz.user`）或 `'\{"invoke":true\}'`（自动生成放通 anonymous/unauthenticated 调 functions 的策略）。设置 Rego 后旧网关鉴权会失效，行为与 CLI 相同。
+⚠️ PostgreSQL 环境：平台 `ModifyResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType="function"` 时，本工具会自动回退到 Manager SDK `modifyEnvAuthzConfig`（与 CLI `tcb policy set` 一致，写入 `authz.user.rego`）。`securityRule` 可传完整 Rego（`package authz.user`）或 `'\{"invoke":true\}'`（自动生成放通 anonymous/unauthenticated 调 functions 的策略）。设置 Rego 后旧网关鉴权会失效，行为与 CLI 相同。显式 OPA 策略请优先用 `action="setPolicy"`。
 
 #### 参数
 
@@ -2921,7 +3057,7 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
       name: "action",
       type: "string",
       required: true,
-      description: ` 可填写的值: "updateResourcePermission", "createRole", "updateRole", "deleteRoles", "addRoleMembers", "removeRoleMembers", "addRolePolicies", "removeRolePolicies", "createUser", "updateUser", "deleteUsers"`,
+      description: ` 可填写的值: "updateResourcePermission", "createRole", "updateRole", "deleteRoles", "addRoleMembers", "removeRoleMembers", "addRolePolicies", "removeRolePolicies", "createUser", "updateUser", "deleteUsers", "setPolicy"`,
     },
     {
       name: "resourceType",
@@ -2996,6 +3132,16 @@ action=deployApp 上传源码 ZIP 并触发远端构建部署管道：
       name: "userStatus",
       type: "string",
       description: ` 可填写的值: "ACTIVE", "BLOCKED"`,
+    },
+    {
+      name: "regoContent",
+      type: "string",
+      description: `仅 action=setPolicy。用户 OPA Rego 全文，必须以 \`package authz.user\` 开头，对齐 CLI \`tcb policy set <regoContent>\`。`,
+    },
+    {
+      name: "confirm",
+      type: "boolean",
+      description: `仅 action=setPolicy。设置 Rego 后会立即禁用旧网关鉴权，必须显式传 confirm=true（对齐 CLI 确认提示）。`,
     }
   ]}
 />

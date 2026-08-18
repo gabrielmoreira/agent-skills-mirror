@@ -40,6 +40,18 @@ describe("buildCapiErrorMessage", () => {
 
     expect(message).not.toContain("可能的 tcb Action");
   });
+
+  it("guides device code / SecretKey on CAM auth failures", () => {
+    const message = buildCapiErrorMessage(
+      "tcbr",
+      "CreateCloudRunEnv",
+      new Error("UnauthorizedOperation: [CAM] not authorized to perform: tcbr:CreateCloudRunEnv"),
+    );
+
+    expect(message).toMatch(/device code|start_auth/);
+    expect(message).toMatch(/SecretId\/SecretKey/);
+    expect(message).toMatch(/API Key/);
+  });
 });
 
 describe("assertTcbCloudRunActionAllowed", () => {

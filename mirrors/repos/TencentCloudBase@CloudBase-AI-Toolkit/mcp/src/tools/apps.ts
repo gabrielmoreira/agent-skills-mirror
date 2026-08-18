@@ -226,7 +226,10 @@ export function registerAppTools(server: ExtendedMcpServer) {
         });
         logCloudBaseResult(server.logger, result);
 
-        const isFailed = result.Status === "FAILED";
+        // Platform may return Failed/failed; normalize before matching.
+        const isFailed =
+          typeof result.Status === "string" &&
+          result.Status.toLowerCase() === "failed";
         const payload: Record<string, unknown> = {
           action,
           serviceName,

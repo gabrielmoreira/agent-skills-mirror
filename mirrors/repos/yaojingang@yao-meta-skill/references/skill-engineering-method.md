@@ -64,6 +64,8 @@ Before deep authoring, ask only the questions that change the package design.
 
 - open with a human, teacher-like framing rather than a cold field list
 - let the user answer naturally first; offer a tiny template only as an optional shortcut
+- infer non-core gaps with visible assumptions and reserve interruption for the core job, primary output, or an explicit direction conflict
+- ask one contextual question per round, stop after two rounds, and use a labeled preferred inference when the fork remains unresolved
 - what recurring job should the skill own
 - what real inputs will users hand to it
 - what outputs must it produce

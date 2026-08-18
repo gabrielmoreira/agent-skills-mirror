@@ -4,6 +4,35 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.234](https://github.com/Piebald-AI/claude-code-system-prompts/commit/373b98c)
+
+_+11,405 tokens_
+
+- **NEW:** Data: SDK cloud session init snapshot field, Data: SDK control cancel request schema, Data: SDK request user dialog kind field, and Data: SDK result message schema — Document cloud-session attachment and directory-sync state, cancellation of in-flight control requests, capability-negotiated user-dialog kinds, and the turn-complete result contract.
+- **NEW:** Data: syncClaudeAiSkills setting — Documents how `false` disables account-synced skills across user, managed, workspace, and invocation scopes, including hiding, trash cleanup, re-enablement, and unsupported project-setting behavior.
+- **NEW:** Data: VCS state changed event schema — Restores the best-effort repository cache-invalidation event with working-directory hints, stricter push-branch attribution, and caveats for silenced or backgrounded mutations.
+- **NEW:** Skill: Claude guide unavailable reference fallback — Adds an embedded live-source index and WebFetch fallback when the Claude guide's on-disk reference files cannot be written.
+- **NEW:** Tool Description: Artifact assets guidance — Adds upload, list, read, reference, and permanent-delete guidance for files in artifacts that declare the `assets` capability.
+- **NEW:** Tool Parameter: Artifact watch actions guidance — Adds action-level guidance for watch, unwatch, status, durable remote wakes, comment wakes, and explicitly authorized `resume_replies` behavior.
+- **REMOVED:** Skill: Build with Claude API (reference guide) — Removes the redundant standalone quick-task navigation prompt; the primary Claude API skill retains its integrated reading guide.
+- **REMOVED:** System Reminder: File modification detected (budget exceeded) and System Reminder: File modified by user or linter — Remove the standalone reminders for externally modified files and omitted modification snippets.
+- **REMOVED:** System Reminder: MCP resource no displayable content — Consolidates the no-displayable-content case into the generalized MCP resource status reminder.
+- Agent Prompt: Coding session title generator and Agent Prompt: Session title and branch generation — Shift titles to specific, two-to-five-word noun phrases that omit generic task verbs and abstract action labels, retain recognizable identifiers, and follow the user's language while keeping branch names in English.
+- Agent Prompt: Status line setup — Adds GitLab merge-request metadata and labeling alongside GitHub pull-request status-line support.
+- Data: Artifact decision component script, Data: Workshop artifact HTML template, and Skill: Artifact components — Harden verifier-pinned decision scripts against ambiguous script tags, quoted-attribute boundaries, escaped script states, and non-ASCII whitespace while refreshing the blessed digest.
+- Data: Plugin eval and skill-doctor quick reference and Data: Plugin eval and skill-doctor reference — Promote image judging to current behavior, document binary-grading remedies, strengthen sandbox isolation from host repositories and project settings, and add plugin-load advisories, authentication-partial results, richer quiet-JSON diagnostics, and SIGTERM handling.
+- Skill: Plugin eval authoring interview — Makes tools and execution budgets follow each grader's actual side effects, rejects pilots whose plugin failed to load or whose graders cannot pass with granted tools, and adds image and binary-artifact grading guidance.
+- Skill: Building LLM-powered applications with Claude — Clarifies that cited language and shared reference paths are external skill files that must be read on demand before relying on them.
+- Skill: Artifact design, Skill: Design, Skill: Prototype, and Tool Description: Artifact publishing and update guidance — Allow Google Fonts stylesheets and font files as the sole external-host exception, require fallback stacks, and note export fallbacks where applicable.
+- Skill: Artifact document, Skill: Artifact slides, and Skill: Artifact spreadsheet — Switch collaborative editing to explicit whole-artifact saves under the `artifact` capability, distinguish write-access and view-only behavior, preserve reader changes through conflict-safe rereads, remove obsolete server-owned `data-id` restrictions, support structural slide edits, and make spreadsheet scratch cells persist when saved.
+- Skill: Artifact PR review and Skill: Artifact PR review (composed publish flow) — Make decision controls the default unless a display-only page was requested, and clarify that connector-backed live PR data—not artifact saving alone—is what restricts external sharing.
+- Skill: Design — Pins every canvas publish to runtime contract `0.1.31`, asks whether app concepts should be static or clickable, leaves publish approval to the tool and handles refusals without unsafe retries, preserves existing capability declarations on updates, clarifies that export—not saving—limits sharing to the organization, and favors a concise handoff followed by a content-focused second pass.
+- System Prompt: Artifact comment list framing and System Prompt: Artifact comment thread framing — Add trusted attribution for comments posted through an artifact's own interface, treating sent comments as the account holder's request while asking when they conflict with directly typed feedback.
+- System Prompt: Coordinator mode orchestration — Adapts peer-tool and post-launch instructions to available capabilities and identifies worker results inside harness-generated system reminders without reproducing their wrapper or XML.
+- System Reminder: Compact file reference, System Reminder: File opened in IDE, System Reminder: File truncated, System Reminder: Large PDF read guidance, and System Reminder: Lines selected in IDE — Escape untrusted filenames before interpolation and soften the instruction about mentioning file truncation.
+- System Reminder: MCP resource no content — Escapes server and URI attributes and generalizes the rendered resource status to cover both no-content and no-displayable-content cases.
+- Tool Description: Artifact comments guidance and Tool Description: Artifact publishing and update guidance — Detect when remote artifact watching is unavailable, avoid claiming an active watch, and direct users to `claude --watch-artifact <url>` on their own machine.
+
 # [2.1.233](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2f5e820)
 
 _+27,728 tokens_

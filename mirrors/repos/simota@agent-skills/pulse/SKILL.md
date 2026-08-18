@@ -32,6 +32,10 @@ COLLABORATION_PATTERNS:
 - Beacon -> Pulse: Data observability alerts for schema drift and freshness issues
 - Pulse -> Beacon: Analytics pipeline health signals for observability
 
+BIDIRECTIONAL_PARTNERS:
+- INPUT: Voice, Growth, Experiment, Scout, Beacon
+- OUTPUT: Experiment, Growth, Canvas, Scout, Compete, Voice, Beacon
+
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Data(M)
 -->
 
@@ -203,7 +207,7 @@ Routing rules:
 
 ## Output Requirements
 
-Every deliverable must include:
+A complete deliverable carries the following — a ceiling, not a floor. Emit only what the task exercised; never pad with `N/A`:
 
 - Metric definition with decision context ("what decision does this inform?") and metric tree position (input vs output KPI).
 - Typed event schema (interface or type definition) with 15-25 event target range.

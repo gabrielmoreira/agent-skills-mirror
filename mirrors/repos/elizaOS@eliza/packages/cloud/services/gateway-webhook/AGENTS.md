@@ -12,7 +12,8 @@ system) from trusted in-cluster callers and forwards those to agents.
 - `src/index.ts` — entrypoint. Builds a Hono app served via `Bun.serve`, wires
   the platform adapters, and registers routes:
   - `GET /health`, `GET /ready`, `POST /drain` — liveness / readiness /
-    graceful-drain (KEDA / k8s lifecycle).
+    graceful-drain (KEDA / k8s lifecycle). `/drain` is gated on
+    `X-Internal-Secret` like `/internal/deliver`; the probe routes stay open.
   - `GET /ready/forwarder-auth/:project` — read-only forwarder-gate readiness;
     a headerless 401 is reserved for an enforced gate on that project.
   - `POST /internal/event` — internal event delivery (auth via
@@ -91,6 +92,12 @@ project/environment/service ids and public URL, materializes the tracked
 service manifest byte-for-byte at the root config path Railway expects, and
 waits for that exact deployment id before proving its applied manifest and
 active identity around live health and canonical fallback checks.
+The successful run publishes a source/environment/deployment-id receipt for
+the protected Telegram edge cutover, which verifies the receipt against the
+currently active Railway service before and after mutation under the same
+per-environment concurrency key. Protected-environment authorization completes
+before either workflow enters that shared Cloudflare/gateway mutation lock, so
+a waiting approval cannot block releases.
 It then proves the dedicated headerless `/ready/forwarder-auth/eliza-app`
 contract returns the exact enforced-gate 401 and reasserts the exact active
 deployment. The route returns distinct non-401 states when the secret is
@@ -154,8 +161,9 @@ is absent or invalid the process rejects startup before binding `/health` or
 
 Other:
 
-- `GATEWAY_INTERNAL_SECRET` — required to accept `POST /internal/event`; when
-  unset, every internal-event request is rejected (logged as a warning at boot).
+- `GATEWAY_INTERNAL_SECRET` — required to accept `POST /internal/event`,
+  `POST /internal/deliver`, and `POST /drain`; when unset, every request to
+  those routes is rejected (logged as a warning at boot).
 - `AGENT_SERVER_SHARED_SECRET` — sent as `X-Server-Token` on forwards to
   agent-server pods.
 - `PORT` (default 3000; `dev`/`start` scripts set 3002), `POD_NAME` /

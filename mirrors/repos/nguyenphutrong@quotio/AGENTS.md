@@ -26,11 +26,10 @@ Use this for normal code validation:
 xcodebuild -project Quotio.xcodeproj -scheme Quotio -configuration Debug build
 ```
 
-Only run release scripts when changing packaging, notarization, appcast, or release behavior:
+Only run the release artifact script when changing packaging, appcast, or release behavior:
 
 ```bash
-./scripts/build.sh
-./scripts/release.sh
+./scripts/build_dmg.sh
 ```
 
 For UI changes, also run the app manually and check light/dark mode. For provider, OAuth, proxy, or menu bar changes, manually verify the affected flow.

@@ -32,7 +32,7 @@ If the user's message contains a new finding, an action request ("save this", "b
 
 ## Before You Start
 
-1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (inline `@name` override → walk up CWD for `.env` → `~/.obsidian-wiki/config` → prompt setup). For cross-project queries without `@name`, prefer `~/.obsidian-wiki/config` when present, even if it is a symlink to the vault `.env`. This gives `OBSIDIAN_VAULT_PATH` and any QMD variables. Works from any project directory.
+1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (inline `@name` override → walk up CWD for `.env` → global config → prompt setup). For cross-project queries without `@name`, prefer the global config when present, even if it is a symlink to the vault `.env`. This gives `OBSIDIAN_VAULT_PATH` and any QMD variables. Works from any project directory.
 2. **Load QMD settings from the resolved config** before deciding retrieval strategy. If `QMD_WIKI_COLLECTION` is set, treat QMD as available subject only to transport/tool checks below. If it is empty or unset, say briefly why QMD is being skipped before using grep/page reads.
 3. If `$OBSIDIAN_VAULT_PATH/hot.md` exists, read it first — it gives you instant context on recent activity. If the user's question is about something ingested recently, hot.md may answer it before you even open `index.md`.
 4. Read `$OBSIDIAN_VAULT_PATH/index.md` to understand the wiki's scope and structure
@@ -66,18 +66,34 @@ obsidian-wiki graph-query "$OBSIDIAN_VAULT_PATH" "<question>" --pretty
 
 Output fields:
 
-- **`answer_type`**: `direct` | `path` | `list` | `gap` — shapes what to do next
+- **`answer_type`**: `direct` | `path` | `list` | `gap` | `impact` | `bridges` | `hubs` | `clusters` | `surprising` — shapes what to do next. The last five are **structural intents**: the question is about the shape of the vault, and the answer comes back fully computed in `graph` (see below) with no page reads at all.
+- **`graph`**: present only for structural intents — the computed answer. `null` otherwise.
 - **`candidates`**: top-ranked pages by title/tag/summary match + degree, with scores and summaries
 - **`should_read`**: the pages most worth opening — start here instead of speculatively reading many files
 - **`path`**: for multi-hop queries, the shortest wikilink path between the two concepts
 - **`god_nodes_relevant`**: hub pages related to your query terms — always useful context
 - **`index_only`**: if `true`, the top candidate's summary already answers the question — skip page reads
 
+**Structural intents** — these are answered entirely from the graph. The user's phrasing routes automatically:
+
+| The user asks | `answer_type` | `graph` contains |
+|---|---|---|
+| "what breaks if I delete X" / "what depends on X" / "what links to X" | `impact` | `direct_dependents`, `transitive_dependents`, `total` |
+| "which pages bridge my clusters" / "what would fragment my vault" | `bridges` | pages by betweenness, with `label` and `connects_labels` |
+| "what's central" / "top hubs" / "my main topics" | `hubs` | pages by degree, with in/out split |
+| "what clusters do I have" / "how is my wiki organised" | `clusters` | each cluster's `label`, `size`, `cohesion`, `fragmented` |
+| "surprising connections" / "unexpected links" | `surprising` | cross-cluster links, rarest first |
+
+Report the `graph` payload directly — do **not** re-derive it by reading pages. If a structural question names a page that can't be resolved, the CLI falls back to `direct` and `graph` is `null`.
+
 **Decision tree:**
 
-1. If `index_only: true` → answer directly from `candidates[0].summary`. Skip Steps 1–4, go to Step 5.
-2. If `answer_type == "path"` and `path` is non-empty → the connection is in `path`. Read only those pages.
-3. Otherwise → open only `should_read` pages (not all candidates). This replaces the speculative 5–10 page reads the old flow required.
+1. If `graph` is non-null → the structural answer is complete. Report it and stop; no page reads.
+2. If `index_only: true` → answer directly from `candidates[0].summary`. Skip Steps 1–4, go to Step 5.
+3. If `answer_type == "path"` and `path` is non-empty → the connection is in `path`. Read only those pages.
+4. Otherwise → open only `should_read` pages (not all candidates). This replaces the speculative 5–10 page reads the old flow required.
+
+> The graph used here excludes vault bookkeeping files (`index.md`, `log.md`, `hot.md`, `_insights.md`). They link to nearly every page, so including them made any two pages look ~2 hops apart and produced meaningless `A → index → B` paths.
 
 **Fallback** (if `obsidian-wiki` is not installed): proceed with Step 1 as normal using grep and index.md.
 
@@ -202,7 +218,14 @@ Run this step **only** for path/multi-hop queries (or when a relationship query 
 
 2. **Locate the endpoints.** Resolve X (and Y, if the query names two) to page paths using the registry from Step 2. If an endpoint is ambiguous, pick the `tier: core` candidate and note the assumption.
 
-3. **Bounded BFS.** Walk outward from X over the adjacency:
+3. **Bounded BFS.** If `obsidian-wiki` is installed, let the CLI do the walk over the wikilink graph first — it is exact and instant:
+
+   ```bash
+   obsidian-wiki graph-analyse "$OBSIDIAN_VAULT_PATH" --path "<X>" "<Y>"                  # two-endpoint: shortest chain + hop count
+   obsidian-wiki graph-analyse "$OBSIDIAN_VAULT_PATH" --around "<X>" --depth 3 [--direction out|in]  # one-endpoint: reachable pages by hop
+   ```
+
+   `--path` follows links in either direction unless `--direction out`; `--around --direction in` answers "what depends on X" (its blast radius). Then decorate the returned chain with the typed edges from step 1 (the CLI sees `[[wikilinks]]`, not relationship types). Otherwise, or to find alternate paths, walk manually:
    - **Max depth 3 hops** by default (the connection is rarely meaningful beyond that). Raise to 4 only if the user says "deep" / "however many hops it takes".
    - **Frontier cap:** stop expanding a node once the visited set exceeds ~60 pages — report partial results rather than fanning out across the whole vault.
    - For a **two-endpoint query** (X→Y): stop as soon as you find the shortest path; then continue briefly to surface up to 2 alternate paths if they exist.

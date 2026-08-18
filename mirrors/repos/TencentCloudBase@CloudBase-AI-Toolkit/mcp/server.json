@@ -1,0 +1,60 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.TencentCloudBase/cloudbase-mcp",
+  "title": "CloudBase",
+  "description": "CloudBase MCP: DB, functions, storage, hosting via @cloudbase/cloudbase-mcp",
+  "version": "2.28.0",
+  "websiteUrl": "https://github.com/TencentCloudBase/CloudBase-AI-Toolkit",
+  "repository": {
+    "url": "https://github.com/TencentCloudBase/CloudBase-AI-Toolkit",
+    "source": "github",
+    "id": "988892963",
+    "subfolder": "mcp"
+  },
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/TencentCloudBase/CloudBase-AI-Toolkit/main/mcp/icon.png",
+      "mimeType": "image/png",
+      "sizes": ["96x96"]
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@cloudbase/cloudbase-mcp",
+      "version": "2.28.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://tcb-api.cloud.tencent.com/mcp/v1?env_id={env_id}",
+      "headers": [
+        {
+          "name": "X-TencentCloud-SecretId",
+          "description": "Tencent Cloud SecretId for hosted MCP.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "X-TencentCloud-SecretKey",
+          "description": "Tencent Cloud SecretKey for hosted MCP.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "variables": {
+        "env_id": {
+          "description": "CloudBase environment ID",
+          "isRequired": true,
+          "format": "string"
+        }
+      }
+    }
+  ]
+}

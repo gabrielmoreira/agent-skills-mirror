@@ -37,7 +37,7 @@ Never invent these values. Walk the user through Slack's app page and ask them t
 ## User Path
 
 ```bash
-npm install -g @opentag/cli
+npm install -g @opentag/cli@0.11.0
 opentag setup
 ```
 

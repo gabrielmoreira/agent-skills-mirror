@@ -72,6 +72,326 @@ export function resolveCreateEnvResources(
 }
 
 /**
+ * Resource-usage modules aligned with tcb CLI `USAGE_MODULES`
+ * (`tcb env usage` / `tcb env info --type`).
+ */
+export const ENV_USAGE_MODULE_VALUES = [
+  "FLEXDB",
+  "TDSQL",
+  "SCF",
+  "EKS",
+  "COS",
+  "AI",
+  "HOSTING",
+  "Auth",
+  "APIInvocation",
+  "HTTPInvocation",
+  "VM",
+  "Workflow",
+  "Other",
+] as const;
+
+export type EnvUsageModule = (typeof ENV_USAGE_MODULE_VALUES)[number];
+
+const ENV_USAGE_MODULE_SET = new Set<string>(ENV_USAGE_MODULE_VALUES);
+
+const ENV_USAGE_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export function resolveEnvUsageModules(
+  type: readonly string[] | undefined,
+): EnvUsageModule[] {
+  if (!Array.isArray(type) || type.length === 0) {
+    return [...ENV_USAGE_MODULE_VALUES];
+  }
+  const normalized = type
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean);
+  const invalid = normalized.filter((item) => !ENV_USAGE_MODULE_SET.has(item));
+  if (invalid.length > 0) {
+    throw new Error(
+      `无效的用量模块 type: ${invalid.join(", ")}。可选值：${ENV_USAGE_MODULE_VALUES.join(", ")}`,
+    );
+  }
+  return normalized as EnvUsageModule[];
+}
+
+export function extractAccountCircleDate(
+  rawTime: unknown,
+): string | undefined {
+  if (typeof rawTime !== "string" || rawTime.trim().length === 0) {
+    return undefined;
+  }
+  const datePart = rawTime.trim().split(/\s+/)[0];
+  return ENV_USAGE_DATE_RE.test(datePart) ? datePart : undefined;
+}
+
+function normalizeUsageDateInput(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+export function resolveEnvUsageDateRange(options: {
+  startDate?: string;
+  endDate?: string;
+  accountCircle?: { StartTime?: string; EndTime?: string } | null;
+}): { startDate: string; endDate: string; dateSource: "params" | "accountCircle" } {
+  const startFromParams = normalizeUsageDateInput(options.startDate);
+  const endFromParams = normalizeUsageDateInput(options.endDate);
+
+  if (startFromParams || endFromParams) {
+    if (!startFromParams || !endFromParams) {
+      throw new Error(
+        "查询资源用量时 startDate 与 endDate 必须同时提供，格式为 YYYY-MM-DD。",
+      );
+    }
+    if (!ENV_USAGE_DATE_RE.test(startFromParams) || !ENV_USAGE_DATE_RE.test(endFromParams)) {
+      throw new Error("startDate / endDate 格式必须为 YYYY-MM-DD。");
+    }
+    if (startFromParams > endFromParams) {
+      throw new Error("startDate 不能晚于 endDate。");
+    }
+    return {
+      startDate: startFromParams,
+      endDate: endFromParams,
+      dateSource: "params",
+    };
+  }
+
+  const startDate = extractAccountCircleDate(options.accountCircle?.StartTime);
+  const endDate = extractAccountCircleDate(options.accountCircle?.EndTime);
+  if (!startDate || !endDate) {
+    throw new Error(
+      "无法从计费周期推导用量日期范围。请显式传入 startDate/endDate（YYYY-MM-DD），或确认环境计费周期可用。",
+    );
+  }
+  return { startDate, endDate, dateSource: "accountCircle" };
+}
+
+/**
+ * Monitor metric names for queryEnv(action=metrics).
+ * Subset of TCB DescribeCurveData MetricName from the CloudBase monitor catalog
+ * (gateway/env QPS, functions, NoSQL, MySQL, CloudRun).
+ */
+export const ENV_METRIC_NAME_VALUES = [
+  "GatewayTraceEnvQPS",
+  "EnvQPSAll",
+  "FunctionInvocation",
+  "FunctionError",
+  "FunctionTimeout",
+  "FunctionThrottle",
+  "FunctionDuration",
+  "FunctionConcurrentExecutions",
+  "DbRead",
+  "DbWrite",
+  "DbSizepkg",
+  "MysqlCpuUsageRate",
+  "MysqlMemoryUse",
+  "MysqlStorageUsage",
+  "MysqlQps",
+  "MysqlSlowQueries",
+  "MysqlDbConnections",
+  "TkeCpuUsedService",
+  "TkeMemUsedService",
+  "TkeQPSService",
+  "TkeHttpErrorService",
+  "TkeInvokeNumService",
+] as const;
+
+export type EnvMetricName = (typeof ENV_METRIC_NAME_VALUES)[number];
+
+export const ENV_METRIC_PERIOD_VALUES = [300, 3600, 86400] as const;
+
+export type EnvMetricPeriod = (typeof ENV_METRIC_PERIOD_VALUES)[number];
+
+/** Console default ResourceID for environment-level gateway QPS. */
+export const GATEWAY_ENV_QPS_DEFAULT_RESOURCE_ID = "all|:|all|:|all|:|all";
+
+const ENV_METRIC_NAME_SET = new Set<string>(ENV_METRIC_NAME_VALUES);
+const ENV_METRIC_PERIOD_SET = new Set<number>(ENV_METRIC_PERIOD_VALUES);
+const ENV_METRICS_REQUIRING_RESOURCE_ID = new Set<string>([
+  "TkeCpuUsedService",
+  "TkeMemUsedService",
+  "TkeQPSService",
+  "TkeHttpErrorService",
+  "TkeInvokeNumService",
+]);
+const ENV_METRIC_TIME_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+const ENV_METRIC_MIN_RANGE_MS = 5 * 60 * 1000;
+
+function padMetricTimeUnit(value: number): string {
+  return value.toString().padStart(2, "0");
+}
+
+export function formatEnvMetricTime(date: Date): string {
+  return `${date.getFullYear()}-${padMetricTimeUnit(date.getMonth() + 1)}-${padMetricTimeUnit(date.getDate())} ${padMetricTimeUnit(date.getHours())}:${padMetricTimeUnit(date.getMinutes())}:${padMetricTimeUnit(date.getSeconds())}`;
+}
+
+export function resolveEnvMetricName(metricName: unknown): EnvMetricName {
+  const normalized =
+    typeof metricName === "string" && metricName.trim().length > 0
+      ? metricName.trim()
+      : undefined;
+  if (!normalized) {
+    throw new Error(
+      `查询监控指标时 metricName 为必填参数。可选值：${ENV_METRIC_NAME_VALUES.join(", ")}`,
+    );
+  }
+  if (!ENV_METRIC_NAME_SET.has(normalized)) {
+    throw new Error(
+      `无效的 metricName: ${normalized}。可选值：${ENV_METRIC_NAME_VALUES.join(", ")}`,
+    );
+  }
+  return normalized as EnvMetricName;
+}
+
+export function resolveEnvMetricPeriod(period: unknown): EnvMetricPeriod | undefined {
+  if (period === undefined || period === null || period === "") {
+    return undefined;
+  }
+  const numericPeriod =
+    typeof period === "number"
+      ? period
+      : typeof period === "string" && /^\d+$/.test(period.trim())
+        ? Number(period.trim())
+        : Number.NaN;
+  if (!ENV_METRIC_PERIOD_SET.has(numericPeriod)) {
+    throw new Error(
+      `period 仅支持 300、3600、86400（秒）。当前值：${String(period)}`,
+    );
+  }
+  return numericPeriod as EnvMetricPeriod;
+}
+
+export function resolveEnvMetricTimeRange(options: {
+  startTime?: string;
+  endTime?: string;
+  now?: Date;
+}): { startTime: string; endTime: string; timeSource: "params" | "defaultLast24h" } {
+  const startFromParams =
+    typeof options.startTime === "string" && options.startTime.trim().length > 0
+      ? options.startTime.trim()
+      : undefined;
+  const endFromParams =
+    typeof options.endTime === "string" && options.endTime.trim().length > 0
+      ? options.endTime.trim()
+      : undefined;
+
+  if (startFromParams || endFromParams) {
+    if (!startFromParams || !endFromParams) {
+      throw new Error(
+        "查询监控指标时 startTime 与 endTime 必须同时提供，格式为 YYYY-MM-DD HH:mm:ss。",
+      );
+    }
+    if (!ENV_METRIC_TIME_RE.test(startFromParams) || !ENV_METRIC_TIME_RE.test(endFromParams)) {
+      throw new Error("startTime / endTime 格式必须为 YYYY-MM-DD HH:mm:ss。");
+    }
+    const startMs = Date.parse(startFromParams.replace(" ", "T"));
+    const endMs = Date.parse(endFromParams.replace(" ", "T"));
+    if (Number.isNaN(startMs) || Number.isNaN(endMs)) {
+      throw new Error("startTime / endTime 无法解析为有效时间。");
+    }
+    if (endMs - startMs < ENV_METRIC_MIN_RANGE_MS) {
+      throw new Error("结束时间需要晚于开始时间至少五分钟（监控最小粒度为 5 分钟）。");
+    }
+    return {
+      startTime: startFromParams,
+      endTime: endFromParams,
+      timeSource: "params",
+    };
+  }
+
+  const now = options.now ?? new Date();
+  const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  return {
+    startTime: formatEnvMetricTime(start),
+    endTime: formatEnvMetricTime(now),
+    timeSource: "defaultLast24h",
+  };
+}
+
+export function resolveEnvMetricResourceId(
+  metricName: EnvMetricName,
+  resourceID?: string,
+): string | undefined {
+  const normalized =
+    typeof resourceID === "string" && resourceID.trim().length > 0
+      ? resourceID.trim()
+      : undefined;
+  if (normalized) {
+    return normalized;
+  }
+  if (metricName === "GatewayTraceEnvQPS") {
+    return GATEWAY_ENV_QPS_DEFAULT_RESOURCE_ID;
+  }
+  if (ENV_METRICS_REQUIRING_RESOURCE_ID.has(metricName)) {
+    throw new Error(
+      `查询 ${metricName} 时 resourceID 为必填（云托管服务名）。请先 queryCloudRun(action="list") 获取服务名后再查询。`,
+    );
+  }
+  return undefined;
+}
+
+export function summarizeEnvMetricCurve(curve: {
+  Values?: unknown;
+  NewValues?: unknown;
+  Time?: unknown;
+}): {
+  sampleCount: number;
+  max: number | null;
+  min: number | null;
+  avg: number | null;
+  latest: number | null;
+  peakTimestamp: number | null;
+  allZero: boolean;
+} {
+  const newValues = Array.isArray(curve.NewValues) ? curve.NewValues : [];
+  const values = Array.isArray(curve.Values) ? curve.Values : [];
+  const times = Array.isArray(curve.Time) ? curve.Time : [];
+  const series = (newValues.length > 0 ? newValues : values).filter(
+    (item): item is number => typeof item === "number" && Number.isFinite(item),
+  );
+
+  if (series.length === 0) {
+    return {
+      sampleCount: 0,
+      max: null,
+      min: null,
+      avg: null,
+      latest: null,
+      peakTimestamp: null,
+      allZero: true,
+    };
+  }
+
+  let max = series[0];
+  let min = series[0];
+  let sum = 0;
+  let peakIndex = 0;
+  for (let i = 0; i < series.length; i++) {
+    const value = series[i];
+    sum += value;
+    if (value > max) {
+      max = value;
+      peakIndex = i;
+    }
+    if (value < min) {
+      min = value;
+    }
+  }
+
+  return {
+    sampleCount: series.length,
+    max,
+    min,
+    avg: sum / series.length,
+    latest: series[series.length - 1],
+    peakTimestamp: typeof times[peakIndex] === "number" ? times[peakIndex] : null,
+    allZero: series.every((value) => value === 0),
+  };
+}
+
+/**
  * Simplify environment list data by keeping only essential fields for AI assistant
  * This reduces token consumption when returning environment lists via MCP tools
  * @param envList - Full environment list from API
@@ -1136,6 +1456,25 @@ function buildEnvQueryErrorMessage(error: unknown, action: string): string {
 
   if (hasNetworkError) {
     suggestions.push("网络错误：请检查网络连接，稍后重试。");
+  }
+
+  if (action === "usage" && suggestions.length === 0) {
+    suggestions.push("查询环境资源用量失败，建议：");
+    suggestions.push("1. 先调用 auth(action=\"status\") 确认登录状态；未登录则 auth(action=\"start_auth\")");
+    suggestions.push("2. 使用 queryEnv(action=\"list\") 确认 envId 正确且可访问");
+    suggestions.push(
+      `3. 再调用 queryEnv(action=\"usage\", envId=\"<EnvId>\")；可用 type 过滤模块（${ENV_USAGE_MODULE_VALUES.join(", ")}）`,
+    );
+  }
+
+  if (action === "metrics" && suggestions.length === 0) {
+    suggestions.push("查询环境监控指标失败，建议：");
+    suggestions.push("1. 先调用 auth(action=\"status\") 确认登录状态；未登录则 auth(action=\"start_auth\")");
+    suggestions.push("2. 使用 queryEnv(action=\"list\") 确认 envId 正确且可访问");
+    suggestions.push(
+      `3. 再调用 queryEnv(action=\"metrics\", envId=\"<EnvId>\", metricName=\"GatewayTraceEnvQPS\")；metricName 可选值：${ENV_METRIC_NAME_VALUES.join(", ")}`,
+    );
+    suggestions.push("4. startTime/endTime 格式为 YYYY-MM-DD HH:mm:ss，须成对传入；period 仅 300/3600/86400");
   }
 
   // If no specific pattern matched, provide general guidance
@@ -2211,7 +2550,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
   );
   } // end: wxide guard for auth tool
 
-  // queryEnv - 环境查询（合并 listEnvs + getEnvInfo + getEnvAuthDomains）
+  // queryEnv - 环境查询（合并 listEnvs + getEnvInfo + getEnvAuthDomains + usage + metrics）
   const queryEnvHandler: (args: any) => Promise<any> = async ({
     action,
     alias,
@@ -2220,14 +2559,34 @@ export function registerEnvTools(server: ExtendedMcpServer) {
     limit,
     offset,
     fields,
+    type,
+    startDate,
+    endDate,
+    needUsageDetails,
+    metricName,
+    startTime,
+    endTime,
+    period,
+    resourceID,
+    subresourceID,
   }: {
-      action: "list" | "info" | "domains";
+      action: "list" | "info" | "domains" | "usage" | "metrics";
       alias?: string;
       aliasExact?: boolean;
       envId?: string;
       limit?: number;
       offset?: number;
       fields?: EnvFieldName[];
+      type?: EnvUsageModule[];
+      startDate?: string;
+      endDate?: string;
+      needUsageDetails?: boolean;
+      metricName?: string;
+      startTime?: string;
+      endTime?: string;
+      period?: number;
+      resourceID?: string;
+      subresourceID?: string;
     }) => {
       try {
         let result;
@@ -2395,6 +2754,112 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             }
             break;
 
+          case "usage": {
+            // Explicit EnvId is required (DescribeEnvPostpayPackage / credits APIs reject missing EnvId).
+            const usageEnvId = normalizeOptionalToolString(envId);
+            if (!usageEnvId) {
+              throw new Error(
+                '查询资源用量时 envId 为必填参数。请先调用 queryEnv(action="list") 获取 EnvId，再调用 queryEnv(action="usage", envId="<EnvId>")。',
+              );
+            }
+            const modules = resolveEnvUsageModules(type);
+            const includeDetails =
+              typeof needUsageDetails === "boolean" ? needUsageDetails : true;
+            const cloudbaseUsage = await getManagerForEnvQuery(usageEnvId);
+            const accountCircle = await cloudbaseUsage.env.describeEnvAccountCircle({
+              EnvId: usageEnvId,
+            });
+            logCloudBaseResult(server.logger, accountCircle);
+            const dateRange = resolveEnvUsageDateRange({
+              startDate,
+              endDate,
+              accountCircle,
+            });
+            const usageDetail = await cloudbaseUsage.env.describeCreditsUsageDetail({
+              EnvId: usageEnvId,
+              Modules: modules,
+              StartDate: dateRange.startDate,
+              EndDate: dateRange.endDate,
+              NeedUsageDetails: includeDetails,
+            });
+            logCloudBaseResult(server.logger, usageDetail);
+            result = {
+              EnvId: usageEnvId,
+              Modules: modules,
+              StartDate: dateRange.startDate,
+              EndDate: dateRange.endDate,
+              DateSource: dateRange.dateSource,
+              NeedUsageDetails: includeDetails,
+              AccountCircle: {
+                StartTime: accountCircle?.StartTime,
+                EndTime: accountCircle?.EndTime,
+                HistoryTime: accountCircle?.HistoryTime ?? [],
+                RequestId: accountCircle?.RequestId,
+              },
+              Usages: usageDetail?.Usages ?? [],
+              RequestId: usageDetail?.RequestId,
+            };
+            break;
+          }
+
+          case "metrics": {
+            const metricsEnvId = normalizeOptionalToolString(envId);
+            if (!metricsEnvId) {
+              throw new Error(
+                '查询监控指标时 envId 为必填参数。请先调用 queryEnv(action="list") 获取 EnvId，再调用 queryEnv(action="metrics", envId="<EnvId>", metricName="GatewayTraceEnvQPS")。',
+              );
+            }
+            const resolvedMetricName = resolveEnvMetricName(metricName);
+            const timeRange = resolveEnvMetricTimeRange({ startTime, endTime });
+            const resolvedPeriod = resolveEnvMetricPeriod(period);
+            const resolvedResourceId = resolveEnvMetricResourceId(
+              resolvedMetricName,
+              resourceID,
+            );
+            const resolvedSubresourceId = normalizeOptionalToolString(subresourceID);
+            const cloudbaseMetrics = await getManagerForEnvQuery(metricsEnvId);
+            if (typeof cloudbaseMetrics?.monitor?.describeCurveData !== "function") {
+              throw new Error(
+                "当前 CloudBase Manager 不支持 monitor.describeCurveData。请升级 @cloudbase/manager-node。",
+              );
+            }
+            const curveParams: {
+              MetricName: EnvMetricName;
+              StartTime: string;
+              EndTime: string;
+              Period?: EnvMetricPeriod;
+              ResourceID?: string;
+              SubresourceID?: string;
+            } = {
+              MetricName: resolvedMetricName,
+              StartTime: timeRange.startTime,
+              EndTime: timeRange.endTime,
+            };
+            if (resolvedPeriod !== undefined) {
+              curveParams.Period = resolvedPeriod;
+            }
+            if (resolvedResourceId) {
+              curveParams.ResourceID = resolvedResourceId;
+            }
+            if (resolvedSubresourceId) {
+              curveParams.SubresourceID = resolvedSubresourceId;
+            }
+            const curve = await cloudbaseMetrics.monitor.describeCurveData(curveParams);
+            logCloudBaseResult(server.logger, curve);
+            result = {
+              EnvId: metricsEnvId,
+              MetricName: resolvedMetricName,
+              StartTime: timeRange.startTime,
+              EndTime: timeRange.endTime,
+              TimeSource: timeRange.timeSource,
+              Period: resolvedPeriod ?? curve?.Period,
+              ResourceID: resolvedResourceId,
+              SubresourceID: resolvedSubresourceId,
+              Curve: curve,
+              Summary: summarizeEnvMetricCurve(curve ?? {}),
+            };
+            break;
+          }
 
           default:
             throw new Error(`不支持的查询类型: ${action}`);
@@ -2431,22 +2896,87 @@ export function registerEnvTools(server: ExtendedMcpServer) {
   const queryEnvToolSchema = {
     title: "CloudBase 环境查询",
     description:
-      "查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情和安全域名。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。\n\n🔍 action=info 还会派生三个用于后端选型的字段：\n- `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。\n- `EnvInfo.RuntimeBackends`：`{postgresql, nosql, mysql}` 三个布尔值，描述当前环境实际并存的后端。\n- `EnvInfo.RuntimeModeHints`：每个后端对应的 API/工具/skill 提示。\n\n🌐 action=info 还会在不改写 `StaticStorages[].StaticDomain`（云 API 名义域名）的前提下，投影网关路由 Enable 状态：`StaticStorages[].staticDomainRouteEnabled` 与 `EnvInfo.staticDomainRouteEnabled`（与 queryHosting websiteConfig 同源）。`false` 表示默认静态域名根路由已禁用（访问会返回 GATEWAY_ROUTE_DISABLED），勿把名义域名当成可达 URL。\n\nAI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业务推荐 `app.rdb()` + RLS（`managePgDatabase action=execute` 跑 `CREATE POLICY`）+ pgstore；已存在的 NoSQL 集合 / 旧 storage / `managePermissions(resourceType=\"noSqlDatabase\")` 在 PG 环境下仍然有效。真正不适用的是 MySQL：当 `RuntimeBackends.mysql === false` 时，`manageMysqlDatabase` / `queryMysqlDatabase` / `relational-database-mcp-cloudbase` skill 都不该使用。",
+      "查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情、安全域名、资源用量与监控指标。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。\n\n📊 action=usage 对齐 tcb env usage/info：透传 Manager SDK describeEnvAccountCircle + describeCreditsUsageDetail，返回计费周期与各模块资源点用量（FLEXDB/SCF/COS 等）。envId 必填；type 可选过滤模块；未传 startDate/endDate 时自动使用当前计费周期。\n\n📈 action=metrics 对齐 TCB DescribeCurveData（manager.monitor.describeCurveData，不是云监控 GetMonitorData）：查询环境/网关 QPS、云函数调用与错误、数据库 CPU/内存/磁盘、云托管 CPU/QPS 等时序。envId 与 metricName 必填；startTime/endTime 格式 YYYY-MM-DD HH:mm:ss，须成对传入，不传则默认最近 24 小时；period 仅 300/3600/86400。GatewayTraceEnvQPS 未传 resourceID 时自动填环境级 all|:|all|:|all|:|all；云托管 Tke* 指标必须传服务名 resourceID。禁止用 callCloudApi 猜测监控 Action。\n\n🔍 action=info 还会派生三个用于后端选型的字段：\n- `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。\n- `EnvInfo.RuntimeBackends`：`{postgresql, nosql, mysql}` 三个布尔值，描述当前环境实际并存的后端。\n- `EnvInfo.RuntimeModeHints`：每个后端对应的 API/工具/skill 提示。\n\n🌐 action=info 还会在不改写 `StaticStorages[].StaticDomain`（云 API 名义域名）的前提下，投影网关路由 Enable 状态：`StaticStorages[].staticDomainRouteEnabled` 与 `EnvInfo.staticDomainRouteEnabled`（与 queryHosting websiteConfig 同源）。`false` 表示默认静态域名根路由已禁用（访问会返回 GATEWAY_ROUTE_DISABLED），勿把名义域名当成可达 URL。\n\nAI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业务推荐 `app.rdb()` + RLS（`managePgDatabase action=execute` 跑 `CREATE POLICY`）+ pgstore；已存在的 NoSQL 集合 / 旧 storage / `managePermissions(resourceType=\"noSqlDatabase\")` 在 PG 环境下仍然有效。真正不适用的是 MySQL：当 `RuntimeBackends.mysql === false` 时，`manageMysqlDatabase` / `queryMysqlDatabase` / `relational-database-mcp-cloudbase` skill 都不该使用。",
     inputSchema: {
       action: z
-        .enum(["list", "info", "domains"])
+        .enum(["list", "info", "domains", "usage", "metrics"])
         .describe(
-          "查询类型：list=环境列表/摘要筛选（按 DescribeEnvs 语义筛选，支持通过 envId 筛选，返回 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，不支持 expiry），info=指定环境的详细信息（必须传入 envId，返回资源字段和计费信息），domains=安全域名列表",
+          "查询类型：list=环境列表/摘要筛选（按 DescribeEnvs 语义筛选，支持通过 envId 筛选，返回 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，不支持 expiry），info=指定环境的详细信息（必须传入 envId，返回资源字段和计费信息），domains=安全域名列表，usage=环境资源用量（必须传入 envId，对齐 tcb env usage/info），metrics=环境监控时序（必须传入 envId 与 metricName，对齐 TCB DescribeCurveData）",
         ),
       alias: z.string().optional().describe("按环境别名筛选。action=list 时可选"),
       aliasExact: z.boolean().optional().describe("按环境别名精确筛选。action=list 时可选；与 alias 配合使用"),
-      envId: z.string().optional().describe("按环境 ID 筛选。action=list 时可选（仅按 DescribeEnvs 语义做筛选，仍返回摘要）；action=info 时必填（返回该环境的详细信息，包含资源字段和计费信息）。如果任务已经给出了明确的 EnvId 并要求查询详情，请直接使用 action=info + envId，而不是 action=list"),
+      envId: z
+        .string()
+        .optional()
+        .describe(
+          "环境 ID。action=list 时可选（仅按 DescribeEnvs 语义做筛选，仍返回摘要）；action=info / action=usage / action=metrics 时必填。",
+        ),
       limit: z.number().int().positive().optional().describe("返回数量上限。action=list 时可选"),
       offset: z.number().int().min(0).optional().describe("分页偏移。action=list 时可选"),
       fields: z
         .array(z.enum(DEFAULT_ENV_FIELDS))
         .optional()
         .describe("返回字段白名单。仅支持 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault。action=list 时可选"),
+      type: z
+        .array(z.enum(ENV_USAGE_MODULE_VALUES))
+        .optional()
+        .describe(
+          "用量模块过滤。仅 action=usage 时有效；不传则查询全部模块。可选值对齐 tcb CLI：FLEXDB、TDSQL、SCF、EKS、COS、AI、HOSTING、Auth、APIInvocation、HTTPInvocation、VM、Workflow、Other。",
+        ),
+      startDate: z
+        .string()
+        .optional()
+        .describe(
+          "用量开始日期（YYYY-MM-DD）。仅 action=usage 时有效；与 endDate 成对传入。不传则使用当前计费周期。",
+        ),
+      endDate: z
+        .string()
+        .optional()
+        .describe(
+          "用量结束日期（YYYY-MM-DD）。仅 action=usage 时有效；与 startDate 成对传入。不传则使用当前计费周期。",
+        ),
+      needUsageDetails: z
+        .boolean()
+        .optional()
+        .describe(
+          "是否返回每日用量明细。仅 action=usage 时有效；默认 true。",
+        ),
+      metricName: z
+        .enum(ENV_METRIC_NAME_VALUES)
+        .optional()
+        .describe(
+          "监控指标名。仅 action=metrics 时有效且必填。GatewayTraceEnvQPS/EnvQPSAll=环境与网关 QPS；FunctionInvocation/FunctionError/FunctionTimeout/FunctionThrottle=云函数调用、错误、超时、限流；DbRead/DbWrite/DbSizepkg=文档库读写与容量；MysqlCpuUsageRate/MysqlMemoryUse/MysqlStorageUsage=SQL 库 CPU/内存/磁盘；TkeCpuUsedService/TkeQPSService/TkeHttpErrorService=云托管 CPU/QPS/错误。",
+        ),
+      startTime: z
+        .string()
+        .optional()
+        .describe(
+          "监控开始时间（YYYY-MM-DD HH:mm:ss）。仅 action=metrics 时有效；与 endTime 成对传入。不传则默认最近 24 小时。结束时间须晚于开始时间至少五分钟。",
+        ),
+      endTime: z
+        .string()
+        .optional()
+        .describe(
+          "监控结束时间（YYYY-MM-DD HH:mm:ss）。仅 action=metrics 时有效；与 startTime 成对传入。不传则默认最近 24 小时。",
+        ),
+      period: z
+        .union([z.literal(300), z.literal(3600), z.literal(86400)])
+        .optional()
+        .describe(
+          "统计周期（秒）。仅 action=metrics 时有效；仅支持 300、3600、86400。不传则由后端按时间范围自动选择。时间范围 ≤1 天不可用 86400；>3 天不可用 300。",
+        ),
+      resourceID: z
+        .string()
+        .optional()
+        .describe(
+          "资源 ID。仅 action=metrics 时有效。云函数传函数名，文档库传集合名，云托管必须传服务名；GatewayTraceEnvQPS 不传则使用环境级 all|:|all|:|all|:|all。",
+        ),
+      subresourceID: z
+        .string()
+        .optional()
+        .describe(
+          "子资源 ID。仅 action=metrics 时有效；查询云托管某版本监控时传入版本名。",
+        ),
     },
     annotations: {
       readOnlyHint: true,

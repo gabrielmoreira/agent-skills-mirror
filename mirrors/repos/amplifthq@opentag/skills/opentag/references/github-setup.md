@@ -28,7 +28,7 @@ Never invent tokens, owner names, repository names, webhook secrets, or project 
 ## User Path
 
 ```bash
-npm install -g @opentag/cli
+npm install -g @opentag/cli@0.11.0
 opentag setup
 ```
 

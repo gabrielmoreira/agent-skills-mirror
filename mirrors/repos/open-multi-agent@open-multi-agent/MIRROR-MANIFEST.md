@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 18 followed patterns, 29 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 20 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 18 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 18 |
-| Files         | 29 |
+| Followed pats | 20 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 18 follow
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `packages/core/README.md`
+- `packages/core/README_zh.md`
+- `CONTRIBUTORS.md`
 - `.github/CONTRIBUTING.md`
 - `.github/RELEASING.md`
 - `docs/tool-configuration.md`
@@ -89,22 +91,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`packages/create-oma-app/CLAUDE.md`](packages/create-oma-app/CLAUDE.md) |
 | 12 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
 | 13 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 14 | → | [`docs/adaptive-recovery.md`](docs/adaptive-recovery.md) |
-| 15 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
-| 16 | → | [`docs/cli.md`](docs/cli.md) |
-| 17 | → | [`docs/consensus.md`](docs/consensus.md) |
-| 18 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 19 | → | [`docs/evaluation.md`](docs/evaluation.md) |
-| 20 | → | [`docs/execution-routing.md`](docs/execution-routing.md) |
-| 21 | → | [`docs/external-agents.md`](docs/external-agents.md) |
-| 22 | → | [`docs/model-routing.md`](docs/model-routing.md) |
-| 23 | → | [`docs/observability.md`](docs/observability.md) |
-| 24 | → | [`docs/plan-replay.md`](docs/plan-replay.md) |
-| 25 | → | [`docs/providers.md`](docs/providers.md) |
-| 26 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 27 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
-| 28 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 29 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 14 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 15 | → | [`docs/adaptive-recovery.md`](docs/adaptive-recovery.md) |
+| 16 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
+| 17 | → | [`docs/cli.md`](docs/cli.md) |
+| 18 | → | [`docs/consensus.md`](docs/consensus.md) |
+| 19 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 20 | → | [`docs/evaluation.md`](docs/evaluation.md) |
+| 21 | → | [`docs/execution-routing.md`](docs/execution-routing.md) |
+| 22 | → | [`docs/external-agents.md`](docs/external-agents.md) |
+| 23 | → | [`docs/model-routing.md`](docs/model-routing.md) |
+| 24 | → | [`docs/observability.md`](docs/observability.md) |
+| 25 | → | [`docs/plan-replay.md`](docs/plan-replay.md) |
+| 26 | → | [`docs/providers.md`](docs/providers.md) |
+| 27 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 28 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
+| 29 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 30 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
+| 31 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

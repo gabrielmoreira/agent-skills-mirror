@@ -8,8 +8,10 @@
 
 ::: warning 升级提醒
 1. 升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
+2. 重建或升级 Redis 容器后需重启 worker，并等待 `/api/system/ready` 恢复后再接入流量。
 :::
 
+- 锁定 Neo4j 5.26.29 与 Redis 7.4.10 镜像版本，补充第三方组件许可证、镜像再分发义务与商业部署边界；完整镜像许可证以实际软件物料清单为准。
 - 建立 Agent-first 工程信任系统：高风险主张在语义 Owner 处绑定负向 oracle、CI gate 与决策记录，审计视图从当前代码、测试、workflow 和决策派生；补齐 Web gate 和完整 unit inventory。API 分离 liveness/readiness；Run 输出只允许当前 lease owner 绑定同 conversation、Run 与 request 的 assistant Message，缺失或非法输出不能进入 completed；worker 以 attempt lease/heartbeat 识别失联并收敛为带 `worker_lease_expired` 原因的失败，PostgreSQL 取消事实与终态不再被 Redis 事件故障绕过。LITE startup 不创建或宣告知识能力，Web 从 runtime discovery 同步隐藏并停止请求不存在的能力；checkpoint 初始化不再静默改变持久化语义。
 - API Key 创建支持并发与响应丢失后的安全重放；删除用户、OIDC 恢复和旧库升级均保留不可复活 tombstone，API/CLI 创建与删除按 User 行锁串行化。三项安全密钥不可复用，Bash/PowerShell 均有原生负控。Web 错误对象不再携带任意服务端上下文。
 

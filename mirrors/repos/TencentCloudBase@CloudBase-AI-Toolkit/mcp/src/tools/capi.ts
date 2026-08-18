@@ -157,6 +157,27 @@ function buildCapiDocGuidance(service: AllowedService) {
     return `请优先核对对应官方云 API 文档；若你的场景其实是通过 HTTP 协议直接集成 auth/functions/cloudrun/storage/mysqldb 等 CloudBase 业务 API，请优先使用 OpenAPI / Swagger 或 searchKnowledgeBase(mode="openapi")，不要继续猜测管控面 Action。`;
 }
 
+/** Match CAM / authorization failures from Tencent Cloud control-plane APIs. */
+export const CAM_AUTH_ERROR_PATTERN =
+    /UnauthorizedOperation|AuthFailure|not authorized|cam.*denied|Forbidden/i;
+
+/**
+ * Guidance when control-plane calls fail due to CAM / API Key scope limits.
+ * Shared by callCloudApi and manageCloudRun error builders.
+ */
+export function buildCamAuthGuidance(): string {
+    return (
+        "这通常是 CAM 权限不足（常见于 API Key 登录仅授权数据面：DB/函数/存储）。请任选其一：" +
+        "1) 改用 device code 登录管控面：auth(action=\"start_auth\", authMode=\"device\")；" +
+        "2) 或使用腾讯云 SecretId/SecretKey（确认子账号已授 CAM 策略，如 QcloudTCBFullAccess、QcloudVPCReadOnlyAccess）；" +
+        "3) 确认目标资源属于当前登录账号。"
+    );
+}
+
+export function isCamAuthError(message: string): boolean {
+    return CAM_AUTH_ERROR_PATTERN.test(message);
+}
+
 export function buildCapiErrorMessage(service: AllowedService, action: string, error: unknown): string {
     const baseMessage = error instanceof Error ? error.message : String(error);
     const suggestions: string[] = [];
@@ -164,6 +185,11 @@ export function buildCapiErrorMessage(service: AllowedService, action: string, e
     const hasInvalidActionError = /invalid or not found|does not exist|not recognized/i.test(baseMessage);
     const hasParameterError = /parameter\s+`?.+?`?\s+is not recognized|MissingParameter|missing parameter|missing required/i.test(baseMessage);
     const hasInvalidParameterValueError = /invalid parameter value/i.test(baseMessage);
+    const hasCamAuthError = isCamAuthError(baseMessage);
+
+    if (hasCamAuthError) {
+        suggestions.push(buildCamAuthGuidance());
+    }
 
     if (hasInvalidActionError) {
         suggestions.push(

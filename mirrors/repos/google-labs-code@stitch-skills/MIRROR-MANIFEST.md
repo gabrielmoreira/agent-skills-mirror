@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-labs-code/stitch-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,8 +73,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`plugins/stitch-design/skills/upload-to-stitch/SKILL.md`](plugins/stitch-design/skills/upload-to-stitch/SKILL.md) |
 | 13 | ✓ | [`plugins/stitch-utilities/skills/design-md/SKILL.md`](plugins/stitch-utilities/skills/design-md/SKILL.md) |
 | 14 | ✓ | [`plugins/stitch-utilities/skills/enhance-prompt/SKILL.md`](plugins/stitch-utilities/skills/enhance-prompt/SKILL.md) |
-| 15 | ✓ | [`plugins/stitch-utilities/skills/stitch-loop/SKILL.md`](plugins/stitch-utilities/skills/stitch-loop/SKILL.md) |
-| 16 | ✓ | [`plugins/stitch-utilities/skills/taste-design/SKILL.md`](plugins/stitch-utilities/skills/taste-design/SKILL.md) |
+| 15 | ✓ | [`plugins/stitch-utilities/skills/site-md/SKILL.md`](plugins/stitch-utilities/skills/site-md/SKILL.md) |
+| 16 | ✓ | [`plugins/stitch-utilities/skills/stitch-loop/SKILL.md`](plugins/stitch-utilities/skills/stitch-loop/SKILL.md) |
+| 17 | ✓ | [`plugins/stitch-utilities/skills/taste-design/SKILL.md`](plugins/stitch-utilities/skills/taste-design/SKILL.md) |
 
 ---
 

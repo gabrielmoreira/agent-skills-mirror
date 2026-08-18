@@ -6,6 +6,19 @@ Skill: `yao-meta-skill`
 
 Let's start from the real work, the result you care about, and the standards that matter here. We can make the structure clearer after that.
 
+## Recommended Next Move
+
+- Decision: `proceed`
+- Current understanding: Turn repeated workflows, prompts, transcripts, runbooks, documents, or existing skill packages into routeable, evaluable, packageable, and governable agent skills for personal, team, library, or governed reuse. Primary output: A working skill package with lean SKILL.md, aligned agents/interface.yaml, justified references, scripts only when useful, eval evidence, reports, packaging metadata, and clear next iteration recommendations.. Exclusions: one-off writing, translation, explanation, or brainstorming requests that do not need a reusable skill, general code review or debugging unless the user is packaging that workflow as a skill, raw private material that was not intentionally supplied as skill evidence, platform-specific plugin creation when the request is not about an agent skill package.
+- Personalized question: No core clarification is required.
+- Why now: The current core intent is ready for the next step.
+- Decision impact: No material package fork remains.
+- Stop rule: ask one question per round, allow at most 2 rounds, then use preferred inference.
+
+### Structured Assumptions
+
+- No assumptions are currently required.
+
 ## Opening Tone Options
 
 ### 温柔陪伴型
@@ -36,7 +49,7 @@ Use this short dialogue before deep authoring. The goal is to learn the real job
 ## Current Anchor
 
 - Title: `Yao Meta Skill`
-- Description: Create, refactor, evaluate, and package agent skills from workflows, prompts, transcripts, docs, or notes. Use when asked to create a skill, turn a repeated process into a reusable skill, improve an existing skill, add evals, or package a skill for team reuse.
+- Description: Create, improve, or evaluate an existing skill from workflows, prompts, SOPs, scripts. Use for migration/release/package, routing, evals/tests, install/trust checks, 优化已有 skill, 补 trigger 评测. Exclude summary/translation/docs, brainstorming, one-off prompts, copy-only edits, outline-only requests.
 - Focus: `portability-and-contract`
 - Reference note: If you already have examples you admire, bring them in. We will learn the pattern, not copy the source.
 

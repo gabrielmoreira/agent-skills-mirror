@@ -42,22 +42,29 @@ type ManagerMock = {
     rollback: ReturnType<typeof vi.fn>;
     getDeployRecords: ReturnType<typeof vi.fn>;
     getBuildLog?: ReturnType<typeof vi.fn>;
+    detail?: ReturnType<typeof vi.fn>;
   };
 };
 
-function makeManager(): ManagerMock {
+function makeManager(options: {
+  deployStatus?: string;
+} = {}): ManagerMock {
+  const { deployStatus = "normal" } = options;
   return {
     commonService: vi.fn().mockReturnValue({ call: vi.fn() }),
     cloudrun: {
       setTraffic: vi.fn().mockResolvedValue({ Success: true }),
       promote: vi.fn().mockResolvedValue({ Success: true }),
       rollback: vi.fn().mockResolvedValue({ Success: true }),
+      detail: vi.fn().mockResolvedValue({
+        BaseInfo: { ServerName: "my-svc", Status: "normal" },
+      }),
       getDeployRecords: vi.fn().mockResolvedValue({
         DeployRecords: [
           {
             DeployId: "d1",
             DeployTime: "2026-08-14 10:00:00",
-            Status: "normal",
+            Status: deployStatus,
             RunId: "run-2",
             BuildId: 200,
             FlowRatio: 100,
@@ -277,5 +284,35 @@ describe("queryCloudRun getDeployRecords", () => {
     expect(parsed.success).toBe(false);
     expect(parsed.error).toContain("detailServerName or serverName");
     expect(manager.cloudrun.getDeployRecords).not.toHaveBeenCalled();
+  });
+});
+
+describe("queryCloudRun detail deploy status case normalization", () => {
+  it("treats uppercase FAILED as deploy failed", async () => {
+    const manager = makeManager({ deployStatus: "FAILED" });
+    mockGetCloudBaseManager.mockReturnValue(manager);
+    const { tools } = await createCloudRunTools();
+
+    const res = await tools.queryCloudRun.handler({
+      action: "detail",
+      detailServerName: "my-svc",
+    });
+    const parsed = parseToolResult(res);
+    expect(parsed.success).toBe(true);
+    expect(parsed.message).toMatch(/latest deploy failed/i);
+  });
+
+  it("treats uppercase CREATING as deploy still running", async () => {
+    const manager = makeManager({ deployStatus: "CREATING" });
+    mockGetCloudBaseManager.mockReturnValue(manager);
+    const { tools } = await createCloudRunTools();
+
+    const res = await tools.queryCloudRun.handler({
+      action: "detail",
+      detailServerName: "my-svc",
+    });
+    const parsed = parseToolResult(res);
+    expect(parsed.success).toBe(true);
+    expect(parsed.message).toMatch(/still running/i);
   });
 });

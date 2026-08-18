@@ -34,6 +34,7 @@ All commands are defined in `package.json` `scripts`.
 | `yarn test:unit`                                                     | Run all `*.unittest.js`.                                                                                        |
 | `yarn test:integration`                                              | Run the integration suites (`basictest`/`longtest`/`test`).                                                     |
 | `yarn test:test262` / `yarn test:html5lib` / `yarn test:css-parsing` | Spec-conformance suites.                                                                                        |
+| `yarn test:syntax-equivalence`                                       | Holds the HTML/CSS printers to what Chrome makes of their output, over `configCases` and `test/wpt`.            |
 | `yarn test:base -u`                                                  | Update snapshots (eyeball the diff first).                                                                      |
 | `yarn test:size`                                                     | Size of the generated code over all `configCases/` (per asset, plus runtime module counts per runtime).         |
 | `yarn cover:unit`                                                    | Unit-test coverage.                                                                                             |
@@ -132,6 +133,7 @@ The directory listings below are the canonical map of the repository. **Whenever
    - `test/__snapshots__/Cli.basictest.js.snap` — the CLI flags are derived from the schema, so every new property adds one.
    - `test/configCases/ecmaVersion/browserslist*/webpack.config.js` — these carry an **inline** snapshot of the resolved `output.environment`, so an entry there must be added to nine config files.
    - `test/__snapshots__/target-browserslist.unittest.js.snap` — same, per browserslist query.
+   - `test/Defaults.unittest.js` — its **inline** snapshots carry the whole resolved config twice over, once for the base defaults and once per browserslist fixture, so an `output.environment` property adds a line to each. It runs in the `unit` flag, which no `configCases` or `basic` run reaches.
    - `test/Validation.test.js` — its **inline** snapshots quote the "these properties are valid" list, so a new property under `module.rules` changes one. It runs in the `integration` matrix, not `basic`.
 
 Skipping any layer silently breaks the option. After editing schemas, run `yarn fix:special` so `lib/` code can reference the updated types. If you added or modified options, consider updating `examples/` and run `yarn build:examples` to verify.
@@ -580,7 +582,8 @@ Code that emits runtime into the bundle — chunk loading (`lib/web/` JSONP, `li
 
 - **Which files changed, and by how much?** The asset table is the headline, so a generator or minifier change reads as the files it moved rather than as one number over the suite. A suite-wide total is deliberately not reported: it says nothing you can act on. Raw is what the generator wrote; the compressed columns are what a user downloads, and the two disagree often enough to be worth reading together — a rewrite that saves raw bytes but not gzip bytes has mostly moved entropy around.
 - **Which way did it go?** A row is marked 🔴 ↑ when it grew and 🟢 ↓ when it shrank, so the direction reads before the number does.
-- **Did a runtime gain or lose a runtime module?** A second table counts the runtime modules each runtime carries and names the ones that came or went. Bytes are deliberately not reported per runtime module — what one weighs in isolation is not what anyone downloads, and the asset table already carries the real number. The count is: it catches a runtime module added for one target and forgotten for another, which is the mistake this section is about.
+- **What is a change, and what is merely new?** An asset both runs emit has a before and an after, so it is a change; one only this run emits is a whole new file whose size is not a delta of anything. They are reported in separate tables — changed first and unfolded, new and deleted folded away, each with its own row budget — and counted in separate columns (`Raw change` against `Raw new/gone`), because a pull request adding test cases brings whole bundles with it that would otherwise outrank and bury every real change.
+- **Did a runtime gain or lose a runtime module?** A second table counts the runtime modules each runtime carries and names the ones that came or went, split the same way — a runtime a new case brought in gained nothing. Bytes are deliberately not reported per runtime module — what one weighs in isolation is not what anyone downloads, and the asset table already carries the real number. The count is: it catches a runtime module added for one target and forgotten for another, which is the mistake this section is about.
 
 Read the "emitted nothing" note before the numbers: a case whose build now errors contributes no bytes, which otherwise reads as an improvement.
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { registerPermissionTools } from "./permissions.js";
+import { registerPermissionTools, validateUserRegoContent } from "./permissions.js";
 import type { ExtendedMcpServer } from "../server.js";
 
 const {
@@ -14,6 +14,7 @@ const {
   mockCreateUser,
   mockDescribeEnvAuthzConfig,
   mockModifyEnvAuthzConfig,
+  mockDescribeResourcePolicyList,
 } = vi.hoisted(() => ({
   mockGetCloudBaseManager: vi.fn(),
   mockGetEnvId: vi.fn(),
@@ -26,6 +27,7 @@ const {
   mockCreateUser: vi.fn(),
   mockDescribeEnvAuthzConfig: vi.fn(),
   mockModifyEnvAuthzConfig: vi.fn(),
+  mockDescribeResourcePolicyList: vi.fn(),
 }));
 
 vi.mock("../cloudbase-manager.js", () => ({
@@ -124,6 +126,7 @@ describe("permission tools", () => {
         createRole: mockCreateRole,
         describeEnvAuthzConfig: mockDescribeEnvAuthzConfig,
         modifyEnvAuthzConfig: mockModifyEnvAuthzConfig,
+        describeResourcePolicyList: mockDescribeResourcePolicyList,
       },
       user: {
         describeUserList: mockDescribeUserList,
@@ -540,5 +543,168 @@ describe("permission tools", () => {
       },
     });
     expect(payload.data.rego).toContain("package authz.user");
+  });
+
+  it("queryPermissions schema includes listPolicy/getPolicy enums", () => {
+    const actionSchema = tools.queryPermissions.meta.inputSchema.action;
+    expect(actionSchema._def.values).toEqual(
+      expect.arrayContaining(["listPolicy", "getPolicy"]),
+    );
+    const policyResourceType = tools.queryPermissions.meta.inputSchema.policyResourceType;
+    expect(policyResourceType._def.innerType._def.values).toEqual(["policy"]);
+  });
+
+  it("managePermissions schema includes setPolicy and confirm", () => {
+    const actionSchema = tools.managePermissions.meta.inputSchema.action;
+    expect(actionSchema._def.values).toEqual(expect.arrayContaining(["setPolicy"]));
+    expect(tools.managePermissions.meta.inputSchema.confirm).toBeDefined();
+    expect(tools.managePermissions.meta.inputSchema.regoContent).toBeDefined();
+  });
+
+  it("validateUserRegoContent rejects empty and non-user packages", () => {
+    expect(() => validateUserRegoContent("")).toThrow(/非空/);
+    expect(() => validateUserRegoContent("package other\n")).toThrow(/package authz\.user/);
+    expect(() => validateUserRegoContent("package authz.user\nallow if {\n")).toThrow(/花括号/);
+    expect(
+      validateUserRegoContent("package authz.user\n\ndefault allow := false\n"),
+    ).toContain("package authz.user");
+  });
+
+  it("queryPermissions(action=listPolicy) calls describeResourcePolicyList", async () => {
+    mockDescribeResourcePolicyList.mockResolvedValueOnce({
+      Data: { PolicyList: [], Total: "0" },
+      RequestId: "req-list-policy",
+    });
+
+    const result = await tools.queryPermissions.handler({
+      action: "listPolicy",
+      policyResourceType: "policy",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeResourcePolicyList).toHaveBeenCalledWith({
+      resourceType: "policy",
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "listPolicy",
+        policies: [],
+        total: "0",
+        policyResourceType: "policy",
+      },
+    });
+  });
+
+  it("queryPermissions(action=getPolicy) reads authz.user.rego by default", async () => {
+    mockDescribeEnvAuthzConfig.mockResolvedValueOnce({
+      Item: {
+        Key: "authz.user.rego",
+        Value: "package authz.user\n\ndefault allow := false\n",
+      },
+      RequestId: "req-get-policy",
+    });
+
+    const result = await tools.queryPermissions.handler({ action: "getPolicy" });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeEnvAuthzConfig).toHaveBeenCalledWith({
+      key: "authz.user.rego",
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "getPolicy",
+        key: "authz.user.rego",
+        extension: false,
+        rego: expect.stringContaining("package authz.user"),
+      },
+    });
+  });
+
+  it("queryPermissions(action=getPolicy, extension=true) reads platform extension key", async () => {
+    mockDescribeEnvAuthzConfig.mockResolvedValueOnce({
+      Item: {
+        Key: "authz.platform.extension.rego",
+        Value: "package authz.platform.extension\n",
+      },
+    });
+
+    const result = await tools.queryPermissions.handler({
+      action: "getPolicy",
+      extension: true,
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeEnvAuthzConfig).toHaveBeenCalledWith({
+      key: "authz.platform.extension.rego",
+    });
+    expect(payload.data.key).toBe("authz.platform.extension.rego");
+    expect(payload.data.extension).toBe(true);
+  });
+
+  it("managePermissions(action=setPolicy) requires confirm=true", async () => {
+    const result = await tools.managePermissions.handler({
+      action: "setPolicy",
+      regoContent: "package authz.user\n\ndefault allow := false\n",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("confirm=true");
+    expect(mockModifyEnvAuthzConfig).not.toHaveBeenCalled();
+  });
+
+  it("managePermissions(action=setPolicy) validates Rego then calls modifyEnvAuthzConfig", async () => {
+    mockModifyEnvAuthzConfig.mockResolvedValueOnce({
+      AffectedRows: 1,
+      RequestId: "req-set-policy",
+    });
+
+    const rego = [
+      "package authz.user",
+      "",
+      "default allow := false",
+      "",
+      "allow if {",
+      '  input.cloudbase.resource_type == "functions"',
+      '  input.subject.auth_type == "anonymous"',
+      "}",
+      "",
+    ].join("\n");
+
+    const result = await tools.managePermissions.handler({
+      action: "setPolicy",
+      regoContent: rego,
+      confirm: true,
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockModifyEnvAuthzConfig).toHaveBeenCalledWith({
+      key: "authz.user.rego",
+      value: rego.trim(),
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "setPolicy",
+        key: "authz.user.rego",
+        rego: expect.stringContaining("package authz.user"),
+        sideEffect: expect.stringContaining("disables legacy gateway"),
+      },
+    });
+  });
+
+  it("managePermissions(action=setPolicy) rejects invalid Rego before API call", async () => {
+    const result = await tools.managePermissions.handler({
+      action: "setPolicy",
+      regoContent: "package wrong\n",
+      confirm: true,
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("package authz.user");
+    expect(mockModifyEnvAuthzConfig).not.toHaveBeenCalled();
   });
 });

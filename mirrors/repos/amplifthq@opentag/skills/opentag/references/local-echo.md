@@ -13,7 +13,7 @@ Do not recommend Echo for real use unless the user explicitly wants a smoke test
 Install or run the CLI:
 
 ```bash
-npm install -g @opentag/cli
+npm install -g @opentag/cli@0.11.0
 opentag setup
 ```
 

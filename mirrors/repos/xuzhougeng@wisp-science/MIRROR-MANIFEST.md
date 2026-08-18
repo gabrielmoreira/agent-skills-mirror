@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns, 150 file(s) materialized.
+Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns, 151 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 150 |
+| Files         | 151 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -193,22 +193,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 132 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
 | 133 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
 | 134 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 135 | ✓ | [`skills/THIRD_PARTY_LICENSES.md`](skills/THIRD_PARTY_LICENSES.md) |
-| 136 | ✓ | [`skills/word-zotero-citations/assets/templates/offline-run-summary.md`](skills/word-zotero-citations/assets/templates/offline-run-summary.md) |
-| 137 | ✓ | [`skills/word-zotero-citations/evals/task-cases.json`](skills/word-zotero-citations/evals/task-cases.json) |
-| 138 | ✓ | [`skills/word-zotero-citations/evals/trigger-cases.json`](skills/word-zotero-citations/evals/trigger-cases.json) |
-| 139 | ✓ | [`skills/word-zotero-citations/references/contracts.md`](skills/word-zotero-citations/references/contracts.md) |
-| 140 | ✓ | [`skills/word-zotero-citations/references/implementation-map.md`](skills/word-zotero-citations/references/implementation-map.md) |
-| 141 | ✓ | [`skills/word-zotero-citations/references/live-refresh-protocol.md`](skills/word-zotero-citations/references/live-refresh-protocol.md) |
-| 142 | ✓ | [`skills/word-zotero-citations/references/live-run-recipe.md`](skills/word-zotero-citations/references/live-run-recipe.md) |
-| 143 | ✓ | [`skills/word-zotero-citations/references/recovery-and-rollback.md`](skills/word-zotero-citations/references/recovery-and-rollback.md) |
-| 144 | ✓ | [`skills/word-zotero-citations/references/verification-matrix.md`](skills/word-zotero-citations/references/verification-matrix.md) |
-| 145 | ✓ | [`skills/word-zotero-citations/references/zotero-mcp-configuration.md`](skills/word-zotero-citations/references/zotero-mcp-configuration.md) |
-| 146 | ✓ | [`skills/word-zotero-citations/scripts/refresh_word_zotero.ps1`](skills/word-zotero-citations/scripts/refresh_word_zotero.ps1) |
-| 147 | ✓ | [`skills/word-zotero-citations/scripts/run_live_workflow.py`](skills/word-zotero-citations/scripts/run_live_workflow.py) |
-| 148 | ✓ | [`skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1`](skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1) |
-| 149 | ✓ | [`skills/word-zotero-citations/scripts/verify_skill.py`](skills/word-zotero-citations/scripts/verify_skill.py) |
-| 150 | ✓ | [`skills/word-zotero-citations/SKILL.md`](skills/word-zotero-citations/SKILL.md) |
+| 135 | ✓ | [`skills/social-note/SKILL.md`](skills/social-note/SKILL.md) |
+| 136 | ✓ | [`skills/THIRD_PARTY_LICENSES.md`](skills/THIRD_PARTY_LICENSES.md) |
+| 137 | ✓ | [`skills/word-zotero-citations/assets/templates/offline-run-summary.md`](skills/word-zotero-citations/assets/templates/offline-run-summary.md) |
+| 138 | ✓ | [`skills/word-zotero-citations/evals/task-cases.json`](skills/word-zotero-citations/evals/task-cases.json) |
+| 139 | ✓ | [`skills/word-zotero-citations/evals/trigger-cases.json`](skills/word-zotero-citations/evals/trigger-cases.json) |
+| 140 | ✓ | [`skills/word-zotero-citations/references/contracts.md`](skills/word-zotero-citations/references/contracts.md) |
+| 141 | ✓ | [`skills/word-zotero-citations/references/implementation-map.md`](skills/word-zotero-citations/references/implementation-map.md) |
+| 142 | ✓ | [`skills/word-zotero-citations/references/live-refresh-protocol.md`](skills/word-zotero-citations/references/live-refresh-protocol.md) |
+| 143 | ✓ | [`skills/word-zotero-citations/references/live-run-recipe.md`](skills/word-zotero-citations/references/live-run-recipe.md) |
+| 144 | ✓ | [`skills/word-zotero-citations/references/recovery-and-rollback.md`](skills/word-zotero-citations/references/recovery-and-rollback.md) |
+| 145 | ✓ | [`skills/word-zotero-citations/references/verification-matrix.md`](skills/word-zotero-citations/references/verification-matrix.md) |
+| 146 | ✓ | [`skills/word-zotero-citations/references/zotero-mcp-configuration.md`](skills/word-zotero-citations/references/zotero-mcp-configuration.md) |
+| 147 | ✓ | [`skills/word-zotero-citations/scripts/refresh_word_zotero.ps1`](skills/word-zotero-citations/scripts/refresh_word_zotero.ps1) |
+| 148 | ✓ | [`skills/word-zotero-citations/scripts/run_live_workflow.py`](skills/word-zotero-citations/scripts/run_live_workflow.py) |
+| 149 | ✓ | [`skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1`](skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1) |
+| 150 | ✓ | [`skills/word-zotero-citations/scripts/verify_skill.py`](skills/word-zotero-citations/scripts/verify_skill.py) |
+| 151 | ✓ | [`skills/word-zotero-citations/SKILL.md`](skills/word-zotero-citations/SKILL.md) |
 
 ---
 

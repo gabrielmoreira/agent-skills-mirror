@@ -304,7 +304,7 @@ compare branch:  当前任务分支
 
 PR 标题直接表达变更目标。正文按创建方式选择模板：
 
-- Agent 创建的 PR 使用默认的 [Agent PR 模板](https://github.com/xerrors/Yuxi/blob/main/.github/PULL_REQUEST_TEMPLATE.md)，保留工程主张、证据矩阵、独立 Review 和未验证范围。
+- Agent 创建的 PR 使用默认的 [Agent PR 模板](https://github.com/xerrors/Yuxi/blob/main/.github/PULL_REQUEST_TEMPLATE.md)，保留工程主张、逐条验收分组、独立 Review 和未验证范围。
 - 人工或其他非 Agent 方式创建的 PR 可使用 [简化模板](https://github.com/xerrors/Yuxi/blob/main/.github/PULL_REQUEST_TEMPLATE/non-agent.md)。使用 GitHub compare 页面时增加 `template=non-agent.md` 查询参数，使用 GitHub CLI 时传入 `--template .github/PULL_REQUEST_TEMPLATE/non-agent.md`。
 
 模板复杂度不同，不改变下述非 trivial / 高风险变更的工程证据要求：

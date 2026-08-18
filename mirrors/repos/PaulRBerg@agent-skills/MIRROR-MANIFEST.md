@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 280 file(s) materialized.
+Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 279 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 280 |
+| Files         | 279 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -303,42 +303,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 242 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
 | 243 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
 | 244 | ✓ | [`skills/task-handoff/agents/openai.yaml`](skills/task-handoff/agents/openai.yaml) |
-| 245 | ✓ | [`skills/task-handoff/scripts/task-handoff.sh`](skills/task-handoff/scripts/task-handoff.sh) |
-| 246 | ✓ | [`skills/task-handoff/SKILL.md`](skills/task-handoff/SKILL.md) |
-| 247 | ✓ | [`skills/todo-archive/agents/openai.yaml`](skills/todo-archive/agents/openai.yaml) |
-| 248 | ✓ | [`skills/todo-archive/scripts/archive_todo.py`](skills/todo-archive/scripts/archive_todo.py) |
-| 249 | ✓ | [`skills/todo-archive/SKILL.md`](skills/todo-archive/SKILL.md) |
-| 250 | ✓ | [`skills/tool-finder/agents/openai.yaml`](skills/tool-finder/agents/openai.yaml) |
-| 251 | ✓ | [`skills/tool-finder/references/tool-finder.md`](skills/tool-finder/references/tool-finder.md) |
-| 252 | ✓ | [`skills/tool-finder/SKILL.md`](skills/tool-finder/SKILL.md) |
-| 253 | ✓ | [`skills/vitest/agents/openai.yaml`](skills/vitest/agents/openai.yaml) |
-| 254 | ✓ | [`skills/vitest/references/configuration.md`](skills/vitest/references/configuration.md) |
-| 255 | ✓ | [`skills/vitest/references/mocking.md`](skills/vitest/references/mocking.md) |
-| 256 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
-| 257 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
-| 258 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
-| 259 | ✓ | [`skills/wrap-up/agents/openai.yaml`](skills/wrap-up/agents/openai.yaml) |
-| 260 | ✓ | [`skills/wrap-up/SKILL.md`](skills/wrap-up/SKILL.md) |
-| 261 | ✓ | [`skills/yeet/agents/openai.yaml`](skills/yeet/agents/openai.yaml) |
-| 262 | ✓ | [`skills/yeet/fixtures/issue-form.yml`](skills/yeet/fixtures/issue-form.yml) |
-| 263 | ✓ | [`skills/yeet/references/comment-discussion.md`](skills/yeet/references/comment-discussion.md) |
-| 264 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
-| 265 | ✓ | [`skills/yeet/references/context.md`](skills/yeet/references/context.md) |
-| 266 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
-| 267 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
-| 268 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
-| 269 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
-| 270 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
-| 271 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
-| 272 | ✓ | [`skills/yeet/references/posting.md`](skills/yeet/references/posting.md) |
-| 273 | ✓ | [`skills/yeet/references/update-discussion.md`](skills/yeet/references/update-discussion.md) |
-| 274 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
-| 275 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
-| 276 | ✓ | [`skills/yeet/references/writing.md`](skills/yeet/references/writing.md) |
-| 277 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
-| 278 | ✓ | [`skills/yeet/scripts/issue-form.py`](skills/yeet/scripts/issue-form.py) |
-| 279 | ✓ | [`skills/yeet/scripts/yeet-context.sh`](skills/yeet/scripts/yeet-context.sh) |
-| 280 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
+| 245 | ✓ | [`skills/task-handoff/SKILL.md`](skills/task-handoff/SKILL.md) |
+| 246 | ✓ | [`skills/todo-archive/agents/openai.yaml`](skills/todo-archive/agents/openai.yaml) |
+| 247 | ✓ | [`skills/todo-archive/scripts/archive_todo.py`](skills/todo-archive/scripts/archive_todo.py) |
+| 248 | ✓ | [`skills/todo-archive/SKILL.md`](skills/todo-archive/SKILL.md) |
+| 249 | ✓ | [`skills/tool-finder/agents/openai.yaml`](skills/tool-finder/agents/openai.yaml) |
+| 250 | ✓ | [`skills/tool-finder/references/tool-finder.md`](skills/tool-finder/references/tool-finder.md) |
+| 251 | ✓ | [`skills/tool-finder/SKILL.md`](skills/tool-finder/SKILL.md) |
+| 252 | ✓ | [`skills/vitest/agents/openai.yaml`](skills/vitest/agents/openai.yaml) |
+| 253 | ✓ | [`skills/vitest/references/configuration.md`](skills/vitest/references/configuration.md) |
+| 254 | ✓ | [`skills/vitest/references/mocking.md`](skills/vitest/references/mocking.md) |
+| 255 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
+| 256 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
+| 257 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
+| 258 | ✓ | [`skills/wrap-up/agents/openai.yaml`](skills/wrap-up/agents/openai.yaml) |
+| 259 | ✓ | [`skills/wrap-up/SKILL.md`](skills/wrap-up/SKILL.md) |
+| 260 | ✓ | [`skills/yeet/agents/openai.yaml`](skills/yeet/agents/openai.yaml) |
+| 261 | ✓ | [`skills/yeet/fixtures/issue-form.yml`](skills/yeet/fixtures/issue-form.yml) |
+| 262 | ✓ | [`skills/yeet/references/comment-discussion.md`](skills/yeet/references/comment-discussion.md) |
+| 263 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
+| 264 | ✓ | [`skills/yeet/references/context.md`](skills/yeet/references/context.md) |
+| 265 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
+| 266 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
+| 267 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
+| 268 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
+| 269 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
+| 270 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
+| 271 | ✓ | [`skills/yeet/references/posting.md`](skills/yeet/references/posting.md) |
+| 272 | ✓ | [`skills/yeet/references/update-discussion.md`](skills/yeet/references/update-discussion.md) |
+| 273 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
+| 274 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
+| 275 | ✓ | [`skills/yeet/references/writing.md`](skills/yeet/references/writing.md) |
+| 276 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
+| 277 | ✓ | [`skills/yeet/scripts/issue-form.py`](skills/yeet/scripts/issue-form.py) |
+| 278 | ✓ | [`skills/yeet/scripts/yeet-context.sh`](skills/yeet/scripts/yeet-context.sh) |
+| 279 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
 
 ---
 

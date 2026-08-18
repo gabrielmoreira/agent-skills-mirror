@@ -411,6 +411,7 @@ describe("manageCloudRun initEnv action", () => {
     expect((calls[1] as any).Param).toEqual({
       EnvId: "env-test",
       PackageType: "Professional",
+      EnvType: "tcbr",
     });
   });
 
@@ -431,6 +432,80 @@ describe("manageCloudRun initEnv action", () => {
     const tools = await createCloudRunTools();
     await tools.manageCloudRun.handler({ action: "initEnv", envId: "env-test" });
     expect((calls[1] as any).Param.PackageType).toBe("Trial");
+    expect((calls[1] as any).Param.EnvType).toBe("tcbr");
+  });
+
+  it("passes optional vpcId/subnetIds through to CreateCloudRunEnv", async () => {
+    const calls: unknown[] = [];
+    mockGetCloudBaseManager.mockReturnValue({
+      commonService: vi.fn().mockReturnValue({
+        call: async (req: any) => {
+          calls.push(req);
+          if (req.Action === "DescribeEnvBaseInfo") {
+            return { EnvBaseInfo: {}, IsExist: false };
+          }
+          return { EnvId: "env-test", TranId: "tran-vpc" };
+        },
+      }),
+      cloudrun: {},
+    });
+    const tools = await createCloudRunTools();
+    await tools.manageCloudRun.handler({
+      action: "initEnv",
+      envId: "env-test",
+      vpcId: "vpc-26vsxozo",
+      subnetIds: ["subnet-hyiwt4ut"],
+    });
+    expect((calls[1] as any).Param).toEqual({
+      EnvId: "env-test",
+      PackageType: "Trial",
+      EnvType: "tcbr",
+      VpcId: "vpc-26vsxozo",
+      SubNetIds: ["subnet-hyiwt4ut"],
+    });
+  });
+
+  it("treats uppercase NORMAL as already-opened (idempotent)", async () => {
+    const calls: unknown[] = [];
+    mockGetCloudBaseManager.mockReturnValue({
+      commonService: vi.fn().mockReturnValue({
+        call: async (req: any) => {
+          calls.push(req);
+          return {
+            EnvBaseInfo: { EnvId: "env-test", Status: "NORMAL", PackageType: "Trial" },
+            IsExist: true,
+          };
+        },
+      }),
+      cloudrun: {},
+    });
+    const tools = await createCloudRunTools();
+    const res = await tools.manageCloudRun.handler({
+      action: "initEnv",
+      envId: "env-test",
+    });
+    const parsed = parseToolResult(res);
+    expect(parsed.data.status).toBe("normal");
+    expect(parsed.data.created).toBe(false);
+    expect(calls.map((c: any) => c.Action)).toEqual(["DescribeEnvBaseInfo"]);
+  });
+
+  it("guides device code / SecretKey on CAM auth failure during initEnv", async () => {
+    mockGetCloudBaseManager.mockReturnValue({
+      commonService: vi.fn().mockReturnValue({
+        call: async (req: any) => {
+          if (req.Action === "DescribeEnvBaseInfo") {
+            return { EnvBaseInfo: {}, IsExist: false };
+          }
+          throw new Error("UnauthorizedOperation: [CAM] not authorized to perform: tcbr:CreateCloudRunEnv");
+        },
+      }),
+      cloudrun: {},
+    });
+    const tools = await createCloudRunTools();
+    await expect(
+      tools.manageCloudRun.handler({ action: "initEnv", envId: "env-test" }),
+    ).rejects.toThrow(/device code|SecretId\/SecretKey|start_auth/);
   });
 });
 
@@ -457,6 +532,22 @@ describe("queryCloudRun envStatus action", () => {
     expect(parsed.data.status).toBe("normal");
     expect(parsed.data.envBaseInfo.Status).toBe("normal");
     expect(parsed.message).toMatch(/可直接 manageCloudRun\(action="deploy"\)/);
+  });
+
+  it("normalizes uppercase NORMAL/CREATING from platform", async () => {
+    mockGetCloudBaseManager.mockReturnValue({
+      commonService: vi.fn().mockReturnValue({
+        call: async () => ({
+          EnvBaseInfo: { EnvId: "env-test", Status: "NORMAL", PackageType: "Trial" },
+          IsExist: true,
+        }),
+      }),
+      cloudrun: {},
+    });
+    const tools = await createCloudRunTools();
+    const res = await tools.queryCloudRun.handler({ action: "envStatus", envId: "env-test" });
+    const parsed = parseToolResult(res);
+    expect(parsed.data.status).toBe("normal");
   });
 
   it("returns creating with retry guidance", async () => {
@@ -523,5 +614,42 @@ describe("queryCloudRun envStatus action", () => {
     const res = await tools.queryCloudRun.handler({ action: "envStatus" });
     const parsed = parseToolResult(res);
     expect(parsed.data.envId).toBe("env-configured");
+  });
+});
+
+describe("cloudrun VPC helpers", () => {
+  it("buildCreateCloudRunEnvParam always sets EnvType=tcbr", async () => {
+    const { buildCreateCloudRunEnvParam } = await import("./cloudrun.js");
+    expect(
+      buildCreateCloudRunEnvParam({ envId: "env-x", packageType: "Trial" }),
+    ).toEqual({
+      EnvId: "env-x",
+      PackageType: "Trial",
+      EnvType: "tcbr",
+    });
+  });
+
+  it("resolveCloudRunDeployVpcInfo prefers VpcConf then env base info", async () => {
+    const { resolveCloudRunDeployVpcInfo } = await import("./cloudrun.js");
+    expect(
+      resolveCloudRunDeployVpcInfo({
+        vpcConf: { VpcId: "vpc-a", SubnetId: "subnet-a" },
+        envBaseInfo: { VpcId: "vpc-b", SubNetIds: ["subnet-b"] },
+      }),
+    ).toEqual({
+      VpcId: "vpc-a",
+      CreateType: 2,
+      SubnetIds: ["subnet-a"],
+    });
+    expect(
+      resolveCloudRunDeployVpcInfo({
+        vpcConf: null,
+        envBaseInfo: { VpcId: "vpc-b", SubNetIds: ["subnet-b"] },
+      }),
+    ).toEqual({
+      VpcId: "vpc-b",
+      CreateType: 2,
+      SubnetIds: ["subnet-b"],
+    });
   });
 });

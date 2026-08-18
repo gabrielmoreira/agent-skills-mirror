@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oven-sh/bun` — 26 default patterns, 0 followed patterns, 23 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,7 +81,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`src/jsc/bindings/v8/CLAUDE.md`](src/jsc/bindings/v8/CLAUDE.md) |
 | 21 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
 | 22 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 23 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
+| 23 | ✓ | [`test/internal/source-lints/CLAUDE.md`](test/internal/source-lints/CLAUDE.md) |
+| 24 | ✓ | [`test/js/node/test/parallel/CLAUDE.md`](test/js/node/test/parallel/CLAUDE.md) |
 
 ---
 

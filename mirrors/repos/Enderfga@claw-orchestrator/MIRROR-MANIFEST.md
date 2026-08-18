@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,22 +61,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`skills/claw-orchestrator/SKILL.md`](skills/claw-orchestrator/SKILL.md) |
-| 3 | ✓ | [`skills/references/autoloop.md`](skills/references/autoloop.md) |
-| 4 | ✓ | [`skills/references/claude-cli-tracking.md`](skills/references/claude-cli-tracking.md) |
-| 5 | ✓ | [`skills/references/cli.md`](skills/references/cli.md) |
-| 6 | ✓ | [`skills/references/council.md`](skills/references/council.md) |
-| 7 | ✓ | [`skills/references/dashboard.md`](skills/references/dashboard.md) |
-| 8 | ✓ | [`skills/references/getting-started.md`](skills/references/getting-started.md) |
-| 9 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
-| 10 | ✓ | [`skills/references/mcp.md`](skills/references/mcp.md) |
-| 11 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
-| 12 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
-| 13 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
-| 14 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
-| 15 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
-| 16 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
-| 17 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 18 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
+| 3 | ✓ | [`skills/references/acp.md`](skills/references/acp.md) |
+| 4 | ✓ | [`skills/references/autoloop.md`](skills/references/autoloop.md) |
+| 5 | ✓ | [`skills/references/claude-cli-tracking.md`](skills/references/claude-cli-tracking.md) |
+| 6 | ✓ | [`skills/references/cli.md`](skills/references/cli.md) |
+| 7 | ✓ | [`skills/references/council.md`](skills/references/council.md) |
+| 8 | ✓ | [`skills/references/dashboard.md`](skills/references/dashboard.md) |
+| 9 | ✓ | [`skills/references/getting-started.md`](skills/references/getting-started.md) |
+| 10 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
+| 11 | ✓ | [`skills/references/mcp.md`](skills/references/mcp.md) |
+| 12 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
+| 13 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
+| 14 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
+| 15 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
+| 16 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
+| 17 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
+| 18 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 19 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
 
 ---
 

@@ -195,6 +195,131 @@ async function resolvePgDbContext(
   };
 }
 
+
+/** Default / recommended roles for CloudBase PG ExecutePGSql.Role */
+const PG_DEFAULT_ROLE = "cloudbase_admin";
+const PG_RECOMMENDED_ROLES = [
+  "cloudbase_admin",
+  "anon",
+  "authenticated",
+  "service_role",
+] as const;
+
+/**
+ * Roles that look like login/instance principals and routinely fail SET ROLE
+ * in beacon data (e.g. postgres, postgres_pgdb_<id>). Reject before the API call.
+ */
+function isLikelyInvalidPgExecuteRole(role: string): boolean {
+  const normalized = role.trim();
+  if (!normalized) {
+    return true;
+  }
+  if (normalized === "postgres") {
+    return true;
+  }
+  // Instance-derived login principals, not valid ExecutePGSql Role targets
+  if (/^postgres_pgdb_[a-z0-9]+$/i.test(normalized)) {
+    return true;
+  }
+  // AI-invented concatenations such as cloudbase_admin_pgdb_xxx_pgdb_xxx
+  if (
+    /_pgdb_[a-z0-9]+(_pgdb_[a-z0-9]+)?$/i.test(normalized) &&
+    !(PG_RECOMMENDED_ROLES as readonly string[]).includes(normalized)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function extractPgRoleNameFromError(message: string): string | null {
+  const missing = message.match(/role\s+"([^"]+)"\s+does\s+not\s+exist/i);
+  if (missing?.[1]) {
+    return missing[1];
+  }
+  const setRole = message.match(/set\s+role\s+([^\s:]+)/i);
+  if (setRole?.[1]) {
+    return setRole[1].replace(/^"|"$/g, "");
+  }
+  const denied = message.match(
+    /permission\s+denied\s+to\s+set\s+role\s+"([^"]+)"/i,
+  );
+  if (denied?.[1]) {
+    return denied[1];
+  }
+  return null;
+}
+
+function isPgRoleExecutionError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    (lower.includes("set role") &&
+      (lower.includes("does not exist") ||
+        lower.includes("permission denied"))) ||
+    /role\s+"[^"]+"\s+does\s+not\s+exist/i.test(message) ||
+    /permission\s+denied\s+to\s+set\s+role/i.test(message)
+  );
+}
+
+function buildPgRoleGuidanceMessage(attemptedRole: string): string {
+  const recommended = PG_RECOMMENDED_ROLES.join(", ");
+  return (
+    `PostgreSQL role "${attemptedRole}" cannot be used with ExecutePGSql (SET ROLE failed or role does not exist). ` +
+    `Do not invent roles like postgres / postgres_pgdb_* from env or instance names. ` +
+    `Omit role (defaults to ${PG_DEFAULT_ROLE}) or pass one of: ${recommended}. ` +
+    `To list roles that exist in this database, retry with role=${PG_DEFAULT_ROLE} and SQL: SELECT rolname FROM pg_roles ORDER BY rolname;`
+  );
+}
+
+function buildPgRoleErrorPayload(
+  attemptedRole: string,
+  rawMessage?: string,
+): PgToolPayload {
+  return {
+    success: false,
+    errorCode: "PG_ROLE_NOT_AVAILABLE",
+    message: buildPgRoleGuidanceMessage(attemptedRole),
+    data: {
+      attemptedRole,
+      defaultRole: PG_DEFAULT_ROLE,
+      recommendedRoles: [...PG_RECOMMENDED_ROLES],
+      listRolesSql: "SELECT rolname FROM pg_roles ORDER BY rolname;",
+      ...(rawMessage ? { rawError: rawMessage.slice(0, 500) } : {}),
+    },
+    nextActions: [
+      buildNextAction(
+        MANAGE_PG_DATABASE,
+        "execute",
+        `Retry without a custom role (defaults to ${PG_DEFAULT_ROLE}), or pass role=${PG_DEFAULT_ROLE} explicitly.`,
+        {
+          action: "execute",
+          role: PG_DEFAULT_ROLE,
+          sql: "SELECT rolname FROM pg_roles ORDER BY rolname;",
+          confirm: true,
+        },
+      ),
+      buildNextAction(
+        QUERY_PG_DATABASE,
+        "context",
+        "Inspect the auto-derived PG context (includes default role) before retrying.",
+        { action: "context" },
+      ),
+    ],
+  };
+}
+
+function tryBuildPgRoleErrorPayload(
+  error: unknown,
+  fallbackRole: string,
+): PgToolPayload | null {
+  const rawMessage = error instanceof Error ? error.message : String(error);
+  if (!isPgRoleExecutionError(rawMessage)) {
+    return null;
+  }
+  const attemptedRole =
+    extractPgRoleNameFromError(rawMessage) ?? fallbackRole;
+  return buildPgRoleErrorPayload(attemptedRole, rawMessage);
+}
+
 function normalizeLimit(limit?: number, fallback = 20, max = 200) {
   if (!Number.isFinite(limit)) {
     return fallback;
@@ -1936,9 +2061,27 @@ async function handleReadOnlySql(
 
   const limit = normalizeLimit(args.limit);
   const limitedSql = buildLimitedReadOnlySql(args.sql, limit);
-  const result = await withPgClient(context, deps, (client) =>
-    client.query(limitedSql),
-  );
+  let result: PgQueryResult;
+  try {
+    result = await withPgClient(context, deps, (client) =>
+      client.query(limitedSql),
+    );
+  } catch (error) {
+    const rolePayload = tryBuildPgRoleErrorPayload(error, context.role);
+    if (rolePayload) {
+      return buildPgToolResult(rolePayload);
+    }
+    const reason = error instanceof Error ? error.message : String(error);
+    return buildPgToolResult({
+      success: false,
+      errorCode: "PG_SQL_EXEC_FAILED",
+      message: `PostgreSQL read-only SQL execution failed: ${reason}`,
+      data: {
+        role: context.role,
+        sqlPreview: limitedSql.trim().slice(0, 500),
+      },
+    });
+  }
   const summary = summarizeQueryResult(result, limit);
 
   return buildPgToolResult({
@@ -2016,6 +2159,10 @@ async function handleExecuteSql(
     });
   }
 
+  if (args.role !== undefined && isLikelyInvalidPgExecuteRole(args.role)) {
+    return buildPgToolResult(buildPgRoleErrorPayload(args.role.trim() || "(empty)"));
+  }
+
   if (!classification.readOnly && !args.confirm) {
     return buildPgToolResult({
       success: false,
@@ -2046,9 +2193,28 @@ async function handleExecuteSql(
     });
   }
 
-  const result = await withPgClient(context, deps, (client) =>
-    client.query(args.sql!),
-  );
+  let result: PgQueryResult;
+  try {
+    result = await withPgClient(context, deps, (client) =>
+      client.query(args.sql!),
+    );
+  } catch (error) {
+    const rolePayload = tryBuildPgRoleErrorPayload(error, context.role);
+    if (rolePayload) {
+      return buildPgToolResult(rolePayload);
+    }
+    const reason = error instanceof Error ? error.message : String(error);
+    return buildPgToolResult({
+      success: false,
+      errorCode: "PG_SQL_EXEC_FAILED",
+      message: `PostgreSQL SQL execution failed: ${reason}`,
+      data: {
+        role: context.role,
+        sqlPreview: args.sql.trim().slice(0, 500),
+      },
+    });
+  }
+
   const targetTable = parseTargetTableFromSql(args.sql, context.defaultSchema);
 
   return buildPgToolResult({
@@ -3222,7 +3388,9 @@ export function registerPGDatabaseTools(
           .string()
           .optional()
           .describe(
-            "可选的 PostgreSQL role，会传给 Manager SDK executePGSql；例如需要管理策略时可传 postgres。",
+            `可选的 PostgreSQL role，传给 Manager SDK executePGSql 的 Role（平台会 SET ROLE）。默认 ${PG_DEFAULT_ROLE}。` +
+              `推荐取值：${PG_RECOMMENDED_ROLES.join(" / ")}。` +
+              `不要传 postgres、postgres_pgdb_* 或从环境名臆造的角色；不确定时省略本字段，或先用 ${PG_DEFAULT_ROLE} 执行 SELECT rolname FROM pg_roles。`,
           ),
         objectName: z
           .string()
@@ -3344,6 +3512,13 @@ export function registerPGDatabaseTools(
             ) {
               return handleExecuteSql(args, context, deps);
             }
+          }
+
+          // Reject known-bad Role values before readiness probe / ExecutePGSql SET ROLE.
+          if (args.role !== undefined && isLikelyInvalidPgExecuteRole(args.role)) {
+            return buildPgToolResult(
+              buildPgRoleErrorPayload(args.role.trim() || "(empty)"),
+            );
           }
 
           try {

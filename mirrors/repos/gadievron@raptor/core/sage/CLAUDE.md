@@ -4,6 +4,9 @@ Loaded on demand by RAPTOR's root `CLAUDE.md` when the `sage_inception`
 MCP tool is present (i.e. when the user has run `libexec/raptor-sage-setup`).
 If this file is loaded, SAGE is available — use it.
 
+Operator-facing documentation (setup, HMAC key, CPU/GPU behaviour, use
+cases, upgrades) lives in `docs/sage.md`.
+
 ## Boot sequence
 
 1. Call `sage_inception` to initialize persistent memory.
@@ -80,6 +83,8 @@ flag. No prompt injection (recalled text dropped into an LLM prompt).
 | `store_audit_observation` / `recall_audit_observations` | Store tool-confirmed/refuted observations for cross-target transfer | `raptor-methodology` |
 | `store_study_concepts` / `recall_concepts_for_study` | Cross-project concept skip: skip LLM when per-evidence hashes match current source | `raptor-concepts-{key}` |
 | `store_teach_concepts` / `recall_concepts_for_teach` | Teach caching: store structured concepts from teach, recall for TEACH-0 skip gate | `raptor-concepts-{key}` |
+
+Rows written by these hooks are MAC-stamped (`core/sage/rowmac.py`, key at `$XDG_DATA_HOME/raptor/rowmac.key`, default `~/.local/share/raptor/rowmac.key` — kept outside every sandbox-readable tree); recall verifies the token over the decision fields before any mechanical effect — rows that fail verification (legacy pre-MAC, federated, or tampered) are hints only.
 
 ## When to use
 

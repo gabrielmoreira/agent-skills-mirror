@@ -444,6 +444,113 @@ describe("PG database tools", () => {
     });
   });
 
+  it("managePgDatabase(execute) rejects invented postgres_pgdb_* role before API call", async () => {
+    const createClient = vi.fn();
+    const { server, tools } = createMockServer();
+    registerPGDatabaseTools(server, { createClient });
+
+    const result = await tools.managePgDatabase.handler({
+      action: "execute",
+      sql: "SELECT 1",
+      role: "postgres_pgdb_efk2jh5f",
+      confirm: true,
+    });
+    const payload = buildToolPayload(result);
+
+    expect(payload).toMatchObject({
+      success: false,
+      errorCode: "PG_ROLE_NOT_AVAILABLE",
+      data: {
+        attemptedRole: "postgres_pgdb_efk2jh5f",
+        defaultRole: "cloudbase_admin",
+        listRolesSql: "SELECT rolname FROM pg_roles ORDER BY rolname;",
+      },
+    });
+    expect(payload.message).toContain("cloudbase_admin");
+    expect(payload.message).toContain("SELECT rolname FROM pg_roles");
+    expect(createClient).not.toHaveBeenCalled();
+  });
+
+  it("managePgDatabase(execute) rejects role=postgres before API call", async () => {
+    const createClient = vi.fn();
+    const { server, tools } = createMockServer();
+    registerPGDatabaseTools(server, { createClient });
+
+    const payload = buildToolPayload(
+      await tools.managePgDatabase.handler({
+        action: "execute",
+        sql: "SELECT 1",
+        role: "postgres",
+        confirm: true,
+      }),
+    );
+
+    expect(payload).toMatchObject({
+      success: false,
+      errorCode: "PG_ROLE_NOT_AVAILABLE",
+      data: { attemptedRole: "postgres" },
+    });
+    expect(createClient).not.toHaveBeenCalled();
+  });
+
+  it("managePgDatabase(execute) maps set-role-does-not-exist API errors to guidance", async () => {
+    const { server, tools } = createMockServer();
+    const fakeClient = createFakeClient(async (sql: string) => {
+      if (sql === "SELECT 1") {
+        return { rows: [{ "?column?": 1 }], rowCount: 1 };
+      }
+      throw new Error(
+        '[ExecutePGSql] set role custom_missing_role: ERROR: role "custom_missing_role" does not exist (SQLSTATE 22023)',
+      );
+    });
+
+    registerPGDatabaseTools(server, {
+      createClient: vi.fn(() => fakeClient),
+      readyCheckOptions: { maxAttempts: 1, retryDelayMs: 1 },
+    });
+
+    const payload = buildToolPayload(
+      await tools.managePgDatabase.handler({
+        action: "execute",
+        sql: "INSERT INTO public.t(id) VALUES (1)",
+        role: "custom_missing_role",
+        confirm: true,
+      }),
+    );
+
+    expect(payload).toMatchObject({
+      success: false,
+      errorCode: "PG_ROLE_NOT_AVAILABLE",
+      data: {
+        attemptedRole: "custom_missing_role",
+        defaultRole: "cloudbase_admin",
+      },
+    });
+    expect(payload.message).toContain("SELECT rolname FROM pg_roles");
+    expect(payload.nextActions?.[0]).toMatchObject({
+      tool: "managePgDatabase",
+      action: "execute",
+      suggested_args: {
+        role: "cloudbase_admin",
+      },
+    });
+  });
+
+  it("managePgDatabase role schema description does not recommend postgres", () => {
+    const { server, tools } = createMockServer();
+    registerPGDatabaseTools(server, { createClient: vi.fn() });
+
+    const roleSchema = tools.managePgDatabase.meta.inputSchema.role;
+    const description =
+      typeof roleSchema?.description === "string"
+        ? roleSchema.description
+        : String(roleSchema?.description ?? "");
+
+    expect(description).toContain("cloudbase_admin");
+    expect(description).toContain("postgres_pgdb_*");
+    expect(description).not.toMatch(/可传 postgres[^_]/);
+  });
+
   it("managePgDatabase(execute) allows schema DDL only with allowDdlViaExecute=true", async () => {
     const { server, tools } = createMockServer();
     const fakeClient = createFakeClient(async (sql: string) => {

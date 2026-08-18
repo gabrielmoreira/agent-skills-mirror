@@ -447,6 +447,42 @@ describe("gateway tools", () => {
     );
   });
 
+  it("manageGateway(action=createRoute) normalizes lowercase success domain status", async () => {
+    mockDescribeHttpServiceRoute.mockResolvedValue({
+      OriginDomain: "env-test.tcbaccess-in.tencentcloudbase.com",
+      TotalCount: 1,
+      Domains: [
+        {
+          Domain: "env-test-1251119057.ap-shanghai.app.tcloudbase.com",
+          DomainType: "HTTPSERVICE",
+          IsDefault: true,
+          Enable: true,
+          Status: "success",
+        },
+      ],
+      RequestId: "req-lowercase-success",
+    });
+
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "helloFn",
+      path: "/hello",
+      upstreamResourceType: "WEB_SCF",
+      auth: false,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Domain: expect.objectContaining({
+          Domain: "env-test-1251119057.ap-shanghai.app.tcloudbase.com",
+        }),
+      }),
+    );
+    expect(payload.success).toBe(true);
+  });
+
   it("manageGateway(action=createRoute) should reject static hosting default domain when HTTPSERVICE is missing", async () => {
     mockDescribeHttpServiceRoute.mockResolvedValue({
       TotalCount: 1,

@@ -33,7 +33,7 @@ The user also needs a local project checkout that the chosen executor can safely
 ## User Path
 
 ```bash
-npm install -g @opentag/cli
+npm install -g @opentag/cli@0.11.0
 opentag setup
 ```
 

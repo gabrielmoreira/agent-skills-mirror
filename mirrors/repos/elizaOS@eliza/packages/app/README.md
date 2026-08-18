@@ -56,7 +56,21 @@ bun run test:e2e       # Playwright UI smoke (ui-smoke config)
 bun run ios            # Build + open Xcode
 bun run android        # Build + open Android Studio
 bun run cap:sync       # Capacitor sync (both platforms) + patch iOS plist
+
+# Physical iPhone lane (macOS + Apple development credentials/device required)
+bun run ios:device:provision -- --device <udid> --product <App.app>
+bun run ios:device:e2e -- --device <id> # full app+appexes + freshly graft-signed XCUITest runner
 ```
+
+Provisioning enables capabilities exposed by the public App Store Connect API,
+then decodes every minted profile and verifies the complete target entitlement
+set. Family Controls approval and exact App Group registration/assignment must
+already be completed by an Apple Account Holder/Admin; missing grants fail the
+lane rather than silently installing a reduced app. Capability changes can
+invalidate immutable profiles, so the provisioner preserves the prior profile
+and creates a uniquely named replacement; rerun it after an administrator fixes
+a missing managed grant. Later runs reuse the first replacement whose decoded
+grants still cover the target instead of minting another profile.
 
 The desktop shell is built by Electrobun from the repo root (`bun run dev:desktop`),
 not from inside this package â `packages/app` only produces the renderer.
@@ -67,17 +81,16 @@ App identity lives in `app.config.ts` (`envPrefix: "ELIZA"`); copy that file to
 white-label a new app. Runtime/build env vars use the `ELIZA_` prefix. See `AGENTS.md`
 for the full env var table; `.env.example` documents the build-time `VITE_*` flags.
 
-## Launch Surface
+## Launch surfaces
 
-All boot/launch surfaces are black `#000000` (`DEFAULT_BACKGROUND_COLOR`, the
-base field under the home ShaderBackground's orange ember glow): the native
-splashes (`capacitor.config.ts`, Android launch resources, iOS
-`LaunchScreen.storyboard`) and the persistent host-chrome surfaces
-(`index.html` FOUC background, `<meta name="theme-color">` / manifest colors
-via `app.config.ts`, the renderer root CSS). The persistent surfaces stay
-visible under the app (iOS home-indicator safe-area, overscroll), so they
-must equal the default home background base for bleed-through to be
-invisible — and boot never paints orange. The brand accent stays `#FF5800`.
+The native and agent-app launch surfaces remain black `#000000`
+(`DEFAULT_BACKGROUND_COLOR`, the base field under the app's orange ember
+glow). The shared HTML shell classifies approved marketing hosts before its
+FOUC styles parse and overrides their launch background, foreground,
+`color-scheme`, and `theme-color` to the landing page's warm white `#fdfaf7`.
+This keeps `eliza.app` visually continuous while its marketing renderer loads
+without changing desktop, mobile, or `cloud.eliza.app` app chrome. The brand
+accent remains `#FF5800`.
 
 ## License
 

@@ -71,18 +71,23 @@ packages/app/
 - `../homepage/src/embedded-home.tsx` and `embedded-downloads.tsx` — public
   marketing entrypoints consumed through the `@homepage/*` Vite alias. Their
   package is source/test-only; this app owns every served and deployed build.
+- `src/entry.ts` — synchronous renderer selector. The root marketing route uses
+  `src/marketing-home-entry.tsx` so its static hero does not wait for the Cloud
+  auth router, service worker, wallet providers, or the normal app boot graph.
 
 ## Boot sequence
 
-1. `main()` resolves embed, smoke-test, managed-launch, popout, and detached-window
+1. `entry.ts` selects the marketing-only root, hosted public routes, or the
+   normal application entry before importing any renderer graph.
+2. `main()` resolves embed, smoke-test, managed-launch, popout, and detached-window
    paths before the normal application path.
-2. `initializeAppModules()` assembles `AppBootConfig` and calls `setBootConfig()`;
+3. `initializeAppModules()` assembles `AppBootConfig` and calls `setBootConfig()`;
    feature modules not needed for first paint remain on the deferred idle path.
-3. The normal native path hydrates the storage bridge before rendering because
+4. The normal native path hydrates the storage bridge before rendering because
    session, first-run, and theme state must exist on the first React read.
-4. Platform-specific request, fetch, vision, voice, and desktop bridges are
+5. Platform-specific request, fetch, vision, voice, and desktop bridges are
    installed in their required order.
-5. React mounts the `@elizaos/ui` application, deferred modules are scheduled,
+6. React mounts the `@elizaos/ui` application, deferred modules are scheduled,
    and `initializePlatform()` completes the remaining lifecycle integration.
 
 ## Commands
@@ -159,6 +164,16 @@ deploy/log/capture work and wait up to `ELIZA_IOS_DEVICE_UNLOCK_WAIT_SECONDS`
 # app explicitly → codesign verify → devicectl install → launch.
 bun run --cwd packages/app ios:device:deploy -- --device <id>   # flags: --skip-build --no-launch --identity <sha1>
 
+# With ASC credentials set, reconcile supported Bundle ID capabilities from
+# every target entitlement, mint development profiles, decode them, and fail if
+# the profile does not grant the target (including exact App Groups).
+bun run --cwd packages/app ios:device:provision -- --device <udid> --product <unsigned App.app>
+# Family Controls approval and exact App Group registration/assignment remain
+# Account Holder/Admin prerequisites: the public ASC API cannot grant them.
+# Stale/invalid immutable profiles are preserved while a uniquely named
+# replacement is created; rerun after an administrator corrects a managed grant.
+# A decoded, covering replacement is reused on later runs.
+
 # Bounded console capture (relaunches the app with devicectl --console attached,
 # default 120 s) and/or pull the boot-trace JSON from the app data container.
 # ENGINE OBSERVABILITY: use --no-console --pull-boot-trace. Attached console runs
@@ -175,6 +190,11 @@ bun run --cwd packages/app ios:device:logs -- --device <id> --no-console --pull-
 # Pass --only-testing AppUITests/<Class>[/test] for a single narrow shard.
 bun run --cwd packages/app capture:ios-sim:boot                  # simulator (booted sim auto-detected)
 bun run --cwd packages/app ios:device:capture -- --device <id> --app-path <signed App.app>  # physical device
+
+# Full physical-device acceptance: fresh full app+appex deploy, fresh unsigned
+# XCUITest build, graft-sign runner, BootCapture, then boot-trace pull. Extension
+# stripping is available only as the explicit degraded --skip-appexes mode.
+bun run --cwd packages/app ios:device:e2e -- --device <id>
 
 # Strict simulator boot/chat health gate: same harness, but error-card,
 # no-reply, all-skipped, and zero-passed summaries are hard failures.

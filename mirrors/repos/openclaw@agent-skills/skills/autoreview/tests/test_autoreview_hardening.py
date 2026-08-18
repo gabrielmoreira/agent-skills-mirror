@@ -9,6 +9,7 @@ import os
 import re
 import runpy
 import shutil
+import signal
 import stat
 import subprocess
 import sys
@@ -4478,6 +4479,34 @@ class AutoreviewHardeningTests(unittest.TestCase):
             )
         )
 
+    def test_branch_bundle_preserves_deleted_jinja_pem_marker_regex(self) -> None:
+        # Generic template regex delimiters are not private-key material. The
+        # branch boundary must keep a deleted template reviewable as-is.
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            template = repo / "origin-pem.j2"
+            template.write_text(
+                "-----BEGIN [A-Z ]+-----\n"
+                "{{ _body }}\n"
+                "-----END [A-Z ]+-----\n",
+                encoding="utf-8",
+            )
+            git(repo, "add", template.name)
+            git(repo, "commit", "-q", "-m", "add template")
+            base = git(repo, "rev-parse", "HEAD").strip()
+
+            template.unlink()
+            git(repo, "add", "-u")
+            git(repo, "commit", "-q", "-m", "delete template")
+
+            bundle, truncated = self.helper["branch_bundle"](repo, base)
+
+            self.assertIn("deleted file mode 100644", bundle)
+            self.assertIn("------BEGIN [A-Z ]+-----", bundle)
+            self.assertIn("-{{ _body }}", bundle)
+            self.assertIn("------END [A-Z ]+-----", bundle)
+            self.assertFalse(truncated)
+
     def test_review_patch_redacts_secret_only_in_entirely_deleted_file(self) -> None:
         value = realistic_secret_value()
         known_fragments: set[str] = set()
@@ -6514,6 +6543,18 @@ class AutoreviewHardeningTests(unittest.TestCase):
             ):
                 self.helper["ensure_claude_isolation_supported"](args, repo)
 
+    def test_claude_canonical_fable_model_uses_portable_cli_selector(self) -> None:
+        self.assertEqual(
+            self.helper["claude_cli_model_selector"]("claude-fable-5"),
+            "fable",
+        )
+        self.assertEqual(
+            self.helper["claude_cli_fallback_models"](
+                "claude-fable-5,claude-opus-5"
+            ),
+            "fable,claude-opus-5",
+        )
+
     def test_claude_runs_outside_repo_with_auto_memory_disabled(self) -> None:
         args = argparse.Namespace(
             claude_allowed_tools=None,
@@ -7377,6 +7418,116 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("\ufffd", result.stdout)
+
+    def test_run_with_heartbeat_bounds_a_silent_reviewer_when_configured(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            result = self.helper["run_with_heartbeat"](
+                [sys.executable, "-c", "import time; time.sleep(2)"],
+                Path(tempdir),
+                label="silent-reviewer",
+                heartbeat_seconds=0.01,
+                max_runtime_seconds=0.05,
+            )
+
+        self.assertEqual(result.returncode, 124)
+        self.assertIn("silent-reviewer engine timed out after 0.05s", result.stderr)
+
+    def test_engine_timeout_accepts_only_positive_finite_seconds(self) -> None:
+        parser = self.helper["positive_float"]
+        self.assertEqual(parser("1800"), 1800)
+        for value in ("0", "-1", "nan", "inf", "soon"):
+            with self.subTest(value=value), self.assertRaises(argparse.ArgumentTypeError):
+                parser(value)
+
+    def test_reviewer_runtime_deadline_is_disabled_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            result = self.helper["run_with_heartbeat"](
+                [sys.executable, "-c", "import time; time.sleep(0.05)"],
+                Path(tempdir),
+                label="compatible-reviewer",
+                heartbeat_seconds=0.01,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    @unittest.skipUnless(os.name == "posix", "process groups require POSIX")
+    def test_streaming_deadline_kills_sigterm_resistant_continuous_output(self) -> None:
+        child = (
+            "import signal,time; "
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+            "time.sleep(60)"
+        )
+        script = (
+            "import signal,subprocess,sys,time; "
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+            f"child=subprocess.Popen([sys.executable, '-c', {child!r}]); "
+            "print(child.pid, flush=True); "
+            "\nwhile True: print('tick', flush=True); time.sleep(0.005)"
+        )
+        started = time.monotonic()
+        with tempfile.TemporaryDirectory() as tempdir:
+            result = self.helper["run_with_heartbeat"](
+                [sys.executable, "-c", script],
+                Path(tempdir),
+                label="streaming-reviewer",
+                heartbeat_seconds=0.01,
+                max_runtime_seconds=0.05,
+                stream_output=True,
+                stream_display=lambda _name, _line: None,
+            )
+        elapsed = time.monotonic() - started
+
+        self.assertEqual(result.returncode, 124, result.stderr)
+        self.assertIn("tick", result.stdout)
+        self.assertIn("streaming-reviewer engine timed out after 0.05s", result.stderr)
+        self.assertLess(elapsed, 5)
+        child_pid = int(result.stdout.splitlines()[0])
+        with self.assertRaises(ProcessLookupError):
+            os.kill(child_pid, 0)
+
+    @unittest.skipUnless(os.name == "posix", "detached process groups require POSIX")
+    def test_deadline_bounds_drain_when_descendant_retains_pipe(self) -> None:
+        child = "import time; time.sleep(60)"
+        script = (
+            "import subprocess,sys; "
+            f"child=subprocess.Popen([sys.executable, '-c', {child!r}], start_new_session=True); "
+            "print(child.pid, flush=True)"
+        )
+        for stream_output in (False, True):
+            with self.subTest(stream_output=stream_output):
+                child_pid: int | None = None
+                started = time.monotonic()
+                try:
+                    with tempfile.TemporaryDirectory() as tempdir, mock.patch.dict(
+                        self.helper["EngineRuntimeDeadline"].terminate.__globals__,
+                        {
+                            "_TIMED_OUT_STREAM_DRAIN_SECONDS": 0.05,
+                            # Model Windows' documented best-effort cleanup: the
+                            # leader is reaped while its detached descendant and
+                            # inherited output handle survive.
+                            "terminate_process_group": lambda proc: proc.poll(),
+                        },
+                    ):
+                        result = self.helper["run_with_heartbeat"](
+                            [sys.executable, "-c", script],
+                            Path(tempdir),
+                            label="retained-pipe-reviewer",
+                            heartbeat_seconds=0.01,
+                            max_runtime_seconds=0.05,
+                            stream_output=stream_output,
+                            stream_display=lambda _name, _line: None,
+                        )
+                    child_pid = int(result.stdout.strip())
+                finally:
+                    if child_pid is not None:
+                        try:
+                            os.kill(child_pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+
+                self.assertEqual(result.returncode, 124, result.stderr)
+                self.assertIn("retained-pipe-reviewer engine timed out", result.stderr)
+                self.assertLess(time.monotonic() - started, 1)
 
     def test_large_repo_relative_evidence_file_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:

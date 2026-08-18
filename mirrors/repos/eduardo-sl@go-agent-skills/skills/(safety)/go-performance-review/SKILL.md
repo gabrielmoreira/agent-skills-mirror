@@ -3,16 +3,19 @@ name: go-performance-review
 description: >
   Detect performance anti-patterns and apply optimization techniques in Go.
   Covers allocations, string handling, slice/map preallocation, sync.Pool,
-  benchmarking, and profiling with pprof.
-  Use when checking performance, finding slow code, reducing allocations,
-  profiling, or reviewing hot paths.
-  Trigger examples: "check performance", "find slow code", "reduce allocations",
-  "benchmark this", "profile", "optimize Go code".
-  Do NOT use for concurrency correctness (use go-concurrency-review) or
-  general code style (use go-coding-standards).
+  benchmarking, and profiling with pprof. Use when checking performance,
+  finding slow code, reducing allocations, profiling, or reviewing hot
+  paths. Trigger examples: "check performance", "find slow code", "reduce
+  allocations", "benchmark this", "profile", "optimize Go code".
+  Not for: concurrency correctness (go-concurrency-review), general style
+  (go-coding-standards).
+user-invocable: true
 license: MIT
+compatibility: Designed for Claude Code or similar AI coding agents working on Go projects. Requires the Go toolchain. benchstat is optional, for comparing benchmark runs.
+allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(gofmt:*) Bash(benchstat:*)
 metadata:
-  version: "1.0.0"
+  author: eduardo-sl
+  version: "1.2.1"
 ---
 
 # Go Performance Review
@@ -193,9 +196,15 @@ import _ "net/http/pprof"
 
 // Access at http://localhost:6060/debug/pprof/
 go func() {
+    // Bind to loopback only — never the public listener.
     log.Println(http.ListenAndServe("localhost:6060", nil))
 }()
 ```
+
+Importing `net/http/pprof` registers its handlers on `http.DefaultServeMux`.
+If the service also serves public traffic from `DefaultServeMux`, profiles,
+command line and goroutine stacks become world-readable. Always give pprof
+its own loopback or internal-network listener.
 
 ## 6. High-Throughput Logging
 

@@ -250,7 +250,11 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     );
     return (
       candidates.find(
-        (item) => item.Enable !== false && item.Status === "SUCCESS",
+        (item) =>
+          item.Enable !== false &&
+          // Platform may return Success/success; normalize before matching.
+          typeof item.Status === "string" &&
+          item.Status.toLowerCase() === "success",
       ) ??
       candidates.find((item) => item.Enable !== false) ??
       candidates[0]

@@ -1,7 +1,7 @@
 ---
 name: minimal-web-baas-demo
 description: "Fast path for a minimal CloudBase Web + database demo (最小前后端 / 最小可用 fullstack / Lovable-like BaaS). Defaults to @cloudbase/js-sdk client CRUD (NoSQL app.database / PG app.rdb), MCP-only schema, preview-first, and forbids cloud functions unless secrets, cron/background jobs, or logic that security rules/RLS cannot express. Use for 搭一套 demo、留言板、Todo、Notes、Kanban, or when users say 带云函数+云数据库 but only need CRUD. NOT for production multi-service backends, CloudRun, WeChat Mini Programs, or tasks that truly need server secrets."
-version: 2.27.0
+version: 2.28.0
 alwaysApply: false
 ---
 
@@ -117,10 +117,9 @@ Any partner host (WorkBuddy, CodeBuddy connectors, vertical expert prompts, ISV 
 
 | Host capability | Recommended packaging |
 | --- | --- |
-| Full CloudBase Sites plugin | Rely on SessionStart Rule 5 injection + this skill on demand for non-Sites cwd demos. |
-| WorkBuddy with SessionStart (supported) | Prefer `plugin/workbuddy-template-prewarm` (or enable Sites with `CLOUDBASE_SITES_AUTO_INIT=1`): background React zip + install + Sites `preview` (ports 17173..17272) overlaps credential/Trust wait; inject this skill pointer via `additionalContext`. Never guess 5173 — read `.cloudbase-sites/preview.json`. |
-| WorkBuddy / connector without hooks | **Pre-enable** the CloudBase MCP connector for the tenant when possible; inject a short system brief that points here; warm `downloadTemplate` + `npm install` **during** credential/Trust wait (do not idle). |
-| Expert / vertical prompts (XDF or other ISVs) | Ship a thin pack: expert Agent markdown (**no** frontmatter hooks) + settings/hooks merge for SessionStart prewarm. Reference example: `plugin/xdf-workbuddy-expert-pack` + sibling prewarm plugin. Replace any "必须云函数中转 / 前端绝不直连库" language with this BaaS-first contract. |
+| Full CloudBase Sites plugin | Rely on SessionStart Rule 5 injection + this skill on demand for non-Sites cwd demos. Prefer Sites with `CLOUDBASE_SITES_AUTO_INIT=1` for empty-cwd preview. Never guess 5173 — read `.cloudbase-sites/preview.json`. |
+| WorkBuddy / connector hosts | **Pre-enable** the CloudBase MCP connector for the tenant when possible; inject a short system brief that points here; warm `downloadTemplate` + `npm install` **during** credential/Trust wait (do not idle). Optional SessionStart `additionalContext` can point at this skill — do not ship a separate template-prewarm plugin. |
+| Expert / vertical prompts (ISVs) | Ship a thin pack: expert Agent markdown (**no** frontmatter hooks) + optional settings/hooks. Replace any "必须云函数中转 / 前端绝不直连库" language with this BaaS-first contract. |
 
 WorkBuddy SessionStart: https://www.workbuddy.ai/docs/cli/hooks (same `additionalContext` schema as CodeBuddy/Claude Code). Empty-dir Sites auto-init stays passive unless opted in — do not assume enabling Sites alone warms templates during credential wait.
 

@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "ctx-agent-history-search",
+      "name": "ctx",
       "source": {
         "source": "local",
-        "path": "./plugins/ctx-agent-history-search"
+        "path": "./plugins/ctx"
       },
       "policy": {
         "installation": "AVAILABLE",

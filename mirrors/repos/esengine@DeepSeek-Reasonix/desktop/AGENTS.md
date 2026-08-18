@@ -17,6 +17,12 @@ Keep to it when touching anything that can move the transcript viewport.
   and programmatic writers preempt an in-flight recovery through reducer
   events that end it in a terminal state (done / cancelled / expired), each
   reported to `noteTranscriptRecoveryTerminal`. No silent exits.
+- **Native geometry is authoritative**: Virtuoso's `atBottomStateChange` is a
+  delivery signal, not the bottom truth. Derive bottom ownership from the live
+  scroller's `scrollHeight - scrollTop - clientHeight`. Browser clamps may not
+  leave manual reading; only a delivered scroll with explicit reader intent
+  may re-enter tail-follow. Tail-follow persists across later measurements and
+  layout growth until explicit user intent releases it.
 - **No keyed remounts on content patches**: patches flow through `data` only;
   Virtuoso re-measures mounted rows itself. Remounts happen only on surface
   switches and blank-watchdog rebuilds, and restore from the measured-size

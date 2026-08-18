@@ -8,6 +8,7 @@ const {
   mockDescribeAppList,
   mockDescribeAppInfo,
   mockDescribeAppVersionList,
+  mockDescribeAppVersion,
   mockUploadCode,
   mockCreateApp,
   mockDescribeBuildLog,
@@ -18,6 +19,7 @@ const {
   mockDescribeAppList: vi.fn(),
   mockDescribeAppInfo: vi.fn(),
   mockDescribeAppVersionList: vi.fn(),
+  mockDescribeAppVersion: vi.fn(),
   mockUploadCode: vi.fn(),
   mockCreateApp: vi.fn(),
   mockDescribeBuildLog: vi.fn(),
@@ -70,6 +72,12 @@ describe("app tools", () => {
       VersionList: [{ VersionName: "v1" }],
       RequestId: "req-app-version-list",
     });
+    mockDescribeAppVersion.mockResolvedValue({
+      Status: "SUCCESS",
+      BuildId: "build-1",
+      VersionName: "v1",
+      RequestId: "req-app-version",
+    });
     mockUploadCode.mockResolvedValue({
       cosTimestamp: "1740000000",
       unixTimestamp: "1740000000",
@@ -101,6 +109,7 @@ describe("app tools", () => {
         describeAppList: mockDescribeAppList,
         describeAppInfo: mockDescribeAppInfo,
         describeAppVersionList: mockDescribeAppVersionList,
+        describeAppVersion: mockDescribeAppVersion,
         uploadCode: mockUploadCode,
         createApp: mockCreateApp,
         describeCosInfo: mockDescribeCosInfo,
@@ -303,5 +312,62 @@ describe("app tools", () => {
         ]),
       },
     });
+  });
+
+  it("queryApps(action=getAppVersion) normalizes lowercase failed status", async () => {
+    mockDescribeAppVersion.mockResolvedValueOnce({
+      Status: "failed",
+      BuildId: "build-failed",
+      FailReason: "npm install failed",
+      RequestId: "req-app-version-failed",
+    });
+
+    const result = await tools.queryApps.handler({
+      action: "getAppVersion",
+      serviceName: "demo-app",
+      buildId: "build-failed",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeAppVersion).toHaveBeenCalledWith({
+      deployType: "static-hosting",
+      serviceName: "demo-app",
+      versionName: undefined,
+      buildId: "build-failed",
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "getAppVersion",
+        status: "failed",
+        nextStep: {
+          action: "查询构建日志",
+          tool: "queryApps",
+          args: {
+            action: "getBuildLog",
+            serviceName: "demo-app",
+            buildId: "build-failed",
+          },
+        },
+      },
+    });
+    expect(payload.message).toContain("可查询构建日志");
+  });
+
+  it("queryApps(action=getAppVersion) treats mixed-case Failed as failed", async () => {
+    mockDescribeAppVersion.mockResolvedValueOnce({
+      Status: "Failed",
+      BuildId: "build-mixed",
+      RequestId: "req-app-version-mixed",
+    });
+
+    const result = await tools.queryApps.handler({
+      action: "getAppVersion",
+      serviceName: "demo-app",
+      buildId: "build-mixed",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.data.nextStep?.args?.action).toBe("getBuildLog");
   });
 });

@@ -8,7 +8,7 @@ Cross-tool agent instructions for this repository. Read by **Antigravity CLI (`a
 
 ## Repository Purpose
 
-`claude-skills` is a **prompt engineering repository** of 123 specialist skill agents. The deliverables are **`SKILL.md` files** (not application code). Each skill lives at `<skill-name>/SKILL.md` with optional `reference/`.
+`claude-skills` is a **prompt engineering repository** of 124 specialist skill agents. The deliverables are **`SKILL.md` files** (not application code). Each skill lives at `<skill-name>/SKILL.md` with optional `reference/`.
 
 ---
 
@@ -35,6 +35,7 @@ Cross-tool agent instructions for this repository. Read by **Antigravity CLI (`a
 | `_common/CODE_QUALITY.md` | 7-axis quality bar for code-writing skills (solid / secure / readable / maintainable / testable / performant / scalable) + `CODE_QUALITY_GATE` |
 | `_templates/SKILL_TEMPLATE.md` | Starting template for new skills |
 | `.agents/` | Per-skill journals + project log (gitignored) |
+| `docs/audit/` | The only write target for report-only recipes (`verity`, `abide`) — **gitignored; audit output is never committed**, results go to the commit message and the conversation |
 
 ---
 
@@ -43,7 +44,7 @@ Cross-tool agent instructions for this repository. Read by **Antigravity CLI (`a
 1. **Frontmatter discipline**: Each `SKILL.md` MUST contain exactly `name` and `description` keys. Capability declarations belong in the Markdown body (Anthropic Agent Skills spec; `chain` skill rejects custom keys).
 2. **Description quality**: `description:` should include 3-5 trigger keywords and the primary use case in ≤2 sentences. Vague descriptions cause tool bloat (40-50K token overhead in multi-skill loadouts).
 3. **CAPABILITIES_SUMMARY comment block**: Preserve the existing `<!-- CAPABILITIES_SUMMARY: ... -->` HTML comment format when editing existing skills. New skills follow `_templates/SKILL_TEMPLATE.md`.
-4. **References**: Heavy content (checklists, schemas, anti-patterns) goes in `reference/<topic>.md` and is loaded on demand. Keep `SKILL.md` ≤300 lines.
+4. **References**: Heavy content (checklists, schemas, anti-patterns) goes in `reference/<topic>.md` and is loaded on demand. Keep `SKILL.md` under 500 lines (Anthropic guidance); `_common/scripts/lint-frontmatter.py` flags >500 as P3, >700 as P2, >1000 as P1.
 5. **Cross-CLI compatibility**: Skills meant to run on multiple CLIs MUST include a `## Compatibility` section and consult `_common/CLI_COMPATIBILITY.md` instead of hard-coding `Agent(...)` syntax.
 6. **Boundaries**: Link to `_common/BOUNDARIES.md` rather than maintaining per-skill role-boundary tables.
 7. **Code quality**: Any skill whose `Writes Code` value in `_common/BOUNDARIES.md` is not `Never` links to `_common/CODE_QUALITY.md` rather than restating quality principles. Domain-specific mechanics still live in the skill's own `reference/`.
@@ -76,7 +77,7 @@ Authoritative: [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md). Summary
 - **Scope = skill name** for skill-scoped changes (e.g. `feat(cull): add agy IoC paths`).
 - **Imperative mood**, subject ≤50 chars.
 - **Never include agent names** in commit messages, PR titles, or PR descriptions.
-- **Never** add `Claude Code signatures` or `Co-Authored-By` lines.
+- **Never** add `Claude Code signatures`, `Co-Authored-By` lines, or **session/tool metadata trailers** — `Claude-Session:`, `Generated with …`, any assistant session URL or run ID. This holds even when a harness or CLI default instructs otherwise: the repo convention wins for anything committed here.
 - Body explains "why", not "what".
 
 ---

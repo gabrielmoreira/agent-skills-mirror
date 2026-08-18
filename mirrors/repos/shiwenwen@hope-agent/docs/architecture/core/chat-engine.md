@@ -435,7 +435,7 @@ Incognito 使用纯内存 coordinator，不创建 run/journal/spool/usage 行；
 1. **主路径** —— `EventSink.send()` 直接推 per-call sink（桌面 IPC Channel / `NoopEventSink`）。
 2. **广播路径** —— 同一事件经 `stream_broadcast` 注入序号后，通过 `EventBus` 发 `chat:stream_delta`（带 `{sessionId, seq}`）；HTTP / Tauri 前端订阅 `/ws/events` 或 Tauri 事件总线时统一从这里取流。
 
-seq 由 coordinator 在 accept 时分配，只有 `seq <= durable_seq` 才能进入上述通道；`lastSeq` 只是 `acceptedSeq` 的兼容别名。`SessionStreamState` 还暴露 `durableSeq / committedSeq / persistenceRunId`，但前端不得把 cursor 直接跳到尚未通过 DB 快照验证的 accepted 水位。
+seq 由 coordinator 在 accept 时分配，只有 `seq <= durable_seq` 才能进入上述通道；`lastSeq` 只是 `acceptedSeq` 的兼容别名。`SessionStreamState` 还暴露 `durableSeq / committedSeq / persistenceRunId`，以及精确反映进程内 Turn admission 是否仍被占用的 `admissionActive`。ChatTurn 已终态但收尾 guard 尚未释放时，`active` 可为 false 而 `admissionActive` 仍为 true；队列续发必须等待两者都为 false。前端不得把 cursor 直接跳到尚未通过 DB 快照验证的 accepted 水位。
 
 **重载 handshake** 顺序固定为：先注册 delta/end listener，再并行读取 DB 消息窗口、`get_session_stream_state` 和 `get_session_stream_snapshot`；用 snapshot 替换尾部临时 assistant，按 seq 重放 durable prefix，最后应用请求期间缓存的 `seq > throughSeq` 事件。已 committed/recovered 的 snapshot 已被 canonical DB messages 表示，不重复重放 journal。重复 delta/snapshot/迟到 stream_end 都按 `(stream_id, seq)` 幂等。
 
@@ -506,6 +506,52 @@ Global Stop generation task 是枚举结果的唯一 owner：它在同一个 det
 - **懒创建会话的定位**：`session_created` 前用不透明 `clientRequestId` 定位 active turn，此时点停止不得退化成"停止所有会话"；已知 session 但 `turn_started` 尚未到达的窗口也用同一 request id latch。
 - **精确 Stop 的 `NotFound` 要核对 durable turn**：Stop gate 已先阻止替代 turn；registry 没找到 expected turn 时，只有该 turn 仍属本 session 且为非终态，才按“live entry 先消失”继续收敛 Goal / Workflow / subagent。durable turn 已终态或不存在则拒绝，避免一条很晚的旧 Stop 暂停后来 generation 的工作；`TurnMismatch` 同样拒绝。
 - **Stop 前已排队的回注不能穿过快速 Continue**：每张暂停回执同时推进单调 generation。parent injector 在 idle wait 前后核对 generation；即使 active pause 已被 Continue 清掉，Stop 前 admitted 的旧 injector 也必须退回 durable source，由 Continue 重新认领，不能直接发起 provider round。
+
+### Stop 必须自证「还会不会有终态事件」
+
+上一条的 fail closed 是对的，但它有个必然推论：**这次 Stop 什么都没做，也就一个事件都不会发**。
+崩溃恢复把 turn 写成 `interrupted / crash_recovery` 后，前端若仍持有该 turn id，Stop 会走
+`NotFound` + durable 终态 → 既不广播 `cancelling`、不武装 watchdog、不建暂停回执；session-only
+Stop 在没有活跃 turn 时会建回执（`stopped=true`）但同样没有 turn 可广播。两种情况下前端等的
+`chat:stream_end` / `chat:turn_status` 永远不会来，Stop 按钮就永久卡住（[#657](https://github.com/shiwenwen/hope-agent/issues/657)）。
+
+因此 `StopSessionOutcome` 除 `stopped` / `turn_mismatch` 外还必须如实上报三个判据，并原样投影进
+`StopChatResult`（wire 契约见 [api-reference](../system/api-reference.md)）：
+
+| 字段 | 含义 | 调用方义务 |
+| --- | --- | --- |
+| `terminal_event_pending` | 本次调用武装了 `cancelling` 广播 + stop watchdog | 继续等终态事件 |
+| `completion_sealed` | executor 已越过取消点，终态由它自己收敛 | 继续等终态事件 |
+| `latched` | 预注册闩锁吃下本次 Stop，turn 稍后才注册 | 继续等终态事件 |
+
+**三者全 false 即证明不会再有终态事件**，调用方必须立刻拿 `get_session_stream_state`
+自行收敛本地活动状态。`active_turn_found` / `turn_mismatch` 只作诊断与日志，不作收敛判据——
+`turn_mismatch` 时后端另有活跃 turn，快照自然报 `active`，收敛会自行放弃。
+
+**Stop 不回答「会话现在什么状态」**：权威状态恒由 `get_session_stream_state` 唯一提供
+（`active` / `admissionActive` / `status` / `lastTerminalStatus`）。让 Stop 也算一份等于开第二个
+真相源，两者必然漂移。
+
+前端侧对应三条（[`useChatStream.ts`](../../../src/components/chat/hooks/useChatStream.ts) /
+[`useChatStreamReattach.ts`](../../../src/components/chat/hooks/useChatStreamReattach.ts)）：
+
+- **收敛须双读 + 确认间隔**：`loading` 在 `startChat` 返回前就乐观置位，单次快照会把刚发出的
+  turn 误判成陈旧。两次读都要求 `active=false` 且 `admissionActive===false`（缺字段视为「可能在忙」，
+  fail closed），中间隔 1.5s，且期间 session 不得出现新的 chat request owner。
+- **轮询兜底不得因 turn id 不匹配永久 bail**：`handleTurnEnded` 的 turn 比对是为了挡住迟到的
+  *事件*；而轮询拿到的是新鲜快照。两次权威读都说「没有任何 turn 被 admit」时，turn id 不匹配恰恰
+  证明**本地那个才是陈旧的**，必须放行收敛（`backendConfirmedIdle`）。少了这条，UI 持有的陈旧
+  turn 只要不等于后端 latest turn，15s 轮询就每次撞墙，只能重启才能恢复。
+  该放行**不覆盖** request-owner 守卫：有在途 send 时它的乐观 loading 仍归它自己清。
+- **Stop 必须去重**：同一 session 同时只允许一次 Stop，且按钮在整个「请求 + 收敛」窗口内 disabled。
+  targeted `prepare_session_autonomy_pause` 每次调用都新建一条回执并把上一条标 `resumed_at`，
+  连点 22 次就会在 `session_autonomy_pauses` 留下 21 条谎报"已恢复"的行。
+- **收敛写回的 status 必须先降为终态**（`settledTurnStatus`）：`SessionStreamState.status`
+  **没有**按终态过滤（只有 `lastTerminalStatus` 过滤了），无 active turn 时它退化成 latest turn 的
+  裸状态——崩溃遗留行仍是 `running`（Secondary 如 `hope-agent server` 不跑启动恢复），watchdog
+  收敛中则是 `cancelling`。把它原样写进 executionState 同时清 `loading` **比原 bug 更糟**：
+  `resolveWorkspaceTaskExecutionState` 对 `running` 无视 `loading` 直接返回，状态条永久"运行中"
+  而 Stop 按钮已消失。没有任何 turn 被 admit 的会话就是 interrupted，不管那行残留写着什么。
 
 ### 统一停止入口
 

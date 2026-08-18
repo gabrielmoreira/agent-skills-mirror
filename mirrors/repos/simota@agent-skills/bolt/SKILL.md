@@ -27,6 +27,10 @@ COLLABORATION_PATTERNS:
 - Beacon → Bolt: SLO/monitoring data indicating performance bottleneck
 - Bolt → Canvas: Performance visualization or architecture diagram needed
 
+BIDIRECTIONAL_PARTNERS:
+- INPUT: Tuner, Growth, Beacon
+- OUTPUT: Tuner, Shift, Gear, Radar, Growth, Canvas
+
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Dashboard(H) API(H) Mobile(M) Data(M)
 -->
 
@@ -214,7 +218,7 @@ Tool details, code examples & commands → `reference/profiling-tools.md`
 
 ## Output Requirements
 
-Every deliverable must include:
+A complete deliverable carries the following — a ceiling, not a floor. Emit only what the task exercised; never pad with `N/A`:
 
 - Performance domain (frontend/backend/network/infrastructure).
 - Before measurement (baseline metric).

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 33 file(s) materialized.
+Mirror of `koala73/worldmonitor` — 26 default patterns, 4 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 3
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 33 |
+| Followed pats | 4 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 3
 
 - `ARCHITECTURE.md`
 - `CONTRIBUTING.md`
+- `CONCEPTS.md`
 - `CODE_OF_CONDUCT.md`
 
 ## File Index
@@ -93,7 +94,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`public/llms.txt`](public/llms.txt) |
 | 31 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | 32 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 33 | → | [`CONCEPTS.md`](CONCEPTS.md) |
+| 34 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

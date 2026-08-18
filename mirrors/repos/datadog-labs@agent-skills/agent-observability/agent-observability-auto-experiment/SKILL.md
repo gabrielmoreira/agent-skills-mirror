@@ -73,7 +73,10 @@ run starts** (see the Mandatory intake gate below).
 Step 2.4, not chosen by anyone. Do **not** ask for them and do **not** show them in the all-params
 validation. They are computed during the run and displayed once, at the end, with their reasoning.
 `max_runs` **is** a shown default param (the ceiling the derived `runs` is clamped to) — it is not
-`runs` itself.
+`runs` itself. The **cost estimate** (`case_count`, `cost_per_case`, `estimated_pilot_cost`,
+`estimated_run_cost_range`) is likewise **not an intake field** — never ask the user for a per-case
+cost; it is **derived** from real call counts and token usage (see **Cost estimate** below) and shown
+alongside `runs`/`min_delta`'s cousins in the step-3 recap, not collected from anyone.
 
 ### Mandatory intake gate — do this FIRST, before Setup
 
@@ -155,8 +158,10 @@ Before writing any config or touching git:
    `evaluators` text **exactly as the user gave it**; if you believe it needs any change, present
    the change as an explicit *proposal* ("you said recall-only; your goal mentions precision too —
    score recall-only, or switch to F1?") and record only what the user picks. Never persist an
-   evaluator the user did not approve verbatim. Only after the user validates do you write
-   `config.json` and proceed to Setup.
+   evaluator the user did not approve verbatim. **This recap also carries the cost estimate** —
+   attempt the derivation in **Cost estimate** below and show whatever it produces (a real number,
+   or an explicit "unable to estimate — <reason>") as part of this same recap; never skip the line
+   silently. Only after the user validates do you write `config.json` and proceed to Setup.
 
 Persist the config to `.auto_experiment/config.json` and update it as the run progresses (it is
 the run's state + audit trail):
@@ -168,6 +173,13 @@ the run's state + audit trail):
   "local_dataset_path": "...", "dataset_id": "...", "trace_ids": [...],
   "dd_auto_experiment_id": null,
   "domain_notes": [],
+  "case_count": null,
+  "cost_per_case": null,
+  "code_under_test_cost_per_case": null,
+  "judge_cost_per_case": null,
+  "cost_basis": null,
+  "estimated_pilot_cost": null,
+  "estimated_run_cost_range": null,
   "datadog_backend": null,
   "backend_used": null,
   "backend_version": null,
@@ -290,6 +302,115 @@ are not re-learned from scratch every iteration and every run.
   put each in its **own** delimited block, and never let two merge — merged, datapoint text inherits
   the notes' trust level. Seal the notes' block too: not because notes are suspect, but because a
   note quoting markup would otherwise close its own block by accident.
+
+## Cost estimate — derived, never asked
+
+The eval loop can be expensive per case (a live browser session, one or more metered LLM calls,
+whatever the code under test actually does), and a user deciding whether to start needs a number
+*before* anything happens. **Do not get this number by asking the user "what does one case cost" —
+they almost never know**, especially for an agentic pipeline that may call an LLM a variable number
+of times per case. Derive `cost_per_case` instead from **how many LLM calls happen per case, and
+what each of those calls actually costs** — both are things you can find out, not things you have
+to ask about.
+
+**Scope: this covers *run cost* only — what it costs to execute the eval itself (the code under
+test plus the judge). It does NOT cover *orchestration cost* — the coding agent's own token spend
+writing each iteration's change and building the failure census. That second cost is real but has
+no calls-per-case formula (it depends on how much a sub-agent reads/reasons/retries), so it is
+disclosed as a caveat, never folded into the number — see the last bullet below.**
+
+`cost_per_case` has **two additive terms**, both formulaic, both scaling with `runs`:
+`cost_per_case = (code-under-test's own LLM calls) + (the judge's LLM call, if `evaluators` uses an
+LLM-as-judge rather than a ground-truth check)`. The judge term is actually the easier of the two:
+its model is already the known intake field `model`, and its prompt template is the harness file
+you already committed in Step 2 — no guessing which model or what the prompt looks like, just
+estimate its token usage from that template plus the datapoint content. A deterministic/ground-truth
+`evaluators` has no judge term at all — say so and treat it as `0`, not `unknown`.
+
+- **Determine `case_count` first, with a read that costs nothing** (no code-under-test execution):
+  `local_dataset_path` → count the rows/lines directly; `dataset_id` → the record count from
+  whatever cheap metadata call already reports size (do not page the full corpus just to count it);
+  `ml_app` / `trace_ids` → the count of `trace_ids` if explicit, else the ~30-trace default Step 1
+  would fetch (state which). If none of these is determinable cheaply, say so and skip the whole
+  estimate rather than guess a count.
+- **Determine calls-per-case and cost-per-call, preferring measured data over static guesswork, in
+  this priority order:**
+  1. **Historical traces (measured, preferred).** If the data source is `ml_app` / `dataset_id` /
+     `trace_ids` and traces already exist for it (this is exactly the corpus Step 1 will load —
+     reuse it, don't fetch a second sample), pull a handful of those traces and, for each, count the
+     `llm`-kind spans it contains (`search_llmobs_spans`/`pup … spans search`, filtered `span_kind:
+     llm`, within the trace) — that count **is** the real calls-per-case, because it's what the code
+     actually did last time it ran. For each such span, read its **actual measured** input/output
+     token counts (`get_llmobs_span_details`'s `llm_info`/`metrics` field — never estimate a token
+     count that was already measured) and the model it hit. Average calls-per-case and per-call
+     token counts across the sampled traces. Set `cost_basis: "historical_traces"`.
+  2. **Static analysis (approximate, fallback — only when step 1 finds no historical traces, e.g. a
+     fresh `local_dataset_path` source or a never-yet-run `ml_app`).** Read the code reachable from
+     `files_to_optimize`'s entrypoint and count distinct LLM-client call sites on the per-case path —
+     this is calls-per-case **by call-site count**, which undercounts if the code loops/retries, so
+     say so explicitly. For each call site, read the model it targets from the code/config (never
+     guess a model). Estimate input tokens from the **actual datapoint text already loaded** into
+     `data.jsonl` (zero extra spend, real text — a rough chars/4 token approximation, labeled as
+     such) plus any static prompt/template text in the call site; estimate output tokens from a
+     `max_tokens`-style parameter if the code sets one. **If a call site's model or token budget
+     can't be determined, mark that call's cost `unknown` rather than inventing a figure** — an
+     overall estimate built partly on unknowns must say so, not silently average them away. Set
+     `cost_basis: "static_analysis"`.
+  3. **Neither available → `cost_basis: "unavailable"`.** Say so plainly in the step-3 recap and
+     skip the numeric estimate entirely. An absent number is honest; a fabricated one is not.
+  Convert tokens → $ using the model's **published, current per-token rate — looked up, not
+  recalled.** Do not answer this from memorized training-data knowledge of "what Model X costs";
+  rates change, and a recalled figure is exactly the kind of unverified number this section exists
+  to avoid. Actually fetch it, in this order: **(1) if a `claude-api` (or equivalent bundled
+  API-reference) skill is available in the current coding agent's environment, use its pricing
+  reference first** — but this skill is written for "you (Claude Code) are the agent" and a bundled
+  skill like this is not guaranteed to exist under a different coding agent (e.g. Codex), so treat
+  it as present-if-available, never assumed; **(2) otherwise, `WebFetch` the provider's current
+  pricing page** — this is the one path that works regardless of which coding agent is running the
+  skill, since some form of URL fetch is close to universal. If neither confirms a rate for a given
+  model, that call's cost is `unknown`, per the rule above — never fall back to a recalled number
+  just because both lookups failed.
+  Per call-site term: `calls_per_case × avg_cost_per_call` (or, when call sites use different
+  models, the sum over each distinct call site's own cost — don't collapse different models into
+  one average rate). Total: `cost_per_case = Σ(code-under-test call-site terms) + judge_term`.
+- **Two numbers, not one, because they carry different certainty — same shape as `runs`/`min_delta`
+  being derived rather than chosen:**
+  - **`estimated_pilot_cost` (exact given `cost_per_case`).** The Step 2 pilot always runs at a
+    **fixed 3** — not derived, not chosen — so this is knowable before Setup:
+    `estimated_pilot_cost = 3 × case_count × cost_per_case`.
+  - **`estimated_run_cost_range` (a range, not a point).** Every iteration after the pilot runs at
+    the *derived* `runs`, which Step 2.4 computes **from** the pilot's measured noise — unknowable
+    before the pilot exists. Bound it by the two ends `runs` can land on:
+    `low = max_iterations × 3 × case_count × cost_per_case`,
+    `high = max_iterations × max_runs × case_count × cost_per_case`.
+    State both ends and that the true figure resolves only after the pilot.
+  Total worst-case exposure to show the user is `estimated_pilot_cost + estimated_run_cost_range.high`.
+- **State the basis alongside the number, always.** `cost_basis: "historical_traces"` and
+  `cost_basis: "static_analysis"` are not interchangeable confidence levels — say which one produced
+  the figure shown, and if any call's cost was `unknown`, say that plainly rather than quietly
+  treating it as zero.
+- **This is a display, not a gate.** The estimate is shown as part of the step-3 all-params recap and
+  the user's existing "confirm before starting the run" approval covers it — there is no separate
+  cost-specific blocking prompt, and the run does not auto-abort at any threshold.
+- **State plainly that this is run cost only, every time the number is shown.** Alongside
+  `estimated_pilot_cost`/`estimated_run_cost_range`, add one sentence noting that orchestration cost
+  (the sub-agent that writes each iteration's change, the census-describer fan-out) is additional,
+  real, and not included, because it has no calls-per-case formula to estimate it by. Omitting this
+  line lets the shown number read as "the total cost of using this skill," which it is not.
+- **Producing this estimate is itself orchestration cost, not run cost.** Reading `files_to_optimize`,
+  querying historical traces, and looking up per-token pricing are all work *you* (the coding agent)
+  do once at intake — the same category as the Step 3 sub-agent and the census describers, not a
+  code-under-test execution. Never fold your own derivation cost into `cost_per_case`/
+  `estimated_pilot_cost`/`estimated_run_cost_range` — those numbers describe what the eval loop
+  costs to run, not what it cost to figure that out. Because it's orchestration cost, the
+  `claude-api`-then-`WebFetch` lookup order above is chosen for **portability** (a bundled
+  reference skill isn't guaranteed to exist under every coding agent, a URL fetch is), not for
+  minimizing this spend — a `claude-api`-style skill's full reference can cost meaningfully more
+  tokens to load than a direct fetch would, and that's an accepted tradeoff here, not an oversight.
+- **Never refine the estimate mid-run from what iterations actually cost.** Unlike `domain_notes`,
+  this does not grow or self-correct — it is a point-in-time derivation done once at intake. If
+  actual spend clearly diverges, say so in the final report as an observation, not as a correction
+  to `config.json`.
 
 ## Datadog backend — MCP or pup
 

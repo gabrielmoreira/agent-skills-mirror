@@ -32,7 +32,23 @@ Ask only the questions that change the package design.
 - ask boundary questions early
 - ask output questions before architecture questions
 - stop once the skill can be described clearly in one sentence
-- do not enter deep authoring until the recurring job, target output, and exclusion boundary are clear enough to defend
+- enter deep authoring once the recurring job and target output are defensible; carry non-core gaps as visible assumptions
+
+## Adaptive Clarification Decision
+
+Use inference first when missing information does not change the package design.
+
+- proceed immediately when the core job and primary output are clear
+- record conservative assumptions for missing real inputs, exclusions, constraints, or standards
+- interrupt only for an unclear core job, unclear primary output, explicit alternative, or correction conflict
+- ask one contextual question per round and quote the strongest confirmed fact in at most `96` characters
+- recalculate intent after every answer and stop as soon as the core fork closes
+- allow at most two clarification rounds
+- after the second unresolved round, use the strongest available signal in this order: user correction, confirmed job or output, description, skill name
+- label the result `preferred-inference`, record its confidence and stop reason, and keep low-confidence work at Scaffold scope by default
+- mirror the user's dominant Chinese or English language
+
+Do not store a full question-and-answer transcript. Keep only the structured ambiguity, decision, assumption, inference source, round count, and stop reason.
 
 ## First Message Pattern
 

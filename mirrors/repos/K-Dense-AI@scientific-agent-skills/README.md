@@ -1,8 +1,8 @@
 # Scientific Agent Skills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
-[![Version](https://img.shields.io/badge/Version-2.63.0-blue.svg)](pyproject.toml)
-[![Skills](https://img.shields.io/badge/Skills-161-brightgreen.svg)](#-whats-included)
+[![Version](https://img.shields.io/badge/Version-2.64.0-blue.svg)](pyproject.toml)
+[![Skills](https://img.shields.io/badge/Skills-163-brightgreen.svg)](#-whats-included)
 [![Databases](https://img.shields.io/badge/Databases-100%2B-orange.svg)](#-whats-included)
 [![Agent Skills](https://img.shields.io/badge/Standard-Agent_Skills-blueviolet.svg)](https://agentskills.io/)
 [![Agent Plugins](https://img.shields.io/badge/Standard-Agent_Plugins-0A7A72.svg)](https://agent-plugins.org/)
@@ -20,7 +20,7 @@
 
 > **Stay up to date:** Follow K-Dense on [X](https://x.com/k_dense_ai), [LinkedIn](https://www.linkedin.com/company/k-dense-inc), [YouTube](https://www.youtube.com/@K-Dense-Inc), and [Reddit](https://www.reddit.com/user/-k-dense-/) for new skills, release announcements, walkthroughs, research workflow demos, and examples you can use with your own AI agent.
 
-A comprehensive collection of **161 ready-to-use scientific and research skills** (covering cancer genomics, individual-level 1000 Genomes queries, hosted regulatory-sequence prediction, live pathogen-variant surveillance, analytical method validation, PK/PD modelling and dose selection, full-text biomedical and regulatory literature retrieval, drug-target binding, bounded biomedical knowledge graph search, molecular dynamics, RNA velocity, geospatial science, time series forecasting, scientific ML resource discovery via Hugging Science, 78+ scientific databases, and more) for any AI agent that supports the open [Agent Skills](https://agentskills.io/) standard, created by [K-Dense](https://k-dense.ai). The repository is also a portable [Agent Plugins](https://agent-plugins.org/) package (`plugin.json` + `skills/`), so plugin-capable clients can load the whole collection as one plugin. Works with **Cursor, Claude Code, Codex, Google Antigravity, and more**. Transform your AI agent into a research assistant capable of executing complex multi-step scientific workflows across biology, chemistry, medicine, and beyond.
+A comprehensive collection of **163 ready-to-use scientific and research skills** (covering cancer genomics, individual-level 1000 Genomes queries, hosted regulatory-sequence prediction, live pathogen-variant surveillance, analytical method validation, PK/PD modelling and dose selection, full-text biomedical and regulatory literature retrieval, drug-target binding, bounded biomedical knowledge graph search, molecular dynamics, RNA velocity, microbiome foundation models, geospatial science, time series forecasting, scientific ML resource discovery via Hugging Science, 78+ scientific databases, and more) for any AI agent that supports the open [Agent Skills](https://agentskills.io/) standard, created by [K-Dense](https://k-dense.ai). The repository is also a portable [Agent Plugins](https://agent-plugins.org/) package (`plugin.json` + `skills/`), so plugin-capable clients can load the whole collection as one plugin. Works with **Cursor, Claude Code, Codex, Google Antigravity, and more**. Transform your AI agent into a research assistant capable of executing complex multi-step scientific workflows across biology, chemistry, medicine, and beyond.
 
 > ⭐ **Help make AI for science easier to discover:** If Scientific Agent Skills saves you time, teaches your agent a workflow, or helps your lab move faster, please [star this repository](https://github.com/K-Dense-AI/scientific-agent-skills). A star is a public signal that these open, reusable research skills are worth maintaining: it helps scientists, engineers, and open-source contributors find the project, shows which agent-skill standards are gaining real adoption, and gives us a clear reason to keep expanding the collection for the community.
 
@@ -55,7 +55,7 @@ These skills enable your AI agent to seamlessly work with specialized scientific
 
 ## 📦 What's Included
 
-This repository provides **162 scientific and research skills** organized into the following categories:
+This repository provides **163 scientific and research skills** organized into the following categories:
 
 - **100+ Scientific & Financial Databases** - A unified database-lookup skill provides deterministic, provenance-rich access to 78 public databases (PubChem, ChEMBL, UniProt, COSMIC, ClinicalTrials.gov, FRED, USPTO, and more), plus dedicated skills for DepMap, Imaging Data Commons, PrimeKG, NCATS ARAX, U.S. Treasury Fiscal Data, Hugging Science, OneKGPd, and Genomic Intelligence. Multi-database packages like BioServices (~40 bioinformatics services), BioPython (39 NCBI sub-databases via Entrez), and gget (20+ genomics databases) add further coverage
 - **70+ Optimized Python Package Skills** - Explicitly defined, version-aware workflows for RDKit, Scanpy, PyTorch Lightning, scikit-learn, PyTDC, PathML, pydicom, NeuroKit2, PufferLib, QuTiP, GeoPandas, pymatgen, BioPython, Qiskit, Molecular Dynamics (OpenMM/MDAnalysis), and others. The agent can still use *any* Python package; these skills provide stronger, safer guidance for the packages listed
@@ -157,7 +157,7 @@ Pin to a specific release tag or commit SHA for reproducible installs:
 
 ```bash
 # Pin to a release tag
-gh skill install K-Dense-AI/scientific-agent-skills --pin v2.63.0
+gh skill install K-Dense-AI/scientific-agent-skills --pin v2.64.0
 
 # Pin to a commit SHA
 gh skill install K-Dense-AI/scientific-agent-skills --pin abc123def
@@ -448,13 +448,13 @@ networks, and search GEO for similar patterns.
 
 ## 📚 Available Skills
 
-This repository contains **162 scientific and research skills** organized across multiple domains. Each skill provides comprehensive documentation, code examples, and best practices for working with scientific libraries, databases, and tools.
+This repository contains **163 scientific and research skills** organized across multiple domains. Each skill provides comprehensive documentation, code examples, and best practices for working with scientific libraries, databases, and tools.
 
 ### Skill Categories
 
 > **Note:** The Python package and integration skills listed below are *explicitly defined* skills — curated with documentation, examples, and best practices for stronger, more reliable performance. They are not a ceiling: the agent can install and use *any* Python package or call *any* API, even without a dedicated skill. The skills listed simply make common workflows faster and more dependable.
 
-#### 🧬 **Bioinformatics & Genomics** (26 skills)
+#### 🧬 **Bioinformatics & Genomics** (27 skills)
 - RNA-seq pipelines: Bulk RNA-seq (end-to-end FASTQ -> counts -> DE -> enrichment orchestrator)
 - Sequence analysis: BioPython, pysam, scikit-bio, BioServices
 - Single-cell analysis: Scanpy, AnnData, scvi-tools, scVelo (RNA velocity), Arboreto, Cellxgene Census
@@ -464,6 +464,7 @@ This repository contains **162 scientific and research skills** organized across
 - Differential expression: PyDESeq2
 - Functional enrichment: Pathway Enrichment (ORA, GSEA/preranked, ssGSEA via gseapy + g:Profiler; GO, KEGG, Reactome, WikiPathways, MSigDB)
 - Phylogenetics: ETE Toolkit, Phylogenetics (MAFFT, IQ-TREE 2, FastTree)
+- Microbiome foundation models: Waypoint (Outpost Bio's open Waypoint-6m/45m/170m checkpoints, the Atlas 539k-sample MGnify pretraining corpus, and the eight-task Compass benchmark — embedding, fine-tuning, benchmarking, and pretraining on taxonomic abundance profiles, with MetaPhlAn/Kraken2/QIIME 2 conversion)
 
 #### 🧪 **Cheminformatics & Drug Discovery** (10 skills)
 - Molecular manipulation: RDKit, Datamol, Molfeat
@@ -915,3 +916,13 @@ See [LICENSE.md](LICENSE.md) for full terms.
 ### Individual Skill Licenses
 
 > ⚠️ **Important**: Each skill has its own license specified in the `license` metadata field within its `SKILL.md` file. These licenses may differ from the repository's MIT License and may include additional terms or restrictions. **Users are responsible for reviewing and adhering to the license terms of each individual skill they use.**
+
+## Star History
+
+<a href="https://star-history.dera.page/#K-Dense-AI/scientific-agent-skills">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=K-Dense-AI/scientific-agent-skills&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=K-Dense-AI/scientific-agent-skills" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=K-Dense-AI/scientific-agent-skills" />
+ </picture>
+</a>

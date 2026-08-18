@@ -516,10 +516,10 @@ through Host. HTTP adapters may project it as structured diagnostic metadata
 while preserving their existing coarse conflict reason; transcript payloads
 and attachment contents never enter that reason.
 
-Session Fork is default-off behind the `lab.agentSessionFork` product flag.
-Desktop exposes the persisted switch in Developer settings, and Desktop plus
-Tuttid enforce the same opt-in for new Fork writes while retaining read and
-acknowledgement access to existing durable operations.
+Session Fork is exposed directly when the provider/runtime attestation and the
+selected canonical Turn satisfy the capability boundary. Product adapters do
+not add a separate feature-preference gate; execution still revalidates the
+exact provider and Turn facts before dispatch.
 
 Capability projection is preparation-free. It reads either the live runtime
 observation or the persisted runtime/driver attestation and never resolves

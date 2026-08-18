@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 21 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,18 +68,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/frontend_design_guide.md`](.agents/frontend_design_guide.md) |
 | 8 | ✓ | [`.agents/mcp.json`](.agents/mcp.json) |
 | 9 | ✓ | [`.agents/python_test_guide.md`](.agents/python_test_guide.md) |
-| 10 | ✓ | [`.agents/scripts/provider_utils.py`](.agents/scripts/provider_utils.py) |
-| 11 | ✓ | [`.agents/skills/claude-maintain-models/SKILL.md`](.agents/skills/claude-maintain-models/SKILL.md) |
-| 12 | ✓ | [`.agents/skills/kiln-check-deprecation/scripts/check_provider.py`](.agents/skills/kiln-check-deprecation/scripts/check_provider.py) |
-| 13 | ✓ | [`.agents/skills/kiln-check-deprecation/scripts/extract_models.py`](.agents/skills/kiln-check-deprecation/scripts/extract_models.py) |
-| 14 | ✓ | [`.agents/skills/kiln-check-deprecation/SKILL.md`](.agents/skills/kiln-check-deprecation/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/kiln-check-finetune-deprecation/scripts/check_finetune.py`](.agents/skills/kiln-check-finetune-deprecation/scripts/check_finetune.py) |
-| 16 | ✓ | [`.agents/skills/kiln-check-finetune-deprecation/SKILL.md`](.agents/skills/kiln-check-finetune-deprecation/SKILL.md) |
-| 17 | ✓ | [`.agents/skills/kiln-prerelease-check/SKILL.md`](.agents/skills/kiln-prerelease-check/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/release-digest/scripts/gather_changes.py`](.agents/skills/release-digest/scripts/gather_changes.py) |
-| 19 | ✓ | [`.agents/skills/release-digest/SKILL.md`](.agents/skills/release-digest/SKILL.md) |
-| 20 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
-| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`.agents/scripts/playwright_server.sh`](.agents/scripts/playwright_server.sh) |
+| 11 | ✓ | [`.agents/scripts/provider_utils.py`](.agents/scripts/provider_utils.py) |
+| 12 | ✓ | [`.agents/skills/claude-maintain-models/SKILL.md`](.agents/skills/claude-maintain-models/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/kiln-check-deprecation/scripts/check_provider.py`](.agents/skills/kiln-check-deprecation/scripts/check_provider.py) |
+| 14 | ✓ | [`.agents/skills/kiln-check-deprecation/scripts/extract_models.py`](.agents/skills/kiln-check-deprecation/scripts/extract_models.py) |
+| 15 | ✓ | [`.agents/skills/kiln-check-deprecation/SKILL.md`](.agents/skills/kiln-check-deprecation/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/kiln-check-finetune-deprecation/scripts/check_finetune.py`](.agents/skills/kiln-check-finetune-deprecation/scripts/check_finetune.py) |
+| 17 | ✓ | [`.agents/skills/kiln-check-finetune-deprecation/SKILL.md`](.agents/skills/kiln-check-finetune-deprecation/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/kiln-prerelease-check/SKILL.md`](.agents/skills/kiln-prerelease-check/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/release-digest/scripts/gather_changes.py`](.agents/skills/release-digest/scripts/gather_changes.py) |
+| 20 | ✓ | [`.agents/skills/release-digest/SKILL.md`](.agents/skills/release-digest/SKILL.md) |
+| 21 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
+| 22 | ✓ | [`.agents/USING_PLAYWRIGHT.md`](.agents/USING_PLAYWRIGHT.md) |
+| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

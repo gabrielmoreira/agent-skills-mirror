@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,13 +89,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
 | 29 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
 | 30 | ✓ | [`.opencode/skills/upload-photo/SKILL.md`](.opencode/skills/upload-photo/SKILL.md) |
-| 31 | ✓ | [`.opencode/skills/voiceover/SKILL.md`](.opencode/skills/voiceover/SKILL.md) |
-| 32 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
-| 33 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
-| 34 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
-| 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 36 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 37 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 31 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
+| 32 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
+| 33 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
+| 34 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 35 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 36 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

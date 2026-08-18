@@ -39,10 +39,21 @@ Representative examples:
   WebKit fixture gates when `packages/ui/src/**` changes.
 - `device-e2e.yml` is the exact-head Android-emulator and iOS-simulator
   device-bundle producer (#19640). Canonical `ci.yml` calls it only for PRs
-  carrying the `ci:device` label; `workflow_dispatch` is the on-demand route.
+  carrying the `ci:device` label; `workflow_dispatch` is the on-demand route,
+  and a weekly cadence hard-gates the explicit host-safe Android subset.
+  [![scheduled device e2e](https://github.com/elizaOS/eliza/actions/workflows/device-e2e.yml/badge.svg?branch=develop&event=schedule)](https://github.com/elizaOS/eliza/actions/workflows/device-e2e.yml?query=event%3Aschedule)
   Both jobs run the bundle-owning runners with `--output` and upload the full
   bundle (`inline/`, `logs/`, `summary.json`, `junit.xml`) on success and
   failure, without reading any repository secret.
+- `android-arm64-local-e2e.yml` is the separate weekly, schedule-only
+  self-hosted physical-device lane for the embedded Bun + GGUF agent. Its
+  `[self-hosted, Linux, ARM64, android-device]` labels are an infrastructure
+  contract: the job stays queued until such a runner is online, then fails
+  closed unless both the host and attached Android target pass ARM64 and pinned
+  toolchain preflight. It runs local chat plus local-runtime/route WebView
+  probes; on-device voice remains separately qualified. Manual arbitrary-ref
+  dispatch is intentionally unavailable because this runner persists and owns
+  a physical device.
 
 ## Manual operations
 
@@ -57,7 +68,30 @@ Representative examples:
   The stable tag then triggers `release-electrobun.yml`, which resolves and
   checks out the peeled tag commit, verifies the existing release is bound to
   that commit, and uploads signed desktop assets without creating or replacing
-  the release. `snap-publish.yml` owns Snap Store publication.
+  the release. Because branch protection does not cover tags, the workflow
+  also requires the tagged commit to be an ancestor of `main` or `develop`
+  and gates every signing, release-upload, and OTA-publish job behind the
+  reviewer-approved `production-release` environment; a tag protection
+  ruleset restricting `v*` creation completes that boundary.
+  After finalization, the canonical workflow also calls the reusable,
+  callable-only `snap-publish.yml` and `store-mobile-publish.yml` legs with the
+  exact finalized source SHA, version, channel, and tag. Those legs re-resolve
+  the tag to the supplied commit before using credentials and run behind the
+  `production-release` environment. Snap uploads the registered `eliza` name;
+  Android builds and audits the cloud-only AAB before Google Play upload; iOS
+  embeds the store runtime and uses an App Store Connect API key for signing
+  and delivery. Missing credentials fail the affected store job with the exact
+  secret names instead of silently skipping publication.
+
+  Store credentials are environment-owned. Snap needs
+  `SNAPCRAFT_STORE_CREDENTIALS`. Google Play needs the four
+  `ANDROID_KEYSTORE_*` secrets plus `PLAY_STORE_SERVICE_ACCOUNT_JSON` (raw
+  service-account JSON or its base64 encoding). Apple
+  needs `APPLE_ID`, `APPLE_TEAM_ID`, `ITC_TEAM_ID`, `APP_STORE_APP_ID`, the
+  three `MATCH_*` values, and `APP_STORE_API_KEY_ID`,
+  `APP_STORE_API_ISSUER_ID`, and `APP_STORE_API_KEY_P8`. The API-backed first
+  upload still depends on the corresponding organization account, application
+  record, agreements, and roles already existing in each publisher portal.
 - `infra.yml` is the only Terraform plan, apply, and state-edit entry point.
   Each protected Environment supplies a distinct RSA public-key variable
   `TERRAFORM_PLAN_ARTIFACT_PUBLIC_KEY` and apply-only private-key secret
@@ -96,7 +130,14 @@ Representative examples:
   of the tracked service `railway.toml`; follows the returned deployment id to
   success; proves that exact id remains active around the public probes; and
   verifies the applied Dockerfile/health manifest, live health, and canonical
-  cloud/agent fallback routing pair. It also sends a headerless `GET` to the
+  cloud/agent fallback routing pair. A successful release publishes a
+  source/environment/deployment-id receipt; the protected edge-activation
+  workflow downloads that exact run receipt, revalidates the active Railway
+  deployment before and after its probes and edge mutation, and shares this
+  workflow's per-environment concurrency key so gateway releases, canonical
+  Cloudflare releases, and cutovers cannot race. Protected-environment approval
+  completes before any of those jobs enters the shared mutation lock. It also
+  sends a headerless `GET` to the
   dedicated `/ready/forwarder-auth/eliza-app` contract and requires the exact
   enforced-gate 401 response before reasserting the active deployment. A
   disabled secret or mismatched forwarded project produces a distinct non-401
@@ -141,8 +182,14 @@ through `cloud-release-dependency-trigger-workflow.test.ts`; otherwise a
 source-form package can change an artifact without creating a release
 candidate.
 
-Production Cloud admission is also tree-bound to staging. After every
-successful automatic `develop` Cloud release, `cloud-cf-deploy.yml` uploads a
+Production Cloud admission is also tree-bound to staging. A staging release
+whose run SHA the `develop` head has fast-forwarded past ends neutrally before
+any mutation only when GitHub proves that an active Cloud CF Deploy push run
+exists for the exact new head (the canonical-source guard reports
+`superseded=true`, every deploy job skips, and no certification is uploaded).
+Ancestry without a successor run, production staleness, divergence, or any
+unverifiable source still fails the run. After every successful, non-superseded
+automatic `develop` Cloud release, `cloud-cf-deploy.yml` uploads a
 14-day immutable certification whose JSON names the repository, workflow,
 source SHA, root Git tree, run/attempt, environment, and deterministic artifact
 name. A production dispatch checks out the exact requested `main` SHA and must

@@ -1,7 +1,7 @@
 interface:
   display_name: "Yao Meta Skill"
   short_description: "Create trigger-aware agent skills"
-  default_prompt: "Use $yao-meta-skill to turn my workflow or notes into a reusable skill with lean structure, clear triggering, and the right evals."
+  default_prompt: "Use $yao-meta-skill on an explicit target; use --self for Yao itself."
 compatibility:
   canonical_format: "agent-skills"
   adapter_targets:

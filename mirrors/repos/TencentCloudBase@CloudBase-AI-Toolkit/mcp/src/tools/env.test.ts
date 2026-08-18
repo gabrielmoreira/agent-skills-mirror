@@ -1,5 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { isUsableNoSqlDatabaseEntry, registerEnvTools } from "./env.js";
+import {
+  ENV_METRIC_NAME_VALUES,
+  ENV_METRIC_PERIOD_VALUES,
+  ENV_USAGE_MODULE_VALUES,
+  GATEWAY_ENV_QPS_DEFAULT_RESOURCE_ID,
+  extractAccountCircleDate,
+  formatEnvMetricTime,
+  isUsableNoSqlDatabaseEntry,
+  registerEnvTools,
+  resolveEnvMetricName,
+  resolveEnvMetricPeriod,
+  resolveEnvMetricResourceId,
+  resolveEnvMetricTimeRange,
+  resolveEnvUsageDateRange,
+  resolveEnvUsageModules,
+  summarizeEnvMetricCurve,
+} from "./env.js";
 import type { ExtendedMcpServer } from "../server.js";
 
 const {
@@ -1629,6 +1645,366 @@ describe("env tools - envQuery", () => {
       },
     });
     expect(payload.message).toContain("直到目标域名不再出现");
+  });
+
+  it("queryEnv schema should expose usage action and module enum", async () => {
+    const { tools } = createMockServer();
+    expect(tools.queryEnv.meta.inputSchema.action.options).toEqual([
+      "list",
+      "info",
+      "domains",
+      "usage",
+      "metrics",
+    ]);
+    expect(tools.queryEnv.meta.inputSchema.type.unwrap().element.options).toEqual([
+      ...ENV_USAGE_MODULE_VALUES,
+    ]);
+    expect(tools.envQuery.meta.inputSchema.action.options).toContain("usage");
+  });
+
+  it("queryEnv schema should expose metrics action and metric enum", async () => {
+    const { tools } = createMockServer();
+    expect(tools.queryEnv.meta.inputSchema.action.options).toContain("metrics");
+    expect(tools.queryEnv.meta.inputSchema.metricName.unwrap().options).toEqual([
+      ...ENV_METRIC_NAME_VALUES,
+    ]);
+    expect(
+      tools.queryEnv.meta.inputSchema.period.unwrap().options.map((item: { value: number }) => item.value),
+    ).toEqual([...ENV_METRIC_PERIOD_VALUES]);
+    expect(tools.envQuery.meta.inputSchema.action.options).toContain("metrics");
+    expect(tools.queryEnv.meta.description).toContain("action=metrics");
+    expect(tools.queryEnv.meta.description).toContain("DescribeCurveData");
+  });
+
+  it("envQuery(usage) should require envId", async () => {
+    const { tools } = createMockServer();
+    const result = await tools.queryEnv.handler({ action: "usage" });
+    expect(result.content[0].text).toContain("envId 为必填参数");
+    expect(result.content[0].text).toContain("queryEnv");
+  });
+
+  it("envQuery(usage) should call account circle + credits usage APIs", async () => {
+    const describeEnvAccountCircle = vi.fn().mockResolvedValue({
+      StartTime: "2026-08-01 00:00:00",
+      EndTime: "2026-08-31 23:59:59",
+      HistoryTime: [],
+      RequestId: "req-circle",
+    });
+    const describeCreditsUsageDetail = vi.fn().mockResolvedValue({
+      Usages: [
+        {
+          EnvId: "ai-native-d1ggefhgb8c27e3e8",
+          Module: "SCF",
+          CreditsValue: 12,
+          MetricUsageDetail: [{ MetricName: "Invocations", Value: 3 }],
+        },
+      ],
+      RequestId: "req-usage",
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: {
+        describeEnvAccountCircle,
+        describeCreditsUsageDetail,
+      },
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({
+          action: "usage",
+          envId: "ai-native-d1ggefhgb8c27e3e8",
+          type: ["SCF", "COS"],
+        })
+      ).content[0].text,
+    );
+
+    expect(describeEnvAccountCircle).toHaveBeenCalledWith({
+      EnvId: "ai-native-d1ggefhgb8c27e3e8",
+    });
+    expect(describeCreditsUsageDetail).toHaveBeenCalledWith({
+      EnvId: "ai-native-d1ggefhgb8c27e3e8",
+      Modules: ["SCF", "COS"],
+      StartDate: "2026-08-01",
+      EndDate: "2026-08-31",
+      NeedUsageDetails: true,
+    });
+    expect(payload).toMatchObject({
+      EnvId: "ai-native-d1ggefhgb8c27e3e8",
+      Modules: ["SCF", "COS"],
+      StartDate: "2026-08-01",
+      EndDate: "2026-08-31",
+      DateSource: "accountCircle",
+      NeedUsageDetails: true,
+      Usages: [
+        {
+          Module: "SCF",
+          CreditsValue: 12,
+        },
+      ],
+    });
+  });
+
+  it("envQuery(usage) should honor explicit date range", async () => {
+    const describeEnvAccountCircle = vi.fn().mockResolvedValue({
+      StartTime: "2026-08-01 00:00:00",
+      EndTime: "2026-08-31 23:59:59",
+    });
+    const describeCreditsUsageDetail = vi.fn().mockResolvedValue({
+      Usages: [],
+      RequestId: "req-usage-2",
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: {
+        describeEnvAccountCircle,
+        describeCreditsUsageDetail,
+      },
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({
+          action: "usage",
+          envId: "env-test",
+          startDate: "2026-07-01",
+          endDate: "2026-07-15",
+          needUsageDetails: false,
+        })
+      ).content[0].text,
+    );
+
+    expect(describeCreditsUsageDetail).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Modules: [...ENV_USAGE_MODULE_VALUES],
+      StartDate: "2026-07-01",
+      EndDate: "2026-07-15",
+      NeedUsageDetails: false,
+    });
+    expect(payload.DateSource).toBe("params");
+    expect(payload.Modules).toEqual([...ENV_USAGE_MODULE_VALUES]);
+  });
+
+  it("envQuery(metrics) should require envId and metricName", async () => {
+    const { tools } = createMockServer();
+    const missingEnv = await tools.queryEnv.handler({ action: "metrics" });
+    expect(missingEnv.content[0].text).toContain("envId 为必填参数");
+    expect(missingEnv.content[0].text).toContain("queryEnv");
+
+    const missingMetric = await tools.queryEnv.handler({
+      action: "metrics",
+      envId: "env-test",
+    });
+    expect(missingMetric.content[0].text).toContain("metricName 为必填参数");
+  });
+
+  it("envQuery(metrics) should call monitor.describeCurveData and summarize the curve", async () => {
+    const describeCurveData = vi.fn().mockResolvedValue({
+      StartTime: "2026-08-16 16:00:00",
+      EndTime: "2026-08-17 16:00:00",
+      MetricName: "FunctionInvocation",
+      Period: 300,
+      Values: [0, 12, 3],
+      Time: [1786900000, 1786900300, 1786900600],
+      NewValues: [0, 12, 3],
+      Statistics: "sum",
+      RequestId: "req-metrics",
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      monitor: { describeCurveData },
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({
+          action: "metrics",
+          envId: "ai-native-d1ggefhgb8c27e3e8",
+          metricName: "FunctionInvocation",
+          startTime: "2026-08-16 16:00:00",
+          endTime: "2026-08-17 16:00:00",
+          period: 300,
+          resourceID: "hello-word-test",
+        })
+      ).content[0].text,
+    );
+
+    expect(describeCurveData).toHaveBeenCalledWith({
+      MetricName: "FunctionInvocation",
+      StartTime: "2026-08-16 16:00:00",
+      EndTime: "2026-08-17 16:00:00",
+      Period: 300,
+      ResourceID: "hello-word-test",
+    });
+    expect(payload).toMatchObject({
+      EnvId: "ai-native-d1ggefhgb8c27e3e8",
+      MetricName: "FunctionInvocation",
+      TimeSource: "params",
+      Period: 300,
+      ResourceID: "hello-word-test",
+      Summary: {
+        sampleCount: 3,
+        max: 12,
+        min: 0,
+        latest: 3,
+        peakTimestamp: 1786900300,
+        allZero: false,
+      },
+    });
+    expect(payload.Curve.RequestId).toBe("req-metrics");
+  });
+
+  it("envQuery(metrics) should default GatewayTraceEnvQPS resourceID and last 24h range", async () => {
+    const describeCurveData = vi.fn().mockResolvedValue({
+      MetricName: "GatewayTraceEnvQPS",
+      Period: 300,
+      Values: [8, 42, 10],
+      Time: [1, 2, 3],
+      NewValues: [8, 42, 10],
+      RequestId: "req-qps",
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      monitor: { describeCurveData },
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({
+          action: "metrics",
+          envId: "env-test",
+          metricName: "GatewayTraceEnvQPS",
+        })
+      ).content[0].text,
+    );
+
+    expect(describeCurveData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        MetricName: "GatewayTraceEnvQPS",
+        ResourceID: GATEWAY_ENV_QPS_DEFAULT_RESOURCE_ID,
+      }),
+    );
+    expect(payload.TimeSource).toBe("defaultLast24h");
+    expect(payload.Summary.max).toBe(42);
+    expect(payload.Summary.allZero).toBe(false);
+  });
+
+  it("envQuery(metrics) should require resourceID for CloudRun metrics", async () => {
+    const { tools } = createMockServer();
+    const result = await tools.queryEnv.handler({
+      action: "metrics",
+      envId: "env-test",
+      metricName: "TkeCpuUsedService",
+    });
+    expect(result.content[0].text).toContain("resourceID 为必填");
+    expect(result.content[0].text).toContain("TkeCpuUsedService");
+  });
+});
+
+describe("env usage helpers", () => {
+  it("resolveEnvUsageModules should default to all CLI modules and reject unknowns", () => {
+    expect(resolveEnvUsageModules(undefined)).toEqual([...ENV_USAGE_MODULE_VALUES]);
+    expect(resolveEnvUsageModules(["FLEXDB", "SCF"])).toEqual(["FLEXDB", "SCF"]);
+    expect(() => resolveEnvUsageModules(["NOT_A_MODULE"])).toThrow(/无效的用量模块/);
+  });
+
+  it("resolveEnvUsageDateRange should derive dates from account circle", () => {
+    expect(extractAccountCircleDate("2026-08-01 00:00:00")).toBe("2026-08-01");
+    expect(
+      resolveEnvUsageDateRange({
+        accountCircle: {
+          StartTime: "2026-08-01 00:00:00",
+          EndTime: "2026-08-31 23:59:59",
+        },
+      }),
+    ).toEqual({
+      startDate: "2026-08-01",
+      endDate: "2026-08-31",
+      dateSource: "accountCircle",
+    });
+  });
+});
+
+describe("env metrics helpers", () => {
+  it("resolveEnvMetricName should accept catalog names and reject unknowns", () => {
+    expect(resolveEnvMetricName("FunctionInvocation")).toBe("FunctionInvocation");
+    expect(() => resolveEnvMetricName(undefined)).toThrow(/metricName 为必填/);
+    expect(() => resolveEnvMetricName("GetMonitorData")).toThrow(/无效的 metricName/);
+  });
+
+  it("resolveEnvMetricPeriod should allow SDK periods only", () => {
+    expect(resolveEnvMetricPeriod(undefined)).toBeUndefined();
+    expect(resolveEnvMetricPeriod(300)).toBe(300);
+    expect(resolveEnvMetricPeriod("3600")).toBe(3600);
+    expect(() => resolveEnvMetricPeriod(60)).toThrow(/period 仅支持/);
+  });
+
+  it("resolveEnvMetricTimeRange should default to last 24h and validate pairs", () => {
+    const now = new Date("2026-08-17T16:00:00");
+    expect(resolveEnvMetricTimeRange({ now })).toEqual({
+      startTime: formatEnvMetricTime(new Date(now.getTime() - 24 * 60 * 60 * 1000)),
+      endTime: formatEnvMetricTime(now),
+      timeSource: "defaultLast24h",
+    });
+    expect(
+      resolveEnvMetricTimeRange({
+        startTime: "2026-08-16 10:00:00",
+        endTime: "2026-08-16 12:00:00",
+      }),
+    ).toEqual({
+      startTime: "2026-08-16 10:00:00",
+      endTime: "2026-08-16 12:00:00",
+      timeSource: "params",
+    });
+    expect(() =>
+      resolveEnvMetricTimeRange({ startTime: "2026-08-16 10:00:00" }),
+    ).toThrow(/必须同时提供/);
+    expect(() =>
+      resolveEnvMetricTimeRange({
+        startTime: "2026-08-16",
+        endTime: "2026-08-17",
+      }),
+    ).toThrow(/YYYY-MM-DD HH:mm:ss/);
+    expect(() =>
+      resolveEnvMetricTimeRange({
+        startTime: "2026-08-16 10:00:00",
+        endTime: "2026-08-16 10:03:00",
+      }),
+    ).toThrow(/至少五分钟/);
+  });
+
+  it("resolveEnvMetricResourceId should fill gateway QPS and require CloudRun service name", () => {
+    expect(resolveEnvMetricResourceId("GatewayTraceEnvQPS")).toBe(
+      GATEWAY_ENV_QPS_DEFAULT_RESOURCE_ID,
+    );
+    expect(resolveEnvMetricResourceId("FunctionInvocation")).toBeUndefined();
+    expect(resolveEnvMetricResourceId("FunctionInvocation", "hello")).toBe("hello");
+    expect(() => resolveEnvMetricResourceId("TkeQPSService")).toThrow(/resourceID 为必填/);
+  });
+
+  it("summarizeEnvMetricCurve should report peak and all-zero invocation", () => {
+    expect(
+      summarizeEnvMetricCurve({
+        Values: [0, 0, 0],
+        NewValues: [0, 0, 0],
+        Time: [1, 2, 3],
+      }),
+    ).toMatchObject({
+      sampleCount: 3,
+      max: 0,
+      allZero: true,
+    });
+    expect(
+      summarizeEnvMetricCurve({
+        Values: [1, 9, 4],
+        NewValues: [1.5, 9.2, 4.1],
+        Time: [10, 20, 30],
+      }),
+    ).toMatchObject({
+      max: 9.2,
+      peakTimestamp: 20,
+      allZero: false,
+    });
   });
 });
 

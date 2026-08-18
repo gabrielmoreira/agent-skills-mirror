@@ -31,6 +31,8 @@ Or manually: copy `skills/*/*/` into `.github/skills/`.
 - **go-design-patterns** — Functional options, factory, strategy, decorator
 - **go-dependency-injection** — Constructor injection, composition root, wire/fx
 - **go-cli** — Flags, subcommands, exit codes, signals, Cobra
+- **go-openapi** — Spec-first REST, oapi-codegen, request validation, breaking-change detection
+- **go-graphql** — gqlgen resolvers, dataloaders, N+1, complexity limits, field-level auth
 
 ### Data
 - **go-database** — Connection pools, transactions, sqlc, migrations
@@ -41,6 +43,7 @@ Or manually: copy `skills/*/*/` into `.github/skills/`.
 - **go-performance-review** — Allocations, benchmarking, pprof
 - **go-observability** — Structured logging, tracing, metrics, OpenTelemetry
 - **go-troubleshooting** — Panics, deadlocks, leaks, pprof diffing, delve
+- **go-defensive-coding** — Typed-nil interfaces, slice aliasing, numeric overflow, defensive copying
 
 ### Testing
 - **go-test-quality** — Subtests, httptest, golden files, fuzz, testcontainers
@@ -54,3 +57,5 @@ Or manually: copy `skills/*/*/` into `.github/skills/`.
 - **git-commit** — Conventional Commits, atomic commits
 
 All skills are in `skills/(category)/skill-name/SKILL.md`.
+- **go-binary-size** — Linker flags, CGO, build tags, dependency weight, container image size
+- **go-skills-router** — Task-to-skill routing, overlap boundaries, multi-concern task recipes

@@ -8,6 +8,7 @@ import type { CloudBaseOptions } from '../types.js';
 import { debug } from '../utils/logger.js';
 import { preferGatewayOrFallback, resolveGatewayAccessUrls } from '../utils/gateway-access-urls.js';
 import { sendDeployNotification } from '../utils/notification.js';
+import { buildCamAuthGuidance, isCamAuthError } from './capi.js';
 import {
   listLikelyRedeployFields,
   mergeCloudRunServerConfig,
@@ -30,7 +31,7 @@ export type CloudRunPackageType = typeof CLOUDRUN_PACKAGE_TYPES[number];
 
 // Input schema for queryCloudRun tool
 const queryCloudRunInputSchema = {
-  action: z.enum(['list', 'detail', 'templates', 'getDeployLog', 'getDeployRecords', 'envStatus']).describe('查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取指定服务最近一次或指定构建的部署日志，getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪'),
+  action: z.enum(['list', 'detail', 'templates', 'getDeployLog', 'getProcessLog', 'getDeployRecords', 'envStatus']).describe('查询操作类型：list=获取云托管服务列表（支持分页和筛选），detail=查询指定服务的详细信息（包含服务配置和最新部署状态），templates=获取可用的项目模板列表（用于初始化新项目），getDeployLog=获取构建日志（仅云端源码构建有意义，走 CODING/DescribeCloudRunBuildLog；已有镜像部署无构建过程；未登录 CODING 的账号会报错），getProcessLog=获取运行日志（部署阶段步骤+容器启动/运行日志，走 tcbr/DescribeCloudRunProcessLog；镜像部署与源码构建均可用，不依赖 CODING；RunId 来自 detail/getDeployRecords 的 latestDeploy.RunId），getDeployRecords=获取指定服务的部署记录列表（按部署时间倒序，含 BuildId/RunId/FlowRatio/Status 等字段，用于查看历史发布与回滚上下文），envStatus=查询当前环境云托管是否已开通及开通状态（Status=creating开通中/normal已开通），用于initEnv之后轮询进度或deploy之前确认环境是否就绪'),
 
   // List operation parameters
   pageSize: z.number().min(1).max(100).optional().default(10).describe('分页大小，控制每页返回的服务数量。取值范围：1-100，默认值：10。建议根据网络性能和显示需求调整'),
@@ -40,13 +41,14 @@ const queryCloudRunInputSchema = {
   envId: z.string().optional().describe('环境 ID（action=envStatus 时使用；不传则使用当前配置的环境）。格式如 env-xxxxxx'),
 
   // Detail and log operation parameters
-  detailServerName: z.string().optional().describe('要查询详细信息、部署记录或部署日志的服务名称。当action为detail、getDeployLog或getDeployRecords时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表'),
-  buildId: z.number().optional().describe('构建ID，仅在action=getDeployLog时使用。不传时默认返回最近一次部署的构建日志'),
+  detailServerName: z.string().optional().describe('要查询详细信息、部署记录、构建日志或运行日志的服务名称。当action为detail、getDeployLog、getProcessLog或getDeployRecords时建议提供，必须是已存在的服务名称。可通过list操作获取可用的服务名称列表'),
+  buildId: z.number().optional().describe('构建ID，仅在action=getDeployLog时使用（构建日志，仅云端源码构建）。不传时默认返回最近一次部署的构建日志'),
+  runId: z.string().optional().describe('运行ID（RunId），仅在action=getProcessLog时使用。不传时默认取该服务最近一次部署记录的 RunId（与 detail/getDeployRecords 的 latestDeploy.RunId 同源）。镜像部署与源码构建均可查询运行日志'),
 };
 
 // Input schema for manageCloudRun tool
 const ManageCloudRunInputSchema = {
-  action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent', 'updateConfig', 'initEnv', 'traffic']).describe('云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；传 imageUrl 时改为已有镜像部署，走 DeployType=image 容器型，targetPath 可省略；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体），initEnv=开通当前环境的云托管（异步创建云托管环境，幂等：已开通直接返回；适合新环境首次部署前使用），traffic=流量管理与灰度发布（set=调整稳定版/灰度版流量比例，promote=将灰度版本升级为全量，rollback=回滚到上一个稳定版本；对应 tcb cloudrun traffic 命令）'),
+  action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent', 'updateConfig', 'initEnv', 'traffic']).describe('云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=触发部署并轻量等待任务注册（不会 hang 等完整构建）。源码构建（targetPath）返回 buildId，用 getDeployLog 轮询后再 getProcessLog；已有镜像部署（imageUrl，DeployType=image，BuildId 常为 0）跳过 getDeployLog，用 detail/getDeployRecords 取 RunId 后 getProcessLog。传 imageUrl 时 targetPath 可省略；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体），initEnv=开通当前环境的云托管（异步创建云托管环境，幂等：已开通直接返回；适合新环境首次部署前使用），traffic=流量管理与灰度发布（set=调整稳定版/灰度版流量比例，promote=将灰度版本升级为全量，rollback=回滚到上一个稳定版本；对应 tcb cloudrun traffic 命令）'),
   serverName: z.string().describe('云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名。initEnv 操作不需要此参数'),
 
   // Traffic management operation parameters (action=traffic)
@@ -57,10 +59,12 @@ const ManageCloudRunInputSchema = {
   // InitEnv operation parameters
   envId: z.string().optional().describe('环境 ID（action=initEnv 时使用；不传则使用当前配置的环境）。格式如 env-xxxxxx'),
   packageType: z.enum(CLOUDRUN_PACKAGE_TYPES).optional().default('Trial').describe('云托管环境套餐类型（action=initEnv 时使用）：Trial=试用，Standard=标准，Professional=专业，Enterprise=企业。默认 Trial'),
+  vpcId: z.string().optional().describe('VPC 网络 ID（action=initEnv 时可选）。当平台拒绝系统创建网络时必填，格式如 vpc-xxxxxxxx。与 subnetIds 一起透传给 CreateCloudRunEnv 的 VpcId/SubNetIds。多数场景可不传（由系统创建网络）'),
+  subnetIds: z.array(z.string()).optional().describe('子网 ID 列表（action=initEnv 时可选）。当需指定自有 VPC 时必填，如 ["subnet-xxxxxxxx"]。与 vpcId 一起透传给 CreateCloudRunEnv 的 SubNetIds'),
 
   // Deploy operation parameters
-  targetPath: z.string().optional().describe('本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun。使用 imageUrl 部署已有镜像时此参数可省略'),
-  imageUrl: z.string().optional().describe('已有镜像部署（action=deploy 时使用）：直接指定容器镜像地址，如 ccr.ccs.tencentyun.com/ns/img:v1 或公网 registry 地址。传入后走 DeployType="image"（容器型）部署，无需本地源码目录（targetPath 可省略）。支持：1) 公网匿名可拉取的镜像直填地址；2) 私有/需登录的镜像（如 ghcr.io）需先在本地 docker pull → docker tag/push 到腾讯云 CCR → 填入 CCR 地址。不传则维持源码构建（本地代码打包上传）。注意：无论哪种部署方式，环境都需先开通云托管（未开通时先调用 initEnv，Status=normal 后再部署）'),
+  targetPath: z.string().optional().describe('本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun。使用 imageUrl 部署已有镜像时此参数可省略。注意：本地有源码目录不等于必须走源码构建；若用户指定镜像请优先传 imageUrl，不要仅因存在 targetPath 就回退到源码构建'),
+  imageUrl: z.string().optional().describe('已有镜像部署（action=deploy 时使用）：直接指定容器镜像地址，如 ccr.ccs.tencentyun.com/ns/img:v1 或公网 registry 地址。传入后走 DeployType="image"（容器型）部署，无需本地源码目录（targetPath 可省略）。支持：1) 公网匿名可拉取的镜像直填地址；2) 私有/需登录的镜像（如 ghcr.io）需先在本地 docker pull → docker tag/push 到腾讯云 CCR → 填入 CCR 地址。不传则维持源码构建（本地代码打包上传）。约束：若用户明确提到使用某个镜像、或无需重新构建代码，则必须传 imageUrl 走镜像部署，不要回退到源码构建。注意：无论哪种部署方式，环境都需先开通云托管（未开通时先调用 initEnv，Status=normal 后再部署）'),
   envParamsReplaceAll: z.boolean().optional().default(false).describe('EnvParams 合并策略（deploy / updateConfig）：false（默认）= 与远程按 key 合并（输入覆盖同名 key，远程其余 key 保留）；true= 用输入 EnvParams 整包替换远程。仅当显式传入 EnvParams 时生效'),
   serverConfig: z.object({
     OpenAccessTypes: z.array(z.enum(CLOUDRUN_ACCESS_TYPES)).optional().describe('公网访问类型配置，控制服务的访问权限：OA=办公网访问，PUBLIC=公网访问（默认，可通过HTTPS域名访问），MINIAPP=小程序访问，VPC=VPC访问（仅同VPC内可访问）。可配置多个类型'),
@@ -81,7 +85,7 @@ const ManageCloudRunInputSchema = {
     InternalDomain: z.string().optional().describe('内网域名配置，用于配置服务的内网访问域名。仅在启用内网访问时有效'),
     EntryPoint: z.array(z.string()).optional().describe('Dockerfile EntryPoint参数配置，仅容器型服务需要。指定容器启动时的入口程序数组，如["node","app.js"]'),
     Cmd: z.array(z.string()).optional().describe('Dockerfile Cmd参数配置，仅容器型服务需要。指定容器启动时的默认命令数组，如["npm","start"]'),
-    InitialDelaySeconds: z.number().min(0).optional().describe('延迟检测时间（秒），用于配置服务启动后的健康检查延迟。在此期间内不会将请求路由到该实例，适用于启动时间较长的服务'),
+    InitialDelaySeconds: z.number().min(0).optional().describe('端口健康检查初始延迟（秒）。部署完成后先等待 N 秒才开始端口探测，之后约每 5s 检查一次、连续约 30 次；30 次全失败才判定部署失败（约 150s 探测窗口），不是「N 秒后立即失败」。启动耗时长的应用建议调到 60–120'),
     LogType: z.string().optional().describe('日志类型配置，指定服务的日志收集类型。影响日志的采集方式和存储格式'),
     LogSetId: z.string().optional().describe('CLS日志集ID配置，指定日志服务（CLS）的日志集ID。需要先开通CLS日志服务'),
     LogTopicId: z.string().optional().describe('CLS日志主题ID配置，指定日志服务（CLS）的日志主题ID。需要先开通CLS日志服务'),
@@ -137,13 +141,14 @@ const ManageCloudRunInputSchema = {
 };
 
 type queryCloudRunInput = {
-  action: 'list' | 'detail' | 'templates' | 'getDeployLog' | 'getDeployRecords' | 'envStatus';
+  action: 'list' | 'detail' | 'templates' | 'getDeployLog' | 'getProcessLog' | 'getDeployRecords' | 'envStatus';
   pageSize?: number;
   pageNum?: number;
   serverName?: string;
   serverType?: CloudRunServiceType;
   detailServerName?: string;
   buildId?: number;
+  runId?: string;
   envId?: string;
 };
 
@@ -159,6 +164,8 @@ type ManageCloudRunInput = {
   serverType?: CloudRunServiceType;
   envId?: string;
   packageType?: CloudRunPackageType;
+  vpcId?: string;
+  subnetIds?: string[];
   trafficOp?: 'set' | 'promote' | 'rollback';
   stablePercent?: number;
   canaryPercent?: number;
@@ -243,13 +250,25 @@ function validateAndNormalizePath(inputPath: string): string {
   return normalizedPath;
 }
 
-function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"] | string, serverName: string, error: unknown): string {
+export function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"] | string, serverName: string, error: unknown): string {
   const baseMessage = error instanceof Error ? error.message : String(error);
   const suggestions: string[] = [];
+
+  if (isCamAuthError(baseMessage)) {
+    suggestions.push(buildCamAuthGuidance());
+  }
 
   if (/已有部署发布任务运行中|部署发布任务运行中/i.test(baseMessage)) {
     suggestions.push(`服务 \`${serverName}\` 当前已有部署任务在执行，请等待现有任务完成后再重试。`);
     suggestions.push("如果你确认要覆盖当前流程，可在合适时机使用 `force=true` 再次发起。");
+  }
+
+  if (/云托管资源未开通|无法使用系统创建网络|VpcInfo/i.test(baseMessage)) {
+    suggestions.push(
+      "CreateCloudRunServer 需要有效 VPC：请传 serverConfig.VpcConf（VpcId+SubnetId），" +
+        "或在 initEnv 时传入 vpcId/subnetIds（环境开通后 deploy 会自动从 EnvBaseInfo 回填）。" +
+        "若平台拒绝系统创建网络，必须指定上海地域 VPC。",
+    );
   }
 
   if (suggestions.length === 0) {
@@ -257,6 +276,288 @@ function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"] |
   }
 
   return `[manageCloudRun/${action}] ${baseMessage}\n建议：${suggestions.join(" ")}`;
+}
+
+/**
+ * Lightweight wait after manageCloudRun deploy: poll until the platform has
+ * registered the manage task / assigned identifiers for follow-up log queries.
+ * - source builds: prefer BuildId > 0 (getDeployLog)
+ * - image deploys: prefer RunId (getProcessLog; BuildId is often 0)
+ * Does NOT wait for the full build/deploy (that can take 5–30 minutes).
+ * Aligns with tcb CLI's DescribeServerManageTask polling entrypoint, but with
+ * a short timeout suitable for MCP tool calls.
+ */
+export const CLOUDRUN_DEPLOY_REGISTRATION_MAX_WAIT_MS = 45_000;
+export const CLOUDRUN_DEPLOY_REGISTRATION_INTERVAL_MS = 3_000;
+
+export type CloudRunDeployRegistrationMode = "source" | "image";
+
+export type CloudRunDeployRegistration = {
+  registered: boolean;
+  timedOut: boolean;
+  taskId?: number;
+  buildId?: number;
+  runId?: string;
+  taskStatus?: string;
+  waitMs: number;
+};
+
+export type CloudRunDeployNextStep = {
+  tool: "queryCloudRun";
+  action: "getDeployLog" | "getProcessLog" | "getDeployRecords";
+  suggested_args: Record<string, string | number>;
+  note?: string;
+};
+
+function sleepMs(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function isValidCloudRunBuildId(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0;
+}
+
+export function isValidCloudRunRunId(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function extractServerManageTaskInfo(resp: unknown): {
+  taskId?: number;
+  taskStatus?: string;
+} {
+  const data = (resp ?? {}) as Record<string, unknown>;
+  const task = (data.Task ?? data.task ?? {}) as Record<string, unknown>;
+  const rawId = task.Id ?? task.id;
+  const rawStatus = task.Status ?? task.status;
+  const taskId =
+    typeof rawId === "number" && rawId > 0
+      ? rawId
+      : typeof rawId === "string" && /^\d+$/.test(rawId) && Number(rawId) > 0
+        ? Number(rawId)
+        : undefined;
+  const taskStatus =
+    typeof rawStatus === "string" && rawStatus.trim()
+      ? rawStatus.trim()
+      : undefined;
+  return {
+    ...(taskId !== undefined ? { taskId } : {}),
+    ...(taskStatus ? { taskStatus } : {}),
+  };
+}
+
+/**
+ * Poll DescribeServerManageTask + getDeployRecords until the preferred
+ * identifier appears:
+ * - source (default): BuildId > 0 for getDeployLog
+ * - image: RunId for getProcessLog (BuildId is often 0)
+ * If only taskId is seen, keeps polling for the preferred id until maxWaitMs.
+ */
+export async function waitForCloudRunDeployRegistration(options: {
+  manager: {
+    commonService?: (
+      service: string,
+      version: string,
+    ) => { call: (req: { Action: string; Param: Record<string, unknown> }) => Promise<unknown> };
+  };
+  cloudrunService: {
+    getDeployRecords?: (params: { serverName: string }) => Promise<unknown>;
+  };
+  envId: string;
+  serverName: string;
+  mode?: CloudRunDeployRegistrationMode;
+  maxWaitMs?: number;
+  intervalMs?: number;
+  sleepFn?: (ms: number) => Promise<void>;
+}): Promise<CloudRunDeployRegistration> {
+  const mode = options.mode ?? "source";
+  const maxWaitMs = options.maxWaitMs ?? CLOUDRUN_DEPLOY_REGISTRATION_MAX_WAIT_MS;
+  const intervalMs = options.intervalMs ?? CLOUDRUN_DEPLOY_REGISTRATION_INTERVAL_MS;
+  const sleepFn = options.sleepFn ?? sleepMs;
+  const startAt = Date.now();
+
+  let lastTaskId: number | undefined;
+  let lastTaskStatus: string | undefined;
+  let lastBuildId: number | undefined;
+  let lastRunId: string | undefined;
+
+  // Immediate first probe, then interval retries until timeout.
+  for (;;) {
+    if (options.manager.commonService) {
+      try {
+        const resp = await options.manager
+          .commonService("tcbr", "2022-02-17")
+          .call({
+            Action: "DescribeServerManageTask",
+            Param: {
+              EnvId: options.envId,
+              ServerName: options.serverName,
+              TaskId: lastTaskId ?? 0,
+            },
+          });
+        const info = extractServerManageTaskInfo(resp);
+        if (info.taskId !== undefined) {
+          lastTaskId = info.taskId;
+        }
+        if (info.taskStatus) {
+          lastTaskStatus = info.taskStatus;
+        }
+      } catch {
+        // Task may not be queryable yet; retry until timeout.
+      }
+    }
+
+    if (typeof options.cloudrunService.getDeployRecords === "function") {
+      try {
+        const recordsResult = (await options.cloudrunService.getDeployRecords({
+          serverName: options.serverName,
+        })) as { DeployRecords?: Array<{ BuildId?: number; RunId?: string }> };
+        const latest = recordsResult?.DeployRecords?.[0];
+        if (isValidCloudRunBuildId(latest?.BuildId)) {
+          lastBuildId = latest.BuildId;
+        }
+        if (isValidCloudRunRunId(latest?.RunId)) {
+          lastRunId = latest.RunId.trim();
+        }
+      } catch {
+        // Deploy record may lag behind task registration; retry.
+      }
+    }
+
+    const preferredReady =
+      mode === "image"
+        ? isValidCloudRunRunId(lastRunId)
+        : isValidCloudRunBuildId(lastBuildId);
+
+    if (preferredReady) {
+      return {
+        registered: true,
+        timedOut: false,
+        taskId: lastTaskId,
+        ...(isValidCloudRunBuildId(lastBuildId) ? { buildId: lastBuildId } : {}),
+        ...(isValidCloudRunRunId(lastRunId) ? { runId: lastRunId } : {}),
+        taskStatus: lastTaskStatus,
+        waitMs: Date.now() - startAt,
+      };
+    }
+
+    if (Date.now() - startAt >= maxWaitMs) {
+      break;
+    }
+    await sleepFn(intervalMs);
+  }
+
+  const registered =
+    isValidCloudRunBuildId(lastBuildId) ||
+    isValidCloudRunRunId(lastRunId) ||
+    (typeof lastTaskId === "number" && lastTaskId > 0);
+
+  return {
+    registered,
+    timedOut: true,
+    taskId: lastTaskId,
+    ...(isValidCloudRunBuildId(lastBuildId) ? { buildId: lastBuildId } : {}),
+    ...(isValidCloudRunRunId(lastRunId) ? { runId: lastRunId } : {}),
+    taskStatus: lastTaskStatus,
+    waitMs: Date.now() - startAt,
+  };
+}
+
+/**
+ * Build manageCloudRun(deploy) next_step by DeployType:
+ * - source: getDeployLog (+ follow-up getProcessLog)
+ * - image: skip getDeployLog; getProcessLog via RunId (or getDeployRecords first)
+ */
+export function buildCloudRunDeployNextStep(options: {
+  deployType: CloudRunDeployRegistrationMode;
+  serverName: string;
+  buildId?: number;
+  runId?: string;
+  registered: boolean;
+}): CloudRunDeployNextStep {
+  const { deployType, serverName, registered } = options;
+
+  if (deployType === "image") {
+    if (isValidCloudRunRunId(options.runId)) {
+      return {
+        tool: "queryCloudRun",
+        action: "getProcessLog",
+        suggested_args: {
+          action: "getProcessLog",
+          detailServerName: serverName,
+          runId: options.runId.trim(),
+        },
+        note: "Image deploy has no CODING build process; skip getDeployLog. Poll getProcessLog for deploy-step and container runtime logs.",
+      };
+    }
+    return {
+      tool: "queryCloudRun",
+      action: "getDeployRecords",
+      suggested_args: {
+        action: "getDeployRecords",
+        detailServerName: serverName,
+      },
+      note: registered
+        ? "Image deploy: read latestDeploy.RunId, then queryCloudRun(action=\"getProcessLog\", runId=...). Skip getDeployLog."
+        : "Image deploy registration still queueing; retry getDeployRecords for RunId, then getProcessLog. Skip getDeployLog.",
+    };
+  }
+
+  if (isValidCloudRunBuildId(options.buildId)) {
+    return {
+      tool: "queryCloudRun",
+      action: "getDeployLog",
+      suggested_args: {
+        action: "getDeployLog",
+        detailServerName: serverName,
+        buildId: options.buildId,
+      },
+      note: "Source build: poll getDeployLog for build progress, then getProcessLog (RunId from detail/getDeployRecords) for runtime/deploy-step logs.",
+    };
+  }
+
+  return {
+    tool: "queryCloudRun",
+    action: "getDeployLog",
+    suggested_args: {
+      action: "getDeployLog",
+      detailServerName: serverName,
+    },
+    note: registered
+      ? "BuildId not yet available; omit buildId to use the latest deploy record. After build, use getProcessLog for runtime logs."
+      : "Registration timed out; wait a moment then retry getDeployLog, or open consoleUrl. After build, use getProcessLog for runtime logs.",
+  };
+}
+
+export function buildCloudRunDeployProgressHint(options: {
+  deployType: CloudRunDeployRegistrationMode;
+  serverName: string;
+  buildId?: number;
+  runId?: string;
+  registered: boolean;
+  timedOut: boolean;
+  waitMs: number;
+  consoleUrl: string;
+  taskId?: number;
+}): string {
+  const { deployType, serverName, consoleUrl } = options;
+
+  if (deployType === "image") {
+    if (isValidCloudRunRunId(options.runId)) {
+      return ` Image deploy: use queryCloudRun(action="getProcessLog", detailServerName="${serverName}", runId="${options.runId.trim()}") for runtime/deploy-step logs (skip getDeployLog).`;
+    }
+    if (options.registered) {
+      return ` Image deploy registered${typeof options.taskId === "number" ? ` (taskId=${options.taskId})` : ""}; RunId not yet available — use queryCloudRun(action="getDeployRecords", detailServerName="${serverName}") then getProcessLog (skip getDeployLog), or check ${consoleUrl}.`;
+    }
+    return ` Image deploy registration timed out after ${Math.round(options.waitMs / 1000)}s — retry getDeployRecords for RunId then getProcessLog (skip getDeployLog), or check ${consoleUrl}.`;
+  }
+
+  if (isValidCloudRunBuildId(options.buildId)) {
+    return ` Use queryCloudRun(action="getDeployLog", detailServerName="${serverName}", buildId=${options.buildId}) to poll build progress, then getProcessLog for runtime logs.`;
+  }
+  if (options.registered) {
+    return ` Task registered (taskId=${options.taskId ?? "unknown"}); BuildId not yet available — retry queryCloudRun(action="getDeployLog", detailServerName="${serverName}") shortly, then getProcessLog, or check ${consoleUrl}.`;
+  }
+  return ` Build registration timed out after ${Math.round(options.waitMs / 1000)}s — deployment may still be queueing. Check ${consoleUrl} or retry queryCloudRun(action="getDeployLog", detailServerName="${serverName}") later.`;
 }
 
 const CLOUDRUN_DB_ENV_KEY_PATTERN =
@@ -319,11 +620,100 @@ export async function describeCloudRunEnvStatus(
     return { isExist: false, status: "unopened", baseInfo };
   }
   const rawStatus = typeof baseInfo.Status === "string" ? baseInfo.Status : "";
+  // Platform may return NORMAL/CREATING (uppercase); normalize before matching.
+  const normalizedStatus = rawStatus.toLowerCase();
   const status =
-    rawStatus === "creating" || rawStatus === "normal"
-      ? (rawStatus as "creating" | "normal")
+    normalizedStatus === "creating" || normalizedStatus === "normal"
+      ? (normalizedStatus as "creating" | "normal")
       : "unknown";
   return { isExist: true, status, baseInfo };
+}
+
+/** CloudRun EnvType for CreateCloudRunEnv (tcbr DescribeEnvBaseInfo enum). */
+export const CLOUDRUN_ENV_TYPE = "tcbr" as const;
+
+export type CloudRunVpcInfo = {
+  VpcId: string;
+  CreateType: number;
+  SubnetIds: string[];
+};
+
+/**
+ * Extract VPC binding from DescribeEnvBaseInfo.EnvBaseInfo when the env was
+ * opened with an explicit VPC.
+ */
+export function extractEnvBaseInfoVpc(
+  baseInfo: Record<string, unknown> | null | undefined,
+): { VpcId: string; SubnetIds: string[] } | undefined {
+  if (!baseInfo) {
+    return undefined;
+  }
+  const vpcId = typeof baseInfo.VpcId === "string" ? baseInfo.VpcId.trim() : "";
+  const rawSubnets = baseInfo.SubNetIds ?? baseInfo.SubnetIds;
+  const subnetIds = Array.isArray(rawSubnets)
+    ? rawSubnets
+        .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+        .map((item) => item.trim())
+    : [];
+  if (!vpcId || subnetIds.length === 0) {
+    return undefined;
+  }
+  return { VpcId: vpcId, SubnetIds: subnetIds };
+}
+
+/**
+ * Resolve CreateCloudRunServer.VpcInfo: prefer explicit serverConfig.VpcConf,
+ * otherwise fall back to env-level VPC from DescribeEnvBaseInfo.
+ */
+export function resolveCloudRunDeployVpcInfo(options: {
+  vpcConf?: { VpcId?: string; SubnetId?: string } | null;
+  envBaseInfo?: Record<string, unknown> | null;
+}): CloudRunVpcInfo | undefined {
+  const conf = options.vpcConf;
+  if (conf?.VpcId?.trim() && conf?.SubnetId?.trim()) {
+    return {
+      VpcId: conf.VpcId.trim(),
+      CreateType: 2,
+      SubnetIds: [conf.SubnetId.trim()],
+    };
+  }
+  const fromEnv = extractEnvBaseInfoVpc(options.envBaseInfo);
+  if (!fromEnv) {
+    return undefined;
+  }
+  return {
+    VpcId: fromEnv.VpcId,
+    CreateType: 2,
+    SubnetIds: fromEnv.SubnetIds,
+  };
+}
+
+/**
+ * Build CreateCloudRunEnv Param, always including EnvType=tcbr.
+ * Optional vpcId/subnetIds are used when the platform requires an explicit VPC.
+ */
+export function buildCreateCloudRunEnvParam(options: {
+  envId: string;
+  packageType: string;
+  vpcId?: string;
+  subnetIds?: string[];
+}): Record<string, unknown> {
+  const param: Record<string, unknown> = {
+    EnvId: options.envId,
+    PackageType: options.packageType,
+    EnvType: CLOUDRUN_ENV_TYPE,
+  };
+  const vpcId = options.vpcId?.trim();
+  const subnetIds = (options.subnetIds ?? [])
+    .filter((id): id is string => typeof id === "string" && id.trim().length > 0)
+    .map((id) => id.trim());
+  if (vpcId) {
+    param.VpcId = vpcId;
+  }
+  if (subnetIds.length > 0) {
+    param.SubNetIds = subnetIds;
+  }
+  return param;
 }
 
 /**
@@ -578,7 +968,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
     "queryCloudRun",
     {
       title: "查询 CloudRun 服务信息",
-      description: "查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表、获取部署日志以及查询环境云托管开通状态（envStatus）。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。",
+      description: "查询云托管服务信息，支持获取服务列表、查询服务详情、获取可用模板列表、获取构建日志（getDeployLog，仅云端源码构建/依赖 CODING）、获取运行日志（getProcessLog，镜像与源码部署均可/不依赖 CODING）、获取部署记录以及查询环境云托管开通状态（envStatus）。返回的服务信息包括服务名称、状态、访问类型、配置详情以及最近部署上下文。",
       inputSchema: queryCloudRunInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -680,9 +1070,16 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
 
               if (!latestDeploy) {
                 message = `Retrieved details for service '${serverName}'. No deploy records found yet.`;
-              } else if (typeof latestDeploy.Status === 'string' && latestDeploy.Status.includes('failed')) {
-                message = `Service '${serverName}' latest deploy failed. Please use queryCloudRun(action="getDeployLog") for details.`;
-              } else if (typeof latestDeploy.Status === 'string' && latestDeploy.Status.includes('creating')) {
+              } else if (
+                typeof latestDeploy.Status === "string" &&
+                // Platform may return FAILED/CREATING (uppercase); normalize before matching.
+                latestDeploy.Status.toLowerCase().includes("failed")
+              ) {
+                message = `Service '${serverName}' latest deploy failed. Use queryCloudRun(action="getProcessLog") for runtime/deploy-step logs (RunId from latestDeploy); use getDeployLog only for cloud source-build logs (CODING).`;
+              } else if (
+                typeof latestDeploy.Status === "string" &&
+                latestDeploy.Status.toLowerCase().includes("creating")
+              ) {
                 message = `Service '${serverName}' latest deploy is still running. Please check again later or query the deploy log for progress.`;
               } else {
                 message = `Retrieved details for service '${serverName}'. Latest service status: ${result.BaseInfo?.Status || 'unknown'}, latest deploy status: ${latestDeploy.Status || 'unknown'}.`;
@@ -771,6 +1168,9 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
             }
 
             const buildId = input.buildId ?? latestDeploy.BuildId;
+            // Build log (CODING / DescribeCloudRunBuildLog). Meaningful only for
+            // cloud source builds; image deploys have no build process. Accounts
+            // without a CODING user may fail here — use getProcessLog for runtime logs.
             const buildLogResult: any = await cloudrunService.getBuildLog({
               serverName,
               buildId,
@@ -804,11 +1204,101 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
                       buildId,
                       deployRecord: latestDeploy,
                       buildLog: buildLogResult?.Log || null,
+                      // Optional best-effort attach; prefer dedicated getProcessLog for runtime diagnosis
                       processLogs,
                       combinedLogText,
                       ...(processLogsWarning ? { processLogsWarning } : {})
                     },
-                    message: `Retrieved deploy log for service '${serverName}'`
+                    message: `Retrieved build log for service '${serverName}' (getDeployLog=构建日志; for 运行日志 use getProcessLog with RunId)`
+                  }, null, 2)
+                }
+              ]
+            };
+          }
+
+          case 'getProcessLog': {
+            const serverName = getCloudRunQueryServerName(input);
+
+            if (!serverName && !input.runId?.trim()) {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: false,
+                      error: "runId is required, or provide detailServerName/serverName to resolve latest RunId",
+                      message: "Pass runId from detail/getDeployRecords latestDeploy.RunId, or provide a service name to use the latest deploy RunId."
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            let runId = input.runId?.trim() || "";
+            let deployRecord: any = null;
+
+            if (serverName) {
+              const deployRecordsResult: any = await cloudrunService.getDeployRecords({ serverName });
+              const deployRecords = Array.isArray(deployRecordsResult?.DeployRecords)
+                ? deployRecordsResult.DeployRecords
+                : [];
+              deployRecord = deployRecords[0] ?? null;
+
+              if (!runId) {
+                runId = typeof deployRecord?.RunId === "string" ? deployRecord.RunId.trim() : "";
+              } else if (deployRecord?.RunId && deployRecord.RunId !== runId) {
+                // Keep latest deploy as context only; explicit runId wins
+              }
+            }
+
+            if (!runId) {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify({
+                      success: false,
+                      error: serverName
+                        ? `Service '${serverName}' has no RunId on the latest deploy record.`
+                        : "runId is required for getProcessLog action",
+                      message: "Deploy the service first, then read RunId from queryCloudRun(action=\"detail\") or getDeployRecords (latestDeploy.RunId)."
+                    }, null, 2)
+                  }
+                ]
+              };
+            }
+
+            if (typeof cloudrunService.getProcessLog !== "function") {
+              throw new Error(
+                "Current CloudBase Manager SDK does not support getProcessLog; please upgrade @cloudbase/manager-node.",
+              );
+            }
+
+            const processLogResult: any = await cloudrunService.getProcessLog({
+              RunId: runId,
+            });
+            const processLogs = Array.isArray(processLogResult?.Logs)
+              ? processLogResult.Logs
+              : [];
+            const processLogText = processLogs.length > 0
+              ? normalizeProcessLogText(processLogs)
+              : "";
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    success: true,
+                    data: {
+                      serverName: serverName || undefined,
+                      runId,
+                      deployRecord,
+                      processLogs,
+                      processLogText,
+                      requestId: processLogResult?.RequestId,
+                    },
+                    message: `Retrieved process/runtime log for RunId='${runId}' (getProcessLog=运行日志; getDeployLog=构建日志且仅云端构建/依赖 CODING)`
                   }, null, 2)
                 }
               ]
@@ -934,7 +1424,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
     "manageCloudRun",
     {
       title: "管理 CloudRun 服务",
-      description: "管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。",
+      description: "管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 语义为「触发部署 + 轻量等待任务注册」（最多约 45s）。源码构建返回 buildId，用 getDeployLog 轮询构建进度后再 getProcessLog；镜像部署（imageUrl）BuildId 常为 0，跳过 getDeployLog，返回 runId/next_step 引导 getProcessLog（或先 getDeployRecords 取 RunId）。若用户明确指定镜像或无需重新构建，必须传 imageUrl，不要仅因本地有源码目录就回退到源码构建。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。",
       inputSchema: ManageCloudRunInputSchema,
       annotations: {
         readOnlyHint: false,
@@ -1025,13 +1515,19 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
             }
 
             // 未开通 → 发起异步开通（CreateCloudRunEnv 异步，不阻塞等待）。
+            // Always pass EnvType=tcbr; optional vpcId/subnetIds when an explicit VPC is required.
             let createResult: any;
             try {
               createResult = await manager
                 .commonService("tcbr", "2022-02-17")
                 .call({
                   Action: "CreateCloudRunEnv",
-                  Param: { EnvId: envId, PackageType: packageType },
+                  Param: buildCreateCloudRunEnvParam({
+                    envId,
+                    packageType,
+                    vpcId: input.vpcId,
+                    subnetIds: input.subnetIds,
+                  }),
                 });
             } catch (error) {
               throw new Error(buildManageCloudRunErrorMessage('initEnv', envId, error));
@@ -1453,16 +1949,31 @@ for await (let x of res.textStream) {
             }
 
             // Manager SDK create path prefers top-level vpcInfo (CreateCloudRunServer.VpcInfo).
-            // Map serverConfig.VpcConf → vpcInfo so first-time create actually binds VPC.
+            // Prefer serverConfig.VpcConf; if missing, auto-fill from env DescribeEnvBaseInfo
+            // (envs opened with vpcId/subnetIds already carry VpcId/SubNetIds).
             const vpcConf = effectiveServerConfig?.VpcConf as
               | { VpcId?: string; SubnetId?: string }
               | undefined;
-            if (vpcConf?.VpcId?.trim() && vpcConf?.SubnetId?.trim()) {
-              deployParams.vpcInfo = {
-                VpcId: vpcConf.VpcId.trim(),
-                CreateType: 2,
-                SubnetIds: [vpcConf.SubnetId.trim()],
-              };
+            let envBaseInfoForVpc: Record<string, unknown> | null = null;
+            const explicitVpcId = vpcConf?.VpcId?.trim() ?? "";
+            const explicitSubnetId = vpcConf?.SubnetId?.trim() ?? "";
+            if (!explicitVpcId || !explicitSubnetId) {
+              try {
+                const envIdForVpc = await getEnvId(cloudBaseOptions);
+                const envStatusForVpc = await describeCloudRunEnvStatus(manager, envIdForVpc);
+                if (envStatusForVpc.isExist) {
+                  envBaseInfoForVpc = envStatusForVpc.baseInfo;
+                }
+              } catch {
+                // Best-effort: deploy may still succeed without vpcInfo when the platform creates the network.
+              }
+            }
+            const resolvedVpcInfo = resolveCloudRunDeployVpcInfo({
+              vpcConf,
+              envBaseInfo: envBaseInfoForVpc,
+            });
+            if (resolvedVpcInfo) {
+              deployParams.vpcInfo = resolvedVpcInfo;
             }
 
             let result: unknown;
@@ -1474,6 +1985,20 @@ for await (let x of res.textStream) {
 
             // Generate cloudbaserc.json configuration file (source-build only; image deploy has no local project dir)
             const currentEnvId = await getEnvId(cloudBaseOptions);
+
+            // Lightweight wait for task / BuildId (source) or RunId (image) registration.
+            // Does not wait for full build/deploy completion.
+            const deployType: CloudRunDeployRegistrationMode = input.imageUrl
+              ? "image"
+              : "source";
+            const registration = await waitForCloudRunDeployRegistration({
+              manager,
+              cloudrunService,
+              envId: currentEnvId,
+              serverName: input.serverName,
+              mode: deployType,
+            });
+
             let cloudbasercGenerated = false;
             if (targetPath) {
               const cloudbasercPath = path.join(targetPath, 'cloudbaserc.json');
@@ -1555,6 +2080,26 @@ for await (let x of res.textStream) {
               ? ` Warning: ${dbNetworkRisk.message} Set serverConfig.VpcConf before relying on DB connectivity.`
               : "";
 
+            const progressHint = buildCloudRunDeployProgressHint({
+              deployType,
+              serverName: input.serverName,
+              buildId: registration.buildId,
+              runId: registration.runId,
+              registered: registration.registered,
+              timedOut: registration.timedOut,
+              waitMs: registration.waitMs,
+              consoleUrl,
+              taskId: registration.taskId,
+            });
+
+            const nextStep = buildCloudRunDeployNextStep({
+              deployType,
+              serverName: input.serverName,
+              buildId: registration.buildId,
+              runId: registration.runId,
+              registered: registration.registered,
+            });
+
             return {
               content: [
                 {
@@ -1564,12 +2109,30 @@ for await (let x of res.textStream) {
                     data: {
                       serviceName: input.serverName,
                       status: 'deploying',
-                      deployType: input.imageUrl ? 'image' : 'source',
+                      deployType,
                       ...(targetPath ? { deployPath: targetPath } : {}),
                       ...(input.imageUrl ? { imageUrl: input.imageUrl } : {}),
                       serverType: serverType,
                       cloudbasercGenerated,
                       consoleUrl,
+                      ...(isValidCloudRunBuildId(registration.buildId)
+                        ? { buildId: registration.buildId }
+                        : {}),
+                      ...(isValidCloudRunRunId(registration.runId)
+                        ? { runId: registration.runId }
+                        : {}),
+                      ...(typeof registration.taskId === "number"
+                        ? { taskId: registration.taskId }
+                        : {}),
+                      registration: {
+                        registered: registration.registered,
+                        timedOut: registration.timedOut,
+                        waitMs: registration.waitMs,
+                        ...(registration.taskStatus
+                          ? { taskStatus: registration.taskStatus }
+                          : {}),
+                      },
+                      next_step: nextStep,
                       ...(existingService
                         ? {
                             configMerge: {
@@ -1590,8 +2153,10 @@ for await (let x of res.textStream) {
                         ? { accessUrlSource: preferredAccessSource }
                         : {}),
                       ...(warnings.length > 0 ? { warnings } : {}),
+                      // Keep raw SDK result for debugging without implying build finished.
+                      ...(result != null ? { deployAccepted: true } : {}),
                     },
-                    message: `Triggered deployment for ${serverType} service '${input.serverName}' ${input.imageUrl ? `from image ${input.imageUrl}` : `from ${targetPath}`}. You can follow the progress in ${consoleUrl}.${warningSuffix}`
+                    message: `Triggered deployment for ${serverType} service '${input.serverName}' ${input.imageUrl ? `from image ${input.imageUrl}` : `from ${targetPath}`}. Deployment is registering/${deployType === "image" ? "starting" : "building"} (status=deploying); this call does not wait for full completion.${progressHint}${warningSuffix}`
                   }, null, 2)
                 }
               ]

@@ -145,6 +145,13 @@ Start every reply with one of these prefixes so that disposition is
 unambiguous:
 
 - `**Accepted** — fixed in {commit-sha or comma-separated list}: {brief explanation}`
+  After that visible prefix, include the prefix-aware reply-identity
+  stamp
+  `<!-- {markerPrefix}-review-reply -->`
+  (use the repository `markerPrefix`, default `idd-skill`; helpers
+  inject it; a manual `gh api` JSON body must append it). The stamp is
+  utterance identity, not an E1 `review-watermark`, and it must not
+  replace the required `**Accepted**` first bytes.
 
 - **Review threads**: after posting your reply, **immediately resolve
   the thread**. When helper runtime is enabled, the profile-selected
@@ -164,6 +171,7 @@ unambiguous:
   same summary (see the E6 non-review-notice rule). Only a notice the
   bot replaces with an actual completed review needs a fresh
   disposition.
+- **Advisory courtesy acks**: do not re-disposition a courtesy bot ack.
 
 After E13 replies and resolutions are complete, upsert the PR live
 status digest before E14 if the next route is still review-fix or CI

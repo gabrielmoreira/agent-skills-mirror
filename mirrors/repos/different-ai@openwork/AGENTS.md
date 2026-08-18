@@ -46,11 +46,6 @@ even before a dedicated UI exists.
 - Run tests and report commands + results. A runtime-observable change is not
   done until its testkit tape is visible on the PR. If validation cannot run,
   say why and give exact repro steps.
-- Feature work is demo-driven: `/voiceover <feature>` — no code until the script
-  is approved — then a fresh worktree (never the user's checkout), spec from the
-  narration, PR against `dev` with the tape. The `voiceover` skill owns the
-  journey.
-
 ## Local headless web (agents)
 
 - `pnpm dev:headless-web --detach` launches an isolated browser UI + local

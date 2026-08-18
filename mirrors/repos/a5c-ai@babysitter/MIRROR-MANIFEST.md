@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `a5c-ai/babysitter` — 26 default patterns, 43 followed patterns, 4271 file(s) materialized.
+Mirror of `a5c-ai/babysitter` — 26 default patterns, 43 followed patterns, 4280 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `a5c-ai/babysitter` — 26 default patterns, 43 followed patterns, 427
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 43 |
-| Files         | 4271 |
+| Files         | 4280 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -4327,51 +4327,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4224 | ✓ | [`plugins/babysitter-unified/per-harness/pi/AGENTS.md`](plugins/babysitter-unified/per-harness/pi/AGENTS.md) |
 | 4225 | ✓ | [`plugins/babysitter-unified/skills/babysit/SKILL.md`](plugins/babysitter-unified/skills/babysit/SKILL.md) |
 | 4226 | ✓ | [`plugins/kradle-unified/SPEC.md`](plugins/kradle-unified/SPEC.md) |
-| 4227 | ✓ | [`third_party/webpackbar/README.md`](third_party/webpackbar/README.md) |
-| 4228 | ✓ | [`video/README.md`](video/README.md) |
-| 4229 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 4230 | → | [`docs/agent-reference/command-surfaces.md`](docs/agent-reference/command-surfaces.md) |
-| 4231 | → | [`docs/agent-reference/process-authoring.md`](docs/agent-reference/process-authoring.md) |
-| 4232 | → | [`docs/agent-reference/README.md`](docs/agent-reference/README.md) |
-| 4233 | → | [`docs/agent-reference/repo-map.md`](docs/agent-reference/repo-map.md) |
-| 4234 | → | [`docs/agent-reference/runtime-and-layout.md`](docs/agent-reference/runtime-and-layout.md) |
-| 4235 | → | [`docs/blueprints.md`](docs/blueprints.md) |
-| 4236 | → | [`docs/package-and-plugin-map.md`](docs/package-and-plugin-map.md) |
-| 4237 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 4238 | → | [`docs/user-guide/ecosystem/kip-sdk.md`](docs/user-guide/ecosystem/kip-sdk.md) |
-| 4239 | → | [`docs/user-guide/features/adapters.md`](docs/user-guide/features/adapters.md) |
-| 4240 | → | [`docs/user-guide/features/architecture-overview.md`](docs/user-guide/features/architecture-overview.md) |
-| 4241 | → | [`docs/user-guide/features/best-practices.md`](docs/user-guide/features/best-practices.md) |
-| 4242 | → | [`docs/user-guide/features/journal-system.md`](docs/user-guide/features/journal-system.md) |
-| 4243 | → | [`docs/user-guide/features/process-definitions.md`](docs/user-guide/features/process-definitions.md) |
-| 4244 | → | [`docs/user-guide/features/process-library.md`](docs/user-guide/features/process-library.md) |
-| 4245 | → | [`docs/user-guide/features/quality-convergence.md`](docs/user-guide/features/quality-convergence.md) |
-| 4246 | → | [`docs/user-guide/features/run-resumption.md`](docs/user-guide/features/run-resumption.md) |
-| 4247 | → | [`docs/user-guide/getting-started/migration.md`](docs/user-guide/getting-started/migration.md) |
-| 4248 | → | [`docs/user-guide/getting-started/quickstart.md`](docs/user-guide/getting-started/quickstart.md) |
-| 4249 | → | [`docs/user-guide/harnesses/claude-code.md`](docs/user-guide/harnesses/claude-code.md) |
-| 4250 | → | [`docs/user-guide/harnesses/codex.md`](docs/user-guide/harnesses/codex.md) |
-| 4251 | → | [`docs/user-guide/harnesses/install-matrix.md`](docs/user-guide/harnesses/install-matrix.md) |
-| 4252 | → | [`docs/user-guide/reference/adapters-cli.md`](docs/user-guide/reference/adapters-cli.md) |
-| 4253 | → | [`docs/user-guide/reference/cli-reference.md`](docs/user-guide/reference/cli-reference.md) |
-| 4254 | → | [`docs/user-guide/reference/faq.md`](docs/user-guide/reference/faq.md) |
-| 4255 | → | [`docs/user-guide/reference/security.md`](docs/user-guide/reference/security.md) |
-| 4256 | → | [`docs/user-guide/reference/troubleshooting.md`](docs/user-guide/reference/troubleshooting.md) |
-| 4257 | → | [`docs/user-guide/tutorials/beginner-rest-api.md`](docs/user-guide/tutorials/beginner-rest-api.md) |
-| 4258 | → | [`docs/workspace-validation.md`](docs/workspace-validation.md) |
-| 4259 | → | [`packages/atlas/README.md`](packages/atlas/README.md) |
-| 4260 | → | [`packages/kip-sdk/README.md`](packages/kip-sdk/README.md) |
-| 4261 | → | [`plugins/babysitter-unified/per-harness/claude-code/README.md`](plugins/babysitter-unified/per-harness/claude-code/README.md) |
-| 4262 | → | [`plugins/babysitter-unified/per-harness/codex/README.md`](plugins/babysitter-unified/per-harness/codex/README.md) |
-| 4263 | → | [`plugins/babysitter-unified/per-harness/cursor/README.md`](plugins/babysitter-unified/per-harness/cursor/README.md) |
-| 4264 | → | [`plugins/babysitter-unified/per-harness/gemini/README.md`](plugins/babysitter-unified/per-harness/gemini/README.md) |
-| 4265 | → | [`plugins/babysitter-unified/per-harness/github/README.md`](plugins/babysitter-unified/per-harness/github/README.md) |
-| 4266 | → | [`plugins/babysitter-unified/per-harness/hermes/README.md`](plugins/babysitter-unified/per-harness/hermes/README.md) |
-| 4267 | → | [`plugins/babysitter-unified/per-harness/omp/README.md`](plugins/babysitter-unified/per-harness/omp/README.md) |
-| 4268 | → | [`plugins/babysitter-unified/per-harness/openclaw/README.md`](plugins/babysitter-unified/per-harness/openclaw/README.md) |
-| 4269 | → | [`plugins/babysitter-unified/per-harness/opencode/README.md`](plugins/babysitter-unified/per-harness/opencode/README.md) |
-| 4270 | → | [`plugins/babysitter-unified/per-harness/pi/README.md`](plugins/babysitter-unified/per-harness/pi/README.md) |
-| 4271 | → | [`README.md`](README.md) |
+| 4227 | ✓ | [`scripts/__tests__/fixtures/fix011/bin-only-metapackage/README.md`](scripts/__tests__/fixtures/fix011/bin-only-metapackage/README.md) |
+| 4228 | ✓ | [`scripts/__tests__/fixtures/fix011/bundler-runtime/README.md`](scripts/__tests__/fixtures/fix011/bundler-runtime/README.md) |
+| 4229 | ✓ | [`scripts/__tests__/fixtures/fix011/failing-verify-release/README.md`](scripts/__tests__/fixtures/fix011/failing-verify-release/README.md) |
+| 4230 | ✓ | [`scripts/__tests__/fixtures/fix011/fix004-extensions-replica/README.md`](scripts/__tests__/fixtures/fix011/fix004-extensions-replica/README.md) |
+| 4231 | ✓ | [`scripts/__tests__/fixtures/fix011/good-package/README.md`](scripts/__tests__/fixtures/fix011/good-package/README.md) |
+| 4232 | ✓ | [`scripts/__tests__/fixtures/fix011/hoist-only/README.md`](scripts/__tests__/fixtures/fix011/hoist-only/README.md) |
+| 4233 | ✓ | [`scripts/__tests__/fixtures/fix011/missing-runtime-dep/README.md`](scripts/__tests__/fixtures/fix011/missing-runtime-dep/README.md) |
+| 4234 | ✓ | [`scripts/__tests__/fixtures/fix011/missing-surface-target/README.md`](scripts/__tests__/fixtures/fix011/missing-surface-target/README.md) |
+| 4235 | ✓ | [`scripts/__tests__/fixtures/fix011/no-consumer-surface/README.md`](scripts/__tests__/fixtures/fix011/no-consumer-surface/README.md) |
+| 4236 | ✓ | [`third_party/webpackbar/README.md`](third_party/webpackbar/README.md) |
+| 4237 | ✓ | [`video/README.md`](video/README.md) |
+| 4238 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 4239 | → | [`docs/agent-reference/command-surfaces.md`](docs/agent-reference/command-surfaces.md) |
+| 4240 | → | [`docs/agent-reference/process-authoring.md`](docs/agent-reference/process-authoring.md) |
+| 4241 | → | [`docs/agent-reference/README.md`](docs/agent-reference/README.md) |
+| 4242 | → | [`docs/agent-reference/repo-map.md`](docs/agent-reference/repo-map.md) |
+| 4243 | → | [`docs/agent-reference/runtime-and-layout.md`](docs/agent-reference/runtime-and-layout.md) |
+| 4244 | → | [`docs/blueprints.md`](docs/blueprints.md) |
+| 4245 | → | [`docs/package-and-plugin-map.md`](docs/package-and-plugin-map.md) |
+| 4246 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 4247 | → | [`docs/user-guide/ecosystem/kip-sdk.md`](docs/user-guide/ecosystem/kip-sdk.md) |
+| 4248 | → | [`docs/user-guide/features/adapters.md`](docs/user-guide/features/adapters.md) |
+| 4249 | → | [`docs/user-guide/features/architecture-overview.md`](docs/user-guide/features/architecture-overview.md) |
+| 4250 | → | [`docs/user-guide/features/best-practices.md`](docs/user-guide/features/best-practices.md) |
+| 4251 | → | [`docs/user-guide/features/journal-system.md`](docs/user-guide/features/journal-system.md) |
+| 4252 | → | [`docs/user-guide/features/process-definitions.md`](docs/user-guide/features/process-definitions.md) |
+| 4253 | → | [`docs/user-guide/features/process-library.md`](docs/user-guide/features/process-library.md) |
+| 4254 | → | [`docs/user-guide/features/quality-convergence.md`](docs/user-guide/features/quality-convergence.md) |
+| 4255 | → | [`docs/user-guide/features/run-resumption.md`](docs/user-guide/features/run-resumption.md) |
+| 4256 | → | [`docs/user-guide/getting-started/migration.md`](docs/user-guide/getting-started/migration.md) |
+| 4257 | → | [`docs/user-guide/getting-started/quickstart.md`](docs/user-guide/getting-started/quickstart.md) |
+| 4258 | → | [`docs/user-guide/harnesses/claude-code.md`](docs/user-guide/harnesses/claude-code.md) |
+| 4259 | → | [`docs/user-guide/harnesses/codex.md`](docs/user-guide/harnesses/codex.md) |
+| 4260 | → | [`docs/user-guide/harnesses/install-matrix.md`](docs/user-guide/harnesses/install-matrix.md) |
+| 4261 | → | [`docs/user-guide/reference/adapters-cli.md`](docs/user-guide/reference/adapters-cli.md) |
+| 4262 | → | [`docs/user-guide/reference/cli-reference.md`](docs/user-guide/reference/cli-reference.md) |
+| 4263 | → | [`docs/user-guide/reference/faq.md`](docs/user-guide/reference/faq.md) |
+| 4264 | → | [`docs/user-guide/reference/security.md`](docs/user-guide/reference/security.md) |
+| 4265 | → | [`docs/user-guide/reference/troubleshooting.md`](docs/user-guide/reference/troubleshooting.md) |
+| 4266 | → | [`docs/user-guide/tutorials/beginner-rest-api.md`](docs/user-guide/tutorials/beginner-rest-api.md) |
+| 4267 | → | [`docs/workspace-validation.md`](docs/workspace-validation.md) |
+| 4268 | → | [`packages/atlas/README.md`](packages/atlas/README.md) |
+| 4269 | → | [`packages/kip-sdk/README.md`](packages/kip-sdk/README.md) |
+| 4270 | → | [`plugins/babysitter-unified/per-harness/claude-code/README.md`](plugins/babysitter-unified/per-harness/claude-code/README.md) |
+| 4271 | → | [`plugins/babysitter-unified/per-harness/codex/README.md`](plugins/babysitter-unified/per-harness/codex/README.md) |
+| 4272 | → | [`plugins/babysitter-unified/per-harness/cursor/README.md`](plugins/babysitter-unified/per-harness/cursor/README.md) |
+| 4273 | → | [`plugins/babysitter-unified/per-harness/gemini/README.md`](plugins/babysitter-unified/per-harness/gemini/README.md) |
+| 4274 | → | [`plugins/babysitter-unified/per-harness/github/README.md`](plugins/babysitter-unified/per-harness/github/README.md) |
+| 4275 | → | [`plugins/babysitter-unified/per-harness/hermes/README.md`](plugins/babysitter-unified/per-harness/hermes/README.md) |
+| 4276 | → | [`plugins/babysitter-unified/per-harness/omp/README.md`](plugins/babysitter-unified/per-harness/omp/README.md) |
+| 4277 | → | [`plugins/babysitter-unified/per-harness/openclaw/README.md`](plugins/babysitter-unified/per-harness/openclaw/README.md) |
+| 4278 | → | [`plugins/babysitter-unified/per-harness/opencode/README.md`](plugins/babysitter-unified/per-harness/opencode/README.md) |
+| 4279 | → | [`plugins/babysitter-unified/per-harness/pi/README.md`](plugins/babysitter-unified/per-harness/pi/README.md) |
+| 4280 | → | [`README.md`](README.md) |
 
 ---
 

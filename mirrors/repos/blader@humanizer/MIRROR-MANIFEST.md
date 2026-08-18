@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `blader/humanizer` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `blader/humanizer` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `blader/humanizer` — 26 default patterns, 0 followed patterns, 3 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
 | 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | ✓ | [`skills/humanizer/SKILL.md`](skills/humanizer/SKILL.md) |
 
 ---
 

@@ -539,7 +539,7 @@ KB 文件预览端点**仅面向用户本人，无 session 参数、无 owner fa
 | `load_session_artifacts_cmd` | `GET /api/sessions/{sessionId}/artifacts` | ✅ |
 | `list_background_jobs` | `GET /api/sessions/{sessionId}/background-jobs` | ✅ |
 | `get_background_job` | `GET /api/background-jobs/{jobId}` | ✅ |
-| `get_session_stream_state` | `GET /api/sessions/{sessionId}/stream-state` | ✅ |
+| `get_session_stream_state` | `GET /api/sessions/{sessionId}/stream-state` | ✅（返回流状态与 `admissionActive`；后者表示 exact Turn admission 尚未释放） |
 | `set_session_archived_cmd` | `PATCH /api/sessions/{sessionId}/archived` | ✅（body `{ archived: boolean }`；归档 / 恢复，不删除消息） |
 | `delete_session_cmd` | `DELETE /api/sessions/{sessionId}` | ✅（永久删除；同时清理独立 `cron.db` 中引用该会话的 run log） |
 | `rename_session_cmd` | `PATCH /api/sessions/{sessionId}` | ✅ |
@@ -579,9 +579,9 @@ KB 文件预览端点**仅面向用户本人，无 session 参数、无 owner fa
 | `get_project_bootstrap_run` | `GET /api/project-bootstrap/{requestId}` | ✅ |
 | `cancel_project_bootstrap` | `POST /api/project-bootstrap/{requestId}/cancel` | ✅ |
 
-Managed Worktree owner API 管理 session-scoped durable git worktree：`create_managed_worktree` 拒绝 incognito、默认在 `~/.hope-agent/worktrees/<repo-slug>/<wt-id>` 建 detached worktree（可由 `WorktreeCreate` hook 接管），`archive` 记 dirty snapshot 且 clean 才 best-effort remove，`restore` 重建已清理路径，`handoff` 只绑父 session cwd 不复制 Git 改动；`chat` / `POST /api/chat` 新项目草稿可带 `projectBootstrap`，配套查询 / 取消接口用于断线恢复。完整契约见 [Managed Worktree 控制平面](../agent/worktree.md)。
+Managed Worktree owner API 管理 durable git worktree：`create_managed_worktree` 拒绝 incognito，且只接受 `manual/workflow/subagent` purpose（Scheduled provenance 只由 kernel typed API 铸造）；默认在 `~/.hope-agent/worktrees/<repo-slug>/<wt-id>` 建 detached worktree（可由 `WorktreeCreate` hook 接管）。返回 DTO 可含 session/task owner、runtime 与 handoff 绑定；`archive` 记 dirty snapshot且 clean 才 best-effort remove，`restore` 重建已清理路径，`handoff` 只绑父 session cwd 不复制 Git 改动；`chat` / `POST /api/chat` 新项目草稿可带 `projectBootstrap`，配套查询 / 取消接口用于断线恢复。完整契约见 [Managed Worktree 控制平面](../agent/worktree.md)。
 
-`POST /api/chat` 的 `projectBootstrap` 可能执行本地分支切换或创建 Worktree，因此与 Git 写端点共用 `filesystem.allow_remote_writes` 默认关闭闸门，并在创建临时 Session 前返回 403；普通聊天以及 Bootstrap 状态查询/取消不受此闸门影响。
+HTTP Managed Worktree 的 create/archive/restore/handoff 与 `POST /api/chat` 的 `projectBootstrap` 都可能写宿主 Git，统一受默认关闭的 `filesystem.allow_remote_writes` 闸门；普通聊天、读取及 Bootstrap 状态查询/取消不受影响。
 
 ### Session Git
 
@@ -846,6 +846,35 @@ Loop owner API 管理 session-scoped 重复触发器：`create_loop_schedule` �
 有界等待并行收敛 DB、审批、`ask_user` 与 session-owned runtime；响应超时不取消已经启动的
 后台清理。全局停止同样走 core `stop_all_sessions`，HTTP / Tauri 只先翻转 transport-local
 cancel handle。精确 `turnId` 不匹配时 fail closed，不得误停同 session 的新回合。
+
+`stop_chat` 与 `POST /api/chat/stop` 返回**同一个** `ha_core::chat_engine::stop::StopChatResult`
+（camelCase），两个适配器不得各自造形状：
+
+```ts
+{
+  stopped: boolean
+  scope: "request" | "session" | "all"
+  reason?: string | null
+  turnMismatch: boolean          // 精确 turn 打到了另一个在跑的 turn
+  activeTurnFound: boolean       // 后端 registry 当时确实有前台 turn
+  completionSealed: boolean      // executor 已越过取消点，终态事件仍在路上
+  terminalEventPending: boolean  // 本次调用武装了 cancelling 广播 + watchdog
+  latched: boolean               // 预注册闩锁吃下了本次 Stop，turn 稍后才注册
+  runtimeCancellations: CancelRuntimeTaskResult[]
+  runtimeCancellationError?: string | null
+  autonomyPaused: boolean
+  autonomyPause?: SessionAutonomyPause | null
+  autonomyPauseError?: string | null
+  stoppedSessionCount?: number   // 仅全局停止
+}
+```
+
+**Stop 只回答「这次调用做了什么」，绝不回答「会话现在什么状态」**——后者恒由
+`get_session_stream_state` 唯一负责，否则两个真相源必然漂移。`latched` /
+`completionSealed` / `terminalEventPending` **三者全为 false 即证明不会再有任何终态事件**
+（例如请求的 turn 已是 `interrupted / crash_recovery`，或 session-only Stop 时根本没有活跃
+turn），调用方必须据此自行收敛本地活动状态，不得继续空等（见
+[chat-engine](../core/chat-engine.md)）。
 
 `chat` / `/api/chat` 的可选 `incomingTurn` 是 typed composer sidecar，当前契约为 `promptContractVersion=3`、`mentionWireVersion=1`。它必须携带 canonical user text、SHA-256 digest、UTF-8 source anchor 与 `file|plan|note|skill|plugin|connector|agent` binding；后端逐项校验正文 token 与来源，typed 请求不回退为字符串猜测。`plan` 只由 Plans 页的 first-party 引用动作产生：服务端独立重解析 registry path、核对附件 canonical path 并 open-once 冻结。没有 sidecar 的普通或粘贴 `@...`（包括 `@plan:`）不产生引用，`[[note]]` 只作为单独登记的只读兼容语法。File/Plan binding 必须在 direct/queue 持久化前分别与 `source=mention|plan_mention` 的附件按 unique target 精确对齐（重复相同 target 只需一个附件）；typed attachment 禁止预装 `data`、upload/quote metadata，且 name/MIME/path 受有界元数据校验。额外、缺失或无 sidecar 的 typed source 直接返回 400/IPC error。队列入口把 `incomingTurn` 与显式 Skill 的 `skillAllowedTools` 一起持久化；编辑排队消息会在同一 DB 事务清除旧 binding/ceiling 和 `mention|plan_mention` 附件、保留普通 upload/quote，避免把旧 provenance 套到新正文或留下无法派发的无 sidecar typed source。
 
@@ -1233,19 +1262,30 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 
 | Tauri Command | HTTP | 状态 |
 |---|---|---|
-| `cron_list_jobs` | `GET /api/cron/jobs` | ✅ |
+| `cron_list_jobs` | `GET /api/cron/jobs` | ✅（每行附 `lastRun` 最近一次运行摘要，供列表搜索与异常入口，无需逐行拉运行日志） |
 | `cron_get_job` | `GET /api/cron/jobs/{id}` | ✅ |
+| `cron_get_job_snapshot` | `GET /api/cron/jobs/{id}/snapshot` | ✅（返回 `{ job, deleted }`；逻辑删除的 Task 仍可读，供保留历史展示与「复制为新任务」草稿，绝不重新进入排程面） |
+| `cron_preflight` | `POST /api/cron/preflight` | ✅（只读；body `{ request }`，支持 create/update/runNow，返回下三次触发、实际执行摘要和 blocker/warning/info） |
 | `cron_create_job` | `POST /api/cron/jobs` | ✅ |
-| `cron_update_job` | `PUT /api/cron/jobs/{id}` | ✅ |
+| `cron_update_job` | `PUT /api/cron/jobs/{id}` | ✅（`expectedRevision` CAS；冲突 HTTP 409 / code=`cron_revision_conflict` + `currentJob`，Tauri 返回同形结果） |
 | `cron_toggle_job` | `POST /api/cron/jobs/{id}/toggle` | ✅ |
-| `cron_delete_job` | `DELETE /api/cron/jobs/{id}` | ✅ |
-| `cron_run_now` | `POST /api/cron/jobs/{id}/run` | ✅ |
+| `cron_delete_job` | `DELETE /api/cron/jobs/{id}` | ✅（逻辑删除；保留运行历史与普通 / legacy Session） |
+| `cron_run_now` | `POST /api/cron/jobs/{id}/run` | ✅（body `{ expectedRevision }`；live preflight 后同步精确 claim，返回 `started` 或带新报告的 `rejected`） |
+| `cron_cancel_run` | `POST /api/cron/runs/{runLogId}/cancel` | ✅（按 immutable run-log occurrence 精确取消 standalone `AgentTurn`；terminal 幂等 no-op；无 `turnId` 的 legacy / SessionLoop 返回 `code=cron_run_cancel_unsupported`、`cancelRequested=false`） |
 | `cron_jobs_referencing_account` | `GET /api/cron/jobs-referencing-account/{accountId}` | ✅ |
-| `cron_get_run_logs` | `GET /api/cron/jobs/{jobId}/logs` | ✅（按可见行分页，排除已归档运行对话） |
+| `cron_get_run_logs` | `GET /api/cron/jobs/{jobId}/logs` | ✅（按可见行分页，排除已归档运行对话；standalone 行含 exact `turnId`） |
 | `cron_get_calendar_events` | `GET /api/cron/calendar` | ✅ |
-| `cron_run_timeline` | `GET /api/cron/timeline?limit=&offset=` | ✅ (跨 job 运行时间线，按可见行分页并排除已归档对话) |
+| `cron_run_timeline` | `GET /api/cron/timeline?limit=&offset=` | ✅（跨 job 运行时间线，含已删 Task 历史；`jobDeleted` 标记，按可见行分页并排除已归档对话） |
 | `cron_unread_total` | `GET /api/cron/unread` | ✅（未读 Cron 运行 session 数，侧边栏独立角标） |
 | `cron_mark_all_read` | `POST /api/cron/read-all` | ✅ (一键清除 cron 未读，emit `cron:unread_changed`) |
+| `cron_workspace_resources` | `GET /api/cron/workspaces?jobId=` | ✅（有界的待处理 Worktree 资源，包含后端裁决的 owner action availability） |
+| `cron_workspace_resource_for_run` | `GET /api/cron/runs/{runLogId}/workspace` | ✅（按保留 run log 查询，Task 逻辑删除后仍可用） |
+| `cron_workspace_takeover` | `POST /api/cron/jobs/{jobId}/workspace/takeover` | ✅（body `{ sessionId }`） |
+| `cron_workspace_return` | `POST /api/cron/jobs/{jobId}/workspace/return` | ✅（body `{ sessionId, resume }`） |
+| `cron_workspace_discard_run` | `POST /api/cron/runs/{runLogId}/workspace/discard` | ✅（body `{ sessionId, confirm: true }`） |
+| `cron_workspace_discard_task` | `POST /api/cron/jobs/{jobId}/workspace/discard` | ✅（body `{ confirm: true }`） |
+
+`cron_preflight` 不联网、不创建 Worktree、不写数据库；create/update 壳在临写前重跑同一 evaluator 并拒绝 blocker。非 Project 任务的远程 create/update/enable/run-now 与资源接管、归还、丢弃还必须实时命中 `filesystem.allowRemoteWrites=true`，否则 403。Scheduled Worktree 读取端点同样不写盘；可用性及拒绝原因由 `CronWorkspaceResource.actions` 返回，客户端不根据本地状态猜测；真正的 Diff / branch / commit / push / PR 继续复用普通 Session Workspace / Git 控制面。
 
 ### Dashboard
 

@@ -49,7 +49,7 @@ Production promotion should require the with-skill pass rate to beat baseline an
 Run execution evidence after the scorecard:
 
 ```bash
-python3 scripts/yao.py output-exec
+python3 scripts/yao.py output-exec --self
 ```
 
 By default, this records the current case outputs as `recorded_fixture`. That is useful for reproducibility, but it is not model-executed evidence. To collect real run evidence, pass `--runner-command` with a command or JSON string list. The runner receives a JSON request on stdin and should return JSON with:
@@ -64,7 +64,7 @@ Only runs that return provider/model metadata or `execution_kind: "model"` shoul
 For local release-gate smoke evidence without external model credentials, use the deterministic runner:
 
 ```bash
-python3 scripts/yao.py output-exec --runner-command '["python3","scripts/local_output_eval_runner.py"]'
+python3 scripts/yao.py output-exec --runner-command '["python3","scripts/local_output_eval_runner.py"]' --self
 ```
 
 This verifies the command-runner contract, timing capture, grading path, and failure handling. It must not be described as provider-backed model evidence.
@@ -74,7 +74,7 @@ For provider-backed evidence, use the bundled provider runner with real credenti
 ```bash
 YAO_OUTPUT_EVAL_MODEL=gpt-4.1-mini \
 OPENAI_API_KEY=... \
-python3 scripts/yao.py output-exec --provider-runner openai
+python3 scripts/yao.py output-exec --provider-runner openai --self
 ```
 
 The provider runner calls an OpenAI Responses API compatible endpoint, reads input files relative to `evals/output/`, returns `execution_kind: "model"`, and records observed token usage when the provider returns usage fields. If the API key or model is missing, the runner must fail instead of falling back to fixtures or pretending model evidence exists. Use `--provider-base-url` only for reviewed compatible endpoints; non-default HTTPS hosts require `--allow-custom-base-url`, and plain HTTP is allowed only with `--allow-insecure-localhost` for local test servers.
@@ -95,7 +95,7 @@ After blind review, record reviewer choices in `reports/output_review_decisions.
 
 ```bash
 python3 scripts/adjudicate_output_review.py --write-template
-python3 scripts/yao.py output-review
+python3 scripts/yao.py output-review --self
 ```
 
 The adjudication report writes:

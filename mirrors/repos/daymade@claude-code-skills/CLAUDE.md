@@ -150,6 +150,20 @@ git commit -m "message"
 git push
 ```
 
+**Closing a PR unmerged (declined, or superseded by another PR) → delete its head
+branch in the same action.** `gh pr merge --delete-branch` only covers merged PRs.
+⚠️ Deleting the branch does NOT remove `refs/pull/<N>/head` — GitHub keeps serving
+that ref, so the commits remain publicly fetchable by anyone who fetches it, and the
+branch listing (plus the weekly `stale-branch-watch`, which only sees branch refs)
+loses sight of the residue. Branch deletion closes the *discoverable* surface, which
+is still worth doing at close time. But if the content needs **sanitizing**, branch
+deletion alone is cosmetic — first move the pull ref to a sanitized commit (reopen
+the PR → push the fix → close again; pushes do not move a *closed* PR's ref), then
+delete the branch, and accept that the old SHAs stay addressable from GitHub's object
+cache until GC — a guaranteed purge requires a GitHub support ticket. (2026-08-17: a
+closed-superseded PR's branch carried an unsanitized fixture for 13 days after the
+fix was written; the pull ref had to be moved via the reopen dance before deletion.)
+
 ### Local `main` Is a Read-Only Mirror
 
 Squash-merged PRs rewrite commits under new SHAs, so every direct commit to
@@ -371,6 +385,8 @@ This applies when you change ANY file under a skill directory:
 89. **docx-creator** - Produce production-grade Word (.docx) documents, especially Chinese ones, by driving the minimax-docx OpenXML engine correctly — alignment-layering rule, per-list numbering restart, and other corrections the underlying engine doesn't ship (daymade-docs suite member)
 90. **claude-code-hooks** - Write, test, register, and debug Claude Code hooks — PreToolUse/PostToolUse/SessionStart/Stop Bash guards that enforce a rule the model would otherwise talk itself past, with token-level shlex matching, bash -n + real-JSON end-to-end testing discipline, and multi-profile registration convergence (daymade-claude-code suite member)
 91. **devils-advocate** - Structured devil's-advocate pressure-testing of an investment thesis against user-supplied materials — decompose explicit/implicit assumptions, retrieve evidence-linked counterarguments with verbatim citations under a source-credibility ladder, risk-flag with an anti-inflation rubric, add a materials-bounded base-rate outside view, and emit dual-layer output (audit JSON + theme-grouped analyst narrative) plus a monitoring signpost list (daymade-financial suite member)
+92. **macos-watchdog** - Design, deploy, and discipline macOS launchd watchdogs (LaunchAgents/LaunchDaemons that auto-remediate recurring problems) — quiet-watchdog contract (premise-state self-check, patient mode, escalating auto-cooldown, never-resurrect-what-the-user-quit), deploy mechanics (gui vs system domain, TCC/FDA, bootout vs deprecated unload), batch-loop throttling, SRE alert layering, with a source-able cooldown library and idempotent installer script
+93. **daymade-sector-research** - A-share sector research workflow: compute Top-N gainers across all sector constituents, retrieve announcement windows (weekly/monthly), grade market-sentiment evidence (L1/L2/L3), and run Agent Team parallel orchestration with fresh-context adversarial verification (daymade-financial suite member)
 
 **Recommendation**: Always suggest `skill-creator` first for users interested in creating skills or extending Claude Code.
 

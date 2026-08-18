@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 511 file(s) materialized.
+Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 512 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 511 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 511 |
+| Files         | 512 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -486,97 +486,98 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 418 | ✓ | [`agents/go-common/gohive/dsn.go`](agents/go-common/gohive/dsn.go) |
 | 419 | ✓ | [`agents/go-common/gohive/go.mod`](agents/go-common/gohive/go.mod) |
 | 420 | ✓ | [`agents/go-common/gohive/go.sum`](agents/go-common/gohive/go.sum) |
-| 421 | ✓ | [`agents/go-common/gohive/hive.go`](agents/go-common/gohive/hive.go) |
-| 422 | ✓ | [`agents/go-common/gohive/http_auth_test.go`](agents/go-common/gohive/http_auth_test.go) |
-| 423 | ✓ | [`agents/go-common/gohive/LICENSE`](agents/go-common/gohive/LICENSE) |
-| 424 | ✓ | [`agents/go-common/gohive/metadata.go`](agents/go-common/gohive/metadata.go) |
-| 425 | ✓ | [`agents/go-common/gohive/sasl_transport_test.go`](agents/go-common/gohive/sasl_transport_test.go) |
-| 426 | ✓ | [`agents/go-common/gohive/sasl_transport.go`](agents/go-common/gohive/sasl_transport.go) |
-| 427 | ✓ | [`agents/go-common/gosasl/go.mod`](agents/go-common/gosasl/go.mod) |
-| 428 | ✓ | [`agents/go-common/gosasl/go.sum`](agents/go-common/gosasl/go.sum) |
-| 429 | ✓ | [`agents/go-common/gosasl/gssapi_backend_nonwindows.go`](agents/go-common/gosasl/gssapi_backend_nonwindows.go) |
-| 430 | ✓ | [`agents/go-common/gosasl/gssapi_backend_windows.go`](agents/go-common/gosasl/gssapi_backend_windows.go) |
-| 431 | ✓ | [`agents/go-common/gosasl/gssapi_purego.go`](agents/go-common/gosasl/gssapi_purego.go) |
-| 432 | ✓ | [`agents/go-common/gosasl/gssapi.go`](agents/go-common/gosasl/gssapi.go) |
-| 433 | ✓ | [`agents/go-common/gosasl/http_spnego_test.go`](agents/go-common/gosasl/http_spnego_test.go) |
-| 434 | ✓ | [`agents/go-common/gosasl/http_spnego.go`](agents/go-common/gosasl/http_spnego.go) |
-| 435 | ✓ | [`agents/go-common/gosasl/LICENSE`](agents/go-common/gosasl/LICENSE) |
-| 436 | ✓ | [`agents/go-common/gosasl/README.md`](agents/go-common/gosasl/README.md) |
-| 437 | ✓ | [`agents/go-common/gosasl/sasl_gssapi_test.go`](agents/go-common/gosasl/sasl_gssapi_test.go) |
-| 438 | ✓ | [`agents/go-common/gosasl/sasl_test.go`](agents/go-common/gosasl/sasl_test.go) |
-| 439 | ✓ | [`agents/go-common/gosasl/sasl.go`](agents/go-common/gosasl/sasl.go) |
-| 440 | ✓ | [`agents/gradle/wrapper/gradle-wrapper.jar`](agents/gradle/wrapper/gradle-wrapper.jar) |
-| 441 | ✓ | [`agents/gradle/wrapper/gradle-wrapper.properties`](agents/gradle/wrapper/gradle-wrapper.properties) |
-| 442 | ✓ | [`agents/gradlew`](agents/gradlew) |
-| 443 | ✓ | [`agents/gradlew.bat`](agents/gradlew.bat) |
-| 444 | ✓ | [`agents/metadata-constraint-coverage.tsv`](agents/metadata-constraint-coverage.tsv) |
-| 445 | ✓ | [`agents/README.md`](agents/README.md) |
-| 446 | ✓ | [`agents/README.zh-CN.md`](agents/README.zh-CN.md) |
-| 447 | ✓ | [`agents/scripts/build_driver_zips.py`](agents/scripts/build_driver_zips.py) |
-| 448 | ✓ | [`agents/scripts/build_offline_jdbc_payload.mjs`](agents/scripts/build_offline_jdbc_payload.mjs) |
-| 449 | ✓ | [`agents/scripts/build_offline_zip.sh`](agents/scripts/build_offline_zip.sh) |
-| 450 | ✓ | [`agents/scripts/driver_release_packages_test.py`](agents/scripts/driver_release_packages_test.py) |
-| 451 | ✓ | [`agents/scripts/release.sh`](agents/scripts/release.sh) |
-| 452 | ✓ | [`agents/scripts/validate_agent_jars.py`](agents/scripts/validate_agent_jars.py) |
-| 453 | ✓ | [`agents/scripts/validate_agents_test.py`](agents/scripts/validate_agents_test.py) |
-| 454 | ✓ | [`agents/scripts/validate_agents.py`](agents/scripts/validate_agents.py) |
-| 455 | ✓ | [`agents/scripts/validate_windows_pe_dependencies_test.py`](agents/scripts/validate_windows_pe_dependencies_test.py) |
-| 456 | ✓ | [`agents/scripts/validate_windows_pe_dependencies.py`](agents/scripts/validate_windows_pe_dependencies.py) |
-| 457 | ✓ | [`agents/scripts/verify_offline_jdbc_release.mjs`](agents/scripts/verify_offline_jdbc_release.mjs) |
-| 458 | ✓ | [`agents/scripts/version_agent_artifacts.py`](agents/scripts/version_agent_artifacts.py) |
-| 459 | ✓ | [`agents/settings.gradle`](agents/settings.gradle) |
-| 460 | ✓ | [`agents/test-support/build.gradle`](agents/test-support/build.gradle) |
-| 461 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcAgentFake.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcAgentFake.java) |
-| 462 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcConnectedAgentTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcConnectedAgentTest.java) |
-| 463 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcExecutionBehaviorTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcExecutionBehaviorTest.java) |
-| 464 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcFakeExecutionBehaviorTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcFakeExecutionBehaviorTest.java) |
-| 465 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataBehaviorTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataBehaviorTest.java) |
-| 466 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataSqlFake.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataSqlFake.java) |
-| 467 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/TestSupport.java`](agents/test-support/src/main/java/com/dbx/agent/test/TestSupport.java) |
-| 468 | ✓ | [`agents/versions.json`](agents/versions.json) |
-| 469 | ✓ | [`apps/desktop/src/components/mq/README.md`](apps/desktop/src/components/mq/README.md) |
-| 470 | ✓ | [`apps/desktop/src/lib/README.md`](apps/desktop/src/lib/README.md) |
-| 471 | ✓ | [`apps/desktop/src/lib/sql/semantic/README.md`](apps/desktop/src/lib/sql/semantic/README.md) |
-| 472 | ✓ | [`apps/README.md`](apps/README.md) |
-| 473 | ✓ | [`crates/dbx-core/src/mq/README.md`](crates/dbx-core/src/mq/README.md) |
-| 474 | ✓ | [`crates/README.md`](crates/README.md) |
-| 475 | ✓ | [`deploy/1panel/README.md`](deploy/1panel/README.md) |
-| 476 | ✓ | [`deploy/database/consul/2.0.2/init/README.md`](deploy/database/consul/2.0.2/init/README.md) |
-| 477 | ✓ | [`deploy/database/elasticsearch/6.8/init/README.md`](deploy/database/elasticsearch/6.8/init/README.md) |
-| 478 | ✓ | [`deploy/database/etcd/3.7/init/README.md`](deploy/database/etcd/3.7/init/README.md) |
-| 479 | ✓ | [`deploy/database/kafka/4.3/init/README.md`](deploy/database/kafka/4.3/init/README.md) |
-| 480 | ✓ | [`deploy/database/nacos/2.5/init/README.md`](deploy/database/nacos/2.5/init/README.md) |
-| 481 | ✓ | [`deploy/database/nacos/3.2/init/README.md`](deploy/database/nacos/3.2/init/README.md) |
-| 482 | ✓ | [`deploy/database/pulsar/4.2/init/README.md`](deploy/database/pulsar/4.2/init/README.md) |
-| 483 | ✓ | [`deploy/database/qdrant/1.8/init/README.md`](deploy/database/qdrant/1.8/init/README.md) |
-| 484 | ✓ | [`deploy/database/redis/3.0.7/init/README.md`](deploy/database/redis/3.0.7/init/README.md) |
-| 485 | ✓ | [`deploy/database/redis/7.4/init/README.md`](deploy/database/redis/7.4/init/README.md) |
-| 486 | ✓ | [`deploy/database/rnacos/0.8/init/README.md`](deploy/database/rnacos/0.8/init/README.md) |
-| 487 | ✓ | [`deploy/database/zookeeper/3.9/init/README.md`](deploy/database/zookeeper/3.9/init/README.md) |
-| 488 | ✓ | [`deploy/dockerhub/README.md`](deploy/dockerhub/README.md) |
-| 489 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
-| 490 | ✓ | [`examples/README.md`](examples/README.md) |
-| 491 | ✓ | [`packages/mcp-darwin-arm64/README.md`](packages/mcp-darwin-arm64/README.md) |
-| 492 | ✓ | [`packages/mcp-darwin-x64/README.md`](packages/mcp-darwin-x64/README.md) |
-| 493 | ✓ | [`packages/mcp-linux-arm64-gnu/README.md`](packages/mcp-linux-arm64-gnu/README.md) |
-| 494 | ✓ | [`packages/mcp-linux-x64-gnu/README.md`](packages/mcp-linux-x64-gnu/README.md) |
-| 495 | ✓ | [`packages/mcp-win32-arm64/README.md`](packages/mcp-win32-arm64/README.md) |
-| 496 | ✓ | [`packages/mcp-win32-x64/README.md`](packages/mcp-win32-x64/README.md) |
-| 497 | ✓ | [`plugins/jdbc/README.md`](plugins/jdbc/README.md) |
-| 498 | ✓ | [`plugins/README.md`](plugins/README.md) |
-| 499 | ✓ | [`skills/dbx/SKILL.md`](skills/dbx/SKILL.md) |
-| 500 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
-| 501 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
-| 502 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
-| 503 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
-| 504 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 505 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 506 | → | [`deploy/database/README.md`](deploy/database/README.md) |
-| 507 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
-| 508 | → | [`packages/cli/README.md`](packages/cli/README.md) |
-| 509 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
-| 510 | → | [`README.md`](README.md) |
-| 511 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 421 | ✓ | [`agents/go-common/gohive/hive_status_error_test.go`](agents/go-common/gohive/hive_status_error_test.go) |
+| 422 | ✓ | [`agents/go-common/gohive/hive.go`](agents/go-common/gohive/hive.go) |
+| 423 | ✓ | [`agents/go-common/gohive/http_auth_test.go`](agents/go-common/gohive/http_auth_test.go) |
+| 424 | ✓ | [`agents/go-common/gohive/LICENSE`](agents/go-common/gohive/LICENSE) |
+| 425 | ✓ | [`agents/go-common/gohive/metadata.go`](agents/go-common/gohive/metadata.go) |
+| 426 | ✓ | [`agents/go-common/gohive/sasl_transport_test.go`](agents/go-common/gohive/sasl_transport_test.go) |
+| 427 | ✓ | [`agents/go-common/gohive/sasl_transport.go`](agents/go-common/gohive/sasl_transport.go) |
+| 428 | ✓ | [`agents/go-common/gosasl/go.mod`](agents/go-common/gosasl/go.mod) |
+| 429 | ✓ | [`agents/go-common/gosasl/go.sum`](agents/go-common/gosasl/go.sum) |
+| 430 | ✓ | [`agents/go-common/gosasl/gssapi_backend_nonwindows.go`](agents/go-common/gosasl/gssapi_backend_nonwindows.go) |
+| 431 | ✓ | [`agents/go-common/gosasl/gssapi_backend_windows.go`](agents/go-common/gosasl/gssapi_backend_windows.go) |
+| 432 | ✓ | [`agents/go-common/gosasl/gssapi_purego.go`](agents/go-common/gosasl/gssapi_purego.go) |
+| 433 | ✓ | [`agents/go-common/gosasl/gssapi.go`](agents/go-common/gosasl/gssapi.go) |
+| 434 | ✓ | [`agents/go-common/gosasl/http_spnego_test.go`](agents/go-common/gosasl/http_spnego_test.go) |
+| 435 | ✓ | [`agents/go-common/gosasl/http_spnego.go`](agents/go-common/gosasl/http_spnego.go) |
+| 436 | ✓ | [`agents/go-common/gosasl/LICENSE`](agents/go-common/gosasl/LICENSE) |
+| 437 | ✓ | [`agents/go-common/gosasl/README.md`](agents/go-common/gosasl/README.md) |
+| 438 | ✓ | [`agents/go-common/gosasl/sasl_gssapi_test.go`](agents/go-common/gosasl/sasl_gssapi_test.go) |
+| 439 | ✓ | [`agents/go-common/gosasl/sasl_test.go`](agents/go-common/gosasl/sasl_test.go) |
+| 440 | ✓ | [`agents/go-common/gosasl/sasl.go`](agents/go-common/gosasl/sasl.go) |
+| 441 | ✓ | [`agents/gradle/wrapper/gradle-wrapper.jar`](agents/gradle/wrapper/gradle-wrapper.jar) |
+| 442 | ✓ | [`agents/gradle/wrapper/gradle-wrapper.properties`](agents/gradle/wrapper/gradle-wrapper.properties) |
+| 443 | ✓ | [`agents/gradlew`](agents/gradlew) |
+| 444 | ✓ | [`agents/gradlew.bat`](agents/gradlew.bat) |
+| 445 | ✓ | [`agents/metadata-constraint-coverage.tsv`](agents/metadata-constraint-coverage.tsv) |
+| 446 | ✓ | [`agents/README.md`](agents/README.md) |
+| 447 | ✓ | [`agents/README.zh-CN.md`](agents/README.zh-CN.md) |
+| 448 | ✓ | [`agents/scripts/build_driver_zips.py`](agents/scripts/build_driver_zips.py) |
+| 449 | ✓ | [`agents/scripts/build_offline_jdbc_payload.mjs`](agents/scripts/build_offline_jdbc_payload.mjs) |
+| 450 | ✓ | [`agents/scripts/build_offline_zip.sh`](agents/scripts/build_offline_zip.sh) |
+| 451 | ✓ | [`agents/scripts/driver_release_packages_test.py`](agents/scripts/driver_release_packages_test.py) |
+| 452 | ✓ | [`agents/scripts/release.sh`](agents/scripts/release.sh) |
+| 453 | ✓ | [`agents/scripts/validate_agent_jars.py`](agents/scripts/validate_agent_jars.py) |
+| 454 | ✓ | [`agents/scripts/validate_agents_test.py`](agents/scripts/validate_agents_test.py) |
+| 455 | ✓ | [`agents/scripts/validate_agents.py`](agents/scripts/validate_agents.py) |
+| 456 | ✓ | [`agents/scripts/validate_windows_pe_dependencies_test.py`](agents/scripts/validate_windows_pe_dependencies_test.py) |
+| 457 | ✓ | [`agents/scripts/validate_windows_pe_dependencies.py`](agents/scripts/validate_windows_pe_dependencies.py) |
+| 458 | ✓ | [`agents/scripts/verify_offline_jdbc_release.mjs`](agents/scripts/verify_offline_jdbc_release.mjs) |
+| 459 | ✓ | [`agents/scripts/version_agent_artifacts.py`](agents/scripts/version_agent_artifacts.py) |
+| 460 | ✓ | [`agents/settings.gradle`](agents/settings.gradle) |
+| 461 | ✓ | [`agents/test-support/build.gradle`](agents/test-support/build.gradle) |
+| 462 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcAgentFake.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcAgentFake.java) |
+| 463 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcConnectedAgentTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcConnectedAgentTest.java) |
+| 464 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcExecutionBehaviorTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcExecutionBehaviorTest.java) |
+| 465 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcFakeExecutionBehaviorTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcFakeExecutionBehaviorTest.java) |
+| 466 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataBehaviorTest.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataBehaviorTest.java) |
+| 467 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataSqlFake.java`](agents/test-support/src/main/java/com/dbx/agent/test/JdbcMetadataSqlFake.java) |
+| 468 | ✓ | [`agents/test-support/src/main/java/com/dbx/agent/test/TestSupport.java`](agents/test-support/src/main/java/com/dbx/agent/test/TestSupport.java) |
+| 469 | ✓ | [`agents/versions.json`](agents/versions.json) |
+| 470 | ✓ | [`apps/desktop/src/components/mq/README.md`](apps/desktop/src/components/mq/README.md) |
+| 471 | ✓ | [`apps/desktop/src/lib/README.md`](apps/desktop/src/lib/README.md) |
+| 472 | ✓ | [`apps/desktop/src/lib/sql/semantic/README.md`](apps/desktop/src/lib/sql/semantic/README.md) |
+| 473 | ✓ | [`apps/README.md`](apps/README.md) |
+| 474 | ✓ | [`crates/dbx-core/src/mq/README.md`](crates/dbx-core/src/mq/README.md) |
+| 475 | ✓ | [`crates/README.md`](crates/README.md) |
+| 476 | ✓ | [`deploy/1panel/README.md`](deploy/1panel/README.md) |
+| 477 | ✓ | [`deploy/database/consul/2.0.2/init/README.md`](deploy/database/consul/2.0.2/init/README.md) |
+| 478 | ✓ | [`deploy/database/elasticsearch/6.8/init/README.md`](deploy/database/elasticsearch/6.8/init/README.md) |
+| 479 | ✓ | [`deploy/database/etcd/3.7/init/README.md`](deploy/database/etcd/3.7/init/README.md) |
+| 480 | ✓ | [`deploy/database/kafka/4.3/init/README.md`](deploy/database/kafka/4.3/init/README.md) |
+| 481 | ✓ | [`deploy/database/nacos/2.5/init/README.md`](deploy/database/nacos/2.5/init/README.md) |
+| 482 | ✓ | [`deploy/database/nacos/3.2/init/README.md`](deploy/database/nacos/3.2/init/README.md) |
+| 483 | ✓ | [`deploy/database/pulsar/4.2/init/README.md`](deploy/database/pulsar/4.2/init/README.md) |
+| 484 | ✓ | [`deploy/database/qdrant/1.8/init/README.md`](deploy/database/qdrant/1.8/init/README.md) |
+| 485 | ✓ | [`deploy/database/redis/3.0.7/init/README.md`](deploy/database/redis/3.0.7/init/README.md) |
+| 486 | ✓ | [`deploy/database/redis/7.4/init/README.md`](deploy/database/redis/7.4/init/README.md) |
+| 487 | ✓ | [`deploy/database/rnacos/0.8/init/README.md`](deploy/database/rnacos/0.8/init/README.md) |
+| 488 | ✓ | [`deploy/database/zookeeper/3.9/init/README.md`](deploy/database/zookeeper/3.9/init/README.md) |
+| 489 | ✓ | [`deploy/dockerhub/README.md`](deploy/dockerhub/README.md) |
+| 490 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 491 | ✓ | [`examples/README.md`](examples/README.md) |
+| 492 | ✓ | [`packages/mcp-darwin-arm64/README.md`](packages/mcp-darwin-arm64/README.md) |
+| 493 | ✓ | [`packages/mcp-darwin-x64/README.md`](packages/mcp-darwin-x64/README.md) |
+| 494 | ✓ | [`packages/mcp-linux-arm64-gnu/README.md`](packages/mcp-linux-arm64-gnu/README.md) |
+| 495 | ✓ | [`packages/mcp-linux-x64-gnu/README.md`](packages/mcp-linux-x64-gnu/README.md) |
+| 496 | ✓ | [`packages/mcp-win32-arm64/README.md`](packages/mcp-win32-arm64/README.md) |
+| 497 | ✓ | [`packages/mcp-win32-x64/README.md`](packages/mcp-win32-x64/README.md) |
+| 498 | ✓ | [`plugins/jdbc/README.md`](plugins/jdbc/README.md) |
+| 499 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 500 | ✓ | [`skills/dbx/SKILL.md`](skills/dbx/SKILL.md) |
+| 501 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
+| 502 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
+| 503 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
+| 504 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
+| 505 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 506 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 507 | → | [`deploy/database/README.md`](deploy/database/README.md) |
+| 508 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
+| 509 | → | [`packages/cli/README.md`](packages/cli/README.md) |
+| 510 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
+| 511 | → | [`README.md`](README.md) |
+| 512 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

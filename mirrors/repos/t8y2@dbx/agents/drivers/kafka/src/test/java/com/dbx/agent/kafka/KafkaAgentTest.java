@@ -29,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.admin.AlterConfigOp;
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
@@ -414,6 +415,30 @@ class KafkaAgentTest {
         assertEquals("dbx", kafkaProperties.getProperty("client.id"));
         assertNull(kafkaProperties.getProperty("zookeeper.sasl.client"));
         assertNull(kafkaProperties.getProperty("zookeeper.ssl.trustStore.password"));
+    }
+
+    @Test
+    void producerDefaultsToLegacyCompatibleNonIdempotentDelivery() {
+        JsonObject connection = new JsonObject();
+        connection.addProperty("bootstrap_servers", "legacy-broker:9092");
+
+        Properties properties = KafkaAgent.producerProperties(connection);
+
+        assertEquals("all", properties.getProperty(ProducerConfig.ACKS_CONFIG));
+        assertEquals("false", properties.getProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG));
+    }
+
+    @Test
+    void producerAllowsExplicitIdempotenceForModernBrokers() {
+        JsonObject extraProperties = new JsonObject();
+        extraProperties.addProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        JsonObject connection = new JsonObject();
+        connection.addProperty("bootstrap_servers", "modern-broker:9092");
+        connection.add("properties", extraProperties);
+
+        Properties properties = KafkaAgent.producerProperties(connection);
+
+        assertEquals("true", properties.getProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG));
     }
 
     @Test

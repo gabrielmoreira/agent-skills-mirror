@@ -14,7 +14,7 @@ description: >-
 license: MIT
 metadata:
     author: niaka3dayo
-    version: "3.0.1"
+    version: "3.0.2"
     tags: vrchat, udonsharp, udon, networking, sync, persistence, dynamics, asmdef, vpm, assembly-definition
 ---
 
@@ -54,6 +54,10 @@ compiler constraints, use `unity-vrc-world-sdk-3` and read
 3. **Late Joiner Correctness** — State must be correct for players who join after events have occurred. Design for re-serialization, not just live updates.
 4. **Sync Minimization** — Every synced variable costs bandwidth (see data budget in `udonsharp-sync-selection.md`). Derive what you can locally; sync only the source of truth.
 5. **Event-Driven, Not Polling** — Use `OnDeserialization`, `[FieldChangeCallback]`, and `SendCustomEvent` instead of checking state in `Update()` **for state-change reactions; for hot-path or periodic work, see [Event Dispatch & Cross-Behaviour Call Cost Tiers](references/patterns-performance.md#event-dispatch--cross-behaviour-call-cost-tiers)**.
+
+### Public fields: Inspector visibility is not persistence policy
+
+`[HideInInspector]` only hides a public field from the Inspector; Unity still serializes it. Use `[HideInInspector] public` when Editor-time DI, baking, or autowiring must persist the value into a Scene/Prefab. Use `[System.NonSerialized] public` for a runtime-only value that another UdonBehaviour must access through direct access or `SetProgramVariable`. When `[HideInInspector]` is intentional, leave a comment explaining why the value must be persisted.
 
 ## Common Mistakes (NEVER List)
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 8 followed patterns, 233 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 235 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 8 followed patterns, 233 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 233 |
+| Followed pats | 10 |
+| Files         | 235 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,12 +52,14 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 8 followed patterns, 233 fi
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `tools/lint/DEPENDENCY-REVIEW.md`
+- `test/e2e/README.md`
+- `test/e2e/docs/README.md`
+- `test/e2e/RETRY_INVENTORY.md`
 - `WRITING.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `SECURITY.md`
 - `scripts/bench/README.md`
-- `test/e2e/docs/README.md`
 - `docs/CONTRIBUTING.md`
 
 ## File Index
@@ -297,8 +299,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 229 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
 | 230 | → | [`SECURITY.md`](SECURITY.md) |
 | 231 | → | [`test/e2e/docs/README.md`](test/e2e/docs/README.md) |
-| 232 | → | [`tools/lint/DEPENDENCY-REVIEW.md`](tools/lint/DEPENDENCY-REVIEW.md) |
-| 233 | → | [`WRITING.md`](WRITING.md) |
+| 232 | → | [`test/e2e/README.md`](test/e2e/README.md) |
+| 233 | → | [`test/e2e/RETRY_INVENTORY.md`](test/e2e/RETRY_INVENTORY.md) |
+| 234 | → | [`tools/lint/DEPENDENCY-REVIEW.md`](tools/lint/DEPENDENCY-REVIEW.md) |
+| 235 | → | [`WRITING.md`](WRITING.md) |
 
 ---
 

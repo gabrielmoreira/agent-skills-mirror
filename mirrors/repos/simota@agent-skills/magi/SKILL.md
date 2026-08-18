@@ -190,7 +190,7 @@ Each Recipe carries its own VERIFY gate **in addition to** Magi's universal disc
 
 ## Output Requirements
 
-Every deliverable must include:
+A complete deliverable carries the following — a ceiling, not a floor. Emit only what the task exercised; never pad with `N/A`:
 
 - MAGI verdict display (Simple: LOGOS/PATHOS/SOPHIA, Engine: CLAUDE/CODEX/GEMINI header).
 - Per-perspective vote (APPROVE/REJECT/ABSTAIN), confidence (0-100), and rationale.
@@ -251,6 +251,7 @@ Mechanics, two-pass clustering states, verdict catalog, engine-attribution tags,
 | `reference/devils-advocate.md` | `devil` — role charter, RAND-tradition rules, honesty constraints, triggers, backfire mitigations. |
 | `reference/delphi-method.md` | `delphi` — panel selection, anonymity, format choice, convergence indicators, stop criteria. |
 | `reference/tri-engine-deliberate.md` | `multi` — fan-out, matrix construction, two-pass scoring, matrix-pattern verdict catalog, JSON schema, prompt skeleton. |
+| `_common/UX_PRINCIPLE_CONFLICTS.md` | The decision is a UX/design trade-off — supplies the named pair and the cost of a one-sided win before the lenses score it. |
 | `_common/MULTI_ENGINE_RECIPE.md` | Cross-skill Pattern H protocol — dual-axis scoring, attribution tags, fallbacks, canonical skeleton. |
 | `_common/SUBAGENT.md` | Base MULTI_ENGINE protocol — engine dispatch, loose-prompt rules, fan-out mechanics, fallbacks. |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the deliberation report, thinking depth at independent evaluation, front-loading at FRAME. Critical: P3, P5. |
@@ -275,3 +276,10 @@ See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantic
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
+
+---
+
+## Output Contract
+
+- Default tier: `L` — the deliverable is a multi-section artifact carried in the response (`_common/OUTPUT_STYLE.md`)
+- Overrides: `tradeoff` on a single axis, or a Go/No-Go with one dominant factor → `M`

@@ -287,6 +287,10 @@ public final class KafkaAgent {
     }
 
     private static KafkaProducer<String, byte[]> buildProducer(JsonObject conn) {
+        return new KafkaProducer<>(producerProperties(conn));
+    }
+
+    static Properties producerProperties(JsonObject conn) {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers(conn));
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
@@ -294,8 +298,10 @@ public final class KafkaAgent {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
             "org.apache.kafka.common.serialization.ByteArraySerializer");
         props.put(ProducerConfig.ACKS_CONFIG, "all");
+        // Kafka 3.x enables idempotence by default, which rejects pre-0.11 brokers.
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "false");
         applyConnectionProperties(conn, props);
-        return new KafkaProducer<>(props);
+        return props;
     }
 
     private static String bootstrapServers(JsonObject conn) {

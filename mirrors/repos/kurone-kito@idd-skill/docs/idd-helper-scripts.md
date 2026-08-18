@@ -1416,7 +1416,16 @@ to post it is the consuming track's job.
   supplied `rerunDecision`'s `rerunCount`), `runAttempt` (the fetched
   run's raw `run_attempt`, only present on a successful live lookup),
   and `runIdLookupError` (only present when the live lookup failed but a
-  `--rerun-count` fallback was available)
+  `--rerun-count` fallback was available). When `--run-id` resolves a
+  `timed_out`/`cancelled` conclusion, the helper also emits
+  `failureClass` and `siblingSweep` (a same-window
+  `gh run list --workflow=<name> --limit 15` of completed sibling runs)
+  and `resolveCiRerunDecision` may return
+  `reason: "evidence-gated-extra-rerun"` for exactly one extra attempt
+  after the default `rerun-once` budget is spent -- only when every
+  other completed sibling in the ±1 h window succeeded and at least one
+  such sibling exists (#1997). No corroboration, a sibling non-success,
+  `rerunCount >= 2`, or a non-timeout/cancelled conclusion still holds.
 - it remains read-only; the command does not poll CI, rerun workflows,
   or post any GitHub comment
 
@@ -1656,10 +1665,16 @@ reflexively as any other CLI option.
   `CANCELLED` bot-triggered instance sitting alongside the `SUCCESS`
   instance the dedup selected as "latest", the live PR #1741 divergence
   where `ci.status: "success"` disagreed with GitHub's own
-  `statusCheckRollup.state: "FAILURE"` for the same commit. Evidence only
-  (empty array, never omitted, when nothing was discarded) -- it does not
-  itself gate F2/F3; a non-empty list is a prompt to double-check the live
-  GitHub rollup directly rather than trusting a bare `ci.status: "success"`.
+  `statusCheckRollup.state: "FAILURE"` for the same commit. Always
+  emitted (empty array, never omitted, when nothing was discarded). A
+  non-empty list does not by itself gate F2/F3; it is a prompt to
+  double-check the live GitHub rollup rather than trusting a bare
+  `ci.status: "success"`. Combined with live
+  `mergeStateStatus: "BLOCKED"` it is also a
+  `discarded-required-check-siblings` merge-gate blocker (#2127):
+  recover via `rerun-advisory-convergence`, do not merge or `--admin`.
+  An empty or absent list never fires that gate, so a CODEOWNER-only
+  `BLOCKED` path is unchanged.
 - `ci.sourcePinnedRequiredCheckNames` (#1689) lists the required check
   names whose green state was downgraded to `ci.status: "unknown"` because
   their ruleset/classic-protection entry is source-pinned
@@ -1765,6 +1780,9 @@ reflexively as any other CLI option.
   live `mergeStateStatus: "BEHIND"` paired with a confirmed-or-assumed
   `branchCurrency.requiresUpToDateHead: true` fails closed as a
   `branch-currency` blocker before `--apply` ever calls `gh pr merge`).
+  A live `mergeStateStatus: "BLOCKED"` paired with a non-empty
+  `ci.discardedNonPassingRequiredChecks` list is a
+  `discarded-required-check-siblings` blocker (#2127).
   Each failing gate is listed in `blockers[]`
   as `{ gate, detail }`.
 - Dry-run (default) is read-only: it prints `ready`, `blockers`, and

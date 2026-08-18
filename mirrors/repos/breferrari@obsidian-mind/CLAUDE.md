@@ -202,6 +202,16 @@ Update these when creating or archiving notes:
 
 ### Decision Records
 
+**When a decision earns a record.** Any ONE of these holding is enough:
+
+- **Hard to reverse** — undoing it later costs real work (a schema, a public contract, a naming scheme).
+- **Surprising without context** — a competent reader would ask "why is it like this?" and the code alone cannot answer. This is the clause that stops the next contributor from "fixing" something deliberate.
+- **A real trade-off** — something was genuinely given up, so the losing option's case is worth keeping.
+
+None hold → no record; the tracker and the commit message are enough. The gate is deliberately symmetric: it prescribes records where they are missing today, and it licenses *not* writing one everywhere else, which is what keeps the record set worth reading. Without it, records cluster where writing them was easy rather than where losing them is expensive.
+
+Once it clears the gate:
+
 1. Create in `work/` using the Decision Record template
 2. Link from the work note(s) that led to the decision
 3. Add to the Decisions Log table in `work/Index.md`
@@ -352,6 +362,8 @@ This is the part worth understanding, and it is what the layer is for. Every mem
 
 A reader never widens what the writer declared, so a sibling app on the same platform does not inherit another app's project-scoped constraints. `recall` with `explain: true` reports why each memory was shown and how many were withheld.
 
+**Getting the reach wrong is corrected the same way any other error is** — `remember` is append-only, so re-file the lesson with the right scope and pass `supersedes: ["<its exact title>"]`. Narrowing takes effect: a superseded memory is served only where its correction can follow it, so the caller the correction excludes stops receiving the wider stale copy rather than receiving it alone with nothing to replace it.
+
 **A repo is identified by its folder name**, which is usually right and occasionally not: two repos both called `api` share one identity, so each receives the other's memories. Write a distinct name into a `.om-project` file at the repo root to separate them — `health` reports which repo it thinks is calling and where that name came from.
 
 ### Which notes the server serves
@@ -413,6 +425,7 @@ Specialized agents in `.claude/agents/` for heavy operations. They run in isolat
 |-------|---------|------------|
 | `brag-spotter` | Finds uncaptured wins and competency gaps | `/om-wrap-up`, `/om-weekly` |
 | `context-loader` | Loads all vault context about a person, project, or concept | Direct |
+| `correction-sweep` | Finds every note restating a corrected fact; classifies each as authoritative, restatement, or historical. Never edits | `/om-correct` |
 | `cross-linker` | Finds missing wikilinks, orphans, broken backlinks | `/om-vault-audit` |
 | `people-profiler` | Bulk creates/updates person notes from Slack profiles | `/om-incident-capture` |
 | `review-prep` | Aggregates all performance evidence for a review period | `/om-review-brief` |
@@ -438,7 +451,7 @@ Five lifecycle hooks in `.claude/settings.json`:
 Each law exists because its absence caused real correction work in vaults running this template. Violating them re-creates documented failures.
 
 1. **Single-source status.** A project's volatile status (version, counts, released/blocked, dates) lives in exactly ONE place — its note's frontmatter + top status line. Every other note **links** to it and never restates it. *Why: one wrong status statement hardened into ~8 notes downstream and had to be swept out.*
-2. **Correction-sweep protocol.** When a fact is corrected, grep the vault for every restatement and fix them all in the same pass. A correction callout on top of a note whose body still says the wrong thing is NOT a correction — future sessions re-absorb the stain from the body.
+2. **Correction-sweep protocol.** When a fact is corrected, find every restatement and fix them all in the same pass. **`/om-correct "<the corrected fact>"` is the acting half** — grep alone finds only the notes that copied the wording, and the expensive half is the *paraphrase*: the same claim in different words, invisible to grep and indistinguishable from correct prose to every structural check. It is also the half most likely to survive a manual sweep, because the sweeper stops when grep goes quiet. A correction callout on top of a note whose body still says the wrong thing is NOT a correction — future sessions re-absorb the stain from the body. Notes that correctly record what was believed *at the time* are preserved, never rewritten; see Law 5.
 3. **Mark inference.** Anything not verified against source (code, repo, primary doc, the person) carries an explicit `(TBC)` / `(unverified)` / `(inferred)` marker. Never state inference bare.
 4. **Date-stamp volatile facts.** Counts, versions, org structure, tool maturity: write "as of YYYY-MM-DD" so staleness is self-evident instead of silent.
 5. **Attribution vs. creation dates may differ** (a `quarter:` field vs. the `date:` field's quarter) — that's legitimate, not a bug to "fix".

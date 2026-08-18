@@ -11,7 +11,7 @@ Every added instruction, file, script, evaluation, or governance rule must trace
 Do not deepen the package on a guessed goal.
 
 - state the working assumption when the user's request has more than one plausible interpretation
-- ask a short follow-up when the recurring job, target output, or exclusion boundary is unclear
+- infer non-core gaps visibly, and ask one short follow-up only when the recurring job, primary output, or an explicit direction conflict remains unresolved
 - surface a real design conflict instead of silently choosing a risky direction
 - proceed silently only when the decision is low-risk and reversible
 

@@ -10,6 +10,9 @@ const QUERY_PERMISSION_ACTIONS = [
   "getRole",
   "listUsers",
   "getUser",
+  // Align with CLI `tcb policy list/get` (OPA gateway authz)
+  "listPolicy",
+  "getPolicy",
 ] as const;
 
 const MANAGE_PERMISSION_ACTIONS = [
@@ -24,7 +27,17 @@ const MANAGE_PERMISSION_ACTIONS = [
   "createUser",
   "updateUser",
   "deleteUsers",
+  // Align with CLI `tcb policy set` (OPA Rego; disables legacy gateway auth)
+  "setPolicy",
 ] as const;
+
+/** Keys accepted by Manager SDK describeEnvAuthzConfig / modifyEnvAuthzConfig. */
+const AUTHZ_USER_REGO_KEY = "authz.user.rego" as const;
+const AUTHZ_PLATFORM_EXTENSION_REGO_KEY = "authz.platform.extension.rego" as const;
+type AuthzConfigKey = typeof AUTHZ_USER_REGO_KEY | typeof AUTHZ_PLATFORM_EXTENSION_REGO_KEY;
+
+/** CLI `tcb policy list --resource-type` only documents `policy`. */
+const POLICY_LIST_RESOURCE_TYPES = ["policy"] as const;
 
 type QueryPermissionAction = (typeof QUERY_PERMISSION_ACTIONS)[number];
 type ManagePermissionAction = (typeof MANAGE_PERMISSION_ACTIONS)[number];
@@ -121,10 +134,39 @@ function isPostgresqlPermissionApiUnsupported(error: unknown): boolean {
   return /does not support PostgreSQL type environments/i.test(message);
 }
 
-const AUTHZ_USER_REGO_KEY = "authz.user.rego" as const;
-
 function looksLikeUserRego(value: string): boolean {
   return /^\s*package\s+authz\.user\b/m.test(value);
+}
+
+/**
+ * Validate user Rego before setPolicy / modifyEnvAuthzConfig.
+ * Aligns with CLI docs (must start with `package authz.user`) and CLI non-empty check.
+ * Does not run a full OPA compiler; backend still owns deep syntax validation.
+ */
+export function validateUserRegoContent(value: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new Error(
+      "action=setPolicy 需要非空 regoContent（对齐 CLI `tcb policy set <regoContent>`）。",
+    );
+  }
+  const trimmed = value.trim();
+  if (!looksLikeUserRego(trimmed)) {
+    throw new Error(
+      "Rego 策略必须以 `package authz.user` 开头（对齐 https://docs.cloudbase.net/cli-v1/policy/management ）。",
+    );
+  }
+  const open = (trimmed.match(/\{/g) || []).length;
+  const close = (trimmed.match(/\}/g) || []).length;
+  if (open !== close) {
+    throw new Error(
+      `Rego 策略花括号不匹配（{=${open}, }=${close}）。请检查语法后再调用 setPolicy。`,
+    );
+  }
+  return trimmed;
+}
+
+function resolveAuthzConfigKey(extension?: boolean): AuthzConfigKey {
+  return extension ? AUTHZ_PLATFORM_EXTENSION_REGO_KEY : AUTHZ_USER_REGO_KEY;
 }
 
 /** Detect legacy function securityRule shapes that mean "public invoke". */
@@ -208,24 +250,30 @@ function resolveFunctionAuthzRegoInput(
   );
 }
 
-async function describeEnvAuthzUserRego(
+async function describeEnvAuthzConfigByKey(
   cloudbase: any,
-): Promise<{ value: string; raw: unknown }> {
+  key: AuthzConfigKey = AUTHZ_USER_REGO_KEY,
+): Promise<{ key: AuthzConfigKey; value: string; raw: unknown }> {
   if (!cloudbase?.permission?.describeEnvAuthzConfig) {
     throw new Error(
       "Current @cloudbase/manager-node does not expose permission.describeEnvAuthzConfig. Upgrade manager-node (>= 5.5.5) to align with CLI tcb policy get.",
     );
   }
-  const result = await cloudbase.permission.describeEnvAuthzConfig({
-    key: AUTHZ_USER_REGO_KEY,
-  });
+  const result = await cloudbase.permission.describeEnvAuthzConfig({ key });
   const value =
     typeof result?.Item?.Value === "string"
       ? result.Item.Value
       : typeof result?.Value === "string"
         ? result.Value
         : "";
-  return { value, raw: result };
+  return { key, value, raw: result };
+}
+
+async function describeEnvAuthzUserRego(
+  cloudbase: any,
+): Promise<{ value: string; raw: unknown }> {
+  const result = await describeEnvAuthzConfigByKey(cloudbase, AUTHZ_USER_REGO_KEY);
+  return { value: result.value, raw: result.raw };
 }
 
 async function modifyEnvAuthzUserRego(
@@ -237,10 +285,25 @@ async function modifyEnvAuthzUserRego(
       "Current @cloudbase/manager-node does not expose permission.modifyEnvAuthzConfig. Upgrade manager-node (>= 5.5.5) to align with CLI tcb policy set.",
     );
   }
+  const validated = validateUserRegoContent(value);
   return cloudbase.permission.modifyEnvAuthzConfig({
     key: AUTHZ_USER_REGO_KEY,
-    value,
+    value: validated,
   });
+}
+
+async function describeResourcePolicyListAligned(
+  cloudbase: any,
+  policyResourceType?: (typeof POLICY_LIST_RESOURCE_TYPES)[number],
+): Promise<unknown> {
+  if (!cloudbase?.permission?.describeResourcePolicyList) {
+    throw new Error(
+      "Current @cloudbase/manager-node does not expose permission.describeResourcePolicyList. Upgrade manager-node (>= 5.5.5) to align with CLI tcb policy list.",
+    );
+  }
+  return cloudbase.permission.describeResourcePolicyList(
+    policyResourceType ? { resourceType: policyResourceType } : undefined,
+  );
 }
 
 async function describeResourcePermissionWithFunctionPgFallback(options: {
@@ -558,7 +621,7 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
     "queryPermissions",
     {
       title: "查询 CloudBase 权限与用户配置",
-      description: "查询 CloudBase 权限与用户配置，支持查询资源权限（数据库/云函数/存储桶等）、角色列表/详情、应用用户列表/详情。\n\n示例：\n- 查询存储桶权限：`action=\"getResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\"`\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`。`resourceType=\"noSqlDatabase\"` 查询的是 CloudBase NoSQL 集合规则，与 CloudBase PostgreSQL（PG）表的行级安全（RLS）是两套独立机制——同一个 PG 环境里 NoSQL 集合若仍在使用，对那些集合查询本工具结果**仍然有效**。要查 PG 表 RLS，请改用 `queryPgDatabase(action=\"sql\", sql=\"SELECT * FROM pg_policies WHERE tablename=...\")`。本工具不涉及 MySQL 权限。\n\n⚠️ PostgreSQL 环境：平台 `DescribeResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType=\"function\"` 时，本工具会自动回退到 Manager SDK `describeEnvAuthzConfig`（与 CLI `tcb policy get` 一致，读取 `authz.user.rego`）。",
+      description: "查询 CloudBase 权限与用户配置，支持查询资源权限（数据库/云函数/存储桶等）、角色列表/详情、应用用户列表/详情，以及网关 OPA 授权策略（对齐 CLI `tcb policy list/get`）。\n\n示例：\n- 查询存储桶权限：`action=\"getResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\"`\n- 列出旧网关策略：`action=\"listPolicy\"`（PG / OPA 引擎环境返回空列表，与 CLI 一致）\n- 读取用户 Rego：`action=\"getPolicy\"`；平台扩展策略：`action=\"getPolicy\", extension=true`\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`。`resourceType=\"noSqlDatabase\"` 查询的是 CloudBase NoSQL 集合规则，与 CloudBase PostgreSQL（PG）表的行级安全（RLS）是两套独立机制——同一个 PG 环境里 NoSQL 集合若仍在使用，对那些集合查询本工具结果**仍然有效**。要查 PG 表 RLS，请改用 `queryPgDatabase(action=\"sql\", sql=\"SELECT * FROM pg_policies WHERE tablename=...\")`。本工具不涉及 MySQL 权限。\n\n⚠️ PostgreSQL 环境：平台 `DescribeResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType=\"function\"` 时，本工具会自动回退到 Manager SDK `describeEnvAuthzConfig`（与 CLI `tcb policy get` 一致，读取 `authz.user.rego`）。显式 OPA 策略请用 `listPolicy` / `getPolicy`。",
       inputSchema: {
         action: z.enum(QUERY_PERMISSION_ACTIONS),
         resourceType: z
@@ -573,6 +636,18 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
         username: z.string().optional(),
         pageNo: z.number().optional(),
         pageSize: z.number().optional(),
+        extension: z
+          .boolean()
+          .optional()
+          .describe(
+            "仅 action=getPolicy。true=读取平台为该环境单独配置的策略（authz.platform.extension.rego），默认 false=用户策略（authz.user.rego），对齐 CLI `tcb policy get --extension`。",
+          ),
+        policyResourceType: z
+          .enum(POLICY_LIST_RESOURCE_TYPES)
+          .optional()
+          .describe(
+            "仅 action=listPolicy。按资源类型过滤，当前仅支持 `policy`，对齐 CLI `tcb policy list --resource-type policy`。",
+          ),
       },
       annotations: {
         readOnlyHint: true,
@@ -592,6 +667,8 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
       username,
       pageNo,
       pageSize,
+      extension,
+      policyResourceType,
     }: {
       action: QueryPermissionAction;
       resourceType?: LegacyResourceType;
@@ -604,6 +681,8 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
       username?: string;
       pageNo?: number;
       pageSize?: number;
+      extension?: boolean;
+      policyResourceType?: (typeof POLICY_LIST_RESOURCE_TYPES)[number];
     }) =>
       withEnvelope(async () => {
         const envId = await getEnvId(cloudBaseOptions);
@@ -780,6 +859,48 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
               "应用用户详情查询成功",
             );
           }
+          case "listPolicy": {
+            const result = await describeResourcePolicyListAligned(
+              cloudbase,
+              policyResourceType,
+            );
+            logCloudBaseResult(server.logger, result);
+            const data = (result as { Data?: { PolicyList?: unknown[]; Total?: string | number } })
+              ?.Data;
+            const policyList = data?.PolicyList ?? [];
+            const total = data?.Total ?? policyList.length;
+            return buildEnvelope(
+              {
+                action,
+                envId,
+                policyResourceType: policyResourceType ?? null,
+                policies: policyList,
+                total,
+                note:
+                  "PG 环境与 authz_engine=opa 的环境会返回空列表（与 CLI `tcb policy list` / SDK describeResourcePolicyList 一致）。读取用户 Rego 请用 action=getPolicy。",
+                raw: result,
+              },
+              "网关授权策略列表查询成功",
+            );
+          }
+          case "getPolicy": {
+            const key = resolveAuthzConfigKey(extension);
+            const result = await describeEnvAuthzConfigByKey(cloudbase, key);
+            logCloudBaseResult(server.logger, result.raw);
+            return buildEnvelope(
+              {
+                action,
+                envId,
+                key: result.key,
+                extension: Boolean(extension),
+                rego: result.value,
+                raw: result.raw,
+              },
+              extension
+                ? "平台扩展 OPA 策略查询成功（authz.platform.extension.rego）"
+                : "用户 OPA 策略查询成功（authz.user.rego）",
+            );
+          }
         }
       }),
   );
@@ -789,7 +910,7 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
     {
       title: "管理 CloudBase 权限与用户配置",
       description:
-        "管理 CloudBase 权限与用户配置，支持修改资源权限（数据库/云函数/存储桶等）、角色管理、成员与策略增删、应用用户 CRUD。\n\n示例：\n- 设置存储桶为私有：`action=\"updateResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\", permission=\"PRIVATE\"`\n- 创建角色：`action=\"createRole\", roleName=\"admin\", roleIdentity=\"admin\"`\n- 放开云函数匿名/未登录访问（PG 会走 OPA，对齐 CLI `tcb policy set`）：`action=\"updateResourcePermission\", resourceType=\"function\", resourceId=\"myFn\", permission=\"CUSTOM\", securityRule='{\"invoke\":true}'`\n\n注意：`createUser` / `updateUser` 是环境侧应用用户管理能力，适合测试账号、管理员或预置用户，不应替代浏览器里的 Web SDK 注册表单；前端用户名密码注册应使用 `auth.signUp({ username, password })`，登录应使用 `auth.signInWithPassword({ username, password })`。直接在浏览器里用 `auth.signUp` 创建用户名密码用户取决于 SDK/provider 支持，使用前必须验证；不支持时应走后端或管理端边界，不能在浏览器暴露密钥。`securityRule` 的详细语义取决于 `resourceType`：`doc._openid`、`auth.openid`、查询条件子集校验，以及 `create` / `update` / `delete` JSON 模板仅适用于 `resourceType=\"noSqlDatabase\"` 的文档数据库安全规则；配置 `function` 或 `storage` 时，请参考各自官方安全规则文档，而不是复用 NoSQL 模板。\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`：\n- `resourceType=\"noSqlDatabase\"` 仅作用于 CloudBase NoSQL 文档数据库的集合；CloudBase PostgreSQL（PG）表的行级权限**不**受它控制——PG 表请改用 RLS：`managePgDatabase(action=\"execute\", confirm=true)` 跑 `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` 与 `CREATE POLICY ...`。同一个 PG 环境里如果还有 NoSQL 集合在用，对那些**集合**继续使用 `noSqlDatabase` 规则是正确的——不是\"PG 环境就禁用本工具\"。\n- `resourceType=\"storage\"` 控制的是 NoSQL/COS 存储桶 ACL；PG 的 `pgstore` bucket 不在此 `resourceType` 覆盖范围内。\n- 本工具不涉及 MySQL；MySQL 数据库权限请走 MySQL 自身的 GRANT/REVOKE 语句（通过 `manageMysqlDatabase`）。\n\n⚠️ PostgreSQL 环境：平台 `ModifyResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType=\"function\"` 时，本工具会自动回退到 Manager SDK `modifyEnvAuthzConfig`（与 CLI `tcb policy set` 一致，写入 `authz.user.rego`）。`securityRule` 可传完整 Rego（`package authz.user`）或 `'{\"invoke\":true}'`（自动生成放通 anonymous/unauthenticated 调 functions 的策略）。设置 Rego 后旧网关鉴权会失效，行为与 CLI 相同。",
+        "管理 CloudBase 权限与用户配置，支持修改资源权限（数据库/云函数/存储桶等）、角色管理、成员与策略增删、应用用户 CRUD，以及设置网关 OPA Rego 策略（对齐 CLI `tcb policy set`）。\n\n示例：\n- 设置存储桶为私有：`action=\"updateResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\", permission=\"PRIVATE\"`\n- 创建角色：`action=\"createRole\", roleName=\"admin\", roleIdentity=\"admin\"`\n- 放开云函数匿名/未登录访问（PG 会走 OPA，对齐 CLI `tcb policy set`）：`action=\"updateResourcePermission\", resourceType=\"function\", resourceId=\"myFn\", permission=\"CUSTOM\", securityRule='{\"invoke\":true}'`\n- 直接设置用户 Rego：`action=\"setPolicy\", regoContent=\"package authz.user\\n\\ndefault allow := false\\n\", confirm=true`（⚠️ 立即禁用旧网关鉴权）\n\n注意：`createUser` / `updateUser` 是环境侧应用用户管理能力，适合测试账号、管理员或预置用户，不应替代浏览器里的 Web SDK 注册表单；前端用户名密码注册应使用 `auth.signUp({ username, password })`，登录应使用 `auth.signInWithPassword({ username, password })`。直接在浏览器里用 `auth.signUp` 创建用户名密码用户取决于 SDK/provider 支持，使用前必须验证；不支持时应走后端或管理端边界，不能在浏览器暴露密钥。`securityRule` 的详细语义取决于 `resourceType`：`doc._openid`、`auth.openid`、查询条件子集校验，以及 `create` / `update` / `delete` JSON 模板仅适用于 `resourceType=\"noSqlDatabase\"` 的文档数据库安全规则；配置 `function` 或 `storage` 时，请参考各自官方安全规则文档，而不是复用 NoSQL 模板。\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`：\n- `resourceType=\"noSqlDatabase\"` 仅作用于 CloudBase NoSQL 文档数据库的集合；CloudBase PostgreSQL（PG）表的行级权限**不**受它控制——PG 表请改用 RLS：`managePgDatabase(action=\"execute\", confirm=true)` 跑 `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` 与 `CREATE POLICY ...`。同一个 PG 环境里如果还有 NoSQL 集合在用，对那些**集合**继续使用 `noSqlDatabase` 规则是正确的——不是\"PG 环境就禁用本工具\"。\n- `resourceType=\"storage\"` 控制的是 NoSQL/COS 存储桶 ACL；PG 的 `pgstore` bucket 不在此 `resourceType` 覆盖范围内。\n- 本工具不涉及 MySQL；MySQL 数据库权限请走 MySQL 自身的 GRANT/REVOKE 语句（通过 `manageMysqlDatabase`）。\n\n⚠️ PostgreSQL 环境：平台 `ModifyResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType=\"function\"` 时，本工具会自动回退到 Manager SDK `modifyEnvAuthzConfig`（与 CLI `tcb policy set` 一致，写入 `authz.user.rego`）。`securityRule` 可传完整 Rego（`package authz.user`）或 `'{\"invoke\":true}'`（自动生成放通 anonymous/unauthenticated 调 functions 的策略）。设置 Rego 后旧网关鉴权会失效，行为与 CLI 相同。显式 OPA 策略请优先用 `action=\"setPolicy\"`。",
       inputSchema: {
         action: z.enum(MANAGE_PERMISSION_ACTIONS),
         resourceType: z
@@ -822,6 +943,18 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
         username: z.string().optional(),
         password: z.string().optional(),
         userStatus: z.enum(["ACTIVE", "BLOCKED"]).optional(),
+        regoContent: z
+          .string()
+          .optional()
+          .describe(
+            "仅 action=setPolicy。用户 OPA Rego 全文，必须以 `package authz.user` 开头，对齐 CLI `tcb policy set <regoContent>`。",
+          ),
+        confirm: z
+          .boolean()
+          .optional()
+          .describe(
+            "仅 action=setPolicy。设置 Rego 后会立即禁用旧网关鉴权，必须显式传 confirm=true（对齐 CLI 确认提示）。",
+          ),
       },
       annotations: {
         readOnlyHint: false,
@@ -850,6 +983,8 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
       username,
       password,
       userStatus,
+      regoContent,
+      confirm,
     }: {
       action: ManagePermissionAction;
       resourceType?: LegacyResourceType;
@@ -869,6 +1004,8 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
       username?: string;
       password?: string;
       userStatus?: "ACTIVE" | "BLOCKED";
+      regoContent?: string;
+      confirm?: boolean;
     }) =>
       withEnvelope(async () => {
         const envId = await getEnvId(cloudBaseOptions);
@@ -1078,6 +1215,32 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
                 raw: result,
               },
               "应用用户删除成功",
+            );
+          }
+          case "setPolicy": {
+            if (confirm !== true) {
+              throw new Error(
+                "action=setPolicy 会立即禁用旧网关鉴权（对齐 CLI `tcb policy set`），必须显式传 confirm=true。",
+              );
+            }
+            const validated = validateUserRegoContent(regoContent ?? "");
+            const result = await modifyEnvAuthzUserRego(cloudbase, validated);
+            logCloudBaseResult(server.logger, result);
+            return buildEnvelope(
+              {
+                action,
+                envId,
+                key: AUTHZ_USER_REGO_KEY,
+                rego: validated,
+                sideEffect:
+                  "Setting authz.user.rego immediately disables legacy gateway authorization.",
+                nextSteps: [
+                  'queryPermissions(action="getPolicy")',
+                  'queryPermissions(action="listPolicy")',
+                ],
+                raw: result,
+              },
+              "用户 OPA Rego 策略设置成功（旧网关鉴权已失效）",
             );
           }
         }
