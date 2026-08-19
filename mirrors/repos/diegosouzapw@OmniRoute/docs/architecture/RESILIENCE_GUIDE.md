@@ -107,6 +107,40 @@ Before #7274, `resolveSessionAffinityTtlMs()` hard-bailed to `0` for every provi
 
 The three session-affinity headers are never forwarded upstream — executors build their own upstream headers from scratch rather than passing client headers through, so this stays an internal correlation id only.
 
+### Exclusive managed session connection leases
+
+**Scope:** one active managed HTTP client/session owns one eligible OmniRoute connection.
+
+**Purpose:** provide durable exclusive connection ownership for clients that need a hard routing
+fence across requests. This differs from session affinity, which is a soft continuity preference:
+an exclusive lease persists lifecycle state in SQLite, enforces global active-owner and
+active-connection uniqueness, and rejects a stale generation before provider dispatch.
+
+The feature is opt-in per API key. A managed key must have the `lease:exclusive` scope and an
+explicit non-empty `allowedConnections` list. Any HTTP client can use the lifecycle endpoint; no
+client name, user-agent, provider, OAuth method, or model is required. The lease owns a connection,
+not a model, so a model change retains the binding while the connection remains ordinarily
+eligible. Normal model, quota, health, cooldown, and allowlist rules remain authoritative and may
+transition the same generation to another free eligible connection.
+
+The lifecycle is `POST /api/v1/session-leases` with JSON actions `acquire`, `renew`, and `release`.
+Managed inference requests present the opaque `X-OmniRoute-Lease-Owner` value and exact
+`X-OmniRoute-Lease-Generation`. The owner uses `vlo_` followed by 43 base64url characters; only
+its SHA-256 hash is stored. Every final dispatch fence also binds the authenticated API key ID and
+active connection ID. Lease control headers are removed from logs, retained request snapshots, and
+upstream executor headers.
+
+If ordinary routing has eligible managed candidates but every free candidate is occupied by a
+foreign active lease, OmniRoute returns HTTP `429`, lease-capacity-unavailable code, a
+waiting-for-capacity state, and a bounded `Retry-After` derived from the earliest relevant expiry.
+Ordinary empty eligibility is not lease contention and keeps its existing routing error semantics.
+
+Related mechanisms remain separate:
+
+- OAuth session occupancy is process-local soft distribution for OAuth accounts.
+- Account semaphores grant request-concurrency permits and end when a request completes.
+- Exclusive managed session leases are durable lifecycle ownership with a generation fence.
+
 ---
 
 ## 3. Model Lockout

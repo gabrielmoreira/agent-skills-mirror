@@ -1,6 +1,6 @@
 # 工程信任系统
 
-Yuxi 把 Agent 或开发者提交的实现视为待证伪候选。完成状态不由提交者自述、测试数量或一次手工演示决定，而由明确 Owner、真实系统事实、与风险匹配的 oracle、只读 gate 和可问责语义 Review 共同决定。
+Yuxi 把 Agent 或开发者提交的实现视为待证伪候选。完成状态需要明确 Owner、真实系统事实、与风险匹配的 oracle、只读 gate 和可问责语义 Review 共同证明。提交者自述、测试数量和一次手工演示不能单独形成完成证据。
 
 从请求、提案、实现、证据到收敛的日常顺序由 [Yuxi Spec Loop](./spec-loop.md) 维护；本页只拥有信任闭环与证据等级。
 
@@ -57,7 +57,7 @@ python3 scripts/verify_engineering_contracts.py
 python3 -m unittest scripts.test_verify_engineering_contracts
 ```
 
-Gate 必须只读、失败可诊断、拥有明确 Owner，并保持有限延迟。低成本只读检查（`trust.yml`）在每个 PR 无条件阻塞；真实 Compose integration/E2E（`system-tests.yml` 等按路径触发）只在匹配高风险范围时运行。高风险 Agent 主链路使用无外部密钥的 deterministic assembled-path E2E 阻断，`real-provider-probe.yml` 手工探针负责外部 provider 校准；两者不能互相冒充。Workflow、selector、skip 或 expected-output 更新都按生产代码审查；长期 flake、误报、绕过或无 consumer 的 gate 应被修复或退役，而不是继续堆叠规则。
+Gate 必须只读、失败可诊断、拥有明确 Owner，并保持有限延迟。低成本只读检查（`trust.yml`）在每个 PR 无条件阻塞；真实 Compose integration/E2E（`system-tests.yml` 等按路径触发）只在匹配高风险范围时运行。高风险 Agent 主链路使用无外部密钥的 deterministic assembled-path E2E 阻断，`real-provider-probe.yml` 手工探针负责外部 provider 校准；两者不能互相冒充。Workflow、selector、skip 或 expected-output 更新都按生产代码审查；长期 flake、误报、绕过或无 consumer 的 gate 应及时修复或退役，禁止用新增规则掩盖既有缺陷。
 
 运行时当前事实属于 `ARCHITECTURE.md`、对应代码 Owner 与测试；本页不复制 readiness、Run、LITE 或 checkpoint 契约。相关非显然取舍保存在 [工程决策记录](./decisions/README.md) 的聚焦 implemented records 中，审计时从这些局部 Owner 派生，不维护另一份手工状态表。
 

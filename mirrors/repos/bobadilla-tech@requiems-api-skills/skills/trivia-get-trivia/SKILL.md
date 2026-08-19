@@ -44,7 +44,7 @@ Returns a random trivia question with multiple-choice answers. Use the optional 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `question` | string | The trivia question text |
-| `options` | array[string] | Four multiple-choice answer options |
+| `options` | array<string> | Four multiple-choice answer options |
 | `answer` | string | The correct answer — always one of the values in options |
 | `category` | string | The category the question belongs to |
 | `difficulty` | string | The difficulty level of the question (easy, medium, or hard) |

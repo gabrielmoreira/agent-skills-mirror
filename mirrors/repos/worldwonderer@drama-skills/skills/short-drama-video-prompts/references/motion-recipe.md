@@ -57,17 +57,17 @@
 **`VID-12 · reviewed_invariant`**：普通母版省略 `coverage_scope`；只有局部补拍或替代实现才增加
 该对象，并按 [`coverage-scope.fragment.json`](../assets/coverage-scope.fragment.json) 的统一结构，
 用 `mode: pickup | alternate` 区分。补拍版/替代版用同一文件内的 `master_motion_id` /
-`supplements_motion_ids` 说明它补什么，避免给文件写指向自身的 `hash`；
+`supplements_motion_ids` 说明它补什么，避免让文件引用自身；
 `source_obligations` 把动作、反应、对白、揭示、结束边界与已确认的项目要求分别绑定来源，
 并把 `disposition` 对到当前 `motion_field`。运动规格只能提交 `replacement_intent`；reviewer
-在下游审查结论中绑定固定的替代版或母版 `hash` 后作出决定，不能把审查引用回写运动规格
+在下游审查结论中指名替代版或母版的记录后作出决定，不能把审查引用回写运动规格
 造成循环引用。未承担的内容保留在母版/其他补拍版本，或退回分镜修改，不能随更短的
 提示词消失。
 
 ## 末镜交接
 
 **`VID-09 · structural_invariant`**：下一镜起点要么引用已经存在的记录，
-要么使用明确的 `provisional` 定位信息，不得伪造记录、`sources` 条目或 `hash`。
+要么使用明确的 `provisional` 定位信息，不得伪造记录或 `sources` 条目。
 
 `next_start` 只有在目标已经存在时，才能写成引用：`src` 指向本文件 `sources` 里声明的那个
 快照，`record_id` 指向该快照里已存在的记录。最后一镜可对照已有的

@@ -147,7 +147,7 @@ node scripts/shot-recipes.mjs lint
 SKILL.md                 给 agent 读的工作流
 scripts/
   shot-recipes.mjs       list / show / search / lint / check / render
-  selftest.mjs           240 项断言，不调模型，lint 每条规则都有击穿用例
+  selftest.mjs           244 项断言，不调模型，lint 每条规则都有击穿用例
 references/
   cards/<id>.md          卡片（frontmatter + 中文正文）
   cards/en/<id>.md       英文正文

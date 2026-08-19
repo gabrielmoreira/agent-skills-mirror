@@ -33,7 +33,7 @@ Returns a sorted list of all distinct body part values present in the dataset. U
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `items` | array | Sorted list of all distinct body part names |
+| `items` | array<string> | Sorted list of all distinct body part names |
 | `total` | integer | Total number of distinct body parts |
 
 ## Errors

@@ -1,6 +1,6 @@
 # Analysis Blindspot Cookbook (Issue #77 batch 2)
 
-> **SSoT**: blindspot recipes R52-R81. **Not** a third master workflow. Obey ADF R1-R51 + re-agent-workflow + A-T/U-AV first.
+> **SSoT**: blindspot recipes R52-R81 (**BS-*** overlay IDs, not routing PRIMARY). **Not** a third master workflow. Obey ADF R1-R51 + re-agent-workflow + A-T/U-AV first.
 > Lab only. Detection+forensics; **no bypass tutorial** for kernel/integrity/injection weaponization.
 
 ## 0. Evidence IDs

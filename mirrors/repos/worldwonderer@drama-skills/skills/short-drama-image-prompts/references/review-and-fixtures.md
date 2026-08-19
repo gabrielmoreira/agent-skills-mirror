@@ -10,7 +10,7 @@
 
 ## 1. 审查方式
 
-先做可确定检查，再由与作者分离的 reviewer 判断语义和 craft。Reviewer 不改 spec；它写 finding，包含 artifact/hash、精确证据、影响、所需修复、owner、severity 与状态。不要以固定长度、词数、形容词比例或“像 AI”判质量。
+先做可确定检查，再由与作者分离的 reviewer 判断语义和 craft。Reviewer 不改 spec；它写 finding，包含产物与记录 ID、精确证据、影响、所需修复、owner、severity 与状态。不要以固定长度、词数、形容词比例或“像 AI”判质量。
 
 ## 2. 证据量表
 

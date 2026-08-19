@@ -94,7 +94,31 @@ export function seedFromOutline(outline) {
     };
   });
 
-  return { source: outline?.source ?? '', style: DEFAULT_STYLE, scenes };
+  // 道具：大纲从 1.1.0 起带 props（id / name / function / beatIds），有就预填。
+  // 搬过来的是改编阶段拍板的事实——哪几件物件承载剧情、各自承载什么、托起哪几个
+  // 爽点、在哪几集出现。留空的是美术层的活：尺度、锚点、状态变体、白底提示词。
+  // 大纲没有 props 字段就返回空数组，模型照 prop-pass.md 从原文提取，跟以前一样。
+  const beatType = new Map((outline?.beats ?? []).map((b) => [b?.id, b?.type]));
+  const props = (outline?.props ?? []).map((pr) => {
+    const episodes = eps.filter((e) => (e?.propIds ?? []).includes(pr.id)).map((e) => e.ep);
+    return {
+      id: pr.id,
+      name: pr.name,
+      // 大纲的 function 就是这里的 summary：两边都指「它在戏里干什么」，不是材质描述
+      summary: pr.function ?? '',
+      // 模型要填的设计字段，先占位
+      scale: '',
+      anchors: [],
+      states: [],
+      relatedScenes: [],
+      carriedBy: [],
+      image: { prompt: '', negativePrompt: '', sheet: '', tags: [] },
+      // 从 outline 搬来的事实，不用再想
+      usage: { episodes, beats: (pr.beatIds ?? []).map((id) => beatType.get(id)).filter(Boolean) },
+    };
+  });
+
+  return { source: outline?.source ?? '', style: DEFAULT_STYLE, scenes, props };
 }
 
 /* ------------------------------------------------------------------ */

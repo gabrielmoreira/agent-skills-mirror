@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `facebook/react-native` — 26 default patterns, 5 followed patterns, 9 file(s) materialized.
+Mirror of `facebook/react-native` — 26 default patterns, 4 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `facebook/react-native` — 26 default patterns, 5 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 9 |
+| Followed pats | 4 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,7 +55,6 @@ Mirror of `facebook/react-native` — 26 default patterns, 5 followed patterns, 
 - `private/react-native-fantom/__docs__/README.md`
 - `packages/rn-tester/README.md`
 - `CONTRIBUTING.md`
-- `ECOSYSTEM.md`
 
 ## File Index
 
@@ -69,9 +68,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`packages/react-native-compatibility-check/AGENTS.md`](packages/react-native-compatibility-check/AGENTS.md) |
 | 5 | → | [`__docs__/README.md`](__docs__/README.md) |
 | 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`ECOSYSTEM.md`](ECOSYSTEM.md) |
-| 8 | → | [`packages/rn-tester/README.md`](packages/rn-tester/README.md) |
-| 9 | → | [`private/react-native-fantom/__docs__/README.md`](private/react-native-fantom/__docs__/README.md) |
+| 7 | → | [`packages/rn-tester/README.md`](packages/rn-tester/README.md) |
+| 8 | → | [`private/react-native-fantom/__docs__/README.md`](private/react-native-fantom/__docs__/README.md) |
 
 ---
 

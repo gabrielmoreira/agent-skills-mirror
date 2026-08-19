@@ -676,131 +676,111 @@ class AutoreviewAmpTests(unittest.TestCase):
                     AUTOREVIEW.run_amp(args, repo, "review")
 
 
-class AutoreviewSecretScannerTests(unittest.TestCase):
-    def test_typescript_type_annotations_are_not_credential_material(self) -> None:
-        source = "\n".join(
+class AutoreviewTruffleHogTests(unittest.TestCase):
+    def test_findings_map_to_prompt_dataset_untracked_and_diff_paths(self) -> None:
+        prompt = "\n".join(
             (
-                "export function modelRuntime(",
-                "  env: NodeJS.ProcessEnv = process.env,",
-                "): ModelRuntime {",
-                "  return env.MODEL_RUNTIME;",
-                "}",
-                "",
-                "export function modelRuntimeCredentials(",
-                "  env: NodeJS.ProcessEnv,",
-                "): NodeJS.ProcessEnv {",
-                "  const credentials: NodeJS.ProcessEnv = {};",
-                "  return credentials;",
-                "}",
+                "# Prompt file: review-notes.md",
+                "prompt body",
+                "# Dataset: evidence.json",
+                "dataset body",
+                "# Untracked File",
+                'path: "new/config.ts"',
+                "source-line 1: redacted example",
+                "diff --git a/old.ts b/new.ts",
+                "--- a/old.ts",
+                "+++ b/new.ts",
+                "@@ -1 +1 @@",
+                "+redacted example",
             )
+        )
+        output = "\n".join(
+            json.dumps(
+                {
+                    "SourceMetadata": {
+                        "Data": {"Filesystem": {"line": line_number}}
+                    }
+                }
+            )
+            for line_number in (2, 4, 7, 12)
         )
 
-        self.assertFalse(
-            AUTOREVIEW.secret_text_risk(
-                source,
-                javascript_dialect="typescript",
-            )
-        )
         self.assertEqual(
-            AUTOREVIEW.review_secret_fragments(
-                source,
-                javascript_dialect="typescript",
-            ),
-            set(),
+            AUTOREVIEW.trufflehog_review_pack_paths(prompt, output),
+            ["evidence.json", "new.ts", "new/config.ts", "review-notes.md"],
         )
 
-    def test_typescript_typed_declaration_still_scans_initializer(self) -> None:
-        literal_value = "actual-production-" + "secret"
-        source = (
-            "const credentials: NodeJS.ProcessEnv = "
-            f'"{literal_value}";'
-        )
-
-        self.assertTrue(
-            AUTOREVIEW.secret_text_risk(
-                source,
-                javascript_dialect="typescript",
-            )
-        )
-        self.assertEqual(
-            AUTOREVIEW.review_secret_fragments(
-                source,
-                javascript_dialect="typescript",
-            ),
-            {literal_value},
-        )
-
-    def test_boolean_declarations_are_not_credential_material(self) -> None:
-        secret_field = "is" + "Secret"
-        client_secret_field = "hasClient" + "Secret"
-        cases = (
-            (f"val {secret_field}: Boolean? = null,", None),
-            (f"var {client_secret_field}: Boolean = false", None),
-            (f"abstract val {secret_field}: Boolean?", None),
-            (f"val {secret_field}: Boolean?", None),
-            (f"const {client_secret_field}: boolean = true;", "typescript"),
-            (f"declare const {client_secret_field}: boolean;", "typescript"),
-            (f"let {secret_field}: Bool? = nil", None),
-            (f"let {secret_field}: Bool?", None),
-        )
-
-        for content, javascript_dialect in cases:
-            with self.subTest(content=content):
-                self.assertFalse(
-                    AUTOREVIEW.secret_text_risk(
-                        content,
-                        javascript_dialect=javascript_dialect,
-                    )
-                )
-
-    def test_boolean_and_null_literal_values_are_not_credentials(self) -> None:
-        cases = (
-            ("is" + "Secret", "true"),
-            ("requires" + "Password", "false"),
-            ("access" + "Token", "null"),
-        )
-        for field_name, literal in cases:
-            content = f"{field_name} = {literal}"
-            with self.subTest(content=content):
-                self.assertFalse(AUTOREVIEW.secret_text_risk(content))
-
-    def test_boolean_annotation_does_not_hide_real_credential_literal(self) -> None:
-        literal_value = "actual-production-" + "secret"
-        secret_field = "is" + "Secret"
-        client_secret_field = "hasClient" + "Secret"
-        cases = (
-            (f'val {secret_field}: Boolean? = "{literal_value}",', None),
-            (f'var {client_secret_field}: Boolean = "{literal_value}"', None),
+    def test_deleted_diff_finding_maps_to_original_path(self) -> None:
+        prompt = "\n".join(
             (
-                f'const {client_secret_field}: boolean = "{literal_value}";',
-                "typescript",
-            ),
-            (f'let {secret_field}: Bool? = "{literal_value}"', None),
+                "# Change Bundle",
+                "diff --git a/config.ts b/config.ts",
+                "deleted file mode 100644",
+                "--- a/config.ts",
+                "+++ /dev/null",
+                "@@ -1 +0,0 @@",
+                "-redacted example",
+            )
+        )
+        output = json.dumps(
+            {
+                "SourceMetadata": {
+                    "Data": {"Filesystem": {"Line": 7}}
+                }
+            }
         )
 
-        for content, javascript_dialect in cases:
-            with self.subTest(content=content):
-                self.assertTrue(
-                    AUTOREVIEW.secret_text_risk(
-                        content,
-                        javascript_dialect=javascript_dialect,
-                    )
+        self.assertEqual(
+            AUTOREVIEW.trufflehog_review_pack_paths(prompt, output),
+            ["config.ts"],
+        )
+
+    def test_unusable_scanner_output_falls_back_without_echoing_it(self) -> None:
+        output = "not-json\n" + json.dumps(
+            {
+                "SourceMetadata": {
+                    "Data": {"Filesystem": {"line": "invalid"}}
+                },
+                "Raw": "must-not-be-returned",
+            }
+        )
+
+        self.assertEqual(
+            AUTOREVIEW.trufflehog_review_pack_paths("prompt", output),
+            ["review pack"],
+        )
+
+    def test_scanner_command_requests_verified_and_unknown_results(self) -> None:
+        prompt = "review pack with redacted examples only"
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+
+            def run_scanner(
+                command: list[str],
+                cwd: Path,
+                **kwargs: object,
+            ) -> subprocess.CompletedProcess[str]:
+                self.assertEqual(cwd, Path(command[2]).parent)
+                self.assertEqual(Path(command[2]).read_text(encoding="utf-8"), prompt)
+                self.assertEqual(
+                    command[3:],
+                    [
+                        "--json",
+                        "--no-color",
+                        "--results=verified,unknown",
+                        "--fail",
+                        "--fail-on-scan-errors",
+                    ],
                 )
+                self.assertEqual(kwargs["check"], False)
+                return subprocess.CompletedProcess(command, 0, "", "")
 
-    def test_boolean_prefix_values_remain_credentials(self) -> None:
-        field_name = "client" + "Secret"
-        for prefix in ("Boolean", "boolean", "Bool"):
-            literal_value = prefix + "-prod-credential"
-            content = f"{field_name}: {literal_value}"
-            with self.subTest(content=content):
-                self.assertTrue(AUTOREVIEW.secret_text_risk(content))
-
-    def test_boolean_type_tokens_in_config_remain_credentials(self) -> None:
-        field_name = "client" + "Secret"
-        for literal_value in ("Boolean?", "Boolean?=abc1234"):
-            content = f"{field_name}: {literal_value}"
-            with self.subTest(content=content):
-                self.assertTrue(AUTOREVIEW.secret_text_risk(content))
+            with mock.patch.object(
+                AUTOREVIEW,
+                "find_command",
+                return_value="/trusted/trufflehog",
+            ), mock.patch.object(AUTOREVIEW, "run", side_effect=run_scanner):
+                AUTOREVIEW.scan_outgoing_review_pack(repo, prompt)
 
 
 class AutoreviewCompatibilityTests(unittest.TestCase):
@@ -826,44 +806,6 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
                 os.environ[key] = value
         cls.home_dir.cleanup()
 
-    def test_harness_rejects_disabled_cursor_engine(self) -> None:
-        harness_path = SCRIPT_PATH.with_name("test-review-harness.py")
-        namespace = runpy.run_path(str(harness_path))
-        with self.assertRaises(SystemExit):
-            namespace["parse_args"](["--engine", "cursor"])
-
-    def test_cursor_agent_bin_cli_alias(self) -> None:
-        with mock.patch.object(
-            sys,
-            "argv",
-            ["autoreview", "--cursor-agent-bin", "/tmp/legacy-cursor"],
-        ):
-            args = AUTOREVIEW.parse_args()
-        self.assertEqual(args.cursor_bin, "/tmp/legacy-cursor")
-
-    def test_cursor_agent_bin_env_alias(self) -> None:
-        with mock.patch.dict(
-            os.environ,
-            {"CURSOR_AGENT_BIN": "/tmp/legacy-cursor"},
-            clear=False,
-        ):
-            os.environ.pop("CURSOR_BIN", None)
-            with mock.patch.object(sys, "argv", ["autoreview"]):
-                args = AUTOREVIEW.parse_args()
-        self.assertEqual(args.cursor_bin, "/tmp/legacy-cursor")
-
-    def test_cursor_agent_reviewer_alias_normalizes_to_cursor(self) -> None:
-        self.assertEqual(
-            AUTOREVIEW.parse_reviewer_token("cursor-agent:auto"),
-            ("cursor", "auto", None),
-        )
-
-    def test_cursor_agent_keyed_option_normalizes_to_cursor(self) -> None:
-        self.assertEqual(
-            AUTOREVIEW.parse_keyed_options(["cursor-agent=auto"], "model"),
-            (None, {"cursor": "auto"}),
-        )
-
     def test_kimi_bin_cli_option(self) -> None:
         with mock.patch.object(
             sys,
@@ -874,9 +816,14 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
         self.assertEqual(args.kimi_bin, "/tmp/trusted-kimi")
 
     def test_kimi_reviewer_disables_tools(self) -> None:
-        args = AUTOREVIEW.reviewer_test_args(
+        args = argparse.Namespace(
             engine="kimi",
+            model=None,
             thinking=["on"],
+            fallback_model=None,
+            codex_config=None,
+            codex_speed=None,
+            tools=True,
         )
 
         reviewer = AUTOREVIEW.reviewer_args(args)[0]
@@ -884,16 +831,6 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
         self.assertEqual(reviewer.engine, "kimi")
         self.assertEqual(reviewer.thinking, "on")
         self.assertFalse(reviewer.tools)
-
-    def test_all_reviewers_includes_kimi(self) -> None:
-        args = AUTOREVIEW.reviewer_test_args(reviewers="all")
-
-        reviewers = AUTOREVIEW.reviewer_args(args)
-
-        self.assertEqual(
-            [reviewer.engine for reviewer in reviewers],
-            ["codex", "claude", "pi", "kimi"],
-        )
 
     def test_kimi_isolation_requires_current_cli_contract(self) -> None:
         args = argparse.Namespace(kimi_bin="kimi")
@@ -1289,164 +1226,6 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(SystemExit, "result was not structured JSON"):
             AUTOREVIEW.extract_json(json.dumps(payload))
-
-    def test_retry_filter_only_matches_parse_failures(self) -> None:
-        self.assertTrue(AUTOREVIEW.is_structured_output_failure("review engine returned non-JSON output: nope"))
-        self.assertTrue(AUTOREVIEW.is_structured_output_failure("review engine result was not structured JSON:\nnope"))
-        self.assertFalse(AUTOREVIEW.is_structured_output_failure("review JSON missing required key: findings"))
-        self.assertFalse(AUTOREVIEW.is_structured_output_failure("finding 0 has invalid priority"))
-
-    def test_cursor_workspace_instructions_fail_closed(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="autoreview-cursor-test.") as tmpdir:
-            repo = Path(tmpdir)
-            args = argparse.Namespace(
-                thinking=None,
-                tools=True,
-                web_search=True,
-                cursor_allow_workspace_instructions=False,
-                cursor_bin="cursor-agent",
-                model="auto",
-                stream_engine_output=False,
-            )
-            with self.assertRaises(SystemExit) as exc_info:
-                AUTOREVIEW.run_cursor(args, repo, "prompt")
-            self.assertIn("cursor engine is unavailable", str(exc_info.exception))
-
-    def test_cursor_local_mcp_requires_explicit_approval(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="autoreview-cursor-test.") as tmpdir:
-            repo = Path(tmpdir)
-            (repo / ".cursor").mkdir()
-            (repo / ".cursor" / "mcp.json").write_text("{}\n")
-            args = argparse.Namespace(
-                thinking=None,
-                tools=True,
-                web_search=True,
-                cursor_allow_workspace_instructions=True,
-                cursor_bin="cursor-agent",
-                model="auto",
-                stream_engine_output=False,
-            )
-            with self.assertRaises(SystemExit) as exc_info:
-                AUTOREVIEW.run_cursor(args, repo, "prompt")
-            self.assertIn("cursor engine is unavailable", str(exc_info.exception))
-
-    def test_cursor_local_hooks_are_always_refused(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="autoreview-cursor-test.") as tmpdir:
-            repo = Path(tmpdir)
-            (repo / ".cursor").mkdir()
-            (repo / ".cursor" / "hooks.json").write_text("{}\n")
-            args = argparse.Namespace(
-                thinking=None,
-                tools=True,
-                web_search=True,
-                cursor_allow_workspace_instructions=True,
-                cursor_bin="cursor-agent",
-                model="auto",
-                stream_engine_output=False,
-            )
-            with self.assertRaises(SystemExit) as exc_info:
-                AUTOREVIEW.run_cursor(args, repo, "prompt")
-            self.assertIn("cursor engine is unavailable", str(exc_info.exception))
-
-    def test_cursor_local_permissions_are_always_refused(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="autoreview-cursor-test.") as tmpdir:
-            repo = Path(tmpdir)
-            (repo / ".cursor").mkdir()
-            (repo / ".cursor" / "cli.json").write_text("{}\n")
-            args = argparse.Namespace(
-                thinking=None,
-                tools=True,
-                web_search=True,
-                cursor_allow_workspace_instructions=True,
-                cursor_bin="cursor-agent",
-                model="auto",
-                stream_engine_output=False,
-            )
-            with self.assertRaises(SystemExit) as exc_info:
-                AUTOREVIEW.run_cursor(args, repo, "prompt")
-            self.assertIn("cursor engine is unavailable", str(exc_info.exception))
-
-    def test_cursor_is_disabled_without_repo_only_read_sandbox(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="autoreview-cursor-test.") as tmpdir:
-            root = Path(tmpdir)
-            repo = root / "repo"
-            repo.mkdir()
-            cursor_bin = root / "cursor-agent"
-            AUTOREVIEW.write_executable(cursor_bin, AUTOREVIEW.fake_cursor_script())
-            args = argparse.Namespace(
-                thinking=None,
-                tools=True,
-                web_search=True,
-                cursor_allow_workspace_instructions=True,
-                cursor_bin=str(cursor_bin),
-                model=None,
-                stream_engine_output=False,
-            )
-            with mock.patch.object(AUTOREVIEW, "cursor_global_hook_paths", return_value=[]):
-                with self.assertRaisesRegex(SystemExit, "Cursor read permissions"):
-                    AUTOREVIEW.run_cursor(args, repo, "prompt")
-
-    def test_cursor_engine_fails_closed_end_to_end(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="autoreview-cursor-e2e.") as tmpdir:
-            root = Path(tmpdir)
-            repo = root / "repo"
-            repo.mkdir()
-            subprocess.run(["git", "init", "--quiet"], cwd=repo, check=True)
-            subprocess.run(["git", "config", "user.name", "AutoReview Test"], cwd=repo, check=True)
-            subprocess.run(["git", "config", "user.email", "autoreview@example.invalid"], cwd=repo, check=True)
-            source = repo / "example.txt"
-            source.write_text("before\n")
-            subprocess.run(["git", "add", "example.txt"], cwd=repo, check=True)
-            subprocess.run(["git", "commit", "--quiet", "-m", "test: seed fixture"], cwd=repo, check=True)
-            source.write_text("after\n")
-
-            cursor_bin = root / "cursor-agent"
-            trufflehog_bin = root / "trufflehog"
-            record_path = root / "record.json"
-            AUTOREVIEW.write_executable(cursor_bin, AUTOREVIEW.fake_cursor_script())
-            AUTOREVIEW.write_executable(
-                trufflehog_bin,
-                "#!/usr/bin/env python3\nraise SystemExit(0)\n",
-            )
-            env = os.environ.copy()
-            env.update(
-                {
-                    "AUTOREVIEW_FAKE_RECORD": str(record_path),
-                    "AUTOREVIEW_FAKE_CURSOR_INVOCATIONS": str(root / "cursor-invocations.jsonl"),
-                    "GIT_CONFIG_GLOBAL": str(root / "hostile-gitconfig"),
-                    "NODE_OPTIONS": "--require=hostile.js",
-                    "PYTHONPATH": str(root / "hostile-python"),
-                    "PATH": (
-                        f"{root}{os.pathsep}{repo}{os.pathsep}"
-                        f"{env.get('PATH', '')}"
-                    ),
-                    "HOME": str(root),
-                    "USERPROFILE": str(root),
-                }
-            )
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPT_PATH),
-                    "--mode",
-                    "local",
-                    "--engine",
-                    "cursor",
-                    "--cursor-bin",
-                    str(cursor_bin),
-                    "--cursor-allow-workspace-instructions",
-                ],
-                cwd=repo,
-                env=env,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn("Cursor read permissions", result.stderr)
-            self.assertFalse(record_path.exists())
-
 
 if __name__ == "__main__":
     unittest.main()

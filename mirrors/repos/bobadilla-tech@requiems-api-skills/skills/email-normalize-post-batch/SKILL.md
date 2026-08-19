@@ -19,7 +19,7 @@ Normalizes up to 100 email addresses in one request. Results are in the same ord
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `emails` | array | yes | body | Array of addresses to normalize (min 1, max 100; each entry non-empty) |
+| `emails` | array<string> | yes | body | Array of addresses to normalize (min 1, max 100; each entry non-empty) |
 
 ## Request Example
 
@@ -73,7 +73,7 @@ Normalizes up to 100 email addresses in one request. Results are in the same ord
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | One normalization result per input email, in order |
+| `results` | array<object> | One normalization result per input email, in order |
 | `total` | integer | Number of emails in the batch (same as results length) |
 
 ## Errors

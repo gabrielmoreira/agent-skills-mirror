@@ -6,7 +6,7 @@ description: >
   ("like last time", "what did we decide"), asks to remember or forget
   something, shares files, URLs, or repos worth keeping, or when the task needs
   context this session does not have — even if nobody says the word "memory".
-  Covers choosing between recall, find, search, and grep, reading viking://
+  Covers choosing between context search, find, list search, and grep, reading viking://
   URIs, and when (not) to write.
 version: 2026.8.7
 ---
@@ -36,13 +36,14 @@ such as `mcp__openviking__find` or `openviking_find`; they are the same tools.
 
 ## Choosing a retrieval tool
 
-- `recall` — first choice for "what do I know about X". The server assembles a
-  ready-to-use, token-budgeted digest across memory types; every entry carries
-  its `viking://` URI so anything that matters can be expanded with `read`.
+- `search` with `mode="context"` — first choice for "what do I know about X".
+  The server assembles a ready-to-use, token-budgeted digest across memory
+  types; every entry carries its `viking://` URI so anything that matters can
+  be expanded with `read`.
 - `find` — fast ranked list of memories, resources, and skills. Use it when you
   want raw hits to triage yourself rather than an assembled digest.
-- `search` — deeper than `find`: intent analysis, optionally session-aware. Use
-  it when `find` comes back thin or off-target.
+- `search` in its default list mode — deeper than `find`: intent analysis,
+  optionally session-aware. Use it when `find` comes back thin or off-target.
 - `grep` / `glob` — exact text or filename matching over `viking://` content.
   Reach for these when you know the literal string, identifier, or file name;
   semantic search would fuzz it.

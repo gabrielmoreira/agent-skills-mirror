@@ -11,8 +11,7 @@
 本文只登记**不需要读懂戏就能判定**的分镜缺陷：时长账目的算术、关键帧声明的边界是否
 与它绑定的字段一致、边界条目有没有写成常见的回指说法、每条引用是否解析得到一个上游快照。它们由
 [storyboard_check.py](../scripts/storyboard_check.py) 执行，`enforcer` 一律是 `validator`。
-脚本读引用时先取文件的 `sources` 声明，再按每条引用的 `src` 取回 `owner`、`artifact`
-和 `hash`。
+脚本读引用时先取文件的 `sources` 声明，再按每条引用的 `src` 取回 `owner` 与 `artifact`。
 
 分成脚本与审查两条路的理由很实际：账目类错误由人来核对既慢又不可靠——覆盖里少写一个
 镜头 ID，肉眼看过去和写全了完全一样。把这类工作交给脚本，审查者的注意力才能留给
@@ -23,9 +22,9 @@
 | code | classification | enforcer | 默认 severity | owner | 含义 |
 |---|---|---|---|---|---|
 | REF_SRC_IS_NOT_DECLARED | structural_invariant | validator | error | storyboard | 引用的 `src` 在本文件 `sources` 里没有声明 |
-| REF_HAS_NO_UPSTREAM_BINDING | structural_invariant | validator | error | storyboard | 引用既没有 `src`，也没有完整的 `owner`/`artifact`/`hash` |
+| REF_HAS_NO_UPSTREAM_BINDING | structural_invariant | validator | error | storyboard | 引用既没有 `src`，也没有完整的 `owner`/`artifact` |
 | REF_IS_NOT_AN_OBJECT | structural_invariant | validator | error | storyboard | 引用位置上不是一个对象 |
-| SOURCE_ENTRY_IS_INCOMPLETE | structural_invariant | validator | error | storyboard | `sources` 条目缺少 `owner`、`artifact` 或 `hash` |
+| SOURCE_ENTRY_IS_INCOMPLETE | structural_invariant | validator | error | storyboard | `sources` 条目缺少 `owner` 或 `artifact` |
 | SHT05_BOUNDARY_ENTRY_IS_A_BACK_REFERENCE | structural_invariant | validator | error | storyboard | 边界条目整条是「同上」「位置不变」这类回指，没有写出绝对事实 |
 | SHT16_RECORD_MISSING | structural_invariant | validator | error | storyboard | 覆盖记录没有 `episode_duration` |
 | SHT16_RECORD_INCOMPLETE | structural_invariant | validator | error | storyboard | `episode_duration` 缺少 `counted_shot_ids` 或 `unresolved_durations` |

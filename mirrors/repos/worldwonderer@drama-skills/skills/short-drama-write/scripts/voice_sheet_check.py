@@ -13,7 +13,6 @@ The script reads accepted creator files and writes nothing.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
@@ -23,7 +22,7 @@ from typing import Any, NamedTuple
 
 # Creators run these scripts on whatever interpreter their machine provides, so
 # an unsupported version must say so instead of failing inside an import.
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "short-drama needs Python {}.{} or newer; this interpreter is {}.{}".format(
@@ -49,7 +48,6 @@ class ResolvedRef(NamedTuple):
 
     owner: str
     artifact: str
-    hash: str
     record_id: str | None
     field: str | None
     authority: str | None
@@ -92,18 +90,18 @@ def resolve_ref(
             return None, RefFinding(
                 "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
             )
-        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
-        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+        owner, artifact = entry.get("owner"), entry.get("artifact")
+        if not (isinstance(owner, str) and isinstance(artifact, str)):
             return None, RefFinding(
                 "SOURCE_ENTRY_IS_INCOMPLETE",
                 location,
-                f"sources[{src!r}] needs owner/artifact/hash",
+                f"sources[{src!r}] needs owner/artifact",
             )
-    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
-        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact")):
+        owner, artifact = ref["owner"], ref["artifact"]
     else:
         return None, RefFinding(
-            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact"
         )
     optional = {
         key: ref[key]
@@ -112,9 +110,8 @@ def resolve_ref(
     }
     return (
         ResolvedRef(
-            owner,
-            artifact,
-            digest,
+        owner,
+        artifact,
             optional.get("record_id"),
             optional.get("field"),
             optional.get("authority"),
@@ -275,17 +272,6 @@ def check(
             )
             continue
         raw = screenplay[start:end]
-        if hashlib.sha256(raw).hexdigest() != block.get("content_sha256"):
-            findings.append(
-                _finding(
-                    "VOICE_INDEX_IS_STALE_AGAINST_SCREENPLAY",
-                    "the index no longer matches the screenplay bytes; rebuild it",
-                    line_id=line_id,
-                    record_id=record_id,
-                )
-            )
-            continue
-
         match = DIALOGUE.match(raw.decode("utf-8").strip())
         if match is None:
             findings.append(

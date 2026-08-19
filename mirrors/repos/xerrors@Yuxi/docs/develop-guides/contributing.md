@@ -149,7 +149,7 @@ Compose 服务 `api` 和 `web` 对应的容器名分别为 `api-dev` 和 `web-de
 
 后端代码位于 `backend/`，请遵循以下约束：
 
-- 使用 Python 3.12+ 支持的现代、Pythonic 写法。
+- 使用 Python 3.12+ 支持的语法，并保持实现简洁、可读。
 - 保持路由、服务、仓储和领域逻辑的现有边界。
 - 新增测试应放入 `backend/test/unit`、`backend/test/integration` 或 `backend/test/e2e` 对应目录。
 - 不在测试或文档中写入 `.env` 中的账号、密码、Token 或其他敏感值。
@@ -237,7 +237,7 @@ git diff --check
 
 - 不继承当前开发会话的对话历史、推理过程或实现结论。
 - 不使用继承当前上下文的 SubAgent 代替独立 Review。
-- Reviewer 应根据需求、完整 diff、相关代码、测试和项目规范独立判断，而不是只检查开发者指定的局部代码。
+- Reviewer 应根据需求、完整 diff、相关代码、测试和项目规范独立判断；开发者指定的局部代码不能限定审查范围。
 
 Review 重点检查以下内容：
 
@@ -382,13 +382,14 @@ git branch -d docs/update-contributing-guide
 
 ## 文档维护
 
-代码改动后，请检查是否需要同步更新文档：
+代码、配置、API、状态、权限或命令变化时，应在同一 PR 更新事实 Owner。完整分层、教程/参考分类、机制页契约、写作流程和检查清单见[文档编写与维护规范](./documentation-guidelines.md)；进入 `docs/` 工作时同时遵循 [`docs/AGENTS.md`](../AGENTS.md)。
 
-- 正式文档位于 `docs/`。
-- 文档导航定义在 `docs/.vitepress/config.mts`；新增正式页面时需要同步加入导航。
-- 已完成的用户可见变更或发布说明更新到 [changelog.md](./changelog.md)。
-- 未来规划和未完成事项更新到 [roadmap.md](./roadmap.md)，不要将已完成变更继续保留为路线图事项。
-- 仅开发者可见且确有必要的临时设计记录放在 `docs/vibe/`。
+- `intro/` 用于从零得到结果的教程，`advanced/` 用于配置和运维参考，`agents/` 用于 Agent 配置与扩展方法，`mechanisms/` 用于运行机制、状态、权限、失败和源码定位。
+- 一个事实只在 owning page 完整解释；其他页面保留必要上下文并使用相对链接。实质性的教程与参考、配置与机制不能长期混在同一页。
+- 新增正式页面时更新 `docs/.vitepress/config.mts` 的正确父级与阅读顺序；移动或拆分页面同时修复全部入站链接。
+- 已完成的用户可见变更更新到 [changelog.md](./changelog.md)，未完成方向更新到 [roadmap.md](./roadmap.md)，不能同时声明同一状态。
+- 非平凡文档信息架构或长期约束变化同样需要 [decision record](./decisions/README.md)；`docs/vibe/` 只保存被忽略的本地临时计划。
+- 文档至少运行工程契约检查、文档构建与 `git diff --check`；构建通过不替代对源码、配置和测试的语义核对。
 
 ## AI 辅助贡献
 

@@ -28,13 +28,19 @@ for a knowledge-only answer. Never invent the path.
 ## The loop
 
 1. **`web_open_tab`** `{url}` — open the page (works even with no tab
-   open yet). Returns the new tab id.
-2. **`web_scan`** — read the page. Returns `page.text`, `page.title`, and
+   open yet). Waits until the document is complete, then returns the new
+   tab id plus `ready`. If `ready` is false, the load timed out — call
+   `web_scan` before acting.
+2. **`web_scan`** — read the page (after waiting for document complete).
+   Returns `page.text`, `page.title`, `page.ready_state`, and
    `page.elements[]`, where each element carries a **unique `selector`**,
    its visible `text`/`aria_label`, and a `rect` `[x,y,w,h]`. Use these
-   selectors directly — do not guess. Use `tabs_only:true` first when you
-   are unsure which tab to target; pass `switch_tab_id:<id>` to pin one.
-3. **`web_execute_js`** — act, then re-scan to confirm the effect.
+   selectors directly — do not guess. If `ready` is false, scan again;
+   do not click a partial page. Use `tabs_only:true` first when you are
+   unsure which tab to target; pass `switch_tab_id:<id>` to pin one.
+3. **`web_execute_js`** — act, then re-scan to confirm the effect. The
+   extension waits for complete before running the script, and again if
+   the script navigates.
 
 ## Recipes (`web_execute_js` `script`)
 

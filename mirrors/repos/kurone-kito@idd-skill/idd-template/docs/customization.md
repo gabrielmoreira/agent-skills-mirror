@@ -168,6 +168,23 @@ authority:
 - `external-bot` when a non-Copilot reviewer has a stable actor identity
   and a current-head completion signal.
 
+`advisory-convergence` reads `reviewPolicy` when deciding
+applicability. `human-required` and `no-advisory` make the check
+`not_applicable` (ready without Copilot clauses). `copilot-advisory`,
+`external-bot`, absent, or an invalid value keep today's
+primary-bot applicability. Do not register
+`idd-advisory-convergence` as a required status check unless the
+chosen policy actually wants an advisory-bot gate.
+
+The shipped hybrid review-reply identity is documented in
+[Hybrid review-reply identity](idd-review-policy-profiles.md#hybrid-review-reply-identity-shipped):
+IDD replies carry `<!-- {markerPrefix}-review-reply -->` after the
+visible disposition body (not an E1 `review-watermark`); unmarked
+human replies on human threads are presence-only and do not let the
+owning session post bare prose on its own items; Copilot threads
+still need an IDD disposition; the required job is not created by
+unmarked human review chatter.
+
 When importing the template, keep the `profiles/` directory with the
 copied docs. For any non-default PR review profile, use the matching
 `profiles/<profile>/README.md` artifact as the reusable patch surface.
@@ -417,10 +434,11 @@ merges — a maintainer must separately register `idd-advisory-convergence`
 as a **required** status check in the repository's branch-protection
 Ruleset; this is a GitHub-settings action taken outside of IDD
 automation, not something an agent applies on its own. Once
-registered, every review-thread reply, edit, or delete re-asserts the
-same Copilot verdict — ordinary human prose can fail that required
-check on the PR and cancel an in-flight run (observed 2026-08-17 on
-PR #2130). This is `idd-advisory-convergence`, not `lint.yml`.
+registered, ordinary human review-thread replies do **not** re-assert
+that required check. IDD-originated comments refresh the existing
+HEAD-associated required run from the companion
+`idd-advisory-convergence-comment.yml` workflow. This is
+`idd-advisory-convergence`, not `lint.yml`.
 Repositories that want human-led or gradual IDD adoption should not
 register the check as required until they intend the Copilot-advisory
 loop. After that
@@ -438,14 +456,17 @@ once `ciGate.externalCheckWaivers.mode` is `maintainer-authorized`
 **and** `idd-advisory-convergence` is itself listed under
 `ciGate.externalChecks.waivable` — enabling waiver mode for some other
 external check never silently makes this one waivable too. **Posting a
-waiver comment does not by itself turn the check green**: a waiver is a
-regular PR comment, which is not one of the workflow's triggers
-(`pull_request` push, `pull_request_review` submission, or
-`pull_request_review_comment` created/edited/deleted on a review
-thread), so after posting a waiver a maintainer must also **re-run the
-existing** PR-linked check run **for the current HEAD SHA** — the
-Actions UI "Re-run jobs" button, or `gh run rerun <run-id>` — for the
-required check to actually reflect it. `workflow_dispatch` does
+waiver comment does not by itself turn the check green**: a waiver is
+a regular PR conversation comment, which is not one of the required
+workflow's triggers (`pull_request` push or `pull_request_review`
+submission), so after posting a waiver a maintainer must also
+**re-run the existing** PR-linked check run **for the current HEAD
+SHA** — the Actions UI "Re-run jobs" button, or
+`gh run rerun <run-id>` — for the required check to actually
+reflect it. An IDD-originated review-thread comment refreshes that
+same HEAD run via the companion
+`idd-advisory-convergence-comment.yml` workflow. `workflow_dispatch`
+does
 **not** reliably do this:
 a dispatched run has no `pull_request` context of its own, so GitHub
 associates it with the dispatch ref rather than the PR's HEAD SHA, and

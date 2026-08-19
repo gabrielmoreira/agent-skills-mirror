@@ -1,20 +1,16 @@
 # Kocoro Project Guide (AGENTS.md)
 
-**Condensed mirror of `CLAUDE.md` for external coding agents; `CLAUDE.md` is the
-full guide** for reasoning, wire details, and unlisted subsystems. This file is
-actionable rules plus the symbols to grep. If the two disagree, `CLAUDE.md` and
-the code win.
+**Condensed mirror of `CLAUDE.md`** — actionable rules plus the symbols to grep.
+If the two disagree, `CLAUDE.md` and the code win.
 
-**Keep this file under 24 KB (CI asserts).** Harnesses inject `AGENTS.md` under a
-shared 32 KiB budget and truncate over-budget files **silently from the tail** —
-bottom sections vanish. Need room? Cut prose, not rules.
+**Keep this file under 24 KB (CI asserts).** Harnesses truncate over-budget
+files silently from the tail. Cut prose, not rules.
 
 Kocoro is the Go CLI/runtime (`shan`) for Shannon AI agents. Production path:
-daemon + Kocoro Desktop + Shannon Cloud — the daemon holds a Cloud WS, receives
-channel messages, runs the agent loop locally, streams back. Also TUI, one-shot
-CLI, MCP server, schedules.
+daemon + Kocoro Desktop + Shannon Cloud — the daemon holds a Cloud WS, runs the
+agent loop locally, streams back. Also TUI, one-shot CLI, MCP server, schedules.
 
-Layout: `cmd/` (Cobra) + `internal/<pkg>/`; use Glob/Grep. Production path is
+Layout: `cmd/` (Cobra) + `internal/<pkg>/`. Production path is
 `internal/daemon/` driving `internal/agent/`.
 
 ## Working Rules
@@ -83,12 +79,18 @@ the SAME PR. Desktop-only transport endpoints stay out; their contract lives in
 - Every `RequiresApproval()==true` tool needs a `description` (5-15 words,
   model-written). The daemon does NOT block on a missing one; UI clients MUST use
   `description?.trim() || fallback`, NOT nullish coalescing.
+- Integration `requires_approval=true` → normal approval flow (always-allow/
+  auto_approve bypasses apply); absent=false. Cloud withholds marked schemas
+  unless `integration_requires_approval` is advertised (fetch + WS).
 - Trusted `material_side_effect=false` permits observational batching without
-  the journal; absent is fail-closed. Calls use stable `request_id`; material
-  calls also use `Idempotency-Key`. Only pre-dispatch `provider_unavailable` is
-  known-no-effect; billing/provider/post-dispatch failures are not. Preserve
-  provider/model/unit/cost via `ToolResult`/`EmitUsage`. Exhausted material
-  `call_in_progress` is `outcome_unknown`: never commit/resend under a new ID.
+  the journal; absent is fail-closed. Stable `request_id`; material calls add
+  `Idempotency-Key`. `provider_unavailable` and `provider_rejected` are
+  known-no-effect; others are not. Preserve
+  provider/model/unit/cost via `ToolResult`/`EmitUsage`. Exhausted
+  `call_in_progress` → `outcome_unknown`: never commit/resend under a new ID.
+- Outcome-unknown material results narrate as ordinary tool errors; the
+  same-turn latch (`agent/unknown_outcome_gate.go`) blocks byte-identical
+  tool+args repeats until the next user message.
 - SourceIntegration is identity-scoped. Key mutation invalidates generations
   before source clear, without the dispatch writer. Failed new-identity listing
   leaves it empty; same-identity refresh failure keeps it. ServerTool binds list
@@ -98,14 +100,10 @@ the SAME PR. Desktop-only transport endpoints stay out; their contract lives in
   preserving calendar/non-auth tools. The six concrete tools (`cloud_delegate`,
   publish/list/retract, generate/edit) lease generation through all `Run` retries;
   stale clones are known-no-effect. Serialize auth across accounts/keys.
-- `x_prepare_post` is Deferred URL-only: no OAuth/HTTP/opener/automation; it
-  reports no post, omits draft/URL from audit, and ends the turn. `browser`,
-  `computer_use`, and canonical Playwright block X composer/publish controls but
-  preserve X reads/non-X mutation. Playwright omits `browser_run_code` and
-  `browser_evaluate`; CDP target check + call share a lock, and any X target
-  blocks mutation because X embeds a composer. Non-CDP has no target-state
-  guarantee. Native actions use guarded `computer_use`; shell/custom MCP are out
-  of scope. Only the user clicks the review link and X's Post button.
+- X publishing only via Cloud X tools (`x_prepare_post` removed).
+  `browser`/`computer_use`/builtin Playwright block X composer/publish
+  controls; Playwright omits `browser_run_code`/`browser_evaluate`; CDP: any
+  X target blocks mutation; non-CDP: no claim; shell/custom MCP unguarded.
 
 ## MCP
 
@@ -304,7 +302,10 @@ hard-block -> denied commands -> compound splitting -> always-ask gates
 - Episodic recall is model-driven: production paths expose `memory_recall` and
   `session_search` directly and MUST NOT install the implicit small-model
   preflight. Route unnamed references to session search; stop after a structured
-  no-data instead of retrying relation variants.
+  no-data instead of retrying relation variants. Keep sidecar `temporal_status`
+  (`current` / `superseded_by_recency`) on recall groups; prefer current
+  unless the user asked about the past. Preserve unknown sidecar group
+  fields on the recall round-trip. `aggregator` is `direct_relation` only.
 - Session sync is opt-in: single Run entry point, flock, atomic markers,
   per-session ACKs. Permanent failures remain until the source session changes.
 - Browser file previews stay fail-closed: only effective session CWD and attached
@@ -373,9 +374,9 @@ barge-in admission, not default dismissal.
 ## Tests
 
 ```bash
-go test ./...                                          # or ./internal/{agent,daemon,agents,schedule}/ -v
+go test ./...                                        # or per-package with -v
 go test ./test/ -v && go test ./test/e2e/ -v
-SHANNON_E2E_LIVE=1 go test -tags=live ./test/e2e/ -v   # live suite; the build tag is required
+SHANNON_E2E_LIVE=1 go test -tags=live ./test/e2e/ -v # live suite (tag required)
 go build ./...
 ```
 

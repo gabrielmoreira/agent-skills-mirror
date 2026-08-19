@@ -25,7 +25,7 @@
 ## 所有权边界
 
 - **本阶段拥有**：场景执行计划、节拍、剧本正文；场景/动作/对白/生产标签；已实现的
-  知识、信念、目标、关系与情绪变化；块 ID、类型、跨度与 hash。
+  知识、信念、目标、关系与情绪变化；块 ID、类型与跨度。
 - **本阶段继承**：已接受的单集契约与已接受事实。开发环节拥有已规划契约时，本阶段只投影
   它、不复制它；没有开发环节记录时，本阶段可拥有独立单集契约，后续若引入开发记录须显式
   迁移权威。
@@ -87,6 +87,7 @@
 | SCR-09 | craft_default | Break a long speech with a visible action beat that changes the speaker's tactic, giving downstream a sourced cut point and the performance a breath; a speech with no internal turn is shortened rather than split. |
 | SCR-10 | reviewed_invariant | When the creator marks a beat's realization as replaceable under later pressure, the record separates the dramatic function from the current depiction and names a fallback depiction that delivers the same function: same person proven or changed, downstream payoff refs and next-episode entry state still satisfied, cost not erased, no new setup required. Deleting the beat is never a fallback. An unmarked beat leaves the rule inactive—the suite carries no platform standard, predicts no outcome, and pre-emptive sanding is the more expensive mistake. |
 | SCR-11 | craft_default | When sound carries story information, spatial pressure, off-screen presence, a deliberate silence, or a scene bridge, the screenplay identifies the necessary source/event and its dramatic target; it does not prescribe per-shot mixing, add decorative sound to every scene, or use music to replace performance. |
+| SCR-12 | craft_default | A crowded scene first makes clear who is contending with whom—by cutting non-essential presence, staggering entrances, splitting the scene so one opponent holds the focus at a time, or handing attention from one character to the next—rather than naming every present character in action paragraphs. Deliberately chaotic ritual, siege, or farce may override this once the disorder is a visible choice and one followable thread remains. |
 
 规则分级由高到低：`structural_invariant`（结构缺陷，阻断）、
 `reviewed_invariant`（需证据判断）、`craft_default`（常用做法，可覆盖）、

@@ -19,7 +19,7 @@ Returns up to 12 daily horoscopes in a single request.
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `signs` | array | yes | body | Array of signs to get (min: 1, max: 12). Allowed values: aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces. |
+| `signs` | array<string> | yes | body | Array of signs to get (min: 1, max: 12). Allowed values: aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces. |
 
 ## Request Example
 
@@ -69,7 +69,7 @@ Returns up to 12 daily horoscopes in a single request.
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of daily horoscopes returned in the same order as the input signs. |
+| `results` | array<object> | List of daily horoscopes returned in the same order as the input signs. |
 | `results[].sign` | string | Zodiac sign the horoscope corresponds to. |
 | `results[].date` | string | Date the horoscope is for, in YYYY-MM-DD format. |
 | `results[].horoscope` | string | Daily horoscope reading for the given sign. |

@@ -4,6 +4,20 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.235](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e9b6b49)
+
+_+6,990 tokens_
+
+- **NEW:** Data: SendMessage ambiguous recipient display — Adds user-facing “not sent” explanations for inexact or duplicate agent names, incomplete session searches, and recipients that need exact-name or pinned-identity confirmation.
+- **NEW:** System Prompt: Artifact comment fast acknowledgement selection — Selects one canned pre-reply acknowledgement from editability, trigger history, and whether the newest comment asks for a specific edit, broader inspection, or a thread-only answer, with a safe ambiguity and off-topic fallback.
+- **NEW:** System Prompt: Non-fork subagent delegation examples — Consolidates synchronous and background delegation examples into capability-aware guidance that suppresses default-agent examples when general-purpose agents are unavailable.
+- **NEW:** System Reminder: Ultrareview launch acknowledgement — Briefly acknowledges an already-visible cloud review without repeating its details, preserves `--fix` intent, and relates later findings to review notes the cloud pass cannot see.
+- **REMOVED:** System Prompt: Background subagent delegation examples and System Prompt: Foreground subagent delegation examples — Remove the separate execution-mode variants superseded by the capability-aware non-fork delegation prompt.
+- Data: Plugin eval and skill-doctor quick reference, Data: Plugin eval and skill-doctor reference, and Skill: Plugin eval authoring interview — Promote configurable `--eval-dir` suites from upcoming to current behavior, document containment-checked plugin discovery and result placement, teach the interview to honor custom suite paths and treat plugin paths as data, and distinguish tool-free negative checks from file-content graders that require an existing file.
+- Skill: Artifact document — Adds block-ID rules that keep viewer comments anchored, preserve editor-generated IDs across edits, strip IDs from duplicated blocks, and reserve hand-written IDs for short in-page link targets.
+- System Prompt: Forked agent guidance and Tool Description: Agent (when to launch subagents) — Make omitted `subagent_type` behavior conditional on general-purpose-agent availability, add plan-specific subagent restrictions, and provide fallback instructions when the general-purpose type is unavailable.
+- Tool Description: Artifact database guidance — Updates current-viewer identity lookup from `claude.user.id()` to `id()` on the page’s `user` capability.
+
 # [2.1.234](https://github.com/Piebald-AI/claude-code-system-prompts/commit/373b98c)
 
 _+11,405 tokens_

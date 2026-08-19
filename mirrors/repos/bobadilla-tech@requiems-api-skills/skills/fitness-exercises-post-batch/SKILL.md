@@ -19,7 +19,7 @@ Fetches up to 50 exercises by their numeric IDs in a single request. IDs that do
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `ids` | array | yes | body | Array of numeric exercise IDs to fetch. Must contain between 1 and 50 items. Each ID must be a positive integer. |
+| `ids` | array<number> | yes | body | Array of numeric exercise IDs to fetch. Must contain between 1 and 50 items. Each ID must be a positive integer. |
 
 ## Request Example
 
@@ -76,14 +76,14 @@ Fetches up to 50 exercises by their numeric IDs in a single request. IDs that do
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Exercises found for the given IDs, in input order. IDs not found are omitted. |
+| `results` | array<object> | Exercises found for the given IDs, in input order. IDs not found are omitted. |
 | `results[].id` | integer | Unique exercise identifier |
 | `results[].name` | string | Exercise name |
-| `results[].body_parts` | array | Body part categories involved |
-| `results[].equipment` | array | Equipment required |
-| `results[].target_muscles` | array | Primary muscles targeted |
-| `results[].secondary_muscles` | array | Secondary muscles engaged |
-| `results[].instructions` | array | Ordered step-by-step instructions |
+| `results[].body_parts` | array<string> | Body part categories involved |
+| `results[].equipment` | array<string> | Equipment required |
+| `results[].target_muscles` | array<string> | Primary muscles targeted |
+| `results[].secondary_muscles` | array<string> | Secondary muscles engaged |
+| `results[].instructions` | array<string> | Ordered step-by-step instructions |
 | `total` | integer | Number of exercises returned |
 
 ## Errors

@@ -2,18 +2,15 @@
   "sources": {
     "shots": {
       "owner": "short-drama-storyboard",
-      "artifact": "剧集/EP001/storyboard/shots.jsonl",
-      "hash": "<sha256>"
+      "artifact": "剧集/EP001/storyboard/shots.jsonl"
     },
     "screenplay-index": {
       "owner": "short-drama-write",
-      "artifact": "剧集/EP001/screenplay-index.jsonl",
-      "hash": "<sha256>"
+      "artifact": "剧集/EP001/screenplay-index.jsonl"
     },
     "short-drama": {
       "owner": "short-drama",
-      "artifact": "short-drama.json",
-      "hash": "<sha256>"
+      "artifact": "short-drama.json"
     }
   },
   "episode_id": "EP001",
@@ -33,7 +30,9 @@
   ],
   "episode_duration": {
     "shot_seconds_total": null,
-    "counted_shot_ids": ["SHOT-EXAMPLE"],
+    "counted_shot_ids": [
+      "SHOT-EXAMPLE"
+    ],
     "unresolved_durations": [],
     "target_ref": {
       "src": "short-drama",

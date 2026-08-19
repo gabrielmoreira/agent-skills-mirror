@@ -18,6 +18,9 @@ manage, and close panes for child OpenCode agent sessions.
   - `KittyMultiplexer`: kitty-specific implementation using `kitten @` CLI commands
   - `CmuxMultiplexer`: cmux UUID surface implementation using the cmux CLI
 - **Shared Utilities** (`shared.ts`): `quoteShellArg`, `buildOpencodeAttachCommand`, and `findBinary` — extracted from the three adapters to eliminate copy-paste duplication.
+- **Tmux pane registry** (`tmux-pane-registry.ts`): Session-scoped,
+  expiring TUI pane registrations used to route child panes to the attached
+  root session that created them.
 - **Session Manager** (`session-manager.ts`): Tracks child session lifecycle and coordinates pane operations via event-driven architecture.
 - **cmux lifecycle** (`cmux/session-lifecycle.ts`): Owns readiness, deferred
   spawning, stable-idle polling, activity generations, reliable close retries,
@@ -70,7 +73,7 @@ The session manager reacts to OpenCode session events:
    ├─ Validates event properties (sessionId, parentId)
    ├─ Checks if session is already tracked or spawning
    ├─ Records session in knownSessions
-   ├─ Spawns pane via multiplexer.spawnPane()
+   ├─ Spawns pane via multiplexer.spawnPane(), forwarding the parent session
    │  ├─ Validates server is running
    │  ├─ Creates new pane with:
    │  │  ├─ Command: opencode attach --session-id <sessionId>
@@ -151,6 +154,11 @@ interface MultiplexerConfig {
 ### Tmux Implementation
 
 - Uses `tmux` CLI commands via `spawn()` utility
+- Resolves a fresh parent-session pane registration before splitting and
+  falls back to the server process's startup pane if registration is absent or
+  rejected by tmux
+- Debounces layout updates per parent pane so attached tmux sessions remain
+  isolated during concurrent child creation
 - Creates panes with descriptive titles and working directories
 - Applies layouts using `tmux select-layout` and `tmux resize-pane`
 - Graceful shutdown: sends Ctrl+C before killing pane to allow clean process termination
@@ -182,6 +190,7 @@ interface MultiplexerConfig {
 | `index.ts` | Public API exports |
 | `types.ts` | Core interfaces and shared utilities |
 | `shared.ts` | Shared infrastructure (quoteShellArg, buildOpencodeAttachCommand, findBinary) |
+| `tmux-pane-registry.ts` | Attached TUI session-to-pane registration storage |
 | `factory.ts` | Multiplexer instance creation |
 | `session-manager.ts` | Session lifecycle management |
 | `tmux/index.ts` | tmux-specific implementation |

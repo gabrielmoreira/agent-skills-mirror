@@ -19,7 +19,7 @@ Look up city, state, and coordinates for up to 50 postal codes in a single reque
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array of objects | yes | body | List of postal code lookups (1–50 items). |
+| `items` | array<object> | yes | body | List of postal code lookups (1–50 items). |
 | `items[].code` | string | yes | body | The postal code to look up. |
 | `items[].country` | string | no | body | ISO 3166-1 alpha-2 country code (default: US). |
 
@@ -59,7 +59,7 @@ Look up city, state, and coordinates for up to 50 postal codes in a single reque
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].code` | string | The postal code as provided in the request. |
 | `results[].country` | string | The country code used for the lookup (defaulted to US when omitted). |
 | `results[].found` | boolean | Whether the postal code was found in the dataset. |

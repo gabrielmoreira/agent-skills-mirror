@@ -18,7 +18,7 @@
 scene_handoff_capsule:
   authority: derived
   sources:
-    screenplay: {owner: short-drama-write, artifact: 剧集/<EP>/screenplay.md, hash: <sha256>}
+    screenplay: {owner: short-drama-write, artifact: 剧集/<EP>/screenplay.md}
   screenplay_ref: {src: screenplay}
   current_scene:
     scene_id: EPxxx-SCxxx
@@ -32,7 +32,7 @@ scene_handoff_capsule:
   setup_debt: [仍待兑现或明确放弃的 setup ID/ref]
   information_permissions: [谁知道/误信/怀疑什么，观众此刻能知道什么]
   next_scene_pressure: 下一场由哪个已发生结果发动
-  tail_locator: {block_id: <last-accepted-block>, content_sha256: <hash>}
+  tail_locator: {block_id: <last-accepted-block>}
   unresolved: [不得由续写者自行补齐的选择]
 ```
 
@@ -42,7 +42,7 @@ accepted。
 
 ## 恢复步骤
 
-1. 先核对 `sources.screenplay.hash` 与磁盘文件；不一致时丢弃胶囊，重新从当前剧本恢复。
+1. 先确认 `sources.screenplay` 指的还是当前剧本；剧本已经改过就丢弃胶囊，重新从当前剧本恢复。
 2. 用 `tail_locator` 读最后一个块及其相邻上下文，确认语气、动作和状态确实对得上。
 3. 读取下一场直接依赖的单集契约、setup/payoff 与连续性引用；不预加载无关 reference。
 4. 写下一场前重新回答 agenda、opposition、turn、exit_state，不能把胶囊里的候选当既定剧情。

@@ -411,7 +411,7 @@ describe("manageCloudRun initEnv action", () => {
     expect((calls[1] as any).Param).toEqual({
       EnvId: "env-test",
       PackageType: "Professional",
-      EnvType: "tcbr",
+      EnvType: "baas",
     });
   });
 
@@ -432,7 +432,7 @@ describe("manageCloudRun initEnv action", () => {
     const tools = await createCloudRunTools();
     await tools.manageCloudRun.handler({ action: "initEnv", envId: "env-test" });
     expect((calls[1] as any).Param.PackageType).toBe("Trial");
-    expect((calls[1] as any).Param.EnvType).toBe("tcbr");
+    expect((calls[1] as any).Param.EnvType).toBe("baas");
   });
 
   it("passes optional vpcId/subnetIds through to CreateCloudRunEnv", async () => {
@@ -459,7 +459,7 @@ describe("manageCloudRun initEnv action", () => {
     expect((calls[1] as any).Param).toEqual({
       EnvId: "env-test",
       PackageType: "Trial",
-      EnvType: "tcbr",
+      EnvType: "baas",
       VpcId: "vpc-26vsxozo",
       SubNetIds: ["subnet-hyiwt4ut"],
     });
@@ -618,14 +618,14 @@ describe("queryCloudRun envStatus action", () => {
 });
 
 describe("cloudrun VPC helpers", () => {
-  it("buildCreateCloudRunEnvParam always sets EnvType=tcbr", async () => {
+  it("buildCreateCloudRunEnvParam always sets EnvType=baas", async () => {
     const { buildCreateCloudRunEnvParam } = await import("./cloudrun.js");
     expect(
       buildCreateCloudRunEnvParam({ envId: "env-x", packageType: "Trial" }),
     ).toEqual({
       EnvId: "env-x",
       PackageType: "Trial",
-      EnvType: "tcbr",
+      EnvType: "baas",
     });
   });
 

@@ -19,7 +19,7 @@ Generate up to 50 passwords in a single request. Each item can have its own leng
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array of objects | yes | body | List of password generation requests (1–50 items). |
+| `items` | array<object> | yes | body | List of password generation requests (1–50 items). |
 | `items[].length` | integer | no | body | Password length (8–128). Defaults to 16 when omitted. |
 | `items[].uppercase` | boolean | no | body | Include uppercase letters (A–Z). Defaults to false. |
 | `items[].numbers` | boolean | no | body | Include numbers (0–9). Defaults to false. |
@@ -55,7 +55,7 @@ Generate up to 50 passwords in a single request. Each item can have its own leng
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].result.password` | string | The generated password (omitted on error). |
 | `results[].result.length` | integer | Length of the generated password. |
 | `results[].result.strength` | string | Strength assessment (weak, medium, or strong). |

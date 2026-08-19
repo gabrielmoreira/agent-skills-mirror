@@ -2,7 +2,7 @@
 
 ## Occurrence and decision
 
-- Does every extracted occurrence point to a source block/hash?
+- Does every extracted occurrence point to a source block?
 - Is it production-relevant rather than every noun in the screenplay?
 - Is the decision explicit: reuse, new identity, new variant, or unresolved?
 - Were pronouns, aliases, groups, memories, portraits, and screen content handled
@@ -93,7 +93,7 @@ apply type-specific criteria:
   palette, light direction, atmosphere; normally empty of cast.
 - **Prop plate:** scale cue, shape, materials, wear, function/moving parts, current
   state, viewing angle, isolation, text policy.
-- **Edit delta:** exact target/hash/region, changes, preserve set, expected
+- **Edit delta:** exact target and region, changes, preserve set, expected
   continuity impact; no unrelated regeneration.
 
 ## Prompt quality failures

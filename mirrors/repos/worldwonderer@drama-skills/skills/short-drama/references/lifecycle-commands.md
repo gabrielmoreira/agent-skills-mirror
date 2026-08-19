@@ -23,9 +23,14 @@ output 路径只能有一个 owner。
 `update_needed`；调用者不计算、不粘贴 hash，也不声明传递依赖。若 A 直接读 B，就声明 B；
 B 又读 C 不会让 A 自动过期，只有 A 下次实际重建时才读取当前 B。
 
+**失效图就是这份清单，漏一条就是一条静默的边**：产物文件首行 `sources` 声明了什么，
+`--input` 就逐个列什么。少列一个，那个上游改了它不会变 `update_needed`，会带着过期的绑定
+停在 `accepted`，而这与真的还是最新的看起来完全一样。身份与变体成对出现的上游尤其容易漏
+一半（`props.jsonl` 列了、`prop-states.jsonl` 没列）。各阶段的完整清单写在自己的 SKILL.md 里。
+
 默认只允许发布到标准阶段目录。`输入/**`、`.short-drama/**`、`交付/**` 和任何
-`short-drama.json` 都不可作为 publish 目标；`short-drama.json` 里的 `creator_authority/*` 与
-`format/target_seconds_per_episode` 用 `set-authority` 写。`set-authority` 只认它所引用的那一个
+`short-drama.json` 都不可作为 publish 目标；`short-drama.json` 里的 `creator_authority/*`、
+`format/target_seconds_per_episode` 与 `format/pacing` 用 `set-authority` 写。`set-authority` 只认它所引用的那一个
 决策文件，同一条决策的撤回要写在同一个文件里。分集目录
 使用 `EP001` 形式。未登记的临时路径必须显式加 `--allow-unregistered-path`。
 
@@ -58,15 +63,43 @@ B 又读 C 不会让 A 自动过期，只有 A 下次实际重建时才读取当
 
 ## 写回创作者权威
 
-创作者定下制作形态、视觉方向、播放面或集长目标后，先把这条决定作为一条创作者决策记录
-发布到 `创作者决策/` 并 `accept`，再写回 `short-drama.json`：
+创作者定下制作形态、视觉方向、播放面、集长目标或语速后，先把这条决定作为一条创作者决策记录
+发布到 `创作者决策/` 并 `accept`，再写回 `short-drama.json`。三步都要走，缺一步 `set-authority`
+会拒绝——决策文件必须先是**已发布且已接受**的产物：
 
 ```text
+# 1. 写决策记录（首行 sources 声明，其后每行一条决定）
+{"record_type":"sources","schema_version":"1.0.0","sources":{"short-drama":{"owner":"short-drama","artifact":"short-drama.json"}}}
+{"decision_id":"CD-PACING-001","status":"accepted","accepted_value":{"spoken_characters_per_second":5.0,"seconds_per_action_paragraph":2.5},"target_locators":[{"src":"short-drama","field":"/format/pacing"}],"decided_by":"creator","decided_at":"2026-01-01T00:00:00Z"}
+
+# 2. 发布并接受
+... publish <project> --owner short-drama --artifact-id creator:decisions --output 创作者决策/decisions.jsonl=_work/decisions.jsonl
+... accept <project> --artifact-id creator:decisions --decision accepted
+
+# 3. 逐个字段写回
+... set-authority <project> --field /format/pacing --decision-ref 创作者决策/decisions.jsonl#CD-PACING-001
 ... set-authority <project> --field /creator_authority/delivery_surface --decision-ref 创作者决策/decisions.jsonl#CD-SURFACE-001
 ... set-authority <project> --field /format/target_seconds_per_episode --decision-ref 创作者决策/decisions.jsonl#CD-LENGTH-001
 ```
 
-`--field` 只接受 `/creator_authority/*` 与 `/format/target_seconds_per_episode`；
+`/format/pacing` 收一个速率对象（每个速率是正数），剧本与分镜两个阶段都读它折算秒数。
+
+`status` 的 `authority` 一节逐个回报已绑定字段的现状——`set-authority` 记下了它写进去的值，
+所以直接改 `short-drama.json` 会在这里显示出来：
+
+| 取值 | 含义 |
+|---|---|
+| `bound` | manifest 当前值仍是那条决策写进去的值 |
+| `hand_edited` | 值被 `set-authority` 之外的东西改过 |
+| `missing` | manifest 里已经没有这个槽位 |
+| `not_authority_field` | 绑定记录指向一个不再属于白名单的字段 |
+
+这一节是给 CLI 与 reviewer 看的，创作台不显示它——创作台按设计过滤掉生命周期内部信息。
+
+对象槽位（`/format/pacing`、`creator_authority` 里带 `choices` 的块）是**并入**而不是整体替换：
+一条只写了一半速率的决策，另一半会保持原样，因此 `set-authority` 校验的是合并之后的结果。
+
+`--field` 只接受 `/creator_authority/*`、`/format/target_seconds_per_episode` 与 `/format/pacing`；
 `creator_authority/decisions_artifact` 是目录布局，由 `init` 定下。被引用的记录 `status`
 必须是 `accepted`，`target_locators` 必须含 `{"src":"short-drama","field":"<同一 field>"}`，
 命令写入它的 `accepted_value`，并只写进 manifest 已声明的槽位、保持该槽位原有的 JSON 类型。

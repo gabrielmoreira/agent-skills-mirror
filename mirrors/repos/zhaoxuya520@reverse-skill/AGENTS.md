@@ -29,7 +29,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/refresh-tool-
 ## 测试（改动后必跑）
 
 ```powershell
-# 路由回归（162 用例，修改 routing.json 后必跑）
+# 路由回归（routing-benchmark.json，修改 routing.json 后必跑）
 powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-routing.ps1
 
 # 结构一致性 + 供应链 pin gate

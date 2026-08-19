@@ -5,17 +5,20 @@ from __future__ import annotations
 
 import copy
 import sys
+import tempfile
+from pathlib import Path
 from typing import Any
 
 from storyboard_check import (
     check_boundary_entries,
     check_episode_duration,
     check_keyframe_boundaries,
+    check_screenplay_coverage,
 )
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("selftest.py requires Python 3.10 or newer")
+    raise SystemExit("selftest.py requires Python 3.9 or newer")
 
 
 def require(condition: bool, message: str) -> None:
@@ -79,6 +82,46 @@ EXPANDED_KEYFRAME: dict[str, Any] = {
 }
 
 
+def test_screenplay_coverage_flags_gaps_and_double_claims() -> None:
+    """Every screenplay block must be claimed by exactly one shot.
+
+    Shots bind to the screenplay through the index, so coverage is measured in
+    block IDs. Measuring it in prose lines instead reported every line of a
+    correctly covered episode as unfilmed.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+        index = Path(directory) / "screenplay-index.jsonl"
+        index.write_text(
+            '{"record_type":"block","block_id":"BLK-A"}\n'
+            '{"record_type":"block","block_id":"BLK-B"}\n'
+            '{"record_type":"block","block_id":"BLK-C"}\n',
+            encoding="utf-8",
+        )
+        sources = {
+            "screenplay-index": {
+                "owner": "short-drama-write",
+                "artifact": "剧集/EP001/screenplay-index.jsonl",
+            }
+        }
+        shots = [
+            {"shot_id": "SH001", "source_refs": [{"src": "screenplay-index", "record_id": "BLK-A"}]},
+            {"shot_id": "SH002", "source_refs": [{"src": "screenplay-index", "record_id": "BLK-B"}]},
+            {"shot_id": "SH003", "source_refs": [{"src": "screenplay-index", "record_id": "BLK-B"}]},
+            {"shot_id": "SH004", "source_refs": [{"src": "screenplay-index", "record_id": "BLK-Z"}]},
+        ]
+        found = {f["code"] for f in check_screenplay_coverage(shots, sources, index)}
+    require("SHT21_BLOCK_UNCLAIMED" in found, "an unfilmed block must be reported")
+    require("SHT21_BLOCK_CLAIMED_TWICE" in found, "a doubly claimed block must be reported")
+    require(
+        "SHT21_BLOCK_NOT_IN_SCREENPLAY" in found,
+        "a shot claiming an absent block must be reported",
+    )
+
+
+def test_screenplay_coverage_is_skipped_when_not_supplied() -> None:
+    require(check_screenplay_coverage([], {}, None) == [], "no index means no claim")
+
+
 def main() -> int:
     require(check_episode_duration(COVERAGE, [SHOT], 5) == [], "valid duration")
     require(
@@ -137,7 +180,10 @@ def main() -> int:
         "a boundary entry that only points back was not detected",
     )
 
-    print("11 self-tests passed")
+    test_screenplay_coverage_flags_gaps_and_double_claims()
+    test_screenplay_coverage_is_skipped_when_not_supplied()
+
+    print("13 self-tests passed")
     return 0
 
 

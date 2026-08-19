@@ -50,7 +50,7 @@ declaration plus the record it points at.
 A `.jsonl` file declares them on its first line:
 
 ```json
-{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay-index.jsonl","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay-index.jsonl"}}}
 ```
 
 A `.json` file uses a top-level `"sources"` object with the same entries. A reference is then:
@@ -64,8 +64,8 @@ file, and one artifact is declared under one key. `owner` and the project-relati
 `record_id` and `field` are optional selectors, and a reference pointing at a whole artifact keeps `src` alone.
 `authority` (`accepted` or `candidate`) belongs to the individual reference, because one snapshot can be read at
 different authority levels by different references. Do not copy whole authoritative values into consumers, and do
-not create self-references. The `hash` in a `sources` entry names the snapshot the file was written against; like
-the hashes inside deterministic source indexes, media observation records and delivery checksums, it is not
+not create self-references. A `sources` entry names the artifact the file was written against by `owner` and
+`artifact` only — no digest. Bytes are compared by the tool, in lifecycle state and delivery checksums, and that is not
 user-supplied lifecycle evidence and does not drive transitive invalidation.
 
 ## Rule classes

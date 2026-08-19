@@ -201,6 +201,15 @@ python3 -m unittest scripts.test_verify_engineering_contracts
 cd docs && pnpm run build
 ```
 
+运行依赖供应链审计：
+
+```bash
+make audit-dependencies
+make audit-licenses
+```
+
+漏洞审计覆盖 `backend/uv.lock`、`packages/yuxi-cli/uv.lock`、`web/pnpm-lock.yaml` 与 `docs/pnpm-lock.yaml` 的生产传递闭包，并执行 `scripts/dependency-audit-fixtures/` 中的固定脆弱输入证明 gate 会失败。backend 锁定的 PyTorch 2.12.1 wheel 要求 `setuptools<82`，且当前 CPU index 没有兼容的 2.13 版本组合；对应 advisory 通过 `uv audit --ignore` 明确列在 workflow 与 Makefile 中，依赖约束解除后直接删除。许可证步骤在临时隔离环境中使用 `pip-licenses` 输出 backend 和 yuxi-cli 的传递依赖报告，不修改项目 `.venv`，仅提供 Review 线索，不自动判断许可证兼容性，也不维护允许清单。
+
 Windows 初始化安全契约由原生 PowerShell 负控执行；Windows 或安装了 PowerShell 7 的环境可运行：
 
 ```powershell
@@ -221,7 +230,7 @@ Backend workflow 会在 `windows-latest` 上阻断短值、密钥复用和首尾
 
 ## 11. 当前落地原则
 
-这套规范的重点不是一步到位重写所有旧测试，而是：
+这套规范采用渐进落地方式：
 
 - 新增测试必须按新目录落位
 - 改到旧测试时顺手迁移

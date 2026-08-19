@@ -629,8 +629,8 @@ export async function describeCloudRunEnvStatus(
   return { isExist: true, status, baseInfo };
 }
 
-/** CloudRun EnvType for CreateCloudRunEnv (tcbr DescribeEnvBaseInfo enum). */
-export const CLOUDRUN_ENV_TYPE = "tcbr" as const;
+/** CloudRun EnvType for CreateCloudRunEnv (baas DescribeEnvBaseInfo enum). */
+export const CLOUDRUN_ENV_TYPE = "baas" as const;
 
 export type CloudRunVpcInfo = {
   VpcId: string;
@@ -689,7 +689,7 @@ export function resolveCloudRunDeployVpcInfo(options: {
 }
 
 /**
- * Build CreateCloudRunEnv Param, always including EnvType=tcbr.
+ * Build CreateCloudRunEnv Param, always including EnvType=baas.
  * Optional vpcId/subnetIds are used when the platform requires an explicit VPC.
  */
 export function buildCreateCloudRunEnvParam(options: {
@@ -1515,7 +1515,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
             }
 
             // 未开通 → 发起异步开通（CreateCloudRunEnv 异步，不阻塞等待）。
-            // Always pass EnvType=tcbr; optional vpcId/subnetIds when an explicit VPC is required.
+            // Always pass EnvType=baas; optional vpcId/subnetIds when an explicit VPC is required.
             let createResult: any;
             try {
               createResult = await manager

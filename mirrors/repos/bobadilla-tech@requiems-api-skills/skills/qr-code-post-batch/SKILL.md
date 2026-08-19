@@ -19,7 +19,7 @@ Generate up to 50 base64-encoded QR codes in a single request. Results are retur
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array of objects | yes | body | List of QR generation requests (1–50 items). |
+| `items` | array<object> | yes | body | List of QR generation requests (1–50 items). |
 | `items[].data` | string | yes | body | The text or URL to encode. |
 | `items[].size` | integer | no | body | Image size in pixels (50–1000). Defaults to 256. |
 | `items[].recovery` | string | no | body | Error-correction level: low, medium, high, highest. Defaults to medium. |
@@ -54,7 +54,7 @@ Generate up to 50 base64-encoded QR codes in a single request. Results are retur
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].data` | string | The input text or URL that was encoded. |
 | `results[].image` | string | Base64-encoded PNG image data (omitted on error). |
 | `results[].width` | integer | Width of the generated image in pixels (omitted on error). |

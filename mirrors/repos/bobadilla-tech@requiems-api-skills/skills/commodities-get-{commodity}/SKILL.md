@@ -61,7 +61,7 @@ Returns the latest annual average price and up to 10 years of historical data fo
 | `unit` | string | Price unit (oz, barrel, mmbtu, lb, or metric_ton) |
 | `currency` | string | Currency code — always USD |
 | `change_24h` | number | Year-over-year percentage change from the prior year's annual average (positive = price increased) |
-| `historical` | array | Up to 10 prior years of annual average prices, ordered newest to oldest |
+| `historical` | array<object> | Up to 10 prior years of annual average prices, ordered newest to oldest |
 | `historical[].period` | string | Year of the historical data point |
 | `historical[].price` | number | Annual average price for that year |
 

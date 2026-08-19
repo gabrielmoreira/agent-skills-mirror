@@ -33,20 +33,32 @@
 
 ## 跨产物引用
 
-同一份上游快照被一个文件反复引用时，在开头声明一次，之后每条引用只写快照键和记录 ID。
-声明本身也占篇幅，所以只被引用一两次的快照直接把 `owner`、`artifact`、`hash` 写在那条引用里。
+引用回答一个问题：**这份产物是从哪些产物做出来的**。
+
+`sources` 只记录**派生来源**——本文件的内容依赖它、它变了本文件就可能要重做的那些产物。
+同层产物互相指名不是派生：occurrence 可以指向它喂给的 decision，那个 decision 也指回它
+消费的 occurrence，两者都成立，但只有后者是派生。**只有派生关系必须无环**，互相指名不受
+此限。把非派生的指名写进 `sources`，会让派生图出现假环，也会让「上游变了要重做什么」这个
+问题答不准。
+
+同一个上游被一个文件反复引用时，在开头声明一次，之后每条引用只写快照键和记录 ID。
+声明本身也占篇幅，所以只被引用一两次的上游直接把 `owner`、`artifact` 写在那条引用里。
 
 `.jsonl` 的第一行是声明记录：
 
 ```json
-{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/EP003/screenplay-index.jsonl","hash":"<sha256>"},"characters":{"owner":"short-drama-assets","artifact":"设定集/characters.jsonl","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/EP003/screenplay-index.jsonl"},"characters":{"owner":"short-drama-assets","artifact":"设定集/characters.jsonl"}}}
 ```
 
 `.json` 用顶层 `"sources"` 对象，条目形状相同。
 
+条目只有 `owner` 与 `artifact`：**引用指名产物，不携带产物的字节**。产物里不写任何哈希——
+写在引用里的哈希要手工维护，而从来没有任何校验器比对过它。真正在比对字节的只剩生命周期
+状态与交付包校验和，那两处由工具自己维护、会真的重算。
+
 `sources` 的键短、小写，由产物文件名派生（`characters`、`looks`、`locations`、
 `location-views`、`props`、`prop-states`、`occurrences`、`screenplay-index`），在本文件内
-唯一且稳定。同一文件内，一个产物只声明一个 `hash`。
+唯一且稳定。
 
 引用写成：
 
@@ -55,22 +67,11 @@
 ```
 
 指向记录中某个字段时加 `field`（JSON pointer）；引用方需要区分权威等级时加 `authority`
-（`accepted` / `candidate`），它属于这一条引用，不属于快照。指向整份产物或产物级字段时
+（`accepted` / `candidate`），它属于这一条引用，不属于来源声明。指向整份产物或产物级字段时
 省略 `record_id`。
 
-创作者的接受记录发布在 `创作者决策/` 下，一条决定一个文件或一份 `.jsonl` 里的一行，
-每条至少写 `decision_id`（`CD-` 前缀）、`decision_kind` 和 `status`。资产记录的
-`creator_acceptance.decision_ref` 先把那份决策文件写进本文件的 `sources`，再按快照键引用它：
-
-```json
-{"status":"accepted","decision_ref":{"src":"cd-char-001","record_id":"CD-CHAR-001"}}
-```
-
-`assets/*.example.jsonl` 是模板目录，每条记录各有自己的 `destination`。把一条记录复制进
-它的目标文件时，把这条记录用到的 `sources` 条目一并写进那个文件的声明行。
-
-尚未发布的下游产物写 locator：`owner`、项目相对路径、`selector` 和 `status`。它在真正
-发布并有 `hash` 之后才进入 `sources`，改写成 `src` 引用。
+`field` 与 `record_id` 都会被检查**真的指得到**：记录必须存在，pointer 必须在目标里解析
+得开。产物存在不等于它里面有你指的那个东西。
 
 ## 制作形态需要什么
 

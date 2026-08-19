@@ -70,12 +70,12 @@ Deep-verify an email address using domain-level signals including WHOIS age, MX 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `verified` | boolean | True when risk score is below 0.3, confidence is above 0.5, email is valid, domain has MX, and domain is registered |
-| `confidence` | float | Confidence in the verification result, based on how many signals resolved |
-| `risk_score` | float | Composite risk score from 0.0 to 1.0 |
-| `flags` | array | Triggered risk flags. Possible values: email_invalid, disposable_email, no_mx, domain_not_registered, young_domain, whois_unavailable, ip_risk |
+| `confidence` | number | Confidence in the verification result, based on how many signals resolved |
+| `risk_score` | number | Composite risk score from 0.0 to 1.0 |
+| `flags` | array<string> | Triggered risk flags. Possible values: email_invalid, disposable_email, no_mx, domain_not_registered, young_domain, whois_unavailable, ip_risk |
 | `signals.email` | object | Email validation result |
 | `signals.domain` | object | Domain intelligence including WHOIS age, MX and A record presence, and registration status |
-| `signals.ip` | object or null | IP risk signals. Null when ip_address was not provided |
+| `signals.ip` | object | IP risk signals. Null when ip_address was not provided |
 
 ## Errors
 

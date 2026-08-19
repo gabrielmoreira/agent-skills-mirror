@@ -19,7 +19,7 @@ Generate multiple Lorem Ipsum placeholder texts in a single request. Processes i
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array | yes | body | Array of text generation requests. Minimum 1 item, maximum 50 items. |
+| `items` | array<object> | yes | body | Array of text generation requests. Minimum 1 item, maximum 50 items. |
 | `items[].paragraphs` | integer | no | body | Number of paragraphs to generate (1-20) |
 | `items[].sentences` | integer | no | body | Number of sentences per paragraph (1-20) |
 

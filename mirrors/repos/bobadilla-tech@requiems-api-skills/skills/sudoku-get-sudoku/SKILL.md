@@ -61,8 +61,8 @@ Returns a randomly generated Sudoku puzzle and its solution. Difficulty defaults
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `difficulty` | string | The difficulty level of the returned puzzle (easy, medium, or hard) |
-| `puzzle` | array[array[integer]] | 9×9 grid representing the puzzle — 0 means an empty cell to be filled in |
-| `solution` | array[array[integer]] | 9×9 grid containing the complete, valid solution |
+| `puzzle` | array<object> | 9×9 grid as an array of 9 rows, each row an array of 9 integers — 0 means an empty cell to be filled in |
+| `solution` | array<object> | 9×9 grid as an array of 9 rows, each row an array of 9 integers — complete, valid solution |
 
 ## Errors
 

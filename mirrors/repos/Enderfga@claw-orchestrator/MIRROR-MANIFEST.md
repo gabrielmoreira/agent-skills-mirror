@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,13 +71,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/references/inbox.md`](skills/references/inbox.md) |
 | 11 | ✓ | [`skills/references/mcp.md`](skills/references/mcp.md) |
 | 12 | ✓ | [`skills/references/multi-engine.md`](skills/references/multi-engine.md) |
-| 13 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
-| 14 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
-| 15 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
-| 16 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
-| 17 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
-| 18 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 19 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
+| 13 | ✓ | [`skills/references/observability.md`](skills/references/observability.md) |
+| 14 | ✓ | [`skills/references/openai-compat.md`](skills/references/openai-compat.md) |
+| 15 | ✓ | [`skills/references/sessions.md`](skills/references/sessions.md) |
+| 16 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
+| 17 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
+| 18 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
+| 19 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 20 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
 
 ---
 

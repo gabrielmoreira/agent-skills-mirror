@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steveyegge/beads` — 26 default patterns, 25 followed patterns, 70 file(s) materialized.
+Mirror of `steveyegge/beads` — 26 default patterns, 25 followed patterns, 71 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steveyegge/beads` — 26 default patterns, 25 followed patterns, 70 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 25 |
-| Files         | 70 |
+| Files         | 71 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,35 +124,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`plugins/beads/skills/beads/README.md`](plugins/beads/skills/beads/README.md) |
 | 40 | ✓ | [`plugins/beads/skills/beads/resources/AGENTS.md`](plugins/beads/skills/beads/resources/AGENTS.md) |
 | 41 | ✓ | [`plugins/beads/skills/beads/SKILL.md`](plugins/beads/skills/beads/SKILL.md) |
-| 42 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 43 | ✓ | [`tests/integration/README.md`](tests/integration/README.md) |
-| 44 | ✓ | [`tests/oracle-a/README.md`](tests/oracle-a/README.md) |
-| 45 | ✓ | [`winget/README.md`](winget/README.md) |
-| 46 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
-| 47 | → | [`ARTICLES.md`](ARTICLES.md) |
-| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 49 | → | [`docs/architecture/dolt.md`](docs/architecture/dolt.md) |
-| 50 | → | [`docs/community-tools.md`](docs/community-tools.md) |
-| 51 | → | [`docs/core-concepts/sync-concepts.md`](docs/core-concepts/sync-concepts.md) |
-| 52 | → | [`docs/getting-started/ide-setup.md`](docs/getting-started/ide-setup.md) |
-| 53 | → | [`docs/getting-started/installation.md`](docs/getting-started/installation.md) |
-| 54 | → | [`docs/integrations/copilot-cli.md`](docs/integrations/copilot-cli.md) |
-| 55 | → | [`docs/integrations/github-copilot.md`](docs/integrations/github-copilot.md) |
-| 56 | → | [`docs/reference/advanced.md`](docs/reference/advanced.md) |
-| 57 | → | [`docs/reference/antivirus.md`](docs/reference/antivirus.md) |
-| 58 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
-| 59 | → | [`docs/reference/protected-branches.md`](docs/reference/protected-branches.md) |
-| 60 | → | [`docs/reference/troubleshooting.md`](docs/reference/troubleshooting.md) |
-| 61 | → | [`docs/related-projects.md`](docs/related-projects.md) |
-| 62 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
-| 63 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
-| 64 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
-| 65 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
-| 66 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
-| 67 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
-| 68 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 69 | → | [`README.md`](README.md) |
-| 70 | → | [`RELEASING.md`](RELEASING.md) |
+| 42 | ✓ | [`scripts/migration-test/catalog/README.md`](scripts/migration-test/catalog/README.md) |
+| 43 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 44 | ✓ | [`tests/integration/README.md`](tests/integration/README.md) |
+| 45 | ✓ | [`tests/oracle-a/README.md`](tests/oracle-a/README.md) |
+| 46 | ✓ | [`winget/README.md`](winget/README.md) |
+| 47 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
+| 48 | → | [`ARTICLES.md`](ARTICLES.md) |
+| 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 50 | → | [`docs/architecture/dolt.md`](docs/architecture/dolt.md) |
+| 51 | → | [`docs/community-tools.md`](docs/community-tools.md) |
+| 52 | → | [`docs/core-concepts/sync-concepts.md`](docs/core-concepts/sync-concepts.md) |
+| 53 | → | [`docs/getting-started/ide-setup.md`](docs/getting-started/ide-setup.md) |
+| 54 | → | [`docs/getting-started/installation.md`](docs/getting-started/installation.md) |
+| 55 | → | [`docs/integrations/copilot-cli.md`](docs/integrations/copilot-cli.md) |
+| 56 | → | [`docs/integrations/github-copilot.md`](docs/integrations/github-copilot.md) |
+| 57 | → | [`docs/reference/advanced.md`](docs/reference/advanced.md) |
+| 58 | → | [`docs/reference/antivirus.md`](docs/reference/antivirus.md) |
+| 59 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
+| 60 | → | [`docs/reference/protected-branches.md`](docs/reference/protected-branches.md) |
+| 61 | → | [`docs/reference/troubleshooting.md`](docs/reference/troubleshooting.md) |
+| 62 | → | [`docs/related-projects.md`](docs/related-projects.md) |
+| 63 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
+| 64 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
+| 65 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
+| 66 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
+| 67 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
+| 68 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
+| 69 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 70 | → | [`README.md`](README.md) |
+| 71 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

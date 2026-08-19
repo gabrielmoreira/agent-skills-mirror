@@ -149,8 +149,8 @@ node {baseDir}/scripts/novel-storyboard.mjs render <剧名>-storyboard.json --ht
 ## 五个 skill 的接力（管线到此闭环）
 
 ```
-novel-characters → cast.json       （谁：角色设定图）
 novel-outline    → outline.json    （什么：结构与分集）
+novel-characters → cast.json       （谁：角色设定图）
 novel-art        → art.json        （哪里：场景/道具设定图）
 novel-script     → script.json     （戏：场次、节拍、台词）
 novel-storyboard → storyboard.json （怎么拍：镜头、首帧、批次）

@@ -17,6 +17,22 @@ python3 {技能目录}/scripts/selftest.py
 python3 {技能目录}/scripts/screenplay_index.py <screenplay.md> --output <screenplay-index.jsonl>
 ```
 
+## 估算本集时长
+
+写完一集后，可以按**项目自己声明的速率**估算它有多长。套件不带跨项目速率，也不设容差带：
+
+```bash
+python3 {技能目录}/scripts/duration_estimate.py <screenplay.md> --project <short-drama.json>
+```
+
+脚本见 [duration_estimate.py](scripts/duration_estimate.py)。速率写在 `short-drama.json` 的
+`format.pacing`（`spoken_characters_per_second` 与 `seconds_per_action_paragraph`），
+由创作者按本项目的戏来定——密集争辩和沉默劳作不是同一个折算比。没有声明速率时，脚本只报
+台词字数与动作段数，不猜秒数。
+
+结果是**给创作者看的数字，不是门槛**：偏离目标不阻断交付。它的价值在于让"这一集到底多长"
+在剧本阶段就能回答，而不是等到分镜环节才发现装不下——那时戏已经写完了。
+
 ## 开始前
 
 本技能可独立安装和执行。先读取用户明确提供的单集材料与本任务直接输入；若当前目录是
@@ -88,7 +104,7 @@ diff，让创作者明确选择 authority 迁移，将 standalone 契约标记 s
 
 引用这样写：文件首行的 `{"record_type": "sources", "schema_version": "1.0.0",
 "sources": {...}}` 记录把每个上游快照声明一次，`sources` 的每个短键映射到
-`{"owner": ..., "artifact": ..., "hash": ...}`；每条引用写
+`{"owner": ..., "artifact": ...}`；每条引用写
 `{"src": "<sources 键>", "record_id": "<记录 ID>"}`，需要时再加 `field` 指向该记录内
 的 JSON pointer。指向整个 artifact 时只写 `{"src": "<sources 键>"}`。同一份文件里
 同一个键始终指同一个快照。`.json` 文件把同样的 `sources` 对象写在顶层。
@@ -126,7 +142,7 @@ diff，让创作者明确选择 authority 迁移，将 standalone 契约标记 s
 
 不要把镜头、资产全集、模型参数或提示词写进剧本。私密想法要转成行为、证据、空间后果，或明确标记的声音表达。
 
-正文发布后，用 [screenplay_index.py](scripts/screenplay_index.py) 生成只读派生索引；工具只识别格式契约中的场景标题、动作、对白、六种生产标签和注释，并保留 UTF-8 byte offsets、行范围与 source/content hash：
+正文发布后，用 [screenplay_index.py](scripts/screenplay_index.py) 生成只读派生索引；工具只识别格式契约中的场景标题、动作、对白、六种生产标签和注释，并保留 UTF-8 byte offsets 与行范围：
 
 ```bash
 python3 <skill-dir>/scripts/screenplay_index.py 剧集/EP001/screenplay.md \
@@ -143,13 +159,28 @@ python3 <skill-dir>/scripts/screenplay_index.py 剧集/EP001/screenplay.md \
 source issue 的 refs 都保持 candidate；accepted 剧本发布后再以默认 accepted authority
 重建，不得只手改状态字段。
 
-修订时同时传 `--previous-index` 和 `--previous-source`。完全相同且唯一的邻近块复用 stable ID；拆分、合并或重复块歧义会写入 `mapping_review_request`，必须显式重映射。索引器绝不改写 `screenplay.md`。
+修订后照原样重跑同一条命令：输出路径上已有索引时，索引器把它当上一版读入，**正文块按内容保 ID**
+——内容没变的块保住自己的 ID，被改写的块直接换新 ID，于是指向它的下游引用会失败而不是静默改指。
+**场景标题是例外**：它按 `scene_id` 保 ID，改写标题不换 ID（同一场戏仍是同一场，内容由标题下面
+的块承载）。说话者清单从上一版索引读回，与这次传的 `--speaker` 取并集，修订时只传新增的人即可。
+
+输出路径上那份索引不能作为上一版读入时（被截断、被手工改过、或那根本是另一部剧本的索引），
+命令会指名该文件并停下。删掉它，或加 `--no-previous` 从零重编 ID。
+
+再加 `--previous-source` 传入改稿前的剧本字节，就多一层拆分/合并识别：歧义写入
+`mapping_review_request`，必须显式重映射。没有那份字节时按内容对齐照常工作。
+
+索引器绝不改写 `screenplay.md`。
 
 正文落定后做一次量级粗测：按项目已接受的语速/字数比把正文字数折成秒数（项目没有这个
 比值就向创作者要一个量级），与本集目标时长比一次。差出两倍以上就在报告里点名，由创作者
 决定改集长还是拆集；两倍以内不必提。
 
-### 5b. 需要配音本时（可选）
+### 5b. 配音本
+
+项目的对白由录音或 TTS 承担时，配音本和剧本一起交付，不是事后想起来才补的东西：没有它，
+拿到剧本的人手里有台词、没有任何一句该怎么念，而这正是下单前最后缺的一块。项目确定
+只做无声或字幕交付时才跳过这一步，并在报告里写明跳过的理由。
 
 创作者要为录音准备台词表时，复制
 [voice-record-sheet.jsonl.md](assets/voice-record-sheet.jsonl.md)。它是**剧本的投影，
@@ -160,8 +191,10 @@ source issue 的 refs 都保持 candidate；accepted 剧本发布后再以默认
 对谁说、接谁的话、此刻他知道什么、这一句要达成什么。写策略而不是情绪词——"愤怒"不可
 执行，"质问"可执行。多音字、生僻字与专名的读法在进棚前定完并留痕；棚里中断是最贵的。
 
-不需要录音时不生成这份文件。本写作阶段不生成音频，也不从这份文本判断成品音质；
-实际 TTS 的确认后生产边界见文末。
+音色描述属于角色档案，由 assets owner 按 `$short-drama-assets` 的 `voice-direction.md` 写；
+配音本用 `source_ref` 指向它，不在这里另写一份。两份都在，一句台词才既有词也有声音。
+
+本写作阶段不生成音频，也不从这份文本判断成品音质；实际 TTS 的确认后生产边界见文末。
 
 写完后用 [voice_sheet_check.py](scripts/voice_sheet_check.py) 核对它仍然是投影：
 
@@ -171,7 +204,7 @@ python3 <skill-dir>/scripts/voice_sheet_check.py 剧集/EP001/voice-record-sheet
   --screenplay 剧集/EP001/screenplay.md
 ```
 
-脚本按块 ID 定位、切出剧本原字节、核对内容 hash，再逐字比对台词与说话人。剧本改过而
+脚本按块 ID 定位、切出剧本原字节，再逐字比对台词与说话人。剧本改过而
 索引没重建、或有人在表里顺手改了词，都会被单独报出来——**这两种情况下的配音本看起来
 和正常的一模一样**，而它被带进录音棚的那一刻正是没人能核对的时刻。
 
@@ -215,6 +248,7 @@ python3 <skill-dir>/scripts/voice_sheet_check.py 剧集/EP001/voice-record-sheet
 - `剧集/<EP>/beats.jsonl`
 - `剧集/<EP>/screenplay.md`
 - 由剧本生成的 `screenplay-index.jsonl`
+- `剧集/<EP>/voice-record-sheet.jsonl`（对白由录音或 TTS 承担时）
 - 规范化预览与语义修订差异
 
 资产身份、分镜边界、图片/视频提示词及终审结论属于其他技能。本技能不生成媒体。

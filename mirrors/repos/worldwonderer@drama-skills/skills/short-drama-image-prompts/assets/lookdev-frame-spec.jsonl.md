@@ -15,28 +15,23 @@
   "sources": {
     "short-drama": {
       "owner": "creator",
-      "artifact": "short-drama.json",
-      "hash": "<sha256>"
+      "artifact": "short-drama.json"
     },
     "<identity-owner>": {
       "owner": "short-drama-assets",
-      "artifact": "设定集/<identity-owner-file>.jsonl",
-      "hash": "<sha256>"
+      "artifact": "设定集/<identity-owner-file>.jsonl"
     },
     "<variant-owner>": {
       "owner": "short-drama-assets",
-      "artifact": "设定集/<variant-owner-file>.jsonl",
-      "hash": "<sha256>"
+      "artifact": "设定集/<variant-owner-file>.jsonl"
     },
     "screenplay-index": {
       "owner": "short-drama-write",
-      "artifact": "剧集/<EP>/screenplay-index.jsonl",
-      "hash": "<sha256>"
+      "artifact": "剧集/<EP>/screenplay-index.jsonl"
     },
     "<reference>": {
       "owner": "<reference-owner>",
-      "artifact": "<project-relative-reference-record>",
-      "hash": "<sha256>"
+      "artifact": "<project-relative-reference-record>"
     }
   }
 }
@@ -122,11 +117,7 @@
   ],
   "generic_prompt": "<只含可被画出的自然中文，不含字段名/hash/审查话术>",
   "derivation": {
-    "input_hashes": [
-      "<sha256>"
-    ],
-    "renderer": "generic-markdown",
-    "rendered_hash": "<sha256>"
+    "renderer": "generic-markdown"
   },
   "provenance": "creator_project"
 }

@@ -3,8 +3,7 @@
   "sources": {
     "episode-map": {
       "owner": "short-drama-develop",
-      "artifact": "项目开发/episode-map.jsonl",
-      "hash": "<sha256>"
+      "artifact": "项目开发/episode-map.jsonl"
     }
   },
   "contract_authority": {

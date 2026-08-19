@@ -19,7 +19,7 @@ Returns up to 50 trivia questions in a single request.
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `filters` | array | yes | body | Array of filters to get (min: 1, max: 50). |
+| `filters` | array<object> | yes | body | Array of filters to get (min: 1, max: 50). |
 
 ## Request Example
 
@@ -80,13 +80,13 @@ Returns up to 50 trivia questions in a single request.
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of trivia questions returned in the same order as the input filters. |
+| `results` | array<object> | List of trivia questions returned in the same order as the input filters. |
 | `results[].category` | string | The topic filter used to retrieve the trivia question. |
 | `results[].difficulty` | string | The complexity level filter used to retrieve the trivia question. |
 | `results[].error` | string | Describes why the question could not be retrieved for this filter. Omitted if the query was successful. |
 | `results[].data` | object | The trivia question returned for this filter. Empty if the query failed. |
 | `results[].data.question` | string | The trivia question text. |
-| `results[].data.options` | array | List of possible answers for the question. |
+| `results[].data.options` | array<string> | List of possible answers for the question. |
 | `results[].data.answer` | string | The correct answer to the trivia question. |
 | `results[].data.category` | string | The category the trivia question belongs to. |
 | `results[].data.difficulty` | string | The difficulty level of the trivia question. |

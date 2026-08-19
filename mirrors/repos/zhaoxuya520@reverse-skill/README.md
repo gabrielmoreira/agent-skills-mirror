@@ -302,6 +302,10 @@ Special thanks to the OLLVM deobfuscation ecosystem contributors and everyone wh
 ## Contact
 
 - **Email:** [ww7517437@gmail.com](mailto:ww7517437@gmail.com)
-- **QQ Group:** 942400892
-- **Discord:** [reverse-skill community](https://discord.gg/TECd3bMRR)
 - **Issues:** [GitHub Issues](https://github.com/zhaoxuya520/reverse-skill/issues)
+
+## Disclaimer
+
+This project is intended solely for lawful security research, education, CTF competitions, and testing of systems that you own or have explicit authorization to assess.
+
+**Unauthorized access, scanning, exploitation, disruption, data acquisition, or any other use against systems without prior permission is strictly prohibited.** Users are solely responsible for complying with applicable laws, regulations, and the authorized scope of testing. The maintainers accept no liability for misuse of this project or for any resulting damage or legal consequences.

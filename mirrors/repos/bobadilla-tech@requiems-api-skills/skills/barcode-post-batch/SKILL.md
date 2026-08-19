@@ -19,7 +19,7 @@ Generate up to 20 barcodes in a single request. Each barcode is processed indepe
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array | yes | body | Array of barcode generation requests. Min: 1, Max: 20. |
+| `items` | array<object> | yes | body | Array of barcode generation requests. Min: 1, Max: 20. |
 
 ## Request Example
 
@@ -73,7 +73,7 @@ Generate up to 20 barcodes in a single request. Each barcode is processed indepe
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of barcode generation results preserving input order |
+| `results` | array<object> | List of barcode generation results preserving input order |
 | `results[].image` | string | Base64-encoded PNG image |
 | `results[].type` | string | Barcode format used |
 | `results[].width` | integer | Image width in pixels |

@@ -26,7 +26,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Iterator
 
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "short-drama needs Python {}.{} or newer; this interpreter is {}.{}".format(
@@ -100,6 +100,11 @@ PROTECTED_PUBLISH_ROOTS = {
 
 AUTHORITY_ROOT_TOKEN = "creator_authority"
 EPISODE_LENGTH_POINTER = "/format/target_seconds_per_episode"
+PACING_POINTER = "/format/pacing"
+# Everything outside /creator_authority/* that a decision may still bind. Both
+# are read by the write stage to turn a screenplay into seconds, so leaving them
+# out of set-authority left hand-editing short-drama.json as the only way in.
+FORMAT_POINTERS = (EPISODE_LENGTH_POINTER, PACING_POINTER)
 
 class ProjectConflictError(RuntimeError):
     """A file changed while a guarded operation was in progress."""
@@ -724,6 +729,43 @@ def _artifact_state(root: Path, record: Mapping[str, Any]) -> str:
     return "accepted"
 
 
+def _authority_report(
+    project: Mapping[str, Any], state: Mapping[str, Any]
+) -> dict[str, str]:
+    """Say whether the manifest still holds what each bound decision wrote.
+
+    `set-authority` is the only sanctioned way into `short-drama.json`, and it
+    already records the digest of what it wrote. Comparing that against the file
+    is what turns a hand edit from invisible into reported.
+    """
+    bindings = state.get("authority")
+    if not isinstance(bindings, Mapping):
+        return {}
+    report: dict[str, str] = {}
+    for field, binding in bindings.items():
+        if not isinstance(field, str) or not isinstance(binding, Mapping):
+            continue
+        try:
+            tokens = _authority_tokens(field)
+        except ValueError:
+            report[field] = "not_authority_field"
+            continue
+        missing = object()
+        cursor: Any = project
+        for token in tokens:
+            cursor = cursor.get(token, missing) if isinstance(cursor, Mapping) else missing
+            if cursor is missing:
+                break
+        if cursor is missing:
+            report[field] = "missing"
+            continue
+        digest = hashlib.sha256(
+            json.dumps(cursor, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+        report[field] = "bound" if digest == binding.get("value_sha256") else "hand_edited"
+    return report
+
+
 def _build_status(
     *,
     project: Mapping[str, Any],
@@ -753,6 +795,7 @@ def _build_status(
         "layout": dict(layout),
         "artifact_states": counts,
         "artifacts": artifacts,
+        "authority": _authority_report(project, state),
         "lifecycle": {"artifact_state": counts},
     }
 
@@ -1134,11 +1177,12 @@ def _authority_tokens(field: str) -> list[str]:
     ]
     if any(not token for token in tokens):
         raise ValueError(f"--field has an empty pointer segment: {field}")
-    if field != EPISODE_LENGTH_POINTER and (
+    if field not in FORMAT_POINTERS and (
         tokens[0] != AUTHORITY_ROOT_TOKEN or len(tokens) < 2
     ):
         raise ValueError(
-            f"set-authority writes /{AUTHORITY_ROOT_TOKEN}/* and {EPISODE_LENGTH_POINTER} only"
+            f"set-authority writes /{AUTHORITY_ROOT_TOKEN}/* and "
+            f"{', '.join(FORMAT_POINTERS)} only"
         )
     if tokens[:2] == [AUTHORITY_ROOT_TOKEN, "decisions_artifact"]:
         # Where decisions are kept is project layout, not a creative choice; a
@@ -1303,6 +1347,24 @@ def set_creator_authority(
         if not isinstance(project, dict):
             raise ValueError("project manifest must be an object")
         written = _write_authority_value(project, tokens, value)
+        if field == PACING_POINTER:
+            # Check what the manifest will hold, not what the decision said: an
+            # object slot is merged, so a half decision leaves the other rate at
+            # null and the estimate stays unusable while the write reports bound.
+            # Type only — which rates make an estimate usable is the write
+            # stage's call, and it stays in one place.
+            if not isinstance(written, Mapping) or not written:
+                raise ValueError("pacing must be an object of named rates")
+            for name, rate in written.items():
+                if not (
+                    isinstance(rate, (int, float))
+                    and not isinstance(rate, bool)
+                    and rate > 0
+                ):
+                    raise ValueError(
+                        f"pacing rate {name} must be a positive number; "
+                        f"a decision that sets only some rates leaves the rest unset"
+                    )
         atomic_json(project_path, project)
         # Record which decision produced the value, so a later reader can tell a
         # bound write from a hand edit and see what a re-bind replaced.
@@ -1804,7 +1866,10 @@ def build_parser() -> argparse.ArgumentParser:
     authority.add_argument(
         "--field",
         required=True,
-        help=f"JSON pointer under /{AUTHORITY_ROOT_TOKEN}/ or {EPISODE_LENGTH_POINTER}.",
+        help=(
+            f"JSON pointer under /{AUTHORITY_ROOT_TOKEN}/ "
+            f"or one of {', '.join(FORMAT_POINTERS)}."
+        ),
     )
     authority.add_argument(
         "--decision-ref",

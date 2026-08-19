@@ -64,7 +64,7 @@
   权限、触发与保护方式。构图既不能提前泄露该事实，也不能遮掉本环节必须传达的载体。
 - **母版、补拍与替代**：补拍默认只补充、不替代母版。普通母版不增加版本范围字段；只有
   补拍/替代版才声明 `pickup | alternate`，用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
-  去向。只有下游审查结论才能绑定固定 hash 并批准替代，不得回写形成循环引用。
+  去向。只有下游审查结论才能批准替代，不得回写形成循环引用。
 
 ## 本阶段规则
 
@@ -90,8 +90,9 @@
 | SHT-16 | structural_invariant | Coverage carries an episode duration total that is the arithmetic sum of its shots' accepted `duration_seconds`; every shot the coverage lists either contributes a number or is named in `unresolved_durations`, so no shot leaves the total silently. When the project declares a target per episode, the record binds that field and states the signed delta; the delta is reported to the creator and never blocks on its own. |
 | SHT-17 | structural_invariant | A keyframe declares which boundary it freezes and binds that shot's matching boundary field. An end keyframe is a projection of `end_boundary`, never a second end-state authority, and per-shot keyframe count stays open: one start frame by default, an end frame only when the delivery workflow consumes it. Handing over a start/end pair delegates the motion between them to interpolation, so an action the shot exists for cannot rest on that gap alone. |
 | SHT-18 | craft_default | For a scene where directing choice materially changes audience knowledge, alignment, spatial pressure, performance ownership, or the landing, an accepted scene visual plan may bridge project direction and shots; it binds exact screenplay blocks, direction/profile, Location/View and relevant asset states, ordinary scenes skip it, and it never owns screenplay facts or shot boundaries. |
-| SHT-19 | reviewed_invariant | When a coverage audition is used, its approaches genuinely differ by knowledge timing, alignment, performance space, strongest image, landing, losses, or production fit; it uses no fixed option, grid, framing, or shot-count formula, and an independent creator acceptance record binds the exact audition hash and names an existing selected approach before the formal plan or shots. |
+| SHT-19 | reviewed_invariant | When a coverage audition is used, its approaches genuinely differ by knowledge timing, alignment, performance space, strongest image, landing, losses, or production fit; it uses no fixed option, grid, framing, or shot-count formula, and an independent creator acceptance record names the exact audition record and an existing selected approach before the formal plan or shots. |
 | SHT-20 | reviewed_invariant | Shot revision identity follows directing responsibility rather than array position or text similarity: reorder preserves IDs, insertion creates one, split/merge retires replaced IDs and creates successors, and active coverage plus downstream refs are reconciled before delivery. |
+| SHT-21 | reviewed_invariant | A keyframe's delivery text carries only what will be filmed: record and rule IDs, lifecycle status words, hashes, field paths, reference filenames, craft notes, and run-on negative lists stay in the spec fields. Two keyframes in one episode whose delivery text differs only by their identifiers are a template, not two frames. The suite runs no mechanical check; the reviewer cites the text against this rule. Same obligation as `VID-22` in the video-prompts stage. |
 
 ### `CON`
 

@@ -6,7 +6,7 @@
 
 ## 不变边界
 
-- 原文件原样保存在 `输入/`；用户输入的 hash 与 byte span 按原始字节计算，CRLF 不做归一化。
+- 原文件原样保存在 `输入/`；byte span 按原始字节计算，CRLF 不做归一化。
 - 自动标题识别只生成候选索引，不是对文件语义的裁决。不要为了迎合脚本而改写创作者原文。
 - 不把整稿、全部分集正文或整季 map 塞进 heredoc、内联 Python、命令参数或单次模型上下文。
 - `episode_intake.py` 不生成转折、回报、钩子等创作字段。它只做索引、校验、单集切片、
@@ -24,16 +24,16 @@ python3 <本技能目录>/scripts/episode_intake.py index \
 ```
 
 脚本识别短独立行形式的 `第N集`、`第N集 标题` 与 Markdown `# EP N`，统一写成规范
-`EP001` ID。索引只含 source hash、行/字节跨度、每集 hash、长度与结构问题，不含正文。
+`EP001` ID。索引只含行/字节跨度、长度与结构问题，不含正文。
 
 退出码 `0` 表示机械结构自洽；退出码 `2` 表示候选已落盘但有缺号、重号、空集或未识别等
-问题。`unmapped_spans` 会用 locator/hash 标出没有归入任何一集的前言、目录、集间说明或
+问题。`unmapped_spans` 会用 locator 标出没有归入任何一集的前言、目录、集间说明或
 尾注；Agent 必须逐个做小范围检查，决定它确实应排除还是要调整边界，不能让材料静默丢失。
 此时根据候选中的 line span，只读取疑似边界附近的小段，判断**这份文件**使用的是
 幕标题、分隔线、混合标题、目录加正文还是别的规律。不要扩大自动正则去猜作品语义。
 
 非标准结构由 Agent 写一个很短的 JSONL 边界文件，每行只给规范 `episode_id` 与 1-based
-`line_start`，必要时给 `line_end`；然后让工具推导精确 byte span 与 hash：
+`line_start`，必要时给 `line_end`；然后让工具推导精确 byte span：
 
 ```jsonl
 {"episode_id":"EP001","line_start":12}

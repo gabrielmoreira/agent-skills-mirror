@@ -49,11 +49,11 @@ Returns the definition, phonetics, examples, and synonyms for the given word.
 | ----- | ---- | ----------- |
 | `word` | string | The normalized (lowercased) word that was looked up |
 | `phonetic` | string | IPA phonetic transcription of the word (may be omitted if unavailable) |
-| `definitions` | array of objects | One or more definitions for the word, each with part_of_speech, definition, and an optional example |
+| `definitions` | array<object> | One or more definitions for the word, each with part_of_speech, definition, and an optional example |
 | `definitions[].part_of_speech` | string | Grammatical category (e.g. noun, verb, adjective) |
 | `definitions[].definition` | string | Plain-text definition of the word |
 | `definitions[].example` | string | Example sentence using the word (may be omitted) |
-| `synonyms` | array of strings | List of words with similar meaning |
+| `synonyms` | array<string> | List of words with similar meaning |
 
 ## Errors
 

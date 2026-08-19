@@ -40,6 +40,8 @@ export const DEFAULT_THRESHOLDS = {
   maxSupport: 10,       // 有名字的重要配角上限
   maxFunctional: 10,    // 功能性角色上限（占脸不占名，name 用称呼标签）
   maxBeatGap: 3,        // 相邻爽点最大间隔（集）
+  maxProps: 8,          // 叙事道具上限。跟主角数量一个量级——收多了就不是叙事道具，
+                        //   是场景陈设，那归 novel-art 的场景锚点管
   // maxPrimaryScenes 不在这里——它随集数动态，见 primarySceneCap()
 };
 
@@ -176,13 +178,20 @@ const EP_TEXT_FIELDS = ['synopsis', 'hook', 'suspense'];
 export function gateReport(outline) {
   const th = thresholdsOf(outline);
   const gates = [];
-  const add = (id, label, ok, detail = '') => gates.push({ id, label, ok, detail });
+  // enKey：中文标签会随条件变化的门（目前只有 refs），英文查表要另给一个键。
+  // 门 id 保持稳定不动——它是日志与下游对账的凭据。
+  const add = (id, label, ok, detail = '', enKey = null) =>
+    gates.push({ id, label, ok, detail, ...(enKey ? { enKey } : {}) });
 
   const chars = Array.isArray(outline?.characters) ? outline.characters : [];
   const scenes = Array.isArray(outline?.scenes) ? outline.scenes : [];
   const beats = Array.isArray(outline?.beats) ? outline.beats : [];
   const eps = Array.isArray(outline?.episodes) ? outline.episodes : [];
   const total = outline?.params?.episodes ?? eps.length;
+  // props 是后加的字段。**没有这个字段的旧大纲要照常通过**——两道相关的门
+  // 都明说跳过而不是报错，否则每一份存量 outline.json 一升级就全红。
+  const hasProps = Array.isArray(outline?.props);
+  const props = hasProps ? outline.props : [];
 
   // G1a–G1c 角色分档上限。主角组还要求至少 1 人——没有主角的剧不成立
   const tierCap = { lead: th.maxLeads, support: th.maxSupport, functional: th.maxFunctional };
@@ -201,13 +210,24 @@ export function gateReport(outline) {
   const primary = scenes.filter((s) => s?.primary);
   add('scene-cap', `主场景 ≤ ${th.maxPrimaryScenes}`, scenes.length > 0 && primary.length <= th.maxPrimaryScenes, `${primary.length} 个`);
 
+  // G2b 叙事道具上限。只收有特写、跨集、承载剧情的那几件；数量失控说明把场景
+  // 陈设也收进来了。没有 props 字段的旧大纲明说跳过，不判失败。
+  add(
+    'prop-cap',
+    `叙事道具 ≤ ${th.maxProps} 件`,
+    !hasProps || props.length <= th.maxProps,
+    hasProps ? `${props.length} 件` : '大纲没有 props 字段，跳过',
+  );
+
   // 场景/角色使用统计（G3、G10 共用）。
   // 只给已登记的 id 计数——未知 id 塞进索引会让「引用不存在」那道门形同虚设。
   const sceneUse = new Map(scenes.map((s) => [s?.id, 0]));
   const charUse = new Map(chars.map((c) => [c?.id, 0]));
+  const propUse = new Map(props.map((pr) => [pr?.id, 0]));
   for (const e of eps) {
     for (const id of e?.sceneIds ?? []) if (sceneUse.has(id)) sceneUse.set(id, sceneUse.get(id) + 1);
     for (const id of e?.characterIds ?? []) if (charUse.has(id)) charUse.set(id, charUse.get(id) + 1);
+    for (const id of e?.propIds ?? []) if (propUse.has(id)) propUse.set(id, propUse.get(id) + 1);
   }
 
   // G3 一次性场景要有规避方案
@@ -286,6 +306,9 @@ export function gateReport(outline) {
   for (const e of eps) {
     for (const id of e?.sceneIds ?? []) if (!sceneUse.has(id)) refBad.push(`第 ${e.ep} 集引用了不存在的场景 ${id}`);
     for (const id of e?.characterIds ?? []) if (!charUse.has(id)) refBad.push(`第 ${e.ep} 集引用了不存在的角色 ${id}`);
+    if (hasProps) {
+      for (const id of e?.propIds ?? []) if (!propUse.has(id)) refBad.push(`第 ${e.ep} 集引用了不存在的道具 ${id}`);
+    }
   }
   for (const b of beats) {
     if (Number.isInteger(b?.episode) && (b.episode < 1 || b.episode > total)) {
@@ -294,7 +317,23 @@ export function gateReport(outline) {
   }
   for (const [id, n] of charUse) if (n === 0) refBad.push(`角色 ${id} 从未在任何一集出现`);
   for (const [id, n] of sceneUse) if (n === 0) refBad.push(`场景 ${id} 从未被用到`);
-  add('refs', '场景/角色引用完整，无失业角色、无空转场景', eps.length > 0 && refBad.length === 0, refBad.join('；'));
+  if (hasProps) {
+    for (const [id, n] of propUse) if (n === 0) refBad.push(`道具 ${id} 从未在任何一集出现`);
+    // 道具关联的爽点必须真的存在——beatIds 指错等于这件道具没有戏剧理由
+    const beatIds = new Set(beats.map((b) => b?.id));
+    for (const pr of props) {
+      for (const bid of pr?.beatIds ?? []) {
+        if (!beatIds.has(bid)) refBad.push(`道具 ${pr.id} 关联了不存在的爽点 ${bid}`);
+      }
+    }
+  }
+  add(
+    'refs',
+    hasProps ? '场景/角色/道具引用完整，无失业角色、无空转场景、无零集道具' : '场景/角色引用完整，无失业角色、无空转场景',
+    eps.length > 0 && refBad.length === 0,
+    refBad.join('；'),
+    hasProps ? 'refs-props' : null,
+  );
 
   // G11 梗概是叙述体
   const dlgBad = eps.filter((e) => EP_TEXT_FIELDS.some((f) => DIALOGUE_RE.test(e?.[f] ?? '')));
@@ -411,6 +450,24 @@ export function validateOutline(outline, stage = 'full') {
     }
   }
 
+  // --- props 叙事道具 ---
+  // 可选字段：旧大纲没有 props 照常通过。写了就按结构查。
+  if (Array.isArray(outline?.props)) {
+    if (outline.props.length > th.maxProps) p(`叙事道具 ${outline.props.length} 件，超过上限 ${th.maxProps}`);
+    const seenP = new Set();
+    for (const pr of outline.props) {
+      const label = pr?.name ?? pr?.id ?? '(无名)';
+      if (!/^P\d{2,}$/.test(pr?.id ?? '')) p(`[${label}] 道具 id 必须是 P01 这种格式`);
+      if (seenP.has(pr?.id)) p(`道具 id ${pr.id} 重复`);
+      seenP.add(pr?.id);
+      if (!thText(pr?.name)) p(`[${pr?.id}] 道具缺 name`);
+      // function 是这一层唯一要拍板的东西：这件物件在戏里承载什么。
+      // 填不出来说明它不是叙事道具，是场景陈设——那归 novel-art 的场景锚点管。
+      if (!thText(pr?.function)) p(`[${label}] 道具缺 function（它在戏里承载什么；填不出来就不该进这张表）`);
+      if (pr?.beatIds !== undefined && !Array.isArray(pr.beatIds)) p(`[${label}] beatIds 必须是数组`);
+    }
+  }
+
   if (stage === 'skeleton') return problems;
 
   // --- beats 爽点表 ---
@@ -484,6 +541,16 @@ export function computeAssets(outline) {
     return { id: c.id, name: c.name, role: c.role, tier: c.tier, uses: episodes.length, episodes };
   });
 
+  // 道具跟场景同一个套路：分集既然带了 propIds，清单就是纯汇总。
+  // 没有 props 字段的旧大纲返回空数组，调用方按空处理即可。
+  const props = (outline?.props ?? []).map((pr) => {
+    const episodes = eps.filter((e) => (e?.propIds ?? []).includes(pr.id)).map((e) => e.ep);
+    return {
+      id: pr.id, name: pr.name, function: pr.function ?? '',
+      uses: episodes.length, episodes, beatIds: pr.beatIds ?? [],
+    };
+  });
+
   // 角色资产量折算：每档要备多少张脸、备到什么程度
   const castPlan = CHARACTER_TIERS.map((tier) => {
     const members = (outline?.characters ?? []).filter((c) => c?.tier === tier);
@@ -502,7 +569,7 @@ export function computeAssets(outline) {
     (beatsByType[b.type] ??= []).push(b.episode);
   }
 
-  return { scenes, characters, castPlan, warnings, beatsByType };
+  return { scenes, characters, props, castPlan, warnings, beatsByType };
 }
 
 /* ------------------------------------------------------------------ */
@@ -529,7 +596,9 @@ const GATE_LABELS_EN = {
   'ep-fields': 'All three fields per episode (synopsis, hook, suspense)',
   'crowd-plan': 'Three or more on screen carries a breakdown plan',
   'risk-flag': 'Production risks flagged in the warning list',
+  'prop-cap': 'Narrative props ≤ {0}',
   'refs': 'Scene / character references complete — no jobless characters, no unused scenes',
+  'refs-props': 'Scene / character / prop references complete — no jobless characters, no unused scenes, no unused props',
   'no-dialogue': 'Synopses in narrative prose, no quoted dialogue',
 };
 const GATE_SKIPS_EN = {
@@ -542,7 +611,7 @@ const GATE_SKIPS_EN = {
 /** 报告里的门文案：英文界面取映射，未命中或中文界面回落原文。 */
 const gateText = (g, lang) => {
   if (lang !== 'en') return { label: g.label, detail: g.detail };
-  const en = GATE_LABELS_EN[g.id];
+  const en = GATE_LABELS_EN[g.enKey ?? g.id];
   // 阈值仍由门自己算：把中文标签里出现的数字按序填进 {0} {1}
   const nums = String(g.label).match(/\d+(?:\.\d+)?/g) ?? [];
   const label = en ? en.replace(/\{(\d)\}/g, (m, i) => nums[Number(i)] ?? m) : g.label;
@@ -607,16 +676,19 @@ const I18N = {
     planSceneRow: '场景环境',
     planSceneSpec: '主场景各一套环境参考 + 光照基调',
     planSceneReuse: (names) => `（+${names.join('、')}复用）`,
+    planPropRow: '叙事道具',
+    planPropSpec: '每件一套白底设定图 + 状态变体，跨集要长一样',
     planRiskRow: '生成难点',
     planRiskSpec: '拍摄前逐条过预警清单',
     beatCols: ['ID', '类型', '量级', '集', '铺垫', '兑现'],
     weight: { major: '大爆点', minor: '常规' },
     rhythm: '爽点节奏',
     rhythmLegend: '■ 大爆点　□ 常规　· 无爽点',
-    matrixHead: '角色 / 场景',
+    matrixHead: '角色 / 场景 / 道具',
     matrixTier: '层级',
     matrixTotal: '合计',
     matrixScenes: '场　景',
+    matrixProps: '道　具',
     onceScene: '一次性',
     primaryScene: '主场景',
     reusePlanLabel: '复用方案',
@@ -633,6 +705,7 @@ const I18N = {
     epsParen: (list) => `（第 ${list.join('、')} 集）`,
     epsCount: (n) => `${n} 集`,
     sceneCols: ['ID', '场景', '主场景', '出现集', '次数', '复用方案'],
+    propCols: ['ID', '道具', '承载什么', '出现集', '次数', '关联爽点'],
     castCols: ['ID', '角色', '定位', '出现集', '次数'],
     warnCols: ['难点', '涉及集'],
     beatTypeCols: ['爽点类型', '落点（集）'],
@@ -704,16 +777,19 @@ const I18N = {
     planSceneRow: 'Scene environments',
     planSceneSpec: 'One environment reference set + lighting key per primary scene',
     planSceneReuse: (names) => ` (+ ${names.join(', ')} via reuse)`,
+    planPropRow: 'Narrative props',
+    planPropSpec: 'One white-plate sheet plus state variants each; must stay identical across episodes',
     planRiskRow: 'Production risks',
     planRiskSpec: 'Walk the warning list before generation',
     beatCols: ['ID', 'Type', 'Weight', 'Ep', 'Setup', 'Payoff'],
     weight: { major: 'Major', minor: 'Minor' },
     rhythm: 'Beat rhythm',
     rhythmLegend: '■ major　□ minor　· none',
-    matrixHead: 'Character / Scene',
+    matrixHead: 'Character / Scene / Prop',
     matrixTier: 'Tier',
     matrixTotal: 'Total',
     matrixScenes: 'Scenes',
+    matrixProps: 'Props',
     onceScene: 'One-off',
     primaryScene: 'Primary',
     reusePlanLabel: 'Reuse plan',
@@ -730,6 +806,7 @@ const I18N = {
     epsParen: (list) => ` (ep ${list.join(', ')})`,
     epsCount: (n) => `${n} eps`,
     sceneCols: ['ID', 'Scene', 'Primary', 'Episodes', 'Uses', 'Reuse plan'],
+    propCols: ['ID', 'Prop', 'What it carries', 'Episodes', 'Uses', 'Beats'],
     castCols: ['ID', 'Name', 'Role', 'Episodes', 'Uses'],
     warnCols: ['Risk', 'Episodes'],
     beatTypeCols: ['Beat type', 'Episodes'],
@@ -818,6 +895,13 @@ export function renderMarkdown(outline, lang) {
   out.push(mdHead(t.sceneCols));
   for (const s of assets.scenes) {
     out.push(mdRow([s.id, s.name, s.primary ? t.yes : t.no, s.episodes.join(t.sep), s.uses, s.reusePlan ?? '—']));
+  }
+  // 道具表：没有 props 的旧大纲不出这张表，不留一张空表占位
+  if (assets.props.length) {
+    out.push('', mdHead(t.propCols));
+    for (const pr of assets.props) {
+      out.push(mdRow([pr.id, pr.name, pr.function, pr.episodes.join(t.sep), pr.uses, pr.beatIds.join(t.sep) || '—']));
+    }
   }
   out.push('', mdHead(t.castCols));
   for (const c of assets.characters) out.push(mdRow([c.id, c.name, c.role, c.episodes.join(t.sep), c.uses]));
@@ -1027,6 +1111,15 @@ export function renderHtml(outline, lang) {
     ...assets.scenes.map((s) =>
       mxRow(s.name, s.primary ? t.primaryScene : t.onceScene, s.episodes, ' sc', s.uses === 1 ? `${s.uses} ⚠` : String(s.uses)),
     ),
+    // 道具段：没有 props 的旧大纲整段不出，不留一个空标题
+    ...(assets.props.length
+      ? [
+        `<tr class="div"><td colspan="${total + 3}">${esc(t.matrixProps)}</td></tr>`,
+        ...assets.props.map((pr) =>
+          mxRow(pr.name, pr.beatIds.join(t.sep) || t.none, pr.episodes, ' pp', String(pr.uses)),
+        ),
+      ]
+      : []),
   ].join('\n');
   const onceNotes = assets.scenes
     .filter((s) => s.uses === 1 && s.reusePlan)
@@ -1076,6 +1169,15 @@ export function renderHtml(outline, lang) {
       esc(primaryScenes.map((s) => s.name).join(t.sep) + (onceNames.length ? t.planSceneReuse(onceNames) : '')),
       esc(t.planSceneSpec),
     ],
+    // 道具行：没有 props 的旧大纲不出这一行
+    ...(assets.props.length
+      ? [[
+        esc(t.planPropRow),
+        String(assets.props.length),
+        esc(assets.props.map((pr) => pr.name).join(t.sep)),
+        esc(t.planPropSpec),
+      ]]
+      : []),
     [esc(t.planRiskRow), String(riskTotal), esc(riskTotal ? riskSub : t.none), esc(t.planRiskSpec)],
   ];
 
@@ -1128,7 +1230,7 @@ export function renderHtml(outline, lang) {
 <style>
 :root{
   --paper:#eceded; --panel:#f5f6f5; --side:#e4e6e3; --ink:#191d21; --ink-2:#5b636a; --ink-3:#8c9298;
-  --rule:#d2d5d0; --rule-2:#c2c6bf; --seal:#8a3324; --seal-2:#c56a4e; --seal-soft:#8a332412; --ok:#3d6b4f;
+  --rule:#d2d5d0; --rule-2:#c2c6bf; --seal:#8a3324; --seal-2:#c56a4e; --seal-3:#e0a98c; --seal-soft:#8a332412; --ok:#3d6b4f;
   --serif:"Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC",Georgia,serif;
   --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -1272,6 +1374,7 @@ q{quotes:"「" "」";font-family:var(--serif);border-left:2px solid var(--seal);
   background:var(--paper);border:1px solid var(--rule)}
 .matrix td.mc.on{background:var(--seal);border-color:var(--seal)}
 .matrix td.mc.on.sc{background:var(--seal-2);border-color:var(--seal-2)}
+.matrix td.mc.on.pp{background:var(--seal-3);border-color:var(--seal-3)}
 .matrix td.n{padding-left:10px;font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap}
 .matrix tr.div td{padding:8px 0 3px;font:500 10px/1 var(--sans);letter-spacing:.18em;color:var(--ink-3)}
 .matrix .mnote{font-size:11px;color:var(--ink-3);margin:10px 0 0}

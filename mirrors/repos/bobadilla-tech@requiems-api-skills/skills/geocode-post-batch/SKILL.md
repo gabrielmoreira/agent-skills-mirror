@@ -19,7 +19,7 @@ Convert up to 20 coordinate pairs to addresses in a single request. Processed co
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array of objects | yes | body | List of coordinate pairs to reverse-geocode (1–20 items). Max 20 due to Nominatim usage policy. |
+| `items` | array<object> | yes | body | List of coordinate pairs to reverse-geocode (1–20 items). Max 20 due to Nominatim usage policy. |
 | `items[].lat` | number | yes | body | Latitude (-90 to 90). |
 | `items[].lon` | number | yes | body | Longitude (-180 to 180). |
 
@@ -59,7 +59,7 @@ Convert up to 20 coordinate pairs to addresses in a single request. Processed co
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].lat` | number | Latitude as provided in the request. |
 | `results[].lon` | number | Longitude as provided in the request. |
 | `results[].result` | object | Reverse geocoding result (omitted on error). Same fields as the single-item endpoint. |

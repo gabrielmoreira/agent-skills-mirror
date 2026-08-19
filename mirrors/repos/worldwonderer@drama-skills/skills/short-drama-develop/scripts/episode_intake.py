@@ -11,7 +11,6 @@ is only a reproducible derived cache.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -21,7 +20,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "episode_intake.py requires Python {}.{} or newer; found {}.{}".format(
@@ -56,10 +55,6 @@ EP_HEADING_RE = re.compile(
 )
 EPISODE_ID_RE = re.compile(r"^EP([0-9]{3}|[1-9][0-9]{3,})$")
 MAX_HEADING_LENGTH = 80
-
-
-def sha256(content: bytes) -> str:
-    return hashlib.sha256(content).hexdigest()
 
 
 def chinese_to_int(text: str) -> int | None:
@@ -203,7 +198,6 @@ def build_index(
                 "byte_start": start,
                 "byte_end": end,
                 "byte_length": end - start,
-                "content_sha256": sha256(data[start:end]),
             }
         )
     return {
@@ -211,7 +205,6 @@ def build_index(
         "record_type": "episode_intake_index",
         "source_name": source.name,
         "source_ref": _portable_source_ref(source, source_ref),
-        "source_sha256": sha256(data),
         "source_byte_length": len(data),
         "episode_count": len(episodes),
         "episodes": episodes,
@@ -250,7 +243,6 @@ def _unmapped_spans(
                     "byte_start": cursor,
                     "byte_end": start,
                     "byte_length": start - cursor,
-                    "content_sha256": sha256(data[cursor:start]),
                 }
             )
         cursor = max(cursor, end)
@@ -262,7 +254,6 @@ def _unmapped_spans(
                 "byte_start": cursor,
                 "byte_end": len(data),
                 "byte_length": len(data) - cursor,
-                "content_sha256": sha256(data[cursor:]),
             }
         )
     return spans
@@ -299,7 +290,6 @@ def make_manual_index(
                 "byte_start": start,
                 "byte_end": end,
                 "byte_length": end - start,
-                "content_sha256": sha256(data[start:end]),
             }
         )
     document = {
@@ -307,7 +297,6 @@ def make_manual_index(
         "record_type": "episode_intake_index",
         "source_name": source.name,
         "source_ref": _portable_source_ref(source, source_ref),
-        "source_sha256": sha256(data),
         "source_byte_length": len(data),
         "episode_count": len(episodes),
         "episodes": episodes,
@@ -411,8 +400,6 @@ def verify_index(index_path: str | Path, source_path: str | Path) -> dict[str, A
         problems.append("unsupported schema_version")
     if document.get("record_type") != "episode_intake_index":
         problems.append("record_type is not episode_intake_index")
-    if document.get("source_sha256") != sha256(data):
-        problems.append("source_sha256 does not match the exact source bytes")
     if document.get("source_byte_length") != len(data):
         problems.append("source_byte_length does not match")
     try:
@@ -444,8 +431,6 @@ def verify_index(index_path: str | Path, source_path: str | Path) -> dict[str, A
         else:
             if row.get("line_start") != expected_line_start or row.get("line_end") != expected_line_end:
                 problems.append(f"{label} line span does not match its byte span")
-        if row.get("content_sha256") != sha256(data[start:end]):
-            problems.append(f"{label} content_sha256 does not match its exact span")
         if row.get("byte_length") != end - start:
             problems.append(f"{label} byte_length does not match its byte span")
     problems.extend(_structural_problems(episodes, data))
@@ -488,8 +473,6 @@ def slice_episode(
     data = Path(source_path).read_bytes()
     row = matches[0]
     content = data[row["byte_start"] : row["byte_end"]]
-    if sha256(content) != row["content_sha256"]:
-        raise ValueError(f"episode span changed: {episode_id}")
     if output_path is not None:
         _atomic_write(Path(output_path), content)
     return content
@@ -550,19 +533,9 @@ def progress(
     by_id = _validated_records(records, set(ordered_ids), "episode-map")
     completed = [episode_id for episode_id in ordered_ids if episode_id in by_id]
     pending = [episode_id for episode_id in ordered_ids if episode_id not in by_id]
-    canonical_records = [by_id[episode_id] for episode_id in completed]
-    map_file = Path(map_path)
-    map_content = map_file.read_bytes() if map_file.exists() else b""
     checkpoint = {
         "schema_version": SCHEMA_VERSION,
         "record_type": "episode_intake_progress",
-        "index_sha256": sha256(Path(index_path).read_bytes()),
-        "source_sha256": document["source_sha256"],
-        "map_sha256": sha256(map_content),
-        "record_hashes": [
-            {"episode_id": record["episode_id"], "sha256": sha256(_json_bytes(record))}
-            for record in canonical_records
-        ],
         "completed": completed,
         "pending": pending,
         "next_batch": pending[:batch_size],

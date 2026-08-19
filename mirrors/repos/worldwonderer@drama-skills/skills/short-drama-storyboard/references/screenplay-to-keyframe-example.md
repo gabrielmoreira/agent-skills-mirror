@@ -56,7 +56,7 @@ A02（摊手与蓝线头）。
 来源：`shots.jsonl` 首行先声明本文件用到的上游快照——
 
 ~~~json
-{"record_type": "sources", "schema_version": "1.0.0", "sources": {"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP004/screenplay-index.jsonl", "hash": "<sha256>"}}}
+{"record_type": "sources", "schema_version": "1.0.0", "sources": {"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP004/screenplay-index.jsonl"}}}
 ~~~
 
 镜头记录里的每条来源引用只写这个快照键和记录 ID：
@@ -139,7 +139,7 @@ A02（摊手与蓝线头）。
 两处引用同一条来源。各自文件先在 `sources` 里声明这份剧本索引的快照：
 
 ~~~json
-{"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP002/screenplay-index.jsonl", "hash": "<sha256>"}}
+{"screenplay-index": {"owner": "short-drama-write", "artifact": "剧集/EP002/screenplay-index.jsonl"}}
 ~~~
 
 镜头记录与运动规格里的引用都写成：

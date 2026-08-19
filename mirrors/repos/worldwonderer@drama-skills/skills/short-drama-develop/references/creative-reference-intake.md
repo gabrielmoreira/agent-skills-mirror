@@ -21,7 +21,7 @@
 
 ```yaml
 reference_mechanism:
-  source_ref: 输入/references/<locator-and-hash>
+  source_ref: 输入/references/<locator>
   purpose: 本次参考要回答的问题
   direct_observation: 对功能的转述，不复制原句
   audience_state: 观众进入这一段时知道、期待或误信什么

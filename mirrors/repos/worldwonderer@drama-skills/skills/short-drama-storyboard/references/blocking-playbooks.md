@@ -68,7 +68,7 @@
 `creator-decision` 是 `short-drama.json` 的 `sources` 为那份创作者决定声明的快照键：
 
 ```json
-{"creator-decision": {"owner": "creator", "artifact": "创作者决策/<artifact-id>.json", "hash": "<sha256>"}}
+{"creator-decision": {"owner": "creator", "artifact": "创作者决策/<artifact-id>.json"}}
 ```
 
 镜头与关键帧记录用 `delivery_surface_ref` 绑定该声明的**精确快照与字段**（模板已有该字段，
@@ -76,7 +76,7 @@
 `stale`，受影响的镜头与关键帧按恢复流程重新核对，不沿用上一版的避让结论。
 
 `status` 为 `unset` 时本规则不生效：镜头照常按画面可读性构图，把它记为待创作者决定。
-声明自身不引用自己所在文件的 hash。
+声明自身不引用自己所在的文件。
 - **已声明时绑定版本**：镜头与关键帧引用该声明的具体版本；交付方案改版时，受影响的镜头
   按 `stale` 处理并重新核对，而不是沿用上一版的避让结论。
 已声明遮挡区后，按下面的优先级判断哪些内容必须挪开：

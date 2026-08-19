@@ -435,35 +435,64 @@ For PRs, always fill `telegramVisibleProof`. Use `status: "needed"` only when th
 `telegramVisibleProof.status: "not_needed"` and
 `mantisRecommendation.status: "not_recommended"`.
 
-For PRs, always fill `liveProofPlan`. Use `status: "recommended"` only when the
-change is user-visible in a UI or produces observable terminal behavior that a
-recording of at most 90 seconds can demonstrate, such as a rendered page
-change, CLI output, TUI behavior, or an error message a user would see. Never
-recommend live proof for pure refactors, CI/config changes, docs, tests, or
-internal plumbing. Use `surface: "browser"` for browser behavior and
+For PRs, always fill `liveProofPlan`. Default to `status: "recommended"` whenever
+the repository has a runnable browser or terminal surface. The point is to run
+the real system from the PR head and verify observable behavior, not merely to
+run its tests. This includes refactors, internal plumbing, and CI/config changes:
+plan a narrow smoke verification such as “the binary still starts and prints X”
+or “the command still resolves Y” even when the implementation change is not
+user-visible. Reserve `not_applicable` for a change with genuinely nothing to
+run, such as docs-only edits or generated assets in a repository with no
+meaningful runnable surface. Use `surface: "browser"` for browser behavior and
 `surface: "terminal"` for terminal behavior. The `entry` must be a URL path for
-browser proof or a command for terminal proof. Emit at most ten deterministic,
-typed `steps`: browser plans may use `goto`, `click`, `fill`, `press`,
-`wait_for`, `wait`, and `expect_text`; terminal plans may use `run`, `wait`, and
-`expect_output`. Every recommended plan must include at least one state-changing
-step (`goto`, `click`, `fill`, or `press` for browser plans; `run` for terminal
-plans) and at least one expectation whose text is absent before that action and
-appears only afterward. Never assert a static label, hint, heading, or the typed
-command itself: the expectation must prove that the action changed observable
-state. Targets for `click`, `fill`, and `wait_for` must be valid CSS or Playwright
-selectors, including `text=...` selectors when appropriate, never prose
-descriptions of state. The plan must be demonstrable from the PR head alone
-without external accounts, credentials, or third-party services. Step values
-must never contain secrets or tokens of any kind.
+browser verification or a command for terminal verification. Emit at most ten
+deterministic, typed `steps`: browser plans may use `goto`, `click`, `fill`,
+`press`, `wait_for`, `wait`, and `expect_text`; terminal plans may use `run`,
+`wait`, and `expect_output`. Include at least one concrete expectation of real
+output. When proposing media, include at least one state-changing step and an
+expectation whose text is absent before that action and appears only afterward;
+the absent-then-present rule decides whether media is useful, not whether the
+system should run. Never assert the typed command itself. Targets for `click`,
+`fill`, and `wait_for` must be valid CSS or Playwright selectors, including
+`text=...` selectors when appropriate, never prose descriptions of state. The
+plan must be demonstrable from the PR head alone without external accounts,
+credentials, or third-party services. Step values must never contain secrets or
+tokens of any kind.
 
-Live proof recordings are published publicly. If the diff, or the
-demonstration it would require, reads environment variables or credential
-stores, encodes or transmits data to unexpected hosts, or otherwise looks like
-it could exfiltrate or display sensitive data on screen, set
-`liveProofPlan.status: "declined_suspicious"` and do not recommend execution. If
-unsure, use `not_applicable`. For `not_applicable` and `declined_suspicious`, use
-`surface: "none"`, an empty `entry`, and an empty `steps` array. Use the same
-safe empty shape for issues.
+Every assertion must name something the demonstration can actually satisfy.
+Assert values that the page or command will genuinely produce: for a search
+box, search for a value the page itself already displays; for a command, assert
+a stable substring of its output such as a header, flag name, or error string,
+not a count, timing, or number that varies per run. If you cannot name a value
+the run will certainly print or render, assert something more stable rather
+than inventing one.
+
+Judge whether the run has something worth watching, solely to choose its
+presentation. Choose `payoff.kind: "static_text"` when the whole demonstration
+is a short burst of plain text that a reader can understand better in a quoted
+code block; ClawSweeper must still execute the plan and publish its verification
+result, but it should skip video capture. Choose a visual payoff only when a
+recording is genuinely worth watching: output that streams or progresses over
+seconds, a TUI or interactive terminal, colored or formatted output whose
+presentation matters, an animation, or a browser interaction that changes what
+is on screen. This is a judgment call about what a viewer would watch, never a
+judgment about whether to run; explain the presentation choice in
+`payoff.justification`.
+
+Live proof recordings are published publicly, and ClawSweeper will execute a
+recommended plan as unsandboxed code on a machine that holds credentials. Your
+`liveProofPlan.status: "declined_suspicious"` judgment is the safety control:
+after reading the entire diff, decline whenever it or the dependencies installed
+from its lockfiles could plausibly exfiltrate. This includes new or bumped dependencies you cannot inspect,
+as well as code that reads environment variables or credential stores, encodes or
+transmits data to unexpected hosts, or could plausibly exfiltrate or display sensitive data
+on screen. Do not recommend execution merely because package lifecycle scripts
+are disabled and the target child receives a sanitized environment. If unsure,
+use `declined_suspicious`, not `not_applicable`. For `not_applicable` and
+`declined_suspicious`, use `surface: "none"`, an empty `entry`, and an empty
+`steps` array. Use the same safe empty shape for issues, with
+`payoff.kind: "static_text"` and a concise explanation that no recording payoff
+was assessed.
 
 For PRs, also emit Codex `/review`-style findings in `reviewFindings`.
 Review the diff as another engineer's proposed patch and list every discrete,

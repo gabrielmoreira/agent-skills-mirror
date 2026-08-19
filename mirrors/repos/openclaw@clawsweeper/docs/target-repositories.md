@@ -4,7 +4,7 @@
 - Owner: ClawSweeper maintainers
 - Source of truth: `config/target-repositories.json`, repository profiles,
   target inventory, dashboard/apply configuration, and profile tests
-- Last verified: `openclaw/clawsweeper@9c32c14c65b0551b43a10c2086c0031338ae41e7`
+- Last verified: `openclaw/clawsweeper@647503ec44b8e777dd172adf974a945367da0d19`
 - Update when: profile policy, supported owners, inventory, dashboard targets,
   apply membership, or onboarding requirements change
 
@@ -51,6 +51,9 @@ without a TypeScript change. It is intentionally narrow:
 - `live_test`, when present, supplies the default live-proof configuration to
   matching built-in, configured, and generic profiles; an explicit repository
   block can override it
+- live-test package installs suppress pnpm/npm/Bun lifecycle scripts by default;
+  `allow_install_scripts: true` is the explicit per-profile opt-in, and no
+  current repository opts in
 - generic `openclaw/*` issues can auto-close only for
   `implemented_on_main`; PRs can auto-close for `implemented_on_main` or
   age-gated `mostly_implemented_on_main`

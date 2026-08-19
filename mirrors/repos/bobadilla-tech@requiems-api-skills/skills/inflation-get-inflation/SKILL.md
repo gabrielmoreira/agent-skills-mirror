@@ -55,7 +55,7 @@ Returns the latest annual CPI inflation rate for a country plus the previous 10 
 | `country` | string | ISO 3166-1 alpha-2 country code, uppercased |
 | `rate` | number | Latest annual CPI inflation rate as a percentage (e.g. 2.9495 means 2.9495%) |
 | `period` | string | Year of the latest data point (e.g. 2024) |
-| `historical` | array | Up to 10 previous years of inflation data, ordered newest to oldest |
+| `historical` | array<object> | Up to 10 previous years of inflation data, ordered newest to oldest |
 | `historical[].period` | string | Year of the historical data point |
 | `historical[].rate` | number | Annual CPI inflation rate for that year |
 

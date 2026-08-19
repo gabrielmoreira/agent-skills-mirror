@@ -19,7 +19,7 @@ Convert up to 50 numbers between bases in a single request. Results are returned
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array of objects | yes | body | List of conversion requests (1–50 items). |
+| `items` | array<object> | yes | body | List of conversion requests (1–50 items). |
 | `items[].from` | integer | yes | body | Source base (2, 8, 10, or 16). |
 | `items[].to` | integer | yes | body | Target base (2, 8, 10, or 16). |
 | `items[].value` | string | yes | body | The number as a string. Accepts optional prefixes: 0x (hex), 0b (binary), 0o (octal). |
@@ -54,7 +54,7 @@ Convert up to 50 numbers between bases in a single request. Results are returned
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].from` | integer | The source base used for conversion. |
 | `results[].to` | integer | The target base used for conversion. |
 | `results[].input` | string | The original value as provided in the request. |

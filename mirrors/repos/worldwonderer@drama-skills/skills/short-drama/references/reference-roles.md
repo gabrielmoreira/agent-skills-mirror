@@ -19,7 +19,7 @@
 
 ## 绑定前先回答四个问题
 
-1. **它是哪一条记录**：写准确的产物引用、`hash` 和记录 ID，不是"参考图二"。
+1. **它是哪一条记录**：写准确的产物引用与记录 ID，不是"参考图二"。
 2. **这次参考它的什么**：身份、造型状态、地点方位、构图、尺度、效果还是起始帧。
 3. **哪些内容可以照着写**：在 `may_control` 里列出这次确实要参考的可见内容。
 4. **哪些内容不能跟着变**：在 `must_not_control` 里保护身份、文字、人数、道具和空间锚点。
@@ -37,7 +37,7 @@
 | `visually_inspected` | 运行环境获授权检查输入参考图并完成检查 | 按检查记录判断 |
 | `unverified` | 只有 JSON 或文字描述，媒体不可见或没有授权 | **不得**声称像素、文字、水印或裁切已通过 |
 
-前两种都要绑定准确的 `reference_observation_ref`，记录所看文件的 `hash`、检查区域、
+前两种都要绑定准确的 `reference_observation_ref`，记录所看的文件、检查区域、
 文字处理结论、检查方式与未决风险，格式见
 [reference-observation.example.jsonl](../assets/reference-observation.example.jsonl)。
 
@@ -86,7 +86,7 @@
 这条绑定所在的文件在第一行声明它引用到的上游快照：
 
 ```json
-{"record_type":"sources","schema_version":"1.0.0","sources":{"keyframes":{"owner":"short-drama-storyboard","artifact":"剧集/EP001/storyboard/keyframes.jsonl","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"keyframes":{"owner":"short-drama-storyboard","artifact":"剧集/EP001/storyboard/keyframes.jsonl"}}}
 ```
 
 之后每条绑定只写快照键、记录 ID 和这一条自己的 `authority`：
@@ -117,7 +117,7 @@
 多张图可能是三种完全不同的东西，不能因为排在一张版面里就混成一个资产：
 
 - **一组参考绑定**：各自有各自的用途；
-- **方便人工浏览的联系表**：只是交付包装，每格仍保留自己的 artifact/hash、用途和文字政策；
+- **方便人工浏览的联系表**：只是交付包装，每格仍保留自己的 artifact、用途和文字政策；
 - **同一段运动的起止边界**：见下。
 
 每条绑定使用稳定 `slot_id` 和显式 `order`。数组重排、插入新参考或联系表换版时**不得改变
@@ -133,7 +133,7 @@
 
 ## 审查顺序
 
-1. 引用、`authority`、`hash` 能否解析；
+1. 引用与 `authority` 能否解析；
 2. 每条绑定的用途、可借用内容、不可照搬内容是否写清；
 3. 观察记录是否存在，没有证据是否老实保持 `unverified`；
 4. 最后才评价措辞与审美。

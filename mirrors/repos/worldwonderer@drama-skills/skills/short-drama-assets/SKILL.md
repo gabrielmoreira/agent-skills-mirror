@@ -66,7 +66,7 @@ Look → Character 绑定；身份是否可信、差异是否有戏剧依据仍�
 4. **用户只要局部结果**（如“拆本场道具”）：仍执行 occurrence → decision，
    但只呈现所问范围及它依赖的连续性，不用强迫走完整项目流程。
 
-缺少 index 时，不凭行号冒充稳定来源；先请 write owner 对剧本建立 block ID/hash。
+缺少 index 时，不凭行号冒充稳定来源；先请 write owner 对剧本建立 block ID。
 
 ## 每轮的工作单元
 

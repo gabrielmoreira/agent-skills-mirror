@@ -19,15 +19,17 @@ bun run build        # gen docs + compile binaries
 bun run gen:skill-docs  # regenerate SKILL.md files from templates
 bun run skill:check  # health dashboard for all skills
 bun run dev:skill    # watch mode: auto-regen + validate on change
-bun run eval:list    # list all eval runs from ~/.gstack-dev/evals/
+bun run eval:list    # list all eval runs from ~/.gstack/projects/<slug>/evals/
 bun run eval:compare # compare two eval runs (auto-picks most recent)
 bun run eval:summary # aggregate stats across all eval runs
 bun run slop          # full slop-scan report (all files)
 bun run slop:diff     # slop findings in files changed on this branch only
 ```
 
-`test:evals` requires `ANTHROPIC_API_KEY`. Codex E2E tests (`test/codex-e2e.test.ts`)
-use Codex's own auth from `~/.codex/` config — no `OPENAI_API_KEY` env var needed.
+`test:evals` requires `ANTHROPIC_API_KEY`. Codex E2E tests (`test/codex-e2e.test.ts`,
+`test/codex-e2e-sol-scope.test.ts`) use Codex's own auth — the hermetic runner copies
+only `auth.json` from `${CODEX_HOME:-~/.codex}` and pins `CODEX_HOME` in the child
+env — no `OPENAI_API_KEY` env var needed.
 
 **Env keys in Conductor workspaces.** The `GSTACK_*` env-shim (v1.39.2.0+,
 `lib/conductor-env-shim.ts`) promotes `GSTACK_ANTHROPIC_API_KEY` /
@@ -62,7 +64,8 @@ seeding tripwires in `test/hermetic-skills-seeding.test.ts` /
 `test/pty-skill-seeding-wiring.test.ts`.
 
 E2E tests stream progress in real-time (tool-by-tool via `--output-format stream-json
---verbose`). Results are persisted to `~/.gstack-dev/evals/` with auto-comparison
+--verbose`). Results are persisted to `~/.gstack/projects/<slug>/evals/` (legacy
+fallback `~/.gstack-dev/evals/`) with auto-comparison
 against the previous finalized run (in-flight `_partial` files are never used as
 a baseline, so a run can't compare against itself).
 
@@ -189,6 +192,15 @@ SKILL.md files are **generated** from `.tmpl` templates. To update docs:
 1. Edit the `.tmpl` file (e.g. `SKILL.md.tmpl` or `browse/SKILL.md.tmpl`)
 2. Run `bun run gen:skill-docs` (or `bun run build` which does it automatically)
 3. Commit both the `.tmpl` and generated `.md` files
+
+Generation uses each host's `defaultModel` (`claude` for existing hosts, `gpt`
+for Codex) unless `--model` is explicit. Codex installs additionally read the
+top-level model from `${CODEX_HOME:-~/.codex}/config.toml`; rerun
+`./setup --host codex` after changing that model. Note: `bun run build` and a
+bare `gen:skill-docs --host codex` render the host default (gpt) — if your
+Codex config.toml pins a different model, rerun `./setup --host codex`
+afterwards to restore your profile (single-owner persistence is filed in
+TODOS.md).
 
 To add a new browse command: add it to `browse/src/commands.ts` and rebuild.
 To add a snapshot flag: add it to `SNAPSHOT_FLAGS` in `browse/src/snapshot.ts` and rebuild.

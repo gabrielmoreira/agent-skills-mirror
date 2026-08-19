@@ -37,7 +37,7 @@ pnpm test && pnpm typecheck
 pnpm lint
 pnpm run verify                   # Full pipeline — what CI's `verify` job runs
 
-# Validator (schema 4.0.0 — see 000-docs/SCHEMA_CHANGELOG.md)
+# Validator (schema 4.0.1 — see 000-docs/SCHEMA_CHANGELOG.md)
 python3 scripts/validate-skills-schema.py --verbose
 python3 scripts/validate-skills-schema.py --marketplace --verbose
 python3 scripts/validate-skills-schema.py --marketplace --populate-db freshie/inventory.sqlite
@@ -110,7 +110,7 @@ canonical editorial data, not deterministic build output.
 
 **Gotcha:** `compressHTML` is disabled in `astro.config.mjs` — iOS Safari fails on lines > 5000 chars. CI enforces this.
 
-Performance budgets (CI-enforced): 40 MB total gzipped, 1 MB largest file, < 30s build, 2,800–4,000 routes.
+Performance budgets (CI-enforced; authority is `scripts/check-performance.mjs` `BUDGETS`): 48 MB total gzipped, 1 MB largest file, < 30s build, 2,800–4,500 routes.
 
 ## Auto-cowork contract
 
@@ -132,7 +132,7 @@ Performance budgets (CI-enforced): 40 MB total gzipped, 1 MB largest file, < 30s
 
 Adopted model: **mirror by default · upstream improvements · never clobber.** Decision record: `000-docs/694-AT-DECR-external-sync-mirror-by-default-model.md`; pipeline audit + hardening: `000-docs/691-AT-AUDT-sync-external-pipeline-audit-and-hardening.md`.
 
-**Scale first — external is a minority augment, not the core.** ~470 plugins total (per `marketplace.extended.json`), but only 63 are externally synced (57 third-party sources + 6 of Jeremy's own repos, per `sources.yaml`). The other ~407 (~87%) are in-repo Intent Solutions work. The sync is a curated side-channel, not the marketplace — treat external contributors as a respected minority augment, never the center of gravity.
+**Scale first — external is a minority augment, not the core.** 468 catalog plugins total (catalog-entry cohort; regenerate via `pnpm run measure:e1`), but only 64 are externally synced (58 third-party sources + 6 of Jeremy's own repos, per `sources.yaml`). The other 404 (~86%) are in-repo Intent Solutions work. The sync is a curated side-channel, not the marketplace — treat external contributors as a respected minority augment, never the center of gravity.
 
 **How sync works.** `sources.yaml` registers each external source. `.github/workflows/sync-external.yml` runs weekly (Mondays 06:00 UTC) and on demand (`workflow_dispatch` / `repository_dispatch`), invoking `scripts/sync-external.mjs` to mirror a source's files into `plugins/` and open an automated PR. A human reviews every auto-PR — historically ~1 in 10 sync PRs merges. The contributor's own repo is the source of truth; we do NOT locally edit a pure-mirror plugin.
 
@@ -220,6 +220,12 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 - **Never checkout or execute PR-authored code in a `pull_request_target` workflow.** Applies equally to `plane-sync.yml` (which runs on `pull_request_target` so fork-PR close-outs get secrets — it reads event context only).
 
 ## Validation & the kernel SSoT — CI/CD posture
+
+> **Authority map:** which document owns which fact class is assigned in blueprint
+> `000-docs/727` § 11 (indexed by `STANDARDS.md § Canonical documents`). The sections below are
+> operational guidance that NAMES its authorities — where this file and an owner disagree, the
+> owner wins, and the doc-governance assertions (`validate:doc-fact-assertions`) pin the facts
+> most prone to drift.
 
 Two things grade frontmatter in this repo today, and the relationship between them is the load-bearing context to preserve.
 
@@ -325,7 +331,8 @@ python3 freshie/scripts/batch-remediate.py --dry-run && python3 freshie/scripts/
 
 **skills.sh curated mirror** (`freshie/scripts/promote-to-curated.py`): rebuilds
 `skills/.curated/` as a generated mirror of the repo's best **A+B** plugin skills (our own;
-external `.source.json` mirrors excluded → ~1,881) so skills.sh can index them — it only
+external `.source.json` mirrors excluded — 1,915 at this writing; the promote gate message
+is the live count) so skills.sh can index them — it only
 crawls root `skills/` / `.curated/`, never `plugins/**/skills/`. The plugin skill stays the
 source of truth; the mirror is wipe-and-rebuilt from the tracked `grades.csv` (not the
 git-ignored `inventory.sqlite`, so the CI drift gate is reproducible), copies only
@@ -375,6 +382,34 @@ Patch version bumps happen automatically on PR (via `auto-bump-on-pr.yml`). For 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 
+## Internal governance agents — use them, don't re-derive their checks
+
+This repo ships 347 agents as **product** under `plugins/**/agents/`. Separately,
+`.claude/agents/` holds 3 internal governance agents that exist to work **on this
+repo**. The governance agents are advisory (read-only, no Write/Edit) — a deterministic
+check belongs in a script wired to `ci-required`, not in a prompt.
+
+| Agent            | Reach for it when                                                                                 | Catches                                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `claim-verifier` | before merging anything that asserts counts, consumers, enforcement, provenance, or certification | false statements in PR bodies, commits, bead notes and governing docs — the class that shipped six times in one day              |
+| `beads-warden`   | after a batch of `bd` writes, before closing an epic, when a bead premise smells stale            | dropped writes from the bd rapid-write race, closures whose _title_ overstates delivery, undispositioned beads, projection drift |
+| `skill-auditor`  | repairing SKILL.md compliance                                                                     | frontmatter + body-section defects                                                                                               |
+
+**Do NOT duplicate the bead specialists.** `plugins/mcp/dolt-mcp-vcs/agents/` already owns
+the graph: `bead-dependency-mapper` (cycles, bottlenecks, critical path),
+`bead-epic-auditor` (epic closure drift), `bead-recovery-specialist`, `beads-guru` (the
+routing generalist), `dolt-sync-advisor`. `beads-warden` deliberately delegates to them and
+keeps only record-integrity — a second owner of one fact is the anti-pattern.
+
+`claim-verifier` delegates documentation-drift classes to the `/validate-consistency`
+skill; take its **deterministic** findings as evidence and its advisory findings as leads.
+
+**Verification traps these encode** (they have each produced a wrong verdict here):
+`cmd | head; echo $?` reports _head's_ exit code — capture it directly; `git grep` searches
+**tracked files only**, so use `git grep --untracked` (never stage a probe — that mutates
+the caller's index) before concluding a pattern is absent; `grep`→`rg`,
+`find`→`fd`, `cp`→`cp -i` (hangs) — use `/usr/bin/grep`, `command find`, `\cp -f`.
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
@@ -423,4 +458,5 @@ bd close <id>         # Complete work
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
+
 <!-- END BEADS INTEGRATION -->

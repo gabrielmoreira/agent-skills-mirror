@@ -2,13 +2,11 @@
   "sources": {
     "screenplay": {
       "owner": "short-drama-write",
-      "artifact": "剧集/EP001/screenplay.md",
-      "hash": "<sha256>"
+      "artifact": "剧集/EP001/screenplay.md"
     },
     "findings": {
       "owner": "short-drama-review",
-      "artifact": "审查/findings.jsonl",
-      "hash": "<sha256>"
+      "artifact": "审查/findings.jsonl"
     }
   },
   "review_id": "REVIEW-EXAMPLE",

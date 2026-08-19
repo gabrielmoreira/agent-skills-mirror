@@ -1,6 +1,6 @@
 # art.json 结构
 
-美术设定集（场景 + 叙事道具）的载体。**模型只填设计字段**，场景的出现集与承载爽点由 `seed` 从 outline.json 搬运；道具表大纲里没有，由模型按 `prop-pass.md` 从原文提取。Markdown 和报告由 `render` 渲染。
+美术设定集（场景 + 叙事道具）的载体。**模型只填设计字段**，场景与道具的出现集、承载爽点都由 `seed` 从 outline.json 搬运；大纲没有 `props` 时道具表留空，由模型按 `prop-pass.md` 从原文提取。Markdown 和报告由 `render` 渲染。
 
 ```json
 {

@@ -34,6 +34,27 @@ node scripts/novel-characters.mjs ui-template fr   # 打印待翻译的骨架
 
 ![角色设定图](assets/sheet.jpg)
 
+## 上游
+
+管线里**大纲在角色的上游**：
+
+```
+novel-outline    → outline.json （什么：结构与分集，谁进谁不进）
+novel-characters → cast.json    （谁：角色资产）
+```
+
+有 `outline.json` 就走 `seed`——它的 `characters` 块已经定死了角色清单：
+
+```bash
+node scripts/novel-characters.mjs seed outline.json > seed.json
+```
+
+搬过来的是大纲拍板过的事实（角色码、名字、分档、人物线、由原著的谁合并而来），留空的是这一层才该做的设计（别名、画像、形象提示词、音色提示词）。`tier` 映射成 `importance`：`lead` → protagonist、`support` → supporting、`functional` → minor。
+
+**大纲定的分档不要在这一层推翻**，觉得不对回去改大纲。主角组内部可以细分——`lead` 是「男女主 + 主反派」一整组，seed 一律给 protagonist，照 `seedNote` 里的定位把主角之外的改成 major。
+
+**没有 `outline.json` 也照常跑**，本 skill 不依赖它——跳过 seed，直接丢一本小说进去，自己从原文拆角色表。
+
 ## 使用
 
 安装见[仓库根 README](../../README.md)。装好后：
@@ -136,6 +157,7 @@ node scripts/novel-characters.mjs styles ghibli   # 看某一个的完整内容
 脚本本身不需要 agent 也能跑，只有两趟模型调用需要：
 
 ```bash
+node scripts/novel-characters.mjs seed outline.json              # 有大纲就从它预填角色表骨架
 node scripts/novel-characters.mjs chunk book.txt /tmp/wk        # 切块
 node scripts/novel-characters.mjs merge /tmp/wk                 # 归并 roster-*.json，附疑似同人候选
 node scripts/novel-characters.mjs merge /tmp/wk --apply m.json   # 落地复核后的合并
@@ -160,7 +182,7 @@ node scripts/novel-characters.mjs slug "胡二爷"                  # 安全文�
 SKILL.md                 给 agent 读的工作流
 scripts/
   novel-characters.mjs   chunk / merge / assemble / validate / render / slug
-  selftest.mjs           316 项断言，不调模型
+  selftest.mjs           355 项断言，不调模型
 references/
   roster-pass.md         第一趟：扫描角色
   profile-pass.md        第二趟：生成角色卡（8 条硬规则）
@@ -182,6 +204,6 @@ examples/
 node scripts/selftest.mjs
 ```
 
-316 项断言，覆盖分块 / 别名归并 / 合成 / 多语言 / 校验 / 渲染。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
+355 项断言，覆盖分块 / 别名归并 / 合成 / 多语言 / 校验 / 渲染。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
 
 **只在 macOS + Node 24 上实测过。** 代码没有平台相关调用，Linux 和更低版本 Node 理论上没问题，但**没验过**。

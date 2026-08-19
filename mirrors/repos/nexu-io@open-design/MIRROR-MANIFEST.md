@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/open-design` — 26 default patterns, 1 followed patterns, 750 file(s) materialized.
+Mirror of `nexu-io/open-design` — 26 default patterns, 1 followed patterns, 751 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nexu-io/open-design` — 26 default patterns, 1 followed patterns, 75
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 750 |
+| Files         | 751 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -785,30 +785,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 724 | ✓ | [`skills/web-clone/scripts/init-clone.mjs`](skills/web-clone/scripts/init-clone.mjs) |
 | 725 | ✓ | [`skills/web-clone/scripts/interaction-probe.mjs`](skills/web-clone/scripts/interaction-probe.mjs) |
 | 726 | ✓ | [`skills/web-clone/scripts/lib/playwright-loader.mjs`](skills/web-clone/scripts/lib/playwright-loader.mjs) |
-| 727 | ✓ | [`skills/web-clone/scripts/mirror-site.mjs`](skills/web-clone/scripts/mirror-site.mjs) |
-| 728 | ✓ | [`skills/web-clone/scripts/network-capture.mjs`](skills/web-clone/scripts/network-capture.mjs) |
-| 729 | ✓ | [`skills/web-clone/scripts/od-preview-rewrite.mjs`](skills/web-clone/scripts/od-preview-rewrite.mjs) |
-| 730 | ✓ | [`skills/web-clone/scripts/recon-site.mjs`](skills/web-clone/scripts/recon-site.mjs) |
-| 731 | ✓ | [`skills/web-clone/scripts/route-crawl.mjs`](skills/web-clone/scripts/route-crawl.mjs) |
-| 732 | ✓ | [`skills/web-clone/scripts/sourcemap-hunt.mjs`](skills/web-clone/scripts/sourcemap-hunt.mjs) |
-| 733 | ✓ | [`skills/web-clone/scripts/visual-diff.mjs`](skills/web-clone/scripts/visual-diff.mjs) |
-| 734 | ✓ | [`skills/web-clone/SKILL.md`](skills/web-clone/SKILL.md) |
-| 735 | ✓ | [`skills/web-design-guidelines/LICENSE`](skills/web-design-guidelines/LICENSE) |
-| 736 | ✓ | [`skills/web-design-guidelines/references/guidelines.md`](skills/web-design-guidelines/references/guidelines.md) |
-| 737 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 738 | ✓ | [`skills/weread-year-in-review-video-template/assets/template.html`](skills/weread-year-in-review-video-template/assets/template.html) |
-| 739 | ✓ | [`skills/weread-year-in-review-video-template/example.html`](skills/weread-year-in-review-video-template/example.html) |
-| 740 | ✓ | [`skills/weread-year-in-review-video-template/references/checklist.md`](skills/weread-year-in-review-video-template/references/checklist.md) |
-| 741 | ✓ | [`skills/weread-year-in-review-video-template/SKILL.md`](skills/weread-year-in-review-video-template/SKILL.md) |
-| 742 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
-| 743 | ✓ | [`skills/writing-guidelines/LICENSE`](skills/writing-guidelines/LICENSE) |
-| 744 | ✓ | [`skills/writing-guidelines/references/guidelines.md`](skills/writing-guidelines/references/guidelines.md) |
-| 745 | ✓ | [`skills/writing-guidelines/SKILL.md`](skills/writing-guidelines/SKILL.md) |
-| 746 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
-| 747 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
-| 748 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
-| 749 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
-| 750 | → | [`docs/testing/test-efficiency.zh-CN.md`](docs/testing/test-efficiency.zh-CN.md) |
+| 727 | ✓ | [`skills/web-clone/scripts/lib/system-browser.mjs`](skills/web-clone/scripts/lib/system-browser.mjs) |
+| 728 | ✓ | [`skills/web-clone/scripts/mirror-site.mjs`](skills/web-clone/scripts/mirror-site.mjs) |
+| 729 | ✓ | [`skills/web-clone/scripts/network-capture.mjs`](skills/web-clone/scripts/network-capture.mjs) |
+| 730 | ✓ | [`skills/web-clone/scripts/od-preview-rewrite.mjs`](skills/web-clone/scripts/od-preview-rewrite.mjs) |
+| 731 | ✓ | [`skills/web-clone/scripts/recon-site.mjs`](skills/web-clone/scripts/recon-site.mjs) |
+| 732 | ✓ | [`skills/web-clone/scripts/route-crawl.mjs`](skills/web-clone/scripts/route-crawl.mjs) |
+| 733 | ✓ | [`skills/web-clone/scripts/sourcemap-hunt.mjs`](skills/web-clone/scripts/sourcemap-hunt.mjs) |
+| 734 | ✓ | [`skills/web-clone/scripts/visual-diff.mjs`](skills/web-clone/scripts/visual-diff.mjs) |
+| 735 | ✓ | [`skills/web-clone/SKILL.md`](skills/web-clone/SKILL.md) |
+| 736 | ✓ | [`skills/web-design-guidelines/LICENSE`](skills/web-design-guidelines/LICENSE) |
+| 737 | ✓ | [`skills/web-design-guidelines/references/guidelines.md`](skills/web-design-guidelines/references/guidelines.md) |
+| 738 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 739 | ✓ | [`skills/weread-year-in-review-video-template/assets/template.html`](skills/weread-year-in-review-video-template/assets/template.html) |
+| 740 | ✓ | [`skills/weread-year-in-review-video-template/example.html`](skills/weread-year-in-review-video-template/example.html) |
+| 741 | ✓ | [`skills/weread-year-in-review-video-template/references/checklist.md`](skills/weread-year-in-review-video-template/references/checklist.md) |
+| 742 | ✓ | [`skills/weread-year-in-review-video-template/SKILL.md`](skills/weread-year-in-review-video-template/SKILL.md) |
+| 743 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
+| 744 | ✓ | [`skills/writing-guidelines/LICENSE`](skills/writing-guidelines/LICENSE) |
+| 745 | ✓ | [`skills/writing-guidelines/references/guidelines.md`](skills/writing-guidelines/references/guidelines.md) |
+| 746 | ✓ | [`skills/writing-guidelines/SKILL.md`](skills/writing-guidelines/SKILL.md) |
+| 747 | ✓ | [`skills/youtube-clipper/SKILL.md`](skills/youtube-clipper/SKILL.md) |
+| 748 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
+| 749 | ✓ | [`tools/pack/AGENTS.md`](tools/pack/AGENTS.md) |
+| 750 | ✓ | [`tools/serve/AGENTS.md`](tools/serve/AGENTS.md) |
+| 751 | → | [`docs/testing/test-efficiency.zh-CN.md`](docs/testing/test-efficiency.zh-CN.md) |
 
 ---
 

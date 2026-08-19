@@ -23,6 +23,8 @@ support. Key source files:
 | `src/persistent-custom-session.ts` | Custom engine — any CLI via user-provided `CustomEngineConfig` |
 | `src/council.ts` | Multi-agent collaboration engine with git worktree isolation and post-processing |
 | `src/consensus.ts` | Consensus voting parser for council |
+| `src/run-ledger.ts` | Durable per-turn record (`~/.claw-orchestrator/runs/*.jsonl`) — append, query, summarize |
+| `src/budget.ts` | Runtime-enforced `maxBudgetUsd` spend cap (all engines, not just Claude Code) |
 | `src/models.ts` | Centralized model registry — pricing, aliases, engine/provider mapping |
 | `src/types.ts` | Shared types, interfaces; re-exports from `models.ts` |
 | `src/logger.ts` | Structured `Logger` interface + console implementation |
@@ -44,7 +46,7 @@ npm run format:check   # Prettier check
 npm run test           # Vitest unit tests (src/__tests__/)
 ```
 
-Integration test (requires all 3 CLIs installed and authenticated):
+Integration test — a manual smoke test, not part of CI; needs `claude` installed and authenticated:
 ```bash
 npx tsx scripts/test-integration.ts
 ```
@@ -78,6 +80,7 @@ When you change functionality, update the corresponding reference file:
 | Council protocol | `skills/references/council.md` |
 | Inbox messaging | `skills/references/inbox.md` |
 | Ultraplan/Ultrareview | `skills/references/ultra.md` |
+| Run ledger / cost / spend caps | `skills/references/observability.md` |
 | CLI commands | `skills/references/cli.md` |
 | Setup / prerequisites | `skills/references/getting-started.md` |
 | New feature or tool | Also update `skills/SKILL.md` description for trigger keywords |
@@ -182,7 +185,7 @@ Current tested versions (update on each release):
 
 | Engine | CLI | Tested Version | Invocation |
 |--------|-----|---------------|------------|
-| Claude | `claude` | 2.1.232 | Persistent subprocess, `--output-format stream-json` |
+| Claude | `claude` | 2.1.234 | Persistent subprocess, `--output-format stream-json` |
 | Codex | `codex` | 0.147.0 | `codex exec --sandbox workspace-write --skip-git-repo-check --json -C <dir>` (or `codex app-server --listen stdio://` for /goal) |
 | Antigravity | `agy` | 1.1.13 | `agy -p <msg> --log-file <tmp> [--conversation <id>] --dangerously-skip-permissions/--sandbox --print-timeout <n>s` |
 | Cursor | `agent` | 2026.08.11-e8db854 | `agent -p <msg> --force/--mode plan --trust --output-format stream-json --workspace <dir>` (read-only injects a `.cursor/cli.json` deny config) |

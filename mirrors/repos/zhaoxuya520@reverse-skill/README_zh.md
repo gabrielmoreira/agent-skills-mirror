@@ -300,3 +300,9 @@ GitHub Actions 会在 Windows 与 Ubuntu 上执行同一套核心检查。
 - **QQ 群**：942400892
 - **Discord**：[reverse-skill 社区](https://discord.gg/TECd3bMRR)
 - **问题反馈**：[GitHub Issues](https://github.com/zhaoxuya520/reverse-skill/issues)
+
+## 免责声明
+
+本项目仅限用于合法的安全研究、教育、CTF 竞赛，以及对自有系统或已获得明确授权的目标进行测试。
+
+**严禁在未经授权的情况下访问、扫描、利用、干扰目标或获取数据。** 使用者须自行确保其行为符合适用法律法规及授权范围；因滥用本项目造成的任何损失或法律责任，均由使用者自行承担，项目维护者不承担相关责任。

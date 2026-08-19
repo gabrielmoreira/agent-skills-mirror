@@ -10,12 +10,14 @@
 
 | 类别 | 字段 | 语言 |
 | --- | --- | --- |
-| **给人读的** | `oneLiner`、`persona.*`、`voice.timbre/pitch/pace/accent/emotion/referenceHint`、`image.style`、`image.promptLocal`、`voice.promptLocal` | **`lang` 指定的语言** |
+| **给人读的** | `oneLiner`、`persona.*`、`voice.timbre/pitch/pace/accent/emotion/referenceHint`、`image.style`、`image.promptLocal` | **`lang` 指定的语言** |
 | **喂给机器的** | `image.prompt`、`image.negativePrompt`、`image.tags`、`image.sheet`、`voice.prompt` | **永远英文** |
 
 机器字段不跟随 `lang`——图像模型和 TTS 引擎吃英文最稳，跟报告用什么语言无关。
 
-`promptLocal` 是对应英文提示词的本地语言译文，给人看的。**`lang` 是 `en` 时省略这两个字段**，否则就是原样重复。
+`image.promptLocal` 是英文出图提示词的本地语言译文，给人看的。**`lang` 是 `en` 时省略它**，否则就是原样重复。
+
+**`voice` 没有 `promptLocal`，这是有意的。** 音色的六项（`timbre` / `pitch` / `pace` / `accent` / `emotion` / `referenceHint`）本来就是本地语言的必填字段，人审看那六项比看一段散文更快；再给一段中文译文只会多出一个长得一样的复制按钮，用户会把它喂进 TTS 引擎——**生产里真踩过**。报告里音色只留一条提示词，就是喂引擎的那条。
 
 ## 硬规则
 
@@ -88,6 +90,46 @@
    提示词里必须逐条写明：`ONE 16:9 landscape canvas`、`LEFT ZONE ... about 34% of the canvas width`、`RIGHT-TOP ZONE`、`RIGHT-BOTTOM ZONE`、`thin hairline rules`、`PROPORTIONS ARE CRITICAL`、`the detail studies give way, not the figures`。
 
 7. `voice.prompt` 是给 TTS 音色设计引擎的：描述**乐器本身**，不是某一句台词的演绎。性别、听感年龄、音色、音高区间、共鸣、气声、语速、节奏、口音、能量、默认情绪。
+
+   **音色设计是一个静态的声音身份。** 引擎要的是「这把嗓子长什么样」，不是「他这句话怎么说」。四类东西写进去就会让效果变差，生产里逐一踩过：
+
+   | ✗ 不许写 | 例子 | 为什么 |
+   | --- | --- | --- |
+   | **文学比喻** | 「字与字之间像在秤上掂银子」「一张听得见笑、却不能信的嘴」 | 引擎映射不到任何声学参数，纯粹稀释有效信息 |
+   | **表演指导** | 「威胁时从不提高音量——反而更轻更慢」 | 那是导演给演员的话。音色不随剧情变 |
+   | **条件分支** | 「公堂场合能切换成过得去的官话」 | 一个 voice 只有一种口音。写「切换」只会让输出不稳定 |
+   | **引号台词** | 「杀意藏在『规矩就是规矩』这类客套话里」 | 有些引擎会把引号里的字当成要朗读的内容。**`validate` 拦这一条** |
+
+   四条里只有引号台词设了门——它判定干净。另外三条靠写卡的自觉：**关键词扫描会误伤正常描述**（「说话时」「低音区」都含「时」「区」），而误拦的门比没有门更糟。
+
+   **写成紧凑的参数串，不要写成散文。`validate` 卡 400 字符。** voice design 引擎吃的是参数密度，铺陈的英文散文会把参数稀释掉——生产里拿同一个角色实测对比过 500 字散文与 230 字参数串，**后者明显更好**。上限 400 是量出来的：自带样例四个角色 218–245 字符，被判为冗余的散文版 490–514，中间余量很大。它拦的是「写成小作文」，不是「写得细」。
+
+   固定的参数顺序，照抄这个形状：
+
+   ```
+   〔年龄性别〕, 〔音色〕, 〔音区〕, 〔共鸣/支撑〕, 〔动态范围〕.
+   〔音量〕, 〔语速〕, 〔语调习惯〕. 〔口音〕. 〔默认情绪〕.
+   ```
+
+   ```
+   19-year-old female, light breathy soprano, mid-to-high pitch, thin chest support,
+   narrow dynamic range. Quiet volume, slightly hesitant pace, rising inflection at
+   phrase ends. Standard Mandarin, no regional accent. Tentative and watchful.
+   ```
+
+   **从头到尾都在描述这把嗓子，一句戏都没有。**
+
+   ### 这条提示词是给哪种引擎的
+
+   **只有「文字直接设计音色」那一类引擎吃它**，别的引擎给了也没用：
+
+   | 引擎 | 吃不吃 `voice.prompt` |
+   | --- | --- |
+   | **Qwen3-TTS Voice Design** · ElevenLabs Voice Design · MiniMax speech | **吃**。整段直接喂 |
+   | CosyVoice 2/3 instruct | **不吃音色**。它的 instruct 是在零样本克隆之上加风格控制，音色仍然来自参考音频 |
+   | IndexTTS / IndexTTS2 | **不吃**。音色只来自参考音频；IndexTTS2 的文本通道只管情绪，可以喂 `voice.emotion` 那一句 |
+
+   用克隆系引擎的话，这条提示词帮不上忙——要靠 `referenceHint` 与六项去挑参考音频。**这不是提示词写得不好，是那类引擎根本没有这个入口。**
 
 8. **同一批角色之间要能区分开，这条现在有门。** 会给你同批其他角色的名字，别把他们的长相和声线做成一个样。
 

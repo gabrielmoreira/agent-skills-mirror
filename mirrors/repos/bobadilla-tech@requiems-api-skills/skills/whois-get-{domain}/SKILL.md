@@ -54,8 +54,8 @@ Returns WHOIS registration information for a domain name.
 | ----- | ---- | ----------- |
 | `domain` | string | The domain name that was looked up |
 | `registrar` | string | The name of the registrar holding the domain registration |
-| `name_servers` | array of strings | List of authoritative name servers for the domain |
-| `status` | array of strings | EPP status codes for the domain (e.g. clientTransferProhibited) |
+| `name_servers` | array<string> | List of authoritative name servers for the domain |
+| `status` | array<string> | EPP status codes for the domain (e.g. clientTransferProhibited) |
 | `created_date` | string | Date the domain was first registered (ISO 8601) |
 | `updated_date` | string | Date the domain record was last updated (ISO 8601) |
 | `expiry_date` | string | Date the domain registration expires (ISO 8601) |

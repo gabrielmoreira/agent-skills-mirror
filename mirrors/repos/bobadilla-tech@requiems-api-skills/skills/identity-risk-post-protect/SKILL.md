@@ -75,10 +75,10 @@ Evaluate a new user at signup. Returns a full risk decision with per-signal brea
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `risk_score` | float | Composite risk score from 0.0 (clean) to 1.0 (high risk) |
+| `risk_score` | number | Composite risk score from 0.0 (clean) to 1.0 (high risk) |
 | `is_safe` | boolean | True when risk_score is below the safety threshold with no critical flags |
-| `confidence` | float | Confidence in the decision from 0.0 to 1.0, based on which signals resolved successfully |
-| `flags` | array | Array of triggered risk flags. Possible values: disposable_email, vpn_detected, proxy_detected, tor_detected, is_hosting |
+| `confidence` | number | Confidence in the decision from 0.0 to 1.0, based on which signals resolved successfully |
+| `flags` | array<string> | Array of triggered risk flags. Possible values: disposable_email, vpn_detected, proxy_detected, tor_detected, is_hosting |
 | `signals.email` | object | Email validation result including disposable detection and MX check |
 | `signals.phone` | object | Phone number validation result with country code and VoIP/virtual detection |
 | `signals.ip` | object | IP intelligence including VPN/proxy/TOR status and fraud score |

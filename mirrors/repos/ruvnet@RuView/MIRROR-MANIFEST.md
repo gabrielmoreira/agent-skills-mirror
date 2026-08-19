@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 62 file(s) materialized.
+Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 62 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 62 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,28 +99,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`harness/homecore/AGENTS.md`](harness/homecore/AGENTS.md) |
 | 39 | ✓ | [`harness/homecore/CLAUDE.md`](harness/homecore/CLAUDE.md) |
 | 40 | ✓ | [`harness/ruview/.claude/skills/calibrate-room/SKILL.md`](harness/ruview/.claude/skills/calibrate-room/SKILL.md) |
-| 41 | ✓ | [`harness/ruview/.claude/skills/onboard/SKILL.md`](harness/ruview/.claude/skills/onboard/SKILL.md) |
-| 42 | ✓ | [`harness/ruview/.claude/skills/provision-node/SKILL.md`](harness/ruview/.claude/skills/provision-node/SKILL.md) |
-| 43 | ✓ | [`harness/ruview/.claude/skills/train-pose/SKILL.md`](harness/ruview/.claude/skills/train-pose/SKILL.md) |
-| 44 | ✓ | [`harness/ruview/.claude/skills/verify/SKILL.md`](harness/ruview/.claude/skills/verify/SKILL.md) |
-| 45 | ✓ | [`harness/ruview/CLAUDE.md`](harness/ruview/CLAUDE.md) |
-| 46 | ✓ | [`harness/wifi-densepose-privshield/CLAUDE.md`](harness/wifi-densepose-privshield/CLAUDE.md) |
-| 47 | ✓ | [`harness/wifi-densepose-sar/.claude/skills/evolve/SKILL.md`](harness/wifi-densepose-sar/.claude/skills/evolve/SKILL.md) |
-| 48 | ✓ | [`harness/wifi-densepose-sar/.claude/skills/plan-change/SKILL.md`](harness/wifi-densepose-sar/.claude/skills/plan-change/SKILL.md) |
-| 49 | ✓ | [`harness/wifi-densepose-sar/CLAUDE.md`](harness/wifi-densepose-sar/CLAUDE.md) |
-| 50 | ✓ | [`plugins/ruview/codex/AGENTS.md`](plugins/ruview/codex/AGENTS.md) |
-| 51 | ✓ | [`plugins/ruview/skills/ruview-advanced-sensing/SKILL.md`](plugins/ruview/skills/ruview-advanced-sensing/SKILL.md) |
-| 52 | ✓ | [`plugins/ruview/skills/ruview-applications/SKILL.md`](plugins/ruview/skills/ruview-applications/SKILL.md) |
-| 53 | ✓ | [`plugins/ruview/skills/ruview-cli-api/SKILL.md`](plugins/ruview/skills/ruview-cli-api/SKILL.md) |
-| 54 | ✓ | [`plugins/ruview/skills/ruview-configure/SKILL.md`](plugins/ruview/skills/ruview-configure/SKILL.md) |
-| 55 | ✓ | [`plugins/ruview/skills/ruview-hardware-setup/SKILL.md`](plugins/ruview/skills/ruview-hardware-setup/SKILL.md) |
-| 56 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
-| 57 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
-| 58 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
-| 59 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
-| 60 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
-| 61 | ✓ | [`wifi-veil/harness/CLAUDE.md`](wifi-veil/harness/CLAUDE.md) |
-| 62 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 41 | ✓ | [`harness/ruview/.claude/skills/cognitum-spaces/SKILL.md`](harness/ruview/.claude/skills/cognitum-spaces/SKILL.md) |
+| 42 | ✓ | [`harness/ruview/.claude/skills/onboard/SKILL.md`](harness/ruview/.claude/skills/onboard/SKILL.md) |
+| 43 | ✓ | [`harness/ruview/.claude/skills/provision-node/SKILL.md`](harness/ruview/.claude/skills/provision-node/SKILL.md) |
+| 44 | ✓ | [`harness/ruview/.claude/skills/train-pose/SKILL.md`](harness/ruview/.claude/skills/train-pose/SKILL.md) |
+| 45 | ✓ | [`harness/ruview/.claude/skills/verify/SKILL.md`](harness/ruview/.claude/skills/verify/SKILL.md) |
+| 46 | ✓ | [`harness/ruview/CLAUDE.md`](harness/ruview/CLAUDE.md) |
+| 47 | ✓ | [`harness/wifi-densepose-privshield/CLAUDE.md`](harness/wifi-densepose-privshield/CLAUDE.md) |
+| 48 | ✓ | [`harness/wifi-densepose-sar/.claude/skills/evolve/SKILL.md`](harness/wifi-densepose-sar/.claude/skills/evolve/SKILL.md) |
+| 49 | ✓ | [`harness/wifi-densepose-sar/.claude/skills/plan-change/SKILL.md`](harness/wifi-densepose-sar/.claude/skills/plan-change/SKILL.md) |
+| 50 | ✓ | [`harness/wifi-densepose-sar/CLAUDE.md`](harness/wifi-densepose-sar/CLAUDE.md) |
+| 51 | ✓ | [`plugins/ruview/codex/AGENTS.md`](plugins/ruview/codex/AGENTS.md) |
+| 52 | ✓ | [`plugins/ruview/skills/ruview-advanced-sensing/SKILL.md`](plugins/ruview/skills/ruview-advanced-sensing/SKILL.md) |
+| 53 | ✓ | [`plugins/ruview/skills/ruview-applications/SKILL.md`](plugins/ruview/skills/ruview-applications/SKILL.md) |
+| 54 | ✓ | [`plugins/ruview/skills/ruview-cli-api/SKILL.md`](plugins/ruview/skills/ruview-cli-api/SKILL.md) |
+| 55 | ✓ | [`plugins/ruview/skills/ruview-configure/SKILL.md`](plugins/ruview/skills/ruview-configure/SKILL.md) |
+| 56 | ✓ | [`plugins/ruview/skills/ruview-hardware-setup/SKILL.md`](plugins/ruview/skills/ruview-hardware-setup/SKILL.md) |
+| 57 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
+| 58 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
+| 59 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
+| 60 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
+| 61 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
+| 62 | ✓ | [`wifi-veil/harness/CLAUDE.md`](wifi-veil/harness/CLAUDE.md) |
+| 63 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 
 ---
 

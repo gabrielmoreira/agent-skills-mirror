@@ -72,13 +72,13 @@ Resolve an address or coordinates into a full location profile — city, country
 | `country` | string | Full country name |
 | `country_code` | string | ISO 3166-1 alpha-2 country code |
 | `coordinates` | object | Resolved lat/lng coordinates |
-| `timezone` | string or null | IANA timezone identifier (e.g. Europe/Berlin). Null when timezone resolution fails. |
-| `utc_offset` | string or null | UTC offset string (e.g. +02:00). Null when timezone resolution fails. |
-| `current_time` | string or null | Current local time in RFC3339 format. Null when timezone resolution fails. |
+| `timezone` | string | IANA timezone identifier (e.g. Europe/Berlin). Null when timezone resolution fails. |
+| `utc_offset` | string | UTC offset string (e.g. +02:00). Null when timezone resolution fails. |
+| `current_time` | string | Current local time in RFC3339 format. Null when timezone resolution fails. |
 | `is_holiday_today` | boolean | True when today is a public holiday in the resolved country |
 | `working_days_this_month` | integer | Number of working days (excluding weekends and public holidays) in the current calendar month |
-| `next_holiday` | object or null | Next public holiday within 90 days. Shape: {date: YYYY-MM-DD, name: string, type: national} |
-| `flags` | array | Non-fatal warnings. Possible values: timezone_unavailable, calendar_unavailable |
+| `next_holiday` | object | Next public holiday within 90 days. Shape: {date: YYYY-MM-DD, name: string, type: national} |
+| `flags` | array<string> | Non-fatal warnings. Possible values: timezone_unavailable, calendar_unavailable |
 
 ## Errors
 

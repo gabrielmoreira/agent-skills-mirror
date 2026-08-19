@@ -144,7 +144,7 @@ CLI 的 `review` 记录 verdict、reviewer 标签和备注；详细 finding 文�
 findings.jsonl 首行是声明记录：
 
 ```json
-{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md"}}}
 ```
 
 verdict.json 用顶层 `sources` 对象声明同样的内容。键取产物文件名，短、小写，

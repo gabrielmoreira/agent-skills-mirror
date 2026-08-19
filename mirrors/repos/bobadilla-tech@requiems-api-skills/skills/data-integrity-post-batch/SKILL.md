@@ -19,7 +19,7 @@ Validates and scores a batch of up to 50 contact records in a single request. Ea
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array | yes | body | Array of contact records to validate. Each item must include email and phone. Text is optional. Min: 1, Max: 50. |
+| `items` | array<object> | yes | body | Array of contact records to validate. Each item must include email and phone. Text is optional. Min: 1, Max: 50. |
 
 ## Response Example
 
@@ -77,20 +77,20 @@ Validates and scores a batch of up to 50 contact records in a single request. Ea
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of validation results, one per input item. Preserves the original submission order via the index field. |
+| `results` | array<object> | List of validation results, one per input item. Preserves the original submission order via the index field. |
 | `results[].index` | integer | Zero-based position of the item in the original request array. |
-| `results[].email` | object or null | Email validation result. Null when email was not provided for this item. |
+| `results[].email` | object | Email validation result. Null when email was not provided for this item. |
 | `results[].email.valid` | boolean | True when the email passes syntax and MX validation. |
-| `results[].email.normalized` | string or null | Normalized form of the email address. Null when syntax is invalid. |
+| `results[].email.normalized` | string | Normalized form of the email address. Null when syntax is invalid. |
 | `results[].email.quality_score` | number | Email quality score from 0.0 to 1.0. Penalized by invalidity, disposable domain, and suggestions. |
 | `results[].email.disposable` | boolean | True when the email domain is a known disposable or temporary provider. |
-| `results[].phone` | object or null | Phone validation result. Null when phone was not provided for this item. |
+| `results[].phone` | object | Phone validation result. Null when phone was not provided for this item. |
 | `results[].phone.valid` | boolean | True when the phone number is valid and dialable. |
-| `results[].phone.normalized` | string or null | Normalized phone number in international format. Null when the number is invalid. |
+| `results[].phone.normalized` | string | Normalized phone number in international format. Null when the number is invalid. |
 | `results[].phone.quality_score` | number | Phone quality score from 0.0 to 1.0. Penalized by invalidity, VoIP, virtual, landline, and unknown type. |
-| `results[].text` | object or null | Text analysis result. Null when text was not provided for this item. |
+| `results[].text` | object | Text analysis result. Null when text was not provided for this item. |
 | `results[].overall_quality_score` | number | Weighted quality score from 0.0 to 1.0 combining email and phone fields only. Weights are email 0.5 and phone 0.4, adjusted proportionally when one field is absent. Text does not currently contribute to this score — scoring will be enabled once toxicity_score is available from the sentiment service. Returns 0.0 when only text is provided. |
-| `results[].error` | string or null | Error message when this item could not be processed due to an unexpected failure, such as a service timeout or malformed input. Null when the item was processed successfully, regardless of whether the fields passed validation or not. |
+| `results[].error` | string | Error message when this item could not be processed due to an unexpected failure, such as a service timeout or malformed input. Null when the item was processed successfully, regardless of whether the fields passed validation or not. |
 | `total` | integer | Total number of items in the batch. |
 | `valid_count` | integer | Number of items where all provided fields have valid set to true. |
 | `invalid_count` | integer | Number of items where at least one provided field has valid set to false, or where processing failed due to a timeout or unexpected error. |

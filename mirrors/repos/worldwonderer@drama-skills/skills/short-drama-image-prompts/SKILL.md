@@ -137,10 +137,21 @@ python3 {技能目录}/scripts/selftest.py
   Look Development 使用，后者为派生文本；
 - `剧集/<EP>/assets/image-prompt-specs.jsonl`：权威规格，写入时 `status` 如实跟随对象当前
   生命周期状态（预览为 `candidate`，已接受的落盘规格为 `accepted`）；
-- `剧集/<EP>/assets/image-prompts.md`：由已接受规格和配方 `hash` 重新生成的文本版本。
+- `剧集/<EP>/assets/image-prompts.md`：由已接受规格重新生成的文本版本，元信息写明用的是哪个渲染器。
 
 项目工具可用时用 `publish` 发布规格和派生文本并声明直接输入；独立运行时直接写出本阶段文件。
 两种方式都不得以半成品覆盖当前版本。
+
+`--input` 要把本文件 `sources` 里声明的每一个上游都列全——**少列一个，那个上游改了本产物也不会
+变 `update_needed`，它会带着过期的绑定停在 `accepted`**。本阶段的完整清单是身份与变体两侧成对：
+
+```text
+... publish <project> --owner short-drama-image-prompts --artifact-id EP001:image-prompts \
+  --output 剧集/EP001/assets/image-prompt-specs.jsonl=_work/image-prompt-specs.jsonl \
+  --input 设定集/characters.jsonl --input 设定集/looks.jsonl \
+  --input 设定集/locations.jsonl --input 设定集/location-views.jsonl \
+  --input 设定集/props.jsonl --input 设定集/prop-states.jsonl
+```
 
 ## 自然语言修订
 

@@ -2,7 +2,9 @@
 
 Common errors, causes, and solutions for VRChat UdonSharp development.
 
-**Supported SDK Versions**: 3.7.1 - 3.10.4
+**Active support / last verified**: SDK 3.10.4
+
+Older version numbers in this reference record feature introductions or migration facts only; SDK 3.7.1-3.10.3 are not supported or validation targets for this Skill.
 
 ## Table of Contents
 
@@ -31,13 +33,14 @@ UdonSharpException: UdonSharp does not currently support [feature]
 
 ```
 
-**Common unsupported features:**
+**Common features unsupported in Udon runtime code:**
+
 | Feature | Alternative |
 |---------|-------------|
 | `async/await` | `SendCustomEventDelayedSeconds()` |
 | `yield return` / coroutines | `SendCustomEventDelayedSeconds()` |
-| Generics `List<T>` | Arrays `T[]` or `DataList` |
-| LINQ | Manual loops |
+| Generics `List<T>` | Arrays `T[]` or `DataList`; an Editor-evaluated field initializer may use `List<T>` only to generate a final Udon-supported value |
+| LINQ / lambdas | Manual loops / named methods; the same limited field initializer exception applies |
 | `dynamic` | Explicit types |
 | Multi-dimensional arrays `T[,]` | Jagged arrays `T[][]` |
 | Delegates / Events | `SendCustomEvent()` |
@@ -68,7 +71,7 @@ CS0246: The type or namespace name 'List' could not be found
 
 ```csharp
 
-// Wrong - List<T> not supported
+// Wrong in Udon runtime code - List<T> is not supported there
 using System.Collections.Generic;
 List<int> numbers = new List<int>();
 
@@ -448,6 +451,53 @@ MyProperty = 10;
 3. **Sync mode compatibility:**
    - Works with `Manual` sync mode
    - May have timing issues with `Continuous`
+
+---
+
+### Synced Array Callback Silent Failure
+
+**Symptom:** A remote client receives a new `[UdonSynced]` array, but the
+property setter and its `FieldChangeCallback` side effects do not run.
+
+`OnVariableChanged` does not fire for array-content changes. Do not rely on it
+for same-length element changes, array reassignments, and array length changes;
+the safe receive hook is `OnDeserialization()` for all three cases. This is a
+silent failure: the array can contain the new values while local UI or other
+derived state still shows the old projection.
+
+Use one idempotent `ApplyValues()` method on both paths:
+
+```csharp
+[UdonSynced] private int[] _syncedValues = new int[4];
+
+public void _SetValues(int[] values)
+{
+    if (values == null) return;
+
+    if (!Networking.IsOwner(gameObject))
+        Networking.SetOwner(Networking.LocalPlayer, gameObject);
+
+    _syncedValues = values;
+    ApplyValues();
+    RequestSerialization();
+}
+
+public override void OnDeserialization()
+{
+    ApplyValues();
+}
+
+private void ApplyValues()
+{
+    if (_syncedValues == null) return;
+    // Rebuild UI or other derived state from the current snapshot.
+}
+```
+
+The owner calls `ApplyValues()` immediately after changing the array and calls
+`RequestSerialization()` once after the complete Manual-sync update. A revision
+guard is optional for non-idempotent effects only; it does not provide packet
+ordering or stale-packet rejection.
 
 ---
 
@@ -1582,6 +1632,8 @@ public int maxHealth = 100; // Serialized value from Inspector wins
 
 **Solution:**
 
+An Editor-evaluated field initializer produces the default value stored with the compiled Udon program. A value already serialized on a scene or prefab instance can override that default; this does not mean the initializer expression ran in Udon runtime.
+
 ```csharp
 
 // Use Start() or explicit initialization
@@ -1596,6 +1648,10 @@ void Start()
 }
 
 ```
+
+Use an initializer for pure initial value generation when the final field type and value are supported by Udon. LINQ, lambdas, and a same-behaviour static helper using `List<T>` are allowed only in that Editor-side evaluation. If the value depends on `Networking.LocalPlayer`, a scene reference, or other runtime state, assign it in `Start()` or lazy initialization instead. Constructors and field initializers can run on a loading thread, so they must not call main-thread-only Unity APIs such as `FindObjectsByType`.
+
+The validator reports `List<T>`, LINQ, and lambdas as warnings in both initializer and Udon runtime code because it intentionally does not parse execution context or call graphs. Verify the context: the same feature or helper still fails when called from `Start()`, `Interact()`, or another Udon runtime path.
 
 ---
 

@@ -114,6 +114,10 @@ Rules:
 - Report only observed evidence. `prepared_not_observed` is never execution,
   review, CI, or merge evidence.
 - Never revert or clean up unrelated dirty files; report them instead.
+- Reflecting merged changes onto a live machine goes through `omh update`
+  (plus a TUI restart), never by hand-copying files into `~/.hermes/plugins/`
+  or `~/.hermes/tui-widgets/`. Hand-copied artifacts drift from the install
+  manifests and make later updates refuse or require `--force`.
 
 ## Common Pitfalls
 

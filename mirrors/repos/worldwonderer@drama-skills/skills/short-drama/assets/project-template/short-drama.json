@@ -7,7 +7,11 @@
     "aspect_ratio": "9:16",
     "prompt_language": "en",
     "episode_count": null,
-    "target_seconds_per_episode": null
+    "target_seconds_per_episode": null,
+    "pacing": {
+      "spoken_characters_per_second": null,
+      "seconds_per_action_paragraph": null
+    }
   },
   "creator_authority": {
     "decisions_artifact": "创作者决策/",

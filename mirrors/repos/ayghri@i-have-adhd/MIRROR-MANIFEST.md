@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ayghri/i-have-adhd` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `ayghri/i-have-adhd` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ayghri/i-have-adhd` — 26 default patterns, 0 followed patterns, 6 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,10 +61,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.cursor/skills/i-have-adhd/SKILL.md`](.cursor/skills/i-have-adhd/SKILL.md) |
-| 3 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 4 | ✓ | [`skills/i-have-adhd/agents/gemini.toml`](skills/i-have-adhd/agents/gemini.toml) |
-| 5 | ✓ | [`skills/i-have-adhd/agents/openai.yaml`](skills/i-have-adhd/agents/openai.yaml) |
-| 6 | ✓ | [`skills/i-have-adhd/SKILL.md`](skills/i-have-adhd/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 5 | ✓ | [`skills/i-have-adhd/agents/gemini.toml`](skills/i-have-adhd/agents/gemini.toml) |
+| 6 | ✓ | [`skills/i-have-adhd/agents/openai.yaml`](skills/i-have-adhd/agents/openai.yaml) |
+| 7 | ✓ | [`skills/i-have-adhd/SKILL.md`](skills/i-have-adhd/SKILL.md) |
 
 ---
 

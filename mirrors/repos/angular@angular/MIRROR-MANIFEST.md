@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `angular/angular` — 26 default patterns, 3 followed patterns, 53 file(s) materialized.
+Mirror of `angular/angular` — 26 default patterns, 3 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `angular/angular` — 26 default patterns, 3 followed patterns, 53 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,28 +92,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/dev-skills/angular-developer/references/loading-strategies.md`](skills/dev-skills/angular-developer/references/loading-strategies.md) |
 | 30 | ✓ | [`skills/dev-skills/angular-developer/references/mcp.md`](skills/dev-skills/angular-developer/references/mcp.md) |
 | 31 | ✓ | [`skills/dev-skills/angular-developer/references/migrations.md`](skills/dev-skills/angular-developer/references/migrations.md) |
-| 32 | ✓ | [`skills/dev-skills/angular-developer/references/navigate-to-routes.md`](skills/dev-skills/angular-developer/references/navigate-to-routes.md) |
-| 33 | ✓ | [`skills/dev-skills/angular-developer/references/outputs.md`](skills/dev-skills/angular-developer/references/outputs.md) |
-| 34 | ✓ | [`skills/dev-skills/angular-developer/references/pipes.md`](skills/dev-skills/angular-developer/references/pipes.md) |
-| 35 | ✓ | [`skills/dev-skills/angular-developer/references/reactive-forms.md`](skills/dev-skills/angular-developer/references/reactive-forms.md) |
-| 36 | ✓ | [`skills/dev-skills/angular-developer/references/rendering-strategies.md`](skills/dev-skills/angular-developer/references/rendering-strategies.md) |
-| 37 | ✓ | [`skills/dev-skills/angular-developer/references/resource.md`](skills/dev-skills/angular-developer/references/resource.md) |
-| 38 | ✓ | [`skills/dev-skills/angular-developer/references/route-animations.md`](skills/dev-skills/angular-developer/references/route-animations.md) |
-| 39 | ✓ | [`skills/dev-skills/angular-developer/references/route-guards.md`](skills/dev-skills/angular-developer/references/route-guards.md) |
-| 40 | ✓ | [`skills/dev-skills/angular-developer/references/router-lifecycle.md`](skills/dev-skills/angular-developer/references/router-lifecycle.md) |
-| 41 | ✓ | [`skills/dev-skills/angular-developer/references/router-testing.md`](skills/dev-skills/angular-developer/references/router-testing.md) |
-| 42 | ✓ | [`skills/dev-skills/angular-developer/references/show-routes-with-outlets.md`](skills/dev-skills/angular-developer/references/show-routes-with-outlets.md) |
-| 43 | ✓ | [`skills/dev-skills/angular-developer/references/signal-forms.md`](skills/dev-skills/angular-developer/references/signal-forms.md) |
-| 44 | ✓ | [`skills/dev-skills/angular-developer/references/signals-overview.md`](skills/dev-skills/angular-developer/references/signals-overview.md) |
-| 45 | ✓ | [`skills/dev-skills/angular-developer/references/tailwind-css.md`](skills/dev-skills/angular-developer/references/tailwind-css.md) |
-| 46 | ✓ | [`skills/dev-skills/angular-developer/references/template-driven-forms.md`](skills/dev-skills/angular-developer/references/template-driven-forms.md) |
-| 47 | ✓ | [`skills/dev-skills/angular-developer/references/testing-fundamentals.md`](skills/dev-skills/angular-developer/references/testing-fundamentals.md) |
-| 48 | ✓ | [`skills/dev-skills/angular-developer/SKILL.md`](skills/dev-skills/angular-developer/SKILL.md) |
-| 49 | ✓ | [`skills/dev-skills/angular-new-app/SKILL.md`](skills/dev-skills/angular-new-app/SKILL.md) |
-| 50 | ✓ | [`skills/dev-skills/README.md`](skills/dev-skills/README.md) |
-| 51 | → | [`contributing-docs/building-and-testing-angular.md`](contributing-docs/building-and-testing-angular.md) |
-| 52 | → | [`contributing-docs/coding-standards.md`](contributing-docs/coding-standards.md) |
-| 53 | → | [`contributing-docs/commit-message-guidelines.md`](contributing-docs/commit-message-guidelines.md) |
+| 32 | ✓ | [`skills/dev-skills/angular-developer/references/naming-conventions.md`](skills/dev-skills/angular-developer/references/naming-conventions.md) |
+| 33 | ✓ | [`skills/dev-skills/angular-developer/references/navigate-to-routes.md`](skills/dev-skills/angular-developer/references/navigate-to-routes.md) |
+| 34 | ✓ | [`skills/dev-skills/angular-developer/references/outputs.md`](skills/dev-skills/angular-developer/references/outputs.md) |
+| 35 | ✓ | [`skills/dev-skills/angular-developer/references/pipes.md`](skills/dev-skills/angular-developer/references/pipes.md) |
+| 36 | ✓ | [`skills/dev-skills/angular-developer/references/reactive-forms.md`](skills/dev-skills/angular-developer/references/reactive-forms.md) |
+| 37 | ✓ | [`skills/dev-skills/angular-developer/references/rendering-strategies.md`](skills/dev-skills/angular-developer/references/rendering-strategies.md) |
+| 38 | ✓ | [`skills/dev-skills/angular-developer/references/resource.md`](skills/dev-skills/angular-developer/references/resource.md) |
+| 39 | ✓ | [`skills/dev-skills/angular-developer/references/route-animations.md`](skills/dev-skills/angular-developer/references/route-animations.md) |
+| 40 | ✓ | [`skills/dev-skills/angular-developer/references/route-guards.md`](skills/dev-skills/angular-developer/references/route-guards.md) |
+| 41 | ✓ | [`skills/dev-skills/angular-developer/references/router-lifecycle.md`](skills/dev-skills/angular-developer/references/router-lifecycle.md) |
+| 42 | ✓ | [`skills/dev-skills/angular-developer/references/router-testing.md`](skills/dev-skills/angular-developer/references/router-testing.md) |
+| 43 | ✓ | [`skills/dev-skills/angular-developer/references/show-routes-with-outlets.md`](skills/dev-skills/angular-developer/references/show-routes-with-outlets.md) |
+| 44 | ✓ | [`skills/dev-skills/angular-developer/references/signal-forms.md`](skills/dev-skills/angular-developer/references/signal-forms.md) |
+| 45 | ✓ | [`skills/dev-skills/angular-developer/references/signals-overview.md`](skills/dev-skills/angular-developer/references/signals-overview.md) |
+| 46 | ✓ | [`skills/dev-skills/angular-developer/references/tailwind-css.md`](skills/dev-skills/angular-developer/references/tailwind-css.md) |
+| 47 | ✓ | [`skills/dev-skills/angular-developer/references/template-driven-forms.md`](skills/dev-skills/angular-developer/references/template-driven-forms.md) |
+| 48 | ✓ | [`skills/dev-skills/angular-developer/references/testing-fundamentals.md`](skills/dev-skills/angular-developer/references/testing-fundamentals.md) |
+| 49 | ✓ | [`skills/dev-skills/angular-developer/SKILL.md`](skills/dev-skills/angular-developer/SKILL.md) |
+| 50 | ✓ | [`skills/dev-skills/angular-new-app/SKILL.md`](skills/dev-skills/angular-new-app/SKILL.md) |
+| 51 | ✓ | [`skills/dev-skills/README.md`](skills/dev-skills/README.md) |
+| 52 | → | [`contributing-docs/building-and-testing-angular.md`](contributing-docs/building-and-testing-angular.md) |
+| 53 | → | [`contributing-docs/coding-standards.md`](contributing-docs/coding-standards.md) |
+| 54 | → | [`contributing-docs/commit-message-guidelines.md`](contributing-docs/commit-message-guidelines.md) |
 
 ---
 

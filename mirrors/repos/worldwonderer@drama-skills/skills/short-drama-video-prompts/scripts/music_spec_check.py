@@ -11,9 +11,9 @@ import sys
 from pathlib import Path
 from typing import Any, NamedTuple
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("music_spec_check.py requires Python 3.10 or newer")
+    raise SystemExit("music_spec_check.py requires Python 3.9 or newer")
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +33,6 @@ class ResolvedRef(NamedTuple):
 
     owner: str
     artifact: str
-    hash: str
     record_id: str | None
     field: str | None
     authority: str | None
@@ -76,18 +75,18 @@ def resolve_ref(
             return None, RefFinding(
                 "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
             )
-        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
-        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+        owner, artifact = entry.get("owner"), entry.get("artifact")
+        if not (isinstance(owner, str) and isinstance(artifact, str)):
             return None, RefFinding(
                 "SOURCE_ENTRY_IS_INCOMPLETE",
                 location,
-                f"sources[{src!r}] needs owner/artifact/hash",
+                f"sources[{src!r}] needs owner/artifact",
             )
-    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
-        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact")):
+        owner, artifact = ref["owner"], ref["artifact"]
     else:
         return None, RefFinding(
-            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact"
         )
     optional = {
         key: ref[key]
@@ -96,9 +95,8 @@ def resolve_ref(
     }
     return (
         ResolvedRef(
-            owner,
-            artifact,
-            digest,
+        owner,
+        artifact,
             optional.get("record_id"),
             optional.get("field"),
             optional.get("authority"),
@@ -134,9 +132,9 @@ TOP_LEVEL_FIELDS = {
     "status",
 }
 SCOPE_FIELDS = {"episode_id", "start_seconds", "end_seconds"}
-REFERENCE_FIELDS = {"src", "owner", "artifact", "hash", "record_id", "field", "authority"}
+REFERENCE_FIELDS = {"src", "owner", "artifact", "record_id", "field", "authority"}
 SOURCES_HEADER_FIELDS = {"record_type", "schema_version", "sources"}
-SOURCE_ENTRY_FIELDS = {"owner", "artifact", "hash"}
+SOURCE_ENTRY_FIELDS = {"owner", "artifact"}
 MIX_FIELDS = {"entry", "exit", "duck_under_dialogue", "loop"}
 MUSIC_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}")
 EPISODE_ID_RE = re.compile(r"EP(?:[0-9]{3}|[1-9][0-9]{3,})")
@@ -216,11 +214,8 @@ def _validate_ref(value: object, label: str, sources: dict[str, dict[str, Any]])
     for key, text in (
         ("owner", resolved.owner),
         ("artifact", resolved.artifact),
-        ("hash", resolved.hash),
     ):
         _text(text, f"{label}.{key}")
-    if HASH_RE.fullmatch(resolved.hash) is None:
-        raise ValidationError(f"{label}.hash must be lowercase sha256")
     if not isinstance(value.get("record_id") or value.get("field"), str):
         raise ValidationError(f"{label} needs record_id or field")
 
@@ -249,8 +244,6 @@ def split_sources_header(
         _exact_fields(entry, SOURCE_ENTRY_FIELDS, label)
         for field in sorted(SOURCE_ENTRY_FIELDS):
             _text(entry.get(field), f"{label}.{field}")
-        if HASH_RE.fullmatch(str(entry["hash"])) is None:
-            raise ValidationError(f"{label}.hash must be lowercase sha256")
     return load_sources(header), specs
 
 

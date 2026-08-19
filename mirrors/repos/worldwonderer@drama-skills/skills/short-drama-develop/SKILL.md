@@ -121,7 +121,7 @@ python3 {技能目录}/scripts/episode_intake.py index <多集整稿> --out <epi
 - `项目开发/creative-brief.md`
 - `项目开发/story-engine.md`
 - `项目开发/director-brief.md`（项目需要时；仅为 creator authority 候选）
-- `项目开发/adaptation-map.jsonl`（长材料改编时；只保留输入 locator/span/hash、
+- `项目开发/adaptation-map.jsonl`（长材料改编时；只保留输入 locator/span、
   去引用的功能摘要、候选去向与未决项，不复制原文；例见
   [adaptation-map.example.jsonl](assets/adaptation-map.example.jsonl)）
 - `项目开发/series-arc.json`（项目需要时）
@@ -142,6 +142,8 @@ python3 {技能目录}/scripts/episode_intake.py index <多集整稿> --out <epi
   [adaptation-craft.md](references/adaptation-craft.md)
 - **创作者提供对标作品、样例剧本或提示词，希望学习机制而非仿写表达**：
   [creative-reference-intake.md](references/creative-reference-intake.md)
+- **单元故事里同一套机制被反复运行，或中段开始重复、越写越薄**：
+  [mechanism-loop.md](references/mechanism-loop.md)
 - **需要区分揭示、反转、回报和钩子，或按题材选压力机制**：
   [reveal-reversal-payoff.md](references/reveal-reversal-payoff.md)
 - **按题材选择冲突推进方式、设计开场或规划集尾钩子时的定性案例方法**：

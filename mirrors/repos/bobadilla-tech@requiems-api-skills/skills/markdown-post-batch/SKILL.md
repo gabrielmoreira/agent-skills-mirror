@@ -19,7 +19,7 @@ Converts multiple Markdown strings into HTML in a single request. Results are re
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `markdowns` | array | yes | body | Array of Markdown strings. Min: 1, Max: 50. |
+| `markdowns` | array<string> | yes | body | Array of Markdown strings. Min: 1, Max: 50. |
 | `sanitize` | boolean | no | body | When true, sanitizes HTML output to remove unsafe tags and attributes. |
 
 ## Request Example
@@ -56,7 +56,7 @@ Converts multiple Markdown strings into HTML in a single request. Results are re
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | One HTML result per Markdown input, preserving input order |
+| `results` | array<object> | One HTML result per Markdown input, preserving input order |
 | `results[].html` | string | Rendered HTML output for each Markdown string |
 
 ## Errors

@@ -92,6 +92,7 @@ Use these rules as a reliability overlay for codebase work. They convert recurri
 - Strictly separate thinking from deliverables. Do not put the process of deciding what to build into code, tests, docs, configuration, migrations, or UI copy.
 - Do not create scratch notes, implementation journals, TODO narratives, "what I changed" files, or agent-generated summaries inside the repo unless the user asks for them. Use the conversation for that context.
 - Code comments should explain stable invariants, domain intent, non-obvious constraints, or external contracts. They should not describe the assistant's reasoning, the user's prompt, or the step-by-step implementation process.
+- Add a concise why-comment where a non-obvious choice could otherwise look accidental and be repeatedly changed or removed. State the constraint, tradeoff, or failure the choice prevents; do not merely restate what the code does, and update or remove the comment when the reason no longer applies.
 - Before finishing, scan changed project text for leaked assistant language such as "I decided", "the user asked", "we need to", "implementation note", "acceptance criteria", "thought process", "debugging steps", "my approach", or "requested by the user".
 
 ## User-Facing Output

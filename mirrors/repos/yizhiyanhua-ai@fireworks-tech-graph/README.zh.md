@@ -28,6 +28,19 @@
 
 ---
 
+## 赞助商
+
+<table>
+  <tr>
+    <td width="200" align="center"><a href="https://aigocode.app/invite/yizhiyanhua"><img src="assets/sponsors/aigocode.png" alt="AIGoCode" width="160" /></a></td>
+    <td>感谢 <strong>AIGoCode</strong> 对本项目的赞助！AIGoCode 是一个集成了 Claude Code、Codex 与最新 Gemini 模型的一站式平台，为你提供稳定、高效且极具性价比的 AI 编程服务。平台提供灵活的订阅方案，零封号风险，无需 VPN 直连，响应快如闪电。AIGoCode 为 <strong>fireworks-tech-graph</strong> 用户准备了专属福利：通过<a href="https://aigocode.app/invite/yizhiyanhua">此链接</a>注册，首次充值即可额外获得 <strong>10% 奖励额度</strong>！</td>
+  </tr>
+</table>
+
+有兴趣成为赞助商？请联系：<a href="mailto:ccc7574@gmail.com">ccc7574@gmail.com</a>
+
+---
+
 ## 效果展示
 
 > 动态样例统一使用已验收的 5.75 秒 settled-flow 时间线：先逐步绘制线路，再让最终拓扑中的数据流额外持续 2 秒。每张完整 GIF 为 960px 宽、20fps / 115 帧；3×4 总览压缩为 1200px 动态预览。`assets/samples/` 中仍保留 1920px 无损 PNG，作为静态回归基线。

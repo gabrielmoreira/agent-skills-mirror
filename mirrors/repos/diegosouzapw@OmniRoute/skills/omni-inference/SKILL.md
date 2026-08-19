@@ -14,6 +14,24 @@ All requests require a valid Bearer token or session cookie. Obtain a token via 
 
 ## Endpoints
 
+### POST /api/v1/session-leases
+
+Acquire, renew, or release an exclusive managed connection lease
+
+Requires an API key with `lease:exclusive` and an explicit non-empty
+`allowedConnections` policy. The opaque owner is bound to the authenticated API key;
+the lease owns an eligible connection, not a provider or model. Managed inference
+requests present the owner and exact generation headers. Temporary foreign occupancy
+returns 429 `WAITING_FOR_CAPACITY` with `Retry-After`.
+
+
+```bash
+curl -X POST https://localhost:20128/api/v1/session-leases \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
 ### POST /api/v1/chat/completions
 
 Create chat completion
@@ -107,6 +125,28 @@ Create embeddings
 
 ```bash
 curl -X POST https://localhost:20128/api/v1/embeddings \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/multimodal-embeddings
+
+List embedding models (Jina multimodal-embeddings alias)
+
+```bash
+curl https://localhost:20128/api/v1/multimodal-embeddings \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/multimodal-embeddings
+
+Create embeddings (Jina multimodal-embeddings alias)
+
+Same handler as `POST /api/v1/embeddings`. Provided so Jina-compatible clients that call `/v1/multimodal-embeddings` do not receive HTTP 404 `unknown_route`.
+
+```bash
+curl -X POST https://localhost:20128/api/v1/multimodal-embeddings \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
   -H "Content-Type: application/json" \
   -d '{}'

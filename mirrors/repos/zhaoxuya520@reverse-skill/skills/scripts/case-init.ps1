@@ -149,9 +149,11 @@ if ((Test-Path $routeScript) -and $Hint) {
         & powershell -NoProfile -ExecutionPolicy Bypass -File $routeScript -Hint $Hint -OutDir $tmp 2>$null | Out-Null
         $scopeRoute = Join-Path $tmp 'route-scope.md'
         if (Test-Path $scopeRoute) {
+            . (Join-Path $scriptDir 'lib/RouteScope.ps1')
             $rt = Get-Content $scopeRoute -Raw -Encoding UTF8
-            if ($rt -match 'primary_skill:\s*skills/(\S+)') { $primary = $Matches[1] }
-            if ($rt -match 'primary:\s*(\S+)') { $primaryId = $Matches[1] }
+            $parsed = Get-ReverseRouteScopeFields -Text $rt
+            if ($parsed.Skill) { $primary = $parsed.Skill }
+            if ($parsed.Id) { $primaryId = $parsed.Id }
         }
     } finally {
         Remove-Item -Recurse -Force $tmp -ErrorAction SilentlyContinue

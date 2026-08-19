@@ -47,12 +47,12 @@
 ## 跟另外两个 skill 的接力
 
 ```
-novel-characters → cast.json    （谁：角色资产）
 novel-outline    → outline.json （什么：结构与分集）
+novel-characters → cast.json    （谁：角色资产）
 novel-art        → art.json     （哪里 + 手里拿的：美术资产）
 ```
 
-- `seed <outline.json>` 确定性预填场景清单、出现集、承载爽点；道具表大纲里没有，模型按 `prop-pass.md` 从原文提取
+- `seed <outline.json>` 确定性预填场景与道具两张清单，连出现集、承载爽点一起搬；大纲没有 `props` 时道具留空，模型按 `prop-pass.md` 从原文提取
 - `validate --cast <cast.json>` 用角色表查提示词里有没有混进角色名
 - 画风预设与 novel-characters **同名对齐**（realistic / ghibli）但内容是环境版——真实感来自用旧的材质，不是皮肤毛孔
 
@@ -77,7 +77,7 @@ node scripts/novel-art.mjs styles                            # 看画风预设
 SKILL.md                 给 agent 读的工作流
 scripts/
   novel-art.mjs          seed / validate / checkup / render / styles / slug
-  selftest.mjs           144 项断言，不调模型
+  selftest.mjs           158 项断言，不调模型
 references/
   schema.md              art.json 结构 + 硬规则
   scene-pass.md          怎么填场景设定（AI 短剧的思路）
@@ -96,6 +96,6 @@ assets/
 node scripts/selftest.mjs
 ```
 
-144 项断言，覆盖 seed / 画风预设 / 11 道门逐项击穿 / 渲染（中英界面）/ 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
+158 项断言，覆盖 seed / 画风预设 / 11 道门逐项击穿 / 渲染（中英界面）/ 导出。不调模型、不花额度、1 秒跑完。改完脚本先跑这个。
 
 **只在 macOS + Node 24 上实测过。** 代码没有平台相关调用，Linux 和更低版本 Node 理论上没问题，但**没验过**。

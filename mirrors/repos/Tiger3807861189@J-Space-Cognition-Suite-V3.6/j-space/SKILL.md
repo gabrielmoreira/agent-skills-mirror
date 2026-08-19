@@ -231,16 +231,19 @@ and continue. The premise, not the procedure, is what makes any of this function
 `<skill-root>/scripts/jspace.py` knows one thing you cannot know accurately: what state you were in a few
 seams ago. It keeps the record and hands it back. It decides nothing, and it blocks nothing.
 
-Resolve `<skill-root>` to this skill's directory, invoke the script by that path, and keep the
-task workspace as the current directory. That keeps `.jspace/` with the task rather than with
-the skill.
+Resolve `<skill-root>` to this skill's directory and `<python-command>` to an available Python 3
+interpreter, invoke the script by that path, and keep the task workspace as the current directory.
+That keeps `.jspace/` with the task rather than with the skill.
 
 ```
-python3 <skill-root>/scripts/jspace.py seam       # the ledger, plus what has and has not moved since
-python3 <skill-root>/scripts/jspace.py note --goal "..." --next "..."  # open the ledger
-python3 <skill-root>/scripts/jspace.py note ...   # record a checkpoint, question, swap, or next action
-python3 <skill-root>/scripts/jspace.py ship FILE  # register check on anything about to leave
-python3 <skill-root>/scripts/jspace.py resume     # premise, invariants and full ledger, after a gap
+<python-command> <skill-root>/scripts/jspace.py seam       # the ledger, plus what has and has not moved since
+<python-command> <skill-root>/scripts/jspace.py note --goal "..." --next "..."  # open the ledger
+<python-command> <skill-root>/scripts/jspace.py note --next "..."  # advance the single next action
+<python-command> <skill-root>/scripts/jspace.py note --check "..." --by "verifier and coverage"  # checkpoint
+<python-command> <skill-root>/scripts/jspace.py note --open "..." --settled-by "..."  # open a question
+<python-command> <skill-root>/scripts/jspace.py note --close 1 --check "..." --by "verifier and coverage"  # close it
+<python-command> <skill-root>/scripts/jspace.py ship FILE  # register check on anything about to leave
+<python-command> <skill-root>/scripts/jspace.py resume     # premise, invariants and full ledger, after a gap
 ```
 
 The commands are named for moments, not for passes, so this is the mapping — a lookup, not a

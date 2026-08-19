@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 19 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 19 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,14 +75,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 10 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
 | 11 | ✓ | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 12 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 13 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 14 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 15 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 16 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
-| 17 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
-| 18 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
-| 19 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 12 | ✓ | [`docs/develop-guides/documentation-guidelines.md`](docs/develop-guides/documentation-guidelines.md) |
+| 13 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 14 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 15 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 16 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 17 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
+| 18 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
+| 19 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
+| 20 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

@@ -9,9 +9,9 @@ from typing import Any
 
 from image_prompt_check import SKILL_ROOT, ValidationError, load_jsonl, validate_records
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("selftest.py requires Python 3.10 or newer")
+    raise SystemExit("selftest.py requires Python 3.9 or newer")
 
 
 def require(condition: bool, message: str) -> None:
@@ -30,7 +30,7 @@ def fail(records: list[dict[str, Any]], sources: dict[str, dict[str, Any]], mark
 
 def expanded(ref: dict[str, Any], sources: dict[str, dict[str, Any]]) -> dict[str, Any]:
     entry = sources[ref["src"]]
-    inline = {key: entry[key] for key in ("owner", "artifact", "hash")}
+    inline = {key: entry[key] for key in ("owner", "artifact")}
     inline.update({key: value for key, value in ref.items() if key != "src"})
     return inline
 
@@ -50,6 +50,13 @@ def main() -> int:
     leaked = copy.deepcopy(records)
     leaked[0]["provider"] = "example"
     fail(leaked, sources, "provider execution fields")
+
+    # A/B Round 2: the suite forbids weight syntax and one engine's quality words,
+    # but nothing enforced it — the only prompt check was for leaked hashes.
+    for syntax in ("--ar 9:16", "masterpiece, 8k", "(red coat:1.2)", "cat::2"):
+        engine_syntax = copy.deepcopy(records)
+        engine_syntax[0]["generic_prompt"] += f" {syntax}"
+        fail(engine_syntax, sources, "engine-specific syntax")
 
     nested_provider = copy.deepcopy(records)
     nested_provider[0]["reference_bindings"][0]["provider"] = "example"

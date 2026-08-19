@@ -61,7 +61,7 @@ A useful finding contains:
 the write owner what outcome must be restored.
 
 A findings or verdict file declares each upstream snapshot once under `sources`, and every reference names that
-snapshot key plus the record. Those source hashes are archival review metadata, not lifecycle inputs and not proof
+snapshot key plus the record. Those source references are archival review metadata, not lifecycle inputs and not proof
 of reviewer independence.
 
 ## Cross-layer synthesis

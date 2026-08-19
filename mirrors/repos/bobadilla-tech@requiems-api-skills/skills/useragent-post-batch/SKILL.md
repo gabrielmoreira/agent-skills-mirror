@@ -19,7 +19,7 @@ Parses up to 50 user agents in a single request.
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `user_agents` | array | yes | body | Array of user agents to parse (min: 1, max: 50). |
+| `user_agents` | array<string> | yes | body | Array of user agents to parse (min: 1, max: 50). |
 
 ## Request Example
 
@@ -73,7 +73,7 @@ Parses up to 50 user agents in a single request.
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of parsed user agents results returned in the same order as the input user agents. |
+| `results` | array<object> | List of parsed user agents results returned in the same order as the input user agents. |
 | `results[].user_agent` | string | The original user agent string from the input. |
 | `results[].data` | object | Parsed user agent details. |
 | `results[].data.browser` | string | Detected browser name (e.g. Chrome, Firefox, Safari, Edge, Opera, Internet Explorer, Other). Empty if not detected. |

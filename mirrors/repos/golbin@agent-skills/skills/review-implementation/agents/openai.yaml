@@ -1,4 +1,4 @@
 interface:
   display_name: "Review Implementation"
-  short_description: "Review code against markdown specs"
-  default_prompt: "Use $review-implementation to review this implementation against the provided spec and identify critical gaps."
+  short_description: "Fix root causes and simplify for real users"
+  default_prompt: "Use $review-implementation to verify the user experience and implementation, fix root causes, and simplify the coherent end state."

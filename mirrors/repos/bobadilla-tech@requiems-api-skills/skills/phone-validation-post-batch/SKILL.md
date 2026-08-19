@@ -19,7 +19,7 @@ Validates up to 50 phone numbers in a single request. Results are returned in th
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `numbers` | array | yes | body | Array of phone numbers to validate (min: 1, max: 50). Each must include the country calling code. |
+| `numbers` | array<string> | yes | body | Array of phone numbers to validate (min: 1, max: 50). Each must include the country calling code. |
 
 ## Request Example
 
@@ -69,7 +69,7 @@ Validates up to 50 phone numbers in a single request. Results are returned in th
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Validation result for each number in the same order as the input. Each item has the same fields as the single validate endpoint. |
+| `results` | array<object> | Validation result for each number in the same order as the input. Each item has the same fields as the single validate endpoint. |
 | `total` | integer | Number of results returned. Matches the length of the input array. |
 
 ## Errors

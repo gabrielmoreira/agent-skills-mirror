@@ -28,6 +28,27 @@ A character model sheet (Shen Zhiwei, from the bundled sample story):
 
 ![model sheet](assets/sheet.jpg)
 
+## Upstream
+
+In the pipeline the **outline sits upstream of the character bible**:
+
+```
+novel-outline    → outline.json (what: structure & episodes, who is in)
+novel-characters → cast.json    (who: character assets)
+```
+
+If you have an `outline.json`, start with `seed` — its `characters` block already settles the roster:
+
+```bash
+node scripts/novel-characters.mjs seed outline.json > seed.json
+```
+
+What comes across is what the outline already decided (character id, name, tier, arc, which source characters were merged into this one); what is left blank is the work this layer owes (aliases, profile, design prompt, voice prompt). `tier` maps onto `importance`: `lead` → protagonist, `support` → supporting, `functional` → minor.
+
+**Do not overturn the outline's tiers here**; if a tier looks wrong, go fix the outline. Splitting *within* the lead group is fine — `lead` covers leads plus the main antagonist, so `seed` assigns protagonist to all of them and you demote the non-leads to major using the `role` recorded in `seedNote`.
+
+**It runs fine without one** — this skill does not depend on it. Skip `seed`, feed it a raw novel, and it builds the roster from the text itself.
+
 ## Use
 
 For installation see the [repository README](../../README.en.md). Then:
@@ -129,6 +150,7 @@ None of these were written up front. Each one exists because real model output v
 The helpers run fine without an agent — only the two model passes need one:
 
 ```bash
+node scripts/novel-characters.mjs seed outline.json              # seed the roster from an outline, if you have one
 node scripts/novel-characters.mjs chunk book.txt /tmp/wk        # split
 node scripts/novel-characters.mjs merge /tmp/wk                 # merge roster-*.json, with merge candidates
 node scripts/novel-characters.mjs merge /tmp/wk --apply m.json   # apply reviewed merges
@@ -153,7 +175,7 @@ node scripts/novel-characters.mjs slug "胡二爷"                  # filesystem
 SKILL.md                 the workflow the agent reads
 scripts/
   novel-characters.mjs   chunk / merge / assemble / validate / render / slug
-  selftest.mjs           316 assertions, never calls a model
+  selftest.mjs           355 assertions, never calls a model
 references/
   roster-pass.md         pass 1: scanning for characters
   profile-pass.md        pass 2: building a character sheet (8 hard rules)
@@ -175,6 +197,6 @@ In `examples/渡口.txt` the peddler is only ever referred to by a nickname and 
 node scripts/selftest.mjs
 ```
 
-316 assertions across chunking, alias merging, assembly, localization, validation, and rendering. No model calls, no quota, runs in about a second. Run it before anything else after touching the scripts.
+355 assertions across chunking, alias merging, assembly, localization, validation, and rendering. No model calls, no quota, runs in about a second. Run it before anything else after touching the scripts.
 
 **Only tested on macOS with Node 24.** There is no platform-specific code, so Linux and older Node releases should be fine, but that is **unverified**.

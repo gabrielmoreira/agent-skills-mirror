@@ -14,7 +14,6 @@ how they adapt are decisions for the skill workflow, not for this file.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -25,7 +24,7 @@ from typing import Any
 
 # Creators run these scripts on whatever interpreter their machine provides, so
 # an unsupported version must say so instead of failing inside an import.
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "short-drama needs Python {}.{} or newer; this interpreter is {}.{}".format(
@@ -89,10 +88,6 @@ def chinese_to_int(text: str) -> int | None:
     if not digit_seen:
         return None
     return total + section
-
-
-def sha256_bytes(content: bytes) -> str:
-    return hashlib.sha256(content).hexdigest()
 
 
 def _atomic_write_text(path: Path, content: str) -> None:
@@ -250,7 +245,6 @@ def build_chapters(
                 "line_start": start_line + 1,
                 "line_end": end_line,
                 "char_count": _visible_width(body),
-                "content_sha256": sha256_bytes(body.encode("utf-8")),
             }
         )
     return chapters
@@ -350,7 +344,6 @@ def build_index(source: Path) -> dict[str, Any]:
         "record_type": "novel_chapter_index",
         "source": {
             "artifact": source.name,
-            "sha256": sha256_bytes(raw),
             "char_count": _visible_width(text),
             "line_count": len(lines),
         },
@@ -371,7 +364,7 @@ def build_index(source: Path) -> dict[str, Any]:
     }
 
 
-REQUIRED_CHAPTER_FIELDS = ("sequence", "line_start", "line_end", "content_sha256")
+REQUIRED_CHAPTER_FIELDS = ("sequence", "line_start", "line_end")
 
 
 def verify_index(index_path: Path, source: Path) -> dict[str, Any]:
@@ -388,16 +381,15 @@ def verify_index(index_path: Path, source: Path) -> dict[str, Any]:
     if not isinstance(index, dict):
         return {"verified": False, "problems": ["index must be a JSON object"]}
     source_record = index.get("source")
-    if not isinstance(source_record, dict) or source_record.get("sha256") != sha256_bytes(raw):
+    if not isinstance(source_record, dict):
         return {
             "verified": False,
             "problems": [
-                "source bytes changed since the index was built; rebuild the index"
+                "index is missing its source record"
             ],
         }
     text = raw.decode("utf-8")
     lines = text.split("\n")
-    line_offsets = _line_offsets(lines)
     chapters = index.get("chapters", [])
     if not isinstance(chapters, list) or not chapters:
         return {"verified": False, "problems": ["index carries no chapters"]}
@@ -422,7 +414,6 @@ def verify_index(index_path: Path, source: Path) -> dict[str, Any]:
             continue
         sequence = chapter["sequence"]
         start_line, end_line = chapter["line_start"], chapter["line_end"]
-        digest = chapter["content_sha256"]
         if (
             isinstance(sequence, bool)
             or not isinstance(sequence, int)
@@ -437,9 +428,6 @@ def verify_index(index_path: Path, source: Path) -> dict[str, Any]:
             for value in (start_line, end_line)
         ):
             problems.append(f"chapter {sequence} line span must use integer line numbers")
-            continue
-        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
-            problems.append(f"chapter {sequence} content_sha256 must be a 64-character hex hash")
             continue
         if not (1 <= start_line <= len(lines)) or not (
             start_line <= end_line <= len(lines)
@@ -456,12 +444,6 @@ def verify_index(index_path: Path, source: Path) -> dict[str, Any]:
             )
             continue
         previous_end = end_line
-        start = line_offsets[start_line - 1]
-        end = line_offsets[end_line] if end_line < len(line_offsets) else len(text)
-        if sha256_bytes(text[start:end].encode("utf-8")) != digest:
-            problems.append(
-                f"chapter {chapter['sequence']} span no longer matches its hash"
-            )
     if previous_end is not None and previous_end != len(lines):
         problems.append(
             f"chapter spans end at line {previous_end}; source ends at line {len(lines)}"
@@ -507,7 +489,6 @@ def sample_chapters(index_path: Path, count: int = DEFAULT_SAMPLE_COUNT) -> dict
             "title": chapters[position].get("title", ""),
             "line_start": chapters[position]["line_start"],
             "line_end": chapters[position]["line_end"],
-            "content_sha256": chapters[position]["content_sha256"],
         }
         for position in positions
     ]

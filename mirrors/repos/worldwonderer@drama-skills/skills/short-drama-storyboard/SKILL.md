@@ -80,8 +80,7 @@ python3 {技能目录}/scripts/storyboard_check.py <coverage.json> --shots <shot
 - `nonvisual_context`：仅供理解、无需直接呈现的内容。
 
 对白、动作、画面文字、画外音或关键音效还没有着落时，不要先追求漂亮镜头。
-发布原文落实表时，先在文件的 `sources` 里为每个上游快照声明一次 `owner`、`artifact`
-和 `hash`，再让每条 `shot_refs` 用 `src` 指向该声明并写上 `record_id`。裸 `shot_id`
+发布原文落实表时，先在文件的 `sources` 里为每个上游快照声明一次 `owner` 与 `artifact`，再让每条 `shot_refs` 用 `src` 指向该声明并写上 `record_id`。裸 `shot_id`
 只可表示同一镜头文件内的关系，不能证明审的是哪一版。
 
 ### 2. 关键场次先比较整场导演选择（可选）
@@ -144,6 +143,12 @@ python3 {技能目录}/scripts/storyboard_check.py <coverage.json> --shots <shot
 
 时长表示剪辑意图。只有明确的计时算术可以机械检查；一般的可拍性必须结合本镜内容判断。
 
+写 `duration_seconds` 之前，先按项目在 `short-drama.json` 的 `format.pacing` 里声明的速率，
+把每个镜头认领的剧本块折算成秒——台词按字数、动作段按段数，这与 `duration_estimate.py` 在
+剧本阶段用的是同一组速率。折算值是起点，为节奏调整它是创作决定；跳过折算直接凭感觉写，
+整集总时长会到覆盖检查那一步才暴露，而那时要重排的是全部镜头。项目没有声明速率时先向
+创作者要一个量级。
+
 ### 6. 默认每镜一个冻结关键帧
 
 使用 [keyframe-template.jsonl](assets/keyframe-template.jsonl) 写结构化来源，发布为
@@ -153,6 +158,11 @@ python3 {技能目录}/scripts/storyboard_check.py <coverage.json> --shots <shot
 
 把已接受镜头的开始边界和准确资产版本，落到一个可以同时存在的瞬间：焦点、构图、
 摄影机与镜头焦段、空间锚点、姿态、目光、双手与持物、表情、光线、排除项。
+
+`generic_prompt` 写这一瞬间要拍出来的画面本身，按 `keyframe-craft.md` 的十二项逐条写满，
+那里有一段四百余字的成稿可以照着写。它只含要被拍出来的内容——不写镜头/记录 ID、规则 ID、
+状态词与成段否定罗列（`SHT-21`）。同一集里两条关键帧的正文不应该只有编号不同：
+读起来一样，说明写的是模板不是画面。
 
 关键帧不得包含“先、再、最后”、表演变化过程、运镜过程或正在变化的环境；时间变化
 交给 `$short-drama-video-prompts`。
@@ -170,8 +180,13 @@ python3 {技能目录}/scripts/storyboard_check.py <coverage.json> --shots <shot
 python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage.json \
   --shots 剧集/EP001/storyboard/shots.jsonl \
   --keyframes 剧集/EP001/storyboard/keyframes.jsonl \
+  --screenplay-index 剧集/EP001/screenplay-index.jsonl \
   --project short-drama.json
 ```
+
+给了 `--screenplay-index` 就多做一项覆盖对账：**剧本的每一个块必须被恰好一个镜头认领**。
+没有镜头认领的块不会被拍，两个镜头认领的块会被剪两次。认领按块 ID 走
+（`source_refs` 里的 `record_id`），不按正文——正文一直在改，块 ID 不变。
 
 它只做算术和结构比对：本集时长总和是否等于各镜头 `duration_seconds` 之和、覆盖列出的
 镜头有没有既不计入也不挂起、有没有边界条目整条写成「同上」「位置不变」这类回指、

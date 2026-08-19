@@ -19,8 +19,8 @@
 
 | Skill | 做什么 |
 | --- | --- |
-| [**novel-characters**](skills/novel-characters) | 把一篇小说拆成角色设定集：人物画像、形象提示词、音色提示词、角色设定图。报告语言与出图风格可选 |
-| [**novel-outline**](skills/novel-outline) | 把一本小说改编成短剧大纲五件套：改编说明、人物表、爽点表、分集梗概、资产清单。13 道质量门全部脚本检查，支持已有大纲的体检模式 |
+| [**novel-outline**](skills/novel-outline) | 把一本小说改编成短剧大纲五件套：改编说明、人物表、爽点表、分集梗概、资产清单（含叙事道具表）。14 道质量门全部脚本检查，支持已有大纲的体检模式 |
+| [**novel-characters**](skills/novel-characters) | 把大纲定下的角色做成角色设定集：人物画像、形象提示词、音色提示词、角色设定图。吃 outline.json 预填角色表，报告语言与出图风格可选 |
 | [**novel-art**](skills/novel-art) | 给 AI 短剧出美术设定集（场景 + 叙事道具）：一致性锚点、光照与状态变体、尺度参照、无人无手白底提示词。吃 outline.json 预填清单，11 道质量门全部脚本检查 |
 | [**novel-script**](skills/novel-script) | 给 AI 短剧写剧本：场次 + 节拍流（动作与台词交替），逐集时长按语速确定性折算，钩子前 3 拍冷开场兑现是门，台词本按角色聚合带音色提示词直接对接 TTS。10 道质量门全部脚本检查 |
 | [**novel-storyboard**](skills/novel-storyboard) | 给 AI 短剧出分镜：段（一次生成 ≤15 秒）→ 分镜（2–5 秒硬门）→ 分镜图（主图钉 0.00 秒、子图钉各自切点），MiniMax H3 提示词的对齐指令与切点时刻逐字对账；分镜图拿设定图当参考图真出图，export 一键出投产包。17 道质量门全部脚本检查（第 17 道是可选挂载 shot-recipes 卡库的配方检查） |
@@ -33,15 +33,39 @@
 
 **六个 skill 的报告都支持中英双语界面**：默认中文，`render --lang en` 出全英文报告（数据内容保持原文）。
 
+## 合成一张单页
+
+五段的报告可以合成一张单页，左侧导航切换——**有哪几段就出哪几个面板**：
+
+```bash
+node scripts/report.mjs --from <demo目录> --out report.html
+```
+
+`--from` 按下面的[工作目录约定](#端到端-demo-工作目录约定)自动发现五份 json；也可以逐个指定（`--outline` `--cast` `--art` `--script` `--storyboard`）。只跑了角色那一段就只有一个面板，不报错。
+
+它是**组装器，不是第六个 skill**：不 import 任何 skill 的代码，而是调各自的 `render --html` 拿产物再拼装。所以六个 skill 一行不改、各自仍然独立可跑、可以单独拷走；某个 skill 改了渲染，这边自动跟上。
+
+合并时处理三件事——**这三件都在组装器里做，不侵入 skill**：
+
+- **样式串味**。五份报告共用 57 个类名，其中 13 个同名不同定义（`.copy` `.kpis` `.badge` `.chip`……），所以给每份样式的每条选择器加作用域前缀
+- **脚本串味**。各报告的脚本都是 `document.querySelector('.expo')` 这种全局查询，合成一页后只会命中第一个——五个导出按钮会全废。做法是给每份脚本套一层作用域代理
+- **图片路径**。各报告的图相对自己那份 json 的目录（`images/…`、`E01-01/f1.png`），合成后按输出文件的位置重算
+
+默认一次显示一个面板（五份加起来将近六十万字符）。左下角「平铺全部」把所有面板同时展开，Cmd+F 恢复全局搜索。数字键 `1`–`5` 切面板，`#pane-script` 这样的深链可以直接分享到某一屏。
+
+```bash
+node scripts/report-selftest.mjs   # 92 项断言，不起浏览器
+```
+
 丢一本小说进去，出这五套：
-
-**novel-characters · 角色设定集**
-
-![角色设定集报告](skills/novel-characters/assets/report.webp)
 
 **novel-outline · 短剧改编大纲**
 
 ![短剧改编大纲报告](skills/novel-outline/assets/report.webp)
+
+**novel-characters · 角色设定集**
+
+![角色设定集报告](skills/novel-characters/assets/report.webp)
 
 **novel-art · 美术设定集（场景 + 道具，设定图为 skill 实际生成）**
 
@@ -127,8 +151,8 @@ for f in skills/*/scripts/selftest.mjs; do node "$f"; done
 
 ```
 <demo>/
-├── characters/    ← novel-characters 产出：<剧>-cast.json / .md / -report.html
 ├── outline/       ← novel-outline 产出：<剧>-outline.json / .md / -report.html
+├── characters/    ← novel-characters 产出：<剧>-cast.json / .md / -report.html
 ├── art/           ← novel-art 产出：<剧>-art.json / .md / -report.html
 ├── script/        ← novel-script 产出：<剧>-script.json / .md / -report.html
 ├── storyboard/    ← novel-storyboard 产出：<剧>-storyboard.json / .md / -report.html

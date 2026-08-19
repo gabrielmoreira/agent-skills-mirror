@@ -278,6 +278,16 @@ to the renderer-boundary checker or its fixture suite also select that
 `check:changed` lane, so policy edits validate both their fixtures and the live
 renderer tree.
 
+Connector ownership is checked by `pnpm check:connector-boundaries`. The check
+keeps Contracts independent from Renderer, keeps Renderer Application free of
+React and host runtimes, prevents Connector packages from importing product
+owners, keeps Daemon Core independent from Application/adapters, and prevents
+Runtime from depending on Daemon Application, SQLite, or Control Plane. It also
+rejects a Renderer root barrel so Application and UI remain separately
+importable. Connector package, AgentGUI Connector integration, Desktop
+Connector adapter, or checker changes select this lane through
+`repository-checks.mjs`.
+
 `pnpm check:ui-boundaries` has a package-scoped temporary migration exception
 for `packages/agent/gui` while the carried agent activity renderer is
 being ported into tutti. During that migration the package may keep its
@@ -487,10 +497,11 @@ The current root entrypoint runs the linter from:
 - `packages/appcli/core`
 - `packages/clients/device-authority-go`
 - `packages/clients/market-go`
-- `packages/connector/daemon`
-- `packages/connector/host`
+- `packages/connector/daemon/application`
+- `packages/connector/daemon/core`
 - `packages/connector/runtime`
-- `packages/connector/store-sqlite`
+- `packages/connector/daemon/adapters/sqlite`
+- `packages/connector/daemon/adapters/controlplane`
 - `packages/device-link`
 - `packages/agent/runtimeprep`
 - `packages/workspace/files`
@@ -512,7 +523,7 @@ Changed-aware Go validation includes the nested
 `packages/agent/runtimeprep`, `packages/agent/store-sqlite`, and
 `packages/agent/store-sqlite/canonical`, `packages/clients/device-authority-go`,
 `packages/clients/market-go`,
-the four `packages/connector/*` Go modules, and `packages/device-link` modules.
+the five Connector Go modules, and `packages/device-link` modules.
 Codex app-server protocol changes should also run
 `pnpm check:codexproto-generated` when schema, generator, or generated protocol
 files are touched.

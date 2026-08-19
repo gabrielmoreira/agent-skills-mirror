@@ -1,6 +1,16 @@
 # Establish the Frame Before Grounding
 
-Load this when the frame isn't clear from the prompt — a bare link, a bare topic, or a warm invocation with no stated question (SKILL.md Phase 0). The job is to figure out what POV the user actually wants *before* spending the scout fan-out, by orienting on what they gave you and proposing — **never guessing**.
+Every Phase 0 loads this, because every run has to settle a frame before spending the scout fan-out. What happens after that follows from the frame.
+
+An intent that routes out of this skill — an explainer, or anything `references/boundaries.md` sends elsewhere — finishes here: say where the request belongs, and stop. No tier, no hatch, no grounding.
+
+Every invocation whose settled frame is a POV takes the **reversibility tier and the selection escape hatch** (in *Tier, sizing, and the selection hatch* at the end), including one whose subject and intent were obvious from the start. The orienting and proposing steps (Steps 1-3) are the path for an input that does not already say what POV the user wants — a bare link, a bare topic, a warm invocation with no stated question; on a clear frame, state it in one line and go straight to the tier and the hatch. Either way the rule is the same: propose, **never guess**.
+
+## Output mode and warm invocations
+
+By default this skill writes no document. The POV is a compact chat block, and a write-up or a `ce-compound` capture is offered at Phase 4. Do not resolve an output format or load a rendering reference up front.
+
+A **warm** invocation is a mid-session second opinion, with the question sitting in the conversation or absent. On one, read `references/invocation.md`, and take only the *question and claims-to-verify* from the conversation, never grounding.
 
 ## Why this gate exists
 
@@ -42,3 +52,17 @@ The subject is usually recoverable; the **intent** is the ambiguous part. Classi
 ## Warm invocations
 
 A warm invocation with no clear question is this same gate — the conversation is the material you orient on. Infer the decision from it, propose/confirm it, then proceed. For the rest of the warm contract (guest output, provenance buckets), see `references/invocation.md`.
+
+## Tier, sizing, and the selection hatch
+
+These two decide **every** invocation, however clear the frame already was.
+
+**Apply the selection escape hatch.** If the input is a *selection* over a field ("what should we use for auth?"), it belongs here only when the realistic field is bounded (roughly five or fewer real candidates) and the criteria are knowable. If the field can't be bounded without inventing options, or the criteria are unclear, **stop**: return a Hold and route to `ce-ideate` (to enumerate) or `ce-brainstorm` (to surface criteria), then offer to re-run.
+
+**Classify the reversibility tier — three levels.** Infer it from project signals:
+
+- **Tier 1 — two-way door:** a dependency, lint rule, or config; trivially reversible.
+- **Tier 2 — one-way but bounded:** a data store, an internal API/contract, or a migration whose blast radius stays inside this codebase.
+- **Tier 3 — one-way and high-stakes:** a security, legal, or privacy surface; a public API/contract; or an irreversible data migration.
+
+State the tier in the verdict and let the user override. The tier sizes the rest of the run (Phase 1 scout count, Phase 2 depth, Phase 3 reversal trigger): Tier 1 stays a one-screen verdict off a single combined grounding pass; Tier 2 adds the full scout fleet and an alternatives pass; Tier 3 adds deep external research, a precedent search, and a durable-record offer. Do not run a Tier-3 workup on a trivially reversible `npm i`, or hand a security-surface decision the moderate Tier-2 treatment.

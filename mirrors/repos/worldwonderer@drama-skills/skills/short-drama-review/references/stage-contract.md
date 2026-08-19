@@ -25,7 +25,7 @@
 
 ## 所有权边界
 
-- **本阶段拥有**：审查问题、审查结论与修订请求；证据指向被审查的产物与 hash。
+- **本阶段拥有**：审查问题、审查结论与修订请求；证据指向被审查的产物与其中的准确记录。
 - **本阶段继承**：精确的 artifact 引用、已接受限制与创作者覆盖。
 - **本阶段不越权**：不修改负责人的来源文件，不用个人偏好替代证据，也不把 owner 修订动作
   冒充审查动作。Self-review may record any evidence-supported verdict when it is labeled honestly.
@@ -62,7 +62,7 @@
   权限、触发与保护方式。构图既不能提前泄露该事实，也不能遮掉本环节必须传达的载体。
 - **母版、补拍与替代**：补拍默认只补充、不替代母版。普通母版不增加版本范围字段；只有
   补拍/替代版才声明 `pickup | alternate`，用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
-  去向。只有下游审查结论才能绑定固定 hash 并批准替代，不得回写形成循环引用。
+  去向。只有下游审查结论才能批准替代，不得回写形成循环引用。
 
 ## 本阶段规则
 
@@ -79,7 +79,7 @@
 | REV-07 | structural_invariant | An end-to-end drafting request cannot impersonate creator acceptance; preview chains remain provisional and undeliverable. |
 | REV-08 | craft_default | When authorized text notes report production defects, trace text/subtitle residue, music-boundary violations, wardrobe drift, axis breaks, or lip-sync mismatch to the exact prompt/spec text and keep unobserved outcomes unknown. |
 | REV-09 | reviewed_invariant | After prompt revision or repackaging, recheck source coverage and every applicable accepted directive; correct asset bindings alone do not prove compliance. |
-| REV-10 | reviewed_invariant | A project-calibration finding distinguishes input-reference from generated-result observation, binds the exact project, prompt/spec hashes, stable reference slots, production configuration, method and limits, and—when its disposition calls for a change (see REV-11)—proposes the smallest owner-routed one with a preserve set; it does not generalize across projects or infer quality from task state. |
+| REV-10 | reviewed_invariant | A project-calibration finding distinguishes input-reference from generated-result observation, binds the exact project, the prompt/spec records it observed, stable reference slots, production configuration, method and limits, and—when its disposition calls for a change (see REV-11)—proposes the smallest owner-routed one with a preserve set; it does not generalize across projects or infer quality from task state. |
 | REV-11 | reviewed_invariant | A calibration finding carries `disposition` (keep, post_production, targeted_edit, resubmit, rewrite) and `disposition_rationale` before any revision text, justified by whether the defect is text-controllable and whether it has already recurred. Dispositions that call for no change leave `required_change` empty rather than inventing one. Resubmitting identical text and appending quality adjectives are not repairs; a recurring defect routes to a structural change instead. Findings outside project calibration use `not_applicable`. |
 
 规则分级由高到低：`structural_invariant`（结构缺陷，阻断）、

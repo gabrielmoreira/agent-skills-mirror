@@ -14,12 +14,13 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $scriptDir = $PSScriptRoot
+. (Join-Path $scriptDir 'lib/RouteScope.ps1')
 if (-not $scriptDir) { $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path }
 $skillsRoot = Split-Path -Parent $scriptDir
 if (-not $PackageRoot) { $PackageRoot = Split-Path -Parent $skillsRoot }
 
 if ([string]::IsNullOrWhiteSpace($Benchmark)) {
-    $Benchmark = Join-Path $skillsRoot 'tests\routing-benchmark.json'
+    $Benchmark = Join-Path $skillsRoot 'tests/routing-benchmark.json'
 }
 if (-not (Test-Path -LiteralPath $Benchmark)) {
     Write-Host ("ERROR: benchmark not found: {0}" -f $Benchmark) -ForegroundColor Red
@@ -54,7 +55,8 @@ foreach ($c in $cases) {
         $scope = Join-Path $tmp 'route-scope.md'
         if (Test-Path -LiteralPath $scope) {
             $text = Get-Content -LiteralPath $scope -Raw -Encoding UTF8
-            if ($text -match 'primary:\s*(\S+)') { $got = $Matches[1] }
+            $parsed = Get-ReverseRouteScopeFields -Text $text
+            if ($parsed.Id) { $got = $parsed.Id }
         }
     } catch {
         $got = 'EXC:' + $_.Exception.Message

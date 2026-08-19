@@ -19,8 +19,8 @@ Returns timezone information for the given coordinates or city name. Provide eit
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `lat` | float | no | query | Latitude of the location (-90 to 90). Required when using coordinate-based lookup. |
-| `lon` | float | no | query | Longitude of the location (-180 to 180). Required when using coordinate-based lookup. |
+| `lat` | number | no | query | Latitude of the location (-90 to 90). Required when using coordinate-based lookup. |
+| `lon` | number | no | query | Longitude of the location (-180 to 180). Required when using coordinate-based lookup. |
 | `city` | string | no | query | City name for city-based lookup (e.g. 'Tokyo', 'London'). Required when not using coordinates. |
 
 ## Response Example

@@ -16,28 +16,23 @@
   "sources": {
     "<identity-owner>": {
       "owner": "short-drama-assets",
-      "artifact": "设定集/<identity-owner-file>.jsonl",
-      "hash": "<sha256>"
+      "artifact": "设定集/<identity-owner-file>.jsonl"
     },
     "<variant-owner>": {
       "owner": "short-drama-assets",
-      "artifact": "设定集/<variant-owner-file>.jsonl",
-      "hash": "<sha256>"
+      "artifact": "设定集/<variant-owner-file>.jsonl"
     },
     "props": {
       "owner": "short-drama-assets",
-      "artifact": "设定集/props.jsonl",
-      "hash": "<sha256>"
+      "artifact": "设定集/props.jsonl"
     },
     "<reference>": {
       "owner": "<reference-owner>",
-      "artifact": "<project-relative-reference-record>",
-      "hash": "<sha256>"
+      "artifact": "<project-relative-reference-record>"
     },
     "<edit-target>": {
       "owner": "short-drama-image-prompts",
-      "artifact": "<精确目标>",
-      "hash": "<sha256>"
+      "artifact": "<精确目标>"
     }
   }
 }
@@ -95,8 +90,7 @@
   ],
   "recipe": {
     "name": "<type-recipe>",
-    "version": "<suite recipe version>",
-    "hash": "<sha256>"
+    "version": "<suite recipe version>"
   },
   "intent": {
     "reuse_job": "<这张参考图后续保持什么>",
@@ -178,11 +172,7 @@
   ],
   "generic_prompt": "<从本规格渲染的可复制通用提示词>",
   "derivation": {
-    "input_hashes": [
-      "<sha256>"
-    ],
-    "renderer": "generic-markdown",
-    "rendered_hash": "<sha256>"
+    "renderer": "generic-markdown"
   },
   "provenance": "creator_project"
 }

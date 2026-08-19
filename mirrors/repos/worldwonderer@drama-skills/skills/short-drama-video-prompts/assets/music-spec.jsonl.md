@@ -9,7 +9,7 @@ once. A source key is short, lowercase and derived from the artifact basename;
 it stays stable and unique within the file.
 
 ```jsonl
-{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md"}}}
 ```
 
 Every record after the header names the snapshot through its key:
@@ -19,7 +19,7 @@ Every record after the header names the snapshot through its key:
 ```
 
 - `source_refs` carry `src` plus the record or field they point at; the
-  snapshot's `owner`, `artifact` and `hash` live in the header entry that `src`
+  artifact's `owner` and `artifact` live in the header entry that `src`
   names.
 - `scope` is the accepted timeline interval; it does not promise a supplier can
   generate that exact duration.

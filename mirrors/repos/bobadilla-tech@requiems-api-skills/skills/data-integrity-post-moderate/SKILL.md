@@ -60,11 +60,11 @@ Check text for profanity, toxicity, sentiment, and language. Returns per-categor
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `is_safe` | boolean | False when any moderation category is triggered. True otherwise. |
-| `toxicity_score` | number or null | Reserved for future use. Currently always null. |
+| `toxicity_score` | number | Reserved for future use. Currently always null. |
 | `sentiment` | string | Detected sentiment: positive, negative, or neutral |
-| `language` | string or null | Detected or provided ISO 639-1 language code. Null when detection confidence is 0. |
-| `language_confidence` | number or null | Confidence in the detected language from 0.0 to 1.0. 1.0 when language was explicitly provided. |
-| `flags` | array | Triggered moderation flags. Currently possible: text_profanity |
+| `language` | string | Detected or provided ISO 639-1 language code. Null when detection confidence is 0. |
+| `language_confidence` | number | Confidence in the detected language from 0.0 to 1.0. 1.0 when language was explicitly provided. |
+| `flags` | array<string> | Triggered moderation flags. Currently possible: text_profanity |
 | `categories` | object | Per-category boolean flags: profanity, hate_speech, spam, violence |
 
 ## Errors

@@ -33,7 +33,7 @@ Returns a sorted list of all distinct muscle names (combining target and seconda
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `items` | array | Sorted list of all distinct muscle names |
+| `items` | array<string> | Sorted list of all distinct muscle names |
 | `total` | integer | Total number of distinct muscles |
 
 ## Errors

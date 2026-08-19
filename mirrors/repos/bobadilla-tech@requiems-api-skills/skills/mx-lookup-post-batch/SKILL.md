@@ -19,7 +19,7 @@ Retrieve MX records for up to 50 domains in a single request. Results for each d
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `domains` | array | yes | body | Array of domains to lookup (min: 1, max: 50). |
+| `domains` | array<string> | yes | body | Array of domains to lookup (min: 1, max: 50). |
 
 ## Request Example
 
@@ -83,13 +83,13 @@ Retrieve MX records for up to 50 domains in a single request. Results for each d
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | MX lookup results for each input domain, in the same order as the input. |
+| `results` | array<object> | MX lookup results for each input domain, in the same order as the input. |
 | `results[].domain` | string | The domain name that was queried. |
 | `results[].found` | boolean | Whether MX records were found for the domain. |
 | `results[].error` | string | Error message if the lookup failed. Empty if found is true. |
 | `results[].data` | object | MX lookup data. Present only when found is true. |
 | `results[].data.domain` | string | The domain name associated with the MX records. |
-| `results[].data.records` | array | List of MX records sorted by priority ascending (lower value means higher priority). |
+| `results[].data.records` | array<object> | List of MX records sorted by priority ascending (lower value means higher priority). |
 | `results[].data.records[].host` | string | Hostname of the mail server. |
 | `results[].data.records[].priority` | number | Priority of the mail server. Lower value means higher priority. |
 | `total` | number | Total number of results returned. |

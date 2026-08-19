@@ -19,13 +19,18 @@ modlens config set <provider>.<field> <value>   # 字段：apiKey、baseUrl、mo
 
 ## 配置文件的完整形状
 
-所有内容都在五个顶层键之下，全部可选。下面的示例一次性展示了所有支持的键和字段（真实文件只需要写你用到的部分）。文件不存在就全用默认值。provider 的设置放在 `providers.<name>` 下面，不在顶层，手工编辑最常犯的就是这个错。
+所有内容都在六个顶层键之下，全部可选。下面的示例一次性展示了所有支持的键和字段（真实文件只需要写你用到的部分）。文件不存在就全用默认值。provider 的设置放在 `providers.<name>` 下面，不在顶层，手工编辑最常犯的就是这个错。
 
 ```json
 {
   "provider": "gemini-api",
   "proxy": "http://127.0.0.1:7890",
   "reuse": { "claude": true, "codex": true, "opencode": false, "pi": true, "grok": true },
+  "saved": {
+    "openai": {
+      "dashscope": { "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1", "apiKey": "sk-...", "model": "qwen3-vl-plus" }
+    }
+  },
   "guards": {
     "allowModels": ["deepseek-v4-*", "glm-5.*", "minimax-m2.5*", "qwen3-coder*"],
     "denyModels": ["glm-*v*", "deepseek-vl*"],
@@ -62,6 +67,7 @@ modlens config set <provider>.<field> <value>   # 字段：apiKey、baseUrl、mo
 - `providers.<name>.<field>`：共六个字段，`apiKey`、`baseUrl`、`model`、`proxy`、`extraBody`、`structuredOutput`（仅 openai 路线）。每个 provider 条目都可选，条目里的每个字段也都可选。别名键同样会被读取（存在 `gemini` 下的设置在解析到 `gemini-api` 时也能找到），冲突时标准键胜出。
 - `providers.<name>.extraBody`：一个 JSON 对象，合并进 API provider（`gemini-api`、`openai`、`anthropic`）的请求体，用来传厂商有而 modlens 没有对应参数的开关。最常见的用途是关掉思考，见下文小节。嵌套对象逐键合并，所以加一个开关不会动到该块里的其他内容。承载图片、提示词和各路线自身强制机制的字段会被拒绝，报错会点名该字段。`openai` 路线上的 `response_format` 不在此列：在那里设置它就是有意替换掉 modlens 本来会发的那份 schema。三个 CLI provider 不发请求体，所以在 `antigravity-cli`、`claude-cli` 或 `kimi-cli` 上运行时它会被忽略，并在 `meta.warnings` 里说明。
 - `providers.openai.structuredOutput`：设为 `true` 时，让 OpenAI 兼容网关自己强制执行视觉契约，以 `response_format: json_schema` 的严格形式发出。默认关闭，因为不支持结构化输出的网关会对这个字段返回 400。你在 `extraBody` 里设的 `response_format` 优先级更高。
+- `saved.openai.<标签>`：openai 槽的命名存档，只有 `modlens config save openai <标签>` 写入、`modlens config use openai <标签>` 整包换入。切换网关不再丢上一个端点的 key：`use` 拒绝覆盖没有任何标签保存过的活跃槽（`--discard` 表示明确放弃）。解析、guard、failover、环境变量规则都不读这个区，活跃槽始终是唯一生效的 openai 路由。
 - `guards`：调用 guard，给在同一个客户端里既跑纯文本模型又跑视觉模型的人用。两个列表都放 glob 模式（支持 `*` 和 `?`，不区分大小写，同时匹配模型名和 `provider/model`），用 `modlens config set guards.denyModels '["gemini-3*"]'` 或 `guards.allowModels` 设置（JSON 数组或逗号分隔的列表都行，传空则清除）。两种写法表达同一个意图，选列表更短的那种：
   - 只用 `denyModels`：除了列出的视觉模型，其余全部运行引擎。适合你接入的模型大多是纯文本的情况。
   - `allowModels` 非空（白名单模式）：只有列出的模型运行引擎，其他所有已识别的模型一律拒绝。适合 2026 年的实际格局，纯文本模型才是那份短名单。deny 模式仍然优先于 allow 匹配，所以宽泛的 allow 可以把视觉变体剔出去，正如上面的示例：`glm-5.*` 放行文本系列，`glm-*v*` 抓住 `glm-5v-turbo`。allow 模式要锚定得紧一些（写 `deepseek-v4-*` 而不是 `deepseek*`），这样厂商下一代多模态型号会自动掉出名单，等你检查过再上场。

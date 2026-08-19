@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 158 file(s) materialized.
+Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 165 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 158
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 158 |
+| Files         | 165 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -186,37 +186,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 125 | ✓ | [`skills/functions/LICENSE.txt`](skills/functions/LICENSE.txt) |
 | 126 | ✓ | [`skills/functions/REFERENCE.md`](skills/functions/REFERENCE.md) |
 | 127 | ✓ | [`skills/functions/SKILL.md`](skills/functions/SKILL.md) |
-| 128 | ✓ | [`skills/safe-browser/LICENSE.txt`](skills/safe-browser/LICENSE.txt) |
-| 129 | ✓ | [`skills/safe-browser/SKILL.md`](skills/safe-browser/SKILL.md) |
-| 130 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/.gitignore`](skills/safe-browser/templates/claude-agent-sdk/.gitignore) |
-| 131 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs`](skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs) |
-| 132 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package-lock.json`](skills/safe-browser/templates/claude-agent-sdk/package-lock.json) |
-| 133 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package.json`](skills/safe-browser/templates/claude-agent-sdk/package.json) |
-| 134 | ✓ | [`skills/search/EXAMPLES.md`](skills/search/EXAMPLES.md) |
-| 135 | ✓ | [`skills/search/LICENSE.txt`](skills/search/LICENSE.txt) |
-| 136 | ✓ | [`skills/search/REFERENCE.md`](skills/search/REFERENCE.md) |
-| 137 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
-| 138 | ✓ | [`skills/ui-test/EXAMPLES.md`](skills/ui-test/EXAMPLES.md) |
-| 139 | ✓ | [`skills/ui-test/LICENSE.txt`](skills/ui-test/LICENSE.txt) |
-| 140 | ✓ | [`skills/ui-test/README.md`](skills/ui-test/README.md) |
-| 141 | ✓ | [`skills/ui-test/references/adversarial-patterns.md`](skills/ui-test/references/adversarial-patterns.md) |
-| 142 | ✓ | [`skills/ui-test/references/browser-recipes.md`](skills/ui-test/references/browser-recipes.md) |
-| 143 | ✓ | [`skills/ui-test/references/design-consistency.md`](skills/ui-test/references/design-consistency.md) |
-| 144 | ✓ | [`skills/ui-test/references/design-system.example.md`](skills/ui-test/references/design-system.example.md) |
-| 145 | ✓ | [`skills/ui-test/references/exploratory-testing.md`](skills/ui-test/references/exploratory-testing.md) |
-| 146 | ✓ | [`skills/ui-test/references/parallel-testing.md`](skills/ui-test/references/parallel-testing.md) |
-| 147 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
-| 148 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
-| 149 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
-| 150 | ✓ | [`skills/webmcp-gen/.gitignore`](skills/webmcp-gen/.gitignore) |
-| 151 | ✓ | [`skills/webmcp-gen/LICENSE.txt`](skills/webmcp-gen/LICENSE.txt) |
-| 152 | ✓ | [`skills/webmcp-gen/package.json`](skills/webmcp-gen/package.json) |
-| 153 | ✓ | [`skills/webmcp-gen/pnpm-lock.yaml`](skills/webmcp-gen/pnpm-lock.yaml) |
-| 154 | ✓ | [`skills/webmcp-gen/scripts/compile.mjs`](skills/webmcp-gen/scripts/compile.mjs) |
-| 155 | ✓ | [`skills/webmcp-gen/scripts/generate-stagehand-example.mjs`](skills/webmcp-gen/scripts/generate-stagehand-example.mjs) |
-| 156 | ✓ | [`skills/webmcp-gen/scripts/scaffold.mjs`](skills/webmcp-gen/scripts/scaffold.mjs) |
-| 157 | ✓ | [`skills/webmcp-gen/scripts/validate.mjs`](skills/webmcp-gen/scripts/validate.mjs) |
-| 158 | ✓ | [`skills/webmcp-gen/SKILL.md`](skills/webmcp-gen/SKILL.md) |
+| 128 | ✓ | [`skills/optimize-agent-prompt/agents/openai.yaml`](skills/optimize-agent-prompt/agents/openai.yaml) |
+| 129 | ✓ | [`skills/optimize-agent-prompt/evals/evals.json`](skills/optimize-agent-prompt/evals/evals.json) |
+| 130 | ✓ | [`skills/optimize-agent-prompt/LICENSE.txt`](skills/optimize-agent-prompt/LICENSE.txt) |
+| 131 | ✓ | [`skills/optimize-agent-prompt/references/api.md`](skills/optimize-agent-prompt/references/api.md) |
+| 132 | ✓ | [`skills/optimize-agent-prompt/references/evaluation.md`](skills/optimize-agent-prompt/references/evaluation.md) |
+| 133 | ✓ | [`skills/optimize-agent-prompt/scripts/optimize_agent_prompt.mjs`](skills/optimize-agent-prompt/scripts/optimize_agent_prompt.mjs) |
+| 134 | ✓ | [`skills/optimize-agent-prompt/SKILL.md`](skills/optimize-agent-prompt/SKILL.md) |
+| 135 | ✓ | [`skills/safe-browser/LICENSE.txt`](skills/safe-browser/LICENSE.txt) |
+| 136 | ✓ | [`skills/safe-browser/SKILL.md`](skills/safe-browser/SKILL.md) |
+| 137 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/.gitignore`](skills/safe-browser/templates/claude-agent-sdk/.gitignore) |
+| 138 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs`](skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs) |
+| 139 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package-lock.json`](skills/safe-browser/templates/claude-agent-sdk/package-lock.json) |
+| 140 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package.json`](skills/safe-browser/templates/claude-agent-sdk/package.json) |
+| 141 | ✓ | [`skills/search/EXAMPLES.md`](skills/search/EXAMPLES.md) |
+| 142 | ✓ | [`skills/search/LICENSE.txt`](skills/search/LICENSE.txt) |
+| 143 | ✓ | [`skills/search/REFERENCE.md`](skills/search/REFERENCE.md) |
+| 144 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
+| 145 | ✓ | [`skills/ui-test/EXAMPLES.md`](skills/ui-test/EXAMPLES.md) |
+| 146 | ✓ | [`skills/ui-test/LICENSE.txt`](skills/ui-test/LICENSE.txt) |
+| 147 | ✓ | [`skills/ui-test/README.md`](skills/ui-test/README.md) |
+| 148 | ✓ | [`skills/ui-test/references/adversarial-patterns.md`](skills/ui-test/references/adversarial-patterns.md) |
+| 149 | ✓ | [`skills/ui-test/references/browser-recipes.md`](skills/ui-test/references/browser-recipes.md) |
+| 150 | ✓ | [`skills/ui-test/references/design-consistency.md`](skills/ui-test/references/design-consistency.md) |
+| 151 | ✓ | [`skills/ui-test/references/design-system.example.md`](skills/ui-test/references/design-system.example.md) |
+| 152 | ✓ | [`skills/ui-test/references/exploratory-testing.md`](skills/ui-test/references/exploratory-testing.md) |
+| 153 | ✓ | [`skills/ui-test/references/parallel-testing.md`](skills/ui-test/references/parallel-testing.md) |
+| 154 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
+| 155 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
+| 156 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
+| 157 | ✓ | [`skills/webmcp-gen/.gitignore`](skills/webmcp-gen/.gitignore) |
+| 158 | ✓ | [`skills/webmcp-gen/LICENSE.txt`](skills/webmcp-gen/LICENSE.txt) |
+| 159 | ✓ | [`skills/webmcp-gen/package.json`](skills/webmcp-gen/package.json) |
+| 160 | ✓ | [`skills/webmcp-gen/pnpm-lock.yaml`](skills/webmcp-gen/pnpm-lock.yaml) |
+| 161 | ✓ | [`skills/webmcp-gen/scripts/compile.mjs`](skills/webmcp-gen/scripts/compile.mjs) |
+| 162 | ✓ | [`skills/webmcp-gen/scripts/generate-stagehand-example.mjs`](skills/webmcp-gen/scripts/generate-stagehand-example.mjs) |
+| 163 | ✓ | [`skills/webmcp-gen/scripts/scaffold.mjs`](skills/webmcp-gen/scripts/scaffold.mjs) |
+| 164 | ✓ | [`skills/webmcp-gen/scripts/validate.mjs`](skills/webmcp-gen/scripts/validate.mjs) |
+| 165 | ✓ | [`skills/webmcp-gen/SKILL.md`](skills/webmcp-gen/SKILL.md) |
 
 ---
 

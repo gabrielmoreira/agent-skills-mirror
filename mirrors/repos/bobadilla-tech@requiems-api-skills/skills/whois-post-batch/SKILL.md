@@ -19,7 +19,7 @@ Returns WHOIS information for up to 50 domains in a single request. Results are 
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `domains` | array | yes | body | Array of domain names. Min: 1, Max: 50. |
+| `domains` | array<string> | yes | body | Array of domain names. Min: 1, Max: 50. |
 
 ## Response Example
 
@@ -64,7 +64,7 @@ Returns WHOIS information for up to 50 domains in a single request. Results are 
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | One entry per domain, in the same order as the input |
+| `results` | array<object> | One entry per domain, in the same order as the input |
 | `results[].domain` | string | Domain name requested in the batch |
 | `results[].found` | boolean | False when WHOIS data could not be found |
 | `results[].error` | string | Error message when found is false |

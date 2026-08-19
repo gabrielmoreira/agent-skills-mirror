@@ -9,11 +9,11 @@
 - `generated_result`：某个准确提示词/规格版本、参考槽位集合和制作配置下的结果观察；它可以支持
   项目内校准，但不能自动变成跨项目、跨配置或跨制作方式的定律。
 
-两种记录都要绑定被观察媒体 hash、观察方法、准确文本 refs、观察区域/时间段、限制与观察者。
+两种记录都要写明被观察的媒体、观察方法、准确文本 refs、观察区域/时间段、限制与观察者。
 `generated_result` 还要绑定 `prompt_or_spec_refs`、每个稳定 `slot_id/order`、production profile
 与 `valid_only_for`。模板见核心的生产观察记录；审查只读取项目提供的记录，不在公开运行时找数据。
 `evidence_state: active` 只表示这份有界观察仍可作为证据使用，不表示内容被接受或质量通过；
-证据被撤回、媒体 hash 不再匹配或来源无法复核时，不沿用该记录做校准，而是保留历史并另记失效原因。
+证据被撤回、被观察的媒体已经换过或来源无法复核时，不沿用该记录做校准，而是保留历史并另记失效原因。
 不要给观察套用创作产物的 `candidate/accepted` 状态。
 实际项目记录建议放在受保护的 `输入/production-observations.jsonl`（legacy 项目为
 `inputs/production-observations.jsonl`），由创作者或获授权观察者提供；它不属于任何 skill 的

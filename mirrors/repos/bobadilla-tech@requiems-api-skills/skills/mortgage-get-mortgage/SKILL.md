@@ -67,7 +67,7 @@ Returns the monthly payment, total cost, and full amortization schedule for a fi
 | `monthly_payment` | number | Fixed monthly payment amount (rounded to 2 decimal places) |
 | `total_payment` | number | Total amount paid over the life of the loan |
 | `total_interest` | number | Total interest paid (total_payment minus principal) |
-| `schedule` | array | Full amortization schedule — one entry per month (years × 12 entries) |
+| `schedule` | array<object> | Full amortization schedule — one entry per month (years × 12 entries) |
 | `schedule[].month` | integer | Month number (1 to years × 12) |
 | `schedule[].payment` | number | Total payment for this month |
 | `schedule[].principal` | number | Portion of this month's payment applied to principal |

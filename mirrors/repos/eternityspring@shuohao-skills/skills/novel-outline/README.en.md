@@ -16,7 +16,7 @@ Outputs `outline.json`, a Markdown report, and a self-contained `outline-report.
 
 ## The quality gates are code
 
-The core stance of this skill: **a checklist the model grades itself on is worthless.** All 13 gates are deterministic checks in `validate`, not prose for the model to read — per-tier cast caps (leads 1–5, supporting ≤ 10, functional ≤ 10), a primary-scene cap that **scales with episode count** (4 + ⌈episodes/10⌉ clamped to 5–15 — tuned for AI production, where scenes are generated and the cap guards consistency assets rather than set-building money), reuse plans for one-off scenes, beat gaps, episode-1 hook, major-beat timing, three-fields-per-episode, crowd-scene plans, risk keywords flagged, reference integrity (no jobless characters, no unused scenes, no dangling IDs), and no quoted dialogue in synopses.
+The core stance of this skill: **a checklist the model grades itself on is worthless.** All 14 gates are deterministic checks in `validate`, not prose for the model to read — per-tier cast caps (leads 1–5, supporting ≤ 10, functional ≤ 10), a narrative-prop cap (≤ 8; `props` is optional and the gate says so when absent), a primary-scene cap that **scales with episode count** (4 + ⌈episodes/10⌉ clamped to 5–15 — tuned for AI production, where scenes are generated and the cap guards consistency assets rather than set-building money), reuse plans for one-off scenes, beat gaps, episode-1 hook, major-beat timing, three-fields-per-episode, crowd-scene plans, risk keywords flagged, reference integrity (no jobless characters, no unused scenes, no unused props, no dangling IDs), and no quoted dialogue in synopses.
 
 Why tiers instead of one flat cap: a flat cap conflates *who the audience must remember* with *how many consistent faces production must maintain*. The lead cap guards screen time and memory; the support/functional caps guard **AI character-asset cost** — and the asset list converts tiers into workload automatically (leads → full model sheets, supporting → bust references, functional → prompt-only). Unnamed extras stay off the table entirely. Functional roles legitimately have no arc — the doctor is there to stitch a wound.
 
@@ -65,7 +65,9 @@ An 800k-character novel doesn't fit in context. `chunk` splits by chapter headin
 
 ## Relationship to novel-characters
 
-novel-characters owns character design (profiles, image/voice prompts, model sheets); novel-outline owns adaptation structure (cutting, merging, beat placement, episodes). If you have a `cast.json`, feed it in as character raw material. This skill writes no dialogue, no storyboards, no generation prompts.
+novel-outline owns adaptation structure (cutting, merging, beat placement, episodes); novel-characters owns character design (profiles, image/voice prompts, model sheets).
+
+**The outline sits upstream of the character bible**: the `characters` block already settles who is in, who is out, and who leads, so the character pass works from that roster instead of re-deciding it. The reverse also works — if you already have a `cast.json`, feed it in as character raw material instead of re-reading the source. This skill writes no dialogue, no storyboards, no generation prompts.
 
 ## Selftest
 
@@ -73,6 +75,6 @@ novel-characters owns character design (profiles, image/voice prompts, model she
 node scripts/selftest.mjs
 ```
 
-219 assertions — chunking, validation, gate-defeating cases, asset aggregation, rendering (both UI languages), export. No model calls, runs in about a second.
+249 assertions — chunking, validation, gate-defeating cases, asset aggregation, rendering (both UI languages), export. No model calls, runs in about a second.
 
 **Only tested on macOS + Node 24.**

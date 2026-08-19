@@ -22,7 +22,7 @@ from typing import Any, NamedTuple
 
 # Creators run these scripts on whatever interpreter their machine provides, so
 # an unsupported version must say so instead of failing inside an import.
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "short-drama needs Python {}.{} or newer; this interpreter is {}.{}".format(
@@ -48,7 +48,6 @@ class ResolvedRef(NamedTuple):
 
     owner: str
     artifact: str
-    hash: str
     record_id: str | None
     field: str | None
     authority: str | None
@@ -91,25 +90,24 @@ def resolve_ref(
             return None, RefFinding(
                 "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
             )
-        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
-        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+        owner, artifact = entry.get("owner"), entry.get("artifact")
+        if not (isinstance(owner, str) and isinstance(artifact, str)):
             return None, RefFinding(
-                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact/hash"
+                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact"
             )
-    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
-        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact")):
+        owner, artifact = ref["owner"], ref["artifact"]
     else:
         return None, RefFinding(
-            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact"
         )
     optional = {
         key: ref[key] for key in ("record_id", "field", "authority") if isinstance(ref.get(key), str)
     }
     return (
         ResolvedRef(
-            owner,
-            artifact,
-            digest,
+        owner,
+        artifact,
             optional.get("record_id"),
             optional.get("field"),
             optional.get("authority"),
@@ -335,7 +333,8 @@ def check_episode_duration(
             findings.append(
                 _finding(
                     "SHT16_DISPOSITION_CLAIMS_A_TARGET",
-                    "no target is declared, so the disposition cannot judge one",
+                    "no target is declared, so the disposition cannot judge one; "
+                    "leave it unset or use no_target_declared",
                 )
             )
         return findings
@@ -355,15 +354,14 @@ def check_episode_duration(
                 computed=round(expected, 6),
             )
         )
-    if duration.get("disposition") not in {
-        "within_creator_tolerance",
-        "creator_accepted_overrun",
-        "to_revise",
-    }:
+    allowed = ("within_creator_tolerance", "creator_accepted_overrun", "to_revise")
+    if duration.get("disposition") not in set(allowed):
         findings.append(
             _finding(
                 "SHT16_DISPOSITION_MISSING",
-                "a declared target needs a disposition for its delta",
+                "a declared target needs a disposition for its delta; "
+                f"use one of {', '.join(allowed)}",
+                stated=duration.get("disposition"),
             )
         )
     return findings
@@ -500,18 +498,89 @@ def _declared_target(project: Path | None) -> float | None:
     return float(value)
 
 
+# A screenplay block that no shot claims is a block nobody will film. A block
+# two shots claim is a block the edit will show twice. Shots bind to the
+# screenplay through the index -- stable block IDs -- not through the prose,
+# because the prose is edited constantly and the IDs survive that.
+def screenplay_block_ids(index_path: Path) -> list[str]:
+    _sources, records = _load_jsonl(index_path)
+    return [
+        str(record["block_id"])
+        for record in records
+        if record.get("record_type") == "block" and isinstance(record.get("block_id"), str)
+    ]
+
+
+def check_screenplay_coverage(
+    shots: list[dict[str, Any]],
+    shot_sources: dict[str, Any],
+    index_path: Path | None,
+) -> list[dict[str, Any]]:
+    if index_path is None:
+        return []
+    try:
+        wanted = screenplay_block_ids(index_path)
+    except OSError as error:
+        raise CheckError(f"screenplay index cannot be read: {error}") from error
+
+    claims: dict[str, list[str]] = {block_id: [] for block_id in wanted}
+    unknown: list[dict[str, Any]] = []
+    for shot in shots:
+        shot_id = shot.get("shot_id")
+        for reference in shot.get("source_refs") or []:
+            resolved, _defect = resolve_ref(reference, shot_sources, "source_refs")
+            if resolved is None or resolved.record_id is None:
+                continue
+            record_id = str(resolved.record_id)
+            if record_id in claims:
+                claims[record_id].append(shot_id)
+            elif resolved.artifact.endswith("screenplay-index.jsonl"):
+                unknown.append({"shot_id": shot_id, "block_id": record_id})
+
+    findings = []
+    for block_id, owners in claims.items():
+        if not owners:
+            findings.append(
+                _finding(
+                    "SHT21_BLOCK_UNCLAIMED",
+                    "no shot claims this screenplay block",
+                    block_id=block_id,
+                )
+            )
+        elif len(owners) > 1:
+            findings.append(
+                _finding(
+                    "SHT21_BLOCK_CLAIMED_TWICE",
+                    "more than one shot claims the same screenplay block",
+                    block_id=block_id,
+                    shot_ids=owners,
+                )
+            )
+    for stray in unknown:
+        findings.append(
+            _finding(
+                "SHT21_BLOCK_NOT_IN_SCREENPLAY",
+                "a shot claims a block that is not in the screenplay index",
+                **stray,
+            )
+        )
+    return findings
+
+
 def check(
     coverage_path: Path,
     shots_path: Path,
     keyframes_path: Path | None,
     project_path: Path | None,
+    screenplay_index_path: Path | None = None,
 ) -> dict[str, Any]:
     coverage = _load_json(coverage_path)
     if not isinstance(coverage, dict):
         raise CheckError("coverage must be a JSON object")
-    _, shots = _load_jsonl(shots_path)
+    shot_sources, shots = _load_jsonl(shots_path)
     findings = check_episode_duration(coverage, shots, _declared_target(project_path))
     findings.extend(check_boundary_entries(shots))
+    findings.extend(check_screenplay_coverage(shots, shot_sources, screenplay_index_path))
     keyframes: list[dict[str, Any]] | None = None
     if keyframes_path is not None:
         keyframe_sources, keyframes = _load_jsonl(keyframes_path)
@@ -536,6 +605,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--shots", type=Path, required=True)
     parser.add_argument("--keyframes", type=Path)
     parser.add_argument(
+        "--screenplay-index",
+        type=Path,
+        help="screenplay-index.jsonl, so every block is claimed by exactly one shot",
+    )
+    parser.add_argument(
         "--project",
         type=Path,
         help="short-drama.json, so a declared per-episode target is compared",
@@ -546,7 +620,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
-        result = check(args.coverage, args.shots, args.keyframes, args.project)
+        result = check(
+            args.coverage, args.shots, args.keyframes, args.project, args.screenplay_index
+        )
     except CheckError as error:
         print(f"{type(error).__name__}: {error}", file=sys.stderr)
         return 2

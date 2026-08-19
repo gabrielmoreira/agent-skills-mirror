@@ -53,7 +53,7 @@ Returns up to 50 random quotes in a single request. Each quote counts as one uni
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Array of random quotes, one per requested count. |
+| `results` | array<object> | Array of random quotes, one per requested count. |
 | `results[].id` | integer | Unique identifier for the quote. |
 | `results[].text` | string | The quote text. |
 | `results[].author` | string | Name of the person who said or wrote the quote. May be empty. |

@@ -51,57 +51,60 @@ python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --
 
 ## 优先级（高 → 低）
 
+> 顺序必须与 `config/routing.json` 的 `priority` 数组一致。改路由只改 JSON，再改本表。`verify-routing-coherence.ps1` 会解析本表。
+
 | ID | 条件 | PRIMARY |
 |----|------|---------|
+| **R4** | DSL VM / fireye / 自定义 opcode VM | `reverse-engineering/dsl-vm-reverse/` |
 | **R1** | APK / smali / jadx / apktool | `apk-reverse/` |
 | **R2** | IPA / iOS / Objection / MobSF / mobile | `mobile-reverse/` |
 | **R3** | JS 签名 / 前端加密 / jshook / CDP | `js-reverse/` |
-| **R4** | DSL VM / fireye / 自定义 opcode VM | `reverse-engineering/dsl-vm-reverse/` |
+| **R30** | 浏览器扩展逆向 | `browser-extension-reverse/` |
+| **R31** | macOS / Mach-O | `macos-reverse/` |
+| **R33** | Go / Rust 二进制 | `go-rust-reverse/` |
 | **R5** | .NET / dnSpy / de4dot / ConfuserEx | `dotnet-reverse/` |
 | **R9** | 恶意样本 / YARA / 沙箱 | `malware-analysis/` |
+| **R21** | 协议 / Protobuf / PCAP 协议 | `protocol-reverse/` |
+| **R22** | Ghidra / 开源反编译 | `ghidra-reverse/` |
 | **R6** | IDA / 反编译 / 反汇编深挖 | `ida-reverse/` |
 | **R7** | radare2 / r2 | `radare2/` |
 | **R8** | 固件 / binwalk / IoT / EMBA | `firmware-pentest/` |
+| **R34** | 硬件调试口 / UART/JTAG | `hardware-security/` |
+| **R28** | OT / ICS / 工控 | `ot-ics/` |
+| **R17** | pwn / ROP / 堆栈利用 | `pwn-chain/` |
+| **R16** | N-day / 补丁差分 | `patch-diff-exploit/` |
+| **R18** | EDR / 免杀 / syscall | `edr-bypass-re/` |
+| **R24** | Windows / AD / Kerberos / AD CS | `windows-ad/` |
+| **R37** | 联邦身份 SAML/OIDC | `identity-federation/` |
+| **R23** | 云 / 容器 / K8s | `cloud-k8s/` |
+| **R35** | 数据库安全 | `database-security/` |
+| **R25** | 取证 / 内存转储 / 时间线 | `digital-forensics/` |
+| **R36** | 邮件 / 钓鱼分析 | `email-security/` |
+| **R29** | Wi-Fi / 无线渗透 | `wifi-wireless/` |
+| **R38** | RF / SDR 研究 | `radio-sdr/` |
+| **R32** | 厚客户端安全 | `thick-client/` |
+| **R26** | 代码审计 / SAST / Semgrep | `code-audit/` |
+| **R27** | 威胁狩猎 / 检测工程 / 蓝队 | `threat-hunting/` |
 | **R10** | 攻击链 / 红队 / 横向 / 完整渗透 | `attack-chain/` |
 | **R11** | Nmap / Nuclei / SQLMap / SRC / 渗透工具 | `pentest-tools/` |
 | **R12** | API / GraphQL / BOLA / JWT 攻击 | `api-security/` |
 | **R13** | SBOM / Trivy / 供应链 | `supply-chain-security/` |
 | **R14** | LLM / Prompt 注入 / Agent 安全 | `llm-security/` |
 | **R15** | bindiff / 符号迁移 / PDB | `binary-diff/` |
-| **R16** | N-day / 补丁差分 | `patch-diff-exploit/` |
-| **R17** | pwn / ROP / 堆栈利用 | `pwn-chain/` |
-| **R18** | EDR / 免杀 / syscall | `edr-bypass-re/` |
 | **R19** | 浏览器/桌面自动化 | `browser-automation/` |
+| **R40** | Case / Evidence 图审查 | `case-review/` |
 | **R20** | 报告 / writeup | `docs-generator/` |
 | **R39** | 图表 / Mermaid / Graphviz / PlantUML / 架构图 | `diagram-generator/` |
-| **R40** | Case / Evidence 图审查 | `case-review/` |
-| **R21** | 协议 / Protobuf / PCAP 协议 | `protocol-reverse/` |
-| **R22** | Ghidra / 开源反编译 | `ghidra-reverse/` |
-| **R23** | 云 / 容器 / K8s | `cloud-k8s/` |
-| **R24** | Windows / AD / Kerberos / AD CS | `windows-ad/` |
-| **R25** | 取证 / 内存转储 / 时间线 | `digital-forensics/` |
-| **R26** | 代码审计 / SAST / Semgrep | `code-audit/` |
-| **R27** | 威胁狩猎 / 检测工程 / 蓝队 | `threat-hunting/` |
-| **R28** | OT / ICS / 工控 | `ot-ics/` |
-| **R29** | Wi-Fi / 无线渗透 | `wifi-wireless/` |
-| **R30** | 浏览器扩展逆向 | `browser-extension-reverse/` |
-| **R31** | macOS / Mach-O | `macos-reverse/` |
-| **R32** | 厚客户端安全 | `thick-client/` |
-| **R33** | Go / Rust 二进制 | `go-rust-reverse/` |
-| **R34** | 硬件调试口 / UART/JTAG | `hardware-security/` |
-| **R35** | 数据库安全 | `database-security/` |
-| **R36** | 邮件 / 钓鱼分析 | `email-security/` |
-| **R37** | 联邦身份 SAML/OIDC | `identity-federation/` |
-| **R38** | RF / SDR 研究 | `radio-sdr/` |
+| **R41** | CTF / AWD / 靶场（单入口，不展开 40 个子技能） | `ctf-sandbox/` |
 | **R0** | 通用逆向 / 反调试 / OLLVM / 未知二进制 | `reverse-engineering/` |
 
-未命中强关键词 → PRIMARY=`R0`，并提示打开 `routing.md`。
+未命中强关键词 → PRIMARY=`R0`，并提示打开 `routing.md`（歧义附录，不是第二套路由器）。
 
 ## 边界
 
 | 任务 | 处理 |
 |------|------|
-| 纯 CTF 多类型编排 | `../CTF-Sandbox-Orchestrator/` |
+| 纯 CTF 多类型编排 | PRIMARY `ctf-sandbox/` → sidecar `../CTF-Sandbox-Orchestrator/` |
 
 ## 读序
 

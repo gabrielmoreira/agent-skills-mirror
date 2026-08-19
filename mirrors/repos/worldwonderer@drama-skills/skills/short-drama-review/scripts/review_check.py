@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 from typing import Any, NamedTuple
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("review_check.py requires Python 3.10 or newer")
+    raise SystemExit("review_check.py requires Python 3.9 or newer")
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 HASH_RE = re.compile(r"[0-9a-f]{64}")
@@ -43,7 +43,6 @@ class ResolvedRef(NamedTuple):
 
     owner: str
     artifact: str
-    hash: str
     record_id: str | None
     field: str | None
     authority: str | None
@@ -86,25 +85,24 @@ def resolve_ref(
             return None, RefFinding(
                 "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
             )
-        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
-        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+        owner, artifact = entry.get("owner"), entry.get("artifact")
+        if not (isinstance(owner, str) and isinstance(artifact, str)):
             return None, RefFinding(
-                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact/hash"
+                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact"
             )
-    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
-        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact")):
+        owner, artifact = ref["owner"], ref["artifact"]
     else:
         return None, RefFinding(
-            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact"
         )
     optional = {
         key: ref[key] for key in ("record_id", "field", "authority") if isinstance(ref.get(key), str)
     }
     return (
         ResolvedRef(
-            owner,
-            artifact,
-            digest,
+        owner,
+        artifact,
             optional.get("record_id"),
             optional.get("field"),
             optional.get("authority"),
@@ -184,8 +182,6 @@ def validate_ref(
     for key, field_value in (("owner", resolved.owner), ("artifact", resolved.artifact)):
         if not field_value.strip():
             raise ValidationError(f"{label}: {key} must be non-empty text")
-    if HASH_RE.fullmatch(resolved.hash) is None:
-        raise ValidationError(f"{label}: hash must be lowercase sha256")
     if not record_optional and not resolved.record_id and not resolved.field:
         raise ValidationError(f"{label}: record_id or field is required")
 
@@ -217,7 +213,10 @@ def validate_findings(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]
             raise ValidationError(f"{label}: invalid status")
         disposition = finding.get("disposition")
         if disposition not in DISPOSITIONS:
-            raise ValidationError(f"{label}: invalid disposition")
+            raise ValidationError(
+                f"{label}: invalid disposition {disposition!r}; "
+                f"use one of {', '.join(sorted(DISPOSITIONS))}"
+            )
         if disposition in {"targeted_edit", "resubmit", "rewrite"} and not finding["required_change"].strip():
             raise ValidationError(f"{label}: disposition requires required_change")
         refs = finding.get("evidence_refs")

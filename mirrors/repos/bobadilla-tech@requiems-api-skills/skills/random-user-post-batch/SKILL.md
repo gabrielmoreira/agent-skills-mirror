@@ -74,7 +74,7 @@ Returns multiple randomly generated fake user profiles in a single request. Each
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Ordered list of generated user profiles. Same fields as the single-user endpoint. |
+| `results` | array<object> | Ordered list of generated user profiles. Same fields as the single-user endpoint. |
 | `total` | integer | Number of users returned. Matches the requested count. |
 
 ## Errors

@@ -1,0 +1,110 @@
+# projectmem
+
+> projectmem is **AI coding memory**: a free, open-source (MIT), local-first
+> memory and judgment layer for AI coding agents. It records what happened while
+> building a project — issues, attempts, fixes, decisions and notes — as typed
+> events in plain text, feeds that history back to the agent through a native
+> MCP server, and warns at git commit time before you repeat an approach that
+> already failed. Runs entirely on your machine: no cloud, no account, no
+> telemetry. Install: `pip install projectmem`
+
+## What is AI coding memory?
+
+AI coding memory is a persistent record of what happened while building a
+project — the issues hit, the approaches attempted, the fixes that worked and
+the decisions made — stored so an AI coding agent can read it at the start of a
+new session. Large language models are stateless, so without a memory layer
+every session begins from zero: the agent re-reads the codebase to rebuild
+context it already had, asks questions that were already answered, and proposes
+approaches that already failed.
+
+## How projectmem differs from chat-history memory
+
+Most agent-memory tools store conversation history and retrieve semantically
+similar passages. projectmem stores **typed events** — `issue`, `attempt`,
+`fix`, `decision`, `note` — with outcomes attached. That structure is what makes
+deterministic queries possible: "has this file failed before, and how?" is a
+lookup, not a similarity search. It is also what enables the pre-commit warning,
+which no other tool in this category offers.
+
+projectmem never deletes a memory. When git history moves past a recorded
+decision, the memory is flagged as possibly stale and you confirm or supersede
+it — as opposed to decay-based pruning or in-place fact rewriting.
+
+## Core facts
+
+- **License:** MIT
+- **Language:** Python 3.10+
+- **Install:** `pip install projectmem`
+- **CLI:** `pjm` (alias: `projectmem`)
+- **Storage:** `.projectmem/` inside your repository — append-only `events.jsonl`
+  plus distilled `summary.md`, `PROJECT_MAP.md`, `plan.md`
+- **Cross-project store:** `~/.projectmem/global/` for library gotchas that carry
+  between repositories
+- **MCP server:** 15 tools, verified end-to-end on Claude Desktop, Cursor,
+  Antigravity and Codex
+- **Network use:** none. The MCP server is a stdio subprocess your AI client
+  spawns. The only optional server is `pjm dashboard --serve`, an ephemeral
+  local viewer.
+- **Paper:** arXiv:2606.12329
+
+## Getting started
+
+```bash
+pip install projectmem      # 1. install (Python 3.10+)
+cd your-project
+pjm init                    # 2. creates .projectmem/, git hooks, and prints
+                            #    an MCP config with absolute paths filled in
+# 3. paste that config into your AI client, then fully quit and reopen it
+pjm brief                   # 4. one-screen status check
+```
+
+## Key commands
+
+- `pjm init` — initialise memory in the current repository
+- `pjm brief` — session-start briefing: warnings, stale memories, open issues, score
+- `pjm show` — print the distilled summary
+- `pjm precheck` — check staged files against failure history (runs from the git hook)
+- `pjm score` — prevention score A+ to F, with hours and tokens saved
+- `pjm search <query>` — search across all events
+- `pjm dashboard` — cross-project view of every registered repository
+- `pjm export --claude-md` — write memory into CLAUDE.md for agents without MCP
+
+## MCP tools (15)
+
+`get_instructions`, `get_summary`, `get_project_map`, `get_plan`, `get_context`,
+`get_issue`, `get_score`, `get_global_gotchas`, `search_events`, `precheck_file`,
+`log_issue`, `record_attempt`, `record_fix`, `add_decision`, `add_note`
+
+## Common questions
+
+**Does projectmem send my code anywhere?**
+No. Memory is written to a plain directory in your repository. There is no
+account, no telemetry and no cloud sync.
+
+**How is this different from CLAUDE.md or .cursorrules?**
+Those hold static rules — how to work in a repo. projectmem holds dynamic
+history — what actually happened, including approaches that failed. They
+complement each other, and `pjm export --claude-md` writes memory into CLAUDE.md
+for agents without MCP support.
+
+**Do I need to run a server or database?**
+No. The MCP server is a stdio subprocess your AI client starts and stops.
+
+**Which AI tools does it work with?**
+Any MCP client. Claude Code, Claude Desktop, Cursor, Antigravity and Codex are
+verified end-to-end. Agents without MCP can read the exported CLAUDE.md or
+`.cursorrules` block.
+
+**Does it work without MCP?**
+Yes. `pjm export --claude-md` and `pjm wrap` inject memory as plain text for any
+agent, and git hooks capture events with no AI involvement at all.
+
+## Links
+
+- Website: https://projectmem.dev
+- Guide: https://projectmem.dev/guide
+- FAQ: https://projectmem.dev/faq
+- Full markdown corpus for crawlers: https://projectmem.dev/llms-full.txt
+- Source: https://github.com/riponcm/projectmem
+- Package: https://pypi.org/project/projectmem/

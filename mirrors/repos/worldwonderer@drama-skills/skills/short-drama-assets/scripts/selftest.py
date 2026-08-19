@@ -9,9 +9,9 @@ from pathlib import Path
 
 from asset_check import SKILL_ROOT, RecordFile, ValidationError, load_jsonl, validate_records
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("selftest.py requires Python 3.10 or newer")
+    raise SystemExit("selftest.py requires Python 3.9 or newer")
 
 
 def require(condition: bool, message: str) -> None:

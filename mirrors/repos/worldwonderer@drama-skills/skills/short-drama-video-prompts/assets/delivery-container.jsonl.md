@@ -8,10 +8,10 @@
 `VID-13` 在那种情形下由运动规格自身的镜头时长满足。
 
 文件第一行是 `sources` 声明：每个上游快照在这里写一次 `owner`、`artifact` 和已接受的
-`hash`，后面的记录用它的 key 引用。key 用产物文件名派生的短小写名字，在本文件内稳定且唯一。
+`artifact`，后面的记录用它的 key 引用。key 用产物文件名派生的短小写名字，在本文件内稳定且唯一。
 
 ```jsonl
-{"record_type":"sources","schema_version":"1.0.0","sources":{"shots":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/shots.jsonl","hash":"<sha256>"},"motion-specs":{"owner":"short-drama-video-prompts","artifact":"剧集/<EP>/storyboard/motion-specs.jsonl","hash":"<sha256>"},"short-drama":{"owner":"creator","artifact":"short-drama.json","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"shots":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/shots.jsonl"},"motion-specs":{"owner":"short-drama-video-prompts","artifact":"剧集/<EP>/storyboard/motion-specs.jsonl"},"short-drama":{"owner":"creator","artifact":"short-drama.json"}}}
 ```
 
 其后每行一个容器记录，引用写 `src` 加它指向的记录 `record_id` 或字段 `field`：
@@ -81,9 +81,9 @@
 
 ## 依赖方向是单向的
 
-容器 → 运动规格 → 镜头，**不存在反向的文件 hash 引用**。运动规格不带 `container_ref`：
-两端在各自 `sources` 里互相声明对方的文件 `hash` 会形成循环，任一文件落盘都会改变对方
-需要声明的 hash，永远得不到可发布的稳定快照。文字上写“只读”不能消除哈希环。
+容器 → 运动规格 → 镜头，**不存在反向的文件引用**。运动规格不带 `container_ref`：
+两端在各自 `sources` 里互相声明对方会形成环：依赖方向必须单向，否则谁都不能先落盘。
+文字上写“只读”不能消除这个环。
 
 要从一个镜头反查它属于哪个容器，扫描容器记录的 `members[]`，不在运动规格里存副本。
 

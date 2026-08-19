@@ -19,7 +19,7 @@ Decode multiple Base64 strings in a single request
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `values` | array[string] | yes | body | List of Base64 strings to decode |
+| `values` | array<string> | yes | body | List of Base64 strings to decode |
 | `variant` | string | no | body | Encoding variant (standard or url) |
 
 ## Response Example
@@ -44,7 +44,7 @@ Decode multiple Base64 strings in a single request
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Decoded results |
+| `results` | array<object> | Decoded results |
 | `total` | integer | Number of processed items |
 
 ## Errors

@@ -2,17 +2,17 @@
   "sources": {
     "screenplay": {
       "owner": "short-drama-write",
-      "artifact": "screenplay.md",
-      "hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "artifact": "screenplay.md"
     },
     "findings": {
       "owner": "short-drama-review",
-      "artifact": "minimal-findings.jsonl",
-      "hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      "artifact": "minimal-findings.jsonl"
     }
   },
   "review_id": "REVIEW-SC001",
-  "scope": ["story_script"],
+  "scope": [
+    "story_script"
+  ],
   "reviewed_artifacts": [
     {
       "src": "screenplay"
@@ -25,7 +25,9 @@
   "reviewer": "standalone example self-check",
   "structural_validation": "passed",
   "verdict": "REVISE",
-  "blocking_findings": ["FIND-SC001-TURN"],
+  "blocking_findings": [
+    "FIND-SC001-TURN"
+  ],
   "open_blocker_count": 1,
   "notes": [],
   "supersession_decisions": []

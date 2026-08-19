@@ -20,7 +20,7 @@ Apply a composable pipeline of normalization operations to a string. Trim whites
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
 | `text` | string | yes | body | The text to normalize. Required. |
-| `operations` | array | yes | body | Ordered list of normalization operations to apply. At least one required. Valid values: trim, lowercase, uppercase, normalize_unicode, collapse_whitespace, strip_html, remove_punctuation |
+| `operations` | array<string> | yes | body | Ordered list of normalization operations to apply. At least one required. Valid values: trim, lowercase, uppercase, normalize_unicode, collapse_whitespace, strip_html, remove_punctuation |
 
 ## Request Example
 
@@ -52,7 +52,7 @@ Apply a composable pipeline of normalization operations to a string. Trim whites
 | ----- | ---- | ----------- |
 | `original` | string | The input text as provided |
 | `normalized` | string | The text after all operations have been applied in order |
-| `operations` | array | The operations list echoed from the request |
+| `operations` | array<string> | The operations list echoed from the request |
 
 ## Errors
 

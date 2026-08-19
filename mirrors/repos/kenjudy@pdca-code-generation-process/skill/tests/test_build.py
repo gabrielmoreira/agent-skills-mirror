@@ -226,6 +226,7 @@ class TestSkillMdSource(unittest.TestCase):
 
 
 README_FILE = CLAUDE_SKILL_DIR / "README.md"
+CHANGELOG_FILE = REPO_ROOT / "CHANGELOG.md"
 
 
 EVAL_SCENARIOS_DIR = CLAUDE_SKILL_DIR / "eval" / "scenarios"
@@ -277,6 +278,31 @@ class TestProjectSetup(unittest.TestCase):
             "run-tests.sh must invoke 'uv run pytest', not bare 'python3'",
         )
 
+    def test_run_tests_script_syncs_its_own_dependencies(self):
+        """run-tests.sh must install the test and lint extras, not assume a provisioned venv.
+
+        Issue #89. `uv run` auto-creates a venv holding only the project package —
+        ruff and pytest live in optional extras it does not install. That fails outright
+        on a fresh clone, and fails worse when an ambient ruff exists on PATH: the lint
+        gate reports green while running a version below pyproject.toml's own declared
+        floor. CI never caught either because its workflows sync the extras first.
+        """
+        script = (CLAUDE_SKILL_DIR / "run-tests.sh").read_text()
+        self.assertIn(
+            "uv sync",
+            script,
+            "run-tests.sh never runs 'uv sync' -- it relies on the venv being provisioned "
+            "elsewhere, so a fresh clone has no ruff/pytest and an ambient ruff is used "
+            "silently instead (issue #89)",
+        )
+        for extra in ("--extra test", "--extra lint"):
+            self.assertIn(
+                extra,
+                script,
+                f"run-tests.sh's sync does not request '{extra}', so the tools it then "
+                "invokes with 'uv run' may resolve outside the venv (issue #89)",
+            )
+
 
 class TestReadme(unittest.TestCase):
     """Validate README quality for marketplace distribution."""
@@ -308,6 +334,43 @@ class TestReadme(unittest.TestCase):
             self.content,
             r"v\d+\.\d+\.\d+",
             "README must contain a semantic version (e.g. v1.0.0)",
+        )
+
+    def test_current_version_matches_changelog(self):
+        """README's Current Version must match the newest released version in CHANGELOG.md.
+
+        The release checklist lists "update skill/README.md" as a manual step with nothing
+        behind it -- it can be skipped and the release workflow still goes green. This test
+        is the mechanism that step was missing.
+        """
+        readme_match = re.search(r"\*\*Current Version:\*\*\s*v(\d+\.\d+\.\d+)", self.content)
+        self.assertIsNotNone(
+            readme_match,
+            "README.md has no '**Current Version:** vX.Y.Z' line to check",
+        )
+        assert readme_match is not None
+        readme_version = readme_match.group(1)
+
+        self.assertTrue(CHANGELOG_FILE.exists(), "CHANGELOG.md not found at repo root")
+        changelog_content = CHANGELOG_FILE.read_text()
+        # The newest RELEASED version is the first "## vX.Y.Z" heading. CHANGELOG.md
+        # starts with "## Unreleased" (no version number, doesn't match) and later has
+        # non-version "## " headings further down (e.g. "## What Changed") that also
+        # don't match -- so the first match here is unambiguously the latest release.
+        changelog_match = re.search(r"^## v(\d+\.\d+\.\d+)", changelog_content, re.MULTILINE)
+        self.assertIsNotNone(
+            changelog_match,
+            "CHANGELOG.md has no '## vX.Y.Z' released-version heading to compare against",
+        )
+        assert changelog_match is not None
+        changelog_version = changelog_match.group(1)
+
+        self.assertEqual(
+            readme_version,
+            changelog_version,
+            f"README Current Version (v{readme_version}) does not match the newest "
+            f"released version in CHANGELOG.md (v{changelog_version}) -- update "
+            "skill/README.md's '**Current Version:**' line",
         )
 
 
@@ -633,6 +696,52 @@ class TestHookInfrastructure(unittest.TestCase):
         self.assertTrue(
             (REPO_ROOT / "install-hooks.sh").exists(),
             "install-hooks.sh missing at repo root — needed to install hooks into .git/hooks/",
+        )
+
+    def test_ci_runs_the_eval_import_smoke_test(self):
+        """test.yml must have a job that installs the eval extra and runs the smoke test.
+
+        tests/test_eval_imports.py is excluded from the default suite, so nothing runs it
+        unless CI does. An excluded test with no job behind it is worse than no test --
+        it looks like coverage while providing none (issue #122).
+        """
+        workflow = REPO_ROOT / ".github" / "workflows" / "test.yml"
+        self.assertTrue(workflow.exists(), ".github/workflows/test.yml missing")
+        content = workflow.read_text()
+        self.assertIn(
+            "tests/test_eval_imports.py",
+            content,
+            "no CI job runs tests/test_eval_imports.py, which the default suite excludes -- "
+            "the eval harness's dependency surface would be untested everywhere",
+        )
+        self.assertIn(
+            "--extra eval",
+            content,
+            "CI runs the eval import smoke test without syncing '--extra eval', so it would "
+            "fail on a missing deepeval rather than testing anything",
+        )
+
+    def test_release_workflow_checks_version_consistency(self):
+        """release.yml must run check_release_version.py against the tag it is building.
+
+        The checker being correct is worth nothing if nothing calls it -- an unwired
+        guard is the same silent pass it exists to prevent. This asserts the wiring,
+        and that the tag is actually passed rather than the script being run bare.
+        """
+        workflow = REPO_ROOT / ".github" / "workflows" / "release.yml"
+        self.assertTrue(workflow.exists(), ".github/workflows/release.yml missing")
+        content = workflow.read_text()
+        self.assertIn(
+            "check_release_version.py",
+            content,
+            "release.yml does not run skill/check_release_version.py, so a tag that matches "
+            "neither README.md nor CHANGELOG.md would publish a mislabeled release",
+        )
+        self.assertIn(
+            "github.ref_name",
+            content,
+            "release.yml runs check_release_version.py without passing github.ref_name, "
+            "so it cannot compare anything against the tag being released",
         )
 
     def test_github_actions_workflow_exists(self):

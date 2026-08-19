@@ -52,10 +52,10 @@ Score a user for risk without the full signal breakdown. Lower latency than /sig
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `risk_score` | float | Composite risk score from 0.0 to 1.0 |
+| `risk_score` | number | Composite risk score from 0.0 to 1.0 |
 | `is_safe` | boolean | True when the risk score is below the safety threshold |
-| `confidence` | float | Confidence in the score based on resolved signals |
-| `flags` | array | Array of triggered risk flags |
+| `confidence` | number | Confidence in the score based on resolved signals |
+| `flags` | array<string> | Array of triggered risk flags |
 
 ## Errors
 

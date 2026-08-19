@@ -51,11 +51,11 @@ Returns a single exercise by its numeric ID.
 | ----- | ---- | ----------- |
 | `id` | integer | Unique exercise identifier |
 | `name` | string | Exercise name |
-| `body_parts` | array | Body part categories involved |
-| `equipment` | array | Equipment required |
-| `target_muscles` | array | Primary muscles targeted |
-| `secondary_muscles` | array | Secondary muscles engaged |
-| `instructions` | array | Ordered step-by-step instructions |
+| `body_parts` | array<string> | Body part categories involved |
+| `equipment` | array<string> | Equipment required |
+| `target_muscles` | array<string> | Primary muscles targeted |
+| `secondary_muscles` | array<string> | Secondary muscles engaged |
+| `instructions` | array<string> | Ordered step-by-step instructions |
 
 ## Errors
 

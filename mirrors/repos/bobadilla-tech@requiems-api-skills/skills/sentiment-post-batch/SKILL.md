@@ -19,7 +19,7 @@ Analyzes the sentiment of up to 50 texts in a single request. Results are return
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `texts` | array | yes | body | The list of texts to analyze. Between 1 and 50 items. |
+| `texts` | array<string> | yes | body | The list of texts to analyze. Between 1 and 50 items. |
 
 ## Request Example
 
@@ -67,7 +67,7 @@ Analyzes the sentiment of up to 50 texts in a single request. Results are return
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Sentiment results for each input text, in the same order as the input. |
+| `results` | array<object> | Sentiment results for each input text, in the same order as the input. |
 | `results[].sentiment` | string | The dominant sentiment class: positive, negative, or neutral |
 | `results[].score` | number | Confidence score for the dominant sentiment, between 0.0 and 1.0 |
 | `results[].breakdown.positive` | number | Proportional score for positive sentiment (sums to 1.0 with other classes) |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 27 file(s) materialized.
+Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,29 +66,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`biome-plugins/README.md`](biome-plugins/README.md) |
 | 4 | ✓ | [`docs/src/app/llms.txt/route.ts`](docs/src/app/llms.txt/route.ts) |
-| 5 | ✓ | [`packages/server/assets/skills/discovery/SKILL.md`](packages/server/assets/skills/discovery/SKILL.md) |
-| 6 | ✓ | [`packages/server/assets/skills/packs/codebase-wiki/SKILL.md`](packages/server/assets/skills/packs/codebase-wiki/SKILL.md) |
-| 7 | ✓ | [`packages/server/assets/skills/packs/entity-vault/SKILL.md`](packages/server/assets/skills/packs/entity-vault/SKILL.md) |
-| 8 | ✓ | [`packages/server/assets/skills/packs/knowledge-base/consolidate/SKILL.md`](packages/server/assets/skills/packs/knowledge-base/consolidate/SKILL.md) |
-| 9 | ✓ | [`packages/server/assets/skills/packs/knowledge-base/research/SKILL.md`](packages/server/assets/skills/packs/knowledge-base/research/SKILL.md) |
-| 10 | ✓ | [`packages/server/assets/skills/packs/knowledge-base/SKILL.md`](packages/server/assets/skills/packs/knowledge-base/SKILL.md) |
-| 11 | ✓ | [`packages/server/assets/skills/packs/okf/SKILL.md`](packages/server/assets/skills/packs/okf/SKILL.md) |
-| 12 | ✓ | [`packages/server/assets/skills/packs/plain-notes/SKILL.md`](packages/server/assets/skills/packs/plain-notes/SKILL.md) |
-| 13 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/frame-a-proposal/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/frame-a-proposal/SKILL.md) |
-| 14 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/record-a-decision/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/record-a-decision/SKILL.md) |
-| 15 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/review-a-design/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/review-a-design/SKILL.md) |
-| 16 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/SKILL.md) |
-| 17 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/write-a-postmortem/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/write-a-postmortem/SKILL.md) |
-| 18 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/write-a-spec/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/write-a-spec/SKILL.md) |
-| 19 | ✓ | [`packages/server/assets/skills/packs/worldbuilding/SKILL.md`](packages/server/assets/skills/packs/worldbuilding/SKILL.md) |
-| 20 | ✓ | [`packages/server/assets/skills/packs/writing-pipeline/SKILL.md`](packages/server/assets/skills/packs/writing-pipeline/SKILL.md) |
-| 21 | ✓ | [`packages/server/assets/skills/project/SKILL.md`](packages/server/assets/skills/project/SKILL.md) |
-| 22 | ✓ | [`packages/server/assets/skills/write-skill/SKILL.md`](packages/server/assets/skills/write-skill/SKILL.md) |
-| 23 | ✓ | [`scripts/linux-repo/README.md`](scripts/linux-repo/README.md) |
-| 24 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 25 | → | [`CLA.md`](CLA.md) |
-| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`README.md`](README.md) |
+| 5 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
+| 6 | ✓ | [`packages/server/assets/skills/discovery/SKILL.md`](packages/server/assets/skills/discovery/SKILL.md) |
+| 7 | ✓ | [`packages/server/assets/skills/packs/codebase-wiki/SKILL.md`](packages/server/assets/skills/packs/codebase-wiki/SKILL.md) |
+| 8 | ✓ | [`packages/server/assets/skills/packs/entity-vault/SKILL.md`](packages/server/assets/skills/packs/entity-vault/SKILL.md) |
+| 9 | ✓ | [`packages/server/assets/skills/packs/knowledge-base/consolidate/SKILL.md`](packages/server/assets/skills/packs/knowledge-base/consolidate/SKILL.md) |
+| 10 | ✓ | [`packages/server/assets/skills/packs/knowledge-base/research/SKILL.md`](packages/server/assets/skills/packs/knowledge-base/research/SKILL.md) |
+| 11 | ✓ | [`packages/server/assets/skills/packs/knowledge-base/SKILL.md`](packages/server/assets/skills/packs/knowledge-base/SKILL.md) |
+| 12 | ✓ | [`packages/server/assets/skills/packs/okf/SKILL.md`](packages/server/assets/skills/packs/okf/SKILL.md) |
+| 13 | ✓ | [`packages/server/assets/skills/packs/plain-notes/SKILL.md`](packages/server/assets/skills/packs/plain-notes/SKILL.md) |
+| 14 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/frame-a-proposal/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/frame-a-proposal/SKILL.md) |
+| 15 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/record-a-decision/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/record-a-decision/SKILL.md) |
+| 16 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/review-a-design/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/review-a-design/SKILL.md) |
+| 17 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/SKILL.md) |
+| 18 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/write-a-postmortem/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/write-a-postmortem/SKILL.md) |
+| 19 | ✓ | [`packages/server/assets/skills/packs/software-lifecycle/write-a-spec/SKILL.md`](packages/server/assets/skills/packs/software-lifecycle/write-a-spec/SKILL.md) |
+| 20 | ✓ | [`packages/server/assets/skills/packs/worldbuilding/SKILL.md`](packages/server/assets/skills/packs/worldbuilding/SKILL.md) |
+| 21 | ✓ | [`packages/server/assets/skills/packs/writing-pipeline/SKILL.md`](packages/server/assets/skills/packs/writing-pipeline/SKILL.md) |
+| 22 | ✓ | [`packages/server/assets/skills/project/SKILL.md`](packages/server/assets/skills/project/SKILL.md) |
+| 23 | ✓ | [`packages/server/assets/skills/write-skill/SKILL.md`](packages/server/assets/skills/write-skill/SKILL.md) |
+| 24 | ✓ | [`scripts/linux-repo/README.md`](scripts/linux-repo/README.md) |
+| 25 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 26 | → | [`CLA.md`](CLA.md) |
+| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 28 | → | [`README.md`](README.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 83 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,40 +108,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`skills/dbs-good-question/SKILL.md`](skills/dbs-good-question/SKILL.md) |
 | 48 | ✓ | [`skills/dbs-hook/agents/openai.yaml`](skills/dbs-hook/agents/openai.yaml) |
 | 49 | ✓ | [`skills/dbs-hook/SKILL.md`](skills/dbs-hook/SKILL.md) |
-| 50 | ✓ | [`skills/dbs-knowledge/agents/openai.yaml`](skills/dbs-knowledge/agents/openai.yaml) |
-| 51 | ✓ | [`skills/dbs-knowledge/SKILL.md`](skills/dbs-knowledge/SKILL.md) |
-| 52 | ✓ | [`skills/dbs-learning/agents/openai.yaml`](skills/dbs-learning/agents/openai.yaml) |
-| 53 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
-| 54 | ✓ | [`skills/dbs-report/agents/openai.yaml`](skills/dbs-report/agents/openai.yaml) |
-| 55 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
-| 56 | ✓ | [`skills/dbs-resonate/agents/openai.yaml`](skills/dbs-resonate/agents/openai.yaml) |
-| 57 | ✓ | [`skills/dbs-resonate/SKILL.md`](skills/dbs-resonate/SKILL.md) |
-| 58 | ✓ | [`skills/dbs-restore/agents/openai.yaml`](skills/dbs-restore/agents/openai.yaml) |
-| 59 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
-| 60 | ✓ | [`skills/dbs-save/agents/openai.yaml`](skills/dbs-save/agents/openai.yaml) |
-| 61 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
-| 62 | ✓ | [`skills/dbs-script-flow/agents/openai.yaml`](skills/dbs-script-flow/agents/openai.yaml) |
-| 63 | ✓ | [`skills/dbs-script-flow/SKILL.md`](skills/dbs-script-flow/SKILL.md) |
-| 64 | ✓ | [`skills/dbs-skill-cleaner/agents/openai.yaml`](skills/dbs-skill-cleaner/agents/openai.yaml) |
-| 65 | ✓ | [`skills/dbs-skill-cleaner/scripts/skill_cleaner.py`](skills/dbs-skill-cleaner/scripts/skill_cleaner.py) |
-| 66 | ✓ | [`skills/dbs-skill-cleaner/SKILL.md`](skills/dbs-skill-cleaner/SKILL.md) |
-| 67 | ✓ | [`skills/dbs-slowisfast/agents/openai.yaml`](skills/dbs-slowisfast/agents/openai.yaml) |
-| 68 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
-| 69 | ✓ | [`skills/dbs-spread/agents/openai.yaml`](skills/dbs-spread/agents/openai.yaml) |
-| 70 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
-| 71 | ✓ | [`skills/dbs-standard-answer/agents/openai.yaml`](skills/dbs-standard-answer/agents/openai.yaml) |
-| 72 | ✓ | [`skills/dbs-standard-answer/evals/evals.json`](skills/dbs-standard-answer/evals/evals.json) |
-| 73 | ✓ | [`skills/dbs-standard-answer/SKILL.md`](skills/dbs-standard-answer/SKILL.md) |
-| 74 | ✓ | [`skills/dbs-update/agents/openai.yaml`](skills/dbs-update/agents/openai.yaml) |
-| 75 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
-| 76 | ✓ | [`skills/dbs-wechat-html/agents/openai.yaml`](skills/dbs-wechat-html/agents/openai.yaml) |
-| 77 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
-| 78 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
-| 79 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
-| 80 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
-| 81 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
-| 82 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
-| 83 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 50 | ✓ | [`skills/dbs-jtbd/agents/openai.yaml`](skills/dbs-jtbd/agents/openai.yaml) |
+| 51 | ✓ | [`skills/dbs-jtbd/SKILL.md`](skills/dbs-jtbd/SKILL.md) |
+| 52 | ✓ | [`skills/dbs-knowledge/agents/openai.yaml`](skills/dbs-knowledge/agents/openai.yaml) |
+| 53 | ✓ | [`skills/dbs-knowledge/SKILL.md`](skills/dbs-knowledge/SKILL.md) |
+| 54 | ✓ | [`skills/dbs-learning/agents/openai.yaml`](skills/dbs-learning/agents/openai.yaml) |
+| 55 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
+| 56 | ✓ | [`skills/dbs-report/agents/openai.yaml`](skills/dbs-report/agents/openai.yaml) |
+| 57 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
+| 58 | ✓ | [`skills/dbs-resonate/agents/openai.yaml`](skills/dbs-resonate/agents/openai.yaml) |
+| 59 | ✓ | [`skills/dbs-resonate/SKILL.md`](skills/dbs-resonate/SKILL.md) |
+| 60 | ✓ | [`skills/dbs-restore/agents/openai.yaml`](skills/dbs-restore/agents/openai.yaml) |
+| 61 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
+| 62 | ✓ | [`skills/dbs-save/agents/openai.yaml`](skills/dbs-save/agents/openai.yaml) |
+| 63 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
+| 64 | ✓ | [`skills/dbs-script-flow/agents/openai.yaml`](skills/dbs-script-flow/agents/openai.yaml) |
+| 65 | ✓ | [`skills/dbs-script-flow/SKILL.md`](skills/dbs-script-flow/SKILL.md) |
+| 66 | ✓ | [`skills/dbs-skill-cleaner/agents/openai.yaml`](skills/dbs-skill-cleaner/agents/openai.yaml) |
+| 67 | ✓ | [`skills/dbs-skill-cleaner/scripts/skill_cleaner.py`](skills/dbs-skill-cleaner/scripts/skill_cleaner.py) |
+| 68 | ✓ | [`skills/dbs-skill-cleaner/SKILL.md`](skills/dbs-skill-cleaner/SKILL.md) |
+| 69 | ✓ | [`skills/dbs-slowisfast/agents/openai.yaml`](skills/dbs-slowisfast/agents/openai.yaml) |
+| 70 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
+| 71 | ✓ | [`skills/dbs-spread/agents/openai.yaml`](skills/dbs-spread/agents/openai.yaml) |
+| 72 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
+| 73 | ✓ | [`skills/dbs-standard-answer/agents/openai.yaml`](skills/dbs-standard-answer/agents/openai.yaml) |
+| 74 | ✓ | [`skills/dbs-standard-answer/evals/evals.json`](skills/dbs-standard-answer/evals/evals.json) |
+| 75 | ✓ | [`skills/dbs-standard-answer/SKILL.md`](skills/dbs-standard-answer/SKILL.md) |
+| 76 | ✓ | [`skills/dbs-update/agents/openai.yaml`](skills/dbs-update/agents/openai.yaml) |
+| 77 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
+| 78 | ✓ | [`skills/dbs-wechat-html/agents/openai.yaml`](skills/dbs-wechat-html/agents/openai.yaml) |
+| 79 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
+| 80 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
+| 81 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
+| 82 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
+| 83 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
+| 84 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
+| 85 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

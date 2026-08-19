@@ -82,7 +82,7 @@ For a pickup or alternate, ask these separately:
 - Is every obligation mapped to a current motion field or an explicit disposition?
 - Are the exact master/supplement record IDs named?
 - Is supersession only *requested* here? Only a downstream verdict may bind fixed
-  alternate/master hashes and decide it — see the
+  alternate/master records and decide it — see the
   [supersession decision example](../assets/supersession-decision.example.json).
 
 For music, ask these separately (`VID-14`):
@@ -146,7 +146,7 @@ ellipsis, dream, or deliberate disorientation.
 存在推断成片质量。
 
 需要项目校准时，先区分 `input_reference` 与 `generated_result`。后一种观察只有在绑定准确
-prompt/spec hash、稳定 reference slots、production profile/config、观察方法和限制时才可引用；
+prompt/spec 记录、稳定 reference slots、production profile/config、观察方法和限制时才可引用；
 finding 同时给出最小 `change_set` 与 `preserve_set`，并保持结论只在该项目和版本条件下有效。
 
 短剧生产中需要防范的文字风险或获授权观察包括：

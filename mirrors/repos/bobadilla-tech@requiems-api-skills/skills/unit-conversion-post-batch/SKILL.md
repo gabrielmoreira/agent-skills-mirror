@@ -19,7 +19,7 @@ convert up to 50 unit conversion operations in a single request.
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `operations` | array | yes | body | Array of operations to convert (min: 1, max: 50). |
+| `operations` | array<object> | yes | body | Array of operations to convert (min: 1, max: 50). |
 
 ## Request Example
 
@@ -83,7 +83,7 @@ convert up to 50 unit conversion operations in a single request.
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of unit conversion results returned in the same order as the input operations. |
+| `results` | array<object> | List of unit conversion results returned in the same order as the input operations. |
 | `results[].from` | string | Source unit used for the conversion. |
 | `results[].to` | string | Target unit used for the conversion. |
 | `results[].success` | boolean | Indicates whether the conversion operation was successful. |

@@ -19,7 +19,7 @@ Calculate up to 50 mortgages in a single request. Results are returned in the sa
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `mortgages` | array | yes | body | Array of mortgages to calculate (min: 1, max: 50). |
+| `mortgages` | array<object> | yes | body | Array of mortgages to calculate (min: 1, max: 50). |
 
 ## Request Example
 
@@ -107,7 +107,7 @@ Calculate up to 50 mortgages in a single request. Results are returned in the sa
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Mortgage calculation result for each mortgage request in the same order as the input. Each item has the same fields as the single mortgage endpoint. |
+| `results` | array<object> | Mortgage calculation result for each mortgage request in the same order as the input. Each item has the same fields as the single mortgage endpoint. |
 | `total` | integer | Number of results returned. Matches the length of the input array. |
 
 ## Errors

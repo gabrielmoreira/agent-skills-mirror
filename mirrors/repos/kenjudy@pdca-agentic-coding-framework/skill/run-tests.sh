@@ -13,6 +13,13 @@
 #
 # For LLM eval tests (requires ANTHROPIC_API_KEY, incurs API cost):
 #   bash run-evals.sh
+#
+# Both `uv run` calls below use --locked: plain `uv run` silently re-resolves
+# and rewrites uv.lock when it drifts from pyproject.toml's constraints,
+# dirtying the contributor's working tree with an unrelated dependency diff
+# instead of telling them anything is wrong. --locked fails loudly instead
+# ("The lockfile at uv.lock needs to be updated") so drift is caught here,
+# not discovered later as a stray diff in someone else's commit.
 
 set -e
 
@@ -20,20 +27,32 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 WARN_ONLY="${WARN_ONLY:-0}"
 
+# Provision the venv this script's own tools live in (issue #89). Without this,
+# `uv run` auto-creates a venv containing only the project package -- ruff and
+# pytest are in optional extras it does not install. On a fresh clone that fails
+# outright; worse, if an ambient ruff exists on PATH, `uv run ruff` silently uses
+# it and the lint gate reports green while running a version below the floor
+# pyproject.toml declares. CI never caught either, because its workflows sync the
+# extras before calling this script -- so the script only ever ran pre-provisioned.
+# Syncing here makes it self-contained and identical in both places.
+echo "=== Syncing dependencies ==="
+(cd "$SCRIPT_DIR" && uv sync --locked --extra test --extra lint)
+
+echo ""
 echo "=== Building PDCA Framework Skill ==="
 bash "$SCRIPT_DIR/build-skill.sh"
 
 echo ""
 echo "=== Lint (ruff) ==="
 set +e
-(cd "$SCRIPT_DIR" && uv run ruff check .) 2>&1
+(cd "$SCRIPT_DIR" && uv run --locked ruff check .) 2>&1
 RUFF_EXIT=$?
 set -e
 
 echo ""
 echo "=== Running Test Suite ==="
 set +e
-(cd "$SCRIPT_DIR" && uv run python -m pytest tests/ -v) 2>&1
+(cd "$SCRIPT_DIR" && uv run --locked python -m pytest tests/ -v) 2>&1
 TEST_EXIT=$?
 set -e
 

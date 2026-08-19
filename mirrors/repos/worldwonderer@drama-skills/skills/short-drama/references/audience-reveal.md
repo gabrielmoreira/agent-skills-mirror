@@ -35,7 +35,7 @@
 `audience_visibility` 所在的 `shots.jsonl` 在第一行声明本文件引用到的上游快照：
 
 ```json
-{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"screenplay":{"owner":"short-drama-write","artifact":"剧集/EP001/screenplay.md"}}}
 ```
 
 数组里每条只写快照键和记录 ID：

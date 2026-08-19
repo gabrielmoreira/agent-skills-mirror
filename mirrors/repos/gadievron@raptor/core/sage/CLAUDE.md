@@ -77,8 +77,8 @@ flag. No prompt injection (recalled text dropped into an LLM prompt).
 | `recall_context_for_codeql_build` / `store_codeql_build_reliability` / `infer_codeql_build_from_sage_recall_row` | Recall prior CodeQL build outcomes; mechanically infer build command from successful priors | `raptor-methodology` |
 | `recall_prior_finding_verdict` / `store_finding_verdict` | Cross-run FP suppression: skip LLM for findings with a prior false_positive/not_exploitable verdict and unchanged source | `raptor-fp-{key}` |
 | `compute_finding_source_hash` | Hash source lines around a finding line for staleness detection | (utility) |
-| `recall_proven_rules` / `store_proven_rule_metadata` | **Deprecated — no production callers.** Rule metadata is tracked by the disk `RuleLibrary` manifest. Kept for backward compat | `raptor-rule-library` |
-| `parse_rule_metadata` / `should_replay_rule` | **Deprecated — no production callers.** Parse/gate utilities for proven rule recall rows | (utility) |
+| `store_proven_rule_metadata` / `recall_verified_proven_rules` | Cross-target rule replay: `RuleLibrary.promote` stores rule metadata; `/audit` sweep replay recalls it (HMAC-verified, `should_replay_rule`-gated) and replays proven rules at zero LLM cost. Disk `RuleLibrary` manifest remains the source of truth for rule bodies | `raptor-rule-library` |
+| `recall_proven_rules` / `parse_rule_metadata` / `should_replay_rule` | Internals of `recall_verified_proven_rules` — mechanical consumers must not call `recall_proven_rules` directly (unverified recall is hint-only) | (utility) |
 | `store_audit_hypothesis_verdict` / `recall_audit_hypothesis_verdict` | Store/recall per-function hypothesis verdicts with source hash. Only `clean`/`dormant` trigger skip on recall | `raptor-audit-{key}` |
 | `store_audit_observation` / `recall_audit_observations` | Store tool-confirmed/refuted observations for cross-target transfer | `raptor-methodology` |
 | `store_study_concepts` / `recall_concepts_for_study` | Cross-project concept skip: skip LLM when per-evidence hashes match current source | `raptor-concepts-{key}` |
@@ -90,7 +90,7 @@ Rows written by these hooks are MAC-stamped (`core/sage/rowmac.py`, key at `$XDG
 
 - **When scanning (SCA):** `recall_context_for_sca` fires pre-analysis; `store_sca_outcomes` fires post-analysis.
 - **When fuzzing:** `recall_context_for_fuzzing_strategy` recalls prior strategies; `infer_afl_fuzz_flags_from_sage_recall_row` derives AFL flags mechanically.
-- **When auditing:** hypothesis verdicts stored at commit time; tool-confirmed observations stored to methodology domain. Proven rules are tracked by the disk `RuleLibrary` manifest, not SAGE.
+- **When auditing:** hypothesis verdicts stored at commit time; tool-confirmed observations stored to methodology domain. Proven rule bodies live in the disk `RuleLibrary` manifest; SAGE carries the cross-target replay metadata (`raptor-rule-library`, HMAC-verified on recall).
 - **When studying/teaching:** concepts stored with per-evidence hashes; recalled and verified before LLM dispatch.
 - **Before destructive actions:** call `sage_recall` with `raptor-methodology` for known pitfalls.
 

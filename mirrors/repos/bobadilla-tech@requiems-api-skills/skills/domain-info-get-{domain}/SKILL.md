@@ -49,11 +49,11 @@ Returns DNS records and availability status for the given domain.
 | ----- | ---- | ----------- |
 | `domain` | string | The domain that was looked up |
 | `available` | boolean | True when the domain appears to be unregistered (NS lookup returns NXDOMAIN). False when name servers are delegated. |
-| `dns.a` | array of strings | IPv4 addresses (A records) |
-| `dns.aaaa` | array of strings | IPv6 addresses (AAAA records) |
-| `dns.mx` | array of objects | Mail exchange records, each with host and priority fields |
-| `dns.ns` | array of strings | Authoritative name server hostnames |
-| `dns.txt` | array of strings | TXT record values (SPF, DKIM, verification tokens, etc.) |
+| `dns.a` | array<string> | IPv4 addresses (A records) |
+| `dns.aaaa` | array<string> | IPv6 addresses (AAAA records) |
+| `dns.mx` | array<object> | Mail exchange records, each with host and priority fields |
+| `dns.ns` | array<string> | Authoritative name server hostnames |
+| `dns.txt` | array<string> | TXT record values (SPF, DKIM, verification tokens, etc.) |
 | `dns.cname` | string | CNAME alias target, if the domain is an alias. Empty string when no alias exists. |
 
 ## Errors

@@ -19,7 +19,7 @@ Check up to 50 texts for profanity in a single request. Results are returned in 
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `texts` | array of strings | yes | body | List of texts to check (1–50 items, each non-empty). |
+| `texts` | array<string> | yes | body | List of texts to check (1–50 items, each non-empty). |
 
 ## Request Example
 
@@ -54,11 +54,11 @@ Check up to 50 texts for profanity in a single request. Results are returned in 
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].text` | string | The original text that was checked. |
 | `results[].result.has_profanity` | boolean | Whether any profanity was detected. |
 | `results[].result.censored` | string | Text with profane words replaced by asterisks. |
-| `results[].result.flagged_words` | array of strings | Deduplicated list of detected profane words (lowercase). |
+| `results[].result.flagged_words` | array<string> | Deduplicated list of detected profane words (lowercase). |
 | `total` | integer | Total number of items processed. |
 
 ## Errors

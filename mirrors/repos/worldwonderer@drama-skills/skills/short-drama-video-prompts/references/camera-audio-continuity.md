@@ -225,7 +225,7 @@ Resolvable ref/显式否定可结构检查；delivery 是否语义背离则要 r
 
 ```markdown
 - **请求 owner**：`storyboard | write | assets`
-- **source evidence**：src + 记录/字段，以及该 `sources` 条目的 artifact/hash
+- **source evidence**：src + 记录/字段，以及该 `sources` 条目的 artifact
 - **当前边界**：精确值
 - **motion 需要**：期望变化与原因
 - **影响**：purpose/feasibility/continuity

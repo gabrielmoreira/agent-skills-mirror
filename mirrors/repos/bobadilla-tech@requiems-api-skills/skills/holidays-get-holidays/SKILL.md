@@ -53,7 +53,7 @@ Returns a list of public holidays for the specified country and year
 | ----- | ---- | ----------- |
 | `country` | string | ISO 3166-1 alpha-2 country code |
 | `year` | integer | Year for which holidays are returned |
-| `holidays` | array | Array of holiday objects |
+| `holidays` | array<object> | Array of holiday objects |
 | `holidays[].date` | string | Holiday date in YYYY-MM-DD format |
 | `holidays[].name` | string | Name of the holiday |
 | `total` | integer | Total number of holidays for the country/year |

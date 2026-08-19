@@ -5,15 +5,15 @@
 ```markdown
 # EP<编号> · 视频提示词
 
-> 来源：`motion-specs.jsonl` 已接受快照 `<hash>`
-> 配方：`motion-generic@<version>` · 当前文本 `<hash>`
+> 来源：`motion-specs.jsonl` 的已接受记录
+> 配方：`motion-generic@<version>`
 > 范围：本文件仅提供提示词，不触发媒体服务；实际视频生产交 `$short-drama-produce`
 
 ## `SHOT-<id>` · <镜头目的短句>
 
 - **运动规格**：`MOTION-<id>`
 - **覆盖范围（仅补拍/替代版）**：`pickup | alternate`；母版/补充 `<master_motion_id / supplements_motion_ids>`；逐项内容 `<source_ref → motion_field/disposition>`；替代请求 `<replacement_intent>`
-- **起始帧**：`KEY-<id>` @ `<hash>`
+- **起始帧**：`KEY-<id>`
 - **参考图用途**：`<slot_id / order / reference>` 只决定 `<role / may_control>`；不得导入 `<must_not_control>`；检查状态 `<observation ref | unverified + risks>`；无附加参考则写“无”
 - **时长（只读）**：`<seconds>s`
 - **边界核对**：`end match | mismatch | unrealized`

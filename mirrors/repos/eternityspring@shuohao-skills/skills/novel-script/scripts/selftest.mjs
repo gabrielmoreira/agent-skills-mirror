@@ -354,7 +354,13 @@ ok(!html.includes('音色提示词'), '不给 --cast 就没有音色按钮——
 {
   const withCast = renderHtml(FIXTURE, { ...CTX, cast: CAST });
   ok(withCast.includes('音色提示词'), '给了 --cast 台词本带音色提示词按钮');
-  ok(withCast.includes('A young female voice'), '音色提示词是 cast 的 voice.prompt 原文');
+  // 从 cast 里取，别硬编样例内容——样例的音色提示词改过形态，
+  // 写死字符串的断言会跟着挂，而且它验的本来就不是「内容长什么样」
+  const anyPrompt = CAST.characters.find((c) => c?.voice?.prompt)?.voice?.prompt ?? '';
+  ok(anyPrompt.length > 0, '样例 cast 里有音色提示词');
+  // html 里字符是转义过的，取一段不含特殊字符的片段来比对
+  const frag = anyPrompt.split(',')[0].trim();
+  ok(frag.length > 5 && withCast.includes(frag), '音色提示词是 cast 的 voice.prompt 原文');
 }
 ok(html.includes('lang="zh"'), '默认报告 html lang 是 zh');
 

@@ -11,7 +11,7 @@ import sys
 import wave
 from pathlib import Path
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "short-drama-produce fixture needs Python {}.{} or newer".format(

@@ -7,13 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-08-19
+
+### Added
+
+- **`dsh-tongflow`** (`packages/dsh-tongflow`) — TongFlow as a DeepSeek Harness
+  plugin: a film-crew studio (`~/.dsh/tongflow/projects/<id>`: bible entities
+  `CHR_/LOC_/PRP_/STY_`, shot breakdown `EP01_SC003_SH0010`, numbered takes with
+  provenance, `tf://` references and `{{tf://…}}` prompt templates), `tongflow_*`
+  agent tools where all media generation runs saved `*.tongflow.json` workflows
+  through the Python engine, packaged skills (`tongflow-studio`,
+  `tongflow-manga-drama` + workflow templates), and a Studio UI in dsh's web
+  shell embedding `tongflow/canvas` (canvas-compat API under
+  `/tongflow/p/:pid/api/*`). Published as npm `dsh-tongflow` (`dsh-npm-v*` tags).
+- **`tongflow` 0.2.0** — canvas-only dependencies moved to optional peer
+  dependencies (the core entry now depends only on `zod` / `json-schema-to-ts`);
+  the exporter honours `data.inputName` on level-0 data / add nodes so workflow
+  inputs get readable names.
+- **Krea 2 Turbo text-to-image plugin** (#143) —
+  [tongflow-modal-krea2](https://github.com/tong-io/tongflow-modal-krea2)
+  (open-weights 12B, 8-step, up to 2K) joins the official GPU plugins.
+
 ### Removed
 
+- **LTX and FastWan video plugins** (#138) — `tongflow-modal-ltx` and
+  `tongflow-modal-fastwan` are no longer official plugins. The preloaded
+  example workflow's image-to-video step now runs on `tongflow-modal-minimax-h3`.
 - **In-app workspace agent** — the chat panel that built workflows on the
   canvas (added in 0.3.0, #130) is gone, along with its `/api/agent/chat`
   proxy, generated docs corpus and the `openai` dependency. TongFlow is a
   pure workflow product again; agent-driven building moves to external hosts
-  that will consume the upcoming `tongflow` npm package + Python SDK engine.
+  that consume the `tongflow` npm package + Python SDK engine (see `dsh-tongflow`).
   `docs/agent-workflow-manual.md` stays as the reference for such hosts.
 - **Skill packages** (`tongflow-package-*`, added in 0.3.2, #140) — the Gen
   Text skill picker, the skills registry / `/api/skills/registry` route and the

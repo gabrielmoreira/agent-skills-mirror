@@ -50,7 +50,7 @@ Identifies the language of the provided text and returns the language name, ISO 
 | ----- | ---- | ----------- |
 | `language` | string | Full name of the detected language (e.g. French, English, Spanish) |
 | `code` | string | ISO 639-1 two-letter language code (e.g. fr, en, es). Empty string when detection is unreliable. |
-| `confidence` | float | Confidence score between 0.0 and 1.0. 0.0 is returned when the language cannot be reliably detected. |
+| `confidence` | number | Confidence score between 0.0 and 1.0. 0.0 is returned when the language cannot be reliably detected. |
 
 ## Errors
 

@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 from typing import Any, NamedTuple
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("image_prompt_check.py requires Python 3.10 or newer")
+    raise SystemExit("image_prompt_check.py requires Python 3.9 or newer")
 
 # ---------------------------------------------------------------------------
 # REFERENCE RESOLVER -- reference implementation.
@@ -32,7 +32,6 @@ class ResolvedRef(NamedTuple):
 
     owner: str
     artifact: str
-    hash: str
     record_id: str | None
     field: str | None
     authority: str | None
@@ -75,25 +74,24 @@ def resolve_ref(
             return None, RefFinding(
                 "REF_SRC_IS_NOT_DECLARED", location, f"src {src!r} has no sources entry"
             )
-        owner, artifact, digest = entry.get("owner"), entry.get("artifact"), entry.get("hash")
-        if not (isinstance(owner, str) and isinstance(artifact, str) and isinstance(digest, str)):
+        owner, artifact = entry.get("owner"), entry.get("artifact")
+        if not (isinstance(owner, str) and isinstance(artifact, str)):
             return None, RefFinding(
-                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact/hash"
+                "SOURCE_ENTRY_IS_INCOMPLETE", location, f"sources[{src!r}] needs owner/artifact"
             )
-    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact", "hash")):
-        owner, artifact, digest = ref["owner"], ref["artifact"], ref["hash"]
+    elif all(isinstance(ref.get(key), str) for key in ("owner", "artifact")):
+        owner, artifact = ref["owner"], ref["artifact"]
     else:
         return None, RefFinding(
-            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact+hash"
+            "REF_HAS_NO_UPSTREAM_BINDING", location, "needs src, or owner+artifact"
         )
     optional = {
         key: ref[key] for key in ("record_id", "field", "authority") if isinstance(ref.get(key), str)
     }
     return (
         ResolvedRef(
-            owner,
-            artifact,
-            digest,
+        owner,
+        artifact,
             optional.get("record_id"),
             optional.get("field"),
             optional.get("authority"),
@@ -108,6 +106,19 @@ def resolve_ref(
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 HASH_RE = re.compile(r"[0-9a-f]{64}")
+# `common-recipe.md` forbids weight syntax and any one engine's control words, and
+# `keyframe-craft.md` rejects "cinematic, 8K, masterpiece" as a substitute for
+# subject identity. A generic prompt that carries them has stopped being generic.
+ENGINE_SYNTAX_RE = re.compile(
+    r"(?:^|[\s,，(（])--(?:ar|v|q|niji|style|no|seed|cref|sref)\b"
+    r"|::-?\d"
+    # Weight syntax is written (x:1.2); prose writes "(aperture: 1.8)" with a space.
+    r"|:[01]\.\d\s*[)）]"
+    # Quality words only count in a tag slot. A 4K monitor in shot is content.
+    r"|(?:^|,\s*)(?:8k|4k|uhd)\s*(?=,|$)"
+    r"|(?:^|,\s*)(?:masterpiece|best quality|ultra[- ]detailed|trending on artstation)\s*(?=,|$)",
+    re.IGNORECASE,
+)
 PURPOSES = {
     "character_sheet",
     "location_plate",
@@ -206,8 +217,6 @@ def validate_ref(
         raise ValidationError(f"{label}: reference could not be resolved")
     if not resolved.owner.strip() or not resolved.artifact.strip():
         raise ValidationError(f"{label}: owner and artifact must be non-empty text")
-    if HASH_RE.fullmatch(resolved.hash) is None:
-        raise ValidationError(f"{label}: hash must be lowercase sha256")
     if "record_id" not in value and (not field_allowed or "field" not in value):
         raise ValidationError(f"{label}: record_id or field is required")
 
@@ -333,7 +342,10 @@ def validate_records(
         identifiers.add(spec_id)
         purpose = record.get("purpose")
         if purpose not in PURPOSES:
-            raise ValidationError(f"{label}: invalid purpose {purpose!r}")
+            raise ValidationError(
+                f"{label}: invalid purpose {purpose!r}; "
+                f"use one of {', '.join(sorted(PURPOSES))}"
+            )
         if record.get("status") not in {"candidate", "accepted"}:
             raise ValidationError(f"{label}: status must be candidate or accepted")
         leaked = sorted(vendor_field_paths(record))
@@ -342,6 +354,12 @@ def validate_records(
         prompt = text(record, "generic_prompt", label)
         if HASH_RE.search(prompt) or "<sha256>" in prompt:
             raise ValidationError(f"{label}: generic_prompt leaks internal hashes")
+        engine_syntax = ENGINE_SYNTAX_RE.search(prompt)
+        if engine_syntax:
+            raise ValidationError(
+                f"{label}: generic_prompt carries engine-specific syntax "
+                f"{engine_syntax.group(0).strip()!r}; keep it in a provider adapter"
+            )
         validate_reference_bindings(record, sources, label)
         if purpose == "lookdev_frame":
             validate_lookdev_spec(record, sources, label)

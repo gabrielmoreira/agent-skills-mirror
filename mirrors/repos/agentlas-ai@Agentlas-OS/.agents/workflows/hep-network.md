@@ -43,7 +43,24 @@ done
    forbiddenAuthorities, consumes, produces, requiredRoles, or modalities —
    tools, authorities, and modalities attach to the executing runtime, not the
    agent card, so those gates only exclude real candidates; describe ordinary
-   inputs/outputs in the task text and inter-slot handoffs in `edges`. Keep private
+   inputs/outputs in the task text and inter-slot handoffs in `edges`. Hand-off
+   edges must be acyclic: a review or feedback edge that points back to an
+   earlier slot is rejected as `task_force_cycle:<the loop path>` — model review
+   as a forward hand-off to the reviewer, not a back-edge (measured 2026-08-19:
+   a researcher→research→quality-engineer order with a `reviews` back-edge was
+   refused, and because edges live inside the WorkOrder the repair changed
+   `workOrderDigest` and forced the whole three-source federation to run again).
+   Size `selectionPolicy.maximumCandidatesPerSlot` generously (the schema
+   allows up to 30) and NEVER to save tokens: the menu is ordered by
+   `canonical_identity_no_rerank`, not by fit — federation performs no scoring
+   by design — so truncating the candidate count discards candidates
+   arbitrarily, not worst-first. Measured 2026-08-19: the only domain-fit
+   candidate for each of three slots sat at ordinals 13-17 behind twelve
+   unrelated agents, so a cap of 8 would have made the order un-staffable.
+   Token savings come from the menu's compact per-row projection, never from
+   fewer rows. In the returned menu, `candidateOrdinal` restarts at 1
+   inside every slot — it is a per-slot position, not a running number across
+   the menu. Keep private
    files, memory, secrets, direct identifiers, and raw local context on-host.
    Write every discovery-facing field (statement, role descriptions, required
    skills/knowledge, artifacts) in English, faithfully translating a
@@ -89,6 +106,13 @@ done
    invocation. Model pins and ceilings come only from the MCP server's operator
    policy, never from the task or tool arguments. A missing worker policy
    inherits orchestrator; orchestrator never falls through to worker.
+   Each advertised session carries `session_id`, `model`, `provider`, and —
+   when the host knows them — `tier`, `supported_efforts`, and `context_window`.
+   Send what the host actually reports and never invent a field: an omitted
+   context window is assumed at a conservative floor and the receipt says so
+   (`inventory_context_window_assumed`), whereas a fabricated one would be read
+   as measured. Operators set the orchestrator/worker policy with
+   `hep-orch orchestrator=<tier|model> worker=<tier|model>`.
 7. Run only the bound workers useful for this turn. For a selected team,
    preserve its authoritative manager/worker graph. Run planner/manager,
    workers, synthesis, and verifier as distinct invocations with explicit

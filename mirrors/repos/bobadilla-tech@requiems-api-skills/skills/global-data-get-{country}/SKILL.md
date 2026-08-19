@@ -60,13 +60,13 @@ GET /v1/systems/business-calendar/DE?year=2026&month=6
 | ----- | ---- | ----------- |
 | `country_code` | string | ISO 3166-1 alpha-2 country code echoed from the path parameter |
 | `year` | integer | Year the calendar covers |
-| `month` | integer or null | Month scope. Present only when the month query parameter was provided. |
+| `month` | integer | Month scope. Present only when the month query parameter was provided. |
 | `working_days` | integer | Number of working days (excluding weekends and public holidays) in the scope |
-| `total_days` | integer or null | Total calendar days in the month. Present only when month is provided. |
-| `weekend_days` | integer or null | Number of weekend days in the month. Present only when month is provided. |
-| `holidays` | array | List of public holidays in the scope. Each item: {date: YYYY-MM-DD, name: string, type: national} |
+| `total_days` | integer | Total calendar days in the month. Present only when month is provided. |
+| `weekend_days` | integer | Number of weekend days in the month. Present only when month is provided. |
+| `holidays` | array<object> | List of public holidays in the scope. Each item: {date: YYYY-MM-DD, name: string, type: national} |
 | `holiday_count` | integer | Count of holidays in the holidays array |
-| `next_holiday` | object or null | Next public holiday within 90 days from today. Shape: {date, name, type} |
+| `next_holiday` | object | Next public holiday within 90 days from today. Shape: {date, name, type} |
 
 ## Errors
 

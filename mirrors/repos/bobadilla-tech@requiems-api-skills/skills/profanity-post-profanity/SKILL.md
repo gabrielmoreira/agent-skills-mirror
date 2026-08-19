@@ -50,7 +50,7 @@ Checks text for profanity, returning a censored version and the list of flagged 
 | ----- | ---- | ----------- |
 | `has_profanity` | boolean | Whether any profanity was detected in the text |
 | `censored` | string | The input text with profane words replaced by asterisks |
-| `flagged_words` | array of strings | Deduplicated list of profane words found (lowercase) |
+| `flagged_words` | array<string> | Deduplicated list of profane words found (lowercase) |
 
 ## Errors
 

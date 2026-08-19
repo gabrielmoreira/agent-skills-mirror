@@ -19,7 +19,7 @@ Validates up to 50 email addresses in a single request. Each email is processed 
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `emails` | array | yes | body | Array of email addresses to validate. Min: 1, Max: 50. |
+| `emails` | array<string> | yes | body | Array of email addresses to validate. Min: 1, Max: 50. |
 
 ## Request Example
 
@@ -68,15 +68,15 @@ Validates up to 50 email addresses in a single request. Each email is processed 
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of validation results for each email, preserving input order |
-| `results[].email` | string|null | Original email input (null if invalid syntax) |
+| `results` | array<object> | List of validation results for each email, preserving input order |
+| `results[].email` | string | Original email input (null if invalid syntax) |
 | `results[].valid` | boolean | Overall validity (syntax + MX record) |
 | `results[].syntax_valid` | boolean | Whether the email is syntactically valid (RFC 5322) |
 | `results[].mx_valid` | boolean | Whether the domain has valid MX records |
 | `results[].disposable` | boolean | Whether the email comes from a disposable domain |
-| `results[].normalized` | string|null | Canonical normalized email (lowercase, alias handling, etc.) |
-| `results[].domain` | string|null | Extracted domain from email address |
-| `results[].suggestion` | string|null | Suggested correction for common domain typos |
+| `results[].normalized` | string | Canonical normalized email (lowercase, alias handling, etc.) |
+| `results[].domain` | string | Extracted domain from email address |
+| `results[].suggestion` | string | Suggested correction for common domain typos |
 | `total` | integer | Number of emails processed in the batch |
 
 ## Errors

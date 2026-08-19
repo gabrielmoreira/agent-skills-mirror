@@ -8,7 +8,7 @@ them. If nobody has decided, keep the artifact pending; do not infer acceptance 
 preview the whole pipeline.
 
 Use project-relative paths and stable record IDs when one artifact points to another. Human-facing records do not
-need lifecycle hashes. Deterministic source indexes may still carry byte spans and content hashes because their job
+need lifecycle digests. Deterministic source indexes may still carry byte spans because their job
 is exact source extraction, not workflow state.
 
 ## Entry points

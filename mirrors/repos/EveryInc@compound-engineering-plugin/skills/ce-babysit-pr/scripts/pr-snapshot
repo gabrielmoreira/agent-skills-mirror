@@ -76,6 +76,12 @@ RELATIONSHIP_INDEPENDENT = "independent"
 RELATIONSHIP_PROBE_ERROR = "probe-error"
 BASE_REF_CURRENT = "current"
 BASE_REF_RACE = "race"
+BASE_REF_STALE_COMPUTATION = "stale-computation"
+# GitHub can leave potentialMergeCommit parented on the old base indefinitely after main moves
+# (observed 20+ min on tmchow/pr-stack-test, unrefreshed by polls or a body PATCH). Once the live
+# base is stable this long with the same head, the cached CLEAN/DIRTY verdict is accepted with a
+# disclosure instead of blocking readiness forever.
+STALE_MERGE_COMPUTATION_SECONDS = 600
 BASE_REF_MERGEABILITY_PENDING = "mergeability-pending"
 BASE_REF_PROBE_ERROR = "probe-error"
 BASE_REF_LEGACY_STALE = "stale"
@@ -272,7 +278,13 @@ def _iso(dt):
 
 
 def _run(cmd):
-    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+    # gh honors CLICOLOR_FORCE / GH_FORCE_TTY even for --json output, and a host that exports them
+    # (observed under orca) makes every JSON read unparsable. Pin plain output regardless of caller env.
+    env = os.environ.copy()
+    env["NO_COLOR"] = "1"
+    env.pop("CLICOLOR_FORCE", None)
+    env.pop("GH_FORCE_TTY", None)
+    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", env=env)
 
 
 def _run_git(cmd):
@@ -347,6 +359,7 @@ query($owner:String!,$repo:String!,$pr:Int!){
   repository(owner:$owner,name:$repo){ pullRequest(number:$pr){
     mergeable mergeStateStatus headRefOid baseRefOid baseRefName viewerCanUpdateBranch
     baseRef { target { oid } }
+    headRef { target { ... on Commit { parents(first:2) { nodes { oid } } } } }
     potentialMergeCommit { oid parents(first:2) { nodes { oid } } }
   } }
 }"""
@@ -448,6 +461,10 @@ def fetch_base_ref(owner, name, ref, merge_identity, host=None):
         if (merge_parent_oids[0].lower() != current_oid.lower()
                 or merge_parent_oids[1].lower() != head_oid.lower()):
             base["identity"] = BASE_REF_RACE
+            # Only the base parent lags while head and live base agree: a stale test merge,
+            # eligible for the bounded degrade in diff().
+            base["stale_computation_candidate"] = (
+                merge_parent_oids[1].lower() == head_oid.lower())
             return base
     elif not (mergeable == "CONFLICTING" and merge_state_status == "DIRTY"):
         base["identity"] = BASE_REF_MERGEABILITY_PENDING
@@ -462,7 +479,7 @@ def _base_ref_blocker(base):
     if identity is None:
         # Compatibility for pre-change --fetch-file fixtures and persisted snapshots.
         identity = (base or {}).get("freshness")
-    if identity == BASE_REF_CURRENT:
+    if identity in (BASE_REF_CURRENT, BASE_REF_STALE_COMPUTATION):
         return None
     if identity in (BASE_REF_RACE, BASE_REF_MERGEABILITY_PENDING):
         return identity
@@ -749,8 +766,9 @@ def fetch_pr_chain(pr, repo, url, base_ref_name, head_ref_name, owner, name, hos
     return result
 
 
-def fetch(pr, repo):
-    """Fetch both event streams via gh into one combined snapshot dict."""
+def fetch(pr, repo, light=False):
+    """Fetch both event streams via gh into one combined snapshot dict. `light` skips the probes a
+    downstack signature never reads (merge identity/base ref, eyes reactions, awaiting-approval)."""
     repo_args = ["--repo", repo] if repo else []
     view = _run_checked(["gh", "pr", "view", str(pr), *repo_args, "--json",
                          "state,mergeable,mergeStateStatus,reviewDecision,headRefOid,baseRefOid,baseRefName,headRefName,url,number,isDraft,"
@@ -782,12 +800,16 @@ def fetch(pr, repo):
             })
 
     owner, name, host = _resolve_repo_ref(repo, v.get("url"))
-    merge_identity = fetch_pr_merge_identity(v.get("number") or pr, owner, name, host)
+    merge_identity = None if light else fetch_pr_merge_identity(v.get("number") or pr, owner, name, host)
     merge_observation = merge_identity or v
     mergeable = merge_observation.get("mergeable")
     merge_state_status = merge_observation.get("mergeStateStatus")
     head = v.get("headRefOid")
-    base = fetch_base_ref(owner, name, v.get("baseRefName"), merge_observation, host)
+    if light:
+        base = {"host": host or "github.com", "repository": f"{owner}/{name}",
+                "ref": v.get("baseRefName"), "oid": None, "identity": BASE_REF_PROBE_ERROR}
+    else:
+        base = fetch_base_ref(owner, name, v.get("baseRefName"), merge_observation, host)
     if merge_identity is not None:
         identity_head = merge_identity.get("headRefOid")
         identity_base_ref = merge_identity.get("baseRefName")
@@ -818,7 +840,7 @@ def fetch(pr, repo):
     # (Codex among them) announce a review is *underway* — a present in-progress signal means the PR
     # is NOT settled, regardless of quiet time. A present signal is meaningful; absence tells us
     # nothing (many reviewers give no signal), so this only ever *delays* a merge-ready read.
-    review_signal_identities = fetch_eyes_reactors(v.get("number") or pr, owner, name, host)
+    review_signal_identities = [] if light else fetch_eyes_reactors(v.get("number") or pr, owner, name, host)
     review_signal_count = len(review_signal_identities)
     review_in_progress = review_signal_count > 0
 
@@ -842,7 +864,8 @@ def fetch(pr, repo):
         # NO inline thread must not be invisible to the loop. Content-actionability is entirely the
         # resolver's judgment; this deterministic layer keeps every non-empty non-author body.
         "feedback": _extract_feedback(v),
-        "awaiting_approval": fetch_awaiting_approval(owner, name, head, host),
+        "awaiting_approval": None if light else fetch_awaiting_approval(owner, name, head, host),
+        "head_parents": _head_parents(merge_identity),
         "pr_chain": pr_chain,
     }
 
@@ -858,21 +881,37 @@ def _body_hash(body):
 
 
 def _extract_feedback(v):
-    """Every non-empty top-level PR comment and review body not known to be from the PR author.
+    """Every non-empty top-level PR comment and review body, whoever wrote it.
     `gh pr view --json comments,reviews` returns flat arrays (not GraphQL {nodes}). Content,
-    identity, and surface are evidence for the resolver to judge, not deterministic exclusions."""
-    author = (v.get("author") or {}).get("login")
+    identity, and surface are evidence for the resolver to judge, not deterministic exclusions --
+    and that includes the PR author, whose own top-level "please rename X" is the ordinary way a
+    human asks an agent-opened PR for a change. Excluding the author here made that request
+    invisible to the tick, so no resolver pass ever ran for it. Loop prevention is the dispatched
+    mark, which silences a candidate permanently once it has been classified, not identity."""
     out = []
     for c in v.get("comments") or []:
-        a = (c.get("author") or {}).get("login")
-        if (not author or a != author) and (c.get("body") or "").strip():
-            out.append({"id": c.get("id"), "kind": "comment", "author": a, "edit_id": _body_hash(c.get("body"))})
+        if (c.get("body") or "").strip():
+            out.append({"id": c.get("id"), "kind": "comment",
+                        "author": (c.get("author") or {}).get("login"),
+                        "edit_id": _body_hash(c.get("body"))})
     for r in v.get("reviews") or []:
-        a = (r.get("author") or {}).get("login")
-        if (not author or a != author) and (r.get("body") or "").strip():
-            out.append({"id": r.get("id"), "kind": "review", "author": a, "state": r.get("state"),
-                        "edit_id": _body_hash(r.get("body"))})
+        if (r.get("body") or "").strip():
+            out.append({"id": r.get("id"), "kind": "review",
+                        "author": (r.get("author") or {}).get("login"),
+                        "state": r.get("state"), "edit_id": _body_hash(r.get("body"))})
     return out
+
+
+def _head_parents(merge_identity):
+    """Parent OIDs of the PR head from the merge-identity GraphQL read, or None when absent. Feeds
+    the unrequested base-merge detector: a two-parent head whose second parent is the base tip,
+    produced without a claimed branch_currency item, is a base-into-head merge nobody asked for."""
+    nodes = ((((merge_identity or {}).get("headRef") or {}).get("target") or {})
+             .get("parents") or {}).get("nodes")
+    if not isinstance(nodes, list):
+        return None
+    oids = [node.get("oid") if isinstance(node, dict) else None for node in nodes]
+    return [str(o).lower() for o in oids if _valid_oid(o)]
 
 
 def fetch_awaiting_approval(owner, name, head, host=None):
@@ -1079,6 +1118,87 @@ def _prepare_claimed_currency_item(state, item, cur=None, head=None):
                          if async_evidence_moved or not already_handled_here else None)
     item["reconciliation_only"] = True
     return item
+
+
+def _apply_stale_merge_computation(state, cur, head, now):
+    """Bounded degrade for a `race` whose only mismatch is GitHub's stale test merge. Tracks the
+    first time the same (head, live base) pair was seen in that state; after
+    STALE_MERGE_COMPUTATION_SECONDS the identity becomes `stale-computation` and the base carries
+    `merge_computation_stale: true` so the report can disclose it. Any head/base movement resets."""
+    base = cur.get("base") if isinstance(cur.get("base"), dict) else None
+    if not base:
+        state["stale_merge_computation"] = None
+        return
+    live = base.get("oid")
+    candidate = (base.get("identity") == BASE_REF_RACE
+                 and base.get("stale_computation_candidate")
+                 and _valid_oid(live) and _valid_oid(head))
+    if not candidate:
+        state["stale_merge_computation"] = None
+        return
+    key = f"{str(head).lower()}:{str(live).lower()}"
+    tracked = state.get("stale_merge_computation")
+    if not isinstance(tracked, dict) or tracked.get("key") != key:
+        tracked = {"key": key, "first_seen_at": _iso(now)}
+        state["stale_merge_computation"] = tracked
+    if _elapsed(tracked.get("first_seen_at"), now) >= STALE_MERGE_COMPUTATION_SECONDS:
+        base["identity"] = BASE_REF_STALE_COMPUTATION
+        base["merge_computation_stale"] = True
+
+
+def _detect_unrequested_base_merge(state, cur, head, head_changed, now):
+    """Head-scoped fact: the current head is a two-parent merge of the base tip that no claimed
+    branch_currency item produced. Ordinary base movement with CLEAN never yields an item, so a
+    base-into-head merge on such a PR is a defect the loop must report, not maintenance. Persisted
+    on the head that introduced it and cleared by the next head change; a legitimate DIRTY repair
+    (mutation_consumed on a claimed item whose head is the merge's other parent) is excluded. A head
+    whose parents could not be observed stays pending and is re-evaluated every snapshot. The head
+    seen on the first-ever snapshot of a state dir is the watch's baseline, not a candidate: the
+    loop has no evidence about who produced it (a user merging main by hand before invoking is
+    ordinary), and state persists across re-invocations, so only heads that appear during the
+    watch are classified."""
+    # Must run before diff() overwrites state["base"] with the current observation.
+    prior_base = state.get("base") if isinstance(state.get("base"), dict) else {}
+    persisted = state.get("unrequested_base_merge")
+    pending = state.get("unrequested_base_merge_pending")
+    should_evaluate = head_changed or pending == head
+    if not should_evaluate:
+        return persisted if isinstance(persisted, dict) and persisted.get("head") == head else None
+
+    state["unrequested_base_merge"] = None   # cleared unless proven below
+    if "head_parents" not in cur:
+        # Pre-detector fixture or persisted snapshot: no parent evidence exists to wait for.
+        state["unrequested_base_merge_pending"] = None
+        return None
+    parents = cur.get("head_parents")
+    if parents is None:
+        state["unrequested_base_merge_pending"] = head
+        return None
+    state["unrequested_base_merge_pending"] = None
+    if not isinstance(parents, list) or len(parents) != 2:
+        return None
+    base = cur.get("base") if isinstance(cur.get("base"), dict) else {}
+    base_oids = {
+        str(o).lower() for o in (
+            base.get("oid"), base.get("graphql_oid"), base.get("historical_oid"),
+            prior_base.get("oid"), prior_base.get("graphql_oid"))
+        if _valid_oid(o)
+    }
+    base_parent = next((p for p in parents if p in base_oids), None)
+    if base_parent is None:
+        return None
+    # Only a consumed mutation that produced THIS merge exempts it: the claimed item must name both
+    # parents — its head is the merge's other parent and its base is the base parent. A confirmed
+    # item for an earlier head, or for an older base, is not evidence.
+    other_parents = {p for p in parents if p != base_parent}
+    for item in (_load_branch_currency_state(state).get("items") or {}).values():
+        if (isinstance(item, dict) and item.get("mutation_consumed")
+                and str(item.get("head_sha") or "").lower() in other_parents
+                and str(item.get("base_oid") or "").lower() == base_parent):
+            return None
+    fact = {"head": head, "base_parent": base_parent, "observed_at": _iso(now)}
+    state["unrequested_base_merge"] = fact
+    return fact
 
 
 def _apply_branch_currency(state, cur, head, head_changed, now):
@@ -1394,6 +1514,7 @@ def diff(state, cur, now=None, advance_trajectory=True):
     # so a momentary null does not look like a new head and wipe ci_dispatched.
     head = cur["head_sha"] or state.get("head_sha")
     head_changed = state.get("head_sha") is not None and head != state["head_sha"]
+    _apply_stale_merge_computation(state, cur, head, now)
 
     prior_threads = state.get("threads", {})
     prior_feedback = state.get("feedback", {})
@@ -1563,6 +1684,13 @@ def diff(state, cur, now=None, advance_trajectory=True):
         state["blocked_external_first_seen_at"] = None
         state["blocked_external_review_last_activity_at"] = None
     state["pr_chain"] = cur.get("pr_chain") or _default_pr_chain()
+    unrequested_base_merge = _detect_unrequested_base_merge(state, cur, head, head_changed, now)
+    unrequested_base_merge_pending = state.get("unrequested_base_merge_pending") == head
+    if unrequested_base_merge_pending and isinstance(cur.get("base"), dict) \
+            and _base_ref_blocker(cur["base"]) is None:
+        # An unclassified head is a pending merge computation: whatever else the base identity says
+        # (current or a bounded stale-computation degrade), it is not certain, not ready, not landable.
+        cur["base"]["identity"] = BASE_REF_MERGEABILITY_PENDING
     state["base"] = cur.get("base")
     branch_currency = _apply_branch_currency(state, cur, head, head_changed, now)
 
@@ -1620,6 +1748,8 @@ def diff(state, cur, now=None, advance_trajectory=True):
         "base_ref_blocker": _base_ref_blocker(cur.get("base")),
         "host_branch_update_capability": cur.get("host_branch_update_capability", "unknown"),
         "branch_currency": branch_currency,
+        "unrequested_base_merge": unrequested_base_merge,
+        "unrequested_base_merge_pending": unrequested_base_merge_pending,
         "branch_currency_blocker": ({
             "key": branch_currency.get("key"),
             "disposition": branch_currency.get("disposition"),
@@ -1943,6 +2073,8 @@ def _wake_reason(a, settle_seconds):
                         if "base_ref_blocker" in a else _base_ref_blocker(a.get("base")))
     if base_ref_blocker:
         return "base-ref-blocked"
+    if a.get("unrequested_base_merge"):
+        return "unrequested-base-merge"
     branch_currency = a.get("branch_currency") or {}
     if a.get("has_failing_checks") and a.get("checks_terminal"):
         # a dispatched check left terminally red (counts.ci is 0 — nothing new to dispatch) is a
@@ -2016,6 +2148,8 @@ def _blocker_sig(a):
         sig.add(f"__stack__:{a['stack_blocker']}")
     if a.get("base_ref_blocker"):
         sig.add(f"__base_ref__:{a['base_ref_blocker']}")
+    if a.get("unrequested_base_merge"):
+        sig.add(("unrequested-base-merge", a["unrequested_base_merge"].get("head")))
     branch_currency = a.get("branch_currency") or {}
     currency_disposition = branch_currency.get("disposition")
     if (currency_disposition in (CURRENCY_CONFIRMED, DISPOSITION_NEEDS_HUMAN)
@@ -2169,6 +2303,53 @@ def _terminate_replaced_watch(previous):
         pass   # exited between the identity check and here (Windows reports this as a plain OSError)
 
 
+def _downstack_targets(args):
+    """(pr, fetch_file_or_None) for each --downstack-pr; test fixtures bind a file per PR."""
+    files = {}
+    for spec in (getattr(args, "downstack_fetch_file", None) or []):
+        pr_text, _, path = spec.partition("=")
+        if pr_text.isdigit() and path:
+            files[int(pr_text)] = path
+    return [(pr, files.get(pr)) for pr in (getattr(args, "downstack_pr", None) or [])]
+
+
+def _downstack_sig(args):
+    """Stateless signature of the lower stack layers built from the same identities the engine
+    uses to decide that a layer has work: the head, each unresolved thread's remote-truth identity
+    (`_thread_identity` — a reply or an edit both change it), each non-thread comment by id (bodies
+    are rewritten by status bots and are not new work), failing checks by the canonical `FAILING`
+    set, the merge state when it demands maintenance, the manager classification tuple, and the PR
+    state. The watcher captures it at arm time and wakes `downstack-actionable` only when it grows,
+    so already-parked or dispatched lower-layer items do not re-wake, but any observation that would
+    make a lower layer non-quiescent does."""
+    sig = set()
+    for pr, fetch_file in _downstack_targets(args):
+        try:
+            if fetch_file:
+                with open(fetch_file) as f:
+                    cur = json.load(f)
+            else:
+                cur = fetch(pr, args.repo, light=True)
+        except (OSError, ValueError, SystemExit):
+            continue   # a failed lower-layer probe never wakes or blocks; the next poll retries
+        head = cur.get("head_sha")
+        sig.add((pr, "head", head))
+        sig.add((pr, "state", cur.get("pr_state")))
+        for t in cur.get("threads") or []:
+            sig.add((pr, "thread", t.get("thread_id"), _thread_identity(t)))
+        for c in cur.get("feedback") or []:
+            sig.add((pr, "comment", c.get("id")))
+        for c in cur.get("checks") or []:
+            if (c.get("status") or "").upper() == "COMPLETED" and (c.get("conclusion") or "").upper() in FAILING:
+                sig.add((pr, "check", head, c.get("key")))
+        status = (cur.get("merge_state_status") or "").upper()
+        if status in ("DIRTY", "BEHIND"):
+            sig.add((pr, "currency", status, head))
+        chain = cur.get("pr_chain") if isinstance(cur.get("pr_chain"), dict) else {}
+        sig.add((pr, "manager", chain.get("manager_status"), chain.get("target_needs_rebase")))
+    return frozenset(sig)
+
+
 def cmd_watch(args):
     """Deterministic background change-detector (no agent tokens between changes): poll on an
     interval, print one wake sentinel line and exit when there is something for the agent to do
@@ -2222,6 +2403,8 @@ def cmd_watch(args):
             return
 
         armed = _blocker_sig(actionable)  # blockers already surfaced when this generation armed
+        downstack_targets = _downstack_targets(args)
+        downstack_armed = _downstack_sig(args) if downstack_targets else frozenset()
         while True:
             if stop_requested.is_set():
                 return
@@ -2281,13 +2464,21 @@ def cmd_watch(args):
                 reason == "blocked-external"
                 and actionable.get("blocked_external_review_moved_this_tick"))
             if (reason in ("needs-human", "blocked-failing", "blocked-external",
-                           "stack-blocked", "base-ref-blocked")
+                           "stack-blocked", "base-ref-blocked", "unrequested-base-merge")
                     and not approval_review_moved and _blocker_sig(actionable) <= armed):
                 reason = None   # already-surfaced residual — keep watching, do not re-wake or terminate
             if reason:
                 _emit_wake_if_current(args, generation, reason, url=actionable.get("url"),
                                       pr_state=actionable.get("pr_state"), counts=actionable.get("counts"))
                 return
+            if downstack_targets:
+                grown = _downstack_sig(args) - downstack_armed
+                if grown:
+                    _emit_wake_if_current(
+                        args, generation, "downstack-actionable", url=actionable.get("url"),
+                        pr_state=actionable.get("pr_state"), counts=actionable.get("counts"),
+                        downstack_prs=sorted({item[0] for item in grown}))
+                    return
             remaining = max(0, budget - invocation_elapsed) if budget else args.interval
             wait_seconds = min(args.interval, remaining)
             if stop_requested.wait(wait_seconds):
@@ -2607,6 +2798,9 @@ def main():
     w.add_argument("--repo", default=None)
     w.add_argument("--state-dir", required=True)
     w.add_argument("--interval", type=float, default=150.0, help="poll cadence seconds")
+    w.add_argument("--downstack-pr", type=int, action="append", default=[],
+                   help="lower managed-stack layer to keep probing; a new thread/comment/failing check/head there wakes downstack-actionable")
+    w.add_argument("--downstack-fetch-file", action="append", default=[], help="N=path fixture for --downstack-pr N (tests)")
     w.add_argument("--settle-seconds", type=float, default=300.0, help="quiet window before a merge-ready wake")
     w.add_argument("--blocked-external-drain-seconds", type=float, default=None,
                    help="head-scoped review-quiet bound before a gated-CI handback")

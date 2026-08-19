@@ -1,21 +1,21 @@
 # `keyframe-prompts.md` 可复制输出模板
 
 这是由已接受的 `keyframes.jsonl` 生成的文本，不是镜头边界或资产事实来源。
-每次导出都保存输入 `hash`、配方版本和当前文本 `hash`；文本被手改时，先预览恢复、
+每次导出都记下配方版本；文本被手改时，先预览恢复、
 采用或合并的结果。
 
 ```markdown
 # EP<编号> · 冻结关键帧提示词
 
-> 来源：`keyframes.jsonl` 已接受快照 `<hash>`
-> 配方：`keyframe-generic@<version>` · 当前文本 `<hash>`
+> 来源：`keyframes.jsonl` 的已接受记录
+> 配方：`keyframe-generic@<version>`
 > 范围：单一静止瞬间；不生成图片，不写时间动作
 
 ## `SHOT-<id>` · `KEY-<id>`
 
 - **镜头目的**：<观众此刻必须看见什么>
 - **观众可见性**：逐项列出 `<来源 · 展示或暂缓 · 声画载体 · 揭示条件 · 保护方法>`
-- **边界来源**：`SHOT-<id>/start_boundary` @ `<hash>`
+- **边界来源**：`SHOT-<id>/start_boundary`
 - **资产绑定**：`<准确人物与造型 · 地点与观察视角 · 道具与状态>`
 - **文字处理**：`<已接受的来源文字政策 -> 本帧呈现方法>`
 

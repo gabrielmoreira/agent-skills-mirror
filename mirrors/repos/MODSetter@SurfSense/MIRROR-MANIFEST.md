@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MODSetter/SurfSense` — 26 default patterns, 0 followed patterns, 243 file(s) materialized.
+Mirror of `MODSetter/SurfSense` — 26 default patterns, 0 followed patterns, 246 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MODSetter/SurfSense` — 26 default patterns, 0 followed patterns, 24
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 243 |
+| Files         | 246 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -295,13 +295,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 234 | ✓ | [`.cursor/skills/vercel-react-best-practices/rules/server-serialization.md`](.cursor/skills/vercel-react-best-practices/rules/server-serialization.md) |
 | 235 | ✓ | [`.cursor/skills/vercel-react-best-practices/SKILL.md`](.cursor/skills/vercel-react-best-practices/SKILL.md) |
 | 236 | ✓ | [`.cursor/skills/web-design-guidelines/SKILL.md`](.cursor/skills/web-design-guidelines/SKILL.md) |
-| 237 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md) |
-| 238 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md) |
-| 239 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md) |
-| 240 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/report-writing/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/report-writing/SKILL.md) |
-| 241 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md) |
-| 242 | ✓ | [`surfsense_obsidian/AGENTS.md`](surfsense_obsidian/AGENTS.md) |
-| 243 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
+| 237 | ✓ | [`docker/sandbox/skills/docx/SKILL.md`](docker/sandbox/skills/docx/SKILL.md) |
+| 238 | ✓ | [`docker/sandbox/skills/pdf/SKILL.md`](docker/sandbox/skills/pdf/SKILL.md) |
+| 239 | ✓ | [`docker/sandbox/skills/pptx/SKILL.md`](docker/sandbox/skills/pptx/SKILL.md) |
+| 240 | ✓ | [`docker/sandbox/skills/xlsx/SKILL.md`](docker/sandbox/skills/xlsx/SKILL.md) |
+| 241 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md) |
+| 242 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md) |
+| 243 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md) |
+| 244 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md) |
+| 245 | ✓ | [`surfsense_obsidian/AGENTS.md`](surfsense_obsidian/AGENTS.md) |
+| 246 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
 
 ---
 

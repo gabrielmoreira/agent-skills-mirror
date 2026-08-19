@@ -19,7 +19,7 @@ Resolve multiple words in a single request. Returns dictionary entries when foun
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array | yes | body | List of words to look up in batch (max 50 items) |
+| `items` | array<string> | yes | body | List of words to look up in batch (max 50 items) |
 
 ## Request Example
 
@@ -68,7 +68,7 @@ Resolve multiple words in a single request. Returns dictionary entries when foun
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | List of batch lookup results |
+| `results` | array<object> | List of batch lookup results |
 | `total` | integer | Total number of items processed |
 
 ## Errors

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DFKHelper/token-goat` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `DFKHelper/token-goat` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DFKHelper/token-goat` — 26 default patterns, 1 followed patterns, 3
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `DFKHelper/token-goat` — 26 default patterns, 1 followed patterns, 3
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
+- `CLAUDE.arch.md`
 
 ## File Index
 
@@ -61,7 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3 | → | [`CLAUDE.arch.md`](CLAUDE.arch.md) |
+| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

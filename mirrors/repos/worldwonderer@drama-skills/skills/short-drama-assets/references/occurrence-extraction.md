@@ -17,7 +17,7 @@
 误并成一人。
 
 **`structural_invariant` AST-01：** 每条出现记录都要指向准确的剧本快照、字段、剧本段 ID
-和场次：文件首行的 `sources` 声明剧本产物与它的 `hash`，`source_ref` 写
+和场次：文件首行的 `sources` 声明剧本产物，`source_ref` 写
 `{"src":"screenplay-index","record_id":"BLK-EP003-SC004-A01"}`。行号只能帮助阅读，
 不能代替稳定来源。
 
@@ -58,7 +58,7 @@
 
 决定尚未创建时写 `decision_locator`：`owner`、项目相对路径、`selector` 和 `status`；
 决定创建后，由决定记录指向出现记录。未来的连续性变化同样先写定位信息。这样不会让两个
-文件互相等待对方的最终 `hash`。
+文件互相等待对方先落盘。
 
 ## 称谓、代词和匿名对象
 

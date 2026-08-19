@@ -19,7 +19,7 @@ Checks multiple texts for spelling mistakes in a single request. Returns a corre
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `texts` | array | yes | body | The list of texts to spell-check. Between 1 and 50 items. |
+| `texts` | array<string> | yes | body | The list of texts to spell-check. Between 1 and 50 items. |
 
 ## Request Example
 
@@ -76,7 +76,7 @@ Checks multiple texts for spelling mistakes in a single request. Returns a corre
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array of objects | One entry per input text, in the same order as the input array. Each item contains corrected (the fixed text) and corrections (list of individual corrections with original, suggested, suggestions, and position). |
+| `results` | array<object> | One entry per input text, in the same order as the input array. Each item contains corrected (the fixed text) and corrections (list of individual corrections with original, suggested, suggestions, and position). |
 | `total` | integer | Number of texts processed. Equals the length of the input array. |
 
 ## Errors

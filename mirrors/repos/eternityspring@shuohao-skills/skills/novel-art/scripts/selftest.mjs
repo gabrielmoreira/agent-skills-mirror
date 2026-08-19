@@ -76,7 +76,37 @@ eq(seeded.scenes.length, 3, 'seed 搬全部场景');
   ok(s03.seedNote?.includes('复用方案'), 'outline 的 reusePlan 变成 seedNote 提示做变体');
   ok(!seeded.scenes.find((s) => s.id === 'S01').seedNote, '没有复用方案的场景不带 seedNote');
 }
+{
+  // 道具：大纲从 1.1.0 起带 props，seed 要吃到
+  eq(seeded.props.length, OUTLINE.props.length, 'seed 搬全部道具');
+  const p01 = seeded.props.find((pr) => pr.id === 'P01');
+  const src = OUTLINE.props.find((pr) => pr.id === 'P01');
+  eq(p01.name, src.name, '道具名从大纲搬过来');
+  // 两边指的是同一件事：这件物件在戏里干什么，不是材质描述
+  eq(p01.summary, src.function, '大纲的 function 落成这里的 summary');
+  const epsWithP01 = OUTLINE.episodes.filter((e) => (e.propIds ?? []).includes('P01')).map((e) => e.ep);
+  eq(p01.usage.episodes.join(','), epsWithP01.join(','), 'seed 算出道具的出现集');
+  // beatIds 是 id，art 这边要的是爽点类型，seed 负责翻译
+  eq(p01.usage.beats.join(','), src.beatIds.map((id) => OUTLINE.beats.find((b) => b.id === id).type).join(','),
+    'beatIds 翻译成爽点类型');
+  // 设计字段留给模型
+  eq(p01.scale, '', '尺度留空——那是美术层的活');
+  eq(p01.states.length, 0, '状态变体留空');
+  eq(p01.image.prompt, '', '出图提示词留空');
+  eq(p01.carriedBy.length, 0, '跟谁走留空');
+}
+
+// 旧大纲没有 props 字段：返回空数组，模型照 prop-pass.md 从原文提取，跟以前一样
+{
+  const noProps = JSON.parse(JSON.stringify(OUTLINE));
+  delete noProps.props;
+  const r = seedFromOutline(noProps);
+  eq(r.props.length, 0, '旧大纲 seed 出空道具表，不是 undefined');
+  ok(Array.isArray(r.props), '空道具表仍然是数组，调用方不用判空');
+}
+
 ok(seedFromOutline({}).scenes.length === 0, '空大纲不炸');
+ok(seedFromOutline({}).props.length === 0, '空大纲的道具表也是空数组');
 
 /* ---------------- castNamesOf ---------------- */
 

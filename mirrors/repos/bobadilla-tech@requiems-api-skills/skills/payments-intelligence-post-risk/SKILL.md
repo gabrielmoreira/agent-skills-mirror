@@ -63,11 +63,11 @@ Score a transaction for fraud risk by cross-checking the card BIN country agains
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `risk_score` | float | Transaction risk score from 0.0 to 1.0 |
+| `risk_score` | number | Transaction risk score from 0.0 to 1.0 |
 | `is_safe` | boolean | True when score is below 0.5 and no TOR or proxy detected |
-| `flags` | array | Triggered flags. Possible values: ip_country_mismatch, bin_country_mismatch, country_mismatch, vpn_detected, proxy_detected, tor_detected, high_value_vpn |
+| `flags` | array<string> | Triggered flags. Possible values: ip_country_mismatch, bin_country_mismatch, country_mismatch, vpn_detected, proxy_detected, tor_detected, high_value_vpn |
 | `signals.ip_country` | string | Country code resolved from the IP address |
-| `signals.billing_country` | string or null | Billing country provided in the request, or null if omitted |
+| `signals.billing_country` | string | Billing country provided in the request, or null if omitted |
 | `signals.bin_country` | string | Country of the card issuer resolved from the BIN |
 | `signals.country_mismatch` | boolean | True when any country comparison produced a mismatch |
 

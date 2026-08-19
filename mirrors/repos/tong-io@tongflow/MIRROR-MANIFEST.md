@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tong-io/tongflow` — 26 default patterns, 9 followed patterns, 11 file(s) materialized.
+Mirror of `tong-io/tongflow` — 26 default patterns, 9 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 9 followed patterns, 11 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 11 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,16 +68,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
-| 3 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 4 | → | [`CLA.md`](CLA.md) |
-| 5 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
-| 6 | → | [`desktop/README.md`](desktop/README.md) |
-| 7 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 8 | → | [`docs/README_JA.md`](docs/README_JA.md) |
-| 9 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
-| 10 | → | [`README.md`](README.md) |
-| 11 | → | [`sdk/README.md`](sdk/README.md) |
+| 2 | ✓ | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
+| 3 | ✓ | [`packages/dsh-tongflow/templates/manga-drama/_locales/zh/README.md`](packages/dsh-tongflow/templates/manga-drama/_locales/zh/README.md) |
+| 4 | ✓ | [`packages/dsh-tongflow/templates/manga-drama/_locales/zh/workflows/README.md`](packages/dsh-tongflow/templates/manga-drama/_locales/zh/workflows/README.md) |
+| 5 | ✓ | [`packages/dsh-tongflow/templates/manga-drama/_locales/zh/workflows/templates/README.md`](packages/dsh-tongflow/templates/manga-drama/_locales/zh/workflows/templates/README.md) |
+| 6 | ✓ | [`packages/dsh-tongflow/templates/manga-drama/README.md`](packages/dsh-tongflow/templates/manga-drama/README.md) |
+| 7 | ✓ | [`packages/dsh-tongflow/templates/manga-drama/workflows/README.md`](packages/dsh-tongflow/templates/manga-drama/workflows/README.md) |
+| 8 | ✓ | [`packages/dsh-tongflow/templates/manga-drama/workflows/templates/README.md`](packages/dsh-tongflow/templates/manga-drama/workflows/templates/README.md) |
+| 9 | ✓ | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
+| 10 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 11 | → | [`CLA.md`](CLA.md) |
+| 12 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
+| 13 | → | [`desktop/README.md`](desktop/README.md) |
+| 14 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 15 | → | [`docs/README_JA.md`](docs/README_JA.md) |
+| 16 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
+| 17 | → | [`README.md`](README.md) |
+| 18 | → | [`sdk/README.md`](sdk/README.md) |
 
 ---
 

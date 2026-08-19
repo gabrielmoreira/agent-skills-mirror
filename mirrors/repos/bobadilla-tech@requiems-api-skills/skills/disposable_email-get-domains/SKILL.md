@@ -47,7 +47,7 @@ Get a paginated list of all disposable domains in the blocklist
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `domains` | array | Array of domain names |
+| `domains` | array<string> | Array of domain names |
 | `total` | integer | Total number of domains in blocklist |
 | `page` | integer | Current page number |
 | `per_page` | integer | Number of items per page |

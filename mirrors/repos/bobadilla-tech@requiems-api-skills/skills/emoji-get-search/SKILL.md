@@ -46,7 +46,7 @@ Search for emojis whose name or category contains the given query string (case-i
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `items` | array | List of matching emoji objects |
+| `items` | array<object> | List of matching emoji objects |
 | `total` | integer | Total number of matches |
 
 ## Errors

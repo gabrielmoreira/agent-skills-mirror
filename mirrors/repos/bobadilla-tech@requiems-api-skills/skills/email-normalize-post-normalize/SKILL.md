@@ -59,7 +59,7 @@ Normalizes a single email address and returns the canonical form together with a
 | `normalized` | string | The canonical form of the address after all transformations |
 | `local` | string | The local part (before @) of the normalized address |
 | `domain` | string | The domain part (after @) of the normalized address |
-| `changes` | array | Ordered list of transformations applied. Possible values: lowercased, trimmed_whitespace, removed_dots, removed_plus_tag, canonicalised_domain. Empty array when no changes were needed. |
+| `changes` | array<string> | Ordered list of transformations applied. Possible values: lowercased, trimmed_whitespace, removed_dots, removed_plus_tag, canonicalised_domain. Empty array when no changes were needed. |
 
 ## Errors
 

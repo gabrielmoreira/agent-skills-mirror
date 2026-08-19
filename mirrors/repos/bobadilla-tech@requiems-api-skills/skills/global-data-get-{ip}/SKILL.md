@@ -53,10 +53,10 @@ GET /v1/systems/timezone/from-ip/92.168.1.1
 | `ip` | string | The IP address as provided |
 | `city` | string | City resolved from the IP |
 | `country_code` | string | ISO 3166-1 alpha-2 country code |
-| `timezone` | string or null | IANA timezone identifier. Null when timezone resolution fails. |
-| `utc_offset` | string or null | UTC offset string. Null when timezone resolution fails. |
-| `dst_active` | boolean or null | True when daylight saving time is currently active. Null when timezone resolution fails. |
-| `current_time` | string or null | Current local time in RFC3339 format |
+| `timezone` | string | IANA timezone identifier. Null when timezone resolution fails. |
+| `utc_offset` | string | UTC offset string. Null when timezone resolution fails. |
+| `dst_active` | boolean | True when daylight saving time is currently active. Null when timezone resolution fails. |
+| `current_time` | string | Current local time in RFC3339 format |
 
 ## Errors
 

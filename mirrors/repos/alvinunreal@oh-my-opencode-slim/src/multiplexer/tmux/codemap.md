@@ -13,6 +13,8 @@ Implements the `Multiplexer` interface contract defined in `src/multiplexer/type
 - **Layout strategy**: Implements debounced layout application to prevent rapid successive layout changes during bursts of pane operations
 - **Graceful shutdown protocol**: Sends Ctrl+C signal before pane termination to allow child processes to exit cleanly
 - **Pane lifecycle hooks**: Triggers layout rebalancing after pane creation and destruction events
+- **Attached-session targeting**: Resolves the parent OpenCode session through
+  the session-scoped tmux pane registry, with startup-pane fallback
 
 ### Core Abstractions
 
@@ -33,12 +35,14 @@ Implements the `Multiplexer` interface contract defined in `src/multiplexer/type
 2. spawnPane(sessionId, description, serverUrl, directory)
    ├─ Validates tmux binary availability
    ├─ Constructs opencode attach command with quoted arguments
-   ├─ Executes: tmux split-window -h -d -P -F '#{pane_id}' <opencode-cmd>
+   ├─ Resolves parent session registration (or startup pane fallback)
+   ├─ Executes: tmux split-window -h -d -P -F '#{pane_id}' -t <target> <opencode-cmd>
+   ├─ Retries against the startup pane if a registered target is rejected
    ├─ Captures stdout to extract pane_id
    ├─ Renames pane with description (truncated to 30 chars)
    └─ Schedules layout rebalance via scheduleLayout()
 
-3. scheduleLayout() → applyLayout() (debounced 150ms)
+3. scheduleLayout(targetPane) → applyLayout() (debounced 150ms per target)
    ├─ Increments layoutGeneration counter
    ├─ Applies stored layout via tmux select-layout
    ├─ For main-* layouts: sets main-pane-width/height percentage
@@ -119,7 +123,8 @@ Implements the `Multiplexer` interface contract defined in `src/multiplexer/type
 
 - **Layout type**: Default 'main-vertical' via constructor parameter
 - **Main pane size**: Default 60% via constructor parameter
-- **Target pane**: Optional TMUX_PANE environment variable for nested operations
+- **Target pane**: Fresh parent-session registration when available; optional
+  startup `TMUX_PANE` fallback for direct/local TUI usage
 
 ### User Configuration
 
@@ -131,6 +136,7 @@ No user-facing configuration required. Tmux binary location and session environm
 |----------|----------|-----------|
 | tmux binary not found | Returns success: false, logs warning | Fallback to other multiplexer or graceful degradation |
 | Pane spawn fails | Returns success: false, logs error | Session continues without pane |
+| Registered parent pane is stale | Retries the split against startup pane | Direct/local behavior remains available |
 | Layout application fails | Silently ignored, logs debug | Maintains previous layout |
 | Pane already closed | Returns false, logs info | Idempotent operation |
 | Ctrl+C send fails | Proceeds to kill-pane | Ensures pane termination |

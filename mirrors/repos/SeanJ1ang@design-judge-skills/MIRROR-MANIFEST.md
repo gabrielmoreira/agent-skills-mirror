@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SeanJ1ang/design-judge-skills` — 26 default patterns, 4 followed patterns, 151 file(s) materialized.
+Mirror of `SeanJ1ang/design-judge-skills` — 26 default patterns, 5 followed patterns, 152 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `SeanJ1ang/design-judge-skills` — 26 default patterns, 4 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 151 |
+| Followed pats | 5 |
+| Files         | 152 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `SeanJ1ang/design-judge-skills` — 26 default patterns, 4 followed pa
 - `README_EN.md`
 - `README.md`
 - `docs/benchmark-coverage_EN.md`
+- `README_JA.md`
 - `docs/benchmark-coverage.md`
 
 ## File Index
@@ -212,7 +213,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 148 | → | [`docs/benchmark-coverage_EN.md`](docs/benchmark-coverage_EN.md) |
 | 149 | → | [`docs/benchmark-coverage.md`](docs/benchmark-coverage.md) |
 | 150 | → | [`README_EN.md`](README_EN.md) |
-| 151 | → | [`README.md`](README.md) |
+| 151 | → | [`README_JA.md`](README_JA.md) |
+| 152 | → | [`README.md`](README.md) |
 
 ---
 

@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any, BinaryIO
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
     raise SystemExit(
         "short-drama-produce needs Python {}.{} or newer".format(*MINIMUM_PYTHON)
@@ -1330,7 +1330,11 @@ def _validated_succeeded_outputs(
     ):
         raise ValueError("succeeded outputs do not match the current job")
     validated: list[tuple[str, str, int]] = []
-    for expected_path, output in zip(expected, entries, strict=True):
+    # ``zip(strict=True)`` needs 3.10; the suite's floor is 3.9, so the length
+    # agreement is asserted directly rather than by the zip flag.
+    if len(expected) != len(entries):
+        raise ValueError("expected %d outputs, got %d" % (len(expected), len(entries)))
+    for expected_path, output in zip(expected, entries):
         if not isinstance(output, Mapping) or set(output) != {
             "path",
             "media_type",

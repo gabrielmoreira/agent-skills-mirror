@@ -19,7 +19,7 @@ Look up timezone information for up to 50 locations in a single request. Each it
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `items` | array of objects | yes | body | List of timezone lookup requests (1–50 items). |
+| `items` | array<object> | yes | body | List of timezone lookup requests (1–50 items). |
 | `items[].timezone` | string | no | body | IANA timezone name (e.g. 'America/New_York'). Highest priority. |
 | `items[].city` | string | no | body | City name for city-based lookup. Used when timezone is not set. |
 | `items[].lat` | number | no | body | Latitude (-90 to 90). Used when neither timezone nor city is set. |
@@ -57,7 +57,7 @@ Look up timezone information for up to 50 locations in a single request. Each it
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].info.timezone` | string | IANA timezone identifier. |
 | `results[].info.offset` | string | UTC offset in +HH:MM or -HH:MM format. |
 | `results[].info.current_time` | string | Current time in UTC (RFC 3339). |

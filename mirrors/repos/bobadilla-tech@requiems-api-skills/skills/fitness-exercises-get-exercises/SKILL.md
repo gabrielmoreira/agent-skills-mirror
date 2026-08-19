@@ -61,14 +61,14 @@ Returns a paginated list of exercises. All filter parameters are optional and co
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `items` | array | Array of exercise objects for the current page |
+| `items` | array<object> | Array of exercise objects for the current page |
 | `items[].id` | integer | Unique exercise identifier |
 | `items[].name` | string | Exercise name |
-| `items[].body_parts` | array | Body part categories involved |
-| `items[].equipment` | array | Equipment required |
-| `items[].target_muscles` | array | Primary muscles targeted |
-| `items[].secondary_muscles` | array | Secondary muscles engaged |
-| `items[].instructions` | array | Ordered step-by-step instructions |
+| `items[].body_parts` | array<string> | Body part categories involved |
+| `items[].equipment` | array<string> | Equipment required |
+| `items[].target_muscles` | array<string> | Primary muscles targeted |
+| `items[].secondary_muscles` | array<string> | Secondary muscles engaged |
+| `items[].instructions` | array<string> | Ordered step-by-step instructions |
 | `total` | integer | Total number of exercises matching the filters |
 | `page` | integer | Current page number |
 | `per_page` | integer | Number of results per page |

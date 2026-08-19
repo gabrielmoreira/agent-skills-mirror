@@ -19,7 +19,7 @@ Returns inflation data for up to 50 countries in a single request. Results are i
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `countries` | array | yes | body | Array of ISO 3166-1 alpha-2 country codes. Min: 1, Max: 50. |
+| `countries` | array<string> | yes | body | Array of ISO 3166-1 alpha-2 country codes. Min: 1, Max: 50. |
 
 ## Response Example
 
@@ -60,12 +60,12 @@ Returns inflation data for up to 50 countries in a single request. Results are i
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | One entry per country, in the same order as the input array |
+| `results` | array<object> | One entry per country, in the same order as the input array |
 | `results[].country` | string | ISO 3166-1 alpha-2 country code, uppercased |
 | `results[].found` | boolean | false when the country has no data in the World Bank set |
 | `results[].rate` | number | Latest CPI inflation rate. Omitted when found: false |
 | `results[].period` | string | Year of the latest data point. Omitted when found: false |
-| `results[].historical` | array | Up to 10 previous years. Omitted when found: false |
+| `results[].historical` | array<object> | Up to 10 previous years. Omitted when found: false |
 | `total` | integer | Total number of results returned (equals number of countries sent) |
 
 ## Errors

@@ -9,9 +9,9 @@ from pathlib import Path
 
 from episode_intake import build_index, slice_episode, verify_index, write_index
 
-MINIMUM_PYTHON = (3, 10)
+MINIMUM_PYTHON = (3, 9)
 if sys.version_info < MINIMUM_PYTHON:
-    raise SystemExit("selftest.py requires Python 3.10 or newer")
+    raise SystemExit("selftest.py requires Python 3.9 or newer")
 
 
 def require(condition: bool, message: str) -> None:

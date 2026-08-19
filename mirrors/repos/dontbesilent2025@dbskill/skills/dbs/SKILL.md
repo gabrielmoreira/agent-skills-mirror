@@ -20,7 +20,7 @@ description: dontbesilent 商业工具箱主入口，提供新手教程、任务
 每次进入本 Skill，在判断模式和路由之前，必须先定位本 `SKILL.md` 所在目录，并执行该目录中的版本检查脚本：
 
 ```bash
-DBS_LOCAL_VERSION="2.18.22"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
+DBS_LOCAL_VERSION="2.18.23"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
 ```
 
 执行规则：
@@ -151,6 +151,7 @@ DBS_LOCAL_VERSION="2.18.22"; bash "<本 SKILL.md 所在目录>/scripts/check-upd
 | 某个概念搞不清楚、说"这个词什么意思" | `/dbs-deconstruct` | 概念拆解，维特根斯坦式审查 |
 | 目标模糊、说"我想做 X 但不知从何开始"、"我的目标是成为..."、"我想变得更..."，或询问"这个任务说清楚了吗" | `/dbs-goal` | 提取已有约束，明确任务直接放行，只追问会改变执行或验收的关键信息 |
 | 问题模糊、想把问题说清楚、判断能不能让 Agent 自动解决、说"这个问题能不能自动化"、"帮我写问题说明书" | `/dbs-good-question` | 好问题生成器，把模糊问题改成 Agent 可推理、可验证的问题说明书 |
+| 想理解用户需求背后的任务、分析为什么会切换方案、提炼选择标准，或说「用户到底要解决什么」「用 JTBD 重写提示词」 | `/dbs-jtbd` | JTBD 任务澄清，识别具体情境中想推进的进展、切换力量与选择标准 |
 | 想把重大决策长期记录下来、回填结果、复盘规律，或说"帮我记下这个决策"、"看看我是不是又在重复老问题" | `/dbs-decision` | 决策系统，在 `~/.dbs/decisions/` 里沉淀可回填、可复盘的本地项目 |
 | 想搭建知识库、让 AI 读懂本地文件夹、把资料放进知识库、从知识库找资料、更新知识库导航、把刚才的文件加入知识库、修改错误路径、确认最新版或检查资料结构 | `/dbs-knowledge` | 文件夹知识库，建立知识库导航并持续处理资料的查找、收录、调用、轻量更新与健康检查 |
 | 明确提到 Claude Code、Codex、Grok、豆包、Trae、`~/.agents/skills`、AGENTS.md、CLAUDE.md、skill bridge、工作台迁移、多端统一，或说"我的 Agent 工作台很乱""帮我统一 Claude 和 Codex 和 Grok 和豆包" | `/dbs-agent-migration` | Agent 工作台迁移，整理规则文件、真源、命名与 Claude Code / Codex / Grok / 通用 Agents 多端 bridge |
@@ -322,6 +323,15 @@ DBS_LOCAL_VERSION="2.18.22"; bash "<本 SKILL.md 所在目录>/scripts/check-upd
 | 问题清楚但做不动 | `/dbs-action` | 不是问题不清，是做不动，心理诊断 |
 | 想系统学习某个理论 | `/dbs-learning` | 系统学习比聊天学习效率高 |
 | 想多角色发散后收敛 | `/dbs-chatroom` | 多视角讨论之后再收 |
+
+#### 来自 `/dbs-jtbd`
+
+| 结论信号 | 推荐下一步 | 为什么 |
+|---|---|---|
+| 已明确用户要推进的进展，需要判断商业模式是否成立 | `/dbs-diagnosis` | 把任务陈述放回价格、成本、交付和市场约束中检验 |
+| 已提炼可观察的选择标准，需要比较候选对象 | `/dbs-benchmark` | 用同一组标准比较方案，减少个人偏好干扰 |
+| 已明确内容受众的雇用时刻与预期结果 | `/dbs-content` | 让内容围绕具体情境、旧方案失效处和可感知进展展开 |
+| 任务已经清楚，需要把重大选择和结果持续记录 | `/dbs-decision` | 长期回填可以检验任务假设和选择标准是否成立 |
 
 #### 来自 `/dbs-action`
 

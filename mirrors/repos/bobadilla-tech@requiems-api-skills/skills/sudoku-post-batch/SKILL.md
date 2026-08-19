@@ -19,7 +19,7 @@ Generate up to 20 Sudoku puzzles in a single request. Results are returned in th
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `puzzles` | array | yes | body | Array of difficulty levels to generate (min: 1, max: 20). Each must be one of: easy, medium, hard. |
+| `puzzles` | array<string> | yes | body | Array of difficulty levels to generate (min: 1, max: 20). Each must be one of: easy, medium, hard. |
 
 ## Request Example
 
@@ -73,10 +73,10 @@ Generate up to 20 Sudoku puzzles in a single request. Results are returned in th
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Generated puzzles in the same order as the input array. Each item has the same fields as the single-puzzle endpoint. |
+| `results` | array<object> | Generated puzzles in the same order as the input array. Each item has the same fields as the single-puzzle endpoint. |
 | `results[].difficulty` | string | The difficulty level of the puzzle (easy, medium, or hard) |
-| `results[].puzzle` | array[array[integer]] | 9×9 grid representing the puzzle — 0 means an empty cell to be filled in |
-| `results[].solution` | array[array[integer]] | 9×9 grid containing the complete, valid solution |
+| `results[].puzzle` | array<object> | 9×9 grid as an array of 9 rows, each row an array of 9 integers — 0 means an empty cell to be filled in |
+| `results[].solution` | array<object> | 9×9 grid as an array of 9 rows, each row an array of 9 integers — complete, valid solution |
 | `total` | integer | Number of puzzles returned. Matches the length of the input array. |
 
 ## Errors

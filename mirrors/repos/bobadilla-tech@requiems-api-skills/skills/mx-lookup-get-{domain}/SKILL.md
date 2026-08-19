@@ -46,7 +46,7 @@ Retrieve all MX records for a domain. Results are sorted by priority ascending (
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `domain` | string | The domain that was queried |
-| `records` | array | List of MX records, sorted by priority ascending (lowest number = highest priority) |
+| `records` | array<object> | List of MX records, sorted by priority ascending (lowest number = highest priority) |
 | `records[].host` | string | Fully-qualified hostname of the mail server (typically ends with a trailing dot) |
 | `records[].priority` | integer | MX priority value. Lower values have higher delivery priority per RFC 5321. |
 

@@ -129,7 +129,19 @@ In the idd-skill source repository, the following optional helpers were adopted:
 - `scripts/advisory-convergence.mjs` for the F2 advisory/disposition
   sub-gate (#1340): a deterministic `converged`/`ready` verdict with an
   exit-code contract via `--assert`, claim-independent so it also works
-  as a required-check-able CI verdict
+  as a required-check-able CI verdict. Stdout is always the JSON
+  verdict only. When `--assert` fails (`ready` is false), a compact
+  English next-action block is written to stderr _before_ that JSON so
+  a GitHub Actions log surfaces the recovery command first (`#2142`).
+  The block is derived from verdict fields, not from rewriting
+  `reasons[]`. The same catalog is also emitted on the verdict as
+  `nextActions` (`#2143`): each item is a stable `token`, a one-line
+  English `summary`, and the command or phase `pointer` the stderr
+  block already printed. A ready verdict has `nextActions: []`; `ready`
+  does not depend on the field. Under `GITHUB_ACTIONS=true` a
+  `::notice::` line is added as extra surfacing; it is not a substitute
+  for the stderr block. `reasons[]` wording and the `--assert`
+  exit-code contract stay unchanged.
 - `scripts/rerun-advisory-convergence.mjs` (#1431) for a rerun-plan
   diagnosis of stuck `idd-advisory-convergence` check-run rollups,
   read-only by default: fetches every check-run instance for a PR's
@@ -864,6 +876,13 @@ The adopted helper boundaries are intentionally narrow:
   thread) and resolves the thread (GraphQL `resolveReviewThread`). Reply
   first, resolve second, so a failed reply never resolves the thread without a
   disposition.
+- **`--apply` appends the reply-identity stamp**
+  `<!-- {markerPrefix}-review-reply -->` after the visible
+  `**Accepted**` / `**Rejected**` body (same injection as
+  `disposition-non-review-notices --apply`). A manual `gh api` JSON
+  body must append that stamp itself. The stamp is utterance
+  identity; it is not an E1 `review-watermark`. See
+  [Hybrid review-reply identity](idd-review-policy-profiles.md#hybrid-review-reply-identity-shipped).
 - **Dry-run** reports the resolved `threadId` and current `alreadyResolved`
   state without posting; a comment with no owning thread omits `threadId`
   and includes an `error` note.
@@ -1828,9 +1847,18 @@ reflexively as any other CLI option.
   retry it also requires live GitHub merge state
   `mergeable: "MERGEABLE"` and `mergeStateStatus: "CLEAN"` or
   `"BEHIND"`; blocked, unknown, or unreadable state aborts the fallback
-  rather than allowing a generic policy error to trigger `--admin`. The verdict's
-  `adminFallbackUsed` field records whether the fallback fired
-  (`true`) whenever it was attempted, regardless of whether the
+  rather than allowing a generic policy error to trigger `--admin`.
+  `"BLOCKED"` stays excluded because field evidence
+  (kurone-kito/idd-skill#1663, 2026-08-06 and 2026-08-17) showed it is
+  often cancelled or stale required-check instances, a missing
+  review-watermark, or incomplete F2 — not a confirmed CODEOWNER
+  deadlock. A live `"BLOCKED"` paired with discarded required-check
+  siblings is the separate `discarded-required-check-siblings` gate
+  (kurone-kito/idd-skill#2127), not a reason to admit `"BLOCKED"` into
+  the `--admin` retry. See `docs/permissions.md` for the `code_quality`
+  ruleset-rule read path and its F3 limitation.
+  The verdict's `adminFallbackUsed` field records whether the fallback
+  fired (`true`) whenever it was attempted, regardless of whether the
   `--admin` retry itself ultimately succeeded. Any merge failure that
   does not match this exact shape — a different error, an ineligible
   topology, or the opt-in `hold-and-report` policy — falls through
@@ -1863,8 +1891,32 @@ reflexively as any other CLI option.
   [`advisory-convergence.schema.json`][advisory-convergence-schema]
 - Every invocation other than `--help`/`-h` prints the JSON verdict.
   Without `--assert` it always exits `0` (report-only). With `--assert` it
-  exits non-zero unless `ready` is `true` (`ready = converged || (deadline
-  passed && validly waived)`).
+  exits non-zero unless `ready` is `true` (`ready = not_applicable ||
+  converged || ((deadline passed || terminal-unavailable) && validly
+  waived)`).
+- **Structured `nextActions` (`#2143`)**: the verdict also reports a
+  `nextActions` array populated from the same catalog the `--assert`
+  failure stderr block uses (`collectAssertNextActions`). Each item
+  has `token` (stable enum), `summary` (one-line English), and
+  `pointer` (the command or phase pointer already printed on stderr;
+  multi-command pointers are newline-separated). Ready verdicts emit
+  `nextActions: []`. `ready` does not depend on this field, and
+  `reasons[]` stays diagnostic state -- do not overload it.
+- **Review-policy applicability (`#2137`)**: this helper reads
+  `reviewPolicy` from `.github/idd/config.json`. Exact
+  `human-required` or `no-advisory` classifies the PR `not_applicable`
+  (reasons `review-policy-human-required` /
+  `review-policy-no-advisory`) so `--assert` exits 0 through the
+  existing `scopeNotApplicable` path, not by faking `converged`.
+  Copilot review/thread clauses do not apply; human approval and
+  conversation resolution stay on branch protection and the phase
+  files. `copilot-advisory`, absent, or an invalid value keep today's
+  fail-closed Copilot applicability. `external-bot` keeps the
+  configured `primaryBotLogin` path. A trusted human approve is never
+  a Copilot substitute under `copilot-advisory`. Do not invent a new
+  `convergenceScope` value for this. Do not register
+  `idd-advisory-convergence` as a required check unless the policy
+  actually wants an advisory-bot gate.
 - **Bounded "not reviewed yet" poll (`#2015`)**: the CLI entry point runs
   through `runAdvisoryConvergenceWithPoll`, not `runAdvisoryConvergence`
   directly. When (and only when) the verdict's sole blocking reason is
@@ -1917,9 +1969,12 @@ reflexively as any other CLI option.
   from `deadline`. When `terminal.state` is `COPILOT_UNAVAILABLE`, the
   SAME waiver escape hatch above also opens — independent of whether the
   ordinary deadline has passed — but `ready` still requires a valid
-  waiver in addition (`ready = converged || ((deadline.passed ||
-  terminal.state == "COPILOT_UNAVAILABLE") && waived)`); the terminal
-  state alone never sets `ready: true`. Observed incident:
+  waiver in addition (`ready = not_applicable || converged ||
+  ((deadline.passed || terminal.state == "COPILOT_UNAVAILABLE") &&
+  waived)`); the terminal state alone never sets `ready: true`. A
+  `not_applicable` applicability (including `reviewPolicy`
+  `human-required` / `no-advisory`) is an independent ready path and
+  does not change this waiver rule. Observed incident:
   kurone-kito/idd-skill#1562. See `idd-advisory-wait.instructions.md`'s
   Terminal routing section for the full hold/rerun sequence.
 - **Eligibility-relevant disposition-evidence counters (`#1719`)**: the
@@ -2490,10 +2545,17 @@ arbitrary git subcommands, run the **merge** step — including a
 plain command (`git fetch` creates no commit and needs no signing):
 
 ```sh
-git -c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true merge origin/main
+git -c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true merge -m "chore: merge origin/main into the claimed branch" origin/main
 # resolve conflicts if any, then:
 git -c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true merge --continue
 ```
+
+Include the conventional `-m` subject so a `commit-msg` hook that runs
+commitlint accepts the merge commit (a subject without a `type:` prefix
+fails the hook and leaves `MERGE_HEAD` in place). Repositories without
+that hook can keep the same subject; it does not change unsigned
+`git merge` elsewhere. `merge --continue` reuses `MERGE_MSG` and needs
+no second `-m`.
 
 Pass the `-c` flags to `git` itself, before the subcommand (`git -c …
 merge`, not `git merge -c …`); a commit-only alias such as `git

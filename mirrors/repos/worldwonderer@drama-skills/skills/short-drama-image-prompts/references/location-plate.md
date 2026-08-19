@@ -117,7 +117,7 @@ Location plate 的价值是让后续镜头共享同一可导航空间。输入�
 | 同一 Location 同一 state 各 View 的主光、色温与光比是否对齐 | `reviewed_invariant` | 并排比同组 View，差异需成因与 delta |
 | 镜头审美与构图 | `taste_option` | 保留创作者选择 |
 
-输出一条 location-plate spec 和 copyable prompt；ID/hash 留在元信息，正文用清楚自然语言。不得生成 plate 图片。
+输出一条 location-plate spec 和 copyable prompt；ID 留在元信息，正文用清楚自然语言。不得生成 plate 图片。
 
 ## 6. 制作形态投影
 

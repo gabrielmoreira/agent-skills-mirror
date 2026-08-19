@@ -11,7 +11,7 @@
   "characters": [ { "id": "C01", "name": "…", "role": "…", "arc": "…", "from": ["原著…", "合并：…"] } ],
   "scenes": [ { "id": "S01", "name": "…", "primary": true, "reusePlan": "…" } ],
   "beats": [ { "id": "B01", "type": "打脸", "weight": "major", "episode": 3, "setup": "…", "payoff": "…" } ],
-  "episodes": [ { "ep": 1, "synopsis": "…", "hook": "…", "suspense": "…", "sceneIds": ["S01"], "characterIds": ["C01"], "crowdPlan": "…", "warnings": [] } ]
+  "episodes": [ { "ep": 1, "synopsis": "…", "hook": "…", "suspense": "…", "sceneIds": ["S01"], "characterIds": ["C01"], "propIds": ["P01"], "crowdPlan": "…", "warnings": [] } ]
 }
 ```
 
@@ -58,12 +58,25 @@
   | `support` | 有名字的重要配角（亲属、闺蜜、副反派） | ≤ 10 | `arc` 必填 |
   | `functional` | 功能性角色（医生、秘书、店员） | ≤ 10 | **占脸不占名**：`name` 用称呼标签（「急诊医生」）；`arc` 可省——医生就是来缝针的 |
 
-  无名背景人不进表、不追踪、不限量。从 novel-characters 的 cast.json 映射：protagonist/major → `lead`，supporting → `support`，minor → `functional`
+  无名背景人不进表、不追踪、不限量。
+
+  **这份表是下游 novel-characters 的角色清单**：谁进谁不进、谁是主角组在这里定死，角色设定照着做，不用再判断一遍轻重（`tier` 对应过去就是 `importance`：`lead` → protagonist、`support` → supporting、`functional` → minor）。反过来，手上已经有 cast.json 的话也能映射进来：protagonist/major → `lead`，supporting → `support`，minor → `functional`
 
 ## scenes
 
 - `id` 格式 `S01`，全局唯一；`name` 必填；`primary` 必填布尔（主场景上限随集数动态，见 `thresholds`）
 - **在全剧只出现一次的场景必须带 `reusePlan`**（规避方案：复用哪个现有环境资产、换什么时段天气改出来）
+
+## props 叙事道具
+
+- **可选字段**。没写照常通过全部质量门（`prop-cap` 与 `refs` 两道会明说跳过）；写了就按下面查
+- `id` 格式 `P01`，全局唯一；`name` 必填
+- **`function` 必填——这一层唯一要拍板的东西：这件物件在戏里承载什么。** 填不出来说明它不是叙事道具，是场景陈设，那归 `novel-art` 的场景锚点管，不进这张表
+- `beatIds` 可选：它托起哪几个爽点。写了就必须指向 `beats` 里真实存在的 id
+- 上限 `maxProps` 默认 8 件（进 `params.thresholds` 可覆盖）。跟主角数量一个量级——**只收有特写、跨集出现、承载剧情的**
+- 分集用 `episodes[].propIds` 引用。**没有任何一集引用的道具会被 `refs` 门点名**——跟失业角色、空转场景同一个判据
+
+边界：尺度、锚点、状态变体、白底提示词都是 `novel-art` 的活，不在这里定。这张表回答「哪几件物件承载剧情、各自承载什么」，美术层回答「它长什么样、怎么保证六集都长一样」。
 
 ## beats 爽点表
 
@@ -77,6 +90,7 @@
 - `synopsis` / `hook` / `suspense` 三栏**都必填**——【钩子】【悬念】空了视为未完成
 - **叙述体**：三栏里出现 `「」『』“”` 引号对白就是在写剧本，越界，validate 会拦
 - `sceneIds` / `characterIds` 必填且必须指向已登记的 id；每个角色至少出现一集、每个场景至少用一次
+- `propIds` 可选（写了 `props` 才有意义），必须指向已登记的道具 id；每件道具至少出现一集
 - `characterIds` ≥ 3 的集必须写 `crowdPlan`（同框拆解方案）。**校验按人数判，是代理指标**——如果这一集三人实际不同框（分处不同场次），把这个事实写成方案即可：「三人分处两场，无同框，分场拍」，照样通过
 - `warnings`：梗概里扫到生成难点关键词（雨戏/肢体接触/人群/手部特写）就必须列进来，宁可多报
 
@@ -84,7 +98,7 @@
 
 ```bash
 node scripts/novel-outline.mjs validate outline.json --stage skeleton|beats|full
-node scripts/novel-outline.mjs checkup outline.json   # 只打印 13 道质量门 ✓/✗
+node scripts/novel-outline.mjs checkup outline.json   # 只打印 14 道质量门 ✓/✗
 ```
 
 stage 就是流程门：骨架拍板前过 `skeleton`，**写分集之前必须过 `beats`**（爽点间隔和 major 时机错了，分集写完全废），交付前过 `full`。

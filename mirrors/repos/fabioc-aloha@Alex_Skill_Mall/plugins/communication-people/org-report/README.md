@@ -2,15 +2,13 @@
 
 ![Org Report](https://raw.githubusercontent.com/fabioc-aloha/org-report/main/assets/banner.svg)
 
-[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise) · [Org Report](https://github.com/fabioc-aloha/org-report)
-
 Org Report turns one directory walk into a sourced, shareable executive brief. Given a target person, it walks the reporting tree exposed by your directory MCP, synthesizes a profile for every individual from accessible communication signals, and produces a Word + PDF report displayed live in a Copilot canvas.
 
 The reference implementation targets Microsoft's [WorkIQ](https://aka.ms/workiq) MCP. Any MCP that exposes equivalent directory and communication-signal queries works with minor prompt tweaks.
 
 ## Status
 
-**Released as `v1.4.1`.** Source:
+**Released as `v1.4.2`.** Source:
 [`fabioc-aloha/org-report`](https://github.com/fabioc-aloha/org-report).
 Install from the Alex ACT Mall as `org-report@alex-mall`.
 
@@ -256,14 +254,18 @@ contains personal names, emails, and signal-derived summaries. Treat it as
 confidential and set a retention policy appropriate for your organization. The
 plugin does not auto-expire it.
 
-## Relationship to the Alex ACT constellation
+## Relationship to other plugins
 
-Org Report is a standalone first-party plugin, not a constellation baseline
-plugin. It ships and versions independently. The Alex ACT MSFT plugin installs
-it as part of the Microsoft-internal stack, and
+Org Report is an independent plugin. It is not part of the Alex ACT
+constellation, inherits none of its governance, and ships and versions on its
+own schedule. It is distributed through the Alex ACT Mall because that is the
+marketplace the Copilot CLI installs it from — a distribution channel, not a
+membership claim.
+
+The Alex ACT MSFT plugin configures it as one of its downstream targets, and
 [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin)
-pairs well with it for output styling, but neither is required. Any directory
-MCP works.
+pairs well with it for output styling. Neither is required. Any directory MCP
+works.
 
 ## Would Revise If
 

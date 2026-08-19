@@ -63,11 +63,13 @@ OpenCode Core → Plugin Initialization (index.ts)
 3. **Config Validation**: Checks if current directory has valid plugin config
 4. **Snapshot Loading**: Reads agent models/variants from `tui-state.ts`
 5. **Live Updates**: Sets up interval to refresh snapshot every 1000ms
-6. **Sidebar Rendering**: Renders sidebar with:
+6. **Tmux registration**: Refreshes the active session-to-`TMUX_PANE`
+   registration for parent-aware child-pane routing
+7. **Sidebar Rendering**: Renders sidebar with:
    - Plugin header (OMO-Slim + version)
    - Config status warning (if invalid)
    - Agent list with model/variant details
-7. **Lifecycle Management**: Cleans up interval on dispose
+8. **Lifecycle Management**: Cleans up interval and owned tmux registration on dispose
 
 ### State Persistence Flow (tui-state.ts)
 

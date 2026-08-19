@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 80 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 80 |
+| Files         | 83 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,34 +111,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`skills/ss-resolve/scripts/compiler.mjs`](skills/ss-resolve/scripts/compiler.mjs) |
 | 51 | ✓ | [`skills/ss-resolve/scripts/distribution-integrity.mjs`](skills/ss-resolve/scripts/distribution-integrity.mjs) |
 | 52 | ✓ | [`skills/ss-resolve/scripts/migrate-project.mjs`](skills/ss-resolve/scripts/migrate-project.mjs) |
-| 53 | ✓ | [`skills/ss-resolve/scripts/project-registry.mjs`](skills/ss-resolve/scripts/project-registry.mjs) |
-| 54 | ✓ | [`skills/ss-resolve/scripts/resolve-context.mjs`](skills/ss-resolve/scripts/resolve-context.mjs) |
-| 55 | ✓ | [`skills/ss-resolve/scripts/runtime-contract.mjs`](skills/ss-resolve/scripts/runtime-contract.mjs) |
-| 56 | ✓ | [`skills/ss-resolve/SKILL.md`](skills/ss-resolve/SKILL.md) |
-| 57 | ✓ | [`skills/ss-restyle/SKILL.md`](skills/ss-restyle/SKILL.md) |
-| 58 | ✓ | [`skills/ss-review/SKILL.md`](skills/ss-review/SKILL.md) |
-| 59 | ✓ | [`skills/ss-score/references/acceptance-report.schema.json`](skills/ss-score/references/acceptance-report.schema.json) |
-| 60 | ✓ | [`skills/ss-score/references/code-report.schema.json`](skills/ss-score/references/code-report.schema.json) |
-| 61 | ✓ | [`skills/ss-score/references/deterministic-report.schema.json`](skills/ss-score/references/deterministic-report.schema.json) |
-| 62 | ✓ | [`skills/ss-score/references/gate-run.schema.json`](skills/ss-score/references/gate-run.schema.json) |
-| 63 | ✓ | [`skills/ss-score/references/temporal-report.schema.json`](skills/ss-score/references/temporal-report.schema.json) |
-| 64 | ✓ | [`skills/ss-score/references/visual-report.schema.json`](skills/ss-score/references/visual-report.schema.json) |
-| 65 | ✓ | [`skills/ss-score/scripts/evidence-contract.mjs`](skills/ss-score/scripts/evidence-contract.mjs) |
-| 66 | ✓ | [`skills/ss-score/scripts/evidence-gate.mjs`](skills/ss-score/scripts/evidence-gate.mjs) |
-| 67 | ✓ | [`skills/ss-score/scripts/styleseed-check.mjs`](skills/ss-score/scripts/styleseed-check.mjs) |
-| 68 | ✓ | [`skills/ss-score/SKILL.md`](skills/ss-score/SKILL.md) |
-| 69 | ✓ | [`skills/ss-setup/SKILL.md`](skills/ss-setup/SKILL.md) |
-| 70 | ✓ | [`skills/ss-studio/agents/openai.yaml`](skills/ss-studio/agents/openai.yaml) |
-| 71 | ✓ | [`skills/ss-studio/references/artifact-contract.md`](skills/ss-studio/references/artifact-contract.md) |
-| 72 | ✓ | [`skills/ss-studio/references/provider-adapters.md`](skills/ss-studio/references/provider-adapters.md) |
-| 73 | ✓ | [`skills/ss-studio/scripts/studio-run.mjs`](skills/ss-studio/scripts/studio-run.mjs) |
-| 74 | ✓ | [`skills/ss-studio/SKILL.md`](skills/ss-studio/SKILL.md) |
-| 75 | ✓ | [`skills/ss-tokens/SKILL.md`](skills/ss-tokens/SKILL.md) |
-| 76 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
-| 77 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
-| 78 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
-| 79 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
-| 80 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
+| 53 | ✓ | [`skills/ss-resolve/scripts/palette-generator.mjs`](skills/ss-resolve/scripts/palette-generator.mjs) |
+| 54 | ✓ | [`skills/ss-resolve/scripts/project-registry.mjs`](skills/ss-resolve/scripts/project-registry.mjs) |
+| 55 | ✓ | [`skills/ss-resolve/scripts/resolve-context.mjs`](skills/ss-resolve/scripts/resolve-context.mjs) |
+| 56 | ✓ | [`skills/ss-resolve/scripts/runtime-contract.mjs`](skills/ss-resolve/scripts/runtime-contract.mjs) |
+| 57 | ✓ | [`skills/ss-resolve/SKILL.md`](skills/ss-resolve/SKILL.md) |
+| 58 | ✓ | [`skills/ss-restyle/SKILL.md`](skills/ss-restyle/SKILL.md) |
+| 59 | ✓ | [`skills/ss-review/SKILL.md`](skills/ss-review/SKILL.md) |
+| 60 | ✓ | [`skills/ss-score/references/acceptance-report.schema.json`](skills/ss-score/references/acceptance-report.schema.json) |
+| 61 | ✓ | [`skills/ss-score/references/code-report.schema.json`](skills/ss-score/references/code-report.schema.json) |
+| 62 | ✓ | [`skills/ss-score/references/deterministic-report.schema.json`](skills/ss-score/references/deterministic-report.schema.json) |
+| 63 | ✓ | [`skills/ss-score/references/gate-run.schema.json`](skills/ss-score/references/gate-run.schema.json) |
+| 64 | ✓ | [`skills/ss-score/references/temporal-report.schema.json`](skills/ss-score/references/temporal-report.schema.json) |
+| 65 | ✓ | [`skills/ss-score/references/visual-report.schema.json`](skills/ss-score/references/visual-report.schema.json) |
+| 66 | ✓ | [`skills/ss-score/scripts/evidence-contract.mjs`](skills/ss-score/scripts/evidence-contract.mjs) |
+| 67 | ✓ | [`skills/ss-score/scripts/evidence-gate.mjs`](skills/ss-score/scripts/evidence-gate.mjs) |
+| 68 | ✓ | [`skills/ss-score/scripts/styleseed-check.mjs`](skills/ss-score/scripts/styleseed-check.mjs) |
+| 69 | ✓ | [`skills/ss-score/SKILL.md`](skills/ss-score/SKILL.md) |
+| 70 | ✓ | [`skills/ss-setup/SKILL.md`](skills/ss-setup/SKILL.md) |
+| 71 | ✓ | [`skills/ss-studio/agents/openai.yaml`](skills/ss-studio/agents/openai.yaml) |
+| 72 | ✓ | [`skills/ss-studio/references/artifact-contract.md`](skills/ss-studio/references/artifact-contract.md) |
+| 73 | ✓ | [`skills/ss-studio/references/provider-adapters.md`](skills/ss-studio/references/provider-adapters.md) |
+| 74 | ✓ | [`skills/ss-studio/scripts/studio-run.mjs`](skills/ss-studio/scripts/studio-run.mjs) |
+| 75 | ✓ | [`skills/ss-studio/SKILL.md`](skills/ss-studio/SKILL.md) |
+| 76 | ✓ | [`skills/ss-tokens/scripts/generate-palette.mjs`](skills/ss-tokens/scripts/generate-palette.mjs) |
+| 77 | ✓ | [`skills/ss-tokens/scripts/generator.mjs`](skills/ss-tokens/scripts/generator.mjs) |
+| 78 | ✓ | [`skills/ss-tokens/SKILL.md`](skills/ss-tokens/SKILL.md) |
+| 79 | ✓ | [`skills/ss-update/scripts/artifact-impact.mjs`](skills/ss-update/scripts/artifact-impact.mjs) |
+| 80 | ✓ | [`skills/ss-update/scripts/check-update.mjs`](skills/ss-update/scripts/check-update.mjs) |
+| 81 | ✓ | [`skills/ss-update/SKILL.md`](skills/ss-update/SKILL.md) |
+| 82 | ✓ | [`skills/ss-verify/SKILL.md`](skills/ss-verify/SKILL.md) |
+| 83 | ✓ | [`skills/styleseed/SKILL.md`](skills/styleseed/SKILL.md) |
 
 ---
 

@@ -1,13 +1,13 @@
 # `motion-specs.jsonl` 填写模板
 
 文件第一行是 `sources` 声明：每个上游快照在这里写一次 `owner`、`artifact` 和已接受的
-`hash`，后面的记录用它的 key 引用。key 用产物文件名派生的短小写名字，在本文件内稳定且唯一。
+`artifact`，后面的记录用它的 key 引用。key 用产物文件名派生的短小写名字，在本文件内稳定且唯一。
 本阶段插入的片段（[`performance.fragment.json`](performance.fragment.json)、
 [`coverage-scope.fragment.json`](coverage-scope.fragment.json)）落进同一个文件，它们用到的 key
 也在这里声明。
 
 ```jsonl
-{"record_type":"sources","schema_version":"1.0.0","sources":{"shots":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/shots.jsonl","hash":"<sha256>"},"keyframes":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/keyframes.jsonl","hash":"<sha256>"},"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/<EP>/screenplay-index.jsonl","hash":"<sha256>"},"characters":{"owner":"short-drama-assets","artifact":"设定集/characters.jsonl","hash":"<sha256>"},"short-drama":{"owner":"creator","artifact":"short-drama.json","hash":"<sha256>"}}}
+{"record_type":"sources","schema_version":"1.0.0","sources":{"shots":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/shots.jsonl"},"keyframes":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/keyframes.jsonl"},"screenplay-index":{"owner":"short-drama-write","artifact":"剧集/<EP>/screenplay-index.jsonl"},"characters":{"owner":"short-drama-assets","artifact":"设定集/characters.jsonl"},"short-drama":{"owner":"creator","artifact":"short-drama.json"}}}
 ```
 
 其后每行一个候选运动规格对象。引用写 `src` 加它指向的记录 `record_id` 或字段 `field`；
@@ -164,7 +164,6 @@
       "visible_state": "<reported>"
     },
     "comparison": "match | mismatch | unrealized",
-    "source_end_hash": "<sha256>",
     "differences": []
   },
   "reference_frame_economy": {
@@ -184,13 +183,9 @@
       "rationale": "<理由>"
     }
   ],
-  "generic_prompt": "<从本规格渲染的可复制通用视频提示词>",
+  "generic_prompt": "<把本规格渲染成一段只含要拍出来的画面的交付文本：从已接受起点的姿态与持物说起，逐条写动作、接触、摄影机行为与终点状态；不写镜头/记录 ID、规则 ID、状态词、工艺备注与成段否定罗列；写满的样子见 references/production-prompt-grammar.md>",
   "derivation": {
-    "recipe_version": "<version>",
-    "input_hashes": [
-      "<sha256>"
-    ],
-    "rendered_hash": "<sha256>"
+    "recipe_version": "<version>"
   },
   "provenance": "creator_project"
 }
@@ -198,7 +193,7 @@
 
 
 运动规格**不带指回交付容器的引用**。依赖方向只有一条：容器 → 运动规格 → 镜头。两端在各自
-`sources` 里互相声明对方的文件 `hash` 会形成循环——任一文件落盘都会改变对方需要声明的 hash，
+`sources` 里互相声明对方会形成环——依赖方向必须单向，
 永远得不到可发布的稳定快照。要找某个镜头属于哪个容器，从容器记录的 `members[]` 反查，不在本文件里
 存副本。容器记录见 [delivery-container.jsonl.md](delivery-container.jsonl.md)。
 

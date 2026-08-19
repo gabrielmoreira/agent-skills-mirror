@@ -38,7 +38,7 @@
 
 - 只处理创作者声明**合法持有、拥有使用权**的作品；授权不清时保留问题，不替创作者定案。
 - 分析是转化性的：提取结构与功能，不复制原文成段落，不模仿原作文风生成新文本。
-- 引用采用最短必要片段，并绑定 span 与 hash。功能摘要必须是**去引用**的重述。
+- 引用采用最短必要片段，并绑定 span。功能摘要必须是**去引用**的重述。
 - 通俗题材的暴力、复仇、背叛、情爱张力与黑暗伦理照常提取；个别片段无法处理时跳过并记录，
   不中止整章或整本。
 - `输入/` 与其中的原始材料不进入交付包。
@@ -49,7 +49,7 @@
 
 | ID | Class | Knowledge |
 |---|---|---|
-| NVA-01 | structural_invariant | All stages slice the source through one chapter index bound to the source hash; a changed source invalidates the index and everything derived from it. |
+| NVA-01 | structural_invariant | All stages slice the source through one chapter index built from that source; `verify` blocks on a chapter set whose numbering, ordering or line spans do not cover that source. An edited source still invalidates the index and everything derived from it, but only a changed line count or numbering is reported — a same-line-count rewrite in place is not, so whoever edits the source re-indexes it. |
 | NVA-02 | structural_invariant | Every extracted claim carries a source locator and span; a claim with no span cannot be cited downstream. |
 | NVA-03 | structural_invariant | Aggregation may not start while chapter coverage is incomplete; missing chapters are named in every aggregate that inherits the gap. |
 | NVA-04 | structural_invariant | Analysis records de-quoted function summaries, never copied source paragraphs. |

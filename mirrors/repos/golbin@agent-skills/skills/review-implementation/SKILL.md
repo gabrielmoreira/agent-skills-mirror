@@ -1,100 +1,59 @@
 ---
 name: review-implementation
-description: Review implementation against provided markdown requirements, specs, PRDs, or phase docs; optionally apply focused fixes. Use when a user supplies .md file paths and asks to verify correctness/completeness, check PRD phase completion, find missing or overbuilt work, assess critical issues, refactor long files/functions, or update code to match the docs.
+description: Review implementation against its purpose and user experience, fix root causes, and refine it through repeated simplification passes. Use when verifying correctness and side effects, reviewing user-facing or developer-facing interfaces, redesigning flawed foundations, managing legacy compatibility, removing speculative abstractions or defensive code, or applying fixes.
 ---
 
 # Review Implementation
 
-## Overview
+Review from evidence. Protect the purpose first, then simplify repeatedly.
 
-Review code against markdown requirements and produce evidence-backed findings.
-When the user asks for fixes, apply targeted changes that bring the
-implementation back to the docs without expanding scope.
+## Philosophy
 
-## Modes
+Follow the Unix and X11 philosophies:
 
-- Use **review-only mode** when the user asks to review, assess, audit, verify,
-  or find issues.
-- Use **fix mode** when the user asks to fix, update, refactor, complete,
-  apply changes, or make the implementation match the docs.
-- In fix mode, keep changes minimal and reversible. Do not add features that are
-  not justified by the docs.
+- Make each part do one thing well.
+- Prefer small, composable mechanisms; keep policy and side effects at explicit boundaries.
+- Treat every interface as a user experience, whether its user is a customer, developer, operator, or another system. Optimize for their outcome, predictability, and cost of use, not implementation convenience or feature count.
+- Choose the simplest coherent system that fully achieves the purpose, not the smallest diff. Effort or change size is not a reason to preserve a wrong foundation.
+- Fix root causes instead of adding compensating branches, wrappers, flags, or special cases around them.
+- Do not design for an imagined future. Add abstraction only when a present need or real duplication justifies it.
+- Defend real boundaries and failures, not every conceivable case. At trusted internal boundaries, prefer an immediate, visible failure to fallback, retry, catch-and-continue, or invalid state. At a user boundary, make the failure specific and actionable.
+- Preserve legacy behavior only when actual users, data, or public contracts justify it. Isolate compatibility at a boundary, provide a migration path, and make its removal explicit; do not distort the core design or maintain parallel paths indefinitely.
+- Treat easy deletion as the strongest test of good modularity. A feature or module should be removable with few unrelated changes.
+- Write code, comments, and documents plainly. State each idea once; remove ceremony, repetition, and decorative language.
 
-## Workflow
+Simplicity is not fewer lines at the expense of correctness. Keep everything required by the goal and nothing else.
 
-### 1) Intake and Discovery Gate
+## Review Cycle
 
-- Read all provided .md files and extract explicit requirements, constraints, and acceptance criteria.
-- Read repo guidance such as AGENTS.md, README, architecture notes, and existing
-  task or PRD files when relevant.
-- Inspect affected code, tests, fixtures, routes, schemas, migrations, services,
-  components, permissions, config, and observability surfaces as needed.
-- Identify the current behavior, expected behavior, data flow, integration
-  points, validation options, and likely blast radius.
-- Ask only when a critical decision cannot be made safely after discovery.
+Work in this order. Do not collapse all concerns into one pass.
 
-### 2) Map Requirements to Evidence
+### 1. Purpose and correctness
 
-- Build an internal traceability map: requirement -> status -> code evidence ->
-  gap -> action.
-- Classify each requirement as satisfied, partial, missing, conflicting,
-  overbuilt, or deferred.
-- Use file/line evidence for important claims. Do not rely on general
-  impressions when code can be inspected.
+- Verify that the implementation achieves the intended goal and requirements.
+- Trace the relevant interface, callers, data flow, and user workflow before changing it. Judge the result from the user's path, not only the local code.
+- Find incorrect, missing, or conflicting behavior.
+- Trace material problems to their root cause. Decide whether a local fix is sound or the model, ownership, boundary, or flow must change.
+- Separate intended contracts from accidental legacy behavior. Treat prescribed designs as revisable when they conflict with the purpose or evidence.
+- Redesign freely within the authorized purpose. Surface material changes to product intent, public contracts, data, or rollout before acting.
+- Check relevant edge cases, integration boundaries, and potential security, data, performance, or operational problems.
+- Look for unintended behavior and side effects outside the changed scope.
+- Validate the user-observable outcome and important contracts with the smallest sufficient checks.
 
-### 3) Run Multi-Pass Review
+### 2. Refine in focused passes
 
-Review in this order:
+Run several small passes:
 
-1. Requirements coverage: every requirement is satisfied or explicitly
-   unresolved.
-2. Correctness: happy paths, edge cases, errors, empty states, permissions,
-   state transitions, and rollback behavior are handled.
-3. Integration: changed modules fit together without contract breaks,
-   duplicated ownership, or hidden assumptions.
-4. Simplicity: the solution is no more complex than necessary.
-5. Cleanup: repeated logic, dead code, temporary code, noisy logs, unused files,
-   and unused dependencies are removed.
-6. Security/privacy: auth, access control, secrets, sensitive data, injection
-   risks, and audit needs are safe.
-7. Performance: expensive queries, N+1 patterns, unnecessary renders, redundant
-   network calls, and blocking work are addressed.
-8. Validation: chosen checks are appropriate for the risk.
-9. Documentation/operability: docs, release notes, migrations, rollback,
-   monitoring, or support notes are updated when required.
+1. **Repair the foundation:** replace a flawed model, boundary, ownership split, or flow instead of patching around it, even when the coherent change is larger.
+2. **Subtract scope:** remove behavior, options, dependencies, temporary work, and future-facing paths not required by the purpose.
+3. **Collapse structure:** remove needless layers, indirection, state, abstractions, wrappers, and defensive branches. Prefer direct failure when recovery has no requirement or user value.
+4. **Isolate legacy:** keep justified compatibility in a removable adapter or migration, with one target model and a clear retirement condition.
+5. **Clarify use:** keep interfaces small, explicit, consistent, and hard to misuse. Use intention-revealing names and clear errors; make docs and tests useful as examples. Remove duplication, restatement, and ornamental prose.
 
-Treat overbuilt code as a review finding when it adds features, abstractions,
-state, dependencies, or workflow paths not required by the docs.
+After each pass, preserve intended behavior with proportionate checks. Then repeat the purpose review and refinement passes until a full pass finds no meaningful problem or simplification. Do not stop after the first acceptable result.
 
-### 4) Apply Focused Fixes
+## Act and Report
 
-- Fix issues directly in code with minimal, targeted changes.
-- Split overly long files/functions only when the split reduces real review or
-  maintenance risk.
-- Remove or simplify overbuilt code that is not justified by the docs.
-- Preserve existing patterns unless the docs or code evidence justify a change.
-- If PRD or phase files are part of the request, update checkboxes, validation
-  notes, discoveries, and change logs only when implementation evidence supports
-  the update.
-
-### 5) Validate with Evidence
-
-- Choose the smallest sufficient validation for the risk: static checks, unit
-  tests, integration tests, API-level E2E, browser/UI checks, simulator checks,
-  screenshots, manual smoke checks, or observability checks.
-- Run relevant checks when available and appropriate. If checks are unavailable,
-  too costly, or not allowed, state the gap and use the best available evidence.
-- Do not run broad or expensive validation by reflex when a narrower check proves
-  the changed behavior.
-
-## Report Format
-
-Lead with the result that matters most:
-
-- In review-only mode, list findings first in severity order with file/line
-  references, then summarize coverage, validation, and residual risk.
-- In fix mode, summarize fixes applied, validation performed, and any remaining
-  findings or risks.
-- If no issues are found, say so clearly and name any validation gaps.
-- For critical blockers, stop and ask. For non-critical ambiguity, make the best
-  reasonable decision, record the assumption, and continue.
+- When asked only to review, report findings in severity order with concrete evidence and validation gaps.
+- When asked to improve or fix, implement the simplest coherent end state, not the smallest patch. Make the broader change when the root cause requires it; leave a workaround only when explicitly temporary, with a removal condition. Validate the final result and report remaining risk.
+- State clearly when no material issue is found.

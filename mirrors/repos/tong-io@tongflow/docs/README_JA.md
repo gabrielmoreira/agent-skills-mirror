@@ -189,10 +189,9 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-pyscenedetect](https://github.com/tong-io/tongflow-modal-pyscenedetect) — ショット境界の検出、クリップ分割用
 - [tongflow-modal-z-image](https://github.com/tong-io/tongflow-modal-z-image) — Z-Image テキストから画像生成
 - [tongflow-modal-ernie-image](https://github.com/tong-io/tongflow-modal-ernie-image) — ERNIE Image テキストから画像生成（代替）
+- [tongflow-modal-krea2](https://github.com/tong-io/tongflow-modal-krea2) — Krea 2 Turbo テキストから画像生成（オープンウェイト 12B、8 ステップ、最大 2K）
 - [tongflow-modal-flux2-klein9b](https://github.com/tong-io/tongflow-modal-flux2-klein9b) — FLUX.2 Klein 9B マルチ参照融合と画像編集
 - [tongflow-modal-boogu](https://github.com/tong-io/tongflow-modal-boogu) — Boogu-Image-0.1（fp8）テキストから画像生成（高密度な多言語テキスト）と単一参照画像編集
-- [tongflow-modal-ltx](https://github.com/tong-io/tongflow-modal-ltx) — LTX-2.3 テキスト / 画像から動画生成
-- [tongflow-modal-fastwan](https://github.com/tong-io/tongflow-modal-fastwan) — FastWan-QAD-FP8 高速テキストから動画生成（3 ステップ蒸留 Wan2.1-1.3B）
 - [tongflow-modal-infinitetalk](https://github.com/tong-io/tongflow-modal-infinitetalk) — InfiniteTalk 音声駆動リップシンク（音声 + 画像 / 動画 → デジタルヒューマン動画）
 - [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate キャラクター置換とモーション転送（動画 + 参照）
 - [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 制御可能なキャラクターアニメーション（画像 + 駆動動画；wan-animate と同じ 2 スロット）
@@ -267,7 +266,7 @@ docker compose up -d
 
 - [tongflow-modal-z-image](https://github.com/tong-io/tongflow-modal-z-image) — テキストから画像生成
 - [tongflow-modal-flux2-klein9b](https://github.com/tong-io/tongflow-modal-flux2-klein9b) — 画像の融合 / ミックス
-- [tongflow-modal-ltx](https://github.com/tong-io/tongflow-modal-ltx) — 画像から動画生成
+- [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — 画像から動画生成
 
 これらのプラグインは [Modal](https://modal.com) 上で動作します（毎月最大 **$30** 分の無料GPU演算）。**設定**で `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` を入力してください。トークンは [modal.com/settings/tokens](https://modal.com/settings/tokens) で作成できます。他のどのプラットフォームでも同じ方法で自分のプラグインを公開できます。
 

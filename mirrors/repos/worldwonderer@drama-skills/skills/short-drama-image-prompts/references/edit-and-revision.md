@@ -59,13 +59,13 @@ Continuity impact：预期对应哪个 accepted State/binding，有效到哪里�
 
 用户不需要知道 JSONL 字段。对“把工作服换成深蓝，但保留脸和袖口油渍”执行：
 
-1. **读取权威源**：当前 accepted spec、asset refs、recipe version 和 rendered hash。
+1. **读取权威源**：当前 accepted spec、asset refs 与 recipe version。
 2. **解释请求**：区分 prompt-owned 改动、source-owned 事实、含糊项与可能影响。
 3. **生成候选 spec**：不覆盖 accepted spec；不确定值保持 unresolved。
 4. **展示语义 diff**：字段路径、before、after、理由、影响、是否需上游 owner。
 5. **展示新 prompt 预览**：让创作者看实际文案效果，而非只看字段。
 6. **接受/拒绝**：接受才提交；拒绝使原 spec 与 Markdown byte-identical。
-7. **重渲染**：accepted spec + recipe hash 唯一导出 Markdown，更新下游 stale 状态。
+7. **重渲染**：从 accepted spec 与 recipe version 导出 Markdown，更新下游 stale 状态。
 
 建议预览：
 
@@ -85,7 +85,7 @@ Continuity impact：预期对应哪个 accepted State/binding，有效到哪里�
 
 ## 4. 缓存漂移的 restore/adopt
 
-`image-prompts.md` 是缓存视图。发现它与 spec + recipe hash 不一致时暂停覆盖：
+`image-prompts.md` 是缓存视图。发现它与 spec 不一致时暂停覆盖：
 
 ### Restore
 
@@ -117,6 +117,6 @@ Continuity impact：预期对应哪个 accepted State/binding，有效到哪里�
 - source-owned 请求已路由给正确 owner；
 - 候选与 accepted 分离，diff 可读、可拒绝，预览可复制；
 - accept 顺序是 spec commit 后 rerender；reject 不变；
-- restore/adopt 都有预览，第三种 live hash 保留为冲突；
+- restore/adopt 都有预览，无法对应字段的改动保留为冲突；
 - 本提示词修订流程不调用媒体生成或 provider API；实际生产交 `$short-drama-produce`
   并对精确任务预览单独确认。

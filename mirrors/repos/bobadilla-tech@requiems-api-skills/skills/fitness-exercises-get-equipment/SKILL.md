@@ -33,7 +33,7 @@ Returns a sorted list of all distinct equipment types. Use these as valid values
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `items` | array | Sorted list of all distinct equipment names |
+| `items` | array<string> | Sorted list of all distinct equipment names |
 | `total` | integer | Total number of distinct equipment types |
 
 ## Errors

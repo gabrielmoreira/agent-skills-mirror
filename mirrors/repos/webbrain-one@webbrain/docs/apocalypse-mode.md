@@ -114,3 +114,5 @@ contain an article title may need a more specific title.
 Catalog metadata comes from the [Kiwix OPDS catalog](https://library.kiwix.org/),
 the file format is documented by [openZIM](https://wiki.openzim.org/wiki/ZIM_file_format),
 and archive content remains subject to the license embedded by its publisher.
+
+See [Remote Downloads & Data Sources](remote-downloads.md) for download triggers, execution order, and integrity verification.

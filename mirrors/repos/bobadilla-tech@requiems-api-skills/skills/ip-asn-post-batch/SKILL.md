@@ -19,7 +19,7 @@ Look up ASN data for up to 50 IP addresses in a single request. Results are retu
 
 | Name | Type | Required | Location | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| `ips` | array of strings | yes | body | List of IP addresses to look up (1–50 items, each must be a valid IPv4 or IPv6 address). |
+| `ips` | array<string> | yes | body | List of IP addresses to look up (1–50 items, each must be a valid IPv4 or IPv6 address). |
 
 ## Request Example
 
@@ -54,7 +54,7 @@ Look up ASN data for up to 50 IP addresses in a single request. Results are retu
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `results` | array | Per-item results in input order. |
+| `results` | array<object> | Per-item results in input order. |
 | `results[].ip` | string | The IP address that was looked up. |
 | `results[].result` | object | ASN data (omitted on error). Same fields as the single-item endpoint. |
 | `results[].error` | string | Error message if the lookup failed (omitted on success). |

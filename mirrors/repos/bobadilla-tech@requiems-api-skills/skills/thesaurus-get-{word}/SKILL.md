@@ -41,8 +41,8 @@ Returns synonyms and antonyms for the given word.
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `word` | string | The normalized (lowercased) word that was looked up |
-| `synonyms` | array of strings | List of words with similar meaning |
-| `antonyms` | array of strings | List of words with opposite meaning |
+| `synonyms` | array<string> | List of words with similar meaning |
+| `antonyms` | array<string> | List of words with opposite meaning |
 
 ## Errors
 

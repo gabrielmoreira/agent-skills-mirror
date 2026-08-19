@@ -11,9 +11,9 @@
 [![Skills](https://img.shields.io/badge/skills-6-0ea5e9)](#6-技能索引)
 [![Observed Works](https://img.shields.io/badge/observed%20works-22%2C125-7c3aed)](docs/benchmark-coverage.md)
 [![Validate repository](https://github.com/SeanJ1ang/design-judge-skills/actions/workflows/validate-repository.yml/badge.svg)](https://github.com/SeanJ1ang/design-judge-skills/actions/workflows/validate-repository.yml)
-[![Language](https://img.shields.io/badge/language-中文%20%7C%20English-1f6feb)](README_EN.md)
+[![Language](https://img.shields.io/badge/language-%E4%B8%AD%E6%96%87%20%7C%20English%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E-1f6feb)](README_EN.md)
 
-[快速开始](#4-快速开始) · [获奖样本体量](docs/benchmark-coverage.md) · [安装](#5-安装) · [技能索引](#6-技能索引) · [贡献与开发](#7-贡献与开发) · [English](README_EN.md)
+[快速开始](#4-快速开始) · [获奖样本体量](docs/benchmark-coverage.md) · [安装](#5-安装) · [技能索引](#6-技能索引) · [贡献与开发](#7-贡献与开发) · [English](README_EN.md) · [日本語](README_JA.md)
 
 </div>
 
@@ -21,6 +21,7 @@
 
 ## 目录
 
+- [Skill 有效性](#skill-有效性)
 - [1. 项目介绍](#1-项目介绍)
 - [2. 工作流](#2-工作流)
 - [3. 设计原则与边界](#3-设计原则与边界)
@@ -32,6 +33,19 @@
   - [5.4 其他 Agent 场景](#54-其他-agent-场景)
 - [6. 技能索引](#6-技能索引)
 - [7. 贡献与开发](#7-贡献与开发)
+
+## Skill 有效性
+
+本次测试完整采集了 K-Design 2026 的全部 1,612 件参赛项目。所有项目于 2026-07-03 完成评分并保存，早于获奖作品公示。评分时尚未取得获奖名单，因此不能根据最终结果倒推或修改分数。
+
+| 模型 | Top-115 命中数 | Top-115 命中率 |
+|---|---:|---:|
+| GPT-5.5 | 32 | 27.83% |
+| GPT-5.4 | 33 | 28.70% |
+| Claude Sonnet 4.6 | 19 | 16.52% |
+| **Design Judge-GPT-5.5** | **41** | **35.65%** |
+| **Design Judge-GPT-5.4** | **47** | **40.87%** |
+| **Design Judge-Claude Sonnet 4.6** | **44** | **38.26%** |
 
 ## 1. 项目介绍
 

@@ -84,8 +84,8 @@ A single-page, 1600px-wide review document. Reports render with a Chinese UI by 
 ## The relay — the pipeline closes here
 
 ```
-novel-characters → cast.json       (who: character sheets)
 novel-outline    → outline.json    (what: structure)
+novel-characters → cast.json       (who: character sheets)
 novel-art        → art.json        (where: scene & prop sheets)
 novel-script     → script.json     (the drama: scenes, beats, lines)
 novel-storyboard → storyboard.json (how to shoot: segments, cuts, frames, H3 prompts)
