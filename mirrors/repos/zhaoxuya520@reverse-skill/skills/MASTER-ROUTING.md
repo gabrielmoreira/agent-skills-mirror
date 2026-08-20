@@ -1,6 +1,6 @@
 # reverse-skill PRIMARY 快路径
 
-> 与 `scripts/master-route.ps1` 保持一致。
+> `scripts/master-route.ps1` 与 `scripts/master-route.sh` 必须保持相同路由契约；平台只改变执行入口，不改变 routing semantics。
 
 ## 执行契约
 
@@ -15,6 +15,8 @@
 8. 未命中 → 读 routing.md 全表或提议新 skill
 ```
 
+### Windows
+
 ```powershell
 powershell -File skills\scripts\master-route.ps1 -Hint "<用户任务>"
 # 默认写出当前项目的 work/master-route-<ts>/route-scope.md；从其他目录调用时显式指定项目根
@@ -24,12 +26,33 @@ powershell -File skills\scripts\case-init.ps1 -Hint "<用户任务>" -CaseName "
 powershell -File skills\scripts\case-init.ps1 -Hint "<用户任务>" -CaseName "my-case" -ProjectRoot "C:\path\to\analysis-project"
 # 一次成型可 ACT（授权 + 目标 + 网络档）：
 powershell -File skills\scripts\case-init.ps1 -Hint "<任务>" -CaseName "my-case" -AuthGranted -TargetUrl "https://target/" -NetworkProfile authorized_target_only
+# 本地离线样本：
+powershell -File skills\scripts\case-init.ps1 -Hint "offline apk" -CaseName "my-sample" -Preset offline-sample -Sample ".\app.apk"
 # 冒烟：verify + 脚本解析 + 路由矩阵（含中文 Hint）
 powershell -File skills\scripts\smoke.ps1
-# ACT 前轻量 scope 门禁（未就绪 exit 2；-Force 仅警告）
+# ACT 前轻量 scope 门禁（未就绪 exit 2；-Force 为兼容参数，不能绕过硬门）
 powershell -File skills\scripts\case-guard.ps1 -CaseRoot work\my-case
 # Evidence 追加
 powershell -File skills\scripts\append-evidence.ps1 -CaseRoot work\my-case -Id E-001 -Title "..." -ReproCommand "..."
+python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --strict
+```
+
+### Linux / macOS / Kali
+
+不要求为了核心 route/case 流程安装 PowerShell：
+
+```bash
+bash skills/scripts/master-route.sh --hint "<用户任务>"
+bash skills/scripts/master-route.sh --hint "<用户任务>" --project-root "/path/to/analysis-project"
+bash skills/scripts/case-init.sh --hint "<用户任务>" --case-name "my-case"
+bash skills/scripts/case-init.sh --hint "<用户任务>" --case-name "my-case" --project-root "/path/to/analysis-project"
+# 本地离线样本：
+bash skills/scripts/case-init.sh --hint "offline apk" --case-name "my-sample" --preset offline-sample --sample ./app.apk
+# ACT 前轻量 scope 门禁（--force 为兼容参数，不能绕过硬门）：
+bash skills/scripts/case-guard.sh --case-root work/my-sample
+# 路由 parity：
+bash skills/scripts/test-routing.sh
+bash skills/scripts/test-bootstrap-manifest.sh
 python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --strict
 ```
 

@@ -3,6 +3,10 @@
 # Injects plan context on every user message.
 # Critical for session recovery after /clear — dumps actual content, not just advice.
 
+# Issue #195 opt-out. The disabled branch reproduces this hook's own
+# no-plan-file behaviour, so the Cursor protocol shape never changes.
+[ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
+
 # --- PWF_PLAN_ROOT: absolute plan-root binding (issue #212). ---
 # A thread whose cwd is a shared PARENT of the real project can be pinned to
 # the nested project root; every planning-state read below goes through the

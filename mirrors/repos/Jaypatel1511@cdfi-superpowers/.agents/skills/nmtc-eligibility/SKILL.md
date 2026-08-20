@@ -27,7 +27,12 @@ tract up in the CDFI Fund's NMTC Low-Income Community (LIC) eligibility table.
 
 - "Is 2400 Grand Concourse, Bronx NY NMTC eligible?"
 - "Is census tract 36005023702 a low-income community?"
-- "Does this tract qualify for severe distress / the 85% investment commitment?"
+- "Is tract 36005023702 flagged severe distress — or deep distress — in the CDFI
+  Fund's eligibility table?" (a tract carries a distress *flag*; a **CDE** makes
+  the 85%/20% *commitments* — see the commitment-basis rule)
+- "Does my pipeline meet the 85% investment commitment?" — answered by pointing
+  at that rule, never by returning a number: these packages never see a QLICI
+  amount.
 - "Screen this $8.5M grocery project for NMTC feasibility."
 
 ## When NOT to use
@@ -268,6 +273,87 @@ therefore **"not carried by this package," never "ineligible"** — route to CIM
 or to the separate territory file; do not answer it from this 2016–2020 ACS
 table.
 
+## The commitment-basis rule (non-negotiable)
+
+The three rules above govern what this lookup may say about a **tract**. This one
+governs what it may say about a **CDE**, and the answer is *nothing*.
+
+**The CDFI Fund's two distress commitments are measured on QLICI dollars.** The
+CY 2024-2025 Allocation Application asks, at **Question 25(a)**, whether the
+Applicant will commit to *"providing at least 85% of its QLICIs **(in terms of
+aggregate dollar amounts)**"* in the qualifying areas, and at **25(b)(i)** for
+*"the percentage of its QLICIs (in terms of aggregate dollar amounts)"* it will
+provide in the 20% tier. The Fund's review-process document states both in one
+sentence (quoted verbatim; downloaded from the source this session):
+
+> **1. Targeting Areas of Higher Distress (Question 25).** The Applicant
+> indicated that it will commit to providing at least 85% of its **QLICIs** in
+> specified areas of severe distress and/or areas characterized by multiple
+> indicia of distress. The Applicant indicated that it will commit to providing
+> at least 20% of its **QLICIs** to "Deep Distress" areas.
+
+— CDFI Fund, *CY 2024-2025 New Markets Tax Credit Program Allocation Application
+Review Process, General Characteristics of a Highly Ranked Application*, §C.1;
+`cdfifund.gov/system/files/2025-12/CY_2024_25_NMTC_Program_Review_Process.pdf`.
+
+**The denominator is the CDE's own QLICI dollars — not QEI, not project count,
+not tract count.** A QEI is what a tax-credit investor puts *into* a CDE; a QLICI
+is what the CDE puts *out* into QALICBs (`references/cdfi-industry-primer.md`).
+They are different quantities on different sides of the CDE, and the credit is
+sized on the first while both commitments are sized on the second. Bucketing QEI,
+or dividing counts instead of dollars, produces a number that is not the
+commitment — under a label that says it is.
+
+**These packages never see a QLICI amount.** A tract-level designation answers
+*"if a QLICI were made here, would it count toward the numerator?"* It cannot
+answer *"what share of this CDE's QLICIs qualifies?"* — that needs the CDE's own
+deployment ledger, which is not an input to `nmtcmapper` or `nmtc_screener`.
+The two questions are not the same question at different scales; the second one
+has an input the first one does not.
+
+**A `severe_distress=False` is therefore not a "does not count toward the 85%."**
+Q25(a)'s numerator is a QLICI in an area characterized by **at least one of items
+1–5** *or* **at least two of items 6–12**. Severe Distress is only item 1. The
+other single-item routes are **NMTC Native Areas, U.S. Island Areas,
+Non-Metropolitan Counties, and Targeted Populations**; the two-of list runs
+25%-poverty / 70%-MFI / 1.25× unemployment, Brownfield sites, ARC/DRA areas,
+Colonias, federal MUA/HPSA areas, FEMA disaster counties, and USDA LILA
+food-access tracts. Of those twelve this package returns **exactly two** —
+`severe_distress` (item 1) and `is_non_metro` (item 4) — and computes **no**
+multi-indicia measure at all. Two of the routes it cannot reach are ones this
+skill already declines elsewhere: **Native Areas** (see the field-list note) and
+**Island Areas** (see the vintage-scope rule). And the gap is not only in what
+the package omits: derived against the live table this session, **10,532 tracts
+are non-metro and not severe** (3,754 of them also LIC), so reading
+`severe_distress` alone understates the qualifying set even within the two routes
+the package *does* return.
+
+**The same holds one tier down, and harder.** Q25(b)'s 20% tier is not Deep
+Distress alone — it is **any one of four**: Deep Distress, NMTC Native Areas,
+**High Migration Rural Counties**, and U.S. Island Areas. A `deep_distress=False`
+says nothing about the other three. **1,185 tracts are high-migration-rural and
+not deep** (live table, this session), and `is_high_migration_rural` is a field
+this package returns — so here too a negative on the flag the label names is not
+a negative on the commitment.
+
+**The two commitments nest, and the Fund says so as a rule** — *"A QLICI that
+meets this commitment will also automatically meet the commitment made in
+Question 25(a)"* (Application, Q25(b)(i) notes). The 20% is carved out of the
+85%, never added to it. The package's two flags happen to nest the same way —
+re-derived over all 85,395 rows this session, `deep_distress` is a **strict
+subset** of `severe_distress`: **8,061 deep-and-severe, 0 deep-and-not-severe,
+13,121 severe-and-not-deep**, against **21,182** severe-flagged. That is a fact
+about two columns, not the reason the commitments nest; do not offer it as one.
+
+**So: never state or imply that a CDE meets, clears, is on track for, or fails
+either commitment on the basis of anything these packages return** — not from one
+tract, not from a batch of tracts, and above all not from a *percentage of
+tracts*, which is a share of the wrong thing. Answer what the lookup answers:
+whether a QLICI made in this tract would count toward the numerator, on the
+routes the package can see. Then direct the user to compute both shares from
+their **own QLICI dollar amounts**, scoring each QLICI against the full Q25 area
+list.
+
 ## Worked example — address eligibility (executed)
 
 ```python
@@ -306,6 +392,15 @@ NMTC Eligibility Result
 `eligibility_status` is `verified-eligible`. Tract `36005023702` verified
 **present** in the live 2016–2020 table this session.
 
+**The `Description:` line is the package's own string, reproduced verbatim — read
+it through the commitment-basis rule.** `DISTRESS_LEVELS["severe"]` reads
+*"qualifies for 85% investment commitment"*; what the flag establishes is that
+**a QLICI made in tract `36005023702` would count toward a CDE's 85% numerator**,
+on item 1 of the Q25 area list. A tract does not "qualify for" a commitment — a
+CDE makes one, over its own QLICI dollars, and nothing in this result speaks to
+that share. Quote the line as the package's label; say what it means in your own
+words alongside it, and never carry it forward as the skill's own claim.
+
 **The `Opportunity Zone` line may now be reported as printed — that is the point
 of 0.5.0.** Through 0.4.3 `summary()` printed a bare `Opportunity Zone: No` here
 and this skill's job was to *re-narrate* it, because `is_opportunity_zone` was a
@@ -332,6 +427,18 @@ Distress — qualifies for 85% investment commitment"*), **`eligibility_status`*
 (the four-way string above) and **`opportunity_zone_status`** (0.5.0 — the
 three-way string `designated` / `not-confirmed` / `no-tract`; see the OZ rule
 below).
+
+**`distress_description` returns `DISTRESS_LEVELS[distress_level]` verbatim, and
+both distress strings assert more than the flag behind them carries.** The
+`severe` string names the 85% commitment without its QLICI-dollar denominator and
+without the *"and/or multiple indicia"* alternative route — see the
+commitment-basis rule. The `deep` string, *"Deep Distress — highest need,
+strongest NMTC application score"*, asserts a **scoring outcome** the package
+cites no source for; there is a real Q25(b) Deep Distress commitment worth points,
+but that is not what this string says and this package does not establish it.
+Quote either property if you quote it, and qualify it on the adjacent line — do
+not restate either claim in the skill's own voice, and do not paraphrase a
+package constant into prose.
 
 **`is_high_migration_rural` is the field that exposes a stale install.** It is
 one of the three routes to LIC status (§45D(e)(5)), and pre-0.4.2 the package
@@ -586,6 +693,10 @@ is only as honest as this input.
   never as "not eligible." (See the third-state rule.)
 - Distinguish the mapper's *tract-eligibility lookup* (authoritative table
   lookup) from the screener's *feasibility score* (a heuristic first pass).
+- **Never render a distress flag as a share of anything.** A count or percentage
+  of *tracts* is not the 85% or the 20% commitment, which are shares of a CDE's
+  QLICI **dollars**. If you are about to divide, re-read the commitment-basis
+  rule — that is the substitution it exists to stop.
 - **OZ status is asymmetric, and as of 0.5.0 the package says so itself — read
   `opportunity_zone_status`, not the boolean.** NMTC eligibility and OZ status
   are independent, so report OZ separately either way. The property is a
@@ -750,5 +861,8 @@ returned the third state.
   only valid for the table vintage named above.
 - An **"unknown" answer is a real answer** — "could not be determined for this
   tract/address," never "not eligible."
+- A distress flag is a fact about a **tract**. The **85% and 20% commitments are
+  facts about a CDE's QLICI dollars**, which this layer never sees — it cannot
+  say whether any CDE meets either one. (Commitment-basis rule.)
 - The screener's score and estimated allocation are **first-pass heuristics** to
   triage deals, not underwriting or a commitment.

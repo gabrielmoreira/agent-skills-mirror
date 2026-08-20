@@ -147,11 +147,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 86 | ✓ | [`.github/skills/sweeper-fix/SKILL.md`](.github/skills/sweeper-fix/SKILL.md) |
 | 87 | ✓ | [`.github/skills/symbolicate-crash-dump/SKILL.md`](.github/skills/symbolicate-crash-dump/SKILL.md) |
 | 88 | ✓ | [`.github/skills/tool-rename-deprecation/SKILL.md`](.github/skills/tool-rename-deprecation/SKILL.md) |
-| 89 | ✓ | [`.github/skills/ui-scenario-validation/SKILL.md`](.github/skills/ui-scenario-validation/SKILL.md) |
-| 90 | ✓ | [`.github/skills/unit-tests/SKILL.md`](.github/skills/unit-tests/SKILL.md) |
-| 91 | ✓ | [`.github/skills/update-screenshots/SKILL.md`](.github/skills/update-screenshots/SKILL.md) |
-| 92 | ✓ | [`.github/skills/ux-css-layout/SKILL.md`](.github/skills/ux-css-layout/SKILL.md) |
-| 93 | ✓ | [`.github/skills/ux-theming/SKILL.md`](.github/skills/ux-theming/SKILL.md) |
+| 89 | ✓ | [`.github/skills/unit-tests/SKILL.md`](.github/skills/unit-tests/SKILL.md) |
+| 90 | ✓ | [`.github/skills/update-screenshots/SKILL.md`](.github/skills/update-screenshots/SKILL.md) |
+| 91 | ✓ | [`.github/skills/ux-css-layout/SKILL.md`](.github/skills/ux-css-layout/SKILL.md) |
+| 92 | ✓ | [`.github/skills/ux-theming/SKILL.md`](.github/skills/ux-theming/SKILL.md) |
+| 93 | ✓ | [`.github/skills/validate-ui-scenario/SKILL.md`](.github/skills/validate-ui-scenario/SKILL.md) |
 | 94 | ✓ | [`.github/skills/vscode-dev-workbench/SKILL.md`](.github/skills/vscode-dev-workbench/SKILL.md) |
 | 95 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 96 | ✓ | [`extensions/copilot/.agents/skills/github-copilot-upgrader/SKILL.md`](extensions/copilot/.agents/skills/github-copilot-upgrader/SKILL.md) |

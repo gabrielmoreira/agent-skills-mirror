@@ -57,8 +57,8 @@ replace container-specific paths with paths valid on the selected context.
 ```
 
 6. Replace all example paths with probed absolute paths. Call `monitor_run`
-   exactly once when waiting is useful. Use one `get_run` snapshot later or
-   `cancel_run` when requested.
+   when waiting is useful (again after `wait_interrupted`; do not resubmit).
+   Use one `get_run` snapshot later or `cancel_run` when requested.
 7. Record the validated activation command, versions, cache paths, GPU witness,
    date, and known limitations in a normal project file such as
    `environments/<context>/<name>.md`. This file is documentation, not a hidden

@@ -3,9 +3,11 @@
 `packages/connector/daemon/application/application` composes Connector Daemon Core inside a
 long-running desktop daemon. It owns bootstrap fencing, recovery ordering,
 operation scheduling, catalog refresh/reconcile scheduling, and durable outbox
-delivery. Bootstrap also calibrates releases with explicit MCP/CLI installation
-probes before opening capability publication; catalog-only connectors are not
-probed.
+delivery. Bootstrap fail-closes stale authority and recovers durable global
+state before opening capability publication, but it does not wait for
+Connector-local installation probes or runtime startup. Those workflows run
+independently with bounded cross-Connector concurrency; catalog-only
+connectors are not probed.
 
 The host also starts lifecycle maintenance immediately and repeats it hourly.
 Defaults retain terminal operation lookup/idempotency results for 24 hours and
@@ -37,6 +39,14 @@ Remote runtimes inject `CapabilityPublicationController`; bootstrap awaits its
 fail-closed/open commands. Same-process Tutti runtimes remain compatible with
 the synchronous implementation-host publication gate.
 
+For one Connector, recovery preserves the safety order `installation
+calibration -> Desired planning -> Observed convergence`. A slow or invalid
+Connector therefore remains starting/failed without delaying unrelated
+Connectors or daemon readiness. Account-authorized remote routes remain
+fail-closed behind `AuthorizationReadiness` until a fresh account snapshot is
+applied asynchronously; device-local authorization-free routes may recover
+immediately.
+
 Account logout and switching use `Host.FenceForScope` to close remote
 publication, fail-close all processes, and force a later bootstrap even when
 the same account logs in again. The account-boundary fence never admits or
@@ -58,6 +68,10 @@ A continuous scanner also claims due Runtime Desired rows with bounded
 cross-Connector concurrency. Same-Connector duplication is prevented by the
 durable lease and desired-generation CAS; different Connectors may reconcile in
 parallel. A new daemon boot treats every older-boot Observed receipt as stale.
+Planning and each Observed success/failure append a Connector Market changed
+event transactionally with their projection update, so clients can render
+`starting`, `started`, or `failed` independently without polling for the end of
+an aggregate bootstrap batch.
 The implementation host combines a global admission/fence barrier with a
 Connector-keyed lifecycle lane: account switching and FailClosed wait for every
 in-flight route transition, while different Connectors may install, authorize,

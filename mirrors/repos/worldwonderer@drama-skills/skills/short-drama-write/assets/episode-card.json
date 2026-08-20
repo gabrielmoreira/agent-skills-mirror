@@ -14,16 +14,13 @@
     },
     "projected_fields": [
       "/incoming_state",
-      "/active_pressure",
+      "/hook",
       "/objective",
       "/opposition",
-      "/causal_escalation",
       "/turn",
       "/local_dramatic_result",
-      "/promised_payoff",
-      "/character_progression",
       "/information_release",
-      "/rhythm_plan",
+      "/premise_device_disclosure",
       "/outgoing_pressure",
       "/handoff_state",
       "/setup_ids",
@@ -50,15 +47,7 @@
         ]
       }
     ],
-    "production_requirements": [],
-    "causal_escalation_realization": [
-      {
-        "source_step_pointer": "/causal_escalation/0",
-        "visible_choice_carrier": "__FILL__",
-        "visible_countermove_carrier": "__FILL__",
-        "visible_state_change_carrier": "__FILL__"
-      }
-    ]
+    "production_requirements": []
   },
   "source_refs": [],
   "open_questions": [],

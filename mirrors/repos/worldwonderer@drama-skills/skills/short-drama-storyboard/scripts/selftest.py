@@ -110,10 +110,10 @@ def test_screenplay_coverage_flags_gaps_and_double_claims() -> None:
             {"shot_id": "SH004", "source_refs": [{"src": "screenplay-index", "record_id": "BLK-Z"}]},
         ]
         found = {f["code"] for f in check_screenplay_coverage(shots, sources, index)}
-    require("SHT21_BLOCK_UNCLAIMED" in found, "an unfilmed block must be reported")
-    require("SHT21_BLOCK_CLAIMED_TWICE" in found, "a doubly claimed block must be reported")
+    require("SHT01_BLOCK_UNCLAIMED" in found, "an unfilmed block must be reported")
+    require("SHT01_BLOCK_CLAIMED_TWICE" in found, "a doubly claimed block must be reported")
     require(
-        "SHT21_BLOCK_NOT_IN_SCREENPLAY" in found,
+        "SHT01_BLOCK_NOT_IN_SCREENPLAY" in found,
         "a shot claiming an absent block must be reported",
     )
 

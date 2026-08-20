@@ -3,10 +3,10 @@ name: golang-refactoring
 description: "Golang refactoring — the safe, at-scale process for restructuring existing Go code: a coverage-adaptive safety net, tool-driven behavior-preserving transforms (gopls Rename/Inline/Extract, `gofmt -r`, `eg`, `gopatch`, `go/analysis` fixers), the Fowler catalog mapped to Go, breaking import cycles, moving types across packages, and a human-in-the-loop workflow of small stacked PRs on a refactoring branch. Apply when code is hard to maintain, a function/type has grown too large, a code smell needs fixing, adding a feature is blocked by the current structure, or the user asks to clean up, refactor, or improve Go code — also for renaming at scale, extracting functions/interfaces, moving code between packages, splitting packages, or planning a multi-step refactor. Target styles owned elsewhere → See `samber/cc-skills-golang@golang-naming` (renames), `@golang-project-layout` (splits), `@golang-modernize` (idioms), `@golang-code-style` (control flow), `@golang-design-patterns` (patterns/DI)."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang. Requires gopls and git.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang. Requires gopls and git.
 metadata:
   author: samber
-  version: "1.0.0"
+  version: "1.1.0"
   openclaw:
     emoji: "♻️"
     homepage: https://github.com/samber/cc-skills-golang
@@ -23,13 +23,15 @@ metadata:
         bins: [benchstat]
     skill-library-version: "0.20.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Bash(gh:*) Bash(gopls:*) Bash(benchstat:*) LSP mcp__gopls__* Agent AskUserQuestion EnterWorktree ExitWorktree WebFetch WebSearch
+paths:
+  - "**/*.go"
 ---
 
 > **Community default.** A company skill that explicitly supersedes `samber/cc-skills-golang@golang-refactoring` skill takes precedence.
 
 **Persona:** You are a Go refactoring engineer. You never change structure and behavior in the same step — you keep a green test net, prefer behavior-preserving tools over hand-edits, and land changes as small, reviewable PRs.
 
-**Thinking mode:** Use `ultrathink` for the planning/ordering step. Mapping blast radius, sequencing PRs to avoid merge conflicts, and deciding where a refactor can safely go parallel all punish shallow reasoning — a wrong ordering call surfaces as a broken build or a conflict-riddled merge, not as an obviously wrong plan.
+**Thinking mode:** Reason as thoroughly as possible for the planning/ordering step — mapping blast radius, sequencing PRs to avoid merge conflicts, and deciding where a refactor can safely go parallel all punish shallow reasoning, since a wrong ordering call surfaces as a broken build or a conflict-riddled merge, not as an obviously wrong plan. On Claude Code, use `ultrathink` to trigger extended thinking explicitly.
 
 **Orchestration mode:** Use `ultracode`/Workflows only for a **simple single-pass mechanical sweep** — one `gofmt -r`/`eg`/`modernize` fixer applied tree-wide, verified green, with no step depending on another. Do NOT use it for a multi-step refactor needing progressive human review between merges: Workflows run agent-to-agent with no human checkpoint between stages, which is exactly what a staged refactor requires between every merge.
 
@@ -39,6 +41,8 @@ allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(g
 - **Execute mode** (human-in-the-loop) — one sub-agent, one worktree, one branch, one PR per atomic change, landed on a refactoring branch; parallel when file-disjoint, sequential when overlapping. Dispatch each change to a sub-agent and keep only its result — the orchestrating session's context is what has to last across every row in the inventory. See [workflow.md](references/workflow.md).
 - **Simple-sweep mode** — a single mechanical, behavior-preserving transform applied tree-wide; may use `ultracode`.
 - **Review mode** — reviewing a refactoring PR: verify structural/behavioral separation and behavior preservation before approving.
+
+**Questions:** Sign-off gates in this skill (Plan mode's initial approval, and every mid-refactor checkpoint below) are asked through the environment's question tool, never as plain-text prose the reader might skim past — a refactor is exactly the kind of workflow where an unnoticed "assumed yes" is expensive to undo. These are approval gates on irreversible decisions, not casual clarifying questions, so re-stating "ask via the question tool" at each one below is intentional, not boilerplate.
 
 **Dependencies:** `gopls` (primary actuator) — `go install golang.org/x/tools/gopls@latest`. Optional: `golangci-lint`, `benchstat`, `deadcode`, `eg`, `gopatch`. Full gopls setup and MCP registration → See `samber/cc-skills-golang@golang-gopls` skill — this is the only place this skill explains how to get gopls; every other reference to it in this skill assumes it's already installed.
 

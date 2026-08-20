@@ -1140,7 +1140,11 @@ Interpretation rules:
   `forcedTakeover` boolean fields) or `collision` (a different `claim-id`
   already holds the lock, or the existing path is malformed/unreadable —
   retry with `--takeover` only after
-  `resume-claim-routing.mjs --fresh-claim-gate` authorizes it). A `holder`
+  `resume-claim-routing.mjs --fresh-claim-gate` authorizes it: a
+  `claimable` verdict, a `stale-reclaimable` verdict, or an
+  `already-claimed` verdict whose `winning_claim_id` matches a
+  `claim-id` the caller has already independently verified as its own).
+  A `holder`
   snapshot of the previous occupant is reported on **both** a plain
   `collision` and an authorized takeover, not only on takeover.
 - The `--acquire` CLI exits `0` only for `acquired` and exits `2` for
@@ -1340,6 +1344,17 @@ Interpretation rules:
   a mismatch routes `state`/`reason` to `disputed` /
   `activation-nonce-mismatch` instead of `already_owned`. Omit it (or leave
   the claim-id's nonce not posted) to skip the comparison unchanged.
+- `evidence.forced_handoff` (kurone-kito/idd-skill#2178): populated on
+  **any** call, including a bare `--issue` call with no `--claim-id`,
+  whenever a trusted, rule-7-valid `forced-handoff` marker's successor
+  pair (`{old_agent_id, old_claim_id, new_agent_id, new_claim_id,
+  forced_by, timestamp}`, `timestamp` the transferring comment's GitHub
+  `created_at`) matches the resolved active claim; `null` otherwise. A
+  bare `--issue` call whose `evidence.forced_handoff` is non-null but
+  whose `state`/`action` still reads `non_inheritable`/`stop` should
+  retry with `--claim-id <evidence.forced_handoff.new_claim_id>` to
+  check adoption eligibility — that second call is what can turn the
+  verdict into `already_owned`/`keep`.
 
 - Step 3 route command:
   `node scripts/resume-route-selection.mjs --issue <issue-number>`
@@ -1659,7 +1674,14 @@ reflexively as any other CLI option.
   kurone-kito/idd-skill#1522, kurone-kito/idd-skill#1528 — omit when no
   nonce was recorded for the active claim, which stays backward
   compatible), and
-  `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`
+  `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`.
+  `--claimless` (#2017) is the no-issue alternative: it cannot combine
+  with `--claim-issue` or `--claim-id`, and it is honored only when the
+  PR's `closingIssuesReferences` is empty (otherwise fail closed and
+  pass `--claim-issue`). It skips claim fetch/revalidation and emits
+  the not-applicable / unclaimed ownership shape (claim-id `none`); CI,
+  review, advisory, thread, and branch-currency gates still run.
+  `idd-merge-execute` still requires `--claim-issue`.
 - Stable contract:
   [`pre-merge-readiness.schema.json`][pre-merge-readiness-schema]
 - Stable sections consumed by the instructions: `reviewCurrency`,
@@ -2457,7 +2479,16 @@ same as `AW4`/`AW5`.
     from the in-thread disposition check), and regular comments /
     `CHANGES_REQUESTED` review bodies from non-IDD-agent authors that have
     **no later IDD-agent disposition** (`**Accepted**` / `**Rejected**` /
-    `**Awaiting maintainer decision**`). Trusted IDD operational markers, IDD
+    `**Awaiting maintainer decision**`). A non-`CHANGES_REQUESTED` review from
+    a _configured_ advisory-bot author (the same narrower identity check as
+    the summary-walkthrough exclusion below, not the broader `isKnownReviewBot`)
+    is also surfaced when its body carries a CodeRabbit
+    `<summary>⚠️ Outside diff range comments (N)</summary>`-shaped block with
+    `N >= 1` (#2194) — GitHub embeds a finding directly in the review body
+    text, rather than as a normal inline review comment, when it targets a
+    line the diff-hunk view cannot host; `N == 0` or an absent block is an
+    ordinary walkthrough/summary review with nothing outside the diff and
+    stays unsurfaced. Trusted IDD operational markers, IDD
     disposition comments, any HTML comment beginning with `<!-- idd-` (for
     example cleanup-evidence, excluded regardless of author — including CI
     automation such as `github-actions[bot]`), and a genuine CodeRabbit

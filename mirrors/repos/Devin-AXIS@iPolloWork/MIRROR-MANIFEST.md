@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,15 +121,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-payment-investigation/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-payment-investigation/SKILL.md) |
 | 61 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-reconciliation/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-reconciliation/SKILL.md) |
 | 62 | ✓ | [`examples/plugin-packages/stripe/skills/stripe-safe-operations/SKILL.md`](examples/plugin-packages/stripe/skills/stripe-safe-operations/SKILL.md) |
-| 63 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md) |
-| 64 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md) |
-| 65 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md) |
-| 66 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md) |
-| 67 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md) |
-| 68 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md) |
-| 69 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md) |
-| 70 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md) |
-| 71 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md) |
+| 63 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-animation/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-animation/SKILL.md) |
+| 64 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-cli/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-cli/SKILL.md) |
+| 65 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-core/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-core/SKILL.md) |
+| 66 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-creative/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-creative/SKILL.md) |
+| 67 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-keyframes/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-keyframes/SKILL.md) |
+| 68 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes-registry/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes-registry/SKILL.md) |
+| 69 | ✓ | [`examples/plugin-packages/video-agent/skills/hyperframes/SKILL.md`](examples/plugin-packages/video-agent/skills/hyperframes/SKILL.md) |
+| 70 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md) |
+| 71 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md) |
+| 72 | ✓ | [`examples/plugin-packages/video-agent/skills/media-use/SKILL.md`](examples/plugin-packages/video-agent/skills/media-use/SKILL.md) |
+| 73 | ✓ | [`examples/plugin-packages/video-agent/skills/product-launch-video/SKILL.md`](examples/plugin-packages/video-agent/skills/product-launch-video/SKILL.md) |
+| 74 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md) |
+| 75 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md) |
+| 76 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md) |
+| 77 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md) |
+| 78 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md) |
+| 79 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md) |
+| 80 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md) |
 
 ---
 

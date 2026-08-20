@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 Prompt Reviewer"
+  short_description: "Review and repair MiniMax H3 video prompts"
+  default_prompt: "Use $minimax-h3-prompt-reviewer to audit and rewrite my MiniMax H3 prompt."

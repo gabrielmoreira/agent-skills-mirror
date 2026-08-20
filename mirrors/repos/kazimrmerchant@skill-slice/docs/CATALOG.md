@@ -1,6 +1,6 @@
 # Catalog
 
-495 sibling skills. Each folder is installable alone: `skills/<name>/SKILL.md`.
+496 sibling skills. Each folder is installable alone: `skills/<name>/SKILL.md`.
 Tags are **indexes**, not parent directories. Do not copy a tag as if it were one skill.
 Rate the works-verified subset first: [WORKS_VERIFIED.md](WORKS_VERIFIED.md). Quality ranks (method + table; **not** these catalog rows): [QUALITY.md](QUALITY.md). Below-A improve playbook: [QUALITY_IMPROVE.md](QUALITY_IMPROVE.md). Works-bar (executability, not a verified-works count): [INCLUSION.md](INCLUSION.md#works-bar-executability). Catalog rows are not rewritten by that sample.
 
@@ -12,11 +12,12 @@ Copy-Item -Recurse .\skills\<name> $env:USERPROFILE\.cursor\skills\
 
 What = YAML `description` (when to load). How = first procedure steps extracted from that SKILL.md (not a rewritten essay).
 
-## agent-os (27)
+## agent-os (28)
 
 | Skill | What it can do | How it works |
 |-------|----------------|--------------|
 | `addvalue` | Deep-reviews a GitHub repo, local project, CLI, docs, or product for high-leverage bugs, features, UX gaps, and inspiring upgrades—not typo farms. Use when the user says /addvalue, add value, find improvements, or what to build next. Do not use for a /better polish pass, a reproduce-then-fix hunt (bug-hunter), or mass good-first-issue PRs. | **Scope lock** — name the target and one primary outcome before editing **Read before invent** — README, CONTRIBUTING, AI_POLICY, recent issues/PRs, architecture entrypoints. No drive-by **Value > vanity** — reject star-farm, typo-only, comment-churn, duplicate open PRs |
+| `awe-me` | Open a creative mind on the current context and invent a leap the user did not know to ask for — a feature, protocol, CLI, demo, architecture, product move, prose, experiment, or visual. Use when they run /awe-me or /inspire-me, say “awe me” or “inspire me”, want surprise, adjacent possible, make-strange, or are stuck recognizing instead of seeing. Not a brainstorm list. Not /better (quality pass). Not a feasibility grill. | **Sniff** the repo and thread. Interview only if `interview` was chosen **Adjacent possible** — one unused combination of parts already here **Ship an artifact** (code, CLI, demo, prose, or visual). Report `AWE: shipped \| partial \| blocked`. Canonical: [kazimrmerchant/awe-me](https://github.com/kazimrmerchant/awe-me) |
 | `better` | Quality upgrade pass on the current deliverable: scorecard, improve, review, verify with fresh evidence. Use when the user runs /better, /better deep, /better ship, /better <focus>, or asks to polish, harden, upgrade quality, or review-and-verify without adding features. Not for new scope. Not /scale (that is quality-at-scale). Not /reviewresults (that is review-results / sensory proof). | **Scope lock** — name the deliverable before editing **Baseline** — diff / screenshot / failing checks. Know what “before” was **Scorecard** — rank gaps; fix highest impact first (see reference) |
 | `chrome-browser-automation` | Agent-driven Chrome automation for research, web apps, downloads, screenshots, and game/canvas testing via owned CDP Chrome + Playwright. Use for browser control, CDP 9222, multi-tab workflows, form fill, download, screenshot verify. Compose with a dedicated Chrome user-data dir over CDP 9222. Never invent profiles. Never cursor-ide-browser for Grok/Flow auth. Not for CAPTCHA bypass or anti-bot evasion. | **HR1 — Attach only via `browser-connection`.** `connectOverCDP("http://127.0.0.1:9222")` or **HR2 — Real branded Chrome only.** No Chromium/Chrome-for-Testing against the owned UserData **HR3 — No fingerprint/anti-bot evasion, no CAPTCHA bypass.** Encounter a CAPTCHA or bot-wall → |
 | `comfyui` | Installs, launches, and runs ComfyUI locally or on Comfy Cloud: comfy-cli lifecycle, custom nodes/models, REST/WebSocket prompt submit with parameter injection. Use when generating images, video, or audio via ComfyUI, SDXL, Flux, Wan, Hunyuan, ControlNet, or img2img. Not for authoring API-format workflow JSON (comfyui-workflow-builder), model-specific prompt craft (comfyui-prompt-engineer), or dimensioned printable CAD/STL. | Sign up at https://comfy.org/cloud Generate an API key at https://platform.comfy.org/login Set the key: |

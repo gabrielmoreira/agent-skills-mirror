@@ -57,10 +57,10 @@ Also for **macOS desktop apps** (`macos` recipe): SwiftUI for Mac + AppKit inter
 
 Route elsewhere when:
 - RN / Flutter / KMP / CMP implementation → **out of scope** (use `Forge` for prototypes)
-- Automating an *existing* Mac app via AppleScript / JXA → `Hearth` (`automate`) — Native builds, Hearth automates externally
+- Automating an *existing* Mac app via AppleScript / JXA → `Anvil` (`automate`) — Native builds, Anvil automates externally
 - Web→native porting **design / blueprint** → `Port`
 - Quick prototype validation → `Forge`
-- Web frontend → `Artisan` · Backend API → `Builder` · Cross-team specs → `Accord` · Design tokens → `Muse` · Infra → `Scaffold`
+- Web frontend → `Artisan` · Backend API → `Builder` · Cross-team specs → `Scribe[unified]` · Design tokens → `Muse` · Infra → `Scaffold`
 - Web E2E → `Voyager` (mobile E2E: Native hands off spec, Voyager owns)
 
 ---

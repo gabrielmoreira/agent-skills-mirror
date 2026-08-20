@@ -294,7 +294,7 @@ Shown as a modal or dedicated screen after successful connection.
 - Server capabilities: Tools, Resources, Prompts, Logging, Completions, Tasks, Experimental
 - Client capabilities: Sampling, Elicitation, Roots, Tasks, Experimental
 - Display server instructions if provided
-- Show OAuth connection snapshot when applicable (`InspectorClient.getOAuthState()` → `OAuthConnectionState`): protocol, authorization status, client id, EMA IdP session, cached auth URL, scopes, access token with copy and in-place JWT decode (`OAuthAccessTokenField`)
+- Show OAuth connection snapshot when applicable (`InspectorClient.getOAuthState()` → `OAuthConnectionState`): protocol, authorization status, client id, EMA IdP session, cached auth URL, scopes, and the stored tokens — access token, plus the `id_token` when the authorization server returned one — each with copy and in-place JWT decode (`OAuthTokenField`)
 
 ### Feature Screens
 

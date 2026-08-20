@@ -183,8 +183,15 @@ function Get-ReverseToolCatalog {
             VersionArgs = @('-v')
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'r2' },
+                [pscustomobject]@{ Type = 'command'; Value = 'radare2' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2.bat') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\radare2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\bin\r2.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2.bat') },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\radare2.exe') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\radare2\r2.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2.bat' },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\radare2.exe' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\radare2\bin\r2.exe' }
             )
         }
@@ -353,22 +360,18 @@ function Get-ReverseToolCatalog {
         [pscustomobject]@{
             Name = 'jshookmcp'
             Skill = 'js-reverse'
-            Purpose = '通过 npx 启动 @jshookmcp/jshook MCP（仍需先配置并启用 MCP server）'
+            Purpose = '通过 npx 启动 @jshookmcp/jshook MCP（需 MCP 注册；npx 本身不代表该能力已安装）'
             FixedVersion = '@jshookmcp/jshook@0.3.4'
             VersionArgs = @()
-            Fallbacks = @(
-                [pscustomobject]@{ Type = 'command'; Value = 'npx' }
-            )
+            Fallbacks = @()
         }
         [pscustomobject]@{
             Name = 'reqable-mcp'
             Skill = 'pentest-tools'
-            Purpose = '通过 npx 启动 Reqable 桌面客户端 MCP（仍需先安装并启动 Reqable）'
+            Purpose = '通过 npx 启动 Reqable 桌面客户端 MCP（需 MCP 注册与 Reqable；npx 本身不代表该能力已安装）'
             FixedVersion = 'reqable-mcp-server@1.0.1'
             VersionArgs = @()
-            Fallbacks = @(
-                [pscustomobject]@{ Type = 'command'; Value = 'npx' }
-            )
+            Fallbacks = @()
         }
         [pscustomobject]@{
             Name = 'agent-browser'
@@ -889,6 +892,17 @@ function Get-ReverseCapabilityState {
         $toolReady = $false
     }
 
+    $runtimeReady = $toolReady
+    if ($definition.bootstrapKind -eq 'npm-mcp') {
+        try {
+            $runtimeSpec = Resolve-ReverseToolSpec -Name 'npx'
+            $runtimeReady = [bool]$runtimeSpec.Available
+        }
+        catch {
+            $runtimeReady = $false
+        }
+    }
+
     $verificationMode = if ($definition.PSObject.Properties['verificationMode']) { [string]$definition.verificationMode } else { '' }
     $ready = $toolReady
     if ($definition.PSObject.Properties['mcpNames']) {
@@ -901,7 +915,7 @@ function Get-ReverseCapabilityState {
             }
             default {
                 if ($definition.bootstrapKind -eq 'npm-mcp') {
-                    $ready = $registered -and $toolReady
+                    $ready = $registered -and $runtimeReady
                 }
                 else {
                     $ready = $registered -or $toolReady
@@ -917,6 +931,7 @@ function Get-ReverseCapabilityState {
         DocsUrl = [string]$definition.docsUrl
         Ready = $ready
         Registered = $registered
+        RuntimeAvailable = $runtimeReady
         ServiceOnline = $serviceOnline
         McpHttpVerified = $mcpHttpVerified
     }

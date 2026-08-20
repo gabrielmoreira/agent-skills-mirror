@@ -14,7 +14,7 @@
 npx skills add mblode/agent-skills
 ```
 
-Installs all skills into `~/.claude/skills/` via the `skills` CLI. Works with Claude Code, OpenCode, and Codex.
+Installs all skills into `~/.claude/skills/` via the `skills` CLI. Works with Claude Code, Codex, Cursor, and OpenCode.
 
 Install a single skill:
 
@@ -33,7 +33,7 @@ ln -s /path/to/agent-skills/skills/<name> ~/.claude/skills/<name>
 
 Changes to the repo files take effect immediately, with no re-install needed. Unlink with `unlink ~/.claude/skills/<name>` when done.
 
-The deploy chain: `skills add` writes to `~/.agents/skills/<name>/`, which is symlinked into `~/.claude/skills/<name>/` for Claude Code to pick up.
+The deploy chain: `skills add` writes the content once to `~/.agents/skills/<name>/`. Agents that read that canonical path directly, which is every agent whose `skillsDir` is `.agents/skills` (Codex, Cursor, and most others), need nothing further; the CLI calls them universal and installs there rather than into `~/.codex/skills` or `~/.cursor/skills`. Claude Code reads `.claude/skills`, so it alone gets a relative symlink, `~/.claude/skills/<name> -> ../../.agents/skills/<name>`. Editing this repo changes none of them until you reinstall or symlink the folder directly.
 
 ### Smoke-test
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 Creative Director"
+  short_description: "Route H3 requests with consistency-first and multishot planning"
+  default_prompt: "Use $minimax-h3-creative-director to ask for missing creative choices, apply the 10-second multishot gate, choose consistency-first routing, and write my MiniMax H3 prompt."

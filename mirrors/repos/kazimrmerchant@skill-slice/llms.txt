@@ -1,11 +1,11 @@
 # Skill Slice
-> Start with the 12 Read-verified chairs: docs/WORKS_VERIFIED.md. Inventory: 495 unique sibling folders. Untested copies are not a claim they work. Read sample N=24, not a bake.
+> Start with the 12 Read-verified chairs: docs/WORKS_VERIFIED.md. Inventory: 496 unique sibling folders. Untested copies are not a claim they work. Read sample N=24, not a bake.
 docs/index.html — human explorer (GitHub Pages); copy one install, never --all
 
 AGENTS.md — 30-second boot for coding agents (start here)
 README.md — copy one folder (`npx skills add kazimrmerchant/skill-slice --skill better`)
 docs/WORKS_VERIFIED.md — rate/install these 12 first
-docs/QUALITY.md — ranking method; not a claim all 495 work
+docs/QUALITY.md — ranking method; not a claim all 496 work
 docs/CATALOG.md — what/how lookup by tag; not the landing page
 docs/INCLUSION.md — include/exclude + works-bar
 docs/VALUE_FRAMEWORK.md — scorecard dimensions

@@ -44,7 +44,7 @@ workflows, setup, or config, use the broader **`archon`** skill instead.
 | **Active** runs only (running/paused) | `archon workflow status --json` |
 | **Start** a run, non-blocking | `archon workflow run <workflow> "<message>" --detach` |
 | **Approve** a paused gate | `archon workflow approve <run-id> "looks good" --json` |
-| **Accept & complete** a signal-bearing loop gate | `archon workflow approve <run-id> --json` (NO comment) |
+| **Accept & complete** a loop gate with a completed condition | `archon workflow approve <run-id> --json` (NO comment) |
 | **Reject** a paused gate | `archon workflow reject <run-id> "fix X first" --json` |
 | **Cancel** a non-terminal run | `archon workflow abandon <run-id> --json` |
 
@@ -92,7 +92,7 @@ auto-resumes (run it as a background task).
 
 ### Interactive-loop gates: no comment = accept & complete
 
-When a paused **interactive loop** gate detected its completion signal
+When a paused **interactive loop** gate met any declared completion condition
 (`archon workflow get <run-id> --json` → `.metadata.approval.completionSignaled` is
 `true`), approving with **no comment** accepts the completion — on resume the node
 finalizes from the already-computed output with **no re-run**. Approving **with** a

@@ -126,20 +126,42 @@ OLD_VERSION=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "unknown")
 Use the install type and directory detected in Step 2:
 
 **For git installs** (global-git, local-git):
+
+Fast-forward first (#2517) — the same policy the session-update auto-upgrade
+uses. `--autostash` carries local edits over the pull; render-footprint dirt
+is discarded first because it is regenerable and poisons stashes (#2569):
 ```bash
 cd "$INSTALL_DIR"
-# Discard render-footprint dirt BEFORE stashing (#2569): pre-v1.67
-# gbrain-enabled installs ran gen:skill-docs:user IN PLACE, leaving
-# generated SKILL.md / sections/*.md files permanently modified. Stashing
-# that dirt poisons the stash: the post-upgrade `git stash pop` would
-# restore STALE generated markdown over the fresh checkout permanently.
-# These files are regenerable (setup re-renders brain-aware variants to
-# ~/.gstack/render), so discarding is lossless; anything else the user
-# changed still reaches the stash untouched. Same file classification as
-# migrations/v1.67.0.0.sh, which remains for manual git-pull flows.
+# Discard render-footprint dirt (#2569): pre-v1.67 gbrain-enabled installs
+# ran gen:skill-docs:user IN PLACE, leaving generated SKILL.md / sections
+# files permanently modified. They are regenerable (setup re-renders to
+# ~/.gstack/render), so discarding is lossless.
 git checkout -- 'SKILL.md' '*/SKILL.md' '*/sections/*.md' 2>/dev/null || true
-STASH_OUTPUT=$(git stash 2>&1)
 git fetch origin
+git pull --ff-only --autostash origin main && ./setup && echo "FF_OK"
+```
+
+If the output ends with `FF_OK`, the upgrade is done — skip the fallback
+below entirely.
+
+**Fallback (ff-only refused — local commits or divergence).** `git reset
+--hard` DESTROYS things: a clean tree with unpushed local commits still loses
+those commits. Gate it (#2517):
+
+1. Run `git status --porcelain` and `git rev-list origin/main..HEAD --oneline`
+   in `$INSTALL_DIR`.
+2. If BOTH are empty, the reset is provably safe — run the fallback block
+   below without asking.
+3. Otherwise ask via AskUserQuestion (one-way door — destructive), listing
+   exactly what will be discarded: each dirty file and each unpushed commit
+   by hash + subject. Options: **A)** Discard them and upgrade (reset) —
+   requires the explicit letter; **B)** Abort the upgrade so the user can
+   rescue their work first (recommended when local commits exist). Never
+   proceed on a vague reply.
+
+```bash
+cd "$INSTALL_DIR"
+STASH_OUTPUT=$(git stash 2>&1)
 git reset --hard origin/main
 ./setup
 ```

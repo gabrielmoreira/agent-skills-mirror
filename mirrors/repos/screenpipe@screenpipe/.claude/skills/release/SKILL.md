@@ -83,14 +83,33 @@ Cargo.toml leaves the other locks stale and breaks `cargo test --locked` on main
 Commit the regenerated locks together with the bump. `style.yml` runs
 `./scripts/regenerate-locks.sh --check` on every push and fails if any lock is stale.
 
-### 4. Commit & Push (Triggers Release)
+Before dispatching a desktop release, compile the actual app binary from its
+own Cargo workspace. Lock freshness and frontend builds do not catch stale
+`screenpipe-app` calls into changed core APIs:
+
 ```bash
-git add -A && git commit -m "Bump app to vX.Y.Z" && git pull --rebase && git push
+cd apps/screenpipe-app-tauri/src-tauri
+cargo check --locked --bin screenpipe-app
 ```
 
-Pushing a commit whose message starts with `Bump app` or `release-app` to `main` triggers `release-app.yml` automatically (`check_commit` job gates on the prefix). The build is a **draft only** — does NOT auto-publish. Use the `release-app-publish` prefix to auto-publish instead.
+### 4. Commit, Push, and Dispatch Exact SHA
+```bash
+git add -A && git commit -m "Bump app to vX.Y.Z" && git pull --rebase && git push
 
-**Do NOT also run `gh workflow run release-app.yml`** — it fires a second `workflow_dispatch` run on the same SHA, doubling the build. The push handles it.
+BUMP_SHA=$(git rev-parse HEAD)
+gh workflow run release-app.yml \
+  --ref main \
+  -f commit_hash="$BUMP_SHA" \
+  -f version="X.Y.Z" \
+  -f needs_testing=false \
+  -f force_github_runners=false
+```
+
+`release-app.yml` is currently `workflow_dispatch` only. A bump push does not start it. Dispatch it once with the exact pushed commit and version inputs; its workflow builds, signs, notarizes, and uploads immutable versioned artifacts. It does not publish updater pointers or create the public GitHub release.
+
+Before dispatching, verify the remote `main` SHA still matches `BUMP_SHA`. After dispatching, read the run back and require its `headSha` to match. Never dispatch a second app run for the same version unless the first run failed and the retry is intentional.
+
+Enterprise is separate and manual. After the bump commit is on `main`, dispatch `release-enterprise.yml` once and verify that its run is pinned to the bump commit before treating Enterprise artifacts as prepared.
 
 ### 5. Monitor Build Status
 ```bash
@@ -106,11 +125,8 @@ gh run view <RUN_ID> --json status,conclusion,jobs --jq '{status: .status, concl
 - Test on macOS and Windows
 - Verify updater artifacts exist (.tar.gz, .sig files)
 
-### 7. Publish Release
-After testing, publish via the Cloudflare R2 / backend dashboard, OR commit with magic words:
-```bash
-git commit --allow-empty -m "release-app-publish" && git push
-```
+### 7. Hand Off Public Publication
+After testing and artifact verification, stop at the authenticated releases control in the website admin UI. Public updater pointers, Enterprise publication state, GitHub tags/releases, and subscriber notification are human-only actions. AI agents must not operate the admin UI, call its publication endpoint, approve the protected environment, or attempt publication with a commit-message prefix.
 
 ## Quick Release (App Only)
 
@@ -119,11 +135,15 @@ git commit --allow-empty -m "release-app-publish" && git push
 # 2. Regenerate every tracked Cargo.lock (skipping this breaks `cargo test --locked` in CI)
 ./scripts/regenerate-locks.sh
 
-# 3. Commit and push — the "Bump app" prefix triggers release-app.yml automatically
+# 3. Commit and push the version bump
 git add -A && git commit -m "Bump app to vX.Y.Z" && git push
 
-# 4. Monitor
-sleep 5 && gh run list --workflow=release-app.yml --limit=1
+# 4. Dispatch the exact pushed commit once, then monitor
+BUMP_SHA=$(git rev-parse HEAD)
+gh workflow run release-app.yml --ref main \
+  -f commit_hash="$BUMP_SHA" -f version="X.Y.Z" \
+  -f needs_testing=false -f force_github_runners=false
+gh run list --workflow=release-app.yml --limit=1
 ```
 
 ## Build Status Format
@@ -173,10 +193,11 @@ The CI copies `tauri.prod.conf.json` to `tauri.conf.json` before building. If ar
 
 CI automatically uses prod config for releases by copying it before build.
 
-### Trigger & Publish Behavior
-- Commit prefix `Bump app` or `release-app` pushed to main → Draft release
-- Commit prefix `release-app-publish` pushed to main → Auto-publish after successful build
-- `workflow_dispatch` (manual `gh workflow run`) → Draft release (redundant with the push trigger; avoid using both)
+### Trigger & Publication Behavior
+- `release-app.yml` is `workflow_dispatch` only → consumer artifact build/upload from the explicit commit/version inputs
+- `release-enterprise.yml` is `workflow_dispatch` only → Enterprise artifact build/upload
+- Public consumer and Enterprise publication remains a human-only admin-dashboard action after artifact verification
+- A bump push alone starts neither release workflow; dispatch each exactly once and verify both run SHAs
 
 ## Notes
 

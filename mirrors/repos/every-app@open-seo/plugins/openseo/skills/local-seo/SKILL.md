@@ -18,6 +18,15 @@ Use this when rankings depend on a physical location or service area. For nation
 - Its coordinate (latitude/longitude) — derive it from a `search_local_businesses` / `get_local_serp_results` row; only ask the user when derivation is ambiguous
 - One to three keywords customers actually search (e.g. "emergency plumber", not the brand name)
 
+## Project context
+
+The project-context tools are free and shared with the app and other agents.
+
+1. Call `get_project_context` first and ground the work in it — what the business does and where it operates decides which keywords and radius matter.
+2. This skill needs `business_overview`. If it is empty, run a minimal inline setup: infer what the business does and its location from the site and confirm it with the user in one question, write it back with `update_project_context`, then continue. Never front-load the full interview; suggest `seo-project-setup` at the end for the rest.
+3. Before spending credits, check the research log. If the same research ran within the last 30 days, reuse that result and say so instead of re-buying it.
+4. On finish, write back what is durable with `update_project_context` — local competitors that have a website via `addCompetitors` (competitor rows are keyed by domain, so skip listings without one), a corrected `business_overview` — and append a research log entry: `{ appendResearchLog: { summary: "Local SEO: <business> near <area>. Verdict: <conclusion>" } }`.
+
 ## OpenSEO MCP tools
 
 - `search_local_businesses`: nearby listings, filterable by `minRating`, `minReviews`, and `isClaimed` — use `isClaimed: false` to find unclaimed listings when prospecting. One call with the brand name as `query` and a wide radius returns category, rating, review count, claimed status, coordinates, and `cid` for every location of a chain — usually enough that per-location `get_business_profile` calls are unnecessary.

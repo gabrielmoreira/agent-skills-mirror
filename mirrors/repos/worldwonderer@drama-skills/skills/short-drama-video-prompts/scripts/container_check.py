@@ -70,6 +70,15 @@ def _seconds(value: Any) -> float | None:
     return float(value)
 
 
+# The three conclusions `delivery-container.jsonl.md` requires a container to
+# state about why its members belong together.
+MEMBERSHIP_BASIS_KEYS = (
+    "source_order_contiguous",
+    "binding_chain_equal",
+    "scene_boundary_not_crossed",
+)
+
+
 def _member_shot_id(member: Any) -> str | None:
     if not isinstance(member, dict):
         return None
@@ -111,6 +120,52 @@ def reconcile(
                 )
             )
             continue
+        # Checkpoint 1: `order` unique, contiguous and ascending. A delivery
+        # package is assembled in this order, so a repeated or skipped number is
+        # an ambiguous cut list, not a cosmetic flaw.
+        orders = [
+            member.get("order") for member in members if isinstance(member, dict)
+        ]
+        if not all(
+            isinstance(value, int) and not isinstance(value, bool) for value in orders
+        ) or orders != list(range(1, len(members) + 1)):
+            findings.append(
+                _finding(
+                    "VID15_MEMBER_ORDER_IS_NOT_A_SEQUENCE",
+                    "members must carry order 1..n, ascending and without gaps",
+                    container_id=container_id,
+                    orders=orders,
+                )
+            )
+
+        # Checkpoint 7: the three membership_basis conclusions. Each is a claim
+        # about why these shots belong in one container; leaving one blank makes
+        # the container's own justification unreadable.
+        basis = container.get("membership_basis")
+        if not isinstance(basis, dict):
+            findings.append(
+                _finding(
+                    "VID15_MEMBERSHIP_BASIS_MISSING",
+                    "a container must record why its members belong together",
+                    container_id=container_id,
+                )
+            )
+        else:
+            blank = sorted(
+                key
+                for key in MEMBERSHIP_BASIS_KEYS
+                if not str(basis.get(key) or "").strip()
+            )
+            if blank:
+                findings.append(
+                    _finding(
+                        "VID15_MEMBERSHIP_BASIS_INCOMPLETE",
+                        "every membership_basis conclusion must be stated",
+                        container_id=container_id,
+                        missing=blank,
+                    )
+                )
+
         member_total = 0.0
         for member in members:
             shot_id = _member_shot_id(member)
@@ -157,6 +212,34 @@ def reconcile(
                     )
                 )
                 continue
+
+            # Checkpoint 3: the member's own `accepted_duration` against the
+            # shot it projects. This field was never read: the total was summed
+            # straight from `shots.jsonl`, so a member could claim 12.0s for a
+            # 6.3s shot and pass, and the execution end would be handed the 12.0.
+            # `motion_timing_check` guards exactly this staleness class; this
+            # file had no equivalent.
+            claimed = _seconds(member.get("accepted_duration"))
+            if claimed is None:
+                findings.append(
+                    _finding(
+                        "VID15_MEMBER_HAS_NO_ACCEPTED_DURATION",
+                        "a member must project the duration it packs",
+                        container_id=container_id,
+                        shot_id=shot_id,
+                    )
+                )
+            elif abs(claimed - seconds) > 1e-6:
+                findings.append(
+                    _finding(
+                        "VID15_MEMBER_DURATION_IS_STALE",
+                        "a member's accepted_duration does not match its shot",
+                        container_id=container_id,
+                        shot_id=shot_id,
+                        claimed=claimed,
+                        accepted=seconds,
+                    )
+                )
             member_total += seconds
         stated = _seconds(container.get("container_duration"))
         if stated is None:

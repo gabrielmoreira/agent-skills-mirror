@@ -1,7 +1,7 @@
 ---
 name: orient
 version: 2.7.1
-description: 'Passive orientation service. Automatically read the trail as a single document when Destination changes or Improve determines that accumulated evidence has made the current orientation stale. Form arc-level claims and refresh .acm/orientation.md without changing the target. Manual invocation remains available for diagnostics or an explicit "how are we doing?" request.'
+description: 'Automatic orientation service. Improve or Destination schedules it when accumulated evidence makes the current orientation stale; it reads the trail as a single document, forms arc-level claims, and refreshes .acm/orientation.md without changing the target. Manual invocation remains available for diagnostics or an explicit "how are we doing?" request.'
 argument-hint: 'The target and its trail, and optionally the specific arc-question to answer'
 ---
 
@@ -17,7 +17,7 @@ The Improve loop is optimised for one iteration at a time. Orient is optimised f
 
 Improve schedules Orient with evidence that the current Orientation no longer explains the governing Destination and material trail. A material Destination change is such evidence. Orient accepts that arc-question; it does not maintain a second trigger taxonomy. Manual `/orient` remains available as a diagnostic override or when the operator explicitly asks "how are we doing?"
 
-**Passive-service contract:** Orient observes and refreshes derived orientation. It never changes the target, chooses work on the operator's behalf, or revises `.acm/destination.md`. Automatic scheduling changes when the arc is read, not what authority Orient has.
+**Automatic-service contract:** Orient observes and refreshes derived orientation. It never changes the target, chooses work on the operator's behalf, or revises `.acm/destination.md`. Improve or Destination schedules when the arc is read; that scheduling does not change Orient's authority.
 
 ## Governing principles
 

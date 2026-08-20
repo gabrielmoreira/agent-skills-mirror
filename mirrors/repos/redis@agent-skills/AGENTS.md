@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to AI coding agents (Claude Code, Cursor, Copilot, etc.) when working with code in this repository.
+This file provides guidance to AI coding agents (ChatGPT, Codex, Claude Code, Cursor, Copilot, etc.) when working with code in this repository.
 
 ## Repository Overview
 
@@ -17,7 +17,7 @@ A collection of agentskills.io-compliant skills for AI coding agents working wit
 
 ## Where Skills Live
 
-`skills/` is the source of truth. `plugins/redis-development/skills/` holds **generated real copies** of it, committed to the repo, and `npm run sync:plugins` regenerates them.
+`skills/` is the source of truth. `plugins/redis-development/skills/` holds **generated real copies** of it for the ChatGPT, Codex, and Claude Code plugin package, committed to the repo, and `npm run sync:plugins` regenerates them.
 
 Copies rather than symlinks, because Claude Code and Cursor both drop a symlink that escapes the plugin root when a plugin is installed from git, so the plugin loads no skills at all. Real files also survive a Windows checkout, where git writes symlinks as plain text files unless `core.symlinks` is on.
 
@@ -59,6 +59,7 @@ Use [skills/redis-core/](skills/redis-core/) as the reference layout. Editorial 
 3. If the skill needs internal eval coverage, add `evals/<skill-name>/<suite-name>/{evals.json, model-matrix.json}` at the repo root, run the suite, and promote a baseline (`npm run eval:baseline`) — validation requires every suite to carry a current baseline.
 4. Create `.cursor-plugin/plugin.json` (`name`, `version`, `description`, `license`, `keywords` — see any existing skill).
 5. To publish via the marketplaces:
+   - ChatGPT and Codex: the sync vendors every skill into `plugins/redis-development/`; keep its `.codex-plugin/plugin.json` version aligned with the Claude manifest before submitting the package to OpenAI.
    - Claude Code: nothing to wire up. The sync vendors every skill under `skills/`, so committing runs it and the directory's nightly bot picks the change up.
    - Cursor: add an entry to `.cursor-plugin/marketplace.json` pointing at `<skill-name>`, then re-submit the repo at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish). Cursor does not pull from git.
 6. Validate: `npm run validate` (covers plugin manifests, the vendored copies, eval baselines, and the agentskills.io spec).
@@ -69,7 +70,8 @@ Use [skills/redis-core/](skills/redis-core/) as the reference layout. Editorial 
 npm run validate                   # plugin manifests + vendored copies + eval baselines + agentskills.io spec
 npm run validate:eval-baselines    # every eval suite has a baseline matching its evals and matrix
 npm run validate:skill-structure   # spec validation only (across all skills)
-npm run validate:plugins           # claude + cursor plugin manifests + vendored copies
+npm run validate:plugins           # codex + claude + cursor plugin manifests + vendored copies
+npm run validate:codex-plugins     # Codex manifest, assets, metadata, and cross-manifest consistency
 npm run validate:plugin-skills     # vendored copies match skills/, with no symlinks
 npm run sync:plugins               # regenerate the vendored copies (the fix when the above fails)
 ```

@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 Keyframe Video Prompt"
+  short_description: "Create pure boundary-only H3 keyframe prompts"
+  default_prompt: "Use $minimax-h3-keyframe-video-prompt only for my explicitly declared first or last frames when they have no reusable reference role."

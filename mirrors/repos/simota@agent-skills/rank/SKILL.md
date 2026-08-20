@@ -18,7 +18,7 @@ CAPABILITIES_SUMMARY:
 COLLABORATION_PATTERNS:
 - Spark → Rank: Feature proposal prioritization
 - Void → Rank: Ordering of surviving items after YAGNI review
-- Accord → Rank: Requirements prioritization
+- Scribe[unified] → Rank: Requirements prioritization
 - Sherpa → Rank: Task list ordering
 - Helm → Rank: Strategic priority input
 - PDM → Rank: Roadmap items needing priority scoring
@@ -29,7 +29,7 @@ COLLABORATION_PATTERNS:
 - Rank → Scribe: Priority documentation
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Spark (proposals), Void (surviving items), Accord (requirements), Sherpa (task lists), Helm (strategy), PDM (roadmap items), Nexus
+- INPUT: Spark (proposals), Void (surviving items), Scribe[unified] (requirements), Sherpa (task lists), Helm (strategy), PDM (roadmap items), Nexus
 - OUTPUT: Sherpa (ranked list), Builder (top items), Helm (priority data), Magi (contentious rankings), Scribe (documentation)
 
 PROJECT_AFFINITY: universal
@@ -153,7 +153,7 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 ## Collaboration
 
-**Receives:** Spark (feature proposals), Void (post-YAGNI items), Accord (requirements), Sherpa (task lists), Helm (strategic priorities), Nexus
+**Receives:** Spark (feature proposals), Void (post-YAGNI items), Scribe[unified] (requirements), Sherpa (task lists), Helm (strategic priorities), Nexus
 **Sends:** Sherpa (ranked list), Builder (highest-priority items), Helm (priority data), Magi (contentious rankings), Scribe (priority documentation)
 
 **Overlap boundaries:**
@@ -166,11 +166,11 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| ICE Score | `ice` | ✓ | ICE scoring (Impact × Confidence × Ease) | `reference/scoring-frameworks.md` |
-| RICE Score | `rice` | | RICE scoring (Reach × Impact × Confidence / Effort) | `reference/scoring-frameworks.md` |
-| WSJF | `wsjf` | | WSJF (Weighted Shortest Job First) | `reference/scoring-frameworks.md` |
-| MoSCoW | `moscow` | | MoSCoW method (Must/Should/Could/Won't) | `reference/scoring-frameworks.md` |
-| Kano Model | `kano` | | Kano model (customer satisfaction classification) | `reference/scoring-frameworks.md` |
+| ICE Score | `ice` | ✓ | ICE scoring (Impact × Confidence × Ease) | — |
+| RICE Score | `rice` |  | RICE scoring (Reach × Impact × Confidence / Effort) | — |
+| WSJF | `wsjf` |  | WSJF (Weighted Shortest Job First) | — |
+| MoSCoW | `moscow` |  | MoSCoW method (Must/Should/Could/Won't) | — |
+| Kano Model | `kano` |  | Kano model (customer satisfaction classification) | — |
 | Cost of Delay (CD3) | `cod` | | Deep CoD economic decomposition and CD3 sequencing (revenue/deadline-bound work) | `reference/cost-of-delay.md` |
 | Value vs Effort | `value-effort` | | 2x2 quadrant workshop (Quick Win/Major/Fill-In/Thankless) for visual consensus | `reference/value-effort-matrix.md` |
 | Priority Poker | `pokerplan` | | Anonymous Fibonacci voting (Wideband Delphi) to mitigate group bias | `reference/priority-poker.md` |
@@ -195,7 +195,6 @@ Behavior notes per Recipe:
 
 | File | Content |
 |------|---------|
-| `reference/scoring-frameworks.md` | Detailed procedures for ICE/RICE/WSJF/MoSCoW/CoD/Kano |
 | `reference/calibration-techniques.md` | Pairwise comparison, bias correction, sensitivity analysis |
 | `reference/output-templates.md` | Ranking report, score matrix, comparison table templates |
 | `reference/cost-of-delay.md` | CD3 = CoD / Duration, four-component CoD, CoD curve patterns, CD3-vs-WSJF distinction (`cod` recipe) |

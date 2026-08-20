@@ -1,17 +1,26 @@
 ---
 name: a-stock-data
-description: 当任务需要写代码实际获取A股数据时使用——拉取行情/K线(mootdx+腾讯+百度)、研报(东财+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业)、资金面(融资融券/大宗/股东户数/分红/资金流)、新闻、财务三表/F10、公告(巨潮)、打板(涨停池/连板/炸板率/重点监控池/日内异动)、ETF期权(T型报价/希腊字母/IV)、舆情互动(互动易/热榜/人气榜)等真实数据。十层数据源·47端点(含3官方备胎)·内嵌全部可运行代码，自包含零依赖外部文件；优先用通达信(mootdx)/腾讯(不封IP)，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
+description: 当任务需要写代码实际获取A股数据时使用——拉取行情/K线(mootdx+腾讯+百度)、研报(东财+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业)、资金面(融资融券/大宗/股东户数/分红/资金流)、新闻、财务三表/F10、公告(巨潮)、打板(涨停池/连板/炸板率/重点监控池/日内异动)、ETF期权(T型报价/希腊字母/IV)、舆情互动(互动易/热榜/人气榜)、筹码分布(获利比例/成本区间)、复权因子、估值历史(PE/PB/PS+换手率+ST)、申万行业变迁史、宏观(社融/PMI)等真实数据。十一层数据源·54端点(含3官方备胎)·内嵌全部可运行代码，自包含零依赖外部文件；优先用通达信(mootdx)/腾讯(不封IP)，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.6.1
+version: 3.7.0
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.6.1
+# A股全栈数据工具包 V3.7.0
 
-十层数据架构，47 个端点实测可用（44 主端点 + 3 官方备胎，2026-07 验证），覆盖主板/中小板/科创板/ST。每类数据在「备用源速查」列有独立备胎，主源被封时可降级。
+十一层数据架构，54 个端点实测可用（51 主端点 + 3 官方备胎，2026-08 验证），覆盖主板/中小板/科创板/ST。每类数据在「备用源速查」列有独立备胎，主源被封时可降级。
+
+> **V3.7.0（宏观层 + 筹码分布 + 复权因子 + 估值历史，2026-08-19）：**新增 **1 个数据层、7 个端点、4 个数据源**（baostock / 申万 / 人民银行 / 国家统计局，全部零注册零 key）。全部端点于 2026-08-19 实跑验证。
+>
+> - **§4.6 筹码分布 CYQ** — 补上本层名实不符的窟窿：Layer 4 叫「资金面 / **筹码**层」但 §4.1~§4.5 全是资金面数据，一直没有真正的筹码分布。**东财没有公开 CYQ 接口**（实测 `push2`/`push2his` 的 `cyq/get` 均 404），本端点用 OHLC + 换手率**本地推演**，零新增数据源。输出获利比例 / 平均成本 / 90-70 成本区间与集中度 / 筹码峰。⚠️ 初始筹码**播种为首日全部流通盘**——从全零起步会把窗口前的存量持仓一笔勾销（两个 1% 换手日会被算成 50/50，真实应约 99%/1%）。
+> - **§6.5 估值历史** — §1.2 腾讯只有**当日**估值快照，本端点给**日频历史序列**（实测茅台 2016-01-04 起 2581 行），并一次补齐此前完全缺失的四项：**换手率**（筹码分布的必需输入）、**停牌状态**、**ST 标记**（实测 000004 有 276 天 isST=1）、历史 PE/PB/PS/PCF。⚠️ **baostock 不支持北交所**，服务端报 `10004011`，本实现在**登录前**就拦掉抛 `ValueError`。
+> - **§1.4 复权因子** — §1.1 通达信 `bars()` 是**不复权**数据，跨除权日直接比价必错。新浪 qfq/hfq 因子序列一次 HTTP 约 1.8KB。⚠️ 响应末尾挂着 `/* base64 */` 注释块，**不能用 `$` 锚定正则**，须用 `raw_decode`。
+> - **§6.6 上市/退市日** — 唯一能拿到**退市日期**的零鉴权源，配合 §1.2 `is_stale` 可在筛选阶段剔除僵尸标的。
+> - **§6.7 申万行业变迁史** — §3.7 东财只有**当前**行业归属，用它做历史研究是**前视偏差**。本端点给每只股票的行业变迁（实测 12,893 行 / 5,905 只 / 38 个一级行业；有标的历史变更过 10 次）。⚠️ 申万官方只发代码不发中文名。
+> - **§11.1/§11.2 宏观层（新）** — 人民银行社融（月度 12 列）+ 国家统计局 PMI。⚠️ 社融链路是三级跳，未发布月份**整行丢弃**而非返回 NaN（否则调用方会把 12 行当 12 个月真数据）；PMI 正文是全角括号**内带空格**，空白必须**整个删掉**才匹配得到。
 
 > **V3.6.1（龙虎榜空窗口崩溃修复，2026-08-09 · #45）：**`dragon_tiger_board()` 在回看窗口内无上榜记录时抛 `UnboundLocalError`——而大市值 / 低换手率标的（如贵州茅台）常态无上榜，等于**调用即崩**，调用方还无法区分「无数据」与「接口异常」。已修，空窗口返回语义一致的空结构。
 >
@@ -62,7 +71,8 @@ version: 3.6.1
 >
 > **V3.1 修复：** 替换 4 个失效接口（百度 PAE 资金流→东财 push2、大宗交易 RPT 报表名更新、机构席位改用 BUY/SELL 明细筛选）+ 修复东财全球资讯 req_trace 参数 + 修复巨潮公告 orgId 格式。
 >
-> **V3.0 Breaking Change**：彻底移除 akshare 依赖，所有数据源改为直连 HTTP API（零第三方数据依赖，仅 mootdx 保留 TCP）。
+> **V3.0 Breaking Change**：彻底移除 akshare 依赖，所有数据源改为直连 HTTP API（仅 mootdx 保留 TCP）。
+> ⚠️ V3.7 起 §6.5/§6.6 另需第三方客户端 `baostock`（TCP），因此「零第三方封装依赖」现仅适用于其余端点。
 
 **使用方式：** 将本文件放入 `~/.claude/skills/a-stock-data/SKILL.md`，Claude Code 会自动识别并在 A 股相关对话中激活。
 
@@ -70,7 +80,8 @@ version: 3.6.1
 行情层（实时，不封IP）
 ├── mootdx        → K线 + 五档盘口 + 逐笔成交 (TCP 7709)
 ├── 腾讯财经 API   → PE/PB/市值/换手率/涨跌停/指数/ETF (HTTP)
-└── 百度股市通     → K线带MA5/10/20 (V3.0 新增，HTTP)
+├── 百度股市通     → K线带MA5/10/20 (V3.0 新增，HTTP)
+└── 新浪复权因子   → qfq/hfq 因子序列 + 套用到不复权K线 (V3.7 新增)
 
 研报层
 ├── 东财 reportapi → 个股研报 + 行业研报 + PDF下载 + 评级 + 三年EPS
@@ -93,7 +104,8 @@ version: 3.6.1
 ├── 大宗交易       → 成交价/量 + 买卖方营业部 (datacenter-web)
 ├── 股东户数变化   → 季度股东户数 + 环比变化 (datacenter-web)
 ├── 分红送转       → 历史每股派息/送股/转增 (datacenter-web)
-└── 个股资金流120日 → 主力/大单/中单/小单 日级净流入 (push2his)
+├── 个股资金流120日 → 主力/大单/中单/小单 日级净流入 (push2his)
+└── 筹码分布 CYQ   → 获利比例/平均成本/90-70成本区间/筹码峰 (本地计算，V3.7 新增)
 
 新闻层
 ├── 东财个股新闻   → 个股相关新闻 (search-api-web JSONP)
@@ -104,7 +116,10 @@ version: 3.6.1
 ├── mootdx finance → 季报快照 (37字段, EPS/ROE/净利)
 ├── mootdx F10     → 公司资料 (9大类文本)
 ├── 东财个股信息   → 行业/总股本/流通股/市值/上市日期 (push2)
-└── 新浪财报三表   → 资产负债表/利润表/现金流量表 (quotes.sina.cn)
+├── 新浪财报三表   → 资产负债表/利润表/现金流量表 (quotes.sina.cn)
+├── baostock 估值历史 → 日频 PE/PB/PS/PCF + 换手率 + 停牌 + ST (不支持北交所，V3.7 新增)
+├── baostock 标的信息 → 上市日/退市日/状态 (V3.7 新增)
+└── 申万行业分类   → 行业归属变迁史，消除前视偏差 (仅代码无中文名，V3.7 新增)
 
 公告层
 ├── 巨潮 cninfo    → 公告全文检索+下载 (cninfo.com.cn)
@@ -127,6 +142,10 @@ ETF期权层 (V3.3 新增)
 ├── 同花顺热榜     → 人气值/概念标签/排名变化 (10jqka)
 ├── 东财人气榜     → 排名+排名变化+名称价格 (emappdata)
 └── 东财概念命中   → 个股被归到哪些概念在炒+热度 (emappdata)
+
+宏观层 (V3.7 新增)
+├── 人民银行社融   → 社会融资规模增量 月度12列 (pbc.gov.cn，三级跳取 xls 附件)
+└── 国家统计局PMI  → 制造业/非制造业/综合 + 大中小型企业分档 (stats.gov.cn)
 ```
 
 ## 端点路由速查（按需定位，不必通读全文）
@@ -139,6 +158,7 @@ ETF期权层 (V3.3 新增)
 | 1.1 | `tdx_client()` → `.bars()` / `.quotes()` / `.transaction()` | K线(多周期,不复权) / 五档盘口 / 逐笔成交 | 通达信 |
 | 1.2 | `tencent_quote(codes)` | 实时价/PE/PB/市值/换手/涨跌停/指数/ETF（带 `is_stale` 僵尸报价标志） | 腾讯 |
 | 1.3 | `baidu_kline_with_ma(code)` | 日K线带 MA5/10/20 | 百度 |
+| 1.4 | `sina_adjust_factor(code, kind)` / `apply_adjust(bars, factors)` | 复权因子 qfq/hfq + 套用到不复权K线 | 新浪 |
 | 2.1 | `eastmoney_reports(code)` / `download_pdf(rec)` | 个股研报+评级+三年EPS / 研报PDF | 东财 |
 | 2.1 | `eastmoney_industry_reports(industry_code)` | 行业研报 | 东财 |
 | 2.2 | `ths_eps_forecast(code)` | 机构一致预期 EPS | 同花顺 |
@@ -157,6 +177,7 @@ ETF期权层 (V3.3 新增)
 | 4.3 | `holder_num_change(code)` | 股东户数变化 | 东财 |
 | 4.4 | `dividend_history(code)` | 分红送转历史 | 东财 |
 | 4.5 | `stock_fund_flow_120d(code)` | 个股资金流（120日，日级） | 东财 |
+| 4.6 | `chip_distribution(df)` | 筹码分布（获利比例/平均成本/90-70成本区间/筹码峰） | 本地计算 |
 | 5.1 | `eastmoney_stock_news(code)` | 个股新闻 | 东财 |
 | 5.2 | `cls_telegraph()` | 财联社电报（7×24，本地签名零key） | 财联社 |
 | 5.3 | `eastmoney_global_news()` | 全球资讯（7×24） | 东财 |
@@ -164,6 +185,9 @@ ETF期权层 (V3.3 新增)
 | 6.2 | `client.F10(symbol, name)` | 公司资料 9 大类文本 | 通达信 |
 | 6.3 | `eastmoney_stock_info(code)` | 行业/股本/市值/上市日期 | 东财 |
 | 6.4 | `sina_financial_report(code, type)` | 财报三表 | 新浪 |
+| 6.5 | `baostock_valuation_history(code, s, e)` | 估值历史 PE/PB/PS/PCF + 换手率 + 停牌 + ST（**不支持北交所**） | baostock |
+| 6.6 | `baostock_stock_basic(code)` | 上市日 / **退市日** / 状态 | baostock |
+| 6.7 | `sw_industry_history()` / `sw_industry_as_of(df, code, d)` | 申万行业**变迁史**（消除前视偏差，仅代码无中文名） | 申万 |
 | 7.1 | `cninfo_announcements(code)` | 公告检索+PDF 下载 | 巨潮 |
 | 7.2 | `client.F10(symbol, name='最新提示')` | 最新公告摘要 | 通达信 |
 | 8.1 | `em_zt_pool` / `em_zb_pool` / `em_dt_pool` / `em_yzt_pool` | 涨停/炸板/跌停/昨涨停四池 | 东财 |
@@ -174,6 +198,8 @@ ETF期权层 (V3.3 新增)
 | 9.1 | `sina_option_codes` / `sina_option_tquote` / `sina_option_greeks` | ETF期权合约清单 / T型报价 / 希腊字母+IV | 新浪 |
 | 10.1 | `cninfo_irm(code)` | 互动易问答（提问+公司回复） | 巨潮 |
 | 10.2 | `ths_hot_list()` / `em_hot_rank()` / `em_hot_concept(code)` | 热榜/人气榜/概念命中 | 同花顺+东财 |
+| 11.1 | `pboc_social_financing(year)` | 社会融资规模增量（月度12列） | 人民银行 |
+| 11.2 | `nbs_pmi()` | 制造业/非制造业/综合 PMI + 大中小型企业 | 国家统计局 |
 | 备用源速查 | `dragon_tiger_backup` / `fund_flow_backup` / `announcements_backup` | 龙虎榜/资金流/公告官方备胎（主源被封时降级） | 交易所官方+新浪+东财(沪市公告) |
 | 估值公式 | `forward_pe` / `pe_digestion` / `calc_peg` / `full_valuation(code)` | 前向PE / PE消化时间 / PEG / 单票估值全景 | 本地计算 |
 
@@ -276,17 +302,21 @@ ETF期权层 (V3.3 新增)
 ## Prerequisites
 
 ```bash
-pip install mootdx requests pandas stockstats
+pip install mootdx requests pandas stockstats numpy baostock xlrd openpyxl
 ```
 
 | 依赖 | 版本要求 | 用途 |
 |------|---------|------|
-| mootdx | >= 0.10 | TCP行情+财务+F10（唯一非HTTP依赖）；0.11.x 用 `tdx_client()` 规避 BESTIP bug，见上节 |
+| mootdx | >= 0.10 | TCP行情+财务+F10（非 HTTP 依赖之一）；0.11.x 用 `tdx_client()` 规避 BESTIP bug，见上节 |
 | requests | any | 所有HTTP API直连 |
 | pandas | any | 数据处理+HTML表格解析 |
 | stockstats | any | 技术指标计算（RSI/MACD/BOLL等） |
+| numpy | any | §4.6 筹码分布的网格计算 |
+| baostock | >= 0.8 | §6.5/§6.6 估值历史·换手率·停牌·ST·退市日（TCP，免注册免 key；**不支持北交所**） |
+| xlrd | >= 2.0 | 读 `.xls`（§6.7 申万行业分类） |
+| openpyxl | any | 读 `.xlsx`（§11.1 人民银行社融） |
 
-> **V3.0 架构：** 除 mootdx（TCP 二进制协议）外，所有数据源均为直连 HTTP API，零第三方数据封装依赖。每个端点的底层 URL/参数完全暴露，方便调试和定制。
+> **架构：** 除 mootdx 与 baostock（均为 TCP 客户端库）外，所有数据源均为直连 HTTP API，不经第三方数据封装。每个 HTTP 端点的底层 URL/参数完全暴露，方便调试和定制。
 
 ### iwencai API Key（仅语义搜索需要）
 
@@ -299,7 +329,7 @@ export IWENCAI_BASE_URL="https://openapi.iwencai.com"
 # 注册后安装 SkillHub CLI，再安装 report-search 技能即可获得 Key
 ```
 
-其他数据源（mootdx / 腾讯 / 东财 / 同花顺 / 百度股市通 / 新浪 / 巨潮）全部免费，无需 key。
+其他数据源（mootdx / 腾讯 / 东财 / 同花顺 / 百度股市通 / 新浪 / 巨潮 / baostock / 申万 / 人民银行 / 国家统计局）全部免费，无需 key。
 
 ### mootdx 客户端（必读，规避 0.11.x BESTIP 空串 bug）
 
@@ -398,6 +428,7 @@ def get_prefix(code: str) -> str:
     if c in SH_INDEX:                         # 沪深300/上证50 等沪指数（000xxx）
         return "sh"
     return "sz"                              # 深市个股/ETF（00/30/15x/16x/159 等），深指数 399xxx 亦走 sz
+
 ```
 
 > **歧义说明：** `000001` 默认按个股→`sz000001`（平安银行）；要上证指数请显式传 `sh000001`。`000016` 默认按沪指数→上证50；要深康佳A 请传 `sz000016`。
@@ -514,6 +545,22 @@ norm_ticker("SH000001", stock_only=True)     # ValueError（上证指数，不�
 norm_ticker("000001.SH", stock_only=True)    # ValueError（后缀写法同样拦下）
 norm_ticker("SZ600519")                      # ValueError（600519 是沪市，标识矛盾）
 norm_ticker("sz000016")                      # '000016'（深康佳A，000 段的显式消歧，合法）
+
+
+def em_market_code(code: str) -> int:
+    """东财 secid 的市场号：**沪=1，深/北=0**（V3.7.0 新增 · #46）。
+
+    ⚠️ 绝不要用 `code.startswith("6")` 判市场 —— 那会把**沪市 ETF（51x）**、
+    **科创板 ETF（588x）**、**沪 B 股（900x）** 全部错判成深市，接口返回 `data: null`。
+    2026-08-19 实测：510300 / 588000 / 600519 / 688112 / 900901 → m=1；
+    300750 / 159915 / 920982 / 832982 → m=0（北交所与深市共用 m=0）。
+    """
+    return 1 if get_prefix(code) == "sh" else 0
+
+
+def em_secid(code: str) -> str:
+    """东财 push2/push2his 的 secid，如 `1.600519` / `0.300750`。"""
+    return f"{em_market_code(code)}.{norm_ticker(code)}"
 ```
 
 ### 东财数据中心统一查询（共用 helper）
@@ -547,10 +594,12 @@ try:
     EM_SESSION.mount("http://", _em_adapter)
 except Exception:
     pass  # 老版本 urllib3 缺 allowed_methods 等参数时降级为无重试，不影响主流程
+from typing import Optional     # 3.9 兼容：不能写 `dict | None`（那是 3.10+ 语法）
+
 EM_MIN_INTERVAL = 1.0          # 两次东财请求最小间隔(秒)；批量筛选建议调大到 1.5~2
 _em_last_call = [0.0]          # 模块级上次请求时间戳
 
-def em_get(url: str, params: dict | None = None, headers: dict | None = None,
+def em_get(url: str, params: Optional[dict] = None, headers: Optional[dict] = None,
            timeout: int = 15, **kwargs):
     """东财统一请求入口：自动节流 + 复用 session + 默认 UA。
     所有 eastmoney.com 接口都应通过它请求，避免高频被封 IP。"""
@@ -788,6 +837,168 @@ print("最近5根K线:", data["rows"][-5:])
 
 ---
 
+### 1.4 新浪复权因子 — qfq / hfq（V3.7.0 新增）
+
+**核心价值：** §1.1 `tdx_client().bars()` 返回的是**不复权**数据，跨除权日直接比价必然出错。
+本端点给出复权因子序列，一次 HTTP、约 1.8KB、零鉴权。
+
+```python
+import json
+import re
+
+import requests
+
+
+def sina_adjust_factor(code: str, kind: str = "qfq") -> list:
+    """新浪复权因子序列 — kind='qfq'(前复权) | 'hfq'(后复权)，按日期倒序（最新在前）"""
+    if kind not in ("qfq", "hfq"):
+        raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
+    # 数字位用 norm_ticker() 剥掉前后缀（否则 "sz000016" 会拼成 "szsz000016" ——
+    # zfill(6) 对 8 字符输入不做任何事）。
+    raw = str(code).strip()
+    digits = norm_ticker(raw)
+    # 市场：**显式写法优先**。get_prefix() 只认前缀不认 `.SH` 后缀，若直接喂原串，
+    # `000016.SH` 会落到 sz 分支 → 静默取到深市 000016 的因子（另一只票）。
+    # 都没写显式市场时，才用 get_prefix() 按号段推断（它已处理 92 必须先于 9x）。
+    m = re.match(r"^(sh|sz|bj)", raw, re.I) or re.search(r"\.(sh|sz|bj)$", raw, re.I)
+    prefix = m.group(1).lower() if m else get_prefix(digits)
+    symbol = f"{prefix}{digits}"
+    url = f"https://finance.sina.com.cn/realstock/company/{symbol}/{kind}.js"
+    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0",
+                                   "Referer": "https://finance.sina.com.cn/"}, timeout=10)
+    r.raise_for_status()
+    # 🔴 响应形如 `var sh600519qfq={...}` 且**末尾挂着 /* base64 */ 注释块**，
+    #    不能用 $ 锚定正则。从第一个 { 起用 raw_decode，让解析器自己在 JSON 结束处停下。
+    text = r.text
+    brace = text.find("{")
+    if brace < 0:
+        raise RuntimeError(f"新浪复权因子响应无 JSON（{symbol}/{kind}）: {text[:120]}")
+    try:
+        data, _ = json.JSONDecoder().raw_decode(text[brace:])
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"新浪复权因子 JSON 解析失败（{symbol}/{kind}）: {e}") from e
+    return [{"date": it["d"], "factor": float(it["f"])} for it in data.get("data", [])]
+
+
+def apply_adjust(bars, factors: list, kind: str = "qfq",
+                 price_keys=("open", "high", "low", "close")):
+    """把复权因子套到不复权 K 线上。
+
+    `bars` 接受两种形态：
+      - **§1.1 `tdx_client().bars()` 的 DataFrame**（日期列名是 `datetime`）→ 返回 DataFrame
+      - list[dict]（需含 `date` 键）→ 返回 list[dict]
+
+    🔴 **qfq 与 hfq 的运算方向相反，必须传对 kind**：
+      - `qfq`（前复权）因子是**除数**：`前复权价 = 不复权价 ÷ factor`
+      - `hfq`（后复权）因子是**乘数**：`后复权价 = 不复权价 × factor`
+    传错方向不会报错，只会把历史价格放大/缩小几倍（见下方实测对照表）。
+
+    因子表是「生效日 → 因子」的阶梯，每根 K 线取**不晚于它**的最近一个因子。
+    """
+    if kind not in ("qfq", "hfq"):
+        raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
+    # 🔴 因子为空时绝不能「原样返回」—— 那会把不复权价当成复权价交出去，
+    #    调用方拿到的数字看着正常却是错的（新浪对不支持的标的就返回空 data）。
+    if not factors:
+        raise ValueError(
+            "复权因子列表为空，无法复权。请先确认 sina_adjust_factor() 是否取到数据"
+            "（新浪对不支持的标的会返回空 data），不要用未复权价继续计算。"
+        )
+
+    is_df = hasattr(bars, "columns") and hasattr(bars, "to_dict")
+    if is_df:
+        # mootdx bars() 的日期列叫 datetime，且可能带时分秒，统一截成 YYYY-MM-DD
+        date_col = next((c for c in ("date", "datetime") if c in bars.columns), None)
+        if date_col is None:
+            raise ValueError(f"DataFrame 需含 date 或 datetime 列，实际列={list(bars.columns)}")
+        rows = bars.to_dict("records")
+        for r in rows:
+            r["date"] = str(r[date_col])[:10]
+    else:
+        rows = [dict(b) for b in bars]
+        for r in rows:
+            if "date" not in r:
+                raise ValueError(f"每根 K 线需含 'date' 键，实际键={sorted(r)}")
+            r["date"] = str(r["date"])[:10]
+
+    fac = sorted(factors, key=lambda x: x["date"])
+    out, i, cur = [], 0, None
+    for bar in sorted(rows, key=lambda b: b["date"]):
+        while i < len(fac) and fac[i]["date"] <= bar["date"]:
+            cur = fac[i]["factor"]
+            i += 1
+        # 🔴 早于最早因子日的 K 线不能原样放行 —— 那会让一份结果里混着「已复权」和
+        #    「未复权」两种价格且无从分辨。新浪的因子表通常带 1900-01-01 哨兵
+        #    （实测 600519/000001/300750/688981/000004/601398 六只均是），
+        #    真出现未覆盖行，说明因子表异常，必须显式失败。
+        if cur is None:
+            raise RuntimeError(
+                f"K 线日期 {bar['date']} 早于因子序列最早日 {fac[0]['date']}，"
+                "无法复权；不返回未复权价以免与已复权行混淆。"
+            )
+        if cur == 0:
+            raise RuntimeError(f"复权因子为 0（{bar['date']}），无法换算")
+        nb = dict(bar)
+        for k in price_keys:
+            if k in nb and nb[k] is not None:
+                v = float(nb[k])
+                nb[k] = round(v / cur if kind == "qfq" else v * cur, 4)
+        nb["adj_factor"] = cur
+        out.append(nb)
+    if is_df:
+        import pandas as pd
+        res = pd.DataFrame(out)
+        # mootdx 的 bars() 带 DatetimeIndex，重建 DataFrame 会退化成 RangeIndex，
+        # 下游按时间切片 / resample / 时间对齐 join 都会失效。按排序后的顺序还原索引。
+        if getattr(bars, "index", None) is not None and not isinstance(
+            bars.index, pd.RangeIndex
+        ):
+            order = sorted(range(len(bars)), key=lambda n: str(bars.iloc[n][date_col])[:10])
+            res.index = bars.index[order]
+            res.index.name = bars.index.name
+        return res
+    return out
+
+
+# 用法
+qfq = sina_adjust_factor("600519", "qfq")
+hfq = sina_adjust_factor("600519", "hfq")
+print(len(qfq), "条 | 最新", qfq[0], "| 最早", qfq[-1])
+# 实测 2026-08-19：33 条
+#   qfq 最新 {'date': '2026-06-26', 'factor': 1.0}          ← 前复权以最新为基准
+#   hfq 最早 {'date': '1900-01-01', 'factor': 1.0}          ← 后复权以最早为基准
+
+bars = [{"date": "2015-01-05", "close": 202.52}]         # 茅台当日不复权收盘价
+print(apply_adjust(bars, qfq, kind="qfq"))                # → 143.46（前复权，除法）
+print(apply_adjust(bars, hfq, kind="hfq"))                # → 1274.28（后复权，乘法）
+```
+
+**方向实测对照（2026-08-19，以 baostock `adjustflag` 为基准交叉验证）**
+
+| 日期 | 不复权 | baostock 前复权 | `raw × qfq` | `raw ÷ qfq` |
+|------|--------|----------------|-------------|-------------|
+| 2015-01-05 | 202.52 | **143.46** | 285.90 ❌ | **143.46** ✅ |
+| 2026-08-14 | 1341.99 | 1341.99 | 1341.99 ✅ | 1341.99 ✅ |
+
+> `qfq` 因子恒 ≥ 1 且越往历史越大，**乘上去会把历史价格放大**，必须做除法。
+> 2026 那行两种算法都对，是因为最新日因子恰为 1.0 —— **只用最近日期做验证会漏掉这个 bug**。
+>
+> ⚠️ **hfq 的基准与 baostock 不同**：新浪 `raw × hfq` 与 baostock 后复权价差一个**恒定倍数**
+> （实测 1.1582，2015 与 2026 两点一致）。后复权序列整体缩放不影响收益率与形态，
+> 但**不要把新浪后复权价与其它源的后复权价直接比数值**。
+
+> ⚠️ **北交所无复权因子**：实测 `bj920982` 返回 **404**（新浪未提供北交所的 qfq/hfq 文件），
+> 本函数会抛 `HTTPError`。北交所标的请改用 §1.1 通达信不复权价，并自行按分红送转推导。
+>
+> **自检口径（实测 2026-08-19 校准）：**
+> - `qfq` 序列**最新**一条因子恒为 `1.0`；`hfq` 序列**最早**一条恒为 `1.0`。
+> - 同一日期上 **`qfq(d) × hfq(d)` 恒等于一个常数**（该标的全期总复权系数，茅台实测 `8.882513`）。
+>   ⚠️ 两者**不是倒数**（乘积不为 1），比值 `hfq/qfq` 也**不恒定**（茅台 33 个日期有 32 种取值）——
+>   两个基准不同的归一化序列，只有乘积守恒。
+> 不满足以上任一条，说明响应被截断或标的代码写错。
+
+---
+
 ## Layer 2: 研报层
 
 ### 2.1 东财研报 API — 研报列表 + PDF下载（主力）
@@ -801,6 +1012,7 @@ import time
 from datetime import date, timedelta   # 注意用 date/timedelta，不要 import datetime 模块：
                                        # 本 SKILL 多处有 `from datetime import datetime`，会把模块名遮蔽掉
 from pathlib import Path
+from typing import Optional            # 3.9 兼容：不能写 `str | None`（那是 3.10+ 语法）
 
 REPORT_API = "https://reportapi.eastmoney.com/report/list"
 PDF_TPL = "https://pdf.dfcfw.com/pdf/H3_{info_code}_1.pdf"
@@ -843,7 +1055,7 @@ def eastmoney_reports(code: str, max_pages: int = 5) -> list[dict]:
         )
     return all_records
 
-def download_pdf(record: dict, target_dir: str = "./reports") -> str | None:
+def download_pdf(record: dict, target_dir: str = "./reports") -> Optional[str]:
     """下载单份研报PDF，返回保存路径或None"""
     info_code = record.get("infoCode", "")
     if not info_code:
@@ -1264,7 +1476,7 @@ def eastmoney_concept_blocks(code: str) -> dict:
     返回: {total, boards: [{name, code(BK码), change_pct, lead_stock}], concept_tags: [板块名...]}
     boards 混合 行业/概念/地域，板块名自解释；concept_tags 是所有板块名的便捷列表。
     """
-    market_code = 1 if code.startswith("6") else 0
+    market_code = em_market_code(code)      # #46：不能用 startswith("6")，见 helper 注释
     params = {
         "fltt": "2", "invt": "2",
         "secid": f"{market_code}.{code}",
@@ -1321,7 +1533,12 @@ def eastmoney_fund_flow_minute(code: str) -> list[dict]:
     返回: [{time, main_net, small_net, mid_net, large_net, super_net}, ...]
     单位: 元
     """
-    secid = f"1.{code}" if code.startswith("6") else f"0.{code}"
+    # #46：secid 必须走 em_secid()。旧的 `startswith("6")` 会把沪市 ETF(51x)、
+    # 科创 ETF(588x)、沪 B(900x) 错判成深市 → 接口返回 `data: null`。
+    # ⚠️ 但要分清两件事：**路由修好 ≠ ETF 就有资金流**。2026-08-19 同批次实测，
+    #    600519/300750 各返回 100 条，而 510300/588000 即便 secid 正确仍为 0 条 ——
+    #    东财这个**个股**资金流接口本身不覆盖 ETF。ETF 资金流请另找端点。
+    secid = em_secid(code)
     url = "https://push2.eastmoney.com/api/qt/stock/fflow/kline/get"
     params = {
         "secid": secid, "klt": 1,
@@ -1341,7 +1558,9 @@ def eastmoney_fund_flow_minute(code: str) -> list[dict]:
         return []
 
     rows = []
-    for line in d.get("data", {}).get("klines", []):
+    # #46：接口对不存在/路由错误的 secid 返回 `"data": null`，
+    # `.get("data", {})` 拿到的是 None 而非 {}，直接 .get() 会 AttributeError。
+    for line in (d.get("data") or {}).get("klines") or []:
         parts = line.split(",")
         if len(parts) >= 6:
             rows.append({
@@ -1554,7 +1773,7 @@ def industry_comparison(top_n: int = 20) -> dict:
     headers = {"User-Agent": UA}
     r = em_get(url, params=params, headers=headers, timeout=15)
     d = r.json()
-    items = d.get("data", {}).get("diff", [])
+    items = (d.get("data") or {}).get("diff") or []        # #46 同因
     if not items:
         return {"top": [], "bottom": [], "total": 0}
 
@@ -1932,7 +2151,7 @@ def stock_fund_flow_120d(code: str) -> list[dict]:
     返回: [{date, main_net(主力净流入), small_net, mid_net, large_net, super_net}]
     单位: 元
     """
-    market_code = 1 if code.startswith("6") else 0
+    market_code = em_market_code(code)      # #46
     url = "https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get"
     params = {
         "secid": f"{market_code}.{code}",
@@ -1951,7 +2170,7 @@ def stock_fund_flow_120d(code: str) -> list[dict]:
     except Exception as e:
         print(f"[WARN] push2 资金流请求失败: {e}")
         return []
-    klines = d.get("data", {}).get("klines", [])
+    klines = (d.get("data") or {}).get("klines") or []     # #46 同因
 
     rows = []
     for line in klines:
@@ -1979,6 +2198,161 @@ print(f"\n近20日主力累计净流入: {total_main/1e8:.2f}亿")
 ```
 
 > **⚠️ 大陆住宅 IP 间歇封锁（#18）：** push2/push2his 系列对**部分大陆住宅宽带 IP** 有连接级风控，表现为偶发 `HTTP 000`（连接被拒/超时）或返回空——**这不是代码问题**（同一代码在其他网络/时段实测正常）。遇到时：① 隔几分钟重试；② 换网络环境（如手机热点）；③ 降低请求频率（调大 `EM_MIN_INTERVAL`）。日级资金流务实替代：仍可用 mootdx 算量价，或换时段重试。
+
+---
+
+### 4.6 筹码分布 CYQ — 获利比例 / 平均成本 / 成本区间（V3.7.0 新增）
+
+**核心价值：** 本层叫「资金面 / **筹码**层」，但 §4.1~§4.5 全是融资融券、大宗、股东户数这类
+**资金面**数据，一直缺真正的**筹码分布**。本端点补齐。
+
+🔴 **东财没有公开 CYQ 接口**（2026-08-19 实测 `push2/api/qt/stock/cyq/get` 与 `push2his` 两种写法**均 404**）。
+业界通行做法是**本地推演**：历史筹码按换手率衰减，当日成交量按三角分布撒进 `[low, high]` 区间。
+**零新增数据源** —— OHLC 用 §1.1 通达信，换手率用 §6.5 baostock。
+
+```python
+import numpy as np
+import pandas as pd
+
+
+def _triangular_weights(grid: np.ndarray, low: float, high: float, avg: float) -> np.ndarray:
+    """当日筹码在价格网格上的三角分布权重（峰值在均价，面积归一）"""
+    w = np.zeros_like(grid)
+    if not np.isfinite([low, high, avg]).all() or high < low:
+        return w
+    if high - low < 1e-9:                       # 一字板：全部堆在一个价位
+        w[np.argmin(np.abs(grid - low))] = 1.0
+        return w
+    avg = min(max(avg, low), high)              # 均价必须落在当日区间内
+    left = (grid >= low) & (grid <= avg)
+    right = (grid > avg) & (grid <= high)
+    if avg - low > 1e-9:
+        w[left] = (grid[left] - low) / (avg - low)
+    else:
+        w[left] = 1.0
+    if high - avg > 1e-9:
+        w[right] = (high - grid[right]) / (high - avg)
+    else:
+        w[right] = 1.0
+    total = w.sum()
+    if total > 0:
+        return w / total
+    # 🔴 兜底：当日振幅窄于网格步长时，可能一个网格点都没落进 [low, high]，
+    #    权重会全为 0。若就此跳过该日，连它的换手衰减也会一并丢失 ——
+    #    低波动标的（银行股等）+ 长窗口下这会累积成很大的偏差。映射到最近网格点。
+    w[np.argmin(np.abs(grid - avg))] = 1.0
+    return w
+
+
+def chip_distribution(df: pd.DataFrame, grid_size: int = 300, decay: float = 1.0) -> dict:
+    """筹码分布 — df 需含 high/low/close/turn（turn 为百分数，0.31 表示 0.31%）
+
+    decay: 换手衰减系数。1.0=按真实换手率换手；同花顺口径常用 1.5~2.0 加快历史筹码消散。
+    """
+    # 🔴 必须带 date 并按时间升序：换手衰减是有方向的时序递推，
+    #    若传入常见的「最新在前」倒序，衰减会反向推、且 close.iloc[-1] 会把最老的
+    #    收盘价当成现价 —— 结果完全错却不会报错。这里强制要求 date 并自行排序。
+    need = {"date", "high", "low", "close", "turn"}
+    missing = need - set(df.columns)
+    if missing:
+        raise ValueError(f"chip_distribution 缺少列: {sorted(missing)}（date 用于强制时间升序）")
+    d = df.dropna(subset=["high", "low", "close", "turn"]).copy()
+    d = d[d["high"] > 0]
+    if d.empty:
+        raise ValueError("chip_distribution: 有效行数为 0（检查是否全是停牌日，或字段类型不对）")
+    d = d.sort_values("date").reset_index(drop=True)
+
+    lo, hi = float(d["low"].min()), float(d["high"].max())
+    pad = (hi - lo) * 0.02 or max(lo * 0.02, 0.01)
+    grid = np.linspace(lo - pad, hi + pad, grid_size)
+
+    # 🔴 初始筹码必须播种成「首日全部流通盘」，不能从全零开始。
+    #    从零起步等于假设窗口之前没有任何持仓，再把窗口内的少量换手归一化成 100%：
+    #    两个 1% 换手日（价 10 和 100）会被算成约 50/50，而真实情况是约 99% 仍在 10 附近。
+    chips = None
+    for row in d.itertuples(index=False):
+        t = float(row.turn) / 100.0 * decay
+        t = min(max(t, 0.0), 1.0)               # 换手率兜到 [0,1]，防异常值把筹码一次清零
+        avg = (float(row.high) + float(row.low) + float(row.close)) / 3.0
+        w = _triangular_weights(grid, float(row.low), float(row.high), avg)
+        if w.sum() <= 0:
+            continue
+        if chips is None:
+            chips = w.copy()                    # 首日分布 = 期初全部流通筹码
+            continue
+        chips = chips * (1.0 - t) + w * t
+    if chips is None:
+        raise RuntimeError("chip_distribution: 所有交易日的价格区间都无效，无法构建分布")
+
+    total = chips.sum()
+    if total <= 0:
+        raise RuntimeError("chip_distribution: 筹码总量为 0，无法计算指标")
+    chips = chips / total
+
+    price = float(d["close"].iloc[-1])
+    cum = np.cumsum(chips)
+
+    def price_at(q: float) -> float:
+        return float(np.interp(q, cum, grid))
+
+    p05, p15, p85, p95 = (price_at(q) for q in (0.05, 0.15, 0.85, 0.95))
+    peak_i = int(np.argmax(chips))
+    return {
+        "price": price,
+        "profit_ratio": float(chips[grid <= price].sum()),      # 获利比例
+        "avg_cost": float((grid * chips).sum()),                # 平均成本
+        "cost_90": (p05, p95),
+        "cost_70": (p15, p85),
+        "concentration_90": float((p95 - p05) / (p95 + p05)) if p95 + p05 else None,
+        "concentration_70": float((p85 - p15) / (p85 + p15)) if p85 + p15 else None,
+        "peak_price": float(grid[peak_i]),                      # 筹码峰
+        "histogram": [(float(pp), float(cc)) for pp, cc in zip(grid, chips) if cc > 1e-6],
+    }
+
+
+# 用法 — 输入用 §6.5 baostock（一次拿齐 OHLC + 换手率）
+import baostock as bs
+
+bs_code = _bs_code("600519")
+with bs_session():
+    rs = bs.query_history_k_data_plus(
+        bs_code, "date,open,high,low,close,turn,tradestatus",
+        start_date="2026-02-01", end_date="2026-08-18", frequency="d", adjustflag="2",
+    )                                            # 2=前复权，筹码成本必须用复权价
+    k = _rs_to_df(rs)
+for c in ("open", "high", "low", "close", "turn"):
+    k[c] = pd.to_numeric(k[c], errors="coerce")
+k = k[k["tradestatus"] == "1"]                   # 停牌日不参与换手衰减
+
+r = chip_distribution(k)
+print(f"现价 {r['price']:.2f} | 获利比例 {r['profit_ratio']*100:.2f}% | 平均成本 {r['avg_cost']:.2f}")
+print(f"90%成本区间 {r['cost_90'][0]:.2f}~{r['cost_90'][1]:.2f} 集中度 {r['concentration_90']*100:.2f}%")
+print(f"筹码峰 {r['peak_price']:.2f}")
+# 实测 2026-08-19（131 个交易日，窗口累计换手 46.5%）：
+#   现价 1297.99 | 获利比例 15.44% | 平均成本 1371.31
+#   90%成本区间 1207.89~1425.16 集中度 8.25% | 筹码峰 1398.99
+#   ← 窗口累计换手不足 100%，多数筹码仍是期初高位持仓，故均成本高于现价、获利盘偏低
+```
+
+**读法与自检**
+
+| 指标 | 含义 | 性质 |
+|------|------|------|
+| `profit_ratio` | 现价**之下**的持仓占比 = 浮盈盘 | **硬约束**：必在 [0,1] |
+| `avg_cost` | 加权平均持仓成本 | **硬约束**：必落在网格最低~最高之间 |
+| `cost_90` / `cost_70` | 5%~95% / 15%~85% 分位价格区间 | **硬约束**：`cost_90` 必包含 `cost_70` |
+| `concentration_*` | `(高-低)/(高+低)`，越小越集中 | **硬约束**：90% 集中度必大于 70% |
+| `peak_price` | 筹码最密集的价位（套牢/支撑区） | **启发式**：通常落在 `cost_90` 内 |
+
+> ⚠️ **下面两条是启发式，不是不变量，不要拿它们当断言去拒绝结果：**
+> - 「`price < avg_cost` ⇔ `profit_ratio < 50%`」在**对称**分布下成立，但**右偏**分布里
+>   均值被右尾拉高，现价可能同时低于均值、又高于中位数 —— 此时两者方向相反是正常的。
+> - 「`peak_price` 落在 `cost_90` 内」绝大多数时候成立，但一个**窄而高的尖峰**若恰好位于
+>   5% 分位之外，峰值就会落在区间外，这仍是合法结果。
+
+> ⚠️ **这是推演不是实测持仓**。券商软件各家衰减系数与分布模型不同，数值不会完全一致，
+> 看的是**形态与相对变化**（获利盘是在增加还是减少、筹码峰在上方还是下方），不是绝对值对齐。
+> 输入必须用**前复权**价（`adjustflag="2"`），用不复权价跨除权日会把成本算错。
 
 ---
 
@@ -2068,7 +2442,7 @@ def cls_telegraph(page_size: int = 50) -> list[dict]:
     d = r.json()
 
     rows = []
-    for item in d.get("data", {}).get("roll_data", []) or []:
+    for item in (d.get("data") or {}).get("roll_data") or []:   # #46 同因
         ts = item.get("ctime")
         t = datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S") if ts else ""
         rows.append({
@@ -2108,7 +2482,7 @@ def eastmoney_global_news(page_size: int = 50) -> list[dict]:
     d = r.json()
 
     rows = []
-    for item in d.get("data", {}).get("fastNewsList", []):
+    for item in (d.get("data") or {}).get("fastNewsList") or []:  # #46 同因
         rows.append({
             "title": item.get("title", ""),
             "summary": item.get("summary", "")[:200],
@@ -2175,7 +2549,7 @@ def eastmoney_stock_info(code: str) -> dict:
     东财个股基本面信息。
     返回: {code, name, industry, total_shares, float_shares, mcap, float_mcap, list_date}
     """
-    market_code = 1 if code.startswith("6") else 0
+    market_code = em_market_code(code)      # #46
     url = "https://push2.eastmoney.com/api/qt/stock/get"
     params = {
         "fltt": "2", "invt": "2",
@@ -2217,7 +2591,7 @@ def sina_financial_report(code: str, report_type: str = "lrb", num: int = 8) -> 
           {"报告期": "2026-03-31", "<科目>": "<值>", "<科目>_同比": <同比>, ...}
           （item_value 为新浪原始字符串数值，仅在有同比时附 "_同比" 键）
     """
-    prefix = "sh" if code.startswith("6") else "sz"
+    prefix = get_prefix(code)               # #46：51x/588x/900x 也是沪市
     paper_code = f"{prefix}{code}"
     url = "https://quotes.sina.cn/cn/api/openapi.php/CompanyFinanceService.getFinanceReport2022"
     params = {
@@ -2231,7 +2605,9 @@ def sina_financial_report(code: str, report_type: str = "lrb", num: int = 8) -> 
     r = requests.get(url, params=params, headers=headers, timeout=15)
     # 新浪实际结构: result.data.report_list 是「按报告期(如 '20260331')为键」的 dict,
     # 每期对象的 data 字段才是行项列表 [{item_title, item_value, item_tongbi}]。
-    report_list = r.json().get("result", {}).get("data", {}).get("report_list", {}) or {}
+    # #46 同因：任一层为 null 时 `.get(k, {})` 返回 None，链式 .get 会 AttributeError
+    _j = r.json() or {}
+    report_list = ((_j.get("result") or {}).get("data") or {}).get("report_list") or {}
 
     rows = []
     for period in sorted(report_list.keys(), reverse=True)[:num]:
@@ -2259,6 +2635,204 @@ fzb = sina_financial_report("600519", "fzb")
 # 用法: 现金流量表
 llb = sina_financial_report("600519", "llb")
 ```
+
+---
+
+### 6.5 baostock 估值历史 — PE/PB/PS/PCF + 换手率 + 停牌 + ST（V3.7.0 新增）
+
+**核心价值：** §1.2 腾讯只给**当日**估值快照，本端点给**日频历史序列**（可回溯至 2016），
+一次调用同时拿到四个我们此前完全没有的字段：**换手率**（筹码分布的必需输入）、
+**停牌状态**、**ST 标记**、**历史估值**。
+
+🔴 **北交所不支持**：baostock 服务端直接拒绝 4/8/92/920 号段，报
+`10004011 股票代码未标识sh或sz`（2026-08-19 实测）。本实现在**登录前**就拦掉并抛 `ValueError`，
+不浪费一次会话，也不会静默返回空表。
+
+```python
+from contextlib import contextmanager
+
+import baostock as bs
+import pandas as pd
+
+
+@contextmanager
+def bs_session():
+    """baostock 登录会话 — 必须用上下文管理器，异常路径也保证 logout"""
+    lg = bs.login()
+    if lg.error_code != "0":
+        raise RuntimeError(f"baostock 登录失败: {lg.error_code} {lg.error_msg}")
+    try:
+        yield
+    finally:
+        bs.logout()
+
+
+def _rs_to_df(rs) -> pd.DataFrame:
+    """baostock ResultData → DataFrame；错误码转异常，绝不静默返回空表"""
+    if rs.error_code != "0":
+        raise RuntimeError(f"baostock 查询失败: {rs.error_code} {rs.error_msg}")
+    rows = []
+    while rs.next():
+        rows.append(rs.get_row_data())
+    return pd.DataFrame(rows, columns=rs.fields)
+
+
+def _bs_code(code: str) -> str:
+    """6位代码 → baostock 格式；北交所在登录前就拦掉"""
+    code = str(code).zfill(6)
+    if code[:2] in ("60", "68", "90"):
+        return f"sh.{code}"
+    if code[:2] in ("00", "30", "20"):
+        return f"sz.{code}"
+    raise ValueError(
+        f"baostock 不支持该代码: {code}（北交所 4/8/92/920 号段会被服务端拒绝，"
+        f"报 10004011 股票代码未标识sh或sz）。北交所估值请改用 §1.2 腾讯当日快照。"
+    )
+
+
+def baostock_valuation_history(code: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """估值历史序列 — PE/PB/PS/PCF + 换手率 + 停牌 + ST，日频"""
+    bs_code = _bs_code(code)          # 先校验，失败就不必登录
+    fields = "date,code,close,peTTM,pbMRQ,psTTM,pcfNcfTTM,turn,tradestatus,isST"
+    with bs_session():
+        rs = bs.query_history_k_data_plus(
+            bs_code, fields, start_date=start_date, end_date=end_date,
+            frequency="d", adjustflag="3",     # 3=不复权，与 §1.1 通达信口径一致
+        )
+        df = _rs_to_df(rs)
+    for c in ("close", "peTTM", "pbMRQ", "psTTM", "pcfNcfTTM", "turn"):
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    return df
+
+
+# 用法
+df = baostock_valuation_history("600519", "2016-01-04", "2026-08-18")
+print(len(df), "行", df.iloc[0]["date"], "→", df.iloc[-1]["date"])
+print(df.tail(2)[["date", "close", "peTTM", "pbMRQ", "psTTM", "turn", "isST"]].to_string(index=False))
+# 实测 2026-08-19：2581 行；2026-08-18 peTTM=19.93 pbMRQ=6.46 psTTM=9.37 turn=0.3098
+
+# ST 标记实测有效：000004 在 2024-01 至今的 610 个交易日里有 276 天 isST=1
+st = baostock_valuation_history("000004", "2024-01-01", "2026-08-18")
+print("isST 分布:", st["isST"].value_counts().to_dict())     # {'0': 334, '1': 276}
+
+# 停牌：tradestatus == "0"
+print("停牌天数:", (df["tradestatus"] == "0").sum())
+```
+
+**字段说明**
+
+| 字段 | 含义 | 备注 |
+|------|------|------|
+| `peTTM` `pbMRQ` `psTTM` `pcfNcfTTM` | 市盈率TTM / 市净率MRQ / 市销率TTM / 市现率TTM | 负值代表亏损，不要直接排序 |
+| `turn` | 换手率（**百分数**，0.31 = 0.31%） | §4.6 筹码分布的必需输入 |
+| `tradestatus` | `1`=正常交易 `0`=停牌 | 算指标前应过滤掉停牌日 |
+| `isST` | `1`=ST/*ST `0`=正常 | 历史逐日标记，可还原「当时是不是 ST」 |
+
+---
+
+### 6.6 baostock 标的基本信息 — 上市日 / 退市日 / 状态（V3.7.0 新增）
+
+**核心价值：** 唯一能拿到**退市日期**的零鉴权源。配合 §1.2 的 `is_stale` 僵尸报价标志，
+可以在回测/筛选阶段直接剔除已退市标的。
+
+```python
+def baostock_stock_basic(code: str) -> dict:
+    """标的基本信息 — ipoDate(上市日) / outDate(退市日，在市为空) / status(1=上市 0=退市)"""
+    bs_code = _bs_code(code)
+    with bs_session():
+        df = _rs_to_df(bs.query_stock_basic(code=bs_code))
+    return df.iloc[0].to_dict() if not df.empty else {}
+
+
+# 用法
+print(baostock_stock_basic("600519"))
+# 实测：{'code': 'sh.600519', 'code_name': '贵州茅台', 'ipoDate': '2001-08-27',
+#        'outDate': '', 'type': '1', 'status': '1'}   ← outDate 为空 = 仍在市
+```
+
+> 🔴 **已退市标的的除权除息，三个源全缺**（2026-08 交叉验证）：通达信 `xdxr()` 即使传对
+> `market=2` 也返回 0 条、东财历史快照同样没有、baostock 直接拒绝北交所代码。
+> 已退市标的（尤其北交所）**做复权必然对不上**，不是本工具包的缺陷，是源侧的保留策略。
+
+---
+
+### 6.7 申万行业分类历史 — 消除行业前视偏差（V3.7.0 新增）
+
+**核心价值：** §3.7 `industry_comparison()` 用东财，**只有当前归属**。做历史研究时用今天的
+行业分类去套过去，是典型的**前视偏差**。本端点给出每只股票的**行业变迁史**。
+
+⚠️ 申万官方只发布**代码**不发布中文名（名称表是另一份未公开发布）。
+东财/通达信的行业名**不能**直接套——分类体系不同，代码不通用。
+
+```python
+import io
+
+from typing import Optional
+
+import pandas as pd
+import requests
+
+SW_URL = "https://www.swsresearch.com/swindex/pdf/SwClass2021/StockClassifyUse_stock.xls"
+
+
+def sw_industry_history() -> pd.DataFrame:
+    """申万行业归属变迁史 — 每只股票每次行业调整一行"""
+    try:
+        r = requests.get(SW_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+        r.raise_for_status()
+    except requests.exceptions.SSLError as e:
+        # 2026-08-19 实测：纯 certifi 环境握手正常，证书链完整，无需手动补中间证书。
+        # 保留此分支是为了在站点证书回归时给出可操作的提示，而不是吞掉异常。
+        raise RuntimeError(
+            "申万站点 SSL 握手失败。2026-08 实测其证书链正常，若你遇到此错误，"
+            "多半是本机 CA 包过旧或中间人代理：先试 `pip install -U certifi`。"
+            f"原始错误: {e}"
+        ) from e
+    df = pd.read_excel(io.BytesIO(r.content))
+    df = df.rename(columns={"股票代码": "code", "计入日期": "start_date",
+                            "行业代码": "industry_code", "更新日期": "update_date"})
+    missing = {"code", "start_date", "industry_code"} - set(df.columns)
+    if missing:
+        raise RuntimeError(f"申万表结构变了，缺列 {sorted(missing)}；实际列={list(df.columns)}")
+    df["code"] = df["code"].astype(str).str.zfill(6)
+    df["industry_code"] = df["industry_code"].astype(str).str.zfill(6)
+    # 层级码要补成规范的 6 位（申万官方一级是 480000、二级是 480300），
+    # 直接截断成 "48"/"4803" 无法与官方指数/名称表 join。
+    df["l1_code"] = df["industry_code"].str[:2] + "0000"    # 一级，如 480000
+    df["l2_code"] = df["industry_code"].str[:4] + "00"      # 二级，如 480300
+    df["start_date"] = pd.to_datetime(df["start_date"], errors="coerce")
+    return df.sort_values(["code", "start_date"]).reset_index(drop=True)
+
+
+def sw_industry_as_of(df: pd.DataFrame, code: str, as_of: str) -> Optional[dict]:
+    """某只股票在 as_of 日所属的申万行业（取不晚于该日的最后一次调整）"""
+    code = str(code).zfill(6)
+    sub = df[(df["code"] == code) & (df["start_date"] <= pd.Timestamp(as_of))]
+    if sub.empty:
+        return None                  # 该日尚未上市 / 无归属记录
+    row = sub.iloc[-1]
+    return {"code": code, "as_of": as_of,
+            "industry_code": row["industry_code"],
+            "l1_code": row["l1_code"], "l2_code": row["l2_code"],
+            "since": row["start_date"].strftime("%Y-%m-%d")}
+
+
+# 用法
+sw = sw_industry_history()
+print(len(sw), "行 |", sw["code"].nunique(), "只标的 |",
+      sw["l1_code"].nunique(), "个一级行业")
+# 实测 2026-08-19：12893 行 | 5905 只 | 38 个一级 / 194 个二级 / 553 个三级
+
+# 前视偏差验证：平安银行在不同时点属于不同行业
+for d in ("2013-01-01", "2016-01-01", "2026-08-18"):
+    print(d, sw_industry_as_of(sw, "000001", d))
+# 2013-01-01 → 440101（一级 440000，自 1991-04-03）
+# 2016-01-01 → 480101（一级 480000，自 2014-02-21）
+# 2026-08-18 → 480301（一级 480000 / 二级 480300，自 2021-07-30）
+```
+
+> **典型用法：** 做行业轮动回测时，每个调仓日调用 `sw_industry_as_of()` 取**当时**的归属，
+> 而不是用一张当前分类表贯穿全程。实测有标的历史上变更过 **10 次**行业。
 
 ---
 
@@ -2296,11 +2870,8 @@ def _cninfo_orgid(code: str) -> str:
     if org:
         return org
     # fallback：老格式（仅部分老股票如 600519/600036 适用）
-    if code.startswith("6"):
-        return f"gssh0{code}"
-    elif code.startswith("8") or code.startswith("4"):
-        return f"gsbj0{code}"
-    return f"gssz0{code}"
+    # #46：改用 get_prefix()，原先只认 6/8/4，会把 51x 沪 ETF、900x 沪 B、920x 北交所判错
+    return f"gs{get_prefix(code)}0{code}"
 
 def cninfo_announcements(code: str, page_size: int = 30) -> list[dict]:
     """
@@ -2872,7 +3443,7 @@ def em_hot_concept(code: str) -> list[dict]:
     """东财个股热门概念命中（这只票当下被市场归到哪些概念在炒）。
     返回 [{concept, bk, hit(命中热度)}, ...]，按热度降序。"""
     try:
-        prefix = "SH" if code.startswith("6") else "SZ"
+        prefix = get_prefix(code).upper()   # #46；emappdata 用大写 SH/SZ/BJ
         r = requests.post("https://emappdata.eastmoney.com/stockrank/getHotStockRankList",
             json={**EM_HOT_BODY, "srcSecurityCode": prefix + code},
             headers={"User-Agent": UA}, timeout=10)
@@ -2891,6 +3462,240 @@ print("人气第一:", hot[0]["name"], "概念命中:", em_hot_concept(hot[0]["c
 ```
 
 > **坑：** ① 东财人气榜 `getAllCurrentList` 只返回带前缀代码（SZ/SH），名称要再走 `ulist.np` 补（`SZ`→`0.`、`SH`→`1.`）。② `ulist.np` 的 `diff` 偶尔是 dict（按序号为键），已做 `list(values())` 归一化。③ 同花顺热榜 `type` 可选 `hour`/`day`。
+
+---
+
+## Layer 11: 宏观层（社融 + PMI，V3.7.0 新增）
+
+> A股是流动性驱动市场，社融是**领先指标**、PMI 是**同步指标**。两者都由官方直接发布，零鉴权。
+> ⚠️ 本层是**月频**数据，不要当日频信号用；发布日固定（社融次月中旬、PMI 月末），
+> 未发布月份**不会**出现在返回里（见下方 fail-fast 说明）。
+>
+> **社融支持范围：2021 年起**（2026-08-19 实测 2021~2026 六年全部可解析，每年 12 行且不跨年）。
+> 2020 及更早是旧版式——表头与项目名合并在一个单元格、且附表带「2017 年以来」的历史区，
+> 传入这些年份会**抛错而不是返回可疑数据**。
+
+### 11.1 人民银行 — 社会融资规模增量
+
+**核心价值：** 官方口径的全社会流动性投放，A股中期最重要的宏观变量。中英双语 12 列。
+
+**链路是三级跳**（索引 → 年份页 → 专题页 → xls 附件），任何一级结构变更都会 fail-fast 抛错，不静默返回空。
+
+```python
+import io
+import re
+from typing import Optional
+
+import pandas as pd
+import requests
+
+_UA = {"User-Agent": "Mozilla/5.0"}
+PBC_BASE = "https://www.pbc.gov.cn"
+PBC_INDEX = f"{PBC_BASE}/diaochatongjisi/116219/116319/index.html"
+
+
+def _macro_get(url: str, timeout: int = 30) -> str:
+    r = requests.get(url, headers=_UA, timeout=timeout)
+    r.raise_for_status()
+    r.encoding = r.apparent_encoding or "utf-8"
+    return r.text
+
+
+def _abs_pbc(href: str) -> str:
+    return href if href.startswith("http") else PBC_BASE + href
+
+
+def pboc_social_financing(year: Optional[int] = None) -> pd.DataFrame:
+    """人民银行「社会融资规模增量统计表」— 月度，单位亿元；year=None 取最新年"""
+    idx = _macro_get(PBC_INDEX)
+    years = re.findall(r"""href=["']([^"']+)["'][^>]*>\s*(\d{4})年统计数据\s*</a>""", idx)
+    if not years:
+        raise RuntimeError("人民银行索引页未找到「XXXX年统计数据」链接，页面结构可能已变更")
+    table = {int(y): href for href, y in years}
+    target = max(table) if year is None else year
+    if target not in table:
+        raise ValueError(f"人民银行无 {target} 年数据，可选年份: {sorted(table, reverse=True)[:8]}")
+
+    ypage = _macro_get(_abs_pbc(table[target]))
+    topics = re.findall(r"""href=["']([^"']+)["'][^>]*>\s*(社会融资规模)\s*</a>""", ypage)
+    if not topics:
+        raise RuntimeError(f"{target} 年页未找到「社会融资规模」专题链接")
+
+    tpage = _macro_get(_abs_pbc(topics[0][0]))
+    books = re.findall(r"""href=["']([^"']+\.xlsx?)["']""", tpage)
+    if not books:
+        raise RuntimeError(f"{target} 年社融专题页未找到 xls/xlsx 附件")
+
+    content = requests.get(_abs_pbc(books[0]), headers=_UA, timeout=60).content
+    raw = pd.read_excel(io.BytesIO(content), header=None)
+
+    start = None                      # 表头是中英双行 + 单位说明，用「月份」列定位数据起点
+    for i in range(len(raw)):
+        if str(raw.iloc[i, 0]).strip() == "月份":
+            start = i
+            break
+    if start is None:
+        raise RuntimeError(
+            f"{target} 年社融表没有独立的「月份」表头单元格。"
+            "**2020 及更早采用旧版式**（表头与项目名合并在同一单元格，且附表含 2017 年以来的历史区），"
+            "本端点仅支持 **2021 年起**（2026-08-19 实测 2021~2026 全部可解析）。"
+        )
+
+    cols = ["month", "afre_total", "rmb_loans", "fx_loans", "entrusted_loans",
+            "trust_loans", "undiscounted_bankers_acceptance", "corporate_bonds",
+            "government_bonds", "equity_financing", "abs_by_depository", "loans_written_off"]
+    df = raw.iloc[start + 3:].copy().iloc[:, :len(cols)]
+    df.columns = cols
+    df = df[df["month"].astype(str).str.match(r"^\d{4}\.\d{1,2}$", na=False)].copy()
+    for c in cols[1:]:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    def _month_label(v):
+        """`2026.01` → 2026-01；`2026.1` → 2026-10。
+
+        Excel 把 `2026.10` 的尾零吃掉读成浮点 `2026.1`，与 1 月的 `2026.01` 撞车。
+        1 月在表里始终写作两位 `.01`，因此**单个小数位必然是被吃了尾零的 x0 月**。
+        按单元格逐行解析（而不是按行序编号），跨年工作簿也不会错位。
+        """
+        m = re.match(r"^(\d{4})\.(\d{1,2})$", str(v).strip())
+        if not m:
+            return None
+        year_s, mon_s = m.group(1), m.group(2)
+        if len(mon_s) == 1:
+            mon_s += "0"
+        return f"{year_s}-{int(mon_s):02d}"
+
+    df["month"] = [_month_label(v) for v in df["month"]]
+    df = df[df["month"].notna()]
+    # 旧工作簿底部会附「表1：2017年以来各月…」的历史区，只保留目标年，防跨年污染
+    df = df[df["month"].str.startswith(f"{target}-")].reset_index(drop=True)
+
+    # 未发布月份整行为空 —— 必须丢掉，否则调用方会把 12 行当成 12 个月的真数据。
+    df = df.dropna(subset=["afre_total"]).reset_index(drop=True)
+    if df.empty:
+        raise RuntimeError(f"社融表解析后无有效月份（{target} 年），格式可能已变更")
+    return df
+
+
+# 用法
+df = pboc_social_financing()          # 最新年（只含已发布月份）
+print(df[["month", "afre_total", "rmb_loans", "government_bonds"]].to_string(index=False))
+# 实测 2026-08-19：返回 7 行（2026-01 ~ 2026-07），2026-01 社融增量 72,185 亿
+# 全部 12 列：month / afre_total(社融增量) / rmb_loans(人民币贷款) / fx_loans(外币贷款) /
+#   entrusted_loans(委托贷款) / trust_loans(信托贷款) /
+#   undiscounted_bankers_acceptance(未贴现银行承兑汇票) / corporate_bonds(企业债券) /
+#   government_bonds(政府债券) / equity_financing(非金融企业境内股票融资) /
+#   abs_by_depository(存款类金融机构ABS) / loans_written_off(贷款核销)
+
+hist = pboc_social_financing(2024)    # 指定年份
+print(len(hist), "个月, 全年社融增量", f"{hist['afre_total'].sum():,.0f}", "亿元")
+# 实测：12 个月, 322,588 亿元
+```
+
+---
+
+### 11.2 国家统计局 — 采购经理指数 PMI
+
+**核心价值：** 制造业景气度同步指标，50 是荣枯线。月末发布，比上市公司财报早一个季度反映景气。
+
+```python
+import re
+
+import requests
+
+NBS_INDEX = "https://www.stats.gov.cn/sj/zxfb/"
+_UA = {"User-Agent": "Mozilla/5.0"}
+
+
+def _macro_get(url: str, timeout: int = 30) -> str:
+    """与 §11.1 同名同实现 —— 本块按「端点路由速查」单独取用时也能独立跑，
+    不必先执行 §11.1。两处同时执行时后定义覆盖前者，行为一致，无副作用。"""
+    r = requests.get(url, headers=_UA, timeout=timeout)
+    r.raise_for_status()
+    r.encoding = r.apparent_encoding or "utf-8"
+    return r.text
+
+
+def nbs_pmi() -> dict:
+    """国家统计局最新 PMI — 制造业 / 非制造业商务活动 / 综合产出 + 大中小型企业"""
+    idx = _macro_get(NBS_INDEX)
+    links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>\s*([^<]{6,80}?)\s*</a>', idx)
+    hit = next(((u, t) for u, t in links if "采购经理指数" in t), None)
+    if not hit:
+        raise RuntimeError("国家统计局最新发布页未找到「采购经理指数」条目")
+    href, title = hit
+    url = href if href.startswith("http") else NBS_INDEX + href.lstrip("./")
+
+    html = _macro_get(url)
+    text = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", html, flags=re.S)
+    text = re.sub(r"<[^>]+>", "", text)
+    # 🔴 正文是全角括号且**括号内带空格**（`（ PMI ）为 49.2%`）。
+    #    必须把空白**整个删掉**；只做「压成单个空格」会一条都匹配不到。
+    text = re.sub(r"[\s\u3000\xa0]+", "", text)
+
+    def grab(pat):
+        m = re.search(pat, text)
+        return float(m.group(1)) if m else None
+
+    ym = re.search(r"(\d{4})年(\d{1,2})月", title)
+
+    # 分档措辞统计局用过三种版式，逐层回退；解析不到留 None（属可选字段）。
+    #   ① 全合并：大、中、小型企业PMI分别为 A%、B%和C%
+    #   ② 半拆：  大型企业PMI为 A%…；中、小型企业PMI分别为 B%和C%
+    #   ③ 全拆：  大型企业PMI为 A%…；中型企业PMI为 B%…；小型企业PMI为 C%
+    # 注：③ 的单条正则要求「…企业PMI为」，不会误匹配 ①② 里的「…企业PMI分别为」。
+    large = medium = small = None
+    combined = re.search(r"大、中、小型企业PMI分别为([\d.]+)%、([\d.]+)%和([\d.]+)%", text)
+    if combined:
+        large, medium, small = (float(x) for x in combined.groups())
+    else:
+        m_ms = re.search(r"中、小型企业PMI分别为([\d.]+)%和([\d.]+)%", text)
+        if m_ms:                            # ② 中小型合并一句
+            medium, small = (float(x) for x in m_ms.groups())
+        for _name, _pat in (("large", r"大型企业PMI为([\d.]+)%"),
+                            ("medium", r"中型企业PMI为([\d.]+)%"),
+                            ("small", r"小型企业PMI为([\d.]+)%")):
+            _m = re.search(_pat, text)      # ③ 各自单独成句
+            if _m:
+                _v = float(_m.group(1))
+                if _name == "large":
+                    large = _v
+                elif _name == "medium" and medium is None:
+                    medium = _v
+                elif _name == "small" and small is None:
+                    small = _v
+
+    result = {
+        "title": title.strip(),
+        "period": f"{ym.group(1)}-{int(ym.group(2)):02d}" if ym else None,
+        "manufacturing_pmi": grab(r"(?<!非)制造业采购经理指数（PMI）为([\d.]+)%"),
+        "non_manufacturing_pmi": grab(r"非制造业商务活动指数为([\d.]+)%"),
+        "composite_pmi": grab(r"综合PMI产出指数为([\d.]+)%"),
+        "pmi_large": large,
+        "pmi_medium": medium,
+        "pmi_small": small,
+        "source_url": url,
+    }
+    # 三个主指标是本端点的承诺输出，解析不到必须 fail-fast ——
+    # 统计局改一次措辞就静默返回一串 None，调用方会当成「本月没数据」。
+    core = ("manufacturing_pmi", "non_manufacturing_pmi", "composite_pmi")
+    absent = [k for k in core if result[k] is None]
+    if absent:
+        raise RuntimeError(
+            f"PMI 正文措辞可能已变更，无法解析 {absent}；请核对页面：{url}"
+        )
+    return result
+
+
+# 用法
+p = nbs_pmi()
+print(p["period"], "制造业", p["manufacturing_pmi"], "非制造业", p["non_manufacturing_pmi"])
+# 实测 2026-08-19：2026-07 制造业 49.2 / 非制造业 49.0 / 综合 49.3
+#                  大型 49.5 / 中型 49.7 / 小型 47.4（均在荣枯线下）
+```
+
+> **解读口径：** PMI > 50 扩张、< 50 收缩；连续两月同向才算趋势。
+> 大/中/小型企业分档能看结构分化——小型企业长期低于大型是常态，看的是**差值变化**不是绝对值。
 
 ---
 
@@ -3149,8 +3954,12 @@ if holders:
 | 13 | **巨潮 cninfo** (HTTP) | 公告全文检索+下载 | 稳定 | 低 |
 | 14 | **上交所官方** (HTTP，备胎) | 龙虎榜全文/实时五档（主源被封时用） | 稳定（一手权威） | 极低（零鉴权） |
 | 15 | **深交所官方** (HTTP，备胎) | 龙虎榜/公告+PDF/实时五档（主源被封时用） | 稳定（一手权威） | 极低（零鉴权） |
+| 16 | **baostock** (TCP，V3.7) | 估值历史PE/PB/PS/PCF+换手率+停牌+ST+上市退市日 | 稳定（免注册） | 极低；**不支持北交所** |
+| 17 | **申万研究** (HTTP，V3.7) | 行业分类变迁史（公开 XLS） | 稳定 | 极低（公开文件） |
+| 18 | **人民银行** (HTTP，V3.7) | 社会融资规模增量（月度，2021 年起） | 稳定（官方站） | 极低 |
+| 19 | **国家统计局** (HTTP，V3.7) | PMI 制造业/非制造业/综合+大中小型 | 稳定（官方站） | 极低 |
 
-**原则：** 行情走 mootdx+腾讯（不封IP），研报走东财+iwencai，资金面走东财 datacenter+push2，**信号层走同花顺+百度+东财直连接口**。全部直连 HTTP，零第三方数据封装依赖。
+**原则：** 行情走 mootdx+腾讯（不封IP），研报走东财+iwencai，资金面走东财 datacenter+push2，**信号层走同花顺+百度+东财直连接口**。除 mootdx / baostock 两个 TCP 客户端外全部直连 HTTP。
 
 **降级：** 任一主源被封/失效时，先查下方「备用源速查 & 降级策略」——每类数据都备有一条**不同域名、不同风控面**的独立备胎（交易所官方/新浪/同花顺），东财被封时它们不受牵连。
 
@@ -3237,7 +4046,7 @@ def announcements_backup(code: str, page_size: int = 20) -> list:
         d = json.loads(r.read())
     return [{"title": a.get("title"), "time": a.get("notice_date", "")[:10],
              "pdf": f"https://pdf.dfcfw.com/pdf/H2_{a.get('art_code','')}_1.pdf"}
-            for a in d.get("data", {}).get("list", [])]
+            for a in (d.get("data") or {}).get("list") or []]     # #46 同因
 
 # 用法（主源失败时降级）
 lhb = dragon_tiger_backup("2026-07-10")   # 深市结构化 + 沪市全文(含营业部)
@@ -3315,7 +4124,7 @@ mkdir -p ~/.claude/skills/a-stock-data
 cp SKILL.md ~/.claude/skills/a-stock-data/SKILL.md
 
 # 3. 安装 Python 依赖
-pip install mootdx requests pandas stockstats
+pip install mootdx requests pandas stockstats numpy baostock xlrd openpyxl
 
 # 4. (可选) 配置 iwencai API Key
 export IWENCAI_API_KEY="your_key_here"

@@ -36,11 +36,11 @@
 分镜技能负责每个镜头的开始和结束边界，包括姿态、位置、目光、双手、持物和可见状态。
 资产可以引用这些边界，但不能另写一套相冲突的手位和走位。
 
-**`structural_invariant` CON-04：** 每条变化记录都要有 `before`、`after`、原因或来源、
+**`structural_invariant` CON-04**： 每条变化记录都要有 `before`、`after`、原因或来源、
 有效范围，以及指向现有使用方的 `affected_binding_refs` 或指向未来使用方的
 `affected_binding_locators`。没有变化时不能只写“更新了”。
 
-**`structural_invariant` CON-06：** `affected_binding_refs` 要覆盖所有已经存在的使用方，
+**`structural_invariant` CON-06**： `affected_binding_refs` 要覆盖所有已经存在的使用方，
 每条写 `src` 加 `record_id`；尚未建立的使用方在真正发布前写
 `affected_binding_locators`：`owner`、项目相对路径、`selector` 和 `status`。
 
@@ -54,7 +54,7 @@
 5. **场次或集间交接**：上一场或上一集的结束状态、下一场或下一集的进入状态，以及
    依赖这些状态的提示词和镜头。
 
-**`craft_default` CON-03：** 只跟踪后续可能引用的事实。顾禾鞋带的颜色若不影响识别或
+**`craft_default` CON-03**： 只跟踪后续可能引用的事实。顾禾鞋带的颜色若不影响识别或
 动作，不必在每场重复；她带走的唯一号牌必须进入结束状态。
 
 ## 写变化记录的步骤
@@ -83,7 +83,7 @@
 ### 有来源不等于变化合理
 
 引用某个剧本段只能证明变化有文字来源，不能自动证明因果成立。例如“灯闪了一下”
-不足以解释整栋渡站永久断电。**`reviewed_invariant` CON-02：** 审查者要结合剧本
+不足以解释整栋渡站永久断电。**`reviewed_invariant` CON-02**： 审查者要结合剧本
 证据，判断伤势、知情情况、道具归属、天气和光线变化是否可信；字段非空不能代替判断。
 
 ## 合成状态链

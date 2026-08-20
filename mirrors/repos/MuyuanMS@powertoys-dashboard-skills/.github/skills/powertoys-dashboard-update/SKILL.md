@@ -81,6 +81,8 @@ $ArtifactBaseUrl = if ($env:POWERTOYS_ARTIFACT_BASE_URL) {
 }
 $Pulse = if ($env:POWERTOYS_PULSE_REPO) { $env:POWERTOYS_PULSE_REPO } else { 'gim-home/powertoys-pulse' }
 $PulsePreview = if ($env:POWERTOYS_PULSE_PREVIEW_REPO) { $env:POWERTOYS_PULSE_PREVIEW_REPO } else { 'MuyuanMS/powertoys-pulse-action-private' }
+$NotifyChannel = if ($env:POWERTOYS_DASHBOARD_NOTIFY) { $env:POWERTOYS_DASHBOARD_NOTIFY } else { 'outlook' }
+$NotifyTeamsChatId = $env:POWERTOYS_DASHBOARD_NOTIFY_TEAMS_CHAT_ID
 ```
 
 On the first run, verify:
@@ -100,6 +102,44 @@ The configured repository is both the reusable skill suite and canonical
 artifact feed. Generated files belong only in its root `data/` directory, not
 inside `.github\skills`. Never place secrets or information that must remain
 private in the public feed.
+
+### Scheduled-run status notifications
+
+Scheduled runs are hard to observe from the CLI, so send compact status
+notifications when M365/WorkIQ tools are available. `POWERTOYS_DASHBOARD_NOTIFY`
+controls delivery:
+
+| Value | Behavior |
+| --- | --- |
+| `outlook` or unset | Send Outlook mail to the signed-in user. |
+| `teams` | Send a Teams/chat message to `POWERTOYS_DASHBOARD_NOTIFY_TEAMS_CHAT_ID`. |
+| `both` | Send both Outlook and Teams/chat messages. |
+| `none` | Disable external notifications. |
+
+For Outlook, read `/me?$select=mail,userPrincipalName` and send to
+`mail ?? userPrincipalName` via `/me/sendMail`. For Teams, create a message at
+`/me/chats/{chat-id}/messages` using `POWERTOYS_DASHBOARD_NOTIFY_TEAMS_CHAT_ID`;
+do not guess or create a chat unless the user explicitly asks for that setup.
+If M365 tools are unavailable, the chat id is missing, or delivery fails, record
+that in the final report and continue the dashboard run.
+
+Send at least:
+
+1. **Started** — after the live queue is enumerated, with eligible PR count,
+   stale PR count, and top stale PR numbers.
+2. **Incremental publish** — whenever completed artifacts are pushed while
+   other PR reviews keep running, with commit, completed PRs, and remaining
+   queue count.
+3. **Completed** — after validation and deployment verification, with commit,
+   PR coverage, stale queue count, artifact count, and whether any upstream
+   public action occurred.
+4. **Blocked/failed** — before stopping on an unrecoverable failure, with the
+   failing command/phase and the next manual action needed.
+
+Keep notification bodies public-safe: no PATs, local checkout paths, fork-only
+implementation provenance, private evidence, or internal worktree details.
+These notifications are status messages only and do not authorize posting
+reviews/comments to `microsoft/PowerToys`.
 
 ## Phase 0 — Sync and load prior state
 
@@ -139,7 +179,7 @@ branches, review PRs, worktrees, round counts, and unresolved-thread state.
 4. Synchronize the PowerToys project board with
    `$SkillRoot\scripts\Sync-PowerToysProject.ps1`. The script is safe to run with
    `-DryRun` while project permissions are being configured. It adds open,
-   non-draft, non-CmdPal PRs that are not already in project 2445 and updates
+   non-draft PRs that are not already in project 2445 and updates
    existing items:
 
    - agent-produced review artifacts with suggested comments → `To manually review`;
@@ -149,9 +189,7 @@ branches, review PRs, worktrees, round counts, and unresolved-thread state.
    - closed or merged items → `Done`.
 
    Items with no recognized decision remain in their current project status,
-   normally `To triage`. CmdPal classification uses labels and title signals;
-   ambiguous PRs are not added automatically and must be reviewed by the agent
-   before inclusion. Project synchronization never posts upstream content.
+   normally `To triage`. Project synchronization never posts upstream content.
 
 ## Phase 1 — Build the complete freshness queue
 
@@ -162,7 +200,7 @@ number.
 
 ### PR freshness
 
-Every open, non-draft, non-CmdPal PR must end the run in exactly one state:
+Every open, non-draft PR must end the run in exactly one state:
 
 - **current clean review** — artifact `head_sha` exactly matches the live head,
   the latest freshly requested Copilot pass has zero new comments and zero
@@ -172,7 +210,7 @@ Every open, non-draft, non-CmdPal PR must end the run in exactly one state:
 - **waiting on author** — a posted/requested change is still outstanding and
   the author has not pushed or replied;
 - **owned elsewhere** — a recognized maintainer is actively reviewing it;
-- **excluded** — draft, CmdPal, closed, or otherwise outside this workflow.
+- **excluded** — draft, closed, or otherwise outside this workflow.
 
 A **full re-review is mandatory** when the live head SHA differs from
 `head_sha`, `head_sha` is missing, or there is no clean artifact. If the head is
@@ -185,6 +223,32 @@ invalidates the prior decision. Otherwise advance `evaluated_at` and
 Never skip an eligible PR merely because it is old or absent from the recent
 activity query. Never re-review an unchanged, converged head with no newer
 relevant activity.
+
+### Mandatory stale-review queue gate
+
+Before publishing, run the stale-review queue check:
+
+```powershell
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Get-StalePrReviewQueue.ps1" `
+  -Dashboard $Dashboard -Upstream $Upstream -AsJson
+```
+
+The queue contains every open, non-draft PR that is not explicitly
+waiting on the author, owned elsewhere, dropped, awaiting a maintainer
+direction/close/takeover decision, or excluded, and that either:
+
+- has no dashboard artifact with a current review action for the live upstream
+  head (`post_review` for drafted findings, or `review_ready`/no-comment action
+  for a clean looped review); or
+- has a prior proposed review, but the live head SHA differs from the artifact
+  or review action head SHA.
+
+Every PR in this queue **must** be sent through or resumed in
+`powertoys-pr-review` during the same run. A metadata-only refresh is not a
+valid substitute for the looped review. After workers finish and artifacts are
+regenerated, rerun the gate with `-FailOnStale`; do not commit or push while it
+reports any applicable PRs still stale.
 
 ### Fast issue judgment
 
@@ -236,7 +300,7 @@ Classify unfinished workflow state:
 ## Phase 2 — Resume or rerun workflows
 
 PR coverage is exhaustive by default: every open, non-draft PR that is not
-waiting on the author, owned elsewhere, or CmdPal must have a current result or
+waiting on the author or owned elsewhere must have a current result or
 be resumed/sent through `powertoys-pr-review` in the fork. Process PRs in
 parallel batches of 3–5 to overlap Copilot polling and builds, while preserving
 each fork's independent convergence state. Prioritize missing/stale heads, then
@@ -247,6 +311,20 @@ freshly requested Copilot review has zero new comments, zero unresolved threads,
 and the required local build has passed. A Copilot-clean result with a pending
 build, context review, spelling check, or timed-out fresh request remains
 `review_in_progress` and must get a `Re-run review`/`Continue review` action.
+
+### Incremental publication during long PR loops
+
+Long-running PR reviews should not block completed review data from reaching the
+dashboard. After any batch of PR workers emits validated artifacts, publish
+those completed artifacts immediately while the remaining workers continue.
+Regenerate and sanitize the feed, validate the completed PR numbers, run the
+stale-review queue check without `-FailOnStale`, and commit/push the completed
+artifacts plus index updates. The dashboard must show still-running PRs as
+queued/running review, not as current.
+
+When a long-running worker finishes later, repeat the same incremental publish
+for that worker's artifact. Run the `-FailOnStale` gate only when claiming the
+full PR review queue is complete.
 
 Issue **judgment** is exhaustive for new/changed bugs, while full design work is
 bounded. Rank `actionable_design` judgments by confidence, reproducibility,
@@ -266,7 +344,9 @@ skill itself, using a general-purpose worker when parallel background execution
 is needed.
 
 - PR: `powertoys-pr-review` must reach zero new Copilot comments and zero
-  unresolved Copilot threads before a new artifact is emitted.
+  unresolved Copilot threads before a new artifact is emitted. For stale-review
+  queue items, the emitted artifact must include `head_sha` and any
+  `post_review` action `review.head_sha` pinned to the live upstream head.
 - Issue: `powertoys-issue-to-design` must reach a converged adversary-reviewed
   implementation-grade design and stop at approval.
 - Approved design: `powertoys-design-to-pr` may build/review the fork PR but
@@ -359,10 +439,9 @@ Candidate rules:
 
 - Issues: consume the Phase 1 fast judgments. Only `actionable_design` enters
   the full-design queue; the other statuses already have explicit actions.
-- PRs: community-authored, non-draft, non-CmdPal, and no meaningful
-  maintainer/reviewer ownership or existing fork trace. If labels do not
-  identify the area, inspect the title, changed files, linked issue, and
-  description before deciding whether it is CmdPal-related.
+- PRs: community-authored, non-draft, and no meaningful maintainer/reviewer
+  ownership or existing fork trace. If labels do not identify the area, inspect
+  the title, changed files, linked issue, and description before routing it.
 
 Rank candidates using:
 
@@ -389,6 +468,24 @@ hand-authored overlay. The sanitizer removes internal-only fields and
 normalizes local checkout paths before publication. Run both only after worker
 writes are complete when possible, and verify the resulting `artifact_numbers`
 includes every completed review from the run.
+
+Then enforce the stale-review queue gate:
+
+```powershell
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Get-StalePrReviewQueue.ps1" `
+  -Dashboard $Dashboard -Upstream $Upstream -FailOnStale
+```
+
+If the gate fails, return to Phase 2 and run/resume `powertoys-pr-review` for
+the listed PRs. Do not repair the failure by copying timestamps or head SHAs
+into artifacts; only a completed looped review, author-waiting classification,
+owned-elsewhere classification, or explicit exclusion clears a PR.
+
+For incremental publication while review workers are still running, run the
+same queue command without `-FailOnStale`, include the remaining stale/running
+PR list in the report, and publish only artifacts that have already passed
+validation and sanitization.
 
 Then synchronize project state after artifacts are written:
 
@@ -486,7 +583,8 @@ Return one concise report containing:
 3. stale workflows resumed/rerun and their resulting stages;
 4. closed/superseded/author-waiting items;
 5. counts in the regenerated board and the published Pages URL;
-6. explicit confirmation that no upstream public action was taken.
+6. status notification delivery result, or why delivery was skipped;
+7. explicit confirmation that no upstream public action was taken.
 
 ## Important limitation: shared action updates
 

@@ -44,6 +44,15 @@ schema versions belong to different APIs and do not imply compatibility.
 The renderer never calls the remote market. The local daemon is authoritative
 for every state rendered by the desktop application.
 
+An authoritative catalog refresh treats a missing Connector as delisted. A
+not-installed Connector with no active lifecycle operation is deleted
+immediately. Installed Connectors and Connectors with active operations retain
+their private durable installation and cleanup evidence, but the daemon marks
+them `removed_from_catalog` and omits the Connector and its operations from
+public snapshots, single-Connector reads, and catalog-page projections. Public
+validation runs only after that filter, so an obsolete manifest retained solely
+for cleanup cannot make the visible catalog unavailable.
+
 Category identifiers are opaque routing values. The Connector adapter sends
 the exact server `categoryId` back as `sectionId` and never rewrites legacy or
 new IDs. The daemon projects both `displayNameZh` and `displayNameEn` through
@@ -52,9 +61,10 @@ the English name otherwise without another network request. During the bounded
 compatibility window, only `featured`, `productivity`, `development`, and
 `other` may use their released local i18n labels when an older daemon omits
 both names. Unknown dynamic categories without a server name fail closed
-instead of displaying their slug as product copy. The local `installed`
-section remains a renderer-owned virtual category and keeps its local i18n
-label.
+instead of displaying their slug as product copy. Installation state stays on
+the connector card; the renderer does not split the catalog into installed and
+available categories, and catalog pages are loaded without the not-installed
+filter so installed connectors remain in their server-owned sections.
 
 Installation is a device fact. Authorization is an account projection. A
 Connector may therefore be installed while inactive for the current account;
@@ -210,10 +220,11 @@ stable CLI shims, and removes every prepared artifact and private Node package
 tree for that Connector. It preserves account authorization, user/workspace
 state, and the shared Node package store and package-manager caches.
 
-Catalog display metadata includes a required, bounded PNG, WebP, or SVG data
-URL. This makes the icon available before installation and removes connector-key
-special cases from the renderer. The data URL is generated from the source
-connector icon during publishing and is limited to 128 KiB after decoding.
+Catalog display metadata includes a required public HTTPS icon URL. Publishing
+stores the source PNG, WebP, or SVG as an immutable versioned object and places
+its CDN URL in the Market manifest. The daemon rejects missing URLs, inline
+`data:` images, non-HTTPS schemes, credentials, surrounding whitespace, and
+URLs longer than 2048 bytes before the release reaches a renderer or runtime.
 
 Manifest permissions use a lowercase stable permission name with an optional
 scope (`permission`, `permission:scope`, or `permission:*`). The daemon keeps
@@ -457,6 +468,11 @@ global `expectedRevision` remains in the wire contract for old clients and is
 used when the Connector fence is absent. Catalog refresh retains its global
 revision fence. Internal level-triggered repair reads current durable state
 inside its transaction.
+Active-operation exclusion follows the same ownership boundary through exact
+scheduling lanes. The empty lane is reserved for catalog refresh; each
+Connector key is its own device lifecycle lane. A catalog refresh and a
+Connector operation may therefore coexist, while a second refresh or a second
+operation for the same Connector is rejected atomically by the durable store.
 An in-flight reconcile may have resolved its binding before a newer Projection
 was persisted. Its Observed compare-and-swap is rejected after Desired advances;
 the scanner then applies the newer generation before receipt resolution.
@@ -588,9 +604,14 @@ synchronizing -> materializing -> ready`; failure is terminal and disposes
 
 Compact composer surfaces reuse `ConnectorComposerMenu` from the shared UI
 entrypoint. The menu consumes only a host-neutral projection of connector key,
-name, icon, and setup state; AgentGUI maps its provider-neutral capability
-options into that projection and retains only placement plus its Tutti Mode
-fallback. Selecting one item emits a semantic connector-open intent. The host
+name, icon, setup state, and the scoped runtime state projected by Connector
+Market. An installed Connector is shown as started only when the current boot
+has observed its latest desired generation as enabled and ready; `starting`,
+`stopped`, and `failed` remain off. Older hosts that omit this optional runtime
+projection retain the legacy authorization-based presentation. AgentGUI maps
+its provider-neutral capability options into that projection and retains only
+placement plus its Tutti Mode fallback. Selecting one item emits a semantic
+connector-open intent. The host
 executes `openConnectorMarketDialog(root, connectorKey)`, which waits for the
 authoritative market view, rejects invalid or unknown keys, and then advances
 the package-owned dialog state machine. Before applying the bounded quick-list
@@ -600,6 +621,15 @@ order. Its compact trigger previews the installed and authorized group without
 requiring those connectors to be selected in the current draft; draft selection
 continues to control only structured prompt content. Selecting “more” remains
 host navigation because settings/workbench location is product-owned.
+
+Connector access-policy editors reuse `ConnectorAccessSelectionPanel` from the
+same shared UI entrypoint. The controlled panel accepts only loading/error/ready
+state, neutral Connector items, selected keys, caller-localized labels, and
+semantic callbacks. It owns the Connector-specific loading, empty, error,
+selection, disabled, and busy presentation. The host retains authorization and
+sharing policy, selected-key normalization, persistence, navigation, and
+catalog projection; the panel imports no AgentGUI draft/store, Desktop global,
+or daemon client.
 
 Every renderer window mounts exactly one `ConnectorMarketDialogHost` alongside
 its other window-level panel hosts. Composer entries and catalog cards never

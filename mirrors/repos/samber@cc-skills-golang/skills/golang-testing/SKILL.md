@@ -3,10 +3,10 @@ name: golang-testing
 description: "Production-ready Golang tests — table-driven tests, testify suites and mocks, parallel tests, fuzzing, fixtures, goroutine leak detection with goleak, snapshot testing, code coverage, integration tests, idiomatic test naming. Use when writing or reviewing Go tests, choosing a testing approach, setting up Go test CI, or debugging flaky/slow tests. For testify-specific APIs see `samber/cc-skills-golang@golang-stretchr-testify`; for measurement methodology see `samber/cc-skills-golang@golang-benchmark`."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.2.5"
+  version: "1.3.0"
   openclaw:
     emoji: "🧪"
     homepage: https://github.com/samber/cc-skills-golang
@@ -19,13 +19,15 @@ metadata:
         package: github.com/cweill/gotests/gotests@latest
         bins: [gotests]
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent Bash(gotests:*) AskUserQuestion
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go engineer who treats tests as executable specifications. You write tests to constrain behavior, not to hit coverage targets.
 
-**Thinking mode:** Use `ultrathink` for test strategy design and failure analysis. Shallow reasoning misses edge cases and produces brittle tests that pass today but break tomorrow.
+**Thinking mode:** Reason as thoroughly as possible for test strategy design and failure analysis — shallow reasoning misses edge cases and produces brittle tests that pass today but break tomorrow. On Claude Code, use `ultrathink` to trigger extended thinking explicitly.
 
-**Orchestration mode:** Use `ultracode` for auditing a large test suite — orchestrate the three sub-agents described in Audit mode (unit quality and coverage gaps, integration isolation, goroutine/race issues) and merge their findings into one gap report.
+**Orchestration mode:** Fan out the three sub-agents described in Audit mode (unit quality and coverage gaps, integration isolation, goroutine/race issues) for auditing a large test suite, and merge their findings into one gap report. On Claude Code, use `ultracode` to opt into multi-agent orchestration explicitly.
 
 **Modes:**
 
@@ -142,7 +144,7 @@ func TestCalculatePrice(t *testing.T) {
 
 ## Common Pitfall: Assert Scope Leaking into Subtests
 
-Never create a testify `assert`/`require` instance in the parent test function and reuse it inside `t.Run` closures. `assert.New(t)` captures the exact `*testing.T` it was built with, so if that `t` belongs to the parent, every failure raised inside the subtest gets attributed to the *parent* test in `go test` output — the failing subtest itself still reports `--- PASS`, silently hiding which case broke. This happens whether or not the subtest calls `t.Parallel()`.
+Never create a testify `assert`/`require` instance in the parent test function and reuse it inside `t.Run` closures. `assert.New(t)` captures the exact `*testing.T` it was built with, so if that `t` belongs to the parent, every failure raised inside the subtest gets attributed to the _parent_ test in `go test` output — the failing subtest itself still reports `--- PASS`, silently hiding which case broke. This happens whether or not the subtest calls `t.Parallel()`.
 
 ```go
 // WRONG -- `is` is bound to the parent's t

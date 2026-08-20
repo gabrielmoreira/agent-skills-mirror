@@ -519,7 +519,7 @@ _BRAIN_SYNC_MODE=$("$_BRAIN_CONFIG_BIN" get artifacts_sync_mode 2>/dev/null || e
 _GBRAIN_MCP_MODE="none"
 _GBRAIN_MCP_ENTRY=""
 if command -v jq >/dev/null 2>&1 && [ -f "$HOME/.claude.json" ]; then
-  _GBRAIN_MCP_ENTRY=$(jq -c --arg cwd "$PWD" '.mcpServers.gbrain // ((.projects // {}) | to_entries | map(select((.key as $k | $cwd == $k or ($cwd | startswith($k + "/"))) and ((try .value.mcpServers.gbrain catch null) != null))) | sort_by(.key | length) | last | .value.mcpServers.gbrain) // empty' "$HOME/.claude.json" 2>/dev/null)
+  _GBRAIN_MCP_ENTRY=$(jq -c --arg cwd "$PWD" '((.projects // {}) | to_entries | map(select((.key as $k | $cwd == $k or ($cwd | startswith($k + "/")) or ($cwd | startswith($k + "\\"))) and ((try .value.mcpServers.gbrain catch null) != null))) | sort_by(.key | length) | last | .value.mcpServers.gbrain) // .mcpServers.gbrain // empty' "$HOME/.claude.json" 2>/dev/null)
   _GBRAIN_MCP_TYPE=$(printf '%s' "$_GBRAIN_MCP_ENTRY" | jq -r '.type // .transport // empty' 2>/dev/null)
   case "$_GBRAIN_MCP_TYPE" in
     url|http|sse) _GBRAIN_MCP_MODE="remote-http" ;;
@@ -559,7 +559,11 @@ if [ "$_GBRAIN_MCP_MODE" = "remote-http" ]; then
   echo "ARTIFACTS_SYNC: remote-mode (managed by brain server ${_GBRAIN_HOST:-remote})"
 elif [ -d "$_GSTACK_HOME/.git" ] && [ "$_BRAIN_SYNC_MODE" != "off" ]; then
   _BRAIN_QUEUE_DEPTH=0
-  [ -f "$_GSTACK_HOME/.brain-queue.jsonl" ] && _BRAIN_QUEUE_DEPTH=$(wc -l < "$_GSTACK_HOME/.brain-queue.jsonl" | tr -d ' ')
+  # Spool-dir queue (one file per record); legacy .brain-queue.jsonl lines are
+  # counted too until the drain migrates them.
+  [ -d "$_GSTACK_HOME/.brain-queue.d" ] && _BRAIN_QUEUE_DEPTH=$(find "$_GSTACK_HOME/.brain-queue.d" -maxdepth 1 -name '*.json' 2>/dev/null | wc -l | tr -d ' ')
+  [ -f "$_GSTACK_HOME/.brain-queue.jsonl" ] && _BRAIN_QUEUE_DEPTH=$(( _BRAIN_QUEUE_DEPTH + $(wc -l < "$_GSTACK_HOME/.brain-queue.jsonl" | tr -d ' ') ))
+  [ -f "$_GSTACK_HOME/.brain-queue.jsonl.migrating" ] && _BRAIN_QUEUE_DEPTH=$(( _BRAIN_QUEUE_DEPTH + $(wc -l < "$_GSTACK_HOME/.brain-queue.jsonl.migrating" | tr -d ' ') ))
   _BRAIN_LAST_PUSH="never"
   [ -f "$_GSTACK_HOME/.brain-last-push" ] && _BRAIN_LAST_PUSH=$(cat "$_GSTACK_HOME/.brain-last-push" 2>/dev/null || echo never)
   echo "ARTIFACTS_SYNC: mode=$_BRAIN_SYNC_MODE | last_push=$_BRAIN_LAST_PUSH | queue=$_BRAIN_QUEUE_DEPTH"
@@ -777,7 +781,13 @@ Escalate after 3 failed attempts, uncertain security-sensitive changes, or scope
 
 ## Operational Self-Improvement
 
-Before completing, if you discovered a durable project quirk or command fix that would save 5+ minutes next time, log it:
+Before completing, review the session for durable learnings and log each one —
+this step ALWAYS runs, it is not conditional on something feeling noteworthy
+(#2402: 43 of 44 learnings came from explicit /learn because "if you
+discovered" read as optional). A durable learning is a project quirk, command
+fix, pitfall, or pattern that would save 5+ minutes in a future session. If
+the review genuinely surfaces none, state "No durable learnings this session"
+in your completion summary — an explicit empty result, not a skipped step.
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"SKILL_NAME","type":"operational","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"observed"}'

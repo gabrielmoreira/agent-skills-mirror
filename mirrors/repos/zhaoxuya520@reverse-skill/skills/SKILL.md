@@ -10,10 +10,10 @@ description: Routes reverse engineering, exploitation, penetration testing, malw
 
 读完本文件后，不允许只回复“已读/已理解”。必须按顺序执行：
 
-1. `NOW`：跑 `scripts/master-route.ps1 -Hint "..."`（SSoT：`config/routing.json`）定 PRIMARY。
-2. `NOW`：`scripts/case-init.ps1` 落地 `work/<case>/scope.md`；**auth 未 granted 禁止对目标 ACT**。点名目标 ≠ granted。
+1. `NOW`：跑平台原生 router（Windows `scripts/master-route.ps1`；Linux/macOS/Kali `scripts/master-route.sh`），从 `config/routing.json` 定 PRIMARY；疑难再读 `routing.md` 三轴附录。
+2. `NOW`：平台原生 `case-init` 落地当前分析项目的 `work/<case>/scope.md`；**auth 未 granted 禁止对目标 ACT**。本地离线样本使用 `offline-sample` preset + explicit sample；Force 不得绕过硬门。
 3. `ACT`：立即打开 PRIMARY `SKILL.md` 执行 ACTION REQUIRED。
-4. `NEXT`：工具路径只认 `tool-index.md`；缺工具 → `bootstrap-reverse.ps1`（仅 manifest）。
+4. `NEXT`：工具路径只认 `tool-index.md`；缺工具 → 平台原生 bootstrap（仅 manifest）。
 5. 结论用 Evidence→Finding→Path。报告/journal 是 SHOULD，除非用户要交付物。
 
 **身份**：见 `ops/IDENTITY.md`（轻量路由包 + 工具自举 + journal；**不是** Z3r0 式平台）。
@@ -82,10 +82,10 @@ description: Routes reverse engineering, exploitation, penetration testing, malw
 
 遇到逆向、CTF、抓包、前端签名、APK 改包、二进制分析类任务时，先按这个顺序进入：
 
-1. `scripts/master-route.ps1` → PRIMARY（`config/routing.json`）
-2. `case-init.ps1` → `scope.md`
+1. 平台原生 router（Windows `scripts/master-route.ps1`；Linux/macOS/Kali `scripts/master-route.sh`）→ PRIMARY（`config/routing.json`）
+2. 平台原生 `case-init` → `scope.md`
 3. 打开 PRIMARY `SKILL.md`
-4. 需要本机路径时再读 `tool-index.md`
+4. 疑难时读 `routing.md`，需要本机路径时读 `tool-index.md`
 
 ## 工作思路
 
@@ -136,10 +136,21 @@ description: Routes reverse engineering, exploitation, penetration testing, malw
 
 ## 按需自举
 
-当 workflow 发现缺少工具时，不要直接报错。统一调用：
+当 workflow 发现缺少工具时，不要直接报错。统一调用平台原生 bootstrap：
 
+Windows：
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "<skill-root>\scripts\bootstrap-reverse.ps1" -Capability @('工具名') -StartServices
+```
+
+Linux / macOS：
+```bash
+bash <skill-root>/scripts/bootstrap-reverse.sh 工具名 --start-services
+```
+
+Kali：
+```bash
+bash <package-root>/kali/scripts/bootstrap-reverse.sh 工具名 --start-services
 ```
 
 支持的能力（以 `scripts/bootstrap-manifest.json` 为准）：jadx、apktool、jeb-pro、frida、frida-ps、idalib-mcp、reqable-mcp、jshookmcp、anything-analyzer、idapro、r2、rabin2、adb、agent-browser、ghidra-mcp、seclists、proxycat、burpsuite-mcp、nmap、pentestswarm、binwalk、yara、pwntools、bkcrack

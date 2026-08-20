@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 164 file(s) materialized.
+Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 163 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 164 |
+| Files         | 163 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -194,35 +194,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 133 | ✓ | [`skills/memorize/SKILL.md`](skills/memorize/SKILL.md) |
 | 134 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
 | 135 | ✓ | [`skills/plan-do-check-act/SKILL.md`](skills/plan-do-check-act/SKILL.md) |
-| 136 | ✓ | [`skills/plan-task/analyse-business-requirements.md`](skills/plan-task/analyse-business-requirements.md) |
-| 137 | ✓ | [`skills/plan-task/SKILL.md`](skills/plan-task/SKILL.md) |
-| 138 | ✓ | [`skills/prompt-engineering/SKILL.md`](skills/prompt-engineering/SKILL.md) |
-| 139 | ✓ | [`skills/propose-hypotheses/SKILL.md`](skills/propose-hypotheses/SKILL.md) |
-| 140 | ✓ | [`skills/query/SKILL.md`](skills/query/SKILL.md) |
-| 141 | ✓ | [`skills/reflect/SKILL.md`](skills/reflect/SKILL.md) |
-| 142 | ✓ | [`skills/reset/SKILL.md`](skills/reset/SKILL.md) |
-| 143 | ✓ | [`skills/resolve-fixed-pr-comments/SKILL.md`](skills/resolve-fixed-pr-comments/SKILL.md) |
-| 144 | ✓ | [`skills/review-local-changes/SKILL.md`](skills/review-local-changes/SKILL.md) |
-| 145 | ✓ | [`skills/review-pr/SKILL.md`](skills/review-pr/SKILL.md) |
-| 146 | ✓ | [`skills/root-cause-tracing/SKILL.md`](skills/root-cause-tracing/SKILL.md) |
-| 147 | ✓ | [`skills/setup-arxiv-mcp/SKILL.md`](skills/setup-arxiv-mcp/SKILL.md) |
-| 148 | ✓ | [`skills/setup-codemap-cli/SKILL.md`](skills/setup-codemap-cli/SKILL.md) |
-| 149 | ✓ | [`skills/setup-context7-mcp/SKILL.md`](skills/setup-context7-mcp/SKILL.md) |
-| 150 | ✓ | [`skills/setup-serena-mcp/SKILL.md`](skills/setup-serena-mcp/SKILL.md) |
-| 151 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
-| 152 | ✓ | [`skills/subagent-driven-development/SKILL.md`](skills/subagent-driven-development/SKILL.md) |
-| 153 | ✓ | [`skills/test-coverage/SKILL.md`](skills/test-coverage/SKILL.md) |
-| 154 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 155 | ✓ | [`skills/test-prompt/SKILL.md`](skills/test-prompt/SKILL.md) |
-| 156 | ✓ | [`skills/test-skill/SKILL.md`](skills/test-skill/SKILL.md) |
-| 157 | ✓ | [`skills/thought-based-reasoning/SKILL.md`](skills/thought-based-reasoning/SKILL.md) |
-| 158 | ✓ | [`skills/traiage-review/SKILL.md`](skills/traiage-review/SKILL.md) |
-| 159 | ✓ | [`skills/tree-of-thoughts/SKILL.md`](skills/tree-of-thoughts/SKILL.md) |
-| 160 | ✓ | [`skills/update-docs/SKILL.md`](skills/update-docs/SKILL.md) |
-| 161 | ✓ | [`skills/why/SKILL.md`](skills/why/SKILL.md) |
-| 162 | ✓ | [`skills/write-concisely/SKILL.md`](skills/write-concisely/SKILL.md) |
-| 163 | ✓ | [`skills/write-tests/SKILL.md`](skills/write-tests/SKILL.md) |
-| 164 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 136 | ✓ | [`skills/plan-task/SKILL.md`](skills/plan-task/SKILL.md) |
+| 137 | ✓ | [`skills/prompt-engineering/SKILL.md`](skills/prompt-engineering/SKILL.md) |
+| 138 | ✓ | [`skills/propose-hypotheses/SKILL.md`](skills/propose-hypotheses/SKILL.md) |
+| 139 | ✓ | [`skills/query/SKILL.md`](skills/query/SKILL.md) |
+| 140 | ✓ | [`skills/reflect/SKILL.md`](skills/reflect/SKILL.md) |
+| 141 | ✓ | [`skills/reset/SKILL.md`](skills/reset/SKILL.md) |
+| 142 | ✓ | [`skills/resolve-fixed-pr-comments/SKILL.md`](skills/resolve-fixed-pr-comments/SKILL.md) |
+| 143 | ✓ | [`skills/review-local-changes/SKILL.md`](skills/review-local-changes/SKILL.md) |
+| 144 | ✓ | [`skills/review-pr/SKILL.md`](skills/review-pr/SKILL.md) |
+| 145 | ✓ | [`skills/root-cause-tracing/SKILL.md`](skills/root-cause-tracing/SKILL.md) |
+| 146 | ✓ | [`skills/setup-arxiv-mcp/SKILL.md`](skills/setup-arxiv-mcp/SKILL.md) |
+| 147 | ✓ | [`skills/setup-codemap-cli/SKILL.md`](skills/setup-codemap-cli/SKILL.md) |
+| 148 | ✓ | [`skills/setup-context7-mcp/SKILL.md`](skills/setup-context7-mcp/SKILL.md) |
+| 149 | ✓ | [`skills/setup-serena-mcp/SKILL.md`](skills/setup-serena-mcp/SKILL.md) |
+| 150 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
+| 151 | ✓ | [`skills/subagent-driven-development/SKILL.md`](skills/subagent-driven-development/SKILL.md) |
+| 152 | ✓ | [`skills/test-coverage/SKILL.md`](skills/test-coverage/SKILL.md) |
+| 153 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 154 | ✓ | [`skills/test-prompt/SKILL.md`](skills/test-prompt/SKILL.md) |
+| 155 | ✓ | [`skills/test-skill/SKILL.md`](skills/test-skill/SKILL.md) |
+| 156 | ✓ | [`skills/thought-based-reasoning/SKILL.md`](skills/thought-based-reasoning/SKILL.md) |
+| 157 | ✓ | [`skills/traiage-review/SKILL.md`](skills/traiage-review/SKILL.md) |
+| 158 | ✓ | [`skills/tree-of-thoughts/SKILL.md`](skills/tree-of-thoughts/SKILL.md) |
+| 159 | ✓ | [`skills/update-docs/SKILL.md`](skills/update-docs/SKILL.md) |
+| 160 | ✓ | [`skills/why/SKILL.md`](skills/why/SKILL.md) |
+| 161 | ✓ | [`skills/write-concisely/SKILL.md`](skills/write-concisely/SKILL.md) |
+| 162 | ✓ | [`skills/write-tests/SKILL.md`](skills/write-tests/SKILL.md) |
+| 163 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

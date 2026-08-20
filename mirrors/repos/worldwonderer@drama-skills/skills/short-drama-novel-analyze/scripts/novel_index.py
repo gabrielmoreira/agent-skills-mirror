@@ -133,17 +133,28 @@ def find_heading_lines(lines: list[str]) -> tuple[list[dict[str, Any]], int]:
     return headings, long_lines
 
 
+# Two headings are the least that can be a numbering run. One 第三回 inside a
+# chapter of dialogue is a character speaking, not a book changing its unit.
+MINIMUM_NUMBERING_RUN = 2
+
+
 def select_chapter_unit(
-    headings: list[dict[str, Any]]
+    headings: list[dict[str, Any]], forced: str | None = None
 ) -> tuple[str | None, dict[str, int]]:
     """Keep one numbering unit and report what the other units cost.
 
     A book that writes chapters as 第N章 and subsections as 第N节 has two
     interleaved numbering runs. Accepting both produces duplicate numbers, and a
     duplicate used to switch off every numbering check at once — so the very
-    file that needed reporting came back clean. Choosing the dominant unit keeps
-    books that number chapters as 第N节 working, without letting subsections
-    masquerade as chapters.
+    file that needed reporting came back clean.
+
+    The unit is chosen by depth, not by frequency. Choosing the most frequent
+    unit inverted every such book, because subsections always outnumber the
+    chapters that contain them: a book of 4 章 with 3 节 each was indexed as 12
+    chapters of 节, `problems` empty, and every later stage then cut episodes on
+    subsection boundaries. `CHAPTER_UNITS` is ordered coarse to fine, so the
+    coarsest unit that forms a real numbering run wins, and a book that numbers
+    its chapters 第N节 with nothing coarser still works.
     """
 
     counts = {unit: 0 for unit in CHAPTER_UNITS}
@@ -151,9 +162,21 @@ def select_chapter_unit(
         counts[heading["unit"]] += 1
     if not headings:
         return None, counts
-    # Ties resolve by the declared order, so the choice never depends on which
-    # heading happened to appear first.
-    chosen = max(CHAPTER_UNITS, key=lambda unit: (counts[unit], -CHAPTER_UNITS.index(unit)))
+    if forced is not None:
+        return forced, {
+            unit: count for unit, count in counts.items() if unit != forced and count
+        }
+    chosen = next(
+        (unit for unit in CHAPTER_UNITS if counts[unit] >= MINIMUM_NUMBERING_RUN),
+        None,
+    )
+    if chosen is None:
+        # No unit forms a run. Fall back to the most frequent, resolving ties by
+        # the declared order so the choice never depends on which heading came
+        # first.
+        chosen = max(
+            CHAPTER_UNITS, key=lambda unit: (counts[unit], -CHAPTER_UNITS.index(unit))
+        )
     ignored = {unit: count for unit, count in counts.items() if unit != chosen and count}
     return chosen, ignored
 
@@ -328,17 +351,38 @@ def validate_chapters(
     return problems
 
 
-def build_index(source: Path) -> dict[str, Any]:
+def build_index(source: Path, unit_override: str | None = None) -> dict[str, Any]:
     raw = source.read_bytes()
     text = raw.decode("utf-8")
     lines = text.split("\n")
     headings, long_heading_lines = find_heading_lines(lines)
-    unit, ignored_units = select_chapter_unit(headings)
+    unit, ignored_units = select_chapter_unit(headings, unit_override)
     headings = [heading for heading in headings if heading["unit"] == unit]
     headings, dropped = drop_leading_table_of_contents(headings)
     chapters = build_chapters(lines, headings, text)
     segments = segment_by_restart(chapters)
     problems = validate_chapters(chapters, segments)
+    if unit is not None:
+        coarser = [
+            other
+            for other in CHAPTER_UNITS[: CHAPTER_UNITS.index(unit)]
+            if ignored_units.get(other)
+        ]
+        if coarser:
+            # SKILL.md names this exact shape as the sign that the unit judgment
+            # is wrong. Reporting it is what lets a creator act on it; `problems`
+            # coming back empty here is how a subsection index passed for a
+            # chapter index all the way to episode cutting.
+            problems.append(
+                "chapters were indexed as 第N{} while coarser headings were skipped: {}"
+                "; pass --unit to choose the unit yourself".format(
+                    unit,
+                    ", ".join(
+                        "第N{} x{}".format(other, ignored_units[other])
+                        for other in coarser
+                    ),
+                )
+            )
     return {
         "schema_version": SCHEMA_VERSION,
         "record_type": "novel_chapter_index",
@@ -544,6 +588,12 @@ def main(argv: list[str] | None = None) -> int:
     build = sub.add_parser("index", help="build the chapter index for one source")
     build.add_argument("source", type=Path)
     build.add_argument("--out", type=Path, default=None)
+    build.add_argument(
+        "--unit",
+        choices=CHAPTER_UNITS,
+        default=None,
+        help="force the chapter unit instead of detecting it (章 / 回 / 节)",
+    )
 
     check = sub.add_parser("verify", help="re-check an index against its source")
     check.add_argument("index", type=Path)
@@ -561,7 +611,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "index":
-        document = build_index(args.source)
+        document = build_index(args.source, args.unit)
         payload = json.dumps(document, ensure_ascii=True, indent=2, sort_keys=True)
         if args.out is not None:
             _atomic_write_text(args.out, payload + "\n")

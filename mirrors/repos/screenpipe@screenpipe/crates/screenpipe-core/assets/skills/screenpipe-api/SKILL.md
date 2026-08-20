@@ -1,11 +1,9 @@
 ---
 name: screenpipe-api
-description: Query the user's data via the local screenpipe REST API at localhost:3030 — screen recordings, audio, UI elements, usage analytics, meetings, connected services, and the user's persistent memory store. Use for questions about screen activity, meetings, apps, productivity, media export, retranscription, connections, OR to save / remember / store information for later (POST /memories — survives across sessions, queryable by external agents).
+description: Query the user's data via the local screenpipe REST API at localhost:3030 — screen recordings, audio, UI elements, usage analytics, meetings, connected services, and persistent memory. Use for questions about screen activity, meetings, apps, productivity, media export, retranscription, connections, or durable memory.
 ---
 
 # Screenpipe API
-
-After completing a complex Screenpipe query, always delegate reusable procedural learning to an asynchronous subagent after the user-visible answer so reflection adds no response latency. Store that learning in a separate user-owned skill: update a dedicated user-owned skill when it already fits the workflow; otherwise create a new narrowly scoped skill. Never modify this `screenpipe-api` skill or any other bundled, vendor-installed, or externally managed skill. Never save one-off facts as skills.
 
 Local REST API at `http://localhost:3030`.
 
@@ -375,7 +373,7 @@ curl -X DELETE http://localhost:3030/memories/1                                 
 
 Notify the desktop UI. This is the Tauri sidecar (port **11435**), not the main API. `body` supports markdown (`**bold**`, `` `code` ``, `[text](url)`).
 
-`priority` is `high`, `normal` (default), or `low`. Only use `high` for a time-sensitive failure or a decision needing the human now; it interrupts and enters the focused Priority view. Routine results and completions belong in normal/low and stay available in All.
+`priority` is `high`, `normal` (default), or `low`. Every priority appears in the top-right notification panel. Only use `high` for a time-sensitive failure or a decision needing the human now; it also enters the focused Priority view. Normal stays available in All, while low is toast-only by default.
 
 ```bash
 curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \

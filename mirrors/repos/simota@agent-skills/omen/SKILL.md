@@ -16,7 +16,7 @@ CAPABILITIES_SUMMARY:
 - tri_engine_failure: `multi` Recipe — parallel failure-mode enumeration across Codex + Antigravity + Claude subagents with concurrence-divergence scoring composed with RPN (composite_priority = concurrence_weight × RPN_max; severity-9 critical gate dominates with 1.5× override); Divergence-primary pattern preserves single-engine VERIFIED-DIVERGENT catastrophic modes (often the most dangerous — one engine sees a failure class the others are structurally blind to); integrates output as Risk Matrix with concurrence-glyph dimension and engine-attribution tags on every shipped cluster
 
 COLLABORATION_PATTERNS:
-- Accord -> Omen: Stress-test the spec for failure modes
+- Scribe[unified] -> Omen: Stress-test the spec for failure modes
 - Spark -> Omen: Failure-risk evaluation of feature proposals
 - Helm -> Omen: Risk scenarios for strategic plans
 - Scribe -> Omen: Weakness analysis of design documents
@@ -28,7 +28,7 @@ COLLABORATION_PATTERNS:
 - Omen -> Sentinel: Escalation of security-related failure modes
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Accord (specs), Spark (feature proposals), Helm (strategy), Scribe (design docs), Nexus (orchestration)
+- INPUT: Scribe[unified] (specs), Spark (feature proposals), Helm (strategy), Scribe (design docs), Nexus (orchestration)
 - OUTPUT: Ripple (blast radius), Magi (trade-offs), Triage (playbooks), Beacon (observability), Radar (test cases), Sentinel (security)
 
 PROJECT_AFFINITY: universal
@@ -140,10 +140,10 @@ Use AP when stakeholders follow AIAG-VDA methodology; use RPN when numeric ranki
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Pre-Mortem | `premortem` | ✓ | Failure scenario enumeration (all-phase DEEP) | `reference/failure-frameworks.md` |
+| Pre-Mortem | `premortem` | ✓ | Failure scenario enumeration (all-phase DEEP) | — |
 | RPN Scoring | `rpn` | | Risk Priority Number scoring | `reference/scoring-methodology.md` |
 | Action Priority | `ap` | | Action Priority scoring (AIAG-VDA) | `reference/scoring-methodology.md` |
-| Failure Mode ID | `mode` | | Failure mode identification (FMEA) | `reference/failure-frameworks.md` |
+| Failure Mode ID | `mode` |  | Failure mode identification (FMEA) | — |
 | Fault Tree Analysis | `faulttree` | | Top-down deductive analysis from one undesired top event, cut-set computation, optional probability roll-up | `reference/fault-tree-analysis.md` |
 | Bowtie Diagram | `bowtie` | | Threat × top event × consequence map with preventive and mitigative barriers for stakeholder communication | `reference/bowtie-diagram.md` |
 | HAZOP Study | `hazop` | | Parameter × guideword deviation study at process / pipeline / integration nodes | `reference/hazop-methodology.md` |
@@ -234,7 +234,7 @@ Full mechanics, scoring, JSON schema, prompt skeletons, and degraded modes -> `r
 
 ## Collaboration
 
-**Receives:** Accord (specs), Spark (feature proposals), Helm (strategy plans), Scribe (design docs), Nexus (orchestration)
+**Receives:** Scribe[unified] (specs), Spark (feature proposals), Helm (strategy plans), Scribe (design docs), Nexus (orchestration)
 **Sends:** Ripple (failure blast radius), Magi (mitigation trade-offs), Triage (incident playbooks), Beacon (observability design), Radar (test cases), Sentinel (security failure modes)
 
 **Overlap boundaries:**
@@ -246,7 +246,6 @@ Full mechanics, scoring, JSON schema, prompt skeletons, and degraded modes -> `r
 
 | Reference | Read this when |
 |-----------|---------------|
-| `reference/failure-frameworks.md` | FMEA procedures, pre-mortem techniques, fault tree, Swiss Cheese |
 | `reference/scoring-methodology.md` | RPN scales, severity/occurrence/detection definitions, AP thresholds |
 | `reference/output-templates.md` | Report templates, FMEA tables, mitigation plans |
 | `reference/fault-tree-analysis.md` | Top-down FTA for a single undesired top event, gate semantics, Minimal Cut Sets, probability roll-up |
@@ -254,7 +253,7 @@ Full mechanics, scoring, JSON schema, prompt skeletons, and degraded modes -> `r
 | `reference/hazop-methodology.md` | HAZOP deviation study at pipeline / broker / integration nodes using parameter × guideword grids |
 | `reference/fix-prompt-generation.md` | Authoring the `## LLM Fix Prompt` block, choosing an Omen-specific action verb (ADD-GUARDRAIL / ADD-MONITOR / ADD-RUNBOOK / MITIGATE / INVESTIGATE-FURTHER / ACCEPT-RISK), or deciding whether to suppress for plan-review-only or all-accepted-risk scope. |
 | `reference/tri-engine-failure.md` | `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Pattern D concurrence-divergence scoring composed with RPN, severity-9 critical gate override, Risk Matrix integration, JSON schema, CLUSTER identity rules, GROUND checks, subagent prompt skeleton, and degraded-mode behavior. |
-| `_common/MULTI_ENGINE_RECIPE.md` | The cross-skill multi-engine protocol — pattern types (C / D / H), canonical flow stages, PREFLIGHT probe, loose-prompt rule, engine-attribution tag convention, degraded modes, and the implementation checklist shared with Spark/Plea/Judge. Read before authoring or extending Omen's `multi` Recipe. |
+| `_common/MULTI_ENGINE_RECIPE.md` | The cross-skill multi-engine protocol — pattern types (C / D / H), canonical flow stages, PREFLIGHT probe, loose-prompt rule, engine-attribution tag convention, degraded modes, and the implementation checklist shared with Spark/Echo[demand]/Judge. Read before authoring or extending Omen's `multi` Recipe. |
 | `_common/SUBAGENT.md` | The base MULTI_ENGINE protocol — engine dispatch table, Agent tool fan-out mechanics, fallback rules. Read alongside `MULTI_ENGINE_RECIPE.md` when authoring `multi` Recipe subagent prompts. |
 | `_common/LLM_PROMPT_GENERATION.md` | Universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel. |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the pre-mortem report, deciding adaptive thinking depth at scoring/severity, or front-loading scope/stakeholders/horizon at FRAME. Critical for Omen: P3, P5. |

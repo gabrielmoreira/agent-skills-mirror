@@ -23,7 +23,7 @@ COLLABORATION_PATTERNS:
 - Pattern B: Design-Faithful-LP (Vision -> Pixel -> Growth -> Artisan)
 - Pattern C: Visual-QA-Only (User -> Pixel[VERIFY only] -> Voyager)
 - Pattern D: Token-Extraction (Pixel -> Muse -> Artisan)
-- Pattern E: Wireframe-to-Prototype (User[sketch] -> Pixel[scaffold] -> Forge -> Artisan)
+- Pattern E: Wireframe-to-Prototype (User[builder] -> Pixel[scaffold] -> Forge -> Artisan)
 - Pattern F: Gap-Audit-to-Compliance (User -> Pixel[gap-report] -> Canon[WCAG mapping] -> Artisan)
 - Pattern G: Gap-Audit-to-Review (User -> Pixel[gap-report] -> Judge[fidelity review])
 
@@ -115,7 +115,7 @@ Question schemas for these triggers -> `reference/recipe-dispatch.md` § INTERAC
 - Assume font families from visual appearance alone — document as LOW confidence (font rendering differs across OS, causing false matches).
 - Treat a low-resolution or JPEG-compressed screenshot as a reliable color source (compression shifts hues by 5-10 ΔE).
 - Compare screenshots across OS/browsers without normalization, without `animations: 'disabled'`, or without masking dynamic content.
-- Nest CSS container queries >3 levels deep (browser evaluation overhead).
+- Grove[llm] CSS container queries >3 levels deep (browser evaluation overhead).
 
 ## Modern CSS Baseline Status
 
@@ -241,7 +241,7 @@ When a detailed gap analysis is requested, additionally include:
 | **B** | Design-Faithful-LP | Vision → Pixel → Growth → Artisan | LP with SEO optimization |
 | **C** | Visual-QA-Only | User → Pixel[VERIFY] → Voyager | Verify existing implementation |
 | **D** | Token-Extraction | Pixel → Muse → Artisan | Extract and systemize tokens |
-| **E** | Wireframe-to-Prototype | User[sketch] → Pixel → Forge → Artisan | Scaffold from sketch |
+| **E** | Wireframe-to-Prototype | User[builder] → Pixel → Forge → Artisan | Scaffold from builder |
 | **F** | Gap-Audit-to-Compliance | User → Pixel[gap] → Canon → Artisan | WCAG mapping from gap JSON |
 | **G** | Gap-Audit-to-Review | User → Pixel[gap] → Judge | Fidelity review of gap report |
 
@@ -264,7 +264,6 @@ Templates: `reference/handoffs.md`. Key flows — **From Frame:** merge Figma da
 | `reference/dark-mode-derivation.md` | Dark mode derivation: semantic tokens, contrast preservation, system toggle |
 | `reference/animation-extraction.md` | Micro-interactions: state matrix, motion tokens, reduced-motion, performance budget |
 | `reference/handoffs.md` | Packaging deliverables for downstream agents |
-| `reference/examples.md` | Reference reproduction examples |
 | `_common/OPUS_5_AUTHORING.md` | Reproduction report sizing + adaptive depth (critical: P3, P5) |
 | `_common/IMAGE_INPUT.md` | Mockup/screenshot input pipeline (pre-crop, describe-first, observed-vs-inferred) before EXTRACT |
 | `_common/CANDIDATE_SELECTION.md` | Comparing multiple viable interpretations of an ambiguous mockup region — Gate/Trade-off/Preference separation, pairwise comparison, stop conditions |

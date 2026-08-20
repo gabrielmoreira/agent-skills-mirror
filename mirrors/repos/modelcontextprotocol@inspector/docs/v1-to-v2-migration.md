@@ -66,7 +66,7 @@ Consequences:
 - `MCP_PROXY_FULL_ADDRESS` has no v2 equivalent and is ignored. It existed to tell the browser where a non-default proxy lived; there is no proxy.
 - Docker needs `-p 6274:6274` for the UI, where the v1 recipe published `6277` as well.
 
-⚠️ **`6274` is not the only listener.** The web backend also starts a **separate MCP Apps sandbox server**, on a dynamic port by default. It is only used by the Apps tab, and on plain loopback it needs no attention — but the browser reaches it directly, so anywhere the Inspector is _not_ served from the browser's own machine (Docker, a remote host, an SSH tunnel) you must pin it with `MCP_SANDBOX_PORT` and expose/forward that port too, or the Apps tab won't load. This is a different port from v1's proxy — it carries no MCP traffic — but it is still a second port. See [MCP Apps caveats](../clients/web/README.md#hosting-on-a-network).
+⚠️ **`6274` is not the only listener.** The web backend also starts a **separate MCP Apps sandbox server**, on a fixed **`6275`** by default (it was OS-assigned before #2008). It is only used by the Apps tab, and on plain loopback it needs no attention — but the browser reaches it directly, so anywhere the Inspector is _not_ served from the browser's own machine (Docker, a dev container, a remote host, an SSH tunnel) you must expose/forward that port too, or the Apps tab won't load. This is a different port from v1's proxy — it carries no MCP traffic — but it is still a second port. See [MCP Apps caveats](../clients/web/README.md#hosting-on-a-network).
 
 ## Launching
 
@@ -280,7 +280,7 @@ Stdout is otherwise compatible: the default `text` format still pretty-prints th
 | `MCP_AUTO_OPEN_ENABLED`  | same                                                                          | Also gates non-TTY interactive OAuth in the CLI/TUI                                                                                                                                                                                                                                                                                                                                                   |
 | —                        | `DANGEROUSLY_BIND_ALL_INTERFACES`                                             | New opt-in for a wildcard bind (the Docker image sets it)                                                                                                                                                                                                                                                                                                                                             |
 | —                        | `MCP_CATALOG_PATH`                                                            | Default catalog path                                                                                                                                                                                                                                                                                                                                                                                  |
-| —                        | `MCP_SANDBOX_PORT`                                                            | MCP Apps sandbox server port (dynamic by default)                                                                                                                                                                                                                                                                                                                                                     |
+| —                        | `MCP_SANDBOX_PORT`                                                            | MCP Apps sandbox server port (fixed `6275` by default)                                                                                                                                                                                                                                                                                                                                                     |
 | —                        | `MCP_STORAGE_DIR`, `MCP_INSPECTOR_OAUTH_STATE_PATH`, `MCP_CLIENT_CONFIG_PATH` | Storage and OAuth state locations                                                                                                                                                                                                                                                                                                                                                                     |
 | —                        | `MCP_OAUTH_CALLBACK_URL`                                                      | CLI/TUI OAuth loopback callback                                                                                                                                                                                                                                                                                                                                                                       |
 
@@ -330,13 +330,14 @@ docker run --rm -p 127.0.0.1:6274:6274 ghcr.io/modelcontextprotocol/inspector:la
 Notes:
 
 - **Keep the `127.0.0.1:` prefix on the published port**, as the v1 recipe did. `-p 6274:6274` publishes on every host interface, and the container's `HOST=0.0.0.0` is about the _container's_ interfaces, not the host's — the two are independent. That matters here because the backend spawns processes, `/` embeds the API token, and requests arriving with **no** `Origin` header (i.e. anything that isn't a browser) skip the origin allow-list, leaving the token as the only guard. Bind to loopback and opt into wider exposure deliberately.
-- **The Apps tab needs one more published port.** The sandbox server is dynamic by default and the `Dockerfile` `EXPOSE`s only `6274`, so the recipe above covers everything _except_ MCP Apps. To use them, pin and publish the sandbox port as well:
+- **The Apps tab needs one more published port.** The sandbox server listens on `6275` by default, so the recipe above covers everything _except_ MCP Apps. To use them, publish that port as well:
 
   ```bash
-  docker run --rm -p 127.0.0.1:6274:6274 -p 127.0.0.1:6280:6280 \
-    -e MCP_SANDBOX_PORT=6280 \
+  docker run --rm -p 127.0.0.1:6274:6274 -p 127.0.0.1:6275:6275 \
     ghcr.io/modelcontextprotocol/inspector:latest
   ```
+
+  Publish it on the **same port number** inside and out: the sandbox URL is handed to the browser via `/api/config` as `http://localhost:<container port>/sandbox`, so remapping it advertises a port the browser can't reach. To use a different number, move both ends — `-e MCP_SANDBOX_PORT=6280 -p 127.0.0.1:6280:6280`.
 
 - The v2 image sets `DANGEROUSLY_BIND_ALL_INTERFACES=true` internally (a container must bind `0.0.0.0` to be reachable through `-p`). Setting a bare `HOST=0.0.0.0` **outside** a container now exits with an error.
 - **If you remap the published port** (`-p 8080:6274`), the browser's origin no longer matches the in-container port, so set `ALLOWED_ORIGINS=http://localhost:8080,http://127.0.0.1:8080` (or run `-e CLIENT_PORT=8080 -p 8080:8080`) or connects will 403.
@@ -355,7 +356,9 @@ Notes:
 
 **"`Transport type not specified and could not be determined from URL`."** The path ends in neither `/mcp` nor `/sse`, so v2 refuses to guess where v1 fell back to SSE. Pass `--transport http` or `--transport sse`.
 
-**"The Apps tab is blank in Docker / over SSH."** The MCP Apps sandbox is a second, dynamic port. Pin it with `MCP_SANDBOX_PORT` and publish/forward it too — see [MCP Apps caveats](../clients/web/README.md#hosting-on-a-network).
+**"The Apps tab is blank in Docker / over SSH."** The MCP Apps sandbox is a second port (`6275` by default). Publish/forward it too — see [MCP Apps caveats](../clients/web/README.md#hosting-on-a-network).
+
+**"The page never loads inside a VS Code dev container."** Fixed in the release carrying #1951 — upgrade; on an older version, work around it with `HOST=127.0.0.1`. Before that fix the default `HOST=localhost` bound IPv6 loopback **only** on Linux, so anything connecting over IPv4 `127.0.0.1` was refused — which is what a dev container's port forwarder does. The terminal printed a normal banner while the browser spun forever; the failure is a **hang** rather than a connection error because the forwarder accepts on the host side before failing to connect inward. The same fix covers an `ssh -L 6274:127.0.0.1:6274` tunnel and a container healthcheck. It does **not** describe the official Docker image (it binds `0.0.0.0`, so it was never affected) or a plain `docker run -p` against a loopback bind, which is unreachable across the network namespace for an unrelated reason.
 
 **"`HOST=0.0.0.0` exits with an error."** That's the wildcard-bind guard. Bind a specific address instead, or set `DANGEROUSLY_BIND_ALL_INTERFACES=true` if you genuinely need all interfaces. See [Host binding & the origin allow-list](../clients/web/README.md#host-binding--the-origin-allow-list).
 

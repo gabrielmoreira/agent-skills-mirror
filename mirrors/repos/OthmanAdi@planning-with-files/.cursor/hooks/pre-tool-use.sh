@@ -3,6 +3,10 @@
 # Reads the first 30 lines of task_plan.md to keep goals in context.
 # Returns {"decision": "allow"} — this hook never blocks tools.
 
+# Issue #195 opt-out. The disabled branch reproduces this hook's own
+# no-plan-file behaviour, so the Cursor protocol shape never changes.
+[ "${PLANNING_DISABLED:-}" = "1" ] && { echo '{"decision": "allow"}'; exit 0; }
+
 PLAN_FILE="task_plan.md"
 
 if [ -f "$PLAN_FILE" ]; then

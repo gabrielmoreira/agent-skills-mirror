@@ -2,27 +2,40 @@
 
 ## Purpose
 
-- Own the built-in Playwright browser tool and WebUI browser viewer.
+- Own the built-in Patchright browser tool and WebUI browser viewer.
 - Bridge browser automation, page inspection helpers, and browser panel UI.
 
 ## Ownership
 
 - `plugin.yaml` and `default_config.yaml` own metadata and browser settings defaults.
 - `tools/browser.py` owns the agent-facing browser tool.
-- `helpers/` owns Playwright runtime, selectors, URL helpers, extension management, and connector runtime logic.
+- `helpers/` owns the Patchright runtime, private interactive display, selectors, URL helpers, extension management, and connector runtime logic.
 - `api/` owns status, extension, and browser WebSocket handlers.
 - `assets/`, `prompts/`, `skills/`, `extensions/`, and `webui/` own browser scripts, prompts, skill guidance, hook contributions, and UI.
 
 ## Local Contracts
 
 - Keep browser actions safe around external pages, credentials, and user data.
-- Preserve Playwright lifecycle cleanup and WebSocket viewer compatibility across regular host browsers and Electron WebContentsView embedding.
+- Preserve Patchright lifecycle cleanup and WebSocket viewer compatibility across regular host browsers and Electron WebContentsView embedding.
 - Keep the WebUI Browser inside its own modal/canvas affordance; do not replace it with page-level navigation.
-- Default the visible WebUI Browser to live CDP screencast for responsiveness. Keep lightweight CDP/DOM state snapshots as the fallback transport.
+- Default the visible WebUI Browser to the authenticated Xpra HTML5 viewer for its existing Patchright page. Keep live CDP screencast and lightweight snapshots as automatic fallbacks.
+- Do not block an available interactive viewer on a redundant Chromium screenshot; capture initial snapshots only for fallback transports.
+- Keep headful Chromium in a normal window with its own toolbar clipped above the private display; do not use browser fullscreen, which shows Chromium's exit warning.
+- Persist open-tab ownership and URLs through the shared KVP store; automatically restore the current chat when its Browser surface opens in per-chat mode and every saved chat in shared mode, then hide Chromium's redundant crash-restore advisory.
+- When no Browser tab manifest exists yet, use Chromium's last session once to migrate open tabs into the owned manifest.
+- Throttle interactive resize updates throughout a drag and let the native-sized Chromium viewport follow the private display; do not defer all layout updates until resizing stops.
+- Keep exactly one interactive viewer iframe connected during canvas/modal handoff so hidden surfaces cannot compete to resize the same display.
+- Notify the active Xpra client of its new frame geometry before resizing the backing display; after an interactive canvas/modal handoff, reconcile once after Xpra's deferred resize so Chromium cannot retain the previous surface size.
+- Present the Xpra shadow window as the raw browser canvas: remove its HTML decoration and shadow pointer while preserving exact viewport geometry.
+- Keep one internal Chromium, Xvfb, and Xpra runtime per Agent Zero process with one unguessable gateway token.
+- Bind Browser Xpra endpoints to loopback, route them through the authenticated virtual-desktop gateway, and keep file transfer, URL opening, printing, and audio disabled.
 - Paint live screencast frames through the Browser panel canvas/ImageBitmap path when available; keep the `<img>`/data URL path for snapshots and fallback rendering.
 - Push internal screencast frames from the runtime to the WebSocket consumer after subscription; keep `read/pop_screencast_frame` as fallback/tooling APIs, not the WebUI hot path.
 - Keep Browser viewer frame transport capability-negotiated: updated clients may request binary/slim screencast frames, while older clients must keep the base64/full-metadata fallback. Do not let the WebUI advertise binary frames unless its Socket.IO client reconstructs attachments as real `Blob`, `ArrayBuffer`, or typed-array values.
-- Keep WebUI Browser tabs scoped to the active chat context by default; aggregate tabs from other AgentContext runtimes only when the Browser settings tab scope is `shared`.
+- Keep WebUI Browser tabs scoped to the active chat context by default; aggregate tabs from other context handles only when the Browser settings tab scope is `shared`.
+- Share one persistent internal-Browser sign-in profile across chats while enforcing tab ownership through context-bound runtime handles; resetting or removing a chat closes only its tabs and never deletes the shared profile.
+- On first shared-profile use after an upgrade, adopt the first requesting chat's legacy Browser profile when one exists.
+- Show an accessible in-panel startup state while the on-demand shared Browser runtime is cold-starting; keep that one runtime warm until Browser configuration changes or Agent Zero shuts down.
 - Keep narrow WebUI Browser controls usable by grouping navigation with Annotate/settings above a full-width address bar.
 - For Bring Your Own Browser with an existing host profile, `host_browser_selection` may target automatic CLI selection, a browser family/id, an HTTP CDP discovery address, or a full DevTools WebSocket endpoint and must be forwarded to the connector runtime as `browser_selection`.
 - Browser Settings must refresh connected A0 CLI host-browser inventory while the settings view is open so newly authorized endpoints appear without saving or reopening.
@@ -30,8 +43,14 @@
 - Browser URL-intent handling must only claim web URL schemes and leave custom Agent Zero schemes to their owning surfaces.
 - Prefer DOM/CDP browser actions with refs, selectors, frame-chain refs, and screenshots over viewport coordinate input. Coordinates remain a visual fallback.
 - Do not hardcode user-specific browser paths or secrets.
-- Browser model-preset selection resolves omitted preset fields from `_model_config`'s global `Default` preset, not from an unrelated currently scoped model selection.
+- Browser model-preset selection resolves omitted preset fields from `_model_config`'s global `Default` preset, not from an unrelated currently scoped model selection. After the first Browser tool call, use the selected preset for subsequent model turns in that monologue and clear it at monologue end.
+- Annotation mode highlights the DOM element under the pointer, keeps saved overlays page-local, and may batch annotated pages only within the active chat context.
+- Annotation voice input reuses Whisper STT's configured draft/send delivery mode and shared microphone state.
 - Internal-browser proxy settings map directly to Playwright's persistent-context proxy option, never to Bring Your Own Browser, and changes must restart active internal runtimes.
+- Run internal Chromium headful through Patchright on the private virtual display; do not add user-agent or header spoofing on top of the patched driver.
+- Browser startup and on-demand launch must converge on the Chromium revision declared by Patchright; let its installer select the host architecture rather than hardcoding x64 or ARM downloads.
+- `hooks.prepare_playwright_cache()` owns reconciliation of the pinned Patchright package and Chromium binary so repository self-updates and fresh images use the same setup path.
+- Browser startup must install the shared virtual-desktop route hook itself; do not make Browser depend on the Desktop plugin being enabled.
 
 ## Work Guidance
 
@@ -44,7 +63,7 @@
 ## Verification
 
 - Smoke-test browser launch, navigation, DOM capture, and WebUI viewer after runtime changes.
-- For viewer render-path changes, verify the live Browser panel paints a screencast frame on canvas with `frameSrc` empty and snapshots still falling back to the image path.
+- For viewer render-path changes, verify direct iframe interaction reaches the same page controlled by Patchright, separate contexts use separate displays, and an unavailable Xpra runtime falls back to CDP screencast/snapshot rendering.
 - Run browser prompt/skill regression tests after changing browser prompt or Browser plugin skills.
 
 ## Child DOX Index

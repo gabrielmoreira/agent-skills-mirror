@@ -19,7 +19,7 @@ python3 {技能目录}/scripts/project_tool.py init ./my-drama --title "示例�
 
 创作者可读内容使用 `short-drama.json#/language`；交给图片或视频生成器的提示词正文使用
 `#/format/prompt_language`。两者互不推断，详见
-[contract-and-ownership.md](references/contract-and-ownership.md#输出语言契约)。
+[contract-and-ownership.md](references/contract-and-ownership.md#output-language-contract)。
 
 ## 每次请求的起点
 
@@ -54,11 +54,11 @@ python3 {技能目录}/scripts/project_tool.py init ./my-drama --title "示例�
 并行，不互相等待。需要把已接受的视觉方向变成可比较的代表帧时，读
 [look-development.md](references/look-development.md)。
 
-**产物可以直接入场。** 上游的可选环节缺失不构成阻塞：现成剧本可直接进入资产；已接受资产
+**产物可以直接入场**。 上游的可选环节缺失不构成阻塞：现成剧本可直接进入资产；已接受资产
 可直接进入资产图片提示词；已接受剧本加资产可直接进入分镜；已接受镜头与关键帧可直接进入
 视频提示词。只补建对应技能拥有的、确实缺少的必要产物，绝不倒补虚构的创作简报或系列大纲。
 
-**请求含糊时不要追问技术细节。** 遇到"帮我把这集做完"这类请求，先展示当前的创作者可读
+**请求含糊时不要追问技术细节**。 遇到"帮我把这集做完"这类请求，先展示当前的创作者可读
 状态，再给出不超过三个有意义的动作，优先能解开当前交付阻塞的那个；不要拿 schema、事务或
 存储格式去问创作者。
 

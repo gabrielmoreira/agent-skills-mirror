@@ -54,6 +54,15 @@
 - 删除链接导入的 My Skills 记录时，只能删除 PromptHub 记录和 PromptHub 拥有的分发链接；不得删除外部源目录。
 - 通过 backup/restore 恢复 Skill 时，`local_repo_path` 属于机器本地的写入目标，不能作为可移植数据回放。恢复必须从备份的内容和文件树重建当前机器的 PromptHub 托管 package，同时保留来源标识、来源地址和 package 对账基线。
 - Desktop 自部署 Web 备份和兼容期 live-sync 必须在发送前移除 `local_repo_path` 以及非 HTTP(S) 的 `source_url`、`content_url` 和本地 icon 路径；Skill 正文、文件树和可移植的远程来源元数据必须保留。旧 live-sync 拉取合并不能只按数据库 ID 判断同一 Skill，必须优先按 `source_id`、package/content fingerprint 或旧记录规范化名称对齐，并同步重映射版本与文件快照，避免重复名称和孤儿文件写入。
+- Agent Skills 页的 inventory 以当前 Agent 原生 Skill 目录为事实来源。
+  `agentScanState` 只允许作为当前 renderer session 的派生缓存，不得跨应用重启
+  持久化后阻止新的文件扫描。直接打开 Agent Skills 且本 session 尚无结果时，
+  必须自动执行一次有界扫描；未完成、失败和成功空目录必须是三个不同状态。
+- 本地 Skill 扫描遇到普通外部断链时，必须静默跳过并继续发现其它有效 Skill；
+  若平台 activation 记录、当前 Skill id/name 与链接保存的旧 PromptHub 托管目标
+  完全一致，则启动必须在 canonical workspace 物化后原子重绑。不得按名称猜测、
+  接管外部断链或覆盖非链接内容；其它解析故障保留有界诊断，单个坏链接不得让
+  整个扫描失败或把有效清单变为空。
 
 ### 2.1 Source Update Reconciliation Contract
 

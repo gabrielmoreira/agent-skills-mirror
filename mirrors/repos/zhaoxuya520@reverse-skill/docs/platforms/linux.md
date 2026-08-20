@@ -41,7 +41,7 @@ python3 -m pipx ensurepath
 | Ghidra | GitHub release ZIP | Flatpak / distro package | Java required. |
 | IDA Pro | manual Linux installer | — | Commercial tool; set `IDADIR` or document local path. |
 | BurpSuite | manual installer / jar | distro package if available | Load `burp-mcp-full` extension manually. |
-| jshookmcp | `npx -y @jshookmcp/jshook@0.3.4` | MCP config command | Requires Node/npm/npx. |
+| jshookmcp | `npx -y @jshookmcp/jshook@0.3.4` | MCP config command | Requires Node/npm/npx and explicit MCP registration. |
 | anything-analyzer | project clone + `pnpm install` | custom local service | Register its MCP endpoint in the Agent client. |
 | nuclei | GitHub release / `go install` | distro package if available | Often absent in Ubuntu apt. |
 | SecLists | `git clone https://github.com/danielmiessler/SecLists ~/tools/SecLists` | distro package if available | Keep path in tool index. |
@@ -114,6 +114,16 @@ adb version
 
 ## MCP setup notes
 
+The core bootstrap is client-neutral by default. It **does not write** `~/.claude/mcp.json` or `~/.codex/config.toml` unless an MCP host is explicitly selected. For MCP capabilities, use one of:
+
+```bash
+--mcp-host=claude
+--mcp-host=codex
+--mcp-host=both
+```
+
+Without an explicit host, the bootstrap may prepare the runtime but reports the MCP capability as `registration-required`. Override the explicit adapter paths with `CLAUDE_MCP_CONFIG` or `CODEX_CONFIG_PATH` when needed.
+
 ### BurpSuite MCP
 
 Build the extension:
@@ -167,12 +177,18 @@ From the repository root, list all bootstrap capabilities:
 bash skills/scripts/bootstrap-reverse.sh --list
 ```
 
-Install/configure capabilities with the same core names as the Windows version:
+Install ordinary capabilities without selecting an Agent client:
 
 ```bash
 bash skills/scripts/bootstrap-reverse.sh jadx apktool frida
-bash skills/scripts/bootstrap-reverse.sh jshookmcp anything-analyzer
-bash skills/scripts/bootstrap-reverse.sh idapro --start-services
+```
+
+For MCP registration, select the target client explicitly:
+
+```bash
+bash skills/scripts/bootstrap-reverse.sh jshookmcp --mcp-host=codex
+bash skills/scripts/bootstrap-reverse.sh anything-analyzer --mcp-host=claude
+bash skills/scripts/bootstrap-reverse.sh idapro --start-services --mcp-host=both
 ```
 
 Refresh the tool index only:
@@ -189,7 +205,7 @@ skills/tool-index.md
 skills/tool-index.json
 ```
 
-The bootstrap script installs or configures supported capabilities where possible using the same core capability names as Windows. The refresh script detects common Linux/macOS tools and records install hints. Manual-only tools such as IDA Pro and BurpSuite still require local installation and app-specific setup.
+The bootstrap script installs or prepares supported capabilities where possible using the same core capability names as Windows. MCP client registration is performed only when `--mcp-host=...` is explicit. The refresh script detects common Linux/macOS tools and discovers supported MCP registrations without choosing a default Agent client. Manual-only tools such as IDA Pro and BurpSuite still require local installation and app-specific setup.
 
 ## Validation checklist
 

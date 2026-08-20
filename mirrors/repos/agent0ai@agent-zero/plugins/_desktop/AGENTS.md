@@ -14,6 +14,7 @@
 ## Local Contracts
 
 - Preserve session startup, cleanup, and route protection for desktop access.
+- Keep the Xpra server, client modules, and GTK introspection runtime present as one compatible stack; Xpra shadow sessions import all three even when users connect only through HTML5.
 - Keep desktop state injected into prompts accurate and bounded.
 - Do not expose desktop routes without the expected auth protections.
 - Keep Desktop host visibility tied to an attached modal or canvas host; modal cleanup may preserve the iframe in keepalive, but must not leave stale modal mode behind.

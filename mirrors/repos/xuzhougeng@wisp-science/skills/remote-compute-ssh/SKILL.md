@@ -20,11 +20,14 @@ or Wisp restarts.
    assume a `python` alias exists when the probe found `python3`.
 2. Put the real command in one `run_in_context` call. Include environment
    activation in the command so the Run is reproducible.
-3. To watch the Run or wait for later work, call `monitor_run` exactly once with
-   the returned Run id. Wisp inserts a live card in the conversation, suspends
+3. To watch the Run or wait for later work, call `monitor_run` with the
+   returned Run id. Wisp inserts a live card in the conversation, suspends
    the tool without additional model calls, and resumes the same agent turn
-   with the terminal result. For fire-and-forget work, report the Run id and end
-   the turn instead.
+   with the terminal result. If the result has `wait_interrupted: true`, the
+   remote process is still running: answer the user from the snapshot, then
+   call `monitor_run` again with the same id. Do not resubmit. Use `cancel_run`
+   only when the user asked to stop. For fire-and-forget work, report the Run id
+   and end the turn instead.
 4. Use `get_run` only for one explicit status snapshot; never call it repeatedly
    to wait. Use `cancel_run` when the user asks to stop.
 
@@ -50,8 +53,10 @@ Then, when live monitoring is needed:
 { "run_id": "<id returned by run_in_context>" }
 ```
 
-Pass that object to `monitor_run` once. The call may remain suspended for hours;
+Pass that object to `monitor_run`. The call may remain suspended for hours;
 it does not consume model tokens while the Run Manager watches the job.
+If `wait_interrupted` is true, respond from the snapshot and call `monitor_run`
+again with the same id; do not resubmit.
 
 `input_paths` are project-relative local files. Wisp validates them, copies
 them into an isolated `inputs/` directory, and flattens them to their basenames.
@@ -153,14 +158,14 @@ destination.
 Omit `destination_path` to place the file under the project's configured
 remote data directory for that server. Wisp rejects globs, symlinks, special
 files, and existing remote destinations, and ledgers every successful upload
-so retracted files can be found and removed later. Call `monitor_run` once
-with the returned Run id.
+so retracted files can be found and removed later. Call `monitor_run`
+with the returned Run id; call it again after `wait_interrupted`.
 
 For a local download, set `destination_context_id` to `local` and provide the
 exact new absolute local path. Ask the user when that path is unspecified.
 Wisp stages the item beside the destination, never overwrites an existing
 path, and removes partial staging data after failure or cancellation. Call
-`monitor_run` once with the returned Run id.
+`monitor_run` with the returned Run id; call it again after `wait_interrupted`.
 
 When the user approves persistent A→B trust, call `configure_ssh_trust` first.
 It creates a dedicated key on A, carries only the public key through Wisp,

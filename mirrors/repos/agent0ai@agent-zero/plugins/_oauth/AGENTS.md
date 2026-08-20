@@ -46,6 +46,8 @@
 - Codex Responses proxy requests must include Codex client metadata and compatibility headers such as `client_metadata`, `x-codex-installation-id`, `originator`, `session-id`, and `thread-id`, and must forward `input` as a list for upstream Codex compatibility.
 - Codex Responses proxy requests must translate the legacy top-level `reasoning_effort` field to `reasoning.effort`; an explicit native `reasoning` field takes precedence.
 - Codex Responses proxy defaults for reasoning effort, reasoning summary, and text verbosity come from the `codex` plugin config; explicit native request values take precedence.
+- Codex request shaping tightens an already-advertised native `response` tool to a strict required `text` schema; it must not add tools omitted by the framework tool policy.
+- Non-streaming Codex proxy responses must retain completed SSE output items when the final `response.completed` envelope omits them.
 - OAuth providers without upstream Responses support must set `a0_api_mode: chat`; native Responses providers rely on the default, since a local proxy route alone does not prove upstream support.
 
 ## Work Guidance

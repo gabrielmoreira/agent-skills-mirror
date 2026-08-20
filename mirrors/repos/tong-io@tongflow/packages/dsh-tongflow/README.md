@@ -1,16 +1,16 @@
 # dsh-tongflow
 
-**TongFlow as a [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) plugin — a film-crew studio inside your agent.**
+**TongFlow as a [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) plugin — a media studio inside your agent.**
 
 Three layers, never mixed up:
 
 | Layer | Owns |
 |---|---|
 | **dsh** | the harness: sessions, model routing, tools, jobs, web UI |
-| **the agent** | creativity: script, characters, shot lists, prompts, review notes — plain files |
-| **TongFlow** | deterministic generation: every image / voice / music / video is produced by **running a saved workflow file** (`workflows/*.tongflow.json`) through the TongFlow engine and its plugins |
+| **the agent** | creativity: the plan, the folder structure, briefs, scripts, prompts, review notes — plain files |
+| **TongFlow** | deterministic generation: every image / voice / music / video / 3D asset is produced by **running a saved workflow file** (`<name>.tongflow.json`) through the TongFlow engine and its plugins |
 
-There is deliberately no "generate an image" tool. The agent writes a workflow, binds its inputs to project assets, runs it, reviews the take, circles the good one. Users open the same `.tongflow.json` on the embedded canvas, tweak it, and re-run.
+There is deliberately no "generate an image" tool and no project template. The agent studies what the user wants to make (with web research when useful), proposes a folder structure, writes it down, and then — for every asset — creates a workflow file where that asset belongs, runs it, reviews the result, and builds the next stage on it. Users open the same `.tongflow.json` on the embedded canvas, tweak it, and re-run; they can also reorganize the folders by hand at any time.
 
 ## Install
 
@@ -20,9 +20,9 @@ npx @deepseek-ai/dsh@next plugin --profile web add dsh-tongflow      # from npm
 npx @deepseek-ai/dsh@next web
 ```
 
-Requirements: dsh ≥ 0.1.0-rc.7 (Node ≥ 22.19), **Python ≥ 3.10** on `PATH` (or `pythonPath` in the plugin config), `git`, and `ffmpeg` for video contact sheets. On first use the plugin creates `~/.dsh/tongflow/venv` with the `tongflow` SDK; TongFlow plugins are cloned into `~/.dsh/tongflow/plugins` on demand.
+Requirements: dsh ≥ 0.1.0-rc.7 (Node ≥ 22.19), **Python ≥ 3.10** on `PATH` (or `pythonPath` in the plugin config), `git`, and `ffmpeg` for video contact sheets. On first use the plugin creates `~/.dsh/tongflow/venv` with the `tongflow` SDK and shallow-clones every official TongFlow plugin into `~/.dsh/tongflow/plugins` (the live list from `config/official-plugins.json`; set `autoInstallOfficial: false` to install by hand), so the canvas offers the same node/plugin catalog as the hosted app. Keys and Modal deploys are only needed when something runs.
 
-Start a session whose **first message begins with `@tongflow`** — that session becomes a studio session: the conversation view turns into the Studio (chat column · project tree · preview / canvas · drawers for takes, runs and details, all in the UI language of your browser), and the agent gets the `tongflow_*` tools and skills. Any other session is untouched dsh. In the Studio: create a project (template **manga-drama** ships, with English / Chinese starter files), install TongFlow plugins and paste API keys under **Plugins & keys**, then talk to the agent — or click a workflow and use the canvas directly.
+Start a session whose **first message begins with `@tongflow`** — that session becomes a studio session: the conversation view turns into the Studio (chat column · the project's folder tree · preview / editor / canvas · a runs drawer, all in the UI language of your browser), and the agent gets the `tongflow_*` tools and skill. Any other session is untouched dsh. In the Studio: create a project (a title and a brief — what you want to make), install TongFlow plugins and paste API keys under **Plugins & keys**, then talk to the agent — or click any file to preview / edit it, click a workflow to open it on the canvas.
 
 ### Chat model
 
@@ -44,34 +44,49 @@ llm-pi-ai:
 
 Video and audio are reviewed through TongFlow's own describe / transcribe slots (`tongflow_perceive`), so they work with any chat model.
 
-## The project (a real crew, on disk)
+## The project (a plain folder)
 
 ```
 ~/.dsh/tongflow/projects/<id>/
-  project.json
-  story/                treatment.md · outline.md · script.md            ← agent-written text
-  world/<ID>/           card.md · consistency.json · REF/ · VO/           ← CHR_ LOC_ PRP_ STY_ entities
-  episodes/EP01/        scenes.json (shot breakdown) + MUS/ SFX/ MIX/ CUT/
-  shots/<SHOT>/         SB/ KF/ ANI/ DLG/                                 ← numbered takes per pass
-  inbox/                user drops
-  workflows/            one *.tongflow.json per generated asset; templates/ = starting shapes
-  notes/                review notes
-  export/               deliverables
+  project.json                     title, brief, locale — the only fixed file
+  README.md                        the agent's plan: what the folders are, in what order things get made
+  …whatever the work needs…        e.g. characters/, ep01/sh010/, music/, export/ — designed per project
 ```
 
-- Ids: `EP01` · `EP01_SC003` · `EP01_SC003_SH0010` (shots step by 10) · `CHR_MEI` · takes `T01…`. One take per pass is **circled**; every take carries a `provenance.json` (workflow hash, bindings, plugins, duration).
-- `tf://` references bind workflows to roles, not paths: `tf://CHR_MEI/REF`, `tf://EP01_SC003_SH0010/KF`, `tf://EP01/ANI`, `tf://EP01_SC003_SH0010/dialogue/2`, `tf://STY_MAIN/prompt`. Prompts compose with `{{tf://…}}` placeholders inside one text.
-- The **consistency kit** (`consistency.json`: prompt prefix/suffix, negative prompt, seed, plugin, model, refs) travels with each entity and is what keeps shots on-model.
+**The one rule:** every AI-generated asset comes from a workflow file that sits next to its outputs.
+
+```
+characters/mei/
+  mei.md                    what the agent wrote about her
+  mei_ref.tongflow.json     the workflow that renders her reference sheet
+  mei_ref.01.png            run 1
+  mei_ref.02.png            run 2  (a run never overwrites — fix the workflow, run again)
+  mei_ref.runs.json         provenance of every run: inputs, plugins, note, timing
+```
+
+- Multi-output runs keep the workflow's output names: `mei_ref.03.image.png` + `mei_ref.03.caption.txt`; text outputs are written as `.txt` too.
+- Workflows reference project files by **path**: `./mei_ref.02.png` / `../style/palette.png` (relative to the workflow file) or `characters/mei/mei_ref.02.png` (relative to the project root); URLs pass through.
+- Text files can be **included** in prompts: `{{../style.md}} {{./mei.md}} full-body sheet` — expanded at run time, so a shared style note is written once.
+- **Compose**: `tongflow_workflow_compose({ folder })` merges the small workflows of a folder (or an explicit list) into one `<folder>_all.tongflow.json` — a data node that references another part's output file (`./ref.01.png`) becomes an edge from that part's producing node, parts are ordered by those dependencies, every stage stays an output labelled after its part (`shot_all.01.i2v.mp4` via `meta.outputLabels`), the parts are untouched.
+- The Studio tree nests a workflow's outputs under it; the user may rename / move / delete anything by hand and **upload files** (header button → the selected folder, or drag & drop onto a folder view; default `uploads/`) — the agent re-reads the tree (`tongflow_project_status`) before acting.
+
+### Billing checkpoint
+
+A run that uses a paid plugin spends the user's money — a paid API key, or GPU seconds on their Modal account (a Modal plugin also deploys on first use). So `tongflow_workflow_run` without `user_confirmed: true` does not run: it returns `needs_confirmation` with the plugins involved, how each is billed (`api` / `modal`), whether its API keys are set, the models it offers and installed alternatives. The agent puts that to the user and calls again with `user_confirmed` only after an explicit yes — **for every paid run**; nothing is remembered. Runs that use only local plugins are free and start directly. The Studio's own **Run** drawer shows the same notice and a **Confirm & run** button.
+
+### Workflows follow TongFlow's grammar
+
+`tongflow_node_catalog` opens with the node grammar — `add/` widgets (canvas only), `modality/` data nodes, and the four executable categories `transfer/` (1 → 1), `compose/` (N → 1), `decompose/` (1 → N), `batch/` (N → 1) — then lists every node type by category with its ABI slot, wires (`batch` / `collect` flags), config fields, outputs and installed plugins, all read from the ABI registry. The patch tool (`apply_graph_patch` from the `tongflow` package) validates each step against the same registry, so a workflow the agent saves is one the exporter and the canvas accept. The category table lives in [`src/engine/node-categories.ts`](src/engine/node-categories.ts) and a test keeps it in step with `packages/tongflow/src/canvas/node-types.tsx`.
 
 ## Agent tools
 
-`tongflow_project_*` · `tongflow_bible_*` · `tongflow_breakdown_*` · `tongflow_workflow_new / _patch / _read / _list / _validate / _bind / _run` · `tongflow_node_catalog / _describe` · `tongflow_take_list / _circle / _delete` · `tongflow_dailies_note` · `tongflow_ref_resolve` · `tongflow_look` (images / video contact sheets, returned as an image block) · `tongflow_perceive` (video/audio/image understanding via TongFlow slots) · `tongflow_plugins_list / _install / _uninstall` · `tongflow_run_status`. Long runs go through dsh background jobs (`run_in_background`).
+`tongflow_project_create / _open / _list / _status` · `tongflow_workflow_new / _patch / _read / _list / _validate / _run / _compose` · `tongflow_node_catalog / _describe` · `tongflow_look` (images / video contact sheets, returned as an image block) · `tongflow_perceive` (video/audio/image understanding via TongFlow slots) · `tongflow_plugins_list / _install / _uninstall` · `tongflow_run_status`. Folder structure and text files are made with dsh's ordinary file tools. Long runs go through dsh background jobs (`run_in_background`).
 
-Skills shipped: `tongflow-studio` (the working method) and `tongflow-manga-drama` (the pipeline: script → bible → breakdown → SB → KF → DLG → ANI → MUS → CUT).
+Skill shipped: `tongflow-studio` (the working method: research → propose a structure → one workflow per asset next to its outputs → run → review → next stage). Genre knowledge is not packaged; the agent researches or the user installs a skill of their own.
 
 ## HTTP (same origin as dsh)
 
-`/tongflow/projects`, `/tongflow/p/:pid/{tree,status,entities,breakdown,takes,workflows,workflow,runs,files/*,ref}`, `/tongflow/runs/:id[/events|/cancel]`, `/tongflow/plugins`, `/tongflow/env`, `/tongflow/health`, plus the canvas-compat API under `/tongflow/p/:pid/api/*` that `tongflow/canvas` talks to.
+`/tongflow/projects`, `/tongflow/p/:pid/{tree,status,workflows,workflow[/summary|/outputs|/describe|/patch],runs,files/*}`, `/tongflow/runs/:id[/events|/cancel]`, `/tongflow/plugins`, `/tongflow/env`, `/tongflow/health`, plus the canvas-compat API under `/tongflow/p/:pid/api/*` that `tongflow/canvas` talks to.
 
 ## Configuration (cordis row `tongflow`)
 
@@ -86,6 +101,7 @@ Skills shipped: `tongflow-studio` (the working method) and `tongflow-manga-drama
 | `maxConcurrentRuns` | `2` | |
 | `httpPrefix` | `/tongflow` | |
 | `locale` | `en` | canvas UI locale (`en` / `zh` / `ja` / `ko`) |
+| `autoInstallOfficial` | `true` | at start, shallow-clone every official plugin that is missing (a few hundred KB each) so the canvas offers the full catalog; API keys / Modal deploys are only needed when a workflow runs |
 
 ## Development
 
@@ -96,6 +112,6 @@ pnpm --filter dsh-tongflow test
 npx @deepseek-ai/dsh@next plugin --profile web add ./packages/dsh-tongflow   # link: install for hacking
 ```
 
-The browser half is a single CJS bundle in dsh's `window.__ModuleLoader__` shape: only dsh's platform modules (react, cordis, slot kits) stay external; `tongflow/canvas`, @xyflow/react, zustand and use-intl are inlined (and deduplicated so React contexts match). See [`docs/design.md`](docs/design.md) and [`docs/naming.md`](docs/naming.md).
+The browser half is a single CJS bundle in dsh's `window.__ModuleLoader__` shape: only dsh's platform modules (react, cordis, slot kits) stay external; `tongflow/canvas`, @xyflow/react, zustand and use-intl are inlined (and deduplicated so React contexts match). See [`docs/design.md`](docs/design.md).
 
 License: AGPL-3.0-only (same as TongFlow).

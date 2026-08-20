@@ -147,6 +147,28 @@ VENDOR_FIELDS = {
 NORMALIZED_VENDOR_FIELDS = {re.sub(r"[^a-z0-9]", "", key) for key in VENDOR_FIELDS}
 
 
+# The source policy -> render treatment mapping from `common-recipe.md`. A
+# treatment outside its policy's row is a structural defect: the fix is a
+# creator override that changes the accepted policy, never a quiet widening here.
+ALLOWED_TREATMENTS = {
+    "exact_readable": {"readable", "postproduction"},
+    "graphic_only": {"symbolic"},
+    "no_readable_text": {"blank", "symbolic"},
+    "pending_creator_text": {"postproduction"},
+}
+
+# A blanket "no text in the image" instruction, however it is phrased. Matching
+# two literals (`no text` / `无文字`) let the reference document's own worked
+# counter-example through: `画面中不要任何文字` contains neither.
+NO_TEXT_CONSTRAINT = re.compile(
+    r"(无任何(文字|字|文本)|无文字|不要(任何)?(文字|字|文本)|不出现(任何)?(文字|字)"
+    r"|没有(任何)?(文字|字)|不含(任何)?(文字|字)|禁止(出现)?(文字|字)"
+    r"|no\s+(visible\s+)?(text|lettering|writing|words|typography)"
+    r"|without\s+(any\s+)?text|text[-\s]free)",
+    re.IGNORECASE,
+)
+
+
 class ValidationError(ValueError):
     pass
 
@@ -300,10 +322,27 @@ def validate_asset_spec(
         treatment = handling.get("render_treatment")
         if not isinstance(treatment, dict):
             raise ValidationError(f"{label}: text_handling.render_treatment is required")
-        if handling.get("source_mode") == "exact_readable" and treatment.get("mode") == "readable":
+        # `common-recipe.md` gives the source policy -> render treatment mapping
+        # as a structural check. Nothing implemented it, so a prop whose accepted
+        # policy is `no_readable_text` could ask for readable lettering and come
+        # back `valid` -- inventing a name or a number the creator never accepted.
+        source_mode = handling.get("source_mode")
+        allowed = (
+            ALLOWED_TREATMENTS.get(source_mode)
+            if isinstance(source_mode, str)
+            else None
+        )
+        mode = treatment.get("mode")
+        if allowed is not None and mode not in allowed:
+            raise ValidationError(
+                f"{label}: text policy {source_mode!r} allows "
+                f"{' or '.join(sorted(allowed))}, not {mode!r}; a creator "
+                f"override must change the policy rather than the treatment"
+            )
+        if source_mode == "exact_readable" and mode == "readable":
             text(treatment, "exact_text", f"{label}.text_handling.render_treatment")
-            negatives = " ".join(str(item).casefold() for item in record.get("negative_constraints", []))
-            if "no text" in negatives or "无文字" in negatives:
+            negatives = " ".join(str(item) for item in record.get("negative_constraints", []))
+            if NO_TEXT_CONSTRAINT.search(negatives):
                 raise ValidationError(f"{label}: readable text conflicts with a no-text constraint")
 
 
@@ -372,7 +411,10 @@ def validate_records(
         "checks": [
             "unique_ids",
             "accepted_bindings",
-            "source_resolution",
+            # Named for what it does: every reference names a snapshot this
+            # file declares. Whether that record exists in the target artifact
+            # is not knowable here -- the checker is handed this file only.
+            "source_declaration",
             "reference_slots",
             "prompt_hygiene",
         ],

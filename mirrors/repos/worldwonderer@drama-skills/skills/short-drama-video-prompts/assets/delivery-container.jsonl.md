@@ -66,16 +66,16 @@
 
 ## 结构校验点
 
-`VID-13` 靠这条记录本地可证，不依赖阅读渲染文本：
+`VID-13` 靠这条记录本地可证，不依赖阅读渲染文本。带 ✓ 的由 [container_check.py](../scripts/container_check.py) 判定，其余由审查者判定——此前这份清单整体写成「本地可证」，而脚本只实现了其中两项：
 
-1. `members[]` 非空，`order` 唯一、连续、升序；
+1. ✓ `members[]` 非空，`order` 唯一、连续、升序；
 2. 每条引用的 `src` 在本文件 `sources` 声明里找得到对应条目；
-3. 每个成员的 `accepted_duration` 等于其 `accepted_duration_ref` 解析后指向的分镜值；
-4. `container_duration` 等于各成员 `accepted_duration` 之和；
+3. ✓ 每个成员的 `accepted_duration` 等于其 `accepted_duration_ref` 解析后指向的分镜值；
+4. ✓ `container_duration` 等于各成员 `accepted_duration` 之和；
 5. 每个成员的 `motion_ref` 指向的运动规格，其 `shot_ref` 与该成员 `shot_ref` 解析到同一镜头记录；
 6. **逐成员**解析 `location_binding_ref` 与 `asset_bindings_ref`，各成员解析结果相同时
    `binding_chain_equal` 才能为 `true`；只引用其中一条成员记录不构成证明。
-7. `membership_basis` 三项都有结论，未成立的写进 `unresolved`，不留空。
+7. ✓ `membership_basis` 三项都有结论，未成立的写进 `unresolved`，不留空。
 
 任何一项不成立即为结构缺陷，按主技能的 `stale` 与恢复流程处理，不在渲染文本里补救。
 

@@ -499,12 +499,38 @@ presentation data.
 
 Tutti Desktop creates one status source per workspace renderer and injects it
 into every AgentGUI surface in that workspace. The source shares the one-hour
-Provider snapshot, five-second refresh debounce, and in-flight Provider probe
-by provider, while each surface keeps its own controller and therefore its own
+Agent Target snapshot, five-second refresh debounce, and in-flight status probe
+by exact `agentTargetId`, while each surface keeps its own controller and therefore its own
 query, loading, close, and stale-response state. Sharing the controller itself
 is invalid because one surface could replace or close another surface's active
 request. Standalone renderer processes have their own source; the Electron main
-process remains the cross-window short-lived Provider cache.
+process remains the cross-window short-lived exact-target cache.
+
+Account-usage probing for an Agent Extension is an optional, versioned,
+target-scoped capability declared by the signed Extension. The provider-owned
+Helper owns provider config, credentials, trusted origins, private endpoints,
+and response parsing; `tuttid` runs only the exact companion script installed
+and fingerprinted in that Target's independent companion runtime through a
+separately verified Node interpreter. Companion availability never changes ACP
+readiness. A daemon-owned reconciler installs the companion outside setup
+actions, wakes after runtime or Extension activation, retries failures with
+bounded backoff, and rechecks persisted activation on restart. Account-usage
+requests are joined and cached for a short TTL by exact `agentTargetId`; the TTL
+starts when execution completes, and Node identity derivation is reused while
+the executable file identity is unchanged. The daemon accepts existing v1
+helper output and returns the normalized provider-neutral
+`tutti.agent.account-usage.v2` discriminated result. Desktop validates the
+schema and echoed Target/provider identity, then projects billing identity,
+quota completeness, and optional exact Provider-neutral amounts without
+changing ACP readiness. A complete quota set is distinct from a known account
+whose quota is unavailable and from API billing where quota is not applicable;
+only the complete state may carry rows. Presentation maps API `not_applicable`
+to a resolved empty limits row (`—`), while `unavailable` uses localized
+account-quota-unavailable copy; neither becomes a refresh failure. Missing
+profiles and older Extensions are `unsupported`; unknown schemas, enums,
+shapes, partial exact amounts, or a claimed complete result without quotas fail
+closed as `parse_failed`. No provider message, path, endpoint, response body,
+credential, account ID, or raw account record crosses the port or enters logs.
 
 A source emits at most one cached `snapshot` followed by at most one
 `refreshed` value, then completes. Backend probing may continue independently
@@ -515,6 +541,13 @@ or transport diagnostics. The limits projection preserves stable codes such as
 `auth_required`, `session_expired`, and `subscription_required` through
 `AgentStatusValue.limitsErrorCode`; AgentGUI owns their localized presentation
 and maps unknown codes to one generic failure label.
+
+A provider quota may carry an optional exact provider-neutral amount and unit
+when a percentage alone would hide useful account information. The host owns
+the provider request, credential handling, package aggregation, and percentage
+normalization; AgentGUI only renders the projected amount and uses the optional
+percentage for progress presentation. Raw account and package records never
+cross this boundary.
 
 An explicit unsupported usage probe is a successful bounded read with no
 quotas and `limitsState: unavailable`; it must not become a refresh failure.
@@ -1388,6 +1421,15 @@ The busy-session prompt queue is ephemeral durable-intent coordination in the wo
 - a queued-prompt `Send next` action uses native guidance when the provider
   supports it, even when the provider also supports interruption; guidance
   stays on the same canonical Turn and follows the provider's native semantics
+- when an active-turn `Send now` arrives before the Session has an authoritative
+  capability snapshot, the workspace Engine retains the exact prompt and
+  send-now decision without dispatching guidance or cancellation. A later
+  authoritative snapshot resolves that same intent to native guidance or
+  cancel-then-send. An explicit complete snapshot that supports neither keeps
+  the prompt in the ordinary queue until canonical availability returns; a
+  missing snapshot must never discard the prompt or be treated as unsupported.
+  Each queued prompt owns its deferred decision and exact target Turn; a later
+  Turn must not inherit guidance or cancellation intended for its predecessor
 - Claude SDK guidance acknowledges delivery only after its SDK interrupt has
   succeeded and the guidance prompt has been enqueued; a failed interrupt is a
   failed guidance request and must not allow the old response to keep running.
@@ -2002,12 +2044,14 @@ converge on the next canonical read without exposing stale entries. The flag
 does not uninstall connectors, stop their runtimes, or reject an already
 structured connector prompt.
 
-Desktop also projects the flag through AgentGUI's existing host-owned
-capability-menu state. The primary footer capability slot renders the
-Connectors menu only when `lab.connectors` is on; otherwise it is omitted.
-Tutti Mode remains available through the slash-command surface, but has no
-dedicated footer entry. The same footer serves both the home hero and
-existing-session dock, so the two AgentGUI contexts cannot drift.
+Desktop also projects these flags through AgentGUI's existing host-owned
+capability-menu state. The footer renders the Connectors menu only when
+`lab.connectors` is on. The independent `lab.tuttiMode` flag defaults off; when
+enabled, the same footer renders the Tutti Mode activation switch and the slash
+palette exposes `/tutti`, including when Connectors are also enabled. When the
+flag is off, both Tutti Mode entry points are omitted. The same footer serves
+both the home hero and existing-session dock, so the two AgentGUI contexts
+cannot drift.
 The menu, selection-chip, and Palette-item implementations plus their neutral
 item contracts belong to `@tutti-os/connector-renderer/ui`. AgentGUI owns only
 the React-free capability projection under `integrations/connector`, Composer
@@ -2263,6 +2307,18 @@ plan panel starts with the plan title and body; it does not repeat mode,
 review-kind, or pending-state badges already communicated by the workflow
 banner.
 
+The reviewed document's effect and speed are immutable plan inputs, while the
+Composer preferences remain mutable for the next Turn. A change is proven only
+when the document carries both explicit frozen values and either differs from
+the current Composer value; legacy documents with a missing pair never infer a
+change from reasoning or orchestration fields. With a proven change, the empty
+Composer shows `Request changes` beside `Accept`; without one, it shows only
+`Accept`. Accept always targets the checkpoint bound to the currently projected
+revision and therefore executes exactly the visible plan. The daemon rejects a
+checkpoint that is no longer bound to the workflow's current revision, so a
+stale render cannot execute replacement content. Typed feedback continues to
+request changes and includes the current preferences when they diverge.
+
 Task-assignment directories and target option catalogs are workspace query
 projections, not Plan, Session, or Turn state. The Desktop assignment source
 retains them in the shared bounded workspace query cache: directories are keyed
@@ -2315,8 +2371,10 @@ remains a separate adjacent action, and all controls stay disabled while an
 activation update is unresolved. The Desktop command host and HTTP adapter must
 preserve the optimistic CAS revision and both optional preferences; dropping
 any field turns a valid UI intent into a stale or semantically mismatched
-response. Tutti Desktop always advertises the Tutti Mode host capability;
-historical `lab.tuttiMode` preference values do not hide or disable it.
+response. Tutti Desktop advertises the Tutti Mode host capability only while
+the default-off `lab.tuttiMode` preference is enabled. Toggling the preference
+changes presentation without mutating an existing session's durable activation
+or workflow state.
 
 The preference popup uses two independent 0-100 sliders. `effect` raises the
 minimum model capability and task-verification breadth. `speed` asks the
@@ -2531,6 +2589,18 @@ tab state. It also owns the single browser chrome instance for that surface.
 Its controller may activate an existing page by URL inside that one surface;
 the product Host remains responsible for choosing among Browser surfaces and
 focusing the owning top-level node or window.
+Desktop mode adapters register the same semantic Terminal, Browser, and Files
+launch coordinators in each renderer. A Workspace adapter presents through its
+Workbench host; a standalone Agent adapter presents through the right-side tool
+sidebar and waits for the exact mounted controller when necessary. The
+standalone AgentGUI `surface.host` represents the Agent node and must not be
+used as a tool-launch host. After a canonical Turn is created, its originating
+renderer claims the Browser presentation role through Electron main; Browser
+automation then selects or creates that exact Agent or Workspace surface.
+Automation may wait briefly when a provider tool request races ahead of that
+claim. Unclaimed legacy Turns retain the user/Workspace fallback. Host
+readiness must not be used to infer Turn origin. These tools remain Desktop
+chrome and do not enter AgentGUI lifecycle state.
 Hosts compose window controls into the tab strip through `defaultActions`,
 pass draggable-header semantics through `dragHandleProps`, and use
 `navigationActions` for address-row actions. A host must not wrap the panel in

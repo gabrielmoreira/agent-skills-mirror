@@ -238,7 +238,10 @@ def validate_records(characters: RecordFile, looks: RecordFile) -> dict[str, Any
         "status": "valid",
         "characters": len(characters.records),
         "looks": len(looks.records),
-        "checks": ["unique_ids", "acceptance_shape", "source_refs", "look_binding"],
+        # `source_declaration` is this file's own `sources` header resolving;
+        # `look_binding` is a real cross-record lookup, and it is one only
+        # because both files are handed to this checker.
+        "checks": ["unique_ids", "acceptance_shape", "source_declaration", "look_binding"],
     }
 
 

@@ -23,15 +23,15 @@ COLLABORATION_PATTERNS:
 - Compete -> Riff: Competitive insights for brainstorming
 - Riff -> Magi: Decision candidates from brainstorming
 - Riff -> Spark: Feature seeds from idea exploration
-- Riff -> Accord: Requirement seeds from concept structuring
+- Riff -> Scribe[unified]: Requirement seeds from concept structuring
 - Riff -> Void: Pruning candidates from over-expanded sessions
 - Riff -> Helm: Strategic options from brainstorming
 - Riff -> Scribe: Concept documentation from synthesized ideas
-- Riff <-> Summon: Expert mental models seed ideation; channeled readings return as brainstorm material (`RIFF_TO_SUMMON` / `SUMMON_TO_RIFF`)
+- Riff <-> Magi[expert]: Documented expert mental models seed ideation and return as brainstorm material (`RIFF_TO_MAGI_EXPERT` / `MAGI_EXPERT_TO_RIFF`)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: User (ideas, themes, questions), Nexus (brainstorming routing), Flux (reframed problems), Summon (named-expert mental models as ideation seeds), Field (research findings), Compete (competitive insights)
-- OUTPUT: Magi (decision candidates), Summon (ideation needing named-expert lenses), Spark (feature seeds), Accord (requirement seeds), Void (pruning candidates), Helm (strategic options), Scribe (concept documentation)
+- INPUT: User (ideas, themes, questions), Nexus (brainstorming routing), Flux (reframed problems), Magi (named-expert mental models as ideation seeds), Field (research findings), Compete (competitive insights)
+- OUTPUT: Magi (decision candidates and named-expert lenses), Spark (feature seeds), Scribe[unified] (requirement seeds), Void (pruning candidates), Helm (strategic options), Scribe (concept documentation)
 
 PROJECT_AFFINITY: Game(H) SaaS(H) E-commerce(M) Dashboard(M) Marketing(H)
 -->
@@ -213,12 +213,12 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 - **Open Questions** that still need exploration.
 - **Recommended Next Steps** with agent routing suggestion when appropriate.
 
-→ Details: `reference/examples.md` for session examples and tone guidance.
+Use the mode definitions and transition signals above for session structure and tone.
 
 ## Collaboration
 
 **Receives:** User (ideas, themes, questions), Nexus (brainstorming routing), Flux (reframed problems), Field (research findings), Compete (competitive insights)
-**Sends:** Magi (decision candidates), Spark (feature seeds), Accord (requirement seeds), Void (pruning candidates), Helm (strategic options), Scribe (concept documentation)
+**Sends:** Magi (decision candidates), Spark (feature seeds), Scribe[unified] (requirement seeds), Void (pruning candidates), Helm (strategic options), Scribe (concept documentation)
 
 **Overlap boundaries:**
 - **vs Flux**: Flux = single-shot perspective transformation on the thinking process. Riff = iterative multi-turn dialogue that deepens ideas through back-and-forth.
@@ -271,7 +271,6 @@ Full algorithm, JSON schema, prompt skeletons, CLUSTER identity rules, GROUND ch
 | Reference | Read this when |
 |-----------|----------------|
 | `reference/patterns.md` | You need pattern definitions, mode transition signals, or session structure guidance |
-| `reference/examples.md` | You need session examples, question repertoires, or tone guidance |
 | `reference/handoffs.md` | You need handoff templates for partner agents |
 | `reference/steelman-protocol.md` | You are running the `steelman` recipe and need the 5-step protocol, quality test, honest-friction rules, dialogue template, or routing guidance |
 | `reference/scamper-method.md` | You are running the `scamper` recipe and need the 7-lens probing questions, sequencing strategies for different situations, variation quality bar, or output format |
@@ -296,4 +295,3 @@ See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantic
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
-

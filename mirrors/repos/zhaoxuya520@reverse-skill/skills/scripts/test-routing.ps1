@@ -19,6 +19,9 @@ if (-not $scriptDir) { $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.P
 $skillsRoot = Split-Path -Parent $scriptDir
 if (-not $PackageRoot) { $PackageRoot = Split-Path -Parent $skillsRoot }
 
+. (Join-Path (Join-Path $scriptDir 'lib') 'HostRuntime.ps1')
+$HostExe = Resolve-ReverseHostExe
+
 if ([string]::IsNullOrWhiteSpace($Benchmark)) {
     $Benchmark = Join-Path $skillsRoot 'tests/routing-benchmark.json'
 }
@@ -51,7 +54,7 @@ foreach ($c in $cases) {
     $tmp = Join-Path $tmpBase ("rs-rt-{0}" -f [guid]::NewGuid().ToString('n'))
     $got = 'ERR'
     try {
-        $null = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint $c.hint -OutDir $tmp 2>&1
+        $null = & $HostExe -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint $c.hint -OutDir $tmp 2>&1
         $scope = Join-Path $tmp 'route-scope.md'
         if (Test-Path -LiteralPath $scope) {
             $text = Get-Content -LiteralPath $scope -Raw -Encoding UTF8

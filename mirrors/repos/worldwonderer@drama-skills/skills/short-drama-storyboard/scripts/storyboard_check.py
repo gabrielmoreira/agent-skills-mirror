@@ -266,6 +266,22 @@ def check_episode_duration(
             )
         )
 
+    # A shot listed twice is summed twice, and set arithmetic above never sees
+    # it. One copy-paste inflates the episode by a whole shot, and the checker
+    # then confirms the inflated figure in the coverage file as correct.
+    duplicates = sorted(
+        {shot_id for shot_id in counted_ids + unresolved_ids
+         if (counted_ids + unresolved_ids).count(shot_id) > 1}
+    )
+    if duplicates:
+        findings.append(
+            _finding(
+                "SHT16_SHOT_LISTED_TWICE",
+                "episode_duration names the same shot more than once",
+                shot_ids=duplicates,
+            )
+        )
+
     accounted = set(counted_ids) | set(unresolved_ids)
     missing = sorted(set(covered_ids) - accounted)
     if missing:
@@ -274,6 +290,20 @@ def check_episode_duration(
                 "SHT16_SHOT_LEFT_THE_TOTAL",
                 "coverage lists shots that neither contribute nor are suspended",
                 shot_ids=missing,
+            )
+        )
+    # `covered_ids` comes from the coverage document itself, so the check above
+    # only asks whether coverage agrees with coverage. The episode's real shot
+    # list is `shots.jsonl`; a shot dropped from both the dispositions and the
+    # total is invisible to every check that reads only the one file.
+    unaccounted = sorted(set(by_id) - accounted)
+    if unaccounted:
+        findings.append(
+            _finding(
+                "SHT16_EPISODE_SHOT_LEFT_THE_TOTAL",
+                "the shot file carries shots that episode_duration neither "
+                "counts nor suspends",
+                shot_ids=unaccounted,
             )
         )
     unknown = sorted(accounted - set(by_id))
@@ -287,7 +317,7 @@ def check_episode_duration(
         )
 
     total = 0.0
-    for shot_id in counted_ids:
+    for shot_id in sorted(set(counted_ids)):
         shot = by_id.get(shot_id)
         if shot is None:
             continue
@@ -502,26 +532,166 @@ def _declared_target(project: Path | None) -> float | None:
 # two shots claim is a block the edit will show twice. Shots bind to the
 # screenplay through the index -- stable block IDs -- not through the prose,
 # because the prose is edited constantly and the IDs survive that.
-def screenplay_block_ids(index_path: Path) -> list[str]:
+def screenplay_block_ids(index_path: Path) -> tuple[list[str], int]:
+    """The indexed blocks, and how much of the screenplay stayed unclassified.
+
+    A line the index could not classify is not a block, so it is invisible to
+    every check below: no shot can claim it, and nothing reports that it is
+    missing. Coverage measured against a partial index is not coverage of the
+    screenplay, so the count comes back with the IDs.
+    """
+
     _sources, records = _load_jsonl(index_path)
-    return [
+    blocks = [
         str(record["block_id"])
         for record in records
         if record.get("record_type") == "block" and isinstance(record.get("block_id"), str)
     ]
+    issues = sum(
+        1 for record in records if record.get("record_type") == "source_issue"
+    )
+    return blocks, issues
+
+
+# SKILL.md gives four dispositions, and three of them are not "one shot claims
+# this block": material can be intentionally repeated, omitted for a reason, or
+# present only so the reader understands the scene. A claim check that knows
+# nothing about them can only ever demand exactly one shot per block, which is
+# why marking a block `nonvisual_context` as the workflow instructs used to fail.
+DISPOSITIONS = {
+    "covered",
+    "intentional_repeat",
+    "omitted_with_reason",
+    "nonvisual_context",
+}
+# Two of them are a decision, not an observation, so they have to carry the
+# reason the decision was made.
+DISPOSITIONS_NEEDING_A_REASON = {"intentional_repeat", "omitted_with_reason"}
+# Only these expect shots. The other two are records of material that is
+# deliberately not on screen.
+DISPOSITIONS_EXPECTING_SHOTS = {"covered", "intentional_repeat"}
+
+
+def block_dispositions(
+    coverage: dict[str, Any], wanted: set[str]
+) -> tuple[dict[str, str], list[dict[str, Any]]]:
+    """Read the disposition table, and check it against the screenplay index.
+
+    Nothing validated this table before: rows could be dropped, given a status
+    no rule defines, or point at blocks that do not exist, and the file still
+    passed. Coverage and `shots.jsonl` were two independent claims about the
+    same fact with no reconciliation between them.
+    """
+
+    findings: list[dict[str, Any]] = []
+    rows = coverage.get("dispositions")
+    if not isinstance(rows, list):
+        return {}, [
+            _finding("SHT01_DISPOSITIONS_MISSING", "coverage carries no dispositions")
+        ]
+
+    status_of: dict[str, str] = {}
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            findings.append(
+                _finding(
+                    "SHT01_DISPOSITION_MALFORMED",
+                    "a disposition row is not an object",
+                    position=index,
+                )
+            )
+            continue
+        block_id = row.get("block_id")
+        status = row.get("status")
+        if not isinstance(block_id, str) or not block_id:
+            findings.append(
+                _finding(
+                    "SHT01_DISPOSITION_MALFORMED",
+                    "a disposition row names no block",
+                    position=index,
+                )
+            )
+            continue
+        if status not in DISPOSITIONS:
+            findings.append(
+                _finding(
+                    "SHT01_DISPOSITION_UNKNOWN",
+                    "a disposition must be one of the four the workflow defines",
+                    block_id=block_id,
+                    status=status,
+                )
+            )
+            continue
+        if block_id in status_of:
+            findings.append(
+                _finding(
+                    "SHT01_DISPOSITION_REPEATED",
+                    "a block carries more than one disposition",
+                    block_id=block_id,
+                )
+            )
+            continue
+        if block_id not in wanted:
+            findings.append(
+                _finding(
+                    "SHT01_DISPOSITION_NOT_IN_SCREENPLAY",
+                    "a disposition names a block that is not in the screenplay index",
+                    block_id=block_id,
+                )
+            )
+            continue
+        if status in DISPOSITIONS_NEEDING_A_REASON and not str(
+            row.get("reason") or ""
+        ).strip():
+            findings.append(
+                _finding(
+                    "SHT01_DISPOSITION_HAS_NO_REASON",
+                    "repeating or omitting material is a decision and must say why",
+                    block_id=block_id,
+                    status=status,
+                )
+            )
+        status_of[block_id] = status
+
+    undecided = sorted(wanted - set(status_of))
+    if undecided:
+        findings.append(
+            _finding(
+                "SHT01_BLOCK_HAS_NO_DISPOSITION",
+                "every production-relevant block must carry a disposition",
+                block_ids=undecided,
+            )
+        )
+    return status_of, findings
 
 
 def check_screenplay_coverage(
     shots: list[dict[str, Any]],
     shot_sources: dict[str, Any],
     index_path: Path | None,
+    coverage: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     if index_path is None:
         return []
     try:
-        wanted = screenplay_block_ids(index_path)
+        wanted, unclassified = screenplay_block_ids(index_path)
     except OSError as error:
         raise CheckError(f"screenplay index cannot be read: {error}") from error
+
+    status_of: dict[str, str] = {}
+    disposition_findings: list[dict[str, Any]] = []
+    if unclassified:
+        disposition_findings.append(
+            _finding(
+                "SHT01_SCREENPLAY_IS_NOT_FULLY_INDEXED",
+                "the screenplay index left lines unclassified, so this coverage "
+                "check cannot see all of the screenplay",
+                source_issue_count=unclassified,
+            )
+        )
+    if coverage is not None:
+        status_of, disposition_findings2 = block_dispositions(coverage, set(wanted))
+        disposition_findings.extend(disposition_findings2)
 
     claims: dict[str, list[str]] = {block_id: [] for block_id in wanted}
     unknown: list[dict[str, Any]] = []
@@ -537,20 +707,36 @@ def check_screenplay_coverage(
             elif resolved.artifact.endswith("screenplay-index.jsonl"):
                 unknown.append({"shot_id": shot_id, "block_id": record_id})
 
-    findings = []
+    findings = list(disposition_findings)
     for block_id, owners in claims.items():
+        # With no coverage file to read, every block is treated as `covered`:
+        # that is the old behaviour, and the only safe assumption when the
+        # creator has not said otherwise.
+        status = status_of.get(block_id, "covered") if coverage is not None else "covered"
         if not owners:
+            if status in DISPOSITIONS_EXPECTING_SHOTS:
+                findings.append(
+                    _finding(
+                        "SHT01_BLOCK_UNCLAIMED",
+                        "no shot claims this screenplay block",
+                        block_id=block_id,
+                        status=status,
+                    )
+                )
+        elif status not in DISPOSITIONS_EXPECTING_SHOTS:
             findings.append(
                 _finding(
-                    "SHT21_BLOCK_UNCLAIMED",
-                    "no shot claims this screenplay block",
+                    "SHT01_BLOCK_IS_ON_SCREEN_ANYWAY",
+                    "a block recorded as not filmed is claimed by a shot",
                     block_id=block_id,
+                    status=status,
+                    shot_ids=owners,
                 )
             )
-        elif len(owners) > 1:
+        elif len(owners) > 1 and status != "intentional_repeat":
             findings.append(
                 _finding(
-                    "SHT21_BLOCK_CLAIMED_TWICE",
+                    "SHT01_BLOCK_CLAIMED_TWICE",
                     "more than one shot claims the same screenplay block",
                     block_id=block_id,
                     shot_ids=owners,
@@ -559,7 +745,7 @@ def check_screenplay_coverage(
     for stray in unknown:
         findings.append(
             _finding(
-                "SHT21_BLOCK_NOT_IN_SCREENPLAY",
+                "SHT01_BLOCK_NOT_IN_SCREENPLAY",
                 "a shot claims a block that is not in the screenplay index",
                 **stray,
             )
@@ -580,7 +766,11 @@ def check(
     shot_sources, shots = _load_jsonl(shots_path)
     findings = check_episode_duration(coverage, shots, _declared_target(project_path))
     findings.extend(check_boundary_entries(shots))
-    findings.extend(check_screenplay_coverage(shots, shot_sources, screenplay_index_path))
+    findings.extend(
+        check_screenplay_coverage(
+            shots, shot_sources, screenplay_index_path, coverage
+        )
+    )
     keyframes: list[dict[str, Any]] | None = None
     if keyframes_path is not None:
         keyframe_sources, keyframes = _load_jsonl(keyframes_path)

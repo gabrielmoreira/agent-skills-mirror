@@ -55,10 +55,17 @@ the other.
   top-level actions (e.g. `COMPUTER_USE_CLICK`, `WINDOW_FOCUS`) so the
   planner picks a specific verb directly from the catalogue.
 - **Services** — `ComputerUseService` (`serviceType = "computeruse"`)
-  and `VisionContextProvider`.
+  owns platform dispatch, approvals, and isolated sessions;
+  `VisionContextProvider` exposes scene context.
 - **Providers** — `computerStateProvider`, `sceneProvider`.
 - **Routes** — approval inbox + SSE stream + approval-mode toggle under
   `/api/computer-use/...`.
+- **Sessions** — authenticated `/api/computer-use/sessions` CRUD, action,
+  read-only frame, lease-renewal, and SSE routes expose exclusive physical-host ownership plus
+  concurrent browser/sandbox/remote-guest targets. Each action carries a
+  unique id and expected sequence; stale, duplicate, busy, and cross-target
+  attempts fail closed. Cursor state is virtual per session. A desktop still
+  has one physical mouse and keyboard.
 
 ## File operations + shell
 
@@ -69,8 +76,8 @@ on the SHELL action. They are **not** exposed by this plugin.
 
 - [`docs/MULTI_MONITOR.md`](./docs/MULTI_MONITOR.md) — multi-display
   capture and coordinate translation.
-- [`docs/SCENE_BUILDER.md`](./docs/SCENE_BUILDER.md) — how windows,
-  a11y, screen, and OCR are composed into a single `Scene`.
+- Scene composition — how windows, a11y, screen, and OCR are composed into a
+  single `Scene` (the separate design note was never committed).
 - [`docs/IOS_CONSTRAINTS.md`](./docs/IOS_CONSTRAINTS.md) /
   [`docs/ANDROID_CONSTRAINTS.md`](./docs/ANDROID_CONSTRAINTS.md) —
   honest scope on mobile.

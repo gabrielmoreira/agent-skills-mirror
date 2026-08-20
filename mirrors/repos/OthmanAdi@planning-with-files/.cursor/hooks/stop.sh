@@ -4,6 +4,10 @@
 # Returns followup_message to auto-continue if phases are incomplete.
 # Always exits 0 — uses JSON stdout for control.
 
+# Issue #195 opt-out. The disabled branch reproduces this hook's own
+# no-plan-file behaviour, so the Cursor protocol shape never changes.
+[ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
+
 PLAN_FILE="task_plan.md"
 
 if [ ! -f "$PLAN_FILE" ]; then

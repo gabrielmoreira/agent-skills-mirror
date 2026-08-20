@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 51 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -110,6 +110,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 49 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
 | 50 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
 | 51 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 52 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
 
 ---
 

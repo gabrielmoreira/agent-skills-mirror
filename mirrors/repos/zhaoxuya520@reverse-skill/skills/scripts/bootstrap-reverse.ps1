@@ -9,8 +9,8 @@ param(
 
     [switch]$StartServices,
 
-    [ValidateSet('Claude', 'Codex', 'Both')]
-    [string]$McpHostTarget = 'Both'
+    [ValidateSet('None', 'Claude', 'Codex', 'Both')]
+    [string]$McpHostTarget = 'None'
 )
 
 # 临时目录统一入口（$env:TEMP 在 Linux/macOS 上可能未设置）
@@ -96,7 +96,8 @@ function Get-McpHostTargets {
     switch ($McpHostTarget) {
         'Claude' { return @('Claude') }
         'Codex' { return @('Codex') }
-        default { return @('Claude', 'Codex') }
+        'Both' { return @('Claude', 'Codex') }
+        default { return @() }
     }
 }
 
@@ -834,7 +835,7 @@ function Ensure-Capability {
     if ($definition.PSObject.Properties['canAutoInstall'] -and $definition.canAutoInstall -eq $false) {
         $hint = if ($definition.PSObject.Properties['manualInstallHint']) { $definition.manualInstallHint } else { "Please install $Name manually. Docs: $($definition.docsUrl)" }
         Write-Warning "MANUAL_INSTALL_REQUIRED: $Name — $hint"
-        # Still try to register MCP URL if applicable
+        # Still try to register MCP URL if applicable and a host was explicitly selected.
         if ($definition.PSObject.Properties['mcpNames'] -and $definition.PSObject.Properties['mcpUrl']) {
             Ensure-McpServer -ServerName $definition.mcpNames[0] -ServerDefinition @{ url = $definition.mcpUrl }
         }

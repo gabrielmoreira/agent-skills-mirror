@@ -52,12 +52,32 @@
 |---|---|
 | `source_ref` | 剧本改一句而表没跟上，录出来的是旧词；绑定了块 ID 才能切出剧本原字节逐字比对 |
 | `speaker` 与 `speaker_display` | 前者是资产身份用于绑定，后者是剧本里逐字写的名字；只留一个就必然有一处对不上 |
-| `channel` 与 `lip_sync_constrained` | 同期与配音、画内与 VO 的可改余地完全不同，混在一起就只能按最严的来 |
+| `channel` 与 `lip_sync_constrained` | 同期与配音、画内与 VO 的可改余地完全不同，混在一起就只能按最严的来。`channel` 必须与它投影的块一致：`[VO]` / `[OS]` 块只能记为同名声道或 `dubbed`，画内对白块不能记成 VO/OS——校验器判定，诊断码 `VOICE_CHANNEL_DISAGREES_WITH_BLOCK` |
 | `addressed_to` / `preceding_line_id` | 集中录制时配音者不知道在对谁说、接谁的话，语气只能靠猜 |
 | `speaker_knows_now` | 同一句话在"已经知道"和"还不知道"下是两种读法，这是最常见的重录原因 |
 | `tactic` | 情绪词（"愤怒"）不可执行；策略可执行。见对白工艺的策略库 |
 | `pronunciation_notes` | 专名与多音字在录音棚里是最贵的中断；决定要在进棚前做完并留痕 |
 | `target_seconds` | 有画面时长约束的行要提前知道，不要在混录时才发现塞不下 |
+
+## 诊断码
+
+`voice_sheet_check.py` 报出的全部代码。它只判逐字投影与结构，不判配音表演。
+
+| 代码 | 分级 | 判定者 | 含义 |
+|---|---|---|---|
+| VOICE_LINE_HAS_NO_ID | structural_invariant | validator | 配音行没有 `line_id` |
+| VOICE_LINE_ID_REPEATS | structural_invariant | validator | `line_id` 重复 |
+| VOICE_CHANNEL_INVALID | structural_invariant | validator | `channel` 不是 sync / dubbed / VO / OS |
+| VOICE_CHANNEL_DISAGREES_WITH_BLOCK | structural_invariant | validator | `channel` 与它投影的块不符：画外音块记成画内，或画内对白记成 VO/OS |
+| VOICE_SOURCE_REF_MISSING | structural_invariant | validator | `source_ref` 没有指向任何上游快照 |
+| VOICE_SOURCE_REF_UNDECLARED | structural_invariant | validator | `src` 在本文件 `sources` 里没有对应条目 |
+| VOICE_SOURCE_REF_UNRESOLVABLE | structural_invariant | validator | `record_id` 在剧本索引里找不到 |
+| VOICE_SOURCE_IS_NOT_DIALOGUE | structural_invariant | validator | 配音行投影的块不是台词，也不是 `[VO]`/`[OS]` |
+| VOICE_BLOCK_SPAN_INVALID | structural_invariant | validator | 索引记的块跨度装不进这份剧本，或落在半个字符上（索引已过期） |
+| VOICE_BLOCK_IS_UNPARSEABLE | structural_invariant | validator | 台词块不符合文档写明的行语法 |
+| VOICE_LINE_TEXT_DIVERGED | structural_invariant | validator | `line_text` 与剧本原字节不一致——**以剧本为准** |
+| VOICE_SPEAKER_DIVERGED | structural_invariant | validator | `speaker_display` 与剧本里写的名字不一致 |
+| SOURCE_ENTRY_IS_INCOMPLETE | structural_invariant | validator | `sources` 里的条目缺 `owner` 或 `artifact` |
 
 ## 边界
 

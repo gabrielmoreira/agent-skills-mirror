@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 多镜头规划器"
+  short_description: "为10秒以上或明确多镜头的H3视频逐镜头规划内容、景别、机位、转场和声音"
+  default_prompt: "为这个 MiniMax H3 视频建立逐镜头方案，并将确认后的结构化镜头表交给总导演继续生成提示词。"

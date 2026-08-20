@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 9 followed patterns, 616 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 9 followed patterns, 617 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 9 followed patterns, 616 file
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 616 |
+| Files         | 617 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -670,19 +670,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 601 | ✓ | [`plugins/plugin-zerollama/AGENTS.md`](plugins/plugin-zerollama/AGENTS.md) |
 | 602 | ✓ | [`plugins/plugin-zerollama/CLAUDE.md`](plugins/plugin-zerollama/CLAUDE.md) |
 | 603 | ✓ | [`plugins/plugin-zerollama/README.md`](plugins/plugin-zerollama/README.md) |
-| 604 | ✓ | [`scripts/gpu-vision/README.md`](scripts/gpu-vision/README.md) |
-| 605 | ✓ | [`scripts/training-harvest/README.md`](scripts/training-harvest/README.md) |
-| 606 | ✓ | [`scripts/vast/README.md`](scripts/vast/README.md) |
-| 607 | ✓ | [`upstreams/electrobun-patches/README.md`](upstreams/electrobun-patches/README.md) |
-| 608 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
-| 609 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
-| 610 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
-| 611 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 612 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
-| 613 | → | [`packages/docs/security.md`](packages/docs/security.md) |
-| 614 | → | [`README.md`](README.md) |
-| 615 | → | [`SECURITY.md`](SECURITY.md) |
-| 616 | → | [`WINDOWS.md`](WINDOWS.md) |
+| 604 | ✓ | [`scripts/evidence-review/README.md`](scripts/evidence-review/README.md) |
+| 605 | ✓ | [`scripts/gpu-vision/README.md`](scripts/gpu-vision/README.md) |
+| 606 | ✓ | [`scripts/training-harvest/README.md`](scripts/training-harvest/README.md) |
+| 607 | ✓ | [`scripts/vast/README.md`](scripts/vast/README.md) |
+| 608 | ✓ | [`upstreams/electrobun-patches/README.md`](upstreams/electrobun-patches/README.md) |
+| 609 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
+| 610 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
+| 611 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
+| 612 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 613 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
+| 614 | → | [`packages/docs/security.md`](packages/docs/security.md) |
+| 615 | → | [`README.md`](README.md) |
+| 616 | → | [`SECURITY.md`](SECURITY.md) |
+| 617 | → | [`WINDOWS.md`](WINDOWS.md) |
 
 ---
 

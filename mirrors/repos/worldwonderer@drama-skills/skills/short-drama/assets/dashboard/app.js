@@ -38,10 +38,11 @@ const HIDDEN_FILES = new Set([
 
 // Reading order inside one group: what the creator wrote, then what was built
 // from it. Raw directory order otherwise buries the screenplay below the prompts.
-const SECTION_ORDER = ["story", "project", "sources", "cast", "visual", "storyboard", "prompts", "production", "other"];
+const SECTION_ORDER = ["story", "project", "sources", "analysis", "cast", "visual", "storyboard", "prompts", "production", "other"];
 
 const CONTENT_META = {
   sources: { label: "原始资料", description: "故事原稿与参考内容" },
+  analysis: { label: "原著分析", description: "拆原著留下的索引、逐章提取与分集候选" },
   project: { label: "项目设定", description: "故事方向与导演表达" },
   cast: { label: "人物场景", description: "角色、造型、场景与道具" },
   story: { label: "故事与剧本", description: "分集构思、节拍与台词" },
@@ -172,6 +173,27 @@ function pathSegments(path) {
   return String(path || "").split("/").filter(Boolean);
 }
 
+// Which stage owns a file is recorded in the project state and travels with
+// `/api/status`. Path rules stay in charge -- they encode real structure, like
+// `assets` under an episode being visual design rather than the asset bible --
+// and this map only catches what those rules do not recognise.
+const OWNER_SECTIONS = {
+  "short-drama": "project",
+  "short-drama-novel-analyze": "analysis",
+  "short-drama-develop": "project",
+  "short-drama-write": "story",
+  "short-drama-assets": "cast",
+  "short-drama-image-prompts": "prompts",
+  "short-drama-storyboard": "storyboard",
+  "short-drama-video-prompts": "prompts",
+  "short-drama-produce": "production",
+};
+
+function ownerSection(path) {
+  const owner = state.status?.ownership?.[path];
+  return owner ? OWNER_SECTIONS[owner] || null : null;
+}
+
 function creatorSection(path) {
   const parts = pathSegments(path);
   const first = parts[0] || "";
@@ -180,12 +202,17 @@ function creatorSection(path) {
   if (!parts.length || HIDDEN_ROOTS.has(first) || HIDDEN_ROOTS.has(lowerFirst)) return null;
   if (HIDDEN_FILES.has(filename)) return null;
   if (parts.length === 1) {
-    return filename === "readme.md" ? "project" : "other";
+    if (filename === "readme.md") return "project";
+    return ownerSection(path) || "other";
   }
   const root = ROOT_ROLES[first] || ROOT_ROLES[lowerFirst];
+  // Pulling a novel apart leaves twenty-odd chapter extracts plus the index and
+  // the aggregates. They are working material, not something read one file at a
+  // time, so they get their own group instead of burying the brief and the map.
+  if (parts[1] === "source-analysis") return "analysis";
   if (root === "sources" || root === "project") return root;
   if (root === "bible") return "cast";
-  if (root !== "episodes") return "other";
+  if (root !== "episodes") return ownerSection(path) || "other";
   const area = (parts[2] || "").toLowerCase();
   if (["production", "制作成果"].includes(area)) return "production";
   if (/prompts?\.(?:md|jsonl?)$/i.test(filename) || filename.includes("prompt")) return "prompts";
@@ -566,8 +593,14 @@ function renderContentList() {
   const term = $("search").value.trim().toLowerCase();
   const files = state.visibleFiles.filter((file) => `${fileLabel(file.path)} ${episodeName(file.path)}`.toLowerCase().includes(term));
   const groups = [];
-  const projectFiles = files.filter((file) => !episodeName(file.path));
+  const projectFiles = files.filter((file) => !episodeName(file.path) && creatorSection(file.path) !== "analysis");
+  const analysisFiles = files.filter((file) => creatorSection(file.path) === "analysis");
   if (projectFiles.length) groups.push(navigationGroup("全剧", projectFiles, "project", Boolean(term)));
+  // Collapsed unless the creator opens it or is searching: on a full-length novel
+  // this is twenty-odd files, and none of them is what someone came here to read.
+  if (analysisFiles.length) {
+    groups.push(navigationGroup(`原著分析（${analysisFiles.length}）`, analysisFiles, "analysis", Boolean(term)));
+  }
   for (const episode of collectEpisodes(files)) {
     groups.push(navigationGroup(episode.id, episode.files, `episode:${episode.id}`, Boolean(term)));
   }

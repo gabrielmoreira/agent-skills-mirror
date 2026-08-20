@@ -3,6 +3,10 @@
 # Returns followup_message to auto-continue if phases are incomplete.
 # Always exits 0 — uses JSON stdout for control.
 
+# Issue #195 opt-out. The disabled branch reproduces this hook's own
+# no-plan-file behaviour, so the Cursor protocol shape never changes.
+if ($env:PLANNING_DISABLED -eq '1') { exit 0 }
+
 $PlanFile = "task_plan.md"
 
 if (-not (Test-Path $PlanFile)) {
@@ -23,6 +27,13 @@ if ($COMPLETE -eq 0 -and $IN_PROGRESS -eq 0 -and $PENDING -eq 0) {
     $COMPLETE = ([regex]::Matches($content, "\[complete\]")).Count
     $IN_PROGRESS = ([regex]::Matches($content, "\[in_progress\]")).Count
     $PENDING = ([regex]::Matches($content, "\[pending\]")).Count
+}
+
+# issue #191: no "### Phase" headings -> not phase-structured. Avoid the false
+# "0/0 phases done ... continue working" auto-continue message. The sh twin has
+# carried this since v3.2.0; this file was the one copy the fix never reached.
+if ($TOTAL -eq 0) {
+    exit 0
 }
 
 if ($COMPLETE -eq $TOTAL -and $TOTAL -gt 0) {

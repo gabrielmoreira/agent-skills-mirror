@@ -3,10 +3,10 @@ name: golang-dependency-management
 description: "Dependency management strategies for Golang projects — go.mod management, installing/upgrading packages, Minimal Version Selection, vulnerability scanning, outdated dependency tracking, binary size analysis, Dependabot/Renovate setup, conflict resolution, and go.work workspaces. Use when adding, removing, or upgrading Go dependencies, auditing vulnerabilities, resolving version conflicts, or setting up automated dependency updates."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.2.4"
+  version: "1.3.0"
   openclaw:
     emoji: "📦"
     homepage: https://github.com/samber/cc-skills-golang

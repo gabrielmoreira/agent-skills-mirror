@@ -217,6 +217,21 @@ def validate_findings(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]
                 f"{label}: invalid disposition {disposition!r}; "
                 f"use one of {', '.join(sorted(DISPOSITIONS))}"
             )
+        # A finding that blocks delivery has to say what to do about it,
+        # whatever its disposition. REV-11 exempts dispositions that call for no
+        # change, and routes every non-calibration finding to `not_applicable`
+        # -- which is one of the exempt three. So the common case was exempt,
+        # and an open `fatal` that told its owner nothing was stamped valid.
+        # REV-02 requires the fix; this is where that requirement lands.
+        if (
+            finding.get("status") == "open"
+            and finding.get("severity") in {"fatal", "error"}
+            and not str(finding.get("required_change") or "").strip()
+        ):
+            raise ValidationError(
+                f"{label}: an open {finding.get('severity')} finding blocks "
+                f"delivery and must state its required change"
+            )
         if disposition in {"targeted_edit", "resubmit", "rewrite"} and not finding["required_change"].strip():
             raise ValidationError(f"{label}: disposition requires required_change")
         refs = finding.get("evidence_refs")
@@ -276,7 +291,15 @@ def validate_records(records: list[dict[str, Any]], verdict: dict[str, Any]) -> 
         "findings": len(findings),
         "open_blockers": len(blockers),
         "verdict": decision,
-        "checks": ["finding_shape", "evidence_refs", "blocker_count", "verdict_consistency"],
+        # `evidence_declaration`: each evidence reference names a snapshot the
+        # findings file declares. The records it points at live in artifacts
+        # this checker never opens.
+        "checks": [
+            "finding_shape",
+            "evidence_declaration",
+            "blocker_count",
+            "verdict_consistency",
+        ],
     }
 
 

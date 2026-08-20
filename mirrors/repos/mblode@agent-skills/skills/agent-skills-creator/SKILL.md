@@ -1,6 +1,6 @@
 ---
 name: agent-skills-creator
-description: Guides creation and improvement of best-practice agent skills following the open format specification. Covers frontmatter, progressive disclosure, reference files, rules folders, degrees of freedom, constraint calibration, executable scripts, MCP tool references, evaluations, constraint ablation, and an eleven-dimension audit protocol for existing skills. Use when creating a new skill, authoring SKILL.md, setting up a rules-based audit skill, structuring a skill bundle, writing scripts inside a skill, evaluating a skill, improving or rewriting an existing skill, or asking "how to write a skill", "improve this skill", "audit my skill", "review this SKILL.md", "simplify this skill", "is this skill over-constrained", or "rightsize this skill".
+description: Guides creation and improvement of best-practice agent skills following the open format specification. Covers frontmatter, progressive disclosure, reference files, rules folders, degrees of freedom, constraint calibration, executable scripts, MCP tool references, evaluations, constraint ablation, whether to adopt or author a skill someone else already wrote, and an eleven-dimension audit protocol for existing skills. Use when creating a new skill, authoring SKILL.md, setting up a rules-based audit skill, structuring a skill bundle, writing scripts inside a skill, evaluating a skill, improving or rewriting an existing skill, or asking "how to write a skill", "improve this skill", "audit my skill", "review this SKILL.md", "simplify this skill", "is this skill over-constrained", "rightsize this skill", or "should I install this skill or write my own".
 ---
 
 # Agent Skills Creator
@@ -27,6 +27,7 @@ Create and improve skills in the Agent Skills open format: full lifecycle from p
 | `references/improving-existing-skills.md` | Auditing, scoring, simplifying, or rewriting an existing skill |
 | `references/executable-code.md` | Skill includes scripts, depends on packages, or invokes MCP tools |
 | `references/evaluation-and-iteration.md` | Designing evaluations, ablating constraints, testing across models |
+| `references/adopt-adapt-author.md` | A public skill already covers this ground, or deciding whether to vendor, adapt, or replace a third-party skill |
 
 Mechanical rules are not in any of these. `scripts/validate.sh` is their single statement:
 
@@ -46,7 +47,7 @@ Skill creation progress:
 - [ ] Step 3: Write SKILL.md body
 - [ ] Step 4: Add reference or rule files
 - [ ] Step 5: Validate
-- [ ] Step 6: Update README.md and docs/skills.mdx
+- [ ] Step 6: Update README.md (and docs/skills.mdx where the repo has one)
 - [ ] Step 7: Smoke-test installation
 - [ ] Step 8: Evaluate and iterate
 ```
@@ -91,15 +92,15 @@ scripts/validate.sh skills/<name>
 
 Output separates **format** (the spec) from **house style** (this repo's taste). Fix every FAIL; a SKIP always states why it did not apply.
 
-### Step 6: Update README.md and docs/skills.mdx
+### Step 6: Update README.md
 
-Add a bullet under the matching category heading in both files, and bump the skill count near the top of the README:
+Add a bullet under the matching category heading, and bump the skill count near the top of the README:
 
 ```markdown
 - **[<skill-name>](./skills/<skill-name>/SKILL.md)**: <one-line description>
 ```
 
-Categories: Architecture, Design, Writing, Quality, Shipping, Authoring. `validate.sh` verifies both bullets and the count.
+Categories: Architecture, Design, Writing, Quality, Shipping, Authoring. `validate.sh` verifies the bullet and the count. A repo that also ships `docs/skills.mdx` needs the same bullet there; the check is conditional on that file existing, so it stays silent in a repo without one.
 
 ### Step 7: Smoke-test
 
@@ -117,6 +118,15 @@ ln -s /path/to/agent-skills/skills/<name> ~/.claude/skills/<name>
 ### Step 8: Evaluate and iterate
 
 `references/evaluation-and-iteration.md`. Define 3+ scenarios, test on each target model, and iterate on observed behavior rather than assumptions. Ablate any rule you suspect is dead weight: delete it, rerun the scenarios, keep it only if one regresses.
+
+## Gotchas
+
+- The installed copy under `~/.agents/skills/<name>/` is a copy, not a symlink to your repo. Editing the repo changes nothing in a running session, and the stale copy loads silently, so a skill can be several commits behind while appearing correct. Reinstall, or symlink the repo folder per Step 7, before testing a change.
+- `no-reference-chains` fires on the words "load" or "read" appearing near another reference's filename. Naming a sibling reference for context passes; telling Claude to go read it does not. Rephrase rather than deleting the pointer.
+- `toc-over-100-lines` wants `## Contents` inside the first 20 lines of any reference over 100 lines. A TOC further down does not count, and the file fails while looking fine.
+- `readme-skill-count` compares the README's stated count against `find skills -maxdepth 2 -name SKILL.md`. Adding a reference file to an existing skill does not change it; only adding or removing a skill does.
+- `--agent` on `skills add` is variadic and space-separated (`--agent codex cursor`); it consumes arguments until the next one starting with `-`. A comma-separated list is validated element-wise and rejected whole as one invalid name. Do not conclude from an empty `~/.codex/skills` that the install failed: any agent whose `skillsDir` is `.agents/skills` is treated as universal and installed to `~/.agents/skills/`, which those agents read directly.
+- A description that omits "Use when" fails `description-triggers` outright, but a description that has the phrase and the wrong trigger words fails nothing and simply never routes. The validator cannot see this; only an eval can.
 
 ## Anti-patterns
 

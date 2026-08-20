@@ -167,6 +167,18 @@ def _accepted_duration(
         shot = shots_by_id.get(record_id)
         if isinstance(shot, dict):
             authoritative = _finite_number(shot.get("duration_seconds"))
+        elif projected is not None:
+            # A reference naming no shot used to fall through to
+            # `resolved = projected`, so the arithmetic was then checked against
+            # the spec's own self-declared number and the staleness guard never
+            # ran -- one mistyped character switched off VID-04. Only reported
+            # when a projection exists: with neither a shot nor a projection
+            # there is nothing to be wrong about, and `unmeasured` stays the
+            # honest answer.
+            return None, (
+                f"duration reference {record_id} resolves to no shot, so the "
+                f"projected {projected}s is checked against nothing"
+            )
 
     if projected is not None and authoritative is not None:
         if abs(projected - authoritative) > TOLERANCE_SECONDS:
@@ -212,6 +224,16 @@ def check(
             for timing in segments
             if isinstance(timing, dict) and timing.get("mode") == "explicit"
         ]
+        # Whether the projection matches the shot is a fact about the data, not
+        # about the timing mode, so it is checked before the mode gate below.
+        # Gated behind `explicit` it never ran on a file of relative plans --
+        # which is every spec in the recorded run -- and a projection authored
+        # wrong from the start was carried downstream unchallenged.
+        duration, conflict = _accepted_duration(spec, shots_by_id)
+        if conflict is not None:
+            findings.append(_finding("VID_DURATION_PROJECTION_STALE", motion_id, conflict))
+            continue
+
         if mode != "explicit":
             # A relative plan makes no arithmetic claim, so it is out of scope
             # by contract rather than passing. Explicit segments underneath one
@@ -230,10 +252,6 @@ def check(
                 relative.append(motion_id)
             continue
 
-        duration, conflict = _accepted_duration(spec, shots_by_id)
-        if conflict is not None:
-            findings.append(_finding("VID_DURATION_PROJECTION_STALE", motion_id, conflict))
-            continue
         if duration is None:
             # Cannot be judged either way, and staying silent here is the
             # failure mode this script exists to remove.

@@ -6,7 +6,7 @@ This document specifies how a ClawBench run is scored. It is the canonical refer
 - **Website snapshot:** https://claw-bench.com/leaderboard
 - **HF data card table:** https://huggingface.co/spaces/TIGER-Lab/ClawBench
 
-Anyone can reproduce every number on the leaderboard from the public traces in [`TIGER-Lab/ClawBenchV1Trace`](https://huggingface.co/datasets/NAIL-Group/ClawBenchV1Trace) and [`TIGER-Lab/ClawBenchV2Trace`](https://huggingface.co/datasets/TIGER-Lab/ClawBenchV2Trace) by running `scripts/clawbench_rescore.py` (see [Reproducibility](#reproducibility) below).
+Anyone can reproduce every number on the leaderboard from the public traces in [`TIGER-Lab/ClawBenchV1Trace`](https://huggingface.co/datasets/NAIL-Group/ClawBenchV1Trace) and [`TIGER-Lab/ClawBenchV2Trace`](https://huggingface.co/datasets/TIGER-Lab/ClawBenchV2Trace) by running `clawbench-rescore` (see [Reproducibility](#reproducibility) below).
 
 ## Summary
 
@@ -165,7 +165,7 @@ export DEEPSEEK_API_KEY=sk-...
 # 4. (one-time) add the judge model to models.yaml — see docs/models.md
 
 # 5. rescore
-python scripts/clawbench_rescore.py \
+clawbench-rescore \
   --judge-model deepseek-v4-pro \
   --only-batch ./v2-traces \
   --force        # re-judge existing judge.json files
@@ -184,7 +184,7 @@ Output: per-run `judge.json` updated in place, plus a fresh `rescore-summary.jso
 ## See also
 
 - [`src/clawbench/runner/judge.py`](../src/clawbench/runner/judge.py) — the judge implementation (~250 lines).
-- [`scripts/clawbench_rescore.py`](../scripts/clawbench_rescore.py) — the rescoring CLI.
+- [`clawbench-rescore`](../src/clawbench/eval/rescore.py) — the rescoring CLI (installed with the package; `uv run clawbench-rescore` from a source checkout).
 - [`test-cases/task.schema.json`](../test-cases/task.schema.json) — `eval_schema` field definition.
 - [Trace dataset (V1)](https://huggingface.co/datasets/NAIL-Group/ClawBenchV1Trace) — every layer of every V1 run.
 - [Trace dataset (V2)](https://huggingface.co/datasets/TIGER-Lab/ClawBenchV2Trace) — V2 traces (rolling, as new models are evaluated).

@@ -2,6 +2,8 @@
 
 Standard operational protocols shared by all agents. Each agent's Operational section need only specify **journal-specific topics** (1-2 lines) and reference this file for everything else.
 
+Project-local extensions (`orbit`, `lore`, `darwin`) are governed by `_common/PROJECT_LOCAL_SKILLS.md`. A handoff to one of them MUST pass its workspace availability gate; otherwise route to the registered global fallback.
+
 ---
 
 ## Journal
@@ -215,7 +217,7 @@ For cross-platform portability (macOS BSD ↔ Linux GNU), use the approved helpe
 | `readlink -f` | unsupported pre-12.3 | supported | Use `python3 -c "import os; print(os.path.realpath('$f'))"` |
 | `stat -c` | `stat -f` | `stat -c` | Branch on `uname` or use `gstat` |
 | `mktemp` | requires template arg variant | tolerant | Always pass an explicit template |
-| `xargs -r` | unsupported | supported | Pipe through `[ -s ] && xargs` instead |
+| `xargs -r` | unsupported | supported | Gear[gha] through `[ -s ] && xargs` instead |
 | `tar --xattrs` | different defaults | GNU defaults | Specify flags explicitly |
 
 **When generating shell commands for the user:**

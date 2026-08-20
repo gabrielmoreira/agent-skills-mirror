@@ -79,6 +79,7 @@ Quality bar:
 
 - Treat direct `loop`, `./loop`, `$loop`, and OMH loop invocations as a start/continue signal rather than a picker or passive clarification path.
 - Classify the goal as task, project, ambition, external-wait, or unclear inside the loop, then keep progressing until a real permission, evidence, verification, context, budget, or external-wait gate appears.
+- A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or state exactly what the run is waiting on (for example, lanes still in flight that resume when their results return). Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it.
 - Expose core OMH roles: interviewer, planner, researcher, builder, reviewer, and loop controller.
 - Route tiny direct tasks to one-cycle delivery surfaces instead of forcing loop overhead.
 - Reframe a north-star ambition into a bounded arena, observable problem, next loop goal, and next verification without shrinking its ambition.

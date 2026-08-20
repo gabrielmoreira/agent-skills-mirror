@@ -17,6 +17,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from collections.abc import Mapping
 from typing import Any, NamedTuple
 
 
@@ -126,6 +127,21 @@ def resolve_ref(
 
 SCHEMA_VERSION = "1.0.0"
 CHANNELS = {"sync", "dubbed", "VO", "OS"}
+# `[VO]` and `[OS]` are spoken lines that happen to be delivered off-camera, and
+# the index already records them with a `tag` and a `speaker`. Projecting only
+# `dialogue` blocks made the VO and OS channels above unreachable, so an episode
+# that carries its interiority in voice-over reported a clean sheet while the
+# recording list was missing every one of those lines.
+VOICED_TAGS = {"VO", "OS"}
+# `[VO] 角色：台词` — the tag is stripped before the line grammar is applied.
+VOICE_TAG_PREFIX = re.compile(r"^\[(?:VO|OS)\]\s*")
+
+
+def _is_voiced(block: Mapping[str, Any]) -> bool:
+    kind = block.get("kind")
+    if kind == "dialogue":
+        return True
+    return kind == "production_tag" and block.get("tag") in VOICED_TAGS
 # The resolver speaks the suite-wide reference vocabulary; this checker reports
 # in its own.
 REF_FINDING_CODES = {
@@ -244,11 +260,11 @@ def check(
                 )
             )
             continue
-        if block.get("kind") != "dialogue":
+        if not _is_voiced(block):
             findings.append(
                 _finding(
                     "VOICE_SOURCE_IS_NOT_DIALOGUE",
-                    "a voice line must project a dialogue block",
+                    "a voice line must project a spoken block: dialogue, [VO] or [OS]",
                     line_id=line_id,
                     record_id=record_id,
                     kind=block.get("kind"),
@@ -271,8 +287,51 @@ def check(
                 )
             )
             continue
+        # The channel decides how the line is booked, and off-camera and
+        # on-camera carry completely different room for change. It was checked
+        # against the enum and never against the block it projects, so a [VO]
+        # line could be booked `sync` and go to the booth under lip-sync
+        # constraints. `_is_voiced` already reads the block's tag; this compares.
+        expected = block.get("tag") if block.get("kind") == "production_tag" else "on_camera"
+        if expected in VOICED_TAGS and channel not in {expected, "dubbed"}:
+            findings.append(
+                _finding(
+                    "VOICE_CHANNEL_DISAGREES_WITH_BLOCK",
+                    "an off-camera block must be booked on its own channel",
+                    line_id=line_id,
+                    record_id=record_id,
+                    channel=channel,
+                    tag=expected,
+                )
+            )
+        elif expected == "on_camera" and channel in VOICED_TAGS:
+            findings.append(
+                _finding(
+                    "VOICE_CHANNEL_DISAGREES_WITH_BLOCK",
+                    "an on-camera dialogue block must not be booked as VO or OS",
+                    line_id=line_id,
+                    record_id=record_id,
+                    channel=channel,
+                )
+            )
+
         raw = screenplay[start:end]
-        match = DIALOGUE.match(raw.decode("utf-8").strip())
+        try:
+            decoded = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            # A span that begins or ends mid-character is a stale offset. It was
+            # crashing the whole check instead of reporting the one line.
+            findings.append(
+                _finding(
+                    "VOICE_BLOCK_SPAN_INVALID",
+                    "the indexed block span does not start and end on characters",
+                    line_id=line_id,
+                    record_id=record_id,
+                )
+            )
+            continue
+        body = VOICE_TAG_PREFIX.sub("", decoded.strip())
+        match = DIALOGUE.match(body)
         if match is None:
             findings.append(
                 _finding(
@@ -307,7 +366,7 @@ def check(
             )
 
     dialogue_blocks = {
-        block_id for block_id, block in blocks.items() if block.get("kind") == "dialogue"
+        block_id for block_id, block in blocks.items() if _is_voiced(block)
     }
     projected: set[str] = set()
     for record in lines:

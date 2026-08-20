@@ -6,37 +6,44 @@
 
 用户任务命中安全/逆向关键词时：
 
-1. `skills/MASTER-ROUTING.md` 或 `powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/master-route.ps1 -Hint "<任务>"` → PRIMARY
+1. `skills/MASTER-ROUTING.md` 或平台对应入口 → PRIMARY：
+   - Windows：`powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/master-route.ps1 -Hint "<任务>"`
+   - Linux / macOS / Kali：`bash skills/scripts/master-route.sh --hint "<任务>"`
 2. 歧义时读 `skills/routing.md` 全矩阵（三轴：目标类型 / 用户意图 / 工具链）
 3. 路由规则唯一事实源：`skills/config/routing.json`（改路由只改这里）
 
 ## 授权门禁（硬性）
 
-- 对任何目标动手前：`powershell -File skills/scripts/case-init.ps1 -Hint "<任务>"` 生成 `work/<case>/scope.md`
-- `auth.status=granted` + `network_profile` 就绪前**禁止 ACT**
+- 对任何目标动手前，按平台初始化当前分析项目的 `work/<case>/scope.md`：
+  - Windows：`powershell -File skills/scripts/case-init.ps1 -Hint "<任务>"`
+  - Linux / macOS / Kali：`bash skills/scripts/case-init.sh --hint "<任务>"`
+- 本地离线样本可使用 `offline-sample` preset；`auth.status=granted` + 明确 sample 才可进入 ACT。
+- `auth.status=granted` + 合法 `network_profile` / offline sample 就绪前**禁止 ACT**；`case-guard --force` / `-Force` 不得绕过这个硬门。
 - 证据链：`skills/ops/evidence-finding-path.md`；角色：`skills/ops/role-map.md`
 
 ## 首次运行
 
-`skills/tool-index.md` 是 gitignored 的生成文件，首次使用前运行：
+`skills/tool-index.md` 是 gitignored 的生成文件，首次使用前按平台运行：
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/refresh-tool-index.ps1
+```text
+Windows:           powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/refresh-tool-index.ps1
+Linux / macOS:     bash skills/scripts/refresh-tool-index.sh
+Kali:              bash kali/scripts/refresh-tool-index.sh
 ```
 
-缺工具 → `skills/scripts/bootstrap-reverse.ps1`（清单能力，禁止猜路径）。
+缺工具 → 使用同平台 bootstrap：Windows `skills/scripts/bootstrap-reverse.ps1`；Linux / macOS `skills/scripts/bootstrap-reverse.sh`；Kali `kali/scripts/bootstrap-reverse.sh`（清单能力，禁止猜路径）。
 
 ## 测试（改动后必跑）
 
-```powershell
-# 路由回归（routing-benchmark.json，修改 routing.json 后必跑）
-powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-routing.ps1
+```text
+Windows / PowerShell（路由回归读取 routing-benchmark.json）：
+  powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-routing.ps1
+  powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/verify-routing-coherence.ps1
+  powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/smoke.ps1
 
-# 结构一致性 + 供应链 pin gate
-powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/verify-routing-coherence.ps1
-
-# 冒烟（verify + 脚本解析 + 快速路由）
-powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/smoke.ps1
+Linux / macOS routing parity:
+  bash skills/scripts/test-routing.sh
+  bash skills/scripts/test-bootstrap-manifest.sh
 ```
 
 ## 客户端边界

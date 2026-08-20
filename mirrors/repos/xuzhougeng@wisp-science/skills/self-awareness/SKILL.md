@@ -45,7 +45,7 @@ corresponding Wisp tool instead.
 | Read a truncated delegated result | `get_delegated_result` | Desktop-only and available with delegation. Use only when the compact result lacks necessary detail. |
 | Submit long-running work | `run_in_context` | Persist a Run in `local`, `ssh:<alias>`, or `wsl:<distro>`. Prefer this over extending `shell` timeouts. |
 | Read one Run snapshot | `get_run` | Call once for an immediate status check; never poll it in a loop. |
-| Wait for a Run | `monitor_run` | Call exactly once with the Run id. Wisp waits without repeated model calls. |
+| Wait for a Run | `monitor_run` | Call with the Run id to wait without polling `get_run`. If `wait_interrupted` is true, respond, then call `monitor_run` again; do not resubmit. |
 | Cancel a Run | `cancel_run` | Request cancellation through the persisted Run lifecycle. |
 | Record project research objects | `research_graph` | Desktop-only. Record data assets, papers, or decisions and link existing graph nodes; it is not a generic artifact browser. |
 | Read or change app preferences, or show disk storage | `configure` | Desktop-only. `get` / `set` cover allowlisted appearance and general settings (font size, theme, `custom_css`, locale, compaction). `storage` reports this project's workspace plus app-data usage in the conversation. Secrets, API keys, model profiles, workspace directory, and proxy are not writable. For a restyle, load `custom-theme` then set `custom_css`. |
@@ -60,8 +60,9 @@ corresponding Wisp tool instead.
 1. Use `python` or `r` for interactive analysis whose next step depends on the
    computed result.
 2. Use `run_in_context` for persisted, recoverable, or long-running work. Use
-   `monitor_run` once when the result is needed in the current task, or return
-   the Run id for fire-and-forget work.
+   `monitor_run` when the result is needed in the current task (again after
+   `wait_interrupted`; do not resubmit), or return the Run id for fire-and-forget
+   work.
 3. Use `explore` when codebase understanding requires more than a couple of
    reads. Use `delegate_tasks` only when desktop delegation is currently
    advertised and the work benefits from independent or parallel Agents.

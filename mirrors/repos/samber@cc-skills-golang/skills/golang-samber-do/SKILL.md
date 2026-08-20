@@ -3,10 +3,10 @@ name: golang-samber-do
 description: "Dependency injection in Golang using samber/do — service containers, lifecycle management, scopes, health checks, graceful shutdown, and module organization. Apply when using or adopting samber/do, when the codebase imports github.com/samber/do or github.com/samber/do/v2, or when refactoring manual constructor injection into a DI container."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.2.5"
+  version: "1.3.0"
   openclaw:
     emoji: "💉"
     homepage: https://github.com/samber/cc-skills-golang
@@ -16,6 +16,8 @@ metadata:
     install: []
     skill-library-version: "2.0.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent WebFetch mcp__context7__resolve-library-id mcp__context7__query-docs Bash(godig:*) Bash(gopls:*) LSP mcp__gopls__*
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go architect setting up dependency injection. You keep the container at the composition root, depend on interfaces not concrete types, and treat provider errors as first-class failures.

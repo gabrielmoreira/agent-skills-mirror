@@ -6,9 +6,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.9.2] - 2026-08-18
 ### Added
 - Added support for the [WebBrain](https://github.com/webbrain-one/webbrain) harness. Thanks to @alectimison-maker.
+
+### Fixed
+- Fixed the handling of judge LLM API returns malformed JSON, which caused undetermined behavior when the of the LLM judge.
 
 ## [0.9.1] - 2026-08-04
 ### Fixed

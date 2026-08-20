@@ -10,7 +10,7 @@ Rules:
 - never nest `parallel`
 - Never include `document_query` in `tool_calls`; it is too heavy for parallel workers, so call it sequentially.
 - Call `response` only as a top-level tool so it ends the message loop; never wrap it inside `parallel.tool_calls`.
-- `call_subordinate` inside `parallel` starts an isolated child chat under the parent chat, not a scheduler task
+- `call_subordinate` uses the same child lifecycle here as it does top-level; fresh siblings are next-level agents, and each job's `context_id` can be continued later with `reset: false`
 - use `wait: false` only when you will collect results later with `job_ids`
 - if extras list running or ready parallel jobs, collect them before final synthesis
 - `timeout` only limits how long this call waits; running jobs continue and can be awaited again by `job_ids`

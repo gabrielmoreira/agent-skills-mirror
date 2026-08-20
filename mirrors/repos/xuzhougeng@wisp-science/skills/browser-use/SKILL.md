@@ -1,16 +1,24 @@
 ---
 name: browser-use
-description: "Use this skill to drive the user's real, persistent Chrome/Chromium session — open pages, read them, click, fill and submit forms, navigate, switch tabs, or scrape content that needs the user's existing cookies and login state. Triggers when the user asks to do something in their browser, log into a site and act inside it, fill out a web form, click through a flow, or extract data from a page that requires being signed in. Tools: browser_setup (check/connect the extension), web_open_tab (open a URL), web_scan (read visible content + actionable elements with ready-made selectors), web_execute_js (click/type/navigate, or a JSON command for tabs/CDP), web_screenshot (see what the tab is showing — layout, charts, canvas, QR codes). Not for the built-in read-only web fetch — this is for interacting with a live browser."
+description: "Use this skill to drive Wisp Browser Runtime sessions (shared daily Chrome or workspace Chrome) — open pages, read them, click, fill and submit forms, navigate, switch tabs, or scrape content that needs the user's existing cookies and login state. Triggers when the user asks to do something in their browser, log into a site and act inside it, fill out a web form, click through a flow, or extract data from a page that requires being signed in. Tools: browser_setup (check/connect the extension), web_open_tab (open a URL), web_scan (read visible content + actionable elements with ready-made selectors), web_execute_js (click/type/navigate, or a JSON command for tabs/CDP), web_screenshot (see what the tab is showing — layout, charts, canvas, QR codes). Not for the built-in read-only web fetch — this is for interacting with a live browser."
 fold_cue: "instead_of=guessing-selectors use=web_scan first — it returns a unique CSS selector and rect for every actionable element; never invent selectors"
 ---
 
 # Browser Use — act inside the user's real Chrome
 
-Wisp does **not** launch an automation browser. It talks to a small
-extension inside the user's own Chrome/Chromium, so every action runs in
-their real profile — existing cookies, logins, extensions, and normal
-fingerprint all apply. That is the whole point: you can operate pages the
-user is already signed into.
+Wisp talks to the **Browser Runtime**. Shared mode uses the user's daily
+Chrome via the unpacked extension — every action runs in their real
+profile: existing cookies, logins, extensions, and normal fingerprint all
+apply. Workspace mode can launch a separate Chrome profile. If both are
+connected, pass `session: "shared"` or `session: "workspace"`. If
+Settings → Browser has **Open browser automatically** enabled (the
+default) and no extension is connected, Wisp may start the installed
+Chrome/Chromium/Edge so the extension can reconnect. That is still the
+user's profile, not Playwright or Selenium.
+
+For figures/code extraction use `web_scan` with `mode: "article"` then
+`web_save_assets`. For ChatGPT web one-shot use `web_agent_send`,
+`web_agent_wait`, `web_agent_read` on an already-logged-in tab.
 
 Every `web_scan` and `web_execute_js` call needs the user's approval by
 design. Do not treat that as a bug to route around.
@@ -24,6 +32,12 @@ current, or URL-specific questions from prior knowledge. Tell the user
 this turn contains no live web retrieval and wait until the popup shows
 *Connected to Wisp*. Only continue from memory if they explicitly ask
 for a knowledge-only answer. Never invent the path.
+
+One exception: the user says the extension is already installed. Chrome
+suspends its service worker when idle and reconnects on a one-minute
+alarm, so `disconnected` can just be a sleeping worker. Try `web_open_tab`
+or `web_scan` once — a successful call proves the bridge is live — and
+relay the install steps only if that call fails too.
 
 ## The loop
 

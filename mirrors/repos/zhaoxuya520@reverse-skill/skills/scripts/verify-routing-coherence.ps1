@@ -12,6 +12,9 @@ $caseInit = Join-Path $scriptDir 'case-init.ps1'
 $masterDoc = Join-Path $skillsRoot 'MASTER-ROUTING.md'
 . (Join-Path $scriptDir 'lib/RouteScope.ps1')
 
+. (Join-Path (Join-Path $scriptDir 'lib') 'HostRuntime.ps1')
+$HostExe = Resolve-ReverseHostExe
+
 $tmpBase = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
 if (-not $ScratchDir) {
     $ScratchDir = Join-Path $tmpBase ("rs-verify-{0}" -f (Get-Date -Format 'yyyyMMddHHmmss'))
@@ -268,7 +271,7 @@ $cases = @(
 )
 foreach ($c in $cases) {
     $out = Join-Path $ScratchDir ("route-{0}" -f $c.N)
-    $stdout = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint $c.H -OutDir $out 2>&1 | Out-String
+    $stdout = & $HostExe -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint $c.H -OutDir $out 2>&1 | Out-String
     $stdout | Set-Content -LiteralPath (Join-Path $ScratchDir ("route-{0}.txt" -f $c.N)) -Encoding UTF8
     $scope = Join-Path $out 'route-scope.md'
     if (-not (Test-Path $scope)) { Bad "no scope $($c.N)"; continue }
@@ -280,14 +283,14 @@ foreach ($c in $cases) {
 }
 
 # default outdir under work
-$def = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint 'radare2 analyze' 2>&1 | Out-String
+$def = & $HostExe -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint 'radare2 analyze' 2>&1 | Out-String
 $def | Set-Content (Join-Path $ScratchDir 'default-out.txt') -Encoding UTF8
 if ($def -match 'work[\\/]master-route-') { Ok 'default OutDir under work/' } else { Bad 'default OutDir not under work/' }
 
 # project-root output must stay with the analysis project when the skill is invoked elsewhere
 $projectRoot = Join-Path $ScratchDir 'analysis-project'
 New-Item -ItemType Directory -Force -Path $projectRoot | Out-Null
-$projectRoute = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute `
+$projectRoute = & $HostExe -NoProfile -ExecutionPolicy Bypass -File $masterRoute `
     -Hint 'radare2 analyze' -ProjectRoot $projectRoot 2>&1 | Out-String
 $projectWork = Join-Path $projectRoot 'work'
 $projectRouteDirs = @(Get-ChildItem -LiteralPath $projectWork -Directory -Filter 'master-route-*' -ErrorAction SilentlyContinue)
@@ -302,7 +305,7 @@ New-Item -ItemType Directory -Force -Path $defaultProjectRoot | Out-Null
 $previousLocation = Get-Location
 try {
     Set-Location -LiteralPath $defaultProjectRoot
-    $defaultProjectRoute = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute `
+    $defaultProjectRoute = & $HostExe -NoProfile -ExecutionPolicy Bypass -File $masterRoute `
         -Hint 'radare2 analyze' 2>&1 | Out-String
 } finally {
     Set-Location -LiteralPath $previousLocation
@@ -317,7 +320,7 @@ if ($defaultProjectRoutes.Count -eq 1 -and (Test-Path (Join-Path $defaultProject
 
 # case-init real path
 $caseName = 'verify-ops-' + (Get-Date -Format 'HHmmss')
-$ci = & powershell -NoProfile -ExecutionPolicy Bypass -File $caseInit -Hint 'apk jadx reverse' -CaseName $caseName -PackageRoot $packageRoot 2>&1 | Out-String
+$ci = & $HostExe -NoProfile -ExecutionPolicy Bypass -File $caseInit -Hint 'apk jadx reverse' -CaseName $caseName -PackageRoot $packageRoot 2>&1 | Out-String
 $ci | Set-Content (Join-Path $ScratchDir 'case-init.txt') -Encoding UTF8
 $caseRoot = Join-Path $packageRoot ("work/{0}" -f $caseName)
 foreach ($f in @('scope.md', 'timeline.md', 'workitems.md')) {
@@ -332,7 +335,7 @@ if (Test-Path (Join-Path $caseRoot 'scope.md')) {
 }
 
 $projectCaseName = 'verify-project-root-' + (Get-Date -Format 'HHmmss')
-& powershell -NoProfile -ExecutionPolicy Bypass -File $caseInit `
+& $HostExe -NoProfile -ExecutionPolicy Bypass -File $caseInit `
     -Hint 'apk jadx reverse' -CaseName $projectCaseName -PackageRoot $packageRoot `
     -ProjectRoot $projectRoot 2>&1 | Out-Null
 $projectCaseRoot = Join-Path $projectWork $projectCaseName
@@ -347,7 +350,7 @@ if ((Test-Path (Join-Path $projectCaseRoot 'scope.md')) -and
 $defaultCaseName = 'verify-default-project-' + (Get-Date -Format 'HHmmss')
 try {
     Set-Location -LiteralPath $defaultProjectRoot
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $caseInit `
+    & $HostExe -NoProfile -ExecutionPolicy Bypass -File $caseInit `
         -Hint 'apk jadx reverse' -CaseName $defaultCaseName 2>&1 | Out-Null
 } finally {
     Set-Location -LiteralPath $previousLocation
@@ -422,15 +425,17 @@ foreach ($mf in @($skillsManifest, $kaliManifest)) {
         }
     }
     foreach ($cap in $mc.capabilities) {
-        if (-not $cap.canAutoInstall) { continue }
-        $hasPin = ($cap.pinnedVersion -or $cap.pinnedCommit -or $cap.pinPolicy)
-        switch ($cap.bootstrapKind) {
-            'github-release-zip' { $hasPin = $hasPin -or $cap.assetSha256 -or $cap.preferApiDigest }
-            'github-release-jar-wrapper' { $hasPin = $hasPin -or $cap.assetSha256 }
-            'github-release-tar' { $hasPin = $hasPin -or $cap.assetSha256 -or $cap.preferApiDigest }
+        $capMap = @{}
+        foreach ($prop in $cap.PSObject.Properties) { $capMap[$prop.Name] = $prop.Value }
+        if (-not $capMap['canAutoInstall']) { continue }
+        $hasPin = ($capMap['pinnedVersion'] -or $capMap['pinnedCommit'] -or $capMap['pinPolicy'])
+        switch ($capMap['bootstrapKind']) {
+            'github-release-zip' { $hasPin = $hasPin -or $capMap['assetSha256'] -or $capMap['preferApiDigest'] }
+            'github-release-jar-wrapper' { $hasPin = $hasPin -or $capMap['assetSha256'] }
+            'github-release-tar' { $hasPin = $hasPin -or $capMap['assetSha256'] -or $capMap['preferApiDigest'] }
             'local-http-mcp' {
-                $fetchesExternalSource = $cap.repoUrl -or $cap.repo
-                $hasPin = (-not $fetchesExternalSource) -or $cap.pinnedCommit -or $cap.pinnedVersion
+                $fetchesExternalSource = $capMap['repoUrl'] -or $capMap['repo']
+                $hasPin = (-not $fetchesExternalSource) -or $capMap['pinnedCommit'] -or $capMap['pinnedVersion']
             }
             'winget-package' { $hasPin = $hasPin } # winget-latest 属于 pinPolicy
             'apt-package' { $hasPin = $true }      # 发行版仓库自带（Kali 侧）
@@ -439,9 +444,9 @@ foreach ($mf in @($skillsManifest, $kaliManifest)) {
             default { $hasPin = $hasPin }
         }
         if (-not $hasPin) {
-            Bad "unpinned auto-install capability: $($cap.name) in $mn ($($cap.bootstrapKind))"
+            Bad "unpinned auto-install capability: $($capMap['name']) in $mn ($($capMap['bootstrapKind']))"
         } else {
-            Ok "pinned $($cap.name) in $mn"
+            Ok "pinned $($capMap['name']) in $mn"
         }
     }
 }

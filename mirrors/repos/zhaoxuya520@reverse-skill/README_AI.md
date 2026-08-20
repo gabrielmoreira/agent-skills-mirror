@@ -24,7 +24,7 @@ AI Community: https://linux.do
 ### Automatic Configuration Process
 
 ```text
-0. ⚠️ Run refresh-tool-index first to generate skills/tool-index.md (see warning above)
+0. ⚠️ Run the platform-native refresh-tool-index first to generate skills/tool-index.md (see warning above)
 1. Detect the actual installation path of this package (derived from the location of this file, i.e., the directory containing README.md)
 2. Detect the local operating system and distribution:
    - Windows → continue with this README and the PowerShell script path
@@ -33,13 +33,15 @@ AI Community: https://linux.do
    - macOS → read docs/platforms/macos.md
    - Other / unknown → read docs/PLATFORMS.md and choose the closest deployment path
 3. Follow the platform-specific deployment document to check toolchains, script entry points, MCP configuration, and path conventions
-4. If the current system supports Bash, prefer the parity bootstrap entry: bash skills/scripts/bootstrap-reverse.sh <capability>; for index refresh only, run: bash skills/scripts/refresh-tool-index.sh
+4. Use the native bootstrap entry for the current platform; Linux/macOS do not require PowerShell for the core routing/case flow
 5. Read RULES.md → execute all instructions inside it (CRITICAL block, global injection, precedent-auth, routing)
 6. Route via skills/MASTER-ROUTING.md or:
    - Windows: `powershell -File skills/scripts/master-route.ps1 -Hint "<task>"`
-   - Linux/macOS/Kali: open MASTER-ROUTING.md (or run the same script under pwsh if available)
-7. **Ops gate (MUST):** `powershell -File skills/scripts/case-init.ps1 -Hint "<task>"` (or hand-write `work/<case>/scope.md` per `skills/ops/scope-contract.md`).  
-   Set `auth.status=granted` + `network_profile` before any target ACT. Evidence chain: `skills/ops/evidence-finding-path.md`. Roles: `skills/ops/role-map.md`. Identity: `skills/ops/IDENTITY.md`.
+   - Linux/macOS/Kali: `bash skills/scripts/master-route.sh --hint "<task>"`
+7. **Ops gate (MUST):** initialize the case using the native platform entry:
+   - Windows: `powershell -File skills/scripts/case-init.ps1 -Hint "<task>"`
+   - Linux/macOS/Kali: `bash skills/scripts/case-init.sh --hint "<task>"`
+   Both default case artifacts to the caller analysis project's `work/<case>/`. Set `auth.status=granted` + a valid network profile before target ACT. An authorized local sample may remain `offline` when an explicit sample is supplied through the `offline-sample` preset. `-Force`/`--force` never bypasses the scope hard gate. Evidence chain: `skills/ops/evidence-finding-path.md`. Roles: `skills/ops/role-map.md`. Identity: `skills/ops/IDENTITY.md`.
 8. Open PRIMARY SKILL.md → execute ACTION REQUIRED. Append timeline/workitems under the case dir.
 9. Before report handoff, run `python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --strict` and resolve every error.
 10. Continue the behavior chain → report via docs-generator + field-journal.
@@ -49,10 +51,10 @@ AI Community: https://linux.do
 
 | Detection result | Signal | Required deployment document | Detection / deployment entry |
 |---|---|---|---|
-| Windows | PowerShell, `$env:OS`, Windows paths | `README_AI.md` | `skills/scripts/*.ps1` |
-| Kali Linux | `/etc/os-release` contains `kali` | `kali/README-kali.md` | `kali/scripts/bootstrap-reverse.sh` / `kali/scripts/refresh-tool-index.sh` |
-| Ubuntu / Debian / Mint / Pop!_OS | `/etc/os-release` contains the distro ID | `docs/platforms/linux.md` | `skills/scripts/bootstrap-reverse.sh` / `skills/scripts/refresh-tool-index.sh` |
-| macOS | `uname -s` = `Darwin` | `docs/platforms/macos.md` | `skills/scripts/bootstrap-reverse.sh` / `skills/scripts/refresh-tool-index.sh` |
+| Windows | PowerShell, `$env:OS`, Windows paths | `README_AI.md` | `skills/scripts/master-route.ps1` / `case-init.ps1` / `bootstrap-reverse.ps1` / `refresh-tool-index.ps1` |
+| Kali Linux | `/etc/os-release` contains `kali` | `kali/README-kali.md` | `skills/scripts/master-route.sh` / `case-init.sh`; Kali bootstrap/refresh under `kali/scripts/` |
+| Ubuntu / Debian / Mint / Pop!_OS | `/etc/os-release` contains the distro ID | `docs/platforms/linux.md` | `skills/scripts/master-route.sh` / `case-init.sh` / `bootstrap-reverse.sh` / `refresh-tool-index.sh` |
+| macOS | `uname -s` = `Darwin` | `docs/platforms/macos.md` | `skills/scripts/master-route.sh` / `case-init.sh` / `bootstrap-reverse.sh` / `refresh-tool-index.sh` |
 | Other / unknown | Cannot identify confidently | `docs/PLATFORMS.md` | Choose the closest platform, then continue |
 
 > RULES.md contains the full behavior chain (steps 0–14). After reading this file, first complete OS detection and platform-document routing, then read RULES.md and start executing. Do not stop at "configuration completed."
@@ -74,7 +76,7 @@ AI Community: https://linux.do
 **Tool index**: <tool-index.md / tool-index.json path>
 **Rules written to**: <write location>
 **Note**: Future reverse-engineering / penetration-testing / security tasks will be routed automatically. Missing tools will be installed automatically when needed.
-**Ops**: Before target ACT, ensure case scope (`case-init` / `ops/scope-contract`) has auth granted + network_profile.
+**Ops**: Before target ACT, ensure case scope (`case-init` / `ops/scope-contract`) has auth granted + a valid network/offline-sample profile.
 ```
 
 ---
@@ -92,18 +94,30 @@ It solves two problems:
 
 | Platform | Status | Entry |
 |---|---|---|
-| Windows | Full primary path | `README_AI.md`, PowerShell scripts |
-| Kali Linux | Specialized support | `kali/README-kali.md`, `kali/scripts/bootstrap-reverse.sh`, `kali/scripts/refresh-tool-index.sh` |
-| Ubuntu / Debian Linux | Generic support | `docs/platforms/linux.md`, `skills/scripts/bootstrap-reverse.sh`, `skills/scripts/refresh-tool-index.sh` |
-| macOS | Generic support | `docs/platforms/macos.md`, `skills/scripts/bootstrap-reverse.sh`, `skills/scripts/refresh-tool-index.sh` |
+| Windows | Full primary path | `README_AI.md`, `skills/scripts/master-route.ps1`, `case-init.ps1`, PowerShell bootstrap/refresh |
+| Kali Linux | Specialized support | `skills/scripts/master-route.sh`, `case-init.sh`, `kali/README-kali.md`, Kali bootstrap/refresh |
+| Ubuntu / Debian Linux | Generic support | `docs/platforms/linux.md`, `skills/scripts/master-route.sh`, `case-init.sh`, Bash bootstrap/refresh |
+| macOS | Generic support | `docs/platforms/macos.md`, `skills/scripts/master-route.sh`, `case-init.sh`, Bash bootstrap/refresh |
 
-Generic Linux/macOS users can list bootstrap capabilities with:
+Generic Linux/macOS users can run the core routing/case path without installing PowerShell:
 
 ```bash
+bash skills/scripts/master-route.sh --hint "offline apk"
+bash skills/scripts/case-init.sh --hint "offline apk" --case-name my-sample --preset offline-sample --sample ./app.apk
+bash skills/scripts/case-guard.sh --case-root work/my-sample
 bash skills/scripts/bootstrap-reverse.sh --list
 ```
 
-Kali users should use the dedicated Kali entrypoint:
+MCP client registration is opt-in. Bootstrap defaults to installing or preparing the capability without writing client-global configuration. Select the target explicitly when registration is required:
+
+```text
+Windows: powershell -File skills/scripts/bootstrap-reverse.ps1 -Capability jshookmcp -McpHostTarget Codex
+Linux/macOS: bash skills/scripts/bootstrap-reverse.sh jshookmcp --mcp-host=codex
+```
+
+Use `Claude` / `claude` or `Both` / `both` for other supported targets.
+
+Kali users should use the dedicated Kali bootstrap entrypoint:
 
 ```bash
 bash kali/scripts/bootstrap-reverse.sh
@@ -272,10 +286,12 @@ Full dependency table with paths in the original [README.md](README.md).
 
 ### Refresh the Tool Index
 
-Do not trust someone else's scan result for long. After migrating to a new machine, refresh it first:
+Do not trust someone else's scan result for long. After migrating to a new machine, refresh it first with the native platform entry:
 
-```powershell
-powershell -File "<SKILL_ROOT>\skills\scripts\refresh-tool-index.ps1"
+```text
+Windows:        powershell -File "<SKILL_ROOT>\skills\scripts\refresh-tool-index.ps1"
+Linux / macOS:  bash <SKILL_ROOT>/skills/scripts/refresh-tool-index.sh
+Kali:           bash <SKILL_ROOT>/kali/scripts/refresh-tool-index.sh
 ```
 
 After success, check:
@@ -364,7 +380,7 @@ Whether you use Claude Code, Codex CLI, Cursor, Cline, Windsurf, or another code
 }
 ```
 
-The bootstrap command enables bearer authentication for Anything Analyzer and registers the generated token for supported clients. Manual configurations must include the `Authorization` header shown above.
+The bootstrap command enables bearer authentication for Anything Analyzer. It registers the generated token only when an MCP host is explicitly selected (`-McpHostTarget` or `--mcp-host`). Manual configurations must include the `Authorization` header shown above.
 
 ### Minimum Prompt Requirements
 
@@ -403,19 +419,23 @@ The key is to inject: package path, key entry files, MCP addresses, and "route f
 If you have configured `.claude\settings.local.json` or `.claude\scripts\route-reverse.ps1`, update all old paths after migration.
 
 ### Tool Index
-After migration, run again:
-```powershell
-powershell -File "<your skill root>\skills\scripts\refresh-tool-index.ps1"
+After migration, run the native refresh command again:
+
+```text
+Windows:        powershell -File "<your skill root>\skills\scripts\refresh-tool-index.ps1"
+Linux / macOS:  bash <your skill root>/skills/scripts/refresh-tool-index.sh
+Kali:           bash <your skill root>/kali/scripts/refresh-tool-index.sh
 ```
 
 ---
 
 ## Recommended Verification Checklist
 
-```powershell
+Core runtime checks:
+
+```text
 java -version
-python --version
-pip --version
+python --version   # or python3 --version
 node -v
 npx -v
 jadx --version
@@ -424,14 +444,28 @@ adb version
 frida-ps -U
 ```
 
-IDA chain:
+Core routing/case contract:
+
+```text
+Windows:
+  powershell -File skills/scripts/master-route.ps1 -Hint "offline apk"
+  powershell -File skills/scripts/case-init.ps1 -Hint "offline apk" -CaseName verify-sample -Preset offline-sample -Sample ".\sample.apk"
+
+Linux / macOS / Kali:
+  bash skills/scripts/master-route.sh --hint "offline apk"
+  bash skills/scripts/case-init.sh --hint "offline apk" --case-name verify-sample --preset offline-sample --sample ./sample.apk
+```
+
+IDA chain on Windows:
 ```powershell
 powershell -File "<your skill root>\ida-reverse\scripts\start.ps1"
 ```
 
 Tool index:
-```powershell
-powershell -File "<your skill root>\skills\scripts\refresh-tool-index.ps1"
+```text
+Windows:        powershell -File "<your skill root>\skills\scripts\refresh-tool-index.ps1"
+Linux / macOS:  bash <your skill root>/skills/scripts/refresh-tool-index.sh
+Kali:           bash <your skill root>/kali/scripts/refresh-tool-index.sh
 ```
 
 ---
@@ -512,7 +546,7 @@ When the AI tries to auto-complete installation and still fails, it **must not s
 ### AI Failure-Handling Flow
 
 ```text
-1. Call bootstrap-reverse.ps1 to attempt automatic installation
+1. Call the platform-native bootstrap (`bootstrap-reverse.ps1` on Windows, `bootstrap-reverse.sh` on Linux/macOS, Kali bootstrap under `kali/scripts/`)
 2. Verify whether the tool is usable after installation
 3. If it is still unavailable → do not retry → immediately output structured guidance
 ```

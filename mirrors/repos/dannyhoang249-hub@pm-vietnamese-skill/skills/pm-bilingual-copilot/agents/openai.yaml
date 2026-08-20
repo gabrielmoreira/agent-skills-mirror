@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Copilot song ngữ"
+  short_description: "Create clear Vietnamese-English PM deliverables."
+  default_prompt: "Use $pm-bilingual-copilot to turn these notes into a concise bilingual Vietnamese-English PM decision memo."

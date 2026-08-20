@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 3 followed patterns, 1302 file(s) materialized.
+Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 3 followed patterns, 1303 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `affaan-m/everything-claude-code` — 26 default patterns, 3 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 1302 |
+| Files         | 1303 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1319,50 +1319,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1256 | ✓ | [`skills/swiftui-patterns/SKILL.md`](skills/swiftui-patterns/SKILL.md) |
 | 1257 | ✓ | [`skills/taste/references/genre-taxonomy.md`](skills/taste/references/genre-taxonomy.md) |
 | 1258 | ✓ | [`skills/taste/SKILL.md`](skills/taste/SKILL.md) |
-| 1259 | ✓ | [`skills/tdd-workflow/SKILL.md`](skills/tdd-workflow/SKILL.md) |
-| 1260 | ✓ | [`skills/team-agent-orchestration/SKILL.md`](skills/team-agent-orchestration/SKILL.md) |
-| 1261 | ✓ | [`skills/team-builder/SKILL.md`](skills/team-builder/SKILL.md) |
-| 1262 | ✓ | [`skills/terminal-opener/agents/openai.yaml`](skills/terminal-opener/agents/openai.yaml) |
-| 1263 | ✓ | [`skills/terminal-opener/scripts/open-terminal.js`](skills/terminal-opener/scripts/open-terminal.js) |
-| 1264 | ✓ | [`skills/terminal-opener/SKILL.md`](skills/terminal-opener/SKILL.md) |
-| 1265 | ✓ | [`skills/terminal-ops/SKILL.md`](skills/terminal-ops/SKILL.md) |
-| 1266 | ✓ | [`skills/tinystruct-patterns/references/architecture.md`](skills/tinystruct-patterns/references/architecture.md) |
-| 1267 | ✓ | [`skills/tinystruct-patterns/references/data-handling.md`](skills/tinystruct-patterns/references/data-handling.md) |
-| 1268 | ✓ | [`skills/tinystruct-patterns/references/database.md`](skills/tinystruct-patterns/references/database.md) |
-| 1269 | ✓ | [`skills/tinystruct-patterns/references/routing.md`](skills/tinystruct-patterns/references/routing.md) |
-| 1270 | ✓ | [`skills/tinystruct-patterns/references/system-usage.md`](skills/tinystruct-patterns/references/system-usage.md) |
-| 1271 | ✓ | [`skills/tinystruct-patterns/references/testing.md`](skills/tinystruct-patterns/references/testing.md) |
-| 1272 | ✓ | [`skills/tinystruct-patterns/SKILL.md`](skills/tinystruct-patterns/SKILL.md) |
-| 1273 | ✓ | [`skills/token-budget-advisor/SKILL.md`](skills/token-budget-advisor/SKILL.md) |
-| 1274 | ✓ | [`skills/ui-demo/SKILL.md`](skills/ui-demo/SKILL.md) |
-| 1275 | ✓ | [`skills/ui-to-vue/SKILL.md`](skills/ui-to-vue/SKILL.md) |
-| 1276 | ✓ | [`skills/uncloud/SKILL.md`](skills/uncloud/SKILL.md) |
-| 1277 | ✓ | [`skills/unified-memory/SKILL.md`](skills/unified-memory/SKILL.md) |
-| 1278 | ✓ | [`skills/unified-notifications-ops/SKILL.md`](skills/unified-notifications-ops/SKILL.md) |
-| 1279 | ✓ | [`skills/verification-loop/SKILL.md`](skills/verification-loop/SKILL.md) |
-| 1280 | ✓ | [`skills/video-editing/SKILL.md`](skills/video-editing/SKILL.md) |
-| 1281 | ✓ | [`skills/videodb/reference/api-reference.md`](skills/videodb/reference/api-reference.md) |
-| 1282 | ✓ | [`skills/videodb/reference/capture-reference.md`](skills/videodb/reference/capture-reference.md) |
-| 1283 | ✓ | [`skills/videodb/reference/capture.md`](skills/videodb/reference/capture.md) |
-| 1284 | ✓ | [`skills/videodb/reference/editor.md`](skills/videodb/reference/editor.md) |
-| 1285 | ✓ | [`skills/videodb/reference/generative.md`](skills/videodb/reference/generative.md) |
-| 1286 | ✓ | [`skills/videodb/reference/rtstream-reference.md`](skills/videodb/reference/rtstream-reference.md) |
-| 1287 | ✓ | [`skills/videodb/reference/rtstream.md`](skills/videodb/reference/rtstream.md) |
-| 1288 | ✓ | [`skills/videodb/reference/search.md`](skills/videodb/reference/search.md) |
-| 1289 | ✓ | [`skills/videodb/reference/streaming.md`](skills/videodb/reference/streaming.md) |
-| 1290 | ✓ | [`skills/videodb/reference/use-cases.md`](skills/videodb/reference/use-cases.md) |
-| 1291 | ✓ | [`skills/videodb/scripts/ws_listener.py`](skills/videodb/scripts/ws_listener.py) |
-| 1292 | ✓ | [`skills/videodb/SKILL.md`](skills/videodb/SKILL.md) |
-| 1293 | ✓ | [`skills/visa-doc-translate/README.md`](skills/visa-doc-translate/README.md) |
-| 1294 | ✓ | [`skills/visa-doc-translate/SKILL.md`](skills/visa-doc-translate/SKILL.md) |
-| 1295 | ✓ | [`skills/vite-patterns/SKILL.md`](skills/vite-patterns/SKILL.md) |
-| 1296 | ✓ | [`skills/vue-patterns/SKILL.md`](skills/vue-patterns/SKILL.md) |
-| 1297 | ✓ | [`skills/windows-desktop-e2e/SKILL.md`](skills/windows-desktop-e2e/SKILL.md) |
-| 1298 | ✓ | [`skills/workspace-surface-audit/SKILL.md`](skills/workspace-surface-audit/SKILL.md) |
-| 1299 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
-| 1300 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 1301 | → | [`docs/skill-adaptation-policy.md`](docs/skill-adaptation-policy.md) |
-| 1302 | → | [`docs/SKILL-DEVELOPMENT-GUIDE.md`](docs/SKILL-DEVELOPMENT-GUIDE.md) |
+| 1259 | ✓ | [`skills/tasteforge-video/SKILL.md`](skills/tasteforge-video/SKILL.md) |
+| 1260 | ✓ | [`skills/tdd-workflow/SKILL.md`](skills/tdd-workflow/SKILL.md) |
+| 1261 | ✓ | [`skills/team-agent-orchestration/SKILL.md`](skills/team-agent-orchestration/SKILL.md) |
+| 1262 | ✓ | [`skills/team-builder/SKILL.md`](skills/team-builder/SKILL.md) |
+| 1263 | ✓ | [`skills/terminal-opener/agents/openai.yaml`](skills/terminal-opener/agents/openai.yaml) |
+| 1264 | ✓ | [`skills/terminal-opener/scripts/open-terminal.js`](skills/terminal-opener/scripts/open-terminal.js) |
+| 1265 | ✓ | [`skills/terminal-opener/SKILL.md`](skills/terminal-opener/SKILL.md) |
+| 1266 | ✓ | [`skills/terminal-ops/SKILL.md`](skills/terminal-ops/SKILL.md) |
+| 1267 | ✓ | [`skills/tinystruct-patterns/references/architecture.md`](skills/tinystruct-patterns/references/architecture.md) |
+| 1268 | ✓ | [`skills/tinystruct-patterns/references/data-handling.md`](skills/tinystruct-patterns/references/data-handling.md) |
+| 1269 | ✓ | [`skills/tinystruct-patterns/references/database.md`](skills/tinystruct-patterns/references/database.md) |
+| 1270 | ✓ | [`skills/tinystruct-patterns/references/routing.md`](skills/tinystruct-patterns/references/routing.md) |
+| 1271 | ✓ | [`skills/tinystruct-patterns/references/system-usage.md`](skills/tinystruct-patterns/references/system-usage.md) |
+| 1272 | ✓ | [`skills/tinystruct-patterns/references/testing.md`](skills/tinystruct-patterns/references/testing.md) |
+| 1273 | ✓ | [`skills/tinystruct-patterns/SKILL.md`](skills/tinystruct-patterns/SKILL.md) |
+| 1274 | ✓ | [`skills/token-budget-advisor/SKILL.md`](skills/token-budget-advisor/SKILL.md) |
+| 1275 | ✓ | [`skills/ui-demo/SKILL.md`](skills/ui-demo/SKILL.md) |
+| 1276 | ✓ | [`skills/ui-to-vue/SKILL.md`](skills/ui-to-vue/SKILL.md) |
+| 1277 | ✓ | [`skills/uncloud/SKILL.md`](skills/uncloud/SKILL.md) |
+| 1278 | ✓ | [`skills/unified-memory/SKILL.md`](skills/unified-memory/SKILL.md) |
+| 1279 | ✓ | [`skills/unified-notifications-ops/SKILL.md`](skills/unified-notifications-ops/SKILL.md) |
+| 1280 | ✓ | [`skills/verification-loop/SKILL.md`](skills/verification-loop/SKILL.md) |
+| 1281 | ✓ | [`skills/video-editing/SKILL.md`](skills/video-editing/SKILL.md) |
+| 1282 | ✓ | [`skills/videodb/reference/api-reference.md`](skills/videodb/reference/api-reference.md) |
+| 1283 | ✓ | [`skills/videodb/reference/capture-reference.md`](skills/videodb/reference/capture-reference.md) |
+| 1284 | ✓ | [`skills/videodb/reference/capture.md`](skills/videodb/reference/capture.md) |
+| 1285 | ✓ | [`skills/videodb/reference/editor.md`](skills/videodb/reference/editor.md) |
+| 1286 | ✓ | [`skills/videodb/reference/generative.md`](skills/videodb/reference/generative.md) |
+| 1287 | ✓ | [`skills/videodb/reference/rtstream-reference.md`](skills/videodb/reference/rtstream-reference.md) |
+| 1288 | ✓ | [`skills/videodb/reference/rtstream.md`](skills/videodb/reference/rtstream.md) |
+| 1289 | ✓ | [`skills/videodb/reference/search.md`](skills/videodb/reference/search.md) |
+| 1290 | ✓ | [`skills/videodb/reference/streaming.md`](skills/videodb/reference/streaming.md) |
+| 1291 | ✓ | [`skills/videodb/reference/use-cases.md`](skills/videodb/reference/use-cases.md) |
+| 1292 | ✓ | [`skills/videodb/scripts/ws_listener.py`](skills/videodb/scripts/ws_listener.py) |
+| 1293 | ✓ | [`skills/videodb/SKILL.md`](skills/videodb/SKILL.md) |
+| 1294 | ✓ | [`skills/visa-doc-translate/README.md`](skills/visa-doc-translate/README.md) |
+| 1295 | ✓ | [`skills/visa-doc-translate/SKILL.md`](skills/visa-doc-translate/SKILL.md) |
+| 1296 | ✓ | [`skills/vite-patterns/SKILL.md`](skills/vite-patterns/SKILL.md) |
+| 1297 | ✓ | [`skills/vue-patterns/SKILL.md`](skills/vue-patterns/SKILL.md) |
+| 1298 | ✓ | [`skills/windows-desktop-e2e/SKILL.md`](skills/windows-desktop-e2e/SKILL.md) |
+| 1299 | ✓ | [`skills/workspace-surface-audit/SKILL.md`](skills/workspace-surface-audit/SKILL.md) |
+| 1300 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
+| 1301 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1302 | → | [`docs/skill-adaptation-policy.md`](docs/skill-adaptation-policy.md) |
+| 1303 | → | [`docs/SKILL-DEVELOPMENT-GUIDE.md`](docs/SKILL-DEVELOPMENT-GUIDE.md) |
 
 ---
 

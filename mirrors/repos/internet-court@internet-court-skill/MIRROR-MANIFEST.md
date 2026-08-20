@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `internet-court/internet-court-skill` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
+Mirror of `internet-court/internet-court-skill` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `internet-court/internet-court-skill` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 94 |
+| Files         | 95 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -153,6 +153,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 92 | ✓ | [`vendored/starknet/starknet-wallet/SKILL.md`](vendored/starknet/starknet-wallet/SKILL.md) |
 | 93 | ✓ | [`vendored/tempo/mppx/SKILL.md`](vendored/tempo/mppx/SKILL.md) |
 | 94 | ✓ | [`vendored/terminalskills/a2a-protocol/SKILL.md`](vendored/terminalskills/a2a-protocol/SKILL.md) |
+| 95 | ✓ | [`vendored/yellow/yellow-settlement-room/SKILL.md`](vendored/yellow/yellow-settlement-room/SKILL.md) |
 
 ---
 

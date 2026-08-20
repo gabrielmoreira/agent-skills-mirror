@@ -17,6 +17,15 @@ Turn seed topics into a prioritized keyword opportunity set using OpenSEO MCP da
 
 If `projectId` is missing, use `list_projects` first. If the target market/location/language is unclear and would materially affect keyword metrics, ask the user; otherwise use the MCP tool defaults.
 
+## Project context
+
+The project-context tools are free and shared with the app and other agents.
+
+1. Call `get_project_context` first and ground the research in it — the business, the goal, the markets, and the competitors and key pages already saved.
+2. This skill needs `business_overview` and `current_goal`. If either is empty, run a minimal inline setup: ask the user, or infer from the site and confirm, just enough to fill them, write them back with `update_project_context`, then continue the research. Never front-load the full interview; suggest `seo-project-setup` at the end for the rest.
+3. Before spending credits, check the research log. If the same research ran within the last 30 days, reuse that result and say so instead of re-buying it.
+4. On finish, write back what is durable — a sharpened `business_overview` or `current_goal`, competitors that kept appearing in the SERPs via `addCompetitors`, pages the keywords should land on via `addKeyPages` — and append a research log entry: `{ appendResearchLog: { summary: "Keyword research: <seeds/market>. Verdict: <conclusion>" } }`.
+
 ## OpenSEO MCP tools
 
 - `research_keywords`: primary discovery tool. Use 1-5 seeds per call and prefer 150 results unless the user asks for exhaustive research.

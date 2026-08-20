@@ -34,7 +34,7 @@ Do not implement broad product vision in one change. Prefer small PRs that add o
 - Every dismissible overlay, dialog, menu, and popover must participate in a window-level Escape stack ordered from the visually topmost surface down. Root-owned state belongs in the app stack; component-local state may use a scoped window listener that is removed on cleanup. Do not rely on a DOM `keydown` handler receiving a bubbled event or on `autofocus`. A local handler is only appropriate when an inner state must consume Escape before its parent; it must prevent propagation. Tests must press Escape immediately after opening, without first moving focus inside, and verify that one press closes only the topmost layer while its parent remains open.
 - UI icons come from one shared set: `compose_icon()` in `ui/src/app_support/messages.rs` (Lucide-style 24×24 stroke SVGs, `stroke="currentColor"`). Never introduce icon fonts, emoji/unicode glyphs, or per-component CSS mask icons (the removed `.gi` system); add a new `compose_icon` kind instead. Give each action a distinct, semantically matching icon — do not reuse the same icon for two different entries in one menu. Size icons via a component-scoped `svg` CSS selector, not by adding wrapper classes to the shared set.
 - Add or update tests with every behavior change.
-- Update docs when user-visible behavior changes. Update release notes only when explicitly requested or when preparing release-facing changes.
+- Update docs when user-visible behavior changes. Update release notes only when explicitly requested or when preparing a release (see Cutting a release).
 - If `cargo fmt --all -- --check` fails because of formatting drift, run `cargo fmt --all` and keep formatting-only changes in a separate commit.
 
 ## Verification Commands
@@ -58,6 +58,54 @@ For MCP-related changes, also run:
 ```bash
 cargo run -p wisp-mcp --example smoke
 ```
+
+## Cutting a release
+
+When asked to release, follow this section. Create the GitHub Release with `gh` **before** CI uploads installers, so platform jobs never write the title or notes.
+
+1. Bump `workspace.package.version` in `Cargo.toml`, `ui/Cargo.toml`, and `src-tauri/tauri.conf.json`. Update workspace package versions in `Cargo.lock` and `ui/Cargo.lock` (only `name = "wisp-*"` entries — do not bump third-party crates that happen to share the same version).
+2. Write bilingual notes at `.github/release-notes/vX.Y.Z.md`. Put the GitHub title in an HTML comment on the first line:
+
+   ```markdown
+   <!-- release-title: v1.6.0: Theme -->
+   ```
+
+3. Commit as `Release vX.Y.Z` and push `main`. Do not push a tag yet.
+4. Publish the release with `gh` from that commit. This creates the tag and the notes in one step; the tag push then starts CI:
+
+   ```bash
+   TITLE="$(scripts/github_release_notes.sh .github/release-notes/vX.Y.Z.md vX.Y.Z | sed 's/^title=//')"
+   gh release create vX.Y.Z \
+     --title "$TITLE" \
+     --notes-file .github/release-notes/vX.Y.Z.md \
+     --target "$(git rev-parse HEAD)"
+   ```
+
+   On Windows PowerShell:
+
+   ```powershell
+   $title = (bash scripts/github_release_notes.sh .github/release-notes/vX.Y.Z.md vX.Y.Z) -replace '^title=',''
+   gh release create vX.Y.Z --title $title --notes-file .github/release-notes/vX.Y.Z.md --target (git rev-parse HEAD)
+   ```
+
+5. Confirm the release exists, then wait until CI has **started** (Create Release, Windows Release, macOS Release, Linux Release):
+
+   ```bash
+   gh release view vX.Y.Z
+   gh run list --branch vX.Y.Z
+   ```
+
+   Create Release is a no-op when the release already exists. Platform workflows attach installers only; they must not be given a release body. Only watch those runs to completion when the user asked to ship or verify the published assets.
+
+Do not `git push origin vX.Y.Z` after `gh release create` — the tag already exists on GitHub. To fix notes on an existing release, edit the notes file and run the Create Release workflow with `overwrite_notes`, or `gh release edit`. Never use `tauri-action` / `action-gh-release` with a body on a published release.
+
+To rebuild one platform for an existing tag, dispatch that workflow **from `main`** (so the upload-only YAML is used) with the tag input. Do not `gh run rerun` a tag-push job whose workflow still rewrites the release body:
+
+```bash
+gh workflow run "Windows Release" --ref main -f tag=vX.Y.Z -f signing_policy=release-signing -f publish=true
+```
+
+Details: [docs/app-updates.md](docs/app-updates.md).
 
 ## PR Expectations
 

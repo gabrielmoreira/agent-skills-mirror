@@ -19,6 +19,7 @@
 - Use shared API, WebSocket, notification, and attachment helpers where available.
 - Do not bypass CSRF or WebSocket state-sync expectations.
 - The shared composer can be mounted on the Welcome screen with no selected chat; sending from that state must create and select a chat context before dispatch.
+- Unsent composer text is kept as a separate browser-session draft for each selected chat and restored when switching contexts; a Welcome-screen prompt must follow the chat created for its first send.
 - Composer text uses the main UI font by default; typing a triple-backtick fence and pressing Enter turns that line into a visual code block that serializes back to fenced Markdown, while pasted fenced Markdown stays plain text.
 - Missing model setup is gated at send intent: the first unconfigured send renders an in-thread setup card, keeps the pending prompt in browser session storage for refresh recovery, and must not call `/message_async` until a chat model is configured.
 - While the setup gate is open, the composer remains typeable but send is blocked until setup succeeds.

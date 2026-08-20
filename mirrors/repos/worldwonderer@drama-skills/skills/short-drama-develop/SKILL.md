@@ -83,7 +83,7 @@ python3 {技能目录}/scripts/episode_intake.py index <多集整稿> --out <epi
 
 ### 4. 把系列运动落到分集
 
-读取 [episode-design.md](references/episode-design.md)，再复制 [episode-map.jsonl](assets/episode-map.jsonl)。每一集记录进入状态、当集追求、阻力、因果升级、方向性转折、已兑现回报、出去的压力以及下一集必须继承的事实。
+读取 [episode-design.md](references/episode-design.md)，再复制 [episode-map.jsonl](assets/episode-map.jsonl)。每一集记录进入状态、开场、当集追求、阻力、方向性转折、当集结果、信息释放、出去的压力以及下一集必须继承的事实。
 
 先保证每集产生局部戏剧结果、相邻集能精确交接，再讨论外部压力/情感负荷的双轨
 节奏。集数、钩子类型、是否反转和高潮位置由创作者与项目决定。

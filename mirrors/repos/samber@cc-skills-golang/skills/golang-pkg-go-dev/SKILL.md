@@ -3,10 +3,10 @@ name: golang-pkg-go-dev
 description: "Golang package and module documentation and exploration via `godig`, a pkg.go.dev API client (CLI + MCP server) — package docs, API references, symbols, code examples, available versions, importers (who imports a package), licenses, and known vulnerabilities. Read-only, no auth. Use for looking up any Go/Golang library's documentation, API signatures, usage examples, which versions exist, whether a dependency has CVEs, or who imports a package — prefer this over Context7 for any Go package or module. Triggers on: how to use a Go library, Go API docs, import usage, code examples, pkg.go.dev. Not for upgrading dependencies (→ See `samber/cc-skills-golang@golang-dependency-management` skill) or choosing a library (→ See `samber/cc-skills-golang@golang-popular-libraries` skill). Not for local symbols, or for navigating an already-used dependency's resolved source, call sites, or generic instantiations — → See `samber/cc-skills-golang@golang-gopls` skill for those."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents. Requires the godig CLI (go install github.com/samber/godig/cmd/godig@latest) or access to a godig MCP server, and internet access to reach the pkg.go.dev API.
+compatibility: Designed for Claude Code, Codex or similar harness. Requires the godig CLI (go install github.com/samber/godig/cmd/godig@latest) or access to a godig MCP server, and internet access to reach the pkg.go.dev API.
 metadata:
   author: samber
-  version: "1.3.0"
+  version: "1.4.0"
   openclaw:
     emoji: "🔎"
     homepage: https://github.com/samber/cc-skills-golang
@@ -52,7 +52,7 @@ go install github.com/samber/godig/cmd/godig@latest
 
 ### Register the MCP server (optional)
 
-`godig mcp` runs over **stdio** by default, or **streamable HTTP** with `--transport http`.
+`godig mcp` runs over **stdio** by default, or **streamable HTTP** with `--transport http`. The command is harness-agnostic — any MCP-capable host can point at it. Claude Code registers it via its own CLI:
 
 stdio (the client launches godig on demand):
 
@@ -72,6 +72,8 @@ Hosted instance (no install needed) — a public server runs at `https://godig.s
 ```bash
 claude mcp add --transport http pkg-go-dev https://godig.samber.dev/mcp
 ```
+
+Other MCP-capable harnesses (Cursor, Windsurf, and others) each have their own MCP server registration — an entry in their respective settings file pointing at the same `godig mcp` command or hosted URL, not a shared config format.
 
 The CLI and the MCP server expose the **same** operations under matching names. Prefer the CLI when `godig` is installed; the hosted instance is a fallback when it is not.
 
@@ -118,7 +120,7 @@ Full `-o md` output for every command: [sample-output.md](references/sample-outp
 - `--filter` narrows list results server-side with a Go boolean expression — see [Filter syntax](#filter-syntax).
 - `--goos`/`--goarch` set the documentation/symbols build context (e.g. `linux`/`amd64`).
 - Prefer `symbol doc`/`symbol examples` over the package-wide `package doc`/`package examples` when you only need one symbol — far fewer tokens.
-- **Parallelize independent lookups** — every command is a self-contained, read-only HTTP query, so calls never depend on each other. When a task needs docs, examples, versions, or vulns for **several** symbols, packages, or modules, issue all the calls at once (multiple `godig` invocations in a single turn) rather than one after another — wall-clock drops from sum-of-latencies to slowest-single-call. For a large fan-out (documenting many symbols, comparing many candidate libraries, auditing CVEs across a dependency set), dispatch parallel sub-agents (up to 5) via the Agent tool, each running its own `godig` calls and returning a compact summary, so the raw LARGE output never lands in the main context.
+- **Parallelize independent lookups** — every command is a self-contained, read-only HTTP query, so calls never depend on each other. When a task needs docs, examples, versions, or vulns for **several** symbols, packages, or modules, issue all the calls at once (multiple `godig` invocations in a single turn) rather than one after another — wall-clock drops from sum-of-latencies to slowest-single-call. For a large fan-out (documenting many symbols, comparing many candidate libraries, auditing CVEs across a dependency set), dispatch up to 5 parallel sub-agents, each running its own `godig` calls and returning a compact summary, so the raw LARGE output never lands in the main context.
 - Listing commands auto-paginate (return all results); use `--limit` to cap.
 
 ### Filter syntax

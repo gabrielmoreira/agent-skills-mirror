@@ -184,12 +184,20 @@ python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage
   --project short-drama.json
 ```
 
-给了 `--screenplay-index` 就多做一项覆盖对账：**剧本的每一个块必须被恰好一个镜头认领**。
-没有镜头认领的块不会被拍，两个镜头认领的块会被剪两次。认领按块 ID 走
-（`source_refs` 里的 `record_id`），不按正文——正文一直在改，块 ID 不变。
+给了 `--screenplay-index` 就多做一项覆盖对账：**剧本的每一个块都要有一种处理，而镜头认领
+必须与那种处理相符**。`covered` 要恰好一个镜头认领，`intentional_repeat` 可以多于一个，
+`omitted_with_reason` 与 `nonvisual_context` 不应有镜头认领——后两种是"决定不拍"，
+写清理由即可。认领按块 ID 走（`source_refs` 里的 `record_id`），不按正文——正文一直在改，
+块 ID 不变。
+
+处理表本身也一起校验：状态必须是上面四种之一，一个块只能有一行，指向的块要在剧本索引里，
+`intentional_repeat` 与 `omitted_with_reason` 必须写理由。此前这张表没有任何检查，
+删掉几行、填一个不存在的状态、把 `shot_refs` 指向别的镜头都能通过——覆盖表与 `shots.jsonl`
+是关于同一件事的两份独立说法，中间没有对账。
 
 它只做算术和结构比对：本集时长总和是否等于各镜头 `duration_seconds` 之和、覆盖列出的
-镜头有没有既不计入也不挂起、有没有边界条目整条写成「同上」「位置不变」这类回指、
+镜头有没有既不计入也不挂起、`shots.jsonl` 里的镜头有没有整个从总和里消失、
+同一个镜头有没有在总和里被列两次（列两次就会被加两次）、有没有边界条目整条写成「同上」「位置不变」这类回指、
 每张关键帧是否声明了 `boundary_role` 并绑定对应边界字段、
 同一镜头的同一端有没有两张关键帧、每条引用的 `src` 能否在本文件 `sources` 里解析到一个
 上游快照。有 `--project` 且项目声明了每集目标时长时，还会核对

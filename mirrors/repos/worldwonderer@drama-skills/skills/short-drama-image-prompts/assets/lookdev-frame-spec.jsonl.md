@@ -115,7 +115,7 @@
   "constraints": [
     "<必须保持的身份、地理、文字与信息权限>"
   ],
-  "generic_prompt": "<只含可被画出的自然中文，不含字段名/hash/审查话术>",
+  "generic_prompt": "<只含可被画出的自然表述，语言按 #/format/prompt_language，不含字段名/hash/审查话术>",
   "derivation": {
     "renderer": "generic-markdown"
   },

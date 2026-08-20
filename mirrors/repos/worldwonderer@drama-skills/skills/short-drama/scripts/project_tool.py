@@ -700,14 +700,34 @@ def _inputs_current(root: Path, record: Mapping[str, Any]) -> bool:
     )
 
 
-def _artifact_state(root: Path, record: Mapping[str, Any]) -> str:
+def _artifact_state_from(
+    record: Mapping[str, Any], live_hash: Callable[[str], str | None]
+) -> str:
+    """Decide one artifact's lifecycle state from the bytes on disk right now.
+
+    The whole lifecycle rests on the two `!= live` comparisons below: an
+    accepted artifact whose bytes were edited behind the tool's back has not
+    been accepted in its current form, and must fall back to `update_needed`.
+
+    This is written once and reached by two callers -- path-based and
+    directory-fd-based -- which differ only in how they hash a file. It used to
+    be two transcriptions of the same rules, with nothing asserting they agreed,
+    and the dashboard renders the fd one.
+    """
+
     outputs = record.get("outputs", [])
     if not isinstance(outputs, list) or not outputs:
         return "draft"
-    live = {path: _live_hash(root, path) for path in outputs if isinstance(path, str)}
+    live = {path: live_hash(path) for path in outputs if isinstance(path, str)}
     if len(live) != len(outputs) or any(value is None for value in live.values()):
         return "update_needed"
-    if not _inputs_current(root, record):
+    inputs = record.get("inputs", {})
+    if not isinstance(inputs, Mapping) or any(
+        not isinstance(path, str)
+        or not isinstance(expected, str)
+        or live_hash(path) != expected
+        for path, expected in inputs.items()
+    ):
         return "update_needed"
     acceptance = record.get("acceptance")
     if not isinstance(acceptance, Mapping):
@@ -727,6 +747,10 @@ def _artifact_state(root: Path, record: Mapping[str, Any]) -> str:
     if verdict == "revise":
         return "revise"
     return "accepted"
+
+
+def _artifact_state(root: Path, record: Mapping[str, Any]) -> str:
+    return _artifact_state_from(record, lambda path: _live_hash(root, path))
 
 
 def _authority_report(
@@ -776,6 +800,10 @@ def _build_status(
 ) -> dict[str, Any]:
     counts: dict[str, int] = {}
     artifacts: dict[str, str] = {}
+    # Which stage produced each file. The state already knows; without it every
+    # reader has to guess from the path, and a stage added later reads as
+    # "unrecognised" until someone updates that reader's own list of names.
+    ownership: dict[str, str] = {}
     records = state.get("artifacts", {})
     if isinstance(records, Mapping):
         for artifact_id, record in records.items():
@@ -784,6 +812,12 @@ def _build_status(
             value = artifact_state(record)
             artifacts[artifact_id] = value
             counts[value] = counts.get(value, 0) + 1
+            owner = record.get("owner")
+            if not isinstance(owner, str) or not owner:
+                continue
+            for output in record.get("outputs", []) or []:
+                if isinstance(output, str) and output:
+                    ownership[output] = owner
     languages = project_languages(project)
     return {
         "project_id": project.get("project_id"),
@@ -795,6 +829,7 @@ def _build_status(
         "layout": dict(layout),
         "artifact_states": counts,
         "artifacts": artifacts,
+        "ownership": ownership,
         "authority": _authority_report(project, state),
         "lifecycle": {"artifact_state": counts},
     }
@@ -948,41 +983,7 @@ def _live_hash_at(directory_fd: int, relative: str) -> str | None:
 
 
 def _artifact_state_at(directory_fd: int, record: Mapping[str, Any]) -> str:
-    outputs = record.get("outputs", [])
-    if not isinstance(outputs, list) or not outputs:
-        return "draft"
-    live = {
-        path: _live_hash_at(directory_fd, path)
-        for path in outputs
-        if isinstance(path, str)
-    }
-    if len(live) != len(outputs) or any(value is None for value in live.values()):
-        return "update_needed"
-    inputs = record.get("inputs", {})
-    if not isinstance(inputs, Mapping) or any(
-        not isinstance(path, str)
-        or not isinstance(expected, str)
-        or _live_hash_at(directory_fd, path) != expected
-        for path, expected in inputs.items()
-    ):
-        return "update_needed"
-    acceptance = record.get("acceptance")
-    if not isinstance(acceptance, Mapping):
-        return "needs_confirmation"
-    if acceptance.get("decision") == "rejected":
-        return "revise"
-    if acceptance.get("decision") != "accepted" or acceptance.get("outputs") != live:
-        return "update_needed"
-    review = record.get("review")
-    if not isinstance(review, Mapping):
-        return "accepted"
-    if review.get("outputs") != live:
-        return "update_needed"
-    if review.get("verdict") in {"approve", "approve_with_notes"}:
-        return "approved"
-    if review.get("verdict") == "revise":
-        return "revise"
-    return "accepted"
+    return _artifact_state_from(record, lambda path: _live_hash_at(directory_fd, path))
 
 
 def project_path_lifecycle_at(

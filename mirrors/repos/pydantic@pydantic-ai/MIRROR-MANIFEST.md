@@ -51,13 +51,13 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `.github/pull_request_template.md`
 - `docs/agent.md`
 - `docs/dependencies.md`
 - `docs/tools.md`
 - `docs/output.md`
 - `docs/message-history.md`
 - `docs/version-policy.md`
+- `.github/pull_request_template.md`
 - `docs/graph.md`
 - `docs/evals.md`
 - `docs/cli.md`

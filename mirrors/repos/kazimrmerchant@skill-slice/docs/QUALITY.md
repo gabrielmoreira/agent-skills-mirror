@@ -2,13 +2,13 @@
 
 **Date:** 2026-08-14  
 **Generation SHA:** `9d3ca366946d8f4a7b68def0c2c7b9274f6b8958` (`9d3ca36`) — parent of this keep/front-door hop. Ranking refresh after leftover keep + N=24 sample overlay. July `independent_*` columns **unchanged**.  
-**Inventory:** 495 sibling folders under `skills/<name>/SKILL.md`  
+**Inventory:** 496 sibling folders under `skills/<name>/SKILL.md`  
 **Structural refresh:** leftover below-A, then A/A+ YAML when+not-for (273 unique descriptions). This hop: leftover **kept** (works-bar pass / stale-grade), not restamped. July `independent_*` columns **unchanged**.
 
 This sheet is **method first**, then ranks. Rate the 12 works-verified chairs before treating a high PQI as a “it works” claim.
 
-- Full 495 rows (machine-readable): [quality-ranking.csv](quality-ranking.csv)
-- Full 495 rows (GitHub-renderable, by works band): [quality-ranking.md](quality-ranking.md)
+- Full 496 rows (machine-readable): [quality-ranking.csv](quality-ranking.csv)
+- Full 496 rows (GitHub-renderable, by works band): [quality-ranking.md](quality-ranking.md)
 - Works-verified subset: [WORKS_VERIFIED.md](WORKS_VERIFIED.md)
 - Inclusion / works-bar: [INCLUSION.md](INCLUSION.md)
 - Scorecard dimensions: [VALUE_FRAMEWORK.md](VALUE_FRAMEWORK.md)
@@ -52,7 +52,7 @@ Three layers. They are not interchangeable.
 
 1. **Independent (July 2026).** `independent_score` / `independent_grade` / `independent_decision` are the 2026-07-17 `qwen36_27b` re-grade of the **private** library (2,540 skills, mean **69.2**). Joined here by folder name = CSV `skill`. The public tree is mostly the `QUALITY_KEEP` slice of that re-grade, plus v1 chairs. **This wave did not re-score 487 bodies with a model.** A high independent score is a July library grade, not a 2026-08-14 reread.
 2. **Structural (today).** `structural_now` is a 2026-08-14 mechanical scan of **this repo’s** `SKILL.md` files (frontmatter length/signals, numbered procedure, claimed `references/` / `scripts/` paths on disk, lean line count, YAML `name` vs folder). No LLM. Thresholds below are falsifiable.
-3. **Works overlay (Read sample only).** Ranking `works` is the **overlay**: **12 WORKS**, **5 WEAK**, **478 untested**. Read sample is **N=24** (18 prior + 6 extra 2026-08-14): **17 WORKS** in INCLUSION (12 overlay + 5 extra, not padded onto WORKS_VERIFIED), **5 WEAK**, **2 FAIL** (already cut from git). Everyone else is never-Read. Untested ≠ fail. Untested ≠ works. **Do not claim all 495 are verified-works.**
+3. **Works overlay (Read sample only).** Ranking `works` is the **overlay**: **12 WORKS**, **5 WEAK**, **479 untested**. Read sample is **N=24** (18 prior + 6 extra 2026-08-14): **17 WORKS** in INCLUSION (12 overlay + 5 extra, not padded onto WORKS_VERIFIED), **5 WEAK**, **2 FAIL** (already cut from git). Everyone else is never-Read. Untested ≠ fail. Untested ≠ works. **Do not claim all 496 are verified-works.**
 
 PQI blends those layers with the formula below. It is **not** “we re-read 487 today.” It is **not** an agy/encyclopedia CLI label. It is **not** a VALUE_FRAMEWORK rescore of this week’s bodies.
 
@@ -62,7 +62,7 @@ Rank 1 = highest recommended under the **sort below**. PQI is compared **inside*
 
 - **Ranks 1–12** are the overlay **WORKS**, sorted by PQI inside that band (then independent_score, then name). This is the install/rate-first set.
 - **Ranks 13–17** are the overlay **WEAK** (keep with caveats; not install-first). Includes `browser-automation` from the extra sample.
-- **Ranks 18–495** are **untested** in the overlay — **not an install order**. That band includes five extra-sample WORKS (INCLUSION only) plus never-Read chairs. PQI there is the July independent score plus today’s structural scan only. Untested ≠ fail. Untested ≠ works.
+- **Ranks 18–496** are **untested** in the overlay — **not an install order**. That band includes five extra-sample WORKS (INCLUSION only) plus never-Read chairs. PQI there is the July independent score plus today’s structural scan only. Untested ≠ fail. Untested ≠ works.
 
 This wave did **not** re-score 487 bodies with a model.
 
@@ -101,7 +101,7 @@ Document mapping only. This is **not** a new 2026-08-14 reread of 487 files. Ind
 - +15 if description len ≥ 1 but not both length+signals
 - +0 if empty/missing description
 
-Signals are **description-only**. A body “When / Do not use” table does not count. After the 2026-08-14 A/A+ YAML wave plus later unique adds, **495/495** chairs have both signals in the YAML `description` (live scan). Historical example: `git-workflow` once had when in YAML and not-for only in a body table → `has_when_not_for=no`, description_points = 15. That chair now has both in YAML.
+Signals are **description-only**. A body “When / Do not use” table does not count. After the 2026-08-14 A/A+ YAML wave plus later unique adds, **496/496** chairs have both signals in the YAML `description` (live scan). Historical example: `git-workflow` once had when in YAML and not-for only in a body table → `has_when_not_for=no`, description_points = 15. That chair now has both in YAML.
 
 **procedure_points (0 / 30)**
 
@@ -226,22 +226,22 @@ This leftover wave **cut** `godot-gdscript-patterns` and `illustration-direction
 | D | 1 |
 | — | 33 |
 
-**Works overlay (CSV `works`):** WORKS 12 · WEAK 5 · untested 478. Read sample N=24 · sampled kept 22 · never-Read 473 (495−22).
+**Works overlay (CSV `works`):** WORKS 12 · WEAK 5 · untested 479. Read sample N=24 · sampled kept 22 · never-Read 474 (496−22).
 
 **PQI bands:**
 
 | Band | Count |
 |------|------:|
-| ≥ 90 | 433 |
+| ≥ 90 | 434 |
 | 80–89.9 | 49 |
 | 70–79.9 | 4 |
 | < 70 | 1 |
 
-**Structural (this scan):** numbered procedure 492/495; both description when+not-for signals **495/495**; `claimed_paths_ok=no` **0**; YAML name mismatch 1 (`transformers.js`).
+**Structural (this scan):** numbered procedure 493/496; both description when+not-for signals **496/496**; `claimed_paths_ok=no` **0**; YAML name mismatch 1 (`transformers.js`).
 
 ## Ranked tables
 
-Ranks **1–50** (works-first) and bottom **25** here. Full **495**: [quality-ranking.csv](quality-ranking.csv) and [quality-ranking.md](quality-ranking.md).
+Ranks **1–50** (works-first) and bottom **25** here. Full **496**: [quality-ranking.csv](quality-ranking.csv) and [quality-ranking.md](quality-ranking.md).
 
 This is **not** a 50-item install list. Ranks 1–12 WORKS (install/rate first), 13–17 WEAK (caveats), **18–50 untested** (July score + structure only — not an install order).
 

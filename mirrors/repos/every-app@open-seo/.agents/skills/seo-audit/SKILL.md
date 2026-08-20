@@ -16,11 +16,20 @@ Use this when asked for an SEO audit or review of a domain, especially when the 
 - Domain to audit
 - `projectId` (use `list_projects`; if no project matches the domain, create one with `create_project`)
 
+## Project context
+
+The project-context tools are free and shared with the app and other agents.
+
+1. Call `get_project_context` first and ground the report in it — what the business does decides which findings matter and what the one thing should be.
+2. This skill needs `business_overview`. If it is empty, run a minimal inline setup: infer what the business does from the site and confirm it with the user in one question, write it back with `update_project_context`, then continue the audit. Never front-load the full interview; suggest `seo-project-setup` at the end for the rest.
+3. Before spending credits, check the research log. If the same research ran within the last 30 days, reuse that result and say so instead of re-buying it.
+4. On finish, write back what is durable — a corrected `business_overview`, the pages the report singles out via `addKeyPages` — and append a research log entry: `{ appendResearchLog: { summary: "Site audit: <domain>. Verdict: <conclusion>" } }`.
+
 ## OpenSEO MCP tools
 
 - `whoami`: confirm connection and remaining credits before spending anything. If OpenSEO is not connected, stop and ask the user to connect it.
 - `list_projects` / `create_project`: resolve the `projectId`.
-- `run_site_audit`: start the crawl (default page budget), then poll `get_audit_status` and read `get_audit_issues`. Use `get_audit_pages` when per-page evidence helps.
+- `run_site_audit`: start the crawl (default page budget). Leave Lighthouse off (its default) — it adds several minutes and this report doesn't need it; pass `runLighthouse: true` only when the user asks for performance/Core Web Vitals depth. Then check `get_audit_status` (the crawl takes a minute or two — wait between checks rather than polling in a loop) and read `get_audit_issues`. Use `get_audit_pages` when per-page evidence helps.
 - `get_backlinks_overview`: backlink and referring-domain picture; usually the deciding data for the "one thing".
 - `get_domain_overview`: estimated organic traffic and organic keyword count. Skip when the site is clearly dead.
 - `research_keywords`: keyword ideas with volume and difficulty, used to propose a starting focus area. One call with 1-3 seeds taken from what the site is actually about. Skip when the site is down.
@@ -30,7 +39,7 @@ Keep total spend modest: one audit, one backlinks overview, at most one domain o
 ## Workflow
 
 1. `whoami`, then resolve the `projectId`.
-2. `run_site_audit` for the domain. While it crawls, fetch `get_backlinks_overview`.
+2. `run_site_audit` for the domain (Lighthouse stays off unless the user asked for performance depth). While it crawls, fetch `get_backlinks_overview`.
 3. When the crawl finishes, read `get_audit_issues` (and `get_domain_overview` if the site is alive).
 4. If the audit comes back broken or nearly empty (certificate errors, 5xx, one page crawled): investigate before writing. Check the certificate and redirect variants yourself, and search the web for the business. A dead domain often has a live successor site, which flips the whole recommendation to "redirect the old domain".
 5. Verify every finding you plan to report against the live page HTML by fetching pages yourself. Report nothing you have not seen evidence for.

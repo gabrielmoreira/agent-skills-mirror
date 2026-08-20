@@ -776,9 +776,27 @@ def _scope(block: dict[str, Any]) -> str:
 def _assign_new_ids(
     current: list[dict[str, Any]],
     previous: list[dict[str, Any]],
-) -> None:
+    high_water: dict[str, int] | None = None,
+) -> dict[str, int]:
+    """Give every unmatched block an ID no earlier revision has used.
+
+    Retirement has to outlive the revision that retired an ID. Seeding the
+    counter from the previous index alone makes it one generation deep: once
+    every block of one kind in a scene is gone, the counter restarts at zero and
+    the next new block is handed a retired ID. A downstream artifact still
+    citing it resolves cleanly and silently means something else -- which is
+    exactly what resolving cleanly is supposed to rule out.
+
+    So the highest number ever issued per (scene, kind) rides along in the index
+    meta and is carried forward here.
+    """
+
     reserved = {str(block["block_id"]) for block in previous}
     counters: dict[tuple[str, str], int] = defaultdict(int)
+    for name, number in (high_water or {}).items():
+        scope, _, code = name.rpartition("|")
+        if scope and isinstance(number, int):
+            counters[(scope, code)] = max(counters[(scope, code)], number)
     for block_id in reserved:
         match = BLOCK_ID_RE.fullmatch(block_id)
         assert match
@@ -802,6 +820,14 @@ def _assign_new_ids(
             "reason": "no_previous_exact_match",
             "previous_block_ids": [],
         }
+    # Every ID this revision kept also counts, so a block reused from the
+    # previous index cannot be reissued after it later disappears.
+    for block in current:
+        match = BLOCK_ID_RE.fullmatch(str(block.get("block_id", "")))
+        if match:
+            key = (match.group("scope"), match.group("code"))
+            counters[key] = max(counters[key], int(match.group("number")))
+    return {f"{scope}|{code}": number for (scope, code), number in counters.items()}
 
 
 def _public_block(block: dict[str, Any], source_ref: dict[str, str]) -> dict[str, Any]:
@@ -849,6 +875,7 @@ def build_index(
     source_ref: str | None = None,
     authority: str = "accepted",
     speakers: list[str] | tuple[str, ...] | set[str] | frozenset[str] | None = None,
+    no_previous: bool = False,
 ) -> dict[str, Any]:
     """Parse ``source_path`` and atomically publish its derived JSONL index."""
     source = Path(source_path)
@@ -857,6 +884,18 @@ def build_index(
         raise ValueError("output path must not be the screenplay source path")
     if (previous_index_path is None) != (previous_source_path is None):
         raise ValueError("--previous-index and --previous-source must be supplied together")
+    # Rebuilding over an existing index without naming a previous version
+    # renumbers every block from scratch. Surviving text keeps whatever ID its
+    # position now yields, so a rewritten block can reclaim the retired ID and
+    # every downstream reference to it silently resolves to different content --
+    # the exact failure the content-stable path exists to prevent. Refuse, and
+    # name the file, rather than produce that index quietly.
+    if previous_index_path is None and not no_previous and output.exists():
+        raise ValueError(
+            f"{output} already holds an index; pass --previous-index {output} "
+            f"--previous-source <the screenplay before this revision> to keep block "
+            f"IDs stable by content, or --no-previous to renumber from scratch"
+        )
     if authority not in {"accepted", "candidate"}:
         raise ValueError("authority must be accepted or candidate")
     raw_speakers = tuple(speakers or ())
@@ -891,6 +930,19 @@ def build_index(
     previous: list[dict[str, Any]] = []
     raw_requests: list[dict[str, Any]] = []
     previous_source_ref: dict[str, str] | None = None
+    # Carried from the previous index so a retired ID stays retired even after
+    # every block that was using it has gone.
+    previous_high_water: dict[str, int] = {}
+    for record in previous_records:
+        if record.get("record_type") == "screenplay_index_meta":
+            declared = record.get("block_id_high_water")
+            if isinstance(declared, dict):
+                previous_high_water = {
+                    str(name): number
+                    for name, number in declared.items()
+                    if isinstance(number, int) and not isinstance(number, bool)
+                }
+            break
     if previous_index_path is not None and previous_source_path is not None:
         previous_source = Path(previous_source_path)
         previous_snapshot = {
@@ -906,7 +958,9 @@ def build_index(
             previous_source_ref["authority"] = "candidate"
         previous = _load_previous(previous_records, previous_source)
         raw_requests = _mark_revision_mappings(current, previous)
-    _assign_new_ids(current, previous)
+    block_id_high_water = _assign_new_ids(
+        current, previous, previous_high_water
+    )
 
     review_requests: list[dict[str, Any]] = []
     for number, request in enumerate(raw_requests, 1):
@@ -953,6 +1007,10 @@ def build_index(
         "source_issue_count": len(issue_records),
         "mapping_review_count": len(review_requests),
         "review_status": review_status,
+        # The highest block number ever issued per scene and kind. Carried
+        # forward so a retired ID stays retired after the blocks that were
+        # using it are gone.
+        "block_id_high_water": dict(sorted(block_id_high_water.items())),
         SOURCES_KEY: declared_sources,
     }
     records = [meta]
@@ -977,6 +1035,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", type=Path, help="output JSONL path")
     parser.add_argument("--previous-index", type=Path)
     parser.add_argument("--previous-source", type=Path)
+    parser.add_argument(
+        "--no-previous",
+        action="store_true",
+        help="renumber block IDs from scratch, abandoning the IDs downstream artifacts cite",
+    )
     parser.add_argument(
         "--source-ref",
         help="portable project-relative source reference; defaults to the source basename",
@@ -1013,6 +1076,7 @@ def main(argv: list[str] | None = None) -> int:
             source_ref=args.source_ref,
             authority=args.authority,
             speakers=args.speaker,
+            no_previous=args.no_previous,
         )
     except (OSError, UnicodeDecodeError, ValueError) as error:
         print(json.dumps({"error": str(error)}, ensure_ascii=False), file=sys.stderr)

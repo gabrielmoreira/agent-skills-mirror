@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,6 +71,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`Anthropic/claude-code/skills/run-skill-generator/template.md`](Anthropic/claude-code/skills/run-skill-generator/template.md) |
 | 11 | ✓ | [`Anthropic/claude-cowork/setup-cowork/SKILL.md`](Anthropic/claude-cowork/setup-cowork/SKILL.md) |
 | 12 | ✓ | [`Anthropic/claude-cowork/setup-writing-style/SKILL.md`](Anthropic/claude-cowork/setup-writing-style/SKILL.md) |
+| 13 | ✓ | [`Anthropic/claude-design/skills/3d-object/SKILL.md`](Anthropic/claude-design/skills/3d-object/SKILL.md) |
+| 14 | ✓ | [`Anthropic/claude-design/skills/animated-video/SKILL.md`](Anthropic/claude-design/skills/animated-video/SKILL.md) |
+| 15 | ✓ | [`Anthropic/claude-design/skills/claude-api-in-prototypes/SKILL.md`](Anthropic/claude-design/skills/claude-api-in-prototypes/SKILL.md) |
+| 16 | ✓ | [`Anthropic/claude-design/skills/create-design-system/SKILL.md`](Anthropic/claude-design/skills/create-design-system/SKILL.md) |
+| 17 | ✓ | [`Anthropic/claude-design/skills/export-as-pptx-editable/SKILL.md`](Anthropic/claude-design/skills/export-as-pptx-editable/SKILL.md) |
+| 18 | ✓ | [`Anthropic/claude-design/skills/export-as-pptx-screenshots/SKILL.md`](Anthropic/claude-design/skills/export-as-pptx-screenshots/SKILL.md) |
+| 19 | ✓ | [`Anthropic/claude-design/skills/flier/SKILL.md`](Anthropic/claude-design/skills/flier/SKILL.md) |
+| 20 | ✓ | [`Anthropic/claude-design/skills/frontend-design/SKILL.md`](Anthropic/claude-design/skills/frontend-design/SKILL.md) |
+| 21 | ✓ | [`Anthropic/claude-design/skills/handoff-to-claude-code/SKILL.md`](Anthropic/claude-design/skills/handoff-to-claude-code/SKILL.md) |
+| 22 | ✓ | [`Anthropic/claude-design/skills/hi-fi-design/SKILL.md`](Anthropic/claude-design/skills/hi-fi-design/SKILL.md) |
+| 23 | ✓ | [`Anthropic/claude-design/skills/html-email/SKILL.md`](Anthropic/claude-design/skills/html-email/SKILL.md) |
+| 24 | ✓ | [`Anthropic/claude-design/skills/interactive-prototype/SKILL.md`](Anthropic/claude-design/skills/interactive-prototype/SKILL.md) |
+| 25 | ✓ | [`Anthropic/claude-design/skills/make-a-deck/SKILL.md`](Anthropic/claude-design/skills/make-a-deck/SKILL.md) |
+| 26 | ✓ | [`Anthropic/claude-design/skills/make-a-doc/SKILL.md`](Anthropic/claude-design/skills/make-a-doc/SKILL.md) |
+| 27 | ✓ | [`Anthropic/claude-design/skills/make-tweakable/SKILL.md`](Anthropic/claude-design/skills/make-tweakable/SKILL.md) |
+| 28 | ✓ | [`Anthropic/claude-design/skills/maps-geography/SKILL.md`](Anthropic/claude-design/skills/maps-geography/SKILL.md) |
+| 29 | ✓ | [`Anthropic/claude-design/skills/options/SKILL.md`](Anthropic/claude-design/skills/options/SKILL.md) |
+| 30 | ✓ | [`Anthropic/claude-design/skills/save-as-pdf/SKILL.md`](Anthropic/claude-design/skills/save-as-pdf/SKILL.md) |
+| 31 | ✓ | [`Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md`](Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md) |
+| 32 | ✓ | [`Anthropic/claude-design/skills/web-research/SKILL.md`](Anthropic/claude-design/skills/web-research/SKILL.md) |
+| 33 | ✓ | [`Anthropic/claude-design/skills/wireframe/SKILL.md`](Anthropic/claude-design/skills/wireframe/SKILL.md) |
 
 ---
 

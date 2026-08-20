@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 Text Video Prompt"
+  short_description: "Create professional H3 text-to-video prompts"
+  default_prompt: "Use $minimax-h3-text-video-prompt to turn my video idea into a professional MiniMax H3 prompt."

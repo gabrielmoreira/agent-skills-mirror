@@ -1,7 +1,7 @@
 ---
 name: destination
 version: 2.8.0
-description: 'Triggered direction-consolidation service. Surface the agent''s sourced guesses about durable direction and turn them into questions the operator can confirm, correct, or reject. Improve schedules it when accumulated work makes cross-run direction useful; manual invocation remains available when the operator wants to explore or revise direction.'
+description: 'Automatic direction-consolidation service. Improve schedules it when accumulated work makes cross-run direction useful; it surfaces sourced guesses about durable direction as questions the operator can confirm, correct, or reject. Manual invocation remains available when the operator wants to explore or revise direction.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
 
@@ -148,7 +148,7 @@ If this run created `.acm/destination.md` or materially changed its direction, c
 
 Do not run Orient when Destination produced no change, only corrected wording without changing meaning, or ended in silence. A destination edit is not automatically a destination change; material meaning is the trigger.
 
-This automatic handoff preserves ownership: Destination changes where the work is going; Orient passively recomputes where the work now stands relative to it. Orient must not revise the destination or change the target.
+This automatic handoff preserves ownership: Destination changes where the work is going; Orient automatically recomputes where the work now stands relative to it. Orient must not revise the destination or change the target.
 
 ## What this skill does not do
 

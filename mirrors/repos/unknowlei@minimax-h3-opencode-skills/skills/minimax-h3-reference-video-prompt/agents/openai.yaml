@@ -1,0 +1,4 @@
+interface:
+  display_name: "MiniMax H3 Reference Video Prompt"
+  short_description: "Default H3 image and consistency prompt route"
+  default_prompt: "Use $minimax-h3-reference-video-prompt to preserve my image references and optionally anchor them as prompt-level first or last frames."

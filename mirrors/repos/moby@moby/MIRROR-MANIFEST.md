@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 288 file(s) materialized.
+Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 285 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moby/moby` — 26 default patterns, 5 followed patterns, 288 file(s) 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 288 |
+| Files         | 285 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -278,79 +278,76 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 213 | ✓ | [`vendor/github.com/zmap/zcrypto/x509/README.md`](vendor/github.com/zmap/zcrypto/x509/README.md) |
 | 214 | ✓ | [`vendor/go.etcd.io/bbolt/README.md`](vendor/go.etcd.io/bbolt/README.md) |
 | 215 | ✓ | [`vendor/go.etcd.io/raft/v3/README.md`](vendor/go.etcd.io/raft/v3/README.md) |
-| 216 | ✓ | [`vendor/go.opencensus.io/CONTRIBUTING.md`](vendor/go.opencensus.io/CONTRIBUTING.md) |
-| 217 | ✓ | [`vendor/go.opencensus.io/README.md`](vendor/go.opencensus.io/README.md) |
-| 218 | ✓ | [`vendor/go.opentelemetry.io/auto/sdk/CONTRIBUTING.md`](vendor/go.opentelemetry.io/auto/sdk/CONTRIBUTING.md) |
-| 219 | ✓ | [`vendor/go.opentelemetry.io/otel/AGENTS.md`](vendor/go.opentelemetry.io/otel/AGENTS.md) |
-| 220 | ✓ | [`vendor/go.opentelemetry.io/otel/attribute/README.md`](vendor/go.opentelemetry.io/otel/attribute/README.md) |
-| 221 | ✓ | [`vendor/go.opentelemetry.io/otel/baggage/README.md`](vendor/go.opentelemetry.io/otel/baggage/README.md) |
-| 222 | ✓ | [`vendor/go.opentelemetry.io/otel/bridge/opencensus/README.md`](vendor/go.opentelemetry.io/otel/bridge/opencensus/README.md) |
-| 223 | ✓ | [`vendor/go.opentelemetry.io/otel/CLAUDE.md`](vendor/go.opentelemetry.io/otel/CLAUDE.md) |
-| 224 | ✓ | [`vendor/go.opentelemetry.io/otel/codes/README.md`](vendor/go.opentelemetry.io/otel/codes/README.md) |
-| 225 | ✓ | [`vendor/go.opentelemetry.io/otel/CONTRIBUTING.md`](vendor/go.opentelemetry.io/otel/CONTRIBUTING.md) |
-| 226 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/internal/x/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/internal/x/README.md) |
-| 227 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/README.md) |
-| 228 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/internal/x/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/internal/x/README.md) |
-| 229 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/README.md) |
-| 230 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/internal/x/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/internal/x/README.md) |
-| 231 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/README.md) |
-| 232 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/README.md) |
-| 233 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/README.md) |
-| 234 | ✓ | [`vendor/go.opentelemetry.io/otel/log/embedded/README.md`](vendor/go.opentelemetry.io/otel/log/embedded/README.md) |
-| 235 | ✓ | [`vendor/go.opentelemetry.io/otel/log/noop/README.md`](vendor/go.opentelemetry.io/otel/log/noop/README.md) |
-| 236 | ✓ | [`vendor/go.opentelemetry.io/otel/log/README.md`](vendor/go.opentelemetry.io/otel/log/README.md) |
-| 237 | ✓ | [`vendor/go.opentelemetry.io/otel/metric/embedded/README.md`](vendor/go.opentelemetry.io/otel/metric/embedded/README.md) |
-| 238 | ✓ | [`vendor/go.opentelemetry.io/otel/metric/noop/README.md`](vendor/go.opentelemetry.io/otel/metric/noop/README.md) |
-| 239 | ✓ | [`vendor/go.opentelemetry.io/otel/metric/README.md`](vendor/go.opentelemetry.io/otel/metric/README.md) |
-| 240 | ✓ | [`vendor/go.opentelemetry.io/otel/propagation/README.md`](vendor/go.opentelemetry.io/otel/propagation/README.md) |
-| 241 | ✓ | [`vendor/go.opentelemetry.io/otel/README.md`](vendor/go.opentelemetry.io/otel/README.md) |
-| 242 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/instrumentation/README.md`](vendor/go.opentelemetry.io/otel/sdk/instrumentation/README.md) |
-| 243 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/internal/x/README.md`](vendor/go.opentelemetry.io/otel/sdk/internal/x/README.md) |
-| 244 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/log/internal/x/README.md`](vendor/go.opentelemetry.io/otel/sdk/log/internal/x/README.md) |
-| 245 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/log/README.md`](vendor/go.opentelemetry.io/otel/sdk/log/README.md) |
-| 246 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/exemplar/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/exemplar/README.md) |
-| 247 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/internal/x/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/internal/x/README.md) |
-| 248 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/metricdata/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/metricdata/README.md) |
-| 249 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/README.md) |
-| 250 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/README.md`](vendor/go.opentelemetry.io/otel/sdk/README.md) |
-| 251 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/resource/README.md`](vendor/go.opentelemetry.io/otel/sdk/resource/README.md) |
-| 252 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/trace/README.md`](vendor/go.opentelemetry.io/otel/sdk/trace/README.md) |
-| 253 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/trace/tracetest/README.md`](vendor/go.opentelemetry.io/otel/sdk/trace/tracetest/README.md) |
-| 254 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.17.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.17.0/README.md) |
-| 255 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.37.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.37.0/README.md) |
-| 256 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.43.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.43.0/README.md) |
-| 257 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/embedded/README.md`](vendor/go.opentelemetry.io/otel/trace/embedded/README.md) |
-| 258 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/noop/README.md`](vendor/go.opentelemetry.io/otel/trace/noop/README.md) |
-| 259 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/README.md`](vendor/go.opentelemetry.io/otel/trace/README.md) |
-| 260 | ✓ | [`vendor/go.uber.org/multierr/README.md`](vendor/go.uber.org/multierr/README.md) |
-| 261 | ✓ | [`vendor/go.uber.org/zap/CONTRIBUTING.md`](vendor/go.uber.org/zap/CONTRIBUTING.md) |
-| 262 | ✓ | [`vendor/go.uber.org/zap/README.md`](vendor/go.uber.org/zap/README.md) |
-| 263 | ✓ | [`vendor/go.yaml.in/yaml/v2/README.md`](vendor/go.yaml.in/yaml/v2/README.md) |
-| 264 | ✓ | [`vendor/go.yaml.in/yaml/v3/README.md`](vendor/go.yaml.in/yaml/v3/README.md) |
-| 265 | ✓ | [`vendor/golang.org/x/net/http2/README.md`](vendor/golang.org/x/net/http2/README.md) |
-| 266 | ✓ | [`vendor/golang.org/x/oauth2/CONTRIBUTING.md`](vendor/golang.org/x/oauth2/CONTRIBUTING.md) |
-| 267 | ✓ | [`vendor/golang.org/x/oauth2/README.md`](vendor/golang.org/x/oauth2/README.md) |
-| 268 | ✓ | [`vendor/golang.org/x/sys/unix/README.md`](vendor/golang.org/x/sys/unix/README.md) |
-| 269 | ✓ | [`vendor/golang.org/x/term/CONTRIBUTING.md`](vendor/golang.org/x/term/CONTRIBUTING.md) |
-| 270 | ✓ | [`vendor/golang.org/x/term/README.md`](vendor/golang.org/x/term/README.md) |
-| 271 | ✓ | [`vendor/google.golang.org/grpc/CONTRIBUTING.md`](vendor/google.golang.org/grpc/CONTRIBUTING.md) |
-| 272 | ✓ | [`vendor/google.golang.org/grpc/README.md`](vendor/google.golang.org/grpc/README.md) |
-| 273 | ✓ | [`vendor/gopkg.in/yaml.v3/README.md`](vendor/gopkg.in/yaml.v3/README.md) |
-| 274 | ✓ | [`vendor/k8s.io/klog/v2/CONTRIBUTING.md`](vendor/k8s.io/klog/v2/CONTRIBUTING.md) |
-| 275 | ✓ | [`vendor/k8s.io/klog/v2/internal/clock/README.md`](vendor/k8s.io/klog/v2/internal/clock/README.md) |
-| 276 | ✓ | [`vendor/k8s.io/klog/v2/README.md`](vendor/k8s.io/klog/v2/README.md) |
-| 277 | ✓ | [`vendor/pgregory.net/rapid/CONTRIBUTING.md`](vendor/pgregory.net/rapid/CONTRIBUTING.md) |
-| 278 | ✓ | [`vendor/pgregory.net/rapid/README.md`](vendor/pgregory.net/rapid/README.md) |
-| 279 | ✓ | [`vendor/resenje.org/singleflight/README.md`](vendor/resenje.org/singleflight/README.md) |
-| 280 | ✓ | [`vendor/sigs.k8s.io/json/CONTRIBUTING.md`](vendor/sigs.k8s.io/json/CONTRIBUTING.md) |
-| 281 | ✓ | [`vendor/sigs.k8s.io/json/README.md`](vendor/sigs.k8s.io/json/README.md) |
-| 282 | ✓ | [`vendor/sigs.k8s.io/yaml/CONTRIBUTING.md`](vendor/sigs.k8s.io/yaml/CONTRIBUTING.md) |
-| 283 | ✓ | [`vendor/sigs.k8s.io/yaml/README.md`](vendor/sigs.k8s.io/yaml/README.md) |
-| 284 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 285 | → | [`docs/contributing/README.md`](docs/contributing/README.md) |
-| 286 | → | [`project/REVIEWING.md`](project/REVIEWING.md) |
-| 287 | → | [`README.md`](README.md) |
-| 288 | → | [`TESTING.md`](TESTING.md) |
+| 216 | ✓ | [`vendor/go.opentelemetry.io/auto/sdk/CONTRIBUTING.md`](vendor/go.opentelemetry.io/auto/sdk/CONTRIBUTING.md) |
+| 217 | ✓ | [`vendor/go.opentelemetry.io/otel/AGENTS.md`](vendor/go.opentelemetry.io/otel/AGENTS.md) |
+| 218 | ✓ | [`vendor/go.opentelemetry.io/otel/attribute/README.md`](vendor/go.opentelemetry.io/otel/attribute/README.md) |
+| 219 | ✓ | [`vendor/go.opentelemetry.io/otel/baggage/README.md`](vendor/go.opentelemetry.io/otel/baggage/README.md) |
+| 220 | ✓ | [`vendor/go.opentelemetry.io/otel/CLAUDE.md`](vendor/go.opentelemetry.io/otel/CLAUDE.md) |
+| 221 | ✓ | [`vendor/go.opentelemetry.io/otel/codes/README.md`](vendor/go.opentelemetry.io/otel/codes/README.md) |
+| 222 | ✓ | [`vendor/go.opentelemetry.io/otel/CONTRIBUTING.md`](vendor/go.opentelemetry.io/otel/CONTRIBUTING.md) |
+| 223 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/internal/x/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/internal/x/README.md) |
+| 224 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc/README.md) |
+| 225 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/internal/x/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/internal/x/README.md) |
+| 226 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp/README.md) |
+| 227 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/internal/x/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/internal/x/README.md) |
+| 228 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc/README.md) |
+| 229 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp/README.md) |
+| 230 | ✓ | [`vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/README.md`](vendor/go.opentelemetry.io/otel/exporters/otlp/otlptrace/README.md) |
+| 231 | ✓ | [`vendor/go.opentelemetry.io/otel/log/embedded/README.md`](vendor/go.opentelemetry.io/otel/log/embedded/README.md) |
+| 232 | ✓ | [`vendor/go.opentelemetry.io/otel/log/noop/README.md`](vendor/go.opentelemetry.io/otel/log/noop/README.md) |
+| 233 | ✓ | [`vendor/go.opentelemetry.io/otel/log/README.md`](vendor/go.opentelemetry.io/otel/log/README.md) |
+| 234 | ✓ | [`vendor/go.opentelemetry.io/otel/metric/embedded/README.md`](vendor/go.opentelemetry.io/otel/metric/embedded/README.md) |
+| 235 | ✓ | [`vendor/go.opentelemetry.io/otel/metric/noop/README.md`](vendor/go.opentelemetry.io/otel/metric/noop/README.md) |
+| 236 | ✓ | [`vendor/go.opentelemetry.io/otel/metric/README.md`](vendor/go.opentelemetry.io/otel/metric/README.md) |
+| 237 | ✓ | [`vendor/go.opentelemetry.io/otel/propagation/README.md`](vendor/go.opentelemetry.io/otel/propagation/README.md) |
+| 238 | ✓ | [`vendor/go.opentelemetry.io/otel/README.md`](vendor/go.opentelemetry.io/otel/README.md) |
+| 239 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/instrumentation/README.md`](vendor/go.opentelemetry.io/otel/sdk/instrumentation/README.md) |
+| 240 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/internal/x/README.md`](vendor/go.opentelemetry.io/otel/sdk/internal/x/README.md) |
+| 241 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/log/internal/x/README.md`](vendor/go.opentelemetry.io/otel/sdk/log/internal/x/README.md) |
+| 242 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/log/README.md`](vendor/go.opentelemetry.io/otel/sdk/log/README.md) |
+| 243 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/exemplar/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/exemplar/README.md) |
+| 244 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/internal/x/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/internal/x/README.md) |
+| 245 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/metricdata/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/metricdata/README.md) |
+| 246 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/metric/README.md`](vendor/go.opentelemetry.io/otel/sdk/metric/README.md) |
+| 247 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/README.md`](vendor/go.opentelemetry.io/otel/sdk/README.md) |
+| 248 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/resource/README.md`](vendor/go.opentelemetry.io/otel/sdk/resource/README.md) |
+| 249 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/trace/README.md`](vendor/go.opentelemetry.io/otel/sdk/trace/README.md) |
+| 250 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/trace/tracetest/README.md`](vendor/go.opentelemetry.io/otel/sdk/trace/tracetest/README.md) |
+| 251 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.17.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.17.0/README.md) |
+| 252 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.37.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.37.0/README.md) |
+| 253 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.43.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.43.0/README.md) |
+| 254 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/embedded/README.md`](vendor/go.opentelemetry.io/otel/trace/embedded/README.md) |
+| 255 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/noop/README.md`](vendor/go.opentelemetry.io/otel/trace/noop/README.md) |
+| 256 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/README.md`](vendor/go.opentelemetry.io/otel/trace/README.md) |
+| 257 | ✓ | [`vendor/go.uber.org/multierr/README.md`](vendor/go.uber.org/multierr/README.md) |
+| 258 | ✓ | [`vendor/go.uber.org/zap/CONTRIBUTING.md`](vendor/go.uber.org/zap/CONTRIBUTING.md) |
+| 259 | ✓ | [`vendor/go.uber.org/zap/README.md`](vendor/go.uber.org/zap/README.md) |
+| 260 | ✓ | [`vendor/go.yaml.in/yaml/v2/README.md`](vendor/go.yaml.in/yaml/v2/README.md) |
+| 261 | ✓ | [`vendor/go.yaml.in/yaml/v3/README.md`](vendor/go.yaml.in/yaml/v3/README.md) |
+| 262 | ✓ | [`vendor/golang.org/x/net/http2/README.md`](vendor/golang.org/x/net/http2/README.md) |
+| 263 | ✓ | [`vendor/golang.org/x/oauth2/CONTRIBUTING.md`](vendor/golang.org/x/oauth2/CONTRIBUTING.md) |
+| 264 | ✓ | [`vendor/golang.org/x/oauth2/README.md`](vendor/golang.org/x/oauth2/README.md) |
+| 265 | ✓ | [`vendor/golang.org/x/sys/unix/README.md`](vendor/golang.org/x/sys/unix/README.md) |
+| 266 | ✓ | [`vendor/golang.org/x/term/CONTRIBUTING.md`](vendor/golang.org/x/term/CONTRIBUTING.md) |
+| 267 | ✓ | [`vendor/golang.org/x/term/README.md`](vendor/golang.org/x/term/README.md) |
+| 268 | ✓ | [`vendor/google.golang.org/grpc/CONTRIBUTING.md`](vendor/google.golang.org/grpc/CONTRIBUTING.md) |
+| 269 | ✓ | [`vendor/google.golang.org/grpc/README.md`](vendor/google.golang.org/grpc/README.md) |
+| 270 | ✓ | [`vendor/gopkg.in/yaml.v3/README.md`](vendor/gopkg.in/yaml.v3/README.md) |
+| 271 | ✓ | [`vendor/k8s.io/klog/v2/CONTRIBUTING.md`](vendor/k8s.io/klog/v2/CONTRIBUTING.md) |
+| 272 | ✓ | [`vendor/k8s.io/klog/v2/internal/clock/README.md`](vendor/k8s.io/klog/v2/internal/clock/README.md) |
+| 273 | ✓ | [`vendor/k8s.io/klog/v2/README.md`](vendor/k8s.io/klog/v2/README.md) |
+| 274 | ✓ | [`vendor/pgregory.net/rapid/CONTRIBUTING.md`](vendor/pgregory.net/rapid/CONTRIBUTING.md) |
+| 275 | ✓ | [`vendor/pgregory.net/rapid/README.md`](vendor/pgregory.net/rapid/README.md) |
+| 276 | ✓ | [`vendor/resenje.org/singleflight/README.md`](vendor/resenje.org/singleflight/README.md) |
+| 277 | ✓ | [`vendor/sigs.k8s.io/json/CONTRIBUTING.md`](vendor/sigs.k8s.io/json/CONTRIBUTING.md) |
+| 278 | ✓ | [`vendor/sigs.k8s.io/json/README.md`](vendor/sigs.k8s.io/json/README.md) |
+| 279 | ✓ | [`vendor/sigs.k8s.io/yaml/CONTRIBUTING.md`](vendor/sigs.k8s.io/yaml/CONTRIBUTING.md) |
+| 280 | ✓ | [`vendor/sigs.k8s.io/yaml/README.md`](vendor/sigs.k8s.io/yaml/README.md) |
+| 281 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 282 | → | [`docs/contributing/README.md`](docs/contributing/README.md) |
+| 283 | → | [`project/REVIEWING.md`](project/REVIEWING.md) |
+| 284 | → | [`README.md`](README.md) |
+| 285 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

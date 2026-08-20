@@ -3,10 +3,10 @@ name: golang-gopls
 description: "Golang semantic code intelligence via `gopls`, the official Go language server — go-to-definition, find references, call/implementation hierarchy, workspace symbol search, package API discovery, diagnostics, safe rename, refactors (extract/inline/fill/rewrite code actions), formatting, and generated tests. Reaches an agent via gopls's own MCP server (`go_*` tools), Claude Code's native `LSP` tool, or the `gopls` CLI. Use when navigating or refactoring Go code — jumping to a definition, finding call sites before a rename, understanding a file's or package's dependencies, running diagnostics after an edit, or extracting/inlining/renaming. Not for the published ecosystem — packages not in your `go.mod`, versions, licenses, importers — → See `samber/cc-skills-golang@golang-pkg-go-dev` skill (`godig`). Not for a whole-tree vulnerability audit → See `samber/cc-skills-golang@golang-security` skill (`govulncheck`)."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents. Requires the gopls binary (go install golang.org/x/tools/gopls@latest) v0.20+ on PATH.
+compatibility: Designed for Claude Code, Codex or similar harness. Requires the gopls binary (go install golang.org/x/tools/gopls@latest) v0.20+ on PATH.
 metadata:
   author: samber
-  version: "1.0.0"
+  version: "1.1.0"
   openclaw:
     emoji: "🛰️"
     homepage: https://github.com/samber/cc-skills-golang
@@ -20,6 +20,8 @@ metadata:
         bins: [gopls]
     skill-library-version: "0.22.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent Bash(gopls:*) LSP mcp__gopls__*
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go engineer who reaches for semantic code intelligence instead of grep whenever a question is about the resolved build — grep finds text, `gopls` finds meaning (types, call graphs, shadowing, implementation relationships).

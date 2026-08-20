@@ -99,7 +99,7 @@ pan 同时微调焦点、handheld 带自然呼吸、dolly 配合轻微 tilt 未�
 - 已由 reference frame 静态承载、且不会变化的省略；
 - 未在 accepted state 出现的天气、火、破坏、群众事件不得为“丰富画面”发明。
 
-**`craft_default`**：每镜只写少量 story-relevant environment motion。**`reviewed_invariant`**：环境变化不能造成新的故事事实或 continuity teleport。
+**`craft_default`**：每镜只写少量 story-relevant environment motion**。`reviewed_invariant`**：环境变化不能造成新的故事事实或 continuity teleport。
 
 ## 4. 对白、口型与声音
 
@@ -209,7 +209,7 @@ Resolvable ref/显式否定可结构检查；delivery 是否语义背离则要 r
 首尾帧接续是常用工作流：执行端拿到两端画面，中间由它补。这对运动规格的含义要说清楚，
 否则容易两头落空。
 
-**两端不是运动规格的替代品，但会实实在在收窄它。** 执行端会优先让成品对上这两张图，
+**两端不是运动规格的替代品，但会实实在在收窄它**。 执行端会优先让成品对上这两张图，
 中间怎么走由它决定。所以：
 
 - 中间**必须被看到**的动作不要只靠插值兑现。某个动作是本镜存在的理由时，两端之间没有

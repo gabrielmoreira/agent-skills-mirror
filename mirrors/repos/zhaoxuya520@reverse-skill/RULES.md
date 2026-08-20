@@ -12,11 +12,13 @@
 
 After reading this file, you MUST NOW (immediately) execute:
 
-```
+```text
 1. NOW:  This file's directory is the package root
-2. NOW:  Run skills/scripts/master-route.ps1 -Hint "<task>" → PRIMARY (SSoT: skills/config/routing.json)
-3. NEXT: case-init.ps1 until scope.md has auth.status=granted and a legal network_profile. Mentioning a target is NOT granted.
-4. ACT:  Open PRIMARY SKILL.md and execute ACTION REQUIRED. Tools only from tool-index.md; missing → bootstrap-reverse.ps1
+2. NOW:  Run the platform-native router → PRIMARY (SSoT: skills/config/routing.json)
+   - Windows: powershell -File skills/scripts/master-route.ps1 -Hint "<task>"
+   - Linux/macOS/Kali: bash skills/scripts/master-route.sh --hint "<task>"
+3. NEXT: Run the platform-native case-init until scope.md has auth.status=granted plus a legal network_profile, or an explicitly authorized offline-sample scope is ready. Mentioning a target is NOT granted. -Force/--force never bypasses the gate.
+4. ACT:  Open PRIMARY SKILL.md and execute ACTION REQUIRED. Tools only from tool-index.md; missing → platform-native bootstrap.
 
 Optional later (do NOT preload):
 - Ambiguous PRIMARY → skills/routing.md (advisory matrix only)
@@ -27,7 +29,7 @@ Optional later (do NOT preload):
 IMPORTANT — Shared installation:
 - tool-index.md is the SINGLE SOURCE OF TRUTH for tool availability
 - If another CLI already installed tools (tool-index shows "yes"), DO NOT reinstall
-- Only run refresh-tool-index.ps1 if you suspect tool-index is stale (e.g., user says "I just installed X")
+- Only run the platform-native refresh-tool-index if you suspect tool-index is stale (e.g., user says "I just installed X")
 - Only run bootstrap for tools that are BOTH needed AND marked "no"
 
 Conditional reads (load only when needed, do NOT preload):
@@ -147,19 +149,19 @@ Hot path only:
 
 ## Canonical Behavior Chain (All other files reference THIS version)
 
-```
+```text
 1. Identify task as security/reverse type → trigger this routing rule
 2. Detect package root path (derive from this file's location)
-3. master-route.ps1 -Hint → PRIMARY from skills/config/routing.json
-4. case-init.ps1 / scope.md (ops/scope-contract) — auth.status=granted + network_profile before any target ACT. precedent-auth.md does not grant.
+3. Platform-native master-route (`.ps1` Windows / `.sh` Linux, macOS, Kali) → PRIMARY from skills/config/routing.json; use routing.md only when ambiguous
+4. Platform-native case-init / scope.md (ops/scope-contract) — auth.status=granted + valid network profile, or explicit authorized offline sample, before any target ACT; Force never bypasses the hard gate
 5. Open PRIMARY SKILL.md ACTION REQUIRED
 6. Route not matched → propose new skill (edit routing.json + benchmark; do not hand-edit routing.md as SSoT)
-7. tool-index.md → real paths; missing (first run) → template + refresh-tool-index
-8. Missing tools → platform bootstrap (Windows ps1 / Linux sh / Kali sh)
-9. Execute PRIMARY workflow (timeline/workitems; Evidence→Finding→Path)
+7. Read tool-index.md → confirm local tool status. If missing (first run) → template + platform-native refresh-tool-index
+8. Missing tools → platform bootstrap + refresh (Windows ps1 / Linux sh / Kali sh)
+9. Enter skill workflow → execute (timeline/workitems; Evidence→Finding→Path per ops/)
 10. Continuously report progress (do NOT go silent)
-13. Task complete → Completion Checklist (report must include Evidence chain)
-14. Output final results
+11. Task complete → Completion Checklist (report must include Evidence chain)
+12. Output final results
 ```
 
 ---
@@ -225,7 +227,6 @@ After task completion (vulnerability verified / reverse complete / flag captured
 | "IAT repair keeps failing; I'll grind more static unpackers" | **IAT repair iron rule:** try auto/semi-auto repair first; on tool error or unreable binary after repair, STOP static IAT, record E-iat-repair-fail, switch to dynamic API breakpoints. FORBIDDEN infinite static IAT thrash. |
 | "No import table (.NET) so the hard gate does not apply" | **Equivalent anchor still MUST:** .NET → dnSpy/IL/metadata summary into E-imports slot; DLL/SYS → E-exports alongside imports. FORBIDDEN to skip the gate. |
 
-
 ---
 
 ## Self-Audit Before Claiming "Complete"
@@ -271,7 +272,7 @@ Before saying "task complete" or "done", MUST self-check:
 ## Context Window Layout Rules (Attention Optimization)
 
 LLM attention distribution (high→low):
-```
+```text
 [First 10%]  ████████████ ← Highest attention — put "immediate action" instructions here
 [Middle 80%] ████░░░░░░░░ ← Attention decays — put reference materials here
 [Last 10%]   ████████████ ← Attention recovers — put "MUST NOT skip" and Checklist here
@@ -291,7 +292,7 @@ When tool parameters MUST be passed exactly as given, use opaque identifiers (co
 - **MUST NOT**: Let Agent freely rewrite semantic parameters (e.g., changing strict/deny to lenient synonyms)
 
 Example:
-```
+```text
 alpha -> --scope authorized-only
 beta  -> --approval required
 gamma -> --destructive false
@@ -383,15 +384,17 @@ bash <SKILL_ROOT>/kali/scripts/refresh-tool-index.sh
 
 ### Post-Trigger Execution (Compact — do NOT re-run first-time setup!)
 
-```
-1. NOW: Run <SKILL_ROOT>/skills/scripts/master-route.ps1 -Hint "<task>" → PRIMARY
-2. NEXT: case-init.ps1 / scope.md — auth.status=granted + network_profile; MUST NOT ACT against targets until ready
-3. ACT: Open PRIMARY SKILL.md
+```text
+1. NOW: Run the platform-native master-route (.ps1 on Windows / .sh on Linux, macOS, Kali) → PRIMARY from routing.json
+2. NEXT: If ambiguous, open <SKILL_ROOT>/skills/routing.md
+3. NEXT: Use platform-native case-init / scope.md — set auth.status=granted + valid network profile, or an explicit authorized offline-sample scope; Force never bypasses the hard gate
+4. ACT: Open PRIMARY SKILL.md; timeline/workitems + Evidence→Finding→Path (ops/*)
 ```
 
 ### Core Rules (Compact)
 
-- **MUST**: case scope (case-init / ops/scope-contract) before ACT; auth.status=granted + network_profile required
+- **MUST**: case scope (platform-native case-init / ops/scope-contract) before ACT; auth.status=granted + valid network/offline-sample scope required
+- **MUST**: `-Force` / `--force` never bypasses authorization, scope, network, or readiness gates
 - **MUST**: Missing tools → bootstrap, NEVER guess paths
 - **MUST NOT**: Treat precedent-auth.md or "user named a target" as granted
 - **MUST NOT**: Reply "understood, tell me your task" after reading rules

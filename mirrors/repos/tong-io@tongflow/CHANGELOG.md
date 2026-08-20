@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-08-19
+
+### Added
+
+- **CometAPI router plugin** —
+  [tongflow-router-cometapi](https://github.com/tong-io/tongflow-router-cometapi):
+  one key for 500+ models behind CometAPI's OpenAI-compatible routes, covering
+  **19 slots** — `gen_text` / split / combine, image / video / audio
+  understanding, image gen/edit/fusion (GPT Image 2, Seedream), text / image(s)
+  → video (Sora 2, Veo 3.1, Seedance, Wan, MiniMax H3, HappyHorse, Vidu), video
+  edit (Omni), TTS and Whisper transcription.
+- **ToAPIs router plugin** —
+  [tongflow-router-toapis](https://github.com/tong-io/tongflow-router-toapis):
+  one key behind ToAPIs' OpenAI-compatible chat route and unified async image /
+  video routes, covering **15 slots** — `gen_text` / split / combine, image
+  understanding, image gen/edit/fusion (GPT Image 2, Seedream 5, Gemini Image,
+  Flux 2, Grok), text / image(s) / first-last-frame / multimodal refs → video
+  (Sora 2, Veo 3.1, Seedance 2, Kling, MiniMax H3, Wan, HappyHorse, Vidu),
+  video edit (HappyHorse). Inputs are hosted through ToAPIs' upload routes; the
+  model picker follows the key's live model list.
+- **Authenticated model catalogs** — `TONGFLOW_MODEL_CATALOG` may set
+  `authEnv` (the env key holding a bearer token); the canvas then loads the
+  catalog through `GET /api/plugins/model-catalog?pluginId=…`, which injects
+  the key from Settings server-side, instead of fetching the URL in the
+  browser. Slot rules also accept token lists and `!`-negated tokens. Scanner
+  version 7, SDK 0.3.2.
+- **Live model catalogs for the per-node model picker** — a plugin may declare
+  `TONGFLOW_MODEL_CATALOG` (a public, CORS-enabled catalog URL plus per-slot
+  filter rules); the canvas fetches it in the browser (10-minute cache,
+  re-checked when the dropdown opens) and appends matching ids after the static
+  `TONGFLOW_SLOT_MODELS` shortlist. Scanner version 6, SDK 0.3.1
+  (`modelCatalog` on the plugin registry entry), `filterModelCatalog` in
+  `tongflow` core.
+
+### Removed
+
+- **Agnes AI plugin** (`tongflow-api-agnes`) — unregistered; the upstream
+  gateway is superseded by CometAPI.
+
 ## [0.3.3] - 2026-08-19
 
 ### Added

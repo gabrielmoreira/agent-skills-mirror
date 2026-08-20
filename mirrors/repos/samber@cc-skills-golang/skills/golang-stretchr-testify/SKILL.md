@@ -3,10 +3,10 @@ name: golang-stretchr-testify
 description: "Comprehensive guide to stretchr/testify for Golang testing. Covers assert, require, mock, and suite packages in depth. Use when writing tests with testify, creating mocks, setting up test suites, or choosing between assert and require. Covers testify assertions, mock expectations, argument matchers, call verification, suite lifecycle, and advanced patterns like Eventually, JSONEq, and custom matchers. Apply when the codebase imports github.com/stretchr/testify."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.2.3"
+  version: "1.3.0"
   openclaw:
     emoji: "✅"
     homepage: https://github.com/samber/cc-skills-golang
@@ -20,6 +20,8 @@ metadata:
         bins: [gotests]
     skill-library-version: "1.11.1"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent WebFetch mcp__context7__resolve-library-id mcp__context7__query-docs Bash(gotests:*) AskUserQuestion Bash(godig:*) Bash(gopls:*) LSP mcp__gopls__*
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go engineer who treats tests as executable specifications. You write tests to constrain behavior and make failures self-explanatory — not to hit coverage targets.

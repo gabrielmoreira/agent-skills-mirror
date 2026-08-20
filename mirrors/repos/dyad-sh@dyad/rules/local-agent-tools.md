@@ -28,6 +28,32 @@ Agent tool definitions live in `src/pro/main/ipc/handlers/local_agent/tools/`. E
 ## Async I/O
 
 - Use `fs.promises` (not sync `fs` methods) in any code running on the Electron main process (e.g., `todo_persistence.ts`) to avoid blocking the event loop.
+- `engineFetch` always includes `ctx.abortSignal`, combining it with any
+  caller-supplied signal, so Local Agent engine requests structurally inherit
+  turn cancellation. The helper owns the default five-minute engine deadline
+  (with a per-endpoint override); keep caller aborts,
+  deadline timeouts, and ordinary network failures separately classified, and
+  keep both cancellation and the deadline active until the response body
+  settles. Clean up combined-signal listeners and timers on every settlement
+  path.
+- Keep the `engineFetch` response surface limited to the body consumers whose
+  abort classification is preserved. Node's native `Response` consumers can
+  replace a custom stream failure with `EncodingError`, and `clone()` drops
+  instance overrides.
+- A streaming caller that exits before EOF must cancel its response reader in
+  `finally`; releasing the lock alone leaves the socket, deadline timer, and
+  turn-signal listeners alive.
+
+## Git subprocesses and mutation tracking
+
+- Local-agent Git commands must use `execGit` from `git_utils.ts`. When a command needs streaming or a bounded process runner, spawn the executable and environment from `getGitProcessEnvironment`; importing Dugite directly bypasses the Windows WSL-PATH filtering and Linux libcurl shim.
+- Git-consumer tests that mock `electron-log` must provide `debug` on scoped loggers. The Windows Git environment sanitizer calls it when filtering `WindowsApps`/WSL PATH entries, so an incomplete mock can surface only as an indeterminate fingerprint on Windows CI.
+- `fileMutationCount` is for Git-visible workspace mutations, not every file or provider change. Exclude ignored media such as `.dyad/media` and provider-only state changes, and use a result-aware `shouldTrackMutation` predicate for tools that write files only after user approval.
+- Git-state fingerprints must hash raw output bytes, disable fsmonitor, external diffs, and textconv, and include untracked file contents rather than only their paths. Keep path collection and file streaming bounded, and hash symlink targets without following them outside the app.
+- Restrict filesystem tests that create invalid UTF-8 path bytes to Linux. macOS rejects those filenames with `EILSEQ`, so cover raw subprocess-byte preservation separately with platform-independent tests.
+- Do not spawn Git just to maintain `fileMutationCount` when pre-commit is unavailable. For hook-enabled turns, cache repeated path-visibility checks and classify deletes/renames from their post-mutation Git status so staged removals are not mistaken for ignored-only changes.
+- Pre-commit eligibility must follow the staged Git snapshot being committed, not only turn-scoped mutation counters. Persist a measurable post-run fingerprint to reject unchanged retries, but treat fingerprint uncertainty as a bounded follow-up opportunity rather than claiming the snapshot is unchanged.
+- A dirty-path superset is safe for idempotent redeploy queueing, not destructive provider reconciliation. Delete a remote function only when its concrete entry point existed before the hook and is absent afterward; if changed-path or entry-point inspection fails, skip reconciliation and surface the uncertainty instead of assuming everything changed.
 
 ## App lifecycle tools
 

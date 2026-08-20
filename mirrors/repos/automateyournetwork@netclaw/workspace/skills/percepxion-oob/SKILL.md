@@ -1,7 +1,7 @@
 ---
 name: percepxion-oob
 description: "Manage Lantronix out-of-band (OOB) infrastructure via Percepxion central management platform: device inventory, serial port inspection via SLC CLI, firmware compliance, config management, security auditing, and closed-loop incident remediation. Use during outages, maintenance windows, compliance cycles, and AI-assisted automation workflows."
-version: 1.0.0
+version: 1.0.1
 license: Apache-2.0
 user-invocable: true
 tags: [lantronix, percepxion, oob, out-of-band, console-server, slc9000, slc8000, emg7500, emg8500, network-ops, serial-console, network-automation, aoob, naf, closed-loop, fleet-management, incident-remediation]
@@ -50,8 +50,8 @@ This skill operates on two distinct device types. Confusing them causes wrong to
 **The key distinction for tool calling:**
 
 - All Percepxion MCP tools, `get_device_list`, `get_device_details`, `get_device_config`, `firmware_compliance_report`, `reboot_device`, and `send_direct_cli_command`, operate on the **OOB device**. The `device_id` in every tool call is the OOB device ID from `get_device_list` or `get_device_details`.
-- `send_direct_cli_command` runs commands on the SLC's own management CLI (Linux shell), not on managed devices attached via serial. Valid commands are SLC-native: `show deviceport names`, `show deviceport port N`, `connect direct deviceport N`,`show sysstatus`, `admin version`, `diag ping <ip>`, `diag traceroute <ip>`. Cisco/Juniper/Arista CLI syntax will not work here. Full CLI command reference in Users Guide [cdn.lantronix.com/wp-content/uploads/pdf/900-704-RBD-SLC-UG.pdf](https://cdn.lantronix.com/wp-content/uploads/pdf/900-704-RBD-SLC-UG.pdf) beginning in chapter "15: Command Reference".
-- There is no Percepxion MCP tool that provides an interactive managed-device CLI session over serial. However, the MCP can compute the direct SSH connection string you need, see the "When to ask for clarification" section below. For a fully interactive terminal session rather than a connection string, SSH directly to the SLC (`ssh sysadmin@<slc-ip>`) and use `connect direct deviceport N` from the SLC shell. That is a human-in-the-loop operation outside this MCP server's scope.
+- `send_direct_cli_command` runs commands on the SLC's own management CLI (Linux shell), not on managed devices attached via serial. Valid commands are SLC-native: `show deviceport names`, `show deviceport port N`, `connect direct deviceport N`,`show sysstatus`, `admin version`, `diag ping <ip>`, `diag traceroute <ip>`. Cisco/Juniper/Arista CLI syntax will not work here. Full CLI command reference in the SLC9000 Users Guide [PMD-00347A-SLC9K-UG-release.pdf](https://cdn.lantronix.com/wp-content/uploads/pdf/PMD-00347A-SLC9K-UG-release.pdf) chapter "18: Command Reference".
+- There is no Percepxion MCP tool that provides an interactive managed-device CLI session over serial. The Percepxion WebUI's device "Console" screen is not one either: it submits a CLI job to the SLC's own CLI and polls for the result, the same mechanism `send_direct_cli_command` + `get_cli_command_output` expose, so anything that screen can do, this MCP already covers. However, the MCP can compute the direct SSH connection string you need, see the "When to ask for clarification" section below. For a fully interactive terminal session rather than a connection string, SSH directly to the SLC (`ssh sysadmin@<slc-ip>`) and use `connect direct deviceport N` from the SLC shell. That is a human-in-the-loop operation outside this MCP server's scope.
 
 **When to ask for clarification:**
 
@@ -101,7 +101,7 @@ Proactive use is as important as reactive use. The Percepxion MCP is not a break
 
 **Never send CLI commands to a managed device or push firmware to an OOB device without explicit operator confirmation.** `send_direct_cli_command` reaches live network infrastructure through a serial port, a wrong port number sends your command to the wrong managed device entirely. `update_firmware_by_smart_group` pushes firmware to OOB devices and is irreversible while in progress. All mutating actions require human confirmation before invocation.
 
-**Always call `login_with_env` first.** Every session requires authentication. No other tool will succeed without an active session. This is not optional.
+**Always call `login_with_env` first.** Every session requires authentication. No other tool will succeed without an active session. This is not optional, and it applies to every credential provider, the tool authenticates via whichever backend `PERCEPXION_CREDENTIAL_PROVIDER` selects.
 
 **Read before you write.** Call `get_device_list` or `get_device_details` to confirm the OOB device. Call `get_security_telemetry` (or `get_port_telemetry` for a single port) to confirm which port reaches the target managed device and verify it shows a connected managed device. `list_device_ports` returns port state only, it does not surface managed-device hostname, model, or serial. Never skip these steps.
 
@@ -146,40 +146,59 @@ uv venv && uv pip install -r requirements.txt
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `PERCEPXION_USERNAME` | Yes | | Percepxion login username |
-| `PERCEPXION_PASSWORD` | Yes | | Percepxion login password |
+| `PERCEPXION_USERNAME` | Yes, when `PERCEPXION_CREDENTIAL_PROVIDER=env` (the default) | | Percepxion login username. Not read by the `vault`, `aws`, or `cyberark` providers. |
+| `PERCEPXION_PASSWORD` | Yes, when `PERCEPXION_CREDENTIAL_PROVIDER=env` (the default) | | Percepxion login password. Not read by the `vault`, `aws`, or `cyberark` providers. |
 | `PERCEPXION_API_URL` | No | `https://api.percepxion.ai/api` | API base URL. Use `https://api.gopercepxion.ai/api` for the Lantronix internal sandbox. |
-| `PERCEPXION_CREDENTIAL_PROVIDER` | No | `env` | Credential backend: `env` (default), `vault`, `aws`, or `cyberark`. See Platform Security Configuration. |
+| `PERCEPXION_CREDENTIAL_PROVIDER` | No | `env` | Credential backend: `env` (default), `vault`, `aws`, or `cyberark`. With a non-env provider, set that provider's variables instead of username/password, see the provider table in Platform Security Configuration. |
 | `PERCEPXION_DEFAULT_ORGANIZATION_ID` | No | | Default organization ID used when callers omit `organization_id`. Useful for single-organization deployments. Primary name; `PERCEPXION_DEFAULT_TENANT_ID` still works as a deprecated alias. |
 | `PERCEPXION_REQUEST_TIMEOUT` | No | `45` | HTTP timeout in seconds. Raise to `120` or higher for large log downloads or slow links. |
 | `PERCEPXION_FIRMWARE_DIR` | No | | If set, firmware uploads are restricted to files in this directory. Recommended for shared or automated deployments. |
 
 > **Important:** Use `https://api.percepxion.ai/api`, not `api.gopercepxion.ai` which is a sandbox environment unless explicitly instructed by the user. The wrong domain causes silent auth failures.
 
+> **Note on the skill metadata:** the `requires.env` entry in this skill's frontmatter lists `PERCEPXION_USERNAME` and `PERCEPXION_PASSWORD` because `env` is the default credential provider. A deployment using `vault`, `aws`, or `cyberark` configures that provider's variables on the MCP server process instead, and does not need those two set.
+
 ---
 
 ## SLC MCP Server
 
-Workflow 3 (SLC Console Diagnostics) and any direct, synchronous single-device access use the **slc-mcp-server**, a separate Python/FastMCP server that talks to an SLC9000/SLC8000 console server directly, not through Percepxion's cloud.
+The **slc-mcp-server** is the direct-to-device companion to percepxion-mcp-server: a separate Python/FastMCP server that talks to a single SLC9000/SLC8000 console server over its REST API, with no cloud round-trip. Use it when the agent has network reach to the SLC's management IP and wants synchronous CLI output in one call (`apply_config_commands`) instead of the Percepxion job-then-fetch cycle. Workflow 3 as written runs entirely through Percepxion and needs only percepxion-mcp-server; slc-mcp-server is optional and adds device-level capabilities Percepxion doesn't expose.
 
 - **Repository:** https://github.com/Lantronix/slc-mcp-server
 - **Transport:** stdio
 - **Python version:** 3.11+
 
+**Which server for which job** (there is no capability overlap by design):
+
+| Capability | slc-mcp-server (direct) | percepxion-mcp-server (fleet) |
+|---|---|---|
+| Serial port status/config | `get_slc_port`, `get_slc_ports` | `list_device_ports` |
+| CLI commands, synchronous output in one call | `apply_config_commands` | - |
+| CLI commands, async job + output fetch | - | `send_direct_cli_command` + `get_cli_command_output` |
+| Firmware update | `firmware_update`, `get_firmware_update_status` | `update_firmware_by_smart_group` |
+| Device config backup | `export_config_commands` | `get_device_config` |
+| User/session management | `get_sessions`, `terminate_session` | - |
+| Reboot | `reboot_device` | `reboot_device` (fleet) |
+| Cellular status | `get_cellular_status` | - |
+| Fleet-wide ops (smart groups, templates) | - | Yes |
+| Audit logs | - | `investigate_audit_logs` |
+
 **Install:**
 ```bash
 git clone https://github.com/Lantronix/slc-mcp-server.git
 cd slc-mcp-server
-uv venv && uv pip install -r requirements.txt
+pip install -e .
 ```
+
+`pip install -e .` pulls in all dependencies including `pyotp`, required for 2FA-enabled devices.
 
 **Register in openclaw.json (stdio transport):**
 ```json
 {
   "slc": {
     "type": "stdio",
-    "command": "uv",
-    "args": ["run", "--directory", "/path/to/slc-mcp-server", "python", "slc_mcp.py"],
+    "command": "python3",
+    "args": ["/path/to/slc-mcp-server/run_server.py"],
     "env": {
       "SLC_DEFAULT_IP": "${SLC_DEFAULT_IP}",
       "SLC_USERNAME": "${SLC_USERNAME}",
@@ -219,6 +238,8 @@ Parameters: {}
 ```
 
 Returns a session token stored in memory for the server process lifetime. Confirm the response shows `"ok": true` before proceeding.
+
+Despite the name, `login_with_env` authenticates via whichever backend `PERCEPXION_CREDENTIAL_PROVIDER` selects (`env`, `vault`, `aws`, or `cyberark`). No different tool call is needed for non-env providers; the server fetches credentials from the configured store and logs in the same way.
 
 ### Step 2: List All OOB Devices
 
@@ -1072,7 +1093,7 @@ Poll until status is `"Completed"` or `"Failed"`. On failure, surface the full e
 
 **SLC CLI scope**
 - `send_direct_cli_command` sends commands to the SLC's own management CLI (Linux/management shell), not to managed devices. Valid commands are SLC-native: `show sysstatus`, `show deviceport port <N>`, `show portstatus`, `diag ping <ip>`, `admin version`, etc.
-- Interactive managed-device CLI (typing into a router or switch prompt over serial) is not supported by this MCP. The MCP can compute the direct SSH connection string (`ssh -p <3000+N> <user>@<slc-ip>`), see "When to ask for clarification" in the Key Terms section. For a fully interactive terminal session, direct SSH to the SLC followed by `connect direct deviceport <N>` from the SLC shell is required. That is a human-in-the-loop operation outside MCP scope.
+- Interactive managed-device CLI (typing into a router or switch prompt over serial) is not supported by this MCP. The Percepxion WebUI's "Console" screen doesn't provide it either, that screen is the same job-based CLI mechanism as `send_direct_cli_command` + `get_cli_command_output`. The MCP can compute the direct SSH connection string (`ssh -p <3000+N> <user>@<slc-ip>`), see "When to ask for clarification" in the Key Terms section. For a fully interactive terminal session, direct SSH to the SLC followed by `connect direct deviceport <N>` from the SLC shell is required. That is a human-in-the-loop operation outside MCP scope.
 - `send_direct_cli_command` is asynchronous. Poll `get_job_group` (or `search_job_groups`) for status, then call `get_cli_command_output` with the same `job_group_id` + `device_id` for the actual output text, `get_job_group` alone never returns it.
 - If the authenticated account is a Percepxion Project Admin, `organization_id` is required (not optional) on `send_direct_cli_command`, `get_cli_command_output`, and most other job/telemetry/content/audit tools, see Workflow 1 Step 3 and Platform Security Configuration.
 - Read-only by default (`PERCEPXION_CLI_WRITE_ENABLED=false`). Write commands require server reconfiguration. The AI cannot bypass CLI policy at runtime.

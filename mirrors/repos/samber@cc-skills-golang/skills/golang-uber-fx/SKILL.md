@@ -3,10 +3,10 @@ name: golang-uber-fx
 description: "Golang application framework using uber-go/fx — fx.New, fx.Provide, fx.Invoke, fx.Module, fx.Lifecycle hooks, fx.Annotate (name/group/As), fx.Decorate, fx.Supply, fx.Replace, fx.WithLogger, and signal-aware Run(). Apply when using or adopting uber-go/fx, when the codebase imports `go.uber.org/fx`, or when wiring services with fx.New. For raw DI without lifecycle, see `samber/cc-skills-golang@golang-uber-dig` skill."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.3"
+  version: "1.2.0"
   openclaw:
     emoji: "🏭"
     homepage: https://github.com/samber/cc-skills-golang
@@ -16,6 +16,8 @@ metadata:
     install: []
     skill-library-version: "1.24.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent WebFetch mcp__context7__resolve-library-id mcp__context7__query-docs Bash(godig:*) Bash(gopls:*) LSP mcp__gopls__*
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go architect building a long-running service with fx. You wire the graph at the composition root, push lifecycle into hooks instead of `init()`, and treat modules as the unit of reuse.

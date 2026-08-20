@@ -882,6 +882,14 @@ publish duplicate deletion events.
 
 Before a session exists, composer options carry the same typed capability
 descriptor. The active session descriptor takes precedence once available.
+For an existing active Turn, a null Session capability snapshot is unresolved
+admission input rather than a negative capability result. Activity Core keeps
+an accepted send-now prompt in its queue and resolves the pending delivery
+decision when the complete Session snapshot arrives. Guidance and interruption
+remain exact capability-driven paths; a complete snapshot supporting neither
+degrades only the delivery mode to ordinary queued send and never drops the
+accepted prompt. Deferred decisions are keyed by prompt and bound to the active
+Turn observed at admission; they never steer or cancel a successor Turn.
 Model composer options keep the selected value and provider-resolved value as
 separate facts. An inherited `default` remains the selected value used for
 future mutations; `effectiveModel` is presentation-only runtime evidence for
@@ -896,7 +904,11 @@ capability catalog.
 The activity snapshot also exposes the composer-options request lifecycle per
 opaque target key and per independent section. `core` contains model,
 reasoning, speed, permission, and effective-settings data; `capabilities`
-contains skills, commands, and capability-catalog data. Desktop requests
+contains skills, commands, and capability-catalog data. The provider's typed
+slash-command policy belongs to `core`; a `capabilities` response that omits it
+or projects it as null must not erase the last successful core value. Every
+section merge updates only the fields owned by that section and preserves
+fields owned by the other sections. Desktop requests
 `core` for the model/reasoning/speed consumer and requests `capabilities` only
 when a capability surface is opened or used; neither capability discovery nor
 its eight-second provider timeout blocks the model controls. `full` remains the
@@ -918,9 +930,20 @@ for the provider refresh before returning.
 Provider context-window and quota updates enter the daemon at the runtime
 adapter boundary, are split into typed durable session metadata, and reach
 Agent GUI through the protocol-v2 `usage` field. GUI projections must not read
-provider-private runtime context to render usage. Existing
-session control state is read from the daemon; pre-session edits remain in the
-engine-owned activation/draft record until the daemon confirms the session.
+provider-private runtime context to render usage. Legacy Desktop-owned account
+probes may enrich current account limits before or without a Session and keep
+their provider adapters in Electron main. Agent Extension account probes have a
+different ownership boundary: the signed Extension declares a provider-owned
+helper, `tuttid` executes its independently installed companion, and Electron
+main only validates and maps the provider-neutral result. Both paths project
+only provider-neutral billing mode, quota windows, and stable error codes.
+Credentials and raw provider responses must never enter AgentGUI, renderer IPC,
+or logs. A
+provider-owned access-token snapshot is not runtime authentication authority:
+an account probe may retry a newer credential, but an unchanged expiry or
+authorization rejection degrades only account limits. Existing session control
+state is read from the daemon; pre-session edits remain in the engine-owned
+activation/draft record until the daemon confirms the session.
 `AgentHostWorkspaceAgent*` types may only appear in compatibility or projection
 layers while the legacy Agent GUI internals are being migrated. Production read
 paths must not call `workspaceAgents.list`,

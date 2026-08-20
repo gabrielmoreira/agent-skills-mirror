@@ -45,6 +45,10 @@ cd web && pnpm test                   # Vitest;  pnpm test:e2e = Playwright;  pn
 
 React 19 + Vite + TypeScript + Tailwind + shadcn/ui; state via React Query. Path alias `@` → `web/src/`. Non-obvious landmines — dual-mode auth (`VITE_HOST_MODE`), SSE via raw `fetch` (not axios), Zod at the prefs boundary — are documented in **`web/AGENTS.md`**.
 
+### Desktop shell (`desktop/`)
+
+Electron wrapper around the hosted web app. It carries **no web bundle**, only an entry URL, so a web deploy never needs a desktop release. Two editions from one source, selected by a gitignored `config/build.json` written at package time (`scripts/write-build-config.mjs`): `oss` points at the user's own stack and asks for it on first run, `saas` opens on hosted onboarding and then the app. Details, including the OAuth interception invariant, in **`desktop/AGENTS.md`**.
+
 ### Agent internals
 
 Built with `create_agent()` from **`langchain.agents`** (not a hand-written `StateGraph`), wrapped in a custom middleware stack (some middleware from `deepagents`). `PTCAgent.create_agent()` in `src/ptc_agent/agent/agent.py` assembles the tools (`execute_code`, `bash`, filesystem ops, `show_widget`, web search/fetch, SEC/market), the middleware, and a `BackgroundSubagentOrchestrator` for parallel background tasks.

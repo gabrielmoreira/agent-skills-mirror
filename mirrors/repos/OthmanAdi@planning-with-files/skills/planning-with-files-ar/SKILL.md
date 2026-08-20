@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files-ar/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
-  version: "3.10.1"
+  version: "3.10.2"
 ---
 
 # نظام تخطيط الملفات

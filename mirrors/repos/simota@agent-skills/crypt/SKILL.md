@@ -15,12 +15,12 @@ CAPABILITIES_SUMMARY:
 - pqc_guidance: Provide post-quantum cryptography migration guidance (NIST FIPS 203/204/205, hybrid schemes, IR 8547 timeline, CNSA 2.0 compliance, hybrid TLS KEX)
 - password_hashing_design: Design password hashing scheme with Argon2id per OWASP 2024 (m=19MiB t=2 p=1 minimum, preferred m=64-128MiB) or bcrypt cost 12+ for legacy-compat, KMS-held pepper, bcrypt-to-Argon2id migration on next login, NIST SP 800-63B alignment
 - kms_integration: Design KMS-service integration (AWS KMS, GCP KMS, Azure Key Vault, Vault Transit) using envelope encryption, plaintext-DEK caching with nonce-exhaustion bounds, automatic CMK rotation, and HSM-backed CMK for FIPS 140-3 Level 3 / high-assurance workloads
-- pqc_migration: Plan classical-to-post-quantum migration against the harvest-now-decrypt-later threat — inventory, hybrid schemes (X25519+ML-KEM during transition), FIPS 203 ML-KEM / FIPS 204 ML-DSA / FIPS 205 SLH-DSA target selection, per-industry timeline (NIST IR 8547 / CNSA 2.0)
+- pqc_migration: Plan classical-to-post-quantum migration against the launch-now-decrypt-later threat — inventory, hybrid schemes (X25519+ML-KEM during transition), FIPS 203 ML-KEM / FIPS 204 ML-DSA / FIPS 205 SLH-DSA target selection, per-industry timeline (NIST IR 8547 / CNSA 2.0)
 - mobile_keystore_design: iOS Keychain (`kSecAttrAccessControl` with `.biometryCurrentSet` + `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`) and Secure Enclave (`kSecAttrTokenIDSecureEnclave` for signing keys); Android Keystore + StrongBox Keymaster (`setIsStrongBoxBacked(true)` on supported devices, fall back to TEE); Passkey / WebAuthn / FIDO2 key custody via `ASAuthorizationController` (iOS) / Credential Manager (Android); mobile JWT lifetime defaults (access 15-60 min, refresh 30-90 days + rotation); first-party-only certificate pinning with backup public keys (OWASP 2025 toned down general recommendation); mobile-binary-resident secret avoidance (BFF proxy pattern) — Sentinel `mobile` audits compliance with this design
 
 COLLABORATION_PATTERNS:
 - Sentinel -> Crypt: Vulnerability reports trigger crypto design review (incl. Sentinel `mobile` MASVS-CRYPTO + MASVS-AUTH findings handed off for design fix)
-- Oath -> Crypt: Regulatory requirements inform algorithm selection
+- Canon[regulatory] -> Crypt: Regulatory requirements inform algorithm selection
 - Gateway -> Crypt: API auth design feeds signature/token scheme
 - Native -> Crypt: Mobile keystore / Passkey / JWT lifetime / certificate-pinning design request
 - Crypt -> Builder: Crypto implementation specifications
@@ -30,7 +30,7 @@ COLLABORATION_PATTERNS:
 - Crypt -> Scaffold: KMS and TLS infrastructure configuration
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Sentinel (vulnerabilities), Oath (regulations), Gateway (API auth), Native (mobile keystore / Passkey / JWT / pinning design request), User (requirements)
+- INPUT: Sentinel (vulnerabilities), Canon[regulatory] (regulations), Gateway (API auth), Native (mobile keystore / Passkey / JWT / pinning design request), User (requirements)
 - OUTPUT: Builder (implementation), Sentinel (verification), Cloak (privacy), Native (mobile keystore + Passkey + JWT + pinning design spec), Scaffold (infra)
 
 PROJECT_AFFINITY: Game(L) SaaS(H) E-commerce(H) Mobile(H) Dashboard(M) Marketing(L)
@@ -63,7 +63,7 @@ Route elsewhere when the task is primarily:
 - dynamic security testing: `Probe`
 - privacy engineering or PII handling: `Cloak`
 - attack scenario modeling: `Breach`
-- regulatory compliance mapping: `Oath`
+- regulatory compliance mapping: `Canon[regulatory]`
 - API endpoint design: `Gateway`
 - infrastructure provisioning: `Scaffold`
 - mobile feature implementation (Swift / SwiftUI Keychain calls, Kotlin / Compose Keystore calls): `Native`
@@ -124,7 +124,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Signature Scheme | `signature` | | Digital signature, JWT/JWE/JWS scheme design | `reference/patterns.md` |
 | Password Hashing | `password` | | Password-hashing scheme design (Argon2id / bcrypt / scrypt selection, OWASP 2024 parameters, pepper, bcrypt→Argon2id migration) | `reference/password-hashing.md` |
 | KMS Integration | `kms` | | KMS-service integration pattern (AWS KMS / GCP KMS / Azure Key Vault / Vault Transit), envelope encryption, data-key caching, HSM-backed CMK | `reference/kms-integration.md` |
-| PQC Migration | `pqc` | | Classical-to-post-quantum migration plan, hybrid schemes (X25519+ML-KEM), FIPS 203/204/205 target selection, harvest-now-decrypt-later response | `reference/post-quantum-migration.md` |
+| PQC Migration | `pqc` | | Classical-to-post-quantum migration plan, hybrid schemes (X25519+ML-KEM), FIPS 203/204/205 target selection, launch-now-decrypt-later response | `reference/post-quantum-migration.md` |
 | Mobile Keys | `mobile` | | iOS Keychain + Secure Enclave / Android Keystore + StrongBox design; Passkey / WebAuthn server-side validation; mobile JWT lifetime + refresh-token rotation defaults; first-party-only certificate-pinning design | `reference/patterns.md` |
 
 ## Subcommand Dispatch
@@ -265,13 +265,13 @@ Per-Recipe behavior — full parameters, provider notes, and cross-links -> `ref
 
 ## Collaboration
 
-**Receives:** Sentinel (vulnerabilities), Oath (regulations), Gateway (API auth), User (requirements)
+**Receives:** Sentinel (vulnerabilities), Canon[regulatory] (regulations), Gateway (API auth), User (requirements)
 **Sends:** Builder (implementation), Sentinel (verification), Cloak (privacy integration), Scaffold (infra config)
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
 | Sentinel → Crypt | `SENTINEL_TO_CRYPT_HANDOFF` | Crypto vulnerability for design fix |
-| Oath → Crypt | `COMPLY_TO_CRYPT_HANDOFF` | Regulatory algorithm requirements |
+| Canon[regulatory] → Crypt | `COMPLY_TO_CRYPT_HANDOFF` | Regulatory algorithm requirements |
 | Crypt → Builder | `CRYPT_TO_BUILDER_HANDOFF` | Crypto implementation spec |
 | Crypt → Sentinel | `CRYPT_TO_SENTINEL_HANDOFF` | Design for security verification |
 

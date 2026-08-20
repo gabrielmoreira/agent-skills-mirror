@@ -37,6 +37,8 @@
 | SHT16_TOTAL_IS_NOT_THE_SUM | structural_invariant | validator | error | storyboard | 总和不等于各计入镜头时长之和 |
 | SHT16_DELTA_MISSING | structural_invariant | validator | error | storyboard | 声明了目标却没有带符号差值 |
 | SHT16_DELTA_IS_WRONG | structural_invariant | validator | error | storyboard | 差值不等于总和减目标 |
+| SHT16_SHOT_LISTED_TWICE | structural_invariant | validator | error | storyboard | 同一镜头在时长记录里出现多次，会被加两次 |
+| SHT16_EPISODE_SHOT_LEFT_THE_TOTAL | structural_invariant | validator | error | storyboard | `shots.jsonl` 里的镜头既不计入总和也没被挂起 |
 | SHT16_DISPOSITION_MISSING | structural_invariant | validator | error | storyboard | 声明了目标却没有对差值的处置 |
 | SHT16_DISPOSITION_CLAIMS_A_TARGET | structural_invariant | validator | error | storyboard | 没有目标却给出了判断目标的处置 |
 | SHT17_KEYFRAME_HAS_NO_ID | structural_invariant | validator | error | storyboard | 关键帧记录没有 `keyframe_id` |
@@ -45,6 +47,18 @@
 | SHT17_BOUNDARY_REF_DISAGREES_WITH_ROLE | structural_invariant | validator | error | storyboard | 声明的角色与绑定的边界字段不一致 |
 | SHT17_BOUNDARY_REF_UNRESOLVABLE | structural_invariant | validator | error | storyboard | 关键帧绑定的镜头不在镜头文件里 |
 | SHT17_DUPLICATE_BOUNDARY_KEYFRAME | structural_invariant | validator | error | storyboard | 同一镜头的同一端有两张关键帧 |
+| SHT01_BLOCK_UNCLAIMED | structural_invariant | validator | error | storyboard | 处理为 `covered`/`intentional_repeat` 的块没有镜头认领 |
+| SHT01_BLOCK_CLAIMED_TWICE | structural_invariant | validator | error | storyboard | 非 `intentional_repeat` 的块被多个镜头认领 |
+| SHT01_BLOCK_IS_ON_SCREEN_ANYWAY | structural_invariant | validator | error | storyboard | 记为不拍的块却有镜头认领 |
+| SHT01_BLOCK_NOT_IN_SCREENPLAY | structural_invariant | validator | error | storyboard | 镜头认领的块不在剧本索引里 |
+| SHT01_BLOCK_HAS_NO_DISPOSITION | structural_invariant | validator | error | storyboard | 有制作相关的块没有写处理 |
+| SHT01_DISPOSITIONS_MISSING | structural_invariant | validator | error | storyboard | 覆盖表没有 `dispositions` |
+| SHT01_DISPOSITION_MALFORMED | structural_invariant | validator | error | storyboard | 处理行不是对象或没点名块 |
+| SHT01_DISPOSITION_UNKNOWN | structural_invariant | validator | error | storyboard | 处理不是工作流定义的四种之一 |
+| SHT01_DISPOSITION_REPEATED | structural_invariant | validator | error | storyboard | 同一个块写了多行处理 |
+| SHT01_DISPOSITION_NOT_IN_SCREENPLAY | structural_invariant | validator | error | storyboard | 处理点名的块不在剧本索引里 |
+| SHT01_DISPOSITION_HAS_NO_REASON | structural_invariant | validator | error | storyboard | 重复或省略是决定，必须写理由 |
+| SHT01_SCREENPLAY_IS_NOT_FULLY_INDEXED | structural_invariant | validator | error | storyboard | 剧本索引里还有没归类的行，覆盖检查看不到剧本的全部 |
 
 ## 不进这份目录的东西
 

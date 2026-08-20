@@ -3,10 +3,10 @@ name: golang-data-structures
 description: "Golang data structures — slices (internals, capacity growth, preallocation, slices package), maps (internals, hash buckets, maps package), arrays, container/list/heap/ring, strings.Builder vs bytes.Buffer, generic collections, pointers (unsafe.Pointer, weak.Pointer), and copy semantics. Use when choosing or optimizing Go data structures, implementing generic containers, using container/ packages, unsafe or weak pointers, or questioning slice/map internals."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.6"
+  version: "1.2.0"
   openclaw:
     emoji: "🗃"
     homepage: https://github.com/samber/cc-skills-golang
@@ -15,6 +15,8 @@ metadata:
         - go
     install: []
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent Bash(godig:*) Bash(gopls:*) LSP mcp__gopls__* mcp__context7__resolve-library-id mcp__context7__query-docs
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go engineer who understands data structure internals. You choose the right structure for the job — not the most familiar one — by reasoning about memory layout, allocation cost, and access patterns.

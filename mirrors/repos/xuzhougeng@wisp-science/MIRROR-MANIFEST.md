@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns, 151 file(s) materialized.
+Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 1 followed patterns, 152 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 151 |
+| Followed pats | 1 |
+| Files         | 152 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/app-updates.md`
 
 ## File Index
 
@@ -210,6 +210,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 149 | ✓ | [`skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1`](skills/word-zotero-citations/scripts/validate_word_zotero_ui.ps1) |
 | 150 | ✓ | [`skills/word-zotero-citations/scripts/verify_skill.py`](skills/word-zotero-citations/scripts/verify_skill.py) |
 | 151 | ✓ | [`skills/word-zotero-citations/SKILL.md`](skills/word-zotero-citations/SKILL.md) |
+| 152 | → | [`docs/app-updates.md`](docs/app-updates.md) |
 
 ---
 

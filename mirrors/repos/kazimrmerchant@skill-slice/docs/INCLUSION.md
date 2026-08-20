@@ -1,6 +1,6 @@
 # Inclusion and exclusion
 
-This public tree is **495** unique sibling folders. Tags are catalog indexes, not parent directories. Rate the works-verified subset first: [WORKS_VERIFIED.md](WORKS_VERIFIED.md). This file is include/exclude rules — not a private-library diary.
+This public tree is **496** unique sibling folders. Tags are catalog indexes, not parent directories. Rate the works-verified subset first: [WORKS_VERIFIED.md](WORKS_VERIFIED.md). This file is include/exclude rules — not a private-library diary.
 
 ## Selection algorithm
 
@@ -31,8 +31,9 @@ v1 used `skills/agent-os/<skill>` and `skills/godot/<skill>`. Those parents were
 | Expansion (unique A-tier KEEP, after uniqueness cut) | 440 |
 | Uniqueness-era total | 491 |
 | Cut this wave (claimed files missing) | `automated-email-campaigns`, `shipping-and-launch` |
-| **Public total** | **495** |
+| **Public total** | **496** |
 | Best-500 add (unique A+ KEEP, live ggml-org docs) | `llama-cpp` |
+| Original add (canonical [kazimrmerchant/awe-me](https://github.com/kazimrmerchant/awe-me); not a pad onto the 12) | `awe-me` |
 | Best-500 wave (unique A KEEP, live official docs 2026-08-14) | `erlang-otp-behaviors`, `ab-testing-design-and-analysis`, `box-least-squares`, `pubchem-database`, `locational-marginal-prices`, `ortools-pickup-delivery-routing`, `weaviate` |
 | last30days | 0 in this repo (upstream companion) |
 | Cut after maintainer gate | `yesterdays` (vendored last30days), Whisper twins, `ui-and-controls`, `fp-ts-react`, `mpc-horizon-tuning`, Makepad extras, `media-audio-extraction` |
@@ -61,7 +62,7 @@ See [CATALOG.md](CATALOG.md) for tag buckets. Frontend KEEP in the CSV is 144 �
 
 ## Works-bar (executability)
 
-Uniqueness cuts already happened. This pack is **495 unique sibling chairs** (target 500 unique that pass the gold bar). This bar is **executability**, not another uniqueness pass.
+Uniqueness cuts already happened. This pack is **496 unique sibling chairs** (target 500 unique that pass the gold bar). This bar is **executability**, not another uniqueness pass.
 
 A public skill **stays** if:
 
@@ -70,7 +71,7 @@ A public skill **stays** if:
 3. not a stale encyclopedia / twin / flood, **AND**
 4. every claimed `references/` or `scripts/` path exists on disk.
 
-Expansion-wave bodies were copied + path/email sanitized, not all rewritten. **Do not claim 495 all work.** Rate [WORKS_VERIFIED.md](WORKS_VERIFIED.md) first. Prefer documenting a works-verified subset over mass deletion. Do not pad toward 500. Do not vendor `last30days` (upstream companion only).
+Expansion-wave bodies were copied + path/email sanitized, not all rewritten. **Do not claim 496 all work.** Rate [WORKS_VERIFIED.md](WORKS_VERIFIED.md) first. Prefer documenting a works-verified subset over mass deletion. Do not pad toward 500. Do not vendor `last30days` (upstream companion only).
 
 Cut from git only on a **clear fail**: no procedure, broken invented commands, twin/flood leftover, or claimed `references/` / `scripts/` that do not exist. Philosophy-heavy intros or companions that exist at a different path than claimed stay **WEAK**, not automatic cuts. Do not mass-delete the remaining untested copies.
 

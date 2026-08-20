@@ -60,6 +60,15 @@ required fix、owner、severity、status。禁止用 prompt 长度、动词数�
 | VID15_MEMBER_SHOT_HAS_NO_DURATION | structural_invariant | validator | error | video-prompts | 被装箱的镜头没有数值时长，容器时长无从成立 |
 | VID15_CONTAINER_DURATION_IS_NOT_THE_SUM | structural_invariant | validator | error | video-prompts | 容器时长不等于成员已接受时长之和 |
 | VID15_EPISODE_TOTAL_DOES_NOT_RECONCILE | structural_invariant | validator | error | video-prompts | 容器加散镜不等于全集镜头时长总和 |
+| VID15_MEMBER_ORDER_IS_NOT_A_SEQUENCE | structural_invariant | validator | error | video-prompts | 成员 `order` 不是从 1 开始、升序、无重复无跳号 |
+| VID15_MEMBER_HAS_NO_ACCEPTED_DURATION | structural_invariant | validator | error | video-prompts | 成员没有投影它所装镜头的时长 |
+| VID15_MEMBER_DURATION_IS_STALE | structural_invariant | validator | error | video-prompts | 成员的 `accepted_duration` 与它所装镜头的值不一致 |
+| VID15_MEMBERSHIP_BASIS_MISSING | structural_invariant | validator | error | video-prompts | 容器没有记录成员为何同属一个容器 |
+| VID15_MEMBERSHIP_BASIS_INCOMPLETE | structural_invariant | validator | error | video-prompts | `membership_basis` 三项里有结论留空 |
+| VID15_CONTAINER_HAS_NO_ID | structural_invariant | validator | error | video-prompts | 容器记录没有 `container_id` |
+| VID15_CONTAINER_HAS_NO_MEMBERS | structural_invariant | validator | error | video-prompts | 容器没有成员 |
+| VID15_CONTAINER_DURATION_MISSING | structural_invariant | validator | error | video-prompts | `container_duration` 缺失或不是秒数 |
+| VID15_MEMBER_HAS_NO_SHOT_REF | structural_invariant | validator | error | video-prompts | 成员没有点名它所装的镜头 |
 
 `VID15_*` 由 [container_check.py](../scripts/container_check.py) 执行。未装容器的散镜与
 时长尚未确定的镜头**只报告不判错**：前者是合法的打包选择，后者是上游还没做完，把它们

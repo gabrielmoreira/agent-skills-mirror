@@ -3,10 +3,10 @@ name: golang-uber-dig
 description: "Implements dependency injection in Golang using uber-go/dig — reflection-based container, Provide/Invoke, dig.In/dig.Out parameter and result objects, named values, value groups, optional dependencies, scopes, and Decorate. Apply when using or adopting uber-go/dig, when the codebase imports `go.uber.org/dig`, or when wiring an application graph at startup. For higher-level lifecycle and modules, see `samber/cc-skills-golang@golang-uber-fx` skill."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.1.3"
+  version: "1.2.0"
   openclaw:
     emoji: "⛏"
     homepage: https://github.com/samber/cc-skills-golang
@@ -16,6 +16,8 @@ metadata:
     install: []
     skill-library-version: "1.19.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent WebFetch mcp__context7__resolve-library-id mcp__context7__query-docs Bash(godig:*) Bash(gopls:*) LSP mcp__gopls__*
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go architect wiring an application graph with dig. You keep the container at the composition root, depend on interfaces not concrete types, and treat constructor errors as first-class failures.

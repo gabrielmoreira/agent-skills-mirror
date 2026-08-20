@@ -2,9 +2,10 @@
 """
 Analyze a product feedback source.
 
-Supported sources: Riffrec zip, standalone video, standalone audio, and
-meeting notes text/markdown. The script extracts transcript, high-signal
-video frames when available, and CE-friendly markdown artifacts.
+Supported sources: Riffrec zip or unpacked capture directory, standalone
+video, standalone audio, and meeting notes text/markdown. The script extracts
+transcript, high-signal video frames when available, and CE-friendly markdown
+artifacts.
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -50,11 +52,20 @@ NOISY_NETWORK_PATTERNS = (
 VIDEO_EXTENSIONS = {".webm", ".mp4", ".mov", ".m4v", ".mkv", ".avi"}
 AUDIO_EXTENSIONS = {".webm", ".mp3", ".mp4", ".mpeg", ".mpga", ".m4a", ".wav", ".ogg", ".flac"}
 NOTES_EXTENSIONS = {".txt", ".md", ".markdown", ".text"}
+RIFFREC_DIRECTORY_MARKERS = {"session.json", "events.json"}
+
+
+class SourceInputError(ValueError):
+    pass
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Analyze a product feedback source")
-    parser.add_argument("source_path", type=Path, help="Path to a Riffrec zip, video, audio, or meeting notes file")
+    parser.add_argument(
+        "source_path",
+        type=Path,
+        help="Path to a Riffrec zip or unpacked capture directory, video, audio, or meeting notes file",
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -102,15 +113,118 @@ def safe_extract(zip_path: Path, dest: Path) -> None:
                     shutil.copyfileobj(source, target)
 
 
-def default_output_dir(zip_path: Path) -> Path:
+def safe_copy_capture_directory(source_dir: Path, dest: Path) -> None:
+    source_root = source_dir.resolve()
+    dest.mkdir(parents=True, exist_ok=True)
+    dest_root = dest.resolve()
+
+    entries = sorted(source_dir.rglob("*"), key=lambda path: str(path.relative_to(source_dir)))
+    for entry in entries:
+        if entry.is_symlink():
+            raise SourceInputError(f"Unpacked Riffrec capture contains a symlink: {entry}")
+        resolved = entry.resolve()
+        if not resolved.is_relative_to(source_root):
+            raise SourceInputError(f"Unpacked Riffrec capture entry escapes its source directory: {entry}")
+        if not entry.is_dir() and not entry.is_file():
+            raise SourceInputError(f"Unpacked Riffrec capture contains an unsupported entry type: {entry}")
+
+    for entry in entries:
+        relative = entry.relative_to(source_dir)
+        target = dest / relative
+        if not target.resolve().is_relative_to(dest_root):
+            raise SourceInputError(f"Unsafe unpacked Riffrec capture path: {relative}")
+        if entry.is_dir():
+            target.mkdir(parents=True, exist_ok=True)
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(entry, target)
+
+
+def validate_raw_destination(raw_dir: Path) -> None:
+    if raw_dir.is_symlink():
+        raise SourceInputError(f"Raw output directory must not be a symlink: {raw_dir}")
+    if raw_dir.exists() and not raw_dir.is_dir():
+        raise SourceInputError(f"Raw output path must be a directory: {raw_dir}")
+    if not raw_dir.exists():
+        return
+    for existing in raw_dir.rglob("*"):
+        if existing.is_symlink():
+            raise SourceInputError(f"Raw output contains a symlink and cannot be replaced safely: {existing}")
+
+
+def promote_raw_snapshot(staging_dir: Path, raw_dir: Path) -> None:
+    validate_raw_destination(raw_dir)
+    previous_dir = raw_dir.parent / staging_dir.name.replace(".staging-", ".previous-", 1)
+    if previous_dir.exists() or previous_dir.is_symlink():
+        raise SourceInputError(f"Temporary raw snapshot path already exists: {previous_dir}")
+
+    had_previous = raw_dir.exists()
+    if had_previous:
+        os.replace(raw_dir, previous_dir)
+    try:
+        os.replace(staging_dir, raw_dir)
+    except BaseException:
+        if had_previous:
+            os.replace(previous_dir, raw_dir)
+        raise
+
+    if had_previous:
+        shutil.rmtree(previous_dir, ignore_errors=True)
+
+
+def validate_frames_destination(frames_dir: Path) -> None:
+    if frames_dir.is_symlink():
+        raise SourceInputError(f"Frames output directory must not be a symlink: {frames_dir}")
+    if frames_dir.exists() and not frames_dir.is_dir():
+        raise SourceInputError(f"Frames output path must be a directory: {frames_dir}")
+    if not frames_dir.exists():
+        return
+    for existing in frames_dir.rglob("*"):
+        if existing.is_symlink():
+            raise SourceInputError(f"Frames output contains a symlink and cannot be replaced safely: {existing}")
+
+
+def promote_frames_snapshot(staging_dir: Path, frames_dir: Path) -> None:
+    validate_frames_destination(frames_dir)
+    previous_dir = frames_dir.parent / staging_dir.name.replace(".staging-", ".previous-", 1)
+    if previous_dir.exists() or previous_dir.is_symlink():
+        raise SourceInputError(f"Temporary frames snapshot path already exists: {previous_dir}")
+
+    had_previous = frames_dir.exists()
+    if had_previous:
+        os.replace(frames_dir, previous_dir)
+    try:
+        os.replace(staging_dir, frames_dir)
+    except BaseException:
+        if had_previous:
+            os.replace(previous_dir, frames_dir)
+        raise
+
+    if had_previous:
+        shutil.rmtree(previous_dir, ignore_errors=True)
+
+
+def default_output_dir(source_path: Path) -> Path:
     cwd = Path.cwd()
-    stem = slugify(zip_path.stem)
+    stem = slugify(source_path.stem)
     if (cwd / "docs" / "brainstorms").is_dir():
         return cwd / "docs" / "brainstorms" / "riffrec-feedback" / stem
     return cwd / "riffrec-feedback" / stem
 
 
 def classify_source(source_path: Path) -> str:
+    if source_path.is_dir():
+        missing = sorted(marker for marker in RIFFREC_DIRECTORY_MARKERS if not (source_path / marker).is_file())
+        if missing:
+            expected = ", ".join(sorted(RIFFREC_DIRECTORY_MARKERS))
+            missing_text = ", ".join(missing)
+            raise SourceInputError(
+                f"Unsupported source directory: {source_path}. "
+                f"An unpacked Riffrec capture must contain {expected}; missing {missing_text}."
+            )
+        return "riffrec_directory"
+    if not source_path.is_file():
+        raise SourceInputError(f"Unsupported source path type: {source_path}")
     if zipfile.is_zipfile(source_path):
         return "riffrec_zip"
     suffix = source_path.suffix.lower()
@@ -174,14 +288,24 @@ def read_notes(path: Path) -> dict[str, Any]:
     return {"status": "ok", "text": text.strip(), "source": "meeting_notes"}
 
 
-def prepare_source(source_path: Path, raw_dir: Path) -> dict[str, Any]:
-    raw_dir.mkdir(parents=True, exist_ok=True)
-    source_kind = classify_source(source_path)
+def populate_source_snapshot(source_path: Path, snapshot_dir: Path, source_kind: str) -> dict[str, Any]:
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
 
-    if source_kind == "riffrec_zip":
-        safe_extract(source_path, raw_dir)
-        session = read_json(raw_dir / "session.json", {})
-        events_payload = read_json(raw_dir / "events.json", {})
+    if source_kind in {"riffrec_zip", "riffrec_directory"}:
+        if source_kind == "riffrec_zip":
+            safe_extract(source_path, snapshot_dir)
+        else:
+            safe_copy_capture_directory(source_path, snapshot_dir)
+            missing = sorted(
+                marker for marker in RIFFREC_DIRECTORY_MARKERS if not (snapshot_dir / marker).is_file()
+            )
+            if missing:
+                missing_text = ", ".join(missing)
+                raise SourceInputError(
+                    f"Unpacked Riffrec capture changed during normalization; missing {missing_text}."
+                )
+        session = read_json(snapshot_dir / "session.json", {})
+        events_payload = read_json(snapshot_dir / "events.json", {})
         events = events_payload.get("events", events_payload if isinstance(events_payload, list) else [])
         if not isinstance(events, list):
             events = []
@@ -194,12 +318,12 @@ def prepare_source(source_path: Path, raw_dir: Path) -> dict[str, Any]:
             "session": session,
             "events": events,
             "duration": duration,
-            "recording_path": raw_dir / "recording.webm",
-            "transcription_path": raw_dir / "voice.webm",
+            "recording_path": snapshot_dir / "recording.webm",
+            "transcription_path": snapshot_dir / "voice.webm",
             "notes_transcript": None,
         }
 
-    copied_path = raw_dir / source_path.name
+    copied_path = snapshot_dir / source_path.name
     if source_path.resolve() != copied_path.resolve():
         shutil.copy2(source_path, copied_path)
 
@@ -236,6 +360,27 @@ def prepare_source(source_path: Path, raw_dir: Path) -> dict[str, Any]:
         "transcription_path": transcription_path,
         "notes_transcript": None,
     }
+
+
+def prepare_source(source_path: Path, raw_dir: Path, source_kind: str | None = None) -> dict[str, Any]:
+    source_kind = source_kind or classify_source(source_path)
+    raw_dir.parent.mkdir(parents=True, exist_ok=True)
+    staging_dir = Path(
+        tempfile.mkdtemp(prefix=f".{raw_dir.name}.staging-", dir=raw_dir.parent)
+    )
+    try:
+        source = populate_source_snapshot(source_path, staging_dir, source_kind)
+        promote_raw_snapshot(staging_dir, raw_dir)
+    except BaseException:
+        if staging_dir.exists() and not staging_dir.is_symlink():
+            shutil.rmtree(staging_dir, ignore_errors=True)
+        raise
+
+    for key in ("recording_path", "transcription_path"):
+        staged_path = source[key]
+        if staged_path is not None:
+            source[key] = raw_dir / staged_path.relative_to(staging_dir)
+    return source
 
 
 def repo_relative(path: Path, base: Path) -> str:
@@ -508,41 +653,49 @@ def select_moments(
 
 
 def extract_frames(recording_path: Path | None, frames_dir: Path, moments: list[dict[str, Any]]) -> None:
-    frames_dir.mkdir(parents=True, exist_ok=True)
-    if not recording_path or not recording_path.exists():
-        for moment in moments:
-            moment["screenshot"] = None
-            moment["screenshot_status"] = "no video source"
-        return
-    if not shutil.which("ffmpeg"):
-        for moment in moments:
-            moment["screenshot"] = None
-            moment["screenshot_status"] = "ffmpeg not installed"
-        return
-
-    for moment in moments:
-        safe_reason = slugify(moment["reason"])[:48]
-        frame_path = frames_dir / f"{moment['id'].lower()}-{moment['t']:.2f}s-{safe_reason}.png"
-        command = [
-            "ffmpeg",
-            "-y",
-            "-ss",
-            f"{max(0.0, float(moment['t'])):.3f}",
-            "-i",
-            str(recording_path),
-            "-frames:v",
-            "1",
-            "-q:v",
-            "2",
-            str(frame_path),
-        ]
-        result = subprocess.run(command, capture_output=True, text=True, timeout=60)
-        if result.returncode == 0 and frame_path.exists():
-            moment["screenshot"] = str(frame_path)
-            moment["screenshot_status"] = "ok"
+    frames_dir.parent.mkdir(parents=True, exist_ok=True)
+    validate_frames_destination(frames_dir)
+    staging_dir = Path(
+        tempfile.mkdtemp(prefix=f".{frames_dir.name}.staging-", dir=frames_dir.parent)
+    )
+    try:
+        if not recording_path or not recording_path.exists():
+            for moment in moments:
+                moment["screenshot"] = None
+                moment["screenshot_status"] = "no video source"
+        elif not shutil.which("ffmpeg"):
+            for moment in moments:
+                moment["screenshot"] = None
+                moment["screenshot_status"] = "ffmpeg not installed"
         else:
-            moment["screenshot"] = None
-            moment["screenshot_status"] = compact_text(result.stderr or result.stdout, 300)
+            for moment in moments:
+                safe_reason = slugify(moment["reason"])[:48]
+                frame_path = staging_dir / f"{moment['id'].lower()}-{moment['t']:.2f}s-{safe_reason}.png"
+                command = [
+                    "ffmpeg",
+                    "-y",
+                    "-ss",
+                    f"{max(0.0, float(moment['t'])):.3f}",
+                    "-i",
+                    str(recording_path),
+                    "-frames:v",
+                    "1",
+                    "-q:v",
+                    "2",
+                    str(frame_path),
+                ]
+                result = subprocess.run(command, capture_output=True, text=True, timeout=60)
+                if result.returncode == 0 and frame_path.exists():
+                    moment["screenshot"] = str(frames_dir / frame_path.name)
+                    moment["screenshot_status"] = "ok"
+                else:
+                    moment["screenshot"] = None
+                    moment["screenshot_status"] = compact_text(result.stderr or result.stdout, 300)
+        promote_frames_snapshot(staging_dir, frames_dir)
+    except BaseException:
+        if staging_dir.exists() and not staging_dir.is_symlink():
+            shutil.rmtree(staging_dir, ignore_errors=True)
+        raise
 
 
 def event_counts(events: list[dict[str, Any]]) -> dict[str, int]:
@@ -736,7 +889,7 @@ def write_requirements_kickoff(
         "## Key Flows",
         "",
         "- F1. Evidence-backed feedback triage",
-        "  - **Trigger:** A feedback zip, video, audio file, or meeting notes file is available.",
+        "  - **Trigger:** A feedback bundle, video, audio file, or meeting notes file is available.",
         "  - **Actors:** A1, A2, A3",
         "  - **Steps:** Extract or copy the source, transcribe media or read notes, select high-signal moments when video exists, inspect screenshots when available, confirm problems, and write requirements with supporting evidence.",
         "  - **Outcome:** Confirmed product problems are represented as requirements with transcript support and screenshot support when visual evidence exists.",
@@ -1035,11 +1188,38 @@ def main() -> int:
         print(f"Source file not found: {source_path}", file=sys.stderr)
         return 1
 
+    try:
+        source_kind = classify_source(source_path)
+    except SourceInputError as exc:
+        print(f"Invalid source: {exc}", file=sys.stderr)
+        return 2
+
     output_dir = (args.output_dir or default_output_dir(source_path)).expanduser().resolve()
+    if source_path == output_dir or source_path.is_relative_to(output_dir):
+        print(
+            f"Invalid output directory: source {source_path} must be outside the analyzer output directory {output_dir}.",
+            file=sys.stderr,
+        )
+        return 2
+    if source_path.is_dir() and (output_dir == source_path or output_dir.is_relative_to(source_path)):
+        print(
+            f"Invalid output directory: {output_dir} must be outside the unpacked capture directory {source_path}.",
+            file=sys.stderr,
+        )
+        return 2
     output_dir.mkdir(parents=True, exist_ok=True)
     raw_dir = output_dir / "raw"
     frames_dir = output_dir / "frames"
-    source = prepare_source(source_path, raw_dir)
+    try:
+        validate_frames_destination(frames_dir)
+    except SourceInputError as exc:
+        print(f"Invalid output: {exc}", file=sys.stderr)
+        return 2
+    try:
+        source = prepare_source(source_path, raw_dir, source_kind)
+    except SourceInputError as exc:
+        print(f"Invalid source: {exc}", file=sys.stderr)
+        return 2
     source_kind = source["source_kind"]
     session = source["session"]
     events = source["events"]
@@ -1066,7 +1246,11 @@ def main() -> int:
             {"id": f"M{index}", "t": timestamp, "reason": "representative video frame", "events": []}
             for index, timestamp in enumerate(fallback_times[: args.max_moments], start=1)
         ]
-    extract_frames(source["recording_path"], frames_dir, moments)
+    try:
+        extract_frames(source["recording_path"], frames_dir, moments)
+    except SourceInputError as exc:
+        print(f"Invalid output: {exc}", file=sys.stderr)
+        return 2
     findings = summarize_candidate_findings(moments, transcript.get("text", ""))
 
     topic = slugify(args.topic or source_path.stem)

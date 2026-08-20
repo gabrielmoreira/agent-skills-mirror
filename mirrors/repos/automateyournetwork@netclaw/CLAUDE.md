@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-08-16
+Auto-generated from all feature plans. Last updated: 2026-08-17
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -140,6 +140,8 @@ Auto-generated from all feature plans. Last updated: 2026-08-16
 - N/A (stateless; no new persistent state — this is a runtime dispatch/performance fix) (116-border-turn-latency)
 - Dart 3.x / Flutter (SDK `^3.12.2` per `mobile/netclaw-mobile/pubspec.yaml`); + None new. Reuses `EdgeAskClient`/`EdgeRpcSource` (Dart, `edge_ask_client.dart`), (117-siri-voice-tuning)
 - N/A — no new persisted state (data-model.md: value-only constant change, request-scoped (117-siri-voice-tuning)
+- Python 3.10+ (`zoom-rtms-mcp`, `bgp/federation/zoom_channel.py` — matches every + FastMCP (MCP framework, matching repo convention), Zoom's official RTMS (118-zoom-meeting-intelligence)
+- N/A — `MeetingSession`/`LiveContextBuffer`/avatar state are in-memory only inside (118-zoom-meeting-intelligence)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -159,9 +161,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 118-zoom-meeting-intelligence: Added Python 3.10+ (`zoom-rtms-mcp`, `bgp/federation/zoom_channel.py` — matches every + FastMCP (MCP framework, matching repo convention), Zoom's official RTMS
 - 117-siri-voice-tuning: Added Dart 3.x / Flutter (SDK `^3.12.2` per `mobile/netclaw-mobile/pubspec.yaml`); + None new. Reuses `EdgeAskClient`/`EdgeRpcSource` (Dart, `edge_ask_client.dart`),
 - 116-border-turn-latency: Added Python 3.10+ (matches `bgp/federation/*`, specs 052–115); no new language. + `websockets` (new — Border-side persistent WS client to the OpenClaw
-- 115-siri-reliability-fix: Added Dart 3.x / Flutter (SDK `^3.12.2` per `pubspec.yaml`); Swift 5.0 (`ios/Runner/*.swift`) — same stack as specs 066–114, unchanged. + No new dependencies. Reuses `AppIntents` (iOS 16+ system framework, already in place from spec 111), `FlutterEngineGroup` (Flutter SDK, already available, previously unused in this codebase), `flutter_secure_storage` (already a dependency, used for the new theme preference exactly as specs 109/110 already use it for other settings).
 
 
 <!-- MANUAL ADDITIONS START -->

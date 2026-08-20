@@ -45,7 +45,7 @@ python3 -m pipx ensurepath
 | Ghidra | `brew install ghidra` or `brew install --cask ghidra` | GitHub release ZIP | Formula/cask availability may vary. |
 | IDA Pro | manual app install | — | Usually under `/Applications/IDA Professional*.app`. |
 | BurpSuite | `brew install --cask burp-suite` | manual jar / installer | Load `burp-mcp-full` extension manually. |
-| jshookmcp | `npx -y @jshookmcp/jshook@0.3.4` | MCP config command | Requires Node/npm/npx. |
+| jshookmcp | `npx -y @jshookmcp/jshook@0.3.4` | MCP config command | Requires Node/npm/npx and explicit MCP registration. |
 | anything-analyzer | project clone + `pnpm install` | custom local service | Register its MCP endpoint. |
 | nuclei | `brew install nuclei` | GitHub release / Go install | Optional security scanner. |
 | SecLists | Git clone | — | Usually clone to `~/tools/SecLists`. |
@@ -99,6 +99,16 @@ pnpm dev
 If the service uses a custom port or token, update your Agent client's MCP configuration accordingly.
 
 ## MCP setup notes
+
+The core bootstrap is client-neutral by default. It **does not write** `~/.claude/mcp.json` or `~/.codex/config.toml` unless an MCP host is explicitly selected. For MCP capabilities, use one of:
+
+```bash
+--mcp-host=claude
+--mcp-host=codex
+--mcp-host=both
+```
+
+Without an explicit host, the bootstrap may prepare the runtime but reports the MCP capability as `registration-required`. Override the explicit adapter paths with `CLAUDE_MCP_CONFIG` or `CODEX_CONFIG_PATH` when needed.
 
 ### BurpSuite MCP
 
@@ -167,12 +177,18 @@ From the repository root, list the same core capability names as the Windows Pow
 
 The generic bootstrap is compatible with the system `/bin/bash` shipped by macOS (Bash 3.2); Homebrew Bash is not required.
 
-Install or configure supported capabilities with the generic Bash bootstrap:
+Install ordinary capabilities without selecting an Agent client:
 
 ```bash
 /bin/bash skills/scripts/bootstrap-reverse.sh jadx apktool frida
-/bin/bash skills/scripts/bootstrap-reverse.sh jshookmcp anything-analyzer
-/bin/bash skills/scripts/bootstrap-reverse.sh burpsuite-mcp
+```
+
+For MCP registration, select the target client explicitly:
+
+```bash
+/bin/bash skills/scripts/bootstrap-reverse.sh jshookmcp --mcp-host=codex
+/bin/bash skills/scripts/bootstrap-reverse.sh anything-analyzer --mcp-host=claude
+/bin/bash skills/scripts/bootstrap-reverse.sh burpsuite-mcp --mcp-host=both
 ```
 
 Refresh the local tool index only:
@@ -188,7 +204,7 @@ skills/tool-index.md
 skills/tool-index.json
 ```
 
-`bootstrap-reverse.sh` installs/configures supported capabilities where possible on macOS, using Homebrew, `pipx`, `npm`, GitHub releases, and MCP registration. `refresh-tool-index.sh` is detection-only. Manual-only tools such as IDA Pro and BurpSuite still require local app installation and app-specific setup.
+`bootstrap-reverse.sh` installs or prepares supported capabilities where possible on macOS using Homebrew, `pipx`, `npm`, and GitHub releases. MCP client registration occurs only when `--mcp-host=...` is explicit. `refresh-tool-index.sh` is detection-only and discovers supported MCP registrations without choosing a default Agent client. Manual-only tools such as IDA Pro and BurpSuite still require local app installation and app-specific setup.
 
 ## Validation checklist
 

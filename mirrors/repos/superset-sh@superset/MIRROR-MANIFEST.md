@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,14 +100,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
 | 40 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
 | 41 | ✓ | [`plugins/superset/skills/browser/SKILL.md`](plugins/superset/skills/browser/SKILL.md) |
-| 42 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
-| 43 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
-| 44 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
-| 45 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
-| 46 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
-| 47 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
-| 48 | ✓ | [`scripts/sandbox/AGENTS.md`](scripts/sandbox/AGENTS.md) |
-| 49 | ✓ | [`scripts/sandbox/CLAUDE.md`](scripts/sandbox/CLAUDE.md) |
+| 42 | ✓ | [`plugins/superset/skills/computer/SKILL.md`](plugins/superset/skills/computer/SKILL.md) |
+| 43 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
+| 44 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
+| 45 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
+| 46 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
+| 47 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
+| 48 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
+| 49 | ✓ | [`scripts/sandbox/AGENTS.md`](scripts/sandbox/AGENTS.md) |
+| 50 | ✓ | [`scripts/sandbox/CLAUDE.md`](scripts/sandbox/CLAUDE.md) |
 
 ---
 

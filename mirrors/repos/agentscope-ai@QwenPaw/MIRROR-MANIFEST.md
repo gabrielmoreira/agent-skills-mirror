@@ -88,8 +88,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`src/qwenpaw/agents/skills/file_reader-zh/SKILL.md`](src/qwenpaw/agents/skills/file_reader-zh/SKILL.md) |
 | 28 | ✓ | [`src/qwenpaw/agents/skills/guidance-en/SKILL.md`](src/qwenpaw/agents/skills/guidance-en/SKILL.md) |
 | 29 | ✓ | [`src/qwenpaw/agents/skills/guidance-zh/SKILL.md`](src/qwenpaw/agents/skills/guidance-zh/SKILL.md) |
-| 30 | ✓ | [`src/qwenpaw/agents/skills/himalaya-en/SKILL.md`](src/qwenpaw/agents/skills/himalaya-en/SKILL.md) |
-| 31 | ✓ | [`src/qwenpaw/agents/skills/himalaya-zh/SKILL.md`](src/qwenpaw/agents/skills/himalaya-zh/SKILL.md) |
+| 30 | ✓ | [`src/qwenpaw/agents/skills/mailbox-en/SKILL.md`](src/qwenpaw/agents/skills/mailbox-en/SKILL.md) |
+| 31 | ✓ | [`src/qwenpaw/agents/skills/mailbox-zh/SKILL.md`](src/qwenpaw/agents/skills/mailbox-zh/SKILL.md) |
 | 32 | ✓ | [`src/qwenpaw/agents/skills/make_plan-en/SKILL.md`](src/qwenpaw/agents/skills/make_plan-en/SKILL.md) |
 | 33 | ✓ | [`src/qwenpaw/agents/skills/make_plan-zh/SKILL.md`](src/qwenpaw/agents/skills/make_plan-zh/SKILL.md) |
 | 34 | ✓ | [`src/qwenpaw/agents/skills/make-skill-en/SKILL.md`](src/qwenpaw/agents/skills/make-skill-en/SKILL.md) |

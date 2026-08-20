@@ -1,6 +1,6 @@
 ---
 name: intent
-version: 1.8.0
+version: 1.8.1
 description: 'Automatic ingress service for substantive work. Apply Operator''s Intent to the user''s own prompt before acting: interpret what the user is trying to achieve, narrate it, and honor the operator''s explicit supervision or delegation boundary. The operator should never need to invoke this skill separately. SKIP only for direct operations that require neither interpretation nor action authority (for example, reading a named file or answering yes/no); never skip when composed with Improve.'
 argument-hint: 'Triggered automatically by any substantive user prompt; can also be invoked explicitly: "apply intent to this request"'
 ---
@@ -48,7 +48,7 @@ A single prompt is a thin signal. Before extracting intent, read what already ex
 
 **Bounded destination reads.** If a destination contains the exact comments `<!-- current-destination: complete -->` and `<!-- destination-history -->` in that order, the content between them is the operator-confirmed complete current mandate. Read that bounded section for routine work. Read the full file when running Destination, when the current section is ambiguous or conflicts with other evidence, or when historical provenance is material to the request. If either comment is absent, malformed, or out of order, read the full file. Never infer a boundary from headings, dates, horizontal rules, or file position.
 
-If none of these exist yet — no `.acm/` at all — interpret the current prompt from the conversation and target evidence, narrate that interpretation, and proceed. The prompt is the operator's mandate for this work; the narration makes the agent's reading of that mandate visible enough to correct before action. Silence after a clearly narrated interpretation permits the current work to continue, but does not turn agent inference into durable cross-run direction. Improve decides when accumulated work makes a [Destination](../destination/SKILL.md) conversation useful.
+If none of these exist yet — no `.acm/` at all — interpret the current prompt from the conversation and target evidence, narrate that interpretation, then apply the authority rule below. The prompt is the operator's mandate for this work; narration makes the agent's reading visible enough to correct, but silence supplies neither execution authority nor durable cross-run direction. Improve decides when accumulated work makes a [Destination](../destination/SKILL.md) conversation useful.
 
 The immediate prompt is the latest instruction. The trail and conversation history are the context that determines what it actually means. An agent that reads only the prompt is working with the thinnest possible signal.
 
@@ -68,7 +68,7 @@ When the operator explicitly delegated this routine gate, narrate the same inter
 
 When Improve is the entry point, briefly name the handoff as well as the interpretation. Explain later automatic handoffs at the moment they become relevant, not as an up-front tour of the suite.
 
-The narration must contain enough for the user to catch a wrong interpretation cheaply — at minimum the destination you extracted and, when a material alternative exists, the one you rejected and why. If the prompt was unambiguous, say so in one line and proceed — but say it.
+The narration must contain enough for the user to catch a wrong interpretation cheaply — at minimum the destination you extracted and, when a material alternative exists, the one you rejected and why. If the prompt was unambiguous, say so in one line; the authority rule above still determines whether to pause.
 
 Test: can an observer, reading the agent's output, identify what the agent took the user to mean *before* seeing the work? If not, the narration failed, regardless of how good the work was.
 

@@ -1,6 +1,6 @@
-# Quality ranking (full 495)
+# Quality ranking (full 496)
 
-Method, column definitions, and how to read ranks: [QUALITY.md](QUALITY.md). This file is the full ranked list (GitHub-renderable), chunked by **works band** (WORKS, then WEAK, then untested). Within untested, rows stay in PQI bands. **Not an install ranking for untested rows.** Untested PQI is July score + structure only. This wave did not re-score 495 bodies with a model. Machine-readable copy: [quality-ranking.csv](quality-ranking.csv).
+Method, column definitions, and how to read ranks: [QUALITY.md](QUALITY.md). This file is the full ranked list (GitHub-renderable), chunked by **works band** (WORKS, then WEAK, then untested). Within untested, rows stay in PQI bands. **Not an install ranking for untested rows.** Untested PQI is July score + structure only. This wave did not re-score 496 bodies with a model. Machine-readable copy: [quality-ranking.csv](quality-ranking.csv).
 
 ## WORKS — Read sample (install / rate first) (12)
 
@@ -31,7 +31,7 @@ Method, column definitions, and how to read ranks: [QUALITY.md](QUALITY.md). Thi
 
 ## untested — not an install ranking (478)
 
-Ranks 18–495. **Not an install ranking.** PQI here is the July independent score plus today’s structural scan. Untested ≠ fail. Untested ≠ works. Untested PQI = 100 means `structural_now` = 100 (no July row), not a works claim.
+Ranks 18–496. **Not an install ranking.** PQI here is the July independent score plus today’s structural scan. Untested ≠ fail. Untested ≠ works. Untested PQI = 100 means `structural_now` = 100 (no July row), not a works claim.
 
 ### PQI ≥ 90 (429)
 
@@ -530,3 +530,12 @@ Ranks 18–495. **Not an install ranking.** PQI here is the July independent sco
 | rank | skill | tag | pqi | independent_score | independent_grade | independent_decision | works | notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 495 | `inspire-quote-effects` | agent-os | 60.0 | — | — | — | untested | v1 chair; no independent CSV row |
+
+### Original add (2026-08-18)
+
+Not July-ranked. Structural 100. Not padded onto the 12.
+
+| rank | skill | tag | pqi | independent_score | independent_grade | independent_decision | works | notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 496 | `awe-me` | agent-os | 100.0 | — | — | — | untested | original; canonical kazimrmerchant/awe-me |
+

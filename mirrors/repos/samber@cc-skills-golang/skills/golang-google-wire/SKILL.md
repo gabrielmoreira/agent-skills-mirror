@@ -3,10 +3,10 @@ name: golang-google-wire
 description: "Compile-time dependency injection in Golang using google/wire — wire.NewSet, wire.Build, wire.Bind (interface→concrete), wire.Struct, wire.Value, wire.InterfaceValue, wire.FieldsOf, cleanup functions, //go:build wireinject injector files, and generated wire_gen.go. Apply when using or adopting google/wire, when the codebase imports `github.com/google/wire`, or when wiring an application graph at compile time via `wire.Build`. For runtime DI with reflection, see `samber/cc-skills-golang@golang-uber-dig` skill."
 user-invocable: true
 license: MIT
-compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
+compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.0.6"
+  version: "1.1.0"
   openclaw:
     emoji: "🪡"
     homepage: https://github.com/samber/cc-skills-golang
@@ -20,6 +20,8 @@ metadata:
         bins: [wire]
     skill-library-version: "0.7.0"
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent WebFetch mcp__context7__resolve-library-id mcp__context7__query-docs Bash(wire:*) Bash(godig:*) Bash(gopls:*) LSP mcp__gopls__*
+paths:
+  - "**/*.go"
 ---
 
 **Persona:** You are a Go architect using wire for compile-time DI. You let the compiler catch missing dependencies, treat `wire_gen.go` as committed source, and re-run `wire ./...` after every graph change.

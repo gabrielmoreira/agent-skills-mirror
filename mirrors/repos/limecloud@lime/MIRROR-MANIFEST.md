@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 45 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 45 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,19 +91,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`lime-rs/resources/default-skills/private-domain-operations-knowledge-builder/SKILL.md`](lime-rs/resources/default-skills/private-domain-operations-knowledge-builder/SKILL.md) |
 | 31 | ✓ | [`lime-rs/resources/default-skills/report_generate/SKILL.md`](lime-rs/resources/default-skills/report_generate/SKILL.md) |
 | 32 | ✓ | [`lime-rs/resources/default-skills/research/SKILL.md`](lime-rs/resources/default-skills/research/SKILL.md) |
-| 33 | ✓ | [`lime-rs/resources/default-skills/site_search/SKILL.md`](lime-rs/resources/default-skills/site_search/SKILL.md) |
-| 34 | ✓ | [`lime-rs/resources/default-skills/summary/SKILL.md`](lime-rs/resources/default-skills/summary/SKILL.md) |
-| 35 | ✓ | [`lime-rs/resources/default-skills/transcription_generate/SKILL.md`](lime-rs/resources/default-skills/transcription_generate/SKILL.md) |
-| 36 | ✓ | [`lime-rs/resources/default-skills/translation/SKILL.md`](lime-rs/resources/default-skills/translation/SKILL.md) |
-| 37 | ✓ | [`lime-rs/resources/default-skills/typesetting/SKILL.md`](lime-rs/resources/default-skills/typesetting/SKILL.md) |
-| 38 | ✓ | [`lime-rs/resources/default-skills/url_parse/SKILL.md`](lime-rs/resources/default-skills/url_parse/SKILL.md) |
-| 39 | ✓ | [`lime-rs/resources/default-skills/video_generate/SKILL.md`](lime-rs/resources/default-skills/video_generate/SKILL.md) |
-| 40 | ✓ | [`lime-rs/resources/default-skills/webpage_generate/SKILL.md`](lime-rs/resources/default-skills/webpage_generate/SKILL.md) |
-| 41 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
-| 42 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
-| 43 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
-| 44 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
-| 45 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
+| 33 | ✓ | [`lime-rs/resources/default-skills/summary/SKILL.md`](lime-rs/resources/default-skills/summary/SKILL.md) |
+| 34 | ✓ | [`lime-rs/resources/default-skills/transcription_generate/SKILL.md`](lime-rs/resources/default-skills/transcription_generate/SKILL.md) |
+| 35 | ✓ | [`lime-rs/resources/default-skills/translation/SKILL.md`](lime-rs/resources/default-skills/translation/SKILL.md) |
+| 36 | ✓ | [`lime-rs/resources/default-skills/typesetting/SKILL.md`](lime-rs/resources/default-skills/typesetting/SKILL.md) |
+| 37 | ✓ | [`lime-rs/resources/default-skills/url_parse/SKILL.md`](lime-rs/resources/default-skills/url_parse/SKILL.md) |
+| 38 | ✓ | [`lime-rs/resources/default-skills/video_generate/SKILL.md`](lime-rs/resources/default-skills/video_generate/SKILL.md) |
+| 39 | ✓ | [`lime-rs/resources/default-skills/webpage_generate/SKILL.md`](lime-rs/resources/default-skills/webpage_generate/SKILL.md) |
+| 40 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
+| 41 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
+| 42 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
+| 43 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
+| 44 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
 
 ---
 

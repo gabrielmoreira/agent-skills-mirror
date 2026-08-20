@@ -365,6 +365,21 @@ untrusted-hook signature, reported as a blocker with the `/hooks` remedy.
 an issue, `--json` emits it machine-readably, and the exit status is non-zero
 when a blocker is found.
 
+Codex takes hook declarations from two files per configuration layer —
+`~/.codex/hooks.json` and inline `[hooks]` tables in `~/.codex/config.toml` —
+and **merges** them when both are present, running every hook declared in both
+once per declaration. Gortex only ever writes the inline TOML representation,
+but `gortex doctor` counts both and prints the file each count came from, so a
+hooks.json-only setup is never reported as having no hooks. Splitting different
+events across the two files is fine and reported as such; only an event declared
+in *both* actually runs twice, and that is what doctor warns about — naming the
+event, and pointing the cleanup at `hooks.json`, since `gortex install` rewrites
+config.toml. `gortex install` and `gortex init --hooks-only` say the same thing
+at the moment they would create such a duplicate; the hooks.json entries are
+yours, so neither touches them. `[features] hooks = false` turns hook execution off
+wholesale and is reported as a blocker in its own right, rather than as an
+untrusted-hook signature.
+
 When hooks are enabled
 (the default), Codex receives user-level hooks. The default posture remains
 advisory. A team can opt into `deny`, `rewrite`, or `suppress` by setting

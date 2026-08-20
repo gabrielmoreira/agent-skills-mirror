@@ -16,6 +16,7 @@
   "h2-legacy": "0.1.16",
   "hive": "0.1.49",
   "ignite": "0.1.0",
+  "ignite3": "0.1.0",
   "spark": "0.1.18",
   "informix": "0.1.47",
   "kingbase": "0.1.49",

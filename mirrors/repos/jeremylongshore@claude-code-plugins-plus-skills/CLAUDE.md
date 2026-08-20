@@ -37,7 +37,7 @@ pnpm test && pnpm typecheck
 pnpm lint
 pnpm run verify                   # Full pipeline — what CI's `verify` job runs
 
-# Validator (schema 4.0.1 — see 000-docs/SCHEMA_CHANGELOG.md)
+# Validator (schema 4.1.0 — see 000-docs/SCHEMA_CHANGELOG.md)
 python3 scripts/validate-skills-schema.py --verbose
 python3 scripts/validate-skills-schema.py --marketplace --verbose
 python3 scripts/validate-skills-schema.py --marketplace --populate-db freshie/inventory.sqlite
@@ -187,7 +187,7 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 
 **Branch protection on `main` requires THREE always-reporting contexts: `ci-required` + `gitleaks` + `skill-conform`** (GitHub Actions app; `strict:false`, `enforce_admins:false`, 1 approving review).
 
-- **`ci-required`** is the final job in `.github/workflows/validate-plugins.yml` — `if: always()`, `needs:` all 21 gate jobs (validate, verify, test, check-package-manager, marketplace-validation, cli-smoke-tests, shellcheck-skills, skill-codeblock-syntax, typescript-coverage-audit, eslint-check, format-check, ruff-check, ruff-format-check, markdownlint, scan-synced-content, promote-curated-check, check-submission-docs, commit-scope-check, codeowners-drift, generated-content-drift, doc-governance). It fails if any needed job ended `failure`/`cancelled`; a `skipped` result counts as PASS — legitimate **only** for a designed job-level `if:`.
+- **`ci-required`** is the final job in `.github/workflows/validate-plugins.yml` — `if: always()`, `needs:` all 22 gate jobs (validate, verify, test, check-package-manager, marketplace-validation, cli-smoke-tests, shellcheck-skills, skill-codeblock-syntax, typescript-coverage-audit, eslint-check, format-check, ruff-check, ruff-format-check, markdownlint, scan-synced-content, promote-curated-check, check-submission-docs, commit-scope-check, codeowners-drift, generated-content-drift, doc-governance, secret-diff-scan). It fails if any needed job ended `failure`/`cancelled`; a `skipped` result counts as PASS — legitimate **only** for a designed job-level `if:`.
 - **`gitleaks`** comes from `secret-scan.yml` (also unfiltered).
 - **`skill-conform`** is its **own** workflow (`.github/workflows/skill-conform.yml`) — `pnpm exec audit-harness conform --strict` over the full marketplace corpus. Always-reports (no path filter). **Never** folded into `ci-required`'s `needs:` (doc 110 § 5: a skippable/path-scoped job must not green the aggregate). Baseline after #1108/#1118: thousands PASS / 0 FAIL; remaining ADVISORY is the harness-side missing marketplace schema only.
 - **Advisory (never required):** `.github/workflows/skill-eval-advisory.yml` — j-rig behavioral eval on changed skills that already carry `eval-spec.yaml`. Kill-switch `vars.ENABLE_SKILL_EVAL=true` + same-repo guard + `MINIMAX_API_KEY`. Graduation to required needs Jeremy + ≥4-week clean flap window (doc 110).
@@ -365,7 +365,9 @@ query="select:mcp__dolt-mcp-vcs__query,mcp__dolt-mcp-vcs__list_dolt_commits,mcp_
   `freshie/dolt/freshie`; a live server holds the lock and the sync will clobber/deadlock. `kill
 <server-pid>`, sync, then restart if you still need it.
 - **Mutation gate**: destructive verbs (`push`/`merge`/`reset`/`branch-delete`) are
-  **recommend-only** — the plugin surfaces them but won't execute, so DoltHub pushes still go
+  **recommend-only, enforced at the wire** — since E4.9 the registered entrypoint is
+  `plugins/mcp/dolt-mcp-vcs/scripts/dolt-mcp-guard.py`, which refuses those verbs before the
+  server sees them and hides them from `tools/list` — so DoltHub pushes still go
   through the one-way `dolt-sync.py` exporter, never the MCP.
 
 **Rules:** local is the sole writer — never merge DoltHub PRs or web-edit the

@@ -22,7 +22,7 @@ COLLABORATION_PATTERNS:
 - Pulse -> Helm: KPI data
 - Field -> Helm: Market data
 - Voice -> Helm: Customer data
-- Accord -> Helm: Business context
+- Scribe[unified] -> Helm: Business context
 - Experiment -> Helm: Validated hypotheses and A/B test results
 - Helm -> Magi: Strategic judgment and Go/No-Go escalation
 - Helm -> Scribe: Formal documentation
@@ -35,7 +35,7 @@ COLLABORATION_PATTERNS:
 - Darwin -> Helm: Business lifecycle alignment signals
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Compete, Pulse, Field, Voice, Accord, Experiment, Flux (assumption reframing), Magi (Go/No-Go verdicts), Darwin (lifecycle signals)
+- INPUT: Compete, Pulse, Field, Voice, Scribe[unified], Experiment, Flux (assumption reframing), Magi (Go/No-Go verdicts), Darwin (lifecycle signals)
 - OUTPUT: Magi, Scribe, Canvas, Sherpa, Lore, Experiment
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(M)
@@ -71,8 +71,8 @@ Route elsewhere when:
 - **Always use WebSearch** to collect the latest market data, benchmarks, and industry reports before simulation. Never rely solely on training knowledge.
 - Robustness over prediction: prioritize preparedness across scenarios, not forecast accuracy
 - AI-augmented strategy: AI's primary value is reframing how companies think, not just automating analysis — scenario testing, market scanning, and competitor modeling are the highest-leverage applications (BCG 2026: https://www.bcg.com/publications/2026/the-corporate-strategy-function-in-an-ai-first-world); only 4% of companies create substantial AI strategy value despite 75% naming it a top-3 priority (BCG AI Radar 2026: https://www.bcg.com/publications/2026/as-ai-investments-surge-ceos-take-the-lead)
-- Geopolitical risk is a first-class PESTLE input: geoeconomic confrontation is WEF's #1 near-term global risk for 2026; surface tariffs, AI export controls, and US-China tech bifurcation explicitly in Political/Economic. Full citations -> `reference/frameworks.md`.
-- Climate scenario integration: IFRS S2 (ISSB) is effective for periods beginning 1 Jan 2024, adopted in 21+ jurisdictions — align LONG-horizon scenarios for listed/institutional clients with its transition-plan disclosure requirements. Citation -> `reference/frameworks.md`.
+- Geopolitical risk is a first-class PESTLE input: geoeconomic confrontation is WEF's #1 near-term global risk for 2026; surface tariffs, AI export controls, and US-China tech bifurcation explicitly in Political/Economic. Full citations -> .
+- Climate scenario integration: IFRS S2 (ISSB) is effective for periods beginning 1 Jan 2024, adopted in 21+ jurisdictions — align LONG-horizon scenarios for listed/institutional clients with its transition-plan disclosure requirements. Citation -> .
 - Cognitive bias guardrails: apply Devil's Advocate and diverse-perspective inclusion to counter overconfidence, confirmation bias, and groupthink in every simulation
 - Code is out of scope. Helm analyzes, simulates, prioritizes, and hands off.
 - Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Helm; P2, P1 recommended).
@@ -152,7 +152,7 @@ Route elsewhere when:
 
 - `COMPETE_TO_HELM`: competitor intelligence into strategy analysis
 - `PULSE_TO_HELM`: KPI data into forecasting and simulation
-- `Field`, `Voice`, `Accord`: use as market, customer, or business-context sources when no formal token is present
+- `Field`, `Voice`, `Scribe[unified]`: use as market, customer, or business-context sources when no formal token is present
 
 ### Outbound
 
@@ -169,9 +169,9 @@ Use Magi for executive choice, Scribe for formal strategy docs, Canvas for maps 
 | Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
 |--------|-----------|---------|-------------|----------|------------|
 | Scenario Planning | `scenario` | ✓ | Business scenario planning (Baseline/Optimistic/Pessimistic 3 scenarios) | Baseline/Optimistic (+20-40%)/Pessimistic (-20-40%) 3 scenarios required. Include sensitivity analysis and FORESIGHT record. | `reference/simulation-patterns.md`, `reference/data-inputs.md` |
-| SWOT Analysis | `swot` | | SWOT analysis + PESTLE→Porter cascade | Execute PESTLE→Porter→SWOT cascade. Always apply Devil's Advocate challenge. | `reference/frameworks.md` |
-| PESTLE Analysis | `pestle` | | PESTLE macro-environment analysis + TPESTRE variants | Also evaluate TPESTRE (Tech/Political/Economic/Social/Trust/Regulatory/Environmental) variant. Prefer when Trust/ethics dimensions matter. | `reference/frameworks.md`, `reference/cognitive-biases.md` |
-| Porter Analysis | `porter` | | Porter 5 Forces industry structure analysis + entry evaluation | 5 Forces quantitative scoring + BCG portfolio linkage + market-entry scoring. | `reference/frameworks.md`, `reference/market-sizing-strategy.md` |
+| SWOT Analysis | `swot` |  | SWOT analysis + PESTLE→Porter cascade | Execute PESTLE→Porter→SWOT cascade. Always apply Devil's Advocate challenge. | — |
+| PESTLE Analysis | `pestle` | | PESTLE macro-environment analysis + TPESTRE variants | Also evaluate TPESTRE (Tech/Political/Economic/Social/Trust/Regulatory/Environmental) variant. Prefer when Trust/ethics dimensions matter. | `reference/cognitive-biases.md` |
+| Porter Analysis | `porter` | | Porter 5 Forces industry structure analysis + entry evaluation | 5 Forces quantitative scoring + BCG portfolio linkage + market-entry scoring. | `reference/market-sizing-strategy.md` |
 | Forecast | `forecast` | | KPI forecasting, financial modeling, SaaS metrics | SaaS Triangle check (Gross Margin `75%+` / CAC Payback `<18mo` / NRR `101%+`), Rule of 40 and Burn Multiple alerts, benchmark gap analysis. | `reference/simulation-patterns.md`, `reference/financial-modeling-pitfalls.md` |
 | Jobs-to-be-Done | `jtbd` | | Christensen JTBD framework | Job statement `When [situation], I want [motivation], so I can [outcome]`; map the four forces of progress; competitive set is defined by *job*, not category. Feature mapping -> Spark; interview validation -> Field. | `reference/jobs-to-be-done.md` |
 | Blue Ocean Strategy | `blue-ocean` | | Value Curve, ERRC grid, Four Actions, non-customer tiers | Map competition factors on a Strategy Canvas, apply ERRC for a divergent curve, identify the three non-customer tiers, pair with a buyer utility map. Feature expression -> Spark; incumbent analysis -> Compete. | `reference/blue-ocean-strategy.md` |
@@ -234,7 +234,7 @@ Include only the sections needed for the request, but keep assumptions, scenario
 
 ## Collaboration
 
-**Receives:** Compete, Pulse, Field, Voice, Accord, Experiment. **Sends:** Magi, Scribe, Canvas, Sherpa, Lore, Experiment. Per-agent payload detail -> `COLLABORATION_PATTERNS` header and `Routing And Handoffs` above.
+**Receives:** Compete, Pulse, Field, Voice, Scribe[unified], Experiment. **Sends:** Magi, Scribe, Canvas, Sherpa, Lore, Experiment. Per-agent payload detail -> `COLLABORATION_PATTERNS` header and `Routing And Handoffs` above.
 
 ### Overlap Boundaries
 - Helm vs Magi: Helm provides multi-scenario analysis and recommendations; Magi makes the final Go/No-Go judgment. Helm never decides, Magi never simulates.
@@ -245,7 +245,6 @@ Include only the sections needed for the request, but keep assumptions, scenario
 
 | Reference | Read this when... |
 |-----------|-------------------|
-| `reference/frameworks.md` | SWOT, PESTLE, Porter, BCG, BSC, Ansoff, Value Chain, or Blue Ocean selection rules |
 | `reference/simulation-patterns.md` | Short-, mid-, or long-horizon simulation formulas and output shapes |
 | `reference/data-inputs.md` | Input tiers, default benchmarks, or missing-data handling |
 | `reference/output-templates.md` | Canonical roadmap, KPI forecast, risk matrix, M&A, or executive-summary templates |

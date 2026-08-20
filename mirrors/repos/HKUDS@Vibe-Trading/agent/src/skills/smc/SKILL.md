@@ -27,7 +27,7 @@ Direction from ChoCH + confirmation from BOS + filtering by FVG:
 ## Dependencies
 
 ```bash
-pip install smartmoneyconcepts pandas numpy requests
+pip install "vibe-trading-ai[smc]"
 ```
 
 ## Parameters

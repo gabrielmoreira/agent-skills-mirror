@@ -183,33 +183,61 @@ WHERE s.DB_ID = CURRENT_DB_ID
 ORDER BY p.SUBPARTI_NO`
 
 var xuguDataTypes = []string{
-	"BOOLEAN",
-	"INTEGER",
-	"SMALLINT",
 	"BIGINT",
-	"FLOAT",
-	"NUMERIC",
-	"CHAR",
-	"VARCHAR",
-	"CLOB",
-	"DATE",
-	"TIME",
-	"TIMESTAMP",
 	"BINARY",
-	"VARBINARY",
+	"BIT",
 	"BLOB",
-	"XML",
 	"BOOL",
-	"INT",
-	"SHORT",
-	"LONGINT",
-	"LONG",
-	"REAL",
+	"BOOLEAN",
+	"CHAR",
+	"CHAR[]",
+	"CLOB",
+	"CLOB[]",
+	"DATE",
+	"DATETIME",
+	"DATETIME WITH TIME ZONE",
 	"DECIMAL",
-	"TEXT",
+	"DOUBLE",
+	"DOUBLE[]",
+	"FLOAT",
+	"GUID",
+	"INT",
+	"INTEGER",
+	"INTEGER[]",
+	"INTERVAL DAY",
+	"INTERVAL DAY TO HOUR",
+	"INTERVAL DAY TO MINUTE",
+	"INTERVAL DAY TO SECOND",
+	"INTERVAL HOUR",
+	"INTERVAL HOUR TO MINUTE",
+	"INTERVAL HOUR TO SECOND",
+	"INTERVAL MINUTE",
+	"INTERVAL MINUTE TO SECOND",
+	"INTERVAL MONTH",
+	"INTERVAL SECOND",
+	"INTERVAL YEAR",
+	"INTERVAL YEAR TO MONTH",
+	"JSON",
+	"LONG",
+	"LONGINT",
 	"NCHAR",
+	"NUMERIC",
 	"NVARCHAR",
 	"NVARCHAR2",
+	"REAL",
+	"ROWID",
+	"SHORT",
+	"SMALLINT",
+	"TEXT",
+	"TIME",
+	"TIME WITH TIME ZONE",
+	"TIMESTAMP",
+	"TIMESTAMP WITH TIME ZONE",
+	"TINYINT",
+	"VARBINARY",
+	"VARBIT",
+	"VARCHAR",
+	"XML",
 }
 
 type request struct {
@@ -4682,17 +4710,31 @@ func columnTypeDDL(column columnInfo) string {
 	if column.CharacterMaximumLength != nil {
 		return fmt.Sprintf("%s(%d)", dataType, *column.CharacterMaximumLength)
 	}
-	if column.NumericPrecision != nil && column.NumericScale != nil {
-		return fmt.Sprintf("%s(%d,%d)", dataType, *column.NumericPrecision, *column.NumericScale)
+	if column.NumericPrecision != nil {
+		if column.NumericScale != nil {
+			return fmt.Sprintf("%s(%d,%d)", dataType, *column.NumericPrecision, *column.NumericScale)
+		}
+		return xuguSingleParameterTypeDDL(dataType, *column.NumericPrecision)
 	}
 	return dataType
+}
+
+func xuguSingleParameterTypeDDL(dataType string, parameter int) string {
+	switch dataType {
+	case "TIME WITH TIME ZONE":
+		return fmt.Sprintf("TIME(%d) WITH TIME ZONE", parameter)
+	case "TIMESTAMP WITH TIME ZONE":
+		return fmt.Sprintf("TIMESTAMP(%d) WITH TIME ZONE", parameter)
+	default:
+		return fmt.Sprintf("%s(%d)", dataType, parameter)
+	}
 }
 
 func decodeXuguScale(dataType string, scale *int) (*int, *int, *int) {
 	if scale == nil || *scale < 0 {
 		return nil, nil, nil
 	}
-	upper := strings.ToUpper(dataType)
+	upper := strings.Join(strings.Fields(strings.ToUpper(dataType)), " ")
 	if strings.Contains(upper, "CHAR") || strings.Contains(upper, "BINARY") {
 		length := *scale
 		return nil, nil, &length
@@ -4701,6 +4743,10 @@ func decodeXuguScale(dataType string, scale *int) (*int, *int, *int) {
 		precision := *scale / 65536
 		numericScale := *scale % 65536
 		return &precision, &numericScale, nil
+	}
+	if upper == "BIT" || upper == "VARBIT" || upper == "TIME" || upper == "TIME WITH TIME ZONE" || upper == "TIMESTAMP" || upper == "TIMESTAMP WITH TIME ZONE" {
+		precision := *scale
+		return &precision, nil, nil
 	}
 	return nil, nil, nil
 }

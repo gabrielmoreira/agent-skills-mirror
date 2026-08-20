@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Start IDA Pro MCP HTTP server (background, non-blocking)
 
