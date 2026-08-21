@@ -27,7 +27,7 @@ The `goal` recipe is a **lightweight setup helper**. It does not implement featu
 1. Which CLI to target (Claude Code / Codex / both)
 2. Which use case (ci-headless / long-dev / parallel-experiment / safe-bounded)
 3. Audit diff of current config (Hone)
-4. Hook configuration for completion verification and notification (Latch)
+4. Hook configuration for completion verification and notification (Hone)
 5. CLAUDE.md or AGENTS.md additions when missing (Scribe, conditional)
 6. Ready-to-run launch command with verification checklist
 
@@ -44,7 +44,7 @@ Use `goal` when the user:
 Route elsewhere when:
 - User wants to actually run `/goal` for a task — that is just the underlying CLI, not Nexus
 - User wants generic CLI config audit without `/goal` context → `hone` directly
-- User wants generic hook design without `/goal` context → `latch` directly
+- User wants generic hook design without `/goal` context → `hone` directly
 
 ## Invocation Modes
 
@@ -54,7 +54,7 @@ Route elsewhere when:
 | `/nexus goal platform=<claude\|codex\|both>` | Skip platform detection |
 | `/nexus goal use_case=<ci-headless\|long-dev\|parallel-experiment\|safe-bounded>` | Skip use-case classification |
 | `/nexus goal platform=<X> use_case=<Y>` | Skip both, go directly to AUDIT |
-| `/nexus goal minimal` | Skip Latch (hooks) and Scribe (context-md); deliver launch command only |
+| `/nexus goal minimal` | Skip Hone's hooks phase and Scribe (context-md); deliver launch command only |
 
 Default when unspecified: detect platform, ask for use case if ambiguous, default to `safe-bounded`.
 
@@ -65,14 +65,29 @@ Inline detection (no agent spawn). Apply in order:
 | Signal | Action |
 |---|---|
 | `CLAUDE.md` exists in cwd | Claude Code is primary |
-| `AGENTS.md` exists in cwd | Codex CLI is primary |
+| `GEMINI.md` exists in cwd | **agy is primary** (agy-specific marker; outranks the `AGENTS.md` signal below, which agy also reads) |
+| `AGENTS.md` exists in cwd | Codex CLI is primary — **but `AGENTS.md` is cross-tool** (agy reads it natively too). If the hub session is agy, or `~/.gemini/antigravity-cli/` exists, treat as ambiguous and ask |
 | Both `CLAUDE.md` and `AGENTS.md` exist | Multi-platform — ask user to pick primary |
 | Only `~/.claude/settings.json` exists globally | Claude Code |
 | Only `~/.codex/config.toml` exists globally | Codex CLI |
+| Only `~/.gemini/antigravity-cli/` exists globally | agy |
 | Both global configs exist, no project marker | Ask user once |
 | Neither global config exists | Stop: instruct user to install Claude Code or Codex CLI first |
 
-Emit `PLATFORM = claude-code | codex | both` for downstream phases.
+Emit `PLATFORM = claude-code | codex | agy | both` for downstream phases.
+
+### agy: no native `/goal` — the recipe changes shape
+
+`/goal` is a **Claude Code and Codex primitive**. agy has **no confirmed `/goal`** (absent from its published slash-command list) and no `/loop` equivalent, so on `PLATFORM = agy` this recipe does **not** produce a `/goal` launch command. Say so explicitly rather than emitting an unverified command, and deliver the substitute instead:
+
+- **Loop driver** = external shell/cron/CI loop over headless `agy -p` one-shots — not an in-agy command.
+- **Completion oracle** = written into the prompt ("Done when …" + a self-validation pass) plus a persistence directive; the *hub*, not agy, decides when to stop.
+- **Hard-stop bound (still MANDATORY)** = harness-side turn counting + `--print-timeout`; agy exposes no `--max-turns`/`--max-budget-usd`, and `/usage` does not update live mid-run, so the bound must live in the external loop.
+- **Resume** = `-c`/`--conversation <id>` (v1.0.8+) between rounds instead of re-spawning cold.
+- **Capture** = artifact + `<<<END_OF_OUTPUT>>>` sentinel under a real pty, never stdout (`_common/CLI_COMPATIBILITY.md §9.2`); each round's exit code is not the completion signal.
+- **Permissions** = `--dangerously-skip-permissions` for headless autonomy, **never combined with `--sandbox`** (issue #36); contain by host isolation. Emit the §9.1 Pre-flight Notification before the first such spawn.
+
+Full primitive map → `reference/loop-engineering-primitives.md` § agy column; principles → `_common/AGY_ORCHESTRATION.md` A2/A4/A9.
 
 ## Use Case Templates
 
@@ -105,7 +120,7 @@ An autonomous `/goal` run converges only if "done" is **machine-checkable**. Thi
 
 - **Elicit a verifiable completion oracle** — a command (or small set) that **exits 0 ⟺ the goal is done**: e.g. `npm test && npm run lint`, `pytest tests/contract/`, `cargo build && cargo test`. The oracle is the goal's analogue of a bug's repro test or a feature's acceptance criteria.
 - **Reject unverifiable goals.** A goal with no machine-checkable stop condition ("improve the code", "make it better", "clean things up") causes the loop to **stop prematurely (false done) or never stop (budget runaway)**. If the user's goal is vague, ask one focused question to convert it into a checkable predicate, or stop with that requirement — do not produce a launch command for an unverifiable goal.
-- **Single source of truth.** The SAME oracle command threads into BOTH (a) Latch's completion-verification hook (Phase 4) AND (b) the launch goal statement (the `/goal "<...>"` text). The loop's stop condition and the post-run verification must check the identical thing — otherwise the run can "complete" against a different bar than it's verified against.
+- **Single source of truth.** The SAME oracle command threads into BOTH (a) Hone's completion-verification hook (Phase 4) AND (b) the launch goal statement (the `/goal "<...>"` text). The loop's stop condition and the post-run verification must check the identical thing — otherwise the run can "complete" against a different bar than it's verified against.
 
 Emit `COMPLETION_ORACLE = <command(s)>` and `GOAL_STATEMENT = <observable, oracle-aligned objective>` to chain state.
 
@@ -121,9 +136,9 @@ Emit `COMPLETION_ORACLE = <command(s)>` and `GOAL_STATEMENT = <observable, oracl
 
 Hone never edits files; it produces diff suggestions only.
 
-### Phase 4 — HOOKS (Latch)
+### Phase 4 — HOOKS (Hone)
 
-**Agent:** Latch
+**Agent:** Hone
 **Inputs:** `PLATFORM`, `USE_CASE`, audit findings
 **Outputs:** Hook configuration snippets ready to install:
 
@@ -159,10 +174,10 @@ Aggregate all outputs into the Output Format below. Verify schema (`PLATFORM`, `
 | Agent | Include when | Skip when |
 |---|---|---|
 | Hone (Phase 3) | Default | Brand-new install with no existing config — replace with template diff |
-| Latch (Phase 4) | Default | User passed `minimal` flag, or use case is `parallel-experiment` (hooks would clash across forks) |
+| Hone hooks (Phase 4) | Default | User passed `minimal` flag, or use case is `parallel-experiment` (hooks would clash across forks) |
 | Scribe (Phase 5) | CLAUDE.md / AGENTS.md missing or thin | Existing context doc already declares observable completion criteria and danger zones |
 
-Minimum chain: Hone alone (1 agent). Typical chain: Hone + Latch (2 agents). Maximum chain: Hone + Latch + Scribe (3 agents).
+Minimum and typical chain: Hone alone (1 agent). Maximum chain: Hone + Scribe (2 agents).
 
 ## Hook Templates
 
@@ -299,12 +314,9 @@ Compare via `/resume` session picker. For Codex use `codex resume --last` per wo
 
 ### safe-bounded — Codex CLI profile
 
-```toml
-[profiles.goal-safe]
-model_reasoning_effort = "high"
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
+A delta over `[profiles.goal-ci]` above — copy its three keys under `[profiles.goal-safe]`, then add the sandbox stanza, which is the only difference:
 
+```toml
 [profiles.goal-safe.sandbox_workspace_write]
 writable_roots = ["./src", "./tests"]
 network_access = false
@@ -362,7 +374,7 @@ steps:
     expected_output: before_after_diff
 
   - phase: HOOKS
-    agent: latch
+    agent: hone
     inputs: [PLATFORM, USE_CASE, audit_findings]
     expected_output: hook_snippets
     skip_when: minimal_flag OR use_case == parallel-experiment
@@ -386,13 +398,13 @@ steps:
 **Task**: `/goal` setup
 **Platform**: <claude-code | codex | both>
 **Use case**: <ci-headless | long-dev | parallel-experiment | safe-bounded>
-**Chain**: Hone → Latch → Scribe?
+**Chain**: Hone → Scribe?
 **Mode**: AUTORUN_FULL
 
 ### Audit (Hone)
 <Before/After diff of settings.json or config.toml, plus CLAUDE.md / AGENTS.md gaps>
 
-### Hooks (Latch)
+### Hooks (Hone)
 <Stop / PostToolUse / PreToolUse snippets to install, with file path and rationale>
 
 ### Context docs (Scribe, if applicable)
@@ -404,7 +416,7 @@ steps:
 ```
 
 ### Verification checklist
-- [ ] **Completion oracle is machine-checkable** and identical in the goal statement and the verification hook (exit 0 ⟺ done)
+- [ ] **Completion oracle** satisfies the Phase 2.5 gate (machine-checkable; the same command in the goal statement and the verification hook)
 - [ ] **Hard-stop bound in place** (native `--max-turns`/`--max-budget-usd` or budget-guard hook) — run cannot loop unbounded
 - [ ] Hooks installed and validated with `claude --debug` / `codex /hooks`
 - [ ] Permission rules / sandbox settings applied
@@ -416,24 +428,44 @@ steps:
 <1-3 sentence summary, recommended next action>
 ```
 
-## Failure Modes
+## Loop Precondition Gate
+
+Run `_common/LOOP_PRECONDITIONS.md` **before emitting any launch command**. Preconditions #1 (verifiable completion oracle) and #2 (hard-stop bound) *are* this recipe's own delivery gate — an unverifiable goal or an unbounded launch is refused, not downgraded. #3-#5 are reported as run risks the launched session must carry. The gate verdict (per precondition: met / converted / blocking) is a required section of the Launch Contract.
+
+When the request arrives with **no named loop shape**, classify the shape first (`_common/LOOP_PRECONDITIONS.md` § Shape first, then gate) — a rubric-quality ask belongs to `converge`, an unattended runner to `orbit`, a full lifecycle to `apex`, and only a native single-session goal stays here.
+
+## Resume
+
+**`N/A`** — `goal` is a short single-pass setup (1-3 agents) that emits a launch command; there is no long-running state worth checkpointing. Re-invoking is cheaper than resuming. The *launched* run carries its own resume mechanism, specified in the Launch Contract.
+
+## Output Report — **Launch Contract** (named)
+
+Emitted inside `NEXUS_COMPLETE` on top of the base `## Nexus Execution Report`:
+
+- **Goal statement + completion oracle** — the machine-checkable predicate the run terminates on, and how it was made checkable when the original ask was vague
+- **Hard-stop bound** — the turn/budget/time limit in force and the mechanism enforcing it (native flag or budget-guard hook)
+- **Launch command** — the exact invocation, with its mode (`ci-headless` / attended) and output-capture path
+- **Hook configuration** — any snippets required before launch, ready to install
+- **Refusals** — an unverifiable goal or an unbounded launch is reported as *not delivered*, with the conversion needed
+
+## Failure Modes Prevented
 
 | Failure | Response |
 |---|---|
-| Goal has no machine-checkable completion oracle | Ask once to convert it into a checkable predicate; if still vague, stop — do not produce a launch command for an unverifiable goal (it will runaway or false-complete) |
+| Goal has no machine-checkable completion oracle | Phase 2.5 gate — ask once to convert it, else stop; no launch command is produced for an unverifiable goal |
 | No hard-stop bound available (native flags absent + no budget hook) | Do not deliver an unbounded autonomous launch; require the budget-guard hook first |
 | Platform unknown after detection + ask | Stop with install instructions; do not guess |
 | `/goal` version too old (Claude Code < v2.1.139) | Emit upgrade instruction; do not produce launch command |
 | Codex CLI lacks `[features] goals = true` | Include the toggle step in the audit diff; warn it is experimental |
-| Existing hooks conflict with proposed hooks | Surface conflicts in Latch output; ask user to resolve before applying |
+| Existing hooks conflict with proposed hooks | Surface conflicts in Hone output; ask user to resolve before applying |
 | Permission rules would deny the test command | Flag in audit; recommend explicit `allow` entry before launch |
 | `apply_patch` / MCP hook gap (Codex known issue) | Note in hooks output; recommend completion verification on shell tool path only |
 
 ## Cost and Latency Profile
 
-- Spawns: 1-3 agents (Hone, Latch optional, Scribe optional)
+- Spawns: 1-2 agents (Hone, Scribe optional)
 - Typical wall time: 2-4 minutes
 - Token cost: low — read-only audit and template generation
-- Confirmation gates: at most one (use-case classification when ambiguous)
+- Confirm / safety gate: **Ask First** at most once (use-case classification when ambiguous). `goal` writes no code and executes nothing — it delivers a launch command — so **Confirm-before-launch is `N/A`**; the launched run carries its own gates.
 
 This is a **lightweight Recipe**. Far below Apex. Suitable for `AUTORUN_FULL` in nearly all cases.

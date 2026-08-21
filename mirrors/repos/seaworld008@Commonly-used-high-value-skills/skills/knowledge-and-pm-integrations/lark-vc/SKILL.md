@@ -2,14 +2,14 @@
 name: lark-vc
 description: '飞书视频会议：查询进行中的会议列表（含会议 ID）、读取会中实时内容（发言、聊天、共享等）、发送会中消息，以及搜索历史会议、查询会议纪要（总结/待办/章节/逐字稿）和参会人快照。Agent 真实入会/离会走 lark-vc-agent；查询未来日程走 lark-calendar。'
 zh_description: "飞书视频会议：搜索历史会议记录、查询会议纪要（总结/待办/章节/逐字稿）、查询参会人快照。"
-version: "1.0.7"
+version: "1.0.8"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-vc"
 license: MIT
 tags: '[feishu, lark, lark-cli, meetings, video-conference]'
 created_at: "2026-05-19"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 4
 complexity: intermediate
 metadata:
@@ -248,4 +248,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

@@ -52,7 +52,7 @@ Every gap the user did **not** explicitly decide — skipped questions, D7 vague
 |---|------|-----------|
 | D13 | **Depth follows signal** | Rich, detailed answers → deepen (more D5 probes, finer options). Terse answers trending shorter → compress: batch dimensions into one AskUserQuestion, propose defaults, lean on the Ledger. Matching the user's bandwidth is part of the contract, not a courtesy. |
 | D14 | **Circling detection (all phases)** | If any dialogue point circles ≥ 2 rounds with no new information, name it and offer: (a) lock the leading option, or (b) park it as `ASSUME-n`/Open Question and proceed. (Generalizes the spec Phase 2 convergence check to every phase of every dialogue recipe.) |
-| D15 | **Delegate mode** | When the user says "just decide" / "任せる", switch to propose-and-confirm: make the call, record it as `ASSUME-n (delegated)`, and continue. Contract-level checkpoints still fire — but they present the delegated decisions for ratification instead of asking the original questions. Delegation compresses the dialogue; it never deletes the checkpoints. |
+| D15 | **Delegate mode** | When the user says "just decide" / "makaseru", switch to propose-and-confirm: make the call, record it as `ASSUME-n (delegated)`, and continue. Contract-level checkpoints still fire — but they present the delegated decisions for ratification instead of asking the original questions. Delegation compresses the dialogue; it never deletes the checkpoints. |
 
 ## 6. Provenance Gate (D16)
 
@@ -90,4 +90,4 @@ A `silent` element routes back to one targeted question (D1–D3) or an explicit
 - **`delve`** — GROUND's Socratic clarification runs D1–D8 (D5 history probe is the reason-for-existence tool); the three knowledge-juncture checkpoints follow D10–D12; the Evolution Map's insights and directions pass D16 (an insight the user never validated is `silent`).
 - **`gedanken` (INTERACTIVE)** / **`clone` Stack Dialogue** / **verdict-card closing question** — D1–D4 + D10–D11 apply to the single or per-phase dialogue moments; the Ledger is optional (short dialogues rarely need one).
 
-This protocol governs the **hub's own conversation with the user** — it is not a spawn-prompt directive. Spawned agents (Riff, Plea, Magi, …) produce material; Nexus alone runs the dialogue that presents it.
+This protocol governs the **hub's own conversation with the user** — it is not a spawn-prompt directive. Spawned agents (Flux, Echo[demand], Magi, …) produce material; Nexus alone runs the dialogue that presents it.

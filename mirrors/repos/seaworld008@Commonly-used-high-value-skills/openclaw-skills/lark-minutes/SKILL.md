@@ -2,14 +2,14 @@
 name: lark-minutes
 description: '飞书妙记：搜索妙记、查看妙记基础信息、下载/上传音视频、读取或编辑妙记的产物内容、改标题、替换说话人/关键词、申请妙记查看/编辑权限。当给出minute_token、本地音视频文件，要查/改/转妙记产物，或用户明确要主动申请妙记权限时使用；本地音视频转纪要/逐字稿优先走本 skill，不要用 ffmpeg/whisper 本地转写。不负责：获取会议关联妙记，或仅按自然语言标题定位纪要'
 zh_description: "飞书妙记：搜索妙记、查看妙记基础信息、下载/上传音视频、读取或编辑妙记的产物内容、改标题、替换说话人/关键词。"
-version: "1.0.8"
+version: "1.0.9"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-minutes"
 license: MIT
 tags: '[feishu, lark, lark-cli, minutes, meetings]'
 created_at: "2026-05-19"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 4
 complexity: intermediate
 metadata:
@@ -246,4 +246,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

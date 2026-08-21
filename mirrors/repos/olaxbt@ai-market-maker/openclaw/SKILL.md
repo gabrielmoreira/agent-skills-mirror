@@ -135,9 +135,10 @@ The repo exposes a lightweight, mostly read-only HTTP API:
 
 ### Security
 
-- If `AIMM_API_KEY` is not set → API is open (intended for local development only).
-- If `AIMM_API_KEY` is set → All non-local requests require `x-api-key` header.
-- In production, always put the Flow API behind a reverse proxy and configure `AIMM_CORS_ORIGINS` appropriately.
+- `AIMM_API_KEY` and `AIMM_AUTH_SECRET` are always required (no shipped default).
+- Empty values are treated as unset; first boot writes unique keys under `.secrets/`.
+- All Flow API requests except `GET /health` require `x-api-key` (or `Authorization: Bearer` with the same key).
+- In production, put the Flow API behind a reverse proxy and configure `AIMM_CORS_ORIGINS` to your dashboard origin.
 
 ## Key Files for OpenClaw Integration
 

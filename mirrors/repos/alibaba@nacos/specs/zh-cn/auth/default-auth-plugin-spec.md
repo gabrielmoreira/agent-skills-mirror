@@ -73,6 +73,11 @@ restart-only 密钥构建。开启 token 缓存时，在同一个基础 manager 
 切回基础 manager，并清空 token 缓存。token 过期时间变化时也会清空包装缓存，使下一次
 取 token 使用新的运行时有效期；已经返回给客户端的 token 仍按签名中的原过期时间有效。
 
+独立部署 Console 时，Console 本地 auth initializer 会在开始接收请求前，从
+`STATIC > DEFAULT` 对内置 `auth:nacos` 应用配置，使稳定的 `TokenManagerDelegate` 完成具体
+token manager 初始化。LDAP 等身份提供方仍消费 `auth:nacos` 持有的 token 和授权基础设施，
+因此所有可配置鉴权实现都要执行 apply，只有当前选中实现接收可选的启动生命周期回调。
+
 `ldap` 实现同样实现 `PluginConfigSpec`，并以可配置插件 `auth:ldap` 注册。其 canonical
 配置前缀为 `nacos.plugin.auth.ldap.`。
 
@@ -170,6 +175,14 @@ Java Client SDK 扩展在 [Java SDK 实现规范](../sdk/sdk-java-impl-spec.md)�
 | `PermissionInfo` | 分配给角色的资源和动作。 |
 
 `ROLE_ADMIN` 是全局管理员角色。拥有该角色的用户可以访问所有资源和控制台管理操作。
+
+用户、角色和权限的模糊搜索会用反斜杠转义 `_` 通配符，使其按字面量匹配。反斜杠只在部分数据库上是
+LIKE 的默认转义字符，因此嵌入式存储显式声明 `ESCAPE '\'`。该子句只作用于紧邻其前的那一个 `LIKE`
+谓词，所以组合多个模糊过滤条件的查询必须在每个谓词之后都重复声明该子句。
+
+该规则适用于同一资源的所有模糊查询入口，而不仅是分页搜索。控制台名称联想所依赖的名称搜索
+（`findRoleNames`、`findUserNames`）必须与分页搜索采用相同的转义方式，使同一个关键字在两者中
+选出相同的记录。
 
 ## 权限资源格式
 

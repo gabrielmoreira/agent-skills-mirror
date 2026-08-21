@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `amElnagdy/delegate-skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
+Mirror of `amElnagdy/delegate-skills` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `amElnagdy/delegate-skills` — 26 default patterns, 0 followed patter
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 94 |
+| Files         | 106 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,36 +123,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`skills/kimi-delegate/references/writing-the-brief.md`](skills/kimi-delegate/references/writing-the-brief.md) |
 | 63 | ✓ | [`skills/kimi-delegate/scripts/relay.mjs`](skills/kimi-delegate/scripts/relay.mjs) |
 | 64 | ✓ | [`skills/kimi-delegate/SKILL.md`](skills/kimi-delegate/SKILL.md) |
-| 65 | ✓ | [`skills/opencode-delegate/references/dispatch-and-poll.md`](skills/opencode-delegate/references/dispatch-and-poll.md) |
-| 66 | ✓ | [`skills/opencode-delegate/references/multi-task-queues.md`](skills/opencode-delegate/references/multi-task-queues.md) |
-| 67 | ✓ | [`skills/opencode-delegate/references/review-and-land.md`](skills/opencode-delegate/references/review-and-land.md) |
-| 68 | ✓ | [`skills/opencode-delegate/references/writing-the-brief.md`](skills/opencode-delegate/references/writing-the-brief.md) |
-| 69 | ✓ | [`skills/opencode-delegate/scripts/relay.mjs`](skills/opencode-delegate/scripts/relay.mjs) |
-| 70 | ✓ | [`skills/opencode-delegate/SKILL.md`](skills/opencode-delegate/SKILL.md) |
-| 71 | ✓ | [`skills/pi-delegate/references/dispatch-and-poll.md`](skills/pi-delegate/references/dispatch-and-poll.md) |
-| 72 | ✓ | [`skills/pi-delegate/references/multi-task-queues.md`](skills/pi-delegate/references/multi-task-queues.md) |
-| 73 | ✓ | [`skills/pi-delegate/references/review-and-land.md`](skills/pi-delegate/references/review-and-land.md) |
-| 74 | ✓ | [`skills/pi-delegate/references/writing-the-brief.md`](skills/pi-delegate/references/writing-the-brief.md) |
-| 75 | ✓ | [`skills/pi-delegate/scripts/relay.mjs`](skills/pi-delegate/scripts/relay.mjs) |
-| 76 | ✓ | [`skills/pi-delegate/SKILL.md`](skills/pi-delegate/SKILL.md) |
-| 77 | ✓ | [`skills/qoder-delegate/references/dispatch-and-poll.md`](skills/qoder-delegate/references/dispatch-and-poll.md) |
-| 78 | ✓ | [`skills/qoder-delegate/references/multi-task-queues.md`](skills/qoder-delegate/references/multi-task-queues.md) |
-| 79 | ✓ | [`skills/qoder-delegate/references/review-and-land.md`](skills/qoder-delegate/references/review-and-land.md) |
-| 80 | ✓ | [`skills/qoder-delegate/references/writing-the-brief.md`](skills/qoder-delegate/references/writing-the-brief.md) |
-| 81 | ✓ | [`skills/qoder-delegate/scripts/relay.mjs`](skills/qoder-delegate/scripts/relay.mjs) |
-| 82 | ✓ | [`skills/qoder-delegate/SKILL.md`](skills/qoder-delegate/SKILL.md) |
-| 83 | ✓ | [`skills/vibe-delegate/references/dispatch-and-poll.md`](skills/vibe-delegate/references/dispatch-and-poll.md) |
-| 84 | ✓ | [`skills/vibe-delegate/references/multi-task-queues.md`](skills/vibe-delegate/references/multi-task-queues.md) |
-| 85 | ✓ | [`skills/vibe-delegate/references/review-and-land.md`](skills/vibe-delegate/references/review-and-land.md) |
-| 86 | ✓ | [`skills/vibe-delegate/references/writing-the-brief.md`](skills/vibe-delegate/references/writing-the-brief.md) |
-| 87 | ✓ | [`skills/vibe-delegate/scripts/relay.mjs`](skills/vibe-delegate/scripts/relay.mjs) |
-| 88 | ✓ | [`skills/vibe-delegate/SKILL.md`](skills/vibe-delegate/SKILL.md) |
-| 89 | ✓ | [`skills/warp-delegate/references/dispatch-and-poll.md`](skills/warp-delegate/references/dispatch-and-poll.md) |
-| 90 | ✓ | [`skills/warp-delegate/references/multi-task-queues.md`](skills/warp-delegate/references/multi-task-queues.md) |
-| 91 | ✓ | [`skills/warp-delegate/references/review-and-land.md`](skills/warp-delegate/references/review-and-land.md) |
-| 92 | ✓ | [`skills/warp-delegate/references/writing-the-brief.md`](skills/warp-delegate/references/writing-the-brief.md) |
-| 93 | ✓ | [`skills/warp-delegate/scripts/relay.mjs`](skills/warp-delegate/scripts/relay.mjs) |
-| 94 | ✓ | [`skills/warp-delegate/SKILL.md`](skills/warp-delegate/SKILL.md) |
+| 65 | ✓ | [`skills/omp-delegate/references/dispatch-and-poll.md`](skills/omp-delegate/references/dispatch-and-poll.md) |
+| 66 | ✓ | [`skills/omp-delegate/references/multi-task-queues.md`](skills/omp-delegate/references/multi-task-queues.md) |
+| 67 | ✓ | [`skills/omp-delegate/references/review-and-land.md`](skills/omp-delegate/references/review-and-land.md) |
+| 68 | ✓ | [`skills/omp-delegate/references/writing-the-brief.md`](skills/omp-delegate/references/writing-the-brief.md) |
+| 69 | ✓ | [`skills/omp-delegate/scripts/relay.mjs`](skills/omp-delegate/scripts/relay.mjs) |
+| 70 | ✓ | [`skills/omp-delegate/SKILL.md`](skills/omp-delegate/SKILL.md) |
+| 71 | ✓ | [`skills/opencode-delegate/references/dispatch-and-poll.md`](skills/opencode-delegate/references/dispatch-and-poll.md) |
+| 72 | ✓ | [`skills/opencode-delegate/references/multi-task-queues.md`](skills/opencode-delegate/references/multi-task-queues.md) |
+| 73 | ✓ | [`skills/opencode-delegate/references/review-and-land.md`](skills/opencode-delegate/references/review-and-land.md) |
+| 74 | ✓ | [`skills/opencode-delegate/references/writing-the-brief.md`](skills/opencode-delegate/references/writing-the-brief.md) |
+| 75 | ✓ | [`skills/opencode-delegate/scripts/relay.mjs`](skills/opencode-delegate/scripts/relay.mjs) |
+| 76 | ✓ | [`skills/opencode-delegate/SKILL.md`](skills/opencode-delegate/SKILL.md) |
+| 77 | ✓ | [`skills/pi-delegate/references/dispatch-and-poll.md`](skills/pi-delegate/references/dispatch-and-poll.md) |
+| 78 | ✓ | [`skills/pi-delegate/references/multi-task-queues.md`](skills/pi-delegate/references/multi-task-queues.md) |
+| 79 | ✓ | [`skills/pi-delegate/references/review-and-land.md`](skills/pi-delegate/references/review-and-land.md) |
+| 80 | ✓ | [`skills/pi-delegate/references/writing-the-brief.md`](skills/pi-delegate/references/writing-the-brief.md) |
+| 81 | ✓ | [`skills/pi-delegate/scripts/relay.mjs`](skills/pi-delegate/scripts/relay.mjs) |
+| 82 | ✓ | [`skills/pi-delegate/SKILL.md`](skills/pi-delegate/SKILL.md) |
+| 83 | ✓ | [`skills/qoder-delegate/references/dispatch-and-poll.md`](skills/qoder-delegate/references/dispatch-and-poll.md) |
+| 84 | ✓ | [`skills/qoder-delegate/references/multi-task-queues.md`](skills/qoder-delegate/references/multi-task-queues.md) |
+| 85 | ✓ | [`skills/qoder-delegate/references/review-and-land.md`](skills/qoder-delegate/references/review-and-land.md) |
+| 86 | ✓ | [`skills/qoder-delegate/references/writing-the-brief.md`](skills/qoder-delegate/references/writing-the-brief.md) |
+| 87 | ✓ | [`skills/qoder-delegate/scripts/relay.mjs`](skills/qoder-delegate/scripts/relay.mjs) |
+| 88 | ✓ | [`skills/qoder-delegate/SKILL.md`](skills/qoder-delegate/SKILL.md) |
+| 89 | ✓ | [`skills/vibe-delegate/references/dispatch-and-poll.md`](skills/vibe-delegate/references/dispatch-and-poll.md) |
+| 90 | ✓ | [`skills/vibe-delegate/references/multi-task-queues.md`](skills/vibe-delegate/references/multi-task-queues.md) |
+| 91 | ✓ | [`skills/vibe-delegate/references/review-and-land.md`](skills/vibe-delegate/references/review-and-land.md) |
+| 92 | ✓ | [`skills/vibe-delegate/references/writing-the-brief.md`](skills/vibe-delegate/references/writing-the-brief.md) |
+| 93 | ✓ | [`skills/vibe-delegate/scripts/relay.mjs`](skills/vibe-delegate/scripts/relay.mjs) |
+| 94 | ✓ | [`skills/vibe-delegate/SKILL.md`](skills/vibe-delegate/SKILL.md) |
+| 95 | ✓ | [`skills/warp-delegate/references/dispatch-and-poll.md`](skills/warp-delegate/references/dispatch-and-poll.md) |
+| 96 | ✓ | [`skills/warp-delegate/references/multi-task-queues.md`](skills/warp-delegate/references/multi-task-queues.md) |
+| 97 | ✓ | [`skills/warp-delegate/references/review-and-land.md`](skills/warp-delegate/references/review-and-land.md) |
+| 98 | ✓ | [`skills/warp-delegate/references/writing-the-brief.md`](skills/warp-delegate/references/writing-the-brief.md) |
+| 99 | ✓ | [`skills/warp-delegate/scripts/relay.mjs`](skills/warp-delegate/scripts/relay.mjs) |
+| 100 | ✓ | [`skills/warp-delegate/SKILL.md`](skills/warp-delegate/SKILL.md) |
+| 101 | ✓ | [`skills/zcode-delegate/references/dispatch-and-poll.md`](skills/zcode-delegate/references/dispatch-and-poll.md) |
+| 102 | ✓ | [`skills/zcode-delegate/references/multi-task-queues.md`](skills/zcode-delegate/references/multi-task-queues.md) |
+| 103 | ✓ | [`skills/zcode-delegate/references/review-and-land.md`](skills/zcode-delegate/references/review-and-land.md) |
+| 104 | ✓ | [`skills/zcode-delegate/references/writing-the-brief.md`](skills/zcode-delegate/references/writing-the-brief.md) |
+| 105 | ✓ | [`skills/zcode-delegate/scripts/relay.mjs`](skills/zcode-delegate/scripts/relay.mjs) |
+| 106 | ✓ | [`skills/zcode-delegate/SKILL.md`](skills/zcode-delegate/SKILL.md) |
 
 ---
 

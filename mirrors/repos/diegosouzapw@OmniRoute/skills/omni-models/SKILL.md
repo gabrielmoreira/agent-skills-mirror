@@ -40,7 +40,7 @@ Create or update a model alias
 
 ```bash
 curl -X POST https://localhost:20128/api/models/alias \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```

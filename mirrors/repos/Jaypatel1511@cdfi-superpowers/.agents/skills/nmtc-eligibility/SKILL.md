@@ -283,7 +283,8 @@ CY 2024-2025 Allocation Application asks, at **Question 25(a)**, whether the
 Applicant will commit to *"providing at least 85% of its QLICIs **(in terms of
 aggregate dollar amounts)**"* in the qualifying areas, and at **25(b)(i)** for
 *"the percentage of its QLICIs (in terms of aggregate dollar amounts)"* it will
-provide in the 20% tier. The Fund's review-process document states both in one
+commit to providing in the 20% tier — a figure it *selects*, not one it enters
+(see the field shape below). The Fund's review-process document states both in one
 sentence (quoted verbatim; downloaded from the source this session):
 
 > **1. Targeting Areas of Higher Distress (Question 25).** The Applicant
@@ -295,6 +296,76 @@ sentence (quoted verbatim; downloaded from the source this session):
 — CDFI Fund, *CY 2024-2025 New Markets Tax Credit Program Allocation Application
 Review Process, General Characteristics of a Highly Ranked Application*, §C.1;
 `cdfifund.gov/system/files/2025-12/CY_2024_25_NMTC_Program_Review_Process.pdf`.
+
+### The Application collects no percentage for Q25(a) — read the field shape first
+
+**Both commitments are entered as selections, not as computed figures.** Read
+verbatim from the instrument this session (CY 2024-2025 NMTC Program Allocation
+Application, 142 pp., 1,525,626 bytes, SHA-256
+`0280c6bc7b35f6015e2c2b1be4b1c07b3864f2dcbaeadfbbbf8bded8de12834f`, downloaded
+from `cdfifund.gov/system/files/2024-11/` and text-extracted locally with
+`pypdf`):
+
+| field | printed p. | Response | Field Type |
+|---|---|---|---|
+| **25(a)** | 38 | `☐ Yes` / `☐ No` | **Dropdown Menu** |
+| 25(a) items 1–12 | 39–40 | `Yes` / `No`, each item separately | Dropdown Menu |
+| **25(b)(i)** | 41 | `0` / `5` / `10` / `15` / `20, if selected enter exact percentage 20-100% in 25(b)(ii)` | **Dropdown Menu** |
+| **25(b)(ii)** | 41 | `___% of QLICIs` — completed *"only … by Applicants that select '20%'"*, admitting *"any percentage amount starting from 20% and up to 100%"* | **Numerical – Percentage** |
+| 25(b) items 1–4 | 41–42 | `Yes` / `No`, each item separately | Dropdown Menu |
+| 25(c) | 42 | `Text Entry` — track record in the areas selected | Text box |
+
+1. **Q25(a) is answered Yes or No.** The 85% is the threshold printed in the
+   question text — the figure the Applicant commits *to*, not a figure it
+   supplies. **There is no percentage field for Q25(a) anywhere in Question 25.**
+2. **Q25(b)(i) is a selection from 0 / 5 / 10 / 15 / 20**, and only selecting 20
+   reaches a free numeric field — **25(b)(ii)**, a *separate* question, which
+   then admits 20% to 100%. That single field is the only free-entry percentage
+   in the whole of Question 25, and it is unreachable from any other rung.
+3. **Both bind forward, over capital the Applicant does not yet have.** Q25(a)'s
+   Question Notes, verbatim (printed p. 38): *"If the Applicant receives an NMTC
+   Allocation, it will be required to meet the percentage figure identified, and
+   such requirement will be a term of its Allocation Agreement."*
+4. **The pipeline is not the deployment, and the Fund says so three times.**
+   Immediately above Question 25 (printed p. 38): *"NOTE: The CDFI Fund does not
+   expect that each and every investment will be in an area identified in
+   Question 25."* Of the Table A5 sample transactions (printed p. 23): *"It is
+   not expected that the Applicant will invest in all of the listed projects"* —
+   those transactions *"should be representative of the types of projects that
+   will be undertaken with an NMTC Allocation."* And Q25(b)(i)'s notes (printed
+   p. 41): *"Applicants will not be held to the individual commitments to any of
+   the areas listed below and will have the flexibility to invest in any of the
+   areas as long as the overall commitment percentage is met."*
+
+**The operational consequence, and it binds exactly as hard as the rest of this
+rule: a CDE asking "what is my Q25(a) percentage" is asking for something the
+Application does not collect.** The right answer is what the commitment means
+and what evidence bears on it — **never a computed share, and never a
+recommendation to answer No because a current pipeline falls short.**
+
+**That last clause is the harm case.** A CDE whose identified projects sit at 60%
+today is *not* thereby a "No" on Q25(a): the commitment governs the QLICIs it
+will make with an allocation it has not yet received, and the Fund has said in
+three separate places that today's project list is not that deployment. Tell that
+CDE its "Q25(a) share is 60%" and it checks **No**, scores lower, and forfeits
+points **it was entitled to claim** — understating itself to a federal agency on
+a number the agency never asked it for. A fabricated share here is the same class
+of failure as a fabricated negative on eligibility (third-state rule), pointed at
+the Applicant instead of the tract.
+
+**And do not overcorrect into "it's only a Yes/No, so check Yes."** The same
+Question Notes make the answer binding — *"it will be required to meet the
+percentage figure identified, and such requirement will be a term of its
+Allocation Agreement"* — so **Yes** is a consequential answer too, enforceable
+against an Allocatee that misses it. Neither direction is this layer's call to
+make. What you can honestly give a CDE is **evidence, per prospective QLICI**:
+which Q25 route each project's tract can be shown to satisfy, which it cannot,
+and which this package cannot see at all (it reaches **two of the twelve** items
+under 25(a) and **two of the four** under 25(b), and computes no multi-indicia
+measure). The CDE aggregates that evidence over its own QLICI dollars and owns
+the commitment. Carry the tri-state through: a `None` on any flag is **"not
+determined for this tract,"** a third column in that evidence — never a "does not
+qualify."
 
 **The denominator is the CDE's own QLICI dollars — not QEI, not project count,
 not tract count.** A QEI is what a tax-credit investor puts *into* a CDE; a QLICI
@@ -312,8 +383,9 @@ The two questions are not the same question at different scales; the second one
 has an input the first one does not.
 
 **A `severe_distress=False` is therefore not a "does not count toward the 85%."**
-Q25(a)'s numerator is a QLICI in an area characterized by **at least one of items
-1–5** *or* **at least two of items 6–12**. Severe Distress is only item 1. The
+A QLICI counts toward the Q25(a) commitment when it is made in an area
+characterized by **at least one of items 1–5** *or* **at least two of items
+6–12**. Severe Distress is only item 1. The
 other single-item routes are **NMTC Native Areas, U.S. Island Areas,
 Non-Metropolitan Counties, and Targeted Populations**; the two-of list runs
 25%-poverty / 70%-MFI / 1.25× unemployment, Brownfield sites, ARC/DRA areas,
@@ -338,7 +410,8 @@ a negative on the commitment.
 
 **The two commitments nest, and the Fund says so as a rule** — *"A QLICI that
 meets this commitment will also automatically meet the commitment made in
-Question 25(a)"* (Application, Q25(b)(i) notes). The 20% is carved out of the
+Question 25(a)"* (Application, Q25(b)(i) Question Notes, printed p. 41). The
+20% is carved out of the
 85%, never added to it. The package's two flags happen to nest the same way —
 re-derived over all 85,395 rows this session, `deep_distress` is a **strict
 subset** of `severe_distress`: **8,061 deep-and-severe, 0 deep-and-not-severe,
@@ -349,10 +422,12 @@ about two columns, not the reason the commitments nest; do not offer it as one.
 either commitment on the basis of anything these packages return** — not from one
 tract, not from a batch of tracts, and above all not from a *percentage of
 tracts*, which is a share of the wrong thing. Answer what the lookup answers:
-whether a QLICI made in this tract would count toward the numerator, on the
-routes the package can see. Then direct the user to compute both shares from
-their **own QLICI dollar amounts**, scoring each QLICI against the full Q25 area
-list.
+**whether a QLICI made in this tract would be an area-qualifying one**, on the
+routes the package can see, and say which route. Then direct the user to their
+**own QLICI dollar amounts**, scored against the full Q25 area list — and be
+clear what that arithmetic is *for*: deciding what to commit to, and meeting the
+commitment once made. It is not an entry on the form. Q25(a) takes a Yes or a
+No.
 
 ## Worked example — address eligibility (executed)
 
@@ -394,9 +469,12 @@ NMTC Eligibility Result
 
 **The `Description:` line is the package's own string, reproduced verbatim — read
 it through the commitment-basis rule.** `DISTRESS_LEVELS["severe"]` reads
-*"qualifies for 85% investment commitment"*; what the flag establishes is that
-**a QLICI made in tract `36005023702` would count toward a CDE's 85% numerator**,
-on item 1 of the Q25 area list. A tract does not "qualify for" a commitment — a
+*"qualifies for 85% investment commitment"*; what the flag establishes is
+narrower than that, and has no quotient anywhere in it: **a QLICI made in tract
+`36005023702` would satisfy item 1 of the Q25(a) area list** — one of the five
+single-item routes by which a QLICI can be an area-qualifying one. Whether to
+commit to the 85% is a **Yes/No the CDE answers for itself**, and no percentage
+is filed for it. A tract does not "qualify for" a commitment — a
 CDE makes one, over its own QLICI dollars, and nothing in this result speaks to
 that share. Quote the line as the package's label; say what it means in your own
 words alongside it, and never carry it forward as the skill's own claim.
@@ -863,6 +941,8 @@ returned the third state.
   tract/address," never "not eligible."
 - A distress flag is a fact about a **tract**. The **85% and 20% commitments are
   facts about a CDE's QLICI dollars**, which this layer never sees — it cannot
-  say whether any CDE meets either one. (Commitment-basis rule.)
+  say whether any CDE meets either one. And **Question 25(a) collects no
+  percentage at all** — it is a Yes/No — so there is no "Q25(a) percentage" for
+  this or any tool to compute. (Commitment-basis rule.)
 - The screener's score and estimated allocation are **first-pass heuristics** to
   triage deals, not underwriting or a commitment.

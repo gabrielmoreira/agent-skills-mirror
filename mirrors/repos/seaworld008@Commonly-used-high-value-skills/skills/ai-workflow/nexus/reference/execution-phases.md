@@ -30,40 +30,7 @@ Each phase completes before the next begins. Track only: current phase (PLAN/DO/
 
 ## Phase 0: PROACTIVE_ANALYSIS (Optional)
 
-Automatically activates when `/Nexus` is invoked by itself. Skip this phase when a normal task instruction is present.
-
-### 0-A: Project State Scan
-Collect the current state of the project:
-
-```bash
-# Git status
-git status --porcelain
-
-# Recent commits
-git log --oneline -10
-
-# Activity Log (if exists)
-.agents/PROJECT.md → Activity Log section
-```
-
-### 0-B: Health Assessment
-Assess project health across four indicators:
-
-| Indicator | Checks | Rating |
-|-----------|--------|--------|
-| `test_health` | Test execution, coverage | 🟢/🟡/🔴 |
-| `security_health` | `npm audit`, dependencies | 🟢/🟡/🔴 |
-| `code_health` | Linting, type checks | 🟢/🟡/🔴 |
-| `doc_health` | README freshness, JSDoc | 🟢/🟡/🔴 |
-
-### 0-C: Recommendation Generation
-Generate recommended actions with priorities:
-
-| Priority | Conditions |
-|----------|------------|
-| 🔴 High | Security issues, test failures, build errors |
-| 🟡 Medium | Lint warnings, coverage regression, missing documentation |
-| 🟢 Low | Refactoring opportunities, optimization suggestions |
+Automatically activates when `/Nexus` is invoked by itself. Skip this phase when a normal task instruction is present. Full scan steps (0-A Project State Scan, 0-B evidence-grounded Health Assessment, 0-C Recommendation Generation with priority table) → `reference/proactive-mode.md`.
 
 ### Flow After Phase 0
 
@@ -77,8 +44,6 @@ User Selection (ON_PROACTIVE_START)
 └─ New task specified → Standard routing → Phase 1
 ```
 
-See `reference/proactive-mode.md` for detailed specifications.
-
 ---
 
 ## AUTORUN_FULL (7 Phases)
@@ -86,16 +51,7 @@ See `reference/proactive-mode.md` for detailed specifications.
 ### Phase 1: PLAN
 Classify and analyze the task:
 
-**Task Classification:**
-- **BUG**: Error fix, defect response, "not working", "broken"
-- **INCIDENT**: Production outage, service degradation, "down", "emergency", "SEV1/2/3/4"
-- **API**: API design, endpoint creation, OpenAPI spec
-- **FEATURE**: New feature, "I want to...", "add..."
-- **REFACTOR**: Code cleanup (behavior unchanged)
-- **OPTIMIZE**: Performance improvement
-- **SECURITY**: Security response, vulnerability
-- **DOCS**: Documentation
-- **INFRA**: Infrastructure provisioning
+**Task Classification:** resolve the task type against `routing-matrix.md` — it owns the type list, the signals that select each type, and each type's default chain.
 
 **Complexity Assessment:**
 - **SIMPLE**: 1-2 steps to complete
@@ -133,126 +89,23 @@ _PARALLEL_CHAINS:
 ```
 
 ### Phase 4: EXECUTE
-Spawn agents via Agent tool with guardrail checkpoints:
+Spawn agents via the Agent tool with guardrail checkpoints. Three layers — **L1** sequential spawn (foreground) for 1-4 step chains, **L2** parallel spawn (background) for 2-3 independent branches, **L3** Rally delegation for 4+ workers or complex ownership. Every spawned agent reads its own SKILL.md and executes autonomously; the hub takes `_STEP_COMPLETE` from the result, runs the Guardrail Check at configured checkpoints, and either passes accumulated context to the next spawn or triggers recovery. After an L2 barrier, proceed to AGGREGATE.
 
-**L1: Sequential Spawn (foreground)**
+Per-layer spawn procedures and API signatures → `reference/execution-layers.md`. Worked spawn examples (Scout→Builder chain, email/phone parallel branches, Rally team) → `orchestration-patterns.md` Patterns A/B/G.
 
-For chains with 1-4 sequential steps:
+**agy hub variant (L1/L2/L3)**
 
-1. Spawn agent via `Agent(name, description, subagent_type: general-purpose, mode: bypassPermissions, model, prompt)` in foreground
-2. Agent reads its own SKILL.md and executes autonomously
-3. Receive `_STEP_COMPLETE` from the spawned agent's response
-4. Guardrail Check at configured checkpoints
-5. Extract handoff context from result
-6. Spawn next agent with accumulated context OR trigger recovery
+The layers above are Claude Code (`Agent(...)`) shapes. On an **agy** hub the phase logic is unchanged, but three primitives do not exist — author against the substitutions in `_common/AGY_ORCHESTRATION.md` A1-A4 / `reference/execution-layers.md` § Antigravity CLI (no per-spawn model field, no foreground/background distinction, no Rally equivalent). Consequence for this phase:
 
-```
-# Step 1: Spawn Scout
-Agent(
-  name: "scout-[task-slug]"
-  description: "[Short description]"
-  subagent_type: general-purpose
-  mode: bypassPermissions
-  model: sonnet
-  prompt: |
-    You are the Scout agent.
-    First, read ~/.claude/skills/scout/SKILL.md and follow its instructions.
-    Task: [task]
-    Constraints: [constraints]
-    On completion, emit results in the _STEP_COMPLETE format.
-)
+| Missing primitive | Consequence for Phase 4 |
+|--------------------|--------------------------|
+| No per-spawn model field (tier is session-scoped, A3) | Pick the tier at *chain* level; a mixed-effort chain splits into per-step headless `agy -p` runs, each pinning its own tier. Recipe steps stay **High**, no downgrade (A1-R) |
+| No foreground/background distinction (A2) | Deliverable is read from the **prompt-mandated artifact file**, never stdout (`_common/CLI_COMPATIBILITY.md §9.2`). Step 3 of the L1 loop becomes "read `_STEP_COMPLETE` from the artifact after the verification chain passes" |
+| No Rally equivalent (A4) | L3 **flattens**: drive the fan-out from the hub in waves of 2-3, or use an installed team pack (`oh-my-antigravity` `/oma:taskboard`). Log the flattening honestly — never report a Rally spawn on agy |
 
-# Step 2: Use Scout's output to spawn Builder
-Agent(
-  name: "builder-[task-slug]"
-  ...
-  prompt: |
-    ...
-    Context from previous step: [Scout's _STEP_COMPLETE output]
-    ...
-)
-```
+Two further Phase 4 rules on agy: append the **Deep Reasoning Directive** (A9-D) to every recipe spawn prompt, and inject file context with `@<path>` — a bare path is read by an internal subagent that dies at the 60s cap (A5). For 4+ step chains, resume with `-c`/`--conversation <id>` instead of re-spawning (A4).
 
-**L2: Parallel Spawn (background)**
-
-For 2-3 independent branches:
-
-1. Spawn independent agents via `Agent(run_in_background: true)` simultaneously
-2. Each agent reads its own SKILL.md and works independently
-3. Wait for all background agents to complete (notifications arrive automatically)
-4. Collect results from all agents
-5. Proceed to AGGREGATE
-
-```
-# Spawn Branch A and Branch B simultaneously
-Agent(
-  name: "builder-email-validation"
-  description: "Implement email validation"
-  run_in_background: true
-  mode: bypassPermissions
-  model: sonnet
-  prompt: |
-    You are the Builder agent.
-    First, read ~/.claude/skills/builder/SKILL.md and follow its instructions.
-    Task: Implement the email-validation feature
-    File ownership: src/validators/email.ts, tests/validators/email.test.ts
-    Constraints: only the files above may be modified
-    On completion, emit results in the _STEP_COMPLETE format.
-)
-
-Agent(
-  name: "builder-phone-validation"
-  description: "Implement phone validation"
-  run_in_background: true
-  mode: bypassPermissions
-  model: sonnet
-  prompt: |
-    You are the Builder agent.
-    First, read ~/.claude/skills/builder/SKILL.md and follow its instructions.
-    Task: Implement the phone-number-validation feature
-    File ownership: src/validators/phone.ts, tests/validators/phone.test.ts
-    Constraints: only the files above may be modified
-    On completion, emit results in the _STEP_COMPLETE format.
-)
-```
-
-**L3: Rally Delegation**
-
-For 4+ workers or complex ownership management:
-
-1. Spawn Rally as an Agent with full task context
-2. Rally reads its own SKILL.md and manages team creation, task distribution, and monitoring
-3. Rally returns aggregated results via `_STEP_COMPLETE`
-
-```
-Agent(
-  name: "rally-parallel-impl"
-  description: "Parallel implementation coordination"
-  subagent_type: general-purpose
-  mode: bypassPermissions
-  model: sonnet
-  prompt: |
-    You are the Rally agent.
-    First, read ~/.claude/skills/rally/SKILL.md and follow its instructions.
-
-    Task: Run the following implementation work in parallel.
-    Workers:
-      1. Builder: email-validation (src/validators/email.ts)
-      2. Builder: phone-number-validation (src/validators/phone.ts)
-      3. Artisan: form UI component (src/components/Form.tsx)
-      4. Radar: full test suite (tests/)
-
-    On completion, emit results in the _STEP_COMPLETE format.
-)
-```
-
-### Layer Selection Criteria
-
-| Condition | Layer | Rationale |
-|-----------|-------|-----------|
-| Sequential chain, 1-4 steps | L1: Direct Spawn | Simple, low overhead |
-| 2-3 independent branches, clear file ownership | L2: Parallel Spawn | True parallelism via background agents |
-| 4+ workers, complex ownership, or multi-step branches | L3: Rally Delegation | Full team management needed |
+Layer selection criteria (1-4 steps → L1, 2-3 independent branches → L2, 4+ workers → L3) and per-engine API mapping: `reference/execution-layers.md` § Claude Code.
 
 ### Phase 5: AGGREGATE
 Merge parallel results:

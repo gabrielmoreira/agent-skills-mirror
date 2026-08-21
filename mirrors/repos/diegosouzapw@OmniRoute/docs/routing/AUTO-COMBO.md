@@ -159,6 +159,28 @@ enumerating every existing combo that shadows a model id, so operators who
 hit this by accident (rather than intentionally, per #6940) have a signal.
 The detection helper lives in `src/lib/combos/modelNameCollision.ts`.
 
+## Calling a Custom Combo From a Client
+
+Persisted combos (Settings → Combos) are only used when the client sends the combo's **exact name** in the `model` field — there is no fuzzy or partial matching of the combo name, and no `auto/` prefix involved. Resolution order (`getComboForModel()` in `src/sse/services/model.ts`):
+
+1. exact combo-name match (`model: "my-combo"`),
+2. `combo/<name>` prefix (`model: "combo/my-combo"`),
+3. model→combo glob mappings (`/api/model-combo-mappings`).
+
+```bash
+curl -X POST http://localhost:20128/v1/chat/completions \
+  -H "Authorization: Bearer <key>" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"my-combo","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+Two common pitfalls:
+
+- **`auto` does not use your combos.** `auto`/`auto/*` builds its own zero-config candidate pool and only consults persisted combos if a combo is literally named `auto` (not recommended). To route through a combo, send its exact name — not `auto`.
+- **`openrouter/auto` is a real paid OpenRouter product** ("Auto Best Available"), not an OmniRoute alias. It is the single static model entry of the OpenRouter registry (`open-sse/config/providers/registry/openrouter/index.ts`) and is billed separately. Use Settings → Routing → Hide paid models to exclude it from `auto` pools.
+
+See [#7992](https://github.com/diegosouzapw/OmniRoute/issues/7992) and [#7111](https://github.com/diegosouzapw/OmniRoute/issues/7111) for the original confusion this documents.
+
 ## How It Works (Persisted Auto-Combos)
 
 The Auto-Combo Engine dynamically selects the best provider/model for each request using a **14-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). Weights form a normalized distribution (custom weights are renormalized by `normalizeScoringWeights()`).

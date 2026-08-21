@@ -203,32 +203,13 @@ Regulatory work follows four invariants: scope before controls; evidence before 
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| OWASP Review | `owasp` | ✓ | OWASP Top 10 / ASVS security standards assessment | `reference/security-standards.md` |
-| WCAG Accessibility | `wcag` | | WCAG 2.2 / WAI-ARIA accessibility assessment | `reference/accessibility-standards.md` |
-| OpenAPI Compliance | `openapi` | | OpenAPI 3.1 / RFC 9110 API standards compliance check | `reference/api-standards.md` |
-| ISO 25010 Quality | `iso` | | ISO/IEC 25010:2023 quality characteristics assessment (SOLID/Clean Code) | `reference/quality-standards.md` |
-| Gap Analysis | `gap` | | Multi-standard gap analysis, audit report generation | `reference/compliance-templates.md` |
-| NIST CSF | `nist` | | NIST CSF 2.0 (Govern/Identify/Protect/Detect/Respond/Recover) Tier and Profile assessment | `reference/nist-csf.md` |
-| PCI-DSS | `pci` | | PCI-DSS v4.0.1 12-Requirement compliance, CDE scoping, SAQ/ROC selection | `reference/pci-dss.md` |
-| GDPR | `gdpr` | | GDPR (Reg. (EU) 2016/679) Articles 5/6/7/13/17/25/30/32/33/35 data-protection assessment | `reference/gdpr-compliance.md` |
-| Regulatory Assessment | `regulatory` | | Select and scope the applicable regulatory framework before dispatching to its specific assessment | `reference/regulatory-frameworks.md` |
-| SOC 2 Assessment | `soc2` | | Type I/II readiness, TSC mapping, CUECs/CSOCs, operating-effectiveness evidence | `reference/regulatory-frameworks.md` |
-| HIPAA Assessment | `hipaa` | | Administrative, physical, technical safeguards; ePHI/BAA and NPRM readiness | `reference/regulatory-frameworks.md` |
-| ISO 27001 Assessment | `iso27001` | | ISO 27001:2022 Annex A mapping, SoA, and risk-treatment alignment | `reference/regulatory-frameworks.md` |
-| Policy as Code | `policy` | | OPA/Rego, Kyverno, Conftest, and CI/CD compliance gates | `reference/regulatory-policy-as-code.md` |
-| Audit Readiness | `audit` | | Evidence room, chain of custody, sampling, interviews, findings retest, continuous audit | `reference/regulatory-audit-readiness.md` |
-| Vendor Risk | `vendor` | | Vendor tiering, contracts, questionnaires, SOC 2 review, monitoring, subprocessors | `reference/regulatory-vendor-risk-assessment.md` |
-| Terms of Service | `tos` | | ToS clause coverage, risk, and proposed wording | `reference/legal-document-checklists.md` |
-| Privacy Policy | `privacy` | | APPI/GDPR/CCPA privacy-policy coverage and data-practice consistency | `reference/legal-document-checklists.md` |
-| Tokushoho | `tokushoho` | | Japan Specified Commercial Transactions Act notation check | `reference/legal-document-checklists.md` |
-| Legal Gap Analysis | `legal-gap` | | Pre-launch or multi-document consistency and missing-clause review | `reference/legal-review-patterns.md` |
-| DPA Review | `dpa` | | GDPR Art. 28 clauses, roles, subprocessors, SCC modules, TIA, audit rights, and breach SLA | `reference/dpa-review.md` |
-| EULA Review | `eula` | | License grant, restrictions, IP, OSS, warranties, indemnity, and jurisdiction-specific enforceability risks | `reference/eula-review.md` |
-| Cookie Consent | `cookie` | | Banner UX, policy inventory, IAB TCF, categorization, scanner-policy diff, and opt-in/opt-out divergence | `reference/cookie-consent.md` |
-| App Store Disclosures | `appstore` | | DSA trader, DMA anti-steering, third-party AI consent, Play AI labels, and EAA statement coverage | `reference/legal-document-checklists.md` |
-| Advertising Claims | `claims` | | Advisory substantiation and disclosure coverage for superlatives, endorsements, health, price, and self-preferencing claims | `reference/legal-document-checklists.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+owasp · wcag · openapi · iso · gap · nist · pci · gdpr · regulatory · soc2 · hipaa · iso27001 · policy · audit · vendor · tos · privacy · tokushoho · legal-gap · dpa · eula · cookie · appstore · claims
+```
+
+Default Recipe: `owasp`.
 
 ## Subcommand Dispatch
 
@@ -236,22 +217,7 @@ Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise, legal-document signals (`ToS`, privacy policy, Tokushoho, DPA, EULA, cookie banner, app-store disclosure, marketing claim) select the matching legal recipe; other unclear standards requests default to `owasp`.
 
-Behavior notes per Recipe:
-
-| Recipe | Non-negotiable behavior |
-|--------|-------------------------|
-| `owasp` / `wcag` / `openapi` / `iso` / `nist` | Pin the current version and use the domain reference; WCAG requires manual review; NIST starts with Govern. |
-| `gap` | Consolidate independent domains only when 3+ are in scope. |
-| `pci` | Scope CDE, select SAQ/ROC, assess v4.0.1, and preserve AOC/QSA evidence needs. |
-| `gdpr` | Cite Article+paragraph; include EU AI Act tier/timeline; route implementation by domain. |
-| `regulatory` | Identify the governing jurisdiction and framework, then dispatch to `soc2`, `pci`, `hipaa`, `iso27001`, `gdpr`, `policy`, `audit`, or `vendor`; do not default regulatory work to `owasp`. |
-| `soc2` | Separate Type I design from Type II operation; map TSC, CUECs/CSOCs, exceptions, and period evidence. |
-| `hipaa` | Assess safeguards, ePHI, and BAA scope; label NPRM items as planning baseline. |
-| `iso27001` | Use 2022 only; map 93 Annex A controls to SoA and risk treatment. |
-| `policy` / `audit` / `vendor` | Specify executable controls, highest-tier evidence, retest/monitoring, and tier-driven vendor gates; delegate implementation. |
-| `tos` / `privacy` / `tokushoho` / `legal-gap` | Run the complete relevant checklist, verify citations, assign per-finding risk, and propose wording; use a consistency matrix for multiple documents. |
-| `dpa` / `eula` / `cookie` / `appstore` | Identify the recipe-specific scope first, then load only its reference and the shared checklist. |
-| `claims` | Report `rule coverage verified`, never `claim approved`; insufficient substantiation routes to the accountable human and qualified counsel before blocking release. |
+Per-Recipe non-negotiable behaviour -> `reference/recipes-index.md`.
 
 ## Output Routing
 
@@ -327,48 +293,26 @@ For each actionable finding, emit one self-contained prompt with one verb, pinne
 - **vs qualified counsel**: Canon finds coverage gaps, inconsistencies, and evidence needs; counsel owns legal opinions, negotiations, enforceability, and consequential interpretation.
 - **vs Cloak/Native/Prose for legal work**: Canon specifies reviewed policy or disclosure wording; Cloak implements privacy behavior, Native implements store/consent UI, and Prose improves readability without changing legal meaning.
 
-**Agent Teams / Subagent pattern (Pattern D: Specialist Team, 2-4 workers):**
-When a full compliance audit spans 3+ independent domains or frameworks, use 2-4 domain workers during ASSESS. Each owns one evidence set; Canon merges statuses and cross-framework controls in VERIFY.
-- `security-assessor` (general-purpose, sonnet): OWASP/NIST/CIS assessment → security compliance report
-- `a11y-assessor` (general-purpose, sonnet): WCAG/WAI-ARIA assessment → accessibility compliance report
-- `api-assessor` (general-purpose, haiku): OpenAPI/RFC compliance → API compliance report
-- `regulatory-assessor` (general-purpose, sonnet): SOC 2/PCI/HIPAA/ISO control evidence → regulatory matrix
-- Shared read: codebase files, `reference/*.md`; exclusive write: per-domain report sections
-- Do NOT spawn for single-domain assessments (overhead exceeds benefit).
+A compliance audit spanning 3+ independent domains uses the Specialist Team pattern
+(2-4 domain workers during ASSESS) -> `reference/compliance-templates.md`.
 
 ## Reference Map
 
+**Full index** → **`reference/reference-index.md`** — every `reference/` file and its read-trigger. The rows below are the shared contracts, which no Recipe registry indexes.
+
 | Reference | Read this when |
 |-----------|----------------|
-| `reference/security-standards.md` | OWASP, NIST, or CIS details, and the OWASP Agentic Top 10 list. |
-| `reference/accessibility-standards.md` | WCAG, WAI-ARIA, or JIS details. |
-| `reference/api-standards.md` | OpenAPI, JSON Schema, RFC, or GraphQL. |
-| `reference/quality-standards.md` | ISO 25010, 12-Factor, CNCF, or SRE. |
-| `reference/compliance-templates.md` | Compliance report template and capability detail. |
-| `reference/anthropic-skill-standards.md` | SKILL.md compliance — frontmatter validation, description quality, progressive disclosure. |
-| `reference/nist-csf.md` | NIST CSF 2.0 functions/categories, Implementation Tiers, Current vs Target Profile, and audit evidence. |
-| `reference/pci-dss.md` | PCI-DSS v4.0.1 requirements, CDE scoping, SAQ type selection, scope minimization. |
-| `reference/gdpr-compliance.md` | GDPR articles, lawful bases, DPIA triggers, 72h breach notification, DPO threshold, Cloak handoff. |
-| `reference/fix-prompt-generation.md` | Authoring `## LLM Fix Prompt` — verb choice and suppression rules. |
-| `reference/regulatory-frameworks.md`, `reference/regulatory-control-mapping.md` | Framework rules, control owners, evidence, and shared-control mapping. |
-| `reference/regulatory-audit-trail-design.md`, `reference/regulatory-audit-readiness.md` | Immutable logs, evidence rooms, sampling, retest, and continuous audit. |
-| `reference/regulatory-policy-as-code.md`, `reference/regulatory-compliance-reporting.md` | Executable policies, control matrices, gaps, and roadmaps. |
-| `reference/regulatory-gdpr-eu-ai-act.md`, `reference/regulatory-vendor-risk-assessment.md` | Privacy/AI regulation and vendor-risk programs. |
-| `reference/regulatory-handoff-formats.md` | Regulatory evidence and implementation handoffs. |
-| `reference/legal-document-checklists.md` | ToS, privacy, Tokushoho, app-store, and advertising-claim clause coverage. |
-| `reference/legal-review-patterns.md`, `reference/legal-review-examples.md` | Cross-document/pre-launch patterns and jurisdiction-appropriate report examples. |
-| `reference/dpa-review.md`, `reference/eula-review.md`, `reference/cookie-consent.md` | DPA, software-license, and cookie-banner/policy deep review mechanics. |
-| `reference/legal-review-handoffs.md` | Legal findings handoffs to Builder, Native, Cloak, Prose, and Scribe. |
 | `_common/LLM_PROMPT_GENERATION.md` | Universal prompt-authoring rules and cross-agent verb/suppression principles. |
-| `_common/OPUS_5_AUTHORING.md` | Sizing the report, thinking depth at version pinning, front-loading standard/scope at ASSESS. Critical: P3, P5. |
 | `_common/PROOF_CARRYING.md` | Generating `a11y_proof` in `acceptance` Phase 2B and the final WCAG verdict in 4B. Empty findings without an exploration log are rejected. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Canon-specific Output/Next schema. |
+
+---
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 **Journal** (`.agents/canon.md`): Read `.agents/canon.md` (create if missing) + `.agents/PROJECT.md`. Only journal significant standards interpretations, jurisdiction-specific review patterns, regulatory scope decisions, evidence patterns, and reusable control mappings; never journal reviewed document contents or personal information.
 - After significant Canon work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Canon | (action) | (files) | (outcome) |`
-- Standard protocols → `_common/OPERATIONAL.md`
 - Git and PR text → `_common/GIT_GUIDELINES.md`; use scope `canon` and never include agent/vendor attribution.
 
 ## AUTORUN Support

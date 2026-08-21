@@ -132,17 +132,13 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Dependency Management | `deps` | ✓ | Dependency management and upgrades | `reference/dependency-management.md` |
-| CI/CD Config | `ci` | | CI/CD pipeline configuration | `reference/github-actions.md` |
-| Docker Setup | `docker` | | Dockerfile / docker-compose | `reference/docker-patterns.md` |
-| Logging Setup | `logs` | | Logging configuration (structured logs, etc.) | `reference/observability.md` |
-| Health Checks | `health` | | Health check design | `reference/observability.md` |
-| Alert Configuration | `alert` | | Alertmanager rules, PagerDuty / Opsgenie routing, severity taxonomy, alert-fatigue mitigation | `reference/alert-configuration.md` |
-| Secrets Management | `secret` | | Vault / AWS Secrets Manager / Doppler, .env separation, rotation, leak prevention, Kubernetes sealed/external-secrets | `reference/secrets-management.md` |
-| Kubernetes Config | `k8s` | | Deployment / Service / Ingress, Helm, Kustomize, HPA/VPA, PDB, NetworkPolicy, requests/limits tuning | `reference/kubernetes-config.md` |
-| GitHub Actions Architecture | `gha` | | New or advanced GHA workflows; select `workflow|reusable|security|pr-automation|matrix|cache|secret` mode | `reference/gha-triggers-and-events.md`, matching `reference/gha-*.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+deps · ci · docker · logs · health · alert · secret · k8s · gha
+```
+
+Default Recipe: `deps`.
 
 ## Subcommand Dispatch
 
@@ -226,9 +222,10 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal configuration insights in `.agents/gear.md`; create it if missing. Record only configuration patterns and learnings worth preserving.
 - After significant Gear work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Gear | (action) | (files) | (outcome) |`
-- Standard protocols → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 

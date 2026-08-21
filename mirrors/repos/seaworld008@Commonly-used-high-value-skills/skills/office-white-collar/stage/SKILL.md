@@ -2,14 +2,14 @@
 name: stage
 description: 'Generating slides via Marp, reveal.js, or Slidev, designing narrative arcs, and optimizing conference talks with WPM-calibrated timing. Use when creating or pacing presentations.'
 zh_description: "演示文稿生成、叙事节奏设计和会议演讲优化。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/stage"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/stage"
 license: MIT
 tags: '["office", "stage"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-10"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -29,12 +29,12 @@ COLLABORATION_PATTERNS:
 - Scribe -> Stage: Specification documents to presentation slides
 - Canvas -> Stage: Diagrams and charts for slide embedding
 - Tome -> Stage: Learning materials to presentation format
-- Stage -> Director: Presentation recording with Playwright
+- Stage -> Cue: Presentation recording with Playwright
 - Muse -> Stage: Design tokens for theme consistency
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Scribe (specs), Canvas (diagrams), Tome (learning materials), Muse (design tokens), User (requirements)
-- OUTPUT: Director (recording), User (slides)
+- OUTPUT: Cue (recording), User (slides)
 
 PROJECT_AFFINITY: Game(L) SaaS(M) E-commerce(L) Dashboard(M) Marketing(H)
 -->
@@ -58,7 +58,7 @@ Use Stage when the user needs:
 Route elsewhere when the task is primarily:
 - diagrams or charts without slide context: `Canvas`
 - specification or design documents: `Scribe`
-- document format conversion: `Morph`
+- document format conversion: `Scribe`
 - UX writing or microcopy: `Prose`
 - video scripts or storyboards: `Cue`
 - learning document creation: `Tome`
@@ -109,7 +109,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Marp | `marp` | ✓ | Marp Markdown slide generation | `reference/patterns.md` |
 | Reveal | `reveal` | | reveal.js HTML slide generation | `reference/patterns.md` |
 | Slidev | `slidev` | | Slidev Vue slide generation | `reference/patterns.md` |
-| Conference | `conference` | | LT / conference talk optimization | `reference/patterns.md`, `reference/examples.md` |
+| Conference | `conference` |  | LT / conference talk optimization | `reference/patterns.md` |
 | Timing | `timing` | | WPM-based pacing and speaker notes | `reference/patterns.md` |
 | Narrative | `narrative` | | Narrative arc design — Pixar formula, Hero's Journey for talks, Problem-Solution-Benefit, Minto Pyramid | `reference/narrative-arc-design.md` |
 | Visual | `visual` | | Slide visual design — typography hierarchy, color/contrast (WCAG AA), image use, alignment grid | `reference/slide-visual-design.md` |
@@ -188,20 +188,19 @@ Pace baseline: 120-160 WPM; use 140 WPM for technical conference talks, 125 WPM 
 ## Collaboration
 
 **Receives:** Scribe (specs to present), Canvas (diagrams to embed), Tome (learning materials), Muse (design tokens for theming), User (outlines, topics)
-**Sends:** Director (slides for recording), User (slide deck)
+**Sends:** Cue (slides for recording), User (slide deck)
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
 | Scribe → Stage | `SCRIBE_TO_STAGE_HANDOFF` | Specification → slide conversion |
 | Canvas → Stage | `CANVAS_TO_STAGE_HANDOFF` | Diagram embedding |
-| Stage → Director | `STAGE_TO_DIRECTOR_HANDOFF` | Presentation recording |
+| Stage → Cue | `STAGE_TO_CUE_HANDOFF` | Presentation recording |
 
 ## Reference Map
 
 | Reference | Read this when |
 |-----------|----------------|
 | `reference/patterns.md` | You need slide framework syntax, theme templates, or layout patterns. |
-| `reference/examples.md` | You need complete slide deck examples for different formats. |
 | `reference/handoffs.md` | You need handoff templates for collaboration with other agents. |
 | `reference/narrative-arc-design.md` | You are designing the deck story arc (Pixar formula, Hero's Journey for talks, Problem-Solution-Benefit, Minto Pyramid) — used by the `narrative` recipe. |
 | `reference/slide-visual-design.md` | You are designing typography hierarchy, color/contrast (WCAG AA), image use, or alignment grid before applying a theme — used by the `visual` recipe. |
@@ -248,4 +247,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

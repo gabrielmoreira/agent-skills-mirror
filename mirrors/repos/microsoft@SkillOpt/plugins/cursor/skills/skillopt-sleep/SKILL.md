@@ -81,9 +81,13 @@ skillopt-sleep run --project "$(pwd)" --source cursor --backend cursor \
   --target-skill-path "$TARGET_SKILL" \
   --max-sessions 5 --max-tasks 3 --progress
 
-# Apply the latest accepted staged proposal after review.
-skillopt-sleep adopt --project "$(pwd)"
+# Inspect selections, then apply the reviewed managed proposal.
+skillopt-sleep status --project "$(pwd)"
+skillopt-sleep adopt --project "$(pwd)" --legacy
 ```
+
+For fan-out proposals, use repeatable `--skill NAME` or `--all-skills` after
+review. Bare adopt deliberately refuses a night containing fan-out rows.
 
 Actions are `status`, `harvest`, `dry-run`, `run`, `adopt`, `schedule`, and
 `unschedule`.

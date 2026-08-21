@@ -7,17 +7,31 @@ All notable changes to SkillOpt are documented here. This project adheres to
 ## [Unreleased]
 
 ### Added
+- **SkillOpt-Sleep multi-skill fan-out and reviewed subset adoption**: each
+  hinted skill is consolidated from its own pinned live baseline, staged as an
+  independent proposal with per-skill gate evidence, and promoted only through
+  an explicit `--skill`, `--all-skills`, or managed `--legacy` choice. Adoption
+  uses a versioned fail-closed manifest, provenance hashes, canonical target
+  pins, immutable backups/receipts, cross-night locking, durable publication,
+  and restart-recoverable transactions. Fan-out discovers native project skill
+  roots, supports repeatable `--skill-root` overrides, and is enabled by
+  `multi_skill_fanout` (`multi_skill_report` remains an alias). MCP adapters
+  enforce typed arguments and preserve engine failures without copying outside
+  the transaction (thanks @bogdanbaciu21, #212).
 - Additive `section_contains` rule-judge operator for literal,
   case-insensitive matching within numbered, bilingual, or annotated ATX
   Markdown headings. The legacy `section_present` behavior is unchanged.
 - **OpenCode transcript source** (`--source opencode`) for SkillOpt-Sleep. It
   reads visible user/assistant text and tool names from OpenCode's local SQLite
   history without requiring its CLI, login, or a provider connection.
-- **OpenCode CLI backend** (`--backend opencode`) for SkillOpt-Sleep model calls,
-  including plain task replay, using an installed OpenCode CLI with the user's
-  existing login and file-based global configuration. Calls parse OpenCode's
-  JSONL output and disable project configuration, tool use, external plugins,
-  and configured MCP servers. Tool-aware replay remains follow-up work.
+- **OpenCode CLI backend** (`--backend opencode`) for SkillOpt-Sleep model calls.
+  It uses an installed OpenCode CLI with the user's existing login and
+  file-based global configuration, and supports plain task replay plus opt-in
+  tool-aware replay. Plain calls disable project configuration,
+  model-initiated tool invocation, external plugins, and configured MCP servers.
+  Tool-aware replay exposes only temporary synthetic tools with randomized names
+  and fixed results, verifies which tools OpenCode actually invokes, and never
+  retains or replays historical tool arguments or results.
 - **GitHub Copilot CLI backend**, in two forms: `copilot_chat` (usable as both
   optimizer and target) and `copilot_exec` (target-only execution harness).
   Because the Copilot CLI carries its own sign-in, `--backend copilot` selects
@@ -106,8 +120,8 @@ All notable changes to SkillOpt are documented here. This project adheres to
   @Alphaxalchemy's #129).
 
 ### Tests
-- Add focused OpenCode backend coverage and opt-in real-CLI smoke tests for a
-  plain call and a seeded cycle-level run.
+- Add focused OpenCode backend coverage and opt-in real-CLI smoke tests for
+  tool-aware replay and a seeded plain cycle.
 - Strengthen SkillOpt-Sleep verifier-discipline assertions, including recorded
   scores and gate actions (thanks @Tanmay9223, #96).
 - Add focused coverage for the validation-gate decision core and edit-budget
@@ -117,8 +131,8 @@ All notable changes to SkillOpt are documented here. This project adheres to
 Thank you to the contributors behind this unreleased work:
 @AKhozya, @Alphaxalchemy, @Phoenix0531-sudo, @SparshGarg999,
 @Tanmay9223, @chirag127, @codeL1985, @dimitarvdenev,
-@ichoosetoaccept, @jcforever1, @nankingjing, @wilyan09007, @xs229, and
-@zixuanguo786-ctrl.
+@bogdanbaciu21, @ichoosetoaccept, @jcforever1, @nankingjing, @wilyan09007,
+@xs229, and @zixuanguo786-ctrl.
 
 ## [0.2.0] — 2026-07-02
 

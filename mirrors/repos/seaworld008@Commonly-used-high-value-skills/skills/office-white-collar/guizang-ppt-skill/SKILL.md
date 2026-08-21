@@ -2,14 +2,14 @@
 name: guizang-ppt-skill
 description: '生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、演讲者视图、观众屏同步、讲稿备注、章节幕封、数据大字报、图片网格等模板。提供两种风格：① \"电子杂志 × 电子墨水\"（衬线 + 流体背景 + 暖色） ② \"瑞士国际主义\"（无衬线 + 网格点阵 + IKB/柠檬黄/柠檬绿/安全橙高亮）。当用户需要制作分享 / 演讲 / 发布会风格的网页 PPT，或提到\"杂志风 PPT\"、\"瑞士风 PPT\"、\"Swiss Style\"、\"horizontal swipe deck\"时使用。'
 zh_description: "生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、章节幕封、数据大字报、图片网格等模板。"
-version: "1.0.5"
+version: "1.0.6"
 author: "seaworld008"
 source: "github:op7418/guizang-ppt-skill"
-source_url: "https://github.com/op7418/guizang-ppt-skill"
+source_url: "https://github.com/op7418/guizang-ppt-skill/blob/72837a8513d1145d800095fc3909d6d3057994b8/SKILL.md"
 license: MIT
 tags: '["ppt", "presentation", "html", "slides", "editorial", "magazine", "webgl"]'
 created_at: "2026-04-28"
-updated_at: "2026-08-10"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "intermediate"
 ---

@@ -587,43 +587,67 @@ function inferMimeTypeFromMagic(raw) {
   return "";
 }
 
-function inferReferenceImageMimeType(filePath, raw) {
-  return inferMimeTypeFromMagic(raw) || IMAGE_MIME_BY_EXT.get(path.extname(filePath).toLowerCase()) || "";
+function inferReferenceImageMimeType(raw) {
+  return inferMimeTypeFromMagic(raw);
 }
 
-async function loadReferenceImages(imagePaths) {
+export async function loadReferenceImages(imagePaths) {
   if (imagePaths.length > MAX_REFERENCE_IMAGES) {
     throw new Error(`参考图最多支持 ${MAX_REFERENCE_IMAGES} 张`);
   }
 
   const images = [];
   for (const imagePath of imagePaths) {
-    const stat = await fs.stat(imagePath).catch((error) => {
+    let handle;
+    try {
+      handle = await fs.open(
+        imagePath,
+        fsSync.constants.O_RDONLY | (fsSync.constants.O_NOFOLLOW || 0),
+      );
+    } catch (error) {
       throw new Error(`参考图不存在或无法读取: ${imagePath} (${error.message})`);
-    });
-    if (!stat.isFile()) {
-      throw new Error(`参考图不是文件: ${imagePath}`);
-    }
-    if (stat.size <= 0) {
-      throw new Error(`参考图为空文件: ${imagePath}`);
-    }
-    if (stat.size > MAX_REFERENCE_IMAGE_BYTES) {
-      throw new Error(`参考图超过 10MB 限制: ${imagePath}`);
     }
 
-    const raw = await fs.readFile(imagePath);
-    const mimeType = inferReferenceImageMimeType(imagePath, raw);
-    if (!SUPPORTED_REFERENCE_IMAGE_MIME_TYPES.has(mimeType)) {
-      throw new Error(`参考图格式不支持或无法识别: ${imagePath}`);
-    }
+    try {
+      const before = await handle.stat({ bigint: true });
+      if (!before.isFile()) {
+        throw new Error(`参考图不是文件: ${imagePath}`);
+      }
+      if (before.size <= 0n) {
+        throw new Error(`参考图为空文件: ${imagePath}`);
+      }
+      if (before.size > BigInt(MAX_REFERENCE_IMAGE_BYTES)) {
+        throw new Error(`参考图超过 10MB 限制: ${imagePath}`);
+      }
 
-    images.push({
-      path: imagePath,
-      filename: path.basename(imagePath),
-      mimeType,
-      raw,
-      sizeBytes: raw.length,
-    });
+      const raw = await handle.readFile();
+      const after = await handle.stat({ bigint: true });
+      if (
+        raw.length !== Number(before.size) ||
+        before.dev !== after.dev ||
+        before.ino !== after.ino ||
+        before.size !== after.size ||
+        before.mtimeNs !== after.mtimeNs ||
+        before.ctimeNs !== after.ctimeNs
+      ) {
+        throw new Error(`参考图在读取期间发生变化: ${imagePath}`);
+      }
+
+      const mimeType = inferReferenceImageMimeType(raw);
+      if (!SUPPORTED_REFERENCE_IMAGE_MIME_TYPES.has(mimeType)) {
+        throw new Error(`参考图格式不支持或无法识别: ${imagePath}`);
+      }
+
+      images.push({
+        path: imagePath,
+        filename: path.basename(imagePath),
+        mimeType,
+        raw,
+        sizeBytes: raw.length,
+      });
+    } finally {
+      await handle.close();
+    }
   }
   return images;
 }
@@ -753,29 +777,100 @@ async function requestMultipart(url, fields, images, apiKey, timeoutMs) {
   }
 }
 
-async function downloadImageURL(url, timeoutMs) {
+function normalizeImageMimeType(value) {
+  const normalized = String(value || "").split(";", 1)[0].trim().toLowerCase();
+  if (normalized === "image/jpg") {
+    return "image/jpeg";
+  }
+  if (normalized === "image/heif") {
+    return "image/heic";
+  }
+  return normalized;
+}
+
+async function readResponseBytesLimited(response, maxBytes, label) {
+  if (!response.body || typeof response.body.getReader !== "function") {
+    throw new Error(`${label} returned an unreadable body`);
+  }
+
+  const chunks = [];
+  let total = 0;
+  const reader = response.body.getReader();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = Buffer.from(value);
+      total += chunk.length;
+      if (total > maxBytes) {
+        await reader.cancel().catch(() => {});
+        throw new Error(`${label} exceeds the ${Math.floor(maxBytes / 1024 / 1024)}MB limit`);
+      }
+      chunks.push(chunk);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return Buffer.concat(chunks, total);
+}
+
+export async function downloadImageURL(url, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(url, {
       method: "GET",
+      redirect: "error",
       signal: controller.signal,
     });
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
+      const rawError = await readResponseBytesLimited(response, 64 * 1024, "download error body")
+        .catch(() => Buffer.alloc(0));
+      const text = rawError.toString("utf8");
       throw new Error(`download HTTP ${response.status}: ${text.slice(0, 500)}`);
     }
 
-    const contentType = (response.headers.get("content-type") || "").split(";", 1)[0].trim();
-    if (contentType && !contentType.startsWith("image/")) {
+    const contentType = normalizeImageMimeType(response.headers.get("content-type"));
+    if (contentType && !SUPPORTED_REFERENCE_IMAGE_MIME_TYPES.has(contentType)) {
       throw new Error(`download returned non-image content-type: ${contentType}`);
     }
 
-    const arrayBuffer = await response.arrayBuffer();
+    const contentLengthHeader = response.headers.get("content-length");
+    if (contentLengthHeader) {
+      if (!/^\d+$/.test(contentLengthHeader.trim())) {
+        throw new Error(`download returned invalid content-length: ${contentLengthHeader}`);
+      }
+      const contentLength = Number(contentLengthHeader);
+      if (!Number.isSafeInteger(contentLength) || contentLength <= 0) {
+        throw new Error(`download returned invalid content-length: ${contentLengthHeader}`);
+      }
+      if (contentLength > MAX_REFERENCE_IMAGE_BYTES) {
+        throw new Error("download exceeds the 10MB limit");
+      }
+    }
+
+    const raw = await readResponseBytesLimited(
+      response,
+      MAX_REFERENCE_IMAGE_BYTES,
+      "download",
+    );
+    if (raw.length === 0) {
+      throw new Error("download returned an empty image");
+    }
+    const detectedMimeType = normalizeImageMimeType(inferMimeTypeFromMagic(raw));
+    if (!SUPPORTED_REFERENCE_IMAGE_MIME_TYPES.has(detectedMimeType)) {
+      throw new Error("downloaded image format is not supported or cannot be identified");
+    }
+    if (contentType && contentType !== detectedMimeType) {
+      throw new Error(
+        `download content-type ${contentType} does not match detected ${detectedMimeType}`,
+      );
+    }
+
     return {
-      raw: Buffer.from(arrayBuffer),
-      mimeType: contentType || null,
+      raw,
+      mimeType: detectedMimeType,
     };
   } finally {
     clearTimeout(timer);
@@ -905,7 +1000,11 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.stack || error.message : String(error));
-  process.exit(1);
-});
+const isMain = Boolean(process.argv[1]) &&
+  fsSync.realpathSync(path.resolve(process.argv[1])) === fsSync.realpathSync(__filename);
+if (isMain) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.stack || error.message : String(error));
+    process.exit(1);
+  });
+}

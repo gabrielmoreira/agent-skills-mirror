@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rikkahub/rikkahub` — 26 default patterns, 0 followed patterns, 77 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -132,10 +132,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 71 | ✓ | [`.agents/skills/locale-tui-localization/SKILL.md`](.agents/skills/locale-tui-localization/SKILL.md) |
 | 72 | ✓ | [`.agents/skills/publish-release/SKILL.md`](.agents/skills/publish-release/SKILL.md) |
 | 73 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 74 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 75 | ✓ | [`locale-tui/CLAUDE.md`](locale-tui/CLAUDE.md) |
-| 76 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
-| 77 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
+| 74 | ✓ | [`locale-tui/CLAUDE.md`](locale-tui/CLAUDE.md) |
+| 75 | ✓ | [`web-ui/AGENTS.md`](web-ui/AGENTS.md) |
+| 76 | ✓ | [`web-ui/CLAUDE.md`](web-ui/CLAUDE.md) |
 
 ---
 

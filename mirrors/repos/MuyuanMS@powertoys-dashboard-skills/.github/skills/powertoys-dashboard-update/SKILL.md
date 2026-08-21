@@ -81,8 +81,7 @@ $ArtifactBaseUrl = if ($env:POWERTOYS_ARTIFACT_BASE_URL) {
 }
 $Pulse = if ($env:POWERTOYS_PULSE_REPO) { $env:POWERTOYS_PULSE_REPO } else { 'gim-home/powertoys-pulse' }
 $PulsePreview = if ($env:POWERTOYS_PULSE_PREVIEW_REPO) { $env:POWERTOYS_PULSE_PREVIEW_REPO } else { 'MuyuanMS/powertoys-pulse-action-private' }
-$NotifyChannel = if ($env:POWERTOYS_DASHBOARD_NOTIFY) { $env:POWERTOYS_DASHBOARD_NOTIFY } else { 'outlook' }
-$NotifyTeamsChatId = $env:POWERTOYS_DASHBOARD_NOTIFY_TEAMS_CHAT_ID
+$NotifyOutlook = if ($env:POWERTOYS_DASHBOARD_NOTIFY) { $env:POWERTOYS_DASHBOARD_NOTIFY -ne 'none' } else { $true }
 ```
 
 On the first run, verify:
@@ -106,35 +105,38 @@ private in the public feed.
 ### Scheduled-run status notifications
 
 Scheduled runs are hard to observe from the CLI, so send compact status
-notifications when M365/WorkIQ tools are available. `POWERTOYS_DASHBOARD_NOTIFY`
-controls delivery:
+notifications through Outlook when M365/WorkIQ tools are available.
+`POWERTOYS_DASHBOARD_NOTIFY=none` disables these emails; all other values send
+Outlook mail to the signed-in user.
 
-| Value | Behavior |
-| --- | --- |
-| `outlook` or unset | Send Outlook mail to the signed-in user. |
-| `teams` | Send a Teams/chat message to `POWERTOYS_DASHBOARD_NOTIFY_TEAMS_CHAT_ID`. |
-| `both` | Send both Outlook and Teams/chat messages. |
-| `none` | Disable external notifications. |
+Read `/me?$select=mail,userPrincipalName` and send to
+`mail ?? userPrincipalName` via `/me/sendMail`. The first message is the run's
+status thread. After sending it, look it up in Sent Items by subject and
+timestamp so later updates can reply to the original message with
+`/me/messages/{message-id}/reply`. If the original message id cannot be found,
+send a new message with the same subject prefixed by `Re:`. If M365 tools are
+unavailable or delivery fails, record that in the final report and continue the
+dashboard run.
 
-For Outlook, read `/me?$select=mail,userPrincipalName` and send to
-`mail ?? userPrincipalName` via `/me/sendMail`. For Teams, create a message at
-`/me/chats/{chat-id}/messages` using `POWERTOYS_DASHBOARD_NOTIFY_TEAMS_CHAT_ID`;
-do not guess or create a chat unless the user explicitly asks for that setup.
-If M365 tools are unavailable, the chat id is missing, or delivery fails, record
-that in the final report and continue the dashboard run.
+Keep messages brief and clear. Send:
 
-Send at least:
+1. **Started** — after the live queue is enumerated. Include the sets that will
+   be updated in this run: stale PR numbers, changed/new bug issue numbers that
+   need fast judgment, selected full-design issue numbers, and any explicitly
+   deferred/running groups.
+2. **30-minute checkpoint** — if the run is still active 30 minutes after the
+   started email, reply to the original with completed PRs/issues, currently
+   running PRs/issues, remaining queue count, and next expected milestone.
+3. **Completed** — reply to the original after validation and deployment
+   verification, with commit, PR/issue coverage, stale queue count, artifact
+   count, and whether any upstream public action occurred.
+4. **Blocked/failed** — reply to the original before stopping on an
+   unrecoverable failure, with the failing phase and the next manual action
+   needed.
 
-1. **Started** — after the live queue is enumerated, with eligible PR count,
-   stale PR count, and top stale PR numbers.
-2. **Incremental publish** — whenever completed artifacts are pushed while
-   other PR reviews keep running, with commit, completed PRs, and remaining
-   queue count.
-3. **Completed** — after validation and deployment verification, with commit,
-   PR coverage, stale queue count, artifact count, and whether any upstream
-   public action occurred.
-4. **Blocked/failed** — before stopping on an unrecoverable failure, with the
-   failing command/phase and the next manual action needed.
+For incremental publishes before the 30-minute checkpoint, do not send noisy
+extra mail unless it materially changes the user's action needed; roll those
+details into the checkpoint or completed reply.
 
 Keep notification bodies public-safe: no PATs, local checkout paths, fork-only
 implementation provenance, private evidence, or internal worktree details.

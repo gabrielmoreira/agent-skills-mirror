@@ -1,15 +1,15 @@
 ---
 name: lark-skill-maker
-description: 'Use when users need to turn Feishu/Lark API operations into reusable agent skills, compose multi-step Lark workflows, or package verified Lark automation patterns for repeatable execution.'
+description: '创建 lark-cli 的自定义 Skill。当用户需要把飞书 API 操作封装成可复用的 Skill（包装原子 API 或编排多步流程）时使用。'
 zh_description: "用于把飞书 API 操作封装为可复用技能、流程模板和多步自动化。"
-version: "1.0.2"
+version: "1.0.3"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-skill-maker"
 license: MIT
 tags: '[feishu, lark, lark-cli, skills, agent-workflow]'
 created_at: "2026-05-19"
-updated_at: "2026-06-29"
+updated_at: "2026-08-20"
 quality: 3
 complexity: intermediate
 metadata:
@@ -118,6 +118,8 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->
 
 <!-- LOCAL-CURATION-SUPPLEMENT:START -->

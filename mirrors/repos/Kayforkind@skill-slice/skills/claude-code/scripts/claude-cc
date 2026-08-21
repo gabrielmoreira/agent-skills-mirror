@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# claude-cc: run Claude Code against your claude.ai MEMBERSHIP (browser OAuth),
+# bypassing any stale ANTHROPIC_AUTH_TOKEN / ANTHROPIC_API_KEY that Hermes injects
+# into the subprocess env (e.g. ANTHROPIC_AUTH_TOKEN=*** from the Ollama model
+# config, which makes `claude` 401). All args pass through to `claude`.
+# Usage: bash scripts/claude-cc -p "do the thing" --max-turns 10
+unset ANTHROPIC_AUTH_TOKEN
+unset ANTHROPIC_API_KEY
+exec claude "$@"

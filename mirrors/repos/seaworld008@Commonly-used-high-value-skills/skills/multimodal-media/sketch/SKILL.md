@@ -2,14 +2,14 @@
 name: sketch
 description: 'Generating AI image-generation code using the Gemini API. Handles text-to-image generation, image editing, and prompt optimization. Use when image generation code is needed.'
 zh_description: "图像生成代码、提示优化、批量生成和成本估算。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/sketch"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/.archive/sketch"
 license: MIT
 tags: '["media", "sketch"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -52,7 +52,7 @@ Use Sketch when the user needs:
 - reference-based editing, style transfer, or iterative image refinement code
 - prompt optimization for image generation (structure, keyword selection, thinking-level tuning)
 - batch image-generation scripts with metadata, cost awareness, and seed-based reproducibility
-- multi-model cost comparison or model-selection guidance (Nano Banana / Nano Banana 2 / Nano Banana Pro / Imagen 4)
+- multi-model cost comparison or model-selection guidance (Nano Banana 2 / Nano Banana Pro)
 - text-rendering images where extended thinking improves accuracy
 - grounded image generation using Google Image Search references (Nano Banana 2)
 
@@ -64,16 +64,16 @@ Route elsewhere when the task is primarily:
 - story or catalog integration after assets exist: `Vitrine`
 
 Model routing within Sketch:
-- Image editing or style transfer: use Gemini-native models (Nano Banana / Nano Banana 2) — Imagen 4 is text-to-image only
-- 4K output: use Nano Banana 2 (`gemini-3.1-flash-image`) — Imagen 4 caps at 2K
-- Best text rendering at lowest cost: Imagen 4 Fast ($0.02/image)
+- General image generation and editing: use Nano Banana 2 (`gemini-3.1-flash-image`)
+- Premium professional asset production: use Nano Banana Pro (`gemini-3-pro-image`)
+- Retired Imagen 3/4 endpoints: migrate to `gemini-3.1-flash-image`
 - No API billing wanted and user has a ChatGPT Plus/Pro subscription: Codex built-in `image_gen` (gpt-image-2) — operating guidance, not Python code; see `reference/codex-image-gen.md`
 
 ## Core Contract
 
 - Deliver code, not generated images.
 - Default stack: Python + `google-genai` (require `v1.38+`; recommend `v1.50+` for `ImageGenerationConfig`). The old `google-generativeai` package is deprecated — always use `google-genai`.
-- Default model: `gemini-2.5-flash-image` (~$0.039/image at 1024×1024).
+- Default model: `gemini-3.1-flash-image`; verify current pricing before estimating a batch.
 - Default API surface: Google AI API with API-key auth; use the `/v1beta/` endpoint (image generation is not available on `/v1`).
 - Translate Japanese prompts to English before generation (`JP -> EN`).
 - Prompt structure: `Subject + Style + Composition + Technical`; target 50-200 words; use photographic/cinematic language (lens, angle, lighting) for realism. Avoid prompt stuffing — conflicting keywords degrade quality.
@@ -107,7 +107,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - High-resolution output (4K via Nano Banana 2) with clear cost increase `ON_RESOLUTION_CHOICE`.
 - Commercial-use intent that needs license review.
 - Prompts near a content-policy boundary `ON_CONTENT_POLICY_RISK`.
-- Model upgrade from Flash to Pro or Imagen 4 (cost multiplier up to 6.7×).
+- Model upgrade from Nano Banana 2 to Nano Banana Pro.
 
 ### Never
 
@@ -117,10 +117,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Execute the API request directly — Sketch delivers code only.
 - Generate copyrighted characters or real people without explicit request — potential DMCA/personality-rights liability.
 - Omit SynthID disclosure — users must understand outputs are watermarked and traceable.
-- Use `imagen-3.0-*` models on Google AI API — they are Vertex AI only and return 404.
+- Use retired Imagen 3 or Imagen 4 endpoints — migrate to a supported Gemini 3 image model.
 - Set `response_modalities=["IMAGE"]` without `"TEXT"` — causes silent failure (HTTP 200, empty parts); always include both.
 - Use the deprecated `google-generativeai` package — it is no longer maintained; use `google-genai` instead.
-- Use Imagen 4 for image editing tasks — Imagen 4 is text-to-image only; route editing to Gemini-native models.
 - Copy-paste model names from tutorials or blog posts without verifying against official docs — Google's naming convention is inconsistent across documentation (e.g., `gemini-flash-image`, `gemini-3.1-flash-preview-image` are wrong); always use the exact IDs from the Model Rules table.
 - Use Files API (`fileData`) for image-to-image editing — the model silently returns text-only output; always use `inlineData` (Base64-encoded) for reference/source images.
 - Combine analysis, summarization, or comparison with image generation in a single turn — the model favors a text-only response; separate analytical and generative requests into distinct API calls.
@@ -130,8 +129,8 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 
 | Topic | Rule |
 | --- | --- |
-| Default model | Use `gemini-2.5-flash-image` (~$0.039/image) unless the user explicitly requires another supported path. Note: `gemini-2.5-flash-image` is scheduled for deprecation 2026-10-02 [Source: ai.google.dev/gemini-api/docs, 2026-06] |
-| Model landscape 2026 | Nano Banana / Nano Banana 2 / Nano Banana Pro / Imagen 4 tiers with per-model pricing, resolution ceilings, and deprecation dates -> `reference/api-integration.md` |
+| Default model | Use `gemini-3.1-flash-image` unless the user explicitly requires another supported path; verify live pricing before quoting cost. |
+| Model landscape 2026 | Nano Banana 2 / Nano Banana Pro roles, resolution support, and retired model migration -> `reference/api-integration.md` |
 | Resolution parameter | Gemini 3 image models accept `resolution: "1K" \| "2K" \| "4K"` (Nano Banana 2 also accepts `"0.5K"`). Default is `1K`. Set explicitly for ≥2K work — do not rely on aspect_ratio alone to control output size |
 | responseModalities | Must be `["TEXT", "IMAGE"]` — using `["IMAGE"]` alone returns HTTP 200 with empty `parts` (silent failure) |
 | Endpoint | Must use `/v1beta/` — image generation is not available on `/v1` |
@@ -176,9 +175,9 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | --- | --- | --- |
 | `INTAKE` | Identify use case, output format, ratio, style, count, budget, and policy constraints | `reference/` |
 | `TRANSLATE` | Convert requirements into a four-layer English prompt (Subject + Style + Composition + Technical); select thinking level | `reference/prompt-patterns.md` |
-| `CONFIGURE` | Choose model (Flash/Pro/Imagen 4), aspect ratio, output paths, batch size, seed, and Batch API eligibility | `reference/api-integration.md` |
+| `CONFIGURE` | Choose model (Nano Banana 2 / Pro), aspect ratio, output paths, batch size, seed, and Batch API eligibility | `reference/api-integration.md` |
 | `CODE` | Generate Python code with SDK setup, safe request handling, error recovery (429/silent/policy), file writes, and metadata | `reference/api-integration.md` |
-| `VERIFY` | Check syntax, API-key safety, policy handling, cost estimate, SynthID disclosure, and execution instructions | `reference/examples.md` |
+| `VERIFY` | Check syntax, API-key safety, policy handling, cost estimate, SynthID disclosure, and execution instructions | — |
 
 ## Routing
 
@@ -263,7 +262,6 @@ Overlap boundaries:
 | --- | --- |
 | `reference/prompt-patterns.md` | you need prompt architecture, style presets, domain templates, JP -> EN mappings, negative-pattern rules, or `v1.50+` prompt-control guidance |
 | `reference/api-integration.md` | you need SDK compatibility, auth setup, request patterns, response handling, rate or cost guidance, error recovery, or SynthID documentation |
-| `reference/examples.md` | you need mode-specific examples, collaboration handoffs, or reusable script packaging patterns |
 | `reference/batch-generation.md` | you are generating ≥5 consistent variants and need seed strategy, rate-limit-aware concurrency, resumable checkpointing, or pHash dedup |
 | `reference/style-transfer.md` | you are matching an existing brand/reference style, extracting reusable STYLE_TOKENs, or deciding between Gemini and SDXL/Flux for style control |
 | `reference/upscale-postprocess.md` | you are upscaling for print/retina, authoring inpaint masks, outpainting canvas extensions, or picking final export format |

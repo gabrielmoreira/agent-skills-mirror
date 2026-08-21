@@ -2,20 +2,22 @@
 name: hermes-agent
 description: 'Use, configure, theme, extend, and orchestrate Hermes Agent.'
 zh_description: "用于配置、扩展、调试和贡献 Hermes Agent，包括多 Agent、CLI 和网关工作流。"
-version: "2.0.15"
+version: "2.0.16"
 author: Hermes Agent + Teknium
-source: "in-house"
-source_url: ""
+source: "github:NousResearch/hermes-agent"
+source_url: "https://github.com/NousResearch/hermes-agent/blob/main/skills/autonomous-ai-agents/hermes-agent/SKILL.md"
 license: MIT
 tags: '[hermes, setup, configuration, multi-agent, spawning, cli, gateway, development]'
 created_at: "2026-04-13"
-updated_at: "2026-07-27"
+updated_at: "2026-08-20"
 quality: 4
 complexity: "intermediate"
 metadata:
-hermes:
-homepage: https://github.com/NousResearch/hermes-agent
-related_skills: '[claude-code, codex, opencode]'
+  hermes:
+    tags: [hermes, setup, configuration, multi-agent, spawning, cli, gateway, themes, skins, desktop-plugins, tui-widgets, petdex, development]
+    homepage: https://github.com/NousResearch/hermes-agent
+    related_skills: [claude-code, codex, opencode]
+platforms: [linux, macos, windows]
 ---
 
 # Hermes Agent

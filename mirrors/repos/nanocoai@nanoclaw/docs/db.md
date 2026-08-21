@@ -110,8 +110,8 @@ These rules are enforced by convention in `src/session-manager.ts` and `containe
 | `unregistered_senders` | central | `src/db/dropped-messages.ts` | ops tooling |
 | `chat_sdk_*` | central | `src/state-sqlite.ts` | Chat SDK bridge |
 | `schema_version` | central | `src/db/migrations/index.ts` | migration runner |
-| `messages_in` | inbound | `src/db/session-db.ts` | `container/agent-runner/src/db/messages-in.ts` |
-| `delivered` | inbound | `src/db/session-db.ts` (`markDelivered`) | container edit/reaction targeting |
+| `messages_in` | inbound | `src/mailbox/sqlite/` | `container/agent-runner/src/mailbox/sqlite/` |
+| `delivered` | inbound | `src/mailbox/sqlite/session-db.ts` (`markDelivered`) | container edit/reaction targeting |
 | `destinations` | inbound | `writeDestinations()` in `src/session-manager.ts` | container routing / ACL |
 | `session_routing` | inbound | `writeSessionRouting()` in `src/session-manager.ts` | container `send_message` defaults |
 | `messages_out` | outbound | `container/agent-runner/src/db/messages-out.ts` | `src/delivery.ts` poll loop |

@@ -69,7 +69,12 @@ filter so installed connectors remain in their server-owned sections.
 Installation is a device fact. Authorization is an account projection. A
 Connector may therefore be installed while inactive for the current account;
 authorization completion or expiry schedules a normal durable runtime
-reconcile without changing installed truth. Every durable lifecycle command
+reconcile without changing installed truth. Remote MCP HTTP 428 and JSON-RPC
+`-33001`/`-33002` during an enabled reconcile are authorization-required
+observations, not retryable install failures. Core persists an expired account
+projection, replans `RuntimeDesired` as disabled, and lets
+`awaitRuntimeDesired` converge that inactive generation so the install
+operation can complete. Every durable lifecycle command
 freezes its `accountId` in `OperationScope`, while short-lived artifact and
 credential grants are passed only through execution ports and are never
 serialized into SQLite.
@@ -315,9 +320,12 @@ supplies a guest process adapter.
 
 ## Durable Operations And Recovery
 
-Remote refresh, install, update, uninstall, and recoverable authorization work
+Remote refresh, install, update, uninstall, disconnect, and runtime reconcile
 use at-least-once execution. Exactly-once execution is not assumed across
-SQLite, the filesystem, runtime activation, and process restarts.
+SQLite, the filesystem, runtime activation, and process restarts. Start
+authorization is not in that set: the user secret exists only in the
+`BeginAuthorization` command, so an accepted or running `start_authorization`
+row must not be executed from persisted state.
 
 An installation request carries an immutable operation identity and release
 identity plus an explicit account execution scope. Each stage is idempotent for at least:
@@ -339,6 +347,10 @@ uninstall:
 accepted -> deactivating(Desired=disabled) -> Observed(disabled)
          -> removing -> absent -> completed
 ```
+
+An authorization-required observation still completes install after the
+disabled generation is Observed. Install completion does not require an
+enabled Agent route.
 
 These are short database transactions separated by idempotent external
 effects, not one long transaction. Every external effect is preceded by a
@@ -365,8 +377,12 @@ constraint remains device-global per Connector.
 
 `accepted` and `running` rows have no age-based expiry. The SQLite repository
 protects them with one-active-operation constraints plus renewable,
-token-fenced leases, and daemon startup reschedules every recoverable row. The
-cleanup path is therefore intentionally unable to select an active operation.
+token-fenced leases. Daemon startup reschedules every recoverable row whose
+effect is durable. Start authorization is command-inline and is not scheduled
+on accept; bootstrap fails leftover accepted or running `start_authorization`
+rows so they cannot block a later user retry, and the continuous recovery
+scanner must not execute them. The cleanup path is therefore intentionally
+unable to select an active operation.
 
 Terminal operation results are retained for 24 hours after `updatedAt`, with
 the cutoff inclusive. This is the supported `GET operation` result window and
@@ -411,10 +427,14 @@ installed release evidence needed for safe repair or uninstall. A later
 preserves the projection. Runtime reconcile then performs interface readiness
 checks before any route is published.
 
-Authorization operations follow the same recovery rule. Authorization creation
-is serialized per account and Connector. A repeated `clientRequestId` resumes
-the same external session. A different request retains the compatibility
-conflict unless it explicitly sends `replacementPolicy=replace_active`. Replace
+Authorization creation is serialized per account and Connector. A repeated
+`clientRequestId` resumes the same external session. Accepted or running
+`start_authorization` is not recovered by replaying the operation: that would
+complete a native-secret control-plane session with an empty secret and fail
+the live command. Completed authorization receipts recover through
+`ReconcileAuthorizations`, not through the durable operation scanner. A
+different request retains the compatibility conflict unless it explicitly
+sends `replacementPolicy=replace_active`. Replace
 is Host-owned: it interrupts an in-progress initial Begin, moves an existing
 receipt through durable `canceling`, asks the provider to terminate the exact
 attempt, waits until that attempt can no longer publish credentials or events,
@@ -430,7 +450,10 @@ For account-scoped runtimes, `AccountRuntimeBindingResolver` maps `none`
 authorization to an always-active device connection. OAuth/API-key connectors
 remain inactive until the current account projection is `connected`; only then
 does the resolver request a one-shot credential-broker grant. `expired`,
-`disconnected`, and missing projections reconcile inactive. Daemon or guest
+`disconnected`, and missing projections reconcile inactive. If an enabled
+reconcile observes authorization-required from the remote MCP before the
+projection has expired, Core writes `expired` and replans inactive instead of
+leaving the install or convergence row retrying 428. Daemon or guest
 restart uses `BootstrapForScope` to rebuild the same projection explicitly.
 
 An enabled Runtime Reconcile returns one identity-fenced receipt containing
@@ -485,6 +508,9 @@ authentication only through a host-supplied request authorizer. Neither an API
 key submitted by the user nor the product account session is copied into the
 runtime VM. Remote MCP execution follows the product host's authenticated
 relay, while the VM receives only the non-credential runtime route identity.
+Route activation may reuse a same-process `tools/list` for an unchanged
+authorization identity; Agent-visible lists stay live and are never persisted
+or TTL-cached.
 Remote authorization replacement propagates the explicit replacement policy to
 Start and uses the session-scoped control-plane Cancel endpoint when a receipt
 already exists. This covers both a returned session and an interrupted initial
@@ -578,12 +604,25 @@ synchronizing -> materializing -> ready`; failure is terminal and disposes
   host keeps the mutation request open until runtime work completes; the local
   projection is cleared on both success and failure and never replaces daemon
   installation truth
-- every new user authorization action creates a new `clientRequestId` and sends
-  `replacementPolicy=replace_active`; continuation polling within that action
-  reuses the same identity, while a superseded renderer Promise cannot retain
-  the Connector mutation token
+- the first user authorization action stays in flight until it completes or
+  the user Cancels; a second Authorize click joins that Promise and must not
+  create another `clientRequestId` or send `replace_active`. After Cancel, the
+  next Authorize is a new action: it creates a new `clientRequestId` and sends
+  `replacementPolicy=replace_active`. Continuation polling within one action
+  reuses the same identity. A canceled renderer Promise cannot retain the
+  Connector mutation token
 - event refreshes are coalesced, daemon reconnect performs a full reload, and
   accepted commands are followed through the operation endpoint or events
+- the settings catalog toolbar Refresh control indicates an explicit
+  `refreshCatalog()` command only. The daemon also runs a scheduled catalog
+  refresh after bootstrap and about once a minute; that background sync may set
+  `catalogState=refreshing` while keeping the last-known-good catalog visible,
+  and must not spin or disable the toolbar control
+- catalog cards show a status field only after installation. Idle uninstalled
+  cards keep the Install action and omit Not installed, so Authorization
+  required remains the distinctive installed-but-disconnected mark. First-time
+  install and update still show their in-progress status because that is live
+  work, not an idle catalog tier
 - hosts gate connector-market transport through `canRequest`; Tutti binds it to
   account authentication, activates the module without network access while
   signed out, reloads after login, and keeps reconnect/resume paths silent
@@ -611,16 +650,23 @@ has observed its latest desired generation as enabled and ready; `starting`,
 projection retain the legacy authorization-based presentation. AgentGUI maps
 its provider-neutral capability options into that projection and retains only
 placement plus its Tutti Mode fallback. Selecting one item emits a semantic
-connector-open intent. The host
+connector-open intent. Composer “install” waits on the durable install
+operation; authorization-required remote MCP must complete that operation
+with an inactive route so the trigger can move from install to authorize
+instead of spinning. The host
 executes `openConnectorMarketDialog(root, connectorKey)`, which waits for the
 authoritative market view, rejects invalid or unknown keys, and then advances
 the package-owned dialog state machine. Before applying the bounded quick-list
-limit, the shared menu stably groups connected connectors ahead of connectors
-that still require authorization or setup; each group preserves host catalog
-order. Its compact trigger previews the installed and authorized group without
-requiring those connectors to be selected in the current draft; draft selection
-continues to control only structured prompt content. Selecting “more” remains
-host navigation because settings/workbench location is product-owned.
+limit, the shared menu ranks already installed and authorized connectors
+(`connected` and installed-but-stopped `disabled`) ahead of connectors that
+still require authorization or setup. The secondary key is the installation
+event timestamp (`installedAtUnixMs`, newest first). Connectors without a
+timestamp keep their relative host catalog order after timestamped entries in
+the same group. Its compact trigger previews the authorized and running
+(`connected`) group without requiring those connectors to be selected in the
+current draft; draft selection continues to control only structured prompt
+content. Selecting “more” remains host navigation because settings/workbench
+location is product-owned.
 
 Connector access-policy editors reuse `ConnectorAccessSelectionPanel` from the
 same shared UI entrypoint. The controlled panel accepts only loading/error/ready
@@ -639,16 +685,24 @@ open it.
 
 Connector details are represented by one modal state machine, never by a fixed
 right-hand pane. An uninstalled connector opens an installation confirmation.
-An unconnected installed connector opens the authorization dialog; an
-authorized connector opens the management dialog. Blocked releases open the
-blocked-state dialog. Only one dialog host is mounted at a time, so
+An unconnected installed connector opens the authorization dialog. The token
+form keeps typed secrets after submit so a failed or in-flight attempt does
+not force the user to re-enter them. Completing authorization in that dialog
+keeps the modal open and advances it to the management dialog, where
+disconnect and try remain available. An already authorized connector opens
+the management dialog directly. Blocked releases
+open the blocked-state dialog. Only one dialog host is mounted at a time, so
 the catalog keeps the full settings content width and never leaves an empty
 right column.
 
-Closing an authorization dialog only dismisses presentation. The explicit
-Cancel action calls the Host cancellation command. Reopening an unconnected
-Connector starts a new replace-active attempt, so a hidden or stuck renderer
-request cannot lock later authorization actions.
+Closing an authorization dialog while a request is in flight does not start a
+new session and does not dismiss the modal; the user must finish the provider
+flow or use Cancel. Browser OAuth keeps the in-flight footer on authorizing
+and does not surface Continue for a synthesized `external_link` view; the
+Start command already opened that URL. Cancel calls the Host cancellation
+command, then the next Authorize is a new replace-active attempt. A leftover
+pending session without an in-flight renderer request also shows Authorize,
+not a second Start disguised as Continue.
 
 ## Local OpenAPI Reuse
 

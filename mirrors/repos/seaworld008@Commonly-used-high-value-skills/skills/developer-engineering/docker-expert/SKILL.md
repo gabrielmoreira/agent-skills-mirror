@@ -2,14 +2,14 @@
 name: docker-expert
 description: 'Use when containerizing an application with Docker, optimizing multi-stage builds and image size, designing Docker Compose services, troubleshooting container networking or volumes, or adding secure image build and CI/CD practices.'
 zh_description: "用于 Docker 容器化最佳实践、多阶段构建优化与 Docker Compose 编排。"
-version: "1.0.1"
+version: "1.0.2"
 author: "seaworld008"
 source: "skills.sh"
-source_url: "https://skills.sh/sickn33/antigravity-awesome-skills/docker-expert"
-license: "CC-BY-4.0"
+source_url: "https://github.com/sickn33/agentic-awesome-skills/blob/e2b6ad15c704e47819b0e2393d04b42a9dcf4fc5/skills/docker-expert/SKILL.md"
+license: MIT
 tags: '["development", "docker", "expert"]'
 created_at: "2026-03-27"
-updated_at: "2026-08-10"
+updated_at: "2026-08-20"
 quality: 4
 complexity: "intermediate"
 ---

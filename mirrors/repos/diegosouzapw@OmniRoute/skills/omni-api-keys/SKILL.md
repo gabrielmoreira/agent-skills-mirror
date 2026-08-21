@@ -29,7 +29,7 @@ Create API key
 
 ```bash
 curl -X POST https://localhost:20128/api/keys \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -49,7 +49,7 @@ Update API key
 
 ```bash
 curl -X PATCH https://localhost:20128/api/keys/{id} \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```

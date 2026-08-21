@@ -73,7 +73,7 @@ Route elsewhere when the task is primarily:
 - For planning recipes, deliver a structured script document; for production recipes, deliver reproducible recording code, video artifacts, and validation evidence.
 - Define target audience and video goal before writing any scenes.
 - Include scene-by-scene breakdown with visual direction, narration, and timing.
-- Specify transitions between scenes (cut, fade, zoom, morph).
+- Specify transitions between scenes (cut, fade, zoom, scribe).
 - Add timing markers for every scene; total must match target duration.
 - Include at least one CTA with placement rationale.
 - Provide narration in the target language with tone/pacing guidance.
@@ -220,7 +220,7 @@ Production recipes continue with `SCRIPT -> STAGE -> SHOOT -> DELIVER` after the
 **Visual:** [What appears on screen — UI, animation, text overlay, etc.]
 **Narration:** "[Spoken text with emphasis markers]"
 **Tone:** [Energetic | Calm | Authoritative | Conversational]
-**Transition:** [Cut | Fade | Zoom | Morph] to next scene
+**Transition:** [Cut | Fade | Zoom | Scribe] to next scene
 **Notes:** [Recording cues, special effects, music changes]
 ```
 
@@ -272,10 +272,11 @@ Production recipes continue with `SCRIPT -> STAGE -> SHOOT -> DELIVER` after the
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal video script patterns and platform insights in `.agents/cue.md`; create if missing.
 - Record only reusable script structures and timing insights.
 - After significant Cue work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Cue | (action) | (files) | (outcome) |`
-- Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
 
 ## AUTORUN Support
 

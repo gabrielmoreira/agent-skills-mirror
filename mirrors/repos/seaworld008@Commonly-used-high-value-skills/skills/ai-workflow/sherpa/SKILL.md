@@ -2,14 +2,14 @@
 name: sherpa
 description: 'Guiding workflows by decomposing complex tasks (Epics) into Atomic Steps under 15 minutes each, with progress tracking and drift prevention. Use when complex decomposition is needed.'
 zh_description: "把复杂任务拆成短步骤，控制漂移并推进交付。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/sherpa"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/sherpa"
 license: MIT
 tags: '["ai", "sherpa", "workflow"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -25,8 +25,8 @@ CAPABILITIES_SUMMARY:
 
 COLLABORATION_PATTERNS:
 - Nexus -> Sherpa: Task chains
-- Titan -> Sherpa: Product phases
-- Accord -> Sherpa: Spec packages
+- Nexus[deliver] -> Sherpa: Product phases
+- Scribe[unified] -> Sherpa: Spec packages
 - Lens -> Sherpa: Codebase analysis for informed decomposition
 - Magi -> Sherpa: Priority decisions for plan ordering
 - Sherpa -> Nexus: Decomposed steps
@@ -39,7 +39,7 @@ COLLABORATION_PATTERNS:
 - PDM -> Sherpa: Epics needing execution decomposition into atomic steps
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Nexus, Titan, Accord, Lens, Magi, Void (scope validation), Matrix (decomposition dimensions), PDM (epics to decompose)
+- INPUT: Nexus, Nexus[deliver], Scribe[unified], Lens, Magi, Void (scope validation), Matrix (decomposition dimensions), PDM (epics to decompose)
 - OUTPUT: Nexus, Rally, Builder/Artisan, Lore, Canvas
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(M)
@@ -94,7 +94,7 @@ Route elsewhere when the task is primarily:
 - Prefer Plan-and-Execute decomposition — decoupling planning from execution avoids repeated re-planning cycles. Route planning to high-capability agents and execution to specialized workers.
 - Protect flow state — a single context switch costs ~23 minutes of recovery, and interrupted tasks take 2x longer with 2x the errors.
 - Author for the executing engine (P1-P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P1, P2, P7 critical). Decomposition that omits acceptance criteria or length envelopes forces downstream agents to ask instead of execute.
-- **Anchor decomposition on the Explore -> Plan -> Implement -> Commit cycle.** Each Atomic Step belongs to exactly one phase: `Explore` reads code and loads context but writes nothing; `Plan` produces a plan artifact (diff sketch, AC list, test stubs) but no implementation; `Implement` writes code against the locked plan; `Commit` runs the verifier and produces a commit/PR. Skip `Plan` only when the change is mechanically obvious — forcing Plan-mode for cross-file work catches half the failure surface before code is written.
+- **Anchor decomposition on the Explore -> Plan -> Implement -> Commit cycle.** Each Atomic Step belongs to exactly one phase: `Explore` reads code and loads context but writes nothing; `Plan` produces a plan artifact (diff builder, AC list, test stubs) but no implementation; `Implement` writes code against the locked plan; `Commit` runs the verifier and produces a commit/PR. Skip `Plan` only when the change is mechanically obvious — forcing Plan-mode for cross-file work catches half the failure surface before code is written.
 - **Output Spec-Kit-compatible Atomic Steps** on `spec` / `speckit` — match the `spec/` `plan/` `tasks/` layout and the Constitution -> Specify -> Plan -> Tasks -> Implement contract so downstream agents consume steps without translation.
 - **Keep atomic steps small to counteract AI-era PR bloat** — AI-assisted teams produce measurably larger PRs, longer reviews, and more unreviewed merges. One committable concern per step directly counters this.
 - **Treat AI-generated task lists as raw MAP input**, never as final — validate, time-box, and apply INVEST before passing steps to implementors.
@@ -126,7 +126,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - ignore weather, blocker, or fatigue signals — interruptions elevate cortisol and accelerate mental fatigue, leading to measurably higher afternoon error rates (Parnin & DeLine)
 - accept informal scope changes without formal review — enforce "zero tolerance" for unreviewed scope additions; every request goes through the change gate. Scope creep can cost up to 4× initial estimates
 - decompose into activities instead of deliverables — "Conduct user interviews" is an activity, not a WBS deliverable; each decomposed item must be a testable output
-- over-decompose distant phases into atomic steps — premature granularity wastes effort when requirements shift; use progressive elaboration (detail near-term, sketch long-term)
+- over-decompose distant phases into atomic steps — premature granularity wastes effort when requirements shift; use progressive elaboration (detail near-term, builder long-term)
 
 ## Workflow
 
@@ -172,7 +172,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | parallel independent steps | `Sherpa -> Rally` | `SHERPA_TO_RALLY_HANDOFF` |
 | return plan or result to orchestrator | `Sherpa -> Nexus` | `SHERPA_TO_NEXUS_HANDOFF` |
 | priority tradeoff | `Magi -> Sherpa` | priority input / decision packet |
-| requirement clarification | `Sherpa -> Accord` | clarification request |
+| requirement clarification | `Sherpa -> Scribe[unified]` | clarification request |
 | commit strategy | `Sherpa -> Guardian` | commit planning request |
 | workflow visualization | `Sherpa -> Canvas` | diagram request |
 | reusable planning pattern | `Sherpa -> Lore` | journal pattern + `EVOLUTION_SIGNAL` |
@@ -216,7 +216,7 @@ Use this map during `GUIDE` to assign the right agent for each step type.
 | Parallel independent steps (`3+`) | `Rally` | `3+` independent steps with no shared deps |
 | Priority tradeoff needed | `Magi` | Multiple valid paths, unclear priority |
 | Emergency / critical blocker | `Triage` | Cascading failure, production issue |
-| Requirement clarification | `Accord` | Ambiguous acceptance criteria |
+| Requirement clarification | `Scribe[unified]` | Ambiguous acceptance criteria |
 
 ### Rally Delegation Threshold
 
@@ -307,7 +307,7 @@ Use this shape:
 
 ## Collaboration
 
-**Receives:** Nexus (task chains), Titan (product phases), Accord (spec packages), Lens (codebase analysis findings for informed decomposition), Magi (priority decisions for plan ordering)
+**Receives:** Nexus (task chains), Nexus[deliver] (product phases), Scribe[unified] (spec packages), Lens (codebase analysis findings for informed decomposition), Magi (priority decisions for plan ordering)
 **Sends:** Nexus (decomposed steps), Rally (parallelizable tasks), Builder/Artisan (atomic implementation tasks), Lore (reusable decomposition patterns via EVOLUTION_SIGNAL), Canvas (workflow visualization requests)
 
 ### Overlap Boundaries

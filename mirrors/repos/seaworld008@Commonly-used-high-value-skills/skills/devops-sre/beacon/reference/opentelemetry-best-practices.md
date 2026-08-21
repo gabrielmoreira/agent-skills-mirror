@@ -321,7 +321,7 @@ Key cost levers (most to least effective):
 Results benchmark (CNCF case study):
   - 72% cost reduction vs previous vendor
   - 100% APM trace coverage (was 5% sampling)
-  - Enabled by: OTel Collector + open-source backends (Loki, Tempo, Mimir)
+  - Enabled by: OTel Collector + open-source backends (Loki, Weave, Mimir)
 
 Observability budget framework:
   - Set per-team telemetry budget (GB/day or cost/month)
@@ -339,22 +339,9 @@ Tool sprawl prevention:
 
 ## 11. GenAI / Agent Observability
 
+GenAI semantic conventions, agent span attributes, token cost tracking, and quality metrics → `reference/llm-observability.md`.
+
 ```
-OTel GenAI Semantic Conventions (v1.37+):
-  Standard attributes:
-    gen_ai.request.model         # Model identifier
-    gen_ai.usage.input_tokens    # Token usage
-    gen_ai.usage.output_tokens
-    gen_ai.provider.name         # Provider (openai, anthropic, etc.)
-    gen_ai.request.temperature   # Model parameters
-    gen_ai.request.max_tokens
-
-  Agent-specific:
-    gen_ai.agent.name            # Agent identifier
-    gen_ai.agent.description
-    gen_ai.tool.name             # Tool calls
-    gen_ai.tool.description
-
 Instrumentation approaches:
   Option 1: Baked-in (framework embeds OTel)
     + Simplified adoption, feature-release control
@@ -363,14 +350,49 @@ Instrumentation approaches:
   Option 2: External OTel libraries (recommended)
     + Decoupled, community-maintained
     - Fragmentation risk if incompatible packages
-
-Key metrics for LLM observability:
-  - Token usage per request/session
-  - Latency per model call (time to first token, total)
-  - Error rates by model/provider
-  - Cost per request (tokens x price)
-  - Tool call success/failure rates
 ```
+
+### Domain causality — spans alone cannot reconstruct an agent run
+
+`parent_span_id` reconstructs *who called whom*. It does not answer the questions an agent incident actually
+asks: which retrieved evidence produced this claim, which state version this tool call mutated, which
+approval authorized this effect, and which earlier attempt this is a retry of. Time ordering is not causality
+— two spans adjacent in the timeline may be unrelated, and the causal parent may be minutes earlier.
+
+Carry domain IDs on the span alongside the span IDs:
+
+```
+state_before / state_after      # state version the call read and wrote
+produced_evidence               # evidence IDs this step created
+caused_state_mutation           # mutation identity, not a boolean
+capability_decision_id          # which authorization decision allowed this
+approval_ref                    # the approval this effect was bound to
+retry_of                        # the prior attempt this supersedes
+delegated_to                    # the child run this step handed off to
+effect_id                       # external side-effect identity (see idempotency)
+```
+
+The test: from a landed external effect, can you walk back to the approval, the plan, the state, the
+evidence, and the source? If any hop is missing, the trace records that something happened, not why.
+
+**Trace completeness is a measurable property**, and worth a dashboard row each:
+`parentage_coverage` (spans with a resolvable parent) · `evidence_link_coverage` (claims with an evidence ID)
+· `approval_binding_coverage` (effects bound to an approval).
+
+**What not to record.** Do not persist private chain-of-thought. Record instead: input/output hash and size,
+model + config, the structured route decision with its reason code, retrieval query template + parameters
+(not the full corpus), evidence IDs, tool name + schema version + status + effect identity, state version and
+mutation summary, approval decision ID, error class and retry relation, latency/token/cost. Storing full
+prompts and outputs requires a stated purpose, access rule, retention, and redaction — never as a debug
+default.
+
+**Sampling is a correctness concern here, not only a cost one.** Dropping high-latency runs or keeping only
+successful traces produces a corpus in which the failures being investigated do not exist. Always retain
+error and side-effecting runs; sample the uneventful ones.
+
+**GenAI semantic conventions are still moving** — the GenAI agent-span conventions are pre-stable. Keep a
+canonical internal event schema and map it to OTel at the exporter, recording the mapping version on the
+trace, so a convention change edits the exporter rather than the history.
 
 ---
 
@@ -577,3 +599,22 @@ Scrape interval optimization:
   | Business metrics         | 60s                  |
   | Build/deploy metrics     | 300s                 |
 ```
+
+
+---
+
+## OTel and Profiling Long Form (SKILL.md excerpt)
+
+- For brownfield services, evaluate OTel eBPF Instrumentation (OBI) for zero-code observability before committing to SDK integration. OBI captures HTTP/gRPC traces and RED metrics without code changes, suitable for initial visibility; add SDK instrumentation selectively for business-critical spans. OBI is in beta (2026), targeting a stable 1.0 release; expanding protocol coverage to messaging (MQTT, AMQP, NATS) and NoSQL (MongoDB). Evaluate for initial rollout in Kubernetes environments.
+
+- Mandate OTel semantic conventions (stable core since 1.28; track latest release, currently 1.40+) for all instrumentation — non-negotiable for cross-service correlation and vendor portability. For GenAI workloads, adopt `gen_ai.*` namespace conventions including agent spans (`create_agent`, `invoke_agent` operations); these remain experimental as of 2026 — set `OTEL_SEMCONV_STABILITY_OPT_IN=http/dup` for dual-emission during version transitions to avoid breaking changes on stabilization.
+
+- Prefer OTel Declarative Configuration (YAML-based SDK config) over code-based setup — stable since 1.0.0 (JSON schema, YAML data model, `OTEL_CONFIG_FILE` env var). Implementations available in Java, Go, PHP, JS, and C++; .NET and Python in development. Reduces instrumentation drift across services and enables configuration-as-code alongside SLOs-as-code.
+
+- For environments with 10+ Collectors, adopt OpAMP (Open Agent Management Protocol) with supervisor-based orchestration for fleet management — enables remote configuration reload, health reporting, version discovery, and dynamic pipeline reconfiguration without redeployment. OpAMP Gateway Extension addresses WebSocket connection scaling limits for large fleets.
+
+- Evaluate OTel Profiles (continuous profiling) as the 4th observability pillar during the DESIGN phase. Profiles entered public Alpha in March 2026 with eBPF-based whole-system profiling (donated by Elastic); include profiling assessment for latency-sensitive services but mark as experimental in implementation specs until the signal reaches stable status.
+
+- **Standardise continuous profiling on Pyroscope 2.0 / Parca for production-scale.** Pyroscope 2.0 ingests 19.5 PB/year at Grafana with 95% symbol-storage reduction via write-once symbols; Parca offers the same continuous-profiling primitives under a CNCF-incubating posture. Add continuous profiling as the third pillar alongside metrics (Prometheus / Mimir) and traces (Weave / Jaeger) — flame graphs over time make the "slow in production only" class of bugs observable. Coordinate with `siege` (concurrency recipe) for memory-leak handoffs (temporal flame graphs) and with `bolt` for CPU hotspot remediation. [Source: grafana.com/blog/pyroscope-2-0-release/; parca.dev]
+
+- **Wire flame-graph temporal-window analysis** into the leak-detection runbook. `memray` (Python) emits temporal flame graphs that isolate "allocations made inside a window that remain unfreed at the window's end" — the canonical leak signature, not "high allocation rate". Same primitive in `jemalloc heap profiling`, Pyroscope 2.0, and Parca. Surface continuous-profiling burn-rate alerts (allocation rate × retention rate) alongside latency / error burn rates. [Source: bloomberg.github.io/memray/temporal-flame-graphs.html]

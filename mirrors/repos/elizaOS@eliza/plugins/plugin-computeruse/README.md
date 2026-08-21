@@ -45,6 +45,16 @@ the other.
 | Windows | PowerShell + `System.Drawing` | PowerShell |
 | Browser | — | `puppeteer-core` + Chrome / Edge / Brave |
 
+The Linux X11 release-evidence path is executable with
+`bun run capture:linux-desktop-evidence`; it uses a disposable controlled xterm
+and emits a strict-validator-compatible evidence bundle. The lane requires
+`xdotool`, `scrot`, `wmctrl`, `xclip`, `xrandr`, and `xterm`.
+
+The Windows release-evidence path is executable with
+`bun run capture:windows-desktop-evidence`; it confines synthetic input to a
+fresh Notepad process, serves the browser fixture from a disposable loopback
+origin, and emits a strict-validator-compatible evidence bundle.
+
 ## Surface
 
 - **Actions** — `COMPUTER_USE` (canonical screenshot / click / key /

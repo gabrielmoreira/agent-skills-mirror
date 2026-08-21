@@ -5,10 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-289-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-286-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 289 个技能**。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 286 个技能**。
 
 ## 为什么值得收藏
 
@@ -21,7 +21,7 @@
 - 已提供 `scripts/sync_codex_skills.py`，可以把仓库中的最新技能一键同步到 `Codex`、`Claude Code` 等本机技能目录，减少手工拷贝和版本漂移。
 - 除了功能覆盖，仓库也重视安全与可信度：既有来源追踪、候选筛选与安装前风险识别能力，也内置 `skill-vetter`、`skill-security-auditor`、`input-guard`、`link-checker` 等安全审查类技能。
 - 现在还内置了许可证审计与月度死链巡检：`repo-validation` 会阻止缺失 license 元数据的外源技能进入主分支，`dead-links` 工作流会按月生成外链巡检报告。
-- `Hermes Agent` 也被作为一等支持对象维护：可直接使用 `skills/` 分类目录，并且仓库已包含 `hermes-agent`、`native-mcp`、`hermes-graphify-gsd-*` 等 Hermes 生态专用技能。
+- `Hermes Agent` 也被作为一等支持对象维护：可直接使用 `skills/` 分类目录，并且仓库已包含 `hermes-agent`、`native-mcp` 与薄路由 `hermes-open-gsd-workflow`。
 
 ## 适合谁
 
@@ -248,14 +248,13 @@ python3 scripts/sync_codex_skills.py --source-root ./skills --codex-root ~/.code
 - `notion-spec-to-implementation`：用于把 Notion 规格说明转化为可执行实现任务。
 - `transcribe`：用于把音频或视频转写为文本，并整理说话人和时间信息。
 
-## Hermes + graphify + GSD 使用说明
+## Hermes、Graphify 与 Open GSD 使用说明
 
-这组最新技能包现在包含 4 个相关技能，详细用法已放到对应分类 README 中，主 README 只保留入口：
+仓库收录官方 Hermes 与 Graphify artifact set，并把 Open GSD Core / Pi 作为受管 bundle；本地组合层只保留一个不复制版本、安装命令或状态机的入口：
 
-- 全局非侵入式工作流：[`hermes-graphify-gsd-nonintrusive-workflow`](./skills/ai-agent-platform/README.md#hermes-graphify-gsd-global-workflow)
-- 运行态排障与 operator：[`hermes-graphify-gsd-runtime-operator`](./skills/ai-agent-platform/README.md#hermes-graphify-gsd-runtime-operator)
-- 项目接入工作流：[`hermes-graphify-gsd-project-integration`](./skills/engineering-workflow-automation/README.md#hermes-graphify-gsd-project-workflow)
-- brownfield 启动流程：[`gsd-graphify-brownfield-bootstrap`](./skills/engineering-workflow-automation/README.md#gsd-graphify-brownfield-bootstrap)
+- 能力选择与故障归属：[`hermes-open-gsd-workflow`](./skills/ai-agent-platform/hermes-open-gsd-workflow/)
+
+实际版本、完整性摘要、安装器和 inventory 以 [`docs/sources/`](./docs/sources/) 的 canonical provenance / bundle metadata 为准。旧 Hermes + Graphify + GSD 组合技能及其迁移兼容层已直接删除；portfolio denylist 只负责阻止这些旧名称被重新引入。
 
 ## Hermes Agent 支持
 
@@ -264,7 +263,7 @@ python3 scripts/sync_codex_skills.py --source-root ./skills --codex-root ~/.code
 - 源码浏览时统一使用 `skills/`；本机安装到 `Codex` / `Claude Code` 时同步到各自 skills 目录
 - 已内置 [`hermes-agent`](./skills/ai-agent-platform/hermes-agent/) 技能，覆盖 CLI、gateway、profiles、memory、skills、MCP 与贡献开发说明
 - 已内置 [`native-mcp`](./skills/ai-agent-platform/native-mcp/) 技能，方便 Hermes 连接外部 MCP server
-- 已内置 `hermes-graphify-gsd-*` 系列技能，支持把 Hermes 与 graphify、GSD 组合成自动化开发工作流
+- 已内置 [`hermes-open-gsd-workflow`](./skills/ai-agent-platform/hermes-open-gsd-workflow/) 薄路由，按请求选择 Hermes、Graphify、Open GSD Core 或显式可选的 GSD Pi
 
 如果你是 Hermes 用户，推荐从这些入口开始：
 
@@ -381,7 +380,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 289 技能）
+## 技能总览（按分类，16 类 / 286 技能）
 
 <a id="cat-developer-engineering"></a>
 ### 1. 开发工程（developer-engineering，47）
@@ -486,7 +485,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `writing-skills`：用于writing、技能，支持任务规划、执行、评审和验证。
 
 <a id="cat-ai-agent-platform"></a>
-### 3. AI 平台与 Agent 开发（ai-agent-platform，15）
+### 3. AI 平台与 Agent 开发（ai-agent-platform，14）
 
 - `agent-hub`：用于管理 Agent 能力中心、技能发现、路由和协作工作流。
 - `arena`：用于构建和运行 Agent 竞技场、评测对战和能力比较流程。
@@ -495,8 +494,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `figma`：用于处理 Figma 设计读取、解析、交付和实现协作。
 - `figma-implement-design`：用于将 Figma 设计转化为可实现的前端界面和组件。
 - `hermes-agent`：用于配置、扩展、调试和贡献 Hermes Agent，包括多 Agent、CLI 和网关工作流。
-- `hermes-graphify-gsd-nonintrusive-workflow`：用于hermes、Graphify、gsd、nonintrusive、工作流，支持 Agent 平台编排、集成和运行管理。
-- `hermes-graphify-gsd-runtime-operator`：用于hermes、Graphify、gsd、runtime、operator，支持 Agent 平台编排、集成和运行管理。
+- `hermes-open-gsd-workflow`：在 Hermes Agent、Graphify、Open GSD Core 与可选 GSD Pi 之间做薄路由，不复制上游安装器和状态机。
 - `mcporter`：用于通过 mcporter CLI 列出、配置、鉴权和调用 MCP 服务器或工具。
 - `native-mcp`：用于构建和调试原生 MCP 集成、服务器和工具调用流程。
 - `openai-docs`：用于查阅和应用 OpenAI 官方文档、API 行为和集成指南。
@@ -505,17 +503,15 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `sigil`：根据项目代码自动生成贴合仓库约定的技能。
 
 <a id="cat-workflow-automation"></a>
-### 4. 工程工作流自动化（engineering-workflow-automation，15）
+### 4. 工程工作流自动化（engineering-workflow-automation，13）
 
 - `agent-browser`：用于让 Agent 操作真实浏览器，完成页面交互、截图录屏、脚本执行和端到端验证。
 - `billing-automation`：用于构建订阅计费、自动开票、续费生命周期和催收管理流程。
 - `gh-address-comments`：用于通过 gh CLI 处理当前分支的 GitHub PR Review 评论或 Issue 评论。
 - `gh-fix-ci`：用于gh、修复、CI，支持工程协作、自动化验证和交付闭环。
 - `github`：用于通过 GitHub CLI 自动化 Issue、PR、Review、CI 检查、标签和发布协作。
-- `gsd-graphify-brownfield-bootstrap`：用于gsd、Graphify、brownfield、启动，支持工程协作、自动化验证和交付闭环。
 - `guardian`：提交、分支、合并请求策略和变更粒度把关。
 - `harvest`：采集合并请求信息并生成工作报告和发布材料。
-- `hermes-graphify-gsd-project-integration`：用于hermes、Graphify、gsd、project、集成，支持工程协作、自动化验证和交付闭环。
 - `jupyter-notebook`：用于Jupyter、Notebook，支持工程协作、自动化验证和交付闭环。
 - `latch`：配置和维护生命周期钩子、质量门禁和自动化守卫。
 - `playwright`：用于使用 Playwright 编写、运行和调试端到端测试。

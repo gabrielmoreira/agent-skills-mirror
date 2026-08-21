@@ -10,6 +10,7 @@
 - [Invocation and Modes](#invocation-and-modes)
 - [When to Use Newsroom](#when-to-use-newsroom)
 - [Claim Taxonomy (the core contract)](#claim-taxonomy-the-core-contract)
+- [Ledger Membership](#ledger-membership)
 - [Phase Contracts](#phase-contracts)
 - [Gates](#gates)
 - [AUTORUN Chain Template](#autorun-chain-template)
@@ -60,7 +61,7 @@ Mode detection when unstated: an existing article path/URL/pasted text → `audi
 
 ### Do NOT use Newsroom for
 
-- Article authoring with no grounding requirement → `zine` direct
+- Article authoring with no grounding requirement → `tome` direct
 - Doc + slide unified package with polish maximization → `podium` (its Phase 4 claim-grounding branch covers grounding *within* that pipeline)
 - Spec-vs-implementation conformance → `attest` direct
 - Standards compliance (WCAG/OWASP/style) → `canon` direct
@@ -88,6 +89,37 @@ Per-claim audit verdicts (Phase 3/4 output vocabulary):
 
 ---
 
+## Ledger Membership
+
+Newsroom is a member of the **external-reviewer-to-zero** family: its completion oracle is an evaluator's finding set driven to zero, not a rubric score. The shared machinery is `_common/FINDING_LEDGER.md`; the Evidence Ledger + `claim_audit.json` **are** that file's ledger, with claims as the findings. Newsroom's five declaration slots:
+
+| Slot | newsroom |
+|------|----------|
+| **(a) Evaluator** | the Phase 3 claim auditor + Phase 4 skeptic panel — separately spawned, never the writer. Maker ≠ checker is bought by spawn separation and adversarial refutation rather than by a second engine (`FINDING_LEDGER.md` §2) |
+| **(b) Frozen scope unit** | `newsroom_charter.yaml`, fixed at Phase 0: article ref + **claim-tolerance contract** (which statement kinds need a source at this `risk_tier` — this *is* the severity floor) + the load-bearing thesis list |
+| **(c) Identity mechanism** | **assigned** — `claim_id` fixed at first decomposition and carried through rewrites. Remediation legitimately rewrites the sentence a claim lives in, so a derived fingerprint would lose the claim on the first fix (`FINDING_LEDGER.md` §4) |
+| **(d) Validity gate** | **Thesis-Integrity** (§ Gates) — the load-bearing thesis still stands and is still stated after remediation |
+| **(e) Invariant + profiles** | the article still makes its point. No profiles: `risk_tier` is a floor preset, `compose`/`audit` are input modes |
+
+**C4 holds** (`FINDING_LEDGER.md` §1): the claim set is the article's own assertions — finite, and each has a right answer — so newsroom needs **no split oracle**, which is why `loop ≤ 2 cycles` suffices where `quell` needs 6. The **craft** axis of prose (structure, altitude, register, redundancy) fails C4 and is *not* in scope here; it lives in `reference/doc-quality-protocol.md` W7-W11 as a single-pass gate.
+
+**Verdict → disposition.** A verdict is what the evaluation found; a disposition is why the claim is closed. Both appear in `claim_audit.json`.
+
+| Verdict / outcome | Disposition |
+|---|---|
+| `miscited` · `unsupported` · `contradicted` · `stale` · `mislabeled` | `OPEN` |
+| re-audited `grounded` after a remedy | `FIXED-VERIFIED` |
+| the auditor tried to confirm the defect against the source and failed | `FALSE-POSITIVE-RATIFIED` |
+| downgraded to labeled opinion (logged, re-audited as `opinion`) | `DOWNGRADED` |
+| removed with a log entry | `DELETED (logged)` |
+| shipped `[UNVERIFIED]` at `cap-reached` | `DEFERRED` |
+| `common-knowledge` pass at `risk_tier: routine` | `BELOW-FLOOR` |
+| a claim that returns to `OPEN` twice after being `FIXED-VERIFIED` | `FROZEN` + `BLOCK` (`FINDING_LEDGER.md` §7) |
+
+`DOWNGRADED` and `DELETED (logged)` are newsroom's **self-dismissal analogue** (`FINDING_LEDGER.md` §6): weakening a claim into vacuity and deleting the inconvenient paragraph both close a finding by moving the standard rather than meeting it. That is why both are logged, both are re-audited, and a hollowed-out thesis is a `BLOCK` rather than a ship.
+
+---
+
 ## Phase Contracts
 
 ### Phase 0: FRAMING (Nexus internal, 0-1 agents)
@@ -108,7 +140,7 @@ parallel:
     agents: [field]            # WebSearch/WebFetch sweep of T1 (official docs, papers, changelogs) → T3
     mission: exhaust T1 sources for every in-scope topic; cite + tier + date every entry
   - branch: internal_sources        # conditional: article derived from a codebase / releases
-    agents: [lens | harvest]
+    agents: [lens | launch]
     mission: code citations, PR/release facts — internal claims get repo-path/SHA provenance, same ledger schema
   - branch: competitive_claims      # conditional: article compares products/tools
     agents: [compete]
@@ -121,7 +153,7 @@ In `audit` mode the sweep is **claim-driven**: a pre-pass extracts the existing 
 
 ### Phase 2: COMPOSE (compose mode only, 1-2 agents)
 
-`zine` writes the article **ledger-bound**: every `fact` sentence carries an inline ledger reference (`[E12]`); anything not in the ledger is written as labeled opinion/hypothesis or not written. `prose?` for headings/hook. `reference/doc-quality-protocol.md` W1-W6 apply (reader contract + UNKNOWN-over-fabrication).
+`tome` writes the article **ledger-bound**: every `fact` sentence carries an inline ledger reference (`[E12]`); anything not in the ledger is written as labeled opinion/hypothesis or not written. `prose?` for headings/hook. `reference/doc-quality-protocol.md` W1-W6 apply (reader contract + UNKNOWN-over-fabrication).
 
 In `audit` mode this phase is skipped; the existing article is ingested verbatim.
 
@@ -132,7 +164,9 @@ A **separately spawned auditor** (never the writer):
 2. For every `fact`: locates its ledger entry, **re-opens the cited source** (WebFetch) and confirms citation-support — the source must state what the sentence states, at the claimed strength.
 3. Flags `mislabeled` phrasing (speculation dressed as fact) and inference steps that outrun their sources.
 
-**Output:** `claim_audit.json` — one row per claim: `{ claim, class, ledger_ref, verdict, evidence_note }`. **No claim may be absent from the table** — unaccounted claims fail the gate (Acceptance-Provenance discipline, Q15).
+**Output:** `claim_audit.json` — one row per claim: `{ claim_id, claim, class, ledger_ref, verdict, disposition, evidence_note, first_seen_cycle }`. **No claim may be absent from the table** — unaccounted claims fail the gate (Acceptance-Provenance discipline, Q15).
+
+`claim_id` is **assigned at this first decomposition and never re-derived** (§ Ledger Membership slot (c)). Remediation rewrites sentences, so a claim re-extracted from the fixed text would otherwise arrive as a new row with no history — and a claim that has already been refuted once would be indistinguishable from a fresh one.
 
 ### Phase 4: ADVERSARIAL VERIFY (parallel, 2-4 agents)
 
@@ -155,7 +189,9 @@ Fix per verdict, generator-evaluator separated per `reference/evaluator-loop-pro
 | `stale` | Update to current facts + date-stamp ("as of <date>") |
 | `mislabeled` | Re-phrase with explicit attribution/hedging |
 
-Re-run Phase 3 on changed text only. **Exit reasons:** `ACCEPT` (zero unresolved `fact` verdicts) | `cap-reached` (deliver best-so-far with residual claims explicitly marked `[UNVERIFIED]` + the residual gap listed) | `BLOCK` (a load-bearing thesis is refuted and the article's premise fails → escalate to the user; do not ship a corrected-into-meaninglessness piece).
+The writer **states the `claim_id` it acted on** for every remedy, so the re-audit re-attaches the claim's verdict history instead of re-discovering it (Phase 3). A claim returning to `OPEN` twice after a `FIXED-VERIFIED` is `FROZEN` + `BLOCK`, never a third attempt.
+
+Re-run Phase 3 on changed text only, then the **Thesis-Integrity gate** (§ Gates). **Exit reasons:** `ACCEPT` (zero unresolved `fact` verdicts **and** the thesis gate green) | `cap-reached` (deliver best-so-far with residual claims explicitly marked `[UNVERIFIED]` + the residual gap listed) | `BLOCK` (a load-bearing thesis is refuted and the article's premise fails → escalate to the user; do not ship a corrected-into-meaninglessness piece).
 
 ### Phase 6: DELIVER
 
@@ -168,6 +204,8 @@ Re-run Phase 3 on changed text only. **Exit reasons:** `ACCEPT` (zero unresolved
 - Claims: N total — fact n / inference n / opinion n / speculation n
 - Verdicts: grounded n · miscited→fixed n · unsupported→(sourced n / downgraded n / deleted n) · contradicted→corrected n · stale→updated n
 - Load-bearing thesis: each claim + its ≥2 independent sources + skeptic verdict
+- Dispositions: every claim carries exactly one (§ Ledger Membership); `DOWNGRADED` / `DELETED (logged)` / `FROZEN` listed individually with the ratifying auditor
+- Thesis-Integrity gate: result per cycle
 - Residuals: [UNVERIFIED] claims shipped (0 required for external-facing) + deletions log
 - Loop: N/2 cycles, exit reason
 ```
@@ -184,6 +222,7 @@ Re-run Phase 3 on changed text only. **Exit reasons:** `ACCEPT` (zero unresolved
 | **Citation-Support** | 3 | Cited source re-opened and confirmed to state the claim — URL existence is not support |
 | **Corroboration** | 4 | Load-bearing facts: ≥2 independent T1–T3 sources |
 | **Never-silent** | 5-6 | Unresolvable → `[UNVERIFIED]` marker or logged deletion; silent keep and silent delete both forbidden |
+| **Thesis-Integrity** (validity gate) | 5, **every cycle** | After each remediation cycle: every load-bearing thesis claim is **still present in the text and still supported**. A cycle that hollowed one out — downgraded it to opinion, deleted it, or hedged it into vacuity — **injects a blocking finding into the audit table** for the next cycle rather than warning (`_common/FINDING_LEDGER.md` §10). This is the per-cycle form of the `BLOCK` exit: the exit catches a thesis the *evidence* refuted, this gate catches a thesis the *remediation* dissolved |
 
 **Resume:** checkpoint-resume — recipes with ≥ 4 phases persist phase outputs at each boundary (ledger, `claim_audit.json`, remediation diffs), so an interrupted run resumes from the last checkpoint (`newsroom resume`).
 
@@ -197,11 +236,11 @@ mode: AUTORUN_FULL
 required_confirmation: only risk_tier == release-critical
 phase_chain:
   - { phase: 0_framing,   owner: nexus_internal, gate: release_critical_confirm }
-  - { phase: 1_evidence,  parallel: [field, lens|harvest?, compete?], gate: research_completeness }
-  - { phase: 2_compose,   agents: [zine, prose?], if: mode == compose }   # ledger-bound writing
+  - { phase: 1_evidence,  parallel: [field, lens|launch?, compete?], gate: research_completeness }
+  - { phase: 2_compose,   agents: [tome, prose?], if: mode == compose }   # ledger-bound writing
   - { phase: 3_claim_audit, agents: [auditor(spawned, != writer)], output: claim_audit.json }
   - { phase: 4_adversarial, parallel: [skeptic ×2-3 per _common/ADVERSARIAL_REFUTATION.md, staleness_check] }
-  - { phase: 5_remediate, loop: "≤ 2 cycles", exit: [ACCEPT, cap-reached, BLOCK] }
+  - { phase: 5_remediate, loop: "≤ 2 cycles", gate: thesis_integrity, exit: [ACCEPT, cap-reached, BLOCK] }
   - { phase: 6_deliver,   output: NEXUS_COMPLETE + Provenance Report }
 ```
 
@@ -238,7 +277,7 @@ phase_chain:
 ## Boundaries — vs Neighbors
 
 - **vs `podium`** — podium is the *package polish* recipe (doc + slides + visuals, five teams); its claim-grounding is one verification branch. Newsroom inverts the weighting: grounding IS the deliverable's core guarantee, polish is incidental. An article that also needs a slide deck and hero imagery → podium (optionally with newsroom-grade rigor requested); an article whose selling point is "every claim checked" → newsroom.
-- **vs `zine` direct** — zine authors; it does not build an Evidence Ledger, spawn an independent auditor, or run refutation. Article with no grounding requirement → zine direct.
+- **vs `tome` direct** — Tome authors without Newsroom's Evidence Ledger, independent auditor, or refutation loop. Article with no grounding requirement → Tome direct.
 - **vs `attest`** — attest verifies implementation against a *normative spec* (AC conformance). Newsroom verifies prose against *the world* (external sources).
 - **vs `canon`** — canon checks compliance with named standards (WCAG/OWASP/style guides); newsroom checks factual truth provenance.
 - **vs `clone`/`fuse`/`graft` research sweep** — same Evidence Ledger machinery (`reference/research-grounding.md`), different oracle: reproduction recipes stay capture-authoritative; newsroom is primary-source-authoritative because there is no artifact to capture.
@@ -255,8 +294,8 @@ Does it need slides/visuals/multi-format packaging as the main ask?
   └─ NO ↓
 Is "every claim sourced / no speculation / verify correctness" part of the ask
   (or the artifact is external-facing with verifiable claims)?
-  └─ NO  → zine direct
+  └─ NO  → tome direct
   └─ YES → newsroom  (existing draft → newsroom audit; new article → newsroom compose)
 ```
 
-**Shared protocols cited (not re-derived):** `reference/research-grounding.md` (Evidence Ledger schema, trust tiers, Research Completeness gate) · `_common/ADVERSARIAL_REFUTATION.md` (skeptic panel discipline) · `reference/evaluator-loop-protocol.md` (generator-evaluator separation, single termination oracle) · `reference/autonomy-quality-protocol.md` (Q9 producer≠verifier, Q10-Q11 evidence-bound claims, Q15 Acceptance Provenance) · `reference/doc-quality-protocol.md` (W4-W6 grounding / UNKNOWN-over-fabrication, W12 Doc Quality Gate — newsroom's Phase 3-4 gates subsume W12 and add citation-support + corroboration).
+**Shared protocols cited (not re-derived):** `_common/FINDING_LEDGER.md` (the ledger machinery this recipe is a member of — scope freeze, identity across cycles, disposition vocabulary + integrity, oscillation, ZERO predicate, validity-gate requirement; newsroom declares its five slots in § Ledger Membership) · `reference/research-grounding.md` (Evidence Ledger schema, trust tiers, Research Completeness gate) · `_common/ADVERSARIAL_REFUTATION.md` (skeptic panel discipline) · `reference/evaluator-loop-protocol.md` (generator-evaluator separation, single termination oracle) · `reference/autonomy-quality-protocol.md` (Q9 producer≠verifier, Q10-Q11 evidence-bound claims, Q15 Acceptance Provenance) · `reference/doc-quality-protocol.md` (W4-W6 grounding / UNKNOWN-over-fabrication, W12 Doc Quality Gate — newsroom's Phase 3-4 gates subsume W12 and add citation-support + corroboration).

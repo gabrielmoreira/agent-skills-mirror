@@ -2,14 +2,14 @@
 name: pipe
 description: 'Designing GitHub Actions workflows in depth: trigger strategy, security hardening, performance optimization, PR automation, and Reusable Workflow design.'
 zh_description: "持续集成工作流、触发策略、安全加固和复用设计。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/pipe"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/.archive/pipe"
 license: MIT
 tags: '["deployment", "pipe"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---

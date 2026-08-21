@@ -296,7 +296,7 @@ Once the container starts, the script prints a **noVNC URL** (e.g. `http://local
 clawbench-batch --models your-model --cases-suite v2 --all-cases
 ```
 
-`your-model` is a key you configured in step 1; `--cases-suite v2` runs the full V2 corpus (swap in `v1-lite` for the 20-task subset). Add `--max-concurrent N` to run tasks in parallel (default 2 locally, 1 with Browserbase) and `--harness <name>` to pick an agent. Each task is intercepted and scored by the `deepseek-v4-pro` judge from step 1 — pass `--no-judge` to skip scoring. A `batch-summary.json` plus per-run recordings land under `./test-output/`.
+`your-model` is a key you configured in step 1; `--cases-suite v2` runs the full V2 corpus (swap in `v1-lite` for the 20-task subset). Add `--max-concurrent N` to run tasks in parallel (default 2 locally, 1 with Kernel or Browserbase) and `--harness <name>` to pick an agent. Each task is intercepted and scored by the `deepseek-v4-pro` judge from step 1 — pass `--no-judge` to skip scoring. A `batch-summary.json` plus per-run recordings land under `./test-output/`.
 
 **By hand, to produce a human reference run:**
 
@@ -330,7 +330,7 @@ Full registry: [`src/clawbench/runtime/harnesses/harnesses.yaml`](src/clawbench/
 
 | I want to… | Where |
 | --- | --- |
-| Use a managed remote browser instead of a local container | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) — Browserbase setup, options, recording URLs |
+| Use a managed remote browser instead of a local container | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) — Kernel and Browserbase setup, options, and recordings |
 | Run V2 through the Harbor framework (and run it fast) | [`docs/harbor.md`](docs/harbor.md) — conversion, judge wiring, concurrency, troubleshooting |
 | See every CLI command and flag | [`docs/cli.md`](docs/cli.md) |
 
@@ -424,7 +424,7 @@ ClawBench ships **three** Hugging Face datasets — task definitions plus full e
 > **🏆 Live leaderboard:** [`claw-bench.com/leaderboard`](https://claw-bench.com/leaderboard) (V2 default, two-stage scoring — interception + LLM judge). Full scoring formula in [`eval/scoring.md`](eval/scoring.md). Add your run: PR to [`leaderboard/results.csv`](https://huggingface.co/datasets/TIGER-Lab/ClawBench/blob/main/leaderboard/results.csv).
 
 ## <img src="assets/icons/bullhorn.svg" width="20" height="20"> News
-
+- **[2026.08.20]** - Added [Kernel](https://www.kernel.sh) as a supported remote browser runtime. Thanks to @[rgarcia](https://github.com/rgarcia).
 - **[2026.08.18]** — Added [WebBrain](https://github.com/webbrain-one/webbrain) as a supported harness. Thanks to @[alectimison-maker](https://github.com/alectimison-maker).
 - **[2026.08.16]** — Released **[RewardHarness](https://github.com/TIGER-AI-Lab/RewardHarness)**, our self-evolving agentic reward framework: 47.4% on EditReward-Bench from just 100 preference demos, with no reward-model training. [Details →](https://arxiv.org/abs/2605.08703)
 - **[2026.08.03]** — Added [Browserbase](https://www.browserbase.com) as a remote browser runtime. [Details →](docs/browser-runtimes.md)
@@ -754,7 +754,7 @@ Each session records five layers of synchronized data under `/data/`:
 
 | Layer              | File                   | Description                                                     |
 | ------------------ | ---------------------- | --------------------------------------------------------------- |
-| Session replay     | `recording.mp4` or `run-meta.json` recording URL | Local H.264 video or Browserbase Session Inspector replay |
+| Session replay     | `recording.mp4` or `run-meta.json` recording URL | Local/Kernel H.264 video or Browserbase Session Inspector replay |
 | Action screenshots | `screenshots/*.png`    | Throttled timestamped PNGs captured after browser actions       |
 | Browser actions    | `actions.jsonl`        | Every DOM event (click, keydown, input, pageLoad, scroll, etc.) |
 | HTTP traffic       | `requests.jsonl`       | Every HTTP request with headers, body, and query params         |

@@ -2,14 +2,14 @@
 name: lens
 description: 'Comprehending and investigating codebases: structure mapping, feature discovery, data flow tracing for ''does X exist?'' or ''how does Y work?''. Includes a conversational ask mode. Does not write code.'
 zh_description: "代码库理解、功能发现、数据流追踪和上下文调查。"
-version: "1.0.4"
+version: "1.0.5"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/lens"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/lens"
 license: MIT
 tags: '["analysis", "lens", "planning"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---

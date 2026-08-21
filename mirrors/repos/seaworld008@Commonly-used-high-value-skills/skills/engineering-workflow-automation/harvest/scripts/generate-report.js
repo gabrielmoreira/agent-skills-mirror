@@ -18,7 +18,7 @@
  *   node generate-report.js --repo owner/repo --output report.html
  */
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -125,21 +125,37 @@ function formatDateFull(isoString) {
 // GitHub CLI Wrapper
 // ============================================
 
+function buildPrListArgs(options) {
+  const args = [
+    'pr',
+    'list',
+    '--state',
+    'merged',
+    '--limit',
+    '500',
+    '--json',
+    'number,title,author,createdAt,mergedAt,additions,deletions,changedFiles,labels,url',
+  ];
+
+  if (options.repo) {
+    args.push('-R', options.repo);
+  }
+  if (options.author) {
+    args.push('--author', options.author);
+  }
+
+  return args;
+}
+
 function fetchPRs(options) {
   const startDate = getStartDate(options.days);
 
-  let cmd = 'gh pr list --state merged --limit 500';
-  cmd += ' --json number,title,author,createdAt,mergedAt,additions,deletions,changedFiles,labels,url';
-
-  if (options.repo) {
-    cmd += ` -R ${options.repo}`;
-  }
-  if (options.author) {
-    cmd += ` --author ${options.author}`;
-  }
-
   try {
-    const result = execSync(cmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+    const result = execFileSync('gh', buildPrListArgs(options), {
+      encoding: 'utf-8',
+      maxBuffer: 10 * 1024 * 1024,
+      shell: false,
+    });
     const prs = JSON.parse(result);
 
     // Filter by date
@@ -154,9 +170,14 @@ function getRepoName(options) {
   if (options.repo) return options.repo;
 
   try {
-    const result = execSync('gh repo view --json nameWithOwner -q ".nameWithOwner"', {
-      encoding: 'utf-8'
-    });
+    const result = execFileSync(
+      'gh',
+      ['repo', 'view', '--json', 'nameWithOwner', '--jq', '.nameWithOwner'],
+      {
+        encoding: 'utf-8',
+        shell: false,
+      }
+    );
     return result.trim();
   } catch {
     return 'Unknown Repository';
@@ -337,6 +358,94 @@ function generateCategoryChartData(byCategory) {
 // HTML Generation
 // ============================================
 
+function isAsciiDigit(char) {
+  return char >= '0' && char <= '9';
+}
+
+function skipAsciiWhitespace(source, start) {
+  let cursor = start;
+  while (cursor < source.length) {
+    const code = source.charCodeAt(cursor);
+    if (code !== 0x20 && (code < 0x09 || code > 0x0d)) break;
+    cursor++;
+  }
+  return cursor;
+}
+
+function parseNumberEnd(source, start) {
+  let cursor = start;
+  if (source[cursor] === '-') cursor++;
+
+  const integerStart = cursor;
+  while (cursor < source.length && isAsciiDigit(source[cursor])) cursor++;
+  if (cursor === integerStart) return -1;
+
+  if (source[cursor] === '.') {
+    cursor++;
+    const fractionStart = cursor;
+    while (cursor < source.length && isAsciiDigit(source[cursor])) cursor++;
+    if (cursor === fractionStart) return -1;
+  }
+
+  if (source[cursor] === 'e' || source[cursor] === 'E') {
+    cursor++;
+    if (source[cursor] === '+' || source[cursor] === '-') cursor++;
+    const exponentStart = cursor;
+    while (cursor < source.length && isAsciiDigit(source[cursor])) cursor++;
+    if (cursor === exponentStart) return -1;
+  }
+
+  return cursor;
+}
+
+function findNumericArrayEnd(source, openBracket) {
+  let cursor = skipAsciiWhitespace(source, openBracket + 1);
+  if (source[cursor] === ']') return cursor + 1;
+
+  while (cursor < source.length) {
+    cursor = parseNumberEnd(source, cursor);
+    if (cursor === -1) return -1;
+    cursor = skipAsciiWhitespace(source, cursor);
+
+    if (source[cursor] === ']') return cursor + 1;
+    if (source[cursor] !== ',') return -1;
+    cursor = skipAsciiWhitespace(source, cursor + 1);
+  }
+
+  return -1;
+}
+
+function replaceNumericDataArrays(source, replacer) {
+  let output = '';
+  let outputCursor = 0;
+  let searchCursor = 0;
+
+  while (searchCursor < source.length) {
+    const marker = source.indexOf('data:', searchCursor);
+    if (marker === -1) break;
+
+    const openBracket = skipAsciiWhitespace(source, marker + 'data:'.length);
+    if (source[openBracket] !== '[') {
+      searchCursor = marker + 'data:'.length;
+      continue;
+    }
+
+    const arrayEnd = findNumericArrayEnd(source, openBracket);
+    if (arrayEnd === -1) {
+      searchCursor = openBracket + 1;
+      continue;
+    }
+
+    const match = source.slice(marker, arrayEnd);
+    output += source.slice(outputCursor, marker);
+    output += replacer(match, marker, source);
+    outputCursor = arrayEnd;
+    searchCursor = arrayEnd;
+  }
+
+  return output + source.slice(outputCursor);
+}
+
 function generateHTML(data, templatePath) {
   const scriptDir = path.dirname(__filename);
   const harvestDir = path.dirname(scriptDir);
@@ -386,8 +495,8 @@ function generateHTML(data, templatePath) {
     }
   );
 
-  html = html.replace(
-    /data:\s*\[\d+(?:\.?\d*)?(?:,\s*\d+(?:\.?\d*)?)*\]/g,
+  html = replaceNumericDataArrays(
+    html,
     (match, offset) => {
       const before = html.substring(Math.max(0, offset - 300), offset);
       if (before.includes('dailyChart') || before.includes('Daily')) {
@@ -642,4 +751,13 @@ function main() {
   console.log(`Report generated: ${outputFile}`);
 }
 
-main();
+module.exports = {
+  buildPrListArgs,
+  fetchPRs,
+  generateHTML,
+  replaceNumericDataArrays,
+};
+
+if (require.main === module) {
+  main();
+}

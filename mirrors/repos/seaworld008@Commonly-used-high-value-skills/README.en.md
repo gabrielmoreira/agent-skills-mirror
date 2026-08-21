@@ -5,12 +5,12 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-289-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-286-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A high-value skills repository for AI developers, organized by real work scenarios such as developer engineering, DevOps, automation, finance, design, knowledge workflows, and reliability.
 
-This repository currently contains **16 categories / 289 skills**.
+This repository currently contains **16 categories / 286 skills**.
 
 ## Who This Is For
 
@@ -30,7 +30,7 @@ This repository currently contains **16 categories / 289 skills**.
 - `scripts/sync_codex_skills.py` lets you sync the latest repository skills into local Codex, Claude Code, or similar skills directories without manual copying
 - The repository also emphasizes trust and safety through provenance tracking, curated source controls, and built-in security-review skills such as `skill-vetter`, `skill-security-auditor`, `input-guard`, and `link-checker`
 - The repository now also includes license auditing and scheduled dead-link checks: `repo-validation` blocks external skills that are missing license metadata, while the monthly `dead-links` workflow produces a link health report instead of silently drifting.
-- `Hermes Agent` is also treated as a first-class supported client: it uses the same categorized `skills/` tree and already has dedicated Hermes runtime, MCP, and Hermes + graphify + GSD workflow skills in the repository.
+- `Hermes Agent` is also treated as a first-class supported client: it uses the same categorized `skills/` tree and has dedicated Hermes runtime, MCP, and the thin `hermes-open-gsd-workflow` router.
 
 ## Which Directory Should You Use
 
@@ -233,7 +233,15 @@ This repository does not just happen to include a few Hermes-related skills. It 
 - source-browsing usage reads the categorized `skills/` tree; local `Codex` / `Claude Code` installs sync into their own skills directories
 - it includes the dedicated [`hermes-agent`](./skills/ai-agent-platform/hermes-agent/) skill covering CLI usage, gateway setup, profiles, memory, skills, MCP, and contributor guidance
 - it includes [`native-mcp`](./skills/ai-agent-platform/native-mcp/) for Hermes MCP usage
-- it includes the `hermes-graphify-gsd-*` workflow skills for graph-aware and autonomous development loops
+- it includes [`hermes-open-gsd-workflow`](./skills/ai-agent-platform/hermes-open-gsd-workflow/) as a thin router across Hermes, Graphify, Open GSD Core, and explicitly optional GSD Pi
+
+## Hermes, Graphify, and Open GSD
+
+The repository mirrors the official Hermes and Graphify artifact sets and governs Open GSD Core / Pi as managed bundles. The local composition layer has one entry point and does not duplicate upstream versions, installer commands, or state machines:
+
+- capability routing and failure ownership: [`hermes-open-gsd-workflow`](./skills/ai-agent-platform/hermes-open-gsd-workflow/)
+
+Canonical provenance and bundle metadata under [`docs/sources/`](./docs/sources/) own versions, integrity digests, installers, and inventory. The legacy Hermes + Graphify + GSD composites and their migration compatibility layer have been deleted directly; a portfolio denylist only prevents those old names from being reintroduced.
 
 Recommended starting points for Hermes users:
 
@@ -323,7 +331,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 2. Open the relevant `SKILL.md` and read its triggers, workflow, boundaries, and scripts.
 3. If a skill includes `scripts/`, `references/`, or `assets/`, reuse those files before recreating similar content.
 
-## Skill Overview (by category, 16 categories / 289 skills)
+## Skill Overview (by category, 16 categories / 286 skills)
 
 <a id="cat-developer-engineering"></a>
 ### 1. Developer Engineering (developer-engineering, 47)
@@ -428,7 +436,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`writing-skills`](./skills/ai-workflow/writing-skills/)
 
 <a id="cat-ai-agent-platform"></a>
-### 3. AI Platform and Agent Development (ai-agent-platform, 15)
+### 3. AI Platform and Agent Development (ai-agent-platform, 14)
 
 - [`agent-hub`](./skills/ai-agent-platform/agent-hub/)
 - [`arena`](./skills/ai-agent-platform/arena/)
@@ -437,8 +445,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`figma`](./skills/ai-agent-platform/figma/)
 - [`figma-implement-design`](./skills/ai-agent-platform/figma-implement-design/)
 - [`hermes-agent`](./skills/ai-agent-platform/hermes-agent/)
-- [`hermes-graphify-gsd-nonintrusive-workflow`](./skills/ai-agent-platform/hermes-graphify-gsd-nonintrusive-workflow/)
-- [`hermes-graphify-gsd-runtime-operator`](./skills/ai-agent-platform/hermes-graphify-gsd-runtime-operator/)
+- [`hermes-open-gsd-workflow`](./skills/ai-agent-platform/hermes-open-gsd-workflow/)
 - [`mcporter`](./skills/ai-agent-platform/mcporter/)
 - [`native-mcp`](./skills/ai-agent-platform/native-mcp/)
 - [`openai-docs`](./skills/ai-agent-platform/openai-docs/)
@@ -447,17 +454,15 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`sigil`](./skills/ai-agent-platform/sigil/)
 
 <a id="cat-workflow-automation"></a>
-### 4. Engineering Workflow Automation (engineering-workflow-automation, 15)
+### 4. Engineering Workflow Automation (engineering-workflow-automation, 13)
 
 - [`agent-browser`](./skills/engineering-workflow-automation/agent-browser/)
 - [`billing-automation`](./skills/engineering-workflow-automation/billing-automation/)
 - [`gh-address-comments`](./skills/engineering-workflow-automation/gh-address-comments/)
 - [`gh-fix-ci`](./skills/engineering-workflow-automation/gh-fix-ci/)
 - [`github`](./skills/engineering-workflow-automation/github/)
-- [`gsd-graphify-brownfield-bootstrap`](./skills/engineering-workflow-automation/gsd-graphify-brownfield-bootstrap/)
 - [`guardian`](./skills/engineering-workflow-automation/guardian/)
 - [`harvest`](./skills/engineering-workflow-automation/harvest/)
-- [`hermes-graphify-gsd-project-integration`](./skills/engineering-workflow-automation/hermes-graphify-gsd-project-integration/)
 - [`jupyter-notebook`](./skills/engineering-workflow-automation/jupyter-notebook/)
 - [`latch`](./skills/engineering-workflow-automation/latch/)
 - [`playwright`](./skills/engineering-workflow-automation/playwright/)

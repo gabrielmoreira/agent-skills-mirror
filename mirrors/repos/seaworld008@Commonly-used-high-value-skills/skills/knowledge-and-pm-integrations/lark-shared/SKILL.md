@@ -2,16 +2,19 @@
 name: lark-shared
 description: 'Use for lark-cli setup/auth tasks: auth login/status/logout, user vs bot identity, business-domain permissions (--domain, including all/docs/drive), missing scopes, revoking authorization, or handling _notice JSON.'
 zh_description: "用于lark、shared，支持知识管理、项目同步和平台集成。"
-version: "1.0.10"
+version: "1.0.11"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-shared"
 license: MIT
 tags: '[feishu, lark, lark-cli, auth, configuration]'
 created_at: "2026-05-19"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 3
 complexity: intermediate
+metadata:
+  requires:
+    bins: ["lark-cli"]
 ---
 
 # lark-cli 共享规则

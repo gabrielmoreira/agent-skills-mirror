@@ -54,7 +54,7 @@ def print_findings_report(findings: list):
         print(f"🔴 {secret_type}: {count} instance(s)")
         for finding in by_type[secret_type][:3]:  # Show first 3
             print(f"   - {finding['file']}:{finding['line']}")
-            print(f"     Match: {finding['match']}")
+            print("     Match: [REDACTED]")
         if len(by_type[secret_type]) > 3:
             print(f"   ... and {len(by_type[secret_type]) - 3} more\n")
         else:

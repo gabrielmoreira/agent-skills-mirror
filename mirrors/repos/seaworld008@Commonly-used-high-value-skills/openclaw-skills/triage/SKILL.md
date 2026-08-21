@@ -2,14 +2,14 @@
 name: triage
 description: 'Responding to incidents: identifies impact scope, formulates recovery procedures, creates postmortems. Use when incident response or disaster recovery is needed. Delegates fixes to Builder.'
 zh_description: "事故首响、影响范围识别、恢复步骤和复盘整理。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/triage"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/triage"
 license: MIT
 tags: '["devops", "sre", "triage"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -32,7 +32,7 @@ CAPABILITIES_SUMMARY:
 - escalation_design: Escalation matrix authoring — tiered on-call rotation, paging policy, auto-escalation thresholds, handoff scripts, after-hours engagement, PagerDuty / Opsgenie / VictorOps integration design
 - incident_comms_authoring: Stakeholder comms — internal engineering / leadership / sales / support, external status page, customer notices, social updates, SEV-based update cadence (Atlassian Incident Handbook)
 - pre_staged_templates_audit: Advisory pre-incident audit of comms / PR-statement / legal-disclosure template inventory per SEV × top-N category (breach / outage / payment failure / billing error / API deprecation / pricing change) — readiness report, not a pre-merge gate
-- regulated_breach_notification_routing: Routes a `data_breach`-classified incident to `clause` for jurisdiction-aware disclosure (GDPR 72h notification, HIPAA Breach Notification Rule, 個人情報保護法, CCPA, EU NIS2). Pattern G: `triage` detects → `clause` drafts disclosure copy → `oath` validates per G14 → back to `triage` for IC sign-off.
+- regulated_breach_notification_routing: Routes a `data_breach`-classified incident to `canon` for jurisdiction-aware disclosure (GDPR 72h notification, HIPAA Breach Notification Rule, 個人情報保護法, CCPA, EU NIS2). Pattern G: `triage` detects → `canon` drafts disclosure copy → `canon[regulatory]` validates per G14 → back to `triage` for IC sign-off.
 
 COLLABORATION_PATTERNS:
 - Pattern A: Standard Incident Flow (Triage → Scout → Builder → Radar → Triage)

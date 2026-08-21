@@ -154,20 +154,13 @@ Skill supply-chain trust boundary → `_common/SECURITY.md`
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Skill Intake Audit | `intake` | ✓ | New third-party skill or plugin requires intake gate | `reference/intake-checklist.md` |
-| Drift Detection | `audit` | | Verify pinned `sha256` against current files; detect silent updates | `_common/SECURITY.md` |
-| MCP Server Pinning | `mcp` | | First install or session-start re-verification of MCP tool descriptions | `_common/SECURITY.md` |
-| Unicode Scan | `scan` | | Standalone scan for Unicode Tag, bidi, or zero-width injection | `reference/unicode-tag-scan.md` |
-| Recovery / Quarantine | `recover` | | Confirmed-compromised skill must be quarantined and remediation diff produced | `reference/intake-checklist.md` |
-| Live Malware Scan | `malware-scan` | | Full campaign IoC sweep across live environment surfaces | `reference/supply-chain-malware-scan-procedures.md`, `reference/supply-chain-malware-ioc-database.md` |
-| Campaign Scan | `campaign-scan` | | Narrow scan for a named npm/PyPI campaign | `reference/supply-chain-malware-ioc-database.md` |
-| Lockfile Pin Check | `lockfile` | | Fast, read-only pre-merge check for known-bad versions and resolved URLs | `reference/supply-chain-malware-ioc-database.md` |
-| Eradication Runbook | `eradicate` | | Persistence-first removal for a recent `CONFIRMED` finding | `reference/supply-chain-malware-eradication.md` |
-| Rotation Runbook | `rotate` | | Dependency-ordered credential rotation after verify-clean | `reference/supply-chain-malware-eradication.md` |
-| Supply-Chain Hardening | `harden` | | Lifecycle-script, cooldown, provenance, registry, and Actions controls | `reference/supply-chain-malware-scan-procedures.md` |
-| Propagation Audit | `propagation` | | Unauthorized maintainer publishes, OIDC exchange, and provenance review from a clean session | `reference/supply-chain-malware-scan-procedures.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+intake · audit · mcp · scan · recover · malware-scan · campaign-scan · lockfile · eradicate · rotate · harden · propagation
+```
+
+Default Recipe: `intake`.
 
 ## Subcommand Dispatch
 
@@ -186,27 +179,9 @@ Behavior notes per Recipe:
 
 ## Audit Decision Matrix
 
-| Finding | Severity | Default action | Escalate to |
-|---------|----------|----------------|-------------|
-| Unicode Tag codepoint in any file | `P0` | `REJECT` + `QUARANTINE` | triage |
-| `curl ... | bash`, `wget ... | sh`, `eval $(...)` in bundled script | `P0` | `REJECT` | triage |
-| `~/.ssh`, `~/.aws`, `~/.npmrc`, `~/.netrc` read without declaration | `P0` | `REJECT` | triage |
-| `settings.json` mutation that changes `permissions` | `P0` | `REJECT` + `QUARANTINE` | triage |
-| Project-local `.claude/settings.json` `hooks` parsed or executed **before** the trust prompt is answered | `P0` | `REJECT` | triage |
-| Path containment checked **before** symlinks are resolved (validation sees the link, not its target) | `P0` | `REJECT` | triage |
-| Frontmatter contains custom keys outside `name` / `description` | `P1` | `REJECT` (forward-compat) | maintainer |
-| Bundled binary without provenance attestation | `P1` | `REJECT` until provenance provided | sentinel |
-| Outbound HTTP to non-allowlisted host | `P1` | `REJECT` until network allowlist updated | maintainer |
-| `sha256` mismatch vs pinned manifest | `P1` | `BLOCK` + investigate diff | maintainer |
-| MCP tool description changed since pin | `P1` | `BLOCK` tool until reviewed | maintainer |
-| Capability declared in body but tool calls observed go beyond | `P2` | `FLAG` + require capability update | maintainer |
-| External URL in SKILL.md resolves to executable content | `P2` | `FLAG` + require static replacement | maintainer |
-| Bidi-override codepoint outside allowlisted i18n context | `P2` | `FLAG` | maintainer |
-
-Severity rules:
-- `P0` always rejects and quarantines.
-- `P1` rejects until remediated by maintainer.
-- `P2` flags but may pass with explicit override and journaled rationale.
+Severity and default action for every finding class — `P0` findings `REJECT` and
+usually `QUARANTINE`, `P1` `REJECT` or `BLOCK` pending evidence, `P2` `FLAG`. The
+full matrix, with the escalation target per row -> `reference/audit-decision-matrix.md`.
 
 ## Critical Patterns (Quick Reference)
 
@@ -279,26 +254,21 @@ Chain receives intake and compromise requests from User, Sentinel, Gauge, Hone, 
 
 ## Reference Map
 
+**Full index** → **`reference/reference-index.md`** — every `reference/` file and its read-trigger. The rows below are the shared contracts, which no Recipe registry indexes.
+
 | File | Read this when... |
 |------|-------------------|
-| `reference/intake-checklist.md` | You are running a new-skill intake audit and need the full per-item procedure |
-| `reference/unicode-tag-scan.md` | You need the codepoint ranges, allowlist policy, and scan command for Unicode Tag / bidi / zero-width |
-| `reference/bundled-artifact-review.md` | You are auditing bundled scripts, binaries, or external resources referenced by SKILL.md |
-| `reference/supply-chain-malware-ioc-database.md` | You need dated campaign hashes, paths, package pins, persistence, C2, or propagation IoCs. |
-| `reference/supply-chain-malware-scan-procedures.md` | You are scanning macOS, Linux, Windows/WSL, containers, CI runners, lockfiles, passive logs, or maintainer publishes. |
-| `reference/supply-chain-malware-eradication.md` | You are producing persistence-first quarantine, verify-clean, credential-rotation, or re-onboarding steps. |
-| `reference/supply-chain-malware-handoffs.md` | You need malware-specific handoff payloads for Triage, Sentinel, Gear, Vigil, or Lore. |
 | [`_common/SECURITY.md`](../_common/SECURITY.md) | You need the trust boundary spec, manifest format, or escalation matrix |
-| [`_common/BOUNDARIES.md`](../_common/BOUNDARIES.md) | Role boundaries with Sentinel / Gauge / Hone / Gear are ambiguous |
-| [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
-| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Chain-specific Output/Next schema. |
+
+---
 
 ## Operational
+
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
 
 **Journal** (`.agents/chain.md`): Record repeated malicious patterns, source-cited campaign signatures, eradication-order lessons, and intake-checklist-version diffs. Do not journal raw audited file contents or credential paths — store only hashes and pattern signatures.
 
 - Activity log: append `| YYYY-MM-DD | Chain | (action) | (skill) | (verdict) |` to `.agents/PROJECT.md`.
-- Follow `_common/GIT_GUIDELINES.md`.
 
 Shared protocols: [`_common/OPERATIONAL.md`](../_common/OPERATIONAL.md), [`_common/SECURITY.md`](../_common/SECURITY.md)
 

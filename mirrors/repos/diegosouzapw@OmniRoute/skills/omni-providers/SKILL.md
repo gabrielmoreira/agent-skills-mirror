@@ -29,7 +29,7 @@ Create provider connection
 
 ```bash
 curl -X POST https://localhost:20128/api/providers \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -49,7 +49,7 @@ Update provider connection
 
 ```bash
 curl -X PATCH https://localhost:20128/api/providers/{id} \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -69,7 +69,7 @@ Test provider connection
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/{id}/test \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -100,7 +100,7 @@ Test multiple providers at once
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/test-batch \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -111,7 +111,7 @@ Validate provider credentials
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/validate \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -131,7 +131,7 @@ Import an Antigravity CLI (agy) token file as an `agy` connection
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/agy-auth/import \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -142,7 +142,7 @@ Bulk-import multiple Antigravity CLI (agy) token files (up to 50)
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/agy-auth/import-bulk \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -153,7 +153,7 @@ Extract `.json` token files from an uploaded ZIP for agy bulk import
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/agy-auth/zip-extract \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -164,7 +164,7 @@ Auto-detect and import the local Antigravity CLI (agy) login from disk
 
 ```bash
 curl -X POST https://localhost:20128/api/providers/agy-auth/apply-local \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -184,7 +184,7 @@ Create provider node
 
 ```bash
 curl -X POST https://localhost:20128/api/provider-nodes \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -195,7 +195,7 @@ Update provider node
 
 ```bash
 curl -X PATCH https://localhost:20128/api/provider-nodes/{id} \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -215,7 +215,7 @@ Validate a provider node
 
 ```bash
 curl -X POST https://localhost:20128/api/provider-nodes/validate \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```

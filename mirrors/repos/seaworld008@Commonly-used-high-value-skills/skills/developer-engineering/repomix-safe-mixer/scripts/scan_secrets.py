@@ -40,24 +40,22 @@ SKIP_DIRS = {
     'node_modules', '.git', '.venv', 'venv', '__pycache__', 'dist', 'build',
     '.next', '.nuxt', 'vendor', 'target', 'bin', 'obj', '.terraform'
 }
+REDACTED = '[REDACTED]'
 
 class SecretFinding:
     """Represents a detected secret."""
-    def __init__(self, file_path: str, line_num: int, pattern_name: str,
-                 matched_text: str, line_content: str):
+    def __init__(self, file_path: str, line_num: int, pattern_name: str):
         self.file_path = file_path
         self.line_num = line_num
         self.pattern_name = pattern_name
-        self.matched_text = matched_text
-        self.line_content = line_content.strip()
 
     def to_dict(self) -> Dict:
         return {
             'file': self.file_path,
             'line': self.line_num,
             'type': self.pattern_name,
-            'match': self.matched_text[:50] + '...' if len(self.matched_text) > 50 else self.matched_text,
-            'context': self.line_content[:100] + '...' if len(self.line_content) > 100 else self.line_content
+            'match': REDACTED,
+            'context': REDACTED,
         }
 
 def scan_file(file_path: Path, base_dir: Path) -> List[SecretFinding]:
@@ -78,8 +76,6 @@ def scan_file(file_path: Path, base_dir: Path) -> List[SecretFinding]:
                             file_path=str(file_path.relative_to(base_dir)),
                             line_num=line_num,
                             pattern_name=pattern_name,
-                            matched_text=match.group(),
-                            line_content=line
                         ))
     except Exception as e:
         print(f"Warning: Could not scan {file_path}: {e}", file=sys.stderr)
@@ -158,8 +154,7 @@ def print_report(findings: List[SecretFinding], directory: Path):
         print(f"📄 {file_path}")
         for finding in by_file[file_path]:
             print(f"   Line {finding.line_num}: {finding.pattern_name}")
-            print(f"      Match: {finding.matched_text[:80]}")
-            print(f"      Context: {finding.line_content[:80]}")
+            print(f"      Match: {REDACTED}")
         print()
 
 def main():

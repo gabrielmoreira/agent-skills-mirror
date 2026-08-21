@@ -1,15 +1,15 @@
 ---
 name: lark-attendance
-description: 'Use when users need to query Feishu/Lark attendance records, audit punch-in gaps, summarize abnormal attendance, or reconcile missing check-ins with HR-facing evidence.'
+description: 'Use when querying Lark attendance records, checking missing clock-ins, and preparing traceable explanations for attendance exceptions.'
 zh_description: "用于查询飞书考勤记录、核对打卡缺失、整理异常考勤并生成可追溯说明。"
-version: "1.0.2"
+version: "1.0.3"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-attendance"
 license: MIT
 tags: '[feishu, lark, lark-cli, attendance]'
 created_at: "2026-05-19"
-updated_at: "2026-06-29"
+updated_at: "2026-08-20"
 quality: 3
 complexity: intermediate
 metadata:
@@ -89,6 +89,8 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->
 
 <!-- LOCAL-CURATION-SUPPLEMENT:START -->

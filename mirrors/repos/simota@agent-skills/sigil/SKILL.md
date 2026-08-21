@@ -206,6 +206,8 @@ Specialization of the canonical pipeline: substitute CRAFT with `DIFF → PLAN �
 
 Archive deprecated active skills only when the change requires removal or replacement and the user has confirmed it.
 
+**Complexity Budget on authoring.** Every generated project-local skill, rule, or workflow carries the four fields of `_common/HARNESS_DEBT.md` §3b — `failure` · `effect` · `owner` · `removal` — in its `## Lifecycle` section. `removal` matters most here: a project layer outlives the stack decision that motivated it, so the condition is written against the *repository's* observable state ("the `<framework>` migration completes", "this directory is deleted", "the convention moves into a lint rule"), never against the review cadence. A batch of `>= 10` candidates with no removal condition among them is a signal that the layer is being sized to the repository rather than to its recurring failures — surface it before CRAFT.
+
 ## Error Handling
 
 Sigil never silently degrades — every error surfaces in `## Sigil's Report` with the chosen recovery action. Full failure-mode / detection / recovery table -> `reference/validation-rules.md` § Error Handling.
@@ -249,34 +251,20 @@ Use the canonical schema in `_common/HANDOFF.md` for all inter-agent communicati
 
 ## Reference Map
 
+**Full index** → **`reference/reference-index.md`** — every `reference/` file and its read-trigger. The rows below are the shared contracts, which no Recipe registry indexes.
+
 | Reference | Read this when |
 |-----------|----------------|
-| `reference/context-analysis.md` | SCAN on any project or refresh to detect stack, conventions, monorepo layout, existing skills, and sync drift. |
-| `reference/skill-catalog.md` | Ranking candidates in DISCOVER to map frameworks to likely high-value skills and migration paths. |
-| `reference/skill-templates.md` | Drafting any new skill in CRAFT to choose Micro vs Full, apply templates, and preserve required structure. |
-| `reference/validation-rules.md` | Scoring before install or after updates to apply structural checks, rubric scoring, and validation reporting. |
-| `reference/evolution-patterns.md` | Updating stale skills to choose lifecycle state, trigger handling, and update strategy. |
-| `reference/advanced-patterns.md` | Handling variants, monorepos, or composed skills with conditional branches, variable substitution, scoping, and composition rules. |
-| `reference/skill-effectiveness.md` | ATTUNE after a batch to record quality signals, calibrate ranking, and persist reusable patterns. |
-| `reference/claude-code-skills-api.md` | Authoring skill metadata or sandbox rules — frontmatter, routing-sensitive descriptions, dynamic context, install paths. |
-| `reference/claude-md-best-practices.md` | Generating or reconciling CLAUDE.md-adjacent guidance — maturity levels, RFC 2119 wording, split/import decisions. |
-| `reference/cross-tool-rules-landscape.md` | Reconciling project rules across AI tools — CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md, Copilot instructions. |
-| `reference/meta-prompting-self-improvement.md` | Improving Sigil itself or its long-term calibration loop using self-improvement patterns such as Mistake Ledger and Self-Refine. |
-| `reference/official-skill-guide.md` | Authoring frontmatter, writing descriptions, structuring instructions, or validating against official Anthropic skill standards during CRAFT or VERIFY. |
-| `reference/operating-layer-blueprint.md` | Surveying recurring tasks and selecting the minimum project-local mechanism for `blueprint`. |
-| `reference/operating-layer-recipe-design.md` | Specifying a repo-tailored single-skill Recipe without moving cross-skill routing out of Nexus. |
-| `reference/operating-layer-workflow-design.md` | Designing pipeline, hub-spoke, hierarchy, or bounded-loop topology for a persistent project workflow. |
-| `reference/operating-layer-handoffs.md` | Handing skill bodies, routing, loops, hooks, and placement to their canonical owners. |
-| `reference/operating-layer-validation.md` | Validating coverage, ownership, topology, mechanism choice, and non-execution boundaries. |
-| `_common/OPUS_5_AUTHORING.md` | Sizing the project skill package or deciding effort allocation across the six-phase pipeline. Critical for Sigil (Knowledge/Meta role): P6, P7. Recommended: P1. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Sigil-specific Output/Next schema. |
+
+---
 
 ## Operational
+
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
 
 - Journal: `.agents/sigil.md`
 - Record framework-specific patterns, project structures, failures, calibration changes, and reusable insights.
 - After completing the task, append a row to `.agents/PROJECT.md`: `| YYYY-MM-DD | Sigil | (action) | (files) | (outcome) |`
-- Standard protocols: `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
@@ -303,11 +291,3 @@ NEXUS_HANDOFF:
     - { agent: <name>, reason: <short> }
   Blockers: [<list or empty>]
 ```
-
-## Output Language
-
-Follows CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers, frontmatter keys, protocol markers, and technical terms remain in English.
-
-## Git Guidelines
-
-Follow [_common/GIT_GUIDELINES.md](../_common/GIT_GUIDELINES.md). Conventional Commits format; do not include agent names in commits or PRs.

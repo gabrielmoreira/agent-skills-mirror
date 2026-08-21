@@ -59,3 +59,34 @@ func GetToolsFromURL(url, token string) ([]*protocol.Tool, error) {
 	}
 	return list.Tools, nil
 }
+
+// GetToolsFromConfig connects to an MCP server described by cfg — URL-based
+// (SSE / StreamableHTTP) or stdio (command + args) — and returns its tool list.
+// It is the stdio-aware counterpart of GetToolsFromURL.
+func GetToolsFromConfig(cfg ServerConfig) ([]*protocol.Tool, error) {
+	cli, err := createClient(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("mcp: create client for %s: %w", describeServerConfig(cfg), err)
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	list, err := cli.ListTools(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("mcp: list tools from %s: %w", describeServerConfig(cfg), err)
+	}
+	return list.Tools, nil
+}
+
+// describeServerConfig renders a short, secret-free label for error messages.
+func describeServerConfig(cfg ServerConfig) string {
+	if cfg.URL != "" {
+		return cfg.URL
+	}
+	if cfg.Command != "" {
+		return cfg.Command
+	}
+	return "MCP server"
+}

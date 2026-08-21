@@ -7,7 +7,7 @@ Purpose: Design append-only audit-log tables that record who did what, when, and
 - **schema `audit-log`**: Append-only audit table design (this document).
 - **schema `event-sourcing` (elsewhere)**: Event store as system-of-record (different intent).
 - **Cloak (elsewhere)**: PII handling rules; audit logs that contain PII inherit Cloak constraints.
-- **Oath (elsewhere)**: Regulatory mapping (SOC2 CC7.2 / HIPAA §164.312(b) / PCI-DSS 10).
+- **Canon[regulatory] (elsewhere)**: Regulatory mapping (SOC2 CC7.2 / HIPAA §164.312(b) / PCI-DSS 10).
 - **Beacon (elsewhere)**: Operational logs (different from audit logs).
 - **Vigil (elsewhere)**: Detection rules over audit logs.
 
@@ -212,7 +212,7 @@ INVENTORY     →  list mutating actions to audit (CRUD on critical entities)
 CHOOSE        →  capture strategy (app / trigger / CDC / temporal)
               →  partitioning (monthly default for high-volume)
 
-DESIGN        →  fields per row (use core 19 fields above + per-domain extensions)
+DESIGN        →  fields per row (use core 20 fields above + per-domain extensions)
               →  before/after image granularity (full row / changed-cols only / event-shaped)
 
 GUARD         →  REVOKE UPDATE/DELETE
@@ -232,7 +232,7 @@ VERIFY        →  inject synthetic audit events; verify capture
               →  retention policy applies
               →  attempt UPDATE/DELETE → must fail
 
-HANDOFF       →  Oath: regulatory mapping
+HANDOFF       →  Canon[regulatory]: regulatory mapping
               →  Cloak: PII rules
               →  Beacon: operational log separation
               →  Vigil: detection rules over audit
@@ -285,7 +285,7 @@ HANDOFF       →  Oath: regulatory mapping
 - [ ] UPDATE/DELETE attempts fail
 
 ### Handoffs
-- Oath: SOC2/HIPAA/PCI mapping
+- Canon[regulatory]: SOC2/HIPAA/PCI mapping
 - Cloak: PII rules
 - Beacon: log separation
 - Vigil: detection rules
@@ -321,7 +321,7 @@ When `audit-log` completes, emit:
 - **PII handling** + GDPR erasure pathway.
 - **Index + partitioning** strategy.
 - **Verification plan**.
-- **Handoffs**: Oath, Cloak, Beacon, Vigil, Stream, Builder.
+- **Handoffs**: Canon[regulatory], Cloak, Beacon, Vigil, Stream, Builder.
 
 ## References
 

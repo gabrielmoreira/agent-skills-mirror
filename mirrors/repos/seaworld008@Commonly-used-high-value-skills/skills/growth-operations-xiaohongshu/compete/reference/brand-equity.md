@@ -10,7 +10,7 @@ under-converts, or planning a brand-building program. Pairs with competitive pos
 (`competitive-moats-category-design.md`) and brand visibility tracking.
 
 > **Scope note.** CBBE measures *product/company brand equity*. For narrative/voice
-> (`saga`), persona archetypes (`cast`), or personal/engineer branding (`crest`), route
+> (`saga`), persona archetypes (`cast`), or personal/engineer branding (`compete brand`), route
 > there instead — this file is the competitive brand-strength lens.
 
 ## The CBBE Pyramid (bottom → top)
@@ -35,7 +35,7 @@ Brand equity is built level by level; you cannot skip a level.
 | Salience | aided/unaided awareness, recall, **share of voice** (see `geo-optimization.md` for AI-answer share of voice) |
 | Performance/Imagery | attribute ratings, brand-association surveys, perceived-quality scores |
 | Judgments/Feelings | brand consideration, Net Promoter, sentiment analysis (route raw feedback to `Voice`) |
-| Resonance | repeat purchase, retention/LTV (`pulse`/`bond`), advocacy, community activity, **brand lift** studies |
+| Resonance | repeat purchase, retention/LTV (`pulse`/`growth`), advocacy, community activity, **brand lift** studies |
 
 A brand can be strong at the base (high awareness) but stall mid-pyramid — that diagnosis
 ("known but not preferred") is the model's main practical payoff.
@@ -49,7 +49,7 @@ A brand can be strong at the base (high awareness) but stall mid-pyramid — tha
 
 ## Handoffs
 - Raw customer feedback / sentiment / NPS collection → `Voice`.
-- Retention / loyalty / LTV instrumentation → `pulse` (`metrics-frameworks.md`) and `bond`.
+- Retention / loyalty / LTV instrumentation → `pulse` and `growth`.
 - AI-answer-engine share of voice → `growth` (`geo-optimization.md`).
 - Narrative & messaging that expresses the brand → `saga` / `Prose`.
 - Defensibility framing of brand as a moat → `moat-7-powers.md`.

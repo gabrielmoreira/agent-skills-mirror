@@ -111,11 +111,9 @@ Below the "acceptable" threshold, return to phase 5 to clarify code definitions,
 
 ## LLM-Assisted Coding (Augment, Don't Replace)
 
-LLMs accelerate phase 2 (initial coding) but degrade phase 3-5 (theme construction) without human oversight.
+LLMs accelerate phase 2 (initial coding) but degrade phase 3-5 (theme construction) without human oversight (see Human-in-the-Loop Discipline above for the κ threshold and codebook-ownership rules).
 
 - Use LLMs to generate first-pass codes on raw segments at temperature 0; require structured JSON output.
-- Compare LLM codes against a 10-20% human-coded sample; reject if κ < 0.60 — re-prompt or fall back to manual.
-- Never let LLMs name themes — theme construction is interpretive and the highest-bias step.
 - Document LLM model, version, prompt, and seed in the report; LLM-coded studies are not reproducible without this.
 
 ## Anti-Patterns
@@ -137,7 +135,7 @@ LLMs accelerate phase 2 (initial coding) but degrade phase 3-5 (theme constructi
 - **To Field**: ambiguous themes or persona divergence → escalate for moderated interviews to disambiguate.
 - **To Spark**: themes describing unmet jobs or workarounds → feature proposals.
 - **To Echo**: themes pointing to persona-specific friction → cognitive walkthrough validation.
-- **To Bond**: themes correlating with churn cohort feedback → retention-program inputs.
-- **To Helm**: cross-segment recurring themes → strategic narrative inputs.
+- **To Growth**: themes correlating with churn cohort feedback → retention-program inputs.
+- **To Magi**: cross-segment recurring themes → strategic narrative inputs.
 
 References: Braun & Clarke (2006), "Using thematic analysis in psychology"; Braun & Clarke (2019), "Reflexive thematic analysis"; Guest, Bunce & Johnson (2006) on saturation thresholds.

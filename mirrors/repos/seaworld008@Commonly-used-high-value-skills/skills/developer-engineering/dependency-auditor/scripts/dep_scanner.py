@@ -366,22 +366,48 @@ class DependencyScanner:
         
         try:
             with open(file_path, 'r') as f:
-                content = f.read()
-            
-            # Simple yarn.lock parsing
-            packages = re.findall(r'^([^#\s][^:]+):\s*\n(?:\s+.*\n)*?\s+version\s+"([^"]+)"', content, re.MULTILINE)
-            
-            for package_spec, version in packages:
-                name = package_spec.split('@')[0] if '@' in package_spec else package_spec
-                name = name.strip('"')
-                
-                dep = Dependency(
-                    name=name,
-                    version=version,
-                    ecosystem='npm',
-                    direct=False
-                )
-                dependencies.append(dep)
+                lines = f.readlines()
+
+            # Yarn v1 records are header lines followed by indented metadata.
+            # Parse them as a small state machine so hostile lockfiles cannot
+            # trigger catastrophic regular-expression backtracking.
+            package_spec = None
+            for raw_line in lines:
+                stripped = raw_line.strip()
+                if (
+                    stripped
+                    and not raw_line[:1].isspace()
+                    and not stripped.startswith('#')
+                    and stripped.endswith(':')
+                ):
+                    package_spec = stripped[:-1]
+                    continue
+
+                version_prefix = 'version "'
+                if (
+                    package_spec is not None
+                    and stripped.startswith(version_prefix)
+                    and stripped.endswith('"')
+                ):
+                    version = stripped[len(version_prefix):-1]
+                    first_selector = package_spec.split(',', 1)[0].strip().strip('"')
+                    if first_selector.startswith('@'):
+                        slash_index = first_selector.find('/')
+                        range_index = first_selector.find('@', slash_index + 1)
+                    else:
+                        range_index = first_selector.find('@')
+                    name = (
+                        first_selector[:range_index]
+                        if range_index > 0
+                        else first_selector
+                    )
+                    dependencies.append(Dependency(
+                        name=name,
+                        version=version,
+                        ecosystem='npm',
+                        direct=False
+                    ))
+                    package_spec = None
         
         except Exception as e:
             print(f"Error parsing yarn.lock: {e}")

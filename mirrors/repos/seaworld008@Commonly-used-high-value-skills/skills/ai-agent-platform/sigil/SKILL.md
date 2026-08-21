@@ -1,15 +1,15 @@
 ---
 name: sigil
-description: 'Generating, updating, auditing, and sync-repairing project-specific Claude Code skills from the repo stack and conventions. Use when authoring project-local skills (Micro or Full).'
+description: 'Designing a repository''s project-local operating layer and generating its skills, recipes, workflows, and routing map. Not for global ecosystem agents (Architect) or runtime execution (Nexus).'
 zh_description: "根据项目代码自动生成贴合仓库约定的技能。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/sigil"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/sigil"
 license: MIT
 tags: '["agent", "ai", "sigil"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -24,6 +24,10 @@ CAPABILITIES_SUMMARY:
 - description_optimization: Train/test split activation testing (60/40 on ~20 synthetic prompts) per Anthropic skill-creator 2.0
 - skill_evolution: Update stale skills when dependencies, frameworks, or conventions change
 - attune_calibration: Evidence-based ranking weight adaptation with safety guardrails
+- operating_layer_design: Blueprint the coherent project-local suite of skills, recipes, workflows, hooks, and routing ownership
+- task_topology_mapping: Map recurring repository tasks to the cheapest suitable mechanism and one canonical owner
+- recipe_workflow_design: Specify repo-tailored recipes and formal workflow topologies without executing them
+- project_routing_map: Produce Nexus-consumable task ownership, trigger, and chain definitions
 
 COLLABORATION_PATTERNS:
 - Lens -> Sigil: Codebase analysis for skill generation
@@ -37,10 +41,12 @@ COLLABORATION_PATTERNS:
 - Sigil -> Judge: Quality review requests
 - Sigil -> Lore: Reusable skill patterns and activation rate data
 - Sigil -> Hone: Skill configuration optimization recommendations
+- Lens/Atlas -> Sigil: Codebase and architecture maps for operating-layer blueprints
+- Sigil -> Orbit/Hone: Loop and hook specifications discovered during blueprinting
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Lens (codebase analysis), Architect (ecosystem patterns), Judge (quality feedback), Canon (standards), Grove (project structure), Gauge (normalization checklist)
-- OUTPUT: Grove (skill structure), Nexus (skill notifications), Judge (review requests), Lore (reusable patterns), Hone (config optimization)
+- INPUT: Lens (codebase analysis), Atlas (architecture topology), Architect (ecosystem patterns), Judge (quality feedback), Canon (standards), Grove (project structure), Gauge (normalization checklist)
+- OUTPUT: Grove (skill structure/placement), Nexus (skill and routing notifications), Judge (review requests), Lore (reusable patterns), Hone (config and hook optimization), Orbit (loop specs)
 
 PROJECT_AFFINITY: Game(H) SaaS(H) E-commerce(H) Dashboard(H) Marketing(H)
 -->
@@ -57,8 +63,9 @@ Use Sigil when the user needs:
 - skill quality audit and scoring
 - sync drift repair between `.claude/skills/` and `.agents/skills/`
 - batch skill generation for a project's tech stack
+- a coherent project operating-layer blueprint spanning local skills, recipes, workflows, hooks, and a routing map
 
-Route elsewhere when the task is primarily: permanent ecosystem agent creation (`Architect`), SKILL.md format compliance audit (`Gauge`), codebase understanding without generation (`Lens`), repository structure design (`Grove`), or code documentation (`Quill`).
+Route elsewhere when the task is primarily: permanent ecosystem agent creation (`Architect`), runtime task-chain execution (`Nexus`), SKILL.md format compliance audit (`Gauge`), codebase understanding without generation (`Lens`), repository structure design (`Grove`), or code documentation (`Quill`).
 
 ## Core Contract
 
@@ -153,6 +160,7 @@ Inline (default) for reference content (conventions, style, domain knowledge) th
 | Analyze Project | `analyze` | | Codebase and stack analysis | `reference/context-analysis.md` |
 | Extract Conventions | `convention` | | Convention extraction | `reference/context-analysis.md`, `reference/claude-md-best-practices.md` |
 | Migrate Existing | `migrate` | | Adapt an existing skill to the project | `reference/evolution-patterns.md` |
+| Design Operating Layer | `blueprint` | | Design or audit the project's skill/recipe/workflow/hook/routing layer; select `layer|recipe|workflow|map|audit` mode | `reference/operating-layer-blueprint.md`, matching `reference/operating-layer-*.md` |
 
 ### Signal Keywords → Workflow
 
@@ -166,6 +174,7 @@ For natural-language input without an explicit subcommand. Subcommand match wins
 | `sync drift`, `repair sync`, `skill mismatch` | SCAN → sync repair | `reference/context-analysis.md` |
 | `skill effectiveness`, `calibrate`, `attune` | ATTUNE-only (OBSERVE → MEASURE → ADAPT → PERSIST) | `reference/skill-effectiveness.md` |
 | `analyze project`, `extract conventions` | `analyze` / `convention` | `reference/context-analysis.md` |
+| `operating layer`, `project routing map`, `repo recipes`, `project workflows`, `skill suite` | `blueprint` | `reference/operating-layer-blueprint.md` |
 | unclear skill request | SCAN → DISCOVER → report | `reference/skill-catalog.md` |
 
 ## Subcommand Dispatch
@@ -208,6 +217,8 @@ Specialization of the canonical pipeline: substitute CRAFT with `DIFF → PLAN �
 
 Archive deprecated active skills only when the change requires removal or replacement and the user has confirmed it.
 
+**Complexity Budget on authoring.** Every generated project-local skill, rule, or workflow carries the four fields of `_common/HARNESS_DEBT.md` §3b — `failure` · `effect` · `owner` · `removal` — in its `## Lifecycle` section. `removal` matters most here: a project layer outlives the stack decision that motivated it, so the condition is written against the *repository's* observable state ("the `<framework>` migration completes", "this directory is deleted", "the convention moves into a lint rule"), never against the review cadence. A batch of `>= 10` candidates with no removal condition among them is a signal that the layer is being sized to the repository rather than to its recurring failures — surface it before CRAFT.
+
 ## Error Handling
 
 Sigil never silently degrades — every error surfaces in `## Sigil's Report` with the chosen recovery action. Full failure-mode / detection / recovery table -> `reference/validation-rules.md` § Error Handling.
@@ -231,6 +242,7 @@ Overlap boundaries:
 - `Architect` creates permanent ecosystem agents; Sigil creates project-local skills — do not cross this boundary.
 - `Gauge` audits existing SKILL.md format compliance; Sigil validates generated skill quality via its own rubric — use Gauge checklist as input, not as replacement for Sigil's rubric.
 - `Quill` documents code; Sigil generates executable skill instructions — refer documentation requests to Quill.
+- `blueprint` designs a persistent project-local operating layer; `Nexus` executes runtime chains and `Architect` owns permanent ecosystem agents.
 
 ## Handoffs
 
@@ -264,6 +276,11 @@ Use the canonical schema in `_common/HANDOFF.md` for all inter-agent communicati
 | `reference/cross-tool-rules-landscape.md` | Reconciling project rules across AI tools — CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md, Copilot instructions. |
 | `reference/meta-prompting-self-improvement.md` | Improving Sigil itself or its long-term calibration loop using self-improvement patterns such as Mistake Ledger and Self-Refine. |
 | `reference/official-skill-guide.md` | Authoring frontmatter, writing descriptions, structuring instructions, or validating against official Anthropic skill standards during CRAFT or VERIFY. |
+| `reference/operating-layer-blueprint.md` | Surveying recurring tasks and selecting the minimum project-local mechanism for `blueprint`. |
+| `reference/operating-layer-recipe-design.md` | Specifying a repo-tailored single-skill Recipe without moving cross-skill routing out of Nexus. |
+| `reference/operating-layer-workflow-design.md` | Designing pipeline, hub-spoke, hierarchy, or bounded-loop topology for a persistent project workflow. |
+| `reference/operating-layer-handoffs.md` | Handing skill bodies, routing, loops, hooks, and placement to their canonical owners. |
+| `reference/operating-layer-validation.md` | Validating coverage, ownership, topology, mechanism choice, and non-execution boundaries. |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the project skill package or deciding effort allocation across the six-phase pipeline. Critical for Sigil (Knowledge/Meta role): P6, P7. Recommended: P1. |
 | `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Sigil-specific Output/Next schema. |
 

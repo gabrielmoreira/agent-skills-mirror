@@ -44,7 +44,7 @@ whole story.
 pnpm start                       # run the shell from source (oss defaults → localhost:5173)
 pnpm test                        # node:test; pure logic only, no Electron runtime needed
 pnpm run preview                 # the shell against a web build that has not deployed yet
-pnpm run build                   # unpacked build into dist/, fastest way to check packaging
+pnpm run build                   # unpacked build into dist/<edition>/, fastest way to check packaging
 pnpm run dist                    # real installers (dmg + zip on macOS)
 
 DESKTOP_EDITION=saas \
@@ -86,7 +86,7 @@ the build it actually loads may not, which is the bug it exists to catch.
 **Say `pnpm run`, not `pnpm`, for anything that builds.** `pnpm <name>` falls back
 to a script only when pnpm has no command of that name, and the failure when it
 does is silent: this used to be `pnpm pack`, which quietly built a **tarball**
-instead, left the previous artifact in `dist/`, and exited 0. A verification run
+instead, left the previous artifact in the output tree, and exited 0. A verification run
 against that stale artifact is what caught it.
 
 **The `postinstall` line is load-bearing.** Electron 42 removed the package's own
@@ -142,6 +142,22 @@ is decided per package, so the origins are written from the environment at packa
 and deleted again on an `oss` build: a tree that previously built `saas` cannot bake
 those origins into an OSS package by accident.
 
+**Nor do the two share an output directory** (`directories.output: dist/${EDITION}`).
+The artifact filename carries the edition; nothing else written there does. The unpacked
+bundle is named from `productName`, so both `.app`s land under one `mac-arm64`, and the
+update manifests are `latest-mac.yml` and `latest.yml`, fixed names with no edition in
+them at all, so whichever edition builds second overwrites the first's. `scripts/build.mjs`
+then searches that same directory for what it just produced, which is where one tree
+turns into a signing check verifying the other edition's stale bundle and a no-feed build
+whose sweep strips the other edition's baked `app-update.yml`.
+
+Separate outputs do **not** make the two editions safe to build at the same time. Both
+still write `config/build.json` and `.electron-builder.resolved.yml`, one copy each at
+fixed paths, so two concurrent packages race over the origins and the identity and can
+produce a correctly named artifact carrying the other edition's configuration. Build them
+one after the other. For the same reason `scripts/make-release-index.mjs` takes one
+edition's output directory and refuses a parent holding several.
+
 ## Layout
 
 | File | Purpose |
@@ -152,7 +168,10 @@ those origins into an OSS package by accident.
 | `src/origins.js` | what counts as ours: **by origin, never by path** |
 | `src/oauth.js` | system-browser OAuth, intercepted (below) |
 | `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed |
-| `src/preload.js` | the renderer bridge: version, platform, `setTheme`, `openExternal` |
+| `src/preload.js` | the renderer bridge: version, platform, `setTheme`, `openExternal`, `savePdf` |
+| `src/pdf.js` | renders the calling window to a PDF the user picks a home for; allowlists the options the page may set |
+| `src/downloads.js` | gives a download a visible ending, since a frameless window has no download shelf |
+| `src/notify.js` | the dock bounce that says a file landed |
 | `src/outage.js` | what replaces a blank window when the network does not answer |
 | `src/updater.js` | auto-update, gated on a feed actually existing |
 | `src/probe.js` | "is anything answering", shared by the picker and the outage page |

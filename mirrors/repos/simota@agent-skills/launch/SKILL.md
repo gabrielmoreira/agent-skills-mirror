@@ -169,23 +169,13 @@ Reporting recipes use `SURVEY → COLLECT → ANALYZE → REPORT → VERIFY`: lo
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Release Plan | `plan` | ✓ | Release planning and strategy | `reference/strategies.md` |
-| Changelog | `changelog` | | CHANGELOG generation and updates | `reference/patterns.md` |
-| Release Notes | `notes` | | User-facing release notes | `reference/patterns.md` |
-| Rollback Plan | `rollback` | | Rollback planning and runbook | `reference/rollback-anti-patterns.md` |
-| Feature Flag | `flag` | | Feature flag management and staged rollout design | `reference/feature-flag-pitfalls.md` |
-| Hotfix Release | `hotfix` | | Emergency patch release (shortened CI / hotfix branch / 2h SLA / rollback bundled / backport to main) | `reference/hotfix-workflow.md` |
-| Canary Rollout | `canary` | | Staged traffic rollout (1%->10%->50%->100%) with automatic guardrails and abort conditions | `reference/canary-rollout.md` |
-| Mobile Release | `mobile` | | iOS / Android store release: TestFlight phased release (1%/10%/50%/100% over 7d), Play staged rollout (5%/20%/50%/100%), store-compliance gate, server-driven flag rollback path | `reference/mobile-release.md` |
-| Weekly Report | `weekly` | | Weekly PR aggregation and engineering summary | `reference/engineering-report-templates.md`, `reference/github-pr-collection.md` |
-| Monthly Report | `monthly` | | Monthly work report with delivery metrics | `reference/engineering-report-templates.md`, `reference/delivery-metrics.md` |
-| Client Report | `client-report` | | Client-facing Markdown/HTML/PDF report with effort ranges and charts | `reference/client-report-templates.md`, `reference/report-pdf-export.md` |
-| Sprint Retro | `retro` | | Narrative retrospective grounded in PR and release data | `reference/retrospective-voice.md` |
-| DORA Deep-Dive | `dora` | | DORA 5-key metric profile, Reliability, SPACE context, and 7-archetype mapping | `reference/delivery-metrics.md` |
-| OKR Linkage | `okr` | | PR-to-Objective evidence and KR narrative for a quarterly window | `reference/okr-linkage.md` |
-| PR Flow | `pr-flow` | | Cycle-time percentiles, PR-size risk, contributor distribution, and bot/human split | `reference/pr-flow-analysis.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+plan · changelog · notes · rollback · flag · hotfix · canary · mobile · weekly · monthly · client-report · retro · dora · okr · pr-flow
+```
+
+Default Recipe: `plan`.
 
 ## Subcommand Dispatch
 Parse the first token of user input.
@@ -253,11 +243,12 @@ When input contains `## NEXUS_ROUTING`, do not call other agents directly. Retur
 ```
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Before starting (mandatory): read `.agents/launch.md` and `.agents/PROJECT.md`; create if missing.
 - After task completion (mandatory): append `| YYYY-MM-DD | Launch | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.
 - Journal (`.agents/launch.md`): record reusable release insights, rollback triggers, flag lifecycle decisions, and versioning rationale.
 - Standard operational rules and Pre-Handoff Checklist: `_common/OPERATIONAL.md`
-- Git discipline: `_common/GIT_GUIDELINES.md`
 
 ## Collaboration
 
@@ -277,7 +268,7 @@ When pure-native iOS or Android releases flow from `Native`, Launch operates as 
 
 ### Incoming: `NATIVE_TO_LAUNCH_HANDOFF`
 
-Carries `app_version`, `platforms`, `store_compliance_notes`, `privacy_manifest_complete`, `data_safety_complete`, `build_artifacts`, `release_notes`, and `rollout_plan`. Full YAML schema -> `reference/mobile-release.md`.
+Field list and full YAML schema -> `reference/mobile-release.md`.
 
 Validate completeness on receipt — reject the handoff and route back to Native if any of the following are missing or `false`:
 - `privacy_manifest_complete` (iOS submissions are auto-rejected without `PrivacyInfo.xcprivacy` Required Reasons API declarations)
@@ -287,38 +278,16 @@ Validate completeness on receipt — reject the handoff and route back to Native
 
 ### Outgoing: `LAUNCH_TO_NATIVE_HANDOFF`
 
-Carries `release_decision` (GO/NO_GO/CONDITIONAL), per-store `rollout_schedule` (iOS: TestFlight Internal/External → App Review → Phased Release dates; Android: Play Internal → Closed → Open → Production Staged dates), `halt_triggers` (crash-free < 99.85%/1h, App Review rejection, P0 store-policy regression, domain KPI), `flag_disable_signals` (flag/condition/action), `rollback_path` (flag_disable < 1 min → halt rollout → hotfix submission), and `next_owner`. Full YAML schema -> `reference/mobile-release.md`.
+Carries the `release_decision` (GO/NO_GO/CONDITIONAL), the per-store rollout schedule, halt triggers, flag-disable signals, rollback path, and next owner. Full YAML schema -> `reference/mobile-release.md`.
 
 Mobile-specific Go/No-Go items beyond the standard scored checklist: App Review / Play Review lead time included in the schedule (typically 24-72h; never assumed faster), and Phased Release / Staged Rollout configured per-store with halt automation, not manual checking. Remaining checklist items (crash-free baseline, hotfix path tested, flags verified live) -> `reference/mobile-release.md` § TL;DR Checklist.
 
 ## Reference Map
 
+**Full index** → **`reference/reference-index.md`** — every `reference/` file and its read-trigger. The rows below are the shared contracts, which no Recipe registry indexes.
+
 | File | Read this when |
 |------|----------------|
-| `reference/strategies.md` | Versioning, CHANGELOG, release notes, rollback options, hotfix flow, release windows, or command references. |
-| `reference/patterns.md` | Multi-agent release orchestration or handoff payload expectations. |
-| `reference/release-anti-patterns.md` | Deployment anti-patterns, canary/blue-green cautions, or release cadence guardrails. |
-| `reference/feature-flag-pitfalls.md` | Feature flag lifecycle rules, debt controls, or cleanup thresholds. |
-| `reference/versioning-pitfalls.md` | SemVer pitfalls, breaking-change detection rules, or CalVer decision support. |
-| `reference/rollback-anti-patterns.md` | Rollback design, DB migration safety, recovery sequencing, or rolling back an AI feature (prompt / model revision / index / embeddings / adapter / runtime / tool schema). |
-| `reference/hotfix-workflow.md` | `hotfix`: emergency patch playbook, 2h SLA, shortened CI gate, hotfix branch, bundled rollback, and backport-to-main planning. |
-| `reference/canary-rollout.md` | `canary`: progressive traffic shifts (1% → 10% → 50% → 100%), guardrail metrics, automatic abort conditions, and observation windows. |
-| `reference/mobile-release.md` | `mobile`: TestFlight phased release / Play staged rollout, store-compliance gating, App Review / Play Review lead-time planning, server-driven feature flag rollback path, and hotfix submission flow. |
-| `reference/github-pr-collection.md` | Read-only `gh` collection, field/date filters, pagination, aggregation, and rate-limit handling. |
-| `reference/github-report-cache.md` | Cache TTL, ETag, invalidation, and rate-limit-aware freshness policy. |
-| `reference/github-report-error-handling.md` | Authentication, rate-limit, network, partial-data, and graceful-degradation handling. |
-| `reference/engineering-report-templates.md` | Weekly, monthly, individual, release-note, and quality-trend report shapes. |
-| `reference/client-report-templates.md` | Client-facing report structure and the bundled HTML/template/style/script toolchain. |
-| `reference/report-pdf-export.md` | Markdown/HTML-to-PDF paths, Mermaid handling, validation, and fallbacks. |
-| `reference/release-report-writing.md` | Changelog categories, audience split, automation, and release-note quality gates. |
-| `reference/delivery-metrics.md` | DORA metrics, Reliability, SPACE complement, percentile bands, and 7 team archetypes. |
-| `reference/engineering-metrics-guardrails.md` | Goodhart, vanity-metric, burnout, and AI-period comparison safeguards. |
-| `reference/pr-flow-analysis.md` | Cycle-time decomposition, percentiles, Lorenz/Gini, bot ratio, and large-PR risk. |
-| `reference/okr-linkage.md` | PR-to-Objective tagging, KR narratives, health scoring, and quarterly aggregation. |
-| `reference/effort-estimation.md` | Effort-range baseline and adjustment guidance. |
-| `reference/effort-estimation-guardrails.md` | LOC and precision caveats for effort estimates. |
-| `reference/reporting-anti-patterns.md` | Actionability, gaming resistance, audience layering, and cadence guardrails. |
-| `reference/retrospective-voice.md` | Data-grounded retrospective voice and narrative frameworks. |
-| `reference/reporting-handoffs.md` | Structured report payloads for Pulse, Canvas, Zen, Sherpa, and Radar. |
-| `_common/OPUS_5_AUTHORING.md` | Sizing the release plan, deciding adaptive thinking depth at rollout staging, or front-loading release type/scope/risk at PLAN. Critical for Launch: P3, P5. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Launch-specific Output/Next schema. |
+
+---
+

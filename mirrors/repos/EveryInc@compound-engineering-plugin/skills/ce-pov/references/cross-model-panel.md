@@ -166,11 +166,12 @@ fail-closes on anything else (including route-shaped guesses like `codex-cli`):
 | `cursor` | `cursor` |
 | `composer` | `composer` |
 
-Binary presence proves only that a route is a candidate. Use an available
-non-egressing authentication or capability probe when the harness exposes one,
-and do not call a route usable until it returns a valid artifact. Classify a
-failed run from its structured diagnostics rather than guessing from a generic
-terminal state.
+Binary presence proves only that a route is a candidate. Pre-dispatch capability
+evidence may refine the fixed route only when the current host context makes that
+evidence authoritative. Do not preflight authentication there: the
+provider-capable worker attempt owns authentication truth, and a valid artifact
+is the usability proof. Classify a failed run from its structured diagnostics
+rather than guessing from a generic terminal state.
 
 The dispatched worker runs only the fixed route. It must return failure to the
 host rather than automatically hopping to another provider or intermediary. If
@@ -267,6 +268,33 @@ execution rather than presence.
 PY="$(for c in python3 python py; do command -v "$c" >/dev/null 2>&1 && "$c" -c '' >/dev/null 2>&1 && { echo "$c"; break; }; done)"; [ -n "$PY" ] || { echo "no working Python 3 interpreter on PATH" >&2; exit 1; };
 ```
 
+**Host command-sandbox boundary.** The detached worker inherits the permission
+context of the `start` call that launches it. Before executing that exact call,
+treat `CODEX_SANDBOX_NETWORK_DISABLED` as a positive signal that the current
+Codex command sandbox cannot reach the provider; unsetting it does not change
+the sandbox policy. A DNS or authentication failure alone is not proof of that
+condition. Use the narrowest host permission that restores the fixed route's
+provider connection. When Codex exposes only full command escalation, attach
+this request to the exact `peer-job-runner.py start ...` tool call after the
+existing egress disclosure:
+
+```json
+{
+  "sandbox_permissions": "require_escalated",
+  "justification": "Allow the disclosed read-only cross-model panel request to reach the fixed external provider."
+}
+```
+
+Disclose that this is not launcher-only isolation: the detached worker inherits
+that launch context for its lifetime, so the adapter's declared read-only/tool
+restrictions — not the Codex command sandbox — bound the peer while the subject
+egresses. If the grant is denied or unavailable, do not execute `start`; create
+no peer job, drop that voice, and continue with the surviving panel. After
+`start` returns a job id, any network, authentication, or provider failure is a
+started-job outcome and follows the ordinary terminal/recovery rules; keep
+`status`, `wait`, `result`, and `reap` sandboxed because they need no provider
+connection.
+
 Start one job per peer with the command below, filling every `<...>` slot. Set
 `SKILL_DIR` to the absolute directory of **this** skill's `SKILL.md`; the Bash
 tool's CWD is the user's project on every host, not the skill directory.
@@ -341,13 +369,13 @@ harness/intermediary route, requested model, served model, and
 `independence_verified` separately. A served model of `unverified` remains
 unverified. If a job yields no usable artifact, use bounded `peer skip evidence`
 from its log to state an observed quota, authentication, or route failure; never
-invent a cause. An authentication-shaped peer failure (`not logged in`, `please
-log in`, 401, or CLI text prompting login) describes only the peer's execution
-context: a sandboxed host — e.g. a restricted Codex task denying spawned commands
-network or keychain access — produces the identical signal to a genuine account
-logout, so state it as a cross-model execution-context authentication failure and
-never report it as the user's account being logged out or prompt the user to run
-a login command on that basis.
+invent a cause. Attribute an account authentication failure only after
+provider-capable dispatch is positively established by the launch context or
+provider response; then report the observed failure and login or
+credential-refresh remediation. Without that proof, authentication-shaped peer
+text describes only the peer's execution context: a sandboxed host can produce
+the same signal as a genuine logout, so never report it as the user's account
+being logged out or prompt a login command.
 
 ## 5. Detect dissent, verify claims, and reconcile
 

@@ -11,7 +11,7 @@
 - Validation Rules
 - Validation Failure Handling
 - NEXUS_HANDOFF_V2 Template
-- Backward Compatibility
+- Compliance Levels (incl. V1 migration)
 - Validation Event Format
 - Integration with Auto-Decision
 
@@ -22,6 +22,22 @@ Validation rules and confidence requirements for agent handoffs.
 ## Overview
 
 Handoff validation ensures consistent, high-quality communication between agents. All agents must use NEXUS_HANDOFF_V2 format with mandatory confidence scoring.
+
+## Communication Invariants
+
+These rules own the actionable safeguards formerly split into a separate communication anti-pattern catalog:
+
+| Invariant | Validation |
+|-----------|------------|
+| Typed envelope | Reject unknown message types, missing required fields, and schema drift; free-form prose may supplement but never replace the envelope |
+| Explicit state | Carry current status, completed work, changed resources, evidence, and unresolved items; never assume execution order or hidden shared state |
+| Intent integrity | Preserve the original request or its approved intent contract, acceptance criteria, constraints, and prohibited outcomes |
+| Selective context | Pass state deltas and required evidence, not the full conversation history |
+| Single ownership | Name one owner for each mutable file/resource and one merge owner for parallel work; non-owners default to read-only |
+| Closed next action | `next` must be a declared action or agent with success criteria; ambiguous “handle appropriately” handoffs are invalid |
+| Recovery-ready | Persist artifact references and the last verified checkpoint so failure does not make the receiving agent the only copy of state |
+
+Confidence never repairs a missing invariant. A high score with an unresolved Authority, absent success criteria, or conflicting ownership is rejected before routing.
 
 ---
 
@@ -114,25 +130,9 @@ validation_checks:
     - confidence_breakdown average ≈ confidence (±0.05)
 ```
 
-### Auto-Routing Rules
+### Auto-Routing
 
-```yaml
-auto_routing:
-  proceed_if:
-    - confidence >= 0.75
-    - status == SUCCESS
-    - next_action == CONTINUE
-
-  pause_if:
-    - confidence < 0.50
-    - status == BLOCKED
-    - pending_confirmations present
-
-  escalate_if:
-    - status == FAILED
-    - next_action == ESCALATE
-    - confidence < 0.30
-```
+Confidence bands (≥ 0.75 auto-route · 0.50-0.74 route with logged assumptions · < 0.50 pause for user input) are canonical in `output-formats.md` § Auto-Routing Rules. Independent of the band, `status == BLOCKED` or a pending confirmation pauses, and `status == FAILED` / `next_action == ESCALATE` escalates.
 
 ---
 
@@ -159,48 +159,7 @@ validation_failure:
 
 ## NEXUS_HANDOFF_V2 Template
 
-```yaml
-## NEXUS_HANDOFF
-step: X/Y
-agent: [AgentName]
-status: [SUCCESS|PARTIAL|BLOCKED|FAILED]
-
-confidence: 0.XX
-confidence_breakdown:
-  task_completion: 0.XX
-  output_quality: 0.XX
-  next_step_clarity: 0.XX
-
-summary: |
-  [1-3 line summary of work completed]
-
-key_findings:
-  - [Finding 1]
-  - [Finding 2]
-
-artifacts:
-  - type: [file|command|link]
-    path: [path or URL]
-    description: [what it is]
-
-risks:
-  - [Risk 1]
-  - [Risk 2]
-
-open_questions:
-  - blocking: [true|false]
-    question: [Question]
-
-pending_confirmations:  # Only if status == BLOCKED
-  - trigger: [INTERACTION_TRIGGER]
-    question: [Question]
-    options: [List]
-    recommended: [Option]
-
-next_agent: [AgentName|DONE]
-next_action: [CONTINUE|MERGE|VERIFY|ESCALATE|ABORT]
-reason: [Why this next step]
-```
+Canonical schema (all fields, including `user_confirmations`) → `output-formats.md` § NEXUS_HANDOFF_V2. Validation below checks conformance to that template.
 
 ---
 
@@ -223,26 +182,7 @@ Level 1 confidence inference (applied automatically):
 
 Level 2 without breakdown: all three components assumed equal to overall confidence.
 
-## Backward Compatibility
-
-The Compliance Levels above formalize the backward compatibility rules:
-
-```yaml
-v1_to_v2_migration:
-  if_missing_confidence:
-    infer_from:
-      - status: SUCCESS → confidence: 0.80
-      - status: PARTIAL → confidence: 0.60
-      - status: BLOCKED → confidence: 0.40
-      - status: FAILED → confidence: 0.20
-
-    log_warning: true
-    request_update: true  # Flag agent for V2 update
-
-  if_missing_breakdown:
-    assume_equal_distribution: true
-    # All three components = overall confidence
-```
+A V1 handoff is migrated by applying those same two rules — infer confidence from `status`, distribute it equally across the three components — and is accepted with a logged warning flagging the agent for a V2 update.
 
 ---
 

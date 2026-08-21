@@ -2,14 +2,14 @@
 name: gateway
 description: 'Designing and reviewing APIs: OpenAPI spec generation, versioning strategy, breaking change detection, REST/GraphQL best practices. Use for API design or OpenAPI specs.'
 zh_description: "接口设计、规范生成、版本策略和破坏性变更检查。"
-version: "1.0.4"
+version: "1.0.5"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/gateway"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/gateway"
 license: MIT
 tags: '["development", "gateway"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -27,8 +27,10 @@ CAPABILITIES_SUMMARY:
 - ai_llm_api_design: SSE streaming (OpenAPI 3.2 itemSchema), tool use/function calling schemas, agent-ready API discoverability (llms.txt + llms-full.txt + /openapi.json), token-based rate limiting, LLM gateway patterns, OWASP Agentic Top 10 2026 compliance, principle of least agency
 - api_gateway_architecture: Governance at scale, routing, adaptive rate limiting (Token Bucket/Sliding Window)
 - rest_semantics_specialist: Resource modeling, URI design, status taxonomy, ETag conditional requests, cursor vs offset pagination, HATEOAS/RMM, RFC 9457 Problem Details
-- graphql_schema_specialist: Schema-first vs code-first trade-off, DataLoader for N+1 prevention, persisted queries, query depth / complexity limits, schema stitching vs Apollo Federation / Relay spec, subscription transport design
+- graphql_schema_specialist: Schema-first vs code-first trade-off, DataLoader for N+1 prevention, persisted queries, query depth / complexity limits, schema stitching vs Apollo Federation / Gateway spec, subscription transport design
 - webhook_provider_design: Standard Webhooks or Stripe-style HMAC-SHA256 with timingSafeEqual, idempotency-key, exponential-backoff retry with DLQ, ordering guarantees, payload vs thin-notification, CloudEvents 1.0.2, RFC 8594/9745 signaling
+
+- messaging_platform_integration: Slack/Discord/Telegram/LINE channel adapters with unified message normalization, bot command frameworks, WebSocket/SSE lifecycle with heartbeat and horizontal scaling, CloudEvents/AsyncAPI event routing — absorbed from `relay` 2026-08-20
 
 COLLABORATION_PATTERNS:
 - Pattern A: Design-to-Implement (Gateway → Builder)
@@ -154,11 +156,11 @@ Single source of truth for Recipe definitions. Notes carry the scope boundary an
 | Versioning Strategy | `versioning` | | API versioning strategy | Evaluate versioning scheme and governance; highlight deprecation timeline. | `reference/versioning-strategies.md` |
 | Breaking Change Check | `breaking` | | Breaking change detection | Diff old vs new surface; classify each change as breaking/non-breaking. | `reference/breaking-change-detection.md` |
 | REST Semantics | `rest` | | REST resource/URI design, status taxonomy, conditional requests, pagination, RMM, RFC 9457 | **Boundary**: `rest` writes the HTTP-idiom contract, `openapi` is its YAML output; vs Builder `api` (implementation layer) hand off via `GATEWAY_TO_BUILDER`; search retrieval → `Seek` for query semantics, `rest` keeps the URI/status shape. | `reference/rest-api-design.md` |
-| GraphQL Schema | `graphql` | | Schema-first/code-first, DataLoader, persisted queries, Federation/Relay, subscriptions | **Boundary**: `graphql` owns SDL/types/resolver boundaries, Builder `api` implements — `GATEWAY_TO_BUILDER`; schemas exposing search fields cross-link to `Seek` (retrieval architecture). | `reference/graphql-design.md` |
+| GraphQL Schema | `graphql` | | Schema-first/code-first, DataLoader, persisted queries, Federation/Gateway, subscriptions | **Boundary**: `graphql` owns SDL/types/resolver boundaries, Builder `api` implements — `GATEWAY_TO_BUILDER`; schemas exposing search fields cross-link to `Seek` (retrieval architecture). | `reference/graphql-design.md` |
 | Webhook Provider | `webhook` | | Emit-side contract: HMAC signature, idempotency, retry/DLQ, ordering, Sunset/Deprecation | PROVIDER-side contract (the API emits). **Boundary**: PROVIDER side only — Builder `integrate` is the CONSUMER side. | `reference/webhook-design.md` |
 | API Auth | `auth` | | OAuth 2.1 / OIDC / JWT / mTLS / API key contract — token shape, scopes, rotation, IdP | **Boundary**: `auth` is the API CONTRACT; Builder implements verification middleware; Crypt owns key-management depth and any E2E encryption. | `reference/api-auth-patterns.md` |
 | Rate Limiting | `rate-limit` | | Bucket/window algorithms, per-key / per-tenant / per-route scoping, IETF RateLimit headers | **Cross-link**: Probe (abuse verification), Beacon (observability). | `reference/rate-limit-patterns.md` |
-| Deprecation | `deprecation` | | RFC 8594 Sunset / RFC 9745 Deprecation headers, policy, SDK migration timeline, cutover | Window: 6-12 months public, 90 days internal. **Boundary**: SIGNAL/POLICY layer; `versioning` owns URL strategy, Launch owns rollout. Cross-link: Oath (regulated), Voice (customer comms). | `reference/deprecation-policy.md` |
+| Deprecation | `deprecation` | | RFC 8594 Sunset / RFC 9745 Deprecation headers, policy, SDK migration timeline, cutover | Window: 6-12 months public, 90 days internal. **Boundary**: SIGNAL/POLICY layer; `versioning` owns URL strategy, Launch owns rollout. Cross-link: Canon[regulatory] (regulated), Voice (customer comms). | `reference/deprecation-policy.md` |
 
 ### Signal Keywords → Recipe
 
@@ -180,6 +182,7 @@ For natural-language input without an explicit subcommand. Subcommand match wins
 | `idempotency`, `retry`, `duplicate` | `design` (idempotency-key spec) |
 | `gateway`, `API gateway`, `governance` | `design` (gateway architecture) |
 | `webhook`, `HMAC signature`, `event emit`, `DLQ` | `webhook` |
+| Messaging Integration | `messaging` |  | Design chat-platform adapters, bots, and realtime transports |  | `reference/messaging/channel-adapters.md`, `reference/messaging/webhook-patterns.md`, `reference/messaging/realtime-architecture.md` |
 
 ## Subcommand Dispatch
 
@@ -211,7 +214,7 @@ Receives data models, implementation needs, and security requirements upstream; 
 | Schema → Gateway | `SCHEMA_TO_GATEWAY` | Data models for API resource design |
 | Builder → Gateway | `BUILDER_TO_GATEWAY` | Implementation constraints and integration needs |
 | Sentinel → Gateway | `SENTINEL_TO_GATEWAY` | Security requirements for API design |
-| Accord → Gateway | `ACCORD_TO_GATEWAY` | Governance and compliance constraints |
+| Scribe[unified] → Gateway | `SCRIBE_TO_GATEWAY` | Governance and compliance constraints |
 | Gateway → Builder | `GATEWAY_TO_BUILDER` | Completed API spec for implementation |
 | Gateway → Canon | `GATEWAY_TO_CANON` | API contract for canonical source of truth |
 | Gateway → Scribe | `GATEWAY_TO_SCRIBE` | OpenAPI spec for documentation generation |
@@ -229,7 +232,7 @@ Receives data models, implementation needs, and security requirements upstream; 
 | Sentinel | API-layer security design (OAuth scope, rate limiting, CORS headers) | Broad security audit, threat modeling, penetration testing |
 | Builder | API specification, OpenAPI/GraphQL SDL, versioning strategy | API implementation code, route handlers, middleware logic |
 | Canon | API design decisions and rationale | Canonical source of truth maintenance, cross-team standards |
-| Accord | API contract authoring | Governance enforcement, compliance validation, policy management |
+| Scribe[unified] | API contract authoring | Governance enforcement, compliance validation, policy management |
 | Scribe | OpenAPI spec and API design docs | General documentation, tutorials, changelog narration |
 | Siege | API latency SLAs and rate limit thresholds | Load test execution, chaos engineering, resilience validation |
 | Beacon | API SLO/SLI definitions from spec | Observability implementation, alerting, dashboard creation |
@@ -253,13 +256,14 @@ Receives data models, implementation needs, and security requirements upstream; 
 | `reference/graphql-spec-anti-patterns.md` | GraphQL/OpenAPI spec anti-patterns: schema design/N+1/type safety/Design-First. |
 | `reference/ai-api-patterns.md` | AI/LLM API design — SSE streaming, tool use, structured output, AI-endpoint errors. |
 | `reference/rest-api-design.md` | `rest` — resource modeling, URI design, status taxonomy, ETag, cursor pagination, RMM, RFC 9457. |
-| `reference/graphql-design.md` | `graphql` — schema-first vs code-first, DataLoader, persisted queries, depth limits, Federation/Relay, subscriptions. |
+| `reference/graphql-design.md` | `graphql` — schema-first vs code-first, DataLoader, persisted queries, depth limits, Federation/Gateway, subscriptions. |
 | `reference/webhook-design.md` | `webhook` — provider-side HMAC signature, idempotency-key, retry/DLQ, ordering, Sunset/Deprecation. |
 | `reference/api-auth-patterns.md` | `auth` — OAuth 2.1/OIDC/JWT/mTLS/API key contract, scopes, key rotation, IdP. |
 | `reference/rate-limit-patterns.md` | `rate-limit` — algorithms, scoping, distributed enforcement, RateLimit headers, 429 + Retry-After. |
 | `reference/deprecation-policy.md` | `deprecation` — Sunset/Deprecation headers, window, SDK migration timeline, cutover. |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the spec, adaptive thinking depth at DESIGN, front-loading consumer profile at SCAN. Critical: P3, P5. |
 | `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Gateway-specific Output/Next schema. |
+| `reference/messaging/` | Designing chat adapters, bots, webhooks, and realtime transports (absorbed from `relay`) |
 
 ## Operational
 

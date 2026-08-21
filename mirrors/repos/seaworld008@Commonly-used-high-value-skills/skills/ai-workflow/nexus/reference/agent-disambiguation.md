@@ -15,18 +15,18 @@ When multiple agents appear to fit a task, use these decision rules for correct 
 
 ## High Priority — Frequently Confused Pairs
 
-### Gear vs Pipe (DevOps / CI/CD)
+### Gear modes (DevOps / CI/CD)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
 | "Fix CI", "speed up build", "update dependencies" | **Gear** | Maintenance of existing pipelines |
-| "Design new workflow", "reusable workflow", "security hardening for GHA" | **Pipe** | New GHA architecture or advanced patterns |
+| "Design new workflow", "reusable workflow", "security hardening for GHA" | **Gear `gha`** | New GHA architecture or advanced patterns |
 | "Add caching to CI" | **Gear** | Optimization of existing pipeline |
-| "Matrix strategy", "composite action design", "OIDC setup" | **Pipe** | Advanced GHA-specific features |
+| "Matrix strategy", "composite action design", "OIDC setup" | **Gear `gha`** | Advanced GHA-specific features |
 | Docker optimization, local dev setup | **Gear** | Not GHA-specific |
 | Observability/alerting setup | **Gear** + Beacon | Infrastructure concern |
 
-**Rule of thumb**: Existing pipeline maintenance → Gear. New GHA workflow design or advanced GHA features → Pipe.
+**Rule of thumb**: Existing provider-agnostic pipeline maintenance → Gear `ci`. New GitHub Actions workflow design or advanced GHA features → Gear `gha`.
 
 ---
 
@@ -49,6 +49,8 @@ When multiple agents appear to fit a task, use these decision rules for correct 
 
 ### Lore vs Darwin (Ecosystem Meta)
 
+Both are project-local extensions. Apply `_common/PROJECT_LOCAL_SKILLS.md` before routing; when unavailable, use `Tome`/`Scribe` for durable knowledge or `Prune` → `Architect` for ecosystem evaluation and improvement.
+
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
 | "What patterns have agents learned?", "cross-agent insights" | **Lore** | Knowledge synthesis and extraction |
@@ -64,7 +66,7 @@ When multiple agents appear to fit a task, use these decision rules for correct 
 
 ---
 
-### Sigil vs Architect vs Loom (Skill / Agent / Layer Creation)
+### Sigil vs Architect (Skill / Agent / Layer Creation)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
@@ -74,11 +76,11 @@ When multiple agents appear to fit a task, use these decision rules for correct 
 | "Analyze this project and create shortcuts" | **Sigil** | Project context → lightweight skills |
 | "Ecosystem gap analysis" | **Architect** | Ecosystem-level concern |
 | "Improve this agent's SKILL.md" | **Architect** | Agent enhancement |
-| "Design this repo's agents, recipes, AND workflows together" | **Loom** | Project **operating layer** as one system — blueprints the suite, delegates skill bodies to Sigil |
+| "Design this repo's agents, recipes, AND workflows together" | **Sigil `blueprint`** | Project **operating layer** as one system before artifact authoring |
 | "Author one project skill body" | **Sigil** | Single skill, not a coordinated suite |
-| "What agent owns which repo task?" (project routing map) | **Loom** | Project-local routing-map design (consumed by Nexus) |
+| "What agent owns which repo task?" (project routing map) | **Sigil `blueprint`** | Project-local routing-map design (consumed by Nexus) |
 
-**Rule of thumb**: Ecosystem-wide permanent agent → Architect. One project-specific skill → Sigil. A coordinated *set* of project agents/recipes/workflows designed together → Loom (designs, then delegates authoring to Sigil and runtime to Nexus).
+**Rule of thumb**: Ecosystem-wide permanent agent → Architect. One project-specific artifact → Sigil authoring mode. A coordinated *set* of project agents/recipes/workflows → Sigil `blueprint`, with runtime registered in Nexus.
 
 ---
 
@@ -136,46 +138,30 @@ When multiple agents appear to fit a task, use these decision rules for correct 
 
 ---
 
-### Flux vs Riff vs Magi (Thinking Support Trio)
+### Flux vs Magi (Thinking Support)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
-| "Reframe this", "shift perspective", single-shot analysis | **Flux** | One-time perspective shift |
-| "Bounce ideas", "brainstorm with me", "rubber-duck session", iterative dialogue | **Riff** | Multi-turn interactive exploration |
+| "Reframe this", "shift perspective", single-shot analysis | **Flux[reframe]** | One-time perspective shift |
+| "Bounce ideas", "brainstorm with me", "rubber-duck session", iterative dialogue | **Flux[ideate]** | Multi-turn interactive exploration |
 | "Which should we pick?", "Go/No-Go", verdict needed | **Magi** | Structured decision with vote |
-| User wants to explore before knowing what to decide | **Riff** | Open-ended exploration first |
-| User is stuck and needs a new frame, not a conversation | **Flux** | Break the frame, then move on |
+| **A real person is named** — "what would Feynman do here?", "critique this as Christensen would", "panel of Buffett + Munger on this" | **Magi[channel/conclave]** | Named-figure documented thinking as an advisory lens |
+| User wants to explore before knowing what to decide | **Flux[ideate]** | Open-ended exploration first |
+| User is stuck and needs a new frame, not a conversation | **Flux[reframe]** | Break the frame, then move on |
 | User has options and needs a verdict, not more ideas | **Magi** | Converge and decide |
+| User wants *a specific documented thinker's* frame, not any new frame | **Magi[advisor]** | Flux invents a frame; Magi applies a documented person's |
 
-**Rule of thumb**: "Help me think about this" → Riff. "Help me see this differently" → Flux. "Help me decide" → Magi.
+**Rule of thumb**: "Help me think about this" → Flux[ideate]. "Help me see this differently" → Flux[reframe]. "Help me decide" → Magi[decide]. **"Help me see this as _<named person>_" → Magi[advisor].**
 
-**Chain patterns**:
-- Flux (reframe) → Riff (explore the new frame) → Magi (decide) → Builder (implement)
-- Riff (brainstorm) → Spark (formalize as spec) → Builder (implement)
-- Riff (brainstorm) → Void (cut scope) → Builder (implement)
-
----
-
-### Spark vs Dawn (Idea Generation)
-
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Propose a feature for our product", existing data/users/workflows in context | **Spark** | Feature proposal grounded in existing product |
-| "Idea for today", "weekend hack", "side-project concept", no existing product context | **Dawn** | Zero-start personal side-project idea |
-| "Add X to the app" (existing app) | **Spark** | Product feature proposal |
-| "What should I build this weekend?" | **Dawn** | Greenfield personal hack |
-| "RICE score this", "JTBD analysis", "OST" | **Spark** | Product discovery frameworks |
-| "One idea a day", "every morning give me one" | **Dawn** | Daily ritual, 1-invocation = 1-idea |
-| "Coding-agent-ready prompt for a personal project" | **Dawn** | Section 8 implementation prompt |
-| Input has product metrics, personas, feedback | **Spark** | Context-bound proposal |
-| Input is just "give me something fun to build" | **Dawn** | Context-free ideation |
-
-**Rule of thumb**: Existing product context → Spark. Zero-start personal hack → Dawn. Spark produces RFCs with RICE/JTBD; Dawn produces 8-section side-project briefs with a ready-to-paste agent prompt.
+**The named-figure Recipe boundary is a documented individual.** A real, *named* person → Magi[channel/conclave/critique]. A school/movement/collective, or no person at all → Flux. A synthetic user persona → Cast. A fixed founder-mentor archetype (no name) → Magi[advisor]. Named-figure Recipes produce a **reading, not a verdict** — every claim is tagged `ATTESTED` / `INFERRED` / `SPECULATIVE`; a requested decision continues to Magi[decide].
 
 **Chain patterns**:
-- Dawn (daily idea) → Forge (prototype) → Builder (production) → Radar (tests)
-- Dawn (daily idea) → Zine (article-ify for a skill/tech blog series)
-- Spark (feature proposal) → Scribe (formal spec) → Builder (implement)
+- Flux[reframe] (new frame) → Flux[ideate] (explore it) → Magi (decide) → Builder (implement)
+- Flux[ideate] (brainstorm) → Spark (formalize as spec) → Builder (implement)
+- Flux[ideate] (brainstorm) → Void (cut scope) → Builder (implement)
+- **Magi[advisor] → Magi[decide] → Builder** — the canonical "expert lens for a decision" path
+- **Flux[reframe] → Magi[advisor]** — reframe first, then borrow the mind that fits it
+- **Magi[advisor] → Flux[ideate]** — expert mental models as ideation seeds
 
 ---
 
@@ -198,146 +184,111 @@ When multiple agents appear to fit a task, use these decision rules for correct 
 
 ### Artisan vs Forge (Frontend Implementation)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Prototype this quickly", "just make it work" | **Forge** | Speed over quality |
-| "Production-ready component", "hooks design", "state management" | **Artisan** | Production quality |
-| "Validate idea with working demo" | **Forge** | Proof of concept |
-| "Convert prototype to production" | **Forge → Artisan** | Standard handoff |
-| "Build this React component" (no existing prototype) | **Artisan** | Direct production build |
-| Backend mock/API stub | **Forge** | Backend prototyping |
-
-**Rule of thumb**: Uncertain requirements or exploration → Forge first. Clear requirements → Artisan directly. Never use both if requirements are already clear.
+**Rule of thumb**: Uncertain requirements or exploration → Forge first ("just make it work", backend mock/API stub). Clear requirements ("hooks design", "state management", production-ready component) → Artisan directly. "Convert prototype to production" is the standard Forge → Artisan handoff; never use both if requirements are already clear.
 
 ---
 
 ### Atlas vs Ripple (Architecture Analysis)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Analyze dependencies", "find God Classes", "circular references" | **Atlas** | Current architecture evaluation |
-| "What's the impact of changing X?", "is this change safe?" | **Ripple** | Pre-change impact assessment |
-| "Create ADR", "architecture decision" | **Atlas** → Magi | Architecture documentation |
-| "Should we proceed with this refactor?" | **Ripple** | Risk evaluation before action |
-| "Module decomposition strategy" | **Atlas** | Structural analysis |
-| "Will renaming this break anything?" | **Ripple** | Change impact |
-
-**Rule of thumb**: "What IS the architecture?" → Atlas. "What HAPPENS IF we change it?" → Ripple.
+**Rule of thumb**: "What IS the architecture?" → Atlas (dependency graphs, God Classes, module decomposition, "create ADR" → Magi). "What HAPPENS IF we change it?" → Ripple ("is this change safe?", "will renaming this break anything?").
 
 ---
 
 ### Scout vs Lens (Code Investigation)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Why is X broken?", "find the bug" | **Scout** | Bug-driven investigation |
-| "How does X work?", "explain this module" | **Lens** | Comprehension-driven exploration |
-| "What caused this regression?" | **Trail** → Scout | Git history then RCA |
-| "Does feature X exist?", "where is X implemented?" | **Lens** | Code exploration |
-| "Reproduce this error" | **Scout** | Bug reproduction |
-| "Map the data flow for X" | **Lens** → Canvas | Understanding then visualization |
-
-**Rule of thumb**: Broken behavior → Scout. Understanding behavior → Lens.
+**Rule of thumb**: Broken behavior → Scout ("find the bug", "reproduce this error"). Understanding behavior → Lens ("how does X work?", "does feature X exist?"). Regression root cause → Trail (history) → Scout (RCA); data-flow mapping → Lens → Canvas (visualize).
 
 ---
 
 ### Voice vs Field (User Insights)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Analyze app store reviews", "NPS survey", "sentiment analysis" | **Voice** | Quantitative feedback analysis |
-| "Design interview questions", "usability test plan" | **Field** | Research methodology |
-| "What are users saying about X?" | **Voice** | Existing feedback collection |
-| "What do users NEED from X?" | **Field** | Deep user understanding |
-| "Create feedback collection system" | **Voice** | Feedback infrastructure |
-| "Create journey map" | **Field** | User experience mapping |
-
-**Rule of thumb**: Collect/analyze existing feedback → Voice. Design new research → Field.
+**Rule of thumb**: Collect/analyze existing feedback → Voice ("NPS survey", "sentiment analysis", "what are users saying about X?", feedback collection systems). Design new research → Field ("usability test plan", "journey map", "what do users NEED from X?").
 
 ---
 
 ### Palette vs Flow (UI Interaction)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Improve usability", "reduce cognitive load", "a11y" | **Palette** | UX quality improvement |
-| "Add hover animation", "loading transition", "modal animation" | **Flow** | CSS/JS animation implementation |
-| "This button feels unresponsive" | **Palette** | Interaction quality |
-| "Animate this page transition" | **Flow** | Motion design |
-| "Micro-interaction design" | **Palette** (simple) / **Flow** (complex) | Complexity determines agent |
-
-**Rule of thumb**: UX/usability concern → Palette. Animation implementation → Flow.
+**Rule of thumb**: UX/usability concern → Palette ("reduce cognitive load", "a11y", "this button feels unresponsive"). Animation implementation → Flow ("hover animation", "loading transition", "animate this page transition"). Micro-interaction design: simple → Palette, complex → Flow.
 
 ---
 
 ### Prose vs Palette (Content & UX)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Write error messages", "improve button labels" | **Prose** | Content creation |
-| "Evaluate UX quality", "audit interaction patterns" | **Palette** | UX assessment |
-| "Onboarding copy", "voice & tone guide" | **Prose** | Content strategy |
-| "Form feels confusing" | **Palette** (assess) → Prose (rewrite) | Assessment then content |
-
-**Rule of thumb**: Write/rewrite text → Prose. Evaluate/improve interaction → Palette.
+**Rule of thumb**: Write/rewrite text → Prose ("error messages", "button labels", "onboarding copy", "voice & tone guide"). Evaluate/improve interaction → Palette ("audit interaction patterns"). "Form feels confusing" → Palette (assess) → Prose (rewrite).
 
 ---
 
 ### Void vs Zen vs Sweep (Necessity / Quality / Cleanup)
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Do we need this?" "YAGNI" "over-engineering" | **Void** | Evaluates whether the thing should exist at all, including non-code assets |
-| "Refactor" "improve the code" "make it more readable" | **Zen** | Improves code quality |
-| "Dead code" "unused files" | **Sweep** | Physically detects unused code/files |
-| "Do we need this process?" "too many meetings" | **Void** | Evaluates whether the process is justified |
-| "This document is outdated" | **Void** (evaluate) → Sweep (remove) | Validate the document's necessity, then remove it if warranted |
+**Rule of thumb**: "Is it necessary?" → Void ("YAGNI", "over-engineering", "do we need this process?" — includes non-code assets). "Is it clean?" → Zen ("make it more readable"). "Is it being used?" → Sweep ("dead code", "unused files"). An outdated document → Void (validate necessity) → Sweep (remove).
 
-**Rule of thumb**: "Is it necessary?" → Void. "Is it clean?" → Zen. "Is it being used?" → Sweep.
+### Chisel vs Oracle vs Scribe vs Attest (Prompt Language / Prompt System / Spec / Conformance)
 
-### Grove vs Nest (Repository Structure / LLM-Optimized Folders)
+All four make requirements explicit; they differ by **what the object is** and **when in the lifecycle they act**.
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Repository structure", "directory layout", "monorepo design" | **Grove** | Human developer conventions and CI/CD paths |
-| "Optimize folders for LLM", "context cost", "CLAUDE.md hierarchy" | **Nest** | LLM navigation efficiency and cache topology |
-| "Agents can't find files", "token budget too high" | **Nest** | LLM-specific discovery and cost optimization |
-| "Project organization", "team conventions" | **Grove** | Developer workflow optimization |
+| Route to | When the object is | Deliverable |
+|----------|--------------------|-------------|
+| **Chisel** | A **supplied prompt's wording** — "high quality", "concise", "modern", "as appropriate", "latest", "you are a world-class X" | Ambiguity ledger + rewritten prompt as an executable spec |
+| **Oracle** | The **prompt system** around it — few-shot policy, structured output, versioning, eval gates, cost, RAG or agent architecture | AI design + eval/guardrail contracts |
+| **Scribe** | A **document for people** — PRD / SRS / HLD / LLD | Specification document |
+| **Attest** | A **finished artifact vs criteria that already exist** | Conformance verdict + traceability matrix |
 
-**Rule of thumb**: Human developer experience → Grove. LLM/AI tool navigation efficiency → Nest.
+**Rule of thumb**: Chisel changes the words of an instruction so a machine can execute and a third party can score it. Oracle decides what the instruction should be part of. Scribe writes for humans. Attest checks afterwards.
+
+**Two traps:**
+- **The user's own request being ambiguous is not a Chisel task.** That is the internal CLASSIFY GATE (`intent-clarification.md`). Chisel needs *supplied prompt text as an object*.
+- **A bad output is not evidence of a vague prompt.** Run Oracle's five-layer triage (Instruction / Context / Capability / Tool / Evaluation) before routing to Chisel — retrieval and evaluator failures are routinely misdiagnosed as prompt failures.
+
+Prompt text inside a `SKILL.md` splits the same way: the file's structure and normalization → `Gauge` / `Sigil` / `Architect`; the vague wording inside its instructions → Chisel.
 
 ---
 
-### Helm vs Spark vs Plea (JTBD — Jobs-To-Be-Done)
+### Grove modes (Repository Structure / LLM-Optimized Folders)
+
+**Rule of thumb**: Human developer experience → Grove default modes ("directory layout", "monorepo design", "team conventions", CI/CD paths). LLM/AI tool navigation efficiency → Grove `llm` ("context cost", "CLAUDE.md hierarchy", "agents can't find files", "token budget too high").
+
+---
+
+### Magi vs Spark vs Echo[demand] (JTBD — Jobs-To-Be-Done)
 
 Three skills hold full JTBD content, each applying it through a different lens — this is
 intentional multi-lens coverage, not duplication. Route by *what the JTBD output feeds*.
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Define the competitive set by job", "market/category strategy via JTBD", "disruption" | **Helm** | Strategic lens — job as the unit of competition (`jobs-to-be-done.md`) |
-| "Target a feature to a persona's job", "feature brief", "proposal hypothesis" | **Spark** | Product lens — persona + JTBD → feature proposal (`persona-jtbd.md`) |
-| "Switch interview", "forces of progress for demand", "why users would switch" | **Plea** | Demand lens — synthetic switch interviews (`jtbd-switch-interview.md`) |
-
-**Rule of thumb**: strategy/competitive-set → Helm; feature targeting → Spark; demand/switch
-interview → Plea. Value Proposition Canvas (jobs/pains/gains zoom-in) lives in **Spark**
-(`value-proposition-canvas.md`) and pulls its jobs block from `persona-jtbd.md`.
+**Rule of thumb**: strategy/competitive-set ("market/category strategy via JTBD", "disruption") →
+Magi (`jobs-to-be-done.md`); feature targeting ("feature brief", "proposal hypothesis") → Spark
+(`persona-jtbd.md`); demand/switch interview ("forces of progress for demand", "why users would
+switch") → Echo `demand` (`demand-jtbd-switch-interview.md`). Value Proposition Canvas (jobs/pains/gains zoom-in)
+lives in **Spark** (`value-proposition-canvas.md`) and pulls its jobs block from `persona-jtbd.md`.
 
 ---
 
-### Helm vs Compete vs Spark (Market Sizing — TAM/SAM/SOM)
+### Magi vs Compete vs Spark (Market Sizing — TAM/SAM/SOM)
 
 Three skills size markets, each for a different decision. Route by *the decision the number
 informs*, not the acronym.
 
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "Strategic market headroom", "entry scoring", "portfolio sizing" | **Helm** | Strategy lens — market-entry / scenario interpretation (`market-sizing-strategy.md`) |
-| "Market size vs competitors", "competitive TAM", "share capture" | **Compete** | Competitive lens — sizing within a competitor landscape (`market-sizing.md`) |
-| "How much can this feature earn", "opportunity upper bound" | **Spark** | Feature lens — opportunity sizing for a single proposal (`opportunity-sizing.md`) |
+**Rule of thumb**: whole-business/entry strategy ("strategic market headroom", "entry scoring",
+"portfolio sizing") → Magi (`market-sizing-strategy.md`); competitor-relative ("market size vs
+competitors", "competitive TAM", "share capture") → Compete (`market-sizing.md`); per-feature
+upside ("how much can this feature earn", "opportunity upper bound") → Spark (`opportunity-sizing.md`).
 
-**Rule of thumb**: whole-business/entry strategy → Helm; competitor-relative → Compete;
-per-feature upside → Spark.
+---
+
+### Chain Modes (Malware / Supply-Chain)
+
+**Rule of thumb**: "Is something already infected right now?" → Chain's malware-response Recipes. "Should we trust this before we let it in?" → Chain's intake/audit Recipes.
+
+---
+
+### Voyager modes (Mobile / Cross-Platform UI Testing)
+
+**Rule of thumb**: Pure-iOS XCUITest/screenshot pipeline → Voyager `ios` ("accessibility-identifier query", "fastlane snapshot", "App Store screenshot pipeline"). Cross-platform E2E (Appium/Detox/Maestro/Playwright) → Voyager's platform modes.
+
+---
+
+### Vector vs Voyager (Browser Automation)
+
+**Rule of thumb**: One-off browser task completion → Vector ("collect data", "fill this form", "capture a screenshot"). Durable regression E2E test authoring → Voyager ("write a regression E2E test", "durable test suite").
 
 ---
 
@@ -383,13 +334,13 @@ per-feature upside → Spark.
 
 **Rule**: Code documentation (JSDoc, README) → Quill. Specification documents (PRD, SRS) → Scribe.
 
-### Helm vs Compete
+### Magi vs Compete
 
-**Rule**: Business strategy simulation → Helm. Competitive intelligence gathering → Compete. Compete output feeds into Helm input.
+**Rule**: Business strategy simulation → Magi. Competitive intelligence gathering → Compete. Compete output feeds into Magi input.
 
-### Titan vs Nexus
+### Nexus build recipes
 
-**Rule**: "Build a product from scratch" → Titan. "Execute this task chain" → Nexus. Titan issues chains TO Nexus.
+**Rule**: One bounded capability → Nexus `feature`. A product/MVP build whose chain must adapt to scope → Nexus `deliver`. A high-investment discovery-to-ship run → Nexus `apex`.
 
 ---
 
@@ -407,16 +358,16 @@ per-feature upside → Spark.
 
 ---
 
-### Cloak vs Oath vs Crypt (Privacy / Compliance / Crypto)
+### Cloak vs Canon[regulatory] vs Crypt (Privacy / Compliance / Crypto)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
 | "Find PII exposure", "GDPR audit" | **Cloak** | Privacy-focused |
-| "SOC2 readiness", "HIPAA controls" | **Oath** | Framework compliance |
+| "SOC2 readiness", "HIPAA controls" | **Canon[regulatory]** | Framework compliance |
 | "Encryption design", "key management" | **Crypt** | Cryptographic architecture |
 | "Security audit" (broad) | **Sentinel** first | Start with static analysis |
 
-**Rule of thumb**: PII/consent/privacy → Cloak. Regulatory frameworks → Oath. Crypto algorithms/keys → Crypt.
+**Rule of thumb**: PII/consent/privacy → Cloak. Regulatory frameworks → Canon[regulatory]. Crypto algorithms/keys → Crypt.
 
 ---
 
@@ -433,16 +384,16 @@ per-feature upside → Spark.
 
 ---
 
-### Shard vs Schema (Multi-tenant / DB Design)
+### Schema modes (Multi-tenant / DB Design)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
-| "Tenant isolation strategy" | **Shard** | Multi-tenant architecture |
+| "Tenant isolation strategy" | **Schema `tenant`** | Multi-tenant architecture |
 | "Database normalization", "ER diagram" | **Schema** | Schema design |
-| "RLS policies for tenants" | **Shard** | Tenant-specific policies |
+| "RLS policies for tenants" | **Schema `tenant`** | Tenant-specific policies |
 | "Add a new table/column" | **Schema** | Regular schema change |
 
-**Rule of thumb**: Multi-tenant concerns → Shard. General DB design → Schema.
+**Rule of thumb**: Multi-tenant concerns → Schema `tenant`. General DB design → Schema's schema/migration modes.
 
 ---
 
@@ -472,57 +423,59 @@ per-feature upside → Spark.
 
 ---
 
-### Zine vs Scribe vs Prose vs Saga vs Tome (Writing Agents)
+### Tome vs Scribe vs Prose vs Saga (Writing Agents)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
-| "Tech blog post for note/Zenn/Qiita/dev.to" | **Zine** | External long-form article |
+| "Tech blog post for note/Zenn/Qiita/dev.to" | **Tome** | External long-form article |
 | "PRD, spec, design document, SRS" | **Scribe** | Internal technical documentation |
 | "Error message, button label, UX microcopy" | **Prose** | User-facing short-form text |
 | "Customer story, use-case narrative for marketing" | **Saga** | Product narrative |
 | "Auto-generate learning doc from git diff" | **Tome** | Diff-driven teaching material |
-| "Tutorial / retrospective / announcement article" | **Zine** | External article regardless of topic |
-| "Internal README explaining the module" | **Quill** | Code-adjacent docs (not Zine) |
-| "Multi-episode series with index article" | **Zine** | Series management is first-class in Zine |
-| "Retrospective as a Tome learning doc vs a Zine post" | **Tome** (internal) / **Zine** (external) | Destination audience decides |
+| "Tutorial / retrospective / announcement article" | **Tome** | External article regardless of topic |
+| "Internal README explaining the module" | **Quill** | Code-adjacent docs (not Tome) |
+| "Multi-episode series with index article" | **Tome** | Series management is first-class in Tome |
+| "Retrospective as a learning doc or a public post" | **Tome** | Destination audience selects the Tome Recipe and format |
 
-**Rule of thumb**: External public article → Zine. Internal spec/doc → Scribe. UI text → Prose. Product story → Saga. Diff → learning doc → Tome.
+**Rule of thumb**: External public article → Tome. Internal spec/doc → Scribe. UI text → Prose. Product story → Saga. Diff → learning doc → Tome.
 
 ---
 
-### Tempo vs Weave vs Launch vs Orbit (Scheduling / Time / Flow)
+### Weave vs Launch vs Orbit (Scheduling / Time / Flow)
+
+Orbit is project-local. Apply `_common/PROJECT_LOCAL_SKILLS.md`; when unavailable, use `Nexus[goal/apex]` for bounded execution or `Sherpa` for decomposition.
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
-| "Design cron expression", "timezone/DST handling" | **Tempo** | Temporal logic design |
-| "Retry/backoff policy", "idempotency key design" | **Tempo** | Time-related resilience |
-| "State machine with retries" | **Tempo** (policy) + Weave (FSM) | Split: Tempo owns timing, Weave owns states |
+| "Design cron expression", "timezone/DST handling" | **Weave[schedule]** | Temporal logic design |
+| "Retry/backoff policy", "idempotency key design" | **Weave[retry]** | Time-related resilience |
+| "State machine with retries" | **Weave[retry]** + **Weave[design]** | One owner: `retry` sets the backoff policy, `design` sets the states |
 | "Release scheduling, feature flag rollout" | **Launch** | One-time release events |
 | "Autonomous AI loop runner (nexus-autoloop)" | **Orbit** | Script-driven AI loops |
-| "Business calendar (JP holidays, fiscal year, banking days)" | **Tempo** | Calendar-as-code |
-| "GitHub Actions cron tuning" | **Tempo** (design) + Gear/Pipe (impl) | Tempo picks pattern, Gear/Pipe configures |
-| "Backfill missed runs after incident" | **Triage** → **Tempo** (replay plan) → Builder | Tempo designs idempotent replay |
+| "Business calendar (JP holidays, fiscal year, banking days)" | **Weave[schedule]** | Calendar-as-code |
+| "GitHub Actions cron tuning" | **Weave[schedule]** + Gear[gha] (impl) | Weave picks the pattern, Gear configures the runner |
+| "Backfill missed runs after incident" | **Triage** → **Weave[schedule]** (replay plan) → Builder | Weave designs idempotent replay |
 
-**Rule of thumb**: Recurring time logic → Tempo. State machine → Weave. Release event → Launch. AI agent loop → Orbit.
+**Rule of thumb**: Recurring time logic → Weave[schedule]. State machine → Weave[design]. Release event → Launch. AI agent loop → Orbit.
 
 ---
 
-### Grok vs Builder vs Gateway vs Schema (Grammar / API / Data Design)
+### Builder vs Gateway vs Schema (Grammar / API / Data Design)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
-| "Design grammar (EBNF/ABNF/PEG)", "parser-generator choice" | **Grok** | Grammar / parser layer |
-| "ReDoS-safe regex", "catastrophic backtracking audit" | **Grok** | Regex security design |
-| "Internal DSL (fluent API, template literal, YAML-embedded)" | **Grok** | DSL architecture |
-| "AST transformation, Babel plugin, jscodeshift, codemod" | **Grok** | AST design / transform |
+| "Design grammar (EBNF/ABNF/PEG)", "parser-generator choice" | **Builder[grammar]** | Grammar / parser layer |
+| "ReDoS-safe regex", "catastrophic backtracking audit" | **Builder[grammar]** (design) + **Sentinel** (audit) | Builder writes the pattern, Sentinel audits the shipped one |
+| "Internal DSL (fluent API, template literal, YAML-embedded)" | **Builder[grammar]** | DSL architecture |
+| "AST transformation, Babel plugin, jscodeshift, codemod" | **Builder[grammar]** (design) + **Shift** (migration) | Builder shapes the transform, Shift orchestrates the rollout |
 | "REST/GraphQL API design, OpenAPI spec" | **Gateway** | HTTP API contract |
 | "Database schema, migration, ER diagram" | **Schema** | Persistence schema |
 | "General business logic implementation" | **Builder** | General implementation |
-| "Log parsing with grok patterns (Logstash)" | **Grok** | Pattern engine migration/design |
+| "Log parsing with builder patterns (Logstash)" | **Builder** | Pattern engine migration/design |
 | "Static security scan of shipped regex" | **Sentinel** | Post-ship audit, not design |
 | "Fuzz testing against a parser" | **Radar** | Test execution, not grammar design |
 
-**Rule of thumb**: Textual grammar/pattern/DSL → Grok. HTTP API → Gateway. DB schema → Schema. General impl → Builder. Grok designs; Sentinel audits; Radar tests.
+**Rule of thumb**: Textual grammar/pattern/DSL → Builder. HTTP API → Gateway. DB schema → Schema. General impl → Builder. Builder designs; Sentinel audits; Radar tests.
 
 ---
 
@@ -550,44 +503,22 @@ per-feature upside → Spark.
 
 ---
 
-### Haul vs Vector vs Trawl vs Sketch (Image / Asset Acquisition)
+### Magi vs Flux vs Spark (Founder Decisions & Ideation)
 
 | Signal | Route to | Rationale |
 |--------|----------|-----------|
-| "Collect product images by SKU / JAN / UPC" | **Haul** | Identifier-driven product image acquisition |
-| "Fetch product images from e-commerce / brand sites" | **Haul** | Multi-source product imagery aggregation |
-| "catalog images with provenance & license" | **Haul** | License-aware curation |
-| "Deduplicate image set with perceptual hash" | **Haul** | Cross-source pHash dedup |
-| "reverse image search → canonical product URL" | **Haul** (reverse recipe) | Sample image → product canonical |
-| "license / provenance audit (no new fetch)" | **Haul** (audit recipe) | Audit-only mode |
-| "Fetch images from login-protected sites" | **Vector** → **Haul** | Auth handoff then download |
-| "Fleet-scale crawl design: 1K+ URL/day, 100+ domains" | **Trawl** | Architecture only |
-| "General browser automation, form input, screenshot capture" | **Vector** | Generic browser tasks |
-| "Generate image from text (text-to-image)" | **Sketch** | AI image generation |
-| "Reproduce HTML/CSS from mockup" | **Pixel** | Mockup-to-code |
-| "Icon / SVG illustration" | **Ink** | Vector asset generation |
-
-**Rule of thumb**: Product image acquisition → Haul. General browser automation → Vector. Fleet-scale crawl architecture → Trawl. AI image generation → Sketch. Haul requires license_class; unknown license blocks distribution.
-
----
-
-### Sage vs Riff vs Magi vs Helm vs Spark vs Flux (Founder Decisions & Ideation)
-
-| Signal | Route to | Rationale |
-|--------|----------|-----------|
-| "office hours" / "I'm stuck" / "what should I focus on" | **Sage** | YC-style advisory; extract the single bottleneck |
-| "founder advisory" / "creative direction reality check" | **Sage** | Pattern match + founder anti-pattern detection |
-| "review my pitch" / "Demo Day deck" / "investor Q&A practice" | **Sage** (pitch recipe) | STRUCTURE → CLARITY → TENSION → RESONANCE → REVISE |
-| "we just shipped X / hired Y / pivoted Z, postmortem" | **Sage** (retro recipe) | Retrospective on recent decisions and outcomes |
-| "we're stuck right now, need to unblock" | **Sage** (triage recipe) | Emergency unblock within 5 turns |
-| "I want to generate ideas, diverge" | **Riff** | Iterative divergent ideation (4 modes) |
+| "office hours" / "I'm stuck" / "what should I focus on" | **Magi** | YC-style advisory; extract the single bottleneck |
+| "founder advisory" / "creative direction reality check" | **Magi** | Pattern match + founder anti-pattern detection |
+| "review my pitch" / "Demo Day deck" / "investor Q&A practice" | **Magi** (pitch recipe) | STRUCTURE → CLARITY → TENSION → RESONANCE → REVISE |
+| "we just shipped X / hired Y / pivoted Z, postmortem" | **Magi** (retro recipe) | Retrospective on recent decisions and outcomes |
+| "we're stuck right now, need to unblock" | **Magi** (triage recipe) | Emergency unblock within 5 turns |
+| "I want to generate ideas, diverge" | **Flux[ideate]** | Iterative divergent ideation (4 modes) |
 | "Propose a new feature as a Markdown spec" | **Spark** | Feature proposals from existing data/logic |
 | "GO / NO-GO decision, pick among multiple options" | **Magi** | Three-perspective deliberation (Logos/Pathos/Sophia) |
-| "Quarterly / annual scenario simulation, KPI forecast" | **Helm** | Long-term strategy simulation |
-| "Question assumptions, shift perspective" | **Flux** | Single-shot reframing |
-| "Personal project idea buildable in 1-3 days" | **Dawn** | Daily personal idea ritual |
+| "Quarterly / annual scenario simulation, KPI forecast" | **Magi[simulate]** | Long-term strategy simulation |
+| "Question assumptions, shift perspective" | **Flux[reframe]** | Single-shot reframing |
 
-**Rule of thumb**: One actionable move to make this week → Sage. Diverge → Riff. Three-perspective deliberation → Magi. Long-term scenario → Helm. Feature spec → Spark. Flip assumptions → Flux. Sage does **not** generate ideas — it surfaces what the founder is avoiding.
+**Rule of thumb**: One actionable move to make this week → Magi[advisor]. Diverge → Flux[ideate]. Three-perspective deliberation → Magi[decide]. Long-term scenario → Magi[simulate]. Feature spec → Spark. Flip assumptions → Flux[reframe]. Magi does **not** generate ideas — it surfaces what the founder is avoiding.
 
 ---
 
@@ -600,7 +531,7 @@ For S/M scope projects, skip agents that add overhead without proportional value
 | Vision | Palette/Muse directly | No full UX redesign needed |
 | Forge | Artisan directly | Requirements are clear |
 | Cast | Echo standalone | Simple persona needs |
-| Pipe | Gear | Basic CI/CD only |
+| Gear[gha] | Gear | Basic CI/CD only |
 | Compete | Skip entirely | Internal tools, no competitors |
 | Scribe | Skip entirely | S scope, no formal specs needed |
 | Field | Echo directly | No formal research methodology needed |

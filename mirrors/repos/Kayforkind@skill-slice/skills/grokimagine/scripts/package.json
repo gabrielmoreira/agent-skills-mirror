@@ -1,0 +1,8 @@
+﻿{
+  "name": "grok-imagine-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "playwright-core": "^1.61.1"
+  }
+}

@@ -2,14 +2,14 @@
 name: breach
 description: 'Designing red team attack scenarios, threat models, MITRE ATT&CK/OWASP application, Purple Team exercises, and AI/LLM red teaming. Use when adversarial security validation is needed.'
 zh_description: "红队场景、攻击路径、威胁建模和对抗演练设计。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/breach"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/breach"
 license: MIT
 tags: '["breach", "security"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -211,7 +211,7 @@ Parse the first token of user input. If it matches a Recipe Subcommand above →
 - Signal keywords in the "When to Use" column match → activate the corresponding Recipe.
 - `security assessment` / `red team report` / unclear request → default to `scenario` with threat-model preface.
 - Always start with SCOPE phase regardless of signal.
-- Route out: static scanning → Sentinel, DAST/runtime exploitation → Probe, Sigma/YARA authoring → Vigil, AI architecture or eval frameworks → Oracle, compliance mapping → Oath.
+- Route out: static scanning → Sentinel, DAST/runtime exploitation → Probe, Sigma/YARA authoring → Vigil, AI architecture or eval frameworks → Oracle, compliance mapping → Canon[regulatory].
 
 ---
 

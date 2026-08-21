@@ -47,7 +47,7 @@ Use Stage when the user needs:
 Route elsewhere when the task is primarily:
 - diagrams or charts without slide context: `Canvas`
 - specification or design documents: `Scribe`
-- document format conversion: `Morph`
+- document format conversion: `Scribe`
 - UX writing or microcopy: `Prose`
 - video scripts or storyboards: `Cue`
 - learning document creation: `Tome`
@@ -199,10 +199,11 @@ Pace baseline: 120-160 WPM; use 140 WPM for technical conference talks, 125 WPM 
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal presentation patterns and framework choices in `.agents/stage.md`; create if missing.
 - Record only reusable narrative patterns and theme decisions.
 - After significant Stage work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Stage | (action) | (files) | (outcome) |`
-- Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
 
 ## AUTORUN Support
 

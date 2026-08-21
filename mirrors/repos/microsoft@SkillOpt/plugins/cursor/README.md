@@ -71,8 +71,11 @@ Run the native command, for example:
 /skillopt-sleep status
 /skillopt-sleep dry-run --backend mock --max-sessions 5 --max-tasks 3
 /skillopt-sleep run --backend cursor --max-sessions 5 --max-tasks 3 --progress
-/skillopt-sleep adopt
+/skillopt-sleep adopt --legacy
 ```
+
+For fan-out proposals, inspect `status` and use repeatable `--skill NAME` or
+`--all-skills`. Bare adopt deliberately refuses a night containing fan-out rows.
 
 The `skillopt-sleep` agent skill remains independently available if a Cursor
 version does not surface plugin commands.
@@ -124,7 +127,8 @@ skillopt-sleep dry-run --project "$(pwd)" --source cursor --backend mock \
 skillopt-sleep run --project "$(pwd)" --source cursor --backend cursor \
   --target-skill-path .cursor/skills/skillopt-sleep-learned/SKILL.md \
   --max-sessions 5 --max-tasks 3 --progress
-skillopt-sleep adopt --project "$(pwd)"
+skillopt-sleep status --project "$(pwd)"
+skillopt-sleep adopt --project "$(pwd)" --legacy
 ```
 
 `--source cursor` reads local JSONL transcripts below

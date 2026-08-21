@@ -62,8 +62,12 @@ bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" dry-run --project "$(pwd)" \
 bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" run --project "$(pwd)" \
   --source codex --target-skill-path "$TARGET_SKILL" --backend codex \
   --max-sessions 5 --max-tasks 3 --progress
-bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" adopt --project "$(pwd)"
+bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" status --project "$(pwd)"
+bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" adopt --project "$(pwd)" --legacy
 ```
+
+For a fan-out night, select reviewed proposals with repeatable
+`--skill NAME` or `--all-skills`; do not treat bare adopt as “adopt everything.”
 
 On Windows (CMD / PowerShell):
 ```cmd

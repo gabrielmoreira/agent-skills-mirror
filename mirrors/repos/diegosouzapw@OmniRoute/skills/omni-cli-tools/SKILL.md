@@ -29,7 +29,7 @@ Create CLI tool backup
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/backups \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -67,7 +67,7 @@ Update Antigravity MITM proxy settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/antigravity-mitm \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -96,7 +96,7 @@ Update Antigravity MITM alias configuration
 
 ```bash
 curl -X PUT https://localhost:20128/api/cli-tools/antigravity-mitm/alias \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -116,7 +116,7 @@ Apply Claude CLI settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/claude-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -145,7 +145,7 @@ Apply Cline CLI settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/cline-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -174,7 +174,7 @@ Create Codex profile
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/codex-profiles \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -185,7 +185,7 @@ Update Codex profile
 
 ```bash
 curl -X PUT https://localhost:20128/api/cli-tools/codex-profiles \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -214,7 +214,7 @@ Apply Codex CLI settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/codex-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -243,7 +243,7 @@ Apply Droid CLI settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/droid-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -272,7 +272,7 @@ Apply Kilo CLI settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/kilo-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -301,7 +301,7 @@ Apply OpenClaw CLI settings
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/openclaw-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -334,7 +334,7 @@ Local-only. Registers OmniRoute as an `openai-compat` provider in Crush's config
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/crush-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -369,7 +369,7 @@ Local-only. Writes the OmniRoute config block in CodeWhale TOML format.
 
 ```bash
 curl -X POST https://localhost:20128/api/cli-tools/codewhale-settings \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```

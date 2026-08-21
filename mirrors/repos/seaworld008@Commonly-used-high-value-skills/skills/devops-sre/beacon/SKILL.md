@@ -2,14 +2,14 @@
 name: beacon
 description: 'Engineering observability and reliability: SLO/SLI design, distributed tracing, alerting, dashboards, capacity planning, toil automation, reliability review. Use for instrumentation or SLO definition.'
 zh_description: "可观测性、服务目标、告警、容量和可靠性设计。"
-version: "1.0.4"
+version: "1.0.5"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/beacon"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/beacon"
 license: MIT
 tags: '["beacon", "devops", "sre"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---

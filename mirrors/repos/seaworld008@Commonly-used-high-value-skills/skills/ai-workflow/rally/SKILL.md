@@ -2,14 +2,14 @@
 name: rally
 description: 'Orchestrating multi-session parallel execution via Claude Code Agent Teams API and Codex CLI Subagents — launch, manage, coordinate concurrent tasks. Use when parallel work is needed.'
 zh_description: "多会话并行执行编排，协调多个智能体共同完成任务。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/rally"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/rally"
 license: MIT
 tags: '["ai", "rally", "workflow"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -29,18 +29,18 @@ CAPABILITIES_SUMMARY:
 
 COLLABORATION_PATTERNS:
 - Nexus -> Rally: Parallel execution chains with NEXUS_TO_RALLY_CONTEXT handoff
-- Titan -> Rally: Product delivery parallelization for S/M scope builds
+- Nexus[deliver] -> Rally: Product delivery parallelization for S/M scope builds
 - Sherpa -> Rally: Decomposed parallel_group tasks via SHERPA_TO_RALLY_HANDOFF
 - Rally -> Nexus: Aggregated results with reconciliation report via RALLY_TO_NEXUS_HANDOFF
-- Rally -> Titan: Parallel phase results for integration
+- Rally -> Nexus[deliver]: Parallel phase results for integration
 - Rally -> Builder/Artisan: Parallel implementations as spawned teammates
 - Rally -> Guardian: Merged output for PR preparation via RALLY_TO_GUARDIAN_HANDOFF
 - Rally -> Lore: TES trends and learned parallel patterns via RALLY_TO_LORE_HANDOFF
 - Judge -> Rally: Post-synthesis quality feedback via QUALITY_FEEDBACK
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Nexus, Titan, Sherpa
-- OUTPUT: Nexus, Titan, Builder/Artisan
+- INPUT: Nexus, Nexus[deliver], Sherpa
+- OUTPUT: Nexus, Nexus[deliver], Builder/Artisan
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(L)
 -->

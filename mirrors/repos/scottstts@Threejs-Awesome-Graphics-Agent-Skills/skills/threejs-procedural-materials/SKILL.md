@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, reflective wave-optical diffraction gratings, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -83,6 +83,19 @@ masks select local groove angle, pitch, and relief while wavelength alone owns
 spectral colour. Its complete optical model is expressed as a pure TSL graph
 with `Fn`, `If`, and `Loop`, without embedded native shader source.
 
+Read
+[references/thin-film-soap-bubble-system.md](references/thin-film-soap-bubble-system.md)
+for the air-film-air Airy equation, representative RGB spectral bands,
+two-membrane blending, bounded secondary reflection, capillary mechanics,
+camera-aware inflow, puncture retraction, limits, and diagnostics.
+
+Read the
+[thin-film soap bubble system](examples/thin-film-soap-bubbles/soap-bubble-system.js)
+when soap-film interference must drive the image: it provides wavelength-
+dependent aqueous index, front and rear membrane passes, analytic nearby-
+bubble reflection, volume-preserving capillary modes, buoyancy and drag,
+Taylor-Culick rupture, visible-drop aftermath, and deterministic physics gates.
+
 ## Required controls
 
 - real or perceptual texture scale;
@@ -92,6 +105,8 @@ with `Fn`, `If`, and `Loop`, without embedded native shader source.
 - for a transmissive body, the physical constants that define it — index and
 Abbe pair, interior path budget, extinction depth — named rather than buried
 inside expressions;
+- for a soap film, the exterior and film indices, nanometre thickness range,
+  wavelength bands, surface tension, and membrane ordering;
 - distance/derivative filtering;
 - specular antialiasing;
 - channel and mask debug modes.
@@ -121,6 +136,8 @@ shared moss PBR identity.
 - diffraction hue is painted from UV instead of derived from wavelength;
 - a groove frame follows the camera or world axes instead of the object;
 - a narrowed diffraction lobe loses energy because its density lacks sigma normalization.
+- a soap bubble is treated as a solid glass sphere or painted with a rainbow instead of using air-film-air interference;
+- a deformed soap membrane retains the undeformed sphere normal;
 
 ## Routing boundary
 

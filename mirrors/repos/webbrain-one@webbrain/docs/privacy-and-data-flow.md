@@ -58,6 +58,46 @@ The user chooses their provider in Settings. Options include:
 
 Local-model and bring-your-own API requests are never collected by WebBrain. WebBrain Cloud requests are processed and may be retained as described below.
 
+### Optional research escalation to ChatGPT
+
+Research escalation is **off by default**. A user must enable it under
+Settings → General before either `delegate_research` or its consent step is
+available to the model. When enabled, WebBrain may propose sending one unusually
+complex, read-only research request to ChatGPT. The consent card shows the exact
+prompt, puts the continue-locally choice first, and requires the user to select
+the explicit approval choice. A timeout, automatic selection, typed variation,
+or prior approval does not count. Each approval creates a tab- and
+conversation-scoped, single-use authorization that expires after five minutes.
+
+After approval, WebBrain opens `https://chatgpt.com/` in a visible helper tab
+and types only the displayed prompt. WebBrain does not separately transmit
+ChatGPT cookies, credentials, API keys, browsing history, attachments, user
+profile, or undisclosed source-page data; any context sent to ChatGPT must be
+visible in that exact prompt before approval. The browser may use the user's
+existing ChatGPT session in the normal way. The safety policy also forbids this
+path for private or sensitive data, purchases, bookings, mutations, account
+actions, or high-stakes decisions. Users should still inspect the displayed
+prompt before approving it.
+
+ChatGPT receives and processes the approved prompt under the user's ChatGPT
+account and OpenAI settings and policies. WebBrain reads the resulting answer
+and source links from the visible page, labels them as untrusted research
+evidence, and sends that tool result to the user's configured primary LLM as
+part of the ongoing turn. The primary model is instructed to verify decisive
+facts instead of treating the delegated answer as instructions or proof.
+
+If ChatGPT is logged out, blocked by a network or regional policy, redirects
+off the approved origin, changes to an unsupported page layout, or does not
+answer before the configured wait limit, the delegation fails and WebBrain can
+continue locally. Visible Log in or Sign up controls fail closed even when
+ChatGPT also offers a guest composer; the approved prompt is not submitted
+without a logged-in composer on the fixed ChatGPT origin. Stop, closing the
+helper tab, or closing the source tab cancels the helper run; the source tab is
+checked again before submission. The helper tab is left visible for inspection
+on login, layout, or timeout failures. Turning Research escalation off removes
+both the delegation tool and the Ask-mode consent schema from later model
+requests.
+
 ### WebBrain Cloud improvement data
 
 Help Improve WebBrain is available under Settings -> General and is
@@ -435,6 +475,26 @@ Agent turn
 
 All IndexedDB reads happen only when the user opens the Traces page.
 
+### Research Escalation Flow (when enabled and approved)
+
+```
+Model proposes one exact read-only research prompt
+  │
+  ▼
+WebBrain consent card shows the exact prompt
+  ├─ Decline / timeout / automatic answer → continue locally; nothing sent
+  └─ Explicit approval → single-use, five-minute authorization
+                              │
+                              ▼
+                    Visible chatgpt.com helper tab
+                              │  exact approved prompt only
+                              ▼
+                    ChatGPT answer + source links
+                              │  marked untrusted
+                              ▼
+                    Configured primary LLM → final answer
+```
+
 ### Screenshot Flow
 
 ```
@@ -458,6 +518,7 @@ CDP capture → JPEG/PNG data URL
 |---|---|---|
 | Browser ↔ LLM provider | Chat messages, page content, screenshot | HTTPS; user chose the provider |
 | Browser ↔ LLM provider | Enabled user memory prompt block and optional extractor input | HTTPS; user chose the provider |
+| Browser ↔ ChatGPT | Exact, user-approved research prompt; returned answer and links | Off-by-default setting; visible fixed-origin tab; per-prompt explicit consent; one-use authorization; result treated as untrusted |
 | Browser ↔ CapSolver | CAPTCHA token requests | HTTPS; user opted in |
 | Extension ↔ Offscreen document | Fetch proxy, recording, and optional local model requests | Same extension, same origin |
 | Service worker ↔ IndexedDB | Trace data | Browser sandbox; never transmitted |
@@ -480,6 +541,7 @@ CDP capture → JPEG/PNG data URL
 | User memory | Controls whether saved memory records are sent to the LLM |
 | User memory auto-learn | Controls whether post-turn extractor calls run |
 | Site adapters toggle | Controls whether site-specific guidance is prepended |
+| Research escalation | Off by default; when enabled, permits per-prompt consent requests for the visible ChatGPT helper flow |
 | `/allow-api` | Controls whether the agent can use API mutations |
 | CapSolver toggle | Controls whether CAPTCHA data is sent to a third-party solver |
 

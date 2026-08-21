@@ -42,7 +42,7 @@ clawbench-run <case-dir> --human      # human reference run
 | `--output-dir <path>` | `<project>/test-output` | Where run directories are written |
 | `--no-build` | off | Skip building the container image (assumes it exists) |
 | `--no-upload` | off | Skip HuggingFace upload even if `HF_TOKEN` is configured |
-| `--browser-runtime <name>` | `local` | `local`, `browserbase`, `remote-cdp` — see [`browser-runtimes.md`](browser-runtimes.md) |
+| `--browser-runtime <name>` | `local` | `local`, `kernel`, `browserbase`, `remote-cdp` — see [`browser-runtimes.md`](browser-runtimes.md) |
 | `--browser-cdp-url <url>` | — | CDP endpoint for `--browser-runtime remote-cdp` |
 | `--browser-runtime-options <json>` | — | Provider-specific options, e.g. `'{"region":"us-west-2"}'` |
 
@@ -71,7 +71,7 @@ Execution:
 
 | Flag | Default | What it does |
 | --- | --- | --- |
-| `--max-concurrent <n>` | 2 local, 1 Browserbase | Parallel jobs |
+| `--max-concurrent <n>` | 2 local, 1 Kernel/Browserbase | Parallel jobs |
 | `--stagger-delay <s>` | 15 | Minimum seconds between consecutive container starts (rolling start) |
 | `--resume <dir>` | — | Reuse a previous batch's output directory and skip finished runs |
 | `--dry-run` | off | Print the job matrix without running anything |
@@ -125,6 +125,8 @@ See [Reproduce the leaderboard](../README.md#reproduce-the-leaderboard) for the 
 | `CONTAINER_ENGINE` | Force `docker` or `podman` |
 | `HF_TOKEN` | Optional upload of runs to HuggingFace |
 | `BROWSERBASE_API_KEY` | Browserbase runtime (from `.env.local`) |
+| `KERNEL_API_KEY` | Kernel runtime (from `.env.local`) |
+| `KERNEL_BASE_URL` | Optional Kernel API base URL override |
 | `CLAWBENCH_JUDGE_*` | Judge credentials for Harbor's verifier — see [`harbor.md`](harbor.md) |
 
 PurelyMail credentials for disposable run emails come from the committed `.env`.

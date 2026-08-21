@@ -2,14 +2,14 @@
 name: lark-approval
 description: '飞书审批：查询和处理审批待办/已办/实例，搜索可发起审批定义、查看定义详情并发起原生审批实例。当用户要处理审批任务、查看审批实例、搜索或发起审批时使用。审批待办不是飞书任务；非审批类待办走 lark-task。不负责创建审批定义；三方审批定义不走原生提单。'
 zh_description: "用于查询、处理和发起飞书原生审批，区分审批待办与普通飞书任务。"
-version: "1.0.6"
+version: "1.0.7"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-approval"
 license: MIT
 tags: '[feishu, lark, lark-cli, approval, workflow]'
 created_at: "2026-05-19"
-updated_at: "2026-07-03"
+updated_at: "2026-08-20"
 quality: 3
 complexity: intermediate
 metadata:
@@ -131,4 +131,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

@@ -2,20 +2,21 @@
 name: lark-doc
 description: '飞书云文档（Docx / Wiki）内容操作：读取、创建、编辑文档，插入或下载图片附件，以及操作思维笔记。用户提供文档 URL/token（包括 doubao.com 的 /docx/、/wiki/）时使用；按 URL 路径/token 而非域名路由。文档内嵌资源按读取参考中的统一规则分流。独立评论操作走 lark-drive；随正文读取评论使用 docs +fetch。表格或 Base 内部数据操作不在本 skill。'
 zh_description: "用于读取、编辑和生成飞书云文档内容。"
-version: "1.0.13"
+version: "1.0.14"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-doc"
 license: MIT
 tags: '[feishu, lark, lark-cli, docs, documents]'
 created_at: "2026-05-19"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 3
 complexity: intermediate
 metadata:
   requires:
     bins: ["lark-cli"]
-  cliHelp: "lark-cli docs --api-version v2 --help; lark-cli docs +create --api-version v2 --help; lark-cli docs +fetch --api-version v2 --help; lark-cli docs +update --api-version v2 --help"
+    skills: ["lark-shared"]
+  cliHelp: "lark-cli docs --help;lark-cli mindnotes --help"
 ---
 
 # docs
@@ -82,4 +83,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

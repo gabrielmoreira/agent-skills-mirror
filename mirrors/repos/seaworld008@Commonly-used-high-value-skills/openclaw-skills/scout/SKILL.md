@@ -2,14 +2,14 @@
 name: scout
 description: 'Investigating bugs via root cause analysis, reproduction steps, and impact assessment. Investigation-only — finds why bugs occur and where to fix them, no code. Use when a bug needs RCA before a fix.'
 zh_description: "缺陷调查、复现步骤、根因分析和影响评估。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/scout"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/scout"
 license: MIT
 tags: '["analysis", "planning", "scout"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -175,7 +175,7 @@ Full phase contracts live in the "Read First" references.
 | Focused Hunt | `bug` | ✓ | Single bug, clear symptom, single evidence chain | `reference/debug-strategies.md`, `reference/bug-patterns.md` |
 | History-Led | `regression` | | Regression signal (recent deploy, version bump) — `git log`/diff/bisect first; delegate to Trail if history suffices | `reference/git-bisect.md`, `reference/modern-rca-methodology.md` |
 | Observability-Led | `prod` | | Production traces/logs/metrics dominate the signal | `reference/observability-debugging.md` |
-| Multi-Engine | `multi` | | Ambiguous RCA after 3 stalled hypotheses, or lock-in risk on high-stakes RCA — ships Primary RCA + Alternatives with verification ordering | `reference/multi-engine-mode.md`, `reference/tri-engine-investigate.md` |
+| Multi-Engine | `multi` | | Ambiguous RCA after 3 stalled hypotheses, or lock-in risk on high-stakes RCA — ships Primary RCA + Alternatives with verification ordering | `reference/tri-engine-investigate.md` |
 | Cascading Failure | `cascade` | | Multi-service propagation from one origin; causal graph separates root from downstream symptoms | `reference/observability-debugging.md`, `reference/modern-rca-methodology.md` |
 | Performance Hunt | `perf` | | Flamegraph -> hot path -> N+1/algorithmic/I/O/lock/GC; delegate to Bolt | `reference/perf-investigation.md` |
 | Memory Hunt | `memory` | | Heap-snapshot diff, retainer path, allocation timeline; delegate to Bolt | `reference/memory-investigation.md` |
@@ -272,8 +272,7 @@ Cross-cluster escalation (LENS↔SCOUT, unified confidence scale): `_common/INVE
 | `reference/frontend-debugging.md` | Browser rendering, React/Vue behavior, CSS layout, frontend state. |
 | `reference/video-bug-analysis.md` | `video` recipe or `P06` inferred — frame extractor contract, Codex invocation, JSON schema, privacy rules. |
 | `reference/fix-prompt-generation.md` | Authoring `## LLM Fix Prompt`, choosing the verb, or deciding suppression. |
-| `reference/multi-engine-mode.md` | `multi` recipe — CLUSTER/Confidence/Perspective rules, GROUND, SYNTHESIZE, degraded mode. |
-| `reference/tri-engine-investigate.md` | `multi` recipe — tri-engine fan-out, JSON schema, subagent prompts, worked examples. |
+| `reference/tri-engine-investigate.md` | `multi` recipe — activation, fan-out, CLUSTER/Confidence/Perspective rules, GROUND, SYNTHESIZE, JSON schema, prompts, and degraded mode. |
 | `reference/handoff-formats.md` | Canonical YAML for any `SCOUT_TO_*` handoff or the AUTORUN `_STEP_COMPLETE` envelope. |
 | `_common/LLM_PROMPT_GENERATION.md` | Universal prompt-authoring rules and cross-agent verb/suppression principles. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation, LENS_TO_SCOUT / SCOUT_TO_LENS, unified confidence scale. |
@@ -286,7 +285,7 @@ Cross-cluster escalation (LENS↔SCOUT, unified confidence scale): `_common/INVE
 
 `multi` Recipe: parallel RCA across Codex + Antigravity + Claude subagents, Pattern H Hybrid scoring (confidence CONFIRMED/LIKELY/CANDIDATE x perspective CONVERGENT/DIVERGENT). Ships a Primary RCA backed by consensus plus preserved Alternative Hypotheses, with explicit verification ordering in the Builder handoff.
 
-Full mechanics, GROUND protocol, SYNTHESIZE merge, engine-attribution tags, and degraded-mode rules: `reference/multi-engine-mode.md` and `reference/tri-engine-investigate.md`. Base protocol: `_common/SUBAGENT.md`, `_common/MULTI_ENGINE_RECIPE.md`.
+Full mechanics, GROUND protocol, SYNTHESIZE merge, engine-attribution tags, and degraded-mode rules: `reference/tri-engine-investigate.md`. Base protocol: `_common/SUBAGENT.md`, `_common/MULTI_ENGINE_RECIPE.md`.
 
 ## Operational
 
@@ -333,4 +332,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

@@ -2,14 +2,14 @@
 name: lark-okr
 description: '飞书 OKR：管理目标与关键结果。查看和编辑 OKR 周期、目标、关键结果、对齐关系、量化指标和进展记录。当用户需要查看或创建 OKR、管理目标和关键结果、查看对齐关系时使用。不负责：待办任务管理（lark-task）、日程/会议安排（lark-calendar）、绩效评估'
 zh_description: "飞书 OKR：管理目标与关键结果。"
-version: "1.0.4"
+version: "1.0.5"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-okr"
 license: MIT
 tags: '[feishu, lark, lark-cli, okr, planning]'
 created_at: "2026-05-19"
-updated_at: "2026-07-27"
+updated_at: "2026-08-20"
 quality: 4
 complexity: intermediate
 metadata:
@@ -198,4 +198,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

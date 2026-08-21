@@ -398,8 +398,14 @@ fi
 The `assets/` directory contains sample dependency files for testing:
 
 - `sample_package.json`: Node.js project with various dependencies
-- `sample_requirements.txt`: Python project dependencies
+- `sample_requirements.fixture`: intentionally vulnerable Python dependency fixture
 - `sample_go.mod`: Go module dependencies
+
+Intentionally vulnerable samples use non-manifest file names so GitHub Dependabot
+and other repository-level dependency automation do not mistake teaching fixtures
+for dependencies executed by this repository. Copy a fixture to the package
+manager's canonical manifest name inside an isolated temporary project before
+running scanner demonstrations.
 
 The `expected_outputs/` directory contains example reports showing the expected format and content.
 

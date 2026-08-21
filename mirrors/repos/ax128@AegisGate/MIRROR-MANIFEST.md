@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ax128/AegisGate` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `ax128/AegisGate` — 26 default patterns, 8 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ax128/AegisGate` — 26 default patterns, 0 followed patterns, 1 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,14 @@ Mirror of `ax128/AegisGate` — 26 default patterns, 0 followed patterns, 1 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `README_zh.md`
+- `UPSTREAM-QUICKSTART.md`
+- `WEBUI-QUICKSTART.md`
+- `OTHER_TERMINAL_CLIENTS_USAGE.md`
+- `config/README.md`
+- `ROADMAP.md`
+- `CHANGELOG.md`
 
 ## File Index
 
@@ -60,6 +67,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
+| 2 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3 | → | [`config/README.md`](config/README.md) |
+| 4 | → | [`OTHER_TERMINAL_CLIENTS_USAGE.md`](OTHER_TERMINAL_CLIENTS_USAGE.md) |
+| 5 | → | [`README_zh.md`](README_zh.md) |
+| 6 | → | [`README.md`](README.md) |
+| 7 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 8 | → | [`UPSTREAM-QUICKSTART.md`](UPSTREAM-QUICKSTART.md) |
+| 9 | → | [`WEBUI-QUICKSTART.md`](WEBUI-QUICKSTART.md) |
 
 ---
 

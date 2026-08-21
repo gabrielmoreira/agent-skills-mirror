@@ -23,13 +23,13 @@ Like `spec`, `delve` defaults to `INTERACTIVE` — it is one of the two dialogue
 `GROUND → EXCAVATE → SURFACE → DIVERGE → REFUTE → CHART`
 
 ### Phase 1 — GROUND (the feature as-is + its reason-for-existence)
-Establish what the feature **is today** before exploring what it could become — excavating an imagined feature is the recipe's first failure mode. `Lens`[map the current implementation — structure, responsibility, data flow] unconditionally; +`Pulse`/`Trace`/`Voice`[usage telemetry / session-replay / sentiment] when that data exists; +`Plea`[the job-to-be-done lens — what user need the feature serves]. The feature's **reason-for-existence** — *why* it was originally built and what intent it encoded — is reconstructed from the user's tacit knowledge in the Socratic clarification + `Lens`'s read of the code, **not** from `Plea` (whose domain is user need, not design history). The user holds that tacit context, so Nexus runs Socratic clarification — conducted per `reference/dialogue-protocol.md` (D1–D8; the D5 **history probe** "what was true when this was built that isn't now?" is the reason-for-existence tool) — covering: who uses it, what job it does, what the original intent was, and what has changed since it shipped. All dialogue throughout the recipe follows that protocol: the three knowledge-juncture checkpoints per D10–D12, engagement calibration per D13–D15, and unvalidated gaps tracked in the draft's **Assumption Ledger** (D9).
+Establish what the feature **is today** before exploring what it could become — excavating an imagined feature is the recipe's first failure mode. `Lens`[map the current implementation — structure, responsibility, data flow] unconditionally; +`Pulse`/`Trace`/`Voice`[usage telemetry / session-replay / sentiment] when that data exists; +`Echo[demand]`[the job-to-be-done lens — what user need the feature serves]. The feature's **reason-for-existence** — *why* it was originally built and what intent it encoded — is reconstructed from the user's tacit knowledge in the Socratic clarification + `Lens`'s read of the code, **not** from `Echo[demand]` (whose domain is user need, not design history). The user holds that tacit context, so Nexus runs Socratic clarification — conducted per `reference/dialogue-protocol.md` (D1–D8; the D5 **history probe** "what was true when this was built that isn't now?" is the reason-for-existence tool) — covering: who uses it, what job it does, what the original intent was, and what has changed since it shipped. All dialogue throughout the recipe follows that protocol: the three knowledge-juncture checkpoints per D10–D12, engagement calibration per D13–D15, and unvalidated gaps tracked in the draft's **Assumption Ledger** (D9).
 - **Checkpoint (contract-level; AUTORUN cannot skip):** present a 3-5 line **feature-as-is** summary (current shape + real usage + reason-for-existence). The user confirms or corrects it. Excavation **cannot start** on a misunderstood feature. (Prevents "deep-dive a strawman of how it actually works".)
 - **Draft init:** on confirmation, write `docs/evolution/<feature-slug>.draft.md` (status `draft`, feature-as-is section filled). See **Draft persistence & resume**.
 
 ### Phase 2 — EXCAVATE (dig beneath the surface)
 The deep-dive proper — go past *what it does* to *what is really going on*. Independent lenses (hub-spoke, no shared mutable state — independence is the point):
-- `Plea`[latent / unmet needs the feature gestures at but does not serve]
+- `Echo[demand]`[latent / unmet needs the feature gestures at but does not serve]
 - `Flux`[challenge the assumptions baked into its current shape — what was taken as true when it was built that may no longer hold]
 - `Echo`[walkthrough friction — where users stumble, work around it, or under-use it]
 - +`Field`[real user-research grounding], +`Compete`[how others solve this same job — the adjacent value next to it], +`Trace`[where real usage diverges from the designed flow]
@@ -48,7 +48,7 @@ From each validated insight, generate evolution directions along **three axes** 
 | **broaden** | extend the feature to an adjacent job the insight revealed |
 | **reframe** | reconceive what the feature fundamentally *is* |
 
-`Riff`[generate directions iteratively] ‖ `Spark`[directions grounded in the existing data/logic — what is reachable] ‖ `Flux`[reframe / cross-domain transplant]. Each direction is tagged with its **axis** + the **insight it springs from** + a rough shape. Diverge deliberately; do not pre-filter for safety here (the gate, not the generator, decides survival).
+`Flux`[generate directions iteratively] ‖ `Spark`[directions grounded in the existing data/logic — what is reachable] ‖ `Flux`[reframe / cross-domain transplant]. Each direction is tagged with its **axis** + the **insight it springs from** + a rough shape. Diverge deliberately; do not pre-filter for safety here (the gate, not the generator, decides survival).
 - Output: a candidate direction set, axis-tagged and insight-linked.
 
 ### Phase 5 — REFUTE (pressure-test insights AND directions)
@@ -99,13 +99,16 @@ Draft-resume: `delve`'s value is a multi-turn excavation, so it must survive int
 
 ## Boundaries / vs neighbors
 
-- **vs `kaizen`** — `kaizen` *executes* improvement against a fixed quantified target (PDCA, builds code, ships a Before/After); `delve` *discovers* what to improve and which new directions exist (dialogue, no code, ships an Evolution Map). `delve` is **upstream** of `kaizen`: a `deepen` direction hands off to it. "improve this against a target" → `kaizen`; "what should we even do with this feature?" → `delve`.
-- **vs `spec`** — `spec` takes a *new* (often vague) feature idea and converges it to a locked, buildable spec. `delve` starts from an *existing shipped* feature and excavates it for evolution directions. `delve → spec` when a chosen direction needs specifying. The axis is **new idea vs existing feature**.
-- **vs `gedanken`** — both are Reason-family, no-code, insight-producing recipes that orchestrate `magi`/`flux`/`omen`. `gedanken` reasons about an **abstract** question/hypothesis inside a *constructed* hypothetical; `delve` excavates a **concrete existing feature** grounded in its real code and usage. "reason through what X would imply" → `gedanken`; "dig into the feature we already ship" → `delve`.
-- **vs `essential` / `killer` / `trim`** — those deliver a *verdict* on which ONE feature to build or remove (single closing AskUserQuestion). `delve` produces a *map of directions* for ONE existing feature. `delve → killer` when "is direction X the differentiator?" becomes the open question.
-- **vs `spark` (agent)** — `spark` is a single-agent feature *proposal* from existing data/logic; `delve` orchestrates `Lens`+`Plea`+`Flux`+`Echo`+`Magi`+`Riff` into a grounded excavation→insight→direction dialogue with a refutation gate, and uses `Spark` inside SURFACE/DIVERGE.
-- **vs `riff` / `flux` (agents)** — `riff` diverges (generates ideas) and `flux` is a single reframing move; `delve` grounds in the real feature, converges to validated insights, *then* diverges to directions, then refutes. Each is one phase of `delve`. A one-off "what could we do with X?" → `riff`/`spark` direct.
-- **vs `converge`** — `converge` is an *automated* generator-evaluator grading loop against a machine rubric; `delve`'s EXCAVATE↔SURFACE loop is an exploratory "dig deeper if insight-thin" heuristic with no rubric and no automated grader (its independent quality check is the REFUTE phase, not the loop). Iterate a generator to a quality bar → `converge`; excavate a feature for insight → `delve`.
+Axis per neighbor; the routing itself lives in the Decision tree below.
+
+| vs neighbor | Axis (neighbor ↔ `delve`) |
+|---|---|
+| `kaizen` | *executes* improvement against a fixed quantified target (PDCA, code, Before/After) ↔ *discovers* what to improve and which directions exist (dialogue, no code, Evolution Map). `delve` is upstream — a `deepen` direction hands off to it |
+| `spec` | a **new** (often vague) idea converged to a locked, buildable spec ↔ an **existing shipped** feature excavated for evolution directions |
+| `gedanken` | reasons about an **abstract** question/hypothesis inside a *constructed* hypothetical ↔ excavates a **concrete existing feature** grounded in its real code and usage (both Reason-family, no code, orchestrating `magi`/`flux`/`omen`) |
+| `essential` / `killer` / `trim` | a *verdict* on which ONE feature to build or remove (single closing AskUserQuestion) ↔ a *map of directions* for ONE existing feature |
+| `spark` / `flux` / `flux` (agents) | a single-agent proposal, a divergence pass, or one reframing move — each is one *phase* of `delve` ↔ the grounded excavation→insight→direction dialogue with a refutation gate that wraps them |
+| `converge` | an *automated* generator-evaluator loop graded against a machine rubric ↔ EXCAVATE↔SURFACE is an exploratory "dig deeper if insight-thin" heuristic with no rubric and no automated grader (its independent quality check is REFUTE, not the loop) |
 
 **Decision tree:**
 ```
@@ -114,7 +117,7 @@ Have an EXISTING shipped feature and want a deep-dive → new insight + evolutio
         abstract hypothesis to reason through? → gedanken
         improve against a known target? → kaizen
         which ONE feature to build / remove? → essential / killer / trim
-  YES → trivial one-off "what could we do with X?" → riff / spark direct (minimum viable chain)
+  YES → trivial one-off "what could we do with X?" → flux / spark direct (minimum viable chain)
         otherwise (ground → excavate → surface → diverge → refute → chart) → delve
               a chosen direction needs a full spec?            → delve → spec
               a chosen direction is incremental polish to a metric? → delve → kaizen
@@ -132,6 +135,6 @@ Have an EXISTING shipped feature and want a deep-dive → new insight + evolutio
 - **Add-ons:** +`Pulse`/`Trace`/`Voice` (usage/sentiment grounding in GROUND when data exists), +`Field` (real user-research grounding in EXCAVATE), +`Compete` (adjacent-value / how-others-solve-the-job in EXCAVATE), +`Cast` (persona-anchored excavation when the audience is unclear), +`Omen` (pre-mortem on a bold reframe in REFUTE), +`Atlas` (structural read when a direction touches module boundaries), +`Scribe` (author the Evolution Map).
 
 ## Chain template
-`GROUND (Lens[map current impl] +Pulse?/Trace?/Voice?[usage] +Plea?[job-to-be-done lens]; reason-for-existence ← Socratic dialogue + Lens) → ✓confirm-feature-as-is + draft-init → EXCAVATE (Plea[latent needs] ‖ Flux[challenge baked-in assumptions] ‖ Echo[friction/workarounds] +Field?/Compete?/Trace?) → SURFACE (Magi[synthesize insights] +Spark[name vs existing logic]; deepening loop EXCAVATE↔SURFACE ≤ 3 cycles (default 3), stop on insight-saturation | diminishing-insight (Δ<ε) | cap-reached → report insights + undug seams) → ✓validate-insights + draft → DIVERGE (Riff ‖ Spark[grounded directions] ‖ Flux[reframe]; tag axis deepen/broaden/reframe + insight-link) → REFUTE (insight: refute×2-3 per _common/ADVERSARIAL_REFUTATION.md — confirmation/no-news/false-pattern, evidence-vs-novelty → confirmed vs hypothesis; direction: Ripple blast-radius + Magi value×feasibility +Omen?) → CHART (Magi/Spark Evolution Map: ranked directions + axis + recommended next-recipe; ✓provenance D16 + walk open ASSUME-n; Scribe?) → ✓pick-direction → recommend handoff (spec | kaizen | feature | apex | killer | essential) [NO CODE]`
+`GROUND (Lens[map current impl] +Pulse?/Trace?/Voice?[usage] +Echo[demand]?[job-to-be-done lens]) → ✓confirm-feature-as-is + draft-init → EXCAVATE (Echo[demand: latent needs] ‖ Flux[challenge baked-in assumptions] ‖ Echo[friction/workarounds] +Field?/Compete?/Trace?) → SURFACE (Magi[synthesize insights] +Spark[name vs existing logic]; ⟲ deepening loop EXCAVATE↔SURFACE) → ✓validate-insights + draft → DIVERGE (Flux ‖ Spark[grounded directions] ‖ Flux[reframe]; tag axis deepen/broaden/reframe + insight-link) → REFUTE (insight: refute×2-3 → confirmed vs hypothesis; direction: Ripple[blast-radius] + Magi[value×feasibility] +Omen?) → CHART (Magi/Spark Evolution Map: ranked directions + axis + recommended next-recipe; ✓provenance D16; Scribe?) → ✓pick-direction → recommend handoff (spec | kaizen | feature | apex | killer | essential) [NO CODE]`
 
-The three dialogue checkpoints (confirm-feature-as-is / validate-insights / pick-direction) and the EXCAVATE↔SURFACE deepening bound are contract-level; resumable via `delve resume [<slug>]` from the draft's current-phase marker. Optional handoff to `spec` / `kaizen` / `feature` / `apex` / verdict recipes at CHART.
+Checkpoint content, loop bound, and exit vocabulary are not restated here — see each Phase contract above. Resumable via `delve resume [<slug>]` from the draft's current-phase marker; optional handoff to `spec` / `kaizen` / `feature` / `apex` / verdict recipes at CHART.

@@ -2,7 +2,7 @@
 
 **Purpose:** Interpretation method for ambiguous user requests.
 **Read when:** The request is vague and routing depends on resolving intent first.
-**See also:** After resolving intent, see `routing-explanation.md` for how to present the chosen chain (and alternatives) back to the user.
+**See also:** After resolving intent, use § Routing Decision Output below to present the chosen chain and material alternatives.
 
 Methodology for decoding ambiguous user intent before agent routing. Previously a standalone agent (Cipher), now integrated as a Nexus capability.
 
@@ -59,7 +59,7 @@ The following rules apply as an internal Nexus capability (previously the Cipher
 - Trigger: context_confidence < 0.60, multiple valid interpretations, or missing critical context
 - Auto-clarification: Nexus attempts to resolve using gathered context
 - Single question: If still ambiguous, ask ONE focused question with options
-- Confidence boost: +0.20 on successful clarification
+- Re-evaluate: integrate the answer, re-type the dimensions, and assign a new evidence band; never add a fixed score bonus
 
 When the blocker is **missing context** (not just ambiguous wording), run the Context Sufficiency
 Gate (`_common/CONTEXT_SUFFICIENCY.md`): inventory which context dimensions the outcome needs
@@ -68,6 +68,30 @@ RISK), retrieve the inferable ones first (Law 1 — git → PROJECT.md → conve
 irreducibly-missing blocking dimensions into a single option-driven question. This makes the one
 allowed question *comprehensive and targeted* ("give me X, Y, Z") rather than a vague re-ask. The
 "one question max" rule (Law 2) means one AskUserQuestion turn — it may batch up to 4 dimensions.
+
+---
+
+## Uncertainty Typing — deciding *which* question the one question is
+
+The confidence band (`confidence-scoring.md`) answers **whether the available evidence clears a routing threshold**. It does not answer **what is still unresolved** — and those are different questions with different remedies. Two requests can both fall below the gate and need opposite treatment: one needs a target named, the other needs a priority chosen. Since Law 2 allows only one question, typing the uncertainty first is what makes that question land.
+
+Type the gap on these six dimensions before asking. Each maps to a distinct remedy, and each has a characteristic way of being asked badly:
+
+| Dimension | Unresolved when | Remedy | Asked badly |
+|-----------|-----------------|--------|-------------|
+| **Referent** | the object is ambiguous — "it", "the old one", "the tests" | name the candidates and let the user pick | asking *what to do* before *to what* |
+| **Scope** | the boundary is missing — how many files, which environments, how far back | offer bounded options (this module / this package / repo-wide) | proceeding on the narrowest reading silently |
+| **Goal** | two readings imply different outcomes, or the user is still forming the goal | ask for the **deciding axis** (what to prioritize, what to avoid), not for a label | forcing an A-or-B when the real answer is C |
+| **Constraint** | a limit is implied but unstated — budget, compatibility, deadline, style | surface the constraint you would otherwise assume, as a `DEC-n` candidate | recording it as a preference and trading it away |
+| **Authority** | it is unclear whether this effect may be caused at all — push, delete, publish, spend | **stop and confirm** — never resolve by inference (Q23) | reading a broad request as a broad grant |
+| **Outcome** | success cannot be observed with what the run can see | agree on the observable, or label the criterion `UNVERIFIED` up front | accepting a proxy as the criterion |
+
+**Rules.**
+
+1. **Do not average the six into one number.** A run that is certain about five dimensions and blind on one is blocked on that dimension. The evidence band gates *whether* to ask; the type decides *what* to ask.
+2. **Authority is not averaged.** Unresolved Authority never auto-proceeds regardless of the evidence band, and never resolves by inference from a broad request. It is the one type where the answer must come from the user (Q23, and the SKILL.md **Ask First** triggers it feeds).
+3. **A forming Goal is not a defect.** When the user is still deciding, an early binary question freezes the intent prematurely — offer the axis and let them explore. This is the one case where "proceed with a reversible draft" (Q24 tier degradation) usually beats asking at all.
+4. **Type before batching.** The Context Sufficiency Gate batches up to 4 missing dimensions into one question; typing tells you which 4 are worth the user's attention.
 
 ---
 
@@ -81,7 +105,7 @@ Some English anchors map cleanly to one recipe; these do **not** — the same wo
 |-------------------|-------------------|----------------------------|
 | `improve` / `polish` / `enhance` / `refine` / `make it better` / `evolve` / `deepen a feature` | `delve` · `kaizen` · `optimize` · `refactor` · `restyle` · `converge` | "Execute an improvement, or first *discover* what to even do? — **`delve`** (deep-dive a shipped feature → insights + evolution directions, **no code**) when the direction is unsettled; else perf only (`optimize`) / internal cleanup, no behavior change (`refactor`) / multi-axis polish vs a target (`kaizen`) / UI-visual-interaction design of an existing surface (`restyle`) / iterate to a quality rubric (`converge`)" |
 | `improve the design` / `design improvement` | `anneal` · `restyle` | "Improve *what* design? — code/architecture design (`anneal`: discover undiagnosed design weaknesses → behavior-preserving brush-up) / UI visual/look-and-feel design of an existing surface (`restyle`)" |
-| `audit` / `review` / `check` | legacy quality review · `security` (Sentinel) · `SUPPLY_CHAIN_AUDIT` (Chain) · `DESIGN_AUDIT` (Pixel) · `COMPLIANCE` (Oath) · red-team (Breach) · `AI_FEATURE` (Oracle+Sentinel) | "Audit for *what*? — code quality / security vulns / skill-MCP supply chain / design-a11y / regulatory compliance / adversarial AI/LLM red-team (prompt injection, jailbreak, misuse scenarios) / AI feature safety (prompt+output review)" |
+| `audit` / `review` / `check` | legacy quality review · `security` (Sentinel) · `SUPPLY_CHAIN_AUDIT` (Chain) · `DESIGN_AUDIT` (Pixel) · `COMPLIANCE` (Canon[regulatory]) · red-team (Breach) · `AI_FEATURE` (Oracle+Sentinel) | "Audit for *what*? — code quality / security vulns / skill-MCP supply chain / design-a11y / regulatory compliance / adversarial AI/LLM red-team (prompt injection, jailbreak, misuse scenarios) / AI feature safety (prompt+output review)" |
 | `differential parity` | `transmute` · `clone` · `migrate` · `fuse` | "Parity against what? — your own source rewritten in another language (`transmute`) / an external product you're copying (`clone`) / your own system you're changing completely (`migrate`) / ≥2 sources synthesized (`fuse`)" |
 | `build` / `implement` (broad) | `feature` · `apex` | "Single guided build (`feature`) or autonomous discovery→ship (`apex`)?" — default `feature` unless 'whole thing / end-to-end' |
 | `migrate` (broad) | `migrate` · `transmute` · `PORTING` · `refactor` · `MODERNIZE` (Shift) | "Same-system change-completeness across arch/framework/middleware (`migrate`) / cross-language rewrite (`transmute`) / web→native (`PORTING`) / one known internal restructure, no behavior change (`refactor`) / same-language library swap or deprecated-API replacement (`MODERNIZE` — Shift)?" |
@@ -89,6 +113,23 @@ Some English anchors map cleanly to one recipe; these do **not** — the same wo
 | `define what we build` / `nail down` | `spec` · `essential` · `charter` | "Refine one feature into a locked spec via dialogue (`spec`) / decide which ONE feature (`essential`) / whole-repo team plan (`charter`)?" |
 
 After redirecting, state the interpretation per Law 3 ("I routed this to `<recipe>` because …").
+
+---
+
+## Routing Decision Output
+
+Keep the explanation proportional to the ambiguity resolved:
+
+```yaml
+routing_decision:
+  intent: "<resolved goal>"
+  route: "<recipe, task type, or direct specialist>"
+  why: "<one discriminating reason>"
+  assumptions: ["<only assumptions that affect the result>"]
+  alternatives: ["<only materially valid alternatives and why they lost>"]
+```
+
+Omit empty `assumptions` and `alternatives`. Do not repeat the routing matrix, emit confidence arithmetic, or invent rejected options merely to make the explanation look complete.
 
 ---
 

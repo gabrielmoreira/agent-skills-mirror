@@ -57,7 +57,7 @@ Also for **macOS desktop apps** (`macos` recipe): SwiftUI for Mac + AppKit inter
 
 Route elsewhere when:
 - RN / Flutter / KMP / CMP implementation → **out of scope** (use `Forge` for prototypes)
-- Automating an *existing* Mac app via AppleScript / JXA → `Anvil` (`automate`) — Native builds, Anvil automates externally
+- Automating an *existing* Mac app via AppleScript / JXA → `Hone` (`automate`) — Native builds, Hone automates externally
 - Web→native porting **design / blueprint** → `Port`
 - Quick prototype validation → `Forge`
 - Web frontend → `Artisan` · Backend API → `Builder` · Cross-team specs → `Scribe[unified]` · Design tokens → `Muse` · Infra → `Scaffold`
@@ -251,6 +251,8 @@ Reinforces `## Workflow` and `## Boundaries`, not new rules — team-ownership a
 ---
 
 ## Operational
+
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
 
 **Journal** (`.agents/native.md`): platform-specific bugs, store rejection patterns, Liquid Glass/M3 Expressive adoption gotchas, Compose recomposition fixes, Swift 6 concurrency migration learnings — not routine implementations. Standard protocols → `_common/OPERATIONAL.md`
 

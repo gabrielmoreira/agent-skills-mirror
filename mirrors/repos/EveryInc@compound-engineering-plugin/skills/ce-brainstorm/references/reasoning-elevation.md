@@ -23,7 +23,7 @@ If the session model already **is** the resolved model, elevation is moot: skip 
 When elevation is active, resolve an adapter in this fixed order and use the first that serves the requested model:
 
 1. **Native in-harness dispatch.** Attempt the platform subagent primitive with a per-agent model override (e.g. `model: "fable"` on the Claude Code `Agent`/`Task` tool). Capability is proven by attempt, not self-assessment — a harness that can serve the model natively does; one that cannot fails the attempt and falls through. **Receipt rule (R6):** a native run whose serving-side receipt names a *different* model family than requested falls through to the next adapter; a run with *no* receipt proceeds and is recorded as unverified (it does NOT fall through).
-2. **Claude CLI.** Run the bundled `scripts/elevation-dispatch.sh` worker as a detached job (see Off-host dispatch). Available only when `claude` is on PATH and authenticated — probe with `claude auth status` (exits 0 if logged in, 1 if not); prefer this over parsing stderr.
+2. **Claude CLI.** Run the bundled `scripts/elevation-dispatch.sh` worker as a detached job (see Off-host dispatch). Available when `claude` is on PATH. Do not preflight authentication in the host command context: the detached worker's provider-capable call is authoritative, and an authentication failure there follows Recovery.
 3. **Inline on the session model.** The always-available fallback.
 
 Elevation is never a correctness dependency: every adapter failure degrades to the next, and inline always completes the run.
@@ -48,6 +48,17 @@ Re-narration is forbidden: the main model's default tendency is to compress, and
 ## Off-host dispatch (Claude CLI route)
 
 Never hold a tool call open for the model's runtime — some harnesses kill long tool calls, silently vanishing the run. Use the bundled detached-job runner.
+
+**Host command-sandbox boundary.** The detached worker inherits the permission context of the `start` call that launches it. Before executing that exact call, treat `CODEX_SANDBOX_NETWORK_DISABLED` as a positive signal that the current Codex command sandbox cannot reach the provider; unsetting it does not change the sandbox policy. A DNS or authentication failure alone is not proof of that condition. Use the narrowest host permission that restores the fixed route's provider connection. When Codex exposes only full command escalation, attach this request to the exact `peer-job-runner.py start ...` tool call after the existing egress disclosure:
+
+```json
+{
+  "sandbox_permissions": "require_escalated",
+  "justification": "Allow the disclosed read-only reasoning-elevation request to reach Anthropic."
+}
+```
+
+Disclose that this is not launcher-only isolation: the detached worker inherits that launch context for its lifetime, so the worker's declared read-only/tool restrictions — not the Codex command sandbox — bound the elevated call while the handoff material egresses. If the grant is denied or unavailable, do not execute `start`; create no job and run the step inline on the session model under the ordinary unavailable-route transparency rule. After `start` returns a job id, any network, authentication, or provider failure is a started-job outcome and follows Recovery below; keep `status`, `wait`, `result`, and `reap` sandboxed because they need no provider connection.
 
 1. **Write the prompt-file into the private handoff directory.** Put the prompt-file *and* every evidence scratch file in the one `mktemp -d "${TMPDIR:-/tmp}/ce-elevation-XXXXXX"` directory from "Read-only posture and brief handoff" above — the worker grants read access to the prompt-file's own parent directory, so co-locating them is what makes the evidence readable while keeping the rest of the temp root private. Build the prompt-file as the elevated model's brief: the instruction to interpret findings and author the plan (or generate approaches), plus the **absolute paths** of those co-located scratch files — the evidence files told to the model as untrusted data to Read and interpret (R20), and the project-conventions file as constraints the output must honor. The scratch files are referenced by path inside this one prompt-file, not passed as extra worker args.
 
@@ -110,4 +121,4 @@ Recovery **never substitutes a different model** — a plan the user believes ca
 
 - **Elevation fired** → surface one line naming the **model**, the **route**, and **why** it fired (config key, explicit in-prompt request, or caller carrier). Name the model as **served** when a receipt confirms it; otherwise name it as **requested** with an explicit *unverified* marker — on every route, including native.
 - **Suppress the line** when elevation did not fire, and when the session model already is the model a **config key** requested. An **explicit in-prompt request** always produces a line, including when the session model already matches (so a recognized request is never indistinguishable from an unparsed one).
-- **Requested but unavailable** (no native support, `claude` absent, or `claude` not authenticated) → run the step inline on the session model, name **which precondition was unmet**, and state what would make the requested model reachable (e.g. install and authenticate the Claude CLI).
+- **Requested but unavailable before provider-capable dispatch** (no native support, `claude` absent, or the required launch permission unavailable) → run the step inline on the session model, name **which routing precondition was unmet**, and state what would make the requested model reachable. Once provider-capable dispatch is established, an authentication failure is instead a route-level Recovery outcome: name the observed authentication failure and the login or credential-refresh remediation.

@@ -29,7 +29,29 @@ Create routing combo
 
 ```bash
 curl -X POST https://localhost:20128/api/combos \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/combos/{id}
+
+Get combo by ID
+
+```bash
+curl https://localhost:20128/api/combos/{id} \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/combos/{id}
+
+Update combo
+
+Partial update: the body is merged onto the stored combo, so a field left out keeps its current value. An array that IS sent replaces the stored one outright.
+
+```bash
+curl -X PUT https://localhost:20128/api/combos/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -40,7 +62,7 @@ Update combo
 
 ```bash
 curl -X PATCH https://localhost:20128/api/combos/{id} \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -69,7 +91,7 @@ Test a combo configuration
 
 ```bash
 curl -X POST https://localhost:20128/api/combos/test \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -93,7 +115,7 @@ Registers a fallback routing chain for a model.
 
 ```bash
 curl -X POST https://localhost:20128/api/fallback/chains \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```

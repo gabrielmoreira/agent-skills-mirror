@@ -109,6 +109,11 @@ await po.openChatHistoryMenu();
 
 **NEVER update snapshot files (e.g. `.txt`, `.yml`) by hand.** Always use `--update-snapshots` to regenerate them.
 
+Local Agent request snapshots embed the packaged prompt plus every exposed tool
+description and JSON schema. After changing any of those inputs, rebuild the
+app and regenerate every affected request-dump snapshot; editing only the
+visibly related schema block can leave unrelated stale prompt text behind.
+
 Snapshots must be **deterministic** and **platform-agnostic**. They must not contain:
 
 - Timestamps
@@ -269,9 +274,12 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **Browser resource teardown**: Tests that start long-lived browser resources such as microphone recording must stop them before the test ends. Killing Electron while Chromium's audio service is active can leave Playwright's worker teardown waiting on a stale browser connection until the worker timeout, even when the test itself passed.
 - **Electron fixture teardown**: Call `electronApp.close()` before an OS-level process-group fallback. Do not treat the Electron application's `close` event as proof that Playwright cleanup finished: wait for both `electronApp.close()` and the launched child process to exit. Killing only the Electron PID can leave preview-server descendants or Playwright's protocol connection alive, causing a worker teardown timeout minutes after every test has passed.
 - **Plan-mode continuation assertions**: After clicking the fixture-driven `Keep going` action, assert stable plan UI such as `accept-plan-new-chat` rather than explanatory assistant prose. The plan and acceptance controls can be ready even when the fake endpoint's follow-up copy differs.
+- **Main-owned user-input follow-ups**: A resumed turn may route to fallback fake-model prose instead of the original `tc=...` fixture's next text. Finish the import-time turn and start a fresh chat first, then assert the exact persisted follow-up prompt and a new completed assistant message rather than canned copy or the global `Retry` footer.
+- **Packaged Electron chat replay**: Do not use `page.reload()` to test remount/replay; the packaged `file://` route can fail with `ERR_FILE_NOT_FOUND`. Switch to another chat and back through the chat tabs, which remounts the message list through the supported app navigation path.
 - **Click timeouts with "subtree intercepts pointer events" across many specs**: When several unrelated specs all time out clicking the same button and the call log says another element's "subtree intercepts pointer events", it's a CSS layout overlap (often a flex item shrinking below its `flex-shrink-0` content — see rules/ui-styling.md), not a flaky test. Look at the failure screenshot first and fix the app layout instead of retrying clicks.
 - **Negated assertions pass vacuously**: Playwright treats a locator matching zero elements as satisfying `not.toHaveAttribute` / `not.toHaveText` / `not.toContainText`. A renamed test id, a collapsed parent, or a Windows path-separator difference then makes the check pass without ever exercising the feature. Assert the element exists first (`await expect(row).toBeVisible()`), then assert the negation.
 - **Filesystem-heavy IPC assertions**: Operations that delete or copy whole app directories (e.g. bulk app delete) can exceed the 5s default expect timeout on CI runners. Give the post-operation assertion an explicit `{ timeout: 30_000 }`.
+- **Expensive platform/framework matrices**: Split scenarios that each install dependencies or run production builds into separate tests. Each scenario then gets its own timeout, retry, and failure identity on slower Windows runners instead of sharing one monolithic budget.
 - **Deleting freshly generated apps**: Prompt completion can precede background preview dependency installation. Before bulk deletion, wait for the latest app's `preview-iframe-element`; otherwise deletion can spend its whole timeout interrupting still-installing runtimes one by one.
 - **Fake Anthropic engine routes**: When app code uses Anthropic direct passthrough, the fake LLM server must handle `/v1/messages` (and provider-prefixed variants like `/engine/v1/messages`), not just `/chat/completions`. Anthropic tool results come back as user messages with `tool_result` content blocks, so fixture turn counting must skip those as user prompts.
 - **Fake LLM fixture routing**: If a `tc=...` prompt unexpectedly returns the canned fallback and proposal buttons never appear, inspect `testing/fake-llm-server` routing. OpenAI-compatible requests can send user content as text parts or end with a non-user message, so fixture and `[sleep=...]` checks should use the extracted last user text, not raw `messages[messages.length - 1].content`.

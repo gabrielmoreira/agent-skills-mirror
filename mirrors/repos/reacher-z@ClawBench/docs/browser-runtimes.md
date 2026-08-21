@@ -2,11 +2,41 @@
 
 By default ClawBench launches Chromium inside its own container. You can point it at a managed remote browser instead — useful when the host cannot run containers comfortably, or when you want the provider to handle scaling and session replay.
 
-`--browser-runtime` accepts `local` (default), `browserbase`, `remote-cdp`, and `steel`. **`steel` is reserved and not implemented yet** — selecting it raises an error.
+`--browser-runtime` accepts `local` (default), `kernel`, `browserbase`, `remote-cdp`, and `steel`. **`steel` is reserved and not implemented yet** — selecting it raises an error.
 
 ## Local container (default)
 
 Nothing to configure. Chromium, Xvfb, ffmpeg, noVNC, and the recorder/interceptor all run in the task container; the session video lands at `recording.mp4`.
+
+## Kernel
+
+Put the key in `.env.local`:
+
+```dotenv
+KERNEL_API_KEY=...
+```
+
+Then select the runtime on a single or batch run:
+
+```bash
+uv run clawbench-run test-cases/v1/<case> your-model \
+  --browser-runtime kernel
+
+uv run clawbench-batch --models your-model --all-cases \
+  --browser-runtime kernel
+```
+
+Kernel runs use ClawBench's existing CDP action capture, screenshots, HTTP logging, and request interception. ClawBench starts a Kernel replay with each browser and downloads the completed video to `data/recording.mp4` before deleting the session.
+
+Provider options are passed as JSON. Supported fields are `stealth`, `region`, `proxy`, and `tags`:
+
+```bash
+uv run clawbench-batch --models your-model --all-cases \
+  --browser-runtime kernel \
+  --browser-runtime-options '{"stealth":true,"region":"us-east"}'
+```
+
+Set `KERNEL_BASE_URL` to override the default `https://api.onkernel.com` API endpoint. Batch concurrency defaults to **1**; raise `--max-concurrent` only as far as your Kernel account limit allows.
 
 ## Browserbase
 

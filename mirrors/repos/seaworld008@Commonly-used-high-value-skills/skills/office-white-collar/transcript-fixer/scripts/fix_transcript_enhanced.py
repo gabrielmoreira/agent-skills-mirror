@@ -19,7 +19,7 @@ from pathlib import Path
 
 # CRITICAL FIX: Import secure secret handling
 sys.path.insert(0, str(Path(__file__).parent))
-from utils.security import mask_secret, SecretStr, validate_api_key
+from utils.security import validate_api_key
 
 # CRITICAL FIX: Import path validation (Critical-5)
 from utils.path_validator import PathValidator, PathValidationError, add_allowed_directory
@@ -68,17 +68,17 @@ def find_glm_api_key():
                                 parts = check_line.split('=', 1)
                                 if len(parts) == 2:
                                     key = parts[1].strip().strip('"').strip("'")
-                                    # CRITICAL FIX: Validate and mask API key
+                                    # Never emit any portion of the credential.
                                     if validate_api_key(key):
-                                        print(f"✓ Found API key in {config_file}: {mask_secret(key)}")
+                                        print(f"✓ Found API key configuration in {config_file}")
                                         return key
                         elif 'export' in check_line and ('TOKEN' in check_line or 'KEY' in check_line):
                             parts = check_line.split('=', 1)
                             if len(parts) == 2:
                                 key = parts[1].strip().strip('"').strip("'")
-                                # CRITICAL FIX: Validate and mask API key
+                                # Never emit any portion of the credential.
                                 if validate_api_key(key):
-                                    print(f"✓ Found API key in {config_file}: {mask_secret(key)}")
+                                    print(f"✓ Found API key configuration in {config_file}")
                                     return key
         except Exception as e:
             print(f"⚠️  Could not read {config_file}: {e}", file=sys.stderr)

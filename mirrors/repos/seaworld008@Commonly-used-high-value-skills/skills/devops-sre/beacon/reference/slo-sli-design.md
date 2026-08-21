@@ -36,6 +36,58 @@ sli:
 
 ---
 
+## AI / LLM Service SLOs
+
+`http_status < 500` is the wrong good-event definition for a system that can answer fast, cheaply, and wrongly.
+A confidently fabricated answer returns `200`. Define the good event as a conjunction over the whole outcome:
+
+```yaml
+good_event:
+  - request_accepted            # not rejected by admission control or quota
+  - response_before_deadline    # end-to-end, client clock
+  - schema_valid                # structured output parses and validates
+  - task_quality_pass           # meets the quality floor for its slice
+  - policy_compliant            # no unsupported claim, no prohibited behavior
+  - no_unauthorized_data        # no cross-tenant or out-of-ACL content
+```
+
+### SLI layers
+
+Do not force these into one composite availability number. Publish an outcome SLO upward and keep the
+component SLIs for diagnosis.
+
+| Layer | SLI | Notes |
+|-------|-----|-------|
+| **Service availability** | accepted / offered, dependency health, within rate limit | rejection is a failure, not an exclusion |
+| **Latency** | end-to-end p95/p99, TTFT, inter-token stall | a stalled stream fails UX at an acceptable mean |
+| **Quality** | task success, per-critical-slice success, abstention rate | slice floors are independent of the overall score |
+| **Reliability** | timeout rate, retry amplification (`attempts/request`), duplicate side-effect actions | duplicate actions are silent in status codes |
+| **Safety / Security** | policy violations, unauthorized tool actions, data exposure | its own budget; never nets out against latency wins |
+| **Cost** | cost per successful task, budget overrun | a cheaper request that gets retried is not cheaper |
+
+### Provisional vs confirmed quality SLI
+
+Latency and schema resolve instantly; quality does not. Automated evaluators and proxy signals give a
+**provisional** value in real time, and human-sampled labels **confirm** it days later. Publish both and mark
+which is which. Never close an error budget on proxy values alone — and when the confirmed value contradicts
+the provisional one, the evaluator itself is a suspect, not only the system.
+
+### Separate budgets, one release policy
+
+Keep latency, quality, and safety error budgets as distinct metrics — a latency win must not be allowed to
+mathematically absorb a quality regression — but connect them to a **single** release policy. Model, prompt,
+dataset, index, and runtime are typically changed by different teams; record every one of them in the same
+release ledger so budget consumption can be attributed to the change that caused it. A critical safety or
+security event halts releases regardless of remaining budget.
+
+### Capacity SLO
+
+Capacity shortfall surfaces as `429` or queue timeout. If latency is computed over accepted requests only,
+shedding load *improves* the number. Bind `admission_rejection_rate` and `successful_task_rate` into the same
+SLO so the two cannot be traded against each other unnoticed.
+
+---
+
 ## SLO Templates
 
 ### Tiered SLO Framework
@@ -100,12 +152,14 @@ Remaining budget:
 
 ## Burn Rate Alerts (Multi-Window)
 
+Canonical tier table (matches SKILL.md Core Contract — `alerting-strategy.md` points here for full detail):
+
 | Alert | Burn Rate | Long Window | Short Window | Budget Consumed |
 |-------|-----------|-------------|--------------|-----------------|
-| **Page (critical)** | 14.4x | 1h | 5min | 2% in 1h |
-| **Page (urgent)** | 6x | 6h | 30min | 5% in 6h |
-| **Ticket (warning)** | 3x | 1d | 2h | 10% in 1d |
-| **Ticket (low)** | 1x | 3d | 6h | 10% in 3d |
+| **Fast burn (page)** | 14.4x | 1h | 5min | ~2% in 1h |
+| **Medium burn (page)** | 6x | 6h | 30min | ~5% in 6h |
+| **Slow burn (ticket)** | 3x | 3d | 6h | ~10% in 3d |
+| **Baseline (trend)** | 1x | 30d | — | 100% at SLO window end |
 
 ```yaml
 # Prometheus alerting rules
@@ -163,7 +217,7 @@ Red (budget remaining < 25%):
 
 Policy governance:
   - Designate freeze authority explicitly
-  - VP/Director escalation path
+  - VP/Cue escalation path
   - If policy feels punitive -> SLO is too tight
   - If degradation occurs before freeze -> SLO is too loose
 ```
@@ -182,6 +236,47 @@ Policy governance:
 | **SA-06** | **Ignoring traffic patterns** | Budget burns fast during peaks | Consider time-based / seasonal SLOs |
 | **SA-07** | **No organizational alignment** | Priority mismatch with PM/leadership | SLO = business metric, shared across organization |
 | **SA-08** | **SLO without policy** | Violations trigger no action ("toothless SLO") | Explicit error budget policy with enforcement |
+| **SA-09** | **`HTTP 200` as AI success** | A fast, cheap, fabricated answer counts as a good event | Conjunctive good event (schema + quality + policy + authorization) |
+| **SA-10** | **Denominator laundering** | Rejects, timeouts, cancellations, and abstentions dropped from the denominator; shedding load improves the SLI | Keep them in the denominator; pair latency SLO with rejection rate. Classify each as good or bad on its own merits (SA-11) — never drop it |
+| **SA-11** | **Scoring a justified abstention as a failure** | "No answer" counted as unavailability, so the cheapest way to raise the SLI is to answer anyway | Split abstention by justification: no supporting evidence, unresolvable conflict, or insufficient authorization → **good event**; declining when the evidence was retrievable → bad event. See below |
+
+### Abstention is an outcome class, not a failure class
+
+`SA-10` and `SA-11` pull in opposite directions unless the two questions are kept apart. **Membership in the
+denominator and classification as a bad event are separate decisions.** Laundering is removing the event;
+mis-scoring is keeping it and grading it wrong. Both are defects, and fixing one by committing the other is
+the common mistake.
+
+An abstention is a **good event** when the supply chain correctly reported its own limit:
+
+- no evidence supports the claim,
+- two sources of equal authority conflict within the same scope,
+- the requester is not authorized for the evidence that would answer it,
+- the action requires a confirmation that has not been given.
+
+It is a **bad event** when the evidence was retrievable and the system declined anyway — that is a retrieval
+or ranking defect wearing an abstention's clothes, and it is invisible if every abstention is counted the
+same way. Track `unjustified_abstention_rate` separately from the overall abstention rate; only the former
+belongs in the error budget.
+
+Scoring all abstentions as failures makes fabricating an answer the cheapest way to raise the SLI. The
+evaluation set must therefore carry unanswerable, conflicting-source, and insufficient-permission cases with
+abstention as the expected output — otherwise the metric rewards exactly the behavior the quality SLO exists
+to prevent.
+
+### Missing data is not a passing window
+
+Excluding periods when the SLI could not be measured makes an SLO improve on paper as instrumentation
+degrades. Declare a **missing-data policy** before the first measurement window closes: state whether an
+unmeasured interval counts as good, bad, or excluded, and cap how much of a window may be excluded before
+the window itself is void. For safety and authorization SLIs the default is **bad, not excluded** — losing
+the ability to observe a control is not evidence the control held.
+
+### Freshness targets are segmented by risk, not uniform
+
+One freshness target across a whole corpus either overpays for static content or under-protects the volatile
+kind. Segment by risk class (security advisory · policy · runbook · reference · FAQ) and set a target per
+class. Report p50/p95/max and the breach count per class; a mean across classes hides the one that matters.
 
 ### Metrics Sprawl Prevention
 

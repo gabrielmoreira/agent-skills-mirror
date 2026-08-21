@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/TypeScript` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `microsoft/TypeScript` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/TypeScript` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.github/skills/compiler-and-fourslash-tests/SKILL.md`](.github/skills/compiler-and-fourslash-tests/SKILL.md) |
 
 ---
 

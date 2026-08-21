@@ -22,7 +22,8 @@ allowed-tools:
 One command generates a setup key and
 prints instructions the other agent can follow to connect. Works with OpenClaw,
 Hermes, Codex, Cursor, or any agent that can make HTTP requests. The remote agent
-gets its own tab with scoped access (read+write by default, admin on request).
+gets its own tab with full page access by default (the pairing ceremony is the
+trust boundary; --restrict narrows it).
 Use when asked to "pair agent", "connect agent", "share browser", "remote browser",
 "let another agent use my browser", or "give browser access".
 
@@ -1000,10 +1001,18 @@ ngrok, start the tunnel, and print the instruction block with the tunnel URL:
 $B pair-agent --client TARGET_HOST
 ```
 
-If the user also needs admin access (JS execution, cookies, storage):
+Default access already includes JS execution. To also grant browser-wide
+control (stop, restart, disconnect):
 
 ```bash
-$B pair-agent --admin --client TARGET_HOST
+$B pair-agent --control --client TARGET_HOST
+```
+
+For a less-trusted agent, narrow the scopes instead:
+
+```bash
+$B pair-agent --restrict read --client TARGET_HOST            # read-only
+$B pair-agent --restrict "read,write" --client TARGET_HOST    # no JS, no cookies
 ```
 
 **CRITICAL: You MUST output the full instruction block to the user.** The command
@@ -1075,15 +1084,28 @@ side panel if you have GStack Browser open."
 
 ## What the remote agent can do
 
-With default (read+write) access:
+Default access is read+write+admin+meta. The trust boundary is the pairing
+ceremony, not the scope:
 - Navigate to URLs, click elements, fill forms, take screenshots
 - Read page content (text, HTML, snapshot)
 - Create new tabs (each agent gets its own)
-- Cannot execute arbitrary JavaScript, read cookies, or access storage
+- Execute JavaScript via `eval`
+- Cannot stop or restart the browser, or disconnect headed mode (needs --control)
 
-With admin access (--admin flag):
-- Everything above, plus JS execution, cookie access, storage access
-- Use sparingly. Only for agents you fully trust.
+Remote agents go through the tunnel command allowlist: `eval` works, but the
+`js`, `cookies`, and `storage` commands are not dispatchable over the tunnel
+even with admin scope. Agents paired with `--local` get all four.
+
+With --restrict (`--restrict read`, `--restrict "read,write"`):
+- Sandboxed sessions: read-only, or read+write with no JS, cookie, or storage
+  access. Pair this way when the remote agent will read untrusted web content:
+  a trusted agent can be prompt-injected by pages it reads, and scope caps the
+  blast radius (eval works over the tunnel).
+- `--restrict` never grants `control`; that scope stays behind --control.
+
+With --control (--admin is the legacy alias):
+- Everything, plus browser-wide destructive ops (stop, restart, disconnect)
+- Only for agents you fully trust.
 
 ## Troubleshooting
 
@@ -1131,9 +1153,21 @@ To disconnect a specific agent:
 $B tunnel revoke AGENT_NAME
 ```
 
-To disconnect all agents and rotate the root token:
+The command deletes every token for that agent (the session and any pending
+setup keys) and re-reads the agent list to prove it's gone.
+
+See who's paired:
 
 ```bash
-# This invalidates ALL scoped tokens immediately
-$B tunnel rotate
+$B tunnel agents
+```
+
+Unexchanged setup keys show as "(pending)"; `tunnel revoke` removes them too.
+
+To disconnect ALL agents at once, stop the daemon. Scoped tokens live in
+daemon memory and never survive a restart; the next command boots a fresh
+daemon with a new root token:
+
+```bash
+$B stop
 ```

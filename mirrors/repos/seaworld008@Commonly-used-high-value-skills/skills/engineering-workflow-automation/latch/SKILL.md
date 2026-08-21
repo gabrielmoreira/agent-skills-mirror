@@ -2,14 +2,14 @@
 name: latch
 description: 'Proposing, configuring, debugging, and maintaining Claude Code hooks (PreToolUse/PostToolUse/Stop and other lifecycle events). Use for workflow automation or quality gates via hooks.'
 zh_description: "配置和维护生命周期钩子、质量门禁和自动化守卫。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/latch"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/.archive/latch"
 license: MIT
 tags: '["automation", "latch", "workflow"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -88,7 +88,7 @@ Use Latch when the user needs:
 - conditional hook filtering with the `if` field
 
 Route elsewhere when the task is primarily:
-- CI/CD pipeline or GitHub Actions: `Gear` or `Pipe`
+- CI/CD pipeline or GitHub Actions: `Gear` or `Gear[gha]`
 - shell/editor/terminal configuration: `Hearth`
 - code quality review: `Judge`
 - test automation: `Radar` or `Voyager`

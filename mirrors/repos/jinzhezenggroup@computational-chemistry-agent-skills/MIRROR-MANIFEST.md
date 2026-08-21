@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `jinzhezenggroup/computational-chemistry-agent-skills` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
+Mirror of `jinzhezenggroup/computational-chemistry-agent-skills` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jinzhezenggroup/computational-chemistry-agent-skills` — 26 default 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 67 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,10 +122,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 61 | ✓ | [`quantum-chemistry/xtb/SKILL.md`](quantum-chemistry/xtb/SKILL.md) |
 | 62 | ✓ | [`quantum-chemistry/xtbloom-integrate-ase-dpdata/SKILL.md`](quantum-chemistry/xtbloom-integrate-ase-dpdata/SKILL.md) |
 | 63 | ✓ | [`quantum-chemistry/xtbloom-run-python-inference/SKILL.md`](quantum-chemistry/xtbloom-run-python-inference/SKILL.md) |
-| 64 | ✓ | [`tools/dpdata-driver/SKILL.md`](tools/dpdata-driver/SKILL.md) |
-| 65 | ✓ | [`tools/dpdata-minimizer/SKILL.md`](tools/dpdata-minimizer/SKILL.md) |
-| 66 | ✓ | [`tools/dpdisp-submit/SKILL.md`](tools/dpdisp-submit/SKILL.md) |
-| 67 | ✓ | [`tools/search-species/SKILL.md`](tools/search-species/SKILL.md) |
+| 64 | ✓ | [`tools/dpdata-cli/SKILL.md`](tools/dpdata-cli/SKILL.md) |
+| 65 | ✓ | [`tools/dpdata-driver/SKILL.md`](tools/dpdata-driver/SKILL.md) |
+| 66 | ✓ | [`tools/dpdata-minimizer/SKILL.md`](tools/dpdata-minimizer/SKILL.md) |
+| 67 | ✓ | [`tools/dpdisp-submit/SKILL.md`](tools/dpdisp-submit/SKILL.md) |
+| 68 | ✓ | [`tools/search-species/SKILL.md`](tools/search-species/SKILL.md) |
 
 ---
 

@@ -2,14 +2,14 @@
 name: ripple
 description: 'Analyzing pre-change impact across vertical (dependency chains, files) and horizontal (pattern consistency, naming) dimensions. Use to estimate blast radius before a refactor. No code.'
 zh_description: "变更前影响分析，评估依赖链和一致性风险。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/ripple"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/ripple"
 license: MIT
 tags: '["analysis", "planning", "ripple"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---

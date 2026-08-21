@@ -2,14 +2,14 @@
 name: growth
 description: 'Optimizing SEO (meta/OGP/JSON-LD/headings), SMO (social sharing), CRO (CTA/form/exit-intent), and GEO (AI citation optimization). Use for search ranking, conversion, or AI visibility.'
 zh_description: "搜索、社交、转化和人工智能引用优化的一体化增长。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/growth"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/growth"
 license: MIT
 tags: '["growth", "marketing"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -26,6 +26,8 @@ CAPABILITIES_SUMMARY:
 - cro_cta_optimization: CTA copy, placement, color, urgency improvements with hypothesis-driven testing
 - form_optimization: Field reduction, inline validation, progress indication
 - exit_intent_prevention: Exit-intent detection and retention overlay patterns
+
+- retention_and_reengagement: Retention and churn framing, engagement loops and habit formation, re-engagement and win-back triggers, loyalty program structure, lifecycle-stage interventions — absorbed from `bond` 2026-08-20
 
 COLLABORATION_PATTERNS:
 - Pattern A: Metrics-to-Optimize (Pulse → Growth)
@@ -165,6 +167,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Keyword | `keyword` | | Keyword research methodology — search intent classification, query clustering, SERP feature analysis, AI prompt mining | `reference/keyword-research.md` |
 | Audit | `audit` | | Full-site SEO audit — crawlability, indexability, content gap, internal linking, log-file analysis | `reference/seo-audit.md` |
 | Vitals | `vitals` | | Core Web Vitals deep optimization — LCP/INP/CLS root-cause and targeted fix patterns at p75 | `reference/core-web-vitals-deep.md` |
+| Retention & Re-engagement | `retention` |  | Design retention mechanics, win-back triggers, and loyalty structure | `reference/retention/retention-analysis.md`, `reference/retention/engagement-triggers.md`, `reference/retention/winback-campaign.md` |
 
 ## Subcommand Dispatch
 
@@ -193,7 +196,7 @@ Behavior notes per Recipe:
 | Signal | Approach | Primary output | Read next |
 |--------|----------|----------------|-----------|
 | `SEO`, `meta`, `title`, `description`, `canonical` | SEO meta implementation | Meta tags + verification | `reference/seo-checklist.md` |
-| `heading`, `h1`, `h2`, `hierarchy` | Heading audit | Heading structure fix | `reference/seo-detailed-checklist.md` |
+| `heading`, `h1`, `h2`, `hierarchy` | Heading audit | Heading structure fix | `reference/seo-checklist.md` |
 | `OG`, `Open Graph`, `Twitter Card`, `social` | Social sharing | OGP/Twitter Card meta | `reference/ogp-twitter-card-guide.md` |
 | `JSON-LD`, `structured data`, `Schema.org` | Structured data | JSON-LD implementation | `reference/json-ld-templates.md` |
 | `LCP`, `INP`, `CLS`, `Core Web Vitals`, `performance` | Core Web Vitals | Ranking impact + p75 measurement gap (CrUX vs Lighthouse); remediation code → `bolt/reference/core-web-vitals.md` | `reference/core-web-vitals.md` |
@@ -254,7 +257,6 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 | Reference | Read this when |
 |-----------|----------------|
 | `reference/seo-checklist.md` | You need SEO quick checklist (per-page + technical). |
-| `reference/seo-detailed-checklist.md` | You need detailed SEO checklist (meta/heading/content/images/URLs/site-level). |
 | `reference/ogp-social-templates.md` | You need OGP and social sharing quick reference. |
 | `reference/ogp-twitter-card-guide.md` | You need full OGP/Twitter Card implementation (HTML/Next.js/React Helmet/specs). |
 | `reference/json-ld-templates.md` | You need JSON-LD templates (Product/Article/FAQ/Breadcrumb/Org/Local/SoftwareApp). |
@@ -269,6 +271,7 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 | `reference/code-standards.md` | You need good/bad code examples. |
 | `_common/OPUS_5_AUTHORING.md` | You are sizing the SEO/GEO/CRO spec, deciding adaptive thinking depth at AUDIT, or front-loading scope/channel/metric at INTAKE. Critical for Growth: P3, P5. |
 | `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Growth-specific Output/Next schema. |
+| `reference/retention/` | Designing retention, re-engagement, and loyalty mechanics (absorbed from `bond`) |
 
 ## Operational
 

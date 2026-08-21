@@ -16,6 +16,8 @@ CAPABILITIES_SUMMARY:
 - form_optimization: Field reduction, inline validation, progress indication
 - exit_intent_prevention: Exit-intent detection and retention overlay patterns
 
+- retention_and_reengagement: Retention and churn framing, engagement loops and habit formation, re-engagement and win-back triggers, loyalty program structure, lifecycle-stage interventions — absorbed from `bond` 2026-08-20
+
 COLLABORATION_PATTERNS:
 - Pattern A: Metrics-to-Optimize (Pulse → Growth)
 - Pattern B: Test-to-Validate (Growth → Experiment)
@@ -154,6 +156,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 | Keyword | `keyword` | | Keyword research methodology — search intent classification, query clustering, SERP feature analysis, AI prompt mining | `reference/keyword-research.md` |
 | Audit | `audit` | | Full-site SEO audit — crawlability, indexability, content gap, internal linking, log-file analysis | `reference/seo-audit.md` |
 | Vitals | `vitals` | | Core Web Vitals deep optimization — LCP/INP/CLS root-cause and targeted fix patterns at p75 | `reference/core-web-vitals-deep.md` |
+| Retention & Re-engagement | `retention` |  | Design retention mechanics, win-back triggers, and loyalty structure | `reference/retention/retention-analysis.md`, `reference/retention/engagement-triggers.md`, `reference/retention/winback-campaign.md` |
 
 ## Subcommand Dispatch
 
@@ -257,13 +260,14 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 | `reference/code-standards.md` | You need good/bad code examples. |
 | `_common/OPUS_5_AUTHORING.md` | You are sizing the SEO/GEO/CRO spec, deciding adaptive thinking depth at AUDIT, or front-loading scope/channel/metric at INTAKE. Critical for Growth: P3, P5. |
 | `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Growth-specific Output/Next schema. |
+| `reference/retention/` | Designing retention, re-engagement, and loyalty mechanics (absorbed from `bond`) |
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal growth insights in `.agents/growth.md`; create it if missing. Record patterns and learnings worth preserving.
 - After significant Growth work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Growth | (action) | (files) | (outcome) |`
-- Standard protocols → `_common/OPERATIONAL.md`
-- Follow `_common/GIT_GUIDELINES.md`.
 
 ## AUTORUN Support
 

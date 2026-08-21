@@ -100,7 +100,9 @@ pip install skillopt        # installs the engine + the `skillopt-sleep` command
 skillopt-sleep dry-run      # harvest + mine + replay, report only; stages nothing
 skillopt-sleep run          # a full nightly cycle; the proposal is staged for review
 skillopt-sleep status       # show state + the latest staged proposal
-skillopt-sleep adopt        # apply the latest staged proposal
+skillopt-sleep adopt --legacy       # apply a reviewed managed proposal
+skillopt-sleep adopt --skill NAME   # adopt one staged skill (repeatable)
+skillopt-sleep adopt --all-skills   # adopt every still-pending fan-out skill
 skillopt-sleep schedule     # install a nightly cron entry for this project
 ```
 
@@ -108,8 +110,8 @@ skillopt-sleep schedule     # install a nightly cron entry for this project
 > commands above. Cursor source/backend/plugin support, VS Code Copilot
 > transcript harvesting, Pi source/backend support, Sleep handoff, non-Azure
 > OpenAI-compatible endpoints, OpenCode Sleep source/backend support, and
-> `--preferences` landed later and require a source install from `main` until
-> the next release.
+> `--preferences`, multi-skill fan-out, and reviewed subset adoption landed
+> later and require a source install from `main` until the next release.
 
 The per-agent integrations below still come from the repo; the CLI above is the
 standalone, pip-only way to run a cycle. Claude Code, Codex, Cursor, Copilot, and
@@ -212,21 +214,27 @@ skillopt-sleep run --project "$(pwd)" \
   --opencode-path /absolute/path/to/opencode --model provider/model
 ```
 
-For plain calls, SkillOpt disables project configuration, tool use, external
-plugins, and configured MCP servers. It stops before the model call if it cannot
-confirm that every resolved MCP server is disabled. The subprocess keeps
-OpenCode's normal data directory, so calls may appear in the user's OpenCode
-session history. SkillOpt sets `OPENCODE_CONFIG_CONTENT` for the child process
-to define the temporary agent and disable configured MCP servers. This replaces
-the user's existing value in that child process, so settings supplied only
-through that value are unavailable; use file-based global configuration or
-provider environment variables instead.
+Plain calls disable project configuration, model-initiated tool invocation,
+external plugins, and configured MCP servers. SkillOpt stops before the model
+call if it cannot confirm that every resolved MCP server is disabled.
 
-Tool-aware replay and a native OpenCode plugin or command are not implemented
-yet. For scheduled runs, configure the source, database, executable, and model
-in `~/.skillopt-sleep/config.json` as needed; the
-[CLI reference](../reference/cli.md#opencode-source-and-backend) has the full
-scheduler details.
+Tool-aware replay is disabled by default. Enable it with
+`--opencode-tool-replay` or `"opencode_tool_replay": true` for tasks whose rule
+judge contains a `tool_called` check. It exposes temporary synthetic tools with
+randomized names and fixed results, verifies which tools OpenCode actually
+invokes, and denies all other tools. Historical tool arguments and results are
+not retained or replayed.
+
+Both modes continue to use OpenCode's normal data directory and file-based
+global configuration. Calls may therefore appear in session history, and global
+custom JS/TS tools may initialize, although SkillOpt does not allow the model to
+invoke them. See the
+[CLI reference](../reference/cli.md#opencode-source-and-backend) for complete
+configuration, history, and isolation details.
+
+For scheduled runs, configure the source, database, executable, and model in
+`~/.skillopt-sleep/config.json` as needed. Set `opencode_tool_replay` to `true`
+there to opt in to tool-aware replay.
 
 ### Cursor
 
@@ -286,22 +294,38 @@ documents the separate HTTPS-only boundary for Azure managed-identity credential
 Deterministic proof (no API key):
 `python -m skillopt_sleep.experiments.run_experiment --persona researcher --assert-improves`.
 
-### Opt-in: per-skill group reporting
+### Opt-in: per-skill fan-out
 
-Set `"multi_skill_report": true` in `~/.skillopt-sleep/config.json` to add an
-independent gate result and report row for every explicit skill hint mined that
-night:
+Set `"multi_skill_fanout": true` in `~/.skillopt-sleep/config.json` to add an
+independent gate result and reviewable proposal for every explicit skill hint
+mined that night. `multi_skill_report` remains a compatibility alias:
 
 ```json
-{"multi_skill_report": true}
+{"multi_skill_fanout": true}
 ```
 
 This runs one additional consolidation per group (including a catch-all group when
-hinted and unhinted evidence are mixed), so it increases backend calls and token use.
-It is reporting-only for now: every group starts from the same managed skill
-document, and Sleep does not yet resolve and update several live `SKILL.md` files
-automatically. Nights containing only the managed catch-all group keep the existing
-single-consolidation behavior.
+hinted and unhinted evidence are mixed), so it multiplies backend calls and token
+use; configured dream rollouts and synthetic variants multiply the per-group work
+too. Each group inherits the configured edit budget, gate mode/metric,
+`gate_no_regression`, `dream_rollouts`, `dream_factor`, `recall_k`, and
+`evolve_skill`. Recalled archive tasks are restricted to that same skill hint;
+shared memory is read-only in fan-out runs. Setting `evolve_skill` to `false`
+therefore disables per-skill proposals as well as the managed skill proposal.
+
+Each explicitly hinted group resolves and reads its own live `SKILL.md` before
+consolidation, so its staged proposal preserves that skill's baseline. Missing,
+ambiguous, unreadable, aliased, or colliding skills are skipped and reported
+instead of falling back to the managed document. Adoption remains review-driven:
+choose fan-out proposals with `adopt --skill NAME` or `--all-skills`, and use
+`adopt --legacy` for a co-staged managed skill/memory pair. `auto_adopt` never
+promotes the per-skill fan-out. Nights containing only the managed catch-all group
+keep the existing single-consolidation behavior.
+
+Resolution searches existing project-native `.agents/skills`, `.claude/skills`,
+`.cursor/skills`, and `.devin/skills` directories, then the established Claude
+home and plugin-cache roots. Add repeatable `--skill-root PATH` values when an
+integration stores skills elsewhere. Relative roots resolve below `--project`.
 
 ### Opt-in: experience replay & dream rollouts
 
@@ -356,6 +380,13 @@ variance here is ±1–2 pts, so treat sub-~1.5 pt differences as noise. The val
 gate keeps the worst case bounded; keep it **on** by default.
 
 ## Learn more
+
+The **low-level** API for staging one proposal per skill and adopting a reviewed
+subset (`staged_skills` / `adopt_skills`, plus `status` and `adopt --skill`) is
+documented in [`docs/sleep/multi-skill-staging.md`](multi-skill-staging.md).
+That page also documents the opt-in nightly fan-out, where every hinted group
+derives its proposal from its own resolved live `SKILL.md` while adoption remains
+an explicit human decision.
 
 See the [SkillOpt documentation index](../index.md), the
 [CLI reference](../reference/cli.md), and the integration-specific READMEs under

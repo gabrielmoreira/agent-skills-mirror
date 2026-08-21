@@ -15,6 +15,9 @@ CAPABILITIES_SUMMARY:
 - long_running_tx: Long-running transaction management — idempotency and retry strategies
 - workflow_testing: Workflow testability design and state-transition test-case generation
 
+- temporal_correctness: Cron authoring and next-fire simulation, DST/IANA safety, JP business-calendar and fiscal boundaries, backfill watermark and misfire policy — absorbed from `tempo` 2026-08-20
+- retry_and_rate_policy: Backoff with jitter, retry budgets, DLQ replay, idempotency dedup windows, token/leaky-bucket and GCRA rate limiting — absorbed from `tempo` and `relay` 2026-08-20
+
 COLLABORATION_PATTERNS:
 - User -> Weave: Workflow or state-transition design request
 - Scribe -> Weave: State-transition section design extracted from a specification
@@ -178,8 +181,8 @@ Single source of truth for Recipe definitions. Behavior depth lives in the "Beha
 | Saga Pattern | `saga` | | Saga pattern distributed transactions | Top-level Saga shape (orchestration vs choreography, participants, boundary). For per-step compensation depth, switch to `compensation`. | `reference/saga-patterns.md` |
 | Approval Flow | `approval` | | Approval flow design | Approval flow with BPMN 2.0 boundary timer + escalation (never error events). Includes SLA, delegation, and audit trail. | `reference/approval-flow-patterns.md` |
 | Invalid Transition Detection | `detect` | | Invalid transition detection | Scan existing transition tables / code for invalid or missing transitions. | `reference/state-machine-patterns.md` |
-| Retry State Machine | `retry` | | Exponential backoff, jitter, max-attempt cap, DLQ terminal state, idempotency contract | Exponential backoff (base × 2^n), jitter (full/equal/decorrelated), max-attempt cap, DLQ as terminal state, retriable-vs-non-retriable classification, idempotency key. Pair with `tempo` for schedules, Beacon for retry-exhaustion alerts. | `reference/retry-state-machine.md` |
-| Timeout / TTL / Deadline | `timeout` | | TTL state design, deadline propagation, grace-period transitions, stuck-state recovery | Per-state timeout from business SLA, deadline propagation (context.deadline), grace-period transitions, stuck-state escape, soft-timeout (warn) vs hard-timeout (abort). Hand off to `tempo` for cron integration. | `reference/timeout-ttl-design.md` |
+| Retry State Machine | `retry` | | Exponential backoff, jitter, max-attempt cap, DLQ terminal state, idempotency contract | Exponential backoff (base × 2^n), jitter (full/equal/decorrelated), max-attempt cap, DLQ as terminal state, retriable-vs-non-retriable classification, idempotency key. Pair with the `schedule` Recipe for cron timing, Beacon for retry-exhaustion alerts. | `reference/retry-state-machine.md` |
+| Timeout / TTL / Deadline | `timeout` | | TTL state design, deadline propagation, grace-period transitions, stuck-state recovery | Per-state timeout from business SLA, deadline propagation (context.deadline), grace-period transitions, stuck-state escape, soft-timeout (warn) vs hard-timeout (abort). Switch to the `schedule` Recipe for cron integration. | `reference/timeout-ttl-design.md` |
 | Compensation Transactions | `compensation` | | Saga compensation per forward step, idempotency keys, compensation-of-compensation, ordering | Per-forward-step compensation; each idempotent, LIFO-ordered by default, handles compensation-of-compensation. Emit compensation table with idempotency keys, ordering, and failure-of-compensation escalation (hand off to Triage). | `reference/compensation-transactions.md` |
 
 ### Signal Keywords → Recipe
@@ -198,6 +201,7 @@ For natural-language input without an explicit subcommand. Subcommand match wins
 | `long-running transaction`, `durable workflow`, `engine selection` | `saga` (engine recommendation included) |
 | `AI agent workflow`, `LLM state transitions`, `human-in-the-loop` | `design` (graph-based — LangGraph / Temporal / DBOS) |
 | unclear workflow design request | `design` (default) |
+| Schedule Design | `schedule` |  | Design cron, timezone, business-calendar, and backfill behavior | UTC at the boundary, IANA identifiers in storage, a stated policy for DST-ambiguous times, catchup vs skip-forward with an explicit watermark. Runner/queue infra routes to Gear or Scaffold. | `reference/scheduling/cron-patterns.md`, `reference/scheduling/timezone-safety.md`, `reference/scheduling/business-calendar.md` |
 
 ## Subcommand Dispatch
 
@@ -346,30 +350,6 @@ Quick orientation:
 - Judge — workflow design for review
 - Nexus — step-complete signal under AUTORUN / Hub mode
 
-### Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    INPUT PROVIDERS                           │
-│  User → Workflow design requirements                         │
-│  Scribe → State-transition sections from specs               │
-│  Atlas → Cross-module dependency / architecture context      │
-└─────────────────────┬───────────────────────────────────────┘
-                      ↓
-            ┌─────────────────┐
-            │      Weave      │
-            │ Workflow Design │
-            └────────┬────────┘
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   OUTPUT CONSUMERS                           │
-│  Builder ← Implementable workflow design                     │
-│  Canvas ← State-transition / workflow diagrams               │
-│  Radar ← State-transition test cases                         │
-│  Scribe ← Workflow specification                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
 ### Collaboration Patterns
 
 | Pattern | Name | Flow | Purpose |
@@ -382,22 +362,7 @@ Quick orientation:
 
 ### Handoff Patterns
 
-**From Scribe:**
-```yaml
-SCRIBE_TO_WEAVE_HANDOFF:
-  spec_section: "State transitions / workflow requirements"
-  business_rules: "[extracted rules]"
-  expected_output: "State machine definition + validation report"
-```
-
-**To Builder:**
-```yaml
-WEAVE_TO_BUILDER_HANDOFF:
-  state_machine: "[complete state machine definition]"
-  validation_report: "[validation results]"
-  implementation_notes: "[guard/action implementation guidance]"
-  recommended_library: "[XState / custom FSM]"
-```
+Inbound (`USER_TO_WEAVE`, `SCRIBE_TO_WEAVE`, `ATLAS_TO_WEAVE`) and outbound (`WEAVE_TO_BUILDER`, `WEAVE_TO_CANVAS`, `WEAVE_TO_RADAR`) schemas -> `reference/handoffs.md`.
 
 ---
 
@@ -411,16 +376,19 @@ WEAVE_TO_BUILDER_HANDOFF:
 | `reference/engine-selection.md` | Selection guide across Temporal / Step Functions / Inngest / XState; non-functional checklist |
 | `reference/event-driven-workflows.md` | Event Sourcing / CQRS / Process Manager / Outbox / DLQ / idempotency patterns |
 | `reference/handoffs.md` | All handoff templates (Inbound: User / Scribe / Atlas / Nexus; Outbound: Builder / Canvas / Radar / Scribe / Judge) |
-| `reference/retry-state-machine.md` | Retry state-machine design — exponential backoff, jitter (full / equal / decorrelated), max-attempt cap, DLQ as terminal state, retriable-vs-non-retriable error classification, idempotency-key contract |
-| `reference/timeout-ttl-design.md` | TTL / deadline / expiry state design — per-state timeout from business SLA, deadline propagation, grace-period transitions, soft-vs-hard timeout, stuck-state recovery |
-| `reference/compensation-transactions.md` | Saga per-forward-step compensation — idempotency keys, LIFO ordering, compensation-of-compensation, failure-of-compensation escalation |
+| `reference/retry-state-machine.md` | Running the `retry` Recipe |
+| `reference/timeout-ttl-design.md` | Running the `timeout` Recipe |
+| `reference/compensation-transactions.md` | Running the `compensation` Recipe |
 | `_common/OPUS_5_AUTHORING.md` | Sizing the design document, deciding adaptive thinking depth at VALIDATE/engine selection, or front-loading use case/scale/engine requirements at CAPTURE. Critical for Weave: P3, P5. |
-| `_common/PROOF_CARRYING.md` | You emit state machine specs (XState / DSL) for interactive UI components in `nexus acceptance` Phase 2B as layer 3 of the Design-Code Contract (default → hover → focus → active → disabled → loading → error transitions). Used by `palette` for `state_proof` coverage gating. Also used in Layer A backend state machines for `rally engine-paradigm` Dual-Implementation Oracle in-scope (state-machine domain). |
+| `_common/PROOF_CARRYING.md` | You emit state machine specs (XState / DSL) for interactive UI components in `nexus acceptance` Phase 2B as layer 4 of the Design-Code Contract, and back Layer A backend state machines for the `rally engine-paradigm` Dual-Implementation Oracle (state-machine domain). |
+| `reference/scheduling/` | Cron, timezone/DST, business-calendar, backfill, retry/rate policy (absorbed from `tempo`) |
 | `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Weave-specific Output/Next schema. |
 
 ---
 
 ## Operational
+
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
 
 **Journal** (`.agents/weave.md`): Record only workflow-design domain insights — effective applications of a new pattern, domain-specific anti-patterns, updates to engine-selection criteria. Do not record individual tasks or routine work.
 
@@ -433,7 +401,6 @@ WEAVE_TO_BUILDER_HANDOFF:
 
 **Avoids**: Verb-form state names · Implicit fallthrough · Over-splitting states · Distributed transactions without compensation · Engine selection before requirements are clear
 
-Standard protocols → `_common/OPERATIONAL.md`
 
 ---
 
@@ -466,19 +433,5 @@ Weave-specific findings to surface in handoff:
 ## Output Language
 
 Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Code identifiers and technical terms remain in English.
-
----
-
-## Git Guidelines
-
-See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
-- Keep subject line under 50 characters
-
-Examples:
-- ✅ `feat(order): add state machine definition`
-- ✅ `docs(workflow): add approval flow specification`
-- ❌ `feat: Weave designs order workflow`
-
----
 
 > *"States are the nouns, events are the verbs, transitions are the grammar. Weave writes the language of your business."*

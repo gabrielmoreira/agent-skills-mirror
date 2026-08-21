@@ -7,9 +7,9 @@ Purpose: Adapt personas for downstream agents without changing the underlying pe
 1. Adapter overview
 2. Echo adapter
 3. Spark adapter
-4. Bond adapter
+4. Growth adapter
 5. Compete adapter
-6. Accord adapter
+6. Scribe[unified] adapter
 7. Generic fallback
 8. Selection logic
 9. Multi-persona delivery
@@ -20,9 +20,9 @@ Purpose: Adapt personas for downstream agents without changing the underlying pe
 |---|---|
 | Echo | testing flows, friction, confidence, recent changes |
 | Spark | unmet needs, opportunity signals, constraints |
-| Bond | lifecycle, churn risk, re-engagement |
+| Growth | lifecycle, churn risk, re-engagement |
 | Compete | expectations, switching behavior, loyalty anchors |
-| Accord | business context, alignment, decision confidence |
+| Scribe[unified] | business context, alignment, decision confidence |
 | Generic | minimal neutral summary |
 
 ## Echo Adapter
@@ -47,7 +47,7 @@ Required sections:
 - `### Constraints`
 - `### Key Behaviors (Design Constraints)`
 
-## Bond Adapter
+## Growth Adapter
 
 Required sections:
 
@@ -68,7 +68,7 @@ Required sections:
 - `### Competitive Vulnerability`
 - `### Loyalty Anchors`
 
-## Accord Adapter
+## Scribe[unified] Adapter
 
 Required sections:
 
@@ -94,9 +94,9 @@ Required sections:
 |---|---|
 | Echo | Echo adapter |
 | Spark | Spark adapter |
-| Bond | Bond adapter |
+| Growth | Growth adapter |
 | Compete | Compete adapter |
-| Accord | Accord adapter |
+| Scribe[unified] | Scribe[unified] adapter |
 | Unknown | Generic fallback |
 
 ## Multi-Persona Delivery

@@ -28,6 +28,8 @@ CAPABILITIES_SUMMARY:
 - expert_conclave: Independently reconstruct 2-5 named thinkers and preserve their tensions before optional decision arbitration
 - attested_expert_profiles: Maintain date-scoped, sourced reasoning profiles with ATTESTED / INFERRED / SPECULATIVE labels and ethics gates
 
+- strategic_scenario_simulation: Baseline/optimistic/pessimistic business scenarios, SWOT/PESTLE/Porter/BCG/Ansoff/Blue Ocean lenses, KPI forecasting across horizons, TAM/SAM/SOM sizing, disruption and wargaming analysis — absorbed from `helm` 2026-08-20
+
 COLLABORATION_PATTERNS:
 - Pattern A: Architecture Arbitration (Atlas → Magi → Builder/Scaffold)
 - Pattern C: Strategy Resolution (Scribe[unified] → Magi → Sherpa)
@@ -38,12 +40,12 @@ COLLABORATION_PATTERNS:
 - Pattern I: API Design Arbitration (Gateway → Magi → Gateway) — versioning and design trade-offs
 - Pattern J: Migration Strategy Verdict (Shift → Magi → Shift) — migration approach selection
 - Pattern K: Experiment Interpretation (Experiment → Magi → Experiment) — A/B result Go/No-Go
-- Pattern L: Named-Expert Lens (User/Flux/Riff → Magi[expert] → Magi[decide]/Builder) — attested named-figure viewpoints remain advisory until explicitly arbitrated
-- Pattern M: Founder Office Hours (Helm/Spark/Field → Magi[office-hours] → Builder/Echo[demand]/Sherpa) — current-state evidence becomes one bottleneck and a short commitment set
+- Pattern L: Named-Expert Lens (User/Flux/Flux → Magi[expert] → Magi[decide]/Builder) — attested named-figure viewpoints remain advisory until explicitly arbitrated
+- Pattern M: Founder Office Hours (Magi/Spark/Field → Magi[office-hours] → Builder/Echo[demand]/Sherpa) — current-state evidence becomes one bottleneck and a short commitment set
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: User, Nexus, Scribe[unified], Atlas, Flux, Riff, Helm, Spark, Field, Schema, Gateway, Shift, Experiment
-- OUTPUT: Builder/Forge/Artisan, Atlas/Scaffold, Launch, Nexus, Sherpa, Echo[demand], Void, Riff, Scribe/Quill, Schema, Gateway, Shift, Experiment
+- INPUT: User, Nexus, Scribe[unified], Atlas, Flux, Spark, Field, Schema, Gateway, Shift, Experiment
+- OUTPUT: Builder/Forge/Artisan, Atlas/Scaffold, Launch, Nexus, Sherpa, Echo[demand], Void, Flux, Scribe/Quill, Schema, Gateway, Shift, Experiment
 
 PROJECT_AFFINITY: universal
 -->
@@ -87,8 +89,8 @@ Route elsewhere when the task is primarily:
 - quality assessment or testing: `Radar`
 - creative reframing of a stuck problem (not a decision): `Flux`
 - questioning whether the decision is necessary at all (YAGNI): `Void`
-- open-ended startup brainstorming or feature ideation: `Riff` or `Spark`
-- long-horizon founder scenarios and forecasts: `Helm`
+- open-ended startup brainstorming or feature ideation: `Flux` or `Spark`
+- long-horizon founder scenarios and forecasts: `Magi`
 - synthetic customer personas or end-user simulation: `Cast` or `Echo[demand]`
 
 ## Core Contract
@@ -160,23 +162,19 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ### Advisory Extensions
 
-Founder Mode uses `SETUP -> CHECK-IN -> PROBE -> DIAGNOSE -> ADVISE -> ACTION -> CLOSE`. It is time-boxed to 6-10 exchanges (12 maximum), asks one question per turn, names exactly one bottleneck, and converts advice into observable commitments. Read `reference/office-hours-format.md`, `reference/probing-questions.md`, and `reference/pattern-library.md`.
-
-Expert Mode uses `SELECT -> GROUND -> CHANNEL -> ATTEST -> DELIVER`. It independently reconstructs documented reasoning, runs the ethics gate, includes trade-offs and blind spots, and stops before authority-based verdicts. If a decision is requested, pass the attested reading into the normal `FRAME` phase as evidence. Read `reference/ethics-and-safety.md`, `reference/channeling-method.md`, and `reference/attestation-tiers.md`.
+Founder Mode (`SETUP -> CHECK-IN -> PROBE -> DIAGNOSE -> ADVISE -> ACTION -> CLOSE`) and
+Expert Mode (`SELECT -> GROUND -> CHANNEL -> ATTEST -> DELIVER`) replace the decision
+phase contract for `advisor` -> `reference/office-hours-format.md`.
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Go/No-Go Decision | `decide` | ✓ | Final adoption verdict (release readiness, feature approval, quality gate). KNOWLEDGE task — evidence at FRAME, then independent voting | `reference/decision-domains.md` |
-| Tradeoff Analysis | `tradeoff` | | X vs Y comparison. Both options explicit; the three lenses evaluate independently with weighted aggregation | `reference/decision-domains.md` |
-| Architecture Arbitration | `arbitrate` | | Design option arbitration (2+ options). Engine Mode auto-detected at low reversibility + high impact | `reference/deliberation-framework.md` |
-| Strategic Direction | `strategic` | | Long-term strategy and roadmap. REASONING task — independent voting; Sophia weights long-term impact | `reference/decision-domains.md` |
-| Six Thinking Hats | `sixhat` | | Parallel-thinking across White/Red/Black/Yellow/Green/Blue modes before voting; Black always paired with equal-time Yellow | `reference/six-thinking-hats.md` |
-| Devil's Advocate | `devil` | | Red-team stress test on high-stakes irreversible proposals; mandatory on `3-0`. Rotated DA, 3-7 ranked objections, addressed/partial/unaddressed scoring | `reference/devils-advocate.md` |
-| Delphi Method | `delphi` | | Anonymous multi-round (2-4) expert convergence for forecasts/uncertain estimates. Bimodal kept as stable disagreement, not flattened | `reference/delphi-method.md` |
-| Advisory | `advisor` | | Founder family (`office-hours`, `triage`, `pitch`) or named-expert family (`expert`, `conclave`, `critique`, `roster`) | `reference/office-hours-format.md`, `reference/ethics-and-safety.md` |
-| Multi-Engine | `multi` | | Multi-engine deliberation — 6-cell dual baseline, 9-cell tri when agy AVAILABLE. Pattern-based verdict preserving cross-viewpoint trade-offs; engine influence capped at 50%; all-cells-unanimous triggers mandatory DA | `reference/tri-engine-deliberate.md`, `_common/MULTI_ENGINE_RECIPE.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+decide · tradeoff · arbitrate · strategic · sixhat · devil · delphi · advisor · multi · simulate
+```
+
+Default Recipe: `decide`.
 
 ### Signal Keywords → Recipe / Approach
 
@@ -211,19 +209,6 @@ Parse the first token of user input:
 
 Each decision Recipe carries its own VERIFY gate in addition to Magi's verdict discipline (3 independent perspectives, hidden scores until voting completes, calibrated confidence, dissent, risk register, and `1-1-1` human escalation). `advisor` uses its mode-specific gate instead. Full decision-recipe notes -> `reference/decision-templates.md`.
 
-| Subcommand | VERIFY gate (headline) |
-|-----------|------------------------|
-| `decide` | KNOWLEDGE protocol — factual evidence shared at FRAME **before** independent voting; verdict GO / NO-GO / CONDITIONAL against established criteria; reversibility classified; `3-0` triggers a devil's-advocate challenge |
-| `tradeoff` | Both options explicit before any vote; strict independent voting; each perspective scores **both** sides; Pathos names who bears the cost; weighted aggregation, never a raw average |
-| `arbitrate` | Engine Mode auto-detected at low-reversibility + high-impact; `>=2` options explicit; Pre-Decision Framing Check mandatory (problem level + `>=1` alternative framing + named implicit assumption) |
-| `strategic` | Strict independent voting; Sophia weights long-term ROI / time-to-market; framing check mandatory; reversibility surfaced (typically LOW — flag the undo horizon); risk register spans the time horizon |
-| `sixhat` | All six hats run; **Black always paired with equal-time Yellow**; Blue frames the open and close; each hat captured before synthesis |
-| `devil` | DA perspective rotated and the dissenting source anonymized; 3-7 ranked objections, each scored addressed / partial / unaddressed; backfire watched; mandatory on any `3-0` |
-| `delphi` | Panelist anonymity every round; 2-4 rounds stopping on a convergence indicator (IQR / Kendall's W), never a fixed count; genuine bimodal disagreement preserved, never flattened to a mean |
-| `advisor` | Variant gate: `office-hours` = CHECK-IN, one bottleneck, pattern citations, 1-3 SMART actions, close by exchange 12; `triage` = one root cause/action in <=5 exchanges; `pitch` = confirmed granularity, no invented traction, line-level replacements; `expert`/`conclave`/`critique` = ethics gate, sourced attestation, no fabricated quote, emulation notice, independently preserved disagreement; `roster` = sourced/date-scoped profile under `.agents/magi/expert-roster/` |
-| `multi` | Dual-engine baseline actually spawned; the deliberation matrix is the primary artifact (**never collapsed to one averaged verdict**); per-cell concurrence + consistency + attribution; pattern-based final verdict; single-engine influence capped at 50%; debate `<=2` rounds; all-cells-unanimous triggers a DA attacking the matrix pattern |
-
-
 ## Output Requirements
 
 A complete deliverable carries the following — a ceiling, not a floor. Emit only what the task exercised; never pad with `N/A`:
@@ -257,8 +242,8 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 ## Collaboration
 
-**Receives:** User (decision, founder-advisory, or named-expert requests), Nexus, Scribe[unified], Atlas, Flux, Riff, Helm, Spark, Field, Schema, Gateway, Shift, Experiment, Void — each as `<AGENT>_TO_MAGI`.
-**Sends:** Builder/Forge/Artisan, Atlas/Scaffold, Launch, Nexus, Sherpa, Echo[demand], Void, Riff, Scribe/Quill, Schema, Gateway, Shift, Experiment — each as `MAGI_TO_<AGENT>`.
+**Receives:** User (decision, founder-advisory, or named-expert requests), Nexus, Scribe[unified], Atlas, Flux, Spark, Field, Schema, Gateway, Shift, Experiment, Void — each as `<AGENT>_TO_MAGI`.
+**Sends:** Builder/Forge/Artisan, Atlas/Scaffold, Launch, Nexus, Sherpa, Echo[demand], Void, Flux, Scribe/Quill, Schema, Gateway, Shift, Experiment — each as `MAGI_TO_<AGENT>`.
 
 Full handoff-token table with per-direction purposes -> `reference/decision-templates.md`.
 
@@ -267,8 +252,7 @@ Full handoff-token table with per-direction purposes -> `reference/decision-temp
 - **vs Scribe[unified]**: Scribe[unified] = stakeholder alignment and requirements; Magi = decision evaluation and verdict.
 - **vs Flux**: Flux = creative reframing and perspective shifting; Magi = structured evaluation and verdict. If deliberation reaches 1-1-1 deadlock, consider routing to Flux for reframing before escalating to human.
 - **vs Void**: Void = questioning whether something should exist; Magi = choosing between options that should exist. Route to Void when "do nothing" emerges as a serious contender.
-- **vs Riff/Spark**: Riff and Spark generate ideas; Magi Founder Mode diagnoses the current bottleneck and may explicitly recommend not building.
-- **vs Helm**: Helm simulates multi-quarter scenarios; Magi Founder Mode works on current state and the next 1-2 weeks.
+- **vs Flux/Spark**: Flux and Spark generate ideas; Magi Founder Mode diagnoses the current bottleneck and may explicitly recommend not building.
 - **vs Cast/Echo**: Cast and Echo simulate synthetic people; Magi Expert Mode reconstructs documented reasoning of real named public figures under attestation and ethics constraints.
 
 ## Multi-Engine Mode
@@ -280,44 +264,24 @@ Mechanics, two-pass clustering states, verdict catalog, engine-attribution tags,
 
 ## Reference Map
 
+**Full index** → **`reference/reference-index.md`** — every `reference/` file and its read-trigger. The rows below are the shared contracts, which no Recipe registry indexes.
+
 | Reference | Read this when |
 |-----------|----------------|
-| `reference/deliberation-framework.md` | Three-perspective evaluation heuristics, bias detection, independence protocols. |
-| `reference/engine-deliberation-guide.md` | Engine Mode spec — availability check, prompt construction, output parsing, fallbacks. |
-| `reference/voting-mechanics.md` | Vote structure, confidence calibration, consensus patterns, escalation rules. |
-| `reference/decision-domains.md` | The 5 domain evaluation matrices, domain-specific questions, sample scenarios. |
-| `reference/decision-templates.md` | Verdict display variants, report template, sample deliberations, per-recipe gates, handoff tokens. |
-| `reference/reframing-toolkit.md` | Three-axis reframing methodology. |
-| `reference/six-thinking-hats.md` | `sixhat` — hat definitions, sequencing, time-boxing, switching rules, facilitator scripts. |
-| `reference/devils-advocate.md` | `devil` — role charter, RAND-tradition rules, honesty constraints, triggers, backfire mitigations. |
-| `reference/delphi-method.md` | `delphi` — panel selection, anonymity, format choice, convergence indicators, stop criteria. |
-| `reference/office-hours-format.md` | Founder Mode session types, exchange budgets, current benchmarks, and close rules. |
-| `reference/probing-questions.md` | Founder CHECK-IN/PROBE question banks, one-question discipline, and resistance handling. |
-| `reference/pattern-library.md` | Durable startup priors and citation format for founder advice. |
-| `reference/founder-anti-patterns.md` | Founder failure signals, two-signal diagnosis threshold, and counter-moves. |
-| `reference/action-extraction.md` | SMART commitment fields, rejection rules, and checkpoint locking. |
-| `reference/pitch-critique.md` | `advisor pitch` — elevator, Demo Day, and investor-Q&A critique with line-level revision format. |
-| `reference/channeling-method.md` | Named-figure reasoning reconstruction, critique technique, and anti-caricature checks. |
-| `reference/attestation-tiers.md` | ATTESTED / INFERRED / SPECULATIVE labels, source and quote handling, and emulation notice. |
-| `reference/ethics-and-safety.md` | Named-expert ethics gate, living/private person handling, and refusal catalog. |
-| `reference/figure-roster.md` | Sourced, date-scoped named-figure profile schema and refresh rules. |
-| `reference/conclave-protocol.md` | Independent multi-figure reconstruction and contrast mapping without forced consensus. |
-| `reference/tri-engine-deliberate.md` | `multi` — fan-out, matrix construction, two-pass scoring, matrix-pattern verdict catalog, JSON schema, prompt skeleton. |
 | `_common/UX_PRINCIPLE_CONFLICTS.md` | The decision is a UX/design trade-off — supplies the named pair and the cost of a one-sided win before the lenses score it. |
 | `_common/MULTI_ENGINE_RECIPE.md` | Cross-skill Pattern H protocol — dual-axis scoring, attribution tags, fallbacks, canonical skeleton. |
 | `_common/SUBAGENT.md` | Base MULTI_ENGINE protocol — engine dispatch, loose-prompt rules, fan-out mechanics, fallbacks. |
-| `_common/OPUS_5_AUTHORING.md` | Sizing the deliberation report, thinking depth at independent evaluation, front-loading at FRAME. Critical: P3, P5. |
-| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Magi-specific Output/Next schema. |
 
 ---
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal recurring decision patterns and deliberation insights in `.agents/magi.md`; create it if missing.
 - Record effective evaluation criteria, bias observations, and escalation outcomes.
 - Store named-figure grounding profiles under `.agents/magi/expert-roster/`; journal only durable founder-advisory or expert-grounding insights, never private user disclosures.
 - After significant Magi work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Magi | (action) | (files) | (outcome) |`
-- Standard protocols → `_common/OPERATIONAL.md`
 
 ---
 

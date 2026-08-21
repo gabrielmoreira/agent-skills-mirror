@@ -213,13 +213,34 @@ Rules:
   intentionally public health, static asset, bootstrap, or presentation
   endpoints;
 - incoming browser requests must not be trusted as server identity requests;
-- independent Console-to-Server calls must carry the configured server identity
-  when server identity is enabled;
+- independent Console-to-Server calls for an authenticated operator must
+  forward every non-blank request identity parameter recorded by the identity
+  builder, using the canonical name declared by the selected auth plugin;
+- transport-derived fields and auth result metadata in `IdentityContext` must
+  not be forwarded;
+- when at least one request identity parameter is forwarded, the call must not
+  also carry the configured server identity, so the target Server authenticates
+  and authorizes the operator;
+- when no non-blank request identity parameter is available, independent
+  Console-to-Server calls must fall back to the configured server identity when
+  server identity is enabled;
 - `nacos.core.auth.server.identity.key` and
   `nacos.core.auth.server.identity.value` must match between independent Console
   and the target Nacos Server deployment;
+- the target Server must enable Admin API authentication and use a compatible
+  auth plugin when operator identity forwarding is used;
 - the auth plugin token secret used by Console login and token verification must
   be configured consistently with the selected auth plugin behavior.
+
+An independently deployed Console must initialize its local auth plugin runtime before accepting
+requests. It applies `STATIC > DEFAULT` configuration to every configurable auth implementation so
+shared auth infrastructure remains available, and starts plugin-owned resources only for the
+selected implementation. A missing selected implementation is a startup error. This Console-local
+lifecycle must not start the Core plugin manager or access Server-owned plugin state,
+runtime-persisted configuration, local-only overrides, storage, or cluster synchronization.
+
+Static configuration refresh may reapply auth fields declared `RUNTIME`. Auth selection, token
+secrets, and other `RESTART` fields retain their startup values until the Console restarts.
 
 Console auth is part of the shared auth model and must follow the
 [Authorization Spec](../http-api/authorization-spec.md).

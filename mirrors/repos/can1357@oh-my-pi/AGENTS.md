@@ -282,6 +282,7 @@ Location: `packages/*/CHANGELOG.md` (per package).
 **Rules:**
 
 - New entries always go under `## [Unreleased]`.
+- Entries are one line, brief, and user-facing: lead with what the user will see or can now do. Root-cause narration and implementation detail belong in the commit/PR, not the changelog.
 - Never modify already-released sections (e.g., `## [0.12.2]`) — they are immutable.
 - Don't flag changelog section order or formatting in reviews or PRs — `bun run release` runs `fix-changelogs` which normalizes everything automatically.
 

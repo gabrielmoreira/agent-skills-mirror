@@ -139,3 +139,44 @@ func createClient(srv ServerConfig) (*client.Client, error) {
 
 	return cli, nil
 }
+
+// NewClientFromConfig opens a persistent MCP connection described by an
+// explicit ServerConfig, so stdio servers (command + args) are supported
+// alongside URL-based ones. The caller is responsible for closing the client.
+func NewClientFromConfig(srv ServerConfig) (*client.Client, error) {
+	return createClient(srv)
+}
+
+// CallToolWithConfig opens a short-lived MCP connection described by cfg,
+// calls toolName with the supplied arguments, and returns the JSON-marshalled
+// result content. It is the stdio-aware counterpart of CallTool.
+func CallToolWithConfig(cfg ServerConfig, toolName string, arguments map[string]interface{}) (string, error) {
+	cli, err := createClient(cfg)
+	if err != nil {
+		return "", err
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer cancel()
+
+	result, err := cli.CallTool(ctx, &protocol.CallToolRequest{
+		Name:      toolName,
+		Arguments: arguments,
+	})
+	if err != nil {
+		return "", err
+	}
+	if result.IsError {
+		b, mErr := json.Marshal(result.Content)
+		if mErr != nil {
+			return "", fmt.Errorf("MCP tool returned error")
+		}
+		return "", fmt.Errorf("MCP tool returned error: %s", string(b))
+	}
+	b, err := json.Marshal(result.Content)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}

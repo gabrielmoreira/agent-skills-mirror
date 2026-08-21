@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 31 followed patterns, 237 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 31 followed patterns, 238 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 31 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 31 |
-| Files         | 237 |
+| Files         | 238 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -244,88 +244,89 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 153 | ✓ | [`packages/aiCore/README.md`](packages/aiCore/README.md) |
 | 154 | ✓ | [`packages/extension-table-plus/README.md`](packages/extension-table-plus/README.md) |
 | 155 | ✓ | [`packages/provider-registry/CLAUDE.md`](packages/provider-registry/CLAUDE.md) |
-| 156 | ✓ | [`packages/provider-registry/README.md`](packages/provider-registry/README.md) |
-| 157 | ✓ | [`packages/ui/README.md`](packages/ui/README.md) |
-| 158 | ✓ | [`packages/ui/stories/README.md`](packages/ui/stories/README.md) |
-| 159 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md) |
-| 160 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-skill-marketplace/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-skill-marketplace/SKILL.md) |
-| 161 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-studio-feedback/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-studio-feedback/SKILL.md) |
-| 162 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/claude-automation-recommender/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/claude-automation-recommender/SKILL.md) |
-| 163 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md) |
-| 164 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md) |
-| 165 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md) |
-| 166 | ✓ | [`resources/skills/cherry-tool-guide/references/skills.md`](resources/skills/cherry-tool-guide/references/skills.md) |
-| 167 | ✓ | [`resources/skills/cherry-tool-guide/SKILL.md`](resources/skills/cherry-tool-guide/SKILL.md) |
-| 168 | ✓ | [`resources/skills/find-skills/SKILL.md`](resources/skills/find-skills/SKILL.md) |
-| 169 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
-| 170 | ✓ | [`scripts/uiContract/README.md`](scripts/uiContract/README.md) |
-| 171 | ✓ | [`src/main/ai/mcp/servers/browser/README.md`](src/main/ai/mcp/servers/browser/README.md) |
-| 172 | ✓ | [`src/main/core/application/README.md`](src/main/core/application/README.md) |
-| 173 | ✓ | [`src/main/core/concurrency/README.md`](src/main/core/concurrency/README.md) |
-| 174 | ✓ | [`src/main/core/job/README.md`](src/main/core/job/README.md) |
-| 175 | ✓ | [`src/main/core/lifecycle/README.md`](src/main/core/lifecycle/README.md) |
-| 176 | ✓ | [`src/main/core/power/README.md`](src/main/core/power/README.md) |
-| 177 | ✓ | [`src/main/core/preboot/README.md`](src/main/core/preboot/README.md) |
-| 178 | ✓ | [`src/main/core/README.md`](src/main/core/README.md) |
-| 179 | ✓ | [`src/main/core/scheduler/README.md`](src/main/core/scheduler/README.md) |
-| 180 | ✓ | [`src/main/core/window/README.md`](src/main/core/window/README.md) |
-| 181 | ✓ | [`src/main/data/db/README.md`](src/main/data/db/README.md) |
-| 182 | ✓ | [`src/main/data/db/restore/README.md`](src/main/data/db/restore/README.md) |
-| 183 | ✓ | [`src/main/data/db/seeding/README.md`](src/main/data/db/seeding/README.md) |
-| 184 | ✓ | [`src/main/data/migration/v2/README.md`](src/main/data/migration/v2/README.md) |
-| 185 | ✓ | [`src/main/data/README.md`](src/main/data/README.md) |
-| 186 | ✓ | [`src/main/data/services/README.md`](src/main/data/services/README.md) |
-| 187 | ✓ | [`src/main/data/services/utils/README.md`](src/main/data/services/utils/README.md) |
-| 188 | ✓ | [`src/main/features/knowledge/README.md`](src/main/features/knowledge/README.md) |
-| 189 | ✓ | [`src/main/services/mediaProtocol/README.md`](src/main/services/mediaProtocol/README.md) |
-| 190 | ✓ | [`src/main/services/oauth/runtime/README.md`](src/main/services/oauth/runtime/README.md) |
-| 191 | ✓ | [`src/main/services/userDataRelocation/README.md`](src/main/services/userDataRelocation/README.md) |
-| 192 | ✓ | [`src/renderer/components/chat/messages/README.md`](src/renderer/components/chat/messages/README.md) |
-| 193 | ✓ | [`src/renderer/components/FilePreview/README.md`](src/renderer/components/FilePreview/README.md) |
-| 194 | ✓ | [`src/renderer/data/README.md`](src/renderer/data/README.md) |
-| 195 | ✓ | [`src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md`](src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md) |
-| 196 | ✓ | [`src/renderer/routes/README.md`](src/renderer/routes/README.md) |
-| 197 | ✓ | [`src/renderer/services/popup/README.md`](src/renderer/services/popup/README.md) |
-| 198 | ✓ | [`src/renderer/windows/migrationV2/README.md`](src/renderer/windows/migrationV2/README.md) |
-| 199 | ✓ | [`src/renderer/windows/README.md`](src/renderer/windows/README.md) |
-| 200 | ✓ | [`src/shared/data/api/README.md`](src/shared/data/api/README.md) |
-| 201 | ✓ | [`src/shared/data/presets/README.md`](src/shared/data/presets/README.md) |
-| 202 | ✓ | [`src/shared/data/README.md`](src/shared/data/README.md) |
-| 203 | ✓ | [`tests/e2e/README.md`](tests/e2e/README.md) |
-| 204 | ✓ | [`v2-refactor-temp/docs/ai/README.md`](v2-refactor-temp/docs/ai/README.md) |
-| 205 | ✓ | [`v2-refactor-temp/README.md`](v2-refactor-temp/README.md) |
-| 206 | ✓ | [`v2-refactor-temp/tools/data-classify/README.md`](v2-refactor-temp/tools/data-classify/README.md) |
-| 207 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 208 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 209 | → | [`DESIGN.md`](DESIGN.md) |
-| 210 | → | [`docs/contrib/branching-strategy.md`](docs/contrib/branching-strategy.md) |
-| 211 | → | [`docs/contrib/development.md`](docs/contrib/development.md) |
-| 212 | → | [`docs/contrib/test-plan.md`](docs/contrib/test-plan.md) |
-| 213 | → | [`docs/references/architecture/main-process.md`](docs/references/architecture/main-process.md) |
-| 214 | → | [`docs/references/architecture/naming-conventions.md`](docs/references/architecture/naming-conventions.md) |
-| 215 | → | [`docs/references/architecture/renderer.md`](docs/references/architecture/renderer.md) |
-| 216 | → | [`docs/references/architecture/shared-layer.md`](docs/references/architecture/shared-layer.md) |
-| 217 | → | [`docs/references/components/ui-semantic-contract.md`](docs/references/components/ui-semantic-contract.md) |
-| 218 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
-| 219 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
-| 220 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
-| 221 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
-| 222 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
-| 223 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
-| 224 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
-| 225 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
-| 226 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
-| 227 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
-| 228 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
-| 229 | → | [`docs/references/testing/frontend-testing.md`](docs/references/testing/frontend-testing.md) |
-| 230 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
-| 231 | → | [`docs/sponsor.md`](docs/sponsor.md) |
-| 232 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
-| 233 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
-| 234 | → | [`README.md`](README.md) |
-| 235 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 236 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
-| 237 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
+| 156 | ✓ | [`packages/provider-registry/compat/README.md`](packages/provider-registry/compat/README.md) |
+| 157 | ✓ | [`packages/provider-registry/README.md`](packages/provider-registry/README.md) |
+| 158 | ✓ | [`packages/ui/README.md`](packages/ui/README.md) |
+| 159 | ✓ | [`packages/ui/stories/README.md`](packages/ui/stories/README.md) |
+| 160 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md) |
+| 161 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-skill-marketplace/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-skill-marketplace/SKILL.md) |
+| 162 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-studio-feedback/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-studio-feedback/SKILL.md) |
+| 163 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/claude-automation-recommender/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/claude-automation-recommender/SKILL.md) |
+| 164 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md) |
+| 165 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md) |
+| 166 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md) |
+| 167 | ✓ | [`resources/skills/cherry-tool-guide/references/skills.md`](resources/skills/cherry-tool-guide/references/skills.md) |
+| 168 | ✓ | [`resources/skills/cherry-tool-guide/SKILL.md`](resources/skills/cherry-tool-guide/SKILL.md) |
+| 169 | ✓ | [`resources/skills/find-skills/SKILL.md`](resources/skills/find-skills/SKILL.md) |
+| 170 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
+| 171 | ✓ | [`scripts/uiContract/README.md`](scripts/uiContract/README.md) |
+| 172 | ✓ | [`src/main/ai/mcp/servers/browser/README.md`](src/main/ai/mcp/servers/browser/README.md) |
+| 173 | ✓ | [`src/main/core/application/README.md`](src/main/core/application/README.md) |
+| 174 | ✓ | [`src/main/core/concurrency/README.md`](src/main/core/concurrency/README.md) |
+| 175 | ✓ | [`src/main/core/job/README.md`](src/main/core/job/README.md) |
+| 176 | ✓ | [`src/main/core/lifecycle/README.md`](src/main/core/lifecycle/README.md) |
+| 177 | ✓ | [`src/main/core/power/README.md`](src/main/core/power/README.md) |
+| 178 | ✓ | [`src/main/core/preboot/README.md`](src/main/core/preboot/README.md) |
+| 179 | ✓ | [`src/main/core/README.md`](src/main/core/README.md) |
+| 180 | ✓ | [`src/main/core/scheduler/README.md`](src/main/core/scheduler/README.md) |
+| 181 | ✓ | [`src/main/core/window/README.md`](src/main/core/window/README.md) |
+| 182 | ✓ | [`src/main/data/db/README.md`](src/main/data/db/README.md) |
+| 183 | ✓ | [`src/main/data/db/restore/README.md`](src/main/data/db/restore/README.md) |
+| 184 | ✓ | [`src/main/data/db/seeding/README.md`](src/main/data/db/seeding/README.md) |
+| 185 | ✓ | [`src/main/data/migration/v2/README.md`](src/main/data/migration/v2/README.md) |
+| 186 | ✓ | [`src/main/data/README.md`](src/main/data/README.md) |
+| 187 | ✓ | [`src/main/data/services/README.md`](src/main/data/services/README.md) |
+| 188 | ✓ | [`src/main/data/services/utils/README.md`](src/main/data/services/utils/README.md) |
+| 189 | ✓ | [`src/main/features/knowledge/README.md`](src/main/features/knowledge/README.md) |
+| 190 | ✓ | [`src/main/services/mediaProtocol/README.md`](src/main/services/mediaProtocol/README.md) |
+| 191 | ✓ | [`src/main/services/oauth/runtime/README.md`](src/main/services/oauth/runtime/README.md) |
+| 192 | ✓ | [`src/main/services/userDataRelocation/README.md`](src/main/services/userDataRelocation/README.md) |
+| 193 | ✓ | [`src/renderer/components/chat/messages/README.md`](src/renderer/components/chat/messages/README.md) |
+| 194 | ✓ | [`src/renderer/components/FilePreview/README.md`](src/renderer/components/FilePreview/README.md) |
+| 195 | ✓ | [`src/renderer/data/README.md`](src/renderer/data/README.md) |
+| 196 | ✓ | [`src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md`](src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md) |
+| 197 | ✓ | [`src/renderer/routes/README.md`](src/renderer/routes/README.md) |
+| 198 | ✓ | [`src/renderer/services/popup/README.md`](src/renderer/services/popup/README.md) |
+| 199 | ✓ | [`src/renderer/windows/migrationV2/README.md`](src/renderer/windows/migrationV2/README.md) |
+| 200 | ✓ | [`src/renderer/windows/README.md`](src/renderer/windows/README.md) |
+| 201 | ✓ | [`src/shared/data/api/README.md`](src/shared/data/api/README.md) |
+| 202 | ✓ | [`src/shared/data/presets/README.md`](src/shared/data/presets/README.md) |
+| 203 | ✓ | [`src/shared/data/README.md`](src/shared/data/README.md) |
+| 204 | ✓ | [`tests/e2e/README.md`](tests/e2e/README.md) |
+| 205 | ✓ | [`v2-refactor-temp/docs/ai/README.md`](v2-refactor-temp/docs/ai/README.md) |
+| 206 | ✓ | [`v2-refactor-temp/README.md`](v2-refactor-temp/README.md) |
+| 207 | ✓ | [`v2-refactor-temp/tools/data-classify/README.md`](v2-refactor-temp/tools/data-classify/README.md) |
+| 208 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 209 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 210 | → | [`DESIGN.md`](DESIGN.md) |
+| 211 | → | [`docs/contrib/branching-strategy.md`](docs/contrib/branching-strategy.md) |
+| 212 | → | [`docs/contrib/development.md`](docs/contrib/development.md) |
+| 213 | → | [`docs/contrib/test-plan.md`](docs/contrib/test-plan.md) |
+| 214 | → | [`docs/references/architecture/main-process.md`](docs/references/architecture/main-process.md) |
+| 215 | → | [`docs/references/architecture/naming-conventions.md`](docs/references/architecture/naming-conventions.md) |
+| 216 | → | [`docs/references/architecture/renderer.md`](docs/references/architecture/renderer.md) |
+| 217 | → | [`docs/references/architecture/shared-layer.md`](docs/references/architecture/shared-layer.md) |
+| 218 | → | [`docs/references/components/ui-semantic-contract.md`](docs/references/components/ui-semantic-contract.md) |
+| 219 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
+| 220 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
+| 221 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
+| 222 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
+| 223 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
+| 224 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
+| 225 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
+| 226 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
+| 227 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
+| 228 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
+| 229 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
+| 230 | → | [`docs/references/testing/frontend-testing.md`](docs/references/testing/frontend-testing.md) |
+| 231 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
+| 232 | → | [`docs/sponsor.md`](docs/sponsor.md) |
+| 233 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
+| 234 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
+| 235 | → | [`README.md`](README.md) |
+| 236 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 237 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 238 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
 
 ---
 

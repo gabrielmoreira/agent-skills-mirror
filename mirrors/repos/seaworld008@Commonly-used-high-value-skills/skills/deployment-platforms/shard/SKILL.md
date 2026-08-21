@@ -2,14 +2,14 @@
 name: shard
 description: 'Designing multi-tenant architectures with tenant isolation strategies, RLS, routing, and scale design for SaaS. Use when designing multi-tenant SaaS systems or tenant isolation.'
 zh_description: "多租户架构、租户隔离、路由和规模化设计。"
-version: "1.0.1"
+version: "1.0.2"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/shard"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/.archive/shard"
 license: MIT
 tags: '["deployment", "shard"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-10"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -127,7 +127,7 @@ Parse the first token of user input.
 ### Subcommand Behavior Notes
 
 - **`migration`**: produce a tenant-move plan with cutover mode (offline-copy / dual-write+cutover / logical-replica-promote / CDC-tail / shadow-read), verification queries (row-count parity, content hash, FK integrity), sequence-reset SQL, and a stage-keyed rollback playbook. Define the abort threshold *before* cutover. Hand DDL to Schema, scheduling to Tempo, SLO observation to Beacon.
-- **`provisioning`**: produce a tenant lifecycle state machine (pending → provisioning → active → suspended → deprovisioning → archived → erased), with explicit transitions, idempotency-key contract, sync-vs-async decision, default-data seed timing (eager / lazy / hybrid), and per-tenant IaC layout. Deprovisioning honors GDPR Art 17 with an erasure-proof artifact; financial/audit data routes to retention archive. Hand retention scheduling to Tempo, retention contract to Oath/Cloak.
+- **`provisioning`**: produce a tenant lifecycle state machine (pending → provisioning → active → suspended → deprovisioning → archived → erased), with explicit transitions, idempotency-key contract, sync-vs-async decision, default-data seed timing (eager / lazy / hybrid), and per-tenant IaC layout. Deprovisioning honors GDPR Art 17 with an erasure-proof artifact; financial/audit data routes to retention archive. Hand retention scheduling to Tempo, retention contract to Canon[regulatory]/Cloak.
 - **`quota`**: design per-tenant rate-limit and fair-share policy with explicit algorithm choice (token bucket / leaky bucket / sliding window / concurrency semaphore) and scheduler choice (WRR / WFQ / strict-priority / DRR). Pair every hard quota with a soft warning at ~80%. Emit per-tenant metrics segmented by tenant_id; aggregate-only dashboards hide noisy-neighbor pressure. Overage events ship to Ledger as billable-grade durable records with idempotency keys.
 
 ## Output Routing

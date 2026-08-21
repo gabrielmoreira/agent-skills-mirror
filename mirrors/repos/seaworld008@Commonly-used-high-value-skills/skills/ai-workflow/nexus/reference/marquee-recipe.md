@@ -1,6 +1,6 @@
-# Marquee Recipe — Wish-Grade One-Shot Landing-Page Production
+# Marquee Blueprint — the `lp` domain preset of `wish`
 
-> `/nexus marquee "<product / offer>"` — Wish-grade one-shot landing-page production — crystallization dialogue → 3-direction tournament → adversarial gauntlet + ceiling convergence with machine oracles (Lighthouse / CWV / WCAG) → One-Shot Gate; ACCEPT = all rubric dims = 3. The page that is the product's face gets built once, to the ceiling — design, copy, conversion, performance, and trust are all first-class dimensions.
+> `/nexus marquee "<product/offer>"` ≡ **`/nexus wish domain=lp`** — the `lp` domain preset of the wish quality-ceiling engine. `marquee` is a **named alias kept for discoverability**; the engine (crystallization → tournament → gauntlet-converge → One-Shot Gate, termination bound, Q9 separation) is owned by `reference/wish-recipe.md` and is **not** re-derived here. This file owns only what the preset fixes: the 5-dimension LP Ceiling Rubric with machine oracles, the GROUND and PRODUCE phases, the LP skeptic angles, and the Marquee Dossier.
 
 Read this file before executing the `marquee` Recipe.
 
@@ -8,7 +8,19 @@ Read this file before executing the `marquee` Recipe.
 
 ## 1. Nature / When to Use / Boundaries
 
-**Marquee is wish machinery specialized to one deliverable class: the acquisition landing page.** It inherits wish's four-stage quality apparatus (crystallization dialogue → tournament → gauntlet-converge → One-Shot Gate) and swaps wish's generic rubric authoring for a **fixed 5-dimension LP Ceiling Rubric** whose Performance dimension is anchored to **machine-checkable oracles** — the objective corner of the ceiling that no reviewer's taste can inflate or deflate.
+**Marquee is wish machinery specialized to one deliverable class: the acquisition landing page.** It inherits wish's quality apparatus (crystallization dialogue → exemplar anchoring → cross-engine blind tournament → calibrated gauntlet-converge → reception → One-Shot + Comparative exit gates) and swaps wish's generic rubric authoring for a **fixed 5-dimension LP Ceiling Rubric** whose Performance dimension is anchored to **machine-checkable oracles** — the objective corner of the ceiling that no reviewer's taste can inflate or deflate.
+
+**Inherited engine elements (owned by `reference/wish-recipe.md`, not re-derived here).** The preset does not re-implement them; it states only where its own phases already discharge them:
+
+| Engine element | How the `lp` preset satisfies it |
+|----------------|----------------------------------|
+| **Benchmark Anchor** (wish §6 Phase 1.5) | **Discharged by Phase 2 GROUND** — the Compete competitor-LP teardown *is* the exemplar sweep. Two additions apply: the teardown must name **2-4 exemplar LPs judged best-in-class** (not merely competitors) and **one routine-quality control LP**, and dims ①②③⑤ rewrite their score-3 anchors as **sourced** against those exemplars. Dim ④ needs no anchoring — its oracles are absolute. |
+| **Two-point calibration** (wish §7) | Evaluators for dims ①②③⑤ score the exemplar and the control before scoring any candidate direction. Dim ④ is **calibration-exempt** — a machine oracle cannot inflate. |
+| **Cross-engine blind tournament** (wish §6 Phase 2) | The 3 orthogonal directions are distributed across model families where the hub allows, one per (engine, direction), and judged with provenance stripped. A single-engine run declares the monoculture in the Dossier. |
+| **Reception Simulation** (wish §6 Phase 3.5) | The Cast+Field personas built at GROUND meet the produced page **cold** before the exit gates — no rubric, no loop history. First-impression failures enter as evidence on dims ① and ⑤. |
+| **Comparative Gate** (wish §6 Phase 4b) | Blind head-to-head: the produced page vs the strongest exemplar LP, and vs the retained runner-up direction. Runs alongside the One-Shot Gate; together they grant at most one bonus cycle. |
+| **Budget envelope** (wish §4) | Declared at launch confirmation; `budget-reached` delivers best-so-far with the residual gap. |
+| **Rubric amendment** (wish §7) | **Not available.** The 5-dim rubric is the preset's defining fixture — a request to amend it means the deliverable is not an acquisition LP, and the honest move is `wish` general or `runway`. |
 
 **Intentional difference from `wish`: no Scarcity Gate.** LP production is a legitimately repeatable demand — every product, campaign, and launch can warrant one — so marquee does not ration invocations. The anti-inflation anchor is objectivity instead: dim ④ cannot ACCEPT without Lighthouse Perf/SEO/Best-Practices ≥ 95, all Core Web Vitals green, and WCAG AA. This is a deliberate design choice, not drift.
 
@@ -22,7 +34,7 @@ Read this file before executing the `marquee` Recipe.
 
 | Not this | Route to | Why |
 |----------|----------|-----|
-| A normal-quality or premium LP (single direction, standard bar) | `bazaar` skill direct | Bazaar's six-craft-axis studio pipeline covers standard-to-premium without tournament/ceiling cost |
+| A normal-quality or premium LP (single direction, standard bar) | `funnel[premium]` skill direct | Funnel[premium]'s six-craft-axis studio pipeline covers standard-to-premium without tournament/ceiling cost |
 | One LP section or a simple page | `funnel` skill direct | Minimum viable chain |
 | Improving an *existing* LP against a metric or design brief | `kaizen` / `restyle` | Improve family owns existing surfaces |
 | In-product flagship UI surface (core screen, onboarding — not an acquisition device) | `runway` | Runway is the design tournament for product UI; conversion is not its first-class dimension |
@@ -30,34 +42,24 @@ Read this file before executing the `marquee` Recipe.
 | The single most important ask of *any* deliverable type | `wish` | Deliverable-agnostic wrapper with the Scarcity Gate |
 | Post-ship market/brand verification | `growth-acceptance` | Marquee's ship feeds it (A/B handoff recorded in the Dossier) |
 
-**Overloaded anchor:** bare "landing page" with no ceiling framing → REDIRECT per `reference/intent-clarification.md` (normal quality → `bazaar`/`funnel`; ceiling one-shot → `marquee`).
+**Overloaded anchor:** bare "landing page" with no ceiling framing → REDIRECT per `reference/intent-clarification.md` (normal quality → `funnel[premium]`/`funnel`; ceiling one-shot → `marquee`).
 
-**Scale: 20-45 agents × ≤4 cycles (3 + ≤1 One-Shot-Gate bonus), 8-20× cost.** Per-phase: P0-P1 ≈ 2 · P2 ≈ 4-6 (Ground sweep) · P3 ≈ 9-12 (3 directions × structure+direction+prototype, + judge panel) · P4 ≈ 6-8 (craft-axis production) · P5 ≈ 5-7 Evaluators/cycle + 2-3 skeptics on near-ceiling cycles · P6-P7 ≈ 2. **Confirm-before-launch always** (unconditional — intentional parity with wish/summit).
+**Scale: 26-55 agents × ≤4 cycles (3 + ≤1 exit-gate bonus), 10-24× cost.** Per-phase: P0-P1 ≈ 2 · P2 ≈ 4-6 (Ground sweep) · P3 ≈ 9-12 (3 directions × structure+direction+prototype, + judge panel) · P4 ≈ 6-8 (craft-axis production) · P5 ≈ 5-7 Evaluators/cycle + 2-3 skeptics on near-ceiling cycles · P6-P7 ≈ 2. **Confirm-before-launch always** (unconditional — intentional parity with wish/summit).
 
-**Model selection (Plan-and-Execute):** Phase 1 Crystallize and the Phase 6 One-Shot Gate verdict are judgment-heavy → plan-tier (opus / Fable 5). Tournament generators, craft-axis producers, and Evaluators → Sonnet 5 default, per SKILL.md § Core Contract.
+**Model selection:** as wish §1, judgment-heavy phases at plan-tier / rest at Sonnet 5 default — mapped here to Phase 1 Crystallize + the Phase 6 One-Shot Gate verdict (plan-tier) vs tournament generators, craft-axis producers, and Evaluators (Sonnet 5).
 
 ---
 
 ## 2. Termination Bound
 
-Convergence **loop ≤ N cycles (default N=3)**, plus the One-Shot Gate may grant **exactly one bonus cycle** — hard total 4. Exit reasons use the canonical vocabulary:
-
-| Exit reason | Marquee-specific meaning |
-|-------------|--------------------------|
-| `ACCEPT` / `target-met` | **all 5 rubric dims = 3** produces a *candidate ACCEPT*; the refutation panel then ratifies (surviving attacks = 0) or demotes to REVISE. Dim ④ can only reach 3 via its machine oracles — a candidate ACCEPT with a failing Lighthouse run is structurally impossible |
-| `diminishing-returns (Δ < ε)` | weighted score Δ < 0.2 between cycles (`evaluator-loop-protocol.md` values verbatim); survivors > 0 → reported as **plateau-with-open-attacks**, never a clean plateau |
-| `cap-reached` | 3 cycles (+ ≤1 bonus) without ratified ceiling ACCEPT |
-| `BLOCK` | un-fixable within scope (e.g., the offer itself cannot support a Trust score of 3) — escalate |
-
-On any non-`ACCEPT` exit the recipe reports best-so-far + the residual gap vs the ceiling, per dimension.
+As wish §2 (`reference/wish-recipe.md`) for the exit-reason vocabulary and best-so-far reporting, with two preset-fixed deltas: **N=3 is fixed** (no L/XL N=5 escalation) — hard total **4** cycles including the One-Shot bonus cycle; and `ACCEPT` requires dim ④ to reach 3 **only via its machine oracles** (Lighthouse/CWV/WCAG) — a candidate ACCEPT with a failing Lighthouse run is structurally impossible.
 
 ## 3. Confirm / Safety Gate
 
-- **Phase 0 Framing: Confirm before launch — always** (unconditional, intentional parity with summit/wish; not drift). Surfaces scope, the 5-dimension rubric skeleton, and the estimated cost envelope (labeled preliminary — refined after Phase 1).
-- **Phase 1 Crystallize: contract-level checkpoint; AUTORUN cannot skip.** The conversion contract (goal / single CTA / offer / audience / brand constraints / disappointment criteria) is the deliverable's foundation — same tier as `spec` and `wish` dialogues.
+As wish §3 (`reference/wish-recipe.md`) for the confirm-always parity, the contract-level/AUTORUN-cannot-skip checkpoint mechanic, and the F8 cost-gate subsumption. Marquee-specific: Phase 0 surfaces the 5-dimension rubric skeleton + preliminary cost envelope; Phase 1 Crystallize excavates the conversion contract (goal / single CTA / offer / audience / brand constraints / disappointment criteria).
+
 - **No Scarcity Gate** — intentional difference from wish (§1).
 - Standard Ask First tiers apply unchanged (L4 security, 10+ files, external publish/deploy — shipping the LP to a live host is an external system modification and always confirms).
-- On a Fable 5 hub, the Phase 0 confirmation subsumes the F8 cost gate — one confirmation, not two.
 
 ## 4. Resume
 
@@ -90,9 +92,9 @@ Phase 3  TOURNAMENT ‖ 3 orthogonal directions: narrative-led / design-led / pr
            scoring vs the frozen Ceiling Rubric
          → winner + salvage list (informal cherry-pick from runners-up, fed to Phase 4)
    ▼
-Phase 4  PRODUCE — bazaar craft axes as the production substrate:
+Phase 4  PRODUCE — funnel[premium] craft axes as the production substrate:
          Prose[copy — Evidence-Ledger-grounded] ‖ Artisan[build] ‖ Flow[motion] ‖
-         Ink/Sketch[assets] ‖ Muse[token-first] ‖ Growth[SEO/OGP/JSON-LD]
+         Ink/Builder[image assets] ‖ Muse[token-first] ‖ Growth[SEO/OGP/JSON-LD]
          (parallel branches per _common/PARALLEL.md; Artisan owns page integration)
    ▼
 Phase 5  GAUNTLET-CONVERGE loop ≤ 3 cycles (evaluator-loop-protocol.md machinery;
@@ -100,7 +102,7 @@ Phase 5  GAUNTLET-CONVERGE loop ≤ 3 cycles (evaluator-loop-protocol.md machine
          every cycle   ‖: Echo[persona re-walk → ①] ‖ Palette[a11y → ④] ‖
                           Bolt+Lighthouse[perf oracles → ④] ‖ Growth[CRO/SEO audit → ③] ‖
                           Voyager[real browser + responsive → ②④] ‖ Judge[craft → ②] ‖
-                          Clause?[claims/legal → ⑤]
+                          Canon[legal]?[claims/legal → ⑤]
          staged        ‖: refutation panel per _common/ADVERSARIAL_REFUTATION.md —
                           spawned ONLY once all dims ≥ 2; LP-specific skeptic angles:
                           (a) bounce-reason enumeration — each persona names why they
@@ -109,12 +111,18 @@ Phase 5  GAUNTLET-CONVERGE loop ≤ 3 cycles (evaluator-loop-protocol.md machine
                               with a competitor's logo swapped in?" (a YES kills ①);
                           panel also ratifies candidate ACCEPTs (§2)
    ▼
-Phase 6  ONE-SHOT GATE — fresh-context independent verifier (plan-tier), spawned with
-         ONLY the Marquee Contract + Ceiling Rubric + final page — no loop history.
-         MATERIALLY-BETTER requires cited evidence (a dim < 3 a redo would plausibly
-         raise, or a disappointment-criterion violation); bare "could be better" = NO.
-         → MATERIALLY-BETTER → exactly one bonus cycle → re-gate once (advisory only)
-         → NO → deliver
+Phase 5.5 RECEPTION — the GROUND personas (Cast/Field) meet the produced page COLD:
+         no rubric, no loop history, first-impression only → friction points enter as
+         evidence on dims ① message and ⑤ trust; unresolved failures become residuals
+   ▼
+Phase 6  EXIT GATES (both run; together they grant at most ONE bonus cycle, total 4) —
+         MATERIALLY-BETTER test and loss semantics as wish §6 Phase 4 (`reference/wish-recipe.md`).
+         (a) ONE-SHOT GATE — fresh-context independent verifier (plan-tier), spawned with
+             ONLY the Marquee Contract + Ceiling Rubric + final page — no loop history.
+         (b) COMPARATIVE GATE — blind head-to-head, provenance stripped: the produced page
+             vs the strongest Phase 2 exemplar LP, and vs the retained runner-up direction.
+         → either fires → exactly one bonus cycle → re-gate once (advisory only)
+         → both pass → deliver
    ▼
 Phase 7  SHIP — Guardian [+ Launch? if deploying] + Marquee Dossier;
          Experiment[A/B test design] recorded as a handoff to growth-acceptance
@@ -128,7 +136,7 @@ Phase 7  SHIP — Guardian [+ Launch? if deploying] + Marquee Dossier;
 | ② | **Craft** | Visual and motion quality passes the multi-engine judge + Vision bar with zero craft findings |
 | ③ | **Conversion** | CRO architecture — the Growth audit yields zero improvement proposals (CTA hierarchy, friction, objection handling all closed) |
 | ④ | **Performance** | Machine oracles: Lighthouse Perf/SEO/Best-Practices ≥ 95, all Core Web Vitals green, WCAG AA — the objective, machine-checkable corner of the ceiling |
-| ⑤ | **Trust** | Every claim, number, and proof element traces to the Evidence Ledger; social proof present and verifiable; legal alignment (Clause? when claims are regulated) |
+| ⑤ | **Trust** | Every claim, number, and proof element traces to the Evidence Ledger; social proof present and verifiable; legal alignment (Canon[legal]? when claims are regulated) |
 
 Disappointment criteria from Phase 1 map onto these dims as score-0 triggers (wish mechanism, inherited verbatim). The dimension set is fixed — Phase 1 tunes the *anchors* to the product, never removes a dimension.
 
@@ -141,7 +149,9 @@ Emitted inside `NEXUS_COMPLETE` on top of the base `## Nexus Execution Report`:
 - **Tournament comparison** — the 3 directions' judge scores + why the winner won + salvage items applied
 - **Evidence Ledger** — every copy claim with citation, trust tier, and verification status
 - **Gauntlet ledger** — bounce-reasons raised / killed / fixed; differentiation-refutation verdict; open attacks listed on any plateau exit
-- **One-Shot Gate verdict** — redo assessment with cited evidence + bonus-cycle usage
+- **Exit gates** — One-Shot redo assessment with cited evidence + **Comparative verdict (vs exemplar / vs runner-up, with the property named on any loss)** + bonus-cycle usage
+- **Calibration record** — per evaluator: exemplar score, control score, verdict (dim ④ marked calibration-exempt)
+- **Reception simulation** — per-persona cold verdict + friction points + unresolved residuals
 - **Exit reason** (§2 vocabulary) + residual gap vs ceiling (empty only on ACCEPT)
 - **A/B handoff** — the Experiment test design queued for `growth-acceptance`
 
@@ -151,27 +161,26 @@ Emitted inside `NEXUS_COMPLETE` on top of the base `## Nexus Execution Report`:
 |---------|-----------|
 | Beautiful but non-converting LP | Conversion (③) and Performance (④) are first-class rubric dims, equal to Message/Craft — a gorgeous page that fails the Growth audit cannot ACCEPT |
 | Ungrounded copy (invented numbers, unverifiable claims) | Evidence Ledger gate (Phase 2, `research-grounding.md`): uncited claims are barred from copy; Trust (⑤) scores 0 on violation |
-| Premature convergence on the first design idea | Phase 3 tournament: 3 orthogonal directions judged vs the frozen rubric + salvage from runners-up |
 | Producer self-satisfaction ("it looks great to us") | One-Shot Gate: fresh-context producer≠verifier redo-verdict with cited evidence (Q9, second application) |
 | Slow LP shipped anyway | Dim ④ machine oracles make ACCEPT structurally impossible below Lighthouse ≥ 95 / CWV green |
 | Interchangeable-with-competitor page | Differentiation refutation: logo-swap test kills Message (①) when the page could be anyone's |
 | Subjective ceiling inflation ("everything is a 3") | Dim ④ is machine-anchored; remaining dims use task-specific score-3 anchors + Magi reachability check before rubric freeze |
-| Tournament cost blowup | Directions compete at hero + 1 section prototype level; only the winner gets the full Phase 4 build |
 | Scarcity-gate misfire on a legitimate repeat demand | No Scarcity Gate by design (§1) — objectivity via machine oracles replaces rationing |
-| Vibe acceptance of "best possible" | Ceiling Rubric frozen at Phase 1 with disappointment criteria as score-0 triggers |
-| Generator grades its own work | GAN separation per `evaluator-loop-protocol.md`; judge panel and Evaluator roster exclude producers |
-| Unbounded ceiling pursuit | loop ≤ 3 (+1 bonus, hard total 4); honorable `diminishing-returns` exit reports per-dim residual gaps |
+
+Inherited from wish §9 (`reference/wish-recipe.md`) unchanged: vibe acceptance of "best possible", first-idea anchoring, tournament cost blowup on small deliverables, generator grading its own work, unbounded ceiling pursuit.
 
 ## 8. Shared-Protocol References
 
-| Protocol | What marquee takes from it | Marquee-specific specialization |
-|----------|---------------------------|--------------------------------|
-| `reference/evaluator-loop-protocol.md` | Generator-Evaluator separation, score scale, aggregation, Δ < 0.2 | ACCEPT = all dims = 3 with panel ratification; dim ④ scored by machine oracles, not model judgment |
-| `_common/ADVERSARIAL_REFUTATION.md` | Skeptic panel, polarity, exclusions, staged spawn | LP-specific angles: bounce-reason enumeration + competitor-logo-swap differentiation refutation |
-| `reference/dialogue-protocol.md` | Question craft, Assumption Ledger, checkpoint presentation | Crystallize excavates the conversion contract (single CTA, offer, disappointment criteria) |
-| `reference/research-grounding.md` | Evidence Ledger schema, trust tiers, cited-claim discipline | Ledger grounds LP *copy* (claims/numbers/testimonials) rather than a reproduction baseline |
-| `reference/doc-quality-protocol.md` | W4-W6 grounding for prose | Applied to page copy; W-violations feed Trust (⑤) |
-| `reference/autonomy-quality-protocol.md` | Intent contract (Q1-Q3), producer ≠ verifier (Q9), Acceptance Provenance (Q15) | Q9 discharged per-dim in Phase 5, then holistically at the One-Shot Gate |
+| Protocol | Marquee-specific specialization |
+|----------|--------------------------------|
+| `reference/evaluator-loop-protocol.md` | ACCEPT = all dims = 3 with panel ratification; dim ④ scored by machine oracles, not model judgment |
+| `_common/ADVERSARIAL_REFUTATION.md` | LP-specific angles: bounce-reason enumeration + competitor-logo-swap differentiation refutation |
+| `reference/dialogue-protocol.md` | Crystallize excavates the conversion contract (single CTA, offer, disappointment criteria) |
+| `reference/research-grounding.md` | Ledger grounds LP *copy* (claims/numbers/testimonials) rather than a reproduction baseline |
+| `reference/doc-quality-protocol.md` | Applied to page copy; W-violations feed Trust (⑤) |
+| `reference/autonomy-quality-protocol.md` | Q9 discharged per-dim in Phase 5, then holistically at the One-Shot Gate |
+
+(Middle column — what each protocol contributes — is as wish §10; see `reference/wish-recipe.md`.)
 
 ## 9. Decision Tree vs Neighbors
 
@@ -183,7 +192,7 @@ Does an LP already exist and just needs improvement?
   YES → kaizen (metric-driven) / restyle (visual direction)
   NO ↓
 Is ceiling one-shot quality actually required (launch fires once, page defines the product)?
-  NO  → bazaar skill (standard-to-premium studio) / funnel skill (single page or section)
+  NO  → funnel[premium] skill (standard-to-premium studio) / funnel skill (single page or section)
   YES → marquee — crystallize → ground → tournament → produce → gauntlet-converge
-        → One-Shot Gate → ship (+ A/B handoff to growth-acceptance)
+        → reception (cold personas) → One-Shot + Comparative gates → ship (+ A/B handoff to growth-acceptance)
 ```

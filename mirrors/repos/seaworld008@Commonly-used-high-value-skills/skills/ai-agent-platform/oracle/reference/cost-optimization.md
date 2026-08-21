@@ -16,10 +16,139 @@ Route to `Ledger` when the question is "is our vector DB oversized?" or "should 
 - Cheapest viable model first, escalate only on validation failure. Premium models (Opus) should handle `~10%` of queries.
 - Stable prompt prefixes come FIRST so prompt caching works; variables go LAST.
 - Combined techniques (model routing + prompt cache + semantic cache + batch) land at `70-90%` total savings.
+- **Optimize cost per *successful task*, never cost per request** — a cheap call that gets retried, escalated, and hand-corrected is not cheap.
+
+## Cost per Successful Task
+
+Per-request price is the denominator of the wrong ratio. The unit that decides architecture is:
+
+```
+Cost per Successful Task =
+    model calls
+  + retrieval / tool calls
+  + retry & fallback
+  + validation & eval
+  + human review / correction
+  + failed-task rework
+  + allocated platform & operations
+```
+
+Define "successful" identically to the eval gate (`reference/evaluation-observability.md`) — a returned response is not a completed task.
+
+The six cost centers a token-price comparison omits:
+
+| Center | What accrues | Watch |
+|--------|--------------|-------|
+| Inference | input/output tokens, images, audio | history, retrieved docs, tool results, agent reflection |
+| Retrieval | index, storage, embedding, re-index, reranker | update frequency drives re-index; per-tenant indexes multiply storage |
+| Platform | gateway, tracing, secrets, policy | shared control that also widens the failure domain |
+| Evaluation | dataset upkeep, judge calls, human samples, adversarial runs | scale the gate to change risk — light for wording, heavy for new tool authority |
+| Operations | on-call, incident, audit, correction of wrong answers | low-probability × high-blast-radius still justifies prevention spend |
+| Change | migration, vendor switch, prompt re-tuning, regression re-baselining | the recurring price of not being locked in |
+
+**Human review is not `count × minutes`.** It carries expert opportunity cost, training, approval fatigue, queue delay, reviewer variance, and exposure to unpleasant content. Automation that emits many low-quality candidates *raises* total cost; track adoption rate, edit distance, rejection rate, review time, and misses. When verifying generated output takes longer than writing it, the feature is cost-negative regardless of token price.
+
+**Counter-example worth remembering.** A support-classification feature moved to a small model: token spend fell ~60%, mean accuracy held, but ambiguous cases mis-routed, adding reprocessing, human escalation, and customer wait — **cost per successful task rose 18%**. Mean-preserving tier changes still shift the tail; evaluate value, reliability, cost, and latency per task, not per token.
+
+### Segment the lead time, or you cannot spend the budget
+
+Cost per Successful Task tells you the ratio is bad. It never tells you **where** — and the reflex answer
+("the model is too slow / too weak") is wrong often enough to be expensive. Measure the elapsed path from
+*task ready* to *accepted* as segments, not as one number:
+
+| Segment | Ends when | A long segment usually means |
+|---------|-----------|------------------------------|
+| `context_discovery` | the agent has the files/facts it needs | poor discoverability, no repo map, authority unclear across sources |
+| `first_useful_diff` | a candidate change exists | ambiguous intent, missing acceptance criteria, over-broad scope |
+| `targeted_verification` | the narrow check runs and reports | no fast targeted check, or the agent cannot discover the command |
+| `full_gate` | the complete local/CI gate passes | serial gate, cold environment, unrelated failures mixed in |
+| `review` | a human accepts | diff too large, several concerns bundled, evidence missing from the handoff |
+
+Record per segment: **wall-clock** and **human attention** as separate quantities, plus intervention count and
+rework count. They move independently — a change can cut wall-clock while raising the attention a human must
+spend, which is a regression the total conceals.
+
+**Rules.**
+
+1. **Improve the dominant segment.** Optimizing a non-dominant one converts spend into no change — the classic
+   version is making generation faster when verification and review own most of the elapsed time.
+2. **Local speedups can be pure push-down.** Faster output that enlarges diffs raises review and rework;
+   parallelism that multiplies merge conflicts raises integration. Re-measure the *whole* path after a change,
+   not the segment you touched.
+3. **Pair the primary metric with guardrails.** Optimizing time-to-green alone rewards narrowing what gets
+   checked; optimizing acceptance rate alone rewards sending only easy tasks. Carry regression escape, rework,
+   human attention, and cost alongside — a faster path that leaks defects is not adopted.
+
+**Cross-boundary note.** Everything below `platform` in the table above leaves the LLM-provider bill and therefore the `cost` recipe's Scope Boundary. Oracle still *counts* it when comparing designs — routing an option to `Ledger` for infra pricing does not license comparing designs on inference price alone.
+
+### Cognitive Budget — what the reviewer can actually audit
+
+Tokens, latency, and money all bound the machine. None bounds the human who has to accept the output, and on
+review-heavy work that is the binding constraint long before the context window is. Budget it explicitly:
+
+| Dimension | Bounds |
+|-----------|--------|
+| `primary_source_count` | How many distinct sources a reviewer must open to check the claim |
+| `citation_length` | How much of each must be read |
+| `decision_count` | Judgment calls the reviewer is being asked to ratify at once |
+| `unresolved_question_count` | Open items they must hold in mind |
+| `diff_size` | Change surface per review unit |
+| `tool_switches` | Context switches required to verify |
+| `evidence_reproduction_time` | Wall-clock to re-run the evidence themselves |
+
+More output that does not reduce time-to-first-judgment is not higher quality — it is cost moved from the
+model's bill to the reviewer's. A `Maintenance Budget` applies the same logic to metadata: any field an owner
+cannot realistically keep current is a future staleness incident, not a control.
+
+### Hard gates apply before optimization, never against it
+
+Split the budget in two and keep the order:
+
+```yaml
+hard_gates:            # pass/fail — never traded for tokens, latency, or price
+  quality_floor: {overall_acceptance, critical_slice_floor, schema_validity, unauthorized_action: 0}
+  security: {max_sensitivity, forbidden_categories}
+  authority: {minimum_for_decision}
+  freshness: {runtime_max_age}
+  scope: {...}
+optimization:          # targets — tuned freely, only after the gates pass
+  {token, latency, monetary, cognitive, maintenance}
+```
+
+**Fix the Quality Floor before the optimization starts, and version it.** The floor is the minimum quality the
+system may not fall below *after* the change — a set, not a single score: overall acceptance, an independent
+floor per critical slice, schema validity, and the counts that must stay at zero (unauthorized tool action,
+unsupported policy claim). A candidate that misses the floor leaves the feasible set; it is not scored lower
+and then rescued by a cheaper price. Compare on cost, latency, and tail *only within* the set that already
+passes.
+
+Two failure modes bracket this. A vague floor lets a quality loss be reclassified after the fact as an
+acceptable trade-off — the release already shipped, so the bar moves to meet it. A floor higher than the risk
+justifies is just as expensive: it pins every request to the largest model and adds human review that catches
+nothing. Derive it from use case and risk, and have Product, domain expert, Security, and the on-call owner
+agree to it.
+
+Two procedural consequences:
+
+- **Every optimization experiment records `workload_version` and `quality_floor_version`.** A result measured
+  against a different workload mix or a different floor is not comparable to the baseline — "we tested that
+  last quarter" is how a regression re-enters.
+- **Lowering the floor is a requirements change with its own approval, never a performance result.** A change
+  that passes only after the bar moves has not improved anything; it has renegotiated what counts as working.
+  Route it back as a scope decision with a named approver, and re-baseline before the next comparison.
+
+When the composed context overflows, degrade in this order — each step preserves more meaning than the next:
+
+1. Drop exact duplicates → 2. drop superseded / expired → 3. convert to pointer → 4. source-preserving extract
+→ 5. make low-impact evidence on-demand → 6. split by phase → 7. re-route model/tool → 8. shrink scope and
+flag the owner.
+
+Naive summarization is not on this list. It is the step that silently drops the counter-evidence and the one
+critical exception, and it is indistinguishable from success until the decision is already wrong.
 
 ## Token Economics
 
-> Claude rows verified against `platform.claude.com/docs/en/about-claude/pricing` on **2026-07-25**. Non-Anthropic rows still need verification — check each vendor's official page before quoting.
+> Claude rows verified against `platform.claude.com/docs/en/about-claude/pricing` on **2026-07-25**. OpenAI GPT-5.6 rows verified against `platform.openai.com/pricing` on **2026-08-19** and show standard short-context rates. Check each vendor's official page before quoting because prices and service tiers change.
 
 | Model | Input / 1M | Output / 1M | Speed | Quality | Default use |
 |-------|------------|-------------|-------|---------|-------------|
@@ -27,9 +156,11 @@ Route to `Ledger` when the question is "is our vector DB oversized?" or "should 
 | Claude Opus 5 | `$5.00` | `$25.00` | Moderate | Highest | Complex agentic coding, `~10%` of traffic |
 | Claude Sonnet 5 | `$2.00` → `$3.00` | `$10.00` → `$15.00` | Fast | High | Production default (intro pricing through 2026-08-31, then standard) |
 | Claude Haiku 4.5 | `$1.00` | `$5.00` | Fastest | Good | Classification, extraction, tier-1 routing |
-| GPT-5.5 | `TBD (needs confirmation)` | `TBD (needs confirmation)` | Medium | High | Cross-vendor fallback |
+| GPT-5.6 Sol | `$5.00` | `$30.00` | Medium | Highest | Frontier cross-vendor fallback |
+| GPT-5.6 Terra | `$2.50` | `$15.00` | Medium | High | General cross-vendor fallback |
+| GPT-5.6 Luna | `$1.00` | `$6.00` | Fast | Good | Lower-cost cross-vendor routing |
 | GPT-4o-mini | `$0.15` | `$0.60` | Fast | Good | High-volume extraction |
-| Gemini 3.6 Flash (High) | `TBD (needs confirmation)` | `TBD (needs confirmation)` | Fast | Good | High-volume extraction (Gemini) |
+| Gemini 3.7 Flash (High) | `TBD (needs confirmation)` | `TBD (needs confirmation)` | Fast | Good | High-volume extraction (Gemini) |
 
 Claude cost modifiers (multiply the base rates above):
 
@@ -142,6 +273,7 @@ Never put Batch in a user-facing synchronous path. Always put Batch behind an ex
 - Shipping `max_tokens: 4096` everywhere — output tokens are the expensive axis.
 - Treating semantic cache like an exact cache without a freshness key.
 - Measuring only global monthly spend — you cannot optimize what you cannot attribute.
+- Making token spend a team KPI — it drives context-trimming that raises retries, human correction, and total cost.
 - Moving user-facing requests into Batch API to "save money" — it breaks UX SLA.
 
 ## Oracle Gates

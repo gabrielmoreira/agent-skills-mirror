@@ -22,6 +22,89 @@ Three implications that decide between the strategies below:
 - **Handoffs are distillations, not transcripts.** A step passes forward the decision-relevant residue, not its trace (see `_common/SUBAGENT.md` — the reference figure for a subagent's condensed return is **1,000–2,000 tokens**).
 - **Compaction: maximize recall first, then precision.** When summarizing a long trace, start with a compaction prompt that captures *everything* relevant (architectural decisions, unresolved constraints, why a path was abandoned) and only then iterate to tighten it. Dropping a load-bearing detail is unrecoverable; a slightly verbose summary is not. **Tool-result clearing** is the lightweight alternative when stale tool output — not reasoning — is what is consuming the window.
 
+### Lifetime classes (what to keep is decided before how much)
+
+Compaction decides *how much* survives. Lifetime decides *what should have been persistent in the first place* —
+and the recurring failure is treating everything loaded as one substance, so ephemeral debugging state gets
+carried into a durable summary while a standing constraint gets dropped.
+
+| Class | Examples | Correct home | Fails as |
+|-------|----------|--------------|----------|
+| `stable` | architecture constraints, security prohibitions, DoD | instruction file / policy — reloaded, never summarized away | quietly dropped mid-run, then violated |
+| `scoped` | directory or component conventions | the scoped instruction near what it governs | applied outside its scope |
+| `dynamic` | this task's issue, diff, current plan, latest failure | working context; refreshed, never retained past the task | a later task inherits a finished task's state |
+| `retrieved` | API docs, external references, search results | fetched on demand with source + version recorded | goes stale silently; the copy outlives its source |
+| `ephemeral` | debugging hypotheses, discarded approaches, scratch reasoning | discarded at task end | a rejected hypothesis resurfaces as an accepted fact |
+
+**Rules.**
+
+1. **Persistence is a decision, not a default.** Anything retained past the task carries a source, a scope, and
+   what would invalidate it — otherwise it is not retained (`_common/OPERATIONAL.md` § Where a learning goes).
+2. **A `stable` item is not protected by being summarized well.** It is protected by living in a file that gets
+   reloaded — the Preserve Set below is the fallback for when compaction happens anyway, not the primary
+   mechanism.
+3. **`retrieved` never gets promoted by being restated.** Restating a fetched claim in your own words does not
+   make it project truth; it only removes the version that made it checkable.
+4. **Mixed classes in one artifact is the bug.** A single note holding a standing constraint *and* today's
+   failing test guarantees one of them is handled wrong — either the constraint expires or the debris persists.
+
+### The Preserve Set (what compaction may never drop)
+
+Recall-first is the *method*; this is the *floor*. Compaction is a lossy transform, and fluent summaries hide
+their losses — the characteristic damage is not lost prose but **collapsed state**:
+
+| Before | After | What broke |
+|--------|-------|-----------|
+| "retry code is 409 or 429, undecided" | "retry code is 409" | An open decision became a settled one |
+| "test A passed, full suite not run" | "tests passed" | Verification scope silently widened |
+| "process mutex works single-process, not in prod" | "considered a mutex" | The failure *condition* — the reusable part — vanished |
+
+Fix the fields before writing the summary:
+
+```
+goal · definition_of_done · current_phase · authoritative_sources · active_constraints
+decisions · open_questions · known_failures · failed_attempts · changed_files
+execution_state · verification_evidence · next_action · raw_evidence_locators
+```
+
+- **`open_questions`, `known_failures`, and `failed_attempts` are the first casualties.** Narrative summaries
+  are drawn to what succeeded. Structure what has *not* succeeded, or the next session re-runs it.
+- **Never promote an assumption to a fact.** "Started the test" must not compact to "tested". If a field's
+  status is unknown, carry `unknown` — an honest gap is recoverable, a confident error is not.
+- **A summary is an explanation; a checkpoint is a state contract.** Both may live in one document, but a
+  checkpoint is only valid if a fresh session could re-derive sources, compare `HEAD` and changed files,
+  confirm what was verified, recover open items, and start the next action from it alone.
+- **Recursive compaction drifts.** Compacting a compaction increases distance from the evidence and hardens
+  claims. Recompact from raw evidence + current sources, not from the previous summary; when that is no longer
+  possible, reset instead (`reference/error-handling.md` § Reset triggers).
+
+#### Verify the Preserve Set actually survived
+
+The field list says what to keep. It does not prove anything was kept, and a compaction that dropped an
+exception reads as clean prose. **Do not check this with semantic similarity** — similarity is dominated by
+the bulk of the text and is near-blind to exactly what matters here: negations, exceptions, and limits.
+
+Count elements by category, before and after:
+
+| Category | Example |
+|----------|---------|
+| Conditions | "only when the tenant is on the legacy plan" |
+| **Exceptions** | "except for refunds issued before cutover" |
+| **Prohibitions** | "never retry a non-idempotent write" |
+| Numeric limits | "max 3 retries", "p95 < 200ms" |
+
+Any loss in a category is a **blocking** failure of the compaction, regardless of how high overall overlap is:
+
+```
+source:    conditions 12 · exceptions 4 · prohibitions 3 · limits 5
+compacted: conditions 10 · exceptions 2 · prohibitions 3 · limits 5
+→ critical_loss: exceptions (-2)   acceptable: false
+```
+
+Losing two conditions may be tolerable restatement. Losing two exceptions removes the cases the rule was
+written for. Re-compact from source rather than patching the summary — a repaired summary is a compaction of
+a compaction, which is the drift failure above.
+
 ---
 
 ## Strategies
@@ -114,7 +197,7 @@ Nexus maintains continuous context; spawned agents use file-based reset.
    the profile UI, tests, and a security scan are also needed.
    ```
 
-2. **Context budget monitoring** — When Nexus context usage exceeds 70%, switch from `continuous` to `reset` for remaining steps
+2. **Context budget monitoring** — Switch from `continuous` to `reset` for remaining steps at or before session-local turn ~50, per `_common/TOKEN_ECONOMY.md` §2's measured turn-count rule (a turn count in the transcript is checkable via `token-economy.py`; a "70% of context" figure has no counting mechanism behind it and is not used)
 
 3. **Selective context injection** — Pass only relevant prior results, not full chain history
    ```
@@ -129,18 +212,24 @@ Nexus maintains continuous context; spawned agents use file-based reset.
 
 ## Platform Compatibility
 
-| Strategy Aspect | Claude Code | Codex CLI |
-|----------------|-------------|-----------|
-| `reset` handoff | Agent prompt contains summary only | `spawn_agent()` prompt contains summary only |
-| `continuous` handoff | Prior Agent results in Nexus context | Prior `wait_agent()` results in orchestrator context |
-| `hybrid` default | Nexus context + Agent(fresh) | Orchestrator context + `spawn_agent(fresh)` |
-| Context budget check | Monitor via conversation length | Monitor via `agents.max_depth` and prompt size |
-| Fallback trigger | Context usage > 70% | Prompt token count approaches model limit |
+| Strategy Aspect | Claude Code | Codex CLI | agy |
+|----------------|-------------|-----------|-----|
+| `reset` handoff | Agent prompt contains summary only | `spawn_agent()` prompt contains summary only | `agy -p` prompt contains summary only + `@<path>` to the handoff file |
+| `continuous` handoff | Prior Agent results in Nexus context | Prior `wait_agent()` results in orchestrator context | **Not natively available** — subagent contexts are isolated; approximate with `-c`/`--conversation <id>` resume, or pass prior artifacts by `@<path>` |
+| `hybrid` default | Nexus context + Agent(fresh) | Orchestrator context + `spawn_agent(fresh)` | Hub context + fresh `agy -p` one-shot; **filesystem artifacts are the handoff bus** |
+| Context budget check | Monitor via conversation length | Monitor via `agents.max_depth` and prompt size | Monitor injected size against the **~128k effective** band, not the 1M window |
+| Fallback trigger | Turn ~50 (session-local), per `_common/TOKEN_ECONOMY.md` §2 — past 100 is already late | Prompt token count approaches model limit | Handoff approaching ~128k → summarize/segment before the next spawn |
 
 **Codex-specific notes:**
 - `agents.max_depth` (default: 1) limits nesting — factor this into strategy selection
 - Use `send_input` for incremental context injection in `continuous` strategy
 - Use `close_agent` to release context when switching from `continuous` to `reset`
+
+**agy-specific notes** (`_common/AGY_ORCHESTRATION.md` A2/A4/A5/A9):
+- **Isolated by default.** agy subagents get their own context window and inherit none of the hub's history, so `continuous` cannot be assumed — write the state delta into an artifact and hand it over by path. This makes `reset`/`hybrid` the practical defaults on agy.
+- **Inject files with `@<path>`, never a bare path** — a bare path is delegated to an internal subagent that dies at the 60s cap, producing a silent empty result.
+- **Window ≠ usable window.** Gemini 3.7 Flash (High) offers 1,048,576 input tokens, but effective accuracy degrades past ~128k. This is a *length* claim; keep it separate from **position** dependence (*lost in the middle*, Liu et al., TACL 2024), which applies at any length — mid-context material is used less reliably than material at either end, and the remedy is not simply "put it first and last". Summarize or segment a handoff before it crosses that band rather than trusting the nominal window; label multiple sources with numbered headers ("Document 1", "Document 2").
+- **Instruction placement flips for large injections.** With a big data/context block, put the instructions *after* the data and anchor with "Based on the preceding information…"; top-load only in normal-size prompts.
 
 ---
 

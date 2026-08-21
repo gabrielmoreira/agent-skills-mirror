@@ -250,8 +250,15 @@ The three subagents return JSON; Compete main context handles NORMALIZE through 
 - `_common/MULTI_ENGINE_RECIPE.md` — base protocol (Pattern D scoring, PREFLIGHT, FAN-OUT, attribution conventions)
 - `_common/SUBAGENT.md §MULTI_ENGINE` — engine dispatch, loose prompts, fallback rules
 - `spark/reference/tri-engine-proposal.md` — canonical Pattern D sibling (ideation domain)
-- `plea/reference/tri-engine-demand.md` — canonical Pattern D with calibration tags (synthetic demand domain)
+- `echo/reference/tri-engine-demand.md` — canonical Pattern D with calibration tags (synthetic demand domain)
 - `compete/reference/intelligence-gathering.md` — WebSearch / WebFetch sources used during GROUND
 - `compete/reference/battle-card.md` — Battle Card output format that absorbs engine_concurrence tags
-- `compete/reference/analysis-templates.md` — Feature Matrix / SWOT output formats
+- `compete/SKILL.md` — Feature Matrix / SWOT output requirements
 - `compete/reference/competitive-moats-category-design.md` — Positioning Map output format
+
+
+---
+
+## Capability Detail (SKILL.md excerpt)
+
+- tri_engine_compete: `multi` Recipe — parallel competitive analysis across Codex + Antigravity + Claude subagents leveraging non-overlapping training-data priors (GitHub/OSS vs Google-ecosystem vs Anthropic-curated); Pattern D Divergence-primary scoring with UNIVERSAL/LIKELY/VERIFIED-DIVERGENT coverage labels; artifact-driven merge into Battle Card / Feature Matrix / Positioning Map / SWOT with engine_concurrence tags; surfaces VERIFIED-DIVERGENT uncommon competitors that single-engine analysis structurally misses

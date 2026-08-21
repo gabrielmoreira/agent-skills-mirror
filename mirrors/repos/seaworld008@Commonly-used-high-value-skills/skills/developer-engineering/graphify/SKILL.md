@@ -2,14 +2,14 @@
 name: graphify
 description: 'Use for any question about a codebase, its architecture, file relationships, or project content — especially when graphify-out/ exists, where the question should be treated as a graphify query first. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with god nodes, community detection, and query/path/explain tools.'
 zh_description: "将代码、文档和多媒体资料映射为持久知识图谱，支持社区发现、路径查询、解释和影响分析。"
-version: "1.0.5"
+version: "1.0.6"
 author: "Graphify-Labs"
 source: "github:Graphify-Labs/graphify"
-source_url: "https://github.com/Graphify-Labs/graphify/blob/v8/graphify/skill-codex.md"
+source_url: "https://github.com/Graphify-Labs/graphify/blob/v0.9.47/graphify/skill-codex.md"
 license: Apache-2.0
 tags: '["development", "graphify"]'
 created_at: "2026-04-13"
-updated_at: "2026-08-10"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "intermediate"
 ---

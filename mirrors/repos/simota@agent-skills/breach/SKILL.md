@@ -182,17 +182,15 @@ INPUT
 
 ## Recipes
 
-Single source of truth for Recipe definitions, subcommand dispatch, and signal routing.
+Subcommand dispatch and signal routing live here; the Recipe definitions live in the registry.
 
-| Recipe | Subcommand | Default? | When to Use | Read First |
-|--------|-----------|---------|-------------|------------|
-| Attack Scenario | `scenario` | ✓ | Attack scenario and kill-chain design — signals `attack scenario` / `kill chain` / `pentest plan` / `WAF bypass` / `control validation` | `reference/attack-playbooks.md` |
-| Threat Model | `threat-model` | | STRIDE / PASTA / Attack Trees — signals `threat model` / `attack surface` / `entry point` / `exposure`. Per-engagement models; **never reuse templates** | `reference/threat-modeling.md` |
-| Purple Team | `purple` | | Red/Blue coordination — signals `purple team` / `detection validation` / `blue team`; outputs exercise plan + detection rules | `reference/attack-playbooks.md` |
-| AI/LLM Red Team | `ai-red` | | AI/LLM red team — signals `prompt injection` / `jailbreak` / `agentic risk` / `RAG poisoning` / `prompt leakage` / `MAESTRO` / `agent skill` / `tool registry`. Multi-turn chains against the deployed pipeline (RAG, tools, MCP, plugins) under OWASP LLM + Agentic Top 10, ATLAS, MAESTRO, NIST AI 100-2 E2025; Garak / PyRIT for automation | `reference/ai-red-teaming.md` |
-| Phishing Campaign | `phishing` | | Authorized campaign design — pretexting, landing-page clones, MFA fatigue, quishing, OAuth consent phishing, SPF/DKIM/DMARC evasion, awareness-training integration | `reference/phishing-campaign-design.md` |
-| Supply Chain Attack | `supply` | | Dependency confusion, typosquatting, build-tool compromise, SBOM analysis, SLSA provenance, in-toto attestation, registry pinning | `reference/supply-chain-attack-design.md` |
-| Social Engineering | `social` | | Vishing, smishing, tailgating, OSINT pretexting, insider threat, BEC, deepfake voice/video; behavioral, not code-centric | `reference/social-engineering-design.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+scenario · threat-model · purple · ai-red · phishing · supply · social
+```
+
+Default Recipe: `scenario`.
 
 ## Subcommand Dispatch
 
@@ -279,10 +277,11 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal novel attack vectors and bypass techniques in `.agents/breach.md`; create it if missing.
 - Record effective framework mappings, detection gaps, and adversarial insights worth preserving.
 - After significant Breach work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Breach | (action) | (files) | (outcome) |`
-- Standard protocols → `_common/OPERATIONAL.md`
 
 ---
 
@@ -304,18 +303,6 @@ Breach-specific findings to surface in handoff:
 ## Output Contract
 
 - Default tier `L` — multi-section artifact carried in the response (`_common/OUTPUT_STYLE.md`); one attack path against an existing threat model → `M`.
-
----
-
-## Output Language
-
-Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
-
----
-
-## Git Guidelines
-
-See `_common/GIT_GUIDELINES.md`. No agent names in commits or PR titles.
 
 ---
 

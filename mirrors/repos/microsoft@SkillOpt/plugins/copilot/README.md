@@ -46,10 +46,30 @@ propose?"*, *"adopt the staged sleep proposal"*. The server exposes seven MCP
 tools: `sleep_status`, `sleep_dry_run`, `sleep_run`, `sleep_adopt`,
 `sleep_harvest`, `sleep_schedule`, and `sleep_unschedule`.
 
-Each tool takes optional `project`, `backend` (`mock`/`claude`/`codex`/`copilot`), and
-`scope` arguments. Default backend is `mock` (no API spend). The `copilot`
-backend drives the GitHub Copilot CLI (`copilot -p ... --output-format json`)
-and requires the `copilot` CLI to be installed and authenticated.
+Each tool takes optional `project`, `backend`
+(`mock`/`claude`/`codex`/`copilot`/`handoff`), and `scope` arguments. For
+`sleep_adopt`, first inspect `sleep_status`, then use the adoption controls that
+match the reviewed staging manifest:
+
+- `staging` — exact staging directory to adopt instead of the latest night
+- `skills` — array of skill names to adopt; each is passed as one repeated
+  `--skill` argument without shell interpolation
+- `all_skills` — adopt every staged per-skill proposal
+- `legacy` — adopt only the legacy managed `SKILL.md`/`CLAUDE.md` pair
+
+Choose one selection mode (`skills`, `all_skills`, or `legacy`) and do not
+combine them. A bare `sleep_adopt` remains compatible with legacy-only staging;
+fan-out staging requires an explicit selection.
+
+Tool results preserve the engine's `exit_code` in `structuredContent`.
+Ordinary nonzero exits set `isError: true`; exit 3 is the expected
+`handoff_pending` state and is not an MCP tool error. With `json: true`, text
+content is the engine's parseable JSON stdout, while diagnostics remain
+separate in `structuredContent`.
+
+Default backend is `mock` (no API spend). The `copilot` backend drives the
+GitHub Copilot CLI (`copilot -p ... --output-format json`) and requires the
+`copilot` CLI to be installed and authenticated.
 
 Harvesting is local and read-only, and the default `mock` backend makes no
 provider calls. A real backend sends truncated transcript excerpts and derived

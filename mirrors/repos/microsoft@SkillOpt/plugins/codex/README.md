@@ -52,7 +52,8 @@ Codex in natural language:
 Use the skillopt-sleep skill to run status for this project.
 Use the skillopt-sleep skill to run a dry-run for this project.
 Use the skillopt-sleep skill to run the full cycle for this project with the Codex backend.
-Use the skillopt-sleep skill to adopt the latest staged proposal.
+Use the skillopt-sleep skill to inspect status, then adopt the reviewed managed
+proposal or an explicit pending skill subset.
 ```
 
 Or call the engine directly:

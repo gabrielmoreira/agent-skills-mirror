@@ -56,8 +56,8 @@ the shared runner falls back first to a `skillopt-sleep` executable on `PATH`
 `uv tool install skillopt` or `pip install skillopt` for that fallback.
 
 > **Version note.** This page tracks `main`. PyPI 0.2.0 provides the base Sleep
-> CLI, but handoff mode and `--preferences` require a source checkout from
-> `main` until the next release.
+> CLI, but handoff mode, `--preferences`, multi-skill fan-out, and reviewed
+> subset adoption require a source checkout from `main` until the next release.
 
 ## Quick start
 
@@ -66,7 +66,8 @@ the shared runner falls back first to a `skillopt-sleep` executable on `PATH`
 /skillopt-sleep dry-run     # preview what it would learn; no changes staged
 /skillopt-sleep run         # full cycle: stages a reviewed proposal (still no live edits)
 /skillopt-sleep status      # see history + the latest staged proposal
-/skillopt-sleep adopt       # apply the staged proposal to CLAUDE.md / SKILL.md (with backup)
+/skillopt-sleep adopt --legacy       # apply the reviewed managed proposal
+# Fan-out nights instead use: adopt --skill NAME (repeatable) or --all-skills
 
 /skillopt-sleep-handoff run # same cycle, but THIS session answers the model calls
                             # (no claude -p subprocess, no API key — subscription-friendly)

@@ -1,13 +1,17 @@
 ---
 name: threejs-spectral-ocean
-description: Build large procedural oceans in Three.js from directional wave spectra. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, forward-refracted structures through an interface, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, windrow and temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
+description: Build large procedural oceans and coast transitions in Three.js. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, coastal breakers, signed-distance coastlines, shallow-water swash films, wet-sand transitions, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, forward-refracted structures through an interface, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, windrow and temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
 ---
 
 # Spectral Ocean
 
-Treat an ocean as a sampled stochastic wave field with explicit frequency-space ownership. Do not approximate this target with a pile of Gerstner waves, scrolling normal maps, or unrelated foam noise.
+Choose the representation that owns the requested view. Open-water sea states use
+explicit frequency-space ownership. A beach-level breaker view uses a coupled
+band-limited wave field, coast representation, swash state, foam history, and
+sand response. Do not reduce either target to scrolling normal maps or unrelated
+foam noise.
 
-## Build order
+## Spectral build order
 
 1. Define the sea-state spectrum and deterministic Gaussian seed.
 2. Partition wavelengths into disjoint cascades.
@@ -21,6 +25,11 @@ Treat an ocean as a sampled stochastic wave field with explicit frequency-space 
 10. Expose spectrum, height, slopes, Jacobian, and foam-history diagnostics.
 
 Read [references/spectral-cascade-ocean-system.md](references/spectral-cascade-ocean-system.md) before implementing or auditing a spectral ocean.
+
+Read
+[references/coastal-breaker-and-swash-ocean.md](references/coastal-breaker-and-swash-ocean.md)
+before implementing or auditing the water-to-wet-sand transition of a coastal
+breaker system.
 
 Read the [spectral cascade ocean system](examples/spectral-cascade-ocean/ocean-system.js)
 and its adjacent spectrum, FFT, material, and detail modules for the cascade,
@@ -53,7 +62,15 @@ structures into the window, shared HDR sky radiance, aquatic extinction and
 in-scatter, footprint-faded differential-area caustics, full-resolution god rays,
 suspended particulates, and the final HDR grade.
 
-## Non-negotiable gates
+Read the
+[coastal breaker ocean system](examples/coastal-breaker-ocean/coastal-breaker-ocean.js)
+when the defining view sits at the waterline: it provides deterministic
+band-limited gravity and capillary fields, a signed-distance mainland and
+island coast, coast-normal shallow-water swash chains, persistent breaker and
+film foam, camera-following warped geometry, wet-sand optics, and shared sky
+radiance.
+
+## Spectral non-negotiable gates
 
 - Require a power-of-two grid and a passing FFT impulse/frequency test.
 - Keep cascade wavenumber intervals disjoint.
@@ -69,6 +86,22 @@ suspended particulates, and the final HDR grade.
 - Gate the entire optical side from one camera-medium state; do not choose above/below behavior per triangle.
 - Terminate distant underwater sightlines with a safely submerged terrain rim; do not mask an empty seabed/ocean horizon with a view-aligned scattering layer.
 - Keep a deterministic seed and fixed-camera capture for comparisons.
+
+## Coastal breaker gates
+
+- Keep coastline SDF, arclength tables, ribbon geometry, and swash columns in
+  one coast contract; do not derive unstable column ordering from SDF gradients.
+- Hand offshore wave level into the coast-normal conserved-volume chain; a
+  linear spring chain does not uniquely recover a flat free surface.
+- Persist both world-space breaker foam and coast-parameterized film foam.
+- Blend water, wet sand, and dry sand by the actual water column, not a detached
+  shoreline decal.
+- Derive water normals from the same gravity/capillary fields that displace the
+  surface, and derivative-filter sand normal detail at grazing distance.
+- Share sky radiance and sun direction between the visible surround and ocean
+  reflection.
+- Keep the orbit camera above the terrain and use a fixed waterline camera for
+  comparisons.
 
 ## Route elsewhere
 

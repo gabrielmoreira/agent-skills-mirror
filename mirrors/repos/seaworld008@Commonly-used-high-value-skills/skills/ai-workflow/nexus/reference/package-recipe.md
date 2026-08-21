@@ -39,7 +39,7 @@ This keeps Nexus to **one recipe** instead of a dozen near-identical ones (Core 
 | `kaizen` | **Executes** improvement of a shipped feature. The `growth` preset produces a **measurement/experiment plan package** — planning, not execution. Route to kaizen to actually change code. |
 | `growth-acceptance` | A **merge lifecycle gate**. The `growth` preset is a planning package, not a gate. |
 | `deep-research` | A cited research **report**. The `research` preset produces a full research **operations package** (design + literature + data + analysis + validation), and may invoke `deep-research` inside Phase 1. |
-| `accord` / `scribe` / `funnel` / `clause` direct | Single-artifact requests. `package` is for multi-role, multi-file handoff packages. |
+| `scribe[unified]` / `scribe` / `funnel` / `canon[legal]` direct | Single-artifact requests. `package` is for multi-role, multi-file handoff packages. |
 
 ## Invocation
 
@@ -66,6 +66,8 @@ Identical to venture's engine; only the blueprint binds differ.
 | **4 Overview** | spark + scribe (+ magi at depth ≥ raise) synthesize after tracks | overview dir |
 | **5 Integrate+Validate** | attest/judge build the traceability matrix + cross-doc consistency + **Universal Grounding Gate** (every external fact sourced / `ASSUMPTION` / research-to-do — fails on ungrounded fact, all presets); Nexus writes `document_manifest.csv`, `validation_report.md`, `README.md`; format syntax lint | manifest + report + README |
 | **6 Package** | Write tree (UTF-8) → `zip -r` → `unzip -l` test → secrets/PII scrub → report absolute zip path | zip |
+
+**Format syntax lint** (Phase 5→6, engine-generic, all presets): JSON via `python3 -m json.tool` or `jq`; YAML via `python3 -c "import yaml,sys;yaml.safe_load(...)"`; SQL via basic parse; HTML/CSS via structural check; CSV via header presence. Results recorded in `validation_report.md` before the Phase 6 zip.
 
 `package_contract` (Phase 0 emit):
 ```yaml
@@ -96,9 +98,6 @@ venture's "feature_id (F-001) barrier" generalizes to a **canonical entity-id ba
 | legal | Risk / policy clause | `R-001` | risk ↔ mitigation ↔ policy clause ↔ lawyer-review point |
 | media | Content pillar | `P-001` | pillar ↔ episode/article ↔ channel ↔ metric |
 | growth | Hypothesis / experiment | `H-001` / `E-001` | hypothesis ↔ experiment ↔ metric ↔ learning-log entry |
-| career | Target role | `T-001` | self-analysis ↔ market/salary ↔ positioning ↔ skill-gap ↔ job-search ↔ asset |
-| learning | Learning objective | `LO-001` | objective ↔ curriculum ↔ material ↔ assessment (alignment matrix) |
-| hiring | Role | `R-001` | role ↔ JD ↔ competency ↔ rubric ↔ scorecard ↔ onboarding |
 
 ## Universal Grounding Gate (all presets — not just research)
 
@@ -110,7 +109,7 @@ The entity-id barrier guards *structural* integrity; this gate guards *factual* 
   3. **Research-to-do** — when grounding was unavailable, enumerated in `research_todo.md` as a lookup, not stated as fact.
 - **A bare number or external-fact stated as fact with none of the three fails Phase 5 validation** — for *all* presets, not only `research`. Fabricated market/statistic/citation claims presented as established fact are the package equivalent of a hallucinated source.
 - **Internal design content** (the user's own roadmap, the proposed feature set, opinions, recommendations) is exempt — the gate targets **externally-checkable facts**, not the plan's own propositions.
-- Preset-specific grounding rules **layer on top**, not replace: `research` requires reproducibility+ethics files; `career` marks unsourced salary `ASSUMPTION`; `legal`/`hiring` add the lawyer-review disclaimer. The universal gate is the floor every preset clears.
+- Preset-specific grounding rules **layer on top**, not replace: `research` requires reproducibility+ethics files; `legal` adds the lawyer-review disclaimer. The universal gate is the floor every preset clears.
 
 `validation_report.md` reports the count of: sourced claims / assumptions / research-to-dos / **ungrounded-fact failures (must be 0 to ship)**.
 
@@ -120,17 +119,14 @@ This gate is the origin of — and is generalized to all doc-producing runs by �
 
 | Preset | Subcommand | Directories | Spine skills (Phase 2) | Track skills (Phase 3) | Risk gate |
 |--------|-----------|-------------|------------------------|------------------------|-----------|
-| **startup** | `package domain=startup` / `venture` | 00_overview … 13_assets (14) | accord+spark+rank+pulse | vision/muse/prose ‖ palette/canvas/echo ‖ funnel ‖ pulse/experiment ‖ atlas/schema/gateway/beacon/gear/crypt ‖ oracle ‖ clause/cloak/oath/omen/ripple ‖ matrix/radar/mint ‖ sherpa/scribe ‖ sketch/canvas | standard |
-| **generic** | `package domain=generic` | 00_overview,01_research,02_strategy,03_design,04_execution,05_assets,06_evaluation,07_operations | accord+spark+rank | field ‖ accord/canvas ‖ sherpa/scribe ‖ mint ‖ matrix ‖ omen+ripple | standard |
-| **research** | `package domain=research` | 00_research_design,01_literature,02_data,03_analysis,04_outputs,05_validation | accord(question/hypothesis/methodology)+rank | field (+`deep-research` skill via Skill tool, not a spawned track agent) ‖ schema/mint(data) ‖ magi(analysis) ‖ scribe(outputs) ‖ canon+cloak(rigor/ethics) | ethics/bias; medical/policy → expert |
-| **ai-adoption** | `package domain=ai-adoption` | 00_overview,01_use_cases,02_data,03_prompt,04_system,05_policy,06_training,07_evaluation,08_rollout | accord(use_cases)+spark+rank | oracle(prompts/RAG/eval) ‖ cloak+sentinel(data/security) ‖ schema(data) ‖ scribe(policy/training) ‖ gear(rollout) ‖ matrix+mint(eval+hallucination cases) ‖ oath(governance) | hallucination + data-sensitivity + human-in-loop mandatory |
-| **legal** | `package domain=legal` | 00_overview,01_policy,02_contracts,03_risk,04_operations,05_security_privacy | clause(policy/clause map)+omen | clause(ToS/Privacy/AI/cookie/moderation) ‖ cloak(PII/consent/data-rights) ‖ oath(checklist) ‖ crypt(incident/breach) ‖ oracle(ai_usage_policy) ‖ omen+ripple(legal_risk_register) | **HIGH — mandatory expert-review gate** |
-| **saas** | `package domain=saas` | 00_vision,01_product,02_ai_system,03_integrations,04_technology,05_gtm,06_operations,07_testing | accord+spark+rank+pulse | oracle(ai_system) ‖ atlas/schema/gateway(tech) ‖ scribe(product/ops) ‖ funnel/bazaar+pulse(gtm) ‖ gear(integrations/CI) ‖ matrix+mint(testing) | standard (defaults to b2b-saas + ai-product modes) |
-| **media** | `package domain=media` | 00_strategy,01_content,02_brand,03_distribution,04_monetization,05_operations,06_assets | accord(content pillars)+spark+rank | cue(scripts/episodes) ‖ prose(articles/tone) ‖ vision/muse(brand/visual) ‖ field(SEO) ‖ funnel(monetization/sponsorship) ‖ pulse(analytics) | copyright/attribution/ad-compliance (clause-light) |
+| **startup** | `package domain=startup` / `venture` | 00_overview … 13_assets (14) | scribe[unified]+spark+rank+pulse | vision/muse/prose ‖ palette/canvas/echo ‖ funnel ‖ pulse/experiment ‖ atlas/schema/gateway/beacon/gear/crypt ‖ oracle ‖ canon[legal]/cloak/canon[regulatory]/omen/ripple ‖ matrix/radar ‖ sherpa/scribe ‖ builder[image]/canvas | standard |
+| **generic** | `package domain=generic` | 00_overview,01_research,02_strategy,03_design,04_execution,05_assets,06_evaluation,07_operations | scribe[unified]+spark+rank | field ‖ scribe[unified]/canvas ‖ sherpa/scribe ‖ radar ‖ matrix ‖ omen+ripple | standard |
+| **research** | `package domain=research` | 00_research_design,01_literature,02_data,03_analysis,04_outputs,05_validation | scribe[unified](question/hypothesis/methodology)+rank | field (+`deep-research` skill via Skill tool, not a spawned track agent) ‖ schema/radar(data) ‖ magi(analysis) ‖ scribe(outputs) ‖ canon+cloak(rigor/ethics) | ethics/bias; medical/policy → expert |
+| **ai-adoption** | `package domain=ai-adoption` | 00_overview,01_use_cases,02_data,03_prompt,04_system,05_policy,06_training,07_evaluation,08_rollout | scribe[unified](use_cases)+spark+rank | oracle(prompts/RAG/eval) ‖ cloak+sentinel(data/security) ‖ schema(data) ‖ scribe(policy/training) ‖ gear(rollout) ‖ matrix+radar(eval+hallucination cases) ‖ canon[regulatory](governance) | hallucination + data-sensitivity + human-in-loop mandatory |
+| **legal** | `package domain=legal` | 00_overview,01_policy,02_contracts,03_risk,04_operations,05_security_privacy | canon[legal](policy/clause map)+omen | canon[legal](ToS/Privacy/AI/cookie/moderation) ‖ cloak(PII/consent/data-rights) ‖ canon[regulatory](checklist) ‖ crypt(incident/breach) ‖ oracle(ai_usage_policy) ‖ omen+ripple(legal_risk_register) | **HIGH — mandatory expert-review gate** |
+| **saas** | `package domain=saas` | 00_vision,01_product,02_ai_system,03_integrations,04_technology,05_gtm,06_operations,07_testing | scribe[unified]+spark+rank+pulse | oracle(ai_system) ‖ atlas/schema/gateway(tech) ‖ scribe(product/ops) ‖ funnel/funnel[premium]+pulse(gtm) ‖ gear(integrations/CI) ‖ matrix+radar(testing) | standard (defaults to b2b-saas + ai-product modes) |
+| **media** | `package domain=media` | 00_strategy,01_content,02_brand,03_distribution,04_monetization,05_operations,06_assets | scribe[unified](content pillars)+spark+rank | cue(scripts/episodes) ‖ prose(articles/tone) ‖ vision/muse(brand/visual) ‖ field(SEO) ‖ funnel(monetization/sponsorship) ‖ pulse(analytics) | copyright/attribution/ad-compliance (clause-light) |
 | **growth** | `package domain=growth` | 00_current_state,01_hypotheses,02_experiments,03_design,04_measurement,05_execution | pulse(funnel/baseline)+experiment(hypotheses)+rank(RICE) | experiment(ab_test/backlog) ‖ funnel(friction/flows) ‖ palette/prose(ui_variants/copy_tests) ‖ pulse(event_tracking/dashboard) ‖ magi(opportunity) | standard — **planning only; route to kaizen for execution** |
-| **career** | `package domain=career` | 00_self_analysis,01_market_research,02_positioning,03_learning,04_job_search,05_assets,06_execution | ascent(self-analysis → target-role + skill-gap) | ascent(owns whole arc) ‖ field(market/salary) ‖ compete(positioning frameworks) ‖ crest(engineer channel branding) ‖ scribe/prose(asset polish) ‖ canvas(roadmap) | irreversible moves (quit-before-income/relocation/visa); unsourced salary = ASSUMPTION; no legal/tax/financial advice; no fabricated credentials |
-| **learning** | `package domain=learning` | 00_learning_goal,01_curriculum,02_materials,03_assessment,04_support,05_progress,06_instructor | agora(objectives → curriculum, Bloom's alignment owner) | agora(curriculum/assessment) ‖ field(topic) ‖ canvas(learning-path) ‖ morph(format) ‖ matrix(hands-on practice) ‖ scribe(formal syllabus) | ALIGNMENT_GAP / ORPHAN_ASSESSMENT; regulated domain (medical/legal/finance/safety/certification) → official-syllabus confirmation |
-| **hiring** | `package domain=hiring` | 00_strategy,01_roles,02_candidate_experience,03_onboarding,04_evaluation,05_culture,06_risk | guild(role → JD/competency)+scribe | guild(process/JD/rubric/onboarding) ‖ cast(candidate personas) ‖ prose(outreach/comms) ‖ helm?(headcount/org) ‖ oath(labor-law escalation) | **labor-law / anti-discrimination / PII → lawyer review; protected-class criteria removed, not encoded** |
 
 ## Preset Auto-Detection
 
@@ -152,9 +148,6 @@ When `domain=` is omitted, Phase 0 resolves the preset from the theme. Detection
 | The deliverable itself is a legal/compliance pack — ToS, Privacy Policy, AI usage policy, contracts, data rights, legal risk register | `legal` |
 | Content/editorial operation — YouTube/podcast/blog/newsletter, editorial calendar, channel growth, audience monetization, content pillars | `media` |
 | Improving an **existing** product's metrics — funnel/CVR/churn, A/B experiments, growth hypotheses, retention (planning a measurement program) | `growth` |
-| Personal career — job change, side-business, independence, portfolio, interview, salary negotiation | `career` |
-| Curriculum / course / training design, lesson plans, assessment, learning program | `learning` |
-| Recruitment / hiring process, job descriptions, interview rubrics, onboarding, org design | `hiring` |
 | Generic project/initiative/plan that matches none of the above (strategy → execution → operations) | `generic` |
 
 ### Precedence rules (multiple matches)
@@ -173,7 +166,7 @@ When `domain=` is omitted, Phase 0 resolves the preset from the theme. Detection
 | Single clear top preset | Proceed with it (state the detected preset in the opening line of the run). |
 | Top-2 within a close margin | Confirm preset with the user (present the top 2 + one-line rationale each). In `AUTORUN_FULL`, pick the higher and state the assumption + the alternative. |
 | No row scores (theme unmatched) | Fall back to `generic`; surface "matched no specialized preset → generic" in the report. |
-| Novel domain with no matching preset/skill (none of the 12 fit) | Use `generic`, and emit a **gap note**: "<domain> has no dedicated preset/skill — produced via generic; recommend a dedicated skill via `architect` if this recurs." Mark with `#TODO(agent): promote <domain> to a first-class preset once a dedicated skill exists`. |
+| Novel domain with no matching preset/skill (none of the 9 fit) | Use `generic`, and emit a **gap note**: "<domain> has no dedicated preset/skill — produced via generic; recommend a dedicated skill via `architect` if this recurs." Mark with `#TODO(agent): promote <domain> to a first-class preset once a dedicated skill exists`. |
 
 ## Per-Preset Blueprints
 
@@ -198,19 +191,13 @@ Distinctive: `privacy_policy_draft.md`, `terms_of_service_draft.md`, `ai_usage_p
 = startup blueprint re-keyed to the SaaS dirs, defaulting to `b2b-saas` + `ai-product` mode overlays. Distinctive: `package_type_catalog.md`, `generation_flow.md`, `prompt_orchestration.md`, `agent_workflow.md`, `validation_engine.md`, `model_selection.md`, `zip_export.md`, integration plans (`notion_export.md`, `github_integration.md`, `figma_linear_jira_plan.md`), `database_schema.sql`, `api_design_openapi.yaml`, `pricing.md`, `package_quality_score.md`, `ai_eval_cases.csv`. Reuse startup's tech + GTM tracks; add the AI-system track from the ai-adoption preset.
 
 ### media
-Distinctive: `content_pillars.md`, `editorial_calendar.csv`, `episode_ideas.md`, `article_templates.md`, `tone_of_voice.md`, `visual_guidelines.md`, `thumbnail_guidelines.md`, `channel_strategy.md`, `seo_strategy.md`, `newsletter_strategy.md`, `sponsorship_plan.md`, `product_funnel.md`, `production_workflow.md`, `scripts.md`, `analytics_dashboard_plan.md`. Anchor: content_pillar_id `P-001` ↔ episode/article ↔ channel ↔ metric. **Coverage note (known gap)**: no single skill owns editorial strategy — assembled from `cue` (scripts/episodes) + `prose` (articles/tone) + `field` (SEO) + `vision/muse` (visual) + `funnel`/`pulse` (monetization/analytics). Lossy vs a dedicated editor skill; flag to user. Risk: copyright/attribution/ad-disclosure — add `clause` (light) for sponsorship/ad-compliance review.
+Distinctive: `content_pillars.md`, `editorial_calendar.csv`, `episode_ideas.md`, `article_templates.md`, `tone_of_voice.md`, `visual_guidelines.md`, `thumbnail_guidelines.md`, `channel_strategy.md`, `seo_strategy.md`, `newsletter_strategy.md`, `sponsorship_plan.md`, `product_funnel.md`, `production_workflow.md`, `scripts.md`, `analytics_dashboard_plan.md`. Anchor: content_pillar_id `P-001` ↔ episode/article ↔ channel ↔ metric. **Coverage note (known gap)**: no single skill owns editorial strategy — assembled from `cue` (scripts/episodes) + `prose` (articles/tone) + `field` (SEO) + `vision/muse` (visual) + `funnel`/`pulse` (monetization/analytics). Lossy vs a dedicated editor skill; flag to user. Risk: copyright/attribution/ad-disclosure — add `canon[legal]` (light) for sponsorship/ad-compliance review.
 
 ### growth
 Distinctive: `funnel_analysis.md`, `friction_points.md`, `opportunity_matrix.md`, `growth_hypotheses.md`, `experiment_backlog.csv`, `ab_test_plan.md`, `success_metrics.md`, `prioritization_rice.csv`, `improved_flows.md`, `copy_tests.md`, `ui_variants.md`, `event_tracking_plan.md`, `dashboard_spec.md`, `analysis_template.md`, `learning_log.md`. Anchor: hypothesis_id `H-001` / experiment_id `E-001` ↔ metric ↔ learning-log entry. **Dedup discipline**: this preset produces a *planning package* only. If the user wants to actually implement an improvement → route to `kaizen`; to gate a merge with growth proof → `growth-acceptance`; for a single A/B test design → `experiment` direct. State this routing in the final report when growth is selected.
 
-### career
-Owner skill: `ascent`. Distinctive: `strengths_weaknesses.md`, `achievement_inventory.md`, `salary_research.md`, `skill_gap_analysis.md`, `positioning.md`, `elevator_pitch.md`, `portfolio_strategy.md`, `target_company_list.csv`, `application_tracker.csv`, `outreach_templates.md`, `cover_letter_templates.md`, `negotiation_strategy.md`, `90_day_plan.md`. Anchor: target_role `T-001` ↔ self-analysis ↔ market/salary ↔ positioning ↔ job-search ↔ asset. Engineer-specific channel branding → hand to `crest`. **Risk**: irreversible moves (quit-before-income / relocation / visa) flagged; salary claims without a source marked `ASSUMPTION — confirm`; no legal/tax/financial advice asserted as fact; never fabricate achievements/credentials.
 
-### learning
-Owner skill: `agora`. Distinctive: `learning_objectives.md`, `prerequisite_check.md`, `outcome_definition.md`, `lesson_plans.md`, `quizzes.csv`, `rubric.md`, `self_assessment.md`, `progress_checkpoints.md`, `study_tracker.csv`, `coaching_prompts.md`, `common_mistakes.md`, `alignment_matrix.md`. Anchor: learning objective `LO-001` (Bloom's-leveled) ↔ curriculum ↔ material ↔ assessment, via the alignment matrix. **Gate**: every objective has ≥1 aligned assessment (`ALIGNMENT_GAP` fails) and every assessment maps to an objective (`ORPHAN_ASSESSMENT` fails); objectives use measurable verbs; regulated domains (medical/legal/finance/safety/certification) require official-syllabus confirmation.
 
-### hiring
-Owner skill: `guild`. Distinctive: `recruitment_strategy.md`, `job_descriptions.md`, `competency_matrix.md`, `interview_rubric.md`, `scorecards.csv`, `candidate_journey.md`, `outreach_templates.md`, `communication_templates.md`, `onboarding_plan_30_60_90.md`, `first_week_checklist.md`, `performance_review_template.md`, `culture.md`, `bias_reduction_checklist.md`. Anchor: role `R-001` ↔ JD ↔ competency ↔ rubric ↔ scorecard ↔ onboarding. Candidate persona depth → `cast`; regulatory framework audit → `oath`. **HIGH-RISK gate (mandatory)**: labor-law / anti-discrimination / PII content is advisory only — every such doc carries a "requires labor-law (lawyer) review before use" disclaimer; **protected-class screening criteria must be removed, not encoded**; Phase 5 fails on encoded protected-class criteria.
 
 ## Risk Gates
 
@@ -218,8 +205,6 @@ Owner skill: `guild`. Distinctive: `recruitment_strategy.md`, `job_descriptions.
 |-----------|-------------------|------|
 | legal | legal (always); any preset with legal drafts | Mandatory "not legal advice / expert review required" disclaimer on every legal doc; Phase 5 fails on missing `lawyer_review_points` reference |
 | medical / finance / safety | any (from theme) | Phase 0 surfaces high-risk; mark all domain claims as hypotheses; recommend domain-expert review in final report |
-| labor-law / anti-discrimination | hiring | Every hiring-law doc carries "requires lawyer review"; protected-class screening criteria removed, not encoded (Phase 5 fails on encoded criteria) |
-| alignment (learning) | learning | Phase 5 fails on `ALIGNMENT_GAP` (objective w/o assessment) or `ORPHAN_ASSESSMENT` (assessment w/o objective); regulated domains need official-syllabus confirmation |
 | hallucination / data-sensitivity | ai-adoption, saas | Every use case requires an eval case + human-review rule; forbidden-use entries for high-risk use cases |
 | ungrounded fact (fabrication) | **all presets** | Universal Grounding Gate: every external fact must be sourced / `ASSUMPTION` / research-to-do; Phase 5 fails on a bare fabricated number or citation stated as fact |
 
@@ -228,7 +213,7 @@ Owner skill: `guild`. Distinctive: `recruitment_strategy.md`, `job_descriptions.
 | Condition | Add | Skip |
 |-----------|-----|------|
 | depth = lite | — | deep tracks; keep overview + research-lite + spine + one primary track |
-| depth = full | void (scope cut), oath, crypt, deeper scribe | — |
+| depth = full | void (scope cut), canon[regulatory], crypt, deeper scribe | — |
 | web_grounding = unavailable | `research_todo.md` (enumerate lookups, mark hypotheses) | live `references.md` sourcing |
 | preset = legal/ai-adoption | risk gate (mandatory) | — |
 | preset = media | clause-light (ad/sponsorship) | heavy tech tracks |
@@ -264,6 +249,44 @@ Nexus AUTORUN package domain=<preset> theme="<X>" depth=<...> mode=<...>
   → report: zip path, file count, main contents, validation, caveats + routing notes
 ```
 
+## Resume
+
+**Checkpoint-resume** (7 phases): persist the Phase 0 framing contract, the Phase 2 frozen entity list, and each Phase 3 track's completed files at its boundary. Resume re-enters at the first incomplete track — **the entity list is never re-derived on resume**, since re-minting IDs would break every cross-reference already written.
+
+## Termination Bound
+
+**`N/A` — `package` is a non-loop recipe.** Phases 0-6 run once; Phase 5 validation either passes or fails the package with a named defect list. Validation failures are reported, not iterated over — the operator decides whether to re-run. Preset blueprints inherit this.
+
+## Output Report — **Package Manifest Report** (named)
+
+Emitted inside `NEXUS_COMPLETE` on top of the base `## Nexus Execution Report`, and mirrored on disk as `document_manifest.csv` + `validation_report.md` + `README.md`:
+
+- **Preset + blueprint** — which domain preset ran, and (for an auto-detected domain) the detection score that chose it
+- **File inventory** — every generated artifact with its owning track and format
+- **Traceability matrix** — primary entities vs the documents that reference them; dangling references and unmapped entities listed (must be empty to ship)
+- **Grounding tally** — sourced claims / assumptions / research-to-dos / **ungrounded-fact failures (must be 0)**
+- **Risk-gate disposition** — which gates fired and how each was satisfied
+- **Gap notes** — any novel domain produced as `generic`, with its `#TODO(agent)` promotion note
+
+## Scale
+
+**10-30 agents, single pass, mid-to-high cost** — preset-dependent: the Phase 3 parallel doc-track count is the multiplier (typically 5-8 tracks), Phase 1 research adds 2-4, Phase 5 validation 2-3. No cycle multiplier (see Termination Bound).
+
+## Failure Modes Prevented
+
+| Failure | Mitigation |
+|---------|-----------|
+| Tracks invent their own entities → a package that cross-references nothing | Canonical **entity-id barrier** at Phase 2: the primary entity list is frozen before any Phase 3 track runs; tracks reference existing IDs only, never mint new ones |
+| Dangling references / orphan primary entities surviving to delivery | Phase 5 **fails** the package on any dangling reference or unmapped primary entity |
+| Plausible-but-fabricated market sizes, adoption stats, and "studies show" numbers | **Universal Grounding Gate** (all presets, not just `research`): every external fact is sourced / `ASSUMPTION` / research-to-do; `validation_report.md` must report **0 ungrounded-fact failures** to ship |
+| Internal opinions policed as if they were external facts (gate over-firing) | The gate targets externally-checkable facts only; the plan's own proposals and recommendations are explicitly exempt |
+| Legal / medical / hiring content shipped as authoritative advice | Per-preset **Risk Gates**: mandatory disclaimer + `lawyer_review_points`; Phase 5 fails on omission |
+| A novel domain silently produced as `generic` with the gap hidden | Phase 0 emits an explicit gap note + `#TODO(agent)` to promote the domain once a dedicated skill exists |
+| Structurally valid but internally contradictory documents | Phase 5 attest/judge cross-doc consistency pass on top of the traceability matrix |
+| Format artifacts that do not load (broken CSV/JSON/YAML/SQL) | Phase 5 format syntax lint — every non-Markdown artifact must be real and parseable |
+
+**Preset blueprints inherit this section** — `reference/venture-recipe.md` (the `startup` preset) adds no failure modes of its own; per-preset risk gates are tabulated in § Risk Gates above.
+
 ## Failure Escalation
 
 | Failure | Detected by | Escalation |
@@ -277,7 +300,7 @@ Nexus AUTORUN package domain=<preset> theme="<X>" depth=<...> mode=<...>
 | AI use case missing eval/human-review | Phase 5 ai gate | Return ai-adoption track |
 | Format syntax invalid | Phase 6 lint | Fix file, re-lint before zipping |
 | Secrets/PII detected | Phase 6 scrub | Remove and re-package; never ship |
-| Novel domain outside the 12 presets | Phase 0 | Use `generic` + flag the missing dedicated skill; recommend `architect` for a new skill if recurring |
+| Novel domain outside the 9 presets | Phase 0 | Use `generic` + flag the missing dedicated skill; recommend `architect` for a new skill if recurring |
 
 ## Cost and Latency Profile
 
@@ -302,10 +325,7 @@ Same guardrails as venture (5+ agent chain confirmation, full-depth confirmation
 | 09 legal_compliance | legal | ✅ (high-risk gate) |
 | 10 growth_optimization | growth | ✅ (planning-only; dedup vs kaizen/growth-acceptance) |
 | 07 media_operation | media | ✅ (known editorial-skill gap, lossy) |
-| 03 career_strategy | career | ✅ (owner skill `ascent`; irreversible-move + salary-source gates) |
-| 04 learning | learning | ✅ (owner skill `agora`; Bloom's alignment gate) |
-| 06 hiring_org | hiring | ✅ (owner skill `guild`; labor-law lawyer-review gate) |
 | 00 pdca_prompt | — | ❌ out of scope (prompt-improvement meta — route to `architect` / `quality-iteration`) |
 | 12 templates (input sheet / quality gate) | — | ♻️ folded into Phase 0 framing contract / Phase 5 validation contract |
 
-All 12 source domains except the meta prompt-improvement prompt now have first-class presets backed by a dedicated owner skill. A novel domain outside these 12 still falls back to `generic` with a surfaced gap note; promote it once a dedicated skill exists (propose via `architect`).
+The remaining source domains now have first-class presets backed by a dedicated owner skill (career/learning/hiring were retired with their owner skills). A novel domain outside these still falls back to `generic` with a surfaced gap note; promote it once a dedicated skill exists (propose via `architect`).

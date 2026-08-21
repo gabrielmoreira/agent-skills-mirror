@@ -2,14 +2,14 @@
 name: scaffold
 description: 'Provisioning infrastructure via cloud IaC (Terraform/OpenTofu/CloudFormation/Pulumi) and local dev environments (Docker Compose, env vars). Use for IaC design or multi-cloud provisioning.'
 zh_description: "云基础设施、环境配置和本地开发部署脚手架。"
-version: "1.0.2"
+version: "1.0.3"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/scaffold"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/scaffold"
 license: MIT
 tags: '["deployment", "scaffold"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -57,7 +57,7 @@ Use Scaffold when the task needs one or more of the following:
 - AWS, GCP, Azure, or multi-cloud infrastructure selection
 - State encryption, IaC tool migration (Terraform ↔ OpenTofu), licensing evaluation (BSL vs open-source), or orchestration platform evaluation (Spacelift, Env0, Scalr)
 
-Use `Gear` for CI/CD, runtime operations, and monitoring. Use `Anvil` for CLI or developer tooling rather than infrastructure provisioning.
+Use `Gear` for CI/CD, runtime operations, and monitoring. Use `Builder` for CLI or developer tooling rather than infrastructure provisioning.
 
 Route elsewhere when the task is primarily:
 - CI/CD pipeline configuration without IaC changes → `Gear`
@@ -136,7 +136,7 @@ Route elsewhere when the task is primarily:
 | AWS specialist | AWS-only and advanced networking/compute/database/event patterns matter | `reference/aws-specialist.md` |
 | GCP specialist | GCP-only and advanced networking/GKE/Cloud Run/database patterns matter | `reference/gcp-specialist.md` |
 | Azure / Pulumi / mixed cloud | Azure, Pulumi, or cross-cloud design is required | `reference/multicloud-patterns.md` |
-| Local development environment | Docker Compose, `.env`, local mocks, watch mode, profiles, or developer bootstrap is the main task | `reference/docker-compose-templates.md` |
+| Local development environment | Docker Compose, `.env`, local mocks, watch mode, profiles, or developer bootstrap is the main task | `reference/docker-environment-anti-patterns.md`, `reference/security-and-cost.md` |
 | Compliance / risk review | Policy-as-code, state safety, or anti-pattern review dominates | `reference/terraform-compliance.md` and relevant anti-pattern reference |
 | Nexus AUTORUN | Input explicitly invokes AUTORUN | Normal deliverable plus `_STEP_COMPLETE:` footer |
 | Nexus Hub | Input contains `## NEXUS_ROUTING` | Return only `## NEXUS_HANDOFF` packet |
@@ -148,7 +148,7 @@ Route elsewhere when the task is primarily:
 | Terraform / OpenTofu | `terraform` | ✓ | Terraform/OpenTofu IaC (most common) | `reference/terraform-modules.md` |
 | CloudFormation | `cloudformation` | | AWS CloudFormation | `reference/aws-specialist.md` |
 | Pulumi | `pulumi` | | Pulumi IaC | `reference/multicloud-patterns.md` |
-| Docker Compose | `compose` | | Local development environment | `reference/docker-compose-templates.md` |
+| Docker Compose | `compose` | | Local development environment | `reference/docker-environment-anti-patterns.md`, `reference/security-and-cost.md` |
 | Env Vars | `env` | | Environment variable design (.env, etc.) | `reference/security-and-cost.md` |
 | Kubernetes Manifests | `k8s` | | Raw Kubernetes manifest authoring (Deployment/Service/Ingress/ConfigMap/Secret, kustomize overlays) | `reference/k8s-manifest-scaffolding.md` |
 | Helm Chart | `helm` | | Helm chart authoring (Chart.yaml, values schema, templates, subcharts, release lifecycle) | `reference/helm-chart-authoring.md` |
@@ -252,7 +252,6 @@ Add these when relevant:
 | `reference/aws-specialist.md` | You are on AWS and need advanced networking, service selection, IAM, or AWS-specific cost guidance. |
 | `reference/gcp-specialist.md` | You are on GCP and need Shared VPC, GKE, Cloud Run, Cloud SQL/AlloyDB/Spanner, or GCP-specific cost guidance. |
 | `reference/multicloud-patterns.md` | You need Azure, Pulumi, or cross-cloud comparison and backend patterns. |
-| `reference/docker-compose-templates.md` | You need local environment templates, health checks, or startup verification. |
 | `reference/security-and-cost.md` | You need secrets, IAM, network guardrails, `.env.example`, or env validation patterns. |
 | `reference/k8s-manifest-scaffolding.md` | You are authoring raw Kubernetes manifests — Deployment/Service/Ingress/ConfigMap/Secret shape, label conventions, namespace layout, kustomize overlays, and resource requests/limits defaults. |
 | `reference/helm-chart-authoring.md` | You are packaging a workload as a Helm chart — Chart.yaml, values.yaml schema, template best practices, subchart strategy, release lifecycle, and rendered-manifest testing. |

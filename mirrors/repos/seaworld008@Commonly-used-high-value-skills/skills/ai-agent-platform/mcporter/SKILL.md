@@ -1,22 +1,24 @@
 ---
 name: mcporter
-description: 'Use when users need to operate MCP servers or tools with the mcporter CLI: list servers, configure auth, call HTTP/stdio tools, edit config, or generate CLI/type bindings.'
+description: 'List, auth, and call MCP servers/tools from the terminal.'
 zh_description: "用于通过 mcporter CLI 列出、配置、鉴权和调用 MCP 服务器或工具。"
 version: "1.0.1"
 author: community
-source: "in-house"
-source_url: ""
+source: "github:NousResearch/hermes-agent"
+source_url: "https://github.com/NousResearch/hermes-agent/blob/main/skills/mcp/mcporter/SKILL.md"
 license: MIT
 tags: '[MCP, Tools, API, Integrations, Interop]'
 created_at: "2026-04-13"
 updated_at: "2026-06-29"
 quality: 4
 complexity: "intermediate"
+platforms: '[linux, macos, windows]'
 metadata:
-hermes:
-homepage: https://mcporter.dev
+  hermes:
+    tags: [MCP, Tools, API, Integrations, Interop]
+    homepage: https://mcporter.dev
 prerequisites:
-commands: '[npx]'
+  commands: [npx]
 ---
 
 # mcporter

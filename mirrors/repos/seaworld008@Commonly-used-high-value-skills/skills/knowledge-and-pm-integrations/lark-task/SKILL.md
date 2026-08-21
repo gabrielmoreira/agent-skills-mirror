@@ -2,14 +2,14 @@
 name: lark-task
 description: '飞书任务：管理任务、清单和任务智能体。创建待办任务、查看和更新任务状态、拆分子任务、组织任务清单、分配协作成员、上传任务附件、注册或注销任务智能体、更新任务智能体的主页数据、写入智能体任务记录。当用户需要创建待办事项、查看任务列表、跟踪任务进度、管理项目清单或给他人分配任务、为任务上传附件文件、注册注销任务智能体、更新智能体主页数据、写入任务记录时使用。'
 zh_description: "用于创建、查询和更新飞书任务及待办事项。"
-version: "1.0.6"
+version: "1.0.7"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-task"
 license: MIT
 tags: '[feishu, lark, lark-cli, tasks, project-management]'
 created_at: "2026-05-19"
-updated_at: "2026-08-17"
+updated_at: "2026-08-20"
 quality: 4
 complexity: intermediate
 metadata:
@@ -220,4 +220,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

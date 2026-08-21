@@ -98,11 +98,13 @@ cost = (input_tokens / 1000) × input_price_per_1k
 | Anthropic | claude-opus-5 | $0.005 | $0.025 |
 | Anthropic | claude-sonnet-5 | $0.002 (intro, → $0.003 on 2026-09-01) | $0.010 (intro, → $0.015) |
 | Anthropic | claude-haiku-4-5 | $0.001 | $0.005 |
-| OpenAI | gpt-5.6 | TBD (verify) | TBD (verify) |
+| OpenAI | gpt-5.6-sol | $0.005 | $0.030 |
+| OpenAI | gpt-5.6-terra | $0.0025 | $0.015 |
+| OpenAI | gpt-5.6-luna | $0.001 | $0.006 |
 | OpenAI | gpt-4o-mini | $0.00015 | $0.0006 |
-| Google | gemini-3.6-flash | TBD (verify) | TBD (verify) |
+| Google | gemini-3.7-flash | TBD (verify) | TBD (verify) |
 
-> Note: Prices change frequently. Always verify from official provider documentation. Anthropic rows verified 2026-07-25 against `platform.claude.com/docs/en/about-claude/pricing`; OpenAI and Google rows are unconfirmed — do not treat `TBD` rows as billing-accurate. Cost dashboards must also model the Batch (0.5×), cache-read (0.1×), cache-write (1.25× / 2×), and fast-mode (2×) multipliers, or per-request cost attribution will be wrong.
+> Note: Prices change frequently. Always verify from official provider documentation. Anthropic rows were verified 2026-07-25 against `platform.claude.com/docs/en/about-claude/pricing`; OpenAI GPT-5.6 rows were verified 2026-08-19 against `platform.openai.com/pricing` and show standard short-context rates. Google rows remain unconfirmed and must not be treated as billing-accurate. Cost dashboards must model provider-specific service tiers, context bands, caching, batch, and regional-processing modifiers rather than applying Claude multipliers to every provider.
 
 ### OTel Cost Metric
 
@@ -110,9 +112,11 @@ Derive cost as a computed metric in the collector or Grafana:
 
 ```yaml
 # Prometheus recording rule example
-# NOTE: per-token multipliers below are carried over from claude-sonnet-4-6
-# pricing and are unverified for claude-sonnet-5 — confirm current pricing
-# before relying on this rule for billing. #TODO(agent): verify claude-sonnet-5 per-token price and update multipliers
+# NOTE: per-token multipliers below (0.000003 / 0.000015) equal claude-sonnet-5's
+# standard post-2026-09-01 rate ($3.00 / $15.00 per 1M tokens; see the pricing
+# table above). The intro rate through 2026-08-31 is lower ($2.00 / $10.00 per
+# 1M, i.e. 0.000002 / 0.000010) — swap multipliers on that date if this rule
+# must track intro pricing until then.
 - record: llm_request_cost_usd
   expr: |
     (
@@ -203,7 +207,7 @@ Row 4: Cost Analysis
   └── Projected monthly cost (stat + budget threshold line)
 
 Row 5: Traces
-  └── Tempo trace explorer link filtered by gen_ai.system
+  └── Weave trace explorer link filtered by gen_ai.system
 ```
 
 ### Key Grafana Variables

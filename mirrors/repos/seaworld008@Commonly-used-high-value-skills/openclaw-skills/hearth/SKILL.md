@@ -2,14 +2,14 @@
 name: hearth
 description: 'Generating and auditing personal dev environment configs (zsh/tmux/neovim/ghostty) and automating the macOS desktop via AppleScript/JXA (Finder, Mail, Safari). Use for dotfiles or Apple Events.'
 zh_description: "终端、编辑器和本地开发环境配置生成与审计。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/hearth"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/.archive/hearth"
 license: MIT
 tags: '["hearth", "productivity"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -80,7 +80,7 @@ Use Hearth when the user needs:
 
 Route elsewhere when the task is primarily:
 - web/browser automation (Playwright/DevTools): `Vector`
-- iOS app UI automation (XCUITest): `Snap`
+- iOS app UI automation (XCUITest): `Voyager[ios]`
 - macOS native app *development* (SwiftUI/AppKit): `Native` (`macos` recipe)
 - scheduling/cron/launchd timing design (no app scripting): `Tempo`
 - CI/CD pipeline or Docker configuration: `Gear`

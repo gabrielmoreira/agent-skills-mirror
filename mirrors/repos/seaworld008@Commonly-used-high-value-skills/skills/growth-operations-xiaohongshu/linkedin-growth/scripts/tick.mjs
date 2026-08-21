@@ -29,31 +29,70 @@
 // moment it completes, and quotas are recomputed from the runs table each tick (bounded to
 // the local calendar day), so state stays correct across interruptions.
 //
+import { randomUUID } from 'node:crypto';
 import {
-  existsSync, writeFileSync, readFileSync, unlinkSync, openSync, closeSync,
-  appendFileSync, readdirSync, statSync,
+  appendFileSync,
+  closeSync,
+  constants,
+  existsSync,
+  fstatSync,
+  openSync,
+  readSync,
+  realpathSync,
+  readdirSync,
+  statSync,
+  unlinkSync,
 } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
-import { withDb } from './lib/db.mjs';
-import { ok, fail } from './lib/output.mjs';
-import { parseArgs } from './lib/args.mjs';
-import { dataDir, ensureDir, logsDir, SKILL_ROOT } from './lib/paths.mjs';
-import { defaults } from './lib/config.mjs';
-import {
-  startOfLocalDayUtc, localHHMM, parseDbUtc, minutesSince,
-} from './lib/time.mjs';
+import { fileURLToPath } from 'node:url';
 
-const { flags } = parseArgs();
+let withDb;
+let ok;
+let fail;
+let parseArgs;
+let dataDir;
+let ensureDir;
+let logsDir;
+let SKILL_ROOT;
+let defaults;
+let startOfLocalDayUtc;
+let localHHMM;
+let parseDbUtc;
+let minutesSince;
 
-try {
-  if (flags.account) {
-    await runWorker(String(flags.account));
-  } else {
-    dispatch();
+async function loadRuntime() {
+  ({ withDb } = await import('./lib/db.mjs'));
+  ({ ok, fail } = await import('./lib/output.mjs'));
+  ({ parseArgs } = await import('./lib/args.mjs'));
+  ({ dataDir, ensureDir, logsDir, SKILL_ROOT } = await import('./lib/paths.mjs'));
+  ({ defaults } = await import('./lib/config.mjs'));
+  ({ startOfLocalDayUtc, localHHMM, parseDbUtc, minutesSince } = await import('./lib/time.mjs'));
+}
+
+async function runCli() {
+  try {
+    await loadRuntime();
+    const { flags } = parseArgs();
+    if (flags.account) {
+      await runWorker(String(flags.account));
+    } else {
+      dispatch();
+    }
+  } catch (err) {
+    if (fail) {
+      fail(err.message);
+    } else {
+      process.stderr.write(`error: ${err.message}\n`);
+      process.exitCode = 1;
+    }
   }
-} catch (err) {
-  fail(err.message);
+}
+
+const isMain = Boolean(process.argv[1]) &&
+  realpathSync(resolve(process.argv[1])) === realpathSync(fileURLToPath(import.meta.url));
+if (isMain) {
+  await runCli();
 }
 
 // Spawn one detached worker per eligible account, then exit. Never waits on a worker.
@@ -257,13 +296,16 @@ function logWorker(account, summary) {
   }
 }
 
-// --- Per-account lock: liveness-based, never time-based. ---
+// --- Per-account lock: SQLite IMMEDIATE transaction, never time-based. ---
+const LOCK_MAX_BYTES = 1024;
+const ownedLockTokens = new Map();
+
 function lockPath(account) {
   return join(dataDir(), `tick-${account}.lock`);
 }
 
 function isProcessAlive(pid) {
-  if (!pid) return false;
+  if (!Number.isSafeInteger(pid) || pid <= 0) return false;
   try {
     process.kill(pid, 0);
     return true;
@@ -272,44 +314,165 @@ function isProcessAlive(pid) {
   }
 }
 
-function lockHeldByLiveProcess(account) {
-  const p = lockPath(account);
-  if (!existsSync(p)) return false;
+function parseLockRecord(rawValue, { allowLegacyPid = false } = {}) {
+  const raw = String(rawValue ?? '');
   try {
-    return isProcessAlive(Number(readFileSync(p, 'utf8')));
+    const parsed = JSON.parse(raw);
+    if (
+      Number.isSafeInteger(parsed?.pid) &&
+      parsed.pid > 0 &&
+      typeof parsed?.token === 'string' &&
+      parsed.token.length >= 8 &&
+      parsed.token.length <= 256
+    ) {
+      return { pid: parsed.pid, token: parsed.token };
+    }
   } catch {
-    return false;
+    // Legacy PID-only files are parsed below.
   }
+  if (allowLegacyPid) {
+    const pid = Number(raw.trim());
+    if (Number.isSafeInteger(pid) && pid > 0) return { pid, token: null };
+  }
+  return null;
+}
+
+export function readLegacyLockSnapshot(filePath) {
+  let fd;
+  try {
+    fd = openSync(filePath, constants.O_RDONLY | (constants.O_NOFOLLOW || 0));
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    return { invalid: true, recoverable: false };
+  }
+  try {
+    const before = fstatSync(fd, { bigint: true });
+    if (!before.isFile()) {
+      return { invalid: true, recoverable: false };
+    }
+    if (before.size <= 0n || before.size > BigInt(LOCK_MAX_BYTES)) {
+      return { invalid: true, recoverable: true };
+    }
+    const buffer = Buffer.alloc(Number(before.size));
+    let offset = 0;
+    while (offset < buffer.length) {
+      const count = readSync(fd, buffer, offset, buffer.length - offset, offset);
+      if (count === 0) break;
+      offset += count;
+    }
+    const after = fstatSync(fd, { bigint: true });
+    if (
+      offset !== buffer.length ||
+      before.dev !== after.dev ||
+      before.ino !== after.ino ||
+      before.size !== after.size ||
+      before.mtimeNs !== after.mtimeNs ||
+      before.ctimeNs !== after.ctimeNs
+    ) {
+      return { invalid: true, recoverable: false };
+    }
+    const record = parseLockRecord(buffer.toString('utf8'), { allowLegacyPid: true });
+    return record
+      ? { invalid: false, record }
+      : { invalid: true, recoverable: true };
+  } finally {
+    closeSync(fd);
+  }
+}
+
+export function legacyLockBlocks(filePath, processAlive = isProcessAlive) {
+  const snapshot = readLegacyLockSnapshot(filePath);
+  if (snapshot === null) return false;
+  if (snapshot.invalid) return !snapshot.recoverable;
+  return processAlive(snapshot.record.pid);
+}
+
+function schedulerLockKey(account) {
+  return `scheduler_lock:${account}`;
+}
+
+function validateOwner(pid, token) {
+  if (!Number.isSafeInteger(pid) || pid <= 0) throw new Error('lock PID must be positive');
+  if (typeof token !== 'string' || token.length < 8 || token.length > 256) {
+    throw new Error('lock ownership token is invalid');
+  }
+}
+
+export function claimSchedulerLock(
+  db,
+  account,
+  pid,
+  token,
+  processAlive = isProcessAlive,
+) {
+  validateOwner(pid, token);
+  const key = schedulerLockKey(account);
+  const claim = db.transaction(() => {
+    const currentValue = db.prepare('SELECT value FROM settings WHERE key = ?').get(key)?.value;
+    if (currentValue !== undefined && currentValue !== null && String(currentValue).trim()) {
+      const current = parseLockRecord(currentValue);
+      if (!current || processAlive(current.pid)) return false;
+    }
+    db.prepare(
+      `INSERT INTO settings (key, value) VALUES (?, ?)
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+    ).run(key, JSON.stringify({ pid, token }));
+    return true;
+  });
+  return claim.immediate();
+}
+
+export function releaseSchedulerLock(db, account, pid, token) {
+  validateOwner(pid, token);
+  const key = schedulerLockKey(account);
+  const release = db.transaction(() => {
+    const currentValue = db.prepare('SELECT value FROM settings WHERE key = ?').get(key)?.value;
+    const current = parseLockRecord(currentValue);
+    if (!current || current.pid !== pid || current.token !== token) return false;
+    return db.prepare('DELETE FROM settings WHERE key = ?').run(key).changes === 1;
+  });
+  return release.immediate();
+}
+
+function databaseLockHeldByLiveProcess(account) {
+  return withDb(
+    (db) => {
+      const value = db
+        .prepare('SELECT value FROM settings WHERE key = ?')
+        .get(schedulerLockKey(account))?.value;
+      if (value === undefined || value === null || !String(value).trim()) return false;
+      const record = parseLockRecord(value);
+      return !record || isProcessAlive(record.pid);
+    },
+    { readonly: true },
+  );
+}
+
+function lockHeldByLiveProcess(account) {
+  if (legacyLockBlocks(lockPath(account))) return true;
+  return databaseLockHeldByLiveProcess(account);
 }
 
 function acquireLock(account) {
-  const p = lockPath(account);
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const fd = openSync(p, 'wx');
-      writeFileSync(fd, String(process.pid));
-      closeSync(fd);
-      return true;
-    } catch {
-      // Lock exists. Reclaim it only if its owner is dead; a live worker keeps it.
-      try {
-        if (isProcessAlive(Number(readFileSync(p, 'utf8')))) return false;
-        unlinkSync(p);
-      } catch {
-        return false;
-      }
-    }
-  }
-  return false;
+  if (legacyLockBlocks(lockPath(account))) return false;
+  const token = randomUUID();
+  const acquired = withDb(
+    (db) => claimSchedulerLock(db, account, process.pid, token),
+  );
+  if (!acquired) return false;
+  ownedLockTokens.set(account, token);
+  return true;
 }
 
 function releaseLock(account) {
-  const p = lockPath(account);
+  const token = ownedLockTokens.get(account);
+  if (!token) return;
   try {
-    if (!existsSync(p)) return;
-    if (Number(readFileSync(p, 'utf8')) === process.pid) unlinkSync(p);
+    withDb((db) => releaseSchedulerLock(db, account, process.pid, token));
   } catch {
-    /* ignore */
+    /* release is best-effort; token mismatch never deletes a newer owner */
+  } finally {
+    ownedLockTokens.delete(account);
   }
 }
 

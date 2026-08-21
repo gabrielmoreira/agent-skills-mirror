@@ -61,6 +61,7 @@ Route elsewhere when the task is primarily:
 - Score every affected skill on 5 axes (usage / overlap / uniqueness / coverage / maintenance cost).
 - Update `_common/SKILL_PACKS.md` and `~/.claude/profiles/*.json` impact analysis with every removal proposal.
 - Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical; P1 recommended).
+- **Own the `HD-ENTROPY` near-duplication sweep** (`_common/HARNESS_DEBT.md` §4): the roster **and one level down** — `_common/` protocols and `*/reference/` files. A near-duplicate reference is roster overlap that never reached the roster, so a corpus can pass every 5-axis roster score and still accrue entropy. Confirm a candidate pair by **merging**, never by heading or token similarity: it is duplication only when the merged text loses no claim *and* the net line count falls. Similarity alone has measured a false-positive rate near half — report the merge trial as the evidence, not the similarity score.
 
 ## Core Rules
 
@@ -216,9 +217,10 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal portfolio insights in `.agents/prune.md`; create it if missing. Record per-audit verdicts and follow-up triggers.
 - After significant Prune work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Prune | (action) | (files) | (outcome) |`.
-- Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
 - Output language follows the CLI global config; identifiers and protocol markers stay in English.
 - No agent names in commits or PRs.
 

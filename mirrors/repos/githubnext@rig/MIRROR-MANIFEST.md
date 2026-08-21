@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `githubnext/rig` — 26 default patterns, 0 followed patterns, 558 file(s) materialized.
+Mirror of `githubnext/rig` — 26 default patterns, 0 followed patterns, 598 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `githubnext/rig` — 26 default patterns, 0 followed patterns, 558 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 558 |
+| Files         | 598 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -557,66 +557,106 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 496 | ✓ | [`skills/rig/samples/429-package-json-field-auditor.md`](skills/rig/samples/429-package-json-field-auditor.md) |
 | 497 | ✓ | [`skills/rig/samples/43-snapshot-test-updater.md`](skills/rig/samples/43-snapshot-test-updater.md) |
 | 498 | ✓ | [`skills/rig/samples/430-parallel-git-stats-workflow.md`](skills/rig/samples/430-parallel-git-stats-workflow.md) |
-| 499 | ✓ | [`skills/rig/samples/44-flaky-test-analysis.md`](skills/rig/samples/44-flaky-test-analysis.md) |
-| 500 | ✓ | [`skills/rig/samples/45-code-owner-suggestion.md`](skills/rig/samples/45-code-owner-suggestion.md) |
-| 501 | ✓ | [`skills/rig/samples/46-prompt-intent-inspection.md`](skills/rig/samples/46-prompt-intent-inspection.md) |
-| 502 | ✓ | [`skills/rig/samples/47-prompt-intents.md`](skills/rig/samples/47-prompt-intents.md) |
-| 503 | ✓ | [`skills/rig/samples/48-custom-engine.md`](skills/rig/samples/48-custom-engine.md) |
-| 504 | ✓ | [`skills/rig/samples/49-timeout-signal-helper.md`](skills/rig/samples/49-timeout-signal-helper.md) |
-| 505 | ✓ | [`skills/rig/samples/50-end-to-end-release-agent.md`](skills/rig/samples/50-end-to-end-release-agent.md) |
-| 506 | ✓ | [`skills/rig/samples/51-subagent-task-harness.md`](skills/rig/samples/51-subagent-task-harness.md) |
-| 507 | ✓ | [`skills/rig/samples/52-claude-design.md`](skills/rig/samples/52-claude-design.md) |
-| 508 | ✓ | [`skills/rig/samples/53-ralf-loop.md`](skills/rig/samples/53-ralf-loop.md) |
-| 509 | ✓ | [`skills/rig/samples/54-large-scale-summarization.md`](skills/rig/samples/54-large-scale-summarization.md) |
-| 510 | ✓ | [`skills/rig/samples/55-file-change-lint-middleware.md`](skills/rig/samples/55-file-change-lint-middleware.md) |
-| 511 | ✓ | [`skills/rig/samples/55-genaiscript-glossary-port.md`](skills/rig/samples/55-genaiscript-glossary-port.md) |
-| 512 | ✓ | [`skills/rig/samples/56-genaiscript-refactor-batch-port.md`](skills/rig/samples/56-genaiscript-refactor-batch-port.md) |
-| 513 | ✓ | [`skills/rig/samples/57-genaiscript-issue-review-port.md`](skills/rig/samples/57-genaiscript-issue-review-port.md) |
-| 514 | ✓ | [`skills/rig/samples/58-genaiscript-travel-plan-port.md`](skills/rig/samples/58-genaiscript-travel-plan-port.md) |
-| 515 | ✓ | [`skills/rig/samples/59-genaiscript-city-info-port.md`](skills/rig/samples/59-genaiscript-city-info-port.md) |
-| 516 | ✓ | [`skills/rig/samples/60-genaiscript-schema-cities-port.md`](skills/rig/samples/60-genaiscript-schema-cities-port.md) |
-| 517 | ✓ | [`skills/rig/samples/60-workflow-parallel-linter.md`](skills/rig/samples/60-workflow-parallel-linter.md) |
-| 518 | ✓ | [`skills/rig/samples/61-genaiscript-list-files-port.md`](skills/rig/samples/61-genaiscript-list-files-port.md) |
-| 519 | ✓ | [`skills/rig/samples/62-genaiscript-todo-port.md`](skills/rig/samples/62-genaiscript-todo-port.md) |
-| 520 | ✓ | [`skills/rig/samples/63-genaiscript-slide-deck-port.md`](skills/rig/samples/63-genaiscript-slide-deck-port.md) |
-| 521 | ✓ | [`skills/rig/samples/64-genaiscript-grumpy-review-port.md`](skills/rig/samples/64-genaiscript-grumpy-review-port.md) |
-| 522 | ✓ | [`skills/rig/samples/65-source-file-annotator.md`](skills/rig/samples/65-source-file-annotator.md) |
-| 523 | ✓ | [`skills/rig/samples/66-ci-workflow-health.md`](skills/rig/samples/66-ci-workflow-health.md) |
-| 524 | ✓ | [`skills/rig/samples/67-glob-file-summarizer.md`](skills/rig/samples/67-glob-file-summarizer.md) |
-| 525 | ✓ | [`skills/rig/samples/68-changelog-generator.md`](skills/rig/samples/68-changelog-generator.md) |
-| 526 | ✓ | [`skills/rig/samples/69-todo-comment-tracker.md`](skills/rig/samples/69-todo-comment-tracker.md) |
-| 527 | ✓ | [`skills/rig/samples/70-multi-file-subagent-summarizer.md`](skills/rig/samples/70-multi-file-subagent-summarizer.md) |
-| 528 | ✓ | [`skills/rig/samples/71-package-script-health.md`](skills/rig/samples/71-package-script-health.md) |
-| 529 | ✓ | [`skills/rig/samples/72-ts-function-signatures.md`](skills/rig/samples/72-ts-function-signatures.md) |
-| 530 | ✓ | [`skills/rig/samples/73-git-branch-pruner.md`](skills/rig/samples/73-git-branch-pruner.md) |
-| 531 | ✓ | [`skills/rig/samples/74-prettier-eslint-compat.md`](skills/rig/samples/74-prettier-eslint-compat.md) |
-| 532 | ✓ | [`skills/rig/samples/75-workflow-validator.md`](skills/rig/samples/75-workflow-validator.md) |
-| 533 | ✓ | [`skills/rig/samples/76-commit-msg-rewriter.md`](skills/rig/samples/76-commit-msg-rewriter.md) |
-| 534 | ✓ | [`skills/rig/samples/77-env-key-checker.md`](skills/rig/samples/77-env-key-checker.md) |
-| 535 | ✓ | [`skills/rig/samples/78-build-log-analyzer.md`](skills/rig/samples/78-build-log-analyzer.md) |
-| 536 | ✓ | [`skills/rig/samples/79-ts-type-alias-mapper.md`](skills/rig/samples/79-ts-type-alias-mapper.md) |
-| 537 | ✓ | [`skills/rig/samples/80-git-contributor-mapper.md`](skills/rig/samples/80-git-contributor-mapper.md) |
-| 538 | ✓ | [`skills/rig/samples/81-markdown-doc-summarizer.md`](skills/rig/samples/81-markdown-doc-summarizer.md) |
-| 539 | ✓ | [`skills/rig/samples/82-workspace-config-drift.md`](skills/rig/samples/82-workspace-config-drift.md) |
-| 540 | ✓ | [`skills/rig/samples/83-commit-format-suggester.md`](skills/rig/samples/83-commit-format-suggester.md) |
-| 541 | ✓ | [`skills/rig/samples/84-json-schema-migration.md`](skills/rig/samples/84-json-schema-migration.md) |
-| 542 | ✓ | [`skills/rig/samples/85-dockerfile-security-audit.md`](skills/rig/samples/85-dockerfile-security-audit.md) |
-| 543 | ✓ | [`skills/rig/samples/86-npm-audit-simplifier.md`](skills/rig/samples/86-npm-audit-simplifier.md) |
-| 544 | ✓ | [`skills/rig/samples/87-git-stash-inventory.md`](skills/rig/samples/87-git-stash-inventory.md) |
-| 545 | ✓ | [`skills/rig/samples/88-git-contributor-mapper.md`](skills/rig/samples/88-git-contributor-mapper.md) |
-| 546 | ✓ | [`skills/rig/samples/89-markdown-doc-summarizer.md`](skills/rig/samples/89-markdown-doc-summarizer.md) |
-| 547 | ✓ | [`skills/rig/samples/90-workspace-config-drift.md`](skills/rig/samples/90-workspace-config-drift.md) |
-| 548 | ✓ | [`skills/rig/samples/91-commit-format-suggester.md`](skills/rig/samples/91-commit-format-suggester.md) |
-| 549 | ✓ | [`skills/rig/samples/92-runtime-env-checker.md`](skills/rig/samples/92-runtime-env-checker.md) |
-| 550 | ✓ | [`skills/rig/samples/93-hotspot-file-analyzer.md`](skills/rig/samples/93-hotspot-file-analyzer.md) |
-| 551 | ✓ | [`skills/rig/samples/94-ts-interface-conflict-checker.md`](skills/rig/samples/94-ts-interface-conflict-checker.md) |
-| 552 | ✓ | [`skills/rig/samples/95-git-worktree-mapper.md`](skills/rig/samples/95-git-worktree-mapper.md) |
-| 553 | ✓ | [`skills/rig/samples/96-test-naming-enforcer.md`](skills/rig/samples/96-test-naming-enforcer.md) |
-| 554 | ✓ | [`skills/rig/samples/97-pkg-dependency-graph.md`](skills/rig/samples/97-pkg-dependency-graph.md) |
-| 555 | ✓ | [`skills/rig/samples/98-async-tool-node-builtins.md`](skills/rig/samples/98-async-tool-node-builtins.md) |
-| 556 | ✓ | [`skills/rig/samples/99-bash-each.md`](skills/rig/samples/99-bash-each.md) |
-| 557 | ✓ | [`skills/rig/SKILL.md`](skills/rig/SKILL.md) |
-| 558 | ✓ | [`skills/rig/tsconfig.json`](skills/rig/tsconfig.json) |
+| 499 | ✓ | [`skills/rig/samples/431-git-file-size-tracker.md`](skills/rig/samples/431-git-file-size-tracker.md) |
+| 500 | ✓ | [`skills/rig/samples/431-git-worktree-analyzer.md`](skills/rig/samples/431-git-worktree-analyzer.md) |
+| 501 | ✓ | [`skills/rig/samples/431-jsonl-file-analyzer.md`](skills/rig/samples/431-jsonl-file-analyzer.md) |
+| 502 | ✓ | [`skills/rig/samples/431-os-env-variable-scanner.md`](skills/rig/samples/431-os-env-variable-scanner.md) |
+| 503 | ✓ | [`skills/rig/samples/432-json-pretty-printer-stats.md`](skills/rig/samples/432-json-pretty-printer-stats.md) |
+| 504 | ✓ | [`skills/rig/samples/432-npm-peer-dep-checker.md`](skills/rig/samples/432-npm-peer-dep-checker.md) |
+| 505 | ✓ | [`skills/rig/samples/432-sequential-commit-pipeline.md`](skills/rig/samples/432-sequential-commit-pipeline.md) |
+| 506 | ✓ | [`skills/rig/samples/432-ts-narrowing-detector.md`](skills/rig/samples/432-ts-narrowing-detector.md) |
+| 507 | ✓ | [`skills/rig/samples/433-toml-config-key-extractor.md`](skills/rig/samples/433-toml-config-key-extractor.md) |
+| 508 | ✓ | [`skills/rig/samples/433-ts-barrel-module-writer.md`](skills/rig/samples/433-ts-barrel-module-writer.md) |
+| 509 | ✓ | [`skills/rig/samples/433-ts-interface-method-counter.md`](skills/rig/samples/433-ts-interface-method-counter.md) |
+| 510 | ✓ | [`skills/rig/samples/433-yaml-key-validator.md`](skills/rig/samples/433-yaml-key-validator.md) |
+| 511 | ✓ | [`skills/rig/samples/434-csv-column-stats-reporter.md`](skills/rig/samples/434-csv-column-stats-reporter.md) |
+| 512 | ✓ | [`skills/rig/samples/434-git-remote-metadata.md`](skills/rig/samples/434-git-remote-metadata.md) |
+| 513 | ✓ | [`skills/rig/samples/434-git-tag-annotation-extractor.md`](skills/rig/samples/434-git-tag-annotation-extractor.md) |
+| 514 | ✓ | [`skills/rig/samples/434-git-tag-release-aggregator.md`](skills/rig/samples/434-git-tag-release-aggregator.md) |
+| 515 | ✓ | [`skills/rig/samples/435-git-worktree-analyzer.md`](skills/rig/samples/435-git-worktree-analyzer.md) |
+| 516 | ✓ | [`skills/rig/samples/435-jsonl-file-analyzer.md`](skills/rig/samples/435-jsonl-file-analyzer.md) |
+| 517 | ✓ | [`skills/rig/samples/435-npm-outdated-reporter.md`](skills/rig/samples/435-npm-outdated-reporter.md) |
+| 518 | ✓ | [`skills/rig/samples/435-os-env-scanner.md`](skills/rig/samples/435-os-env-scanner.md) |
+| 519 | ✓ | [`skills/rig/samples/436-npm-peer-dep-conflict-checker.md`](skills/rig/samples/436-npm-peer-dep-conflict-checker.md) |
+| 520 | ✓ | [`skills/rig/samples/436-sequential-commit-pipeline.md`](skills/rig/samples/436-sequential-commit-pipeline.md) |
+| 521 | ✓ | [`skills/rig/samples/436-ts-narrowing-pattern-detector.md`](skills/rig/samples/436-ts-narrowing-pattern-detector.md) |
+| 522 | ✓ | [`skills/rig/samples/436-ts-string-literal-unions.md`](skills/rig/samples/436-ts-string-literal-unions.md) |
+| 523 | ✓ | [`skills/rig/samples/437-git-grep-search-reporter.md`](skills/rig/samples/437-git-grep-search-reporter.md) |
+| 524 | ✓ | [`skills/rig/samples/437-git-reflog-summarizer.md`](skills/rig/samples/437-git-reflog-summarizer.md) |
+| 525 | ✓ | [`skills/rig/samples/437-ts-symbol-frequency-recorder.md`](skills/rig/samples/437-ts-symbol-frequency-recorder.md) |
+| 526 | ✓ | [`skills/rig/samples/437-ts-tuple-pattern-extractor.md`](skills/rig/samples/437-ts-tuple-pattern-extractor.md) |
+| 527 | ✓ | [`skills/rig/samples/438-markdown-table-writer.md`](skills/rig/samples/438-markdown-table-writer.md) |
+| 528 | ✓ | [`skills/rig/samples/438-ts-export-reporter.md`](skills/rig/samples/438-ts-export-reporter.md) |
+| 529 | ✓ | [`skills/rig/samples/438-ts-interface-method-counter.md`](skills/rig/samples/438-ts-interface-method-counter.md) |
+| 530 | ✓ | [`skills/rig/samples/438-ts-interface-stub-writer.md`](skills/rig/samples/438-ts-interface-stub-writer.md) |
+| 531 | ✓ | [`skills/rig/samples/439-git-commit-risk-classifier.md`](skills/rig/samples/439-git-commit-risk-classifier.md) |
+| 532 | ✓ | [`skills/rig/samples/439-git-grep-search-workflow.md`](skills/rig/samples/439-git-grep-search-workflow.md) |
+| 533 | ✓ | [`skills/rig/samples/439-json-duplicate-key-detector.md`](skills/rig/samples/439-json-duplicate-key-detector.md) |
+| 534 | ✓ | [`skills/rig/samples/439-parallel-project-health.md`](skills/rig/samples/439-parallel-project-health.md) |
+| 535 | ✓ | [`skills/rig/samples/44-flaky-test-analysis.md`](skills/rig/samples/44-flaky-test-analysis.md) |
+| 536 | ✓ | [`skills/rig/samples/440-json-union-type-inferrer.md`](skills/rig/samples/440-json-union-type-inferrer.md) |
+| 537 | ✓ | [`skills/rig/samples/440-markdown-frontmatter-extractor.md`](skills/rig/samples/440-markdown-frontmatter-extractor.md) |
+| 538 | ✓ | [`skills/rig/samples/440-ts-generic-constraint-reporter.md`](skills/rig/samples/440-ts-generic-constraint-reporter.md) |
+| 539 | ✓ | [`skills/rig/samples/440-ts-reexport-chain-tracer.md`](skills/rig/samples/440-ts-reexport-chain-tracer.md) |
+| 540 | ✓ | [`skills/rig/samples/45-code-owner-suggestion.md`](skills/rig/samples/45-code-owner-suggestion.md) |
+| 541 | ✓ | [`skills/rig/samples/46-prompt-intent-inspection.md`](skills/rig/samples/46-prompt-intent-inspection.md) |
+| 542 | ✓ | [`skills/rig/samples/47-prompt-intents.md`](skills/rig/samples/47-prompt-intents.md) |
+| 543 | ✓ | [`skills/rig/samples/48-custom-engine.md`](skills/rig/samples/48-custom-engine.md) |
+| 544 | ✓ | [`skills/rig/samples/49-timeout-signal-helper.md`](skills/rig/samples/49-timeout-signal-helper.md) |
+| 545 | ✓ | [`skills/rig/samples/50-end-to-end-release-agent.md`](skills/rig/samples/50-end-to-end-release-agent.md) |
+| 546 | ✓ | [`skills/rig/samples/51-subagent-task-harness.md`](skills/rig/samples/51-subagent-task-harness.md) |
+| 547 | ✓ | [`skills/rig/samples/52-claude-design.md`](skills/rig/samples/52-claude-design.md) |
+| 548 | ✓ | [`skills/rig/samples/53-ralf-loop.md`](skills/rig/samples/53-ralf-loop.md) |
+| 549 | ✓ | [`skills/rig/samples/54-large-scale-summarization.md`](skills/rig/samples/54-large-scale-summarization.md) |
+| 550 | ✓ | [`skills/rig/samples/55-file-change-lint-middleware.md`](skills/rig/samples/55-file-change-lint-middleware.md) |
+| 551 | ✓ | [`skills/rig/samples/55-genaiscript-glossary-port.md`](skills/rig/samples/55-genaiscript-glossary-port.md) |
+| 552 | ✓ | [`skills/rig/samples/56-genaiscript-refactor-batch-port.md`](skills/rig/samples/56-genaiscript-refactor-batch-port.md) |
+| 553 | ✓ | [`skills/rig/samples/57-genaiscript-issue-review-port.md`](skills/rig/samples/57-genaiscript-issue-review-port.md) |
+| 554 | ✓ | [`skills/rig/samples/58-genaiscript-travel-plan-port.md`](skills/rig/samples/58-genaiscript-travel-plan-port.md) |
+| 555 | ✓ | [`skills/rig/samples/59-genaiscript-city-info-port.md`](skills/rig/samples/59-genaiscript-city-info-port.md) |
+| 556 | ✓ | [`skills/rig/samples/60-genaiscript-schema-cities-port.md`](skills/rig/samples/60-genaiscript-schema-cities-port.md) |
+| 557 | ✓ | [`skills/rig/samples/60-workflow-parallel-linter.md`](skills/rig/samples/60-workflow-parallel-linter.md) |
+| 558 | ✓ | [`skills/rig/samples/61-genaiscript-list-files-port.md`](skills/rig/samples/61-genaiscript-list-files-port.md) |
+| 559 | ✓ | [`skills/rig/samples/62-genaiscript-todo-port.md`](skills/rig/samples/62-genaiscript-todo-port.md) |
+| 560 | ✓ | [`skills/rig/samples/63-genaiscript-slide-deck-port.md`](skills/rig/samples/63-genaiscript-slide-deck-port.md) |
+| 561 | ✓ | [`skills/rig/samples/64-genaiscript-grumpy-review-port.md`](skills/rig/samples/64-genaiscript-grumpy-review-port.md) |
+| 562 | ✓ | [`skills/rig/samples/65-source-file-annotator.md`](skills/rig/samples/65-source-file-annotator.md) |
+| 563 | ✓ | [`skills/rig/samples/66-ci-workflow-health.md`](skills/rig/samples/66-ci-workflow-health.md) |
+| 564 | ✓ | [`skills/rig/samples/67-glob-file-summarizer.md`](skills/rig/samples/67-glob-file-summarizer.md) |
+| 565 | ✓ | [`skills/rig/samples/68-changelog-generator.md`](skills/rig/samples/68-changelog-generator.md) |
+| 566 | ✓ | [`skills/rig/samples/69-todo-comment-tracker.md`](skills/rig/samples/69-todo-comment-tracker.md) |
+| 567 | ✓ | [`skills/rig/samples/70-multi-file-subagent-summarizer.md`](skills/rig/samples/70-multi-file-subagent-summarizer.md) |
+| 568 | ✓ | [`skills/rig/samples/71-package-script-health.md`](skills/rig/samples/71-package-script-health.md) |
+| 569 | ✓ | [`skills/rig/samples/72-ts-function-signatures.md`](skills/rig/samples/72-ts-function-signatures.md) |
+| 570 | ✓ | [`skills/rig/samples/73-git-branch-pruner.md`](skills/rig/samples/73-git-branch-pruner.md) |
+| 571 | ✓ | [`skills/rig/samples/74-prettier-eslint-compat.md`](skills/rig/samples/74-prettier-eslint-compat.md) |
+| 572 | ✓ | [`skills/rig/samples/75-workflow-validator.md`](skills/rig/samples/75-workflow-validator.md) |
+| 573 | ✓ | [`skills/rig/samples/76-commit-msg-rewriter.md`](skills/rig/samples/76-commit-msg-rewriter.md) |
+| 574 | ✓ | [`skills/rig/samples/77-env-key-checker.md`](skills/rig/samples/77-env-key-checker.md) |
+| 575 | ✓ | [`skills/rig/samples/78-build-log-analyzer.md`](skills/rig/samples/78-build-log-analyzer.md) |
+| 576 | ✓ | [`skills/rig/samples/79-ts-type-alias-mapper.md`](skills/rig/samples/79-ts-type-alias-mapper.md) |
+| 577 | ✓ | [`skills/rig/samples/80-git-contributor-mapper.md`](skills/rig/samples/80-git-contributor-mapper.md) |
+| 578 | ✓ | [`skills/rig/samples/81-markdown-doc-summarizer.md`](skills/rig/samples/81-markdown-doc-summarizer.md) |
+| 579 | ✓ | [`skills/rig/samples/82-workspace-config-drift.md`](skills/rig/samples/82-workspace-config-drift.md) |
+| 580 | ✓ | [`skills/rig/samples/83-commit-format-suggester.md`](skills/rig/samples/83-commit-format-suggester.md) |
+| 581 | ✓ | [`skills/rig/samples/84-json-schema-migration.md`](skills/rig/samples/84-json-schema-migration.md) |
+| 582 | ✓ | [`skills/rig/samples/85-dockerfile-security-audit.md`](skills/rig/samples/85-dockerfile-security-audit.md) |
+| 583 | ✓ | [`skills/rig/samples/86-npm-audit-simplifier.md`](skills/rig/samples/86-npm-audit-simplifier.md) |
+| 584 | ✓ | [`skills/rig/samples/87-git-stash-inventory.md`](skills/rig/samples/87-git-stash-inventory.md) |
+| 585 | ✓ | [`skills/rig/samples/88-git-contributor-mapper.md`](skills/rig/samples/88-git-contributor-mapper.md) |
+| 586 | ✓ | [`skills/rig/samples/89-markdown-doc-summarizer.md`](skills/rig/samples/89-markdown-doc-summarizer.md) |
+| 587 | ✓ | [`skills/rig/samples/90-workspace-config-drift.md`](skills/rig/samples/90-workspace-config-drift.md) |
+| 588 | ✓ | [`skills/rig/samples/91-commit-format-suggester.md`](skills/rig/samples/91-commit-format-suggester.md) |
+| 589 | ✓ | [`skills/rig/samples/92-runtime-env-checker.md`](skills/rig/samples/92-runtime-env-checker.md) |
+| 590 | ✓ | [`skills/rig/samples/93-hotspot-file-analyzer.md`](skills/rig/samples/93-hotspot-file-analyzer.md) |
+| 591 | ✓ | [`skills/rig/samples/94-ts-interface-conflict-checker.md`](skills/rig/samples/94-ts-interface-conflict-checker.md) |
+| 592 | ✓ | [`skills/rig/samples/95-git-worktree-mapper.md`](skills/rig/samples/95-git-worktree-mapper.md) |
+| 593 | ✓ | [`skills/rig/samples/96-test-naming-enforcer.md`](skills/rig/samples/96-test-naming-enforcer.md) |
+| 594 | ✓ | [`skills/rig/samples/97-pkg-dependency-graph.md`](skills/rig/samples/97-pkg-dependency-graph.md) |
+| 595 | ✓ | [`skills/rig/samples/98-async-tool-node-builtins.md`](skills/rig/samples/98-async-tool-node-builtins.md) |
+| 596 | ✓ | [`skills/rig/samples/99-bash-each.md`](skills/rig/samples/99-bash-each.md) |
+| 597 | ✓ | [`skills/rig/SKILL.md`](skills/rig/SKILL.md) |
+| 598 | ✓ | [`skills/rig/tsconfig.json`](skills/rig/tsconfig.json) |
 
 ---
 

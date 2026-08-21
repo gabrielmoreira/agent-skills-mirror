@@ -30,7 +30,8 @@ source into the Claude Code-compatible JSONL the engine reads.
 | Skill files | `.devin/skills/*/SKILL.md` |
 
 Workspaces are auto-detected from `~/.config/Devin/User/workspaceStorage/*/workspace.json`.
-After `sleep_adopt`, the evolved skill is synced to `.devin/skills/skillopt-sleep-learned/SKILL.md`.
+The adapter performs no post-adoption copy. The core engine applies a reviewed
+proposal directly to its selected target and owns backup/rollback behavior.
 
 ## Install
 
@@ -68,10 +69,31 @@ Requires Python ≥ 3.10. No third-party packages — the server is pure stdlib.
 | `sleep_status` | nights run so far + latest staged proposal |
 | `sleep_dry_run` | preview cycle — no staging; a real backend still makes provider calls |
 | `sleep_run` | full cycle; stages a proposal for review |
-| `sleep_adopt` | apply the staged proposal; syncs skill to the workspace |
+| `sleep_adopt` | apply a reviewed legacy or per-skill proposal (with backup) |
 | `sleep_harvest` | debug: list the recurring tasks mined |
 | `sleep_schedule` | install a nightly cron entry (`--hour` / `--minute`) |
 | `sleep_unschedule` | remove the nightly cron entry |
+
+Before `sleep_adopt`, inspect `sleep_status` and use the controls that match the
+reviewed staging manifest:
+
+- `staging` — exact staging directory to adopt instead of the latest night
+- `skills` — array of skill names to adopt; each is forwarded as one repeated
+  `--skill` argument without shell interpolation
+- `all_skills` — adopt every staged per-skill proposal
+- `legacy` — adopt only the legacy managed `SKILL.md`/`CLAUDE.md` pair
+
+Choose one selection mode (`skills`, `all_skills`, or `legacy`) and do not
+combine them. A bare call remains compatible with legacy-only staging; fan-out
+staging requires an explicit selection. To operate on a specific Devin skill,
+pass its `SKILL.md` as `target_skill_path`; the adapter never performs a second
+copy after the core engine returns.
+
+Tool results preserve the engine's `exit_code` in `structuredContent`.
+Ordinary nonzero exits set `isError: true`; exit 3 is the expected
+`handoff_pending` state and is not an MCP tool error. With `json: true`, text
+content is the engine's parseable JSON stdout, while harvest and engine
+diagnostics remain separate in `structuredContent`.
 
 Default backend is `mock` (no API spend); the `claude`, `codex`, and `copilot`
 backends use the corresponding authenticated CLI and budget. The `handoff`

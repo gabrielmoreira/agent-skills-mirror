@@ -16,6 +16,8 @@ import argparse
 import sys
 import datetime
 import hashlib
+import os
+from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
 from enum import Enum
@@ -115,6 +117,44 @@ class RollbackRunbook:
     validation_checklist: List[str]
     post_rollback_procedures: List[str]
     emergency_contacts: List[Dict[str, str]]
+
+
+REDACTED = "[REDACTED]"
+
+
+def runbook_to_dict(runbook: RollbackRunbook, include_sensitive: bool = False) -> Dict[str, Any]:
+    """Serialize a runbook with sensitive operational details redacted by default."""
+    data = asdict(runbook)
+    if include_sensitive:
+        return data
+
+    recovery_plan = data["data_recovery_plan"]
+    recovery_plan["backup_location"] = REDACTED
+    recovery_plan["recovery_scripts"] = [REDACTED]
+    recovery_plan["data_validation_queries"] = [REDACTED]
+    for contact in data["emergency_contacts"]:
+        for field in ("name", "primary_phone", "email", "backup_contact"):
+            contact[field] = REDACTED
+    return data
+
+
+def write_private_text(file_path: str | Path, content: str) -> None:
+    """Write output with owner-only permissions and without following symlinks."""
+    target = Path(file_path)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(target, flags, 0o600)
+    stream = None
+    try:
+        if hasattr(os, "fchmod"):
+            os.fchmod(descriptor, 0o600)
+        stream = os.fdopen(descriptor, "w", encoding="utf-8")
+        descriptor = -1
+        stream.write(content)
+    finally:
+        if stream is not None:
+            stream.close()
+        elif descriptor >= 0:
+            os.close(descriptor)
 
 
 class RollbackGenerator:
@@ -937,7 +977,11 @@ Executive On-Call: {executive_on_call}
         
         return base_requirements
     
-    def generate_human_readable_runbook(self, runbook: RollbackRunbook) -> str:
+    def generate_human_readable_runbook(
+        self,
+        runbook: RollbackRunbook,
+        include_sensitive: bool = False,
+    ) -> str:
         """Generate human-readable rollback runbook"""
         output = []
         output.append("=" * 80)
@@ -951,10 +995,14 @@ Executive On-Call: {executive_on_call}
         output.append("EMERGENCY CONTACTS")
         output.append("-" * 40)
         for contact in runbook.emergency_contacts:
-            output.append(f"{contact['role']}: {contact['name']}")
-            output.append(f"  Phone: {contact['primary_phone']}")
-            output.append(f"  Email: {contact['email']}")
-            output.append(f"  Backup: {contact['backup_contact']}")
+            output.append(f"{contact['role']}:")
+            if include_sensitive:
+                output.append(f"  Name: {contact['name']}")
+                output.append(f"  Phone: {contact['primary_phone']}")
+                output.append(f"  Email: {contact['email']}")
+                output.append(f"  Backup: {contact['backup_contact']}")
+            else:
+                output.append(f"  Contact details: {REDACTED}")
             output.append("")
         
         # Escalation Matrix
@@ -1019,14 +1067,21 @@ Executive On-Call: {executive_on_call}
         output.append("-" * 40)
         drp = runbook.data_recovery_plan
         output.append(f"Recovery Method: {drp.recovery_method}")
-        output.append(f"Backup Location: {drp.backup_location}")
+        backup_location = drp.backup_location if include_sensitive else REDACTED
+        output.append(f"Backup Location: {backup_location}")
         output.append(f"Estimated Recovery Time: {drp.estimated_recovery_time_minutes} minutes")
         output.append("Recovery Scripts:")
-        for script in drp.recovery_scripts:
-            output.append(f"  • {script}")
+        if include_sensitive:
+            for script in drp.recovery_scripts:
+                output.append(f"  • {script}")
+        else:
+            output.append(f"  • {REDACTED}")
         output.append("Validation Queries:")
-        for query in drp.data_validation_queries:
-            output.append(f"  • {query}")
+        if include_sensitive:
+            for query in drp.data_validation_queries:
+                output.append(f"  • {query}")
+        else:
+            output.append(f"  • {REDACTED}")
         output.append("")
         
         # Validation Checklist
@@ -1052,8 +1107,15 @@ def main():
     parser.add_argument("--input", "-i", required=True, help="Input migration plan file (JSON)")
     parser.add_argument("--output", "-o", help="Output file for rollback runbook (JSON)")
     parser.add_argument("--format", "-f", choices=["json", "text", "both"], default="both", help="Output format")
+    parser.add_argument(
+        "--include-sensitive",
+        action="store_true",
+        help="Include sensitive contact and recovery details; requires --output",
+    )
     
     args = parser.parse_args()
+    if args.include_sensitive and not args.output:
+        parser.error("--include-sensitive requires --output; sensitive output is never printed")
     
     try:
         # Load migration plan
@@ -1071,20 +1133,32 @@ def main():
         
         # Output results
         if args.format in ["json", "both"]:
-            runbook_dict = asdict(runbook)
+            runbook_dict = runbook_to_dict(runbook, args.include_sensitive)
+            json_content = json.dumps(runbook_dict, indent=2) + "\n"
             if args.output:
-                with open(args.output, 'w') as f:
-                    json.dump(runbook_dict, f, indent=2)
+                write_private_text(args.output, json_content)
                 print(f"Rollback runbook saved to {args.output}")
             else:
-                print(json.dumps(runbook_dict, indent=2))
+                print(json_content, end="")
         
         if args.format in ["text", "both"]:
-            human_runbook = generator.generate_human_readable_runbook(runbook)
-            text_output = args.output.replace('.json', '.txt') if args.output else None
+            human_runbook = generator.generate_human_readable_runbook(
+                runbook,
+                include_sensitive=args.include_sensitive,
+            )
+            if args.output:
+                output_path = Path(args.output)
+                if args.format == "both":
+                    text_output = output_path.with_suffix(".txt")
+                    if text_output == output_path:
+                        text_output = Path(f"{output_path}.human.txt")
+                else:
+                    # Preserve the historical text-only CLI contract.
+                    text_output = Path(args.output.replace(".json", ".txt"))
+            else:
+                text_output = None
             if text_output:
-                with open(text_output, 'w') as f:
-                    f.write(human_runbook)
+                write_private_text(text_output, human_runbook + "\n")
                 print(f"Human-readable runbook saved to {text_output}")
             else:
                 print("\n" + "="*80)

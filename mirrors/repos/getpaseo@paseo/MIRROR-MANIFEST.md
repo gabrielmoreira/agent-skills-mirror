@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 37 followed patterns, 53 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 38 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 37 followed patterns, 53 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 37 |
-| Files         | 53 |
+| Followed pats | 38 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,6 +80,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 37 followed patterns, 53 fil
 - `docs/qa.md`
 - `docs/mobile-testing.md`
 - `docs/mobile-panels.md`
+- `docs/side-panel.md`
 - `docs/ad-hoc-daemon-testing.md`
 - `docs/browser-capture-harness.md`
 - `docs/android.md`
@@ -142,12 +143,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | → | [`docs/release.md`](docs/release.md) |
 | 46 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
 | 47 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 48 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 49 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 50 | → | [`docs/testing.md`](docs/testing.md) |
-| 51 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 52 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
-| 53 | → | [`SECURITY.md`](SECURITY.md) |
+| 48 | → | [`docs/side-panel.md`](docs/side-panel.md) |
+| 49 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 50 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 51 | → | [`docs/testing.md`](docs/testing.md) |
+| 52 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 53 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
+| 54 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -2,14 +2,14 @@
 name: lark-contact
 description: '飞书 / Lark 通讯录:按姓名 / 邮箱解析成 open_id,或按 open_id 反查姓名 / 部门 / 邮箱 / 联系方式 / 个人状态 / 签名,以及按关键词搜索当前用户可见的机器人 / 智能体(agent)。当用户提到一个名字要下一步发消息 / 排日程,或拿到 open_id 想查具体信息时使用。不负责部门树遍历、按部门列员工、组织架构图,这类需求走原生 OpenAPI。'
 zh_description: "用于按姓名或邮箱解析飞书 open_id，并反查成员姓名、部门、邮箱和个人状态。"
-version: "1.0.4"
+version: "1.0.5"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-contact"
 license: MIT
 tags: '[feishu, lark, lark-cli, contacts, identity]'
 created_at: "2026-05-19"
-updated_at: "2026-08-10"
+updated_at: "2026-08-20"
 quality: 3
 complexity: intermediate
 metadata:
@@ -104,4 +104,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

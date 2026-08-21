@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KhazP/vibe-coding-prompt-template` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `KhazP/vibe-coding-prompt-template` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `KhazP/vibe-coding-prompt-template` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/vibe-agents/SKILL.md`](.claude/skills/vibe-agents/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/vibe-build/SKILL.md`](.claude/skills/vibe-build/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/vibe-prd/SKILL.md`](.claude/skills/vibe-prd/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/vibe-research/SKILL.md`](.claude/skills/vibe-research/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/vibe-techdesign/SKILL.md`](.claude/skills/vibe-techdesign/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/vibe-workflow/SKILL.md`](.claude/skills/vibe-workflow/SKILL.md) |
-| 7 | ✓ | [`examples/reddit-to-ai/AGENTS.md`](examples/reddit-to-ai/AGENTS.md) |
-| 8 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 9 | ✓ | [`templates/tool-adapters/CLAUDE.md`](templates/tool-adapters/CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/vibe-agents/SKILL.md`](.agents/skills/vibe-agents/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/vibe-build/SKILL.md`](.agents/skills/vibe-build/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/vibe-prd/SKILL.md`](.agents/skills/vibe-prd/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/vibe-research/SKILL.md`](.agents/skills/vibe-research/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/vibe-techdesign/SKILL.md`](.agents/skills/vibe-techdesign/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/vibe-workflow/SKILL.md`](.agents/skills/vibe-workflow/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/vibe-agents/SKILL.md`](.claude/skills/vibe-agents/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/vibe-build/SKILL.md`](.claude/skills/vibe-build/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/vibe-prd/SKILL.md`](.claude/skills/vibe-prd/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/vibe-research/SKILL.md`](.claude/skills/vibe-research/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/vibe-techdesign/SKILL.md`](.claude/skills/vibe-techdesign/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/vibe-workflow/SKILL.md`](.claude/skills/vibe-workflow/SKILL.md) |
+| 13 | ✓ | [`examples/reddit-to-ai/AGENTS.md`](examples/reddit-to-ai/AGENTS.md) |
+| 14 | ✓ | [`templates/.agents/skills/vibe-build/SKILL.md`](templates/.agents/skills/vibe-build/SKILL.md) |
+| 15 | ✓ | [`templates/.agents/skills/vibe-prd/SKILL.md`](templates/.agents/skills/vibe-prd/SKILL.md) |
+| 16 | ✓ | [`templates/.agents/skills/vibe-research/SKILL.md`](templates/.agents/skills/vibe-research/SKILL.md) |
+| 17 | ✓ | [`templates/.agents/skills/vibe-review/SKILL.md`](templates/.agents/skills/vibe-review/SKILL.md) |
+| 18 | ✓ | [`templates/.agents/skills/vibe-techdesign/SKILL.md`](templates/.agents/skills/vibe-techdesign/SKILL.md) |
+| 19 | ✓ | [`templates/.agents/skills/vibe-workflow/SKILL.md`](templates/.agents/skills/vibe-workflow/SKILL.md) |
+| 20 | ✓ | [`templates/.claude/skills/vibe-build/SKILL.md`](templates/.claude/skills/vibe-build/SKILL.md) |
+| 21 | ✓ | [`templates/.claude/skills/vibe-prd/SKILL.md`](templates/.claude/skills/vibe-prd/SKILL.md) |
+| 22 | ✓ | [`templates/.claude/skills/vibe-research/SKILL.md`](templates/.claude/skills/vibe-research/SKILL.md) |
+| 23 | ✓ | [`templates/.claude/skills/vibe-review/SKILL.md`](templates/.claude/skills/vibe-review/SKILL.md) |
+| 24 | ✓ | [`templates/.claude/skills/vibe-techdesign/SKILL.md`](templates/.claude/skills/vibe-techdesign/SKILL.md) |
+| 25 | ✓ | [`templates/.claude/skills/vibe-workflow/SKILL.md`](templates/.claude/skills/vibe-workflow/SKILL.md) |
+| 26 | ✓ | [`templates/.cursor/rules/00-project.mdc`](templates/.cursor/rules/00-project.mdc) |
+| 27 | ✓ | [`templates/.cursor/rules/10-architecture.mdc`](templates/.cursor/rules/10-architecture.mdc) |
+| 28 | ✓ | [`templates/.cursor/rules/20-testing-review.mdc`](templates/.cursor/rules/20-testing-review.mdc) |
+| 29 | ✓ | [`templates/.github/copilot-instructions.md`](templates/.github/copilot-instructions.md) |
+| 30 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 31 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 32 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
+| 33 | ✓ | [`templates/tool-adapters/CLAUDE.md`](templates/tool-adapters/CLAUDE.md) |
 
 ---
 

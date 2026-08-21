@@ -253,16 +253,13 @@ Detailed performance optimization → delegate to Growth / Bolt. LP-specific pri
 
 ## Recipes
 
-| Recipe | Subcommand | Default? | When to Use | Output / Behavior | Read First |
-|--------|-----------|---------|-------------|-------------------|------------|
-| Build LP | `build` | ✓ | Full LP design (starting from AIDA/PAS/BAB/4Ps framework selection) | Section map + copy direction + CTA placement (≥3) + responsive specs + CWV targets | `reference/patterns.md` |
-| CTA Optimization | `cta` | | CTA placement, copy, micro-copy optimization | CTA placement plan + button copy variants + constraints (size, contrast, microcopy) | — |
-| Conversion Audit | `conversion` | | Conversion improvement and section audit for an existing LP | Audit findings + section-level improvement plan + prioritized fix list | `reference/patterns.md` |
-| Responsive Design | `responsive` |  | Mobile-first implementation, tap targets, viewport optimization | Responsive section spec + breakpoint plan + tap-target / viewport rules | — |
-| Form Optimization | `form` | | Field minimization, progressive disclosure, autofill cooperation, validation, submit friction | Form spec — field-count cost model, single vs multi-step, `autocomplete`/`inputmode` contract, blur-time validation, submit state machine. Delegates: Artisan (impl), Prose (labels/errors), Growth (A/B), Muse (tokens) | `reference/form-lp-optimization.md` |
-| Copy Authoring | `copy` | | Headline formulas, hero body, value-prop clarity, microcopy shells, readability, tone | LP copy — PAS/BAB/4U formulas, hero anatomy, clarity tests, benefit-vs-feature, microcopy shells, readability targets. Delegates: Prose (exact microcopy + voice), Growth (ads/nurture), Muse (type tokens), Vision (positioning) | `reference/copy-lp-authoring.md` |
-| Trust Signal Placement | `trust` | | Testimonials, logo bars, case studies, badges, review aggregation, urgency vs dark patterns | Placement map — testimonial shape/quantity, logo bar treatment, metric- vs story-forward cases, certifications, review aggregation, honest-urgency red lines. Delegates: Prose (wording), Growth (review APIs + schema), Muse (tokens), Canon (FTC substantiation) | `reference/trust-signal-placement.md` |
-| Premium LP Studio | `premium` | | Standard-to-premium full LP pipeline; select `premium|lead-gen|saas|ecom|event|magnet` mode | Nine gated stages + six-axis craft rubric + specialist handoff bundle | `reference/premium-chain-recipes.md`, `reference/premium-quality-gates.md` |
+**Full table** → **`reference/recipes-index.md`** (read on subcommand match, or when scanning). The list below is the dispatch allowlist only — a token not on it is not a subcommand.
+
+```
+build · cta · conversion · responsive · form · copy · trust · premium
+```
+
+Default Recipe: `build`.
 
 ### Signal Keywords → Recipe
 
@@ -345,10 +342,10 @@ Handoff formats → `reference/handoffs.md`
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal LP design insights in `.agents/funnel.md`; create if missing. Record patterns and learnings worth preserving (effective structures, high-impact CTA/copy discoveries, performance techniques).
 - After significant work, append to `.agents/PROJECT.md`: `| YYYY-MM-DD | Funnel | (action) | (files) | (outcome) |`
-- Standard protocols → `_common/OPERATIONAL.md`
-- Follow `_common/GIT_GUIDELINES.md`.
 
 ## AUTORUN Support
 
@@ -362,11 +359,3 @@ Funnel-specific findings to surface in handoff:
 - Framework selected (AIDA/PAS/BAB/4Ps) + reason
 - Copy decisions + performance considerations
 - Conversion risks identified
-
-## Output Language
-
-Follows CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
-
----
-
-> Every scroll is a micro-commitment. Design the page so each section earns the next.

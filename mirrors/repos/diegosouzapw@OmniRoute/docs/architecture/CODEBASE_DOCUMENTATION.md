@@ -89,7 +89,6 @@ src/
 ├── i18n/                 Locale bundles
 ├── instrumentation.ts    Next.js instrumentation hook
 ├── instrumentation-node.ts
-├── server-init.ts        Process-level bootstrap (env, DB, jobs, sync)
 └── proxy.ts              Top-level proxy bootstrap helper
 ```
 

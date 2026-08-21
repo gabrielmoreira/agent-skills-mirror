@@ -26,7 +26,7 @@ Use `converge` when a single deliverable must reach a **rubric-defined quality b
 | Full implementation discovery→ship with an internal loop | `apex` | converge exposes only the loop, for a single deliverable |
 | Just need the pattern spec, not an invocation | read `evaluator-loop-protocol.md` | converge *executes* it; the protocol *defines* it |
 
-Scale: 4-10 agents × cycles (cap 3 default). Mid cost (multiplied by cycle count). **Confirm when max_cycles raised above 3 or a wrapped Tier-S recipe is the generator.**
+Scale: 4-10 agents × cycles (cap 3 default). Mid cost (multiplied by cycle count). **Confirm before launch when `max_cycles` is raised above 3, or when a wrapped Tier-S recipe is the generator.**
 
 ---
 
@@ -36,7 +36,7 @@ The bare evaluator-loop can run forever or devolve into "Agent Tennis" (Generato
 
 | Bound | Default | Stop behavior |
 |-------|---------|---------------|
-| `max_cycles` | 3 | Hard ceiling — stop + report best-so-far. Raising > 3 needs confirm. |
+| `max_cycles` | 3 | Hard ceiling — stop + report best-so-far. Raising > 3 is **Confirm-before-launch**. |
 | `token_budget` | run-level | Stop + report when exhausted (shared pool, not per-cycle). |
 | diminishing-returns | **weighted score Δ < 0.2 between cycles** (`evaluator-loop-protocol.md` termination table) | If the aggregate weighted rubric score improves by < 0.2 versus the prior cycle, stop + report (further iteration not worth it). |
 | `BLOCK` escalation | — | If Aggregate verdict is BLOCK (un-fixable within scope, or Agent Tennis), stop + escalate to user. Agent Tennis = Nexus core circuit-breaker definition: two agents disagreeing on the same point 3+ turns without progress. |
@@ -48,7 +48,7 @@ The bare evaluator-loop can run forever or devolve into "Agent Tennis" (Generato
 ## 3. Phase Contract (AUTORUN chain template)
 
 ```
-CONTRACT ── Scribe/Accord[author the Sprint Contract (acceptance spec) + Rubric (0-3 dims)]
+CONTRACT ── Scribe[unified: author the Sprint Contract (acceptance spec) + Rubric (0-3 dims)]
             (skip authoring if caller supplies both; else generate before the loop)
    ▼
 ┌─ LOOP (until ACCEPT | bound hit per §2) ───────────────────────────────────┐
@@ -73,6 +73,10 @@ DELIVER ── convergence report: cycles run, per-cycle score trajectory,
 **Checkpoint-resume:** persist the Contract, Rubric, and each cycle's score + feedback δ at the GATE boundary so an interrupted run resumes mid-convergence with its trajectory intact.
 
 ---
+
+## 3a. Loop Precondition Gate
+
+Run `_common/LOOP_PRECONDITIONS.md` before cycle 1. Two of the five are structural here and pass by construction — #3 (maker ≠ checker) via Generator-Evaluator separation, #2 (hard-stop bound) via `max_cycles` — so the gate reduces to confirming #1 (the rubric *is* the completion oracle; a rubric with no score-3 anchor fails it), #4, and #5. Report the verdict in the Convergence Report.
 
 ## 4. Flatten Rule — wrapping a loop-recipe
 

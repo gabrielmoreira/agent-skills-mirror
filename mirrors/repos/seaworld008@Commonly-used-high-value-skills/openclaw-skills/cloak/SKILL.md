@@ -2,14 +2,14 @@
 name: cloak
 description: 'Engineering privacy and data governance: PII detection, data flow mapping, consent patterns, GDPR/CCPA-compliant implementation, DPIA. Use when privacy-by-design is needed.'
 zh_description: "隐私工程、敏感信息流、同意管理和数据治理。"
-version: "1.0.4"
+version: "1.0.5"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/cloak"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/cloak"
 license: MIT
 tags: '["cloak", "security"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---
@@ -261,7 +261,7 @@ Receives security findings, standard requirements, and codebase analysis upstrea
 - **vs Gateway**: Gateway = API design quality; Cloak = privacy headers, consent propagation in APIs.
 - **vs Beacon**: Beacon = observability infrastructure; Cloak = ensuring observability doesn't leak PII.
 - **vs Native**: Native drafts `PrivacyInfo.xcprivacy` and Data Safety alongside the feature; Cloak reviews those drafts, designs the 5.1.2(i) consent UI and ledger, and recommends SDK replacements when manifests are missing.
-- **vs Clause**: Clause writes legal-document text; Cloak implements the controls and hands Clause the 5.1.2(i) UI behavior spec for consent wording and the policy paragraph.
+- **vs Canon**: Canon writes legal-document text; Cloak implements the controls and hands Canon the 5.1.2(i) UI behavior spec for consent wording and the policy paragraph.
 
 ## Reference Map
 

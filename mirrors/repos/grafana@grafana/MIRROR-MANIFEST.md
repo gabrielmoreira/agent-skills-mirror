@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 16 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,13 +68,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`e2e-playwright/dashboard-new-layouts/AGENTS.md`](e2e-playwright/dashboard-new-layouts/AGENTS.md) |
 | 8 | ✓ | [`e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md`](e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md) |
 | 9 | ✓ | [`packages/grafana-ui/AGENTS.md`](packages/grafana-ui/AGENTS.md) |
-| 10 | ✓ | [`pkg/storage/unified/AGENTS.md`](pkg/storage/unified/AGENTS.md) |
-| 11 | ✓ | [`public/app/core/journeys/AGENTS.md`](public/app/core/journeys/AGENTS.md) |
-| 12 | ✓ | [`public/app/features/AGENTS.md`](public/app/features/AGENTS.md) |
-| 13 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
-| 14 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
-| 15 | ✓ | [`public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md`](public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md) |
-| 16 | ✓ | [`public/app/plugins/panel/AGENTS.md`](public/app/plugins/panel/AGENTS.md) |
+| 10 | ✓ | [`pkg/router/AGENTS.md`](pkg/router/AGENTS.md) |
+| 11 | ✓ | [`pkg/storage/unified/AGENTS.md`](pkg/storage/unified/AGENTS.md) |
+| 12 | ✓ | [`public/app/core/journeys/AGENTS.md`](public/app/core/journeys/AGENTS.md) |
+| 13 | ✓ | [`public/app/features/AGENTS.md`](public/app/features/AGENTS.md) |
+| 14 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
+| 15 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
+| 16 | ✓ | [`public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md`](public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md) |
+| 17 | ✓ | [`public/app/plugins/panel/AGENTS.md`](public/app/plugins/panel/AGENTS.md) |
 
 ---
 

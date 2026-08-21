@@ -2,14 +2,14 @@
 name: trace
 description: 'Analyzing session replays, extracting persona-based behavioral patterns, and storytelling UX issues. Reads the ''why'' from real user operation logs. Works with Field/Echo for persona validation.'
 zh_description: "会话回放分析、行为模式提取和体验问题叙事。"
-version: "1.0.4"
+version: "1.0.5"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/trace"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/trace"
 license: MIT
 tags: '["design", "product", "trace"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---

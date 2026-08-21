@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `conductor-oss/conductor` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `conductor-oss/conductor` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `conductor-oss/conductor` — 26 default patterns, 1 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`ui-next/src/pages/agent/guides/python/claude.md`](ui-next/src/pages/agent/guides/python/claude.md) |
-| 4 | → | [`SECURITY.md`](SECURITY.md) |
+| 3 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 4 | ✓ | [`ui-next/src/pages/agent/guides/python/claude.md`](ui-next/src/pages/agent/guides/python/claude.md) |
+| 5 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

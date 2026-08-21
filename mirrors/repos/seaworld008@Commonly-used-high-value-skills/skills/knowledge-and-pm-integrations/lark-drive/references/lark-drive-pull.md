@@ -3,7 +3,7 @@
 
 > **前置条件：** 先阅读 [`../lark-shared/SKILL.md`](../../lark-shared/SKILL.md) 了解认证、全局参数和安全规则。
 
-把飞书云空间的某个文件夹**单向、文件级**镜像到本地目录（Drive → 本地）。命令递归列出 `--folder-token` 下所有 `type=file` 的文件，逐一下载到 `--local-dir` 对应的相对路径，子文件夹自动复刻为本地目录。
+把飞书云空间（云盘/云存储）的某个文件夹**单向、文件级**镜像到本地目录（Drive → 本地）。命令递归列出 `--folder-token` 下所有 `type=file` 的文件，逐一下载到 `--local-dir` 对应的相对路径，子文件夹自动复刻为本地目录。
 
 > ⚠️ **不是 directory-level mirror**：`--delete-local` 只删除本地"多余"的常规文件，不删除空目录。如果云端把整个子文件夹删了，对应的本地子目录会留空（里面的文件被清掉，目录本身保留）；想精确同步目录结构请自己 `rmdir` 处理空壳。
 
@@ -17,11 +17,11 @@
 | `summary.deleted_local` | 启用 `--delete-local --yes` 时删除的本地文件数 |
 | `items[]` | 每个文件的明细（`rel_path` / `file_token` / `source_id` / `action` / 失败时的 `error`） |
 
-`summary.failed > 0` 时命令以 **非零状态码**（`exit=1`，`error.type=partial_failure`）退出，且同一份 `summary + items` 会在 `error.detail` 里返回；脚本/agent 直接通过 exit code 判断成败即可，不需要再去解 `summary.failed`。
+`summary.failed > 0` 时命令以 **非零状态码**（`exit=1`）退出：同一份 `summary + items` 会以 `ok:false` 部分失败信封写到 **stdout**（字段在 `data.summary` / `data.items`），stderr 不再输出单独的错误信封；脚本/agent 直接通过 exit code 判断成败即可，不需要再去解 `summary.failed`。
 
 ## 远端同名文件冲突
 
-如果 Drive 中多个条目映射到同一个 `rel_path`，默认直接失败（`error.type=duplicate_remote_path`），且不会下载、覆盖或删除任何本地文件。只有“多个 `type=file` 同名”的场景支持显式策略；`file-folder` 这类异构冲突始终直接失败。
+如果 Drive 中多个条目映射到同一个 `rel_path`，默认直接失败（stderr 类型化错误信封：`error.type=validation`、`error.subtype=failed_precondition`，`error.params[]` 逐条列出冲突的 `rel_path` 及碰撞条目），且不会下载、覆盖或删除任何本地文件。只有“多个 `type=file` 同名”的场景支持显式策略；`file-folder` 这类异构冲突始终直接失败。
 
 | 策略 | 行为 |
 |------|------|
@@ -80,7 +80,7 @@ lark-cli drive +pull --local-dir ./repo --folder-token fldcnxxxxxxxxx \
 
 - `--delete-local`（无 `--yes`）→ Validate 直接报错：`--delete-local requires --yes`，没有任何下载、列表请求或删除发生。
 - `--delete-local --yes`，**且下载阶段全部成功** → 扫一遍 `--local-dir` 下所有常规文件，把不在云端清单里的逐个 `os.Remove`。**只删常规文件，不删目录**：远端文件夹被删除后，对应本地目录会保留空壳。
-- `--delete-local --yes`，**但下载阶段有任何条目失败** → **跳过整个删除阶段**，命令以 `partial_failure` 非零退出。设计意图：避免出现"前面下载失败、后面继续删本地文件"的半同步状态；操作者修好下载错误后再重跑即可。
+- `--delete-local --yes`，**但下载阶段有任何条目失败** → **跳过整个删除阶段**，命令以 `ok:false` 部分失败结果非零退出。设计意图：避免出现"前面下载失败、后面继续删本地文件"的半同步状态；操作者修好下载错误后再重跑即可。
 - 远端同名文件冲突且使用默认 `fail` → 在下载阶段前失败，删除阶段不会运行。
 - 不传 `--delete-local` → `summary.deleted_local` 永远是 0；命令对本地"多余"文件视而不见。
 
@@ -131,7 +131,7 @@ lark-cli drive +pull --local-dir ./repo --folder-token fldcnxxxxxxxxx \
 
 ## 参考
 
-- [lark-drive](../SKILL.md) —— 云空间全部命令
+- [lark-drive](../SKILL.md) —— 云空间（云盘/云存储）全部命令
 - [lark-shared](../../lark-shared/SKILL.md) —— 认证和全局参数
 - [lark-drive-status](lark-drive-status.md) —— 下载前先看差异
 - [lark-drive-download](lark-drive-download.md) —— 单文件按需拉取

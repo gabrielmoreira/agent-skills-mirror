@@ -1,8 +1,8 @@
-# Loop-Engineering Primitives — Claude Code & Codex (2026-06)
+# Loop-Engineering Primitives — Claude Code, Codex & agy
 
-How the **loop engineering** pattern maps onto concrete orchestration primitives in each hub engine. Nexus stays the routing/recipe layer; this file is the reference for *which primitive implements which loop part* when designing a `/goal`-style or apex/summit loop. For the concept, lineage, and applicability limits see `orbit/reference/loop-engineering.md`.
+How the **loop engineering** pattern maps onto concrete orchestration primitives in each hub engine. Nexus stays the routing/recipe layer; this file is the reference for *which primitive implements which loop part* when designing a `/goal`-style or apex/summit loop. For the concept, lineage, and applicability limits see `.claude/skills/orbit/reference/loop-engineering.md`.
 
-> Snapshot date: 2026-06-29 (refreshed; previously 2026-06-15). Versions move within weeks — verify against primary docs (`code.claude.com/docs`, `developers.openai.com/codex`) before quoting a version number.
+> Capability mapping, not a version registry. `_common/CLI_COMPATIBILITY.md` owns current versions, flags, model IDs, and availability. Verify current primary docs before executing a version-sensitive branch; parenthetical versions below are historical provenance only.
 
 ## The pattern → primitive map
 
@@ -16,6 +16,21 @@ A loop = scheduled execution + isolated workspaces + maker/checker separation + 
 | Maker/checker separation | subagents (`.claude/agents/`, markdown) + agent teams; worktrees isolate *file edits*, subagents/teams coordinate *the work* | subagents spawned in parallel (≤8), results merged into one response; built-in `default`/`worker`/`explorer`; custom agents require `name`/`description`/`developer_instructions` (model + sandbox_mode inherited from parent); on-demand spawn only |
 | Persistent memory | markdown / Linear / state files on disk — "the agent forgets, the repo doesn't" | same: state file outside the conversation as the loop's spine |
 | **Loop-wide token bound** | **Not available in Claude Code** — `task_budget` is a Messages API feature and is explicitly unsupported on Claude Code and Cowork surfaces. In-session, bound with a `stop after N turns` clause plus `max_tokens`; the countdown mechanism is unavailable | n/a — Codex has no equivalent; bound via harness-side turn counting |
+
+### agy column
+
+agy ships **fewer** loop parts natively than either engine above, so more of the loop is hand-rolled by the hub. Author against these (`_common/AGY_ORCHESTRATION.md` A2/A4/A9, `reference/execution-layers.md` § Antigravity CLI):
+
+| Loop part | agy | Note |
+|-----------|-----|------|
+| Heartbeat (recurring) | **No `/loop` equivalent.** `/schedule` exists in the slash-command list but its semantics are unverified — do not build on it | Implement the heartbeat *outside* agy: cron / CI / an external shell loop driving headless `agy -p` one-shots |
+| Stop-when-done (in-session) | **No confirmed `/goal`** (absent from the published slash-command list — do not assume it) | Implement run-to-completion as an **external loop + completion oracle in the prompt** ("Done when …" + a self-validation pass) plus a persistence directive; the hub owns the stop decision |
+| Workspace isolation | `/fork` branches the conversation into a separate workspace; git worktrees are managed by the hub, not by agy | Fork before risky/destructive trials so the main session stays clean |
+| Maker/checker separation | Separate `/agent` invocations or separate headless one-shots — contexts are isolated by construction | **Ports cleanly and matters more here**: the generator is a fast model, so keep the checker at the High tier and give it an assume-broken rubric (A9) |
+| Persistent memory | Filesystem artifacts (the same channel A2 mandates for deliverables) | The artifact bus doubles as the loop's state spine; `-c`/`--conversation <id>` resume (v1.0.8+) preserves session context between rounds |
+| Loop-wide token bound | Not available — no `task_budget`, no countdown the model can see | Bound harness-side: turn counting + `--print-timeout`; poll `/usage` between rounds (it does not update live mid-run) |
+
+**Consequence for recipe design:** an agy loop is *always* hub-driven. Every one of the five moves that Claude Code or Codex would delegate to a native primitive (heartbeat, stop-when-done) becomes explicit hub logic on agy — which means an agy loop must never be authored as "tell agy to keep going until done".
 
 ### `task_budget` — a loop bound for API-implemented steps only (beta `task-budgets-2026-03-13`)
 
@@ -44,7 +59,7 @@ The four-part skeleton above is the minimum. The Orange Book (HuaShu IEEE reform
 | **Scheduling** — run round after round | Automation | `/loop`, Cloud Routines, GitHub Actions | Automations tab, cloud (planned) | Manual loop (silently stops) |
 
 - **Discovery sets the ceiling**: surface work via a maintainable skill, not a cron-glued prompt that rots (intent debt). The other four moves done well in service of bad discovery yield nothing.
-- **Verification is the floor and the hardest move**: the generator's level decides what the loop *can* produce; the evaluator's level decides what it *will not*. Tune the evaluator to assume-broken and judge by *acting* (Playwright MCP: click/screenshot/run) not reading — see `orbit/reference/loop-engineering.md` and the `goal` recipe.
+- **Verification is the floor and the hardest move**: the generator's level decides what the loop *can* produce; the evaluator's level decides what it *will not*. Tune the evaluator to assume-broken and judge by *acting* (Playwright MCP: click/screenshot/run) not reading — see `.claude/skills/orbit/reference/loop-engineering.md` and the `goal` recipe.
 - The loop **shape** is engine-agnostic; only the brand of command differs. The design question is "are all six parts present?", not "which toolchain?".
 
 ## `/loop` modes & safety bounds (Claude Code, verified 2026-06-15)
@@ -81,4 +96,4 @@ For OS-reboot-persistent recurrence use Desktop Scheduled tasks (Hourly/Daily/We
 ## Caveats / gaps
 
 - No public, verifiable ROI case study for loop engineering exists yet (esp. solo/consumer-plan). Don't assert efficiency gains as fact.
-- Attribution detail and applicability limits live in `orbit/reference/loop-engineering.md`; this file is primitives-only.
+- Attribution detail and applicability limits live in `.claude/skills/orbit/reference/loop-engineering.md`; this file is primitives-only.

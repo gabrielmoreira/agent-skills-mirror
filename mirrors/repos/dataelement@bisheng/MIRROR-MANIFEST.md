@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 24 file(s) materialized.
+Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 24
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 24 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,10 +80,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`src/frontend/client/.agents/skills/react-component-refactor/SKILL.md`](src/frontend/client/.agents/skills/react-component-refactor/SKILL.md) |
 | 19 | ✓ | [`src/frontend/client/AGENTS.md`](src/frontend/client/AGENTS.md) |
 | 20 | ✓ | [`src/frontend/client/CLAUDE.md`](src/frontend/client/CLAUDE.md) |
-| 21 | ✓ | [`src/frontend/platform/AGENTS.md`](src/frontend/platform/AGENTS.md) |
-| 22 | ✓ | [`src/frontend/platform/CLAUDE.md`](src/frontend/platform/CLAUDE.md) |
-| 23 | → | [`docs/constitution.md`](docs/constitution.md) |
-| 24 | → | [`docs/SDD-Guide.md`](docs/SDD-Guide.md) |
+| 21 | ✓ | [`src/frontend/packages/ui/AGENTS.md`](src/frontend/packages/ui/AGENTS.md) |
+| 22 | ✓ | [`src/frontend/packages/ui/CLAUDE.md`](src/frontend/packages/ui/CLAUDE.md) |
+| 23 | ✓ | [`src/frontend/platform/AGENTS.md`](src/frontend/platform/AGENTS.md) |
+| 24 | ✓ | [`src/frontend/platform/CLAUDE.md`](src/frontend/platform/CLAUDE.md) |
+| 25 | → | [`docs/constitution.md`](docs/constitution.md) |
+| 26 | → | [`docs/SDD-Guide.md`](docs/SDD-Guide.md) |
 
 ---
 

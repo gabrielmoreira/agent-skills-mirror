@@ -80,6 +80,20 @@ cmake --build build-linux -j
 cmake --install build-linux --prefix pkg-geniex
 ```
 
+#### CPU-only variant (baseline armv8.0-a)
+
+NPU-less Dragonwing IoT boards (unoq) are baseline ARMv8.0 and trap on the LSE
+atomics the `snapdragon` presets inline (see
+[#1217](https://github.com/qualcomm/GenieX/issues/1217)). Swap the preset for
+`arm64-linux-cpu-{debug,release}` — same container, plain `-march=armv8-a`, and
+CPU-only (no QAIRT, Hexagon, or OpenCL):
+
+```bash
+cmake --preset arm64-linux-cpu-debug -B build-linux-cpu .
+cmake --build build-linux-cpu -j
+cmake --install build-linux-cpu --prefix pkg-geniex
+```
+
 ### Android (cross-compile from Linux)
 
 Build the SDK inside the derived Snapdragon Android toolchain container — it extends [ghcr.io/snapdragon-toolchain/arm64-android](https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/snapdragon/README.md#android) with `build-essential`, `ccache`, `rustup`, and the `aarch64-linux-android` Rust target baked in (see [`.github/docker/toolchain-android.Dockerfile`](../.github/docker/toolchain-android.Dockerfile)). Run from the repo root.
@@ -112,6 +126,24 @@ cmake --preset arm64-android-snapdragon-debug -B build-android .
 cmake --build build-android -j
 cmake --install build-android --prefix pkg-geniex
 ```
+
+#### CPU-only variant (baseline armv8.0-a)
+
+`minSdk` is 27, so the AAR still targets phones that predate the armv8.7 ISA the
+`snapdragon` presets bake in and trap at startup (see
+[#1217](https://github.com/qualcomm/GenieX/issues/1217)). Swap the preset for
+`arm64-android-cpu-{debug,release}` — same container, plain `-march=armv8-a`, and
+CPU-only (no QAIRT, Hexagon, or OpenCL):
+
+```bash
+cmake --preset arm64-android-cpu-debug -B build-android-cpu .
+cmake --build build-android-cpu -j
+cmake --install build-android-cpu --prefix pkg-geniex
+```
+
+`bindings/android` needs no changes: `assembleRelease` packages whatever
+`sdk/pkg-geniex/lib/` holds, so the same gradle project yields the CPU-only AAR
+that CI publishes as `geniex-android-aar-cpu-<tag>.aar`.
 
 Deploy and smoke-test on device:
 

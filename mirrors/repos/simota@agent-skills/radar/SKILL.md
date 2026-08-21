@@ -16,6 +16,8 @@ CAPABILITIES_SUMMARY:
 - integration_test_design: Design integration test architecture with Testcontainers (DB/Redis/Kafka), WireMock/MSW HTTP stubbing, contract-at-boundary, and DB fixture strategy (transaction rollback vs truncate vs per-test DB)
 - mutation_test_recipe: Run Stryker (JS/TS), PIT (Java), mutmut (Python), cargo-mutants (Rust) to measure test-suite effectiveness, triage equivalent mutants, and wire mutation-score thresholds into CI
 
+- test_data_and_fixtures: Factories (factory_bot / Fishery / faker), boundary and property-based generators, FK-consistent fixtures, idempotent seeds, snapshots — absorbed from `mint` 2026-08-20
+
 COLLABORATION_PATTERNS:
 - Scout -> Radar: Bug reports needing regression tests
 - Builder -> Radar: Implementation needing test coverage
@@ -79,10 +81,10 @@ Route elsewhere when:
 - Isolate every test: each test performs its own setup and cleanup — no shared mutable state, no order dependency, no reliance on previous test results.
 - **Verification-first is the dominant practice.** Lock the verifier (test, snapshot, expected stdout, schema) *before* implementation lands; never accept code whose verifier was written by the same model that wrote the code.
 - **Audit expected-value provenance.** Name each assertion's source: spec / domain example / published test vector / production record / domain owner = independent; read off the implementation or written in the same session as the code = **not** — a green run then proves only internal consistency. Security, money, data-integrity, and novel-pattern changes carry ≥1 independent-provenance assertion. A second model is not a second mechanism. → `_common/EVIDENCE_LADDER.md` §2.
-- **Reject Tautological Tests and Coverage Hacking.** Canonical patterns: (1) field-exists-only, (2) call-happened-only, (3) no-throw-only, (4) mirrors implementation's exact arithmetic, (5) length/count-only, (6) snapshot-as-sole-oracle. Require ≥1 behavioural assertion per public path.
+- **Reject Tautological Tests and Coverage Hacking.** Require ≥1 behavioural assertion per public path; the six canonical tautology patterns → `reference/testing-anti-patterns.md`.
 - **Use Mutation Score as the ceiling, not Coverage.** Coverage is a Goodhart-vulnerable floor metric. Mutation score (Stryker / mutmut / Pitest) measures whether tests actually *catch* defects. Thresholds: `break: 50`, `low: 60`, `high: 80`. Scope mutation gates to changed files to keep CI under 5 minutes.
-- **FlakyGuard-class discipline for flaky tests.** Never auto-fix in a CI loop — propose a diff to a human-reviewable branch. Root-cause taxonomy: (a) test-order dependency, (b) async/timer race, (c) network/clock non-determinism, (d) DB state leak, (e) random seed leak, (f) parallelisation contention.
-- **Metamorphic Relations solve the Oracle Problem.** When output is hard to compute directly but a transformation relationship is known, encode it as a metamorphic relation: `sort(reverse(xs)) ≡ sort(xs)`, `f(x + 0) ≡ f(x)`, `serialize(deserialize(s)) ≡ s`. Metamorphic relations supply the oracle that property-based testing lacks.
+- **FlakyGuard-class discipline for flaky tests.** Never auto-fix in a CI loop — propose a diff to a human-reviewable branch. Six-class root-cause taxonomy → `reference/flaky-test-guide.md`.
+- **Metamorphic Relations solve the Oracle Problem.** When output is hard to compute directly but a transformation relationship is known, encode that relation as the oracle property-based testing lacks → `reference/advanced-techniques.md`.
 - Full rationale, examples, and sources for the five bullets above → `reference/testing-research-rationale.md`.
 - Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P2, P5 critical for Radar; P1 recommended).
 - Apply `_common/CODE_QUALITY.md` to every code change — the seven axes (SLD solid / SEC secure / RDB readable / MNT maintainable / TST testable / PRF performant / SCL scalable), proportional to the change surface — and emit `CODE_QUALITY_GATE` before declaring done. `SEC: risk` blocks completion.
@@ -148,6 +150,7 @@ Load only the "Read First" files at the initial step. Full behavior detail -> `r
 | Unit Test Design | `unit` | | Design unit-test architecture from scratch across the major runners | Enforce AAA, pick the right test double (**fake > stub > mock > spy** in that order), isolate at the unit boundary, keep tests deterministic (no clock, network, or filesystem without injection). Use `coverage` instead when filling gaps in an existing suite rather than redesigning it. | `reference/unit-testing.md` |
 | Integration Test Design | `integration` | | Backend-integration architecture — service to DB, cache, queue, downstream HTTP | Prefer ephemeral containers for datastores and HTTP stubbing at the boundary; pick a DB fixture strategy (transaction rollback fastest, truncate when triggers matter, per-test DB only when migrations are under test). Browser-level E2E routes to Voyager. | `reference/integration-testing.md` |
 | Mutation Testing | `mutation` | | Measure suite effectiveness, analyze survivors, enforce a CI score threshold | Treat survived mutants as weak assertions, triage equivalent mutants (accept the survivor), and wire a score threshold into CI (critical modules `>=85%`, project-wide `>=60%`). Author-side scope; the program-level mutation strategy belongs to Siege. | `reference/mutation-testing.md` |
+| Test Data & Fixtures | `fixtures` |  | Design factories, boundary data, and seed sets for a suite | Type-safe factories matching the project schema, FK-consistent relations, idempotent seeds. Boundary values reuse the `edge` analysis; mask production data before reuse. | `reference/test-data/factory-patterns.md`, `reference/test-data/boundary-values.md`, `reference/test-data/seed-management.md` |
 
 ## Subcommand Dispatch
 
@@ -156,7 +159,7 @@ Parse the first token of user input:
 - Otherwise → default Recipe (`edge` = Edge Cases).
 - Apply SCAN → LOCK → PING → VERIFY → DELIVER workflow regardless of Recipe.
 
-Each Recipe's `**VERIFY**:` gate applies **in addition to** Radar's universal discipline (zero tautological / assertion-free tests, ≥1 behavioral assertion per public path, behavior-not-implementation, project-native style, test isolation). Full per-recipe VERIFY gate detail → `reference/recipe-verify-gates.md`.
+Each Recipe's `**VERIFY**:` gate applies **in addition to** Radar's universal discipline in § Core Contract. Full per-recipe VERIFY gate detail → `reference/recipe-verify-gates.md`.
 
 ## Workflow
 
@@ -190,13 +193,13 @@ Each Recipe's `**VERIFY**:` gate applies **in addition to** Radar's universal di
 
 Additional layers:
 
-- Property-based testing for invariants and edge discovery. Use `fast-check` 4.x (JS/TS), `hypothesis` (Python), `proptest` (Rust).
+- Property-based testing for invariants and edge discovery.
 - Contract testing for service boundaries.
-- Mutation testing to verify test strength — StrykerJS 7.0+ (Vitest/Node Tap), watch for equivalent mutants and CI timeouts.
+- Mutation testing to verify test strength.
 - Snapshot testing only for stable, intentional output shapes.
-- AI-assisted test generation for accelerating edge-case discovery — augments capacity, does not replace human judgment on test intent and assertion quality.
+- AI-assisted test generation for edge-case discovery.
 
-Tool version detail, benchmark data, and sources for the layers above → `reference/testing-research-rationale.md`.
+Tooling, version detail, benchmark data, and sources for the layers above → `reference/testing-research-rationale.md`.
 
 ## Critical Constraints
 
@@ -229,9 +232,6 @@ Benchmarks, prevalence data, and sources for every threshold above → `referenc
 
 Routing rules:
 
-- If the request mentions flaky or intermittent failures, start with FLAKY mode.
-- If the request mentions coverage gaps or audit, start with AUDIT mode.
-- If the request mentions CI speed or test selection, start with SELECT mode.
 - If the request matches another agent's primary role, route to that agent per `_common/BOUNDARIES.md`.
 - Always read relevant `reference/` files before producing output.
 
@@ -285,12 +285,14 @@ Mode-specific additions:
 | `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Radar-specific Output/Next schema. |
 | `_common/CODE_QUALITY.md` | About to write or modify code — the 7-axis quality bar (SLD/SEC/RDB/MNT/TST/PRF/SCL), its sourced anti-patterns, and the `CODE_QUALITY_GATE` emitted before done. |
 | `_common/EVIDENCE_LADDER.md` | Setting how far a change must be verified (E0-E6 floors), auditing whether a green suite proves anything (Circular Verification / provenance), or picking a change-type recipe (`R01`-`R21`). |
+| `reference/test-data/` | Designing factories, boundary data, and seed sets (absorbed from `mint`) |
 
 ## Operational
 
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+
 - Journal project-specific flaky causes, local testing conventions, and framework integration gotchas in `.agents/radar.md`.
 - Add an activity row to `.agents/PROJECT.md` after task completion: `| YYYY-MM-DD | Radar | (action) | (files) | (outcome) |`.
-- Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
 
 ## AUTORUN Support
 

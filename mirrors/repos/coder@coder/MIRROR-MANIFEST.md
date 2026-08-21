@@ -52,20 +52,20 @@ Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 59 file(s
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `.claude/docs/WORKFLOWS.md`
-- `.claude/docs/OBSERVABILITY.md`
-- `.claude/docs/DEV_ISOLATION.md`
-- `.claude/docs/AGENT_FAILURES.md`
 - `.claude/docs/GO.md`
 - `.claude/docs/TESTING.md`
 - `.claude/docs/DATABASE.md`
 - `.claude/docs/OAUTH2.md`
 - `.claude/docs/ARCHITECTURE.md`
 - `.claude/docs/TROUBLESHOOTING.md`
-- `.claude/docs/DOCS_STYLE_GUIDE.md`
+- `.claude/docs/OBSERVABILITY.md`
+- `.claude/docs/DEV_ISOLATION.md`
+- `.claude/docs/AGENT_FAILURES.md`
 - `.claude/docs/PR_STYLE_GUIDE.md`
-- `docs/.style/content-guidelines.md`
-- `.claude/docs/FRONTEND_PATTERNS.md`
 - `docs/.style/style-guide/README.md`
+- `docs/.style/content-guidelines.md`
+- `.claude/docs/DOCS_STYLE_GUIDE.md`
+- `.claude/docs/FRONTEND_PATTERNS.md`
 - `coderd/x/chatd/ARCHITECTURE.md`
 
 ## File Index

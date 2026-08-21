@@ -8,10 +8,10 @@
 
 ## 推荐先看
 
+- [lark-mail](./lark-mail/) - 飞书邮箱：Use when user mentions 起草邮件、写邮件、草稿、发送/回复/转发邮件、查阅邮件、看邮。
+- [lark-sheets](./lark-sheets/) - 用于读取、编辑和分析飞书电子表格数据。
 - [lark-slides](./lark-slides/) - 飞书幻灯片：创建和编辑幻灯片。
 - [grove](./grove/) - 仓库结构、文档布局、测试脚本组织和迁移规划。
-- [lark-base](./lark-base/) - 用于操作飞书 Base 数据表、记录、字段和自动化数据流程。
-- [lark-calendar](./lark-calendar/) - 用于查询、创建和管理飞书日历事件与日程安排。
 
 ## 技能总览
 

@@ -20,7 +20,7 @@ Preview compression for a message payload
 
 ```bash
 curl -X POST https://localhost:20128/api/compression/preview \
-  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{}'
 ```

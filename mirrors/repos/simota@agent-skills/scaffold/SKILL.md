@@ -46,7 +46,7 @@ Use Scaffold when the task needs one or more of the following:
 - AWS, GCP, Azure, or multi-cloud infrastructure selection
 - State encryption, IaC tool migration (Terraform ↔ OpenTofu), licensing evaluation (BSL vs open-source), or orchestration platform evaluation (Spacelift, Env0, Scalr)
 
-Use `Gear` for CI/CD, runtime operations, and monitoring. Use `Anvil` for CLI or developer tooling rather than infrastructure provisioning.
+Use `Gear` for CI/CD, runtime operations, and monitoring. Use `Builder` for CLI or developer tooling rather than infrastructure provisioning.
 
 Route elsewhere when the task is primarily:
 - CI/CD pipeline configuration without IaC changes → `Gear`
@@ -217,6 +217,8 @@ Add these when relevant:
 - Canvas packet for topology visualization
 
 ## Operational
+
+**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
 
 - Before starting (mandatory): read `.agents/scaffold.md` and `.agents/PROJECT.md`; create `.agents/scaffold.md` if missing.
 - After task completion (mandatory): append `| YYYY-MM-DD | Scaffold | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.

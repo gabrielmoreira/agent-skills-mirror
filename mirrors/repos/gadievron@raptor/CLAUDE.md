@@ -49,11 +49,11 @@ When a `/command` fires:
 /diagram - Mermaid visual maps — `libexec/raptor-render-diagrams <out-dir> [args]`
 /audit - Hypothesis-driven code audit — `dispatch: skill`, see below
 /review - Navigate audit results — `libexec/raptor-review $ARGUMENTS`
-/annotate - Per-function prose annotations (human-only) — `libexec/raptor-annotate <subcommand> [args]`
+/annotate - Per-function prose annotations (human notes get authority; agent notes are hint-tier) — `libexec/raptor-annotate <subcommand> [args]`
 
 **Coverage:** When asked about coverage, run `libexec/raptor-coverage-summary` (no args = active project). Use `--detailed` for per-file table, `--gaps` for unreviewed functions. See `.claude/skills/coverage.md` for mark/unmark and the full API.
 
-**Note:** `/agentic` runs scan → dedup → prep → analysis (with validation methodology). Use `--sequential` to bypass parallel orchestration. Use `--understand` to pre-map the codebase before scanning, and `--validate` to run the full validation pipeline on exploitable findings afterwards. Both flags are opt-in. Multi-model: `--model` is repeatable — multiple models each independently analyse every finding, then results are correlated; `--consensus`, `--judge`, and `--aggregate` add optional review/synthesis models.
+**Note:** `/agentic` runs scan → dedup → prep → analysis (with validation methodology). Use `--sequential` to bypass parallel orchestration. Use `--understand` to pre-map the codebase before scanning, `--validate` to run the full validation pipeline on exploitable findings afterwards, and `--gap-audit` to run the /audit orchestrator over the coverage residual (functions no phase reviewed; uses the external LLM, or the claudecode transport when only Claude Code is available; NOT `--audit`, which is the sandbox audit mode). All three flags are opt-in. Multi-model: `--model` is repeatable — multiple models each independently analyse every finding, then results are correlated; `--consensus`, `--judge`, and `--aggregate` add optional review/synthesis models.
 /sage - SAGE persistent memory: status, recall, browse, store, manage
 /crash-analysis - Autonomous crash root-cause analysis (see below)
 /oss-forensics - GitHub forensic investigation (see below)
@@ -71,7 +71,7 @@ When a `/command` fires:
 
 ## PROJECTS
 
-Projects are opt-in named workspaces that corral analysis runs into a shared directory. Commands with `--project <name>` or after `/project use <name>` write output to the project directory. Without a project, commands behave as before (timestamped dirs under `out/`).
+Projects are opt-in named workspaces that corral analysis runs into a shared directory. Activate a project with `/project use <name>` in-session, or at launch with the launcher's `-p <name>` / `--project <name>` flag (`bin/raptor` routes it through `libexec/raptor-startup-check`, which also auto-activates a project whose target matches the caller's directory). While a project is active, analysis commands write output to the project directory — no analysis command takes a `--project` flag itself. Without a project, commands behave as before (timestamped dirs under `out/`).
 
 ```
 /project create myapp --target /path/to/code -d "Description"
@@ -172,6 +172,21 @@ When scanning untrusted repositories:
 
 ---
 
+## INTERACTIVE PROMPTS
+
+Some commands and skills define decision points where an interactive session presents a structured choice with the AskUserQuestion tool instead of prose. These are interactive-only enhancements layered on the existing behavior — never new pipeline stages.
+
+**The gate.** Before ANY AskUserQuestion, run `libexec/raptor-may-ask` (decision logic: `core/ux/interactivity.py`). Ask only when it prints `interactive` AND the AskUserQuestion tool is available to you. If it prints `non-interactive`, errors, or is missing — or the tool is absent — this session is a dispatched sub-agent, CI, or otherwise unattended: do NOT ask. Apply the instruction's documented non-interactive fallback (always the pre-existing default behavior) and say in your output which default you applied.
+
+**Doctrine for ask instructions:**
+- Every AskUserQuestion instruction in a command/skill file MUST name its non-interactive fallback.
+- Asks live at run boundaries only — completion forks, consent that changes a FUTURE run, destructive confirms. Never insert an ask mid-pipeline where an autonomous flow would block on it.
+- The first option carries the "(Recommended)" tag.
+- Fill option labels and descriptions with the run's actual facts (paths, warning text, findings, `cost_usd` values from the report) — never invent flags, artifacts, or estimates.
+- Never ask the operator to confirm or adjust an evidence-driven verdict — tool output is the verdict.
+
+---
+
 ## CRASH ANALYSIS
 
 The `/crash-analysis` command provides autonomous root-cause analysis for C/C++ crashes.
@@ -221,7 +236,7 @@ The `/oss-forensics` command provides evidence-backed forensic investigation for
 
 **Requirements:** `GOOGLE_APPLICATION_CREDENTIALS` for BigQuery
 
-**Output:** `.out/oss-forensics-<timestamp>/forensic-report.md`
+**Output:** `.out/oss-forensics-<timestamp>/forensic-report.md` (note: hidden `.out/` directory, not the usual `out/`)
 
 ---
 
@@ -400,6 +415,13 @@ The verdict flows through the existing reachability chokepoint: /codeql + /agent
 - `--no-binary-oracle` — disable binary-oracle filtering entirely for this run. Use for library-only targets with no main binary, runs where you want every finding unfiltered for review, or when a build mismatch is causing over-suppression. Overrides `--binary` / `--binary-auto` with a stderr warning if combined.
 - `--binary-edges` — Inc 2b Tier 1/2: extract direct call edges + vtable resolution via r2 (single-invocation script-file mode; cached per-build-id with cross-target collision check). Slow (~10-30s per binary, then cached). Required for the `binary_call_edge` REACHABLE promote witness (rescues functions the source-graph thought were dead).
 - For `--target-kind=hybrid` deployments (library + application both shipped), declare MULTIPLE binaries — a function is `absent` only when EVERY declared binary lacks it. Tier-weighted combine: when full-DWARF and symbol-only disagree, full-DWARF wins (`alive-in-any` rule only applies same-tier).
+
+**Provenance-drop consent (interactive sessions only, after the run completes — never mid-pipeline):** when a run's output shows the `binary-oracle: N repo-committed binary(s) ignored (provenance unverified — could be planted or stale)` warning, offer the trust decision as a structured choice (see INTERACTIVE PROMPTS; gate with `libexec/raptor-may-ask` first). Options:
+1. **Stay safe (Recommended)** — keep the drop. Verdicts continue to come only from locally-built (git-untracked) binaries; a committed binary can be attacker-planted or stale and would steer `absent` verdicts toward suppressing real findings.
+2. **Trust for this run** — re-run with `--binary <path>` naming the dropped binary(s); list the exact paths from the warning in the description. Grants: bypasses the git-tracked provenance filter for that one run; the binary's DWARF/symbol data then drives `absent`-verdict suppression.
+3. **Persist via `/project binary add <path>`** — one add per dropped binary. Grants: auto-loaded by every subsequent `/agentic`, `/codeql`, `/validate` run on the active project — the same trust as option 2, standing.
+
+**Non-interactive fallback:** current behavior — the binaries stay dropped; surface the warning plus the `--binary <path>` / `/project binary add` escape hatches in the run summary.
 
 **Persistent per-project config**:
 - `/project binary add <path>` — persist a binary path on the active project. Auto-loaded by every subsequent /agentic / /codeql / /validate run. `is_file()`-validated at add time.

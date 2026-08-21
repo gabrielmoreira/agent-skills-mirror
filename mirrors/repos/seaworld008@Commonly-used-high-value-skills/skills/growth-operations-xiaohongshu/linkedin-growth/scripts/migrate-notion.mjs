@@ -17,17 +17,34 @@
 // DRY-RUN by default (no writes). Pass --apply to write.
 // Flags: --apply  --refetch  --rr=vlad,alex,maksim  --pending=keep|exhaust
 //
-import Database from 'better-sqlite3';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
+import {
+  chmodSync,
+  closeSync,
+  constants,
+  fchmodSync,
+  fstatSync,
+  fsyncSync,
+  lstatSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  realpathSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const HOME = process.env.HOME;
 const DATA_DIR = join(HOME, '.local/share/linkedapi-linkedin-growth');
-const TOKEN = readFileSync(join(DATA_DIR, '.notion-token'), 'utf8').trim();
+const TOKEN_PATH = join(DATA_DIR, '.notion-token');
 const DB_PATH = join(DATA_DIR, 'db.sqlite');
 const CACHE = join(DATA_DIR, 'tmp/notion-leads-cache.json');
 const PREVIEW = join(DATA_DIR, 'tmp/migration-preview.json');
-const NOTION_DB = '28665216-8ab0-809c-a8dc-d8fe366d0266';
+export const NOTION_QUERY_URL =
+  'https://api.notion.com/v1/databases/28665216-8ab0-809c-a8dc-d8fe366d0266/query';
 const HIST = '2026-01-01 00:00:00'; // fallback historical timestamp (safely before today)
 
 const args = process.argv.slice(2);
@@ -36,11 +53,65 @@ const REFETCH = args.includes('--refetch');
 const rrArg = (args.find((a) => a.startsWith('--rr=')) || '').split('=')[1];
 const pendingMode = (args.find((a) => a.startsWith('--pending=')) || '').split('=')[1] || 'keep';
 
-const H = { Authorization: 'Bearer ' + TOKEN, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' };
 const rt = (p) => (p?.rich_text || []).map((t) => t.plain_text).join('');
 const ti = (p) => (p?.title || []).map((t) => t.plain_text).join('');
 const norm = (s) => (s || '').trim().toLowerCase();
 const RANK = { connected: 4, pending: 3, withdrawn: 2, error: 1 };
+
+function ensurePrivateDirectory(directoryPath) {
+  mkdirSync(directoryPath, { recursive: true, mode: 0o700 });
+  const stat = lstatSync(directoryPath);
+  if (!stat.isDirectory() || stat.isSymbolicLink()) {
+    throw new Error(`refusing non-directory cache path: ${directoryPath}`);
+  }
+  chmodSync(directoryPath, 0o700);
+}
+
+export function readJsonCache(filePath) {
+  let fd;
+  try {
+    const noFollow = constants.O_NOFOLLOW || 0;
+    fd = openSync(filePath, constants.O_RDONLY | noFollow);
+    const stat = fstatSync(fd);
+    if (!stat.isFile()) {
+      throw new Error(`cache is not a regular file: ${filePath}`);
+    }
+    fchmodSync(fd, 0o600);
+    return JSON.parse(readFileSync(fd, 'utf8'));
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    throw error;
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+  }
+}
+
+export function writePrivateJsonAtomic(filePath, value, space = 0) {
+  const directoryPath = dirname(filePath);
+  ensurePrivateDirectory(directoryPath);
+  const temporaryPath = join(
+    directoryPath,
+    `.${basename(filePath)}.${process.pid}.${randomUUID()}.tmp`,
+  );
+  let fd;
+  try {
+    fd = openSync(
+      temporaryPath,
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW || 0),
+      0o600,
+    );
+    fchmodSync(fd, 0o600);
+    writeFileSync(fd, JSON.stringify(value, null, space), 'utf8');
+    fsyncSync(fd);
+    closeSync(fd);
+    fd = undefined;
+    renameSync(temporaryPath, filePath);
+    chmodSync(filePath, 0o600);
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+    rmSync(temporaryPath, { force: true });
+  }
+}
 
 function mapStatus(oldStatus) {
   const n = norm(oldStatus);
@@ -51,22 +122,43 @@ function mapStatus(oldStatus) {
   return 'not_connected';
 }
 
-async function fetchAll() {
-  if (existsSync(CACHE) && !REFETCH) {
-    const cached = JSON.parse(readFileSync(CACHE, 'utf8'));
-    process.stderr.write(`using cache (${cached.length} rows); pass --refetch to refresh\n`);
-    return cached;
+export async function fetchAll({
+  cachePath = CACHE,
+  fetchImpl = globalThis.fetch,
+  refetch = REFETCH,
+  token,
+} = {}) {
+  ensurePrivateDirectory(dirname(cachePath));
+  if (!refetch) {
+    const cached = readJsonCache(cachePath);
+    if (cached !== null) {
+      if (!Array.isArray(cached)) throw new Error(`invalid Notion cache payload: ${cachePath}`);
+      process.stderr.write(`using cache (${cached.length} rows); pass --refetch to refresh\n`);
+      return cached;
+    }
   }
+  if (!token) throw new Error('Notion token is required when refreshing the cache');
+  if (typeof fetchImpl !== 'function') throw new Error('fetch is unavailable');
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  };
   let cursor;
   const rows = [];
   do {
     const body = { page_size: 100 };
     if (cursor) body.start_cursor = cursor;
-    const r = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB}/query`, {
-      method: 'POST', headers: H, body: JSON.stringify(body),
+    const r = await fetchImpl(NOTION_QUERY_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      redirect: 'error',
     });
     const j = await r.json();
+    if (!r.ok) throw new Error(`Notion HTTP ${r.status}: ${j?.message || 'request failed'}`);
     if (j.object === 'error') throw new Error('Notion error: ' + j.message);
+    if (!Array.isArray(j.results)) throw new Error('Notion response is missing results');
     for (const row of j.results) {
       const p = row.properties;
       rows.push({
@@ -86,7 +178,7 @@ async function fetchAll() {
     process.stderr.write(`\rfetched ${rows.length}...`);
   } while (cursor);
   process.stderr.write('\n');
-  writeFileSync(CACHE, JSON.stringify(rows));
+  writePrivateJsonAtomic(cachePath, rows);
   return rows;
 }
 
@@ -119,7 +211,9 @@ function firstNonEmpty(rowsArr, key) {
 }
 
 async function main() {
-  const rows = await fetchAll();
+  const token = readFileSync(TOKEN_PATH, 'utf8').trim();
+  const rows = await fetchAll({ token });
+  const { default: Database } = await import('better-sqlite3');
 
   // --- collapse by hashed_url ---
   const groups = new Map();
@@ -239,7 +333,7 @@ async function main() {
     multi_list_people: multiList,
   };
   console.log(JSON.stringify(summary, null, 2));
-  writeFileSync(PREVIEW, JSON.stringify({ summary, sample: planned.slice(0, 25) }, null, 2));
+  writePrivateJsonAtomic(PREVIEW, { summary, sample: planned.slice(0, 25) }, 2);
   console.log(`\npreview (summary + 25 sample rows) written to: ${PREVIEW}`);
 
   if (!APPLY) {
@@ -274,4 +368,8 @@ async function main() {
   db.close();
 }
 
-main().catch((e) => { console.error('FAILED:', e.message); process.exit(1); });
+const isMain = Boolean(process.argv[1]) &&
+  realpathSync(resolve(process.argv[1])) === realpathSync(fileURLToPath(import.meta.url));
+if (isMain) {
+  main().catch((e) => { console.error('FAILED:', e.message); process.exit(1); });
+}

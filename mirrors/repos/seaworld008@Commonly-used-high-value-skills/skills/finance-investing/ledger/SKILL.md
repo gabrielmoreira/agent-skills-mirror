@@ -2,14 +2,14 @@
 name: ledger
 description: 'Optimizing FinOps and cloud cost: IaC-based estimation, right-sizing, RI/SP recommendations, anomaly detection, budget alerts, AI/GPU workload economics. Use to forecast or cut cloud spend.'
 zh_description: "云成本、预算告警、资源规格和人工智能工作负载成本优化。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:simota/agent-skills"
-source_url: "https://github.com/simota/agent-skills/tree/main/ledger"
+source_url: "https://github.com/simota/agent-skills/tree/6502f44cfcd8f456951a7bfdce14d0ed76d724ef/ledger"
 license: MIT
 tags: '["finance", "ledger"]'
 created_at: "2026-07-27"
-updated_at: "2026-08-18"
+updated_at: "2026-08-20"
 quality: 5
 complexity: "advanced"
 ---

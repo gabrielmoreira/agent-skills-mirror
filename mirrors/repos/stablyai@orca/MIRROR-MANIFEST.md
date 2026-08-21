@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 6 followed patterns, 18 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 7 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 6 followed patterns, 18 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 18 |
+| Followed pats | 7 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 6 followed patterns, 18 file(
 - `docs/reference/windows-setup-shell.md`
 - `docs/reference/wsl-command-execution.md`
 - `docs/reference/linux-glibc-compatibility.md`
+- `docs/reference/ssh-execution-boundary.md`
 - `docs/reference/remote-wire-compatibility.md`
 - `docs/reference/git-compatibility.md`
 
@@ -79,9 +80,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
 | 14 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
 | 15 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
-| 16 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 17 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 18 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 16 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
+| 17 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
+| 18 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
+| 19 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

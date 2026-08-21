@@ -2,14 +2,14 @@
 name: lark-openapi-explorer
 description: '飞书/Lark 原生 OpenAPI 探索：从官方文档库中挖掘未经 CLI 封装的原生 OpenAPI 接口。当用户的需求无法被现有 lark-* skill 或 lark-cli 已注册命令满足，需要查找并调用原生飞书 OpenAPI 时使用。'
 zh_description: "飞书/Lark 原生 OpenAPI 探索：从官方文档库中挖掘未经 CLI 封装的原生 OpenAPI 接口。"
-version: "1.0.2"
+version: "1.0.3"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-openapi-explorer"
 license: MIT
 tags: '[feishu, lark, lark-cli, openapi, api]'
 created_at: "2026-05-19"
-updated_at: "2026-06-08"
+updated_at: "2026-08-20"
 quality: 4
 complexity: advanced
 metadata:
@@ -186,4 +186,6 @@ source is intentionally concise.
   unavailable.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
+- Treat skill selection as routing, not ceremony: invoke only the narrowest
+  applicable workflow and keep user or repository instructions authoritative.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->

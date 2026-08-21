@@ -16,7 +16,7 @@ The metaphor is metallurgical annealing: apply a controlled process that **relie
 
 ### Default Mode: `AUTORUN`
 
-Each brush-up is scope-bounded and behavior-preserving, so the default Mode is `AUTORUN` with the **Phase 3 slate gate** (the slate is confirmed before any code is touched when it crosses a blast-radius threshold). Escalate to `GUIDED` when the slate touches 10+ files or structural module boundaries (then Magi confirms the slate before BRUSH-UP). Unlike `delve`/`spec`, `anneal` is an **execution** recipe, not a dialogue one — there is no mandatory mid-run conversational checkpoint; its gates are blast-radius gates, not knowledge-junctures.
+Each brush-up is scope-bounded and behavior-preserving, so the default Mode is `AUTORUN`, gated by blast radius (see § Confirm / safety gate for the tiers and thresholds; Magi confirms the slate before BRUSH-UP on escalation). Unlike `delve`/`spec`, `anneal` is an **execution** recipe, not a dialogue one — there is no mandatory mid-run conversational checkpoint; its gates are blast-radius gates, not knowledge-junctures.
 
 ---
 
@@ -37,7 +37,7 @@ Engine routing follows summit principles throughout: **Codex owns code-gen** (Bu
 ### Phase 1 — MAP (ground the design as-is)
 Establish the **real** design before critiquing it — auditing an imagined architecture is the recipe's first failure mode (mirrors `delve` GROUND / `refactor` safety-net). `Lens`[map structure, responsibilities, data flow] unconditionally; +`Atlas`[dependency graph, layering, circular references, God classes, module boundaries] unconditionally (architecture is the headline design surface); +`Grove`?[repo/directory structure] when structure is in scope; +`Trail`?[recent churn / change hotspots — where design stress concentrates, so CRITIQUE digs where it matters]. Output: a **design map** — as-is architecture + responsibilities + hotspots.
 - **Scope gate:** under no-target (whole-codebase) or a structural scope, confirm the scope/launch before CRITIQUE (confirm-before-launch). A scoped `anneal <target>` proceeds without a stop.
-- **Checkpoint-resume:** persist the design map at the phase boundary.
+- **Checkpoint-resume:** see § Resume below.
 
 ### Phase 2 — CRITIQUE (the enumeration — multi-dimensional design audit)
 The enumeration proper — surface design weaknesses from **independent** angles (hub-spoke, no shared mutable state — independence is what makes the audit broad). Each lens owns one design dimension:
@@ -57,7 +57,7 @@ The enumeration proper — surface design weaknesses from **independent** angles
 Bound the work — *boil-the-ocean* is the second failure mode. `Ripple`[blast-radius / risk per issue — fixing a design issue can ripple widely] + `Rank`[value × risk × effort, e.g. WSJF / ICE / Cost-of-Delay] + `Magi`[arbitrate the **brush-up slate**: which issues this run, which to defer]. The slate is the top-N by value × risk; the deferred long-tail is recorded in the Ledger, never silently dropped.
 - **Behavior-change flag:** any slated issue whose fix would change externally-observable behavior is marked `behavior-changing` and split out — it does **not** ride the behavior-preserving brush-up; it routes to `feature`/`bug`/`migrate` or is confirmed explicitly (Ask First).
 - **Slate gate (contract-level under AUTORUN):** confirm the slate before BRUSH-UP when it touches **10+ files**, crosses structural module boundaries, or any target's blast radius is `PUBLIC_API` / `DATA` (Ask First). A small, internal-only slate proceeds.
-- **Checkpoint-resume:** persist the slate + deferred long-tail.
+- **Checkpoint-resume:** see § Resume below.
 
 ### Phase 4 — BRUSH-UP (execute the fixes — bounded loop, behavior-preserving)
 The actual brush-up. **Safety-net first** (refactor discipline): `Radar`[claude-gated] establishes a **green baseline before any code is touched** — green-before is the entry condition (`refactor` SAFETY-NET). Then fix per issue class, engine-routed:
@@ -68,10 +68,10 @@ The actual brush-up. **Safety-net first** (refactor discipline): `Radar`[claude-
 | over-engineering / dead | `Void` | `Sweep` / `Zen` |
 | API design | `Gateway` | `Builder` |
 | data-model design | `Schema` | `Builder` (+ migration) |
-| specification / spec-drift | `Attest`/`PDM` (locate) → `Accord`/`Scribe` (spec) | `Radar` (lock contract with a characterization test) |
+| specification / spec-drift | `Attest`/`PDM` (locate) → `Scribe[unified]`/`Scribe` (spec) | `Radar` (lock contract with a characterization test) |
 
 Independent issues run in parallel with **file-ownership isolation** (`_common/PARALLEL.md`); dependent ones serialize. Fixes are **behavior-preserving** — same external contract, better internal design. The spec axis stays behavior-preserving by construction: brush up a *stale spec to match correct code*, add a *missing AC*, or *lock undocumented behavior with a characterization test + a minimal spec*. The other direction — *code that drifted from its intended spec* and needs a code change to conform — is a behavior change, so it is flagged `behavior-changing` at PRIORITIZE and routed to `bug`/`feature`, never silently "fixed" under the design-clean-up banner.
-- **Loop:** `loop ≤ 3 cycles (default 3)` (per recipe-contract §2) against the design-quality bar. Each cycle brushes up a slice of the slate, then **re-critiques the touched area** (did the fix introduce a new smell?). The loop machinery — Generator-Evaluator separation, single termination oracle, flatten rule — lives in `reference/evaluator-loop-protocol.md`; this recipe references it rather than re-specifying it.
+- **Loop:** `loop ≤ 3 cycles (default 3)` (per recipe-contract §2) against the design-quality bar. Each cycle brushes up a slice of the slate, then **re-critiques the touched area** (did the fix introduce a new smell?). The loop machinery — Generator-Evaluator separation, single termination oracle, flatten rule — lives in `reference/evaluator-loop-protocol.md`; this recipe references it rather than re-specifying it. MAP/CRITIQUE/PRIORITIZE/VERIFY/SHIP are single-pass — only this phase iterates.
 - **Exit reasons** (recipe-contract §2): `ACCEPT` / `target-met` (slate cleared / design-quality bar reached, no regression) · `diminishing-returns (Δ < ε)` (a cycle yields little measurable design improvement) · `cap-reached` (`loop ≤ 3 cycles`) · `BLOCK` (a fix needs a decision/escalation). On any non-`ACCEPT` exit, `Void` confirms the stop and the recipe **reports best-so-far brushed-up + the residual slate** — never silently stops, never burns cycles past marginal value.
 
 ### Phase 5 — VERIFY (the dual gate — no-regression + design-improvement proof)
@@ -85,10 +85,6 @@ Two distinct gates; a brush-up must pass **both**:
 `Guardian`[PR with the **Design Ledger** report]. **Phased, small-scope commits** — one issue-class per commit/PR where reversibility matters; never a big-bang multi-issue design rewrite in one commit (void's ≈60% fewer-regression-bugs rule). ADRs accompany structural decisions.
 
 ---
-
-## Termination bound
-
-The Phase 4 BRUSH-UP loop: `loop ≤ 3 cycles (default 3)` (recipe-contract §2). Exit vocabulary: `ACCEPT`/`target-met` | `diminishing-returns (Δ < ε)` | `cap-reached` | `BLOCK`. Non-`ACCEPT` exit → report best-so-far + residual slate (the deferred long-tail + any issues that hit `BLOCK`). MAP/CRITIQUE/PRIORITIZE/VERIFY/SHIP are single-pass (no loop).
 
 ## Confirm / safety gate
 
@@ -120,44 +116,30 @@ The Phase 4 BRUSH-UP loop: `loop ≤ 3 cycles (default 3)` (recipe-contract §2)
 | **Auditing a strawman** (critiquing an imagined architecture) | MAP grounds in Lens + Atlas before any critique |
 | **Boil-the-ocean** (trying to fix every design issue at once) | PRIORITIZE bounds the slate to top-N by value × risk; long-tail deferred + recorded |
 | **Bikeshedding / cosmetic-only churn** (re-arranging to taste) | CRITIQUE false-positive filter: an issue needs a concrete cost; contested ones get a skeptic pass |
-| **Silent behavior drift under a "design improvement" banner** | VERIFY behavior-preservation hard gate (Radar same-suite-same-result) + the `behavior-changing` flag at PRIORITIZE |
+| **Silent behavior change under a "design improvement" banner** — including "fixing" drifted code to match its spec | VERIFY behavior-preservation hard gate (Radar same-suite-same-result) + the `behavior-changing` flag at PRIORITIZE, which routes those out to `bug`/`feature` rather than folding them into a clean-up. The CRITIQUE spec axis (Attest/PDM conformance + drift) is what surfaces the divergence; only the behavior-preserving direction — brushing up a *stale spec* to match correct code — stays in scope |
 | **Trading one smell for another** (de-couple → surface-area explosion) | VERIFY cross-axis guard |
 | **Over-engineering as "improvement"** (only ever adding structure) | Void owns the YAGNI/over-engineering dimension in CRITIQUE; Sweep/Void in BRUSH-UP can *remove* |
 | **Unmeasured improvement** ("looks cleaner", no proof) | VERIFY re-measures the CRITIQUE metrics → Before/After is mandatory |
-| **Spec drift goes unnoticed** (code and its spec silently diverge) | CRITIQUE spec axis (Attest/PDM conformance + drift); brush-up updates the stale spec, or flags the code mismatch `behavior-changing` |
 | **Undocumented load-bearing behavior** (behavior with no spec, lost on the next change) | spec axis flags it; brush-up locks it with a characterization test + a minimal spec |
-| **"Fixing" code to match a spec under a clean-up banner** (silent behavior change) | spec-axis code-conformance fixes are `behavior-changing` → flagged + routed to `bug`/`feature`, never folded into the brush-up |
 | **Big-bang design rewrite** (one giant risky commit) | SHIP phased small-scope commits, one issue-class at a time |
 | **Reinventing refactor/kaizen** (doing their job under a new banner) | boundaries below; a known single restructure → `refactor`, a feature-vs-target → `kaizen` |
 | **Work lost on interruption** | checkpoint-resume + `anneal resume` from the last boundary |
 
 ## Boundaries / vs neighbors
 
-- **vs `refactor`** — `refactor` applies a *known* internal restructure to a *known* target (you already decided what and where; behavior-invariant, narrow, code-level). `anneal` is **discovery-first**: it enumerates *undiagnosed* design weaknesses across a scope, prioritizes, then brushes up the slate (also behavior-preserving, but broader — architecture + standards + under-specified design, not just code style). `anneal`'s per-issue fix often *is* a refactor; a single known restructure → `refactor` direct (minimum viable chain).
-- **vs `optimize`** — `optimize` targets a perf number (measure → target → optimize). `anneal` targets *design quality* (coupling/cohesion/maintainability/robustness); a perf-tagged issue it surfaces hands off to `optimize`.
-- **vs `kaizen`** — `kaizen` improves **one feature** against a **known quantified target** via PDCA (perf/UX/code-quality/feature-extension axes you already picked). `anneal` audits **the design across a scope you have not pre-diagnosed** and fixes the prioritized slate. The axis is **known-target-for-one-feature (kaizen) vs discover-undiagnosed-design-weaknesses-across-a-scope (anneal)**. A `kaizen`-style design-quality axis on a single feature is in-scope for kaizen; a broad design sweep is `anneal`.
-- **vs `converge`** — `converge` is an execution-control loop (generator-evaluator vs a machine rubric) that can *wrap* any generator. `anneal`'s Phase 4 is a bounded brush-up loop, but `anneal` is a *task shape* (audit→fix design), not a control wrapper. `converge anneal` is valid: it wraps `anneal`'s brush-up generators under a single termination oracle.
-- **vs `delve`** — `delve` excavates **one shipped feature** for *evolution directions* and **writes no code** (forward-looking: what it could become). `anneal` **corrects design weaknesses across a scope and ships code** (backward-looking: what is wrong, fix it). `delve` is expansion; `anneal` is hardening.
-- **vs `trim`** — `trim` *removes* dead-weight **features** (essential×killer 2×2). `anneal` *strengthens* the design of features that stay; a `SIMPLIFY` outcome it produces (overbuilt-but-necessary) is brushed up here rather than removed. A dead-weight feature `anneal` notices → hand off to `trim`.
-- **vs `summit` / `acceptance`** — both are **PR/change-gated** quality maximization (summit = pre-merge tournament on a specific change, 28-119 agents; acceptance = proof-carrying merge for a specific PR). `anneal` is a **standing-codebase design sweep** not tied to a single PR — lighter (6-16 agents), proactive, and design-dimension-scoped. A release-critical specific change → `summit`/`acceptance`.
-- **vs `atlas` (agent)** — `atlas` analyzes architecture and authors ADRs/RFCs but is single-agent and *proposal-only* (no execution). `anneal` orchestrates `atlas` (as one CRITIQUE lens + the architecture-fix planner) together with `zen`/`canon`/`void`/`omen`/`attest` for the audit and `builder`/`zen`/`sweep`/`scribe` for the brush-up, plus the prioritize → fix → verify machinery `atlas` alone lacks. `atlas` is one engine inside `anneal`.
-- **vs `spec` / `attest` / `pdm` / `acceptance` (the spec axis's neighbors)** — `spec` *authors a new* spec via dialogue (no code); `attest`/`pdm` are single-agent *reporting* (conformance check / docs-vs-code drift, no fix); `acceptance` is a *PR-gated* proof-carrying merge. `anneal`'s **spec axis** is none of these: it audits the spec↔code health of *existing* code across a scope (using `attest`/`pdm` as the lens) and then **brushes it up** — updating stale specs, adding missing ACs, locking undocumented behavior with tests (`accord`/`scribe`/`radar`) — while routing genuine code-conformance defects out to `bug`/`feature`. Audit-and-fix the spec health of a standing codebase → `anneal`; write a brand-new spec → `spec`; just report conformance → `attest`/`pdm`; gate one PR → `acceptance`.
+`anneal` always holds the same side: **discover undiagnosed design weaknesses across a scope, then fix the prioritized slate behavior-preservingly**. Each row names the axis and the route out.
 
-**Decision tree:**
-```
-Want to improve EXISTING code?
-  Remove a whole feature?                          → trim
-  Just discover directions for ONE feature (no code)? → delve
-  Hit a specific perf number?                      → optimize
-  Apply a KNOWN single internal restructure?       → refactor
-  Improve ONE feature against a KNOWN target (PDCA)? → kaizen
-  Gate a specific PR/change at max quality?        → summit / acceptance
-  DISCOVER undiagnosed design weaknesses across a scope and brush them up (behavior-preserving)?
-        → anneal
-              anneal <target>   → scoped audit + brush-up
-              anneal (no target) → whole-codebase design sweep (confirm-before-launch)
-              wrap in a rubric-graded loop → converge anneal
-```
+| vs neighbor | Axis (neighbor ↔ `anneal`) | Route |
+|---|---|---|
+| `refactor` | known restructure on a known target ↔ discovery-first enumeration across a scope | a single known restructure → `refactor` direct (minimum viable chain); `anneal`'s per-issue fix often *is* a refactor |
+| `optimize` | a perf number ↔ design quality (coupling/cohesion/maintainability/robustness) | perf-tagged issue surfaced by CRITIQUE → `optimize` |
+| `kaizen` | known quantified target for **one feature** ↔ undiagnosed weaknesses **across a scope** | design-quality axis on one feature → `kaizen`; broad sweep → `anneal` |
+| `converge` | execution-control wrapper ↔ task shape (audit→fix design) | `converge anneal` is valid — it wraps the Phase 4 brush-up generators under one termination oracle |
+| `delve` | forward-looking evolution directions for one shipped feature, no code ↔ backward-looking hardening that ships code | expansion → `delve`; hardening → `anneal` |
+| `trim` | removes dead-weight features ↔ strengthens the design of features that stay | dead-weight feature noticed here → `trim`; its `SIMPLIFY` (overbuilt-but-necessary) outcome → brushed up here |
+| `summit` / `acceptance` | PR/change-gated quality maximization (28-119 agents / proof-carrying merge) ↔ standing-codebase sweep untied to a PR (6-16 agents) | release-critical specific change → `summit`/`acceptance` |
+| `atlas` (agent) | single-agent, proposal-only architecture analysis ↔ orchestration adding the prioritize → fix → verify machinery | `atlas` is one CRITIQUE lens *inside* `anneal` |
+| `spec` / `attest` / `pdm` (spec-axis neighbors) | author a new spec via dialogue (`spec`) or report conformance/drift without fixing (`attest`/`pdm`) ↔ audit **and brush up** the spec↔code health of existing code | new spec → `spec`; report only → `attest`/`pdm`; gate one PR → `acceptance`; genuine code-conformance defects route out to `bug`/`feature` |
 
 ## Scale
 
@@ -165,11 +147,11 @@ Want to improve EXISTING code?
 
 ## Shared protocols & Add-ons
 
-- **Shared:** Phase 4 loop → `reference/evaluator-loop-protocol.md` (Generator-Evaluator separation, single termination oracle, flatten rule). Phase 4 parallel fixes → `_common/PARALLEL.md` (file-ownership isolation, merge, rollback). Engine routing → summit principles (Codex code-gen / Claude judgment, `reference/summit-recipe.md`). CRITIQUE false-positive refutation → `_common/ADVERSARIAL_REFUTATION.md` (skeptic pass on contested issues). Behavior-preservation discipline → the `refactor` recipe (safety-net + same-suite-same-result). Spec-axis AC/REQ traceability → `_common/TRACEABILITY.md` (canonical AC/REQ IDs the `Attest` lens and `Accord` brush-up reuse).
+- **Shared:** Phase 4 loop → `reference/evaluator-loop-protocol.md` (Generator-Evaluator separation, single termination oracle, flatten rule). Phase 4 parallel fixes → `_common/PARALLEL.md` (file-ownership isolation, merge, rollback). Engine routing → summit principles (Codex code-gen / Claude judgment, `reference/summit-recipe.md`). CRITIQUE false-positive refutation → `_common/ADVERSARIAL_REFUTATION.md` (skeptic pass on contested issues). Behavior-preservation discipline → the `refactor` recipe (safety-net + same-suite-same-result). Spec-axis AC/REQ traceability → `_common/TRACEABILITY.md` (canonical AC/REQ IDs the `Attest` lens and `Scribe[unified]` brush-up reuse).
 - **Add-ons:** +`Scout` for deeper root-cause when an issue's origin is unclear, +`Schema`/`Gateway` when DB/API surfaces are in scope (also listed as conditional CRITIQUE lenses), +`Sentinel` to flag (not fix) security-relevant design weaknesses, +`Trail` to locate design-stress hotspots from churn in MAP, +`Scribe` to author the ADRs / Design Ledger, +`Sherpa` to decompose a large slate into atomic brush-up steps.
 
 ## Chain template
 
-`MAP (Lens[map current design] + Atlas[deps/layering/God-class/boundaries] +Grove?[structure] +Trail?[hotspots]) → ✓scope-gate (confirm-before-launch when no-target/structural) → CRITIQUE (Atlas[architecture] ‖ Zen[code smells] ‖ Canon[standards/ISO-25010] ‖ Void[over-engineering/YAGNI] ‖ Omen[under-specified/edge-cases/invariants] ‖ Attest/PDM[spec: spec↔code drift / AC traceability / undocumented behavior] +Gateway?/Schema?/Sentinel?; → Design-Issue Ledger, every issue evidence-tied; false-positive filter + skeptic pass on contested per _common/ADVERSARIAL_REFUTATION.md) → PRIORITIZE (Ripple[blast-radius] + Rank[value×risk×effort] + Magi[slate; defer long-tail; flag behavior-changing]) → ✓slate-gate (Ask First: 10+ files | PUBLIC_API/DATA | behavior-changing) → BRUSH-UP [Radar safety-net green-before → ⟲{ (Atlas+Builder[arch] ‖ Zen[smell] ‖ Void+Sweep[dead/over-built] ‖ Gateway+Builder[API] ‖ Schema+Builder[data] ‖ Accord/Scribe+Radar[spec: update stale spec / lock undocumented behavior; code-conformance defect → flag behavior-changing, route out]) per _common/PARALLEL.md file-ownership → re-critique touched area }⟲ loop ≤3 cycles (default 3), exit ACCEPT | diminishing-returns (Δ<ε) | cap-reached | BLOCK ] → VERIFY (Radar[regression: same-suite-same-result] + Atlas/Canon/Attest[Before/After design + spec-drift metrics] + cross-axis guard + Judge[multi-engine diff review]) → SHIP (Guardian[phased small-scope commits + Design Ledger + ADRs])`
+`MAP (Lens[design map] + Atlas[deps/layering/boundaries] +Grove? +Trail?) → ✓scope-gate → CRITIQUE (Atlas[architecture] ‖ Zen[code smells] ‖ Canon[standards] ‖ Void[over-engineering] ‖ Omen[under-specified] ‖ Attest/PDM[spec drift] +Gateway?/Schema?/Sentinel? → Design-Issue Ledger) → PRIORITIZE (Ripple[blast-radius] + Rank[value×risk×effort] + Magi[slate]) → ✓slate-gate → BRUSH-UP [Radar safety-net green-before → ⟲{ Atlas+Builder[arch] ‖ Zen[smell] ‖ Void+Sweep[dead/over-built] ‖ Gateway+Builder[API] ‖ Schema+Builder[data] ‖ Scribe[unified]/Scribe+Radar[spec] → re-critique touched area }⟲] → VERIFY (Radar[regression] + Atlas/Canon/Attest[Before/After] + cross-axis guard + Judge[diff review]) → SHIP (Guardian[phased commits + Design Ledger + ADRs])`
 
-The behavior-preservation gate, the value×risk-bounded slate, and the ≤3-cycle brush-up loop are contract-level; resumable via `anneal resume` from the last checkpoint. Optional `converge anneal` wraps the brush-up loop under a single rubric oracle. Hands off deferred clusters to `refactor` / `optimize` / `kaizen` / `trim` / `security`.
+Gate content, loop bound, and exit vocabulary are not restated here — see each Phase contract above and § Confirm / safety gate. Resumable via `anneal resume`; optional `converge anneal` wraps the brush-up loop under a single rubric oracle; deferred clusters hand off to `refactor` / `optimize` / `kaizen` / `trim` / `security`.
