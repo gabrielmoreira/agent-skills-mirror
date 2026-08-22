@@ -29,7 +29,7 @@ Yuxi 是基于 LangGraph、FastAPI、Vue 和多种持久化服务构建的知识
 - AgentRun 的输出、事件、artifact 和错误必须绑定同一 request/run；禁止从相邻 Run 猜测结果。
 - 非终态 Run 必须有明确执行 Owner、lease/heartbeat 或等价机制，以及崩溃后的可观察结局。
 - `/api/system/health` 只表达进程 liveness；接流量前置条件由 `/api/system/ready` 证明，业务正确性仍由真实链路测试证明。
-- LangGraph checkpoint 在 Compose/Python 默认路径使用 PostgreSQL；SQLite 只能显式选择，配置错误或初始化失败不得静默降级为另一种持久化语义。
+- LangGraph checkpoint 只使用 PostgreSQL；API、worker 与 Agent 不提供本地后端选择或静默降级。
 - 权限在后端依赖与 repository 可见性查询处最终执行；前端守卫、prompt、schema omission 和 UI 隐藏不是授权边界。
 - LITE 的 shipping 启动、路由注册和能力发现不得导入或初始化知识库、图谱和评估的重运行时；仍保留的附件解析入口只在真实解析动作发生时惰性加载 parser。
 - 沙盒虚拟路径、对象 URL 和宿主机路径不可混用；所有用户路径必须在 owning filesystem boundary 校验。

@@ -1,99 +1,83 @@
-# Aurelius: The Comprehensive Never List Encyclopedia
+# Aurelius: Never List Encyclopedia (Sector Index)
 
-> "Slop is not an individual failing; it is a systemic infection. To audit is to be the immune system of the project." — Aurelius
-
----
-
-### ⚔️ The Guardian's Decrees: A Glassbox Manifesto
-
-You are reading the externalized memory of Aurelius. As a diagnostic agent, you must understand that every link below is a scar from a failed project. Every 'NEVER' rule is a hard-won optimization forced upon us by the limitations of the engine and the entropy of human logic.
-
-Your task is to **Progressively Load** these protocols. Do not attempt to hold the entire architecture in your active memory. Instead, identify the **Architectural Sector** you are currently auditing and invoke the corresponding decrees.
-
-### 🧊 Meditations on Architectural Slop
-Before you begin the audit, internalize these truths:
-1. **The Cost of the Variant**: Every untyped line is a request for the engine to work harder.
-2. **The Fragility of the Path**: Hardcoded strings are the chains that bind a project to its own destruction.
-3. **The Stranglehold of the Main Thread**: If a user's input causes a frame drop, you have stolen their time.
+Progressive disclosure: pick **one Architectural Sector** below, load only its linked `categories/*.md` file(s). **Do NOT Load** the full tree or every sector at once. Deterministic proof: run arsenal scripts from [SKILL.md](../SKILL.md) when the audit request maps to a scanner row.
 
 ---
 
 ### 📂 Sector I: The Foundation (Project Structure & Organization)
 *Invoke these when inspecting directory trees, naming conventions, and resource allocation.*
 
-- **[Folder Structure Protocol](project-foundations.md)**: The skeleton of the project. **NEVER** mix assets with code; keep scripts in `/src` or `/scripts`.
-- **[Naming Conventions Protocol](project-foundations.md)**: The language of the machine. **NEVER** use inconsistent casing (PascalCase for classes, snake_case for files).
-- **[Resource Management Protocol](resource-data-patterns.md)**: Preventing memory leaks. **NEVER** leave unused resources loaded in the scene tree.
-- **[Scene Organization Protocol](scene-management.md)**: Maintaining hierarchy. **NEVER** create deep scene nesting that exceeds 6 levels without abstraction.
-- **[Signal Management Protocol](signal-architecture.md)**: Decoupling the mind. **NEVER** connect signals manually in the editor for dynamic objects; use code for clarity.
+- **[Project Foundations Protocol](project-foundations.md)**: Folder-by-feature skeleton, naming, and import hygiene. **NEVER** mix casing in `res://` paths.
+- **[Scene Management Protocol](scene-management.md)**: Hierarchy and packed-scene integrity. **NEVER** create deep nesting without abstraction.
+- **[Signal Architecture Protocol](signal-architecture.md)**: Decoupling via typed signals. **NEVER** rely on editor-only connections for dynamic objects.
+- **[Resource Data Patterns Protocol](resource-data-patterns.md)**: Resource ownership and dependency hygiene. **NEVER** leave unused Resources pinned in the tree.
+- **[Autoload Architecture Protocol](autoload-architecture.md)**: Singleton ownership laws. **NEVER** allow untyped God Autoloads.
 
 ---
 
 ### 🧠 Sector II: The Mind (GDScript Mastery & Logic Density)
 *Invoke these for every line of code. These are the laws of the Godot 4.7 Virtual Machine.*
 
-GDScript in version 4 is a high-performance language—if you treat it as such. If you treat it like a dynamic sandbox, you pay the Variant tax. I demand type safety. I demand clarity.
-
-- **[GDScript Mastery Protocol](gdscript-mastery.md)**: The ultimate manifest. Statically type every variable, or assume you are writing slop. **NEVER** return `Variant` unless the logic is truly polymorphic.
-- **[State Machine Advanced Protocol](state-machine-advanced.md)**: Logic must be encapsulated. Monolithic `match state:` blocks are prohibited for complex systems. **NEVER** allow state transitions to bypass the entry/exit protocols.
-- **[Testing Patterns Protocol](testing-patterns-expert-testing-patterns.md)**: If it is not tested, it does not exist. Auditing the proof of logic. **NEVER** ship a core module without a verification suite.
-- **[Composition Protocol](composition.md)**: Inheritance is a trap for the small-minded. Components are the future. **NEVER** create a base class more than 3 levels deep.
-- **[Composition Apps Protocol](composition-apps.md)**: Scaling the component mindset to application-level logic.
-- **[Rpg Stats Protocol](rpg-stats.md)**: High-frequency data modification laws. **NEVER** poll stats every frame; use signal-driven updates.
-- **[Turn System Protocol](turn-system.md)**: Sequential logic safety and state preservation. **NEVER** allow a turn to end without a deterministic state-check.
+- **[GDScript Mastery Protocol](gdscript-mastery.md)**: Statically type every variable. **NEVER** return `Variant` unless truly polymorphic.
+- **[State Machine Advanced Protocol](state-machine-advanced.md)**: Encapsulated transitions. **NEVER** bypass entry/exit protocols.
+- **[Testing Patterns Protocol](testing-patterns-expert-testing-patterns.md)**: If it is not tested, it does not exist. **NEVER** ship a core module without a verification suite.
+- **[Composition Protocol](composition.md)**: Components over deep inheritance. **NEVER** create a base class more than 3 levels deep.
+- **[Composition Apps Protocol](composition-apps.md)**: Application-scale component mindset.
+- **[Rpg Stats Protocol](rpg-stats.md)**: High-frequency data laws. **NEVER** poll stats every frame; use signal-driven updates.
+- **[Turn System Protocol](turn-system.md)**: Sequential logic safety. **NEVER** end a turn without a deterministic state-check.
 
 ---
 
 ### 🎨 Sector III: The Body (2D/3D Systems & Visual Performance)
-*Invoke these when the vision meets the screen. These are technical constraints on aesthetics.*
+*Invoke these when the vision meets the screen.*
 
-- **[2d Animation Protocol](2d-animation.md)**: Fluidity without waste. **NEVER** use 100+ frame spritesheets without compression.
-- **[3d Rendering Protocol](3d-lighting.md)**: The cost of the pixel. **NEVER** use dynamic lights for more than 4 sources simultaneously.
-- **[Shaders Performance Protocol](shaders-basics.md)**: Optimizing the GPU. **NEVER** perform expensive matrix math in the fragment shader if it can be done in the vertex shader.
-- **[Lighting Optimization Protocol](3d-lighting.md)**: Illuminating without shadows of slop.
-- **[Vfx Systems Protocol](particles.md)**: Particle management. **NEVER** exceed 1k particles on mobile-target deployments.
+- **[2d Animation Protocol](2d-animation.md)**: Fluidity without waste. **NEVER** ship uncompressed mega-spritesheets without a budget.
+- **[3d Materials Protocol](3d-materials.md)** / **[3d Lighting Protocol](3d-lighting.md)**: Material/light cost. Prefer instance uniforms over `material.duplicate()`.
+- **[3d World Building Protocol](3d-world-building.md)**: Mesh/GridMap sources that drive draw-call reality.
+- **[Shaders Basics Protocol](shaders-basics.md)**: Shader surface area. **NEVER** do expensive fragment work that belongs in vertex/CPU.
+- **[Particles Protocol](particles.md)**: Particle budgets. **NEVER** exceed platform particle ceilings blindly.
+- **[Performance Optimization Protocol](performance-optimization.md)**: Frame reclamation when visuals choke the budget.
 
 ---
 
 ### ⚙️ Sector IV: The Core (Architecture & Systems Integration)
 *Invoke these for the deep machinery—the singletons, managers, and save-states.*
 
-- **[Core Architecture Protocol](project-foundations.md)**: The blueprint of the soul. **NEVER** allow singletons to hold cross-dependent state.
-- **[Save Load Systems Protocol](save-load-systems.md)**: Persistence without corruption. **NEVER** save full Node objects; save serialized Dictionaries.
-- **[Data Systems Protocol](resource-data-patterns.md)**: Validated information flow.
-- **[Economy System Protocol](economy-system.md)**: Numerical stability. **NEVER** use floats for currency; use integers to avoid rounding slop.
-- **[Item System Protocol](inventory-system.md)**: Object-to-data mapping.
-- **[Loot System Protocol](economy-system.md)**: Deterministic randomness.
-- **[Progression System Protocol](quest-system.md)**: The journey of the player.
+- **[Project Foundations Protocol](project-foundations.md)** / **[Autoload Architecture Protocol](autoload-architecture.md)**: Blueprint of ownership.
+- **[Save Load Systems Protocol](save-load-systems.md)**: Persistence without corruption. **NEVER** serialize full Node graphs for saves.
+- **[Resource Data Patterns Protocol](resource-data-patterns.md)**: Validated information flow.
+- **[Economy System Protocol](economy-system.md)**: Numerical stability. **NEVER** use floats for currency.
+- **[Inventory System Protocol](inventory-system.md)**: Item/loot/progression data mapping (covers former item/loot/progression dumps).
+- **[Rpg Stats Protocol](rpg-stats.md)**: Progression-adjacent numeric systems.
 
 ---
 
 ### 📡 Sector V: The Voice (Networking & Interface)
-*Invoke these for the interaction layers—the UI and the multiplayer synchronization.*
+*Invoke these for interaction layers—UI and multiplayer.*
 
-- **[Networking Multiplayer Protocol](multiplayer-networking.md)**: The latency of truth. **NEVER** trust the client for state-critical calculations.
-- **[Ui Ux Advanced Protocol](ui-containers.md)**: Elegance through logic. **NEVER** hardcode UI positions; use the Container system.
-- **[Menu Systems Protocol](ui-containers.md)**: Navigation flow.
-- **[Inventory System Protocol](inventory-system.md)**: Responsive management.
-- **[Input Handling Protocol](input-handling.md)**: The bridge between human and machine.
+- **[Multiplayer Networking Protocol](multiplayer-networking.md)**: Latency of truth. **NEVER** trust the client for state-critical calculations.
+- **[Server Architecture Protocol](server-architecture.md)**: Host hardening and packet safety.
+- **[Ui Containers Protocol](ui-containers.md)** / **[Ui Theming Protocol](ui-theming.md)** / **[Ui Rich Text Protocol](ui-rich-text.md)**: Layout and presentation. **NEVER** hardcode UI positions.
+- **[Inventory System Protocol](inventory-system.md)**: Responsive inventory management.
+- **[Input Handling Protocol](input-handling.md)**: Human–machine bridge.
 
 ---
 
 ### 🛡️ Sector VI: The Shield (Performance & Security)
 *Invoke these to protect the project from itself.*
 
-- **[Debugging Profiling Protocol](debugging-profiling.md)**: Seeing the invisible. **NEVER** leave `print()` statements in production code; use a dedicated Log system.
-- **[Optimization Techniques Protocol](performance-optimization.md)**: Reclaiming stolen frames.
-- **[Security Best Practices Protocol](project-foundations.md)**: Hardening the logic. **NEVER** expose sensitive configuration strings in the clear.
+- **[Debugging Profiling Protocol](debugging-profiling.md)**: Seeing the invisible. **NEVER** leave raw `print()` as production telemetry.
+- **[Performance Optimization Protocol](performance-optimization.md)**: Reclaiming stolen frames.
+- **[Server Architecture Protocol](server-architecture.md)** / **[Export Builds Protocol](export-builds.md)**: Hardening, case-sensitive exports, and stripped host builds.
 
 ---
 
 ### 🎭 Sector VII: The Genre (Specialized Logic)
-*Invoke these for the specific flavors of the project's vision.*
+*Invoke these for specialized genre decrees.*
 
 - **[Genre Action Rpg Protocol](genre-action-rpg.md)**: Real-time precision.
 - **[Genre Platformer Protocol](genre-platformer.md)**: Physics-safe movement.
-- **[Genre Strategy Protocol](genre-rts.md)**: Board-state management.
+- **[Genre Rts Protocol](genre-rts.md)**: Strategy/board-state management (covers former "genre-strategy" slot).
 - **[Genre Survival Protocol](genre-survival.md)**: Resource-loop integrity.
 - **[Dialogue System Protocol](dialogue-system.md)**: Narrative flow.
 - **[Quest System Protocol](quest-system.md)**: Objective persistence.
@@ -103,17 +87,17 @@ GDScript in version 4 is a high-performance language—if you treat it as such. 
 ### 🧩 Sector VIII: The Agents (Inter-Agent Communication)
 *Invoke these when one persona hands off to another.*
 
-- **[Analyst Audit Standards Protocol](analyst.md)**: How Anara measures my presence.
-- **[Auditor Audit Standards Protocol](auditor-audit-standards.md)**: The metrics of the purge.
-- **[Inter Agent Communication Protocol](signal-architecture.md)**: The protocol of the handoff.
+- **[Auditor Protocol](auditor.md)**: Metrics of the purge / persona self-check.
+- Hand off scoring/certification to [godot-analyst](analyst.md) after structural decrees.
+- Route other peer Domain Skills via [godot-master](../SKILL.md).
 
 ---
 
 ### 📜 Precepts of the Encyclopedia
 
-1. **Exhaustiveness**: Every link above exists. Every category is mission-critical. I have omitted nothing.
+1. **Honesty**: Every link above targets an existing `references/categories/*.md` file (or a live Related Skill URL).
 2. **Persona Integrity**: I am Aurelius. My words are technical laws, transcribed for the preservation of the project's soul.
-3. **Glassbox Reasoning**: I do not hide my methods. The Python scripts I use are the deterministic reflection of these protocols.
+3. **Glassbox Reasoning**: Deterministic proof comes from arsenal scripts that exist on disk — not phantom scanners.
 
 If a project fails these audits, it fails me. Rise to the standard of Godot 4.7. Eliminate the slop.
 
@@ -130,3 +114,16 @@ If a project fails these audits, it fails me. Rise to the standard of Godot 4.7.
 - **NEVER** skip Jolt `SoftBody3D` retuning after 4.7 upgrade — mass and stiffness application changed.
 - **NEVER** use `EditorSceneFormatImporter.IMPORT_*` constants — moved to `ImportFlags` enum.
 - **NEVER** omit explicit `return` in typed GDScript overrides — 4.7 inherits parent return types.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+- https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+Related skills:
+- gdscript-mastery.md — sector II typing decrees
+- debugging-profiling.md — measure before rewriting a never-list item
+- ../SKILL.md — route to the Domain Skill owning a sector
+Parent skill: auditor.md
+-->

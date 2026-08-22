@@ -6,37 +6,55 @@ runners, environments, and a concise job graph.
 
 ## Required validation
 
-`merge-candidate-biome.yml` is the pre-merge admission gate. GitHub's merge
-queue synthesizes its checkout SHA from the current `develop` tip and the
-queued pull requests, then the workflow runs the repository-pinned full lint
-and format contracts on that exact tree. Branch rules must require the stable
-`Merge Candidate Biome / Candidate tree` check for the queue to block a bad
-candidate; post-merge workflows remain health checks rather than admission.
+`pr-static-smoke.yml` is the sole pull-request and merge-candidate workflow. It
+publishes the stable `All Tests Passed` context after proving the exact candidate
+is mergeable, checking its diff and conflict markers, scanning its commits for
+secrets, linting changed workflow definitions, performing a frozen install, and
+building plus linting and typechecking the affected workspace closure. It does
+not run tests, scenarios, live providers, devices, deployments, or destructive
+effects. New commits cancel stale work for the same pull request or merge group.
 
-`ci.yml` is the canonical post-merge branch-health workflow for `develop`. It
-classifies changed paths, runs repository quality checks, affected tests,
-deterministic smoke tests, a path-scoped Android release AAB audit, and a
-diff-scoped secret scan. Its stable `CI / Required` job diagnoses the integrated
-branch; it does not replace the merge-candidate admission check above.
+`develop-full.yml` is the sole develop-push workflow. Its stable concurrency
+group cancels the complete read-only graph for a superseded tip, delegates each
+validation family to its reusable workflow, and publishes `Complete manifest`
+only when every family succeeds. Publication and deployment workflows remain
+manual until durable current-SHA effect fencing makes cancellation safe.
+The delegated `platform-smoke.yml` family preserves macOS and Windows core
+proof without a separate periodic authority.
 
-`nightly.yml` calls the same CI workflow once per day and adds macOS and Windows
-core smoke tests. It never publishes packages or creates releases.
+`.github/rulesets/required-branches.json` is the reviewed no-bypass ruleset
+manifest for `develop` and `main`. `scripts/security/apply-branch-protection.sh`
+is read-only by default (`--check`) and requires explicit `--apply` authority to
+create or update that exact ruleset. `repository-ruleset-drift.yml` performs the
+same semantic readback by manual dispatch and through the
+`repository_ruleset_drift` external repository-dispatch event. A green readback
+proves configuration parity only; owner audit-log review plus red/green and
+direct-push canaries remain required after an authorized apply. External
+readback requires an owner-provisioned
+`REPOSITORY_RULESET_READ_TOKEN` Actions secret with repository
+`Administration: read`; the workflow-scoped `GITHUB_TOKEN` cannot request
+that repository permission and is never used for this readback.
 
-`develop-health.yml` is the canonical uncontended trunk-health lane (#19181).
-Push-triggered develop runs supersede each other during merge waves, so this
-lane runs the repository verify gate on the live develop tip four times a day
-(and on manual dispatch) from a single hosted runner, in a fixed
-never-cancelled concurrency group, and publishes the outcome as a
-`develop-health` commit status on the exact SHA it measured. A missing status
-means no measurement concluded; a red status means develop is actually red —
-the lane exists to keep those two states distinguishable while the fleet is
-saturated.
-[![develop health](https://github.com/elizaOS/eliza/actions/workflows/develop-health.yml/badge.svg?branch=develop)](https://github.com/elizaOS/eliza/actions/workflows/develop-health.yml)
+The manifest intentionally keeps Code Owner review disabled while
+`.github/CODEOWNERS` names placeholder teams. An organization owner must
+replace every placeholder, verify each team exists and can review the covered
+paths, then submit a separate reviewed manifest change enabling Code Owner
+review. The current ruleset still requires one approval, last-push approval,
+and review-thread resolution.
 
-## Scheduled security analysis
+The manifest allows squash and rebase only: linear history rejects merge commits.
+Required-signature enforcement is deferred because GitHub cannot generally
+produce a signed web squash for an external contributor unless the merger is
+also the pull-request author, while rebase admission requires every source
+commit to be signed. An owner may propose signature enforcement separately only
+after proving contributor-safe signed squash/rebase canaries; ordinary approval,
+last-push approval, thread resolution, status checks, linear history, and the
+force-push/deletion bans remain active here.
 
-`codeql.yml` runs JavaScript/TypeScript CodeQL analysis only on its weekly
-schedule or by explicit manual dispatch. It deliberately has no `push` or
+## On-demand security analysis
+
+`codeql.yml` runs JavaScript/TypeScript CodeQL analysis only by explicit manual
+dispatch. It deliberately has no `push` or
 `pull_request` trigger, so CodeQL cannot add work or checks to ordinary pull
 request updates. Seven category-distinct production shards keep the default
 security suite inside hosted-job limits while covering every maintained package,
@@ -48,14 +66,11 @@ fixture, research, example, and documentation trees are excluded.
 Several branch-scoped and path-scoped workflows run alongside the canonical CI
 gate for specific surfaces. This list is non-exhaustive; other specialized
 gates such as `cloud-tests.yml`, `chat-shell-gestures.yml`, and the `pr.yaml`
-title check cover narrower contracts. None replaces the `CI / Required` status.
+title check cover narrower contracts. None replaces the required
+`All Tests Passed` aggregate.
 Representative examples:
 
-- `develop-pr.yml` is called from canonical `ci.yml` for `develop`-targeted PRs
-  and runs lint, typecheck, build, changed-plugin tests, and pinned `actionlint`.
-  It has no direct pull-request trigger, so outside contributors encounter only
-  the canonical workflow's approval boundary.
-- `gitleaks.yml` scans protected-branch pushes. Canonical `ci.yml` owns the
+- `gitleaks.yml` scans the develop tip inside Develop Full. `pr-static-smoke.yml` owns the
   equivalent diff-scoped pull-request secret scan on a hosted runner.
 - `quality.yml` supplies the extended homepage build and workspace format gate
   for `main`-targeted PRs and post-merge pushes, including the single
@@ -65,16 +80,9 @@ Representative examples:
 - `ui-e2e-gate.yml` and `ui-fixture-e2e.yml` run the packages/ui Chromium and
   WebKit fixture gates when `packages/ui/src/**` changes.
 - `device-e2e.yml` is the exact-head Android-emulator and iOS-simulator
-  device-bundle producer (#19640). Canonical `ci.yml` calls it only for PRs
-  carrying the `ci:device` label; `workflow_dispatch` is the on-demand route,
-  and a weekly cadence hard-gates only the explicit host-safe Android subset;
-  scheduled runs do not allocate the macOS/iOS job. A scheduled Android
-  non-success opens, updates, or reopens one stable failure issue containing
-  exact run-attempt, attempt-scoped artifact, and revision links; the next
-  successful cadence updates and closes it so the issue never remains stale.
-  The notifier has job-scoped read access to Actions and contents plus issue
-  write access; reusable and manually dispatched runs never write issues.
-  [![scheduled device e2e](https://github.com/elizaOS/eliza/actions/workflows/device-e2e.yml/badge.svg?branch=develop&event=schedule)](https://github.com/elizaOS/eliza/actions/workflows/device-e2e.yml?query=event%3Aschedule)
+  device-bundle producer (#19640). Pull requests never call it;
+  `workflow_dispatch` is the on-demand route and `workflow_call` is available to
+  an explicit trusted caller.
   Artifact names include the run ID and attempt so reruns cannot overwrite or
   link a prior attempt's bundle. Both jobs initialize a revision-bound artifact
   root after checkout, then run the bundle-owning runners with `--output`. A
@@ -82,7 +90,7 @@ Representative examples:
   `junit.xml`) on success and failure; an earlier toolchain or device failure
   retains the bootstrap record plus the Actions log. No job reads a repository
   secret.
-- `android-arm64-local-e2e.yml` is the separate weekly, schedule-only
+- `android-arm64-local-e2e.yml` is the separate trusted repository-dispatch
   self-hosted physical-device lane for the embedded Bun + GGUF agent. Its
   `[self-hosted, Linux, ARM64, android-device]` labels are an infrastructure
   contract: the job stays queued until such a runner is online, then fails
@@ -90,8 +98,9 @@ Representative examples:
   toolchain preflight. Preflight output is uploaded even when a prerequisite
   fails before the bundle runner starts. It runs local chat plus
   local-runtime/route WebView probes; on-device voice remains separately
-  qualified. Manual arbitrary-ref dispatch is intentionally unavailable
-  because this runner persists and owns a physical device.
+  qualified. Manual arbitrary-ref dispatch is intentionally unavailable because
+  this runner persists and owns a physical device; repository dispatch resolves
+  the workflow from the trusted default branch.
 
 ## Manual operations
 
@@ -103,8 +112,7 @@ Representative examples:
   and an always-uploaded evidence bundle. The
   `dedicated` suite owns the managed dedicated staging canary and exact
   stale-canary recovery. Specialized app and voice evidence also flows through
-  `app-live-e2e.yml` and `voice-live-e2e.yml`, which run on schedule or
-  dispatch.
+  `app-live-e2e.yml` and `voice-live-e2e.yml`, which run only by dispatch.
 - `release.yaml` is the npm, canonical Git tag, and GitHub Release authority.
   It creates the release as the final step of its npm/version transaction.
   The stable tag then triggers `release-electrobun.yml`, which resolves and
@@ -134,6 +142,33 @@ Representative examples:
   `APP_STORE_API_ISSUER_ID`, and `APP_STORE_API_KEY_P8`. The API-backed first
   upload still depends on the corresponding organization account, application
   record, agreements, and roles already existing in each publisher portal.
+
+  The authored inventory of those names, together with the prerequisite,
+  owner, rotation cadence, and revocation path for each lane, lives in
+  `packages/scripts/lib/store-release-credentials.mjs`.
+  `bun run release:store-credentials` prints it and fails on drift between the
+  contract and the names these workflows reference.
+  `bun run release:store-credentials:audit` additionally reads the live
+  `production-release` environment through `gh api`: the credential-name
+  inventory a repository owner still has to provision, plus the resolved
+  required-reviewer principals, `prevent_self_review`, and the custom
+  deployment branch/tag policy patterns, validated against the repo-owned
+  `RELEASE_ENVIRONMENT_POLICY` (reviewer allowlist, self-review prevention,
+  and only the `develop` branch and `v*` tag deployment patterns). Any
+  protection setting the API cannot prove is reported as an owner-verification
+  blocker, never a pass, and the reviewer allowlist ships empty so the audit
+  cannot report READY until an owner verifies and commits it. Both operations
+  compare names and policy metadata only; the GitHub API never exposes secret
+  values and the preflight never reads, prints, or stores one. Name presence
+  cannot prove a credential value is valid — only a real protected store
+  publish proves that. Exit codes are `0` ready, `1` contract drift or
+  unreadable live state, `2` live environment not provisioned or its
+  protection policy unproven or in violation.
+
+  Creating `production-release`, selecting its required reviewers and
+  deployment branch/tag policy, and adding any credential are owner-only
+  actions taken in the GitHub UI with authorized confirmation at action time.
+  No automation in this repository creates them.
 - `infra.yml` is the only Terraform plan, apply, and state-edit entry point.
   Each protected Environment supplies a distinct RSA public-key variable
   `TERRAFORM_PLAN_ARTIFACT_PUBLIC_KEY` and apply-only private-key secret
@@ -263,9 +298,8 @@ reads a value back from a provider.
 
 ## Maintenance and assistance
 
-`weekly-maintenance.yml` provides the single scheduled dependency/security
-maintenance signal. `claude.yml` remains opt-in through mentions and is not a
-required check.
+`weekly-maintenance.yml` provides on-demand dependency/security maintenance.
+`claude.yml` remains opt-in through mentions and is not a required check.
 
 When adding automation, prefer extending an existing package script and one of
 these workflows. A new workflow requires a distinct trigger, credential, runner,

@@ -1,6 +1,6 @@
-# 📜 Aurelius Expert Audit Standards (Godot 4.6+)
+# 📜 Aurelius Expert Audit Standards (Godot 4.7+)
 
-This document defines the technical benchmarks for the **Aurelius Protocol**. These standards represent the "Gold Standard" for professional-grade Godot 4.6 development.
+This document defines the technical benchmarks for the **Aurelius Protocol**. These standards represent the "Gold Standard" for professional-grade Godot 4.7 development.
 
 ---
 
@@ -22,7 +22,7 @@ This document defines the technical benchmarks for the **Aurelius Protocol**. Th
 
 ---
 
-## ⚡ Performance Protocol (Godot 4.6 Nuances)
+## ⚡ Performance Protocol (Godot 4.7 Nuances)
 
 ### 1. The "Main Thread" Sanctuary
 *   **Standard**: Any operation taking > 2ms (e.g., massive JSON parsing, long-distance pathfinding) MUST be offloaded.
@@ -50,4 +50,17 @@ This document defines the technical benchmarks for the **Aurelius Protocol**. Th
 | **Loading** | `load("res://path")` | `preload("res://path")` or `ResourceLoader` background tasks. |
 
 ---
-*Reference version 2.0.0 | Aurelius Protocol Authorized | Godot 4.6+ Verified*
+*Reference version 2.0.0 | Aurelius Protocol Authorized | Godot 4.7+ Verified*
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+Related skills:
+- project-foundations.md — foundational pillars Aurelius standards assume
+- performance-optimization.md — main-thread and RID performance protocol
+- signal-architecture.md — signal-up topology in the standards
+Parent skill: auditor.md
+-->

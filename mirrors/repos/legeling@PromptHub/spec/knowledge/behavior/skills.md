@@ -166,6 +166,12 @@
 - 翻译是否仍然有效必须基于当前 `SKILL.md` 内容 fingerprint 判断，而不是仅凭页面内存态。
 - 当 `SKILL.md` 变化导致旧译文失效时，UI 必须回退原文并提供明确的重翻入口。
 - `.prompthub/` 目录属于 PromptHub 内部文件空间，默认不参与普通文件树、导出和分发流程。
+- canonical file authority 启用后，`data/skills/<skill-id>/` 只允许保存可验证的
+  canonical Skill bundle；安装/更新暂存必须位于 `operations/`，不得在该目录旁创建
+  legacy managed container 或把 `.prompthub` 管理元数据混入 package payload。
+- canonical 安装/更新直接从已验证的暂存 package 原子发布 bundle，再物化
+  `cache/skill-workspaces/<skill-id>` 可写工作区。SQLite finalize、版本快照和 bundle
+  发布任一步失败时必须恢复旧状态，暂存目录由生命周期清理。
 
 ### 5. Stable Internal Sources
 

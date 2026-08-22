@@ -1,6 +1,6 @@
 ---
 name: typescript-style-guide
-description: Apply, review, and explain the TypeScript Style Guide conventions for type modelling and type-related code. Use automatically for TypeScript tasks involving inference, readonly data, optional properties, discriminated unions, type-safe constants, template literal types, any and unknown, assertions, type errors, type definitions, arrays, type imports, or generated service types.
+description: Apply, review, and explain the TypeScript Style Guide conventions for type modelling, functions, constants, variable state, naming, source organization, React, and tests. Use automatically for TypeScript tasks involving inference, readonly data, optional properties, discriminated unions, type-safe constants, function design, arguments, return types, purity, side effects, enums, boolean state flags, null and undefined, naming, exports, generics, comments, template literal types, any and unknown, assertions, type errors, type definitions, arrays, type imports, generated service types, code collocation, feature-based project structure, import paths, React component APIs, props-to-state, component roles, data flow, test design, test descriptions, isolation, mocking, or snapshots.
 ---
 
 # TypeScript Style Guide
@@ -12,13 +12,19 @@ Apply only the conventions relevant to the current task. Keep TypeScript, linter
 1. Inspect the consuming repository's conventions and configuration.
 2. Let explicit repository conventions take precedence over this opinionated guide.
 3. Identify which guide topic applies.
-4. Read only the relevant reference file.
+4. Read only the reference for the task's primary guide topic. Read multiple references only when the task substantively spans multiple topics.
 5. Apply, review, or explain the conventions in the context of the current task.
 6. State important tradeoffs when a convention depends on context or judgment.
 
 ## Reference routing
 
-- Read [references/types.md](references/types.md) for type modelling, inference, readonly data, object properties, discriminated unions, constants, template literal types, `any`, `unknown`, assertions, type errors, type definitions, arrays, type imports, and generated service types.
+- Read [references/types.md](references/types.md) for type modelling, inference, readonly data, object properties, discriminated unions, constants, template literal types, `any`, `unknown`, assertions, type errors, type definitions, arrays, type imports, and generated service types. This reference takes precedence for narrowing `unknown` and assertions, including their runtime null checks.
+- Read [references/functions.md](references/functions.md) for function responsibility, statelessness, purity, side effects, function arguments, function API design, and return types. This reference takes precedence when discriminated unions concern a function's arguments.
+- Read [references/variables.md](references/variables.md) when the task concerns variable declarations, state modelling, enum alternatives, or choosing how application state represents absence with `null` or `undefined`. Do not read it for incidental variables or runtime checks used only for type narrowing.
+- Read [references/naming.md](references/naming.md) for named exports, naming conventions, generic type parameters, React naming, comments, and TSDoc.
+- Read [references/source-organization.md](references/source-organization.md) for code collocation, feature-based organization, relative and absolute import paths, and frontend or backend project structure. Do not read it for type-only import semantics, which belong to Types.
+- Read [references/react.md](references/react.md) for React component and hook APIs, required and optional props, discriminated props, props-to-state, component typing and roles, data flow, state placement, and compound components. This reference takes precedence when discriminated unions concern component props.
+- Read [references/tests.md](references/tests.md) for test design, the Arrange-Act-Assert pattern, isolation, implementation details, mocking, test descriptions, tooling, and snapshots.
 
 ## Boundaries
 

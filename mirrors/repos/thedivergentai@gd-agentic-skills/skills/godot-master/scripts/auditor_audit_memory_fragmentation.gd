@@ -1,6 +1,6 @@
 # audit_memory_fragmentation.gd
 # Expert runtime utility for tracking ObjectDB allocations and detecting fragmentation risks.
-# Grounded in Godot 4.6+ ObjectDB snapshots.
+# Grounded in Godot 4.7+ ObjectDB snapshots.
 
 extends RefCounted
 
@@ -36,5 +36,16 @@ static func audit_fragmentation(snap_a: Dictionary, snap_b: Dictionary) -> Strin
 		
 	return report
 
-## Expert tip: In Godot 4.6, use the ObjectDB Profiler in the Debugger tab 
+## Expert tip: In Godot 4.7, use the ObjectDB Profiler in the Debugger tab 
 ## to take visual snapshots and diff them for deep fragmentation analysis.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/objectdb_profiler.html
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/the_profiler.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — ObjectDB snapshot/diff workflow
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — pool short-lived Objects after spikes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+# =============================================================================

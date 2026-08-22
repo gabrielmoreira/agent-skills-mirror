@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 23 file(s) materialized.
+Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 23 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 23 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,15 +77,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`plugins/cursor/README.md`](plugins/cursor/README.md) |
 | 13 | ✓ | [`plugins/cursor/skills/skillopt-sleep/SKILL.md`](plugins/cursor/skills/skillopt-sleep/SKILL.md) |
 | 14 | ✓ | [`plugins/devin/README.md`](plugins/devin/README.md) |
-| 15 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
-| 16 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
-| 17 | ✓ | [`plugins/README.md`](plugins/README.md) |
-| 18 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
-| 19 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 20 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
-| 21 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
-| 22 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
-| 23 | → | [`README.md`](README.md) |
+| 15 | ✓ | [`plugins/dsh/README.md`](plugins/dsh/README.md) |
+| 16 | ✓ | [`plugins/dsh/skills/skillopt-sleep/SKILL.md`](plugins/dsh/skills/skillopt-sleep/SKILL.md) |
+| 17 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
+| 18 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
+| 19 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 20 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
+| 21 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 22 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
+| 23 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
+| 24 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
+| 25 | → | [`README.md`](README.md) |
 
 ---
 

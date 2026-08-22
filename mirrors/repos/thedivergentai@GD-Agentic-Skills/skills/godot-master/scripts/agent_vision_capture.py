@@ -383,7 +383,7 @@ def cmd_list_windows() -> int:
 
 def cmd_editor(args: argparse.Namespace) -> int:
     try:
-        from stage_editor_bridge import run_editor_capture
+        from agent_vision_stage_editor_bridge import run_editor_capture
     except ImportError:
         from agent_vision_stage_editor_bridge import run_editor_capture
 

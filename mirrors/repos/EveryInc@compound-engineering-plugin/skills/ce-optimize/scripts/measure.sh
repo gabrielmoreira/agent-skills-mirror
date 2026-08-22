@@ -16,7 +16,8 @@
 # Output:
 #   stdout: Raw JSON output from the measurement command
 #   stderr: Passed through from the measurement command
-#   exit code: Same as the measurement command (124 for timeout)
+#   exit code: Same as the measurement command (124 for timeout, 125 when
+#              CE_OPTIMIZE_CENSOR_AFTER fires before timeout_seconds)
 
 set -euo pipefail
 
@@ -44,14 +45,23 @@ cd "$WORKDIR" || {
   exit 1
 }
 
+run_timed_command() {
+  local timeout_bin="$1"
+  if [[ -n "${CENSOR_STATUS_FILE:-}" ]]; then
+    "$timeout_bin" "$TIMEOUT" bash -c 'bash -c "$1"; printf "%s\n" "$?" > "$2"; exit 0' _ "$COMMAND" "$CENSOR_STATUS_FILE"
+    return
+  fi
+  "$timeout_bin" "$TIMEOUT" bash -c "$COMMAND"
+}
+
 run_with_timeout() {
   if command -v timeout >/dev/null 2>&1; then
-    timeout "$TIMEOUT" bash -c "$COMMAND"
+    run_timed_command timeout
     return
   fi
 
   if command -v gtimeout >/dev/null 2>&1; then
-    gtimeout "$TIMEOUT" bash -c "$COMMAND"
+    run_timed_command gtimeout
     return
   fi
 
@@ -63,18 +73,24 @@ run_with_timeout() {
     fi
   done
   if [ -n "$PY" ]; then
-    "$PY" - "$TIMEOUT" "$COMMAND" <<'PY'
+    "$PY" - "$TIMEOUT" "$COMMAND" "${CENSOR_STATUS_FILE:-}" <<'PY'
 import os
 import signal
 import subprocess
 import sys
 
-timeout_seconds = int(sys.argv[1])
+timeout_seconds = float(sys.argv[1])
 command = sys.argv[2]
+status_file = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else ""
 proc = subprocess.Popen(["bash", "-c", command], start_new_session=True)
 
 try:
-    sys.exit(proc.wait(timeout=timeout_seconds))
+    rc = proc.wait(timeout=timeout_seconds)
+    if status_file:
+        with open(status_file, "w", encoding="utf-8") as fh:
+            fh.write(f"{rc}\n")
+        sys.exit(0)
+    sys.exit(rc)
 except subprocess.TimeoutExpired:
     os.killpg(proc.pid, signal.SIGTERM)
     try:
@@ -91,7 +107,34 @@ PY
   exit 1
 }
 
+# Optional futility bound: CE_OPTIMIZE_CENSOR_AFTER=<seconds> kills a live
+# run that has already exceeded a predeclared noncompetitive bound. Distinct
+# from timeout_seconds (the spec's hard cap). Exit 125 means censored; 124
+# still means the configured timeout fired.
+CENSOR_AFTER="${CE_OPTIMIZE_CENSOR_AFTER:-}"
+CENSORING=0
+CENSOR_STATUS_FILE=""
+if [[ -n "$CENSOR_AFTER" ]] && awk -v a="$CENSOR_AFTER" -v t="$TIMEOUT" 'BEGIN { exit !(a ~ /^[0-9]+(\.[0-9]+)?$/ && t+0 == t && a+0 > 0 && a+0 < t+0) }'; then
+  TIMEOUT="$CENSOR_AFTER"
+  CENSORING=1
+  CENSOR_STATUS_FILE=$(mktemp "${TMPDIR:-/tmp}/ce-optimize-censor-XXXXXX")
+fi
+
 # Run the measurement command with timeout
 # timeout returns 124 if the command times out
 # We pass stdout and stderr through directly
+set +e
 run_with_timeout
+status=$?
+set -e
+if [[ $CENSORING -eq 1 ]]; then
+  if [[ -s "$CENSOR_STATUS_FILE" ]]; then
+    status=$(cat "$CENSOR_STATUS_FILE")
+  elif [[ $status -eq 124 ]]; then
+    echo "Error: measurement censored after ${CENSOR_AFTER}s (noncompetitive bound)" >&2
+    rm -f "$CENSOR_STATUS_FILE"
+    exit 125
+  fi
+  rm -f "$CENSOR_STATUS_FILE"
+fi
+exit "$status"

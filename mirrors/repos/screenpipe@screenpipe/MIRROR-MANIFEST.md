@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,8 +69,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 9 | ✓ | [`crates/screenpipe-core/assets/skills/render-html-report/SKILL.md`](crates/screenpipe-core/assets/skills/render-html-report/SKILL.md) |
 | 10 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md) |
-| 11 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md) |
-| 12 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md) |
+| 11 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-chats/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-chats/SKILL.md) |
+| 12 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md) |
+| 13 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md) |
 
 ---
 

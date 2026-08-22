@@ -1,6 +1,6 @@
 ---
 name: laravel-11-12-app-guidelines
-description: Guidelines and workflow for working on Laravel 11 or Laravel 12 applications across common API-only and full-stack setups, including optional Docker Compose or Sail, Inertia with React, Vue, or Svelte, Livewire, Blade, Tailwind CSS 4, Fortify or WorkOS AuthKit, Wayfinder, Pest or PHPUnit, Pint, and Laravel Boost MCP tools. Use when implementing features, fixing bugs, or changing Laravel 11/12 backend or frontend behavior while following repository-specific instructions and installed package versions.
+description: Coordinator-routed implementation guidance for confirmed Laravel 11 or 12 repositories when framework conventions materially own the work. Use after project-development-mindset inspects laravel/framework, or directly when explicitly invoked or installed standalone. Never load both Laravel version skills; Laravel 12-to-13 upgrades use the Laravel 13 skill. Do not use merely for supporting Sail, Docker, test, or frontend commands.
 ---
 
 # Laravel 11/12 App Guidelines
@@ -8,6 +8,12 @@ description: Guidelines and workflow for working on Laravel 11 or Laravel 12 app
 ## Overview
 
 Apply a consistent workflow for Laravel 11/12 apps with optional frontend stacks, Dockerized commands, and Laravel Boost tooling.
+
+This skill owns version-specific Laravel implementation guidance, not the whole
+task lifecycle. Keep routine testing, documentation, Docker command execution,
+and UI reuse as supporting work. Return routing control to
+`project-development-mindset` if debugging, test strategy, local container
+topology, UI concept work, or deployment becomes the primary concern.
 
 Run this skill in the main conversation. Do not spawn subagents, agent teams, or
 delegated parallel workers unless the user explicitly approves the proposed
@@ -81,8 +87,11 @@ before expanding an approved scope.
 - Preserve the repository's Pest or PHPUnit test runner. Confirm generator flags
   with `php artisan help make:test`; generally prefer feature tests for behavior
   that crosses framework boundaries.
-- Run the smallest relevant test target first (`php artisan test <file>` or
-  `--filter=`), then run the complete affected suite.
+- Run the smallest relevant test target (`php artisan test <file>` or
+  `--filter=`). After implementation and focused verification are complete,
+  identify the broader affected or full suite and ask the user whether to run it.
+  Do not run it without explicit approval unless higher-priority repository
+  instructions require it.
 - Run `vendor/bin/pint --dirty` before finalizing code changes.
 
 ## Laravel Boost MCP Tools (when available)

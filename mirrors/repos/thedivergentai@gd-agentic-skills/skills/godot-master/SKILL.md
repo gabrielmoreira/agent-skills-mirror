@@ -1,6 +1,6 @@
 ---
 name: godot-master
-description: "Consolidated expert library for professional Godot 4.7+ game and application development. Orchestrates 92 Domain Skills through architectural workflows, anti-pattern catalogs, performance budgets, and Server API patterns. Use when: (1) starting a new Godot project, (2) designing game or app architecture, (3) building entity/component systems, (4) debugging performance or physics issues, (5) choosing between 2D/3D approaches, (6) implementing multiplayer, (7) optimizing draw calls or script time, (8) porting between platforms, (9) migrating from 4.6 to 4.7. Primary entry point for ALL Godot development tasks. Keywords: Godot 4.7, AreaLight3D, HDR, Asset Store, godot-master."
+description: "Consolidated expert library for professional Godot 4.7+ game and application development. Orchestrates 92 Domain Skills through architectural workflows, anti-pattern catalogs, performance budgets, and Server API patterns. Use when: (1) starting a new Godot project, (2) designing game or app architecture, (3) building entity/component systems, (4) debugging performance or physics issues, (5) choosing between 2D/3D approaches, (6) implementing multiplayer, (7) optimizing draw calls or script time, (8) porting between platforms, (9) migrating from 4.6 to 4.7, (10) visually verifying UI/editor/game appearance via Agent Vision, (11) scoring/certifying architecture with Analyst (Anara), (12) enforcing never-lists with Auditor (Aurelius), (13) programmatic CLI scene building with Builder. Primary entry point for ALL Godot development tasks. Keywords: Godot 4.7, AreaLight3D, HDR, Asset Store, godot-master, agent vision, visual QA, Agent Eyes, analyst, Anara, auditor, Aurelius, builder."
 ---
 
 # Godot Master: Lead Architect Knowledge Hub
@@ -51,6 +51,9 @@ Expert systems are defined not by their isolation, but by their **Payload Synthe
 - **Animation → Physics**: `AnimationTree.get_root_motion_position()` converts animation displacement into physics `velocity`, preventing "foot sliding" in complex movement.
 - **Data → Reactivity**: Serialized `Resource` objects (like `Stats`) emit signals when modified, allowing UI to update automatically without tight coupling.
 - **Asset → Spawning**: An O(1) Dictionary-based cache (preloaded during `ResourceLoader` async phases) prevents I/O hitches when spawning items or enemies.
+- **Eyes → Verification**: After UI, lighting, or scene-building work, agents must **see** the current representation — route to [Agent Vision](references/agent-vision.md) (capture → budgeted WebP → scored taste), not verbal guesswork.
+- **Score → Certify**: Before calling architecture “production-ready,” route to [Analyst](references/analyst.md) (Anara) — rubric sectors + helper scripts, not vibes.
+- **Slop → Decree**: Before merge/ship, route to [Auditor](references/auditor.md) (Aurelius) — never-list encyclopedia + deterministic scanners.
 - **Mobile → Visuals**: Prevent runtime frame-hitches by instantiating hidden effects during loading screens to force GPU shader pipeline compilation.
 - **Networking → Bandwidth**: Use bit-packing into `PackedByteArray` for synchronization instead of JSON/Strings to keep packets under 100 bytes.
 - **Genre Synthesis**:
@@ -93,6 +96,9 @@ Expert systems are defined not by their isolation, but by their **Payload Synthe
 | **Rectangular Area Lights** | AreaLight3D | **READ**: [3D Lighting](references/3d-lighting.md) → [3D Materials](references/3d-materials.md). Prefer AreaLight3D over emissive+GI hacks. | Forward+ renderer required for full quality |
 | **Mobile Touch Controls** | Native Joystick | **READ**: [Platform Mobile](references/platform-mobile.md) → [Adapt Desk→Mobile](references/adapt-desktop-to-mobile.md). Use built-in virtual joystick (4.7+). | Less plugin dependency |
 | **Addon / Asset Discovery** | Asset Store | **READ**: [Project Foundations](references/project-foundations.md) → [Export Builds](references/export-builds.md). Asset Store replaces Asset Library. | Beta store UI — verify licensing per addon |
+| **CLI Scene / Headless Build** | Builder Pipeline | **READ**: [Builder](references/builder.md). Programmatic `.tscn` / glTF→collision / CI export via prefixed `builder_*.py`. **Do NOT load** genre refs. | Structure only — pair with Agent Vision for pixels |
+| **Architecture Score / Certificate** | Analyst (Anara) | **READ**: [Analyst](references/analyst.md) → marking rubrics atlas → active sector category only. | Certifies scale/cohesion — not “it runs” |
+| **Never-List / Slop Audit** | Auditor (Aurelius) | **READ**: [Auditor](references/auditor.md) → never-list encyclopedia → active sector + scanners on disk. | Surgical load — do not ingest entire encyclopedia |
 | **Agent Eyes / Visual QA** | Capture → WebP → Rubric | **READ**: [Agent Vision](references/agent-vision.md). Screenshot assets, window/region/screen, or TEMP editor bridge — then structured review. **Do NOT load** genre refs. | Host-side only; never Autoload / never leave staged addon |
 
 ### The "When NOT to Use a Node" Decision
@@ -119,7 +125,8 @@ One of the most impactful expert-only decisions. The Godot docs explicitly say "
 2. **READ**: [Signal Architecture](references/signal-architecture.md) — Create `GlobalSignalBus` autoload with < 15 events.
 3. **READ**: [GDScript Mastery](references/gdscript-mastery.md) — Enable `untyped_declaration` warning in Project Settings → GDScript → Debugging.
 4. Apply **[Project Templates](references/project-templates.md)** for base `.gitignore`, export presets, and input map.
-5. Use **[Builder](references/builder.md)** (`create_scene.py`, `add_node.py`, `save_scene.py`) to generate scene hierarchies programmatically via the Godot CLI.
+5. Use **[Builder](references/builder.md)** (`builder_create_scene.py`, `builder_add_node.py`, `builder_save_scene.py`) to generate scene hierarchies programmatically via the Godot CLI.
+6. After the container exists: optional early **Workflow 13** ([Analyst](references/analyst.md)) on foundations cohesion; before first ship, **Workflow 14** ([Auditor](references/auditor.md)) on signal/typing/export never-lists.
 
 > [!CAUTION] **Workflow 1 NEVER List**
 > - **NEVER** use `res://` paths in logic scripts. Use `@export_file` or `@export_dir` to ensure resources remain valid when moved.
@@ -237,9 +244,10 @@ One of the most impactful expert-only decisions. The Godot docs explicitly say "
 
 1. **The F6 Principle**: Every UI scene must be testable in isolation. Use `MOUSE_FILTER_STOP` only on the background, `PASS` on children.
 2. **Breathing Room**: Use `add_theme_constant_override("separation", X)` over manual padding.
-3. **Adaptive Scaling**: Use `responsive_layout_builder.gd` for breakpoint-aware mobile/desktop switching.
+3. **Adaptive Scaling**: Use `ui_containers_responsive_layout_builder.gd` for breakpoint-aware mobile/desktop switching.
 4. **Lifecycle Safety**: Never scroll to a new child on the same frame. `await get_tree().process_frame` before modifying `scroll_vertical`.
 5. **Data Integration**: Use `Resource-to-UI` binding; UI nodes MUST be stateless projection layers.
+6. **See it**: Close with **Workflow 12** — [Agent Vision](references/agent-vision.md) window/asset capture → scored layout/type review. Agents cannot QA UI from text alone.
 
 > [!CAUTION] **Workflow 9 NEVER List**
 > - **NEVER** use absolute pixel offsets. UI becomes unreadable on 4K or tiny mobile screens. Use `Container` sizing.
@@ -247,16 +255,18 @@ One of the most impactful expert-only decisions. The Godot docs explicitly say "
 > - **NEVER** connect UI buttons to gameplay logic directly. UI sends "Signal", `PlayerController` listens. This prevents UI-deletion crashes.
 > - **NEVER** use `_process()` to move a UI element to a target. Use a `Tween` to avoid stuttering and frame-rate dependence.
 > - **NEVER** leave `mouse_filter` as `STOP` on transparent containers; it "eats" clicks for everything behind it.
-- **NEVER** use dynamic `load()` on paths without validating the `res://` prefix and safe extension (`.tres`, `.res`, `.theme`) — Prevents arbitrary code/resource execution.
+> - **NEVER** use dynamic `load()` on paths without validating the `res://` prefix and safe extension (`.tres`, `.res`, `.theme`) — Prevents arbitrary code/resource execution.
+> - **NEVER** declare UI “done” without an Agent Vision capture of the live layout.
 
 ### Workflow 10: Cinematic Lighting & VFX (Audit Verified)
 **MANDATORY Chain**: [3D Lighting](references/3d-lighting.md) → [Particles](references/particles.md) → [3D Materials](references/3d-materials.md) → [Shaders](references/shaders-basics.md)
 
 1. **The GI Choice**: VoxelGI for interiors, SDFGI for open world. Never ship with both overlapping.
-2. **Shadow Budget**: Max 2 Shadow-casting DirectionalLights. Use `fake_gi_bounce.gd` for mobile fills.
+2. **Shadow Budget**: Max 2 Shadow-casting DirectionalLights. Use `3d_lighting_fake_gi_bounce.gd` for mobile fills.
 3. **VFX Lifecycle**: Use `finished` signal over Timers. Re-run with `restart()` to avoid async GPU stalls.
 4. **Optimization**: Use `ORM Texture` packing (AO/Rough/Metal) to save GPU cache and texture slots.
 5. **Batching**: Use `Instance Uniforms` for material variations across thousands of instances without draw call penalties.
+6. **See it**: Close with **Workflow 12** — [Agent Vision](references/agent-vision.md) editor/window capture to verify lighting, exposure, and VFX read in pixels.
 
 > [!CAUTION] **Workflow 10 NEVER List**
 > - **NEVER** scale `CollisionShape` nodes; strictly scale the Shape Resource to avoid physics jitter.
@@ -264,28 +274,119 @@ One of the most impactful expert-only decisions. The Godot docs explicitly say "
 > - **NEVER** animate CSG nodes during gameplay; forces expensive CPU geometry recalculation.
 > - **NEVER** use real-time Global Illumination (SDFGI/VoxelGI) for a 2D-looking game. Stick to `DirectionalLight2D` and `CanvasModulate`.
 > - **NEVER** ignore `Camera3D` near/far planes; improper settings cause Z-fighting in large worlds.
+> - **NEVER** trust lighting “looks fine” from code alone — capture the viewport with Agent Vision.
 
 ### Workflow 11: Programmatic Scene Building (Builder)
 **MANDATORY**: [Builder](references/builder.md)
 **Use ONLY for batch operations or complex procedural scaffolds.** Prefer the standalone `godot-builder` skill when doing heavy CLI automation.
 
 1. **Step 1**: Draft the node hierarchy on paper/markdown before touching disk.
-2. **Step 2**: Use `create_scene.py` to define the root node and `.tscn` path.
-3. **Step 3**: Use `add_node.py` for children. Set `owner` on every node so serialization keeps them.
-4. **Step 4**: ALWAYS call `run_project.py` or `launch_editor.py` to verify the scene loads cleanly.
-5. **Expert Rule**: Use Builder to build the *structure* (nodes, names, inheritance), then use GDScript to build the *behavior*.
+2. **Step 2**: Use `builder_create_scene.py` to define the root node and `.tscn` path.
+3. **Step 3**: Use `builder_add_node.py` for children. Set `owner` on every node so serialization keeps them.
+4. **Step 4**: ALWAYS call `builder_run_project.py` or `builder_launch_editor.py` to verify the scene loads cleanly.
+5. **Step 5 (see it)**: After batch scene or UI writes, run **Workflow 12** ([Agent Vision](references/agent-vision.md)) — window/editor capture → WebP → scored review — so agents verify appearance, not only that the `.tscn` loads.
+6. **Expert Rule**: Use Builder to build the *structure* (nodes, names, inheritance), then use GDScript to build the *behavior*.
 
 > [!CAUTION] **Workflow 11 NEVER List**
-> - **NEVER** jump straight to `add_node.py` without designing the hierarchy first — spaghetti scenes follow.
+> - **NEVER** jump straight to `builder_add_node.py` without designing the hierarchy first — spaghetti scenes follow.
 > - **NEVER** use absolute filesystem paths in scripts or scene props; use `res://` only.
 > - **NEVER** add a `CollisionShape2D`/`CollisionShape3D` without assigning a Shape resource — the node alone does nothing.
-> - **NEVER** skip verification via `run_project.py` / `launch_editor.py` after batch scene writes.
+> - **NEVER** skip verification via `builder_run_project.py` / `builder_launch_editor.py` after batch scene writes.
+> - **NEVER** treat “scene loads” as visual QA — layout, type, and lighting bugs need Agent Vision captures.
 
 #### Security: Boundary Markers & Validation
 When agents ingest untrusted scene/data text before writing files:
 1. **Boundary Markers**: Wrap analysis in `<<<CONTEXT_START>>>` and `<<<CONTEXT_END>>>`.
 2. **Sanitization**: Node names must be alphanumeric/underscored. Paths must start with `res://`.
 3. **Verification**: Confirm scene existence before modification.
+
+### Workflow 12: Agent Eyes — See the Current Representation
+*How agents verify what the game/editor/UI actually looks like.*
+
+**MANDATORY — READ ENTIRE FILE**: [Agent Vision](references/agent-vision.md)
+**Prefer the standalone `godot-agent-vision` skill** when doing heavy capture/review loops. Hub mirrors keep prefixed scripts under `scripts/agent_vision_*`.
+
+**When to invoke (default, not optional):**
+- After UI/theme/layout changes (Workflow 9)
+- After lighting/VFX/material passes (Workflow 10)
+- After Builder or procedural scene scaffolds (Workflow 11)
+- Whenever the agent would otherwise *describe* pixels it has not captured
+- Asset sheet / icon / HUD typography review before shipping polish
+
+**Golden path:**
+1. **Setup**: `pip install -r skills/godot-agent-vision/requirements-vision.txt` (host venv). Ensure `.gdskills/` is gitignored (`agent_vision_ensure_gitignore.py`).
+2. **Doctor**: `agent_vision_capture.py doctor` — confirm display session / backends.
+3. **Capture** (pick one mode — do not dump full screens by default):
+   - Game/editor window: `agent_vision_capture.py window --project-root . --title Godot`
+   - Editor 2D/3D viewport: `agent_vision_capture.py editor --project-root . --editor-mode 3d --godot "%GODOT_PATH%"`
+   - Asset / icon sheet: `agent_vision_capture.py asset --project-root . --paths res://ui/icons --sheet`
+   - Desktop region: `agent_vision_capture.py region …` when window-by-title fails (Wayland, etc.)
+4. **Read** the budgeted WebP(s) from `.gdskills/vision/` (default short-edge 512). Use `--detail` only when type/OCR fails at 512.
+5. **Score** with the Taste Receptor Atlas / vision rubric in the Agent Vision refs — ordered fixes keyed to receptor IDs, not vibes.
+6. **Teardown**: never leave the TEMP editor bridge / `addons/_gdskills_agent_vision/` staged; never commit `.gdskills/vision/**`.
+
+> [!CAUTION] **Workflow 12 NEVER List**
+> - **NEVER** invent how the game looks without a capture — Agent Vision is the eyes.
+> - **NEVER** ship the editor bridge as an Autoload or leave it in the consumer project.
+> - **NEVER** dump uncompressed PNG walls into context — WebP only, budgeted.
+> - **NEVER** replace scored taste with binary PASS/FAIL or purple-gradient “AI default” UI praise.
+> - **NEVER** put ornate display faces on ammo/HP/timers (`TYPE-DISPLAY-HUD-SPLIT`).
+
+### Workflow 13: Architecture Scoring — Analyst (Anara)
+*Certify whether the project can survive tomorrow — not whether it merely runs.*
+
+**MANDATORY — READ ENTIRE FILE**: [Analyst](references/analyst.md)
+**Prefer the standalone `godot-analyst` skill** for full certification loops. Hub mirrors: `scripts/analyst_*`, nested `references/analyst-*.md`.
+
+**When to invoke:**
+- Before calling a milestone “architecture complete”
+- After large refactors (folder-by-feature, autoload sprawl, Resource graphs)
+- When the user asks for modernity / scalability / Visionary Certificate scoring
+- After Workflow 1 scaffolding or Workflow 2–4 systems land — score cohesion before more features
+
+**Golden path:**
+1. **Map**: Request the project root; map `res://` structure (feature folders, autoloads, dependency hotspots).
+2. **Atlas**: Load [analyst-marking_rubrics_atlas.md](references/analyst-marking_rubrics_atlas.md) — pick the Evolutionary Sector(s) in scope.
+3. **Sector only**: **MANDATORY** load matching category rubric file(s) under the Analyst progressive-disclosure tree. **Do NOT** load every category file.
+4. **Engine helpers** (only what exists on disk): `analyst_scoring_logic.gd`, `analyst_marking_rubrics_atlas.gd`, `analyst_visionary_comparison.gd` — do not invent phantom `score_*.py` fleets.
+5. **Synthesize**: Weighted scores → Visionary Certificate narrative + transcendence blueprint (gaps ordered by impact).
+
+> [!CAUTION] **Workflow 13 NEVER List**
+> - **NEVER** certify without the active sector rubric — guessing weights is not Visionary.
+> - **NEVER** parse `.tscn`/`.tres` by hand — use `ResourceLoader.get_dependencies` / `PackedScene.get_state`.
+> - **NEVER** treat “it runs” or green play as a pass — score scale, typing, decoupling, cohesion.
+> - **NEVER** load the entire Analyst categories tree into context.
+
+### Workflow 14: Never-List Enforcement — Auditor (Aurelius)
+*Find the invisible slop that invites bugs — then decree remediation.*
+
+**MANDATORY — READ ENTIRE FILE**: [Auditor](references/auditor.md)
+**Prefer the standalone `godot-auditor` skill** for deep audits. Hub mirrors: `scripts/auditor_*`, nested `references/auditor-*.md`.
+
+**When to invoke:**
+- Pre-merge / pre-release integrity pass
+- After signal, typing, export, or memory regressions
+- When Analyst scores flag decay — Auditor proves it with scanners + encyclopedia
+- Pair with Workflow 5 (performance) when ObjectDB / orphan / batching slop is suspected
+
+**Golden path:**
+1. **Survey**: Confirm project path + feature-folder integrity.
+2. **Encyclopedia**: Open [auditor-never_list_encyclopedia.md](references/auditor-never_list_encyclopedia.md) — identify the Architectural Sector.
+3. **Surgical load**: **MANDATORY** read only the matching category never-list file(s). **Do NOT** ingest the entire encyclopedia.
+4. **Scanners on disk** (call individually — do not invent missing tools):
+   - `auditor_audit_signals.py` — string `.connect` decay
+   - `auditor_audit_type_hints.py` — untyped Array/Dictionary + string-connect
+   - `auditor_audit_memory_fragmentation.gd` — ObjectDB / orphan snapshots
+   - `auditor_purge_report_generator.gd` — purge / unused-resource rollup
+5. **Decrees**: Findings with the *why* behind each never-list hit; ordered remediation. For sectors without a scanner, cite engine APIs from the loaded category — do not claim a phantom script ran.
+
+> [!CAUTION] **Workflow 14 NEVER List**
+> - **NEVER** load every never-list category at once — progressive disclosure only.
+> - **NEVER** invent `audit_*.py` scanners that are not in `scripts/`.
+> - **NEVER** soft-pedal export case-sensitivity, signal decay, or untyped hot-path collections.
+> - **NEVER** skip deterministic proof when a scanner exists for the request.
+
+**Persona triad (ship loop):** [Builder](references/builder.md) builds structure → [Agent Vision](references/agent-vision.md) sees pixels → [Analyst](references/analyst.md) scores architecture → [Auditor](references/auditor.md) enforces never-lists.
 
 ---
 
@@ -422,7 +523,7 @@ Expert implementations of common architectural and gameplay systems.
 > Load ONLY the modules needed for your current workflow. Use the Decision Matrix in Part 2 to determine which chain to follow.
 
 ### Architecture & Foundation
-[Foundations](references/project-foundations.md) | [Composition](references/composition.md) | [App Composition](references/composition-apps.md) | [Signals](references/signal-architecture.md) | [Autoloads](references/autoload-architecture.md) | [States](references/state-machine-advanced.md) | [Resources](references/resource-data-patterns.md) | [Templates](references/project-templates.md) | [Analyst](references/analyst.md) | [Auditor](references/auditor.md) | [Builder](references/builder.md)
+[Foundations](references/project-foundations.md) | [Composition](references/composition.md) | [App Composition](references/composition-apps.md) | [Signals](references/signal-architecture.md) | [Autoloads](references/autoload-architecture.md) | [States](references/state-machine-advanced.md) | [Resources](references/resource-data-patterns.md) | [Templates](references/project-templates.md) | [Analyst](references/analyst.md) | [Auditor](references/auditor.md) | [Builder](references/builder.md) | [Agent Vision](references/agent-vision.md)
 
 **Version upgrades (external hub):** [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — full-history router (legacy eras, 3→4 bridge, 4.0→4.7 hops); not mirrored here.
 

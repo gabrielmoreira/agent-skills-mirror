@@ -50,23 +50,27 @@ copilot plugin marketplace remove alex-mall      # unregister the marketplace
 
 ---
 
-## Start with Alex ACT Core
+## Build an Alex ACT setup
 
-Core is the self-activating baseline every Alex ACT installation needs. Native Copilot CLI commands provide plugin lifecycle, and optional Alex ACT plugins add focused capabilities without a separate lifecycle controller.
+Core is the self-activating baseline every Alex ACT installation needs. Native Copilot CLI commands provide plugin lifecycle; add the optional capabilities that match the work at hand.
 
-| What you want to do | Plugin | What it adds |
-| --- | --- | --- |
-| Give Copilot a reliable baseline across projects | [`alex-act-core`](plugins/reasoning-metacognition/alex-act-core/) | Critical thinking, planning, security and privacy guidance, document workflows, engineering practices, and plugin management |
-| Create charts, print figures, banners, AI images, or browsable documentation | [`alex-act-illustrator-plugin`](plugins/data-analytics/alex-act-illustrator-plugin/) | Visual framing, authoring, generation, and verification workflows |
-| Set up public Microsoft tools for a project | [`alex-act-enterprise`](plugins/cloud-infrastructure/alex-act-enterprise/) | Guided setup for Azure, Fabric, Power BI, and Microsoft 365 Agents Toolkit |
+| What you want to do | Plugin | Published version | What it adds |
+| --- | --- | --- | --- |
+| Give Copilot a reliable baseline across projects | [`alex-act-core`](https://github.com/fabioc-aloha/Alex_ACT_Core/tree/v4.0.1) | `4.0.1` | Critical thinking, planning, security and privacy guidance, project bootstrap, and plugin management |
+| Create charts, print figures, banners, AI images, or browsable documentation | [`alex-act-illustrator-plugin`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/v2.5.1) | `2.5.1` | Visual framing, authoring, generation, and verification workflows |
+| Convert Markdown, Word, HTML, and email deliverables | [`alex-act-document-tools`](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools/tree/v1.1.1) | `1.1.1` | Portable document conversion and polished rich-email workflows |
+| Set up public Microsoft tools for a project | [`alex-act-enterprise`](https://github.com/fabioc-aloha/alex-act-enterprise/tree/v1.1.1/packages/copilot) | `1.1.1` | Guided setup for Azure, Fabric, Power BI, and Microsoft 365 Agents Toolkit |
+| Plan and govern an optional provider workflow | [`alex-act-ai-operations`](https://github.com/fabioc-aloha/Alex_ACT_AI_Operations/tree/v0.2.1) | `0.2.1` | Provider-neutral discovery, explicit consent, and execution evidence for Foundry, Hugging Face, and ElevenLabs |
 
 ### Recommended path
 
 1. Install Core with `copilot plugin install alex-act-core@alex-mall`.
 2. Reload VS Code, open Copilot Chat, and run `/alex-act-core bootstrap-core`.
-3. Add an optional plugin directly if you know what you need:
+3. Add an optional plugin when you know what you need:
    - Visual work: `copilot plugin install alex-act-illustrator-plugin@alex-mall`
+   - Document production: `copilot plugin install alex-act-document-tools@alex-mall`
    - Public Microsoft tools: `copilot plugin install alex-act-enterprise@alex-mall`
+   - Provider operations: `copilot plugin install alex-act-ai-operations@alex-mall`
 
 > **Private specialization:** `alex-act-msft` is private and intended only for Microsoft-internal work. It is not published in this public Mall.
 

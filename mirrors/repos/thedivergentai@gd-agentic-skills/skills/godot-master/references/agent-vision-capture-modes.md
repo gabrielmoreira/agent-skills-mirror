@@ -6,11 +6,11 @@ Host utility — runs on the **agent machine**, not inside an exported game. Dep
 
 | Mode | Command | Notes |
 |------|---------|--------|
-| screen | `capture.py screen [--monitor N]` | `0` = virtual desktop union (may have **negative** left/top on Windows) |
-| region | `capture.py region --x --y --w --h` | Physical pixels when DPI-aware |
-| window | `capture.py window --title SUBSTR` | Best-effort; OS limits below |
-| asset | `capture.py asset --paths ... [--sheet]` | Files/folders/`res://` → WebP / ≤2×2 sheet |
-| editor | `capture.py editor --project-root ...` | TEMP EditorPlugin handshake; `--godot` auto-launches |
+| screen | `agent_vision_capture.py` screen [--monitor N]` | `0` = virtual desktop union (may have **negative** left/top on Windows) |
+| region | `agent_vision_capture.py` region --x --y --w --h` | Physical pixels when DPI-aware |
+| window | `agent_vision_capture.py` window --title SUBSTR` | Best-effort; OS limits below |
+| asset | `agent_vision_capture.py` asset --paths ... [--sheet]` | Files/folders/`res://` → WebP / ≤2×2 sheet |
+| editor | `agent_vision_capture.py` editor --project-root ...` | TEMP EditorPlugin handshake; `--godot` auto-launches |
 
 Common flags: `--project-root`, `--out`, `--quality`, `--short-edge` (default **512**), `--detail` / `--max-edge`, `--label`, `--skip-gitignore`.
 

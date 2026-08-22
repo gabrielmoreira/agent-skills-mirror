@@ -63,8 +63,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`agent-observability/agent-observability-eval-bootstrap/SKILL.md`](agent-observability/agent-observability-eval-bootstrap/SKILL.md) |
 | 3 | ✓ | [`agent-observability/agent-observability-eval-pipeline/SKILL.md`](agent-observability/agent-observability-eval-pipeline/SKILL.md) |
 | 4 | ✓ | [`agent-observability/agent-observability-experiment-analyzer/SKILL.md`](agent-observability/agent-observability-experiment-analyzer/SKILL.md) |
-| 5 | ✓ | [`agent-observability/agent-observability-experiment-py-bootstrap/references/providers/gemini.md`](agent-observability/agent-observability-experiment-py-bootstrap/references/providers/gemini.md) |
-| 6 | ✓ | [`agent-observability/agent-observability-experiment-py-bootstrap/SKILL.md`](agent-observability/agent-observability-experiment-py-bootstrap/SKILL.md) |
+| 5 | ✓ | [`agent-observability/agent-observability-experiment-bootstrap/references/python/providers/gemini.md`](agent-observability/agent-observability-experiment-bootstrap/references/python/providers/gemini.md) |
+| 6 | ✓ | [`agent-observability/agent-observability-experiment-bootstrap/SKILL.md`](agent-observability/agent-observability-experiment-bootstrap/SKILL.md) |
 | 7 | ✓ | [`agent-observability/agent-observability-replay-trace/SKILL.md`](agent-observability/agent-observability-replay-trace/SKILL.md) |
 | 8 | ✓ | [`agent-observability/agent-observability-session-classify/SKILL.md`](agent-observability/agent-observability-session-classify/SKILL.md) |
 | 9 | ✓ | [`agent-observability/agent-observability-trace-rca/SKILL.md`](agent-observability/agent-observability-trace-rca/SKILL.md) |

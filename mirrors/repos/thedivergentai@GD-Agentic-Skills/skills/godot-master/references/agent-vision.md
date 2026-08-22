@@ -48,24 +48,24 @@ Requires a display session. Use repo/project venv Python.
 
 > **Do NOT Load** every script. Call only what the mode needs.
 
-### [capture.py](../scripts/agent_vision_capture.py)
+### [agent_vision_capture.py](../scripts/agent_vision_capture.py)
 Main CLI: `doctor`, `list-windows`, `screen`, `region`, `window`, `asset`, `editor`. Prints `wrote=`, `bytes=`, `budget=short-edge:N|long-edge:N`.
 
-### [webp_encode.py](../scripts/agent_vision_webp_encode.py)
+### [agent_vision_webp_encode.py](../scripts/agent_vision_webp_encode.py)
 Default **fit short-edge 512**; `--detail` / `--max-edge` switches to long-edge cap (1568). Never upscales. Soft re-encode if &gt;1MB.
 
-### [asset_sheet.py](../scripts/agent_vision_asset_sheet.py)
+### [agent_vision_asset_sheet.py](../scripts/agent_vision_asset_sheet.py)
 Single asset or ≤2×2 contact sheet with labels; `res://` resolution against `--project-root`.
 
-### [ensure_gitignore.py](../scripts/agent_vision_ensure_gitignore.py)
+### [agent_vision_ensure_gitignore.py](../scripts/agent_vision_ensure_gitignore.py)
 Appends `.gdskills/` so vision scratch never stages.
 
-### [stage_editor_bridge.py](../scripts/agent_vision_stage_editor_bridge.py)
+### [agent_vision_stage_editor_bridge.py](../scripts/agent_vision_stage_editor_bridge.py)
 Stages TEMP addon, optional `--godot` launch, handshake wait, WebP encode, teardown + `project.godot` plugin strip.
 
 ### Editor bridge templates
-- [plugin.cfg](../scripts/agent_vision_editor_bridge_plugin.cfg) / [plugin.gd](../scripts/agent_vision_editor_bridge_plugin.gd) — `@tool` EditorPlugin polls `request` → `raw/*.png` → `done`
-- [capture_viewport.gd](../scripts/agent_vision_editor_bridge_capture_viewport.gd) — Control crop helper (`get_global_rect` → `Image.get_region`)
+- [agent_vision_editor_bridge_plugin.cfg](../scripts/agent_vision_editor_bridge_plugin.cfg) / [agent_vision_editor_bridge_plugin.gd](../scripts/agent_vision_editor_bridge_plugin.gd) — `@tool` EditorPlugin polls `request` → `raw/*.png` → `done`
+- [agent_vision_editor_bridge_capture_viewport.gd](../scripts/agent_vision_editor_bridge_capture_viewport.gd) — Control crop helper (`get_global_rect` → `Image.get_region`)
 
 ## Capture CLI (golden path)
 
@@ -165,7 +165,6 @@ Stages templates → `addons/_gdskills_agent_vision/` → `.gdskills/vision/{req
 - [godot-ui-containers](ui-containers.md) — layout must be honest before vision blames Theme.
 
 #### Complements
-- [godot-asset-gen](asset-gen.md) — local/API art generation before visual QA (ORIG/ICON/SLOP/ID).
 - [godot-ui-theming](ui-theming.md) — Theme/StyleBox/font APIs after V3/V8 finds chrome/type debt.
 - [godot-ui-rich-text](ui-rich-text.md) — BBCode/fonts that must stay coherent with HUD type roles.
 - [godot-auditor](auditor.md) — architectural anti-slop kinship.

@@ -1,6 +1,6 @@
 ---
 name: agent-observability-eval-pipeline
-description: End-to-end Agent Observability pipeline for an instrumented ml_app — classify production traces, root-cause failures, bootstrap evaluators, then (optionally) sample + publish a dataset, generate + run an experiment, and analyze results. Six narrated phases with a standardized banner and a "continue" checkpoint between each. Pure orchestration over the agent-observability sub-skills (`agent-observability-session-classify`, `agent-observability-trace-rca`, `agent-observability-eval-bootstrap`, `agent-observability-experiment-py-bootstrap`, `agent-observability-experiment-analyzer`). Use when user says "run the eval pipeline", "go from traces to evals", "bootstrap evals end to end", "classify then RCA then bootstrap", "build an eval set from scratch", "onboard me to datasets and experiments", "walk me through experiments", "I have an ml_app, now what", "Agent Observability onboarding", "guided experiment setup", "from traces to experiments", or wants a deterministic, narrated tour from production data through evaluators, datasets, and experiments. Stop early with `--stop-after <phase>` to short-circuit at evaluators or dataset, or resume mid-flow with `--start-at <phase>`.
+description: End-to-end Agent Observability pipeline for an instrumented ml_app — classify production traces, root-cause failures, bootstrap evaluators, then (optionally) sample + publish a dataset, generate + run an experiment, and analyze results. Six narrated phases with a standardized banner and a "continue" checkpoint between each. Pure orchestration over the agent-observability sub-skills (`agent-observability-session-classify`, `agent-observability-trace-rca`, `agent-observability-eval-bootstrap`, `agent-observability-experiment-bootstrap`, `agent-observability-experiment-analyzer`). Use when user says "run the eval pipeline", "go from traces to evals", "bootstrap evals end to end", "classify then RCA then bootstrap", "build an eval set from scratch", "onboard me to datasets and experiments", "walk me through experiments", "I have an ml_app, now what", "Agent Observability onboarding", "guided experiment setup", "from traces to experiments", or wants a deterministic, narrated tour from production data through evaluators, datasets, and experiments. Stop early with `--stop-after <phase>` to short-circuit at evaluators or dataset, or resume mid-flow with `--start-at <phase>`.
 ---
 
 ## Backend
@@ -49,7 +49,7 @@ A deterministic, six-phase guided pipeline for an already-instrumented `ml_app` 
 [Phase 6: Analyze experiment]            entity: metric, comparison, recommendation
 ```
 
-This skill is **pure orchestration plus pedagogy** — no new analytical logic. The work happens inside the sub-skills (`agent-observability-session-classify`, `agent-observability-trace-rca`, `agent-observability-eval-bootstrap`, `agent-observability-experiment-py-bootstrap`, `agent-observability-experiment-analyzer`). What this skill adds is the deterministic envelope: every phase has the same shape, the same checkpoint contract, and the same entity-explanation banner — so the user gets a consistent, narrated experience regardless of how they phrased the original request.
+This skill is **pure orchestration plus pedagogy** — no new analytical logic. The work happens inside the sub-skills (`agent-observability-session-classify`, `agent-observability-trace-rca`, `agent-observability-eval-bootstrap`, `agent-observability-experiment-bootstrap`, `agent-observability-experiment-analyzer`). What this skill adds is the deterministic envelope: every phase has the same shape, the same checkpoint contract, and the same entity-explanation banner — so the user gets a consistent, narrated experience regardless of how they phrased the original request.
 
 ## Usage
 
@@ -73,11 +73,11 @@ Arguments: $ARGUMENTS
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
 | `ml_app` | Yes | — | The instrumented LLM app to onboard / evaluate against. The precheck verifies it has recent traces. |
-| `--project-name` | No | derived from `pyproject.toml` / `setup.cfg` / `setup.py` / `package.json` / cwd (same order as `agent-observability-experiment-py-bootstrap`); falls back to `experiment-sdk-default` | The Datadog **project** the pipeline writes datasets and experiments into. The SDK lazily creates the project on first use via `LLMObs.enable(project_name=...)`. Surface this in the Precheck so the user can confirm before anything is created. |
+| `--project-name` | No | derived from `pyproject.toml` / `setup.cfg` / `setup.py` / `package.json` / cwd (same order as `agent-observability-experiment-bootstrap`); falls back to `experiment-sdk-default` | The Datadog **project** the pipeline writes datasets and experiments into. The SDK lazily creates the project on first use via `LLMObs.enable(project_name=...)`. Surface this in the Precheck so the user can confirm before anything is created. |
 | `--timeframe` | No | `now-7d` | Lookback window for Phase 1 classification and Phase 4 dataset sampling. |
 | `--trace-limit` | No | `20` | Sampling cap for Phase 4. Phase 1 internally uses `min(20, --trace-limit)` for the classification sample. |
-| `--format` | No | `py` | Passed to `agent-observability-experiment-py-bootstrap` in Phase 5: `py` (script) or `ipynb` (Jupyter notebook). |
-| `--evaluator-style` | No | `function` | Passed to `agent-observability-eval-bootstrap` (Phase 3) and `agent-observability-experiment-py-bootstrap` (Phase 5): `function`, `class`, or `remote`. |
+| `--format` | No | `py` | Passed to `agent-observability-experiment-bootstrap` in Phase 5: `py` (script) or `ipynb` (Jupyter notebook). |
+| `--evaluator-style` | No | `function` | Passed to `agent-observability-eval-bootstrap` (Phase 3) and `agent-observability-experiment-bootstrap` (Phase 5): `function`, `class`, or `remote`. |
 | `--offline-evaluators` | No | on (default) | Phase 3: emit a Python SDK evaluator suite (BaseEvaluator / LLMJudge classes) that runs inside an experiment against a dataset. Maps internally to `agent-observability-eval-bootstrap` `sdk_code` mode. |
 | `--online-evaluators` | No | off | Phase 3: publish online LLM-judge evaluators directly to Datadog (created as disabled drafts; enable in the UI). Online evaluators run on production spans as they're emitted. Maps internally to `agent-observability-eval-bootstrap` `publish` mode (was `--publish`). |
 | `--data-only` | No | off | Phase 3: emit a local data blob only — no executable evaluator code or online publish. At Phase 3 entry the skill **prompts** the user to pick one of: (a) a `DatasetRecordRaw[]` JSON suitable for experiment use (maps internally to `agent-observability-eval-bootstrap --emit-dataset`), or (b) a framework-agnostic JSON evaluator spec for local analysis (maps internally to `agent-observability-eval-bootstrap` `data_only` mode). |
@@ -90,7 +90,7 @@ Arguments: $ARGUMENTS
 | `--experiment-file <path>` | No | auto-loaded from `<output-dir>/state/05-experiment-run.json`'s `experiment_file` field if `--start-at experiment` and the file already exists | The generated experiment file. When present, Phase 5 skips the codegen sub-step (5a) and goes straight to the review beat (5b) → run (5c). |
 | `--experiment-id <uuid>` | No | auto-loaded from `<output-dir>/state/05-experiment-run.json` if `--start-at analyze` | The Datadog experiment ID Phase 6 analyzes. Mutually exclusive with `--experiment-url`. |
 | `--experiment-url <url>` | No | auto-loaded as above | Alternative to `--experiment-id`. The skill parses the trailing UUID out of the URL. |
-| `--app-root` | No | resolved from cwd / `pyproject.toml` etc. | Restricts `agent-observability-experiment-py-bootstrap`'s task-function introspection to this directory tree. |
+| `--app-root` | No | resolved from cwd / `pyproject.toml` etc. | Restricts `agent-observability-experiment-bootstrap`'s task-function introspection to this directory tree. |
 | `--env-file` | No | none (auto-discovery walks standard locations) | Explicit `.env` path for credential loading. Surfaced in the Precheck and baked into the generated experiment as `ENV_FILE_OVERRIDE`. |
 | `--output-dir` | No | `./experiments` | Where the dataset JSON, publish script, and generated experiment file are written. |
 | `--backend` | No | auto-detect | `pup` forces pup mode regardless of MCP availability. |
@@ -107,7 +107,7 @@ Before Phase 1, run a single short verification pass — do **not** announce a "
 
 2. **ml_app has recent traces** — call `search_llmobs_spans(query="@ml_app:\"<ml_app>\"", root_spans_only=true, limit=1, from="<timeframe>")` (MCP) or the pup equivalent. If the result is empty, stop and tell the user the precheck failed — there is nothing to evaluate against — and suggest widening `--timeframe` or confirming the ml_app name.
 
-3. **Resolve `project_name`** — if `--project-name <name>` was supplied, use it verbatim. Otherwise derive using the same resolution order as `agent-observability-experiment-py-bootstrap` (Workflow step 1): `pyproject.toml` → `setup.cfg` → `setup.py` → `package.json` → cwd basename (slugified). Final value is `experiment-<service-name>`; fall back to `experiment-sdk-default` if nothing resolves and emit a warning telling the user to set `--project-name` explicitly.
+3. **Resolve `project_name`** — if `--project-name <name>` was supplied, use it verbatim. Otherwise derive using the same resolution order as `agent-observability-experiment-bootstrap` (Workflow step 1): `pyproject.toml` → `setup.cfg` → `setup.py` → `package.json` → cwd basename (slugified). Final value is `experiment-<service-name>`; fall back to `experiment-sdk-default` if nothing resolves and emit a warning telling the user to set `--project-name` explicitly.
 
    **Project creation semantics**: the project is created lazily by the Datadog SDK the first time `LLMObs.enable(project_name=...)` is called against the org (in Phase 4's publish script, and again in Phase 5's generated experiment). The user does not need to pre-create anything in the UI. Surface the chosen project name in the Precheck output so the user can override before Phase 4 if it isn't what they wanted.
 
@@ -484,10 +484,10 @@ Wait for confirmation.
 
 **Action — three sub-steps with an in-phase review beat between codegen and run:**
 
-**5a — Generate the experiment file.** Follow the **`agent-observability-experiment-py-bootstrap`** skill:
+**5a — Generate the experiment file.** Follow the **`agent-observability-experiment-bootstrap`** skill:
 
 ```
-/agent-observability-experiment-py-bootstrap \
+/agent-observability-experiment-bootstrap \
   --dataset-name <dataset_name> \
   --project-name <project_name> \
   --format <format> \
@@ -776,7 +776,7 @@ Everything else routes through sub-skills, which carry their own MCP-to-pup mapp
 | `agent-observability-trace-rca` | Phase 2 | `agent-observability/agent-observability-trace-rca/SKILL.md` (Tool Reference appendix) |
 | `agent-observability-eval-bootstrap` (offline-evaluators / online-evaluators / data-only) | Phase 3 | `agent-observability/agent-observability-eval-bootstrap/SKILL.md` (Tool Reference appendix) |
 | `agent-observability-eval-bootstrap` (`--emit-dataset` mode) | Phase 4 (sub-step 4a) | `agent-observability/agent-observability-eval-bootstrap/SKILL.md` (Phase 3D + Tool Reference appendix) |
-| `agent-observability-experiment-py-bootstrap` | Phase 5 (sub-step 5a) | `agent-observability/agent-observability-experiment-py-bootstrap/SKILL.md` |
+| `agent-observability-experiment-bootstrap` | Phase 5 (sub-step 5a) | `agent-observability/agent-observability-experiment-bootstrap/SKILL.md` |
 | `agent-observability-experiment-analyzer` | Phase 6 | `agent-observability/agent-observability-experiment-analyzer/SKILL.md` (Tool Reference appendix) |
 
 ### Precheck `search_llmobs_spans` ↔ pup

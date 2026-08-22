@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mkosir/typescript-style-guide` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `mkosir/typescript-style-guide` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mkosir/typescript-style-guide` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/typescript-style-guide/references/types.md`](skills/typescript-style-guide/references/types.md) |
-| 2 | ✓ | [`skills/typescript-style-guide/SKILL.md`](skills/typescript-style-guide/SKILL.md) |
+| 1 | ✓ | [`skills/evals/typescript-style-guide/cases.ts`](skills/evals/typescript-style-guide/cases.ts) |
+| 2 | ✓ | [`skills/evals/typescript-style-guide/run-codex.ts`](skills/evals/typescript-style-guide/run-codex.ts) |
+| 3 | ✓ | [`skills/package-lock.json`](skills/package-lock.json) |
+| 4 | ✓ | [`skills/package.json`](skills/package.json) |
+| 5 | ✓ | [`skills/typescript-style-guide/references/functions.md`](skills/typescript-style-guide/references/functions.md) |
+| 6 | ✓ | [`skills/typescript-style-guide/references/naming.md`](skills/typescript-style-guide/references/naming.md) |
+| 7 | ✓ | [`skills/typescript-style-guide/references/react.md`](skills/typescript-style-guide/references/react.md) |
+| 8 | ✓ | [`skills/typescript-style-guide/references/source-organization.md`](skills/typescript-style-guide/references/source-organization.md) |
+| 9 | ✓ | [`skills/typescript-style-guide/references/tests.md`](skills/typescript-style-guide/references/tests.md) |
+| 10 | ✓ | [`skills/typescript-style-guide/references/types.md`](skills/typescript-style-guide/references/types.md) |
+| 11 | ✓ | [`skills/typescript-style-guide/references/variables.md`](skills/typescript-style-guide/references/variables.md) |
+| 12 | ✓ | [`skills/typescript-style-guide/SKILL.md`](skills/typescript-style-guide/SKILL.md) |
 
 ---
 

@@ -403,8 +403,12 @@ wrote, and dolt 1.52.1 fails at both serving and reading.
 
 This is a warning, not a hard failure — there is deliberately no hard
 version floor, so an older dolt can still be used at your own risk. To
-resolve it, install a current dolt (https://docs.dolthub.com/introduction/installation)
-and either update PATH or set `BEADS_DOLT_BIN` to the new binary's path.
+resolve it, install the pinned dolt version — see
+[Which Dolt version to install](/architecture/dolt#which-dolt-version-to-install)
+— and either update PATH or set `BEADS_DOLT_BIN` to the new binary's path.
+Install that specific version rather than `latest`: 2.3.x is a newer release
+that satisfies this warning but carries a
+[separate data-operation defect](/architecture/dolt#which-dolt-version-to-install).
 
 The advisory repeats at most once per day, not on every command: the probe
 result and the warning timestamp are cached (keyed by the binary's path,
@@ -640,6 +644,35 @@ cd ~/project/component2 && bd init --prefix comp2
 # Run Dolt garbage collection to compact storage
 bd admin compact --dolt
 ```
+
+If this or `bd flatten` stops with `Error 1105 (HY000): context canceled`,
+see [Storage reclaim fails with "context canceled"](#storage-reclaim-fails-with-context-canceled)
+below.
+
+### Storage reclaim fails with "context canceled"
+
+`bd flatten` and the Dolt-history compaction in `bd admin compact` finish by
+hard-resetting `main` onto a temporary branch; the merge-settle path behind
+`bd dolt pull` / `bd sync` falls back to a hard reset when it abandons a
+merge. On Dolt 2.3.x a few percent of freshly created databases come up with
+`CALL DOLT_RESET('--hard')` broken for the life of the server process, so on
+an affected database those commands stop with:
+
+```
+Error 1105 (HY000): context canceled
+```
+
+Nothing else looks wrong — ordinary queries, commits, soft resets,
+`CALL DOLT_CLEAN()` and `CALL DOLT_CHECKOUT('.')` all still work — so the
+problem only shows up when something needs a hard reset. Confirm with the
+check in
+[Which Dolt version to install](/architecture/dolt#which-dolt-version-to-install),
+which also covers the fix: restarting `dolt sql-server` clears it for now,
+and installing the pinned Dolt version keeps it clear.
+
+This applies to server and proxied-server mode, which use the standalone
+`dolt` CLI. Embedded mode links its own Dolt engine at the version pinned in
+`go.mod` and is not affected by which `dolt` CLI is on your PATH.
 
 ## Agent Issues
 

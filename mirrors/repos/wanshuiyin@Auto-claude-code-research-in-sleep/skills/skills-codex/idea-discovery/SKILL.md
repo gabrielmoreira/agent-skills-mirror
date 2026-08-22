@@ -24,7 +24,7 @@ Each phase builds on the previous one's output. The final deliverables are a val
 - **PILOT_TIMEOUT_HOURS = 3** — Hard timeout: kill any running pilot that exceeds 3 hours. Collect partial results if available.
 - **MAX_PILOT_IDEAS = 3** — Run pilots for at most 3 top ideas in parallel. Additional ideas are validated on paper only.
 - **MAX_TOTAL_GPU_HOURS = 8** — Total GPU budget across all pilots. If exceeded, skip remaining pilots and note in report.
-- **AUTO_PROCEED = true** — If user doesn't respond at a checkpoint, automatically proceed with the best option after presenting results. Set to `false` to always wait for explicit user confirmation.
+- **AUTO_PROCEED = true** — When `true`, checkpoints are informational: report the selected option and continue in the same turn. Set to `false` to ask for explicit user confirmation and end the turn at each selection checkpoint.
 - **REVIEWER_MODEL = `gpt-5.6-sol`** — Model used via a secondary Codex agent. Must be an OpenAI model (e.g., `gpt-5.6-sol`, `o3`, `gpt-4o`). Passed to sub-skills.
 - **ARXIV_DOWNLOAD = false** — When `true`, `/research-lit` downloads the top relevant arXiv PDFs during Phase 1. When `false` (default), only fetches metadata. Passed through to `/research-lit`.
 - **COMPACT = false** — When `true`, generate compact summary files for short-context sessions and downstream skills. Writes `idea-stage/IDEA_CANDIDATES.md`.
@@ -35,6 +35,28 @@ Each phase builds on the previous one's output. The final deliverables are a val
 
 > 💡 These are defaults. Override by telling the skill, e.g., `/idea-discovery "topic" — ref paper: https://arxiv.org/abs/2406.04329` or `/idea-discovery "topic" — compact: true`.
 
+## Checkpoint execution rule
+
+Resolve `AUTO_PROCEED` once from `$ARGUMENTS` before Phase 0 and keep that mode
+for the entire workflow.
+
+- **`AUTO_PROCEED=true` is non-blocking.** A checkpoint is a progress update,
+  not a question. State the result and the automatically selected next action,
+  then continue executing in the **same turn**. Do not ask for confirmation,
+  request user input, sleep, wait for silence, or end the turn at a checkpoint.
+- **`AUTO_PROCEED=false` is blocking.** Present the options, ask the user, and
+  end the turn. Resume only after an explicit reply.
+
+Never implement auto-proceed as “ask, then continue if there is no response.”
+Once a turn ends, silence cannot resume the workflow. The user can still
+interrupt a non-blocking run at any time.
+
+This rule governs only `AUTO_PROCEED`-controlled selection checkpoints. If the
+user explicitly enables a Feishu **interactive** gate, that external approval
+or reply is an intentional blocking exception; wait for that user-controlled
+gate rather than treating it as a silence timeout. Feishu off/push-only modes
+remain non-blocking under `AUTO_PROCEED=true`.
+
 ## Per-stage evidence gate (`RESUMABLE = true`)
 
 Resolve `run_state.py` and `idea_discovery_gate.py` from the Codex manifest
@@ -43,8 +65,8 @@ unavailable, the final report is `BLOCKED`; do not silently continue without a
 state record.
 
 For a new run, derive `<run_id>` from the direction slug and date, then start
-this ordered state record with `--executor codex-gpt-5.6-sol
---provisional-advances`:
+this ordered state record with `--executor <actual-Codex-model>
+--provisional-advances` (for example, `codex-gpt-5.6-sol`):
 
 ```text
 research-lit,idea-creator,novelty-check,research-review,research-refine-pipeline
@@ -62,6 +84,33 @@ check the canonical report rather than scattered scratch files:
 | `research-review` | `idea-stage/IDEA_REPORT.md#external-critical-review` |
 | `research-refine-pipeline` | `refine-logs/FINAL_PROPOSAL.md` |
 
+`novelty-check` and `research-review` are **reviewer-bearing phases**. A
+`done` status or a heading alone is not review evidence. After each phase has
+folded substantive findings into its anchored report section, first record it
+`done`, then, only after the secondary Codex reviewer actually returns a
+positive, identity-bearing verdict, record its honest same-family receipt using the
+actual reviewer model and durable agent/trace id:
+
+```text
+python3 <resolved-run_state.py> mark-provisional . <run_id> novelty-check --verdict-id "<agent-or-trace-id>" --reviewer "<actual-Codex-reviewer-model>"
+python3 <resolved-run_state.py> mark-provisional . <run_id> research-review --verdict-id "<agent-or-trace-id>" --reviewer "<actual-Codex-reviewer-model>"
+```
+
+Never invent either value and never mark a phase provisional without the
+positive verdict required by the run-state contract. A negative verdict does not grant a review receipt.
+Leave the phase `done` and the final gate `BLOCKED`,
+select a surviving or new idea, then re-run that reviewer-bearing phase. Do the
+same if the reviewer is unavailable, returns no valid identity/response, or its
+output was not folded into the report. `--provisional-advances` is required
+because these same-family receipts are explicitly provisional, not
+cross-family acceptance.
+
+If a reviewer overlay actually returns a recognized **different-family** model
+(for example Claude reviewing a Codex run), use `accept` with that overlay's
+real model and trace id instead. Do not mislabel a cross-family receipt as
+provisional; the evidence gate validates either honest route from the recorded
+families.
+
 At the end of Phase 5, run:
 
 ```text
@@ -69,12 +118,13 @@ python3 <resolved-idea_discovery_gate.py> . <run_id> --report idea-stage/IDEA_RE
 ```
 
 The gate writes its result to `gates.idea-discovery-evidence` in the run state.
-On `PASS`, it records the gate verdict under `gates.idea-discovery-evidence` —
-per-phase acceptance stays with each stage's own cross-model or deterministic
-gate (the evidence gate proves execution, never quality). On a
-non-zero exit, it writes explicit `BLOCKED: <stage> evidence missing` lines to
-the report; do not present the workflow as complete. On `— resume <run_id>`,
-start from the first non-terminal phase and re-run the gate before finalizing.
+On `PASS`, it has validated (but never created) the two review receipts, all
+required artifacts, and non-empty anchored report sections. Per-phase
+acceptance or provisional status stays with the reviewer route that produced
+the receipt. On a non-zero exit, the gate writes explicit
+`BLOCKED: <stage> evidence missing` lines to the report; do not present the
+workflow as complete. On `— resume <run_id>`, start from the first non-terminal
+phase and re-run the gate before finalizing.
 
 ## Pipeline
 
@@ -164,17 +214,23 @@ Invoke `/research-lit` to map the research landscape:
 - Identify structural gaps and recurring limitations
 - Output a literature summary (saved to working notes)
 
-**🚦 Checkpoint:** Present the landscape summary to the user. Ask:
+**🚦 Checkpoint:** Present the landscape summary to the user.
+
+**When `AUTO_PROCEED=true` (non-blocking):** report the selected direction and
+continue immediately in the same turn, without a question:
 
 ```
 📚 Literature survey complete. Here's what I found:
 - [key findings, gaps, open problems]
 
-Does this match your understanding? Should I adjust the scope before generating ideas?
-(If no response, I'll proceed with the top-ranked direction.)
+AUTO_PROCEED: selected [top-ranked direction]. Continuing to Phase 2.
 ```
 
-- **User approves** (or no response + AUTO_PROCEED=true) → proceed to Phase 2 with best direction.
+**When `AUTO_PROCEED=false` (blocking):** present the same findings, ask
+`Does this match your understanding? Should I adjust the scope before generating ideas?`,
+then end the turn.
+
+- **User approves** → proceed to Phase 2 with the best direction.
 - **User requests changes** (e.g., "focus more on X", "ignore Y", "too broad") → refine the search with updated queries, re-run `/research-lit` with adjusted scope, and present again. Repeat until the user is satisfied.
 
 ### Phase 2: Idea Generation + Filtering + Pilots
@@ -194,7 +250,10 @@ Invoke `/idea-creator` with the landscape context and `idea-stage/REF_PAPER_SUMM
 - Rank by empirical signal
 - Output `idea-stage/IDEA_REPORT.md`
 
-**🚦 Checkpoint:** Present `idea-stage/IDEA_REPORT.md` ranked ideas to the user. Ask:
+**🚦 Checkpoint:** Present `idea-stage/IDEA_REPORT.md` ranked ideas to the user.
+
+**When `AUTO_PROCEED=true` (non-blocking):** report the automatic selection and
+continue immediately in the same turn, without a question:
 
 ```
 💡 Generated X ideas, filtered to Y, piloted Z. Top results:
@@ -203,11 +262,14 @@ Invoke `/idea-creator` with the landscape context and `idea-stage/REF_PAPER_SUMM
 2. [Idea 2] — Pilot: WEAK POSITIVE (+Y%)
 3. [Idea 3] — Pilot: NEGATIVE, eliminated
 
-Which ideas should I validate further? Or should I regenerate with different constraints?
-(If no response, I'll proceed with the top-ranked ideas.)
+AUTO_PROCEED: selected [top-ranked idea(s)]. Continuing to Phase 3.
 ```
 
-- **User picks ideas** (or no response + AUTO_PROCEED=true) → proceed to Phase 3 with top-ranked ideas.
+**When `AUTO_PROCEED=false` (blocking):** present the same ranking, ask
+`Which ideas should I validate further? Or should I regenerate with different constraints?`,
+then end the turn.
+
+- **User picks ideas** → proceed to Phase 3 with the selected ideas.
 - **User unhappy with all ideas** → collect feedback ("what's missing?", "what direction do you prefer?"), update the prompt with user's constraints, and re-run Phase 2 (idea generation). Repeat until the user selects at least 1 idea.
 - **User wants to adjust scope** → go back to Phase 1 with refined direction.
 
@@ -263,7 +325,10 @@ After review, refine the top idea into a concrete proposal and plan experiments:
 - Generate a claim-driven experiment roadmap with ablations, budgets, and run order
 - Output: `refine-logs/FINAL_PROPOSAL.md`, `refine-logs/EXPERIMENT_PLAN.md`, `refine-logs/EXPERIMENT_TRACKER.md`
 
-**🚦 Checkpoint:** Present the refined proposal summary:
+**🚦 Checkpoint:** Present the refined proposal summary.
+
+**When `AUTO_PROCEED=true` (non-blocking):** report that the proposal was
+selected and continue immediately in the same turn, without a question:
 
 ```
 🔬 Method refined and experiment plan ready:
@@ -273,10 +338,13 @@ After review, refine the top idea into a concrete proposal and plan experiments:
 - Must-run experiments: [N blocks]
 - First 3 runs to launch: [list]
 
-Proceed to implementation? Or adjust the proposal?
+AUTO_PROCEED: accepted the top proposal. Continuing to Final Report.
 ```
 
-- **User approves** (or AUTO_PROCEED=true) → proceed to Final Report.
+**When `AUTO_PROCEED=false` (blocking):** present the same summary, ask
+`Proceed to implementation? Or adjust the proposal?`, then end the turn.
+
+- **User approves** → proceed to Final Report.
 - **User requests changes** → pass feedback to `/research-refine` for another round.
 - **Lite mode:** If reviewer score < 6 or pilot was weak, run `/research-refine` only (skip `/experiment-plan`) and note remaining risks in the report.
 
@@ -387,7 +455,7 @@ After finalizing `idea-stage/IDEA_REPORT.md` (and the optional `IDEA_CANDIDATES.
 - **Large file handling**: If the Write tool fails due to file size, immediately retry using Bash (`cat << 'EOF' > file`) to write in chunks. Do NOT ask the user for permission — just do it silently.
 
 - **Don't skip phases.** Each phase filters and validates — skipping leads to wasted effort later.
-- **Checkpoint between phases.** Briefly summarize what was found before moving on.
+- **Checkpoint between phases.** Briefly summarize what was found. With `AUTO_PROCEED=true`, state the selected next action and keep executing in the same turn; with `false`, ask and end the turn.
 - **Kill ideas early.** It's better to kill 10 bad ideas in Phase 3 than to implement one and fail.
 - **Empirical signal > theoretical appeal.** An idea with a positive pilot outranks a "sounds great" idea without evidence.
 - **Document everything.** Dead ends are just as valuable as successes for future reference.

@@ -4,6 +4,31 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.239](https://github.com/Piebald-AI/claude-code-system-prompts/commit/50c563b)
+
+_+960 tokens_
+
+- **NEW:** Data: SDK MCP server errors field — Documents skipped `--mcp-config` entries on SDK init frames, including stable error categories, omitted affected servers, Remote Control bridge failures, and CI handling.
+- **NEW:** Data: SendMessage ambiguous recipient display — Restores user-facing “not sent” explanations for inexact or duplicate agent names, unavailable or truncated session searches, and recipients that require exact-name or pinned-identity confirmation.
+- **NEW:** Tool Description: Artifact content host network block guidance — Explains the Artifact content-host allowlist entry for personal and shared cloud environments and forbids republishing until Claude can read the live version.
+- **NEW:** Tool Description: Artifact files guidance — Adds `list_files` and `read_file` actions for multi-file Artifacts, defaulting reads to the scratchpad while reserving `out_dir` for user-requested destinations.
+- **NEW:** Tool Description: Artifact identical resubmission refusal, Tool Parameter: Artifact URL guidance, and Tool Parameter: Artifact force overwrite guidance — Require existing owned Artifact URLs for in-place updates, reject unchanged retries after stale-version conflicts, and reserve forced overwrites for explicit approval to discard a specific newer version.
+- **REMOVED:** Skill: Artifact slides and Skill: Artifact spreadsheet — Remove the standalone editable slide-deck and spreadsheet Artifact skills and their template-preservation workflows.
+- Agent Prompt: Security monitor for autonomous agent actions — Adds an unverifiable-deletion-scope soft block for runtime-computed destructive writes against shared or remote state, requiring a transcript-visible resolved target list or literal verified names within the user-approved scope.
+- Skill: `/insights` report output — Reworks the restored `/insights` flow into an exact unwrapped shareable-report handoff, replaces the additional-context injection with report-header context, and forbids adding, omitting, or rewording any line.
+- Tool Description: Artifact and Skill: Artifact design — Make HTML the default Artifact format, allowing Markdown only when a loaded skill explicitly requires it and converting shared Markdown documents into designed HTML pages rather than one-to-one transcriptions.
+- Tool Description: Artifact publishing and update guidance; Skill: Artifact PR review, Skill: Design, and Skill: Whiteboard — Move Artifact reads from WebFetch to `action: "read"`, returning owned pages as raw HTML and shared pages as isolated summaries—except same-session Slack-channel pages, which return full untrusted content—while updating dependent workflows to consume saved large-page results safely.
+- Tool Description: Artifact publishing and update guidance, Tool Description: Artifact runtime capabilities guidance, and Tool Parameter: Artifact watch actions guidance — Distinguish unavailable, durable-wake, and live watch modes; expand capability examples to live or connected data, shared state, viewer identity, Claude questions, added files, and self-saving pages; and require re-read, merge, and republish handling when local source falls behind a page-authored version.
+- Tool Description: Artifact live room guidance — Requires explicit per-publish approval to join a room and approval for every `room_send`, exposes joined rooms through status, and coalesces and caps incoming events so pages send summaries rather than streams.
+- Data: Artifact MCP connector guidance — Expands Artifact MCP manifests from claude.ai and host connectors to include built-in connector guidance while retaining exact upstream-tool-name discovery.
+- Data: Claude API reference — Python and Skill: Anthropic Python SDK 0.x to 1.x upgrade — Switch timeout and custom-client guidance to `anthropic.Timeout`/`httpx2`, expand `output_format` migration coverage, and preserve supported older-model sampling parameters through `extra_body` instead of deleting them blindly.
+- Data: Background tasks changed event schema, SDK protocol capabilities field, Interrupt cancel queued parameter, Interrupt receipt still queued field, and SDK subagent stats schema — Add reinitialize snapshots for live background tasks, hosted-session exceptions to cancel-queued receipts, and held-back-result timing details for cost, duration, model usage, and subagent totals.
+- System Prompt: Coordinator mode orchestration and Tool Description: ListAgents — Add capability-aware user-message routing, `blocked` worker outcomes, concise launch updates when no communications role exists, and teammates as addressable agents.
+- System Reminder: Previously invoked skills — Broadens the post-compaction warning so request or argument text anywhere in restored skill bodies, including “User Request” sections, is historical context rather than a new live instruction.
+- System Prompt: Interactive agent intro and System Prompt: Harness instructions — Add a collaborative-goals identity branch when no output style is active, alongside the existing software-engineering framing.
+- Tool Description: Bash (Git commit and PR creation instructions) — Corrects generated pull-request bodies so summary and test-plan templates appear under their matching headings and optional attribution follows the test plan.
+- System Prompt: Auto memory durable lesson instructions — Adds a runtime note about the configured memory directory alongside the persistent-memory introduction.
+
 # [2.1.238](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d2f451b)
 
 _+3,292 tokens_

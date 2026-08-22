@@ -10,11 +10,11 @@
 pnpm change
 ```
 
-This repo uses MonoChange with a lockstep `monopi` group, so every changeset frontmatter must use only `monopi` as the key.
+This repo uses MonoChange with a lockstep `monopi-group`, so every changeset frontmatter must use only `monopi-group` as the key.
 
 ```md
 ---
-monopi: patch
+monopi-group: patch
 ---
 ```
 
@@ -22,9 +22,9 @@ Do not use package names like `@monopi/monopi` or `@monopi/extension-worktree` i
 
 ## Change types
 
-- `major` — breaking API or behavior changes
-- `minor` — new features, extensions, or config options
-- `patch` — bug fixes, docs updates, and internal refactors
+- `major`: breaking API or behavior changes
+- `minor`: new features, extensions, or config options
+- `patch`: bug fixes, docs updates, and internal refactors
 
 ## Packaging model
 

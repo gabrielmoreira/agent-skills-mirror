@@ -4,6 +4,20 @@
 
 Provide the `modlens` CLI tool that converts image sources (local path or remote URL) into structured text evidence for non-vision LLM workflows.
 
+## Scope
+
+The contract: an image the user hands over is read once, and that read leaves text later turns can quote. The image is in the conversation because the user pasted it, dropped a path, or gave a URL.
+
+Do not add:
+
+- a camera, screenshot capture, or hotkeys
+- CDP, or holding a browser session
+- computer-use (screen plus keyboard and mouse)
+- a pixel toolbox (grounding, crop, pixel-diff, reconstructing a UI)
+- bounding boxes or confidence scores (dropped from the schema on purpose)
+
+Visual parsing is the only job. Web search and page fetching live in `modsearch`.
+
 ## Technical Approach
 
 - **Six vision providers behind one interface** (`src/providers/index.ts`). Subprocess providers implement `buildInvocation` + `parseOutput` (antigravity-cli, claude-cli, kimi-cli); in-process API providers implement `execute` (gemini-api, openai, anthropic). `antigravity-cli` is the zero-config default, and `kimi-cli` runs only when named, since it spends a subscription.

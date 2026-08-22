@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 28 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,33 +60,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/wasp-review/SKILL.md`](.agents/skills/wasp-review/SKILL.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`examples/ask-the-documents/AGENTS.md`](examples/ask-the-documents/AGENTS.md) |
-| 4 | ✓ | [`examples/ask-the-documents/CLAUDE.md`](examples/ask-the-documents/CLAUDE.md) |
-| 5 | ✓ | [`examples/kitchen-sink/AGENTS.md`](examples/kitchen-sink/AGENTS.md) |
-| 6 | ✓ | [`examples/kitchen-sink/CLAUDE.md`](examples/kitchen-sink/CLAUDE.md) |
-| 7 | ✓ | [`examples/tutorials/TodoApp/AGENTS.md`](examples/tutorials/TodoApp/AGENTS.md) |
-| 8 | ✓ | [`examples/tutorials/TodoApp/CLAUDE.md`](examples/tutorials/TodoApp/CLAUDE.md) |
-| 9 | ✓ | [`examples/tutorials/TodoAppTs/AGENTS.md`](examples/tutorials/TodoAppTs/AGENTS.md) |
-| 10 | ✓ | [`examples/tutorials/TodoAppTs/CLAUDE.md`](examples/tutorials/TodoAppTs/CLAUDE.md) |
-| 11 | ✓ | [`examples/waspello/AGENTS.md`](examples/waspello/AGENTS.md) |
-| 12 | ✓ | [`examples/waspello/CLAUDE.md`](examples/waspello/CLAUDE.md) |
-| 13 | ✓ | [`examples/waspleau/AGENTS.md`](examples/waspleau/AGENTS.md) |
-| 14 | ✓ | [`examples/waspleau/CLAUDE.md`](examples/waspleau/CLAUDE.md) |
-| 15 | ✓ | [`examples/websockets-realtime-voting/AGENTS.md`](examples/websockets-realtime-voting/AGENTS.md) |
-| 16 | ✓ | [`examples/websockets-realtime-voting/CLAUDE.md`](examples/websockets-realtime-voting/CLAUDE.md) |
-| 17 | ✓ | [`waspc/data/Cli/starters/skeleton/AGENTS.md`](waspc/data/Cli/starters/skeleton/AGENTS.md) |
-| 18 | ✓ | [`waspc/data/Cli/starters/skeleton/CLAUDE.md`](waspc/data/Cli/starters/skeleton/CLAUDE.md) |
-| 19 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md) |
-| 20 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md) |
-| 21 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md) |
-| 22 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md) |
-| 23 | ✓ | [`web/.claude/skills/crossposting/SKILL.md`](web/.claude/skills/crossposting/SKILL.md) |
-| 24 | ✓ | [`web/.claude/skills/geo-fundamentals/SKILL.md`](web/.claude/skills/geo-fundamentals/SKILL.md) |
-| 25 | ✓ | [`web/.claude/skills/notion-to-blog/SKILL.md`](web/.claude/skills/notion-to-blog/SKILL.md) |
-| 26 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
-| 27 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
-| 28 | ✓ | [`web/markdown-snapshots/llms.txt`](web/markdown-snapshots/llms.txt) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`examples/ask-the-documents/AGENTS.md`](examples/ask-the-documents/AGENTS.md) |
+| 5 | ✓ | [`examples/ask-the-documents/CLAUDE.md`](examples/ask-the-documents/CLAUDE.md) |
+| 6 | ✓ | [`examples/kitchen-sink/AGENTS.md`](examples/kitchen-sink/AGENTS.md) |
+| 7 | ✓ | [`examples/kitchen-sink/CLAUDE.md`](examples/kitchen-sink/CLAUDE.md) |
+| 8 | ✓ | [`examples/tutorials/TodoApp/AGENTS.md`](examples/tutorials/TodoApp/AGENTS.md) |
+| 9 | ✓ | [`examples/tutorials/TodoApp/CLAUDE.md`](examples/tutorials/TodoApp/CLAUDE.md) |
+| 10 | ✓ | [`examples/tutorials/TodoAppTs/AGENTS.md`](examples/tutorials/TodoAppTs/AGENTS.md) |
+| 11 | ✓ | [`examples/tutorials/TodoAppTs/CLAUDE.md`](examples/tutorials/TodoAppTs/CLAUDE.md) |
+| 12 | ✓ | [`examples/waspello/AGENTS.md`](examples/waspello/AGENTS.md) |
+| 13 | ✓ | [`examples/waspello/CLAUDE.md`](examples/waspello/CLAUDE.md) |
+| 14 | ✓ | [`examples/waspleau/AGENTS.md`](examples/waspleau/AGENTS.md) |
+| 15 | ✓ | [`examples/waspleau/CLAUDE.md`](examples/waspleau/CLAUDE.md) |
+| 16 | ✓ | [`examples/websockets-realtime-voting/AGENTS.md`](examples/websockets-realtime-voting/AGENTS.md) |
+| 17 | ✓ | [`examples/websockets-realtime-voting/CLAUDE.md`](examples/websockets-realtime-voting/CLAUDE.md) |
+| 18 | ✓ | [`waspc/data/Cli/starters/skeleton/AGENTS.md`](waspc/data/Cli/starters/skeleton/AGENTS.md) |
+| 19 | ✓ | [`waspc/data/Cli/starters/skeleton/CLAUDE.md`](waspc/data/Cli/starters/skeleton/CLAUDE.md) |
+| 20 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md) |
+| 21 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md) |
+| 22 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md) |
+| 23 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md) |
+| 24 | ✓ | [`web/.claude/skills/crossposting/SKILL.md`](web/.claude/skills/crossposting/SKILL.md) |
+| 25 | ✓ | [`web/.claude/skills/geo-fundamentals/SKILL.md`](web/.claude/skills/geo-fundamentals/SKILL.md) |
+| 26 | ✓ | [`web/.claude/skills/notion-to-blog/SKILL.md`](web/.claude/skills/notion-to-blog/SKILL.md) |
+| 27 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
+| 28 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
+| 29 | ✓ | [`web/markdown-snapshots/llms.txt`](web/markdown-snapshots/llms.txt) |
 
 ---
 

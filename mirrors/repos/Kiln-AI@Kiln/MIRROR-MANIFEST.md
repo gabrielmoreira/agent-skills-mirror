@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 129 file(s) materialized.
+Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 130 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 129 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 129 |
+| Files         | 130 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -184,10 +184,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 123 | ✓ | [`.agents/skills/playwright/references/search_tool.md`](.agents/skills/playwright/references/search_tool.md) |
 | 124 | ✓ | [`.agents/skills/playwright/references/seeded_project.md`](.agents/skills/playwright/references/seeded_project.md) |
 | 125 | ✓ | [`.agents/skills/playwright/SKILL.md`](.agents/skills/playwright/SKILL.md) |
-| 126 | ✓ | [`.agents/skills/release-digest/scripts/gather_changes.py`](.agents/skills/release-digest/scripts/gather_changes.py) |
-| 127 | ✓ | [`.agents/skills/release-digest/SKILL.md`](.agents/skills/release-digest/SKILL.md) |
-| 128 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
-| 129 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 126 | ✓ | [`.agents/skills/qa/SKILL.md`](.agents/skills/qa/SKILL.md) |
+| 127 | ✓ | [`.agents/skills/release-digest/scripts/gather_changes.py`](.agents/skills/release-digest/scripts/gather_changes.py) |
+| 128 | ✓ | [`.agents/skills/release-digest/SKILL.md`](.agents/skills/release-digest/SKILL.md) |
+| 129 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
+| 130 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

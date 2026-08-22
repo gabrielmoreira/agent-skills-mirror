@@ -52,6 +52,8 @@ python3 {技能目录}/scripts/storyboard_check.py <coverage.json> --shots <shot
 
 - 竖屏多人、单房对白、证据揭示、群体轴线或门内外视角：
   [blocking-playbooks.md](references/blocking-playbooks.md)
+- 视觉方向已接受为漫剧 / 二维漫画形态，需要为关键帧投影共享画风与当前可读性约束时：
+  [comic-keyframe-lexicon.md](references/comic-keyframe-lexicon.md)
 - 需要查看“剧本 → 原文落实 → 镜头 → 关键帧”的完整正例，或对白表演括注
   `（情绪）` 怎样同源投影到本镜表演状态与下游 `delivery`：
   [screenplay-to-keyframe-example.md](references/screenplay-to-keyframe-example.md)
@@ -187,8 +189,8 @@ python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage
 给了 `--screenplay-index` 就多做一项覆盖对账：**剧本的每一个块都要有一种处理，而镜头认领
 必须与那种处理相符**。`covered` 要恰好一个镜头认领，`intentional_repeat` 可以多于一个，
 `omitted_with_reason` 与 `nonvisual_context` 不应有镜头认领——后两种是"决定不拍"，
-写清理由即可。认领按块 ID 走（`source_refs` 里的 `record_id`），不按正文——正文一直在改，
-块 ID 不变。
+写清理由即可。认领按块 ID 走（`source_refs` 里的 `record_id`），不按正文行定位。内容没变的
+块在修订后保留 ID；被改写的块换新 ID，让旧的下游引用明确失效。
 
 处理表本身也一起校验：状态必须是上面四种之一，一个块只能有一行，指向的块要在剧本索引里，
 `intentional_repeat` 与 `omitted_with_reason` 必须写理由。此前这张表没有任何检查，

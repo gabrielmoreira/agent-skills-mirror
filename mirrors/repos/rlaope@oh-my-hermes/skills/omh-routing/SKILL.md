@@ -139,6 +139,7 @@ Load these only when exact detail matters:
 - `references/wrapper-routing.md` for backend/plugin/chat/coding delegation contracts.
 - `references/coding-handoff-progress-reporting.md` for active progress cadence, background executor watchdogs, PR head/merge verification, and memory/context collision pitfalls.
 - `references/evidence-boundaries.md` for prepared-vs-observed, target topology, memory, and compatibility rules.
+- `references/structural-code-search.md` for ast-grep structural code search patterns and the grep fallback.
 
 ## Recovery
 
@@ -148,6 +149,7 @@ Load these only when exact detail matters:
 - If delegated coding work is running or being reported, load `references/coding-handoff-progress-reporting.md`.
 - If maintenance command behavior matters, load `references/operator-maintenance.md`.
 - If evidence or target topology is disputed, load `references/evidence-boundaries.md`.
+- If the search target is a syntactic shape rather than a string, load `references/structural-code-search.md`.
 - If the right skill was not loaded, call `skills_list` or `skill_view`.
 - If a slash command exists, use the explicit slash skill such as `/ulw-work`.
 - If a skill name collides, keep the OMH-selected policy in control and present the Hermes-native skill only as an explicit recommendation; do not let a native candidate override routing.

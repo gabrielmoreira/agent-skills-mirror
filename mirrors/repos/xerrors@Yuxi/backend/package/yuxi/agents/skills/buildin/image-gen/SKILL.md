@@ -26,7 +26,7 @@ description: "在 Agent 沙盒中生成图片并保存到 outputs。当用户要
 2. 使用可用的执行工具在沙盒中运行脚本，调用图片生成接口，传入用户需求整理后的 `prompt`，并按需传入 `negative_prompt`、`num_inference_steps`、`guidance_scale`。
 3. 从生成接口响应中读取图片地址，默认路径为 `images[0].url`。
 4. 在同一个沙盒脚本中用 `Authorization: Bearer $SILICONFLOW_API_KEY` 下载该图片地址；如果接口直接返回 base64，则直接解码保存。
-5. 将最终图片保存到 `/home/gem/user-data/outputs/` 下，例如 `/home/gem/user-data/outputs/generated-image.png`。
+5. 将最终图片保存到当前 Workdir 的 `outputs/` 下，例如 `outputs/generated-image.png`。
 6. 调用 `present_artifacts`，传入保存后的 outputs 虚拟路径，让前端展示图片产物。
 7. 最终回复简要说明图片已生成，不要把外部临时 URL 当作最终结果展示。
 
@@ -64,7 +64,7 @@ image_response = requests.get(
 )
 image_response.raise_for_status()
 
-output_path = Path("/home/gem/user-data/outputs/generated-image.png")
+output_path = Path("outputs/generated-image.png")
 output_path.parent.mkdir(parents=True, exist_ok=True)
 output_path.write_bytes(image_response.content)
 print(output_path.as_posix())
@@ -72,7 +72,7 @@ print(output_path.as_posix())
 
 ## 多模型扩展
 
-如果用户指定其它图片生成模型或兼容接口，可以按该接口的协议先生成图片。只要最终拿到图片 bytes 或 base64，就保存到 `/home/gem/user-data/outputs/`，再调用 `present_artifacts` 展示。
+如果用户指定其它图片生成模型或兼容接口，可以按该接口的协议先生成图片。只要最终拿到图片 bytes 或 base64，就保存到当前 Workdir 的 `outputs/`，再调用 `present_artifacts` 展示。
 
 ## 关键约束
 

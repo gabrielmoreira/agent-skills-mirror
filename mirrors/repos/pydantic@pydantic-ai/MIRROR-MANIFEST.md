@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 78 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 13 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 78 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,36 +119,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
 | 47 | ✓ | [`docs/toolsets.md`](docs/toolsets.md) |
 | 48 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/building-pydantic-ai-agents/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/building-pydantic-ai-agents/SKILL.md) |
-| 49 | ✓ | [`pydantic_ai_slim/pydantic_ai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/AGENTS.md) |
-| 50 | ✓ | [`pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md`](pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md) |
-| 51 | ✓ | [`pydantic_ai_slim/pydantic_ai/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/CLAUDE.md) |
-| 52 | ✓ | [`pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md`](pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md) |
-| 53 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
-| 54 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
-| 55 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md`](pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md) |
-| 56 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md) |
-| 57 | ✓ | [`pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md`](pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md) |
-| 58 | ✓ | [`pydantic_ai_slim/pydantic_ai/providers/AGENTS.md`](pydantic_ai_slim/pydantic_ai/providers/AGENTS.md) |
-| 59 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md`](pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md) |
-| 60 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md) |
-| 61 | ✓ | [`pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md`](pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md) |
-| 62 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
-| 63 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
-| 64 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 65 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
-| 66 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 67 | → | [`agent_docs/index.md`](agent_docs/index.md) |
-| 68 | → | [`docs/agent.md`](docs/agent.md) |
-| 69 | → | [`docs/cli.md`](docs/cli.md) |
-| 70 | → | [`docs/dependencies.md`](docs/dependencies.md) |
-| 71 | → | [`docs/evals.md`](docs/evals.md) |
-| 72 | → | [`docs/graph.md`](docs/graph.md) |
-| 73 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 74 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 75 | → | [`docs/output.md`](docs/output.md) |
-| 76 | → | [`docs/tools.md`](docs/tools.md) |
-| 77 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 78 | → | [`docs/web.md`](docs/web.md) |
+| 49 | ✓ | [`pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-langchain-to-pydantic-ai/SKILL.md`](pydantic_ai_slim/pydantic_ai/.agents/skills/migrating-langchain-to-pydantic-ai/SKILL.md) |
+| 50 | ✓ | [`pydantic_ai_slim/pydantic_ai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/AGENTS.md) |
+| 51 | ✓ | [`pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md`](pydantic_ai_slim/pydantic_ai/capabilities/AGENTS.md) |
+| 52 | ✓ | [`pydantic_ai_slim/pydantic_ai/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/CLAUDE.md) |
+| 53 | ✓ | [`pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md`](pydantic_ai_slim/pydantic_ai/durable_exec/AGENTS.md) |
+| 54 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
+| 55 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
+| 56 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md`](pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md) |
+| 57 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md) |
+| 58 | ✓ | [`pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md`](pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md) |
+| 59 | ✓ | [`pydantic_ai_slim/pydantic_ai/providers/AGENTS.md`](pydantic_ai_slim/pydantic_ai/providers/AGENTS.md) |
+| 60 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md`](pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md) |
+| 61 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md) |
+| 62 | ✓ | [`pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md`](pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md) |
+| 63 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
+| 64 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
+| 65 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 66 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 67 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 68 | → | [`agent_docs/index.md`](agent_docs/index.md) |
+| 69 | → | [`docs/agent.md`](docs/agent.md) |
+| 70 | → | [`docs/cli.md`](docs/cli.md) |
+| 71 | → | [`docs/dependencies.md`](docs/dependencies.md) |
+| 72 | → | [`docs/evals.md`](docs/evals.md) |
+| 73 | → | [`docs/graph.md`](docs/graph.md) |
+| 74 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 75 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 76 | → | [`docs/output.md`](docs/output.md) |
+| 77 | → | [`docs/tools.md`](docs/tools.md) |
+| 78 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 79 | → | [`docs/web.md`](docs/web.md) |
 
 ---
 

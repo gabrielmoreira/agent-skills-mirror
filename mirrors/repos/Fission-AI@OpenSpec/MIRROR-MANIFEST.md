@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 20
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,26 +59,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/release-openspec/agents/openai.yaml`](.agents/skills/release-openspec/agents/openai.yaml) |
-| 2 | ✓ | [`.agents/skills/release-openspec/references/release-notes.md`](.agents/skills/release-openspec/references/release-notes.md) |
-| 3 | ✓ | [`.agents/skills/release-openspec/SKILL.md`](.agents/skills/release-openspec/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`openspec/work/AGENTS.md`](openspec/work/AGENTS.md) |
-| 6 | ✓ | [`skills/openspec-apply-change/SKILL.md`](skills/openspec-apply-change/SKILL.md) |
-| 7 | ✓ | [`skills/openspec-archive-change/SKILL.md`](skills/openspec-archive-change/SKILL.md) |
-| 8 | ✓ | [`skills/openspec-bulk-archive-change/SKILL.md`](skills/openspec-bulk-archive-change/SKILL.md) |
-| 9 | ✓ | [`skills/openspec-continue-change/SKILL.md`](skills/openspec-continue-change/SKILL.md) |
-| 10 | ✓ | [`skills/openspec-explore/SKILL.md`](skills/openspec-explore/SKILL.md) |
-| 11 | ✓ | [`skills/openspec-ff-change/SKILL.md`](skills/openspec-ff-change/SKILL.md) |
-| 12 | ✓ | [`skills/openspec-new-change/SKILL.md`](skills/openspec-new-change/SKILL.md) |
-| 13 | ✓ | [`skills/openspec-onboard/SKILL.md`](skills/openspec-onboard/SKILL.md) |
-| 14 | ✓ | [`skills/openspec-propose/SKILL.md`](skills/openspec-propose/SKILL.md) |
-| 15 | ✓ | [`skills/openspec-sync-specs/SKILL.md`](skills/openspec-sync-specs/SKILL.md) |
-| 16 | ✓ | [`skills/openspec-update-change/SKILL.md`](skills/openspec-update-change/SKILL.md) |
-| 17 | ✓ | [`skills/openspec-verify-change/SKILL.md`](skills/openspec-verify-change/SKILL.md) |
-| 18 | ✓ | [`skills/README.md`](skills/README.md) |
-| 19 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 20 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
+| 1 | ✓ | [`.agents/skills/draft-openspec-docs/SKILL.md`](.agents/skills/draft-openspec-docs/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/release-openspec/agents/openai.yaml`](.agents/skills/release-openspec/agents/openai.yaml) |
+| 3 | ✓ | [`.agents/skills/release-openspec/references/release-notes.md`](.agents/skills/release-openspec/references/release-notes.md) |
+| 4 | ✓ | [`.agents/skills/release-openspec/SKILL.md`](.agents/skills/release-openspec/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/verify-openspec-docs/SKILL.md`](.agents/skills/verify-openspec-docs/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/write-openspec-docs/full-process.md`](.agents/skills/write-openspec-docs/full-process.md) |
+| 7 | ✓ | [`.agents/skills/write-openspec-docs/SKILL.md`](.agents/skills/write-openspec-docs/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/write-openspec-docs/writing.md`](.agents/skills/write-openspec-docs/writing.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`docs-lab/customize/skills.md`](docs-lab/customize/skills.md) |
+| 11 | ✓ | [`docs-lab/reference/skills.md`](docs-lab/reference/skills.md) |
+| 12 | ✓ | [`openspec/work/AGENTS.md`](openspec/work/AGENTS.md) |
+| 13 | ✓ | [`skills/openspec-apply-change/SKILL.md`](skills/openspec-apply-change/SKILL.md) |
+| 14 | ✓ | [`skills/openspec-archive-change/SKILL.md`](skills/openspec-archive-change/SKILL.md) |
+| 15 | ✓ | [`skills/openspec-bulk-archive-change/SKILL.md`](skills/openspec-bulk-archive-change/SKILL.md) |
+| 16 | ✓ | [`skills/openspec-continue-change/SKILL.md`](skills/openspec-continue-change/SKILL.md) |
+| 17 | ✓ | [`skills/openspec-explore/SKILL.md`](skills/openspec-explore/SKILL.md) |
+| 18 | ✓ | [`skills/openspec-ff-change/SKILL.md`](skills/openspec-ff-change/SKILL.md) |
+| 19 | ✓ | [`skills/openspec-new-change/SKILL.md`](skills/openspec-new-change/SKILL.md) |
+| 20 | ✓ | [`skills/openspec-onboard/SKILL.md`](skills/openspec-onboard/SKILL.md) |
+| 21 | ✓ | [`skills/openspec-propose/SKILL.md`](skills/openspec-propose/SKILL.md) |
+| 22 | ✓ | [`skills/openspec-sync-specs/SKILL.md`](skills/openspec-sync-specs/SKILL.md) |
+| 23 | ✓ | [`skills/openspec-update-change/SKILL.md`](skills/openspec-update-change/SKILL.md) |
+| 24 | ✓ | [`skills/openspec-verify-change/SKILL.md`](skills/openspec-verify-change/SKILL.md) |
+| 25 | ✓ | [`skills/README.md`](skills/README.md) |
+| 26 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 27 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
 
 ---
 

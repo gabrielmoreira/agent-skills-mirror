@@ -37,7 +37,7 @@ When `--godot` is set, the CLI `Popen`s `godot -e --path <project>` after stagin
 - Always `await RenderingServer.frame_post_draw` (twice is safer) before `Viewport.get_texture().get_image()` — otherwise the Image can be empty or one frame stale.
 - HDR / float viewports may need conversion before PNG; if `save_png` fails or Image is empty, switch main screen (`2D`/`3D`) and retry.
 - DPI mis-crop on Windows OS capture: process not Per-Monitor V2 aware → window rect in wrong space → black bars or wrong panel. Sympton for OS modes, not editor SubViewport grabs.
-- **Control crop WHEN:** need a dock/inspector slice rather than the 2D/3D scene SubViewport. HOW: capture editor main viewport Image, then `Image.get_region(Rect2i(control.get_global_rect()))` (see `capture_viewport.gd`). Clamp to image bounds — global rects can extend off-screen.
+- **Control crop WHEN:** need a dock/inspector slice rather than the 2D/3D scene SubViewport. HOW: capture editor main viewport Image, then `Image.get_region(Rect2i(control.get_global_rect()))` (see `agent_vision_editor_bridge_capture_viewport.gd`). Clamp to image bounds — global rects can extend off-screen.
 
 ## Recovery
 

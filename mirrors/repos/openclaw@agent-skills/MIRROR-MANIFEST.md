@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/agent-skills` — 26 default patterns, 2 followed patterns, 44 file(s) materialized.
+Mirror of `openclaw/agent-skills` — 26 default patterns, 2 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/agent-skills` — 26 default patterns, 2 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 44 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,12 +98,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`skills/session-viewer/scripts/importers/claude.ts`](skills/session-viewer/scripts/importers/claude.ts) |
 | 37 | ✓ | [`skills/session-viewer/scripts/importers/codex.ts`](skills/session-viewer/scripts/importers/codex.ts) |
 | 38 | ✓ | [`skills/session-viewer/scripts/importers/pi-openclaw.ts`](skills/session-viewer/scripts/importers/pi-openclaw.ts) |
-| 39 | ✓ | [`skills/session-viewer/scripts/session-viewer.test.ts`](skills/session-viewer/scripts/session-viewer.test.ts) |
-| 40 | ✓ | [`skills/session-viewer/scripts/session-viewer.ts`](skills/session-viewer/scripts/session-viewer.ts) |
-| 41 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
-| 42 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
-| 43 | → | [`README.md`](README.md) |
-| 44 | → | [`VISION.md`](VISION.md) |
+| 39 | ✓ | [`skills/session-viewer/scripts/open-browser.ts`](skills/session-viewer/scripts/open-browser.ts) |
+| 40 | ✓ | [`skills/session-viewer/scripts/session-viewer.test.ts`](skills/session-viewer/scripts/session-viewer.test.ts) |
+| 41 | ✓ | [`skills/session-viewer/scripts/session-viewer.ts`](skills/session-viewer/scripts/session-viewer.ts) |
+| 42 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
+| 43 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
+| 44 | → | [`README.md`](README.md) |
+| 45 | → | [`VISION.md`](VISION.md) |
 
 ---
 

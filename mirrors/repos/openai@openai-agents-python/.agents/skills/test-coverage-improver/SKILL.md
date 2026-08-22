@@ -39,4 +39,4 @@ Use this skill whenever coverage needs assessment or improvement (coverage regre
 
 - Keep any added comments or code in English.
 - Do not create `scripts/`, `references/`, or `assets/` unless needed later.
-- If coverage artifacts are missing or stale, rerun `pnpm test:coverage` instead of guessing.
+- If coverage artifacts are missing or stale, rerun `make coverage` instead of guessing.

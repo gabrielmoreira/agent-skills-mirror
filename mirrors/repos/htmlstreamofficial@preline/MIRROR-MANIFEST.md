@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `htmlstreamofficial/preline` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `htmlstreamofficial/preline` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `htmlstreamofficial/preline` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,27 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/theme-generator/docs/final-output-style.md`](skills/theme-generator/docs/final-output-style.md) |
-| 2 | ✓ | [`skills/theme-generator/docs/palette-guidance.md`](skills/theme-generator/docs/palette-guidance.md) |
-| 3 | ✓ | [`skills/theme-generator/docs/step-1.md`](skills/theme-generator/docs/step-1.md) |
-| 4 | ✓ | [`skills/theme-generator/docs/step-2.md`](skills/theme-generator/docs/step-2.md) |
-| 5 | ✓ | [`skills/theme-generator/docs/step-3.md`](skills/theme-generator/docs/step-3.md) |
-| 6 | ✓ | [`skills/theme-generator/docs/step-4.md`](skills/theme-generator/docs/step-4.md) |
-| 7 | ✓ | [`skills/theme-generator/docs/step-5.md`](skills/theme-generator/docs/step-5.md) |
-| 8 | ✓ | [`skills/theme-generator/docs/step-6.md`](skills/theme-generator/docs/step-6.md) |
-| 9 | ✓ | [`skills/theme-generator/docs/step-7.md`](skills/theme-generator/docs/step-7.md) |
-| 10 | ✓ | [`skills/theme-generator/docs/token-reference.md`](skills/theme-generator/docs/token-reference.md) |
-| 11 | ✓ | [`skills/theme-generator/docs/validation-checklist.md`](skills/theme-generator/docs/validation-checklist.md) |
-| 12 | ✓ | [`skills/theme-generator/docs/workflow.md`](skills/theme-generator/docs/workflow.md) |
-| 13 | ✓ | [`skills/theme-generator/examples.md`](skills/theme-generator/examples.md) |
-| 14 | ✓ | [`skills/theme-generator/output_template.md`](skills/theme-generator/output_template.md) |
-| 15 | ✓ | [`skills/theme-generator/qa.md`](skills/theme-generator/qa.md) |
-| 16 | ✓ | [`skills/theme-generator/scripts/example-config.json`](skills/theme-generator/scripts/example-config.json) |
-| 17 | ✓ | [`skills/theme-generator/scripts/example-config.yaml`](skills/theme-generator/scripts/example-config.yaml) |
-| 18 | ✓ | [`skills/theme-generator/scripts/find-themes-dir.js`](skills/theme-generator/scripts/find-themes-dir.js) |
-| 19 | ✓ | [`skills/theme-generator/scripts/generate-theme.js`](skills/theme-generator/scripts/generate-theme.js) |
-| 20 | ✓ | [`skills/theme-generator/scripts/run-theme-generator.js`](skills/theme-generator/scripts/run-theme-generator.js) |
-| 21 | ✓ | [`skills/theme-generator/SKILL.md`](skills/theme-generator/SKILL.md) |
+| 1 | ✓ | [`skills/preline-mcp/agents/openai.yaml`](skills/preline-mcp/agents/openai.yaml) |
+| 2 | ✓ | [`skills/preline-mcp/references/catalog-map.md`](skills/preline-mcp/references/catalog-map.md) |
+| 3 | ✓ | [`skills/preline-mcp/references/composite-layouts.md`](skills/preline-mcp/references/composite-layouts.md) |
+| 4 | ✓ | [`skills/preline-mcp/references/mcp-tools-reference.md`](skills/preline-mcp/references/mcp-tools-reference.md) |
+| 5 | ✓ | [`skills/preline-mcp/SKILL.md`](skills/preline-mcp/SKILL.md) |
+| 6 | ✓ | [`skills/theme-generator/docs/final-output-style.md`](skills/theme-generator/docs/final-output-style.md) |
+| 7 | ✓ | [`skills/theme-generator/docs/palette-guidance.md`](skills/theme-generator/docs/palette-guidance.md) |
+| 8 | ✓ | [`skills/theme-generator/docs/token-reference.md`](skills/theme-generator/docs/token-reference.md) |
+| 9 | ✓ | [`skills/theme-generator/docs/validation-checklist.md`](skills/theme-generator/docs/validation-checklist.md) |
+| 10 | ✓ | [`skills/theme-generator/docs/workflow.md`](skills/theme-generator/docs/workflow.md) |
+| 11 | ✓ | [`skills/theme-generator/examples.md`](skills/theme-generator/examples.md) |
+| 12 | ✓ | [`skills/theme-generator/scripts/find-themes-dir.js`](skills/theme-generator/scripts/find-themes-dir.js) |
+| 13 | ✓ | [`skills/theme-generator/scripts/generate-theme.js`](skills/theme-generator/scripts/generate-theme.js) |
+| 14 | ✓ | [`skills/theme-generator/scripts/run-theme-generator.js`](skills/theme-generator/scripts/run-theme-generator.js) |
+| 15 | ✓ | [`skills/theme-generator/SKILL.md`](skills/theme-generator/SKILL.md) |
 
 ---
 

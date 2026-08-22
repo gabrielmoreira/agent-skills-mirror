@@ -46,7 +46,7 @@ Repository map and Reference Documentation sections below.
 
 ## Project at a Glance
 
-**OmniRoute** — unified AI proxy/router. One endpoint, 346 LLM providers, auto-fallback.
+**OmniRoute** — unified AI proxy/router. One endpoint, 348 LLM providers, auto-fallback.
 
 | Layer         | Location                | Purpose                                                                                                                                                                   |
 | ------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -58,7 +58,7 @@ Repository map and Reference Documentation sections below.
 | Services      | `open-sse/services/`    | Combo routing, rate limits, caching, etc                                                                                                                                  |
 | Database      | `src/lib/db/`           | SQLite domain modules (157 migrations)                                                                                                                                    |
 | Domain/Policy | `src/domain/`           | Policy engine, cost rules, fallback logic                                                                                                                                 |
-| MCP Server    | `open-sse/mcp-server/`  | 109 tools (44 canonical + memory/skill/GitHub/pool/gamification/plugin/Notion/Obsidian/local-corpus/RTK modules), 3 transports (stdio / SSE / Streamable HTTP), 33 scopes |
+| MCP Server    | `open-sse/mcp-server/`  | 110 tools (44 canonical + memory/skill/GitHub/pool/gamification/plugin/Notion/Obsidian/local-corpus/RTK modules), 3 transports (stdio / SSE / Streamable HTTP), 33 scopes |
 | A2A Server    | `src/lib/a2a/`          | JSON-RPC 2.0 agent protocol                                                                                                                                               |
 | Skills        | `src/lib/skills/`       | Extensible skill framework                                                                                                                                                |
 | Memory        | `src/lib/memory/`       | Persistent conversational memory                                                                                                                                          |

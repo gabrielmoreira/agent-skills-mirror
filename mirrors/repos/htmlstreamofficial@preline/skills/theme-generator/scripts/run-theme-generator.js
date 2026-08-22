@@ -5,7 +5,7 @@ const path = require('path');
 const { generateTheme } = require('./generate-theme');
 
 function printHelp() {
-  console.log(`Usage:
+	console.log(`Usage:
   node scripts/run-theme-generator.js --name <theme-name> [--hue <0-360> | --primary-color <hex>] [options] --stdout
   node scripts/run-theme-generator.js --name <theme-name> [--hue <0-360> | --primary-color <hex>] [options] --output <path>
 
@@ -28,115 +28,117 @@ Options:
 }
 
 function fail(message) {
-  console.error(message);
-  process.exit(1);
+	console.error(message);
+	process.exit(1);
 }
 
 function requireValue(flag, value) {
-  if (!value) {
-    fail(`Missing value for ${flag}`);
-  }
+	if (!value) {
+		fail(`Missing value for ${flag}`);
+	}
 
-  return value;
+	return value;
 }
 
 function parseArgs(argv) {
-  const config = {};
-  let outputPath = null;
-  let writeToStdout = false;
+	const config = {};
+	let outputPath = null;
+	let writeToStdout = false;
 
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
+	for (let i = 0; i < argv.length; i += 1) {
+		const arg = argv[i];
 
-    switch (arg) {
-      case '--name':
-        config.name = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--hue':
-        config.hue = Number(requireValue(arg, argv[i + 1]));
-        i += 1;
-        break;
-      case '--primary-color':
-        config.primaryColor = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--style':
-        config.style = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--tailwind-gray':
-        config.tailwindGray = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--use-custom-dark-gray':
-        config.useCustomDarkGray = true;
-        break;
-      case '--font-sans':
-        config.fontSans = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--font-serif':
-        config.fontSerif = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--font-mono':
-        config.fontMono = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--output':
-        outputPath = requireValue(arg, argv[i + 1]);
-        i += 1;
-        break;
-      case '--stdout':
-        writeToStdout = true;
-        break;
-      case '--help':
-        printHelp();
-        process.exit(0);
-      default:
-        fail(`Unknown argument: ${arg}`);
-    }
-  }
+		switch (arg) {
+			case '--name':
+				config.name = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--hue':
+				config.hue = Number(requireValue(arg, argv[i + 1]));
+				i += 1;
+				break;
+			case '--primary-color':
+				config.primaryColor = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--style':
+				config.style = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--tailwind-gray':
+				config.tailwindGray = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--use-custom-dark-gray':
+				config.useCustomDarkGray = true;
+				break;
+			case '--font-sans':
+				config.fontSans = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--font-serif':
+				config.fontSerif = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--font-mono':
+				config.fontMono = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--output':
+				outputPath = requireValue(arg, argv[i + 1]);
+				i += 1;
+				break;
+			case '--stdout':
+				writeToStdout = true;
+				break;
+			case '--help':
+				printHelp();
+				process.exit(0);
+			default:
+				fail(`Unknown argument: ${arg}`);
+		}
+	}
 
-  if (!outputPath && !writeToStdout) {
-    writeToStdout = true;
-  }
+	if (!outputPath && !writeToStdout) {
+		writeToStdout = true;
+	}
 
-  if (outputPath && writeToStdout) {
-    fail('Use either --output or --stdout, not both');
-  }
+	if (outputPath && writeToStdout) {
+		fail('Use either --output or --stdout, not both');
+	}
 
-  return {
-    config,
-    outputPath,
-    writeToStdout,
-  };
+	return {
+		config,
+		outputPath,
+		writeToStdout,
+	};
 }
 
 function writeOutput(outputPath, css) {
-  const absolutePath = path.resolve(outputPath);
-  fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-  fs.writeFileSync(absolutePath, css, 'utf8');
-  console.error(`Wrote ${absolutePath}`);
+	const absolutePath = path.resolve(outputPath);
+	fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+	fs.writeFileSync(absolutePath, css, 'utf8');
+	console.error(`Wrote ${absolutePath}`);
 
-  console.error('Generated a final standalone theme file.');
+	console.error('Generated a final standalone theme file.');
 }
 
 function main() {
-  const { config, outputPath, writeToStdout } = parseArgs(process.argv.slice(2));
-  const css = generateTheme(config);
+	const { config, outputPath, writeToStdout } = parseArgs(
+		process.argv.slice(2),
+	);
+	const css = generateTheme(config);
 
-  if (writeToStdout) {
-    process.stdout.write(css);
-    return;
-  }
+	if (writeToStdout) {
+		process.stdout.write(css);
+		return;
+	}
 
-  writeOutput(outputPath, css);
+	writeOutput(outputPath, css);
 }
 
 try {
-  main();
+	main();
 } catch (error) {
-  fail(error.message);
+	fail(error.message);
 }

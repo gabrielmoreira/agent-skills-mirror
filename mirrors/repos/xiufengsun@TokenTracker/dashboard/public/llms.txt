@@ -23,7 +23,7 @@ timestamps, never prompts, responses, or source code.
 - [npm package](https://www.npmjs.com/package/tokentracker-cli)
 - [Latest release](https://github.com/xiufengsun/TokenTracker/releases/latest)
 
-## Supported AI coding tools (32)
+## Supported AI coding tools (33)
 - Claude Code
 - Codex CLI
 - Cursor
@@ -56,6 +56,7 @@ timestamps, never prompts, responses, or source code.
 - AnythingLLM Desktop
 - Claude Science
 - DeepSeek Harness
+- TRAE Work CN
 
 ## Capabilities
 - Desktop pet that reacts to real token burn, streaks, and rest

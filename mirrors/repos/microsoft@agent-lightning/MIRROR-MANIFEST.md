@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/agent-lightning/.claude-plugin/plugin.json`](skills/agent-lightning/.claude-plugin/plugin.json) |
-| 2 | ✓ | [`skills/agent-lightning/SKILL.md`](skills/agent-lightning/SKILL.md) |
-| 3 | ✓ | [`skills/assets/agent-lightning-alfworld-success-finale-cost.svg`](skills/assets/agent-lightning-alfworld-success-finale-cost.svg) |
-| 4 | ✓ | [`skills/assets/agent-lightning-alfworld-success-overall-cost.svg`](skills/assets/agent-lightning-alfworld-success-overall-cost.svg) |
-| 5 | ✓ | [`skills/assets/agent-lightning-officeqa-correctness-finale-cost.svg`](skills/assets/agent-lightning-officeqa-correctness-finale-cost.svg) |
-| 6 | ✓ | [`skills/assets/agent-lightning-officeqa-correctness-overall-cost.svg`](skills/assets/agent-lightning-officeqa-correctness-overall-cost.svg) |
-| 7 | ✓ | [`skills/assets/agent-lightning-spreadsheetbench-accuracy-finale-cost.svg`](skills/assets/agent-lightning-spreadsheetbench-accuracy-finale-cost.svg) |
-| 8 | ✓ | [`skills/assets/agent-lightning-spreadsheetbench-accuracy-overall-cost.svg`](skills/assets/agent-lightning-spreadsheetbench-accuracy-overall-cost.svg) |
-| 9 | ✓ | [`skills/README.md`](skills/README.md) |
+| 1 | ✓ | [`.agents/skills/release/agents/openai.yaml`](.agents/skills/release/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
+| 3 | ✓ | [`skills/agent-lightning/.claude-plugin/plugin.json`](skills/agent-lightning/.claude-plugin/plugin.json) |
+| 4 | ✓ | [`skills/agent-lightning/SKILL.md`](skills/agent-lightning/SKILL.md) |
+| 5 | ✓ | [`skills/assets/agent-lightning-alfworld-success-finale-cost.svg`](skills/assets/agent-lightning-alfworld-success-finale-cost.svg) |
+| 6 | ✓ | [`skills/assets/agent-lightning-alfworld-success-overall-cost.svg`](skills/assets/agent-lightning-alfworld-success-overall-cost.svg) |
+| 7 | ✓ | [`skills/assets/agent-lightning-officeqa-correctness-finale-cost.svg`](skills/assets/agent-lightning-officeqa-correctness-finale-cost.svg) |
+| 8 | ✓ | [`skills/assets/agent-lightning-officeqa-correctness-overall-cost.svg`](skills/assets/agent-lightning-officeqa-correctness-overall-cost.svg) |
+| 9 | ✓ | [`skills/assets/agent-lightning-spreadsheetbench-accuracy-finale-cost.svg`](skills/assets/agent-lightning-spreadsheetbench-accuracy-finale-cost.svg) |
+| 10 | ✓ | [`skills/assets/agent-lightning-spreadsheetbench-accuracy-overall-cost.svg`](skills/assets/agent-lightning-spreadsheetbench-accuracy-overall-cost.svg) |
+| 11 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

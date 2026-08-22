@@ -1,6 +1,6 @@
 ---
 name: screenpipe-cli
-description: Manage screenpipe pipes (scheduled AI automations) and connections (Telegram, Slack, Discord, etc.) via the CLI. Use when the user asks to create, list, enable, disable, run, or debug pipes, or manage service connections from the command line.
+description: Set up and operate screenpipe from the terminal, including always-on recording, service modes, capture health, storage, local search, read-only SQLite access, pipes, and connections. Use when the user asks to install, run, inspect, query, automate, or debug screenpipe without relying on the desktop app.
 ---
 
 # Screenpipe CLI
@@ -17,9 +17,96 @@ cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} <command>
 
 Works on macOS, Linux, and Windows: the CLI always runs under bash, and `mktemp` is present on all three (on Windows via the bundled git-portable `usr/bin`).
 
-**The CLI is the slow path.** Even at 0.15s it is a process spawn; the local REST API answers the same read in ~0.02s (see the `screenpipe-api` skill). Use the CLI for state changes it uniquely owns — `pipe enable`, `connection set` — and read through the API or MCP tools.
+Use `status`, `search`, and state-changing commands as the canonical terminal surface. For high-frequency read loops, the local REST API is faster (see the `screenpipe-api` skill), and advanced local workflows may query SQLite read-only.
 
 > **Sandboxed shells:** some agents (e.g. Codex) block all shell network access, so `bun x` cannot fetch the package and CLI calls to `localhost:3030` fail instantly. If that happens, use the screenpipe MCP tools instead of the CLI.
+
+## Recorder quickstart
+
+For a CLI-only user who wants this computer recorded continuously, use this sequence:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} doctor
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} service install
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} status
+```
+
+`service install` defaults to **recorder mode**: screen + audio capture, local indexing, and the API, launched at boot/login and restarted after failures. On macOS, resolve Screen Recording, Microphone, and Accessibility permission warnings reported by `doctor`; a background service cannot bypass OS consent.
+
+Use the foreground process only for an interactive session or live debugging:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} record
+```
+
+Use API-only server mode only when the machine should serve existing or synced data without recording itself:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} service install --mode server
+```
+
+Running `service install` again switches modes and restarts the service immediately. `service uninstall` stops and removes it.
+
+## Status and diagnostics
+
+Start every investigation with:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} status
+```
+
+This reports the distinction that matters:
+
+- `recording normally`: the API is healthy and at least one capture stream is active
+- `serving normally`: intentional server mode; the API is healthy and local capture is disabled
+- `not capturing`: the process is up but no capture stream is active
+- `needs attention`: the health endpoint reports degraded/unhealthy capture
+- `stopped`: no screenpipe health endpoint answered on the selected port
+
+It also prints screen/audio freshness, active devices, history counts, total storage, and the exact SQLite path. Do not infer recording from a PID, an open port, or `service status`; those prove a process exists, not that new data is arriving.
+
+For scripts and agents, use structured output:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} status --json
+```
+
+Important fields are `running`, `health.status`, `health.frame_status`, `health.audio_status`, `last_capture`, `last_audio_capture`, `storage_size_bytes`, and `database_path`. Treat `running: true` as API availability only; inspect capture status and timestamps before claiming recording is healthy.
+
+Useful follow-ups:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} service status
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} doctor
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} diagnose --dry-run
+```
+
+`diagnose --dry-run` saves a support bundle locally and does not upload it. Do not run `diagnose` without `--dry-run` unless the user explicitly wants to send diagnostics to screenpipe support.
+
+## Query local history
+
+`search` reads the local SQLite database directly and does not require the daemon. Prefer JSON Lines for agent workflows:
+
+```bash
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} search --start "30m ago" --json
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} search "project alpha" --start "7d ago" --json
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} search --content-type audio --start "2h ago" --json
+cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} search --app "Code" --focused --start "1d ago" --json
+```
+
+Use `--limit`, `--offset`, `--end`, `--window`, `--browser-url`, `--speaker`, and `--max-content-length` to bound output. An empty result is not evidence that capture is healthy; check `status` and freshness separately.
+
+### Direct SQLite for advanced analysis
+
+The database path is intentionally discoverable through `status --json`. If the user prefers SQL, open that exact database read-only so SQLite can read the live WAL safely:
+
+```bash
+status_json="$(cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} status --json)"
+db_path="$(printf '%s' "$status_json" | jq -r '.database_path')"
+sqlite3 "file:${db_path}?mode=ro" 'PRAGMA query_only=ON; SELECT COUNT(*) FROM frames;'
+```
+
+Never write to the live database, copy only `db.sqlite` while recording, use `immutable=1`, or delete `-wal`/`-shm` files. Prefer `screenpipe search --json` unless the analysis genuinely needs SQL.
 
 ## Shell
 

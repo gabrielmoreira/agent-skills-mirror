@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/book-to-skill/../../../engineering/book-to-skill/skills/book-to-skill/SKILL.md

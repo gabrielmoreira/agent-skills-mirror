@@ -1,6 +1,6 @@
 ---
 name: documentation-guidelines
-description: Create, update, reorganize, or audit agent-first repository documentation that routes work to canonical module, feature, contract, workflow, and runbook context without duplication or stale task history.
+description: Coordinator-routed specialist for documentation architecture, broad audits, canonical ownership, module/feature docs, contracts, workflows, runbooks, or stale-content consolidation. Use after project-development-mindset makes documentation the primary deliverable, or directly when explicitly invoked or installed standalone. Do not use for routine docs alignment accompanying code or configuration changes.
 ---
 
 # Documentation Guidelines
@@ -118,8 +118,10 @@ unless they encode a durable operational requirement.
    ownership, or cross-boundary context changed.
 6. Remove contradictory copies; search for stale names, paths, IDs, links, contracts,
    and consumers.
-7. Run repository checks and report changed durable context, unresolved gaps, or why
-   no docs update was needed.
+7. Run focused documentation checks. After the documentation work is complete,
+   list any broader repository or full-suite checks and ask the user whether to
+   run them. Report changed durable context, unresolved gaps, or why no docs
+   update was needed.
 
 ## Verification
 

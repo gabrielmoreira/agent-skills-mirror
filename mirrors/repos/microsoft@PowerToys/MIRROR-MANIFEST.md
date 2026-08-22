@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/PowerToys` — 26 default patterns, 11 followed patterns, 60 file(s) materialized.
+Mirror of `microsoft/PowerToys` — 26 default patterns, 11 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/PowerToys` — 26 default patterns, 11 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 60 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,45 +90,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.github/skills/release-note-generation/SKILL.md`](.github/skills/release-note-generation/SKILL.md) |
 | 20 | ✓ | [`.github/skills/ui-tests-local-vm/SKILL.md`](.github/skills/ui-tests-local-vm/SKILL.md) |
 | 21 | ✓ | [`.github/skills/ui-tests-migration/SKILL.md`](.github/skills/ui-tests-migration/SKILL.md) |
-| 22 | ✓ | [`.github/skills/winmd-api-search/SKILL.md`](.github/skills/winmd-api-search/SKILL.md) |
-| 23 | ✓ | [`.github/skills/wpf-to-winui3-migration/SKILL.md`](.github/skills/wpf-to-winui3-migration/SKILL.md) |
-| 24 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 25 | ✓ | [`doc/devdocs/core/settings/communication-with-modules.md`](doc/devdocs/core/settings/communication-with-modules.md) |
-| 26 | ✓ | [`doc/devdocs/core/settings/compatibility-legacy-settings.md`](doc/devdocs/core/settings/compatibility-legacy-settings.md) |
-| 27 | ✓ | [`doc/devdocs/core/settings/dsc-configure.md`](doc/devdocs/core/settings/dsc-configure.md) |
-| 28 | ✓ | [`doc/devdocs/core/settings/gpo-integration.md`](doc/devdocs/core/settings/gpo-integration.md) |
-| 29 | ✓ | [`doc/devdocs/core/settings/hotkeycontrol.md`](doc/devdocs/core/settings/hotkeycontrol.md) |
-| 30 | ✓ | [`doc/devdocs/core/settings/project-overview.md`](doc/devdocs/core/settings/project-overview.md) |
-| 31 | ✓ | [`doc/devdocs/core/settings/runner-ipc.md`](doc/devdocs/core/settings/runner-ipc.md) |
-| 32 | ✓ | [`doc/devdocs/core/settings/settings-implementation.md`](doc/devdocs/core/settings/settings-implementation.md) |
-| 33 | ✓ | [`doc/devdocs/core/settings/settings-utilities.md`](doc/devdocs/core/settings/settings-utilities.md) |
-| 34 | ✓ | [`doc/devdocs/core/settings/telemetry.md`](doc/devdocs/core/settings/telemetry.md) |
-| 35 | ✓ | [`doc/devdocs/core/settings/ui-architecture.md`](doc/devdocs/core/settings/ui-architecture.md) |
-| 36 | ✓ | [`doc/devdocs/core/settings/viewmodels.md`](doc/devdocs/core/settings/viewmodels.md) |
-| 37 | ✓ | [`doc/devdocs/processes/gpo.md`](doc/devdocs/processes/gpo.md) |
-| 38 | ✓ | [`doc/devdocs/tools/bug-report-tool.md`](doc/devdocs/tools/bug-report-tool.md) |
-| 39 | ✓ | [`doc/devdocs/tools/build-tools.md`](doc/devdocs/tools/build-tools.md) |
-| 40 | ✓ | [`doc/devdocs/tools/monitor-info-report.md`](doc/devdocs/tools/monitor-info-report.md) |
-| 41 | ✓ | [`doc/devdocs/tools/styles-report-tool.md`](doc/devdocs/tools/styles-report-tool.md) |
-| 42 | ✓ | [`doc/devdocs/tools/verification-scripts.md`](doc/devdocs/tools/verification-scripts.md) |
-| 43 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/copilot-instructions.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/copilot-instructions.md) |
-| 44 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-adaptive-card-form/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-adaptive-card-form/SKILL.md) |
-| 45 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-dock-band/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-dock-band/SKILL.md) |
-| 46 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-extension-settings/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-extension-settings/SKILL.md) |
-| 47 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-fallback-commands/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-fallback-commands/SKILL.md) |
-| 48 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/publish-extension/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/publish-extension/SKILL.md) |
-| 49 | ✓ | [`tools/project_template/README.md`](tools/project_template/README.md) |
-| 50 | → | [`doc/devdocs/core/architecture.md`](doc/devdocs/core/architecture.md) |
-| 51 | → | [`doc/devdocs/core/runner.md`](doc/devdocs/core/runner.md) |
-| 52 | → | [`doc/devdocs/core/settings/readme.md`](doc/devdocs/core/settings/readme.md) |
-| 53 | → | [`doc/devdocs/development/guidelines.md`](doc/devdocs/development/guidelines.md) |
-| 54 | → | [`doc/devdocs/development/logging.md`](doc/devdocs/development/logging.md) |
-| 55 | → | [`doc/devdocs/development/style.md`](doc/devdocs/development/style.md) |
-| 56 | → | [`doc/devdocs/development/ui-tests.md`](doc/devdocs/development/ui-tests.md) |
-| 57 | → | [`doc/devdocs/modules/interface.md`](doc/devdocs/modules/interface.md) |
-| 58 | → | [`doc/devdocs/tools/fuzzingtesting.md`](doc/devdocs/tools/fuzzingtesting.md) |
-| 59 | → | [`doc/devdocs/tools/readme.md`](doc/devdocs/tools/readme.md) |
-| 60 | → | [`tools/build/BUILD-GUIDELINES.md`](tools/build/BUILD-GUIDELINES.md) |
+| 22 | ✓ | [`.github/skills/ui-tests-pipeline-ci/SKILL.md`](.github/skills/ui-tests-pipeline-ci/SKILL.md) |
+| 23 | ✓ | [`.github/skills/winmd-api-search/SKILL.md`](.github/skills/winmd-api-search/SKILL.md) |
+| 24 | ✓ | [`.github/skills/wpf-to-winui3-migration/SKILL.md`](.github/skills/wpf-to-winui3-migration/SKILL.md) |
+| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 26 | ✓ | [`doc/devdocs/core/settings/communication-with-modules.md`](doc/devdocs/core/settings/communication-with-modules.md) |
+| 27 | ✓ | [`doc/devdocs/core/settings/compatibility-legacy-settings.md`](doc/devdocs/core/settings/compatibility-legacy-settings.md) |
+| 28 | ✓ | [`doc/devdocs/core/settings/dsc-configure.md`](doc/devdocs/core/settings/dsc-configure.md) |
+| 29 | ✓ | [`doc/devdocs/core/settings/gpo-integration.md`](doc/devdocs/core/settings/gpo-integration.md) |
+| 30 | ✓ | [`doc/devdocs/core/settings/hotkeycontrol.md`](doc/devdocs/core/settings/hotkeycontrol.md) |
+| 31 | ✓ | [`doc/devdocs/core/settings/project-overview.md`](doc/devdocs/core/settings/project-overview.md) |
+| 32 | ✓ | [`doc/devdocs/core/settings/runner-ipc.md`](doc/devdocs/core/settings/runner-ipc.md) |
+| 33 | ✓ | [`doc/devdocs/core/settings/settings-implementation.md`](doc/devdocs/core/settings/settings-implementation.md) |
+| 34 | ✓ | [`doc/devdocs/core/settings/settings-utilities.md`](doc/devdocs/core/settings/settings-utilities.md) |
+| 35 | ✓ | [`doc/devdocs/core/settings/telemetry.md`](doc/devdocs/core/settings/telemetry.md) |
+| 36 | ✓ | [`doc/devdocs/core/settings/ui-architecture.md`](doc/devdocs/core/settings/ui-architecture.md) |
+| 37 | ✓ | [`doc/devdocs/core/settings/viewmodels.md`](doc/devdocs/core/settings/viewmodels.md) |
+| 38 | ✓ | [`doc/devdocs/processes/gpo.md`](doc/devdocs/processes/gpo.md) |
+| 39 | ✓ | [`doc/devdocs/tools/bug-report-tool.md`](doc/devdocs/tools/bug-report-tool.md) |
+| 40 | ✓ | [`doc/devdocs/tools/build-tools.md`](doc/devdocs/tools/build-tools.md) |
+| 41 | ✓ | [`doc/devdocs/tools/monitor-info-report.md`](doc/devdocs/tools/monitor-info-report.md) |
+| 42 | ✓ | [`doc/devdocs/tools/styles-report-tool.md`](doc/devdocs/tools/styles-report-tool.md) |
+| 43 | ✓ | [`doc/devdocs/tools/verification-scripts.md`](doc/devdocs/tools/verification-scripts.md) |
+| 44 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/copilot-instructions.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/copilot-instructions.md) |
+| 45 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-adaptive-card-form/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-adaptive-card-form/SKILL.md) |
+| 46 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-dock-band/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-dock-band/SKILL.md) |
+| 47 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-extension-settings/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-extension-settings/SKILL.md) |
+| 48 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-fallback-commands/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/add-fallback-commands/SKILL.md) |
+| 49 | ✓ | [`src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/publish-extension/SKILL.md`](src/modules/cmdpal/ExtensionTemplate/TemplateCmdPalExtension/.github/skills/publish-extension/SKILL.md) |
+| 50 | ✓ | [`tools/project_template/README.md`](tools/project_template/README.md) |
+| 51 | → | [`doc/devdocs/core/architecture.md`](doc/devdocs/core/architecture.md) |
+| 52 | → | [`doc/devdocs/core/runner.md`](doc/devdocs/core/runner.md) |
+| 53 | → | [`doc/devdocs/core/settings/readme.md`](doc/devdocs/core/settings/readme.md) |
+| 54 | → | [`doc/devdocs/development/guidelines.md`](doc/devdocs/development/guidelines.md) |
+| 55 | → | [`doc/devdocs/development/logging.md`](doc/devdocs/development/logging.md) |
+| 56 | → | [`doc/devdocs/development/style.md`](doc/devdocs/development/style.md) |
+| 57 | → | [`doc/devdocs/development/ui-tests.md`](doc/devdocs/development/ui-tests.md) |
+| 58 | → | [`doc/devdocs/modules/interface.md`](doc/devdocs/modules/interface.md) |
+| 59 | → | [`doc/devdocs/tools/fuzzingtesting.md`](doc/devdocs/tools/fuzzingtesting.md) |
+| 60 | → | [`doc/devdocs/tools/readme.md`](doc/devdocs/tools/readme.md) |
+| 61 | → | [`tools/build/BUILD-GUIDELINES.md`](tools/build/BUILD-GUIDELINES.md) |
 
 ---
 

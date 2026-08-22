@@ -37,7 +37,7 @@ mkdir -p .context/compound-engineering/ce-optimize/<spec-name>/
 
 **This phase is a HARD GATE. The user must approve baseline and parallel readiness before Phase 2.**
 
-**Bundled scripts.** Phases 1 and 3 call helper scripts that ship in this skill's `scripts/` directory (`measure.sh`, `parallel-probe.sh`, `experiment-worktree.sh`). The Bash tool's working directory is the user's project, not the skill directory, so a bare `scripts/<name>` path will not resolve — invoke each by the skill's own absolute path. Every runnable block below already sets `SKILL_DIR` inline (shell state does not persist between Bash tool calls, so each block must carry it); just replace the `<absolute path …>` placeholder with the directory you loaded this `ce-optimize` SKILL.md from before running. The shape:
+**Bundled scripts.** Phases 1 and 3 call helper scripts that ship in this skill's `scripts/` directory (`measure.sh`, `decide.mjs`, `parallel-probe.sh`, `experiment-worktree.sh`). The Bash tool's working directory is the user's project, not the skill directory, so a bare `scripts/<name>` path will not resolve — invoke each by the skill's own absolute path. Every runnable block below already sets `SKILL_DIR` inline (shell state does not persist between Bash tool calls, so each block must carry it); just replace the `<absolute path …>` placeholder with the directory you loaded this `ce-optimize` SKILL.md from before running. The shape:
 
 ```bash
 SKILL_DIR="<absolute path of the directory containing this SKILL.md>";
@@ -59,6 +59,7 @@ The body owns this gate. Run `git status --porcelain`, filter the output against
 2. Validate the JSON output:
    - Contains keys for all degenerate gate metric names
    - Contains keys for all diagnostic metric names
+   - Contains keys for every required hard objective (`metric.primary` when it is hard, plus every `metric.objectives` entry)
    - Values are numeric or boolean as expected
 3. If validation fails, report what is missing and ask the user to fix the harness
 
@@ -71,20 +72,26 @@ The body owns this gate. Run `git status --porcelain`, filter the output against
 
 ### 1.3 Establish Baseline
 
-Run the measurement harness on the current code.
+Run the measurement harness on the current code. Baseline and final confirmation always use the full configured protocol (`repeat_count` samples when mode is `repeat` or `ladder`; one run when mode is `stable`). Exploratory experiments later may spend less; the baseline must not.
 
-**If stability mode is `repeat`:**
-1. Run the harness `repeat_count` times
+**If stability mode is `repeat` or `ladder`:**
+Do not start this protocol until the counts that mode uses are coherent. Repeat needs a positive `repeat_count`. Ladder needs positive `exploratory_pairs` and `confirmation_repeats` (falling back to `repeat_count`) with confirmation at least the exploratory count — the same rule `scripts/decide.mjs` uses. A repeat-mode spec does not need ladder fields.
+1. Run the harness that many times (`repeat_count` in repeat mode; the coherent confirmation count in ladder mode)
 2. Aggregate results using the configured aggregation method (median, mean, min, max)
 3. Calculate variance across runs
-4. If variance exceeds `noise_threshold`, warn the user and suggest increasing `repeat_count`
+4. If variance exceeds the configured comparison threshold, warn the user and suggest increasing `repeat_count`
 
-Record the baseline in the experiment log:
+**Spend only the measurement the current decision needs.** After Phase 1, a smoke failure is degenerate; one paired exploratory sample can reject a clearly worse candidate or mark it inconclusive; add samples only while the result is promising or inconclusive; run the full configured protocol only before keeping a candidate and for the run's final confirmation. `scripts/decide.mjs` returns that next step. When mode is `stable` or `repeat`, keep the existing full-protocol behavior.
+
+Record the baseline in the experiment log. Persist every required hard objective under `metrics` (or `judge` when the primary is a judge score) so `decide.mjs` can load the same snapshot shape later experiments use. Gates and diagnostics stay in their own containers.
 ```yaml
 baseline:
   timestamp: "<current ISO 8601 timestamp>"
   gates:
     <gate_name>: <value>
+    ...
+  metrics:
+    <required_hard_objective>: { aggregate: <value>, samples: [<value>, ...] }
     ...
   diagnostics:
     <diagnostic_name>: <value>

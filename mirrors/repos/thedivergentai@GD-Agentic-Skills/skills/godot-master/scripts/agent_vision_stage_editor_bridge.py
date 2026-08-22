@@ -16,7 +16,7 @@ from typing import List, Optional, Tuple
 from PIL import Image
 
 try:
-    from webp_encode import save_webp
+    from agent_vision_webp_encode import save_webp
 except ImportError:  # godot-master flattened mirror
     from agent_vision_webp_encode import save_webp
 

@@ -1,7 +1,0 @@
-{
-  "name": "<theme-name>",
-  "hue": 200,
-  "style": "vibrant",
-  "useCustomDarkGray": false,
-  "tailwindGray": "neutral"
-}

@@ -6,9 +6,9 @@ lastUpdated: 2026-08-08
 
 # OmniRoute MCP Server Documentation
 
-> Model Context Protocol server with 109 tools across routing, cache, compression, memory, skills, proxy, pool, Radar, and context source operations.
+> Model Context Protocol server with 110 tools across routing, cache, compression, memory, skills, proxy, pool, Radar, and context source operations.
 >
-> Source of truth: `open-sse/mcp-server/server.ts` computes **109 unique tools** with `countUniqueMcpTools()`: 44 canonical definitions (including the six CCR lifecycle tools, the agent-skills trio, and `omniroute_radar_catalog`), plus memory (3), skills (4), GitHub skills (3), pool (6), gamification (8), plugins (8), Notion (6), Obsidian (22), local corpus (3), and two RTK-only compression tools.
+> Source of truth: `open-sse/mcp-server/server.ts` computes **110 unique tools** with `countUniqueMcpTools()`: 45 canonical definitions (including the six CCR lifecycle tools, the agent-skills trio, `omniroute_radar_catalog`, and `omniroute_x_search`), plus memory (3), skills (4), GitHub skills (3), pool (6), gamification (8), plugins (8), Notion (6), Obsidian (22), local corpus (3), and two RTK-only compression tools.
 
 ## Installation
 
@@ -79,7 +79,8 @@ Cursor, Cline, and compatible MCP client setup.
 | `omniroute_list_models_catalog` | `read:models`         | Full model catalog with capabilities, status, pricing         |
 | `omniroute_radar_catalog`       | `read:radar`          | Local signed Radar catalog; optional provider/family filters  |
 | `omniroute_tool_search`         | `read:tools`          | Discover tools from the registered MCP catalog                |
-| `omniroute_web_search`          | `execute:search`      | Web search through the configured search providers            |
+| `omniroute_web_search`          | `execute:search`      | Web search through the configured search providers. Not X/Twitter. |
+| `omniroute_x_search`            | `execute:search`      | Search X (Twitter) through SuperGrok / xAI server-side `x_search`. Requires `xai-oauth` or an xAI API key. Not the X Developer Platform MCP. |
 | `omniroute_web_fetch`           | `execute:search`      | Fetch web content through the configured fetch providers      |
 
 ## Advanced Tools (11) — Phase 2
@@ -226,7 +227,7 @@ See [AGENT-SKILLS.md](./AGENT-SKILLS.md) for the full catalog and how external a
 
 ## Related Frameworks (v3.8.0)
 
-The MCP tool inventory above (109 unique tools, computed by `countUniqueMcpTools()`) is intentionally
+The MCP tool inventory above (110 unique tools, computed by `countUniqueMcpTools()`) is intentionally
 scoped to runtime routing/cache/compression/memory/skills/proxy/context-source operations. Two adjacent
 frameworks ship alongside the MCP server in v3.8.0 and are documented separately:
 
@@ -370,7 +371,7 @@ MCP tool, prompt, and resource registries can compress descriptions at registrat
 
 Description compression shrinks each tool's metadata; **tool-cardinality reduction** goes one step further by reducing _how many_ tools are announced at all. Advertising fewer tools in the `tools/list` manifest cuts the per-request token cost the client's model pays for the tool catalog ("layer 5" compression). The implementation is a pure, stateless filter in `open-sse/mcp-server/toolCardinality.ts` (`reduceToolManifest`), wired into the registration loop in `createMcpServer()` (`open-sse/mcp-server/server.ts`).
 
-**Opt-in, off by default.** The filter only runs when at least one of two environment variables is set; with neither set, all 109 tools are announced unchanged.
+**Opt-in, off by default.** The filter only runs when at least one of two environment variables is set; with neither set, all 110 tools are announced unchanged.
 
 | Variable         | Mode                                                                                    |
 | :--------------- | :-------------------------------------------------------------------------------------- |

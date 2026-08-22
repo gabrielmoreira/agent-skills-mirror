@@ -29,30 +29,29 @@ Symptom → cause → fix, with the PR where each was diagnosed. Use with
 
 ## Statistical power
 
-The gate has two independent bars: **counted trials ≥ 5** (else `underpowered`), and **p ≤ 0.05 on
-an exact one-sided sign test over the discordant (non-tie) trials**. `trials = stimuli × runs`.
+The gate has two independent bars: **distinct stimuli ≥ 5** (else `underpowered`), and **p ≤ 0.05
+on an exact one-sided sign test over discordant (non-tie) stimulus votes**. Repeated runs collapse
+to one vote per stimulus and remain reliability evidence.
 
-| discordant trials | records that pass | p |
+| discordant stimulus votes | records that pass | p |
 |---:|---|---:|
 | ≤ 4 | none | ≥ 0.0625 |
 | 5–7 | zero losses only (5W/0L) | 0.031 |
 | 8 | one loss survivable (7W/1L) | 0.035 |
 
-At exactly 5 counted trials one tie is fatal — it leaves 4 discordant. At 6 counted trials one tie is
-survivable (5W/1T/0L); at 7, up to two are (5W/2T/0L). A loss is not: 4W/3T/1L over eight trials is
-five discordant and fails.
+At exactly 5 stimuli one tie is fatal — it leaves 4 discordant votes. At 6 stimuli one tie is
+survivable; at 7, up to two are. A loss is not: 4W/3T/1L over eight stimulus votes fails.
 
 Consequences seen in real runs:
 
-- Five `dotnet-test` evals raised to exactly 5 trials returned 16W/8T/1L overall — every skill
+- Five `dotnet-test` evals raised to exactly 5 distinct stimuli returned 16W/8T/1L overall — every skill
   winning, none regressing — and **all five failed**, four because ties made a pass unreachable
   before the run started. (PR #971, `eng/eval-quality/README.md`)
-- At the 32% tie rate measured there, a genuinely-helping skill parked at 5 trials is certified
-  about one run in ten; at 15 trials, about nine in ten.
-- Adding stimuli is strictly better than raising `runs`: repeats measure one task. Use `runs` only
-  where a stimulus is genuinely expensive — `code-testing-agent` uses `defaults.runs: 2` because
-  each stimulus drives a full npm/pytest/dotnet pipeline inside a 60-minute budget. (PR #974)
-- The verdict reads each trial's **winner**, never its magnitude: weighting a confidence interval by
+- At the 32% tie rate measured there, a genuinely-helping skill parked at 5 stimulus votes is
+  certified about one run in ten; at 15 stimulus votes, about nine in ten.
+- Adding stimuli increases task breadth. Raising `runs` measures reliability for the same tasks and
+  cannot clear the stimulus floor.
+- The verdict reads each repeated run's **winner**, never its magnitude: weighting a confidence interval by
   "slightly better" vs "much better" made a stronger win look like variance and reversed verdicts on
   identical records. (PR #965, PR #952)
 

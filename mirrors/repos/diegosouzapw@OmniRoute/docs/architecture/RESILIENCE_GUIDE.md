@@ -369,7 +369,7 @@ matching provider classification rule
 (`agentrouter-model-access-denied` in `open-sse/config/providerErrorRules.ts`:
 `reason: "auth_error"`, `scope: "model"`, a `6h` declared base cooldown) is
 consulted by `checkFallbackError` (`open-sse/services/accountFallback.ts`)
-*before* the generic apikey-category `FORBIDDEN` early-return, gated on
+_before_ the generic apikey-category `FORBIDDEN` early-return, gated on
 `honorsRuleLockScope(provider)` (#10334 — currently agentrouter-exclusive via
 the `HONORS_RULE_LOCK_SCOPE_PROVIDERS` allowlist in
 `providerErrorRules.ts`). The rule's declared 6h cooldown flows through as
@@ -378,7 +378,7 @@ per-model-quota lockout path (`lockModelIfPerModelQuota()` /
 `recordModelLockoutFailure()`, unchanged by #10334 except for the cooldown
 source): it is clamped down to the operator's `mlSettings.maxCooldownMs`
 (default `1_800_000ms` / 30min), like every other model lockout, and the
-*persisted lockout reason* stays the pre-existing hardcoded `"forbidden"`,
+_persisted lockout reason_ stays the pre-existing hardcoded `"forbidden"`,
 not the rule's `"auth_error"` — only the cooldown duration is honored
 end-to-end, not the reason string. The connection itself stays active;
 sibling models on the same connection are unaffected.
@@ -413,7 +413,7 @@ never `creditsExhausted` — a defense against a future rule pairing scope
   `open-sse/services/combo/targetExhaustion.ts`): the same guard marks the
   connection into the in-memory `exhaustedConnections` set, keyed
   `${provider}:${connectionId}`. This only skips a remaining SAME-REQUEST
-  target that *itself already carries that exact `connectionId`* on its own
+  target that _itself already carries that exact `connectionId`_ on its own
   target object (`getExhaustedTargetSkipReason()`,
   `open-sse/services/combo/comboPredicates.ts`, `if (provider &&
 connectionId)` before the `exhaustedConnections` lookup) — a plain
@@ -497,6 +497,68 @@ provider is on that allowlist.
    full text only for that provider).
 
 No changes to `chatCore.ts`, `classifyError`, or combo are needed.
+
+#### Egress-bucketed lock (#10880)
+
+Providers in `EGRESS_BUCKETED_LOCK_PROVIDERS` (opencode family) are treated
+as IP-bucketed upstream (the opencode free tier is IP-bucketed, not
+account-bucketed — see #9611): a status-429 classified `quota_exhausted`
+**or** `rate_limit_exceeded` cools down every allowlisted-family connection
+whose last known egress IP matches the failing connection's, before the
+rotation can try them
+— avoiding N-1 guaranteed-failed upstream calls (same shape as #10460/#10525).
+`rate_limit_exceeded` is included deliberately: on the `markAccountUnavailable`
+path the opencode-specific rules never match (no headers/body handed to
+`checkFallbackError`, opencode not in `FULL_TEXT_RULE_PROVIDERS`), so a 429
+whose body carries the subscription-quota text ("monthly usage limit
+reached") is classified `quota_exhausted` by the quota-text fallback
+(`buildSubscriptionQuotaFallback`, `accountFallback.ts`; 1h cooldown) before
+the `status_429` rule is ever reached — while a quota-text-free 429 (plain
+rate limiting) classifies via the `status_429` rule as `rate_limit_exceeded`
+and still cools the IP family down. For an allowlisted provider an IP-bucketed
+rate limit is the same signal as an exhausted quota. Honest limits:
+
+- **Best-effort**: the lock resolves the connection's last known `egress_ip`
+  from `proxy_logs` (24h window, synchronous, no cache). Cold cache (egress
+  IP never probed) or no row → the failing connection is still cooled by the
+  branch (recorded like today), only no sibling is locked.
+- **Never terminal**: the cooldown is a renewing quota window
+  (`testStatus: "unavailable"`); a permanent state is never derived from an
+  IP-level signal. `disableCooling` connections skip the branch entirely.
+- **Lock granularity changes for the allowlisted family**: this is a scope
+  change, not only a sibling optimization. opencode is a `passthroughModels`
+  provider, so before this branch a 429 produced a per-MODEL lockout; it now
+  produces a connection cooldown — including for an operator running a single
+  connection with no sibling at all. That is the granularity the opencode rule
+  table already declares correct (`scope: "connection"`,
+  `providerErrorRules.ts`), never honored so far because opencode is not in
+  `HONORS_RULE_LOCK_SCOPE_PROVIDERS`. The branch writes the failing
+  connection's cooldown + `backoffLevel` itself, mirroring the
+  connection-scoped agentrouter branch, and returns — the per-model block and
+  the generic path below are never reached.
+- **Combo included**: like the agentrouter branch, the scope deliberately
+  ignores the `persistUnavailableState`/`isCombo` downgrade a combo caller
+  applies to a 429. A per-model lockout is not a weaker form of this scope, it
+  is the wrong unit: it says nothing about the exhausted IP, so the combo
+  rotation would keep burning one guaranteed-failed call per sibling.
+- **Sibling safety**: a sibling already terminal (banned/credits_exhausted)
+  or already in a longer cooldown is never overwritten.
+- **Exclusive allowlist**: widening `EGRESS_BUCKETED_LOCK_PROVIDERS` is an
+  explicit owner decision; no generic wiring (pattern #10334/#10419). The
+  sibling query binds that same allowlist rather than repeating it as a SQL
+  literal, so widening it stays a one-line change.
+- **Egress IP rotation, both directions**: the lookup window (24h) is far
+  wider than the egress-IP cache TTL (5 min), so "last known IP" is history,
+  not current state. If a connection's proxy rotated within the window the
+  lock may **miss** a genuinely shared IP (the recorded IP is the new,
+  unexhausted one) — and symmetrically it may **cool a sibling that has since
+  rotated away** from the exhausted IP. The second case costs that sibling one
+  cooldown window; both are accepted best-effort limits of a history-based
+  lookup.
+- **Cost**: two bounded scans of `proxy_logs` (window-filtered via
+  `idx_pl_timestamp`), only at 429 frequency. No new index (migration 134
+  YAGNI). Measured on a real-traffic DB copy of moderate size; a
+  high-throughput instance holds proportionally more rows in the same window.
 
 ---
 

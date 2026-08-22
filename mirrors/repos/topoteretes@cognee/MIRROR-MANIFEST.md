@@ -70,9 +70,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
 | 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
-| 13 | ✓ | [`examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
-| 14 | ✓ | [`examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
+| 12 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
+| 13 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
+| 14 | ✓ | [`examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/feedback/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
 
 ---
 

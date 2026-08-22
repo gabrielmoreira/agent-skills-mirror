@@ -111,6 +111,15 @@ sends the current preference, stable conversation id, and an allowlisted
 generation label with every WebBrain Cloud model request. It never attaches
 those collection fields to local or bring-your-own providers.
 
+For WebBrain Cloud only, an enabled Help Improve preference also allows the
+extension to retain one bounded terminal tool call/result and the final run
+status in a local durable outbox until the Cloud improvement endpoint
+acknowledges it. Delivery is retried on a later Cloud run after transient
+network/server failures. The outbox is not created for local or bring-your-own
+providers, and disabling Help Improve stops new terminal records; any older
+queued records are sent with the disabled preference so the server discards
+them and the client can remove them.
+
 Current clients explicitly send `X-WebBrain-Help-Improve: 1` or `0`. Older
 WebBrain Cloud clients that send neither the preference header nor a session id
 are treated as using the default-on setting. The Cloud service derives a
@@ -137,7 +146,10 @@ for WebBrain training.
 For eligible completed generations, MySQL is WebBrain's canonical store. The
 service strips media, compresses the request/response payload, encrypts it with
 AES-256-GCM, and stores it with an opaque HMAC session id. Interrupted streams
-and failed generations are not stored as improvement content. Eligible requests
+and failed generations are not stored as generation content. Separately,
+eligible terminal-runtime envelopes are de-identified, encrypted, and stored
+idempotently so evaluation can distinguish provider export gaps from actual
+execution outcomes. Eligible requests
 also use an isolated OpenRouter workspace with private Input & Output Logging
 enabled as a redundant review copy. OpenRouter documents a minimum retention of
 three months and says data may be retained longer unless deletion is requested.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `firecrawl/firecrawl` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `firecrawl/firecrawl` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `firecrawl/firecrawl` — 26 default patterns, 0 followed patterns, 2 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/firecrawl-build-interact/SKILL.md`](skills/firecrawl-build-interact/SKILL.md) |
+| 4 | ✓ | [`skills/firecrawl-build-onboarding/references/auth-flow.md`](skills/firecrawl-build-onboarding/references/auth-flow.md) |
+| 5 | ✓ | [`skills/firecrawl-build-onboarding/references/project-setup.md`](skills/firecrawl-build-onboarding/references/project-setup.md) |
+| 6 | ✓ | [`skills/firecrawl-build-onboarding/references/sdk-installation.md`](skills/firecrawl-build-onboarding/references/sdk-installation.md) |
+| 7 | ✓ | [`skills/firecrawl-build-onboarding/SKILL.md`](skills/firecrawl-build-onboarding/SKILL.md) |
+| 8 | ✓ | [`skills/firecrawl-build-scrape/references/freshness-and-liveness.md`](skills/firecrawl-build-scrape/references/freshness-and-liveness.md) |
+| 9 | ✓ | [`skills/firecrawl-build-scrape/SKILL.md`](skills/firecrawl-build-scrape/SKILL.md) |
+| 10 | ✓ | [`skills/firecrawl-build-search/SKILL.md`](skills/firecrawl-build-search/SKILL.md) |
+| 11 | ✓ | [`skills/firecrawl-build/references/auth-and-env.md`](skills/firecrawl-build/references/auth-and-env.md) |
+| 12 | ✓ | [`skills/firecrawl-build/references/endpoint-selection.md`](skills/firecrawl-build/references/endpoint-selection.md) |
+| 13 | ✓ | [`skills/firecrawl-build/references/integration-patterns.md`](skills/firecrawl-build/references/integration-patterns.md) |
+| 14 | ✓ | [`skills/firecrawl-build/references/project-intake.md`](skills/firecrawl-build/references/project-intake.md) |
+| 15 | ✓ | [`skills/firecrawl-build/references/sdk-installation.md`](skills/firecrawl-build/references/sdk-installation.md) |
+| 16 | ✓ | [`skills/firecrawl-build/references/verification.md`](skills/firecrawl-build/references/verification.md) |
+| 17 | ✓ | [`skills/firecrawl-build/SKILL.md`](skills/firecrawl-build/SKILL.md) |
+| 18 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

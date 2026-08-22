@@ -1233,7 +1233,7 @@ For each sampled root span, build one `DatasetRecordRaw` entry:
 | `input_data` | Root span's `meta.input` | If `meta.input.value` is a plain string, wrap as `{"input": "<value>"}`. If `meta.input.messages` exists, use `{"messages": [...]}` (preserving the role/content shape). For RAG roots that also have `documents`, include `{"documents": [...]}`. |
 | `expected_output` | Root span's `meta.output.value` (or `meta.output.messages[-1].content` for LLM-kind roots) | This is the **production behavior baseline**, not ground truth. Document this clearly in the summary so the user does not over-trust it. |
 | `metadata` | `{"source": "production", "trace_id": "<id>", "span_id": "<id>", "ml_app": "<ml_app>", "extracted_at": "<ISO 8601 UTC>"}` | Trace/span IDs let the user click back to the source trace in Datadog. |
-| `tags` | `["env:prod", "source:traces", "ml_app:<ml_app>"]` | Always `"key:value"` strings — bare strings will fail `Dataset.append()`. See the per-record tag rules in `agent-observability-experiment-py-bootstrap/SKILL.md` (search "Per-record tags"). |
+| `tags` | `["env:prod", "source:traces", "ml_app:<ml_app>"]` | Always `"key:value"` strings — bare strings will fail `Dataset.append()`. See the per-record tag rules in `agent-observability-experiment-bootstrap/references/python/python.md` (search "key:value"). |
 
 **PII scrub.** Before writing, run the same scrub used elsewhere in the agent-observability skill set: replace email / phone / SSN / API-key regex matches in all string values with `<REDACTED:pii-type>`. Surface a one-line warning listing affected record indices in the summary.
 
@@ -1287,7 +1287,7 @@ Wrote `<path>` — {N} records sampled from `<ml_app>` ({timeframe}).
    ds = LLMObs.create_dataset(dataset_name="<your-name>", records=records)
    print(ds)
    ```
-3. **Run an experiment** against the published dataset via `agent-observability-experiment-py-bootstrap --dataset-name <your-name>`.
+3. **Run an experiment** against the published dataset via `agent-observability-experiment-bootstrap --dataset-name <your-name>`.
 ```
 
 Skip the notebook export prompt in this mode — datasets aren't well-served by a markdown summary in a notebook, and the next step (experiment generation) will produce its own artifacts.

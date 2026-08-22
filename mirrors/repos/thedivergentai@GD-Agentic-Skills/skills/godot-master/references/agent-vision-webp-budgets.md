@@ -41,4 +41,4 @@ python scripts/capture.py region --x 100 --y 100 --w 800 --h 600 --max-edge 1568
 - Prefer window/region over 4K/5K full desktop
 - After Read + rubric, prune old timestamps if cluttered (keep last few)
 
-Implemented in [webp_encode.py](../scripts/agent_vision_webp_encode.py) and [asset_sheet.py](../scripts/agent_vision_asset_sheet.py).
+Implemented in [agent_vision_webp_encode.py](../scripts/agent_vision_webp_encode.py) and [agent_vision_asset_sheet.py](../scripts/agent_vision_asset_sheet.py).

@@ -112,6 +112,10 @@ Safety rules:
 - Keep command planning, observed command output, generated artifacts, inferred focus files, and executor dispatch separate.
 - Never expose secret values from codegraph inputs or config files; record redacted paths and warning categories only.
 
+## Structural Code Search
+
+When the target is a syntactic shape rather than a string, load `omh-routing/references/structural-code-search.md` before searching. If ast-grep is not on PATH, use grep/ripgrep exactly as today.
+
 ## Runtime Evidence
 
 Preferred harness for this skill: `codegraph-refresh`.

@@ -85,6 +85,9 @@ Facade。两者复用 [AI 资源检索规范](ai-resource-search-spec.md)的同�
 description、tools、resources 和公开 tags；endpoint credential、运行时 instance 和敏感 auth
 metadata 不进入检索 chunk。迁移到标准 AI Resource 前，handler 可以读取兼容存储，但必须生成相同
 的标准 projection。通用 Search 只指定 MCP 时与专用 Search 候选资格一致。
+Client Facade 为 `GET /v3/client/ai/mcp/search`；它接受 `query`、可重复的
+`tagsAll`、`protocolsAny`、`capabilitiesAny`、`pageNo` 和 `pageSize`，并返回
+`Page<McpServerBasicInfo>`。
 
 ## 5. 当前兼容存储
 
@@ -110,8 +113,14 @@ MCP Resource Operator 负责通过 MCP 领域操作服务应用导入 artifact�
 Config-backed 的 `McpServerOperationService`。未来 MCP 元数据和版本迁移到 `ai_resource`
 后，应替换 MCP Resource Operator 到新的存储模型，同时保持导入插件和统一导入 API 兼容。
 
-旧 MCP 导入 API 可以作为兼容路由保留，但应委托给统一 AI 资源导入流程。默认情况下，不得把用户传入的
-registry URL 或 MCP endpoint 地址作为服务端直接访问的网络目标。
+旧 MCP 导入 API 可以作为兼容路由保留，但应委托给统一 AI 资源导入流程。在该 registry 导入流程中，
+默认不得把用户传入的 registry URL 或 MCP endpoint 地址作为服务端直接访问的网络目标。
+
+Console 专用的 `GET /v3/console/ai/mcp/importToolsFromMcp` schema 构建辅助接口默认允许访问
+公网 MCP 目标。运维可以通过 `nacos.console.ai.mcp.import.enabled=false` 关闭全部出站 tools 导入。
+私网或本地地址默认拒绝；只有 `baseUrl` 解析得到的每一个此类地址都命中运维配置的
+`nacos.console.ai.mcp.import.allowed-private-addresses` IP/CIDR 白名单时才允许访问。
+`endpoint` 不得覆盖 `baseUrl` 的 origin，并且请求不得跟随重定向。
 
 ## 7. 待迁移问题
 

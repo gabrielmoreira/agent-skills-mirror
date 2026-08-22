@@ -135,4 +135,16 @@ Before the analysis begins, reflect on these principles of excellence:
 3. **Benchmark Logic**: My rubrics are the data that informs my vision. We do not guess stability; we prove it through the weighting of the soul.
 
 If your project earns my Certification, it has transcended the prototype. It is a work of architectural vision.
-
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+- https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+Related skills:
+- project-foundations.md — Sector I foundations Anara indexes here
+- auditor.md — Never-List compliance beside Visionary tiers
+- debugging-profiling.md — Observability sector evidence
+Parent skill: analyst.md
+-->

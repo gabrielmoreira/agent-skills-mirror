@@ -60,6 +60,8 @@ curl -X PUT https://localhost:20128/api/combos/{id} \
 
 Update combo
 
+Partial update: the body is merged onto the stored combo, so a field left out keeps its current value. An array that IS sent replaces the stored one outright.
+
 ```bash
 curl -X PATCH https://localhost:20128/api/combos/{id} \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN" \

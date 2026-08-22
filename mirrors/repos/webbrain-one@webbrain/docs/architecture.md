@@ -566,6 +566,15 @@ copied nor fingerprinted in request events. Policy revisions are bumped when
 controlled prompt templates or tool-exposure rules change; private request
 content does not affect them.
 
+WebBrain Cloud runs also have a separate consent-gated terminal-runtime path.
+After an executed tool result is made durable in `chrome.storage.local`, a
+bounded `terminal_runtime` envelope is sent to the Cloud improvement endpoint.
+Transient failures remain in the outbox for the next Cloud run; acknowledged or
+non-retryable records are removed. This path does not depend on optional local
+IndexedDB tracing, is disabled for local/bring-your-own providers, and never
+blocks the visible answer on the network request. Chrome and Firefox use the
+same event and outbox schema.
+
 Each new trace run records the manifest version that created it. `/export`
 Markdown records the exporting version, `/export --traces` records both the
 exporting version and every turn's recording version, and Traces-page JSON adds

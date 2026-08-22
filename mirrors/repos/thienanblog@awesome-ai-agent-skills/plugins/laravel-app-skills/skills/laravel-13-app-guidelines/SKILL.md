@@ -1,6 +1,6 @@
 ---
 name: laravel-13-app-guidelines
-description: Guidelines and workflow for creating, upgrading, and changing Laravel 13 applications. Use when a task targets laravel/framework ^13.0 or a Laravel 12-to-13 upgrade, including API-only apps and Blade, Livewire 4, or Inertia 3 with React, Vue, or Svelte, plus starter kits, Tailwind CSS 4, Fortify or WorkOS AuthKit, Wayfinder, Pest 4 or PHPUnit 12, Pint, Laravel Boost 2, the Laravel AI SDK, JSON:API resources, and search. Detect installed versions and repository conventions before applying version-specific guidance.
+description: Coordinator-routed implementation and upgrade guidance for confirmed Laravel 13 repositories or Laravel 12-to-13 upgrades when framework conventions materially own the work. Use after project-development-mindset inspects the installed or target laravel/framework major, or directly when explicitly invoked or installed standalone. Never load both Laravel version skills; do not use merely for supporting Docker, test, frontend, or Artisan commands.
 ---
 
 # Laravel 13 App Guidelines
@@ -10,6 +10,12 @@ description: Guidelines and workflow for creating, upgrading, and changing Larav
 Use a repository-first workflow for Laravel 13 work. Detect the actual framework,
 packages, frontend, command runner, and local conventions before selecting a
 Laravel pattern; do not turn optional Laravel 13 capabilities into dependencies.
+
+This skill owns version-specific Laravel implementation and upgrade guidance,
+not the whole task lifecycle. Keep routine testing, documentation, Docker
+command execution, and UI reuse as supporting work. Return routing control to
+`project-development-mindset` if debugging, test strategy, local container
+topology, UI concept work, or deployment becomes the primary concern.
 
 Run this skill in the main conversation. Do not spawn subagents, agent teams, or
 delegated parallel workers unless the user explicitly approves the proposed
@@ -33,8 +39,9 @@ again before expanding the approved scope.
    Laravel Boost `search-docs` when Boost is installed and available; otherwise
    use Laravel 13.x or the installed package's official documentation.
 6. Follow existing architecture and naming. Implement the smallest coherent
-   change, add or update focused tests, then run all checks relevant to the
-   affected surface.
+   change, add or update focused tests, and run focused checks for the affected
+   surface. After implementation is complete, ask the user whether to run any
+   broader or full suite.
 
 Do not install, upgrade, or replace packages merely because this skill lists
 them. Confirm a task requirement and compatibility first.
@@ -132,11 +139,14 @@ new Laravel 13 feature or upgrading an application from Laravel 12.
 - Confirm generator flags with `php artisan help make:test` before using them.
   For upgrades, expect Pest 4 or PHPUnit 12 only after dependency compatibility
   has been verified.
-- Run the smallest relevant test target first, then the complete affected suite.
-  Use the repository wrapper and test database; never point tests at production.
-- Run `vendor/bin/pint --dirty` when Pint is configured. Also run applicable
-  static analysis, frontend lint, type-check, build, and browser or E2E checks
-  defined by the repository or CI.
+- Run the smallest relevant test target. Use the repository wrapper and test
+  database; never point tests at production.
+- Run focused formatting, static analysis, frontend lint, type-check, build, and
+  browser or E2E checks when they can fail for the changed surface. After
+  implementation and focused verification are complete, list the broader
+  affected or full-suite commands and ask the user whether to run them. Do not
+  run them without explicit approval unless higher-priority repository
+  instructions require it.
 - Report the exact checks run, results, and any checks that could not run.
 
 ## Use Laravel Boost Safely

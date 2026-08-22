@@ -111,6 +111,10 @@ Safety rules:
 - Keep onboarding findings, inferred risks, first-task suggestions, and implementation handoffs separate.
 - Never expose secrets from config or environment files; record only redacted paths and risk categories.
 
+## Structural Code Search
+
+When the target is a syntactic shape rather than a string, load `omh-routing/references/structural-code-search.md` before searching. If ast-grep is not on PATH, use grep/ripgrep exactly as today.
+
 ## Runtime Evidence
 
 Preferred harness for this skill: `codebase-onboarding`.

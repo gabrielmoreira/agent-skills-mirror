@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jaechang-hits/SciAgent-Skills` — 26 default patterns, 0 followed patterns, 295 file(s) materialized.
+Mirror of `jaechang-hits/SciAgent-Skills` — 26 default patterns, 0 followed patterns, 296 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jaechang-hits/SciAgent-Skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 295 |
+| Files         | 296 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -295,65 +295,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 234 | ✓ | [`skills/scientific-writing/scientific-slides/references/slide_design_guide.md`](skills/scientific-writing/scientific-slides/references/slide_design_guide.md) |
 | 235 | ✓ | [`skills/scientific-writing/scientific-slides/references/talk_types_guide.md`](skills/scientific-writing/scientific-slides/references/talk_types_guide.md) |
 | 236 | ✓ | [`skills/scientific-writing/scientific-slides/SKILL.md`](skills/scientific-writing/scientific-slides/SKILL.md) |
-| 237 | ✓ | [`skills/structural-biology-drug-discovery/alphafold-database-access/references/api_schemas_reference.md`](skills/structural-biology-drug-discovery/alphafold-database-access/references/api_schemas_reference.md) |
-| 238 | ✓ | [`skills/structural-biology-drug-discovery/alphafold-database-access/SKILL.md`](skills/structural-biology-drug-discovery/alphafold-database-access/SKILL.md) |
-| 239 | ✓ | [`skills/structural-biology-drug-discovery/autodock-vina-docking/references/receptor_preparation_guide.md`](skills/structural-biology-drug-discovery/autodock-vina-docking/references/receptor_preparation_guide.md) |
-| 240 | ✓ | [`skills/structural-biology-drug-discovery/autodock-vina-docking/references/scoring_functions_comparison.md`](skills/structural-biology-drug-discovery/autodock-vina-docking/references/scoring_functions_comparison.md) |
-| 241 | ✓ | [`skills/structural-biology-drug-discovery/autodock-vina-docking/SKILL.md`](skills/structural-biology-drug-discovery/autodock-vina-docking/SKILL.md) |
-| 242 | ✓ | [`skills/structural-biology-drug-discovery/chembl-database-bioactivity/SKILL.md`](skills/structural-biology-drug-discovery/chembl-database-bioactivity/SKILL.md) |
-| 243 | ✓ | [`skills/structural-biology-drug-discovery/clinicaltrials-database-search/SKILL.md`](skills/structural-biology-drug-discovery/clinicaltrials-database-search/SKILL.md) |
-| 244 | ✓ | [`skills/structural-biology-drug-discovery/dailymed-database/SKILL.md`](skills/structural-biology-drug-discovery/dailymed-database/SKILL.md) |
-| 245 | ✓ | [`skills/structural-biology-drug-discovery/datamol-cheminformatics/SKILL.md`](skills/structural-biology-drug-discovery/datamol-cheminformatics/SKILL.md) |
-| 246 | ✓ | [`skills/structural-biology-drug-discovery/ddinter-database/SKILL.md`](skills/structural-biology-drug-discovery/ddinter-database/SKILL.md) |
-| 247 | ✓ | [`skills/structural-biology-drug-discovery/deepchem/references/workflows_model_catalog.md`](skills/structural-biology-drug-discovery/deepchem/references/workflows_model_catalog.md) |
-| 248 | ✓ | [`skills/structural-biology-drug-discovery/deepchem/SKILL.md`](skills/structural-biology-drug-discovery/deepchem/SKILL.md) |
-| 249 | ✓ | [`skills/structural-biology-drug-discovery/diffdock/SKILL.md`](skills/structural-biology-drug-discovery/diffdock/SKILL.md) |
-| 250 | ✓ | [`skills/structural-biology-drug-discovery/drugbank-database-access/references/chemical_analysis.md`](skills/structural-biology-drug-discovery/drugbank-database-access/references/chemical_analysis.md) |
-| 251 | ✓ | [`skills/structural-biology-drug-discovery/drugbank-database-access/references/interactions_targets.md`](skills/structural-biology-drug-discovery/drugbank-database-access/references/interactions_targets.md) |
-| 252 | ✓ | [`skills/structural-biology-drug-discovery/drugbank-database-access/SKILL.md`](skills/structural-biology-drug-discovery/drugbank-database-access/SKILL.md) |
-| 253 | ✓ | [`skills/structural-biology-drug-discovery/emdb-database/SKILL.md`](skills/structural-biology-drug-discovery/emdb-database/SKILL.md) |
-| 254 | ✓ | [`skills/structural-biology-drug-discovery/fda-database/SKILL.md`](skills/structural-biology-drug-discovery/fda-database/SKILL.md) |
-| 255 | ✓ | [`skills/structural-biology-drug-discovery/gtopdb-database/SKILL.md`](skills/structural-biology-drug-discovery/gtopdb-database/SKILL.md) |
-| 256 | ✓ | [`skills/structural-biology-drug-discovery/mdanalysis-trajectory/SKILL.md`](skills/structural-biology-drug-discovery/mdanalysis-trajectory/SKILL.md) |
-| 257 | ✓ | [`skills/structural-biology-drug-discovery/mdtraj-trajectory-analysis/SKILL.md`](skills/structural-biology-drug-discovery/mdtraj-trajectory-analysis/SKILL.md) |
-| 258 | ✓ | [`skills/structural-biology-drug-discovery/medchem/references/rules_catalog.md`](skills/structural-biology-drug-discovery/medchem/references/rules_catalog.md) |
-| 259 | ✓ | [`skills/structural-biology-drug-discovery/medchem/SKILL.md`](skills/structural-biology-drug-discovery/medchem/SKILL.md) |
-| 260 | ✓ | [`skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/api_reference.md`](skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/api_reference.md) |
-| 261 | ✓ | [`skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/available_featurizers.md`](skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/available_featurizers.md) |
-| 262 | ✓ | [`skills/structural-biology-drug-discovery/molfeat-molecular-featurization/SKILL.md`](skills/structural-biology-drug-discovery/molfeat-molecular-featurization/SKILL.md) |
-| 263 | ✓ | [`skills/structural-biology-drug-discovery/opentargets-database/SKILL.md`](skills/structural-biology-drug-discovery/opentargets-database/SKILL.md) |
-| 264 | ✓ | [`skills/structural-biology-drug-discovery/pdb-database/SKILL.md`](skills/structural-biology-drug-discovery/pdb-database/SKILL.md) |
-| 265 | ✓ | [`skills/structural-biology-drug-discovery/pubchem-compound-search/SKILL.md`](skills/structural-biology-drug-discovery/pubchem-compound-search/SKILL.md) |
-| 266 | ✓ | [`skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/datasets_catalog.md`](skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/datasets_catalog.md) |
-| 267 | ✓ | [`skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/oracles_utilities.md`](skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/oracles_utilities.md) |
-| 268 | ✓ | [`skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/SKILL.md`](skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/SKILL.md) |
-| 269 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/references/cdxml-schema-reference.md`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/references/cdxml-schema-reference.md) |
-| 270 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/build_reaction_scheme.py`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/build_reaction_scheme.py) |
-| 271 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/check_scheme.py`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/check_scheme.py) |
-| 272 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/SKILL.md`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/SKILL.md) |
-| 273 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/api_reference.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/api_reference.md) |
-| 274 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/descriptors_guide.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/descriptors_guide.md) |
-| 275 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/smarts_patterns.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/smarts_patterns.md) |
-| 276 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/SKILL.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/SKILL.md) |
-| 277 | ✓ | [`skills/structural-biology-drug-discovery/rowan/SKILL.md`](skills/structural-biology-drug-discovery/rowan/SKILL.md) |
-| 278 | ✓ | [`skills/structural-biology-drug-discovery/sar-analysis/SKILL.md`](skills/structural-biology-drug-discovery/sar-analysis/SKILL.md) |
-| 279 | ✓ | [`skills/structural-biology-drug-discovery/smina-molecular-docking/SKILL.md`](skills/structural-biology-drug-discovery/smina-molecular-docking/SKILL.md) |
-| 280 | ✓ | [`skills/structural-biology-drug-discovery/torchdrug/SKILL.md`](skills/structural-biology-drug-discovery/torchdrug/SKILL.md) |
-| 281 | ✓ | [`skills/structural-biology-drug-discovery/unichem-database/SKILL.md`](skills/structural-biology-drug-discovery/unichem-database/SKILL.md) |
-| 282 | ✓ | [`skills/structural-biology-drug-discovery/zinc-database/SKILL.md`](skills/structural-biology-drug-discovery/zinc-database/SKILL.md) |
-| 283 | ✓ | [`skills/systems-biology-multiomics/brenda-database/SKILL.md`](skills/systems-biology-multiomics/brenda-database/SKILL.md) |
-| 284 | ✓ | [`skills/systems-biology-multiomics/cellchat-cell-communication/SKILL.md`](skills/systems-biology-multiomics/cellchat-cell-communication/SKILL.md) |
-| 285 | ✓ | [`skills/systems-biology-multiomics/cobrapy-metabolic-modeling/references/api_workflows.md`](skills/systems-biology-multiomics/cobrapy-metabolic-modeling/references/api_workflows.md) |
-| 286 | ✓ | [`skills/systems-biology-multiomics/cobrapy-metabolic-modeling/SKILL.md`](skills/systems-biology-multiomics/cobrapy-metabolic-modeling/SKILL.md) |
-| 287 | ✓ | [`skills/systems-biology-multiomics/kegg-pathway-analysis/SKILL.md`](skills/systems-biology-multiomics/kegg-pathway-analysis/SKILL.md) |
-| 288 | ✓ | [`skills/systems-biology-multiomics/lamindb-data-management/SKILL.md`](skills/systems-biology-multiomics/lamindb-data-management/SKILL.md) |
-| 289 | ✓ | [`skills/systems-biology-multiomics/libsbml-network-modeling/SKILL.md`](skills/systems-biology-multiomics/libsbml-network-modeling/SKILL.md) |
-| 290 | ✓ | [`skills/systems-biology-multiomics/mofaplus-multi-omics/SKILL.md`](skills/systems-biology-multiomics/mofaplus-multi-omics/SKILL.md) |
-| 291 | ✓ | [`skills/systems-biology-multiomics/muon-multiomics-singlecell/SKILL.md`](skills/systems-biology-multiomics/muon-multiomics-singlecell/SKILL.md) |
-| 292 | ✓ | [`skills/systems-biology-multiomics/omics-analysis-guide/SKILL.md`](skills/systems-biology-multiomics/omics-analysis-guide/SKILL.md) |
-| 293 | ✓ | [`skills/systems-biology-multiomics/reactome-database/SKILL.md`](skills/systems-biology-multiomics/reactome-database/SKILL.md) |
-| 294 | ✓ | [`skills/systems-biology-multiomics/string-database-ppi/references/api_advanced.md`](skills/systems-biology-multiomics/string-database-ppi/references/api_advanced.md) |
-| 295 | ✓ | [`skills/systems-biology-multiomics/string-database-ppi/SKILL.md`](skills/systems-biology-multiomics/string-database-ppi/SKILL.md) |
+| 237 | ✓ | [`skills/structural-biology-drug-discovery/aizynthfinder-retrosynthesis/SKILL.md`](skills/structural-biology-drug-discovery/aizynthfinder-retrosynthesis/SKILL.md) |
+| 238 | ✓ | [`skills/structural-biology-drug-discovery/alphafold-database-access/references/api_schemas_reference.md`](skills/structural-biology-drug-discovery/alphafold-database-access/references/api_schemas_reference.md) |
+| 239 | ✓ | [`skills/structural-biology-drug-discovery/alphafold-database-access/SKILL.md`](skills/structural-biology-drug-discovery/alphafold-database-access/SKILL.md) |
+| 240 | ✓ | [`skills/structural-biology-drug-discovery/autodock-vina-docking/references/receptor_preparation_guide.md`](skills/structural-biology-drug-discovery/autodock-vina-docking/references/receptor_preparation_guide.md) |
+| 241 | ✓ | [`skills/structural-biology-drug-discovery/autodock-vina-docking/references/scoring_functions_comparison.md`](skills/structural-biology-drug-discovery/autodock-vina-docking/references/scoring_functions_comparison.md) |
+| 242 | ✓ | [`skills/structural-biology-drug-discovery/autodock-vina-docking/SKILL.md`](skills/structural-biology-drug-discovery/autodock-vina-docking/SKILL.md) |
+| 243 | ✓ | [`skills/structural-biology-drug-discovery/chembl-database-bioactivity/SKILL.md`](skills/structural-biology-drug-discovery/chembl-database-bioactivity/SKILL.md) |
+| 244 | ✓ | [`skills/structural-biology-drug-discovery/clinicaltrials-database-search/SKILL.md`](skills/structural-biology-drug-discovery/clinicaltrials-database-search/SKILL.md) |
+| 245 | ✓ | [`skills/structural-biology-drug-discovery/dailymed-database/SKILL.md`](skills/structural-biology-drug-discovery/dailymed-database/SKILL.md) |
+| 246 | ✓ | [`skills/structural-biology-drug-discovery/datamol-cheminformatics/SKILL.md`](skills/structural-biology-drug-discovery/datamol-cheminformatics/SKILL.md) |
+| 247 | ✓ | [`skills/structural-biology-drug-discovery/ddinter-database/SKILL.md`](skills/structural-biology-drug-discovery/ddinter-database/SKILL.md) |
+| 248 | ✓ | [`skills/structural-biology-drug-discovery/deepchem/references/workflows_model_catalog.md`](skills/structural-biology-drug-discovery/deepchem/references/workflows_model_catalog.md) |
+| 249 | ✓ | [`skills/structural-biology-drug-discovery/deepchem/SKILL.md`](skills/structural-biology-drug-discovery/deepchem/SKILL.md) |
+| 250 | ✓ | [`skills/structural-biology-drug-discovery/diffdock/SKILL.md`](skills/structural-biology-drug-discovery/diffdock/SKILL.md) |
+| 251 | ✓ | [`skills/structural-biology-drug-discovery/drugbank-database-access/references/chemical_analysis.md`](skills/structural-biology-drug-discovery/drugbank-database-access/references/chemical_analysis.md) |
+| 252 | ✓ | [`skills/structural-biology-drug-discovery/drugbank-database-access/references/interactions_targets.md`](skills/structural-biology-drug-discovery/drugbank-database-access/references/interactions_targets.md) |
+| 253 | ✓ | [`skills/structural-biology-drug-discovery/drugbank-database-access/SKILL.md`](skills/structural-biology-drug-discovery/drugbank-database-access/SKILL.md) |
+| 254 | ✓ | [`skills/structural-biology-drug-discovery/emdb-database/SKILL.md`](skills/structural-biology-drug-discovery/emdb-database/SKILL.md) |
+| 255 | ✓ | [`skills/structural-biology-drug-discovery/fda-database/SKILL.md`](skills/structural-biology-drug-discovery/fda-database/SKILL.md) |
+| 256 | ✓ | [`skills/structural-biology-drug-discovery/gtopdb-database/SKILL.md`](skills/structural-biology-drug-discovery/gtopdb-database/SKILL.md) |
+| 257 | ✓ | [`skills/structural-biology-drug-discovery/mdanalysis-trajectory/SKILL.md`](skills/structural-biology-drug-discovery/mdanalysis-trajectory/SKILL.md) |
+| 258 | ✓ | [`skills/structural-biology-drug-discovery/mdtraj-trajectory-analysis/SKILL.md`](skills/structural-biology-drug-discovery/mdtraj-trajectory-analysis/SKILL.md) |
+| 259 | ✓ | [`skills/structural-biology-drug-discovery/medchem/references/rules_catalog.md`](skills/structural-biology-drug-discovery/medchem/references/rules_catalog.md) |
+| 260 | ✓ | [`skills/structural-biology-drug-discovery/medchem/SKILL.md`](skills/structural-biology-drug-discovery/medchem/SKILL.md) |
+| 261 | ✓ | [`skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/api_reference.md`](skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/api_reference.md) |
+| 262 | ✓ | [`skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/available_featurizers.md`](skills/structural-biology-drug-discovery/molfeat-molecular-featurization/references/available_featurizers.md) |
+| 263 | ✓ | [`skills/structural-biology-drug-discovery/molfeat-molecular-featurization/SKILL.md`](skills/structural-biology-drug-discovery/molfeat-molecular-featurization/SKILL.md) |
+| 264 | ✓ | [`skills/structural-biology-drug-discovery/opentargets-database/SKILL.md`](skills/structural-biology-drug-discovery/opentargets-database/SKILL.md) |
+| 265 | ✓ | [`skills/structural-biology-drug-discovery/pdb-database/SKILL.md`](skills/structural-biology-drug-discovery/pdb-database/SKILL.md) |
+| 266 | ✓ | [`skills/structural-biology-drug-discovery/pubchem-compound-search/SKILL.md`](skills/structural-biology-drug-discovery/pubchem-compound-search/SKILL.md) |
+| 267 | ✓ | [`skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/datasets_catalog.md`](skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/datasets_catalog.md) |
+| 268 | ✓ | [`skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/oracles_utilities.md`](skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/references/oracles_utilities.md) |
+| 269 | ✓ | [`skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/SKILL.md`](skills/structural-biology-drug-discovery/pytdc-therapeutics-data-commons/SKILL.md) |
+| 270 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/references/cdxml-schema-reference.md`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/references/cdxml-schema-reference.md) |
+| 271 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/build_reaction_scheme.py`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/build_reaction_scheme.py) |
+| 272 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/check_scheme.py`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/check_scheme.py) |
+| 273 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/SKILL.md`](skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/SKILL.md) |
+| 274 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/api_reference.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/api_reference.md) |
+| 275 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/descriptors_guide.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/descriptors_guide.md) |
+| 276 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/smarts_patterns.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/references/smarts_patterns.md) |
+| 277 | ✓ | [`skills/structural-biology-drug-discovery/rdkit-cheminformatics/SKILL.md`](skills/structural-biology-drug-discovery/rdkit-cheminformatics/SKILL.md) |
+| 278 | ✓ | [`skills/structural-biology-drug-discovery/rowan/SKILL.md`](skills/structural-biology-drug-discovery/rowan/SKILL.md) |
+| 279 | ✓ | [`skills/structural-biology-drug-discovery/sar-analysis/SKILL.md`](skills/structural-biology-drug-discovery/sar-analysis/SKILL.md) |
+| 280 | ✓ | [`skills/structural-biology-drug-discovery/smina-molecular-docking/SKILL.md`](skills/structural-biology-drug-discovery/smina-molecular-docking/SKILL.md) |
+| 281 | ✓ | [`skills/structural-biology-drug-discovery/torchdrug/SKILL.md`](skills/structural-biology-drug-discovery/torchdrug/SKILL.md) |
+| 282 | ✓ | [`skills/structural-biology-drug-discovery/unichem-database/SKILL.md`](skills/structural-biology-drug-discovery/unichem-database/SKILL.md) |
+| 283 | ✓ | [`skills/structural-biology-drug-discovery/zinc-database/SKILL.md`](skills/structural-biology-drug-discovery/zinc-database/SKILL.md) |
+| 284 | ✓ | [`skills/systems-biology-multiomics/brenda-database/SKILL.md`](skills/systems-biology-multiomics/brenda-database/SKILL.md) |
+| 285 | ✓ | [`skills/systems-biology-multiomics/cellchat-cell-communication/SKILL.md`](skills/systems-biology-multiomics/cellchat-cell-communication/SKILL.md) |
+| 286 | ✓ | [`skills/systems-biology-multiomics/cobrapy-metabolic-modeling/references/api_workflows.md`](skills/systems-biology-multiomics/cobrapy-metabolic-modeling/references/api_workflows.md) |
+| 287 | ✓ | [`skills/systems-biology-multiomics/cobrapy-metabolic-modeling/SKILL.md`](skills/systems-biology-multiomics/cobrapy-metabolic-modeling/SKILL.md) |
+| 288 | ✓ | [`skills/systems-biology-multiomics/kegg-pathway-analysis/SKILL.md`](skills/systems-biology-multiomics/kegg-pathway-analysis/SKILL.md) |
+| 289 | ✓ | [`skills/systems-biology-multiomics/lamindb-data-management/SKILL.md`](skills/systems-biology-multiomics/lamindb-data-management/SKILL.md) |
+| 290 | ✓ | [`skills/systems-biology-multiomics/libsbml-network-modeling/SKILL.md`](skills/systems-biology-multiomics/libsbml-network-modeling/SKILL.md) |
+| 291 | ✓ | [`skills/systems-biology-multiomics/mofaplus-multi-omics/SKILL.md`](skills/systems-biology-multiomics/mofaplus-multi-omics/SKILL.md) |
+| 292 | ✓ | [`skills/systems-biology-multiomics/muon-multiomics-singlecell/SKILL.md`](skills/systems-biology-multiomics/muon-multiomics-singlecell/SKILL.md) |
+| 293 | ✓ | [`skills/systems-biology-multiomics/omics-analysis-guide/SKILL.md`](skills/systems-biology-multiomics/omics-analysis-guide/SKILL.md) |
+| 294 | ✓ | [`skills/systems-biology-multiomics/reactome-database/SKILL.md`](skills/systems-biology-multiomics/reactome-database/SKILL.md) |
+| 295 | ✓ | [`skills/systems-biology-multiomics/string-database-ppi/references/api_advanced.md`](skills/systems-biology-multiomics/string-database-ppi/references/api_advanced.md) |
+| 296 | ✓ | [`skills/systems-biology-multiomics/string-database-ppi/SKILL.md`](skills/systems-biology-multiomics/string-database-ppi/SKILL.md) |
 
 ---
 

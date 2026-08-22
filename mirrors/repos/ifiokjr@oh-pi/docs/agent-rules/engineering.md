@@ -13,14 +13,14 @@
 
 ## Common commands
 
-- `pnpm lint` — run oxlint checks
-- `pnpm lint:fix` — apply oxfmt + oxlint fixes
-- `pnpm format` — format the repo
-- `pnpm test` — run the full test suite
-- `pnpm typecheck` — run repo type-checking with `tsgo`
-- `pnpm build` — run every workspace package build script
-- `pnpm security:check` — run dependency allowlist and audit checks
-- `pnpm mdt ...` — run MDT documentation reuse commands with the repo-pinned version
+- `pnpm lint`: run oxlint checks
+- `pnpm lint:fix`: apply oxfmt + oxlint fixes
+- `pnpm format`: format the repo
+- `pnpm test`: run the full test suite
+- `pnpm typecheck`: run repo type-checking with `tsgo`
+- `pnpm build`: run every workspace package build script
+- `pnpm security:check`: run dependency allowlist and audit checks
+- `pnpm mdt ...`: run MDT documentation reuse commands with the repo-pinned version
 
 ## Documentation reuse
 
@@ -73,7 +73,8 @@ packages/
   analytics-dashboard/    → @monopi/analytics-dashboard (private React dashboard for visualizing AI usage)
   analytics-extension/    → @monopi/analytics-extension (raw .ts analytics tracking extension for pi)
   docs/                   → @monopi/docs (private documentation site for monopi)
-  monopi/                  → @monopi/monopi (installer CLI: `npx @monopi/monopi`)
+  monopi__monopi/         → @monopi/monopi (installer CLI: `npx @monopi/monopi`)
+  monopi/                  → monopi (unscoped npm alias re-exporting the installer CLI: `npx monopi`)
 ```
 
 ## Package conventions
