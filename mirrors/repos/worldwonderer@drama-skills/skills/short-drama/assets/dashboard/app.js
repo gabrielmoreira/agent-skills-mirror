@@ -38,7 +38,7 @@ const HIDDEN_FILES = new Set([
 
 // Reading order inside one group: what the creator wrote, then what was built
 // from it. Raw directory order otherwise buries the screenplay below the prompts.
-const SECTION_ORDER = ["story", "project", "sources", "analysis", "cast", "visual", "storyboard", "prompts", "production", "other"];
+const SECTION_ORDER = ["story", "project", "sources", "analysis", "cast", "visual", "storyboard", "prompts", "production", "review", "other"];
 
 const CONTENT_META = {
   sources: { label: "原始资料", description: "故事原稿与参考内容" },
@@ -50,6 +50,7 @@ const CONTENT_META = {
   visual: { label: "画面设计", description: "图片方案与视觉参考" },
   storyboard: { label: "分镜画面", description: "镜头、关键帧与运动" },
   production: { label: "制作成果", description: "项目内已有的图片、视频与声音" },
+  review: { label: "审查意见", description: "当前版本的问题、证据与修订要求" },
   other: { label: "其他内容", description: "放在标准目录之外的创作文件" },
 };
 
@@ -120,6 +121,11 @@ const FILE_LABELS = {
   "episode-card.json": "本集提要",
   "beats.jsonl": "剧情节拍",
   "screenplay.md": "剧本",
+  "剧本.md": "剧本",
+  "视觉设定.md": "视觉设定",
+  "分镜.md": "分镜",
+  "图片提示词.md": "图片提示词",
+  "视频提示词.md": "视频提示词",
   "screenplay-index.jsonl": "场次索引",
   "voice-record-sheet.jsonl": "配音稿",
   "occurrences.jsonl": "出场安排",
@@ -199,6 +205,8 @@ function creatorSection(path) {
   const first = parts[0] || "";
   const lowerFirst = first.toLowerCase();
   const filename = (parts.at(-1) || "").toLowerCase();
+  const creatorReview = ["reviews", "审查"].includes(lowerFirst) && filename.endsWith("-审查.md");
+  if (creatorReview) return "review";
   if (!parts.length || HIDDEN_ROOTS.has(first) || HIDDEN_ROOTS.has(lowerFirst)) return null;
   if (HIDDEN_FILES.has(filename)) return null;
   if (parts.length === 1) {
@@ -215,6 +223,10 @@ function creatorSection(path) {
   if (root !== "episodes") return ownerSection(path) || "other";
   const area = (parts[2] || "").toLowerCase();
   if (["production", "制作成果"].includes(area)) return "production";
+  if (filename === "视觉设定.md") return "cast";
+  if (filename === "分镜.md") return "storyboard";
+  if (["图片提示词.md", "视频提示词.md"].includes(filename)) return "prompts";
+  if (filename === "剧本.md") return "story";
   if (/prompts?\.(?:md|jsonl?)$/i.test(filename) || filename.includes("prompt")) return "prompts";
   if (["assets", "资产"].includes(area)) return "visual";
   if (["storyboard", "分镜"].includes(area)) return "storyboard";
@@ -341,9 +353,9 @@ function episodePresentation(files) {
   const names = files.map((file) => String(file.path || "").toLowerCase());
   const media = files.filter((file) => file.type === "media").length;
   if (media) return { label: "已有媒体", detail: `${media} 项成果` };
-  if (names.some((path) => path.endsWith("video-prompts.md"))) return { label: "提示词就绪", detail: "可在 skill 中确认投产" };
+  if (names.some((path) => /(?:video-prompts|视频提示词|图片提示词)\.md$/.test(path))) return { label: "提示词就绪", detail: "可在 skill 中确认投产" };
   if (names.some((path) => /\/(?:shots|keyframes)\.jsonl$/.test(path))) return { label: "分镜中", detail: "镜头资料已建立" };
-  if (names.some((path) => path.endsWith("screenplay.md"))) return { label: "剧本就绪", detail: "可继续做资产与分镜" };
+  if (names.some((path) => /(?:screenplay|剧本)\.md$/.test(path))) return { label: "剧本就绪", detail: "可继续做资产与分镜" };
   return { label: "筹备中", detail: `${files.length} 项内容` };
 }
 
@@ -534,7 +546,7 @@ function renderProjectOverview() {
   const media = model.media.slice(0, 6);
   $("mediaShowcase").hidden = media.length === 0;
   $("mediaGallery").replaceChildren(...media.map(mediaCard));
-  const screenplay = state.visibleFiles.find((file) => /(?:^|\/)screenplay\.md$/i.test(file.path));
+  const screenplay = state.visibleFiles.find((file) => /(?:^|\/)(?:screenplay|剧本)\.md$/i.test(file.path));
   $("openScreenplay").disabled = !screenplay;
   $("openScreenplay").onclick = screenplay ? () => openFile(screenplay, true) : null;
 }
@@ -1042,7 +1054,7 @@ async function selectProject(id, preferredPath = "") {
     if (tree.warnings?.length) showNotice("部分内容暂时无法读取，已展示其余创作资料。", "warning");
     renderWorkspace();
     const initial = state.visibleFiles.find((file) => file.path === preferredPath) ||
-      state.visibleFiles.find((file) => /(?:^|\/)screenplay\.md$/i.test(file.path)) ||
+      state.visibleFiles.find((file) => /(?:^|\/)(?:screenplay|剧本)\.md$/i.test(file.path)) ||
       state.visibleFiles.find((file) => file.path.toLowerCase() === "readme.md") ||
       state.visibleFiles[0];
     if (initial) {

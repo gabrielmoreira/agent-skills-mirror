@@ -33,10 +33,12 @@ Use the PR's `updatedAt` field and commit timestamps to determine whether new co
 
 If `commits_since_body_change` is empty, the description is already up to date — say so and stop.
 
+Run `git fetch origin <base>` so the remote ref is current before any diff below. A local branch of the same name can sit behind the remote, which puts the merge base before an already-merged pull request and pulls merged work into the description.
+
 If there are commits since the last body change, check the incremental diff to assess significance:
 
 ```bash
-git diff origin/<base>...HEAD --diff-filter=d --stat -- $(git diff --name-only --since="<body_last_changed>" origin/<base>..HEAD)
+git diff origin/<base>...HEAD --diff-filter=d --stat -- $(git log --since="<body_last_changed>" --name-only --pretty=format: origin/<base>..HEAD | sort -u)
 ```
 
 Skip the update if the incremental changes are trivial (formatting, typos, config-only). Proceed if they add, remove, or modify meaningful behavior.

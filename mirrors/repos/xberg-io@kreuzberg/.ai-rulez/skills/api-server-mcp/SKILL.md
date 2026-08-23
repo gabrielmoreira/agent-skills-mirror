@@ -6,206 +6,115 @@ priority: critical
 
 # API Server & MCP Protocol
 
-**Axum server design for document extraction endpoints, middleware, async processing, and Model Context Protocol integration for AI agents**
+**Axum server for document extraction, plus the rmcp Model Context Protocol surface**
 
-## Xberg API Architecture
+Locations: `crates/xberg/src/api/` (`router.rs`, `handlers.rs`, `startup.rs`, `types.rs`,
+`error.rs`, `jobs.rs`) and `crates/xberg/src/mcp/`. There is no `api/server.rs`.
 
-**Location**: `crates/xberg/src/api/`, `crates/xberg-cli/`
+## REST routes
 
-Xberg provides a dual REST API + MCP server built with Axum + Tokio.
+Registered in `api/router.rs`, all on one `Router`:
 
-```text
-Request Flow:
-HTTP Client / AI Agent (Claude)
-    |
-[Transport Layer]
-├── REST API (Axum HTTP)
-└── MCP Protocol (HTTP or Stdio)
-    |
-[Middleware Layer]
-├── CORS, Request Logging (TraceLayer)
-├── Request/Response size limits
-└── Rate limiting (optional)
-    |
-[Router]
-├── REST Endpoints
-│   ├── POST /extract - File upload extraction
-│   ├── POST /extract-url - URL-based extraction
-│   ├── GET /formats - List supported formats
-│   ├── GET /health - Server health check
-│   ├── POST /batch - Batch document processing
-│   ├── GET /cache/stats - Cache statistics
-│   └── DELETE /cache - Clear extraction cache
-├── MCP Endpoints
-│   ├── POST /mcp/tools - List available tools
-│   ├── POST /mcp/tools/call - Call a tool
-│   ├── GET /mcp/resources - List resources
-│   ├── GET /mcp/resources/:uri - Read resource
-│   ├── GET /mcp/prompts - List prompts
-│   └── GET /mcp/prompts/:name - Get prompt
-    |
-[Handler / Tool Layer]
-├── extract_handler / extract tool
-├── extract_async_handler / extract_batch tool
-├── health_handler / get_capabilities tool
-└── format_handler
-    |
-[Extraction Core]
-├── Format detection
-├── Extraction pipeline
-├── Post-processing (chunking, embeddings)
-└── Result formatting
-    |
-JSON Response / MCP ToolResult
-```
+| Route | Handler |
+| --- | --- |
+| `POST /extract` | `extract_handler` — multipart files, URL fields, or JSON; builds `ExtractInput` |
+| `POST /extract-async` | `extract_async_handler` — queues a job |
+| `GET`/`DELETE /jobs/{job_id}` | `job_status_handler` / `cancel_job_handler` |
+| `POST /detect` | `detect_handler` |
+| `GET /formats` | `formats_handler` |
+| `GET /health` | `health_handler` |
+| `GET /info`, `GET /version` | `info_handler`, `version_handler` |
+| `GET /cache/stats` | `cache_stats_handler` |
+| `DELETE /cache/clear` | `cache_clear_handler` |
+| `GET /cache/manifest`, `POST /cache/warm` | `cache_manifest_handler`, `cache_warm_handler` |
+| `PUT /process`, `POST /v1/convert/file` | `openweb_external_handler`, `openweb_docling_handler` (`api/openweb.rs`) |
+| `GET /openapi.json` | `openapi_schema_handler` (feature `api`) |
+| `GET /metrics` | `metrics_handler` (feature `prometheus`) |
 
-## Server Setup & Configuration
+There is **no** `POST /extract-url` (URL ingestion is a field on `ExtractInput` passed to
+`/extract`) and **no** `POST /batch` (batch is `/extract-async` + `/jobs/{job_id}`).
 
-**Location**: `crates/xberg/src/api/server.rs`
+Middleware, in order: `DefaultBodyLimit::max(limits.max_request_body_bytes)` +
+`RequestBodyLimitLayer` (default 100 MB), CORS, request-id, compression, catch-panic,
+sensitive-header stripping, tracing. CORS is built explicitly as
+`CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any)` and warns loudly;
+restrict it with `XBERG_CORS_ORIGINS`.
 
-Server initialization pattern: Create `ApiState` (holds `ExtractionConfig` + `ExtractionCache`), build Axum `Router` with all REST + MCP routes, apply middleware layers (body limits, CORS, tracing), serve via `tokio::net::TcpListener`.
+## Caching
 
-Key middleware layers applied in order:
+`crates/xberg/src/cache/` — `GenericCache` is a **filesystem-backed** store with LRU-style
+eviction, not an in-memory map. Keys are BLAKE3 content hashes (`blake3_hash_bytes` /
+`blake3_hash_file`, `cache/utilities.rs`). Eviction is bounded by `max_age_days`,
+`max_cache_size_mb` and `min_free_space_mb` — there is no entry-count limit.
 
-- `DefaultBodyLimit::max(100MB)` + `RequestBodyLimitLayer` -- configurable via env vars
-- `CorsLayer::permissive()` -- restrict in production via `CORS_ALLOWED_ORIGINS`
-- `TraceLayer::new_for_http()` -- request/response logging
+## Error handling
 
-## Core REST Handlers
+`ApiError` is a **struct**, not an enum: `{ status: StatusCode, body: ErrorResponse }`
+(`api/error.rs`). Status comes from the constructor, not a variant:
 
-**Location**: `crates/xberg/src/api/handlers.rs`
+- `validation()` → 400, `unprocessable()` → 422, `internal()` → 500, `bad_gateway()` → 502
+- `From<XbergError>` picks one via `error.api_status_category()`
+  (`Validation` / `Unprocessable` / `Internal`)
 
-| Handler               | Method            | Description                                                                                            |
-| --------------------- | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `extract_handler`     | POST /extract       | Multipart files, URL fields, or JSON inputs; build `ExtractInput` and call `extract()` / `extract_batch()` |
-| `extract_async_handler` | POST /extract-async | Queue the same unified extraction input shape for async processing                                      |
-| `health_handler`      | GET /health       | Report status, version, uptime, feature availability (OCR, embeddings), cache stats                    |
-| `formats_handler`     | GET /formats      | Return supported format categories (office, pdf, images, web, email, archives, academic)               |
-| `cache_stats_handler` | GET /cache/stats  | Hit/miss counts and hit rate                                                                           |
-| `cache_clear_handler` | DELETE /cache     | Clear LRU cache                                                                                        |
+There is no 404, 413 or 503 path with a named variant. Do not `match` on `ApiError`.
 
-## Caching Strategy
+## MCP
 
-**Location**: `crates/xberg/src/cache/mod.rs`
+`crates/xberg/src/mcp/`. Transport is a single nested rmcp streamable-HTTP service —
+`Router::new().nest_service("/mcp", http_service)` — **not** a set of `/mcp/*` REST paths.
+Tools, resources and prompts are JSON-RPC methods on it. Stdio transport serves the same
+router over stdin/stdout.
 
-LRU cache keyed by `SHA256(file_content)`, stores `Arc<ExtractionResult>`. Default 1000 entries. Thread-safe via `RwLock`. Tracks hit/miss counters with `AtomicU64` for stats endpoint.
+### Tools (9)
 
-## Error Handling
+`extract`, `extract_batch`, `detect_mime_type`, `list_formats`, `cache_stats`, `cache_clear`,
+`get_version`, `cache_manifest`, `cache_warm`. The set is pinned by
+`test_all_tools_are_registered` in `mcp/server.rs`. There is no `get_capabilities`.
 
-**Location**: `crates/xberg/src/api/error.rs`
+`extract`, `extract_batch` and `cache_warm` are task-eligible (`TASK_ELIGIBLE_TOOLS`,
+`mcp/server.rs`).
 
-`ApiError` enum maps to HTTP status codes:
+### Resources
 
-- `MissingFile` -> 400, `FileNotFound` -> 404
-- `OnnxRuntimeMissing` / `TesseractMissing` -> 503 (with remediation message)
-- `PayloadTooLarge` -> 413
-- `ExtractionFailed` / `InvalidConfig` / `UnsupportedFormat` -> 500
+`mcp/resources.rs`: `xberg://formats`, `xberg://models`, `xberg://languages/ocr`, plus
+`xberg://presets/embeddings` behind `#[cfg(feature = "embeddings")]`.
 
-## MCP Server Implementation
+### Prompts (3)
 
-**Location**: `crates/xberg/src/mcp/server.rs`
+`mcp/prompts.rs`: `extract_document`, `extract_with_ocr`, `semantic_search`.
 
-The MCP server allows Claude and other AI agents to call Xberg extraction functions through the Model Context Protocol.
+## Environment variables
 
-### MCP Tools (Callable Functions)
+There is no `.env.example`. Server-side vars are read in `core/server_config/env.rs`:
 
-Three tools are registered:
+- `XBERG_HOST`, `XBERG_PORT` (defaults `127.0.0.1:8000`)
+- `XBERG_MAX_REQUEST_BODY_BYTES`, `XBERG_MAX_MULTIPART_FIELD_BYTES` (both default 100 MB)
+- `XBERG_CORS_ORIGINS` (comma-separated)
 
-| Tool               | Purpose                                                   | Required Params |
-| ------------------ | --------------------------------------------------------- | --------------- |
-| `extract`          | Extract text/tables/metadata from bytes, paths, file URIs, or URLs | `input`        |
-| `extract_batch`    | Extract from multiple unified inputs in parallel                 | `inputs[]`     |
-| `get_capabilities` | List supported formats, features, backends                | (none)          |
-
-**Tool registration pattern** (example: `extract`):
-
-```rust
-// Define Tool with name, description, JSON Schema inputSchema
-// Register with server.register_tool(tool, handler_fn)
-// Handler: parse params -> build ExtractInput + ExtractionConfig -> call extract() -> return ToolResult as JSON
-```
-
-`extract` optional params: `mime_type`, `filename`, `extract_tables`, `extract_images`, `ocr_enabled`, `extract_metadata`, `chunking_preset`, `generate_embeddings`, and URL ingestion options.
-
-### MCP Resources (Static Knowledge)
-
-Three resources provide static information to agents:
-
-- `xberg://formats` -- Supported format list as JSON
-- `xberg://features` -- Cross-binding feature matrix (from `FEATURE_MATRIX.md`)
-- `xberg://api-reference` -- Generated API documentation
-
-### MCP Prompts (Agent Templates)
-
-Two prompts guide agent extraction workflows:
-
-- `extract_for_rag` -- Document type-specific RAG extraction guidance (research paper, contract, report). Recommends chunking preset and embedding config.
-- `batch_document_processing` -- Optimal concurrency, grouping, and error handling for batch workflows.
-
-### MCP Transport Protocols
-
-- **HTTP/REST**: MCP routes mounted alongside REST API on separate `/mcp/` prefix
-- **Stdio**: JSON-RPC 2.0 over stdin/stdout for local CLI integration (e.g., Claude Desktop)
-
-### Integration with Claude Desktop
-
-```json
-{
-  "mcpServers": {
-    "xberg": {
-      "command": "xberg-mcp",
-      "env": {
-        "XBERG_API_BASE": "http://localhost:8000",
-        "XBERG_MCP_TRANSPORT": "stdio"
-      }
-    }
-  }
-}
-```
-
-### MCP Error Handling
-
-`ToolError` variants: `FileNotFound`, `UnsupportedFormat`, `ExtractionFailed`, `OnnxRuntimeMissing`, `TesseractMissing`, `Timeout`. Each maps to an MCP `ToolResultError` with descriptive code and message.
-
-## Environment Configuration
-
-See `.env.example` for all configurable variables. Key categories:
-
-- **Server**: `XBERG_HOST`, `XBERG_PORT`
-- **Size limits**: `XBERG_MAX_REQUEST_BODY_BYTES` (default 100MB), `XBERG_MAX_MULTIPART_FIELD_BYTES`
-- **Features**: `XBERG_ENABLE_OCR`, `XBERG_ENABLE_EMBEDDINGS`, `XBERG_ENABLE_KEYWORDS`
-- **Cache**: `XBERG_CACHE_ENABLED`, `XBERG_CACHE_SIZE`
-- **CORS**: `CORS_ALLOWED_ORIGINS` (comma-separated)
-- **MCP**: `XBERG_MCP_HOST`, `XBERG_MCP_PORT`, `XBERG_MCP_TRANSPORT` (stdio/http)
-- **Logging**: `RUST_LOG=xberg=info,tower_http=debug`
+Extraction-side vars are documented on `ExtractionConfig::apply_env_overrides`
+(`core/config/extraction/env.rs`) — `XBERG_OCR_BACKEND`, `XBERG_OCR_LANGUAGE`,
+`XBERG_CHUNKING_MAX_CHARS`, `XBERG_CACHE_ENABLED`, `XBERG_LLM_*`, and others. Read that doc
+comment rather than guessing a name.
 
 ## Critical Rules
 
-### REST API Rules
+### REST
 
-1. **Always validate multipart file uploads** - Check MIME type, size, magic bytes
-2. **Timeout long-running extractions** - Set per-handler timeout (5 min default)
-3. **Stream large files** - Never buffer entire multi-GB file in memory
-4. **Cache aggressively** - Identical files should return from cache in <1ms
-5. **Parallel extraction is CPU-bound** - Limit workers to CPU count + 1
-6. **Error responses must be actionable** - Include error code and remediation suggestion
-7. **Health checks must verify features** - Report missing dependencies (ONNX, Tesseract)
-8. **Size limits are configurable** - Allow override via env var for large deployments
-9. **CORS is permissive by default** - Restrict in production via env var
-10. **Logging all requests** - Track extraction metrics for observability
+1. **Validate uploads** — MIME type, size, magic bytes; never trust the filename.
+2. **Size limits are configurable** — always read `limits.max_request_body_bytes`, never hardcode.
+3. **Errors must be actionable** — include the operation and a remediation hint in `ErrorResponse`.
+4. **CORS is permissive by default** — production deployments must set `XBERG_CORS_ORIGINS`.
+5. **Long work goes to `/extract-async`** — do not block a request thread on a multi-minute extraction.
 
-### MCP Rules
+### MCP
 
-1. **All tools must have timeout** - Prevent hanging on large files (default 5 min)
-2. **Error responses must be detailed** - Include suggestions for missing dependencies
-3. **Feature gates must be checked** - Return helpful message if feature unavailable (embeddings, OCR)
-4. **Resources should be static** - Don't query external services in resource handlers
-5. **Prompts guide agents** - Provide clear examples and best practices
-6. **Batch tools must support cancellation** - Allow agent to stop long-running batch operations
-7. **Logging all tool calls** - Track usage for analytics and debugging
+1. **Register a new tool in `mcp/server.rs` and extend `test_all_tools_are_registered`** — the test is the contract.
+2. **Feature-gate resources the same way `xberg://presets/embeddings` is** — a missing feature must not break `resources/list`.
+3. **Resources are static** — no network or filesystem scans in a resource handler.
+4. **Tools need timeouts** — a hung tool blocks the agent.
 
 ## Related Skills
 
-- **extraction-pipeline-patterns** - Core extraction called by handlers and MCP tools
-- **chunking-embeddings** - Optional chunking/embedding parameters in extraction
-- **ocr-backend-management** - OCR engine selection and image preprocessing
+- **extraction-pipeline-patterns** — the core extraction the handlers and tools call
+- **chunking-embeddings** — optional chunking/embedding parameters
+- **config-loading-precedence** — server-mode precedence and env overrides

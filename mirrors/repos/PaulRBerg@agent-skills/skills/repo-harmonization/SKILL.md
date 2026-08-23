@@ -103,8 +103,6 @@ implemented fixes.
 
 - Deduplicate overlapping observations without discarding the strongest file:line and mechanical evidence.
 - Keep linked but non-identical observations separate when they require different fixes or decisions.
-- Apply the three-way classification to every finding: confirmed drift to fix, true duplication as a single-source
-  candidate, or deliberate or necessary duplication to document without changing.
 - Do not classify an unverified suspicion; return it to research or record it as an open question.
 - Regenerate suspected generated-copy drift through its build-only path and byte-verify the result with a diff.
 - Preserve the generator's inputs and command output needed to reproduce the verification.
@@ -159,9 +157,8 @@ implemented fixes.
   applicable.
 - Attribute an aggregate failure before acting: a failure outside the approved files is concurrent work, not evidence to
   broaden this change.
-- Use `$commit` when available to compose each repository's semantic message after validation; let its `ai-commit`
-  backend handle deterministic transaction, commit, and push mechanics.
-- Pass only task files to `$commit`; never bypass it with `git add -A`, `git commit -a`, stash, or reset.
+- Use `$commit` when available after validation, passing only task files; never bypass it with `git add -A`,
+  `git commit -a`, stash, or reset.
 - Inspect each scoped commit before creating the next so an upstream commit remains independently reversible.
 - Keep commits per repository so their histories, hooks, and publication states remain independently auditable.
 - Rerun every required publish or install flow after its source changes.

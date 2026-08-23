@@ -369,7 +369,6 @@ _Libraries for working with HTTP._
   - [httpx2](https://github.com/pydantic/httpx2) - HTTP/1.1 and HTTP/2 client with sync and async APIs, maintained by Pydantic ([httpx](https://github.com/encode/httpx) fork).
 - URL Manipulation
   - [yarl](https://github.com/aio-libs/yarl) - Yet another URL library.
-  - [httpx.URL](https://www.python-httpx.org/api/) - The immutable URL class bundled with HTTPX.
 
 ### Web Scraping
 
@@ -399,7 +398,7 @@ _Libraries that implement Object-Relational Mapping or data mapping techniques._
 - Relational Databases
   - [sqlalchemy](https://github.com/sqlalchemy/sqlalchemy) - The Python SQL Toolkit and Object Relational Mapper.
     - [awesome-sqlalchemy](https://github.com/dahlia/awesome-sqlalchemy)
-  - [django.db.models](https://github.com/django/django) - The Django [ORM](https://docs.djangoproject.com/en/dev/topics/db/models/).
+  - [django.db.models](https://github.com/django/django) - (part of Django) The Django [ORM](https://docs.djangoproject.com/en/dev/topics/db/models/).
   - [peewee](https://github.com/coleifer/peewee) - A small, expressive ORM.
   - [sqlmodel](https://github.com/fastapi/sqlmodel) - SQLModel is based on Python type annotations, and powered by Pydantic and SQLAlchemy.
 - NoSQL Databases
@@ -531,7 +530,7 @@ _Libraries for geocoding addresses and working with latitudes and longitudes._
 - [geopandas](https://github.com/geopandas/geopandas) - Python tools for geographic data (GeoSeries/GeoDataFrame) built on pandas.
 - [geopy](https://github.com/geopy/geopy) - Python Geocoding Toolbox.
 - [geojson](https://github.com/jazzband/geojson) - Python bindings and utilities for GeoJSON.
-- [geodjango](https://github.com/django/django) - A world-class geographic web framework that is part of [Django](https://docs.djangoproject.com/en/dev/ref/contrib/gis/).
+- [geodjango](https://github.com/django/django) - (part of Django) A world-class [geographic web framework](https://docs.djangoproject.com/en/dev/ref/contrib/gis/).
 
 ### Science
 
@@ -549,6 +548,7 @@ _Libraries for scientific computing. Also see [Python-for-Scientists](https://gi
   - [biopython](https://github.com/biopython/biopython) - Biopython is a set of freely available tools for biological computation.
   - [rdkit](https://github.com/rdkit/rdkit) - Cheminformatics and Machine Learning Software.
 - Physics and Engineering
+  - [pint](https://github.com/hgrecco/pint) - Operate and manipulate physical quantities with units and dimensional analysis.
   - [astropy](https://github.com/astropy/astropy) - A community Python library for Astronomy.
   - [obspy](https://github.com/obspy/obspy) - A Python toolbox for seismology.
 - Simulation and Modeling
@@ -585,6 +585,7 @@ _Python implementation of data structures, algorithms and design patterns. Also 
 - Design Patterns
   - [transitions](https://github.com/pytransitions/transitions) - A lightweight, object-oriented finite state machine implementation.
   - [python-patterns](https://github.com/faif/python-patterns) - A collection of design patterns in Python.
+  - [python-statemachine](https://github.com/fgmacedo/python-statemachine) - Expressive statecharts and finite state machines with a declarative API, in sync and async codebases.
 
 ### Interactive Interpreter
 
@@ -604,6 +605,7 @@ _Tools of static analysis, linters and code quality checkers. Also see [awesome-
   - [vulture](https://github.com/jendrikseipp/vulture) - A tool for finding and analyzing dead Python code.
   - [prospector](https://github.com/prospector-dev/prospector) - A tool to analyze Python code.
   - [repowise](https://github.com/repowise-dev/repowise) - Codebase intelligence that indexes repos into dependency graphs, git history, and auto-generated docs with dead code detection.
+  - [complexipy](https://github.com/rohaquinlop/complexipy) - Cognitive complexity analysis for Python code, written in Rust.
 - Git Hooks
   - [pre-commit](https://github.com/pre-commit/pre-commit) - A framework for managing and maintaining multi-language pre-commit hooks.
 - Linters and Formatters
@@ -693,9 +695,9 @@ _Libraries for generating project documentation._
 - [sphinx](https://github.com/sphinx-doc/sphinx/) - Python Documentation generator.
   - [awesome-sphinxdoc](https://github.com/ygzgxyz/awesome-sphinxdoc)
 - [mkdocs-material](https://github.com/squidfunk/mkdocs-material) - A documentation framework and Material Design theme built on MkDocs.
-- [mkdocs](https://github.com/mkdocs/mkdocs/) - Markdown friendly documentation generator.
 - [diagrams](https://github.com/mingrammer/diagrams) - Diagram as Code.
 - [pdoc](https://github.com/mitmproxy/pdoc) - Epydoc replacement to auto generate API documentation for Python libraries.
+- [zensical](https://github.com/zensical/zensical) - A modern static site generator for technical documentation.
 
 **DevOps**
 
@@ -1115,7 +1117,7 @@ _Frameworks and tools for penetration testing._
 _Tools for auditing dependencies against known vulnerabilities._
 
 - [pip-audit](https://github.com/pypa/pip-audit) - Audits Python environments and dependency trees for known vulnerabilities, using the PyPI Advisory Database and OSV.
-- [uv audit](https://docs.astral.sh/uv/reference/cli/#uv-audit) - uv's built-in dependency vulnerability and malware scanning backed by OSV.
+- [uv-audit](https://github.com/astral-sh/uv) - (part of uv) uv's [dependency vulnerability and malware scanning](https://docs.astral.sh/uv/reference/cli/#uv-audit) backed by OSV.
 
 ### Web Security
 

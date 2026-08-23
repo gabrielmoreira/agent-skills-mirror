@@ -12,10 +12,10 @@ not enable Apocalypse Mode, query the Kiwix catalog, or store article text.
 Open the **☢ Apocalypse Mode** link beside **Support** in the Settings header to
 opt in.
 
-On supported Chromium browsers, local LFM2.5-VL vision is an optional fallback.
+On supported Chromium browsers, WebBrain VL 2 450M is an optional local vision fallback.
 Apocalypse Mode never enables or downloads it. The dedicated **Use local
 fallback** control in **Settings → Multimodal → Vision** checks WebGPU support,
-records explicit consent, and starts caching the approximately 770 MB model
+records explicit consent, and starts caching the approximately 810 MB model
 from Hugging Face. The download continues in the background, but screenshot
 operations report its status and never wait for it. Wikipedia archives still
 require their own confirmation. The local **text** model defaults to LFM2.5

@@ -185,10 +185,10 @@ the stored copies are not separately synced to WebBrain.
 When enabled (Settings → Display → "Record traces"), every agent run is written to an IndexedDB database (`webbrain_traces`):
 
 - **`runs` store**: model, provider, token totals, timestamps, user message, final content
-- **`events` store**: per-step LLM request provenance, model responses, and tool calls with args and results. Request provenance contains counts, controlled prompt/mode labels, and declared prompt/tool policy revisions; it neither duplicates nor fingerprints raw system prompts, message text, tool schemas, or tool names.
+- **`events` store**: per-step LLM request provenance, model responses, and tool calls with args and results. By default, request provenance contains counts, controlled prompt/mode labels, and declared prompt/tool policy revisions; it neither duplicates nor fingerprints raw system prompts, message text, tool schemas, or tool names. Users can explicitly enable the lossless debug tier in Settings → Display; those runs are visibly marked and retain bounded request messages and tool schemas for debugging. Both Markdown and JSON exports mask credential-shaped values for lossless runs before writing a file.
 - **`shots` store**: screenshot blobs
 
-The Traces page (`ui/traces.html`) reads from local IndexedDB only. Export produces a JSON blob saved to the user's Downloads folder. **No trace data ever leaves the browser.**
+The Traces page (`ui/traces.html`) reads from local IndexedDB only. Export produces a JSON blob saved to the user's Downloads folder. **No trace data ever leaves the browser.** Lossless recording is off by default and uses per-request/result bounds; treat a lossless trace as sensitive even though exported credentials are masked.
 
 Each run also records an allowlisted effective runtime snapshot (including mode
 and prompt tier). Trace Markdown surfaces that snapshot and the privacy-safe

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,12 +75,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`apps/skills/core/plannotator-annotate/SKILL.md`](apps/skills/core/plannotator-annotate/SKILL.md) |
 | 15 | ✓ | [`apps/skills/core/plannotator-last/SKILL.md`](apps/skills/core/plannotator-last/SKILL.md) |
 | 16 | ✓ | [`apps/skills/core/plannotator-review/SKILL.md`](apps/skills/core/plannotator-review/SKILL.md) |
-| 17 | ✓ | [`apps/skills/extra/plannotator-compound/SKILL.md`](apps/skills/extra/plannotator-compound/SKILL.md) |
-| 18 | ✓ | [`apps/skills/extra/plannotator-setup-goal/SKILL.md`](apps/skills/extra/plannotator-setup-goal/SKILL.md) |
-| 19 | ✓ | [`apps/skills/extra/plannotator-visual-explainer/SKILL.md`](apps/skills/extra/plannotator-visual-explainer/SKILL.md) |
-| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 21 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 22 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
+| 17 | ✓ | [`apps/skills/core/plannotator/SKILL.md`](apps/skills/core/plannotator/SKILL.md) |
+| 18 | ✓ | [`apps/skills/extra/plannotator-compound/SKILL.md`](apps/skills/extra/plannotator-compound/SKILL.md) |
+| 19 | ✓ | [`apps/skills/extra/plannotator-setup-goal/SKILL.md`](apps/skills/extra/plannotator-setup-goal/SKILL.md) |
+| 20 | ✓ | [`apps/skills/extra/plannotator-visual-explainer/SKILL.md`](apps/skills/extra/plannotator-visual-explainer/SKILL.md) |
+| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 22 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 23 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
 
 ---
 

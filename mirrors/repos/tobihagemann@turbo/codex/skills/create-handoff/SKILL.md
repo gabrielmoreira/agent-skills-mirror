@@ -21,9 +21,11 @@ Pick a slug for the current task:
 
 If the work is anchored to an existing plan at `.turbo/plans/<slug>.md`, reuse that plan's slug verbatim.
 
-The user may pass an explicit slug or path; honor it.
+The user may pass an explicit slug or output path; honor it.
 
-The target path is `.turbo/handoff/<YYYY-MM-DD>-<slug>.md`. If the path already exists, append `-2`, `-3`, etc. until the path is free.
+The target path is `.turbo/handoff/<YYYY-MM-DD>-<slug>.md`. A generated slug takes `-2`, `-3`, and so on until the path is free. When the user supplied the slug or path and it already exists, use `request_user_input` to offer overwrite, a numeric suffix, or a different slug.
+
+When an open decision will outlive the rest of the session's state, still unresolved while the work around it is finished, give it its own handoff. Everything else stays in a single file. Slug the split handoff for that decision rather than appending a collision suffix, and write it to stand alone.
 
 State the chosen path before continuing.
 
@@ -53,10 +55,12 @@ Lead with `# Handoff: <Task Title>`. Cover the items gathered in Step 2 in whate
 
 Keep it dense. Omit anything that has no real content.
 
+When this handoff splits an open decision out of an existing one, add a line to that existing handoff pointing at the new path, and remove the content the new file now carries.
+
 ## Step 4: Confirm
 
 Once the handoff file exists, delete any `.turbo/improvements.md` entry it takes over, as noted in Step 2. Delete the file if no entries remain.
 
-Tell the user where the handoff was written, name any backlog entry deleted, and quote the next-step statement so the path forward is visible at a glance.
+Tell the user where the handoff was written, name any backlog entry deleted and any existing handoff edited to point at a split, and quote the next-step statement so the path forward is visible at a glance.
 
 Then call `update_plan` to mark this step completed and continue with the next step of the active workflow.

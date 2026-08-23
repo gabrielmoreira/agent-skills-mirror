@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadrivenconstruction/DDC_Skills_for_AI_Agents_in_Construction` — 26 default patterns, 0 followed patterns, 221 file(s) materialized.
+Mirror of `datadrivenconstruction/DDC_Skills_for_AI_Agents_in_Construction` — 26 default patterns, 0 followed patterns, 238 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadrivenconstruction/DDC_Skills_for_AI_Agents_in_Construction` — 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 221 |
+| Files         | 238 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -251,35 +251,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 190 | ✓ | [`4_DDC_Curated/Quality-Assurance/continuous-learning/SKILL.md`](4_DDC_Curated/Quality-Assurance/continuous-learning/SKILL.md) |
 | 191 | ✓ | [`4_DDC_Curated/Quality-Assurance/security-review-construction/SKILL.md`](4_DDC_Curated/Quality-Assurance/security-review-construction/SKILL.md) |
 | 192 | ✓ | [`4_DDC_Curated/Quality-Assurance/verification-loop-construction/SKILL.md`](4_DDC_Curated/Quality-Assurance/verification-loop-construction/SKILL.md) |
-| 193 | ✓ | [`5_DDC_Innovative/as-built-documentation/SKILL.md`](5_DDC_Innovative/as-built-documentation/SKILL.md) |
-| 194 | ✓ | [`5_DDC_Innovative/bim-visual-programming-automation/SKILL.md`](5_DDC_Innovative/bim-visual-programming-automation/SKILL.md) |
-| 195 | ✓ | [`5_DDC_Innovative/capacity-planning/SKILL.md`](5_DDC_Innovative/capacity-planning/SKILL.md) |
-| 196 | ✓ | [`5_DDC_Innovative/change-order-analysis/SKILL.md`](5_DDC_Innovative/change-order-analysis/SKILL.md) |
-| 197 | ✓ | [`5_DDC_Innovative/clash-detection-analysis/SKILL.md`](5_DDC_Innovative/clash-detection-analysis/SKILL.md) |
-| 198 | ✓ | [`5_DDC_Innovative/contractor-matching-ai/SKILL.md`](5_DDC_Innovative/contractor-matching-ai/SKILL.md) |
-| 199 | ✓ | [`5_DDC_Innovative/defect-detection-ai/SKILL.md`](5_DDC_Innovative/defect-detection-ai/SKILL.md) |
-| 200 | ✓ | [`5_DDC_Innovative/digital-twin-sync/SKILL.md`](5_DDC_Innovative/digital-twin-sync/SKILL.md) |
-| 201 | ✓ | [`5_DDC_Innovative/document-classification-nlp/SKILL.md`](5_DDC_Innovative/document-classification-nlp/SKILL.md) |
-| 202 | ✓ | [`5_DDC_Innovative/drone-site-survey/SKILL.md`](5_DDC_Innovative/drone-site-survey/SKILL.md) |
-| 203 | ✓ | [`5_DDC_Innovative/energy-simulation/SKILL.md`](5_DDC_Innovative/energy-simulation/SKILL.md) |
-| 204 | ✓ | [`5_DDC_Innovative/enterprise-risk-aggregator/SKILL.md`](5_DDC_Innovative/enterprise-risk-aggregator/SKILL.md) |
-| 205 | ✓ | [`5_DDC_Innovative/environmental-monitoring/SKILL.md`](5_DDC_Innovative/environmental-monitoring/SKILL.md) |
-| 206 | ✓ | [`5_DDC_Innovative/equipment-telematics/SKILL.md`](5_DDC_Innovative/equipment-telematics/SKILL.md) |
-| 207 | ✓ | [`5_DDC_Innovative/ifc-data-extraction/SKILL.md`](5_DDC_Innovative/ifc-data-extraction/SKILL.md) |
-| 208 | ✓ | [`5_DDC_Innovative/labor-productivity-analytics/SKILL.md`](5_DDC_Innovative/labor-productivity-analytics/SKILL.md) |
-| 209 | ✓ | [`5_DDC_Innovative/material-tracking-iot/SKILL.md`](5_DDC_Innovative/material-tracking-iot/SKILL.md) |
-| 210 | ✓ | [`5_DDC_Innovative/n8n-workflow-automation/SKILL.md`](5_DDC_Innovative/n8n-workflow-automation/SKILL.md) |
-| 211 | ✓ | [`5_DDC_Innovative/open-construction-estimate/SKILL.md`](5_DDC_Innovative/open-construction-estimate/SKILL.md) |
-| 212 | ✓ | [`5_DDC_Innovative/permit-tracking-automation/SKILL.md`](5_DDC_Innovative/permit-tracking-automation/SKILL.md) |
-| 213 | ✓ | [`5_DDC_Innovative/portfolio-dashboard/SKILL.md`](5_DDC_Innovative/portfolio-dashboard/SKILL.md) |
-| 214 | ✓ | [`5_DDC_Innovative/prefab-optimization/SKILL.md`](5_DDC_Innovative/prefab-optimization/SKILL.md) |
-| 215 | ✓ | [`5_DDC_Innovative/progress-monitoring-cv/SKILL.md`](5_DDC_Innovative/progress-monitoring-cv/SKILL.md) |
-| 216 | ✓ | [`5_DDC_Innovative/resource-pool-optimizer/SKILL.md`](5_DDC_Innovative/resource-pool-optimizer/SKILL.md) |
-| 217 | ✓ | [`5_DDC_Innovative/risk-assessment-ml/SKILL.md`](5_DDC_Innovative/risk-assessment-ml/SKILL.md) |
-| 218 | ✓ | [`5_DDC_Innovative/safety-compliance-checker/SKILL.md`](5_DDC_Innovative/safety-compliance-checker/SKILL.md) |
-| 219 | ✓ | [`5_DDC_Innovative/sensor-data-aggregator/SKILL.md`](5_DDC_Innovative/sensor-data-aggregator/SKILL.md) |
-| 220 | ✓ | [`5_DDC_Innovative/site-logistics-optimization/SKILL.md`](5_DDC_Innovative/site-logistics-optimization/SKILL.md) |
-| 221 | ✓ | [`5_DDC_Innovative/weather-impact-analysis/SKILL.md`](5_DDC_Innovative/weather-impact-analysis/SKILL.md) |
+| 193 | ✓ | [`5_DDC_Innovative/ai-act-compliance/SKILL.md`](5_DDC_Innovative/ai-act-compliance/SKILL.md) |
+| 194 | ✓ | [`5_DDC_Innovative/ai-agent-orchestration/SKILL.md`](5_DDC_Innovative/ai-agent-orchestration/SKILL.md) |
+| 195 | ✓ | [`5_DDC_Innovative/as-built-documentation/SKILL.md`](5_DDC_Innovative/as-built-documentation/SKILL.md) |
+| 196 | ✓ | [`5_DDC_Innovative/bim-visual-programming-automation/SKILL.md`](5_DDC_Innovative/bim-visual-programming-automation/SKILL.md) |
+| 197 | ✓ | [`5_DDC_Innovative/capacity-planning/SKILL.md`](5_DDC_Innovative/capacity-planning/SKILL.md) |
+| 198 | ✓ | [`5_DDC_Innovative/change-order-analysis/SKILL.md`](5_DDC_Innovative/change-order-analysis/SKILL.md) |
+| 199 | ✓ | [`5_DDC_Innovative/clash-detection-analysis/SKILL.md`](5_DDC_Innovative/clash-detection-analysis/SKILL.md) |
+| 200 | ✓ | [`5_DDC_Innovative/contractor-matching-ai/SKILL.md`](5_DDC_Innovative/contractor-matching-ai/SKILL.md) |
+| 201 | ✓ | [`5_DDC_Innovative/defect-detection-ai/SKILL.md`](5_DDC_Innovative/defect-detection-ai/SKILL.md) |
+| 202 | ✓ | [`5_DDC_Innovative/digital-twin-sync/SKILL.md`](5_DDC_Innovative/digital-twin-sync/SKILL.md) |
+| 203 | ✓ | [`5_DDC_Innovative/document-classification-nlp/SKILL.md`](5_DDC_Innovative/document-classification-nlp/SKILL.md) |
+| 204 | ✓ | [`5_DDC_Innovative/drone-site-survey/SKILL.md`](5_DDC_Innovative/drone-site-survey/SKILL.md) |
+| 205 | ✓ | [`5_DDC_Innovative/embodied-carbon-esg/SKILL.md`](5_DDC_Innovative/embodied-carbon-esg/SKILL.md) |
+| 206 | ✓ | [`5_DDC_Innovative/energy-simulation/SKILL.md`](5_DDC_Innovative/energy-simulation/SKILL.md) |
+| 207 | ✓ | [`5_DDC_Innovative/enterprise-risk-aggregator/SKILL.md`](5_DDC_Innovative/enterprise-risk-aggregator/SKILL.md) |
+| 208 | ✓ | [`5_DDC_Innovative/environmental-monitoring/SKILL.md`](5_DDC_Innovative/environmental-monitoring/SKILL.md) |
+| 209 | ✓ | [`5_DDC_Innovative/equipment-telematics/SKILL.md`](5_DDC_Innovative/equipment-telematics/SKILL.md) |
+| 210 | ✓ | [`5_DDC_Innovative/generative-ai-design/SKILL.md`](5_DDC_Innovative/generative-ai-design/SKILL.md) |
+| 211 | ✓ | [`5_DDC_Innovative/ifc-data-extraction/SKILL.md`](5_DDC_Innovative/ifc-data-extraction/SKILL.md) |
+| 212 | ✓ | [`5_DDC_Innovative/labor-productivity-analytics/SKILL.md`](5_DDC_Innovative/labor-productivity-analytics/SKILL.md) |
+| 213 | ✓ | [`5_DDC_Innovative/material-passports-circular/SKILL.md`](5_DDC_Innovative/material-passports-circular/SKILL.md) |
+| 214 | ✓ | [`5_DDC_Innovative/material-tracking-iot/SKILL.md`](5_DDC_Innovative/material-tracking-iot/SKILL.md) |
+| 215 | ✓ | [`5_DDC_Innovative/n8n-workflow-automation/SKILL.md`](5_DDC_Innovative/n8n-workflow-automation/SKILL.md) |
+| 216 | ✓ | [`5_DDC_Innovative/open-construction-estimate/SKILL.md`](5_DDC_Innovative/open-construction-estimate/SKILL.md) |
+| 217 | ✓ | [`5_DDC_Innovative/permit-tracking-automation/SKILL.md`](5_DDC_Innovative/permit-tracking-automation/SKILL.md) |
+| 218 | ✓ | [`5_DDC_Innovative/portfolio-dashboard/SKILL.md`](5_DDC_Innovative/portfolio-dashboard/SKILL.md) |
+| 219 | ✓ | [`5_DDC_Innovative/prefab-optimization/SKILL.md`](5_DDC_Innovative/prefab-optimization/SKILL.md) |
+| 220 | ✓ | [`5_DDC_Innovative/progress-monitoring-cv/SKILL.md`](5_DDC_Innovative/progress-monitoring-cv/SKILL.md) |
+| 221 | ✓ | [`5_DDC_Innovative/resource-pool-optimizer/SKILL.md`](5_DDC_Innovative/resource-pool-optimizer/SKILL.md) |
+| 222 | ✓ | [`5_DDC_Innovative/risk-assessment-ml/SKILL.md`](5_DDC_Innovative/risk-assessment-ml/SKILL.md) |
+| 223 | ✓ | [`5_DDC_Innovative/safety-compliance-checker/SKILL.md`](5_DDC_Innovative/safety-compliance-checker/SKILL.md) |
+| 224 | ✓ | [`5_DDC_Innovative/sensor-data-aggregator/SKILL.md`](5_DDC_Innovative/sensor-data-aggregator/SKILL.md) |
+| 225 | ✓ | [`5_DDC_Innovative/site-logistics-optimization/SKILL.md`](5_DDC_Innovative/site-logistics-optimization/SKILL.md) |
+| 226 | ✓ | [`5_DDC_Innovative/weather-impact-analysis/SKILL.md`](5_DDC_Innovative/weather-impact-analysis/SKILL.md) |
+| 227 | ✓ | [`6_OpenConstructionERP/oce-bim-takeoff/SKILL.md`](6_OpenConstructionERP/oce-bim-takeoff/SKILL.md) |
+| 228 | ✓ | [`6_OpenConstructionERP/oce-cost-browser/SKILL.md`](6_OpenConstructionERP/oce-cost-browser/SKILL.md) |
+| 229 | ✓ | [`6_OpenConstructionERP/oce-estimate-boq/SKILL.md`](6_OpenConstructionERP/oce-estimate-boq/SKILL.md) |
+| 230 | ✓ | [`6_OpenConstructionERP/oce-field-ops/SKILL.md`](6_OpenConstructionERP/oce-field-ops/SKILL.md) |
+| 231 | ✓ | [`6_OpenConstructionERP/oce-geo-coordination/SKILL.md`](6_OpenConstructionERP/oce-geo-coordination/SKILL.md) |
+| 232 | ✓ | [`6_OpenConstructionERP/oce-load-cost-bases/SKILL.md`](6_OpenConstructionERP/oce-load-cost-bases/SKILL.md) |
+| 233 | ✓ | [`6_OpenConstructionERP/oce-mcp-integration/SKILL.md`](6_OpenConstructionERP/oce-mcp-integration/SKILL.md) |
+| 234 | ✓ | [`6_OpenConstructionERP/oce-platform-overview/SKILL.md`](6_OpenConstructionERP/oce-platform-overview/SKILL.md) |
+| 235 | ✓ | [`6_OpenConstructionERP/oce-property-dev/SKILL.md`](6_OpenConstructionERP/oce-property-dev/SKILL.md) |
+| 236 | ✓ | [`6_OpenConstructionERP/oce-scheduling-4d5d/SKILL.md`](6_OpenConstructionERP/oce-scheduling-4d5d/SKILL.md) |
+| 237 | ✓ | [`6_OpenConstructionERP/oce-tendering/SKILL.md`](6_OpenConstructionERP/oce-tendering/SKILL.md) |
+| 238 | ✓ | [`6_OpenConstructionERP/oce-validation-engine/SKILL.md`](6_OpenConstructionERP/oce-validation-engine/SKILL.md) |
 
 ---
 

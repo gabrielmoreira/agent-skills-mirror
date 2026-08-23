@@ -16,6 +16,15 @@ default) and no extension is connected, Wisp may start the installed
 Chrome/Chromium/Edge so the extension can reconnect. That is still the
 user's profile, not Playwright or Selenium.
 
+**Shared is the default; workspace is not a fallback.** Google Chrome 137
+and later ignore `--load-extension`, so on a machine with only branded
+Chrome the workspace window cannot load the Wisp extension at all.
+`browser_setup {"action":"start_workspace"}` therefore returns only once
+the workspace extension has connected, and otherwise closes the window
+and fails with `WORKSPACE_EXTENSION_BLOCKED`. On that error: relay the
+message, do not retry `start_workspace`, do not claim any workspace page
+was opened or read, and get the shared session working instead.
+
 For figures/code extraction use `web_scan` with `mode: "article"` then
 `web_save_assets`. For ChatGPT web one-shot use `web_agent_send`,
 `web_agent_wait`, `web_agent_read` on an already-logged-in tab.
@@ -32,6 +41,18 @@ current, or URL-specific questions from prior knowledge. Tell the user
 this turn contains no live web retrieval and wait until the popup shows
 *Connected to Wisp*. Only continue from memory if they explicitly ask
 for a knowledge-only answer. Never invent the path.
+
+Two fields say *why* a browser that looks connected is not usable —
+never report a bare "not connected" when either is set:
+
+- `refused_connection` — something reached the bridge port and Wisp
+  refused it (usually a different extension id, or another loopback
+  bridge holding the port). Its popup can still read *Connected to Wisp*.
+  Relay `refused_connection.explanation`.
+- `reload_required` — a connected extension is older than the protocol
+  this build needs. Have the user open `chrome://extensions` and
+  **Reload** Wisp Real Browser Bridge from `extension_path`; Chrome does
+  not auto-update an unpacked extension.
 
 One exception: the user says the extension is already installed. Chrome
 suspends its service worker when idle and reconnects on a one-minute

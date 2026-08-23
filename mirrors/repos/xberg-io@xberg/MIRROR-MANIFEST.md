@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
+Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 48 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 48 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,42 +71,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.ai-rulez/skills/mime-detection-routing/SKILL.md`](.ai-rulez/skills/mime-detection-routing/SKILL.md) |
 | 11 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
 | 12 | ✓ | [`.ai-rulez/skills/release-versioning/SKILL.md`](.ai-rulez/skills/release-versioning/SKILL.md) |
-| 13 | ✓ | [`.ai-rulez/skills/wasm-constraints/SKILL.md`](.ai-rulez/skills/wasm-constraints/SKILL.md) |
-| 14 | ✓ | [`plugin/.ai-rulez/skills/batch-extraction/SKILL.md`](plugin/.ai-rulez/skills/batch-extraction/SKILL.md) |
-| 15 | ✓ | [`plugin/.ai-rulez/skills/chunking/SKILL.md`](plugin/.ai-rulez/skills/chunking/SKILL.md) |
-| 16 | ✓ | [`plugin/.ai-rulez/skills/extracting-keywords/SKILL.md`](plugin/.ai-rulez/skills/extracting-keywords/SKILL.md) |
-| 17 | ✓ | [`plugin/.ai-rulez/skills/extracting-tables/SKILL.md`](plugin/.ai-rulez/skills/extracting-tables/SKILL.md) |
-| 18 | ✓ | [`plugin/.ai-rulez/skills/extracting-with-ocr/SKILL.md`](plugin/.ai-rulez/skills/extracting-with-ocr/SKILL.md) |
-| 19 | ✓ | [`plugin/.ai-rulez/skills/picking-a-format/SKILL.md`](plugin/.ai-rulez/skills/picking-a-format/SKILL.md) |
-| 20 | ✓ | [`plugin/.ai-rulez/skills/xberg/SKILL.md`](plugin/.ai-rulez/skills/xberg/SKILL.md) |
-| 21 | ✓ | [`plugin/.cursor-plugin/skills/batch-extraction/SKILL.md`](plugin/.cursor-plugin/skills/batch-extraction/SKILL.md) |
-| 22 | ✓ | [`plugin/.cursor-plugin/skills/chunking/SKILL.md`](plugin/.cursor-plugin/skills/chunking/SKILL.md) |
-| 23 | ✓ | [`plugin/.cursor-plugin/skills/extracting-keywords/SKILL.md`](plugin/.cursor-plugin/skills/extracting-keywords/SKILL.md) |
-| 24 | ✓ | [`plugin/.cursor-plugin/skills/extracting-tables/SKILL.md`](plugin/.cursor-plugin/skills/extracting-tables/SKILL.md) |
-| 25 | ✓ | [`plugin/.cursor-plugin/skills/extracting-with-ocr/SKILL.md`](plugin/.cursor-plugin/skills/extracting-with-ocr/SKILL.md) |
-| 26 | ✓ | [`plugin/.cursor-plugin/skills/picking-a-format/SKILL.md`](plugin/.cursor-plugin/skills/picking-a-format/SKILL.md) |
-| 27 | ✓ | [`plugin/.cursor-plugin/skills/xberg/SKILL.md`](plugin/.cursor-plugin/skills/xberg/SKILL.md) |
-| 28 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/batch-extraction/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/batch-extraction/SKILL.md) |
-| 29 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/chunking/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/chunking/SKILL.md) |
-| 30 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-keywords/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-keywords/SKILL.md) |
-| 31 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-tables/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-tables/SKILL.md) |
-| 32 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-with-ocr/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-with-ocr/SKILL.md) |
-| 33 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/picking-a-format/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/picking-a-format/SKILL.md) |
-| 34 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/xberg/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/xberg/SKILL.md) |
-| 35 | ✓ | [`plugin/.hermes/plugins/xberg/skills/batch-extraction/SKILL.md`](plugin/.hermes/plugins/xberg/skills/batch-extraction/SKILL.md) |
-| 36 | ✓ | [`plugin/.hermes/plugins/xberg/skills/chunking/SKILL.md`](plugin/.hermes/plugins/xberg/skills/chunking/SKILL.md) |
-| 37 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-keywords/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-keywords/SKILL.md) |
-| 38 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-tables/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-tables/SKILL.md) |
-| 39 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-with-ocr/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-with-ocr/SKILL.md) |
-| 40 | ✓ | [`plugin/.hermes/plugins/xberg/skills/picking-a-format/SKILL.md`](plugin/.hermes/plugins/xberg/skills/picking-a-format/SKILL.md) |
-| 41 | ✓ | [`plugin/.hermes/plugins/xberg/skills/xberg/SKILL.md`](plugin/.hermes/plugins/xberg/skills/xberg/SKILL.md) |
-| 42 | ✓ | [`plugin/skills/batch-extraction/SKILL.md`](plugin/skills/batch-extraction/SKILL.md) |
-| 43 | ✓ | [`plugin/skills/chunking/SKILL.md`](plugin/skills/chunking/SKILL.md) |
-| 44 | ✓ | [`plugin/skills/extracting-keywords/SKILL.md`](plugin/skills/extracting-keywords/SKILL.md) |
-| 45 | ✓ | [`plugin/skills/extracting-tables/SKILL.md`](plugin/skills/extracting-tables/SKILL.md) |
-| 46 | ✓ | [`plugin/skills/extracting-with-ocr/SKILL.md`](plugin/skills/extracting-with-ocr/SKILL.md) |
-| 47 | ✓ | [`plugin/skills/picking-a-format/SKILL.md`](plugin/skills/picking-a-format/SKILL.md) |
-| 48 | ✓ | [`plugin/skills/xberg/SKILL.md`](plugin/skills/xberg/SKILL.md) |
+| 13 | ✓ | [`.ai-rulez/skills/test-corpus/SKILL.md`](.ai-rulez/skills/test-corpus/SKILL.md) |
+| 14 | ✓ | [`.ai-rulez/skills/wasm-constraints/SKILL.md`](.ai-rulez/skills/wasm-constraints/SKILL.md) |
+| 15 | ✓ | [`plugin/.ai-rulez/skills/batch-extraction/SKILL.md`](plugin/.ai-rulez/skills/batch-extraction/SKILL.md) |
+| 16 | ✓ | [`plugin/.ai-rulez/skills/chunking/SKILL.md`](plugin/.ai-rulez/skills/chunking/SKILL.md) |
+| 17 | ✓ | [`plugin/.ai-rulez/skills/extracting-keywords/SKILL.md`](plugin/.ai-rulez/skills/extracting-keywords/SKILL.md) |
+| 18 | ✓ | [`plugin/.ai-rulez/skills/extracting-tables/SKILL.md`](plugin/.ai-rulez/skills/extracting-tables/SKILL.md) |
+| 19 | ✓ | [`plugin/.ai-rulez/skills/extracting-with-ocr/SKILL.md`](plugin/.ai-rulez/skills/extracting-with-ocr/SKILL.md) |
+| 20 | ✓ | [`plugin/.ai-rulez/skills/picking-a-format/SKILL.md`](plugin/.ai-rulez/skills/picking-a-format/SKILL.md) |
+| 21 | ✓ | [`plugin/.ai-rulez/skills/xberg/SKILL.md`](plugin/.ai-rulez/skills/xberg/SKILL.md) |
+| 22 | ✓ | [`plugin/.cursor-plugin/skills/batch-extraction/SKILL.md`](plugin/.cursor-plugin/skills/batch-extraction/SKILL.md) |
+| 23 | ✓ | [`plugin/.cursor-plugin/skills/chunking/SKILL.md`](plugin/.cursor-plugin/skills/chunking/SKILL.md) |
+| 24 | ✓ | [`plugin/.cursor-plugin/skills/extracting-keywords/SKILL.md`](plugin/.cursor-plugin/skills/extracting-keywords/SKILL.md) |
+| 25 | ✓ | [`plugin/.cursor-plugin/skills/extracting-tables/SKILL.md`](plugin/.cursor-plugin/skills/extracting-tables/SKILL.md) |
+| 26 | ✓ | [`plugin/.cursor-plugin/skills/extracting-with-ocr/SKILL.md`](plugin/.cursor-plugin/skills/extracting-with-ocr/SKILL.md) |
+| 27 | ✓ | [`plugin/.cursor-plugin/skills/picking-a-format/SKILL.md`](plugin/.cursor-plugin/skills/picking-a-format/SKILL.md) |
+| 28 | ✓ | [`plugin/.cursor-plugin/skills/xberg/SKILL.md`](plugin/.cursor-plugin/skills/xberg/SKILL.md) |
+| 29 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/batch-extraction/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/batch-extraction/SKILL.md) |
+| 30 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/chunking/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/chunking/SKILL.md) |
+| 31 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-keywords/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-keywords/SKILL.md) |
+| 32 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-tables/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-tables/SKILL.md) |
+| 33 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-with-ocr/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/extracting-with-ocr/SKILL.md) |
+| 34 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/picking-a-format/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/picking-a-format/SKILL.md) |
+| 35 | ✓ | [`plugin/.hermes/package/src/xberg_hermes_plugin/skills/xberg/SKILL.md`](plugin/.hermes/package/src/xberg_hermes_plugin/skills/xberg/SKILL.md) |
+| 36 | ✓ | [`plugin/.hermes/plugins/xberg/skills/batch-extraction/SKILL.md`](plugin/.hermes/plugins/xberg/skills/batch-extraction/SKILL.md) |
+| 37 | ✓ | [`plugin/.hermes/plugins/xberg/skills/chunking/SKILL.md`](plugin/.hermes/plugins/xberg/skills/chunking/SKILL.md) |
+| 38 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-keywords/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-keywords/SKILL.md) |
+| 39 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-tables/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-tables/SKILL.md) |
+| 40 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-with-ocr/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-with-ocr/SKILL.md) |
+| 41 | ✓ | [`plugin/.hermes/plugins/xberg/skills/picking-a-format/SKILL.md`](plugin/.hermes/plugins/xberg/skills/picking-a-format/SKILL.md) |
+| 42 | ✓ | [`plugin/.hermes/plugins/xberg/skills/xberg/SKILL.md`](plugin/.hermes/plugins/xberg/skills/xberg/SKILL.md) |
+| 43 | ✓ | [`plugin/skills/batch-extraction/SKILL.md`](plugin/skills/batch-extraction/SKILL.md) |
+| 44 | ✓ | [`plugin/skills/chunking/SKILL.md`](plugin/skills/chunking/SKILL.md) |
+| 45 | ✓ | [`plugin/skills/extracting-keywords/SKILL.md`](plugin/skills/extracting-keywords/SKILL.md) |
+| 46 | ✓ | [`plugin/skills/extracting-tables/SKILL.md`](plugin/skills/extracting-tables/SKILL.md) |
+| 47 | ✓ | [`plugin/skills/extracting-with-ocr/SKILL.md`](plugin/skills/extracting-with-ocr/SKILL.md) |
+| 48 | ✓ | [`plugin/skills/picking-a-format/SKILL.md`](plugin/skills/picking-a-format/SKILL.md) |
+| 49 | ✓ | [`plugin/skills/xberg/SKILL.md`](plugin/skills/xberg/SKILL.md) |
 
 ---
 

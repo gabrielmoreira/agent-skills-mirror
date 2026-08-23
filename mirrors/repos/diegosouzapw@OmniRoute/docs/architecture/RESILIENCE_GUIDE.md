@@ -448,14 +448,14 @@ classification rules pick the fallback `reason` and lock `scope`
 Classification rules only see full error **text** (needed to match body
 markers like `额度不足`) for providers listed in the `FULL_TEXT_RULE_PROVIDERS`
 allowlist in `providerErrorRules.ts` — currently only `"agentrouter"`. For
-every other provider, `checkFallbackError` hands `getProviderErrorRuleMatch`
-only the structured error (`{code, type}`), which is enough for
-header/status/code-based rules but blind to body-text markers. The helper
-`resolveRuleMatchBody()` performs this selection: full error text for
-allowlisted providers, the structured error otherwise. Adding a provider to
-`FULL_TEXT_RULE_PROVIDERS` is an explicit per-provider opt-in — it exists so
-that the default path for every provider not on the list stays
-byte-for-byte unchanged.
+every other **built-in catalog** provider, `checkFallbackError` hands
+`getProviderErrorRuleMatch` only the structured error (`{code, type}`), which
+is enough for header/status/code-based rules but blind to body-text markers.
+The helper `resolveRuleMatchBody()` performs this selection: full error text
+for allowlisted providers, the structured error otherwise. Adding a
+**built-in** provider to `FULL_TEXT_RULE_PROVIDERS` is an explicit per-provider
+opt-in — it exists so that the default path for every provider not on the
+list stays byte-for-byte unchanged.
 
 A rule's `scope` (`model` / `provider` / `connection`) is a separate opt-in
 from `FULL_TEXT_RULE_PROVIDERS`: `checkFallbackError` only surfaces it as
@@ -465,6 +465,31 @@ anything other than an informational label, for providers in the
 honorsRuleLockScope()` — today only `"agentrouter"`). See "Restated quota
 errors" above for what a `scope: "connection"` match actually does once a
 provider is on that allowlist.
+
+**#11104 — operator-declared rules bypass both allowlists.** An operator can
+declare a per-provider rule at runtime via `settings.providerErrorRules`
+(`open-sse/config/providerErrorRules.ts::setOperatorProviderErrorRules`)
+without editing this file. Gating an operator rule behind
+`FULL_TEXT_RULE_PROVIDERS`/`HONORS_RULE_LOCK_SCOPE_PROVIDERS` — allowlists
+meant to protect the **default** behavior of built-in catalog rules — would
+make the settings mechanism inert for every provider except the ones already
+listed there, since declaring the rule is already the operator's explicit
+opt-in. `resolveRuleMatchBody()` and `honorsRuleLockScope()` both check
+`hasOperatorRuleForProvider()` first: a provider with an operator rule gets
+the raw error text and has its declared `scope` honored, regardless of
+whether it also appears in either allowlist.
+
+**Known gap — `providerRuleRegistry` is never consulted for HTTP 400.**
+`checkFallbackError`'s `BAD_REQUEST` branch classifies status 400 entirely
+through its own pattern arrays (`MODEL_ACCESS_DENIED_PATTERNS`,
+`CONTEXT_OVERFLOW_PATTERNS`, etc. in `accountFallback.ts`) and returns before
+the `configuredRule`/`getProviderErrorRuleMatch` branch above it is reached.
+A built-in catalog rule (or an operator rule) with `status: 400` is
+syntactically valid but will never fire. No existing rule targets 400 today,
+so nothing in production is affected — but a future 400 rule needs this
+branch touched first, which is a larger change than adding a rule (it
+reclassifies 400 for every provider already relying on the pattern-array
+behavior) and is out of scope for a single-provider rule addition.
 
 ### Adding a new quota-misstating gateway
 

@@ -8,62 +8,73 @@ priority: critical
 
 ## Plugin Types
 
-| Type               | Trait                       | Location                     |
-| ------------------ | --------------------------- | ---------------------------- |
-| Document Extractor | `DocumentExtractor: Plugin` | `plugins/extractor/trait.rs` |
-| OCR Backend        | `OcrBackend: Plugin`        | `plugins/ocr/trait.rs`       |
-| Post Processor     | `PostProcessor: Plugin`     | `plugins/processor/trait.rs` |
-| Validator          | `Validator: Plugin`         | `plugins/validator/trait.rs` |
+| Type | Trait | Location |
+| --- | --- | --- |
+| Document extractor (binding-facing) | `DocumentExtractor: Plugin` | `plugins/extractor/trait.rs` |
+| Document extractor (in-crate) | `InternalDocumentExtractor: Plugin` | `plugins/extractor/trait.rs` |
+| OCR backend | `OcrBackend: Plugin` | `plugins/ocr.rs` (a file, not a directory) |
+| Post processor | `PostProcessor: Plugin` | `plugins/processor/trait.rs` |
+| Validator | `Validator: Plugin` | `plugins/validator/trait.rs` |
+| Embedding backend | `EmbeddingBackend: Plugin` | `plugins/embedding.rs` |
+| Reranker backend | `RerankerBackend: Plugin` | `plugins/reranker.rs` |
+| Tokenizer backend | `TokenizerBackend: Plugin` | `plugins/tokenizer.rs` |
+| Renderer | `Renderer: Plugin` | `plugins/renderer.rs` |
 
-## DocumentExtractor Implementation
+`Plugin` (`plugins/traits.rs`) is `Send + Sync` and requires `name()`; `version()`,
+`initialize()`, `shutdown()`, `description()`, `author()` have defaults.
+
+## Native Rust extractors implement `InternalDocumentExtractor`
+
+`DocumentExtractor` is the binding-facing surface. In-crate extractors implement
+`InternalDocumentExtractor` and get `DocumentExtractor` from a blanket impl. Implementing
+`DocumentExtractor` directly in this crate is the wrong layer.
 
 ```rust
-use crate::plugins::{DocumentExtractor, Plugin};
-use async_trait::async_trait;
-
-pub struct MyExtractor;
-
-impl Plugin for MyExtractor {
-    fn name(&self) -> &str { "my-extractor" }
-    fn version(&self) -> String { env!("CARGO_PKG_VERSION").to_string() }
-}
-
-#[async_trait]
-impl DocumentExtractor for MyExtractor {
-    async fn extract(&self, input: ExtractInput, config: &ExtractionConfig)
-        -> Result<ExtractedDocument> { /* ... */ }
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
+impl InternalDocumentExtractor for MyExtractor {
+    async fn extract_content(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig)
+        -> Result<InternalDocument> { /* ... */ }
 
     fn supported_mime_types(&self) -> &[&str] { &["application/x-custom"] }
     fn priority(&self) -> i32 { 50 }
-
-    // WASM support (optional)
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> { None }
 }
 ```
 
+`extract_path` has a default that reads the file and delegates to `extract_content` (and
+errors without `tokio-runtime`).
+
+Always use the two-arm `cfg_attr` form for `async_trait`. A bare `#[async_trait]` does not
+match the trait declaration on `wasm32`.
+
+The public trait has exactly four items — `extract`, `supported_mime_types`, `priority`,
+`can_handle`. There is no `as_sync_extractor`; writing one is a compile error. WASM sync
+support is the separate `SyncExtractor` trait — see `wasm-constraints`.
+
 ## Priority System
 
-| Range  | Use                       |
-| ------ | ------------------------- |
-| 0-25   | Fallback/low-quality      |
-| 26-49  | Alternative extractors    |
-| **50** | **Default (built-in)**    |
-| 51-75  | Premium/enhanced          |
+| Range | Use |
+| --- | --- |
+| 0-25 | Fallback/low-quality |
+| 26-49 | Alternative extractors |
+| **50** | **Default (built-in)** |
+| 51-75 | Premium/enhanced |
 | 76-100 | Specialized/high-priority |
 
-Registry selects **highest priority** extractor for each MIME type. Override built-ins with priority > 50.
+The registry selects the **highest priority** extractor for each MIME type — registration
+order is irrelevant. Override a built-in with priority > 50.
 
 ## Registration
 
 ```rust
-// In extractors/mod.rs → register_default_extractors()
+// crates/xberg/src/extractors/mod.rs -> register_default_extractors()
 let registry = get_document_extractor_registry();
 let mut registry = registry.write()
     .map_err(|e| XbergError::Other(format!("Registry lock poisoned: {}", e)))?;
 registry.register(Arc::new(MyExtractor::new()))?;
 ```
 
-## Feature-Gated Registration
+Feature-gate optional formats:
 
 ```rust
 #[cfg(feature = "office")]
@@ -76,22 +87,28 @@ registry.register(Arc::new(MyExtractor::new()))?;
 ## PostProcessor Pattern
 
 ```rust
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 impl PostProcessor for MyProcessor {
-    async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
+    async fn process(&self, result: &mut ExtractedDocument, config: &ExtractionConfig)
         -> Result<()> {
         result.content = process_content(&result.content);
         Ok(())
     }
-    fn stage(&self) -> ProcessorStage { ProcessorStage::Middle }
+    fn processing_stage(&self) -> ProcessingStage { ProcessingStage::Middle }
 }
 ```
 
-Stages: `Early` → `Middle` → `Late`. Failures isolated (don't block others).
+The enum is `ProcessingStage` and the accessor is `processing_stage()`. Stages:
+`Early` (default) → `Middle` → `Late`. `process` takes `&mut ExtractedDocument`, not an owned
+result.
 
 ## Critical Rules
 
-1. All plugins **MUST be `Send + Sync`**
-2. Feature gate with `#[cfg(feature = "...")]` for optional formats
-3. Use `#[async_trait]` for `DocumentExtractor`
-4. Initialization via `ensure_initialized()` (lazy, called before first extraction)
-5. Plugin names: kebab-case (e.g., `"pdf-extractor"`)
+1. All plugins **MUST be `Send + Sync`** — `Plugin` requires it.
+2. In-crate extractors implement `InternalDocumentExtractor`, never `DocumentExtractor`.
+3. Use the two-arm `cfg_attr` `async_trait` form on every plugin trait impl.
+4. Feature-gate optional formats with `#[cfg(feature = "...")]` at the registration site.
+5. Initialization is lazy via `ensure_initialized()` (`extractors/mod.rs`), called before first extraction.
+6. Plugin names are kebab-case (e.g. `"pdf-extractor"`).
+7. A new extractor struct needs `#[cfg_attr(alef, alef(skip))]` or the binding regen aborts — see `alef-generated-bindings`.

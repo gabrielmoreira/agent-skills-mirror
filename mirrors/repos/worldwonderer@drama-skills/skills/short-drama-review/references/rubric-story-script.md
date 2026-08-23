@@ -24,9 +24,27 @@
 - What pressure is active at the opening?
 - What does the protagonist want now, and what resists it?
 - Which choice/action causes the directional turn?
+- Until that choice is made, what live value does each direction still protect, and
+  what visible cost remains after the rejected direction closes (`SCR-13`)?
+- Does the choice close only the incompatible path, or manufacture depth by throwing
+  away a separate benefit the character could realistically keep?
+- Compared with the rejected path, which exit-state loss was newly caused or worsened
+  by the choice? A loss already inevitable before the choice is pressure, not its cost.
+- Could a viewer identify those stakes from the screenplay alone, without access to
+  the upstream brief or episode card?
+- Were the choice cost and deadline established before the choice was triggered, or
+  invented at decision time by a convenient message, broadcast, or new rule?
 - What part of the promised experience is delivered before the outgoing hook?
 - What exact state enters the next episode?
 - Before the outgoing hook, what local dramatic result has already landed?
+- Which established relationship object, form of address, or repeated action carries the
+  protagonist's private reason for the choice, rather than merely decorating backstory?
+- Does the outgoing hook arise from the choice, an opponent's response, or a changed
+  established object? An ambient sound counts only when it changes knowledge or next action.
+- Can the reviewer trace a closing chain from local result, through a live path being
+  closed, to a new cost, relationship response, fact, or forced next action?
+- After that cost lands, do cleanup or helping beats accidentally reopen the path the
+  screenplay just claimed was lost?
 - Whose choice caused that result (`STY-13`)? If it arrived by outside force, cite the
   protagonist's earlier action that made it arrive now, and what they did with it.
   A protagonist who only endures until rescue is this episode's audience, not its lead.
@@ -78,6 +96,13 @@ What is reportable:
 - Do world truth, character beliefs, and audience knowledge remain separate?
 - For each evidence carrier, what claim does it directly support, and which identity,
   cause, motive, or mechanism remains an unresolved inference (`STY-15`)?
+- Is the evidence visibly tested before belief changes, and is the response limited to
+  what was actually proven (`SCR-14`)?
+- What is the strongest ordinary counter-explanation available in the scene, and does
+  the screenplay name what visible result would differ if it were true? Does the test
+  make that prediction fail? If not, does the character explicitly narrow the conclusion?
+- If proof depends on an object remaining attached, sealed, untouched, or in place, does
+  that state survive every preceding action, or was it already broken and recreated?
 - Does active serial memory preserve character/relationship state, information
   permissions, setup debt, rhythm direction, and the exact physical handoff?
 - Do external pressure and emotional load rise, fall, or diverge for a reason?
@@ -107,6 +132,25 @@ when nothing changes.
 - Are exact on-screen text, prop text, SFX, VO/OS, and transitions tagged?
 - Does prose avoid camera/prompt boilerplate while retaining production-critical
   facts?
+- Does each speaking supporting character use their own judgment or action to change the
+  obstacle, choice, evidence, or result, rather than serving only as a timer or exposition source?
+- Does any explicit countdown fit the stated movement, repair, verification, login,
+  upload, or speech chain? If not, where does the character narrow the goal, change
+  method, use an established resource, or accept failure (`SCR-16`)?
+- Are timestamps, whole-minute sounds, and spoken countdowns strictly monotonic?
+- Are relative dates checked against a live current source, rather than inferred solely
+  from a stopped calendar, expired notice, or historical seal?
+- Does a compressed technical sequence retain diagnosis, resistance, changed method
+  or collaboration, and a visible result—or merely list interchangeable operations?
+- Does one primary timing carrier and one continuous decisive test do the work, or are
+  clock, system time, spoken countdown, broadcast, reversal, and explanation stacked?
+- Does narrowing the objective still confront the established obstacle, or erase it with
+  a newly invented removable store, backup, login state, or perfectly compatible device?
+- After a mechanism becomes visually clear, does dialogue change the relationship or
+  narrow the claim instead of explaining the same mechanism again?
+- When the brief gives a target duration but the project has no pacing rates, has the
+  writer still performed a real-time read/action pass and removed obviously excessive
+  repeated verification, date exposition, or equivalent closing beats?
 
 ## Dialogue
 
@@ -162,3 +206,23 @@ the benefit is not, and the mark exists precisely so the strong version can stay
 - generic emotion adjectives replace visible performance;
 - every character explains the plot in the same voice;
 - downstream production requirement was never marked in screenplay truth.
+- a redundant `[连续性]` tag repeats an exit state already explicit in the final action;
+- an ending prop, container, key, or money position appears without a prior transition;
+- a generic horn, thunderclap, or black frame replaces a more specific available story action.
+- a one-use sentimental prop signals backstory but never participates in the present choice;
+- the outgoing hook is atmospheric but causally detached from the action that just occurred;
+- the last beat merely restates the chosen destination or stores a keepsake without changing
+  knowledge, an available path, risk, or relationship;
+- a supposed choice has one option declared useless before the character acts;
+- one clue makes a character accept identity, motive, cause, and full truth at once;
+- a test claims continuity, sealing, or untouched placement after a character has already
+  detached, opened, removed, or reinserted the evidence;
+- a local payoff erases its cost or ends by explaining the theme in a slogan (`SCR-15`);
+- a countdown succeeds only because complex physical or technical steps become instant.
+- an already inevitable loss is presented again as the price of the protagonist's choice;
+- a malfunctioning object conveniently revives at the moment of hesitation and supplies the choice trigger;
+- an unseeded storage, backup, login, or compatibility fact removes the central obstacle;
+- temporary access or a limited evidentiary result is later renamed as full repair or full truth;
+- a stopped or historical date display is treated as sufficient proof of the current day;
+- redundant clocks, spoken counts, broadcasts, or repeated test operations restate one pressure;
+- post-payoff cleanup makes a supposedly missed moving, evacuation, or closing window look recoverable.

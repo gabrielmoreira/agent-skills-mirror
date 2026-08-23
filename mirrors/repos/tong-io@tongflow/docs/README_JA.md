@@ -283,6 +283,21 @@ docker compose up -d
 
 あらかじめ読み込まれたサンプルをノードごとに実行することも、実行モードに切り替えて実行ボタンをクリックし、一括で実行することもできます。
 
+## 自分のエージェントに組み込む（dsh プラグイン）
+
+TongFlow は [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) のプラグインとして、**自分のエージェントの中で動かす**こともできます。デスクトップアプリも、自前のサーバーも要りません：
+
+```sh
+npx @deepseek-ai/dsh@next plugin --profile web add dsh-tongflow
+npx @deepseek-ai/dsh@next web
+```
+
+あとは、**最初のメッセージを `@tongflow` で始めて**セッションを開くだけです。そのセッションが Studio に変わり——チャット、プロジェクトのフォルダツリー、プレビュー / エディタ / キャンバス、実行履歴のドロワー——エージェントは TongFlow のツール一式を使えるようになります。ほかのセッションはこれまでどおりの dsh のままです。
+
+役割がはっきり分かれているのがポイントです。エージェントはプロジェクトを設計し、計画・設定・プロンプトをふつうのファイルとして書きます。生成を担うのは TongFlow で、生成物はすべて、その隣に置かれた `.tongflow.json` ワークフローから生まれます——だからキャンバスで開いて、手を入れて、もう一度実行できます。「画像を生成する」ようなツールも、プロジェクトのテンプレートもありません。プラグインは初回利用時に自前の Python venv を用意し、公式プラグインをクローンするので、キャンバスで選べるノードとプラグインはホスト版と同じです。
+
+動作要件と設定項目は **[packages/dsh-tongflow/README.md](../packages/dsh-tongflow/README.md)** を参照してください。
+
 ## カスタムプラグイン
 
 キャンバス上で動作するすべてのノードの背後には、**契約**——ABI（[`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json)）があります。これは「どんな能力があるか」と「各能力の入出力がどんな形か」を定義し、「誰が実装するか」とは無関係です。プラグインとは小さなPythonパッケージで、ABI の中の1つまたは複数のスロットを選び、tongflow Python SDK を使って、ABI から生成された型で**どう実装するか**の部分を提供します。

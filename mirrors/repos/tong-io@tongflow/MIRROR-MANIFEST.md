@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tong-io/tongflow` — 26 default patterns, 9 followed patterns, 12 file(s) materialized.
+Mirror of `tong-io/tongflow` — 26 default patterns, 10 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 9 followed patterns, 12 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
+| Followed pats | 10 |
 | Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -59,6 +59,7 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 9 followed patterns, 12 fi
 - `sdk/README.md`
 - `desktop/README.md`
 - `CHANGELOG.md`
+- `packages/dsh-tongflow/README.md`
 - `COMMERCIAL-LICENSE.md`
 
 ## File Index
@@ -68,15 +69,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
-| 3 | ✓ | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
-| 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 5 | → | [`CLA.md`](CLA.md) |
-| 6 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
-| 7 | → | [`desktop/README.md`](desktop/README.md) |
-| 8 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 9 | → | [`docs/README_JA.md`](docs/README_JA.md) |
-| 10 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
+| 2 | ✓ | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
+| 3 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 4 | → | [`CLA.md`](CLA.md) |
+| 5 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
+| 6 | → | [`desktop/README.md`](desktop/README.md) |
+| 7 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 8 | → | [`docs/README_JA.md`](docs/README_JA.md) |
+| 9 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
+| 10 | → | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
 | 11 | → | [`README.md`](README.md) |
 | 12 | → | [`sdk/README.md`](sdk/README.md) |
 

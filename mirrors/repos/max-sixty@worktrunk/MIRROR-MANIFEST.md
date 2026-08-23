@@ -69,7 +69,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 9 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 | 10 | ✓ | [`docs/demos/CLAUDE.md`](docs/demos/CLAUDE.md) |
-| 11 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
+| 11 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
 | 12 | ✓ | [`plugins/worktrunk/CLAUDE.md`](plugins/worktrunk/CLAUDE.md) |
 | 13 | ✓ | [`plugins/worktrunk/skills/worktrunk/SKILL.md`](plugins/worktrunk/skills/worktrunk/SKILL.md) |
 | 14 | ✓ | [`plugins/worktrunk/skills/wt-switch-create/SKILL.md`](plugins/worktrunk/skills/wt-switch-create/SKILL.md) |

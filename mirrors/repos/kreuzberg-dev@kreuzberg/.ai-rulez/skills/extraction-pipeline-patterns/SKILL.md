@@ -6,121 +6,90 @@ priority: critical
 
 # Extraction Pipeline Patterns
 
-**Xberg's format detection -> extraction -> fallback orchestration for 75+ file formats**
+**Format detection → extractor routing → post-processing, across 100 formats / 120 file extensions**
 
-## Core Pipeline Architecture
+The counts are asserted in-tree by
+`crates/xberg/src/core/mime.rs::tests::format_and_extension_counts_match_the_published_headline`
+(`PUBLISHED_FORMATS = 100`, `PUBLISHED_EXTENSIONS = 120`). Cite that test rather than copying
+the number, and update it when `FORMATS` changes.
 
-The extraction pipeline (`crates/xberg/src/core/pipeline.rs`, `crates/xberg/src/extraction/`) orchestrates:
+## Layout
 
-1. **Format Detection** - MIME type inference + extension validation -> select appropriate extractor
-2. **Intelligent Extraction** - Route to format-specific extractors (PDF, DOCX, Excel, HTML, images, archives, etc.)
-3. **Fallback Strategies** - Password-protected PDFs, OCR for images, nested archive handling, corrupted file recovery
-4. **Post-Processing Pipeline** - Validators, quality processing, chunking, custom hooks (see `core/pipeline.rs`)
+- `crates/xberg/src/core/pipeline/` — orchestration (`mod.rs`, `cache.rs`, `execution.rs`,
+  `features.rs`, `format.rs`, `initialization.rs`, `page_markers.rs`)
+- `crates/xberg/src/core/mime.rs`, `core/formats.rs` — detection and the `FORMATS` registry
+- `crates/xberg/src/extractors/` — one module per format, each implementing
+  `InternalDocumentExtractor`
+- `crates/xberg/src/extraction/` — shared parsing/rendering helpers used by those extractors
+- `crates/xberg/src/core/config/`, `core/config_validation/` — both directories, not files
 
-## Format Detection Strategy
+## Flow
 
-**Location**: `crates/xberg/src/core/mime.rs`, `crates/xberg/src/core/formats.rs`
+1. **Detect** — MIME from extension via `EXT_TO_MIME`, or from bytes via
+   `detect_mime_type_from_bytes`; validate against `SUPPORTED_MIME_TYPES`.
+2. **Route** — registry returns the highest-`priority()` extractor registered for that MIME.
+3. **Extract** — the extractor produces an `InternalDocument`.
+4. **Post-process** — `core::pipeline::run_pipeline(doc, config)` (async) or
+   `run_pipeline_sync` (WASM) runs validators, quality processing, chunking and hooks, and
+   returns `ExtractedDocument`. Every extraction path goes through it.
 
-Pattern: detect via magic bytes, validate extension alignment (prevent spoofing), route to extractor. Multiple extractors for same format -> choose highest confidence/specificity.
+## Extractor modules
 
-```rust
-// Pseudocode: core/mime.rs
-match (magic_bytes(content), extension) {
-    (Some(fmt), Some(ext)) if aligned -> Ok(fmt),
-    (Some(fmt), Some(ext)) if misaligned -> Err(FormatMismatch),
-    (Some(fmt), None) -> Ok(fmt),  // magic bytes only
-    (None, Some(ext)) -> Ok(from_extension(ext)),
-    _ -> Err(UnknownFormat),
-}
-```
+| Category | Extractors | Modules |
+| --- | --- | --- |
+| Office | DOCX, PPTX, PPT, DOC, XLSX/XLS, ODT, ODP, iWork, HWP/HWPX, WordPerfect | `extractors/{docx,pptx,ppt,doc,excel,odt,odp,hwp,hwpx,wordperfect}.rs`, `extractors/iwork/` |
+| PDF | text, encrypted, OCR fallback | `extractors/pdf/` |
+| Images | PNG, JPG, TIFF, WebP, HEIC, SVG, QR | `extractors/{image,qr}.rs`, `extraction/{image,image_ocr,heif}.rs` |
+| Web | HTML, XHTML, XML, MDX | `extractors/{html,xml,mdx}.rs`, `extraction/html/` |
+| Email | EML, MSG, PST | `extractors/{email,pst}.rs`, `extraction/email.rs` |
+| Archives | ZIP, TAR, GZ, 7Z | `extractors/archive.rs`, `extraction/archive/` |
+| Markup | MD, TXT, RST, Org, RTF, AsciiDoc, Typst, Djot | `extractors/{markdown,text,rst,orgmode,asciidoc,typst}.rs`, `extractors/{rtf,djot_format}/` |
+| Academic | LaTeX, BibTeX, JATS, Jupyter, DocBook, EPUB, FictionBook | `extractors/{bibtex,jupyter,docbook,fictionbook}.rs`, `extractors/{latex,jats,epub}/` |
+| Structured | JSON, YAML, TOML, CSV, DBF | `extractors/{structured,csv,dbf}.rs` |
 
-## Extraction Modules (75 Formats)
+## Fallback strategies
 
-| Category     | Extractors                                       | Key Modules                                          |
-| ------------ | ------------------------------------------------ | ---------------------------------------------------- |
-| **Office**   | DOCX, XLSX, XLSM, XLSB, XLS, PPTX, ODP, ODS      | `extraction/{docx,excel,pptx}.rs`                    |
-| **PDF**      | Standard + encrypted, password attempts          | `pdf/` subdirectory (13 files)                       |
-| **Images**   | PNG, JPG, TIFF, WebP, JP2, SVG (OCR-enabled)     | `extraction/image.rs` + `ocr/`                       |
-| **Web**      | HTML, XHTML, XML, SVG (DOM parsing)              | `extraction/html.rs` (67KB - complex table handling) |
-| **Email**    | EML, MSG (headers, body, attachments, threading) | `extraction/email.rs`                                |
-| **Archives** | ZIP, TAR, GZ, 7Z (recursive extraction)          | `extraction/archive.rs` (31KB)                       |
-| **Markdown** | MD, TXT, RST, Org Mode, RTF                      | `extraction/markdown.rs`                             |
-| **Academic** | LaTeX, BibTeX, JATS, Jupyter, DocBook            | `extraction/{structured,xml}.rs`                     |
+- **Password-protected PDFs** — try the configured password, then the secondary list; on
+  failure report `is_encrypted` in metadata rather than erroring out.
+- **OCR fallback** — a PDF page with no extractable text routes to the OCR pipeline;
+  `config.force_ocr` and `config.force_ocr_pages` force it.
+- **Nested archives** — recursive with a depth limit from `SecurityLimits`.
+- **Corrupted input** — emit what parsed and attach the error location; never panic.
 
-## Extraction Dispatcher
+## Plugin integration
 
-```rust
-// Pseudocode: extraction/mod.rs
-let format = detect_format(source.bytes, source.extension);
-let result = match format {
-    Pdf -> extract_pdf(source, config),
-    Docx -> extract_docx(source, config),
-    Image -> extract_image_with_ocr_fallback(source, config),
-    Archive -> extract_archive_recursive(source, config),
-    _ -> extract_with_plugin(format, source, config),
-};
-run_pipeline(result, config)  // post-processing always runs
-```
+`crates/xberg/src/plugins/`. Registry selection is by **`priority()`, highest wins** — not by
+registration order. Register above 50 to override a built-in. See
+`plugin-architecture-patterns`.
 
-## Fallback Strategies
+## Features
 
-- **Password-Protected PDFs**: Try primary password -> secondary password list -> return `is_encrypted=true` in metadata on failure
-- **OCR Fallback**: If image text extraction confidence < threshold, trigger OCR backend; return both results with scores
-- **Nested Archives**: Recursive extraction with configurable depth limit; flatten or preserve hierarchy
-- **Corrupted File Recovery**: Stream-based parsing, emit content up to error point, include error location in metadata
+All features live in `crates/xberg/Cargo.toml`; there is no `FEATURE_MATRIX.md`.
 
-## Configuration Integration
+| Group | Features |
+| --- | --- |
+| OCR | `ocr` (Tesseract), `ocr-wasm`, `paddle-ocr` / `paddle-ocr-tract`, `sceptre-ocr`, `candle-vlm-ocr` |
+| Formats | `pdf` (→ `pdf-native`), `office`, `excel` / `excel-wasm`, `html`, `xml`, `email`, `archives`, `heic`, `wordperfect`, `hwp`, `hwpx`, `iwork`, `notebook`, `mdx`, `svg` |
+| AI/ML | `embeddings` (ORT), `static-embeddings` (pure Rust), `layout-detection` / `layout-tract`, `keywords`, `language-detection`, `ner-onnx`, `ner-llm` |
+| Server | `api` (Axum), `mcp`, `otel`, `prometheus`, `tokio-runtime` |
+| Aggregates | `formats`, `analysis`, `services`, `full`, `no-ort-target`, `wasm-target`, `android-target`, `windows-target`, `macos-intel-target` |
 
-**Location**: `crates/xberg/src/core/config.rs`, `crates/xberg/src/core/config_validation.rs`
-
-`ExtractionConfig` holds format-specific configs (`pdf`, `image`, `html`, `office`), fallback orchestration (`fallback`), and post-processing (`postprocessor`, `chunking`, `keywords`). See struct definition in `config.rs`.
-
-## Plugin System Integration
-
-**Location**: `crates/xberg/src/plugins/`
-
-- **CustomExtractor**: Override built-in format extractors
-- **PostProcessor**: Modify results after extraction (Early/Middle/Late stages)
-- **Validator**: Fail-fast validation (e.g., minimum text length)
-- **OCRBackend**: Swap OCR engine
-
-Plugin registry loaded at startup, cached for zero-cost lookup.
-
-## Feature Flag Strategy
-
-**Location**: `Cargo.toml` (workspace), `crates/xberg/Cargo.toml`, `FEATURE_MATRIX.md`
-
-20+ features across 9 language bindings. Key feature groups:
-
-| Group    | Features                                                                             | Notes                             |
-| -------- | ------------------------------------------------------------------------------------ | --------------------------------- |
-| OCR      | `tesseract` (default), `tesseract-static`, `ocr-minimal`                             | Mutually exclusive recommendation |
-| Formats  | `pdf`, `pdf-minimal`, `office`, `office-minimal`                                     |                                   |
-| AI/ML    | `embeddings` (requires ONNX), `keywords-yake`, `keywords-rake`, `language-detection` |                                   |
-| Server   | `api` (Axum), `mcp`, `tokio-runtime`, `lite-runtime`                                 |                                   |
-| Bindings | `python-bindings`, `ruby-bindings`, `php-bindings`, `node-bindings`, `wasm`          |                                   |
-
-Conditional compilation: modules gated with `#[cfg(feature = "...")]`. Runtime `validate_config()` warns if requested feature not compiled in.
-
-### Feature Flag Critical Rules
-
-1. **Never mix conflicting features** - e.g., `ocr-minimal` + `tesseract` should error at compile time
-2. **Always provide feature diagnostics** - Config validation must warn if feature unavailable
-3. **Default to maximum feature set** - Unless embedded/minimal specifically requested
-4. **Test all feature combinations** - Matrix testing in CI catches regressions
-5. **WASM incompatible** with embeddings, keywords, OCR
+Bindings are separate crates, not features of `crates/xberg`. The one mutually-exclusive pair
+is `ort-bundled` / `ort-dynamic`. WASM excludes ORT-backed `embeddings`, but **does** carry
+`ocr-wasm`, `keywords` and `static-embeddings`. Full detail in `feature-flag-policy`.
 
 ## Critical Rules
 
-1. **Always use format detection** before routing to extractors (prevent confusion attacks)
-2. **Stream-based parsing** for PDFs/archives to handle multi-GB files
-3. **Post-pipeline is mandatory**: All extraction results flow through `run_pipeline()` for validators/hooks
-4. **Plugin overrides are order-dependent**: Plugins registered first take priority
-5. **Fallback timeouts**: Set reasonable OCR/archive extraction timeouts (config-driven)
-6. **Metadata preservation**: Include format detection confidence, extraction method used, any fallbacks applied
+1. **Detect before routing** — never dispatch on a caller-supplied extension alone.
+2. **Post-processing is mandatory** — all results flow through `run_pipeline` / `run_pipeline_sync`.
+3. **Selection is by priority, not registration order** — the registry returns the highest `priority()` for a MIME type.
+4. **Stream large inputs** — PDFs and archives must not be fully buffered.
+5. **Apply `SecurityLimits` to user content** — archive size, compression ratio, file count, nesting depth.
+6. **Fail gracefully** — malformed input returns partial content plus error context, never a panic.
 
 ## Related Skills
 
-- **ocr-backend-management** - OCR engine selection and image preprocessing
-- **chunking-embeddings** - Post-extraction text splitting with FastEmbed
-- **api-server-mcp** - Axum endpoint for extraction pipeline exposure and MCP server
+- **mime-detection-routing** — the `FORMATS` registry and how to add a format
+- **plugin-architecture-patterns** — which trait an extractor actually implements
+- **format-specific-extraction** — per-format workflows and helpers
+- **chunking-embeddings** — post-extraction text splitting

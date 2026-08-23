@@ -46,8 +46,8 @@ cannot weaken this shared contract.
 - Run only after explicit invocation. Research-only = requested outcome is findings/evidence/assessment only, no repo
   changes or plan requested. All handoffs may run in any host mode; implementation handoffs must pass through the Plan
   Phase and receive explicit user approval before launch.
-- The parent owns decisions, the final plan, and orchestration; for complex tasks, delegate investigation to read-only
-  research agents before writing the plan.
+- The parent owns decisions, the final plan, and orchestration. Delegate investigation to read-only research agents only
+  when task and repository evidence make it useful before planning.
 - Research agents gather evidence and report findings only — never edit files, make design decisions, or return plans.
 - Implementation agents implement their assigned part of the approved plan: inspect, edit, validate, never redesign or
   return another plan.
@@ -162,9 +162,9 @@ Require `$code-polish` for nonlocal invariants, concurrency or state machines, m
 retry or error semantics, and public API or data-contract changes. File count alone is not a trigger.
 
 Require `$agents-brain polish` when approved work changes a target its polish workflow supports: README.md, AGENTS.md or
-CLAUDE.md, a durable context doc, or an existing project-installed skill under `.agents/skills`. Source catalog skills
-under `skills/` stay outside that workflow. Mark both passes required when both trigger rules apply; mark neither when
-neither applies.
+CLAUDE.md, a durable context doc, an existing project-installed skill under `.agents/skills`, or an existing git-tracked
+source-catalog skill under `skills/` where polish is prose-only. Installed copies under managed agent-config roots
+remain excluded. Mark both passes required when both trigger rules apply; mark neither when neither applies.
 
 Do not launch implementation agents until the user approves the plan. Read-only research is the only pre-approval
 exception.
@@ -253,10 +253,9 @@ placeholder.
   required polish pass that blocks, fails, or writes outside its supported scope blocks later polish and
   cross-repository commits.
 - If approved work changes repositories on this machine other than the one where the handoff began, invoke `$commit`
-  from each additional repository after its work, validation, and required polish complete. `$commit` owns semantic
-  message composition; its `ai-commit` backend owns deterministic transaction, commit, and push mechanics. Scope each
-  invocation to files changed there; do not commit incomplete, blocked, unexpected, or out-of-scope changes. Push only
-  when the user explicitly requested it.
+  from each additional repository after its work, validation, and required polish complete, scoped to files changed
+  there; do not commit incomplete, blocked, unexpected, or out-of-scope changes. Push only when the user explicitly
+  requested it.
 - Finish with the selected adapter's completion report, including strategy, wave and agent counts, each agent's
   requested configuration, status, and summary, plus combined changed files, verification, polish when run (listing each
   pass and outcome), automatic cross-repository commit hashes when any, blockers, and residual risks. Write `none` for

@@ -23,16 +23,53 @@ _SKIP_KEYS = {"_source_file", "uncertain"}
 
 
 def load_fields_yaml(fields_path):
+    """解析 fields.yaml，仅接受 research skill 实际生成的唯一 schema：
+
+        fields:
+          <category>:
+            - {name: ..., description: ..., detail_level: ...}
+            ...
+        uncertain: []
+
+    只接受这一种格式。不符合的 fields.yaml 会直接报错退出，
+    而不是以零字段静默通过。
+
+    Required 语义（避免校验器空转通过/说谎）：
+      - 若任一字段显式带 `required:` 键 -> 沿用 opt-in 语义
+      - 否则（detail_level 式、无标记）-> 全部字段视为必填，因为脚本的目的就是完整覆盖。
+    """
     with fields_path.open(encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    items = [
-        (field["name"], category["category"], field.get("required", False))
-        for category in data.get("field_categories", [])
-        for field in category.get("fields", [])
-    ]
-    all_fields = {name for name, _, _ in items}
-    required_fields = {name for name, _, required in items if required}
-    field_categories = {name: category for name, category, _ in items}
+        data = yaml.safe_load(f) or {}
+    defs = []  # (name, category, required_or_None)
+
+    fn = data.get("fields")
+    if not isinstance(fn, dict):
+        print(f"[错误] fields.yaml 必须使用 `fields: {{<category>: [{{name, ...}}]}}` 格式；当前为 {type(fn).__name__ if fn is not None else 'None'}。")
+        sys.exit(1)
+
+    for cname, flist in fn.items():
+        if cname in _SKIP_KEYS:
+            continue
+        if not isinstance(flist, list):
+            print(f"[错误] 分类 `{cname}` 必须映射为字段字典列表；当前为 {type(flist).__name__}。")
+            sys.exit(1)
+        for field in flist:
+            if isinstance(field, dict) and "name" in field:
+                defs.append((str(field["name"]), str(cname), field.get("required", None)))
+            else:
+                print(f"[错误] `{cname}` 下的字段必须是带 `name` 键的字典；当前为 {field!r}。")
+                sys.exit(1)
+
+    if not defs:
+        print("[错误] fields.yaml 解析到零个字段。请确保至少有一个分类及其字段字典。")
+        sys.exit(1)
+
+    all_fields = {n for n, _, _ in defs}
+    if any(r is not None for _, _, r in defs):
+        required_fields = {n for n, _, r in defs if r}
+    else:
+        required_fields = set(all_fields)
+    field_categories = {n: c for n, c, _ in defs}
     return all_fields, required_fields, field_categories
 
 

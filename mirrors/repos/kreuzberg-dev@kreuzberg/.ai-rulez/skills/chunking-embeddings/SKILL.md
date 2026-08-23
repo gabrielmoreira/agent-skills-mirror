@@ -6,115 +6,104 @@ priority: critical
 
 # Chunking & Embeddings
 
-**Text splitting strategies, embedding generation with FastEmbed, RAG pipeline integration**
+**Text splitting, ONNX/static embedding generation, RAG pipeline integration**
 
-## Chunking Architecture Overview
+Locations: `crates/xberg/src/chunking/` and `crates/xberg/src/embeddings/` (both directories,
+not single files).
 
-**Location**: `crates/xberg/src/chunking/`, `crates/xberg/src/embeddings.rs`
+## Chunking
 
-```text
-Extracted Text
-    |
-[1. Normalization] -> Clean whitespace, remove control chars
-    |
-[2. Chunk Strategy Selection] -> Fixed-size, semantic, syntax-aware, recursive
-    |
-[3. Overlap Management] -> Control context window overlap
-    |
-[4. Optional Embedding] -> Generate vectors with FastEmbed
-    |
-Output: Vec<Chunk> with text, vectors, metadata
-```
+`ExtractionConfig.chunking: Option<ChunkingConfig>` drives it. The standalone entry points are
+`chunking::chunk_text(text, &ChunkingConfig, page_boundaries) -> Result<ChunkingResult>`
+(`chunking/core.rs`) and `chunking::rag::chunk_for_rag(text, &ChunkingConfig)`
+(`chunking/rag.rs`), which upgrades `ChunkerType::Text` to `Markdown` and fills each chunk's
+`heading_path`.
 
-## Chunking Strategies
+`ChunkingResult { chunks: Vec<Chunk>, chunk_count: usize }`. `Chunk` carries `content`,
+`chunk_type`, `metadata`, and the optional vectors `embedding`, `sparse_embedding`,
+`late_interaction` (`types/extraction.rs`).
 
-**Location**: `crates/xberg/src/chunking/mod.rs`
+### `ChunkerType` — there is no strategy enum beyond this
 
-| Strategy                          | Pattern                                                 | Best For                                                           |
-| --------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------ |
-| **Fixed-Size**                    | Sliding window with configurable overlap                | Uniform chunks for embedding models with fixed token limits        |
-| **Semantic**                      | Split by sentences, merge/split by similarity threshold | Smart context preservation for LLM consumption and semantic search |
-| **Syntax-Aware**                  | Split by paragraph/section/heading/code-block structure | Preserving document structure (sections, code blocks) in RAG       |
-| **Recursive** (LangChain pattern) | Try separators in order: `\n\n`, `\n`, `,`              | Best general-purpose chunking; auto-finds optimal split points     |
+`Text` (default), `Markdown`, `Yaml`, `Semantic` (`core/config/processing.rs`).
+`Semantic` splits at embedding-based topic shifts when an `EmbeddingConfig` is present, and
+falls back to a structural-boundary heuristic otherwise — `topic_threshold` has no effect on
+the fallback path.
 
-Key config fields per strategy (see struct definitions in `chunking/mod.rs`):
+### `ChunkingConfig` fields and their serde wire names
 
-- Fixed-Size: `chunk_size`, `overlap`, `trim_whitespace`
-- Semantic: `target_chunk_size`, `min/max_chunk_size`, `semantic_threshold`, `use_sentence_boundaries`
-- Syntax-Aware: `chunk_by` (Paragraph/Section/Heading/Sentence/CodeBlock), `max_chunk_size`, `respect_code_blocks`
-- Recursive: `separators[]`, `chunk_size`, `overlap`
+| Field | Wire name (config file) | Default |
+| --- | --- | --- |
+| `max_characters` | `max_chars` (alias `max_characters`) | 1000 |
+| `overlap` | `max_overlap` (alias `overlap`) | 200 |
+| `trim` | `trim` | true |
+| `chunker_type` | `chunker_type` | `Text` |
+| `preset` | `preset` | none |
 
-## Chunking Configuration Presets
+The renames are load-bearing: a config file that writes `max_characters` works only via the
+alias, and a typo'd key is silently ignored (see `config-loading-precedence`).
 
-**Location**: `crates/xberg/src/chunking/mod.rs`
+### Presets set chunk size AND the embedding model
 
-| Preset       | Chunk Size  | Overlap | Strategy   | Use Case               |
-| ------------ | ----------- | ------- | ---------- | ---------------------- |
-| **Balanced** | 512 tokens  | 50      | Semantic   | RAG sweet spot         |
-| **Compact**  | 256 tokens  | 32      | Fixed-Size | Dense vectors          |
-| **Extended** | 1024 tokens | 100     | Recursive  | Full context           |
-| **Minimal**  | 128 tokens  | 16      | (default)  | Lightweight embeddings |
+`ChunkingConfig.preset` resolves through `resolve_preset()`, which is
+`#[cfg(feature = "embeddings")]`-gated — **without that feature it is a no-op and the preset
+name does nothing**. A preset overrides `max_characters` and `overlap` and, if no embedding
+config was given, selects the model.
 
-Usage: set `config.chunking.preset = Some("balanced")` in `ExtractionConfig`.
+| Preset | chunk_size | overlap | dims | backend |
+| --- | --- | --- | --- | --- |
+| `fast` | 512 | 50 | 384 | ONNX |
+| `balanced` | 1024 | 100 | 768 | ONNX |
+| `quality` | 2000 | 200 | 1024 | ONNX |
+| `multilingual` | 1024 | 100 | 768 | ONNX |
+| `gte-modernbert-base` | 1024 | 100 | 768 | ONNX |
+| `lightweight` | 512 | 50 | 256 | static (model2vec) |
+| `arctic-embed-m-v2.0` | 1024 | 100 | 768 | ONNX |
+| `qwen3-embedding-0.6b` | 2000 | 200 | 1024 | ONNX |
 
-## Embedding Generation with FastEmbed
+Source of truth: `EMBEDDING_PRESETS` in `crates/xberg/src/embeddings/mod.rs`.
 
-**Location**: `crates/xberg/src/embeddings.rs`
+## Embeddings
 
-### Model Selection
+There is no `TextEmbeddingManager`, no `embed_chunks()`, no `ChunkWithEmbedding`, no
+`RagDocument`, and **no fastembed dependency** — do not write code against any of those.
 
-| Model                               | Dimensions | Notes                            |
-| ----------------------------------- | ---------- | -------------------------------- |
-| `BAAI/bge-small-en-v1.5` (default)  | 384        | Fast, excellent for RAG          |
-| `BAAI/bge-small-zh-v1.5`            | 384        | Chinese optimized                |
-| `BAAI/bge-base-en-v1.5`             | 768        | Better quality, slower           |
-| `jinaai/jina-embeddings-v2-base-en` | 768        | Long context (up to 8192 tokens) |
-| `Custom(path)`                      | varies     | Custom ONNX model path           |
+Model selection is `EmbeddingModelType`, a tagged enum (`core/config/processing.rs`):
+`Preset { name }` (recommended), `Custom { … }` (HuggingFace ONNX), `Llm { … }`,
+`Plugin { … }`.
 
-### Embedding Pattern
+Two defaults disagree and both are live: `EmbeddingModelType::default()` is the
+`gte-modernbert-base` preset (what bindings and `#[serde(default)]` get), while
+`EmbeddingConfig::default()` names `balanced` via `default_balanced_embedding_model()`. Read
+the constructor you are actually going through before assuming which model runs.
 
-`TextEmbeddingManager` provides singleton-cached models per config. Pattern:
+`EmbeddingConfig` defaults: `normalize = true`, `batch_size = 32`,
+`max_embed_duration_secs = Some(60)`, `max_sequence_length = None` (falls back to 512, capped
+at the model's own `model_max_length`).
 
-1. `get_or_init_model()` -- lazy-loads ONNX model (downloads if needed), caches in `Arc<RwLock<HashMap>>`
-2. `embed_chunks()` -- collects chunk texts, calls `model.embed(texts, batch_size)`, zips results back to `ChunkWithEmbedding`
-
-Default config: `batch_size=256`, `device=CPU`, `parallel_requests=4`.
-
-### ONNX Runtime Requirement
-
-Embeddings require ONNX Runtime. Feature-gated via:
+### Feature gating
 
 ```toml
-[features]
-embeddings = ["dep:fastembed", "dep:ort"]
+embeddings = ["onnx-runtime", "dep:ndarray", "chunking", "tokio-runtime", "embedding-presets"]
 ```
 
-Install: `brew install onnxruntime` (macOS) / `apt install libonnxruntime libonnxruntime-dev` (Linux). Verify: `echo $ORT_DYLIB_PATH`.
+`ort-bundled` (the default ORT linkage) **downloads** ONNX Runtime at build time — no system
+install, no `ORT_DYLIB_PATH`. That variable matters only under `ort-dynamic`.
 
-## RAG Integration Pattern
-
-The full extraction-to-RAG pipeline:
-
-1. **Extract**: `extract(ExtractInput::from_uri(path), config)` -> `ExtractionResult`
-2. **Chunk**: Apply preset strategy to `output.results[0].content` -> `Vec<Chunk>`
-3. **Embed**: If embedding config present, `TextEmbeddingManager::embed_chunks()` -> `Vec<ChunkWithEmbedding>`
-4. **Output**: `RagDocument { file_path, metadata, chunks }` ready for vector DB ingestion
-
-See `ChunkWithEmbedding` struct in `types.rs`: contains `text`, `embedding: Vec<f32>`, `dimensions`, `norm`, `metadata`.
+`static-embeddings` is the pure-Rust model2vec path and the only dense embedder available on
+`no-ort-target` (WASM/Android). `embedding-presets` carries preset metadata alone and is
+WASM-safe.
 
 ## Critical Rules
 
-1. **Chunking is preprocessing** - Always apply before embedding to ensure consistent vector sizes
-2. **Overlap prevents information loss** - Set overlap to 15-20% of chunk size
-3. **Embedding models are stateful** - Lazy load and cache to avoid repeated initialization
-4. **ONNX Runtime is required** - Gracefully degrade if not available (skip embeddings)
-5. **Batch embedding for performance** - Never embed single chunks; batch 50-1000 chunks
-6. **Normalize embeddings for search** - Use L2 norm for cosine similarity
-7. **Cache embedding results** - Don't re-embed identical text chunks
-8. **Model selection impacts quality** - bge-small (384) for speed, bge-base (768) for quality
+1. **Chunk before embedding** — vectors are attached per chunk, not per document.
+2. **A preset without the `embeddings` feature is inert** — `resolve_preset()` is compiled out.
+3. **Write serde wire names in config files** — `max_chars`/`max_overlap`, not the Rust field names.
+4. **Degrade, don't fail** — a build without ORT should skip embeddings, not error.
+5. **Normalize for cosine similarity** — `EmbeddingConfig.normalize` defaults to true; leave it on.
 
 ## Related Skills
 
-- **extraction-pipeline-patterns** - Text extraction preceding chunking
-- **api-server-mcp** - Endpoint for chunking + embedding operations
-- **ocr-backend-management** - OCR text quality affects chunking success
+- **extraction-pipeline-patterns** — text extraction preceding chunking
+- **config-loading-precedence** — how `ChunkingConfig` is resolved and why typos are silent
+- **feature-flag-policy** — `embeddings` vs `static-embeddings` vs `embedding-presets`

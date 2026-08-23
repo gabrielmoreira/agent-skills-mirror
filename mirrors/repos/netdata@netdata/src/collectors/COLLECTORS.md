@@ -21,21 +21,21 @@ Learn more about [how collectors work](/src/collectors/README.md), and then lear
 **Select your primary infrastructure to jump directly to relevant integrations:**
 
 **Cloud & Infrastructure:**
-[AWS](#cloud-provider-managed) • [Azure](#cloud-provider-managed) • [GCP](#cloud-provider-managed) • [Kubernetes](#kubernetes) • [Docker](#containers-and-vms) • [VMware](#containers-and-vms)
+[AWS](#cloud-and-devops) • [Azure](#cloud-and-devops) • [GCP](#cloud-and-devops) • [Kubernetes](#containers-and-vms) • [Docker](#containers-and-vms) • [VMware](#containers-and-vms)
 
 **Databases & Caching:**
-[MySQL](#databases) • [PostgreSQL](#databases) • [MongoDB](#databases) • [Redis](#databases) • [Elasticsearch](#search-engines) • [Oracle](#databases)
+[MySQL](#databases) • [PostgreSQL](#databases) • [MongoDB](#databases) • [Redis](#databases) • [Elasticsearch](#databases) • [Oracle](#databases)
 
 **Web & Application:**
-[NGINX](#web-servers-and-web-proxies) • [Apache](#web-servers-and-web-proxies) • [HAProxy](#web-servers-and-web-proxies) • [Tomcat](#web-servers-and-web-proxies) • [PHP-FPM](#web-servers-and-web-proxies)
+[NGINX](#web-servers-and-proxies) • [Apache](#web-servers-and-proxies) • [HAProxy](#web-servers-and-proxies) • [Tomcat](#web-servers-and-proxies) • [PHP-FPM](#web-servers-and-proxies)
 
 **Message Queues:**
-[Kafka](#message-brokers) • [RabbitMQ](#message-brokers) • [ActiveMQ](#message-brokers) • [NATS](#message-brokers) • [Pulsar](#message-brokers)
+[Kafka](#databases) • [RabbitMQ](#databases) • [ActiveMQ](#databases) • [NATS](#databases) • [Pulsar](#databases)
 
 **Operating Systems:**
-[Linux](#linux-systems) • [Windows](#windows-systems) • [macOS](#macos-systems) • [FreeBSD](#freebsd)
+[Linux](#operating-systems) • [Windows](#operating-systems) • [macOS](#operating-systems) • [FreeBSD](#operating-systems)
 
-**Don't see what you need?** We support [Prometheus endpoints](#generic-data-collection), [SNMP devices](#generic-data-collection), [StatsD](#beyond-the-850-integrations), and [custom data sources](#generic-data-collection).
+**Don't see what you need?** We support [Prometheus endpoints](#beyond-the-850-integrations), [SNMP devices](#networking), [StatsD](#beyond-the-850-integrations), and [custom data sources](#beyond-the-850-integrations).
 
 
 ## Beyond the 850+ integrations
@@ -182,7 +182,7 @@ Need a dedicated integration? [Submit a feature request](https://github.com/netd
 | [CPU performance](https://github.com/netdata/netdata/blob/master/src/collectors/perf.plugin/integrations/cpu_performance.md) | This collector monitors CPU performance metrics about cycles, instructions, migrations, cache operations and more. |
 | [dev.cpu.0.freq](https://github.com/netdata/netdata/blob/master/src/collectors/freebsd.plugin/integrations/dev.cpu.0.freq.md) | Read current CPU Scaling frequency. |
 | [eBPF Cachestat](https://github.com/netdata/netdata/blob/master/src/collectors/ebpf.plugin/ebpfgo.plugin/integrations/ebpf_cachestat.md) | Monitor Linux page cache events giving users a general vision about how the kernel is manipulating files. |
-| [eBPF DCstat](https://github.com/netdata/netdata/blob/master/src/collectors/ebpf.plugin/integrations/ebpf_dcstat.md) | Monitor directory cache events per application given an overall vision about files on memory or storage device. |
+| [eBPF DCstat](https://github.com/netdata/netdata/blob/master/src/collectors/ebpf.plugin/ebpfgo.plugin/integrations/ebpf_dcstat.md) | Monitor directory cache events given an overall vision about files on memory or storage device. |
 | [eBPF DNS](https://github.com/netdata/netdata/blob/master/src/collectors/ebpf.plugin/ebpfgo.plugin/integrations/ebpf_dns.md) | Monitor DNS query and response traffic at the kernel level, broken down by transport protocol (UDP/TCP) and IP family (IPv4/IPv6). |
 | [eBPF Filedescriptor](https://github.com/netdata/netdata/blob/master/src/collectors/ebpf.plugin/integrations/ebpf_filedescriptor.md) | Monitor calls for functions responsible to open or close a file descriptor and possible errors. |
 | [eBPF Hardirq](https://github.com/netdata/netdata/blob/master/src/collectors/ebpf.plugin/integrations/ebpf_hardirq.md) | Monitor latency for each HardIRQ available. |

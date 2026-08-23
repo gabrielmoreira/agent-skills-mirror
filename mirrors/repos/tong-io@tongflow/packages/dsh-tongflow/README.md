@@ -20,7 +20,7 @@ npx @deepseek-ai/dsh@next plugin --profile web add dsh-tongflow      # from npm
 npx @deepseek-ai/dsh@next web
 ```
 
-Requirements: dsh ≥ 0.1.0-rc.7 (Node ≥ 22.19), **Python ≥ 3.10** on `PATH` (or `pythonPath` in the plugin config), `git`, and `ffmpeg` for video contact sheets. On first use the plugin creates `~/.dsh/tongflow/venv` with the `tongflow` SDK and shallow-clones every official TongFlow plugin into `~/.dsh/tongflow/plugins` (the live list from `config/official-plugins.json`; set `autoInstallOfficial: false` to install by hand), so the canvas offers the same node/plugin catalog as the hosted app. Keys and Modal deploys are only needed when something runs.
+Requirements: dsh ≥ 0.1.0-rc.7 — including the 0.1.1-rc line (Node ≥ 22.19), **Python ≥ 3.10** on `PATH` (or `pythonPath` in the plugin config), `git`, and `ffmpeg` for video contact sheets. On first use the plugin creates `~/.dsh/tongflow/venv` with the `tongflow` SDK and shallow-clones every official TongFlow plugin into `~/.dsh/tongflow/plugins` (the live list from `config/official-plugins.json`; set `autoInstallOfficial: false` to install by hand), so the canvas offers the same node/plugin catalog as the hosted app. Keys and Modal deploys are only needed when something runs.
 
 Start a session whose **first message begins with `@tongflow`** — that session becomes a studio session: the conversation view turns into the Studio (chat column · the project's folder tree · preview / editor / canvas · a runs drawer, all in the UI language of your browser), and the agent gets the `tongflow_*` tools and skill. Any other session is untouched dsh. In the Studio: create a project (a title and a brief — what you want to make), install TongFlow plugins and paste API keys under **Plugins & keys**, then talk to the agent — or click any file to preview / edit it, click a workflow to open it on the canvas.
 
@@ -80,9 +80,18 @@ A run that uses a paid plugin spends the user's money — a paid API key, or GPU
 
 ## Agent tools
 
-`tongflow_project_create / _open / _list / _status` · `tongflow_workflow_new / _patch / _read / _list / _validate / _run / _compose` · `tongflow_node_catalog / _describe` · `tongflow_look` (images / video contact sheets, returned as an image block) · `tongflow_perceive` (video/audio/image understanding via TongFlow slots) · `tongflow_plugins_list / _install / _uninstall` · `tongflow_run_status`. Folder structure and text files are made with dsh's ordinary file tools. Long runs go through dsh background jobs (`run_in_background`).
+`tongflow_project_create / _open / _list / _status` · `tongflow_workflow_new / _patch / _read / _list / _validate / _run / _compose` · `tongflow_node_catalog / _describe` · `tongflow_look` (images / video contact sheets, returned as an image block — or described through a slot when the session's model takes no images) · `tongflow_perceive` (video/audio/image understanding via TongFlow slots; billing plugins need `user_confirmed`) · `tongflow_plugins_list / _install / _uninstall` · `tongflow_run_status`. Folder structure and text files are made with dsh's ordinary file tools. Long runs go through dsh background jobs (`run_in_background`).
 
-Skill shipped: `tongflow-studio` (the working method: research → propose a structure → one workflow per asset next to its outputs → run → review → next stage). Genre knowledge is not packaged; the agent researches or the user installs a skill of their own.
+Skill shipped: `tongflow-studio` (the working method: research → propose a structure → one workflow per asset next to its outputs → run → review → next stage), with four method references under [`skills/references/`](skills/references/) that the agent loads only when the step needs them:
+
+| Reference | Read before |
+|---|---|
+| `prompt-layers.md` | writing any non-trivial prompt — the seven layers, and what belongs in the prompt text vs. node config vs. a wired reference file |
+| `shot-contract.md` | a video shot — open/close state, beat timeline, camera start-path-end, audio, continuity across shots |
+| `failure-codes.md` | a result came back wrong — locate the responsible layer, make the smallest fix |
+| `iteration.md` | running the same asset again — one variable at a time, and when to stop rewriting the prompt |
+
+Genre knowledge is not packaged; the agent researches or the user installs a skill of their own.
 
 ## HTTP (same origin as dsh)
 

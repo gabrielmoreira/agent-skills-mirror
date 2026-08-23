@@ -7,32 +7,39 @@ description: How xberg versions are synced and released — Cargo.toml is the si
 
 ## Single source of truth
 
-The root `Cargo.toml` `version` is the one authoritative version (including any
+The root `Cargo.toml` `[workspace.package] version` is the one authoritative version (including any
 `-rc.N` pre-release suffix). Everything else is derived from it — never hand-edit
 a version in a package manifest.
 
-## `task version:sync` propagates to two families
+## `task version:sync` runs three steps
 
-`task version:sync` (alias `task versions:sync`) runs, in order:
+`task version:sync` (alias `task versions:sync`) runs, in order
+(`.task/tools/version-sync.yml`):
 
-1. `alef sync-versions` — updates the **alef-managed binding manifests** (their own
+1. `alef sync-versions` — the **alef-managed binding manifests** (their own
    version = core version). Targets are listed in `alef.toml` `[workspace.sync] extra_paths`
    (packages/python, packages/ruby, crates/xberg-node, packages/go, cli-proxy, …).
-2. `python3 scripts/sync_integration_versions.py` — updates the **integrations**
-   under `integrations/`. These are NOT alef-managed, so alef never touches them.
+2. `python3 scripts/sync_integration_versions.py` — the **integrations** under
+   `integrations/`, the Helm chart, and `plugin/.ai-rulez/config.toml` `[plugin].version`.
+   These are NOT alef-managed, so alef never touches them.
+3. `ai-rulez generate --plugin` — regenerates the per-runtime coding-agent plugin bundles
+   under `plugin/` from the just-synced config.
 
 Bump/set helpers chain both automatically:
 `task version:bump:major|minor|patch`, `task version:set -- <version>`.
-`task version:check` dry-runs both and fails on drift (`sync_integration_versions.py --check`).
+`task version:check` prints the Cargo version and runs `sync_integration_versions.py --check`,
+failing on integration drift. It does not dry-run `alef sync-versions`.
 
 ## Integrations are lockstep with core
 
 The integration packages under `integrations/` are versioned and **published together
-with core** across three ecosystems:
+with core** across four target families:
 
 - **Python → PyPI**: langchain, llama-index (readers + node-parser), crewai, txtai, surrealdb.
 - **Java → Maven Central**: spring-ai (`io.xberg:spring-ai-xberg`).
 - **npm → npm**: n8n-nodes-xberg, langchain-xberg, llamaindex-xberg (`@xberg-io/*`).
+- **Helm → chart**: `charts/xberg/Chart.yaml` (`version`, `appVersion`, the ArtifactHub image
+  tag and prerelease flag) plus `charts/xberg/README.md`'s `--version`.
 
 `scripts/sync_integration_versions.py` sets, for each manifest:
 

@@ -362,6 +362,64 @@ not tuned on.
 
 ---
 
+## Auto Run Document Scanning (`src/shared/markdownTaskScan.ts` - Both)
+
+Fence-aware primitives every Auto Run document scanner rides. Shared because the desktop engine (`src/renderer/hooks/batch/`) and the CLI engine (`src/cli/services/batch-processor.ts`, which cannot import from the renderer) must read a document identically.
+
+| Function / Constant                   | Signature                                            | Purpose                                                                             |
+| ------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `forEachMarkdownLine(content, visit)` | `(string, (line, index) => boolean \| void) => void` | Walk lines, skipping fenced code blocks. Return `false` from `visit` to stop early. |
+| `UNCHECKED_TASK_REGEX`                | `RegExp`                                             | An unchecked checkbox: `- [ ] task` (also `*`, `+`).                                |
+| `CHECKED_TASK_COUNT_REGEX`            | `RegExp`                                             | A checked checkbox: `- [x] task` (also `X`, `✓`, `✔`).                              |
+| `CHECKED_TASK_REGEX`                  | `RegExp` (global)                                    | Rewrite checked boxes back to unchecked (reset-on-completion).                      |
+
+Do NOT hand-roll another line loop. A scanner that forgets the fence bookkeeping fires on a playbook that merely DOCUMENTS the marker syntax, and hand-rolled copies drift on closing-fence length, tilde fences, and CRLF.
+
+---
+
+## Model Tiers & Effort (`src/shared/modelTiers.ts` - Both)
+
+One vocabulary (`low | medium | high`) for two independent axes: which model runs the turn (**tier**) and how hard it thinks (**effort**). The levels are ladder POSITIONS, not literal provider values - Claude's ceiling is `max`, Codex's floor is `minimal`.
+
+| Function / Constant                   | Signature                                           | Purpose                                                                               |
+| ------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `TIER_LEVELS`                         | `readonly ['low', 'medium', 'high']`                | The vocabulary. Both axes use it.                                                     |
+| `asTierLevel(value)`                  | `(unknown) => ModelTier \| undefined`               | Narrow an untrusted value to a rung.                                                  |
+| `resolveTierModel(toolType, tier)`    | `(ToolType, ModelTier) => string \| undefined`      | Model for a tier. `undefined` = no mapping, inherit the agent's model **and say so**. |
+| `resolveEffortLevel(toolType, level)` | `(ToolType, EffortLevel) => string \| undefined`    | Provider effort string for a level. `undefined` = provider has no effort knob.        |
+| `supportsTierSelection(toolType)`     | `(ToolType) => boolean`                             | Whether this provider can act on a tier hint at all.                                  |
+| `supportsEffortSelection(toolType)`   | `(ToolType) => boolean`                             | Whether this provider can act on an effort hint at all.                               |
+| `cheapTurnSettings(toolType)`         | `(ToolType) => { model?: string; effort?: string }` | Bottom of both ladders. Used to pin throwaway synopsis turns.                         |
+
+Tier maps ship only where model IDs are stable (`claude-code` permanent aliases, `factory-droid`). Do NOT add one for a provider that discovers its catalogue at runtime (`codex`, `copilot-cli`, `opencode`): a shipped guess rots into naming a model the user cannot run. `undefined` must never become a silent substitution.
+
+`cheapTurnSettings` is safe only because a synopsis is a LEAF - every caller discards the `agentSessionId` it returns. A future caller that adopts that id has to revisit the pin first, or the tab silently continues on the cheap model.
+
+---
+
+## Auto Run Model Hints (`src/shared/autorunModelHints.ts`, `src/shared/autorunTurnSettings.ts` - Both)
+
+`<!-- MAESTRO:MODEL tier="high" effort="high" -->` sets the model and effort. **Placement is the scope**, and there is no third syntax: a marker on its OWN line applies from there down until the next standalone marker (above the first task that is the whole document, under a section heading it is that phase), while a marker at the END of a task line applies to that ONE task and the next task reverts. Resolution is recomputed before every dispatch rather than tracked as run state, so editing a document mid-run takes effect on the next task.
+
+| Function                                                         | File                     | Purpose                                                                                                                |
+| ---------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `findActiveModelHint(content)`                                   | `autorunModelHints.ts`   | The hint governing the next task, or `null`. Prevailing standalone marker with that task's inline marker layered over. |
+| `findAllModelHints(content)`                                     | `autorunModelHints.ts`   | Every marker in order, tagged with its scope, for authoring-time validation.                                           |
+| `parseModelMarker(inner, line, scope?)`                          | `autorunModelHints.ts`   | Parse one marker's attributes. Records invalid values instead of dropping them.                                        |
+| `resolveTurnSettings(toolType, hint, agentModel?, agentEffort?)` | `autorunTurnSettings.ts` | Join hint + provider capability into `{ model, effort, notes, warnings }`.                                             |
+| `describeTurnSettings(resolved)`                                 | `autorunTurnSettings.ts` | One-line summary for a log line or History entry. `null` when the document set no hint.                                |
+
+Precedence: the document's hint (if the provider can act on it), then the agent's configured value, then the provider default. A hint the provider cannot honor falls back **and warns** - the whole point is that an unresolvable hint is loud.
+
+Two rules the scopes turn on, both of which look like details and are not:
+
+- **The scopes layer PER AXIS.** An inline marker that names only `tier` keeps the prevailing `effort`. Merging wholesale would make `tier="high"` on a task inside a high-effort section quietly LOWER its effort to the agent default.
+- **`'default'` survives parsing rather than collapsing to `undefined`.** Both mean "use the agent's value" at resolution time, but they differ when scopes merge: a task saying `tier="default"` must override a document-wide `tier="high"`, while a task saying nothing about `tier` must inherit it. That is how one task opts out of a document-wide hint.
+
+A checked task is stepped over entirely, marker and all. That keeps a half-finished phase on the setting the rest of it needs, and stops a completed task's inline marker from leaking onto the tasks below it.
+
+---
+
 ## Tree Utilities (`src/shared/treeUtils.ts` - Both)
 
 | Function                                | Signature                                    | Purpose                                                       |

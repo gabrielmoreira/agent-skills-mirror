@@ -9,70 +9,81 @@ priority: high
 ## Office XML (DOCX/PPTX/ODT)
 
 ```text
-ZIP archive → Security validation → XML parsing → Text + tables + metadata
+ZIP archive → SecurityBudget → XML parsing → Text + tables + metadata
 ```
 
-1. `ZipBombValidator::new(limits).validate(&mut archive)?`
-2. Extract XML files from archive (`word/document.xml`, `ppt/slides/*.xml`, `content.xml`)
-3. Parse with `quick-xml::Reader` (streaming) + `DepthValidator` + `StringGrowthValidator`
-4. Extract metadata via `crate::extraction::office_metadata::extract_metadata()`
-5. See: `extractors/docx.rs`, `extractors/pptx.rs`, `extractors/odt.rs`
+1. `let budget = SecurityBudget::from_config(config);` (`extractors/security.rs`), plus
+   `config.security_limits…max_files_in_archive` as the member cap. The Office path does
+   **not** use `ZipBombValidator` — that is the archive/iWork/HWPX path.
+2. Open with `zip::ZipArchive::new(cursor)` and read the parts
+   (`word/document.xml`, `ppt/slides/*.xml`, `content.xml`).
+3. Parse with `quick-xml::Reader` (streaming), threading `&mut budget` through the recursive
+   walkers so a hostile document exhausts a budget instead of memory.
+4. Metadata via `crate::extraction::office_metadata` — see the helper table below. There is no
+   `extract_metadata()`.
+5. See `extractors/docx.rs`, `extractors/pptx.rs`, `extractors/odt.rs`.
 
 ## PDF
 
 ```text
-Bytes → pdf_oxide → Per-page text + OCR fallback → Tables → Metadata
+Bytes → xberg_native_pdf → Per-page text + OCR fallback → Tables → Metadata
 ```
 
-1. `pdf_oxide::PdfDocument::from_bytes(content)?`
-2. Check if needs OCR: `config.force_ocr || !has_searchable_text()`
-3. Extract text per page, tables if `config.pages` enabled
-4. Feature-gated: `#[cfg(feature = "pdf")]`
-5. See: `extractors/pdf/mod.rs`
+1. `xberg_native_pdf::PdfDocument::from_bytes(content.to_vec())?` — the engine takes an owned
+   `Vec<u8>`, not a slice.
+2. OCR is forced by `config.force_ocr` (whole document) or `config.force_ocr_pages`
+   (`Option<Vec<u32>>`); otherwise pages with no extractable text route to OCR.
+3. `config.pages: Option<PageConfig>` controls per-page output — it does not gate tables.
+4. Feature-gated `#[cfg(feature = "pdf")]`; the backend is `PdfConfig.backend`
+   (`native` default, `pdfium` behind `pdf-pdfium`).
+5. See `extractors/pdf/mod.rs`.
 
 ## Archives (ZIP/TAR/7z/GZIP)
 
 ```text
-Validate → Extract metadata → Extract plaintext files only
+ZipBombValidator → per-format metadata → per-format text content
 ```
 
-1. `ZipBombValidator` BEFORE any extraction
-2. Extract metadata (file list, sizes)
-3. Extract text content from plaintext files
-4. Use `build_archive_result()` helper
-5. See: `extractors/archive.rs`, `extraction/archive/*.rs`
+1. `ZipBombValidator::new(limits).validate(&mut archive)?` before any extraction.
+2. Metadata and content come from per-format helpers in `extraction/archive/`:
+   `extract_{zip,tar,7z,gzip}_metadata`, `extract_{zip,tar,7z,gzip}_text_content`,
+   `extract_{zip,tar,7z}_file_bytes`. There is no `build_archive_result()`.
+3. See `extractors/archive.rs`, `extraction/archive/{zip,tar,sevenz,gzip}.rs`.
 
 ## Structured Text (JSON/YAML/TOML/XML)
 
-```text
-Detect format from MIME → Parse → Pretty-print → Metadata
-```
+Single `StructuredExtractor` covers several MIME types: parse with the format library,
+pretty-print to text. See `extractors/structured.rs`.
 
-Single `StructuredExtractor` handles multiple MIME types. Parse with format-specific library, pretty-print to text.
-See: `extractors/structured.rs`
+## Email (EML/MSG/PST)
 
-## Email (EML/MSG)
-
-```text
-Parse headers → Extract body (text/html) → Process attachments
-```
-
-See: `extraction/email.rs`, `extractors/email.rs`
+Parse headers → extract body (text/html) → process attachments. Message-in-message nesting is
+bounded by the `SecurityBudget`'s `SecurityLimits`-derived `DepthValidator`, the same counter
+every other format uses. See `extraction/email.rs`, `extractors/email.rs`, `extractors/pst.rs`.
 
 ## Common Helpers
 
-| Helper                                | Location                    | Purpose                        |
-| ------------------------------------- | --------------------------- | ------------------------------ |
-| `office_metadata::extract_metadata()` | `extraction/office.rs`      | Office XML metadata            |
-| `cells_to_markdown()`                 | `extraction/mod.rs`         | Convert cell grid to GFM table |
-| `build_archive_result()`              | `extraction/archive/mod.rs` | Standard archive result        |
+| Helper | Location |
+| --- | --- |
+| `extract_core_properties()` | `extraction/office_metadata/core_properties.rs` |
+| `extract_custom_properties()` | `extraction/office_metadata/custom_properties.rs` |
+| `extract_{docx,xlsx,pptx}_app_properties()` | `extraction/office_metadata/app_properties.rs` |
+| `extract_odt_properties()` | `extraction/office_metadata/odt_properties.rs` |
+| `cells_to_markdown()` | `extraction/markdown.rs` (`pub(crate)`) |
+| `SecurityBudget`, `SecurityLimits`, `ZipBombValidator`, `DepthValidator`, `StringGrowthValidator` | `extractors/security.rs` |
+
+The security types are `pub(crate)`: in-crate extractors can use them, out-of-crate plugin
+authors cannot.
 
 ## Adding a New Format
 
-1. Add MIME type to `EXT_TO_MIME` in `core/mime.rs`
-2. Create extractor implementing `DocumentExtractor` trait
-3. Set `supported_mime_types()` and `priority()` (default: 50)
-4. Register in `extractors/mod.rs` → `register_default_extractors()`
-5. Feature-gate if optional: `#[cfg(feature = "my-format")]`
-6. Apply security validators for user content
-7. Add tests with fixture files
+1. Add one `FormatEntry` to the `FORMATS` registry in `core/mime.rs`. `EXT_TO_MIME` and
+   `SUPPORTED_MIME_TYPES` are derived from it — do not hand-edit either. See
+   `mime-detection-routing` for the full procedure, including the count assertion to bump.
+2. Create an extractor implementing `InternalDocumentExtractor` (not `DocumentExtractor`).
+3. Set `supported_mime_types()` and `priority()` (default 50).
+4. Register in `extractors/mod.rs → register_default_extractors()`.
+5. Feature-gate if optional: `#[cfg(feature = "my-format")]`.
+6. Apply `SecurityBudget` / `SecurityLimits` to any user-supplied content.
+7. Add `#[cfg_attr(alef, alef(skip))]` to the extractor struct or the binding regen aborts.
+8. Add tests with fixture files (see the `test-corpus` skill for where fixtures come from).

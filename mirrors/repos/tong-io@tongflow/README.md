@@ -291,6 +291,21 @@ Open **Settings** (the gear icon, top-right) and add the environment variables y
 
 Run the preloaded example node by node, or switch to Execute Mode and hit the run button to run the whole thing in one click.
 
+## Use it inside an agent (dsh plugin)
+
+TongFlow also runs **inside your own agent**, as a plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — no desktop app, no server of your own:
+
+```sh
+npx @deepseek-ai/dsh@next plugin --profile web add dsh-tongflow
+npx @deepseek-ai/dsh@next web
+```
+
+Then start a session whose **first message begins with `@tongflow`**. That session turns into the Studio — chat, the project's folder tree, preview / editor / the canvas, and a runs drawer — and the agent gets TongFlow's tools. Any other session stays plain dsh.
+
+The split is the point: the agent designs the project and writes the plan, briefs and prompts as ordinary files; TongFlow generates, and every generated asset comes from a saved `.tongflow.json` workflow sitting next to its outputs — so you can open it on the canvas, change it and run it again. There is no "generate an image" tool and no project template. The plugin provisions its own Python venv and clones the official plugins on first use, so the canvas offers the same catalog as the hosted app.
+
+Requirements and configuration: **[packages/dsh-tongflow/README.md](packages/dsh-tongflow/README.md)**.
+
 ## Custom plugins
 
 Every runnable node is backed by a **contract** — the ABI ([`packages/tongflow/abi/tongflow.abi.json`](packages/tongflow/abi/tongflow.abi.json)) — that defines *what capabilities exist* and *what each one's input/output looks like*, independent of *who* implements it. A plugin is just a small Python package that picks one or more ABI slots and supplies the **how**, annotated against the ABI-generated types via the tongflow Python SDK.

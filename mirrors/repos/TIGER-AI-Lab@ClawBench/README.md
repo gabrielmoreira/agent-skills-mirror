@@ -7,6 +7,7 @@
   </picture>
 </a>
 
+[![EMNLP 2026 Findings](https://img.shields.io/badge/%F0%9F%8F%86_EMNLP_2026-Findings-8C1D18?style=flat-square)](https://2026.emnlp.org/)
 [![arXiv](https://img.shields.io/badge/arXiv-2604.08523-B31B1B?style=flat-square&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.08523)
 [![Leaderboard](https://img.shields.io/badge/Leaderboard-FFD21E?style=flat-square&logo=huggingface&logoColor=000)](https://huggingface.co/spaces/TIGER-Lab/ClawBench)
 [![HF Dataset](https://img.shields.io/badge/Dataset-FFD21E?style=flat-square&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/NAIL-Group/ClawBench)
@@ -424,6 +425,7 @@ ClawBench ships **three** Hugging Face datasets — task definitions plus full e
 > **🏆 Live leaderboard:** [`claw-bench.com/leaderboard`](https://claw-bench.com/leaderboard) (V2 default, two-stage scoring — interception + LLM judge). Full scoring formula in [`eval/scoring.md`](eval/scoring.md). Add your run: PR to [`leaderboard/results.csv`](https://huggingface.co/datasets/TIGER-Lab/ClawBench/blob/main/leaderboard/results.csv).
 
 ## <img src="assets/icons/bullhorn.svg" width="20" height="20"> News
+- **[2026.08.20]** — 🏆 Our paper has been accepted to [EMNLP 2026 Findings](https://2026.emnlp.org/).
 - **[2026.08.20]** - Added [Kernel](https://www.kernel.sh) as a supported remote browser runtime. Thanks to @[rgarcia](https://github.com/rgarcia).
 - **[2026.08.18]** — Added [WebBrain](https://github.com/webbrain-one/webbrain) as a supported harness. Thanks to @[alectimison-maker](https://github.com/alectimison-maker).
 - **[2026.08.16]** — Released **[RewardHarness](https://github.com/TIGER-AI-Lab/RewardHarness)**, our self-evolving agentic reward framework: 47.4% on EditReward-Bench from just 100 preference demos, with no reward-model training. [Details →](https://arxiv.org/abs/2605.08703)

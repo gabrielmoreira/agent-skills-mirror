@@ -4,8 +4,8 @@ description: "Rewrites scene descriptions using professional cinematography lang
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, seedance-pro, content-filter, prompt, director, flagged]
-  version: 1.12.0
-  updated: 2026-08-09
+  version: 1.14.0
+  updated: 2026-08-22
   parent: higgsfield
 ---
 
@@ -511,6 +511,30 @@ arithmetic there.
 - **Never place an `@tag` in a shot where that object is not present** — the
   model will force it into frame.
 
+**Naming the tags themselves** `[FIELD — Higgsfield Studio, ONEIRIC breakdown, 2026-08-13]`
+The bullets above say what a tag *line* contains; on a project of any size the *name* needs
+a convention too, and the rule behind it is **one element, one name**. Without it a project
+grows duplicates — the same couch living under three names — and nobody can tell which
+reference is the real one:
+
+```
+@loc_ON_dorm_commonroom_front_s2     type + project + name + [angle] + scene
+@char_ON_Rudy_s2_v1                  type + project + name + scene + version
+@prop_ON_pizza                       type + project + name
+```
+
+- **The scene suffix ties an asset to where it lives**, so two dressings of one room, or
+  two versions of a location across a time jump, cannot collide.
+- **The version suffix appears when a state changes** — and a changed state is a **new
+  asset with a new name, never an overwrite**. One character in a dorm room and the same
+  character in a hospital bed are two assets of one man. The identity discipline behind
+  that split lives in `../higgsfield-soul/SKILL.md` § The Untouched Base; this bullet is
+  only the naming half of it.
+- Tags are arbitrary strings, so mixed case is safe and **consistency is the only rule**.
+  Pair related names visibly (a location and its staging reference sharing a stem) so it
+  reads at a glance which assets belong together — see
+  `../../templates/seedance/staging-reference.md` § Tag naming for the staging-side form.
+
 ### Context isolation
 
 Every generation is a blank slate with no memory of previous shots. Never
@@ -950,6 +974,53 @@ Pattern in a Seedance prompt:
 behavior.] [How the prop appears in the new shot — same geometry and
 material as the reference.]
 ```
+
+### Depth Map
+
+`[FIELD — Higgsfield Studio, ADILIADA breakdown, 2026-08-14]` A greyscale image where
+**light areas are near and dark areas are far**. The model reads it as the scene's depth
+skeleton — an explicit three-dimensional read that fixes composition, volume and
+proportion. The failure it prevents is a space that **rearranges itself between shots**:
+without a depth anchor, geometry drifts and a location subtly re-plans itself every few
+seconds.
+
+Use it where the space itself must hold — a fight in a specific room, a chase through
+architecture that has to stay the same architecture. It is a *geometry* input and carries
+no style: pair it with the environment reference that owns surfaces and light.
+
+### Bake it into the asset when the prompt will not hold it
+
+`[FIELD — Higgsfield Studio, ONEIRIC breakdown, 2026-08-13]` The general move, and one of
+the most useful in this file: **when a property drifts no matter how well you write it,
+stop writing it and move it one step earlier — generate it into the asset.** The reference
+image then carries the property, the model reads it off the plate, and it stops being
+something the text has to win every shot.
+
+The worked case is **anamorphic optics**. Asked for in a video prompt, the lens character
+drifts shot to shot. Asked for at the *image* stage, it holds — because the plate itself
+becomes the lens. There is no "anamorphic" switch in an image model either, so the effect
+is assembled from the geometry of the lens, written out, at the end of the location image
+prompt:
+
+```
+STRONG anamorphic lens character: horizontal squeeze and compression,
+oval elliptical bokeh, horizontally stretched highlights, curved barrel
+edge distortion, chromatic aberration toward the edges.
+NO lens flares, NO light streaks, NO floating bokeh circles. 2.39:1.
+```
+
+Dose with *subtle / gentle / moderate / strong / maximum*. Ban the garbage that tags along
+(flares, streaks, floating bokeh orbs) **at the image stage only**.
+
+> **Then never say those words again.** In the video prompt the optics vocabulary does not
+> appear at all — **not even as a ban** — because naming a thing under a negation summons
+> it (`../shared/negative-constraints.md`). The video prompt describes only clean glass and
+> contained glows; the anamorphic character arrives with the asset.
+
+This generalises past optics: a grain structure, a lens character, a colour cast, a crowd
+that costs a paragraph to specify — anything the text keeps losing is a candidate for
+baking into the plate. Note the cost: a baked property is no longer directable per shot,
+so bake only what should be *constant* across the sequence.
 
 ### Per-Image Role Convention
 

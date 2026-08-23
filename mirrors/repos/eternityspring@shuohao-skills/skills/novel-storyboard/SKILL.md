@@ -97,7 +97,7 @@ node {baseDir}/scripts/novel-storyboard.mjs seed <script.json> --eps 1-3 > <work
 ```bash
 node {baseDir}/scripts/novel-storyboard.mjs validate <storyboard.json> \
   --script <script.json> --outline <outline.json> --cast <cast.json> \
-  [--shots <shot-recipes/references/cards>]
+  [--shots </path/to/cards>]
 ```
 
 17 道质量门全是代码：节拍全覆盖（分镜级，恰好一次、按顺序、连续）、段 0 < 总秒 ≤ 15、**每切 2–5 秒**、台词装得进分镜、每集总时长在剧本目标 ±15% 内、同框 ≤ 3 人（超了必须带拆解说明）、段号 E01-01 格式连号、景别短语在分镜图提示词里、**风格短语统一**（`style` 预设 realistic/ghibli 与角色/场景 skill 同名对齐，同剧分镜图不许画风漂）、运镜用 H3 词表且在自己的 [Shot k] 段落里、**H3 对齐指令由分镜结构推导逐字对账 + 切点时刻逐个对**、**认领台词逐字进 `<d>` 块**、**提示词语言与 promptLang 一致**（双向查：中文写成英文、英文混进中文都拦）、分镜图提示词全英文非空、英文提示词不含角色名（中文 H3 提示词放行）、场次/人物/道具对账剧本、**镜头配方对账**（可选门，见下）。

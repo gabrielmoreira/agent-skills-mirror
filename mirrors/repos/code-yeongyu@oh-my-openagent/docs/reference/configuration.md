@@ -463,7 +463,7 @@ Run `bunx oh-my-openagent doctor --verbose` to see effective model resolution fo
 
 ### Background Tasks
 
-Control parallel agent execution and concurrency limits. `background_task` (camelCase) is the OpenCode plugin key; the shared/Senpi/Codex equivalent is the core `task` object (snake_case: `default_concurrency`, `provider_concurrency`, `model_concurrency`, `max_depth`, `ttl_ms`). They are separate objects, not aliases; `background_task` at the shared base fails core validation.
+Control parallel agent execution and concurrency limits. `background_task` (camelCase) is the OpenCode plugin key; the shared/Senpi/Codex equivalent is the core `task` object (snake_case: `default_concurrency`, `provider_concurrency`, `model_concurrency`, `max_depth`, `ttl_ms`). They are separate objects, not aliases; `background_task` at the shared base fails core validation. Setting a concurrency value to `0` means unlimited (no cap) in both places: `background_task` (`defaultConcurrency`, `providerConcurrency`, `modelConcurrency`) and the core `task` object.
 
 ```json
 {

@@ -46,7 +46,7 @@
 
 自测里每道门都有**击穿用例**——证明它真的会拦。
 
-**镜头配方是可选挂载的语汇层**：cut 上可以写一个可选的 `recipe`（[shot-recipes](../shot-recipes) 的卡片 id，**cut 级不是 segment 级**，**多格配方靠连续同 id 的分镜表达**，不是数组）。没装 shot-recipes 照跑不误——本 skill 自包含，连解析卡片 frontmatter 的那 25 行都是自己写的，不跨目录 import。卡片的**建议景别与运镜刻意不设门**，只在报告的「配方」列加 `≠` 标记（悬停看建议值）、`checkup` 末尾出一段提示：配方是语汇不是法条，可选挂载的东西一旦变严就没人挂了，**误拦的门比没有门更糟**。
+**镜头配方是可选挂载的语汇层**：cut 上可以写一个可选的 `recipe`（外部可选卡库中的卡片 id，**cut 级不是 segment 级**，**多格配方靠连续同 id 的分镜表达**，不是数组）。没装外部卡库照跑不误——本 skill 自包含，连解析卡片 frontmatter 的那 25 行都是自己写的，不跨目录 import。卡片的**建议景别与运镜刻意不设门**，只在报告的「配方」列加 `≠` 标记（悬停看建议值）、`checkup` 末尾出一段提示：配方是语汇不是法条，可选挂载的东西一旦变严就没人挂了，**误拦的门比没有门更糟**。
 
 ## 门失败会累积，`stats` 告诉你模型最常违反哪条规则
 
@@ -103,7 +103,7 @@ node scripts/novel-storyboard.mjs validate sb.json \
      --script script.json --outline outline.json --cast cast.json
 node scripts/novel-storyboard.mjs checkup sb.json --script script.json
 node scripts/novel-storyboard.mjs validate sb.json --script script.json \
-     --shots ../shot-recipes/references/cards                            # 可选：开第 17 道配方门
+     --shots /path/to/cards                                              # 可选：开第 17 道配方门
 node scripts/novel-storyboard.mjs render sb.json --html \
      --script script.json --outline outline.json --art art.json > storyboard-report.html
 node scripts/novel-storyboard.mjs render sb.json --html --lang en \

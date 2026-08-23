@@ -1,6 +1,6 @@
 ## Functions
 
-Function conventions should be followed as much as possible (some of the conventions derive from functional programming basic concepts):
+Function conventions should be followed as much as possible (some derive from basic functional programming concepts):
 
 ### General
 
@@ -39,13 +39,13 @@ transformUserInput({
 
 ### Required & Optional Args
 
-**Strive to have majority of args required and use optional sparingly.**  
+**Strive to have the majority of arguments required and use optional arguments sparingly.**  
  If the function becomes too complex, it probably should be broken into smaller pieces.  
  An exaggerated example: implementing 10 focused functions with 5 required arguments each is preferable to implementing one "do-it-all" function with 50 optional arguments.
 
 ### Args as Discriminated Type
 
-When applicable use **discriminated union type** to eliminate optional properties, which will decrease complexity on function API and only required properties will be passed depending on its use case.
+When applicable, use a **discriminated union type** to eliminate optional properties. This decreases complexity in a function's API and ensures that only the required properties are passed for each use case.
 
 ```ts
 // ❌ Avoid optional properties as they increase complexity and ambiguity in function APIs
@@ -98,6 +98,6 @@ Consider the advantages of explicitly defining the return type of a function:
 As context matters, use explicit return types when they add clarity and safety.
 
 <Rule
-  prefix="Explicitly defining the return type of a function is encouraged, although not required"
-  href="https://typescript-eslint.io/rules/explicit-function-return-type/"
->{`"@typescript-eslint/explicit-function-return-type": "error"`}</Rule>
+  prefix="Require explicit return types at module boundaries"
+  href="https://typescript-eslint.io/rules/explicit-module-boundary-types/"
+>{`"@typescript-eslint/explicit-module-boundary-types": "error"`}</Rule>

@@ -187,6 +187,25 @@ def _save_image(data: bytes, output_dir: str) -> str:
     return path
 
 
+def _apply_attribution_headers(headers: dict) -> None:
+    """Forward run/source attribution passed down by the parent agent via env.
+
+    Kept local to this script so it stays self-contained; only invoked for the
+    first-party provider so identifiers never leak to third-party vendors.
+    """
+    mapping = {
+        "COW_AGENT_RUN_ID": "X-Agent-Run-Id",
+        "COW_CLIENT_SOURCE": "X-Client-Source",
+        "COW_CLIENT_OS": "X-Client-OS",
+        "COW_CLIENT_VERSION": "X-Client-Version",
+        "COW_DEPLOYMENT_ID": "X-Deployment-Id",
+    }
+    for env_name, header in mapping.items():
+        value = (os.environ.get(env_name) or "").strip()
+        if value:
+            headers[header] = value
+
+
 # ---------------------------------------------------------------------------
 # Provider interface
 # ---------------------------------------------------------------------------
@@ -404,6 +423,10 @@ class LinkAIProvider(ImageProvider):
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
+        # Attribution headers so this out-of-process call joins the same run as
+        # its parent agent. Only sent to LinkAI (this provider), never to other
+        # vendors. Values are forwarded from the agent via env vars.
+        _apply_attribution_headers(headers)
 
         if _HAS_REQUESTS:
             resp = requests.post(url, headers=headers, json=payload, timeout=300)

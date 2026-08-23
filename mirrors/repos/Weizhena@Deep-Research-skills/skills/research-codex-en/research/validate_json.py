@@ -23,16 +23,54 @@ _SKIP_KEYS = {"_source_file", "uncertain"}
 
 
 def load_fields_yaml(fields_path):
+    """Parse fields.yaml in the single schema the research skills emit:
+
+        fields:
+          <category>:
+            - {name: ..., description: ..., detail_level: ...}
+            ...
+        uncertain: []
+
+    This is the ONLY accepted shape. A fields.yaml that does not match fails
+    loudly instead of silently passing with zero fields.
+
+    Required semantics (so the validator can never pass vacuously / "lie"):
+      - if ANY field carries an explicit `required:` key -> opt-in, preserve it
+      - else (detail_level-style, no markers)            -> ALL fields required, because the
+        script's stated purpose is COMPLETE field coverage.
+    """
     with fields_path.open(encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    items = [
-        (field["name"], category["category"], field.get("required", False))
-        for category in data.get("field_categories", [])
-        for field in category.get("fields", [])
-    ]
-    all_fields = {name for name, _, _ in items}
-    required_fields = {name for name, _, required in items if required}
-    field_categories = {name: category for name, category, _ in items}
+        data = yaml.safe_load(f) or {}
+    defs = []  # (name, category, required_or_None)
+
+    fn = data.get("fields")
+    if not isinstance(fn, dict):
+        print(f"[ERROR] fields.yaml must use the `fields: {{<category>: [{{name, ...}}]}}` shape; got {type(fn).__name__ if fn is not None else 'None'}.")
+        sys.exit(1)
+
+    for cname, flist in fn.items():
+        if cname in _SKIP_KEYS:
+            continue
+        if not isinstance(flist, list):
+            print(f"[ERROR] category `{cname}` must map to a list of field dicts; got {type(flist).__name__}.")
+            sys.exit(1)
+        for field in flist:
+            if isinstance(field, dict) and "name" in field:
+                defs.append((str(field["name"]), str(cname), field.get("required", None)))
+            else:
+                print(f"[ERROR] field entry under `{cname}` must be a dict with a `name` key; got {field!r}.")
+                sys.exit(1)
+
+    if not defs:
+        print("[ERROR] fields.yaml parsed zero fields. Ensure at least one category with field dicts.")
+        sys.exit(1)
+
+    all_fields = {n for n, _, _ in defs}
+    if any(r is not None for _, _, r in defs):
+        required_fields = {n for n, _, r in defs if r}
+    else:
+        required_fields = set(all_fields)
+    field_categories = {n: c for n, c, _ in defs}
     return all_fields, required_fields, field_categories
 
 

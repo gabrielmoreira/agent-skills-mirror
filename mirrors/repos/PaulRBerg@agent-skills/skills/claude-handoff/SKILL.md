@@ -31,8 +31,8 @@ approved plan.
 - Run only after explicit user invocation. Classify a task research-only when its requested outcome is findings,
   evidence, or an assessment, with no repository changes or implementation plan requested. All handoffs may run in any
   host mode; implementation handoffs must pass through the Plan Phase and receive explicit user approval before launch.
-- Claude owns decisions, the final plan, and orchestration; delegate investigation to read-only research subagents
-  before writing the plan on complex tasks.
+- Claude owns decisions, the final plan, and orchestration. Delegate investigation to read-only research subagents only
+  when task and repository evidence make it useful before planning.
 - Research agents gather evidence and report findings; never edit files, decide design, or return plans.
 - Implementation agents implement their assigned part of the approved plan — inspect, edit, validate — never redesign or
   return another plan.
@@ -157,9 +157,10 @@ scope decomposition is the only lever for balancing a wave.
 Require `$code-polish` for nonlocal invariants, concurrency or state machines, migrations or parsing, auth or security,
 retry or error semantics, and public API or data-contract changes; file count alone is not a trigger.
 
-Require `$agents-brain polish` when approved work changes a target its workflow supports: README.md, AGENTS.md or
-CLAUDE.md, a durable context doc, or an existing project-installed skill under `.agents/skills` (source catalog skills
-under `skills/` are excluded). Mark both required when both rules apply, neither when neither applies.
+Require `$agents-brain polish` when approved work changes a target its polish workflow supports: README.md, AGENTS.md or
+CLAUDE.md, a durable context doc, an existing project-installed skill under `.agents/skills`, or an existing git-tracked
+source-catalog skill under `skills/` where polish is prose-only. Installed copies under managed agent-config roots
+remain excluded. Mark both passes required when both trigger rules apply; mark neither when neither applies.
 
 Do not spawn implementation subagents until the user approves the plan — the read-only research phase is the only
 pre-approval exception.
@@ -254,10 +255,9 @@ nothing qualifies, stay silent — no placeholder, no "nothing found" note.
   required pass that blocks, fails, or writes outside its supported scope blocks later polish and cross-repository
   commits.
 - If approved work changes Git repositories other than the one where the handoff began, automatically invoke `$commit`
-  from each additional repository once its work, validation, and required polish are complete. `$commit` owns semantic
-  message composition; its `ai-commit` backend owns deterministic transaction/commit/push mechanics. Scope each
-  invocation to files changed there, skip separate confirmation, and never commit incomplete, blocked, unexpected, or
-  out-of-scope changes. Push only when explicitly requested.
+  from each additional repository once its work, validation, and required polish are complete, scoped to files changed
+  there; skip separate confirmation and never commit incomplete, blocked, unexpected, or out-of-scope changes. Push only
+  when explicitly requested.
 - Finish with `### 🏁 Claude handoff — <completed or blocked>`, the strategy and agent count, and a compact per-agent
   result table. Follow with `### 📦 Changed` as a file tree, `### 🧪 Verification`, `### 🧹 Polish` when run, automatic
   cross-repository commit hashes when any, and an always-present `### ⚠️ Risks / blockers`; list each polish pass and

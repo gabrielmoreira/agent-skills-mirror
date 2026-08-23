@@ -46,6 +46,14 @@ Tags declared in `SKILL.md` appear automatically. Tags edited in Settings are a
 user override and are also applied to Agent `search_skills` queries after the
 next idle-Agent rebuild.
 
+`search_skills` normalizes case and common separators before matching names,
+descriptions, and tags. Continuous CJK queries also contribute bounded 2–4
+character terms, so ordinary Chinese task descriptions do not have to contain
+spaces to find matching Chinese metadata. Agent guidance asks for one retry
+with cross-language domain synonyms when the first query has no confident
+match. Search is still local lexical retrieval; it does not call an embedding
+service or send the Skill catalog to a third party.
+
 The **Capabilities** summary uses the same current enabled Skill inventory and
 splits it into bundled and project-added counts. Project-added includes project,
 global, extra-path, and project-enabled plugin Skills. MCP counts are split into

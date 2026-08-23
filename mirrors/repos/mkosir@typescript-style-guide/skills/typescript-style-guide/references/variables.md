@@ -2,7 +2,7 @@
 
 ### Const Assertion
 
-Strive declaring constants using const assertion `as const`:
+Strive to declare constants using the const assertion `as const`:
 
 Constants are used to represent values that are not meant to change, ensuring reliability and consistency in a codebase. Const assertions preserve literal types and infer readonly properties.
 
@@ -31,7 +31,7 @@ Examples:
   BAR_LOCATION.push(10);
 
   // ✅ Use
-  const BAR_LOCATION = [50, 130] as const; // Type 'readonly [10, 20]'
+  const BAR_LOCATION = [50, 130] as const; // Type 'readonly [50, 130]'
   BAR_LOCATION.push(10); // Error
   ```
 
@@ -44,13 +44,13 @@ Examples:
 
   // ✅ Use
   const RATE_LIMIT = 25;
-  const RATE_LIMIT_MESSAGE = `Max number of requests/min is ${RATE_LIMIT}.` as const; // Type 'Rate limit exceeded! Max number of requests/min is 25.'
+  const RATE_LIMIT_MESSAGE = `Max number of requests/min is ${RATE_LIMIT}.` as const; // Type 'Max number of requests/min is 25.'
   ```
 
 ### Enums & Const Assertion
 
 Enums are discouraged in the TypeScript ecosystem due to their runtime cost and quirks.  
-The TypeScript documentation outlines several [pitfalls](https://www.typescriptlang.org/docs/handbook/enums.html#const-enum-pitfalls), and recently introduced the [--erasableSyntaxOnly](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-8.html#the---erasablesyntaxonly-option) flag to disable runtime-generating features like enums altogether.
+The TypeScript documentation outlines several [pitfalls](https://www.typescriptlang.org/docs/handbook/enums.html#const-enum-pitfalls), and TypeScript 5.8 introduced the [--erasableSyntaxOnly](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-8.html#the---erasablesyntaxonly-option) flag to disable runtime-generating features like enums altogether.
 
 <Rule href="https://eslint.org/docs/latest/rules/no-restricted-syntax">{`'no-restricted-syntax': [
     'error',
@@ -60,7 +60,7 @@ The TypeScript documentation outlines several [pitfalls](https://www.typescriptl
     },
 ]`}</Rule>
 
-As rule of a thumb, prefer:
+As a rule of thumb, prefer:
 
 - Literal types whenever possible.
 - Const assertion arrays when looping through values.
@@ -177,4 +177,3 @@ Strive to:
 
 - Use `null` when a value is explicitly empty, such as an assignment or function return value.
 - Use `undefined` when a value is missing or omitted, such as an optional field in a form, request payload, or database query ([Prisma differentiation](https://www.prisma.io/docs/concepts/components/prisma-client/null-and-undefined)).
-

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kyegomez/swarms` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `kyegomez/swarms` — 26 default patterns, 2 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `kyegomez/swarms` — 26 default patterns, 0 followed patterns, 4 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 4 |
+| Followed pats | 2 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `kyegomez/swarms` — 26 default patterns, 0 followed patterns, 4 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
 
 ## File Index
 
@@ -63,6 +64,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`examples/single_agent/capabilities/skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/code-review/SKILL.md) |
 | 3 | ✓ | [`examples/single_agent/capabilities/skills/data-visualization/SKILL.md`](examples/single_agent/capabilities/skills/data-visualization/SKILL.md) |
 | 4 | ✓ | [`examples/single_agent/capabilities/skills/financial-analysis/SKILL.md`](examples/single_agent/capabilities/skills/financial-analysis/SKILL.md) |
+| 5 | ✓ | [`SKILL.md`](SKILL.md) |
+| 6 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

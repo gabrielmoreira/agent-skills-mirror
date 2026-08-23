@@ -32,6 +32,17 @@ Full frontmatter conventions in [`docs/authoring.md`](docs/authoring.md).
 - If a plugin wraps a third-party API, package, or service that you own or
   maintain, disclose that relationship in the PR description and the plugin
   README.
+- Plugin payloads must not contain runnable machinery for collecting payment or
+  gating access. A script that takes payment, verifies a transaction, or grants
+  and revokes access to a repository or service is out of scope, whether it
+  charges the installing user or helps the installing user charge someone else.
+  Verifying a transaction, checking a licence or entitlement, and granting or
+  revoking access are each covered on their own, so splitting the steps across
+  tools does not get around the rule. Teaching an agent to build payment,
+  licensing, or access-control features in the user's own application is a
+  different thing and is welcome, and the `payment-processing` plugin is the
+  reference example of that. The line is whether the payload operates the
+  contributor's commercial relationship or only explains how to build one.
 
 ## External and vendor plugins
 
@@ -64,19 +75,25 @@ Every PR runs these on CI (`.github/workflows/`); run them locally before pushin
 
 ```bash
 make validate STRICT=1     # structural validation across all harness outputs
-make garden STRICT=1       # drift, dead-link, stale-artifact detection
+make garden                # drift, dead-link, stale-artifact detection
 make test                  # full pytest suite (plugin-eval + tools/tests/)
 make smoke-test            # real-CLI subprocess tests (OpenCode, Antigravity, Codex, Claude)
 ```
 
+`make garden STRICT=1` also fails on warnings. Main currently carries ten
+`SKILL_OVER_CODEX_CAP` warnings, so treat it as something to read rather than a
+pass/fail gate until those skills are split. CI gates on errors only.
+
 Code-quality checks (also in CI):
 
 ```bash
-cd plugins/plugin-eval
-uv run ruff check ../../tools/ src/plugin_eval/
-uv run ruff format --check ../../tools/ src/plugin_eval/
-uv run ty check ../../tools/ src/plugin_eval/
+make lint      # ruff check, ruff format --check, and ty
+make format    # apply ruff format and safe fixes
 ```
+
+Both run from `plugins/plugin-eval/`, which is where the ruff and ty config lives.
+Invoking ruff from the repo root instead silently falls back to line-length 88 and
+disagrees with CI.
 
 ## Cross-harness portability checklist
 

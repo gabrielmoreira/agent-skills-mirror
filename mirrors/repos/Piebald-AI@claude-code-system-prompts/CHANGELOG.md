@@ -4,6 +4,22 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.241](https://github.com/Piebald-AI/claude-code-system-prompts/commit/0260612)
+
+_+182 tokens_
+
+- **NEW:** Data: SDK set max thinking tokens request schema — Documents the `set_max_thinking_tokens` control request, including resetting an omitted or null token budget to the session default and optionally setting or clearing the session-scoped thinking display mode.
+
+# [2.1.240](https://github.com/Piebald-AI/claude-code-system-prompts/commit/18f32d7)
+
+_-1,911 tokens_
+
+- **NEW:** Tool Description: Agent (simple usage notes) — Adds concise Agent-tool guidance covering when to delegate, fork behavior, resuming agents, worktree isolation, background execution, parallel launches, and context restrictions.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Expands Self-Modification protection to an explicit set of agent configuration paths, while treating `.claude/worktrees/<name>/` and unlisted project-specific `.claude/` directories as ordinary project files unless they contain protected configuration.
+- Agent Prompt: Worker fork — Clarifies that “default to forking” guidance belongs to the parent agent and that the fork must execute its directive directly without spawning another agent.
+- Tool Description: Snooze (delay and reason guidance) — Prohibits short-interval polling for harness-tracked background work, recommends a 1200-second-or-longer fallback heartbeat, and reserves short cache-preserving delays for external state such as CI runs, deployments, and remote queues.
+- Tool Description: Write (read existing file first) — Clarifies that Write is for creating files or fully replacing previously read files, while partial modifications should use Edit.
+
 # [2.1.239](https://github.com/Piebald-AI/claude-code-system-prompts/commit/50c563b)
 
 _+960 tokens_

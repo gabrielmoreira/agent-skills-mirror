@@ -25,8 +25,7 @@ completed work or a decision-complete handoff, without losing progress. Optimize
 roughly five minutes end to end. Use `$ARGUMENTS` as the user's deadline or departure note when present; a stated
 deadline overrides the default budget.
 
-This skill applies equally to orchestrated sessions with active subagents and to a single agent working alone. In the
-single-agent case, skip Worker Wind-Down and apply the same wrap-up rules to your own in-progress work.
+In a single-agent session, skip Worker Wind-Down and apply the same rules to the session's own in-progress work.
 
 ## Freeze
 
@@ -65,9 +64,9 @@ problem becomes remaining work in the handoff.
 
 ## Secure
 
-Inventory the working tree with `git status` and `git diff`, and map every change to a workstream using the wrap-up
-reports. Classify each workstream as completed (edits done and validated), partial (edits or validation unfinished), or
-untouched.
+Inventory the working tree with `git status --short` and `git diff --stat`, and map every change to a workstream using
+the wrap-up reports. Classify each workstream as completed (edits done and validated), partial (edits or validation
+unfinished), or untouched.
 
 Exclude every `active-unsettled` scope from validation, staging, and commits. Preserve its current coordination claims
 and avoid overlapping writes until the worker settles; a snapshot may describe visible paths only as provisional
@@ -95,7 +94,7 @@ scope. Do not turn its still-running assignment into immediately actionable repl
 
 ## Report
 
-Finish with `### 🏁 Hurry-up — session parked` followed by, compactly: completed workstreams with commit hashes when
-committed, partial workstreams and their exact stopping points, active-unsettled workers with their settlement
-conditions, the handoff command(s) verbatim from task-handoff's report, and an always-present risks line (`none` when
-empty). Keep it short — the user is walking out the door.
+Finish with `### 🏁 Hurry-up — session parked` followed by, compactly: completed workstreams with their `$commit`
+receipt OIDs when committed (never a follow-up `git log`), partial workstreams and their exact stopping points,
+active-unsettled workers with their settlement conditions, the handoff command(s) verbatim from task-handoff's report,
+and an always-present risks line (`none` when empty). Keep it short — the user is walking out the door.

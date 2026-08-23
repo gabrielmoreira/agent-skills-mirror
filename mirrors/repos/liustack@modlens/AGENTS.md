@@ -22,7 +22,7 @@ Visual parsing is the only job. Web search and page fetching live in `modsearch`
 
 - **Six vision providers behind one interface** (`src/providers/index.ts`). Subprocess providers implement `buildInvocation` + `parseOutput` (antigravity-cli, claude-cli, kimi-cli); in-process API providers implement `execute` (gemini-api, openai, anthropic). `antigravity-cli` is the zero-config default, and `kimi-cli` runs only when named, since it spends a subscription.
 - **Schema-enforced JSON output** wherever the backend allows: `--json-schema` on the Claude and Antigravity CLIs (kimi-cli has no such flag and uses the template), `responseJsonSchema` on gemini-api, a forced tool call on anthropic. The openai route uses a template-instance prompt (weak gateways echo raw schemas back) plus shape validation that fails loudly.
-- **Layered config**: CLI flags > `~/.modlens/config.json` (managed by `modlens config init/set/show`, 0600, masked rendering) > built-ins. Since 3.17.0 a provider's settings come from one source, whole: the file when it mentions that provider, the bound environment variables (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL`) when it does not. They used to merge field by field, and an endpoint and a key are one credential, so drawing halves from two places built a pairing that existed in neither. `MODLENS_MODEL`, `MODLENS_HARNESS` and the proxy conventions are unaffected.
+- **Layered config**: CLI flags > `~/.modlens/config.json` (managed by `modlens config init/set/show`, 0600, masked rendering) > built-ins. Since 3.17.0 a provider's settings come from one source, whole: the file when it mentions that provider, the bound environment variables (`GEMINI_API_KEY`, `GEMINI_BASE_URL`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL`) when it does not. They used to merge field by field, and an endpoint and a key are one credential, so drawing halves from two places built a pairing that existed in neither. `apiKey` (file or env) accepts a comma-separated list and rotates after auth, rate-limit, or quota failures. Quota cooldown state lives in `~/.modlens/state.json`. `MODLENS_MODEL`, `MODLENS_HARNESS` and the proxy conventions are unaffected.
 - **Vendor knobs pass through, they are not modelled**: `<provider>.extraBody` (or `--extra-body`) deep-merges a JSON object into the request body of the three API providers, which is how thinking gets turned off. No per-vendor table lives in the code, because the spelling differs per gateway and a wrong guess either 400s or is ignored silently. The fields carrying the image, the prompt, and the schema are reserved (`src/util/extraBody.ts`).
 - **Paste recovery across harnesses**: `modlens recover-paste` pulls pasted image bytes out of local session storage (pastes never hit a regular temp file). It supports Claude Code and Pi (JSONL transcripts) and OpenCode (SQLite), detects Codex and defers to its on-disk temp files, and scopes to the harness it runs inside via process ancestry. Exact targeting via `--session`, else newest-image-timestamp scanning. Storage layouts are each harness's internals, so treat this as best-effort.
 - **Single responsibility**: visual parsing only. Web search and page fetching live in `modsearch`.
@@ -35,9 +35,10 @@ pnpm install
 
 ```
 src/
-├── main.ts           # CLI entry: analyze (default), guard, recover-paste, doctor, config subcommands
+├── main.ts           # CLI entry: analyze (default), guard, recover-paste, doctor, config, state subcommands
 ├── analyzer.ts       # orchestration: input resolution, config merge, provider dispatch
 ├── config.ts         # layered config load/set/show/init
+├── cooldown.ts       # quota cooldown store at ~/.modlens/state.json
 ├── doctor.ts         # offline diagnostics: Node, provider readiness, selection, harness, config perms
 ├── prompt.ts         # vision prompt (local/remote agent modes + inline api mode)
 ├── schema.ts         # vision result JSON schema (single source of truth)

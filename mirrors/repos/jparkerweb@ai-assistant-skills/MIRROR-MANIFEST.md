@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jparkerweb/ai-assistant-skills` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
+Mirror of `jparkerweb/ai-assistant-skills` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jparkerweb/ai-assistant-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 56 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,18 +103,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/ai-assist-project-summary/references/part1-project-overview.md`](skills/ai-assist-project-summary/references/part1-project-overview.md) |
 | 43 | ✓ | [`skills/ai-assist-project-summary/references/part2-engineer-status.md`](skills/ai-assist-project-summary/references/part2-engineer-status.md) |
 | 44 | ✓ | [`skills/ai-assist-project-summary/SKILL.md`](skills/ai-assist-project-summary/SKILL.md) |
-| 45 | ✓ | [`skills/ai-assist-security-audit/references/dimensions.md`](skills/ai-assist-security-audit/references/dimensions.md) |
-| 46 | ✓ | [`skills/ai-assist-security-audit/references/output-template.md`](skills/ai-assist-security-audit/references/output-template.md) |
-| 47 | ✓ | [`skills/ai-assist-security-audit/references/scoring.md`](skills/ai-assist-security-audit/references/scoring.md) |
-| 48 | ✓ | [`skills/ai-assist-security-audit/SKILL.md`](skills/ai-assist-security-audit/SKILL.md) |
-| 49 | ✓ | [`skills/ai-assist-tech-debt/references/dimensions.md`](skills/ai-assist-tech-debt/references/dimensions.md) |
-| 50 | ✓ | [`skills/ai-assist-tech-debt/references/output-template.md`](skills/ai-assist-tech-debt/references/output-template.md) |
-| 51 | ✓ | [`skills/ai-assist-tech-debt/references/scoring.md`](skills/ai-assist-tech-debt/references/scoring.md) |
-| 52 | ✓ | [`skills/ai-assist-tech-debt/SKILL.md`](skills/ai-assist-tech-debt/SKILL.md) |
-| 53 | ✓ | [`skills/ai-assist-test-audit/references/dimensions.md`](skills/ai-assist-test-audit/references/dimensions.md) |
-| 54 | ✓ | [`skills/ai-assist-test-audit/references/output-template.md`](skills/ai-assist-test-audit/references/output-template.md) |
-| 55 | ✓ | [`skills/ai-assist-test-audit/references/scoring.md`](skills/ai-assist-test-audit/references/scoring.md) |
-| 56 | ✓ | [`skills/ai-assist-test-audit/SKILL.md`](skills/ai-assist-test-audit/SKILL.md) |
+| 45 | ✓ | [`skills/ai-assist-prototype/assets/template.html`](skills/ai-assist-prototype/assets/template.html) |
+| 46 | ✓ | [`skills/ai-assist-prototype/evals/evals.json`](skills/ai-assist-prototype/evals/evals.json) |
+| 47 | ✓ | [`skills/ai-assist-prototype/references/handoff-format.md`](skills/ai-assist-prototype/references/handoff-format.md) |
+| 48 | ✓ | [`skills/ai-assist-prototype/references/token-contract.md`](skills/ai-assist-prototype/references/token-contract.md) |
+| 49 | ✓ | [`skills/ai-assist-prototype/references/tui-prototypes.md`](skills/ai-assist-prototype/references/tui-prototypes.md) |
+| 50 | ✓ | [`skills/ai-assist-prototype/references/variant-playbook.md`](skills/ai-assist-prototype/references/variant-playbook.md) |
+| 51 | ✓ | [`skills/ai-assist-prototype/scripts/build-prototype.mjs`](skills/ai-assist-prototype/scripts/build-prototype.mjs) |
+| 52 | ✓ | [`skills/ai-assist-prototype/scripts/validate-prototype.mjs`](skills/ai-assist-prototype/scripts/validate-prototype.mjs) |
+| 53 | ✓ | [`skills/ai-assist-prototype/SKILL.md`](skills/ai-assist-prototype/SKILL.md) |
+| 54 | ✓ | [`skills/ai-assist-security-audit/references/dimensions.md`](skills/ai-assist-security-audit/references/dimensions.md) |
+| 55 | ✓ | [`skills/ai-assist-security-audit/references/output-template.md`](skills/ai-assist-security-audit/references/output-template.md) |
+| 56 | ✓ | [`skills/ai-assist-security-audit/references/scoring.md`](skills/ai-assist-security-audit/references/scoring.md) |
+| 57 | ✓ | [`skills/ai-assist-security-audit/SKILL.md`](skills/ai-assist-security-audit/SKILL.md) |
+| 58 | ✓ | [`skills/ai-assist-tech-debt/references/dimensions.md`](skills/ai-assist-tech-debt/references/dimensions.md) |
+| 59 | ✓ | [`skills/ai-assist-tech-debt/references/output-template.md`](skills/ai-assist-tech-debt/references/output-template.md) |
+| 60 | ✓ | [`skills/ai-assist-tech-debt/references/scoring.md`](skills/ai-assist-tech-debt/references/scoring.md) |
+| 61 | ✓ | [`skills/ai-assist-tech-debt/SKILL.md`](skills/ai-assist-tech-debt/SKILL.md) |
+| 62 | ✓ | [`skills/ai-assist-test-audit/references/dimensions.md`](skills/ai-assist-test-audit/references/dimensions.md) |
+| 63 | ✓ | [`skills/ai-assist-test-audit/references/output-template.md`](skills/ai-assist-test-audit/references/output-template.md) |
+| 64 | ✓ | [`skills/ai-assist-test-audit/references/scoring.md`](skills/ai-assist-test-audit/references/scoring.md) |
+| 65 | ✓ | [`skills/ai-assist-test-audit/SKILL.md`](skills/ai-assist-test-audit/SKILL.md) |
 
 ---
 

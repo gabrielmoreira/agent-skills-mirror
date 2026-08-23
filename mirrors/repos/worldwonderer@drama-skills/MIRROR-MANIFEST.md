@@ -232,9 +232,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 171 | ✓ | [`skills/short-drama/assets/reference-observation.example.jsonl`](skills/short-drama/assets/reference-observation.example.jsonl) |
 | 172 | ✓ | [`skills/short-drama/references/audience-reveal.md`](skills/short-drama/references/audience-reveal.md) |
 | 173 | ✓ | [`skills/short-drama/references/contract-and-ownership.md`](skills/short-drama/references/contract-and-ownership.md) |
-| 174 | ✓ | [`skills/short-drama/references/creator-workflow.md`](skills/short-drama/references/creator-workflow.md) |
-| 175 | ✓ | [`skills/short-drama/references/knowhow-index.md`](skills/short-drama/references/knowhow-index.md) |
-| 176 | ✓ | [`skills/short-drama/references/lifecycle-commands.md`](skills/short-drama/references/lifecycle-commands.md) |
+| 174 | ✓ | [`skills/short-drama/references/creator-documents.md`](skills/short-drama/references/creator-documents.md) |
+| 175 | ✓ | [`skills/short-drama/references/creator-workflow.md`](skills/short-drama/references/creator-workflow.md) |
+| 176 | ✓ | [`skills/short-drama/references/knowhow-index.md`](skills/short-drama/references/knowhow-index.md) |
 | 177 | ✓ | [`skills/short-drama/references/look-development.md`](skills/short-drama/references/look-development.md) |
 | 178 | ✓ | [`skills/short-drama/references/pickup-and-alternate.md`](skills/short-drama/references/pickup-and-alternate.md) |
 | 179 | ✓ | [`skills/short-drama/references/production-form-profiles.md`](skills/short-drama/references/production-form-profiles.md) |

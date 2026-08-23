@@ -1,6 +1,6 @@
 ---
 name: config-loading-precedence
-description: How Xberg resolves configuration — CLI-mode and server/MCP-mode precedence orders, config file auto-discovery (xberg.{toml,yaml,json}), field-level inline JSON merge (merge_json_into_config), config file formats, and apply_extraction_overrides. Load when adding a config flag or env var, changing config precedence, or debugging why a setting is or isn't taking effect.
+description: How Xberg resolves configuration — CLI-mode and server/MCP-mode precedence orders, config file auto-discovery (xberg.toml walk-up, then the user config dir), field-level inline JSON merge (merge_json_into_config), the ExtractionOverrides CLI layer, and the two mechanisms that make a config change silently do nothing. Load when adding a config flag or env var, changing config precedence, or debugging why a setting is or isn't taking effect.
 ---
 
 # Configuration Loading & Precedence
@@ -10,7 +10,7 @@ description: How Xberg resolves configuration — CLI-mode and server/MCP-mode p
 1. Individual CLI flags (`--ocr`, `--output-format`, `--chunk`)
 2. Inline JSON config (`--config-json` or `--config-json-base64`)
 3. Config file (`--config path.toml`)
-4. Auto-discovered config (`xberg.{toml,yaml,json}` in cwd/parents)
+4. Auto-discovered config (`xberg.toml` in cwd/parents, then the user config dir)
 5. Default values
 
 ## Server/MCP Mode Precedence
@@ -22,7 +22,15 @@ description: How Xberg resolves configuration — CLI-mode and server/MCP-mode p
 
 ## Config File Discovery
 
-Searches current directory and parents for `xberg.toml`, `xberg.yaml`, or `xberg.json`. Stops at first match.
+`ExtractionConfig::discover()` (`core/config/extraction/loaders.rs`) does two different things:
+
+1. Walks the current directory and its parents looking for **`xberg.toml` only** — no
+   `.yaml`/`.yml`/`.json` at this stage. First hit wins.
+2. If that finds nothing, falls back to the per-user global config directory
+   (`dirs::config_dir()/xberg`) and probes four basenames in a fixed order:
+   `xberg.toml`, `xberg.yaml`, `xberg.yml`, `xberg.json`.
+
+So a project-local `xberg.yaml` is **not** auto-discovered — pass it with `--config`.
 
 ## Inline JSON Config
 
@@ -55,12 +63,34 @@ max_archive_size = 524288000
 
 ## CLI Flag Overrides
 
-In `commands.rs`: `apply_extraction_overrides()` applies individual flags on top of merged config.
+`crates/xberg-cli/src/commands/overrides.rs`: the `ExtractionOverrides` struct's `validate()`
+runs first, then `apply(self, config: &mut ExtractionConfig)` lays individual CLI flags over
+the merged config. There is no `apply_extraction_overrides()` and no `commands.rs` —
+`commands/` is a directory.
+
+Inline JSON enters through `apply_json_overrides(config, config_json, config_json_base64)`
+(`crates/xberg-cli/src/input.rs`), which delegates to `merge_json_into_config`.
+
+## Two silent no-op mechanisms
+
+**Duplicate `Default` impls.** `TesseractConfig` is defined twice — public
+(`types/formats.rs`, binding-friendly types) and internal (`ocr/types.rs`, engine-side types)
+— bridged by a `From` impl, each with its own `Default`. Changing one default fixes only the
+routes that materialise that struct. Before changing any config default, grep the **bare**
+type name (a `pub use module::*;` makes a qualified path unsearchable) and check for a second
+definition.
+
+**Unknown keys are ignored.** `#[serde(deny_unknown_fields)]` is on exactly two structs:
+`ExtractionConfig` (`core/config/extraction/core.rs`) and `UrlExtractionConfig`
+(`core/config/extraction/types.rs`). Every nested config silently ignores a typo'd key, so a
+wrong setting parses clean, does nothing, and the test still passes. Write config fixtures
+against the serde **wire** names (`ChunkingConfig` declares `max_characters` but renames to
+`max_chars`), and assert the parsed config differs from the default rather than that it parsed.
 
 ## Critical Rules
 
 1. CLI flags always win over config file
 2. JSON merge is field-level, not whole-object
-3. Auto-discovery stops at first config file found
+3. Auto-discovery walks parents for `xberg.toml` only; other extensions need `--config`
 4. `--config-json-base64` for shell-safe JSON passing
 5. Server config uses `[server]` section + extraction config

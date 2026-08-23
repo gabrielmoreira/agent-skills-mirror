@@ -384,8 +384,8 @@ must_phrases: [over-the-shoulder, blurred foreground shoulder]
   eq(parseCardFields('---\nname: 无 id\n---\n'), null, '没有 id 就不是卡片');
 }
 
-const CARDS = loadRecipes(join(here, '../../shot-recipes/references/cards'));
-ok(CARDS.size >= 17, '卡片目录读得出全库');
+const CARDS = loadRecipes(join(here, '../references/test-fixtures/shot-recipes'));
+eq(CARDS.size, 3, '最小卡片夹具三张全读出');
 ok(CARDS.get('ots-shot-reverse').must_phrases.includes('over-the-shoulder'), '真实卡片的必备短语读得出来');
 eq(CARDS.get('ots-shot-reverse').cuts[0], 2, '真实卡片的格数下限读得出来');
 eq(loadRecipes(join(here, '../不存在的目录')).size, 0, '目录不存在不崩');

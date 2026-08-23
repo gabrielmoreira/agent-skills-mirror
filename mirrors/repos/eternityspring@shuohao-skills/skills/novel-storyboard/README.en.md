@@ -47,7 +47,7 @@ Same stance as the other four skills in this repo: **a checklist the model grade
 
 The selftest **defeats every gate on purpose** to prove each one actually blocks.
 
-**Shot recipes are an optional vocabulary layer.** A cut may carry an optional `recipe` — a card id from [shot-recipes](../shot-recipes), **per cut, not per segment**, with **multi-cut recipes expressed as a run of consecutive cuts sharing the id** rather than an array. Without shot-recipes installed everything still runs: this skill is self-contained, down to its own 25-line restricted frontmatter parser instead of a cross-directory import. A card's suggested sizes and cameras are **deliberately not gated** — the report's Recipe column marks deviations with `≠` (hover for the suggestion) and `checkup` prints a note. A recipe is vocabulary, not law; make an optional mount stricter and nobody mounts it, and **a gate that blocks wrongly is worse than no gate**.
+**Shot recipes are an optional vocabulary layer.** A cut may carry an optional `recipe` — a card id from an external optional card library, **per cut, not per segment**, with **multi-cut recipes expressed as a run of consecutive cuts sharing the id** rather than an array. Without an external card library installed everything still runs: this skill is self-contained, down to its own 25-line restricted frontmatter parser instead of a cross-directory import. A card's suggested sizes and cameras are **deliberately not gated** — the report's Recipe column marks deviations with `≠` (hover for the suggestion) and `checkup` prints a note. A recipe is vocabulary, not law; make an optional mount stricter and nobody mounts it, and **a gate that blocks wrongly is worse than no gate**.
 
 ## Gate failures accumulate, and `stats` tells you which rule the model breaks most
 
@@ -99,7 +99,7 @@ novel-storyboard → storyboard.json (how to shoot: segments, cuts, frames, H3 p
 node scripts/novel-storyboard.mjs seed script.json --eps 1
 node scripts/novel-storyboard.mjs validate sb.json --script script.json --outline outline.json --cast cast.json
 node scripts/novel-storyboard.mjs checkup sb.json --script script.json
-node scripts/novel-storyboard.mjs validate sb.json --script script.json --shots ../shot-recipes/references/cards   # optional: the 17th gate
+node scripts/novel-storyboard.mjs validate sb.json --script script.json --shots /path/to/cards   # optional: the 17th gate
 node scripts/novel-storyboard.mjs render sb.json --html --script script.json --outline outline.json --art art.json > storyboard-report.html
 node scripts/novel-storyboard.mjs render sb.json --html --lang en --script script.json --outline outline.json --art art.json > storyboard-report.html   # English report UI
 node scripts/novel-storyboard.mjs export sb.json --script script.json   # per-segment folders: f1..fN.png + prompt.md

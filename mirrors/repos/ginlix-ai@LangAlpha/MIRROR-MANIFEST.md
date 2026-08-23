@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 257 file(s) materialized.
+Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 262 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 25
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 257 |
+| Files         | 262 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -314,8 +314,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 253 | ✓ | [`skills/xlsx/scripts/recalc.py`](skills/xlsx/scripts/recalc.py) |
 | 254 | ✓ | [`skills/xlsx/SKILL.md`](skills/xlsx/SKILL.md) |
 | 255 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
-| 256 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 257 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 256 | ✓ | [`tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md`](tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md) |
+| 257 | ✓ | [`tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md`](tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md) |
+| 258 | ✓ | [`tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md`](tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md) |
+| 259 | ✓ | [`tests/fixtures/plugins/skill-defects/skills/good/SKILL.md`](tests/fixtures/plugins/skill-defects/skills/good/SKILL.md) |
+| 260 | ✓ | [`tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md`](tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md) |
+| 261 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 262 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

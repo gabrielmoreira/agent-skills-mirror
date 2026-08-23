@@ -283,6 +283,21 @@ docker compose up -d
 
 逐个节点执行预加载的示例，也可以切换到执行模式，点击运行按钮即可一键执行。
 
+## 装进你自己的 agent（dsh 插件）
+
+TongFlow 也可以**跑在你自己的 agent 里**，作为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的插件——不用装桌面 app，也不用自己起服务：
+
+```sh
+npx @deepseek-ai/dsh@next plugin --profile web add dsh-tongflow
+npx @deepseek-ai/dsh@next web
+```
+
+然后开一个会话，**第一条消息以 `@tongflow` 开头**。这个会话就变成 Studio——聊天、项目的文件树、预览 / 编辑器 / 画布，加一个运行记录抽屉——agent 也就拿到了 TongFlow 的那套工具。其他会话还是原来的 dsh，不受影响。
+
+分工是这么设计的：agent 负责搭项目、把计划、设定和提示词写成普通文件；TongFlow 负责生成，而每一个生成出来的东西都来自一个存好的 `.tongflow.json` 工作流，就放在它的产物旁边——所以你随时可以在画布上打开它、改一改、再跑一遍。这里没有「生成一张图」这种工具，也没有项目模板。插件首次使用时会自己建 Python venv 并克隆官方插件，画布上的节点和插件目录跟线上版一样全。
+
+环境要求和配置项见 **[packages/dsh-tongflow/README.md](../packages/dsh-tongflow/README.md)**。
+
 ## 自定义插件
 
 画布上每一个能跑的节点，背后都是一份**契约**——ABI（[`packages/tongflow/abi/tongflow.abi.json`](../packages/tongflow/abi/tongflow.abi.json)），它定义「有哪些能力」以及「每个能力的输入输出长什么样」，而与「由谁实现」无关。一个插件就是一个小小的 Python 包，挑 ABI 里一个或多个槽，借助 tongflow Python SDK，用 ABI 生成的类型给出**怎么做**的那部分。

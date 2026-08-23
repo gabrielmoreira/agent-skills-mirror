@@ -17,6 +17,12 @@
 
 推荐始终重新运行 story-setup，让部署器按 owner class 处理文件。
 
+### 自嵌套残留
+
+部署清单的 Source 相对 skill 包、Target 相对项目根，两个基准目录在 skills-only 端会重合；经 `.agents/skills → ../skills` 等 symlink 加载时，路径文字不同也可能指向同一目录。部署器会先按 realpath / samefile 语义拒绝同对象与「目标位于源目录内」的递归复制，再删掉已有的 `agent-references/agent-references/`（可能多层）或 `skills/story-setup/skills/` 残留。
+
+OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` 里，重跑时执行的就是项目里那份，自动清理到不了：先手动删掉上述目录。要让项目里的 skill 文本本身更新，还需要更新 oh-story-claudecode 后，用新包覆盖项目 `skills/` 下这 13 个目录。
+
 ## 文件所有权
 
 ### story-setup 管理，可替换
@@ -26,6 +32,7 @@
 - `.claude/agents/` — 所有 agent 定义
 - `.claude/rules/` — 所有 path-scoped 规则
 - `.claude/skills/story-setup/references/agent-references/` — Agent 参考资料副本
+- `skills/{13 known skills}/` — OpenClaw / Reasonix / generic 的项目 skill 副本，仅覆盖 oh-story 已知名称
 - `.zcode/skills/{13 known skills}/`、`.zcode/commands/{13 known commands}.md` — 仅覆盖 oh-story 已知名称
 - `.zcode/hooks/story_zcode_hook.js` — ZCode 专用 Hook runner
 
