@@ -1,6 +1,6 @@
 ---
 name: typescript-style-guide
-description: Apply, review, and explain the opinionated conventions in the TypeScript Style Guide. Use automatically for TypeScript tasks involving type modelling, function APIs, variables and state, naming, source organization, React component design, or tests.
+description: Apply, review, and explain the opinionated conventions in the TypeScript Style Guide. Use automatically for TypeScript tasks involving type modelling, discriminated unions, function APIs, variables and state, naming, source organization, React component design, or tests.
 ---
 
 # TypeScript Style Guide
@@ -18,12 +18,13 @@ Apply only the conventions relevant to the current task. Keep TypeScript, linter
 
 ## Reference routing
 
-- Read [references/types.md](references/types.md) for type modelling, inference, readonly data, object properties, discriminated unions, constants, template literal types, `any`, `unknown`, assertions, type errors, type definitions, arrays, type imports, and generated service types. This reference takes precedence for narrowing `unknown` and assertions, including their runtime null checks.
-- Read [references/functions.md](references/functions.md) for function responsibility, statelessness, purity, side effects, function arguments, function API design, and return types. This reference takes precedence when discriminated unions concern a function's arguments.
-- Read [references/variables.md](references/variables.md) when the task concerns variable declarations, state modelling, enum alternatives, or choosing how application state represents absence with `null` or `undefined`. Do not read it for incidental variables or runtime checks used only for type narrowing.
+- Read [references/types.md](references/types.md) for type modelling, inference, readonly data, constants, template literal types, `any`, `unknown`, assertions, type errors, type definitions, arrays, type imports, and generated service types. This reference takes precedence for narrowing `unknown` and assertions, including their runtime null checks.
+- Read [references/discriminated-unions.md](references/discriminated-unions.md) for general discriminated-union modelling, narrowing, invalid states, exhaustiveness checking, required and optional object properties, application state with variant-specific data, function arguments, and React props. This reference takes precedence when discriminated unions concern application state, function arguments, or React props.
+- Read [references/functions.md](references/functions.md) for function responsibility, statelessness, purity, side effects, function arguments, function API design, and return types.
+- Read [references/variables.md](references/variables.md) when the task concerns variable declarations, simple literal-union state modelling, enum alternatives, or choosing how application state represents absence with `null` or `undefined`. Do not read it for incidental variables or runtime checks used only for type narrowing.
 - Read [references/naming.md](references/naming.md) for named exports, naming conventions, generic type parameters, React naming, comments, and TSDoc.
 - Read [references/source-organization.md](references/source-organization.md) for code collocation, feature-based organization, relative and absolute import paths, and frontend or backend project structure. Do not read it for type-only import semantics, which belong to Types.
-- Read [references/react.md](references/react.md) for React component and hook APIs, required and optional props, discriminated props, props-to-state, component typing and roles, data flow, state placement, and compound components. This reference takes precedence when discriminated unions concern component props.
+- Read [references/react.md](references/react.md) for React component and hook APIs, props-to-state, component typing and roles, data flow, state placement, and compound components.
 - Read [references/tests.md](references/tests.md) for test design, the Arrange-Act-Assert pattern, isolation, implementation details, mocking, test descriptions, and snapshots.
 
 ## Boundaries

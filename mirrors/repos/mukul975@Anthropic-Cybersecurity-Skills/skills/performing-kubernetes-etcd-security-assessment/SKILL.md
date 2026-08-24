@@ -1,10 +1,13 @@
 ---
 name: performing-kubernetes-etcd-security-assessment
-description: Assess the security posture of Kubernetes etcd clusters by evaluating
-  encryption at rest, TLS transport configuration, access controls, backup encryption,
-  and network isolation for the cluster's backing key-value store. Use when auditing
-  or hardening a Kubernetes control plane, since etcd holds Secrets, RBAC policies,
-  and ConfigMaps in plaintext by default and is a high-value target if left unassessed.
+description: >-
+  Assesses the security posture of the etcd cluster backing Kubernetes: encryption at rest,
+  TLS peer and client transport, access control, backup encryption, and network isolation. Use
+  when auditing or hardening a control plane, reviewing whether Secrets are encrypted at rest,
+  or protecting etcd backups, since etcd stores Secrets, RBAC policy, and ConfigMaps in
+  plaintext by default. Keywords: etcd, EncryptionConfiguration, encryption at rest, peer TLS,
+  snapshot, backup, control plane. Do not use for broad cluster-wide CIS checks - use
+  performing-kubernetes-cis-benchmark-with-kube-bench.
 domain: cybersecurity
 subdomain: container-security
 tags:

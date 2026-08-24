@@ -19,6 +19,27 @@ SCENARIO_USE_DETERMINISTIC_MODEL=1 eliza-scenarios run ./test/scenarios
 eliza-scenarios list ./test/scenarios
 ```
 
+## When2Speak Stage-1 evaluation
+
+Run the full labeled JSONL through the same `runV5MessageRuntimeStage1` model
+boundary used by production group messages:
+
+```bash
+bun run --cwd packages/scenario-runner eval:when2speak -- \
+  --input=/path/to/finetune_test_dialogue.jsonl \
+  --provider=anthropic
+```
+
+The command writes `reports/group-chat-timing/when2speak.json`. It reports
+accuracy, SPEAK and SILENT precision/recall/F1, false intervention rate, missed
+intervention rate, and slices by direct address, speaker count, and context
+length. Row-level gold and predicted decisions make every aggregate auditable
+without redistributing the source dialogue in the report. It sends every
+accepted dialogue to Stage 1 in full. A malformed row is recorded as a failure
+and makes the command exit nonzero. Complete Stage-1 trajectories are written
+beside the report under `reports/group-chat-timing/trajectories`; override that
+location with `--run-dir=<dir>`.
+
 ## Writing a scenario
 
 Create a `<name>.scenario.ts` file and export a `ScenarioDefinition`:
@@ -48,6 +69,19 @@ export default {
   ],
 } satisfies ScenarioDefinition;
 ```
+
+### Plugin requirements
+
+Declare npm plugin import specifiers in `requires.plugins`; the runner passes
+each value to the runtime module resolver and registers the exported plugin
+before startup. This supports scoped or unscoped packages and package subpath
+exports without guessing from the spelling. Relative, absolute, `file:`, and
+`workspace:` specifiers fail preflight with a typed error because they are not
+portable runtime package requirements.
+
+If a scenario seed registers an in-file fixture plugin, declare its runtime
+plugin name in `requires.fixturePlugins` instead. Fixture names are verified
+after seeding and are never treated as module specifiers.
 
 ### Turn kinds
 

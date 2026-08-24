@@ -41,8 +41,9 @@ a better completion signal:
   the DOM continuously.
 - `--wait-selector '<css>'`: wait for a stable content element. Prefer this for
   client-rendered lists, articles, and results.
-- `--wait-script '<expression>'`: wait for a JavaScript expression to become
-  truthy.
+- `--wait-script '<expression-or-function>'`: wait for a JavaScript expression
+  to become truthy. If it evaluates to a function, Moli invokes it without
+  arguments on every poll, so `() => window.__ready` is supported.
 - `--wait-script-file <path>`: use a reusable or multiline condition. It is
   mutually exclusive with `--wait-script`.
 - `--wait-response-url <substring>`: wait for an application request whose URL

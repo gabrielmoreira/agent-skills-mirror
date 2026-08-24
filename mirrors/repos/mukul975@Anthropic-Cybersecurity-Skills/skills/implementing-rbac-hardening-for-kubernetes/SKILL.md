@@ -1,10 +1,13 @@
 ---
 name: implementing-rbac-hardening-for-kubernetes
-description: Harden Kubernetes RBAC by implementing least-privilege Roles and ClusterRoles,
-  auditing RoleBindings, eliminating cluster-admin sprawl, separating service accounts,
-  and integrating external identity providers (OIDC). Use when reviewing or tightening
-  Kubernetes access control, removing excessive ClusterRoleBindings, or hardening
-  service-account permissions against privilege escalation and lateral movement.
+description: >-
+  Hardens Kubernetes RBAC by designing least-privilege Roles and ClusterRoles, auditing
+  RoleBindings, eliminating cluster-admin sprawl, separating service accounts, and integrating
+  an external OIDC identity provider. Use when tightening cluster access control, removing
+  excessive ClusterRoleBindings, or hardening service-account permissions against escalation
+  and lateral movement. Keywords: RBAC, Role, ClusterRole, RoleBinding, least privilege,
+  service account, OIDC, cluster-admin. Do not use for discovering existing escalation paths -
+  use auditing-kubernetes-rbac-privilege-escalation.
 domain: cybersecurity
 subdomain: container-security
 tags:

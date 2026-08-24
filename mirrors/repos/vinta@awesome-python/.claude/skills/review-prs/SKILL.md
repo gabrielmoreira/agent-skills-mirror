@@ -6,7 +6,7 @@ argument-hint: [PR numbers]
 
 # Review PRs
 
-A PR review turns the open queue into terminal states: merged, closed, or explicitly parked. The rules live in CONTRIBUTING.md (Quality Requirements, Admission, Review Process, Automatic Rejection) — this skill is the workflow that applies them, not a second copy.
+A PR review turns the open queue into terminal states: merged, closed, or explicitly parked. The rules live in CONTRIBUTING.md (Quality Requirements, Admission, Review Process, Automatic Rejection) — this skill is the workflow that applies them, not a second copy. Every PR named in chat is a PR link, `[#<number>](https://github.com/vinta/awesome-python/pull/<number>)`, so the maintainer can open it from the terminal.
 
 ## 1. Fetch
 
@@ -26,10 +26,10 @@ Group survivors by target use case — PRs proposing entries for the same use ca
 
 ## 4. Act
 
-- **Close**: per closing PR, AskUserQuestion presenting the draft closing comment — the comment states the reason and links CONTRIBUTING.md. Batch up to 4 PRs per call and keep a checklist of which verdicts have been asked; answers often arrive as custom text, and that text is the decision. Arms: close with this comment, close without a comment, keep open. Then `gh pr close <number> --repo vinta/awesome-python --comment "<comment>"`, or a plain close.
+- **Close**: draft each closing comment — it states the reason and links CONTRIBUTING.md. Per batch of up to 4 closing PRs: print each draft in chat, its PR link as a label above a fenced block holding only the comment bytes, then AskUserQuestion over that batch — arms: close with the draft as printed, close without a comment, keep open. The chat print is the review copy; an option description only points at it. Keep a checklist of which verdicts have been asked; answers often arrive as custom text, and that text is the decision — an edited comment replaces the draft. Then `gh pr close <number> --repo vinta/awesome-python --comment "<comment>"`, or a plain close.
 - **Merge**: a clean PR merges with `gh pr merge <number> --repo vinta/awesome-python --merge`. A conflicted one merges locally: `git fetch origin pull/<number>/head`, `git merge FETCH_HEAD` with the standard `Merge pull request #<number> from <owner>/<headRef>` message, resolving the conflict by placing the entry correctly — GitHub still marks the PR merged and the contributor keeps credit. Either way, reconcile the section per CONTRIBUTING before pushing: remove the entry the verdict displaced, fix the new entry's display name and Entry Ordering position, `make test`, commit. An add-only diff that displaces is the normal case — the removal is this step's job, not the contributor's.
-Done when every verdict has been adjudicated by the maintainer and its action executed. A kept-open PR resurfaces next run — that is its point.
+Done when every verdict has been adjudicated by the maintainer and its action executed, with every posted comment byte-identical to a printed draft or to the custom text the maintainer supplied. A kept-open PR resurfaces next run — that is its point.
 
 ## 5. Report
 
-Summary table: PR, verdict, action taken, plus the needs-human list. Done when every fetched PR ends in exactly one state — merged with its section reconciled, closed, or left open (kept open, needs-human, or structure question pending).
+Summary table: PR link, verdict, action taken, plus the needs-human list. Done when every fetched PR ends in exactly one state — merged with its section reconciled, closed, or left open (kept open, needs-human, or structure question pending).

@@ -59,7 +59,7 @@ claude plugin install daymade-skill@daymade-skills
 
 ### Skill Validation and Packaging
 
-Behavior evaluation is risk-scaled by `daymade-skill:skill-creator`: bounded fixes use targeted deterministic checks and narrow instruction changes use at most one or two sampled replays. Tier 3 classifies broad/high-risk work but does not authorize paired baselines, agent fan-out, grading, benchmarking, or a viewer; an explicit user request or a decision-bearing plan plus opt-in passes the separate evidence-budget gate without changing the risk tier. A request to "optimize" an existing skill and a long preceding conversation do not by themselves trigger Tier 3 or conversation-mining. Existing-skill regression, one required fresh-context review, and packaging gates remain separate.
+Behavior evaluation is risk-scaled by `daymade-skill:skill-creator`: bounded fixes use targeted deterministic checks and narrow instruction changes use at most one or two sampled replays. Tier 3 classifies broad/high-risk work but does not authorize paired baselines, agent fan-out, grading, benchmarking, or a viewer; an explicit user request or a decision-bearing plan plus opt-in passes the separate evidence-budget gate without changing the risk tier. A request to "optimize" an existing skill and a long preceding conversation do not by themselves trigger Tier 3 or conversation-mining. Before editing, classify each delta: only behavior-equivalent relocation/deduplication is compression; retirement, scope narrowing, workflow/safety redesign, and bug fixes are separate changes. Existing-skill regression, one bounded fresh-context review with a declared stopping rule, and packaging gates remain separate.
 
 ```bash
 # Quick validation of a skill
@@ -321,7 +321,7 @@ This applies when you change ANY file under a skill directory:
 25. **iOS-APP-developer** - iOS app development with XcodeGen, SwiftUI, and SPM troubleshooting
 26. **fact-checker** - Verify factual claims in documents using web search with automated corrections
 27. **twitter-reader** - Fetch Twitter/X post content using Jina.ai API without JavaScript or authentication
-28. **macos-cleaner** - Intelligent macOS disk space analysis and cleanup with safety-first philosophy, risk categorization, and interactive confirmation
+28. **macos-cleaner** - Targeted-first macOS disk diagnosis and confirmed cleanup, including Apple Content Caching, physical-vs-logical usage, protected-service verification, Docker/OrbStack, caches, remnants, and large files
 29. **skill-reviewer** - Reviews and improves Claude Code skills with a canonical-validator-backed CLI, structured exit semantics, external review, and auto-PR modes
 30. **github-contributor** - Strategic guide for becoming an effective GitHub contributor with opportunity discovery, project selection, and reputation building
 31. **i18n-expert** - Complete internationalization/localization setup and auditing for UI codebases with framework support, key architecture, and parity validation
@@ -377,7 +377,7 @@ This applies when you change ANY file under a skill directory:
 81. **skill-governance** - Enforce source-of-truth discipline for Claude Code skill marketplaces and caches: check source/cache drift, sync through official plugin commands, clean old cache versions, and switch marketplace entries to local source (daymade-skill suite member)
 82. **photo-to-scanned-pdf** - Turn phone photos of paper documents into a scanner-quality A4 PDF with perspective correction, noteshrink enhancement, colored-paper handling, content-based page ordering, and mandatory whole-document visual verification (daymade-docs suite member)
 83. **github-review-pr** - Review one named contributor PR (open or closed under reconsideration) or all open PRs newest-to-oldest against the live base, with immutable OID snapshots, history-discontinuity detection, isolated current-base contribution projection, three-way merge analysis, PR/BASE/SHARED ownership, explicit personal maintainer context, and per-PR review-gated repair or landing
-84. **local-conversation-history** - List recent local Claude Code and Codex conversations in one read-only command; Claude inventory combines active homes with registered archives, de-duplicates session IDs, and both providers use internal stored timestamps rather than file mtime (daymade-claude-code suite member)
+84. **local-conversation-history** - List recent local Claude Code, Codex, and Kimi CLI conversations in one read-only command; Claude inventory combines active homes with registered archives, every provider uses internal timestamps instead of file mtime, and every in-scope Codex session gets a positive-only marker when its canonical writer-lock file is held, with lock-held rows appended beyond the recent limit (daymade-claude-code suite member)
 85. **continue-codex-work** - Recover actionable context from prior Codex CLI rollout files and continue interrupted work without running `codex resume` (daymade-claude-code suite member)
 86. **git-safety-net** - Audit, preserve, recover, and safely retire local Git state across branches, linked/detached worktrees, stashes, dangling commits, and squash/rebase merge uncertainty
 87. **design-style-picker** - Batch-generate and compare visual design directions so a user can choose the style they actually want, instead of guessing one final design
@@ -388,6 +388,7 @@ This applies when you change ANY file under a skill directory:
 92. **macos-watchdog** - Design, deploy, and discipline macOS launchd watchdogs (LaunchAgents/LaunchDaemons that auto-remediate recurring problems) — quiet-watchdog contract (premise-state self-check, patient mode, escalating auto-cooldown, never-resurrect-what-the-user-quit), deploy mechanics (gui vs system domain, TCC/FDA, bootout vs deprecated unload), batch-loop throttling, SRE alert layering, with a source-able cooldown library and idempotent installer script
 93. **daymade-sector-research** - A-share sector research workflow: compute Top-N gainers across all sector constituents, retrieve announcement windows (weekly/monthly), grade market-sentiment evidence (L1/L2/L3), and run Agent Team parallel orchestration with fresh-context adversarial verification (daymade-financial suite member)
 94. **kimi-use** - Drive the logged-in Kimi desktop app through computer-use to query its built-in company, financial, market, academic, and legal data plugins without separate API keys; includes source-labeled query patterns and independent verification for screen-transcribed results
+95. **tibo-reset-codex** - Query current ChatGPT/Codex usage-limit reset timing, interpret Tibo reset announcements, and convert Pacific times to Beijing time through live evidence rather than memory
 
 **Recommendation**: Always suggest `skill-creator` first for users interested in creating skills or extending Claude Code.
 

@@ -126,6 +126,8 @@ Keep plans scannable yet executable without re-reading the conversation. Record 
 
 Name an implementation-notes file next to the plan and instruct the executor to keep it: every deviation the code forced on the plan gets logged under a `## Deviations` heading as what the plan said, what the code required, and which option was taken. A deviation that is not a STOP condition never pauses the work; take the conservative option, log it, keep going. The notes file is what review reads afterwards, so a handoff without one loses every decision made during execution.
 
+A handoff plan also says what an acceptable finish looks like, not only what trips a STOP. STOP conditions name assumptions checkable in advance; an executor that never trips one and has no finish line keeps patching past the point the work stopped converging. The last entry in the implementation-notes file states how the run ended and the evidence for it: the capability works on the real path and the case that motivated the plan improved, or a genuine blocker was removed and the next one isolated, or the run stopped because finishing would need scope the plan does not cover.
+
 ### Step 4: Validate
 
 - Does the plan answer the user's original request?
@@ -248,6 +250,7 @@ Plan edits happen incrementally during the loop; this final pass confirms the fi
 - Blocking edges declared only in a ticket's prose are invisible to whatever picks the tickets up. Use the tracker's native blocking relation, and only where the dependency is real: a false edge parks a ticket that could have started.
 - Re-asking a stalled question in different words never produces the 5/5 answer. Propose a concrete fix to accept or reject, or record what blocks 5/5 and move to the next dimension.
 - A handoff plan with no named implementation-notes file loses every deviation the code forced on the executor, so review afterwards has nothing to read.
+- A handoff plan that says what trips a STOP but never what an acceptable finish looks like leaves an executor that trips nothing patching indefinitely, with nothing in the notes file recording how the run ended.
 - A plan that arrived as pasted text has no file to write resolutions into, so the whole Review evaporates when the session ends. Output the full updated plan in a code block and offer a path.
 
 ## Related skills

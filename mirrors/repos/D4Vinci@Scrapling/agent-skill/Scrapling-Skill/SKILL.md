@@ -1,7 +1,7 @@
 ---
 name: scrapling-official
 description: Scrape web pages using Scrapling with anti-bot bypass (like Cloudflare Turnstile), stealth headless browsing, spiders framework, adaptive scraping, and JavaScript rendering. Use when asked to scrape, crawl, or extract data from websites; web_fetch fails; the site has anti-bot protections; write Python code to scrape/crawl; or write spiders.
-version: "0.4.14"
+version: "0.4.15"
 license: Complete terms in LICENSE.txt
 metadata:
   homepage: "https://scrapling.readthedocs.io/en/latest/index.html"
@@ -40,7 +40,7 @@ Blazing fast crawls with real-time stats and streaming. Built by Web Scrapers fo
 
 Create a virtual Python environment through any way available, like `venv`, then inside the environment do:
 
-`pip install "scrapling[all]>=0.4.14"`
+`pip install "scrapling[all]>=0.4.15"`
 
 Then do this to download all the browsers' dependencies:
 
@@ -398,6 +398,7 @@ async with AsyncDynamicSession(capture_xhr=r"https://api\.example\.com/.*") as s
 ## References
 You already had a good glimpse of what the library can do. Use the references below to dig deeper when needed
 - `references/mcp-server.md` - MCP server tools, persistent session management, remote browsers over CDP, authentication, and capabilities
+- `references/building-rag-systems.md` - Converting pages/websites to LLM-ready Markdown with `Response.markdown()` and `SiteToMarkdownSpider` for RAG pipelines
 - `references/parsing` - Everything you need for parsing HTML
 - `references/fetching` - Everything you need to fetch websites and session persistence
 - `references/spiders` - Everything you need to write spiders, proxy rotation, and advanced features. It follows a Scrapy-like format

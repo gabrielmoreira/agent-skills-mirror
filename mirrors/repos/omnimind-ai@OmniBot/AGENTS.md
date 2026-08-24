@@ -149,27 +149,6 @@ OMNI_RELEASE_KEY_PWD=***
 
 ## Development Notes
 
-### ACP Runtime Maintenance Contract
-
-The shared Agent boundary is the official ACP session surface:
-`session/new`, `session/load`, `session/list`, `session/prompt`,
-`session/update`, and `session/cancel`. Every local Agent, PC Bridge, WebChat
-entry point, and future Harness adapter must use this boundary.
-
-Keep Agent state keyed by `conversationId` (local history), `sessionId`,
-`turnId`, `messageId`, and `toolCallId`. Do not add or revive Flutter/Kotlin
-private stream protocols such as `AgentStreamEvent`, `acp/presentation`,
-`codex/event`, page-specific callback buses, or a second Agent reducer. New
-capabilities must be exposed through the shared ACP runtime and MCP/plugin
-modules, then consumed by `AgentEventReducer` and
-`ChatConversationRuntimeCoordinator`.
-
-The plugin system is for MCP/tool capabilities. The standalone external App
-surface, WebView launcher, desktop shortcut, and `window.omni.app` bridge are
-removed. Do not reintroduce them; use an MCP/plugin tool instead. Provider and
-model resolution remains owned by the configured Provider, and ACP transport
-refactors must not modify long-term memory APIs or stored memory data.
-
 ### WebUI Verification Rules
 - Do not use the in-app Browser, Chrome automation, Playwright, or any other browser-based visual/interaction acceptance for WebUI changes unless the user explicitly requests browser verification.
 - Validate WebUI changes with focused source inspection plus `cd webchat && pnpm run typecheck && pnpm run build`.
@@ -179,6 +158,11 @@ refactors must not modify long-term memory APIs or stored memory data.
 - Toggle key: `flutter.predictive_back_enabled` (boolean, default true) in `FlutterSharedPreferences`, exposed on the Flutter misc/experience settings page.
 - Native gates `cn.com.omnimind.bot.util.PredictiveBackGate` and `com.rk.terminal.util.PredictiveBackGate` (ReTerminal) register a consuming back callback when the toggle is OFF to preserve legacy no-animation behavior; MainActivity needs no gate because Dart always handles back.
 - Flutter side (`ui/lib`): GoRouter `CustomTransitionPage` routes are wrapped by `ui/lib/widgets/predictive_back_gesture_wrapper.dart` — when ON it forwards back-gesture events to the route (public `PredictiveBackRoute` API) so the stock `CupertinoPageTransition` follows the finger, adding a 32dp corner clip on the top page (Miuix-style slide, no card shrink); when OFF or non-Android it falls back to the app's original transitions. Theme gating in `app_bootstrap.dart` covers the few `MaterialPageRoute` pages (ON: `PredictiveBackPageTransitionsBuilder`; OFF: `FadeForwardsPageTransitionsBuilder`).
+
+### ReTerminal Theming
+- The embedded terminal (ReTerminal/, built as the `:core:*` modules) is themed to match the main app: `core/main/src/main/java/com/rk/terminal/ui/theme/Color.kt` mirrors the Flutter tokens in `ui/lib/theme/omni_theme_palette.dart` (light accent `#2C7FEB`, dark accent `#98AD90`, error `#FF6464`), Monet/dynamic color is off by default (`Settings.monet`), typography uses the system font, and icons are Lucide-style stroke vectors in `core/resources/src/main/res/drawable/ic_lucide_*.xml`. Keep these in sync when the main app palette changes.
+- ReTerminal settings pages replicate the main app's list style in Compose (no cards, hairline row dividers, 18dp page padding, 24dp group spacing, centered 17sp title bar): see `core/components/src/main/java/com/rk/components/compose/preferences/` and the extra tokens in `OmniPaletteExtras.kt` (provided by `KarbonTheme`).
+- Page transitions mirror the main app's predictive-back style (full-width slide + 25% parallax + 90% dim, strictly linear 250ms so gesture progress maps 1:1 to finger travel; 250ms linear fade when the toggle is OFF): `ui/animations/NavigationAnimationTransitions.kt`, gated by `rememberPredictiveBackEnabled()`. During transitions the NavHost clips to the device's physical screen corner radius (`ui/components/ScreenCornerRadius.kt`). Cross-activity open/close uses `overrideActivityTransition` (API 34+) or `overridePendingTransition` with the same slide style, registered in terminal `MainActivity` and applied at launch in `EmbeddedTerminalLaunchHelper`/`TerminalActivity`.
 
 ### GitHub Codex Bot Rules
 - The self-hosted GitHub Actions Codex bot is configured in `.github/workflows/codex-bot.yml`.

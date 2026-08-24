@@ -1,10 +1,13 @@
 ---
 name: implementing-network-policies-for-kubernetes
-description: Writes Kubernetes NetworkPolicy YAML (default-deny-all, DNS egress, namespace/pod
-  selector rules) enforced via CNI plugins like Calico or Cilium to control ingress
-  and egress traffic between pods, namespaces, and external endpoints. Use when
-  implementing zero-trust microsegmentation inside a Kubernetes cluster to prevent
-  lateral movement between workloads or namespaces.
+description: >-
+  Writes portable upstream Kubernetes NetworkPolicy YAML - default-deny-all, DNS egress,
+  namespace and pod selector rules - that works on any conformant CNI such as Calico or
+  Cilium. Use when segmentation must stay CNI-portable, introducing a default-deny posture, or
+  restricting east-west traffic between pods and namespaces without depending on a vendor CRD.
+  Keywords: NetworkPolicy, default deny, podSelector, namespaceSelector, ingress, egress, CNI
+  portable. Do not use for Calico-specific resources - use
+  implementing-kubernetes-network-policy-with-calico.
 domain: cybersecurity
 subdomain: container-security
 tags:

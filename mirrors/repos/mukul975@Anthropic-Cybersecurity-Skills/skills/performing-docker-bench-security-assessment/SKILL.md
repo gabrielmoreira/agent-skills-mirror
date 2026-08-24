@@ -1,11 +1,13 @@
 ---
 name: performing-docker-bench-security-assessment
-description: Run Docker Bench for Security, the open-source CIS Docker Benchmark audit
-  script, to check host configuration, Docker daemon settings, container images, and
-  runtime configurations, then interpret pass/fail/warn results and remediate common
-  failures. Use when auditing Docker hosts for CIS Benchmark compliance, scheduling
-  recurring container security assessments, or validating container runtime hardening
-  controls.
+description: >-
+  Runs Docker Bench for Security, the open-source CIS Docker Benchmark audit script, across
+  host configuration, daemon settings, images, and runtime configuration, then interprets
+  pass/fail/warn output and remediates the common failures. Use when auditing Docker hosts for
+  CIS compliance, scheduling recurring container assessments, or validating runtime hardening
+  controls after a change. Keywords: docker-bench-security, CIS Docker Benchmark, audit
+  script, pass fail warn, host configuration, remediation. Do not use for applying the daemon
+  hardening itself - use hardening-docker-daemon-configuration.
 domain: cybersecurity
 subdomain: container-security
 tags:

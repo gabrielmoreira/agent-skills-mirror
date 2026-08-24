@@ -1,38 +1,55 @@
-# OmniRoute A2A Server Documentation (Türkçe)
+---
+title: "OmniRoute A2A Sunucu Dokümantasyonu"
+version: 3.8.50
+lastUpdated: 2026-08-23
+---
 
-🌐 **Languages:** 🇺🇸 [English](../../../../docs/A2A-SERVER.md) · 🇸🇦 [ar](../../ar/docs/A2A-SERVER.md) · 🇧🇬 [bg](../../bg/docs/A2A-SERVER.md) · 🇧🇩 [bn](../../bn/docs/A2A-SERVER.md) · 🇨🇿 [cs](../../cs/docs/A2A-SERVER.md) · 🇩🇰 [da](../../da/docs/A2A-SERVER.md) · 🇩🇪 [de](../../de/docs/A2A-SERVER.md) · 🇪🇸 [es](../../es/docs/A2A-SERVER.md) · 🇮🇷 [fa](../../fa/docs/A2A-SERVER.md) · 🇫🇮 [fi](../../fi/docs/A2A-SERVER.md) · 🇫🇷 [fr](../../fr/docs/A2A-SERVER.md) · 🇮🇳 [gu](../../gu/docs/A2A-SERVER.md) · 🇮🇱 [he](../../he/docs/A2A-SERVER.md) · 🇮🇳 [hi](../../hi/docs/A2A-SERVER.md) · 🇭🇺 [hu](../../hu/docs/A2A-SERVER.md) · 🇮🇩 [id](../../id/docs/A2A-SERVER.md) · 🇮🇹 [it](../../it/docs/A2A-SERVER.md) · 🇯🇵 [ja](../../ja/docs/A2A-SERVER.md) · 🇰🇷 [ko](../../ko/docs/A2A-SERVER.md) · 🇮🇳 [mr](../../mr/docs/A2A-SERVER.md) · 🇲🇾 [ms](../../ms/docs/A2A-SERVER.md) · 🇳🇱 [nl](../../nl/docs/A2A-SERVER.md) · 🇳🇴 [no](../../no/docs/A2A-SERVER.md) · 🇵🇭 [phi](../../phi/docs/A2A-SERVER.md) · 🇵🇱 [pl](../../pl/docs/A2A-SERVER.md) · 🇵🇹 [pt](../../pt/docs/A2A-SERVER.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/A2A-SERVER.md) · 🇷🇴 [ro](../../ro/docs/A2A-SERVER.md) · 🇷🇺 [ru](../../ru/docs/A2A-SERVER.md) · 🇸🇰 [sk](../../sk/docs/A2A-SERVER.md) · 🇸🇪 [sv](../../sv/docs/A2A-SERVER.md) · 🇰🇪 [sw](../../sw/docs/A2A-SERVER.md) · 🇮🇳 [ta](../../ta/docs/A2A-SERVER.md) · 🇮🇳 [te](../../te/docs/A2A-SERVER.md) · 🇹🇭 [th](../../th/docs/A2A-SERVER.md) · 🇹🇷 [tr](../../tr/docs/A2A-SERVER.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/A2A-SERVER.md) · 🇵🇰 [ur](../../ur/docs/A2A-SERVER.md) · 🇻🇳 [vi](../../vi/docs/A2A-SERVER.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/A2A-SERVER.md)
+# OmniRoute A2A Sunucu Dokümantasyonu (Türkçe)
+
+🌐 **Languages:** 🇺🇸 [English](../../../../docs/frameworks/A2A-SERVER.md) · 🇸🇦 [ar](../../ar/docs/frameworks/A2A-SERVER.md) · 🇧🇬 [bg](../../bg/docs/frameworks/A2A-SERVER.md) · 🇧🇩 [bn](../../bn/docs/frameworks/A2A-SERVER.md) · 🇨🇿 [cs](../../cs/docs/frameworks/A2A-SERVER.md) · 🇩🇰 [da](../../da/docs/frameworks/A2A-SERVER.md) · 🇩🇪 [de](../../de/docs/frameworks/A2A-SERVER.md) · 🇪🇸 [es](../../es/docs/frameworks/A2A-SERVER.md) · 🇮🇷 [fa](../../fa/docs/frameworks/A2A-SERVER.md) · 🇫🇮 [fi](../../fi/docs/frameworks/A2A-SERVER.md) · 🇫🇷 [fr](../../fr/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [gu](../../gu/docs/frameworks/A2A-SERVER.md) · 🇮🇱 [he](../../he/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [hi](../../hi/docs/frameworks/A2A-SERVER.md) · 🇭🇺 [hu](../../hu/docs/frameworks/A2A-SERVER.md) · 🇮🇩 [id](../../id/docs/frameworks/A2A-SERVER.md) · 🇮🇹 [it](../../it/docs/frameworks/A2A-SERVER.md) · 🇯🇵 [ja](../../ja/docs/frameworks/A2A-SERVER.md) · 🇰🇷 [ko](../../ko/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [mr](../../mr/docs/frameworks/A2A-SERVER.md) · 🇲🇾 [ms](../../ms/docs/frameworks/A2A-SERVER.md) · 🇳🇱 [nl](../../nl/docs/frameworks/A2A-SERVER.md) · 🇳🇴 [no](../../no/docs/frameworks/A2A-SERVER.md) · 🇵🇭 [phi](../../phi/docs/frameworks/A2A-SERVER.md) · 🇵🇱 [pl](../../pl/docs/frameworks/A2A-SERVER.md) · 🇵🇹 [pt](../../pt/docs/frameworks/A2A-SERVER.md) · 🇧🇷 [pt-BR](../../pt-BR/docs/frameworks/A2A-SERVER.md) · 🇷🇴 [ro](../../ro/docs/frameworks/A2A-SERVER.md) · 🇷🇺 [ru](../../ru/docs/frameworks/A2A-SERVER.md) · 🇸🇰 [sk](../../sk/docs/frameworks/A2A-SERVER.md) · 🇸🇪 [sv](../../sv/docs/frameworks/A2A-SERVER.md) · 🇰🇪 [sw](../../sw/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [ta](../../ta/docs/frameworks/A2A-SERVER.md) · 🇮🇳 [te](../../te/docs/frameworks/A2A-SERVER.md) · 🇹🇭 [th](../../th/docs/frameworks/A2A-SERVER.md) · 🇹🇷 [tr](../../tr/docs/frameworks/A2A-SERVER.md) · 🇺🇦 [uk-UA](../../uk-UA/docs/frameworks/A2A-SERVER.md) · 🇵🇰 [ur](../../ur/docs/frameworks/A2A-SERVER.md) · 🇻🇳 [vi](../../vi/docs/frameworks/A2A-SERVER.md) · 🇨🇳 [zh-CN](../../zh-CN/docs/frameworks/A2A-SERVER.md)
 
 ---
 
-> Agent-to-Agent Protocol v0.3 — OmniRoute as an intelligent routing agent
+> Agent-to-Agent Protokolü v0.3 — Akıllı bir yönlendirme ajanı olarak OmniRoute
 
-## Agent Discovery
+A2A yüzeyinin iki arayüzü vardır:
+
+- `POST /a2a` adresinde **JSON-RPC 2.0** (kurallı giriş noktası, `src/app/a2a/route.ts` içinde tanımlı).
+- Panolar ve araçlar için `/api/a2a/*` altında **REST** (durum, görev listesi, iptal).
+
+Görevler `A2ATaskManager` (`src/lib/a2a/taskManager.ts`, varsayılan 5 dakikalık TTL) tarafından izlenir. Yetenekler `src/lib/a2a/taskExecution.ts` içindeki `A2A_SKILL_HANDLERS` aracılığıyla dağıtılır.
+
+## Ajan Keşfi (Agent Discovery)
 
 ```bash
 curl http://localhost:20128/.well-known/agent.json
 ```
 
-Returns the Agent Card describing OmniRoute's capabilities, skills, and authentication requirements.
+OmniRoute'un yeteneklerini, becerilerini ve kimlik doğrulama gereksinimlerini açıklayan Ajan Kartını (Agent Card) döndürür.
 
 ---
 
-## Authentication
+## Kimlik Doğrulama
 
-All `/a2a` requests require an API key via the `Authorization` header:
+Tüm `/a2a` istekleri `Authorization` başlığı aracılığıyla bir API anahtarı gerektirir:
 
 ```
-Authorization: Bearer YOUR_OMNIROUTE_API_KEY
+Authorization: Bearer SIZIN_OMNIROUTE_API_ANAHTARINIZ
 ```
 
-If no API key is configured on the server, authentication is bypassed.
+Sunucuda hiçbir API anahtarı yapılandırılmamışsa, kimlik doğrulama atlanır.
+
+## Etkinleştirme
+
+A2A, **Uç Noktalar → A2A** anahtarıyla kontrol edilir ve varsayılan olarak devre dışıdır. Devre dışıyken, `GET /api/a2a/status` `status: "disabled"` ve `online: false` bildirir; `POST /a2a` çağrıları `-32000` JSON-RPC hata koduyla HTTP 503 döndürür.
 
 ---
 
-## JSON-RPC 2.0 Methods
+## JSON-RPC 2.0 Metotları
 
-### `message/send` — Synchronous Execution
+### `message/send` — Eşzamanlı Yürütme
 
-Sends a message to a skill and waits for the complete response.
+Bir yeteneğe mesaj gönderir ve tam yanıtı bekler.
 
 ```bash
 curl -X POST http://localhost:20128/a2a \
@@ -50,151 +67,25 @@ curl -X POST http://localhost:20128/a2a \
   }'
 ```
 
-**Response:**
+### `message/stream` — SSE Akışı
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "1",
-  "result": {
-    "task": { "id": "uuid", "state": "completed" },
-    "artifacts": [{ "type": "text", "content": "..." }],
-    "metadata": {
-      "routing_explanation": "Selected claude-sonnet via provider \"anthropic\" (latency: 1200ms, cost: $0.003)",
-      "cost_envelope": { "estimated": 0.005, "actual": 0.003, "currency": "USD" },
-      "resilience_trace": [
-        { "event": "primary_selected", "provider": "anthropic", "timestamp": "..." }
-      ],
-      "policy_verdict": { "allowed": true, "reason": "within budget and quota limits" }
-    }
-  }
-}
-```
+`message/send` ile aynıdır ancak gerçek zamanlı akış için Server-Sent Events döndürür.
 
-### `message/stream` — SSE Streaming
+### `tasks/get` — Görev Durumu Alma
 
-Same as `message/send` but returns Server-Sent Events for real-time streaming.
+`params.id` ile bir görevin durumunu, yapıtlarını ve yürütme meta verilerini sorgular.
 
-```bash
-curl -N -X POST http://localhost:20128/a2a \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_KEY" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": "1",
-    "method": "message/stream",
-    "params": {
-      "skill": "smart-routing",
-      "messages": [{"role": "user", "content": "Explain quantum computing"}]
-    }
-  }'
-```
+### `tasks/cancel` — Görevi İptal Etme
 
-**SSE Events:**
-
-```
-data: {"jsonrpc":"2.0","method":"message/stream","params":{"task":{"id":"...","state":"working"},"chunk":{"type":"text","content":"..."}}}
-
-: heartbeat 2026-03-03T17:00:00Z
-
-data: {"jsonrpc":"2.0","method":"message/stream","params":{"task":{"id":"...","state":"completed"},"metadata":{...}}}
-```
-
-### `tasks/get` — Query Task Status
-
-```bash
-curl -X POST http://localhost:20128/a2a \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_KEY" \
-  -d '{"jsonrpc":"2.0","id":"2","method":"tasks/get","params":{"taskId":"TASK_UUID"}}'
-```
-
-### `tasks/cancel` — Cancel a Task
-
-```bash
-curl -X POST http://localhost:20128/a2a \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_KEY" \
-  -d '{"jsonrpc":"2.0","id":"3","method":"tasks/cancel","params":{"taskId":"TASK_UUID"}}'
-```
+Çalışan bir görevi iptal eder.
 
 ---
 
-## Available Skills
+## Desteklenen A2A Yetenekleri (Skills)
 
-| Skill              | Description                                                                                                                     |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| `smart-routing`    | Routes prompts through OmniRoute's intelligent pipeline. Returns response with routing explanation, cost, and resilience trace. |
-| `quota-management` | Answers natural-language queries about provider quotas, suggests free combos, and provides quota rankings.                      |
-
----
-
-## Task Lifecycle
-
-```
-submitted → working → completed
-                    → failed
-                    → cancelled
-```
-
-- Tasks expire after 5 minutes (configurable)
-- Terminal states: `completed`, `failed`, `cancelled`
-- Event log tracks every state transition
-
----
-
-## Error Codes
-
-| Code   | Meaning                        |
-| :----- | :----------------------------- |
-| -32700 | Parse error (invalid JSON)     |
-| -32600 | Invalid request / Unauthorized |
-| -32601 | Method or skill not found      |
-| -32602 | Invalid params                 |
-| -32603 | Internal error                 |
-
----
-
-## Integration Examples
-
-### Python (requests)
-
-```python
-import requests
-
-resp = requests.post("http://localhost:20128/a2a", json={
-    "jsonrpc": "2.0", "id": "1",
-    "method": "message/send",
-    "params": {
-        "skill": "smart-routing",
-        "messages": [{"role": "user", "content": "Hello"}]
-    }
-}, headers={"Authorization": "Bearer YOUR_KEY"})
-
-result = resp.json()["result"]
-print(result["artifacts"][0]["content"])
-print(result["metadata"]["routing_explanation"])
-```
-
-### TypeScript (fetch)
-
-```typescript
-const resp = await fetch("http://localhost:20128/a2a", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer YOUR_KEY",
-  },
-  body: JSON.stringify({
-    jsonrpc: "2.0",
-    id: "1",
-    method: "message/send",
-    params: {
-      skill: "smart-routing",
-      messages: [{ role: "user", content: "Hello" }],
-    },
-  }),
-});
-const { result } = await resp.json();
-console.log(result.metadata.routing_explanation);
-```
+1. **`smart-routing`** — Akıllı yönlendirme ve çok sağlayıcılı geri dönüş ile mesaj gönderme.
+2. **`quota-management`** — Tüm bağlı sağlayıcılardaki kota durumunu ve sıfırlanma sürelerini kontrol etme.
+3. **`provider-discovery`** — Uygun sağlayıcıları ve modelleri yeteneklere göre listeleme.
+4. **`cost-analysis`** — Oturum veya zaman dilimi bazında maliyet analiz raporu alma.
+5. **`health-report`** — Sistem çalışma süresi, devre kesiciler ve sağlayıcı sağlık durumu.
+6. **`list-capabilities`** — Desteklenen tüm modelleri, komboları ve stratejileri listeleme.

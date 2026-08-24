@@ -11,11 +11,11 @@ reverse proxy, e.g. `https://<your-host>/dash`).
 
 ## Tabs
 
-| Tab | Backed by | Launch endpoint |
-|---|---|---|
+| Tab      | Backed by                        | Launch endpoint      |
+| -------- | -------------------------------- | -------------------- |
 | Autoloop | `SessionManager.autoloopStart()` | `POST /autoloop/new` |
-| Council | `SessionManager.councilStart()` | `POST /council/new` |
-| Forge | `UltraappManager.createRun()` | `POST /ultraapp/new` |
+| Council  | `SessionManager.councilStart()`  | `POST /council/new`  |
+| Forge    | `UltraappManager.createRun()`    | `POST /ultraapp/new` |
 
 Each tab has a `+ New` button in the sidebar. Council and Autoloop open a
 modal form (because they need workspace/task input); Forge POSTs an empty
@@ -89,11 +89,11 @@ authenticates only against your edge auth; the dashboard's own token stays
 inside the box.
 
 Example sasha-doctor pattern (matches the user-side setup):
+
 ```js
 // after the edge auth check passes:
 if (!req.headers.authorization) {
-  req.headers.authorization =
-    "Bearer " + fs.readFileSync("~/.openclaw/server-token", "utf-8").trim();
+  req.headers.authorization = 'Bearer ' + fs.readFileSync('~/.openclaw/server-token', 'utf-8').trim();
 }
 proxyHTTP(req, res, 18796);
 ```
@@ -120,6 +120,14 @@ run** button in the topbar. Clicking it POSTs `/autoloop/<id>/resume`;
 the orchestrator re-attaches the Planner (reusing the persisted Claude
 session ID when available, so Claude's context picks up where it left
 off) and the dashboard reconnects to `/events` for live updates.
+
+If the run used a **custom engine** for any role, the button first asks
+`/autoloop/<id>/resume-requirements` and prompts for one reference name per
+role — the name of a `CLAWO_CUSTOM_ENGINE_<NAME>` variable on the orchestrator
+host. The config itself is never stored and never sent; only the name is. Until
+this existed the button sent an empty body unconditionally, so a custom-engine
+run was resumable from the library and the HTTP API but not from the UI that
+offers the button.
 
 Runs that pre-date this feature have no `chat.jsonl` and no persisted
 session — they still resume cleanly, but with a blank Planner pane and a
@@ -170,3 +178,23 @@ launchctl kickstart -k "gui/$(id -u)/com.clawo.serve"
 # Then visit /login?token=$(cat ~/.openclaw/server-token)&redirect=/dash once
 # to refresh the cookie.
 ```
+
+## Runs tab (6.0.0)
+
+A fourth tab listing durable workflow runs. Because runs are checkpointed to
+disk, this sees runs started by other processes and by earlier sessions, not just
+what the current server started.
+
+Each row shows the run state and its verdict as one of three things:
+
+- **verified** — an acceptance contract ran and passed.
+- **refuted** — a contract ran and a required check failed.
+- **unchecked** — no contract was declared. Rendered in neutral grey, not red:
+  an unchecked run is not a failed one, and colouring it like one would misreport
+  every run that simply never asked to be checked.
+
+Opening a run shows per-node state (kind, attempts, visit count for loops, and
+any error), the consensus votes when a council node ran — labelled advisory,
+because they are recorded rather than used to decide completion — and the
+evidence bundle: per-check pass/fail with the failing detail, the fix rounds
+consumed, and how many files changed since the base commit.

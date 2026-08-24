@@ -16,11 +16,6 @@ Defaults:
 - Host: `127.0.0.1`
 - Port: `9222`
 - Server timeout: 10 seconds
-- CDP active connections: 16
-- CDP pending connections: 128
-
-Tune the last two with `--cdp-max-connections` and
-`--cdp-max-pending-connections`.
 
 ## Endpoint map
 

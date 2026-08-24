@@ -508,3 +508,68 @@ Plugin to server:
 - plugin reload is special and needs explicit reconnect handling
 - the active session model must stay coherent as multi-instance support grows
 - any new runtime-feedback tools must respect the same queueing and readiness rules as existing write tools
+
+## Custom Tools (Third-Party Addons)
+
+Other Godot addons can register their own MCP tools with the `custom_tools/`
+registry. The design keeps every trust decision in the editor process and
+every advertisement decision in the user's hands.
+
+### Registering
+
+```gdscript
+var spec := McpCustomToolSpec.new()
+spec.name = "gdunit_run"                       # ascii identifier, unique
+spec.description = "Run the GdUnit4 suite"     # agent-facing, ≤600 chars
+spec.params_schema = {"type": "object", ...}   # JSON Schema, ≤8 KB UTF-8
+spec.script_path = "res://addons/my_addon/mcp_handler.gd"
+spec.method = &"run_suite"                     # func(params: Dictionary, ctx: McpCallContext) -> Dictionary
+spec.source_path = "res://addons/my_addon/plugin.cfg"
+McpToolRegistry.get_instance().register(spec)  # or batch_register([...]) — atomic
+```
+
+Handlers are materialized lazily from `script_path` (hot-reload safe, #229);
+`source_path` is a cooperative collision/ownership policy, NOT a security
+boundary — same path replaces (hot reload), different path colliding on a
+name is rejected. `spec.validate()` enforces the budgets at register time.
+
+### The call context — stable surface
+
+`McpCallContext` hands handlers `request_id`, `session_id`, `deadline_msec`,
+`spec`, `is_expired()`, and `send_deferred(payload)` (for `deferred = true`
+specs). Underscore-prefixed members are internal wiring — published
+`class_name`s are permanent compat surface, so the addon-facing API is kept
+deliberately narrow. Params arrive UNVALIDATED: `params_schema` is
+advertised to agents, but the handler owns its own input validation.
+
+### Exposure: custom_manage vs promoted
+
+Every enabled tool is reachable through `custom_manage(op="list"/"invoke")`
+and the `godot://custom-tools` resource ("active session only" — list and
+invoke always resolve the same editor). A spec with `promoted = true` opts
+into ALSO being registered as a first-class MCP tool named
+`custom_<name>`, advertising the addon's `params_schema` verbatim so MCP
+clients validate params natively. Promotion is capped server-side
+(`MAX_PROMOTED_TOOLS` in `services/promoted_tools.py`) to protect the
+repo's tool budget; overflow stays behind `custom_manage`, and the sync
+follows every catalog change live via `tools/list_changed`.
+
+### User control (dock)
+
+The dock's Tools tab lists every registered custom tool with its source
+addon and a per-tool checkbox. Toggles apply immediately: a disabled tool
+is dropped from the catalog push (never advertised), rejected at dispatch
+with `CUSTOM_TOOL_DISABLED` (covers stale client lists and
+`batch_execute`), and its promotion is withdrawn. The choice persists
+per-project via `EditorSettings` project metadata — deliberately not
+machine-global, and not `project.godot` churn.
+
+### Execution contract
+
+`requires_writable` gates play/import on BOTH sides (plugin wrapper and
+server handler). `deferred = true` tools must reply via
+`ctx.send_deferred` within `timeout_ms` (500..120000 ms, honored by the
+server-side future too); a handler that defers without declaring it is an
+error, and deferred tools are rejected from `batch_execute` (their reply
+would outlive the batch response). Only `undoable = true` tools may join
+`batch_execute(undo=true)`.

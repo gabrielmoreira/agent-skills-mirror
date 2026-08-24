@@ -82,6 +82,9 @@ Projects are opt-in named workspaces that corral analysis runs into a shared dir
 /project coverage              # shows tool coverage summary
 /project report                # merged view across all runs
 /project correlate             # cross-run finding correlation
+/project adopt <name> <run>    # retro-create a project around existing
+                               #   project-less run(s); target inferred,
+                               #   journal/coverage projections re-run
 /project binary add <path>     # persist a debug binary for binary-oracle enrichment
 /project binary list           # list persisted binaries on the active project
 /project binary remove <path>  # remove one

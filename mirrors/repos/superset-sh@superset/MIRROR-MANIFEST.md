@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,10 +105,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
 | 45 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
 | 46 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
-| 47 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
-| 48 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
-| 49 | ✓ | [`scripts/sandbox/AGENTS.md`](scripts/sandbox/AGENTS.md) |
-| 50 | ✓ | [`scripts/sandbox/CLAUDE.md`](scripts/sandbox/CLAUDE.md) |
+| 47 | ✓ | [`plugins/superset/skills/page/SKILL.md`](plugins/superset/skills/page/SKILL.md) |
+| 48 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
+| 49 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
+| 50 | ✓ | [`scripts/sandbox/AGENTS.md`](scripts/sandbox/AGENTS.md) |
+| 51 | ✓ | [`scripts/sandbox/CLAUDE.md`](scripts/sandbox/CLAUDE.md) |
 
 ---
 

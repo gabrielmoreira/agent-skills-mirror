@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Enderfga/claw-orchestrator` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,8 +77,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/references/tools.md`](skills/references/tools.md) |
 | 17 | ✓ | [`skills/references/ultra.md`](skills/references/ultra.md) |
 | 18 | ✓ | [`skills/references/ultraapp.md`](skills/references/ultraapp.md) |
-| 19 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 20 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
+| 19 | ✓ | [`skills/references/verification.md`](skills/references/verification.md) |
+| 20 | ✓ | [`skills/references/workflow.md`](skills/references/workflow.md) |
+| 21 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 22 | ✓ | [`skills/ultraapp/SKILL.md`](skills/ultraapp/SKILL.md) |
 
 ---
 

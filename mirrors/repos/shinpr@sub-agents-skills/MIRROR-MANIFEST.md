@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shinpr/sub-agents-skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `shinpr/sub-agents-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shinpr/sub-agents-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,10 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/sub-agents/scripts/_constants.py`](skills/sub-agents/scripts/_constants.py) |
 | 7 | ✓ | [`skills/sub-agents/scripts/_executor.py`](skills/sub-agents/scripts/_executor.py) |
 | 8 | ✓ | [`skills/sub-agents/scripts/_loader.py`](skills/sub-agents/scripts/_loader.py) |
-| 9 | ✓ | [`skills/sub-agents/scripts/_resolver.py`](skills/sub-agents/scripts/_resolver.py) |
-| 10 | ✓ | [`skills/sub-agents/scripts/_stream.py`](skills/sub-agents/scripts/_stream.py) |
-| 11 | ✓ | [`skills/sub-agents/scripts/run_subagent.py`](skills/sub-agents/scripts/run_subagent.py) |
-| 12 | ✓ | [`skills/sub-agents/SKILL.md`](skills/sub-agents/SKILL.md) |
+| 9 | ✓ | [`skills/sub-agents/scripts/_stream.py`](skills/sub-agents/scripts/_stream.py) |
+| 10 | ✓ | [`skills/sub-agents/scripts/run_subagent.py`](skills/sub-agents/scripts/run_subagent.py) |
+| 11 | ✓ | [`skills/sub-agents/SKILL.md`](skills/sub-agents/SKILL.md) |
 
 ---
 

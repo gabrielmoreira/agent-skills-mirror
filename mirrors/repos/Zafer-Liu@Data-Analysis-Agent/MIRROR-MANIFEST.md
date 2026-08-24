@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,33 +60,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`commands/skills.md`](commands/skills.md) |
-| 2 | ✓ | [`skills/arima/SKILL.md`](skills/arima/SKILL.md) |
-| 3 | ✓ | [`skills/bcg-matrix/SKILL.md`](skills/bcg-matrix/SKILL.md) |
-| 4 | ✓ | [`skills/business-model-canvas/SKILL.md`](skills/business-model-canvas/SKILL.md) |
-| 5 | ✓ | [`skills/chart/SKILL.md`](skills/chart/SKILL.md) |
-| 6 | ✓ | [`skills/dashboard/SKILL.md`](skills/dashboard/SKILL.md) |
-| 7 | ✓ | [`skills/data/SKILL.md`](skills/data/SKILL.md) |
-| 8 | ✓ | [`skills/decile/SKILL.md`](skills/decile/SKILL.md) |
-| 9 | ✓ | [`skills/export/SKILL.md`](skills/export/SKILL.md) |
-| 10 | ✓ | [`skills/funnel-analysis/SKILL.md`](skills/funnel-analysis/SKILL.md) |
-| 11 | ✓ | [`skills/gru/SKILL.md`](skills/gru/SKILL.md) |
-| 12 | ✓ | [`skills/inset/SKILL.md`](skills/inset/SKILL.md) |
-| 13 | ✓ | [`skills/kmeans/SKILL.md`](skills/kmeans/SKILL.md) |
-| 14 | ✓ | [`skills/logistic/SKILL.md`](skills/logistic/SKILL.md) |
-| 15 | ✓ | [`skills/ppt/SKILL.md`](skills/ppt/SKILL.md) |
-| 16 | ✓ | [`skills/prophet/SKILL.md`](skills/prophet/SKILL.md) |
-| 17 | ✓ | [`skills/regression/SKILL.md`](skills/regression/SKILL.md) |
-| 18 | ✓ | [`skills/report/SKILL.md`](skills/report/SKILL.md) |
-| 19 | ✓ | [`skills/sarima/SKILL.md`](skills/sarima/SKILL.md) |
-| 20 | ✓ | [`skills/screening/SKILL.md`](skills/screening/SKILL.md) |
-| 21 | ✓ | [`skills/sql/SKILL.md`](skills/sql/SKILL.md) |
-| 22 | ✓ | [`skills/swot-analysis/SKILL.md`](skills/swot-analysis/SKILL.md) |
-| 23 | ✓ | [`skills/tree/SKILL.md`](skills/tree/SKILL.md) |
-| 24 | ✓ | [`skills/trimming/SKILL.md`](skills/trimming/SKILL.md) |
-| 25 | ✓ | [`skills/value-proposition/SKILL.md`](skills/value-proposition/SKILL.md) |
-| 26 | ✓ | [`skills/var/SKILL.md`](skills/var/SKILL.md) |
-| 27 | ✓ | [`skills/winsorize/SKILL.md`](skills/winsorize/SKILL.md) |
-| 28 | ✓ | [`static/drawio/js/diagramly/vsdx/CLAUDE.md`](static/drawio/js/diagramly/vsdx/CLAUDE.md) |
+| 2 | ✓ | [`skills/ab-test-analysis/SKILL.md`](skills/ab-test-analysis/SKILL.md) |
+| 3 | ✓ | [`skills/arima/SKILL.md`](skills/arima/SKILL.md) |
+| 4 | ✓ | [`skills/bcg-matrix/SKILL.md`](skills/bcg-matrix/SKILL.md) |
+| 5 | ✓ | [`skills/business-model-canvas/SKILL.md`](skills/business-model-canvas/SKILL.md) |
+| 6 | ✓ | [`skills/chart/SKILL.md`](skills/chart/SKILL.md) |
+| 7 | ✓ | [`skills/dashboard/SKILL.md`](skills/dashboard/SKILL.md) |
+| 8 | ✓ | [`skills/data/SKILL.md`](skills/data/SKILL.md) |
+| 9 | ✓ | [`skills/decile/SKILL.md`](skills/decile/SKILL.md) |
+| 10 | ✓ | [`skills/export/SKILL.md`](skills/export/SKILL.md) |
+| 11 | ✓ | [`skills/feishu-bitable/SKILL.md`](skills/feishu-bitable/SKILL.md) |
+| 12 | ✓ | [`skills/funnel-analysis/SKILL.md`](skills/funnel-analysis/SKILL.md) |
+| 13 | ✓ | [`skills/gru/SKILL.md`](skills/gru/SKILL.md) |
+| 14 | ✓ | [`skills/inset/SKILL.md`](skills/inset/SKILL.md) |
+| 15 | ✓ | [`skills/kmeans/SKILL.md`](skills/kmeans/SKILL.md) |
+| 16 | ✓ | [`skills/logistic/SKILL.md`](skills/logistic/SKILL.md) |
+| 17 | ✓ | [`skills/ppt/SKILL.md`](skills/ppt/SKILL.md) |
+| 18 | ✓ | [`skills/prophet/SKILL.md`](skills/prophet/SKILL.md) |
+| 19 | ✓ | [`skills/regression/SKILL.md`](skills/regression/SKILL.md) |
+| 20 | ✓ | [`skills/report/SKILL.md`](skills/report/SKILL.md) |
+| 21 | ✓ | [`skills/sarima/SKILL.md`](skills/sarima/SKILL.md) |
+| 22 | ✓ | [`skills/screening/SKILL.md`](skills/screening/SKILL.md) |
+| 23 | ✓ | [`skills/sql/SKILL.md`](skills/sql/SKILL.md) |
+| 24 | ✓ | [`skills/swot-analysis/SKILL.md`](skills/swot-analysis/SKILL.md) |
+| 25 | ✓ | [`skills/tree/SKILL.md`](skills/tree/SKILL.md) |
+| 26 | ✓ | [`skills/trimming/SKILL.md`](skills/trimming/SKILL.md) |
+| 27 | ✓ | [`skills/value-proposition/SKILL.md`](skills/value-proposition/SKILL.md) |
+| 28 | ✓ | [`skills/var/SKILL.md`](skills/var/SKILL.md) |
+| 29 | ✓ | [`skills/winsorize/SKILL.md`](skills/winsorize/SKILL.md) |
+| 30 | ✓ | [`static/drawio/js/diagramly/vsdx/CLAUDE.md`](static/drawio/js/diagramly/vsdx/CLAUDE.md) |
 
 ---
 

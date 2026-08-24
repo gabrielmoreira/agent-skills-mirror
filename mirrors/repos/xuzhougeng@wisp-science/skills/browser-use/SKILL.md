@@ -26,8 +26,9 @@ message, do not retry `start_workspace`, do not claim any workspace page
 was opened or read, and get the shared session working instead.
 
 For figures/code extraction use `web_scan` with `mode: "article"` then
-`web_save_assets`. For ChatGPT web one-shot use `web_agent_send`,
-`web_agent_wait`, `web_agent_read` on an already-logged-in tab.
+`web_save_assets`. For an already-logged-in in-browser chat (ChatGPT,
+Gemini, or Google AI Mode at `google.com/search?udm=50`) use
+`web_agent_send`, `web_agent_wait`, `web_agent_read` on that tab.
 
 Every `web_scan` and `web_execute_js` call needs the user's approval by
 design. Do not treat that as a bug to route around.
@@ -99,6 +100,22 @@ relay the install steps only if that call fails too.
 Prefer plain JS. Reach for `cmd:cdp` only when a page blocks synthetic
 events or you truly need trusted input.
 
+## In-browser chat — `web_agent_send` / `web_agent_wait` / `web_agent_read`
+
+Use these on an **already signed-in** tab. They are not a new Wisp agent;
+they drive the chat composer in the user's Chrome.
+
+Supported tabs (HTTPS, exact host, no lookalikes):
+
+- ChatGPT: `chatgpt.com` / `chat.openai.com`
+- Gemini: `gemini.google.com`
+- Google AI Mode: `google.com/search?udm=50` (plain Google Search without
+  `udm=50` is refused)
+
+Flow: `web_agent_send {prompt}` → `web_agent_wait` → `web_agent_read`. The
+read result is `{answer_text, citations, status, site}`. If the page is
+login or CAPTCHA, stop and let the user finish it in that tab.
+
 ## Seeing the page — `web_screenshot`
 
 `web_scan` gives text and elements; **`web_screenshot`** gives sight. Use it
@@ -112,25 +129,26 @@ Pass `question` to say what to read out of it, e.g.
 It goes through the configured vision model, so `web_scan` stays the cheaper
 default — screenshot when you need eyes, not for every step.
 
-## Tab hygiene — track what you open, offer to close it
+## Tab hygiene — the app tracks what you open
 
-Browsing tasks (searching papers, opening a dozen results) leave the user
-with a pile of tabs to close by hand. So:
+Browsing tasks (searching papers, opening a dozen results) used to leave the
+user with a pile of tabs. **Do not ask in chat whether to close them.** The
+desktop records every tab `web_open_tab` (and tab-create commands) opened in
+this turn, including after URL changes, and never includes tabs that were
+already open.
 
-1. Every `web_open_tab` returns `tab.id`. **Keep a running list of the ids
-   you opened in this task**, in your own message text — e.g. after a batch
-   write `opened tabs: 1234, 1235, 1236`. `{"cmd":"tabs"}` cannot tell you
-   which tabs are yours, only what exists.
-2. When the task is done, before your final answer, **ask the user**:
-   name the count and offer to close them, e.g. *"我为这次检索开了 6 个标签
-   页，需要我关掉吗？"* Do not close anything without a yes.
-3. On a yes, close them in one call:
-   `{"cmd":"tabs","method":"close","tabIds":[1234,1235,1236]}`. Report
-   `closed`; ids already gone are skipped silently.
+- If Settings → Browser has **Automatically close browser tabs** on
+  (`browser_setup.auto_close_tabs=true`), the app closes this turn's tabs
+  when the turn ends. Do not also close them yourself unless the user asks
+  mid-task.
+- If that setting is off, the app shows a confirmation after the turn
+  (default: close all this-turn tabs; the user can uncheck pages to keep).
+- You may still close a tab **mid-task** with
+  `{"cmd":"tabs","method":"close","tabIds":[...]}` if a later step does not
+  need it, or if the user explicitly asks now.
 
 Close **only ids you opened yourself**. Tabs the user had open, or ones
-they opened during the task, are theirs — never include them, and never
-close a tab mid-task that later steps still need.
+they opened during the task, are theirs.
 
 ## Stop conditions (do not automate through these)
 

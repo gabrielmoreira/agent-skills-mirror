@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `minipuft/wolfflow-mcp` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `minipuft/wolfflow-mcp` — 26 default patterns, 3 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `minipuft/wolfflow-mcp` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 3 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `minipuft/wolfflow-mcp` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.claude/rules/extension-alignment.md`
+- `.claude/rules/mcp-contracts.md`
+- `.claude/rules/sqlite-persistence.md`
 
 ## File Index
 
@@ -59,8 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents/chain-executor.md`](agents/chain-executor.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`agents/chain-executor.md`](agents/chain-executor.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | → | [`.claude/rules/extension-alignment.md`](.claude/rules/extension-alignment.md) |
+| 5 | → | [`.claude/rules/mcp-contracts.md`](.claude/rules/mcp-contracts.md) |
+| 6 | → | [`.claude/rules/sqlite-persistence.md`](.claude/rules/sqlite-persistence.md) |
 
 ---
 

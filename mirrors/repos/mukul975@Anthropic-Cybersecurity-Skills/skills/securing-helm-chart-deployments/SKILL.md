@@ -1,11 +1,13 @@
 ---
 name: securing-helm-chart-deployments
-description: Secures Helm chart deployments by verifying chart signatures and provenance,
-  rendering and scanning templates for misconfigurations with helm lint, enforcing
-  pod security contexts in values.yaml, managing secrets via external stores instead
-  of Helm values, and scoping RBAC for Helm operations in a CI/CD pipeline. Use when
-  deploying Helm charts to Kubernetes or when a security review of chart provenance,
-  templates, or release RBAC is needed.
+description: >-
+  Secures Helm chart deployments by verifying chart signatures and provenance, rendering and
+  linting templates for misconfiguration, enforcing pod security contexts through values.yaml,
+  moving secrets into an external store instead of Helm values, and scoping RBAC for Helm
+  operations in CI/CD. Use when deploying charts to Kubernetes or reviewing chart provenance,
+  templates, or release RBAC. Keywords: Helm, provenance file, helm verify, helm lint,
+  values.yaml, Tiller-less, release RBAC, external secrets. Do not use for scanning the
+  rendered manifests themselves - use scanning-kubernetes-manifests-with-kubesec.
 domain: cybersecurity
 subdomain: container-security
 tags:

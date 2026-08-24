@@ -164,6 +164,8 @@ On start, check for an existing run before doing study/map again:
 libexec/raptor-audit gaps --out "$OUTPUT_DIR"
 ```
 
+Optional: add `--rank` (with `--rank-model <name>` / `--rank-head <n>`) for an LLM listwise re-rank of the queue head, strictly within priority tiers — ordering only, never drops a gap. Use when the gap list is much longer than the review budget.
+
 If gaps exist and `domain-model.json` + `context-map.json` are already present, skip study and map — go straight to the review loop. Coverage records, journal entries, and findings from prior sessions are already on disk.
 
 ### 3. Agent delegation

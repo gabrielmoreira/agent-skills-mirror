@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/logfire` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
+Mirror of `pydantic/logfire` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/logfire` — 26 default patterns, 1 followed patterns, 9 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 9 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,8 +66,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`docs/how-to-guides/mcp-server.md`](docs/how-to-guides/mcp-server.md) |
 | 6 | ✓ | [`docs/how-to-guides/skills.md`](docs/how-to-guides/skills.md) |
 | 7 | ✓ | [`docs/integrations/agent-frameworks/CLAUDE.md`](docs/integrations/agent-frameworks/CLAUDE.md) |
-| 8 | ✓ | [`logfire/.agents/skills/logfire-instrumentation/SKILL.md`](logfire/.agents/skills/logfire-instrumentation/SKILL.md) |
-| 9 | → | [`dev-docs/documentation-style-guide.md`](dev-docs/documentation-style-guide.md) |
+| 8 | ✓ | [`logfire/.agents/skills/logfire-evals/SKILL.md`](logfire/.agents/skills/logfire-evals/SKILL.md) |
+| 9 | ✓ | [`logfire/.agents/skills/logfire-infrastructure/SKILL.md`](logfire/.agents/skills/logfire-infrastructure/SKILL.md) |
+| 10 | ✓ | [`logfire/.agents/skills/logfire-instrumentation/SKILL.md`](logfire/.agents/skills/logfire-instrumentation/SKILL.md) |
+| 11 | ✓ | [`logfire/.agents/skills/logfire-setup/SKILL.md`](logfire/.agents/skills/logfire-setup/SKILL.md) |
+| 12 | → | [`dev-docs/documentation-style-guide.md`](dev-docs/documentation-style-guide.md) |
 
 ---
 

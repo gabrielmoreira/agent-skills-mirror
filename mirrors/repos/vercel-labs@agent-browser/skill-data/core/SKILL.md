@@ -458,6 +458,7 @@ EOF
 - **Slack workspace automation**: `agent-browser skills get slack`
 - **Exploratory testing / QA / bug hunts**: `agent-browser skills get dogfood`
 - **Vercel Sandbox microVMs**: `agent-browser skills get vercel-sandbox`
+- **Vercel deployment behind Authentication, SSO, or Deployment Protection**: `agent-browser skills get protected-vercel-deployments`
 - **AWS Bedrock AgentCore cloud browser**: `agent-browser skills get agentcore`
 
 ## Accessibility audits

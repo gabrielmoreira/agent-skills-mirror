@@ -63,10 +63,16 @@ trap '' HUP
 # reap() is defined) reaps it so an orchestrator kill cannot leave orphans.
 ACTIVE_PEER_PID=""
 RUN_SUCCEEDED=false
-PEER_MAX_TURNS="${PEER_MAX_TURNS:-15}"
+PROVIDER_OUTCOME="ok"
+PY_BIN=""
+PEER_MAX_TURNS="${PEER_MAX_TURNS:-25}"
+TRANSIENT_RETRY_DELAY_SECS="${CROSS_MODEL_TRANSIENT_RETRY_DELAY_SECS:-5}"
 
 log()  { printf '[cross-model] %s\n' "$*" >&2; }
 skip() { log "$*"; exit 0; }   # non-blocking: announce reason, exit clean, no output
+
+case "$TRANSIENT_RETRY_DELAY_SECS" in ''|*[!0-9]*) skip "transient retry delay must be an integer from 0 to 60; skipping" ;; esac
+[ "$TRANSIENT_RETRY_DELAY_SECS" -le 60 ] || skip "transient retry delay must be an integer from 0 to 60; skipping"
 
 # --- model + reasoning per provider ----------------------------------------
 # ONE editorial model/reasoning mapping per provider. Concrete IDs are the CURRENT
@@ -270,6 +276,15 @@ adapter_argv() {
   esac
 }
 
+validate_turn_limit() {
+  case "$1" in
+    claude|grok-cli) ;;
+    *) return 0 ;;
+  esac
+  case "$PEER_MAX_TURNS" in ''|*[!0-9]*) return 1 ;; esac
+  [ "$PEER_MAX_TURNS" -gt 0 ]
+}
+
 # Accept a host-discovered replacement only for its declared target and model
 # family. An override for another target is ignored rather than leaking across
 # routes; an unbound or cross-family override is invalid for its own route.
@@ -315,6 +330,7 @@ if [ "${1:-}" = "--emit-adapter" ]; then
   validate_model_override "$route" 2>/dev/null || { echo "model override '${CROSS_MODEL_MODEL_OVERRIDE:-}' not compatible with route '$route'" >&2; exit 2; }
   validate_effort_override "$route" 2>/dev/null || { echo "effort override '${CROSS_MODEL_EFFORT_OVERRIDE:-}' not compatible with route '$route'" >&2; exit 2; }
   adapter_argv "$route" >/dev/null 2>&1 || { echo "unknown route '$route' (want codex|claude|grok-cli|grok-cursor|cursor|composer)" >&2; exit 2; }
+  validate_turn_limit "$route" || { echo "peer max turns must be a positive integer" >&2; exit 2; }
   adapter_argv "$route" | tr '\0' ' '; echo
   exit 0
 fi
@@ -502,8 +518,6 @@ if [ "$ESTIMATED_DIFF_TOKENS" -gt "$INLINE_MAX_TOKENS" ] || [ "$DIFF_FILES" -gt 
   [ "$REVIEW_BRIEF_READY" = 1 ] || skip "large diff requires a compact orchestrator review map; skipping peer dispatch"
   LARGE_DIFF_CONTEXT_DIR="$RAW_DIR"
   PEER_MAX_TURNS="${CROSS_MODEL_LARGE_DIFF_MAX_TURNS:-40}"
-  case "$PEER_MAX_TURNS" in ''|*[!0-9]*) skip "large-diff max turns must be a positive integer; skipping" ;; esac
-  [ "$PEER_MAX_TURNS" -gt 0 ] || skip "large-diff max turns must be a positive integer; skipping"
   log "large diff routed through orchestrator review map: files=$DIFF_FILES estimated_tokens=$ESTIMATED_DIFF_TOKENS"
 fi
 
@@ -674,6 +688,7 @@ stop_heartbeat() {
 
 run_codex_cmd() {
   RUN_SUCCEEDED=false
+  local hard_cap="${1:-$HARD_SECS}"
   local prev; case "$-" in *m*) prev=1;; *) prev=0;; esac
   set -m
   # `command` bypasses shell functions/aliases that could strip -s read-only.
@@ -690,8 +705,8 @@ run_codex_cmd() {
     if [ $(( now - lastchg )) -ge "$IDLE_SECS" ]; then
       log "codex output idle ${IDLE_SECS}s; reaping peer process group"; reap "$pid"; break
     fi
-    if [ $(( now - start )) -ge "$HARD_SECS" ]; then
-      log "codex exceeded hard cap ${HARD_SECS}s; reaping peer process group"; reap "$pid"; break
+    if [ $(( now - start )) -ge "$hard_cap" ]; then
+      log "codex exceeded hard cap ${hard_cap}s; reaping peer process group"; reap "$pid"; break
     fi
     # 1s slices so a finished peer is noticed promptly (was sleep-5-first, which
     # added up to 5s after every short stub / healthy exit).
@@ -753,15 +768,18 @@ run_timeout_cmd() {
   ACTIVE_PEER_PID=""
 }
 
+resolve_python() {
+  for c in python3 python py; do
+    command -v "$c" >/dev/null 2>&1 && "$c" -c '' >/dev/null 2>&1 && { printf '%s\n' "$c"; return; }
+  done
+}
+
 # Decode each {...} object in raw stdout via raw_decode (string/escape-aware,
 # unlike brace counting) and keep the last one shaped like findings. Envelope
 # routes nest that object inside a JSON *string* field, so string values that
 # could hold one are re-scanned rather than skipped.
 recover_findings_json() {   # <logfile> <outfile>
-  # Probe execution, not just PATH presence — Windows Store's python3 stub
-  # satisfies `command -v` then exits nonzero (see resolve-python convention).
-  local py
-  py="$(for c in python3 python py; do command -v "$c" >/dev/null 2>&1 && "$c" -c '' >/dev/null 2>&1 && { echo "$c"; break; }; done)"
+  local py="${PY_BIN:-}"
   [ -n "$py" ] || return 1
   "$py" - "$1" "$2" <<'PY' 2>/dev/null
 import sys, json
@@ -828,6 +846,145 @@ PY
   [ -s "$2" ]
 }
 
+classify_provider_outcome() {
+  local py="${PY_BIN:-}"
+  [ -n "$py" ] || { printf '%s\n' failed; return; }
+  "$py" - "$PEERLOG" "$PEERERR" "${ACTUAL_ROUTE:-}" <<'PY' 2>/dev/null
+import json, re, sys
+
+decoder = json.JSONDecoder()
+
+def scan(text):
+    objects, plain = [], []
+    cursor = search = 0
+    while True:
+        start = text.find("{", search)
+        if start < 0:
+            break
+        try:
+            value, end = decoder.raw_decode(text, start)
+        except Exception:
+            search = start + 1
+            continue
+        if isinstance(value, dict):
+            plain.extend((text[cursor:start], "\n"))
+            objects.append(value)
+            cursor = end
+        search = max(end, start + 1)
+    plain.append(text[cursor:])
+    return objects, "".join(plain)
+
+texts = []
+object_streams = []
+route = sys.argv[3]
+for path in sys.argv[1:3]:
+    try:
+        text = open(path, encoding="utf-8", errors="replace").read()
+    except OSError:
+        text = ""
+    found, plain = scan(text)
+    texts.append(plain)
+    object_streams.append(found)
+
+def status(value):
+    error = value.get("error")
+    nested = error if isinstance(error, dict) else {}
+    for candidate in (
+        value.get("api_error_status"), value.get("http_status"), value.get("status"),
+        nested.get("api_error_status"), nested.get("http_status"), nested.get("status"),
+    ):
+        if candidate is not None:
+            return candidate
+    return None
+
+same_line = re.compile(r"(?:^|\W)(?:API Error|HTTP(?: Error)?)[^\r\n]*?529(?:\D|$)[^\r\n]*?(?:overload|capacity)", re.I)
+split_head = re.compile(r"(?:^|\W)(?:API Error|HTTP(?: Error)?)[^\r\n]*?529(?:\D|$)", re.I)
+split_tail = re.compile(r"^\s*[^\w]*(?:overload|capacity)", re.I)
+
+def overload_text(text):
+    lines = text.splitlines()
+    return any(same_line.search(line) for line in lines) or any(split_head.search(line) and split_tail.search(lines[index + 1]) for index, line in enumerate(lines[:-1]))
+
+def provider_error_text(value):
+    error = value.get("error")
+    if isinstance(error, dict):
+        message = error.get("message", "")
+    elif isinstance(error, str):
+        message = error
+    elif value.get("type") == "error" or value.get("is_error") is True:
+        message = value.get("message", "")
+    else:
+        message = ""
+    return message if isinstance(message, str) else ""
+
+def route_terminal_success(value):
+    if route == "codex":
+        return {"turn.completed": True, "turn.failed": False}.get(value.get("type"))
+    return None
+
+def terminal_record(value):
+    error = value.get("error")
+    return route_terminal_success(value) is not None or value.get("type") in {"result", "error"} or error not in (None, False, "") or status(value) is not None or any(key in value for key in ("is_error", "terminal_reason", "stopReason", "api_error_status"))
+
+def terminal_success(value):
+    route_success = route_terminal_success(value)
+    if route_success is not None:
+        return route_success
+    subtype = str(value.get("subtype", ""))
+    terminal_reason = str(value.get("terminal_reason", ""))
+    stop_reason = str(value.get("stopReason", ""))
+    if value.get("is_error") is True or value.get("error") not in (None, False, ""):
+        return False
+    terminal_status = status(value)
+    if terminal_status is not None:
+        try:
+            status_ok = 200 <= int(terminal_status) < 300
+        except (TypeError, ValueError):
+            status_ok = str(terminal_status).lower() in {"ok", "success", "completed"}
+        if not status_ok:
+            return False
+    if "stopReason" in value and stop_reason not in {"end_turn", "completed", "success"}:
+        return False
+    if "terminal_reason" in value and terminal_reason not in {"end_turn", "completed", "success"}:
+        return False
+    if "api_error_status" in value:
+        if value.get("api_error_status") is not None or value.get("is_error") is not False:
+            return False
+    if value.get("type") == "result":
+        if subtype:
+            return subtype == "success"
+        return route in {"grok-cursor", "cursor", "composer"}
+    if "stopReason" in value or "terminal_reason" in value or terminal_status is not None or "api_error_status" in value:
+        return True
+    return value.get("is_error") is False
+
+terminal_streams = [[value for value in stream if terminal_record(value)] for stream in object_streams]
+authoritative = next((stream[-1] for stream in terminal_streams if stream), None)
+if authoritative is not None:
+    if terminal_success(authoritative):
+        print("ok")
+    elif str(status(authoritative)) == "529" or overload_text(provider_error_text(authoritative)):
+        print("overloaded")
+    else:
+        print("failed")
+    raise SystemExit
+
+if any(overload_text(plain) for plain in texts):
+    print("overloaded")
+else:
+    print("ok")
+PY
+}
+
+classify_route_output() {
+  PROVIDER_OUTCOME="$(classify_provider_outcome)"
+  case "$PROVIDER_OUTCOME" in
+    ok) ;;
+    overloaded) RUN_SUCCEEDED=false; rm -f "$RAW_OUT" ;;
+    *) log "peer terminal envelope reports failure; discarding structured output"; RUN_SUCCEEDED=false; rm -f "$RAW_OUT" ;;
+  esac
+}
+
 parse_structured() {   # <logfile> <outfile>
   # Prefer findings-shaped structured_output so a bare envelope does not look "valid"
   # to out_missing_or_invalid and block recovery.
@@ -860,6 +1017,9 @@ parse_structured() {   # <logfile> <outfile>
 
 attempt_route() {
   local provider="$1" route="$2" note
+  local attempt_hard="${ATTEMPT_HARD_SECS:-}"
+  [ -n "$attempt_hard" ] || attempt_hard="$(route_hard_budget "$route")"
+  PROVIDER_OUTCOME="ok"
   : > "$PEERLOG"; : > "$PEERERR"; rm -f "$RAW_OUT"
   build_cmd "$route"
   case "$route" in
@@ -867,11 +1027,12 @@ attempt_route() {
     grok-cursor|composer)  note="$(route_model "$route")" ;;
     cursor)                note="auto (serving model unverified)" ;;
   esac
-  log "peer run: provider=$provider route=$route model=$note lens=adversarial read-only in-tree (idle ${IDLE_SECS}s / hard ${HARD_SECS}s; grok-cli hard-only ${UNGUARDED_HARD_SECS}s); reviewed code/diff may egress to this provider"
+  log "peer run: provider=$provider route=$route model=$note lens=adversarial read-only in-tree (idle ${IDLE_SECS}s / attempt hard ${attempt_hard}s); reviewed code/diff may egress to this provider"
   case "$route" in
     codex)
       compose_prompt_codex
-      run_codex_cmd
+      run_codex_cmd "$attempt_hard"
+      classify_route_output
       cp "$PEERLOG" "$RUN_DIR/adversarial-codex-events.jsonl" 2>/dev/null || true
       jq -s '[.[] | select(.type == "turn.completed") | .usage] | last // empty' "$PEERLOG" \
         > "$RUN_DIR/adversarial-codex-usage.json" 2>/dev/null || true
@@ -881,17 +1042,20 @@ attempt_route() {
       ;;
     grok-cli)
       compose_prompt_embedded
-      run_timeout_cmd "" "$UNGUARDED_HARD_SECS" no-idle
+      run_timeout_cmd "" "$attempt_hard" no-idle
+      classify_route_output
       [ "$RUN_SUCCEEDED" = true ] && parse_structured "$PEERLOG" "$RAW_OUT"
       ;;
     claude)
       compose_prompt_embedded
-      run_timeout_cmd "$PROMPT_FILE" "$HARD_SECS" idle
+      run_timeout_cmd "$PROMPT_FILE" "$attempt_hard" idle
+      classify_route_output
       [ "$RUN_SUCCEEDED" = true ] && parse_structured "$PEERLOG" "$RAW_OUT"
       ;;
     grok-cursor|cursor|composer)
       compose_prompt_embedded
-      run_timeout_cmd "$PROMPT_FILE" "$HARD_SECS" idle
+      run_timeout_cmd "$PROMPT_FILE" "$attempt_hard" idle
+      classify_route_output
       [ "$RUN_SUCCEEDED" = true ] && parse_structured "$PEERLOG" "$RAW_OUT"
       ;;
   esac
@@ -904,8 +1068,21 @@ attempt_route() {
   extract_model_receipt "$route"
 }
 
+# An exact 529 is a transient provider-capacity response, unlike account/session
+# quota 429s. Match structured envelopes first and retain a narrow plain-text
+# fallback for CLIs that print "529 Overloaded" without JSON.
+provider_overloaded() {
+  [ "$PROVIDER_OUTCOME" = "overloaded" ]
+}
+
+route_hard_budget() {
+  if [ "$1" = "grok-cli" ]; then printf '%s\n' "$UNGUARDED_HARD_SECS"; else printf '%s\n' "$HARD_SECS"; fi
+}
+
+# Run one host-resolved provider through its fixed route.
 run_provider() {
   local provider="$1" primary="" fixed="${CROSS_MODEL_FIXED_ROUTE:-}"
+  local provider_budget provider_deadline remaining
   OUT="$RUN_DIR/adversarial-$provider.json"
   RAW_OUT="$RAW_DIR/adversarial-$provider.raw.json"
   [ -n "$fixed" ] || { log "host must resolve one fixed route before egress; skipping"; rm -f "$OUT"; return 0; }
@@ -916,10 +1093,42 @@ run_provider() {
     return 0
   fi
   primary="$fixed"
+  PY_BIN="$(resolve_python)"
+  [ -n "$PY_BIN" ] || { log "working Python 3 interpreter required for peer outcome classification; skipping"; rm -f "$OUT"; return 0; }
+  if ! validate_turn_limit "$primary"; then
+    if [ "$LARGE_DIFF_MODE" = true ]; then
+      log "large-diff max turns must be a positive integer; skipping"
+    else
+      log "peer max turns must be a positive integer; skipping"
+    fi
+    rm -f "$OUT"
+    return 0
+  fi
   validate_model_override "$primary" || { log "model override '${CROSS_MODEL_MODEL_OVERRIDE:-}' not compatible with route '$primary'; skipping"; rm -f "$OUT"; return 0; }
   validate_effort_override "$primary" || { log "effort override '${CROSS_MODEL_EFFORT_OVERRIDE:-}' not compatible with route '$primary'; skipping"; rm -f "$OUT"; return 0; }
   ACTUAL_ROUTE="$primary"
+  provider_budget="$(route_hard_budget "$primary")"
+  case "$provider_budget" in
+    ''|0*|*[!0-9]*) log "peer hard budget must be a positive integer; skipping"; rm -f "$OUT"; return 0 ;;
+  esac
+  provider_deadline=$(( $(date +%s) + provider_budget ))
+  ATTEMPT_HARD_SECS="$provider_budget"
   attempt_route "$provider" "$primary"
+  if [ ! -s "$RAW_OUT" ] && provider_overloaded; then
+    remaining=$(( provider_deadline - $(date +%s) ))
+    if [ "$remaining" -le "$TRANSIENT_RETRY_DELAY_SECS" ]; then
+      log "provider overload 529; shared peer budget spent, not retrying"
+    else
+      log "provider overload 529; retrying same route once after ${TRANSIENT_RETRY_DELAY_SECS}s"
+      sleep "$TRANSIENT_RETRY_DELAY_SECS"
+      remaining=$(( provider_deadline - $(date +%s) ))
+      if [ "$remaining" -gt 0 ]; then
+        ATTEMPT_HARD_SECS="$remaining"
+        attempt_route "$provider" "$primary"
+      fi
+    fi
+  fi
+  ATTEMPT_HARD_SECS=""
 
   rm -f "$OUT"
   if [ -s "$RAW_OUT" ]; then

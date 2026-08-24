@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-**Super Agent Party** (v0.4.2) 是一个 **AI 桌面伴侣应用**，基于 **Electron 桌面应用 + Python/FastAPI 后端** 架构。提供多智能体 AI 助手体验，包括 3D/2D 虚拟角色、桌面自动化、IM 机器人、直播互动等功能。
+**Super Agent Party** (v0.4.3) 是一个 **AI 桌面伴侣应用**，基于 **Electron 桌面应用 + Python/FastAPI 后端** 架构。提供多智能体 AI 助手体验，包括 3D/2D 虚拟角色、桌面自动化、IM 机器人、直播互动等功能。
 
 - 仓库: https://github.com/heshengtao/super-agent-party
 - 协议: AGPL-3.0

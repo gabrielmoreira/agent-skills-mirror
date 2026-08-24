@@ -6,7 +6,7 @@ allowed-tools: Bash Read
 
 # Sub-Agents - External CLI AI Task Delegation
 
-Spawns external CLI AIs (codex, claude, cursor-agent, glm, kimi, grok, gemini, opencode) as isolated sub-agents with dedicated context.
+Spawns external CLI AIs (codex, claude, cursor-agent, glm, kimi, grok, antigravity, gemini, opencode) as isolated sub-agents with dedicated context.
 
 Workflow: discover available definitions, select one from the user request, execute it, and handle the JSON response.
 
@@ -102,6 +102,9 @@ Parse JSON output and check `status` field:
 For configuration or credential errors, retry after the required external
 configuration has changed.
 
+If execution fails because `run-agent` is missing, retry with `--cli` set to
+the current client's backend.
+
 **By exit_code** (when status is `error`):
 
 | exit_code | Meaning | Resolution |
@@ -142,13 +145,14 @@ What this agent does.
 How results should be structured.
 ```
 
-`run-agent` supplies the backend; an explicit `--cli` argument overrides it.
+`run-agent` supplies the backend. Pass `--cli` only as an explicit one-run
+override; execution fails with a corrective error when neither is specified.
 
 **Frontmatter fields:**
 
 | Field | Values | Description |
 |-------|--------|-------------|
-| `run-agent` | `codex`, `claude`, `cursor-agent`, `glm`, `kimi`, `grok`, `gemini`, `opencode` | Which CLI executes this agent |
+| `run-agent` | `codex`, `claude`, `cursor-agent`, `glm`, `kimi`, `grok`, `antigravity`, `gemini`, `opencode` | Which CLI executes this agent |
 | `model` | Backend-specific model name (optional) | Model passed to the selected CLI; omit to use its configured default |
 | `effort` | Backend/model-specific reasoning level or OpenCode variant (optional) | Advanced: forwarded as an opaque value. Confirm support for the selected model before setting; omit to use its default. Unsupported on `cursor-agent` and `gemini` |
 | `permission` | `read-only`, `safe-edit` (default), `yolo` | `read-only` for investigation, `safe-edit` for workspace edits, or `yolo` to bypass approvals and sandboxing |

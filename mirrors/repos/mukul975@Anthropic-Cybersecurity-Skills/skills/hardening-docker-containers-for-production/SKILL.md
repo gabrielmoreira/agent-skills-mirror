@@ -1,12 +1,13 @@
 ---
 name: hardening-docker-containers-for-production
-description: >
-  Harden Dockerfiles, images, and container runtime settings against the CIS
-  Docker Benchmark v1.8.0: non-root users, dropped capabilities, read-only
-  rootfs, seccomp/AppArmor, and minimal multi-stage images, validated with
-  docker-bench-security, Hadolint, and Dockle. Use when preparing a container
-  or Dockerfile for production, or auditing images/runtime configs against
-  CIS Docker controls.
+description: >-
+  Hardens Dockerfiles, images, and per-container runtime settings against the CIS Docker
+  Benchmark v1.8.0: non-root users, dropped capabilities, read-only root filesystem, seccomp
+  and AppArmor profiles, and minimal multi-stage builds, validated with docker-bench-security,
+  Hadolint, and Dockle. Use when preparing a container or Dockerfile for production, or
+  auditing images and runtime flags against CIS Docker controls. Keywords: Dockerfile, USER,
+  --cap-drop, read-only rootfs, seccomp, AppArmor, multi-stage, Hadolint, Dockle. Do not use
+  for the Docker daemon's own configuration - use hardening-docker-daemon-configuration.
 domain: cybersecurity
 subdomain: container-security
 tags:

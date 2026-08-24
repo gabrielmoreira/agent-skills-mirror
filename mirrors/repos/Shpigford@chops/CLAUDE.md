@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is Chops
 
-A native macOS app (SwiftUI + SwiftData) for discovering, organizing, and editing AI coding agent skills across tools (Claude Code, Cursor, Codex, Windsurf, Copilot, Aider, Amp). Fully open source (MIT), public repo at github.com/Shpigford/chops. No sandbox — requires full filesystem access to read user dotfiles.
+A native macOS app (SwiftUI + SwiftData) for discovering, organizing, and editing AI coding agent skills across tools (Claude Code, Cursor, Codex, Windsurf, Copilot, Aider, Amp, and many others — see `Chops/Models/ToolSource.swift` for the full set). Source-available under FSL-1.1-MIT (converts to MIT after two years), public repo at github.com/Shpigford/chops. No sandbox — requires full filesystem access to read user dotfiles.
 
 ## Build & Run
 
@@ -58,9 +58,11 @@ SwiftData store path is explicit: `~/Library/Application Support/Chops/Chops.sto
   - Both share `OneShotResponseParser` (`Chops/Services/Agents/OneShotResponseParser.swift`) — the parser tries a structured-edits JSON envelope first and falls back to summary + fenced full-file. Either format produces a `PendingWrite`.
   - Both conform to `AgentSession` (`Chops/Services/Agents/AgentSession.swift`); `AgentFactory.make(for:)` returns the right one. `ComposePanel` keys off the protocol so the UI doesn't care which transport is in use.
 
-**Views:** Three-column `NavigationSplitView` (Sidebar → List → Detail). Editor uses native `NSTextView` with markdown highlighting. Cmd+S save via `FocusedValues`. Agent responses render via `MarkdownMessageView` (MarkdownUI `.gitHub` theme + syntax highlighting).
+**Views:** Three-column `NavigationSplitView` (Sidebar → List → Detail). A ⌘K command palette (`Chops/Views/Shared/CommandPaletteView.swift`, presented via `AppState.showingCommandPalette`) provides fuzzy-search navigation and quick actions. Editor uses native `NSTextView` with markdown highlighting. Agent responses render via `MarkdownMessageView` (MarkdownUI `.gitHub` theme + syntax highlighting). Menus and global shortcuts are wired in `ChopsApp.swift`: ⌘S save (via `FocusedValues`), ⌘B toggle sidebar (via the `.toggleSidebar` NotificationCenter post), ⌘⇧L go to Skills, ⌘K command palette.
 
-**Tool sources** are defined in `ToolSource.swift` — each enum case knows its display name, icon, and filesystem paths to scan.
+**Registry/Discovery:** `SkillRegistry` fetches trending skills scraped from skills.sh (no public JSON API exists for this), cached in memory for the session via `SkillRegistry.shared`.
+
+**Tool sources** are defined in `Chops/Models/ToolSource.swift` — each enum case knows its display name, icon, and filesystem paths to scan.
 
 ## Release Pipeline
 

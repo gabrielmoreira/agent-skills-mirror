@@ -1,6 +1,13 @@
 ---
 name: auditing-kubernetes-rbac-privilege-escalation
-description: Find over-permissive RBAC roles and service-account token abuse paths in Kubernetes using kubectl auth can-i, rbac-police, kubectl-who-can, and rakkess during authorized cluster security reviews.
+description: >-
+  Finds over-permissive RBAC roles and service-account token abuse paths in a Kubernetes
+  cluster using kubectl auth can-i, rbac-police, kubectl-who-can, and rakkess, tracing which
+  subjects can escalate toward cluster-admin. Use when reviewing who can escalate privileges
+  in a cluster, hunting exploitable RoleBindings during an authorized review, or validating
+  least privilege after an RBAC change. Keywords: RBAC, ClusterRoleBinding, service account
+  token, auth can-i, rbac-police, escalate, bind, impersonate. Do not use for designing and
+  applying hardened RBAC - use implementing-rbac-hardening-for-kubernetes.
 domain: cybersecurity
 subdomain: container-security
 tags:

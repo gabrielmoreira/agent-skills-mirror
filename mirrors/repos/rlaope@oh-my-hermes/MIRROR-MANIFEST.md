@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 127 file(s) materialized.
+Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 128 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 12
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 127 |
+| Files         | 128 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -180,12 +180,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 119 | ✓ | [`skills/ulw-context/SKILL.md`](skills/ulw-context/SKILL.md) |
 | 120 | ✓ | [`skills/ulw-interview/SKILL.md`](skills/ulw-interview/SKILL.md) |
 | 121 | ✓ | [`skills/ulw-loop/references/goal-constraint-discipline.md`](skills/ulw-loop/references/goal-constraint-discipline.md) |
-| 122 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
-| 123 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
-| 124 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
-| 125 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
-| 126 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
-| 127 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
+| 122 | ✓ | [`skills/ulw-loop/references/measured-loop-discipline.md`](skills/ulw-loop/references/measured-loop-discipline.md) |
+| 123 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
+| 124 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
+| 125 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
+| 126 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
+| 127 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
+| 128 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
 
 ---
 

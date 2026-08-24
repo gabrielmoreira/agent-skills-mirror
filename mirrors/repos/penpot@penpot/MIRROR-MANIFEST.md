@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.opencode/skills/bat-cat/SKILL.md`](.opencode/skills/bat-cat/SKILL.md) |
-| 2 | ✓ | [`.opencode/skills/code-review-and-quality/SKILL.md`](.opencode/skills/code-review-and-quality/SKILL.md) |
+| 2 | ✓ | [`.opencode/skills/code-review/SKILL.md`](.opencode/skills/code-review/SKILL.md) |
 | 3 | ✓ | [`.opencode/skills/create-commit/SKILL.md`](.opencode/skills/create-commit/SKILL.md) |
 | 4 | ✓ | [`.opencode/skills/create-issue/SKILL.md`](.opencode/skills/create-issue/SKILL.md) |
 | 5 | ✓ | [`.opencode/skills/create-pr/SKILL.md`](.opencode/skills/create-pr/SKILL.md) |

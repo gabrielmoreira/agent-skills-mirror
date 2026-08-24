@@ -1,12 +1,15 @@
 ---
 name: implementing-kubernetes-network-policy-with-calico
 description: >-
-  Implements Kubernetes network segmentation using Calico's Kubernetes
-  NetworkPolicy and GlobalNetworkPolicy resources, including default-deny rules,
-  policy ordering, and service-account-based selectors for zero-trust
-  pod-to-pod communication. Use when installing Calico CNI and writing or
-  auditing network policies to restrict east-west traffic within a Kubernetes
-  cluster.
+  Installs Calico as the cluster CNI and writes standard Kubernetes NetworkPolicy under it,
+  covering default-deny baselines, policy ordering and precedence, service-account-based
+  selectors, and verifying that policy is genuinely being enforced. Use when adopting Calico
+  as the enforcement CNI, establishing a default-deny baseline, or debugging why a
+  NetworkPolicy is not taking effect under Calico. Keywords: Calico CNI, NetworkPolicy,
+  default deny, policy order, Felix, service account selector. Do not use for Calico-only CRDs
+  such as GlobalNetworkPolicy or DNS egress - use
+  implementing-container-network-policies-with-calico; for CNI-agnostic policy use
+  implementing-network-policies-for-kubernetes.
 domain: cybersecurity
 subdomain: container-security
 tags:

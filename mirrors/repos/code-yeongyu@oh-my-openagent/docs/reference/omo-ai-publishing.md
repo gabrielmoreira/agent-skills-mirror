@@ -74,12 +74,18 @@ identity instead of impersonating the product.
 
 | field | value | effect |
 | --- | --- | --- |
-| `name` | `omo` | welcome header, terminal titles, help, tips, first-run, system-prompt identity |
+| `name` | `OmO` | welcome header, terminal titles, help, tips, first-run, system-prompt identity |
 | `displayVersion` | the omo-ai version | `omo --version` and the TUI header; the engine version stays internal for update comparisons |
 | `configDir` + `flatLayout` | `.omo`, nested | agent state lives at `~/.omo/agent` - the one directory every omo entry point resolves through `bin/lib/agent-dir.js`; the launcher pins it for the engine with `OMO_CODING_AGENT_DIR` plus the legacy `SENPI_CODING_AGENT_DIR` |
 | `envPrefix` | `OMO` | `OMO_*` variables are read first, then the legacy `SENPI_*` and `PI_*` names |
 | `userAgent` / `originator` | `omo` | outgoing request identity |
 | `update` | `omo-ai`, `beta`, `npm i -g omo-ai@beta` | the update banner checks the beta dist-tag of omo-ai and prints the product's own command |
+
+The display name also becomes Senpi's `APP_NAME`, so process titles, exported
+session filenames, debug-log filenames, and opt-in provider attribution headers
+use `OmO`. Machine contracts remain explicitly pinned by the other fields:
+`.omo`, `OMO_*`, the `omo` User-Agent/originator, and the lowercase `omo`
+command/package names do not derive from the display spelling.
 
 The update channel matters: omo-ai's `latest` tag is pinned to the deprecated bootstrap
 placeholder forever, so a `latest` lookup would never see a release. The engine therefore reads

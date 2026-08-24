@@ -1,6 +1,14 @@
 ---
 name: detecting-container-escape-with-falco-rules
-description: Write and tune Falco rules that monitor Linux syscalls to detect container escape techniques in real time, including host filesystem mounts, sensitive host path access, kernel module loading, and abuse of privileged container capabilities. Use when deploying or tuning Falco for a Kubernetes/container environment, or when investigating an alert tied to syscall-level escape behavior.
+description: >-
+  Writes and tunes Falco rule syntax for container escape detection - conditions, macros,
+  lists, priorities, and output fields - covering host filesystem mounts, sensitive host path
+  access, kernel module loading, and privileged capability abuse, including how to drive down
+  false positives. Use when authoring or tuning a specific Falco rule for breakout behaviour,
+  or triaging a noisy escape-related Falco alert. Keywords: Falco rule, macro, list,
+  condition, priority, falco_rules.local.yaml, tuning, false positive. Do not use for
+  deploying and operating Falco itself - use detecting-container-runtime-threats-with-falco;
+  for tool-agnostic escape signals use detecting-container-escape-attempts.
 domain: cybersecurity
 subdomain: container-security
 tags:

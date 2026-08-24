@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 529 file(s) materialized.
+Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 530 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `t8y2/dbx` — 26 default patterns, 8 followed patterns, 529 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 529 |
+| Files         | 530 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -579,22 +579,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 511 | ✓ | [`packages/mcp-linux-x64-gnu/README.md`](packages/mcp-linux-x64-gnu/README.md) |
 | 512 | ✓ | [`packages/mcp-win32-arm64/README.md`](packages/mcp-win32-arm64/README.md) |
 | 513 | ✓ | [`packages/mcp-win32-x64/README.md`](packages/mcp-win32-x64/README.md) |
-| 514 | ✓ | [`plugins/jdbc/README.md`](plugins/jdbc/README.md) |
-| 515 | ✓ | [`plugins/README.md`](plugins/README.md) |
-| 516 | ✓ | [`skills/dbx/SKILL.md`](skills/dbx/SKILL.md) |
-| 517 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
-| 518 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
-| 519 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
-| 520 | ✓ | [`vendor/tiberius/README.md`](vendor/tiberius/README.md) |
-| 521 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
-| 522 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 523 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 524 | → | [`deploy/database/README.md`](deploy/database/README.md) |
-| 525 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
-| 526 | → | [`packages/cli/README.md`](packages/cli/README.md) |
-| 527 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
-| 528 | → | [`README.md`](README.md) |
-| 529 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 514 | ✓ | [`plugins/connection-types/README.md`](plugins/connection-types/README.md) |
+| 515 | ✓ | [`plugins/jdbc/README.md`](plugins/jdbc/README.md) |
+| 516 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 517 | ✓ | [`skills/dbx/SKILL.md`](skills/dbx/SKILL.md) |
+| 518 | ✓ | [`vendor/ctor/README.md`](vendor/ctor/README.md) |
+| 519 | ✓ | [`vendor/dirs-sys/README.md`](vendor/dirs-sys/README.md) |
+| 520 | ✓ | [`vendor/rumqttc/README.md`](vendor/rumqttc/README.md) |
+| 521 | ✓ | [`vendor/tiberius/README.md`](vendor/tiberius/README.md) |
+| 522 | ✓ | [`vendor/wry/README.md`](vendor/wry/README.md) |
+| 523 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 524 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 525 | → | [`deploy/database/README.md`](deploy/database/README.md) |
+| 526 | → | [`deploy/database/README.zh-CN.md`](deploy/database/README.zh-CN.md) |
+| 527 | → | [`packages/cli/README.md`](packages/cli/README.md) |
+| 528 | → | [`packages/mcp-server/README.md`](packages/mcp-server/README.md) |
+| 529 | → | [`README.md`](README.md) |
+| 530 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

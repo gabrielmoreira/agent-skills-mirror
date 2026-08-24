@@ -1,6 +1,13 @@
 ---
 name: detecting-container-runtime-threats-with-falco
-description: Write and deploy Falco rules with the modern eBPF driver to detect container escape, namespace abuse, privileged mounts, and anomalous syscalls at runtime in Kubernetes and Docker.
+description: >-
+  Deploys and operates Falco with the modern eBPF driver in Kubernetes and Docker, covering
+  driver selection, Helm installation, output channels, and the built-in ruleset that detects
+  container escape, namespace abuse, privileged mounts, and anomalous syscalls. Use when
+  standing Falco up on a cluster, choosing between the eBPF and kernel-module drivers, routing
+  Falco alerts into a SIEM or Falcosidekick, or upgrading an existing deployment. Keywords:
+  Falco, modern_ebpf, kernel module, Helm, Falcosidekick, runtime security, syscall. Do not
+  use for authoring individual escape rules - use detecting-container-escape-with-falco-rules.
 domain: cybersecurity
 subdomain: container-security
 tags:

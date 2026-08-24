@@ -4,22 +4,42 @@
 
 同一版本的多次更新按功能归并。后续修复 A 功能引入的缺陷时，直接改写 A 的原有条目并纳入最新结果，禁止另建重复修复条目；后续功能补充遵循同一规则。每个条目不超过 200 字。
 
-## v0.7.2 (current)
+## v0.7.2.beta1 (2026-08-23)
 
-::: warning 升级提醒
-1. 升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
-2. 重建或升级 Redis 容器后需重启 worker，并等待 `/api/system/ready` 恢复后再接入流量。
+::: danger Beta 版本与数据风险
+v0.7.2.beta1 包含不可逆的数据与文件布局迁移，主要影响历史对话线程、附件、Agent 产物和运行状态。本版本用于验证升级路径，不建议在重要、生产或缺少可恢复备份的环境中运行。
+:::
+
+::: warning 升级前检查与迁移
+1. 自动迁移只支持从 v0.7.1 正式版或当前 v0.7.2 schema 升级；运行过未发布 Workdir 中间 schema 的实例会被明确拒绝，不能直接原地升级。
+2. 安排维护窗口并停止业务写入，在同一停机时点完整备份 PostgreSQL、MinIO 和 `docker/volumes/yuxi`，并确认备份可以成套恢复。迁移会修改 Conversation/Project 关系、附件路径、旧 thread 文件布局及持久目录所有权。
+3. 检出 `v0.7.2.beta1` 后，先使用与重启时完全相同的 Compose、env file 和 profile 参数运行 `bash scripts/migrate-storage.sh ...`；迁移成功前不要启动新 API 或 worker。完整命令见[生产部署指南](../advanced/deployment.md#部署步骤)。
+4. 迁移按 Workdir、系统配置、共享 Skill 和运行身份分阶段提交。任一阶段失败后保持 API/worker 停止，保留完整日志，修复冲突后重跑同一命令；需要回滚时，检出 v0.7.1 并从同一停机时点成套恢复 PostgreSQL、MinIO 和文件卷，禁止只恢复其中一项。
+5. 每个历史顶层 Conversation 会获得 implicit Project，子 Conversation 继承所属 Project；旧 `threads/<thread-id>/user-data/uploads|outputs` 会导入 UserWorkspace 的 `projects/<uuid>`，相关附件和 artifact 路径会被重写。每一类旧源只在自身目标提交并回读成功后清理。
+6. 迁移会把非终态 AgentRun 收敛为可观察失败。v0.7.1 SQLite LangGraph checkpoint 不迁移，升级前尚未完成的审批、中断、摘要或执行状态无法继续恢复；请先完成或终止重要运行，并保存所需结果。
+7. 持久 UserWorkspace、Skill source/projection 的所有权会统一为 `1000:1000`，目录和普通文件权限会分别收紧到 owner-only。依赖其他宿主机用户直接读取这些目录的自定义脚本需要提前调整。
+8. v0.7.1 的 `config/base.toml` 与共享 Skill 由同一次迁移切换到 PostgreSQL 和新 Skill source；个人 Skill 保留在各用户 UserWorkspace，不会进入共享投影。
+9. 历史知识库 Markdown 与 `public` bucket 图片不会自动迁移到私有 bucket；升级后这些旧 URL 仍可能匿名可读。重要知识库应重新解析生成私有图片，并在核对新结果后清理旧公开对象。
+10. 管理员此前创建的 stdio MCP 会被禁用且无法重新启用。请迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
+11. 重建或升级 Redis 后需重启 worker，并等待 `/api/system/ready` 恢复后再接入流量。
 :::
 
 - 锁定 Neo4j 5.26.29 与 Redis 7.4.10 镜像版本，补充第三方组件许可证、镜像再分发义务与商业部署边界；完整镜像许可证以实际软件物料清单为准。
 - API 与 worker 的日志及 Office 预览缓存改用各自容器本地运行目录，不再写入共享 `saves`；管理端日志接口与调试面板明确只展示 API 进程日志。历史日志和预览缓存不迁移，worker 日志由容器日志查看。
 - LangGraph checkpoint 固定使用 PostgreSQL，删除 SQLite saver、后端选择环境变量、本地 checkpoint 挂载和旧 SQLite checkpoint 自动迁移。
-- Workdir 收敛为 Conversation 保存的 UserWorkspace 相对路径；默认创建 `projects/<uuid>`，显式路径接口可绑定同一用户的既有目录。Sandbox 整体挂载 UserWorkspace 到 `/home/gem/user-data` 并以当前 Workdir 为 cwd，同一用户的其他 Project 可读，Prompt 默认禁止未经要求跨 Workdir 写入。
+- 新增 Project 资源并作为 Workdir 归属 Owner：Conversation 只保存不可变 `project_id`；默认对话创建 implicit Project，用户可创建绑定既有 Workspace 目录的 selectable Project。多个 Project 可共享目录，但顶层 Conversation 的 runtime 仍相互隔离。
 - 根 Conversation 与全部子 Agent 共用稳定 `runtime_scope_id` 和 Workdir；不同顶层 Conversation 即使绑定同一目录也使用独立 runtime。Viewer、附件与 artifact 通过持久化 `Workspace` 与 `Workdir` 访问同一 POSIX 字节，不再创建 file-bridge Sandbox。
 - Workspace 路径与 no-follow 文件访问迁至顶层 `yuxi.workspace`；Viewer API 统一使用当前 Workdir 相对路径并复用 Workspace 的预览与有界扫描。删除开发期 Thread 文件浏览接口及 Mention Redis 文件索引，不为 0.7.2 开发快照保留兼容层。
 - `uploads/outputs` 改为首次使用时创建，Sandbox provisioner 不再预建目录或递归修改整个 UserWorkspace 权限。附件上传只保留 MinIO 临时上传、可选解析、确认一条链路；Agent 每轮通过当前用户消息获得线程历史附件路径，不再修改系统提示词或维护 `uploads` state。Conversation 附件 JSON 不再复制 Markdown、hash 和派生 URL；确认批次逐项处理且不限制数量，未确认临时对象在后续上传时清理超过 24 小时的分组。
-- `storage-migrator` 在停机证明后把 v0.7.1 的 `base.toml`、共享 Skill 与 thread `uploads/outputs` 一次性迁入当前 Owner，并为每个历史 Conversation 建立 Workdir；目标与数据库回读成功后才清理旧源。未发布的 Workdir 中间 schema 不属于升级兼容范围，新安装直接使用当前布局。
-- 建立 Agent-first 工程信任系统：高风险主张在语义 Owner 处绑定负向 oracle、CI gate 与决策记录，审计视图从当前代码、测试、workflow 和决策派生；补齐 Web gate 和完整 unit inventory。API 分离 liveness/readiness；Run 输出只允许当前 lease owner 绑定同 conversation、Run 与 request 的 assistant Message，缺失或非法输出不能进入 completed；worker 以 attempt lease/heartbeat 识别失联并收敛为带 `worker_lease_expired` 原因的失败，PostgreSQL 取消事实与终态不再被 Redis 事件故障绕过。LITE startup 不创建或宣告知识能力，Web 从 runtime discovery 同步隐藏并停止请求不存在的能力；checkpoint 初始化不再静默改变持久化语义。
+- `storage-migrator` 在停机证明后分阶段迁移 v0.7.1 的 `base.toml`、共享 Skill 与 thread `uploads/outputs`，为历史 Conversation 建立 Project Workdir；每类旧源在自身目标提交并回读成功后清理，失败后可在保持停机的前提下幂等续跑。未发布的 Workdir 中间 schema 不进入兼容范围。
+- 建立 Agent-first 工程信任系统：高风险主张在语义 Owner 处绑定负向 oracle、CI gate 与决策记录；API 分离 liveness/readiness，LITE 只宣告真实能力，Run 输出、取消、lease 和失联收敛由 PostgreSQL 事实闭合。
+- AgentRun 新增 write-once 运行清单指纹和持久化 RunAttempt 历史，记录实际模型、工具、Skill、关键配置与每次执行占有结果；敏感值、用户正文和宿主机路径不进入清单。
+- 升级 DeepAgents 到 0.7.7+ 与新版 LangChain 底座：每个 Run 使用独立 CompositeBackend，文件读取与 grep 提供结构化分页/截断语义，Summary 适配新版会话和内联媒体 offload；未纳入审批设计的 delete 工具保持关闭。
+- Agent 配置新增 Skill 预加载：指定 Skill 的根级说明和依赖工具从首轮模型请求起可用，默认空配置继续渐进加载；预加载严格受当前用户授权、Agent Skill 列表和 LITE 能力边界约束。
+- 新增用户级 Memory：开启后仅主 Agent 可读取和受限更新 UserWorkspace 的 `agents/MEMORY.md`，并可按需搜索当前用户的普通历史对话；SubAgent、关闭开关和非法 Run owner 均不能使用该能力。
+- Sandbox 异步 `read_file` 改用 agent-sandbox 原生文件 API，保持同步读取的路径授权、类型错误和分页语义；图片流式执行大小限制并编码，HTTP client 由每次读取显式关闭。
+- AgentPanel 统一承载文件树、文件预览与子智能体线程 Tab，并按 Workdir、Workspace、artifact 三种身份选择读取接口；文件刷新只在可见运行期轮询，终态补读最终持久字节。
+- Web 补充流式文本平滑、知识库结果按真实文件身份分组、紧凑片段弹窗及首页/工作区展示优化；历史大块文本和 Run 终态仍立即收敛到完整内容。
 - API Key 创建支持并发与响应丢失后的安全重放；删除用户、OIDC 恢复和旧库升级均保留不可复活 tombstone，API/CLI 创建与删除按 User 行锁串行化。三项安全密钥不可复用，Bash/PowerShell 均有原生负控。Web 错误对象不再携带任意服务端上下文。
 
 - 清理测试套件冗余：删除 5 个自证式/假绿/重复覆盖的测试文件（`test_hash_utils`、`test_skills_backend_error_handling`、`test_graph_router_list`、`test_agent_sync_e2e`、`test_viewer_filesystem_e2e`），合并约 50 个文件的重复场景与参数转发断言，抽取 eval 与 e2e 共享 helper；净减约 2,900 行测试代码，真实回归覆盖不变。
@@ -33,7 +53,7 @@
 - 修复 Agent 产物 Word 文件无法预览：查看器文件预览路径（outputs、uploads、沙盒文件）与工作区一致，docx/pptx 先经 LibreOffice 转换为 PDF 再预览，转换失败返回明确错误，不再判定为二进制文件拒绝预览。
 - Agent 文件预览的 HTML 预览新增缩放比例调节（默认 90%，范围 60%–150%，步进 10%）：内联、顶部工具栏与全屏预览均提供缩小/放大按钮并实时显示百分比，切换文件时重置为默认比例，预览/源码模式切换仅在预览态显示缩放控件。
 - 修复公开图片上传的存储型 XSS 风险：头像与用户图片不再信任客户端 MIME 或文件名后缀，服务端校验真实图片内容且仅接受 PNG、JPEG、WebP、GIF，对象名使用识别出的固定安全后缀，拒绝伪装成图片的 SVG。
-- 修复知识库图片公开访问风险：解析产生的知识库图片从 `public` bucket 迁移到私有 `kb-images` bucket，新增带知识库读权限校验的后端代理接口按需读取；Markdown 预览对代理图片携带鉴权头加载为 blob URL，未登录或无权限用户无法匿名访问图片，头像/Agent 图标等公开资源不受影响。
+- 修复后续知识库解析图片的公开访问风险：新解析或重新解析产生的图片写入私有 `kb-images` bucket，并通过带知识库读权限校验的后端代理读取；历史 Markdown 和旧 `public` 对象不自动迁移，需重新解析并人工清理才能消除既有匿名 URL。
 - 登录新增 IP 级失败限速并修复锁定计数残留：`/auth/token` 按「IP+账号」与「IP 全局」在 Redis 滑动窗口内累计失败（10 分钟内 10/30 次，跨 worker 与重启有效），超限返回 429 与 Retry-After，与账号级锁定叠加；账号锁定到期后首次访问清零失败计数，解锁后首次失败不再立即重新锁定；登录成功清除对应 IP+账号失败记录。
 - 修复个人 Skill 列表权限解析错误：个人 Skill 不再进入共享配置解析，所有者获得管理权限，其他用户不可访问；同时修正数据库 UTC-naive 时间的序列化，子智能体运行时间不再错误偏移 8 小时。
 

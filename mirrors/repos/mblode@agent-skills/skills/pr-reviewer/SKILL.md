@@ -83,6 +83,7 @@ Report only when certain:
 - Measurable performance regression.
 - Missing necessary tests: render-only checks for interactive behavior, or bug fixes without a failing repro test at the seam that failed (route, API, integration point, not a helper invented during the fix).
 - Test setup that requires helper tracing to understand assertions.
+- Scaffolding whose consumer is absent or unreachable: a test for a module that does not exist, a generated surface nothing imports, a CI check on a contract nothing emits. Cite the artifact's line and the search that found no consumer, and mark it plausible where the consumer could be generated at build time, reached by framework convention, or live outside this repo.
 - New lint, type-check, or test failures versus baseline.
 - Scoped instruction-file violation, with the rule quoted.
 - Retried or at-least-once write with no idempotency key or dedupe barrier, so a duplicate delivery applies twice.
@@ -95,7 +96,7 @@ Report only when certain:
 Structural checks that fire in every mode, including Standard, which does not load the structural rubric. `references/structural-quality-rubric.md` deepens each one for Structural mode; these are the always-on floor:
 
 - Wrong altitude: a fix bolted on above the level it belongs at. A special case keyed to one caller, route, tenant, or file type added inside code that serves all of them; a guard added at one call site when the callee could return the right shape for every caller; a value patched after the fact instead of produced correctly. Name the mechanism that should absorb it.
-- Speculative abstraction or avoidable complexity without a current requirement.
+- Speculative abstraction or avoidable complexity without a current requirement, where a caller exists but the requirement does not.
 - File pushed past ~1000 lines when the new behavior has a local module, component, or helper boundary. A project-configured `max-lines` wins over this number.
 - Feature-specific conditionals added to unrelated shared paths.
 - Bespoke helper duplicating a canonical utility.
@@ -164,6 +165,7 @@ PR handoff format:
 - Skipping the baseline makes pre-existing failures look like regressions.
 - Refuting a real bug for being "speculative" costs more than a wrong finding does. The reader can dismiss a plausible finding in a sentence; nobody can dismiss the one you deleted.
 - Reading only the added lines. A diff that removes a guard shows up as green in the review and red in production.
+- A search returning nothing is not proof that nothing consumes an artifact. Dynamic imports, framework file-name conventions, generated code, and other repos all reach code no static search finds, and one wrongly declared dead file costs the whole report its credibility.
 
 ## Related skills
 

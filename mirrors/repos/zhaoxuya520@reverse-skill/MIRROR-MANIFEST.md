@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 12 followed patterns, 388 file(s) materialized.
+Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 12 followed patterns, 389 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 12 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 388 |
+| Files         | 389 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -417,47 +417,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 345 | ✓ | [`skills/scripts/refresh-tool-index.sh`](skills/scripts/refresh-tool-index.sh) |
 | 346 | ✓ | [`skills/scripts/scan-leaks.ps1`](skills/scripts/scan-leaks.ps1) |
 | 347 | ✓ | [`skills/scripts/smoke.ps1`](skills/scripts/smoke.ps1) |
-| 348 | ✓ | [`skills/scripts/test-bootstrap-codex-encoding.ps1`](skills/scripts/test-bootstrap-codex-encoding.ps1) |
-| 349 | ✓ | [`skills/scripts/test-bootstrap-manifest.sh`](skills/scripts/test-bootstrap-manifest.sh) |
-| 350 | ✓ | [`skills/scripts/test-bootstrap-supply-chain.ps1`](skills/scripts/test-bootstrap-supply-chain.ps1) |
-| 351 | ✓ | [`skills/scripts/test-client-neutral-bootstrap.ps1`](skills/scripts/test-client-neutral-bootstrap.ps1) |
-| 352 | ✓ | [`skills/scripts/test-client-neutral-bootstrap.sh`](skills/scripts/test-client-neutral-bootstrap.sh) |
-| 353 | ✓ | [`skills/scripts/test-p0-friction.ps1`](skills/scripts/test-p0-friction.ps1) |
-| 354 | ✓ | [`skills/scripts/test-parse-contracts.ps1`](skills/scripts/test-parse-contracts.ps1) |
-| 355 | ✓ | [`skills/scripts/test-routing.ps1`](skills/scripts/test-routing.ps1) |
-| 356 | ✓ | [`skills/scripts/test-routing.sh`](skills/scripts/test-routing.sh) |
-| 357 | ✓ | [`skills/scripts/test-workflow-title-safety.ps1`](skills/scripts/test-workflow-title-safety.ps1) |
-| 358 | ✓ | [`skills/scripts/update-star-history.ps1`](skills/scripts/update-star-history.ps1) |
-| 359 | ✓ | [`skills/scripts/verify-doc-facts.ps1`](skills/scripts/verify-doc-facts.ps1) |
-| 360 | ✓ | [`skills/scripts/verify-routing-coherence.ps1`](skills/scripts/verify-routing-coherence.ps1) |
-| 361 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 362 | ✓ | [`skills/supply-chain-security/references/cicd-pipeline-security.md`](skills/supply-chain-security/references/cicd-pipeline-security.md) |
-| 363 | ✓ | [`skills/supply-chain-security/references/sbom-sca-methodology.md`](skills/supply-chain-security/references/sbom-sca-methodology.md) |
-| 364 | ✓ | [`skills/supply-chain-security/SKILL.md`](skills/supply-chain-security/SKILL.md) |
-| 365 | ✓ | [`skills/tests/routing-benchmark.json`](skills/tests/routing-benchmark.json) |
-| 366 | ✓ | [`skills/thick-client/references/thick-client-checklist.md`](skills/thick-client/references/thick-client-checklist.md) |
-| 367 | ✓ | [`skills/thick-client/SKILL.md`](skills/thick-client/SKILL.md) |
-| 368 | ✓ | [`skills/threat-hunting/references/hunting-loop.md`](skills/threat-hunting/references/hunting-loop.md) |
-| 369 | ✓ | [`skills/threat-hunting/SKILL.md`](skills/threat-hunting/SKILL.md) |
-| 370 | ✓ | [`skills/threat-intelligence/references/x-public-intelligence.md`](skills/threat-intelligence/references/x-public-intelligence.md) |
-| 371 | ✓ | [`skills/threat-intelligence/SKILL.md`](skills/threat-intelligence/SKILL.md) |
-| 372 | ✓ | [`skills/tool-index.md.template`](skills/tool-index.md.template) |
-| 373 | ✓ | [`skills/wifi-wireless/references/wireless-lab-rules.md`](skills/wifi-wireless/references/wireless-lab-rules.md) |
-| 374 | ✓ | [`skills/wifi-wireless/SKILL.md`](skills/wifi-wireless/SKILL.md) |
-| 375 | ✓ | [`skills/windows-ad/references/ad-attack-paths.md`](skills/windows-ad/references/ad-attack-paths.md) |
-| 376 | ✓ | [`skills/windows-ad/SKILL.md`](skills/windows-ad/SKILL.md) |
-| 377 | → | [`docs/COMMUNITY-ISSUE-TRIAGE.md`](docs/COMMUNITY-ISSUE-TRIAGE.md) |
-| 378 | → | [`docs/PLATFORMS.md`](docs/PLATFORMS.md) |
-| 379 | → | [`docs/platforms/linux.md`](docs/platforms/linux.md) |
-| 380 | → | [`docs/platforms/macos.md`](docs/platforms/macos.md) |
-| 381 | → | [`docs/QUICKSTART_zh.md`](docs/QUICKSTART_zh.md) |
-| 382 | → | [`docs/UV-AND-DOWNLOAD-SECURITY_zh.md`](docs/UV-AND-DOWNLOAD-SECURITY_zh.md) |
-| 383 | → | [`docs/UV-AND-DOWNLOAD-SECURITY.md`](docs/UV-AND-DOWNLOAD-SECURITY.md) |
-| 384 | → | [`kali/README-kali.md`](kali/README-kali.md) |
-| 385 | → | [`README_AI.md`](README_AI.md) |
-| 386 | → | [`README_zh.md`](README_zh.md) |
-| 387 | → | [`README.md`](README.md) |
-| 388 | → | [`RULES.md`](RULES.md) |
+| 348 | ✓ | [`skills/scripts/test-bash-workflow.sh`](skills/scripts/test-bash-workflow.sh) |
+| 349 | ✓ | [`skills/scripts/test-bootstrap-codex-encoding.ps1`](skills/scripts/test-bootstrap-codex-encoding.ps1) |
+| 350 | ✓ | [`skills/scripts/test-bootstrap-manifest.sh`](skills/scripts/test-bootstrap-manifest.sh) |
+| 351 | ✓ | [`skills/scripts/test-bootstrap-supply-chain.ps1`](skills/scripts/test-bootstrap-supply-chain.ps1) |
+| 352 | ✓ | [`skills/scripts/test-client-neutral-bootstrap.ps1`](skills/scripts/test-client-neutral-bootstrap.ps1) |
+| 353 | ✓ | [`skills/scripts/test-client-neutral-bootstrap.sh`](skills/scripts/test-client-neutral-bootstrap.sh) |
+| 354 | ✓ | [`skills/scripts/test-p0-friction.ps1`](skills/scripts/test-p0-friction.ps1) |
+| 355 | ✓ | [`skills/scripts/test-parse-contracts.ps1`](skills/scripts/test-parse-contracts.ps1) |
+| 356 | ✓ | [`skills/scripts/test-routing.ps1`](skills/scripts/test-routing.ps1) |
+| 357 | ✓ | [`skills/scripts/test-routing.sh`](skills/scripts/test-routing.sh) |
+| 358 | ✓ | [`skills/scripts/test-workflow-title-safety.ps1`](skills/scripts/test-workflow-title-safety.ps1) |
+| 359 | ✓ | [`skills/scripts/update-star-history.ps1`](skills/scripts/update-star-history.ps1) |
+| 360 | ✓ | [`skills/scripts/verify-doc-facts.ps1`](skills/scripts/verify-doc-facts.ps1) |
+| 361 | ✓ | [`skills/scripts/verify-routing-coherence.ps1`](skills/scripts/verify-routing-coherence.ps1) |
+| 362 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 363 | ✓ | [`skills/supply-chain-security/references/cicd-pipeline-security.md`](skills/supply-chain-security/references/cicd-pipeline-security.md) |
+| 364 | ✓ | [`skills/supply-chain-security/references/sbom-sca-methodology.md`](skills/supply-chain-security/references/sbom-sca-methodology.md) |
+| 365 | ✓ | [`skills/supply-chain-security/SKILL.md`](skills/supply-chain-security/SKILL.md) |
+| 366 | ✓ | [`skills/tests/routing-benchmark.json`](skills/tests/routing-benchmark.json) |
+| 367 | ✓ | [`skills/thick-client/references/thick-client-checklist.md`](skills/thick-client/references/thick-client-checklist.md) |
+| 368 | ✓ | [`skills/thick-client/SKILL.md`](skills/thick-client/SKILL.md) |
+| 369 | ✓ | [`skills/threat-hunting/references/hunting-loop.md`](skills/threat-hunting/references/hunting-loop.md) |
+| 370 | ✓ | [`skills/threat-hunting/SKILL.md`](skills/threat-hunting/SKILL.md) |
+| 371 | ✓ | [`skills/threat-intelligence/references/x-public-intelligence.md`](skills/threat-intelligence/references/x-public-intelligence.md) |
+| 372 | ✓ | [`skills/threat-intelligence/SKILL.md`](skills/threat-intelligence/SKILL.md) |
+| 373 | ✓ | [`skills/tool-index.md.template`](skills/tool-index.md.template) |
+| 374 | ✓ | [`skills/wifi-wireless/references/wireless-lab-rules.md`](skills/wifi-wireless/references/wireless-lab-rules.md) |
+| 375 | ✓ | [`skills/wifi-wireless/SKILL.md`](skills/wifi-wireless/SKILL.md) |
+| 376 | ✓ | [`skills/windows-ad/references/ad-attack-paths.md`](skills/windows-ad/references/ad-attack-paths.md) |
+| 377 | ✓ | [`skills/windows-ad/SKILL.md`](skills/windows-ad/SKILL.md) |
+| 378 | → | [`docs/COMMUNITY-ISSUE-TRIAGE.md`](docs/COMMUNITY-ISSUE-TRIAGE.md) |
+| 379 | → | [`docs/PLATFORMS.md`](docs/PLATFORMS.md) |
+| 380 | → | [`docs/platforms/linux.md`](docs/platforms/linux.md) |
+| 381 | → | [`docs/platforms/macos.md`](docs/platforms/macos.md) |
+| 382 | → | [`docs/QUICKSTART_zh.md`](docs/QUICKSTART_zh.md) |
+| 383 | → | [`docs/UV-AND-DOWNLOAD-SECURITY_zh.md`](docs/UV-AND-DOWNLOAD-SECURITY_zh.md) |
+| 384 | → | [`docs/UV-AND-DOWNLOAD-SECURITY.md`](docs/UV-AND-DOWNLOAD-SECURITY.md) |
+| 385 | → | [`kali/README-kali.md`](kali/README-kali.md) |
+| 386 | → | [`README_AI.md`](README_AI.md) |
+| 387 | → | [`README_zh.md`](README_zh.md) |
+| 388 | → | [`README.md`](README.md) |
+| 389 | → | [`RULES.md`](RULES.md) |
 
 ---
 
