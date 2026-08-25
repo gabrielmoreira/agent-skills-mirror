@@ -96,7 +96,7 @@ class MessageBus:
         if extra:
             msg.update(extra)
         inbox_path = self.dir / f"{to}.jsonl"
-        with open(inbox_path, "a") as f:
+        with open(inbox_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(msg) + "\n")
         return f"Sent {msg_type} to {to}"
 
@@ -105,11 +105,11 @@ class MessageBus:
         if not inbox_path.exists():
             return []
         messages = []
-        for line in inbox_path.read_text().strip().splitlines():
+        for line in inbox_path.read_text(encoding="utf-8").strip().splitlines():
             if line:
                 messages.append(json.loads(line))
         if clear:
-            inbox_path.write_text("")
+            inbox_path.write_text("", encoding="utf-8")
         return messages
 
     def broadcast(self, sender: str, content: str, teammates: list) -> str:
@@ -129,7 +129,7 @@ def scan_unclaimed_tasks() -> list:
     TASKS_DIR.mkdir(exist_ok=True)
     unclaimed = []
     for f in sorted(TASKS_DIR.glob("task_*.json")):
-        task = json.loads(f.read_text())
+        task = json.loads(f.read_text(encoding="utf-8"))
         if (task.get("status") == "pending"
                 and not task.get("owner")
                 and not task.get("blockedBy")):
@@ -142,7 +142,7 @@ def claim_task(task_id: int, owner: str) -> str:
         path = TASKS_DIR / f"task_{task_id}.json"
         if not path.exists():
             return f"Error: Task {task_id} not found"
-        task = json.loads(path.read_text())
+        task = json.loads(path.read_text(encoding="utf-8"))
         if existing_owner := task.get("owner"):
             return f"Error: Task {task_id} has already been claimed by {existing_owner}"
         if (status := task.get("status")) != "pending":
@@ -151,7 +151,7 @@ def claim_task(task_id: int, owner: str) -> str:
             return f"Error: Task {task_id} is blocked by other task(s) and cannot be claimed yet"
         task["owner"] = owner
         task["status"] = "in_progress"
-        path.write_text(json.dumps(task, indent=2))
+        path.write_text(json.dumps(task, indent=2), encoding="utf-8")
     return f"Claimed task #{task_id} for {owner}"
 
 
@@ -174,11 +174,11 @@ class TeammateManager:
 
     def _load_config(self) -> dict:
         if self.config_path.exists():
-            return json.loads(self.config_path.read_text())
+            return json.loads(self.config_path.read_text(encoding="utf-8"))
         return {"team_name": "default", "members": []}
 
     def _save_config(self):
-        self.config_path.write_text(json.dumps(self.config, indent=2))
+        self.config_path.write_text(json.dumps(self.config, indent=2), encoding="utf-8")
 
     def _find_member(self, name: str) -> dict:
         for m in self.config["members"]:
@@ -404,7 +404,7 @@ def _run_bash(command: str) -> str:
 
 def _run_read(path: str, limit: int = None) -> str:
     try:
-        lines = _safe_path(path).read_text().splitlines()
+        lines = _safe_path(path).read_text(encoding="utf-8").splitlines()
         if limit and limit < len(lines):
             lines = lines[:limit] + [f"... ({len(lines) - limit} more)"]
         return "\n".join(lines)[:50000]
@@ -416,7 +416,7 @@ def _run_write(path: str, content: str) -> str:
     try:
         fp = _safe_path(path)
         fp.parent.mkdir(parents=True, exist_ok=True)
-        fp.write_text(content)
+        fp.write_text(content, encoding="utf-8")
         return f"Wrote {len(content)} bytes"
     except Exception as e:
         return f"Error: {e}"
@@ -425,10 +425,10 @@ def _run_write(path: str, content: str) -> str:
 def _run_edit(path: str, old_text: str, new_text: str) -> str:
     try:
         fp = _safe_path(path)
-        c = fp.read_text()
+        c = fp.read_text(encoding="utf-8")
         if old_text not in c:
             return f"Error: Text not found in {path}"
-        fp.write_text(c.replace(old_text, new_text, 1))
+        fp.write_text(c.replace(old_text, new_text, 1), encoding="utf-8")
         return f"Edited {path}"
     except Exception as e:
         return f"Error: {e}"
@@ -570,7 +570,7 @@ if __name__ == "__main__":
         if query.strip() == "/tasks":
             TASKS_DIR.mkdir(exist_ok=True)
             for f in sorted(TASKS_DIR.glob("task_*.json")):
-                t = json.loads(f.read_text())
+                t = json.loads(f.read_text(encoding="utf-8"))
                 marker = {"pending": "[ ]", "in_progress": "[>]", "completed": "[x]"}.get(t["status"], "[?]")
                 owner = f" @{t['owner']}" if t.get("owner") else ""
                 print(f"  {marker} #{t['id']}: {t['subject']}{owner}")

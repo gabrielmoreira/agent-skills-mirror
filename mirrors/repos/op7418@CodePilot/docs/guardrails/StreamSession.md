@@ -41,6 +41,7 @@
 | 25 | Thinking 动画只增强已有事实，不自行声称模型在 reasoning。首 token 前的普通等待使用 `working`，只有真实 thinking delta 行使用 `solving`；可访问语义仍由现有文字承担，canvas 必须 decorative，并尊重组件的 reduced-motion / visibility pause | `StreamingMessage.tsx` + `tool-actions-group.tsx` |
 | 26 | Runtime 内部 lifecycle envelope 不得经通用 status fallback 原样出现在聊天中。已知成功/瞬态事件默认静默；真正影响能力的失败保留结构化诊断事实但只展示本地化人类提示；未知 Codex kind 降级为通用人类状态。双聊天入口均不得暴露 server id、payload JSON 或协议 kind | `codex/event-mapper.ts` + `useSSEStream.ts` + `chat/page.tsx` |
 | 27 | 持久化并重放给 AI SDK 的每个非 provider-executed tool-call，在下一条 user/system 或 transcript 结束前必须有匹配 tool-result。回合结束仍未收到结果时，只能补 app-owned、`is_error:true` 的“未收到结果”事实，不能伪造工具成功/执行失败；legacy history 同样修复。无调用来源的 orphan result 可留在 UI/DB 审计，但不得原样送进模型 prompt | `stream-session-manager.ts` + `message-builder.ts` + `tool-history-integrity.ts` + Native loops |
+| 28 | 由多个异步 callback 写入的 server-side `ReadableStream` 必须把 enqueue/close 的唯一所有权交给 `SingleOwnerStreamWriter`。consumer cancel 先原子宣告 terminal，再 kill/abort producer；producer 的 exit/error/data callback 只能调用 writer，取消后的迟到写入必须 no-op。stream attach 后禁止任何 callback 继续直接操作裸 `controller` | `single-owner-stream-writer.ts` + marketplace/CLI/media stream routes |
 
 ## 关键文件 + 责任
 
@@ -69,6 +70,7 @@
 | `src/lib/chat-collect-stream-response.ts` | assistant checkpoint 增量写入、owner gate、同 id 终态收口 |
 | `src/components/chat/PermissionPrompt.tsx` | child permission attribution 展示 |
 | `src/lib/tool-history-integrity.ts` | Stop/partial delivery 后的 call/result 完整性、legacy replay 修复与 orphan model-input 隔离 |
+| `src/lib/single-owner-stream-writer.ts` | server-produced Web Stream 的 cancel/exit/error 单终态所有权 |
 
 ## 改动检查表
 
@@ -104,6 +106,7 @@
 - [ ] 升级 `thinking-orbs` 前重新人工审阅发布 diff（网络/eval/storage、浏览器 API guard、reduced-motion、visibility/offscreen pause、unmount cleanup），不得只放宽版本范围后依赖 lockfile
 - [ ] 新增 Runtime status kind 时明确 quiet / human-copy / actionable-UI 三选一，并同时覆盖 `/chat` 首轮和 `/chat/[id]` 后续流；禁止落入原始 JSON 展示
 - [ ] 改 tool persistence/replay 时覆盖正常 pair、Stop 后 missing result、多 call、provider-executed call 与 orphan result；synthetic marker 只能陈述“CodePilot 未收到结果”，不得冒充工具执行结论。
+- [ ] 新增 subprocess/callback 驱动的 `ReadableStream` 时使用 `SingleOwnerStreamWriter`；cancel 必须先终止 writer，再 kill/abort，所有迟到 callback 都要有行为断言。
 
 ## 常见坑
 
@@ -138,6 +141,7 @@
 - 不要依赖父模型把 A 的结果写进同一 turn 内预先生成的 B prompt。那段输入已经冻结；必须在 B 真正执行前由应用从 durable result 编译。
 - 不要因为加载动画叫 Thinking Orb，就把普通首 token 等待标成模型推理；视觉 state 必须跟已有状态事实走，文字仍是语义真源。
 - 不要把 `unknown_item` 的 `{ kind, payload }` 直接当用户文案。fallback 保证事件可诊断，不代表内部协议适合进入聊天正文。
+- 不要在 `ReadableStream.cancel()` 里只 kill producer，同时让 exit/error callback 继续裸 `controller.enqueue/close`；这是 “Controller is already closed” 的稳定竞态。
 
 ## 测试覆盖
 
@@ -165,6 +169,7 @@
 | durable cancellation 不被晚到 completion 覆盖 | `subagent-run-persistence.test.ts` |
 | 20px Thinking Orb 的 React 兼容、decorative 语义与 wait/reasoning state 接线 | `chat-thinking-orb.test.ts` |
 | terminal missing result、legacy repair 与真实 AI SDK `MissingToolResults` 正/反对照 | `codex-tool-only-completion.test.ts` + `agent-loop-messages.test.ts` + `tool-history-integrity.test.ts` |
+| subprocess stream cancel、迟到 data/exit/error 与单终态；marketplace install/remove、CLI install、media plan 四条 route 接线 | `single-owner-stream-writer.test.ts` |
 
 ## 设计决策日志
 
@@ -190,3 +195,4 @@
 - 2026-08-04：聊天等待与真实 reasoning 行接入 MIT `thinking-orbs@0.2.0` 的 20px Canvas preset。首 token 前使用 `working`，thinking delta 使用 `solving`；orb 标为 decorative，保留现有文字语义，并由上游组件负责 reduced-motion、离屏与后台暂停。该包采用时仍年轻，版本保持精确 pin；任何升级必须重新人工审阅发布 diff，不能把当前审计结论沿用到未来版本。reasoning 行用固定 20px 图标框，避免 streaming orb 切到完成图标时产生位移。
 - 2026-08-04：用户实机发现 Codex `mcpServerReady` 经 `unknown_item → status` 显示成原始 JSON。现将 ready/starting 在 mapper 静默，startup failed 仍保留结构化诊断，但由共享 resolver 在首轮与后续流转换为本地化人类提示；旧 server 发来的 ready envelope 也由 renderer 防御性消费。generic fallback 只允许普通人类字符串直通，结构化对象及以 `{` / `[` 开头的残缺 JSON 统一降级为本地化状态，防止同类问题换 Runtime 复发。
 - 2026-08-07：0.65 真实 Sentry stack 证明 `AI_MissingToolResultsError` 发生在下一轮 prompt conversion；根因是终止回合可持久化只有 tool_use 的 transcript。未来收口补诚实 missing-result，legacy replay 再防御性修复；真实 AI SDK 正/反对照证明修复前拒绝、修复后进入模型调用。
+- 2026-08-24：marketplace 与 CLI/media subprocess stream 的 cancel/exit 同时争抢 controller，生产出现 closed-controller Sentry。统一由 `SingleOwnerStreamWriter` 认领终态；cancel 先 close owner 再 kill，迟到 callback 只会 no-op。行为测试覆盖 writer 的迟到写入，并逐条钉住四个 route attach/cancel/no-raw-controller 接线；`safe-stream.ts` 仅保留给尚未迁移的 callback-heavy 旧流，不再宣称每个 ReadableStream 都必须使用。

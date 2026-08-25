@@ -190,6 +190,11 @@ ADD --checksum=sha256:10b3fa0475eb572c9a81a6fe37fa16a9c500c0c91cfc148cac15692b7e
 
 FROM scratch AS hermes-managed-teams-0-wheels
 
+# Keep the selected wheel stage non-empty for classic Dockerfile builders when
+# the managed capability union is disabled. The marker is removed after the
+# selected stage is copied into the final image.
+COPY --from=hermes-wrapper-payload /usr/local/share/nemoclaw/hermes-cli-adapter-v1.json /.empty
+
 # hadolint ignore=DL3006
 FROM hermes-managed-teams-${TARGETARCH}-wheels AS hermes-managed-teams-1-wheels
 
@@ -486,7 +491,7 @@ RUN chmod -R a+rX /opt/nemoclaw-blueprint/
 # only repairs stale bases predating the v0.0.69 base layer, which may lack the
 # profile hook, bashrc hook, or root-owned helper mode. Remove it once the
 # minimum supported Hermes sandbox base tag guarantees those artifacts and
-# test/sandbox-rlimit-hooks.test.ts covers that base.
+# test/runtime/sandbox/sandbox-rlimit-hooks.test.ts covers that base.
 RUN chmod 755 /usr/local/bin/nemoclaw-start /usr/local/bin/nemoclaw-managed-startup-hold /usr/local/bin/nemoclaw-managed-bootstrap /usr/local/lib/nemoclaw/sandbox-init.sh /usr/local/lib/nemoclaw/validate-hermes-env-secret-boundary.py /usr/local/lib/nemoclaw/patch-hermes-session-list-preview.py /usr/local/lib/nemoclaw/patch-hermes-sqlite-temp-store.py /usr/local/lib/nemoclaw/patch-hermes-discord-recovery-permissions.py /usr/local/lib/nemoclaw/patch-hermes-profile-policy-defaults.py /usr/local/lib/nemoclaw/seed-hermes-dashboard-config.py /usr/local/lib/nemoclaw/hermes-runtime-config-guard.py /usr/local/lib/nemoclaw/finalize-tirith-marker.py /usr/local/lib/nemoclaw/hermes-mcp-config-transaction.py \
     && chown root:root /usr/local/bin/nemoclaw-gateway-control /usr/local/lib/nemoclaw/gateway-supervisor.sh /usr/local/lib/nemoclaw/state-dir-guard.py /usr/local/lib/nemoclaw/runtime-state-mutation-control.py /usr/local/lib/nemoclaw/runtime-state-mutation-startup-gate.py /usr/local/lib/nemoclaw/runtime_state_mutation_hermes_publisher.py /usr/local/share/nemoclaw/state-lock-plan.json /usr/local/share/nemoclaw/runtime-state-mutation-publisher-v1.json /usr/local/lib/nemoclaw/managed-gateway-control.py /usr/local/lib/nemoclaw/build-hermes-mcp-digest.py /usr/local/lib/nemoclaw/hermes-cron-restore-control.py /usr/local/lib/nemoclaw/openshell-child-visible-credentials.v0.0.106.json \
     && chmod 700 /usr/local/bin/nemoclaw-gateway-control /usr/local/lib/nemoclaw/hermes-cron-restore-control.py \
@@ -696,7 +701,7 @@ RUN node --experimental-strip-types \
 # silent supply-chain tampering of the build context (an attacker rewriting a
 # file has to also rewrite the Dockerfile-committed hash, which reviewers gate).
 # Regenerate with `sha256sum agents/hermes/{hermes-wrapper.py,hermes-cli-adapter-v1.json,validate-cli-adapter.py,validate-env-secret-boundary.py,finalize-tirith-marker.py,cron-restore-control.py}`.
-ARG NEMOCLAW_HERMES_WRAPPER_SHA256=f4276e9833638b7a620176c88bd329d6b6d4948538a3227b727a1397146a0e0e
+ARG NEMOCLAW_HERMES_WRAPPER_SHA256=4db45043f45d8296dd39228315b721ee19b0a4e0591579ec0ceeec2777bbb40d
 ARG NEMOCLAW_HERMES_CLI_ADAPTER_SHA256=989edf54a8c09c6efb348600a8aa2f264c0b71408eb9d7bcd579b92cbeccf9b1
 ARG NEMOCLAW_HERMES_CLI_ADAPTER_VALIDATOR_SHA256=db4046e79e513eab67b069a8eda20167b8b65529cf26842531d2ad673c670330
 ARG NEMOCLAW_HERMES_VALIDATOR_SHA256=b355d1365fb1d15475e327f312ceb854ae96f9ebed28cf96bc8817f550df2688
@@ -855,17 +860,20 @@ RUN unset SSL_CERT_FILE REQUESTS_CA_BUNDLE; \
     node --experimental-strip-types /src/lib/messaging/applier/build/messaging-build-applier.mts --agent hermes --phase agent-install
 
 # Managed images have no serialized messaging plan. Install their complete
-# reviewed package union from the read-only wheel set with registry access
-# disabled so this layer is independently reproducible without imported cache.
+# reviewed package union from the selected wheel stage. Portable Podman uses the
+# classic Dockerfile parser, which supports cross-stage COPY but not BuildKit's
+# RUN --mount or RUN --network options. UV_OFFLINE keeps package resolution
+# independent of registry access.
+COPY --from=hermes-managed-teams-wheels / /opt/nemoclaw-hermes-teams-wheels/
 # hadolint ignore=DL3059
-RUN --network=none --mount=from=hermes-managed-teams-wheels,target=/opt/nemoclaw-hermes-teams-wheels,ro \
-    if [ "$NEMOCLAW_MANAGED_IMAGE_CAPABILITY_UNION" = "1" ]; then \
+RUN if [ "$NEMOCLAW_MANAGED_IMAGE_CAPABILITY_UNION" = "1" ]; then \
         UV_OFFLINE=true UV_FIND_LINKS=/opt/nemoclaw-hermes-teams-wheels \
         node --experimental-strip-types /src/lib/messaging/applier/build/messaging-build-applier.mts \
             --agent hermes --phase managed-image-capability-union; \
     fi; \
     /opt/hermes/.venv/bin/python -I -c \
-        "from importlib.metadata import version; expected = {'aiohttp': '3.14.3', 'cryptography': '50.0.0'}; actual = {name: version(name) for name in expected}; assert actual == expected, actual"
+        "from importlib.metadata import version; expected = {'aiohttp': '3.14.3', 'cryptography': '50.0.0'}; actual = {name: version(name) for name in expected}; assert actual == expected, actual" \
+    && rm -rf /opt/nemoclaw-hermes-teams-wheels
 
 WORKDIR /sandbox
 RUN test "$(id -u sandbox):$(id -g sandbox):$(pwd)" = "998:999:/sandbox"
@@ -901,7 +909,7 @@ RUN install -o root -g root -m 0444 \
 
 # Fresh named profiles do not receive config.yaml. Patch the pinned Hermes
 # fallback readers from the generated manifest, then validate a real profile.
-ARG NEMOCLAW_HERMES_PROFILE_POLICY_PATCHER_SHA256=7468555c7596b3b95732fb98aec6152537778d8519a4409c3da8aa6a76c9a3f7
+ARG NEMOCLAW_HERMES_PROFILE_POLICY_PATCHER_SHA256=424336d2ee3a12b4fb979ed84401ef105bf9c70e36dc3aa27a70f2a46b46def9
 # hadolint ignore=DL4006
 RUN printf '%s  %s\n' \
         "$NEMOCLAW_HERMES_PROFILE_POLICY_PATCHER_SHA256" /usr/local/lib/nemoclaw/patch-hermes-profile-policy-defaults.py \
@@ -1196,7 +1204,9 @@ RUN set -eu; \
 # The nested write-denial shell returns success after every prohibited mutation
 # fails. Create the wheel before resetting the target so the sandbox installer
 # is the next Python process to use it.
-RUN --network=none /opt/hermes/.venv/bin/python -I -m ensurepip --upgrade --default-pip \
+# ensurepip reads only Python's bundled wheel payload; it performs no external
+# package lookup and therefore needs no BuildKit network option.
+RUN /opt/hermes/.venv/bin/python -I -m ensurepip --upgrade --default-pip \
     && /opt/hermes/.venv/bin/python -I -m pip --version \
     && chmod 644 /opt/hermes/.venv/.lock \
     && test "$(stat -c '%U:%G %a' /opt/hermes/.venv/.lock)" = "root:root 644" \

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nodejs/node` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `nodejs/node` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nodejs/node` — 26 default patterns, 0 followed patterns, 1 file(s) 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 1 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `nodejs/node` — 26 default patterns, 0 followed patterns, 1 file(s) 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `doc/contributing/ai-guidelines.md`
 
 ## File Index
 
@@ -59,7 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`deps/v8/GEMINI.md`](deps/v8/GEMINI.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`deps/v8/GEMINI.md`](deps/v8/GEMINI.md) |
+| 3 | → | [`doc/contributing/ai-guidelines.md`](doc/contributing/ai-guidelines.md) |
 
 ---
 

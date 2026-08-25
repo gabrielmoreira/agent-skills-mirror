@@ -2,7 +2,7 @@
 repo: diegosouzapw/OmniRoute
 repoUrl: https://github.com/diegosouzapw/OmniRoute.git
 refType: branch
-ref: release/v3.8.50
+ref: release/v3.8.51
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns
 |---------------|-------|
 | Repo          | `diegosouzapw/OmniRoute` |
 | Ref Type      | `branch` |
-| Ref           | `release/v3.8.50` |
+| Ref           | `release/v3.8.51` |
 | Default pats  | 26 |
 | Followed pats | 12 |
 | Files         | 334 |

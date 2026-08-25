@@ -138,7 +138,7 @@ Never run `gh pr merge` or click the GitHub merge button — both are blocked by
 Agents must not enqueue, merge, re-enqueue, or otherwise cause a PR to land without explicit user approval in the current conversation for the identified PR or stack. Do not infer that approval from requests to prepare a PR, move it toward merge, make it ready, monitor it, or resolve its blockers. Agents may inspect status, fix code and CI, apply `stamphog` when approval is missing, and report that a PR is ready; then they must wait for a direct instruction to merge or enqueue it.
 
 - After explicit user approval: enqueue with `gh pr comment <number> --body "/trunk merge"`. Cancel: `gh pr comment <number> --body "/trunk cancel"`. Enqueueing a stacked PR also enqueues every unmerged layer below it — comment on the top PR to merge the whole stack. `--no-batch` opts the PR (or stack) out of batching.
-- The Trunk CLI is an alternative to the comments: `trunk merge <number>` enqueues, `trunk merge status <number>` inspects, `trunk merge cancel <number>` dequeues. It ships in the flox environment but needs a one-time interactive `trunk login`, so agents and headless environments should keep using the comments.
+- The Trunk CLI is an alternative to the comments: `trunk merge <number>` enqueues, `trunk merge status <number>` inspects, `trunk merge cancel <number>` dequeues. It ships in the flox environment and needs a one-time interactive `trunk login` — run it once even if you prefer the comments, because the same login arms the pre-push merge-queue guard that stops you from knocking a queued PR out of the queue. Agents and headless environments that can't complete the interactive login use the comments.
 - Missing required approval: apply the `stamphog` label (`gh pr edit <number> --add-label stamphog`) to trigger the automated review-and-approve flow, and re-apply it whenever it was stripped (`REFUSED`/`ESCALATE` verdict) once the feedback is addressed — re-applying is always safe.
 - After enqueueing, babysit the PR until it merges or fails — follow [`.agents/skills/merging-prs/SKILL.md`](./.agents/skills/merging-prs/SKILL.md) for the preflight, watch, and failure-handling loop.
 - Queue progress is the `Trunk Merge Queue (master)` check run on the PR's head commit. The PR's own checks don't reflect the queue's testing — it runs CI on a `trunk-merge/**` branch.
@@ -215,6 +215,7 @@ See [.agents/security.md](.agents/security.md) for security guidelines — least
 - Error handling: Prefer explicit error handling with typed errors
 - Naming: Use descriptive names, camelCase for JS/TS, snake_case for Python
 - Comments: default to short or 1-line comments. Explain _why_, not _what_, and only when a future reader (with no access to this PR or chat) would otherwise be confused
+- Comments: use mostly ASD-STE100 Simplified Technical English. Use active voice, simple tenses, one idea per sentence, and consistent terms
 - Comments: never log change history or chat context in code — no "previously did X, now does Y", "per <task/PR>", "changed because…", or "AI:"/"agent:" notes. That goes in the commit message and PR description
 - Comments: when refactoring or moving code, preserve existing comments unless they are explicitly made obsolete by the change
 - Python tests: do not add doc comments

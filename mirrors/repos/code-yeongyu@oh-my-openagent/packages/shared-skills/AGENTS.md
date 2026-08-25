@@ -1,6 +1,6 @@
 # shared-skills — Cross-Harness SKILL.md Bundle (Skills)
 
-**Generated:** 2026-08-10 (38d268995)
+**Generated:** 2026-08-24 (f3642fcda)
 
 ## OVERVIEW
 
@@ -63,6 +63,6 @@ upstreams/{open-design,taste-skill,ui-ux-pro-max,designpowers}   # pinned submod
 - **Test files, caches, and source metadata are excluded** when Codex copies skills.
 - **`lcx-` prefix = Codex-only** (no OpenCode counterpart). Frontmatter has NO `location:` field (unlike `.agents/skills/`).
 - **Packaging is pinned** by `omo-opencode/src/shared-skills-package.test.ts` (workspace inclusion + `files` entries + every skill parses).
-- **Skill CONTENT is PROSE — do NOT pin its wording with a test.** A skill body is instructions the model reads; asserting what it *says* (`toContain` a sentence, `not.toContain` old wording, word/char counts) guards a diff, not behavior, and blocks every legitimate edit — see `.omo/rules/test-discipline.md` §PROMPT TESTS. Guard only what a MACHINE consumes: packaging (`omo-opencode/src/shared-skills-package.test.ts`, above), personal-token scrubbing (`depersonalization-gate.test.ts` — a security exclusion), the third-party manifest (`frontend-thirdparty-manifest.test.ts`), the root-path probe (`shared-skills-root-path.test.ts`), and `upstreams.test.ts`. A pure-prose skill edit ships on review with NO new test; the prose-pinning contract tests that used to sit here were removed as pretend-coverage.
+- **Skill CONTENT is PROSE — do NOT pin its wording with a test.** A skill body is instructions the model reads; asserting what it *says* (`toContain` a sentence, `not.toContain` old wording, word/char counts) guards a diff, not behavior, and blocks every legitimate edit — see `.omo/rules/test-discipline.md` §PROMPT TESTS. Guard only what a MACHINE consumes: packaging (`omo-opencode/src/shared-skills-package.test.ts`, above), personal-token scrubbing (`depersonalization-gate.test.ts` — a security exclusion), the third-party manifest (`frontend-thirdparty-manifest.test.ts`), the root-path probe (`shared-skills-root-path.test.ts`), `upstreams.test.ts`, the stylegallery routing membership (`frontend-stylegallery-routing.test.ts`), and the ultimate-browsing runtime pins (`ultimate-browsing-runtime-pins.test.ts`). A pure-prose skill edit ships on review with NO new test; the prose-pinning contract tests that used to sit here were removed as pretend-coverage.
 - **ulw-plan is dual-maintained by hand** (here AND `omo-codex/plugin/components/ultrawork/skills/ulw-plan/`) — sync-skills does NOT copy the shared version to Codex; keep both in step.
 - Parent: [`packages/AGENTS.md`](../AGENTS.md).

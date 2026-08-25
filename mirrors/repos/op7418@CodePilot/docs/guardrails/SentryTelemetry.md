@@ -21,7 +21,7 @@
 | ST-07 | 有 stack 的 product fault 与 unknown 不得强设 fingerprint；unknown 必须标 `needs_classification=yes`，normalized fingerprint 必须包含 provider.class。 |
 | ST-08 | provider test、user cancel、expected lifecycle、`user_action_required` 都生成 0 个 Sentry event；禁止用 info/message health-summary 绕过 Issue 合同。 |
 | ST-09 | rich provider body 只供 UI；共享边界必须在 async capture / rethrow 前写 non-enumerable marker，Node auto-capture 必须丢弃原始异常；受控事件只能发送固定 message 或保留原 stack frame 的安全副本。 |
-| ST-10 | Electron init 保持在应用 import 之前，不得用 async policy 推迟；不得用 `integrations: []` 清空 native/minidump 默认能力。 |
+| ST-10 | Electron init 保持在应用 import 之前，不得用 async policy 推迟。普通可分发构建必须过滤 `SentryMinidump`，因为附件绕过 JS sanitizer；只有手动 CI 的 compile-time telemetry-smoke 构建可显式保留，且该产物不得发布。不得用 `integrations: []` 清空其余默认能力。 |
 | ST-11 | auth token 只在 CI upload step；DSN 不得以 literal 提交；public env 不得含上传权限。 |
 | ST-12 | stable source-map upload 必须覆盖最终 packaged JS；临时失败最多重试 3 次，最终仍失败必须 fail closed；任何 DMG/ZIP/EXE/AppImage/deb/rpm/app.asar 不得含 `.map`。 |
 | ST-13 | 真实 Sentry smoke 只能由手动 CI 的显式 boolean 输入编译开启；tag、普通本地构建、Windows 与 Linux 必须编译为关闭。Native crash 还必须同时提供运行时开关，smoke 产物不得上传为可下载 artifact 或发布。 |
@@ -52,6 +52,7 @@
 - [ ] Utility failure 是否按 generation exactly-once；是否只从 allowlisted 数值快照构造事件，并在 API 形状上拒绝 diagnostic report 原文？
 - [ ] Utility exit code 是否按平台整数单独校验（`[-2^31, 2^32-1]`），没有误套 memory 的非负规则或接受浮点/越界值？
 - [ ] Electron SDK `ChildProcess` 是否仍以 `events:[]` 替换默认实例（保留 breadcrumb、禁止 abnormal-exit/launch-failed/integrity-failure 自动 Issue），避免和 ST-16 自定义事件双源？
+- [ ] 普通构建是否过滤 `SentryMinidump`；只有不会发布的 compile-time telemetry-smoke 构建显式保留，并在 crash 后恢复启动时仍可读取受控 fixture？
 - [ ] “必须 0 event”的 transport/envelope 测试是否在同文件包含至少一个已知应产生 event 的阳性对照，证明 SDK carrier 与捕获链路实际接通？
 - [ ] SDK 升级后用真实 SDK client 重新枚举三层 default integrations，并以 request 行为确认只有 main session。
 - [ ] sanitizer transport 是否真的序列化 `user.ip_address:null`，且 Sentry project 的 Prevent Storing IP Addresses 仍开启？不要把代码 tombstone 冒充 project 设置已核验。
@@ -60,7 +61,7 @@
 - [ ] upload 使用最终 bundle，package 扫描仍为 0 map。
 - [ ] Linux x64/arm64 均由原生 runner 产出三种格式，且架构/ABI/server/0-map 门禁没有被降级为文件存在检查。
 - [ ] 修改 source path 时同步处理 debug_meta，保留行列号/debug ID。
-- [ ] 真实 smoke 仍是手动 macOS-only；正式 tag 的 compile flag 为 `0`，native crash 无运行时 flag 时不可触发。
+- [ ] 真实 smoke 仍是手动 macOS-only；正式 tag 的 compile flag 为 `0`，因此不启用 minidump integration；native crash 无运行时 flag 时不可触发。
 
 ## 5. 常见坑
 
@@ -112,3 +113,4 @@
 - 2026-08-12：Claude 复审发现 Electron SDK 默认 `ChildProcess` 对 `abnormal-exit` 仍自动 `captureMessage`，会和 ST-16 自定义 event 双报。Main 改为显式替换 `childProcessIntegration({events:[]})`，保留 process breadcrumb，只让 normalized generation boundary 拥有 utility Issue。
 - 2026-08-12：复审 P3 follow-up 将 utility `exitCode` 从 memory-style 非负过滤中分离；保留 Electron 平台整数（signed int32 至 Windows DWORD），拒绝浮点、非有限与越界值，且 fingerprint 不变。
 - 2026-08-15：`telemetry-native-stream-loop.test.ts` 的 initial-503 exactly-once 阳性断言已在两台机器复现 0-event flake，登记 tech-debt #86。修复必须收敛 carrier/transport drain 与 terminal capture 的异步所有权；禁止用重跑、固定 sleep、降低 exactly-once 或移除阳性对照让门禁“变绿”。
+- 2026-08-23：确认 `SentryMinidump` 以附件发送，不能经过 `beforeSend` 的 JS sanitizer。普通 stable 保留经脱敏的 JS error 与 main session，但默认过滤 native dump；只有手动 CI 专门编译且禁止发布的 telemetry-smoke artifact 保留该 integration，以继续验证受控 native crash fixture。

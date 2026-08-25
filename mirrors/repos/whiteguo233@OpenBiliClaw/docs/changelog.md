@@ -7,6 +7,8 @@
 
 ## v0.3.210：海外代理路由统一修复与来源日期过滤（2026-08-23）
 
+- **修复 LLM 模块路由失效导致「聊聊口味」永久卡死（issue #213）**：用户配置的 `[llm.routes.soul]` 自定义链引用了已删除 / 已停用的实例后，每次对话调用都在发起任何 HTTP 请求前快速失败并归类为 `no_provider`（relay 本身健康、curl / 健康检查均正常，因为请求根本没发出去），而 durable 聊天 worker 对这种配置型错误无限原位重试，UI 永久停在「阿B 正在思考」且严格串行阻塞后续所有 turn；唯一的线索是一条 INFO 级日志。三层修复：(1) `LLMService` 的模块路由实例过滤与 legacy override 忽略日志从 INFO 升为 WARNING，点名 bucket、失效实例 ID 与修复方式；(2) durable 聊天 turn 对连续 3 次快速 `no_provider` 失败（约 3s，保留设置页切换实例等瞬态窗口的自愈机会）终态化为带修复提示的 failed，不再无限等待也不再阻塞队列，其余失败种类（限流 / 超时 / 网络等瞬态错误）仍保持无限有界退避；(3) 保存时校验（`_collect_llm_instance_routing_issues`）此前已拦截无效路由链，本次补齐运行期可诊断性。测试新增空链 WARNING 回归与 no_provider 终态化端到端；`docs/modules/llm.md` 与 `docs/modules/api.md` 已同步。
+
 - **发布状态**：后端 / 插件 / 桌面安装包（macOS arm64 普通 + embedding、Windows 普通 + embedding）/ Docker 多架构镜像与聚合 Release 均已发布为 `v0.3.210`，完整性门禁全绿，详情见 [Release](https://github.com/whiteguo233/OpenBiliClaw/releases)。Chrome Web Store 已上传并提交 `0.3.210` 审核；Firefox AMO 已提交 listed `0.3.210`；Gitee 镜像已同步 main 与四个频道 tag，发行说明见 Gitee Release 页。
 
 - **修复 custom 代理下国内网络 YouTube 封面全裂**：`/api/image-proxy` 的境外 CDN 抓取硬编码 `trust_env=True`，但 `[network] mode="custom"` 的代理只存于 `openbiliclaw.network` 模块全局、从不写 `os.environ`，trust_env 读到空值，i.ytimg.com / ggpht.com 实际从国内网络直连、全部超时成裂图（youtube/client 等其它海外客户端都经 `outbound_httpx_kwargs()` 拿代理，唯独 image_cache 漏接）。`fetch_cover_bytes` 改为按主机分流：国内 CDN（hdslb / xhscdn 等）恒直连不变，境外 CDN（ytimg / ggpht / lain.bgm.tv）跟随进程级 `[network]` 出口策略（custom 显式传代理 / system 继承环境变量 / direct 强制直连），按次查询策略使配置热更新对下一张封面即时生效；测试覆盖三种模式的分流断言，`docs/modules/runtime.md` 与 `docs/modules/config.md` 已同步。

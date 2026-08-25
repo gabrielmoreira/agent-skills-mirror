@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/resume-builder/references/schema.md`](skills/resume-builder/references/schema.md) |
-| 4 | ✓ | [`skills/resume-builder/SKILL.md`](skills/resume-builder/SKILL.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`skills/resume-builder/references/schema.md`](skills/resume-builder/references/schema.md) |
+| 5 | ✓ | [`skills/resume-builder/SKILL.md`](skills/resume-builder/SKILL.md) |
 
 ---
 

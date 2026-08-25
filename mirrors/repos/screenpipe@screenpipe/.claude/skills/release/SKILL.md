@@ -83,14 +83,22 @@ Cargo.toml leaves the other locks stale and breaks `cargo test --locked` on main
 Commit the regenerated locks together with the bump. `style.yml` runs
 `./scripts/regenerate-locks.sh --check` on every push and fails if any lock is stale.
 
-Before dispatching a desktop release, compile the actual app binary from its
-own Cargo workspace. Lock freshness and frontend builds do not catch stale
-`screenpipe-app` calls into changed core APIs:
+Before dispatching a desktop release, compile the actual app binary through the
+guarded native build queue. A raw `cargo check` from a clean worktree is not a
+valid substitute: the Tauri build script requires sidecars such as
+`bun-aarch64-apple-darwin`, which `scripts/pre_build.js` prepares. Install the
+frontend dependencies first so the guarded build can run its prebuild and
+frontend/type checks before compiling the app:
 
 ```bash
-cd apps/screenpipe-app-tauri/src-tauri
-cargo check --locked --bin screenpipe-app
+cd apps/screenpipe-app-tauri
+bun install --frozen-lockfile
+bun run build:tauri:dev
 ```
+
+The build may regenerate Tauri schemas. Restore build-only schema drift before
+staging, then require the release commit to contain only the intended version
+files.
 
 ### 4. Commit, Push, and Dispatch Exact SHA
 ```bash

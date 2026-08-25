@@ -1,6 +1,6 @@
 ---
 name: powertoys-dashboard-update
-description: "Daily PowerToys triage-dashboard updater. Exhaustively checks every eligible PR against its latest head and activity, quickly judges changed bug issues into explicit actions, resumes stale review/design work, requires implementation-grade issue designs with exact files/symbols/code paths, and republishes the v3 dashboard. Does not post upstream reviews/comments or open upstream PRs without explicit approval."
+description: "Reliable resumable PowerToys triage-dashboard updater. Exhaustively inventories freshness, processes a bounded PR/design batch per run, checkpoints completed work, and republishes the dashboard while leaving unfinished work explicitly queued. Does not post upstream reviews/comments or open upstream PRs without explicit approval."
 ---
 
 # PowerToys Dashboard Update
@@ -35,8 +35,8 @@ skills:
 4. Do not publish PATs, tokens, local paths, or private notes to the artifact
    repository.
 5. Every run must regenerate and publish `data/index.json`, `data/index.js`, and
-   `data/items/<number>.json` to the configured board repository after the
-   agent work completes.
+   `data/items/<number>.json` before heavy agent work and after each completed
+   batch. A non-empty stale queue is valid when deferred items remain explicit.
 6. PowerToys Pulse is the user-facing dashboard. After publishing artifacts,
    synchronize and validate Pulse, then deploy only an approved Pulse branch or
    workflow. Do not substitute the artifact repository's Pages site as the
@@ -69,7 +69,11 @@ $Board = if ($env:POWERTOYS_BOARD_REPO) {
 }
 $Since = (Get-Date).AddDays(-2).ToUniversalTime().ToString('o')
 $IssueWindowDays = 30
-$DesignBatchSize = 10
+$DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } else { 2 }
+$PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } else { 5 }
+$PrReviewConcurrency = if ($env:POWERTOYS_PR_REVIEW_CONCURRENCY) { [int]$env:POWERTOYS_PR_REVIEW_CONCURRENCY } else { 2 }
+$RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } else { 45 }
+$DrainReviewQueue = $env:POWERTOYS_DASHBOARD_DRAIN_QUEUE -eq '1'
 $RunStartedAt = (Get-Date).ToUniversalTime().ToString('o')
 $ProjectOwner = if ($env:POWERTOYS_PROJECT_OWNER) { $env:POWERTOYS_PROJECT_OWNER } else { 'microsoft' }
 $ProjectNumber = if ($env:POWERTOYS_PROJECT_NUMBER) { [int]$env:POWERTOYS_PROJECT_NUMBER } else { 2445 }
@@ -102,6 +106,32 @@ artifact feed. Generated files belong only in its root `data/` directory, not
 inside `.github\skills`. Never place secrets or information that must remain
 private in the public feed.
 
+### Reliability contract
+
+Normal runs are bounded and resumable. They must finish within the configured
+run budget instead of trying to drain an arbitrarily large review queue:
+
+- inventory every eligible PR and changed bug, but select at most
+  `$PrReviewBatchSize` PRs and `$DesignBatchSize` full designs for execution;
+- run at most `$PrReviewConcurrency` PR workers at once;
+- treat cloud-review waiting as a persisted queue stage, not an active worker:
+  request the review, checkpoint `waiting_copilot`, return the worker slot, and
+  inspect the result on the next scheduler pass;
+- never let a PR worker launch another subagent; the worker performs its review
+  directly and may use external GitHub Copilot review as required;
+- give each worker the exact UTC deadline from the run plan and require it to
+  stop cleanly with durable `review_in_progress` state before that deadline;
+- publish the refreshed inventory before launching workers, then publish each
+  completed artifact without waiting for the full queue;
+- checkpoint every durable transition locally and publish after two transitions,
+  after ten minutes, or at run completion, whichever comes first;
+- leave unselected or unfinished items explicitly queued for the next run.
+
+`POWERTOYS_DASHBOARD_DRAIN_QUEUE=1` is an exceptional operator-requested mode.
+Only drain mode may continue through additional batches and require the stale
+queue to reach zero. Do not use drain mode in scheduled or ordinary manual
+runs.
+
 ### Scheduled-run status notifications
 
 Scheduled runs are hard to observe from the CLI, so send compact status
@@ -120,10 +150,9 @@ dashboard run.
 
 Keep messages brief and clear. Send:
 
-1. **Started** — after the live queue is enumerated. Include the sets that will
-   be updated in this run: stale PR numbers, changed/new bug issue numbers that
-   need fast judgment, selected full-design issue numbers, and any explicitly
-   deferred/running groups.
+1. **Started** — after the live queue and bounded run plan are enumerated.
+   Include selected PRs, deferred PR count, changed/new bug issues, selected
+   full-design issues, the concurrency cap, and the UTC deadline.
 2. **30-minute checkpoint** — if the run is still active 30 minutes after the
    started email, reply to the original with completed PRs/issues, currently
    running PRs/issues, remaining queue count, and next expected milestone.
@@ -246,11 +275,22 @@ direction/close/takeover decision, or excluded, and that either:
 - has a prior proposed review, but the live head SHA differs from the artifact
   or review action head SHA.
 
-Every PR in this queue **must** be sent through or resumed in
-`powertoys-pr-review` during the same run. A metadata-only refresh is not a
-valid substitute for the looped review. After workers finish and artifacts are
-regenerated, rerun the gate with `-FailOnStale`; do not commit or push while it
-reports any applicable PRs still stale.
+The queue is exhaustive, but execution is bounded. Build the run plan:
+
+```powershell
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Get-PrReviewRunPlan.ps1" `
+  -Dashboard $Dashboard -Upstream $Upstream `
+  -BatchSize $PrReviewBatchSize `
+  -MaxConcurrency $PrReviewConcurrency `
+  -RunBudgetMinutes $RunBudgetMinutes -AsJson
+```
+
+Send only `selected_prs` through or resume them in `powertoys-pr-review`.
+Publish `deferred_prs` as queued work for later runs. A metadata-only refresh
+is still insufficient: every run must either advance its selected batch or
+honestly retain durable in-progress state. Use `-FailOnStale` only in explicit
+drain mode.
 
 ### Fast issue judgment
 
@@ -301,32 +341,58 @@ Classify unfinished workflow state:
 
 ## Phase 2 — Resume or rerun workflows
 
-PR coverage is exhaustive by default: every open, non-draft PR that is not
-waiting on the author or owned elsewhere must have a current result or
-be resumed/sent through `powertoys-pr-review` in the fork. Process PRs in
-parallel batches of 3–5 to overlap Copilot polling and builds, while preserving
-each fork's independent convergence state. Prioritize missing/stale heads, then
-unchanged heads with newer activity. Do not re-review an unchanged head that
-already has a current clean fork result and no relevant newer activity.
+PR inventory is exhaustive, but normal execution is bounded to the run plan.
+Process only the selected batch, with at most two active workers by default.
+The default batch contains five PRs so cloud waits can release slots and let
+other PRs advance without increasing local build concurrency. Never launch all
+stale PRs in one conversation. Prioritize resumable in-progress reviews, stale
+proposed reviews, stale artifact heads, then missing artifacts.
+Do not re-review an unchanged head that already has a current clean fork result
+and no relevant newer activity.
 Do not call a PR review complete, approval-ready, or "clean" unless the latest
 freshly requested Copilot review has zero new comments, zero unresolved threads,
 and the required local build has passed. A Copilot-clean result with a pending
 build, context review, spelling check, or timed-out fresh request remains
 `review_in_progress` and must get a `Re-run review`/`Continue review` action.
 
+Each worker receives the run-plan deadline and must stop initiating new review
+rounds or builds 15 minutes before it. If it cannot converge, it writes durable
+`review_in_progress` state and returns. Do not keep polling simply to make the
+current run look complete. Do not launch nested agents from a PR worker.
+
+Use `Set-PrReviewCheckpoint.ps1` after each durable transition:
+
+```powershell
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Set-PrReviewCheckpoint.ps1" `
+  -Dashboard $Dashboard -Number $Number -HeadSha $LiveHead `
+  -SourceUpdatedAt $LiveUpdatedAt -Phase waiting_copilot `
+  -Detail "Fresh fork review requested; the next run will inspect the result." `
+  -ForkPr $ForkPr -ForkBranch $ForkBranch -Fork $Fork
+```
+
+Required checkpoint phases are: selected/`queued`, fork setup/`mirroring`,
+review request/`review_requested`, external wait/`waiting_copilot`, finding
+work/`reviewing_findings`, and local validation/`building`. A worker waiting on
+GitHub Copilot performs one immediate status check only; if the result is not
+ready, it checkpoints and returns instead of polling.
+
 ### Incremental publication during long PR loops
 
-Long-running PR reviews should not block completed review data from reaching the
-dashboard. After any batch of PR workers emits validated artifacts, publish
-those completed artifacts immediately while the remaining workers continue.
+Long-running PR reviews must not block fresh dashboard data. Before launching
+workers, regenerate and publish the inventory with `-AllowStaleReviewQueue`.
+Checkpoint every stage transition locally immediately. After two checkpoint
+transitions, ten elapsed minutes, or any completed artifact, regenerate,
+sanitize, validate, commit, and push without waiting for remaining selected
+PRs.
 Regenerate and sanitize the feed, validate the completed PR numbers, run the
 stale-review queue check without `-FailOnStale`, and commit/push the completed
 artifacts plus index updates. The dashboard must show still-running PRs as
 queued/running review, not as current.
 
-When a long-running worker finishes later, repeat the same incremental publish
-for that worker's artifact. Run the `-FailOnStale` gate only when claiming the
-full PR review queue is complete.
+At the run deadline, publish completed/in-progress state and stop cleanly.
+Report selected, completed, in-progress, and deferred counts. Run the
+`-FailOnStale` gate only in explicit drain mode.
 
 Issue **judgment** is exhaustive for new/changed bugs, while full design work is
 bounded. Rank `actionable_design` judgments by confidence, reproducibility,
@@ -343,7 +409,7 @@ The retired custom `pr-iterate` agent must not be launched. `pr-iterate/<N>`
 remains the durable fork branch naming convention used by
 `powertoys-pr-review`; the current execution path is the `powertoys-pr-review`
 skill itself, using a general-purpose worker when parallel background execution
-is needed.
+is needed. That worker must not delegate to another agent.
 
 - PR: `powertoys-pr-review` must reach zero new Copilot comments and zero
   unresolved Copilot threads before a new artifact is emitted. For stale-review
@@ -362,6 +428,14 @@ suggestions must target an exact current RIGHT-side diff range and contain an
 apply-ready suggestion block; architectural or out-of-diff findings belong in
 body comments. Keep fork/worktree provenance in internal evidence, never in
 public upstream comment text.
+
+Do not collapse every concrete code fix into broad companion notes. When the
+converged fork contains a localized fix on a current upstream diff line, emit
+an `inline`/`in_diff: true` item with the exact range and apply-ready
+`suggestion` block. If a review legitimately contains only architectural or
+out-of-diff companion notes, its action label or note must explicitly say
+`general review notes — no inline suggestions`; never present it as though the
+user is about to post inline comments.
 
 ### Required issue-design artifact
 
@@ -457,10 +531,11 @@ remaining candidates without starting them.
 
 ## Phase 4 — Emit artifacts and update PowerToys Pulse
 
-Run the v3 generator after all fork-side work:
+Run the v3 generator once before heavy fork-side work and again after each
+completed batch:
 
 ```powershell
-pwsh -NoProfile -File "$Dashboard\emit.ps1"
+pwsh -NoProfile -File "$Dashboard\emit.ps1" -AllowStaleReviewQueue
 pwsh -NoProfile -File "$Dashboard\Sanitize-ActionData.ps1"
 ```
 
@@ -469,9 +544,13 @@ it must not delete worker output merely because an item is not in the
 hand-authored overlay. The sanitizer removes internal-only fields and
 normalizes local checkout paths before publication. Run both only after worker
 writes are complete when possible, and verify the resulting `artifact_numbers`
-includes every completed review from the run.
+includes every completed review from the run. `emit.ps1` runs the stale-review
+queue gate itself and fails by default when any applicable PR lacks a current
+looped review for its live head. Normal bounded runs therefore use
+`-AllowStaleReviewQueue` for both initial and final publication. Omit that
+switch only in explicit drain mode.
 
-Then enforce the stale-review queue gate:
+In drain mode only, enforce the stale-review queue gate:
 
 ```powershell
 pwsh -NoProfile -File `
@@ -479,10 +558,11 @@ pwsh -NoProfile -File `
   -Dashboard $Dashboard -Upstream $Upstream -FailOnStale
 ```
 
-If the gate fails, return to Phase 2 and run/resume `powertoys-pr-review` for
-the listed PRs. Do not repair the failure by copying timestamps or head SHAs
-into artifacts; only a completed looped review, author-waiting classification,
-owned-elsewhere classification, or explicit exclusion clears a PR.
+In normal mode, rerun the queue command without `-FailOnStale`, publish the
+remaining queue, and finish successfully. Do not repair stale items by copying
+timestamps or head SHAs into artifacts; only a completed looped review,
+author-waiting classification, owned-elsewhere classification, or explicit
+exclusion clears a PR.
 
 For incremental publication while review workers are still running, run the
 same queue command without `-FailOnStale`, include the remaining stale/running

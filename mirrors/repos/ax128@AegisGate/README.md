@@ -42,6 +42,8 @@ AegisGate is a self-hosted, pipeline-based security proxy designed to protect LL
 | No external API dependency | Yes (core filters local; semantic service optional) | Yes | No (OpenAI) | No |
 | Bilingual (EN/ZH) | Yes | English | English | English |
 
+> Comparison compiled from each project's public documentation, last checked 2026-08. Those projects move independently of this one — verify against their current docs before relying on a row.
+
 > **Quick start:** create `cliproxyapi_default` and `sub2api-deploy_sub2api-network` first, then run `docker compose up -d --build` — gateway runs on port 18080, admin UI login at `http://localhost:18080/__ui__/login`
 
 ### Architecture
@@ -58,19 +60,23 @@ flowchart LR
         MW[Token Router & Middleware]
 
         subgraph ReqPipeline["Request Pipeline"]
-            R1[PII Redaction<br/>50+ patterns]
-            R2[Exact-Value Redaction<br/>API keys, secrets]
+            R1[Exact-Value Redaction<br/>API keys, secrets]
+            R2[PII Redaction<br/>50+ patterns]
             R3[Request Sanitizer<br/>injection & leak detection]
             R4[RAG Poison Guard]
+            R1 --> R2 --> R3 --> R4
         end
 
         subgraph RespPipeline["Response Pipeline"]
-            S1[Injection Detector<br/>regex patterns]
+            S1[Exact-Value Redaction]
             S2[Anomaly Detector<br/>encoding & command patterns]
-            S3[Privilege Guard]
-            S4[Tool Call Guard]
-            S5[Restoration &<br/>Post-Restore Guard]
-            S6[Output Sanitizer<br/>block / sanitize / pass]
+            S3[Injection Detector<br/>regex patterns]
+            S4[RAG Poison Guard]
+            S5[Privilege Guard]
+            S6[Tool Call Guard]
+            S7[Restoration &<br/>Post-Restore Guard]
+            S8[Output Sanitizer<br/>block / sanitize / pass]
+            S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8
         end
         SR["Semantic Review (Gray Zone)<br/>optional service call"]
 
@@ -103,7 +109,7 @@ Yes. AegisGate provides an OpenAI-compatible API (`/v1/chat/completions`, `/v1/r
 
 **What data does AegisGate redact?**
 Over 50 PII pattern categories including: API keys and tokens (OpenAI, AWS, GitHub, Slack), credit card numbers, SSNs, email addresses, phone numbers, crypto wallet addresses and seed phrases, medical record numbers, IP addresses, internal URLs, and infrastructure identifiers. Custom exact-value redaction is also supported for arbitrary secrets.
-Which of them run depends on the route: `/v1/chat/completions`, `/v1/responses` and `/v1/messages` carry structured conversation payloads, so by default only the credential-only `redaction.relaxed_pii_ids` subset runs there (12 of the 56 shipped patterns — tokens, JWT, PEM private keys, AWS/GitHub/Slack keys, exchange secrets, crypto WIF/xprv/seed phrases). Every other route runs the full set. Set `redaction.relaxed_pii_ids: ["*"]` in `security_filters.yaml` to run all patterns on those three routes too.
+Which of them run depends on the route. `/v1/chat/completions`, `/v1/responses` and `/v1/messages` carry structured conversation payloads, so by default only the credential-only `redaction.relaxed_pii_ids` subset runs there (13 of the 56 shipped patterns — tokens, tokens in URL query strings, JWT, session cookies, PEM private keys, AWS/GitHub/Slack keys, exchange secrets, crypto WIF/xprv/seed phrases). Other `/v1/` routes run the full set, and `/v2/` runs the same relaxed set as the conversation routes. Set `redaction.relaxed_pii_ids: ["*"]` in `security_filters.yaml` to run all patterns everywhere the relaxed set applies. Full breakdown in [PII Redaction Coverage](#pii-redaction-coverage-50-categories).
 
 **Can I use AegisGate with AI coding agents like Cursor, Claude Code, or Codex?**
 Yes. AegisGate supports MCP (Model Context Protocol) and Agent SKILL integration. Point your agent's `baseUrl` to the gateway and it will transparently filter all LLM traffic. See [SKILL.md](SKILL.md) for agent-specific setup instructions.
@@ -136,12 +142,23 @@ Health check: `curl http://127.0.0.1:18080/health`
 
 Readiness check: `curl http://127.0.0.1:18080/ready`
 
-The response body carries a `checks` map and a `degraded_checks` list. One check is
-reported without failing readiness: `security_rules` reads `stale: <error>` when the
-rules file on disk stops parsing. The gateway keeps enforcing the last document it
-loaded successfully, so it is still ready to serve — and since every replica reads
-the same file, failing readiness there would drop them all at once and turn a config
-typo into an outage. Alert on `degraded_checks` rather than on the status code alone.
+The response body carries a `checks` map and a `degraded_checks` list. Two checks are
+reported without failing readiness:
+
+- `security_rules` reads `stale: <error>` when the rules file on disk stops parsing.
+  The gateway keeps enforcing the last document it loaded successfully, so it is still
+  ready to serve — and since every replica reads the same file, failing readiness there
+  would drop them all at once and turn a config typo into an outage.
+- `risk_gate` reads `unreachable: security_level=… effective_threshold=…` when the
+  effective risk threshold has been clamped above every score an `action_map` action
+  can assign, which makes every "raise the risk, set no disposition" `block` entry a
+  no-op. On `AEGIS_SECURITY_LEVEL=low` that is the definition of the tier, not a fault
+  — hence non-gating. It is reported because the *other* way to reach this state is a
+  regression, and until now the condition had no outlet anywhere. Filters that set a
+  disposition directly are unaffected either way, which is what makes the failure
+  partial and easy to miss.
+
+Alert on `degraded_checks` rather than on the status code alone.
 
 Admin UI login: `http://localhost:18080/__ui__/login`
 
@@ -170,11 +187,51 @@ Notes:
 
 ### Local Development (No Docker)
 
+The repo ships a launcher that creates the venv, installs the project, bootstraps
+`config/.env` and the policy YAML, and runs the gateway in the background:
+
+```bash
+python aegisgate-local.py install    # create .venv and install
+python aegisgate-local.py init       # bootstrap config/.env and default policies
+python aegisgate-local.py start      # start in the background
+python aegisgate-local.py status     # or: logs --tail 50 / restart / stop / open-ui
+```
+
+`start --foreground` runs in the foreground, `start --skip-install` skips the venv
+step, and `install --extras semantic,redis` selects optional dependency groups.
+The launcher writes its own state and output under `logs/launcher/`, and falls back
+to a user-local SQLite path when the default one is not writable. Full command
+reference: [WEBUI-QUICKSTART.md](WEBUI-QUICKSTART.md) §2.
+
+Or drive uvicorn yourself:
+
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,semantic]"
 uvicorn aegisgate.core.gateway:app --host 127.0.0.1 --port 18080
 ```
+
+**One worker only.** See [Deployment Model](#deployment-model) — the gateway logs
+its pid and instance id at startup and raises an ERROR when the environment
+implies more than one worker.
+
+### Changing the Port
+
+Under Docker, the listener follows `AEGIS_PORT`. Change it in three places so the
+published mapping, the inter-container address and the listener agree:
+
+```yaml
+ports:
+  - "127.0.0.1:28080:28080"    # host mapping
+expose:
+  - "28080"                     # container-to-container
+environment:
+  AEGIS_PORT: "28080"           # the listener, and the Base URLs the console renders
+```
+
+`AEGIS_HOST` is not used for binding inside the container — the image always binds
+`0.0.0.0` and the network boundary is the published port mapping. On bare metal,
+pass `--host`/`--port` to uvicorn, or let `aegisgate-local.py` read them from `config/.env`.
 
 ## Upstream Integration
 
@@ -234,6 +291,25 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 
 Use the returned token: `http://<gateway-ip>:18080/v1/__gw__/t/<token>`
 
+Tokens are 24 alphanumeric characters (`a-zA-Z0-9`, no `-`/`_`), and one token binds
+exactly one `upstream_base`. `config/gw_tokens.json` is hot-reloaded, so hand-editing
+it takes effect without a restart.
+
+All five admin endpoints take `gateway_key` in the JSON body and should be reachable
+only from localhost or an internal admin ingress:
+
+| Endpoint | Required fields | Purpose |
+|----------|-----------------|---------|
+| `POST /__gw__/register` | `upstream_base`, `gateway_key` | Create (or return the existing) token for an upstream. Optional `whitelist_key` list |
+| `POST /__gw__/lookup` | `upstream_base`, `gateway_key` | Find the token bound to an upstream |
+| `POST /__gw__/unregister` | `token`, `gateway_key` | Delete a token |
+| `POST /__gw__/add` | `token`, `gateway_key`, `whitelist_key` (list) | Add redaction-exempt field names. Optional `upstream_base` repoints the token |
+| `POST /__gw__/remove` | `token`, `gateway_key`, `whitelist_key` (list) | Remove redaction-exempt field names |
+
+`whitelist_key` names are lowercased and must match `^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$`.
+**Names that do not match are dropped silently** — the response body's `whitelist_key`
+is the normalized set that actually took effect, so check it rather than your request.
+
 ### Scenario 3: Caddy + TLS for Public Access
 
 ```
@@ -254,6 +330,16 @@ See [Caddyfile.example](Caddyfile.example) for the complete configuration.
 - **Multipart upload routes**: `POST /v1/files`, `POST /v1/images/edits`, `POST /v1/images/variations` — dedicated handlers registered ahead of the generic pass-through. Form fields go through PII redaction, and the body limit is `AEGIS_MAX_MULTIPART_BODY_BYTES` (60MB) rather than `AEGIS_MAX_REQUEST_BODY_BYTES`
 - **Generic pass-through**: `POST /v1/{subpath}` — forwards any other `/v1/` path to upstream; by default it still runs the v1 request/response safety pipeline, and only `__passthrough` or an `AEGIS_UPSTREAM_WHITELIST_URL_LIST` match skips **both** request and response filtering (including PII redaction)
 - **Relay-compatible endpoint**: `POST /relay/generate` — disabled by default; enable with `AEGIS_ENABLE_RELAY_ENDPOINT=true`. This endpoint maps relay-style payloads to `/v1/chat/completions` and requires internal `x-upstream-base` and `gateway-key` headers
+
+Operational endpoints (no filter pipeline):
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET\|HEAD /health` | Liveness. Returns `status`, plus `pid` and `instance` so two replicas behind one address are distinguishable |
+| `GET\|HEAD /ready` | Readiness. Returns `checks` and `degraded_checks`; see [Getting Started](#docker-compose-recommended) for why a stale rules file is reported without failing readiness |
+| `GET /metrics` | Prometheus scrape target. Only present with the `observability` extra installed, and it has no dedicated auth layer |
+| `POST /__gw__/register\|lookup\|unregister\|add\|remove` | Token administration. Each call takes `gateway_key` in the JSON body; keep them off the public internet |
+| `GET /__ui__/...` | Admin console and its JSON API. Loopback-only by default |
 
 Compatibility notes:
 
@@ -330,6 +416,54 @@ Extend the list without touching code by adding names to `allowed_models` in `co
 > A filter runs only when it is listed in the policy YAML **and** its matching `enable_<filter>`
 > feature flag is on — except `redaction` / `exact_value_redaction`, which the policy engine force-enables
 > whenever their flags are on, even if the YAML omits them.
+
+#### Exfiltration-chain rules (`exfil_chain_*`)
+
+These decide on *capability pairs*, not wording: a credential artefact (file, directory,
+browser secret store, whole-environment dump) **and** an outbound transfer (`curl -F`, `-T`,
+`--data-binary @`, a pipe into `nc`, `Invoke-RestMethod -Method Post`) in the same command.
+Either half alone is an everyday developer action and is deliberately not listed — only the
+pair is unambiguous. Three boundaries are deliberate: a credential file must be dot-prefixed
+(`.env`, not a `/env` URL path segment) and `.env.example`-style templates are excluded;
+`scp` / `rsync` are out of scope, because their `-F` / `-T` mean "ssh config" and "temp dir"
+rather than "upload"; and the harvest rule requires an actual secret token, not merely a
+recursive-looking flag. They live in three groups whose dispositions differ:
+
+| Group | Count | What a hit does |
+| --- | --- | --- |
+| `tool_call_guard.dangerous_param_patterns` | 6 | `review` on tool-call arguments: raises the risk score and flags for review. Also feeds `router::_tool_call_guard_patterns`, the auto-sanitize tool-call stripper. |
+| `sanitizer.command_patterns` | 5 | `response_disposition = sanitize` on the response body. `exfil_chain_secret_in_url_query` is deliberately absent: a documented example URL in prose must not truncate a streaming answer. |
+| `sanitizer.force_block_command_patterns` | 2 | The two highest-confidence forms, behind `AEGIS_STRICT_COMMAND_BLOCK_ENABLED` (default `false`). Note this group also feeds `router::_critical_danger_patterns()`, which that switch does **not** gate. |
+#### Exfiltration increments
+
+Four unrelated gaps, each closed on its own terms:
+
+- **Decoded payloads are re-scanned.** Multi-stage base64 / hex / URL decoding used to be
+  matched against a nine-entry keyword list and nothing else, so wrapping an injection in
+  base64 walked past every pattern family that had just scanned the outer text. The
+  instruction families (`direct_patterns`, `system_exfil_patterns`,
+  `tool_call_injection_patterns`) are re-run over the decoder output, and a hit lands in
+  the bucket it would have used as plaintext, labelled `decoded:<rule id>`. Surface-form
+  families (`html_markdown`, `remote_content`, `spam_noise`) are deliberately not re-run —
+  they describe how text is *written*, which says nothing after a decode.
+- **Persistence (`exfil_persist_*`).** An autostart surface (`crontab`, systemd units,
+  LaunchAgents, the `Run` key, shell rc files) *plus* a fetch-and-run payload (`curl … | sh`,
+  `/dev/tcp/`, `Invoke-Expression`). Both halves required: appending to `~/.bashrc` and
+  scheduling a cron job are each ordinary. A third rule covers the agent rewriting its own
+  configuration (MCP server definitions, `settings.json`, `CLAUDE.md`, skill files) to reach
+  the network.
+- **Markdown-image egress (`exfil_egress_markdown_image_secret`).** A markdown image is
+  fetched by the renderer, so the URL *is* the request — no click involved. The rule requires
+  a secret-shaped value or an AegisGate placeholder in the query, which is why the existing
+  `<img>` rule can stay unarmed for ordinary pictures. Listed twice: in
+  `injection_detector.html_markdown_patterns` (which has no `action_map` entry, so it only
+  feeds the score) and in `sanitizer.unsafe_markup_patterns`, where it is actually removed.
+- **Positional criteria on restoration.** `restoration.suspicious_context_patterns` asked
+  only whether the *wording* looked suspicious; miss it and restoration unconditionally wrote
+  the real credential back into the response. Wording can be rewritten. Three added rules ask
+  **where the placeholder sits** — a URL query value, a network command's argument, a
+  markdown image URL — which is a position no rephrasing avoids, because it is what makes the
+  data leave.
 
 ### Error Response Format
 
@@ -459,14 +593,41 @@ legacy `functions`), multipart form fields, and the full JSON body on generic
 locators (`image_url` / `file_id`) are always forwarded verbatim so upstream
 calls keep working.
 
-Which patterns run depends on the route, and both the scoring pipeline and the
-forward path use the same rule (`is_low_false_positive_route`):
-`/v1/chat/completions`, `/v1/responses` and `/v1/messages` carry structured
-conversation payloads where a false positive corrupts the prompt, so they run the
-**low-false-positive id set** (`redaction.relaxed_pii_ids`, credential-only by
-default). Every other route — the generic provider proxy included — runs the full
-set. Set `redaction.relaxed_pii_ids: ["*"]` to run every pattern on those three
-routes as well.
+Which patterns run depends on the route. `/v1/chat/completions`, `/v1/responses`
+and `/v1/messages` carry structured conversation payloads where a false positive
+corrupts the prompt, so they run the **low-false-positive id set**
+(`redaction.relaxed_pii_ids`, credential-only by default, selected by
+`is_low_false_positive_route`). Other `/v1/` routes — the generic provider proxy
+included — run the full set. Set `redaction.relaxed_pii_ids: ["*"]` to run every
+pattern on the three conversation routes as well.
+
+The full picture is six execution surfaces rather than two buckets, because the
+scoring pass and the pass that actually rewrites the outbound body do not always
+use the same set:
+
+| Surface | Scope | Pattern set |
+|---------|-------|-------------|
+| Pipeline, conversation routes | `/v1/chat/completions`, `/v1/responses`, `/v1/messages` | relaxed (configurable) |
+| Pipeline, other routes | multipart and generic JSON included | full |
+| Forward, conversation body / `system` / `instructions` / tool definitions | same three routes | relaxed (configurable) |
+| Forward, multipart form fields | `/v1/files`, `/v1/images/*` | full |
+| Forward, generic `/v1/<subpath>` JSON | embeddings, rerank, … | full |
+| v2 request body | `/v2/__gw__/t/<token>/...` | relaxed (configurable) |
+
+Every surface picks its set from the **route**, and both the scoring pass and
+the pass that rewrites the outbound body use the same rule, so the two cannot
+disagree. The forward path used to derive it from the message role instead —
+which, because every real role was in the "relaxed" set, meant "always relaxed"
+regardless of route.
+
+`field_value_patterns` are a separate layer and are **not** gated by
+`relaxed_pii_ids` — they run on every surface that runs redaction at all.
+
+The admin console renders all six surfaces per rule, computed server-side — see
+[WEBUI-QUICKSTART.md](WEBUI-QUICKSTART.md) §4.3.
+
+Multipart **file contents** are not redacted on any surface; only the form
+fields alongside them are.
 
 ## Configuration
 
@@ -540,16 +701,20 @@ per-filter score floors (`aegisgate/config/security_level.py`):
 | Level | Threshold multiplier | Floor multiplier | Effective threshold with the `default` policy (`0.85`) |
 |-------|----------------------|------------------|--------------------------------------------------------|
 | `high` | ×0.90 | ×1.05 | `0.765` |
-| `medium` (default) | ×1.30 | ×0.85 | `1.0` (clamped) |
+| `medium` (default) | ×1.00 | ×0.85 | `0.85` |
 | `low` | ×1.60 | ×0.70 | `1.0` (clamped) |
 
-The scaled value is clamped to `1.0`, so with the stock `default` policy at `medium` or `low` the
-**score-based** block path in `OutputSanitizer` never fires — the highest score an `action_map`
-`block` assigns is `0.95`. Protection at those levels comes from the hard-disposition paths instead:
+`medium` is the neutral tier: it uses the policy YAML's declared `risk_threshold` unchanged, and the
+other two adjust around it. The scaled value is clamped to `1.0`, which is why `low` on the stock
+policies effectively disables **score-based** blocking — the highest score an `action_map` `block`
+assigns is `0.95`. Protection at `low` comes from the hard-disposition paths instead:
 `injection_detector` and `rag_poison_guard` set a `block` disposition directly, independent of the
-threshold, as does `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`. Use `high`, or a policy YAML with a lower
-`risk_threshold` (`strict` uses `0.50`), if you want score-based blocking. Whether `medium` should
-scale at all is an open question tracked in [ROADMAP.md](ROADMAP.md).
+threshold, as does `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`.
+
+At `medium` and `high` an `action_map` `block` does reach the threshold, so the score-based path in
+`OutputSanitizer` and `RestorationFilter` fires as the console has always shown it doing. `medium`
+used to be ×1.30, which clamped to `1.0` on every shipped policy and made `medium` and `low`
+identical — see [CHANGELOG.md](CHANGELOG.md) for the before/after numbers.
 
 These categories are force-blocked at every level and are not reduced by research/quotation context
 (`action_map.injection_detector` + `non_reducible_categories` in `security_filters.yaml`):
@@ -582,15 +747,16 @@ The semantic service should return a JSON object:
 
 ## Documentation
 
-| Document | Contents |
-|----------|----------|
-| [WEBUI-QUICKSTART.md](WEBUI-QUICKSTART.md) | Admin console: login, CSRF/ETag API contract, config center, rules workbench, audit explorer, which settings need a restart |
-| [UPSTREAM-QUICKSTART.md](UPSTREAM-QUICKSTART.md) | Connecting CLIProxyAPI / Sub2API / AIClient-2-API, port routing vs Docker service mapping |
-| [OTHER_TERMINAL_CLIENTS_USAGE.md](OTHER_TERMINAL_CLIENTS_USAGE.md) | Codex CLI, Cherry Studio, VS Code, Cursor, WSL2 |
-| [SKILL.md](SKILL.md) | Agent-executable install and integration runbook |
-| [config/README.md](config/README.md) | Mounted config directory, hot-reload limits, `model_map.json`, `gw_tokens.json` |
-| [CHANGELOG.md](CHANGELOG.md) | Release history and breaking changes |
-| [ROADMAP.md](ROADMAP.md) | Architectural work not yet done, and known trade-offs |
+| Document | Language | Contents |
+|----------|----------|----------|
+| [README_zh.md](README_zh.md) | ZH | Chinese reference. Deeper than this file on Docker deployment, the local launcher and token administration |
+| [WEBUI-QUICKSTART.md](WEBUI-QUICKSTART.md) | ZH | Admin console: login, CSRF/ETag API contract, config center, rules workbench, request-redaction panel, audit explorer, which settings need a restart |
+| [UPSTREAM-QUICKSTART.md](UPSTREAM-QUICKSTART.md) | ZH | Connecting CLIProxyAPI / Sub2API / AIClient-2-API, port routing vs Docker service mapping |
+| [OTHER_TERMINAL_CLIENTS_USAGE.md](OTHER_TERMINAL_CLIENTS_USAGE.md) | EN | Codex CLI, Cherry Studio, VS Code, Cursor, WSL2 |
+| [SKILL.md](SKILL.md) | EN + ZH | Agent-executable install and integration runbook |
+| [config/README.md](config/README.md) | ZH | Mounted config directory, hot-reload limits, `model_map.json`, `gw_tokens.json` |
+| [CHANGELOG.md](CHANGELOG.md) | ZH | Release history and breaking changes |
+| [ROADMAP.md](ROADMAP.md) | ZH | Architectural work not yet done, and known trade-offs |
 
 ## Agent Skill
 
@@ -627,8 +793,19 @@ Gateway transparently forwards upstream errors. Verify upstream availability ind
 ### Streaming logs show `upstream_eof_no_done` or `terminal_event_no_done_recovered:*`
 Two different cases are logged separately:
 
-- `upstream_eof_no_done`: upstream closed the stream without sending `data: [DONE]`; the gateway auto-recovers by synthesizing a completion event.
+- `upstream_eof_no_done`: upstream closed the stream without sending `data: [DONE]`.
 - `terminal_event_no_done_recovered:response.completed|response.failed|error`: the gateway already received an explicit terminal event from upstream, but upstream closed before sending `[DONE]`. This is no longer logged as a generic EOF recovery.
+
+Recovery is **not uniform across routes** — only these paths synthesize a terminating event:
+
+| Route | On upstream EOF without `[DONE]` |
+|-------|----------------------------------|
+| `/v1/chat/completions` | Synthesizes a visible text chunk carrying a disconnect notice |
+| `/v1/responses` | Emits `[DONE]`, and synthesizes `response.completed` when no explicit terminal event arrived |
+| `/v2/` SSE | Emits `data: [DONE]\n\n` |
+| `/v1/messages`, generic `/v1/<subpath>` | **No recovery branch.** The stream ends where upstream ended it, and the client sees a truncated stream |
+
+Adding the missing branch is new behaviour rather than a bug fix — it needs a client-compatibility assessment, so it is tracked in [ROADMAP.md](ROADMAP.md) instead of being slipped into a patch.
 
 For `/v1/responses`, forwarded upstream calls now carry `x-aegis-request-id`, and upstream forwarding logs include the same `request_id`. If gateway logs show repeated `incoming request` entries but only one or two `forward_stream start/connected` entries for matching request IDs, the extra traffic is coming into the gateway as new HTTP requests rather than SSE chunks being split into multiple upstream calls.
 

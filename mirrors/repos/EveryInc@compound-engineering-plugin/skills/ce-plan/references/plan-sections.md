@@ -120,19 +120,33 @@ When an implementation-ready software plan is warranted, these sections are
 present. They carry the contracts downstream consumers depend on.
 
 - **Goal Capsule** — objective, means (only when an approach is fixed),
-  authority hierarchy, stop conditions, execution profile, and tail ownership.
-  This is the fastest way for an executor to avoid drifting from the plan. The
-  **Objective** is always the outcome: what is true afterwards, phrased so it
-  would still read as the goal under a different implementation. The chosen
-  approach is the **Means**, its own line whenever the request or the plan
-  has fixed one — never invented for outcome-only work. It is a linked
-  projection under the one-owner rule below: one line naming the approach and
-  citing the KTD or Key Decision that owns it (`Means: … (KTD2)`), never a
-  restatement of that owner's mechanism. Test: if the
-  implementation changed, would the Objective still be the goal? If not, it is
-  a Means. When a request supplies only its approach ("move X out of A into
-  B"), that is the Means; the Objective is the outcome it serves, derived from
-  the request's motivation or asked for — never the approach restated.
+  authority hierarchy, stop conditions, execution profile, and tail
+  ownership. This is the fastest way for an executor to avoid drifting from
+  the plan. The **Objective** is always the outcome: what is true for users
+  or operators afterwards, phrased so it would still read as the goal under
+  a different implementation. It sits outside the component being changed,
+  which is a question of who can check it rather than of which nouns it
+  uses: an outcome someone outside that component can verify without knowing
+  its internals is an Objective even when that component is what changed,
+  and one only its internals can settle is not the Objective however
+  outcome-shaped its wording; the registry above decides where it does
+  belong. The usual failure is an objective about the component's own
+  execution — the wall-clock it no longer holds, the runtime it no longer
+  consumes, what stays isolated inside it — which only its internals settle.
+  Infrastructure and refactor work has such an objective too: the reason
+  that component's behavior mattered to someone. The chosen approach is the
+  **Means**, its own line whenever the request or the plan has fixed one —
+  never invented for outcome-only work. It is a linked projection under the
+  one-owner rule below: one line naming the approach and citing the KTD or
+  Key Decision that owns it (`Means: … (KTD2)`), never a restatement of that
+  owner's mechanism. Test: if the implementation changed, would the
+  Objective still be the goal, and could a reader who does not know the
+  changed component's internals tell whether it was met? No to the first
+  makes it a Means. No to the second means it is stated at the component's
+  altitude, and the Objective is whatever depended on that component. When a
+  request supplies only its approach ("move X out of A into B"), that is the
+  Means; the Objective is the outcome it serves, derived from the request's
+  motivation or asked for — never the approach restated.
 - **Product Contract** — product scope and behavior. Contains Summary, Problem
   Frame, Requirements with stable R-IDs, and any material Actors, Flows,
   Acceptance Examples, Success Criteria, Scope Boundaries, Dependencies,

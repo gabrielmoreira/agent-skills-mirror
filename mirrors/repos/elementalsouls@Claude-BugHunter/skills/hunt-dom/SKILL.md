@@ -2,7 +2,7 @@
 name: hunt-dom
 description: "Hunt client-side DOM vulnerabilities — DOM Clobbering (overwrite JS globals via HTML injection), PostMessage hijacking (missing origin check), Service Worker abuse (intercept requests from same-origin script), CSS Injection/Exfiltration (attribute selectors → token char-by-char via OOB), client-side template injection, dangerouslySetInnerHTML. Grounded in named public research: Gareth Heyes / PortSwigger DOM-clobbering + DOM-Invader, Michał Bentkowski DOMPurify clobbering bypasses, jQuery htmlPrefilter XSS (CVE-2020-11022 / CVE-2020-11023), d0nut CSS-exfil research. Use when hunting DOM-XSS, client-side auth bypass, or token exfiltration without server-side interaction."
 sources: portswigger_research, hackerone_public, github_security_advisories
-report_count: 17
+report_count: 14
 ---
 
 # HUNT-DOM — DOM Clobbering / PostMessage / Service Worker / CSS Exfil
@@ -133,6 +133,9 @@ addEventListener('message', e => {
 > False-positive guard: a handler with a *partial* check (`origin.indexOf('target.com')>-1`, `endsWith('target.com')`, regex `target\.com`) is still vulnerable — bypass with `target.com.evil.com` or `eviltarget.com`. Confirm by serving the PoC from such a look-alike host and showing the message still lands.
 
 ---
+
+### PostMessage handler race — win the message before origin is set
+Beyond static origin/sender checks: some handlers trust the FIRST message, or read `event.origin` while it is still `""`/`null` during frame load. Race it — flood `postMessage` in a tight loop during iframe/popup load, or fire from `about:blank` before navigation, so your message lands before the legit sender or before strict origin setup runs. Test any handler that assumes "first message = trusted". Disclosed: reports/381356.
 
 ## Phase 3 — Service Worker Abuse
 

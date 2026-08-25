@@ -624,7 +624,7 @@ set uses the Version `contentDigest` as its opaque source revision.
 | Read | Facts read | AI Storage read |
 | --- | --- | :---: |
 | Management Agent list | `ai_resource` page. | No |
-| RAD or generic Agent Search | Current Agent Search document; RAD `AUTO/SCAN` uses the compatibility scan before readiness. | No |
+| RAD or generic Agent Search | Current Agent Search document; `AUTO/INDEX` may return a partial current snapshot before readiness, while `SCAN` explicitly uses the compatibility scan. | No |
 | Agent overview | Resource plus bounded Version-row page. | No |
 | Exact Version detail | One Version row. | One |
 | Runtime Endpoint snapshot | Complete internal `ServiceStorage` projection for one protocol; optional binding filter. | No |
@@ -696,6 +696,7 @@ are defined by the [AI Resource Search Spec](ai-resource-search-spec.md).
 | `runtimeVersion` | 64 characters. |
 | Canonical `versionRange` | 256 characters; one continuous interval. |
 | Registration batch | 1 to 1000 Endpoints. |
+| Runtime Endpoint publication entries per publisher Client | Soft watermark 100 by default; configurable with `nacos.ai.rad.capacity.publication.max-publications-per-client`. A complete batch admitted from below may cross it. |
 | Runtime Endpoints per Agent and protocol | 1000, subject to a lower cluster quota. |
 | Final Endpoint metadata | 32 public items; key 64 and value 256 characters. |
 | Final Naming metadata | Sum of Java `String.length()` for keys and values is 1024. |

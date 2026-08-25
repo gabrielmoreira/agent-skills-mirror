@@ -6,7 +6,7 @@
 
 - **Add Service 成功 / 单服务商刷新 / 刷新全部**：自动 probe + apply，无 dialog；保护层是 `applyDiscoveryDiff` 拒绝翻动 `enable_source IN ('manual_enabled','manual_hidden')` 或 `user_edited=1` 的行
 - **按推荐整理 (`alignEnabledWithCatalog`) / 高级 diff 对话框**：preview-first，dryRun 显示影响范围后才写入；保留给会主动翻动多行或做删除的"扫荡"操作
-- **套餐目录升级 (`mergeCatalogManagedModels`)**：Settings > Models 读取 catalog-only plan 时，只更新 pristine `source='catalog'` 行的当前 metadata/order 并补缺失 catalog id；不改 manual/user-edited/manual-hidden，不 disable/prune，因此不等同于全量 align。补行前同时按 stable id 与 upstream wire id 去重；写入使用冲突安全的条件 INSERT，目录排序绕开用户行占用的 slot
+- **套餐目录升级 (`mergeCatalogManagedModels`)**：Settings > Models 读取 catalog-only plan 时，更新 pristine catalog 行并补当前 catalog id；已知历史错误只允许按 catalog 的完整 `legacyFingerprints`（旧 upstream/display/capabilities）compare-and-swap，且必须没有用户所有权信号。历史 `source` 可能被 backfill 污染，不能单独作为判据。补行以 upstream wire 占用为冲突事实，任何歧义均不写库；不 disable/prune，因此不等同于全量 align
 
 **演进路径**：第一版纯只读 spike → 第二版无差别 upsert（已淘汰，会回滚用户编辑）→ Phase A "diff-first 必须人确认"（保护放在 UI 步骤，但日常刷新太重）→ **Phase B 当前版**（保护下沉到数据层，UI 可以静默 apply）。详见 `docs/research/provider-model-discovery.md` §"演进历史"。
 
@@ -176,7 +176,8 @@ availableModels = [
 | Apply route | `src/app/api/providers/[id]/discover-models/apply/route.ts` | 唯一写入入口；保留 user_edited；orphan 不动 |
 | Diff apply DB op | `src/lib/db.ts` `applyDiscoveryDiff()` | 五种 case 分明；user_edited / hidden 守护 |
 | Align with catalog | `/api/providers/[id]/models/align-enabled` + `db.alignModelsWithCatalog()` | preview-first；apply 保留 user_edited；不删 manual |
-| Catalog-only plan read merge | `/api/providers/[id]/models` GET + `db.mergeCatalogManagedModels()` | 只升级 pristine catalog 行并补当前 id；不改用户行，不 disable/prune；stable/upstream 任一已存在都不补重复 SKU，并发 INSERT 输家采用已有行 |
+| Catalog-only plan read merge | `/api/providers/[id]/models` GET + `db.mergeCatalogManagedModels()` | pristine catalog 行可刷新；legacy 仅按完整 fingerprint compare-and-swap；upstream 占用/歧义 fail-closed；不 disable/prune，并发 INSERT 输家采用已有行 |
+| Catalog model identity | `src/lib/catalog-model-identity.ts` | 搜索候选区分 current enabled/hidden、legacy upgrade、identity conflict、missing 五态 |
 | Refresh diff Dialog | `ProviderManager.tsx` `handleApplyDiff` | 仅发 actionable diff（new/update/preserve/hidden-up），跳 unchanged/orphan |
 | Models page row badges | `ModelsSection.tsx` source badge | source 5 态 tone 锁定 |
 | Catalog | `provider-catalog.ts:VENDOR_PRESETS` `defaultModels` | seed 模型来源 |
@@ -199,7 +200,7 @@ availableModels = [
 - 加 / 改 catalog `defaultModels`：
   - `seedCatalogModels` 路径会种这些 ID（仅当 provider 无任何 row 时）
   - catalog-only plan 已 seed 过的 provider 会在 Models 页读取时通过 `mergeCatalogManagedModels` 补当前 catalog id，并刷新 pristine catalog metadata；其它 provider 仍不自动扩写
-  - Add Model 候选必须区分 `未添加 / 已添加且启用 / 已添加但隐藏`。隐藏候选提供“重新启用”动作并 PATCH 真实 existing local id，不能只显示无操作的“已添加”
+  - Add Model 候选必须区分 `current_enabled / current_hidden / legacy_upgrade_available / identity_conflict / missing`。隐藏候选提供“重新启用”动作并 PATCH 真实 existing local id；legacy 仅在完整 fingerprint 成立时迁移；冲突项禁止覆盖目标行，并返回 typed 409 + conflict model ids + Models 恢复入口；Renderer 本地化 typed code，2xx/409 后都重拉候选与父模型列表，不乐观标成功
   - catalog-only plan 的精确 catalog 候选重新添加时，POST 服务端必须从当前 catalog 重建 display/upstream/capabilities/source/order；不得让 renderer 把它写成 `source='manual' + capabilities='{}'`
   - 删除不是“退出 catalog”的语义：catalog-only plan 的当前目录项若被物理删除，下一次 Models GET 会重新物化。用户只想不在 picker 使用时必须选择“隐藏”
   - 自动 read merge 绝不能复用完整 `alignEnabledWithCatalog`：后者会 disable/prune，必须继续 preview-first
@@ -221,6 +222,9 @@ availableModels = [
 11. **批量驱动忘了 try/catch/finally** — `刷新全部` 必须 try/finally 保护 `setRefreshingAll(false)`，否则单个 throw 让按钮永久卡 loading。`auto-discover-models.ts` 的 `probeAndApplyProvider` 是纯结果版本，专门给批量驱动用以便外层独占 toast。
 12. **用共享 URL 猜 Token Plan 套餐** — 个人/团队命中同 endpoint；URL first-match 会静默换目录。必须使用持久化 `preset_key`，legacy ambiguous 要用户确认。
 13. **把 xAI OAuth 静态目录冒充账号目录** — 上游 Build proxy 已有 authenticated `/v1/models`，但它需要 session header 合同和独立 virtual-provider 接线。未实现前只能把静态值标为 fallback；实现后也不能复用要求 DB row 的通用 `/discover-models` route。
+14. **stable id 命中就覆盖 legacy 行** — stable id 只定位本地槽位，不能证明旧行仍归 catalog；插入冲突由 upstream wire 占用决定。只有完整 `legacyFingerprints` 与 ownership guard 同时成立才允许迁移，否则返回 `identity_conflict`。
+15. **只给主模型写 legacy 指纹** — 一个套餐的历史目录通常同时换过 sonnet/opus/haiku 槽位。替换 SKU 时必须从已发布 git 历史逐槽列出 upstream/display/capabilities；不得造一个“看起来合理”但从未发布的 wire。fixture 必须用当时完整目录行数，不能只造目标单行。
+16. **一条旧 duplicate 把已可用 current SKU 整体降为 conflict** — canonical current 行存在时，它是可用性真源；额外旧行需要在 Models 中可见/可整理，但不能让 Add dialog 只剩无动作徽章。真正 CAS 冲突必须服务端重读后返回 model ids，UI 消费并给出恢复入口。
 
 ## 9. 测试覆盖
 
@@ -229,7 +233,7 @@ availableModels = [
 | `catalog-only-discovery.test.ts` / `coding-plan-discovery-gate.test.ts` | 套餐型/xAI catalog-only gate，不发通用 discovery |
 | 待补 `apply-discovery-diff.test.ts` | 五种 DiffEntryStatus 写库行为；user_edited / hidden 保留 |
 | `provider-resolver.test.ts` 内 `buildResolution` 系列 | catalog merge / DB 优先 / hidden 抑制 |
-| `foundation-refresh-user-path-contract.test.ts` U3 | 存量 GLM-5.2 catalog 快照在 Models GET 后持久升级为 5.3/Turbo/4.7；Add Model stable/wire id 分离；隐藏候选可恢复；目录重加保留能力；重复 GET 零写；非 plan gate 反例 |
+| `foundation-refresh-user-path-contract.test.ts` U3 | 真实三行 GLM 旧目录中 sonnet/haiku 历史指纹原位升级、非目标 opus 保留；Add Model 五态与 conflict ids/动作；stable/wire id 分离；隐藏候选可恢复；目录重加保留能力；重复 GET 零写；非 plan gate 反例 |
 | `catalog-capabilities-roundtrip.test.ts` | catalog metadata round-trip、read merge 用户保护；upstream 去重、单旗标保护、capabilities COALESCE、排序避让与 INSERT 冲突赢家 |
 | `qwen-token-plan-catalog.test.ts` | 三种 Qwen 套餐精确目录与默认角色 |
 | `provider-preset-identity-migration.test.ts` | 共享 URL identity、legacy ambiguous 与保守迁移 |
@@ -250,3 +254,5 @@ availableModels = [
 - **2026-08-14 xAI OAuth 专用 model-list** — Grok Build 上游源码确认 session auth 会请求 proxy authenticated `/v1/models`。CodePilot 当前行为仍归 Class C，因为 virtual provider 无 DB row 且尚未实现专用 parser/cache/UI；后续应增加 virtual-provider refresh，而不是把 bearer 塞进通用 discovery。
 - **2026-08-15 GLM-5.3 存量目录热修** — v0.67.0 的 Runtime read-through 能把 pristine `sonnet/GLM-5.2` 临时解释为 5.3，但 Models GET 仍展示原始 DB，Add Model 又按稳定 alias 判成“已添加”。catalog-only plan 的 Models GET 现执行非破坏 merge：更新 pristine catalog metadata、补缺失 id，永不 disable/prune；搜索候选同时拆分 stable local id 与 upstream wire id，避免点击添加制造重复行。
 - **2026-08-16 v0.67.1 review 收口** — 条件审查发现并发 INSERT、同 upstream 双行、hidden 候选死路、catalog 重加降级 manual 四类缺口。merge 改为 stable/upstream 双查重 + 条件 `INSERT OR IGNORE` + 用户排序避让；候选暴露 hidden/local-id 三态并可 PATCH 恢复；精确 plan catalog POST 由服务端目录重建完整 metadata。历史上已经存在的 user-owned 双行不自动删改，避免破坏 session pin/用户所有权；后续如需清理必须 preview-first。
+- **2026-08-23 GLM legacy identity** — 存量迁移从 stable/source 猜测改为 catalog 明示的全字段旧指纹；搜索协议升级为五态。安全匹配可原子升级，upstream 被占用或任一字段歧义时只报告冲突，不替用户改写。
+- **2026-08-24 implementation review remediation** — git 历史核实旧目录不止单个 sonnet 版本：补入 sonnet→`sonnet` 的 gen-0 `GLM-4.7`、`GLM-5-Turbo`/`GLM-5.2` 与 haiku→`haiku` 的 `GLM-4.5-Air`，删除从未作为 sonnet 槽位 upstream 发布的 `glm-5-turbo` 猜测。current canonical 行存在时不因额外旧 duplicate 整体降级；真正 CAS conflict 由服务端重读返回 model ids，Dialog 展示解释与 Models 恢复动作，并由行为测试锁住 fail-closed 分支。

@@ -525,7 +525,7 @@ Endpoint set 及其 revision，不维护第二份投影缓存。
 | 读取 | 读取事实 | AI Storage 读取 |
 | --- | --- | :---: |
 | 管控 Agent 列表 | `ai_resource` page。 | 否 |
-| RAD 或通用 Agent Search | 当前 Agent Search document；未 READY 的 RAD `AUTO/SCAN` 使用兼容扫描。 | 否 |
+| RAD 或通用 Agent Search | 当前 Agent Search document；`AUTO/INDEX` 在未 READY 时可返回部分当前快照，`SCAN` 显式使用兼容扫描。 | 否 |
 | Agent overview | Resource 和有界 Version-row page。 | 否 |
 | 精确 Version detail | 一行 Version。 | 一次 |
 | Runtime Endpoint Snapshot | 一个 protocol 的完整内部 `ServiceStorage` 投影；可选 binding filter。 | 否 |
@@ -584,6 +584,7 @@ Publisher、心跳或 Runtime revision。Backfill/Reconciliation 通过资源类
 | `runtimeVersion` | 64 字符。 |
 | Canonical `versionRange` | 256 字符；一个连续区间。 |
 | 注册批次 | 1～1000 个 Endpoint。 |
+| 每个 Publisher Client 的 Runtime Endpoint 发布条目 | 默认软水位 100；通过 `nacos.ai.rad.capacity.publication.max-publications-per-client` 配置。从水位以下准入的完整 Batch 可以越过水位。 |
 | 每个 Agent 和 protocol 的 Runtime Endpoint | 1000，可由集群配额调低。 |
 | 最终 Endpoint metadata | 32 个公开项；key 64、value 256 字符。 |
 | 最终 Naming metadata | key 和 value 的 Java `String.length()` 合计 1024。 |

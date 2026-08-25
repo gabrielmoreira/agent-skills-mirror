@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 26 file(s) materialized.
+Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 26 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,14 +83,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`docs/guardrails/Runtime.md`](docs/guardrails/Runtime.md) |
 | 17 | ✓ | [`docs/guardrails/SentryTelemetry.md`](docs/guardrails/SentryTelemetry.md) |
 | 18 | ✓ | [`docs/guardrails/StreamSession.md`](docs/guardrails/StreamSession.md) |
-| 19 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
-| 20 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 21 | → | [`docs/design.md`](docs/design.md) |
-| 22 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
-| 23 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
-| 24 | → | [`docs/rules/README.md`](docs/rules/README.md) |
-| 25 | → | [`docs/rules/release.md`](docs/rules/release.md) |
-| 26 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
+| 19 | ✓ | [`docs/guardrails/Updater.md`](docs/guardrails/Updater.md) |
+| 20 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
+| 21 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 22 | → | [`docs/design.md`](docs/design.md) |
+| 23 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
+| 24 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
+| 25 | → | [`docs/rules/README.md`](docs/rules/README.md) |
+| 26 | → | [`docs/rules/release.md`](docs/rules/release.md) |
+| 27 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
 
 ---
 

@@ -59,7 +59,7 @@ historical_var(returns, confidence=0.95)              # 1-day 95% VaR
 historical_var(returns, confidence=0.99, horizon=10)  # 10-day 99% VaR
 ```
 
-The quantile is a *non-interpolating lower order statistic*: element `floor((1 - confidence) * n)` of the ascending-sorted returns, negated. The result is therefore always a return that was actually observed, never a blend of two neighbours.
+The quantile is a *non-interpolating lower order statistic*: element `ceil((1 - confidence) * n) - 1` of the ascending-sorted returns, negated. The result is therefore always a return that was actually observed, never a blend of two neighbours.
 
 #### Parametric (normal)
 

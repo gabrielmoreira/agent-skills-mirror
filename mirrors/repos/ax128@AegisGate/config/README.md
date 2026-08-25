@@ -12,16 +12,16 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
 |------|------|:---:|:---:|:---:|
 | `default.yaml` / `strict.yaml` / `permissive.yaml` | 策略（启用哪些 filter、`risk_threshold`） | 否（首启生成） | 是 | 否 |
 | `security_filters.yaml` | 各 filter 规则与 `action_map` | 否（Docker 首启生成） | 是 | 否 |
-| `security_filters.yaml.bak-<UTC>` | 升级时定点迁移 regex 前的自动备份（见下方 §1） | 否 | — | 否 |
+| `security_filters.yaml.bak-<UTC>` | 规则文件写入前的自动备份，两个来源：升级时的定点 regex 迁移，以及**控制台每次写入**（见下方 §1） | 否 | — | 否 |
 | `.env` | 运行参数（见下方「运行参数」小节） | 否（从 `.env.example` 生成） | 部分 | 是 |
-| `.env.example` | 完整可调项清单与注释 | 是 | — | 否 |
+| `.env.example` | 全部面向用户的可调项清单与注释（内部灰度开关不列） | 是 | — | 否 |
 | `gw_tokens.json` | token → 上游映射 | 否 | 是 | 是 |
 | `gw_tokens.json.example` | token 映射模板 | 是 | — | 否 |
 | `model_map.json` | compat 模式的全局模型映射 + `allowed_models` 扩展 | 是 | **否，需重启** | 否 |
 | `stats.json` | 请求统计持久化（`core/stats.py` 运行时写入） | 否 | — | 否 |
 | `aegis_gateway.key` | 网关密钥 / UI 登录密码，首启生成 `0600` | 否 | 否 | **是** |
 | `aegis_fernet.key` | 脱敏映射加密密钥（Fernet），首启生成 `0600` | 否 | 否 | **是** |
-| `aegis_proxy_token.key` | 反向代理互信凭据（见 README §1.7），首启生成 `0600` | 否 | 否 | **是** |
+| `aegis_proxy_token.key` | 反向代理互信凭据（见 [README_zh.md §1.7](../README_zh.md#17-自定义-http-头)），首启生成 `0600` | 否 | 否 | **是** |
 
 以下按四类展开说明。
 
@@ -38,12 +38,19 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
 当前默认策略补充：
 - `default.yaml` 当前**未**包含 `untrusted_content_guard`。如需对 `retrieval/web/tool/document` 等不可信来源做边界包裹与风险抬升，需要在策略 YAML 中显式加入该 filter，并保持对应 feature flag 开启。
 - 已默认启用 `tool_call_guard`：未命中白名单的工具名与危险参数都按 `review` 处理（抬高风险分并标记复核，按阈值处置）；`tool_whitelist` 默认留空，避免误伤自定义工具。如需严格白名单，可再显式配置。
+  - 只读工具里属于外泄链两端的那几个（`read` / `read_file` / `glob` / `grep` / `webfetch` / `web_fetch` / `web_search` / `browser` / `search`）走 `action_map.tool_call_guard.readonly_param`，默认 `observe`——只记录。**改成 `review` 或 `block` 会立刻改写日常的读文件 / 搜索回答**，因为那两档都会设 `requires_human_review`。
+  - 两端检查的模式集不同：采集侧（`read`/`read_file`/`glob`/`grep`）过全量 `dangerous_param_patterns`；出口侧（`webfetch`/`web_fetch`/`web_search`/`browser`/`search`）跳过 `sensitive_file_access` / `path_traversal` / `ssh_key_access`——它们只上网、不碰文件系统，一条「怎么读 /etc/passwd」的搜索是关于文件读的问题，不是一次文件读。
+  - 挂载的旧 `security_filters.yaml` 里没有这个键时，代码按 `observe` 兜底，不会掉进 `default_action: review`。
 - `security_filters.yaml` 的唯一事实来源是 `aegisgate/policies/rules/security_filters.yaml`，**不入库**——此前本目录下也有一份被版本控制的副本，导致同一条安全修复只落到其中一份，Docker 与裸机部署加载了不同的规则。改规则请改包内那份（或通过 UI 编辑运行时那份，但要清楚它只影响本部署）。
   - Docker 部署：`./config` 被挂载覆盖到包内规则目录，本目录下的同名文件由 `init_config` 首次启动时从镜像内的 `/app/bootstrap/rules` 生成。**升级时必须重建镜像**（`docker compose build aegisgate`），否则补写进来的是旧镜像里的旧规则。
   - 裸机部署：直接读包内那份，本目录下不会生成同名文件。
   - **升级时的定点迁移**：`init_config.migrate_http_smuggling_regex()` 只替换本目录 `security_filters.yaml`
     里 id 为 `http_smuggling_*` / `web_http_smuggling_*` 的 regex，其余自定义规则原样保留；改写前另存
     `security_filters.yaml.bak-<UTC>`（`config/*.yaml.bak-*` 已在 `.gitignore` 中）。回滚 = 把备份拷回并回退镜像。
+  - **控制台写入也建备份**：`core/rules_write.py` 在每一次成功写入前都会存一份 `.bak-<时间戳>`，并按
+    `_MAX_BACKUPS` 保留最近若干份、自动清理更旧的。文档内容未变时不写、也不轮换备份。备份落在被编辑
+    的那个文件旁边——Docker 下是挂载的配置目录，裸机下是包内策略目录，因此 `.gitignore` 里的
+    `*.yaml.bak-*` 规则没有做路径限定。
 
 - **v2 的危险命令规则另有一份内置副本**：`aegisgate/adapters/v2_proxy/router.py` 的
   `_DEFAULT_DANGEROUS_COMMAND_PATTERNS` 会被**无条件编译**，然后再追加 YAML 里的
@@ -116,13 +123,14 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
    | 级别 | 阈值系数 | 地板系数 | `default` 策略（0.85）的有效阈值 |
    |------|:---:|:---:|:---:|
    | `high` | ×0.90 | ×1.05 | 0.765 |
-   | `medium`（默认） | ×1.30 | ×0.85 | **1.0**（clamp） |
+   | `medium`（默认） | ×1.00 | ×0.85 | **0.85**（按策略声明值） |
    | `low` | ×1.60 | ×0.70 | **1.0**（clamp） |
 
-   注意 `medium` **也**会缩放——它不是「原样使用 YAML 声明值」。因此 `medium` / `low` 配
-   `default` 策略时，基于分数的拦截分支不会触发（`action_map` 的 `block` 最高只抬到 0.95）；
-   这两档的防护来自 `injection_detector` / `rag_poison_guard` 的硬处置与
-   `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`。详见 README_zh §5.2 与 [ROADMAP.md](../ROADMAP.md)。
+   `medium` 是**中性档**：原样使用策略 YAML 声明的值，另外两档围绕它调整。因此在 `default`
+   策略下 `medium` 的有效阈值是 0.85，`action_map` 的 `block`（最高 0.95）能够达到阈值，
+   基于分数的拦截会真正触发。`low` 缩放后 clamp 到 1.0，基于分数的拦截不触发，防护来自
+   `injection_detector` / `rag_poison_guard` 的硬处置与 `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`。
+   `medium` 此前是 ×1.30，与 `low` 一样 clamp 到 1.0，两档完全等价——详见 README_zh §5.2。
 
    `AEGIS_RISK_SCORE_THRESHOLD` 是**全局兜底值**：策略 YAML 声明了 `risk_threshold` 就按策略
    覆盖它，而仓库自带的三个策略都声明了，所以它只对未声明该键的自定义策略 YAML 生效。
@@ -151,7 +159,7 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
 
 ### 4. Token 映射表（gw_tokens.json）
 
-通过 `POST /__gw__/register` 注册的 token 与上游映射会写入 `gw_tokens.json`（路径可由 `AEGIS_GW_TOKENS_PATH` 覆盖）。启动时自动加载，可手动编辑该文件，**同一 upstream_base 建议只保留一条**，重启后生效。
+通过 `POST /__gw__/register` 注册的 token 与上游映射会写入 `gw_tokens.json`（路径可由 `AEGIS_GW_TOKENS_PATH` 覆盖）。启动时自动加载，也在热重载 watcher 的监听范围内——**手动编辑保存后即时生效，无需重启**。**同一 upstream_base 建议只保留一条**。
 
 - **Docker 部署（当前默认）**：Compose 设为 `AEGIS_GW_TOKENS_PATH=/app/aegisgate/policies/rules/gw_tokens.json`，并将 `./config` 挂载到该目录，因此会持久化到宿主机 `./config/gw_tokens.json`，重启后不丢失。
 - 若你改为 `/tmp/...` 等临时路径，容器重启后 token 可能丢失。

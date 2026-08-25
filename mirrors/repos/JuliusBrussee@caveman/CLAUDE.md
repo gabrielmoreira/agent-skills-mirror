@@ -83,8 +83,7 @@ caveman/
 │   ├── cli/                     # @caveman-ai/cli
 │   ├── pi-extension/            # @caveman-ai/pi — native Pi extension (bundled into the CLI, published on `pi-v*` tags)
 │   ├── sdk/                     # TypeScript + Python gateway clients
-│   ├── kit/ · graders/          # Honesty UI surfaces + fail-closed eval graders
-│   ├── mastra/ · subagent-tax/  # Mastra adapter + local harness-prefix benchmark
+│   ├── subagent-tax/            # Local harness-prefix benchmark
 │   └── shared/                  # Contracts + binary installer
 ├── engine/ · proxy/             # BSL local compression runtime + provider proxy
 ├── cacheengine/ · rewriter/     # Standalone cache planner + prompt rewriter

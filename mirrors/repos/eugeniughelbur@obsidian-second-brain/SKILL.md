@@ -40,7 +40,7 @@ To wire it: `bash scripts/setup.sh "/path/to/vault"` or run `/obsidian-setup`.
 Use standard file tools (Read, Write, Edit, Glob) against the vault path. The vault is plain markdown, so every operation in this skill works this way with no setup. This is the normal path in Claude Code - the commands below use these tools directly.
 
 **Method B - MCP server (optional, mainly for non-Claude-Code clients):**
-This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package).
+This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --no-project --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package).
 
 ### 1. First time in a vault → read `_CLAUDE.md`
 
@@ -680,7 +680,7 @@ Backed by `scripts/link_graph.py` (deterministic link extraction - no whole-vaul
 
 **Scaffolds a new obsidian-second-brain command through a short interview - no markdown or frontmatter editing.**
 
-A guided conversation (intent, name, category, trigger phrases, behavior steps, AI-first compliance, external APIs) writes a fully-formed `commands/<name>.md` that the build pipeline picks up on the next `bash scripts/build.sh`, flowing into all seven platform builds. The optional seed pre-fills suggestions. Every command created this way lands AI-first-compliant by construction. (This is the command that creates commands; it does not run on itself.)
+A guided conversation (intent, name, category, trigger phrases, behavior steps, AI-first compliance, external APIs) writes a fully-formed `commands/<name>.md` that the build pipeline picks up on the next `bash scripts/build.sh`, flowing into all eight platform builds. The optional seed pre-fills suggestions. Every command created this way lands AI-first-compliant by construction. (This is the command that creates commands; it does not run on itself.)
 
 ---
 

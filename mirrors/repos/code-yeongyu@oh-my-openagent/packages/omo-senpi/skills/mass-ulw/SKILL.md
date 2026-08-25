@@ -19,6 +19,10 @@ A run is a declarative definition: a stable `key` (idempotency: re-starting the 
 
 Route every node by `category` using the routing table in `references/planning.md`; the run executes nodes in parallel waves as their dependencies clear.
 
+## Goal before start
+
+Every run is goal-bound. Before `start`, register the run's goal (`create_goal`, or a `# Goal` block where no goal tool exists): the objective names the deliverable the graph produces, and the success criteria carry RESULT VERIFICATION - node and run completion claims are false until proven against captured evidence, the same contract the dag completion directive injects (TREAT AS FALSE UNTIL YOU PROVE IT). The verification wave (references/planning.md) produces the evidence those criteria name; the run ends when the criteria pass, never when the last node reports completion.
+
 ## Running a dag - eval is the default
 
 Build and run every dag INSIDE an eval cell. The eval kernel installs the `tool.dag` proxy and the extension publishes a small JS SDK at `OMO_DAG_SDK_ROOT`; driving runs from a cell is what unlocks the orchestration patterns in `references/planning.md` (data-driven graph construction, multi-run composition, concurrent runs, adaptive retries).

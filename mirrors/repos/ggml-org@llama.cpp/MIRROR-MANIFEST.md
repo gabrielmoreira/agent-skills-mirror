@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ggml-org/llama.cpp` — 26 default patterns, 27 followed patterns, 81 file(s) materialized.
+Mirror of `ggml-org/llama.cpp` — 26 default patterns, 27 followed patterns, 82 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ggml-org/llama.cpp` — 26 default patterns, 27 followed patterns, 81
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 27 |
-| Files         | 81 |
+| Files         | 82 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,35 +137,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`tools/server/bench/speed-bench/README.md`](tools/server/bench/speed-bench/README.md) |
 | 51 | ✓ | [`tools/server/tests/README.md`](tools/server/tests/README.md) |
 | 52 | ✓ | [`tools/tts/README.md`](tools/tts/README.md) |
-| 53 | ✓ | [`tools/ui/README.md`](tools/ui/README.md) |
-| 54 | ✓ | [`tools/ui/src/lib/components/app/SKILL.md`](tools/ui/src/lib/components/app/SKILL.md) |
-| 55 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 56 | → | [`ci/README.md`](ci/README.md) |
-| 57 | → | [`common/jinja/README.md`](common/jinja/README.md) |
-| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 59 | → | [`docs/android.md`](docs/android.md) |
-| 60 | → | [`docs/autoparser.md`](docs/autoparser.md) |
-| 61 | → | [`docs/backend/BLIS.md`](docs/backend/BLIS.md) |
-| 62 | → | [`docs/backend/OPENCL.md`](docs/backend/OPENCL.md) |
-| 63 | → | [`docs/backend/SYCL.md`](docs/backend/SYCL.md) |
-| 64 | → | [`docs/backend/VirtGPU.md`](docs/backend/VirtGPU.md) |
-| 65 | → | [`docs/backend/zDNN.md`](docs/backend/zDNN.md) |
-| 66 | → | [`docs/build.md`](docs/build.md) |
-| 67 | → | [`docs/completions.md`](docs/completions.md) |
-| 68 | → | [`docs/development/HOWTO-add-model.md`](docs/development/HOWTO-add-model.md) |
-| 69 | → | [`docs/development/parsing.md`](docs/development/parsing.md) |
-| 70 | → | [`docs/development/token_generation_performance_tips.md`](docs/development/token_generation_performance_tips.md) |
-| 71 | → | [`docs/docker.md`](docs/docker.md) |
-| 72 | → | [`docs/models.md`](docs/models.md) |
-| 73 | → | [`docs/multi-gpu.md`](docs/multi-gpu.md) |
-| 74 | → | [`docs/release.md`](docs/release.md) |
-| 75 | → | [`docs/xcframework.md`](docs/xcframework.md) |
-| 76 | → | [`grammars/README.md`](grammars/README.md) |
-| 77 | → | [`README.md`](README.md) |
-| 78 | → | [`tools/cli/README.md`](tools/cli/README.md) |
-| 79 | → | [`tools/completion/README.md`](tools/completion/README.md) |
-| 80 | → | [`tools/server/README-dev.md`](tools/server/README-dev.md) |
-| 81 | → | [`tools/server/README.md`](tools/server/README.md) |
+| 53 | ✓ | [`tools/tuning/README.md`](tools/tuning/README.md) |
+| 54 | ✓ | [`tools/ui/README.md`](tools/ui/README.md) |
+| 55 | ✓ | [`tools/ui/src/lib/components/app/SKILL.md`](tools/ui/src/lib/components/app/SKILL.md) |
+| 56 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 57 | → | [`ci/README.md`](ci/README.md) |
+| 58 | → | [`common/jinja/README.md`](common/jinja/README.md) |
+| 59 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 60 | → | [`docs/android.md`](docs/android.md) |
+| 61 | → | [`docs/autoparser.md`](docs/autoparser.md) |
+| 62 | → | [`docs/backend/BLIS.md`](docs/backend/BLIS.md) |
+| 63 | → | [`docs/backend/OPENCL.md`](docs/backend/OPENCL.md) |
+| 64 | → | [`docs/backend/SYCL.md`](docs/backend/SYCL.md) |
+| 65 | → | [`docs/backend/VirtGPU.md`](docs/backend/VirtGPU.md) |
+| 66 | → | [`docs/backend/zDNN.md`](docs/backend/zDNN.md) |
+| 67 | → | [`docs/build.md`](docs/build.md) |
+| 68 | → | [`docs/completions.md`](docs/completions.md) |
+| 69 | → | [`docs/development/HOWTO-add-model.md`](docs/development/HOWTO-add-model.md) |
+| 70 | → | [`docs/development/parsing.md`](docs/development/parsing.md) |
+| 71 | → | [`docs/development/token_generation_performance_tips.md`](docs/development/token_generation_performance_tips.md) |
+| 72 | → | [`docs/docker.md`](docs/docker.md) |
+| 73 | → | [`docs/models.md`](docs/models.md) |
+| 74 | → | [`docs/multi-gpu.md`](docs/multi-gpu.md) |
+| 75 | → | [`docs/release.md`](docs/release.md) |
+| 76 | → | [`docs/xcframework.md`](docs/xcframework.md) |
+| 77 | → | [`grammars/README.md`](grammars/README.md) |
+| 78 | → | [`README.md`](README.md) |
+| 79 | → | [`tools/cli/README.md`](tools/cli/README.md) |
+| 80 | → | [`tools/completion/README.md`](tools/completion/README.md) |
+| 81 | → | [`tools/server/README-dev.md`](tools/server/README-dev.md) |
+| 82 | → | [`tools/server/README.md`](tools/server/README.md) |
 
 ---
 

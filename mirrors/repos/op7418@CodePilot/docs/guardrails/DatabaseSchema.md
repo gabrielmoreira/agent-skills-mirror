@@ -38,6 +38,11 @@
 | 19 | Notification action 以受限 `action_type/action_payload` additive 保存；route consumer 只能按 channel claim，不能恢复 destructive GET drain | notification event/delivery schema + claim routes |
 | 20 | 首次启用 durable notification consumer 时不得重放旧内存队列遗留的历史 `queued` 行。超过迁移安全窗口的 native/toast delivery 只改为可审计 `skipped`，保留 event/delivery；one-time marker 与 cutoff 必须同事务写入 | `suppressLegacyQueuedNotificationBacklog` |
 | 21 | Provider secret 行同时含非空明文与密文时，明文代表回滚/旧版重写后的当前用户值，必须优先 materialize 并重新生成 envelope；不得信任旧密文复活旧 key。单行加密/验证/UPDATE 失败必须保留该行可恢复数据并记录脱敏诊断，不能穿透 `getDb()` 阻断应用启动或回滚其它健康行 | `materializeProvider` + `migrateProviderSecrets` |
+| 22 | 正常 bootstrap 前对既有 DB 做一次 readonly `quick_check(1)`；失败不得进入 migration/runtime recovery，也不得循环换端口重试。必须先复制 DB/WAL/SHM 到时间戳目录并对每份副本 fsync + SHA-256 比对；复制前后的源文件集合/size/hash 也必须完全一致，跨文件撕裂只能标 partial。原件默认不删不改；只有用户在离线恢复页二次确认且完整备份校验成功后，才可移走原件并创建空库。健康响应必须执行最小 DB query，诊断只暴露低基数 code/preservation 状态，不含绝对路径或 SQLite 原文 | `database-integrity.ts` + `database-recovery.ts` + `/api/health` + Electron offline recovery |
+| 23 | integrity corruption、transient busy/locked、migration failure、runtime-recovery failure 必须使用不同 startup code/UI。只有真实 corruption 能宣称 integrity failed 并提供“新建空库”；只有 preservation=complete/partial 才能提供“打开本次备份”，failed 必须如实提示重新备份。migration/runtime failure 不得把健康数据引向破坏入口，unknown health error 不得伪造 DB marker。migration/runtime 与 unknown-health 原始异常必须先收敛成有界、路径/凭据脱敏的本地 diagnostic，并进入支持日志/“复制诊断”，不能只剩低基数分类 | `src/lib/db.ts` + `database-recovery.ts` + `/api/health` + Electron offline recovery |
+| 24 | `SQLITE_BUSY`/`SQLITE_LOCKED` 只允许有界重试；耗尽后进入可重试状态、不创建 corruption backup，也不得进程级永久 cache。普通 restart/retry 必须保持可用；初始启动失败尚未赋值 `serverPort` 时，“再试一次”必须重新拉起 utility 并返回真实 accepted 状态，不能静默 no-op | `database-integrity.ts` + `src/lib/db.ts` + Electron offline recovery |
+| 25 | 用户确认“新建空库”且完整备份成功后，必须 fsync durable fresh-start intent（包含备份文件 size+SHA-256）。下一次 bootstrap 在 legacy copy 前验证 intent；若 DB/WAL/SHM 又出现，视为手工恢复或中断残留的歧义，绝不自动删除。离线页必须让用户明确选择“保留当前库并取消 intent”或“重新校验旧备份后继续空库”；空库成功打开后才清 marker | `database-recovery.ts` + `src/lib/db.ts` + Electron offline recovery |
+| 26 | Electron Main、Next utility 与所有持久资源必须共用 `resolveCodePilotDataDir()`；自定义 `CLAUDE_GUI_DATA_DIR` 不得让恢复动作指向另一个库。health 已返回 path-free DB marker 时 Main 必须立即展示恢复页，不等通用 30 秒 timeout。时间戳恢复备份只在完整验证成功后按名称/直系目录/非 symlink 规则保留最多 10 个不同内容世代；相同 DB/WAL/SHM identity 复用既有备份，当前已验证备份受 retention 保护，无关目录与链接不动 | `codepilot-data-dir.ts` + `database-recovery.ts` + Electron Main |
 
 ## 关键文件 + 责任
 
@@ -48,6 +53,7 @@
 | `src/lib/provider-catalog.ts` | preset identity 的唯一/ambiguous 判定；migration 不自造另一套 matcher |
 | `src/__tests__/db-isolation.setup.ts` | 每个测试进程使用隔离数据库目录 |
 | `src/__tests__/unit/collect-owner-gate.test.ts` | 单文件直跑也先加载 DB isolation，防止 synthetic chat 写入 Dev 最近列表 |
+| `src/lib/database-integrity.ts`, `database-recovery.ts` | 启动前只读探测、DB/WAL/SHM 保全、用户确认后的空库逃生路径 |
 
 ## 改动检查表
 
@@ -74,6 +80,11 @@
 - [ ] 改 notification delivery 时保持 status 枚举冻结，验证双 claimant、owner mismatch、stale reclaim、retry cap 和 terminal immutability
 - [ ] 从内存队列迁到 durable consumer 时验证历史 backlog 不会在升级后集中弹出，同时新近通知仍保持 queued、event 审计行不被删除、migration 重跑 no-op
 - [ ] 改 Provider secret migration 时覆盖：纯 legacy 明文、明文 + 旧密文冲突、单行 UPDATE 失败后健康行继续迁移、失败行仍可在 Settings 修复；不得在 diagnostics 中回显明文/密文
+- [ ] 改 DB 打开/health/startup 时覆盖健康库、truncated/not-a-db、WAL/SHM 一并保全、权限/磁盘失败、原件不自动删除、完整备份前不允许空库，以及 Electron 不循环换端口/不回显绝对路径
+- [ ] migration/runtime-recovery failure 是否与 corruption 分型、没有虚构备份/完整性文案、没有破坏性“新建空库”；preservation failed 是否隐藏无效的打开备份动作；unknown health error 是否不带 DB marker且保留脱敏诊断
+- [ ] busy/locked 是否有界重试、耗尽后可 retry/restart 且不缓存为永久 blocked；bare filesystem product fault 是否仍可诊断/上报
+- [ ] fresh-start intent 是否在 legacy copy 前验证、绑定完整备份 identity、成功打开空库后才清 marker；重现 DB 是否进入明确二选一而非自动删除
+- [ ] Main/utility/assets 是否共用 data-dir resolver；DB marker 是否立即展示恢复页；备份是否通过复制前后 generation envelope、相同世代去重，retention 是否不跟随 symlink、不删除无关目录或当前受保护备份
 
 ## 常见坑
 
@@ -94,6 +105,10 @@
 - 不要为了表示 claim 中间态给 `notification_deliveries.status` 新增值；lease owner/time 和 attempt columns 才是并发状态。
 - 不要让新 durable consumer 直接领取旧内存队列留下的 `queued` 行；它们已失去当时的展示上下文，升级后重放会把数月前测试通知集中推给用户。用有时间边界的一次性 `skipped` 迁移保留审计，不要 DELETE。
 - 不要先建 heartbeat unique index 再处理历史 duplicate；这会让旧用户启动时直接 migration 失败。
+- 不要在 SQLite 已报 malformed 后继续跑 `journal_mode`、migration 或 runtime recovery，也不要把 `/api/health` 写成与 DB 无关的常量 200；这会让 Main 宣称 ready 后由任意业务 route 反复崩溃。
+- 不要用 health catch-all 给 migration/runtime failure 统一加 corruption marker；这会虚构“完整性检查失败/已备份”，把健康数据引向新建空库。
+- 不要只删除新路径 DB 后 relaunch；legacy-location migration 会把陈年旧库复制回来。必须先持久化 fresh-start intent，并在任何 legacy copy 之前消费。
+- 不要把 durable fresh-start intent 当成永久删除授权；后来出现的 DB 可能是用户手工恢复。必须保留文件并要求明确选择。
 
 ## 测试覆盖
 
@@ -110,6 +125,7 @@
 | Heartbeat duplicate consolidation、partial UNIQUE、cadence/reconcile | `heartbeat-reconcile.test.ts`, `scheduler-trigger-unification.test.ts` |
 | Notification additive claim、并发/stale/retry/terminal、legacy backlog 抑制 | `notification-delivery-claim.test.ts`, `notification-claim-policy.test.ts` |
 | Provider secret 明文迁移、回滚冲突、per-row 启动容错 | `provider-secret-storage.test.ts` |
+| readonly quick-check、malformed 原件保留、DB/WAL/SHM 完整备份、busy 重试、migration/runtime 分型、fresh-start 冲突选择/备份 tamper、共享 data dir 与有界 retention | `database-integrity-recovery.test.ts`, `electron-server-recovery.test.ts` |
 
 ## 设计决策日志
 
@@ -129,3 +145,7 @@
 - 2026-07-31 — Backfill failure journal 增加 permanent/transient/deferred 语义。瞬态 I/O 错误冷却 30 秒后重试；Gallery 在线迁移限制 32 MiB 累计/单文件与 75ms 调度预算；超预算行先 deferred 让后续行继续，显式无界迁移仍可恢复它，不把预算判断变成永久数据结论。
 - 2026-08-03 — Heartbeat system task 增加 exact-source partial UNIQUE index；历史 duplicate 先在事务中重关联 run/event 再合并。Notification delivery 使用 additive claim owner/time/attempt/backoff 字段，冻结现有 status CHECK，以 durable row 取代进程内 drain queue。
 - 2026-08-03 — dev 实机首次启用 durable renderer consumer 后连续弹出历史 `Hi / There`。数据库证明不是 retry：137 条不同旧 event 长期停在 `renderer-toast/queued`。新增一次性事务迁移，把首次升级时超过 1 小时的 renderer/native backlog 标记为 `skipped`，保留 event/delivery 审计并保护当前运行中新通知。1 小时边界成立于版本上线顺序：升级时已有 queued renderer 行均由 pre-durable 版本产生；durable consumer 与该 migration 同版本首次出现，所以边界内行只可能来自当前升级运行或同分支 dev，必须保护而不能按 legacy 回放处理。
+- 2026-08-23 — 生产 malformed 反馈暴露 `getDb()` 在任何完整性探测前直接进入 WAL/migration。现在既有库先执行一次 readonly `quick_check(1)`；失败缓存为 path-free startup block，保全 DB/WAL/SHM 并由 Electron 展示离线恢复页。默认不删除原件；“新建空库”必须由用户原生二次确认且重新验证完整备份后才执行。
+- 2026-08-23 — implementation review 发现 health catch-all 会把 migration/runtime 产品故障伪装为 corruption，且 start-fresh relaunch 会被旧路径 DB migration 劫持。startup code/UI 现按 corruption/busy/migration/runtime 分型；busy 有界重试且不永久 block。完整备份后写入并 fsync fresh-start intent，下一次 bootstrap 在 legacy copy 前消费，空库成功打开后才清 marker。
+- 2026-08-24 — 修复轮复核发现初始 DB 阻断会把 `serverPort` 清空，旧 retry 因而永远 no-op；现由 Main 在无端口分支重新执行稳定端口启动。migration/runtime catch 在替换为低基数 startup error 前先生成路径/凭据脱敏 diagnostic，Main 将其纳入本地日志与复制诊断。
+- 2026-08-24 — fresh-start marker 不再授权 bootstrap 自动删除后来出现的 DB。marker 绑定已验证备份身份，冲突页由用户明确保留当前恢复或再次校验后继续空库；Main/utility/资产路径统一到共享 data-dir resolver，DB marker 快速失败，完整备份只保留最新 10 份。

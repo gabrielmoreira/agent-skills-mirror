@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/generate-status-report/references/report-templates.md`](skills/generate-status-report/references/report-templates.md) |
 | 5 | ✓ | [`skills/generate-status-report/scripts/jql_builder.py`](skills/generate-status-report/scripts/jql_builder.py) |
 | 6 | ✓ | [`skills/generate-status-report/SKILL.md`](skills/generate-status-report/SKILL.md) |
-| 7 | ✓ | [`skills/jira-sprint-dashboard-canvas/SKILL.md`](skills/jira-sprint-dashboard-canvas/SKILL.md) |
+| 7 | ✓ | [`skills/jira-sprint-dashboard/SKILL.md`](skills/jira-sprint-dashboard/SKILL.md) |
 | 8 | ✓ | [`skills/search-company-knowledge/SKILL.md`](skills/search-company-knowledge/SKILL.md) |
 | 9 | ✓ | [`skills/spec-to-backlog/references/breakdown-examples.md`](skills/spec-to-backlog/references/breakdown-examples.md) |
 | 10 | ✓ | [`skills/spec-to-backlog/references/epic-templates.md`](skills/spec-to-backlog/references/epic-templates.md) |

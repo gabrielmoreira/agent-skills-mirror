@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,6 +77,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.claude/skills/token-build/SKILL.md`](.claude/skills/token-build/SKILL.md) |
 | 17 | ✓ | [`.claude/skills/ux-writing/SKILL.md`](.claude/skills/ux-writing/SKILL.md) |
 | 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 19 | ✓ | [`templates/product-design/CLAUDE.md`](templates/product-design/CLAUDE.md) |
 
 ---
 

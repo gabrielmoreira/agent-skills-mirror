@@ -20,7 +20,7 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 | **fixer** | `createFixerAgent()` | Fast implementation specialist for bounded tasks | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.fixer |
 | **observer** | `createObserverAgent()` | Visual analysis specialist (images, PDFs, diagrams) | Read-only (read, glob, grep, ast_grep_search) | DEFAULT_MODELS.observer |
 | **council** | `createCouncilAgent()` | Multi-LLM consensus synthesis from councillor responses | Read-only | DEFAULT_MODELS.council |
-| **councillor** | `createCouncillorAgent()` | Read-only council advisor; registered dynamically per preset seat as `councillor-<name>` | Read-only (read, glob, grep, ast_grep_search) | Inherited from council preset |
+| **councillor** | `createCouncillorAgent()` | Read-only council advisor; registered dynamically per preset seat as `councillor-<name>` by `buildCouncillorAgents()` (`council-agents.ts`) | Read-only (read, glob, grep, ast_grep_search) | Inherited from council preset |
 
 ### Configuration System
 
@@ -33,9 +33,11 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 ### Agent Lifecycle
 
 1. **Agent creation**: `createAgents(config)` instantiates all agents with merged configuration
-2. **Permission application**: `applyDefaultPermissions()` sets read/write permissions based on agent type
-3. **Display name injection**: Orchestrator prompt rewrites `@agent` mentions to user-configured display names
-4. **Configuration export**: `getAgentConfigs()` converts `AgentDefinition` to OpenCode SDK format with classification metadata
+2. **Dynamic councillors**: `buildCouncillorAgents()` (`council-agents.ts`) creates one `councillor-<name>` subagent per council preset seat, attaching `_modelArray` fallback chains for multi-model councillors
+3. **Permission application**: `applyDefaultPermissions()` sets read/write permissions based on agent type
+4. **Task-rejection instruction**: `appendTaskRejectionInstruction()` appends the "outside your role" instruction to specialist prompts (`task-rejection.ts`)
+5. **Display name injection**: Orchestrator prompt rewrites `@agent` mentions to user-configured display names
+6. **Configuration export**: `getAgentConfigs()` converts `AgentDefinition` to OpenCode SDK format with classification metadata
 
 ## Flow
 
@@ -180,6 +182,8 @@ These rules are filtered based on disabled agents and injected into the orchestr
 - `observer.ts` - Visual analysis specialist
 - `council.ts` - Multi-LLM council agent
 - `councillor.ts` - Read-only council advisor (internal)
+- `council-agents.ts` - Dynamic `councillor-<name>` agent builders from council presets
+- `task-rejection.ts` - Task-rejection instruction appended to specialist prompts
 - `permissions.ts` - Permission factory for read-only agents
 
 ## Design Patterns

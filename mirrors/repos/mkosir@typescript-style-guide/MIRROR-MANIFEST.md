@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mkosir/typescript-style-guide` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `mkosir/typescript-style-guide` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mkosir/typescript-style-guide` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,28 +59,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/evals/typescript-style-guide/cases.ts`](skills/evals/typescript-style-guide/cases.ts) |
-| 2 | ✓ | [`skills/evals/typescript-style-guide/run-codex.ts`](skills/evals/typescript-style-guide/run-codex.ts) |
+| 1 | ✓ | [`skills/evals/eval-cases.ts`](skills/evals/eval-cases.ts) |
+| 2 | ✓ | [`skills/evals/run-codex.ts`](skills/evals/run-codex.ts) |
 | 3 | ✓ | [`skills/package-lock.json`](skills/package-lock.json) |
 | 4 | ✓ | [`skills/package.json`](skills/package.json) |
 | 5 | ✓ | [`skills/scripts/sync-guide.ts`](skills/scripts/sync-guide.ts) |
-| 6 | ✓ | [`skills/typescript-discriminated-unions/SKILL.md`](skills/typescript-discriminated-unions/SKILL.md) |
-| 7 | ✓ | [`skills/typescript-functions/SKILL.md`](skills/typescript-functions/SKILL.md) |
-| 8 | ✓ | [`skills/typescript-naming/SKILL.md`](skills/typescript-naming/SKILL.md) |
-| 9 | ✓ | [`skills/typescript-react/SKILL.md`](skills/typescript-react/SKILL.md) |
-| 10 | ✓ | [`skills/typescript-source-organization/SKILL.md`](skills/typescript-source-organization/SKILL.md) |
-| 11 | ✓ | [`skills/typescript-style-guide/references/discriminated-unions.md`](skills/typescript-style-guide/references/discriminated-unions.md) |
-| 12 | ✓ | [`skills/typescript-style-guide/references/functions.md`](skills/typescript-style-guide/references/functions.md) |
-| 13 | ✓ | [`skills/typescript-style-guide/references/naming.md`](skills/typescript-style-guide/references/naming.md) |
-| 14 | ✓ | [`skills/typescript-style-guide/references/react.md`](skills/typescript-style-guide/references/react.md) |
-| 15 | ✓ | [`skills/typescript-style-guide/references/source-organization.md`](skills/typescript-style-guide/references/source-organization.md) |
-| 16 | ✓ | [`skills/typescript-style-guide/references/tests.md`](skills/typescript-style-guide/references/tests.md) |
-| 17 | ✓ | [`skills/typescript-style-guide/references/types.md`](skills/typescript-style-guide/references/types.md) |
-| 18 | ✓ | [`skills/typescript-style-guide/references/variables.md`](skills/typescript-style-guide/references/variables.md) |
-| 19 | ✓ | [`skills/typescript-style-guide/SKILL.md`](skills/typescript-style-guide/SKILL.md) |
-| 20 | ✓ | [`skills/typescript-tests/SKILL.md`](skills/typescript-tests/SKILL.md) |
-| 21 | ✓ | [`skills/typescript-types/SKILL.md`](skills/typescript-types/SKILL.md) |
-| 22 | ✓ | [`skills/typescript-variables/SKILL.md`](skills/typescript-variables/SKILL.md) |
+| 6 | ✓ | [`skills/tsconfig.json`](skills/tsconfig.json) |
+| 7 | ✓ | [`skills/typescript-discriminated-unions/SKILL.md`](skills/typescript-discriminated-unions/SKILL.md) |
+| 8 | ✓ | [`skills/typescript-functions/SKILL.md`](skills/typescript-functions/SKILL.md) |
+| 9 | ✓ | [`skills/typescript-naming/SKILL.md`](skills/typescript-naming/SKILL.md) |
+| 10 | ✓ | [`skills/typescript-react/SKILL.md`](skills/typescript-react/SKILL.md) |
+| 11 | ✓ | [`skills/typescript-source-organization/SKILL.md`](skills/typescript-source-organization/SKILL.md) |
+| 12 | ✓ | [`skills/typescript-style-guide/references/discriminated-unions.md`](skills/typescript-style-guide/references/discriminated-unions.md) |
+| 13 | ✓ | [`skills/typescript-style-guide/references/functions.md`](skills/typescript-style-guide/references/functions.md) |
+| 14 | ✓ | [`skills/typescript-style-guide/references/naming.md`](skills/typescript-style-guide/references/naming.md) |
+| 15 | ✓ | [`skills/typescript-style-guide/references/react.md`](skills/typescript-style-guide/references/react.md) |
+| 16 | ✓ | [`skills/typescript-style-guide/references/source-organization.md`](skills/typescript-style-guide/references/source-organization.md) |
+| 17 | ✓ | [`skills/typescript-style-guide/references/tests.md`](skills/typescript-style-guide/references/tests.md) |
+| 18 | ✓ | [`skills/typescript-style-guide/references/types.md`](skills/typescript-style-guide/references/types.md) |
+| 19 | ✓ | [`skills/typescript-style-guide/references/variables.md`](skills/typescript-style-guide/references/variables.md) |
+| 20 | ✓ | [`skills/typescript-style-guide/SKILL.md`](skills/typescript-style-guide/SKILL.md) |
+| 21 | ✓ | [`skills/typescript-tests/SKILL.md`](skills/typescript-tests/SKILL.md) |
+| 22 | ✓ | [`skills/typescript-types/SKILL.md`](skills/typescript-types/SKILL.md) |
+| 23 | ✓ | [`skills/typescript-variables/SKILL.md`](skills/typescript-variables/SKILL.md) |
 
 ---
 

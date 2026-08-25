@@ -17,7 +17,7 @@
 | Read page content | `--dump markdown` | Default for research and summarization |
 | Inspect semantic structure | `--dump semantic_tree_text` | Compact roles, labels, text, and backend node IDs |
 | Process semantic structure | `--dump semantic_tree` | Structured accessibility-oriented payload |
-| Process stable fields | `--dump json` | Returns `final_url`, `status`, and `html` |
+| Process stable fields | `--dump json` | Returns `final_url`, `status`, `title`, `headers`, `redirect_chain`, and `html` |
 | Inspect exact DOM | `--dump html` | Useful when Markdown loses important structure |
 | Diagnose requests | `--dump json --trace-network` | Adds the `network` object |
 | Capture the viewport | `--layout --dump screenshot` | Writes PNG bytes to stdout |
@@ -25,6 +25,10 @@
 | Capture a paginated document | `--layout --dump pdf` | Writes PDF bytes to stdout |
 
 Raw non-HTML responses support only `html` and `json`.
+
+JSON `headers` is an ordered list of `{name, value}` records so duplicate
+headers are preserved. `redirect_chain` contains every main-navigation HTTP
+redirect hop in order.
 
 ## Readiness
 

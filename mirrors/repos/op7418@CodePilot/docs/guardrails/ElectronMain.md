@@ -25,7 +25,7 @@
 | 2 | 构建前只清理 `release/` + `.next/` + `dist-electron/`，且先验证当前目录确为 CodePilot 项目 | `scripts/clean-electron-build.mjs` |
 | 3 | standalone 根目录只允许 `.next`、`node_modules`、`server.js`、`package.json`、`cache-handler.js`；本地 DB、uploads、Git/agent/worktree 状态不得入包 | build scripts |
 | 4 | `extraResources` 中 standalone root、`node_modules`、`.next` 的目标互斥；禁止 `**/*` 再叠加子目录 FileSet | `electron-builder.yml` + tests |
-| 5 | macOS/Windows 产物必须校验版本、native ABI 与 packaged server health 后才能上传 | build workflow |
+| 5 | stable Release 的 macOS、Windows、Linux 产物都必须校验版本、native ABI 与 packaged server health 后才能上传；Windows/Linux 只作手工分发，official updater provenance 必须关闭且不得携带 updater metadata | build workflow |
 | 6 | 主窗口外部导航必须经过 `classifyNavigation`；非 http/https 协议不得交给系统 shell | `electron/main.ts` + tests |
 | 7 | Renderer 的 input / textarea / contenteditable 使用 Electron role 菜单；密码框不得启用复制、剪切 | `attachRendererEditingContextMenu` |
 | 8 | Grok Build browser OAuth callback 只绑定 `127.0.0.1`，生产由 OS 分配动态端口；authorize/token exchange 必须复用同一 redirect URI | OAuth manager |
@@ -56,6 +56,8 @@
 | 33 | packaged Next utility 的运行期 fatal/error/unexpected exit 在 stable opt-in telemetry 中每个 generation 最多捕获一次；只传稳定枚举、平台定义的有界整数退出码与 utility/host memory 数值。负 POSIX/launch-failure sentinel 不得被当作无效内存指标丢弃；Electron diagnostic report 原文必须在 Main 边界丢弃，不得进入日志、Sentry 或恢复页 | `utility-process-failure.ts` + Main + telemetry/recovery tests |
 | 34 | stable/preview macOS distributable 必须是 Developer ID Application 签名且 `TeamIdentifier` 精确匹配发布配置；证书打包步骤使用 `CSC_LINK` 时必须允许 electron-builder 发现并选择导入的身份，除非同时配置了显式 identity。缺证书、ad-hoc、Team ID 不一致、最终 bundle deep/strict 失败都必须阻断上传。最终 `codesign` inspect/deep verify 自身必须有进程级硬超时，不能只依赖 CI step timeout；ad-hoc 只允许显式本地包，不能作为发布证据 | `after-sign.js` + `verify-macos-developer-id.mjs` + workflows |
 | 35 | packaged recovery smoke 跳过 provider Safe Storage 只允许 exact flag + packaged app + canonical realpath 位于 `os.tmpdir()/codepilot-packaged-recovery-*`；flag 不得传给 Next/Agent child。真实 userData、dev mode、symlink/不存在路径和近似 flag 全部 fail closed | `provider-secret-startup-policy.ts` + Main + recovery smoke/tests |
+| 36 | 数据库启动在分配 stable port 前失败时，“再试一次”仍必须能重新启动 utility，IPC 返回真实 accepted 而非乐观 `true`。migration/runtime 原始错误只允许以有界、路径/凭据脱敏的 marker 写本地日志并进入“复制诊断”；不得把动态根因塞进低基数 startup code 或 Sentry message | `electron/main.ts` + `database-recovery.ts` + recovery tests |
+| 37 | DB health marker 是已完成的启动分类，Main 必须绕过通用 30 秒 wait 立即进入离线页。Main 与 utility 共用同一个 data-dir resolver；fresh-start 后文件重现时只暴露 fixed-path、trusted recovery-renderer IPC，让用户明确保留当前库或在旧备份重新校验后继续，Renderer 不得提交数据库路径 | Main + preload + recovery page/tests |
 
 ## 关键文件 + 责任
 
@@ -111,6 +113,8 @@
 - [ ] 改外链导航时两个入口（`setWindowOpenHandler` / `will-navigate`）都走 `openExternalSafely`；拒绝 Promise 与失败 dialog 自身拒绝均必须被消费，日志/提示不得回显目标 URL 或 OS error。
 - [ ] 改 packaged server lifecycle 时覆盖 intentional quit、单次/连续 crash、health-before-reload、poll pause/resume、stable port、safe-mode env 与 descendant fail-closed。
 - [ ] 运行期 crash recovery 的发布证据必须来自 packaged app；Node source-pin/单测只能证明状态机和接线，不能标 `Smoke passed`。
+- [ ] 改数据库启动恢复时覆盖 stable port 尚未赋值的 retry；IPC 必须返回实际结果。复制诊断只含脱敏 startup marker，不得包含 home、绝对路径、URL、token 或原始环境。
+- [ ] 改 DB recovery 页时覆盖 marker 快速失败、共享 data dir、fresh-start conflict 两个 fixed-path 动作与备份 tamper；任何重现文件都不得由 bootstrap 自动删。
 
 ## 常见坑
 
@@ -151,6 +155,7 @@
 | macOS default-keychain 探测、Claude credential shim、safeStorage 前置门禁、packaged resource | `macos-keychain-guard.test.ts` + `provider-secret-electron-contract.test.ts` + `electron-packaging-hygiene.test.ts` |
 | 外链默认应用失败、反馈失败与隐私日志边界 | `electron-external-navigation.test.ts` + `electron-main-security.test.ts` |
 | utility supervisor、offline page、safe mode、descendant identity、poll/reload 顺序 | `electron-server-recovery.test.ts` + `scripts/smoke-packaged-server-recovery.mjs` |
+| 数据库启动前 retry、marker 快速失败、fresh-start conflict 与 migration/runtime 脱敏诊断 | `electron-server-recovery.test.ts` + `database-integrity-recovery.test.ts` |
 
 ## 设计决策日志
 
@@ -172,3 +177,7 @@
 - 2026-08-11 — Next utility OOM containment 改为 Main-owned safe mode + 本地 recovery page + bounded supervisor。自动重启受 production descendant registry 硬门禁；未知/残留 owner fail-closed，不以无限重启换表面可用。
 - 2026-08-12 — B-030 用户日志证明 utility fatal 只落本地主日志、Sentry 无对应事件。Main 新增 generation one-shot 的 normalized fatal capture，且继续在 API 入口丢弃 diagnostic report 原文；Electron 从 40.2.1 更新到同主版本 40.10.6，吸收后续 Chromium/Electron 补丁，不以全局关闭 GPU 规避旧 Graphite crash。
 - 2026-08-12 — 第二台 Mac 的 `codepilot Safe Storage` 授权框与本机 `SecItemCopyMatching` 阻塞揭示 stable/preview CI 也在静默产出 ad-hoc 包。macOS distributable 改为 Developer ID + exact Team ID fail-closed，并在最终产物后置复核；本地 recovery smoke 只能在 canonical 临时 userData 隔离跳过 Safe Storage。
+- 2026-08-24 — DB migration/runtime 错误可以发生在 `serverPort` 赋值前；旧 retry 因 `!serverPort` 早退却向 Renderer 返回成功。Main 现在为初次启动失败提供独立重试路径并返回真实结果；原始根因只经共享 sanitizer 形成有界本地 marker，供日志与复制诊断使用，不改变低基数恢复分类。
+- 2026-08-24 — `/api/health` 的 DB marker 改为立即失败；恢复路径与 utility 统一使用 `CLAUDE_GUI_DATA_DIR` resolver。fresh-start 后出现 DB 时 Main 不自动删除，而以 trusted、无路径参数的 IPC 提供“保留当前库 / 校验旧备份后继续空库”。
+- 2026-08-24 — 本轮 tag/prerelease 发布范围收窄为 macOS。Windows/Linux 原生构建 job 保留作手工 artifact 验证，但 `CODEPILOT_OFFICIAL_UPDATE_BUILD=0` 且 central Release 明确排除其资产。
+- 2026-08-24 — 用户随后澄清 stable 仍需全平台分发：tag 恢复 Windows/Linux 手动安装包，保持 `CODEPILOT_OFFICIAL_UPDATE_BUILD=0`；preview 与原生 updater 仍只有 macOS。

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuliusBrussee/caveman` — 26 default patterns, 1 followed patterns, 146 file(s) materialized.
+Mirror of `JuliusBrussee/caveman` — 26 default patterns, 1 followed patterns, 140 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JuliusBrussee/caveman` — 26 default patterns, 1 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 146 |
+| Files         | 140 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,90 +121,84 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`packages/cli/CLAUDE.md`](packages/cli/CLAUDE.md) |
 | 61 | ✓ | [`packages/cli/TERMINAL_UX.md`](packages/cli/TERMINAL_UX.md) |
 | 62 | ✓ | [`packages/create-caveman-agent/CLAUDE.md`](packages/create-caveman-agent/CLAUDE.md) |
-| 63 | ✓ | [`packages/graders/AGENTS.md`](packages/graders/AGENTS.md) |
-| 64 | ✓ | [`packages/graders/CLAUDE.md`](packages/graders/CLAUDE.md) |
-| 65 | ✓ | [`packages/kit/AGENTS.md`](packages/kit/AGENTS.md) |
-| 66 | ✓ | [`packages/kit/CLAUDE.md`](packages/kit/CLAUDE.md) |
-| 67 | ✓ | [`packages/sdk/parity/AGENTS.md`](packages/sdk/parity/AGENTS.md) |
-| 68 | ✓ | [`packages/sdk/parity/CLAUDE.md`](packages/sdk/parity/CLAUDE.md) |
-| 69 | ✓ | [`packages/sdk/python/AGENTS.md`](packages/sdk/python/AGENTS.md) |
-| 70 | ✓ | [`packages/sdk/python/CLAUDE.md`](packages/sdk/python/CLAUDE.md) |
-| 71 | ✓ | [`packages/sdk/typescript/AGENTS.md`](packages/sdk/typescript/AGENTS.md) |
-| 72 | ✓ | [`packages/sdk/typescript/CLAUDE.md`](packages/sdk/typescript/CLAUDE.md) |
-| 73 | ✓ | [`packages/shared/contracts/AGENTS.md`](packages/shared/contracts/AGENTS.md) |
-| 74 | ✓ | [`packages/shared/contracts/CLAUDE.md`](packages/shared/contracts/CLAUDE.md) |
-| 75 | ✓ | [`plugins/caveman/skills/cavecrew/SKILL.md`](plugins/caveman/skills/cavecrew/SKILL.md) |
-| 76 | ✓ | [`plugins/caveman/skills/caveman-compress/SKILL.md`](plugins/caveman/skills/caveman-compress/SKILL.md) |
-| 77 | ✓ | [`plugins/caveman/skills/caveman-stats/SKILL.md`](plugins/caveman/skills/caveman-stats/SKILL.md) |
-| 78 | ✓ | [`plugins/caveman/skills/caveman/SKILL.md`](plugins/caveman/skills/caveman/SKILL.md) |
-| 79 | ✓ | [`proxy/AGENTS.md`](proxy/AGENTS.md) |
-| 80 | ✓ | [`proxy/CLAUDE.md`](proxy/CLAUDE.md) |
-| 81 | ✓ | [`shared/provider-catalog/AGENTS.md`](shared/provider-catalog/AGENTS.md) |
-| 82 | ✓ | [`shared/provider-catalog/CLAUDE.md`](shared/provider-catalog/CLAUDE.md) |
-| 83 | ✓ | [`shrink/AGENTS.md`](shrink/AGENTS.md) |
-| 84 | ✓ | [`shrink/CLAUDE.md`](shrink/CLAUDE.md) |
-| 85 | ✓ | [`skills/cavecrew/README.md`](skills/cavecrew/README.md) |
-| 86 | ✓ | [`skills/cavecrew/SKILL.md`](skills/cavecrew/SKILL.md) |
-| 87 | ✓ | [`skills/caveman-commit/README.md`](skills/caveman-commit/README.md) |
-| 88 | ✓ | [`skills/caveman-commit/SKILL.md`](skills/caveman-commit/SKILL.md) |
-| 89 | ✓ | [`skills/caveman-compress/README.md`](skills/caveman-compress/README.md) |
-| 90 | ✓ | [`skills/caveman-compress/scripts/__init__.py`](skills/caveman-compress/scripts/__init__.py) |
-| 91 | ✓ | [`skills/caveman-compress/scripts/__main__.py`](skills/caveman-compress/scripts/__main__.py) |
-| 92 | ✓ | [`skills/caveman-compress/scripts/benchmark.py`](skills/caveman-compress/scripts/benchmark.py) |
-| 93 | ✓ | [`skills/caveman-compress/scripts/cli.py`](skills/caveman-compress/scripts/cli.py) |
-| 94 | ✓ | [`skills/caveman-compress/scripts/compress.py`](skills/caveman-compress/scripts/compress.py) |
-| 95 | ✓ | [`skills/caveman-compress/scripts/detect.py`](skills/caveman-compress/scripts/detect.py) |
-| 96 | ✓ | [`skills/caveman-compress/scripts/validate.py`](skills/caveman-compress/scripts/validate.py) |
-| 97 | ✓ | [`skills/caveman-compress/SECURITY.md`](skills/caveman-compress/SECURITY.md) |
-| 98 | ✓ | [`skills/caveman-compress/SKILL.md`](skills/caveman-compress/SKILL.md) |
-| 99 | ✓ | [`skills/caveman-discover/SKILL.md`](skills/caveman-discover/SKILL.md) |
-| 100 | ✓ | [`skills/caveman-evidence-review/SKILL.md`](skills/caveman-evidence-review/SKILL.md) |
-| 101 | ✓ | [`skills/caveman-explore/package.json`](skills/caveman-explore/package.json) |
-| 102 | ✓ | [`skills/caveman-explore/SKILL.md`](skills/caveman-explore/SKILL.md) |
-| 103 | ✓ | [`skills/caveman-explore/tests/skill-file.test.mjs`](skills/caveman-explore/tests/skill-file.test.mjs) |
-| 104 | ✓ | [`skills/caveman-help/README.md`](skills/caveman-help/README.md) |
-| 105 | ✓ | [`skills/caveman-help/SKILL.md`](skills/caveman-help/SKILL.md) |
-| 106 | ✓ | [`skills/caveman-learn/CLAUDE.md`](skills/caveman-learn/CLAUDE.md) |
-| 107 | ✓ | [`skills/caveman-learn/package.json`](skills/caveman-learn/package.json) |
-| 108 | ✓ | [`skills/caveman-learn/README.md`](skills/caveman-learn/README.md) |
-| 109 | ✓ | [`skills/caveman-learn/SKILL.md`](skills/caveman-learn/SKILL.md) |
-| 110 | ✓ | [`skills/caveman-learn/tests/index.js`](skills/caveman-learn/tests/index.js) |
-| 111 | ✓ | [`skills/caveman-learn/tests/skill-file.test.mjs`](skills/caveman-learn/tests/skill-file.test.mjs) |
-| 112 | ✓ | [`skills/caveman-manage/SKILL.md`](skills/caveman-manage/SKILL.md) |
-| 113 | ✓ | [`skills/caveman-optimize/SKILL.md`](skills/caveman-optimize/SKILL.md) |
-| 114 | ✓ | [`skills/caveman-review/README.md`](skills/caveman-review/README.md) |
-| 115 | ✓ | [`skills/caveman-review/SKILL.md`](skills/caveman-review/SKILL.md) |
-| 116 | ✓ | [`skills/caveman-setup/SKILL.md`](skills/caveman-setup/SKILL.md) |
-| 117 | ✓ | [`skills/caveman-stats/README.md`](skills/caveman-stats/README.md) |
-| 118 | ✓ | [`skills/caveman-stats/SKILL.md`](skills/caveman-stats/SKILL.md) |
-| 119 | ✓ | [`skills/caveman/README.md`](skills/caveman/README.md) |
-| 120 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
-| 121 | ✓ | [`skills/compile.mjs`](skills/compile.mjs) |
-| 122 | ✓ | [`skills/engine-mcp-tools.json`](skills/engine-mcp-tools.json) |
-| 123 | ✓ | [`skills/generated/aider/pack.json`](skills/generated/aider/pack.json) |
-| 124 | ✓ | [`skills/generated/claude/pack.json`](skills/generated/claude/pack.json) |
-| 125 | ✓ | [`skills/generated/codex/pack.json`](skills/generated/codex/pack.json) |
-| 126 | ✓ | [`skills/generated/gemini/pack.json`](skills/generated/gemini/pack.json) |
-| 127 | ✓ | [`skills/generated/hermes/pack.json`](skills/generated/hermes/pack.json) |
-| 128 | ✓ | [`skills/generated/opencode/pack.json`](skills/generated/opencode/pack.json) |
-| 129 | ✓ | [`skills/investigate-first/agents/openai.yaml`](skills/investigate-first/agents/openai.yaml) |
-| 130 | ✓ | [`skills/investigate-first/SKILL.md`](skills/investigate-first/SKILL.md) |
-| 131 | ✓ | [`skills/lean-build/agents/openai.yaml`](skills/lean-build/agents/openai.yaml) |
-| 132 | ✓ | [`skills/lean-build/SKILL.md`](skills/lean-build/SKILL.md) |
-| 133 | ✓ | [`skills/migration/agents/openai.yaml`](skills/migration/agents/openai.yaml) |
-| 134 | ✓ | [`skills/migration/SKILL.md`](skills/migration/SKILL.md) |
-| 135 | ✓ | [`skills/native-core.md`](skills/native-core.md) |
-| 136 | ✓ | [`skills/registry.json`](skills/registry.json) |
-| 137 | ✓ | [`skills/safe-refactor/agents/openai.yaml`](skills/safe-refactor/agents/openai.yaml) |
-| 138 | ✓ | [`skills/safe-refactor/SKILL.md`](skills/safe-refactor/SKILL.md) |
-| 139 | ✓ | [`skills/surgical-patch/agents/openai.yaml`](skills/surgical-patch/agents/openai.yaml) |
-| 140 | ✓ | [`skills/surgical-patch/SKILL.md`](skills/surgical-patch/SKILL.md) |
-| 141 | ✓ | [`skills/verbs-gate.mjs`](skills/verbs-gate.mjs) |
-| 142 | ✓ | [`skills/verify-and-stop/agents/openai.yaml`](skills/verify-and-stop/agents/openai.yaml) |
-| 143 | ✓ | [`skills/verify-and-stop/SKILL.md`](skills/verify-and-stop/SKILL.md) |
-| 144 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 145 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
-| 146 | → | [`SECURITY.md`](SECURITY.md) |
+| 63 | ✓ | [`packages/sdk/parity/AGENTS.md`](packages/sdk/parity/AGENTS.md) |
+| 64 | ✓ | [`packages/sdk/parity/CLAUDE.md`](packages/sdk/parity/CLAUDE.md) |
+| 65 | ✓ | [`packages/sdk/python/AGENTS.md`](packages/sdk/python/AGENTS.md) |
+| 66 | ✓ | [`packages/sdk/python/CLAUDE.md`](packages/sdk/python/CLAUDE.md) |
+| 67 | ✓ | [`packages/sdk/typescript/AGENTS.md`](packages/sdk/typescript/AGENTS.md) |
+| 68 | ✓ | [`packages/sdk/typescript/CLAUDE.md`](packages/sdk/typescript/CLAUDE.md) |
+| 69 | ✓ | [`packages/shared/contracts/AGENTS.md`](packages/shared/contracts/AGENTS.md) |
+| 70 | ✓ | [`packages/shared/contracts/CLAUDE.md`](packages/shared/contracts/CLAUDE.md) |
+| 71 | ✓ | [`plugins/caveman/skills/cavecrew/SKILL.md`](plugins/caveman/skills/cavecrew/SKILL.md) |
+| 72 | ✓ | [`plugins/caveman/skills/caveman-compress/SKILL.md`](plugins/caveman/skills/caveman-compress/SKILL.md) |
+| 73 | ✓ | [`plugins/caveman/skills/caveman-stats/SKILL.md`](plugins/caveman/skills/caveman-stats/SKILL.md) |
+| 74 | ✓ | [`plugins/caveman/skills/caveman/SKILL.md`](plugins/caveman/skills/caveman/SKILL.md) |
+| 75 | ✓ | [`proxy/AGENTS.md`](proxy/AGENTS.md) |
+| 76 | ✓ | [`proxy/CLAUDE.md`](proxy/CLAUDE.md) |
+| 77 | ✓ | [`shared/provider-catalog/AGENTS.md`](shared/provider-catalog/AGENTS.md) |
+| 78 | ✓ | [`shared/provider-catalog/CLAUDE.md`](shared/provider-catalog/CLAUDE.md) |
+| 79 | ✓ | [`shrink/AGENTS.md`](shrink/AGENTS.md) |
+| 80 | ✓ | [`shrink/CLAUDE.md`](shrink/CLAUDE.md) |
+| 81 | ✓ | [`skills/cavecrew/README.md`](skills/cavecrew/README.md) |
+| 82 | ✓ | [`skills/cavecrew/SKILL.md`](skills/cavecrew/SKILL.md) |
+| 83 | ✓ | [`skills/caveman-commit/README.md`](skills/caveman-commit/README.md) |
+| 84 | ✓ | [`skills/caveman-commit/SKILL.md`](skills/caveman-commit/SKILL.md) |
+| 85 | ✓ | [`skills/caveman-compress/README.md`](skills/caveman-compress/README.md) |
+| 86 | ✓ | [`skills/caveman-compress/scripts/__init__.py`](skills/caveman-compress/scripts/__init__.py) |
+| 87 | ✓ | [`skills/caveman-compress/scripts/__main__.py`](skills/caveman-compress/scripts/__main__.py) |
+| 88 | ✓ | [`skills/caveman-compress/scripts/benchmark.py`](skills/caveman-compress/scripts/benchmark.py) |
+| 89 | ✓ | [`skills/caveman-compress/scripts/cli.py`](skills/caveman-compress/scripts/cli.py) |
+| 90 | ✓ | [`skills/caveman-compress/scripts/compress.py`](skills/caveman-compress/scripts/compress.py) |
+| 91 | ✓ | [`skills/caveman-compress/scripts/detect.py`](skills/caveman-compress/scripts/detect.py) |
+| 92 | ✓ | [`skills/caveman-compress/scripts/validate.py`](skills/caveman-compress/scripts/validate.py) |
+| 93 | ✓ | [`skills/caveman-compress/SECURITY.md`](skills/caveman-compress/SECURITY.md) |
+| 94 | ✓ | [`skills/caveman-compress/SKILL.md`](skills/caveman-compress/SKILL.md) |
+| 95 | ✓ | [`skills/caveman-discover/SKILL.md`](skills/caveman-discover/SKILL.md) |
+| 96 | ✓ | [`skills/caveman-evidence-review/SKILL.md`](skills/caveman-evidence-review/SKILL.md) |
+| 97 | ✓ | [`skills/caveman-explore/package.json`](skills/caveman-explore/package.json) |
+| 98 | ✓ | [`skills/caveman-explore/SKILL.md`](skills/caveman-explore/SKILL.md) |
+| 99 | ✓ | [`skills/caveman-explore/tests/skill-file.test.mjs`](skills/caveman-explore/tests/skill-file.test.mjs) |
+| 100 | ✓ | [`skills/caveman-help/README.md`](skills/caveman-help/README.md) |
+| 101 | ✓ | [`skills/caveman-help/SKILL.md`](skills/caveman-help/SKILL.md) |
+| 102 | ✓ | [`skills/caveman-learn/CLAUDE.md`](skills/caveman-learn/CLAUDE.md) |
+| 103 | ✓ | [`skills/caveman-learn/package.json`](skills/caveman-learn/package.json) |
+| 104 | ✓ | [`skills/caveman-learn/README.md`](skills/caveman-learn/README.md) |
+| 105 | ✓ | [`skills/caveman-learn/SKILL.md`](skills/caveman-learn/SKILL.md) |
+| 106 | ✓ | [`skills/caveman-learn/tests/index.js`](skills/caveman-learn/tests/index.js) |
+| 107 | ✓ | [`skills/caveman-learn/tests/skill-file.test.mjs`](skills/caveman-learn/tests/skill-file.test.mjs) |
+| 108 | ✓ | [`skills/caveman-manage/SKILL.md`](skills/caveman-manage/SKILL.md) |
+| 109 | ✓ | [`skills/caveman-optimize/SKILL.md`](skills/caveman-optimize/SKILL.md) |
+| 110 | ✓ | [`skills/caveman-review/README.md`](skills/caveman-review/README.md) |
+| 111 | ✓ | [`skills/caveman-review/SKILL.md`](skills/caveman-review/SKILL.md) |
+| 112 | ✓ | [`skills/caveman-setup/SKILL.md`](skills/caveman-setup/SKILL.md) |
+| 113 | ✓ | [`skills/caveman-stats/README.md`](skills/caveman-stats/README.md) |
+| 114 | ✓ | [`skills/caveman-stats/SKILL.md`](skills/caveman-stats/SKILL.md) |
+| 115 | ✓ | [`skills/caveman/README.md`](skills/caveman/README.md) |
+| 116 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
+| 117 | ✓ | [`skills/compile.mjs`](skills/compile.mjs) |
+| 118 | ✓ | [`skills/engine-mcp-tools.json`](skills/engine-mcp-tools.json) |
+| 119 | ✓ | [`skills/generated/aider/pack.json`](skills/generated/aider/pack.json) |
+| 120 | ✓ | [`skills/generated/claude/pack.json`](skills/generated/claude/pack.json) |
+| 121 | ✓ | [`skills/generated/codex/pack.json`](skills/generated/codex/pack.json) |
+| 122 | ✓ | [`skills/generated/gemini/pack.json`](skills/generated/gemini/pack.json) |
+| 123 | ✓ | [`skills/generated/hermes/pack.json`](skills/generated/hermes/pack.json) |
+| 124 | ✓ | [`skills/generated/opencode/pack.json`](skills/generated/opencode/pack.json) |
+| 125 | ✓ | [`skills/investigate-first/agents/openai.yaml`](skills/investigate-first/agents/openai.yaml) |
+| 126 | ✓ | [`skills/investigate-first/SKILL.md`](skills/investigate-first/SKILL.md) |
+| 127 | ✓ | [`skills/lean-build/agents/openai.yaml`](skills/lean-build/agents/openai.yaml) |
+| 128 | ✓ | [`skills/lean-build/SKILL.md`](skills/lean-build/SKILL.md) |
+| 129 | ✓ | [`skills/migration/agents/openai.yaml`](skills/migration/agents/openai.yaml) |
+| 130 | ✓ | [`skills/migration/SKILL.md`](skills/migration/SKILL.md) |
+| 131 | ✓ | [`skills/native-core.md`](skills/native-core.md) |
+| 132 | ✓ | [`skills/registry.json`](skills/registry.json) |
+| 133 | ✓ | [`skills/safe-refactor/agents/openai.yaml`](skills/safe-refactor/agents/openai.yaml) |
+| 134 | ✓ | [`skills/safe-refactor/SKILL.md`](skills/safe-refactor/SKILL.md) |
+| 135 | ✓ | [`skills/surgical-patch/agents/openai.yaml`](skills/surgical-patch/agents/openai.yaml) |
+| 136 | ✓ | [`skills/surgical-patch/SKILL.md`](skills/surgical-patch/SKILL.md) |
+| 137 | ✓ | [`skills/verbs-gate.mjs`](skills/verbs-gate.mjs) |
+| 138 | ✓ | [`skills/verify-and-stop/agents/openai.yaml`](skills/verify-and-stop/agents/openai.yaml) |
+| 139 | ✓ | [`skills/verify-and-stop/SKILL.md`](skills/verify-and-stop/SKILL.md) |
+| 140 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

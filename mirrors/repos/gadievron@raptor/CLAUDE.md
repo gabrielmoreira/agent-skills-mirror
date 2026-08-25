@@ -71,7 +71,12 @@ When a `/command` fires:
 
 ## PROJECTS
 
-Projects are opt-in named workspaces that corral analysis runs into a shared directory. Activate a project with `/project use <name>` in-session, or at launch with the launcher's `-p <name>` / `--project <name>` flag (`bin/raptor` routes it through `libexec/raptor-startup-check`, which also auto-activates a project whose target matches the caller's directory). While a project is active, analysis commands write output to the project directory — no analysis command takes a `--project` flag itself. Without a project, commands behave as before (timestamped dirs under `out/`).
+Projects are opt-in named workspaces that corral analysis runs into a shared directory. Project state is TWO-LAYERED so concurrent sessions never steer each other:
+
+- **Session binding** (authoritative): each launcher session carries its own project in `~/.local/share/raptor/sessions.d/`, seeded at launch and changed only by THIS session's `/project use <name>` / `/project none` / `/project create`. Bound-to-none is authoritative — a cleared session does not follow the default.
+- **Last-activated default** (the `.active` symlink): a bookmark that seeds NEW sessions and serves bare shells. `use`/`create`/`-p` bump it; auto-detect and `/project none` do not.
+
+Activate with `/project use <name>` in-session, or at launch with `-p <name>` (auto-detect activates for the session only). While a project is active, analysis commands write output to the project directory, and every RUN is pinned to its project at start — a mid-run project switch never moves an in-flight run's output, trust markers, or stores. Analysis commands also accept `--project <name>` to pin a single run explicitly (`--project -` = explicitly projectless); invalid values are a hard error, never a fallback. Without a project, commands behave as before (timestamped dirs under `out/`). `/project sessions` shows which live sessions are bound to what.
 
 ```
 /project create myapp --target /path/to/code -d "Description"
@@ -98,7 +103,9 @@ Projects are opt-in named workspaces that corral analysis runs into a shared dir
 /project unset <key>           # remove a setting
 /project get <key>             # bare value on stdout; exit 1 if unset
 /project clean --keep 3        # delete old runs
-/project none                  # clear active project
+/project sessions              # live sessions and their bindings
+/project none                  # clear THIS SESSION's project (the
+                               #   last-activated default is untouched)
 ```
 
 **Trust markers** are operator assertions persisted on the project (never auto-set, never read from the scanned repo): `config` = the `--trust-repo` umbrella (cc_trust + codeql_trust), `build` = traced-build CodeQL extraction (`--traced-build`), `dynamic` = dynamic validation (`config.dynamic_validation`). `/agentic` and `/codeql` consume them at start alongside the persisted binaries; the audit pipeline consumes `dynamic`. Per-run flags always win in both directions (`--no-trust-repo` / `--no-traced-build` / `--no-dynamic` > positive flag > marker > off), a banner line prints whenever a marker affects a run, and `build` does NOT imply `config`.
@@ -111,19 +118,19 @@ See `/project help` for full command list.
 
 When a command like `/scan`, `/agentic`, `/validate`, `/codeql`, or `/fuzz` is run **without a path argument**, resolve the default target in this order:
 
-1. **Active project target:** the run lifecycle script reads the `.active` symlink to find the project target automatically
+1. **Active project target:** the run lifecycle script resolves THIS SESSION's project (session binding first, then the last-activated `.active` default) and uses its target automatically
 2. **Caller's directory:** if `$RAPTOR_CALLER_DIR` is set (launcher saves the user's cwd before switching to the RAPTOR repo dir), use it
 3. **Ask the user** for the target path
 
 Do not use the current working directory as a fallback — it is always the RAPTOR repo dir, not the user's target. Do not use any of these if the user already specified a path.
 
 **Volatile-target sanity gate (default resolution only):** when the active project's target is scratch/volatile — the system temp dir itself (`/tmp`, `/var/tmp`), a nonexistent path, or an empty directory — the mechanical default resolution (`core.run.output.resolve_default_target`) refuses with a loud banner instead of steering the run at scratch space (a stale machine-generated `corpus-*` project once left `/tmp` as the active target). When you hit this banner on a no-path command, present a structured choice (see INTERACTIVE PROMPTS; gate with `libexec/raptor-may-ask` first):
-1. **Pick the real target (Recommended)** — ask for / confirm the intended codebase path and re-run the command with it explicitly; also offer `/project use none` (or the right project) to fix the session.
+1. **Pick the real target (Recommended)** — ask for / confirm the intended codebase path and re-run the command with it explicitly; also offer `/project none` (or `/project use <right-project>`) to fix the session.
 2. **Proceed against the volatile target** — re-run with the volatile path passed explicitly (explicit paths always bypass the gate).
 
 **Non-interactive fallback:** refuse — report the banner and stop; do not pick a target on the operator's behalf.
 
-Machine-generated `corpus-*` projects also carry a creation-time auto-expiry marker consumed at `.active` resolution — one left active by a crashed corpus run deactivates itself after the TTL. Expiry never applies to operator-named projects, and an explicit `/project use <name>` clears the marker (operator ownership).
+Machine-generated `corpus-*` projects also carry a creation-time auto-expiry marker consumed at active-project resolution on BOTH layers — an expired session binding re-binds to none (the machine-wide default is never collateral), an expired default unlinks. Expiry never applies to operator-named projects, and an explicit `/project use <name>` clears the marker (operator ownership).
 
 ---
 
@@ -147,7 +154,7 @@ libexec/raptor-run-lifecycle complete "$OUTPUT_DIR"
 libexec/raptor-run-lifecycle fail "$OUTPUT_DIR" "error description"
 ```
 
-The `start` command automatically resolves the output directory using the active project (via `.active` symlink) or the default `out/` directory. Do not construct output paths manually.
+The `start` command automatically resolves the output directory using this session's project (session binding, then the last-activated default) or the default `out/` directory, and PINS the run to that project for its whole lifetime. Do not construct output paths manually.
 
 **If `start` fails (non-zero exit):** STOP. Report the error to the user. Do not proceed with the command.
 
@@ -157,7 +164,7 @@ Commands run via `python3 raptor.py` (scan, agentic, codeql, fuzz, web) manage l
 
 ### Coverage tracking
 
-The coverage tracking plugin (`plugins/coverage/`) tracks which source files the LLM reads during analysis via a PostToolUse hook. Loaded automatically by the launcher. Logs file paths to a `.reads-manifest` in the active run directory, converted to a `coverage-read.json` record when the run completes. Zero overhead when no run is active.
+The coverage tracking plugin (`plugins/coverage/`) tracks which source files the LLM reads during analysis via a PostToolUse hook. Loaded automatically by the launcher. The hook resolves THIS SESSION's live run via the session run ledger — project, `--out`, and standalone runs all get read-coverage (a project is no longer required) — logging file paths to a `.reads-manifest` in that run directory, converted to a `coverage-read.json` record when the run completes. Zero overhead when no run is active.
 
 ---
 
@@ -448,10 +455,10 @@ The verdict flows through the existing reachability chokepoint: /codeql + /agent
 - Sandbox isolation: r2 runs under `core.sandbox.run` (namespace + Landlock + network deny); the oracle's binutils invocations (readelf, nm, objdump, c++filt) run under the full sandbox as well.
 
 **E2E + precision verification**:
-- `libexec/raptor-binary-oracle-e2e` — single-invocation audit that builds a real C target and walks 14 consumer surfaces (~50 assertions). No LLM calls. Run via `bin/raptor` or `CLAUDECODE=1 libexec/...`.
-- `libexec/raptor-binary-oracle-precision --corpus <name>` — re-measure absent-precision on any corpus driver (synthetic/zlib/libsodium/snappy/leveldb/regex-rust/zstd_holdout). Report includes per-corpus cross-tab (classifier × gcov live/dead), aggregate with rule-of-three UB, n-concentration dominator detection, and the toolchain block (cc/gcov/llvm-cov versions) so the precision number is reproducible.
+- `core/analysis/scripts/binary-oracle-e2e` — single-invocation audit that builds a real C target and walks 14 consumer surfaces (~50 assertions). No LLM calls. Run with `CLAUDECODE=1 core/analysis/scripts/binary-oracle-e2e`. (Verification harnesses live in a `scripts/` subdirectory beside the code they audit — never on the `libexec/` LLM dispatch surface.)
+- `core/analysis/scripts/binary-oracle-precision --corpus <name>` — re-measure absent-precision on any corpus driver (synthetic/zlib/libsodium/snappy/leveldb/regex-rust/zstd_holdout). Report includes per-corpus cross-tab (classifier × gcov live/dead), aggregate with rule-of-three UB, n-concentration dominator detection, and the toolchain block (cc/gcov/llvm-cov versions) so the precision number is reproducible.
 
-**Skill location**: `core/analysis/binary_oracle.py` (classifier), `core/analysis/binary_oracle_autodetect.py` (auto-detect), `core/analysis/binary_oracle_precision.py` (measurement harness — `libexec/raptor-binary-oracle-precision` CLI shim runs it). Design + validation writeup: `~/design/binary-oracle-reachability.md` §9-11.
+**Skill location**: `core/analysis/binary_oracle.py` (classifier), `core/analysis/binary_oracle_autodetect.py` (auto-detect), `core/analysis/binary_oracle_precision.py` (measurement harness — the `core/analysis/scripts/binary-oracle-precision` shim runs it). Design + validation writeup: `~/design/binary-oracle-reachability.md` §9-11.
 
 ---
 

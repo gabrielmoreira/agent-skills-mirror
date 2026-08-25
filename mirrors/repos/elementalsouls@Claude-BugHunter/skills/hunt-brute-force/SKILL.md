@@ -2,7 +2,7 @@
 name: hunt-brute-force
 description: "Hunt Missing/Weak Rate Limiting — login brute force, OTP/2FA brute force (10^6 keyspace), password-reset-token brute, credential stuffing, username/email enumeration via error-string / status-code / timing differences, weak password policy, missing CAPTCHA (CAPTCHA token replay / single-use / concurrency-window bypass specifics → hunt-captcha-bypass), IP-based rate-limit bypass via X-Forwarded-For and friends, ReDoS. Distinguishes hard lockout vs soft IP-throttle vs CAPTCHA-injection vs silent shadow-throttling (avoids false-negative 'no rate limit' conclusions). Medium to Critical depending on what the brute reaches (OTP→ATO = Critical)."
 sources: public_research
-report_count: 0
+report_count: 6
 ---
 
 # HUNT-BRUTE-FORCE — Rate Limiting / Brute Force / Enumeration
@@ -162,6 +162,9 @@ curl -s -X POST "https://$TARGET/forgot-password" -d "email=$VALID_USER"   | gre
 curl -s -X POST "https://$TARGET/forgot-password" -d "email=$INVALID_USER" | grep -i "sent\|exist\|not found\|registered"
 curl -s -X POST "https://$TARGET/api/register"   -d "email=$VALID_USER"    | grep -i "exist\|taken\|already"
 ```
+
+### Phase 3b — Unthrottled registration (mass account creation)
+An unrate-limited signup endpoint is an abuse finding on its own, not just an enumeration oracle: burst `*/signup`/`*/register` (rotate email + source per request) and confirm N accounts are actually created with no 429/CAPTCHA/lockout → automated mass-account creation (spam, promo/referral abuse, resource exhaustion). Low–Medium standalone; higher when it chains to a paid/limited resource. Disclosed: reports/2915502.
 
 ### Phase 4 — IP / Source Rotation Bypass
 ```bash

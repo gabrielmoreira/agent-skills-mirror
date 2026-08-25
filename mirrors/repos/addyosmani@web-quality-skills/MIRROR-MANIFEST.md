@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/web-quality-skills` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `addyosmani/web-quality-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `addyosmani/web-quality-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,13 +65,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/accessibility/references/A11Y-PATTERNS.md`](skills/accessibility/references/A11Y-PATTERNS.md) |
 | 5 | ✓ | [`skills/accessibility/references/WCAG.md`](skills/accessibility/references/WCAG.md) |
 | 6 | ✓ | [`skills/accessibility/SKILL.md`](skills/accessibility/SKILL.md) |
-| 7 | ✓ | [`skills/best-practices/SKILL.md`](skills/best-practices/SKILL.md) |
-| 8 | ✓ | [`skills/core-web-vitals/references/LCP.md`](skills/core-web-vitals/references/LCP.md) |
-| 9 | ✓ | [`skills/core-web-vitals/SKILL.md`](skills/core-web-vitals/SKILL.md) |
-| 10 | ✓ | [`skills/performance/SKILL.md`](skills/performance/SKILL.md) |
-| 11 | ✓ | [`skills/seo/SKILL.md`](skills/seo/SKILL.md) |
-| 12 | ✓ | [`skills/web-quality-audit/scripts/analyze.sh`](skills/web-quality-audit/scripts/analyze.sh) |
-| 13 | ✓ | [`skills/web-quality-audit/SKILL.md`](skills/web-quality-audit/SKILL.md) |
+| 7 | ✓ | [`skills/best-practices/references/SECURITY.md`](skills/best-practices/references/SECURITY.md) |
+| 8 | ✓ | [`skills/best-practices/SKILL.md`](skills/best-practices/SKILL.md) |
+| 9 | ✓ | [`skills/core-web-vitals/references/CLS.md`](skills/core-web-vitals/references/CLS.md) |
+| 10 | ✓ | [`skills/core-web-vitals/references/INP.md`](skills/core-web-vitals/references/INP.md) |
+| 11 | ✓ | [`skills/core-web-vitals/references/LCP.md`](skills/core-web-vitals/references/LCP.md) |
+| 12 | ✓ | [`skills/core-web-vitals/SKILL.md`](skills/core-web-vitals/SKILL.md) |
+| 13 | ✓ | [`skills/performance/references/MEASUREMENT.md`](skills/performance/references/MEASUREMENT.md) |
+| 14 | ✓ | [`skills/performance/references/RUM.md`](skills/performance/references/RUM.md) |
+| 15 | ✓ | [`skills/performance/SKILL.md`](skills/performance/SKILL.md) |
+| 16 | ✓ | [`skills/seo/references/STRUCTURED-DATA.md`](skills/seo/references/STRUCTURED-DATA.md) |
+| 17 | ✓ | [`skills/seo/SKILL.md`](skills/seo/SKILL.md) |
+| 18 | ✓ | [`skills/web-quality-audit/scripts/analyze.sh`](skills/web-quality-audit/scripts/analyze.sh) |
+| 19 | ✓ | [`skills/web-quality-audit/SKILL.md`](skills/web-quality-audit/SKILL.md) |
 
 ---
 

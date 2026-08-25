@@ -640,6 +640,10 @@ start_heartbeat() {
   case "$every" in ''|*[!0-9]*) every=60 ;; esac; [ "$every" -lt 1 ] && every=1
   _HEARTBEAT_READY=0
   trap '_HEARTBEAT_READY=1' USR1
+  # Callers restore set +m after launching the peer, so without this the
+  # heartbeat inherits the worker pgid and kill -- -PID cannot reach the sleep.
+  local prev_m; case "$-" in *m*) prev_m=1;; *) prev_m=0;; esac
+  set -m
   ( local t0 n sleeper=""
     trap 'kill "${sleeper:-}" 2>/dev/null || true; exit 0' TERM INT
     kill -USR1 "$parent_pid"
@@ -652,12 +656,15 @@ start_heartbeat() {
       n="$(date +%s)"; log "peer alive ($(( n - t0 ))s elapsed)"
     done ) &
   _HEARTBEAT_PID=$!
+  [ "$prev_m" = 0 ] && set +m
   while [ "$_HEARTBEAT_READY" != 1 ] && kill -0 "$_HEARTBEAT_PID" 2>/dev/null; do sleep 0.01 || true; done
   trap - USR1
 }
 stop_heartbeat() {
   if [ -n "$_HEARTBEAT_PID" ]; then
-    kill "$_HEARTBEAT_PID" 2>/dev/null || true
+    # Leader-only TERM is deferred until the inner `wait $sleeper` returns, so
+    # the default 60s interval would block this wait. Signal the process group.
+    kill -- -"$_HEARTBEAT_PID" 2>/dev/null || kill "$_HEARTBEAT_PID" 2>/dev/null || true
     wait "$_HEARTBEAT_PID" 2>/dev/null || true
   fi
   _HEARTBEAT_PID=""

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 23 followed patterns, 175 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 24 followed patterns, 176 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 23 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 23 |
-| Files         | 175 |
+| Followed pats | 24 |
+| Files         | 176 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,6 +69,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 23 followed patterns, 1
 - `backend/docs/IM_CHANNEL_CONNECTIONS.md`
 - `docker/lark-cli-init/README.md`
 - `docs/plans/2026-07-10-pluggable-authorization-rfc.md`
+- `docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`
 - `docs/OPENVIKING.md`
 - `backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`
 - `backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`
@@ -248,14 +249,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 165 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | 166 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
 | 167 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 168 | → | [`Install.md`](Install.md) |
-| 169 | → | [`README_fr.md`](README_fr.md) |
-| 170 | → | [`README_ja.md`](README_ja.md) |
-| 171 | → | [`README_ru.md`](README_ru.md) |
-| 172 | → | [`README_zh.md`](README_zh.md) |
-| 173 | → | [`README.md`](README.md) |
-| 174 | → | [`RELEASING.md`](RELEASING.md) |
-| 175 | → | [`SECURITY.md`](SECURITY.md) |
+| 168 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
+| 169 | → | [`Install.md`](Install.md) |
+| 170 | → | [`README_fr.md`](README_fr.md) |
+| 171 | → | [`README_ja.md`](README_ja.md) |
+| 172 | → | [`README_ru.md`](README_ru.md) |
+| 173 | → | [`README_zh.md`](README_zh.md) |
+| 174 | → | [`README.md`](README.md) |
+| 175 | → | [`RELEASING.md`](RELEASING.md) |
+| 176 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

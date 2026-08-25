@@ -42,10 +42,12 @@ stats、LRU 缓存、后台 worker、限流窗口全是**进程内单例**，只
 
 分两层做，顺序不能反：
 
-1. **必做（S）**：启动时把 pid 与实例标识写进日志和 `/health`；能读到 `WEB_CONCURRENCY` 或 `--workers` 时打 ERROR 级告警；README 与部署文档写明「仅支持单进程」。
+1. ~~**必做（S）**：启动时把 pid 与实例标识写进日志和 `/health`；能读到 `WEB_CONCURRENCY` 或 `--workers` 时打 ERROR 级告警；README 与部署文档写明「仅支持单进程」。~~
+   **已完成** —— 见 `aegisgate/core/process_identity.py`：启动日志与 `/health`、`/ready` 都带 `pid` 与 `instance`；
+   命中 `WEB_CONCURRENCY` / `UVICORN_WORKERS` / `GUNICORN_WORKERS` / `GUNICORN_CMD_ARGS` / `--workers N` 时打 ERROR 并在探针 body 里带 `multiprocess_warning`。
 2. **视需求（XL）**：确有水平扩展需求时，再把进程内单例改造为跨进程安全（Redis 后端天然可用）。
 
-不要把「检测到多进程就拒绝启动」当成唯一防线：worker 子进程通常看不到父进程的启动参数，会同时制造「检测不到 → 静默破裂」和「误检测 → 无法启动」两种反向故障。可靠的那一层是告警与文档。
+不要把「检测到多进程就拒绝启动」当成唯一防线：worker 子进程通常看不到父进程的启动参数，会同时制造「检测不到 → 静默破裂」和「误检测 → 无法启动」两种反向故障。可靠的那一层是告警与文档，第 1 层就是按这个口径实现的——只告警，不阻止启动。
 
 ### R5 — 可部署性打磨（M）
 
@@ -53,26 +55,23 @@ stats、LRU 缓存、后台 worker、限流窗口全是**进程内单例**，只
 - compose 与 Dockerfile 都缺 `healthcheck` / `HEALTHCHECK`，容器挂死时编排层看不出来。
 - Dockerfile 先 `COPY` 源码、后 `pip install`，任何源码改动都会击穿依赖层缓存；镜像里还带着 `aegisgate/tests`。调整 COPY 顺序并排除测试即可，属纯收益改动。
 
-### R6 — 风险阈值与 `block` 语义的一致性（M，**需先决策**）
+### R6 — 风险阈值与 `block` 语义的一致性（M）
 
-两处实测行为与文档/控制台呈现出的语义不一致。都属于「行为变更」，要单独 PR、单独回归，不要混进文档 PR。
+1. ~~**`medium` 也参与阈值缩放**~~ **已完成**：`medium` 的阈值系数改为 `1.00`（中性档，
+   原样使用策略 YAML 声明值）。此前 ×1.30 在三个自带策略上都 clamp 到 1.0，与 `low` 完全等价，
+   且基于分数的拦截分支永不触发。选择改系数而非改 `default.yaml`，是因为前者一次修好三个策略
+   （改 YAML 只修 `default`，`permissive` 仍会 medium≡low）。
+   `count_threshold_multiplier` 与 `floor_multiplier` **未改**：两者都不受上限 clamp，
+   没有造成档位坍缩，各自是独立的调节项。守护见 `aegisgate/tests/test_security_level_tiers.py`。
 
-1. **`medium` 也参与阈值缩放**。`policy_engine.resolve()` 对所有档位都调 `apply_threshold()`，
-   `medium` 的系数是 `1.30`。配 `default` 策略（`risk_threshold: 0.85`）时
-   `0.85 × 1.30 = 1.105`，clamp 后是 **1.0**；`low`（×1.60）同样是 1.0。于是：
-
-   - `low` 与 `medium` 在默认策略下**完全等价**，与「三档分层」的产品语义不符；
-   - `action_map` 的 `block` 最高把风险分抬到 `0.95`，所以 `OutputSanitizer` 里
-     `risk_score >= max(ctx.risk_threshold, self._block_threshold)` 这条**基于分数**的拦截分支
-     在默认配置下永不触发。
-
-   要么把 `medium` 的系数改回 `1.0`，要么把 `default.yaml` 的 `risk_threshold` 降到缩放后仍
-   `< 1.0` 的值。改哪个都会**提高**默认部署的拦截率，需要评估误拦。
-
-2. **`block` 在不同 filter 里语义不同**。`injection_detector` 与 `rag_poison_guard` 的 `block`
-   直接设置 `request_disposition` / `response_disposition`（不依赖阈值）；`restoration` 与
-   `sanitizer` 的 `block` 只做 `risk_score = max(..., 0.95)`，仍受阈值约束——叠加上面第 1 点，
-   在默认配置下不会拦截。控制台「动作映射」页把这四种动作呈现为统一语义，用户无从看出差别。
+2. **`block` 在不同 filter 里语义仍不统一**（未解决）。`injection_detector` 与
+   `rag_poison_guard` 的 `block` 直接设置 `request_disposition` / `response_disposition`，
+   **任何档位都强制拦截**；`restoration` 与 `sanitizer` 的 `block` 只做
+   `risk_score = max(..., 0.95)`，**仍受阈值约束**。
+   第 1 点修好之后，后者在 `medium` / `high` 下会真正拦截，在 `low` + `default`/`permissive`
+   下不会——差别从「永远不拦」变成「按档位」，但两类 `block` 的语义差异本身依然存在。
+   控制台「动作映射」页把它们呈现为统一语义，用户无从看出差别。收敛方式有两条路：
+   把后者也改为设置 disposition，或在控制台按「强制」/「按阈值」分开呈现。
 
 ### R7 — 无消费者的配置项（S）
 
@@ -87,16 +86,40 @@ stats、LRU 缓存、后台 worker、限流窗口全是**进程内单例**，只
 - `require_confirmation_on_block` 仍保留在 `Settings` 里做配置兼容（不在控制台开放）。确认没有
   部署依赖旧键之后可以删除。
 
+### R8 — 请求侧脱敏的六执行面收敛（M–L，**部分需先决策**）
+
+请求侧脱敏当前是**六个执行面**，不是「V1 / V2」两桶。生效面已由 `core/request_redaction_settings.py`
+的 `SURFACES` 服务端算好并在控制台呈现，README / README_zh / config/README 也已按这个模型改写；
+剩下的是把模型分裂本身消掉。以下四条原先只记录在本地未入库的实施规格里，现在收进这里。
+
+1. ~~**V2 的 relaxed 集配置化**~~ **已完成**。V2 现在与 V1 读同一个 `redaction.relaxed_pii_ids`，
+   `V2_RELAXED_PII_IDS` 已删除。实测两侧在 `pii_patterns` 口径上只差 `COOKIE_SESSION` 一项
+   （`AUTH_BEARER` / `FIELD_SECRET` 属 `field_value_patterns` 层，两侧本就恒跑），因此把
+   `COOKIE_SESSION` 并入共享默认集即可完成收敛，**两侧都不丢覆盖**。守护见
+   `aegisgate/tests/test_relaxed_pii_convergence.py`。
+2. ~~**转发层判据从按角色改为按路由**~~ **已完成**。原先的角色推导集合含全部真实角色，
+   等价于「永远 relaxed」；multipart 因此出现「全量集打分、relaxed 集改写」的分歧。
+   现在五个转发入口都接收 `route` 并内部推导，`relaxed_patterns` 改为必填参数，
+   角色集合已删除。守护见 `aegisgate/tests/test_forward_redaction_route_derived.py`。
+3. **field 规则语义跨 V1/V2 统一**：默认列表与显式列表的关系、`field_value_min_len` 各层下限不同；
+   顺带把精确值脱敏的覆盖面扩到 V1 结构化内容、通用 JSON 与 multipart（目前只覆盖扁平消息文本）。
+4. **按执行层 / 规则 ID 的命中统计**。控制台现在的统计卡是去重后的唯一值数且含 field 规则，
+   无法回答「哪条规则在哪一层命中了多少次」。
+
+另有两条与 R3 重叠、不重复展开：不可变规则快照 + 请求级 generation 绑定（V2 侧目前没有等价的请求
+上下文，需新建一套），以及带运行时超时保证的正则引擎。
+
 ## 单点待办
 
 - **messages / generic 的 EOF 恢复**：上游 EOF 且无 `[DONE]` 时，chat / responses 会补一条断开提示，messages / generic 没有该分支（见 CHANGELOG 中「EOF 无 `[DONE]`」条目，这是记录在案的当前行为）。补上属于**新增行为**而非缺陷修复，要单独评估客户端兼容性，不要混进 bug 修复 PR。
 - **TF-IDF 资产去留**：`aegisgate/models/tfidf/` 目前定位是「保留的离线实验资产」。这是产品决策 —— 要么接回主链路并给出评估口径，要么整体下架，不要长期挂在中间态。
-- **README 与 UPSTREAM-QUICKSTART 的上游章节仍有重复**：`README_zh.md §上游接入` 与
-  `UPSTREAM-QUICKSTART.md` 覆盖同一组事实（上游表、Base URL 表、`AEGIS_DOCKER_UPSTREAMS`、
-  Caddy 要点）。已加交叉链接，真正的收敛（README_zh 只留速查、细节全部下沉）还没做。
-- **CHANGELOG 结构**：`## [Unreleased]` 下 `### Added` / `### Changed` / `### Fixed` 各出现两次，
-  `### Breaking Changes` 被埋在中间；`## [Previous]` 更乱。文件顶部声明遵循 Keep a Changelog，
-  实际没有。合并同名小节是纯文本搬运，但 diff 很大，建议单独一个 PR 做。
+- ~~**README 与 UPSTREAM-QUICKSTART 的上游章节仍有重复**~~ **已完成**：`README_zh.md §上游接入`
+  只剩上游表 + 三场景判断依据 + 两条安全默认，Docker 服务名、网络连通性排查与 Caddy 要点全部
+  下沉到 `UPSTREAM-QUICKSTART.md`。
+- **CHANGELOG 结构**：`## [Unreleased]` 下同名小节反复出现 —— `### Added` ×5、`### Changed` ×6、
+  `### Fixed` ×3、`### Security` ×2，`### Breaking Changes` 被埋在中间；`## [Previous]` 更乱。
+  文件顶部原先声明遵循 Keep a Changelog 而实际没有版本节，该声明已改成如实描述当前结构。
+  真正的收敛（合并同名小节、切出带日期的版本节）是纯文本搬运，但 diff 很大，建议单独一个 PR 做。
 - **低优先级项**：日志脱敏粒度、权限窗口、局部性能与一致性问题，按需单独立项，不要顺手夹带进相邻 PR。
 
 ## 横切验收口径

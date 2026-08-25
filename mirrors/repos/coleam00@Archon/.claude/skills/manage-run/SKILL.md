@@ -8,7 +8,7 @@ description: |
   Triggers (control): "approve the plan", "approve run <id>", "reject that run", "cancel that run",
             "abandon run <id>", "resume run <id>", "continue that run".
   Triggers (start): "start <workflow> in the background", "kick off <workflow> detached".
-  Capability: Drives `archon workflow runs/get/status/run --detach/approve/reject/abandon/resume`
+  Capability: Drives `archon workflow runs/get/status/run --detach/approve/reject/cancel/abandon/resume`
             with machine-readable `--json` output, scoped to the current project by cwd.
   NOT for: Authoring workflows/commands, or Archon setup/config — use the broader `archon` skill.
 argument-hint: "[run-id or workflow] [comment]"
@@ -46,9 +46,8 @@ workflows, setup, or config, use the broader **`archon`** skill instead.
 | **Approve** a paused gate | `archon workflow approve <run-id> "looks good" --json` |
 | **Accept & complete** a loop gate with a completed condition | `archon workflow approve <run-id> --json` (NO comment) |
 | **Reject** a paused gate | `archon workflow reject <run-id> "fix X first" --json` |
-| **Cancel** a non-terminal run | `archon workflow abandon <run-id> --json` |
-
-> There is no separate `cancel` verb — `abandon` cancels a non-terminal run by id.
+| **Actively stop** a running CLI `--detach` run | `archon workflow cancel <run-id> --json` |
+| Mark a paused or verified-orphan run cancelled without stopping host work | `archon workflow abandon <run-id> --json` |
 
 ## Patterns
 
@@ -85,8 +84,8 @@ archon workflow approve <run-id> "ship it" --json   # records the approval (resu
 archon workflow resume <run-id>                      # execute it — run this as a BACKGROUND task
 archon workflow get <run-id> --json                  # poll until completed/failed
 ```
-If you only need to record the decision (e.g. cancel via reject) and don't need to
-drive the run forward, the `--json` step alone is enough. To approve **and** continue
+If you only need to record a gate decision and don't need to drive the resulting
+cancel-or-rework path forward, the `--json` step alone is enough. To approve **and** continue
 in one blocking call, drop `--json`: `archon workflow approve <run-id> "ship it"`
 auto-resumes (run it as a background task).
 

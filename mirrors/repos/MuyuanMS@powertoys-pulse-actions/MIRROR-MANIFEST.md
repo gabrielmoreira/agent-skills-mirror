@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MuyuanMS/powertoys-pulse-actions` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `MuyuanMS/powertoys-pulse-actions` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MuyuanMS/powertoys-pulse-actions` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/skills/powertoys-dashboard-update/SKILL.md`](.github/skills/powertoys-dashboard-update/SKILL.md) |
-| 2 | ✓ | [`.github/skills/powertoys-design-to-pr/SKILL.md`](.github/skills/powertoys-design-to-pr/SKILL.md) |
-| 3 | ✓ | [`.github/skills/powertoys-issue-to-design/SKILL.md`](.github/skills/powertoys-issue-to-design/SKILL.md) |
-| 4 | ✓ | [`.github/skills/powertoys-pr-review/SKILL.md`](.github/skills/powertoys-pr-review/SKILL.md) |
+| 1 | ✓ | [`.github/prompts/powertoys-issue-local-fix.prompt.md`](.github/prompts/powertoys-issue-local-fix.prompt.md) |
+| 2 | ✓ | [`.github/prompts/powertoys-pr-e2e-test.prompt.md`](.github/prompts/powertoys-pr-e2e-test.prompt.md) |
+| 3 | ✓ | [`.github/prompts/powertoys-pr-loop-review.prompt.md`](.github/prompts/powertoys-pr-loop-review.prompt.md) |
+| 4 | ✓ | [`.github/skills/powertoys-dashboard-update/SKILL.md`](.github/skills/powertoys-dashboard-update/SKILL.md) |
+| 5 | ✓ | [`.github/skills/powertoys-design-to-pr/SKILL.md`](.github/skills/powertoys-design-to-pr/SKILL.md) |
+| 6 | ✓ | [`.github/skills/powertoys-issue-to-design/SKILL.md`](.github/skills/powertoys-issue-to-design/SKILL.md) |
+| 7 | ✓ | [`.github/skills/powertoys-pr-review/SKILL.md`](.github/skills/powertoys-pr-review/SKILL.md) |
 
 ---
 

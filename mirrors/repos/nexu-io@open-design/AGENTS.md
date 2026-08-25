@@ -200,11 +200,13 @@ conservative behavior such as:
 - direct planner tests cover representative in-bound, out-of-bound, mixed, and
   fallback inputs without reimplementing the evaluator in another language.
 
-Keep scope routing and hash invalidation conceptually orthogonal: scope answers
-which test sets are necessary for a change, while hash answers whether the
-selected workload's declared inputs equal a previous invocation. New designs
-should not use hash equality to weaken source-to-test coverage or copy route
-policy into `.github/config/hash.json`.
+Keep scope routing and reusable-result convergence conceptually orthogonal:
+scope answers which test sets are necessary for a change, while convergence
+answers whether an identically declared workload already has a validated,
+reusable successful result. New designs should not use result availability to
+weaken source-to-test coverage or copy route policy into
+`.github/config/convergence.json`. Prefer productless reusable workloads; when a
+workload owns products, declare the complete typed reuse manifest with it.
 
 For work whose purpose is CI orchestration, start by inventorying the current
 chain from changed path to match, effect, workload, job command, and concrete

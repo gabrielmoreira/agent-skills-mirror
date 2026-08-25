@@ -102,6 +102,7 @@ For PR/branch work, a task-owned worktree is mandatory before implementation sta
 Solo orchestration with parallel background workers is the default topology. Decide once, when the wave's lanes are known, and record the verdict in the ledger:
 
 - **Independent lanes -> parallel workers.** Separate files, no shared contract: one parallel spawn burst; no team.
+- **Dependency-ordered lanes -> a dag run.** Sub-tasks with real ordering between them (C needs A and B finished first) and a harness with a native `dag` tool: dispatch the wave as ONE dag run — one producer node per lane plus a verification node — instead of a spawn burst, and watch the run's lifecycle instead of arming per-lane watchers. Read the `mass-ulw` skill's `SKILL.md` and `references/planning.md` IN FULL before defining any graph.
 - **Overlapping lanes -> a team.** The lanes touch the same module or contract AND running them concurrently actually finishes sooner: stand up a team (where the harness has one) so one lane's discoveries relay through you mid-flight.
 - **PR-mode independent lanes -> a worktree per lane.** Under `--make-pr`/`--ship`, when a wave holds independent checkboxes, give each lane its own branch and task-owned worktree, delivered as its own PR.
 
@@ -118,7 +119,7 @@ Landing rules, regardless of topology:
 3. Ignore nested checkboxes under acceptance criteria, evidence, and definition-of-done sections.
 4. Classify the checkbox tier and record it in its ledger entry. Default is LIGHT — a narrow change inside existing layers. Take HEAVY only on a fact you can point to: a new module / abstraction / domain model; auth, security, or session; an external integration; a DB schema or migration; concurrency or transaction boundaries; a cross-domain refactor; or the plan or user signals care. When unsure, take HEAVY; upgrade and redo skipped gates the moment a HEAVY fact surfaces; never downgrade.
 5. Decompose that checkbox into atomic sub-tasks sized for ONE worker in ONE run — a sub-task that would need mid-flight steering is two sub-tasks. Collect every other unchecked checkbox in the same plan wave whose dependencies are met — their lanes execute concurrently. A wave that could split further but holds fewer than 3 independent sub-tasks is under-split.
-6. **DELEGATE EVERYTHING. YOU NEVER IMPLEMENT.** Route every sub-task through the delegation router below, then dispatch ALL independent sub-tasks across those checkboxes in one parallel worker-spawn burst (a single batched spawn call where the harness supports it); serialize only named dependencies. Verification and checkbox marking stay per-checkbox.
+6. **DELEGATE EVERYTHING. YOU NEVER IMPLEMENT.** Route every sub-task through the delegation router below, then dispatch ALL independent sub-tasks across those checkboxes in one parallel worker-spawn burst (a single batched spawn call where the harness supports it); route named dependencies per the lane-topology decision above. Verification and checkbox marking stay per-checkbox.
 7. Give every dispatched sub-task its completion condition and watch for it per the section below. A dispatch whose completion nobody watches is an unfinished dispatch.
 
 ### Monitor every dispatched subagent to its completion condition

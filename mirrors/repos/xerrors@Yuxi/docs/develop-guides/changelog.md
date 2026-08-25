@@ -39,7 +39,7 @@ v0.7.2.beta1 包含不可逆的数据与文件布局迁移，主要影响历史�
 - 新增用户级 Memory：开启后仅主 Agent 可读取和受限更新 UserWorkspace 的 `agents/MEMORY.md`，并可按需搜索当前用户的普通历史对话；SubAgent、关闭开关和非法 Run owner 均不能使用该能力。
 - Sandbox 异步 `read_file` 改用 agent-sandbox 原生文件 API，保持同步读取的路径授权、类型错误和分页语义；图片流式执行大小限制并编码，HTTP client 由每次读取显式关闭。
 - AgentPanel 统一承载文件树、文件预览与子智能体线程 Tab，并按 Workdir、Workspace、artifact 三种身份选择读取接口；文件刷新只在可见运行期轮询，终态补读最终持久字节。
-- Web 补充流式文本平滑、知识库结果按真实文件身份分组、紧凑片段弹窗及首页/工作区展示优化；历史大块文本和 Run 终态仍立即收敛到完整内容。
+- Web 补充流式文本平滑、知识库结果按真实文件身份分组、紧凑片段弹窗及首页/工作区展示优化；超级管理员可开启对话 Debug 模式，在 Agent 侧栏按后端消息顺序查看、筛选、复制和展开原始消息 JSON，并从 Run 分组精确跳转到对应 Langfuse trace；历史大块文本和 Run 终态仍立即收敛到完整内容。
 - API Key 创建支持并发与响应丢失后的安全重放；删除用户、OIDC 恢复和旧库升级均保留不可复活 tombstone，API/CLI 创建与删除按 User 行锁串行化。三项安全密钥不可复用，Bash/PowerShell 均有原生负控。Web 错误对象不再携带任意服务端上下文。
 
 - 清理测试套件冗余：删除 5 个自证式/假绿/重复覆盖的测试文件（`test_hash_utils`、`test_skills_backend_error_handling`、`test_graph_router_list`、`test_agent_sync_e2e`、`test_viewer_filesystem_e2e`），合并约 50 个文件的重复场景与参数转发断言，抽取 eval 与 e2e 共享 helper；净减约 2,900 行测试代码，真实回归覆盖不变。

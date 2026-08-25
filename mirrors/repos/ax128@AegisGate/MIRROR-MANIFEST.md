@@ -57,8 +57,8 @@ Mirror of `ax128/AegisGate` — 26 default patterns, 8 followed patterns, 9 file
 - `WEBUI-QUICKSTART.md`
 - `OTHER_TERMINAL_CLIENTS_USAGE.md`
 - `config/README.md`
-- `ROADMAP.md`
 - `CHANGELOG.md`
+- `ROADMAP.md`
 
 ## File Index
 

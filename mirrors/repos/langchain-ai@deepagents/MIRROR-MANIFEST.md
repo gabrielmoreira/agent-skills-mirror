@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 7 followed patterns, 61 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 7 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 61 |
+| Followed pats | 6 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,7 +56,6 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 7 followed patterns
 - `.github/RELEASING.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `libs/code/DEVELOPMENT.md`
-- `libs/cli/DEVELOPMENT.md`
 - `.github/LAYOUT.md`
 
 ## File Index
@@ -92,40 +91,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`examples/text-to-sql-agent/AGENTS.md`](examples/text-to-sql-agent/AGENTS.md) |
 | 26 | ✓ | [`examples/text-to-sql-agent/skills/query-writing/SKILL.md`](examples/text-to-sql-agent/skills/query-writing/SKILL.md) |
 | 27 | ✓ | [`examples/text-to-sql-agent/skills/schema-exploration/SKILL.md`](examples/text-to-sql-agent/skills/schema-exploration/SKILL.md) |
-| 28 | ✓ | [`libs/cli/examples/deploy-content-writer/AGENTS.md`](libs/cli/examples/deploy-content-writer/AGENTS.md) |
-| 29 | ✓ | [`libs/cli/examples/deploy-content-writer/skills/blog-post/SKILL.md`](libs/cli/examples/deploy-content-writer/skills/blog-post/SKILL.md) |
-| 30 | ✓ | [`libs/cli/examples/deploy-content-writer/skills/social-media/SKILL.md`](libs/cli/examples/deploy-content-writer/skills/social-media/SKILL.md) |
-| 31 | ✓ | [`libs/cli/examples/skills/arxiv-search/SKILL.md`](libs/cli/examples/skills/arxiv-search/SKILL.md) |
-| 32 | ✓ | [`libs/cli/examples/skills/langgraph-docs/SKILL.md`](libs/cli/examples/skills/langgraph-docs/SKILL.md) |
-| 33 | ✓ | [`libs/cli/examples/skills/skill-creator/SKILL.md`](libs/cli/examples/skills/skill-creator/SKILL.md) |
-| 34 | ✓ | [`libs/cli/examples/skills/web-research/SKILL.md`](libs/cli/examples/skills/web-research/SKILL.md) |
-| 35 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/bare/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/bare/AGENTS.md) |
-| 36 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/subagent_with_local_skills/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/subagent_with_local_skills/AGENTS.md) |
-| 37 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/subagent_with_local_skills/subagents/researcher/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/subagent_with_local_skills/subagents/researcher/AGENTS.md) |
-| 38 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/subagent_with_local_skills/subagents/researcher/skills/note/SKILL.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/subagent_with_local_skills/subagents/researcher/skills/note/SKILL.md) |
-| 39 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/with_skills/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/with_skills/AGENTS.md) |
-| 40 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/with_skills/skills/summarize/SKILL.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/with_skills/skills/summarize/SKILL.md) |
-| 41 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/with_subagents/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/with_subagents/AGENTS.md) |
-| 42 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/with_subagents/subagents/researcher/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/with_subagents/subagents/researcher/AGENTS.md) |
-| 43 | ✓ | [`libs/cli/tests/unit_tests/deploy/fixtures/projects/with_tools/AGENTS.md`](libs/cli/tests/unit_tests/deploy/fixtures/projects/with_tools/AGENTS.md) |
-| 44 | ✓ | [`libs/code/AGENTS.md`](libs/code/AGENTS.md) |
-| 45 | ✓ | [`libs/code/ARCHITECTURE.md`](libs/code/ARCHITECTURE.md) |
-| 46 | ✓ | [`libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md`](libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md) |
-| 47 | ✓ | [`libs/code/deepagents_code/built_in_skills/remember/SKILL.md`](libs/code/deepagents_code/built_in_skills/remember/SKILL.md) |
-| 48 | ✓ | [`libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md`](libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md) |
-| 49 | ✓ | [`libs/code/examples/skills/arxiv-search/SKILL.md`](libs/code/examples/skills/arxiv-search/SKILL.md) |
-| 50 | ✓ | [`libs/code/examples/skills/langgraph-docs/SKILL.md`](libs/code/examples/skills/langgraph-docs/SKILL.md) |
-| 51 | ✓ | [`libs/code/examples/skills/skill-creator/SKILL.md`](libs/code/examples/skills/skill-creator/SKILL.md) |
-| 52 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
-| 53 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
-| 54 | ✓ | [`libs/partners/AGENTS.md`](libs/partners/AGENTS.md) |
-| 55 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
-| 56 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 57 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 58 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
-| 59 | → | [`libs/cli/DEVELOPMENT.md`](libs/cli/DEVELOPMENT.md) |
-| 60 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
-| 61 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
+| 28 | ✓ | [`libs/code/AGENTS.md`](libs/code/AGENTS.md) |
+| 29 | ✓ | [`libs/code/ARCHITECTURE.md`](libs/code/ARCHITECTURE.md) |
+| 30 | ✓ | [`libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md`](libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md) |
+| 31 | ✓ | [`libs/code/deepagents_code/built_in_skills/remember/SKILL.md`](libs/code/deepagents_code/built_in_skills/remember/SKILL.md) |
+| 32 | ✓ | [`libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md`](libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md) |
+| 33 | ✓ | [`libs/code/examples/skills/arxiv-search/SKILL.md`](libs/code/examples/skills/arxiv-search/SKILL.md) |
+| 34 | ✓ | [`libs/code/examples/skills/langgraph-docs/SKILL.md`](libs/code/examples/skills/langgraph-docs/SKILL.md) |
+| 35 | ✓ | [`libs/code/examples/skills/skill-creator/SKILL.md`](libs/code/examples/skills/skill-creator/SKILL.md) |
+| 36 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
+| 37 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
+| 38 | ✓ | [`libs/partners/AGENTS.md`](libs/partners/AGENTS.md) |
+| 39 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
+| 40 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 41 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 42 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
+| 43 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
+| 44 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
 
 ---
 

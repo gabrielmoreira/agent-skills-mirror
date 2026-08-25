@@ -143,7 +143,7 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 
 **发版纪律（硬规则）：** 禁止自动发版——`git push` + `git tag` 必须等用户明确指示后才执行；commit 可正常进行。不要手动创建 GitHub Release（CI 自动创建）。不要删除 / 重建已发布的 release tag（会把 Release 打回 Draft）。
 
-**构建：** macOS 产出 DMG（arm64 + x64），Windows 产出 NSIS 安装包（x64），Linux 在原生 Ubuntu 22.04 runner 产出 AppImage / deb / rpm（arm64 + x64）；任一目标失败都会阻断正式 Release。Windows 构建机器钉在 `windows-2022`（tech-debt #44）。`scripts/after-pack.js` 重编译 better-sqlite3 为 Electron ABI。构建前使用受保护的清理脚本清理 `release/ .next/ dist-electron/`。
+**构建：** stable tag 同时发布 macOS arm64/x64 DMG/ZIP、universal updater ZIP、Windows NSIS 与 Linux x64/arm64 AppImage/deb/rpm；只有 macOS 嵌入 official updater provenance 并发布 `latest-mac.yml`/ZIP blockmap，Windows/Linux 仅作手动下载，不上传各自 updater metadata。Mac 任一签名、公证、Gatekeeper、ABI 或 Intel 门禁，以及任一平台 package health/asset audit 失败，都会阻断正式 Release。Windows signer 三件套全有时执行 Authenticode；全部未配置时显式产出未签名手动包并验证 `NotSigned`，半配置时 fail closed。Windows 构建机器钉在 `windows-2022`（tech-debt #44）。preview Release 仍为 macOS-only。`scripts/after-pack.js` 重编译 better-sqlite3 为 Electron ABI。构建前使用受保护的清理脚本清理 `release/ .next/ dist-electron/`。
 
 ## 执行计划
 

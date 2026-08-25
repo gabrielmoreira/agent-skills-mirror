@@ -1,10 +1,10 @@
 # senpi-task - Senpi Task State Machine + Tool Surface
 
-**Generated:** 2026-07-17 / 7d664b96b
+**Generated:** 2026-08-24 / f3642fcda
 
 ## OVERVIEW
 
-The Senpi-coupled engine behind the `omo-senpi` task component: a durable task state machine, a persistent record store, two child runners (in-process and RPC process), a residency/TTL/reconcile lifecycle, an exactly-once completion notifier, a steering engine, a named-team runtime, and the 4 task + 7 lead-team `ToolDefinition`s. Package: `@oh-my-opencode/senpi-task` (private, `sideEffects: false`). `@code-yeongyu/senpi` and `typebox` are optional peers (`package.json:25`) so pure state/store/schema code stays runnable without a live Senpi import; runner and tool code that needs the Senpi surface is isolated. Do not import `packages/omo-opencode` from here.
+The Senpi-coupled engine behind the `omo-senpi` task component: a durable task state machine, a persistent record store, two child runners (in-process and RPC process), a residency/TTL/reconcile lifecycle, an exactly-once completion notifier, a steering engine, a named-team runtime, and the 4 task + 7 lead-team `ToolDefinition`s. Package: `@oh-my-opencode/senpi-task` (private, `sideEffects: false`). `@code-yeongyu/senpi` and `typebox` are optional peers (`package.json:62`) so pure state/store/schema code stays runnable without a live Senpi import; runner and tool code that needs the Senpi surface is isolated. Do not import `packages/omo-opencode` from here.
 
 ## ANATOMY
 
@@ -18,6 +18,7 @@ The Senpi-coupled engine behind the `omo-senpi` task component: a durable task s
 | Completion | `src/completion/` | `createCompletionNotifier` + `routeCompletion` - the exactly-once wake/deliver/buffer/queue routing table (`completion/routing.ts`). |
 | Steering | `src/steering/` | `createSteeringEngine` - send / interrupt / cancel against a live or resident child. |
 | Team | `src/team/` | Named-team registry, normalize/validate, durable mailboxes with injection-driven delivery, lead poller, member self-polling extension, tasklist, shutdown handshake, and runtime (`team/runtime.ts`). |
+| DAG | `src/dag/` | Wave-based multi-node DAG engine: `compileDag` -> `createDagScheduler` strict-barrier waves, filesystem WAL journal + checkpoints, fingerprint-keyed run reuse/amendment, node retry/send, crash recovery, skill materialization. Full map: [`src/dag/AGENTS.md`](src/dag/AGENTS.md). |
 | Tools | `src/tools/` | `task/` (single or `tasks:[...]` batch spawn), `control/` (`task_send`/`task_cancel`), `output/` (`task_output`), `team/` (the 6 lead-only team tools). |
 | Agents | `src/agents/` | `loadAgents` + `mapOmoConfigAgents` - omo.json agent definitions to task-tool targets - plus the builtin curated agents (`agents/builtin/`) and `resolveAgent` agent-aware model/persona resolution. |
 | Category | `src/category/` | `resolveCategory` + per-provider builtin category tables (anthropic/openai/google/kimi), including the `requiresModel` activation gate. |
@@ -29,12 +30,12 @@ The Senpi-coupled engine behind the `omo-senpi` task component: a durable task s
 
 | Tool | Factory | File |
 |------|---------|------|
-| `task` | `createTaskTool` | `tools/task/tool.ts:9` (`TASK_TOOL_NAME`) |
+| `task` | `createTaskTool` | `tools/task/tool.ts:10` (`TASK_TOOL_NAME`) |
 | `task_send` | `createTaskSendTool` | `tools/control/send.ts` |
-| `task_cancel` | `createTaskCancelTool` | `tools/control/cancel.ts:61` |
+| `task_cancel` | `createTaskCancelTool` | `tools/control/cancel.ts:60` |
 | `task_output` | `createTaskOutputTool` | `tools/output/output.ts` |
 
-`task` is spawn-only. It accepts either one `prompt` or a non-empty `tasks:[...]` batch; synchronous batches aggregate every child result, while background batches return item ids and queue positions. Steer, resident-session revival, team messaging, and shutdown approval traffic goes through `task_send`; child output and single-child status/transcript peeks go through `task_output`.
+`task` is spawn-only. It accepts either one `prompt` or a non-empty `tasks:[...]` batch (module map: [`src/tools/task/AGENTS.md`](src/tools/task/AGENTS.md)); synchronous batches aggregate every child result, while background batches return item ids and queue positions. Steer, resident-session revival, team messaging, and shutdown approval traffic goes through `task_send`; child output and single-child status/transcript peeks go through `task_output`.
 
 ### Team tools (6, lead-only)
 
@@ -53,6 +54,8 @@ A **second, independent gate** runs alongside `requiresModel`: `isCategoryChainV
 The task tool description cannot consult the registry - it is built at tool registration, before the model registry is captured - so `listTaskCategories` keeps gated builtins listed and appends a ` (requires <model>)` annotation instead. A category carrying an explicit `omo.json` entry is listed without the annotation. Spawn-time `resolveCategory` remains the sole authoritative gate.
 
 `createTaskManager`, `createTaskLifecycle`, `createCompletionNotifier` / `routeCompletion` / `shouldNotifyStatus`, `createSteeringEngine`, `InProcessRunner`, `RpcProcessRunner`, `createTaskRecordStore` / `resolveStateDir`, `transitionTaskRecord` / `createTaskRecord`, `resolveCategory`, `loadAgents` / `mapOmoConfigAgents`, `resolveAgent` / `BUILTIN_AGENTS` / `BUILTIN_AGENT_DEFAULTS` / `CURATED_READONLY_AGENT_NAMES`, plus the team runtime (`createTeam`, `deleteTeam`, `sendTeamMessage`, `createLeadPoller`, `WaitRegistry`, `resolveMemberExtensionEntryPath`, `createTeamTask`, `requestShutdown`/`approveShutdown`/`rejectShutdown`, ...) and their typed errors (`SenpiTeamSpecError`, `SenpiTeamRuntimeError`, `SenpiShutdownError`, `RunnerError`, `TaskRecordCollisionError`).
+
+DAG surface (`src/dag/`, package subpath `./dag`): `createDagManager` (start/amend/replay, fingerprint-keyed run reuse), `createDagScheduler` / `applyDagSchedulerEvent` (strict-barrier waves, skip cascade, replay), `createDagRecovery`, `createDagWaitSurface`, `compileDag`, `createDagJournal` / `subscribeDagJournal`, `createDagFileStore` (WAL + locks + retention under `<stateDir>/dag/`), `createDagSkillMaterializer`, node-scoped `retryDagNodes` / `sendToDagNode`, and `persistDagNodeResult` / `readDagNodeResult`. Persistence and fingerprint rules: [`src/dag/AGENTS.md`](src/dag/AGENTS.md). The package also declares deep subpath exports (`./agents-builtin`, `./category-builtins`, `./category-resolver`, `./rpc-spawn`, `./rpc-model-admission`, `./task-renderers`, `./renderer-text`, `./notice-box`).
 
 ### Builtin curated agents
 

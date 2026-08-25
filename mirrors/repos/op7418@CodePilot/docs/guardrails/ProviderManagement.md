@@ -104,9 +104,9 @@ if (DB has rows) {
 
 不变量：DB 行**优先**于 catalog；hidden DB 行**必须**抑制 catalog tail 中的同 id（否则用户隐藏一个 catalog 模型，下次刷新它又冒出来）。
 
-catalog-only plan 有一个更窄的持久升级例外：Settings > Models 的 per-provider GET 会调用 `mergeCatalogManagedModels()`，把未编辑的 `source='catalog'` 行更新到当前 display/upstream/capabilities/order，并补缺失 catalog id。它不得覆盖 `user_edited=1` / `manual_*`，也不得 disable 或 prune 非当前目录行；会删/隐藏行的完整 align 仍必须 preview-first。补缺失行时 stable id 与 upstream wire id 任一命中都视为同一 SKU，且条件 INSERT 必须容忍另一个进程抢先写入。
+catalog-only plan 有一个更窄的持久升级例外：Settings > Models 的 per-provider GET 会调用 `mergeCatalogManagedModels()`，把未编辑的 `source='catalog'` 行更新到当前 display/upstream/capabilities/order，并补缺失 catalog id。对于已知历史版本错误种下的行，还可以按 catalog 明示的 `legacyFingerprints` 做 compare-and-swap 升级：必须同时精确匹配旧 upstream id、display name、capabilities，且没有 `user_edited` / `manual_*` 所有权信号。历史 backfill 可能把系统行标成 `manual`，所以 `source` 不能单独决定所有权。任何字段不吻合都按用户行或歧义处理，不自动改写。该流程不得 disable 或 prune 非当前目录行；会删/隐藏行的完整 align 仍必须 preview-first。补缺失行的占用判据以 upstream wire id 为核心，stable id 只用于定位当前行；条件 INSERT 必须容忍另一个进程抢先写入。
 
-Add Model 对话框的候选存在三态：未添加、已启用、已隐藏。已隐藏必须返回真实 `existingModelId` 并提供 PATCH 重新启用，不能用“已添加” badge 把用户困住。catalog-only plan 的精确目录候选若重新添加，由 POST 服务端使用 catalog 真源恢复 capabilities/source/order；renderer 只传身份，不能把目录模型降级为 manual 空能力行。
+Add Model 对话框不能再用 `alreadyAdded:boolean` 压平身份状态。服务端必须区分 `current_enabled`、`current_hidden`、`legacy_upgrade_available`、`identity_conflict`、`missing`；隐藏项返回真实 `existingModelId` 并提供 PATCH 重新启用，legacy 只在上述精确指纹成立时升级。同一 current wire 同时有 hidden canonical 与唯一 enabled direct row 时，enabled row 是真实可用 identity，不得被 hidden canonical 整体拖成 hidden/conflict；多个 enabled current 或其他歧义仍 fail closed。冲突项不静默覆盖目标行，必须返回 typed 409 + 真实 conflict model ids，并提供进入 Models 的恢复动作；Renderer 必须本地化 typed code，且 2xx/409 后都重拉候选与父模型列表（merge 可能已补其它目录行），不能显示英文 route fallback 或乐观翻成本地成功。catalog-only plan 的精确目录候选若重新添加，由 POST 服务端使用 catalog 真源恢复 capabilities/source/order；renderer 只传身份，不能把目录模型降级为 manual 空能力行。
 
 ### 4.2 user_edited 守护
 
@@ -160,6 +160,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | Provider 卡片 | `src/components/settings/ProviderCard.tsx` | 头部 2 行：name+actions / 2 个 pill；compat pill `whitespace-nowrap` |
 | Renderer 预设适配 | `src/components/settings/provider-presets.tsx` | 只适配共享 identity resolver 的结果，不复制匹配规则 |
 | Catalog + identity | `src/lib/provider-catalog.ts` | `VENDOR_PRESETS`、identity 合同、歧义/非法状态；`meta.claudeCodeVerified` 仅给实测稳定的 |
+| Catalog model identity | `src/lib/catalog-model-identity.ts` | 五态 presence classifier；legacy fingerprint 必须全字段精确匹配，冲突 fail-closed |
 | Verified wire resolver | `src/lib/provider-catalog.ts:getVerifiedProviderWireCapabilities()` | preset identity + exact model；第一方能力不外溢到聚合渠道 |
 | Runtime transport config | `src/lib/provider-resolver.ts:toAiSdkConfig()` | 只消费 verified wire；runtime/model 不匹配时保留默认协议 |
 | Provider DB ops | `src/lib/db.ts` `createProvider/updateProvider/deleteProvider` | 删除联动 active_image_provider；不允许改 provider_type |
@@ -177,6 +178,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
   - 决定 `iconKey` 并加图标到 `getProviderIcon`
   - 若 endpoint 与现有 preset 相同，补 ambiguous/explicit-switch/migration 测试，不能依赖数组顺序
   - 若声明 `wireCapabilities`，必须分别回答 exact model、Runtime、endpoint、effort 档位、unsupported fallback，并补第一方正例 + 聚合/近似模型反例 + 真实凭据 smoke
+  - 若替换历史 catalog SKU，必须列出可追溯的 `legacyFingerprints`；只接受完整旧 upstream/display/capabilities 指纹，不能仅按 stable id 或 `source` 猜迁移
 - 新增 provider 字段（如新 endpoint 信息）：
   - 加 DB 列（用 `PRAGMA table_info` 检测 + ALTER TABLE 模式）
   - 更新 `ApiProvider` type
@@ -203,8 +205,11 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 12. **compiler 从静态 descriptor 宣称未挂载工具** — descriptor 只定义潜在能力，不能单独成为当前请求的提示真源。编译给模型的 tool hints 必须取“catalog descriptor ∩ 当前 bridge 实际 `toolNames`”；logged-out、权限 gate 或 Runtime 不支持导致未挂载时，不得提示模型调用该工具。golden/fixture 必须显式写清 OAuth/可用性状态，禁止继承开发机登录态。
 13. **把模型能力当成网关 wire 能力** — 同名模型经聚合渠道可能拒绝或忽略 effort/Responses；必须用 preset `wireCapabilities` 独立声明
 14. **preset 新 env 只对新连接生效** — resolver 必须层叠 catalog 默认；新增 key 也必须进入 managed 清理集合，避免旧用户缺能力、切 provider 后又串值
-15. **把 hidden 候选显示成普通“已添加”** — Models 列表看不到、Add dialog 又没有恢复动作，会原样复活“已添加但没有选项”的语义 bug。必须返回 hidden 三态与真实 local id
+15. **把 presence 压成“已添加”** — hidden、可安全升级、身份冲突都被吞掉，会原样复活“已添加但没有选项”的语义 bug。必须返回五态与真实 local id
 16. **目录候选复用 manual POST 默认值** — `source='manual' / user_edited=1 / capabilities='{}'` 会永久退出 catalog 升级并丢 effort/context。精确 plan 候选必须由服务端 catalog 重建
+17. **只按 stable id 或 `source` 迁移 legacy** — stable id 只能定位，真正阻止插入/证明 SKU 的是 upstream wire 占用；历史 backfill 的 `source='manual'` 也可能是系统行。必须使用全字段 legacy fingerprint + ownership guard，歧义时不写库
+18. **目录只记录部分历史槽位** — 替换套餐 SKU 时必须从已发布历史逐槽记录 upstream/display/capabilities，fixture 使用完整旧目录；不能只造当前反馈的 sonnet 一行，也不能保留 git 历史无来源的猜测指纹
+19. **Conflict 只有徽章没有恢复路径** — current canonical 存在时仍按 current 可用；真正 CAS conflict 必须在写后重读并返回冲突 model ids，前端展示解释和进入 Models 的动作，不能乐观改本地状态或让用户卡死
 
 ## 9. 测试覆盖
 
@@ -214,7 +219,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | `src/__tests__/unit/provider-preset-identity-migration.test.ts` | `preset_key` 迁移、歧义、保守 backfill |
 | `src/__tests__/unit/provider-preset-switch-route.test.ts` | 显式切套餐、catalog reconcile、非法 endpoint 拒绝 |
 | `src/__tests__/unit/provider-resolver.test.ts` | catalog merge / DB 优先 / hidden 抑制 / role models 拉取 |
-| `src/__tests__/unit/foundation-refresh-user-path-contract.test.ts` | Models GET 的存量套餐目录升级、Add Model stable/upstream identity、hidden 恢复、catalog 重加能力保真、零写幂等与非 plan 反例 |
+| `src/__tests__/unit/foundation-refresh-user-path-contract.test.ts` | Models GET 的真实三行存量套餐升级、Add Model stable/upstream identity 与五态/conflict recovery、hidden 恢复、catalog 重加能力保真、零写幂等与非 plan 反例 |
 | `src/__tests__/unit/catalog-capabilities-roundtrip.test.ts` | catalog metadata round-trip、read merge 用户保护、upstream 去重、冲突安全与排序避让 |
 | `src/__tests__/unit/deepseek-v4-flash-adaptation.test.ts` | Flash 0731 + Pro 0813 exact preset/model wire 门、legacy env 默认层叠、DeepSeek Anthropic effort + Codex Responses 请求形状、Claude suffix/聚合渠道反例 |
 | `src/__tests__/unit/qwen-token-plan-catalog.test.ts` | Qwen 三套餐白名单、默认角色、usage policy |
@@ -240,3 +245,6 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 - **2026-08-02** 模型/UI capability 与 provider wire capability 正式分轴。DeepSeek V4 Flash 只有在第一方 preset + exact model + Codex Runtime 时切原生 Responses；Anthropic effort 也只对 preset 声明的模型放行。ClinePass/OpenCode Go 的同名模型保持 tool-use-only，直到各自网关 smoke。preset env 同时改为可升级分层配置，老 provider 行不必删除重加。
 - **2026-08-15** catalog-only plan 的旧 catalog 快照改为 Models GET 非破坏升级：只同步 pristine catalog 行并补当前 id，不覆盖用户选择、不做 disable/prune。套餐搜索候选把稳定 DB id 与 upstream wire id 分列，避免 GLM-5.3 因旧 `sonnet` alias 显示“已添加”但管理页仍停在 5.2，或手动添加后产生重复行。
 - **2026-08-16** v0.67.1 条件审查收口：catalog merge 增加 stable/upstream 双查重、跨进程冲突安全与用户排序避让；Add dialog 显式区分 hidden 并可恢复；plan catalog 重加由服务端恢复完整能力和 catalog ownership。存量 user-owned 双行不做静默迁移，后续整理必须 preview-first。
+- **2026-08-23** GLM legacy 修复改为显式身份迁移：`legacyFingerprints` 全字段 compare-and-swap，upstream wire 占用才是插入冲突事实；Add Model 暴露五态，`identity_conflict` fail-closed，不再让 stable alias 或不可靠的历史 `source` 替用户做决定。
+- **2026-08-24** implementation review 收口后按已发布 git 历史补齐 sonnet→`sonnet` 的 gen-0 `GLM-4.7`、`GLM-5-Turbo`/`GLM-5.2` 与 haiku→`haiku` 的 `GLM-4.5-Air` 指纹，删除 upstream=`glm-5-turbo` 的无来源猜测；gen-0 与后续三行完整目录 fixture 都验证目标槽原位升级、非目标 opus 保留。mutation 后 UI 重拉服务端真源；canonical current 不被额外旧行拖成死路，真正 conflict 有行为断言并显示具体恢复动作。
+- **2026-08-24** presence 进一步明确 enabled-first：hidden canonical 与唯一 enabled direct current wire 并存时返回 `current_enabled` 并指向 enabled row；只有没有 enabled current 时 hidden canonical 才代表 `current_hidden`。

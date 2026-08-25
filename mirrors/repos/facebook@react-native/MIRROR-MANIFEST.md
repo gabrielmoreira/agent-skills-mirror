@@ -54,7 +54,7 @@ Mirror of `facebook/react-native` — 26 default patterns, 4 followed patterns, 
 - `__docs__/README.md`
 - `private/react-native-fantom/__docs__/README.md`
 - `packages/rn-tester/README.md`
-- `CONTRIBUTING.md`
+- `scripts/build/README.md`
 
 ## File Index
 
@@ -67,9 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`packages/react-native-compatibility-check/AGENTS.md`](packages/react-native-compatibility-check/AGENTS.md) |
 | 5 | → | [`__docs__/README.md`](__docs__/README.md) |
-| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`packages/rn-tester/README.md`](packages/rn-tester/README.md) |
-| 8 | → | [`private/react-native-fantom/__docs__/README.md`](private/react-native-fantom/__docs__/README.md) |
+| 6 | → | [`packages/rn-tester/README.md`](packages/rn-tester/README.md) |
+| 7 | → | [`private/react-native-fantom/__docs__/README.md`](private/react-native-fantom/__docs__/README.md) |
+| 8 | → | [`scripts/build/README.md`](scripts/build/README.md) |
 
 ---
 
