@@ -1,1 +1,1 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cpo-review/../../../c-level-advisor/c-level-agents/skills/cpo-review/SKILL.md
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/cpo-review/../../../c-level-agents/skills/cpo-review/SKILL.md

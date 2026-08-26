@@ -262,16 +262,31 @@ class OpenAIProvider(ImageProvider):
                 msg = resp.text or resp.reason
             raise RuntimeError(f"API {resp.status_code}: {msg} (url: {resp.url})")
 
+    @staticmethod
+    def _raise_for_business_error(result: dict):
+        """Raise for OpenAI-compatible backends that report business errors
+        with HTTP 200 plus an `error` field (e.g. LinkAI, Volcengine Ark)."""
+        if isinstance(result, dict) and result.get("error"):
+            err = result["error"]
+            if isinstance(err, dict):
+                msg = err.get("message") or err.get("code") or str(err)
+            else:
+                msg = str(err)
+            raise RuntimeError(f"API error: {msg}")
+
     def _post_json(self, url: str, payload: dict) -> dict:
         headers = {**self._headers(), "Content-Type": "application/json"}
         if _HAS_REQUESTS:
             resp = requests.post(url, headers=headers, json=payload, timeout=300)
             self._raise_for_api_error(resp)
-            return resp.json()
-        data = json.dumps(payload).encode()
-        req = Request(url, data=data, headers=headers, method="POST")
-        with urlopen(req, timeout=300) as r:
-            return json.loads(r.read())
+            result = resp.json()
+        else:
+            data = json.dumps(payload).encode()
+            req = Request(url, data=data, headers=headers, method="POST")
+            with urlopen(req, timeout=300) as r:
+                result = json.loads(r.read())
+        self._raise_for_business_error(result)
+        return result
 
     def _post_multipart(self, url: str, fields: dict, files: list[tuple]) -> dict:
         """POST multipart/form-data using requests (or fall back to urllib)."""
@@ -279,7 +294,9 @@ class OpenAIProvider(ImageProvider):
         if _HAS_REQUESTS:
             resp = requests.post(url, headers=headers, data=fields, files=files, timeout=300)
             self._raise_for_api_error(resp)
-            return resp.json()
+            result = resp.json()
+            self._raise_for_business_error(result)
+            return result
         boundary = uuid.uuid4().hex
         body = b""
         for key, val in fields.items():
@@ -294,7 +311,9 @@ class OpenAIProvider(ImageProvider):
         headers["Content-Type"] = f"multipart/form-data; boundary={boundary}"
         req = Request(url, data=body, headers=headers, method="POST")
         with urlopen(req, timeout=300) as r:
-            return json.loads(r.read())
+            result = json.loads(r.read())
+        self._raise_for_business_error(result)
+        return result
 
     def generate(
         self,
@@ -309,8 +328,12 @@ class OpenAIProvider(ImageProvider):
         # OpenAI Images API expects pixel size like 1024x1024.
         resolved = resolve_size(size, aspect_ratio) if (size or aspect_ratio) else None
         if image_url:
-            return self._edit(prompt, image_url=image_url, quality=quality, size=resolved, output_dir=output_dir)
-        return self._create(prompt, quality=quality, size=resolved, output_dir=output_dir)
+            paths = self._edit(prompt, image_url=image_url, quality=quality, size=resolved, output_dir=output_dir)
+        else:
+            paths = self._create(prompt, quality=quality, size=resolved, output_dir=output_dir)
+        if not paths:
+            raise RuntimeError("provider returned no image (empty data)")
+        return paths
 
     def _create(self, prompt: str, *, quality: str | None, size: str | None, output_dir: str) -> list[str]:
         url = f"{self.api_base}/images/generations"

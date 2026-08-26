@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 51 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,45 +71,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.qwen/skills/codegraph/SKILL.md`](.qwen/skills/codegraph/SKILL.md) |
 | 11 | ✓ | [`.qwen/skills/create-issue/SKILL.md`](.qwen/skills/create-issue/SKILL.md) |
 | 12 | ✓ | [`.qwen/skills/deflake/SKILL.md`](.qwen/skills/deflake/SKILL.md) |
-| 13 | ✓ | [`.qwen/skills/desktop-pet/SKILL.md`](.qwen/skills/desktop-pet/SKILL.md) |
-| 14 | ✓ | [`.qwen/skills/docs-audit-and-refresh/SKILL.md`](.qwen/skills/docs-audit-and-refresh/SKILL.md) |
-| 15 | ✓ | [`.qwen/skills/docs-update-from-diff/SKILL.md`](.qwen/skills/docs-update-from-diff/SKILL.md) |
-| 16 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
-| 17 | ✓ | [`.qwen/skills/feat-dev/SKILL.md`](.qwen/skills/feat-dev/SKILL.md) |
-| 18 | ✓ | [`.qwen/skills/find-simplifications/SKILL.md`](.qwen/skills/find-simplifications/SKILL.md) |
-| 19 | ✓ | [`.qwen/skills/memory-leak-debug/SKILL.md`](.qwen/skills/memory-leak-debug/SKILL.md) |
-| 20 | ✓ | [`.qwen/skills/openwork-desktop-sync/SKILL.md`](.qwen/skills/openwork-desktop-sync/SKILL.md) |
-| 21 | ✓ | [`.qwen/skills/prepare-pr/SKILL.md`](.qwen/skills/prepare-pr/SKILL.md) |
-| 22 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
-| 23 | ✓ | [`.qwen/skills/repo-hygiene/SKILL.md`](.qwen/skills/repo-hygiene/SKILL.md) |
-| 24 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
-| 25 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
-| 26 | ✓ | [`.qwen/skills/tmux-real-user-testing/SKILL.md`](.qwen/skills/tmux-real-user-testing/SKILL.md) |
-| 27 | ✓ | [`.qwen/skills/triage/SKILL.md`](.qwen/skills/triage/SKILL.md) |
-| 28 | ✓ | [`.qwen/skills/verify-pr/SKILL.md`](.qwen/skills/verify-pr/SKILL.md) |
-| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 31 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
-| 32 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
-| 33 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md) |
-| 34 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
-| 35 | ✓ | [`packages/core/src/skills/bundled/computer-use/SKILL.md`](packages/core/src/skills/bundled/computer-use/SKILL.md) |
-| 36 | ✓ | [`packages/core/src/skills/bundled/coordinate/SKILL.md`](packages/core/src/skills/bundled/coordinate/SKILL.md) |
-| 37 | ✓ | [`packages/core/src/skills/bundled/dataviz/SKILL.md`](packages/core/src/skills/bundled/dataviz/SKILL.md) |
-| 38 | ✓ | [`packages/core/src/skills/bundled/extension-creator/SKILL.md`](packages/core/src/skills/bundled/extension-creator/SKILL.md) |
-| 39 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 40 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
-| 41 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 42 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 43 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
-| 44 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
-| 45 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 46 | ✓ | [`packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md) |
-| 47 | ✓ | [`packages/desktop/.agents/skills/desktop-develop/SKILL.md`](packages/desktop/.agents/skills/desktop-develop/SKILL.md) |
-| 48 | ✓ | [`packages/desktop/.agents/skills/desktop-pet/SKILL.md`](packages/desktop/.agents/skills/desktop-pet/SKILL.md) |
-| 49 | ✓ | [`packages/desktop/apps/electron/resources/AGENTS.md`](packages/desktop/apps/electron/resources/AGENTS.md) |
-| 50 | ✓ | [`packages/desktop/apps/electron/resources/docs/craft-cli.md`](packages/desktop/apps/electron/resources/docs/craft-cli.md) |
-| 51 | ✓ | [`packages/desktop/apps/electron/resources/docs/skills.md`](packages/desktop/apps/electron/resources/docs/skills.md) |
+| 13 | ✓ | [`.qwen/skills/docs-audit-and-refresh/SKILL.md`](.qwen/skills/docs-audit-and-refresh/SKILL.md) |
+| 14 | ✓ | [`.qwen/skills/docs-update-from-diff/SKILL.md`](.qwen/skills/docs-update-from-diff/SKILL.md) |
+| 15 | ✓ | [`.qwen/skills/e2e-testing/SKILL.md`](.qwen/skills/e2e-testing/SKILL.md) |
+| 16 | ✓ | [`.qwen/skills/feat-dev/SKILL.md`](.qwen/skills/feat-dev/SKILL.md) |
+| 17 | ✓ | [`.qwen/skills/find-simplifications/SKILL.md`](.qwen/skills/find-simplifications/SKILL.md) |
+| 18 | ✓ | [`.qwen/skills/memory-leak-debug/SKILL.md`](.qwen/skills/memory-leak-debug/SKILL.md) |
+| 19 | ✓ | [`.qwen/skills/prepare-pr/SKILL.md`](.qwen/skills/prepare-pr/SKILL.md) |
+| 20 | ✓ | [`.qwen/skills/qwen-code-claw/SKILL.md`](.qwen/skills/qwen-code-claw/SKILL.md) |
+| 21 | ✓ | [`.qwen/skills/repo-hygiene/SKILL.md`](.qwen/skills/repo-hygiene/SKILL.md) |
+| 22 | ✓ | [`.qwen/skills/structured-debugging/SKILL.md`](.qwen/skills/structured-debugging/SKILL.md) |
+| 23 | ✓ | [`.qwen/skills/terminal-capture/SKILL.md`](.qwen/skills/terminal-capture/SKILL.md) |
+| 24 | ✓ | [`.qwen/skills/tmux-real-user-testing/SKILL.md`](.qwen/skills/tmux-real-user-testing/SKILL.md) |
+| 25 | ✓ | [`.qwen/skills/triage/SKILL.md`](.qwen/skills/triage/SKILL.md) |
+| 26 | ✓ | [`.qwen/skills/verify-pr/SKILL.md`](.qwen/skills/verify-pr/SKILL.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
+| 30 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
+| 31 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md) |
+| 32 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
+| 33 | ✓ | [`packages/core/src/skills/bundled/computer-use/SKILL.md`](packages/core/src/skills/bundled/computer-use/SKILL.md) |
+| 34 | ✓ | [`packages/core/src/skills/bundled/coordinate/SKILL.md`](packages/core/src/skills/bundled/coordinate/SKILL.md) |
+| 35 | ✓ | [`packages/core/src/skills/bundled/dataviz/SKILL.md`](packages/core/src/skills/bundled/dataviz/SKILL.md) |
+| 36 | ✓ | [`packages/core/src/skills/bundled/extension-creator/SKILL.md`](packages/core/src/skills/bundled/extension-creator/SKILL.md) |
+| 37 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
+| 38 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
+| 39 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 40 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 41 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
+| 42 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 43 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
 
 ---
 

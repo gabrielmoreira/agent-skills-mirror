@@ -48,8 +48,10 @@ even before a dedicated UI exists.
   say why and give exact repro steps.
 ## Local headless web (agents)
 
-- `pnpm dev:headless-web --detach` launches an isolated browser UI + local
- `openwork-server` without Electron, detached from the invoking shell. Read
+- `pnpm world up ./worlds/dev-headless.ts` launches an isolated browser UI +
+ local `openwork-server` without Electron, detached by the world definition.
+ `pnpm dev:headless-web` remains a compatibility alias with its prior foreground
+ default (`--detach` still works). Read
  `tmp/dev-headless-web.json` for `webUrl`, tokens, logs, and Den proxy URLs.
  It does not use `~/.config/openwork/server.json`. Re-running reuses a healthy
  instance; `--replace` restarts it with fresh tokens (`--keep-tokens` to

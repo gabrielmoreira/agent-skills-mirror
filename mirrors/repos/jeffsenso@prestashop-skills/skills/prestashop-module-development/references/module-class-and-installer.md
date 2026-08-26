@@ -85,8 +85,8 @@ class MyModule extends Module
 
     public function getContent(): string
     {
-        $route = $this->get('router')->generate('mymodule_configuration');
-
+        $router = $this->get('router');
+        $route = $router->generate('mymodule_configuration');
         Tools::redirectAdmin($route);
 
         return '';
@@ -97,6 +97,41 @@ class MyModule extends Module
         return new Installer();
     }
 }
+```
+
+## **MANDATORY: getContent() redirection pattern**
+
+**CRITICAL**: Always use the Symfony router to generate admin routes. **NEVER use `$this->context->link->getAdminLink()`**.
+
+**❌ WRONG — DO NOT DO THIS**:
+```php
+// ❌ WRONG: Using legacy context link
+public function getContent(): string
+{
+    Tools::redirectAdmin($this->context->link->getAdminLink('AdminMymoduleConfiguration'));
+    return '';
+}
+```
+
+**✅ CORRECT — USE THIS**:
+```php
+// ✅ CORRECT: Using Symfony router
+public function getContent(): string
+{
+    $router = $this->get('router');
+    $route = $router->generate('mymodule_configuration');  // Route name from config/routes.yml
+    Tools::redirectAdmin($route);
+
+    return '';
+}
+```
+
+**Why**: 
+- ✅ Modern Symfony approach
+- ✅ Routes validated at compile-time
+- ✅ No dependency on tab class names
+- ✅ Consistent with Symfony controller patterns
+- ❌ Legacy `link->getAdminLink()` is deprecated and error-prone
 ```
 
 ## **MANDATORY: Tab management pattern**

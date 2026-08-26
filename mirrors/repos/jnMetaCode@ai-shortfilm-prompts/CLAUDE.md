@@ -63,4 +63,8 @@ ships only structured, original documentation.
 Bump `version` in both `.claude-plugin/plugin.json` and
 `.claude-plugin/marketplace.json`, then tag + `gh release create`. Current: v0.5.0.
 Log notable changes in `CHANGELOG.md`. When adding/removing a web prompt,
-re-run `python3 scripts/generate_pages.py` (regenerates `docs/p/` + sitemap).
+re-run `python3 scripts/generate_pages.py` (regenerates `docs/p/` + sitemap)
+**and `python3 scripts/gen_index.py`** (regenerates `templates/index.json`, the
+machine-readable catalogue other tools consume — e.g. agency-orchestrator's
+creative library and this repo's own generator). Both are stdlib-only; commit
+their output (the deployed site stays zero-build).

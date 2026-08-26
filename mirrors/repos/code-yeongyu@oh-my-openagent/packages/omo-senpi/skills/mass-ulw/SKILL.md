@@ -84,7 +84,11 @@ Runs are journaled. When the session dies mid-run, the run pauses instead of bei
 
 `start` is for STARTING a run, not for recovering one: re-issuing the same key and definition against an already-settled run returns it untouched and schedules nothing. To move a settled run forward, use `retry` or `amend` above.
 
-## Observing a run
+## Supervising a run
+
+Observation is supervision, not spectating. Running children err, over-engineer, obsess over one sub-problem, and drift out of scope MID-RUN, not only at the end. On every mid-run wake (a node completion notification, a monitor event) and on periodic `snapshot` peeks, check each active node against ITS OWN prompt's SCOPE: the assigned work, only the assigned work, at the assigned depth. On any sign of drift - writes outside its scope, gold-plating past the deliverable, circling one sub-problem - steer it back with `send` naming the exact boundary it crossed; a node that stays off course gets a tightened prompt through `retry` or `amend` (above) once the run settles. Drift corrected in wave 1 costs one message; drift discovered at synthesis costs the run.
+
+Surfaces:
 
 - The TUI status widget shows live runs with per-node progress.
 - `/dag` opens the detail view: node states, waves, and failures for each run in the session.

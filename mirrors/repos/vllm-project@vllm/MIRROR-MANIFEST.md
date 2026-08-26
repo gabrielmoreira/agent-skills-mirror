@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 13 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 13 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 13 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,19 +64,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/ci-fails-buildkite/SKILL.md`](.claude/skills/ci-fails-buildkite/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
-| 5 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
-| 6 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
-| 7 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
-| 8 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 9 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
-| 10 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 11 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 12 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 13 | → | [`SECURITY.md`](SECURITY.md) |
+| 1 | ✓ | [`.agents/skills/debug-ima/agents/openai.yaml`](.agents/skills/debug-ima/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/debug-ima/SKILL.md`](.agents/skills/debug-ima/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/kernel-microbenchmark/agents/openai.yaml`](.agents/skills/kernel-microbenchmark/agents/openai.yaml) |
+| 4 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py`](.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py) |
+| 5 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py`](.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py) |
+| 6 | ✓ | [`.agents/skills/kernel-microbenchmark/SKILL.md`](.agents/skills/kernel-microbenchmark/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/ci-fails-buildkite/SKILL.md`](.claude/skills/ci-fails-buildkite/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
+| 11 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
+| 12 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
+| 13 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
+| 14 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 15 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
+| 16 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 17 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 18 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 19 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

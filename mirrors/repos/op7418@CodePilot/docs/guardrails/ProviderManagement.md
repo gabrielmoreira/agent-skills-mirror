@@ -11,6 +11,7 @@ Settings > Providers 是 CodePilot 的"服务资产中心"，所有 provider 的
 | Preset identity | DB `api_providers.preset_key` 中持久化的稳定套餐身份；同 URL 多套餐不能靠数组顺序推断 | `src/lib/provider-catalog.ts:resolveProviderPresetIdentity()` |
 | OAuth virtual provider | 通过 OAuth 登录、DB `api_providers` 里**没有**对应行的服务商；当前包括 OpenAI OAuth 与 xAI OAuth | `openai-oauth-manager.ts` / `xai-oauth-manager.ts` + resolver/routes |
 | Env provider | DB 里**没有**对应行，credentials 来自 `process.env` / `~/.claude/settings.json` / 旧 DB setting；`provider_id='env'` | resolver `provider-resolver.ts:buildResolution` |
+| Provider secret | DB provider 的 API Key；数据库只保存 AES-GCM 密文，数据密钥由 Electron `safeStorage` 包装。密文不可读与“未配置 Key”是两种状态，但都不得回退到别的 Provider/OAuth | `electron/provider-secret-key.ts` + `src/lib/provider-secret-crypto.ts` + `src/lib/db.ts` |
 | Active image provider | 多个图片 provider 时哪个被 `/api/media/generate` 优先选中 | `setting active_image_provider_id` |
 
 ## 2. Settings > Providers 信息架构契约
@@ -82,6 +83,17 @@ Qwen Token Plan 个人版与团队版共享 endpoint，稳定身份分别是 `qw
 `defaultEnvOverrides` 不是只在“添加服务”那一刻复制一次的快照。`provider-resolver.ts:buildResolution()` 必须按 `preset defaults < stored env_overrides` 合并，让已有 provider 获得后续兼容默认值，同时保留用户显式 override。
 
 所有新增的 managed env key 必须同时加入 `toClaudeCodeEnv()` 的清理集合；否则从一个 provider 切到另一个时会残留跨服务配置。DeepSeek 的 `CLAUDE_CODE_SUBAGENT_MODEL` 是当前回归钉。
+
+### 3.5 显式 Provider 凭据必须 fail closed
+
+会话最终解析到 DB Provider 时，这个 Provider 拥有整组认证变量；不仅包括显式 `session.provider_id`，也包括 legacy 空 pin 经 default/active 得到的最终 Provider。若 `api_key` 为空，或者存量 `api_key_ciphertext` 因 Safe Storage / 数据密钥不可用而解密失败，Resolver 必须在任何消息写入和 Provider 请求前返回 typed invalid reason；Claude SDK 与 Native Runtime 都必须拒绝构造 transport。
+
+不变量：
+
+- 选中 DB Provider 但凭据缺失/不可读时，禁止继承 `process.env.ANTHROPIC_*`、`~/.claude` OAuth 或另一个 Provider 的凭据；这会把用户明确选择的 GLM/Kimi 等请求静默发送给 Claude。
+- 密文不可读只暴露低基数错误码，不向 API/UI 返回密文、wrapped DEK 或原始异常。原密文保持不动；UI 必须说明 API Key 本身可能仍有效，并引导用户到 Settings > Providers 删除原服务商、使用同一个 Key 重新添加，不能把本机解密失败说成服务商鉴权失败。删除会移除该服务商的自定义模型设置，恢复文案必须提前披露。
+- Chat route 返回 typed 409，现有会话与新会话都显示本地化说明和 `/settings/providers` 恢复动作；被拒绝的消息不得落库或留下错误 assistant bubble。
+- `hasCodePilotProvider()` 是全局粗检查，不能抢在 session-aware credential gate 前把“唯一 Provider 凭据不可读”误报成“未配置服务商”。
 
 ## 4. provider_models 表关系
 
@@ -163,6 +175,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | Catalog model identity | `src/lib/catalog-model-identity.ts` | 五态 presence classifier；legacy fingerprint 必须全字段精确匹配，冲突 fail-closed |
 | Verified wire resolver | `src/lib/provider-catalog.ts:getVerifiedProviderWireCapabilities()` | preset identity + exact model；第一方能力不外溢到聚合渠道 |
 | Runtime transport config | `src/lib/provider-resolver.ts:toAiSdkConfig()` | 只消费 verified wire；runtime/model 不匹配时保留默认协议 |
+| Provider credential gate | `src/lib/provider-resolver.ts:resolveProviderForSession()` + `sdk-subprocess-env.ts` + `ai-provider.ts` | 显式 DB Provider 无可用凭据时，Chat/Claude SDK/Native 三层均 fail closed，禁止 ambient OAuth 串线 |
 | Provider DB ops | `src/lib/db.ts` `createProvider/updateProvider/deleteProvider` | 删除联动 active_image_provider；不允许改 provider_type |
 | Provider models DB ops | `src/lib/db.ts` `upsertProviderModel/applyDiscoveryDiff/updateProviderModelUserFields/mergeCatalogManagedModels` | 保留 user_edited 行的用户字段；catalog seed 与 plan 目录非破坏升级分开 |
 | API: providers CRUD | `src/app/api/providers/route.ts` + `[id]/route.ts` | DELETE 不动 chat_sessions；PUT 拒绝 provider_type 变更 |
@@ -210,6 +223,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 17. **只按 stable id 或 `source` 迁移 legacy** — stable id 只能定位，真正阻止插入/证明 SKU 的是 upstream wire 占用；历史 backfill 的 `source='manual'` 也可能是系统行。必须使用全字段 legacy fingerprint + ownership guard，歧义时不写库
 18. **目录只记录部分历史槽位** — 替换套餐 SKU 时必须从已发布历史逐槽记录 upstream/display/capabilities，fixture 使用完整旧目录；不能只造当前反馈的 sonnet 一行，也不能保留 git 历史无来源的猜测指纹
 19. **Conflict 只有徽章没有恢复路径** — current canonical 存在时仍按 current 可用；真正 CAS conflict 必须在写后重读并返回冲突 model ids，前端展示解释和进入 Models 的动作，不能乐观改本地状态或让用户卡死
+20. **Provider 密钥不可读时继续启动 SDK** — `provider` 仍存在不等于凭据可用；若让 `provider && !hasCredentials` 进入 Claude SDK，ambient Claude OAuth 会接管请求，把所有同 Provider 模型伪装成供应商故障。必须 session-aware 阻断并引导重新填写 Key
 
 ## 9. 测试覆盖
 
@@ -227,6 +241,9 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | `src/__tests__/unit/xai-oauth-manager.test.ts` | xAI virtual provider、token 生命周期、header/host 防泄漏 |
 | `src/__tests__/unit/provider-key-lifecycle.test.ts` | api_key 写入 / 读取一致 |
 | `src/__tests__/unit/provider-presence.test.ts` | hasCodePilotProvider 各分支 |
+| `src/__tests__/unit/session-runtime-immunity.test.ts` | 不可读 provider 密文的 session-aware fail-closed、typed route/UI 恢复接线 |
+| `src/__tests__/unit/sdk-subprocess-env.test.ts` | Claude SDK 与 Native Runtime 拒绝无凭据 DB Provider，不继承 ambient OAuth |
+| `src/__tests__/unit/glm-5-3-codeplan-adaptation.test.ts` | GLM-5.3 / GLM-5-Turbo / GLM-4.7 逐模型 auth/base URL/upstream env 边界 |
 | `src/__tests__/unit/stale-default-provider.test.ts` | 默认 provider 引用已删 ID 时 auto-heal |
 | `src/__tests__/unit/media-provider-routes.test.ts` | active-image 路由 + stale 处理 |
 

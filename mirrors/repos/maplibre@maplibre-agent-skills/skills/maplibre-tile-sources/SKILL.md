@@ -1,6 +1,7 @@
 ---
 name: maplibre-tile-sources
 description: How to choose and configure data sources for MapLibre GL JS — rendering your own data without tiles, hosted tile services, serverless PMTiles, self-hosted tile servers, tile schemas, glyphs, and sprites.
+status: verified
 ---
 
 # MapLibre Tile Sources
@@ -289,3 +290,7 @@ Hosted providers handle CORS for you. For self-hosted servers or static storage,
 12. **Cloud-native geospatial formats**: FlatGeobuf ([flatgeobuf.org](https://flatgeobuf.org/)), GeoParquet ([GeoParquet](https://geoparquet.org/)), Cloud-Optimized GeoTIFF ([COG website](https://cogeo.org/))
 13. **awesome-maplibre** — [github.com/maplibre/awesome-maplibre](https://github.com/maplibre/awesome-maplibre)
 14. **switch2osm.org** — Community guide to switching from Google Maps to OSM-based tile hosting, including provider list, self-hosting stack, hardware requirements, and ODbL licensing guidance — [switch2osm.org](https://switch2osm.org)
+
+---
+
+**This skill is a snapshot.** Where a primary source contradicts it — the References above, MapLibre's current documentation, or what MapLibre does when you run it — that source wins. Follow it, then [report the disagreement](https://github.com/maplibre/maplibre-agent-skills/issues/new?template=ai-failure-report.md), citing the source and your MapLibre version: editing your installed copy helps no one else and is overwritten on the next update.

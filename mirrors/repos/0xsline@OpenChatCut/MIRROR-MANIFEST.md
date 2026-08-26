@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `0xsline/OpenChatCut` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `0xsline/OpenChatCut` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0xsline/OpenChatCut` — 26 default patterns, 0 followed patterns, 32
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,25 +72,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`src/agent/skills/export/SKILL.md`](src/agent/skills/export/SKILL.md) |
 | 12 | ✓ | [`src/agent/skills/image-gen/SKILL.md`](src/agent/skills/image-gen/SKILL.md) |
 | 13 | ✓ | [`src/agent/skills/known-errors/SKILL.md`](src/agent/skills/known-errors/SKILL.md) |
-| 14 | ✓ | [`src/agent/skills/long-video-to-shorts/SKILL.md`](src/agent/skills/long-video-to-shorts/SKILL.md) |
-| 15 | ✓ | [`src/agent/skills/motion-graphic-placement/SKILL.md`](src/agent/skills/motion-graphic-placement/SKILL.md) |
-| 16 | ✓ | [`src/agent/skills/multi-clips-to-reels/SKILL.md`](src/agent/skills/multi-clips-to-reels/SKILL.md) |
-| 17 | ✓ | [`src/agent/skills/music-intelligence/SKILL.md`](src/agent/skills/music-intelligence/SKILL.md) |
-| 18 | ✓ | [`src/agent/skills/music/SKILL.md`](src/agent/skills/music/SKILL.md) |
-| 19 | ✓ | [`src/agent/skills/news-rough-cut/SKILL.md`](src/agent/skills/news-rough-cut/SKILL.md) |
-| 20 | ✓ | [`src/agent/skills/openchatcut-plugin-basics/SKILL.md`](src/agent/skills/openchatcut-plugin-basics/SKILL.md) |
-| 21 | ✓ | [`src/agent/skills/product-ad-video-script/SKILL.md`](src/agent/skills/product-ad-video-script/SKILL.md) |
-| 22 | ✓ | [`src/agent/skills/product-help/SKILL.md`](src/agent/skills/product-help/SKILL.md) |
-| 23 | ✓ | [`src/agent/skills/shader-gen/SKILL.md`](src/agent/skills/shader-gen/SKILL.md) |
-| 24 | ✓ | [`src/agent/skills/skill-creator/SKILL.md`](src/agent/skills/skill-creator/SKILL.md) |
-| 25 | ✓ | [`src/agent/skills/storyboard-shot-breakdown/SKILL.md`](src/agent/skills/storyboard-shot-breakdown/SKILL.md) |
-| 26 | ✓ | [`src/agent/skills/talking-head-guide/SKILL.md`](src/agent/skills/talking-head-guide/SKILL.md) |
-| 27 | ✓ | [`src/agent/skills/transcription/SKILL.md`](src/agent/skills/transcription/SKILL.md) |
-| 28 | ✓ | [`src/agent/skills/verification/SKILL.md`](src/agent/skills/verification/SKILL.md) |
-| 29 | ✓ | [`src/agent/skills/video-gen/SKILL.md`](src/agent/skills/video-gen/SKILL.md) |
-| 30 | ✓ | [`src/agent/skills/video-thumbnail-generator/SKILL.md`](src/agent/skills/video-thumbnail-generator/SKILL.md) |
-| 31 | ✓ | [`src/agent/skills/voice/SKILL.md`](src/agent/skills/voice/SKILL.md) |
-| 32 | ✓ | [`src/agent/skills/widget-forms/SKILL.md`](src/agent/skills/widget-forms/SKILL.md) |
+| 14 | ✓ | [`src/agent/skills/livestream-to-clips/SKILL.md`](src/agent/skills/livestream-to-clips/SKILL.md) |
+| 15 | ✓ | [`src/agent/skills/long-video-to-shorts/SKILL.md`](src/agent/skills/long-video-to-shorts/SKILL.md) |
+| 16 | ✓ | [`src/agent/skills/motion-graphic-placement/SKILL.md`](src/agent/skills/motion-graphic-placement/SKILL.md) |
+| 17 | ✓ | [`src/agent/skills/multi-clips-to-reels/SKILL.md`](src/agent/skills/multi-clips-to-reels/SKILL.md) |
+| 18 | ✓ | [`src/agent/skills/music-intelligence/SKILL.md`](src/agent/skills/music-intelligence/SKILL.md) |
+| 19 | ✓ | [`src/agent/skills/music/SKILL.md`](src/agent/skills/music/SKILL.md) |
+| 20 | ✓ | [`src/agent/skills/news-rough-cut/SKILL.md`](src/agent/skills/news-rough-cut/SKILL.md) |
+| 21 | ✓ | [`src/agent/skills/openchatcut-plugin-basics/SKILL.md`](src/agent/skills/openchatcut-plugin-basics/SKILL.md) |
+| 22 | ✓ | [`src/agent/skills/product-ad-video-script/SKILL.md`](src/agent/skills/product-ad-video-script/SKILL.md) |
+| 23 | ✓ | [`src/agent/skills/product-help/SKILL.md`](src/agent/skills/product-help/SKILL.md) |
+| 24 | ✓ | [`src/agent/skills/shader-gen/SKILL.md`](src/agent/skills/shader-gen/SKILL.md) |
+| 25 | ✓ | [`src/agent/skills/skill-creator/SKILL.md`](src/agent/skills/skill-creator/SKILL.md) |
+| 26 | ✓ | [`src/agent/skills/storyboard-shot-breakdown/SKILL.md`](src/agent/skills/storyboard-shot-breakdown/SKILL.md) |
+| 27 | ✓ | [`src/agent/skills/talking-head-guide/SKILL.md`](src/agent/skills/talking-head-guide/SKILL.md) |
+| 28 | ✓ | [`src/agent/skills/transcription/SKILL.md`](src/agent/skills/transcription/SKILL.md) |
+| 29 | ✓ | [`src/agent/skills/verification/SKILL.md`](src/agent/skills/verification/SKILL.md) |
+| 30 | ✓ | [`src/agent/skills/video-gen/SKILL.md`](src/agent/skills/video-gen/SKILL.md) |
+| 31 | ✓ | [`src/agent/skills/video-thumbnail-generator/SKILL.md`](src/agent/skills/video-thumbnail-generator/SKILL.md) |
+| 32 | ✓ | [`src/agent/skills/voice/SKILL.md`](src/agent/skills/voice/SKILL.md) |
+| 33 | ✓ | [`src/agent/skills/widget-forms/SKILL.md`](src/agent/skills/widget-forms/SKILL.md) |
 
 ---
 

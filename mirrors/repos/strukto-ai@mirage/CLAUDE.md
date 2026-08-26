@@ -12,6 +12,8 @@ This monorepo hosts two sibling implementations:
 
 Run Python commands from `python/`, TypeScript commands from `typescript/`.
 
+Create all Git worktrees under the repository-local `.worktrees/` directory.
+
 ### TypeScript packages
 
 - `typescript/packages/core` contains runtime-agnostic primitives and shared logic. Code in `core` must work in both browser and Node.js runtimes; do not put browser-only or Node-only APIs there.

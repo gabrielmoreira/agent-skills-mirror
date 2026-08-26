@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-08-24T05:22:46.000Z
+Generated at: 2026-08-25T17:54:41.000Z
 
-Total skills: 2026
+Total skills: 2028
 
 ## agent-behavior (5)
 
@@ -1017,7 +1017,7 @@ Total skills: 2026
 | `mcp-tool-developer` | Build Model Context Protocol (MCP) servers and tools from scratch. Full-stack MCP development with TypeScript/Python, testing, deployment, and registry publi... | safe | demo112/yunqu-ai-skills | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol, developer, model, context, protocol, servers |
 | `tokenwise` | Measurement-driven model router for Claude Code. Routes Haiku/Sonnet/Opus per task class, logs every routed task with real $ numbers, and A/B tests cheaper t... | critical | CodeShuX/tokenwise | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement, tokenwise, driven |
 
-## development (177)
+## development (179)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1161,6 +1161,7 @@ Total skills: 2026
 | `performance-profiling` | Performance profiling principles. Measurement, analysis, and optimization techniques. | critical | community | performance, profiling | performance, profiling, principles, measurement, analysis, optimization, techniques |
 | `performance-testing-review-ai-review` | You are an expert AI-powered code review specialist combining automated static analysis, intelligent pattern recognition, and modern DevOps practices. Levera... | critical | community | performance, ai | performance, ai, testing, review, powered, code, combining, automated, static, analysis, intelligent, recognition |
 | `performance-testing-review-multi-agent-review` | Use when working with performance testing review multi agent review | critical | community | performance, multi, agent | performance, multi, agent, testing, review, working |
+| `poka-yoke` | Mistake-proof code, config and process: make the wrong action impossible or self-announcing rather than documented. | safe | rainmanjam/poka-yoke | mistake-proofing, code-review, api-design, guardrails, reliability | mistake-proofing, code-review, api-design, guardrails, reliability, poka, yoke, mistake, proof, code, config, process |
 | `prototype` | Build a throwaway prototype to flesh out a design — a runnable terminal app for state/business-logic questions, or several radically different UI variations ... | safe | mattpocock/skills | engineering, workflow, coding-agents | engineering, workflow, coding-agents, prototype, throwaway, flesh, runnable, terminal, app, state, business, logic |
 | `push-skill-to-github` | Commit and push skill changes to the configured skills repository after review and validation. | critical | davidondrej/skills | skills, git, publishing | skills, git, publishing, push, skill, github, commit, changes, configured, repository, after, review |
 | `pydantic-models-py` | Create Pydantic models following the multi-model pattern for clean API contracts. | critical | community | pydantic, models, py | pydantic, models, py, following, multi, model, clean, api, contracts |
@@ -1183,6 +1184,7 @@ Total skills: 2026
 | `senior-fullstack` | Complete toolkit for senior fullstack with modern tools and best practices. | critical | community | senior, fullstack | senior, fullstack, complete, toolkit |
 | `setup-matt-pocock-skills` | Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the o... | safe | mattpocock/skills | engineering, workflow, coding-agents | engineering, workflow, coding-agents, setup, matt, pocock, skills, configure, repo, set, up, issue |
 | `skill-check` | Validate Claude Code skills against the agentskills specification. Catches structural, semantic, and naming issues before users do. | safe | https://github.com/olgasafonova/SkillCheck-Free | validation, linter, agentskills, skill-authoring, code-quality | validation, linter, agentskills, skill-authoring, code-quality, skill, check, validate, claude, code, skills, against |
+| `spec-driven-loop` | Freeze PRD, technical design, and acceptance criteria before medium-to-large Codex work; coordinate agents with explicit ownership, then judge delivery from ... | safe | Linji-x/spec-driven-loop | codex, spec-driven-development, multi-agent, agent-orchestration, acceptance-testing | codex, spec-driven-development, multi-agent, agent-orchestration, acceptance-testing, spec, driven, loop, freeze, prd, technical, acceptance |
 | `squirrel` | Full-cycle AI coding skill: plans, builds, tests, lints, fixes bugs, and writes production-grade docs. Auto-detects project state and adapts its 8-phase pipe... | safe | flyingsquirrel0419/squirrel-skill | development, testing, planning, code-review, documentation, ci-cd | development, testing, planning, code-review, documentation, ci-cd, squirrel, full, cycle, ai, coding, skill |
 | `systems-programming-rust-project` | You are a Rust project architecture expert specializing in scaffolding production-ready Rust applications. Generate complete project structures with cargo to... | critical | community | programming, rust | programming, rust, architecture, specializing, scaffolding, applications, generate, complete, structures, cargo, tooling, proper |
 | `tdd` | Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests. | safe | mattpocock/skills | engineering, workflow, coding-agents | engineering, workflow, coding-agents, tdd, test, driven, development, user, wants, features, fix, bugs |

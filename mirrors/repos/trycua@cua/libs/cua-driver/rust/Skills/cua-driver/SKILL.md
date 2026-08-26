@@ -1,7 +1,7 @@
 ---
 name: cua-driver
 description: Drive a native GUI app (macOS, Windows, Linux) via the cua-driver CLI (default) or MCP server; snapshot its accessibility tree, act through snapshot-bound element tokens, native menu paths, exact window geometry, or pixel coordinates, and verify from fresh state. Use when the user asks you to operate, drive, automate, or perform a GUI task in a real application on the host, or to continue, resume, or recall recent Cua activity.
-version: 0.22.0 # x-release-please-version
+version: 0.22.1 # x-release-please-version
 metadata:
   openclaw:
     requires:
@@ -675,6 +675,12 @@ launch_app(target, session)
   → verify_state(pid, window_id, expect)  # structured check; optional image
 end_session(session?)             # optional explicit cleanup
 ```
+
+An existing-profile `end_session` restores the Chromium browser's
+remote-debugging toggle when Cua enabled it and no other Cua session still uses
+that browser process and dismisses the exact native consent prompt. If exact
+cleanup cannot be proven, session cleanup fails closed and a later
+`end_session` retries it.
 
 For screen-absolute work, replace the window portion with
 `get_desktop_state() → action(target={kind:"desktop",display_id:"primary"}, ...)

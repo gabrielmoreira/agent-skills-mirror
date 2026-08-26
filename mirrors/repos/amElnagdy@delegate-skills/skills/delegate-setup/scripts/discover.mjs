@@ -48,11 +48,19 @@ It counts session entries and reads their mtimes; it never opens a session file.
 `;
 
 function resolveBinary(binary) {
-  const pathValue = process.env.PATH || process.env.Path || "";
-  if (!pathValue) return null;
+  const pathValue = process.env.PATH ?? process.env.Path;
+  // A set-but-empty PATH is one empty component — the current directory — in
+  // POSIX lookup, so spawn still resolves there and discovery must agree. Only
+  // an absent PATH (spawn falls back to the system default path, never the
+  // current directory) or an empty one on Windows reports nothing.
+  if (pathValue === undefined || (pathValue === "" && process.platform === "win32")) return null;
   const pathEntries = pathValue
     .split(delimiter)
     .map((entry) => entry.replace(/^"(.*)"$/, "$1"))
+    // An empty component means the current directory in POSIX lookup, which is
+    // where a relay's own spawn would find the binary. Dropping it made
+    // discovery report a CLI as missing that dispatch can actually run.
+    .map((entry) => (entry.length === 0 && process.platform !== "win32" ? "." : entry))
     .filter((entry) => entry.length > 0);
 
   if (process.platform === "win32") {

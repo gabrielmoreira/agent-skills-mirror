@@ -1,6 +1,7 @@
 ---
 name: maplibre-terrain-patterns
 description: Terrain and hillshade in MapLibre GL JS — raster-dem sources, Terrarium vs. Mapbox RGB encoding, hillshade layer configuration (single and multi-pass), 3D terrain, dynamic contour lines, and self-hosting DEM tiles. Use when adding elevation context, hillshade, or 3D terrain to a map.
+status: verified
 ---
 
 # MapLibre Terrain Patterns
@@ -313,3 +314,7 @@ To create a custom DEM tileset from source elevation data, follow standard DEM p
 - **Slope visualization tutorial (Michael Minn)** — <https://michaelminn.net/tutorials/arcgis-pro-terrain/>
 - **Creating hillshade imagery in a GIS (video walkthrough)** — <https://www.youtube.com/watch?v=tGbJnpySAJY>
 - **Generating DEMs and hillshades on OpenTopography (video walkthrough)** — <https://www.youtube.com/watch?v=f1m-qa-6YXo>
+
+---
+
+**This skill is a snapshot.** Where a primary source contradicts it — the References above, MapLibre's current documentation, or what MapLibre does when you run it — that source wins. Follow it, then [report the disagreement](https://github.com/maplibre/maplibre-agent-skills/issues/new?template=ai-failure-report.md), citing the source and your MapLibre version: editing your installed copy helps no one else and is overwritten on the next update.

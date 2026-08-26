@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `netdata/netdata` — 26 default patterns, 1 followed patterns, 567 file(s) materialized.
+Mirror of `netdata/netdata` — 26 default patterns, 1 followed patterns, 568 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `netdata/netdata` — 26 default patterns, 1 followed patterns, 567 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 567 |
+| Files         | 568 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -583,49 +583,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 522 | ✓ | [`src/ml/ml-configuration.md`](src/ml/ml-configuration.md) |
 | 523 | ✓ | [`src/ml/notebooks/README.md`](src/ml/notebooks/README.md) |
 | 524 | ✓ | [`src/ml/README.md`](src/ml/README.md) |
-| 525 | ✓ | [`src/plugins.d/DYNCFG.md`](src/plugins.d/DYNCFG.md) |
-| 526 | ✓ | [`src/plugins.d/README.md`](src/plugins.d/README.md) |
-| 527 | ✓ | [`src/registry/CONFIGURATION.md`](src/registry/CONFIGURATION.md) |
-| 528 | ✓ | [`src/registry/README.md`](src/registry/README.md) |
-| 529 | ✓ | [`src/streaming/README.md`](src/streaming/README.md) |
-| 530 | ✓ | [`src/web/api/exporters/prometheus/README.md`](src/web/api/exporters/prometheus/README.md) |
-| 531 | ✓ | [`src/web/api/exporters/README.md`](src/web/api/exporters/README.md) |
-| 532 | ✓ | [`src/web/api/exporters/shell/README.md`](src/web/api/exporters/shell/README.md) |
-| 533 | ✓ | [`src/web/api/formatters/csv/README.md`](src/web/api/formatters/csv/README.md) |
-| 534 | ✓ | [`src/web/api/formatters/json/README.md`](src/web/api/formatters/json/README.md) |
-| 535 | ✓ | [`src/web/api/formatters/README.md`](src/web/api/formatters/README.md) |
-| 536 | ✓ | [`src/web/api/formatters/ssv/README.md`](src/web/api/formatters/ssv/README.md) |
-| 537 | ✓ | [`src/web/api/formatters/value/README.md`](src/web/api/formatters/value/README.md) |
-| 538 | ✓ | [`src/web/api/health/README.md`](src/web/api/health/README.md) |
-| 539 | ✓ | [`src/web/api/queries/average/README.md`](src/web/api/queries/average/README.md) |
-| 540 | ✓ | [`src/web/api/queries/countif/README.md`](src/web/api/queries/countif/README.md) |
-| 541 | ✓ | [`src/web/api/queries/des/README.md`](src/web/api/queries/des/README.md) |
-| 542 | ✓ | [`src/web/api/queries/incremental_sum/README.md`](src/web/api/queries/incremental_sum/README.md) |
-| 543 | ✓ | [`src/web/api/queries/max/README.md`](src/web/api/queries/max/README.md) |
-| 544 | ✓ | [`src/web/api/queries/median/README.md`](src/web/api/queries/median/README.md) |
-| 545 | ✓ | [`src/web/api/queries/min/README.md`](src/web/api/queries/min/README.md) |
-| 546 | ✓ | [`src/web/api/queries/percentile/README.md`](src/web/api/queries/percentile/README.md) |
-| 547 | ✓ | [`src/web/api/queries/README.md`](src/web/api/queries/README.md) |
-| 548 | ✓ | [`src/web/api/queries/ses/README.md`](src/web/api/queries/ses/README.md) |
-| 549 | ✓ | [`src/web/api/queries/stddev/README.md`](src/web/api/queries/stddev/README.md) |
-| 550 | ✓ | [`src/web/api/queries/sum/README.md`](src/web/api/queries/sum/README.md) |
-| 551 | ✓ | [`src/web/api/queries/trimmed_mean/README.md`](src/web/api/queries/trimmed_mean/README.md) |
-| 552 | ✓ | [`src/web/api/README.md`](src/web/api/README.md) |
-| 553 | ✓ | [`src/web/api/v1/api_v1_badge/README.md`](src/web/api/v1/api_v1_badge/README.md) |
-| 554 | ✓ | [`src/web/mcp/bridges/README.md`](src/web/mcp/bridges/README.md) |
-| 555 | ✓ | [`src/web/mcp/bridges/stdio-golang/README.md`](src/web/mcp/bridges/stdio-golang/README.md) |
-| 556 | ✓ | [`src/web/mcp/bridges/stdio-nodejs/README.md`](src/web/mcp/bridges/stdio-nodejs/README.md) |
-| 557 | ✓ | [`src/web/mcp/bridges/stdio-python/README.md`](src/web/mcp/bridges/stdio-python/README.md) |
-| 558 | ✓ | [`src/web/mcp/README.md`](src/web/mcp/README.md) |
-| 559 | ✓ | [`src/web/README.md`](src/web/README.md) |
-| 560 | ✓ | [`src/web/rtc/README.md`](src/web/rtc/README.md) |
-| 561 | ✓ | [`src/web/server/README.md`](src/web/server/README.md) |
-| 562 | ✓ | [`src/web/server/static/README.md`](src/web/server/static/README.md) |
-| 563 | ✓ | [`src/web/websocket/README.md`](src/web/websocket/README.md) |
-| 564 | ✓ | [`tests/ebpf/README.md`](tests/ebpf/README.md) |
-| 565 | ✓ | [`tests/health_mgmtapi/README.md`](tests/health_mgmtapi/README.md) |
-| 566 | ✓ | [`tests/query-corpus/README.md`](tests/query-corpus/README.md) |
-| 567 | → | [`README.md`](README.md) |
+| 525 | ✓ | [`src/nrpc/README.md`](src/nrpc/README.md) |
+| 526 | ✓ | [`src/plugins.d/DYNCFG.md`](src/plugins.d/DYNCFG.md) |
+| 527 | ✓ | [`src/plugins.d/README.md`](src/plugins.d/README.md) |
+| 528 | ✓ | [`src/registry/CONFIGURATION.md`](src/registry/CONFIGURATION.md) |
+| 529 | ✓ | [`src/registry/README.md`](src/registry/README.md) |
+| 530 | ✓ | [`src/streaming/README.md`](src/streaming/README.md) |
+| 531 | ✓ | [`src/web/api/exporters/prometheus/README.md`](src/web/api/exporters/prometheus/README.md) |
+| 532 | ✓ | [`src/web/api/exporters/README.md`](src/web/api/exporters/README.md) |
+| 533 | ✓ | [`src/web/api/exporters/shell/README.md`](src/web/api/exporters/shell/README.md) |
+| 534 | ✓ | [`src/web/api/formatters/csv/README.md`](src/web/api/formatters/csv/README.md) |
+| 535 | ✓ | [`src/web/api/formatters/json/README.md`](src/web/api/formatters/json/README.md) |
+| 536 | ✓ | [`src/web/api/formatters/README.md`](src/web/api/formatters/README.md) |
+| 537 | ✓ | [`src/web/api/formatters/ssv/README.md`](src/web/api/formatters/ssv/README.md) |
+| 538 | ✓ | [`src/web/api/formatters/value/README.md`](src/web/api/formatters/value/README.md) |
+| 539 | ✓ | [`src/web/api/health/README.md`](src/web/api/health/README.md) |
+| 540 | ✓ | [`src/web/api/queries/average/README.md`](src/web/api/queries/average/README.md) |
+| 541 | ✓ | [`src/web/api/queries/countif/README.md`](src/web/api/queries/countif/README.md) |
+| 542 | ✓ | [`src/web/api/queries/des/README.md`](src/web/api/queries/des/README.md) |
+| 543 | ✓ | [`src/web/api/queries/incremental_sum/README.md`](src/web/api/queries/incremental_sum/README.md) |
+| 544 | ✓ | [`src/web/api/queries/max/README.md`](src/web/api/queries/max/README.md) |
+| 545 | ✓ | [`src/web/api/queries/median/README.md`](src/web/api/queries/median/README.md) |
+| 546 | ✓ | [`src/web/api/queries/min/README.md`](src/web/api/queries/min/README.md) |
+| 547 | ✓ | [`src/web/api/queries/percentile/README.md`](src/web/api/queries/percentile/README.md) |
+| 548 | ✓ | [`src/web/api/queries/README.md`](src/web/api/queries/README.md) |
+| 549 | ✓ | [`src/web/api/queries/ses/README.md`](src/web/api/queries/ses/README.md) |
+| 550 | ✓ | [`src/web/api/queries/stddev/README.md`](src/web/api/queries/stddev/README.md) |
+| 551 | ✓ | [`src/web/api/queries/sum/README.md`](src/web/api/queries/sum/README.md) |
+| 552 | ✓ | [`src/web/api/queries/trimmed_mean/README.md`](src/web/api/queries/trimmed_mean/README.md) |
+| 553 | ✓ | [`src/web/api/README.md`](src/web/api/README.md) |
+| 554 | ✓ | [`src/web/api/v1/api_v1_badge/README.md`](src/web/api/v1/api_v1_badge/README.md) |
+| 555 | ✓ | [`src/web/mcp/bridges/README.md`](src/web/mcp/bridges/README.md) |
+| 556 | ✓ | [`src/web/mcp/bridges/stdio-golang/README.md`](src/web/mcp/bridges/stdio-golang/README.md) |
+| 557 | ✓ | [`src/web/mcp/bridges/stdio-nodejs/README.md`](src/web/mcp/bridges/stdio-nodejs/README.md) |
+| 558 | ✓ | [`src/web/mcp/bridges/stdio-python/README.md`](src/web/mcp/bridges/stdio-python/README.md) |
+| 559 | ✓ | [`src/web/mcp/README.md`](src/web/mcp/README.md) |
+| 560 | ✓ | [`src/web/README.md`](src/web/README.md) |
+| 561 | ✓ | [`src/web/rtc/README.md`](src/web/rtc/README.md) |
+| 562 | ✓ | [`src/web/server/README.md`](src/web/server/README.md) |
+| 563 | ✓ | [`src/web/server/static/README.md`](src/web/server/static/README.md) |
+| 564 | ✓ | [`src/web/websocket/README.md`](src/web/websocket/README.md) |
+| 565 | ✓ | [`tests/ebpf/README.md`](tests/ebpf/README.md) |
+| 566 | ✓ | [`tests/health_mgmtapi/README.md`](tests/health_mgmtapi/README.md) |
+| 567 | ✓ | [`tests/query-corpus/README.md`](tests/query-corpus/README.md) |
+| 568 | → | [`README.md`](README.md) |
 
 ---
 

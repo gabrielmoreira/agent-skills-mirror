@@ -23,6 +23,14 @@ stable tag 的 Windows 手动包采用三态门禁：`WINDOWS_CERT_PFX_BASE64` /
 
 electron-builder 与 electron-updater 都使用 exact pin。macOS job 必须上传 builder 原生生成的 `latest-mac.yml` / `preview-mac.yml`、ZIP blockmap、DMG/ZIP 与 checksum；stable central job 以 `distribution` target 同时要求完整 Windows/Linux 手动安装包，但拒绝非 Mac updater metadata/blockmap，preview 继续以 `macos` target 拒绝任何 Windows/Linux 资产。审计器校验版本、URL、sha512、size、blockmap 与全平台 checksum 覆盖，并要求 Mac metadata 恰好一条 universal ZIP entry。完整图与 `SHA256SUMS.txt` 先上传 draft，全部成功后才一次切换为公开 stable/prerelease；中断时保留不可见、可由同 tag workflow rerun 恢复的 draft。workflow 顶层保持 `contents: read`，Release/OIDC/attestation 写权限只授予最终发布 job。universal 合并前必须按 lockfile sha512 完整性准备两套 Darwin Sharp runtime，并在逐架构 `afterPack` 中把 Next standalone 的 SQLite/zlib 替换为目标 Electron ABI；合并后 Arch=4 hook 必须 no-op，保留真实 fat binary。`x64ArchFiles` 只允许逐路径保留 SDK/Sharp 的目录选型预编译文件与 already-universal Trash helper，禁止用宽泛规则掩盖其他 native ABI 不一致。macOS DMG 是手工 bootstrap 资产：容器必须先由同一 Developer ID Application identity 签名，再公证/staple，并通过 DMG 专用 Gatekeeper `open/context:primary-signature`；因 staple 会改写其字节，`dmg.writeUpdateInfo` 必须保持 `false`，DMG 不进入 metadata/blockmap。mac updater 只消费签名、公证后的 ZIP。禁止手写 metadata、加入 `stagingPercentage`、发布后替换资产、复用版本或移动 tag。preview 使用 `preview-mac.yml` 与 GitHub prerelease；tag 必须是与 `package.json` 完全相同的 `X.Y.Z-preview.N` 有效 semver，不能使用 electron-updater 无法识别的 `preview-X.Y.Z` 前缀。stable 只接受 `vX.Y.Z`，任何 `vX.Y.Z-preview.N` 必须 fail closed；artifact-only preview 永远不能写 stable feed。
 
+### macOS 自动更新发布确认
+
+1. stable tag 的 Mac 更新源固定为该仓库公开 Release feed；official provenance=1 的客户端只消费 `latest-mac.yml`，不得按平台拆到另一个临时地址，也不得让本地/fork/手工构建启用更新器。
+2. 同一 Release 必须同时具备三份签名、公证、staple 的 DMG（手工 bootstrap）、三份签名/公证 ZIP、三份 ZIP blockmap、`latest-mac.yml` 与 checksum。`latest-mac.yml` 必须恰好引用同版本 universal ZIP，MacUpdater 不消费 DMG。
+3. `push tag` 只表示 CI 已触发，不表示 Shipped。发布者必须跟踪 workflow 终态，并在公开 Release 上复核：非 draft、非 prerelease、Latest=true、版本正确、Windows/Linux 手动包齐全、没有 `latest.yml` / `latest-linux*.yml`、`latest-mac.yml` 的 version/URL/sha512/size 与公开 universal ZIP 一致。
+4. 任一检查失败时保留不可变失败 tag；修复后递增 patch 重新发布。禁止删除/移动 tag、覆盖同版本资产或手工改 metadata。
+5. 任何签名、更新 channel、平台资产图或自动更新能力变更，都必须同步本文件、根目录 `CLAUDE.md`、`AGENTS.md`、`README.md` 与当版 `RELEASE_NOTES.md`。
+
 Linux AppImage/deb/rpm 当前提供 checksum/attestation 与手工安装，不宣称后台自动安装。建立受信 GPG repository 或独立签名 manifest、完成真实 upgrade smoke 前，应用不得静默执行包管理器或提权安装。
 
 涉及 packaged Next utility 生命周期、Codex transport/model discovery 或 server recovery 的版本，除启动期 `/api/health` 外还必须在对应平台产物执行：一次运行期强制退出并验证 offline recovery page → bounded safe-mode restart → 原 stable port/route 恢复；三次自动重启分别消费 1s/2s/4s 预算后，第 4 次退出验证停止自动重试；有不可验证 descendant 时验证 fail-closed。Codex 相关改动另需至少 15 分钟 warmup soak。未完成这些真实产物 smoke 时只能报 `Tests pass`，不得报 `Release ready`。
@@ -90,6 +98,8 @@ Linux AppImage/deb/rpm 当前提供 checksum/attestation 与手工安装，不�
 ## 安装说明
 
 **macOS**: 下载 DMG → 拖入 Applications → 正常启动。若 Gatekeeper 报告开发者无法验证或文件损坏，请停止安装并反馈，不要绕过安全检查。
+
+已安装的 macOS 正式版会通过同一 GitHub Release 的 `latest-mac.yml` 检查更新，并使用签名、公证后的 universal ZIP 完成应用内下载与重启安装；Windows/Linux 仍需手动下载新版安装包。
 
 **Windows/Linux**: stable 只提供手动下载安装。若 Windows 包未签名，Release Notes 必须明示 SmartScreen 风险并引导核对 SHA-256。
 

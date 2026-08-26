@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 34 followed patterns, 131 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 34 followed patterns, 134 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 34 followed patterns, 131
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 34 |
-| Files         | 131 |
+| Files         | 134 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -129,100 +129,103 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`.claude/skills/add-macos-statusbar/SKILL.md`](.claude/skills/add-macos-statusbar/SKILL.md) |
 | 36 | ✓ | [`.claude/skills/add-matrix/REMOVE.md`](.claude/skills/add-matrix/REMOVE.md) |
 | 37 | ✓ | [`.claude/skills/add-matrix/SKILL.md`](.claude/skills/add-matrix/SKILL.md) |
-| 38 | ✓ | [`.claude/skills/add-mnemon/REMOVE.md`](.claude/skills/add-mnemon/REMOVE.md) |
-| 39 | ✓ | [`.claude/skills/add-mnemon/SKILL.md`](.claude/skills/add-mnemon/SKILL.md) |
-| 40 | ✓ | [`.claude/skills/add-ollama-provider/SKILL.md`](.claude/skills/add-ollama-provider/SKILL.md) |
-| 41 | ✓ | [`.claude/skills/add-ollama-tool/REMOVE.md`](.claude/skills/add-ollama-tool/REMOVE.md) |
-| 42 | ✓ | [`.claude/skills/add-ollama-tool/SKILL.md`](.claude/skills/add-ollama-tool/SKILL.md) |
-| 43 | ✓ | [`.claude/skills/add-opencode/REMOVE.md`](.claude/skills/add-opencode/REMOVE.md) |
-| 44 | ✓ | [`.claude/skills/add-opencode/SKILL.md`](.claude/skills/add-opencode/SKILL.md) |
-| 45 | ✓ | [`.claude/skills/add-resend/REMOVE.md`](.claude/skills/add-resend/REMOVE.md) |
-| 46 | ✓ | [`.claude/skills/add-resend/SKILL.md`](.claude/skills/add-resend/SKILL.md) |
-| 47 | ✓ | [`.claude/skills/add-rtk/REMOVE.md`](.claude/skills/add-rtk/REMOVE.md) |
-| 48 | ✓ | [`.claude/skills/add-rtk/SKILL.md`](.claude/skills/add-rtk/SKILL.md) |
-| 49 | ✓ | [`.claude/skills/add-signal/REMOVE.md`](.claude/skills/add-signal/REMOVE.md) |
-| 50 | ✓ | [`.claude/skills/add-signal/SKILL.md`](.claude/skills/add-signal/SKILL.md) |
-| 51 | ✓ | [`.claude/skills/add-slack/REMOVE.md`](.claude/skills/add-slack/REMOVE.md) |
-| 52 | ✓ | [`.claude/skills/add-slack/SKILL.md`](.claude/skills/add-slack/SKILL.md) |
-| 53 | ✓ | [`.claude/skills/add-tavily-tool/REMOVE.md`](.claude/skills/add-tavily-tool/REMOVE.md) |
-| 54 | ✓ | [`.claude/skills/add-tavily-tool/SKILL.md`](.claude/skills/add-tavily-tool/SKILL.md) |
-| 55 | ✓ | [`.claude/skills/add-tavily-tool/upgrade-instructions.md`](.claude/skills/add-tavily-tool/upgrade-instructions.md) |
-| 56 | ✓ | [`.claude/skills/add-teams/REMOVE.md`](.claude/skills/add-teams/REMOVE.md) |
-| 57 | ✓ | [`.claude/skills/add-teams/SKILL.md`](.claude/skills/add-teams/SKILL.md) |
-| 58 | ✓ | [`.claude/skills/add-telegram/REMOVE.md`](.claude/skills/add-telegram/REMOVE.md) |
-| 59 | ✓ | [`.claude/skills/add-telegram/SKILL.md`](.claude/skills/add-telegram/SKILL.md) |
-| 60 | ✓ | [`.claude/skills/add-vercel/container-skills/vercel-cli/SKILL.md`](.claude/skills/add-vercel/container-skills/vercel-cli/SKILL.md) |
-| 61 | ✓ | [`.claude/skills/add-vercel/REMOVE.md`](.claude/skills/add-vercel/REMOVE.md) |
-| 62 | ✓ | [`.claude/skills/add-vercel/SKILL.md`](.claude/skills/add-vercel/SKILL.md) |
-| 63 | ✓ | [`.claude/skills/add-webex/REMOVE.md`](.claude/skills/add-webex/REMOVE.md) |
-| 64 | ✓ | [`.claude/skills/add-webex/SKILL.md`](.claude/skills/add-webex/SKILL.md) |
-| 65 | ✓ | [`.claude/skills/add-wechat/REMOVE.md`](.claude/skills/add-wechat/REMOVE.md) |
-| 66 | ✓ | [`.claude/skills/add-wechat/SKILL.md`](.claude/skills/add-wechat/SKILL.md) |
-| 67 | ✓ | [`.claude/skills/add-whatsapp-cloud/REMOVE.md`](.claude/skills/add-whatsapp-cloud/REMOVE.md) |
-| 68 | ✓ | [`.claude/skills/add-whatsapp-cloud/SKILL.md`](.claude/skills/add-whatsapp-cloud/SKILL.md) |
-| 69 | ✓ | [`.claude/skills/add-whatsapp/REMOVE.md`](.claude/skills/add-whatsapp/REMOVE.md) |
-| 70 | ✓ | [`.claude/skills/add-whatsapp/SKILL.md`](.claude/skills/add-whatsapp/SKILL.md) |
-| 71 | ✓ | [`.claude/skills/customize/SKILL.md`](.claude/skills/customize/SKILL.md) |
-| 72 | ✓ | [`.claude/skills/debug/SKILL.md`](.claude/skills/debug/SKILL.md) |
-| 73 | ✓ | [`.claude/skills/init-first-agent/SKILL.md`](.claude/skills/init-first-agent/SKILL.md) |
-| 74 | ✓ | [`.claude/skills/init-onecli/SKILL.md`](.claude/skills/init-onecli/SKILL.md) |
-| 75 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
-| 76 | ✓ | [`.claude/skills/manage-channels/SKILL.md`](.claude/skills/manage-channels/SKILL.md) |
-| 77 | ✓ | [`.claude/skills/manage-mounts/SKILL.md`](.claude/skills/manage-mounts/SKILL.md) |
-| 78 | ✓ | [`.claude/skills/migrate-from-openclaw/REMOVE.md`](.claude/skills/migrate-from-openclaw/REMOVE.md) |
-| 79 | ✓ | [`.claude/skills/migrate-from-openclaw/SKILL.md`](.claude/skills/migrate-from-openclaw/SKILL.md) |
-| 80 | ✓ | [`.claude/skills/migrate-from-v1/SKILL.md`](.claude/skills/migrate-from-v1/SKILL.md) |
-| 81 | ✓ | [`.claude/skills/migrate-memory/SKILL.md`](.claude/skills/migrate-memory/SKILL.md) |
-| 82 | ✓ | [`.claude/skills/migrate-nanoclaw/SKILL.md`](.claude/skills/migrate-nanoclaw/SKILL.md) |
-| 83 | ✓ | [`.claude/skills/migrate-slack-agents/SKILL.md`](.claude/skills/migrate-slack-agents/SKILL.md) |
-| 84 | ✓ | [`.claude/skills/setup/SKILL.md`](.claude/skills/setup/SKILL.md) |
-| 85 | ✓ | [`.claude/skills/update-nanoclaw/SKILL.md`](.claude/skills/update-nanoclaw/SKILL.md) |
-| 86 | ✓ | [`.claude/skills/update-skills/SKILL.md`](.claude/skills/update-skills/SKILL.md) |
-| 87 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 88 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 89 | ✓ | [`container/CLAUDE.md`](container/CLAUDE.md) |
-| 90 | ✓ | [`container/skills/agent-browser/SKILL.md`](container/skills/agent-browser/SKILL.md) |
-| 91 | ✓ | [`container/skills/frontend-engineer/SKILL.md`](container/skills/frontend-engineer/SKILL.md) |
-| 92 | ✓ | [`container/skills/onecli-gateway/SKILL.md`](container/skills/onecli-gateway/SKILL.md) |
-| 93 | ✓ | [`container/skills/self-customize/SKILL.md`](container/skills/self-customize/SKILL.md) |
-| 94 | ✓ | [`container/skills/welcome/SKILL.md`](container/skills/welcome/SKILL.md) |
-| 95 | ✓ | [`docs/README.md`](docs/README.md) |
-| 96 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
-| 97 | ✓ | [`templates/README.md`](templates/README.md) |
-| 98 | → | [`.claude/skills/add-imessage/docs.md`](.claude/skills/add-imessage/docs.md) |
-| 99 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 100 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 101 | → | [`docs/agent-mailbox-seam-migration.md`](docs/agent-mailbox-seam-migration.md) |
-| 102 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
-| 103 | → | [`docs/api-details.md`](docs/api-details.md) |
-| 104 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
-| 105 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 106 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
-| 107 | → | [`docs/central-db-async-migration.md`](docs/central-db-async-migration.md) |
-| 108 | → | [`docs/customizing.md`](docs/customizing.md) |
-| 109 | → | [`docs/db-central.md`](docs/db-central.md) |
-| 110 | → | [`docs/db-session.md`](docs/db-session.md) |
-| 111 | → | [`docs/db.md`](docs/db.md) |
-| 112 | → | [`docs/hardened-image.md`](docs/hardened-image.md) |
-| 113 | → | [`docs/host-lifecycle-migration.md`](docs/host-lifecycle-migration.md) |
-| 114 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
-| 115 | → | [`docs/memory.md`](docs/memory.md) |
-| 116 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 117 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
-| 118 | → | [`docs/ollama.md`](docs/ollama.md) |
-| 119 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 120 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 121 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
-| 122 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 123 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
-| 124 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
-| 125 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 126 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 127 | → | [`docs/templates.md`](docs/templates.md) |
-| 128 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 129 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 130 | → | [`README.md`](README.md) |
-| 131 | → | [`RELEASING.md`](RELEASING.md) |
+| 38 | ✓ | [`.claude/skills/add-mattermost/LOCAL_SERVER.md`](.claude/skills/add-mattermost/LOCAL_SERVER.md) |
+| 39 | ✓ | [`.claude/skills/add-mattermost/REMOVE.md`](.claude/skills/add-mattermost/REMOVE.md) |
+| 40 | ✓ | [`.claude/skills/add-mattermost/SKILL.md`](.claude/skills/add-mattermost/SKILL.md) |
+| 41 | ✓ | [`.claude/skills/add-mnemon/REMOVE.md`](.claude/skills/add-mnemon/REMOVE.md) |
+| 42 | ✓ | [`.claude/skills/add-mnemon/SKILL.md`](.claude/skills/add-mnemon/SKILL.md) |
+| 43 | ✓ | [`.claude/skills/add-ollama-provider/SKILL.md`](.claude/skills/add-ollama-provider/SKILL.md) |
+| 44 | ✓ | [`.claude/skills/add-ollama-tool/REMOVE.md`](.claude/skills/add-ollama-tool/REMOVE.md) |
+| 45 | ✓ | [`.claude/skills/add-ollama-tool/SKILL.md`](.claude/skills/add-ollama-tool/SKILL.md) |
+| 46 | ✓ | [`.claude/skills/add-opencode/REMOVE.md`](.claude/skills/add-opencode/REMOVE.md) |
+| 47 | ✓ | [`.claude/skills/add-opencode/SKILL.md`](.claude/skills/add-opencode/SKILL.md) |
+| 48 | ✓ | [`.claude/skills/add-resend/REMOVE.md`](.claude/skills/add-resend/REMOVE.md) |
+| 49 | ✓ | [`.claude/skills/add-resend/SKILL.md`](.claude/skills/add-resend/SKILL.md) |
+| 50 | ✓ | [`.claude/skills/add-rtk/REMOVE.md`](.claude/skills/add-rtk/REMOVE.md) |
+| 51 | ✓ | [`.claude/skills/add-rtk/SKILL.md`](.claude/skills/add-rtk/SKILL.md) |
+| 52 | ✓ | [`.claude/skills/add-signal/REMOVE.md`](.claude/skills/add-signal/REMOVE.md) |
+| 53 | ✓ | [`.claude/skills/add-signal/SKILL.md`](.claude/skills/add-signal/SKILL.md) |
+| 54 | ✓ | [`.claude/skills/add-slack/REMOVE.md`](.claude/skills/add-slack/REMOVE.md) |
+| 55 | ✓ | [`.claude/skills/add-slack/SKILL.md`](.claude/skills/add-slack/SKILL.md) |
+| 56 | ✓ | [`.claude/skills/add-tavily-tool/REMOVE.md`](.claude/skills/add-tavily-tool/REMOVE.md) |
+| 57 | ✓ | [`.claude/skills/add-tavily-tool/SKILL.md`](.claude/skills/add-tavily-tool/SKILL.md) |
+| 58 | ✓ | [`.claude/skills/add-tavily-tool/upgrade-instructions.md`](.claude/skills/add-tavily-tool/upgrade-instructions.md) |
+| 59 | ✓ | [`.claude/skills/add-teams/REMOVE.md`](.claude/skills/add-teams/REMOVE.md) |
+| 60 | ✓ | [`.claude/skills/add-teams/SKILL.md`](.claude/skills/add-teams/SKILL.md) |
+| 61 | ✓ | [`.claude/skills/add-telegram/REMOVE.md`](.claude/skills/add-telegram/REMOVE.md) |
+| 62 | ✓ | [`.claude/skills/add-telegram/SKILL.md`](.claude/skills/add-telegram/SKILL.md) |
+| 63 | ✓ | [`.claude/skills/add-vercel/container-skills/vercel-cli/SKILL.md`](.claude/skills/add-vercel/container-skills/vercel-cli/SKILL.md) |
+| 64 | ✓ | [`.claude/skills/add-vercel/REMOVE.md`](.claude/skills/add-vercel/REMOVE.md) |
+| 65 | ✓ | [`.claude/skills/add-vercel/SKILL.md`](.claude/skills/add-vercel/SKILL.md) |
+| 66 | ✓ | [`.claude/skills/add-webex/REMOVE.md`](.claude/skills/add-webex/REMOVE.md) |
+| 67 | ✓ | [`.claude/skills/add-webex/SKILL.md`](.claude/skills/add-webex/SKILL.md) |
+| 68 | ✓ | [`.claude/skills/add-wechat/REMOVE.md`](.claude/skills/add-wechat/REMOVE.md) |
+| 69 | ✓ | [`.claude/skills/add-wechat/SKILL.md`](.claude/skills/add-wechat/SKILL.md) |
+| 70 | ✓ | [`.claude/skills/add-whatsapp-cloud/REMOVE.md`](.claude/skills/add-whatsapp-cloud/REMOVE.md) |
+| 71 | ✓ | [`.claude/skills/add-whatsapp-cloud/SKILL.md`](.claude/skills/add-whatsapp-cloud/SKILL.md) |
+| 72 | ✓ | [`.claude/skills/add-whatsapp/REMOVE.md`](.claude/skills/add-whatsapp/REMOVE.md) |
+| 73 | ✓ | [`.claude/skills/add-whatsapp/SKILL.md`](.claude/skills/add-whatsapp/SKILL.md) |
+| 74 | ✓ | [`.claude/skills/customize/SKILL.md`](.claude/skills/customize/SKILL.md) |
+| 75 | ✓ | [`.claude/skills/debug/SKILL.md`](.claude/skills/debug/SKILL.md) |
+| 76 | ✓ | [`.claude/skills/init-first-agent/SKILL.md`](.claude/skills/init-first-agent/SKILL.md) |
+| 77 | ✓ | [`.claude/skills/init-onecli/SKILL.md`](.claude/skills/init-onecli/SKILL.md) |
+| 78 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
+| 79 | ✓ | [`.claude/skills/manage-channels/SKILL.md`](.claude/skills/manage-channels/SKILL.md) |
+| 80 | ✓ | [`.claude/skills/manage-mounts/SKILL.md`](.claude/skills/manage-mounts/SKILL.md) |
+| 81 | ✓ | [`.claude/skills/migrate-from-openclaw/REMOVE.md`](.claude/skills/migrate-from-openclaw/REMOVE.md) |
+| 82 | ✓ | [`.claude/skills/migrate-from-openclaw/SKILL.md`](.claude/skills/migrate-from-openclaw/SKILL.md) |
+| 83 | ✓ | [`.claude/skills/migrate-from-v1/SKILL.md`](.claude/skills/migrate-from-v1/SKILL.md) |
+| 84 | ✓ | [`.claude/skills/migrate-memory/SKILL.md`](.claude/skills/migrate-memory/SKILL.md) |
+| 85 | ✓ | [`.claude/skills/migrate-nanoclaw/SKILL.md`](.claude/skills/migrate-nanoclaw/SKILL.md) |
+| 86 | ✓ | [`.claude/skills/migrate-slack-agents/SKILL.md`](.claude/skills/migrate-slack-agents/SKILL.md) |
+| 87 | ✓ | [`.claude/skills/setup/SKILL.md`](.claude/skills/setup/SKILL.md) |
+| 88 | ✓ | [`.claude/skills/update-nanoclaw/SKILL.md`](.claude/skills/update-nanoclaw/SKILL.md) |
+| 89 | ✓ | [`.claude/skills/update-skills/SKILL.md`](.claude/skills/update-skills/SKILL.md) |
+| 90 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 91 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 92 | ✓ | [`container/CLAUDE.md`](container/CLAUDE.md) |
+| 93 | ✓ | [`container/skills/agent-browser/SKILL.md`](container/skills/agent-browser/SKILL.md) |
+| 94 | ✓ | [`container/skills/frontend-engineer/SKILL.md`](container/skills/frontend-engineer/SKILL.md) |
+| 95 | ✓ | [`container/skills/onecli-gateway/SKILL.md`](container/skills/onecli-gateway/SKILL.md) |
+| 96 | ✓ | [`container/skills/self-customize/SKILL.md`](container/skills/self-customize/SKILL.md) |
+| 97 | ✓ | [`container/skills/welcome/SKILL.md`](container/skills/welcome/SKILL.md) |
+| 98 | ✓ | [`docs/README.md`](docs/README.md) |
+| 99 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
+| 100 | ✓ | [`templates/README.md`](templates/README.md) |
+| 101 | → | [`.claude/skills/add-imessage/docs.md`](.claude/skills/add-imessage/docs.md) |
+| 102 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 103 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 104 | → | [`docs/agent-mailbox-seam-migration.md`](docs/agent-mailbox-seam-migration.md) |
+| 105 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
+| 106 | → | [`docs/api-details.md`](docs/api-details.md) |
+| 107 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
+| 108 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 109 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
+| 110 | → | [`docs/central-db-async-migration.md`](docs/central-db-async-migration.md) |
+| 111 | → | [`docs/customizing.md`](docs/customizing.md) |
+| 112 | → | [`docs/db-central.md`](docs/db-central.md) |
+| 113 | → | [`docs/db-session.md`](docs/db-session.md) |
+| 114 | → | [`docs/db.md`](docs/db.md) |
+| 115 | → | [`docs/hardened-image.md`](docs/hardened-image.md) |
+| 116 | → | [`docs/host-lifecycle-migration.md`](docs/host-lifecycle-migration.md) |
+| 117 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
+| 118 | → | [`docs/memory.md`](docs/memory.md) |
+| 119 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
+| 120 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
+| 121 | → | [`docs/ollama.md`](docs/ollama.md) |
+| 122 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 123 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 124 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
+| 125 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 126 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
+| 127 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
+| 128 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 129 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 130 | → | [`docs/templates.md`](docs/templates.md) |
+| 131 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 132 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 133 | → | [`README.md`](README.md) |
+| 134 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

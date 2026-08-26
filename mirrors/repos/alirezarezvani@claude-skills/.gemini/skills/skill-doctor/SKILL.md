@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/skill-doctor/../../../engineering/skill-doctor/skills/skill-doctor/SKILL.md

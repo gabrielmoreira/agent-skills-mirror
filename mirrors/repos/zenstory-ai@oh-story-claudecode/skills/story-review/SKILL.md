@@ -12,6 +12,12 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 **执行铁律：审查是找问题，不是验证正确性。**
 
+## 作者习惯边界
+
+若作者记忆 state 已存在，审查前用 `scripts/author_memory_commit.py query` 获取本次相关 active 条目（总输出 ≤2KB）。它们只能帮助解释意图和组织报告，不能降低 rubric 严重度、把事实冲突判为无问题或跳过平台门禁；当前请求仍优先。完整规则见 [references/author-memory.md](references/author-memory.md)。
+
+用户对报告格式或协作方式作出稳定声明时，在本轮审查完成后用 `record` 记录并回传回执；重复修正/推断先待确认，一次性要求不记录。审查发现、工具告警和助手建议本身绝不自动学习。
+
 ---
 
 ## Review Mode 选择
@@ -86,6 +92,8 @@ Rubric Source: file | embedded fallback
 | 平台 rubric | `story-review/references/rubrics/{fanqie,qidian,zhihu}.md` |
 | 标点预检脚本 | `story-review/scripts/normalize-punctuation.js` |
 | AI句式预检脚本 | `story-review/scripts/check-ai-patterns.js` |
+| 作者习惯协议 | `story-review/references/author-memory.md` |
+| 作者习惯事务脚本 | `story-review/scripts/author_memory_commit.py` |
 
 ### 内置审查基准包（路径不可读时必用）
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 38 followed patterns, 54 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 39 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 38 followed patterns, 54 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 38 |
-| Files         | 54 |
+| Followed pats | 39 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,12 +75,13 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 38 followed patterns, 54 fil
 - `docs/protocol-compatibility.md`
 - `docs/protocol-validation.md`
 - `docs/terminal-performance.md`
+- `docs/agent-stream-performance.md`
 - `docs/file-observation.md`
 - `docs/testing.md`
 - `docs/qa.md`
 - `docs/mobile-testing.md`
 - `docs/mobile-panels.md`
-- `docs/side-panel.md`
+- `docs/explorer-sidebar.md`
 - `docs/ad-hoc-daemon-testing.md`
 - `docs/browser-capture-harness.md`
 - `docs/android.md`
@@ -114,42 +115,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
 | 17 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
 | 18 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
-| 19 | → | [`docs/android.md`](docs/android.md) |
-| 20 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 21 | → | [`docs/browser-capture-harness.md`](docs/browser-capture-harness.md) |
-| 22 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
-| 23 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
-| 24 | → | [`docs/data-model.md`](docs/data-model.md) |
-| 25 | → | [`docs/design.md`](docs/design.md) |
-| 26 | → | [`docs/development.md`](docs/development.md) |
-| 27 | → | [`docs/docker.md`](docs/docker.md) |
-| 28 | → | [`docs/expo-router.md`](docs/expo-router.md) |
-| 29 | → | [`docs/file-icons.md`](docs/file-icons.md) |
-| 30 | → | [`docs/file-observation.md`](docs/file-observation.md) |
-| 31 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
-| 32 | → | [`docs/forge-providers.md`](docs/forge-providers.md) |
-| 33 | → | [`docs/forms.md`](docs/forms.md) |
-| 34 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 35 | → | [`docs/hover.md`](docs/hover.md) |
-| 36 | → | [`docs/menus.md`](docs/menus.md) |
-| 37 | → | [`docs/mobile-panels.md`](docs/mobile-panels.md) |
-| 38 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 39 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 40 | → | [`docs/product.md`](docs/product.md) |
-| 41 | → | [`docs/protocol-compatibility.md`](docs/protocol-compatibility.md) |
-| 42 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
-| 43 | → | [`docs/providers.md`](docs/providers.md) |
-| 44 | → | [`docs/qa.md`](docs/qa.md) |
-| 45 | → | [`docs/release.md`](docs/release.md) |
-| 46 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 47 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 48 | → | [`docs/side-panel.md`](docs/side-panel.md) |
-| 49 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 50 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 51 | → | [`docs/testing.md`](docs/testing.md) |
-| 52 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 53 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
-| 54 | → | [`SECURITY.md`](SECURITY.md) |
+| 19 | → | [`docs/agent-stream-performance.md`](docs/agent-stream-performance.md) |
+| 20 | → | [`docs/android.md`](docs/android.md) |
+| 21 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 22 | → | [`docs/browser-capture-harness.md`](docs/browser-capture-harness.md) |
+| 23 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
+| 24 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
+| 25 | → | [`docs/data-model.md`](docs/data-model.md) |
+| 26 | → | [`docs/design.md`](docs/design.md) |
+| 27 | → | [`docs/development.md`](docs/development.md) |
+| 28 | → | [`docs/docker.md`](docs/docker.md) |
+| 29 | → | [`docs/explorer-sidebar.md`](docs/explorer-sidebar.md) |
+| 30 | → | [`docs/expo-router.md`](docs/expo-router.md) |
+| 31 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 32 | → | [`docs/file-observation.md`](docs/file-observation.md) |
+| 33 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
+| 34 | → | [`docs/forge-providers.md`](docs/forge-providers.md) |
+| 35 | → | [`docs/forms.md`](docs/forms.md) |
+| 36 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 37 | → | [`docs/hover.md`](docs/hover.md) |
+| 38 | → | [`docs/menus.md`](docs/menus.md) |
+| 39 | → | [`docs/mobile-panels.md`](docs/mobile-panels.md) |
+| 40 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 41 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 42 | → | [`docs/product.md`](docs/product.md) |
+| 43 | → | [`docs/protocol-compatibility.md`](docs/protocol-compatibility.md) |
+| 44 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
+| 45 | → | [`docs/providers.md`](docs/providers.md) |
+| 46 | → | [`docs/qa.md`](docs/qa.md) |
+| 47 | → | [`docs/release.md`](docs/release.md) |
+| 48 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 49 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 50 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 51 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 52 | → | [`docs/testing.md`](docs/testing.md) |
+| 53 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 54 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
+| 55 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

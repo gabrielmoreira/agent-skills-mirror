@@ -66,9 +66,27 @@ Astron Agent is an enterprise-grade Agentic Workflow development platform. It in
 - **Always prioritize official frameworks, SDKs, and APIs.** When an official framework, SDK, or API exists for a task, you MUST use it instead of hand-rolling a custom implementation, reimplementing existing capabilities, or calling lower-level interfaces directly. Only fall back to a custom approach when no official option covers the need, and state explicitly why the official option was insufficient.
 - If it is a complete feature request or a complex bug, add logs at key points as much as reasonably possible to help with troubleshooting, but do not add excessive logging.
 
+# Context7 Usage Rules
+
+In the following scenarios, you **must** use the Context7 MCP tools (`resolve-library-id` + `query-docs`) first to retrieve the latest official documentation before answering or writing code. Do not answer solely from training data:
+
+1. **Library/framework/SDK API usage** - Querying the syntax, component APIs, method signatures, parameter details, or usage patterns of any library, framework, or official SDK. This includes widely used libraries such as React, Next.js, Vue, Django, Spring Boot, and Tailwind, as well as vendor SDKs such as Anthropic, OpenAI, AWS, Azure, Google Cloud, Stripe, WeChat Open Platform, Alipay Open Platform, and similar official SDKs.
+2. **Version migrations** - Any framework or SDK upgrade or breaking-change question, such as Next.js 14 to 15, AWS SDK v2 to v3, or Pydantic v1 to v2.
+3. **Configuration and installation** - Configuration-file syntax, CLI flags, environment setup, or installation steps for a specific tool or library.
+4. **Library-specific error debugging** - When an error message is related to behavior specific to a third-party library, check that library's documentation before drawing conclusions.
+5. **New or niche libraries** - For libraries that may have little or no coverage in training data, Context7 documentation must be treated as authoritative.
+
+Exceptions where Context7 is not required:
+
+- General programming concepts such as closures, data structures, and design patterns.
+- Refactoring, code review, or debugging of the user's own business logic.
+- Writing scripts from scratch when no specific library documentation is involved.
+
+Note: Even if you believe you already know the answer, if the request matches any scenario above, verify it with Context7 first to avoid giving outdated API guidance.
+
 ## Key Workflow Expectations
 
-Once the code review is completed and approved, run the following release-and-acceptance loop **autonomously, end to end, without asking the user to confirm any step**. Steps 1, 3, and 5 each dispatch a new subagent to run the named skill under `.codex\skills\` (step 2 is the main agent polling the image build). Step 4 is different: the main agent reads and runs the skill itself, then spawns its own testing subagent as the skill directs — do not hand the whole skill to a single subagent. Repeat the loop until acceptance passes, then run the final CI check as the closing step.
+Once the code review is completed and approved, run the following release-and-acceptance loop **autonomously, end to end, without asking the user to confirm any step**. Steps 1, 3, and 5 each dispatch a new subagent to run the named skill under `.codex/skills/` (step 2 is the main agent polling the image build). Step 4 is different: the main agent reads and runs the skill itself, then spawns its own testing subagent as the skill directs — do not hand the whole skill to a single subagent. Repeat the loop until acceptance passes, then run the final CI check as the closing step.
 
 1. **Publish and merge** — Dispatch a subagent to execute the `astron-agent-pr-publish` skill. It commits the eligible local changes, pushes the current branch to `origin`, opens a same-branch pull request into `iflytek/astron-agent`, and merges it once the PR has no conflicts.
 2. **Wait for the image build** — Merging into the upstream branch triggers the image-build workflow `.github/workflows/build-push.yml` in `iflytek/astron-agent`, which builds and pushes all service images to GHCR and takes ~16 minutes. Do not deploy before it finishes. Poll the run with `gh run list` / `gh run watch -R iflytek/astron-agent` on the branch you merged into (rather than sleeping a fixed time), and proceed only when it concludes with `success`. If the build fails, fix the cause and restart from step 1.

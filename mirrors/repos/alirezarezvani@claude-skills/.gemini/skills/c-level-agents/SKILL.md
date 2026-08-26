@@ -1,1 +1,1 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/c-level-agents/../../../c-level-advisor/c-level-agents/skills/c-level-agents/SKILL.md
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/c-level-agents/../../../c-level-agents/skills/c-level-agents/SKILL.md

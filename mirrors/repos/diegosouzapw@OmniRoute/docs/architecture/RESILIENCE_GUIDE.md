@@ -82,7 +82,7 @@ OmniRoute has three distinct but related resilience mechanisms. Each has a diffe
 **Terminal states (NOT cooldowns):**
 
 - `banned` — set by banned-keyword / account-ban detection (see [BAN_DETECTION](../security/BAN_DETECTION.md))
-- `expired`
+- `expired` (transitions to terminal after bounded retries — `EXPIRED_RETRY_MAX = 3` with exponential backoff — so transient OAuth errors can self-heal before the account is permanently deactivated)
 - `credits_exhausted`
 
 These persist until credentials change or an operator resets them. Do not overwrite terminal states with transient cooldown state.

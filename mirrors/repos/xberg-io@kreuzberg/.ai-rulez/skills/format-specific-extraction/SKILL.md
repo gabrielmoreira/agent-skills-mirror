@@ -70,7 +70,9 @@ every other format uses. See `extraction/email.rs`, `extractors/email.rs`, `extr
 | `extract_{docx,xlsx,pptx}_app_properties()` | `extraction/office_metadata/app_properties.rs` |
 | `extract_odt_properties()` | `extraction/office_metadata/odt_properties.rs` |
 | `cells_to_markdown()` | `extraction/markdown.rs` (`pub(crate)`) |
-| `SecurityBudget`, `SecurityLimits`, `ZipBombValidator`, `DepthValidator`, `StringGrowthValidator` | `extractors/security.rs` |
+| `SecurityBudget`, `SecurityLimits` | `extractors/security.rs` |
+| `ZipBombValidator`, `DepthValidator` | `extractors/security.rs` |
+| `StringGrowthValidator` | `extractors/security.rs` |
 
 The security types are `pub(crate)`: in-crate extractors can use them, out-of-crate plugin
 authors cannot.

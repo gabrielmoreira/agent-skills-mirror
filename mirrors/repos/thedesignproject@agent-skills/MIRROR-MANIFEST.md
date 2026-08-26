@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedesignproject/agent-skills` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
+Mirror of `thedesignproject/agent-skills` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedesignproject/agent-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 75 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,21 +119,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`skills/presentation/README.md`](skills/presentation/README.md) |
 | 59 | ✓ | [`skills/presentation/SKILL.md`](skills/presentation/SKILL.md) |
 | 60 | ✓ | [`skills/presentation/slide-types.md`](skills/presentation/slide-types.md) |
-| 61 | ✓ | [`skills/prompt-engineer/references/evaluation-frameworks.md`](skills/prompt-engineer/references/evaluation-frameworks.md) |
-| 62 | ✓ | [`skills/prompt-engineer/references/prompt-optimization.md`](skills/prompt-engineer/references/prompt-optimization.md) |
-| 63 | ✓ | [`skills/prompt-engineer/references/prompt-patterns.md`](skills/prompt-engineer/references/prompt-patterns.md) |
-| 64 | ✓ | [`skills/prompt-engineer/references/structured-outputs.md`](skills/prompt-engineer/references/structured-outputs.md) |
-| 65 | ✓ | [`skills/prompt-engineer/references/system-prompts.md`](skills/prompt-engineer/references/system-prompts.md) |
-| 66 | ✓ | [`skills/prompt-engineer/SKILL.md`](skills/prompt-engineer/SKILL.md) |
-| 67 | ✓ | [`skills/ux-audit/SKILL.md`](skills/ux-audit/SKILL.md) |
-| 68 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 69 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
-| 70 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
-| 71 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
-| 72 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
-| 73 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
-| 74 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 75 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 61 | ✓ | [`skills/product-context-builder/assets/templates/AGENTS.template.md`](skills/product-context-builder/assets/templates/AGENTS.template.md) |
+| 62 | ✓ | [`skills/product-context-builder/assets/templates/CLAUDE.template.md`](skills/product-context-builder/assets/templates/CLAUDE.template.md) |
+| 63 | ✓ | [`skills/product-context-builder/assets/templates/DESIGN.template.md`](skills/product-context-builder/assets/templates/DESIGN.template.md) |
+| 64 | ✓ | [`skills/product-context-builder/assets/templates/PRODUCT.template.md`](skills/product-context-builder/assets/templates/PRODUCT.template.md) |
+| 65 | ✓ | [`skills/product-context-builder/references/always-loaded-files.md`](skills/product-context-builder/references/always-loaded-files.md) |
+| 66 | ✓ | [`skills/product-context-builder/references/design.md`](skills/product-context-builder/references/design.md) |
+| 67 | ✓ | [`skills/product-context-builder/references/product.md`](skills/product-context-builder/references/product.md) |
+| 68 | ✓ | [`skills/product-context-builder/references/project-skills.md`](skills/product-context-builder/references/project-skills.md) |
+| 69 | ✓ | [`skills/product-context-builder/references/validation.md`](skills/product-context-builder/references/validation.md) |
+| 70 | ✓ | [`skills/product-context-builder/SKILL.md`](skills/product-context-builder/SKILL.md) |
+| 71 | ✓ | [`skills/prompt-engineer/references/evaluation-frameworks.md`](skills/prompt-engineer/references/evaluation-frameworks.md) |
+| 72 | ✓ | [`skills/prompt-engineer/references/prompt-optimization.md`](skills/prompt-engineer/references/prompt-optimization.md) |
+| 73 | ✓ | [`skills/prompt-engineer/references/prompt-patterns.md`](skills/prompt-engineer/references/prompt-patterns.md) |
+| 74 | ✓ | [`skills/prompt-engineer/references/structured-outputs.md`](skills/prompt-engineer/references/structured-outputs.md) |
+| 75 | ✓ | [`skills/prompt-engineer/references/system-prompts.md`](skills/prompt-engineer/references/system-prompts.md) |
+| 76 | ✓ | [`skills/prompt-engineer/SKILL.md`](skills/prompt-engineer/SKILL.md) |
+| 77 | ✓ | [`skills/ux-audit/SKILL.md`](skills/ux-audit/SKILL.md) |
+| 78 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 79 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
+| 80 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
+| 81 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
+| 82 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
+| 83 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
+| 84 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 85 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

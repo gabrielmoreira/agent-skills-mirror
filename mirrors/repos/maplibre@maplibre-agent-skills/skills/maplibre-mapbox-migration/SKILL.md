@@ -1,6 +1,7 @@
 ---
 name: maplibre-mapbox-migration
 description: Migrating from Mapbox GL JS to MapLibre GL JS — package and import changes, removing the access token, choosing tile sources, plugin equivalents, and what you gain or give up. Use when moving an existing Mapbox map to MapLibre.
+status: verified
 ---
 
 # Mapbox to MapLibre Migration
@@ -185,3 +186,7 @@ These sources were used when creating this skill. You may want to involve contri
 3. **MapLibre GL JS GitHub** — [github.com/maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) — README, releases, and fork history.
 4. **mapbox-agent-skills** — The `mapbox-maplibre-migration` skill (Mapbox repo) covers the reverse direction (MapLibre → Mapbox). Topic structure and comparison elements were adapted for this Mapbox → MapLibre skill. Copyright (c) Mapbox, Inc. for adapted portions.
 5. **This repo’s skills** — [maplibre-tile-sources](../maplibre-tile-sources/SKILL.md), [maplibre-pmtiles-patterns](../maplibre-pmtiles-patterns/SKILL.md); maplibre-open-search-patterns and maplibre-geospatial-operations not yet in repo — for tile source and service alternatives after migration.
+
+---
+
+**This skill is a snapshot.** Where a primary source contradicts it — the References above, MapLibre's current documentation, or what MapLibre does when you run it — that source wins. Follow it, then [report the disagreement](https://github.com/maplibre/maplibre-agent-skills/issues/new?template=ai-failure-report.md), citing the source and your MapLibre version: editing your installed copy helps no one else and is overwritten on the next update.

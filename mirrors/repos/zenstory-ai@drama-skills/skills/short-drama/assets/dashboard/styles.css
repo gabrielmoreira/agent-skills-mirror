@@ -111,7 +111,8 @@ main:focus { outline: none; }
 .overview-lead { min-width: 0; display: grid; align-content: start; gap: var(--space-4); }
 .eyebrow { color: #d79072; font-size: var(--text-2xs); font-weight: 750; letter-spacing: .16em; }
 .overview-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6); }
-.overview-title-row h2 { margin: 0; font-family: var(--font-doc); font-size: clamp(1.9rem, 3vw, 3.25rem); font-weight: 580; line-height: 1.08; letter-spacing: -.02em; }
+.overview-title-row > div { min-width: 0; }
+.overview-title-row h2 { margin: 0; overflow-wrap: anywhere; font-family: var(--font-doc); font-size: clamp(1.9rem, 3vw, 3.25rem); font-weight: 580; line-height: 1.08; letter-spacing: -.02em; }
 .overview-title-row p { max-width: 44rem; margin: var(--space-3) 0 0; color: var(--muted); }
 .overview-title-row button { flex: 0 0 auto; }
 .overview-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); }
@@ -173,7 +174,8 @@ main:focus { outline: none; }
 .content-link-copy small { color: var(--muted); font-size: var(--text-2xs); }
 .empty-copy { margin: var(--space-3); color: var(--muted); }
 
-.document-pane { min-width: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; scroll-margin-top: var(--space-4); background: var(--workspace); }
+/* Desktop Grid shrink contract: keep the long document inside .content-stage's scroll area. */
+.document-pane { min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; scroll-margin-top: var(--space-4); background: var(--workspace); }
 .document-toolbar { min-height: 5.375rem; padding: var(--space-4) var(--space-5); display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); border-bottom: 1px solid var(--line); }
 .file-identity { min-width: 0; display: grid; gap: var(--space-1); }
 .file-identity h2 { margin: 0; overflow: hidden; font-family: var(--font-doc); font-size: var(--text-lg); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
@@ -279,10 +281,13 @@ main:focus { outline: none; }
   .document-footer span { display: none; }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 420px) {
   .app-header { flex-direction: column; }
   .project-tools, .project-picker { width: 100%; align-items: stretch; }
   .project-picker select { width: 100%; max-width: none; }
+}
+
+@media (max-width: 360px) {
   .media-gallery { grid-template-columns: 1fr; }
 }
 

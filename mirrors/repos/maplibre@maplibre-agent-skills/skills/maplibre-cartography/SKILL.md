@@ -1,6 +1,7 @@
 ---
 name: maplibre-cartography
 description: Cartographic principles for MapLibre GL JS — label and symbol legibility on imagery vs. vector basemaps, figure-ground for point icons, styling vector roads over aerial imagery, visual hierarchy, typography (glyphs/font stacks), sprites and route shields, layer ordering for data injection, and accessibility. Use when styling a map, choosing text or symbol colors, making markers or roads readable on satellite/aerial imagery, setting up fonts or icons, debugging shields, or ordering layers correctly.
+status: verified
 ---
 
 # MapLibre Cartography
@@ -240,3 +241,7 @@ MapLibre styles are rendered in the browser as a WebGL canvas. Accessibility con
 4. [**Unauthenticated rate limits on `raw.githubusercontent.com` (GitHub Community Discussion)**](https://github.com/orgs/community/discussions/159123) — anonymous requests are rate-limited; production traffic sees intermittent HTTP 429
 5. [**`raw.githubusercontent.com` and private repositories (GitHub Community Discussion)**](https://github.com/orgs/community/discussions/69281) — private-repo raw URLs return 404/403 to anonymous requests
 6. [**"About Text Rendering in MapLibre"**](https://github.com/wipfli/about-text-rendering-in-maplibre) — SDF glyph architecture, codepoint-to-glyph mapping, and why shaping-dependent scripts (Devanagari, Khmer) don't render correctly
+
+---
+
+**This skill is a snapshot.** Where a primary source contradicts it — the References above, MapLibre's current documentation, or what MapLibre does when you run it — that source wins. Follow it, then [report the disagreement](https://github.com/maplibre/maplibre-agent-skills/issues/new?template=ai-failure-report.md), citing the source and your MapLibre version: editing your installed copy helps no one else and is overwritten on the next update.

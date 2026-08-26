@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import errno
 import hmac
 import hashlib
 import importlib.util
@@ -16,6 +17,7 @@ import secrets
 import stat
 import sys
 import threading
+import time
 import uuid
 import webbrowser
 from collections.abc import Iterator
@@ -24,7 +26,7 @@ from http.cookies import SimpleCookie
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path, PurePosixPath
 from types import ModuleType
-from typing import Any, BinaryIO
+from typing import Any, BinaryIO, Union
 from urllib.parse import parse_qs, unquote, urlencode, urlsplit
 
 
@@ -81,11 +83,23 @@ MAX_JSON_EXPANSION = 6
 REQUEST_OVERHEAD_BYTES = 64 * 1024
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 STATIC_ROOT = SKILL_ROOT / "assets/dashboard"
+
+# Windows opens files in text mode unless told otherwise, which would rewrite
+# every newline and break the SHA-256 versions the editor round-trips on.
+BINARY = getattr(os, "O_BINARY", 0)
+NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+# POSIX pins directories by descriptor, which makes traversal free of races by
+# construction. Everywhere else the same guarantee is approximated by checking
+# each component and re-checking identity; see ``_PathDirectory``.
 SECURE_DIR_FD = (
     os.name != "nt"
     and bool(getattr(os, "O_DIRECTORY", 0))
-    and bool(getattr(os, "O_NOFOLLOW", 0))
+    and bool(NOFOLLOW)
+    and os.open in os.supports_dir_fd
 )
+# Windows refuses to replace a file another process still holds open, and an
+# editor or a search indexer is enough to hold one for a moment.
+REPLACE_ATTEMPTS = 6
 
 
 class DashboardError(Exception):
@@ -147,23 +161,260 @@ def _validate_structured_text(path: PurePosixPath, content: str) -> None:
             ) from exc
 
 
+def _is_link_or_reparse(details: os.stat_result) -> bool:
+    """Say whether a stat result describes something that must not be traversed.
+
+    ``S_ISLNK`` alone is not enough on Windows: junctions and every other
+    reparse point redirect just as well, and need no privilege to create.
+    """
+
+    attributes = getattr(details, "st_file_attributes", 0)
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return stat.S_ISLNK(details.st_mode) or bool(attributes & reparse_flag)
+
+
+def _entry_is_link(entry: os.DirEntry) -> bool:
+    try:
+        if entry.is_symlink():
+            return True
+        if os.name != "nt":
+            return False
+        return _is_link_or_reparse(entry.stat(follow_symlinks=False))
+    except OSError:
+        return True
+
+
+def _identity(details: os.stat_result) -> tuple[int, int]:
+    return details.st_dev, details.st_ino
+
+
+def _same_object(before: tuple[int, int], after: tuple[int, int]) -> bool:
+    # A volume that reports no inode gives nothing to compare, so treat the
+    # check as inapplicable there instead of failing every read on it.
+    if not before[1] or not after[1]:
+        return True
+    return before == after
+
+
+class _DescriptorDirectory:
+    """A directory pinned by descriptor, the POSIX backend.
+
+    Every operation names a file relative to a descriptor the request already
+    holds, so the pin is the directory itself rather than a name that resolves
+    to one, and nothing in between can be swapped mid-request.
+    """
+
+    __slots__ = ("_fd",)
+
+    contract = (
+        "project_status_at",
+        "is_protected_project_text",
+        "coordinated_project_text_edit_at",
+        "project_path_lifecycle_at",
+    )
+
+    def __init__(self, descriptor: int) -> None:
+        self._fd = descriptor
+
+    @classmethod
+    def open_root(cls, path: Path) -> _DescriptorDirectory:
+        return cls(os.open(path, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW))
+
+    def reopen(self) -> _DescriptorDirectory:
+        # A directory cursor belongs to the open file description, so dup()
+        # would still let concurrent requests advance one another's scan.
+        # Opening "." gives every caller an independent description.
+        return _DescriptorDirectory(
+            os.open(".", os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW, dir_fd=self._fd)
+        )
+
+    def child(self, name: str) -> _DescriptorDirectory:
+        return _DescriptorDirectory(
+            os.open(
+                name, os.O_RDONLY | os.O_DIRECTORY | NOFOLLOW, dir_fd=self._fd
+            )
+        )
+
+    @contextlib.contextmanager
+    def scandir(self) -> Iterator[Iterator[os.DirEntry]]:
+        with os.scandir(self._fd) as entries:
+            yield entries
+
+    def open_regular(self, name: str, flags: int, mode: int = 0o666) -> int:
+        return os.open(name, flags | NOFOLLOW | BINARY, mode, dir_fd=self._fd)
+
+    def replace(self, source: str, target: str) -> None:
+        os.replace(source, target, src_dir_fd=self._fd, dst_dir_fd=self._fd)
+
+    def unlink(self, name: str) -> None:
+        os.unlink(name, dir_fd=self._fd)
+
+    def sync(self) -> None:
+        os.fsync(self._fd)
+
+    def close(self) -> None:
+        if self._fd >= 0:
+            os.close(self._fd)
+            self._fd = -1
+
+    def status(self, tool: ModuleType, project_root: str) -> dict[str, Any]:
+        return tool.project_status_at(self._fd, project_root=project_root)
+
+    def lifecycle(self, tool: ModuleType, relative: str) -> dict[str, str] | None:
+        return tool.project_path_lifecycle_at(self._fd, relative)
+
+    def coordinated_edit(
+        self, tool: ModuleType, relative: str, expected_version: str
+    ) -> Any:
+        return tool.coordinated_project_text_edit_at(
+            self._fd, relative, expected_version
+        )
+
+
+class _PathDirectory:
+    """A directory pinned by verified path, for platforms without ``openat``.
+
+    Windows cannot name a file relative to an open directory, so the guarantee
+    is rebuilt from two checks: every component is inspected with ``os.lstat``,
+    which never follows, and refused if it is a link or any other reparse
+    point; then the pinned directory's identity is re-checked before each
+    operation and an opened file's identity against what was inspected.
+
+    This is weaker than a descriptor -- a swap timed between the two checks is
+    not caught. It is the boundary this suite already accepts for Windows
+    ``verify``, and the adversary it admits, a local process running as the
+    creator, can open these files directly anyway.
+    """
+
+    __slots__ = ("_path", "_identity")
+
+    contract = (
+        "project_status_from_root",
+        "is_protected_project_text",
+        "coordinated_project_text_edit",
+        "project_path_lifecycle",
+    )
+
+    def __init__(self, path: Path, identity: tuple[int, int]) -> None:
+        self._path = path
+        self._identity = identity
+
+    @classmethod
+    def open_root(cls, path: Path) -> _PathDirectory:
+        details = os.lstat(path)
+        if _is_link_or_reparse(details) or not stat.S_ISDIR(details.st_mode):
+            raise OSError(
+                errno.ENOTDIR, "not a plain directory", str(path)
+            )
+        return cls(path, _identity(details))
+
+    def _pinned(self) -> Path:
+        details = os.lstat(self._path)
+        if _is_link_or_reparse(details) or not stat.S_ISDIR(details.st_mode):
+            raise OSError(
+                errno.ENOTDIR, "pinned directory is no longer a directory",
+                str(self._path),
+            )
+        if not _same_object(self._identity, _identity(details)):
+            raise OSError(
+                errno.ENOENT, "pinned directory was replaced", str(self._path)
+            )
+        return self._path
+
+    def reopen(self) -> _PathDirectory:
+        return _PathDirectory(self._pinned(), self._identity)
+
+    def child(self, name: str) -> _PathDirectory:
+        return _PathDirectory.open_root(self._pinned() / name)
+
+    @contextlib.contextmanager
+    def scandir(self) -> Iterator[Iterator[os.DirEntry]]:
+        with os.scandir(self._pinned()) as entries:
+            yield entries
+
+    def open_regular(self, name: str, flags: int, mode: int = 0o666) -> int:
+        target = self._pinned() / name
+        expected: tuple[int, int] | None = None
+        if not flags & os.O_CREAT:
+            # O_CREAT|O_EXCL already refuses an existing name, so only an open
+            # of something that must already be there needs inspecting first.
+            details = os.lstat(target)
+            if _is_link_or_reparse(details) or not stat.S_ISREG(details.st_mode):
+                raise OSError(errno.EPERM, "not a plain file", str(target))
+            expected = _identity(details)
+        descriptor = os.open(target, flags | BINARY, mode)
+        if expected is None:
+            return descriptor
+        try:
+            if not _same_object(expected, _identity(os.fstat(descriptor))):
+                raise OSError(
+                    errno.ENOENT, "file was replaced while opening", str(target)
+                )
+        except BaseException:
+            os.close(descriptor)
+            raise
+        return descriptor
+
+    def replace(self, source: str, target: str) -> None:
+        root = self._pinned()
+        delay = 0.01
+        for remaining in range(REPLACE_ATTEMPTS - 1, -1, -1):
+            try:
+                os.replace(root / source, root / target)
+                return
+            except PermissionError:
+                if not remaining:
+                    raise
+                time.sleep(delay)
+                delay *= 2
+
+    def unlink(self, name: str) -> None:
+        os.unlink(self._pinned() / name)
+
+    def sync(self) -> None:
+        # Windows has no directory handle to flush; the file itself was already
+        # fsynced before the replace, which is the same guarantee the CLI makes.
+        return None
+
+    def close(self) -> None:
+        return None
+
+    def status(self, tool: ModuleType, project_root: str) -> dict[str, Any]:
+        return tool.project_status_from_root(
+            self._pinned(), project_root=project_root
+        )
+
+    def lifecycle(self, tool: ModuleType, relative: str) -> dict[str, str] | None:
+        return tool.project_path_lifecycle(self._pinned(), relative)
+
+    def coordinated_edit(
+        self, tool: ModuleType, relative: str, expected_version: str
+    ) -> Any:
+        return tool.coordinated_project_text_edit(
+            self._pinned(), relative, expected_version
+        )
+
+
+Directory = Union[_DescriptorDirectory, _PathDirectory]
+
+
+def directory_backend() -> type[_DescriptorDirectory] | type[_PathDirectory]:
+    return _DescriptorDirectory if SECURE_DIR_FD else _PathDirectory
+
+
 @contextlib.contextmanager
-def _open_parent_directory_at(
-    root_fd: int, relative: PurePosixPath
-) -> Iterator[tuple[int, str]]:
-    descriptor = os.dup(root_fd)
+def _open_parent_directory(
+    root: Directory, relative: PurePosixPath
+) -> Iterator[tuple[Directory, str]]:
+    current = root.reopen()
     try:
         for part in relative.parts[:-1]:
-            child = os.open(
-                part,
-                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                dir_fd=descriptor,
-            )
-            os.close(descriptor)
-            descriptor = child
-        yield descriptor, relative.name
+            child = current.child(part)
+            current.close()
+            current = child
+        yield current, relative.name
     finally:
-        os.close(descriptor)
+        current.close()
 
 
 class ProjectStore:
@@ -192,18 +443,12 @@ class ProjectStore:
         self.max_request_bytes = (
             max_file_bytes * MAX_JSON_EXPANSION + REQUEST_OVERHEAD_BYTES
         )
-        # The four entry points this server actually invokes. Everything the
-        # dashboard touches goes through a pinned directory descriptor, so the
-        # path-based twins are not part of the contract.
-        required_contract = (
-            "project_status_at",
-            "is_protected_project_text",
-            "coordinated_project_text_edit_at",
-            "project_path_lifecycle_at",
-        )
+        # Which four entry points this server invokes depends on how the
+        # platform can pin a directory: by descriptor, or by verified path.
+        self.backend = directory_backend()
         missing = [
             name
-            for name in required_contract
+            for name in self.backend.contract
             if not callable(getattr(project_tool, name, None))
         ]
         if missing:
@@ -211,26 +456,11 @@ class ProjectStore:
                 "project tool does not support the Dashboard contract: "
                 + ", ".join(missing)
             )
-        # Fail closed once, here, instead of serving a half-working dashboard.
-        # Without directory descriptors every file read, write and media preview
-        # answers 501, so the browse tree and status card are all that render —
-        # and the only way to keep them working was a second, path-based
-        # traversal of every walk, which is precisely the symlink-race-prone
-        # lane this server exists to avoid.
-        if not SECURE_DIR_FD:
-            raise RuntimeError(
-                "the short-drama dashboard needs POSIX directory descriptors; "
-                "this platform is unsupported"
-            )
-        self._workspace_fd = os.open(
-            workspace, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-        )
+        self._workspace = self.backend.open_root(workspace)
         self._write_lock = threading.Lock()
 
     def close(self) -> None:
-        if self._workspace_fd >= 0:
-            os.close(self._workspace_fd)
-            self._workspace_fd = -1
+        self._workspace.close()
 
     @staticmethod
     def _project_id(relative: str) -> str:
@@ -243,12 +473,12 @@ class ProjectStore:
         depth_truncated = False
         node_truncated = False
 
-        def walk_fd(directory_fd: int, parts: tuple[str, ...], depth: int) -> None:
+        def walk(directory: Directory, parts: tuple[str, ...], depth: int) -> None:
             nonlocal depth_truncated, node_truncated, nodes
             if nodes >= self.max_nodes:
                 return
             try:
-                with os.scandir(directory_fd) as iterator:
+                with directory.scandir() as iterator:
                     entries = sorted(iterator, key=lambda item: item.name.casefold())
             except OSError as exc:
                 warnings.append(f"无法读取 {'/'.join(parts) or '.'}: {exc}")
@@ -258,7 +488,7 @@ class ProjectStore:
                     node_truncated = True
                     return
                 nodes += 1
-                if entry.is_symlink():
+                if _entry_is_link(entry):
                     continue
                 if (
                     entry.is_file(follow_symlinks=False)
@@ -267,7 +497,7 @@ class ProjectStore:
                     relative = "/".join(parts) or "."
                     title = "未命名短剧"
                     try:
-                        raw, _mode = self._read_regular_at(directory_fd, entry.name)
+                        raw, _mode = self._read_regular(directory, entry.name)
                         manifest = json.loads(raw.decode("utf-8"))
                         candidate = manifest.get("title") if isinstance(manifest, dict) else None
                         if isinstance(candidate, str) and candidate.strip():
@@ -288,30 +518,22 @@ class ProjectStore:
                     depth_truncated = True
                     continue
                 try:
-                    child_fd = os.open(
-                        entry.name,
-                        os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                        dir_fd=directory_fd,
-                    )
+                    child = directory.child(entry.name)
                 except OSError:
                     continue
                 try:
-                    walk_fd(child_fd, (*parts, entry.name), depth + 1)
+                    walk(child, (*parts, entry.name), depth + 1)
                 finally:
-                    os.close(child_fd)
+                    child.close()
 
-        # A directory cursor belongs to the open file description, so dup() would
-        # still let concurrent requests advance the same scan. Open `.` relative
-        # to the pinned workspace to give every discovery its own cursor.
-        discovery_fd = os.open(
-            ".",
-            os.O_RDONLY | os.O_DIRECTORY | getattr(os, "O_NOFOLLOW", 0),
-            dir_fd=self._workspace_fd,
-        )
+        # Reopen rather than share: on POSIX a directory cursor belongs to the
+        # open file description, so two concurrent discoveries walking one
+        # handle would advance each other's scan.
+        discovery = self._workspace.reopen()
         try:
-            walk_fd(discovery_fd, (), 0)
+            walk(discovery, (), 0)
         finally:
-            os.close(discovery_fd)
+            discovery.close()
         if node_truncated:
             warnings.append(f"项目发现达到节点上限 {self.max_nodes}，结果已截断")
         if depth_truncated:
@@ -319,13 +541,13 @@ class ProjectStore:
         return projects, warnings
 
     @contextlib.contextmanager
-    def _pinned_project(self, project_id: str) -> Iterator[tuple[int, Path]]:
-        """Pin the project root by descriptor and report its creator-facing path.
+    def _pinned_project(self, project_id: str) -> Iterator[tuple[Directory, Path]]:
+        """Pin the project root and report its creator-facing path.
 
-        Every parent is opened with O_NOFOLLOW from the workspace descriptor, so
-        a directory swapped for a symlink mid-request fails instead of
-        redirecting the operation. The yielded path is for display only — no
-        caller reads through it.
+        Every parent is opened from the pinned workspace with the backend's
+        no-follow guarantee, so a directory swapped for a symlink mid-request
+        fails instead of redirecting the operation. The yielded path is for
+        display only — no caller reads through it.
         """
 
         selected = next(
@@ -338,49 +560,37 @@ class ProjectStore:
             if selected["path"] == "."
             else self.workspace / selected["path"]
         )
-        # dup() would share the workspace directory's seek position across
-        # requests. Opening "." creates an independent open-file description,
-        # including when the workspace itself is the selected project.
-        descriptor = os.open(
-            ".",
-            os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-            dir_fd=self._workspace_fd,
-        )
-        marker_fd = -1
+        # Reopen instead of sharing the workspace handle: on POSIX that handle
+        # carries a seek position other requests would advance, including when
+        # the workspace itself is the selected project.
+        directory = self._workspace.reopen()
+        marker = -1
         try:
             for part in PurePosixPath(selected["path"]).parts:
                 if part == ".":
                     continue
-                child = os.open(
-                    part,
-                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                    dir_fd=descriptor,
-                )
-                os.close(descriptor)
-                descriptor = child
-            marker_fd = os.open(
-                "short-drama.json", os.O_RDONLY | os.O_NOFOLLOW, dir_fd=descriptor
-            )
-            if not stat.S_ISREG(os.fstat(marker_fd).st_mode):
+                child = directory.child(part)
+                directory.close()
+                directory = child
+            marker = directory.open_regular("short-drama.json", os.O_RDONLY)
+            if not stat.S_ISREG(os.fstat(marker).st_mode):
                 raise OSError("project manifest is not a regular file")
         except OSError as exc:
-            if marker_fd >= 0:
-                os.close(marker_fd)
-            os.close(descriptor)
+            if marker >= 0:
+                os.close(marker)
+            directory.close()
             raise DashboardError(
                 HTTPStatus.FORBIDDEN, "project root cannot be opened safely"
             ) from exc
-        os.close(marker_fd)
+        os.close(marker)
         try:
-            yield descriptor, display
+            yield directory, display
         finally:
-            os.close(descriptor)
+            directory.close()
 
     def status(self, project_id: str) -> dict[str, Any]:
-        with self._pinned_project(project_id) as (directory_fd, root):
-            return self.project_tool.project_status_at(
-                directory_fd, project_root=str(root)
-            )
+        with self._pinned_project(project_id) as (directory, root):
+            return directory.status(self.project_tool, str(root))
 
     @staticmethod
     def _safe_relative(relative: str) -> PurePosixPath:
@@ -400,10 +610,10 @@ class ProjectStore:
         )
 
     def tree(self, project_id: str) -> dict[str, Any]:
-        with self._pinned_project(project_id) as (directory_fd, _root):
-            return self._tree_from_root(directory_fd)
+        with self._pinned_project(project_id) as (directory, _root):
+            return self._tree_from_root(directory)
 
-    def _tree_from_root(self, directory_fd: int) -> dict[str, Any]:
+    def _tree_from_root(self, directory: Directory) -> dict[str, Any]:
         nodes = 0
         warnings: list[str] = []
         depth_truncated = False
@@ -411,14 +621,14 @@ class ProjectStore:
         oversized_text = 0
         oversized_media = 0
 
-        def scan_fd(
-            parent_fd: int, parts: tuple[str, ...], depth: int
+        def scan(
+            parent: Directory, parts: tuple[str, ...], depth: int
         ) -> list[dict[str, Any]]:
             nonlocal depth_truncated, node_truncated, nodes
             nonlocal oversized_media, oversized_text
             children: list[dict[str, Any]] = []
             try:
-                with os.scandir(parent_fd) as iterator:
+                with parent.scandir() as iterator:
                     entries = sorted(
                         iterator,
                         key=lambda item: (
@@ -430,7 +640,7 @@ class ProjectStore:
                 warnings.append(f"无法读取 {'/'.join(parts) or '.'}: {exc}")
                 return children
             for entry in entries:
-                if entry.is_symlink():
+                if _entry_is_link(entry):
                     continue
                 relative = "/".join((*parts, entry.name))
                 if parts == () and entry.name.casefold() == ".short-drama":
@@ -448,19 +658,15 @@ class ProjectStore:
                     }
                     if depth < self.max_depth:
                         try:
-                            child_fd = os.open(
-                                entry.name,
-                                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                                dir_fd=parent_fd,
-                            )
+                            child = parent.child(entry.name)
                         except OSError:
                             continue
                         try:
-                            node["children"] = scan_fd(
-                                child_fd, (*parts, entry.name), depth + 1
+                            node["children"] = scan(
+                                child, (*parts, entry.name), depth + 1
                             )
                         finally:
-                            os.close(child_fd)
+                            child.close()
                     else:
                         depth_truncated = True
                         node["truncated"] = True
@@ -496,7 +702,7 @@ class ProjectStore:
                 )
             return children
 
-        tree = scan_fd(directory_fd, (), 0)
+        tree = scan(directory, (), 0)
         if node_truncated:
             warnings.append(f"文件树达到节点上限 {self.max_nodes}，结果已截断")
         if depth_truncated:
@@ -527,12 +733,9 @@ class ProjectStore:
                 HTTPStatus.UNSUPPORTED_MEDIA_TYPE, "file type is not editable text"
             )
         try:
-            with self._pinned_project(project_id) as (directory_fd, _root):
-                with _open_parent_directory_at(directory_fd, pure) as (
-                    parent_fd,
-                    name,
-                ):
-                    data, _ = self._read_regular_at(parent_fd, name)
+            with self._pinned_project(project_id) as (directory, _root):
+                with _open_parent_directory(directory, pure) as (parent, name):
+                    data, _ = self._read_regular(parent, name)
         except OSError as exc:
             raise DashboardError(
                 HTTPStatus.FORBIDDEN, "text file cannot be opened safely"
@@ -550,9 +753,8 @@ class ProjectStore:
             "writable": not self._is_protected(pure),
         }
 
-    def _read_regular_at(self, parent_fd: int, name: str) -> tuple[bytes, int]:
-        flags = os.O_RDONLY | os.O_NOFOLLOW
-        descriptor = os.open(name, flags, dir_fd=parent_fd)
+    def _read_regular(self, parent: Directory, name: str) -> tuple[bytes, int]:
+        descriptor = parent.open_regular(name, os.O_RDONLY)
         try:
             details = os.fstat(descriptor)
             if not stat.S_ISREG(details.st_mode):
@@ -575,17 +777,17 @@ class ProjectStore:
             if descriptor >= 0:
                 os.close(descriptor)
 
-    def _replace_text_at(
+    def _replace_text(
         self,
-        parent_fd: int,
+        parent: Directory,
         name: str,
         encoded: bytes,
         mode: int,
         expected_version: str,
     ) -> None:
         temporary_name = f".{name}.{uuid.uuid4().hex}.tmp"
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
-        descriptor = os.open(temporary_name, flags, mode, dir_fd=parent_fd)
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        descriptor = parent.open_regular(temporary_name, flags, mode)
         replaced = False
         try:
             with os.fdopen(descriptor, "wb") as handle:
@@ -593,36 +795,43 @@ class ProjectStore:
                 handle.write(encoded)
                 handle.flush()
                 os.fsync(handle.fileno())
-                os.fchmod(handle.fileno(), mode)
-            latest, _ = self._read_regular_at(parent_fd, name)
+                # Windows has no fchmod, and its chmod only moves the read-only
+                # bit; the mode the file already carries is the right one there.
+                if hasattr(os, "fchmod"):
+                    os.fchmod(handle.fileno(), mode)
+            latest, _ = self._read_regular(parent, name)
             if _version(latest) != expected_version:
                 raise DashboardError(
                     HTTPStatus.CONFLICT, "file changed since it was opened"
                 )
-            os.replace(
-                temporary_name,
-                name,
-                src_dir_fd=parent_fd,
-                dst_dir_fd=parent_fd,
-            )
+            try:
+                parent.replace(temporary_name, name)
+            except PermissionError as exc:
+                # Windows refuses the rename while anything else holds the
+                # target open; elsewhere the same errno means the file is
+                # write-protected. Neither is an unsafe path, so neither may
+                # report as one.
+                raise DashboardError(
+                    HTTPStatus.CONFLICT, "file is locked or not writable"
+                ) from exc
             replaced = True
-            os.fsync(parent_fd)
+            parent.sync()
         finally:
             if descriptor >= 0:
                 os.close(descriptor)
             if not replaced:
-                try:
-                    os.unlink(temporary_name, dir_fd=parent_fd)
-                except FileNotFoundError:
-                    pass
+                # Best effort: the save already failed, and a cleanup that
+                # cannot run must not replace that error with its own.
+                with contextlib.suppress(OSError):
+                    parent.unlink(temporary_name)
 
     @contextlib.contextmanager
     def _coordinated_edit(
-        self, directory_fd: int, relative: PurePosixPath, expected_version: str
+        self, directory: Directory, relative: PurePosixPath, expected_version: str
     ) -> Iterator[None]:
         try:
-            with self.project_tool.coordinated_project_text_edit_at(
-                directory_fd, relative.as_posix(), expected_version
+            with directory.coordinated_edit(
+                self.project_tool, relative.as_posix(), expected_version
             ):
                 yield
         except Exception as exc:
@@ -631,6 +840,13 @@ class ProjectStore:
             if isinstance(exc, ValueError):
                 raise DashboardError(
                     HTTPStatus.FORBIDDEN, "project path changed during the save"
+                ) from exc
+            if isinstance(exc, OSError):
+                # Both backends refuse to take the project lock through a
+                # redirected `.short-drama`. That is a refused path, not the
+                # internal error it used to surface as.
+                raise DashboardError(
+                    HTTPStatus.FORBIDDEN, "text file cannot be replaced safely"
                 ) from exc
             raise
 
@@ -663,25 +879,22 @@ class ProjectStore:
         _validate_structured_text(pure, content)
         with (
             self._write_lock,
-            self._pinned_project(project_id) as (directory_fd, _root),
-            self._coordinated_edit(directory_fd, pure, expected_version),
+            self._pinned_project(project_id) as (directory, _root),
+            self._coordinated_edit(directory, pure, expected_version),
         ):
             # The in-process lock and the project's file lock keep the version
-            # check and atomic replace together. Pinned parent descriptors stop
-            # a concurrent symlink swap from redirecting the write.
+            # check and atomic replace together. Pinned parents stop a
+            # concurrent symlink swap from redirecting the write.
             try:
-                with _open_parent_directory_at(directory_fd, pure) as (
-                    parent_fd,
-                    name,
-                ):
-                    current, mode = self._read_regular_at(parent_fd, name)
+                with _open_parent_directory(directory, pure) as (parent, name):
+                    current, mode = self._read_regular(parent, name)
                     if _version(current) != expected_version:
                         raise DashboardError(
                             HTTPStatus.CONFLICT,
                             "file changed since it was opened",
                         )
-                    self._replace_text_at(
-                        parent_fd, name, encoded, mode, expected_version
+                    self._replace_text(
+                        parent, name, encoded, mode, expected_version
                     )
             except OSError as exc:
                 raise DashboardError(
@@ -691,12 +904,10 @@ class ProjectStore:
 
     def media_info(self, project_id: str, relative: str) -> dict[str, Any]:
         pure = self._safe_relative(relative)
-        with self._pinned_project(project_id) as (directory_fd, _root):
-            handle, content_type, size = self._open_media_at(directory_fd, pure)
+        with self._pinned_project(project_id) as (directory, _root):
+            handle, content_type, size = self._open_media(directory, pure)
             handle.close()
-            lifecycle = self.project_tool.project_path_lifecycle_at(
-                directory_fd, pure.as_posix()
-            )
+            lifecycle = directory.lifecycle(self.project_tool, pure.as_posix())
         kind = "image"
         if content_type.startswith("video/"):
             kind = "video"
@@ -719,22 +930,21 @@ class ProjectStore:
         self, project_id: str, relative: str
     ) -> tuple[BinaryIO, PurePosixPath, str, int]:
         pure = self._safe_relative(relative)
-        with self._pinned_project(project_id) as (directory_fd, _root):
-            handle, content_type, size = self._open_media_at(directory_fd, pure)
+        with self._pinned_project(project_id) as (directory, _root):
+            handle, content_type, size = self._open_media(directory, pure)
         return handle, pure, content_type, size
 
-    def _open_media_at(
-        self, directory_fd: int, pure: PurePosixPath
+    def _open_media(
+        self, directory: Directory, pure: PurePosixPath
     ) -> tuple[BinaryIO, str, int]:
         content_type = MEDIA_TYPES.get(pure.suffix.casefold())
         if content_type is None:
             raise DashboardError(
                 HTTPStatus.UNSUPPORTED_MEDIA_TYPE, "unsupported preview media"
             )
-        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
         try:
-            with _open_parent_directory_at(directory_fd, pure) as (parent_fd, name):
-                descriptor = os.open(name, flags, dir_fd=parent_fd)
+            with _open_parent_directory(directory, pure) as (parent, name):
+                descriptor = parent.open_regular(name, os.O_RDONLY)
         except OSError as exc:
             raise DashboardError(
                 HTTPStatus.FORBIDDEN, "media file cannot be opened safely"

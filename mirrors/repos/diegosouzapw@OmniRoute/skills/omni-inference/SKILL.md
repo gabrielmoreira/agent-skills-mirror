@@ -32,6 +32,30 @@ curl -X POST https://localhost:20128/api/v1/session-leases \
   -d '{}'
 ```
 
+### GET /api/v1/search
+
+List search providers
+
+Lists configured search providers and their supported search types.
+
+```bash
+curl https://localhost:20128/api/v1/search \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/search
+
+Run a unified search
+
+Searches the web, news, or X through a configured provider. Set `provider` to `xquik-search` to use Xquik for X search. The aliases `xquik` and `xquik_search` resolve to the same provider.
+
+```bash
+curl -X POST https://localhost:20128/api/v1/search \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
 ### POST /api/v1/chat/completions
 
 Create chat completion

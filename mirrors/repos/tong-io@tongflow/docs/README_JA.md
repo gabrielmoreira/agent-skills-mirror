@@ -267,7 +267,7 @@ docker compose up -d
 あらかじめ読み込まれた**サンプルワークフロー**（テキスト → 画像 → 融合 → 動画）を実行するには、以下の3つのプラグインが必要です：
 
 - [tongflow-modal-z-image](https://github.com/tong-io/tongflow-modal-z-image) — テキストから画像生成
-- [tongflow-modal-flux2-klein9b](https://github.com/tong-io/tongflow-modal-flux2-klein9b) — 画像の融合 / ミックス
+- [tongflow-modal-qwen-image-edit](https://github.com/tong-io/tongflow-modal-qwen-image-edit) — 画像の融合 / ミックス
 - [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — 画像から動画生成
 
 これらのプラグインは [Modal](https://modal.com) 上で動作します（毎月最大 **$30** 分の無料GPU演算）。**設定**で `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` を入力してください。トークンは [modal.com/settings/tokens](https://modal.com/settings/tokens) で作成できます。他のどのプラットフォームでも同じ方法で自分のプラグインを公開できます。

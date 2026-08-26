@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/swedish-mentor/../../../productivity/swedish-mentor/SKILL.md

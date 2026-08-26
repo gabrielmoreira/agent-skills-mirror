@@ -78,7 +78,7 @@ createHooks()
   │   │                             anthropicContextWindowLimitRecovery, autoUpdateChecker,
   │   │                             codegraphBootstrap, astGrepSgProvision,
   │   │                             agentUsageReminder, nonInteractiveEnv, interactiveBashSession,
-  │   │                             goal, editErrorRecovery, delegateTaskRetry, startWork,
+  │   │                             goal, editErrorRecovery, delegateTaskRetry, ulwExecute,
   │   │                             prometheusMdOnly, sisyphusJuniorNotepad, noSisyphusGpt,
   │   │                             noHephaestusNonGpt, hephaestusAgentsMdInjector,
   │   │                             questionLabelTruncator, taskResumeInfo,

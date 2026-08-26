@@ -423,7 +423,7 @@ Grok bridge 需要 `user_invocable: true`。豆包等通用 Agent 优先通过 `
 - `/dbs-knowledge`：管理一般本地资料的导航、收录、调用、版本关系和健康检查。
 - `/dbs-content-system`：用户要把大量文稿、推文、选题、案例或课程稿加工成内容单元、主题地图和选题装配稿时使用。
 - `/dbs-agent-migration`：用户要整理整个 Agent 工作台、规则真源、宿主命名和多端迁移时使用。
-- `/dbs-bridge`：知识库已经可用，用户只需要把某个 Skill 挂到多个 Agent 时使用。
+- `/dbs-install-skill`：知识库已经可用，用户只需要把某个 Skill 安装到多个 Agent 时使用。
 - `/dbs-decision`：用户要持续记录决策、回填结果并提炼个人规律时使用。
 
 用户的请求越过上述边界时，先完成当前知识库任务，把越界需求和已有结果写进结论，再交回 `/dbs`。可以说明相邻 Skill 的职责，不在当前 Skill 内选择下一站，也不安排固定的多 Skill 长链。

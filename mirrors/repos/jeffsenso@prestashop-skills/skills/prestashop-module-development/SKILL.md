@@ -57,9 +57,27 @@ Read: `references/module-class-and-installer.md`
 Key rules:
 - Always `require_once __DIR__ . '/vendor/autoload.php';` after the `_PS_VERSION_` guard
 - Never put hook registration, DB queries, or `Configuration::` calls directly in `install()` — delegate to `src/Install/Installer.php`
-- `getContent()` must only redirect to the Symfony route, never render HTML
+- `getContent()` must only redirect to the Symfony route using the **modern Symfony router**: `$router = $this->get('router'); $route = $router->generate('route_name'); Tools::redirectAdmin($route);` — **NEVER use `$this->context->link->getAdminLink()`**
 - **No SQL in the main module class** — all database access (including in hooks like `hookActionShopDataDuplication` and widget methods like `getWidgetVariables`) must be delegated to the Repository or Manager class via `$this->get('service.id')`
 - **Service access**: use `$this->has()` + null check in admin context; use plain `$this->get()` + null check in front-office context. **NEVER use `ContainerFinder`** — it is unnecessary. See `references/module-class-and-installer.md` → *Guard patterns* section.
+
+### 1b) Configuration variable management
+
+Read: `references/configuration-management.md`
+
+**MANDATORY pattern**: YAML-based configuration with ConfigurationManager service
+
+Key rules:
+- **NEVER use `Configuration::updateValue()` or `Configuration::get()` directly** in business logic
+- **ALWAYS create `/config_data/module.yml`** to define all configuration keys and default values (single source of truth)
+- **ALWAYS use `ConfigurationInstaller`** service for install/uninstall operations
+- **ALWAYS use `ConfigurationManager`** service to read configuration (from database or YAML fallback)
+- **Structure**:
+  - `config_data/module.yml` — all keys + defaults
+  - `src/Install/ConfigurationInstaller.php` — install/uninstall config values
+  - `src/Configuration/ConfigurationManager.php` — read config (DB or YAML)
+  - `config/components/configuration/configuration_manager.yml` — register service
+- **Benefits**: Single source of truth, type-safe access, no hardcoded keys, easy to test and maintain
 
 ### 2) Modern configuration pages
 

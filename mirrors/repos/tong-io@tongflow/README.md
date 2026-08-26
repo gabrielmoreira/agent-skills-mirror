@@ -275,7 +275,7 @@ Open the **plugin manager** (the blocks icon, top-right) and install what you ne
 To run the preloaded **example workflow** (text → image → fusion → video), install these three plugins:
 
 - [tongflow-modal-z-image](https://github.com/tong-io/tongflow-modal-z-image) — text-to-image
-- [tongflow-modal-flux2-klein9b](https://github.com/tong-io/tongflow-modal-flux2-klein9b) — image fusion / blending
+- [tongflow-modal-qwen-image-edit](https://github.com/tong-io/tongflow-modal-qwen-image-edit) — image fusion / blending
 - [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — image-to-video
 
 These run on [Modal](https://modal.com) (up to **$30/month** of free GPU compute). Add `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` in **Settings**; create a token at [modal.com/settings/tokens](https://modal.com/settings/tokens). Any other platform can publish its own plugins the same way.

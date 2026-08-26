@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zenstory-ai/drama-skills` — 26 default patterns, 0 followed patterns, 185 file(s) materialized.
+Mirror of `zenstory-ai/drama-skills` — 26 default patterns, 0 followed patterns, 186 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zenstory-ai/drama-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 185 |
+| Files         | 186 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -240,10 +240,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 179 | ✓ | [`skills/short-drama/references/production-form-profiles.md`](skills/short-drama/references/production-form-profiles.md) |
 | 180 | ✓ | [`skills/short-drama/references/reference-roles.md`](skills/short-drama/references/reference-roles.md) |
 | 181 | ✓ | [`skills/short-drama/references/runtime-preflight.md`](skills/short-drama/references/runtime-preflight.md) |
-| 182 | ✓ | [`skills/short-drama/scripts/dashboard_server.py`](skills/short-drama/scripts/dashboard_server.py) |
-| 183 | ✓ | [`skills/short-drama/scripts/project_tool.py`](skills/short-drama/scripts/project_tool.py) |
-| 184 | ✓ | [`skills/short-drama/scripts/selftest.py`](skills/short-drama/scripts/selftest.py) |
-| 185 | ✓ | [`skills/short-drama/SKILL.md`](skills/short-drama/SKILL.md) |
+| 182 | ✓ | [`skills/short-drama/scripts/creator_markdown_check.py`](skills/short-drama/scripts/creator_markdown_check.py) |
+| 183 | ✓ | [`skills/short-drama/scripts/dashboard_server.py`](skills/short-drama/scripts/dashboard_server.py) |
+| 184 | ✓ | [`skills/short-drama/scripts/project_tool.py`](skills/short-drama/scripts/project_tool.py) |
+| 185 | ✓ | [`skills/short-drama/scripts/selftest.py`](skills/short-drama/scripts/selftest.py) |
+| 186 | ✓ | [`skills/short-drama/SKILL.md`](skills/short-drama/SKILL.md) |
 
 ---
 

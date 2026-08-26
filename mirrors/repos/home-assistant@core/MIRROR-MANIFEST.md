@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 13
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,15 +63,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
 | 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
 | 4 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/ha-pr-comment-audit/SKILL.md`](.claude/skills/ha-pr-comment-audit/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/ha-quality-scale-verify/SKILL.md`](.claude/skills/ha-quality-scale-verify/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
-| 9 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 10 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
-| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | → | [`AI_POLICY.md`](AI_POLICY.md) |
+| 5 | ✓ | [`.claude/skills/ha-merge-queue/SKILL.md`](.claude/skills/ha-merge-queue/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/ha-pr-comment-audit/SKILL.md`](.claude/skills/ha-pr-comment-audit/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/ha-quality-scale-verify/SKILL.md`](.claude/skills/ha-quality-scale-verify/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
+| 10 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 11 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | → | [`AI_POLICY.md`](AI_POLICY.md) |
 
 ---
 

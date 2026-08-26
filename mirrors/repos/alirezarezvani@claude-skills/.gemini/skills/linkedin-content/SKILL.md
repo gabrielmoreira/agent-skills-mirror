@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/linkedin-content/../../../marketing/linkedin/skills/linkedin-content/SKILL.md

@@ -433,6 +433,8 @@ Five states. **`stale` is not a state** — it is a computed overlay: `is_stale 
 
 Only ingest skills set `draft`. All other transitions require a human editor. Update `lifecycle_changed` whenever the state changes.
 
+Two edge classes are therefore **illegal** and are reported by `obsidian-wiki lint` as `illegal_lifecycle_transitions`: anything falling back to `draft` (`reviewed|verified|disputed → draft`), and any exit from `archived` (it is terminal — restoring a page is a deliberate delete-and-recreate, not a transition). The check compares against the lifecycle recorded in `_meta/trust-ledger.json` at the page's last review, so it only sees pages that have been reviewed at least once.
+
 ## Importance Tiering
 
 The `tier:` field controls which pages get updated on each ingest pass and their priority in retrieval. As wikis grow, re-reading every page on every ingest wastes tokens — tiering lets ingest and query skills focus effort where it matters most.
@@ -593,6 +595,14 @@ STATE_DIR="$(obsidian_wiki_config_dir)/state/$VAULT_ID"
 Every skill's setup section should read:
 
 > **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md`. Honor an inline `@name` override first, then walk up from CWD for `.env`, fall back to the global config, else prompt setup. This gives `OBSIDIAN_VAULT_PATH` and any tool-specific path overrides.
+
+## Writing Profile Resolution
+
+Before drafting or rewriting natural-language Markdown, resolve the global config directory with the XDG/legacy algorithm above, then read `<global config dir>/WRITING.md` when it exists. A missing or empty `WRITING.md` means there are no custom writing preferences. If that optional read fails, warn and continue with the default framework guidance.
+
+The effective precedence is framework invariants > current task/skill requirements > current project `AGENTS.md` > vault `AGENTS.md` > global `WRITING.md`. Framework invariants include schema, provenance, and safety; operation-specific requirements remain authoritative for the current task. Unspecified project and vault rules are inherited from less-specific layers, and more specific same-topic rules win.
+
+Writing preferences apply only to newly drafted or rewritten natural-language fields and body content. This includes natural-language title and summary values in YAML frontmatter, but preferences cannot alter YAML syntax, required keys, structure, types, or machine-generated fields. JSON, structured logs, and pass-through content remain unchanged and retain their required formats and source fidelity.
 
 ## Environment Variables
 

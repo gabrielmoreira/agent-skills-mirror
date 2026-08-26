@@ -143,6 +143,11 @@ Rules:
 - Making Codex the implicit default owner in wording, schemas, or reports —
   keep Codex, Claude Code, Hermes runtime, and generic executors
   executor-neutral (`AGENTS.md`, Implementation Boundaries).
+- Reading Maestro/handoff surfaces (`src/coding/maestro/`, executor capability
+  snapshots, prompting contracts, throughput overlays) as the default coding
+  path — they activate only after an explicit coding-owner choice. The default
+  and normal path is the Hermes harness; `CONTEXT.md` (Coding delegation) and
+  `src/coding/orchestration_vocabulary.py` pin the two lanes.
 
 ## Working Style
 

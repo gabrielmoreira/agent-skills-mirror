@@ -170,6 +170,7 @@ This allows consumers to import directly from `src/config` rather than individua
 
 ### AgentOverrideConfig
 - `model`: Model ID or array of model IDs
+- `inheritModelFrom`: Explicitly inherit the current `session` model or the configured `orchestrator` model when `model` is omitted; supported for built-in and custom agents
 - `temperature`: Sampling temperature (0-2)
 - `variant`: Model variant identifier
 - `skills`: Skill allow/deny list ("*" = all, "!item" = exclude)

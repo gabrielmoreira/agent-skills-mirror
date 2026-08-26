@@ -145,6 +145,10 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 
 **构建：** stable tag 同时发布 macOS arm64/x64 DMG/ZIP、universal updater ZIP、Windows NSIS 与 Linux x64/arm64 AppImage/deb/rpm；只有 macOS 嵌入 official updater provenance 并发布 `latest-mac.yml`/ZIP blockmap，Windows/Linux 仅作手动下载，不上传各自 updater metadata。Mac 任一签名、公证、Gatekeeper、ABI 或 Intel 门禁，以及任一平台 package health/asset audit 失败，都会阻断正式 Release。Windows signer 三件套全有时执行 Authenticode；全部未配置时显式产出未签名手动包并验证 `NotSigned`，半配置时 fail closed。Windows 构建机器钉在 `windows-2022`（tech-debt #44）。preview Release 仍为 macOS-only。`scripts/after-pack.js` 重编译 better-sqlite3 为 Electron ABI。构建前使用受保护的清理脚本清理 `release/ .next/ dist-electron/`。
 
+**macOS 自动更新是 stable 发版硬门禁：** 不能把“DMG/ZIP 已上传”当作 Mac 发版完成。CI 必须从同一 immutable build 发布 `latest-mac.yml`、同版本 universal ZIP 与 ZIP blockmap，并验证 metadata 的 version、URL、sha512、size；公开 Release 后还要复核 Latest 状态与 metadata 只引用该 universal ZIP。Windows/Linux 没有原生自动更新，只能在 Release Notes 中描述为手动下载安装。
+
+**发版文档同步：** 改动签名、更新 channel、平台产物或自动更新能力时，必须同时核对并同步 `docs/rules/release.md`、`CLAUDE.md`、`AGENTS.md`、`README.md` 与当版 `RELEASE_NOTES.md`。权威细节仍以 `docs/rules/release.md` 为准，其余文件只保留面向各自读者的摘要，避免两份实现规则漂移。
+
 ## 执行计划
 
 **中大型功能（跨 3+ 模块、涉及 schema 变更、需分阶段交付）必须先写执行计划再开工。**

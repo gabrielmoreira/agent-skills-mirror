@@ -20,6 +20,9 @@ You are ingesting source documents into an Obsidian wiki. Your job is not to sum
 
 ## Before You Start
 
+**Writing profile:** Before drafting or rewriting natural-language Markdown, read and apply the `Writing Profile Resolution` section in `llm-wiki/SKILL.md`. Framework schema, provenance, safety, and operation-specific requirements take precedence.
+`WRITING.md` preferences apply only to newly drafted or rewritten natural-language Markdown; preserve source content and structured records.
+
 1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (inline `@name` override → walk up CWD for `.env` → global config → prompt setup). This gives `OBSIDIAN_VAULT_PATH`, `OBSIDIAN_SOURCES_DIR`, `OBSIDIAN_LINK_FORMAT` (default: `wikilink`), and `WIKI_STAGED_WRITES`. Only read the specific variables you need — do not log, echo, or reference any other values from these files.
 2. **Check `WIKI_STAGED_WRITES`** — if set to `true`, all new and updated category pages go to `_staging/<category>/` instead of their final location. Tell the user at the start of the ingest: "Staged writes mode is enabled — pages will land in `_staging/` for your review. Run `/wiki-stage-commit` when ready to promote."
 3. Read `.manifest.json` at the vault root to check what's already been ingested
@@ -469,6 +472,8 @@ After writing pages, check that wikilinks work in both directions. If page A lin
 `content_hash`, `last_ingested`, and `pages_produced` are the three fields `cache.py` reads and writes (`cache-check` / `cache-update`) — the field names must match exactly or incremental-skip detection breaks. `content_hash` is the SHA-256 of the file contents at ingest time; it's the primary skip signal on subsequent runs, so always write it. `source_type` and `project` are advisory metadata for your own bookkeeping — the cache layer doesn't read them.
 
 Also update `stats.total_sources_ingested` and `stats.total_pages`.
+
+**In parallel runs** (batch fan-out, or while the Docker server is writing the same vault), record sources with `obsidian-wiki cache-update` rather than hand-editing `.manifest.json`. That command takes an advisory lock and writes atomically; concurrent hand edits are a plain read-modify-write and silently drop whichever entry lands second.
 
 If the manifest doesn't exist yet, create it with `version: 1`.
 

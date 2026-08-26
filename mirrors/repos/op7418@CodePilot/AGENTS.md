@@ -51,6 +51,13 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 
 接手 P1/P2 finding、用户反馈、测试失败时按 `Signal → Triage → Fix → Verify → Guardrail` 处理；说明含根因、改动、验证、防回归。需要沉淀的同类问题写执行计划 / tech-debt tracker / guardrail，不只在聊天里关闭。
 
+## Codex 发版执行边界
+
+- 用户明确要求“发版”后，才允许按 [docs/rules/release.md](./docs/rules/release.md) 执行 `push main → 创建并推送不可变 stable tag → 跟踪 CI`；不要手工创建 Release，也不要删除、移动或复用失败 tag。
+- stable Release 是混合分发：macOS 正式包必须同时包含签名、公证后的安装包和原生自动更新资产（`latest-mac.yml`、universal ZIP、ZIP blockmap）；Windows/Linux 只提供手动安装包，禁止发布其 updater metadata 或宣称自动安装。
+- “tag 已推送”不等于发版成功。Codex 必须跟踪 workflow 到终态，并在公开 Release 上复核版本、Latest 状态、三平台资产图，以及 `latest-mac.yml` 只引用同版本 universal ZIP；任一门禁失败时保留 tag、报告失败阶段并使用更高 patch 修复。
+- 更改发版能力或分发拓扑时，必须同步 `docs/rules/release.md`（权威规则）、`CLAUDE.md`、本文件、`README.md` 与当版 `RELEASE_NOTES.md`；不能只改 workflow 或只在聊天中说明。
+
 ## 文档
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — 项目架构、目录结构、数据流

@@ -109,7 +109,8 @@ comment rather than guessing a name.
 ### MCP
 
 1. **Register a new tool in `mcp/server.rs` and extend `test_all_tools_are_registered`** — the test is the contract.
-2. **Feature-gate resources the same way `xberg://presets/embeddings` is** — a missing feature must not break `resources/list`.
+2. **Feature-gate resources the same way `xberg://presets/embeddings` is** — a missing feature must not break
+   `resources/list`.
 3. **Resources are static** — no network or filesystem scans in a resource handler.
 4. **Tools need timeouts** — a hung tool blocks the agent.
 

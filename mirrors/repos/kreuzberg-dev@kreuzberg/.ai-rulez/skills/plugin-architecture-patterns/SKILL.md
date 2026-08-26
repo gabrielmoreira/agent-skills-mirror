@@ -1,6 +1,9 @@
 ---
 name: plugin-architecture-patterns
-description: "Plugin architecture, registration, and trait patterns"
+description: >-
+  Design, implement, or diagnose Xberg plugin traits, typed registries, priority collisions, lifecycle,
+  native extractors, and Alef-generated Python plugin bridges. Load for plugin-system work, not ordinary
+  extractor parsing.
 priority: critical
 ---
 
@@ -21,7 +24,8 @@ priority: critical
 | Renderer | `Renderer: Plugin` | `plugins/renderer.rs` |
 
 `Plugin` (`plugins/traits.rs`) is `Send + Sync` and requires `name()`; `version()`,
-`initialize()`, `shutdown()`, `description()`, `author()` have defaults.
+`initialize()`, `shutdown()`, `description()`, and `author()` have defaults. There is no
+`'static` trait bound; registry-owned `Arc<dyn Trait>` supplies the necessary lifetime.
 
 ## Native Rust extractors implement `InternalDocumentExtractor`
 
@@ -61,16 +65,17 @@ support is the separate `SyncExtractor` trait — see `wasm-constraints`.
 | 51-75 | Premium/enhanced |
 | 76-100 | Specialized/high-priority |
 
-The registry selects the **highest priority** extractor for each MIME type — registration
-order is irrelevant. Override a built-in with priority > 50.
+The registry selects the **highest priority** extractor for each MIME type. The ranges are
+conventions over an unclamped `i32`; negative and values above 100 are representable. Equal
+MIME and priority is a collision: the later registration replaces the earlier entry and
+warns. Give competing plugins distinct priorities.
 
 ## Registration
 
 ```rust
 // crates/xberg/src/extractors/mod.rs -> register_default_extractors()
 let registry = get_document_extractor_registry();
-let mut registry = registry.write()
-    .map_err(|e| XbergError::Other(format!("Registry lock poisoned: {}", e)))?;
+let mut registry = registry.write();
 registry.register(Arc::new(MyExtractor::new()))?;
 ```
 
@@ -111,4 +116,40 @@ result.
 4. Feature-gate optional formats with `#[cfg(feature = "...")]` at the registration site.
 5. Initialization is lazy via `ensure_initialized()` (`extractors/mod.rs`), called before first extraction.
 6. Plugin names are kebab-case (e.g. `"pdf-extractor"`).
-7. A new extractor struct needs `#[cfg_attr(alef, alef(skip))]` or the binding regen aborts — see `alef-generated-bindings`.
+7. A new extractor struct needs `#[cfg_attr(alef, alef(skip))]` or the binding regen aborts — see
+   `alef-generated-bindings`.
+
+## Registry and lifecycle invariants
+
+- Eight plugin types have eight process-global typed registries in `plugins/registry/mod.rs`.
+  There is no universal `PluginRegistry`.
+- Registries use `Arc<parking_lot::RwLock<_>>`. Their guards are not poisoned and
+  `.read()`/`.write()` return guards directly.
+- Extractor lookup is `HashMap<mime, BTreeMap<priority, entry>>`: exact MIME lookup is
+  constant-time on the outer map; wildcard-family lookup scans registered MIME keys.
+- Registration calls `initialize()` and rejects a plugin whose initialization fails.
+  Registries support register, remove, clear, and `shutdown_all`; there is no hot reload.
+- All eight plugin types can be registered from language bindings. Plugin interfaces are
+  public APIs, so breaking changes follow the public compatibility policy.
+- Return errors rather than panicking. Test lifecycle, collision/replacement, concurrent
+  access, and failure paths with test doubles; use real backends for integration coverage.
+  No dispatch-overhead benchmark exists unless one is explicitly added.
+
+## Alef-generated Python bridge
+
+The Python bridge is generated into `crates/xberg-py/src/lib.rs`; there is no hand-written
+`plugins.rs`. Change Alef/configuration and regenerate rather than editing the bridge.
+
+- PyO3 0.29 uses `Python::attach`. Async host calls enter Python from
+  `tokio::task::spawn_blocking` and propagate the caller's `contextvars` context.
+- Cache frequently accessed host data such as plugin names in Rust fields so infallible
+  methods do not need repeated GIL acquisition. Do not assume `allow_threads` is in use.
+- Every trait method return crosses the bridge through native extraction or JSON fallback.
+  Crossing types therefore need `Serialize + Deserialize + Default`, including unit enums.
+- Host exceptions become `XbergError::Other` with plugin and method context; the original
+  Python exception type and traceback are not retained. Infallible methods can only warn and
+  return `Default::default()`, so a default may indicate bridge failure rather than real data.
+- Rust-side extractor plugin failures may use `XbergError::Plugin`, which is fallback-eligible;
+  do not assume Python bridge errors have the same fallback behavior.
+- Validate the Python protocol at registration. Do not quote GIL overhead without a current
+  benchmark.

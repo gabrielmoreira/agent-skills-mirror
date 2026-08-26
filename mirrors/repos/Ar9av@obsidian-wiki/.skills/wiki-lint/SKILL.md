@@ -18,6 +18,9 @@ You are performing a health check on an Obsidian wiki. Your goal is to find and 
 
 ## Before You Start
 
+**Writing profile:** Before drafting or rewriting natural-language Markdown, read and apply the `Writing Profile Resolution` section in `llm-wiki/SKILL.md`. Framework schema, provenance, safety, and operation-specific requirements take precedence.
+Apply `WRITING.md` preferences only to generated consolidation reports; deterministic findings and fixes keep their existing formats.
+
 1. **Resolve config** — follow the Config Resolution Protocol in `llm-wiki/SKILL.md` (inline `@name` override → walk up CWD for `.env` → global config → prompt setup). This gives `OBSIDIAN_VAULT_PATH` plus any `OBSIDIAN_ALLOWED_LIFECYCLES`, `OBSIDIAN_ALLOWED_RELATIONSHIP_TYPES`, `OBSIDIAN_REQUIRED_TRUST_FIELDS`, and `OBSIDIAN_SCHEMA_SOURCE` values.
 2. **Read owner rules** — if `$OBSIDIAN_VAULT_PATH/AGENTS.md` exists, read it before interpreting any schema. Owner rules override framework defaults.
 3. **Form the effective schema** — record the schema source locator plus effective required/optional frontmatter, lifecycle values, relationship types, and provenance markers. Framework values are defaults; preserve owner extensions and relaxed requiredness exactly. Never coerce an owner type to a framework type.
@@ -207,6 +210,18 @@ Staleness is never stored — it is computed at read time: `is_stale = (today �
 - All other stale pages as a standard warning
 
 **How to fix:** `--fix` does **not** rewrite `lifecycle`. Staleness clears automatically when a re-ingest bumps `updated`.
+
+#### Rule 12c-2 — Illegal lifecycle transitions
+
+The lifecycle enum is a state machine, not a free-form label. `obsidian-wiki lint` reports `illegal_lifecycle_transitions` by comparing each page's current `lifecycle` against the value recorded in `_meta/trust-ledger.json` at its last review.
+
+**Flagged:** any state falling back to `draft` (only ingest sets `draft`), and any exit from `archived` (terminal — a restore is a deliberate human delete-and-recreate).
+
+**Not flagged:** `draft → verified`. Ledger snapshots are sparse, so a legitimate intermediate `reviewed` may have happened between two reviews; flagging it would fire on valid history.
+
+Warns by default; fails under `--strict-trust`. Pages whose ledger entry predates the `lifecycle` field have no baseline and are skipped silently.
+
+**How to fix:** n/a — a page that moved along a forbidden edge means either a skill wrote `lifecycle` when it shouldn't have, or a human transition needs recording. Surface for human resolution.
 
 #### Rule 12d — Supersession integrity
 

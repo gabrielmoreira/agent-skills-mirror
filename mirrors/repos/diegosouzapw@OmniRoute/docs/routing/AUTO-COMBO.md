@@ -183,7 +183,7 @@ See [#7992](https://github.com/diegosouzapw/OmniRoute/issues/7992) and [#7111](h
 
 ## How It Works (Persisted Auto-Combos)
 
-The Auto-Combo Engine dynamically selects the best provider/model for each request using a **15-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). The default weights sum to `1.0`; custom weights are renormalized by `normalizeScoringWeights()`.
+The Auto-Combo Engine dynamically selects the best provider/model for each request using a **15-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). The default weights sum to `1.0`; custom weights are renormalized by `normalizeScoringWeights()`. Two of the fifteen — `cacheAffinity` and `resetWindowAffinity` — carry a default weight of `0`: they are still computed for every candidate, and `cacheAffinity` gates prompt-cache deduplication outside the score, so they are declared factors that simply do not vote by default.
 
 ![Auto-Combo 15-factor scoring](../diagrams/exported/auto-combo-12factor.svg)
 
@@ -279,8 +279,8 @@ OmniRoute's combo engine supports **19 routing strategies** (declared in `src/sh
 | `reset-window`      | Prefer targets whose quota window resets soonest                                                                                                                                          |
 | `headroom`          | Pick the target with the most remaining quota headroom                                                                                                                                    |
 | `strict-random`     | Random without deduplication of repeats                                                                                                                                                   |
-| `auto`              | Use Auto Combo scoring (9-factor) — **recommended**                                                                                                                                       |
-| `lkgp`              | Last-Known-Good Path (sticky route to last successful target)                                                                                                                             |
+| `auto`              | Use Auto Combo scoring (15-factor) — **recommended**                                                                                                                                      |
+| `lkgp`              | Last-Known-Good Path (pins to the last successful provider, then falls back to rules)                                                                                                     |
 | `context-optimized` | Pick target with best fit for current context size                                                                                                                                        |
 | `cache-optimized`   | Reorder targets by prompt-cache affinity — the connection likeliest to already hold this request's cached prefix is tried first (`open-sse/services/combo/promptCacheAffinity.ts`, #8008) |
 | `fusion` 🧬         | Fan out to a panel of models in parallel, then synthesize one answer via a judge (see below)                                                                                              |
@@ -368,7 +368,7 @@ The Auto Combo engine doesn't require pre-defined combos. Instead, `open-sse/ser
 3. Cross-references with `getProviderRegistry()` for model availability + pricing
 4. For each tuple `(provider, model, connection)`, builds a `VirtualAutoComboCandidate`
 5. Picks `connection.defaultModel` (or the registry's first model) as the dispatch target
-6. Scores each candidate using the 9-factor `scorePool()` and the variant's weight pack
+6. Scores each candidate using the 15-factor `scorePool()` and the variant's weight pack
 7. Returns the resulting in-memory `AutoComboConfig` for `handleComboChat()` — never persisted to DB
 
 This means **adding a new provider with `auto/*` enabled automatically expands the candidate pool** — no manual combo editing needed. The virtual combo is rebuilt per request, so newly-added or newly-healthy connections are picked up immediately.
@@ -427,7 +427,7 @@ Each strategy picks one provider from the candidate pool, given a `RoutingContex
 (task type, tool/vision hints, token estimate, optional SLA policy, optional
 last-known-good provider).
 
-#### 1. `rules` (default) — 6-factor weighted scoring
+#### 1. `rules` (default) — 15-factor weighted scoring
 
 Wraps the existing scoring engine. Filters out `OPEN` circuit-breaker
 candidates, then runs `scorePool()` with the current task type and `getTaskFitness()`,
@@ -436,8 +436,7 @@ picking the top-scoring provider.
 ```ts
 class RulesStrategyImpl implements RouterStrategy {
   readonly name = "rules";
-  readonly description =
-    "6-factor weighted scoring: quota, health, cost, latency, taskFit, stability";
+  readonly description = "15-factor weighted scoring (see DEFAULT_WEIGHTS)";
 
   select(pool, context) {
     const eligible = pool.filter((c) => c.circuitBreakerState !== "OPEN");
@@ -733,7 +732,7 @@ intentionally excluded from CI because they require live credentials and VPS acc
 
 | File                                                      | Purpose                                                                    |
 | :-------------------------------------------------------- | :------------------------------------------------------------------------- |
-| `open-sse/services/autoCombo/scoring.ts`                  | 9-factor scoring function, `DEFAULT_WEIGHTS`, pool norm                    |
+| `open-sse/services/autoCombo/scoring.ts`                  | 15-factor scoring function, `DEFAULT_WEIGHTS`, pool norm                   |
 | `open-sse/services/autoCombo/taskFitness.ts`              | Model × task fitness lookup                                                |
 | `open-sse/services/autoCombo/engine.ts`                   | Selection logic, bandit, budget cap                                        |
 | `open-sse/services/autoCombo/selfHealing.ts`              | Exclusion, probes, incident mode                                           |

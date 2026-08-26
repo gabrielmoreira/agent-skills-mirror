@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 5 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 0 followed p
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 8 |
+| Followed pats | 5 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,11 @@ Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 0 followed p
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `evals/README.md`
+- `evals/results/maplibre-cartography.md`
+- `evals/results/maplibre-v6-migration.md`
+- `LICENSE.md`
 
 ## File Index
 
@@ -59,14 +63,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/maplibre-cartography/SKILL.md`](skills/maplibre-cartography/SKILL.md) |
-| 2 | ✓ | [`skills/maplibre-mapbox-migration/AGENTS.md`](skills/maplibre-mapbox-migration/AGENTS.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`skills/maplibre-cartography/SKILL.md`](skills/maplibre-cartography/SKILL.md) |
 | 3 | ✓ | [`skills/maplibre-mapbox-migration/SKILL.md`](skills/maplibre-mapbox-migration/SKILL.md) |
-| 4 | ✓ | [`skills/maplibre-pmtiles-patterns/AGENTS.md`](skills/maplibre-pmtiles-patterns/AGENTS.md) |
-| 5 | ✓ | [`skills/maplibre-pmtiles-patterns/SKILL.md`](skills/maplibre-pmtiles-patterns/SKILL.md) |
+| 4 | ✓ | [`skills/maplibre-pmtiles-patterns/SKILL.md`](skills/maplibre-pmtiles-patterns/SKILL.md) |
+| 5 | ✓ | [`skills/maplibre-skill-authoring/SKILL.md`](skills/maplibre-skill-authoring/SKILL.md) |
 | 6 | ✓ | [`skills/maplibre-terrain-patterns/SKILL.md`](skills/maplibre-terrain-patterns/SKILL.md) |
-| 7 | ✓ | [`skills/maplibre-tile-sources/AGENTS.md`](skills/maplibre-tile-sources/AGENTS.md) |
-| 8 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
+| 7 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
+| 8 | ✓ | [`skills/maplibre-v6-migration/SKILL.md`](skills/maplibre-v6-migration/SKILL.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`evals/README.md`](evals/README.md) |
+| 11 | → | [`evals/results/maplibre-cartography.md`](evals/results/maplibre-cartography.md) |
+| 12 | → | [`evals/results/maplibre-v6-migration.md`](evals/results/maplibre-v6-migration.md) |
+| 13 | → | [`LICENSE.md`](LICENSE.md) |
 
 ---
 

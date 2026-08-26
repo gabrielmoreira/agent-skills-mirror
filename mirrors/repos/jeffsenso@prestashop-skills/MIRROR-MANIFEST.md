@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 1 followed patterns, 165 file(s) materialized.
+Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 1 followed patterns, 166 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jeffsenso/prestashop-skills` — 26 default patterns, 1 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 165 |
+| Files         | 166 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -204,26 +204,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 143 | ✓ | [`skills/prestashop-module-development/ps9-core-ai/STRUCTURE.md`](skills/prestashop-module-development/ps9-core-ai/STRUCTURE.md) |
 | 144 | ✓ | [`skills/prestashop-module-development/README.md`](skills/prestashop-module-development/README.md) |
 | 145 | ✓ | [`skills/prestashop-module-development/references/cart-rules.md`](skills/prestashop-module-development/references/cart-rules.md) |
-| 146 | ✓ | [`skills/prestashop-module-development/references/configuration-page.md`](skills/prestashop-module-development/references/configuration-page.md) |
-| 147 | ✓ | [`skills/prestashop-module-development/references/database-and-entities.md`](skills/prestashop-module-development/references/database-and-entities.md) |
-| 148 | ✓ | [`skills/prestashop-module-development/references/debugging.md`](skills/prestashop-module-development/references/debugging.md) |
-| 149 | ✓ | [`skills/prestashop-module-development/references/entity-doctrine.md`](skills/prestashop-module-development/references/entity-doctrine.md) |
-| 150 | ✓ | [`skills/prestashop-module-development/references/forms.md`](skills/prestashop-module-development/references/forms.md) |
-| 151 | ✓ | [`skills/prestashop-module-development/references/grid-system.md`](skills/prestashop-module-development/references/grid-system.md) |
-| 152 | ✓ | [`skills/prestashop-module-development/references/hooks-and-front-office.md`](skills/prestashop-module-development/references/hooks-and-front-office.md) |
-| 153 | ✓ | [`skills/prestashop-module-development/references/legacy-conversion.md`](skills/prestashop-module-development/references/legacy-conversion.md) |
-| 154 | ✓ | [`skills/prestashop-module-development/references/module-class-and-installer.md`](skills/prestashop-module-development/references/module-class-and-installer.md) |
-| 155 | ✓ | [`skills/prestashop-module-development/references/module-structure.md`](skills/prestashop-module-development/references/module-structure.md) |
-| 156 | ✓ | [`skills/prestashop-module-development/references/security.md`](skills/prestashop-module-development/references/security.md) |
-| 157 | ✓ | [`skills/prestashop-module-development/references/services-and-di.md`](skills/prestashop-module-development/references/services-and-di.md) |
-| 158 | ✓ | [`skills/prestashop-module-development/references/services-split.md`](skills/prestashop-module-development/references/services-split.md) |
-| 159 | ✓ | [`skills/prestashop-module-development/references/theme-template-injection.md`](skills/prestashop-module-development/references/theme-template-injection.md) |
-| 160 | ✓ | [`skills/prestashop-module-development/references/translations.md`](skills/prestashop-module-development/references/translations.md) |
-| 161 | ✓ | [`skills/prestashop-module-development/references/validation.md`](skills/prestashop-module-development/references/validation.md) |
-| 162 | ✓ | [`skills/prestashop-module-development/scripts/grid.bundle.js`](skills/prestashop-module-development/scripts/grid.bundle.js) |
-| 163 | ✓ | [`skills/prestashop-module-development/scripts/translatable-form.bundle.js`](skills/prestashop-module-development/scripts/translatable-form.bundle.js) |
-| 164 | ✓ | [`skills/prestashop-module-development/SKILL.md`](skills/prestashop-module-development/SKILL.md) |
-| 165 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 146 | ✓ | [`skills/prestashop-module-development/references/configuration-management.md`](skills/prestashop-module-development/references/configuration-management.md) |
+| 147 | ✓ | [`skills/prestashop-module-development/references/configuration-page.md`](skills/prestashop-module-development/references/configuration-page.md) |
+| 148 | ✓ | [`skills/prestashop-module-development/references/database-and-entities.md`](skills/prestashop-module-development/references/database-and-entities.md) |
+| 149 | ✓ | [`skills/prestashop-module-development/references/debugging.md`](skills/prestashop-module-development/references/debugging.md) |
+| 150 | ✓ | [`skills/prestashop-module-development/references/entity-doctrine.md`](skills/prestashop-module-development/references/entity-doctrine.md) |
+| 151 | ✓ | [`skills/prestashop-module-development/references/forms.md`](skills/prestashop-module-development/references/forms.md) |
+| 152 | ✓ | [`skills/prestashop-module-development/references/grid-system.md`](skills/prestashop-module-development/references/grid-system.md) |
+| 153 | ✓ | [`skills/prestashop-module-development/references/hooks-and-front-office.md`](skills/prestashop-module-development/references/hooks-and-front-office.md) |
+| 154 | ✓ | [`skills/prestashop-module-development/references/legacy-conversion.md`](skills/prestashop-module-development/references/legacy-conversion.md) |
+| 155 | ✓ | [`skills/prestashop-module-development/references/module-class-and-installer.md`](skills/prestashop-module-development/references/module-class-and-installer.md) |
+| 156 | ✓ | [`skills/prestashop-module-development/references/module-structure.md`](skills/prestashop-module-development/references/module-structure.md) |
+| 157 | ✓ | [`skills/prestashop-module-development/references/security.md`](skills/prestashop-module-development/references/security.md) |
+| 158 | ✓ | [`skills/prestashop-module-development/references/services-and-di.md`](skills/prestashop-module-development/references/services-and-di.md) |
+| 159 | ✓ | [`skills/prestashop-module-development/references/services-split.md`](skills/prestashop-module-development/references/services-split.md) |
+| 160 | ✓ | [`skills/prestashop-module-development/references/theme-template-injection.md`](skills/prestashop-module-development/references/theme-template-injection.md) |
+| 161 | ✓ | [`skills/prestashop-module-development/references/translations.md`](skills/prestashop-module-development/references/translations.md) |
+| 162 | ✓ | [`skills/prestashop-module-development/references/validation.md`](skills/prestashop-module-development/references/validation.md) |
+| 163 | ✓ | [`skills/prestashop-module-development/scripts/grid.bundle.js`](skills/prestashop-module-development/scripts/grid.bundle.js) |
+| 164 | ✓ | [`skills/prestashop-module-development/scripts/translatable-form.bundle.js`](skills/prestashop-module-development/scripts/translatable-form.bundle.js) |
+| 165 | ✓ | [`skills/prestashop-module-development/SKILL.md`](skills/prestashop-module-development/SKILL.md) |
+| 166 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 
 ---
 

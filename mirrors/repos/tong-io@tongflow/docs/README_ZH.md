@@ -267,7 +267,7 @@ docker compose up -d
 要运行预加载的**示例工作流**（文本 → 图像 → 融合 → 视频），需安装以下三个插件：
 
 - [tongflow-modal-z-image](https://github.com/tong-io/tongflow-modal-z-image) — 文本生图
-- [tongflow-modal-flux2-klein9b](https://github.com/tong-io/tongflow-modal-flux2-klein9b) — 图像融合 / 混合
+- [tongflow-modal-qwen-image-edit](https://github.com/tong-io/tongflow-modal-qwen-image-edit) — 图像融合 / 混合
 - [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — 图生视频
 
 这些插件运行在 [Modal](https://modal.com) 上（每月最多 **$30** 免费 GPU 算力）。在**设置**里填入 `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET`；可在 [modal.com/settings/tokens](https://modal.com/settings/tokens) 创建 token。任何其他平台都可以用同样方式发布自己的插件。

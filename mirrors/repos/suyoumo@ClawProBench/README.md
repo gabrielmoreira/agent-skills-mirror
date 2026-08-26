@@ -1,0 +1,244 @@
+<div align="center">
+
+<img src="docs/assets/openclawprobench-logo.svg" width="160" alt="ClawProBench Logo">
+
+# ClawProBench
+
+[![Paper](https://img.shields.io/badge/paper-arXiv-B31B1B)](https://arxiv.org/abs/2608.22510)
+[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97-Dataset-yellow)](https://huggingface.co/datasets/xyh110sym/clawprobench)
+[![Clones](https://img.shields.io/badge/clones-459-blue)](https://github.com/suyoumo/ClawProBench)
+[![Views](https://img.shields.io/badge/views-129-green)](https://github.com/suyoumo/ClawProBench)
+[![Active Scenarios](https://img.shields.io/badge/active-102-blue)](#benchmark-profiles)
+[![Catalog](https://img.shields.io/badge/catalog-164-green)](#benchmark-profiles)
+[![Core Profile](https://img.shields.io/badge/core-26-orange)](#benchmark-profiles)
+[![Execution](https://img.shields.io/badge/execution-live--first-black)](#quick-start)
+[![License](https://img.shields.io/badge/license-Apache%202.0-red)](LICENSE)
+
+> Transparent live-first benchmark harness for evaluating model capability inside the OpenClaw runtime. <br>
+> 102 active scenarios, 164 catalog scenarios, deterministic grading, and OpenClaw-native coverage. <br>
+> Paper now on arXiv: [ClawProBench: Trace-Aware Evaluation of AI Agents with Runtime Coverage and Frozen Workplace-Style Holdouts](https://arxiv.org/abs/2608.22510). <br>
+> Dataset available on Hugging Face: [xyh110sym/clawprobench](https://huggingface.co/datasets/xyh110sym/clawprobench).
+
+</div>
+
+<p>
+  <a href="README.zh-CN.md"><strong>简体中文 README</strong></a>
+</p>
+
+ClawProBench focuses on real OpenClaw execution with deterministic grading, structured reports, and benchmark-profile selection. The default ranking path is the `core` profile; broader active coverage remains available through `intelligence`, `coverage`, `native`, and `full`.
+
+The current worktree inventory reports `102` active scenarios and `164` total catalog scenarios (`62` incubating) via `python3 run.py inventory --json` and `python3 run.py inventory --benchmark-status all --json`.
+
+## Leaderboard
+
+Browse the public leaderboard and benchmark cases at **[suyoumo.github.io/bench](https://suyoumo.github.io/bench/)**.
+
+[![ClawProBench leaderboard preview](docs/assets/leaderboard-preview-20260426.png)](https://suyoumo.github.io/bench/)
+
+[![ClawProBench ModelPK preview](docs/assets/modelpk.png)](https://suyoumo.github.io/bench/modelpk/)
+
+## Get Involved
+
+We sincerely thank friends from Kimi and Qwen for their helpful feedback and improvement suggestions for the ClawProBench leaderboard.
+
+We also thank LongCat, Kimi, Ant Ling, and MiMo for providing model access support, trial access, or platform resources. This support helped reduce evaluation costs and made it possible to cover more frontier and preview models in a transparent live-runtime setting.
+
+If domestic third-party API gateway providers would like their served models, such as Claude 4.7 Opus or GPT-5.5, to appear on the leaderboard, please contact us. We can run the benchmark and publish reproducible results when the evaluation setup is stable.
+
+To run ClawProBench, submit results, or discuss model evaluation for the leaderboard, contact: xyh920691910@outlook.com.
+
+## LLMLeadBoard
+
+LLMLeadBoard is the report-sourced model-score board in the same leaderboard
+family as ClawProBench. It aggregates benchmark scores by model and inference
+mode from public model reports, making it easier to compare reported capability
+signals across benchmark families.
+
+The current LLMLeadBoard covers `63` models, `55` source reports, and `444`
+benchmarks. It supports benchmark filtering, stacked cells when different
+reports give different scores for the same model and benchmark, trend charts for
+benchmark progress within a model family, and iteration-speed charts for model
+release cadence.
+
+## Blog
+
+- [ClawProBench Close DataSet LeadBoard Release：ClawProBench Closed Dataset Release and Analysis](https://suyoumo.github.io/bench/blog/2026-05-19-closed-dataset-release-analysis/)
+- [Safety Under Live Agent Work: What the ClawProBench Leaderboard Shows](https://suyoumo.github.io/bench/blog/2026-04-30-model-safety-analysis/)
+- [My Feelings During the Development of ClawProBench](https://suyoumo.github.io/bench/blog/2026-04-02-why-pass3-matters/)
+- [Open-sourcing ClawProBench: Bringing Agent Benchmarks Back to the Real Runtime](https://suyoumo.github.io/bench/blog/2026-04-02-openclawprobench-launch/)
+
+## 📢 Updates
+
+- `v2.0.4` - Released the full 102 active scenarios dataset on [Hugging Face](https://huggingface.co/datasets/xyh110sym/clawprobench), including prompts, fixtures, and scenario configurations for all benchmark-active tasks.
+- `v2.0.3` - Published the ClawProBench paper on arXiv ([2608.22510](https://arxiv.org/abs/2608.22510)) and updated the citation block; added `kimi-k3` leaderboard scores; synced harness code updates (resume model-alias preservation fix); hardened multiple custom checkers with deterministic order-insensitive matchers; and vendored the IronClaw and NanoClaw harness sources to support cross-harness evaluation.
+- `v2.0.2` - Added `agnes-2.0-flash` results to both the ClawProBench open-source and closed-dataset leaderboards. CodeAgentBench also added results for `GLM-5.2`, `Qwen3.7-Max`, `Qwen3.7-Plus`, `MiniMax-M3`, and `step-3.7-flash`.
+- `v2.0.1` - Added closed-dataset scores for `Qwen3.7-Max`, `Gemini 3.1 Pro`, `MiniMax-M3`, and `step-3.7-flash`; added open-source dataset scores for `MiniMax-M3` and `step-3.7-flash`; and introduced the LLMLeadBoard section for the report-sourced benchmark-score leaderboard.
+- `v2.0.0` - Released the closed-dataset leaderboard with `33` model results; added clickable closed-dataset model detail pages, closed-dataset visualization charts, and closed-dataset task browsing in `Tasks`.
+- `v1.1.6` - Added Shanghai AI Lab `intern-s2-preview` to the open-source model leaderboard.
+- `v1.1.5` - Added the `ring-2.6-1T-xhigh` leaderboard result; the leaderboard now includes `65` models.
+- `v1.1.4` - Added leaderboard results for Baidu `ERNIE 5.1` and SenseTime `Sensenova 6.7 Flash Lite`. (We are glad to see ClawProBench attracting growing attention. Because the benchmark is fully open source, it cannot fully avoid vendors optimizing specifically for the public benchmark; a leaderboard based on a closed ClawProBench dataset will be released soon. The open-source dataset portion and evaluation harness for my coding benchmark are also expected to be open-sourced within the next 1-2 weeks. Stay tuned.)
+- `v1.1.3` - Added OpenAI `gpt-5.5`, `gpt-5.4`, and `gpt-5.3-codex` leaderboard results, which now rank 1-3; also added `DeepSeek-R1` and `kimi-for-coding-k2.6`, and synced the latest live-runtime, custom-check loading, and scenario-grading fixes.
+- `v1.1.2` - Added leaderboard data for `qwen3.5-397b-a17b`, fixed pricing and release-date metadata for several models, and added ModelPK for detailed model-to-model comparison.
+- `v1.1.1` - Added leaderboard results for `kimi-k2.6`; the leaderboard now includes `57` models.
+- `v1.1.0` - Added leaderboard results for `qwen3.6-27b`, `qwen3.6-35b-a3b`, and `qwen3.6-flash`.
+- `v1.0.9` - Verified model-detail data across the leaderboard, fixed several data errors, added `DeepSeeK-V4-Pro`, `DeepSeek-V4-Flash`, `LongCat-2.0-Preview`, and `Ling-2.6-1T`, and introduced the new `FinalScore` metric based on `pass^3`, `pass@3`, and `average_score`.
+- `v1.0.8` - Added 6 new leaderboard models: `qwen3.6-max-preview`, `mimo-v2.5`, `mimo-v2.5-pro`, `hunyuan-t1`, `hy3-preview`, and `Ling-2.6-Flash`.
+- `v1.0.7` - Synced benchmark bug fixes from the latest harness line, including `--exclude-scenario` filtering, isolated live-run runtime hardening, and trace-argument compatibility fixes for custom scoring.
+- `v1.0.6` - Fixed the leaderboard sticky-header sync bug that could appear when dragging the horizontal scrollbar with a mouse. Added the `qwen3.6-plus` Token Plan result to the leaderboard.
+- `v1.0.5` - Fixed the `qwen3.6-plus` model detail bug where the Bailian and Qwen Coding Plan entries incorrectly showed duplicated per-task scores.
+- `v1.0.4` - Fixed isolated live-run log pollution that could cause false execution failures. Added `kimi-k2.6-code-preview`; the leaderboard now includes `43` model results.
+- `v1.0.3` - Reviewed leaderboard, detail, and raw-result consistency across 40+ benchmark models; fixed confirmed data mismatches for `doubao-seed-code`, `qwen3.6-plus`, `qwen3-max-2026-01-23`, `astron-code-latest`, and `ERNIE-4.5-Turbo`.
+- `v1.0.2` - Added `kimi-for-coding`, `gemma4-31b`, and `kimi-k2-thinking`; improved image download flows for easier mobile-device browsing.
+- `v1.0.1` - Added `qwen3-coder-next`, `doubao-seed-code`, `qwen3-max-2026-01-23`, and `qwen3.6plus` rerun with `bailiancodingplan`; added model image download and benchmark sharing to Twitter; fixed completed-report resume overwrite, `tool_use_14` graceful fallback on skills inventory load failure, `tool_use_17` invalid JSON and missing-file tolerance, and `audit_scenario_quality.py` compatibility.
+- `v1.0.0` - ClawProBench released with 102 tasks across 6 domains, with 3-try runs, checkpoint resume, and cross-environment resume support.
+
+## Evaluation Logic
+
+- Default ranking path: `core`
+- Extended active capability suite: `intelligence`
+- Native-only slice: `native`
+- Multi-trial runs are supported via `--trials N`
+- Key leaderboard metrics now include `pass^3`, `pass@3`, `average_score`, and `FinalScore`
+- `FinalScore = 100 × S^0.40 × r_all^0.45 × r_any^0.15`, where `S = average_score`, `r_all = (pass^3)^(1/3)`, and `r_any = 1 - (1 - pass@3)^(1/3)`
+- This is intended to weight stable repeated success most heavily, while still preserving overall quality and upside from best-of-3 performance
+- Reports expose `avg_score`, `max_score`, coverage-aware summaries, cost, latency, and resume metadata
+- Interrupted runs can continue with `--continue` or `--resume-from`, and execution failures can be re-queued with `--rerun-execution-failures`
+
+## Quick Start
+
+We recommend using [uv](https://docs.astral.sh/uv/) for fast, reliable Python environment setup:
+
+```bash
+pip install uv
+uv venv --python 3.11
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
+Before running the benchmark, make sure your local OpenClaw runtime is available:
+
+```bash
+openclaw --help
+openclaw agents list --json
+```
+
+Inspect the benchmark catalog and validate the scenario set:
+
+```bash
+python3 run.py inventory
+python3 run.py inventory --json
+python3 run.py dry
+```
+
+Run a one-trial smoke on the default ranking benchmark:
+
+```bash
+python3 run.py run \
+  --model '<MODEL>' \
+  --execution-mode live \
+  --benchmark-profile core \
+  --trials 1 \
+  --cleanup-agents
+```
+
+Run the full default benchmark:
+
+```bash
+python3 run.py run \
+  --model '<MODEL>' \
+  --execution-mode live \
+  --benchmark-profile core \
+  --trials 3 \
+  --cleanup-agents
+```
+
+Compare generated reports:
+
+```bash
+python3 run.py compare --results-dir results
+```
+
+For isolated same-host runs, the harness also supports:
+
+- `--openclaw-profile`
+- `--openclaw-state-dir`
+- `--openclaw-config-path`
+- `--openclaw-gateway-port`
+- `--openclaw-binary`
+
+## Benchmark Profiles
+
+| Profile | Active scenarios | Purpose |
+| --- | ---: | --- |
+| `core` | 26 | Default ranking suite |
+| `intelligence` | 95 | Extended active capability benchmark |
+| `coverage` | 7 | Lower-stakes breadth and regression slice |
+| `native` | 36 | Active OpenClaw-native slice only |
+| `full` | 102 | Union of all active scenarios |
+
+The benchmark catalog also includes `62` incubating scenarios that can be inspected with `--benchmark-status all`.
+
+## OpenClaw Runtime
+
+Live runs expect a working local `openclaw` CLI plus the auth and config required by the surfaces exercised by the selected scenarios. If your binary is not on `PATH`, set `OPENCLAW_BINARY` or pass `--openclaw-binary`.
+
+`config/openclaw.json.template` is provided as a reference template for local OpenClaw configuration and isolated-run setups.
+
+## Repo Map
+
+- `run.py`: CLI entrypoint for `inventory`, `dry`, `run`, and `compare`
+- `harness/`: loader, runner, scoring, reporting, and live OpenClaw bridge
+- `scenarios/`: benchmark tasks in YAML
+- `datasets/`: seeded live-task data and optional setup / teardown scripts
+- `custom_checks/`: scenario-specific grading logic
+- `tests/`: regression coverage for loader, runner, scoring, and reporting
+- `docs/`: public assets plus evaluation validation and benchmark-profile policy
+
+## Generated Output
+
+Benchmark reports are written to `results/`. They are generated runtime artifacts and are intentionally ignored by version control in this repo layout.
+
+## Usage Statistics
+
+[![Clones](https://img.shields.io/badge/clones-459-blue)](https://github.com/suyoumo/ClawProBench)
+[![Views](https://img.shields.io/badge/views-129-green)](https://github.com/suyoumo/ClawProBench)
+
+**Tracking started**: 2026-08-25
+
+| Metric | Total | Unique |
+|--------|-------|--------|
+| Clones | 459 | 82 |
+| Views | 129 | 61 |
+
+Clones and views are accumulated daily from the GitHub Traffic API. Raw daily data lives in `traffic/traffic.json`.
+
+Run `python3 scripts/update_traffic.py` to refresh the statistics.
+
+## Citation
+
+If you use ClawProBench in your research, please cite:
+
+```bibtex
+@misc{clawprobench2026,
+  title={ClawProBench: Trace-Aware Evaluation of AI Agents with Runtime Coverage and Frozen Workplace-Style Holdouts},
+  author={YuanHang, Xiao},
+  year={2026},
+  eprint={2608.22510},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={https://arxiv.org/abs/2608.22510},
+  doi={10.48550/arXiv.2608.22510}
+}
+```
+
+## Contribution
+
+We welcome issues, documentation fixes, scenario improvements, grader hardening, and benchmark-engine contributions. See `CONTRIBUTING.md` for setup and validation guidance.
+
+## Acknowledgements
+
+This project was informed by prior open-source work on agent evaluation, benchmark design, and real-world task assessment.
+
+We drew ideas from projects such as PinchBench, Claw-Eval, AgencyBench, and related agent-benchmark efforts, especially in areas like task design, evaluation methodology, harness structure, and public benchmark presentation.
+
+Some tasks in this repository are adapted and reworked from earlier public benchmark-style task sets into the OpenClaw runtime and grading framework.

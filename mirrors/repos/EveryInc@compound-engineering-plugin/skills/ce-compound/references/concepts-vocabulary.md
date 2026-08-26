@@ -2,6 +2,12 @@
 
 `CONCEPTS.md` defines the words that mean something specific in this codebase — substrate that `<root>/solutions/` and AGENTS.md can cite without redefinition. Lives at the repo root. Terms enter two ways — accretion and seeding (below) — and the file is created the first time either path produces a qualifying entry.
 
+## The supported mutations
+
+A run may **add** an entry, **refine** one, **fold** one into the entry that already carries its meaning, **retire** one to `## Retired`, **delete** one, or **scrub** violations from one it touched. Which subset a given run may perform is stated where that run is defined, and is not re-listed anywhere else.
+
+**Update-only** names what a run withholds, never what it grants: no creation and no seeding. It does not widen the subset that run's own definition permits.
+
 ## How terms enter: accretion and seeding
 
 Two paths populate the file, and they cover different gaps:
@@ -20,7 +26,7 @@ Define the core domain nouns the area's **declared domain model** exposes that m
 
 ## Be opinionated
 
-When the team uses several words for the same concept, pick the best one and retire the rest. Record retired synonyms as aliases on the entry (see "Per entry"). Settled distinctions go to the Flagged ambiguities tail. The glossary is not a record of all words the team has ever used — it is the team's agreed-upon vocabulary.
+When the team uses several words for the same concept, pick the best one and drop the rest. Dropping a synonym is not a retirement: the surviving entry still carries that meaning, so the word becomes an aliases line on it (see "Per entry") and never goes to `## Retired`, which is only for a concept the project no longer has. Settled distinctions go to the Flagged ambiguities tail. The glossary is not a record of all words the team has ever used — it is the team's agreed-upon vocabulary.
 
 ## The file stands on its own
 
@@ -34,15 +40,25 @@ Each entry teaches its concept to a reader with no access to anything else — n
 
 Cross-references between entries within `CONCEPTS.md` are fine — they resolve internally. General programming vocabulary (caches, queues, jobs, sessions) and everyday domain English need no redefinition either. But if an entry leans on another *project-specific* term to make sense, that term must be defined here too — an undefined project-specific sibling is itself a candidate to add.
 
-## What earns a slot
+## What earns a slot — and what keeps one
 
-A term qualifies when its meaning here is precise enough that a new engineer would need it defined to follow conversations, tickets, or code. General programming vocabulary does not belong, even when used heavily.
+A term qualifies on two counts: its meaning here is precise enough that a new engineer would need it defined to follow conversations, tickets, or code, and it is a concept in its own right rather than a property of one already defined. General programming vocabulary does not belong, even when used heavily.
+
+Both counts apply at both moments — admitting a term the work surfaced, and deciding whether an existing entry keeps its heading.
+
+An entry that loses its heading still has to resolve for whoever meets the term next in an old ticket, learning, or commit. Ask which surviving entry can carry it; usually one can — the neighbor whose property it always was, or the concept that replaced it. **Fold** it there: the meaning moves into that entry, cross-references repoint, and the old term is named on that entry, worded so a reader can tell whether it meant this entry or was replaced by it. When nothing can carry it, the term **retires** to `## Retired` at the tail if readers will still meet it in the project's own material, and is deleted if they will not — version history is the archive.
+
+Removing an entry acts only on positive contrary evidence, and uncertainty leaves it standing. Name where the concept went — what replaced it, what absorbed it, what took it out. Being unable to find it is not the same as it being gone: a deleted class, path, or symbol is never that evidence (an entry is meant to outlive the code that implemented it, which is what standing on its own means), and neither is the absence of corroboration.
+
+## The coherence neighborhood
+
+The neighborhood of an entry is its cluster siblings plus the terms it cross-references or that reference it. It bounds a capture-time pass: act only on evidence already in hand, never audit the whole file, and flag for `ce-compound-refresh` anything whose judgment would need investigation this run did not do.
 
 ## Per entry
 
 Definition is one sentence — what the term means in this domain, what makes it distinct from neighbors. A term with non-obvious behavioral rules (lifecycle, cancellation semantics, ownership invariants) earns a second paragraph for those rules — never for elaborating the definition itself.
 
-When retired synonyms exist, list them as an aliases line directly under the definition: *Avoid: Booking, appointment*. Entities typically need more depth than value types; status concepts may need transition notes.
+When dropped synonyms exist, list them as an aliases line directly under the definition: *Avoid: Booking, appointment*. Entities typically need more depth than value types; status concepts may need transition notes.
 
 ## Relationships (optional)
 
@@ -55,6 +71,10 @@ Cluster concepts by domain relationship — entities with their states, processe
 ## Flagged ambiguities (tail of file)
 
 When two terms were used interchangeably and the team settled on a distinction, record the resolution as a one-line note: *"'account' had been used for both Customer and User — these are distinct."* This section is the audit trail for opinions the team has formed.
+
+## Retired (tail of file, present only when it has entries)
+
+One line per concept the project no longer has and nothing replaced: what the term meant, and what removed it. Enough that someone meeting it in an old ticket understands what they were reading and why it is not current — not the original entry carried over.
 
 ## One illustrative entry — the shape, not a template
 

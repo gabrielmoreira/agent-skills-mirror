@@ -4,6 +4,8 @@ All notable changes to NanoClaw will be documented in this file.
 
 ## [Unreleased]
 
+- [BREAKING] **Agents now receive their capability instructions.** `CLAUDE.md` was a list of `@` imports into `/app`; Claude Code silently drops imports resolving outside the project directory, so eight of nine instruction sections never reached the model. It is now one flat file with every source inlined, shared with the Codex provider. Customized source breaks on two surfaces: `src/claude-md-compose.ts` is now `src/project-doc-compose.ts` with `composeGroupClaudeMd(group)` becoming `composeGroupProjectDoc(group, groupDir, spec)`, and the `/app/CLAUDE.md` and `/workspace/agent/.claude-fragments` mounts are gone. **Migration:** `grep -rn "claude-md-compose\|composeGroupClaudeMd\|claude-fragments" src/ setup/ scripts/` — no hits means nothing to do; otherwise repoint the import and pass `DEFAULT_PROJECT_DOC` as the third argument. Then clear the leftovers once: `rm -rf groups/*/.claude-fragments groups/*/.claude-shared.md` — they are inert (nothing reads them) but sit in the agent's working directory.
+
 ## [2.3.0] - 2026-08-24
 
 - [BREAKING] **A new Slack experience — per-agent provisioned Slack apps, agent spawning from Slack, and UX improvements — is available to classic single-bot Slack installs.** Classic Slack keeps working unchanged; this gate asks for a decision, not a forced migration. New installs and non-Slack installs are unaffected. **Migration:** run `/migrate-slack-agents` — it detects classic state (exits cleanly otherwise) and either walks the upgrade or records the choice to stay on classic; both outcomes satisfy this requirement.
