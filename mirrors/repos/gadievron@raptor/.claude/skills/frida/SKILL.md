@@ -31,9 +31,10 @@ The slash command surfaces the libexec wrapper; run it as Bash. Lifecycle (outpu
 
 ```
 libexec/raptor-frida --target <pid|name|bundle-id|binary>
-                     (--template <name> | --script <path>)
+                     (--template <name> | --script <path> | --sink-watch <file>)
                      [--host HOST[:PORT]] [--usb]
                      [--duration N] [--spawn] [--unsafe-attach]
+                     [--follow-children]
 ```
 
 Equivalent CLI without a Claude session: `raptor frida ...`.
@@ -47,7 +48,14 @@ raptor frida --list-templates
 | Name | Purpose |
 |------|---------|
 | `api-trace` | Hooks `open`/`read`/`write`/`connect`/`fork`/`execve` etc. Most useful default. |
-| `ssl-unpin` | Bypasses iOS/macOS Security.framework, OpenSSL `SSL_get_verify_result`, and Android `X509TrustManager`. |
+| `ssl-unpin` | Bypasses iOS/macOS Security.framework and OpenSSL `SSL_get_verify_result`; the Android `X509TrustManager` layer needs the Java bridge (unbundled on Frida 17 — inactive via RAPTOR's runner, reported in `_meta`). |
+| `bb-coverage` | Basic-block coverage via Stalker; drcov output feeds the coverage store. |
+| `binary-flow-trace` | Input/parser callsite evidence for `/binary` investigations. |
+| `seed-harvest` | Dumps received input buffers; auto-distilled into `<out>/seeds/` for `raptor fuzz --corpus`. |
+| `exec-and-load` | Command execution (argv + caller) and dlopen activity — confirms injection sinks firing, maps runtime-loaded plugins. |
+| `sink-watch` | Argument-level evidence at dangerous sinks; `--sink-watch <attack-paths.json>` derives the watch list from a finding. |
+| `call-edges` | Dynamic call graph (Stalker); owned callees become `frida_call_edge` REACHABLE witnesses — rescues indirect-call/vtable targets from dead-code verdicts. |
+| `jni-trace` | Android/ART: RegisterNatives mapping — native method name/signature → native module + offset (bridges jadx to native analysis; class names need the Java bridge, unbundled on Frida 17). |
 
 Operator-supplied scripts via `--script ./hook.js` - same `send(...)` capture path.
 
@@ -112,6 +120,13 @@ Frida output is automatically consumed by downstream pipelines when evidence exi
 | `/understand --map` context bridge | `events.jsonl` file operations | `ObserveProfile` merged into context map (read/write/stat/connect paths) |
 | Coverage store | `coverage.drcov` (bb-coverage template) | Function-level coverage marks via existing `import_drcov` pipeline |
 
+Evidence caveat: sink/exec/load events count only when the target
+binary is on the call stack (spawn-mode binary targets); `seed-harvest`
+and `jni-trace` runs feed NO runtime evidence — their outputs are the
+seed corpus and the JNI mapping. A collection pass that yields zero
+evidence reports its unattributable events (with caller modules) as a
+warning; routine startup drops on evidence-bearing runs log at debug.
+
 No flags needed — consumers discover evidence via `packages.frida.evidence.discover_evidence()` and gate on `packages.frida.available()`.
 
 ### Programmatic API (for orchestration scripts)
@@ -132,4 +147,4 @@ run_dir = auto_observe("/path/to/binary", search_dirs=[out_dir])
 
 ## Status
 
-Alpha. Four templates ship (`api-trace`, `bb-coverage`, `ssl-unpin`, `binary-flow-trace`); richer set in progress (collab with @Splinters-io). Integration into `/validate` is automatic (Stage B collects runtime evidence via `frida_validation_bridge`). `/crash-analysis` integration on macOS is planned. The autonomous LLM-guided mode from the abandoned PR #57 is intentionally **not** in this slice.
+Alpha. Bundled templates: see the table above (authoritative list via `raptor frida --list-templates`); richer set in progress (collab with @Splinters-io). Integration into `/validate` is automatic (Stage B collects runtime evidence via `frida_validation_bridge`). `/crash-analysis` integration on macOS is planned. The autonomous LLM-guided mode from the abandoned PR #57 is intentionally **not** in this slice.

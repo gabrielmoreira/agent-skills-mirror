@@ -296,13 +296,16 @@ AERS는 두 가지를 동시에 제공합니다: (1) 완전한 실증 파이프�
 | **본 저장소에 벤더링**되어 카탈로그화된 스킬 | **1,096** | [`catalog/skills.json`](catalog/skills.json) |
 | 벤더링된 **컬렉션(collections)** | **76** | [`catalog/skills.json`](catalog/skills.json) · [76개 전체 한눈에 보기 ↑](#전체-76개-스킬-컬렉션-한눈에-보기) |
 | **자체 제작 플래그십** 전체 파이프라인 스킬 (StatsPAI DSL + 명시적 Python/Stata/R) | **4** | [`skills/00*`](skills/) |
-| 매 실행마다 데이터에서 gold 값을 재계산하는 수치 **벤치마크 과제** | **17** | [`benchmark/`](benchmark/) |
-| 행동 수준 **eval 시나리오 / 루브릭 항목** | **37 / 183** | [`eval-harness/`](eval-harness/) |
+| 매 실행마다 데이터에서 gold 값을 재계산하는 수치 **벤치마크 과제** | **19** | [`benchmark/`](benchmark/) |
+| 행동 수준 **eval 시나리오 / 루브릭 항목** | **42 / 217** | [`eval-harness/`](eval-harness/) |
+| 그중 **정답과 오답을 구분함이 입증된** 시나리오(pass/fail 픽스처 자체 검사) | **9**(`critical` 6개 전부 포함) | [`eval-harness/fixtures/`](eval-harness/fixtures/) |
 | **원본 베이스라인** 보안 감사 (컬렉션 / 파일) | **52 / 2,940+**, 52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | **더 넓은 생태계**의 큐레이션 지도 | **23,000+ 스킬 / 119개 저장소** | 본 README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
 | **도구 카탈로그** (`tools/`): 인과/계량 라이브러리, 자율 연구 에이전트, MCP 서버, 인과 발견, 벤치마크 데이터셋 | **334개 도구 / 6개 카테고리** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > 보안 감사는 원본 **52개 컬렉션 / 2,940개 파일 베이스라인 (52/52 CLEAN)**을 대상으로 했습니다. 그 베이스라인 이후 벤더링된 스킬은 [`catalog/provenance.json`](catalog/provenance.json), [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md), [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md)에서 추적됩니다. 높은 신뢰가 필요한 맥락에서 의존하기 전에 `make audit`를 실행하세요. 컬렉션 49–70에 대한 증분 패턴 스캔(2026-07-15)에서는 악성 콘텐츠가 발견되지 않았습니다 — [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md)의 부록을 참조하세요.
+
+> 🏁 **자신의 agent로 같은 시험을 볼 수 있습니다.** `pip install -e .` 후 [`aers-score`](aers_score/README.md)로 채점하고 [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md)에 게시하세요(규칙: [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md)). 그 보드의 숫자는 제출자의 자기 보고가 아니라 **같은 채점기로 다시 계산한 값**입니다.
 
 ---
 
@@ -362,7 +365,7 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 |---|---|---|
 | ![주요 계수 플롯](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![사양 곡선](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![민감도 대시보드](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
 
-> 🧪 **엔드투엔드 복제 실증**: 의존성 없는 명령 하나로 Card & Krueger (1994) 최저임금 DiD를 공식 원자료에서 복제 — 웨이브 평균 자릿수까지 일치, Table 4 계수 완전 일치, 복제 채점기 판정 **PERFECT**(3개 등급 모두 100%). [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/) 참조.
+> 🧪 **엔드투엔드 복제 실증**: 의존성 없는 명령 하나로 Card & Krueger (1994) 최저임금 DiD를 공식 원자료에서 복제 — 웨이브 평균 자릿수까지 일치, Table 4 계수 완전 일치, 복제 채점기 판정 **PERFECT**(3개 등급 모두 100%). [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/) 참조. 같은 형태의 두 번째 복제 — [`demo-notebooks/card-1995-iv/`](demo-notebooks/card-1995-iv/) — 는 Card (1995)의 교육 수익률을 **표준오차까지** 복제합니다: OLS 0.075 (0.003), 2SLS 0.132 (0.055), 1단계 F 13.3, 그리고 'IV > OLS'라는 주장 자체도 명시적으로 검사.
 >
 > 🔎 온라인 카탈로그(GitHub Pages, 빌드 불필요): **[스킬 검색](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [도구 검색](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [사이트 홈](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
 
@@ -395,8 +398,8 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 
 | 층위 | 무엇을 잡아내는가 | 위치 |
 |---|---|---|
-| **수치 벤치마크** | 실제 데이터에서 재계산한 진실과 일치하지 않는 보고 숫자 — 순진한 DID 부호 함정, 1단계 F 없는 약한 IV, staggered 타이밍 하의 TWFE 편향, RDD 추세 교란, 처치 후 나쁜 통제, 통합 평균이 숨기는 이질적 효과(CATE), 평균만 보면 놓치는 분위수 효과, 지역 충격에 교란된 시프트-셰어(Bartik) IV, 매개변수를 통제해 직접효과 부호가 뒤집히는 함정, 준거집단에 따라 달라지는 Oaxaca 분해, kink에서 잉여질량을 무보정 밀도가 숨기는 bunching | [`benchmark/`](benchmark/) · 17개 과제 |
-| **Eval 하니스** | 산문 수준 실패: 약한 IV의 거짓 안심, staggered-DID의 TWFE 오용, 조작된 인용, 안전하지 않은 `curl \| bash` 설치, 다중 검정 남용, AER 준수 누락 | [`eval-harness/`](eval-harness/) · 37개 시나리오 / 183개 루브릭 항목 |
+| **수치 벤치마크** | 실제 데이터에서 재계산한 진실과 일치하지 않는 보고 숫자 — 순진한 DID 부호 함정, 1단계 F 없는 약한 IV, staggered 타이밍 하의 TWFE 편향, RDD 추세 교란, 처치 후 나쁜 통제, 통합 평균이 숨기는 이질적 효과(CATE), 평균만 보면 놓치는 분위수 효과, 지역 충격에 교란된 시프트-셰어(Bartik) IV, 매개변수를 통제해 직접효과 부호가 뒤집히는 함정, 준거집단에 따라 달라지는 Oaxaca 분해, kink에서 잉여질량을 무보정 밀도가 숨기는 bunching, 내생적 가격을 도구변수로 다루지 않은 수요 추정과 계수를 그대로 탄력성으로 보고하는 오류(구조 추정), 처치 단위를 부분적으로 노출된 이웃과 비교하는 오류(간섭/스필오버) | [`benchmark/`](benchmark/) · 19개 과제 |
+| **Eval 하니스** | 산문 수준 실패: 약한 IV의 거짓 안심, staggered-DID의 TWFE 오용, 조작된 인용, 안전하지 않은 `curl \| bash` 설치, 다중 검정 남용, AER 준수 누락 | [`eval-harness/`](eval-harness/) · 42개 시나리오 / 217개 루브릭 항목 |
 | **보안 감사** | pipe-to-shell, 리버스 셸, 자격증명 유출, 프롬프트 인젝션을 13개 위험 카테고리에 걸쳐 점검 — 6단계, 40개 이상의 hook 스크립트를 손으로 검토 | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | **출처 & 라이선스** | 벤더링되지 않은 출처, 라이선스 위험, 1,096개 카탈로그 스킬 전반의 위생 드리프트 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
 | **CI & 호환성** | 카탈로그 신선도, 깨진 로컬 링크, GitHub Actions 정책, Python 3.9 **및** 3.12 문법 하한선 | [`.github/workflows/`](.github/workflows/) · 7개 워크플로 |
@@ -570,6 +573,7 @@ Replication → Submission → Peer Review Response → Defense
 
 서술형 변경 이력은 [**CHANGELOG.md**](CHANGELOG.md)로 옮겨졌습니다. 최근 주요 사항:
 
+- **2026-08** — 수치 벤치마크를 외부에 개방: [`aers-score`](aers_score/README.md) CLI와 [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md) — 후자는 제출된 숫자를 싣는 대신 **제출된 원본 candidate를 같은 채점기로 다시 계산**합니다. 방법론 패밀리 18로 **구조적 수요 추정** 추가(가격 내생성, 탄력성은 계수가 아니다, 한계비용은 FOC에서 반전), 자체 Python/Stata/R 플래그십에 첫 행동 수준 eval 부여, 벤더링된 컬렉션 보안 스캔을 '스캔되지 않은 컬렉션이 있으면 실패하는' 게이트로 전환. 엔드투엔드 복제도 두 건 추가 — 표준오차를 포함한 Card (1995), 그리고 NSW 실험(LaLonde 과제가 대조하는 +$1,794를 인용이 아니라 **도출**).
 - **2026-07** — 첫 태그 릴리스 **v2026.07** 발행; 엄밀성 커버리지 맵을 **16개 방법론 패밀리 전체 폐쇄 루프**로 확장(CATE, 분위수 효과, Bartik 시프트-셰어, 인과 매개, Oaxaca 분해 추가 — 각 패밀리에 eval 시나리오와 수치 벤치마크 모두 제공), 벤치마크는 **16개 과제**, eval 하니스는 **29개 시나리오 / 159개 루브릭 항목**으로 확대; 기계 생성 릴리스 스냅숏, rigor 커버리지 배지, 6개 언어 README 숫자 일관성 게이트 도입.
 - **2026-05** — **AER-skills**(Top-5 경제학 투고 스택, 9개 스킬)를 매주 상류 동기화와 함께 벤더링; 수치 벤치마크를 **5개 인과 복원 과제**로, eval 하니스를 **17개 시나리오 / 95개 루브릭 항목**으로 확장.
 - **2026-04** — **52/52 보안 베이스라인** 완료; 네 개의 전체 파이프라인 플래그십(**StatsPAI** + 명시적 **Python / Stata / R**) 출시; 오리지널 **chinese-de-aigc** 스킬 출시.

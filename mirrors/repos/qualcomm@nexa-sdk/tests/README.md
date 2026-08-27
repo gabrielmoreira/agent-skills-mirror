@@ -12,27 +12,37 @@ tests/
 ├── test_qairt.py          # qairt plugin     — LLM + VLM + precision
 ├── conftest.py            # Top-level fixtures (init, model paths, image)
 ├── pytest.ini             # Marker registry + suite discovery
-├── _models.py             # Model identifiers used by the matrix
+├── _models.py             # Model-matrix loader for models.json
+├── models.json            # The matrix: role -> [{id, precision, devices}]
 └── _quality_data.py       # Keyword-quality prompts shared by both plugins
 ```
 
 ## What each plugin covers
 
-Every plugin file ships the same four cases, plus an explicit
+Every plugin file ships the same behavioural cases, plus an explicit
 model-manager-pull check that runs first:
 
-| Test                          | What it proves                                                     |
-|-------------------------------|--------------------------------------------------------------------|
-| `test_model_manager_pull`     | AI Hub / HuggingFace pull for every model this file needs works.   |
-| `test_llm_multi_turn`         | Two-turn "Alice" conversation; turn-2 must recall the name.        |
-| `test_vlm_multi_turn`         | Two-turn conversation with an image on turn 1.                     |
-| `test_llm_quality_keywords`   | Greedy decode, 3 short Q/A; keyword substring must land.           |
-| `test_vlm_quality_keywords`   | Golden-retriever caption must match one of the canonical keywords. |
-| `test_mtp_multi_turn`         | (llama_cpp only) same "Alice" convo with `spec_type='draft-mtp'`.  |
+| Test                             | What it proves                                                     |
+|----------------------------------|--------------------------------------------------------------------|
+| `test_model_manager_pull`        | AI Hub / HuggingFace pull for every model this file needs works.   |
+| `test_llm_multi_turn`            | Two-turn "Alice" conversation; turn-2 must recall the name.        |
+| `test_llm_greedy_is_deterministic` | Same prompt under two seeds decodes to byte-identical text.       |
+| `test_vlm_multi_turn`            | Two-turn conversation with an image on turn 1.                     |
+| `test_llm_quality_keywords`      | Greedy decode, 3 short Q/A; keyword substring must land.           |
+| `test_vlm_quality_keywords`      | Golden-retriever caption must match one of the canonical keywords. |
+| `test_mtp_multi_turn`            | (llama_cpp only) same "Alice" convo with `spec_type='draft-mtp'`.  |
 
-Backends per plugin: `llama_cpp` on `cpu` + `gpu` + `npu`; `qairt` on `npu` only.
-Model-manager pull failures are treated as FAIL, not SKIP, so a broken
-download surfaces as a red CI leg instead of a silent green skip.
+Behavioural cases are parametrised over `(model, device_map)` pairs from
+`models.json`, so which backends run is a property of the model entry.
+Template / contract cases (ChatML sentinels, `enable_thinking`, tools
+rendering, mtmd markers) stay pinned to the role's first entry — they assert
+tokenizer specifics of one model. Model-manager pull failures are treated as
+FAIL, not SKIP, so a broken download surfaces as a red CI leg instead of a
+silent green skip.
+
+Every generating cell passes `GREEDY_TEMPERATURE` (a negative argmax sentinel),
+not `0.0`: both plugins read `0.0` as "unset" and substitute 0.8, so a pinned
+seed alone does not make a cell deterministic.
 
 ## Marker registry
 
@@ -46,7 +56,8 @@ The conftest auto-tags items by location and `device_map` value:
 | `device_cpu`    | parametrised with `device_map='cpu'`                     |
 | `device_gpu`    | parametrised with `device_map='gpu'`                     |
 | `device_npu`    | parametrised with `device_map='npu'`                     |
-| `snapdragon`    | any `device_map` in {`gpu`, `npu`} cell (auto-applied)   |
+| `device_hybrid` | parametrised with `device_map='hybrid'`                  |
+| `snapdragon`    | any `device_map` in {`gpu`, `npu`, `hybrid`} cell (auto) |
 | `llm` / `vlm`   | applied per-test via `@pytest.mark.llm` / `.vlm`         |
 
 `snapdragon`-marked and `qairt` items skip automatically unless
@@ -64,34 +75,51 @@ pytest tests -m api
 pytest tests -m "api or (llama_cpp and device_cpu)"
 
 # Snapdragon Windows ARM64 or Qualcomm Linux — full matrix
+# (pulls every models.json entry, ~30 GB including gpt-oss-20b and the MTP pair)
 GENIEX_DEVICE_TEST=1 pytest tests
 ```
 
 ## Models
 
-The matrix uses one model per modality, aligned across both plugins so a
-keyword-quality divergence between llama_cpp and QAIRT traces to backend /
-quantization rather than model identity. Manifest: `tests/models.json` (edit
-this file to swap or add models); loader: `tests/_models.py`.
+`tests/models.json` is the matrix. Each role maps to a list of entries and
+every entry names the `devices` it runs on, so adding a model to the whole
+behavioural suite is a manifest edit. Loader: `tests/_models.py`.
 
-| Modality | llama_cpp (HF GGUF) | QAIRT (AI Hub) |
-|----------|---------------------|----------------|
-| LLM      | `unsloth/Qwen3-4B-GGUF` Q4_0 | `qualcomm/Qwen3-4B` |
-| VLM      | `unsloth/gemma-4-E2B-it-GGUF` Q4_0 + mmproj-F16 | `qualcomm/Qwen2.5-VL-7B-Instruct` |
-| MTP      | `google/gemma-4-26B-A4B-it-qat-q4_0-gguf` + `RachidAR/gemma-4-...-assistant-q4_0-gguf` | — (llama_cpp only) |
+| Role                   | Model | Devices |
+|------------------------|-------|---------|
+| `llama_cpp_llm`        | `unsloth/Qwen3-4B-GGUF` Q4_0 | cpu, gpu, npu |
+| `llama_cpp_llm`        | `unsloth/gpt-oss-20b-GGUF` Q4_0 | hybrid |
+| `llama_cpp_vlm`        | `unsloth/gemma-4-E2B-it-GGUF` Q4_0 + mmproj-F16 | cpu, gpu, npu |
+| `llama_cpp_mtp_target` | `google/gemma-4-26B-A4B-it-qat-q4_0-gguf` | npu |
+| `llama_cpp_mtp_draft`  | `RachidAR/gemma-4-...-assistant-q4_0-gguf` | — (paired with the target) |
+| `qairt_llm`            | `qualcomm/Qwen3-4B` | npu |
+| `qairt_vlm`            | `qualcomm/Qwen2.5-VL-7B-Instruct` | npu |
 
-The LLM is Qwen3-4B **base**, not Instruct-2507: Instruct-2507 emits a long
-`<think>` preamble before the answer that, on the 256-token budget the
+Entry fields: `id`, `precision`, `hub` (default `auto`), `devices`,
+`quality_max_new_tokens` (per-model budget for the keyword cells),
+`env_override` (an env var that replaces `id`).
+
+llama_cpp and QAIRT share the same LLM/VLM models so a keyword-quality
+divergence traces to backend / quantization rather than model identity.
+`gpt-oss-20b` is the `hybrid`-only entry and needs a bigger
+`quality_max_new_tokens` — its reasoning channel has no `enable_thinking` off
+switch.
+
+The primary LLM is Qwen3-4B **base**, not Instruct-2507: Instruct-2507 emits a
+long `<think>` preamble before the answer that, on the 256-token budget the
 suite uses, pushes the keyword off the end of the completion and turns
 `test_llm_quality_keywords` into a thinking-budget test rather than a
 backend-quality test.
 
-Override the QAIRT model identifiers without editing the suite:
+Swap models via `env_override` per entry, or `GENIEX_TEST_MODELS` for the whole
+matrix:
 
 ```bash
 GENIEX_QAIRT_MODEL=qualcomm/<other-llm> \
 GENIEX_QAIRT_VLM_MODEL=qualcomm/<other-vlm> \
 GENIEX_DEVICE_TEST=1 pytest tests -m qairt
+
+GENIEX_TEST_MODELS=/path/to/my-matrix.json GENIEX_DEVICE_TEST=1 pytest tests
 ```
 
 ## CI

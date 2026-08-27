@@ -73,7 +73,7 @@ Reasoning demand: `standard`
 Quality bar:
 
 - Make the design job, context boundary, direction, downstream lane ownership, and visual evidence requirements readable before handoff.
-- Reject generic default drift by naming hierarchy, palette, typography, layout, signature element, and avoid patterns deliberately.
+- Reject generic default drift by naming hierarchy, palette, typography, layout, signature element, and avoid patterns deliberately — the direction vocabulary and anti-slop patterns live in the frontend skill's `omh-frontend/references/taste-foundations.md`; prepared directions inherit its named bar (technically clean but flat fails).
 - Require the selected executor and fresh visual evidence separately before any implementation or quality completion claim.
 
 Handoff policy:

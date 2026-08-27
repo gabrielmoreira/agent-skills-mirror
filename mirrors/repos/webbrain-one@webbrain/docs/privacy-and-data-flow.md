@@ -49,7 +49,8 @@ The user chooses their provider in Settings. Options include:
 - **WebBrain Cloud**: requests go through `api.webbrain.one`; selected interactions may be retained and used for evaluation, improvement, fine-tuning, and training while Help Improve WebBrain is enabled
 - **Bring-your-own cloud providers**: OpenAI, Anthropic, Google Gemini, Mistral, DeepSeek, xAI, Groq, OpenRouter, etc. — requests go directly to the provider using the user's credentials and are never collected by WebBrain
 - **Local model runtimes**: llama.cpp, Ollama, LM Studio, Jan, vLLM, SGLang,
-  LocalAI, and GPT4All — inference requests stay on the user's machine
+  LocalAI, GPT4All, and Unsloth Studio — inference requests stay on the user's
+  machine when Studio is configured with its loopback URL
 - **WebGPU (In-browser), Chromium only**: the selected text model runs in an extension
   Worker with no API key, base URL, localhost server, or model endpoint
 - **Local OpenAI-compatible Proxy**: WebBrain connects only to the configured
@@ -182,13 +183,47 @@ the stored copies are not separately synced to WebBrain.
 
 ### Trace Recorder
 
-When enabled (Settings → Display → "Record traces"), every agent run is written to an IndexedDB database (`webbrain_traces`):
+When enabled (Settings → Display → "Record traces"), every agent run is written
+to the local `webbrain_traces` IndexedDB database in one of two privacy tiers:
 
-- **`runs` store**: model, provider, token totals, timestamps, user message, final content
-- **`events` store**: per-step LLM request provenance, model responses, and tool calls with args and results. By default, request provenance contains counts, controlled prompt/mode labels, and declared prompt/tool policy revisions; it neither duplicates nor fingerprints raw system prompts, message text, tool schemas, or tool names. Users can explicitly enable the lossless debug tier in Settings → Display; those runs are visibly marked and retain bounded request messages and tool schemas for debugging. Both Markdown and JSON exports mask credential-shaped values for lossless runs before writing a file.
-- **`shots` store**: screenshot blobs
+- **Default metadata-only tier.** The `runs` store keeps run identifiers and
+  lineage, model/provider identifiers, token and event totals, timestamps,
+  status, and the allowlisted runtime snapshot. It omits the user's message,
+  final assistant text, full tab URL/title, and attachment filenames. The
+  `events` store keeps allowlisted diagnostic fields such as event kind, step,
+  counts, timings, usage, finish/status/error codes, called tool name and
+  outcome status, and screenshot marker/caption. It omits raw LLM
+  request/response text, tool schemas, tool arguments/results, and error
+  messages. Default traces do not write screenshot blobs or data URLs to the
+  `shots` store.
+- **Lossless debug tier (explicit opt-in).** Enabling lossless tracing under
+  Settings → Display adds user/final text, bounded request messages and tool
+  schemas, model responses and tool calls, tool arguments/results, detailed
+  errors, screenshot bytes, tab URL/title, and attachment filename metadata.
+  Lossless payloads have per-request, per-result, per-run, and aggregate
+  storage bounds; old completed lossless runs may be evicted to remain within
+  the aggregate limit. These runs are visibly marked in the Traces UI.
 
-The Traces page (`ui/traces.html`) reads from local IndexedDB only. Export produces a JSON blob saved to the user's Downloads folder. **No trace data ever leaves the browser.** Lossless recording is off by default and uses per-request/result bounds; treat a lossless trace as sensitive even though exported credentials are masked.
+Default trace redaction does not disable `/workflow --save`. While a traced run
+is active, the recorder keeps bounded raw tool payloads in memory only. On
+successful completion, the agent immediately compiles them into the existing
+value-free saved-workflow schema: typed values and historical element references are
+removed, URL data is reduced to origin/path families, and inputs become runtime
+parameter placeholders. Only that sanitized temporary draft is added to the
+already session-scoped `agentConv:<tabId>` recovery record. It is cleared with
+the conversation and becomes a durable saved workflow only after the user runs
+`/workflow --save <name>`.
+
+The Traces page (`ui/traces.html`) reads from local IndexedDB only. Export saves
+a local file to the user's Downloads folder; trace recording itself makes no
+network request. Both Markdown and JSON export paths mask credential-shaped
+values in lossless structured data, but screenshots and remaining page/chat
+content can still be sensitive. Lossless recording is off by default.
+
+The projection applies to newly recorded rows. Historical trace rows are not
+rewritten during an update, so a user upgrading with existing traces
+should treat those rows and their exports under the retention behavior of the
+version that recorded them, or delete them from the Traces page.
 
 Each run also records an allowlisted effective runtime snapshot (including mode
 and prompt tier). Trace Markdown surfaces that snapshot and the privacy-safe
@@ -198,13 +233,14 @@ prompt/tool rules, not with private request content.
 
 ### Saved Workflows
 
-`/workflow --save <name>` locally compiles the latest successful trace into a
-separate `webbrain-workflow/1` record in browser local storage
+`/workflow --save <name>` promotes the latest successful value-free draft (or
+uses a compatible legacy/lossless trace as a fallback) into a separate
+`webbrain-workflow/1` record in browser local storage
 (`wb_saved_workflows_v1`). The saved record contains action names, sanitized
 arguments, semantic target descriptors, URL origin/path families,
 postconditions, and parameter descriptors. It does not contain typed field
-values, raw historical `ref_id` values, action CSS selectors, coordinates, URL query strings, or URL
-fragments.
+values, raw historical `ref_id` values, action CSS selectors, coordinates, URL
+query strings, or URL fragments.
 
 `/teach --start <name>` records a user demonstration in temporary,
 tab-scoped session storage. The page capture code never reads field values:
@@ -219,9 +255,9 @@ compilation succeeds or fails; a successful compilation writes the same
 and sends them directly to the background replay executor. The values are not
 written to the workflow, chat text, retry payload, user memory, replay trace,
 or Agent fallback prompt. They necessarily reach the active page when the
-requested field action runs. A source trace is a separate opt-in record and may
-still contain the original raw tool arguments; saving a workflow does not
-delete or redact that source trace.
+requested field action runs. A lossless or legacy source trace may still
+contain the original raw tool arguments; saving a workflow does not delete or
+redact that separate trace.
 
 Replay traces contain workflow/step IDs, semantic match status and score,
 postcondition status, fallback status, and estimated model calls saved. They do

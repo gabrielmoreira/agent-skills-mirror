@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trailofbits/skills` — 26 default patterns, 1 followed patterns, 152 file(s) materialized.
+Mirror of `trailofbits/skills` — 26 default patterns, 1 followed patterns, 154 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trailofbits/skills` — 26 default patterns, 1 followed patterns, 152
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 152 |
+| Files         | 154 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -162,55 +162,57 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 101 | ✓ | [`plugins/testing-handbook-skills/README.md`](plugins/testing-handbook-skills/README.md) |
 | 102 | ✓ | [`plugins/testing-handbook-skills/skills/address-sanitizer/SKILL.md`](plugins/testing-handbook-skills/skills/address-sanitizer/SKILL.md) |
 | 103 | ✓ | [`plugins/testing-handbook-skills/skills/aflpp/SKILL.md`](plugins/testing-handbook-skills/skills/aflpp/SKILL.md) |
-| 104 | ✓ | [`plugins/testing-handbook-skills/skills/atheris/SKILL.md`](plugins/testing-handbook-skills/skills/atheris/SKILL.md) |
-| 105 | ✓ | [`plugins/testing-handbook-skills/skills/cargo-fuzz/SKILL.md`](plugins/testing-handbook-skills/skills/cargo-fuzz/SKILL.md) |
-| 106 | ✓ | [`plugins/testing-handbook-skills/skills/constant-time-testing/SKILL.md`](plugins/testing-handbook-skills/skills/constant-time-testing/SKILL.md) |
-| 107 | ✓ | [`plugins/testing-handbook-skills/skills/coverage-analysis/SKILL.md`](plugins/testing-handbook-skills/skills/coverage-analysis/SKILL.md) |
-| 108 | ✓ | [`plugins/testing-handbook-skills/skills/fuzzing-dictionary/SKILL.md`](plugins/testing-handbook-skills/skills/fuzzing-dictionary/SKILL.md) |
-| 109 | ✓ | [`plugins/testing-handbook-skills/skills/fuzzing-obstacles/SKILL.md`](plugins/testing-handbook-skills/skills/fuzzing-obstacles/SKILL.md) |
-| 110 | ✓ | [`plugins/testing-handbook-skills/skills/harness-writing/SKILL.md`](plugins/testing-handbook-skills/skills/harness-writing/SKILL.md) |
-| 111 | ✓ | [`plugins/testing-handbook-skills/skills/libafl/SKILL.md`](plugins/testing-handbook-skills/skills/libafl/SKILL.md) |
-| 112 | ✓ | [`plugins/testing-handbook-skills/skills/libfuzzer/SKILL.md`](plugins/testing-handbook-skills/skills/libfuzzer/SKILL.md) |
-| 113 | ✓ | [`plugins/testing-handbook-skills/skills/ossfuzz/SKILL.md`](plugins/testing-handbook-skills/skills/ossfuzz/SKILL.md) |
-| 114 | ✓ | [`plugins/testing-handbook-skills/skills/ruzzy/SKILL.md`](plugins/testing-handbook-skills/skills/ruzzy/SKILL.md) |
-| 115 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/agent-prompt.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/agent-prompt.md) |
-| 116 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/discovery.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/discovery.md) |
-| 117 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/SKILL.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/SKILL.md) |
-| 118 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/testing.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/testing.md) |
-| 119 | ✓ | [`plugins/testing-handbook-skills/skills/wycheproof/SKILL.md`](plugins/testing-handbook-skills/skills/wycheproof/SKILL.md) |
-| 120 | ✓ | [`plugins/trailmark/README.md`](plugins/trailmark/README.md) |
-| 121 | ✓ | [`plugins/trailmark/skills/audit-augmentation/SKILL.md`](plugins/trailmark/skills/audit-augmentation/SKILL.md) |
-| 122 | ✓ | [`plugins/trailmark/skills/crypto-protocol-diagram/SKILL.md`](plugins/trailmark/skills/crypto-protocol-diagram/SKILL.md) |
-| 123 | ✓ | [`plugins/trailmark/skills/diagramming-code/SKILL.md`](plugins/trailmark/skills/diagramming-code/SKILL.md) |
-| 124 | ✓ | [`plugins/trailmark/skills/genotoxic/SKILL.md`](plugins/trailmark/skills/genotoxic/SKILL.md) |
-| 125 | ✓ | [`plugins/trailmark/skills/graph-evolution/SKILL.md`](plugins/trailmark/skills/graph-evolution/SKILL.md) |
-| 126 | ✓ | [`plugins/trailmark/skills/mermaid-to-proverif/SKILL.md`](plugins/trailmark/skills/mermaid-to-proverif/SKILL.md) |
-| 127 | ✓ | [`plugins/trailmark/skills/slicing-code-context/SKILL.md`](plugins/trailmark/skills/slicing-code-context/SKILL.md) |
-| 128 | ✓ | [`plugins/trailmark/skills/trailmark-finding-triage/SKILL.md`](plugins/trailmark/skills/trailmark-finding-triage/SKILL.md) |
-| 129 | ✓ | [`plugins/trailmark/skills/trailmark-review-gate/SKILL.md`](plugins/trailmark/skills/trailmark-review-gate/SKILL.md) |
-| 130 | ✓ | [`plugins/trailmark/skills/trailmark-structural/SKILL.md`](plugins/trailmark/skills/trailmark-structural/SKILL.md) |
-| 131 | ✓ | [`plugins/trailmark/skills/trailmark-summary/SKILL.md`](plugins/trailmark/skills/trailmark-summary/SKILL.md) |
-| 132 | ✓ | [`plugins/trailmark/skills/trailmark-variant-neighborhood/SKILL.md`](plugins/trailmark/skills/trailmark-variant-neighborhood/SKILL.md) |
-| 133 | ✓ | [`plugins/trailmark/skills/trailmark/SKILL.md`](plugins/trailmark/skills/trailmark/SKILL.md) |
-| 134 | ✓ | [`plugins/trailmark/skills/vector-forge/SKILL.md`](plugins/trailmark/skills/vector-forge/SKILL.md) |
-| 135 | ✓ | [`plugins/variant-analysis/evals/README.md`](plugins/variant-analysis/evals/README.md) |
-| 136 | ✓ | [`plugins/variant-analysis/README.md`](plugins/variant-analysis/README.md) |
-| 137 | ✓ | [`plugins/variant-analysis/skills/variant-analysis/references/reporting.md`](plugins/variant-analysis/skills/variant-analysis/references/reporting.md) |
-| 138 | ✓ | [`plugins/variant-analysis/skills/variant-analysis/SKILL.md`](plugins/variant-analysis/skills/variant-analysis/SKILL.md) |
-| 139 | ✓ | [`plugins/variant-analysis/tests/README.md`](plugins/variant-analysis/tests/README.md) |
-| 140 | ✓ | [`plugins/vulnerability-triage-brocards/README.md`](plugins/vulnerability-triage-brocards/README.md) |
-| 141 | ✓ | [`plugins/vulnerability-triage-brocards/skills/vulnerability-triage-brocards/SKILL.md`](plugins/vulnerability-triage-brocards/skills/vulnerability-triage-brocards/SKILL.md) |
-| 142 | ✓ | [`plugins/writing-lean-proofs/evals/README.md`](plugins/writing-lean-proofs/evals/README.md) |
-| 143 | ✓ | [`plugins/writing-lean-proofs/README.md`](plugins/writing-lean-proofs/README.md) |
-| 144 | ✓ | [`plugins/writing-lean-proofs/skills/writing-lean-proofs/SKILL.md`](plugins/writing-lean-proofs/skills/writing-lean-proofs/SKILL.md) |
-| 145 | ✓ | [`plugins/yara-authoring/evals/README.md`](plugins/yara-authoring/evals/README.md) |
-| 146 | ✓ | [`plugins/yara-authoring/README.md`](plugins/yara-authoring/README.md) |
-| 147 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md`](plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md) |
-| 148 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md`](plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md) |
-| 149 | ✓ | [`plugins/zeroize-audit/README.md`](plugins/zeroize-audit/README.md) |
-| 150 | ✓ | [`plugins/zeroize-audit/skills/zeroize-audit/SKILL.md`](plugins/zeroize-audit/skills/zeroize-audit/SKILL.md) |
-| 151 | ✓ | [`plugins/zeroize-audit/tests/rust-regression/README.md`](plugins/zeroize-audit/tests/rust-regression/README.md) |
-| 152 | → | [`README.md`](README.md) |
+| 104 | ✓ | [`plugins/testing-handbook-skills/skills/atheris/examples.md`](plugins/testing-handbook-skills/skills/atheris/examples.md) |
+| 105 | ✓ | [`plugins/testing-handbook-skills/skills/atheris/SKILL.md`](plugins/testing-handbook-skills/skills/atheris/SKILL.md) |
+| 106 | ✓ | [`plugins/testing-handbook-skills/skills/atheris/structured-input.md`](plugins/testing-handbook-skills/skills/atheris/structured-input.md) |
+| 107 | ✓ | [`plugins/testing-handbook-skills/skills/cargo-fuzz/SKILL.md`](plugins/testing-handbook-skills/skills/cargo-fuzz/SKILL.md) |
+| 108 | ✓ | [`plugins/testing-handbook-skills/skills/constant-time-testing/SKILL.md`](plugins/testing-handbook-skills/skills/constant-time-testing/SKILL.md) |
+| 109 | ✓ | [`plugins/testing-handbook-skills/skills/coverage-analysis/SKILL.md`](plugins/testing-handbook-skills/skills/coverage-analysis/SKILL.md) |
+| 110 | ✓ | [`plugins/testing-handbook-skills/skills/fuzzing-dictionary/SKILL.md`](plugins/testing-handbook-skills/skills/fuzzing-dictionary/SKILL.md) |
+| 111 | ✓ | [`plugins/testing-handbook-skills/skills/fuzzing-obstacles/SKILL.md`](plugins/testing-handbook-skills/skills/fuzzing-obstacles/SKILL.md) |
+| 112 | ✓ | [`plugins/testing-handbook-skills/skills/harness-writing/SKILL.md`](plugins/testing-handbook-skills/skills/harness-writing/SKILL.md) |
+| 113 | ✓ | [`plugins/testing-handbook-skills/skills/libafl/SKILL.md`](plugins/testing-handbook-skills/skills/libafl/SKILL.md) |
+| 114 | ✓ | [`plugins/testing-handbook-skills/skills/libfuzzer/SKILL.md`](plugins/testing-handbook-skills/skills/libfuzzer/SKILL.md) |
+| 115 | ✓ | [`plugins/testing-handbook-skills/skills/ossfuzz/SKILL.md`](plugins/testing-handbook-skills/skills/ossfuzz/SKILL.md) |
+| 116 | ✓ | [`plugins/testing-handbook-skills/skills/ruzzy/SKILL.md`](plugins/testing-handbook-skills/skills/ruzzy/SKILL.md) |
+| 117 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/agent-prompt.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/agent-prompt.md) |
+| 118 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/discovery.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/discovery.md) |
+| 119 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/SKILL.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/SKILL.md) |
+| 120 | ✓ | [`plugins/testing-handbook-skills/skills/testing-handbook-generator/testing.md`](plugins/testing-handbook-skills/skills/testing-handbook-generator/testing.md) |
+| 121 | ✓ | [`plugins/testing-handbook-skills/skills/wycheproof/SKILL.md`](plugins/testing-handbook-skills/skills/wycheproof/SKILL.md) |
+| 122 | ✓ | [`plugins/trailmark/README.md`](plugins/trailmark/README.md) |
+| 123 | ✓ | [`plugins/trailmark/skills/audit-augmentation/SKILL.md`](plugins/trailmark/skills/audit-augmentation/SKILL.md) |
+| 124 | ✓ | [`plugins/trailmark/skills/crypto-protocol-diagram/SKILL.md`](plugins/trailmark/skills/crypto-protocol-diagram/SKILL.md) |
+| 125 | ✓ | [`plugins/trailmark/skills/diagramming-code/SKILL.md`](plugins/trailmark/skills/diagramming-code/SKILL.md) |
+| 126 | ✓ | [`plugins/trailmark/skills/genotoxic/SKILL.md`](plugins/trailmark/skills/genotoxic/SKILL.md) |
+| 127 | ✓ | [`plugins/trailmark/skills/graph-evolution/SKILL.md`](plugins/trailmark/skills/graph-evolution/SKILL.md) |
+| 128 | ✓ | [`plugins/trailmark/skills/mermaid-to-proverif/SKILL.md`](plugins/trailmark/skills/mermaid-to-proverif/SKILL.md) |
+| 129 | ✓ | [`plugins/trailmark/skills/slicing-code-context/SKILL.md`](plugins/trailmark/skills/slicing-code-context/SKILL.md) |
+| 130 | ✓ | [`plugins/trailmark/skills/trailmark-finding-triage/SKILL.md`](plugins/trailmark/skills/trailmark-finding-triage/SKILL.md) |
+| 131 | ✓ | [`plugins/trailmark/skills/trailmark-review-gate/SKILL.md`](plugins/trailmark/skills/trailmark-review-gate/SKILL.md) |
+| 132 | ✓ | [`plugins/trailmark/skills/trailmark-structural/SKILL.md`](plugins/trailmark/skills/trailmark-structural/SKILL.md) |
+| 133 | ✓ | [`plugins/trailmark/skills/trailmark-summary/SKILL.md`](plugins/trailmark/skills/trailmark-summary/SKILL.md) |
+| 134 | ✓ | [`plugins/trailmark/skills/trailmark-variant-neighborhood/SKILL.md`](plugins/trailmark/skills/trailmark-variant-neighborhood/SKILL.md) |
+| 135 | ✓ | [`plugins/trailmark/skills/trailmark/SKILL.md`](plugins/trailmark/skills/trailmark/SKILL.md) |
+| 136 | ✓ | [`plugins/trailmark/skills/vector-forge/SKILL.md`](plugins/trailmark/skills/vector-forge/SKILL.md) |
+| 137 | ✓ | [`plugins/variant-analysis/evals/README.md`](plugins/variant-analysis/evals/README.md) |
+| 138 | ✓ | [`plugins/variant-analysis/README.md`](plugins/variant-analysis/README.md) |
+| 139 | ✓ | [`plugins/variant-analysis/skills/variant-analysis/references/reporting.md`](plugins/variant-analysis/skills/variant-analysis/references/reporting.md) |
+| 140 | ✓ | [`plugins/variant-analysis/skills/variant-analysis/SKILL.md`](plugins/variant-analysis/skills/variant-analysis/SKILL.md) |
+| 141 | ✓ | [`plugins/variant-analysis/tests/README.md`](plugins/variant-analysis/tests/README.md) |
+| 142 | ✓ | [`plugins/vulnerability-triage-brocards/README.md`](plugins/vulnerability-triage-brocards/README.md) |
+| 143 | ✓ | [`plugins/vulnerability-triage-brocards/skills/vulnerability-triage-brocards/SKILL.md`](plugins/vulnerability-triage-brocards/skills/vulnerability-triage-brocards/SKILL.md) |
+| 144 | ✓ | [`plugins/writing-lean-proofs/evals/README.md`](plugins/writing-lean-proofs/evals/README.md) |
+| 145 | ✓ | [`plugins/writing-lean-proofs/README.md`](plugins/writing-lean-proofs/README.md) |
+| 146 | ✓ | [`plugins/writing-lean-proofs/skills/writing-lean-proofs/SKILL.md`](plugins/writing-lean-proofs/skills/writing-lean-proofs/SKILL.md) |
+| 147 | ✓ | [`plugins/yara-authoring/evals/README.md`](plugins/yara-authoring/evals/README.md) |
+| 148 | ✓ | [`plugins/yara-authoring/README.md`](plugins/yara-authoring/README.md) |
+| 149 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md`](plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md) |
+| 150 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md`](plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md) |
+| 151 | ✓ | [`plugins/zeroize-audit/README.md`](plugins/zeroize-audit/README.md) |
+| 152 | ✓ | [`plugins/zeroize-audit/skills/zeroize-audit/SKILL.md`](plugins/zeroize-audit/skills/zeroize-audit/SKILL.md) |
+| 153 | ✓ | [`plugins/zeroize-audit/tests/rust-regression/README.md`](plugins/zeroize-audit/tests/rust-regression/README.md) |
+| 154 | → | [`README.md`](README.md) |
 
 ---
 

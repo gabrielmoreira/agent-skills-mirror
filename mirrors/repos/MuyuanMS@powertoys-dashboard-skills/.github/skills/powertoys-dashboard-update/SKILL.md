@@ -70,9 +70,9 @@ $Board = if ($env:POWERTOYS_BOARD_REPO) {
 $Since = (Get-Date).AddDays(-2).ToUniversalTime().ToString('o')
 $IssueWindowDays = 30
 $DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } else { 2 }
-$PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } else { 5 }
+$PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } else { 8 }
 $PrReviewConcurrency = if ($env:POWERTOYS_PR_REVIEW_CONCURRENCY) { [int]$env:POWERTOYS_PR_REVIEW_CONCURRENCY } else { 2 }
-$RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } else { 45 }
+$RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } else { 50 }
 $DrainReviewQueue = $env:POWERTOYS_DASHBOARD_DRAIN_QUEUE -eq '1'
 $RunStartedAt = (Get-Date).ToUniversalTime().ToString('o')
 $ProjectOwner = if ($env:POWERTOYS_PROJECT_OWNER) { $env:POWERTOYS_PROJECT_OWNER } else { 'microsoft' }
@@ -114,6 +114,9 @@ run budget instead of trying to drain an arbitrarily large review queue:
 - inventory every eligible PR and changed bug, but select at most
   `$PrReviewBatchSize` PRs and `$DesignBatchSize` full designs for execution;
 - run at most `$PrReviewConcurrency` PR workers at once;
+- select up to eight PRs by default so workers that checkpoint an external
+  Copilot wait release their slots to additional queued PRs without increasing
+  heavy local concurrency;
 - treat cloud-review waiting as a persisted queue stage, not an active worker:
   request the review, checkpoint `waiting_copilot`, return the worker slot, and
   inspect the result on the next scheduler pass;
@@ -124,7 +127,7 @@ run budget instead of trying to drain an arbitrarily large review queue:
 - publish the refreshed inventory before launching workers, then publish each
   completed artifact without waiting for the full queue;
 - checkpoint every durable transition locally and publish after two transitions,
-  after ten minutes, or at run completion, whichever comes first;
+  after eight minutes, or at run completion, whichever comes first;
 - leave unselected or unfinished items explicitly queued for the next run.
 
 `POWERTOYS_DASHBOARD_DRAIN_QUEUE=1` is an exceptional operator-requested mode.
@@ -343,7 +346,7 @@ Classify unfinished workflow state:
 
 PR inventory is exhaustive, but normal execution is bounded to the run plan.
 Process only the selected batch, with at most two active workers by default.
-The default batch contains five PRs so cloud waits can release slots and let
+The default batch contains eight PRs so cloud waits can release slots and let
 other PRs advance without increasing local build concurrency. Never launch all
 stale PRs in one conversation. Prioritize resumable in-progress reviews, stale
 proposed reviews, stale artifact heads, then missing artifacts.
@@ -356,7 +359,7 @@ build, context review, spelling check, or timed-out fresh request remains
 `review_in_progress` and must get a `Re-run review`/`Continue review` action.
 
 Each worker receives the run-plan deadline and must stop initiating new review
-rounds or builds 15 minutes before it. If it cannot converge, it writes durable
+rounds or builds 10 minutes before it. If it cannot converge, it writes durable
 `review_in_progress` state and returns. Do not keep polling simply to make the
 current run look complete. Do not launch nested agents from a PR worker.
 
@@ -397,7 +400,7 @@ Report selected, completed, in-progress, and deferred counts. Run the
 Issue **judgment** is exhaustive for new/changed bugs, while full design work is
 bounded. Rank `actionable_design` judgments by confidence, reproducibility,
 scope, recency, and lack of existing ownership. Run at most
-`$DesignBatchSize` (default 10) through `powertoys-issue-to-design`; leave the
+`$DesignBatchSize` (default 2) through `powertoys-issue-to-design`; leave the
 rest queued with explicit `Design fix` actions. Prefer issues updated in the
 last `$IssueWindowDays`, then consume older actionable issues as capacity
 allows.

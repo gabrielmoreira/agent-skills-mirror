@@ -184,7 +184,8 @@ Run `npm run check` frequently while developing, not just before pushing — it 
 2. **Spelling** — cspell (markdown)
 3. **Markdown linting** — markdownlint
 4. **Terminology** — proper noun capitalization (e.g. `MapLibre` not `Maplibre`)
-5. **Skills validation** — YAML frontmatter and structure
+5. **Model pins** — provider ids must match the pinned generator/judge
+6. **Skills validation** — YAML frontmatter and structure
 
 All checks pass when the output ends with:
 
@@ -219,6 +220,23 @@ All checks pass when the output ends with:
 2. Make your edit, following whichever path in [Ways to contribute](#ways-to-contribute) matches what you're doing.
 3. Run `npm run check`, and evals too if you touched skill content.
 4. Push and open a PR describing what you changed and why.
+5. **Fill in the Changelog section** in your PR description — this is required. A CI check validates it on every PR. See [How to fill in the Changelog field](#how-to-fill-in-the-changelog-field) below.
+
+### How to fill in the Changelog field
+
+Every PR description includes a `## Changelog` section (the PR template pre-fills it). Fill in three fields:
+
+| Field      | What to write                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Bump`     | `minor` for a new or removed skill or a change to how skills are consumed; `patch` for content fixes and tooling; `major` if installed skills would break; `none` for typo fixes, CI-only, or changes that need no entry |
+| `Category` | `Added`, `Changed`, `Fixed`, `Removed`, or `Internal` — the CHANGELOG heading the entry goes under                                                                                                                       |
+| `Entry`    | One line in the CHANGELOG's voice, naming the skill if one is touched. Omit when Bump is `none`                                                                                                                          |
+
+On merge, automation reads these fields and inserts the entry under `[Unreleased]` in `CHANGELOG.md` — do not hand-edit that section. A merged PR without a usable field (one opened before the template carried it, for example) is skipped with a warning on the workflow run, and its entry can be added by hand.
+
+### How releases are cut
+
+Releases are cut by a maintainer via the Release workflow (`workflow_dispatch`), which bumps the version, moves `[Unreleased]` entries into a dated section, regenerates the README skills table, and opens a release PR. Merging that PR tags `vX.Y.Z` and publishes the GitHub Release. Opening the PR needs "Allow GitHub Actions to create and approve pull requests" enabled under Settings → Actions → General → Workflow permissions; without it the workflow pushes the `release/vX.Y.Z` branch and stops, and the PR can be opened by hand. A PR opened by the workflow does not trigger `check.yml` on its own (GitHub does not run workflows for events caused by `GITHUB_TOKEN`); close and reopen it to run the checks. The README skills table is regenerated at the same time: rows are sorted by name, a row is added for each new skill (its "Use when" text seeded from the `Use when` clause of the skill's `description`), and rows for removed skills are dropped. Existing "Use when" text is preserved, so edit it in place in `README.md` whenever it can be improved; there is no need to touch the table when adding a skill.
 
 ## Note on AI usage
 

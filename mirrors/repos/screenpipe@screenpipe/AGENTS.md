@@ -99,3 +99,9 @@ versioned artifacts. Agents must never publish: no writes to `latest.json`,
 tags or GitHub releases; no `app-publication` approvals; no calls to the admin
 publication endpoint; and never weaken the `Human-only app publication tags`
 ruleset. Publication is a human click in the admin releases UI.
+
+## PR
+
+Don't mention any Screenpipe private secret method you used to implement feature based on inspiration from other product research in PR bodies or GH issues
+
+

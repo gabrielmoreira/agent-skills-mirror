@@ -1,21 +1,20 @@
 ---
 name: comfyui-skill-openclaw
 description: |
-  Run ComfyUI workflows from any AI agent (Claude Code, OpenClaw, Codex, Hermes) via a single CLI.
-  Import workflows, manage dependencies, execute across multiple servers, and track history
-  — all through shell commands.
+  Run registered ComfyUI workflows through the fast comfyui-skill CLI, and use the official
+  local Comfy MCP for live template, node, model, validation, and orchestration capabilities.
 
   **Use this Skill when:**
   (1) The user requests to "generate an image", "draw a picture", or "execute a ComfyUI workflow".
   (2) The user has specific stylistic, character, or scene requirements for image generation.
   (3) The user asks you to import, register, sync, or configure saved ComfyUI workflows for later reuse.
-version: 1.0.0
 license: Apache-2.0
-platforms: [macos, linux, windows]
-prerequisites:
-  commands: ["comfyui-skill"]
-  env_vars: []
 metadata:
+  version: "1.1.0"
+  platforms: [macos, linux, windows]
+  prerequisites:
+    commands: ["comfyui-skill"]
+    env_vars: []
   requires:
     bins: ["comfyui-skill"]
   cliHelp: "comfyui-skill --help"
@@ -26,7 +25,7 @@ metadata:
 
 # ComfyUI Agent SKILL
 
-> **Prerequisites**: Install the CLI: `pip install -U comfyui-skill-cli`. All commands must run from this project's root directory (where this `SKILL.md` is located).
+> **Prerequisites**: Install the CLI: `pip install -U comfyui-skill-cli`. The official local Comfy MCP is optional and should be connected using the [official guide](https://docs.comfy.org/agent-tools/mcp#local-comfy-mcp-connection) when MCP capabilities are needed. All shell commands must run from this project's root directory (where this `SKILL.md` is located).
 >
 > [!IMPORTANT]
 > **Directory Sensitivity**: The CLI reads `config.json` and `data/` from the current directory.
@@ -35,14 +34,18 @@ metadata:
 
 ## Quick Decision
 
-- User says "generate image / draw a picture" → **Execution Flow (Step 1–4)**
+- A matching registered workflow exists → use the **CLI Execution Flow (Step 1-4)**. This is the default for repeated, batch, and latency-sensitive work.
+- The request has no matching workflow, or requires live template/model/node discovery → use the **official local Comfy MCP**.
+- The user supplies a raw workflow that needs real environment validation → use MCP `validate_workflow`; use CLI `run --validate` for a registered workflow.
+- The user asks to install nodes, download models, restart, update, or switch versions → use MCP only after explaining the effect and getting confirmation.
+- User says "generate image / draw a picture" → first inspect registered workflows; if none fit, discover a current MCP template instead of guessing a model name.
 - User says "import workflow / add workflow" → `comfyui-skill --json workflow import <path>`
 - User says "img2img / use this image" → first `comfyui-skill --json upload <image>`, then execute
 - User says "inpainting / mask this area" → `comfyui-skill --json upload <mask> --mask`, then execute
 - User says "show previous results" → `comfyui-skill --json history list <id>`
 - User says "what failed / check job status" → `comfyui-skill --json jobs list --status failed`
 - User says "which server has more VRAM" → `comfyui-skill --json server stats --all`
-- User says "what nodes are available" → `comfyui-skill --json nodes list`
+- User says "what nodes are available" → use MCP `nodes` for live ecosystem discovery; use `comfyui-skill --json nodes list` when only the CLI inventory is needed.
 - User says "dry run / test without executing" → `comfyui-skill --json run <id> --validate`
 - User says "open management UI" → `python3 ./ui/open_ui.py`
 
@@ -51,6 +54,31 @@ metadata:
 - **Skill ID**: `<server_id>/<workflow_id>` (e.g., `local/txt2img`). If server is omitted, the default server is used.
 - **Schema**: Each workflow has a `schema.json` that maps business parameter names (e.g., `prompt`, `seed`) to internal ComfyUI node fields. Never expose node IDs to the user.
 - **Server**: One or more ComfyUI instances configured in `config.json`. Check health with `server status`.
+- **Two interfaces, one Skill**: CLI is the efficient execution path for known workflows. Official MCP is the adaptive path for discovering and orchestrating the current ComfyUI ecosystem. They share the same business intent and must not submit the same job twice.
+
+## Official Local Comfy MCP
+
+When the Agent host exposes the official Comfy MCP tools, call those tools directly. Start every MCP flow with `server_info` and use the live tool schemas instead of assuming parameters or tool availability.
+
+When the host does not expose MCP tools but can run shell commands, use the included stdio bridge:
+
+```bash
+python ./scripts/comfy_mcp.py probe
+python ./scripts/comfy_mcp.py tools
+python ./scripts/comfy_mcp.py call search_templates --arguments '{"query":"background removal"}'
+```
+
+The bridge reads `mcp_command`, `mcp_args`, `mcp_python`, `mcp_cwd`, and `mcp_env` from the selected server in `config.json`. `probe` and `tools` are read-only. A `call` has the side effects of the named official tool.
+
+Read [references/comfy-mcp.md](./references/comfy-mcp.md) when the request needs MCP discovery, raw-workflow validation, template adaptation, job management, installation, lifecycle control, or partner models.
+
+Routing invariants:
+
+- Prefer CLI for a known `<server_id>/<workflow_id>`; MCP is not a mandatory extra hop.
+- Prefer MCP when the answer depends on the currently installed templates, nodes, models, hardware, or official tool contract.
+- For long MCP runs: `run_workflow(wait=false)` or `run_template(wait=false)` -> `job(action="wait"|"status")` -> `fetch_outputs`.
+- Once either path returns a `prompt_id`, continue polling that path. Never fall back by submitting again.
+- Never set `confirm_spend=true` without the user's explicit approval for that paid call.
 
 ## Command Reference
 

@@ -14,13 +14,20 @@ description: >-
 license: MIT
 activation: /agent-skill-creator
 metadata:
-  author: Francy Lisboa Charuto
+  author: Francy J G Lisboa
   version: 6.1.0
   created: 2025-10-18
   last_reviewed: 2026-08-11
   review_interval_days: 180
+  dependencies:
+    - name: GitHub repository transport
+      url: https://github.com/FrancyJGLisboa/agent-skill-creator
+      type: service
+    - name: GitHub raw bootstrap transport
+      url: https://raw.githubusercontent.com/FrancyJGLisboa/agent-skill-creator/main/scripts/bootstrap.sh
+      type: service
 provenance:
-  maintainer: Francy Lisboa Charuto
+  maintainer: Francy J G Lisboa
   version: 6.1.0
   created: 2025-10-18
   source_references:
@@ -202,6 +209,21 @@ for the package layouts.
 
 ## Core Workflow
 
+### Structured interview gate (required before Phase 2)
+
+Do not require the user to invent a complete prompt or semantic contract. Start a
+resumable `interview.json` from the problem they can describe. Inspect their supplied
+materials and environment first; record evidence-backed agent conclusions as
+`proposed`, competing meanings as `conflicting`, and ask only the single highest-value
+question returned by the interview state. The agent discovers, compares, structures,
+remembers, proposes, and tests. Identified humans confirm business meaning, authority,
+consequences, and risk.
+
+Run `python3 scripts/structured_interview.py gate interview.json` before Phase 2.
+`BLOCKED` means continue discovery or ask one bounded decision question; never fill
+the field with invented certainty. `READY` permits design and generation. Read
+`references/structured-interview.md` for commands, states, and authority rules.
+
 ### Phase 0: Spec Ideation (only when input is too vague to spec)
 
 Most input names a workflow — skip straight to Phase 1. But when the user arrives
@@ -257,7 +279,12 @@ Read `references/skill-audit.md` for the four audit questions in full, the verdi
 
 ### Phase 1: Discovery
 
-Research available APIs and data sources for the user's domain. Compare options by cost, rate limits, data quality, and documentation. **Decide** which API to use with justification.
+Research available APIs and data sources for the user's domain. Compare options by
+cost, rate limits, data quality, and documentation. Propose the best technical option
+with evidence. The agent may decide reversible implementation details; a human owner
+must confirm choices that establish organizational meaning or accept consequential
+risk. Update `interview.json` throughout discovery and ask no question whose answer
+can be obtained from the supplied environment.
 
 See `references/pipeline-phases.md` for detailed Phase 1 instructions.
 
@@ -295,6 +322,37 @@ with the skill as an instant regression test, formatted so
 `references/phase2-eval-assessment.md` for criteria rules, the golden-case
 strategy, the JSON spec format, and the optimize handoff.
 
+**Phase 2 also classifies software mutation.** If the generated skill creates or
+modifies application code, schemas, models, persistence, serialization, caches,
+synchronization, migrations, or stateful features, review the affected representation
+before designing the implementation. Name the affected structures, invariants, single
+sources of truth, invalid states that must be unrepresentable, and allowed state
+transitions. Unknown invariants block implementation; do not substitute a generic
+checklist. Non-software skills declare that this conditional review does not apply.
+Read `references/discovery-metadata.md` for the schema, then record the result in
+`discovery.json`.
+
+**Phase 2 also classifies structured data interfaces.** If the generated skill reads
+an API, MCP tool/resource, database, structured file, event stream, or schema
+registry, establish the data contract before designing its processing logic. Inspect
+authoritative documentation and, when safely accessible, one representative sample;
+record entities, identifiers, relationships, field semantics, invariants, freshness
+and pagination, nullability, and blocking readiness checks. Do not infer undocumented
+semantics from field names or treat a successful connection as schema proof. Missing
+authority or unresolved ambiguity blocks useful execution. Non-structured workflows
+declare that this conditional contract does not apply. Read
+`references/discovery-metadata.md` for the schema.
+
+**Phase 2 also classifies organizational semantics.** When a correct answer depends
+on business definitions, scope, grain, units, time interpretation, or which source
+wins, require the human domain owner to approve a versioned semantic contract. Record
+ordered source precedence, owner, validity and review dates, exact dependencies, and
+the legitimate `answer`, `ask`, and `refuse_unknown` outcomes. The agent may draft and
+document this representation but cannot establish authority. Unresolved meaning must
+ask the declared clarification or refuse. Skills with no organizational interpretation
+declare that this conditional contract does not apply. Read
+`references/discovery-metadata.md` for the schema.
+
 ### Phase 3: Architecture
 
 Structure the skill using the Agent Skills Open Standard:
@@ -327,7 +385,11 @@ Create all files in this order:
    `trigger`, `decision`, `evidence`, and `success_measure`), plus the real-world
    outcome, intended users, input types, output artifacts, use cases, invocation
    examples, permissions/systems, typical completion time, declared platform
-   compatibility, and support tier. Read `references/discovery-metadata.md`. Never
+   compatibility, environment discovery/readiness, risk and mutation boundaries,
+   the conditional software-mutation representation review, the conditional structured
+   data-interface contract, the conditional governed semantic contract,
+   positive/negative routing tests, and support tier. Read
+   `references/discovery-metadata.md`. Never
    generate a skill without the five decision-contract fields; do not invent
    compatibility certification during creation.
    If the user has named a target governed marketplace and its published governance
@@ -335,7 +397,11 @@ Create all files in this order:
    write those exact values as `metadata.owners` and `metadata.approval_status` in
    `SKILL.md`. Do not guess an owner, approver, department, or approval status when
    no target marketplace is known; leave organizational assignment to intake.
-8. Generate `install.sh` from `scripts/install-template.sh` (replace `{{SKILL_NAME}}` with actual name, `chmod +x`)
+7.6. Copy the ready **`interview.json`** into the generated skill root. Run
+   `python3 scripts/structured_interview.py gate <skill>/interview.json` immediately
+   before copying it. A blocked state stops generation; never downgrade a confirmed
+   field to a proposal or remove conflicts to pass the gate.
+8. Generate both installers deterministically with **`python3 scripts/render_installers.py <skill-directory>`**. Never copy the factory's root `install.sh` or `install.ps1`; the renderer binds the generated skill name and version into the canonical templates and marks `install.sh` executable.
 8.5. Generate `.claude-plugin/plugin.json` + `marketplace.json` from `scripts/claude-plugin-template/` (placeholders from frontmatter — makes the skill installable via `/plugin marketplace add`), and **ship the evolution toolkit and local success ledger**: copy `scripts/evolve_template.py` → `scripts/evolve.py`, `scripts/success_ledger.py`, plus the staleness/drift/dep-health modules. See `references/pipeline-phases.md` Steps 6.5–6.6
 9. Write `README.md` (multi-platform install instructions showing the `/plugin marketplace add` path for Claude Code and `git clone` to each tool's **native** path)
 9.5. Build the normalized IR with **`python3 scripts/skill_graph.py build <skill> --output <skill>/skill.graph.json`**. This typed artifact/dependency graph is the validation source of truth; the five phases remain its user-facing projection. Read `references/skill-graph.md` for its schema and invariants.
@@ -573,3 +639,5 @@ Read these on demand — each one when its moment arrives, not upfront.
 | `references/skill-graph.md` | Normalized artifact graph, blocking reachability constraints, parallel gates, and content-addressed caching |
 | `references/product-success.md` | Local lifecycle event schema, privacy boundary, Durable Active Skills definition, and metric formulas |
 | `references/discovery-metadata.md` | Generated discovery.json schema used by governed marketplace search and skill pages |
+| `references/structured-interview.md` | Resumable evidence/authority interview and pre-generation gate |
+| `references/semantic-contract-experiment.md` | Bounded three-skill, four-configuration evidence protocol for semantic-contract product success |

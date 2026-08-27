@@ -55,7 +55,8 @@ scenario coverage and the deterministic graders, and run them as described in St
 so the skill is absent from the model-facing skilled arm and any direct eval compares two identical
 arms. Answer-content graders do not create a difference between those arms. The honest coverage for
 such skills is dependency-level — through the outcome evals of the skills that load them, and through
-the plugin arm.
+the plugin arm. For example, `filter-syntax` is covered by the filtered-command scenarios in
+`tests/dotnet-test/run-tests/eval.yaml`.
 
 ### Step 2: Write the spec skeleton
 

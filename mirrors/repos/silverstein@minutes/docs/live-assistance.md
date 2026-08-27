@@ -62,12 +62,15 @@ Start or confirm a Minutes live transcript before asking the agent to attach:
 
 ```bash
 minutes transcript --status
-minutes transcript --since 2m
+minutes transcript --since 2m --include-current
 ```
 
 Both **Live** and **Start Recording** provide live transcript evidence.
 Recording additionally preserves media and produces a finalized meeting after
-processing.
+processing. The bounded read returns finalized lines plus at most one fresh
+`provisional` current-speech draft. That draft is replaceable and in-memory
+only. It disappears immediately when speech ends, capture stops, or its
+three-second freshness window expires.
 
 The current skill is an honest operating contract, not a background daemon. If
 the host cannot prove evented delivery, cancellation, and foreground

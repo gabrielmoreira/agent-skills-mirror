@@ -10,6 +10,7 @@
 - [`ProviderManagement.md`](./ProviderManagement.md) — Settings > Providers 信息架构、preset 匹配、provider_models 表关系、删除安全。改 `ProviderManager.tsx` / `ProviderCard.tsx` / `provider-presets.tsx` / `provider-catalog.ts` / `/api/providers/*` 前必读
 - [`ModelDiscovery.md`](./ModelDiscovery.md) — discover-models 三步流（probe / confirm / apply）+ user_edited 守护 + classification 分类。改 `model-discovery.ts` / `applyDiscoveryDiff` / refresh dialog 前必读
 - [`ComposerModelSelection.md`](./ComposerModelSelection.md) — useProviderModels resolved pair 契约 + ChatView 三道 send gate + new chat page 自治路径。改 `useProviderModels.ts` / `MessageInput.tsx` / `ChatView.tsx` / `chat/page.tsx` / `useAssistantTrigger.ts` 前必读
+- [`WorkspaceSidebar.md`](./WorkspaceSidebar.md) — Workspace Sidebar 的瞬时 Tab / 项目 Pin / shell collapse 分层、Primary + Inspector 与 legacy 只读迁移。改 `useWorkspaceSidebar.tsx` / `WorkspaceSidebar/*` / workspace surface persistence 前必读
 - [`i18n.md`](./i18n.md) — typed dictionary / 局部双语 pair / 风险与计费承诺一致性。改任何 UI 文案前必读
 - [`DatabaseSchema.md`](./DatabaseSchema.md) — additive migration、conservative backfill、`preset_key` 稳定身份。改 schema 前必读
 - [`Onboarding.md`](./Onboarding.md) — OpenAI/xAI OAuth refresh、原子 bundle、loopback/device flow、bearer host 防泄漏。改凭据相关代码前必读

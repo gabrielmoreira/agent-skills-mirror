@@ -5,6 +5,221 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
+### Opening the evidence chain (docs/PLAN-2026-09)
+
+- **`aers-score` — an outsider can now take the benchmark.** The numeric
+  benchmark has always been the repo's strongest trust signal, and the only way
+  in was to read `benchmark/README.md`, hand-write a `results.json` against an
+  undocumented field list, and run a checker written for this repo's CI. The new
+  [`aers-score`](aers_score/README.md) console script is the front door:
+  `tasks` / `describe` / `init` / `grade` / `submit`, machine-readable output on
+  every subcommand, installed with `pip install -e .` and zero dependencies on
+  Python 3.9+. It reimplements no grading — `aers_score/exam.py` loads
+  `benchmark/check_benchmark.py` and calls its own `validate_candidate` /
+  `compute_truth` / `grade`, so every gold, tolerance and anti-fabrication
+  cross-check stays defined in exactly one place, and a test asserts the
+  reference candidates still sweep the exam through the CLI. The exam is
+  resolved from a checkout rather than bundled into the wheel: a task spec is
+  meaningless without the dataset its golds are recomputed from, so a second
+  copy would be pure drift surface.
+- **[`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md) — third-party
+  agents on the same exam.** `BENCHMARK_SCOREBOARD.md` scores two pipelines this
+  repo wrote itself, which is a self-report. The new board is open to anyone, and
+  **submitted numbers are never displayed**: each entry ships its raw per-task
+  candidate files under `benchmark/external/<slug>/`, and
+  `scripts/build-external-scoreboard.py` regrades them from scratch, then
+  compares the submitter's summary against that regrade and fails the build on
+  any disagreement. Two independent walls, both attacked directly in
+  `tests/test_external_scoreboard.py`: you cannot publish a score you did not
+  earn (the cross-check), and you cannot earn one by fabricating numbers (the
+  `honest-*` golds). Rules, ranking and the reason cherry-picking cannot improve
+  a position are in [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md).
+- **Method family 18: structural demand estimation.** Skills in the catalog
+  advertise BLP and demand estimation; nothing checked whether a pipeline could
+  do it. `benchmark/lib/structural.py` builds a logit demand system whose golds
+  are *exact* rather than asymptotic — Berry's inversion makes the model linear,
+  and the demand shock is residualized in-sample against the instruments when the
+  data is generated, so just-identified 2SLS returns the design parameter itself.
+  The task grades the three steps that separate a structural pipeline from a
+  regression, each with the folk answer the naive baseline takes: price
+  endogeneity (OLS gives 1.14 against a true 1.50, biased toward *less*
+  price-sensitive demand), elasticity-is-not-a-coefficient (−3.73 vs −1.14), and
+  marginal cost inverted from the Bertrand–Nash FOC (2.05 vs 1.81 when the biased
+  α is carried through). Coverage: 18 families, 17 fully covered, 0 gaps.
+
+- **A second end-to-end replication: Card (1995).** The repo could already show
+  one automated pipeline reaching *published* numbers from raw data
+  (Card–Krueger 1994). [`demo-notebooks/card-1995-iv/`](demo-notebooks/card-1995-iv/)
+  adds the returns-to-schooling IV in the same shape — zero dependencies, exits
+  non-zero when an anchor is missed — and reproduces seven anchors including the
+  ones a point-estimate check skips: OLS 0.075 (s.e. 0.003), first-stage `nearc4`
+  0.32 (0.088), 2SLS 0.132 (s.e. 0.055), N = 3,010. Two details make it a
+  replication rather than a regression run. The 2SLS variance uses the
+  *structural* residuals, and the script also computes what you get by reading
+  the second stage's own OLS standard error instead (0.0565 against the correct
+  0.0550) — the classic manual-2SLS error, shown at its actual size rather than
+  warned about. And `iv_exceeds_ols` is checked on its own, because a pipeline
+  can hit both point estimates and still bury the finding the paper is about.
+
+- **The NSW experimental benchmark is now derived, not cited.** The +$1,794
+  effect that `benchmark/tasks/lalonde-recovery.toml` grades every candidate
+  against was a hand-transcribed literature constant — a claim.
+  [`demo-notebooks/nsw-lalonde-1986/`](demo-notebooks/nsw-lalonde-1986/) vendors
+  the randomized NSW arms (185 treated / 260 controls, with URL, download date
+  and SHA-256 in `data/PROVENANCE.md`) and computes +$1,794.34 from them
+  directly: no model, no covariates, 185 minus 260. `tests/test_nsw_replication.py`
+  pins the task constant to that derivation, so editing one without the other
+  fails the suite. The demo also puts LaLonde's problem on one screen — the same
+  185 men give **−$635** against the PSID comparison group, sign flipped — and
+  runs the randomization check that makes the failure visible *before* the
+  outcome is consulted: pre-treatment earnings differ by $11 across the
+  randomized arms and by $3,524 across the observational ones.
+
+- **Method family 19: interference / spillovers (SUTVA).** SUTVA is the
+  assumption almost every applied paper states in one sentence and never returns
+  to, and the comparison that violates it is the one a field experiment hands
+  you for free: treated households next to untreated ones, both in the same
+  village. `benchmark/lib/spillover.py` builds a partial-interference design
+  (Hudgens and Halloran 2008) where four quantities all get called "the
+  treatment effect" and all four are recovered exactly — direct 2.0, spillover
+  1.5, total on the treated 3.5, overall/policy 2.5. The within-cluster contrast
+  gives 2.0, which is a perfectly good *direct* effect and a bad answer to "what
+  did the program do": the comparison group is already receiving 1.5 of
+  spillover, so the number understates the benefit to a treated person by 43%
+  and the benefit of rolling the program out by 20%. Reporting the spillover as
+  zero is graded as a claim against a value recomputed from the data, because
+  that is what "we assume no interference between units" means when nothing
+  follows it. Baselines are balanced across both the within-cluster and the
+  between-cluster split, which is what makes every contrast exact; tests assert
+  that balance rather than trusting it. Paired with the
+  `statspai-spillovers-sutva` eval scenario. Coverage: 19 families, 18 fully
+  covered, 0 gaps.
+- **`docs/QUICKSTART_REPORT.md` was a committed generated artifact nothing
+  regenerated.** It was marked "manual" and had drifted. The snapshot is now
+  deterministic (its generation timestamp is gone — git already records when a
+  file changed, and a `--check` that compares the current clock to a stored one
+  can only ever fail), `make catalog` rebuilds it, and `make validate` gates its
+  freshness like every other generated file.
+
+### Rigor and trust
+
+- **Eval scenarios now have to prove they discriminate.** "42 scenarios" is a
+  number anyone can inflate: write rubrics whose regexes match ordinary prose
+  and every scenario passes everything while testing nothing. The opposite
+  failure — a rubric so tight no correct answer satisfies it — is just as
+  invisible from reading the scenario file, and gets the check ignored instead.
+  `run_evals.py --selftest` runs each scenario's rubric against a **pass/fail
+  fixture pair** (`eval-harness/fixtures/<id>/{pass.md,fail.md}`) and requires
+  the verdicts to differ: every auto-checkable item must pass on the correct
+  answer, and at least one *required* item must fail on the plausibly-wrong one.
+  Fixtures are **mandatory for every `critical` scenario**, since leaning
+  hardest on an unproven rubric is exactly what this prevents; `make
+  eval-harness` and CI enforce a `--min-fixtures` floor that only ratchets up.
+  Seeded with 9 pairs — all six criticals plus the three flagship scenarios —
+  and the trust tables in all seven stat-bearing documents now carry the
+  discrimination count as its own linted row, because "9 proven to discriminate"
+  is a stronger claim than "41 exist" and a stronger claim that drifts is worse
+  than a weaker one that does not. The mechanism itself is tested by
+  constructing rubrics broken in each direction and requiring the self-test to
+  name the failure.
+
+- **The first-party flagships finally have behavioral coverage.** The 2026-07
+  quality assessment named per-skill eval coverage as the metric worth growing;
+  its sharpest instance was that the vendored StatsPAI skill carried sixteen
+  scenarios while `00.1`/`00.2`/`00.3` — the Python, Stata and R flagships this
+  repo writes itself and ships as marketplace plugins — carried none. Three new
+  scenarios, one per flagship, each on an *ecosystem* trap rather than a method
+  trap: `reghdfe` singleton drops plus wrong-level clustering with twelve
+  clusters (Stata), `fixest` clustering on the first fixed effect by default
+  (R), and `PanelOLS(...).fit()` returning unadjusted standard errors so a t of
+  6.2 against a coauthor's 1.8 is not a robustness range (Python).
+  `tests/test_flagship_scenarios.py` runs each rubric against a hand-written
+  correct answer and a hand-written plausible-wrong answer and requires the
+  automated items to separate them — a scenario whose regexes fire on anything
+  inflates the coverage count without testing behavior. Coverage moved 19 → 22
+  skills, 38 → 41 scenarios, 191 → 210 rubric items, with the harness minimums
+  ratcheted.
+- **The bunching family was rendering as "Unclassified".** It had a full rigor
+  pair — the `statspai-bunching` eval and the `bunching-recovery` benchmark — but
+  `bunching` was never added to the coverage map's `METHOD_ORDER`, so the whole
+  family fell into a tail section that reads like a to-do note, and the footer
+  under-counted the covered families. Registered as a first-class row, and
+  `tests/test_coverage_map.py` now fails the suite when any scenario or task is
+  unclassified, instead of letting it appear quietly at the bottom of a generated
+  page. (It immediately caught the three new flagship scenarios.)
+
+### Security
+
+- **The pattern scan's coverage stopped being a memory.** `SECURITY-SCAN-REPORT.md`
+  recorded a 52-collection baseline and a hand-run 49–70 addendum, both written
+  up in prose. The result was that coverage silently expired: collections 71 and
+  72 were vendored afterwards and *nothing recorded that they had never been
+  scanned*. `scripts/scan-collections.py` implements the same thirteen risk
+  dimensions as an executable scanner, records what was scanned per collection
+  in `catalog/security-scan.json`, and `make validate` now fails when a
+  cataloged collection has no scan record — so that particular gap cannot
+  reopen. Full sweep: 76 collections, 3,821 text files, 16 findings, all
+  benign, each with its reason recorded rather than silently suppressed (the
+  tests reject a thin reason, and reject a suppression whose finding no longer
+  exists).
+- **Three of the thirteen patterns were crying wolf.** The first full run
+  produced 27 findings, of which 11 were noise: `rm -rf ~/.cache/matplotlib`,
+  the `rm -rf /var/lib/apt/lists/*` Dockerfile idiom, `b64decode(...)` writing a
+  decoded image to disk, `compile(src, name, "exec")` used for *syntax checking*,
+  and a Stata line of `+`-joined variable names that is entirely inside base64's
+  alphabet but does not decode. A scanner that fires on every Dockerfile is not
+  safer — it teaches people to skip the report, and then the one real hit
+  scrolls past with the noise. The three rules now require the dangerous form
+  specifically: a **bare** delete target, a decode whose result is actually
+  `eval`/`exec`ed, and a blob that genuinely decodes. Both edges of each are
+  pinned by tests, including flag-order variants (`rm -fr /`, `rm -r -f /`,
+  `rm --recursive --force /`) that the first version missed.
+- **The scan reads the tracked tree, not the working tree.** The first version
+  walked the directory, which made the record a function of whoever ran it: a
+  stray `.DS_Store`, a gitignored helper inside the submodule and a log left by
+  an earlier run were enough to shift the file counts, so it passed locally and
+  failed in CI with "catalog/security-scan.json is stale" — pointing at a
+  regeneration command that would only have moved the staleness to the other
+  machine. It now lists files with `git ls-files --recurse-submodules`, which is
+  what a freshness check needs: the record is a function of the commit. A
+  collection that contributes no tracked files (an un-initialized submodule)
+  fails loudly instead of quietly reporting coverage it does not have.
+- The scope caveat is unchanged and deliberately repeated in the script, the
+  record and the report: this is a pattern scan, strictly weaker than the
+  baseline's multi-agent content read. A green gate means no known-bad pattern
+  matched, **not** "reviewed and safe".
+
+### Developer experience
+
+- **`make quickstart` reported a markdown separator row as a method family.**
+  The five-minute tour is the first thing a newcomer runs, and it printed
+  "19 method families with closed rigor coverage" with `---` in the sample list.
+  The separator guard tested for dashes and spaces only, so the alignment colons
+  in `|---|---:|---|` made every separator look like data. The label was wrong
+  too: 18 families are tracked, 17 have closed coverage, and reporting the total
+  as the closed count overstates precisely what the coverage map exists to be
+  honest about. It also pointed readers at `README-zh-CN.md`, a deprecated
+  redirect stub since 2026-07-19, and carried "1,150 vendored skills across 69
+  collections" in its docstring — both wrong by the time anyone read them.
+
+- **`make setup` and `make doctor`.** `make validate` runs the Paper-WorkFlow
+  demo gate, which really executes `did_demo.ipynb` and therefore needs the
+  pinned scientific stack. On an interpreter without numpy the gate reported
+  `RIGOR.md is STALE` and pointed at a regeneration command that cannot possibly
+  help. `make setup` builds the venv, installs `requirements.txt` and initializes
+  submodules; `make doctor` (`scripts/doctor.py`) answers "why did the gate
+  fail?" in one screen with a fix command on every failing row; and
+  `paper-workflow-check` now preflights the stack so it names its real cause.
+- **`linearmodels` floor raised past the NumPy 2 ABI break.** A fresh venv from
+  `requirements.txt` resolved to `linearmodels` 5.x, whose wheels are compiled
+  against the NumPy 1.x ABI, so every import printed a crash warning under the
+  `numpy>=2` this file already allows. 7.0 imports clean. It needs Python ≥ 3.10,
+  which is safe only while every workflow that installs this file runs 3.10+ and
+  the 3.9 matrix leg installs nothing — `tests/test_requirements.py` pins both
+  halves so a workflow edit cannot quietly make the constraint unsatisfiable.
+
+### Upstream attribution
+
 - **Upstream attribution is now on the front page.** Every row of the
   all-collections table in all six locale entry documents (`README.md`, the
   four locale READMEs, and [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)) gained a

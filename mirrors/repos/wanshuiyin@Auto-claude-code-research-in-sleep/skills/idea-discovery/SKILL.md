@@ -99,7 +99,13 @@ returned model and durable thread/trace id:
 ```
 
 Never invent either value and never call `accept` without the positive verdict
-required by the run-state contract. A negative verdict does not grant a review receipt.
+required by the run-state contract. For `novelty-check`, **both PROCEED and
+PROCEED WITH CAUTION are positive verdicts** — caution is guidance for the
+pilot, not a rejection; only ABANDON is negative. For `research-review`,
+positive means the review's bottom line does not argue for abandoning the
+idea — a list of named risks is not a rejection. If the review ends without a
+clear stance, ask the same reviewer thread for a one-line verdict (proceed or
+abandon) and record on that answer; never infer positivity from silence. A negative verdict does not grant a review receipt.
 Leave the phase `done` and the final gate `BLOCKED`, select a surviving
 or new idea, then re-run that reviewer-bearing phase. Do the same if the
 reviewer is unavailable, returns no valid identity/response, or its output was
@@ -304,7 +310,7 @@ For each top idea (positive pilot signal), run a thorough novelty check:
 
 ### Phase 4: External Critical Review
 
-For the surviving top idea(s), get brutal feedback:
+For the surviving top idea(s), get a sharp outside read — strongest case, named risks, and the cheapest discriminating next experiment; the core hypothesis is not up for rewriting:
 
 ```
 /research-review "[top idea with hypothesis + pilot results]" — composed: idea-stage/IDEA_REPORT.md
@@ -329,7 +335,7 @@ After review, refine the top idea into a concrete proposal and plan experiments:
 
 **What this does:**
 - Freeze a **Problem Anchor** to prevent scope drift
-- Iteratively refine the method via GPT-5.6-Sol review (up to 5 rounds, until score ≥ 9)
+- Refine the method via GPT-5.6-Sol review — reviewer risks choose the next tests, they do not add components; the score is advisory, and preserving the core hypothesis outranks pleasing the reviewer
 - Generate a claim-driven experiment roadmap with ablations, budgets, and run order
 - Output: `refine-logs/FINAL_PROPOSAL.md`, `refine-logs/EXPERIMENT_PLAN.md`, `refine-logs/EXPERIMENT_TRACKER.md`
 
@@ -354,7 +360,7 @@ AUTO_PROCEED: accepted the top proposal. Continuing to Final Report.
 
 - **User approves** → proceed to Final Report.
 - **User requests changes** → pass feedback to `/research-refine` for another round.
-- **Lite mode:** If reviewer score < 6 or pilot was weak, run `/research-refine` only (skip `/experiment-plan`) and note remaining risks in the report.
+- **Lite mode:** If the pilot was inconclusive, still produce the smallest discriminating next-experiment plan — a reviewer score alone never downgrades an idea.
 
 ### Phase 5: Final Report
 
@@ -502,7 +508,7 @@ Skip this step if `RENDER_HTML = false`.
 
 - **Don't skip phases.** Each phase filters and validates — skipping leads to wasted effort later.
 - **Checkpoint between phases.** Briefly summarize what was found. With `AUTO_PROCEED=true`, state the selected next action and keep executing in the same turn; with `false`, ask and end the turn.
-- **Kill ideas early.** It's better to kill 10 bad ideas in Phase 3 than to implement one and fail.
+- **Let pilots kill, not vibes.** A cheap pilot that says no beats a month of implementation that says no — but the kill needs empirical signal or a named published paper, not taste. Talking yourself out of ideas on paper is how pipelines end up with nothing to run.
 - **Empirical signal > theoretical appeal.** An idea with a positive pilot outranks a "sounds great" idea without evidence.
 - **Document everything — inside the one report, not in scattered files.** Dead ends and eliminated ideas are valuable, so record them as sections of `idea-stage/IDEA_REPORT.md` (see *Output hygiene* above). Do not spawn a separate `.md` per phase.
 - **Be honest with the reviewer.** Include negative results and failed pilots in the review prompt.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 250 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 9 followed patterns, 249 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 250 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 250 |
+| Followed pats | 9 |
+| Files         | 249 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,7 +54,6 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 250 f
 - `tools/lint/DEPENDENCY-REVIEW.md`
 - `test/e2e/README.md`
 - `test/e2e/docs/README.md`
-- `test/e2e/RETRY_INVENTORY.md`
 - `WRITING.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
@@ -315,9 +314,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 245 | → | [`SECURITY.md`](SECURITY.md) |
 | 246 | → | [`test/e2e/docs/README.md`](test/e2e/docs/README.md) |
 | 247 | → | [`test/e2e/README.md`](test/e2e/README.md) |
-| 248 | → | [`test/e2e/RETRY_INVENTORY.md`](test/e2e/RETRY_INVENTORY.md) |
-| 249 | → | [`tools/lint/DEPENDENCY-REVIEW.md`](tools/lint/DEPENDENCY-REVIEW.md) |
-| 250 | → | [`WRITING.md`](WRITING.md) |
+| 248 | → | [`tools/lint/DEPENDENCY-REVIEW.md`](tools/lint/DEPENDENCY-REVIEW.md) |
+| 249 | → | [`WRITING.md`](WRITING.md) |
 
 ---
 

@@ -7,37 +7,54 @@
 | 名称 | 定义 | 来源 |
 |---|---|---|
 | Composer | chat 页底部输入区，含 textarea + 模型/权限 selector + 发送按钮 | `src/components/chat/MessageInput.tsx` |
-| Picker | Composer 顶部模型选择下拉 | `MessageInput.tsx` 内部 |
+| Picker | Composer footer 内的 Runtime → 可用模型两层选择器 | `MessageInput.tsx` 内部 |
 | ChatView | 已有会话页（chat/[id]）渲染器，包含 Composer + 消息列表 + send 路径 | `src/components/chat/ChatView.tsx` |
 | New Chat Page | 新会话入口 (chat/) — 没有 ChatView，自己管 currentModel/currentProviderId | `src/app/chat/page.tsx` |
 | Resolved pair | hook 返回的 `(resolvedProviderId, resolvedModel)`，runtime-filtered 后实际生效的发送对 | `useProviderModels.ts` |
 | Auto-correct | MessageInput 在 modelName 不在当前 group modelOptions 里时，自动 fire `onProviderModelChange(currentProviderIdValue, modelOptions[0].value)` | `MessageInput.tsx:181-187` |
 
+### 1.1 统一 Runtime → Provider × Model route 与能力菜单（2026-08-26 修订）
+
+- Picker 左侧主体导航**只能是 Runtime**，顺序来自 `RUNTIME_IDS`。唯一例外是 Runtime 列表上方固定的 Favorites 快捷入口；Provider、最近使用不得成为左侧一级导航。
+- 点击左侧 Runtime 是真实 session runtime 变更：既有会话走 `runtime_pin` PATCH，新会话更新待创建状态；不得只在前端临时过滤列表而不改变本次执行 Runtime。
+- 右侧只显示所选 Runtime 当前可执行的 live route，并按 provider instance 小标题分组；Provider 图标/名称是分组身份，用于区分同名模型，不是选择器的第一层。
+- Picker 的可执行 identity 是 `(providerInstanceId, modelId)`，不能只按 model id。两个渠道实例即使暴露同名模型也必须是两个独立 route。
+- 收藏以版本化 localStorage `codepilot:model-route-favorites:v2` 保存 `(runtimeId, providerInstanceId, modelId)` 精确组合；点击必须依次调用 Runtime 与 Provider/Model 的真实更新 handler。provider/model snapshot 绝不能据以猜一条可执行 route。失效或不兼容收藏只在 Favorites lane 以 disabled 行展示真实原因和取消收藏入口，不进入普通 Runtime 可用列表，也不能执行。
+- 未发布 V1 收藏缺 Runtime identity，当前 parser 必须 fail closed；不得用打开 picker 时的 Runtime 猜迁移。
+- 搜索可覆盖右侧 live route 的 model id/name 与 provider name，但不得搜索/展示 secret、base URL 原文或隐藏 metadata。
+- 搜索排序固定为 `exact > prefix/substring > favorite > recency > catalog order`。收藏 boost 不得压过更准确文本匹配。
+- Trigger 显示当前 Runtime 图标 + 当前模型；Composer 中不得再渲染第二个独立 `RuntimeSelector`。
+- Provider 品牌图标统一由 `ProviderBrandIcon` + `getProviderIconKey()` 渲染；业务组件不得复制一套 name/URL 品牌猜测。
+- capability 菜单消费当前 group/model 已返回的能力字段，并用 `selectable / fixed / unsupported / unknown` 四态表达。`fixed`（例如默认 1M）只能只读展示；`unknown` 不得变成可点击开关。
+- provider option 是共享 requested preference，当前 composer 另有 session-effective capability 值。模型切换归一化只能更新 effective display/request；不得自动 PUT `context_1m` 等共享 option。只有用户显式操作能力菜单才允许持久化 requested 值。
+- Composer footer 的参数与权限菜单必须使用显式宽度和 viewport `max-width`；解释文案保持一行短句，动态不可用原因允许换行。不得让 i18n 文案决定弹层的 intrinsic width，也不得通过删掉真实权限/降级原因来换取紧凑布局。
+
 ## 2. Hook 契约（`useProviderModels`）
 
-### 2.1 默认 runtime='auto'
+### 2.1 runtime 必填，目录全量拉取、发送能力按 Runtime 投影
 
 ```ts
-useProviderModels(providerId?, modelName?, runtime: ChatRuntimeParam | null = 'auto')
+useProviderModels(providerId, modelName, runtime: ChatRuntimeParam | null)
 ```
 
-- `'auto'`（默认）→ fetch `/api/providers/models?runtime=auto`，server 端按 active runtime 过滤
-- `'claude_code'` / `'codepilot_runtime'`（显式）→ caller 指定具体 runtime
-- `null`（显式 opt-out）→ fetch 不带 query，看完整 catalog
+- Hook 始终 fetch `/api/providers/models` 全量带 `supportedRuntimes` 注解的 catalog，供统一 Picker 在左侧切 Runtime 后立即投影右侧列表。
+- Composer / ChatView 必须传 `effectiveChatRuntime(...)` 得到的具体 `RuntimeId`；既有 session pin 优先于 global runtime。
+- `'auto'` 仅允许没有 session intent 的受控初始化流程；不得作为 hook 默认值。
+- `null` 是 Settings 等明确需要完整 catalog、且不做发送解析的 opt-out。
 
-不变量：Composer / chat picker 永远不传 `null`；Settings 全局默认 selector 永远传 `null`。详见 `Runtime.md` §2.1。
+不变量：`providerGroups` 保留全量 catalog；`compatibleProviderGroups` 才负责 resolved pair / send gate。Picker 对当前左栏 Runtime 做同一兼容投影。详见 `Runtime.md` §2.1。
 
 ### 2.2 返回值契约 — 五个关键字段
 
 ```ts
 {
-  providerGroups,           // 原始 group 列表
+  providerGroups,           // 原始完整 group 列表，Picker 切 Runtime 的数据源
   currentProviderIdValue,   // alias for resolvedProviderId（兼容历史 caller）
   modelOptions,             // 当前 group 的 models
   currentModelOption,       // modelOptions 内匹配 modelName 的那个，否则 [0]
   globalDefaultModel,       // 仅 Settings selector 用
   globalDefaultProvider,    // 同上
-  noCompatibleProvider,     // = fetchState==='loaded' && providerGroups.length===0
+  noCompatibleProvider,     // = loaded && compatibleProviderGroups.length===0
   fetchState,               // 'idle' | 'loaded' | 'failed'
   resolvedProviderId,       // 经 runtime gate 后实际的 provider ID
   resolvedModel,            // 经 runtime gate 后实际的 model value
@@ -50,7 +67,7 @@ useProviderModels(providerId?, modelName?, runtime: ChatRuntimeParam | null = 'a
 | state | providerGroups | noCompatibleProvider | resolvedProviderId | resolvedModel | 用途 |
 |---|---|---|---|---|---|
 | `idle` | `[]` 或上次结果（refetch 中） | `false` | 可能空 | 可能空 | 加载窗口，**所有 send 路径必须 gate** |
-| `loaded` | server 返回的 groups | groups.length===0 | 算出的 fallback | 算出的 fallback | 正常 |
+| `loaded` | server 返回的完整 groups | compatibleProviderGroups.length===0 | 算出的 runtime-compatible fallback | 算出的 runtime-compatible fallback | 正常 |
 | `failed` | catch 合成的 `[{ env synthetic }]` | `false`（length=1） | `'env'` | `DEFAULT_MODEL_OPTIONS[0]` | API 不可用 best-effort |
 
 **不变量**：fetchAll 头部**必须** `setFetchState('idle')`；refetch 期间不能仍按 'loaded' 让 send 走旧 feed。
@@ -101,29 +118,14 @@ if (providerFetchState === 'loaded' && (!resolvedProviderId || !resolvedModel)) 
 
 `sendMessage` 头部**也**必须有 gate 1 + gate 2（在 append user message 之前），否则 user 看到自己消息悬停无回复。`dequeue useEffect` 同样。
 
-## 4. ChatView resolved pair 同步
+## 4. ChatView runtime 不兼容时禁止静默改写
 
-```ts
-useEffect(() => {
-  if (providerFetchState !== 'loaded') return;
-  if (!providerWasFilteredOut) return;
-  if (!resolvedProviderId || !resolvedModel) return;
-  if (resolvedProviderId === currentProviderId && resolvedModel === currentModel) return;
-  setCurrentProviderId(resolvedProviderId);
-  setCurrentModel(resolvedModel);
-  fetch(`/api/chat/sessions/${sessionId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: resolvedModel, provider_id: resolvedProviderId }),
-  }).catch(() => {});
-}, [providerFetchState, providerWasFilteredOut, resolvedProviderId, resolvedModel, currentProviderId, currentModel, sessionId]);
-```
+`providerWasFilteredOut` 只用于形成 `sessionProviderRuntimeIncompatible`。一旦已保存的 route 不兼容当前 Runtime，ChatView 必须显示恢复提示并在 append optimistic user message 前硬阻断发送。
 
 不变量：
-- `providerFetchState !== 'loaded'` 跳过 — idle 时 hook 信号不可靠；failed 时 catch 已合成 env，不强制 PATCH
-- `providerWasFilteredOut` 必须为 true 才同步 — 防止稳态下反复 PATCH
-- 等值检查防止 React 18 双 effect / 重复 fetch
-- DB PATCH 失败 silent — UI 已切了，DB 同步是 best-effort（下次打开会再次 trigger 同步）
+- 页面加载、全局 Runtime 变化或目录 refetch 都不得静默 `setCurrentProviderId` / PATCH session route。
+- 只有用户在统一 Picker 中显式选择 Runtime 或右侧模型路线，才能分别持久化 `runtime_pin` 或 `(provider_id, model)`。
+- 服务端并发删除 provider 时用 `INVALID_SESSION_PROVIDER` 409 回到同一恢复面，不得由客户端猜 fallback 后继续发送。
 
 ## 5. ChatView 初始化保留 '' 语义
 
@@ -166,7 +168,7 @@ useEffect(() => {
 为什么不复用 hook：新会话初始化要把 saved provider/model 跟 global default 对比，决定用哪个；逻辑跟 hook 的"展示 picker"职责不同。两套代码各自完整。
 
 不变量：两条路径**都**必须遵守同一契约：
-- `?runtime=auto` 拉 runtime-filtered feed
+- 初始化 resolver 使用当前 `sessionRuntimeParam` 拉 runtime-filtered feed；Composer 内 Picker 仍从 full annotated catalog 投影三 Runtime 列表
 - `groups: []` → `noCompatibleProvider=true` + 清 currentProviderId/Model
 - 不要把 saved provider/model 塞回到刚被 runtime 滤掉的位置
 - `sendFirstMessage` 加 `noCompatibleProvider` + `!currentModel || !currentProviderId` 防御
@@ -188,10 +190,13 @@ if (!resolvedProviderId || !resolvedModel) return;
 | 模块 | 文件 | 不变量 |
 |---|---|---|
 | Hook 主体 | `src/hooks/useProviderModels.ts` | 五字段契约 + AbortController + 三态 fetchState + undefined/'' 区分 |
-| Composer 顶层 | `src/components/chat/MessageInput.tsx` line 172 | 调 hook 默认 runtime='auto'；auto-correct fallback 用 modelOptions[0] 不用 globalDefault |
+| Composer 顶层 | `src/components/chat/MessageInput.tsx` | 传 concrete Runtime；只渲染统一 Runtime+Model Picker；auto-correct fallback 用 modelOptions[0] 不用 globalDefault |
 | ChatView 顶层 | `src/components/chat/ChatView.tsx` line 142+ | 调 hook + 同步 useEffect + 三道 gate + sendMessage 头部 gate |
 | New Chat Page init | `src/app/chat/page.tsx` line 110+ + line 295+ | `?runtime=auto`；空集合不走 localStorage；sendFirstMessage 防御 |
 | Auto-trigger | `src/hooks/useAssistantTrigger.ts` | 接收 resolved pair；三道 gate；startStream 用 resolved pair |
+| Route picker / favorites | `src/components/chat/ModelSelectorDropdown.tsx`, `RuntimeSelector.tsx`, `src/lib/model-route-favorites.ts` | 左栏 Runtime、右栏可用 provider+model 复合 identity、失效收藏 fail closed |
+| Capability menu | `src/components/chat/ModelCapabilityDropdown.tsx`, `src/lib/model-option-support.ts` | Runtime+protocol+model 粒度四态；fixed/unknown 不产生假 wire |
+| Brand icon | `src/components/ui/provider-brand-icon.tsx`, `src/lib/provider-icon-rule.ts` | Settings 与 Composer 共用同一品牌规则 |
 | ChatView state init | `ChatView.tsx` line 130-138 | `providerId !== undefined ? providerId : localStorage` 不能用 truthy |
 
 ## 10. 改 / 加新功能必须检查
@@ -204,8 +209,18 @@ if (!resolvedProviderId || !resolvedModel) return;
   - 看 fetchState 而不是 providerGroups.length
   - empty providerGroups + loaded ≠ 完全没 provider，可能用户没兼容的 → noCompatibleProvider 信号
 - 改 MessageInput 模型选择 UI：
-  - **不能**让 picker 显示 hook 不返回的 model（picker 永远 = modelOptions = hook 算后）
+  - 左侧 Runtime 主体只能渲染 `RUNTIME_IDS`；Favorites 可固定在其上方，Provider 不得成为左栏层级
+  - 收藏 key 必须包含 Runtime + provider instance + model；收藏点击必须切完整组合
+  - 普通 Runtime lane 只能显示所选 Runtime 下 `selectable && live` 的 route；Favorites lane 可显示 disabled 快照，但只能解释/删除，不能执行
+  - 右侧必须先显示 Provider 分组标题，再列该 Provider 的模型
+  - 切 Runtime 必须调用 session/new-chat runtime handler，不得只改 picker 本地 state
+  - Composer 不得同时出现统一 Picker 与独立 `RuntimeSelector`
   - 改 onProviderModelChange callback 时确保把 hook 的 `currentProviderIdValue` 传上去而非 prop
+  - 收藏/最近项不能绕过 runtime-filtered live route；snapshot 不得执行
+  - V1 等缺 Runtime identity 的记录必须 fail closed，不得按当前 Runtime 猜迁移
+  - capability 缺 source 时必须 `unknown`，不得为了截图补开关
+  - capability 自动归一化不得调用 provider option PUT；显式菜单操作与自动归一化必须是两条不同 handler
+  - 参数菜单保持紧凑的固定宽度；权限菜单必须有固定宽度、viewport 上限和长原因换行，不能只设 `min-width`
 - 改 ChatView state 初始化：
   - 任何 `providerId || ...` 短路写法都是 bug，必须 `providerId !== undefined`
   - `modelName || ...` OK（empty model 不合法）
@@ -225,6 +240,12 @@ if (!resolvedProviderId || !resolvedModel) return;
 8. **auto-trigger 用 raw currentModel/currentProviderId** — backend 端绕过 runtime gate
 9. **同步 effect 缺 `providerFetchState` deps** — eslint-disable React Hook 后忘记加
 10. **MessageInput auto-correct fallback 用 globalDefaultModel** — 存量 session 被强行改
+11. **把 Provider 放进左栏，或让 Favorites 丢失 Runtime** — 执行渠道被误当 Runtime，或快捷选择只换半套 route
+12. **Unify 后仍保留独立 Runtime selector** — 两个入口可以显示/写入不同 Runtime，导致 UI 与 wire 漂移
+13. **把上下文状态留在左侧工具组** — 视觉上与模型/权限混为一组；它必须紧邻 Send 左侧
+14. **badge 统计失效收藏但列表隐藏它们** — 用户看得到数量却无法清理；Favorites lane 必须保留 disabled 管理行
+15. **模型切换时把 effective 1M 回写 provider option** — 一次 session 的兼容性归一化污染同 provider 的其他会话
+16. **用长解释撑开 footer 菜单** — capability/permission 说明应为短句；完整安全告警留在确认弹窗，动态诊断原因在受限宽度内换行
 
 ## 12. 测试覆盖
 
@@ -235,6 +256,10 @@ if (!resolvedProviderId || !resolvedModel) return;
 | 待补 `useProviderModels.test.ts` | hook 单测：fetchState 转移 / providerWasFilteredOut / requestedProviderId 三层语义 / AbortController 竞态 |
 | 待补 `ChatView-send-gate.test.ts` | 三道 gate / append-before-gate 防御 |
 | `src/__tests__/unit/sdk-subprocess-env.test.ts` | toClaudeCodeEnv 不 leak hidden role default |
+| `src/__tests__/unit/codex-phase-6-wiring.test.ts` | Favorites 位于 Runtime 上方、右栏 Provider 分组、完整组合 handler、上下文紧邻 Send |
+| `src/__tests__/unit/model-route-favorites.test.ts` | V2 精确三元 identity、V1 fail-closed、去重与搜索排序 |
+| `src/__tests__/unit/model-option-support.test.ts` | Runtime/protocol/model 四态 descriptor 与 context effective 归一化 |
+| `src/__tests__/e2e/project-panel.spec.ts` | 三 Runtime、Provider 分组、收藏一键切完整组合、失效收藏可见可删、权限文案、上下文/Send 几何、归一化不 PUT shared 1M |
 
 加 / 改本文涉及任何契约时，至少跑 chat-runtime.test.ts + provider-resolver.test.ts；理想是把 useProviderModels 的 hook test 补上。
 
@@ -247,3 +272,10 @@ if (!resolvedProviderId || !resolvedModel) return;
 - **2026-04-26** 拆 requestedProviderId vs preferredProviderId — env session + env 不在 feed 时 providerWasFilteredOut 误判 false
 - **2026-04-26** ChatView 顶层调 hook 而非通过 props — 让 MessageInput 内部 hook 跟 ChatView 共享同一 fetch 结果不可行（state 各自），但两个 instance 的 fetch 是廉价的
 - **2026-04-26** auto-trigger 也吃 resolved pair — welcome/heartbeat 之前用 raw currentModel/currentProviderId 绕过 runtime gate
+- **2026-08-26** Picker 改为 Runtime-first — 用户复核指出左栏 Provider 是语义错误；Runtime 决定执行引擎，Provider 只属于右侧可用模型路线
+- **2026-08-26** Unify 后移除独立 Runtime selector — 单一入口同时更新 Runtime 与模型可用面，避免两个控件 cross-wire
+- **2026-08-26** Favorites 固定在 Runtime 上方，identity 升为 Runtime + Provider + Model — 用户要求收藏即完整执行组合，点击一次完成三项切换
+- **2026-08-26** 右栏按 Provider 分组；RunCockpit/上下文移到 Send 左侧 — 对齐模型归属与输入框末端动作层级
+- **2026-08-26** 失效收藏留在 Favorites lane 管理、V1 fail closed — badge 必须对应可见可删条目，缺 Runtime 的旧格式不得靠当前 UI 状态猜执行 identity
+- **2026-08-26** capability requested/effective 分层 — 模型归一化是 session-local，不允许自动污染 provider 共享设置
+- **2026-08-26** footer 菜单收窄 — capability 固定 240px，permission 固定 256px 且动态原因换行；短说明只辅助扫读，完整权限告警继续由确认弹窗承担

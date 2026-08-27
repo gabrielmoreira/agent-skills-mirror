@@ -44,9 +44,13 @@ minutes transcript --status
 Use supported bounded reads when answering or when the user asks for an update:
 
 ```bash
-minutes transcript --since 2m
-minutes transcript --since <cursor>
+minutes transcript --since 2m --include-current
+minutes transcript --since <cursor> --include-current
 ```
+
+The response separates `finals` from `current_draft`. `finals` are settled transcript evidence. `current_draft` is replaceable, provisional current speech and may be `null`. Use a draft only when `draft_state` is `current`; reject stale, unavailable, superseded, finalizing, or wrong-session evidence. When the same speech later appears in `finals`, replace the draft in your reasoning rather than counting it twice. Do not describe provisional wording as a quote or settled commitment.
+
+If the installed Minutes version does not recognize `--include-current`, fall back to `minutes transcript --since 2m` and say you only have finalized transcript context if the distinction matters.
 
 Prefer a documented exact-session event or wait adapter when the host exposes one. Never invent an adapter, tool, or session guarantee.
 

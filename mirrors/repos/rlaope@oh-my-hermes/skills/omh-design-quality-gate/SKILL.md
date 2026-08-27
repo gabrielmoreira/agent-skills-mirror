@@ -74,7 +74,7 @@ Reasoning demand: `standard`
 
 Quality bar:
 
-- Define superior design quality with references, audience, hierarchy, style, and measurable QA gates.
+- Define superior design quality with references, audience, hierarchy, style, and measurable QA gates. The bar is named, not relative: what a senior product designer at a top-tier product company (the Linear/Stripe/Supabase class) would sign off on — technically clean but flat output fails it. Load `references/design-critique-rubric.md` and judge every axis with named evidence.
 - State why the result should be better than ordinary output, including content depth, visual hierarchy, spacing, typography, and interaction or export polish.
 - Review content accuracy and hierarchy before visual polish.
 - Use design-system/reference rules for web, deck, PDF, and poster surfaces.

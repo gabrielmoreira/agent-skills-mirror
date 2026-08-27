@@ -12,7 +12,7 @@ Live Senpi QA harness: E2E drivers, continuation probes, scenario fixtures, and 
 | Resume | `task-resume-e2e.mjs`, `task-resume-failure-e2e.mjs`, `task-resume-e2e-scenarios.mjs`, `resume-e2e-runtime.mjs` |
 | Memory | `memory-e2e.mjs`, `memory-model-fallback-e2e.mjs`, `memory-skill-startup-e2e.mjs`, `facts-backlog-e2e.mjs`, `memory-write-visual-qa.mjs [--keep-sandbox]` |
 | Components | `fallback-architect-e2e.mjs`, `git-master-attribution-e2e.mjs`, `skill-pointers-e2e.mjs`, `mass-ulw-prompts-e2e.mjs`, `ulw-prompts-e2e.mjs`, `ulw-goal-footer-tui.mjs`, `todo-fanout-reminder-e2e.mjs`, `no-todo-continuity-e2e.mjs`, `variant-thinking-e2e.mjs`, `task-tui-{e2e,scenarios}.mjs`, `task-stats-renderer.mjs` |
-| Runtimes | `lsp-e2e.mjs` (largest, ~1.4k LOC: staged runtime, extension loading, tool behavior, post-edit flows), `ast-grep-mcp-e2e.mjs`, `curated-agents-e2e.mjs`, `parallelism-eval-e2e.mjs`, `plan-gated-agents-e2e.mjs`, `dag-gate-proof.ts`, `probe-continuation.mjs`, `probe-cross-session.mjs` |
+| Runtimes | `lsp-e2e.mjs` (largest, ~1.4k LOC: staged runtime, extension loading, tool behavior, post-edit flows), `ast-grep-mcp-e2e.mjs`, `curated-agents-e2e.mjs`, `parallelism-eval-e2e.mjs`, `plan-gated-agents-e2e.mjs`, `dag-gate-proof.ts`, `dag-wait-detach-qa.ts`, `probe-continuation.mjs`, `probe-cross-session.mjs` |
 | Infra | `drive.mjs`, `task-e2e-{analysis,process}.mjs`, `mock-completions-server.mjs`, `mock-provider/` |
 
 ## Shared hubs

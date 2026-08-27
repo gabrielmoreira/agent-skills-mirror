@@ -1,6 +1,6 @@
 # projectmem
 
-> projectmem is **AI coding memory**: a free, open-source (MIT), local-first
+> projectmem is **coding agent memory**: a free, open-source (MIT), local-first
 > memory and judgment layer for AI coding agents. It records what happened while
 > building a project — issues, attempts, fixes, decisions and notes — as typed
 > events in plain text, feeds that history back to the agent through a native
@@ -8,9 +8,9 @@
 > already failed. Runs entirely on your machine: no cloud, no account, no
 > telemetry. Install: `pip install projectmem`
 
-## What is AI coding memory?
+## What is coding agent memory?
 
-AI coding memory is a persistent record of what happened while building a
+Coding agent memory is a persistent record of what happened while building a
 project — the issues hit, the approaches attempted, the fixes that worked and
 the decisions made — stored so an AI coding agent can read it at the start of a
 new session. Large language models are stateless, so without a memory layer
@@ -77,6 +77,14 @@ pjm brief                   # 4. one-screen status check
 `log_issue`, `record_attempt`, `record_fix`, `add_decision`, `add_note`
 
 ## Common questions
+
+**What is the best open source memory for AI coding agents?**
+It depends on which memory your agent is missing. Graphify maps code structure,
+OpenMemory stores user preferences, MemRL keeps scored episodes, and projectmem
+records engineering history — issues, attempts, fixes and decisions — and is the
+only one that warns before your agent repeats an approach that already failed.
+All run locally.
+
 
 **Does projectmem send my code anywhere?**
 No. Memory is written to a plain directory in your repository. There is no

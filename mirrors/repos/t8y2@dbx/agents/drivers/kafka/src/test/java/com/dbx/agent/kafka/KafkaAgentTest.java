@@ -143,6 +143,65 @@ class KafkaAgentTest {
     }
 
     @Test
+    void consumerGroupListRowsFilterToTheRequestedTopicAndSortByPartition() {
+        Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+        offsets.put(new TopicPartition("orders", 2), new OffsetAndMetadata(20));
+        offsets.put(new TopicPartition("payments", 0), new OffsetAndMetadata(5));
+        offsets.put(new TopicPartition("orders", 0), new OffsetAndMetadata(8));
+
+        List<Map<String, Object>> rows = KafkaAgent.offsetRows(offsets, "orders");
+
+        assertEquals(List.of("orders:0", "orders:2"), rows.stream()
+            .map(row -> row.get("topic") + ":" + row.get("partition"))
+            .toList());
+        assertEquals(8L, rows.get(0).get("offset"));
+        assertEquals(20L, rows.get(1).get("offset"));
+    }
+
+    @Test
+    void consumerGroupListRowsKeepEveryPartitionWithoutATopicFilter() {
+        Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+        offsets.put(new TopicPartition("orders", 0), new OffsetAndMetadata(8));
+        offsets.put(new TopicPartition("payments", 1), new OffsetAndMetadata(3));
+
+        List<Map<String, Object>> rows = KafkaAgent.offsetRows(offsets, "");
+
+        assertEquals(2, rows.size());
+    }
+
+    @Test
+    void consumerGroupListEndOffsetRowsSkipPartitionsWithoutResolvedEndOffsets() {
+        Map<TopicPartition, OffsetAndMetadata> committed = new HashMap<>();
+        committed.put(new TopicPartition("orders", 0), new OffsetAndMetadata(8));
+        committed.put(new TopicPartition("orders", 1), new OffsetAndMetadata(20));
+        Map<TopicPartition, Long> endOffsets = new HashMap<>();
+        endOffsets.put(new TopicPartition("orders", 1), 24L);
+
+        List<Map<String, Object>> rows = KafkaAgent.endOffsetRows(committed, endOffsets, "orders");
+
+        assertEquals(List.of("orders:1"), rows.stream()
+            .map(row -> row.get("topic") + ":" + row.get("partition"))
+            .toList());
+        assertEquals(24L, rows.get(0).get("offset"));
+    }
+
+    @Test
+    void consumerGroupListEndOffsetRowsFilterToTheRequestedTopic() {
+        Map<TopicPartition, OffsetAndMetadata> committed = new HashMap<>();
+        committed.put(new TopicPartition("orders", 0), new OffsetAndMetadata(8));
+        committed.put(new TopicPartition("payments", 0), new OffsetAndMetadata(4));
+        Map<TopicPartition, Long> endOffsets = new HashMap<>();
+        endOffsets.put(new TopicPartition("orders", 0), 10L);
+        endOffsets.put(new TopicPartition("payments", 0), 9L);
+
+        List<Map<String, Object>> rows = KafkaAgent.endOffsetRows(committed, endOffsets, "orders");
+
+        assertEquals(List.of("orders:0"), rows.stream()
+            .map(row -> row.get("topic") + ":" + row.get("partition"))
+            .toList());
+    }
+
+    @Test
     void explicitConsumerGroupOffsetsAcceptOneBoundedPartitionOffset() {
         JsonObject params = JsonParser.parseString("""
             {"offsets":[{"partition":1,"offset":42}]}

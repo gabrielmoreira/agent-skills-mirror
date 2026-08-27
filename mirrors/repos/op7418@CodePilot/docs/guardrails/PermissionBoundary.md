@@ -31,6 +31,10 @@
 | 15 | 破坏性进程重启 recovery 只有在上一 runtime owner 已死亡时才能中止 pending permission / 清理 lock；Next route/module 重复初始化或用户切换聊天不能把仍存活的 child 审批改成 `Process restarted` | `src/lib/db.ts` runtime owner guard |
 | 16 | 标为 `safe_read` / `PERMISSION_SAFE_TOOLS` 的工具不得把模型输入拼入 shell 字符串；调用外部只读程序必须使用固定 executable + argv 数组，`shell:false`，并以恶意分号、引号、命令替换反例证明没有副作用 | `src/lib/tools/grep.ts`、`src/lib/tools/glob.ts` |
 | 17 | 本地 HTTP 路由只要能安装/卸载软件或启动进程，就必须在解析 body 前要求 loopback Host、同源 `Origin`、`application/json`，并对请求参数采用闭合语法；跨平台兼容不得把未验证参数重新送回 shell。Windows 的固定 `cmd.exe /d /s /c npx.cmd` bridge 会重新解析 argv，其安全性显式依赖当前 `SAFE_PATH_SEGMENT` 闭合语法；任何放宽都必须先补 Windows metachar 反例并重新审查该边界 | `src/lib/skills-marketplace-command.ts` + Skills Marketplace install/remove routes |
+| 18 | Composer 的“只读规划”不是样式预设：canonical persistence 必须是 `mode=plan + permission_profile=default`，且 Plan resolver precedence 高于 full access / auto reviewer / global skip | `composer-access-level.ts` + 三 Runtime permission resolver |
+| 19 | Composer 加载旧 `ask` row 时只显示保守 default + legacy marker，不自动写库；只有用户显式切档才 canonicalize。未知 mode/profile fail closed 到 default 并保留 breadcrumb | `composer-access-level.ts` + `ChatPermissionSelector.tsx` |
+| 20 | UI 切换权限档位必须在一个请求中提交 mode/profile pair；session API 在任何写入前同时校验两个字段。不得用两个独立 PATCH 制造短暂的 `plan+full_access` 或 stale profile 组合 | `ChatPermissionSelector.tsx` + `api/chat/sessions/[id]/route.ts` |
+| 21 | Browser 网页权限与 Agent/Runtime permission profile 完全分离。guest 的 permission check/request 当前默认全部拒绝；Composer 的 full access、auto review 或“请求批准”不得改变网页摄像头、定位、通知、剪贴板或下载策略 | Electron browser Session + BrowserPanel |
 
 ## 关键文件 + 责任
 
@@ -51,6 +55,10 @@
 | `src/lib/skills-marketplace-command.ts` | Marketplace 同源 mutation、输入语法与跨平台进程 argv 边界 |
 | `src/lib/provider-call-policy.ts` | delegated_interactive 场景分类 |
 | `src/components/chat/PermissionPrompt.tsx` | 子 Agent 权限发起者的用户可见归属 |
+| `src/lib/composer-access-level.ts` | persisted mode/profile ↔ Composer 四档的双向映射、legacy ask/no-touch/fail-closed |
+| `src/components/chat/ChatPermissionSelector.tsx` | 单一权限入口、capability degraded 展示、显式切档 |
+| `src/app/api/chat/sessions/[id]/route.ts` | mode/profile pair 的 write-before-validation 防线 |
+| `electron/main.ts` + `electron/browser-surface-security.ts` | 网页 guest permission 默认拒绝、workspace partition 与 attach gate |
 
 ## 改动检查表
 
@@ -74,6 +82,9 @@
 - [ ] 改 Codex proxy non-function tools 时覆盖 namespace definition → provider function alias → Codex `(namespace, name)` 回包的完整 round trip
 - [ ] 改 Codex delegation 工具时覆盖 managed proxy 与 Codex Account 两条反例：proxy 不得暴露 `multi_agent_v1`，Codex Account 不得误删原生 collab
 - [ ] 改 DB startup/recovery 时验证 live process 的 pending child permission 与 session lock 在重复模块初始化后仍存在；只有真正进程重启才批量中止
+- [ ] 改 Composer 权限 UI 时跑四档 round-trip、plan precedence、legacy ask no-touch、unsupported reviewer degraded 与 invalid fail-closed；不得恢复独立 Mode selector
+- [ ] 改 session PATCH 时证明 invalid mode/profile 在任何其它字段写入前返回 400；一个 UI 动作只能提交一组 canonical pair
+- [ ] 改 Browser permission/download 时单独跑 guest permission matrix；不得读取或复用 Agent session 的 mode/profile/reviewer/sandbox 字段
 
 ## 常见坑
 
@@ -95,6 +106,7 @@
 - 不要只在 parser 里“接受” namespace/tool_search 等 non-function descriptor 就宣称工具已接入。对第三方 Provider，namespace 的每个 MCP member 必须成为模型可调用的 function，并在回包时恢复 namespace，否则工具在请求里存在但模型永远不可用。
 - 不要把所有 namespace 无差别展开。`multi_agent_v1` 与 `codepilot_spawn_subagent` 同时出现时，父模型会同时创建原生 inherited-model worker 和 exact-route managed child；每个 `spawn/wait` 控制动作还会产生额外胶囊，并可能把父模型 worker 冒充成用户指定模型。
 - 不要把“某个 route 首次 import DB 模块”当成“应用刚重启”。活进程内执行 restart sweep 会静默拒绝 Sub-agent 正在等待的审批，并破坏 run/session owner。
+- 不要把 Composer “完全访问”理解成网页 full access。Browser guest 是不受 Agent 授权继承的独立不可信 origin；网页权限必须按自己的 origin/session 产品合同开放。
 
 ## 测试覆盖
 
@@ -111,16 +123,20 @@
 | live process 重复初始化不终止 pending child permission | `collect-owner-gate.test.ts` |
 | Native Grep/Glob 模型输入不会产生 shell 副作用 | `native-search-tools-security.test.ts` |
 | Skills Marketplace loopback + 同源 JSON、闭合输入和 shell-free argv | `skills-marketplace-security.test.ts` |
+| Composer 四档映射、legacy ask 与 capability degraded | `composer-access-level.test.ts` |
+| Browser 网页权限与 Agent 权限隔离、默认拒绝 source pin | `browser-surface-security.test.ts` + `electron-main-security.test.ts` |
 
 ## 设计决策日志
 
 - 2026-05-18 — Phase 5e：`codepilot_*` 前缀洞改为 mutationLevel 派生；Native image/media 走 MediaBlock side-channel；live=zero unsupported exposures（详见 `completed/phase-5e-runtime-harness-architecture.md`）。
 - 2026-07-20 — Codex auto reviewer 不再依赖 Claude SDK capability；最低已验证版本保守钉为 `0.145.0-alpha.18`，并以 thread start/resume 的 `approvalsReviewer` 回显作为最终事实源。
 - 2026-07-20 — 接受 CodePilot profile 覆盖用户 Codex 全局默认的产品语义：会话选择必须可预测，default 显式使用 user reviewer + workspace sandbox；这可能比用户全局配置更保守，但不会静默放宽。
+- 2026-08-25 — 独立 Code/Plan 控件从 Composer 移除，但 Plan 硬边界没有删除：它成为 Permission 菜单中的“只读规划”。四档 UI 只复用既有 mode/profile schema；旧 ask row no-touch，显式切档才 canonicalize。
 - 2026-07-22 — same-runtime delegation 首版固定 foreground/read-only/depth 1/concurrency 2；权限行挂 parent DB session，但 transport 额外携带 agentRunId/childSessionId，避免并发归属歧义。
 - 2026-07-22 — 用户真实复测证明 Claude Code 无法按 Agent override 路由 Grok；增加模型门禁、prompt-level 角色冒充检测、双语 warning 和父 Agent 恢复指引，禁止把失败/继承冒充 Grok 已执行。
 - 2026-07-22 — 后续复测确认 AgentDefinition 不能切 Provider；精确模型委派改为 `codepilot_spawn_subagent` 独立 SDK child。最初按 safe_read 把 child 固定为只读，次日用户反馈证明这是过度限制，已由下一条决策取代。
 - 2026-07-23 — 用户否决“CodePilot 额外固定只读”的产品限制。`codepilot_spawn_subagent` 仍可按 spawn 动作本身归为 safe_read，但 child 改为继承父工具与权限；所有写入/Shell 继续由父 profile 的审批/sandbox 决定，递归委派仍硬移除。
+- 2026-08-26 — 内置 Browser guest 权限与 Agent 权限正式拆域：网页 permission check/request 默认拒绝，Composer 档位无论多宽都不能放宽网页权限；下载在独立产品 UI 完成前由 Main 阻断。
 - 2026-07-23 — 用户进一步明确 Codex child 不应只有“联网工具特例”，而应完整保留 Codex 原生工具系统。删除 Codex `required_capabilities` gate 与 Memory-only dynamic MCP allowlist；所有 namespaced MCP call 经 Codex MCP manager 执行，sandbox/approval/elicitation 继续由 app-server 决定。CodePilot 唯一硬裁剪是 depth 1。
 - 2026-07-23 — 真实会话 `1ff7d214c15e2ed2ba590b3183fe1293` 证明只做“继承”仍不够：canonical Codex wire 把 default/auto/plan 的 `networkAccess` 全固定为 false，Qwen 等无 hosted search 的第三方 Provider 因此只能得到必失败的 Shell 网络。以当前 app-server `0.145.0-alpha.27` 的生成 `SandboxPolicy`（字段为 boolean）为协议依据，将 readOnly/workspaceWrite 的网络改为 true；写入 sandbox、审批 reviewer 与 full-access 语义保持不变。
 - 2026-07-23 — 真实会话 `7fc82cb65f2dbb40a10856feac84595e` 证明 `networkAccess:true` 仍不足：CodePilot 把 `item/permissions/requestApproval` 误回成 `{ decision }`，实际批准无法生效；同时第三方 Provider proxy 保存了 namespace descriptor 却未把嵌套 MCP member 暴露给模型。按当前 app-server 生成 schema 改为 permissions subset + scope，并补 namespace 双向 round trip。Shell/文件仍由 app-server 执行，不在 CodePilot 复制一套工具权限系统。

@@ -159,11 +159,11 @@ launching.
 ## 6. Reaching the web inspector remotely (SSH port-forward)
 
 When the backend runs on another host and you want to complete OAuth or
-visually inspect a rendered App from your local browser, forward **both**
+visually inspect a rendered App from your local browser, forward **all three**
 ports:
 
 ```bash
-ssh -L 6274:127.0.0.1:6274 -L 6275:127.0.0.1:6275 <remote-host>
+ssh -L 6274:127.0.0.1:6274 -L 6275:127.0.0.1:6275 -L 6278:127.0.0.1:6278 <remote-host>
 ```
 
 Then open `http://127.0.0.1:6274/?MCP_INSPECTOR_API_TOKEN=$TOKEN` locally.
@@ -178,6 +178,11 @@ Then open `http://127.0.0.1:6274/?MCP_INSPECTOR_API_TOKEN=$TOKEN` locally.
 - Forward `:6275` (`MCP_SANDBOX_PORT`) as well: the Apps tab renders widgets in
   an iframe served from that second origin; without it the App frame stays
   blank.
+- Forward `:6278` (`MCP_APP_ORIGIN_PORT`) too, for an App whose UI resource
+  declares `_meta.ui.domain` (#2056). That App is served from a *third* origin
+  the browser loads directly, so without the forward its frame fails to load —
+  and the backend cannot detect that, since publishing succeeded on its side.
+  An App that declares no `domain` is unaffected.
 - Forward the **same** local port number you bind on the remote — the browser
   sends `Origin: http://127.0.0.1:<local-port>` and the backend compares it to
   its own port.

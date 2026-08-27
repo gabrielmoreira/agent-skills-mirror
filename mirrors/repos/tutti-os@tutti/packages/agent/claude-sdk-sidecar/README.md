@@ -77,6 +77,9 @@ therefore binds the selected remapped child root UUID and the last SDK-visible
 child checkpoint without comparing source and child message content. Task
 notifications and internal synthetic user messages extend the checkpoint when
 visible, but are not treated as origin root Turns.
+Top-level Claude `user` messages that carry `tool_result` blocks likewise stay
+inside the preceding root Turn checkpoint and never become independent Turn
+bindings.
 
 For live Turns, the UUID supplied on the outbound SDK user message is a
 `promptCorrelationId` only because Claude Code may rewrite it in the durable
@@ -105,14 +108,19 @@ proceed. Checkpoint and terminal events use the same bound provider Turn ID and
 never fall back to the outbound correlation UUID.
 
 Exact cancellation returns a structured `pre_accept`, `provider_active`,
-`absent`, or `mismatch` disposition. An undispatched Turn or deferred Goal
-command can be removed locally. A dispatched Turn is fenced immediately, but
+`provider_state_lost`, `absent`, or `mismatch` disposition. An undispatched
+Turn or deferred Goal command can be removed locally. A dispatched Turn is
+fenced immediately, but
 its terminal event is emitted only after the Query reaches an authoritative
 shutdown boundary: either the SDK acknowledges the interrupt or the sidecar
 closes the owned Query transport and its consumer drains. `provider_active`
 includes the resolved provider Turn ID so the
 daemon can wait for that exact Turn's durable acceptance result before it
 confirms cancellation; failures and unknown dispositions remain fail-closed.
+If an accepted Turn still has live provider-acceptance evidence but its Query
+generation or provider mapping is gone, the sidecar returns
+`provider_state_lost`; it never downgrades that observation to ordinary
+`absent`.
 
 Interactive responses use `(turnId, requestId)` identity. The sidecar keeps a
 bounded terminal disposition registry so `submit_interactive` is idempotent:

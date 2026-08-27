@@ -56,10 +56,13 @@
 
 | Rigor lane | Count | Where |
 |---|---|---|
-| Numeric **benchmark tasks** — gold values recomputed from real data each run | **17** | [`benchmark/`](benchmark/) |
-| Behavioral **eval scenarios / rubric items** | **37 / 183** | [`eval-harness/`](eval-harness/) |
+| Numeric **benchmark tasks** — gold values recomputed from real data each run | **19** | [`benchmark/`](benchmark/) |
+| Behavioral **eval scenarios / rubric items** | **42 / 217** | [`eval-harness/`](eval-harness/) |
+| 其中**已证明能区分对错**的场景（pass/fail 双 fixture 自检） | **9**（全部 6 个 critical 场景在内） | [`eval-harness/fixtures/`](eval-harness/fixtures/) |
 
 > Full trust overview: [`docs/TRUST.md`](docs/TRUST.md) · [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md)
+>
+> 🏁 **带上你自己的 agent 来考同一份卷子**：`pip install -e .` 后用 [`aers-score`](aers_score/README.md) 给自己打分，成绩发布在 [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md)（规则见 [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md)）。榜上的数字是**我们用同一套评分器重算**出来的，不是提交者自报的。
 
 ---
 
@@ -308,6 +311,14 @@ gitGraph TB:
    checkout main
    merge kaggle
    commit id: "2026-08 de-AIGC 双语"
+   commit id: "2026-08 来源链接全覆盖"
+   branch evidence
+   commit id: "2026-08 aers-score CLI"
+   commit id: "2026-08 外部成绩单"
+   checkout main
+   merge evidence
+   commit id: "2026-08 结构估计 = 方法族 18"
+   commit id: "2026-08 NSW 基准从引用变推导"
 ```
 
 <div align="center">

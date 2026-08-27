@@ -369,6 +369,39 @@ Two rules the hook exists to enforce:
 
 **Put `<Pager>` in the toolbar row, not under the list.** A pager below a long grid inside a scrolling modal forces the user to scroll to the bottom, click, and then scroll back to the top to see the page they asked for. Beside the filter and sort controls, everything that changes what you see sits in one place and stays on screen. Gate it on `pager.isPaginated` so the control is absent entirely when everything fits - and choose a page size that keeps the bounded filters on one page, so the pager appears exactly when it is needed.
 
+### Filtering a List (`<FilterInput>`)
+
+`<FilterInput>` (`components/ui/FilterInput.tsx`) is the "narrow this list" box: search icon, borderless input, optional result count (`resultLabel`), and a clear button that only exists once there is something to clear. Reach for it whenever a pane filters a list it already holds - the Memory Viewer's name-or-content filter is the first caller.
+
+It is **not** a find bar. A find bar walks matches inside one document and owns next/prev plus a match index (`AutoRunSearchBar`, `TerminalSearchBar`); this control has no cursor into the results, it only narrows them. Do not add match navigation to it - pick by question ("which rows do I see?" vs "take me to the next hit").
+
+**Escape is the part that needs care.** The control clears its own query on Escape, but that only fires on an UNLAYERED surface: the layer stack listens on `window` in the capture phase, so inside any modal or registered overlay the key closes the surface before the input ever sees it. The host has to clear the filter from its own `onEscape` first:
+
+```tsx
+onEscapeRef.current = () => {
+	if (filterQuery) {
+		setFilterQuery('');
+		return;
+	}
+	onClose();
+};
+```
+
+Losing the whole pane while trying to reset a filter is the bug this prevents. The clear button is the always-available path either way.
+
+### Keyboard Navigation in a `<DualPaneFileEditor>` List
+
+The shared list pane (`components/shared/DualPaneFileEditor.tsx`) handles keys once a row has focus - clicking a row is enough, since rows are real `<button>`s and the handler sits on the list container:
+
+- **Up / Down** walk the **visible** rows. The order comes from `visibleOrder`, which skips collapsed categories: stepping into a collapsed group would move the selection somewhere the user cannot see. The ends do not wrap, and a selection the current filter hides means the keys enter the list from whichever end they point at.
+- **Backspace / Delete** raise `onDeleteItem(selectedId)`. The list only reports the intent; the consumer owns the confirmation. Both keys are ignored unless the event came from a row, so Backspace on the "+ New" button in the same container cannot delete anything.
+
+Two focus rules the component exists to enforce:
+
+**Selection is chased, not assumed.** `onSelect` may be async or may refuse (unsaved changes), so arrow nav records the requested id and only moves DOM focus once `selectedId` actually lands on it.
+
+**After a consumer-driven delete, bump `listFocusToken`.** The row that had focus was just unmounted, so focus falls to `<body>` and the next Backspace does nothing - which reads as the keyboard dying halfway through a cleanup pass. Only the consumer knows when its own async delete settled, hence the token.
+
 ### Measuring an Element's Width (`useElementWidth`)
 
 `useElementWidth(ref, enabled?)` (`hooks/ui/useElementWidth.ts`) wraps the ResizeObserver boilerplate that was previously inline in `UsageDashboardModal`. Reach for it **only when the number has to exist in JavaScript**: an inline SVG chart needs real pixels for its viewBox, and a responsive breakpoint that switches column counts needs a value to compare. Anything expressible in CSS stays in CSS.
@@ -618,6 +651,12 @@ Users can rebind `DEFAULT_SHORTCUTS` and `TAB_SHORTCUTS` via the ShortcutEditor 
 ```tsx
 const { shortcuts, setShortcuts, tabShortcuts, setTabShortcuts } = useSettings();
 ```
+
+### Surface-Local Chords (`useCommandKeyShortcut`)
+
+`useCommandKeyShortcut(key, handler, enabled)` in `src/renderer/hooks/keyboard/useCommandKeyShortcut.ts` is the primitive for a bare Cmd/Ctrl+`<key>` chord that ONE visible surface claims for as long as it is up: Cmd+S in an editor pane (`useSaveShortcut` is a preset over it), Cmd+R on the Usage Dashboard's Anthropic Usage / OpenAI Usage panels (`useQuotaRefresh`'s `refreshHotkey` option). It listens in the capture phase with `preventDefault`, so it wins against a focused textarea and against the browser's own default for the chord, and it requires the modifier ALONE - a Shift- or Alt-qualified chord falls through to whatever else owns it.
+
+Do NOT reach for it to add a global shortcut. Those belong in `constants/shortcuts.ts` and must be matched through `eventMatchesShortcutKeys` so the user can rebind them. And do NOT let a component claim a chord just because it is mounted: `refreshHotkey` defaults to false and the dashboard opts in only on the tab that renders the panel, because two mounted panels both answering Cmd+R would refresh whichever one registered last. When a surface advertises its chord in a tooltip, gate the hint on the same flag that claims it, and build the label with `formatShortcutKeys()` so it does not read `⌘R` on Windows.
 
 ### Keyboard Mastery Gamification
 

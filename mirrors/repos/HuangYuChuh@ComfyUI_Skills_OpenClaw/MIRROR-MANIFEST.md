@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HuangYuChuh/ComfyUI_Skills_OpenClaw` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `HuangYuChuh/ComfyUI_Skills_OpenClaw` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HuangYuChuh/ComfyUI_Skills_OpenClaw` — 26 default patterns, 1 follo
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `HuangYuChuh/ComfyUI_Skills_OpenClaw` — 26 default patterns, 1 follo
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `references/comfy-mcp.md`
 - `references/workflow-import.md`
 
 ## File Index
@@ -61,7 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | → | [`references/workflow-import.md`](references/workflow-import.md) |
+| 3 | → | [`references/comfy-mcp.md`](references/comfy-mcp.md) |
+| 4 | → | [`references/workflow-import.md`](references/workflow-import.md) |
 
 ---
 

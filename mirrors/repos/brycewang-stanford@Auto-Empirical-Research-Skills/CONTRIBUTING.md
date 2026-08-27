@@ -4,7 +4,23 @@ We welcome contributions! Here's how you can help.
 
 ## Development prerequisites
 
-Before opening a PR, run:
+One command bootstraps a clean checkout:
+
+```bash
+make setup                      # venv + pinned scientific stack + submodules
+source .venv/bin/activate
+make doctor                     # confirms the environment can run the gates
+```
+
+Most of the repo is deliberately stdlib-only, so `make test`, the eval harness
+and the numeric benchmark all run on a bare interpreter. The one exception is
+`make validate`, which runs the Paper-WorkFlow demo gate — that gate really
+executes `did_demo.ipynb`, so it needs the pinned scientific stack in
+[`requirements.txt`](requirements.txt). Skip the bootstrap and the gate reports
+`RIGOR.md is STALE`, which points at a regeneration command that cannot help;
+`make doctor` names the real cause instead.
+
+Also install the hooks:
 
 ```bash
 pip install pre-commit
@@ -20,6 +36,22 @@ make check-fast    # catalog + validate + python-compat + unit tests (~30s)
 make check-full    # adds eval-harness + benchmark lanes (~5 min on warm cache)
 make quickstart    # 5-minute tour of what's in this repo and where to start
 ```
+
+## Adding a vendored collection
+
+`make validate` fails when a collection in the catalog has no entry in
+[`catalog/security-scan.json`](catalog/security-scan.json), so a new collection
+needs one scan before it can land:
+
+```bash
+make security-scan          # rescans everything, updates the record
+```
+
+Any finding it surfaces has to be looked at in context and recorded under
+`triaged` with a reason — the tests reject an empty or thin one. This is a
+pattern scan, the weakest tier of evidence in
+[`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md); a clean result means "no
+known-bad pattern matched", not "reviewed and safe".
 
 ## Skill hygiene vs. correctness
 

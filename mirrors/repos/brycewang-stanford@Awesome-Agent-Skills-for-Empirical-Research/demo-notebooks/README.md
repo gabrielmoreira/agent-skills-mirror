@@ -20,8 +20,22 @@ files are the run evidence for the `.do` demos.
 ## Other contents
 
 - `_lalonde_data.csv` — shared input data (LaLonde / NSW).
-- `card-krueger-1994/` — Card & Krueger (1994) minimum-wage replication used
-  by the numeric benchmark (`tests/test_ck_replication.py`).
+- `card-krueger-1994/` — Card & Krueger (1994) minimum-wage DiD, replicated
+  from the official raw survey file (`tests/test_ck_replication.py`).
+- `card-1995-iv/` — Card (1995) returns to schooling, replicated from the
+  vendored NLSYM extract with standard errors and the first stage
+  (`tests/test_card1995_replication.py`).
+- `nsw-lalonde-1986/` — the NSW experimental benchmark (+$1,794) derived from
+  the randomized arms, next to the −$635 the same 185 treated men produce
+  against the PSID comparison group in `_lalonde_data.csv`. This is where the
+  literature constant in `benchmark/tasks/lalonde-recovery.toml` comes from
+  (`tests/test_nsw_replication.py` pins the two together).
+
+Both are zero-dependency scripts that **exit non-zero when a published anchor
+is missed**, so they are gates rather than illustrations. They answer a
+different question from `benchmark/`: the benchmark asks whether *your* pipeline
+gets a known-by-construction number right, while these show that *this*
+pipeline reaches a *published* number from real data.
 
 When adding a new generation, add a row (or move the old one to the right
 column) instead of leaving the reader to guess which files are current.

@@ -13,35 +13,36 @@ RPC service is only a transport/path/security adapter and must call the same
 `runtimeprep.DefaultPreparer`; it must not maintain separate Claude or Codex
 preparers.
 
-For a Codex Session launched with saver mode enabled, runtime preparation keeps
-the selected main-thread model unchanged and materializes a session-scoped
-default subagent role backed by `agents/luna_worker.toml`, plus a short managed
-`AGENTS.md` routing rule. The role pins only delegated work to the Luna model and reasoning
-effort. The routing rule is intentionally advisory and bounded: it favors
-self-contained work that would otherwise consume meaningful main-thread
-reasoning, context, tool calls, or waiting time and must replace rather than add
-main-thread work. One complete independent unit defaults to one worker. More
-workers are used only when multiple genuinely independent, non-trivial,
-non-overlapping units exist; implementation, tests, and compatibility are not
-automatically treated as separate units. Independent read-only or
-isolated-worktree units may run in parallel. Workers start before the main
-thread inspects their assigned questions or files, and the main thread verifies
-returned evidence narrowly instead of repeating the investigation. Write scopes
-that cannot be isolated remain sequential. A mechanical workflow stays in the
-main thread when one bounded blocking or event-driven command can complete it.
-A single worker owns the end-to-end flow only when it would otherwise require
-multiple model-driven tool turns. Delegations declare non-goals, allowed state
-changes, acceptance criteria, evidence, and retry limits. Workers use the
-minimum analysis and tools needed. Each delegation has a concrete tool-call
-budget; unless justified otherwise, read-only analysis is capped at 8 calls and
-implementation at 20. Read-only analysis does not run tests, repair an
-environment, or write files unless explicitly requested. Workers return when
-the criteria or budget are reached, and the main thread interrupts a worker if
-an intermediate message already supplies sufficient evidence instead of
-waiting for further exploration. Workers do not delegate recursively unless
-their parent task explicitly authorizes nested delegation and sets a total
-nested-worker and tool-call budget. The policy does not create an unbounded
-automatic retry loop.
+For any Agent Session launched with RTK saver mode enabled, provider-neutral
+runtime preparation keeps the selected model unchanged and resolves the pinned
+Tutti-owned `rtk` executable. Packaged Desktop supplies it from app resources;
+other hosts resolve the SHA-256-verified `rtk-saver` managed-runtime component.
+
+RTK saver mode is independent from the existing Codex saver mode. The latter
+remains Codex-only and installs the session-scoped Luna worker role and Codex
+routing policy; enabling either mode does not implicitly enable or disable the
+other.
+Preparation copies that executable and the canonical `RTK.md`
+into the exact Session runtime and prepends only the private binary directory to
+that Session's `PATH`. Session-private Codex, Tutti Agent, and OpenCode
+`AGENTS.md` files start with an absolute `@<runtime>/rtk/RTK.md` reference,
+matching RTK's native Codex integration. The common Tutti Runtime policy also
+carries the same RTK instructions inline through every provider's native
+instruction channel as a compatibility fallback (for example, Claude's
+system-prompt file and Cursor's plugin context). Claude and Cursor install
+native pre-tool hooks, OpenCode installs a command-rewrite plugin, and Hermes
+installs a session-home plugin. Kimi receives a session-home plugin system
+prompt because its pre-tool hooks can block but cannot mutate tool input. RTK's
+database, tee output, and telemetry policy are also isolated under the Session
+runtime.
+
+Runtime preparation deliberately does not inspect the user PATH or install RTK
+through Homebrew, Cargo, an upstream shell script, or any other global
+toolchain. A missing or invalid bundled/managed artifact fails closed. Disabled
+Sessions receive no RTK files or environment overlay, and cleanup removes only
+the enabled Session's recorded runtime paths. The Tutti integrated terminal
+also prepends the Tutti-owned RTK directory to its child environment, but Tutti
+never mutates the operating-system or user-global PATH.
 
 Deployment differences are expressed with `DeploymentProfile` and
 `CapabilityPack`. A pack resolves policy, skills, and environment together.
@@ -50,10 +51,16 @@ The canonical template and shared skill bodies remain in runtimeprep so hosts
 do not fork the actual prompt content. `PrepareInput.SharedInvocation` and
 `EnabledConnectors` render the session-sticky enable-set protocol in
 `connector-discovery`: a non-empty set is the current user-enabled connectors,
-and an empty set is discovery mode over the listed connectors. Shared
-invocations add Caller-versus-Owner routing rules. Hosts pass the full enable
-set on each turn as connector prompt blocks; `packages/agent/daemon` injects
-only enable/disable deltas into the provider-visible turn.
+and an empty set is discovery mode over the listed connectors. Runtimeprep
+renders each available Connector key, display name, and alias into one routing
+index. A request matching any generated entry, or asking to operate a service
+represented by that index, must begin with `connector available --json` before
+the provider asks clarifying questions, reads a Connector-owned Skill, or calls
+a Connector interface. The current Turn's discovery result is authoritative;
+the policy does not hard-code service-specific mappings. Shared invocations add
+Caller-versus-Owner routing rules. Hosts pass the full enable set on each turn
+as connector prompt blocks; `packages/agent/daemon` injects only enable/disable
+deltas into the provider-visible turn.
 
 Tutti Agent keeps auth, configuration, transcripts, and other mutable state in
 its session-scoped `TUTTI_AGENT_HOME`, while Tutti-managed Skills use a
@@ -90,20 +97,19 @@ the model context, the standard ACP adapter appends that prepared context to the
 first provider prompt only. It is provider-only content and is never projected
 as a user message; a newly connected or resumed provider Session receives it
 again. This makes Tutti capabilities available at session start without writing
-provider instructions or Skills into the workspace. Cursor Agent
-`2026.07.01-41b2de7` does not merge plugin-provided hooks into its ACP hook
-executor: only user, project, and team hook sources are loaded. Runtimeprep
-therefore must not advertise or materialize plugin hooks for ACP. A focused
-background-Task guard implementation remains dormant with unit coverage so it
-can be enabled if Cursor adds that capability; it is not a current runtime
-guarantee. Never write an equivalent hook into user or project Cursor config to
-work around the provider limitation.
+provider instructions or Skills into the workspace. Current Cursor Agent
+runtimes discover a plugin-scoped `hooks/hooks.json`. When RTK saver mode is
+enabled, runtimeprep adds a `preToolUse` Shell hook that runs `rtk hook cursor`;
+it remains inside the Session plugin and never writes user or project Cursor
+configuration. A focused background-Task guard remains dormant and independent
+of this Shell rewrite hook.
 
 OpenCode preparation follows the same session-isolation rule as Codex without
 changing OpenCode's standard ACP transport. It creates a session-scoped
 `OPENCODE_CONFIG_DIR`, writes the canonical Tutti runtime policy to that
-directory's `AGENTS.md`, and materializes the resolved Tutti Skill bundle under
-its native `skills/` root. Re-preparing the Session reconciles that managed root
+directory's `AGENTS.md`, installs an RTK `tool.execute.before` rewrite plugin,
+and materializes the resolved Tutti Skill bundle under its native `skills/`
+root. Re-preparing the Session reconciles that managed root
 to the current resolved bundle while preserving unmanaged entries. This happens
 for every Session, including Sessions
 without a model access plan, so mention-driven handoff, context, issue, and

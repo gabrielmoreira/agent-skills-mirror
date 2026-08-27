@@ -52,11 +52,12 @@ Then set:
 MATTERMOST_BASE_URL=http://localhost:8065
 ```
 
-Keep this hostname in Mattermost Desktop too. The template persists the
-canonical Site URL and allows both common loopback origins for WebSockets, so
-Desktop does not silently stop receiving live events if it normalizes the
-hostname. It also enables bot account creation and permits callbacks only to
-the Docker host name needed by a locally running NanoClaw.
+Use this host name in Mattermost Desktop. This keeps the Desktop app and the
+server on the same address. The template sets SiteURL for you. Use
+`http://localhost:8065` in all settings. Do not use `127.0.0.1` in Desktop.
+Keep `WebsocketURL` blank. The template does not change `AllowCorsFrom`. It
+enables bot account creation. It permits callbacks only to the Docker host name
+that a local NanoClaw installation uses.
 
 The first browser visit creates the administrator and team; Mattermost always
 allows creating the first account even with open signup disabled. The template
@@ -70,6 +71,14 @@ Health:
 
 ```bash
 curl -fsS http://localhost:8065/api/v4/system/ping
+```
+
+Client configuration. The first value must be the SiteURL. The second value
+must be empty.
+
+```bash
+curl -fsS 'http://localhost:8065/api/v4/config/client?format=old' |
+  jq -er '.SiteURL, (.WebsocketURL // "")'
 ```
 
 WebSocket origin (a successful upgrade remains open, so use a timeout; seeing

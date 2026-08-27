@@ -85,7 +85,7 @@ export { getCurrentVersion, checkForUpdates, compareVersions } from './utils/ver
 
 ```
 Step 0: 语言选择（首次/已保存跳过）
-Step 1/4: API 提供方（官方 / 第三方 / 302.AI）
+Step 1/4: API 提供方（官方 / 第三方 / APIMart 赞助商 / 跳过）
 Step 2/4: 模型路由（Frontend: Gemini|Codex, Backend: Codex|Gemini, Gemini 型号）
 Step 3/4: MCP 工具多选（ace-tool ✓, context7 ✓, fast-context, grok-search, contextweaver）
 Step 4/4: 性能模式（standard|lite）+ Impeccable 可选安装
@@ -107,6 +107,7 @@ v1.7.83 将原 1878 行单文件拆分为 5 个聚焦模块，各自边界清晰
 | `installer-template.ts` | 模板变量替换，PACKAGE_ROOT 解析，MCP provider 注册表 | `injectConfigVariables()`, `replaceHomePathsInTemplate()`, `PACKAGE_ROOT` |
 | `installer-mcp.ts` | MCP 服务安装（ace-tool / fast-context / contextweaver / 通用） | `installAceTool()`, `installFastContext()`, `syncMcpToCodex()`, `syncMcpToGemini()` |
 | `installer-prompt.ts` | fast-context 搜索引导 Prompt 管理 | `writeFastContextPrompt()`, `removeFastContextPrompt()` |
+| `installer-codex-api.ts` | APIMart 作为 Codex 模型供应商写入 `~/.codex/config.toml` | `configureApiMartForCodex()`, `removeApiMartFromCodex()` |
 
 **`installWorkflows()` 执行链**（`src/utils/installer.ts:659`）：
 
@@ -267,12 +268,14 @@ pnpm typecheck
 # 构建（unbuild → dist/cli.mjs + dist/index.mjs，inline 所有依赖）
 pnpm build
 
-# 测试（130+ 用例）
+# 测试（166 用例）
 pnpm test
 
-# 发布
-npm publish
+# 发布 —— 不要本地 npm publish；推 tag 由 GitHub Actions 经 OIDC 发布
+git tag -a vx.y.z -m "..." && git push origin vx.y.z
 ```
+
+发版完整规则与 OIDC 排查表见[根目录 CLAUDE.md 的「发版规则」](../CLAUDE.md#发版规则必须严格遵守)。
 
 **build.config.ts**：
 ```typescript
@@ -310,7 +313,7 @@ defineBuildConfig({
 
 ## 测试覆盖
 
-`src/utils/__tests__/` 下 6 个测试文件，130+ 用例：
+`src/utils/__tests__/` 下 9 个测试文件，166 用例：
 
 | 测试文件 | 覆盖内容 |
 |----------|----------|
@@ -320,6 +323,9 @@ defineBuildConfig({
 | `installer.test.ts` | `installWorkflows` 主流程，template 变量完整性检查 |
 | `installWorkflows.test.ts` | 安装结果验证，error 处理路径 |
 | `injectConfigVariables.test.ts` | 所有模板占位符替换正确性 |
+| `installer-codex-api.test.ts` | APIMart Codex provider 注册/移除、原子 TOML 合并 |
+| `skills-hygiene.test.ts` | 扫 `templates/skills/` 拦截密钥/公网 IP/绝对路径泄漏 |
+| `plugin-manifest.test.ts` | `.claude-plugin` manifest 版本一致性、impeccable 收敛不回退、frontend-design 无死链 |
 
 ---
 

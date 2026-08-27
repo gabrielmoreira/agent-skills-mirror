@@ -115,7 +115,7 @@ function resolveLaunch(impl) {
     const configured = process.env.COMMANDCODE_BIN;
     if (process.platform === "win32" && !isAbsolute(configured)) return null;
     const command = /[\\/]/.test(configured) ? resolve(configured) : resolveBinary(configured);
-    if (!command || (process.platform === "win32" && /\.(?:cmd|bat)$/i.test(command))) return null;
+    if (!command) return null;
     try {
       const comspec = process.env.ComSpec || process.env.COMSPEC;
       if (
@@ -129,7 +129,10 @@ function resolveLaunch(impl) {
     }
     return null;
   }
-  if (process.platform === "win32" && impl.key === "commandcode") return null;
+  if (process.platform === "win32" && impl.key === "commandcode") {
+    const command = resolveBinary("cmdc");
+    return command ? { path: command, command, prefixArgs: [] } : null;
+  }
   const onPath = resolveBinary(impl.binary);
   if (onPath) return { path: onPath, command: onPath, prefixArgs: [] };
   const candidates = impl.locate?.candidates?.[process.platform] ?? [];

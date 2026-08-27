@@ -16,6 +16,7 @@
 - **OS accepted**：Electron `Notification` 发出 `show` lifecycle event。它证明系统接受展示请求，不等于用户看见或已读。
 - **server recovery safe mode**：Electron Main 在 packaged Next utility 意外退出后持有的跨 generation 状态；通过只读 child env 注入，Renderer 无权自行清除。
 - **descendant registry**：当前 utility generation 通过窄 lifecycle channel 登记其直接 child 的 role、PID、start identity、可执行文件 basename 与后代可验证性；Main 只用它决定能否重启，不凭不完整身份杀进程。
+- **browser guest**：统一 Workspace Sidebar 中由 `<webview>` 创建的远端页面进程；它使用 Main 签发的 workspace partition，但没有 CodePilot preload、Node、CDP 或任意 host IPC 能力。
 
 ## 不变量 / 契约表
 
@@ -25,7 +26,7 @@
 | 2 | 构建前只清理 `release/` + `.next/` + `dist-electron/`，且先验证当前目录确为 CodePilot 项目 | `scripts/clean-electron-build.mjs` |
 | 3 | standalone 根目录只允许 `.next`、`node_modules`、`server.js`、`package.json`、`cache-handler.js`；本地 DB、uploads、Git/agent/worktree 状态不得入包 | build scripts |
 | 4 | `extraResources` 中 standalone root、`node_modules`、`.next` 的目标互斥；禁止 `**/*` 再叠加子目录 FileSet | `electron-builder.yml` + tests |
-| 5 | stable Release 的 macOS、Windows、Linux 产物都必须校验版本、native ABI 与 packaged server health 后才能上传；Windows/Linux 只作手工分发，official updater provenance 必须关闭且不得携带 updater metadata | build workflow |
+| 5 | stable Release 的 macOS、Windows、Linux 产物都必须校验版本、native ABI 与 packaged server health 后才能上传；macOS 使用 signed/notarized updater，Windows 使用明确无 Authenticode 的 GitHub-single-root updater，Linux 只作手工分发且 official updater provenance 必须关闭 | build workflow |
 | 6 | 主窗口外部导航必须经过 `classifyNavigation`；非 http/https 协议不得交给系统 shell | `electron/main.ts` + tests |
 | 7 | Renderer 的 input / textarea / contenteditable 使用 Electron role 菜单；密码框不得启用复制、剪切 | `attachRendererEditingContextMenu` |
 | 8 | Grok Build browser OAuth callback 只绑定 `127.0.0.1`，生产由 OS 分配动态端口；authorize/token exchange 必须复用同一 redirect URI | OAuth manager |
@@ -58,6 +59,8 @@
 | 35 | packaged recovery smoke 跳过 provider Safe Storage 只允许 exact flag + packaged app + canonical realpath 位于 `os.tmpdir()/codepilot-packaged-recovery-*`；flag 不得传给 Next/Agent child。真实 userData、dev mode、symlink/不存在路径和近似 flag 全部 fail closed | `provider-secret-startup-policy.ts` + Main + recovery smoke/tests |
 | 36 | 数据库启动在分配 stable port 前失败时，“再试一次”仍必须能重新启动 utility，IPC 返回真实 accepted 而非乐观 `true`。migration/runtime 原始错误只允许以有界、路径/凭据脱敏的 marker 写本地日志并进入“复制诊断”；不得把动态根因塞进低基数 startup code 或 Sentry message | `electron/main.ts` + `database-recovery.ts` + recovery tests |
 | 37 | DB health marker 是已完成的启动分类，Main 必须绕过通用 30 秒 wait 立即进入离线页。Main 与 utility 共用同一个 data-dir resolver；fresh-start 后文件重现时只暴露 fixed-path、trusted recovery-renderer IPC，让用户明确保留当前库或在旧备份重新校验后继续，Renderer 不得提交数据库路径 | Main + preload + recovery page/tests |
+| 38 | Browser guest 只能使用 Main 为 canonical 64-hex workspace id 签发的 `persist:codepilot-browser-*` partition；`will-attach-webview` 必须核对已签发 partition 与允许 URL、删除 preload，并强制 `sandbox/contextIsolation/webSecurity=true`、Node/subframe Node/Worker Node/nested webview/insecure content=false。Preload 不得暴露 Main WebContents/Session/CDP/通用 execute bridge；DOM `<webview>` 的 host 控制面按下文残余风险处理 | `browser-surface-security.ts` + Main/Preload + BrowserPanel |
+| 39 | Browser 顶层导航只允许 HTTPS、loopback HTTP 和 exact `about:blank`；remote HTTP、credentials、file/data/javascript/未知 scheme fail closed。guest permission check/request 默认全部拒绝，download 当前全部阻断并显示诚实 UI；popup 只能转受控 tab，不能创建未管理窗口 | `browser-url-policy.ts` + Main handlers + BrowserPanel |
 
 ## 关键文件 + 责任
 
@@ -80,6 +83,8 @@
 | `electron/notification-lifecycle.ts` | 平台 notification options 与 show/error/timeout 终态 |
 | `electron/notification-click-queue.ts` | 点击 action 校验、有界 pending queue 与 event-id 去重 |
 | `electron/external-navigation.ts` | HTTP(S) system-browser Promise 所有权、本地化失败提示与隐私边界 |
+| `electron/browser-surface-security.ts` + `src/lib/browser-url-policy.ts` | workspace partition、固定 guest preferences 与共享 URL policy |
+| `src/components/layout/WorkspaceSidebar/BrowserPanel.tsx` | 单个 Browser tab 的 guest 生命周期、实际导航/loading 事件、错误/崩溃 UI；tab 身份由 Workspace Sidebar 持有，preload 不暴露 Main `WebContents`/Session/CDP handle |
 | `electron/server-supervisor.ts` | crash window、有限 backoff、safe-mode ownership 与健康重置 |
 | `electron/server-descendant-registry.ts` + `src/lib/server-lifecycle-contract.ts` | generation/identity 校验与 single-owner restart gate |
 | `electron/server-recovery-page.ts` | 不依赖 Next 的本地化错误面与 CSP |
@@ -88,6 +93,8 @@
 ## 改动检查表
 
 - [ ] 改 `BrowserWindow` / `webContents` 事件时运行 `electron-main-security` 与 `workspace-context-menus`
+- [ ] 改 Browser guest 时同时覆盖：canonical workspace/partition、伪造 partition、preload 删除、Node/sandbox/contextIsolation、HTTPS/loopback/remote HTTP/scheme/credentials、permission/download/popup 与实际 Electron guest smoke
+- [ ] `<webview>` 仅限统一 Browser surface；不得新增通用 webview factory、CDP/executeJavaScript preload API，或把 Provider/Agent 权限映射成网页权限
 - [ ] 编辑右键菜单保持 Electron `role` 实现，避免硬编码快捷键或绕过密码保护
 - [ ] 改 after-pack / native module 后完整打包并确认产物可启动
 - [ ] 修改 `extraResources` 时检查所有 FileSet destination 不重叠
@@ -119,6 +126,7 @@
 ## 常见坑
 
 - tech-debt #6 — 现有 Playwright 主要覆盖 web 层，主进程变更仍需 packaged 人工验证。
+- `webviewTag:true` 只是创建能力，不是信任；没有 `will-attach-webview` 的 issued-partition gate 与二次 hardening 时，Renderer XSS 可伪造 guest/preload。即使有 gate，host Renderer 仍天然拥有 DOM `<webview>` 控制面；当前合同只隔离不可信 guest，不把 host Renderer compromise 声称为已由 `<webview>` 解决。若要收紧这条边界，必须回到 Main-owned view 路线。
 - Electron 不自动给 renderer 输入框提供复制/粘贴菜单；逐组件实现会漏掉 CodeMirror / contenteditable。
 - `context-menu.selectionText` 不能作为密码字段可复制依据；还要检查 `inputFieldType` 与 `editFlags`。
 - v0.34 crash on upgrade 根因是 `dist-electron/` 未清理，stale artifacts 进入 app.asar。
@@ -149,6 +157,7 @@
 | xAI loopback / proxy / child env | 对应 xAI、env-proxy、process-proxy 单测 + packaged smoke |
 | 原生主题枚举、preload/main bridge、透明 surface | `src/__tests__/unit/native-theme-sync.test.ts` + `platform-marker.test.ts` |
 | HTML thumbnail canonical scope、外联阻断与 deadline queue | `src/__tests__/unit/electron-main-security.test.ts` |
+| Browser partition、URL policy、attach hardening 与 preload capability shape | `browser-surface-security.test.ts` + `electron-main-security.test.ts` |
 | 聊天本地路径分类、canonical inspect、bundle/协议拦截与窄系统能力 | `local-link-detector.test.ts` + `local-path-navigation.test.ts` + `markdown-contract.test.ts` + `electron-main-security.test.ts` + `asset-library-ui.test.ts` |
 | 默认助理 fixed-path、native lifecycle、点击队列与 Main 单 owner | `default-assistant-bootstrap.test.ts` + `electron-notification-lifecycle.test.ts` + `bg-poller-channel-parity.test.ts` + `bridge-delivery-visibility.test.ts` |
 | HTML preview 本机路径限制、UNC/device token 拒绝 | `html-preview-url.test.ts` + `html-preview-route.test.ts` |
@@ -181,3 +190,6 @@
 - 2026-08-24 — `/api/health` 的 DB marker 改为立即失败；恢复路径与 utility 统一使用 `CLAUDE_GUI_DATA_DIR` resolver。fresh-start 后出现 DB 时 Main 不自动删除，而以 trusted、无路径参数的 IPC 提供“保留当前库 / 校验旧备份后继续空库”。
 - 2026-08-24 — 本轮 tag/prerelease 发布范围收窄为 macOS。Windows/Linux 原生构建 job 保留作手工 artifact 验证，但 `CODEPILOT_OFFICIAL_UPDATE_BUILD=0` 且 central Release 明确排除其资产。
 - 2026-08-24 — 用户随后澄清 stable 仍需全平台分发：tag 恢复 Windows/Linux 手动安装包，保持 `CODEPILOT_OFFICIAL_UPDATE_BUILD=0`；preview 与原生 updater 仍只有 macOS。
+- 2026-08-26 — 用户明确 Windows 自动更新不申请 Microsoft/Azure/PFX 签名。stable Windows 构建启用 official provenance并发布 unsigned NSIS metadata/blockmap；Linux 继续 provenance=0。Windows 必须以 UI 明示、GitHub immutable/ruleset/Action SHA 发布门禁和真实 RC 升级 smoke 补偿缺失的 publisher identity。
+- 2026-08-26 — 内置 Browser 明确采用 T3 同类的 renderer-owned `<webview>`，但不复制其 `contextIsolation:false`、宽权限或 CDP。Main 只签发 workspace partition 并在 attach 时二次 harden；权限默认拒绝、下载默认阻断、URL 只放行 HTTPS/loopback。WebContentsView POC 保留为 inconclusive research，不冒充 GO。
+- 2026-08-26 — Browser tab 身份上移到统一 Workspace Sidebar：一个顶层 tab 对应一个 guest，BrowserPanel 不再嵌套第二层 tab。loading 由真实 navigation request/start 到 stop/fail/block 的生命周期驱动，不展示伪造百分比。

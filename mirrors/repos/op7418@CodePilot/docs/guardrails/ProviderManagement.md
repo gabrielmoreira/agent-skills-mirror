@@ -243,7 +243,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | `src/__tests__/unit/provider-presence.test.ts` | hasCodePilotProvider 各分支 |
 | `src/__tests__/unit/session-runtime-immunity.test.ts` | 不可读 provider 密文的 session-aware fail-closed、typed route/UI 恢复接线 |
 | `src/__tests__/unit/sdk-subprocess-env.test.ts` | Claude SDK 与 Native Runtime 拒绝无凭据 DB Provider，不继承 ambient OAuth |
-| `src/__tests__/unit/glm-5-3-codeplan-adaptation.test.ts` | GLM-5.3 / GLM-5-Turbo / GLM-4.7 逐模型 auth/base URL/upstream env 边界 |
+| `src/__tests__/unit/glm-5-3-codeplan-adaptation.test.ts` | GLM-5.3 / GLM-5.3-Flash 当前目录，逐模型 auth/base URL/upstream env、1M/vision/effort 与 Claude/Codex wire 边界 |
 | `src/__tests__/unit/stale-default-provider.test.ts` | 默认 provider 引用已删 ID 时 auto-heal |
 | `src/__tests__/unit/media-provider-routes.test.ts` | active-image 路由 + stale 处理 |
 
@@ -265,3 +265,4 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 - **2026-08-23** GLM legacy 修复改为显式身份迁移：`legacyFingerprints` 全字段 compare-and-swap，upstream wire 占用才是插入冲突事实；Add Model 暴露五态，`identity_conflict` fail-closed，不再让 stable alias 或不可靠的历史 `source` 替用户做决定。
 - **2026-08-24** implementation review 收口后按已发布 git 历史补齐 sonnet→`sonnet` 的 gen-0 `GLM-4.7`、`GLM-5-Turbo`/`GLM-5.2` 与 haiku→`haiku` 的 `GLM-4.5-Air` 指纹，删除 upstream=`glm-5-turbo` 的无来源猜测；gen-0 与后续三行完整目录 fixture 都验证目标槽原位升级、非目标 opus 保留。mutation 后 UI 重拉服务端真源；canonical current 不被额外旧行拖成死路，真正 conflict 有行为断言并显示具体恢复动作。
 - **2026-08-24** presence 进一步明确 enabled-first：hidden canonical 与唯一 enabled direct current wire 并存时返回 `current_enabled` 并指向 enabled row；只有没有 enabled current 时 hidden canonical 才代表 `current_hidden`。
+- **2026-08-26** GLM Coding Plan 当前目录收敛为 GLM-5.3 + GLM-5.3-Flash；旗舰 stable `sonnet` 与默认角色保持 5.3，快速 stable `haiku` 升级 Flash。Models GET 仍为非破坏 merge：迁移已知 pristine haiku 指纹、补当前缺失行，但不删除或停用历史 Turbo/4.7 行；当前目录事实与存量数据清理由不同动作负责。

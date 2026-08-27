@@ -58,6 +58,7 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
 13. **Never mention a fork repository, fork PR, worktree, internal review loop, or private validation provenance in comments posted to the original PR.** Store that evidence only under `internalEvidence`; public payloads must be self-contained.
 14. **Never post prose summaries as inline code suggestions.** An inline item must contain one non-empty, apply-ready `suggestion` block targeting an exact current RIGHT-side diff range. Split localized fixes out of broader multi-file findings instead of collapsing every concrete change into companion prose. Use a companion item only for the architectural, coordination, or out-of-diff remainder, and explicitly label companion-only reviews as general notes with no inline suggestions. Omit obsolete findings.
 15. **Never publish with ad-hoc `gh` commands.** Validate schema-version-2 data with `Test-ReviewData.ps1`, then publish approved decisions with `Publish-ApprovedReview.ps1`. The publisher stages a pending review, reads it back, and submits only after exact verification.
+16. **Score confidence per finding, but never expose it upstream.** Every drafted public item carries a 50–100 confidence score and evidence-based rationale as metadata. Scores below 50 stay internal. Pulse may show the score to maintainers; author-facing review bodies must contain severity and reasoning only.
 
 ## Phase 0: Context & Process Review
 

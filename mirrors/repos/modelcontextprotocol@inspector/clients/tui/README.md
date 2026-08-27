@@ -75,7 +75,7 @@ The TUI provides terminal-native tabs and panes for interacting with your MCP se
 
 - **Resources**: Browse and read resources exposed by the server.
 - **Prompts**: List and test prompts.
-- **Tools**: View available tools and execute them with form-like inputs.
+- **Tools**: View available tools and execute them with form-like inputs. A tool whose advertised schema carries a portability problem is flagged in the list — red `!` for a construct a shipping MCP client refuses, yellow `?` for one handled unevenly — and the detail pane lists each finding under **Schema Portability** with the path, the problem, and a concrete fix. The verdict comes from [`core/json/schemaLint.ts`](../../core/json/schemaLint.ts), shared with the web Tools tab and the CLI's `--strict` report, so the three cannot disagree ([#1005](https://github.com/modelcontextprotocol/inspector/issues/1005)).
 - **Protocol**: View JSON-RPC request/response/notification history (matches the web Protocol monitor).
 - **Network**: View HTTP fetch traffic for SSE / Streamable HTTP servers (matches the web Network monitor).
 - **Console**: View stdio stderr from the connected server process (matches the web Console monitor).

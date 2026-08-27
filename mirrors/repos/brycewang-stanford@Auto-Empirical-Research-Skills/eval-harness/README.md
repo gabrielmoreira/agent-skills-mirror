@@ -52,6 +52,7 @@ eval-harness/
   schema/scenario.schema.json   # documents the scenario shape
   scenarios/*.toml        # one file per scenario; stem == id
   candidates/_example/    # sample agent outputs (fixtures for the grader)
+  fixtures/<id>/          # pass.md + fail.md — proof the rubric discriminates
   results/                # generated scorecards (results.json + RESULTS.md)
 ```
 
@@ -125,6 +126,32 @@ patterns = ['(?i)weak instrument', '(?i)below (the )?(threshold|10|23)']
 and stay inside the repo; absolute paths and `..` escapes are rejected. `rubric`
 must be an array of TOML tables (`[[rubric]]`), even for a single item.
 
+### Prove it discriminates
+
+A scenario count is easy to inflate: write rubrics whose patterns match prose
+and every scenario passes everything. So a scenario is expected to ship a
+**fixture pair** — a correct answer and a plausibly wrong one — and prove the
+verdicts differ:
+
+```
+eval-harness/fixtures/<scenario-id>/pass.md   # what a careful answer looks like
+eval-harness/fixtures/<scenario-id>/fail.md   # the folk move, argued confidently
+```
+
+```bash
+python3 eval-harness/run_evals.py --selftest
+```
+
+The bar: **every** auto-checkable item passes on `pass.md` (an item no correct
+answer can satisfy is broken, not strict), and **at least one required** item
+fails on `fail.md` (a rubric the wrong answer sails through tests nothing).
+Manual items are excluded — they exist because no regex settles them.
+
+Fixtures are **mandatory for `severity = "critical"`** and encouraged for
+everything else; `make eval-harness` enforces a `--min-fixtures` floor that only
+ratchets upward. Details and the relationship to `candidates/_example/` are in
+[`fixtures/README.md`](fixtures/README.md).
+
 ### Check types (`lib/checks.py`)
 
 | check | passes when |
@@ -152,4 +179,9 @@ the whole document.
 - Scenarios are pinned to skill content that was verified to exist at authoring
   time. When a skill's methodology changes, update the matching scenario.
 - `candidates/_example/` is a fixture set (some good, one deliberately weak) used
-  to prove the grader discriminates — not a real model run.
+  to prove the **grader** discriminates — not a real model run. `fixtures/` is
+  the parallel set that proves each **rubric** discriminates. Both are
+  hand-written; neither is evidence about any particular model.
+- The self-test proves a rubric separates *one* correct answer from *one* wrong
+  answer. That rules out the two cheap failure modes (matches everything,
+  matches nothing); it does not prove the rubric is right about econometrics.

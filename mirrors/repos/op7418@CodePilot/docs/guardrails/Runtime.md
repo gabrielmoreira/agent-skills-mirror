@@ -129,6 +129,17 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 - 后续新增的 app-server spawn 路径或后台 worker 必须复用
   `prepareCodePilotCodexHome()`；只设置两个 home 变量中的一个属于契约违规。
 
+### 2.7 Composer capability descriptor
+
+Composer 参数菜单不得从模型名字猜能力。`buildComposerModelCapabilityDescriptor()` 只适配 `/api/providers/models` 当前 route 已返回的 model capability，并把事实钉在 Runtime + protocol + modelIds 三个维度：
+
+- `selectable`：存在真实可变 wire 与已验证值列表，UI 才能交互；
+- `fixed`：模型容量/行为已由 route 固定（例如默认 1M），UI 可只读展示但不能发 no-op toggle；
+- `unsupported`：该 Runtime/protocol 明确没有这条 wire；
+- `unknown`：能力事实缺失，UI 不渲染为可操作控件。
+
+Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 重新生成。收藏 snapshot、模型名启发式和 catalog 全集均不能把 `unknown/unsupported` 提升为 selectable。
+
 ## 3. 关键文件 + 不变量
 
 | 模块 | 文件 | 不变量 |
@@ -156,6 +167,7 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | Runtime-specific provider transport | `src/lib/provider-catalog.ts` wire capabilities → `provider-resolver.ts:toAiSdkConfig()` → `ai-provider.ts` | 只在 preset identity + exact model + runtime 都命中时换协议；Anthropic / Responses 模型 ID 不同时由声明式 override 改写；effort compatibility alias 也必须由该 first-party preset 显式声明，不得用 hostname/品牌特判；unsupported 回原协议 |
 | Anthropic-compatible effort | `agent-loop-anthropic-wire.ts` + `claude-code-compat/request-builder.ts` | 未验证第三方继续省略 effort；verified model×tier 才生成 `output_config.effort` |
 | Codex provider Responses effort | `codex/proxy/unified-adapter.ts:buildProviderOptions()` | preset-verified third-party Responses 才可 `forceReasoning`；档位按 transport allowlist，未知档位省略 |
+| Composer option descriptor | `model-option-support.ts` + `ModelCapabilityDropdown.tsx` | Runtime+protocol+model 四态；fixed/unknown 不得生成假开关或假 wire |
 
 ## 4. 加 / 改新功能时必须检查
 
@@ -179,6 +191,7 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
   - send 路径前必须 gate `noCompatibleProvider` + `fetchState`
 - 改 Codex model discovery / transport：覆盖 frame chunk/CRLF/multibyte/exact-cap/oversize/no-newline、RPC deadline、10 caller single-flight、cooldown/force 与 unhealthy-idle recycle；日志 fixture 中不得出现 frame/prompt/path/token 内容。
 - 新增任何 Codex app-server 直达入口时必须复用 `getCodexAppServer()` 的 recovery-safe-mode gate，不得自行 spawn 绕过 Main owner。
+- 新增 Composer 模型参数时必须先有 request wire + source breadcrumb，再进入 descriptor；UI 截图、模型容量或名字匹配不能作为 selectable 证据。
 - 新增 sub-agent adapter：必须定义 model allowlist / alias canonicalization / effective provenance，并消费共同 workflow/task/dependency compiler；未证明的能力 fail closed，不得实现第四套 queued/依赖等待语义
 
 ## 5. 常见坑
@@ -196,7 +209,8 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 11. **只给 HTTP warmup 加 2.5s timeout** → client pending 仍会活到内部 30s timer。调用方 deadline 必须向下 abort 对应 JSON-RPC id，late response 只能被丢弃。
 12. **把一次 refresh warning 当成僵死进程热杀** → 可能中断 active turn/approval。必须按 generation+窗口累计并仅在 idle recycle。
 13. **CodePilot Provider 的 Codex effort 复用 Codex Account 模型缓存** → GLM 等第三方目录的 Max 会被静默夹成 High，Auto 也无法采用供应商默认档。Codex Account 只信当前账号 `model/list`；CodePilot Provider 必须信精确 preset/model catalog 的 `supportedEffortLevels/defaultEffortLevel`。`xhigh/max` 的语法兼容证据可来自当前 app-server `model/list` vocabulary，或在账号未登录/目录冷缓存时来自已初始化本机 binary 的保守版本门（当前实际验证下限为稳定版 `0.144.2`）。版本门必须复用严格、prerelease-aware 的 `codex --version` 解析器；`0.144.2-alpha.*` 和仅在任意 user-agent 中夹带三元组的字符串都不得放行。不得为了使用 CodePilot Provider 要求登录或刷新 Codex Account；旧/未知 binary 必须可见失败，禁止静默降级。
-14. **把“没有 effort allowlist”误判成“不是原生 Responses”** → GLM-5-Turbo 这类已验证 Responses transport 会退回 generic path，丢 reasoning summary 或错误附带 effort。transport 能力与可选 effort 档位是两个字段：前者建立 Responses context，后者为空时仍走原生 Responses，但 body 不得出现 `reasoning.effort`。
+14. **把“没有 effort allowlist”误判成“不是原生 Responses”** → 已验证 Responses transport 会退回 generic path，丢 reasoning summary 或错误附带 effort。transport 能力与可选 effort 档位是两个字段：前者建立 Responses context，后者为空时仍走原生 Responses，但 body 不得出现 `reasoning.effort`。历史 GLM-5-Turbo fixture 保留用于钉住这一通用不变量；它不再代表当前 GLM Coding Plan 目录。
+15. **把供应商标称的“1M”擅自换算成 1,048,576** → 若官方示例实际配置 1,000,000，会让接近满窗时的剩余比例被系统性高估。没有精确 token 数的第一方依据时使用供应商配置值或十进制标称值，并在 source breadcrumb 说明精度边界；不得把 MB/MiB 习惯套到 token 上。
 
 ## 6. 测试覆盖
 
@@ -217,7 +231,7 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | `src/__tests__/unit/agent-loop-anthropic-wire.test.ts` | Anthropic 官方 model×effort-tier wire allowlist；Auto 不冒充显式 High；第三方代理保留原始 requested tier；Sonnet 4.6 max/xhigh 正反例 |
 | `src/__tests__/unit/codex-proxy-translators.test.ts` | Codex proxy 对 Anthropic resolved upstream model 使用共享 sanitizer；adaptive 家族禁止 manual budget thinking，支持档位 xhigh 保真、Sonnet 4.6 非法 xhigh 省略 |
 | `src/__tests__/unit/deepseek-v4-flash-adaptation.test.ts` | Codex Runtime Flash/Pro exact-model Responses dispatch、Pro 0813 production factory outbound body、DeepSeek max/xhigh 映射、Anthropic output_config 与 suffix/aggregator fail-closed |
-| `src/__tests__/unit/glm-5-3-codeplan-adaptation.test.ts` | GLM-5.3 当前目录、Claude `[1m]` / Codex bare ID 分流、CN/Global Responses endpoint、provider-scoped effort alias、Codex catalog contract 的显式/Auto→Max 与旧 binary fail-visible、Turbo 原生 Responses 无 effort outbound body、production factory 与 aggregator fail-closed |
+| `src/__tests__/unit/glm-5-3-codeplan-adaptation.test.ts` | GLM-5.3 + GLM-5.3-Flash 当前目录、两模型 Claude `[1m]` / Codex bare ID 分流、CN/Global endpoint、provider-scoped effort alias、显式/Auto→Max、production Responses body、Flash Anthropic/Responses 图片输入与 aggregator fail-closed |
 | `codex-bounded-ndjson-reader.test.ts` + `codex-app-server-client.test.ts` + `codex-models-decoupling.test.ts` | frame byte cap、deadline pending cleanup、model/list single-flight/cooldown/safe-mode cache-only |
 | `codex-binary-discovery.test.ts` | internal refresh-timeout signature、health window threshold 与 app-server spawn compatibility |
 
@@ -245,3 +259,5 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 - **2026-08-02** DeepSeek V4 Flash 在 Codex Runtime 使用第一方原生 Responses；同 credential 在 CodePilot Runtime 保持 Anthropic-compatible，Claude Code 保持官方 `/anthropic` env 路径。transport 由 preset 声明而非 hostname 分支；V4 Pro 暂不切 Responses。AI SDK 对未知模型的 reasoning heuristic 由 verified transport 的 `forceReasoning` 覆盖，DeepSeek 未支持的 summary 被移除。真实 API 已分别跑通 Responses High 与 Anthropic thinking+High；聚合渠道 effort 继续 fail closed。
 - **2026-08-15** CodePilot Provider 的扩展 effort 与 Codex Account entitlement 分轴：账号 `model/list` vocabulary 可作为当前 binary 证据，但未登录/冷缓存不能阻断第三方 Provider。runtime 在 app-server 已初始化后只读本机版本，`0.144.2+` 作为本仓库实测保守门；旧/未知版本可见失败，不静默夹档，也不提示用户刷新无关的 Codex Account 目录。
 - **2026-08-15** 扩展 effort 版本门改为复用 app-server auto-review 已使用的严格 semver/prerelease 比较器；只接受 bare release、锚定的 `codex-cli <release>`，或锚定的 `Codex Desktop/<release>` app-server user agent，稳定版 `0.144.2` 可用但同 core 的 alpha 不可用，避免无关 user-agent 中的版本误命中。production smoke 进一步钉住 ChatGPT.app 当前 `Codex Desktop/0.147.0-alpha.6.5 (...)` 格式，防止严格化时误拒真实 bundle。
+- **2026-08-26** GLM-5.3-Flash 复用第一方 preset-scoped 双 transport：Claude 发 `glm-5.3-flash[1m]`，Codex Responses 发 `glm-5.3-flash`；两路径都只开放官方 Low/High/Max、默认 Max，Flash 额外开放 vision。ID override、effort alias 与 vision 都不能按名称泄漏到聚合 Provider；Codex 工具页示例目录尚未同步 Flash，真实套餐 turn 继续留在 Smoke Ledger，不用 synthetic body 冒充 entitlement。
+- **2026-08-26 review P3** GLM 文档只承诺 1M，官方配置使用 1,000,000；catalog 与 fallback 统一从 1,048,576 降为 1,000,000，并修正旧模型自动路由的 overview 引用。此变更宁可保守显示容量，也不允许无来源的 4.7% 余量。

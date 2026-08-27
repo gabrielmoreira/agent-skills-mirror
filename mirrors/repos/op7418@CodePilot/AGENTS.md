@@ -54,8 +54,8 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 ## Codex 发版执行边界
 
 - 用户明确要求“发版”后，才允许按 [docs/rules/release.md](./docs/rules/release.md) 执行 `push main → 创建并推送不可变 stable tag → 跟踪 CI`；不要手工创建 Release，也不要删除、移动或复用失败 tag。
-- stable Release 是混合分发：macOS 正式包必须同时包含签名、公证后的安装包和原生自动更新资产（`latest-mac.yml`、universal ZIP、ZIP blockmap）；Windows/Linux 只提供手动安装包，禁止发布其 updater metadata 或宣称自动安装。
-- “tag 已推送”不等于发版成功。Codex 必须跟踪 workflow 到终态，并在公开 Release 上复核版本、Latest 状态、三平台资产图，以及 `latest-mac.yml` 只引用同版本 universal ZIP；任一门禁失败时保留 tag、报告失败阶段并使用更高 patch 修复。
+- stable Release 是混合分发：macOS 正式包必须包含签名、公证后的安装包和原生自动更新资产（`latest-mac.yml`、universal ZIP、ZIP blockmap）；Windows 使用用户明确接受的无 Authenticode 原生更新（`latest.yml`、unsigned NSIS、EXE blockmap），必须从 packaged config 读取真实 publisher 状态、明示 GitHub 单一信任根，并以新鲜的 Immutable Releases 管理员确认、active 且无 bypass/exclude/重名的 main no-delete/no-force 与 `v*` tag no-delete/no-update rulesets、管理员生成且与 live `id` / `updated_at` 无漂移的 `CODEPILOT_RULESETS_CONFIRMED_STATE`、Action SHA pin、精确版本资产审计和真实升级 smoke 为门禁；Linux 只提供手动安装包，禁止发布 updater metadata。
+- “tag 已推送”不等于发版成功。Codex 必须跟踪 workflow 到终态，并在公开 Release 上复核版本、Latest 状态、三平台资产图、`latest-mac.yml` 只引用同版本 universal ZIP、`latest.yml` 只引用同版本完整 NSIS；任一门禁失败时保留 tag、报告失败阶段并使用更高 patch 修复。
 - 更改发版能力或分发拓扑时，必须同步 `docs/rules/release.md`（权威规则）、`CLAUDE.md`、本文件、`README.md` 与当版 `RELEASE_NOTES.md`；不能只改 workflow 或只在聊天中说明。
 
 ## 文档

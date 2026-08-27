@@ -246,7 +246,7 @@ use Responses streaming. Other supported official OpenAI models use Chat
 Completions streaming. Anthropic uses its native Messages event parser, Azure
 OpenAI uses its deployment-based parser, and Gemini, DeepSeek, xAI, Mistral,
 Nvidia NIM, Groq, Together AI, Fireworks, z.ai, OpenRouter, WebBrain Cloud,
-Ollama, LM Studio, Jan, vLLM, SGLang, and LocalAI use the OpenAI-compatible
+Ollama, LM Studio, Jan, vLLM, SGLang, LocalAI, and Unsloth Studio use the OpenAI-compatible
 Chat Completions parser. z.ai streaming tool calls add its documented
 `tool_stream` request flag. llama.cpp uses its dedicated OpenAI-compatible
 parser. Alibaba Cloud remains non-streaming because DashScope rejects
@@ -281,13 +281,31 @@ invariants therefore keep one production lifecycle.
 ### Selected-text source scopes
 
 Selected-text runs always carry an explicit, durable `source_grounding` policy.
-Fixed actions and custom questions default to `selection_only`, which limits the
-answer to the selected text. A custom question can explicitly opt into
-`selection_context`, which also permits the model's intrinsic general knowledge.
-Both policies treat the selection as untrusted data and exclude live page
-context, screenshots, tools, attachments, and conversation history from before
-the selection. The policy is stored with the per-tab conversation, survives
-follow-up turns and retries, and is shown in the side-panel scope banner.
+Fixed actions keep `selection_only`, which limits the answer to the selected
+text. A free-form question may use `selection_context`, which permits intrinsic
+model knowledge and a bounded projection of earlier user/assistant dialogue so
+references such as “the above” can be resolved. That projection is explicitly
+non-authoritative: wrapped page text, tool results, screenshots, attachments,
+and app-owned state are excluded. The current selection remains untrusted page
+data inside its own boundary.
+
+The visible transcript and provider payload are intentionally different views.
+The transcript keeps every bubble for reading and recovery; the provider view
+adds the scope system note, the current selection, and (for `selection_context`)
+only the safe dialogue projection. Each selection adds an inline scope divider
+and the side-panel banner explains the included/excluded material. The user can
+confirm **Use broader conversation** to remove the scope before the next
+turn; only that explicit action allows the normal conversation payload again.
+
+`source_grounding` and the selection anchor are persisted with the per-tab
+conversation, survive panel/service-worker restart, retries, tab switches, and
+compaction, and are cleared by New conversation. The selection-scope fields in
+trace runtime metadata record only the policy, anchor presence, and
+`selection_scope_excluded_messages` count — never projected text or anchor/message
+fingerprints. This allowlist does not change the broader Trace retention contract:
+other run, event, screenshot, deep-debug, or lossless fields follow the current
+privacy mode documented in [Privacy & Data Flow](privacy-and-data-flow.md). Treat
+trace and diagnostic exports as privacy-sensitive data.
 
 ### Step 6: Tool Execution
 

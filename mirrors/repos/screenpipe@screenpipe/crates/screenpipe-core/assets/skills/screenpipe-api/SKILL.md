@@ -1,6 +1,6 @@
 ---
 name: screenpipe-api
-description: Query the user's data via the local screenpipe REST API at localhost:3030 — screen recordings, audio, UI elements, usage analytics, meetings, connected services, and persistent memory. Use for questions about screen activity, meetings, apps, productivity, media export, retranscription, connections, or durable memory.
+description: Query the user's local and synced-device data via the screenpipe REST API at localhost:3030 — recordings, audio, UI, meetings, connected services, and memory. Use for screen activity, other-device or cross-device history, productivity, media export, connections, or durable memory.
 ---
 
 <!-- screenpipe — AI that knows everything you've seen, said, or heard -->
@@ -124,6 +124,30 @@ head -20 /tmp/sp.csv
 **Tags** link people/projects/topics across screen, audio, and memories under one namespace (`person:ada`, `project:atlas`, `topic:pricing`). Add to a frame/audio: `POST /tags/vision/{frame_id}` or `POST /tags/audio/{chunk_id}` body `{"tags":["person:ada"]}`; to a memory: `tags` in `POST /memories`. Retrieve: `GET /search?tags=person:ada&start_time=30d%20ago` (add `content_type=memory` for memories). Frames are pruned by retention — tag a **memory** for durable links (memories carry `created_at` + a `frame_id` back to the moment). `include_related=true` returns co-occurring tags grouped by namespace, replacing 2-3 follow-up calls.
 
 Response: `{"data": [{"type":"OCR","content":{"frame_id":...,"text":...,"app_name":...}}, {"type":"Audio","content":{"chunk_id":...,"transcription":...,"speaker":{"name":...}}}, {"type":"Parsed","content":{"frame_id":...,"text":...,"items":[...],"actors":[...]}}], "pagination":{"limit":10,"offset":0,"total":42}}`.
+
+---
+
+## Synced devices — `GET /data-sync/devices` and `/data-sync/search`
+
+Use these endpoints when the user says **another device**, **across devices**, or
+names a machine that is not the current one. For the current machine only, keep
+using `/search`; it is faster and has richer local filters. Prefer the MCP tools
+`synced-devices` and `search-synced-content` when they are available.
+
+```bash
+curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  "${SCREENPIPE_LOCAL_API_URL:-http://localhost:3030}/data-sync/devices"
+
+curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  "${SCREENPIPE_LOCAL_API_URL:-http://localhost:3030}/data-sync/search?device_name=MacBook&since_hours_ago=24&q=pricing&limit=10"
+```
+
+Start with `/data-sync/devices` when the device name is ambiguous. Search accepts
+`q`, `device_name`, `device_id`, `app_name`, `since`, `until`,
+`since_hours_ago`, and `limit`. Cite the returned device and timestamp. If Data
+Sync is disabled or unavailable, say so plainly; never ask for a cloud token,
+account ID, user ID, or R2 bucket and never access R2 directly. The local API
+supplies the signed-in identity.
 
 ---
 

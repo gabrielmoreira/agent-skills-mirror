@@ -16,8 +16,9 @@ and `make validate` will flag the staleness either way.
 | `RIGOR_COVERAGE.md` | `scripts/build-coverage-map.py` | `make catalog` |
 | `RELEASE_NOTES.md`, `badges/`, `releases/` | `scripts/build-release-notes.py` | `make catalog` |
 | `BENCHMARK_SCOREBOARD.md` | `scripts/build-benchmark-scoreboard.py` | `make catalog` |
+| `EXTERNAL_SCOREBOARD.md` | `scripts/build-external-scoreboard.py` | `make catalog` |
 | `LINK_TRIAGE.md` | `scripts/build-link-triage.py` | on link-check failure |
-| `QUICKSTART_REPORT.md` | `scripts/quickstart.py --markdown` | manual |
+| `QUICKSTART_REPORT.md` | `scripts/quickstart.py --markdown` | `make catalog` |
 
 ## Hand-maintained entry points
 
@@ -25,6 +26,12 @@ and `make validate` will flag the staleness either way.
   (two-level architecture; see the note at the top of `README.md`).
 - `GETTING_STARTED.md`, `CHOOSING_A_SKILL.md`, `FAQ.md`, `INSTALL.md`,
   `GOLDEN_WORKFLOWS.md`, `WORKFLOW_MAP.md` — user guides.
+- `../catalog/security-scan.json` (outside this dir) — the vendored-collection
+  pattern-scan record, written by `scripts/scan-collections.py` (`make
+  security-scan`) and freshness-checked by `make validate`. The prose write-up
+  lives in `../SECURITY-SCAN-REPORT.md`.
+- `SCOREBOARD_RULES.md` — who may submit to `EXTERNAL_SCOREBOARD.md` and how
+  entries are ranked (the board itself is generated).
 - `TRUST.md`, `SCOREBOARD.md` (link hub — deliberately carries no numbers),
   `QUALITY_GATE.md`, `SKILL_FRONTMATTER_SPEC.md`, `SKILL_HYGIENE.md`'s
   companion policy docs (`SKILL_SUBMISSION_GUIDE.md`, `OUT_OF_SCOPE.md`).

@@ -1,7 +1,7 @@
 ---
 name: xberg
 description: >-
-  Extract text, tables, metadata, and images from 101 document formats
+  Extract text, tables, metadata, and images from 100 document formats
   (PDF, Office, images, HTML, email, archives, academic) using Xberg.
   Use when writing code that calls Xberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
@@ -15,14 +15,14 @@ metadata:
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:99de599640f2b3a9128bd4d1b4d281cf91f0d6d70802f8e283c96537a8287ec9
-Source-Hash: blake3:ac8bab9ae4a76e61f437af29b4a45a38326056a50769a177038927c69353edaf
+Content-Hash: blake3:7d0d1f488c0b205fe1f37968a71f5c3c81ed02ab981648b756771e38b965e288
+Source-Hash: blake3:45cb11995592f052d075d6a24353eb8b647075dcb25f77187fcb4c161b574d49
 Schema-Version: v1
 -->
 
 # Xberg Document Extraction
 
-Xberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 101 file formats across 115 file extensions including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
+Xberg is a document intelligence library with a Rust core and bindings for Python, TypeScript/Node.js, Ruby, PHP, Go, Java, C#, Elixir, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C. It extracts text, tables, metadata, and images from 100 formats across 120 file extensions, including PDF, Office documents, images, HTML, email, archives, and academic formats.
 
 Use this skill when writing code that:
 
@@ -57,7 +57,7 @@ cargo add xberg
 ```toml
 # Cargo.toml
 [dependencies]
-xberg = { version = "1.0.2", features = ["full"] }
+xberg = { version = "1.1.0", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
 # feature flags: pdf, ocr, chunking, embeddings, language-detection, keywords, api, mcp
 #                (or "formats" / "full" aggregates); tokio-runtime is on by default
@@ -374,7 +374,7 @@ match extract(ExtractInput::from_uri("file.pdf"), &config).await {
 4. **Python ChunkingConfig fields**: construct with `max_characters` and `overlap` (defaults 1000 / 200); these are also the readable attributes. When passing config as a dict/JSON, the `max_chars` / `max_overlap` aliases are also accepted. Node uses `maxCharacters` / `overlap`; Rust struct fields are `max_characters` / `overlap`.
 5. **Python errors**: `extract` / `extract_batch` raise a plain `RuntimeError` on failure, not typed `XbergError` subclasses — catch `RuntimeError`. Node throws plain `Error` (no typed error subclasses).
 6. **Rust extract signature**: `extract(input, &config)` — the config is a reference. Use `&ExtractionConfig::default()` for defaults.
-7. **CLI --format vs --content-format**: `--format` controls CLI output (text/json). `--content-format` controls content format (plain/markdown/djot/html).
+7. **CLI --format vs --content-format**: `--format` controls CLI output (`text`, `json`, or `toon`). `--content-format` controls content rendering (`plain`, `markdown`, `djot`, `html`, `json`, or `doctags`).
 8. **Config file field names**: Use snake_case in TOML/YAML/JSON config files — `[chunking]` fields are `max_characters` and `overlap`; other fields use names like `output_format`, `pdf_options`.
 
 ## Supported Formats (Summary)
@@ -405,9 +405,9 @@ Detailed reference files for specific topics:
 - **[Rust API Reference](references/rust-api.md)** — All functions with feature gates, structs, Cargo.toml examples
 - **[CLI Reference](references/cli-reference.md)** — All commands, flags, config precedence, exit codes
 - **[Configuration Reference](references/configuration.md)** — TOML/YAML/JSON formats, auto-discovery, env vars, full schema
-- **[Supported Formats](references/supported-formats.md)** — All 101 formats (115 file extensions) with file extensions and MIME types
+- **[Supported Formats](references/supported-formats.md)** — Format families, extensions, capabilities, and authoritative discovery commands
 - **[Advanced Features](references/advanced-features.md)** — Plugins, embeddings, MCP server, API server, security limits
-- **[Other Language Bindings](references/other-bindings.md)** — Go, Ruby, Java, C#, PHP, Elixir, WASM, Docker
+- **[Other Language Bindings](references/other-bindings.md)** — Go, Ruby, Java, C#, PHP, Elixir, WASM, Dart, Kotlin Android, Swift, Zig, C, and Docker
 
 ## Related skills
 

@@ -275,13 +275,16 @@ AERS 同时是两样东西：(1) 一小撮**自研旗舰 skill**，能跑通完�
 | **本仓库自有**并已编目的 skill | **1,096** | [`catalog/skills.json`](../catalog/skills.json) |
 | 自有 **合集（collections）** | **76** | [`catalog/skills.json`](../catalog/skills.json) · [全部 76 个一览 ↑](#全部-76-个-skill-合集一览) |
 | **自研旗舰**全流程 skill（StatsPAI DSL + 显式 Python/Stata/R） | **4** | [`skills/00*`](../skills/) |
-| 每次运行从数据**重算 gold 值**的数值基准任务 | **17** | [`benchmark/`](../benchmark/) |
-| 行为级**评测场景 / rubric 条目** | **37 / 183** | [`eval-harness/`](../eval-harness/) |
+| 每次运行从数据**重算 gold 值**的数值基准任务 | **19** | [`benchmark/`](../benchmark/) |
+| 行为级**评测场景 / rubric 条目** | **42 / 217** | [`eval-harness/`](../eval-harness/) |
+| 其中**已证明能区分对错**的场景（pass/fail 双 fixture 自检） | **9**（含全部 6 个 critical 场景） | [`eval-harness/fixtures/`](../eval-harness/fixtures/) |
 | **原始基线**安全审计（合集 / 文件） | **52 / 2,940+**，52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](../SECURITY-SCAN-REPORT.md) |
 | 覆盖**更广生态**的精选地图 | **23,000+ skill / 119 仓库** | 本 README · [`SKILL_CATALOG.md`](SKILL_CATALOG.md) |
 | **工具目录**（`tools/`）：因果/计量库、自动化研究 Agent、MCP 服务、因果发现、基准数据集 | **334 工具 / 6 类** | [`tools/tools.json`](../tools/tools.json) · [`tools/CATALOG.md`](../tools/CATALOG.md) |
 
 > 安全审计覆盖的是**原始 52 合集 / 2,940 文件的基线（52/52 CLEAN）**。在该基线之后新增的 vendor skill 由 [`catalog/provenance.json`](../catalog/provenance.json)、[`LICENSE_AUDIT.md`](LICENSE_AUDIT.md)、[`SKILL_AUDIT.md`](SKILL_AUDIT.md) 跟踪；高信任场景使用前请先 `make audit` 复核。针对 49–70 号合集的增量模式扫描（2026-07-15）未发现恶意内容 —— 见 [`SECURITY-SCAN-REPORT.md`](../SECURITY-SCAN-REPORT.md) 增补章节。
+
+> 🏁 **带上你自己的 agent 来考同一份卷子。** `pip install -e .` 后用 [`aers-score`](../aers_score/README.md) 给自己打分，成绩发布在 [`EXTERNAL_SCOREBOARD.md`](EXTERNAL_SCOREBOARD.md)（规则见 [`SCOREBOARD_RULES.md`](SCOREBOARD_RULES.md)）。榜上的数字是**我们用同一套评分器重算**出来的，不是提交者自报的。
 
 ---
 
@@ -341,7 +344,7 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 |---|---|---|
 | ![主估计系数图](../demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![规格曲线](../demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![敏感性仪表盘](../demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
 
-> 🧪 **端到端复现实证**：一条零依赖命令从 Card & Krueger (1994) 官方原始数据复现最低工资 DiD —— 波次均值逐位命中、Table 4 系数精确一致，复现评分器判定 **PERFECT**（三档命中率 100%）。见 [`demo-notebooks/card-krueger-1994/`](../demo-notebooks/card-krueger-1994/)。
+> 🧪 **端到端复现实证**：一条零依赖命令从 Card & Krueger (1994) 官方原始数据复现最低工资 DiD —— 波次均值逐位命中、Table 4 系数精确一致，复现评分器判定 **PERFECT**（三档命中率 100%）。见 [`demo-notebooks/card-krueger-1994/`](../demo-notebooks/card-krueger-1994/)。 同样形态的第二例 —— [`demo-notebooks/card-1995-iv/`](../demo-notebooks/card-1995-iv/) —— 复现 Card (1995) 的教育回报，**含标准误**：OLS 0.075 (0.003)、2SLS 0.132 (0.055)、第一阶段 F 13.3，并单独检查「IV > OLS」这个论点本身。
 >
 > 🔎 在线目录站（GitHub Pages，零构建）：**[技能搜索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [工具搜索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [站点首页](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
 
@@ -374,8 +377,8 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 
 | 层 | 它能拦住什么 | 在哪 |
 |---|---|---|
-| **数值基准** | 报告数字与真实数据重算真值不符 —— 朴素 DID 符号陷阱、缺第一阶段 F 的弱 IV、交错时点下的 TWFE 偏误、RDD 趋势混淆、后处理坏控制、被合并均值掩盖的异质效应（CATE）、只看均值漏掉尾部的分位数效应、本地冲击混淆的移位份额（Bartik）IV、把中介当控制变量导致直接效应翻号、依赖参照组的 Oaxaca 分解拆分、kink 处超额质量被朴素密度掩盖的 bunching | [`benchmark/`](../benchmark/) · 17 任务 |
-| **评测套件** | 散文级失误：弱 IV 假性安心、交错 DID 误用 TWFE、编造引用、不安全的 `curl \| bash` 安装、多重检验滥用、AER 合规缺口 | [`eval-harness/`](../eval-harness/) · 37 场景 / 183 rubric |
+| **数值基准** | 报告数字与真实数据重算真值不符 —— 朴素 DID 符号陷阱、缺第一阶段 F 的弱 IV、交错时点下的 TWFE 偏误、RDD 趋势混淆、后处理坏控制、被合并均值掩盖的异质效应（CATE）、只看均值漏掉尾部的分位数效应、本地冲击混淆的移位份额（Bartik）IV、把中介当控制变量导致直接效应翻号、依赖参照组的 Oaxaca 分解拆分、kink 处超额质量被朴素密度掩盖的 bunching、未对内生价格做工具变量就估计需求并把系数当弹性报告（结构估计）、把已被外溢波及的邻居当干净对照组（干扰/外溢） | [`benchmark/`](../benchmark/) · 19 任务 |
+| **评测套件** | 散文级失误：弱 IV 假性安心、交错 DID 误用 TWFE、编造引用、不安全的 `curl \| bash` 安装、多重检验滥用、AER 合规缺口 | [`eval-harness/`](../eval-harness/) · 42 场景 / 217 rubric |
 | **安全审计** | pipe-to-shell、反向 shell、凭据外泄、prompt 注入等 13 类风险 —— 六阶段，40+ hook 脚本人工核查 | [`SECURITY-SCAN-REPORT.md`](../SECURITY-SCAN-REPORT.md) |
 | **来源与许可** | 未声明来源、许可风险、1,096 个编目 skill 的卫生度漂移 | [`LICENSE_AUDIT.md`](LICENSE_AUDIT.md) · [`SKILL_HYGIENE.md`](SKILL_HYGIENE.md) |
 | **CI 与兼容性** | catalog 新鲜度、本地死链、GitHub Actions 策略、Python 3.9 **与** 3.12 语法基线 | [`.github/workflows/`](../.github/workflows/) · 7 条 workflow |
@@ -552,6 +555,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 
 叙事版更新日志已迁至 [**CHANGELOG.md**](../CHANGELOG.md)。近期要点：
 
+- **2026-08** —— 把数值基准对外开放：[`aers-score`](../aers_score/README.md) CLI 与 [`EXTERNAL_SCOREBOARD.md`](EXTERNAL_SCOREBOARD.md)——后者**用同一套评分器重算每份提交的原始 candidate**，而不是刊登提交者自报的数字。新增**结构需求估计**为方法族 18（价格内生性、弹性不是系数、边际成本由 FOC 反演）；为自有的 Python/Stata/R 旗舰技能补上首批行为级 eval；把 vendored 合集的安全扫描改成「有合集从未扫过就让门禁挂掉」的门。另加两个端到端复现——含标准误的 Card (1995)，以及 NSW 实验（LaLonde 题所对照的 +$1,794 从此是**推导**出来的，不再只是引用）。
 - **2026-07** —— 发布首个 tagged release **v2026.07**；方法严谨性覆盖图扩到 **16 个方法族全闭环**（新增 CATE、分位数效应、Bartik 移位份额、因果中介、Oaxaca 分解，每族 eval 场景 + 数值基准双覆盖），基准扩到 **16 任务**、评测套件扩到 **29 场景 / 159 rubric**；上线机器生成的发布快照、rigor 覆盖徽章与六语 README 数字一致性门。
 - **2026-05** —— 收录 **AER-skills**（Top-5 经济学投稿套件，9 个 skill）并设周更上游同步；数值基准扩到 **5 个因果复原任务**、评测套件扩到 **17 场景 / 95 rubric**。
 - **2026-04** —— 完成 **52/52 安全基线**；交付四个全流程旗舰（**StatsPAI** + 显式 **Python / Stata / R**）；上线原创 **chinese-de-aigc** skill。

@@ -222,3 +222,59 @@
 **范围说明**：本增补为自动化模式扫描 + 命中人工核验，未包含基线报告的三 Agent 并行内容深读环节，严格程度低于原始六阶段方法论。README 徽章中的 "52/52 CLEAN" 仍指原始基线；依赖 49–70 号集合于高信任场景前，建议按原方法论补一轮深读。
 
 *增补扫描由 Claude（Fable 5）执行于 2026-07-15。*
+
+---
+
+## 增补：全仓可复跑模式扫描（2026-08-27）
+
+前两轮（52 集合基线 + 49–70 增量）都是**一次性人工执行、以散文形式写入本报告**的。
+问题不在结论，而在**覆盖范围会悄悄过期**：`71-brycewang-lit-review-agent-tools`
+与 `72-kaggle-research` 是在 49–70 增量之后才收录的，**从未被扫过**，而没有任何
+机制记录这件事。
+
+本轮把这个流程变成不会漂移的东西：
+
+- [`scripts/scan-collections.py`](scripts/scan-collections.py) —— 把同样的 13 类
+  风险维度写成可执行扫描器（纯标准库）。
+- [`catalog/security-scan.json`](catalog/security-scan.json) —— 按合集记录**扫了什么**，
+  于是覆盖范围是事实而不是记忆。
+- `make validate` 跑 `--check`：**catalog 里有、扫描记录里没有的合集会直接让门禁挂掉**。
+  71 / 72 那种缺口无法再次悄悄出现。
+- `make security-scan` 重跑并刷新记录。
+
+**本轮范围**：76 个合集、3,877 个 **git 已跟踪**文件（其中 3,816 个文本文件被实际读取；
+其余为二进制/超大数据文件，模式扫描读不了）。
+
+> 扫描读的是**已跟踪的树**，不是工作区。理由是新鲜度检查：`--check` 拿现场重扫的结果
+> 和已提交的记录对账，所以这份记录必须是 **commit 的函数**。第一版遍历目录，结果它
+> 变成了「谁跑的」的函数——一个 `.DS_Store`、submodule 里一个被 gitignore 的辅助脚本、
+> 上一次运行留下的一条日志，都会改变文件计数。它在本地绿、在 CI 红，而错误信息指向的
+> 「重新生成」只会把不一致搬到另一台机器上。
+
+**结论：未发现恶意内容。16 条命中逐条核验后全部为良性**，理由逐条记录在
+`catalog/security-scan.json` 的 `triaged` 字段里（不是一个无理由的白名单——
+测试要求每条理由都有实质内容，且指向仍然存在的命中）：
+
+| 类别 | 条数 | 核验结论 |
+|---|---:|---|
+| 上游 README 里的安装命令（`curl … \| sh`） | 7 | 均为上游作者自己仓库/官方分发点（astral.sh 的 uv、Anthropic 的 claude.ai、作者自有域名）的安装文档；vendored skill 本身不执行。其中 `33-Galaxy-Dawn/uv-package-manager/SKILL.md` 一条位于**可执行指令文件**而非 README，已单独标注 |
+| 安全控制自身描述它所拦截的模式 | 4 | DAAF 的 `deny` 列表、`bash-safety.sh` 注释、CLAUDE.md 的 "MUST NEVER" 规则、Galaxy-Dawn hook 的**测试夹具**（断言该命令被拦截） |
+| 内嵌图片的 base64 | 3 | marp 主题 CSS 的 SVG data-URI（解码后 399 字节 SVG）+ `did_demo.ipynb` 的 matplotlib PNG 输出 ×2 |
+| `exec(compile(...))` | 1 | Paper-WorkFlow 执行**仓库自带**的 notebook 单元，无网络 IO（2026-07-15 已核验） |
+| 凭据路径 | 1 | ARIS README 的 `ssh-keygen` 指引，展示的命令读取的是 **`.pub` 公钥** |
+
+**同时收紧了三条过宽的规则。** 首轮跑出 27 条命中，其中 11 条是噪声——
+`rm -rf ~/.cache/matplotlib`、`rm -rf /var/lib/apt/lists/*`（Dockerfile 惯用法）、
+把解码后的图片写入磁盘的 `b64decode(...)`、用来做**语法检查**的
+`compile(src, name, "exec")`、以及一行由 `+` 连接的 Stata 变量名（每个字符都在
+base64 字母表里，但根本解不出来）。会对每个 Dockerfile 报警的扫描器不是更安全，
+它只是训练人们不再看报告。收紧后三条规则分别要求：删除目标是**裸**的
+`/`/`~`/`$HOME`/`*`、解码结果**确实被 eval/exec**、以及 base64 blob **能真的解码**。
+两侧边界都由 [`tests/test_scan_collections.py`](tests/test_scan_collections.py) 钉住。
+
+**范围说明（与 2026-07-15 相同，不可弱化）**：本轮仍为**自动化模式扫描 + 命中人工核验**，
+未包含基线报告的三 Agent 并行内容深读环节，严格程度低于原始六阶段方法论。
+门禁绿只意味着"没有已知恶意模式命中"，**不等于"已审阅且安全"**。
+README 徽章中的 "52/52 CLEAN" 仍指原始基线。
+
+*本轮扫描器与核验由 Claude（Opus 5）执行于 2026-08-27。*

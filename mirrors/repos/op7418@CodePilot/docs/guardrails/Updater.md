@@ -16,7 +16,7 @@
 | # | 契约 |
 |---|---|
 | UP-01 | feed/provider/channel 只由打包配置与 Main 决定；stable 映射 builder `latest*`，preview 映射 `preview*`；Renderer 不得传 URL、路径、channel 或 updater options。 |
-| UP-02 | native updater 只在官方 workflow 嵌入 provenance bit、packaged + (`stable` 或 `preview`) + macOS/Windows 同时成立时启用；官方 CI 还校验 `GITHUB_REPOSITORY=op7418/CodePilot`，dev/fork/local 默认 no-op。主动修改自身源码/信任配置的第三方 fork 不属于本 guardrail 能强制约束的边界。Linux 在独立 signature/manifest 威胁模型与 packaged upgrade smoke 通过前只走手工/package-manager fallback。 |
+| UP-02 | native updater 只在官方 workflow 嵌入 provenance bit、packaged + (`stable` 或 `preview`) + macOS/Windows 同时成立时启用；官方 CI 还校验 `GITHUB_REPOSITORY=op7418/CodePilot`，dev/fork/local 默认 no-op。主动修改自身源码/信任配置的第三方 fork 不属于本 guardrail 能强制约束的边界。Windows publisher verification 必须读取实际 packaged `app-update.yml`：无 `publisherName` 才显示 unsigned，存在有效 publisher 才记 Authenticode，缺失/畸形配置关闭 native updater；不得从 `platform=win32` 猜测。Linux 在独立 signature/manifest 威胁模型与 packaged upgrade smoke 通过前只走手工/package-manager fallback。 |
 | UP-03 | stable 固定 `allowPrerelease=false`，preview 固定 `allowPrerelease=true`；两者 `allowDowngrade=false`。设置 `autoUpdater.channel` 后必须再次压回 downgrade=false；`electron-updater` 必须 exact pin。 |
 | UP-04 | 状态机只允许 idle/checking/available/downloading/downloaded/installing/error；download promise 存在或 phase 为 downloading/downloaded/installing 时拒绝并发 check，窗口重建重放 snapshot。 |
 | UP-05 | 启动抖动检查，之后最多每 8 小时检查；失败指数退避。无更新、离线、用户稍后与 active-work 拒绝都不生成 Sentry Issue。 |
@@ -24,10 +24,11 @@
 | UP-07 | IPC 只暴露 get-status/check/retry-download/install 与只读 status listener；Main 校验 sender 是当前窗口的 `127.0.0.1:<serverPort>`。 |
 | UP-08 | 日志不得包含 feed URL/query、缓存路径、installer 命令或 raw SDK error；只记录版本、枚举状态与整数进度桶。 |
 | UP-09 | release notes 视为不可信 Markdown；更新失败不阻断旧版启动和 Settings，始终保留平台正确的手工 fallback。若 GitHub 最新版本没有当前平台安装包，API 必须返回独立 `platformAssetMissing` breadcrumb，UI 明说“该版本未提供此平台安装包”，不得把 Release 页伪装成下载直链。 |
-| UP-10 | installer、`latest*.yml`、blockmap、checksum/attestation 必须来自同一 immutable output，经 central audit 后一次发布。mac metadata 只引用 ZIP；后置 staple 的 DMG 只作手工 bootstrap，不进入 updater graph。发布后不改 metadata、不复用版本/tag；恢复只发更高 patch。 |
+| UP-10 | installer、`latest*.yml`、blockmap、checksum/attestation 必须来自同一 immutable output，经 central audit 后一次发布。metadata URL 必须是当前版本裸 basename，checksum 按精确文件名集合核对，任何旧版本/额外 release payload 都失败。mac metadata 只引用 ZIP；后置 staple 的 DMG 只作手工 bootstrap，不进入 updater graph。Windows `latest.yml` 只引用完整 unsigned NSIS installer，并发布其外置 blockmap；发布后不改 metadata、不复用版本/tag，恢复只发更高 patch。 |
 | UP-11 | `quitAndInstall()` 只是安装 handoff 请求，不是成功终态。Main 在 `before-quit-for-update` 前临时放行 close-to-hide；若同步抛错、updater error 或 15 秒内进程未进入真实 `before-quit` teardown，必须撤销 `isQuitting`、恢复窗口/托盘并回到 downloaded + `install_failed`，允许用户重试。 |
 | UP-12 | chat 活动事实必须同时存在 active `runtime_status`（`running` / `streaming` / `waiting_permission`）与未过期 session lock；尤其不能漏掉正在输出 token 的 `streaming`。崩溃留下的裸 status/过期 owner 不得永久卡安装。一次只读 activity snapshot 不是跨请求原子准入栅栏；在 chat/bridge/task 共用带租约 fence 前，不得宣称“检查后绝无新任务启动”，残余竞态由 tech-debt #88 跟踪。 |
-| UP-13 | stable GitHub Release 同时发布三平台安装包，但只发布 macOS updater graph。Windows/Linux 必须使用 `CODEPILOT_OFFICIAL_UPDATE_BUILD=0`，只允许手动安装包/checksum/attestation，不得出现对应 updater metadata/blockmap；preview Release 仍为 macOS-only。重新开启 Windows auto-update 需要用户明确启用 signer 与真实升级门禁。 |
+| UP-13 | stable GitHub Release 同时发布三平台安装包，发布 macOS signed/notarized ZIP updater graph 与 Windows unsigned NSIS updater graph；Linux 必须使用 `CODEPILOT_OFFICIAL_UPDATE_BUILD=0`，只允许手动安装包/checksum/attestation，不得出现 Linux updater metadata。Windows unsigned feed 只有在新鲜的 Immutable Releases 管理员确认、active 且无 bypass/exclude/重名的 default-branch no-delete/no-force 与 `v*` tag no-delete/no-update rulesets、管理员 no-bypass 状态与 live `id` / `updated_at` 无漂移、40-hex Action pins 与真实 RC-A→RC-B 门禁全部成立时才可公开；Actions token 隐藏 `bypass_actors` 时不得把缺失解释为空；preview Release 仍为 macOS-only。 |
+| UP-14 | Windows differential update 必须显式保持 `nsis.differentialPackage=true` 与 `disableDifferentialDownload=false`。差分只是优先路径：旧 installer、blockmap 或 Range 请求不可用时必须回退完整 NSIS 下载；不得把理论节省比例冒充每次实测。 |
 
 ## 3. 关键文件 + 责任
 
@@ -49,7 +50,9 @@
 - [ ] raw URL、缓存路径、installer 命令、SDK error 是否都未进入日志/Sentry/IPC？
 - [ ] native 失败时 Settings 与 GitHub fallback 是否仍可用？最新 Release 没有当前平台资产时，是否展示 `platformAssetMissing` 而非假下载 CTA？
 - [ ] dependency 是否 exact pin；metadata/blockmap/signature verifier 是否先于开启安装？
-- [ ] stable 是否包含三平台安装包但只有 Mac metadata/blockmap；Windows/Linux 是否关闭 official provenance，preview 是否仍拒绝所有非 Mac 资产？
+- [ ] stable 是否同时包含 Mac `latest-mac.yml`/ZIP blockmap 与 Windows `latest.yml`/EXE blockmap；Linux 是否关闭 official provenance且没有 metadata，preview 是否仍拒绝所有非 Mac 资产？
+- [ ] Windows publisher breadcrumb 是否来自 packaged `app-update.yml` 而不是平台常量；unsigned UI 是否只对应无 `publisherName`；仓库 dated immutable/ruleset/Action SHA 门禁是否在 publish 前 fail closed？
+- [ ] Windows NSIS 差分是否显式开启，并保留完整 installer fallback？
 - [ ] targeted + full + build + packaged RC-A→RC-B clean-machine smoke 是否登记？
 
 ## 5. 常见坑
@@ -68,7 +71,7 @@
 - `updater-contract.test.ts`：平台/channel、错误分类、退避、Main-owned IPC、平台缺资产 UI 与下载中检查按钮 source contract。
 - `updater-contract.test.ts`：同时钉住 downloading check 互斥、install handoff latch 回滚、无更新时清空旧 snapshot 字段，以及 `running` / `streaming` + live owner 会阻断安装、stale runtime_status 不冒充 live owner。
 - `electron-packaging-hygiene.test.ts`：真实 Main→utilityProcess→SQLite package gate。
-- 发布资产合同测试：stable 要求 macOS metadata/blockmap 与三平台 installer/checksum 的 central audit；混入 Windows/Linux updater metadata/blockmap 必须失败，preview 混入任一非 Mac 资产必须失败。
+- 发布资产合同测试：stable 要求 macOS metadata/blockmap、Windows metadata/blockmap 与三平台 installer/checksum 的 central audit；混入 Linux updater metadata 必须失败，preview 混入任一非 Mac 资产必须失败。
 - 真实 smoke：0.67.1→RC-A 手动 bootstrap；RC-A→RC-B native update，macOS arm64/x64 与 Windows x64。
 
 ## 7. 设计决策日志
@@ -84,3 +87,4 @@
 - 2026-08-24：用户决定本轮只发布 macOS 自动更新；stable/preview Release 收窄为 Mac updater graph，Windows/Linux 只保留 official provenance 关闭的手工构建入口。
 - 2026-08-24：macOS-only 发布后，Windows/Linux 仍可发现新版本，但 API/UI 必须明确该版本没有对应平台安装包；Release 详情页不能冒充推荐下载。下载、已下载或安装阶段的检查按钮显示“更新进行中”并禁用，避免无反馈的重复检查。
 - 2026-08-24：用户澄清目标是“Mac 自动更新 + Windows/Linux 手动包”，不是 Mac-only 分发。stable 同一 Release 恢复三平台安装包，API 继续按真实 platform/arch 选直链；只有 Mac 包带 official provenance 并消费 `latest-mac.yml`，Windows/Linux 不发布 updater feed。
+- 2026-08-26：用户再次明确先交付 Windows 自动更新、Linux 延后，并接受不申请 Microsoft/Azure/PFX 签名。Windows stable 改为 GitHub single-trust-root unsigned NSIS updater：`latest.yml` + EXE blockmap + SHA-512；客户端/UI 不宣称 publisher verification。发布前新增 Immutable Releases acknowledgement、active main no-delete/no-force、`v*` tag no-delete/no-update rulesets与全 workflow Action SHA pin 门禁；既有 `v0.67.7` 仍需手动 bootstrap。

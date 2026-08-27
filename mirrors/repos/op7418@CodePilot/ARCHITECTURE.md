@@ -65,6 +65,51 @@ electron/
          → db.ts 持久化到 SQLite
 ```
 
+**Composer route / capability / access 数据流：**
+```
+/api/providers/models?runtime=<effective>
+  → useProviderModels（runtime-filtered resolved provider+model pair）
+  → ModelSelectorDropdown（provider instance × model 搜索/收藏）
+  → ModelCapabilityDropdown（selectable/fixed/unsupported/unknown）
+  → MessageInput 内部 footer（Runtime / route / capability / permission / run status）
+
+persisted mode + permission_profile
+  ↔ composer-access-level.ts（四档双向映射；legacy ask no-touch）
+  → ChatPermissionSelector（一个 validated PATCH）
+  → 各 Runtime 既有 permission resolver（Plan 优先）
+```
+
+**Workspace Surface Sidebar 数据流：**
+```
+session working_directory
+  → server-owned canonical workspace identity
+     Git: absolute git common dir / non-Git: PathIdentity comparison key
+  → opaque workspace-v1 id
+  → workspace preference（pin/order/open/width/default Primary）
+
+thread id
+  → thread surface state（active Primary / Inspector tabs）
+  → WorkspaceSidebar 单一 shell
+     ├─ Primary: Files / Git / Widget / Browser / Agents
+     └─ Inspector: file / markdown / artifact / diff / agent-run
+```
+
+同一 repository 的 linked worktrees 共享 workspace preference，独立 clone 不共享；preview path 仍属 thread。窄 app 宽度下 workspace shell 变为有界右侧 overlay，Inspector 在 shell 内退化为 peek，不能再创建第二个 FileTree rail。
+
+Browser 是 Electron-only Primary surface。Workspace Sidebar 的顶层 `BrowserSurfaceTab` 拥有页面身份；每个 tab 只挂载一个 `BrowserPanel` / `<webview>`，浏览器内部不再维护第二层 tabs。当前 URL、history、标题与真实 loading lifecycle 只保留在挂载期；“+”创建另一个顶层 Browser tab，页面 popup 也转成同层受控 tab。Main 只通过窄 preload bridge 把 canonical workspace id 派生为 `persist:codepilot-browser-<20 hex>` partition，并在 `will-attach-webview` 二次校验已签发 partition/初始 URL、删除 preload、强制 sandbox/contextIsolation/webSecurity 与 Node off。HTTPS 和 loopback HTTP 共用 `browser-url-policy`，网页权限默认拒绝、下载当前明确阻断；preload 不暴露 Main `WebContents`、Session、CDP 或通用代码执行 bridge。DOM `<webview>` 仍由 host Renderer 控制，所以当前边界隔离的是不可信 guest→host，不声称能在 host Renderer compromise 后继续保护 Browser session。WebContentsView POC 保留为被路线取代的研究证据，不是本能力的 GO。
+
+```text
+Workspace Sidebar BrowserSurfaceTab (one page per top-level tab)
+  └─ BrowserPanel <webview> (navigation/loading UI)
+       ├─ browser:get-config(canonical workspace id)
+       │    → trusted main-frame check
+       │    → persistent workspace partition + default-deny Session
+       ├─ will-attach-webview
+       │    → issued partition + URL gate + forced guest hardening
+       └─ guest events
+            → actual URL/title/history/loading state；popup 转同层受控 tab；download/blocked reason 回到 host UI
+```
+
 **Bridge 数据流（远程 IM 控制）：**
 ```
 Telegram/Feishu 消息

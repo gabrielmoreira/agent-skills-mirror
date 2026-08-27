@@ -233,7 +233,7 @@ availableModels = [
 | `catalog-only-discovery.test.ts` / `coding-plan-discovery-gate.test.ts` | 套餐型/xAI catalog-only gate，不发通用 discovery |
 | 待补 `apply-discovery-diff.test.ts` | 五种 DiffEntryStatus 写库行为；user_edited / hidden 保留 |
 | `provider-resolver.test.ts` 内 `buildResolution` 系列 | catalog merge / DB 优先 / hidden 抑制 |
-| `foundation-refresh-user-path-contract.test.ts` U3 | 真实三行 GLM 旧目录中 sonnet/haiku 历史指纹原位升级、非目标 opus 保留；Add Model 五态与 conflict ids/动作；stable/wire id 分离；隐藏候选可恢复；目录重加保留能力；重复 GET 零写；非 plan gate 反例 |
+| `foundation-refresh-user-path-contract.test.ts` U3 | 真实三行 GLM 旧目录中 sonnet/haiku 历史指纹原位升级到 5.3/Flash、非目标 opus 保留；Add Model 五态与 conflict ids/动作；stable/wire id 分离；隐藏候选可恢复；目录重加保留能力；重复 GET 零写；非 plan gate 反例 |
 | `catalog-capabilities-roundtrip.test.ts` | catalog metadata round-trip、read merge 用户保护；upstream 去重、单旗标保护、capabilities COALESCE、排序避让与 INSERT 冲突赢家 |
 | `qwen-token-plan-catalog.test.ts` | 三种 Qwen 套餐精确目录与默认角色 |
 | `provider-preset-identity-migration.test.ts` | 共享 URL identity、legacy ambiguous 与保守迁移 |
@@ -256,3 +256,4 @@ availableModels = [
 - **2026-08-16 v0.67.1 review 收口** — 条件审查发现并发 INSERT、同 upstream 双行、hidden 候选死路、catalog 重加降级 manual 四类缺口。merge 改为 stable/upstream 双查重 + 条件 `INSERT OR IGNORE` + 用户排序避让；候选暴露 hidden/local-id 三态并可 PATCH 恢复；精确 plan catalog POST 由服务端目录重建完整 metadata。历史上已经存在的 user-owned 双行不自动删改，避免破坏 session pin/用户所有权；后续如需清理必须 preview-first。
 - **2026-08-23 GLM legacy identity** — 存量迁移从 stable/source 猜测改为 catalog 明示的全字段旧指纹；搜索协议升级为五态。安全匹配可原子升级，upstream 被占用或任一字段歧义时只报告冲突，不替用户改写。
 - **2026-08-24 implementation review remediation** — git 历史核实旧目录不止单个 sonnet 版本：补入 sonnet→`sonnet` 的 gen-0 `GLM-4.7`、`GLM-5-Turbo`/`GLM-5.2` 与 haiku→`haiku` 的 `GLM-4.5-Air`，删除从未作为 sonnet 槽位 upstream 发布的 `glm-5-turbo` 猜测。current canonical 行存在时不因额外旧 duplicate 整体降级；真正 CAS conflict 由服务端重读返回 model ids，Dialog 展示解释与 Models 恢复动作，并由行为测试锁住 fail-closed 分支。
+- **2026-08-26 GLM-5.3-Flash** — catalog-only 搜索只展示当前 5.3 / Flash 两项，haiku 的已发布 4.5-Air 与 4.7 全字段快照作为 legacy fingerprint 原位升级；已经独立持久化的 Turbo 等退役行不因 GET 被 prune。目录更新与历史数据清理保持分离，避免读取页面制造不可逆变化。

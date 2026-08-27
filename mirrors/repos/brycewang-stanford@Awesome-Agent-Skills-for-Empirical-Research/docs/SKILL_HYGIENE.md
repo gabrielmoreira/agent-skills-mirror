@@ -15,8 +15,8 @@ A skill can be **well-formed** (high hygiene) yet **untested for the traps an ap
 
 - Skills scored: **1096**
 - Mean hygiene score: **99.4/100**
-- Skills with at least one eval scenario: **18** (1.6% of catalog)
-- Total eval-harness scenarios that target a specific skill: **19**
+- Skills with at least one eval scenario: **21** (1.9% of catalog)
+- Total eval-harness scenarios that target a specific skill: **22**
 - Descriptions: 1096 from frontmatter, 0 body-derived, 0 none
 - Tagged with at least one taxonomy facet: 560
 
@@ -24,10 +24,10 @@ A skill can be **well-formed** (high hygiene) yet **untested for the traps an ap
 
 | Collection | Skills | Mean hygiene | Min hygiene | Skills w/ ≥1 eval | Total eval scenarios |
 |---|---:|---:|---:|---:|---:|
-| `00-Full-empirical-analysis-skill_StatsPAI` | 1 | 85.0 | 85 | 1 | 15 |
-| `00.1-Full-empirical-analysis-skill_Python` | 1 | 100.0 | 100 | 0 | 0 |
-| `00.2-Full-empirical-analysis-skill_Stata` | 1 | 100.0 | 100 | 0 | 0 |
-| `00.3-Full-empirical-analysis-skill_R` | 1 | 100.0 | 100 | 0 | 0 |
+| `00-Full-empirical-analysis-skill_StatsPAI` | 1 | 85.0 | 85 | 1 | 17 |
+| `00.1-Full-empirical-analysis-skill_Python` | 1 | 100.0 | 100 | 1 | 1 |
+| `00.2-Full-empirical-analysis-skill_Stata` | 1 | 100.0 | 100 | 1 | 1 |
+| `00.3-Full-empirical-analysis-skill_R` | 1 | 100.0 | 100 | 1 | 1 |
 | `01-lishix520-academic-paper-skills` | 2 | 100.0 | 100 | 0 | 0 |
 | `02-luwill-research-skills` | 3 | 100.0 | 100 | 0 | 0 |
 | `03-K-Dense-AI-claude-scientific-skills` | 4 | 100.0 | 100 | 0 | 0 |
@@ -105,7 +105,7 @@ A skill can be **well-formed** (high hygiene) yet **untested for the traps an ap
 
 | Score | Skill | Flags | Eval coverage |
 |---:|---|---|---:|
-| 85 | [`skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md`](../skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md) | very-long-no-references | statspai-bad-controls, statspai-bunching, statspai-clustered-inference, statspai-decomposition, statspai-dml-crossfit, statspai-heterogeneous-effects, statspai-matching-overlap, statspai-mediation-assumptions, statspai-pretrends-eventstudy, statspai-quantile-effects, statspai-rdd-diagnostics, statspai-staggered-did, statspai-survival-assumptions, statspai-synthetic-control, statspai-weak-iv |
+| 85 | [`skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md`](../skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md) | very-long-no-references | statspai-bad-controls, statspai-bunching, statspai-clustered-inference, statspai-decomposition, statspai-dml-crossfit, statspai-heterogeneous-effects, statspai-matching-overlap, statspai-mediation-assumptions, statspai-pretrends-eventstudy, statspai-quantile-effects, statspai-rdd-diagnostics, statspai-spillovers-sutva, statspai-staggered-did, statspai-structural-demand, statspai-survival-assumptions, statspai-synthetic-control, statspai-weak-iv |
 | 85 | [`skills/04-K-Dense-AI-claude-scientific-writer/citation-management/SKILL.md`](../skills/04-K-Dense-AI-claude-scientific-writer/citation-management/SKILL.md) | very-long-no-references | — |
 | 85 | [`skills/04-K-Dense-AI-claude-scientific-writer/research-grants/SKILL.md`](../skills/04-K-Dense-AI-claude-scientific-writer/research-grants/SKILL.md) | very-long-no-references | — |
 | 85 | [`skills/20-wenddymacro-python-econ-skill/SKILL.md`](../skills/20-wenddymacro-python-econ-skill/SKILL.md) | very-long-no-references | — |
@@ -135,10 +135,13 @@ A skill can be **well-formed** (high hygiene) yet **untested for the traps an ap
 
 | # evals | Skill | Hygiene |
 |---:|---|---:|
-| 15 | [`skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md`](../skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md) | 85 |
+| 17 | [`skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md`](../skills/00-Full-empirical-analysis-skill_StatsPAI/SKILL.md) | 85 |
 | 3 | [`skills/50-brycewang-aer-skills/skills/aer-replication/SKILL.md`](../skills/50-brycewang-aer-skills/skills/aer-replication/SKILL.md) | 100 |
 | 2 | [`skills/50-brycewang-aer-skills/skills/aer-identification/SKILL.md`](../skills/50-brycewang-aer-skills/skills/aer-identification/SKILL.md) | 100 |
 | 2 | [`skills/50-brycewang-aer-skills/skills/aer-introduction/SKILL.md`](../skills/50-brycewang-aer-skills/skills/aer-introduction/SKILL.md) | 100 |
+| 1 | [`skills/00.1-Full-empirical-analysis-skill_Python/SKILL.md`](../skills/00.1-Full-empirical-analysis-skill_Python/SKILL.md) | 100 |
+| 1 | [`skills/00.2-Full-empirical-analysis-skill_Stata/SKILL.md`](../skills/00.2-Full-empirical-analysis-skill_Stata/SKILL.md) | 100 |
+| 1 | [`skills/00.3-Full-empirical-analysis-skill_R/SKILL.md`](../skills/00.3-Full-empirical-analysis-skill_R/SKILL.md) | 100 |
 | 1 | [`skills/10-Jill0099-causal-inference-mixtape/SKILL.md`](../skills/10-Jill0099-causal-inference-mixtape/SKILL.md) | 100 |
 | 1 | [`skills/39-vincentarelbundock-marginaleffects/SKILL.md`](../skills/39-vincentarelbundock-marginaleffects/SKILL.md) | 100 |
 | 1 | [`skills/40-py-econometrics-pyfixest/SKILL.md`](../skills/40-py-econometrics-pyfixest/SKILL.md) | 100 |
@@ -147,9 +150,6 @@ A skill can be **well-formed** (high hygiene) yet **untested for the traps an ap
 | 1 | [`skills/48-de-AIGC-skills/SKILL.md`](../skills/48-de-AIGC-skills/SKILL.md) | 100 |
 | 1 | [`skills/50-brycewang-aer-skills/skills/aer-robustness/SKILL.md`](../skills/50-brycewang-aer-skills/skills/aer-robustness/SKILL.md) | 100 |
 | 1 | [`skills/50-brycewang-aer-skills/skills/aer-submission/SKILL.md`](../skills/50-brycewang-aer-skills/skills/aer-submission/SKILL.md) | 100 |
-| 1 | [`skills/50-brycewang-aer-skills/skills/aer-tables-figures/SKILL.md`](../skills/50-brycewang-aer-skills/skills/aer-tables-figures/SKILL.md) | 100 |
-| 1 | [`skills/51-pymc-labs-CausalPy/skills/running-placebo-analysis/SKILL.md`](../skills/51-pymc-labs-CausalPy/skills/running-placebo-analysis/SKILL.md) | 100 |
-| 1 | [`skills/52-keemanxp-slr-prisma/SKILL.md`](../skills/52-keemanxp-slr-prisma/SKILL.md) | 100 |
 
 ## Reading this report
 

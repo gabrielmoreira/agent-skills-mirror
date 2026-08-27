@@ -1,12 +1,12 @@
 ---
 name: picking-a-format
-description: Use when choosing an output format for extracted documents — text, markdown, djot, html, or JSON. Maps consumer (LLM, parser, archive) to the right `--format` / `--content-format` pair.
+description: Use when choosing an output format for extracted documents — plain text, markdown, djot, HTML, JSON, or DocTags. Maps consumer (LLM, parser, archive) to the right `--format` / `--content-format` pair.
 ---
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:470e563273f21e16138f65bd8a6c9b7a7b0c4adb003af8747c2957f3c17df0c4
-Source-Hash: blake3:ac8bab9ae4a76e61f437af29b4a45a38326056a50769a177038927c69353edaf
+Content-Hash: blake3:bcdbffe958890e1c589f3ea44540c67c86540196a844e6de5c011faccdd345fc
+Source-Hash: blake3:45cb11995592f052d075d6a24353eb8b647075dcb25f77187fcb4c161b574d49
 Schema-Version: v1
 -->
 
@@ -18,7 +18,7 @@ downstream code stays simple.
 | Knob                | What it controls                                  | Values                                 | Default          |
 | ------------------- | ------------------------------------------------- | -------------------------------------- | ---------------- |
 | `--format`          | How the CLI prints the result                     | `text`, `json`, `toon`                 | `text` (`extract`), `json` (`batch`) |
-| `--content-format`  | How extracted content is rendered inside `result` | `plain`, `markdown`, `djot`, `html`, `json` | `plain`     |
+| `--content-format`  | How extracted content is rendered inside `result` | `plain`, `markdown`, `djot`, `html`, `json`, `doctags` | `plain`     |
 | `--token-reduction` | Strip whitespace / boilerplate for LLM contexts   | `off`, `light`, `moderate`, `aggressive`, `maximum` | `off`  |
 
 `--format json` returns an envelope wrapping the `ExtractedDocument` — the
@@ -87,6 +87,7 @@ xberg extract file.pdf --format json | jq '.result.metadata'
 - Reach for `plain` only when downstream cannot tolerate any markup.
 - Reach for `djot` only if you're already in a djot/pandoc pipeline.
 - Reach for `html` only when re-rendering for the web.
+- Reach for `json` for a heading-driven content tree, or `doctags` for Docling-compatible output.
 
 ## Token-reduction (orthogonal)
 

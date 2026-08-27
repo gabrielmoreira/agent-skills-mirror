@@ -1,41 +1,36 @@
 # 开发路线图
 
-路线图可能会经常变更，如果有强烈的建议，可以在 [issue](https://github.com/xerrors/Yuxi/issues) 中提。
+这里记录尚未完成的方向，不代表已经实现或一定会在某个版本发布。需求和优先级会根据 Issue、讨论和维护资源调整；欢迎在 [GitHub Issues](https://github.com/xerrors/Yuxi/issues) 提交建议。
 
-项目看板（Maintainer Only）：[GitHub Project](https://github.com/users/xerrors/projects/2)
+## 计划中的不兼容方向
 
+后续 0.8 版本可能包含：
 
-后续 0.8 的非兼容计划更新
+- 升级 Milvus 3.0；
+- 进一步解除 API/worker 对共享文件系统的依赖，支持更清晰的分布式部署边界。
 
-1. Milvus 3.0 https://milvus.io/docs/zh/release_notes.md
-2. API 和 Worker 等从文件系统解耦，分布式部署
+这两项会影响部署和数据迁移，确定方案前会单独说明升级条件和兼容范围。
 
+## 知识库
 
-### 看板
+- 为知识导图增加基于文件名的关联边，并探索用聚类形成社区节点。
+- 增加按关键词排序的 `query_keywords` 工具。
+- 丰富检索结果中的 metadata 和标签。
+- 为个人工作区增加检索能力，但不做向量化。
 
-**知识库**
-- [ ] 知识库 Mindmap 扩展：新增基于文件名的文件“边”构建，支持聚类算法形成社区节点，并提供思维导图 (Mindmap) 可视化结构展示
-- [ ] 知识库工具新增 query_keywords 工具，专门用于基于关键词命中的排序 
-- [ ] 增强知识库检索体验：增强 metadata、标签等
-- [ ] 个人工作区增加可检索能力（但是不做向量化）
+## 智能体
 
-**智能体**
-- [ ] 子智能体缺少 steer 机制 
-- [ ] 子智能体的双向通信，缺少 ask_for_main_agent 的机制
-- [ ] 子智能体与子智能体的通信机制
+- 为子智能体增加 Steer 机制。
+- 增加子智能体向主智能体提问的 `ask_for_main_agent` 能力。
+- 设计子智能体之间的通信机制。
 
-**其他**
-- [ ] 集成 Memory，基于 deepagents 的文件后端实现，需要考虑定位
-- [ ] 优化 Agent 向用户追问交互：支持较长文本回答输入，并在流式输出时保持聊天区跟随最新内容（[#753](https://github.com/xerrors/Yuxi/issues/753)）
+## 其他
 
+- 继续完善基于 DeepAgents 文件后端的 Memory 方案，并明确它与现有用户级 Memory 的边界。
+- 改进 `ask_user_question`：支持较长文本回答，并让流式输出期间的聊天区域保持跟随最新内容（[#753](https://github.com/xerrors/Yuxi/issues/753)）。
 
-### Bugs
-- [ ] 打开对话时自动定位到消息末尾。
+## 已知问题
 
----
+- 打开历史对话时自动滚动到消息末尾。
 
-历史版本发布记录已迁移到 [版本变更记录](./changelog.md)。
-
-维护说明：
-- roadmap 仅保留未来规划（看板/Bugs/里程碑方向）。
-- 具体版本发布内容统一维护在 changelog。
+已发布的功能和修复请看[版本变更记录](./changelog.md)。

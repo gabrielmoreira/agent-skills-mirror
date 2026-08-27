@@ -4,6 +4,19 @@
 
 ---
 
+## v0.3.212：修复 explore 调度堵塞导致的惊喜候选断供（2026-08-26）
+
+- **修复 explore 调度三条堵塞链路**：Planner 生成 explore 词后不再回写 `last_explore_refresh_at`，改为独立的 `last_explore_planned_at`；执行戳只在 ExploreStrategy 真正派发且 `supply attempts > 0` 后更新，避免“没跑也算跑”。`_build_refresh_plan` 不再在 270–299 死区直接 `return []`：水位以下只补 `search + related_chain`，due 的 `trending / explore` 作为独立计划项入队；`refresh_if_needed` 不再因 pool at cap 直接跳过周期探索，`_run_refresh_plan` 的 cap break 只作用于 `search / related_chain`。补充拆钟、270–299 区间、补货拆分与 supply attempts 打戳等测试；真实环境验证 `deepseek-v4-flash` 下 explore 成功发现 2 条并写入 content_cache。
+
+- **发布状态**：后端 / 插件 / 桌面安装包 / Docker 多架构镜像与聚合 Release 均已发布为 `v0.3.212`，完整性门禁全绿，详情见 [Release](https://github.com/whiteguo233/OpenBiliClaw/releases)。Gitee 镜像已同步 main 与四个频道 tag。
+
+## v0.3.211：异常报警可视化与商汤日日新零成本上手（2026-08-26）
+
+- **新增商汤日日新（SenseNova）免费额度 preset（issue #193）**：OpenAI 协议兼容子菜单新增 `sensenova` preset（第 6 位，总数 9→10）：`base_url=https://token.sensenova.cn/v1`、默认模型 `deepseek-v4-flash`——该端点已按 OpenAI 协议真实请求验证连通（成功调用 + 401 鉴权失败路径均实测），新用户免费额度可零成本体验本项目；`scripts/agent_bootstrap.py --llm-preset sensenova` 同步支持（`LLM_PRESETS` / `HUMAN_OPENAI_COMPAT_PRESETS` / choices 三处同步）。token 推理端点未验证 `/v1/embeddings`，preset 如实标注 `supports_embedding=false` 并引导 Phase 3 独立 Ollama bge-m3。新增 cli↔bootstrap 两张 preset 表的键/顺序同步测试（新增 preset 时同步文档子菜单清单的提醒也固化在断言里）；`docs/agent-install.md` 与 `docs/openclaw-quickstart.md` 子菜单清单已同步为 10 个 preset。
+
+- **新增异常报警（LLM / Embedding 请求异常可视化）**：新顶层模块 `diagnostics_alerts` 维护进程内有界环形缓冲（60s 内同类别/来源/错误码合并为一条并累加计数，上限 100 条），`LLMRegistry` 的限流 / 鉴权失败 / 超时 / 响应异常 / 全部实例失败与 `EmbeddingService` 的单次失败 / 熔断触发都会自动记录（熔断与全部实例失败为 error 级，单次失败为 warning 级）；记录永不抛错、不阻塞热路径。新增只读端点 `GET /api/diagnostics/alerts?since_id=&limit=`（支持增量拉取），新告警同时经 event hub 以 `type="diagnostics.alert"` 实时推送到 `/api/runtime-stream`；桌面 Web 设置页日志 tab 与插件 popup 设置页「日志」tab 均新增「异常报警」区（摘要 + 错误/警告徽标 + 中文错误码说明 + 刷新 + 可见面板时轮询/实时刷新）。**展示面范围**：移动 Web 与 CLI 明确不在本功能范围——移动 Web 没有日志/设置面（views 仅 chat/history/library/login/profile/recommend/saved），CLI 只有 `logs-prune` 等文件维护命令、无运行时 feed 展示面。测试覆盖缓冲合并、快照、发布、LLM 与 embedding 失败钩子，并为插件与桌面 Web 新增异常报警区结构契约测试（`popup-diagnostics-alerts.test.ts` / `test_desktop_web_diagnostics_alerts.py`）；`docs/modules/api.md`、`docs/modules/llm.md` 与 `docs/modules/extension.md` 已同步。
+
+- **修复 temporal 存储测试时间炸弹**：`test_storage.py` 四个用例硬编码的 `next_review_at`（2026-08-26）被真实时钟越过，`cache_content` 重算 disposition 后行状态 `eligible → review_due` 集体翻转、main CI 与本地同时失败。新增 `_freeze_storage_clock()` helper（monkeypatch database 模块 `datetime` 为冻结时钟）应用到受影响用例，恢复确定性而不是把日期改成下一颗炸弹。纯测试改动，无运行时行为变化。
 
 ## v0.3.210：海外代理路由统一修复与来源日期过滤（2026-08-23）
 

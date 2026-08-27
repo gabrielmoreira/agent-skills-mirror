@@ -38,6 +38,15 @@ After the review command returns, the job inspects the produced reports before
 installing tools. tmux is installed only when a terminal candidate exists. The
 recording toolchain (`ffmpeg`, Xvfb, xterm, and related X11 tools) is installed
 only when at least one recommended plan has a non-`static_text` payoff. Review
+jobs use each candidate's exact reviewed-head root `go.mod` as the setup gate,
+then use a root `go.work` instead when present and provision the highest
+candidate baseline. A directive-less root workspace requires Go 1.18. Nested Go
+configuration and mixed shards with rootless candidates enable
+`GOTOOLCHAIN=auto` after setup so each proof can select a newer toolchain without
+letting nested fixtures choose the shared baseline. Automatic fallback baselines
+are floored at Go 1.21, the first release with toolchain switching. Root-only
+candidates retain the setup action's `GOTOOLCHAIN=local`; the sanitized child
+keeps the selected setting while using its private writable module cache. Review
 job timeouts include the target installation and deterministic drive. Review
 jobs default to `ubuntu-latest`; `CLAWSWEEPER_REVIEW_RUNNER` remains an optional
 runner override.
@@ -135,11 +144,14 @@ assertion remains a completed, non-gating schema-v1 step, is explicitly labeled
 paths never enter published terminal output. Each entry or `run` action executes
 as a separately supervised Bash process in the same checkout, so plans should
 share state through files or one command rather than shell-local mutations.
+The terminal `entry` executes automatically before typed steps and must not be
+repeated as the first `run`; exact leading duplicates are normalized away before
+execution.
 Nonzero exits, signals, command timeouts, and missing markers for still-running
 commands remain failures.
 All untrusted fields are bounded and neutralized against Markdown fences, HTML,
-and ClawSweeper marker spoofing. OpenClaw Bay is unaffected: the durable schema-v1
-passing-assertion invariant and observer ownership remain unchanged.
+and ClawSweeper marker spoofing. OpenClaw Bay is unaffected because schema v1
+and the existing lifecycle and publication contracts do not change.
 
 ## Local simulation
 

@@ -34,8 +34,7 @@ xberg batch reports/*.pdf \
 
 ## Parallelism
 
-`--max-concurrent` caps how many files extract at once (default: the CPU
-count, capped at 8). Lower it on memory-constrained hosts or when OCR/ML
+`--max-concurrent` caps how many files extract at once. When omitted, the scheduler derives document concurrency from the total thread budget. Lower it on memory-constrained hosts or when OCR/ML
 models are active, since each in-flight extraction holds its own buffers.
 Layout-heavy batches are further limited (1 concurrent extraction for
 all-PDF-layout batches, 2 for mixed layout):
@@ -154,8 +153,8 @@ and a config object and returns structured results directly.
   `extract` to `--format text`. Set `--format` explicitly if a script
   depends on one shape.
 - **`--output-dir` must exist** — the CLI does not create it.
-- **Memory blowups** — large batches with OCR/layout active need a lower
-  `--max-concurrent`; the default is the CPU count, capped at 8.
+- **Memory blowups** — large batches with OCR/layout active may need an explicit
+  `--max-concurrent` ceiling.
 - **`--file-configs` path keys** — must match the paths as passed on the
   command line, not absolute-resolved variants.
 

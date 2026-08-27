@@ -134,6 +134,30 @@ If you'd rather skip assembly entirely, [**CoPaper.AI**](https://copaper.ai) run
 empirical pipeline end-to-end (data → causal models → robustness → publication-quality
 tables) with the same methodology these skills encode.
 
+## 5. Score your own agent — the `aers-score` CLI
+
+Not installing skills at all, but bringing your own agent and wanting to know
+how it does? The repo's numeric benchmark is a shared exam — deterministic
+datasets with known truth, and graders that recompute every gold from the
+committed CSV so fabricated numbers fail by construction.
+
+```bash
+git clone https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills
+cd Auto-Empirical-Research-Skills
+pip install -e .                      # zero dependencies, Python 3.9+
+
+aers-score tasks                      # what is on the exam
+aers-score describe rdd-recovery      # what one task grades, and its trap
+aers-score init ./my-run              # scaffold candidates with the right fields
+#   ... run your agent over each task's dataset, fill in the numbers ...
+aers-score grade ./my-run             # score yourself
+```
+
+Publishing the result on the public board takes one more command
+(`aers-score submit`). Full guide: [`aers_score/README.md`](aers_score/README.md);
+rules and ranking: [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md); the
+board itself: [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md).
+
 ---
 
 ## Which method should I use?
@@ -145,6 +169,7 @@ tables) with the same methodology these skills encode.
 | Grab one specific skill from the catalog and tweak it | **Method 3** (copy into `.claude/skills/` or `.codex/skills/`) |
 | Try a skill for one session without installing | **Method 3** (`--plugin-dir`) |
 | Get the result without installing anything | **Method 4** (CoPaper.AI) |
+| Benchmark your own agent against this repo's exam | **Method 5** (`aers-score`) |
 
 ---
 
@@ -158,7 +183,14 @@ tables) with the same methodology these skills encode.
   `brycewang-stanford/Auto-Empirical-Research-Skills`. You can also add from a local clone:
   `claude plugin marketplace add /path/to/Auto-Empirical-Research-Skills`.
 - **`skills/69-Paper-WorkFlow/` is empty / `make validate` fails on it** — the
-  clone skipped submodules. Run `git submodule update --init` from the repo root.
+  clone skipped submodules. Run `git submodule update --init` from the repo root,
+  or `make setup` to bootstrap submodules and the scientific stack in one go.
+- **`make validate` says `RIGOR.md is STALE` and regenerating does not help** —
+  that gate executes a notebook and needs numpy/pandas/matplotlib/statsmodels.
+  Run `make doctor` for a one-screen diagnosis, then `make setup`.
+- **`aers-score` cannot find the exam** — it needs an AERS checkout. Set
+  `export AERS_REPO=/path/to/Auto-Empirical-Research-Skills`, pass `--repo PATH`,
+  or run from inside the checkout. `aers-score where` shows what it resolved.
 - **Whole-repo import failed in Codex / CodeBuddy** — import the repository root
   as `auto-empirical-research-skills` so the root `SKILL.md` is the selected
   skill folder. Do not point a single-skill importer at `skills/` itself.

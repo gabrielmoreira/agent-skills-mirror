@@ -1,6 +1,6 @@
 ---
 name: picking-a-format
-description: Use when choosing an output format for extracted documents — text, markdown, djot, html, or JSON. Maps consumer (LLM, parser, archive) to the right `--format` / `--content-format` pair.
+description: Use when choosing an output format for extracted documents — plain text, markdown, djot, HTML, JSON, or DocTags. Maps consumer (LLM, parser, archive) to the right `--format` / `--content-format` pair.
 ---
 
 # Picking a format
@@ -11,7 +11,7 @@ downstream code stays simple.
 | Knob                | What it controls                                  | Values                                 | Default          |
 | ------------------- | ------------------------------------------------- | -------------------------------------- | ---------------- |
 | `--format`          | How the CLI prints the result                     | `text`, `json`, `toon`                 | `text` (`extract`), `json` (`batch`) |
-| `--content-format`  | How extracted content is rendered inside `result` | `plain`, `markdown`, `djot`, `html`, `json` | `plain`     |
+| `--content-format`  | How extracted content is rendered inside `result` | `plain`, `markdown`, `djot`, `html`, `json`, `doctags` | `plain`     |
 | `--token-reduction` | Strip whitespace / boilerplate for LLM contexts   | `off`, `light`, `moderate`, `aggressive`, `maximum` | `off`  |
 
 `--format json` returns an envelope wrapping the `ExtractedDocument` — the
@@ -80,6 +80,7 @@ xberg extract file.pdf --format json | jq '.result.metadata'
 - Reach for `plain` only when downstream cannot tolerate any markup.
 - Reach for `djot` only if you're already in a djot/pandoc pipeline.
 - Reach for `html` only when re-rendering for the web.
+- Reach for `json` for a heading-driven content tree, or `doctags` for Docling-compatible output.
 
 ## Token-reduction (orthogonal)
 

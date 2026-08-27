@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.1] - 2026-08-27
+
+### ✨ Features
+
+- **原生 Claude Code 插件市场**：新增 `.claude-plugin/marketplace.json` + `plugin.json`，CCG 现可被 `claude plugin marketplace add fengshao1227/ccg-workflow` 一键接入、`claude plugin install ccg@ccg` 装入全部技能（namespaced 为 `/ccg:<skill>`）。plugin 只暴露纯静态 skills（`skills` 字段指向 `templates/skills`，不声明 commands —— 带 `{{FRONTEND_PRIMARY}}` 占位符的命令模板依赖 npx 安装器注入，进不了原生 plugin）。完整多模型编排（命令 + hooks + binary）仍走 `npx ccg-workflow`。已过 `claude plugin validate --strict`。
+- **三个实战建站独立技能**（脱敏后随包发布，Skill Registry 自动生成 `/ccg:` 命令）：
+  - `/ccg:bt-panel` — 通过宝塔 / aaPanel HTTP API 操控服务器：部署、更新线上、读写文件、执行 shell、跑 MySQL，无需 SSH/rsync。自带 `bt_client.py` + 一键部署 `bt_deploy.py`，凭据只从环境变量 / git-ignored `sites.json` 读取。
+  - `/ccg:seo-page-builder` — SERP 意图驱动的 SEO 工具页构建 / 审计 / 优化，附可跑的 `onpage-audit.py` 关键词密度量具。改编自 yuzeiki 的同名技能并大幅重写，已在 SKILL.md 顶部署名。
+  - `/ccg:adsense-site-auditor` — 按 Google AdSense 官方完整清单审计站点达标度（资格 / 归属 / 内容 / ads.txt / 隐私 / 发布商政策）。
+- **技能卫生 + plugin manifest 防回归测试**（`skills-hygiene.test.ts` 10 例 + `plugin-manifest.test.ts` 8 例）：每次 `pnpm test` 自动扫描 `templates/skills/` 全量文本文件拦截密钥/公网 IP/绝对路径泄漏，并校验 marketplace/plugin 版本与 `package.json` 同步、impeccable 收敛不回退。
+
+### 🔄 Changes
+
+- **impeccable 20 个平铺命令收敛为 1 个入口**：`/ccg:polish`、`/ccg:critique`、`/ccg:animate` 等 20 个设计微调命令曾占可调用命令的 65%，而它们已被 `/ccg:frontend-design` 完整融合。现将 impeccable 全部 `user-invocable` 设为 false —— **可调用命令从 31 → 11**，`/ccg:frontend-design` 一个入口统领全部设计能力，20 个手法作为其 playbook 按需读取（文件保留，知识零丢失）。frontend-design 内的斜杠引用同步改为 playbook 引用，消除死链。
+
+### 🐛 Fixes
+
+- **搬运时清除私有信息**：`bt-panel` 文档内一串真实宝塔 API 密钥、真实面板公网 IP、客户项目路径全部替换为占位符；`seo-page-builder` 内原作者本机路径改为署名标注。
+
+## [3.5.0] - 2026-08-26
+
+### ✨ Features
+
+- **APIMart 成为赞助商，并可直接用作 API 提供方** — 中英文 README 顶部新增 APIMart Banner + 介绍，位置在 Gamma Remover 之上。`init` Step 1 与菜单的 API 配置新增 APIMart 选项，选中后自动填入 Base URL，用户只需粘贴 Key。
+- **Codex CLI 也能走 APIMart** — 新增 `src/utils/installer-codex-api.ts`，把 APIMart 注册为 `~/.codex/config.toml` 里的 `[model_providers.apimart]`。`ccg codex-mode install` 会静默完成注册（保持非交互，CI 可用），`init` 选 APIMart 时则会额外询问是否接入 Codex。
+  **注册与启用是两个独立的问题，且启用默认为否**：翻动 `model_provider` 会把用户**全部** Codex 请求从现有订阅改道到按量计费的 APIMart，这种事安装器不该替人默默决定。注册本身不改变任何行为，日后想切只是一行改动。
+  合并沿用 `syncMcpToCodex()` 的做法（解析 → 只改一张表 → 临时文件 + rename 原子写），用户既有配置完整保留；卸载时会一并摘除该表以及可能悬空的 `model_provider`。
+
+### 🐛 Fixes
+
+- **两个 Base URL 极易写反，已分别锁死并加注释** — Claude Code 的 `ANTHROPIC_BASE_URL` 必须是 `https://api.apimart.ai`（**不带** `/v1`，因为 Claude Code 自己会拼 `/v1/messages`）；Codex 的 `base_url` 必须是 `https://api.apimart.ai/v1`（**带** `/v1`，OpenAI 协议约定）。写反的表现是静默 404。两处取值分处不同模块并各自注明理由。
+
+### 🔄 Changes
+
+- **302.AI 赞助结束** — README Banner、init/菜单选项、i18n 文案与 `assets/sponsors/302.ai*.jpg` 一并移除。
+- **npm 发布改用 Trusted Publishing (OIDC)** — 新增 `.github/workflows/publish.yml`，推 `v*` tag 即发布，仓库和 CI 里都不再存放任何 npm token（长期 token 会过期，也会泄漏）。发布前强制跑 typecheck + test + build，并校验 tag 与 `package.json` 版本一致、该版本尚未发布过。附带生成 provenance 证明。
+
+### ✅ Tests
+
+- 新增 `installer-codex-api.test.ts`（9 例）：默认不激活、`/v1` 后缀正确、用户配置无损、显式激活、往返卸载零残留、不误伤用户自有 provider。生成的配置已用 `codex --strict-config`（codex-cli 0.149.0）实测通过。
+
+---
+
 ## [3.4.0] - 2026-08-12
 
 ### ✨ Features

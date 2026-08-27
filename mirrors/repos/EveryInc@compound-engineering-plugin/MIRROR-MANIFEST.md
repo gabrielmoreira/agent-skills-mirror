@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 408 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 443 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 408 |
+| Files         | 443 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -452,21 +452,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 391 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
 | 392 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
 | 393 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
-| 394 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
-| 395 | ✓ | [`skills/lfg/references/plan-brief.md`](skills/lfg/references/plan-brief.md) |
-| 396 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
-| 397 | ✓ | [`skills/lfg/references/shipping-tail.md`](skills/lfg/references/shipping-tail.md) |
-| 398 | ✓ | [`skills/lfg/references/stage-routing.md`](skills/lfg/references/stage-routing.md) |
-| 399 | ✓ | [`skills/lfg/references/task-visibility.md`](skills/lfg/references/task-visibility.md) |
-| 400 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
-| 401 | ✓ | [`skills/lfg/references/work-return.md`](skills/lfg/references/work-return.md) |
-| 402 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
-| 403 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
-| 404 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
-| 405 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
-| 406 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
-| 407 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
-| 408 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
+| 394 | ✓ | [`skills/guides/ce-babysit-pr.md`](skills/guides/ce-babysit-pr.md) |
+| 395 | ✓ | [`skills/guides/ce-brainstorm.md`](skills/guides/ce-brainstorm.md) |
+| 396 | ✓ | [`skills/guides/ce-code-review.md`](skills/guides/ce-code-review.md) |
+| 397 | ✓ | [`skills/guides/ce-commit-push-pr.md`](skills/guides/ce-commit-push-pr.md) |
+| 398 | ✓ | [`skills/guides/ce-commit.md`](skills/guides/ce-commit.md) |
+| 399 | ✓ | [`skills/guides/ce-compound-refresh.md`](skills/guides/ce-compound-refresh.md) |
+| 400 | ✓ | [`skills/guides/ce-compound.md`](skills/guides/ce-compound.md) |
+| 401 | ✓ | [`skills/guides/ce-debug.md`](skills/guides/ce-debug.md) |
+| 402 | ✓ | [`skills/guides/ce-doc-review.md`](skills/guides/ce-doc-review.md) |
+| 403 | ✓ | [`skills/guides/ce-dogfood.md`](skills/guides/ce-dogfood.md) |
+| 404 | ✓ | [`skills/guides/ce-explain.md`](skills/guides/ce-explain.md) |
+| 405 | ✓ | [`skills/guides/ce-handoff.md`](skills/guides/ce-handoff.md) |
+| 406 | ✓ | [`skills/guides/ce-ideate.md`](skills/guides/ce-ideate.md) |
+| 407 | ✓ | [`skills/guides/ce-optimize.md`](skills/guides/ce-optimize.md) |
+| 408 | ✓ | [`skills/guides/ce-plan.md`](skills/guides/ce-plan.md) |
+| 409 | ✓ | [`skills/guides/ce-polish.md`](skills/guides/ce-polish.md) |
+| 410 | ✓ | [`skills/guides/ce-pov.md`](skills/guides/ce-pov.md) |
+| 411 | ✓ | [`skills/guides/ce-product-pulse.md`](skills/guides/ce-product-pulse.md) |
+| 412 | ✓ | [`skills/guides/ce-promote.md`](skills/guides/ce-promote.md) |
+| 413 | ✓ | [`skills/guides/ce-proof.md`](skills/guides/ce-proof.md) |
+| 414 | ✓ | [`skills/guides/ce-prototype.md`](skills/guides/ce-prototype.md) |
+| 415 | ✓ | [`skills/guides/ce-resolve-pr-feedback.md`](skills/guides/ce-resolve-pr-feedback.md) |
+| 416 | ✓ | [`skills/guides/ce-retune.md`](skills/guides/ce-retune.md) |
+| 417 | ✓ | [`skills/guides/ce-riffrec-feedback-analysis.md`](skills/guides/ce-riffrec-feedback-analysis.md) |
+| 418 | ✓ | [`skills/guides/ce-setup.md`](skills/guides/ce-setup.md) |
+| 419 | ✓ | [`skills/guides/ce-simplify-code.md`](skills/guides/ce-simplify-code.md) |
+| 420 | ✓ | [`skills/guides/ce-strategy.md`](skills/guides/ce-strategy.md) |
+| 421 | ✓ | [`skills/guides/ce-sweep.md`](skills/guides/ce-sweep.md) |
+| 422 | ✓ | [`skills/guides/ce-test-browser.md`](skills/guides/ce-test-browser.md) |
+| 423 | ✓ | [`skills/guides/ce-test-xcode.md`](skills/guides/ce-test-xcode.md) |
+| 424 | ✓ | [`skills/guides/ce-work.md`](skills/guides/ce-work.md) |
+| 425 | ✓ | [`skills/guides/ce-worktree.md`](skills/guides/ce-worktree.md) |
+| 426 | ✓ | [`skills/guides/configuration.md`](skills/guides/configuration.md) |
+| 427 | ✓ | [`skills/guides/lfg.md`](skills/guides/lfg.md) |
+| 428 | ✓ | [`skills/guides/README.md`](skills/guides/README.md) |
+| 429 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
+| 430 | ✓ | [`skills/lfg/references/plan-brief.md`](skills/lfg/references/plan-brief.md) |
+| 431 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
+| 432 | ✓ | [`skills/lfg/references/shipping-tail.md`](skills/lfg/references/shipping-tail.md) |
+| 433 | ✓ | [`skills/lfg/references/stage-routing.md`](skills/lfg/references/stage-routing.md) |
+| 434 | ✓ | [`skills/lfg/references/task-visibility.md`](skills/lfg/references/task-visibility.md) |
+| 435 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
+| 436 | ✓ | [`skills/lfg/references/work-return.md`](skills/lfg/references/work-return.md) |
+| 437 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
+| 438 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
+| 439 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
+| 440 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
+| 441 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
+| 442 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
+| 443 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
 
 ---
 

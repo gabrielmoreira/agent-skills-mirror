@@ -25,6 +25,8 @@ const {
   mockGetAuthConfigValidationError,
   mockSupervisorLoginByWebAuth,
   mockEnsureLogin,
+  mockEnsureSlottedCredential,
+  mockListUsableCredentialSites,
   mockPeekLoginState,
   mockGetAuthProgressState,
   mockLogout,
@@ -85,6 +87,8 @@ const {
   }),
   mockSupervisorLoginByWebAuth: vi.fn(),
   mockEnsureLogin: vi.fn(),
+  mockEnsureSlottedCredential: vi.fn().mockResolvedValue({}),
+  mockListUsableCredentialSites: vi.fn().mockResolvedValue([]),
   mockPeekLoginState: vi.fn(),
   mockGetAuthProgressState: vi.fn(),
   mockLogout: vi.fn(),
@@ -132,6 +136,8 @@ vi.mock("../auth.js", () => ({
   buildDeviceAuthChallengePayload: mockBuildDeviceAuthChallengePayload,
   buildVerificationUriComplete: mockBuildVerificationUriComplete,
   ensureLogin: mockEnsureLogin,
+  ensureSlottedCredential: mockEnsureSlottedCredential,
+  listUsableCredentialSites: mockListUsableCredentialSites,
   getAuthConfigValidationError: mockGetAuthConfigValidationError,
   getCloudBaseApiKeyFromEnv: () =>
     process.env.CLOUDBASE_API_KEY || process.env.CLOUDBASE_APIKEY || undefined,
@@ -180,6 +186,7 @@ function createMockServer(ide = "TestIDE", authOptions?: any) {
     ide,
     server: {
       sendLoggingMessage: vi.fn(),
+      notification: vi.fn().mockResolvedValue(undefined),
     },
     registerTool: vi.fn(
       (name: string, meta: any, handler: (args: any) => Promise<any>) => {
@@ -737,7 +744,8 @@ describe("env tools - auth", () => {
       },
     ]);
 
-    const result = await tools.auth.handler({
+    const { server, tools: localTools } = createMockServer();
+    const result = await localTools.auth.handler({
       action: "set_env",
       envId: "env-test",
     });
@@ -748,6 +756,11 @@ describe("env tools - auth", () => {
     expect(payload.next_step).toBeUndefined();
     expect(payload.env_candidates).toBeUndefined();
     expect(mockEnvManagerSetEnvId).toHaveBeenCalledWith("env-test");
+    // set_env 成功时应推送跨客户端环境变更通知（替代客户端兜底轮询）
+    expect(server.server.notification).toHaveBeenCalledWith({
+      method: "notifications/cloudbase/env_changed",
+      params: { envId: "env-test" },
+    });
   });
 
   it("auth(action=set_env) should bind envId outside current-region candidates", async () => {

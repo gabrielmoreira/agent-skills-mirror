@@ -1,13 +1,8 @@
 **中文** · [English](README.en.md)
 
-> 👋 **找工作 / 合作** — 作者目前在空窗期，这个仓库就是业余的一点小探索。
-> 有缘的朋友欢迎联系。**远程工作**之外，也接受**半合作**——每月几千块生活费 + 利润分成。如有必要，FED的话，也是可以考虑到场出差。希望在AI浪潮下，能找到同频朋友一起做点事情。
-> 个人简历：**[resume.79px.com](https://resume.79px.com)**
-> 
-> 我建了一个 **AI 短剧交流群**（付费），聊 AI 短剧的工作流、工具和实操。
-> 有兴趣的加我：**微信 `hao_dev`**，添加时**备注 `github`**。
->
-> <img src="assets/wechat.png" alt="烁皓微信二维码" width="180">
+🎬 **[AI视频工作台](https://reelbench.79px.com/)**
+
+[![ReelBench AI短剧工作台首屏](assets/reelbench-first-screen.png)](https://reelbench.79px.com/)
 
 # shuohao-skills
 
@@ -26,6 +21,14 @@
 | [**novel-storyboard**](skills/novel-storyboard) | 给 AI 短剧出分镜：段（一次生成 ≤15 秒）→ 分镜（2–5 秒硬门）→ 分镜图（主图钉 0.00 秒、子图钉各自切点），MiniMax H3 提示词的对齐指令与切点时刻逐字对账；分镜图拿设定图当参考图真出图，export 一键出投产包。17 道质量门全部脚本检查 |
 
 **五个 skill 的报告都支持中英双语界面**：默认中文，`render --lang en` 出全英文报告（数据内容保持原文）。
+
+## AI 短剧交流社群
+
+这是作者独立运营的付费交流群，讨论 AI 短剧的工作流、工具和实操。**交流群与上方 ReelBench AI 视频工作台是两项独立服务。**
+
+有兴趣的加我：**微信 `hao_dev`**，添加时备注 **`github`**。
+
+<img src="assets/wechat.png" alt="烁皓微信二维码" width="180">
 
 ## 合成一张单页
 

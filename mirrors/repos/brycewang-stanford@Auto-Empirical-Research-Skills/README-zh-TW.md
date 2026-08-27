@@ -298,13 +298,16 @@ AERS 同時是兩樣東西：(1) 一小撮**自研旗艦 skill**，能跑通完�
 | **本倉庫自有**並已編目的 skill | **1,096** | [`catalog/skills.json`](catalog/skills.json) |
 | 自有 **合集（collections）** | **76** | [`catalog/skills.json`](catalog/skills.json) · [全部 76 個一覽 ↑](#全部-76-個-skill-合集一覽) |
 | **自研旗艦**全流程 skill（StatsPAI DSL + 顯式 Python/Stata/R） | **4** | [`skills/00*`](skills/) |
-| 每次執行從資料**重算 gold 值**的數值基準任務 | **17** | [`benchmark/`](benchmark/) |
-| 行為級**評測場景 / rubric 條目** | **37 / 183** | [`eval-harness/`](eval-harness/) |
+| 每次執行從資料**重算 gold 值**的數值基準任務 | **19** | [`benchmark/`](benchmark/) |
+| 行為級**評測場景 / rubric 條目** | **42 / 217** | [`eval-harness/`](eval-harness/) |
+| 其中**已證明能區分對錯**的場景（pass/fail 雙 fixture 自檢） | **9**（含全部 6 個 critical 場景） | [`eval-harness/fixtures/`](eval-harness/fixtures/) |
 | **原始基線**安全稽核（合集 / 檔案） | **52 / 2,940+**，52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | 涵蓋**更廣生態**的精選地圖 | **23,000+ skill / 119 倉庫** | 本 README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
 | **工具目錄**（`tools/`）：因果/計量庫、自動化研究 Agent、MCP 服務、因果發現、基準資料集 | **334 工具 / 6 類** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > 安全稽核涵蓋的是**原始 52 合集 / 2,940 檔案的基線（52/52 CLEAN）**。在該基線之後新增的 vendor skill 由 [`catalog/provenance.json`](catalog/provenance.json)、[`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md)、[`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) 追蹤；高信任場景使用前請先 `make audit` 複核。針對 49–70 號合集的增量模式掃描（2026-07-15）未發現惡意內容 —— 見 [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) 增補章節。
+
+> 🏁 **帶上你自己的 agent 來考同一份卷子。** `pip install -e .` 後用 [`aers-score`](aers_score/README.md) 給自己打分，成績發布在 [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md)（規則見 [`docs/SCOREBOARD_RULES.md`](docs/SCOREBOARD_RULES.md)）。榜上的數字是**我們用同一套評分器重算**出來的，不是提交者自報的。
 
 ---
 
@@ -364,7 +367,7 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 |---|---|---|
 | ![主估計係數圖](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![規格曲線](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![敏感性儀表板](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
 
-> 🧪 **端到端復現實證**：一條零依賴命令從 Card & Krueger (1994) 官方原始資料復現最低工資 DiD —— 波次均值逐位命中、Table 4 係數精確一致，復現評分器判定 **PERFECT**（三檔命中率 100%）。見 [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/)。
+> 🧪 **端到端復現實證**：一條零依賴命令從 Card & Krueger (1994) 官方原始資料復現最低工資 DiD —— 波次均值逐位命中、Table 4 係數精確一致，復現評分器判定 **PERFECT**（三檔命中率 100%）。見 [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/)。 同樣形態的第二例 —— [`demo-notebooks/card-1995-iv/`](demo-notebooks/card-1995-iv/) —— 復現 Card (1995) 的教育回報，**含標準誤**：OLS 0.075 (0.003)、2SLS 0.132 (0.055)、第一階段 F 13.3，並單獨檢查「IV > OLS」這個論點本身。
 >
 > 🔎 線上目錄站（GitHub Pages，零建置）：**[技能搜尋](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [工具搜尋](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [站點首頁](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
 
@@ -397,8 +400,8 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 
 | 層 | 它能擋住什麼 | 在哪 |
 |---|---|---|
-| **數值基準** | 報告數字與真實資料重算真值不符 —— 樸素 DID 符號陷阱、缺第一階段 F 的弱 IV、交錯時點下的 TWFE 偏誤、RDD 趨勢混淆、後處理壞控制、被合併均值掩蓋的異質效應（CATE）、只看均值漏掉尾部的分位數效應、本地衝擊混淆的移位份額（Bartik）IV、把中介當控制變數導致直接效應翻號、依賴參照組的 Oaxaca 分解拆分、kink 處超額質量被樸素密度掩蓋的 bunching | [`benchmark/`](benchmark/) · 17 任務 |
-| **評測套件** | 散文級失誤：弱 IV 假性安心、交錯 DID 誤用 TWFE、編造引用、不安全的 `curl \| bash` 安裝、多重檢驗濫用、AER 合規缺口 | [`eval-harness/`](eval-harness/) · 37 場景 / 183 rubric |
+| **數值基準** | 報告數字與真實資料重算真值不符 —— 樸素 DID 符號陷阱、缺第一階段 F 的弱 IV、交錯時點下的 TWFE 偏誤、RDD 趨勢混淆、後處理壞控制、被合併均值掩蓋的異質效應（CATE）、只看均值漏掉尾部的分位數效應、本地衝擊混淆的移位份額（Bartik）IV、把中介當控制變數導致直接效應翻號、依賴參照組的 Oaxaca 分解拆分、kink 處超額質量被樸素密度掩蓋的 bunching、未對內生價格做工具變數就估計需求並把係數當彈性報告（結構估計）、把已被外溢波及的鄰居當乾淨對照組（干擾/外溢） | [`benchmark/`](benchmark/) · 19 任務 |
+| **評測套件** | 散文級失誤：弱 IV 假性安心、交錯 DID 誤用 TWFE、編造引用、不安全的 `curl \| bash` 安裝、多重檢驗濫用、AER 合規缺口 | [`eval-harness/`](eval-harness/) · 42 場景 / 217 rubric |
 | **安全稽核** | pipe-to-shell、反向 shell、憑據外洩、prompt 注入等 13 類風險 —— 六階段，40+ hook 腳本人工核查 | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | **來源與授權** | 未聲明來源、授權風險、1,096 個編目 skill 的衛生度漂移 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
 | **CI 與相容性** | catalog 新鮮度、本機死連、GitHub Actions 政策、Python 3.9 **與** 3.12 語法基線 | [`.github/workflows/`](.github/workflows/) · 7 條 workflow |
@@ -573,6 +576,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 
 敘事版更新日誌已遷至 [**CHANGELOG.md**](CHANGELOG.md)。近期要點：
 
+- **2026-08** —— 把數值基準對外開放：[`aers-score`](aers_score/README.md) CLI 與 [`docs/EXTERNAL_SCOREBOARD.md`](docs/EXTERNAL_SCOREBOARD.md)——後者**用同一套評分器重算每份提交的原始 candidate**，而不是刊登提交者自報的數字。新增**結構需求估計**為方法族 18（價格內生性、彈性不是係數、邊際成本由 FOC 反演）；為自有的 Python/Stata/R 旗艦技能補上首批行為級 eval；把 vendored 合集的安全掃描改成「有合集從未掃過就讓門禁掛掉」的門。另加兩個端到端復現——含標準誤的 Card (1995)，以及 NSW 實驗（LaLonde 題所對照的 +$1,794 從此是**推導**出來的，不再只是引用）。
 - **2026-07** —— 發布首個 tagged release **v2026.07**；方法嚴謹性覆蓋圖擴到 **16 個方法族全閉環**（新增 CATE、分位數效應、Bartik 移位份額、因果中介、Oaxaca 分解，每族 eval 場景 + 數值基準雙覆蓋），基準擴到 **16 任務**、評測套件擴到 **29 場景 / 159 rubric**；上線機器生成的發布快照、rigor 覆蓋徽章與六語 README 數字一致性門。
 - **2026-05** —— 收錄 **AER-skills**（Top-5 經濟學投稿套件，9 個 skill）並設週更上游同步；數值基準擴到 **5 個因果復原任務**、評測套件擴到 **17 場景 / 95 rubric**。
 - **2026-04** —— 完成 **52/52 安全基線**；交付四個全流程旗艦（**StatsPAI** + 顯式 **Python / Stata / R**）；上線原創 **chinese-de-aigc** skill。

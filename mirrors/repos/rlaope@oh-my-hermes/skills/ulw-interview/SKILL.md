@@ -83,7 +83,7 @@ mid-interview check now and continue from Round 4.
 
 - Never fold counters, ratios, or dimension names into the question sentence.
 - Ask the way a senior colleague would ask out loud: one sentence, no preamble, no restating
-  what the user just said, no numbered sub-parts. If it reads like a form field, rewrite it.
+  what the user just said, no numbered sub-questions. If it reads like a form field, rewrite it.
 - Outside the header line, the user never hears the words round, budget, dimension, or resolved.
 - Mirror the user's language in the header labels and the question. Korean header:
   `라운드 {n}/6 · 명확도: {percent}% ({resolved}/3) · 확인 중: {목표/제약과 비목표/성공 기준}`.
@@ -91,12 +91,28 @@ mid-interview check now and continue from Round 4.
 - The clarified brief follows the same rule: write its headings and labels in the user's
   language. Translate those terms, never transliterate them.
 
+**Answer options — every question ships with candidates.**
+
+After the question sentence, offer the likely answers as a short numbered list: two to four
+real candidates, then one final free-input entry. Each candidate is an answer the user could
+actually pick — drawn from the request, repo evidence, or the tradeoff the question is really
+about, never filler to reach a count, and never a candidate whose text is itself a bare number
+(it would collide with reply-by-number). The last entry is always the open door, in the user's
+language — for example English `N) Something else — type your answer`, Korean `N) 기타 — 직접 입력`.
+
+- A number, an option's own words, or a completely different free-text answer are all valid;
+  free text is always accepted, even when it matches no option. Never re-ask because the reply
+  was not a listed option.
+- Options mirror the user's language, like the header and the question.
+- The list is an answer palette, not extra questions; it does not break the one-question rule.
+
 **Mid-interview check — this is not a stop rule.**
 
 Before asking the question that would be Round 4, offer the choice instead: say where
 things stand and ask whether to keep going or plan now — your own words, the user's language,
-one short sentence. The check is not a round: emit it without a header. If the user chooses to
-continue, the next question is Round 4; if they choose to plan, stop rule 2 applies.
+one short sentence, with the same option shape: keep going / plan now / free input.
+The check is not a round: emit it without a header. If the user chooses to continue, the next
+question is Round 4; if they choose to plan, stop rule 2 applies.
 
 **Stop rules — the first match ends the interview.**
 
@@ -128,6 +144,7 @@ Reasoning demand: `light`
 Quality bar:
 
 - Ask exactly one blocking question per turn unless the wrapper explicitly supports a structured batch.
+- Offer two to four candidate answers plus a free-input option with every question, and accept free text over the list at any time.
 - Tie each question to a missing decision that changes the plan, handoff, or stop condition.
 - Emit a clarified brief with non-goals and acceptance criteria before planning or delegation.
 

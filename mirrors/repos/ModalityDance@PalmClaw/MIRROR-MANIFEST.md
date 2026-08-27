@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ModalityDance/PalmClaw` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `ModalityDance/PalmClaw` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModalityDance/PalmClaw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,14 +63,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`app/src/main/assets/skills/android-device/SKILL.md`](app/src/main/assets/skills/android-device/SKILL.md) |
 | 3 | ✓ | [`app/src/main/assets/skills/android-file/SKILL.md`](app/src/main/assets/skills/android-file/SKILL.md) |
 | 4 | ✓ | [`app/src/main/assets/skills/android-media/SKILL.md`](app/src/main/assets/skills/android-media/SKILL.md) |
-| 5 | ✓ | [`app/src/main/assets/skills/android-personal/SKILL.md`](app/src/main/assets/skills/android-personal/SKILL.md) |
-| 6 | ✓ | [`app/src/main/assets/skills/channels/SKILL.md`](app/src/main/assets/skills/channels/SKILL.md) |
-| 7 | ✓ | [`app/src/main/assets/skills/cron/SKILL.md`](app/src/main/assets/skills/cron/SKILL.md) |
-| 8 | ✓ | [`app/src/main/assets/skills/memory/SKILL.md`](app/src/main/assets/skills/memory/SKILL.md) |
-| 9 | ✓ | [`app/src/main/assets/skills/skill-creator/SKILL.md`](app/src/main/assets/skills/skill-creator/SKILL.md) |
-| 10 | ✓ | [`app/src/main/assets/skills/summarize/SKILL.md`](app/src/main/assets/skills/summarize/SKILL.md) |
-| 11 | ✓ | [`app/src/main/assets/skills/text-encoding/SKILL.md`](app/src/main/assets/skills/text-encoding/SKILL.md) |
-| 12 | ✓ | [`app/src/main/assets/skills/weather/SKILL.md`](app/src/main/assets/skills/weather/SKILL.md) |
+| 5 | ✓ | [`app/src/main/assets/skills/android-notification/SKILL.md`](app/src/main/assets/skills/android-notification/SKILL.md) |
+| 6 | ✓ | [`app/src/main/assets/skills/android-personal/SKILL.md`](app/src/main/assets/skills/android-personal/SKILL.md) |
+| 7 | ✓ | [`app/src/main/assets/skills/channels/SKILL.md`](app/src/main/assets/skills/channels/SKILL.md) |
+| 8 | ✓ | [`app/src/main/assets/skills/cron/SKILL.md`](app/src/main/assets/skills/cron/SKILL.md) |
+| 9 | ✓ | [`app/src/main/assets/skills/memory/SKILL.md`](app/src/main/assets/skills/memory/SKILL.md) |
+| 10 | ✓ | [`app/src/main/assets/skills/skill-creator/SKILL.md`](app/src/main/assets/skills/skill-creator/SKILL.md) |
+| 11 | ✓ | [`app/src/main/assets/skills/summarize/SKILL.md`](app/src/main/assets/skills/summarize/SKILL.md) |
+| 12 | ✓ | [`app/src/main/assets/skills/text-encoding/SKILL.md`](app/src/main/assets/skills/text-encoding/SKILL.md) |
+| 13 | ✓ | [`app/src/main/assets/skills/weather/SKILL.md`](app/src/main/assets/skills/weather/SKILL.md) |
 
 ---
 

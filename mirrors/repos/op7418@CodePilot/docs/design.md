@@ -194,11 +194,11 @@ macOS profile 下，外壳是**几张悬浮卡片**并排：左侧栏 / 主聊�
 **规则：**
 - **frame 画影、surface 裁剪、gutter 调宽**——三件事分给三个组件；不要在一个 div 上又投影又裁剪（投影会被自身 `overflow:hidden` 切掉）。
 - **ResizeGutter 永远是 CardFrame 的兄弟、不是孩子**。卡间可见缝全部由 gutter 的 8px 宽度提供（content-row gap 设 0），隐藏的卡旁边不留多余缝。
-- **半透明只给 sidebar / workspace kind**（backdrop-blur + `--platform-surface-sidebar`）；main / fileTree / assistant 不透明（`bg-background`）。
+- **半透明只给 sidebar / workspace kind**（backdrop-blur + `--platform-surface-sidebar`）；main / assistant 不透明（`bg-background`）。
 - **宽度 state 留在业务面板**，primitive 只收 `width` prop + 转发 `onResize` 回调；面板组件（ChatListPanel 等）只出内层内容，不再自己 wrap aside / data-attribute / bg / clip。
 - 约束被 `card-primitives.test.ts` 的 source pin 锁死，别绕过。
 
-实现路径（实现者）：`src/components/layout/card-primitives.tsx`；圆角 14px / clip-path 在 `globals.css` darwin profile（off-mac radius 0、clip no-op）；四卡接入点 = `AppShell.tsx`(sidebar) / `ChatContentRow`(main + workspace) / `PanelZone`(fileTree)；`RESIZE_GUTTER_WIDTH_PX = 8`。
+实现路径（实现者）：`src/components/layout/card-primitives.tsx`；圆角 14px / clip-path 在 `globals.css` darwin profile（off-mac radius 0、clip no-op）；接入点 = `AppShell.tsx`(sidebar) / `ChatContentRow`(main + workspace) / `PanelZone`(assistant)；`RESIZE_GUTTER_WIDTH_PX = 8`。
 
 ## Composer（聊天输入外壳）
 

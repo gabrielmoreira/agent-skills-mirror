@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 11 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/gpui-test/SKILL.md`](.agents/skills/gpui-test/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/lint-creator/SKILL.md`](.agents/skills/lint-creator/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/zed-cherry-pick/SKILL.md`](.agents/skills/zed-cherry-pick/SKILL.md) |
-| 4 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
-| 5 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
-| 6 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
-| 7 | ✓ | [`docs/.conventions/brand-writer/SKILL.md`](docs/.conventions/brand-writer/SKILL.md) |
-| 8 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 9 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
-| 10 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
-| 11 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
+| 1 | ✓ | [`.agents/skills/gpui-bench/SKILL.md`](.agents/skills/gpui-bench/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/gpui-test/SKILL.md`](.agents/skills/gpui-test/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/lint-creator/SKILL.md`](.agents/skills/lint-creator/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/zed-cherry-pick/SKILL.md`](.agents/skills/zed-cherry-pick/SKILL.md) |
+| 5 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
+| 6 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
+| 7 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
+| 8 | ✓ | [`docs/.conventions/brand-writer/SKILL.md`](docs/.conventions/brand-writer/SKILL.md) |
+| 9 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 10 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
+| 11 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
+| 12 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
 
 ---
 
