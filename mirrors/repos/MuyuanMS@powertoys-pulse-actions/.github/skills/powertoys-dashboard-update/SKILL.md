@@ -1,6 +1,6 @@
 ---
 name: powertoys-dashboard-update
-description: "Reliable resumable PowerToys triage-dashboard updater. Exhaustively inventories freshness, processes a bounded PR/design batch per run, checkpoints completed work, and republishes the dashboard while leaving unfinished work explicitly queued. Does not post upstream reviews/comments or open upstream PRs without explicit approval."
+description: "Reliable resumable PowerToys triage-dashboard updater. Exhaustively inventories freshness, processes bounded normal updates or uncapped drain-mode work, checkpoints completed work, and republishes periodically so finished work survives crashes. Does not post upstream reviews/comments or open upstream PRs without explicit approval."
 ---
 
 # PowerToys Dashboard Update
@@ -41,6 +41,11 @@ skills:
    synchronize and validate Pulse, then deploy only an approved Pulse branch or
    workflow. Do not substitute the artifact repository's Pages site as the
    final preview.
+7. The only canonical skill and action-data repository is
+   `MuyuanMS/powertoys-pulse-actions`. Before reading or writing checkpoints,
+   generating data, or publishing, run
+   `scripts/Assert-CanonicalDashboardTarget.ps1`. Never update or push
+   `MuyuanMS/powertoys-triage-board`; it is a retired standalone prototype.
 
 ## Configuration
 
@@ -62,18 +67,14 @@ $Fork = if ($env:POWERTOYS_FORK_REPO) {
 } else {
   "$ForkOwner/PowerToys"
 }
-$Board = if ($env:POWERTOYS_BOARD_REPO) {
-  $env:POWERTOYS_BOARD_REPO
-} else {
-  (gh repo view --json nameWithOwner --jq '.nameWithOwner').Trim()
-}
+$Board = 'MuyuanMS/powertoys-pulse-actions'
 $Since = (Get-Date).AddDays(-2).ToUniversalTime().ToString('o')
 $IssueWindowDays = 30
-$DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } else { 2 }
-$PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } else { 8 }
-$PrReviewConcurrency = if ($env:POWERTOYS_PR_REVIEW_CONCURRENCY) { [int]$env:POWERTOYS_PR_REVIEW_CONCURRENCY } else { 2 }
-$RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } else { 50 }
 $DrainReviewQueue = $env:POWERTOYS_DASHBOARD_DRAIN_QUEUE -eq '1'
+$DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 4 }
+$PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 16 }
+$PrReviewConcurrency = if ($env:POWERTOYS_PR_REVIEW_CONCURRENCY) { [int]$env:POWERTOYS_PR_REVIEW_CONCURRENCY } elseif ($DrainReviewQueue) { 6 } else { 3 }
+$RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } elseif ($DrainReviewQueue) { 0 } else { 50 }
 $RunStartedAt = (Get-Date).ToUniversalTime().ToString('o')
 $ProjectOwner = if ($env:POWERTOYS_PROJECT_OWNER) { $env:POWERTOYS_PROJECT_OWNER } else { 'microsoft' }
 $ProjectNumber = if ($env:POWERTOYS_PROJECT_NUMBER) { [int]$env:POWERTOYS_PROJECT_NUMBER } else { 2445 }
@@ -93,30 +94,57 @@ On the first run, verify:
 ```powershell
 gh auth status
 gh repo view $Fork
-gh repo view $Board
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Assert-CanonicalDashboardTarget.ps1" `
+  -Dashboard $Dashboard
 ```
 
-Run this skill from the board repository root, or set
-`POWERTOYS_DASHBOARD_PATH`. The other three skills must be present beside it
-under `.github\skills`. Personal overrides are environment variables so no
-account-specific configuration or token is committed.
+Run this skill from the `MuyuanMS/powertoys-pulse-actions` repository root, or
+set `POWERTOYS_DASHBOARD_PATH` to a checkout of that exact repository. The
+other three skills must be present beside it under `.github\skills`. The target
+repository is intentionally not overrideable.
 
 The configured repository is both the reusable skill suite and canonical
 artifact feed. Generated files belong only in its root `data/` directory, not
 inside `.github\skills`. Never place secrets or information that must remain
 private in the public feed.
 
+### Dashboard action taxonomy
+
+Pulse action proposals are maintainer-facing actions only. Status, freshness,
+queue state, validation gaps, and "wait/do nothing" choices remain metadata and
+must not appear as clickable action proposals.
+
+Update this table when a new action type is intentionally introduced, then
+update `emit.ps1`, `Sanitize-ActionData.ps1`, Pulse's triage action filter, and
+the dashboard artifact validators in the same change.
+
+| Item | Allowed action type | Dashboard meaning | Must contain | Not allowed as an action |
+| --- | --- | --- | --- | --- |
+| PR | `approve` | Submit/choose approval for a review-clean PR. | Current `head_sha`, covered `source_updated_at`, no unresolved agent findings. | Native validation still pending, queued review, owned elsewhere, re-run prompt. |
+| PR | `post_review` | Post selected code suggestions or review comments. | Proposed comments pinned to the current head; inline comments use current RIGHT-side ranges when possible. | General "keep checking", "complete validation", or product-direction reminders without a publishable review body. |
+| PR | `request_changes` | Post selected blocking review comments as a request-changes review. | Same evidence and current-head requirements as `post_review`. | A standalone request to run the review loop again. |
+| Issue | `request_info` | Ask the reporter for specific missing evidence. | A concrete upstream issue comment body naming the exact logs, repro, screenshots, version, or confirmation needed. | "Not now", wait, monitor, or generic "needs info" with no concrete ask. |
+| Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
+| Issue | `post_comment` | Post a close, duplicate, handled, out-of-scope, or maintainer-direction comment. | Specific rationale and linked duplicate/fix/ownership evidence when applicable. | Silent close, vague "won't fix", or no-op status comments. |
+| Issue | `open_upstream_pr` | Open the completed fork fix upstream. | Fork PR/head, implementation evidence, and approval gate. | Opening without explicit approval or without a reviewed fork fix. |
+
+Forbidden action types in public artifacts include `hold`, `rerun`,
+`continue_review`, `review_summary`, `monitor`, `start_review`, and
+`start_triage`. These may be retained as internal workflow/status metadata, but
+Pulse must not render them as executable action proposals.
+
 ### Reliability contract
 
-Normal runs are bounded and resumable. They must finish within the configured
-run budget instead of trying to drain an arbitrarily large review queue:
+Normal runs are bounded and resumable. They must finish within the 50-minute
+default run budget instead of trying to drain an arbitrarily large review queue:
 
 - inventory every eligible PR and changed bug, but select at most
   `$PrReviewBatchSize` PRs and `$DesignBatchSize` full designs for execution;
 - run at most `$PrReviewConcurrency` PR workers at once;
-- select up to eight PRs by default so workers that checkpoint an external
-  Copilot wait release their slots to additional queued PRs without increasing
-  heavy local concurrency;
+- select up to sixteen PRs by default so workers that checkpoint an external
+  Copilot wait release their slots to additional queued PRs while still capping
+  active heavy local work;
 - treat cloud-review waiting as a persisted queue stage, not an active worker:
   request the review, checkpoint `waiting_copilot`, return the worker slot, and
   inspect the result on the next scheduler pass;
@@ -128,12 +156,22 @@ run budget instead of trying to drain an arbitrarily large review queue:
   completed artifact without waiting for the full queue;
 - checkpoint every durable transition locally and publish after two transitions,
   after eight minutes, or at run completion, whichever comes first;
-- leave unselected or unfinished items explicitly queued for the next run.
+- leave unselected or unfinished items explicitly queued for the next run;
+- ensure every open, non-draft PR that is not waiting on the author is either
+  backed by an allowed PR action from the taxonomy above, explicitly marked as
+  pending author feedback, or shown as queued/internal status without a
+  clickable Pulse action.
 
 `POWERTOYS_DASHBOARD_DRAIN_QUEUE=1` is an exceptional operator-requested mode.
-Only drain mode may continue through additional batches and require the stale
-queue to reach zero. Do not use drain mode in scheduled or ordinary manual
-runs.
+Drain mode intentionally removes the PR selection limit, issue design cap, and
+run deadline. It selects every stale PR, runs up to six PR workers at once by
+default, processes all actionable issue designs, and continues until the stale
+queue is empty or an unrecoverable blocker is published. Drain mode still must
+checkpoint every durable fork/mirror/review transition immediately and publish
+after two transitions, after five minutes, or after any completed artifact,
+whichever comes first, so completed work and resumable fork traces survive a
+frozen or crashed session. Do not use drain mode in scheduled or ordinary manual
+runs unless the operator explicitly requested it.
 
 ### Scheduled-run status notifications
 
@@ -155,7 +193,9 @@ Keep messages brief and clear. Send:
 
 1. **Started** — after the live queue and bounded run plan are enumerated.
    Include selected PRs, deferred PR count, changed/new bug issues, selected
-   full-design issues, the concurrency cap, and the UTC deadline.
+   full-design issues, the concurrency cap, and the UTC deadline. In drain
+   mode, state that the deadline, PR selection limit, and issue design cap are
+   disabled, and include the higher worker count.
 2. **30-minute checkpoint** — if the run is still active 30 minutes after the
    started email, reply to the original with completed PRs/issues, currently
    running PRs/issues, remaining queue count, and next expected milestone.
@@ -278,22 +318,29 @@ direction/close/takeover decision, or excluded, and that either:
 - has a prior proposed review, but the live head SHA differs from the artifact
   or review action head SHA.
 
-The queue is exhaustive, but execution is bounded. Build the run plan:
+The queue is exhaustive. Build the run plan:
 
 ```powershell
-pwsh -NoProfile -File `
-  "$SkillRoot\scripts\Get-PrReviewRunPlan.ps1" `
-  -Dashboard $Dashboard -Upstream $Upstream `
-  -BatchSize $PrReviewBatchSize `
-  -MaxConcurrency $PrReviewConcurrency `
-  -RunBudgetMinutes $RunBudgetMinutes -AsJson
+$runPlanArgs = @(
+  '-NoProfile', '-File', "$SkillRoot\scripts\Get-PrReviewRunPlan.ps1",
+  '-Dashboard', $Dashboard, '-Upstream', $Upstream,
+  '-BatchSize', $PrReviewBatchSize,
+  '-MaxConcurrency', $PrReviewConcurrency,
+  '-RunBudgetMinutes', $RunBudgetMinutes,
+  '-AsJson'
+)
+if ($DrainReviewQueue) { $runPlanArgs += '-DrainQueue' }
+pwsh @runPlanArgs
 ```
 
-Send only `selected_prs` through or resume them in `powertoys-pr-review`.
-Publish `deferred_prs` as queued work for later runs. A metadata-only refresh
-is still insufficient: every run must either advance its selected batch or
-honestly retain durable in-progress state. Use `-FailOnStale` only in explicit
-drain mode.
+In normal mode, send only `selected_prs` through or resume them in
+`powertoys-pr-review`; publish `deferred_prs` as queued work for later runs. In
+drain mode, `selected_prs` is the full stale queue and `deferred_prs` must be
+empty unless an unrecoverable blocker is published. A metadata-only refresh is
+still insufficient: every run must either advance its selected work or honestly
+retain durable in-progress state. Use `-FailOnStale` only in explicit drain
+mode after all selected work has either completed or reached a durable blocked
+state.
 
 ### Fast issue judgment
 
@@ -320,6 +367,20 @@ Older unchanged bugs do not need to be re-read every run, but they must retain
 their prior explicit judgment/action in the board. The 30-day window controls
 full-design priority, not whether changed issues receive a judgment.
 
+Issue action freshness is anchored to the latest upstream issue activity, with
+latest comments being the decisive signal. A proposed issue action is current
+only when `source_updated_at` covers the live issue `updatedAt`/latest comment
+time. If a newer comment exists, do not expose the old request-info, close, or
+fix action as actionable; mark the item for triage revalidation and publish
+that queued state instead.
+
+Do not emit placeholder issue controls. Issue artifacts should only include
+concrete maintainer actions that can be executed from Pulse: request a specific
+piece of information, post a close/dedupe/out-of-scope comment, approve/start a
+fix design, or open an upstream PR from a completed fork fix. Do not include
+`hold`/`Not now` actions, and do not publish issue artifacts whose only action
+is to wait.
+
 For every artifact and mapped fork trace, also detect:
 
 - upstream PR/issue closed, merged, superseded, or linked work appeared;
@@ -344,12 +405,14 @@ Classify unfinished workflow state:
 
 ## Phase 2 — Resume or rerun workflows
 
-PR inventory is exhaustive, but normal execution is bounded to the run plan.
-Process only the selected batch, with at most two active workers by default.
-The default batch contains eight PRs so cloud waits can release slots and let
-other PRs advance without increasing local build concurrency. Never launch all
-stale PRs in one conversation. Prioritize resumable in-progress reviews, stale
-proposed reviews, stale artifact heads, then missing artifacts.
+PR inventory is exhaustive. Normal execution is bounded to the run plan:
+process only the selected batch, with at most three active workers by default.
+The default batch contains sixteen PRs so cloud waits can release slots and let
+other PRs advance without increasing local build concurrency. Drain mode is the
+only mode that may select every stale PR in one conversation; it runs up to six
+active workers by default and relies on checkpointed fork branches plus
+incremental publication instead of a time cap. Prioritize resumable in-progress
+reviews, stale proposed reviews, stale artifact heads, then missing artifacts.
 Do not re-review an unchanged head that already has a current clean fork result
 and no relevant newer activity.
 Do not call a PR review complete, approval-ready, or "clean" unless the latest
@@ -358,10 +421,14 @@ and the required local build has passed. A Copilot-clean result with a pending
 build, context review, spelling check, or timed-out fresh request remains
 `review_in_progress` and must get a `Re-run review`/`Continue review` action.
 
-Each worker receives the run-plan deadline and must stop initiating new review
-rounds or builds 10 minutes before it. If it cannot converge, it writes durable
-`review_in_progress` state and returns. Do not keep polling simply to make the
-current run look complete. Do not launch nested agents from a PR worker.
+In normal mode, each worker receives the run-plan deadline and must stop
+initiating new review rounds or builds 10 minutes before it. If it cannot
+converge, it writes durable `review_in_progress` state and returns. In drain
+mode, workers do not receive a stop deadline; they still must checkpoint every
+fork, mirror, review-request, finding, and build transition so a later run can
+resume from the fork branch or dashboard artifact after a crash. Do not keep
+polling simply to make the current run look complete. Do not launch nested
+agents from a PR worker.
 
 Use `Set-PrReviewCheckpoint.ps1` after each durable transition:
 
@@ -384,26 +451,31 @@ ready, it checkpoints and returns instead of polling.
 
 Long-running PR reviews must not block fresh dashboard data. Before launching
 workers, regenerate and publish the inventory with `-AllowStaleReviewQueue`.
-Checkpoint every stage transition locally immediately. After two checkpoint
-transitions, ten elapsed minutes, or any completed artifact, regenerate,
-sanitize, validate, commit, and push without waiting for remaining selected
-PRs.
+Checkpoint every stage transition locally immediately. In normal mode, after
+two checkpoint transitions, eight elapsed minutes, or any completed artifact,
+regenerate, sanitize, validate, commit, and push without waiting for remaining
+selected PRs. In drain mode, use the same transition/completion triggers and a
+five-minute maximum publish interval.
 Regenerate and sanitize the feed, validate the completed PR numbers, run the
 stale-review queue check without `-FailOnStale`, and commit/push the completed
 artifacts plus index updates. The dashboard must show still-running PRs as
 queued/running review, not as current.
 
-At the run deadline, publish completed/in-progress state and stop cleanly.
-Report selected, completed, in-progress, and deferred counts. Run the
-`-FailOnStale` gate only in explicit drain mode.
+At the normal-mode run deadline, publish completed/in-progress state and stop
+cleanly. In drain mode, continue through additional work until the stale queue
+is empty or a published blocker remains. Report selected, completed,
+in-progress, and deferred counts. Run the `-FailOnStale` gate only in explicit
+drain mode after the drain attempt finishes.
 
-Issue **judgment** is exhaustive for new/changed bugs, while full design work is
-bounded. Rank `actionable_design` judgments by confidence, reproducibility,
-scope, recency, and lack of existing ownership. Run at most
-`$DesignBatchSize` (default 2) through `powertoys-issue-to-design`; leave the
-rest queued with explicit `Design fix` actions. Prefer issues updated in the
-last `$IssueWindowDays`, then consume older actionable issues as capacity
-allows.
+Issue **judgment** is exhaustive for new/changed bugs. Normal-mode full design
+work is bounded: rank `actionable_design` judgments by confidence,
+reproducibility, scope, recency, and lack of existing ownership, then run at
+most `$DesignBatchSize` (default 4) through `powertoys-issue-to-design`; leave
+the rest queued with explicit `Design fix` actions. Drain mode removes this
+design cap and processes every actionable issue design, still checkpointing and
+publishing after each durable transition or completed artifact. Prefer issues
+updated in the last `$IssueWindowDays`, then consume older actionable issues as
+capacity allows.
 
 For each queued item, invoke the corresponding skill with the upstream number
 and complete its fork-side loop. Do not bypass its gates:
@@ -426,19 +498,28 @@ is needed. That worker must not delegate to another agent.
 If a workflow is waiting on an author or user approval, do not rerun it just to
 make activity; preserve that status. A queued item must retain an explicit
 fork trace or dashboard action even when its execution is deferred.
-When drafting review payloads, follow the review skill's schema rules: inline
-suggestions must target an exact current RIGHT-side diff range and contain an
-apply-ready suggestion block; architectural or out-of-diff findings belong in
-body comments. Keep fork/worktree provenance in internal evidence, never in
-public upstream comment text.
+Draft every supported, current-head review finding as a proposed upstream
+review comment. Prefer an inline suggestion when the finding is localized to a
+current RIGHT-side diff range and can contain one apply-ready `suggestion`
+block. Do not require an inline anchor to draft the review: architectural,
+cross-file, out-of-diff, validation, or coordination findings belong in normal
+body comments and must still produce a pinned `post_review` action.
 
 Do not collapse every concrete code fix into broad companion notes. When the
 converged fork contains a localized fix on a current upstream diff line, emit
 an `inline`/`in_diff: true` item with the exact range and apply-ready
-`suggestion` block. If a review legitimately contains only architectural or
-out-of-diff companion notes, its action label or note must explicitly say
-`general review notes — no inline suggestions`; never present it as though the
-user is about to post inline comments.
+`suggestion` block. For every other supported finding, emit a non-inline
+proposed comment that explains the concern, its impact, and the required
+follow-up; never replace it with a generic local `review_summary` action
+merely because an inline suggestion is unavailable. Label companion-only
+reviews `Post general review notes` and disclose `general review notes — no
+inline suggestions`.
+
+Use a local manual-review or validation action only when no defensible
+author-facing comment can be drafted from the current head—for example, the
+review lacks sufficient evidence, the finding was superseded, or maintainers
+must first choose product direction. The iteration cap ends automated loops;
+it does not end drafting supported inline or normal review comments.
 
 ### Required issue-design artifact
 
@@ -529,8 +610,11 @@ Rank candidates using:
 - issues: easy reproduction/verification, low risk, small scope, and clear
   acceptance criteria.
 
-Run only the bounded top candidates through the relevant sub-skill. Report the
-remaining candidates without starting them.
+In normal mode, run only the bounded top candidates through the relevant
+sub-skill and report the remaining candidates without starting them. In drain
+mode, keep consuming candidates until no selected PRs or actionable issue
+designs remain, while preserving the higher worker cap and incremental publish
+requirements.
 
 ## Phase 4 — Emit artifacts and update PowerToys Pulse
 
@@ -550,8 +634,10 @@ writes are complete when possible, and verify the resulting `artifact_numbers`
 includes every completed review from the run. `emit.ps1` runs the stale-review
 queue gate itself and fails by default when any applicable PR lacks a current
 looped review for its live head. Normal bounded runs therefore use
-`-AllowStaleReviewQueue` for both initial and final publication. Omit that
-switch only in explicit drain mode.
+`-AllowStaleReviewQueue` for both initial and final publication. In drain mode,
+use `-AllowStaleReviewQueue` for intermediate publishes while work remains, and
+omit it only for the final gate after all selected work has reached a durable
+completed, author-waiting, owned-elsewhere, excluded, or blocked state.
 
 In drain mode only, enforce the stale-review queue gate:
 

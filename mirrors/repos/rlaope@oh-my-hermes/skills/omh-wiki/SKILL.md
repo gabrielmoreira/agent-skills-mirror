@@ -1,6 +1,6 @@
 ---
-name: omh-wiki
-description: [omh] Hermes adaptation for wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance. Use when the user says: wiki, project wiki, build a wiki, start a wiki, organize my notes, external knowledge store, knowledge base, Obsidian.
+name: "omh-wiki"
+description: "[omh] Hermes adaptation for wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance. Use when the user says: wiki, project wiki, build a wiki, start a wiki, organize my notes, external knowledge store, knowledge base, Obsidian."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, knowledge]

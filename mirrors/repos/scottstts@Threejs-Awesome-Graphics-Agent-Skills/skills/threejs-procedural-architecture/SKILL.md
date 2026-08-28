@@ -7,6 +7,10 @@ description: Build authored procedural buildings and architectural kits in Three
 
 Separate design planning from mesh emission. A building generator should produce an inspectable plan before it produces triangles.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Required architecture
 
 ```text

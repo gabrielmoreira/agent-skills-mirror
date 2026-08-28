@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `coleam00/Archon` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `coleam00/Archon` — 26 default patterns, 9 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coleam00/Archon` — 26 default patterns, 0 followed patterns, 31 fil
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 31 |
+| Followed pats | 9 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,15 @@ Mirror of `coleam00/Archon` — 26 default patterns, 0 followed patterns, 31 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.archon/direction.md`
+- `.archon/workflow-language-constitution.md`
+- `.github/pull_request_template.md`
+- `packages/docs-web/src/content/docs/contributing/index.md`
+- `packages/docs-web/src/content/docs/reference/architecture.md`
+- `packages/docs-web/src/content/docs/reference/configuration.md`
+- `packages/docs-web/src/content/docs/reference/cli.md`
+- `packages/docs-web/src/content/docs/guides/authoring-workflows.md`
+- `packages/docs-web/src/content/docs/reference/database.md`
 
 ## File Index
 
@@ -60,36 +68,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/agent-browser/SKILL.md`](.claude/skills/agent-browser/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/archon-dev/SKILL.md`](.claude/skills/archon-dev/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/archon/SKILL.md`](.claude/skills/archon/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/archon-cli/SKILL.md`](.claude/skills/archon-cli/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/archon-dev/SKILL.md`](.claude/skills/archon-dev/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/docker-extend/SKILL.md`](.claude/skills/docker-extend/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/manage-run/SKILL.md`](.claude/skills/manage-run/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/playwright-cli/SKILL.md`](.claude/skills/playwright-cli/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/remotion-best-practices/SKILL.md`](.claude/skills/remotion-best-practices/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/replicate-issue/SKILL.md`](.claude/skills/replicate-issue/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/rulecheck/SKILL.md`](.claude/skills/rulecheck/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/save-task-list/SKILL.md`](.claude/skills/save-task-list/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/test-release/SKILL.md`](.claude/skills/test-release/SKILL.md) |
-| 13 | ✓ | [`.claude/skills/triage/SKILL.md`](.claude/skills/triage/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/validate-ui/SKILL.md`](.claude/skills/validate-ui/SKILL.md) |
-| 15 | ✓ | [`.github/prompts/create-rules.prompt.md`](.github/prompts/create-rules.prompt.md) |
-| 16 | ✓ | [`.github/prompts/implement-fix.prompt.md`](.github/prompts/implement-fix.prompt.md) |
-| 17 | ✓ | [`.github/prompts/implement.prompt.md`](.github/prompts/implement.prompt.md) |
-| 18 | ✓ | [`.github/prompts/install.prompt.md`](.github/prompts/install.prompt.md) |
-| 19 | ✓ | [`.github/prompts/investigate-debug.prompt.md`](.github/prompts/investigate-debug.prompt.md) |
-| 20 | ✓ | [`.github/prompts/plan.prompt.md`](.github/prompts/plan.prompt.md) |
-| 21 | ✓ | [`.github/prompts/prd.prompt.md`](.github/prompts/prd.prompt.md) |
-| 22 | ✓ | [`.github/prompts/prime-client.prompt.md`](.github/prompts/prime-client.prompt.md) |
-| 23 | ✓ | [`.github/prompts/prime-components.prompt.md`](.github/prompts/prime-components.prompt.md) |
-| 24 | ✓ | [`.github/prompts/prime-endpoint.prompt.md`](.github/prompts/prime-endpoint.prompt.md) |
-| 25 | ✓ | [`.github/prompts/prime-server.prompt.md`](.github/prompts/prime-server.prompt.md) |
-| 26 | ✓ | [`.github/prompts/prime.prompt.md`](.github/prompts/prime.prompt.md) |
-| 27 | ✓ | [`.github/prompts/review.prompt.md`](.github/prompts/review.prompt.md) |
-| 28 | ✓ | [`.github/prompts/validate.prompt.md`](.github/prompts/validate.prompt.md) |
-| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 31 | ✓ | [`packages/docs-web/src/content/docs/guides/skills.md`](packages/docs-web/src/content/docs/guides/skills.md) |
+| 5 | ✓ | [`.claude/skills/playwright-cli/SKILL.md`](.claude/skills/playwright-cli/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/remotion-best-practices/SKILL.md`](.claude/skills/remotion-best-practices/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/replicate-issue/SKILL.md`](.claude/skills/replicate-issue/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/rulecheck/SKILL.md`](.claude/skills/rulecheck/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/save-task-list/SKILL.md`](.claude/skills/save-task-list/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/test-release/SKILL.md`](.claude/skills/test-release/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/triage/SKILL.md`](.claude/skills/triage/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/validate-ui/SKILL.md`](.claude/skills/validate-ui/SKILL.md) |
+| 14 | ✓ | [`.github/prompts/create-rules.prompt.md`](.github/prompts/create-rules.prompt.md) |
+| 15 | ✓ | [`.github/prompts/implement-fix.prompt.md`](.github/prompts/implement-fix.prompt.md) |
+| 16 | ✓ | [`.github/prompts/implement.prompt.md`](.github/prompts/implement.prompt.md) |
+| 17 | ✓ | [`.github/prompts/install.prompt.md`](.github/prompts/install.prompt.md) |
+| 18 | ✓ | [`.github/prompts/investigate-debug.prompt.md`](.github/prompts/investigate-debug.prompt.md) |
+| 19 | ✓ | [`.github/prompts/plan.prompt.md`](.github/prompts/plan.prompt.md) |
+| 20 | ✓ | [`.github/prompts/prd.prompt.md`](.github/prompts/prd.prompt.md) |
+| 21 | ✓ | [`.github/prompts/prime-client.prompt.md`](.github/prompts/prime-client.prompt.md) |
+| 22 | ✓ | [`.github/prompts/prime-components.prompt.md`](.github/prompts/prime-components.prompt.md) |
+| 23 | ✓ | [`.github/prompts/prime-endpoint.prompt.md`](.github/prompts/prime-endpoint.prompt.md) |
+| 24 | ✓ | [`.github/prompts/prime-server.prompt.md`](.github/prompts/prime-server.prompt.md) |
+| 25 | ✓ | [`.github/prompts/prime.prompt.md`](.github/prompts/prime.prompt.md) |
+| 26 | ✓ | [`.github/prompts/review.prompt.md`](.github/prompts/review.prompt.md) |
+| 27 | ✓ | [`.github/prompts/validate.prompt.md`](.github/prompts/validate.prompt.md) |
+| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 30 | ✓ | [`packages/docs-web/src/content/docs/guides/skills.md`](packages/docs-web/src/content/docs/guides/skills.md) |
+| 31 | → | [`.archon/direction.md`](.archon/direction.md) |
+| 32 | → | [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md) |
+| 33 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 34 | → | [`packages/docs-web/src/content/docs/contributing/index.md`](packages/docs-web/src/content/docs/contributing/index.md) |
+| 35 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
+| 36 | → | [`packages/docs-web/src/content/docs/reference/architecture.md`](packages/docs-web/src/content/docs/reference/architecture.md) |
+| 37 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
+| 38 | → | [`packages/docs-web/src/content/docs/reference/configuration.md`](packages/docs-web/src/content/docs/reference/configuration.md) |
+| 39 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
 
 ---
 

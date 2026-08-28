@@ -31,12 +31,12 @@ and version churn:
 
 | Module group | Example modules | Version line |
 |---|---|---|
-| Stable signals (traces, metrics) | `go.opentelemetry.io/otel`, `otel/sdk`, `otel/trace`, `otel/metric`, OTLP trace/metric exporters | **v1.x** (e.g. v1.45.0) |
+| Stable signals (traces, metrics) | `go.opentelemetry.io/otel`, `otel/sdk`, `otel/trace`, `otel/metric`, OTLP trace/metric exporters | **v1.x** (e.g. v1.46.0) |
 | Logs | `otel/log`, `otel/sdk/log`, `otel/exporters/otlp/otlplog/otlploghttp` | **v0.x** (separate, lower line) |
-| Contrib instrumentation | `contrib/instrumentation/net/http/otelhttp`, `.../otelgrpc` | **v0.x** (separate line, e.g. v0.70.0) |
+| Contrib instrumentation | `contrib/instrumentation/net/http/otelhttp`, `.../otelgrpc` | **v0.x** (separate line, e.g. v0.71.0) |
 | Contrib log bridges | `contrib/bridges/otelslog`, `otelzap`, `otellogrus`, `otellogr` | **v0.x** |
 
-**The trap:** pinning every module to the core version (e.g. `go get go.opentelemetry.io/otel/log@v1.45.0`)
+**The trap:** pinning every module to the core version (e.g. `go get go.opentelemetry.io/otel/log@v1.46.0`)
 fails — log and bridge modules have no v1.x tag. Hand-picking and re-guessing each `@vX`
 is the churn to avoid.
 
@@ -66,7 +66,7 @@ For Go-specific facts:
 | Latest `go.opentelemetry.io/otel` core release | `gh api repos/open-telemetry/opentelemetry-go/releases/latest -q '.tag_name'` |
 | Latest `go.opentelemetry.io/contrib` release | `gh api repos/open-telemetry/opentelemetry-go-contrib/releases/latest -q '.tag_name'` |
 | Latest `otelconf` module tag | `gh api repos/open-telemetry/opentelemetry-go-contrib/git/matching-refs/tags/otelconf -q '.[-1].ref'` |
-| Latest semconv package version | `gh api repos/open-telemetry/semantic-conventions/releases/latest -q '.tag_name'` |
+| Latest Go semconv package | Search the selected core release's CHANGELOG for `Add the go.opentelemetry.io/otel/semconv/`; do not infer package availability from the upstream semantic-conventions release. |
 | `otel-go` CHANGELOG | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go/main/CHANGELOG.md` |
 | `otel-go-contrib` CHANGELOG | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-contrib/main/CHANGELOG.md` |
 

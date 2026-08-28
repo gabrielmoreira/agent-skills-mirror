@@ -1,6 +1,6 @@
 ---
-name: omh-code-review
-description: [omh] Hermes Code Review workflow: bug-first review with evidence. Use when the user says: code-review, review, audit, find bugs, release gate, claim audit, evidence audit, README claim.
+name: "omh-code-review"
+description: "[omh] Hermes Code Review workflow: bug-first review with evidence. Use when the user says: code-review, review, audit, find bugs, release gate, claim audit, evidence audit, README claim."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]

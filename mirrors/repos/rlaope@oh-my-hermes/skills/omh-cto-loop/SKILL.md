@@ -1,6 +1,6 @@
 ---
-name: omh-cto-loop
-description: [omh] Hermes CTO Loop workflow: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence. Use when the user says: cto-loop, cto loop, cto, cto pm, pm dev qa security ops, roadmap technical tradeoffs, technical tradeoff, delivery risk.
+name: "omh-cto-loop"
+description: "[omh] Hermes CTO Loop workflow: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence. Use when the user says: cto-loop, cto loop, cto, cto pm, pm dev qa security ops, roadmap technical tradeoffs, technical tradeoff, delivery risk."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, leadership]

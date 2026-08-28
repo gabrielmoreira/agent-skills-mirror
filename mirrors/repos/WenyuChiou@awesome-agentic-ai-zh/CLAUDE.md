@@ -59,7 +59,10 @@ If unsure, ask the user to run `ollama list` and verify.
 1. **Claude is the canonical / production reference** in documentation positioning.
 2. **Ollama is the practice default** because of cost — students should not be blocked by API fees during learning.
 3. **Every exercise must ship BOTH paths**:
-   - Path A (Ollama, `<details markdown="1" open>`, primary practice runnable)
+   - Path A (Ollama, primary practice runnable): keep the exercise title, result,
+     and first action visible. Use `<details markdown="1" open>` only when Path A
+     is the single immediate action and its rendered body is short; otherwise use
+     a closed `<details markdown="1">` block for code and troubleshooting.
    - Path B (Anthropic, `<details markdown="1">`, optional cloud-quality comparison)
 4. **Every exercise must mention budget explicitly** — single-run cost + total stage cost.
 5. **Local LLMs must appear in any model recommendation list** — never list cloud-only options.
@@ -107,7 +110,7 @@ If unsure, ask the user to run `ollama list` and verify.
 | Stage 4 (5 exercises) | ✅ Verified 2026-05-13 — ex1 LangGraph+CrewAI comparison, ex2 CrewAI multi-agent roles (CrewAI install fails on Python 3.14, code unmodified), ex3 LangGraph branching+HITL, ex4 Smolagents CodeAct, ex5 Pydantic AI typed output. 14 of 15 test suites verified green; ex2 CrewAI untestable on 3.14 due to tiktoken/regex wheel build failures |
 | Stage 6 (5 exercises) | ✅ Verified 2026-05-13 — all 10 test suites green. Fixed 2 bugs: ChromaDB 'kb' collection name (needs 3-512 chars; renamed knowledge_base) + EphemeralClient state leak across test fixtures (added uuid suffix per test) |
 | Stage 7 (5 exercises) | ✅ Verified 2026-05-13 — all 10 test suites green. Fixed 1 bug: eval test fake_agent operator precedence (and binds tighter than or) caused test_run_eval_aggregates to fail. FastAPI deploy includes Dockerfile |
-| Track A1-A3 (12 CLI exercises) | 🟡 Outline complete (`tracks/cli/A{1,2,3}-*.md` × 3 langs, ~367 lines zh-TW; 12 numbered exercises documented end-to-end with goal / required-reading / hands-on / curated-projects / self-check). `examples/track-a/` folder intentionally NOT built — these exercises are bash + CLAUDE.md + slash command + MCP integration + GitHub Actions yml, **NOT** Python SDK code; the dual-path Ollama/Anthropic framing doesn't apply. Reference doc: [`resources/cli-agents-guide.md`](resources/cli-agents-guide.md) (148 lines). |
+| Track A1-A3 (12 CLI exercises) | 🟡 A1 is a trilingual progressive beginner path; A2-A3 remain outline chapters. All 12 numbered exercises stay inline: `examples/track-a/` is intentionally not built because these exercises use shell, rules files, Skills, MCP, and GitHub Actions rather than Python SDK starters. The Ollama/Anthropic dual-path frame does not apply. Canonical tool identity and selection reference: [`resources/cli-agents-guide.md`](resources/cli-agents-guide.md). |
 | Stage 5 (11 sub-exercises) | ⚪ Pending — different shape (bash / MCP / markdown / CLAUDE.md / SKILL.md / plugin.json authoring, not OpenAI SDK Python). 5.3 has 1 meta-example shipped: [`examples/stage-5/tool-calling-tutor/`](examples/stage-5/tool-calling-tutor/). Other sub- framing TBD — see [`docs/TESTING_PLAN.md`](docs/TESTING_PLAN.md). |
 | `examples/README` LLM list + budget table | ✅ Done (3 langs) |
 | Per-stage budget callouts | ✅ Done for Stage 1+2+3 (3 langs each) |

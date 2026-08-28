@@ -1,6 +1,6 @@
 ---
-name: omh-physical-device-readiness
-description: [omh] Physical device readiness - gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools. Use when the user says: physical-device-readiness, physical device readiness, device safety readiness, physical device safety, hardware safety gate, 3d printer readiness, 3D printer safety, snapmaker printer safety.
+name: "omh-physical-device-readiness"
+description: "[omh] Physical device readiness - gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools. Use when the user says: physical-device-readiness, physical device readiness, device safety readiness, physical device safety, hardware safety gate, 3d printer readiness, 3D printer safety, snapmaker printer safety."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]

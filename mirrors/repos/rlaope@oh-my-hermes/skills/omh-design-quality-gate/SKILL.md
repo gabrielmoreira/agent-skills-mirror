@@ -1,6 +1,6 @@
 ---
-name: omh-design-quality-gate
-description: [omh] Hermes Design Quality Gate workflow: enforce superior content, design, layout, publishing, and visual QA gates. Use when the user says: design-quality-gate, design quality gate, ui ux pro max, design pro max, frontend pro max, visual qa pro, premium design, high quality design.
+name: "omh-design-quality-gate"
+description: "[omh] Hermes Design Quality Gate workflow: enforce superior content, design, layout, publishing, and visual QA gates. Use when the user says: design-quality-gate, design quality gate, ui ux pro max, design pro max, frontend pro max, visual qa pro, premium design, high quality design."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]

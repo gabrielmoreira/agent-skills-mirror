@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `googleapis/mcp-toolbox` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `googleapis/mcp-toolbox` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `googleapis/mcp-toolbox` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,8 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/maintainer/fix-failing-tests/references/ci-map.md`](skills/maintainer/fix-failing-tests/references/ci-map.md) |
 | 6 | ✓ | [`skills/maintainer/fix-failing-tests/SKILL.md`](skills/maintainer/fix-failing-tests/SKILL.md) |
 | 7 | ✓ | [`skills/maintainer/review-prs/SKILL.md`](skills/maintainer/review-prs/SKILL.md) |
-| 8 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
-| 9 | ✓ | [`skills/README.md`](skills/README.md) |
+| 8 | ✓ | [`skills/maintainer/stale-sweep/SKILL.md`](skills/maintainer/stale-sweep/SKILL.md) |
+| 9 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
+| 10 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

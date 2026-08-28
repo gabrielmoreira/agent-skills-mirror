@@ -33,7 +33,7 @@ The slash command surfaces the libexec wrapper; run it as Bash. Lifecycle (outpu
 libexec/raptor-frida --target <pid|name|bundle-id|binary>
                      (--template <name> | --script <path> | --sink-watch <file>)
                      [--host HOST[:PORT]] [--usb]
-                     [--duration N] [--spawn] [--unsafe-attach]
+                     [--duration N] [--stdin FILE] [--spawn] [--unsafe-attach]
                      [--follow-children]
 ```
 
@@ -55,6 +55,7 @@ raptor frida --list-templates
 | `exec-and-load` | Command execution (argv + caller) and dlopen activity — confirms injection sinks firing, maps runtime-loaded plugins. |
 | `sink-watch` | Argument-level evidence at dangerous sinks; `--sink-watch <attack-paths.json>` derives the watch list from a finding. |
 | `call-edges` | Dynamic call graph (Stalker); owned callees become `frida_call_edge` REACHABLE witnesses — rescues indirect-call/vtable targets from dead-code verdicts. |
+| `heap-trace` | Heap lifecycle evidence: double-free / invalid-free / UAF candidates at libc boundaries (target-attributed, budgeted) + leak-candidate sites in the flush summary; anomalies feed the validation bridge. |
 | `jni-trace` | Android/ART: RegisterNatives mapping — native method name/signature → native module + offset (bridges jadx to native analysis; class names need the Java bridge, unbundled on Frida 17). |
 
 Operator-supplied scripts via `--script ./hook.js` - same `send(...)` capture path.

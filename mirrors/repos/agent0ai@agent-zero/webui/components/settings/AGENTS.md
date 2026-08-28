@@ -18,6 +18,9 @@
 - Do not store secrets in localStorage, URLs, or console output.
 - Preserve Store Gating and modal footer conventions in settings components.
 - Interface control visibility is edited as a Save/Cancel draft, persisted with instance settings, and applied through the shared frontend preference store after Settings saves successfully.
+- Bundled controls contributed by plugins add their Interface row through
+  `interface-controls-end` and register visibility defaults with the shared
+  preference store.
 - MCP manager tool toggles write `disabled_tools` into the draft JSON and require Apply before changing the running MCP tool set.
 - Confirmed MCP server removals apply immediately and refresh server status; other MCP manager draft edits still require Apply.
 - MCP manager local command forms accept shell-style command and argument lines; quote argument values that intentionally contain spaces.

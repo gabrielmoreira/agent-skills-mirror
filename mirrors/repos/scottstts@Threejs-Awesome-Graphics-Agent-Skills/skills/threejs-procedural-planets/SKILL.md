@@ -7,6 +7,10 @@ description: Author procedural planetary bodies in Three.js. Use for spherical t
 
 Build a planet as a coupled field system evaluated on a unit direction. The same geological causes must drive geometry, color, roughness, normal, atmosphere handoff, and distance filtering.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Required build order
 
 1. Establish planet-space direction, radius, sea level, and world-unit scale.

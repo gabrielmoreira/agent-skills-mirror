@@ -156,7 +156,7 @@ model_records() {
       kind = kind_for_file(file)
       if (kind != "") {
         printf "%s\t%s\t%s\t%s\n", parts[2], kind, path, parts[count]
-      } else if (path ~ /^model\/messaging\/[^/]+\.ya?ml$/) {
+      } else if (count == 3 && parts[1] == "model" && parts[2] == "messaging") {
         # v1.44 definition/2 provider files can contain both span definitions
         # and cross-signal attribute groups, despite neutral filenames.
         printf "%s\tspans\t%s\t%s\n", parts[2], path, parts[count]
@@ -212,6 +212,12 @@ find_kind_files() {
 find_registry_path() {
   local records="$1"
   awk -F '\t' '$2 == "registry" { print $3; exit }' <<<"$records"
+}
+
+is_definition_v2() {
+  local content="$1"
+  [[ "$content" == file_format:\ definition/2* ||
+     "$content" == *$'\nfile_format: definition/2'* ]]
 }
 
 print_available_groups() {
@@ -346,6 +352,7 @@ extract_v2_entries() {
       return trim(value)
     }
     function section_kind(value) {
+      if (value == "attributes") return "registry"
       if (value == "spans" || value == "span_refinements") return "spans"
       if (value == "events" || value == "event_refinements") return "events"
       if (value == "metrics" || value == "metric_refinements") return "metrics"
@@ -368,10 +375,10 @@ extract_v2_entries() {
       active = section_kind(section) == requested_kind
       next
     }
-    active && /^  - (id|type): / {
+    active && /^  - (id|key|name|type): / {
       emit()
       id = $0
-      sub(/^  - (id|type): /, "", id)
+      sub(/^  - (id|key|name|type): /, "", id)
       next
     }
     active && id != "" && /^    stability: / {
@@ -407,10 +414,10 @@ extract_exact_v2_entry() {
   local path="$4"
 
   awk -v entry_id="$entry_id" -v tag="$tag" -v path="$path" '
-    /^  - (id|type): / {
+    /^  - (id|key|name|type): / {
       if (found) exit
       candidate = $0
-      sub(/^  - (id|type): /, "", candidate)
+      sub(/^  - (id|key|name|type): /, "", candidate)
       if (candidate == entry_id) {
         found = 1
         start_line = NR
@@ -555,7 +562,11 @@ main() {
   if [[ -z "$second_arg" ]]; then
     if [[ -n "$registry_path" ]]; then
       registry_content="$(fetch_group_file "$tag" "$registry_path")"
-      registry_entries="$(extract_entries "$registry_content" "      - id: " "        " 32)"
+      if is_definition_v2 "$registry_content"; then
+        registry_entries="$(extract_v2_entries "$registry_content" registry 32)"
+      else
+        registry_entries="$(extract_entries "$registry_content" "      - id: " "        " 32)"
+      fi
     else
       registry_entries=""
     fi
@@ -577,7 +588,11 @@ main() {
         return 1
       }
       registry_content="$(fetch_group_file "$tag" "$registry_path")"
-      registry_entries="$(extract_entries "$registry_content" "      - id: " "        " 32)"
+      if is_definition_v2 "$registry_content"; then
+        registry_entries="$(extract_v2_entries "$registry_content" registry 32)"
+      else
+        registry_entries="$(extract_entries "$registry_content" "      - id: " "        " 32)"
+      fi
       print_kind_listing "$resolved_group" "$version" "$kinds" "$source_url" "$requested_kind" "$registry_entries"
       return 0
     fi
@@ -586,7 +601,7 @@ main() {
     while IFS=$'\t' read -r file_path _; do
       [[ -n "$file_path" ]] || continue
       file_content="$(fetch_group_file "$tag" "$file_path")"
-      if [[ "$file_content" == file_format:\ definition/2* ]]; then
+      if is_definition_v2 "$file_content"; then
         kind_entries+="$(extract_v2_entries "$file_content" "$requested_kind" 36)"$'\n'
       else
         kind_entries+="$(extract_entries "$file_content" "  - id: " "    " 36)"$'\n'
@@ -599,6 +614,11 @@ main() {
 
   if [[ -n "$registry_path" ]]; then
     registry_content="$(fetch_group_file "$tag" "$registry_path")"
+    if is_definition_v2 "$registry_content" &&
+        matched_entry="$(extract_exact_v2_entry "$registry_content" "$second_arg" "$tag" "$registry_path")"; then
+      printf '%s\n' "$matched_entry"
+      return 0
+    fi
     if matched_entry="$(extract_exact_entry "$registry_content" "      - id: " "$second_arg" "$tag" "$registry_path")"; then
       printf '%s\n' "$matched_entry"
       return 0
@@ -612,7 +632,7 @@ main() {
     while IFS=$'\t' read -r file_path _; do
       [[ -n "$file_path" ]] || continue
       file_content="$(fetch_group_file "$tag" "$file_path")"
-      if [[ "$file_content" == file_format:\ definition/2* ]] &&
+      if is_definition_v2 "$file_content" &&
           matched_entry="$(extract_exact_v2_entry "$file_content" "$second_arg" "$tag" "$file_path")"; then
         printf '%s\n' "$matched_entry"
         return 0

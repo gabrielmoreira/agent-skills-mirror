@@ -256,6 +256,10 @@ Label 和 Delete 规则。通过标准生命周期 API 发布的内容不可变�
 Admin 前缀为 `/v3/admin/ai/mcp`，Console 在 `/v3/console/ai/mcp` 下镜像相同的
 相对操作。精确路由由 [V3 HTTP API 范围](../http-api/v3-api-surface.md)定义。
 
+这些标准路由只在管理权威达到 `LIFECYCLE_MANAGED` 后启用。Embedded 和 Standalone Console
+直接使用相同的 Application Service。Console-only Remote 部署必须使用 Typed Maintainer Lifecycle
+Transport；该 Transport 可用前，Remote Handler 返回能力未启用，且不得回退到 Legacy Write。
+
 ### 6.2 历史 Direct-Online Facade
 
 现有 Admin、Console、Maintainer SDK、Java Client SDK 和 gRPC wire shape 保持兼容，
@@ -290,6 +294,10 @@ Draft 按以下顺序写入：
 4. 更新 Resource 工作指针。
 
 Draft 不加入历史 Manifest。
+
+删除精确 Draft 时，先通过 MCP Storage 清理内容，清理成功后删除 Version Row，最后清除匹配的
+Resource Working Pointer。Storage 或 Row 删除中断时，保留的 Pointer 是重试锚点；如果 Row 已经
+删除，重试可以在不再依赖已删除 Content Descriptor 的情况下清除 Pointer。
 
 Publish 或 Online 按以下顺序执行：
 
@@ -358,9 +366,12 @@ Client 自有 Runtime Instance 保持现有所有权，不随 MCP Version 删除
   `ext.mcpId` 并要求唯一命中；
 - Alias 缺失、非法、重复或冲突时返回受控参数错误或完整性错误。
 
-规范化后，所有路径执行相同的标准鉴权、Visibility 和生命周期操作。ID 查询不得使用
-Search Index、Manifest、Config 或历史 MCP 内存 Index。不为这个低频已废弃路径新增表、
-字段或 JSON Index。`SYNCING` 期间历史 Index 可以继续服务完整的历史管理路径；
+协议 Filter 先按现有 Wire 契约完成请求身份认证。对于 ID-only 输入，Lifecycle Locator 随后解析
+Canonical Resource，并在读取任何内容或执行变更前，针对该标准名称再次执行精确的 Identity 与
+Authority 校验；之后与 Name 输入执行相同的 Visibility 和生命周期操作。这个顺序既避免未认证的
+Alias 枚举，也防止空 Wire Name 绕过标准名称鉴权。ID 查询不得使用 Search Index、Manifest、
+Config 或历史 MCP 内存 Index。不为这个低频已废弃路径新增表、字段或 JSON Index。
+`SYNCING` 期间历史 Index 可以继续服务完整的历史管理路径；
 `LIFECYCLE_MANAGED` 后任何管理正确性路径都不再依赖它。
 
 现有 Create/Release 响应和 DTO 继续返回 ID 字段；现有仅兼容的自定义 UUID 输入能力不扩展。
@@ -517,7 +528,8 @@ OpenAPI Import 不得把它收窄为单个字符串类型。
 Implementation PR 至少覆盖：
 
 - 精确 Resource/Version 映射，包括历史非 SemVer Version 字符串；
-- 从 Resource row 执行 name-only、name+ID 和 legacy ID-only 解析，规范化后的标准鉴权与冲突处理；
+- 从 Resource row 执行 name-only、name+ID 和 legacy ID-only 解析，协议身份认证后针对 ID-only
+  标准名称执行精确二次鉴权，并处理身份冲突；
 - Manifest/Server/Tools/Resources 坐标和字节保持不变；
 - 对账不修改 Naming，Direct、REF、frontend/backend、Runtime、订阅、重连和 redo 行为保持不变；
 - 所有 Server/Tools/Resources 和 Manifest Config 访问经过 MCP Storage，不存在 Service

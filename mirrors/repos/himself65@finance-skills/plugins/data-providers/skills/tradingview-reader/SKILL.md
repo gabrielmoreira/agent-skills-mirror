@@ -190,7 +190,6 @@ opencli tradingview quote --ticker SPY --exchange NYSEARCA -f json
 7. **For alerts**, group by status (active vs triggered/fired) and order recent firings by `fired_at` desc. Don't expose alert ids unless the user explicitly asks.
 8. **For screener results**, surface the top movers / extreme values in plain prose first (e.g. "highest market cap NVDA at $4.2T, 12 names below the RSI<30 threshold"), then the table.
 9. **Treat sessions as private** — never expose CDP target IDs, cookies, or layout IDs unless the user asks.
-10. **Cross-reference with Funda when the user is making a trade decision** — TradingView's options/screener data is convenient but can lag; for trade entry analysis, also fetch from the `funda-data` skill and reconcile.
 
 ---
 

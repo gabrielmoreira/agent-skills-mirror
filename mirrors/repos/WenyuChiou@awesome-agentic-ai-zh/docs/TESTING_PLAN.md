@@ -1,6 +1,6 @@
 # Testing Plan — T3+ Verification Log
 
-> Updated 2026-05-13. Verification is **done**; this doc is now a historical log.
+> Updated 2026-08-27. Verification is **done**; this doc is now a historical log.
 > The branch `t3-stage-4-6-7-unverified` referenced in earlier versions has been
 > fully merged into `main` and deleted.
 
@@ -19,6 +19,15 @@
 **Total: 28/30 test files run green** + 1 install caveat (CrewAI on Python 3.14) + 1 pending live test (skill auto-load).
 
 **Total bugs fixed**: 6 — all in commit [`50c3bf8`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/50c3bf8).
+
+## ✅ Stage 2 prompt-eval example (2026-08-27)
+
+`examples/stage-2/01-prompt-eval-loop/` now gives beginners one small, repeatable loop: run the same six support messages, add three examples to the prompt, rerun, and compare the two scores.
+
+- `python starter.py` and `python starter_anthropic.py` both run a deterministic fixture without a model or API key. The visible `3/6 → 6/6` result explains the mechanics; it is **not** a model benchmark or a promise that few-shot examples always improve a result.
+- `python test.py`: **4/4 passed** for prompt construction, strict label scoring, all six cases, and the Ollama/OpenAI-compatible response shape.
+- `python test_anthropic.py`: **2/2 passed** for Anthropic text-block handling and request construction.
+- Live Ollama and Anthropic quality are optional learner checks. CI does not depend on a nondeterministic model score or spend API money.
 
 ## 🟢 Pedagogy v1 also shipped (2026-05-13)
 
@@ -55,22 +64,22 @@ Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-
 
 | File | Lines (zh-TW) | Exercises |
 |---|---|---|
-| `tracks/cli/A1-cli-intro.md` | 107 | CLI-1 安裝 + 第一次跑 / CLI-2 CLAUDE.md / CLI-3 第二個 CLI 並用 / CLI-4 認證細節 |
-| `tracks/cli/A2-cli-workflow.md` | 126 | CLI-5 production CLAUDE.md / CLI-6 slash command / CLI-7 多步驟拆解 / CLI-8 portable prompt |
-| `tracks/cli/A3-cli-production.md` | 134 | CLI-9 MCP server 接 CLI / CLI-10 GitHub Actions / CLI-11 cost tracking / CLI-12 plugin 跨 team 分享 |
+| `tracks/cli/A1-cli-intro.md` | 157 | CLI-1 安裝與第一次唯讀任務 / CLI-2 project instructions / CLI-3 第二個 CLI 重跑 / CLI-4 假憑證與安全失敗 |
+| `tracks/cli/A2-cli-workflow.md` | 221 | CLI-5 project instructions / CLI-6 Skill / CLI-7 多步驟拆解 / CLI-8 portable prompt |
+| `tracks/cli/A3-cli-production.md` | 241 | CLI-9 MCP server 接 CLI / CLI-10 GitHub Actions / CLI-11 cost tracking / CLI-12 plugin 跨 team 分享 |
 
 **No `examples/track-a/` folder built — and this is intentional**. CLI exercises are:
 
 - Bash commands (`ollama pull`, `claude` install, MCP-server install)
-- Markdown authoring (CLAUDE.md, slash command `.md` files, SKILL.md)
+- Markdown authoring (project-instructions files and `SKILL.md`)
 - YAML / JSON config (GitHub Actions `.yml`, `plugin.json`, `marketplace.json`)
 - **Not Python SDK code**, so the dual-path Ollama/Anthropic `starter.py` + `test.py` pattern doesn't apply.
 
 What learners do for Track A: follow each numbered exercise in the outline doc, on their own real repo (their work codebase, not a sample). The `tracks/cli/A*.md` files contain success criteria for self-check.
 
-**Core reference**: [`resources/cli-agents-guide.md`](../resources/cli-agents-guide.md) (148 lines) — 8-CLI comparison + decision rubric + common pitfalls.
+**Core reference**: [`resources/cli-agents-guide.md`](../resources/cli-agents-guide.md) — 9-CLI identity, provider, sign-in, and safety reference; the full comparison is collapsed by default.
 
-**Potential v2** (not committed): could ship `examples/track-a/` containing sample CLAUDE.md / `.claude/commands/review.md` / sample GHA workflow yml. Low priority — current outline is self-contained.
+**Potential v2** (not committed): could ship `examples/track-a/` containing a sample project-instructions file, `skills/review-changes/SKILL.md`, and a sample GHA workflow yml. Low priority — current outline is self-contained.
 
 ### Stage 5 — partial coverage
 

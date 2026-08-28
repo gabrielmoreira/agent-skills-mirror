@@ -1,6 +1,6 @@
 ---
-name: omh-failure-signal-audit
-description: [omh] Failure Signal Audit workflow: find swallowed errors, unsafe fallbacks, hidden UI/runtime failures, and missing propagation before they become false green status. Use when the user says: failure-signal-audit, failure signal audit, silent failure, silent failures, silent failure hunter, swallowed error, swallowed errors, empty catch.
+name: "omh-failure-signal-audit"
+description: "[omh] Failure Signal Audit workflow: find swallowed errors, unsafe fallbacks, hidden UI/runtime failures, and missing propagation before they become false green status. Use when the user says: failure-signal-audit, failure signal audit, silent failure, silent failures, silent failure hunter, swallowed error, swallowed errors, empty catch."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -105,6 +105,12 @@ Artifact expectations:
 - propagation_gap_map/v1 for missing context, lost stack, ignored async rejection, empty catch, null/empty default, or log-only handling
 - false_green_status_review/v1 comparing PASS/green claims against observed checks and missing signals
 - remediation_handoff/v1 only after findings are accepted and the selected owner is explicit
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `failure_signal_audit_plan/v1`; enforcement_level: `guidance_only`; consumer_id: `none`
 
 Safety rules:
 

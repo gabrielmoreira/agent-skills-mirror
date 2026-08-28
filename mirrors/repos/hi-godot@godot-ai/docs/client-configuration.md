@@ -28,6 +28,24 @@ rules are not visible in the code:
   dispatched on `config_type "dsh"`), plus the matching branch in
   `client_configurator.gd` and `_manual_command.gd`.
 
+### Path resolution fails closed
+
+Every descriptor path is `~`- or `$VAR`-rooted and expands through
+`_path_template.gd`. A token that cannot be resolved — the variable is unset, or
+a dock worker is reading an env snapshot that was never warmed — is **left in
+the string** rather than replaced with an empty string. Substituting the empty
+string is what turned `$USERPROFILE/godot` into `/godot`, a root-relative path
+that `is_absolute_path()` accepts, so every fail-closed guard in this layer
+waved it through and Configure wrote somewhere the user never named.
+
+The invariant that replaces it: **a resolved config path is absolute or it is an
+error**. `McpClient.resolved_config_path_details()` enforces it for every
+descriptor path (both env overrides, `config_path_candidates`, and plain
+`path_template`), `_json_strategy.gd::_load_merge_tiers` enforces it for Pi's
+merge tiers, and `McpAtomicWrite.write` refuses a non-absolute destination as a
+last line of defence. The dock reports the unexpanded path, which still shows
+what failed to resolve.
+
 MCP tools `client_configure`, `client_remove`, and `client_status` expose this to
 AI clients.
 
@@ -48,6 +66,18 @@ telemetry, and required uv options are verified as launch drift;
 telemetry toggle, or tool-domain change. Never silently fall back to a bare `uvx`
 command for these entries—report ERROR and leave the config untouched when no
 verified tier exists.
+
+Configure pre-builds the pinned `godot-ai==X` uv environment before it
+returns (`prewarm_attach_plan` / `prewarm_attach_launch`), so the first
+client spawn is a warm cache hit. Without it the *client* pays for building
+~67 packages on its own critical path, which flashes a terminal window on
+Windows (#851) and can overrun an MCP client's default 30s connect timeout —
+the tools then appear to vanish until a restart. Only the `uvx` tier is
+warmed; dev-venv and system launches run an already-installed package. The
+warm is best-effort and never downgrades a successful Configure: the config
+file is already written, and a failure only restores the old cold-start cost.
+The dock relabels the button `Installing…` while it runs so a cold build does
+not read as a hang.
 
 Per-strategy command rendering (`CommandShape` docs in `_base.gd`):
 

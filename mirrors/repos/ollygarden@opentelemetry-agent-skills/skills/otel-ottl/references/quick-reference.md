@@ -226,14 +226,19 @@ processors:
       - name: errors
         type: ottl_condition
         ottl_condition:
+          error_mode: ignore
           span:
             - 'span.status.code == STATUS_CODE_ERROR'
       - name: slow
         type: ottl_condition
         ottl_condition:
+          error_mode: ignore
           span:
             - '(span.end_time_unix_nano - span.start_time_unix_nano) > 1000000000'
 ```
+
+Set the OTTL policy's `error_mode` explicitly; it is nested under `ottl_condition`, not at the
+`tail_sampling` processor level.
 
 ## Regular expressions
 

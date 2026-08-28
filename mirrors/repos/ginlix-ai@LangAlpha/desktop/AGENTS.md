@@ -251,8 +251,22 @@ Three things are load-bearing:
 - **The exchange happens in the renderer, never in main.** The PKCE verifier lives in
   that renderer's cookie jar and never leaves it. That is also what makes the loopback
   hop safe: anything else listening on the port gets a code it cannot redeem.
-- **Only 8788/8789/8790 work.** Supabase matches `redirect_to` as an exact string, so
-  every port has to be in its Redirect URLs allowlist.
+- **The port comes from the OS, not from us.** `listen(0)` on loopback, which is what
+  RFC 8252 §7.3 tells an authorization server to expect from a native client, and the
+  only way to be sure of getting a port at all. Sign-in's `redirect_to` is still matched
+  against the Supabase Redirect URLs allowlist, so that entry has to be a port wildcard
+  (`http://127.0.0.1:*/callback`) for any of this to work. **That wildcard is wider than
+  a port.** Supabase's glob stops only at `.` and `/`, and `@` is neither, so the same
+  entry also matches `http://127.0.0.1:x@capture/callback`, a string whose real host is
+  `capture` rather than loopback. Reaching it takes a single-label hostname the user's own
+  resolver answers for, which is a narrower opening than the glob's shape suggests but not a
+  closed one: a search domain or a `hosts` entry can point `capture` at an address anywhere.
+  The allowlist is simply not doing the work it looks like it is doing. Whatever a Supabase
+  version happens to special-case about loopback literals is theirs to change, so do not
+  lean on it: the binding that actually holds is the PKCE verifier, which lives in the
+  renderer that minted it and cannot be redeemed anywhere else. A connector's authorization
+  server matches loopback as a pattern and adds no constraint, and this deployment's backend
+  accepts any loopback port at or above 1024 (`sanitize_loopback_redirect`).
 - **The interception mechanic is indirect.** `setWindowOpenHandler` returns `deny`, so
   `window.open` returns `null` and the SPA takes its existing popup-blocked fallback: a
   same-tab navigation to the authorize URL, which `will-navigate` then catches. If an

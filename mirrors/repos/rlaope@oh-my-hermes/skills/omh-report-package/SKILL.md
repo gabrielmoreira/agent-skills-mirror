@@ -1,6 +1,6 @@
 ---
-name: omh-report-package
-description: [omh] Hermes Report Package workflow: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages. Use when the user says: report-package, report package, weekly report, monthly report, executive report, exec brief, leadership deck, status package.
+name: "omh-report-package"
+description: "[omh] Hermes Report Package workflow: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages. Use when the user says: report-package, report package, weekly report, monthly report, executive report, exec brief, leadership deck, status package."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, reporting]

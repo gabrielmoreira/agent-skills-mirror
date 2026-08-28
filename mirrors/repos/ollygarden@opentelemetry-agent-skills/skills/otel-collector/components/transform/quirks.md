@@ -26,7 +26,7 @@ Under `propagate`, the first statement that errors (a type mismatch, a nil deref
 - set(log.attributes["uid"], log.cache["user"]["id"]) where log.cache["user"] != nil
 ```
 
-`silent` hides evaluation errors entirely — if a transform "isn't working," confirm it isn't set to `silent`. The default flipped from `propagate` to `ignore` in v0.153.0 and became permanent when `processor.transform.defaultErrorModeIgnore` reached Stable in v0.157.0; disabling the gate now fails startup, and the gate is scheduled for removal in v0.159.0. Pre-v0.153.0 collectors still default to `propagate`; on v0.153.0–v0.156.0 the Beta gate could be disabled to restore it.
+`silent` hides evaluation errors entirely — if a transform "isn't working," confirm it isn't set to `silent`. The default flipped from `propagate` to `ignore` in v0.153.0 and became permanent when `processor.transform.defaultErrorModeIgnore` reached Stable in v0.157.0. The gate remains registered in released v0.159.0 (with v0.159.0 recorded as its metadata end version), and disabling it fails startup. Pre-v0.153.0 collectors still default to `propagate`; on v0.153.0–v0.156.0 the Beta gate could be disabled to restore it.
 
 ## Context performance
 
@@ -50,7 +50,7 @@ metric_statements:
 
 ## OTTL version drift
 
-`transform` is a thin shell around OTTL, which evolves quickly: function names, signatures, path syntax, and enums change between collector releases (e.g. the path-prefix style `log.body` vs older bare `body`; `set_semconv_span_name` semconv versions; `extract_percentile_metric` added in v0.151.0). Validate statements against the running version — see the `otel-ottl` skill — rather than assuming a snippet from another release still parses.
+`transform` is a thin shell around OTTL, which evolves quickly: function names, signatures, path syntax, and enums change between collector releases (e.g. the path-prefix style `log.body` vs older bare `body`; `extract_percentile_metric` added in v0.151.0). `set_semconv_span_name` accepts semantic-convention versions `1.37.0` through `1.43.0`. Validate statements against the running version — see the `otel-ottl` skill — rather than assuming a snippet from another release still parses.
 
 ## Don't change identity carelessly
 

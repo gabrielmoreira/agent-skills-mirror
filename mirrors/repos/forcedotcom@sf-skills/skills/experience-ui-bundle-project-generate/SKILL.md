@@ -6,10 +6,10 @@ metadata:
   domains: ["Experience"]
   relatedSkills:
     - "experience-ui-bundle-app-coordinate"
-    - "experience-ui-bundle-metadata-generate"
-    - "experience-ui-bundle-frontend-generate"
-    - "experience-ui-bundle-salesforce-data-access"
     - "experience-ui-bundle-deploy"
+    - "experience-ui-bundle-frontend-generate"
+    - "experience-ui-bundle-metadata-generate"
+    - "experience-ui-bundle-salesforce-data-access"
   cliTools:
     - tool: ["node"]
       semver: ">=18.0.0"

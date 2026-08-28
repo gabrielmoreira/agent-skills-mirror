@@ -56,7 +56,7 @@ For a UI flow, collect all of these when feasible:
 - CDP target proof: `browser_list` shows the intended target.
 - App proof: `navigator.userAgent` contains `Electron/` for desktop flows, or does not for standalone Chrome flows.
 - State proof: URL, visible text, selected model/provider, status, or route matches the expected outcome.
-- Backend proof: relevant `daytona exec` process/log/health check for sidecars, Den, worker proxy, or mock servers.
+- Backend proof: relevant `daytona exec` process/log/health check for sidecars, Den, or mock servers.
 - Test evidence: observable assertions and validated screenshot artifacts for every claim.
 - Custom screenshot indexes: supplementary presentation artifacts only. See
   `daytona-recording-artifacts`.

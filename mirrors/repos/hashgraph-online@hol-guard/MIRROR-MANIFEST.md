@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,17 +61,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.factory/skills/hol-guard/SKILL.md`](.factory/skills/hol-guard/SKILL.md) |
 | 2 | ✓ | [`docs/guard/SKILL.md`](docs/guard/SKILL.md) |
-| 3 | ✓ | [`tests/fixtures/claude-plugin-good/skills/example/SKILL.md`](tests/fixtures/claude-plugin-good/skills/example/SKILL.md) |
-| 4 | ✓ | [`tests/fixtures/gemini-extension-good/GEMINI.md`](tests/fixtures/gemini-extension-good/GEMINI.md) |
-| 5 | ✓ | [`tests/fixtures/good-plugin/skills/example/SKILL.md`](tests/fixtures/good-plugin/skills/example/SKILL.md) |
-| 6 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md) |
-| 7 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md) |
-| 8 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md) |
-| 9 | ✓ | [`tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md`](tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md) |
-| 10 | ✓ | [`tests/fixtures/malicious-skill-plugin/skills/leaky-skill/SKILL.md`](tests/fixtures/malicious-skill-plugin/skills/leaky-skill/SKILL.md) |
-| 11 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md) |
-| 12 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md) |
-| 13 | ✓ | [`tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md`](tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md) |
+| 3 | ✓ | [`integrations/claude-code-plugin/skills/setup/SKILL.md`](integrations/claude-code-plugin/skills/setup/SKILL.md) |
+| 4 | ✓ | [`integrations/claude-code-plugin/skills/status/SKILL.md`](integrations/claude-code-plugin/skills/status/SKILL.md) |
+| 5 | ✓ | [`tests/fixtures/claude-plugin-good/skills/example/SKILL.md`](tests/fixtures/claude-plugin-good/skills/example/SKILL.md) |
+| 6 | ✓ | [`tests/fixtures/gemini-extension-good/GEMINI.md`](tests/fixtures/gemini-extension-good/GEMINI.md) |
+| 7 | ✓ | [`tests/fixtures/good-plugin/skills/example/SKILL.md`](tests/fixtures/good-plugin/skills/example/SKILL.md) |
+| 8 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md) |
+| 9 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md) |
+| 10 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md) |
+| 11 | ✓ | [`tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md`](tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md) |
+| 12 | ✓ | [`tests/fixtures/malicious-skill-plugin/skills/leaky-skill/SKILL.md`](tests/fixtures/malicious-skill-plugin/skills/leaky-skill/SKILL.md) |
+| 13 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md) |
+| 14 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md) |
+| 15 | ✓ | [`tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md`](tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md) |
 
 ---
 

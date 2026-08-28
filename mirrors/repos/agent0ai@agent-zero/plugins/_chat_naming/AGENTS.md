@@ -7,7 +7,7 @@
 ## Ownership
 
 - `helpers/naming.py` owns user-message selection, name generation, and persistence.
-- `extensions/python/monologue_start/` owns configured automatic naming.
+- `extensions/python/monologue_end/` owns configured automatic naming.
 - `api/chat_name.py` owns modal reads, generation, and manual saves.
 - `webui/` and `extensions/webui/sidebar-row-actions-menu/` own the standard rename modal and row-menu action.
 - `prompts/` owns the Utility Model naming instructions.
@@ -16,6 +16,7 @@
 ## Local Contracts
 
 - Automatic naming reads scoped plugin config through the active chat agent.
+- Automatic naming runs after the monologue completes, so it cannot delay the Main Model.
 - Utility Model input contains the current name and user messages only; assistant work and tool results are excluded.
 - The complete naming prompt must remain within 70% of the effective Utility Model context window, preserving the newest user context when trimming is required.
 - `once` names only unnamed user chats from their first user message; `always` considers the latest user message plus recent user context.

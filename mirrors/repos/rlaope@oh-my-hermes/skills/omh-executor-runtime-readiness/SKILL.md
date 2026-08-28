@@ -1,6 +1,6 @@
 ---
-name: omh-executor-runtime-readiness
-description: [omh] Executor runtime readiness - compare Codex, Claude Code, Hermes coding, and oh-my runtimes by tools and handoff mode; use external-connector-readiness for a named plugin or API, and toolbelt-readiness for the whole capability inventory. Use when the user says: executor-runtime-readiness, executor readiness, runtime readiness, codex readiness, claude code readiness, hermes coding readiness, executor tools, missing tools.
+name: "omh-executor-runtime-readiness"
+description: "[omh] Executor runtime readiness - compare Codex, Claude Code, Hermes coding, and oh-my runtimes by tools and handoff mode; use external-connector-readiness for a named plugin or API, and toolbelt-readiness for the whole capability inventory. Use when the user says: executor-runtime-readiness, executor readiness, runtime readiness, codex readiness, claude code readiness, hermes coding readiness, executor tools, missing tools."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, executor-readiness]

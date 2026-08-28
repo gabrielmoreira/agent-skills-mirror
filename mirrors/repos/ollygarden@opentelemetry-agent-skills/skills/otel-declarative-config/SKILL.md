@@ -51,8 +51,8 @@ released-version guidance from schema files or examples on `main`. Coverage iden
 `1.0.0` or `1.0.0-rc.3` are not automatically YAML literals; tagged examples may use `MAJOR.MINOR`
 values such as `1.1`. Generated YAML must use the literal verified in the target runtime.
 
-**\.NET note:** declarative YAML config is **not yet implemented** in OpenTelemetry .NET
-(tracked by [`open-telemetry/opentelemetry-dotnet#6380`](https://github.com/open-telemetry/opentelemetry-dotnet/issues/6380)).
+**\.NET note:** declarative YAML config has **no released implementation or package** in OpenTelemetry .NET
+(tracked by [`open-telemetry/opentelemetry-dotnet#7658`](https://github.com/open-telemetry/opentelemetry-dotnet/issues/7658)).
 .NET configures via the DI/builder API, `OTEL_*` env vars, and `IConfiguration`. Do **not**
 use `OTEL_CONFIG_FILE` with .NET runtimes.
 

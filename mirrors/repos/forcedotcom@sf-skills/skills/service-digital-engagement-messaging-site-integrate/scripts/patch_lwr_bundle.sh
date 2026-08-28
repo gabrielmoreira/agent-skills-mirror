@@ -1,33 +1,32 @@
 #!/usr/bin/env bash
 # patch_lwr_bundle.sh
 # Idempotently inserts (or updates in place) the experience_messaging:embeddedMessaging
-# component inside the "content" region of an LWR site's home/content.json.
-#
-# Deterministic path — same input yields the same output. If the component
-# already exists inside .contentBody.component.children[] (recursively), its
-# .attributes are refreshed and the existing .id is preserved. Otherwise a new
-# community_layout:section wrapper is appended to the region whose
-# .type == "region" AND .name == "content".
+# component into the footer region of every sfdc_cms__themeLayout content.json in an
+# LWR DigitalExperienceBundle. Targeting the themeLayout footer places the widget
+# site-wide (as a floating overlay on every page), equivalent to the Aura themeFooter.
 #
 # Usage:
-#   patch_lwr_bundle.sh <content.json> <deploymentName> <scrtUrl> <siteEndpoint>
+#   patch_lwr_bundle.sh <site-dir> <deploymentName> <scrtUrl> <siteEndpoint>
+#
+#   <site-dir> is the path to the site root, e.g.:
+#     force-app/main/default/digitalExperiences/site/<siteName>
 #
 # Requires: jq, uuidgen (or /proc/sys/kernel/random/uuid, or python3).
 
 set -euo pipefail
 
 if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <content.json> <deploymentName> <scrtUrl> <siteEndpoint>" >&2
+    echo "Usage: $0 <site-dir> <deploymentName> <scrtUrl> <siteEndpoint>" >&2
     exit 1
 fi
 
-CONTENT_JSON="$1"
+SITE_DIR="$1"
 DEPLOYMENT_NAME="$2"
 SCRT_URL="$3"
 SITE_ENDPOINT="$4"
 
-if [ ! -f "$CONTENT_JSON" ]; then
-    echo "Error: file not found: $CONTENT_JSON" >&2
+if [ ! -d "$SITE_DIR" ]; then
+    echo "Error: site directory not found: $SITE_DIR" >&2
     exit 1
 fi
 
@@ -46,87 +45,149 @@ gen_uuid() {
     fi
 }
 
-UUID_SECTION="$(gen_uuid)"
-UUID_REGION="$(gen_uuid)"
-UUID_MESSAGING="$(gen_uuid)"
+# Find all themeLayout content.json files (skip mobile/tablet rendition subdirs)
+THEME_LAYOUTS=$(find "$SITE_DIR/sfdc_cms__themeLayout" -maxdepth 2 -name "content.json" 2>/dev/null || true)
 
-TMP_OUT="$(mktemp)"
-trap 'rm -f "$TMP_OUT"' EXIT
+if [ -z "$THEME_LAYOUTS" ]; then
+    echo "Error: no sfdc_cms__themeLayout/*/content.json files found under $SITE_DIR" >&2
+    exit 1
+fi
 
-jq \
-    --arg deploymentName "$DEPLOYMENT_NAME" \
-    --arg scrtUrl "$SCRT_URL" \
-    --arg siteEndpoint "$SITE_ENDPOINT" \
-    --arg uuidSection "$UUID_SECTION" \
-    --arg uuidRegion "$UUID_REGION" \
-    --arg uuidMessaging "$UUID_MESSAGING" \
-    '
-    def attrs:
-        {
-            deploymentName: $deploymentName,
-            scrtUrl: $scrtUrl,
-            siteEndpoint: $siteEndpoint,
-            isExpSiteAuthMode: false,
-            hideChatButtonOnLoad: "Default",
-            clientVersion: "WebV1"
-        };
+PATCHED=0
+SKIPPED=0
 
-    def has_messaging(children):
-        (children // []) | any(
-            (.definition? == "experience_messaging:embeddedMessaging") or
-            has_messaging(.children // [])
-        );
+while IFS= read -r CONTENT_JSON; do
+    # Skip mobile/tablet rendition files (they live in a subdirectory of the layout dir)
+    LAYOUT_DIR=$(dirname "$CONTENT_JSON")
+    PARENT_DIR=$(dirname "$LAYOUT_DIR")
+    GRANDPARENT=$(basename "$PARENT_DIR")
+    if [ "$GRANDPARENT" != "sfdc_cms__themeLayout" ]; then
+        continue
+    fi
 
-    def update_messaging(children):
-        (children // []) | map(
-            if .definition? == "experience_messaging:embeddedMessaging" then
-                .attributes = attrs
-            elif (.children // []) | length > 0 then
-                .children = update_messaging(.children)
-            else . end
-        );
+    UUID_MESSAGING="$(gen_uuid)"
+    TMP_OUT="$(mktemp)"
+    trap 'rm -f "$TMP_OUT"' EXIT
 
-    def section_config:
-        ({columns: [{id: $uuidRegion, width: 12}]} | tostring);
+    jq \
+        --arg deploymentName "$DEPLOYMENT_NAME" \
+        --arg scrtUrl "$SCRT_URL" \
+        --arg siteEndpoint "$SITE_ENDPOINT" \
+        --arg uuidMessaging "$UUID_MESSAGING" \
+        '
+        def attrs:
+            {
+                deploymentName: $deploymentName,
+                scrtUrl: $scrtUrl,
+                siteEndpoint: $siteEndpoint,
+                isExpSiteAuthMode: false,
+                hideChatButtonOnLoad: "Default",
+                clientVersion: "WebV2"
+            };
 
-    def new_section:
-        {
-            id: $uuidSection,
-            definition: "community_layout:section",
-            sectionConfig: section_config,
-            children: [
-                {
-                    id: $uuidRegion,
-                    name: "column",
-                    title: "Column",
-                    type: "region",
-                    children: [
-                        {
-                            id: $uuidMessaging,
-                            definition: "experience_messaging:embeddedMessaging",
-                            attributes: attrs
-                        }
-                    ]
-                }
-            ]
-        };
+        # Recursively check whether a messaging component already exists
+        def has_messaging:
+            . as $n |
+            if type == "array" then
+                any(.[]; has_messaging)
+            elif type == "object" then
+                ((.definition? == "experience_messaging:embeddedMessaging") or
+                 ((.children // []) | has_messaging))
+            else false end;
 
-    def patch_region:
-        if has_messaging(.children // []) then
-            .children = update_messaging(.children)
-        else
-            .children = ((.children // []) + [new_section])
-        end;
+        # Recursively update attributes of existing messaging component in place
+        def update_messaging:
+            if type == "array" then map(update_messaging)
+            elif type == "object" then
+                if .definition? == "experience_messaging:embeddedMessaging" then
+                    .attributes = attrs
+                elif (.children | type) == "array" then
+                    .children |= update_messaging
+                else . end
+            else . end;
 
-    .contentBody.component.children |=
-        (map(
-            if (.type? == "region") and (.name? == "content") then
-                patch_region
-            else . end
-        ))
-    ' "$CONTENT_JSON" > "$TMP_OUT"
+        # New standalone messaging component node (no section wrapper — it is a
+        # floating overlay and does not need a layout container in the footer)
+        def new_messaging:
+            {
+                id: $uuidMessaging,
+                type: "component",
+                definition: "experience_messaging:embeddedMessaging",
+                attributes: attrs
+            };
 
-mv "$TMP_OUT" "$CONTENT_JSON"
-trap - EXIT
+        # Inject into the footer region layout section. Two decisions, both made
+        # over the ENTIRE footer subtree so a stale widget anywhere in the footer
+        # is refreshed rather than duplicated:
+        #   1. If the footer subtree already has a messaging component (in any
+        #      region or as a direct section child), run update_messaging over
+        #      the whole footer — never append a second one.
+        #   2. Otherwise pick the best insertion slot: the first
+        #      `community_layout:section` wrapper (by definition, since the footer
+        #      can hold consent banners etc. before it) → its first inner region →
+        #      else the section itself → else the footer root.
+        # All child accessors default to [] so a component-only or empty footer
+        # never pipes null into an array op (jq would abort).
+        def patch_footer_region:
+            . as $footer |
+            if ($footer.children // []) | has_messaging then
+                .children |= update_messaging
+            else
+                ([ ($footer.children // []) | to_entries[]
+                   | select(.value.type? == "component"
+                            and .value.definition? == "community_layout:section") ]
+                 | .[0].key) as $si |
+                if $si == null then
+                    .children = ((.children // []) + [new_messaging])
+                else
+                    ((.children[$si].children // []) | to_entries
+                     | map(select(.value.type? == "region")) | .[0].key) as $ri |
+                    if $ri == null then
+                        .children[$si].children =
+                            ((.children[$si].children // []) + [new_messaging])
+                    else
+                        .children[$si].children[$ri].children =
+                            ((.children[$si].children[$ri].children // []) + [new_messaging])
+                    end
+                end
+            end;
 
-echo "Patched: $CONTENT_JSON"
+        # Apply to every top-level footer region. Guard the children array so a
+        # component-only layout (children == null) is a no-op, not a crash.
+        .contentBody.component.children |= (
+            (. // []) | map(
+                if .type? == "region" and .name? == "footer" then
+                    patch_footer_region
+                else . end
+            )
+        )
+        ' "$CONTENT_JSON" > "$TMP_OUT"
+
+    mv "$TMP_OUT" "$CONTENT_JSON"
+    trap - EXIT
+    LAYOUT_NAME=$(basename "$(dirname "$CONTENT_JSON")")
+    # Confirm the widget landed inside a FOOTER region specifically — not just
+    # anywhere in the file. A stale messaging component elsewhere (e.g. the
+    # content region) must not make a footerless layout count as patched, or the
+    # script could exit 0 without ever placing the site-wide footer widget.
+    # Recurse only into the footer region subtree(s) and look for the component.
+    if jq -e '
+        [ .contentBody.component.children[]?
+          | select(.type? == "region" and .name? == "footer")
+          | .. | select(type == "object" and .definition? == "experience_messaging:embeddedMessaging")
+        ] | length > 0
+    ' "$CONTENT_JSON" >/dev/null; then
+        echo "Patched: $LAYOUT_NAME ($CONTENT_JSON)"
+        PATCHED=$((PATCHED + 1))
+    else
+        echo "Skipped (no footer region): $LAYOUT_NAME ($CONTENT_JSON)" >&2
+        SKIPPED=$((SKIPPED + 1))
+    fi
+done <<< "$THEME_LAYOUTS"
+
+echo "Done: $PATCHED themeLayout(s) patched, $SKIPPED skipped."
+
+if [ "$PATCHED" -eq 0 ]; then
+    echo "Error: no themeLayout had a footer region to patch under $SITE_DIR" >&2
+    exit 1
+fi

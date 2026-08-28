@@ -77,6 +77,10 @@ One file per translated language (e.g., `es.translation-meta.xml` for Spanish, `
 </Translations>
 ```
 
+Always write the whole document shown above, not a fragment: exactly one XML declaration, one `<Translations>` root with the Metadata API namespace, and one complete `<customLabels>` block per label. For an untranslated scaffold, copy the XML-escaped English source text into `<label>` and leave actual translation to the localization team. Preserve positional placeholders such as `{0}` and `{1}`.
+
+XML-escape text values: `&` becomes `&amp;`, `<` becomes `&lt;`, and `>` becomes `&gt;`. Before considering the file complete, parse both `CustomLabels.labels-meta.xml` and every generated `*.translation-meta.xml` with an XML parser. A fragment with balanced-looking inner tags is still invalid without its root document.
+
 ### Fields
 
 | Field | Purpose | Notes |
@@ -105,7 +109,7 @@ You have two options:
 
 ### 1. Hand-edit the XML (for small apps)
 
-Create the `<locale>.translation-meta.xml` file, add one `<customLabels>` block per label, and type the translations directly. Good for a handful of labels or prototyping.
+Create the complete `<locale>.translation-meta.xml` document and add one complete `<customLabels>` block per label. For this skill's scaffold, keep the English source text rather than inventing translations; translators can replace it later. Good for a handful of labels or prototyping.
 
 ### 2. Use Translation Workbench (for scale)
 
@@ -233,14 +237,17 @@ To change a user's Language (to test translations), go to:
 </labels>
 ```
 
-### 2. Add the Spanish translation
+### 2. Add the untranslated Spanish scaffold
 
 `force-app/main/default/translations/es.translation-meta.xml`:
 ```xml
-<customLabels>
-  <label>Bienvenido</label>
-  <name>Welcome_Text</name>
-</customLabels>
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+  <customLabels>
+    <label>Welcome</label>
+    <name>Welcome_Text</name>
+  </customLabels>
+</Translations>
 ```
 
 ### 3. Register in the manifest
@@ -264,13 +271,20 @@ function WelcomeBanner() {
 ### 5. Deploy
 
 ```bash
-sf project deploy start --source-dir force-app --target-org <alias>
+sf project deploy start \
+  --source-dir force-app/main/default/uiBundles/<your-bundle> \
+  --source-dir force-app/main/default/labels/CustomLabels.labels-meta.xml \
+  --source-dir force-app/main/default/translations/<locale>.translation-meta.xml \
+  --target-org <alias>
 ```
+
+Review the exact paths and target org with the user before deploying. Repeat the translation path only for locale files changed by this task.
 
 ### 6. Verify
 
 - User with Language = English sees "Welcome"
-- User with Language = Spanish sees "Bienvenido"
+- Before translator review, a user with Language = Spanish also sees the scaffold value "Welcome"
+- After a translator replaces the scaffold value with `Bienvenido` and the metadata is retrieved/deployed, a user with Language = Spanish sees "Bienvenido"
 
 ---
 

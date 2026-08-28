@@ -126,6 +126,10 @@ receivers:
           ascending: false         # track only the highest-numbered file
 ```
 
+An explicit `top_n: 0` means "match all files." Omitting `top_n` still falls
+back to the legacy value `1` unless the alpha `filelog.requireExplicitTopN` gate is enabled; with
+that gate, a sorted configuration must state either `0` or a positive limit.
+
 ## Kubernetes pod logs
 
 The canonical node-level collection path: tail the kubelet's per-pod log files and parse the

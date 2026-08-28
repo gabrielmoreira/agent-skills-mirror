@@ -41,7 +41,7 @@ logger.Emit(ctx, record)
 span.SetStatus(codes.Error, err.Error())
 ```
 
-Go log SDK 0.21.0 derives `exception.type` and `exception.message` from
+Go log SDK 0.22.0 derives `exception.type` and `exception.message` from
 `SetErr`. An explicitly supplied exception attribute is preserved, while each
 missing `exception.type` or `exception.message` attribute is derived independently.
 When an error library preserves the origin stack, add `exception.stacktrace` and

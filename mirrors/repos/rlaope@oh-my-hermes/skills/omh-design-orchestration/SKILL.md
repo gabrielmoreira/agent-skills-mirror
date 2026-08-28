@@ -1,6 +1,6 @@
 ---
-name: omh-design-orchestration
-description: [omh] Hermes design orchestration workflow: prepare a bounded design direction, existing-lane composition, and executor-neutral handoff. Use when the user says: design-orchestration, design orchestration, design ownership, handle this product design, take on the design, 디자인 맡겨, 디자인 맡겨줘, 디자인 전체 맡겨.
+name: "omh-design-orchestration"
+description: "[omh] Hermes design orchestration workflow: prepare a bounded design direction, existing-lane composition, and executor-neutral handoff. Use when the user says: design-orchestration, design orchestration, design ownership, handle this product design, take on the design, 디자인 맡겨, 디자인 맡겨줘, 디자인 전체 맡겨."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]

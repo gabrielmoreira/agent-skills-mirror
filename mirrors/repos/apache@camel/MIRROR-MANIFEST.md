@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 10 file(s) materialized.
+Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 10 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 10 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,10 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`archetypes/camel-archetype-dataformat/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-dataformat/src/main/resources/archetype-resources/AGENTS.md) |
 | 5 | ✓ | [`archetypes/camel-archetype-java/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-java/src/main/resources/archetype-resources/AGENTS.md) |
 | 6 | ✓ | [`archetypes/camel-archetype-main/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-main/src/main/resources/archetype-resources/AGENTS.md) |
-| 7 | ✓ | [`archetypes/camel-archetype-spring/src/main/resources/archetype-resources/AGENTS.md`](archetypes/camel-archetype-spring/src/main/resources/archetype-resources/AGENTS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
-| 10 | → | [`SECURITY.md`](SECURITY.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
+| 9 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -396,9 +396,9 @@ The package includes a reference implementation in `src/features/fileupload/` wi
 
 ## DO NOT do these things
 
-- ❌ Build XHR/fetch upload logic from scratch — use the `upload()` API
-- ❌ Try to import `<FileUpload />` component — it's not exported
-- ❌ Try to import `useFileUpload` hook — it's not exported
-- ❌ Use third-party file upload libraries when this feature exists
-- ❌ Skip progress tracking — always provide user feedback
-- ❌ Ignore errors — always handle and display error messages
+- Build XHR/fetch upload logic from scratch — use the `upload()` API
+- Try to import `<FileUpload />` component — it's not exported
+- Try to import `useFileUpload` hook — it's not exported
+- Use third-party file upload libraries when this feature exists
+- Skip progress tracking — always provide user feedback
+- Ignore errors — always handle and display error messages

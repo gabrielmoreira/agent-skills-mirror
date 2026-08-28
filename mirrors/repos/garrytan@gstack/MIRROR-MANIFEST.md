@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 1 followed patterns, 69 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 7 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `garrytan/gstack` — 26 default patterns, 1 followed patterns, 69 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 69 |
+| Followed pats | 7 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,12 @@ Mirror of `garrytan/gstack` — 26 default patterns, 1 followed patterns, 69 fil
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/howto-ios-testing-with-gstack.md`
+- `docs/TESTING_INTERNALS.md`
+- `docs/PROJECT_STRUCTURE.md`
+- `docs/BROWSER_INTERNALS.md`
+- `docs/SLOP_SCAN.md`
+- `docs/CHANGELOG_STYLE.md`
+- `docs/OPENCLAW_PUBLISHING.md`
 
 ## File Index
 
@@ -127,7 +133,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`test/fixtures/context-bill/tree-a/alpha/SKILL.md`](test/fixtures/context-bill/tree-a/alpha/SKILL.md) |
 | 67 | ✓ | [`test/fixtures/context-bill/tree-a/beta/SKILL.md`](test/fixtures/context-bill/tree-a/beta/SKILL.md) |
 | 68 | ✓ | [`unfreeze/SKILL.md`](unfreeze/SKILL.md) |
-| 69 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
+| 69 | → | [`docs/BROWSER_INTERNALS.md`](docs/BROWSER_INTERNALS.md) |
+| 70 | → | [`docs/CHANGELOG_STYLE.md`](docs/CHANGELOG_STYLE.md) |
+| 71 | → | [`docs/howto-ios-testing-with-gstack.md`](docs/howto-ios-testing-with-gstack.md) |
+| 72 | → | [`docs/OPENCLAW_PUBLISHING.md`](docs/OPENCLAW_PUBLISHING.md) |
+| 73 | → | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) |
+| 74 | → | [`docs/SLOP_SCAN.md`](docs/SLOP_SCAN.md) |
+| 75 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
 
 ---
 

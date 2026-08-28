@@ -33,8 +33,8 @@ modlens config set <provider>.<field> <value>   # 字段：apiKey、baseUrl、mo
     }
   },
   "guards": {
-    "allowModels": ["deepseek-v4-*", "glm-5.*", "minimax-m2.5*", "qwen3-coder*"],
-    "denyModels": ["glm-*v*", "deepseek-vl*"],
+    "allowModels": ["deepseek-v4-*", "glm-5.2*", "*/glm-5.2*", "glm-5.3", "*/glm-5.3", "minimax-m2.5*", "qwen3-coder*"],
+    "denyModels": ["glm-*v*", "*/glm-*v*", "glm-5.3-flash", "glm-5.3-flash-*", "glm-5.3-flash:*", "*/glm-5.3-flash", "*/glm-5.3-flash-*", "*/glm-5.3-flash:*", "deepseek-vl*"],
     "denyWhenUnknown": false
   },
   "providers": {
@@ -72,7 +72,7 @@ modlens config set <provider>.<field> <value>   # 字段：apiKey、baseUrl、mo
 - `saved.openai.<标签>`：openai 槽的命名存档，只有 `modlens config save openai <标签>` 写入、`modlens config use openai <标签>` 整包换入。切换网关不再丢上一个端点的 key：`use` 拒绝覆盖没有任何标签保存过的活跃槽（`--discard` 表示明确放弃）。解析、guard、failover、环境变量规则都不读这个区，活跃槽始终是唯一生效的 openai 路由。
 - `guards`：调用 guard，给在同一个客户端里既跑纯文本模型又跑视觉模型的人用。两个列表都放 glob 模式（支持 `*` 和 `?`，不区分大小写，同时匹配模型名和 `provider/model`），用 `modlens config set guards.denyModels '["gemini-3*"]'` 或 `guards.allowModels` 设置（JSON 数组或逗号分隔的列表都行，传空则清除）。两种写法表达同一个意图，选列表更短的那种：
   - 只用 `denyModels`：除了列出的视觉模型，其余全部运行引擎。适合你接入的模型大多是纯文本的情况。
-  - `allowModels` 非空（白名单模式）：只有列出的模型运行引擎，其他所有已识别的模型一律拒绝。适合 2026 年的实际格局，纯文本模型才是那份短名单。deny 模式仍然优先于 allow 匹配，所以宽泛的 allow 可以把视觉变体剔出去，正如上面的示例：`glm-5.*` 放行文本系列，`glm-*v*` 抓住 `glm-5v-turbo`。allow 模式要锚定得紧一些（写 `deepseek-v4-*` 而不是 `deepseek*`），这样厂商下一代多模态型号会自动掉出名单，等你检查过再上场。
+  - `allowModels` 非空（白名单模式）：只有列出的模型运行引擎，其他所有已识别的模型一律拒绝。适合 2026 年的实际格局，纯文本模型才是那份短名单。deny 模式仍然优先于 allow 匹配，所以宽泛的 allow 可以把视觉变体剔出去，正如上面的示例：`glm-5.2*` 和 `*/glm-5.2*` 覆盖裸名和带命名空间的 5.2 系列（`z-ai/glm-5.2:free`），`glm-5.3` 和 `*/glm-5.3` 覆盖 GLM-5.3 本体，`glm-*v*` 和 `*/glm-*v*` 抓住 `glm-5v-turbo`、`z-ai/glm-5.2v` 与 `z-ai/glm-5.2-vision`，带分隔符的 `glm-5.3-flash` / `glm-5.3-flash-*` / `glm-5.3-flash:*`（以及对应的 `*/` 形式）抓住 `glm-5.3-flash`。guard 按存下来的 id 匹配，不会剥掉厂商前缀，所以带命名空间的文本型号需要那条 `*/` 配对，带命名空间的视觉变体也需要对应的 deny 配对。不要写 `glm-5.*` 或 `glm-5.3-flash*`：前者也会匹配 `glm-5.3-flash`，后者也会匹配 `glm-5.3-flashlight` 这种连写。allow 模式要锚定得紧一些（写 `deepseek-v4-*` 而不是 `deepseek*`），这样厂商下一代多模态型号会自动掉出名单，等你检查过再上场。
   - 按真正抵达模型的内容来列名单，而不是按它本来能看到什么：多模态模型如果躲在一个剥离图片的网关后面，照样需要 modlens，而你的会话记录里存的是网关上报的模型名。`modlens doctor` 的 Guard 一节会显示规则和一条实时判定，方便核对结果。
   - `denyWhenUnknown`（默认 `false`）决定在两种模式下，当没有任何信号能识别当前模型时怎么办：`false` 放行，`true` 拒绝。当前模型的检测来源从强到弱依次是：`MODLENS_MODEL` 环境变量（`none` 表示「按未知处理」）、harness 的会话存储、`--model` 自报。
 - `GEMINI_API_KEY`、`GEMINI_BASE_URL`、`OPENAI_API_KEY`、`OPENAI_BASE_URL`、`ANTHROPIC_API_KEY`、`ANTHROPIC_BASE_URL` 用来配置本文件只字未提的 provider。本文件提到过的，它们完全不生效。过去它们逐字段覆盖，拼出的组合在哪儿都不存在：地址和密钥本是一副凭据。密钥变量和文件字段一样接受英文逗号分隔的列表。modlens 仍然读取 `MODLENS_HARNESS`（粘贴恢复和 guard 的作用范围）、`MODLENS_MODEL`（guard 覆盖，见 `guards`），以及各 harness 自己注入的指纹，它们把 guard 的存储查询钉在当前 session 上：`CLAUDE_CODE_SESSION_ID`、`CODEX_THREAD_ID`，加上 harness 检测依赖的存在性标记（`CLAUDECODE`、`PI_CODING_AGENT`、`CODEX_SANDBOX`）。
@@ -180,7 +180,7 @@ modlens config set openai.extraBody ''                                   # 清�
 | :-- | :-- |
 | MiMo 官方 API（`api.xiaomimimo.com/v1`） | `{"thinking":{"type":"disabled"}}` |
 | MiMo Responses 格式路由 | `{"reasoning":{"effort":"none"}}` |
-| Qwen、GLM、MiMo 等自建在 vLLM 或 SGLang 上 | `{"chat_template_kwargs":{"enable_thinking":false}}` |
+| Qwen、GLM、MiMo 等自建在 vLLM 或 SGLang 上（GLM-5.3 与 GLM-5.3-Flash 不支持关闭思考） | `{"chat_template_kwargs":{"enable_thinking":false}}` |
 | 接受 effort 档位的 OpenAI 风格网关 | `{"reasoning_effort":"low"}` |
 | `gemini-api`，Gemini 3 系列 | `{"generationConfig":{"thinkingConfig":{"thinkingLevel":"LOW"}}}` |
 | `gemini-api`，Gemini 2.5 Flash 与 Flash Lite | `{"generationConfig":{"thinkingConfig":{"thinkingBudget":0}}}` |

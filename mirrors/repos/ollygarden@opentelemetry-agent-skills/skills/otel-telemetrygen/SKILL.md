@@ -6,7 +6,7 @@ description: Build safe, version-pinned telemetrygen commands for synthetic OTLP
 # Telemetrygen
 
 Generate synthetic OpenTelemetry telemetry with `telemetrygen` from
-[opentelemetry-collector-contrib v0.158.0](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/v0.158.0/cmd/telemetrygen).
+[opentelemetry-collector-contrib v0.159.0](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/v0.159.0/cmd/telemetrygen).
 Upstream metadata marks its traces, metrics, and logs subcommands as alpha.
 
 ## Safety and input gate
@@ -39,7 +39,8 @@ missing.
    the limiter counts parent and child spans: with `n` effective children, approximate configured
    traces/s = `workers * rate / (n + 1)`; the default `n = 1` gives `workers * rate / 2`.
 5. Put resource attributes on repeatable `--otlp-attributes` and signal-level attributes on
-   repeatable `--telemetry-attributes`. Use `--service` for `service.name`.
+   repeatable `--telemetry-attributes`. Use `--service` for `service.name`; an explicit
+   `service.name` on `--otlp-attributes` overrides `--service`.
 6. Add only the signal-specific flags needed. Look up exact names, defaults, supported values, and
    typed attribute quoting in [references/flags.md](references/flags.md).
 
@@ -116,8 +117,8 @@ Before finalizing a response, check that:
 Pin the release:
 
 ```bash
-go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@v0.158.0
-docker pull ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.158.0
+go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@v0.159.0
+docker pull ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.159.0
 ```
 
 The version belongs in the installation or image reference, not between the installed
@@ -127,7 +128,7 @@ Run the container with the same flags after the image name:
 
 ```bash
 docker run --rm --network "container:<collector-container-name>" \
-  ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.158.0 \
+  ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.159.0 \
   traces --otlp-insecure --otlp-endpoint 127.0.0.1:4317 \
   --traces 100 --workers 1 --rate 1
 ```

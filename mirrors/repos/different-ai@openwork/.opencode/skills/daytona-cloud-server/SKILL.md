@@ -1,6 +1,6 @@
 ---
 name: daytona-cloud-server
-description: Daytona cloud server, Den sandbox, desktop plus cloud e2e, marketplace server, worker proxy, cloud auth, org policies, connect Electron to Den. Use for server-side setup in validated flows.
+description: Daytona cloud server, Den sandbox, desktop plus cloud e2e, marketplace server, cloud auth, org policies, connect Electron to Den. Use for server-side setup in validated flows.
 ---
 
 # Daytona Cloud Server
@@ -26,7 +26,7 @@ bash .devcontainer/test-server-on-daytona.sh [branch-or-commit]
 ```
 
 The helper creates a separate server sandbox, starts MySQL, Den API, Den Web,
-and worker proxy, waits for health checks, then prints URLs.
+and waits for health checks, then prints URLs.
 
 If dependencies or the base image changed, refresh the server snapshot:
 
@@ -63,7 +63,6 @@ Inspect logs if health checks fail:
 ```bash
 daytona exec "$SERVER_SANDBOX" -- 'tail -120 /tmp/den-api.log'
 daytona exec "$SERVER_SANDBOX" -- 'tail -120 /tmp/den-web.log'
-daytona exec "$SERVER_SANDBOX" -- 'tail -120 /tmp/den-worker-proxy.log'
 daytona exec "$SERVER_SANDBOX" -- 'tail -120 /tmp/den-db-push.log'
 ```
 
@@ -74,7 +73,7 @@ and a separate Electron sandbox for the desktop client. This matches production
 better than trying to run everything inside one desktop sandbox.
 
 Use this for marketplace install/remove/search/filter, org-managed extensions,
-desktop handoff auth, cloud restrictions, and worker proxy flows.
+desktop handoff auth, cloud restrictions, and signed preview flows.
 
 ## Evidence
 

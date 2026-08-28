@@ -1,6 +1,6 @@
 ---
-name: omh-ops-observability-card
-description: [omh] Hermes ops observability workflow: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries. Use when the user says: ops-observability-card, observability card, operations command board, ops command board, service quality board, service quality, external metric provider, metric provider.
+name: "omh-ops-observability-card"
+description: "[omh] Hermes ops observability workflow: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries. Use when the user says: ops-observability-card, observability card, operations command board, ops command board, service quality board, service quality, external metric provider, metric provider."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]
@@ -102,6 +102,12 @@ Artifact expectations:
 - external_metric_provider/v1 supplied metric payload when available
 - external_metric_provider_adapter/v1 connector-ready adapter metadata when available
 - ops_service_quality_board/v1 evidence-gated service-quality board
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `ops_service_quality_board/v1`; enforcement_level: `executable_validated`; consumer_id: `validate_ops_service_quality_board`
 
 Safety rules:
 

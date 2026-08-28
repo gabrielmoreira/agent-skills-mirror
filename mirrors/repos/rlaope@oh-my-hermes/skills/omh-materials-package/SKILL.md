@@ -1,6 +1,6 @@
 ---
-name: omh-materials-package
-description: [omh] Hermes Materials Package workflow: decks, PDFs, spreadsheets, documents, HWP, Markdown, and binary export handoffs. Use when the user says: materials-package, material package, materials package, document package, deck file, binary export, file export, render qa.
+name: "omh-materials-package"
+description: "[omh] Hermes Materials Package workflow: decks, PDFs, spreadsheets, documents, HWP, Markdown, and binary export handoffs. Use when the user says: materials-package, material package, materials package, document package, deck file, binary export, file export, render qa."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]

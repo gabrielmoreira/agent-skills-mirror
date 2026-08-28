@@ -1,5 +1,5 @@
 {
-  "name": "reviewing-lwc-mobile-offline-runner",
+  "name": "mobile-platform-offline-validate-runner",
   "private": true,
   "description": "Pinned ESLint + Komaci plugin used by run-komaci.sh.",
   "type": "module",

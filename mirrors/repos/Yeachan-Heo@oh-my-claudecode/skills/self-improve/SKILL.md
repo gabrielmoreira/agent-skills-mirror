@@ -125,7 +125,7 @@ Read these files at startup and at the beginning of each iteration:
    git -C {repo_path} checkout {target_branch}
    ```
    Where `{goal_slug}` is derived from the goal objective (lowercase, underscored). If the branch already exists, skip creation. Persist `goal_slug` in agent-settings.json.
-10. **Mode exclusivity**: Call `state_list_active`. If autopilot, ralph, or ultrawork is active, refuse to start.
+10. **Mode exclusivity**: Call `state_list_active`. If autopilot or ralph is active, refuse to start.
 11. Write initial state: `state_write(mode='self-improve', active=true, iteration=0, started_at=<now>)`
 
 ---

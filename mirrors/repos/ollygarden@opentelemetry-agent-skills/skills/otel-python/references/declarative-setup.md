@@ -105,8 +105,10 @@ from opentelemetry import trace, metrics
 # ... rest of app imports
 ```
 
-The import order matters. Any OTel API call that happens before `bootstrap` is
-imported (or before the CLI activates the config) uses no-op providers.
+The import order matters: telemetry emitted before `bootstrap` is imported (or
+before the CLI activates the config) uses the no-op defaults. API objects such
+as proxy tracers obtained before setup can bind to a provider installed later,
+but spans started before setup are not retroactively recorded.
 
 ## YAML Config
 

@@ -1,6 +1,6 @@
 ---
-name: omh-skill
-description: [omh] Hermes adaptation for managing local skills. Use when the user says: skill, skills, manage skills.
+name: "omh-skill"
+description: "[omh] Hermes adaptation for managing local skills. Use when the user says: skill, skills, manage skills."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]

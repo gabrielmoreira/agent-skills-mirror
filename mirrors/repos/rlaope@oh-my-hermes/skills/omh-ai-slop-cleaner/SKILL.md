@@ -1,6 +1,6 @@
 ---
-name: omh-ai-slop-cleaner
-description: [omh] Hermes AI slop cleaner workflow: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, risk analysis, refactor workflow.
+name: "omh-ai-slop-cleaner"
+description: "[omh] Hermes AI slop cleaner workflow: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, risk analysis, refactor workflow."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]

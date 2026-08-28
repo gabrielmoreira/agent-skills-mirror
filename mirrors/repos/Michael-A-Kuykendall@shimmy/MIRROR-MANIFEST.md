@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/beads/agents/openai.yaml`](.agents/skills/beads/agents/openai.yaml) |
-| 2 | ✓ | [`.agents/skills/beads/SKILL.md`](.agents/skills/beads/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`.github/instructions/emergency-rollback.instructions.md`](.github/instructions/emergency-rollback.instructions.md) |
-| 5 | ✓ | [`.github/instructions/frontend-switching.instructions.md`](.github/instructions/frontend-switching.instructions.md) |
-| 6 | ✓ | [`.github/instructions/github-pages-deployment.instructions.md`](.github/instructions/github-pages-deployment.instructions.md) |
-| 7 | ✓ | [`.github/instructions/lifecycle-testing.instructions.md`](.github/instructions/lifecycle-testing.instructions.md) |
-| 8 | ✓ | [`.github/instructions/post-launch-monitoring.instructions.md`](.github/instructions/post-launch-monitoring.instructions.md) |
-| 9 | ✓ | [`.github/instructions/release-validation.instructions.md`](.github/instructions/release-validation.instructions.md) |
-| 10 | ✓ | [`.github/instructions/wrangler-setup.instructions.md`](.github/instructions/wrangler-setup.instructions.md) |
-| 11 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`.github/instructions/emergency-rollback.instructions.md`](.github/instructions/emergency-rollback.instructions.md) |
+| 3 | ✓ | [`.github/instructions/frontend-switching.instructions.md`](.github/instructions/frontend-switching.instructions.md) |
+| 4 | ✓ | [`.github/instructions/github-pages-deployment.instructions.md`](.github/instructions/github-pages-deployment.instructions.md) |
+| 5 | ✓ | [`.github/instructions/lifecycle-testing.instructions.md`](.github/instructions/lifecycle-testing.instructions.md) |
+| 6 | ✓ | [`.github/instructions/post-launch-monitoring.instructions.md`](.github/instructions/post-launch-monitoring.instructions.md) |
+| 7 | ✓ | [`.github/instructions/release-validation.instructions.md`](.github/instructions/release-validation.instructions.md) |
+| 8 | ✓ | [`.github/instructions/wrangler-setup.instructions.md`](.github/instructions/wrangler-setup.instructions.md) |
 
 ---
 

@@ -7,6 +7,10 @@ description: Generate authored procedural trees, grass, ivy, flowers, and vegeta
 
 Represent a plant as a growth hierarchy plus rendering adaptations. Do not model it as randomly scattered cylinders.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Build sequence
 
 1. Define a per-level species table: length, radius, taper, child count, emergence range, angle, twist, gnarliness, sections, radial segments.

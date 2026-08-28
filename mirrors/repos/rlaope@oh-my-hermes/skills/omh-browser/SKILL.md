@@ -1,6 +1,6 @@
 ---
-name: omh-browser
-description: [omh] Policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions. Use when the user says: browser-operator, browser operator, browser task, browser operation, browser automation, browser session, webpage operation, web page operation.
+name: "omh-browser"
+description: "[omh] Policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions. Use when the user says: browser-operator, browser operator, browser task, browser operation, browser automation, browser session, webpage operation, web page operation."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, browser]

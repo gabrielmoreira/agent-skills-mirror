@@ -121,16 +121,16 @@ aggressively (see
 conventions are **merged** (see the
 [WebVital event](https://opentelemetry.io/docs/specs/semconv/browser/browser-events/#webvital-event)).
 
-The released `browser.web_vital` event (development stability; verify via the
-`otel-semantic-conventions` skill, group `browser`, entry `event.browser.web_vital`) requires a map
-**body** with `name`, `value`, `delta`, and `id`. These are body fields, not log attributes.
+Semantic conventions v1.44.0 defines the released `browser.web_vital` event (development
+stability; verify via the
+`otel-semantic-conventions` skill, group `browser`, entry `event.browser.web_vital`) requires the
+`browser.web_vital.name`, `.value`, `.delta`, and `.id` log attributes. The `.rating` and
+`.navigation_type` attributes are recommended.
 
-`@opentelemetry/browser-instrumentation` 0.7.0 does not yet match that released shape: it uses the
-correct event name but emits `browser.web_vital.name`, `.value`, `.rating`, `.delta`, `.id`, and
-`.navigation_type` as attributes; `body` is only set to raw attribution when
-`includeRawAttribution` is enabled. Account for that package shape in queries or transform it at
-the pipeline edge. For strict semconv output from hand-written reporting, emit a `LogRecord` with
-`eventName: 'browser.web_vital'` and the four required fields in its map body.
+`@opentelemetry/browser-instrumentation` 0.7.0 matches that released shape. Its record body is unset
+unless `includeRawAttribution` is enabled, which adds JSON-stringified attribution details outside
+the semantic-convention fields. For hand-written reporting, put the web-vital fields in attributes,
+not the record body.
 
 | Option | Type | Default | Description |
 |---|---|---|---|

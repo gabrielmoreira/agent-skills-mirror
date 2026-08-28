@@ -1,6 +1,6 @@
 ---
-name: omh-codebase-onboarding
-description: [omh] Hermes Codebase Onboarding workflow: create a repo map, reading path, glossary, risk map, and first-task runway for unfamiliar codebases. Use when the user says: codebase-onboarding, codebase onboarding, repo onboarding, repository onboarding, codebase tour, code tour, new repo orientation, understand this repo.
+name: "omh-codebase-onboarding"
+description: "[omh] Hermes Codebase Onboarding workflow: create a repo map, reading path, glossary, risk map, and first-task runway for unfamiliar codebases. Use when the user says: codebase-onboarding, codebase onboarding, repo onboarding, repository onboarding, codebase tour, code tour, new repo orientation, understand this repo."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

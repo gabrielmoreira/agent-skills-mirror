@@ -28,7 +28,7 @@ The operation is idempotent: if the component is already present it is updated i
 
 ## Scope
 
-- **In scope**: Detecting LWR vs Aura bundle type; scaffolding missing LWR template routes required by the site template (e.g. `too-many-requests`); patching the home-page JSON to insert or update the Embedded Messaging component; staging the bundle into `force-app`; async deploy with polling; resolving the `Network.Name` and publishing the site; guest-URL smoke test; manual Experience Builder fallback with a deep link.
+- **In scope**: Detecting LWR vs Aura bundle type; scaffolding missing LWR template routes required by the site template (e.g. `too-many-requests`); patching all `sfdc_cms__themeLayout/*/content.json` files to insert or update the Embedded Messaging component in the footer region (site-wide placement); staging the bundle into `force-app`; async deploy with polling; resolving the `Network.Name` and publishing the site; guest-URL smoke test; manual Experience Builder fallback with a deep link.
 - **Out of scope**: Creating the `EmbeddedServiceConfig` (Embedded Service Deployment) itself — use `service-digital-engagement-deployment-configure`; creating the `MessagingChannel` — use `service-digital-engagement-channel-configure`; creating the Experience Cloud site itself — use `experience-lwr-site-generate`; generating a standalone JS snippet for a non-Experience website.
 
 ---
@@ -92,15 +92,15 @@ Read `references/bundle_detection.md` for retrieval command shapes and troublesh
 
 3. **Scaffold any missing LWR template routes** (commonly `too-many-requests`) before patching — missing routes fail the deploy. Route+view scaffolding is owned by `experience-lwr-site-generate` (see its `configure-content-route.md`, `configure-content-view.md`, and `handle-component-and-region-ids.md`). Delegate to that skill for the actual scaffold; this skill only supplies the messaging-specific context (which route the deploy is complaining about, and confirmation that the scaffolded pair resolves that specific deploy error). See `references/lwr_route_scaffolding.md` for the delegation pointer.
 
-4. **Patch the home page** by running:
+4. **Patch all themeLayout files** by running:
 
    ```bash
    scripts/patch_lwr_bundle.sh \
-     <retrieve-dir>/digitalExperiences/site/<siteName>/sfdc_cms__view/home/content.json \
+     <retrieve-dir>/digitalExperiences/site/<siteName> \
      <deploymentName> <scrtUrl> <siteEndpoint>
    ```
 
-   The script deterministically walks `.contentBody.component.children[]`, targets the region with `.type == "region"` and `.name == "content"`, and either updates the existing `.definition == "experience_messaging:embeddedMessaging"` component in place (preserving its `id`) or appends a fresh `community_layout:section` wrapper with a JSON-string `sectionConfig`. See `references/lwr_patch.md` for the JSON shapes it emits and how to verify.
+   The script iterates every `sfdc_cms__themeLayout/*/content.json` file. For each, it locates the `footer` region at `.contentBody.component.children[]`, walks into the existing `community_layout:section` wrapper's inner slot region, and either updates the existing `experience_messaging:embeddedMessaging` component in place (preserving its `id`) or appends a fresh component node. Targeting the themeLayout footer makes the widget site-wide (floating overlay on every page), equivalent to the Aura themeFooter placement. See `references/lwr_patch.md` for the JSON shapes and how to verify.
 
 5. Proceed to Phase 4.
 
@@ -195,7 +195,7 @@ Read `references/bundle_detection.md` for retrieval command shapes and troublesh
 | Preserve the existing component `id` when updating in place | Ensures idempotency; the Experience runtime keys off `id` |
 | Every new `id` must be a fresh UUID | Duplicate IDs corrupt the layout and can fail render |
 | LWR uses `definition` / `attributes`; Aura uses `componentName` / `componentAttributes` | Wrong key names silently drop the component from render |
-| LWR `community_layout:section` `sectionConfig` is a JSON string, not a nested object | The Experience CMS serializer expects a string |
+| LWR `community_layout:section` `sectionConfig` lives inside `.attributes` as a JSON string (not a top-level property, not a nested object) | Top-level placement violates the schema's `additionalProperties: false` constraint; the serializer also expects a string not an object |
 | Aura sibling `<siteName>.site-meta.xml` must be copied alongside the bundle | Deploy is rejected without it |
 | Poll the async deploy; do not fire-and-forget | Publish must run only after deploy succeeds |
 | Resolve `Network.Name` from `UrlPathPrefix`, do not reuse site `DeveloperName` | The two are frequently different |
@@ -215,7 +215,7 @@ Read `references/bundle_detection.md` for retrieval command shapes and troublesh
 | `sf community publish` fails with "community not found" | The `Network.Name` differs from site `DeveloperName`; resolve via `UrlPathPrefix` query |
 | Guest URL returns `403` or `503` after publish | Publish is async — retry the smoke test after 60s before falling back to manual |
 | Re-run adds a second messaging component | The recursive search matched on the wrong key name; component detection must use `definition` (LWR) or `componentName` (Aura) |
-| Deploy succeeds but widget does not appear | The messaging component is present in a region that is not on the site's home page — patch `home/content.json` (LWR) or `homeGuestLayout.json` (Aura), not another view |
+| Deploy succeeds but widget does not appear on all pages | For LWR, confirm the component was injected into `sfdc_cms__themeLayout/*/content.json` footer (not `sfdc_cms__view/home/content.json` — that is page-specific). For Aura, confirm `homeGuestLayout.json` was patched (themeFooter region). |
 | `sectionConfig` written as an object | Serialize it as a JSON string; the CMS parser will not accept an object |
 
 ---
@@ -231,8 +231,9 @@ Read `references/bundle_detection.md` for retrieval command shapes and troublesh
 - [ ] For Aura, are the keys `componentName` and `componentAttributes`?
 - [ ] When updating in place, was the existing `id` preserved?
 - [ ] When appending, are all new `id` values fresh UUIDs?
-- [ ] For LWR, is `sectionConfig` a JSON *string* (not a nested object)?
-- [ ] For LWR, do the UUIDs referenced inside `sectionConfig` match the section `id` and child region `id`?
+- [ ] For LWR, did the script patch every `sfdc_cms__themeLayout/*/content.json` (not just `home/content.json`)?
+- [ ] For LWR, does the messaging node appear inside the `footer` region's subtree in each themeLayout?
+- [ ] For LWR, is `clientVersion` set to `"WebV2"` in the messaging node attributes?
 
 ### Deploy
 - [ ] For Aura, was `<siteName>.site-meta.xml` copied alongside the bundle?
@@ -253,7 +254,7 @@ Read `references/bundle_detection.md` for retrieval command shapes and troublesh
 
 Deliverables:
 
-- Modified home-page JSON in the retrieval directory and in `force-app/main/default/...`
+- Modified `sfdc_cms__themeLayout/*/content.json` files (one per themeLayout) in the retrieval directory and in `force-app/main/default/...` (LWR); or modified `homeGuestLayout.json` (Aura)
 - (LWR only, if needed) new `sfdc_cms__route/<RouteApiName>/` + `sfdc_cms__view/<viewId>/` pair for any scaffolded missing route
 - Deploy `job-id` and the final deploy report
 - Publish confirmation

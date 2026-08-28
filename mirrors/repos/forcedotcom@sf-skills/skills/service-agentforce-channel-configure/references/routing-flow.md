@@ -7,13 +7,13 @@ Two distinct RoutingFlows are used when wiring an agent to a channel:
 | Inbound | `RoutingFlow` | `Copilot` | Routes arriving work items *to* the agent; queue is fallback when agent unavailable |
 | Outbound | `RoutingFlow` | `QueueBased` | Routes *from* the agent to a human queue when the customer requests escalation |
 
-Both flows reference the same fallback queue resolved in Phase 1. The inbound flow is created in Phase 2 (Branches B/C only — Branch A uses `sessionHandlerAsa` instead). The outbound flow is created in Phase 3 if the user opts into outbound escalation.
+Both flows reference the same fallback queue resolved in Phase 1. The inbound flow is created in Phase 2 for **Branch B (Voice)**, and for **Branch C (Email-to-Case)** when the user picks the Omni-Channel flow path over direct case-owner assignment, and Branch A uses `sessionHandlerAsa`. The outbound flow is created in Phase 3 if the user opts into outbound escalation.
 
 ---
 
 ## Part 1 — Inbound RoutingFlow (Copilot routing)
 
-Used for Voice (Branch B) and Email-to-Case (Branch C). When a work item arrives on the channel, it routes directly to the Agentforce Agent, with the fallback queue used when the agent is unavailable.
+Used for Voice (Branch B), and for Email-to-Case (Branch C) on the Omni-Channel flow path. When a work item arrives on the channel, it routes directly to the Agentforce Agent, with the fallback queue used when the agent is unavailable.
 
 The `routingType` is `Copilot` (the platform token for Agentforce Agent routing). The agent is referenced by its **label** (`copilotLabel`), not its DeveloperName. The queue fallback is expressed via `queueLabel` (the queue's `Name` field) and `queueId` (the queue's 18-char record Id).
 
@@ -22,7 +22,7 @@ The `routingType` is `Copilot` (the platform token for Agentforce Agent routing)
 | Channel | Flow Label | DeveloperName |
 |---|---|---|
 | Voice | `{AgentLabel} Inbound Voice Flow` | `{AgentDevName}_Inbound_Voice_Flow` |
-| Email-to-Case | `{AgentLabel} Inbound Email Flow` | `{AgentDevName}_Inbound_Email_Flow` |
+| Service Email (Email-to-Case) | `{AgentLabel} Inbound Email Flow` | `{AgentDevName}_Inbound_Email_Flow` |
 
 ## Lookup the queue Id before writing the XML
 
@@ -168,6 +168,7 @@ Used in Phase 3 for all channel types. When the agent escalates to a human, this
 | Enhanced Chat | `{AgentLabel} Outbound Enhanced Chat Flow` | `{AgentDevName}_Outbound_Enhanced_Chat_Flow` |
 | Enhanced Messaging | `{AgentLabel} Outbound Messaging Flow` | `{AgentDevName}_Outbound_Messaging_Flow` |
 | Voice | `{AgentLabel} Outbound Voice Flow` | `{AgentDevName}_Outbound_Voice_Flow` |
+| Service Email (Email-to-Case) | `{AgentLabel} Outbound Email Flow` | `{AgentDevName}_Outbound_Email_Flow` |
 
 ### Check before creating
 
@@ -184,6 +185,16 @@ If a row exists with non-null `ActiveVersionId`, reuse it — capture the `ApiNa
 |---|---|---|
 | Enhanced Chat / Enhanced Messaging | `sfdc_livemessage` | `Messaging` |
 | Voice | `sfdc_phone` | `Phone` |
+| Service Email (Email-to-Case) | *(org-specific — the Case-based ServiceChannel; resolve or provision it, see below)* | *(its `MasterLabel`)* |
+
+For **Email-to-Case (Branch C)**, there is no fixed platform token — the outbound flow needs the org's **Case-based `ServiceChannel`** (`RelatedEntity = 'Case'`). Resolve it here, and provision it if absent, before writing the flow:
+
+```bash
+sf data query --target-org $ORG --json \
+  --query "SELECT DeveloperName, MasterLabel FROM ServiceChannel WHERE RelatedEntity='Case' LIMIT 1"
+```
+
+Use the returned `DeveloperName` as `SERVICE_CHANNEL_DEV_NAME` and `MasterLabel` as `SERVICE_CHANNEL_LABEL`. If no row is returned, provision one first — see `references/channel-types.md` § "Provision a Case ServiceChannel".
 
 ### XML template
 

@@ -2,6 +2,17 @@
 name: integration-connectivity-generate
 description: "Salesforce integration architecture and runtime plumbing with 120-point scoring. Use this skill to set up Named Credentials, External Credentials, External Services, REST/SOAP callout patterns, Platform Events, and Change Data Capture. TRIGGER when: user sets up Named Credentials, External Services, REST/SOAP callouts, Platform Events, CDC, or touches .namedCredential-meta.xml files. DO NOT TRIGGER when: Connected App/OAuth config (use integration-connectivity-connected-app-configure), Apex-only logic (use platform-apex-generate), data import/export (use platform-data-manage), or CDC channel-membership metadata such as PlatformEventChannel, PlatformEventChannelMember, or EnrichedField (use integration-eventing-cdc-configure)."
 metadata:
+  version: "1.1"
+  domains: ["Integration"]
+  minApiVersion: "61.0"
+  relatedSkills:
+    - "agentforce-generate"
+    - "automation-flow-generate"
+    - "integration-connectivity-connected-app-configure"
+    - "integration-eventing-cdc-configure"
+    - "platform-apex-generate"
+    - "platform-data-manage"
+    - "platform-metadata-deploy"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6.0"
@@ -11,16 +22,6 @@ metadata:
       semver: ">=3.10.0"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  relatedSkills:
-    - "agentforce-generate"
-    - "automation-flow-generate"
-    - "integration-connectivity-connected-app-configure"
-    - "integration-eventing-cdc-configure"
-    - "platform-apex-generate"
-    - "platform-data-manage"
-    - "platform-metadata-deploy"
-  version: "1.1"
-  domains: ["Integration"]
 ---
 
 # integration-connectivity-generate: Salesforce Integration Patterns Expert

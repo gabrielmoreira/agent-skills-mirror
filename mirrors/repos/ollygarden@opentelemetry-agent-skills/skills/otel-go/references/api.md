@@ -205,6 +205,11 @@ filtered, excluded := attrs.Filter(func(kv attribute.KeyValue) bool {
 _ = excluded // attributes removed by the filter
 ```
 
+For incremental filtering or deduplication, `attribute.NewHasher()` computes the same
+`Distinct` identifier as `Set.Equivalent()` without first constructing a set. Supply attributes
+to `Write` in ascending key order with no duplicates (retain the last value for duplicate keys),
+call `Distinct`, and use `Reset` before reusing the hasher. Its zero value is not usable.
+
 ## Propagation
 
 ### Context Propagation
@@ -227,7 +232,7 @@ propagator.Inject(ctx, propagation.HeaderCarrier(w.Header()))
 ## Logs API
 
 The Logs API and SDK are versioned on a **separate v0.x line** (currently `otel/log` and
-`otel/sdk/log` v0.21.0, released alongside core v1.45.0) and are **Beta** — interfaces may
+`otel/sdk/log` v0.22.0, released alongside core v1.46.0) and are **Beta** — interfaces may
 still change without a major bump. They primarily provide a bridge for existing logging
 libraries. Track their version independently from the stable v1.x traces/metrics
 signals (see the module-versioning table in SKILL.md).
@@ -246,7 +251,8 @@ log.Severity           // Log severity level
 // Get logger (use import path as name)
 logger := global.GetLoggerProvider().Logger("github.com/user/pkg")
 
-// Check if logging is enabled (EnabledParameters is a plain struct; set fields directly)
+// Optionally skip expensive record construction. Do not cache the result: it can change.
+// EnabledParameters is a plain struct; set fields directly.
 params := log.EnabledParameters{Severity: log.SeverityInfo}
 if logger.Enabled(ctx, params) {
     var rec log.Record

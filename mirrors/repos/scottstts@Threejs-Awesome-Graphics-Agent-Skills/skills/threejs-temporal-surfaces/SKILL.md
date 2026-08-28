@@ -9,6 +9,10 @@ Choose persistent history or procedural screen-space evolution explicitly. Do
 not fake accumulation with time-only noise, and do not allocate history for an
 effect whose complete state is analytic in time.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Pipeline
 
 ```text

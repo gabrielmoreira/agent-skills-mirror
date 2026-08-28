@@ -1,6 +1,6 @@
 ---
-name: ulw-loop
-description: [omh] Hermes Loop workflow: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate. Use when the user says: loop, goal loop, long horizon goal, never stop, research plan goal feedback, token exhaustion resume, permission profile, star 10k.
+name: "ulw-loop"
+description: "[omh] Hermes Loop workflow: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate. Use when the user says: loop, goal loop, long horizon goal, never stop, research plan goal feedback, token exhaustion resume, permission profile, star 10k."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, goal-loop]

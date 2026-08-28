@@ -1,6 +1,6 @@
 # `otlp_grpc` exporter: configuration
 
-All keys live under the exporter instance — `exporters: { otlp_grpc: { … } }` or, via the deprecated alias, `exporters: { otlp: { … } }`. Facts below trace to core **v1.63.0 / v0.157.0** source (`exporter/otlpexporter/config.go` + `factory.go`, `config/configgrpc/configgrpc.go` `ClientConfig`, `config/configtls`, `config/configretry/backoff.go`, and `exporter/exporterhelper/internal/queuebatch/config.go` + `queue_sender.go`).
+All keys live under the exporter instance — `exporters: { otlp_grpc: { … } }` or, via the deprecated alias, `exporters: { otlp: { … } }`. Facts below trace to core **v1.65.0 / v0.159.0** source (`exporter/otlpexporter/config.go` + `factory.go`, `config/configgrpc/configgrpc.go` `ClientConfig`, `config/configtls`, `config/configretry/backoff.go`, and `exporter/exporterhelper/internal/queuebatch/config.go` + `queue_sender.go`).
 
 ## Top-level (gRPC client) keys
 
@@ -53,7 +53,9 @@ All keys live under the exporter instance — `exporters: { otlp_grpc: { … } }
 
 ## `sending_queue`
 
-The buffer between the pipeline and the gRPC sender. **Enabled by default**, and it carries the built-in batching (`batch` below). Defaults from `NewDefaultQueueConfig`.
+The buffer between the pipeline and the gRPC sender. **Enabled by default.** Its optional `batch`
+sub-block uses defaults from `NewDefaultQueueConfig`, but batching itself is disabled by default
+unless the `pkg.exporterhelper.queueBatchEnabled` feature gate is enabled.
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
@@ -64,13 +66,17 @@ The buffer between the pipeline and the gRPC sender. **Enabled by default**, and
 | `block_on_overflow` | bool | `false` | `false` → overflow returns a retryable error immediately; `true` → enqueue blocks until space frees. |
 | `wait_for_result` | bool | `false` | Block the caller until the export result is known. **Not supported with a persistent `storage` queue.** |
 | `storage` | component ID | — | A `file_storage` extension ID; turns the queue **persistent** (survives restarts). |
-| `batch` | object | present by default | Built-in batching (see [batch](#sending_queuebatch)). |
+| `batch` | object | disabled | Built-in batching (see [batch](#sending_queuebatch)). Add `batch: {}` to enable it with defaults, or enable the migration gate globally. |
 
 > `storage` references a [`file_storage`](../file_storage/README.md) extension. Persistence survives Collector restarts at the cost of disk I/O; see [advanced.md](advanced.md).
 
 ### `sending_queue.batch`
 
-Present by default — flushes at `flush_timeout` or when `min_size` is reached, whichever comes first. This often makes a separate `batch` processor unnecessary, but that processor remains supported for pipeline-level batching.
+When enabled, flushes at `flush_timeout` or when `min_size` is reached, whichever comes first.
+Add `batch: {}` beneath `sending_queue` to opt in with these defaults. The alpha
+`pkg.exporterhelper.queueBatchEnabled` feature gate also enables batching by default for exporters
+using `NewDefaultQueueConfig`; this is phase 1 of the Collector batching migration. A separate
+`batch` processor remains supported for pipeline-level batching.
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|

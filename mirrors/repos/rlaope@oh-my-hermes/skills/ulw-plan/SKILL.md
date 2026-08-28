@@ -1,6 +1,6 @@
 ---
-name: ulw-plan
-description: [omh] Hermes Ralplan workflow: consensus planning with review gates. Use when the user says: ralplan, consensus plan, reviewed plan, issue to PR, acceptance criteria, verification command, reviewable PR, risky planning.
+name: "ulw-plan"
+description: "[omh] Hermes Ralplan workflow: consensus planning with review gates. Use when the user says: ralplan, consensus plan, reviewed plan, issue to PR, acceptance criteria, verification command, reviewable PR, risky planning."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

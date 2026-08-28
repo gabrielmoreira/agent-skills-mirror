@@ -1,6 +1,6 @@
 ---
-name: omh-apps
-description: [omh] External app actions - email, Slack, Discord, Notion, Linear, Jira, CRM, and similar providers, scoped with auth, payload, confirmation, and result-evidence gates. Use when the user says: connector-operator, connector operator, external app action, external connector action, saas action, api action, send email, email customer.
+name: "omh-apps"
+description: "[omh] External app actions - email, Slack, Discord, Notion, Linear, Jira, CRM, and similar providers, scoped with auth, payload, confirmation, and result-evidence gates. Use when the user says: connector-operator, connector operator, external app action, external connector action, saas action, api action, send email, email customer."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, connector]

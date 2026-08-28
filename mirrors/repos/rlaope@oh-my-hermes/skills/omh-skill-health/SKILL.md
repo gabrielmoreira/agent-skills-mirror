@@ -1,6 +1,6 @@
 ---
-name: omh-skill-health
-description: [omh] Skill Health workflow: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions. Use when the user says: skill-health, skill health, skill portfolio health, skill dashboard, skill health dashboard, skill failure pattern dashboard, skill failure patterns, pending skill amendments.
+name: "omh-skill-health"
+description: "[omh] Skill Health workflow: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions. Use when the user says: skill-health, skill health, skill portfolio health, skill dashboard, skill health dashboard, skill failure pattern dashboard, skill failure patterns, pending skill amendments."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -88,16 +88,13 @@ Required inputs:
 
 Expected outputs:
 
-- skill_portfolio_health_dashboard/v1
-- skill_failure_pattern_clusters/v1 when observed
-- pending_skill_amendment_review/v1
-- skill_health_action_plan/v1
+- catalog, generated, reference, harness, and capability-surface status
+- observed failure signals, or an explicit statement that none were supplied
+- pending amendment review slots and top safe actions with owner lane and verification path
 
 Artifact expectations:
 
-- skill_portfolio_health_dashboard/v1 with catalog, generated, reference, harness, and capability-surface status
-- skill_failure_pattern_clusters/v1 only from supplied traces, tests, reviews, missed routes, or wrapper observations
-- skill_health_action_plan/v1 with top actions, owner lane, verification path, and non-mutation boundary
+- skill_health_card/v1 metadata-only wrapper card recording surface status, observed-only failure signals, pending amendments, and the non-mutation boundary
 
 Safety rules:
 

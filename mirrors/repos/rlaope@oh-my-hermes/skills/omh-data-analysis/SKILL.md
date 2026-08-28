@@ -1,6 +1,6 @@
 ---
-name: omh-data-analysis
-description: [omh] Hermes data analysis workflow: scope supplied data with provenance, causal-claim, and hallucination guards. Use when the user says: data-analysis, data analysis, dataset analysis, csv analysis, json analysis, log analysis, table analysis, analyze csv.
+name: "omh-data-analysis"
+description: "[omh] Hermes data analysis workflow: scope supplied data with provenance, causal-claim, and hallucination guards. Use when the user says: data-analysis, data analysis, dataset analysis, csv analysis, json analysis, log analysis, table analysis, analyze csv."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, analysis]

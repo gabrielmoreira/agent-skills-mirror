@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
+Mirror of `openai/openai-agents-python` — 26 default patterns, 1 followed patterns, 77 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 76 |
+| Followed pats | 1 |
+| Files         | 77 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patt
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.github/RELEASING.md`
 
 ## File Index
 
@@ -135,6 +135,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md`](examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md) |
 | 75 | ✓ | [`examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md`](examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md) |
 | 76 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
+| 77 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
 
 ---
 

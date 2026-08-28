@@ -1,6 +1,6 @@
 # OTTL Contexts Reference
 
-Context paths and enums for collector-contrib **v0.158.0**. Higher-level contexts are reachable from lower ones (a span statement can read `resource.attributes`); the reverse is not true. Always pick the most specific context for the work — using `datapoint` to set metric-point attributes is much cheaper than walking through `metric.data_points` from the metric context.
+Context paths and enums for collector-contrib **v0.159.0**. Higher-level contexts are reachable from lower ones (a span statement can read `resource.attributes`); the reverse is not true. Always pick the most specific context for the work — using `datapoint` to set metric-point attributes is much cheaper than walking through `metric.data_points` from the metric context.
 
 ## Contents
 
@@ -250,6 +250,11 @@ log.trace_id / log.trace_id.string
 log.span_id  / log.span_id.string
 log.event_name                       # for event-shaped logs
 ```
+
+As of v0.159, OTTL compares `pcommon.Value` paths such as `log.body` by their underlying type.
+Primitive values support the normal comparison operators, including numeric comparison between
+integer and double values. Maps and slices support equality and inequality only; incompatible
+types compare unequal.
 
 ```ottl
 # Parse JSON body into structured attributes

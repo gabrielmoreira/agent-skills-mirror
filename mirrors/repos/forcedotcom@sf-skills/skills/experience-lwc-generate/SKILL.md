@@ -2,6 +2,16 @@
 name: experience-lwc-generate
 description: "Lightning Web Components with PICKLES methodology and 165-point scoring. Use this skill when the user creates or edits LWC components, builds wire service patterns, or writes Jest tests for LWC. TRIGGER when: user creates/edits LWC components, touches lwc/**/*.js, .html, .css, .js-meta.xml files, or asks about wire service, SLDS, or Jest LWC tests. DO NOT TRIGGER when: Apex classes (use platform-apex-generate), Aura components, or Visualforce."
 metadata:
+  version: "1.1"
+  domains: ["Experience"]
+  minApiVersion: "66.0"
+  relatedSkills:
+    - "agentforce-generate"
+    - "automation-flow-generate"
+    - "integration-connectivity-generate"
+    - "platform-apex-generate"
+    - "platform-apex-test-run"
+    - "platform-metadata-deploy"
   cliTools:
     - tool: ["node"]
       semver: ">=18.0.0"
@@ -13,15 +23,6 @@ metadata:
       semver: ">=3.9.0"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  relatedSkills:
-    - "agentforce-generate"
-    - "automation-flow-generate"
-    - "integration-connectivity-generate"
-    - "platform-apex-generate"
-    - "platform-apex-test-run"
-    - "platform-metadata-deploy"
-  version: "1.1"
-  domains: ["Experience"]
 ---
 
 # experience-lwc-generate: Lightning Web Components Development

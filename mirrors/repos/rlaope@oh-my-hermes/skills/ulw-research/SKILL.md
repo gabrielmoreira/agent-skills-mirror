@@ -1,6 +1,6 @@
 ---
-name: ulw-research
-description: [omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use best-practice-research. Aliases: web-research. Use when the user says: web research, web search, search the web, internet search, fresh sources, current sources, current web evidence, source-backed research.
+name: "ulw-research"
+description: "[omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use best-practice-research. Aliases: web-research. Use when the user says: web research, web search, search the web, internet search, fresh sources, current sources, current web evidence, source-backed research."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]

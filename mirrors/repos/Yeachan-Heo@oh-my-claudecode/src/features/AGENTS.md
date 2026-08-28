@@ -24,7 +24,7 @@ This directory contains self-contained feature modules that enhance orchestratio
 | File | Description |
 |------|-------------|
 | `index.ts` | Re-exports all feature modules |
-| `magic-keywords.ts` | Magic keyword detection (ultrawork, analyze, etc.) |
+| `magic-keywords.ts` | Magic keyword detection (search, analyze, ultrathink) |
 | `continuation-enforcement.ts` | Ensures task completion before stopping |
 | `auto-update.ts` | Silent version checking and updates |
 | `background-tasks.ts` | Background task execution patterns |

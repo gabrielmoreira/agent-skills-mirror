@@ -28,6 +28,8 @@ The SDK reads defaults from environment variables; check the [released OpenTelem
 | Span event count limit | `OTEL_SPAN_EVENT_COUNT_LIMIT` | Check SDK default |
 | Span link count limit | `OTEL_SPAN_LINK_COUNT_LIMIT` | Check SDK default |
 | Attribute value length limit | `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Unlimited if unset |
+| Log record attribute count limit | `OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT` | Falls back to `OTEL_ATTRIBUTE_COUNT_LIMIT` |
+| Log record attribute value length limit | `OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT` | Falls back to `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` |
 | Metric export interval (ms) | `OTEL_METRIC_EXPORT_INTERVAL` | Check SDK default |
 | Metric export timeout (ms) | `OTEL_METRIC_EXPORT_TIMEOUT` | Check SDK default |
 | OTLP export timeout (s) | `OTEL_EXPORTER_OTLP_TIMEOUT` | Python reads this as **seconds** (default `10`), deviating from the spec, which defines it in milliseconds |
@@ -80,7 +82,7 @@ TraceIdRatioBased(0.1)      -> ~90% of root spans become noops (near-zero cost)
 ALWAYS_OFF                  -> All spans noop — useful for benchmarking app overhead
 ```
 
-`ParentBased` is the recommended production default: it honors upstream sampling decisions propagated via W3C TraceContext while allowing ratio-based sampling at service entry points.
+The SDK default is `ParentBased(ALWAYS_ON)`: it honors upstream sampling decisions propagated via W3C TraceContext and samples new root traces.
 
 > **Tail sampling**: For sampling decisions based on complete trace data (error status, latency), use the OpenTelemetry Collector's `tail_sampling` processor rather than SDK-level head sampling. SDK head sampling combined with Collector tail sampling is a common production pattern.
 
@@ -488,12 +490,17 @@ async def shutdown_providers():
 
 ## Telemetry Pipeline Reliability
 
-The SDK is designed so that telemetry failures do not crash or slow the application:
+Built-in processors isolate exporter failures from application code, but the
+exact behavior depends on the processor and exporter:
 
-- **Span creation never raises** — after provider shutdown it may still return a recording span,
-  but the shut-down processors/exporters no longer process or export that span
-- **Metric recording never raises** — measurements are silently dropped on failure
-- **Export failures are retried** — then dropped after the timeout or max retries
+- **Batch processors decouple export I/O** from application threads; simple
+  processors perform export synchronously and therefore add exporter latency
+- **Built-in span processors catch exporter exceptions** and log them; custom
+  samplers, processors, and exporters must honor the same non-throwing contract
+- **Invalid metric measurements** such as NaN and Inf are logged and dropped at
+  the instrument boundary in SDK 1.44.0
+- **OTLP exporters retry eligible failures** according to their transport-specific
+  retry behavior; other exporters may not retry
 - **Queue overflow drops spans** — the application is not blocked
 
 ---

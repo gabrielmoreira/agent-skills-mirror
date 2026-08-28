@@ -1,6 +1,6 @@
 ---
-name: omh-automation-blueprint
-description: [omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status. Use when the user says: automation-blueprint, scheduled ops, scheduled operation, scheduled operations, automation blueprint, cron blueprint, cron-ready, recurring ops.
+name: "omh-automation-blueprint"
+description: "[omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status. Use when the user says: automation-blueprint, scheduled ops, scheduled operation, scheduled operations, automation blueprint, cron blueprint, cron-ready, recurring ops."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]

@@ -1,6 +1,6 @@
 ---
-name: ulw-context
-description: [omh] Project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff. Use when the user says: ulw-context, project terminology alignment, review project terms, align project terminology, terminology this project uses.
+name: "ulw-context"
+description: "[omh] Project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff. Use when the user says: ulw-context, project terminology alignment, review project terms, align project terminology, terminology this project uses."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, clarification]

@@ -7,7 +7,7 @@ rots with each release.
 ## Step 1: Fetch the CHANGELOGs
 
 Fetch both released upstream sources before reviewing any code. As of
-2026-07-20, the released ceiling is core **1.44.0** and contrib **0.65b0**:
+2026-08-26, the released ceiling is core **1.44.0** and contrib **0.65b0**:
 
 ```
 WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-python/v1.44.0/CHANGELOG.md
@@ -34,8 +34,8 @@ introduced the change.
 
 The definitive indicator of which track a given package follows is its version string, not its
 name: a `b` suffix (e.g. `0.63b0`) means beta track; a plain SemVer (e.g. `1.42.0`) means stable.
-Check with `pip show <pkg>` or the PyPI `.info.version` field — some SDK sub-packages (such as
-`opentelemetry-sdk-extension-*`) follow the beta track despite the `opentelemetry-sdk` prefix.
+Check with `pip show <pkg>` or the PyPI `.info.version` field; independently released packages
+can follow their own version tracks.
 
 Fetch current versions from PyPI to orient yourself:
 

@@ -4,6 +4,9 @@
 
 The decision is made per-trace inside one process. If spans of one trace are spread across multiple tail-sampling collectors, each sees only a fragment and makes its own (wrong/partial) decision. Whenever you run more than one tail-sampling collector you **must** put a `load_balancing` exporter layer in front that routes by `traceID`. A single instance needs no load balancer.
 
+`num_shards` does not change this rule. Sharding is internal to one processor and routes a complete
+trace to one event loop; it is not coordination among Collector instances.
+
 ## Memory scales with `num_traces` and trace size
 
 `num_traces` is the in-flight trace buffer: every trace awaiting a decision is held in memory. Rough estimate `num_traces * avg_spans_per_trace * ~1KB/span` (e.g. 50,000 traces × 20 spans ≈ 1 GB). Longer `decision_wait` means more traces resident at once. When the buffer fills, the oldest traces are evicted **before** their decision (surfacing as the `sampling_trace_dropped_too_early` metric) unless `block_on_overflow` is set. Size it as `traces_per_sec * decision_wait_seconds * safety_factor`.

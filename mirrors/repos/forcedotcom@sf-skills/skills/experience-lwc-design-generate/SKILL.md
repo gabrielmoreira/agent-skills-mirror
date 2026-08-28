@@ -15,7 +15,7 @@ metadata:
     - design-systems-slds-apply
     - experience-lds-best-practices-apply
     - experience-lds-data-requirements-generate
-    - experience-lwc-accessibility-validate
+    - experience-accessibility-validate
     - experience-lwc-base-components-integrate
     - experience-lwc-generate
     - experience-lwc-rtl-validate
@@ -101,7 +101,7 @@ Do NOT use this skill for:
    - Audit event handlers and lifecycle hook usage (`renderedCallback` guards).
    - Consider lazy loading for heavy children.
 2. Hand off to `experience-lwc-generate` for the LWC best-practices review pass (anti-patterns, reactivity, composition).
-3. Hand off to the compliance suite for the pre-ship review — `experience-lwc-accessibility-validate` (a11y), `experience-lwc-security-validate` (LWS + Product Security), and `experience-lwc-rtl-validate` (RTL i18n). Run them together for the full quality pass.
+3. Hand off to the compliance suite for the pre-ship review — `experience-accessibility-validate` (a11y), `experience-lwc-security-validate` (LWS + Product Security), and `experience-lwc-rtl-validate` (RTL i18n). Run them together for the full quality pass.
 4. If the component touches data, hand off to `experience-lds-best-practices-apply` for cache/consistency and referential-integrity checks.
 5. Apply every accepted finding. Keep the PRD as the source of truth — do not add scope under the guise of optimization.
 
@@ -153,7 +153,7 @@ A new component built from this workflow is "done" only when **every** item belo
 
 5. `.js-meta.xml` AI metadata passes the audit in `experience-lwc-generate` (component-wide `<ai><description>` set, plus an `<ai><property name="…" aiDescription="…"/></ai>` entry for every `@api` member exposed through `<targetConfig>`; no marketing language).
 6. SLDS styling passes `design-systems-slds-apply` verification — no raw hex / px values, only styling hooks and SLDS utility classes.
-7. Accessibility pass complete: `experience-lwc-accessibility-validate` for source review + `experience-lwc-accessibility-jest-run` for automated tests, both green.
+7. Accessibility pass complete: `experience-accessibility-validate` for source review + `experience-lwc-accessibility-jest-run` for automated tests, both green.
 8. Security + RTL pass complete: `experience-lwc-security-validate` + `experience-lwc-rtl-validate`, both green.
 
 **Data + tests:**
@@ -169,7 +169,7 @@ A new component built from this workflow is "done" only when **every** item belo
   - `design-systems-slds-apply`, `experience-lwc-base-components-integrate` — Phase 2 styling decisions.
   - `experience-lwc-generate` — Phase 2 authoring baseline + Phase 3 best-practices review + Phase 5 AI-metadata audit.
   - `experience-lds-best-practices-apply` — Phase 2/3 data-layer adapter selection and consistency review.
-  - `experience-lwc-accessibility-validate`, `experience-lwc-security-validate`, `experience-lwc-rtl-validate` — Phase 3 a11y/security/RTL review.
+  - `experience-accessibility-validate`, `experience-lwc-security-validate`, `experience-lwc-rtl-validate` — Phase 3 a11y/security/RTL review.
   - `experience-lwc-accessibility-jest-run` — Phase 5 automated a11y test generation.
   - Optional: add o11y instrumentation as a separate pass once the component stabilizes.
   - `experience-lwc-typescript-migrate` — optional once JS is green.

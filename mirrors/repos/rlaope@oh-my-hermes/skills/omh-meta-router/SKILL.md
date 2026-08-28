@@ -1,6 +1,6 @@
 ---
-name: omh-meta-router
-description: [omh] Meta-routing guidance for a leading /omh command: reason over the imperative task, consult the live workflow catalog, and select or chain the right workflow(s).
+name: "omh-meta-router"
+description: "[omh] Meta-routing guidance for a leading /omh command: reason over the imperative task, consult the live workflow catalog, and select or chain the right workflow(s)."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, router]

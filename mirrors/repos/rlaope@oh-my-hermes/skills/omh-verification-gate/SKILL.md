@@ -1,6 +1,6 @@
 ---
-name: omh-verification-gate
-description: [omh] Hermes Verification Gate workflow: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge. Use when the user says: verification-gate, verification gate, quality gate, release gate, test gate, build lint test, lint typecheck tests, verify before merge.
+name: "omh-verification-gate"
+description: "[omh] Hermes Verification Gate workflow: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge. Use when the user says: verification-gate, verification gate, quality gate, release gate, test gate, build lint test, lint typecheck tests, verify before merge."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]

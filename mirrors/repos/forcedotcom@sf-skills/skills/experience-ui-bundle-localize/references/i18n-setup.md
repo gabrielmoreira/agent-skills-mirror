@@ -25,7 +25,7 @@ export async function initI18n() {
   const dataSDK = await createDataSDK();
   const ctx = await fetchI18nContext(dataSDK);
 
-  // Tell the browser the user's language + text direction (RTL support).
+  // B2E: the session language is the display language.
   document.documentElement.dir = ctx.dir;
   document.documentElement.lang = ctx.lang;
 
@@ -40,7 +40,7 @@ export async function initI18n() {
         backends: [LocalStorageBackend, SalesforceBackend],
         backendOptions: [
           { expirationTime: 86400000 }, // cache labels in localStorage for a day
-          { dataSDK, labelManifest }, // fetch the rest over GraphQL
+          { dataSDK, labelManifest }, // B2E: shipped BASE_VALUE fallback
         ],
       },
       interpolation: {
@@ -56,6 +56,34 @@ export async function initI18n() {
     });
 }
 ```
+
+The example above is the **B2E** configuration. Do not set `labelFallback` for B2E: the shipped `SalesforceBackend` default is `BASE_VALUE`.
+
+For a **B2C** bundle, change only the Salesforce backend options entry:
+
+```typescript
+backendOptions: [
+  { expirationTime: 86400000 },
+  {
+    dataSDK,
+    labelManifest,
+    labelFallback: "USER_DEFAULT",
+  },
+],
+```
+
+`USER_DEFAULT` is required for B2C so fallback follows the guest/site language context. Do not copy this override into B2E wiring.
+
+For B2C, also set the document language and direction from the route-selected display language, not `ctx.dir`. The GraphQL i18n context direction reflects the guest session profile and can stay `ltr` after the site switches to an RTL language. Reuse the resolved language from the site's language-switcher integration:
+
+```typescript
+const resolvedLang =
+  (globalThis as { SFDC_ENV?: { language?: string } }).SFDC_ENV?.language || ctx.lang;
+document.documentElement.dir = i18next.dir(resolvedLang);
+document.documentElement.lang = resolvedLang.replace(/_/g, "-");
+```
+
+Before using this configuration, have an org admin confirm that `GraphQLApiOrgPrefForGuestUsers` is already enabled. This workflow must never enable it. Without the preference, unauthenticated GraphQL label requests return HTTP 403; see dependency W-23854208.
 
 **Call it once at boot**, before mounting your app:
 
@@ -90,6 +118,22 @@ export const labelManifest = [
 
 The manifest is how i18next knows what to fetch. An **unregistered key fails silently**: it renders as its own literal name (e.g., `"Welcome_Text"` instead of "Welcome") with no console warning. Always keep the manifest in sync with your `t()` calls.
 
+## B2C language context
+
+A B2C site's configured languages and language-specific URLs are the source of truth. At boot, the site route supplies `SFDC_ENV.language`; the SDK detector uses that value to resolve labels. A language switcher must navigate to the target language URL and perform a full page reload. An in-place i18next language change is insufficient because the SDK context and localStorage-backed labels are established at boot.
+
+For local preview, use the site entry of the Vite plugin and pass the site's supported language codes, with the default first:
+
+```typescript
+import siteUiBundlePlugin from "@salesforce/vite-plugin-ui-bundle/site";
+
+export default defineConfig({
+  plugins: [siteUiBundlePlugin({ languages: ["en_US", "es", "ar"] })],
+});
+```
+
+The site plugin injects `SFDC_ENV.language` per request and serves non-default hyphenated language routes such as `/es` or `/en-US`; the default language has no prefix. Verify the injected language before judging label output. The authenticated org user's Language setting is not a substitute for the guest site's language context.
+
 ---
 
 ## Dependencies
@@ -100,7 +144,7 @@ Install these first (Step 4 of the main workflow):
 npm install i18next react-i18next i18next-chained-backend i18next-localstorage-backend
 ```
 
-Use `@salesforce/platform-sdk` **≥11.42.1**. The `@salesforce/platform-sdk/i18n` subpath (`SalesforceBackend`, `createSalesforceDetector`, `fetchI18nContext`) has existed since 11.4.1, and 11.7.0 added `reloadI18nContext` for refreshing the cached label context. 11.42.1 is the validated floor because it carries the fix that batches a namespace into 100-name-or-fewer queries. Without it, a manifest of more than 100 labels in one namespace hits the `uiapi.platform.labels` limit and the whole namespace read fails. Keep the SDK's siblings (`@salesforce/vite-plugin-ui-bundle`, `@salesforce/ui-bundle`) on the same version.
+Use aligned `@salesforce/platform-sdk`, `@salesforce/vite-plugin-ui-bundle`, and `@salesforce/ui-bundle` packages at **≥11.49.3**. Platform SDK 11.45.0 introduced the `labelFallback` option and shipped `BASE_VALUE` default, but the B2C local-preview entry `@salesforce/vite-plugin-ui-bundle/site` first appears in the 11.49.x line. Version 11.49.3 is therefore the common floor for this B2C-capable workflow. Earlier history: the i18n subpath existed in 11.4.1, 11.7.0 added `reloadI18nContext`, and 11.42.1 added namespace batching for the 100-name labels-query limit.
 
 Known-good companion versions:
 - `i18next` **^24.2.2**
@@ -125,7 +169,7 @@ If you see an older example that vendors `salesforce-detector.ts` or `salesforce
 
 1. Bundle loads, `initI18n()` runs
 2. `createDataSDK()` initializes the SDK
-3. `fetchI18nContext()` queries the org for the user's language/locale/direction
+3. `fetchI18nContext()` queries the org for language/locale/direction (B2C uses the site route's `SFDC_ENV.language`)
 4. `SalesforceBackend` reads the manifest and issues a GraphQL query per namespace:
    ```graphql
    query LoadLabels {

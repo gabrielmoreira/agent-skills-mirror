@@ -1,6 +1,6 @@
 ---
-name: omh-agent-board
-description: [omh] Hermes agent board workflow: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states. Use when the user says: agent-board, agent board, kanban, multi-agent, multi agent, multi agent board, multiple hermes agents, multiple hermes profiles.
+name: "omh-agent-board"
+description: "[omh] Hermes agent board workflow: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states. Use when the user says: agent-board, agent board, kanban, multi-agent, multi agent, multi agent board, multiple hermes agents, multiple hermes profiles."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, agent-coordination]

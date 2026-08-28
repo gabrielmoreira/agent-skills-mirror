@@ -120,7 +120,7 @@ Without cleanup, the stop hook blocks all subsequent stops with `[RALPLAN - CONS
    d. Note which improvements were applied in a brief changelog section at the end of the plan
 7. On Critic approval (with improvements applied): mark the plan status as `pending approval` unless explicit execution approval has already been captured. _(--interactive only)_ If running with `--interactive`, use `AskUserQuestion` to present the plan with these options:
    - **Approve execution via team** (Recommended) — explicit opt-in to proceed via coordinated parallel team agents (`/team`). Team is the canonical orchestration surface since v4.1.7.
-   - **Approve execution via ralph** — explicit opt-in to proceed via ralph+ultrawork (sequential execution with verification)
+   - **Approve execution via ralph** — explicit opt-in to proceed via Ralph persistence with verification
    - **Compact then return for execution approval** — explicit opt-in to compact the context window first (recommended when context is large after planning), then stop at the saved pending-approval plan and ask again before launching execution
    - **Request changes** — return to step 1 with user feedback
    - **Reject** — discard the plan entirely
@@ -128,7 +128,7 @@ Without cleanup, the stop hook blocks all subsequent stops with `[RALPLAN - CONS
 8. _(--interactive only)_ User chooses via the structured `AskUserQuestion` UI (never ask for approval in plain text). If user selects **Reject**, call `state_clear(mode="ralplan", session_id=<current_session_id>)` and stop.
 9. On user approval (--interactive only): Call `state_write(mode="ralplan", active=false, session_id=<current_session_id>)` **before** invoking the execution skill (ralph/team), so the stop hook does not interfere with the execution mode's own enforcement. Do NOT use `state_clear` here — it writes a cancel signal that disables enforcement for the newly launched mode.
    - **Approve execution via team**: **MUST** invoke `Skill("oh-my-claudecode:team")` with the approved plan path from `.omc/plans/` as context. Do NOT implement directly. The team skill coordinates parallel agents across the staged pipeline for faster execution on large tasks. This is the recommended default execution path.
-   - **Approve execution via ralph**: **MUST** invoke `Skill("oh-my-claudecode:ralph")` with the approved plan path from `.omc/plans/` as context. Do NOT implement directly. Do NOT edit source code files in the planning agent. The ralph skill handles execution via ultrawork parallel agents.
+   - **Approve execution via ralph**: **MUST** invoke `Skill("oh-my-claudecode:ralph")` with the approved plan path from `.omc/plans/` as context. Do NOT implement directly. Do NOT edit source code files in the planning agent. The Ralph skill owns persistent execution and verification.
    - **Compact then return for execution approval**: First invoke `Skill("compact")` to compress the context window (reduces token usage accumulated during planning), then return with the saved pending-approval plan path and require a fresh explicit execution approval before any ralph/team launch. This path is recommended when the context window is 50%+ full after the planning session.
 
 ### Review Mode (`--review`)

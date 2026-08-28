@@ -6,12 +6,14 @@ How to build, deploy, open, and verify that labels render correctly in multiple 
 
 ## Overview
 
-Verification has five steps:
+Authenticated B2E verification has five steps:
 1. **Build** the app (API version bakes in, point at the deploy target org first)
 2. **Deploy** the bundle + labels + translations in one shot
 3. **Open** the app at the correct URL (on the `lightning.force.com` domain)
 4. **Flip** the user's Language setting to the translated language
 5. **Reload** and confirm the labels render in the new language
+
+B2C verification uses the site-configured languages and language-specific URLs instead of the authenticated user's Language setting. Follow the B2C section after deployment.
 
 ---
 
@@ -56,20 +58,24 @@ English (`en_US`) needs no activation; it's always available.
 
 ## Step 3: Deploy the bundle + labels + translations
 
-Deploy the entire `force-app` tree (bundle, labels, translations) in one command:
+Before deploying, inspect the local diff and construct exact source paths for the target bundle, `CustomLabels.labels-meta.xml`, and only the locale files changed by this task. Show the actual metadata diff/components, not only the filenames; if either shared label file contains unrelated changes, stop or get explicit approval for those changes too. Show the resolved target org (`sf org display --target-org <alias>`) and wait for explicit confirmation. Then deploy the approved paths, for example:
 
 ```bash
-sf project deploy start --source-dir force-app --target-org <your-org-alias>
+sf project deploy start \
+  --source-dir force-app/main/default/uiBundles/<your-bundle> \
+  --source-dir force-app/main/default/labels/CustomLabels.labels-meta.xml \
+  --source-dir force-app/main/default/translations/<locale>.translation-meta.xml \
+  --target-org <your-org-alias>
 ```
 
-**Run from the SFDX project root** (not from inside the bundle directory). `--source-dir force-app` deploys everything under that folder:
+**Run from the SFDX project root** (not from inside the bundle directory). The approved source paths deploy only:
 - `labels/CustomLabels.labels-meta.xml` (English base labels)
 - `translations/<locale>.translation-meta.xml` (translated labels)
 - `uiBundles/<your-bundle>/dist/` (the built app)
 
-You do **not** need a `package.xml` or any manifest entry; the CLI discovers the metadata automatically.
+You do **not** need a `package.xml` or any manifest entry; the CLI discovers the selected metadata automatically.
 
-**Point at `force-app`, not `uiBundles/`, or your labels and translations won't go up.**
+Repeat `--source-dir` for each approved locale file. Do not replace these paths with the broad `force-app`, `labels`, or `translations` directories unless the user explicitly intends to deploy every metadata change in them.
 
 ---
 
@@ -115,6 +121,22 @@ To test translations, you need to change the **Language** setting (not Locale, s
 
 **Reload the app.** Labels should now render in the selected language.
 
+This step is for **B2E only**. For B2C, use the site language route below.
+
+---
+
+## B2C: verify a guest site language
+
+1. In the site administration experience, configure at least two supported languages. Translation Workbench activation and translation metadata remain required, but they do not by themselves add a language to the site.
+2. Confirm an org admin has already enabled `GraphQLApiOrgPrefForGuestUsers` (W-23854208). Never enable it as part of this workflow. Without it, a guest's GraphQL label request returns HTTP 403.
+3. If the configured language or deployed metadata requires publishing, treat publication as a separate go-live mutation. Resolve the site's `Network.Name` from the target site (prefer matching its `UrlPathPrefix`), show that community name and target org, and wait for explicit user confirmation immediately before running `sf community publish --name "<network-name>" --target-org <org-alias>`. A metadata deployment is not publication approval. Track the returned background operation to completion before guest verification; if propagation is still in progress, report that instead of treating stale output as a localization failure.
+4. Open the published site as a signed-out guest through its language-specific URL. Confirm the boot environment exposes the same language in `SFDC_ENV.language`.
+5. Confirm translated labels render and the labels GraphQL request succeeds for the guest.
+6. Use the site's language switcher. It must navigate to the target language URL and cause a **full page reload**; changing i18next in place leaves the boot-time SDK context and cached resources stale.
+7. Confirm the new route and `SFDC_ENV.language` agree, then verify the translated labels again.
+
+For a localized local preview, supply an explicit configured language in the preview URL/route. Do not use the authenticated org user's Language as evidence for guest behavior. If a recent translation or route change appears stale, delete `i18next_res_*` localStorage entries and reload each language URL.
+
 ---
 
 ## Language vs Locale (common confusion)
@@ -140,7 +162,7 @@ When you test localization, **change the Language**, not the Locale. Changing Lo
 
 **Check:** Go to Setup → Translation Workbench → Translate → pick the language and the label. Is the translation there? If not, author it and re-deploy.
 
-**Fallback behavior:** If a key is in the manifest but untranslated for the active language, i18next renders the **English base value** (via `fallbackLng: "en"` in the init). That's correct behavior; it just means that one key wasn't translated yet.
+**Fallback behavior:** If a registered key is untranslated for the active language, the Platform SDK's GraphQL request resolves it according to `labelFallback`: B2E uses `BASE_VALUE`; B2C explicitly uses `USER_DEFAULT`. The i18next `fallbackLng` applies only if no resource is loaded for the detected language; it does not define Salesforce label-resolution semantics.
 
 ---
 
@@ -178,11 +200,11 @@ See [gotchas.md](gotchas.md) for the full explanation.
 
 This is expected, not a bug, **as long as you only authored the base (`en_US`) translation.**
 
-Asked with `fallback: BASE_VALUE`, the GraphQL server returns the label's base value for a regional Language it has no explicit translation for: `resolvedLocale` comes back as the base (`en_US`) with `wasFallback: true`. The server does **not** map `en_GB → en_US` region-aware; it just honors the base-value fallback. On the documented SDK floor (11.42.1) the backend does not yet request `BASE_VALUE`, so it resolves with the server default (`USER_DEFAULT`): a guest or org-default user still lands on the base value, but see the related note below for the logged-in case. The base-value request ships in a later SDK release (see [gotchas.md](gotchas.md)).
+For B2E, the shipped `SalesforceBackend` default is `BASE_VALUE`. The GraphQL server returns the label's base value for a regional Language with no explicit translation: `resolvedLocale` comes back as the base (`en_US`) with `wasFallback: true`. The server does **not** map `en_GB → en_US` region-aware; it honors the base-value fallback.
 
 **Fix (only if you want region-specific text):** Author a translation for that exact regional Language (`en_GB.translation-meta.xml`). Otherwise the base value is the intended, correct result.
 
-**Related:** if instead a *logged-in* user sees **their own** language (not the org default) for an untranslated label, that's the fallback-strategy case, see [gotchas.md](gotchas.md) ("Logged-in user sees their own language instead of the org default"). On 11.42.1 that is the expected behavior, since the backend still uses `USER_DEFAULT`; author an explicit org-default translation to avoid it. The `BASE_VALUE` fallback that prevents it arrives in a later SDK release.
+For B2C, the skill explicitly configures `labelFallback: "USER_DEFAULT"`; test fallback through the guest site's configured language URL rather than by changing an authenticated user's Language.
 
 ---
 
@@ -192,11 +214,16 @@ Use this to confirm everything works:
 
 - [ ] Built against the correct org (API version matches deploy target)
 - [ ] Every translated language is activated in the org
-- [ ] Deployed `force-app` (bundle + labels + translations in one shot)
+- [ ] Deployed only the target bundle + labels + translations directories
 - [ ] Opened at `lightning.force.com/lwr/application/ai/<namespace>-<bundleName>` (redirected to `.my.salesforce.app` is fine)
 - [ ] Changed user's **Language** (not Locale) to the translated language
 - [ ] Reloaded, labels render in the new language
 - [ ] If labels are stale, cleared `i18next_res_*` from localStorage
+- [ ] B2C: site languages are configured/published and the language URL matches `SFDC_ENV.language`
+- [ ] B2C: any site publication received separate explicit confirmation for the named site and org
+- [ ] B2C: signed-out guest labels GraphQL succeeds (no HTTP 403)
+- [ ] B2C: language switcher performs a full reload and localized local preview was checked
+- [ ] B2B was excluded; this workflow does not support B2B sites
 
 ---
 
@@ -206,7 +233,8 @@ Use this to confirm everything works:
 |---|---|---|
 | `sf config set target-org=<alias>` | Anywhere | Set default org (API version bakes in on next build) |
 | `npm run build` | UI bundle dir | Build the app |
-| `sf project deploy start --source-dir force-app --target-org <alias>` | Project root | Deploy bundle + labels + translations |
+| `sf project deploy start --source-dir force-app/main/default/uiBundles/<bundle> --source-dir force-app/main/default/labels/CustomLabels.labels-meta.xml --source-dir force-app/main/default/translations/<locale>.translation-meta.xml --target-org <alias>` | Project root | Deploy the approved target bundle + exact label metadata paths |
+| `sf community publish --name "<network-name>" --target-org <alias>` | Project root | Publish the B2C site, only after resolving `Network.Name` and separate explicit confirmation |
 | `sf project retrieve start --metadata Translations:<locale>` | Project root | Pull translations authored in Translation Workbench |
 
 ---

@@ -7,6 +7,10 @@ description: Author production procedural materials in Three.js. Use for hybrid 
 
 Build a material from surface identity and causes. Color, roughness, metalness, normal, transmission, and emission should describe the same surface—not unrelated noise textures.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Material graph order
 
 ```text

@@ -8,6 +8,10 @@ description: Build silhouette-aware parallax occlusion mapping in Three.js WebGP
 Treat relief as a coupled intersection, coverage, normal, and shadow system.
 Do not stop at offsetting texture coordinates.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Build order
 
 ```text

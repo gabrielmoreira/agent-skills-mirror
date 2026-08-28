@@ -1,6 +1,6 @@
 ---
-name: omh-plan
-description: [omh] Hermes Plan workflow: structured planning before execution. Use when the user says: plan, implementation plan, task breakdown, safe feature, safely add a feature, add a feature, feature request, new feature.
+name: "omh-plan"
+description: "[omh] Hermes Plan workflow: structured planning before execution. Use when the user says: plan, implementation plan, task breakdown, safe feature, safely add a feature, add a feature, feature request, new feature."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

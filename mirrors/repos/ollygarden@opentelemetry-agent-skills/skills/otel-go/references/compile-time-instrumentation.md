@@ -1,6 +1,6 @@
 # Compile-time instrumentation with `otelc`
 
-`otelc` (`go.opentelemetry.io/otelc`, current stable release **v1.0.1**) instruments Go applications
+`otelc` (`go.opentelemetry.io/otelc`, current stable release **v1.1.0**) instruments Go applications
 with OpenTelemetry **at compile time**. It wraps the Go toolchain via the compiler's `-toolexec`
 hook and injects trampoline hooks (linked with `//go:linkname`) into target functions, so
 instrumentation is baked into the binary — **no source-code changes**, and it reaches third-party
@@ -11,7 +11,7 @@ the pre-v1 module paths in consumer `go.mod` files; use v1.0.1 or later.
 
 | Approach | Reach for it when |
 |---|---|
-| **`otelc`** (this file) | You can rebuild the app and want zero code changes, zero runtime overhead, and automatic coverage of dependencies/stdlib you don't control. |
+| **`otelc`** (this file) | You can rebuild the app and want zero source changes and automatic coverage of dependencies/stdlib you don't control. The injected OpenTelemetry SDK and instrumentation still have runtime cost. |
 | **Hand-written SDK + contrib libraries** ([`instrumentation-libraries.md`](instrumentation-libraries.md), [`api.md`](api.md)) | You need explicit, fine-grained control over spans/metrics, or you cannot change the build toolchain. |
 
 `otelc` is **not** [`opentelemetry-go-instrumentation`](https://github.com/open-telemetry/opentelemetry-go-instrumentation),
@@ -49,7 +49,7 @@ go.opentelemetry.io/otelc/tool/cmd/otelc@latest`, or the tool-dependency mode ab
 **Zero-config:** with no instrumentation file present, `otelc go build` analyzes the dependency
 graph, generates a temporary config for the build, and cleans up. Upgrading `otelc` can change what
 gets instrumented, so pin the `otelc` version and inspect `.otelc-build/matched.json` in auditable
-builds. In v1.0.1, committing `otelc pin` output is not yet supported (see below).
+builds. Committing `otelc pin` output is not yet supported (see below).
 
 ## Subcommands
 
@@ -78,12 +78,14 @@ confirm against the tree when a version changes.
 | `database/sql` | DB client spans |
 | `github.com/gin-gonic/gin` | HTTP server spans |
 | `github.com/redis/go-redis/v9` | Redis DB spans |
-| `go.mongodb.org/mongo-driver` | MongoDB DB spans |
+| `go.mongodb.org/mongo-driver` (v1/v2) | MongoDB DB spans |
 | `k8s.io/client-go` | K8s resource spans |
 | `github.com/openai/openai-go` (v1/v2/v3) | GenAI spans |
+| `github.com/anthropics/anthropic-sdk-go` | GenAI spans |
 | `github.com/segmentio/kafka-go` (consumer & producer) | Kafka messaging spans |
-| `log/slog` | Log records |
-| `github.com/sirupsen/logrus` | Log records |
+| `github.com/aws/aws-sdk-go-v2` | AWS SDK client spans |
+| `github.com/linode/linodego/v2` | HTTP client spans and metrics |
+| `log`, `log/slog`, `github.com/sirupsen/logrus` | Trace/span ID log correlation |
 | Go runtime | Runtime metrics |
 
 ## Selecting & configuring instrumentation
@@ -100,7 +102,7 @@ ones below it:**
 
 This is the top cause of "nothing got instrumented": an `OTELC_RULES`/`--rules` override silently
 masks the tool file and the embedded bundle. `--rules`/`OTELC_RULES` are for dev/debugging. The
-tool file is the intended explicit model, but v1.0.1 has not yet published the instrumentation
+tool file is the intended explicit model, but `otelc` has not published the instrumentation
 submodules: `otelc pin` adds local `replace` directives into `.otelc-build/`. Treat its output as
 a local workflow, not a source-controlled production configuration.
 
@@ -120,14 +122,26 @@ import (
 ```
 
 Only blank (`_`) imports are allowed. Do not hand-copy the parent
-`instrumentation/google.golang.org/grpc` import shown in the v1.0.1 upstream protocol example: it
+`instrumentation/google.golang.org/grpc` import shown in an upstream protocol example: it
 is not a Go package; the client and server are separate instrumentation modules.
 
 **Runtime tuning:** instrumented binaries embed an auto-initialized SDK that reads the standard
 [OTel SDK env vars](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/)
 (`OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_TRACES_SAMPLER`, `OTEL_SERVICE_NAME`, …). There is no
-`otelc`-specific exporter/sampler config. The one `otelc`-specific knob is `OTEL_GLS_MAX_SPANS`
-(goroutine-local-storage span-stack depth, for instrumentation that doesn't thread `context.Context`).
+`otelc`-specific exporter or sampler destination config. `OTEL_SDK_DISABLED=true` (case-insensitive)
+disables the injected SDK. `otelc` exposes these runtime controls:
+
+| Variable | Behavior |
+|---|---|
+| `OTEL_GO_ENABLED_INSTRUMENTATIONS` | Comma-separated, case-insensitive allowlist of compiled instrumentation names. |
+| `OTEL_GO_DISABLED_INSTRUMENTATIONS` | Comma-separated denylist, applied after the allowlist. |
+| `OTEL_GLS_MAX_SPANS` | Per-goroutine live span-stack limit; default `1000`. |
+| `OTEL_GLS_MAX_SPAN_STATES` | Shared span-lifecycle map limit; default `100000`, evicting the oldest state when full. |
+| `OTEL_LOG_LEVEL` | `debug`, `info` (default), `warn`, or `error` for `otelc` runtime logs. |
+| `OTEL_GO_SIMPLE_SPAN_PROCESSOR` | Exactly lowercase `true` selects `SimpleSpanProcessor`; other spellings are ignored. |
+
+The enable/disable lists only gate instrumentation already compiled into the binary; build-time
+selection still comes from the rule sources above.
 
 **Verify what matched:** `.otelc-build/matched.json` lists every rule that matched; `[]` means
 nothing matched (and `otelc` prints `Warning: no instrumentation will be applied`). Enable
@@ -137,8 +151,13 @@ nothing matched (and `otelc` prints `Warning: no instrumentation will be applied
 
 Custom rules and new-library instrumentation use YAML rules with `target` (import path; globs and
 `$root` supported), optional `version`, `where`/`where.file` predicates, and a `do` action. The
-seven rule types: `inject_hooks` (function hook), `add_struct_fields`, `inject_code`, `wrap_call`,
-`expand_directive`, `add_file`, `assign_value`. See the fetch table for the full grammar.
+eight rule types: `inject_hooks` (function hook), `add_struct_fields`, `inject_code`, `wrap_call`,
+`expand_directive`, `add_file`, `assign_value`, and `set_fields` (composite literals). See the
+fetch table for the full grammar.
+
+**v1.1.0 custom-rule migration:** function template variables are fields on Go's `text/template`
+dot. Use `{{ .FuncName }}`, `{{ .FuncArgument 0 }}`, and corresponding dotted forms; the pre-v1.1
+`{{ FuncName }}` spelling is no longer valid.
 
 ## Sources of truth
 
@@ -149,7 +168,7 @@ seven rule types: `inject_hooks` (function hook), `add_struct_fields`, `inject_c
 |---|---|
 | Latest `otelc` release tag | `gh api repos/open-telemetry/opentelemetry-go-compile-instrumentation/releases/latest -q '.tag_name'` |
 | Install, usage modes, managing instrumentations | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-compile-instrumentation/main/docs/getting-started.md` |
-| Full rule schema (all 7 types, glob grammar, predicates) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-compile-instrumentation/main/docs/rules.md` |
+| Full rule schema, glob grammar, and predicates | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-compile-instrumentation/main/docs/rules.md` |
 | Scope, filtering, precedence, runtime tuning, verification | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-compile-instrumentation/main/docs/configuration.md` |
 | Declaring instrumentations via `otel.instrumentation.go` | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-compile-instrumentation/main/docs/external-configuration.md` |
 | Add instrumentation for a new library; semconv | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-compile-instrumentation/main/docs/instrument-guide.md` |

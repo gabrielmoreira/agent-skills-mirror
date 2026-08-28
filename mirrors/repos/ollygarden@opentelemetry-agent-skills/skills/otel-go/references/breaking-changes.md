@@ -58,6 +58,10 @@ RPC attribute changes:
 
 - `otlptracehttp.WithEndpointURL` and `otlpmetrichttp.WithEndpointURL` no longer append `/v1/traces` or `/v1/metrics` when the URL has no path. They now use `/`, matching signal-specific endpoint environment variables and the log exporter. Join the signal path explicitly to preserve the old behavior.
 
+## Log exporter shutdown (log SDK v0.22.0; core v1.46.0 release)
+
+- `sdk/log` adds `ErrExporterShutdown`. The built-in stdout and OTLP log exporters now return it when `Export` is called after `Shutdown`; custom exporters should do the same. Calls to `Shutdown` or `ForceFlush` after shutdown remain no-ops that return `nil`.
+
 ## HTTP instrumentation behaviour (instrumentation v0.69.0; contrib v1.44.0 release)
 
 - Unknown or empty HTTP methods now report `_OTHER` instead of `GET` across all HTTP instrumentations (otelhttp, otelmux).

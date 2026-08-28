@@ -1,6 +1,6 @@
 ---
-name: omh-frontend
-description: [omh] Hermes frontend workflow: prepare design-system-driven web UI creation, redesign, polish, accessibility, performance, and visual QA handoffs. Use when the user says: frontend, front-end, front end, frontend skill, web ui, ui ux, landing page, web app layout.
+name: "omh-frontend"
+description: "[omh] Hermes frontend workflow: prepare design-system-driven web UI creation, redesign, polish, accessibility, performance, and visual QA handoffs. Use when the user says: frontend, front-end, front end, frontend skill, web ui, ui ux, landing page, web app layout."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]

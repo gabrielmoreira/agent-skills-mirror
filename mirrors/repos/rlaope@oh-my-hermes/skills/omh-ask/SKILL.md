@@ -1,6 +1,6 @@
 ---
-name: omh-ask
-description: [omh] Hermes adaptation for consulting an external advisor when configured. Use when the user says: ask, external advisor, claude, gemini, ask claude, ask gemini, consult claude, consult gemini.
+name: "omh-ask"
+description: "[omh] Hermes adaptation for consulting an external advisor when configured. Use when the user says: ask, external advisor, claude, gemini, ask claude, ask gemini, consult claude, consult gemini."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]

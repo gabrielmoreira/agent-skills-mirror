@@ -19,7 +19,14 @@ screenpipe team search "TOPIC" --since 24h -n 20 --raw > /tmp/sp-team.jsonl
 
 # Fetch a short chronology only after the device and window are known.
 screenpipe team records --device-id DEVICE --since 4h --kind all -n 50 --raw > /tmp/sp-team.jsonl
+
+# Fetch at most 2-3 cited frames, then open the JPEG with your image tool.
+sp_team_frame_dir="$(mktemp -d)"
+screenpipe team frame --device-id DEVICE --frame-id FRAME_ID --output "$sp_team_frame_dir/frame.jpg"
 ```
+
+Only describe pixels after the frame command succeeds and your image tool opens
+the JPEG. An unavailable frame is not evidence about what was on screen.
 
 Keep context small: check `wc -c /tmp/sp-team.jsonl`; if it exceeds 5 KB,
 filter with `jq` or narrow the query/window instead of printing the whole file.

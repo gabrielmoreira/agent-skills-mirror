@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ghostsecurity/skills` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `ghostsecurity/skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ghostsecurity/skills` — 26 default patterns, 0 followed patterns, 7
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/ghost/skills/proxy/SKILL.md`](plugins/ghost/skills/proxy/SKILL.md) |
-| 2 | ✓ | [`plugins/ghost/skills/repo-context/SKILL.md`](plugins/ghost/skills/repo-context/SKILL.md) |
-| 3 | ✓ | [`plugins/ghost/skills/report/SKILL.md`](plugins/ghost/skills/report/SKILL.md) |
-| 4 | ✓ | [`plugins/ghost/skills/scan-code/SKILL.md`](plugins/ghost/skills/scan-code/SKILL.md) |
-| 5 | ✓ | [`plugins/ghost/skills/scan-deps/SKILL.md`](plugins/ghost/skills/scan-deps/SKILL.md) |
-| 6 | ✓ | [`plugins/ghost/skills/scan-secrets/SKILL.md`](plugins/ghost/skills/scan-secrets/SKILL.md) |
-| 7 | ✓ | [`plugins/ghost/skills/validate/SKILL.md`](plugins/ghost/skills/validate/SKILL.md) |
+| 1 | ✓ | [`plugins/ghost/skills/exo/SKILL.md`](plugins/ghost/skills/exo/SKILL.md) |
+| 2 | ✓ | [`plugins/ghost/skills/proxy/SKILL.md`](plugins/ghost/skills/proxy/SKILL.md) |
+| 3 | ✓ | [`plugins/ghost/skills/repo-context/SKILL.md`](plugins/ghost/skills/repo-context/SKILL.md) |
+| 4 | ✓ | [`plugins/ghost/skills/report/SKILL.md`](plugins/ghost/skills/report/SKILL.md) |
+| 5 | ✓ | [`plugins/ghost/skills/scan-code/SKILL.md`](plugins/ghost/skills/scan-code/SKILL.md) |
+| 6 | ✓ | [`plugins/ghost/skills/scan-deps/SKILL.md`](plugins/ghost/skills/scan-deps/SKILL.md) |
+| 7 | ✓ | [`plugins/ghost/skills/scan-secrets/SKILL.md`](plugins/ghost/skills/scan-secrets/SKILL.md) |
+| 8 | ✓ | [`plugins/ghost/skills/validate/SKILL.md`](plugins/ghost/skills/validate/SKILL.md) |
 
 ---
 

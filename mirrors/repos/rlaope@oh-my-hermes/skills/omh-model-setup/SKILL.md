@@ -1,6 +1,6 @@
 ---
-name: omh-model-setup
-description: [omh] Hermes Model Setup workflow: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval. Use when the user says: model-setup, hermes model setup, set up my models, set up my model, configure my models, configure model provider, connect my model provider, set up model role slots.
+name: "omh-model-setup"
+description: "[omh] Hermes Model Setup workflow: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval. Use when the user says: model-setup, hermes model setup, set up my models, set up my model, configure my models, configure model provider, connect my model provider, set up model role slots."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, hermes-setup]
@@ -124,10 +124,10 @@ Safety rules:
 
 ## Runtime Evidence
 
-Preferred harness for this skill: `coding-handling`.
+Preferred harness for this skill: `hermes-setup`.
 
 ```sh
-omh runtime record --skill model-setup --harness coding-handling --status started
+omh runtime record --skill model-setup --harness hermes-setup --status started
 ```
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.

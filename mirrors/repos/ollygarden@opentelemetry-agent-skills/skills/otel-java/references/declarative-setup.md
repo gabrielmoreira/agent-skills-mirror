@@ -22,6 +22,7 @@ skill. For Java-specific facts:
 | Javaagent declarative-config docs (current activation flag, supported `file_format`) | `WebFetch https://opentelemetry.io/docs/zero-code/java/agent/declarative-configuration/` |
 | Javaagent declarative-config smoke fixture (parser truth for selected agent tag) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/smoke-tests/src/test/resources/declarative-config.yaml` |
 | Javaagent CHANGELOG (when each schema rc landed) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/CHANGELOG.md` |
+| Generated Java instrumentation config reference (names, types, defaults, deprecations) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/docs/declarative-configuration-example.yaml` |
 | Spring Boot Starter declarative-config fixture (selected starter tag) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/smoke-tests-otel-starter/spring-boot-2/src/testDeclarativeConfig/resources/application.yaml` |
 | Spring Boot starter docs | `WebFetch https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/` |
 
@@ -48,9 +49,9 @@ Declarative config has been supported since Javaagent 2.9.0; the property is now
 SDK 1.63.0 bundled with Javaagent 2.29.0). Newer agent versions track newer schema versions.
 Confirm both the accepted range and preferred `file_format` from the tag-matched parser, then use
 the preferred value from that release's fixture to avoid compatibility warnings for experimental
-properties. As of 2026-08-13, the latest SDK BOM is 1.65.0, while Javaagent/Spring Boot Starter
-2.30.0 still target SDK 1.64.0. Both released SDK parsers accept `0.4` and `1.*` and prefer
-`"1.1"`; both 2.30.0 instrumentation fixtures use `1.1`. Keep the selected distribution's
+properties. As of 2026-08-26, the latest SDK BOM is 1.65.0, and Javaagent/Spring Boot Starter
+2.31.1 target SDK 1.65.0. The released SDK parser accepts `0.4` and `1.*` and prefers
+`"1.1"`; both 2.31.1 instrumentation fixtures use `1.1`. Keep the selected distribution's
 embedded SDK distinct from the independently released BOM, and do not infer either from `main` or
 the generic language support matrix alone.
 
@@ -108,22 +109,24 @@ AutoConfiguredOpenTelemetrySdk sdk =
 - **Spring Boot Starter activation**: unlike the Javaagent/autoconfigure, the starter does
   not load an external file. Embed the declarative config inline under the `otel:` key in
   `application.yaml` (or as `otel.*` properties in `application.properties`) and opt in by
-  setting `otel.file_format` (for example, `file_format: "1.1"` for starter 2.30.0; verify the
+  setting `otel.file_format` (for example, `file_format: "1.1"` for starter 2.31.1; verify the
   selected release fixture). The presence of `otel.file_format` is what switches the starter into
   declarative-config mode.
 - **Shutdown hook**: The Javaagent and autoconfigure both register a JVM shutdown hook automatically — no manual `sdk.close()` needed.
 - **Zipkin exporter removal**: SDK/BOM 1.65.0 no longer publishes
   `opentelemetry-exporter-zipkin`. It was previously deprecated; migrate direct Zipkin export to
-  OTLP or send OTLP to a Collector with a Zipkin-compatible exporter before upgrading.
+  OTLP or send OTLP to a Collector with a Zipkin-compatible exporter before upgrading. Javaagent
+  2.31.1 still accepts `otel.traces.exporter=zipkin` and `otel.exporter.zipkin.endpoint`, but both
+  are deprecated in favor of OTLP configuration.
 - **Agent-only properties**: `otel.javaagent.extensions`, `otel.javaagent.enabled`, and
   `otel.javaagent.debug` cannot be set via declarative config. Set them as system properties or
   their corresponding environment variables instead.
-- **Released 2.30.0 selectors**: Javaagent and Starter declarative config can select semantic
-  conventions per `db`, `code`, `rpc`, or `messaging` domain under
-  `instrumentation/development.general.<domain>.semconv` with `version`, `experimental`, and
-  `dual_emit`. `service.peer` is still flag-only in this release. Check the schema for supported
-  value combinations; unsupported combinations fall back rather than forcing the requested mode.
-- **Starter thread details**: Starter 2.30.0 can add experimental `thread.id` and `thread.name`
+- **Semantic-convention selection**: In 2.31.1 declarative config, prefer
+  `instrumentation/development.general.stability_opt_in_list`, a comma-separated string such as
+  `database,code,messaging` or `<group>/dup` for dual emission. The older
+  `general.semconv_stability.opt_in` field is deprecated. Check the tag-matched generated config
+  and instrumentation metadata because support differs by domain and instrumentation.
+- **Starter thread details**: Starter 2.31.1 can add experimental `thread.id` and `thread.name`
   to spans with `distribution.spring_starter.thread_details_enabled: true`. This path is
   Starter-only; the Javaagent uses the separate
   `distribution.javaagent.thread_details_enabled` path.

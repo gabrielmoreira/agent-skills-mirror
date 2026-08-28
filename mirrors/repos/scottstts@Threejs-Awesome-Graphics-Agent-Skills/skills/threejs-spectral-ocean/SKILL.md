@@ -11,6 +11,10 @@ band-limited wave field, coast representation, swash state, foam history, and
 sand response. Do not reduce either target to scrolling normal maps or unrelated
 foam noise.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Spectral build order
 
 1. Define the sea-state spectrum and deterministic Gaussian seed.

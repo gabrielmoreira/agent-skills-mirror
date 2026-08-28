@@ -3,6 +3,10 @@ name: automation-sandbox-post-copy-configure
 description: "Apply a Salesforce sandbox post-copy automation JSON config against a target org. For each entry, the skill derives the correct Tooling API sobject from the entry's `ConfigurationName`, verifies the derivation via a describe probe, resolves the record Id via SOQL-over-REST, then PATCHes the record via the compound `Metadata` field using `sf api request rest`. Use when the user asks to apply, run, execute, dry-run, or preview a post-copy or post-refresh config file (e.g. `post-copy-config.json`) against a sandbox. Trigger phrases: \"apply post-copy config\", \"run post-copy automation\", \"execute sandbox post-refresh JSON\", \"apply sandbox refresh config\", \"configure sandbox after refresh\". DO NOT TRIGGER for generating the config JSON from an SOP (delegate to `automation-sandbox-post-copy-config-generate`), or for deploying metadata XML."
 allowed-tools: Bash Read Write
 metadata:
+  relatedSkills:
+    - "automation-sandbox-post-copy-config-generate"
+    - "dx-org-permission-set-assign"
+    - "platform-metadata-deploy"
   version: "1.0"
   domains: ["Automation"]
   cliTools:

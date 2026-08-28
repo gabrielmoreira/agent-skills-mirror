@@ -8,7 +8,7 @@ description: MIME type detection and extractor routing in core/mime.rs — the F
 ## Detection Flow
 
 ```text
-Extension -> EXT_TO_MIME -> validate_mime_type -> registry.get(mime) -> extractor
+Policy -> content and/or extension evidence -> validate_mime_type -> registry.get(mime) -> extractor
 ```
 
 ## Key Functions
@@ -17,7 +17,7 @@ Extension -> EXT_TO_MIME -> validate_mime_type -> registry.get(mime) -> extracto
 | --- | --- | --- |
 | `detect_mime_type(path, check_exists: bool)` | `core/mime.rs` | **Path-based only** — never reads bytes. Lowercased extension → `EXT_TO_MIME`, then tree-sitter extension detection (feature `tree-sitter`), then `mime_guess::from_path`. `check_exists` gates a file-existence check, not content inspection. |
 | `detect_mime_type_from_bytes(bytes)` | `core/mime.rs` | Magic-number detection via the `infer` crate. The only content-sniffing entry point. |
-| `validate_mime_type(mime)` | `core/mime.rs` | Membership test against the static `SUPPORTED_MIME_TYPES` set (plus an `image/*` prefix rule and a case-insensitive retry). It does **not** consult the extractor registry — a MIME can validate and still have no extractor. |
+| `validate_mime_type(mime)` | `core/mime.rs` | Parses the media type, matches its case-insensitive essence against `SUPPORTED_MIME_TYPES`, and returns the registered MIME spelling. Parameters such as `charset` do not affect extractor routing. It does **not** consult the extractor registry. |
 
 ## The FORMATS registry is the single source of truth
 
@@ -25,9 +25,10 @@ Extension -> EXT_TO_MIME -> validate_mime_type -> registry.get(mime) -> extracto
 `EXT_TO_MIME` and `SUPPORTED_MIME_TYPES` are `LazyLock`s **derived** from it by iteration —
 there is no `m.insert` call site to add to, and hand-editing either is impossible.
 
-Current size: 100 formats, 120 unique extensions, asserted by
-`core/mime.rs::tests::format_and_extension_counts_match_the_published_headline`. Extension
-lookup is case-insensitive (the extension is lowercased before the map hit).
+The full registry publishes 106 formats, 140 unique extensions, and 53 aliases, verified by
+`scripts/sync_supported_counts.py verify`. The published count constants describe that static
+registry; runtime availability is its intersection with registered extractors. Extension lookup is
+case-insensitive (the extension is lowercased before the map hit).
 
 ## Registry Selection
 
@@ -50,9 +51,8 @@ An extractor may register a family: `"image/*"` matches `image/png`, `image/jpeg
 
 1. Add one `FormatEntry` to `FORMATS` in `crates/xberg/src/core/mime.rs`. `EXT_TO_MIME` and
    `SUPPORTED_MIME_TYPES` update automatically.
-2. Bump `PUBLISHED_FORMATS` / `PUBLISHED_EXTENSIONS` in
-   `format_and_extension_counts_match_the_published_headline`, and the docs copies that test
-   enumerates.
+2. Run `scripts/sync_supported_counts.py sync` to update published count claims, then run its
+   `verify` command.
 3. Implement `InternalDocumentExtractor` (not `DocumentExtractor` — see
    `plugin-architecture-patterns`) with `supported_mime_types()` returning the MIME.
 4. Register in `crates/xberg/src/extractors/mod.rs::register_default_extractors()`.
@@ -61,5 +61,9 @@ An extractor may register a family: `"image/*"` matches `image/png`, `image/jpeg
 
 1. Call `validate_mime_type()` before extraction — but do not treat it as proof an extractor exists.
 2. Extension lookup is case-insensitive.
-3. `detect_mime_type` inspects no content. Use `detect_mime_type_from_bytes` for extension-less or untrusted input.
-4. Never edit `EXT_TO_MIME` or `SUPPORTED_MIME_TYPES` — edit `FORMATS`.
+3. `detect_mime_type` inspects no content. Extraction defaults to `PreferContent`, which performs
+   bounded content inspection and falls back to a supported extension. Use `ContentOnly` when the
+   filename must be ignored; use `TrustExtension` only for trusted sources.
+4. A specific explicit MIME type is authoritative. `application/octet-stream` is the exception: it
+   is a generic placeholder and triggers policy-based detection.
+5. Never edit `EXT_TO_MIME` or `SUPPORTED_MIME_TYPES` — edit `FORMATS`.

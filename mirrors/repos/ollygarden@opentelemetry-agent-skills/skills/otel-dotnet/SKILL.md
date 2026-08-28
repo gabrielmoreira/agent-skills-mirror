@@ -12,7 +12,7 @@ task; each reference is self-contained.
 
 | File | Use when |
 |---|---|
-| [`references/setup.md`](references/setup.md) | Setting up the SDK via the DI/builder path (`AddOpenTelemetry().WithTracing/WithMetrics/WithLogging`, `UseOtlpExporter`, `OpenTelemetrySdk.Create`, `OpenTelemetry.Extensions.Hosting`), exporter wiring, env-var / `IConfiguration` inputs, and why there is no declarative YAML config in .NET. |
+| [`references/setup.md`](references/setup.md) | Setting up the SDK via the DI/builder path (`AddOpenTelemetry().WithTracing/WithMetrics/WithLogging`, `UseOtlpExporter`, `OpenTelemetrySdk.Create`, `OpenTelemetry.Extensions.Hosting`), exporter wiring, env-var / `IConfiguration` inputs, and why there is no released declarative YAML config in .NET. |
 | [`references/api.md`](references/api.md) | Instrumenting with native BCL APIs (`ActivitySource`/`Activity`, `System.Diagnostics.Metrics.Meter`, `ILogger`), how the SDK subscribes (`AddSource`/`AddMeter`), attributes, propagation, and the optional OTel API shim. |
 | [`references/instrumentation-libraries.md`](references/instrumentation-libraries.md) | Zero-code (the `opentelemetry-dotnet-instrumentation` CLR-profiler agent), the contrib instrumentation-package catalog, and manual instrumentation following semconv. |
 | [`references/performance.md`](references/performance.md) | Tuning sampling, batch export processor, periodic metric reader, views, exporter choice, async context, graceful shutdown. |
@@ -21,7 +21,7 @@ task; each reference is self-contained.
 ## Sources of Truth
 
 For YAML schema details (language-agnostic), see the `otel-declarative-config` skill — but note
-.NET does not yet implement declarative config (see `references/setup.md`).
+.NET does not yet have a released declarative-config implementation (see `references/setup.md`).
 For .NET-specific facts:
 
 | Fact | Fetch |

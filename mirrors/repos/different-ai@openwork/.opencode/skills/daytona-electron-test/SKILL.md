@@ -54,7 +54,7 @@ source every `/daytona-secrets/*.env` file before Electron starts.
 
 - `daytona-flow-validator`: pass/fail validation with a strict observe -> act
   -> observe/assert -> evidence loop.
-- `daytona-cloud-server`: Den Web/API, worker proxy, marketplace, cloud auth,
+- `daytona-cloud-server`: Den Web/API, marketplace, cloud auth,
   and org policy server setup.
 - `daytona-electron-den`: two-sandbox server + Electron validation.
 - `daytona-chrome-cdp`: standalone Chrome in Daytona for web sign-in and OAuth.
@@ -66,7 +66,7 @@ source every `/daytona-secrets/*.env` file before Electron starts.
 ## Daytona Testing Toolbox
 
 - **Cloud server:** use `.devcontainer/test-server-on-daytona.sh` for Den Web,
-  Den API, worker proxy, org policies, marketplace, and cloud auth flows.
+  Den API, org policies, marketplace, and cloud auth flows.
 - **Secrets volume:** use `openwork-eval-secrets:/daytona-secrets` for provider
   keys and eval-only credentials. Add more files with
   `bash .devcontainer/setup-daytona-secrets-volume.sh <local-env> <name>.env`.

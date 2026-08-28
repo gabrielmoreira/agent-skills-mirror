@@ -301,6 +301,13 @@ The Admin prefix is `/v3/admin/ai/mcp`. Console mirrors the same relative
 operations under `/v3/console/ai/mcp`. Exact routes are listed in the
 [V3 HTTP API Surface](../http-api/v3-api-surface.md).
 
+These standard routes are enabled only after management authority reaches
+`LIFECYCLE_MANAGED`. Embedded and standalone Console use the same application
+service directly. A Console-only remote deployment must use the typed
+Maintainer lifecycle transport; until that transport is available, the remote
+handler reports the capability as disabled and must not fall back to a legacy
+write.
+
 ### 6.2 Historical Direct-Online Facades
 
 Existing Admin, Console, Maintainer SDK, Java Client SDK, and gRPC wire shapes
@@ -338,6 +345,12 @@ A draft write uses this order:
 4. update the Resource working pointer.
 
 A draft is not added to the historical Manifest.
+
+Deleting an exact draft uses MCP Storage cleanup first, removes the Version row
+after cleanup succeeds, and clears the matching Resource working pointer last.
+The retained pointer is the retry anchor if storage or row deletion is
+interrupted. A retry after the row has already been removed clears that pointer
+without requiring the deleted content descriptor.
 
 Publish or online uses this order:
 
@@ -426,10 +439,15 @@ already accept ID-only input remain compatible:
 - missing, malformed, duplicate, or conflicting aliases return a controlled
   parameter or integrity error.
 
-After normalization, every path applies the same canonical authorization,
-Visibility, and lifecycle operation. ID lookup must not query the Search
-index, Manifest, Config, or the historical MCP in-memory index. No new table,
-column, or JSON index is introduced for this low-frequency deprecated path.
+The protocol filter authenticates the request first using the existing wire
+contract. For ID-only input, the lifecycle locator then resolves the canonical
+Resource and, before any content read or mutation, repeats identity and
+authority validation against that exact canonical name. The path subsequently
+applies the same Visibility and lifecycle operation as name-based input. This
+order avoids unauthenticated alias enumeration while preventing an empty wire
+name from bypassing canonical authorization. ID lookup must not query the
+Search index, Manifest, Config, or the historical MCP in-memory index. No new
+table, column, or JSON index is introduced for this low-frequency deprecated path.
 The historical index may continue serving wholly historical management paths
 while `SYNCING`; after `LIFECYCLE_MANAGED`, no management correctness path
 depends on it.
@@ -638,7 +656,8 @@ Implementation PRs must cover at least:
 - exact Resource and Version mapping, including historical non-SemVer Version
   strings;
 - name-only, name-plus-ID, and legacy ID-only resolution from Resource rows,
-  canonical authorization after normalization, and conflict handling;
+  protocol authentication followed by exact canonical re-authorization for
+  ID-only input, and conflict handling;
 - unchanged Manifest/Server/Tools/Resources coordinates and bytes;
 - no Naming mutation during reconciliation and unchanged Direct, REF,
   frontend/backend, Runtime, subscription, reconnect, and redo behavior;

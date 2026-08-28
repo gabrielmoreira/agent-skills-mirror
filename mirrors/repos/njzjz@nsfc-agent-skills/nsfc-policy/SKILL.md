@@ -1,7 +1,6 @@
 ---
 name: nsfc-policy
 description: NSFC 2026年度申报政策速查。包含限项规定、AI使用规范、申请代码说明、项目类型定位、申请书结构改革等关键政策信息。
-version: 0.1.0
 ---
 
 # NSFC 2026年度申报政策速查

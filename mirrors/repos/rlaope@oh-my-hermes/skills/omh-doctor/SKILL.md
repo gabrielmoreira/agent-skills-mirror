@@ -1,6 +1,6 @@
 ---
-name: omh-doctor
-description: [omh] Hermes adaptation for diagnosing oh-my-hermes installation health. Use when the user says: doctor, diagnose omh, installation health.
+name: "omh-doctor"
+description: "[omh] Hermes adaptation for diagnosing oh-my-hermes installation health. Use when the user says: doctor, diagnose omh, installation health."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]

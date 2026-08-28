@@ -8,6 +8,10 @@ description: Build coupled precipitation and affected surfaces in Three.js. Use 
 Treat weather as a coupled event, particle, and surface-response system. Do not
 add rain or snow particles that are visually disconnected from the ground.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Build order
 
 ```text

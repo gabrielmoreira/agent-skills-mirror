@@ -72,7 +72,7 @@ Follow the Plan skill's full documentation for consensus mode details.
 
 ### Why the Gate Exists
 
-Execution modes (ralph, autopilot, team, ultrawork, ultrapilot) spin up heavy multi-agent orchestration. When launched on a vague request like "ralph improve the app", agents have no clear target — they waste cycles on scope discovery that should happen during planning, often delivering partial or misaligned work that requires rework.
+Execution modes (ralph, autopilot, team, ultrapilot) spin up heavy multi-agent orchestration. When launched on a vague request like "ralph improve the app", agents have no clear target — they waste cycles on scope discovery that should happen during planning, often delivering partial or misaligned work that requires rework.
 
 The ralplan-first gate intercepts underspecified execution requests and redirects them through the ralplan consensus planning workflow. This ensures:
 - **Explicit scope**: A PRD defines exactly what will be built
@@ -87,14 +87,12 @@ The ralplan-first gate intercepts underspecified execution requests and redirect
 - `autopilot implement issue #42`
 - `team add validation to function processKeywordDetector`
 - `ralph do:\n1. Add input validation\n2. Write tests\n3. Update README`
-- `ultrawork add the user model in src/models/user.ts`
 
 **Gated — redirected to ralplan** (needs scoping first):
 - `ralph fix this`
 - `autopilot build the app`
 - `team improve performance`
 - `ralph add authentication`
-- `ultrawork make it better`
 
 **Bypass the gate** (when you know what you want):
 - `force: ralph refactor the auth module`

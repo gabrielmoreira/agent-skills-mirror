@@ -8,7 +8,7 @@
 ## Purpose
 
 Hooks intercept Claude Code events to enable:
-- **Execution modes**: autopilot, ultrawork, ralph, ultrapilot, swarm, pipeline (mode-registry)
+- **Execution modes**: autopilot, ralph, ultrapilot, swarm, pipeline (mode-registry)
 - **Validation**: thinking blocks, empty messages, comments
 - **Recovery**: edit errors, session recovery, context window
 - **Enhancement**: rules injection, directory READMEs, notepad
@@ -28,7 +28,6 @@ Hooks intercept Claude Code events to enable:
 | Directory | Purpose | Trigger |
 |-----------|---------|---------|
 | `autopilot/` | Full autonomous execution | "autopilot", "build me" |
-| `ultrawork/` | Maximum parallel execution | "ulw", "ultrawork" |
 | `ralph/` | Persistence until verified | "ralph", "don't stop" |
 | `ultrapilot/` | Parallel autopilot with file ownership | "ultrapilot" |
 | `swarm/` | N coordinated agents with task claiming | "swarm N agents" |

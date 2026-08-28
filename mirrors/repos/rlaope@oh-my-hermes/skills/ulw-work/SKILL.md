@@ -1,6 +1,6 @@
 ---
-name: ulw-work
-description: [omh] Ultrawork - split an accepted plan into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file. Aliases: ulw. Use when the user says: ultrawork, parallel work, parallel implementation, high throughput, coding team, coordinated workers, finish until done, persistent execution.
+name: "ulw-work"
+description: "[omh] Ultrawork - split an accepted plan into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file. Aliases: ulw. Use when the user says: ultrawork, parallel work, parallel implementation, high throughput, coding team, coordinated workers, finish until done, persistent execution."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, execution]

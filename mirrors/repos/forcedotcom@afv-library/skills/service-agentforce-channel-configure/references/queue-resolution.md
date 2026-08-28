@@ -56,15 +56,15 @@ sf data create record --target-org $ORG \
 
 ## Step 4 — Resolve or create a Routing Configuration
 
-The queue must have a `QueueRoutingConfig` so Omni-Channel knows how to handle capacity. Query first:
+The queue must have a `QueueRoutingConfig` so Omni-Channel knows how to handle capacity. `QueueRoutingConfig` has **no `QueueId` column** — the link is the reverse direction (the queue's `Group` record points at the config via `QueueRoutingConfigId`), so resolve an existing config through the `Group` record, not by filtering the config on a queue Id:
 
 ```bash
 sf data query --target-org $ORG --json \
-  --query "SELECT Id, DeveloperName, CapacityPercentage, RoutingModel FROM QueueRoutingConfig WHERE QueueId='{QUEUE_ID}'"
+  --query "SELECT QueueRoutingConfigId FROM Group WHERE Id='{QUEUE_ID}'"
 ```
 
-- **Found** → use it as-is; skip creation.
-- **Not found** → create one using the capacity percentage for the channel type:
+- **`QueueRoutingConfigId` is non-null** → the queue already has a routing config; use it as-is and skip creation.
+- **`QueueRoutingConfigId` is null** → create one using the capacity percentage for the channel type, then link it to the queue:
 
 | Channel type | `CapacityPercentage` |
 |---|---|
@@ -74,17 +74,26 @@ sf data query --target-org $ORG --json \
 
 All use `RoutingModel: LeastActive`.
 
+`QueueRoutingConfig` uses `MasterLabel` (there is **no `Name` field**), has **no `QueueId`**, and **requires `RoutingPriority`** — a non-nillable integer with no default; set `1`. Create the config standalone, capture its Id, then point the queue's `Group` record at it:
+
 ```bash
-sf data create record --target-org $ORG \
+QRC_ID=$(sf data create record --target-org $ORG \
   --sobject QueueRoutingConfig \
-  --values "Name='{QUEUE_NAME} Routing' DeveloperName='{QUEUE_DEVELOPER_NAME}_Routing' QueueId='{QUEUE_ID}' CapacityPercentage={CAPACITY_PERCENTAGE} RoutingModel='LeastActive' IsAttributeBased=false"
+  --values "MasterLabel='{QUEUE_NAME} Routing' DeveloperName='{QUEUE_DEVELOPER_NAME}_Routing' CapacityPercentage={CAPACITY_PERCENTAGE} RoutingModel='LeastActive' RoutingPriority=1 IsAttributeBased=false" \
+  --json | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['id'])")
+
+# Link is the REVERSE direction — the queue's Group record points at the config:
+sf data update record --target-org $ORG \
+  --sobject Group --record-id "{QUEUE_ID}" \
+  --values "QueueRoutingConfigId='$QRC_ID'"
 ```
 
-Verify the record was created:
+Verify the queue now references the config:
 ```bash
 sf data query --target-org $ORG --json \
-  --query "SELECT Id, CapacityPercentage FROM QueueRoutingConfig WHERE QueueId='{QUEUE_ID}'"
+  --query "SELECT Id, QueueRoutingConfigId FROM Group WHERE Id='{QUEUE_ID}'"
 ```
+`QueueRoutingConfigId` must be non-null.
 
 ## Step 5 — Capture for use in Phase 2
 

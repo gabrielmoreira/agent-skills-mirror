@@ -1,6 +1,6 @@
 ---
-name: omh-agent-ops-review
-description: [omh] Hermes agent ops review workflow: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers. Use when the user says: agent-ops-review, agent ops review, agent productivity, operator productivity, manager view, quality dashboard, throughput review, agent work quality.
+name: "omh-agent-ops-review"
+description: "[omh] Hermes agent ops review workflow: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers. Use when the user says: agent-ops-review, agent ops review, agent productivity, operator productivity, manager view, quality dashboard, throughput review, agent work quality."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]
@@ -95,6 +95,12 @@ Expected outputs:
 Artifact expectations:
 
 - agent-ops-review/v1 metadata-only runtime or wrapper card when recorded
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `agent_operator_productivity/v1`; enforcement_level: `executable_validated`; consumer_id: `validate_agent_operator_productivity_card`
 
 Safety rules:
 

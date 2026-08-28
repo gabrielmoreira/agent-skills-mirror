@@ -89,7 +89,7 @@ agent discovers state, the CLI is how it acts.
   given. Shadowing is the one thing it can do (define a shell function with the
   same name), which is bash's own rule, reversible with `unset -f`, bypassable
   with `command <name>`, and visible in `type -a`. A deployment that needs a head
-  word pinned enforces that in the policy layer's `pre_execute`, not in the CLI
+  word pinned enforces that in the policy layer's `pre_command`, not in the CLI
   registry.
 
 - **Precedence is written down once**, in `_layers`/`layers`
@@ -222,11 +222,13 @@ the child's keys live in a different resource, so the parent's `readdir`
 never lists it. Two mechanisms follow from that, and they are separate.
 
 - **`MountView` is how a command sees the boundaries** (`ops/types.py`,
-  `ops/types.ts`), and it is offered the way `LinkView` is: a command
-  opts in by naming a `mounts` parameter, `execute_cmd`/`executeCmd`
-  delivers it only to handlers that do, and there is no list of
-  boundary-aware commands anywhere. It carries `descendants` (mount
-  roots strictly under a path), `is_root`, and `root_of`.
+  `ops/types.ts`), and it is offered the way `LinkView` is: it rides
+  `opts.ns.mounts` into every handler, and a command opts in by reading
+  the field, so there is no list of boundary-aware commands anywhere.
+  It carries `descendants` (every mount root strictly under a path, for
+  a caller avoiding one), `visible_descendants` (only the ones the
+  session may be told about, for a caller naming one), `is_root`, and
+  `root_of`.
   A traversal command that renders **lines** does not need it: the
   executor's fan-out (`workspace/executor/fanout.py`) already reruns
   find/du/tree/grep -r per mount and concatenates the output. A command
@@ -335,8 +337,8 @@ they bite:
 - **A command consumes a fact by reading the `opts` field, nothing else.**
   Every namespace fact (`links`, `stat_overlay`, `stat_path`, `readdir_path`,
   `child_mounts`, `mounts`) rides `CommandOpts` into every handler, identically
-  in both languages; the generic that wants one reads `opts.links` and the rest
-  ignore it, so there is no opt-in registry, spec field, or signature
+  in both languages; the generic that wants one reads `opts.ns.links` and the
+  rest ignore it, so there is no opt-in registry, spec field, or signature
   convention that can fall out of step. `LinkView` bundles every link fact
   (`stat_at`, `children`, `subtree`, `resolve`, `exists`, `target_stat`) so a
   command that grows a new need adds a field read, not a new keyword threaded

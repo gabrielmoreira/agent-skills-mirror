@@ -16,6 +16,7 @@
 - Sanitize or safely render model/user-provided content through shared rendering paths.
 - Avoid layout shifts that break long-running message streaming.
 - Keep message action chrome out of text selection so copy/paste captures message content without button labels or icons.
+- Reconcile standard action buttons in place during streamed updates so hover, focus, tooltips, and click feedback survive while handlers receive the latest message data; preserve extension-owned buttons in the same action bar.
 - Order standard message actions as Detail, Copy, then Speak; omit unavailable actions without changing the relative order of the remaining controls. Plugin-rendered message actions must follow the same order.
 - Keep collapsed process-step detail text out of the DOM; opening a step may materialize its current cached log data and collapsing it must discard that heavy detail again without removing extension action hooks.
 - Preference-driven process detail modes must await the same materialization path as manual expansion and accept an explicit chat-history target for off-screen window staging. `STEP` opens only the current non-utility step at the live tail; historical windows must not invent a current step at their boundary.

@@ -1,6 +1,6 @@
 ---
-name: omh-context-budget-review
-description: [omh] Hermes Context Budget Review workflow: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work. Use when the user says: context-budget-review, context budget review, context budget, token budget review, token budget, prompt budget, context compaction, compact context.
+name: "omh-context-budget-review"
+description: "[omh] Hermes Context Budget Review workflow: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work. Use when the user says: context-budget-review, context budget review, context budget, token budget review, token budget, prompt budget, context compaction, compact context."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]

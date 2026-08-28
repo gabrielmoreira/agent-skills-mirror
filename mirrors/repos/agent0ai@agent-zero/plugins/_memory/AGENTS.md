@@ -16,11 +16,15 @@
 
 - Keep memory scoped by configured subdirectory/context.
 - Preserve embedding metadata needed to rebuild indexes safely.
+- Delayed recall results must survive `LoopData` replacement, stay scoped to the originating memory/profile/project, and be consumed once by the next prompt; do not persist live task objects into chat JSON.
 - `memory_load` accepts numeric `threshold` and `limit` values as native numbers or numeric strings and coerces them before vector search.
+- Grouped tool-prompt declarations must start with `arg` or `args` so native Responses models receive every memory tool.
+- Auto-recall embeds each prepared query once and reuses that vector for the memory and solution filters; manual `memory_load` keeps the ordinary text-query path.
 - Avoid storing transient action-history noise as durable memory.
 
 ## Work Guidance
 
+- Keep dashboard metadata JSON-safe without changing shared API serialization.
 - Coordinate tool, prompt, and consolidation changes so saved memories remain useful and bounded.
 
 ## Verification

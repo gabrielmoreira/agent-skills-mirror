@@ -1,6 +1,6 @@
 ---
-name: omh-codegraph-refresh
-description: [omh] Hermes Codegraph Refresh workflow: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution. Use when the user says: codegraph-refresh, codegraph refresh, refresh codegraph, update codegraph, codegraph stale, stale codegraph, codegraph handoff, codegraph summary.
+name: "omh-codegraph-refresh"
+description: "[omh] Hermes Codegraph Refresh workflow: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution. Use when the user says: codegraph-refresh, codegraph refresh, refresh codegraph, update codegraph, codegraph stale, stale codegraph, codegraph handoff, codegraph summary."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

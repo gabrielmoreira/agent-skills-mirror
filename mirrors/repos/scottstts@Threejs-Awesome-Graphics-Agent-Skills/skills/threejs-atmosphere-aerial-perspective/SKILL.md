@@ -7,6 +7,10 @@ description: Implement physically motivated sky and aerial-perspective systems i
 
 Treat sky rendering and aerial perspective as two views of the same scattering model. They must share radii, density profiles, coefficients, sun direction, exposure scale, and coordinate transforms.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Choose the implementation tier
 
 - Small scene with no orbital camera: analytic height/distance approximation.
@@ -47,4 +51,6 @@ This skill owns molecular/aerosol sky scattering and surface-segment aerial
 perspective. Use `$threejs-volumetric-clouds` for weather-shaped cloud density,
 temporal cloud reconstruction, and cloud shadows. Use
 `$threejs-procedural-vfx` for emissive aurora curtain volumes and their
-perspective/equirectangular radiance materials.
+perspective/equirectangular radiance materials, and for standalone filmic HDR
+lens-flare compositors. Keep the LUT example's lens flare here when it remains
+one stage in the sky-scattering and aerial-perspective composition.

@@ -7,7 +7,7 @@
 | Enhanced Chat | `MessagingSession` | Branch A — set `sessionHandlerAsa` on MessagingChannel | `sfdc_livemessage` | `Messaging` |
 | Enhanced Messaging (3rd-party: WhatsApp, SMS, etc.) | `MessagingSession` | Branch A — set `sessionHandlerAsa` on MessagingChannel | `sfdc_livemessage` | `Messaging` |
 | Voice | `VoiceCall` | Branch B — create inbound RoutingFlow (`routingType: Copilot`) | `sfdc_phone` | `Phone` |
-| Email-to-Case | `Case` | Branch C — create inbound RoutingFlow (`routingType: Copilot`) | *(query required — see below)* | *(query required)* |
+| Service Email (Email-to-Case) | `Case` | Branch C — create inbound RoutingFlow (`routingType: Copilot`) | *(query required — see below)* | *(query required)* |
 
 ## Email-to-Case: query the org-specific ServiceChannel
 
@@ -15,12 +15,39 @@ The Case-based ServiceChannel DeveloperName and Label are not system-generated a
 
 ```bash
 sf data query --target-org $ORG --json \
-  --query "SELECT DeveloperName, MasterLabel FROM ServiceChannel WHERE RelatedEntityType='Case'"
+  --query "SELECT DeveloperName, MasterLabel FROM ServiceChannel WHERE RelatedEntity='Case'"
 ```
 
-- **Zero rows** → stop; surface gap to user. The channel cannot be wired until a Case-based ServiceChannel exists.
+The SObject column is `RelatedEntity` — `RelatedEntityType` is the *metadata* field name (used in the deploy below) and errors as `No such column` in SOQL.
+
+- **Zero rows** → no Case-based ServiceChannel exists yet. This is **provisionable, not a dead end** — tell the user one is required for routing and provision it (see "Provision a Case ServiceChannel" below), then continue with the new channel's `DeveloperName`/`MasterLabel`.
 - **One row** → use its `DeveloperName` as `SERVICE_CHANNEL_DEV_NAME` and `MasterLabel` as `SERVICE_CHANNEL_LABEL`.
 - **Multiple rows** → ask user to choose via `AskUserQuestion`.
+
+### Provision a Case ServiceChannel (Branch C only)
+
+This applies **only to Branch C (Email-to-Case)** — Branches A and B use the fixed system channels `sfdc_livemessage`/`sfdc_phone`, which always exist and never reach this path.
+
+When none exists, deploy one. `ServiceChannel` is in the SDR registry and has no v68-only fields, so a source deploy is fine (no `sourceApiVersion` concern). Write `serviceChannels/Case_Channel.serviceChannel-meta.xml` under the project's package directory:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <doesMinimizeWidgetOnAccept>false</doesMinimizeWidgetOnAccept>
+    <hasAutoAcceptEnabled>false</hasAutoAcceptEnabled>
+    <isInterruptible>false</isInterruptible>
+    <label>Cases</label>
+    <relatedEntityType>Case</relatedEntityType>
+</ServiceChannel>
+```
+
+The *metadata* field is `relatedEntityType` (here), while the SOQL column queried above is `RelatedEntity` — don't conflate them. Deploy:
+
+```bash
+sf project deploy start --metadata "ServiceChannel:Case_Channel" --target-org $ORG --json
+```
+
+Then use `Case_Channel` as `SERVICE_CHANNEL_DEV_NAME` and `Cases` as `SERVICE_CHANNEL_LABEL`. Deploy-time only needs the channel to exist; live Omni routing additionally needs presence configuration (reps online) before work actually routes.
 
 ## Voice: native vs partner — MUST CHECK before Branch B
 

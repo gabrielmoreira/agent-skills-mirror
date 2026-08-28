@@ -1,6 +1,6 @@
 ---
-name: omh-best-practice-research
-description: [omh] Hermes adaptation for bounded official/upstream best-practice research. Use when the user says: best-practice-research, best practice, official docs, upstream guidance, what do the docs say, check the docs.
+name: "omh-best-practice-research"
+description: "[omh] Hermes adaptation for bounded official/upstream best-practice research. Use when the user says: best-practice-research, best practice, official docs, upstream guidance, what do the docs say, check the docs."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]

@@ -14,6 +14,10 @@
 
 Tail sampling buffers **all spans of a trace** (grouped automatically by `trace_id` — no `groupbytrace` needed), waits a configurable `decision_wait` for the trace to complete, then evaluates a set of policies against the **whole trace** to make a single keep/drop decision. Because the decision is made after the trace is (mostly) assembled, it can act on trace-wide signals: presence of an error on any span, total latency, span count, specific attributes, etc.
 
+`num_shards` can split that in-process work across parallel event loops while
+keeping each trace on one shard. This improves concurrency inside one Collector; it does not replace
+trace-affinity routing when scaling across Collector instances.
+
 This is the opposite of **head sampling** (e.g. `probabilistic_sampler`), which decides at the start of a trace based only on the trace ID — before any span content is known. Head sampling is cheap and stateless; tail sampling is content-aware but stateful, requires buffering, and adds latency.
 
 ## Main use-cases
@@ -37,8 +41,8 @@ Avoid it when:
 
 ## Details
 
-- [Configuration](configuration.md) — top-level config keys (`decision_wait`, `num_traces`, `decision_cache`, …), defaults, and the minimal pipeline. Open when wiring up the processor or checking a key/default.
+- [Configuration](configuration.md) — top-level config keys (`decision_wait`, `num_traces`, `num_shards`, `decision_cache`, …), defaults, and the minimal pipeline. Open when wiring up the processor or checking a key/default.
 - [Policy types](policies.md) — the full catalog of all ~17 policy types and their sub-fields, latency-boundary semantics, and optional W3C tracestate probability handling. Open when choosing or configuring a sampling policy.
 - [Verification](verification.md) — telemetrygen recipe to confirm sampling works. Open when you want to prove the config end-to-end.
-- [Advanced use-cases](advanced.md) — `and`/`composite`/`drop` combinations and scaling out with `load_balancing`. Open when building multi-condition policies or running more than one instance.
+- [Advanced use-cases](advanced.md) — `and`/`composite`/`drop` combinations, in-process sharding, and scaling out with `load_balancing`. Open when building multi-condition policies or increasing concurrency.
 - [Known quirks](quirks.md) — same-instance/loadbalancing requirement, memory model, `decision_wait` latency, late spans, statefulness, and tracestate parsing. Open when sizing memory or debugging missing/partial traces.

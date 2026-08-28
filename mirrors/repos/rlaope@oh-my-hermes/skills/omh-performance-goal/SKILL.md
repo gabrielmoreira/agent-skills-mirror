@@ -1,6 +1,6 @@
 ---
-name: omh-performance-goal
-description: [omh] Hermes adaptation for measurable performance-goal execution. Use when the user says: performance-goal, performance goal, latency, throughput, benchmark.
+name: "omh-performance-goal"
+description: "[omh] Hermes adaptation for measurable performance-goal execution. Use when the user says: performance-goal, performance goal, latency, throughput, benchmark."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, optimization]

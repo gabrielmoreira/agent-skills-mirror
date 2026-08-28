@@ -1,6 +1,6 @@
 ---
-name: omh-product-brief
-description: [omh] Turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief. Use when the user says: product requirements document, PRD, roadmap prioritization, 제품 요구사항 문서, 제품 기획서, 로드맵 우선순위.
+name: "omh-product-brief"
+description: "[omh] Turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief. Use when the user says: product requirements document, PRD, roadmap prioritization, 제품 요구사항 문서, 제품 기획서, 로드맵 우선순위."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]

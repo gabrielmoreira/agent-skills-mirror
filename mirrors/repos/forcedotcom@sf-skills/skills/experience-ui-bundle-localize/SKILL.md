@@ -1,6 +1,6 @@
 ---
 name: experience-ui-bundle-localize
-description: "MUST activate to localize / internationalize a uiBundles/*/src/ React project: extract hardcoded user-facing strings into Custom Labels, wire i18next over the Platform SDK GraphQL backend, add a language to a localized bundle, or troubleshoot label rendering across locales. Triggers: user-facing string literals in .tsx/.jsx, a CustomLabels.labels-meta.xml, a src/i18n/ directory or label-manifest.ts, t(…) calls, or requests to 'translate / localize / internationalize / support another language.' Scope: authenticated UI Bundles only (B2E CustomApplication-bound, or in-core accessCheck-bound apps). DO NOT TRIGGER when: the bundle is a site (B2C/B2B) app bound to a DigitalExperienceConfig (site localization not yet supported), building app shell/UI or styling, reading/writing/refreshing records (use experience-ui-bundle-salesforce-data-access), generating a new bundle (use experience-ui-bundle-frontend-generate), deploying (use experience-ui-bundle-deploy), or authoring translations in Translation Workbench."
+description: "MUST activate to localize / internationalize a uiBundles/*/src/ React project: extract hardcoded user-facing strings into Custom Labels, wire i18next over the Platform SDK GraphQL backend, add labels for another language, or troubleshoot label rendering across locales. Triggers: user-facing string literals in .tsx/.jsx, a CustomLabels.labels-meta.xml, a src/i18n/ directory or label-manifest.ts, t(…) calls, or requests to 'translate / localize / internationalize / support another language.' Scope: authenticated B2E UI Bundles and B2C site bundles. Use experience-ui-bundle-site-generate instead for site language configuration or sfdc_cms__languageSettings. DO NOT TRIGGER for B2B site bundles, building app shell/UI or styling, reading/writing/refreshing records (use experience-ui-bundle-salesforce-data-access), generating a new bundle (use experience-ui-bundle-frontend-generate), deploying (use experience-ui-bundle-deploy), or authoring translations in Translation Workbench."
 metadata:
   version: "1.0"
   domains: ["Experience"]
@@ -9,6 +9,7 @@ metadata:
     - "experience-ui-bundle-deploy"
     - "experience-ui-bundle-frontend-generate"
     - "experience-ui-bundle-salesforce-data-access"
+    - "experience-ui-bundle-site-generate"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"
@@ -20,7 +21,7 @@ metadata:
 
 # Localize a React UI Bundle
 
-Walk a developer through localizing a React UI Bundle: detect hardcoded user-facing strings, extract them into Salesforce Custom Labels, wire up i18next over the Platform SDK GraphQL backend, and verify labels render across locales.
+Localize a React UI Bundle: extract user-facing strings into Salesforce Custom Labels, wire i18next over the Platform SDK GraphQL backend, and verify labels across locales.
 
 This file is the **workflow + guardrail spine**. Depth lives in linked docs:
 
@@ -51,6 +52,7 @@ function WelcomeBanner() {
 |---|---|
 | Bundle doesn't exist yet | **experience-ui-bundle-frontend-generate** skill |
 | Deploying the app with its labels | **experience-ui-bundle-deploy** skill |
+| Configuring site languages or `sfdc_cms__languageSettings` | **experience-ui-bundle-site-generate** skill |
 | Localizing an existing bundle | **Workflow below** |
 
 ---
@@ -60,10 +62,11 @@ function WelcomeBanner() {
 | # | Requirement | Verify | If missing |
 |---|---|---|---|
 | 1 | It's a `uiBundles/*/src/` React project | Project structure matches | Not a UI Bundle → route to the correct skill |
-| 2 | `@salesforce/platform-sdk` installed (≥11.42.1) | `package.json` in the UI bundle dir | Tell user to install it; cannot proceed |
+| 2 | Platform SDK, UI Bundle, and Vite plugin siblings installed and aligned (≥11.49.3) | `package.json` in the UI bundle dir | Tell user to align and upgrade them; cannot proceed |
 | 3 | You can identify where the app mounts | Read the entry file (usually `src/index.tsx`) | No clear mount point → ask user to point it out |
 | 4 | Target org actually supports API v68.0+ (runtime label GraphQL for UI Bundles ships in Release 264) | Run the runtime org-release check below | Org's max API version is below v68.0 (Release 262 or older) → cannot proceed; retarget a Release 264+ org or upgrade the org |
-| 5 | The bundle is an authenticated app (B2E, or an in-core internal app), not a public site | Run the authenticated-app detection below | Bundle is a site (B2C/B2B) app → localization is **not yet supported for site bundles**; stop and tell the user B2C support is planned for when B2C localization is ready |
+| 5 | The bundle is authenticated B2E or the request/context explicitly identifies a B2C site, not B2B | Run the bundle-type detection below and use the request/context for site product identity | Explicit B2B → reject; site type not explicit → ask the user and stop until confirmed; B2C also requires precondition 6 |
+| 6 | For B2C only, an admin has enabled `GraphQLApiOrgPrefForGuestUsers` | Ask the admin to confirm the org preference is already enabled | Do not enable it; explain that guest GraphQL returns HTTP 403 without it and stop (dependency: W-23854208) |
 
 **Runtime org-release check (precondition 4).** The `platform.labels` GraphQL path that resolves labels at runtime for UI Bundles ships in Salesforce Release 264 (API v68.0 or higher). A `sourceApiVersion` in `sfdx-project.json` records what you declared, not what the org supports, so a newer CLI pointed at an older org can pass a static file check and then fail at runtime. Query the org's actual maximum API version before wiring anything:
 
@@ -73,21 +76,25 @@ bash <skill-dir>/scripts/check-org-api-version.sh <org-alias-or-username>
 
 Exit `0` → the org supports v68.0+, proceed. Exit `1` → the org is too old or unreachable; do not write i18n wiring or labels, report the version mismatch to the user and stop. (`sf api request rest` inside the script keeps authentication at the CLI transport layer, so no access token enters context.)
 
-**Authenticated-app detection (precondition 5).** The bundle's type decides whether localization is supported, and it's decided by deterministic file and string checks. Pass the full path to the bundle dir; the script derives the metadata root from it, so the current directory does not matter:
+**Bundle-type detection (precondition 5).** The bundle's type decides which localization branch applies. Pass the full path to the bundle dir; the script derives the metadata root from it, so the current directory does not matter:
 
 ```bash
 bash <skill-dir>/scripts/detect-bundle-type.sh <path-to-uiBundles/<name>/ dir>
 ```
 
-Act on the exit code: `0` → authenticated app (in-core internal or B2E), proceed; `1` → site (B2C/B2B), localization is **not yet supported for site bundles**, stop and tell the user (B2C support is planned for when B2C localization is ready); `2` → unbound or cannot auto-detect, **ask the user to confirm** the bundle is an authenticated app (B2E or in-core internal) and stop if they cannot.
+Act on the exit-code contract: `0` → authenticated app (B2E or in-core internal), use the B2E branch; `10` → bound public site app-container candidate, meaning metadata proves site binding and guest access but **not** B2C versus B2B; `11` → bound non-public/unsupported site, stop; `12` → both CustomApplication and one site binding exist, ask which runtime context is the localization target; `13` → multiple matching Experience site bindings, show the reported site names and ask which site/runtime context is the target; `2` → unbound/unknown, report the script output and stop rather than guessing.
 
-If a precondition isn't met, stop: report the specific block to the user and record a plan item to return once it's resolved. Do not edit the bundle, in particular, never add i18n wiring or TODO markers to a site (B2C/B2B) bundle that precondition 5 gated off as unsupported.
+For exit `10`, route by explicit request/context: if it says **B2C**, confirm precondition 6 and use the B2C branch; if it says **B2B**, reject it; if product type is not explicit, ask the user whether the site is B2C or B2B and stop until confirmed. For exits `12` and `13`, require the user to choose the runtime context (and site for exit `13`), then apply that branch's fallback and prerequisites. Never infer B2C from `DigitalExperienceConfig`, `appSpace`, `appContainer`, or `AUTHENTICATED_WITH_PUBLIC_ACCESS_ENABLED`; the authentication value means guest access is enabled.
+
+For B2C, only an org admin may enable `GraphQLApiOrgPrefForGuestUsers`; never provision or change it. Without it, guest label requests return HTTP 403. Track availability through W-23854208.
+
+If a precondition isn't met, stop: report the specific block to the user and record a plan item to return once it's resolved. Do not add i18n wiring or TODO markers to a B2B or unknown bundle.
 
 ---
 
 ## Workflow: the five steps
 
-Each step has a **checkable completion criterion** and a **confirm-before-continue** pause.
+Each step has a **completion criterion** and a **confirm-before-continue** pause.
 
 ### Step 1: Detect
 
@@ -183,6 +190,8 @@ Branch on the exit code: `0`, every key is registered (or there are no `t()` cal
 
 **Goal:** Ensure the i18next init exists; scaffold it if the app has no i18n yet.
 
+Configure `SalesforceBackend` by bundle type: preserve the shipped `BASE_VALUE` default for B2E; for B2C only, set `labelFallback: "USER_DEFAULT"`. See [references/i18n-setup.md](references/i18n-setup.md) for both configurations and B2C language context.
+
 **Check:**
 Run `check-i18n-wired.sh` from the UI bundle dir (it scans `src/` relative to the current directory) and report what it returns. The script owns the whole deterministic inspection: it looks for an init file defining `initI18n()` and a boot-time call to it, and when those exist it also reports whether the label manifest is imported and actually passed into the backend config. Do not re-derive any of this by reading files yourself.
 
@@ -228,42 +237,21 @@ Act on the message `check-i18n-wired.sh` already printed (above): if it reports 
 
 **Goal:** Guide the developer to verify labels render in a second language.
 
-**Action:**
-1. **Activate a second language** (if not already active), tell the user: "In your org, go to Setup → Translation Workbench → Translation Settings → add a language (e.g., Spanish)."
-2. **Author a translation**, scaffold an empty translation file for the language:
-   ```xml
-   <!-- force-app/main/default/translations/es.translation-meta.xml -->
-   <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
-     <customLabels>
-       <label>Bienvenido</label>
-       <name>Welcome_Text</name>
-     </customLabels>
-   </Translations>
-   ```
-   (Full structure: [references/label-xml.md](references/label-xml.md))
-   
-   Tell the user to either:
-   - Edit the XML file by hand (for a small number of labels), or
-   - Use Translation Workbench (Setup → Translate → Custom Label → pick language → enter translations), then retrieve with `sf project retrieve start --metadata Translations:es`.
+**Action:** Follow the branch-specific procedure in [references/verifying.md](references/verifying.md).
 
-3. **Build and deploy**, tell the user:
-   ```bash
-   sf config set target-org=<alias>  # API version bakes in; point at the deploy target first
-   npm run build
-   sf project deploy start --source-dir force-app --target-org <alias>
-   ```
+For **B2E**, activate a second language, author or retrieve its translation metadata, build against the target org, deploy only the target bundle and label metadata, then change the authenticated user's Language and reload. The exact commands and URLs are in [references/verifying.md](references/verifying.md).
 
-4. **Open the app** at the `/lwr/application/ai/<namespace>-<bundleName>` URL on the `lightning.force.com` domain (redirects to the app host).
+For **B2C**, verify configured site languages, URL routing, `SFDC_ENV.language`, the full-reload language switcher, localized local preview, guest GraphQL access, and cache clearing as detailed in [references/verifying.md](references/verifying.md).
 
-5. **Change the user's Language** (not Locale), Setup → My Settings → Language & Time Zone → Language → pick the translated language → Save.
-
-6. **Reload the app**, labels should flip to the translated language.
+Deploying the bundle, labels, and translations does not publish the Experience site. Treat `sf community publish` as a separate go-live mutation: show the exact site and target org, then wait for explicit user confirmation immediately before running it.
 
 **If it doesn't render:**
 Check the three gotchas in [references/gotchas.md](references/gotchas.md):
 - Unregistered manifest key (Step 3 missed a label)
 - API-version mismatch (built against a different org)
 - Stale localStorage cache (clear `i18next_res_*` keys in DevTools)
+- B2C guest GraphQL 403 (`GraphQLApiOrgPrefForGuestUsers` is not admin-enabled)
+- B2C route, site language, and `SFDC_ENV.language` disagree
 
 **Completion criterion:**
 Labels render in ≥2 locales, or the blocking gotcha is identified.
@@ -278,15 +266,17 @@ Labels render in ≥2 locales, or the blocking gotcha is identified.
 - **No strings found**: report cleanly and stop; do not invent work.
 - **App has no i18n setup yet**: Step 4 scaffolds the two files first before Step 3 can register anything.
 - **Partial setup** (manifest exists but init missing, or vice-versa), reconcile what's present; never clobber existing wiring.
+- **B2B site**: explicitly reject it. B2C support does not imply B2B support.
 
 ---
 
 ## Guardrails: never regress these
 
-1. **Never machine-translate into deployable metadata.** Scaffold empty translation files and guide the developer to author translations (by hand or via Translation Workbench). Do not call any MT API and paste the result into `translation-meta.xml`; unreviewed machine translations are a quality liability.
+1. **Never machine-translate deployable metadata.** Scaffold one well-formed `<Translations>` document with a closed `<customLabels>` block per label and XML-escaped English source text. Preserve placeholders and parse both metadata files before completion. Translators replace scaffold values by hand or through Translation Workbench; never call an MT API for them.
 2. **Never register a key that has no label.** Manifest entry count must equal label count (Step 3 criterion). An unregistered key renders as its own literal name with no console warning. It's the most common localization bug.
 3. **Never clobber existing i18n wiring.** If Step 4 finds an existing `initI18n()`, reconcile (add the manifest import if missing) rather than replace the whole file.
 4. **Every file must be customer-safe.** No `webapps`, core-only paths, or internal infrastructure references anywhere. Write as if for an external customer in an SFDX project.
+5. **Never publish a B2C site implicitly.** Metadata deployment and site publication are separate. Run `sf community publish` only after showing the site and org and receiving explicit confirmation for that publication.
 
 ---
 
@@ -310,7 +300,7 @@ Labels render in ≥2 locales, or the blocking gotcha is identified.
 |---|---|---|
 | `npm install i18next react-i18next i18next-chained-backend i18next-localstorage-backend` | UI bundle dir | Install i18n dependencies (Step 4) |
 | `npm run build` | UI bundle dir | Build the app (API version bakes in, set target-org first) |
-| `sf project deploy start --source-dir force-app` | Project root | Deploy the app + labels + translations |
+| See `references/verifying.md` | Project root | Review and deploy the exact target bundle + changed label metadata to an explicit org |
 | `sf project retrieve start --metadata Translations:<locale>` | Project root | Pull translations authored in Translation Workbench |
 
 ---
@@ -320,5 +310,8 @@ Labels render in ≥2 locales, or the blocking gotcha is identified.
 - [ ] Every confirmed string has both a `CustomLabels` entry and a `t()` call
 - [ ] `label-manifest.ts` entry count == label count (no unregistered keys)
 - [ ] `initI18n()` present and called once at boot
+- [ ] B2C only: guest GraphQL preference confirmed, `USER_DEFAULT` configured, and site language route matches `SFDC_ENV.language`
+- [ ] B2E only: no `labelFallback` override; the `BASE_VALUE` default is preserved
 - [ ] Labels render in ≥2 locales (or the blocking gotcha is named)
 - [ ] No hand-written machine translations landed in `*-meta.xml` (only scaffold-and-guide)
+- [ ] Both metadata files parse as XML; the translation scaffold has one `<Translations>` root and one closed block per label

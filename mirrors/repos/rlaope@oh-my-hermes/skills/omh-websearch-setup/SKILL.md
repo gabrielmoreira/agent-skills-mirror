@@ -1,6 +1,6 @@
 ---
-name: omh-websearch-setup
-description: [omh] Hermes Web Search Setup workflow: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval. Use when the user says: websearch-setup, web search setup, make web search cheaper, set up web search, configure web search, reduce web search cost, connect scraper api key, set up auxiliary web-extract model.
+name: "omh-websearch-setup"
+description: "[omh] Hermes Web Search Setup workflow: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval. Use when the user says: websearch-setup, web search setup, make web search cheaper, set up web search, configure web search, reduce web search cost, connect scraper api key, set up auxiliary web-extract model."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, hermes-setup]
@@ -105,10 +105,10 @@ Safety rules:
 
 ## Runtime Evidence
 
-Preferred harness for this skill: `coding-handling`.
+Preferred harness for this skill: `hermes-setup`.
 
 ```sh
-omh runtime record --skill websearch-setup --harness coding-handling --status started
+omh runtime record --skill websearch-setup --harness hermes-setup --status started
 ```
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.

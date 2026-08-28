@@ -1,6 +1,6 @@
 ---
-name: omh-cancel
-description: [omh] Hermes adaptation for ending active workflow state cleanly. Use when the user says: cancel, stop the workflow, abort the run, cancel the loop.
+name: "omh-cancel"
+description: "[omh] Hermes adaptation for ending active workflow state cleanly. Use when the user says: cancel, stop the workflow, abort the run, cancel the loop."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]

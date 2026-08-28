@@ -1,6 +1,6 @@
 ---
-name: omh-deploy-and-monitor
-description: [omh] Hermes Deploy-and-Monitor workflow: release checklist, deploy decision, health signals, rollback gate, and post-deploy status. Use when the user says: deploy-and-monitor, deploy and monitor, deploy monitor, deployment monitoring, release monitor, post deploy, post-deploy, rollback.
+name: "omh-deploy-and-monitor"
+description: "[omh] Hermes Deploy-and-Monitor workflow: release checklist, deploy decision, health signals, rollback gate, and post-deploy status. Use when the user says: deploy-and-monitor, deploy and monitor, deploy monitor, deployment monitoring, release monitor, post deploy, post-deploy, rollback."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, monitoring]
@@ -97,6 +97,12 @@ Expected outputs:
 Artifact expectations:
 
 - release operation status record when the wrapper captures deploy or monitor observations
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `deploy-and-monitor`; enforcement_level: `guidance_only`; consumer_id: `none`
 
 Safety rules:
 

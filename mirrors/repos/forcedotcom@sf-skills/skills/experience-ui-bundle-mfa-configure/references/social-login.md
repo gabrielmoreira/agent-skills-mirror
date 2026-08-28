@@ -69,3 +69,4 @@ writing a component.
 | Redirect loop after SSO | `startURL` misconfigured | Point `startURL` at the site home path, not the login page |
 | Provider button missing an icon | Auth Provider icon not set | Set the icon on the Auth Provider definition |
 | No Social Login buttons render on the React login page even with Auth Providers configured | Org predates 264 (React runtime shipped the built-in Social Login component in 264) | Ensure the org is on 264+ |
+| No Social Login buttons in local dev preview (`localhost`) even with providers linked | Local preview runs outside the site guest context — `/auth/social-login-config` returns no providers | Expected; test on the **published** site login page, not `localhost`. |

@@ -1,7 +1,6 @@
 ---
 name: nsfc-literature
 description: NSFC申请书文献检索与引用生成。使用OpenAlex API免费搜索学术文献，使用wenxian生成标准引用格式。
-version: 0.1.0
 ---
 
 # NSFC 申请书文献检索与引用生成

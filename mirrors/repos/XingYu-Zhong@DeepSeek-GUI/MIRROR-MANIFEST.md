@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `XingYu-Zhong/DeepSeek-GUI` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `XingYu-Zhong/DeepSeek-GUI` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `XingYu-Zhong/DeepSeek-GUI` — 26 default patterns, 0 followed patter
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,6 +78,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 18 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 19 | ✓ | [`docs/kun-architecture.md`](docs/kun-architecture.md) |
+| 20 | ✓ | [`resources/bundled-skills/diagram-design/SKILL.md`](resources/bundled-skills/diagram-design/SKILL.md) |
 
 ---
 

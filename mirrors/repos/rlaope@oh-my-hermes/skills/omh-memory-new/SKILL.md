@@ -1,6 +1,6 @@
 ---
-name: omh-memory-new
-description: [omh] Capture one bounded durable project or product memory candidate through explicit remember, refuse, or defer review; for existing Hermes memory use omh-memory-sync, and for a past decision use decision-recall. Use when the user says: memory-new, new memory, project memory, product memory, remember this project, remember this product, do not save, do not save this token.
+name: "omh-memory-new"
+description: "[omh] Capture one bounded durable project or product memory candidate through explicit remember, refuse, or defer review; for existing Hermes memory use omh-memory-sync, and for a past decision use decision-recall. Use when the user says: memory-new, new memory, project memory, product memory, remember this project, remember this product, do not save, do not save this token."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, memory]

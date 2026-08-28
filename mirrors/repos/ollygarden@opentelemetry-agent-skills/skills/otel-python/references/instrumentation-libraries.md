@@ -189,6 +189,7 @@ instrumentation guidance.
 | Library | Package |
 |---------|---------|
 | logging (stdlib) | `opentelemetry-instrumentation-logging` |
+| structlog | `opentelemetry-instrumentation-structlog` |
 | uncaught exceptions (process/thread/asyncio → logs) | `opentelemetry-instrumentation-exceptions` |
 | system-metrics | `opentelemetry-instrumentation-system-metrics` |
 | Jinja2 | `opentelemetry-instrumentation-jinja2` |
@@ -203,7 +204,7 @@ instrumentation guidance.
 
 Use these when no contrib instrumentor covers the target. Follow semconv — see the `otel-semantic-conventions` skill for attribute names.
 
-Use the current stable attribute constants from `opentelemetry.semconv.attributes` (e.g. `http.request.method`, `url.full`, `db.collection.name`). These match what the contrib instrumentors emit. The older `opentelemetry.semconv.trace.SpanAttributes.HTTP_*` / `DB_*` names (`http.method`, `http.url`, `db.sql.table`) are deprecated — avoid them so manual and auto-instrumented spans stay consistent.
+Use the current stable attribute constants from `opentelemetry.semconv.attributes` (e.g. `http.request.method`, `url.full`, `db.collection.name`). The older `opentelemetry.semconv.trace.SpanAttributes.HTTP_*` / `DB_*` names (`http.method`, `http.url`, `db.sql.table`) are deprecated. During contrib's migration window, instrumentors can still emit legacy names by default; use `OTEL_SEMCONV_STABILITY_OPT_IN` deliberately and audit downstream queries so manual and auto-instrumented spans stay aligned.
 
 ### HTTP Client Call
 

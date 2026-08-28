@@ -86,6 +86,17 @@ follow a specific schema; the OTLP exporter carries `Resource.SchemaUrl` on trac
 metrics, and logs. Merging resources with different non-empty schema URLs clears the
 resulting schema URL and emits a self-diagnostics warning.
 
+Core 1.18.0 added `ITelemetryHostInitializer` for DI-based applications that do not run
+hosted services, such as Blazor. Resolve it from the built service provider and initialize
+telemetry during application startup:
+
+```csharp
+app.Services.GetRequiredService<ITelemetryHostInitializer>().Initialize();
+```
+
+Regular generic-host applications do not need this call: the registered
+`TelemetryHostedService` initializes the providers when the host starts.
+
 ## Non-Hosted Setup
 
 For console apps or worker processes that do not use the generic host, SDK 1.10.0 and newer
@@ -182,17 +193,18 @@ builder.Services.AddOpenTelemetry()
 Azure Key Vault, and other providers — it is not the OTel declarative YAML format (see
 below).
 
-## No Declarative Config in .NET
+## No Released Declarative Config in .NET
 
-> **Note:** .NET does not implement the OpenTelemetry declarative YAML (`file_format`)
-> specification. There is no `file_format:` config file equivalent in the .NET SDK.
+> **Note:** .NET does not have a released implementation of the OpenTelemetry declarative
+> YAML (`file_format`) specification. There is no released NuGet package providing a
+> `file_format:` config file equivalent for the .NET SDK.
 >
 > Upstream tracking issue:
-> [open-telemetry/opentelemetry-dotnet#6380](https://github.com/open-telemetry/opentelemetry-dotnet/issues/6380)
+> [open-telemetry/opentelemetry-dotnet#7658](https://github.com/open-telemetry/opentelemetry-dotnet/issues/7658)
 >
 > To check current status, fetch the issue or the latest core CHANGELOG (see Sources of
 > Truth above). For the language-agnostic YAML schema, load the `otel-declarative-config`
 > skill.
 
 Use `OTEL_*` env vars and `IConfiguration` (described above) for runtime configuration
-until declarative config lands.
+until declarative config is released.

@@ -1,12 +1,13 @@
 # `prometheus_remote_write` exporter: configuration
 
-All keys live under the exporter instance — `exporters: { prometheus_remote_write: { … } }` (the deprecated alias `prometheusremotewrite` also works). Facts below trace to contrib **v0.158.0** source (`exporter/prometheusremotewriteexporter/config.go` + `factory.go` + `wal.go`, with the embedded `confighttp.ClientConfig`, `exporterhelper.TimeoutConfig`, and `configretry.BackOffConfig`).
+All keys live under the exporter instance — `exporters: { prometheus_remote_write: { … } }` (the deprecated alias `prometheusremotewrite` also works). Facts below trace to contrib **v0.159.0** source (`exporter/prometheusremotewriteexporter/config.go` + `factory.go` + `wal.go`, with `confighttp.ClientConfig`, `exporterhelper.TimeoutConfig`, and `configretry.BackOffConfig`).
 
 ## Top-level keys
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
-| `endpoint` | string | `http://some.url:9411/api/prom/push` (**must override**) | Remote-write URL to push samples to. From the embedded `confighttp.ClientConfig`. The factory ships a placeholder — set your real backend URL. |
+| `http` | object | standard HTTP client defaults | Nested `confighttp.ClientConfig`. Added in v0.159.0; preferred over the deprecated flat HTTP client settings. |
+| `http.endpoint` | string | `http://some.url:9411/api/prom/push` (**must override**) | Remote-write URL to push samples to. The factory ships a placeholder — set your real backend URL. |
 | `namespace` | string | `""` | Prefix prepended to every exported metric name. |
 | `external_labels` | map[string]string | `{}` | Labels attached to **every** series. Values may start with the reserved `__` prefix. |
 | `add_metric_suffixes` | bool | `true` | **Deprecated** (use `translation_strategy`). When `false`, no type/unit suffixes are added; the factory logs a deprecation warning. **Ignored** when `translation_strategy` is explicitly set. See note below on the removal-version discrepancy. |
@@ -26,10 +27,15 @@ All keys live under the exporter instance — `exporters: { prometheus_remote_wr
 | `retry_on_failure` | object | `configretry.BackOffConfig` | Standard retry block; the factory overrides `InitialInterval` to `50ms`. Cross-reference the [exporterhelper retry docs](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md). |
 | `timeout` | duration | per exporterhelper | From the embedded `exporterhelper.TimeoutConfig` (squashed). Cross-reference exporterhelper. |
 
-The exporter also accepts all standard HTTP **client** options from the embedded `confighttp.ClientConfig` — squashed at the top level, so `endpoint`, `headers`, `tls`, `timeout`, `compression`, `auth`, etc. are top-level keys. Cross-reference rather than enumerating:
+The `http` block accepts the standard HTTP **client** options from `confighttp.ClientConfig`, such
+as `endpoint`, `headers`, `tls`, `compression`, and `auth`. Deprecated flat HTTP settings still
+work when `http` is absent; when `http` is present it takes precedence. The alpha
+`exporter.prometheusremotewritexporter.removeTopLevelHTTPSettings` gate rejects flat HTTP client
+settings so migrations can be tested before their eventual removal. (`timeout` remains the
+exporterhelper send timeout at top level.) Cross-reference rather than enumerating:
 
 - [HTTP client settings (confighttp)](https://github.com/open-telemetry/opentelemetry-collector/blob/main/config/confighttp/README.md) — note only `snappy` compression is accepted (required by the Remote Write protocol). Headers `Content-Encoding`, `Content-Type`, `X-Prometheus-Remote-Write-Version`, and `User-Agent` cannot be overridden via `headers`.
-- [TLS / mTLS settings (configtls)](https://github.com/open-telemetry/opentelemetry-collector/blob/main/config/configtls/README.md) — **TLS is on by default**; set `tls.insecure: true` for plaintext.
+- [TLS / mTLS settings (configtls)](https://github.com/open-telemetry/opentelemetry-collector/blob/main/config/configtls/README.md) — **TLS is on by default**; set `http.tls.insecure: true` for plaintext.
 - [Retry and timeout settings (exporterhelper)](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/exporterhelper/README.md) — note the exporter does **not** support `sending_queue`; it provides `remote_write_queue` instead.
 
 ## `remote_write_queue`
@@ -87,10 +93,10 @@ When set, this enum takes precedence over the deprecated `add_metric_suffixes`. 
 | `remote_write_queue.num_consumers < 0` | `remote write consumer number can't be negative` |
 | `max_batch_size_bytes < 0` | `max_batch_size_bytes must be greater than 0` |
 | `max_batch_size_bytes == 0` | not an error — **reset to `3000000`** |
-| `compression` set and not `snappy` | `compression type must be snappy` (empty is allowed) |
+| `http.compression` set and not `snappy` | `compression type must be snappy` (empty is allowed) |
 | `protobuf_message` = `io.prometheus.write.v2.Request` without the `enableSendingRW2` gate | `remote write v2 is only supported with the feature gate exporter.prometheusremotewritexporter.enableSendingRW2` |
 | `translation_strategy` not one of the four valid values | `invalid translation_strategy: <v>` |
 | `translation_strategy` = `NoUTF8EscapingWithSuffixes` or `NoTranslation` under RW1 | `translation strategy <v> requires Prometheus Remote Write 2.0 (UTF-8 support)` |
 | `include_metadata_keys` contains `Content-Encoding`, `Content-Type`, `User-Agent`, or `X-Prometheus-Remote-Write-Version` (case-insensitive) | rejected because it collides with a reserved Remote Write header |
 
-> Note: `Validate()` does **not** catch an unset `endpoint` — the factory ships a non-empty placeholder default, so the failure surfaces at send time, not config validation.
+> Note: `Validate()` does **not** catch an unset `http.endpoint` — the factory ships a non-empty placeholder default, so the failure surfaces at send time, not config validation.

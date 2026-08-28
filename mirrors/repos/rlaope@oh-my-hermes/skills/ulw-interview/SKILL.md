@@ -1,6 +1,6 @@
 ---
-name: ulw-interview
-description: [omh] Hermes Deep Interview workflow: one-question-at-a-time clarification. Use when the user says: deep-interview, interview, clarify, feature shaping, ambiguous product request, one question, 온보딩, 부드럽게.
+name: "ulw-interview"
+description: "[omh] Hermes Deep Interview workflow: one-question-at-a-time clarification. Use when the user says: deep-interview, interview, clarify, feature shaping, ambiguous product request, one question, 온보딩, 부드럽게."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, clarification]

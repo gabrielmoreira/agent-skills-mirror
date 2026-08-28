@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 64 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 64 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,10 +119,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
 | 59 | ✓ | [`skills/next-cache-components-optimizer/test-template.md`](skills/next-cache-components-optimizer/test-template.md) |
 | 60 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
-| 61 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
-| 62 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 63 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
-| 64 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
+| 61 | ✓ | [`skills/next-partial-prefetching-adoption/rig-template.md`](skills/next-partial-prefetching-adoption/rig-template.md) |
+| 62 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
+| 63 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 64 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
+| 65 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
 
 ---
 

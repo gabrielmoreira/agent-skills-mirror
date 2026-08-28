@@ -68,7 +68,7 @@ main() {
   # AddException is the current .NET exception span-event API (the OTel
   # RecordException extension is obsolete); both record exception span events.
   if scan_pattern "$dir" "RecordException / AddException (exception recording)" \
-    '(RecordException|record_exception|recordException|RecordError|RecordErr|AddException)'; then
+    '(RecordException|record_exception|recordException|RecordError|record_error|RecordErr|AddException)'; then
     found=1
   fi
 

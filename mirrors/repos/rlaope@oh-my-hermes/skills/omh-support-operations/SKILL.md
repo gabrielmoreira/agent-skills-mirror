@@ -1,6 +1,6 @@
 ---
-name: omh-support-operations
-description: [omh] Turn a support case into a clear customer reply, severity path, and owned next step. Use when the user says: support escalation, customer support reply, ticket triage, 고객 지원 에스컬레이션, 고객 답변 초안, 지원 티켓 분류.
+name: "omh-support-operations"
+description: "[omh] Turn a support case into a clear customer reply, severity path, and owned next step. Use when the user says: support escalation, customer support reply, ticket triage, 고객 지원 에스컬레이션, 고객 답변 초안, 지원 티켓 분류."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, triage]
@@ -101,6 +101,12 @@ Expected outputs:
 Artifact expectations:
 
 - prepared support case brief when a wrapper captures it
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `support-operations`; enforcement_level: `guidance_only`; consumer_id: `none`
 
 Safety rules:
 

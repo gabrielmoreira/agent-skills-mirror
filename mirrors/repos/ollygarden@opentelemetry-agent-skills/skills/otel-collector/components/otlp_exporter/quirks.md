@@ -6,7 +6,12 @@ The canonical type was renamed from `otlp` to **`otlp_grpc`** in core **v1.50.0*
 
 ## Exporter batching vs. the `batch` processor
 
-This exporter's `sending_queue` is enabled by default with a `batch` sub-block that flushes at **200ms** or **8192 items**, so a pipeline ending in this exporter already batches at the exporter boundary. The separate `batch` processor is still Beta and supported; use it when batching must happen at pipeline level (for example, once before fan-out to several exporters), and place it after processors that may drop data. If both layers are enabled, tune them deliberately because unintentional double batching can add latency.
+This exporter's `sending_queue` is enabled by default, but queue batching is **disabled by default**.
+Add `sending_queue.batch: {}` to activate the 200ms / 8192-item defaults, or enable the
+alpha `pkg.exporterhelper.queueBatchEnabled` migration gate. The separate `batch` processor is still
+Beta and supported; use it when batching must happen at pipeline level (for example, once before
+fan-out to several exporters), and place it after processors that may drop data. If both layers are
+enabled, tune them deliberately because double batching can add latency.
 
 ## gzip compression is on by default
 
@@ -26,7 +31,7 @@ Before core v0.157.0, `wait_for_ready: true` was accepted in the gRPC client con
 
 ## `min_size` must be ≤ `queue_size`
 
-When their sizers match, `sending_queue.batch.min_size` (default 8192) must not exceed `sending_queue.queue_size` (default 1000 in `requests` units — but if you switch `queue_size` to `items`, the 8192 default `min_size` can exceed it and fail validation). If you set `queue_size` in items, raise it above `min_size`, or lower `min_size`. Also: `batch.flush_timeout` must be > 0, and `batch.max_size` (when > 0) must be ≥ `min_size`.
+When batching is enabled and the sizers match, `sending_queue.batch.min_size` (default 8192) must not exceed `sending_queue.queue_size` (default 1000 in `requests` units — but if you switch `queue_size` to `items`, the 8192 default `min_size` can exceed it and fail validation). If you set `queue_size` in items, raise it above `min_size`, or lower `min_size`. Also: `batch.flush_timeout` must be > 0, and `batch.max_size` (when > 0) must be ≥ `min_size`.
 
 ## Data is dropped after `max_elapsed_time`
 

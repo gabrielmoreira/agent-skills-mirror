@@ -1,6 +1,6 @@
 ---
-name: omh-meeting-brief
-description: [omh] Hermes Meeting Brief workflow: agenda, prompts, decisions, and record template. Use when the user says: meeting-brief, meeting brief, meeting agenda, agenda, discussion prompts, decisions needed, record template, meeting topics.
+name: "omh-meeting-brief"
+description: "[omh] Hermes Meeting Brief workflow: agenda, prompts, decisions, and record template. Use when the user says: meeting-brief, meeting brief, meeting agenda, agenda, discussion prompts, decisions needed, record template, meeting topics."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, meeting]

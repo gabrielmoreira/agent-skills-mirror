@@ -7,6 +7,10 @@ description: Build raymarched space phenomena in Three.js. Use for black-hole le
 
 Treat these effects as numerical renderers with explicit integration state. The visual character depends on coordinate choice, step policy, and how rays interact with emissive structures.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Workflow
 
 1. Define the effect-space transform and camera ray.

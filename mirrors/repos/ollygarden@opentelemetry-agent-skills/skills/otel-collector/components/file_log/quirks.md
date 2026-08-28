@@ -21,7 +21,7 @@ high-volume live logs where you don't want to re-read history on every restart (
 ## The type was renamed `filelog` → `file_log` in v0.149.0
 
 New configs should use `file_log`. The old `filelog` name still works as a deprecated alias but
-logs a startup warning (verified on 0.154.0):
+logs a startup warning:
 
 ```
 warn  "filelog" alias is deprecated; use "file_log" instead  {"otelcol.component.id": "filelog", ...}
@@ -34,19 +34,20 @@ When reviewing an existing config, `filelog:` is **not** broken — it's the leg
 Some keys do nothing (or error) unless a feature gate is enabled at startup
 (`--feature-gates=<gate>`):
 
-| Option | Required gate | State (v0.157.0) |
+| Option | Required gate | State (v0.159.0) |
 |--------|---------------|-------|
-| `delete_after_read` | `filelog.allowFileDeletion` | Alpha (off by default) — pass `--feature-gates=filelog.allowFileDeletion` |
+| `delete_after_read` | `filelog.allowFileDeletion` | Beta (on by default) |
 | `header` parsing | `filelog.allowHeaderMetadataParsing` | Beta (on by default) — no flag needed |
 | `ordering_criteria.sort_by.sort_type: mtime` | `filelog.mtimeSortType` | Alpha (off by default) |
-| include/exclude case-insensitive globbing (Windows) | `filelog.windows.caseInsensitive` | Alpha (off by default) |
+| require explicit `ordering_criteria.top_n` when sorting | `filelog.requireExplicitTopN` | Alpha (off by default); unset keeps the legacy default `1`, explicit `0` matches all files |
+| include/exclude case-insensitive globbing (Windows) | `filelog.windows.caseInsensitive` | Beta (on by default) |
 | protobuf checkpoint encoding | `filelog.protobufCheckpointEncoding` | Beta (**on by default** since v0.156.0; Alpha off in v0.148.0–v0.155.0) — ~7× faster decode, ~31% smaller; reads both formats either way |
 
 ## `delete_after_read` conflicts with `start_at: end`
 
 `delete_after_read: true` reads a file then deletes it; it must be paired with
-`start_at: beginning` (it is invalid with `start_at: end`) and needs the
-`filelog.allowFileDeletion` gate.
+`start_at: beginning` (it is invalid with `start_at: end`) and requires the
+`filelog.allowFileDeletion` gate to remain enabled.
 
 ## Fingerprinting and re-ingestion
 

@@ -47,10 +47,33 @@ Allocate a total spans-per-second budget across policies in priority order:
         percent: 60
       - policy: slow
         percent: 30
-      # sample-rest uses the remaining 10%
+      - policy: sample-rest
+        percent: 10
 ```
 
 Each sub-policy gets `(percent/100) * max_total_spans_per_second`; the first matching policy under budget samples the trace. Put an `always_sample` last to use leftover capacity.
+
+A sub-policy omitted from `rate_allocation` receives the default equal share
+(`max_total_spans_per_second / number of sub-policies`) instead of an accidental zero rate. That
+default is not the unallocated remainder; list every policy explicitly when exact percentages matter.
+
+## In-process sharding
+
+`num_shards` runs independent event loops inside one processor and assigns each trace by trace-ID
+hash. This reduces contention at high ingest rates without splitting a trace:
+
+```yaml
+processors:
+  tail_sampling:
+    num_shards: 8
+    num_traces: 100000
+    policies: [ ... ]
+```
+
+`num_traces`, `expected_new_traces_per_sec`, both decision-cache sizes, and per-second limits in
+`rate_limiting`, `bytes_limiting`, and composite policies are divided across shards so their
+configured totals remain aggregate limits. Limiter `burst_capacity` is not divided. Values above
+256 are rejected, and `num_shards > 1` cannot be combined with `tail_storage`.
 
 ## Combining policies and dropping noise
 

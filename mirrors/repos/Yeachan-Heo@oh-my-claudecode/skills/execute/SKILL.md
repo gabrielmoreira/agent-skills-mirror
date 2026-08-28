@@ -7,8 +7,8 @@ description: Carry an approved task through to working, verified code
 
 Use this skill when the work is understood and the job is to build it.
 
-This is the canonical execution workflow. `autopilot`, `ralph`, `ultrawork`,
-`ultragoal`, `ultrapilot`, `pipeline`, and `swarm` route here.
+This is the canonical execution workflow. `autopilot`, `ralph`, `ultragoal`,
+`ultrapilot`, `pipeline`, and `swarm` route here.
 
 ## Goal
 Take a task from agreed intent to working code, with evidence that it works.

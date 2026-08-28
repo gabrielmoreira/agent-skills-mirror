@@ -11,19 +11,19 @@ Use this skill to migrate instrumentation from the Span Event API (`AddEvent`, `
 
 The OpenTelemetry project accepted a plan to deprecate `Span.AddEvent` and `Span.RecordException` in favor of emitting events and exceptions through the Logs API. Span Events as a concept remain valid -- they can be emitted via logs that correlate to the active span, and optionally bridged back into the span proto.
 
-Status as of 2026-08-13: OTEP 4430 is accepted, log-based event/exception emission is specified in the Logs API, and the SDK "event to span event bridge" is specified with Development status. The trace API methods `AddEvent`/`RecordException` are not yet formally marked Deprecated in the specification -- that step is still pending. Treat existing span-event calls as migration candidates, not automatically invalid code; some SDK-specific equivalents have already changed status (for example OpenTelemetry .NET's `Activity.RecordException` extension is `[Obsolete]` in favor of `Activity.AddException`, which is still a span-event API).
+Status as of 2026-08-26: OTEP 4430 is accepted, log-based event/exception emission is specified in the Logs API, and the SDK "event to span event bridge" is specified with Development status. The trace API methods `AddEvent`/`RecordException` are not yet formally marked Deprecated in the specification -- that step is still pending. Treat existing span-event calls as migration candidates, not automatically invalid code; some SDK-specific equivalents have already changed status (for example OpenTelemetry .NET's `Activity.RecordException` extension is `[Obsolete]` in favor of `Activity.AddException`, which is still a span-event API).
 
 See `references/deprecation-plan.md` for the full context.
 
 ## Workflow
 
 0. Prepare before migrating.
-- check the project's OpenTelemetry SDK version supports log-based events (check the `manual-instrumentation` skill's version index if available)
+- check the project's OpenTelemetry SDK version supports log-based events (check the `otel-sdk-versions` skill's version index if available)
 - identify whether the project has a LoggerProvider configured; if not, one must be set up
 - determine if downstream consumers (backends, dashboards, alerts) depend on span events appearing in the span proto envelope
 
 1. Scan the codebase for span event usage.
-- search for `AddEvent`, `add_event`, `addEvent`, `RecordException`, `record_exception`, `recordException`, `RecordError`, `AddException`, and language-specific variants
+- search for `AddEvent`, `add_event`, `addEvent`, `RecordException`, `record_exception`, `recordException`, `RecordError`, `record_error`, `AddException`, and language-specific variants
 - categorize each call site: general event, exception recording, or informational annotation
 - note the span context, attributes, and timestamp usage at each site
 

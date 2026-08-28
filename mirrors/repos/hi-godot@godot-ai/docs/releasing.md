@@ -40,10 +40,14 @@ converge without user intervention:
 2. **Bounded stale-occupant recovery** (`server_lifecycle.gd`,
    `_stale_recovery_budget`): a `status == "success"` pending-update marker
    arms `authorize_stale_recovery()` before the startup walk (the Update
-   click is the consent), letting the walk — and the WS handshake-mismatch
-   verdict, which usually lands first — kill a brand-verified stale-version
-   godot-ai occupant via the weak (`status_name`) proof tier and retry a
-   bounded number of rounds when a bridge respawn wins a race. Automatic
+   click is the consent), letting either the startup walk or the WS
+   handshake-mismatch verdict request replacement of a brand-verified
+   stale-version godot-ai occupant via the weak (`status_name`) proof tier.
+   Those requests share one single-flight recovery transaction: whichever
+   path starts first owns the kill/drain/respawn and the other coalesces into
+   it. An automatic handshake recovery is also pinned to the exact stale
+   version it observed and re-probes immediately before accepting kill proof,
+   so a delayed old verdict cannot kill the fresh replacement. Automatic
    triggers only spend budget; only user actions (Update click, dock Restart
    click) arm it, so the kill/respawn loop cannot run unbounded. Same-version
    and foreign occupants are never touched by this path.

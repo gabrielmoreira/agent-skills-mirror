@@ -8,6 +8,10 @@ instructions or memory. The nearest scoped `AGENTS.md` adds path-specific rules.
 
 - Inspect status and existing consumers before editing. Preserve unrelated,
   dirty, and untracked work.
+- Before adding a module named `model_*`, `*_config`, `provider_*`, or
+  anything that "bridges", "mirrors", or "stages" an existing thing, grep
+  for the existing thing and edit it. A new layer must name the predecessor
+  it replaces in the module doc; otherwise edit the original.
 - Prefer the simplest implementation that preserves observable contracts. A
   rewrite is acceptable when justified by product intent and observed behavior,
   not as a shortcut around understanding existing code.

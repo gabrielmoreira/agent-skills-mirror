@@ -7,7 +7,8 @@ The WAL persists outgoing metrics to disk before sending, so a crash or backend 
 ```yaml
 exporters:
   prometheus_remote_write:
-    endpoint: https://my-cortex:7900/api/v1/push
+    http:
+      endpoint: https://my-cortex:7900/api/v1/push
     wal:
       directory: ./prom_rw     # setting this enables the WAL
       buffer_size: 100         # default 300
@@ -56,7 +57,8 @@ Two ways to bring attributes onto the metric labels directly:
   ```yaml
   exporters:
     prometheus_remote_write:
-      endpoint: https://my-cortex:7900/api/v1/push
+      http:
+        endpoint: https://my-cortex:7900/api/v1/push
       resource_to_telemetry_conversion:
         enabled: true
         exclude_service_attributes: true
@@ -69,7 +71,8 @@ Two ways to bring attributes onto the metric labels directly:
 ```yaml
 exporters:
   prometheus_remote_write:
-    endpoint: https://my-cortex:7900/api/v1/push
+    http:
+      endpoint: https://my-cortex:7900/api/v1/push
     external_labels:
       cluster: prod-eu
       collector: gateway-1
@@ -87,7 +90,8 @@ The feature gate `exporter.prometheusremotewritexporter.EnableMultipleWorkers` (
 ```yaml
 exporters:
   prometheus_remote_write:
-    endpoint: https://my-cortex:7900/api/v1/push
+    http:
+      endpoint: https://my-cortex:7900/api/v1/push
     max_batch_request_parallelism: 1   # safe for backends that reject out-of-order samples
 ```
 
@@ -102,7 +106,8 @@ By default the exporter does **not** retry on `429 Too Many Requests` — RW bac
 ```yaml
 exporters:
   prometheus_remote_write:
-    endpoint: https://my-cortex:7900/api/v1/push
+    http:
+      endpoint: https://my-cortex:7900/api/v1/push
     translation_strategy: UnderscoreEscapingWithSuffixes   # classic Prometheus compatibility
 ```
 

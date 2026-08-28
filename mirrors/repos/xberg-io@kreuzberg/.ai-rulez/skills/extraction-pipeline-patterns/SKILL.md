@@ -9,12 +9,11 @@ priority: critical
 
 # Extraction Pipeline Patterns
 
-**Format detection → extractor routing → post-processing, across 100 formats / 120 file extensions**
+**Format detection → extractor routing → post-processing, across 106 formats / 140 file extensions**
 
-The counts are asserted in-tree by
-`crates/xberg/src/core/mime.rs::tests::format_and_extension_counts_match_the_published_headline`
-(`PUBLISHED_FORMATS = 100`, `PUBLISHED_EXTENSIONS = 120`). Cite that test rather than copying
-the number, and update it when `FORMATS` changes.
+The full-registry counts are verified against published claims by
+`scripts/sync_supported_counts.py verify`. Runtime `SUPPORTED_FORMAT_COUNT` and
+`SUPPORTED_EXTENSION_COUNT` values are derived from the full static `FORMATS` registry.
 
 ## Layout
 
@@ -49,7 +48,7 @@ the number, and update it when `FORMATS` changes.
 - Web: HTML, XHTML, XML, and MDX under `extractors/` and `extraction/html/`.
 - Email: EML, MSG, and PST under `extractors/` and `extraction/email.rs`.
 - Archives: ZIP, TAR, GZIP, and 7z under `extractors/archive.rs` and `extraction/archive/`.
-- Structured: JSON, YAML, TOML, CSV, and DBF under `extractors/`.
+- Structured: JSON, GeoJSON, YAML, TOML, CSV, DBF, SQLite, and GeoPackage under `extractors/`.
 
 ## Fallback strategies
 

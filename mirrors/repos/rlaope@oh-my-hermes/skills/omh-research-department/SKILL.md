@@ -1,6 +1,6 @@
 ---
-name: omh-research-department
-description: [omh] Research operations department - coordinate Scout, Analyst, and Briefer work with source-inbox and status boundaries; for one decision brief use research-brief, and for typed candidates before research starts use source-finder. Use when the user says: research-department, research department, research ops department, research operations department, scout analyst briefer, scout analyst brief, daily research department, competitor research department.
+name: "omh-research-department"
+description: "[omh] Research operations department - coordinate Scout, Analyst, and Briefer work with source-inbox and status boundaries; for one decision brief use research-brief, and for typed candidates before research starts use source-finder. Use when the user says: research-department, research department, research ops department, research operations department, scout analyst briefer, scout analyst brief, daily research department, competitor research department."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]

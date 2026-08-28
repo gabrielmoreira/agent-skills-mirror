@@ -1,6 +1,6 @@
 ---
-name: omh-decision-recall
-description: [omh] Recall scoped reviewed rejected decisions without elevating them to approved memory. Use when the user says: decision-recall, rejected decision recall, rejected decisions, why was this rejected, previously rejected alternative, 거절된 결정, 기각된 대안.
+name: "omh-decision-recall"
+description: "[omh] Recall scoped reviewed rejected decisions without elevating them to approved memory. Use when the user says: decision-recall, rejected decision recall, rejected decisions, why was this rejected, previously rejected alternative, 거절된 결정, 기각된 대안."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, memory]

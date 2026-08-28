@@ -388,14 +388,17 @@ Without a `RUNTIME.md`, orchestration prompts lack project-specific details — 
 ## Quick Reference
 
 `/octo:doctor` was removed in v9.41.0 to preserve Claude Code's native `/doctor` command.
-Invoke this skill by asking Claude naturally, or run the orchestrator directly:
+Invoke this manual skill explicitly, or run the CLI directly:
 
 | What to say / run | Action |
 |-------------------|--------|
-| "run Octopus doctor diagnostics" | Run all 14 categories |
-| "check Octopus providers" | Check provider installation only |
-| `bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor auth --verbose` | Detailed auth status |
-| `bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor --json` | Machine-readable output |
+| `/octo:skill-doctor` | Run all 14 categories inside Claude Code |
+| `octopus doctor providers` | Check provider installation only |
+| `octopus doctor auth --verbose` | Detailed auth status |
+| `octopus doctor --json` | Machine-readable output |
+| `bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor auth --verbose` | Detailed auth status when the CLI is unavailable |
+| `bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor --json` | Machine-readable output when the CLI is unavailable |
 
-Resolve and export `OCTO_PLUGIN_ROOT` with the Step 1 resolver before using either
-direct command.
+If the `octopus` CLI is not on `PATH`, resolve and export `OCTO_PLUGIN_ROOT`
+with the Step 1 resolver, then run the equivalent `scripts/orchestrate.sh`
+command directly.

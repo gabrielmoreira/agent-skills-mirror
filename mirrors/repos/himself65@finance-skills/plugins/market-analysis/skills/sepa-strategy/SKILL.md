@@ -25,7 +25,7 @@ Analyze stocks using Mark Minervini's SEPA (Specific Entry Point Analysis) frame
 
 ## Step 1: Gather Stock Data
 
-Collect the following data for the stock. Use yfinance, funda-data, or any available market data tool.
+Collect the following data for the stock. Use yfinance or any available market data tool.
 
 | Data needed | Purpose |
 |---|---|

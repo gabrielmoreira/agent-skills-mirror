@@ -1,6 +1,6 @@
 ---
-name: omh-operating-rhythm
-description: [omh] Hermes Operating Rhythm workflow: meeting minutes, scrum/sprint records, retros, decisions, and follow-up history. Use when the user says: operating-rhythm, operating rhythm, meeting minutes, meeting history, scrum record, sprint planning, sprint review, sprint retrospective.
+name: "omh-operating-rhythm"
+description: "[omh] Hermes Operating Rhythm workflow: meeting minutes, scrum/sprint records, retros, decisions, and follow-up history. Use when the user says: operating-rhythm, operating rhythm, meeting minutes, meeting history, scrum record, sprint planning, sprint review, sprint retrospective."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]

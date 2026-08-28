@@ -177,3 +177,4 @@ sf data create record --target-org <org> --sobject PermissionSetAssignment \
 | SSO user: `NO_ACCESS: User was not authorized for the community` | `communityMemberProfile` not in `NetworkMemberGroup` | Ensure sub-step 3 ran (profile added to member groups) |
 | SSO user insert fails with `FIELD_INTEGRITY_EXCEPTION` | "Allow standard external profiles" org setting off | Ensure sub-step 1 ran (`enableExternalProfiles`) |
 | `getCurrentUser()` / `/chatter/users/me` fails for SSO users | Community profile lacks `ApiEnabled` | Set `communityUserPermset` so sub-step 4 assigns API access |
+| No social-login buttons in local dev preview (`npm run dev:preview`) even when providers are correctly linked | Local preview runs outside the Experience site guest context, so `/auth/social-login-config` returns no providers (`Site.getBaseUrl()` is blank) | Expected — not a misconfig. Verify on the **published** site login page, not `localhost`. |

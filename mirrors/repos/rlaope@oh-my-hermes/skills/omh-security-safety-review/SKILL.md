@@ -1,6 +1,6 @@
 ---
-name: omh-security-safety-review
-description: [omh] Hermes Security Safety Review workflow: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution. Use when the user says: security-safety-review, security safety review, ai coding safety, agent safety review, prompt injection review, tool permission review, secret exposure review, destructive action review.
+name: "omh-security-safety-review"
+description: "[omh] Hermes Security Safety Review workflow: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution. Use when the user says: security-safety-review, security safety review, ai coding safety, agent safety review, prompt injection review, tool permission review, secret exposure review, destructive action review."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -105,6 +105,12 @@ Artifact expectations:
 - prompt_injection_risk_review/v1 with untrusted input boundaries and tool-use constraints
 - safe_action_policy/v1 with allowed, confirmation-gated, blocked, and observed-only actions
 - plugin_risk_audit/v1 with bounded aggregate local risk categories and no source disclosure
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `security_safety_review_plan/v1`; enforcement_level: `guidance_only`; consumer_id: `none`
 
 Safety rules:
 

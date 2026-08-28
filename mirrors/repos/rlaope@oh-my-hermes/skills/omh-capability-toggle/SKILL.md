@@ -1,6 +1,6 @@
 ---
-name: omh-capability-toggle
-description: [omh] Hermes adaptation for turning one OMH capability family on or off so an install can be tailored instead of taken whole. Use when the user says: capability-toggle, capability policy, disable memory, enable memory, disable coding orchestration, disable a capability family, enable a capability family, 메모리 기능 꺼줘.
+name: "omh-capability-toggle"
+description: "[omh] Hermes adaptation for turning one OMH capability family on or off so an install can be tailored instead of taken whole. Use when the user says: capability-toggle, capability policy, disable memory, enable memory, disable coding orchestration, disable a capability family, enable a capability family, 메모리 기능 꺼줘."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]

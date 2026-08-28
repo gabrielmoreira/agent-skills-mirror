@@ -1,7 +1,7 @@
 ---
 name: xberg
 description: >-
-  Extract text, tables, metadata, and images from 100 document formats
+  Extract text, tables, metadata, and images from 106 document formats
   (PDF, Office, images, HTML, email, archives, academic) using Xberg.
   Use when writing code that calls Xberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
@@ -15,14 +15,14 @@ metadata:
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:7d0d1f488c0b205fe1f37968a71f5c3c81ed02ab981648b756771e38b965e288
-Source-Hash: blake3:45cb11995592f052d075d6a24353eb8b647075dcb25f77187fcb4c161b574d49
+Content-Hash: blake3:df701ffeceb35bec24d339a9ea715fca5a26475da3c28b25342034ba3bdcca2a
+Source-Hash: blake3:a92a53795b15c1bfb0f4ee65d2ec8e7475ff291f9271b5bbf404957b82eb790a
 Schema-Version: v1
 -->
 
 # Xberg Document Extraction
 
-Xberg is a document intelligence library with a Rust core and bindings for Python, TypeScript/Node.js, Ruby, PHP, Go, Java, C#, Elixir, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C. It extracts text, tables, metadata, and images from 100 formats across 120 file extensions, including PDF, Office documents, images, HTML, email, archives, and academic formats.
+Xberg is a document intelligence library with a Rust core and bindings for Python, TypeScript/Node.js, Ruby, PHP, Go, Java, C#, Elixir, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C. It extracts text, tables, metadata, and images from 106 formats across 140 unique file extensions and accepts 53 compatibility MIME aliases, including PDF, Office documents, images, HTML, email, archives, and academic formats.
 
 Use this skill when writing code that:
 
@@ -382,17 +382,20 @@ match extract(ExtractInput::from_uri("file.pdf"), &config).await {
 | Category          | Extensions                                                                                                                                                  |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **PDF**           | `.pdf`                                                                                                                                                      |
-| **Word**          | `.docx`, `.odt`                                                                                                                                             |
-| **Spreadsheets**  | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.ods`                                                                                         |
-| **Presentations** | `.pptx`, `.ppt`, `.ppsx`                                                                                                                                    |
+| **Word**          | `.docx`, `.docm`, `.doc`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages`, `.wpd`, `.wp`, `.wp5`, `.wp6`, `.hwp`, `.hwpx`                                       |
+| **Spreadsheets**  | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers`                                                            |
+| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.pps`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.odp`, `.key`                                                                         |
 | **eBooks**        | `.epub`, `.fb2`                                                                                                                                             |
-| **Images**        | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`, `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm`, `.svg` |
-| **Markup**        | `.html`, `.htm`, `.xhtml`, `.xml`                                                                                                                           |
-| **Data**          | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv`                                                                                                           |
-| **Text**          | `.txt`, `.md`, `.markdown`, `.djot`, `.rst`, `.org`, `.rtf`                                                                                                 |
-| **Email**         | `.eml`, `.msg`                                                                                                                                              |
+| **Images**        | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`, `.jp2`, `.jpg2`, `.j2c`, `.j2k`, `.jpc`, `.jbig2`, `.jb2`, `.pnm`, `.pbm`, `.pgm`, `.ppm`, `.heic`, `.heics`, `.heif`, `.heifs`, `.hif`, `.avif`, `.avcs`, `.svg` |
+| **Markup**        | `.html`, `.htm`, `.xhtml`, `.xht`, `.xml`, `.kml`                                                                                                           |
+| **Data**          | `.json`, `.geojson`, `.jsonl`, `.ndjson`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv`, `.dbf`, `.sqlite`, `.sqlite3`, `.db`, `.gpkg`, `.gpkx`                  |
+| **Text**          | `.txt`, `.adoc`, `.asciidoc`, `.vtt`, `.md`, `.markdown`, `.commonmark`, `.qmd`, `.rmd`, `.mdx`, `.djot`, `.dj`, `.doctags`, `.rst`, `.org`, `.rtf`       |
+| **Email**         | `.eml`, `.msg`, `.pst`                                                                                                                                      |
 | **Archives**      | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z`                                                                                                                        |
-| **Academic**      | `.bib`, `.biblatex`, `.ris`, `.nbib`, `.enw`, `.csl`, `.tex`, `.latex`, `.typ`, `.jats`, `.ipynb`, `.docbook`, `.opml`, `.pod`, `.mdoc`, `.troff`           |
+| **Audio/Video**   | `.mp3`, `.mpga`, `.m4a`, `.wav`, `.webm`, `.mp4`, `.mpg4`, `.mp4v`, `.m4v`, `.mpeg`, `.mpg`, `.mpe`, `.m1v`, `.m2v`                                     |
+| **Academic**      | `.bib`, `.ris`, `.nbib`, `.enw`, `.tex`, `.latex`, `.typ`, `.typst`, `.jats`, `.nxml`, `.ipynb`, `.docbook`, `.dbk`, `.docbook4`, `.docbook5`, `.opml`      |
+
+CSL JSON is supported through an explicit MIME type but does not have a registered file extension.
 
 See [references/supported-formats.md](references/supported-formats.md) for the complete format reference with MIME types.
 

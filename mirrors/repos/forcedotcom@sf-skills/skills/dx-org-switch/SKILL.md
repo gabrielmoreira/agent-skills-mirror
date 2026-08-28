@@ -2,11 +2,11 @@
 name: dx-org-switch
 description: "Switches the active Salesforce org (default target-org) using the Salesforce CLI. Use whenever someone wants to change which org CLI commands run against — whether they say \"switch org\", \"change default org\", \"set my org to\", \"use alias\", \"point to\", or describe wanting to work against a specific org, scratch org, sandbox, or production."
 metadata:
+  version: "1.0"
+  domains: ["Developer Experience"]
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
-  version: "1.0"
-  domains: ["Developer Experience"]
 ---
 
 ## Steps

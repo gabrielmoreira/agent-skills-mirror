@@ -1,6 +1,6 @@
 ---
-name: omh-github-event-ops
-description: [omh] Hermes GitHub event operations workflow: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards. Use when the user says: github-event-ops, github event ops, github ops, github triage, github pr, github review, github action, github actions.
+name: "omh-github-event-ops"
+description: "[omh] Hermes GitHub event operations workflow: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards. Use when the user says: github-event-ops, github event ops, github ops, github triage, github pr, github review, github action, github actions."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, github-ops]

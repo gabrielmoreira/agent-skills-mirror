@@ -1,6 +1,6 @@
 ---
-name: omh-autoresearch-goal
-description: [omh] Hermes adaptation for durable research-goal execution. Use when the user says: autoresearch-goal, research goal, durable research, critic research.
+name: "omh-autoresearch-goal"
+description: "[omh] Hermes adaptation for durable research-goal execution. Use when the user says: autoresearch-goal, research goal, durable research, critic research."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]

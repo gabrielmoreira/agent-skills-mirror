@@ -19,7 +19,6 @@ Skills are reusable workflow templates that can be invoked via `/oh-my-claudecod
 | File | Skill | Purpose |
 |-----------|-------|---------|
 | `autopilot/SKILL.md` | autopilot | Full autonomous execution from idea to working code |
-| `ultrawork/SKILL.md` | ultrawork | Maximum parallel agent execution |
 | `ralph/SKILL.md` | ralph | Persistence until verified complete |
 | `team/SKILL.md` | team | N coordinated agents with task claiming |
 
@@ -175,7 +174,7 @@ None - pure markdown files.
 
 | Category | Skills | Trigger Keywords |
 |----------|--------|------------------|
-| Execution | autopilot, ultrawork, ralph, team | "autopilot", "ulw", "ralph", "team" |
+| Execution | autopilot, ralph, team | "autopilot", "ralph", "team" |
 | Cleanup | ai-slop-cleaner | "deslop", "anti-slop", cleanup/refactor + slop smells |
 | Planning | omc-plan, ralplan, deep-interview, ralph-init | "plan this", "interview me", "ouroboros" |
 | Exploration | deepinit, sciomc, external-context | "deepinit", "research" |
@@ -189,7 +188,6 @@ Some skills activate automatically based on context:
 | Skill | Auto-Trigger Condition |
 |-------|----------------------|
 | autopilot | "autopilot", "build me", "I want a" |
-| ultrawork | "ulw", "ultrawork" |
 | ralph | "ralph", "don't stop until" |
 | deep-interview | "deep interview", "interview me", "ouroboros", "don't assume" |
 | cancel | "stop", "cancel", "abort" |

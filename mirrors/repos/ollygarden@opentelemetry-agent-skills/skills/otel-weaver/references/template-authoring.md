@@ -91,10 +91,10 @@ Notes:
 - `application_mode: single` renders the template once with the filter result bound to `ctx`.
 - Bundled jq filters live in [`defaults/jq/semconv.jq`](https://github.com/open-telemetry/weaver/blob/main/defaults/jq/semconv.jq) in the Weaver repo. In v0.25.1, released grouped helpers are `semconv_grouped_attributes`, `semconv_grouped_metrics`, `semconv_grouped_spans`, `semconv_grouped_events`, and `semconv_grouped_entities`.
 - The no-argument helpers default to the legacy schema. For a `definition/2` registry, call them with `{"v2": true}` (as shown above). Use a folded YAML scalar (`filter: >`) so the object's colon doesn't collide with YAML mapping syntax. A custom multi-clause jq expression that takes no arguments should be single-quoted instead — for the same reason.
-- `acronyms` shapes how `pascal_case_const` and similar filters split words.
+- `acronyms` configures the explicit `acronym` filter; case filters such as `pascal_case_const` do not consult that list automatically.
 - `comment_formats` lets `comment(format="go")` know what comment prefix to emit.
 - A template entry may add `when: <jq-expression>` to gate the entire template before its `filter` runs. It must return exactly one boolean; empty streams and non-booleans are errors. Template parameters are exposed as `$params`.
-- v0.25.1 also lets a project-wide `.weaver.toml` `[template]` section override `acronyms` and `text_maps` across template packages; other `weaver.yaml` settings are not project-level overrides.
+- v0.25.1 also lets a project-wide `.weaver.toml` `[template]` section layer `acronyms` and `text_maps` over every template package; case-insensitive acronym collisions and text-map name collisions favor the TOML values. Other `weaver.yaml` settings are not project-level overrides.
 
 ## Jinja2 template patterns
 
@@ -160,14 +160,14 @@ const (
 ## Filter reference
 
 - `comment(format="go")`: emits a comment with the configured prefix. Already includes `// `; do not double-prefix.
-- `pascal_case_const`: converts `ecommerce.order.id` → `EcommerceOrderId`. Honors the `acronyms` list.
+- `pascal_case_const`: converts `ecommerce.order.id` → `EcommerceOrderId`.
 
 Weaver ships more MiniJinja filters/tests/functions than any one template needs — reach for these instead of hand-rolling string manipulation in a template:
 
-- **Case filters**: `snake_case`, `camel_case`, `pascal_case`, `screaming_snake_case`, `kebab_case`, `acronym`, `pascal_case_const` (all honor the `acronyms` list from `weaver.yaml`).
+- **Case filters**: `snake_case`, `camel_case`, `pascal_case`, `screaming_snake_case`, `kebab_case`, `pascal_case_const`; use `acronym` explicitly where configured acronym replacement is needed.
 - **Other filters**: `map_text` (looks up a value in a `text_maps` table from `weaver.yaml`, e.g. `attr.type | map_text("go_types")`), `attribute_sort`, `required`, `not_required`, `instantiated_type`, `enum_type`, `body_fields`, `prometheus_metric_name`, `prometheus_unit_name`, plus ANSI color filters (rarely needed outside CLI output templates).
 - **Tests**: `stable`, `experimental`, `deprecated`, `enum`, `simple_type`, `template_type`, `enum_type`, `array` — e.g. `{% if attr is deprecated %}`.
-- **Functions**: `concat_if(...)`, `now()`.
+- **Functions**: `concat_if(...)`.
 - **Loop controls**: `break`/`continue` are supported inside `{% for %}` loops (a MiniJinja extension beyond stock Jinja2).
 
 ## Generation

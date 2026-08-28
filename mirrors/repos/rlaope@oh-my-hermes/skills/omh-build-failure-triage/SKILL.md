@@ -1,6 +1,6 @@
 ---
-name: omh-build-failure-triage
-description: [omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs. Use when the user says: build-failure-triage, build failure triage, build failure, 빌드 실패, 배포 파이프라인, 파이프라인 깨짐, 파이프라인 실패, 배포 실패.
+name: "omh-build-failure-triage"
+description: "[omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs. Use when the user says: build-failure-triage, build failure triage, build failure, 빌드 실패, 배포 파이프라인, 파이프라인 깨짐, 파이프라인 실패, 배포 실패."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -112,6 +112,12 @@ Artifact expectations:
 - minimal_fix_handoff/v1 names the selected executor, affected files, smallest patch direction, and rejected broad refactors
 - rerun_plan/v1 orders targeted rerun, broader local check, CI rerun, and stale-check blocker
 - build_failure_triage_verdict/v1 returns FIX_READY, NEEDS_MORE_LOGS, BLOCKED_BY_ENVIRONMENT, or ROUTE_TO_VERIFICATION_GATE
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `build_failure_triage_plan/v1`; enforcement_level: `guidance_only`; consumer_id: `none`
 
 Safety rules:
 

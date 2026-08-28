@@ -1,6 +1,6 @@
 ---
-name: omh-ops-review
-description: [omh] Hermes Ops Review workflow: status, risks, blockers, priorities, and follow-ups. Use when the user says: ops-review, ops review, weekly ops review, status review, operating review, release risks, risks and blockers, priorities.
+name: "omh-ops-review"
+description: "[omh] Hermes Ops Review workflow: status, risks, blockers, priorities, and follow-ups. Use when the user says: ops-review, ops review, weekly ops review, status review, operating review, release risks, risks and blockers, priorities."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -95,6 +95,12 @@ Expected outputs:
 Artifact expectations:
 
 - ops review record or status artifact when a wrapper captures it
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `ops-review`; enforcement_level: `guidance_only`; consumer_id: `none`
 
 Safety rules:
 

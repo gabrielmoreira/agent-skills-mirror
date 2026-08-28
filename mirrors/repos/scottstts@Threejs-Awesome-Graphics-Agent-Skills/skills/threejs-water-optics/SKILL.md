@@ -7,6 +7,10 @@ description: Build production analytic and bounded water in Three.js. Use for sh
 
 Treat water as geometry motion, surface orientation, and a participating optical layer. A blue transparent material is not a water system.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 For large stochastic seas driven by directional spectra and GPU FFTs, use
 `$threejs-spectral-ocean` instead.
 

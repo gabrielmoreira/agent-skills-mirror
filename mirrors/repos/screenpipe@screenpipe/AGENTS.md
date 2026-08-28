@@ -102,6 +102,5 @@ ruleset. Publication is a human click in the admin releases UI.
 
 ## PR
 
-Don't mention any Screenpipe private secret method you used to implement feature based on inspiration from other product research in PR bodies or GH issues
-
+In public artifacts, describe competitor research through observed UX patterns and decisions; omit inspection mechanics unless directly asked, and never misrepresent them.
 

@@ -7,6 +7,10 @@ description: Implement volumetric cloud systems in Three.js. Use for weather-dri
 
 Cloud quality comes from density organization, lighting, and temporal stability—not from increasing march steps over unstructured noise.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## System order
 
 1. Define the cloud volume and layer bounds.

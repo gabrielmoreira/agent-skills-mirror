@@ -4,10 +4,16 @@
   "type": "module",
   "scripts": {
     "eval:codex": "node evals/run-codex.ts",
-    "sync:guide": "node scripts/sync-guide.ts"
+    "sync:guide": "node scripts/sync-guide.ts",
+    "tsc": "tsc -p tsconfig.json",
+    "clean": "rm -rf node_modules"
   },
   "devDependencies": {
-    "@openai/codex-sdk": "0.149.1",
-    "@types/node": "26.3.0"
+    "@openai/codex-sdk": "0.150.1",
+    "@types/node": "26.4.0",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=26.8.1"
   }
 }

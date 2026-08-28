@@ -62,6 +62,14 @@ subagent-fallback chain has nowhere to await, so an `await` added before the
 activation block would silently reroute subagents to a different model than the
 operator configured.
 
+That one is enforced too, in the same file: a scan reads the window between the
+`Bun.serve` call and the `labActivationRequired` check and fails on any `await`
+that would suspend `startServer` itself, plus on `startServer` being declared
+`async`. It has to ignore comments, string bodies, and nested functions to be
+usable, because the window legitimately contains three awaits inside the
+`server.stop` closure and two comments that mention the word. Until it existed,
+this paragraph was the only thing holding the guarantee.
+
 Design and audit history: `devlog/_fin/260814_lab_core_decoupling/`.
 
 ## The `devlog` directory

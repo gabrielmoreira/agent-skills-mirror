@@ -1,55 +1,73 @@
-# LWR — Patching `home/content.json`
+# LWR — Patching themeLayout footer (site-wide widget placement)
 
-Target file:
+Target files:
 
 ```text
-digitalExperiences/site/<siteName>/sfdc_cms__view/home/content.json
+digitalExperiences/site/<siteName>/sfdc_cms__themeLayout/*/content.json
 ```
 
 The patch is applied by `scripts/patch_lwr_bundle.sh`. Invoke as:
 
 ```bash
-scripts/patch_lwr_bundle.sh <content.json> <deploymentName> <scrtUrl> <siteEndpoint>
+scripts/patch_lwr_bundle.sh <site-dir> <deploymentName> <scrtUrl> <siteEndpoint>
 ```
 
-The manual JSON walk is preserved below in `manual_fallback.md` for cases where the script cannot run (jq missing, unusual template shape, etc.).
+where `<site-dir>` is the root of the retrieved bundle, e.g.:
+`<retrieve-dir>/digitalExperiences/site/<siteName>`
+
+Targeting the `sfdc_cms__themeLayout` footer (not `sfdc_cms__view/home/content.json`) places the widget as a site-wide floating overlay on every page — equivalent to the Aura `themeFooter` region placement.
 
 ## What the script does
 
-1. Reads `<content.json>` with `jq`.
-2. Walks `.contentBody.component.children[]` and locates the region where `.type == "region"` and `.name == "content"`.
-3. Recursively checks whether any descendant node already has `.definition == "experience_messaging:embeddedMessaging"`.
-4. **If found** — updates that node's `.attributes` to the six standard values and **preserves the existing `.id`**:
+1. Finds every `sfdc_cms__themeLayout/*/content.json` file under `<site-dir>`.
+2. For each file, locates the `footer` region at `.contentBody.component.children[]` (where `.name == "footer"`).
+3. Within that region, finds the existing `community_layout:section` wrapper (`.type == "component"`), then the inner slot region (`.type == "region"`) inside it — the inner region is where the widget goes (e.g. `footerSection`, `content`, etc.).
+4. Recursively checks whether any descendant node already has `.definition == "experience_messaging:embeddedMessaging"`.
+5. **If found** — updates that node's `.attributes` to the six standard values and **preserves the existing `.id`**:
    - `deploymentName`, `scrtUrl`, `siteEndpoint` (from CLI args)
-   - `isExpSiteAuthMode: false`, `hideChatButtonOnLoad: "Default"`, `clientVersion: "WebV1"`
-5. **If absent** — appends a fresh `community_layout:section` wrapper. The wrapper's `sectionConfig` is a **JSON string** (not a nested object), and the UUID inside `sectionConfig.columns[0].id` matches the child region's `id`. The nested region carries `id`, `name: "column"`, `title: "Column"`, `type: "region"`.
-6. Writes the file back with jq's 2-space indentation.
+   - `isExpSiteAuthMode: false`, `hideChatButtonOnLoad: "Default"`, `clientVersion: "WebV2"`
+6. **If absent** — appends a fresh messaging component node directly into the inner region's `children[]`. The node has `"type": "component"` and `"definition": "experience_messaging:embeddedMessaging"`. No new `community_layout:section` wrapper is created — the section wrapper already exists in the footer region.
+7. Handles the edge case where no wrapper section or inner region exists: falls back to appending directly to the footer's `children[]`.
+8. Writes each file back with jq's 2-space indentation.
 
 Re-running with the same arguments is a no-op (idempotent); re-running with new deployment coordinates refreshes the attributes in place without changing the component's `id`.
 
 ## How to verify
 
-- Exactly one messaging node exists:
+- Exactly one messaging node exists per themeLayout file:
 
   ```bash
-  jq '[.. | select(.definition? == "experience_messaging:embeddedMessaging")] | length' <content.json>
+  jq '[.. | select(.definition? == "experience_messaging:embeddedMessaging")] | length' \
+    <site-dir>/sfdc_cms__themeLayout/<layoutName>/content.json
   # → 1
   ```
 
-- `sectionConfig` is a string, not an object:
+- The node lives inside the footer region's subtree:
 
   ```bash
-  jq '.. | select(.definition? == "community_layout:section") | .sectionConfig | type' <content.json>
-  # → "string"
+  jq '
+    .contentBody.component.children[]
+    | select(.name? == "footer")
+    | [.. | select(.definition? == "experience_messaging:embeddedMessaging")]
+    | length
+  ' <site-dir>/sfdc_cms__themeLayout/<layoutName>/content.json
+  # → 1
   ```
 
-- The section's `id` and the child region's `id` both appear inside the `sectionConfig` string.
+- `clientVersion` is `"WebV2"` (not `"WebV1"`):
+
+  ```bash
+  jq '.. | select(.definition? == "experience_messaging:embeddedMessaging") | .attributes.clientVersion' \
+    <site-dir>/sfdc_cms__themeLayout/<layoutName>/content.json
+  # → "WebV2"
+  ```
 
 ## Common failures
 
 | Symptom | Cause |
 |---------|-------|
-| Deploy succeeds but chat button never appears | `sectionConfig` was written as an object, not a JSON string |
-| Two chat buttons on the page after re-run | Detection did not descend into nested `community_layout:section` wrappers; the script's recursive check avoids this |
+| Widget only appears on the home page | Script was run against `sfdc_cms__view/home/content.json` instead of the themeLayout files |
+| Widget appears on no pages after deploy | The footer region name differed from `"footer"` — inspect `.contentBody.component.children[].name` in the themeLayout |
+| Two chat buttons after re-run | Detection did not descend into the full tree; the recursive `has_messaging` check avoids this |
 | Deploy error "component not registered" | Used `componentName` (Aura shape) instead of `definition` (LWR shape) |
-| Section renders but is empty | Nested region is missing `type: "region"` |
+| `clientVersion: "WebV1"` — widget appears but Enhanced Web Chat fails | Script emitted `WebV1`; re-run the script (it defaults to `WebV2`) |

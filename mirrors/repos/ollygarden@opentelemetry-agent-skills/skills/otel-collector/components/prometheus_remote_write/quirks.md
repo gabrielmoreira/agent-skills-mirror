@@ -14,7 +14,7 @@ Per upstream: **"Non-cumulative monotonic, histogram, and summary OTLP metrics a
 
 ## TLS is on by default; snappy is the only compression
 
-TLS is **enabled by default** — a plaintext backend needs `tls.insecure: true`, otherwise the connection fails. Compression must be `snappy` (the only value `Validate()` accepts; empty is allowed): the Remote Write protocol requires it, so you cannot switch to gzip/zstd.
+TLS is **enabled by default** — a plaintext backend needs `http.tls.insecure: true`, otherwise the connection fails. Compression must be `snappy` (the only value `Validate()` accepts; empty is allowed): the Remote Write protocol requires it, so you cannot switch to gzip/zstd.
 
 ## `remote_write_queue`, not `sending_queue`
 
@@ -32,13 +32,21 @@ This exporter does **not** use the standard `exporterhelper` `sending_queue`. Qu
 | `invalid translation_strategy: <v>` | Use one of the four valid enum values. |
 | `translation strategy <v> requires Prometheus Remote Write 2.0 (UTF-8 support)` | Switch to an escaping strategy, or enable RW2. |
 
-## `endpoint` ships a placeholder, not a real default
+## `http.endpoint` ships a placeholder, not a real default
 
-The factory default for `endpoint` is `http://some.url:9411/api/prom/push` — a non-functional placeholder. `Validate()` does **not** catch it, so if you forget to override it the failure surfaces only when the exporter tries to send. Always set your real backend URL.
+The factory default for `http.endpoint` is `http://some.url:9411/api/prom/push` — a non-functional placeholder. `Validate()` does **not** catch it, so if you forget to override it the failure surfaces only when the exporter tries to send. Always set your real backend URL.
+
+## HTTP client settings belong under `http`
+
+Put `endpoint`, `tls`, `headers`, `compression`, and the other `confighttp.ClientConfig` fields under
+`http`. Deprecated flat settings still work by default when `http` is absent, and a configured
+`http` block takes precedence. Enabling the alpha
+`exporter.prometheusremotewritexporter.removeTopLevelHTTPSettings` gate makes flat HTTP settings a
+startup error, which is useful for validating a migration.
 
 ## `add_metric_suffixes` deprecation — version discrepancy
 
-`add_metric_suffixes` (default `true`) is **deprecated** in favor of `translation_strategy`. The factory logs a deprecation warning when it is `false` (`add_metric_suffixes is deprecated. Please use translation_strategy: UnderscoreEscapingWithoutSuffixes instead.`). Note a documentation/source discrepancy: the `config.go` comment claims it will be removed in **v0.153.0**, but it is **still present in v0.158.0**. Treat it as live-but-deprecated; migrate to `translation_strategy` for new configs.
+`add_metric_suffixes` (default `true`) is **deprecated** in favor of `translation_strategy`. The factory logs a deprecation warning when it is `false` (`add_metric_suffixes is deprecated. Please use translation_strategy: UnderscoreEscapingWithoutSuffixes instead.`). The `config.go` comment claims it would be removed in **v0.153.0**, but the key remains present. Treat it as live-but-deprecated; migrate to `translation_strategy` for new configs.
 
 ## RW2 is not production-ready
 

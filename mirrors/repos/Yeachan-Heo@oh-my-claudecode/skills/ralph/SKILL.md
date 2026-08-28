@@ -5,12 +5,12 @@ argument-hint: "[--no-deslop] [--critic=architect|critic|codex] <task descriptio
 level: 4
 ---
 
-[RALPH + ULTRAWORK - ITERATION {{ITERATION}}/{{MAX}}]
+[RALPH - ITERATION {{ITERATION}}/{{MAX}}]
 
 Your previous attempt did not output the completion promise. Continue working on the task.
 
 <Purpose>
-Ralph is a PRD-driven persistence loop that keeps working on a task until ALL user stories in prd.json have passes: true and are reviewer-verified. It wraps ultrawork's parallel execution with session persistence, automatic retry on failure, structured story tracking, and mandatory verification before completion.
+Ralph is a PRD-driven persistence loop that keeps working on a task until ALL user stories in prd.json have passes: true and are reviewer-verified. It combines session persistence, automatic retry on failure, structured story tracking, and mandatory verification before completion.
 </Purpose>
 
 <Use_When>
@@ -26,7 +26,7 @@ Ralph is a PRD-driven persistence loop that keeps working on a task until ALL us
 - User wants a full autonomous pipeline from idea to code -- use `autopilot` instead
 - User wants to explore or plan before committing -- use `plan` skill instead
 - User wants a quick one-shot fix -- delegate directly to an executor agent
-- User wants manual control over completion -- use `ultrawork` directly
+- User wants manual control over completion -- delegate directly to an executor agent
 - User already has an active Claude Code `/goal` and only wants that native goal loop monitored -- adopt the existing `/goal` explicitly or use artifact-only Ultragoal notes instead of starting Ralph as a competing persistence loop
   </Do_Not_Use_When>
 
@@ -131,7 +131,7 @@ Rules:
    d. If any active criterion is NOT met and NOT amended, continue working -- do NOT mark the story as complete
 
 5. **Mark story complete**:
-   a. When ALL active acceptance criteria are verified, set `passes: true` for this story in the active PRD file
+   a. When ALL active acceptance criteria are verified, create a revision-bound completion claim: set `passes: true` and set `completionCriteriaRevision` to the story's current `governingCriteriaRevision`. Do not set `architectVerified`; reviewer approval binds that separately.
    b. Record progress in `progress.txt`: what was implemented, files changed, learnings for future iterations
    c. Add any discovered codebase patterns to `progress.txt`
 
@@ -220,7 +220,7 @@ Story-by-story verification:
 1. Story US-001: "Add flag detection helpers"
    - Criterion: "Legacy --no-prd is stripped from the working prompt" → Run test → PASS
    - Criterion: "TypeScript compiles" → Run build → PASS
-   - Mark US-001 passes: true
+   - Mark US-001 complete with `passes: true` and `completionCriteriaRevision` equal to its current `governingCriteriaRevision`
 2. Story US-002: "Wire PRD into bridge.ts"
    - Continue to next story...
 

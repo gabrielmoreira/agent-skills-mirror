@@ -286,6 +286,25 @@ The OTLP exporter's `TimeoutMilliseconds` property controls how long an individu
 })
 ```
 
+### Request and Response Size Limits
+
+Core 1.18.0 added `MaxRequestSizeBytes` and `MaxResponseSizeBytes` to
+`OtlpExporterOptions`. The request limit defaults to 64 MiB (reduced from 128 MiB in a
+breaking behavior change), and the response limit defaults to 4 MiB. An oversized request
+batch is dropped in its entirety; an oversized response is discarded and treated as a
+non-retryable failure.
+
+```csharp
+.AddOtlpExporter(options =>
+{
+    options.MaxRequestSizeBytes = 128 * 1024 * 1024;
+    options.MaxResponseSizeBytes = 8 * 1024 * 1024;
+})
+```
+
+The maximum supported request limit is 256 MiB. Size is measured before compression, and
+the receiver may enforce its own request-size limit.
+
 ### Compression
 
 The OTLP exporter supports `none` and `gzip` compression. Configure it with

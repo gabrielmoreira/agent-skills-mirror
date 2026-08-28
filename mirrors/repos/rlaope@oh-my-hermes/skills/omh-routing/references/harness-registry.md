@@ -7,6 +7,7 @@ Legend: Tier `quality-tier` is in each harness definition; Ladder: evidence step
 ## Representative Harnesses
 
 - `coding-handling`: Route implementation requests through scoped.... L: `coding_delegation_prepared` -> `executor_dispatch_observed` -> `executor_result_observed` -> `+2 more`. A: `accept_plan`, `show_prompt_handoff`, `copy_prompt_handoff`, `+13 more`.
+- `hermes-setup`: Walk a local Hermes setup change through.... L: `prerequisite_check_recorded` -> `read_only_diagnosis_recorded` -> `guidance_delivered` -> `+2 more`. A: `show_setup_diagnosis`, `approve_config_diff`, `record_setup_verification`, `+1 more`.
 - `goal-execution`: Keep long-running work tied to explicit goals,.... L: `goal_created` -> `story_started` -> `checkpoint_recorded` -> `+2 more`. A: `continue_goal`, `show_status`, `record_checkpoint`, `+2 more`.
 - `planning`: Turn clarified requirements into an execution-ready.... L: `request_clarified` -> `plan_drafted` -> `option_tradeoffs_recorded` -> `+3 more`. A: `accept_plan`, `revise_plan`, `cancel`, `+1 more`.
 - `research`: Gather current or source-backed evidence before.... L: `research_question_scoped` -> `source_boundaries_recorded` -> `primary_sources_checked` -> `+4 more`. A: `show_sources`, `ask_followup`, `record_source`, `+1 more`.

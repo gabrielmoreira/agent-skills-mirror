@@ -455,6 +455,30 @@ It uses `useLayoutEffect`, not `useEffect`: the scroll has to land in the same f
 
 Distinct from `useScrollIntoView` (brings ONE element into view inside a list, for keyboard navigation) and from `TerminalOutput`'s MutationObserver auto-scroll (owns the whole conversation pane). Pick by scope: one self-contained box, one element in a list, or the whole pane.
 
+### Scrolling a Virtualized List to the Selection
+
+A virtualized list follows its selection through the virtualizer's own `scrollToIndex`, from an effect keyed on the selected index. Never through a `ref` on the selected row.
+
+```tsx
+// CORRECT - one scroll per real change of selection.
+useEffect(() => {
+	virtualizer.scrollToIndex(selectedIndex, { align: 'auto' });
+}, [selectedIndex, virtualizer]);
+
+// WRONG - fires on EVERY render, not on every selection change.
+<button ref={isSelected ? (el) => el?.scrollIntoView?.({ block: 'nearest' }) : undefined}>
+```
+
+An inline arrow function is a new identity on every render, so React detaches the old ref and attaches the new one each time, and an attach runs the callback. `@tanstack/react-virtual` re-renders (inside `flushSync`) on every scroll-offset change, so the two form a loop: a wheel tick scrolls the list, the virtualizer re-renders, the row's ref re-attaches, and `scrollIntoView` snaps the list back to the selection inside the same event. The wheel reads as broken; the component is undoing it. This is what `FileSearchModal` did, and the fix was deleting the ref, not touching the wheel handling.
+
+`scrollToIndex` is also the API that understands the virtual window: `scrollIntoView` can only reach a row the virtualizer has actually rendered, so it silently does nothing for a selection outside the current slice.
+
+**No `behavior: 'smooth'` on a long list.** The animation to a distant index runs long enough for the user's next wheel gesture to arrive mid-flight, and the two fight over the scroll offset.
+
+The same identity trap applies to a non-virtualized list, minus the loop - the scroll just fires more often than the user changed anything. Use `useScrollIntoView` (`hooks/ui/useScrollIntoView.ts`) there, which keys on the value rather than on render count.
+
+Testing it needs the virtualizer mocked: jsdom has no layout engine, so the real one measures a zero-height scroll element, yields zero items, and every assertion about row scrolling passes vacuously. `FileSearchModal.render.test.tsx` mocks `useVirtualizer` to emit a fixed window of rows, stubs `Element.prototype.scrollIntoView` (jsdom does not implement it), and asserts it is never called. Lead with a test that the rows exist, or the suite proves nothing.
+
 ### Rendering Raw Terminal Output (`useAnsiConverter`)
 
 `useAnsiConverter(theme)` in `src/renderer/hooks/ui/useAnsiConverter.ts` returns the theme-aware `ansi-to-html` converter every raw-output surface shares; `createAnsiConverter(theme)` is the non-React form. Feed its result to `getCachedAnsiHtml(text, theme.id, converter)` from `utils/textProcessing`, which converts, sanitizes with DOMPurify, and caches per theme. Callers today: `TerminalOutput` (transcript + terminal pane), `ShellCommandCard` (command mode), `GitCommandRunnerModal` (the Pull / Push console).
@@ -1403,6 +1427,31 @@ This rule applies to **content containers** sized to wrap text. It does NOT appl
 
 ---
 
+## Left Bar Header Width Gates
+
+The Left Bar header is a single row that neither wraps nor scrolls, and the user can drag the sidebar down to 256px. Every control added to it (the badge pill, the now-playing pill, the LIVE toggle) takes room from a fixed budget, so the row needs a declared yield order rather than whatever CSS happens to shrink first.
+
+**The MAESTRO wordmark is drawn in full or not at all.** It used to carry `truncate`, which rendered the brand as "MAE..." on a narrow sidebar. A clipped brand reads as a rendering bug, not as a deliberate space saving, so `SessionList` gates it on a width instead:
+
+```ts
+const showWordmark =
+	leftSidebarWidthState >=
+	WORDMARK_MIN_WIDTH + livePillReserve + headerBadgeWidth + nowPlayingReserve;
+```
+
+The wand button stays at every width, so the header never loses its identity or its switch-agent affordance.
+
+**The now-playing pill is the row's shrink target of last resort.** Something has to yield, and the filename inside that pill is the only thing in the row that can be clipped without looking broken. It is therefore `min-w-0` rather than `shrink-0` (a flex item defaults to `min-width: auto` and refuses to go below its content, so both the pill and the button inside it need `min-w-0`), while both transport buttons, both icons, and the divider stay `shrink-0` - they are the entire transport a minimized player has.
+
+Two rules for adding a control here:
+
+- **Reserve for the form the control is actually in, not its widest form.** The now-playing pill sheds its filename below `NOW_PLAYING_LABEL_MIN_WIDTH`, so `NOW_PLAYING_COMPACT_RESERVE` and `NOW_PLAYING_LABEL_RESERVE` are separate numbers. Reserving the wide figure at every width hides the wordmark to make room for a pill that is no longer that wide.
+- **Ask the store whether the control is on screen, once.** `selectNowPlayingVisible` in `mediaPlaybackStore` answers that for the pill, and both the pill and the header's reserve read it. Two copies of "is it visible" is how a width reserve ends up describing a header nobody is looking at.
+
+Testing this drives `leftSidebarWidth` in `useSettingsStore` directly, the same way the LIVE-pill tests do; jsdom measures nothing, so a real-layout test is not available. Assert the wordmark's ABSENCE at narrow widths, not that `truncate` is gone - the latter passes on a wordmark that still renders clipped.
+
+---
+
 ## Tab System
 
 Each agent supports multiple AI tabs within its workspace. Tab management hooks live in `src/renderer/hooks/tabs/`.
@@ -1591,6 +1640,30 @@ beforeEach(() => {
 });
 ```
 
+### The Record View for a Table Row (`<RecordDetailModal>`)
+
+`<RecordDetailModal>` in `src/renderer/components/ui/RecordDetailModal.tsx` flips one row of a table into a field/value list: one field per line, values wrapped with their newlines intact, a field filter, prev/next row navigation, and a per-value copy button.
+
+Every tabular preview uses it. `CsvRowDetailModal` is a thin adapter that maps a positional CSV row onto the field list; the parquet viewer maps typed cells through `formatCellExact`. Do NOT hand-roll a second one - the keyboard model here is subtle and easy to get subtly wrong.
+
+Callers supply their own `priority` (a `MODAL_PRIORITIES` entry), `resizeKey` (so each surface remembers its own dragged size), and `testIdPrefix` (so a test can target the surface it opened rather than "whichever record modal is up"). The `fields` prop is the only shape all callers agree on: a CSV row is positional strings and a parquet row is typed values, so the mapping belongs in the caller, not in a union type here.
+
+**Focus starts on the field list, not the filter input.** Left/Right step between rows and Up/Down scroll, and none of that works while a text input owns the caret - `/` is what moves focus to the filter. Escape is deliberately NOT handled locally: the layer stack takes it at capture on `window`, so "Escape clears the filter first" is not implementable here and Escape closing the modal is the app-wide contract anyway.
+
+### The Parquet Viewer (`src/renderer/components/ParquetViewer/`)
+
+The file preview for `.parquet`. Unlike every other preview it is a **client of a query engine**, not a renderer over file content: the file stays open in the main process and only the displayed window of rows crosses IPC. See [Parquet Preview](#parquet-preview-srcmainparquet) in AGENT-INFRA for the engine side.
+
+Three rules for editing it:
+
+- **Never filter or sort locally.** Both round-trip to the engine. Filtering the loaded page would only ever search the first few hundred rows, which on a 100M-row file is a search box that lies.
+- **`matchedRows` is a lower bound until `complete` is true.** Render it as `1,204+`, never as an exact total. A filtered scan stops as soon as it has filled the requested window; a background pass with `countAll: true` converges the number, and that pass is also what warms the scan for the next page.
+- **Hiding a column changes the projection.** It is a real optimization (the engine stops decoding that column), not a CSS toggle, which is why it invalidates the loaded window.
+
+The grid virtualizes with `@tanstack/react-virtual`. **Its "load the next page" effect must not fire for an unmeasured grid**: with no layout, the virtualizer renders a default window and the last rendered index looks like the end of the data, so the viewer pages the entire match set into memory without the user ever scrolling. `ParquetGrid` guards on `scrollRef.current?.clientHeight` and treats "no rendered rows" as `-1` rather than `0` for exactly this reason. jsdom has no layout engine, so this is the failure mode a render test will catch and a manual pass never will.
+
+Column widths are explicit state seeded from each column's type, not measured. Measuring needs cells, cells arrive one page at a time, and a width that jumps when page two lands is worse than one that is merely approximate.
+
 ---
 
 ## Key Files Reference
@@ -1611,3 +1684,5 @@ beforeEach(() => {
 | Markdown renderer | `src/renderer/components/Markdown/` (`<Markdown preset=...>`; `MarkdownRenderer.tsx` wraps the chat preset) |
 | Settings hook     | `src/renderer/hooks/settings/useSettings.ts`                                                                |
 | Settings store    | `src/renderer/stores/settingsStore.ts`                                                                      |
+| Record view       | `src/renderer/components/ui/RecordDetailModal.tsx`                                                          |
+| Parquet viewer    | `src/renderer/components/ParquetViewer/`                                                                    |

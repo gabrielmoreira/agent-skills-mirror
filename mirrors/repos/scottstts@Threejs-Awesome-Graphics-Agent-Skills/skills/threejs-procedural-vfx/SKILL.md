@@ -1,11 +1,15 @@
 ---
 name: threejs-procedural-vfx
-description: Author production real-time VFX in Three.js. Use for raymarched aurora curtains, finite-footprint emissive slabs, uniform volume integration, equirectangular radiance probes, WebGPU voxel fire and smoke, coupled volumetric fluid fields, mesh-surface emitters, signed-distance fire collisions, ship-conforming reentry plasma, generated capsule wakes, instanced analytic sparks, timed dissolving debris, dense-swap effect pools, additive holographic projections, Fresnel rim shells, scanline banding, glitch displacement, swept shape-to-shape handovers, and explicit scene-relative HDR emission hierarchy.
+description: Author production real-time VFX in Three.js. Use for filmic HDR lens-flare compositors, highlight-derived ghosts, field-angle pupil deformation, localized glare and bloom, raymarched aurora curtains, finite-footprint emissive slabs, uniform volume integration, equirectangular radiance probes, WebGPU voxel fire and smoke, coupled volumetric fluid fields, mesh-surface emitters, signed-distance fire collisions, ship-conforming reentry plasma, generated capsule wakes, instanced analytic sparks, timed dissolving debris, dense-swap effect pools, additive holographic projections, Fresnel rim shells, scanline banding, glitch displacement, swept shape-to-shape handovers, and explicit scene-relative HDR emission hierarchy.
 ---
 
 # Procedural VFX
 
 Build effects from an event envelope, motion field, geometry representation, and shading response. Avoid independent particle emitters that happen to share a color.
+
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
 
 ## Effect graph
 
@@ -33,6 +37,11 @@ for finite emissive-slab bounds, warped curtain density, uniform ray steps,
 gentle start jitter, matching screen/probe materials, exact constants, limits,
 and failure diagnostics.
 
+Read [references/filmic-lens-flare.md](references/filmic-lens-flare.md) for HDR
+emitter extraction, optical-axis invariants, field-angle pupil deformation,
+finite ghost families, spectral rings, localized bloom, film response, exact
+constants, limits, and failure diagnostics.
+
 Read the [reentry plasma implementation](examples/reentry-plasma/reentry-plasma.js)
 for closed layered wake shells, flow-axis deformation, advected filament
 fields, opacity shaping, and additive emission diagnostics.
@@ -57,6 +66,12 @@ for the reusable emitting field, perspective-ray material, four-sample
 equirectangular radiance material, shared uniforms, and calibrated curtain
 preset without sky, terrain, weather, lighting, or renderer setup.
 
+Read the
+[filmic lens-flare implementation](examples/filmic-lens-flare/filmic-lens-flare.js)
+for top-origin HDR sun detection, panorama-ray reconstruction, stable source
+projection, finite radial ghost families, field-deformed pupil shapes, spectral
+ring and star response, localized bloom, and the complete filmic composite.
+
 ## Rules
 
 - Every layer must have a role in silhouette, motion, illumination, or residue.
@@ -75,6 +90,11 @@ preset without sky, terrain, weather, lighting, or renderer setup.
 - Use normalized lifetime curves instead of scattered time constants.
 - Derive secondary motion from the same flow or event direction.
 - Keep bloom as a response to HDR emission, not as the effect's only shape.
+- Derive lens ghosts from an HDR emitter, keep every synthetic centre on one
+  optical axis, and deform pupil footprints from object-space field angle rather
+  than screen radius.
+- Keep the lens-flare family finite; do not extend calibrated terminal haze into
+  an arbitrary bead chain or place diffraction stars at ghost centres.
 - Pool instances and trails; do not allocate per burst.
 - Filter every periodic band by pixel footprint, and fade it to the band's own
   mean rather than to zero.
@@ -92,6 +112,8 @@ falling rain or snow, splash flipbooks, and weather events that alter ground
 materials. Use `$threejs-volumetric-clouds` for atmospheric weather layers and
 planet-scale cloud volumes. Use `$threejs-atmosphere-aerial-perspective` for
 molecular/aerosol sky scattering and surface-segment aerial perspective. Keep
-emissive aurora curtain volumes, bounded interactive fire and smoke,
-subject-space plasma, generated wakes, sparks, pooled debris, and additive
-projection shells in this skill.
+standalone filmic HDR lens-flare compositors, emissive aurora curtain volumes,
+bounded interactive fire and smoke, subject-space plasma, generated wakes,
+sparks, pooled debris, and additive projection shells in this skill. Keep lens
+flare in `$threejs-atmosphere-aerial-perspective` when it remains one stage in a
+shared sky-scattering and aerial-perspective composition.

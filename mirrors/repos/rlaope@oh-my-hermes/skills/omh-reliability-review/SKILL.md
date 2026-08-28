@@ -1,6 +1,6 @@
 ---
-name: omh-reliability-review
-description: [omh] Hermes Reliability Review workflow: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence. Use when the user says: reliability-review, reliability review, incident review, incident postmortem, postmortem, post-mortem, slo review, slo.
+name: "omh-reliability-review"
+description: "[omh] Hermes Reliability Review workflow: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence. Use when the user says: reliability-review, reliability review, incident review, incident postmortem, postmortem, post-mortem, slo review, slo."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, reliability]
@@ -94,7 +94,13 @@ Expected outputs:
 
 Artifact expectations:
 
-- operation_artifact/v1 reliability-review artifact when a wrapper or CLI records it
+- omh_operation_artifact/v1 reliability-review artifact when a wrapper or CLI records it
+
+Artifact contracts:
+
+This label denotes the machine-enforcement level, not a skill quality score and not an observed evidence state.
+
+- contract_id: `omh_operation_artifact/v1`; enforcement_level: `shared_operation_validated`; consumer_id: `validate_operation_artifact`
 
 Safety rules:
 

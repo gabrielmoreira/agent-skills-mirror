@@ -81,7 +81,11 @@ If you built while pointed at a v65.0 org and deploy to a v63.0 org, the bundle 
 ```bash
 sf config set target-org=<your-deploy-target-alias>
 npm run build
-sf project deploy start --source-dir force-app --target-org <same-alias>
+sf project deploy start \
+  --source-dir force-app/main/default/uiBundles/<your-bundle> \
+  --source-dir force-app/main/default/labels/CustomLabels.labels-meta.xml \
+  --source-dir force-app/main/default/translations/<locale>.translation-meta.xml \
+  --target-org <same-alias>
 ```
 
 **Check an org's API version:**
@@ -190,7 +194,7 @@ English never needs activation.
 
 **Symptom:** The text is correct, just not translated (e.g., you see "Welcome" when you expected "Bienvenido").
 
-**Cause (most likely):** The translation file is missing that label, or its `<name>` doesn't match the `<fullName>` in `CustomLabels`. i18next falls back to the English base value (via `fallbackLng: "en"`), which is correct behavior; it just means that one key wasn't translated.
+**Cause (most likely):** The translation file is missing that label, or its `<name>` doesn't match the `<fullName>` in `CustomLabels`. The Platform SDK's GraphQL request returns a fallback according to `labelFallback` (`BASE_VALUE` for B2E, explicit `USER_DEFAULT` for B2C), so correct English text usually means that one key wasn't translated.
 
 **Other causes:**
 - The user's **Language** (not Locale) isn't set to the language you translated.
@@ -200,15 +204,25 @@ English never needs activation.
 
 ---
 
-### Logged-in user sees their own language instead of the org default
+### B2C guest labels request returns HTTP 403
 
-**Symptom:** In a B2X site (or any authenticated context), a logged-in user whose **Language** is French sees French text for a label you only authored in the org-default language (English), **even when the app requests English**. A guest user switching languages works fine; only the logged-in user with a different Language setting hits it.
+**Symptom:** The B2C site loads, but a signed-out visitor's labels GraphQL request returns HTTP 403. The same request can work for an authenticated user.
 
-**Cause:** the server's label **fallback strategy**. When the app asks for a locale that has no explicit translation for a label, the server decides what to return. Its default strategy, `USER_DEFAULT`, resolves in this order: requested locale → that locale's language-fallback chain → **the logged-in user's own language** → the base/master value. Because the user's language comes *before* the base value, a French user gets French, not the English default.
+**Cause:** `GraphQLApiOrgPrefForGuestUsers` is not enabled. Guest access to the GraphQL label path is an org-admin prerequisite tracked by W-23854208.
 
-**Fix on the documented floor (11.42.1):** `SalesforceBackend` does not yet override the server's default, so the query resolves with `USER_DEFAULT` and a logged-in user with a different Language can still see their own language instead of the base value. To get the org default on this version, author an explicit org-default translation for the label, or debug the raw query with `fallback: BASE_VALUE` (shown below) to confirm the value you expect.
+**Fix:** Ask an org admin to confirm and enable the preference through the supported administration process. This localization workflow must never provision or change it. Stop until the prerequisite is satisfied.
 
-> **Coming in a later SDK release:** a change that makes `SalesforceBackend` request `fallback: BASE_VALUE` is merged (2026-07-29) but not yet published, so it is not in 11.42.1. Once the release that carries it ships, the backend skips straight to the org-default value when a translation is missing, and you no longer need an explicit English translation just to work around this. Until then, treat the behavior above as current.
+### B2C language switch leaves old-language labels
+
+**Symptom:** The URL or switcher displays a new site language, but labels remain in the previous language.
+
+**Cause:** B2C language context is established at boot from the language-specific route through `SFDC_ENV.language`. An in-place language change does not rebuild the SDK context, and `i18next_res_*` localStorage entries may continue serving cached labels.
+
+**Fix:** Make the switcher navigate to the configured language URL and perform a full page reload. Confirm the route and `SFDC_ENV.language` agree. During development, clear `i18next_res_*` before retesting.
+
+### Choose fallback by bundle type
+
+The shipped `SalesforceBackend` supports `labelFallback`. Preserve its `BASE_VALUE` default for B2E by omitting the option. For B2C only, configure `labelFallback: "USER_DEFAULT"` so fallback follows the guest/site language context. Do not apply the B2C override to B2E.
 
 **If you're debugging the raw labels query** (e.g., re-running it in DevTools): `fallback` must be declared in the operation signature (`$fallback: LabelFallback`) **and** passed to the `labels(...)` field. A `fallback` key in the variables block alone is silently dropped and the server falls back to `USER_DEFAULT`. It takes the `LabelFallback` enum (`USER_DEFAULT` / `BASE_VALUE` / `NONE`), not a locale string like `"en"`:
 
@@ -228,6 +242,8 @@ query Labels($ns: String!, $names: [String!]!, $locale: String, $fallback: Label
 ```
 
 with `"fallback": "BASE_VALUE"` in the variables.
+
+B2B remains unsupported. Do not infer B2B support from the B2C guidance or apply these steps to a B2B site.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
-name: omh-localization-review
-description: [omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance. Use when the user says: localization review, translation QA, locale glossary, 현지화 검토, 번역 QA, 용어집.
+name: "omh-localization-review"
+description: "[omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance. Use when the user says: localization review, translation QA, locale glossary, 현지화 검토, 번역 QA, 용어집."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]

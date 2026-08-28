@@ -27,23 +27,15 @@ Values of listed parameter names are replaced with `REDACTED` in `url.query` and
 ```properties
 # default list — credential parameters only
 otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters=\
-  AWSAccessKeyId,Signature,sig,X-Goog-Signature
+  AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,\
+  X-Amz-Security-Token,sig,X-Goog-Signature
 ```
 
 - Type: list of case-sensitive parameter names. Setting it **replaces** the default list
   (full override, not additive) — re-list the credential defaults when extending it.
-- Declarative config limitation in Javaagent and Spring Boot Starter **v2.30.0**: custom
-  query-parameter redaction is not usable from the YAML file. The SDK 1.64.0 model accepts
-  unsuffixed `sensitive_query_parameters`, while the instrumentation reads
-  `sensitive_query_parameters/development`. The suffixed spelling is therefore rejected during
-  startup as an unrecognized field, and the unsuffixed spelling parses but is ignored, leaving
-  only the default credential list active.
-
-  If custom query redaction is required on v2.30.0, use the flat
-  `otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters` property
-  without activating declarative file-config mode, customize the HTTP instrumentation's attribute
-  extraction, or redact `url.query` / `url.full` in a Collector processor. Do not infer that
-  redaction works merely because a YAML file parses and the application starts.
+- In Javaagent and Spring Boot Starter **v2.31.1**, the equivalent declarative field is
+  `instrumentation/development.general.sanitization.url.sensitive_query_parameters`. It also
+  replaces the default list, so include every default that must remain active.
 - History: replaces `otel.instrumentation.http.client.experimental.redact-query-parameters`
   (client-only; deprecated, then removed in 2026 releases —
   [#18229](https://github.com/open-telemetry/opentelemetry-java-instrumentation/pull/18229)).
@@ -60,7 +52,8 @@ otel.instrumentation.http.server.capture-request-headers=<list>
 otel.instrumentation.http.server.capture-response-headers=<list>
 otel.instrumentation.http.client.capture-request-headers=<list>
 otel.instrumentation.http.client.capture-response-headers=<list>
-otel.instrumentation.servlet.experimental.capture-request-parameters=<list>
+otel.instrumentation.servlet.experimental.request-parameters.included=<list-of-globs>
+otel.instrumentation.servlet.experimental.request-parameters.excluded=<list-of-globs>
 # High risk: captures JDBC parameter values and disables query sanitization
 otel.instrumentation.jdbc.experimental.capture-query-parameters=true
 ```
@@ -68,7 +61,11 @@ otel.instrumentation.jdbc.experimental.capture-query-parameters=true
 Captured headers land as `http.request.header.<lowercase-name>` /
 `http.response.header.<lowercase-name>` (list-valued); servlet parameters as
 `servlet.request.parameter.<name>`. Enabling any of these captures the raw values — there
-is no per-header/per-parameter redaction.
+is no per-header/per-parameter value redaction. Servlet selectors are case-sensitive; exclusions
+take precedence. With both lists empty, nothing is captured. An exclude-only selector captures
+every available parameter not excluded, so prefer an explicit include list. The old
+`otel.instrumentation.servlet.experimental.capture-request-parameters` include-only property is
+deprecated in 2.31.1 and does not support globs.
 
 Those flat properties apply to normal property-based configuration. When declarative config is
 active, flat instrumentation properties are not an overlay; use the corresponding YAML paths:
@@ -85,7 +82,9 @@ instrumentation/development:
         response_captured_headers: [x-request-id]
   java:
     servlet:
-      capture_request_parameters/development: [customer]
+      request_parameters/development:
+        included: [customer-*]
+        excluded: [customer-password]
     jdbc:
       # High risk: captures values and disables query sanitization
       capture_query_parameters/development: true
@@ -112,5 +111,6 @@ JDBC's parameter-capture switch shown above is a separate opt-in. It emits raw v
 |---|---|
 | HTTP capture properties (headers, servlet params, known-methods) | `WebFetch https://opentelemetry.io/docs/zero-code/java/agent/instrumentation/http/` |
 | Current property names/defaults incl. `sensitive-query-parameters` | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/instrumentation-docs/src/main/resources/shared-config-definitions.yaml`; per-instrumentation `metadata.yaml` files reference these shared definitions |
+| Generated declarative names, defaults, and deprecations | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/docs/declarative-configuration-example.yaml` |
 | Renames/removals of capture & sanitization properties | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/<selected-agent-tag>/CHANGELOG.md` |
 | Semconv redaction rules for `url.query`/`url.full` | `WebFetch https://opentelemetry.io/docs/specs/semconv/http/http-spans/` |

@@ -1,6 +1,6 @@
 ---
-name: omh-buzz
-description: [omh] Connect and operate Hermes as a native Buzz community agent, deliver local media with verified relay receipts, or diagnose a self-hosted Buzz relay without inventing transport evidence. Aliases: omh-buzz. Use when the user says: connect Hermes to Buzz, Buzz community agent, Buzz gateway setup, Buzz media attachment, Buzz relay self-hosting, Buzz connection diagnostics, 버즈 커뮤니티 연결, Buzz 메시지 첨부.
+name: "omh-buzz"
+description: "[omh] Connect and operate Hermes as a native Buzz community agent, deliver local media with verified relay receipts, or diagnose a self-hosted Buzz relay without inventing transport evidence. Aliases: omh-buzz. Use when the user says: connect Hermes to Buzz, Buzz community agent, Buzz gateway setup, Buzz media attachment, Buzz relay self-hosting, Buzz connection diagnostics, 버즈 커뮤니티 연결, Buzz 메시지 첨부."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]

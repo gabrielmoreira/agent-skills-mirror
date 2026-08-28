@@ -1,6 +1,6 @@
 ---
-name: omh-instinct-ledger
-description: [omh] Instinct Ledger workflow: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries. Use when the user says: instinct-ledger, instinct ledger, project instincts, project-scoped instincts, project scoped instincts, global instincts, instinct review, instinct candidate.
+name: "omh-instinct-ledger"
+description: "[omh] Instinct Ledger workflow: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries. Use when the user says: instinct-ledger, instinct ledger, project instincts, project-scoped instincts, project scoped instincts, global instincts, instinct review, instinct candidate."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, optimization]

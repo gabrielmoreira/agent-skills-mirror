@@ -1,6 +1,6 @@
 ---
-name: omh-morning-brief
-description: [omh] Morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself. Use when the user says: morning-brief, morning brief, connect my email for a morning brief, set up morning brief, configure morning brief, connect mail for morning brief, connect calendar for morning brief, set up my morning brief.
+name: "omh-morning-brief"
+description: "[omh] Morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself. Use when the user says: morning-brief, morning brief, connect my email for a morning brief, set up morning brief, configure morning brief, connect mail for morning brief, connect calendar for morning brief, set up my morning brief."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, hermes-setup]
@@ -105,10 +105,10 @@ Safety rules:
 
 ## Runtime Evidence
 
-Preferred harness for this skill: `coding-handling`.
+Preferred harness for this skill: `hermes-setup`.
 
 ```sh
-omh runtime record --skill morning-brief --harness coding-handling --status started
+omh runtime record --skill morning-brief --harness hermes-setup --status started
 ```
 
 Record observed delegation results; otherwise return `not_available` or `not_observed`.

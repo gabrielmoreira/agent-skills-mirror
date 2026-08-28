@@ -1,6 +1,6 @@
 ---
-name: omh-prompt-import-readiness
-description: [omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities. Use when the user says: prompt-import-readiness, prompt import readiness, slash prompt import, slash prompts import, slash command prompt import, prompt library import, prompt folder import, prompt directory import.
+name: "omh-prompt-import-readiness"
+description: "[omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities. Use when the user says: prompt-import-readiness, prompt import readiness, slash prompt import, slash prompts import, slash command prompt import, prompt library import, prompt folder import, prompt directory import."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, prompt]

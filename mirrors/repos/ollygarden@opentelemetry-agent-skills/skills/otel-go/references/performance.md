@@ -326,6 +326,14 @@ exporter, err := otlptracehttp.New(ctx,
 )
 ```
 
+### OTLP/HTTP trace encoding
+
+The trace HTTP exporter supports both OTLP protobuf (the default) and OTLP JSON. Select JSON
+with `otlptracehttp.WithEncoding(otlptracehttp.EncodingJSON)` or set
+`OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=http/json` (the signal-specific variable takes precedence
+over `OTEL_EXPORTER_OTLP_PROTOCOL`). This released option is specific to `otlptracehttp`; do not
+assume the metric and log HTTP exporters expose the same encoding option.
+
 ### Retry Defaults
 
 The OTLP exporters use exponential backoff with jitter:
@@ -368,7 +376,9 @@ exporter, err := otlptracegrpc.New(ctx,
 
 ### Enabled() Early Exit
 
-The Logs API supports an `Enabled()` check for skipping expensive log construction when the log level is below threshold or when a processor filters it:
+The Logs API supports an optional `Enabled()` check for skipping expensive log construction when
+the log level is below threshold or when a processor filters it. Call it at each emission where
+the optimization matters; its result can change and should not be cached:
 
 ```go
 logger := otellog.GetLoggerProvider().Logger("my-service")
@@ -465,6 +475,10 @@ The released SDK and OTLP exporters expose experimental self-observability metri
 | `otel.sdk.processor.span.processed` | Spans processed; `error.type=queue_full` identifies queue drops |
 | `otel.sdk.exporter.span.exported` | Spans whose export finished; `error.type` distinguishes failures |
 | Exporter errors in logs | Export failures with error details |
+
+Since v1.46.0, simple span and log processors record their `processed` metric when a record is
+submitted to the exporter, before export completes, and do not derive `error.type` from the export
+outcome. Do not interpret that processor metric as proof of successful export.
 
 ### ForceFlush
 

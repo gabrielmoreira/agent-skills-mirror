@@ -1,6 +1,6 @@
 ---
-name: omh-decide
-description: [omh] Decide between options: tradeoffs, a recommendation, and a decision note you can act on. Use when the user says: strategy-brief, strategy brief, strategy memo, product strategy, strategic options, decision note, leadership strategy, next strategy.
+name: "omh-decide"
+description: "[omh] Decide between options: tradeoffs, a recommendation, and a decision note you can act on. Use when the user says: strategy-brief, strategy brief, strategy memo, product strategy, strategic options, decision note, leadership strategy, next strategy."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, strategy]

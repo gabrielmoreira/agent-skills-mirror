@@ -2,10 +2,11 @@
 
 ## Tuning the queue for throughput vs. latency
 
-The defaults (`num_consumers: 10`, `queue_size: 1000`, `batch.min_size: 8192`, `batch.flush_timeout: 200ms`) suit a general gateway. The levers:
+The queue defaults are `num_consumers: 10` and `queue_size: 1000`. If you opt into queue batching,
+its defaults are `batch.min_size: 8192` and `batch.flush_timeout: 200ms`. The levers:
 
 - **Throughput** — raise `num_consumers` (more parallel senders) and `queue_size` (deeper buffer to absorb bursts). Larger `batch.min_size` packs more per request, reducing per-RPC overhead.
-- **Latency** — lower `batch.flush_timeout` (flush sooner) and `batch.min_size` (smaller batches leave the queue faster). The trade-off is more, smaller RPCs.
+- **Latency** — when batching is enabled, lower `batch.flush_timeout` (flush sooner) and `batch.min_size` (smaller batches leave the queue faster). The trade-off is more, smaller RPCs.
 
 ```yaml
 exporters:

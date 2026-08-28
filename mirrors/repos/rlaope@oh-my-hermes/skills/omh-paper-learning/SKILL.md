@@ -1,6 +1,6 @@
 ---
-name: omh-paper-learning
-description: [omh] Hermes Paper Learning workflow: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries. Use when the user says: paper-learning, paper learning, paper-explainer, paper explainer, paper explanation, explain this paper, explain this arxiv paper, paper walkthrough.
+name: "omh-paper-learning"
+description: "[omh] Hermes Paper Learning workflow: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries. Use when the user says: paper-learning, paper learning, paper-explainer, paper explainer, paper explanation, explain this paper, explain this arxiv paper, paper walkthrough."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]

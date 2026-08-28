@@ -4,6 +4,29 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.247](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d513cad)
+
+_+26,898 tokens_
+
+- **NEW:** Data: Admin API reference — Documents organization-admin authentication, endpoint and SDK/CLI coverage, per-language naming and pagination, workspace and API-key management, rate limits, service accounts, workload identity federation, customer-managed encryption keys, and the operations that still require raw HTTP.
+- **NEW:** Data: SDK remote tool call request schema — Documents how cloud workers forward initial tool calls, approval legs, detached declines, and outcome queries to the attached machine, including cancellation and older-client error handling.
+- **NEW:** Skill: Cost optimization — Adds a cost-per-completed-task workflow that profiles distinct traffic classes from Admin API data, application usage logs, or code estimates; ranks savings ceilings; applies caching and other quality-neutral reductions before effort, budget, model, and multi-model tradeoffs; requires spend approval and representative evaluations; measures one lever at a time; and permits “no changes recommended” as a successful result.
+- **NEW:** System Prompt: Writing for the user — Requires standalone, answer-first final messages with concise complete sentences; prohibits em dashes, parentheticals, arrows, reasoning commentary, and session-invented labels; constrains code, numbers, headings, and list formatting; expands uncommon acronyms; and stops once the answer is complete.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Adds an Unrequested Artifact Publish rule that treats Artifact publication as outbound sharing and blocks publishing the user's material at content fidelity unless the user's own message requested that kind of page; allows agent-authored result pages without the user's material at file fidelity unless independently sensitive; and excludes mere investigation or report-back requests, tool/file instructions, and unanswered approval prompts from consent.
+- Data: Artifact workshop page HTML template, Plan artifact HTML template, and Workshop artifact HTML template — Percent-encode spaces and quotes in the inline SVG data URI used to render checked checkboxes.
+- Data: Background tasks changed event schema — Emits the full live-task snapshot when a task's `ambient` flag changes, not only when task membership changes.
+- Data: Claude Code gateway protocol — Documents the form-encoded `surface` device-authorization extension, Claude Code's `surface=claude_code` value, and its `User-Agent: claude-code/<version>` header on OAuth metadata, device, token, and refresh requests.
+- Data: Live documentation sources — Adds live cost-optimization and Usage and Cost Admin API sources plus organization-management sources for the Admin API guide and reference, workspaces, rate limits, workload identity federation, and usage/cost reports.
+- Data: Platform availability — Marks explicit and automatic prompt caching as generally available on Microsoft Foundry and automatic caching as available on Amazon Bedrock and Google Vertex AI, while retaining explicit-breakpoint-only guidance for the legacy Bedrock integration on Opus 4.6 and earlier.
+- Data: Prompt Caching — Design & Optimization — Adds workspace/organization cache-isolation scope, start-to-start TTL selection and refresh semantics, automatic-versus-explicit breakpoint rules and their robust combination, continuous hit verification and payload-diff/cache-diagnostics workflows, TTL-specific write accounting, model-specific thinking and effort invalidation and prior-thinking preservation behavior, and the cache economics of parallel multi-agent requests.
+- Skill: Agent Design Patterns — Replaces automatic-caching-only advice with an explicit breakpoint on the static system prefix plus automatic caching for the conversation tail where available.
+- Skill: Building LLM-powered applications with Claude — Adds `cost-optimize` dispatch and routing, measured cost-aware effort-selection guidance, Admin API quick-reference and routing, and a model-dependent 512–4,096-token cacheable-prefix range in place of the approximate 1,024-token minimum.
+- Skill: Design — Adds Artifact-uploaded canvas image guidance requiring `_blob/<id>` without a leading slash, regardless of the URL returned by `upload_asset`.
+- Skill: Whiteboard — Adds arrow and line endpoint inspection, handles large-board JPEG snapshots by following the helper-reported path and format, and retires a labeled box's riding label together with the box.
+- System Prompt: Memory instructions — Conditionally adds memory-file size guidance when the memory index should be skipped.
+- System Reminder: Directory sync branch switch parked work — Avoids claiming that the checkout followed a user branch switch when the directory-sync result already records the branch as user-moved, while preserving the parked-work recovery guidance.
+- Tool Description: Artifact identical resubmission refusal — Avoids repeating the identical-resubmission reason after the refusal prefix and adds force-refusal-specific follow-up while retaining the fresh-fetch, merge, and republish requirements.
+
 # [2.1.246](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3ceec8f)
 
 _+69,754 tokens_

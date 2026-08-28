@@ -1,6 +1,6 @@
 ---
-name: omh-run-efficiency
-description: [omh] Report supplied local run efficiency while provider and host data stay unobserved. Use when the user says: run-efficiency, run efficiency report, local run efficiency, context utilization, tool duration report, 실행 효율 리포트, 컨텍스트 사용량, 도구 지연 시간.
+name: "omh-run-efficiency"
+description: "[omh] Report supplied local run efficiency while provider and host data stay unobserved. Use when the user says: run-efficiency, run efficiency report, local run efficiency, context utilization, tool duration report, 실행 효율 리포트, 컨텍스트 사용량, 도구 지연 시간."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]

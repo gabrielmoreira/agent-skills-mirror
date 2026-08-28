@@ -32,6 +32,14 @@ available before target setup. Installer failures become a failed
 path; they do not fail the review itself. Reviews that do not verify never probe
 or install a target package manager.
 
+The selected repository profile also owns `live_test.setup`. Setup commands run
+from the exact-head target root, not the ClawSweeper checkout or a discovered
+package directory. Nested packages therefore need explicit target-native
+commands: Crabbox uses `npm ci --prefix worker`, which becomes
+`npm ci --ignore-scripts --prefix worker` under the default install-script policy.
+An owner fallback cannot describe every repository's package layout; configure
+the target profile rather than assuming OpenClaw's root pnpm setup applies.
+
 ## Review-job execution
 
 After the review command returns, the job inspects the produced reports before
@@ -82,12 +90,40 @@ and is unaffected by this live-proof policy.
 
 HOME, package-manager caches, and temporary files point into the scratch profile.
 
+The production review prompt supplies trusted execution context from the effective
+repository profile, including configured/fallback resolution, enablement, package
+manager, normalized setup commands, install-script policy, and browser-only startup.
+These facts are separate from PR-authored context. The proof target is a cold
+checkout of the exact reviewed head: reviewer/controller `dist` and other generated
+output do not transfer. The planner must inspect the relevant package scripts and
+import chain, then include any build or code-generation prerequisites that setup
+does not supply before the first dependent command. When an existing repository or
+package-manager script owns the required prerequisites, invoke that wrapper and do
+not bypass it by calling its internal script directly. An arbitrary test script
+need not build. When no owning wrapper exists, use an explicit fail-fast command
+chain. The executor does not infer or repair missing prerequisites.
+
 Plans must use assertions the demonstration can satisfy. Browser interactions
 should derive search or filter values from content the page already renders,
 and terminal plans should assert stable output such as a header, flag, or error
 string rather than counts, timings, or run-dependent numbers. When no exact
 value is certain, the planner must choose a more stable assertion instead of
 inventing one.
+
+The [review prompt](../prompts/review-item.md) and decision parser require
+`liveProofPlan.entry` and terminal `run.command` strings to contain no literal
+CR, LF, U+2028, or U+2029, including leading or trailing line breaks. The parser
+checks this before trimming; a `run.command` must remain nonempty after trimming.
+For complex commands, use an existing script or a properly quoted single-line
+command instead of a multiline heredoc. Escaped newline sequences inside quoted
+source strings are distinct from literal newlines in the decoded command.
+Browser entries remain URL paths; nonrecommended plans use an empty entry and
+no steps.
+
+The [decision schema](../schema/clawsweeper-decision.schema.json) constrains
+these strings with ordinary anchored character classes, not regex lookaround
+(which the structured-output provider rejects). The parser remains the final
+validation boundary for every generated plan.
 
 Browser plans are serialized as JSON data into a generated plain
 `playwright-core` script; plan values are never inserted as source code.
@@ -106,9 +142,14 @@ dev server could bind its port without publishing an unbounded target log.
 
 Every drive writes `live-verification.json` with the exact reviewed head, entry,
 typed steps and outcomes, bounded terminal output, and overall pass/fail result.
-A setup or drive failure still publishes verification and no media. Media is
-eligible only when an expectation was absent initially and satisfied after the
-plan acted, and the recording passes the three-second floor. Eligible recordings
+A setup or drive failure still publishes verification and no media. Command
+failure summaries retain evidence from both stderr and stdout, sharing a
+1,000-character budget across nonempty streams and any spawn error. Summaries
+are flattened to one line so an informational stderr notice cannot hide a
+stdout failure in the human-readable reason. Existing output bounds and
+publication sanitization still apply. Media is eligible only when an expectation
+was absent initially and satisfied after the plan acted, and the recording passes
+the three-second floor. Eligible recordings
 are capped at 90 seconds and 50 MB, transcoded to H.264 MP4, probed, and paired
 with `poster.jpg` plus a metadata-only manifest.
 
@@ -137,18 +178,70 @@ existing comment-sync path upserts the marker-backed review comment.
 
 Browser comments contain sanitized per-step outcomes and a one-line failing-step
 reason, never page text. Terminal comments retain capped output and list
-assertions only when present. A terminal command with a confirmed successful exit
-still passes when its expected marker is absent from the captured pane; the
-assertion remains a completed, non-gating schema-v1 step, is explicitly labeled
-`NOT OBSERVED`, and cannot qualify a recording. Private command files and runner
-paths never enter published terminal output. Each entry or `run` action executes
-as a separately supervised Bash process in the same checkout, so plans should
-share state through files or one command rather than shell-local mutations.
-The terminal `entry` executes automatically before typed steps and must not be
-repeated as the first `run`; exact leading duplicates are normalized away before
-execution.
+assertions only when present. Each command runs in a real PTY, and terminal
+assertions inspect tmux-rendered history observed by the controller. Capture
+keeps a rolling 1 MiB diagnostic tail, but that target-writable artifact is not
+assertion authority. Once the controller observes an assertion, later history
+eviction does not erase that fact. Sealing proves the capture helper consumed the
+stream before completion. Successful runs publish the final visible 50-row
+terminal viewport, and long-running proofs publish their current viewport.
+Failed runs publish each command's bounded combined diagnostics under one label.
+Private supervisor files and runner paths never enter published terminal output.
+Each entry or `run` action executes as a separately supervised Bash process in
+the same checkout, so plans should share state through files or one command
+rather than shell-local mutations. Terminal assertions observe only bytes emitted
+to the terminal; artifact content must be emitted by the entry or a preceding run,
+for example with `cat`, before an `expect_output` step can assert it.
+The terminal `entry` executes automatically before all typed steps. Every `run`
+executes independently, including a first `run` identical to `entry` or a later
+repeated command; the parser and driver do not deduplicate commands. Intentional
+reruns after state changes remain valid and execute in order.
+
+Plan one-shot proofs, including commands that refuse an existing output directory,
+in one of two ways: put the proof command in `entry` followed by stable
+`expect_output` steps, or put safe setup in `entry` followed by exactly one `run`
+of the proof command and its expectations. Do not replay a proof just to capture
+its output or produce media. For a useful recording transition, choose setup plus
+one run so the expected output appears after the action; otherwise use
+`static_text` and verify once. Preserve non-overwrite guards rather than deleting
+the original output to accommodate an accidental replay.
+
 Nonzero exits, signals, command timeouts, and missing markers for still-running
-commands remain failures.
+commands remain failures. Terminal plans declare `terminalCompletion:
+exit_zero` when the final command must finish successfully, or
+`terminalCompletion: ready_while_running` when the final command must remain
+live after satisfying an output expectation. Non-recorded long-running proofs
+must remain live through a three-second stability hold before publication.
+Every earlier command must exit zero. The supervisor exits with the command's
+status, and tmux's pane lifecycle records whether that supervisor is still
+running or how it exited. Each proof uses a private tmux socket directory. The
+controller binds the exact pane PID and controlling terminal before opening the
+start gate. The pane process validates that tuple and opens a private lease file
+on reserved descriptor 9, inherited by the held target and its descendants.
+Before opening a second execution gate, the controller starts a cleanup watchdog
+outside the pane process tree through the private tmux server and requires an
+exact atomic armed receipt bound to the pane PID, terminal, nonce, and lease
+inode.
+
+After capture and the final viewport are sealed, controller cleanup requests the
+already-armed watchdog. Pane death triggers the same watchdog independently. It
+TERM-sweeps, then repeatedly KILL-sweeps processes still holding the lease plus
+bound-terminal members only while the original pane still owns both its lease
+and bound terminal. Lease-holder discovery remains active after pane death.
+Darwin finds lease holders with stock `lsof -X`, restricting discovery to open
+descriptors and fileports rather than mapped images or working directories;
+duplicated lease descriptors remain discoverable. Linux inspects `/proc` for
+reserved inherited descriptor 9. Terminal membership queries select the bound
+TTY directly. These queries avoid unrelated host work without changing the
+cleanup budget or identity guards. Cleanup succeeds only when an exact
+zero-survivor receipt matches the bound identity and the original pane is dead.
+Missing, malformed, stale, replaced, surviving-process, or timeout evidence
+fails visibly. Target commands do not inherit `TMUX`, `TMUX_PANE`, or
+`TMUX_TMPDIR`.
+
+The lease is lifecycle cleanup, not hostile same-UID isolation. A target that
+deliberately closes inherited descriptors or attacks same-user controller
+processes requires container, VM, namespace, or separate-user containment.
 All untrusted fields are bounded and neutralized against Markdown fences, HTML,
 and ClawSweeper marker spoofing. OpenClaw Bay is unaffected because schema v1
 and the existing lifecycle and publication contracts do not change.

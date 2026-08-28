@@ -34,6 +34,27 @@ Run it from the **project root** (the `npm` script `cd`s into the bundle itself)
 6. `npm run dev` — launch the Vite dev server. **Blocking** — it runs until the
    user stops it with Ctrl+C.
 
+## Local preview limitations
+
+`npm run dev:preview` runs the app in the Vite dev server with `sdk.fetch` proxied
+to the org **outside the Experience site's guest/community context**. Some auth
+surfaces therefore **cannot be exercised locally** — this is expected, not a
+misconfiguration:
+
+- **Social Login buttons do not render.** The built-in Social Login component calls
+  `/auth/social-login-config`, which returns no providers because `Site.getBaseUrl()`
+  is blank outside the site context — even when providers are correctly linked
+  (SKILL.md step 6b). The Social Login section simply renders nothing.
+- **Password / MFA login does not complete.** `Site.login()` cannot establish the
+  site session, so login returns *"Your login attempt has failed…"* and any MFA
+  challenge never renders.
+
+Test social login and MFA on the **published** site login page
+(`https://<domain>.site.com/<site-path>/login`), not on `localhost`.
+
+`npm run dev:preview` prints this same warning to the CLI just before it launches
+the dev server, so the limitation is visible even without reading this reference.
+
 ## When to use it vs. the setup GraphQL step
 
 - **Setup step 8** (`references/graphql.md`) refreshes schema/types and then

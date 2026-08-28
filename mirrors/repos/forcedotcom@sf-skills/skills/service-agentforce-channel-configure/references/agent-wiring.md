@@ -13,6 +13,7 @@ The connection block name depends on the channel type being wired:
 | Enhanced Chat (EmbeddedMessaging) | `connection customer_web_client:` | `OmniChannelFlow` |
 | Enhanced Messaging (3rd-party) | `connection messaging:` | `OmniChannelFlow` |
 | Voice | `connection telephony:` | `OmniChannelFlow` |
+| Email-to-Case | `connection service_email:` | `OmniChannelFlow` |
 
 ## Prerequisite
 
@@ -72,6 +73,15 @@ connection telephony:
     adaptive_response_allowed: True
 ```
 
+For **Email-to-Case** (`connection service_email:`):
+
+```yaml
+connection service_email:
+    outbound_route_type: "OmniChannelFlow"
+    outbound_route_name: "flow://{OUTBOUND_FLOW_DEVELOPER_NAME}"
+    adaptive_response_allowed: True
+```
+
 If a block for the relevant connection type already exists in the file, **add the outbound fields to the existing block** rather than creating a duplicate. Do not overwrite fields that are already present. If `modality voice:` already exists, leave it as-is — do not overwrite existing voice tuning values.
 
 ## Republish and activate the agent
@@ -93,5 +103,15 @@ grep -n "outboundRouteName\|outboundRouteType" \
 Both `outboundRouteName` and `outboundRouteType` must be present in the correct `<plannerSurfaces>` entry. The compiled XML maps the connection blocks as:
 - `connection customer_web_client:` → `<surfaceType>CustomerWebClient</surfaceType>`
 - `connection messaging:` → `<surfaceType>Messaging</surfaceType>`
+- `connection service_email:` → `<surfaceType>ServiceEmail</surfaceType>`
 
 If absent, the connection block was not serialised correctly — re-retrieve the `.agent` file and confirm the YAML was written before publishing.
+
+> **AiAuthoringBundle / Email-to-Case caveat (`connection service_email:`).** For an agent authored as an **AiAuthoringBundle** — the `ExternalCopilot` Agentforce Service Agent used by Email-to-Case (Branch C) — `sf project retrieve start --metadata "GenAiPlannerBundle:{AGENT_DEVELOPER_NAME}"` can report `files: 1` yet write **nothing** under `genAiPlannerBundles/`. With no compiled file to grep, the command above returns empty — a **false negative**, not a wiring failure. Do not conclude the surface is missing. Verify instead by:
+> - **Grepping the `AiAuthoringBundle` source** (the source of truth), which retains the block through publish:
+>   ```bash
+>   sf project retrieve start --metadata "AiAuthoringBundle:{AGENT_DEVELOPER_NAME}" --target-org $ORG
+>   grep -n "connection service_email:" \
+>     force-app/main/default/aiAuthoringBundles/{AGENT_DEVELOPER_NAME}/{AGENT_DEVELOPER_NAME}.agent
+>   ```
+> - **Treating the `BotEmailDefinition` deploy as the definitive `ServiceEmail`-surface check.** Its save-time validation fires `SurfaceMissingForSave` **last**, so a successful `Created` deploy (Branch C, Step 4c) proves the surface is live on the active version — authoritative over the empty GenAiPlannerBundle grep.

@@ -1,6 +1,6 @@
 ---
-name: omh-toolbelt-readiness
-description: [omh] Toolbelt readiness - inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner. Use when the user says: toolbelt-readiness, mcp readiness, tool readiness, plugin readiness, connector readiness, needed mcp, api credential, missing cli.
+name: "omh-toolbelt-readiness"
+description: "[omh] Toolbelt readiness - inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner. Use when the user says: toolbelt-readiness, mcp readiness, tool readiness, plugin readiness, connector readiness, needed mcp, api credential, missing cli."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, tools]

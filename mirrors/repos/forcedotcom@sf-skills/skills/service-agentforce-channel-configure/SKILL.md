@@ -1,9 +1,9 @@
 ---
 name: service-agentforce-channel-configure
-description: "Wires an existing, active Agentforce agent to a channel by resolving a fallback queue, setting up inbound routing (either PATCH SessionHandlerId on the MessagingChannel, or an inbound RoutingFlow for Voice/Email), and optionally configuring outbound escalation. Use when the user wants to add a channel to an existing agent, connect an agent to a messaging or voice channel, route Voice or Email-to-Case to an Agentforce agent, or set up a fallback queue for an agent channel. Applies to any already-created agent, including an existing Help Agent. The channel infrastructure (MessagingChannel, Voice config, email-to-case) must already exist — this skill only adds the routing. DO NOT TRIGGER when the agent does not yet exist or still needs Help Agent setup (use agentforce-generate or service-helpagent-coordinate), when creating the MessagingChannel itself (use service-digital-engagement-channel-configure), or when creating an Embedded Service Deployment (use service-digital-engagement-deployment-configure)."
+description: "Wires an existing, active Agentforce agent to a channel by resolving a fallback queue, setting up inbound routing (either PATCH SessionHandlerId on the MessagingChannel, or an inbound RoutingFlow for Voice/Email), and optionally configuring outbound escalation. Use when the user wants to add a channel to an existing agent, connect an agent to a messaging or voice channel, route Voice or Email-to-Case to an Agentforce agent, or set up a fallback queue for an agent channel. Also applies to an existing Help Agent. The channel infrastructure must already exist — this skill adds routing. DO NOT TRIGGER when the agent does not yet exist or still needs Help Agent setup (use agentforce-generate or service-helpagent-coordinate), when setting up Email-to-Case with an agent end-to-end (use service-email-to-case-configure), when creating the MessagingChannel itself (use service-digital-engagement-channel-configure), or when creating an Embedded Service Deployment (use service-digital-engagement-deployment-configure)."
 allowed-tools: Bash Read Write Edit Glob Grep AskUserQuestion
 metadata:
-  version: "1.0"
+  version: "1.1"
   domains: ["Service", "Agentforce"]
   minApiVersion: "67.0"
   relatedSkills:
@@ -30,7 +30,7 @@ This skill is generic — it works for any Agentforce agent, not just the Help A
 - Resolving or creating a fallback queue with the correct `QueueSobject` SobjectType
 - Branch A (Enhanced Chat / Enhanced Messaging): deploying `sessionHandlerType=AgentforceServiceAgent` + `sessionHandlerQueue` on an existing MessagingChannel, then binding `SessionHandlerId` via Data API PATCH
 - Branch B (Voice): assumes the phone number and `PstnVoice` MessagingChannel already exist (provisioned by the caller, e.g. `service-helpagent-coordinate`), then creating an inbound RoutingFlow (`routingType: Copilot`) that routes to the agent with the queue as fallback
-- Branch C (Email-to-Case): same inbound RoutingFlow, using the org-specific Case-based ServiceChannel
+- Branch C (Email-to-Case): inbound routing via direct case-owner assignment or an Omni-Channel RoutingFlow, plus deploying a `BotEmailDefinition` (Email Configuration) that links the agent to Service Email and binding it to the routing address
 - Optional outbound escalation: adding the appropriate `connection {type}:` block to the agent and republishing
 
 **Out of scope:**
@@ -162,25 +162,22 @@ Proceed to Phase 3 (optional).
 
 #### Branch C — Email-to-Case
 
-Same inbound RoutingFlow shape as Branch B, but using the org-specific Case-based ServiceChannel. Additionally requires an outbound `connection service_email:` and a mandatory manual BotEmailDefinition step in Setup — these are not optional and cannot be deferred to Phase 3.
+Inbound routing to the agent via direct case-owner assignment or an Omni-Channel `Copilot` RoutingFlow — user chooses in Step 2. Additionally requires the `connection service_email:` **surface** block and a mandatory BotEmailDefinition step (Email Configuration). It gates on API v68.0+ up front (see `references/channel-branch-email.md`).
 
-Follow `references/channel-branch-email.md` end to end. Highlights:
+Follow `references/channel-branch-email.md` end to end. Load-bearing gotchas (full walkthrough in that file):
 
-- Step 0 — verify `emailToCase.enableEmailToCase` and `emailToCase.enableOnDemandEmailToCase` are `true` in CaseSettings via the Tooling API; if either is off, deploy a settings file that enables both (safe-fields-only pattern) before continuing.
-- Step 1 — reuse an existing `EmailRoutingAddress` or create one for the support email address, then patch `caseOrigin` / `saveEmailHeaders: true` / `addressType: EmailToCase` for that entry in `CaseSettings.Metadata.caseEmailRoutingAddresses` via Tooling-API PATCH (fallback: `sf project deploy start --metadata Settings:Case`). Inform the user about the verification email but do not block on it.
-- Step 2 — query the Case-based ServiceChannel (see `references/channel-types.md`), then write and deploy the inbound RoutingFlow using the template in `references/routing-flow.md`; verify `ActiveVersionId` is non-null.
-- Step 3 — mandatory outbound: reuse or create `{AgentDevName}_Outbound_Email_Flow` (QueueBased template in `references/routing-flow.md` Part 2), then add `connection service_email:` to the agent and republish per `references/agent-wiring.md`.
-- Step 4 — mandatory manual: prompt the user to create an **Email Configuration for Agentforce Service Agent** at `{ORG_INSTANCE_URL}/lightning/setup/AsaForEmail/home` and set the Agentforce Configuration field on the Email-to-Case routing address. Wait for user confirmation.
+- Step 1 — bind routing-address fields via Tooling-API PATCH or a `--metadata-dir` `Settings:Case` deploy, **never** a source `--metadata Settings:Case` deploy (it reads `sourceApiVersion` and mutates the user's project).
+- Step 2 — choose inbound routing (`AskUserQuestion`): **case-owner** (`caseOwner` = the agent's bot user) or **Omni-Channel flow** (`Copilot` RoutingFlow + `routingFlow`/`fallbackQueue`). Resolve the bot user either way; routing fields go in the Step 4d deploy.
+- Step 3 — the agent is already active, so add the mandatory `connection service_email:` surface via **deactivate → publish → activate** (a plain publish fails with `couldn't find the default agent user`). Batch the outbound route here too if escalation is wanted.
+- Step 4 — BotEmailDefinition: preflight the save-time gates, validate the reply template, deploy via `--metadata-dir`, then bind the routing address in one `Settings:Case` deploy (`botEmailDefinition` + Step 2 routing fields + the required `casePriority`). Stop on failure.
 
-Branch C is complete once the user confirms Step 4. Skip Phase 3 for Email-to-Case (outbound escalation is already handled inline).
+Branch C is complete once the routing-address binding is verified. Proceed to Phase 3.
 
 ---
 
-### Phase 3 — Outbound escalation (optional — Branches A/B only)
+### Phase 3 — Outbound escalation (optional)
 
-> **Branch C (Email-to-Case):** outbound escalation was handled inline in Branch C above. Do not run Phase 3 for Email-to-Case.
-
-After inbound routing is confirmed (Branches A or B), ask the user:
+After inbound routing is confirmed, ask the user:
 
 > *"Inbound routing is now set up — the channel will route to [agent name]. Do you also want to configure outbound escalation so the agent can hand off to a human when requested?"*
 
@@ -219,7 +216,9 @@ If yes:
 | Branches B/C: use `routingType: Copilot` and `copilotLabel` — not `QueueBased` | `QueueBased` routes to the queue directly; `Copilot` routes to the agent first with the queue as fallback |
 | Queue `Id` must be queried and embedded in the RoutingFlow XML | The `queueId` parameter requires a hardcoded 18-char record Id — do not leave it empty |
 | Queue naming: `{ChannelTypeLabel} Queue` | Named after the channel type, not the agent |
-| Outbound escalation is optional for Branches A/B — mandatory for Branch C (Email-to-Case) | BotEmailDefinition (Email Configuration in Setup) requires `connection service_email:` to already be on the agent; it cannot be created before the connection block is deployed |
+| Outbound escalation is optional — never block inbound routing completion on it | Inbound and outbound are independent; inbound wiring is complete without the outbound step |
+| Branch C: deploy BotEmailDefinition via `--metadata-dir`, never `--metadata BotEmailDefinition:<name>` | Not in the CLI's SDR registry, so the named-type deploy fails; metadata-format works |
+| Branch C: do not wire an agent carrying a `ServiceCustomerVerification` topic to email | Detect and stop — do not auto-remove (may be legitimate for a multi-surface agent). See `channel-branch-email.md` Step 4a |
 
 ---
 
@@ -248,8 +247,11 @@ If yes:
 - [ ] If new: user informed that a verification email was sent to the support address (non-blocking)
 
 ### Branch C — BotEmailDefinition
-- [ ] User has confirmed creation of Email Configuration for Agentforce Service Agent at `/lightning/setup/AsaForEmail/home`
-- [ ] Email-to-Case routing address has the Agentforce Configuration field set
+- [ ] Preflight passed: agent is `EinsteinServiceAgent` with a bot user holding `agentforceServiceAgentUser`; active version carries the `ServiceEmail` surface; no `ServiceCustomerVerification` topic on the email agent
+- [ ] Reply `EmailTemplate` is SFX, HTML, public, and contains `[[[GENERATED_CONTENT]]]` + `[[[LEGAL_DISCLOSURE]]]`
+- [ ] Headless path (API ≥68): `BotEmailDefinition` deployed via `--metadata-dir` with `success: true`; `legalDisclaimer`/`signature` ≥10 chars
+- [ ] Routing address's `botEmailDefinition` child set to the deployed component `fullName`
+- [ ] Inbound routing set on the same routing address: `caseOwner`+`caseOwnerType` or `routingFlow`+`fallbackQueue`, with `casePriority` present
 
 ### Optional Phase 3 — Outbound escalation
 - [ ] Correct connection block used: `customer_web_client:` for EmbeddedMessaging, `messaging:` for 3rd-party, `telephony:` for Voice, `service_email:` for Email-to-Case
@@ -266,6 +268,12 @@ If yes:
 | `references/queue-resolution.md` | Phase 1 — queue lookup, creation, and Id capture |
 | `references/live-traffic-gate.md` | Phase 2 — detection queries, deferred-flow rules, and manual wiring copy for the live-traffic warning gate |
 | `references/channel-branch-voice.md` | Branch B — full Voice inbound wiring: PstnVoice channel selection, RoutingFlow, MessagingChannel assignment, `modality voice:` republish |
-| `references/channel-branch-email.md` | Branch C — full Email-to-Case wiring: CaseSettings flags, EmailRoutingAddress + read-modify-write patch, inbound RoutingFlow, mandatory outbound `connection service_email:`, BotEmailDefinition manual step |
+| `references/channel-branch-email.md` | Branch C — full Email-to-Case wiring: API v68.0+ precondition gate, CaseSettings flags, EmailRoutingAddress + read-modify-write patch, inbound RoutingFlow, mandatory `connection service_email:` surface block, headless BotEmailDefinition deploy, routing-address binding |
+| `references/botemaildefinition.md` | Branch C Step 4 — BotEmailDefinition fields, save-time validation order, ASA template rules, `--metadata-dir` deploy recipe, `ServiceEmail` surface prerequisite, composite org gate |
 | `references/routing-flow.md` | Branches B/C — inbound RoutingFlow XML template, deploy, verify |
-| `references/agent-wiring.md` | Phase 3 (optional) — outbound escalation `connection messaging:` block |
+| `references/agent-wiring.md` | Phase 3 (optional) — outbound escalation `connection` block |
+| `assets/BotEmailDefinition.botEmailDefinition-meta.xml` | Branch C Step 4c — starting template for the BotEmailDefinition source file |
+| `assets/mdapi-package.xml` | Branch C Step 4c — metadata-format `package.xml` for the `--metadata-dir` deploy |
+| `assets/email/unfiled$public/AgentforceForServiceEmailTemplate.email` + `.email-meta.xml` | Branch C Step 4b (fallback) — minimal ASA-compliant SFX reply template when the user has none |
+| `scripts/validate-botemaildefinition.py` | Branch C Step 4c — validate the BotEmailDefinition file before deploy |
+| `scripts/validate-emailtemplate.py` | Branch C Step 4b (fallback) — validate the SFX template before deploy |

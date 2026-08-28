@@ -1,6 +1,6 @@
 ---
-name: ulw-qa
-description: [omh] Hermes UltraQA workflow: adversarial QA and fix loops. Use when the user says: ultraqa, adversarial qa, hostile scenarios, e2e qa, real-world qa, qa scenario, release qa, 장애 상황.
+name: "ulw-qa"
+description: "[omh] Hermes UltraQA workflow: adversarial QA and fix loops. Use when the user says: ultraqa, adversarial qa, hostile scenarios, e2e qa, real-world qa, qa scenario, release qa, 장애 상황."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]

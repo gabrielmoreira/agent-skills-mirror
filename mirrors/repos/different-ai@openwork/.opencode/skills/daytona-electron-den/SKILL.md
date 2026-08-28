@@ -1,6 +1,6 @@
 ---
 name: daytona-electron-den
-description: Electron and Den, desktop plus cloud, two-sandbox e2e, cloud auth, marketplace, org policy, worker proxy, provider sync, desktop handoff. Validate Electron against a Daytona Den server with unified proof.
+description: Electron and Den, desktop plus cloud, two-sandbox e2e, cloud auth, marketplace, org policy, signed preview routing, provider sync, desktop handoff. Validate Electron against a Daytona Den server with unified proof.
 ---
 
 # Daytona Electron Against Den
@@ -21,7 +21,6 @@ Record the printed values:
 - `SERVER_SANDBOX`
 - `DEN_WEB_URL`
 - `DEN_API_URL`
-- `DEN_WORKER_PROXY_URL`
 
 Validate server health:
 

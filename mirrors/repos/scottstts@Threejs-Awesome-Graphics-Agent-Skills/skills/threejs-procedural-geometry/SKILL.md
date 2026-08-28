@@ -10,6 +10,10 @@ Treat polygon operations as the design model and triangle emission as the final
 compilation step. Do not declare an object complete until its topology,
 assembly relationships, semantic measurements, and fixed views all pass.
 
+This skill contains exemplary examples and assets beyond descriptive guidance,
+they're worth studying, referencing, or even copying. Use them sufficiently
+when relevant and do NOT blindly skip them.
+
 ## Craft loop
 
 1. Define units, local/world frames, dimensions, bounds, primary profiles,
