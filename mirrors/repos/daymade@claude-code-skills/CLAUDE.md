@@ -61,6 +61,8 @@ claude plugin install daymade-skill@daymade-skills
 
 Behavior evaluation is risk-scaled by `daymade-skill:skill-creator`: bounded fixes use targeted deterministic checks and narrow instruction changes use at most one or two sampled replays. Tier 3 classifies broad/high-risk work but does not authorize paired baselines, agent fan-out, grading, benchmarking, or a viewer; an explicit user request or a decision-bearing plan plus opt-in passes the separate evidence-budget gate without changing the risk tier. A request to "optimize" an existing skill and a long preceding conversation do not by themselves trigger Tier 3 or conversation-mining. Before editing, classify each delta: only behavior-equivalent relocation/deduplication is compression; retirement, scope narrowing, workflow/safety redesign, and bug fixes are separate changes. Existing-skill regression, one bounded fresh-context review with a declared stopping rule, and packaging gates remain separate.
 
+Treat `daymade-skill/skill-creator/scripts/packaging_policy.py` as the shipping-policy SSOT. Add or remove shipping exclusions only there, require every consumer to import it, and do not copy its directory list into documentation or consumer-specific filters.
+
 ```bash
 # Quick validation of a skill
 cd daymade-skill/skill-creator && uv run --with PyYAML python -m scripts.quick_validate ../skill-name
@@ -89,6 +91,14 @@ deterministic, Linux-verified) and the runner types (`python-unittest` via
 check the registry before assuming otherwise, and note `unittest discover`
 only collects `unittest.TestCase` subclasses, not bare pytest-style functions.
 
+### Prior Work Retrieval Boundary
+
+`prior-work-retrieval` creates an obligation only for an explicit prior-work,
+reuse, or history request. Ordinary implementation, reports, and read-only
+inspection do not arm it; PreToolUse and Stop may enforce only a requirement
+already created by the current prompt. Detailed retrieval mechanics remain in
+`daymade-claude-code/prior-work-retrieval/SKILL.md`.
+
 ### WeCom Send Boundary
 
 WeCom sender skills must read an explicit target class. `self` may send to the
@@ -100,18 +110,22 @@ receipt, and an automatic outbox path gets one non-retrying HTTP attempt.
 
 ### Testing Skills Locally
 
-```bash
-# Add local marketplace
-claude plugin marketplace add https://github.com/daymade/claude-code-skills
-# Marketplace name: daymade-skills (from marketplace.json)
+Test from the canonical checkout, not from a mutable direct copy. Use the current
+`claude-switch-models-setup` local-source workflow for this maintainer machine,
+and use `daymade-skill:skill-governance` to verify source, installed state,
+discovery policy, and the fresh model-visible catalog. Do not blindly remove and
+re-add a marketplace: removing it uninstalls plugins installed from that
+marketplace. Do not `cp -r` a second Skill tree into a user Skill directory; that
+copy immediately creates an independent drift owner.
 
-# Install the suite that contains skill-creator and skill-reviewer
-claude plugin install daymade-skill@daymade-skills
-
-# Test by copying to user skills directory
-cp -r skill-name ~/.claude/skills/
-# Then restart Claude Code
-```
+Marketplace source inventory is not Codex activation policy. On a maintainer
+machine, the explicit selection in
+`~/.config/claude-switch-models-setup/codex-active-skills.json` is the SSOT for
+source Skills linked into `~/.agents/skills`; `~/.codex/skills` is only a bounded
+legacy-compatibility surface. Change the manifest and run the bundled syncer—do
+not restore bulk links in either user root. Detailed topology and recovery rules
+remain in
+`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`.
 
 In Claude Code, use `/plugin ...` slash commands. In your terminal, use `claude plugin ...`.
 
@@ -158,6 +172,12 @@ git add path/to/file1 path/to/file2   # specific files only
 git commit -m "message"
 git push
 ```
+
+For recovery or repository convergence under concurrent work, treat
+`git-safety-net/SKILL.md` as the canonical authorization and evidence router. It owns the
+change-authorized / inspect-only / excluded partition and the scoped-vs-exhaustive audit boundary;
+do not copy its detailed commands here or treat a visible collaborator ref/worktree as a cleanup
+target merely because it appears in the inventory.
 
 **Closing a PR unmerged (declined, or superseded by another PR) → delete its head
 branch in the same action.** `gh pr merge --delete-branch` only covers merged PRs.

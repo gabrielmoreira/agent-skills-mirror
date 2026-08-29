@@ -23,7 +23,7 @@
 | 4 | 多步 backfill 必须在一个 SQLite transaction 内完成；任一步失败不得留下半迁移身份 | `db.transaction(...)` |
 | 5 | 身份/协议类 backfill 必须 fail closed：ambiguous 或 fingerprint 不完整时保留空值，不按数组顺序、名称、key 前缀或模型子集猜测 | provider migration helper |
 | 6 | provider schema/catalog 迁移不得删除或改写 `manual`、`user_edited=1` 模型行，也不得删除 provider/session/message | migration + provider model reconciliation |
-| 7 | 测试不得触碰用户数据库；全量命令必须预加载 `db-isolation.setup.ts`。任何会被单文件直接运行的 DB 测试还必须把该 setup 作为第一条 import，自行 fail closed，不能依赖操作者记住 `--import`；同时关闭并发 Codex runtime | `db-isolation.setup.ts`, DB 测试首 import, `CODEX_DISABLED=1` |
+| 7 | 测试不得触碰用户数据库；全量 Node 命令必须预加载 `db-isolation.setup.ts`。任何会被单文件直接运行的 DB 测试还必须把该 setup 作为第一条 import，自行 fail closed，不能依赖操作者记住 `--import`；同时关闭并发 Codex runtime。Playwright 必须经 `scripts/run-playwright.mjs` 启动独立 loopback server、临时 `CLAUDE_GUI_DATA_DIR` 与独立 `.next-e2e-*`，禁止复用日常 dev server；直接 `npx playwright` 在缺少隔离环境时必须拒绝启动 | `db-isolation.setup.ts`, `scripts/run-playwright.mjs`, `playwright.config.ts`, `CODEX_DISABLED=1` |
 | 8 | `messages.stream_status` 的 legacy 默认只能是 `completed`；collector 显式创建 `streaming`，真正的进程重启 recovery 才能将遗留 streaming 收口为 `interrupted`，不能重写历史完成消息或删除内容 | `src/lib/db.ts` + `chat-collect-stream-response.ts` |
 | 9 | Schema bootstrap / on-touch migration 必须是纯结构初始化，不能顺带清理运行态。破坏性的 restart recovery（中断 stream/run、清空 lock、终止 permission）必须先取得进程级 owner，且 owner PID 仍存活时重复 module/route 初始化必须严格 no-op | `src/lib/db.ts` runtime owner guard |
 | 10 | `subagent_runs` 的 running checkpoint 只能更新 `terminal=0` 行的 result/effective model，不得修改 status/completed_at；第一次 terminal 后所有迟到 checkpoint 必须原子 no-op | `checkpointSubagentRun` + `settleSubagentRun` |
@@ -36,6 +36,7 @@
 | 17 | `source='assistant_heartbeat'` 全库至多一条。建 partial UNIQUE index 前必须选 keeper、重关联 `task_run_logs.task_id` 与 `notification_events.task_id`、再删除 duplicate；user-source task 不得受影响 | `consolidateHeartbeatTasksAndEnsureUniqueIndex` |
 | 18 | Notification claim 只使用 additive lease/attempt columns，不扩展既有 delivery status CHECK。claim 在 transaction 中完成；settle 用 owner/status 条件 UPDATE，stale ack 不能覆盖新 owner；retry backoff 有界且 terminal delivered/error 不回滚 | notification delivery migration + CRUD |
 | 19 | Notification action 以受限 `action_type/action_payload` additive 保存；route consumer 只能按 channel claim，不能恢复 destructive GET drain | notification event/delivery schema + claim routes |
+| 20 | `renderer-toast` 退役时不得删除历史 event/delivery。只把仍 queued 且没有 native peer 的行原位改为 `electron-native`；已有 native peer 时 renderer 行收口为可审计 skipped。迁移必须 transaction + idempotent，并 bump schema revision 使 dev HMR cached handle 也执行 | `migrateQueuedRendererNotificationsToNative` |
 | 20 | 首次启用 durable notification consumer 时不得重放旧内存队列遗留的历史 `queued` 行。超过迁移安全窗口的 native/toast delivery 只改为可审计 `skipped`，保留 event/delivery；one-time marker 与 cutoff 必须同事务写入 | `suppressLegacyQueuedNotificationBacklog` |
 | 21 | Provider secret 行同时含非空明文与密文时，明文代表回滚/旧版重写后的当前用户值，必须优先 materialize 并重新生成 envelope；不得信任旧密文复活旧 key。单行加密/验证/UPDATE 失败必须保留该行可恢复数据并记录脱敏诊断，不能穿透 `getDb()` 阻断应用启动或回滚其它健康行 | `materializeProvider` + `migrateProviderSecrets` |
 | 22 | 正常 bootstrap 前对既有 DB 做一次 readonly `quick_check(1)`；失败不得进入 migration/runtime recovery，也不得循环换端口重试。必须先复制 DB/WAL/SHM 到时间戳目录并对每份副本 fsync + SHA-256 比对；复制前后的源文件集合/size/hash 也必须完全一致，跨文件撕裂只能标 partial。原件默认不删不改；只有用户在离线恢复页二次确认且完整备份校验成功后，才可移走原件并创建空库。健康响应必须执行最小 DB query，诊断只暴露低基数 code/preservation 状态，不含绝对路径或 SQLite 原文 | `database-integrity.ts` + `database-recovery.ts` + `/api/health` + Electron offline recovery |
@@ -70,11 +71,13 @@
 - [ ] 流式消息列变更必须验证 bootstrap/on-touch 同形、legacy completed 默认、startup recovery 幂等、同 message id terminal update
 - [ ] 改 startup recovery 时必须验证 schema 初始化不触发 recovery、同一存活 PID 的重复模块初始化不删除 lock/permission/checkpoint、真正遗留 run 才会被回收
 - [ ] 新增或改单文件 DB 测试时，裸跑该文件是否仍先加载 isolation setup，并确认真实 Dev API/DB 行数无变化
+- [ ] 新增或改 Playwright 写路径时，是否仍由 `npm run test:e2e/test:smoke/test:visual` 创建临时 DB/独立 build dir；fixture session 是否在 `finally` 精确回收；真实 `~/.codepilot` 行数前后是否不变
 - [ ] 改 `subagent_runs` checkpoint 时验证 running 状态不变、terminal 后迟到写入 no-op、正文有明确大小上限
 - [ ] 改 logical run/attempt 时验证唯一索引、attempt 单调递增、parent/UI latest-attempt 聚合、legacy 行“一行一 logical”保守 backfill，以及 active/completed logical ID 复用不会插入新 attempt
 - [ ] 改 terminal 收口时验证 running→settling→terminal、structured result/provenance、terminal event 同事务和 restart recovery 同形
 - [ ] 改 workflow/task/dependency 时验证 bootstrap + additive migration、queued→executing、missing-upstream 创建宽限与反序 fail-fast、同 workflow task key 防重复、self/indirect cycle 拒绝、dependency failure 不启动下游 Provider
 - [ ] 给 `initDb` / `migrateDb` 新增 migration 时同步 bump `DATABASE_SCHEMA_REVISION`，并验证缓存 DB handle 不重启也能补齐结构、且不触发 runtime recovery
+- [ ] notification channel 迁移保留 event/delivery row 数量与 terminal 历史；queued duplicate 先 skipped 再改 channel，避免触发 `(event_id, channel)` UNIQUE
 - [ ] 改 Asset backfill 时验证 permanent/transient/deferred 分类、冷却重试、显式 deferred 恢复，以及在线行数/字节/时限预算均不会饿死后续行
 - [ ] 改 heartbeat migration 时验证 duplicate consolidation 保留 run→event 关联、user-source task 不变、partial UNIQUE index 幂等
 - [ ] 改 notification delivery 时保持 status 枚举冻结，验证双 claimant、owner mismatch、stale reclaim、retry cap 和 terminal immutability
@@ -149,3 +152,5 @@
 - 2026-08-23 — implementation review 发现 health catch-all 会把 migration/runtime 产品故障伪装为 corruption，且 start-fresh relaunch 会被旧路径 DB migration 劫持。startup code/UI 现按 corruption/busy/migration/runtime 分型；busy 有界重试且不永久 block。完整备份后写入并 fsync fresh-start intent，下一次 bootstrap 在 legacy copy 前消费，空库成功打开后才清 marker。
 - 2026-08-24 — 修复轮复核发现初始 DB 阻断会把 `serverPort` 清空，旧 retry 因而永远 no-op；现由 Main 在无端口分支重新执行稳定端口启动。migration/runtime catch 在替换为低基数 startup error 前先生成路径/凭据脱敏 diagnostic，Main 将其纳入本地日志与复制诊断。
 - 2026-08-24 — fresh-start marker 不再授权 bootstrap 自动删除后来出现的 DB。marker 绑定已验证备份身份，冲突页由用户明确保留当前恢复或再次校验后继续空库；Main/utility/资产路径统一到共享 data-dir resolver，DB marker 快速失败，完整备份只保留最新 10 份。
+- 2026-08-28 — `project-panel.spec.ts` 本地复用日常 dev server，三类 fixture 只删临时目录、不删 session，累计把 44 条 `codepilot-sidebar-*` 会话写入真实侧栏。已按标题+系统临时目录双证据精确删除 44 条（总会话 627→583，匹配残留 0），并另删 1 条目录已不存在的 `/tmp/codepilot-codex-image-smoke` 明确 smoke（583→582）；Playwright 改由单 owner 启动器创建临时 DB 与 `.next-e2e-*`，配置拒绝直接/复用启动，global setup 只初始化隔离库，fixture 仍在 `finally` 回收。
+- 2026-08-28 — 用户将产品通知面统一为系统通知。schema 不增列，启动事务把仍 queued 的 `renderer-toast` 原位迁到 `electron-native`；若同 event 已有 native peer，只把冗余 renderer row 标记 skipped。历史 terminal delivery 全部保留，revision bump 保障 dev HMR 生效。

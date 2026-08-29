@@ -1,6 +1,6 @@
 ---
 name: "ulw-work"
-description: "[omh] Ultrawork - split an accepted plan into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file. Aliases: ulw. Use when the user says: ultrawork, parallel work, parallel implementation, high throughput, coding team, coordinated workers, finish until done, persistent execution."
+description: "[omh] Ultrawork - split an accepted plan into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file. Aliases: ulw. Use when the user says: ultrawork, parallel work, parallel implementation, parallel then integrate, high throughput, coding team, coordinated workers, finish until done."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, execution]
@@ -16,7 +16,7 @@ This is a Hermes-native `ultrawork` workflow skill.
 
 ## Why This Exists
 
-`ultrawork` exists to split an accepted implementation plan into independent lanes without letting parallelism blur ownership, verification, worker protocol, worktree isolation, or observed runtime evidence. It also carries four named internal capabilities absorbed from sibling engines: `coordinated_scope` (coordinated worker lanes), `delivery_boundary` (one bounded plan-to-PR cycle), `single_owner_persistence` (one owner finishes and verifies), and `durable_checkpoint` (durable goal ledger with checkpoints and a final gate).
+`ultrawork` exists to choose one-owner, ordered-dependency, or independent-frontier execution for an accepted implementation plan without letting concurrency blur ownership, verification, worker protocol, worktree isolation, or observed runtime evidence. It also carries four named internal capabilities absorbed from sibling engines: `coordinated_scope` (coordinated worker lanes), `delivery_boundary` (one bounded plan-to-PR cycle), `single_owner_persistence` (one owner finishes and verifies), and `durable_checkpoint` (durable goal ledger with checkpoints and a final gate).
 
 ## Do Not Use When
 
@@ -47,11 +47,13 @@ Bad example:
 
 ## Completion Checklist
 
-- All work lanes are disjoint by file, invariant, or responsibility before preparing parallel handoffs.
+- Every concurrently runnable lane is disjoint by write scope, invariant, or responsibility, and every ordered unit carries an explicit acyclic dependency edge, before parallel handoffs are prepared.
 - Each lane has acceptance criteria, verification command, worker protocol expectation, and review owner.
 - When Hermes owns the coding path, use `hermes_coding_harness/v1` to separate builder, verifier, reviewer, docs, and PR lanes.
 - Worker ACK, dispatch, result, review, CI, and merge evidence are observed or explicitly missing.
 - Integration verification ran after lane results before the final status claims completion.
+- Changed behavior was exercised through the real user surface after diagnostics and relevant tests passed, and every spawned QA resource has a cleanup receipt.
+- The closing brief ends with the observed `omh_run_summary` line (elapsed seconds and token usage) or an explicit run-summary not_available statement — never a model-estimated number.
 - [capability:coordinated_scope] The integrated status names which coordination lanes are observed, blocked, or still prepared_not_observed.
 - [capability:coordinated_scope] Coordination teardown is explicit: released lanes are named and closed instead of lingering as implicit owners.
 - [capability:durable_checkpoint] The goal_status_card/v1 or goal_continuation/v1 names the next action and the final status says complete, blocked, or continue with the exact remaining checkpoint.
@@ -64,13 +66,15 @@ Bad example:
 - If lanes are non-disjoint, collapse to one owner or route back to the durable-checkpoint goal ledger before coding starts.
 - If a worker does not ACK or return a result, keep that lane blocked/not_observed and expose the retry or reassignment action.
 - If a worktree or shared-file conflict appears, pause parallel delivery and re-plan ownership before more edits.
+- If a node fails, recover node-locally: the failure blocks only its dependents; read its error and retry first, amend the node definition when its prompt or contract is wrong, and steer a live lane instead of duplicating its owner - never rebuild the graph.
+- Do not read a quiet or scheduled node as stalled; inspect returned output because a returned blocked response still completes the node and carries the blocker to report.
 - [capability:coordinated_scope] If a coordinated worker has no ACK or result, mark that lane not_observed or blocked rather than infer progress.
 - [capability:durable_checkpoint] If the goal ledger is stale or missing, inspect .omh/goals and ask which checkpoint to resume before continuing.
 - [capability:durable_checkpoint] If a blocker checkpoint exists, keep the goal open and record the blocker plus the smallest unblock action.
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `ultrawork`, `+6 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `ultrawork`, `+7 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -78,7 +82,7 @@ Bad example:
 
 Use when an accepted implementation plan can be split into independent, reviewable work lanes.
 
-    Strong routing signals: `ultrawork`, `$ultrawork`, `ulw`, `$ulw`, `parallel work`, `parallel implementation`, `high throughput`, `coding team`, `coordinated workers`, `finish until done`, `persistent execution`, `implement`, `one-cycle delivery`, `single-cycle delivery`, `end-to-end process`, `delivery process`, `research plan implement review docs pr`, `plan implement review docs pr`, `prepare a pr`, `make a pr`, `open a pr`, `pr-ready`
+    Strong routing signals: `ultrawork`, `$ultrawork`, `ulw`, `$ulw`, `parallel work`, `parallel implementation`, `parallel then integrate`, `high throughput`, `coding team`, `coordinated workers`, `finish until done`, `persistent execution`, `implement`, `one-cycle delivery`, `single-cycle delivery`, `end-to-end process`, `delivery process`, `research plan implement review docs pr`, `plan implement review docs pr`, `prepare a pr`, `make a pr`, `open a pr`, `pr-ready`, `red green refactor`, `red-green refactor`, `red-green`, `failing test first`
 
 ## Catalog Metadata
 
@@ -91,19 +95,25 @@ Reasoning demand: `heavy`
 Quality bar:
 
 - Do not start this engine as an automatic continuation of another skill's output: an accepted plan, a clarified brief, or a routing recommendation is planning evidence, not permission. Unless the user explicitly invoked this engine themselves, restate in one line what will start (engine, scope, selected executor) and wait for the user's explicit go-ahead first.
-- Require disjoint lane ownership before preparing multiple coding runtime handoffs.
+- Resolve the dependency_topology decision before any dispatch: work coupled by a shared invariant or inseparable edit boundary collapses to one owner; separable but ordered units get explicit acyclic dependency edges; independent units form the dependency-ready parallel frontier; no unit dispatches without scope, acceptance criteria, a verification command, and an owner route - load `references/dependency-topology.md` for the full discipline.
 - Attach acceptance criteria, verification commands, and review expectations to each lane.
 - Keep dispatch, execution, review, CI, and merge status evidence separate.
+- Write every lane or node prompt standalone with TASK, DELIVERABLE, SCOPE, VERIFY, and STOP WHEN in that order, exact paths and binary pass/fail observables, and one role per node; a dependency edge orders execution only and never substitutes upstream output.
+- End every code-changing run with a verification fan-in that depends on all producer lanes, runs the repository's real test/build command, and reports captured binary pass/fail output; downstream consumers re-check upstream claims before trusting them.
+- For each behavioral increment follow PIN -> RED -> GREEN -> SURFACE -> CLEAN: pin behavior a refactor could hide, capture the intended failing proof before implementation, make the smallest change, exercise the real user surface, and tear down every QA resource with a cleanup receipt; tests alone never prove completion.
+- Keep one inspectable, append-only evidence ledger for the run using the available goal/runtime records: record the tier decision, dependency topology, todo transitions, command outputs, real-surface artifacts, and cleanup receipts when each occurs.
+- For a tests-first (TDD or red-green) run, hold every implementation lane to the observed red/green contract: the new test's failing (non-zero) output is pasted before any implementation edit, the passing (zero) output plus full-suite result before any done claim, and a test is never edited, deleted, skipped, xfail-marked, or weakened to make it pass - load `references/tdd-red-green.md` for the full discipline.
 - [capability:coordinated_scope] Keep Hermes as coordinator and status narrator for lane framing and status while coding lanes become runtime handoffs with explicit ownership.
 - [capability:delivery_boundary] Complete exactly one plan-to-PR delivery cycle, then stop with status, evidence gaps, or a next recommended workflow.
 - [capability:delivery_boundary] Start a delivery cycle with codebase/source research and a ralplan-style decision record before implementation handoff.
 - [capability:delivery_boundary] Run code-review as a gate after implementation evidence exists; review preparation alone is not review evidence.
 - [capability:delivery_boundary] End a delivery cycle with a PR-ready or PR-observed report that separates prepared, executed, reviewed, verified, CI, and PR evidence.
 - [capability:delivery_boundary] For implementation, default to Hermes-native delegation with a per-lane `omh_delegate_route` mixture route and acceptance criteria and verification commands attached; hand off to the `durable_checkpoint` capability for work that must survive sessions, and prepare a selected external executor/runtime path only on the user's explicit owner acceptance.
+- When a lane's coding owner is an external CLI rather than the Hermes harness, that lane's handoff runs under `ulw-maestro`'s contract — load it and follow its explicit-owner precondition, skill-set-informed prompt composition, readiness and permission probes, and session-id capture; a lane with an external owner is never a Hermes-native `delegate_task` lane. Lane framing, disjointness, integration verification, and the closing brief stay here.
 - Route each Hermes-native lane before dispatch: an inherit-labeled delegation wave is an unrouted wave, not mixture routing — re-route it or state why parent inheritance is intended.
 - Initialize the phase todo before engine work: declare numbered phases in delivery order with `omh_todo` (todo init) — bootstrap, one implement/verify/deliver task per lane or work unit, independent review lanes, and an evidence-and-cleanup close, with one task per observable outcome — keep exactly one item active while working, and update states as lanes complete; the run walks a bounded, HUD-visible checklist instead of an open-ended reasoning loop. Phase names and task titles are written in English — short, operator-legible labels — even when the conversation runs in another language, since the HUD todo checklist is an operator surface under the repo's English-by-default output contract.
 - A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or state exactly what the run is waiting on (for example, lanes still in flight that resume when their results return). Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it.
-- Close a completed run with the localized run summary: call `omh_run_summary` with the conversation's language and print its summary_text verbatim as the final lines (elapsed seconds, token usage, and models used from observed host accounting — never numbers the model estimated).
+- Close a completed run with the localized run summary: call `omh_run_summary` with the conversation's language and print its summary_text verbatim as the final lines (elapsed seconds, token usage, and models used from observed host accounting — never numbers the model estimated); when the tool reports a non-observed status (no session id, no accounting row), print an explicit run-summary not_available line instead of omitting it or estimating the numbers.
 - [capability:single_owner_persistence] Do not enter a finish-until-done loop until scope, acceptance criteria, and verification commands are concrete.
 - [capability:single_owner_persistence] For single-owner coding edits, prepare and track the selected runtime path instead of implying unobserved work happened or hiding execution inside chat narration.
 - [capability:single_owner_persistence] Report single-owner completion only from observed execution and verification evidence, with remaining risks named.
@@ -132,8 +142,8 @@ Delegation transparency:
 Required inputs:
 
 - accepted plan
-- lane list
-- disjoint file or responsibility scopes
+- work units with read/write scopes
+- dependency edges or shared invariants
 - verification commands
 
 Expected outputs:
@@ -150,7 +160,7 @@ Artifact expectations:
 
 Safety rules:
 
-- Do not start parallel coding without disjoint ownership boundaries.
+- Do not run two concurrently runnable lanes with overlapping write scopes; a shared file requires an ordering edge or one owner.
 - Keep Hermes responsible for orchestration/status; when Hermes itself is selected for coding, still preserve runtime evidence boundaries.
 - Record unobserved executor work as prepared_not_observed or not_observed.
 - [capability:coordinated_scope] Use coordination lanes only when work is independent; if two lanes are not independent, collapse them under one owner or re-plan before dispatch.
@@ -160,6 +170,12 @@ Safety rules:
 - [capability:delivery_boundary] Do not skip planning when the delivery request is broad, risky, or user-visible; a ralplan-style or reviewed plan names acceptance criteria, risks, and verification commands.
 - [capability:delivery_boundary] Run docs sync only when behavior, setup, commands, examples, or public claims changed.
 - [capability:delivery_boundary] Keep web research source-backed and permission-aware; do not run hidden network or LLM calls from OMH core.
+
+## Tests-First Delivery
+
+When the user asks for TDD, tests first, or red-green delivery, every implementation lane runs under the red/green contract. The iron law: no implementation line before a failing test - write the test that describes the missing behavior, run it, and watch it fail for the right reason before any implementation edit. A cycle is observed only when a failing (non-zero) run of the lane's test command precedes a passing (zero) run, both with pasted output; a lane that shows only green is `prepared_not_observed` on its red phase and does not count as tests-first delivery. Never edit, delete, skip, xfail, or weaken a test to make it pass - a failing test means fix the code - and a test that passes on its first run proves nothing: make it fail first. Commit the failing test as a checkpoint before implementing, so any later test edit is diff-visible.
+
+Hermes bundles the superpowers `test-driven-development` skill; when it is loaded, follow its cycle - this contract reinforces it with OMH's evidence vocabulary and never overrides it. Load `references/tdd-red-green.md` for the full discipline: the evidence ledger, forbidden moves, the rationalization table, and the observed red-before-green rule.
 
 ## Runtime Evidence
 

@@ -1,10 +1,10 @@
 ---
 name: improve-website
-description: 'Guided journey from a live website that underperforms to a prioritized, evidence-backed backlog of conversion, usability, message, and speed fixes - each shipped as a testable experiment. Orchestrates eight skills phase by phase - cro-methodology, ux-heuristics, refactoring-ui, web-typography, storybrand-messaging, high-perf-browser, made-to-stick, design-everyday-things - asking the user questions at every decision point and recording results in the project docs/ folder (WEBSITE.md, DESIGN.md, EXPERIMENTS.md, IMPROVE-WEBSITE-PLAN.md) so the journey resumes across sessions. Use when the user wants to fix a landing page that isn''t converting, diagnose why visitors leave, audit for clarity and usability, or says ''the homepage feels off but a redesign didn''t help''. Do not use with no site yet - use create-website; if it converts but needs more traffic or leads, grow-website; if the friction is in a product app, not the marketing site, improve-app. For one framework in isolation, invoke that skill directly.'
+description: 'Guided journey from a live website that underperforms to a prioritized, evidence-backed backlog of conversion, usability, message, and speed fixes - each shipped as a testable experiment. Orchestrates eight skills phase by phase - cro-methodology, ux-heuristics, refactoring-ui, web-typography, storybrand-messaging, high-perf-browser, made-to-stick, design-everyday-things - asking the user questions at every decision point and recording results in the project docs/ folder (WEBSITE.md, DESIGN.md, IMPROVE-WEBSITE-PLAN.md) so the journey resumes across sessions. Use when the user wants to fix a landing page that isn''t converting, diagnose why visitors leave, audit for clarity and usability, or says ''the homepage feels off but a redesign didn''t help''. No site yet, create-website; converts but needs traffic, grow-website; if the friction is in a product app, not the marketing site, improve-app; if one specific flow leaks, conversion-optimization. For one framework in isolation, invoke that skill directly.'
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Improve a Website

@@ -102,7 +102,7 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 
 完成核心设定后，创建以下 artifact（加载 [references/artifact-protocols.md](artifact-protocols.md) 中对应模板）：
 - **设定/关系.md**：角色关系映射（参考 character-relations.md「四种关系类型」）
-- **设定/题材定位.md**：题材核心梗三分法+对标分析（参考 genre-core-mechanics.md「核心梗解析」）。对标分析表保留 2-3 行摘要，详细数据见 `对标/` 目录
+- **设定/题材定位.md**：题材核心梗三分法+对标分析（参考 long-genre-mechanics.md「核心梗解析」）。对标分析表保留 2-3 行摘要，详细数据见 `对标/` 目录
 - **设定/题材正文提示卡.md**：从 `设定/题材定位.md` + `references/genre-prose-cards.md`（索引）+ `references/genre-prose-cards/`（单题材正文卡目录，按题材分类优先）+ `references/style-genre-modules.md`（通用流派补充）抽取本书正文层题材卡，只写题材边界、核心逻辑、读者期待、核心爽点/情绪、正文落点、前中后期打法、节奏密度、场景颗粒、禁止漂移；不写通用格式规则，不覆盖 `设定/文风.md`
 
 > **多对标书时**：参 `references/cross-book-recall.md`，副对标 anchor 入「对标分析」表附录
@@ -187,7 +187,7 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 1. **批次边界**：一批 ≈ 一个剧情单元（5-15 章）；>10 章的剧情单元拆两批。**首批 = 前 10 章封顶、可跨单元**：跨入的剧情单元在建卡时召回一次，余章由后续滚动批共享该剧情单元卡结论。写到单元末段（剩余未建细纲 ≤2 章）即滚动补下一单元整批；用户显式给出章数/范围时按用户要求执行，单批仍建议 ≤10 章、分批连续交付。
 2. **批次定位与阶段约束**（每批补纲前先写）：当前章节区间属于哪个阶段与哪个剧情单元（单元ID）、本批推进目标、本批可释放信息、本批严禁提前释放信息、章尾钩子不能越过的边界。
 3. **剧情单元消费**：建卡批读本批剧情单元卡「对标剧情参照」指向的剧情单元（≤3 个文件，含结构分布/情节点索引），按节拍→章映射铺章、情节点换素材；同一剧情单元的后续批共享剧情单元卡固化结论，不重读剧情单元。当前卷纲缺少必需剧情单元字段时先补齐卷纲，不带缺失字段进入日更。
-4. **批末结构复核**（每批建完必做）：按现有大纲流程确认章级目标与 `visible_chars_v1` 口径、核心字段、禁止提前释放和可执行情节点齐全。不得用“每个情节点固定等于多少字”预测容量或自动补事件；本阶段不新增语义型细纲 checker。
+4. **批末结构复核**（每批建完必做）：按现有大纲流程确认章级目标与 `visible_chars_v1` 口径、核心字段、禁止提前释放和可执行情节点齐全。不得用“每个情节点固定等于多少字”预测容量或自动补事件；每章细纲落盘后必须跑 `node scripts/check-outline-contract.js --json --project {书目录} --chapter {N}`：exit 1 只按 `repair_scope` 补点名字段再复验，最多两轮。**旧章细纲缺字段是常态，不要照抄同目录既有文件的字段集**，以本节模板为准。语义仍不设 checker。
 
 不要在单次对话里强行产出 30 章完整细纲。
 如果全书章数较少（≤30 章），可以在 Phase 3 一次全部建完。
@@ -271,7 +271,7 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 
 大纲完成后，创建以下 artifact（加载 [references/artifact-protocols.md](artifact-protocols.md) 中对应模板）：
 - **大纲/大纲.md**：全书卷级鸟瞰（卷名+字数+章数+核心事件+状态变化，一段式汇总）
-- **大纲/卷纲_第X卷.md**：每卷的剧情单元+情绪弧线（含章节定位）+人物弧线+伏笔+反转+对标结构坐标（参考 outline-methods.md「大纲三层结构法」 + outline-structure-theory.md「章节定位与张弛 / 对标节奏迁移」 + emotional-arc-design.md「六种弧线速查」 + reversal-toolkit.md「反转类型」）
+- **大纲/卷纲_第X卷.md**：每卷的剧情单元+情绪弧线（含章节定位）+人物弧线+伏笔+反转+对标结构坐标（参考 outline-methods.md「大纲三层结构法」 + outline-structure-theory.md「章节定位与张弛 / 对标节奏迁移」 + emotional-arc-design.md「六种弧线速查」 + long-reversal.md「反转类型」）
 - **追踪事务初始状态**：按 `references/tracking-transaction.md` 构造第 0 章初始化 JSON，执行 `scripts/tracking_commit.py init`，生成检查点、续写状态卡（固定 7 栏）、空的伏笔/时间线视图与目录；紧接着运行 `check`，通过后删除初始化事务 JSON；核心角色动态快照可在第一次正文事务中创建
 
 前 3 章细纲额外加载 [references/opening-design.md](opening-design.md)（黄金三章法则+六大标准）。

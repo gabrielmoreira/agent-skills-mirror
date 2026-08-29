@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zilliztech/memsearch` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `zilliztech/memsearch` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zilliztech/memsearch` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,19 +60,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`plugins/claude-code/skills/memory-config/SKILL.md`](plugins/claude-code/skills/memory-config/SKILL.md) |
-| 3 | ✓ | [`plugins/claude-code/skills/memory-recall/SKILL.md`](plugins/claude-code/skills/memory-recall/SKILL.md) |
-| 4 | ✓ | [`plugins/claude-code/skills/memory-to-skill/SKILL.md`](plugins/claude-code/skills/memory-to-skill/SKILL.md) |
-| 5 | ✓ | [`plugins/codex/skills/memory-config/SKILL.md`](plugins/codex/skills/memory-config/SKILL.md) |
-| 6 | ✓ | [`plugins/codex/skills/memory-recall/SKILL.md`](plugins/codex/skills/memory-recall/SKILL.md) |
-| 7 | ✓ | [`plugins/codex/skills/memory-to-skill/SKILL.md`](plugins/codex/skills/memory-to-skill/SKILL.md) |
-| 8 | ✓ | [`plugins/dsh/skills/memory-recall/SKILL.md`](plugins/dsh/skills/memory-recall/SKILL.md) |
-| 9 | ✓ | [`plugins/openclaw/skills/memory-config/SKILL.md`](plugins/openclaw/skills/memory-config/SKILL.md) |
-| 10 | ✓ | [`plugins/openclaw/skills/memory-recall/SKILL.md`](plugins/openclaw/skills/memory-recall/SKILL.md) |
-| 11 | ✓ | [`plugins/openclaw/skills/memory-to-skill/SKILL.md`](plugins/openclaw/skills/memory-to-skill/SKILL.md) |
-| 12 | ✓ | [`plugins/opencode/skills/memory-config/SKILL.md`](plugins/opencode/skills/memory-config/SKILL.md) |
-| 13 | ✓ | [`plugins/opencode/skills/memory-recall/SKILL.md`](plugins/opencode/skills/memory-recall/SKILL.md) |
-| 14 | ✓ | [`plugins/opencode/skills/memory-to-skill/SKILL.md`](plugins/opencode/skills/memory-to-skill/SKILL.md) |
+| 2 | ✓ | [`plugins/_shared/skills/memory-config/SKILL.md`](plugins/_shared/skills/memory-config/SKILL.md) |
+| 3 | ✓ | [`plugins/_shared/skills/memory-to-skill/SKILL.md`](plugins/_shared/skills/memory-to-skill/SKILL.md) |
+| 4 | ✓ | [`plugins/claude-code/skills/memory-config/SKILL.md`](plugins/claude-code/skills/memory-config/SKILL.md) |
+| 5 | ✓ | [`plugins/claude-code/skills/memory-recall/SKILL.md`](plugins/claude-code/skills/memory-recall/SKILL.md) |
+| 6 | ✓ | [`plugins/claude-code/skills/memory-to-skill/SKILL.md`](plugins/claude-code/skills/memory-to-skill/SKILL.md) |
+| 7 | ✓ | [`plugins/codex/skills/memory-config/SKILL.md`](plugins/codex/skills/memory-config/SKILL.md) |
+| 8 | ✓ | [`plugins/codex/skills/memory-recall/SKILL.md`](plugins/codex/skills/memory-recall/SKILL.md) |
+| 9 | ✓ | [`plugins/codex/skills/memory-to-skill/SKILL.md`](plugins/codex/skills/memory-to-skill/SKILL.md) |
+| 10 | ✓ | [`plugins/dsh/skills/memory-config/SKILL.md`](plugins/dsh/skills/memory-config/SKILL.md) |
+| 11 | ✓ | [`plugins/dsh/skills/memory-recall/SKILL.md`](plugins/dsh/skills/memory-recall/SKILL.md) |
+| 12 | ✓ | [`plugins/dsh/skills/memory-to-skill/SKILL.md`](plugins/dsh/skills/memory-to-skill/SKILL.md) |
+| 13 | ✓ | [`plugins/openclaw/skills/memory-config/SKILL.md`](plugins/openclaw/skills/memory-config/SKILL.md) |
+| 14 | ✓ | [`plugins/openclaw/skills/memory-recall/SKILL.md`](plugins/openclaw/skills/memory-recall/SKILL.md) |
+| 15 | ✓ | [`plugins/openclaw/skills/memory-to-skill/SKILL.md`](plugins/openclaw/skills/memory-to-skill/SKILL.md) |
+| 16 | ✓ | [`plugins/opencode/skills/memory-config/SKILL.md`](plugins/opencode/skills/memory-config/SKILL.md) |
+| 17 | ✓ | [`plugins/opencode/skills/memory-recall/SKILL.md`](plugins/opencode/skills/memory-recall/SKILL.md) |
+| 18 | ✓ | [`plugins/opencode/skills/memory-to-skill/SKILL.md`](plugins/opencode/skills/memory-to-skill/SKILL.md) |
 
 ---
 

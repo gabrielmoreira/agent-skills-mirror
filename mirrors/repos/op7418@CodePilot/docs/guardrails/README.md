@@ -21,6 +21,7 @@
 - [`AssistantWorkspace.md`](./AssistantWorkspace.md) — 默认助理 no-touch/CAS、`instructions.md` 中立规则、心跳 desired/actual 分离与系统通知纵向闭环。改助理目录、心跳或通知设置前必读
 - [`SentryTelemetry.md`](./SentryTelemetry.md) — official-stable enable、main-only Release Health、default-deny sanitizer、normalized grouping、provider/in-band stream terminal anti-double-capture 与 private source-map 发布契约。改三层 Sentry init、capture、CI map 上传或打包入口前必读
 - [`Updater.md`](./Updater.md) — Main-owned updater、stable feed/channel、签名/metadata 前置、活动任务保护、窄 IPC 与手工 fallback。改 updater、preload bridge、更新 UI 或 release feed 前必读
+- [`CliMaintenance.md`](./CliMaintenance.md) — Claude/Codex selected-target 渠道证明、same-channel latest、Main-owned 一键更新、provider lease、进程树回收与 app updater/quit 双向互斥。改 CLI 检测、更新入口或 Runtime spawn 前必读
 
 ### Stub（尚未被真实改动激活的高风险入口；首次 on-touch 时由实施 Agent 填充）
 

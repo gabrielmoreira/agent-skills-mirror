@@ -10,7 +10,7 @@
 |---|---|---|---|
 | Phase 3 — Stage 1 + 3 folder renames (6 folders) | `starter.py` (Ollama) / `starter_anthropic.py` / both test suites | `python test.py` + `python test_anthropic.py` per folder | 0 |
 | Phase A — `stages/03-tool-use-and-hello-agent.md` inline `<details>` (練習 2-6) | 5 simplified inline blocks + zh-Hans drift | `wc -l` parity, `grep` no residual Trad chars | 0 |
-| Phase B — `examples/stage-5/tool-calling-tutor/` skill | SKILL.md + 3 references + evals + trilingual READMEs | YAML frontmatter parses; evals.json valid JSON | 0 (live skill-install test still pending) |
+| Phase B — `examples/stage-5/tool-calling-tutor/` skill | SKILL.md + 3 trilingual references + executable offline contracts + trilingual READMEs | frontmatter, install-safe references, relative links, five routes, safety wording, PowerShell-first install, and offline checker are regression-tested | 0 (live model quality is intentionally not claimed) |
 | Phase C — cross-references | stages/03 + stages/05 + CLAUDE.md links | `grep -c` confirms 10 references across 7 files | 0 |
 | **Stage 4 (5 ex)** | LangGraph + CrewAI + LangGraph workflow + Smolagents + Pydantic AI | 8/8 test suites verified green; ex2 CrewAI install-blocked on Python 3.14 (tiktoken/regex wheels) — code shipped unmodified | 3 (i18n key mismatch in ex3 + Smolagents docstring `Args:` requirement in ex4 + Pydantic AI version fallback in ex5 test) |
 | **Stage 6 (5 ex)** | embeddings + ChromaDB + chunking + full RAG + long-term memory | 10/10 test suites verified green | 2 (ChromaDB `kb` collection name too short for Chroma 1.0+; `EphemeralClient` state leak across test fixtures) |
@@ -45,7 +45,7 @@ Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-
 
 1. **CrewAI exercise (Stage 4 ex2)** not tested on Python 3.14 — tiktoken + regex don't have wheels yet. Code shipped unchanged; users on Python 3.11/3.12/3.13 should be fine. Document at top of `examples/stage-4/02-multi-agent-roles/README.md` if needed for future learners.
 
-2. **tool-calling-tutor skill** not live-tested in Claude Code — only structural validation (YAML frontmatter parse + JSON evals validate). Manual install test: `cp -r examples/stage-5/tool-calling-tutor/{SKILL.md,references,evals} ~/.claude/skills/tool-calling-tutor/`, restart Claude Code, prompt 「為什麼 LLM 不呼叫我的 tool」.
+2. ~~**tool-calling-tutor skill only had structural validation**~~ — **RESOLVED 2026-08-28**. The 05B layer fixes the copy command, makes every bundled reference resolve through `${CLAUDE_SKILL_DIR}`, replaces the invalid promptfoo-config claim with `python evals/check_evals.py`, and executes five offline behavior contracts. The regression also checks three-locale frontmatter, reference paths, relative links, safety boundaries, unsupported benchmark removal, and PowerShell-first installation. It does not call a live model or claim a model-quality score; direct `/tool-calling-tutor` invocation remains the honest manual product check.
 
 3. ~~**Walkthrough Python never executed**~~ — **RESOLVED 2026-08-10**. All 9 python blocks (304 lines) of `walkthroughs/build-first-agent-in-7-steps.md` were extracted to the filenames the doc names and executed in a clean venv on Python 3.14, with `Anthropic` and `requests` mocked (no API key, no spend): Stage 1-6 (6 blocks) plus all of Stage 7 (7.1 `eval_provider`, 7.2 `step7_observability`, 7.3 `main.py`). **Four** real defects were found and fixed in all three locales, plus two zh-Hans blocks that did not even parse (`
 ` expanded into real newlines, so Stage 1 and `reflect` raised `unterminated f-string literal` — a Simplified-Chinese reader's very first script crashed): Stage 6's vector memory stored nothing at all (empty-DB early return meant `store_paper` was never reached, compounded by a hardcoded `"..."` id that `collection.add()` silently ignores); `compare_with_memory`'s `comparison` was dropped because `State` never declared it; and `import step2_paper_summary` issued a billed API call at module level, which every later stage inherited. Post-fix, measured: memory count goes 1→2→3, `comparison` survives in state, and the four imported modules make 0 API calls; and Stage 6 now stores each paper's own summary rather than three byte-identical `[Reviewer verdict: PASS]` strings — the `compare` node read `messages[-1]`, which is `reflect`'s verdict, not the summary. Completed 2026-08-10: 7.2's import path was corrected (`observe` moved to the top-level package in langfuse **3.0**, not 4.x — verified by installing 2.60.10, 3.0.0 and 4.14.2; only 2.x has `langfuse.decorators`. `@observe(name=…)` itself is unchanged across all four, signature checked) and 7.3 was run with fastapi 0.141.1 — `TestClient` gets HTTP 200 and a `{'summary': …}` body from `POST /summarize`, and HTTP 422 on a missing field. **Still open**: end-to-end output quality against a live API key is untested — every run so far has mocked the model.
@@ -81,18 +81,40 @@ What learners do for Track A: follow each numbered exercise in the outline doc, 
 
 **Potential v2** (not committed): could ship `examples/track-a/` containing a sample project-instructions file, `skills/review-changes/SKILL.md`, and a sample GHA workflow yml. Low priority — current outline is self-contained.
 
-### Stage 5 — partial coverage
+### Stage 5 — reader path covered; meta-example hardening pending
 
-Stage 5 (`stages/05-claude-code-ecosystem.md`) has 4 sub-stages with hands-on exercises:
+Stage 5 (`stages/05-claude-code-ecosystem.md`) has five cumulative exercises and eight reference sections (5.1–5.8). The first reader-UX layer keeps every exercise outcome and first copyable action visible, while longer setup and troubleshooting stay closed by default.
 
-| Sub-stage | Status |
+| Area | Current evidence |
 |---|---|
-| 5.1 Claude Code 基礎 | Outline only (in `stages/05-...md` 動手練習) |
-| 5.2 MCP (Model Context Protocol) | Outline only; cookbook 2 covers building first MCP server |
-| 5.3 Skills | Outline + **1 shipped meta-example**: [`examples/stage-5/tool-calling-tutor/`](../examples/stage-5/tool-calling-tutor/) (full SKILL.md + 3 references + evals.json, used as the Stage 5.3 authoring exemplar) |
-| 5.4 Plugins & Marketplaces | Outline only |
+| 5.1 `CLAUDE.md` | Copyable minimal rule card and manual success check in the stage page |
+| 5.2 MCP | Restricted-directory exercise and explicit inside/outside-path success condition |
+| 5.3 Skills | Copyable Skill plus [`examples/stage-5/tool-calling-tutor/`](../examples/stage-5/tool-calling-tutor/); the example receives its own 05B hardening layer |
+| Hooks | Copyable observation-only `PreToolUse` logger, synthetic-event smoke test, `/hooks` landing check, and no-prompt/no-secret logging boundary |
+| 5.5 Subagents | Read-only review exercise with isolated output and a visible success condition |
+| 5.6–5.8 | Current Dynamic workflows／Worktree／Agent-loop／Agent SDK reference path; optional depth stays collapsed |
 
-For v2, sub-stages 5.1 / 5.2 / 5.4 could ship sample artifacts (sample `CLAUDE.md`, MCP server skeleton, plugin.json). Similar to Track A v2 — low priority.
+`scripts/test_stage05_content.py` permanently executes the Hook logger against a synthetic `PreToolUse` event, asserts that only timestamp／event／tool metadata is written, locks the three locale code blocks together, and compiles the current Python Agent SDK `AssistantMessage.content`／`TextBlock` example. It does not call a live model or claim live output quality.
+
+The 05B layer validates the `tool-calling-tutor` frontmatter, installed and repository-relative links, translations, eval contract, model／SDK wording, and offline behavior. It stays separate from 05A so the reader rewrite and executable-example migration can be reviewed and rolled back independently.
+
+### Stage 6 — reader path covered; executable hardening stays in the next layer
+
+Stage 6 (`stages/06-memory-rag.md`) now keeps seven core terms, five cumulative exercise outcomes, the first copyable PowerShell action, one RAG + Memory mini-project, and the Stage 7 check visible. Time, setup, advanced RAG patterns, memory taxonomy, chunking, reflection, evaluation, and the 18-row resource table stay closed by default.
+
+`scripts/test_stage06_content.py` locks the three locales to the same freshness marker, concepts, five exercise headings, 109 legacy heading aliases, 18 resource URLs and ratings, five accessible rowgroups (`4／5／4／3／2`), distinct `1672×941` localized images, current project owners/statuses, the honest temporary-storage boundary in Exercise 5, and the absence of stale or mixed-language text. `scripts/check-reader-ux.py` excludes empty compatibility anchors because they render no reader-visible text, measures the collapsed mainline at `3,290／6,367／3,340` non-whitespace characters, and permits only 50 characters of growth per locale.
+
+This reader layer does not claim that the five example folders are fully hardened. The next stacked layer will separately test the chunk-overlap boundary, isolate Chroma collections, replace ephemeral “long-term” memory with real persistence, preserve Ollama／Anthropic paths, and make the teaching tests offline and behavior-based.
+
+### Stage 7 — reader path covered; executable hardening stays in the next layer
+
+Stage 7 (`stages/07-multi-agent-production.md`) keeps the single-Agent／Multi-Agent decision, seven bold core terms, five-layer map, eight-part Harness checklist, OpenRouter／Pi／OpenCode／Orca／QM role split, five real exercise headings and commands, execution-receipt mini-project, benchmark-reading discipline, and self-check visible. Seven closed disclosures hold setup, full reading, Loop／Graph depth, recovery／cost details, full exercise steps, benchmark links, and the resource catalog.
+
+`scripts/test_stage07_content.py` locks the three locales to the same 20 external URLs, four accessible rowgroups (`4／6／5／5`), 20 editorial ratings, seven closed disclosures, five real example directories, direct `python test.py` entry commands, quiet `2026-08-28 UTC` verification date, current canonical project owners, and the absence of frozen SOTA scores, stale redirects, GitHub star counts, empty-quote artifacts, or a fake sixth exercise. It also verifies six distinct locale-specific PNGs at full educational-diagram size and rejects untranslated CJK in the English page.
+
+`scripts/check-reader-ux.py` measures the collapsed mainline at `5,770／9,925／5,863` non-whitespace characters and locks all seven core-term definitions before Exercise 1. `scripts/check-image-locale.py` ensures the English and Simplified Chinese pages use their own bright image variants.
+
+This content layer does not claim that the five Stage 7 examples use current model names, current-major SDKs, or the final direct-run pedagogy. The next stacked layer will update those folders, remove the “rename and rewrite the solution” instruction, preserve offline tests, and verify Ollama／Anthropic behavior separately.
 
 ## v2 path (deferred)
 

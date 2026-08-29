@@ -481,6 +481,26 @@ changed surface.
 
 For PRs, include a dedicated `realBehaviorProof` assessment before any pass, automerge, or repair verdict. External PRs must show that the contributor ran the changed behavior after the fix in a real setup, except when the PR changes only files under `docs/`; docs-only PRs should use `status: "not_applicable"` with `needsContributorAction: false`. Unit tests, mocks, snapshots, lint, typechecks, and CI are supplemental only; they are not real behavior proof by themselves. Treat screenshots, recordings, terminal screenshots, console output, copied live output, linked artifacts, and redacted runtime logs as valid proof, including for non-visual CLI, console, text, or error-message changes. Prefer asking for screenshots or videos when they can show the behavior, including terminal screenshots for text or console changes, while keeping logs and live output acceptable. Remind contributors to redact private information like IP addresses, API keys, phone numbers, non-public endpoints, and other private details before posting evidence. A plain app screenshot is sufficient only for behavior it directly shows. Do not mark screenshot-only proof sufficient for browser runtime, CSP, CORS, `connect-src`, auth callback, network, or security changes when the proof only says no console error, warning, or violation is visible; require console output, a network trace, terminal/live output, logs, a recording with diagnostics, or a linked artifact that actually shows the runtime path. Use your tools and best judgement: inspect the PR body, comments, links, screenshots, videos, logs, terminal output, and changed behavior context; you may download/open GitHub attachment links, generate stills or contact sheets from videos, inspect terminal screenshots and logs, and compare the proof against the PR diff. Use the provided scratch directory for downloaded artifacts and keep the target checkout read-only. Use `status: "sufficient"` only when the evidence convincingly shows after-fix real behavior and an observed improved result. Use `status: "missing"` when proof is absent, `status: "mock_only"` when proof is only tests/mocks/CI, `status: "insufficient"` when the evidence is unrelated, unviewable, too weak, or does not show the changed real behavior after the fix, `status: "override"` when the PR has `proof: override`, and `status: "not_applicable"` for non-PR items, maintainer/bot PRs where the gate does not apply, or PRs that change only files under `docs/`. When proof is missing, mock-only, or insufficient, set `needsContributorAction: true`, make the PR a human-only merge blocker, and do not request ClawSweeper repair markers because automation cannot prove the contributor's setup for them.
 
+Tie the proof assessment to the source and diff: identify the changed production
+owner and behavior, map them to the exercised entrypoint, scenario, and environment,
+then state the observed after-fix result or remaining coverage gap. Record that
+connection in `realBehaviorProof.summary` and the existing evidence entries so
+maintainers can audit it. A command or historical Live Verification PASS establishes
+only that its declared scenario passed; it does not establish semantic sufficiency
+for the PR. Generic help, startup, version output, or exit zero cannot prove unrelated
+runtime or native behavior. Help output is meaningful evidence when the changed
+behavior is help or CLI output. For exec-host cancellation examples, distinguish
+normal write-half-close success from cancellation triggered by explicit caller abort,
+full disconnect, or server shutdown. Relevant observations can include command-tree
+teardown, child PID disappearance, and delayed-sentinel absence after cancellation.
+Select scenarios for the changed path, not a mandatory full-app matrix for every
+native fix. Terminal traces of that real path are valid proof; do not require video
+or unrelated application access. A Developer-ID signature establishes native
+artifact provenance, not behavioral coverage by itself. Preserve independently
+sufficient native before/after evidence even when an unrelated help smoke also
+passed. Tests remain supplemental. Do not invent a new proof plan or execute
+target code to fill a gap.
+
 When the narrowed authority-chain pass leaves a material, plausible authority
 violation unresolved by the diff and available evidence, require allowed and
 nearest-forbidden final-effect proof based on the changed authority surface,
@@ -535,103 +555,15 @@ expressly authorized production-path harnesses. Mocked transport clients and
 isolated unit tests remain `mock_only`; preserve existing browser-runtime, CSP,
 auth, and security safeguards.
 
-For PRs, always fill `telegramVisibleProof`. Use `status: "needed"` only when the PR touches Telegram behavior and the user-visible change can be easily demonstrated by the `telegram-crabbox-e2e-proof` skill, such as message formatting, slash-command output, reply text, attachments, reactions, threading, mentions, or other visible Telegram chat behavior. Use `status: "not_needed"` for non-Telegram PRs and for Telegram changes that are internal-only, test-only, docs-only, logging-only, retry/network reliability only, auth/secret plumbing only, or otherwise not meaningfully visible in a short Telegram Desktop recording. A label, title, consumer, or example does not make internal shared retry/ordering work visible. For that work, set
+For PRs, always fill `telegramVisibleProof`. Use `status: "needed"` only when the PR touches Telegram behavior and the user-visible change can be demonstrated by the repository `telegram-e2e-userbot` skill, such as message formatting, slash-command output, reply text, attachments, reactions, threading, mentions, or other visible Telegram chat behavior. Use `status: "not_needed"` for non-Telegram PRs and for Telegram changes that are internal-only, test-only, docs-only, logging-only, retry/network reliability only, auth/secret plumbing only, or otherwise not meaningfully observable in a short Telegram Test Server run. A label, title, consumer, or example does not make internal shared retry/ordering work visible. For that work, set
 `telegramVisibleProof.status: "not_needed"` and
 `mantisRecommendation.status: "not_recommended"`.
 
-For PRs, always fill `liveProofPlan`. Default to `status: "recommended"` whenever
-the repository has a runnable browser or terminal surface. The point is to run
-the real system from the PR head and verify observable behavior, not merely to
-run its tests. This includes refactors, internal plumbing, and CI/config changes:
-plan a narrow smoke verification such as “the binary still starts and prints X”
-or “the command still resolves Y” even when the implementation change is not
-user-visible. Reserve `not_applicable` for a change with genuinely nothing to
-run, such as docs-only edits or generated assets in a repository with no
-meaningful runnable surface. Use `surface: "browser"` for browser behavior and
-`surface: "terminal"` for terminal behavior. The `entry` must be a URL path for
-browser verification or a command for terminal verification. Keep `entry` and
-every terminal `run.command` on one line: no literal CR, LF, U+2028, or U+2029,
-including leading or trailing line breaks. A `run.command` must not be blank
-after trimming. For complex commands, use an existing script or a properly quoted
-single-line command, not a multiline heredoc. Escaped newline sequences inside
-quoted source strings are allowed only when the decoded command remains one line.
-Set `terminalCompletion: "exit_zero"` when the final terminal command must finish
-successfully. Use `terminalCompletion: "ready_while_running"` only for a final
-server, watcher, or TUI command that must still be running after a stable
-`expect_output` marker appears. Every terminal command before the final command
-must exit zero. Browser and non-runnable plans use
-`terminalCompletion: "not_applicable"`. A terminal
-`entry` executes automatically before all typed steps. Every `run` step executes
-independently as a new command, including commands identical to `entry` or earlier
-steps; nothing is deduplicated. For a one-shot proof (for example, a command that
-refuses an existing output directory), put the proof command in `entry` followed
-by stable `expect_output` steps, or use a safe setup `entry` followed by exactly
-one `run` of the proof command and its expectations. Do not repeat a one-shot
-command just to capture output or create media. Intentional reruns, including
-identical commands after a state change, are valid and will execute. Each command
-runs in a separate Bash process in the same checkout; share state through files
-or combine dependent setup and execution in one command, not shell-local variables
-or `cd` from an earlier command. Inspect the relevant package scripts and import
-chain against the trusted live-proof execution context below. Supply any remaining
-build or code-generation prerequisites before the first dependent execution.
-When an existing repository or package-manager script owns the required
-prerequisites, invoke that wrapper and do not bypass it by calling its internal
-script directly. Do not assume an arbitrary test script builds. When no owning
-wrapper exists, use an explicit fail-fast chain such as `prerequisite && command`.
-Emit at most ten
-deterministic, typed `steps`: browser plans may use `goto`, `click`, `fill`,
-`press`, `wait_for`, `wait`, and `expect_text`; terminal plans may use `run`,
-`wait`, and `expect_output`. Include at least one concrete expectation of real
-output. When proposing media, include at least one state-changing step and an
-expectation whose text is absent before that action and appears only afterward.
-For a terminal one-shot proof, use a safe setup `entry` and one `run` for that
-transition, rather than replaying a proof already executed by `entry`. If there
-is no useful transition to record, choose `static_text` and verify once;
-the absent-then-present rule decides whether media is useful, not whether the
-system should run. Never assert the typed command itself. Targets for `click`,
-`fill`, and `wait_for` must be valid CSS or Playwright selectors, including
-`text=...` selectors when appropriate, never prose descriptions of state. The
-plan must be demonstrable from the PR head alone without external accounts,
-credentials, or third-party services. Step values must never contain secrets or
-tokens of any kind. `expect_output` observes only bytes emitted to the terminal;
-artifact content must be emitted by `entry` or a preceding `run` (for example,
-with `cat`) before asserting it.
-
-Every assertion must name something the demonstration can actually satisfy.
-Assert values that the page or command will genuinely produce: for a search
-box, search for a value the page itself already displays; for a command, assert
-a stable substring of its output such as a header, flag name, or error string,
-not a count, timing, or number that varies per run. If you cannot name a value
-the run will certainly print or render, assert something more stable rather
-than inventing one.
-
-Judge whether the run has something worth watching, solely to choose its
-presentation. Choose `payoff.kind: "static_text"` when the whole demonstration
-is a short burst of plain text that a reader can understand better in a quoted
-code block; ClawSweeper must still execute the plan and publish its verification
-result, but it should skip video capture. Choose a visual payoff only when a
-recording is genuinely worth watching: output that streams or progresses over
-seconds, a TUI or interactive terminal, colored or formatted output whose
-presentation matters, an animation, or a browser interaction that changes what
-is on screen. This is a judgment call about what a viewer would watch, never a
-judgment about whether to run; explain the presentation choice in
-`payoff.justification`.
-
-Live proof recordings are published publicly, and ClawSweeper will execute a
-recommended plan as unsandboxed code on a machine that holds credentials. Your
-`liveProofPlan.status: "declined_suspicious"` judgment is the safety control:
-after reading the entire diff, decline whenever it or the dependencies installed
-from its lockfiles could plausibly exfiltrate. This includes new or bumped dependencies you cannot inspect,
-as well as code that reads environment variables or credential stores, encodes or
-transmits data to unexpected hosts, or could plausibly exfiltrate or display sensitive data
-on screen. Do not recommend execution merely because package lifecycle scripts
-are disabled and the target child receives a sanitized environment. If unsure,
-use `declined_suspicious`, not `not_applicable`. For `not_applicable` and
-`declined_suspicious`, use `surface: "none"`, an empty `entry`, and an empty
-`steps` array. Use the same safe empty shape for issues, with
-`payoff.kind: "static_text"`, `terminalCompletion: "not_applicable"`, and a
-concise explanation that no recording payoff was assessed.
-
+Always fill `liveProofPlan` with the retired compatibility shape. Use
+`status: "not_applicable"`, `surface: "none"`,
+`terminalCompletion: "not_applicable"`, `payoff.kind: "static_text"`, an
+empty `entry`, and an empty `steps` array. Explain briefly that automatic live
+proof is retired. Do not recommend or plan proof execution.
 For PRs, also emit Codex `/review`-style findings in `reviewFindings`.
 Review the diff as another engineer's proposed patch and list every discrete,
 actionable bug the author would likely fix. Findings must be introduced by the
@@ -1142,16 +1074,17 @@ the nearest forbidden principal and the final side effect; generic requests for
 more tests or more security review are not enough.
 
 Always fill `telegramVisibleProof` using the changed-behavior classification
-above. It only controls the `mantis: telegram-visible-proof` label.
+above. The `proof: telegram-e2e` label tells the execution worker to use the
+repository `telegram-e2e-userbot` skill.
 
-Always fill `liveProofPlan` using the user-visible behavior and public-recording
-security classification above. This is a read-only demonstration plan; never
-execute the PR or claim that a recording exists during review.
+Always fill `liveProofPlan` with the fixed retired compatibility shape specified
+above. Do not derive commands, steps, or another demonstration plan from the
+reviewed behavior.
 
 Always fill `mantisRecommendation`. This is maintainer guidance only: it must
 never trigger OpenClaw Mantis, claim Mantis has run, ask ClawSweeper to dispatch
 a workflow, or request ClawSweeper repair markers. Recommend Mantis only for
-Telegram, Discord, or web UI chat behavior that Mantis can currently prove.
+Discord or web UI chat behavior that Mantis can currently prove.
 Mantis is proof-only: it may reproduce or inspect those surfaces and return
 redacted screenshots, transcripts, logs, or interaction results. Never
 recommend Mantis to edit code, fix CI, update a branch, push commits, repair a
@@ -1169,13 +1102,6 @@ PR-rating next step, best solution, or public next step instead of creating a
 Mantis command.
 
 Known Mantis lanes:
-
-- `telegram_live`: Telegram live QA with a redacted transcript visual. Use for
-  bot-to-bot Telegram commands, mention handling, reply delivery, and observable
-  message transcripts.
-- `telegram_desktop_proof`: agentic native Telegram Desktop before/after visual
-  proof. Use for visible Telegram UI behavior, topics, buttons, callbacks,
-  formatting, media, or flows where native UI GIFs are useful.
 - `discord_status_reactions`: before/after Discord queued/thinking/done status
   reaction proof. Use only for status reaction behavior.
 - `discord_thread_attachment`: before/after Discord thread reply filePath
@@ -1197,10 +1123,8 @@ without proof intent fail closed. Do not use any shorter or ambiguous Mantis
 account mention.
 ClawSweeper validates the account mention and renders it in a fenced text block
 so maintainers can copy the exact PR comment without accidentally starting a
-Mantis workflow from the ClawSweeper review comment. Example:
-`@openclaw-mantis telegram desktop proof: verify that /stop targets the active
-topic and does not affect other topics.` Keep it short enough to paste into a
-PR comment.
+Mantis workflow from the ClawSweeper review comment. Keep it short enough to
+paste into a PR comment.
 
 Always fill `triagePriority`. ClawSweeper syncs this value to one of the GitHub
 labels `P0`, `P1`, `P2`, or `P3` so maintainers can find issues and pull requests

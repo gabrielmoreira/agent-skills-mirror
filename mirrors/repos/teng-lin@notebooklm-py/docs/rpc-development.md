@@ -37,9 +37,9 @@ NotebookLM uses Google's `batchexecute` RPC protocol.
 
 - **RPC method IDs:** `src/notebooklm/rpc/types.py`
 - **Payload builders:** the owning implementation modules, for example
-  `_notebooks.py::build_create_notebook_params`,
-  `_source/upload_payloads.py`, `_source/add.py`, `_label/params.py`, and
-  `_artifact/payloads.py`
+  `_web/params/notebooks.py::build_create_notebook_params`,
+  `_web/params/artifacts.py`, `_web/params/sources.py`, `_web/sources/add.py`,
+  `_web/params/labels.py`, and `_web/params/collections.py`
 - **Golden payload tests:** `tests/unit/test_rpc_golden_payloads.py` and
   feature-specific unit tests such as `tests/unit/test_label_params.py`
 - **Human reference:** `docs/rpc-reference.md`, updated after the builder and
@@ -172,7 +172,7 @@ await client.refresh_auth()
 ```python
 # decode_response is an internal RPC helper (notebooklm.rpc.* is internal per
 # docs/stability.md); import it from its defining module for contributor debugging.
-from notebooklm.rpc.decoder import decode_response
+from notebooklm._web.wire.decoder import decode_response
 
 raw_response = await http_client.post(...)
 print("Raw:", raw_response.text[:500])

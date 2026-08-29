@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a collection of 62 agent skills for Claude, Claude Code, Claude Cowork, Codex, Cursor, OpenClaw, Hermes Agent and other agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.). Twelve of them are **metaskills** — guided journeys that orchestrate the other skills step by step toward a goal.
+This is a collection of 64 agent skills for Claude, Claude Code, Claude Cowork, Codex, Cursor, OpenClaw, Hermes Agent and other agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.). Fourteen of them are **metaskills** — guided journeys that orchestrate the other skills step by step toward a goal.
 
 ## Repository Structure
 
@@ -32,11 +32,11 @@ skills/
 
 The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) and the [Agent Plugins](https://agent-plugins.org/) standard (root `plugin.json` in each `plugins/*` dir, plus the `plugins/wondelai-skills` all-in-one bundle) are **generated from `.claude-plugin/marketplace.json`** by `scripts/generate-plugins.sh` — same 10 collections, same skill membership, versions tracked automatically. The plugin trees contain **copies** of the skills, not symlinks (the Agent Plugins spec requires all paths to resolve inside the plugin root), so after editing any skill's `SKILL.md` or `references/`, re-run `scripts/sync-ide-skills.sh` to refresh them. Never hand-edit the generated trees.
 
-## Current Skills (62)
+## Current Skills (64)
 
 | Category | Skills |
 |----------|--------|
-| **Metaskills** | create-business, create-website, create-app, improve-business, improve-website, improve-app, grow-business, grow-website, grow-app, improve-code-quality, remove-technical-debt, design-code-architecture |
+| **Metaskills** | create-business, create-website, create-app, improve-business, improve-website, improve-app, grow-business, grow-website, grow-app, improve-code-quality, remove-technical-debt, design-code-architecture, conversion-optimization, architecture-optimization |
 | **UX/Design** | refactoring-ui, ios-hig-design, ux-heuristics, hooked-ux, improve-retention, web-typography, top-design, design-everyday-things, lean-ux, microinteractions, steve-jobs-design-review |
 | **Marketing/CRO** | cro-methodology, storybrand-messaging, scorecard-marketing, contagious, one-page-marketing |
 | **Sales/Influence** | influence-psychology, predictable-revenue, made-to-stick, hundred-million-offers |
@@ -109,9 +109,9 @@ See [references/file.md](references/file.md) when <situation> — <what it adds>
 
 The YAML frontmatter `description` field is critical for skill discovery - it should include keywords and trigger phrases that help match user requests to the skill. Single quotes in YAML values must be escaped by doubling them (`''`).
 
-### Metaskill Format (the 12 guided journeys)
+### Metaskill Format (the 14 guided journeys)
 
-The 12 metaskills (create/improve/grow × business/website/app, improve-code-quality, remove-technical-debt, design-code-architecture) are **orchestrators, not book skills** — do not force-fit the book template above (no Scoring, Further Reading, or About the Author). Their SKILL.md sections, in order: intro → `## Core Principle` (the journey's sequencing law) → `## Journey Map` (Phase | Skill | Question it answers | Artifact) → `## Operating Rules` (rules 1–7 word-identical across all 12; rule 8 is the journey-specific guardrail) → `## Intake` → `## Phases` (each phase has six fields: Purpose, Brief (fallback), Invoke, Decide with the user, Artifact, Done when) → `## Optional Phases` → `## Common Mistakes` → `## Completing the Journey`. Descriptions follow a 5-sentence formula whose 4th sentence routes to sibling metaskills (negative triggers) — keep the routing mutually consistent when editing. Metaskills write UPPERCASE artifacts into the *user's project* `docs/` folder; the canonical skeletons and section headings live in [docs/ARTIFACT-REGISTRY.md](docs/ARTIFACT-REGISTRY.md) — artifact headings quoted in phases must match it, and each metaskill's `references/artifact-templates.md` copies the skeletons it creates.
+The 14 metaskills (create/improve/grow × business/website/app, improve-code-quality, remove-technical-debt, design-code-architecture, conversion-optimization, architecture-optimization) are **orchestrators, not book skills** — do not force-fit the book template above (no Scoring, Further Reading, or About the Author). Their SKILL.md sections, in order: intro → `## Core Principle` (the journey's sequencing law) → `## Journey Map` (Phase | Skill | Question it answers | Artifact) → `## Operating Rules` (rules 1–7 word-identical across all 14; rule 8 is the journey-specific guardrail) → `## Intake` → `## Phases` (each phase has six fields: Purpose, Brief (fallback), Invoke, Decide with the user, Artifact, Done when) → `## Optional Phases` → `## Common Mistakes` → `## Completing the Journey`. Descriptions follow a 5-sentence formula whose 4th sentence routes to sibling metaskills (negative triggers) — keep the routing mutually consistent when editing. Metaskills write UPPERCASE artifacts into the *user's project* `docs/` folder; the canonical skeletons and section headings live in [docs/ARTIFACT-REGISTRY.md](docs/ARTIFACT-REGISTRY.md) — artifact headings quoted in phases must match it, and each metaskill's `references/artifact-templates.md` copies the skeletons it creates. The two optimization metaskills (conversion-optimization, architecture-optimization) additionally ship `references/methods.md` — the full per-phase method — so they run standalone when no constituent skill is installed.
 
 ## Adding New Skills
 
@@ -141,7 +141,7 @@ The 12 metaskills (create/improve/grow × business/website/app, improve-code-qua
 /plugin install team-motivation@wondelai-skills     # Drive (Autonomy, Mastery, Purpose), High Output Management
 /plugin install code-craftsmanship@wondelai-skills  # Clean Code, Refactoring Patterns, Software Design Philosophy, Pragmatic Programmer, DDD, Working with Legacy Code
 /plugin install systems-architecture@wondelai-skills # DDIA, System Design, Clean Architecture, Release It!, High Performance Browser Networking, Team Topologies
-/plugin install metaskills@wondelai-skills           # 12 guided journeys: create/improve/grow × business/website/app + improve-code-quality, remove-technical-debt, design-code-architecture
+/plugin install metaskills@wondelai-skills           # 14 guided journeys: create/improve/grow × business/website/app + improve-code-quality, remove-technical-debt, design-code-architecture, conversion-optimization, architecture-optimization
 ```
 
 ### Via skills.sh
@@ -173,6 +173,12 @@ metadata:
 ### Marketplace versions (automated)
 
 The versions in `.claude-plugin/marketplace.json` (top-level `metadata.version` and every `plugins[].version`) are **not** hand-edited. They are auto-synced to the latest GitHub release by `.github/workflows/sync-marketplace-version.yml`, which runs `scripts/sync-marketplace-versions.sh` on each published release (which in turn regenerates the `plugins/` and `.agents/plugins/` trees via `scripts/generate-plugins.sh`) and commits the result to `main`. To ship: bump the affected skills' `SKILL.md` versions, merge, then publish a `vX.Y.Z` GitHub release — the workflow sets all marketplace versions to `X.Y.Z`. To sync without a release, run `scripts/sync-marketplace-versions.sh X.Y.Z` locally.
+
+## Testing
+
+**Tautological tests considered harmful.** A test that restates the implementation instead of pinning behavior proves nothing: it passes for any code that compiles, fails only when the implementation is edited, and turns every refactor into a test rewrite. Typical shapes — asserting a mock returns what the test told it to return, re-deriving the expected value with the same expression the code under test uses, `expect(CONSTANT).toBe(CONSTANT)`, or snapshotting output nobody read before approving it.
+
+Write tests against observable behavior and hand-computed expected values instead. Delete tautological tests on sight rather than fixing them — they carry no coverage to preserve. This applies to any test written in this repo and to the test examples inside the code-quality skills (`clean-code`, `working-with-legacy-code`, `refactoring-patterns`); a characterization test that pins an *observed* value is not tautological, but one that pins whatever the code recomputes at assert time is.
 
 ## Commit Policy
 

@@ -1,10 +1,10 @@
 ---
 name: grow-website
-description: 'Guided journey from a website with traffic it under-converts to a research-driven growth engine that captures more leads, persuades more buyers, sells a sharper offer, and earns referrals. Orchestrates eight skills phase by phase - cro-methodology, scorecard-marketing, storybrand-messaging, made-to-stick, influence-psychology, hundred-million-offers, contagious, one-page-marketing - asking the user questions at every decision point and recording results in the project docs/ folder (WEBSITE.md, OFFER.md, MARKETING.md, GROW-WEBSITE-PLAN.md) so the journey resumes across sessions. Use when the user wants to raise conversion on a site that already has traffic, capture more leads, sharpen a weak offer, add referral loops, or says ''my site gets visitors but nobody buys''. If a broken funnel or usability friction is the real blocker, run improve-website first; if there is no site yet, use create-website. For one framework in isolation, invoke that skill directly.'
+description: 'Guided journey from a website with traffic it under-converts to a research-driven growth engine that captures more leads, persuades more buyers, sells a sharper offer, and earns referrals. Orchestrates eight skills phase by phase - cro-methodology, scorecard-marketing, storybrand-messaging, made-to-stick, influence-psychology, hundred-million-offers, contagious, one-page-marketing - asking the user questions at every decision point and recording results in the project docs/ folder (WEBSITE.md, OFFER.md, MARKETING.md, GROW-WEBSITE-PLAN.md) so the journey resumes across sessions. Use when the user wants to raise conversion on a site that already has traffic, capture more leads, sharpen a weak offer, add referral loops, or says ''my site gets visitors but nobody buys''. If a broken funnel or usability friction is the real blocker, run improve-website first; if there is no site yet, use create-website; for one leaking flow, conversion-optimization. For one framework in isolation, invoke that skill directly.'
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Grow a Website

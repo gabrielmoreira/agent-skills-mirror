@@ -241,7 +241,7 @@ Note that a real `run` emits a JSON payload **only** under `--detach`. Without i
 | `--supersedes <run-id>` | Start in a fresh estate while recording that this run replaces a terminal prior run. Unlike `--adopt`, it inherits no checkout. |
 | `--quiet`, `-q` | Suppress all progress output to stderr |
 | `--verbose`, `-v` | Also show tool-level events (tool name and duration) |
-| `--detach` | Run in a detached background child and return immediately. The child does all the work; find it later with `workflow runs`/`workflow get`. Child stdout/stderr is captured to `~/.archon/logs/detached-run-<id>.log`. Combine with `--json` for a machine-readable ack. Also available on `approve`/`reject`/`resume` — see [Detached control verbs](#detached-control-verbs). |
+| `--detach` | Run in a detached background child and return immediately. The child does all the work; find it later with `workflow runs`/`workflow get`. Child stdout/stderr is captured to `~/.archon/logs/detached-run-<id>.log`. Combine with `--json` for a machine-readable ack — it carries the new run's `runId`, so the natural next step is [`workflow wait <run-id>`](#workflow-wait) instead of a polling loop. Also available on `approve`/`reject`/`resume` — see [Detached control verbs](#detached-control-verbs). |
 | `--dry-run` | Simulate deterministic DAG control flow in memory. Creates no run, worktree, session, event, artifact, or provider request. |
 | `--stubs <path>` | YAML mapping of node ids to scalar or structured outputs for `--dry-run`. Relative paths resolve from `--cwd`. |
 | `--stubs-init <path>` | Write a complete stub scaffold for the expanded workflow and exit. Refuses to overwrite an existing file. Relative paths resolve from `--cwd`. |
@@ -472,6 +472,63 @@ recorded).
 Add `--events` to `--json --verbose` to return raw `events` rows instead of `nodes` for
 debugging. Raw events are not the recommended integration surface.
 
+### `workflow wait`
+
+Block until a run reaches a state it will not leave on its own — it finished, or it
+parked on a gate awaiting a response — then print what it needs. This is the intended
+partner of `--detach --json`: take the `runId` from the launch ack and wait on it,
+instead of polling `workflow get` in a loop.
+
+The response a gate is waiting for does not have to come from a person. An
+orchestrating agent can supply it with `workflow respond` just as a reviewer can; the
+engine only reports that one is owed, and who answers is the waiting host's business.
+
+```bash
+archon workflow wait <run-id>
+archon workflow wait <run-id> --json
+archon workflow wait <run-id> --json --timeout 900
+```
+
+There is no default timeout. A run reports when it is done, and a wait that ended on
+its own clock would be answering a question only the run can answer. `--timeout
+<seconds>` is there for a host that needs an upper bound anyway.
+
+**Exit codes describe the command, not the run.**
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | The run said something — it finished (`completed`, `failed`, or `cancelled`) or it is waiting for a response. The status is data on stdout. |
+| `3` | The timeout passed with the run still live. The `--json` payload carries `observedStatus`. |
+| `1` | The wait itself failed — unknown run id, database unreachable. |
+
+A `failed` or `cancelled` run is still exit `0`: mapping run state onto the process
+exit code would make a legitimately cancelled run look like a broken command.
+
+`--json` emits one document. On a wake it carries the attention value:
+
+```json
+{ "ok": true, "action": "wait", "runId": "…", "result": "attention",
+  "attention": { "kind": "terminal", "runId": "…", "status": "completed", "at": "…" } }
+```
+
+`attention.kind` is one of:
+
+- `terminal` — the run finished; `status` is `completed`, `failed`, or `cancelled`.
+- `awaiting_response` — a gate is waiting for a decision. `respondTo` names the run and
+  node where that response is recorded. **That run is not always the one you waited on**:
+  a parent blocked on a `workflow:` sub-run wakes when the chain below it reaches a gate,
+  and `respondTo.runId` is the child you answer. A parent blocked on a child that is
+  merely still running wakes nobody.
+- `unreadable` — the run is parked but cannot describe itself (corrupt gate metadata, a
+  gate type this build does not know, a sub-run pointer with no row). `detail` says which.
+
+Two pauses deliberately do **not** wake a waiter, because neither is owed a response: a
+gate that has already been approved or rejected and is awaiting auto-resume, and a
+[`wait:` node](/guides/authoring-workflows/) whose timer or event has not fired.
+
+The run id may be the short prefix printed by `workflow runs`. Once the wait returns,
+inspect the run normally with `workflow get <run-id>`.
+
 ### `workflow resume`
 
 Resume a failed or paused workflow run. Re-executes the workflow, automatically skipping nodes that completed in the prior run.
@@ -551,8 +608,10 @@ hands the whole command to a detached child that owns all state mutation in its 
 process group. A shell that dies mid-flight can no longer wedge the run.
 
 The parent also waits out the child's startup window before acking, so a child that
-dies immediately surfaces as an error carrying the tail of its log rather than as a
-success you only discover was false minutes later.
+dies before it starts the run surfaces as an error carrying the tail of its log rather
+than as a success you only discover was false minutes later. A run that simply finishes
+inside that window — a short workflow, or one that fails on its first node — is acked
+normally; its outcome belongs to the run, and `workflow get <run-id>` reports it.
 
 ```bash
 archon workflow approve <run-id> --detach
@@ -689,6 +748,14 @@ The `gh` CLI is optional — if absent, only git signals are used.
 By default, branches with a **CLOSED** PR are skipped. Pass `--include-closed` to clean
 those up as well. Branches with an **OPEN** PR are always skipped.
 
+An environment a workflow run can still claim is never removed by either mode,
+regardless of age or merge state — the same live-run lock the scheduled sweep applies.
+That covers running, pending and paused runs, and also **failed** runs: a failed run
+stays resumable, and removing its environment deletes the local branch that
+`workflow run --resume` and `--adopt` need. Stale environments with quiet
+conversations still pass the activity filter; the live-run lock is what keeps them on
+disk until no run can claim them.
+
 ### `validate workflows [name]`
 
 Validate workflow YAML definitions and their referenced resources (command files, MCP configs, skill directories).
@@ -804,7 +871,8 @@ archon version
 | `--cwd <path>` | Override working directory (default: current directory) |
 | `--quiet`, `-q` | Reduce log verbosity to warnings and errors only |
 | `--verbose`, `-v` | Show debug-level output |
-| `--json` | Output machine-readable JSON (workflow `list`, `status`, `runs`, `get`, and the write commands `approve`/`reject`/`abandon`/`resume`). Implies log suppression so stdout is exactly the JSON payload. |
+| `--json` | Output machine-readable JSON (workflow `list`, `status`, `runs`, `get`, `wait`, and the write commands `approve`/`reject`/`abandon`/`resume`). Implies log suppression so stdout is exactly the JSON payload. |
+| `--timeout <seconds>` | For `workflow wait`: give up after N seconds and exit `3`. Omitted means wait indefinitely. |
 | `--events` | With verbose JSON workflow `status`/`get`, return raw event rows instead of ordered node summaries. |
 | `--help`, `-h` | Show help message |
 

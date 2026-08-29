@@ -23,7 +23,7 @@ These surfaces are generated command references, not installed Hermes workflow s
 ## Role Registry
 
 - `guide`: `oh-my-hermes`, `meta-router`, `model-setup`, `parallel-tools`, `websearch-setup`, `morning-brief`, `gateway-intent-card`, `voice-operator`, `browser-operator`, `workspace-file-operator`, `command-operator`, `connector-operator`, `live-info-operator`, `external-connector-readiness`, `prompt-import-readiness`, `content-operator`, `media-input-operator`, `data-analysis`
-- `handoff-guide`: `ultrawork`, `ai-slop-cleaner`, `executor-runtime-readiness`
+- `handoff-guide`: `ultrawork`, `maestro`, `ai-slop-cleaner`, `executor-runtime-readiness`
 - `memory-keeper`: `rules-distill`, `wiki`, `memory-new`, `memory-sync`, `decision-recall`
 - `operator`: `strategy-brief`, `meeting-brief`, `feedback-triage`, `finance-analysis`, `people-ops`, `support-operations`, `sales-development`, `ops-review`, `operating-rhythm`, `report-package`, `materials-package`, `img-summary`, `design-orchestration`, `design-quality-gate`, `frontend`, `visual-qa`, `workspace-audit`, `agent-evaluation`, `automation-blueprint`, `reliability-review`, `idea-to-deploy`, `cto-loop`, `deploy-and-monitor`, `github-event-ops`, `deliverable-package`, `physical-device-readiness`, `agent-debug`, `skill-scout`, `skill-health`, `provider-profile-posture`
 - `planner`: `loop`, `context`, `deep-interview`, `curriculum-design`, `product-brief`, `codebase-onboarding`, `codegraph-refresh`, `plan`, `ralplan`
@@ -41,7 +41,8 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `context`: `ulw-context`, `$context`, `./context`, `project terminology alignment`, `review project terms`, `align project terminology`, `terminology this project uses`
 - `deep-interview`: `deep-interview`, `$deep-interview`, `interview`, `don't assume`, `clarify`, `feature shaping`, `ambiguous product request`, `one question`, `온보딩`
 - `jit-learn`: `jit-learn`, `learn next`, `learn now`, `blocker-specific learning target`, `highest-leverage learning target`, `immediate learning payoff`, `immediately applicable learning brief`, `source-backed learning brief`, `학습 주제`
-- `ultrawork`: `ultrawork`, `$ultrawork`, `ulw`, `$ulw`, `parallel work`, `parallel implementation`, `high throughput`, `coding team`, `coordinated workers`
+- `ultrawork`: `ultrawork`, `$ultrawork`, `ulw`, `$ulw`, `parallel work`, `parallel implementation`, `parallel then integrate`, `high throughput`, `coding team`
+- `maestro`: `$maestro`, `ulw-maestro`, `coding handoff`, `prepare the handoff`, `prepare a coding handoff`, `hand off the coding work`, `external executor handoff`, `handoff prompt`, `delegation prompt`
 - `research`: `web-research`, `web research`, `web search`, `search the web`, `internet search`, `fresh sources`, `current sources`, `current web evidence`, `source-backed research`
 - `source-finder`: `source-finder`, `source finder`, `source acquisition`, `source intake`, `find papers and datasets`, `find datasets and repos`, `find papers`, `find arxiv link`, `find arxiv paper`
 - `research-brief`: `research-brief`, `business-research`, `business research`, `research brief`, `decision brief`, `pricing decision brief`, `decision-ready brief`, `source-backed business research`, `customer feedback trends`
@@ -76,7 +77,7 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `rules-distill`: `rules-distill`, `rules distill`, `distill rules`, `rule distillation`, `principle distill`, `skill principles`, `extract agent rules`, `turn traces into rules`, `policy distill`
 - `codebase-onboarding`: `codebase-onboarding`, `codebase onboarding`, `repo onboarding`, `repository onboarding`, `codebase tour`, `code tour`, `new repo orientation`, `understand this repo`, `how this repo works`
 - `codegraph-refresh`: `codegraph-refresh`, `codegraph refresh`, `refresh codegraph`, `update codegraph`, `codegraph stale`, `stale codegraph`, `codegraph handoff`, `codegraph summary`, `codemap`
-- `context-budget-review`: `context-budget-review`, `context budget review`, `context budget`, `token budget review`, `token budget`, `prompt budget`, `context compaction`, `compact context`, `too much context`
+- `context-budget-review`: `context-budget-review`, `context budget review`, `context budget`, `token budget review`, `token budget`, `prompt budget`, `prompt caching`, `prompt cache`, `cache hygiene`
 - `security-safety-review`: `security-safety-review`, `security safety review`, `ai coding safety`, `agent safety review`, `prompt injection review`, `tool permission review`, `secret exposure review`, `destructive action review`, `supply chain safety`
 - `automation-blueprint`: `automation-blueprint`, `scheduled ops`, `scheduled operation`, `scheduled operations`, `automation blueprint`, `cron blueprint`, `cron-ready`, `recurring ops`, `recurring workflow`
 - `reliability-review`: `reliability-review`, `reliability review`, `incident review`, `incident postmortem`, `postmortem`, `post-mortem`, `slo review`, `slo`, `sla`

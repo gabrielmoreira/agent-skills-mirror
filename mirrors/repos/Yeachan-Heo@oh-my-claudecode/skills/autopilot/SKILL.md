@@ -119,7 +119,7 @@ V1 does not support `stageModels`, model routing, provider or role selection; in
 - Use `Task(subagent_type="oh-my-claudecode:architect", ...)` for Phase 4 architecture validation
 - Use `Task(subagent_type="oh-my-claudecode:security-reviewer", ...)` for Phase 4 security review
 - Use `Task(subagent_type="oh-my-claudecode:code-reviewer", ...)` for Phase 4 quality review
-- Agents form their own analysis first, then spawn Claude Task agents for cross-validation
+- Agents form their own analysis and return it; the LEAD then spawns any cross-validation agents itself. Do not rely on a subagent spawning further subagents without checking the Claude Code depth setting: Claude Code 2.1.217–2.1.218 defaulted `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to 1, while 2.1.219+ defaults to 3. Keep cross-validation at the LEAD level unless nested delegation is deliberate and supported by the active runtime.
 - Never block on external tools; proceed with available agents if delegation fails
 </Tool_Usage>
 

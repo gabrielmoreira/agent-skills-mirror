@@ -177,6 +177,19 @@ bun run privacy:scan   # credential/privacy scan used by CI
 bun run build:gui      # Vite GUI build
 ```
 
+`skills/ocx/` is the operating reference for the CLI — what an agent reads to *drive* a running
+proxy, as opposed to [`AGENTS_INSTALL.md`](./AGENTS_INSTALL.md) (installing and operating consent)
+or this file (changing the codebase). Its surface map is generated:
+
+```bash
+bun run skill:surface        # regenerate after adding a capability
+bun run skill:surface:check  # what CI asserts
+```
+
+`tests/skill-ocx.test.ts` fails if the committed map drifts from `src/cli/capabilities.ts`, and
+also if the hand-written pages name a command the registry does not have. That second check is not
+hypothetical: it caught a documented `ocx request-history` that never existed.
+
 During implementation, use the smallest focused checks that directly cover the
 changed subsystem. Do not run repository-wide `bun run typecheck` or
 `bun run test` for a scoped change unless the change affects shared runtime,

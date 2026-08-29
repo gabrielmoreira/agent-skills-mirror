@@ -49,6 +49,16 @@ When import precedence decides a property, state why the winning source wins
 (for example, it is imported later or its condition applies), not merely that it
 contains the final value or overrides another assignment.
 
+Keep the explanation on the requested axis:
+
+- An SDK version pin in `global.json` is context, not a platform selector. Claim
+  that `global.json` selects VSTest or native MTP only when its `test.runner`
+  setting actually does so.
+- If `UseVSTest=true` is decisive, say that directly. Do not speculate about an
+  absent `test.runner` or describe SDK pinning as an additional platform choice.
+- If command mode was not requested, do not add it, even when it was needed
+  internally to determine the executed platform.
+
 When a classic-project request also asks for the command family, add a direct
 line such as `Command family: MSBuild + vstest.console.exe`; do not turn it into
 an optional alternative or add an unnecessary build qualifier.
@@ -182,8 +192,11 @@ the final override and its source, not the superseded default.
 When a runner-selection property competes with `Microsoft.NET.Test.Sdk`, say
 that the runner property selects MTP and `Microsoft.NET.Test.Sdk` does **not**
 select or imply VSTest. It may remain as compatibility support, but that is
-secondary. For a request asking which single signal decides, stop there; do not
-enumerate bridge or host-shape prerequisites when the configuration is complete.
+secondary. `TestingPlatformDotnetTestSupport=true` is a bridge prerequisite, not
+the runner-selection signal; never say that this property alone enables the
+bridge. For a request asking which single signal decides, stop there. Omit
+bridge or host-shape prerequisites when the configuration is complete, and add
+them only when needed to explain why the selected runner cannot execute.
 
 Use causal evidence, not a bag of signals. For example:
 

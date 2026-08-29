@@ -1,22 +1,22 @@
 # jcodemunch-mcp — Project Brief
 
 ## Current State
-- **Version:** 1.108.303 — **The measurement was the defect.** Five instruments reported a good number about something they could not observe, and four of them were ours. ⚠⚠ **THE RUST FIDELITY HARNESS, SIX DAYS OLD, GRADED A 37.9% NAME-COLLISION RATE AS A PERFECT RUN — it keyed bare names in a SET, and a set cannot COUNT.** Proven by deleting the second symbol of every duplicated name in the fixtures: `extra` and `missing` did not move, so extracting ONE of `defs.rs`'s **108 `is_switch`** scored like extracting all 108. What it hid: `impl Foo { fn new }` and `impl Bar { fn new }` both emitted a bare `new`, kind `function`, parent None, separated only by a `~1`/`~2` id suffix — **the trait's own declaration qualified fine (`T.go`), so traits had an owner and impls did not.** `impl_item` sat in `symbol_node_types` as `"class"` for the extractor's whole life and never produced ONE symbol (no `name_fields` entry could name it), **and a container becomes a parent only if it EMITTED one** — so it is a virtual scope now, emitting nothing, which is what `syn` says an impl block is too. ripgrep @ `3fce3b5b`: 1,331/3,514 (37.9%) across 44/110 files -> **55 (1.6%)**; 2,199 symbols move `function` -> `method`. ⚠ `undercount` and `qual_mismatch` gate at 0 beside `extra`/`wrong_span`; the oracle emits `qual` and tracks its scopes. **The owner is `self_ty`, NEVER the trait** — `impl Display for Foo` puts `fmt` on `Foo`, and keying on `Display` is the same collision one level up. ⚠ Two more gaps fell out of the new buckets, invisible to everything that shipped: a `const` inside an `impl` came out bare (35 in ripgrep) because `_constant_symbol` hardcodes `qualified_name = name`, and `associated_type` (a trait's `type Carried;`) was absent from `RUST_SPEC` — `.302`'s `function_signature_item` again. ⚠⚠ **`tests/test_rust_fidelity.py` listed its three fixture names as a LITERAL in every `parametrize`** — a SECOND roster beside the frozen artifact, where only the artifact had a test keeping it honest; the new `qualification.rs` was ungated on arrival. Read off disk now. ⚠ **Practice 9 fired again**: `test_rust_fn_in_impl` asserted `kind == "function"` under the docstring *"Without the impl parent being extracted, 'new' appears as a top-level function"* — the defect written down as intended behaviour, passing only while it existed. `PARSER_GENERATION` **6 -> 7** (`qualified_name`/`kind`/`parent` on unchanged content). ⚠⚠ **#556 by @otherjoel is THIRTEEN of the eighteen entries** — twelve findings, one per commit, each measured against Racket's EXPANDER, Racket's READER, or five real package layouts on disk rather than against our own output. `#lang` is read before the grammar runs (`#lang punct` was indexing Markdown code samples; `conscript` lost 61% of definitions and FABRICATED ~100 that error recovery re-parented to module level); collection paths resolve through `info.rkt` (splitflap 0/70 -> 13 edges, congame 304 -> 624); **the `define-generics` exemption was REMOVED rather than widened, because `extra: 0` was carrying a fabrication.** ⚠ He declined the `PARSER_GENERATION` bump ON PURPOSE and substituted a per-project `racket_config_digest` stamp — **an absent key is detectable forever, a stamp equal to the constant is not**, our own `.302` lesson used against us correctly. We bumped to 7 anyway for the Rust fix, so those indexes are reached twice; **the stamp is NOT redundant** — it fires when a PROJECT edits `racket_langs`, which no global counter can see. ⚠ Also: **`.next`/`.nuxt`/`.output`/`.svelte-kit`/`.angular`/`.turbo`/`.parcel-cache`/`.dart_tool` were indexed as source** (`.next/server/**` is a TRANSPILED copy of the user's own pages — the `_build` defect a FOURTH time); **the observatory scored eleven public repos on ONE COMMIT** so `churn_surface` read churn 1 everywhere and ranked nothing but complexity (jcm 81.3 B -> 75.6 C, i.e. we were FLATTERING ourselves); **`max_nesting` counted brackets**, which in Python measures the deepest EXPRESSION (`index_folder`: 3 reported, AST truth 6); and the codex cache-hit-rate cut **cannot separate its arms BY CONSTRUCTION** — it is a ratio, so the arm with the least schema scores highest. ⚠ Three of the five were found by reading a competitor's fix titles against our tree. [[a-competitors-fix-list-is-a-free-defect-probe]] [[a-guard-covered-only-by-positive-tests-can-be-deleted]]
-- **Prior (1.108.302):** **Nothing we could say about Rust.** Rust had **20 tracker mentions and zero measurement** while the README talked about 70+ languages; Racket has had a fidelity harness since `.298`. **`benchmarks/rust_fidelity/` scores extraction against Rust's own parser (`syn`)**, same asymmetric shape: `extra`/`wrong_span` gated at **0**, `missing` reported BY KIND so a gap has a name. ripgrep @ `3fce3b5b`, 110 files: **95.8%**, 44 clean files, `missing` (156) entirely `module`+`macro`, both deliberate. ⚠⚠ **THE CEILING IS LOWER THAN RACKET'S: `syn` PARSES, it does not EXPAND.** A `macro_rules!`-generated item is invisible to the oracle AND to us, unscored in BOTH directions — a green run is NOT evidence about macro-generated code. ⚠ **All three gaps it found are FIXED** (`PARSER_GENERATION` **4 -> 5**): `union_item` and `function_signature_item` were absent from `RUST_SPEC` — so `union Foo {}` yielded NO symbol at all, and the half of a trait an implementor MUST provide was the half we could not find — and a `const` in a fn body was excluded by the locals gate, **which already let nested `fn`s through, so it was a node-type rule wearing a scope rule's name**. 3474 -> 3514 symbols. ⚠⚠ **The bump is the clearest case that counter has had**: unlike `.mts` (never parsed, so coverage arrives through DISCOVERY) every `.rs` file in an existing index was already parsed at gen 4 with the old symbol set. ⚠⚠ **THREE oracle traps, every one made US look wrong when the HARNESS was**, and the third fired on the FIX: identifier-span not item-span (scored us **40.4%** vs a true **95.4%**; the tell was we were NEVER earlier), walk function bodies (35 phantom fabrications, **inverting the `extra` gate**), and walk NESTED blocks (`for` body, `match` arm). Now `syn::visit::Visit` — **a hand-rolled walk only sees where its author remembered to look.** **Also #555 (@RascoApps): `sd.encode` fails closed on a table under an undeclared key** — the #354 guard needs ROWS to fire and a wrong KEY yields none, which is how `search_ast` served empty tables. ⚠ Placement is the design: it runs POST-transform, so pre-flattening schemas need NO exemption; scanning the RAW response flags `search_text` on every call and an allowlist for it would have been the wrong fix to the right symptom. ⚠ **CLAUDE.md budget 130k -> 140k**, halving the gap to the 150k harness cliff. **That 10k is the last buffer** — next time, rotate or split. [[a-guard-covered-only-by-positive-tests-can-be-deleted]] [[a-fixture-authored-from-the-schema-tests-nothing]]
-- **Prior (1.108.301):** **Green on a defect, three times.** Three green signals sat on top of real defects this release, and that is the release. ⚠⚠ **#553 by @RascoApps: `search_ast` served an EMPTY TABLE for every language and every preset** — the encoder declared `results`/`result_count`/`files_searched`, the tool has always returned `matches`/`total_matches`/`files_scanned`. **The fail-closed guard is STRUCTURALLY BLIND to this class**: it raises when a table has ROWS but no declared COLUMN populated (#354), and a wrong KEY yields no rows, so `out_rows` is empty and the check never runs. ⚠ Cross-checked all 17 schemas; the only one. ⚠⚠ **His proposed FIX would have been worse than the defect** — six columns inferred from two presets, where the match dict carries SIXTEEN keys across ten detectors and five are pattern-specific (`marker`, `value`, `callee`, `loop_depth`, `nesting_depth`), i.e. the ones saying what the finding FOUND. Dropping them still populates `file`/`line`, so `any_value` goes true and the guard stays quiet: **a total loud loss becomes a partial silent one.** Demonstrated — with that column list the row test passes and the field test fails. Eleven columns plus one JSON `details` cell (the `search_text` `before`/`after` shape); `sa1` -> `sa2` with `LEGACY_ENCODING_IDS`. ⚠⚠ **It ALREADY HAD a green round-trip test and why is the better half: the fixture was FABRICATED IN THE SCHEMA'S IMAGE** (`result_count`/`results`/`match_type`, none of which the tool returns) so both sides were wrong identically, **and its assertion looped over a HARDCODED list of five table keys** — `matches` absent, so the loop body ran ZERO times and the case asserted nothing. Keys now derive from the RESPONSE; row COUNT, not key presence. ⚠ Fixing the fixture alone was NOT enough — it still passed against the broken schema, because the roster was a second independent hole. ⚠⚠ **#554 by @otherjoel: the declared-forms block REPLACED the descent guard instead of preceding it**, so `_RACKET_SPLICING_HEADS` went defined-and-unreferenced and the walker descended into EVERY unrecognised form, emitting internal definitions as importable bindings. **All 8 CI jobs and the full 8,482-test local suite were GREEN on it**; he measured 86 of 87 Racket tests still passing with the guard deleted, because every assertion on that path is POSITIVE. Corpus effect `extra` 0 -> **5**, `wrong_span` 0 -> **26**, and those five were the exact names **#548's guard was added to suppress — a silent revert of a shipped fix, not a new defect.** ⚠ Caught by READING THE DIFF; no automated signal saw it. ⚠⚠ **He fixed the ROUTE, not just the defect**: the CI-safe fidelity harness was equally blind (no frozen fixture wrapped a `define` in an unrecognised form), so `guards.rkt` now fails on a Racket-free machine. His `results.json` had also been regenerated BEFORE the displacing edit and asserted `extra: 0` against code producing 5. **Also ships `racket_definition_forms`** — declare a project's own defining macros; the KIND is declared, the NAME POSITION is read off the source because one form appears in both shapes — **and `.mts`/`.cts`, which mapped to NO language while sitting in the reindex hook's watched set**: editing one spawned `index-file`, mapped nothing, dropped it as `wrong_extension`, and reported success. ⚠ The import half is inseparable — a TS specifier names the EMITTED file, so `.mts` is imported as `./foo.mjs`, and the map alone would make the file visible and its importers invisible (#550's shape). No `PARSER_GENERATION` bump: coverage, not extraction. [[a-fixture-authored-from-the-schema-tests-nothing]] [[a-guard-covered-only-by-positive-tests-can-be-deleted]]
-- **Older releases (1.108.300 and earlier):** see `CHANGELOG.md`. The 1.108.182 entry ("a stall has a name and a ceiling", #375) and the 1.108.177-.181 #377 hardening arc are there in full.
-- **Tests:** 8706 passed, 13 skipped, **0 failed** (1.108.303) **+ `uv run ruff check src/` clean**, measured on the settled tree after the merge, the bump and the rotation. ⚠ **8719 TOTAL, +189 over .302's 8530** — decomposed by MEASURING each push, not by counting new files: **+38 ours** (Rust qualification gates and the framework-build-tree parametrize) and **+151 from #556**. ⚠⚠ **Compare TOTALS, never passed counts, and NEVER a skip count across machines** — CI ubuntu skips 26 and windows 19 where this box skips 13, all pre-existing. I once read a CI/local skip gap as a new gate silently skipping and was WRONG; **the before/after delta on the SAME job is the only signal**. ⚠⚠ **A CONTRIBUTOR PR IS TRIAL-MERGED ONTO `main` AND RUN LOCALLY BEFORE THE MERGE, never read off the branch** — #556 was green on its own head, but branch-green is not merged-green and the merge base moves every release. It also touched `extractor.py`, `imports.py` and `index_store.py`, all three of which we had edited hours earlier. ⚠ **@otherjoel reported one failure we could not reproduce** (`test_suggest_corrections.py::test_freshness_correction_no_patch`): it reads the developer's real machine state and fails where a jcm watch service runs, which is the Practice 8 shape and his own diagnosis. It passes here. ⚠ 3.13 CI-env reproduce: **CLEAN** — 8700 passed, 19 skipped, **0 errors**, the SAME 8719 total. ⚠⚠ **A reproduce that ERRORS in `tests/test_sdist_exclusions.py` is NOT environmental noise** — that file is the sdist CREDENTIAL-LEAK guard (v0.2.6), and it errors at setup when the scratch venv must fetch the build backend with DNS blocked. Re-run it explicitly on the release tree; never wave it through. ⚠ Prior (1.108.302): 8517 passed, 13 skipped, **0 failed** (8530 total). ⚠ Prior (1.108.301): 8482 passed, 13 skipped, **0 failed** (8495 total). ⚠ Two full runs contend on the same `~/.code-index` process-lock scopes, the documented cause of .261's 47m outlier, so the 3.13 reproduce runs AFTER the local suite, never beside it.
+- **Version:** 1.108.306 — **A count taken after the page, and a field nobody read.** Four issues from @lilubot, two sharing a root cause and a third falling out of the first. ⚠⚠ **`get_untested_symbols` computed `untested_count = len(symbols)` AFTER the `max_results` slice and derived `reached_pct` from it, and `get_repo_health` asks for `max_results=1` because it "only needs the count"** — so the PUBLISHED health/radar test axis read ~100% reach on every repository with untested code (**4,893 of 6,352, 23.0%, published as 100**). It reached the grade and the observatory. ⚠⚠ **The sweep for other instances found NONE, and that is the finding** — `find_importers`/`find_references`/`get_dead_code_v2` all count before slicing. **The defect is invisible to any single call, because one call's number is self-consistent**; only two page sizes over the SAME repo can see it, which is what `test_counts_survive_truncation.py` does. ⚠⚠ **`detect_framework` persists `entry_point_patterns` into `context_metadata` on every index, and a tree-wide search found that key WRITTEN IN ONE PLACE AND READ IN NONE.** Three tools each reproduced their own answer to "is this a root?" and every one was Python (`_ENTRY_POINT_FILENAMES` is eleven `.py` names plus `Makefile`), so a Next.js repo detected ZERO entry points: v2 returned `dead_symbols: []`, and 203 of 366 "unstable" files were `route.ts` handlers whose Ca is 0 BY CONSTRUCTION. ⚠⚠ **Consuming that field naively would have been FAR WORSE than the defect: Flask and FastAPI shipped `"*.py"` in it**, and under fnmatch a `*` crosses `/`, so the first reader would have declared every Python file in a Flask repo a live root — dead-code detection off across an ecosystem, silently, with those repos' coupling denominators emptied. Removed at the source AND refused by `_is_catch_all`, gated over every profile; **directory SCOPE is what saves a pattern** (`routes/*.php` fine, `**/*.php` not). ⚠⚠ **Coupling excludes entry points from the DENOMINATOR as well as the numerator** — numerator-only shrinks a count without shrinking what it is a fraction of, **the 84.0 B -> 88.8 B sign error of .305 pointing the other way**. So an entry point with a real `Ce` problem is graded by nothing; the count and profile are disclosed. ⚠ Only the DETECTED profile excludes: widening to `_ENTRY_POINT_FILENAMES` moves every Python repo's published score on a heuristic and needs its own measurement. ⚠⚠ **A REFUSAL IS NOT A ZERO** — v2 returning `[]` WITH a `signal_warning` became `dead_code_pct: 0.0` and an axis of 100, the strongest claim assembled from an admission that nothing was established; it withholds composite and grade through .305's own `unmeasurable_axes` now. ⚠ Toolchain manifests leave the dead-code population by NAME (nothing imports a lockfile by design; **`package.json` was reported dead by the same run that READS it to find entry points**) — never by extension, so an orphaned `data/fixtures.json` is still a finding. ⚠ #560 was VERIFIED, not fixed: all four type-only import spellings resolve. Tested anyway, because the claim rested on nothing. ⚠⚠ **Found on the way: THREE consumers reading keys their producers never emit, two in one renderer** — the post-task untested diagnostic and `assemble_task_context`'s audit stage were dark for their whole lives. **The test guarding the first was the reason nobody noticed: its mock returned the INVENTED key**, and a fabricated producer makes an absent-key defect structurally invisible to a test written about that exact code path. ⚠⚠ **The unmocked replacement PASSED against the reintroduced defect on its first version** — it asserted the name appeared in the message, and the name appears in three sections. **An assertion that does not name which producer put the string there proves nothing about that producer.** [[a-mock-can-supply-a-contract-the-producer-lacks]] [[grep-a-persisted-field-for-its-readers]]
+- **Prior (1.108.305):** **Only the reader was never fixed.** Nine tools run `git log --since=N days`; a shallow clone answers every churn question with a small number and exit 0, so `churn_surface` ranked nothing but complexity and the grade came out FLATTERING. ⚠⚠ **We had fixed this TWICE — Practice 6's Action `fetch --depth=1`, and the observatory's cloner (81.3 B vs 75.6 C at ONE identical commit) — and both times we made OUR clones deep.** `actions/checkout` defaults to `fetch-depth: 1`, so every user running the Action or `jcodemunch-mcp health` in their own CI kept the defect **on their own pull requests**. Third instance of the standing lesson. ⚠ `tools/_git_history.py` asks COVERAGE, not shallowness: `--is-shallow-repository` is the mechanism, "reaches past the window" is the property — a `--depth=900` clone at 90 days is shallow AND complete, and a false alarm there teaches people to ignore the flag. Tri-state; a young repo is not a truncated one. ⚠⚠ **THE FIRST FIX MADE THE NUMBER WORSE, which is the release.** Omitting `churn_surface` the way `runtime_coverage` is omitted took the tree **84.0 B -> 88.8 B** against a truth of **77.3 C**: dropping a LOW-scoring axis RAISES a mean. **NOT APPLICABLE and COULD NOT MEASURE are different states and only the first may be dropped silently.** `compute_radar` takes `unmeasurable_axes` and **withholds composite AND grade**; measured axes stand. Default path byte-for-byte unchanged. ⚠⚠ **Two `None` sites the tests then found, both user-facing**: `diff_radar`'s `.get("composite", 0.0)` — **the default NEVER fires for a present key holding None** — and `_verdict`, which would have printed **"no meaningful change"** on a contributor's PR on the one occasion nothing was measured. ⚠⚠ **CI caught a 3.10 break I could not reproduce on ANY local version: git renders a UTC offset as `Z`, unparseable by `fromisoformat` before 3.11 — and git only emits `Z` on a UTC host.** Runners are UTC, this box is CDT and got `-05:00`. **The host's timezone selected the input format**, so the version matrix was not the axis; the guard is a UNIT test over all four spellings. The tri-state held under the fault (`complete: None`, not a wrong verdict). ⚠⚠ **Also: `relnotes.md`, a scratch copy of the release notes, SHIPPED INSIDE THE PUBLISHED 1.108.304 SDIST** via `git add -A`. The canary tests prove NAMED bad paths are absent and could never have caught it — **a denylist catches the instance, an allowlist catches the class** — and `ALLOWED_ROOT_FILES` found a SECOND instance minutes later: `suite.log`, from this session's own gate runs. ⚠⚠ **@Ticki84 ran the new breakdown on the first build that had it and it answered at once: `save=9.906s` of a `10.000s` total, everything else summing to 0.094s** — the cost is entirely `incremental_save`. **That lock is taken BEFORE the write, so from the caller's timer a CONTENDED LOCK and a SLOW WRITE are the same number**; `process_locks` now reports `waited_seconds` and NAMES the holder past 1s. ⚠ The round `10.000s` says contention, but that is a HYPOTHESIS and shipping the instrument beats asking the reporter to test it — three earlier ones on this issue were each measured dead by him. [[a-module-that-imports-clean-has-been-tested-for-nothing]] [[a-one-directional-check-certifies-its-blind-side]]
+- **Prior (1.108.304):** **Three hypotheses, each measured, each wrong.** #557 (@Ticki84, Windows, ~10s to reindex one file where `index_file` took ~0.2s) drew an old version, the watcher's hash-cache reload, the `JCODEMUNCH_INDEX_CACHE_TTL` cliff and context providers. He answered all of it: **1.108.303, TTL unset, providers confirmed off FROM THE LOG'S OWN SILENCE, and the DEBUG line's `(10.31s)` is `index_folder`'s OWN duration** — so the time is inside indexing and every hypothesis we offered is dead. ⚠⚠ **He answered SIX HOURS BEFORE our next comment, which re-asked all three.** ⚠⚠ **What the hunt found instead: the fast path OPENED with `store.load_index(owner, repo_name)  # always load base for branch check`** — a full symbol hydration on every watcher event, INSIDE the block whose entire purpose is to skip loading the index and THREE LINES ABOVE the `use_memory_hash_cache` flag that exists to make the store's hashes unnecessary. **The saving that flag names was never realised on a cold read, because this ran first regardless.** Every question that path asks of it is metadata (`branch`, `git_head`, `file_hashes`, `has_source_file`, the two re-parse stamps), so it is a `SelectiveIndexView` now: **zero symbol rows, 0.172s -> under 1ms cold on 13,906 symbols.** ⚠⚠ **`parser_generation` and `racket_config_digest` HAD TO JOIN `EXACT_FIELDS` or the fix moves the cost instead of removing it** — absent from that tuple they fall through `__getattr__`, which promotes, so the per-event upgrade check would still load every symbol to read one integer. **If it lives in a `meta` row it belongs in `EXACT_FIELDS`.** ⚠⚠ **The test asserts `promoted is False`, NOT that `open_selective` was called** — the mechanism check stays green while a newly added `existing_index.symbols` hydrates the corpus behind it, which is the only regression worth catching (Practice 9's shape, caught at authoring time for once). 4 of 5 new tests fail pre-fix; the 5th guards a future regression and is honestly vacuous today. ⚠ **NOT his 10s and the thread says so** — his index is 6,352 symbols, where that load costs under a tenth of a second here. Shipped because it is wrong. ⚠⚠ **So the release's real deliverable is the INSTRUMENT: the watcher's re-index line now splits its own duration** (`[base_index= classify= read_hash= parse= git_head= save=]`, also `phase_seconds` on the result). Three rounds of guessing spent a reporter's patience; one line of one log now names the subsystem. ⚠ **A full walk emits NO breakdown rather than a zeroed one** — an empty bracket would read as "the fast path ran and cost nothing", the opposite of what happened, so absence means the fast path was not taken, which is the first thing worth knowing. ⚠ **Practice 10's first real case, and it held**: touched files 122 tests in 10s, suite once as the gate at 10:18. ⚠⚠ **A background-task banner reported "exit code 0" for a suite that NEVER RAN** (`--timeout` plugin absent, pytest exited on argparse). Only the log's own `EXIT=` line is evidence; the banner is not. [[a-trailing-command-hides-pytests-exit-code]] [[a-module-that-imports-clean-has-been-tested-for-nothing]]
+- **Older releases (1.108.303 and earlier):** see `CHANGELOG.md` (1.108.303 in `ISSUE-HISTORY.md`). The 1.108.182 entry ("a stall has a name and a ceiling", #375) and the 1.108.177-.181 #377 hardening arc are there in full.
+- **Tests:** 8794 passed, 13 skipped, **0 failed** (1.108.306) **+ `uv run ruff check src/` clean**, measured on the settled tree after the bump and the rotation. ⚠ **8807 TOTAL, +45 over .305's 8762.** ⚠⚠ **READ THE SKIP COUNT, NOT JUST THE EXIT CODE AND THE TOTAL.** A .305 3.13 reproduce came back **exit 0 with the total reconciling EXACTLY** while `passed` fell 8,721 -> 8,634 and `skipped` rose **19 -> 124**: 105 tests silently did not execute, because the documented command never built CI's environment (no sync, no `--extra watch`). See **Reproducing CI's environment**. ⚠⚠ **Compare TOTALS, never passed counts, and NEVER a skip count ACROSS machines** — CI ubuntu skips 26 and windows 19 where this box skips 13, all pre-existing; **the before/after delta on the SAME job is the only signal**, and that is exactly what caught it. ⚠⚠ **A BACKGROUND-TASK BANNER SAYING "exit code 0" IS NOT A GREEN SUITE** — one run reported exit 0 having never started pytest (`--timeout` plugin absent), and **this release had a banner say exit 0 over a log whose own `EXIT=` line said 1.** **Redirect the exit code INTO the log (`{ pytest; echo "EXIT=$?"; } > log`) and grep that line**; a bare `&` does not survive the shell either. ⚠⚠ **A CONTRIBUTOR PR IS TRIAL-MERGED ONTO `main` AND RUN LOCALLY BEFORE THE MERGE** — branch-green is not merged-green and the merge base moves every release. ⚠ **CI on the pre-release PR (#563) was green on all 12 checks with the skip counts CORRECT**: ubuntu 3.10 8781/26, windows 3.13 8788/19, both totalling 8807. ⚠⚠ **A reproduce that ERRORS in `tests/test_sdist_exclusions.py` is NOT environmental noise** — that file is the sdist CREDENTIAL-LEAK guard (v0.2.6), and it errors at setup when the scratch venv must fetch the build backend with DNS blocked. Re-run it explicitly; never wave it through. ⚠ Prior (1.108.305): 8749 passed, 13 skipped, **0 failed** (8762 total). ⚠ Prior (1.108.304): 8727 passed, 13 skipped, **0 failed** (8740 total). ⚠ Two full runs contend on the same `~/.code-index` process-lock scopes, the documented cause of .261's 47m outlier, so the 3.13 reproduce runs AFTER the local suite, never beside it.
 - **Python:** >=3.10
 - **Tool count:** 91 visible in `full` / 94 in catalog (front door hidden; counts verified 2026-07-30 from `jcodemunch-mcp surface`, which is the only place to get them — do NOT hand-type this; +1 v1.108.111 `get_parity_map`, +1 v1.108.112 `get_decorator_census`, +1 v1.108.113 `get_architecture_metrics`); `tool_surface=counter` exposes a 3-tool front door (`order`/`menu`/`route`) instead
 
 ## Key Files
 ```
 src/jcodemunch_mcp/
-  server.py            # MCP dispatcher (async); CLI subcommand dispatch, auth/rate-limit middleware. v1.108.292: `_mcp_instructions()`/`_tool_search_query()`/`_initialization_options()` — the MCP `initialize` `instructions` string, surface-aware (front door on `counter`, the six core tools on `full`), 1,000-char budget. ⚠ Built per `run()`, never passed to `Server(...)` at import: the surface comes from env+config and neither is settled then. ⚠⚠ It is THE ONLY prose that survives tool deferral — a host over its schema budget ships 91 bare names and withholds every description. All three transports pass it; `tests/test_mcp_instructions.py` parses the dispatcher's AST and fails if any `server.run()` goes back to a bare `create_initialization_options()`, which sends an empty field and raises nothing. ⚠ Same line also sets `Server(..., version=__version__)`: omit it and the SDK reports ITS OWN version in `serverInfo` (hosts showed `1.26.0` while we shipped 1.108.x). ⚠⚠ `__version__` is `"unknown"` under `PYTHONPATH=src`, so a green test here does NOT prove the wire carries a real number — **and CI cannot close that gap either, because it runs from source too.** ⚠ **Closed MANUALLY on 2026-08-24 against the PUBLISHED artifact** (#536): a real stdio handshake to `jcodemunch-mcp==1.108.293` in a clean venv returns `serverInfo {"name":"jcodemunch-mcp","version":"1.108.293"}` and a non-empty `instructions`. Re-verify this way after any change to the handshake; a green suite still does not prove it. ⚠⚠ **The first probe was WRONG and the reason generalises: `uvx jcodemunch-mcp` served a CACHED 1.108.275**, which predates both fixes, so the wire showed the SDK's own version and no instructions — i.e. **exactly the pre-fix symptoms, from a stale cache rather than a defect.** Pin the version and build a fresh venv (`uv venv` + `uv pip install "jcodemunch-mcp==X.Y.Z"`); never probe through bare `uvx` and never read its output as evidence about what we ship. v1.108.66: the Counter front door (order/menu/route) — _effective_surface()/_counter_front_door_tools()/_raw_catalog_tools()/_catalog_names() + surface-collapse in _build_tools_list + _handle_order/menu/route + early front-door branch in call_tool
+  server.py            # MCP dispatcher (async); CLI subcommand dispatch, auth/rate-limit middleware. v1.108.292: `_mcp_instructions()`/`_tool_search_query()`/`_initialization_options()` — the MCP `initialize` `instructions` string, surface-aware (front door on `counter`, the six core tools on `full`), 1,000-char budget. ⚠ Built per `run()`, never passed to `Server(...)` at import: the surface comes from env+config and neither is settled then. ⚠⚠ It is THE ONLY prose that survives tool deferral — a host over its schema budget ships 91 bare names and withholds every description. All three transports pass it; `tests/test_mcp_instructions.py` parses the dispatcher's AST and fails if any `server.run()` goes back to a bare `create_initialization_options()`, which sends an empty field and raises nothing. ⚠ Same line also sets `Server(..., version=__version__)`: omit it and the SDK reports ITS OWN version in `serverInfo` (hosts showed `1.26.0` while we shipped 1.108.x). ⚠⚠ `__version__` is `"unknown"` under `PYTHONPATH=src`, so a green test here does NOT prove the wire carries a real number — **and CI cannot close that gap either, because it runs from source too.** ⚠ **Verify the handshake MANUALLY against the PUBLISHED artifact** after any change to it (#536): pin the version and build a fresh venv (`uv venv` + `uv pip install "jcodemunch-mcp==X.Y.Z"`), then do a real stdio handshake. ⚠⚠ **NEVER probe through bare `uvx`** — it served a CACHED build once and showed the SDK's own version with no instructions, i.e. **exactly the pre-fix symptoms from a stale cache rather than a defect.** (2026-08-24, ISSUE-HISTORY.md) v1.108.66: the Counter front door (order/menu/route) — _effective_surface()/_counter_front_door_tools()/_raw_catalog_tools()/_catalog_names() + surface-collapse in _build_tools_list + _handle_order/menu/route + early front-door branch in call_tool
   counter.py           # (v1.108.66) The Counter: adaptive tool surface logic (pure, no server import). FRONT_DOOR set; STATE_CHANGING_ACTIONS + exec/write-verb tripwire (_FORBIDDEN_VERB_RE) → order_gate(); idf-weighted search_catalog() for menu; _INTENT_RULES + classify_intent()/shape_execute_args() for route. v1.108.124: EXAMPLES (curated per-action example arg objects) + example_for() — catalog_entry attaches `example` into menu rows, _handle_route uses it as the args_template fallback; validated against live inputSchemas in test_counter.py. server.py owns Tool registration + call_tool re-dispatch; counter.py is fed plain data
   watcher.py           # WatcherManager class (dynamic folder watching); watch_folders() wrapper
   progress.py          # MCP progress notifications; ProgressReporter (thread-safe, monotonic), make_progress_notify() bridge. v1.108.189 adds HeartbeatReporter (#383) — the token-less fallback: elapsed-time WARNING lines on the LOG channel, duck-typing ProgressReporter so the dispatcher wires either identically. ⚠ Holds NO notify channel/session ref by construction (not in __slots__) and close() yields no futures, so it CANNOT become an unrequested notification; silent until the first JCODEMUNCH_HEARTBEAT_SECONDS elapses, and finish() is silent if it never spoke
-  security.py          # Path validation, skip patterns, file caps. ⚠ **A build tree is excluded in ELEVEN spellings** — `build`, `.build` and (v1.108.295) `_build`, which is what Elixir/Mix, Sphinx and Dune use — plus (v1.108.303) the eight DOTTED framework trees `.next`/`.nuxt`/`.output`/`.svelte-kit`/`.angular`/`.turbo`/`.parcel-cache`/`.dart_tool`. ⚠⚠ **`.next/server/**` holds a TRANSPILED copy of the pages the user WROTE**, so a Next.js project got its own source twice with the generated copy competing in ranking. ⚠ **DOTTED ONLY** — `out`, `bin`, `obj`, `coverage` and `public` all name real source dirs, and `tests/test_framework_build_trees_are_skipped.py` asserts their ABSENCE as firmly as the eight additions. **`mix` copies dependency SOURCES into `_build`**, so this was the v1.108.234 duplicate-source-tree defect wearing a third name, not a new one. ⚠ Add spellings to `_SKIP_DIRECTORY_NAMES`, never to a derived export — `SKIP_DIRECTORIES` (local walk) and `SKIP_PATTERNS` (GitHub indexer) both derive from it, and editing one reaches only half the product. `verify_package_integrity()` runs on EVERY CLI invocation and its checks are ordered cheapest-first — that ordering IS the fix. ⚠⚠ `packages_distributions()` maps every distribution on `sys.path` to answer a question about ONE: **3.35 s uncached on a box with 894 top-level names, and it returned nothing there** (source tree, no distribution describes it). Targeted `distribution("jcodemunch-mcp")` settles the ordinary install in **5 ms**; the map is reached only when the official dist is absent or did not provide the running module. ⚠⚠ **The map must stay REACHABLE** — it alone can NAME the offending distribution, which is the whole warning; a guard that just banned the call would be satisfied by deleting the security check. ⚠ **Installed-and-correctly-named is NOT sufficient**, so the fast path also proves the official dist owns the running `__file__`. ⚠ Invisible while the CLI was human-typed; the whole cost of a hook once hooks spawn it per tool call (`hook-pretooluse` 4.0s -> 0.94s, the rest being the server import). `tests/test_integrity_check_cost.py` asserts the COST as a property, never the call order
+  security.py          # Path validation, skip patterns, file caps. ⚠ **A build tree is excluded in ELEVEN spellings** — `build`, `.build` and (v1.108.295) `_build`, which is what Elixir/Mix, Sphinx and Dune use — plus (v1.108.303) the eight DOTTED framework trees `.next`/`.nuxt`/`.output`/`.svelte-kit`/`.angular`/`.turbo`/`.parcel-cache`/`.dart_tool`. ⚠⚠ **`.next/server/**` holds a TRANSPILED copy of the pages the user WROTE**, so a Next.js project got its own source twice with the generated copy competing in ranking. ⚠ **DOTTED ONLY** — `out`, `bin`, `obj`, `coverage` and `public` all name real source dirs, and `tests/test_framework_build_trees_are_skipped.py` asserts their ABSENCE as firmly as the eight additions. **`mix` copies dependency SOURCES into `_build`**, so this was the v1.108.234 duplicate-source-tree defect wearing a third name, not a new one. ⚠ Add spellings to `_SKIP_DIRECTORY_NAMES`, never to a derived export — `SKIP_DIRECTORIES` (local walk) and `SKIP_PATTERNS` (GitHub indexer) both derive from it, and editing one reaches only half the product. `verify_package_integrity()` runs on EVERY CLI invocation and its checks are ordered cheapest-first — that ordering IS the fix. ⚠⚠ `packages_distributions()` maps every distribution on `sys.path` to answer a question about ONE: **3.35 s uncached on a box with 894 top-level names, and it returned nothing there** (source tree, no distribution describes it). Targeted `distribution("jcodemunch-mcp")` settles the ordinary install in **5 ms**; the map is reached only when the official dist is absent or did not provide the running module. ⚠⚠ **The map must stay REACHABLE** — it alone can NAME the offending distribution, which is the whole warning; a guard that just banned the call would be satisfied by deleting the security check. ⚠ **Installed-and-correctly-named is NOT sufficient**, so the fast path also proves the official dist owns the running `__file__`. ⚠ Invisible while the CLI was human-typed; the whole cost of a hook once hooks spawn it per call (`hook-pretooluse` 4.0s -> 0.94s). `tests/test_integrity_check_cost.py` asserts the COST as a property, never the call order
   redact.py            # Response-level secret redaction; regex patterns for AWS/GCP/Azure/JWT/GitHub/Slack/PEM/API keys/private IPs; redact_dict() post-processor
   config.py            # JSONC config: global + per-project layering, env var fallback, language/tool gating
   agent_selector.py    # Complexity scoring + model routing (off/manual/auto); default provider batting orders
@@ -42,16 +42,16 @@ src/jcodemunch_mcp/
     gate.py              # 15% savings threshold (JCODEMUNCH_ENCODING_THRESHOLD override)
     generic.py           # Shape-sniffer fallback encoder (covers all tools w/o custom encoder)
     decoder.py           # Public decode() — rehydrates MUNCH payloads back to dicts
-    schemas/             # Per-tool custom encoders (tier-1, phase 2+); auto-discovered registry. ⚠⚠ **A schema that disagrees with its producer about the table KEY is INVISIBLE to the fail-closed guard**: `schema_driven` raises when a table has rows but no declared column populated (#354), and a wrong key yields NO rows, so `out_rows` is empty and the check never runs. That is #553 -- `search_ast` declared `results` while the tool returned `matches`, and served an empty table for every language and preset. ⚠ `tests/test_search_ast_encoder_contract.py` holds the CI-time ratchet: every declared table key must name something its tool emits. ⚠⚠ **(#555) `sd.encode` now also fails closed at RUNTIME on a list-of-dicts under a key no `TableSpec` declares.** It runs on the dict handed to `encode`, which is POST-transform BY CONSTRUCTION — `search_text._flatten` has already removed the public `results` before the guard sees it, so pre-flattening schemas need NO exemption. **Scanning the RAW response instead flags `search_text` on every call**, and an allowlist entry for it would have been the wrong fix to the right symptom. `allow_undeclared=(...)` is explicit and per-key. Raises rather than warns (dispatcher falls back to JSON, data survives); the full suite is clean with it active, so nothing legitimately drops a table. ⚠ **Columns are the second half and the near-miss**: a heterogeneous row set (search_ast carries 16 keys across 10 detectors, 5 of them pattern-specific) loses its payload silently if only the common columns are declared, because `file`/`line` populate and `any_value` goes true. Pattern-specific keys ride as one JSON cell, the `search_text` `before`/`after` shape. A table-key or column change is a WIRE change: bump `ENCODING_ID` and add the old one to `LEGACY_ENCODING_IDS`
+    schemas/             # Per-tool custom encoders (tier-1, phase 2+); auto-discovered registry. ⚠⚠ **A schema that disagrees with its producer about the table KEY is INVISIBLE to the fail-closed guard**: `schema_driven` raises when a table has rows but no declared column populated (#354), and a wrong key yields NO rows, so `out_rows` is empty and the check never runs. (#553: `search_ast` declared `results` where the tool returns `matches`, serving an empty table for every language and preset.) ⚠ `tests/test_search_ast_encoder_contract.py` is the CI ratchet: every declared table key must name something its tool emits. ⚠⚠ **(#555) `sd.encode` also fails closed at RUNTIME on a list-of-dicts under a key no `TableSpec` declares.** It runs POST-transform BY CONSTRUCTION — `search_text._flatten` has already removed the public `results` — so pre-flattening schemas need NO exemption; **scanning the RAW response instead flags `search_text` on every call**, and an allowlist entry for it would be the wrong fix to the right symptom. `allow_undeclared=(...)` is explicit and per-key; raises rather than warns (dispatcher falls back to JSON, data survives). ⚠ **Columns are the second half and the near-miss**: a heterogeneous row set (search_ast carries 16 keys across 10 detectors, 5 of them pattern-specific) loses its payload silently if only the common columns are declared, because `file`/`line` populate and `any_value` goes true. Pattern-specific keys ride as one JSON cell, the `search_text` `before`/`after` shape. A table-key or column change is a WIRE change: bump `ENCODING_ID` and add the old one to `LEGACY_ENCODING_IDS`
   investigator/
     deletion_safety.py           # (v1.108.214) tri-state proof obligations; `investigate_deletion_safety`. NOT an MCP tool
     retrieval_counterfactual.py  # (v1.108.217) `explain_route(task, expected_action)` / `explain_misses(per_query)` — names the FIRST gate that excluded an action: `catalog_absent` / `empty_query` / `rule_preempted` / `no_lexical_overlap` / `ranked_below_cutoff`, in pipeline order (reporting more than the first is reporting consequences). ⚠ Uses the SAME `counter` functions the live front door uses — never a second scorer. ⚠⚠ `rule_preempted` = **never scored**, because `route` runs the fallback ONLY when no rule matched; do NOT read it as a ranking loss. NOT an MCP tool (item 3 moratorium), test-asserted
     reuse_audit.py               # (v1.108.296) `investigate_reuse_before_write(repo, intent)` -- reuse-before-write as proof obligations. Verdicts reuse_available/adapt_candidate/write_justified/lexical_only/not_established; obligations intent_is_searchable (fatal), no_name_twin, no_lexical_match, no_semantic_match, no_structural_twin (optional, EXCLUDED from `_verdict` and `_confidence` when no `proposed_signature` was passed, still shown in `obligations`). ⚠⚠ **`lexical_only` is the whole point**: an intent of 'modal' shares no token with an existing `Dialog`, so an unavailable embedding channel goes UNESTABLISHED and degrades the verdict instead of licensing a write. `no_provider` and `repo_not_embedded` are separate states with OPPOSITE advice. ⚠⚠ **`search_symbols` emits `score` ONLY under `debug=True`** -- without it every row squashes to 0.0, `strong`/`partial` are empty BY CONSTRUCTION and `strong_match`/`adapt_floor` grade nothing. ~25 ms/sweep vs a 0.5 ms cache hit; losing the cache is correct (an absence claim replayed from a cached row is #377 item 3). ⚠⚠ **Sample `_index_was_rewritten` BEFORE any channel runs, never after** -- our own semantic read opens a read-WRITE connection and moves the very mtime the probe compares, so a post-scan sample reported a rewrite we caused ourselves and made `write_justified` UNREACHABLE. ⚠ `has_any()` returning None is UNKNOWN, not embedded-and-clean. ⚠ A refutation backed only by symbols proved dead yields `adapt_candidate` + `dead_matches`, never `reuse_available` -- and is ordered AHEAD of the absence blockers, because a positive hit is not an absence claim. ⚠ `_STRONG_MATCH`/`_ADAPT_FLOOR` are SEEDED, not calibrated, and had never been evaluated against a non-zero score before v1.108.296. NOT an MCP tool (moratorium: control route@1 40.0% vs a 55.0% bar), registered in `WITHHELD`
   storage/
-    selective.py       # (v1.108.216, #398 Arc 2) `SelectiveIndexView` — a `CodeIndex`-SHAPED read view over metadata + named symbol rows. **NOT a subclass**: subclassing would inherit CodeIndex's corpus-wide methods silently operating over a partial `symbols` list, the one outcome this exists to make impossible. `EXACT_FIELDS` are copied onto the instance at construction; **everything else falls through `__getattr__` and promotes to one full load** — including fields invented later. `CORPUS_WIDE` documents the known ones and every entry is parametrized in the test. ⚠ `_PROVENANCE` (`_db_path`/`_loaded_mtime_ns`) MUST stay in `__slots__` — see Current State
+    selective.py       # (v1.108.216, #398 Arc 2) `SelectiveIndexView` — a `CodeIndex`-SHAPED read view over metadata + named symbol rows. **NOT a subclass**: subclassing would inherit CodeIndex's corpus-wide methods silently operating over a partial `symbols` list, the one outcome this exists to make impossible. `EXACT_FIELDS` are copied onto the instance at construction; **everything else falls through `__getattr__` and promotes to one full load** — including fields invented later. `CORPUS_WIDE` documents the known ones and every entry is parametrized in the test. ⚠ `_PROVENANCE` (`_db_path`/`_loaded_mtime_ns`) MUST stay in `__slots__` — see Current State. ⚠⚠ **A metadata field left OUT of `EXACT_FIELDS` costs a full hydration to read one value, silently** — `parser_generation`/`racket_config_digest` (#557) were read by the watcher's per-event upgrade check and promoted the whole corpus to answer an integer. **If it lives in a `meta` row, it belongs in `EXACT_FIELDS`.** ⚠ Assert `promoted is False` after the reads, never that `open_selective` was called — the latter stays green while a new `.symbols` access hydrates behind it
     generation.py      # (v1.108.215, #398 Arc 1) THE READ CONTRACT, both halves. `IndexGeneration`/`describe(index)` — the ONE place `indexed_at`/`git_head`/`_db_path`/`_loaded_mtime_ns` are read off an index; empty string normalises to None once (three surfaces used to disagree). `rewritten_since_load` keeps unknown ≠ changed. `connect_readonly(db_path)` / `readonly_uri` / `wal_sidecar_present` — ⚠⚠ **neither single flag is right**: plain `mode=ro` CREATES `-wal`/`-shm` when absent (moves `_db_mtime_ns`, the .185 `rebuilding` bug), `immutable=1` cannot READ them when present (measured: raises `no such table`, which `has_any()` maps to a confident False). Reads the WAL when its sidecar exists, immutably when it does not. **Every read-only opener in the tree routes through this**; `test_generation_contract.py` fails on a hand-rolled `?mode=ro` URI anywhere else
     sqlite_store.py    # CodeIndex, save/load/incremental_save, WAL-aware LRU cache (_db_mtime_ns); get_source_root(). v1.106.0: save_index + migrate_from_json acquire `indexwrite` process_locks before SQLite writes, body extracted to `_save_index_locked` / `_migrate_from_json_locked`; serialises across MCP processes
-    process_locks.py   # v1.106.0: generic multi-process coordination (acquire/release/inspect/held). Atomic O_EXCL + fcntl flock (Unix) + PID liveness + scoped lock files. Scopes: `watcher` (one-watcher-per-repo, shared with watcher.py) + `indexwrite` (save coordination). Metadata: pid/client_id/scope/target/started_at. JCODEMUNCH_CLIENT_ID env var sets friendly client name (defaults to sys.argv[0] basename)
+    process_locks.py   # v1.106.0: generic multi-process coordination (acquire/release/inspect/held). Atomic O_EXCL + fcntl flock (Unix) + PID liveness + scoped lock files. Scopes: `watcher` (one-watcher-per-repo, shared with watcher.py) + `indexwrite` (save coordination). Metadata: pid/client_id/scope/target/started_at. JCODEMUNCH_CLIENT_ID env var sets friendly client name (defaults to sys.argv[0] basename) ⚠⚠ **(#557) `held.__enter__` records `waited_seconds` and REPORTS it** — DEBUG for any wait, **WARNING past `_SLOW_WAIT_SECONDS` (1.0) with the holder NAMED** (pid/client_id/age). **A CONTENDED LOCK AND SLOW WORK ARE INDISTINGUISHABLE FROM THE CALLER'S TIMER**: `incremental_save` takes this lock before writing, so a reporter measuring `save=9.906s` cannot tell queueing from working and only this function can. ⚠ `watch-all` watches EVERY indexed repo, so a second watcher or an editor-side MCP server is exactly the shape that queues here — naming the holder is the point, because "something else has the lock" sends the reader hunting in the wrong process.
   embeddings/
     ../storage/embedding_matrix.py # (v1.108.223, #399) Process-local cache of the L2-NORMALISED matrix, keyed by a size+mtime stamp over the .db AND its -wal/-shm sidecars. `get_matrix(db_path)` -> `EmbeddingMatrix | None`; `score_all(q)` is ONE `matrix @ q` under numpy and a norm-hoisted Python loop without it. ⚠ **numpy is opportunistic, never a dependency** — `_scores_python` is tested with numpy forced absent. ⚠ **The sidecars are load-bearing in the stamp**: a write lands in the WAL and may not touch the .db until a checkpoint, so a .db-only stamp pins a stale matrix across exactly the write it must see. ⚠ Rows are `array.array('f')` in the fallback, not `list[float]` (~8x the memory, and this is HELD not thrown away). Bounded to 2 repos; `JCODEMUNCH_EMBED_MATRIX_CACHE=0` disables retention only
     ../storage/embedding_store.py  # CRUD over symbol_embeddings. ⚠ **Five read paths, pick deliberately**: `iter_raw()` (.223, read-only, UNDECODED blobs, for embedding_matrix only); `get_all()` (read-WRITE conn, bumps .db mtime), `get_all_readonly()` (.185, `mode=ro&immutable=1`, does not), `get_many(ids)` (.210, targeted + read-only, chunked at 900 for SQLITE_MAX_VARIABLE_NUMBER), `has_any()` (.211, `SELECT 1 ... LIMIT 1`, read-only, TRI-STATE — `None` means could-not-establish and is NEVER `False`). ⚠ `count()` and `get_all()` both use `_connect()`, which runs PRAGMA+CREATE-TABLE on EVERY connection — an existence check is NOT free and moves the mtime. Prefer `get_many` whenever the caller already knows its ids, and `has_any` over `count()` for a pure existence question
@@ -67,7 +67,7 @@ src/jcodemunch_mcp/
     batch_summarize.py # 3-tier: Anthropic > Gemini > OpenAI-compat > signature fallback
   tools/
     index_folder.py    # Local indexer (sync → asyncio.to_thread in server.py). v1.108.0 adds `paths=[...]` arg via new `resolve_explicit_paths()` helper to skip the directory walk when the caller supplies an explicit file/subdir list; security matches the walk path (outside-root / traversal / symlink-escape / oversize / unsupported-ext all warn-and-skip with per-entry warnings). v1.108.6 adds `identity_mode: "config"|"local"|"git"` arg — delegates to `storage/git_root.resolve_index_identity()` which is the single source of truth for local-folder → repo-ID resolution (replacing duplicated logic across watcher.py / resolve_repo.py / index_folder.py).
-    refresh.py         # (v1.108.259, #395) Bounded, resumable repo-wide refresh. `run()` slices the corpus through `index_folder(paths=..., force_reparse=True)` under a wall-clock + file budget, persisting a cursor to `<CODE_INDEX_PATH>/refresh_state/<owner>__<name>.json` (atomic write) so N short windows converge like one long one. `status()` reports progress and does NO work. ⚠⚠ Stamps `parser_generation` ONLY after re-running discovery proves full-corpus coverage — drift appends and DEFERS, batch errors block, and `stamp_parser_generation` refuses to go backwards. ⚠⚠ **That check asked only whether the corpus GREW, and for its whole life could not see the opposite failure** (2026-08-25): a source root that has moved, been unmounted, or been cleaned makes discovery return `[]`, so `current` and `known` are both empty, nothing drifts, nothing errors, and the campaign stamps the target generation having re-parsed ZERO files. **UNREPAIRABLE — a stamp equal to the constant is indistinguishable from a genuine one, so the tool built to prevent the exempt bucket was putting indexes INTO it.** Now refuses on `corpus_unreadable` (discovery empty, index not) and `index_unreadable` (`_index_files` returned None — UNKNOWN blocks, same rule as `has_any()`). ⚠ EMPTY-vs-NON-EMPTY deliberately, NOT a shrink threshold: a repo may legitimately lose most of its files, so partial shortfall is DISCLOSED as `indexed_files_not_reparsed` rather than guessed at. ⚠ Found by running the documented command on the three pinned benchmark corpora — bare `.git` dirs, 8,220 stale symbols, all three stamped in under a second. ⚠ `use_ai_summaries` defaults FALSE here (opposite of `index_folder`): a scheduled job must not bill a paid summarizer unasked
+    refresh.py         # (v1.108.259, #395) Bounded, resumable repo-wide refresh. `run()` slices the corpus through `index_folder(paths=..., force_reparse=True)` under a wall-clock + file budget, persisting a cursor to `<CODE_INDEX_PATH>/refresh_state/<owner>__<name>.json` (atomic write) so N short windows converge like one long one. `status()` reports progress and does NO work. ⚠⚠ Stamps `parser_generation` ONLY after re-running discovery proves full-corpus coverage — drift appends and DEFERS, batch errors block, and `stamp_parser_generation` refuses to go backwards. ⚠⚠ **A growth-only check cannot see an EMPTY corpus**: a moved/unmounted/cleaned source root makes discovery return `[]`, nothing drifts, nothing errors, and the campaign stamps the generation having re-parsed ZERO files — UNREPAIRABLE, because a stamp equal to the constant is indistinguishable from a genuine one. Refuses on `corpus_unreadable` and `index_unreadable` (UNKNOWN blocks, same rule as `has_any()`). ⚠ EMPTY-vs-NON-EMPTY deliberately, NOT a shrink threshold: a repo may legitimately lose most of its files, so partial shortfall is DISCLOSED as `indexed_files_not_reparsed`. (2026-08-25, ISSUE-HISTORY.md) ⚠ `use_ai_summaries` defaults FALSE here (opposite of `index_folder`): a scheduled job must not bill a paid summarizer unasked
     index_repo.py      # GitHub indexer (async, httpx)
     get_symbol.py      # get_symbol_source: shape-follows-input (id→flat, ids[]→{symbols,errors}). v1.108.70 bounded-source mode: optional source_start_line/source_end_line/max_source_lines/max_source_bytes/max_total_source_bytes return an explicitly-labeled slice (source_truncated + range/total metadata, source_is_bounded_view); verify stays full-body; context_lines+bound rejected. Pure helpers _utf8_safe_truncate + _bound_source
     search_columns.py  # Column search across dbt/SQLMesh models
@@ -93,6 +93,7 @@ src/jcodemunch_mcp/
     get_architecture_metrics.py # (v1.108.113) get_architecture_metrics: concentration (Gini over per-file symbols/bytes/fan_in/fan_out + top concentrators) + depth (Lakos levelization, longest chain over SCC-condensed DAG) + modularity (WCC clusters + back_edges = DSM hidden coupling). Reuses _build_adjacency (get_dependency_graph) + _find_cycles. One tool vs their 3; NO N×N matrix; does NOT touch radar composite. Read-only analytics. Standard tier
     get_decorator_census.py   # (v1.108.112) get_decorator_census: repo-wide census of decorators/annotations/attributes. Aggregates the index's stored per-symbol `decorators` (cross-language, no parser work); normalized histogram (_normalize_decorator strips @/args/[]; _short_raw flattens+caps raw_forms), per-bucket symbol_kinds + file count; name_filter/scope_path/kind filters, include_sites. Read-only ANALYTICS (no tokens-saved _meta). Standard tier
     get_parity_map.py         # (v1.108.111) get_parity_map: correspondence-aware migration parity between a SOURCE and TARGET symbol tree (two subpaths of one repo, or two repos). Exact + rename matching (reuses find_similar_symbols _signature_tokens/_callee_set/_jaccard/_byte_ratio), status per source symbol (ported/ported_diverged/unported/orphaned/added), dependency-ordered port_plan (adjacency from _callee_set, SCC grouping via get_dependency_cycles._find_cycles, Kahn topo, unblocked/blocking_deps). Read-only/plan-only; parity_axes reserved for P3 suite axes. Standard tier
+    find_dead_code.py         # ⚠⚠ **`_ENTRY_POINT_FILENAMES` is Python and nothing else** -- eleven `.py` names plus `Makefile` -- so on a JS repo it names NOTHING (#562). Framework roots come from `_entry_points.entry_point_spec`, never from this list. ⚠⚠ **`_TOOLCHAIN_MANIFESTS`**: nothing imports a lockfile BY DESIGN, so `zero_importers` is a tautology there -- `pnpm-lock.yaml`, `tsconfig.json` and `package.json` were reported dead, the last by the same run that READS it to find entry points. **Excluded by NAME, never by extension**: an orphaned `data/fixtures.json` is a real finding and must keep being reported. `Makefile` was already in the set above for exactly this reason.
     get_hotspots.py           # get_hotspots: top-N high-risk symbols by complexity x churn
     get_repo_map.py           # get_repo_map: query-less, token-budgeted, signature-level repo overview ranked by PageRank — cold-start orientation. Reuses cached PageRank, emits signatures only (no bodies), greedy-packs per-file under token_budget
     find_similar_symbols.py   # find_similar_symbols: multi-signal consolidation detection — semantic (embeddings) + structural (signature/size) + behavioral (callee Jaccard); union-find clustering, verdict tier (near_duplicate / similar_logic / parallel_implementation), canonical pick by PageRank, differs_by breakdown. BM25 inverted-index pre-filter for sub-N^2 cost. Skips tests/dunders/generated by default.
@@ -108,9 +109,11 @@ src/jcodemunch_mcp/
     mermaid_viewer.py         # mmd-viewer spawn helper for render_diagram; resolve_viewer_path/open_diagram/cleanup_temp_dir; jcm- prefix for safe cleanup; config-gated via render_diagram_viewer_enabled + mermaid_viewer_path
     get_project_intel.py      # get_project_intel: auto-discover+parse non-code knowledge (Dockerfiles, CI configs, compose, K8s, .env templates, Makefiles, scripts); cross-references to code symbols; 6 categories. v1.108.0 adds `scope_path` arg to restrict discovery to a monorepo subpath (use list_workspaces.path values); validates against source_root (traversal/absolute/non-existent all error).
     list_workspaces.py        # (v1.108.0) Enumerate monorepo workspace members. Detects pnpm (pnpm-workspace.yaml), yarn/npm (package.json `workspaces:`), turborepo (turbo.json), lerna (lerna.json), rush (rush.json), Go (go.work `use (...)`, module name from go.mod), Cargo (Cargo.toml `[workspace] members`). Returns `[{path, package_name, manager}, ...]` plus `is_monorepo` + `managers`. Read-only, dependency-free (hand-rolled minimal TOML/YAML readers).
-    get_repo_health.py        # get_repo_health: one-call triage snapshot (delegate aggregator); includes six-axis `radar` field (v1.87.0)
+    get_repo_health.py        # get_repo_health: one-call triage snapshot (delegate aggregator); includes six-axis `radar` field (v1.87.0) ⚠⚠ **`_count_unstable_modules` excludes framework entry points from BOTH sides of the ratio (#561)** -- the rule it already applied to tests, whose own comment says they have "Ca=0 by construction". Numerator-only would shrink a count without shrinking what it is a fraction of: **the 84.0 B -> 88.8 B sign error of 1.108.305.** ⚠ So an entry point with a real `Ce` problem is graded by NOTHING; `coupling_entry_points_excluded` + `coupling_framework_profile` disclose it. ⚠ Only the DETECTED profile excludes -- widening to `_ENTRY_POINT_FILENAMES` moves every Python repo's published score on a heuristic, and needs its own measurement. ⚠⚠ **A REFUSAL IS NOT A ZERO**: `get_dead_code_v2` returning `[]` WITH a `signal_warning` became `dead_code_pct: 0.0` and a dead_code axis of 100 -- the strongest claim assembled from an admission that nothing was established. `dead_code_measurable` feeds `unmeasurable_axes`, which withholds composite and grade.
+    _entry_points.py          # (#561/#562) `entry_point_spec(index)` -- reads the framework profile `detect_framework` persists into `context_metadata`. ⚠⚠ **That key was WRITTEN in one place and READ IN NONE for its whole life**, so three tools each reproduced their own Python-only answer to "is this a root?" and a Next.js repo detected ZERO entry points -- v2 returned `dead_symbols: []`, and 203 of 366 "unstable" files were `route.ts` handlers whose Ca is 0 BY CONSTRUCTION. ⚠⚠ **Flask/FastAPI shipped `"*.py"` there**, which under fnmatch declares the whole tree; catch-alls are removed at the source AND refused by `_is_catch_all`, gated by a test over every profile. Directory SCOPE saves a pattern (`routes/*.php` is fine, `**/*.php` is not). ⚠ Three dialects, all shipped: glob, bare filename (ROOT-LEVEL only -- `main.py` must not claim `src/vendor/main.py`), and directory prefix (`cmd/`, which fnmatch never matches). ⚠⚠ **`matches()` False is NOT "an ordinary module"** -- `profile_name is None` is the tell for no-declaration-available. [[grep-a-persisted-field-for-its-readers]]
+    _git_history.py           # (#shallow) `history_coverage(cwd, days)` -- does the history REACH BACK past the window a churn tool is about to read? ⚠⚠ **Nine tools run `git log --since=N days` and none could tell a TRUNCATED history from a QUIET one**; git answers exit 0 with a short log, so `churn_surface` ranked nothing but complexity and the grade came out FLATTERING. ⚠⚠ **Fixed twice in the CLONERS (Practice 6, the observatory) and never in a READER** -- `actions/checkout` defaults to `fetch-depth: 1`, so every user kept it. ⚠ Asks COVERAGE, not shallowness: `--is-shallow-repository` is the mechanism, "reaches past the window" is the property -- a `--depth=900` clone at 90 days is shallow AND complete, and flagging it would teach people to ignore the flag. A young repo is not a truncated one. ⚠ TRI-STATE (`complete: None` = could not establish, never False); `churn_is_measurable()` collapses None to do-not-publish at the grade gate. ⚠ `attach_history_coverage` is SILENT on a covered window by design, and discloses an UNKNOWN
     health_radar.py           # Six-axis health radar (complexity/dead_code/cycles/coupling/test_gap/churn_surface) + diff_health_radar pure-function tool for PR-time diff-grade reporting (v1.87.0). Phase 7 (v1.100.0): optional 7th axis runtime_coverage when caller passes runtime_coverage_pct; axis is omitted otherwise so the composite stays comparable against pre-Phase-7 baselines. diff_radar walks the axes dict generically — picks up the new axis automatically.
-    get_untested_symbols.py   # get_untested_symbols: find functions with no test-file reachability (import graph + name matching)
+    get_untested_symbols.py   # get_untested_symbols: find functions with no test-file reachability (import graph + name matching) ⚠⚠ **`untested_count`/`reached_pct` are measured BEFORE the `max_results` cut (#559)**; the page length is `returned_count`. The count used to be `len(symbols)` POST-slice and `get_repo_health` asks for `max_results=1`, so the published test axis read ~100% reach on every repo with untested code (4,893 of 6,352 published as 100). ⚠ **The response key is `symbols`** -- three consumers invented `untested_symbols`/`untested`/`results` and fell through to `[]` in silence. [[a-mock-can-supply-a-contract-the-producer-lacks]]
     search_ast.py             # search_ast: cross-language AST pattern matching; 10 preset anti-patterns + custom mini-DSL (call:, string:, comment:, nesting:, loops:, lines:); enriched with symbol context
     winnow_symbols.py         # winnow_symbols: multi-axis constraint-chain query; AND-intersects kind/language/name/file/complexity/decorator/calls/summary/churn in one round trip; ranks by importance/complexity/churn/name
     audit_agent_config.py    # audit_agent_config: token waste audit for CLAUDE.md, .cursorrules, etc.; cross-refs against index. Reused by suggest_corrections (_discover_files / _fuzzy_suggest / stale-config findings). Skill-candidate advisory (_check_skill_candidates / _split_sections / _best_subtree): flags always-resident H2 sections whose index-resolved refs concentrate in ONE subtree, gated by `skill_advisor_mode` (default off). ⚠ The signal is CONCENTRATION, not size — it returns [] with no index, and `subtreeShareCap` (0.25) not `concentrationFloor` is the discriminator, because a narrow subtree failing the floor hands selection to its permissive parent. ⚠ Findings state relevance was NOT measured; nothing records which section a turn needed
@@ -324,17 +327,13 @@ regenerate per `tests/fixtures/rust/REGENERATE.md`.
 
 ### Codex tool-surface benchmark (`benchmarks/codex_surface/`) — NEGATIVE result
 
-⚠ Shipped in 1.108.271. Kept here rather than in the rotation because it is a
-STANDING warning about a measurement, not a release note that ages out.
+⚠ Shipped in 1.108.271. A STANDING warning about a measurement, not a release
+note that ages out. Forensics in `ISSUE-HISTORY.md` (2026-07).
 
-⚠⚠ **Do not quote the arm numbers; the honesty gate fired.** Four arms x three
-repeats on FastAPI at a pinned commit, answering an
-[r/codex benchmark](https://www.reddit.com/r/codex/comments/1vjfepe/) that put
-jCodeMunch at **+28.45% on Codex** and **-3.34% on OpenCode**. Largest arm
-difference 568,617 tokens against a baseline varying against ITSELF by
-1,143,229. Directions were incoherent too (`full`, carrying 24,007 tokens of
-schema, came out CHEAPER than baseline). The hypothesis is **untested, not
-disproven** — the instrument cannot resolve an effect that size.
+⚠⚠ **Do not quote the arm numbers; the honesty gate fired.** The largest arm
+difference was smaller than the baseline's variation against ITSELF, and the
+directions were incoherent. The hypothesis is **untested, not disproven** — the
+instrument cannot resolve an effect that size.
 
 ⚠⚠ **The finding that outlived the arms, and it corrects a claim this project
 made: 86% of baseline input is CACHED.** The schema block is stable across
@@ -342,34 +341,24 @@ requests, so it is paid at full rate roughly ONCE and at cache-read rates after.
 Any framing of "24,007 tokens in every request" is wrong, and that framing was
 used here before measuring. **The fixed-cost story is a WEAKER explanation for
 the r/codex result than the raw number suggests, not a stronger one.**
-`--surface-only` still measures the schema exactly (90 tools / 24,007 tokens at
-default `full`, 6 / 1,030 at `counter`) and needs no API credits; what it does
-not measure is what that costs in practice.
 
-⚠ **Those two numbers are a 2026-07 snapshot from THIS harness and are not the
-canonical figures.** `benchmarks/schema_baseline.json` is, written by
-`benchmarks/harness/capture_schema_baseline.py` and guarded by
-`tests/test_schema_budget.py`; it counts a different payload shape, so the two
-sets will never agree digit for digit and neither is wrong. Quote the baseline
-file. ⚠⚠ **Reconciled 2026-08-14: the Counter avoids 95.9%, not the ~98% that
-`run_route_recall.py` asserted for two months** — that literal is now computed
-from the baseline at runtime, with a test that fails if any schema-saving
-percentage returns to that file. **The gap existed because the budget guardrail
-only walked `tool_profile`, which does not apply to the front door at all**, so
-the single largest lever in the project had no test under it.
+⚠⚠ **`tool_profile: "standard"` is NOT a token lever: it drops 9 of 91 tools and
+5.7% of the payload.** `core` (74.0%) and `counter` (95.9%) are the only two
+settings that move the number; there is no gradient between them, and the config
+surface implies there is. ⚠ Under `full`, tool DESCRIPTIONS are 36% of the
+payload and `compact_schemas` rewrites input schemas only — schema compaction is
+near its floor, descriptions are untouched ground.
 
-⚠⚠ **The same run killed `tool_profile: "standard"` as a token lever: it drops 9
-of 91 tools and 5.7% of the payload.** Anyone selecting it as the safe middle
-setting gets nothing measurable. `core` (74.0%) and `counter` (95.9%) are the
-only two settings that move the number; there is no gradient between them, and
-the config surface currently implies there is. ⚠ Where the rest sits, from
-`--breakdown`: under `full`, tool DESCRIPTIONS are 36% of the payload and
-`compact_schemas` rewrites input schemas only, never descriptions. Schema
-compaction is near its floor; descriptions are untouched ground.
+⚠⚠ **Quote `benchmarks/schema_baseline.json`, never a figure from the harness.**
+It is written by `benchmarks/harness/capture_schema_baseline.py` and guarded by
+`tests/test_schema_budget.py`; the harness counts a different payload shape, so
+the two will never agree digit for digit and neither is wrong. The Counter
+avoids **95.9%**, not the ~98% `run_route_recall.py` asserted for two months —
+that literal is computed from the baseline at runtime now, with a test that
+fails if any schema-saving percentage returns to that file. **The gap existed
+because the budget guardrail only walked `tool_profile`, which does not apply to
+the front door at all**, so the largest lever in the project had no test under it.
 
-⚠ Design flaw recorded so nobody repeats it: summing per-invocation input across
-a RESUMED conversation counts accumulated context on every step, so the total is
-dominated by how much the agent read early on, which compounds.
 
 **Dated entries are rotated out.** Closed issue and PR history lives in
 `ISSUE-HISTORY.md`, verbatim, and is NOT loaded into a session. Grep it by
@@ -462,6 +451,71 @@ Each names a date to grep for in `ISSUE-HISTORY.md`.
   stable prefix raises numerator and denominator together, so the arm carrying
   the least schema scores the highest. The cut was not merely inconclusive, it
   was incapable — and it will be suggested again by the next cache paper.
+- **Dropping an unmeasurable axis is not the same as omitting an inapplicable
+  one, and the difference has a SIGN.** 08-28: gating `churn_surface` on a
+  shallow clone by omitting it — the convention `runtime_coverage` already uses
+  — took the same tree from **84.0 B to 88.8 B** while full-clone truth was
+  **77.3 C**. **Removing a low-scoring axis RAISES a mean**, so the fix moved
+  the published grade further from reality than the defect had. NOT APPLICABLE
+  may be dropped silently; COULD NOT MEASURE must withhold the composite and
+  the grade. ⚠ Ask which direction a "safe" omission moves the number before
+  shipping it. [[a-one-directional-check-certifies-its-blind-side]]
+- **`.get(key, default)` is not a None guard when the key EXISTS.** 08-28:
+  `diff_radar`'s `.get("composite", 0.0)` raised the moment a composite was
+  legitimately `None` — the default never fires for a present key. ⚠ And the
+  0.0 it would have supplied was worse than the crash: a ~77-point regression
+  reported against a side nobody measured. Same shape as
+  [[a-module-that-imports-clean-has-been-tested-for-nothing]].
+- **The host's timezone can select a test's INPUT FORMAT.** 08-28: git renders
+  a UTC offset as `Z`, which `datetime.fromisoformat` could not parse before
+  3.11 — so a boundary date was unreadable on 3.10, in CI only. Every runner is
+  UTC; this box is CDT and got `-05:00`, which parses everywhere. ⚠⚠ **No local
+  run on any version could reproduce it, `uv run --python 3.13` included** —
+  the version matrix was not the axis that mattered. Pin format-sensitive
+  parsing with a UNIT test over every spelling; an integration test can only
+  observe the one its host emits. [[a-module-that-imports-clean-has-been-tested-for-nothing]]
+- **A command that does not CREATE its environment is testing whatever was
+  left there.** 08-28: the release checklist's CI-env reproduce ran
+  `uv run --python 3.13 python -m pytest` with no sync and no `--extra watch`,
+  so it inherited `.venv`. It looked right for months because a previous sync's
+  packages survived; switching interpreters cleared them and **105 tests
+  silently stopped executing while the run reported exit 0 and the totals
+  reconciled exactly**. ⚠ Read the SKIP count, not just the exit code and the
+  total. ⚠⚠ The fix is in a GITIGNORED skill file, so the durable copy and its
+  ratchet live in the repo — `tests/test_ci_env_reproduce_command.py` binds
+  CLAUDE.md's command to `test.yml`'s install line.
+  [[pipes-and-missing-xdist-both-report-exit-zero]]
+- **A denylist catches the instance; an allowlist catches the class.** 08-28:
+  `relnotes.md`, a scratch copy of the release notes, was swept up by
+  `git add -A` and shipped inside the published sdist. The sdist canary tests
+  prove NAMED bad paths are absent and could never have seen it — a scratch
+  file has no name to plant a canary under. ⚠ **Build release notes outside the
+  repository**; a `.gitignore` entry protects only the spelling someone
+  remembered. ⚠ Assert the allowlist in BOTH directions — an entry naming a
+  file that no longer ships makes the list stop describing the artifact.
+  ⚠⚠ **It found a SECOND instance minutes later and it was mine**: `suite.log`,
+  the pytest redirect used for every gate run that day, sitting in the repo
+  root. A release cut while one existed ships it, and a pytest log carries
+  absolute paths and usernames. **Redirect gate runs to the scratchpad, never
+  the repo.**
+- **A field written by nobody's reader is a defect with no symptom.** 08-28
+  (#561/#562): `detect_framework` persisted `entry_point_patterns` into
+  `context_metadata` at index time, and a tree-wide search found that key
+  written in ONE place and read in NONE. Three tools each reproduced their own
+  "is this a root?" answer and every one was Python, so a Next.js repo detected
+  zero entry points. ⚠⚠ **An unconsumed field also rots unnoticed**: Flask and
+  FastAPI carried `"*.py"` there, which under fnmatch declares the whole tree —
+  the first naive reader would have switched dead-code detection off across an
+  ecosystem. **Grep a persisted field for its readers before trusting it, and
+  before adding one.** [[a-module-that-imports-clean-has-been-tested-for-nothing]]
+- **A count taken after the page is cut describes the page.** 08-28 (#559):
+  `untested_count = len(symbols)` ran after the `max_results` slice, so
+  `get_repo_health`'s `max_results=1` published ~100% test reach on every repo
+  with untested code. ⚠ **Invisible to any single-call test** — one call's
+  number is self-consistent; only two page sizes over the SAME repo can see it.
+  ⚠ And the paired half: **a refusal is not a zero.** `get_dead_code_v2`
+  returning `[]` WITH a `signal_warning` became `dead_code_pct: 0.0` and an axis
+  of 100. [[a-one-directional-check-certifies-its-blind-side]]
 - **A competitor's fix list is a free defect probe.** 08-22: a rival's
   `fix(gini): measure a file's lines as its own span, not the sum of every node`
   named our defect precisely enough to confirm in one query —
@@ -472,193 +526,166 @@ Each names a date to grep for in `ISSUE-HISTORY.md`.
 
 ## Issue + release policy (2026-07-28)
 
+⚠⚠ **The forensics behind every rule here are in `ISSUE-HISTORY.md` §
+"issue + release policy forensics (2026-08-28)" — measurements, dates and the
+incidents that produced each one. READ THEM BEFORE ARGUING WITH A POLICY.**
+Several were written after we broke them ourselves; 2e is recorded in the first
+person because the wrong call sounded reasonable at the time.
+
 **1. One issue, one verdict.** A multi-finding report gets SPLIT at triage into
 one issue per finding, cross-linked, credit on each. Nothing is dropped and no
 detail is discouraged. The reason is closure mechanics: a 4-finding issue closes
 only when the last one settles, so three finished fixes sit behind one
-unfinished conversation and the tracker cannot say which is which.
-
-⚠ **This is the correction to a mistake we made deliberately.** On 2026-07-27 we
-CONSOLIDATED five jdoc issues (#80/#89/#90/#93) into one gate, #95. It cut the
-open count from 5 to 1 and manufactured a single artifact with the power to
-block a release. **Tracker-tidiness and granularity pull in opposite directions;
-do not optimize the count.**
+unfinished conversation. ⚠ This corrects a mistake we made deliberately —
+consolidating five jdoc issues into one gate cut the open count from 5 to 1 and
+manufactured a single artifact with the power to block a release.
+**Tracker-tidiness and granularity pull in opposite directions; do not optimize
+the count.**
 
 **2. A release is NEVER blocked on an open issue**, including a verification we
 asked for. Done + tested + green ships on schedule, carrying a plain-language
-verification-status line (the #95 disclosure sentence is the template; it is
-deliberately weaker than a sign-off and the changelog must never blur the two).
-Late re-verification counts IN FULL and is announced retroactively. Nothing
-expires. **Every timebox names its default action** ("verification by X, or Y
-ships with disclosure Z"); a date with no stated consequence is a wish.
-
+verification-status line. Late re-verification counts IN FULL and is announced
+retroactively. Nothing expires. **Every timebox names its default action** ("verification
+by X, or Y ships with disclosure Z"); a date with no stated consequence is a wish.
 ⚠ **The point is that a reviewer's thoroughness must never become a veto.** If
-being careful can stall a release, careful review becomes expensive to accept,
-which is backwards.
+being careful can stall a release, careful review becomes expensive to accept.
 
 **2e. NEVER BATCH OUR RELEASE BEHIND SOMEONE ELSE'S CLOCK** (jjg, 2026-08-18,
-after it happened). Policy 2 says a release is never blocked on an open issue.
-**The way that rule gets broken is not by someone overruling it — it is by an
-apparently sensible batching argument that never mentions it.**
-
-⚠⚠ **The exact failure, recorded because it was MINE and it sounded reasonable.**
-On 2026-08-18, five fixes were merged and green (#488/#489/#490's siblings,
-#495). I recommended holding the release until 08-19/08-20 so it could include
-#504 and #447, on the grounds that each of our releases re-conflicts elfrost's
-CLA-blocked #443 and batching means resolving once instead of three times. jjg
-accepted it. **That recommendation coupled our shipping schedule to a
-contributor's CLA signature and a first-time reporter's availability, which is
-the precise outcome policy 2 exists to prevent.**
-
-⚠⚠ **It was also wrong ON THE MERITS, which is the part that generalises.**
-Batching reduces the NUMBER of conflict resolutions, not whether they happen —
-#443 conflicts on whatever release comes next, whenever that is. Each resolution
-is a scripted three-way merge plus one suite run, measured at minutes. **The
-trade was "finished, tested, user-facing fixes sit unreleased for two days" in
-exchange for "we do a cheap chore once instead of three times." Weigh the cost
-of the chore against the cost of the delay before proposing a batch; here it was
-not close.**
-
-⚠ **The timeboxes are NOT the problem and must not be "fixed".** Every one names
-a default that ships the work regardless (policy 3a). A posted window decides
-whose commit it is, never whether the fix ships or whether we can release. If a
-window ever appears to block a release, the batching decision is what is
-blocking it, not the window.
-
+after it happened). ⚠⚠ **Policy 2 does not get broken by someone overruling it —
+it gets broken by an apparently sensible batching argument that never mentions
+it.** I once recommended holding five merged, green, user-facing fixes for two
+days so a release could absorb a contributor's CLA-blocked PR and save three
+conflict resolutions. jjg accepted it. That coupled our schedule to a
+contributor's signature, which is exactly what policy 2 exists to prevent — and
+it was wrong on the merits, because batching reduces the NUMBER of resolutions,
+not whether they happen, and each is minutes.
 ⚠ **The test, before proposing to hold a release:** name the thing being waited
 for, and whether it is OURS. If it is anyone else's action — a signature, a PR, a
-reply, a re-run — the answer is ship now and let them ride the next one.
-Contributor work is never worse off for this: their default still fires, their
-credit is unchanged, and their PR merges into a smaller diff.
-
+reply, a re-run — ship now and let them ride the next one.
 ⚠ **Corollary: "reduce OUR churn" is not a release criterion.** Conflict
-resolution, re-runs and re-merges are our costs to absorb. The moment avoiding
-them starts shaping WHEN users get fixes, the optimisation has inverted — we are
-spending their latency to buy our convenience. [[never-batch-a-release-behind-someone-elses-clock]]
+resolution and re-merges are our costs to absorb. The moment avoiding them shapes
+WHEN users get fixes, the optimisation has inverted.
+⚠ **The timeboxes are NOT the problem and must not be "fixed".** Every one names
+a default that ships the work regardless. If a window appears to block a release,
+the batching decision is what is blocking it. [[never-batch-a-release-behind-someone-elses-clock]]
 
 **2f. THE ONE CASE WHERE NOT CUTTING A RELEASE IS LEGAL — and it is narrow**
-(jjg, 2026-08-20). 2e forbids holding a release behind someone else's clock.
-This is not that, and the difference has to be stated precisely or 2f becomes
-the loophole that kills 2e.
-
-⚠⚠ **THE DISCRIMINATOR IS WHETHER A USER IS WAITING FOR ANYTHING IN THE BLOCK.**
-In #443 we held a SECURITY FIX behind a contributor's CLA: real users, real
-exposure, eight days. In 1.108.289 the entire `[Unreleased]` block is licence
-metadata whose ONLY beneficiary is the customer we would be waiting on.
-**Shipping it gets no user anything.** So the timing question is not "do we make
-users wait" — it is "what serves the one party this release is for", which is a
-different question with a different answer.
-
-⚠ **The asymmetry that decides it: released metadata is PERMANENT per version,
-unreleased metadata is FREE.** Cutting .289 before the customer confirms the
-identifier form risks a THIRD spelling (.288 `-1.1`, .289 `-1`, .290 whatever),
-and their allowlist fans out across all three. **This is the same immutability
-argument that justified deciding FAST, pointing the other way at the release
-step.** Deciding early is cheap; publishing early is not.
-
-⚠⚠ **THE TEST, and it must be applied every time before invoking 2f: name what
-is in the block and who is waiting for it. If ANY entry is a fix, a feature or a
-correctness change, 2f does not apply and 2e governs — cut it now.** A block that
-is entirely metadata for one named recipient is the only shape this covers.
-
-⚠ **Both triggers fire independently and neither can be deferred**: the next
-content update ships it regardless of any reply, and a reply ships it regardless
-of what else is ready. **A held release with no trigger is a forgotten release**,
-which is why the hold is recorded in Current State where it is read every
-session, not only here.
-
-⚠ **"We never wait for a reply to ship a fix; we can decline to CUT a release
-whose only content is a thing the recipient has not confirmed."** Those are
-different acts. Only the first is what 2 and 2e protect against.
+(jjg, 2026-08-20). ⚠⚠ **THE DISCRIMINATOR IS WHETHER A USER IS WAITING FOR
+ANYTHING IN THE BLOCK.** A block that is entirely metadata for one named
+recipient is the only shape this covers, because shipping it gets no user
+anything. ⚠ The asymmetry that decides it: **released metadata is PERMANENT per
+version, unreleased metadata is FREE** — the same immutability argument that
+justifies deciding fast, pointing the other way at the release step.
+⚠⚠ **THE TEST, applied every time before invoking 2f: name what is in the block
+and who is waiting for it. If ANY entry is a fix, a feature or a correctness
+change, 2f does not apply and 2e governs — cut it now.**
+⚠ A held release with no trigger is a forgotten release, so record the hold in
+Current State, not only here. [[declining-to-cut-is-not-holding-a-fix]]
 
 **3. A contributor's PR is never the only path.** Timebox it and keep our own
 path warm (#388 taught this the expensive way).
 
 **3a. NO TIMEBOX WE OFFER RUNS LONGER THAN 24 HOURS** (jjg, 2026-08-14, widened
-the same day from the CLA-only version). It covers **every** shape: signing the
-CLA, opening a PR already written, and taking an issue to implement. The CLA case
-is the easiest to justify — CLA Assistant prompts the moment a PR opens and
-signing takes about 30 seconds, so a longer window parks a finished, green,
-reviewed fix behind a form — but the rule is not limited to it.
-
+same day; **made ABSOLUTE 2026-08-20 — "Not again. 24 hour. Tops. Ever."**). It
+covers every shape: signing the CLA, opening a PR already written, taking an
+issue to implement.
 ⚠⚠ **The window is only fair BECAUSE the default action preserves credit.** At
-expiry we implement the fix ourselves and credit them in the CHANGELOG, the
-release notes and the close comment. So the 24 hours decide whose COMMIT it is,
-never whether they are credited and never whether the fix ships. Quote the
-default in the same comment as the deadline — a 24-hour clock with an unstated
-consequence reads as a threat, and it is not one.
+expiry we implement it ourselves and credit them in the CHANGELOG, the release
+notes and the close comment. So the 24 hours decide whose COMMIT it is, never
+whether they are credited and never whether the fix ships. **Quote the default in
+the same comment as the deadline** — a clock with an unstated consequence reads
+as a threat.
+⚠⚠ **The failure mode has a name: a CLA hostage negotiation.** #443 went eight
+days — a real security fix, reviewed and green, held behind a 30-second form,
+while seven of our own merges conflicted its branch. **A window longer than 24
+hours purchases exactly one thing: the chance the contributor's commit is theirs
+— and it pays for that chance in the user's exposure to an unfixed defect.**
+⚠ An extension the contributor ASKS FOR is different from a default we hand out;
+CONTRIBUTING.md invites the ask. Hold it when they ask.
+⚠ **Do not shorten a timebox already posted**, and **re-read the thread for the
+operative date — never quote one from here or from memory.** A thread can carry
+two. The grandfathering clause is spent and must not be revived.
+[[re-read-the-thread-for-the-operative-timebox]] [[timebox-comments-state-deadline-and-default-only]]
 
-⚠ **An extension the contributor ASKS FOR is not the same as a default we hand
-out**, and CONTRIBUTING.md invites the ask by name. Hold it when they ask; the
-clock exists to stop work going quiet, not to catch anyone out.
-
-⚠ **Stated consequence, not hidden**: on an IMPLEMENTATION handoff, 24 hours
-means in practice that we implement it and they are credited, because nobody
-lands an additive-schema-plus-dispatcher change around a job in a day. That is a
-change in what a handoff IS, not only in how long it lasts. It is the intended
-trade — our throughput over their commit — and it should be made in the open
-rather than discovered at expiry.
-
-**3d. `license/cla` IS A REQUIRED STATUS CHECK ON THE DEFAULT BRANCH OF ALL
-THREE REPOS** (jjg, 2026-08-17 for jcm; extended suite-wide 2026-08-21).
-Enabled because it was NOT one: until this date the repo had **no branch
-protection, no rulesets and no required checks**, so the CLA was read but never
-enforced and one distracted click could have merged unsigned code. Open PRs now
-read `MERGEABLE/BLOCKED` rather than `MERGEABLE/UNSTABLE`.
-
-⚠⚠ **For four days this was fixed in ONE repo of three, which is the recurring
-shape.** jdoc was protected but required NOTHING; jdata had **no protection at
-all**. Measured 2026-08-21 on jdata PR #5: the CLA was genuinely unsigned, the PR
-read `MERGEABLE/UNSTABLE`, and nothing would have stopped the merge. **A setting
-fixed in one repo of a suite is fixed in one repo** — the same sentence jdata's
-own brief already carried about `fork-pr-contributor-approval`, written after a
-contributor hit it first. All three now read identically: `contexts
-["license/cla"]`, `strict false`, `enforce_admins false`, force-push and deletion
-off.
+**3b. A MERGEABLE contributor PR merges BEFORE any changelog-touching work of
+our own** (jjg, 2026-08-14), including a release commit.
 
 ```bash
-# All three; the default branch is `main` for jcm and `master` for jdoc/jdata.
+GITHUB_TOKEN="" gh pr list --state open --json number,author,mergeable,mergeStateStatus \
+  --jq '.[] | select(.author.login != "jgravelle") | "#\(.number) \(.author.login) \(.mergeable) \(.mergeStateStatus)"'
+```
+
+Any row reading `MERGEABLE CLEAN` goes in before ours. ⚠⚠ The reason is
+mechanical: our `[Unreleased]` edits land in the same block a contributor's entry
+occupies, so each of our merges conflicts their branch, and **a CONFLICTING fork
+PR has no `refs/pull/N/merge` and therefore gets NO CI AT ALL** — their branch
+goes dark for a reason unrelated to their change. Measured: #443 conflicted FIVE
+TIMES IN ONE DAY, which is one wrong merge order repeated, not five incidents.
+⚠ **The boundary:** a BLOCKED PR cannot go first. Then we ship anyway (policy 2)
+and **we own the resolution** — push the merge to their branch and say on the
+thread that the conflict was ours. **This rule governs ORDER when we have a
+choice; it never holds our work behind someone else's form.**
+⚠⚠ **Do NOT answer "an issue is stuck" with aggregate stats.** jcm's median
+time-to-close is 0 days; that is TRUE and it is NOT a response. The cost of a
+blocked issue is CONCENTRATED, not distributed. Design the fix at the OUTLIER.
+[[feedback_dont_answer_pain_with_aggregates]] [[push-to-the-fork-remote-by-name]]
+
+**3c. PROFILE THE AUTHOR BEFORE REVIEWING A VENDOR-SHAPED PR** (jjg,
+2026-08-17). Any PR adding a named third-party provider, gateway, SDK or endpoint
+gets three queries FIRST, before a line of the diff is read:
+
+```bash
+GITHUB_TOKEN="" gh api users/<login> --jq '"created=\(.created_at[0:10]) repos=\(.public_repos) company=\(.company) bio=\(.bio)"'
+GITHUB_TOKEN="" gh api "search/issues?q=is:pr+author:<login>&per_page=1" --jq .total_count
+GITHUB_TOKEN="" gh api "search/issues?q=is:pr+author:<login>+<vendor>+in:title&per_page=1" --jq .total_count
+```
+
+⚠⚠ **The discriminator is the RATIO, not the volume.** #485's author had 3,089
+PRs, 2,242 with "minimax" in the title (73%), ~19/day. Found in under a minute;
+the PR had been reviewed in depth twice before anyone looked.
+⚠ Also check whether we have a DEMAND signal, the actual #380 bar:
+`gh api "search/issues?q=repo:jgravelle/jcodemunch-mcp+<vendor>"`.
+⚠⚠ **Quality is NOT the discriminator and must not be used as one.** #485's diff
+was better than most human PRs. **Good work aimed at something nobody asked for
+is still something nobody asked for.** Close on demand, credit the finding, and
+say plainly that quality was not the reason.
+⚠ Do not assert employment you cannot prove — state the numbers and ask.
+⚠ **A posted timebox's default can be RETRACTED IN THE OPEN when the facts
+change, but never silently.** [[profile-the-author-before-reviewing-a-vendor-pr]]
+
+**3d. `license/cla` IS A REQUIRED STATUS CHECK ON THE DEFAULT BRANCH OF ALL
+THREE REPOS** (jjg, 2026-08-17 for jcm; suite-wide 2026-08-21). ⚠⚠ **A setting
+fixed in one repo of a suite is fixed in one repo** — for four days jdoc required
+nothing and jdata had no protection at all.
+
+```bash
 for r in jcodemunch-mcp:main jdocmunch-mcp:master jdatamunch-mcp:master; do
-  GITHUB_TOKEN="" gh api "repos/jgravelle/${r%%:*}/branches/${r##*:}/protection"     --jq '{contexts:.required_status_checks.contexts, strict:.required_status_checks.strict, enforce_admins:.enforce_admins.enabled}'
+  GITHUB_TOKEN="" gh api "repos/jgravelle/${r%%:*}/branches/${r##*:}/protection" \
+    --jq '{contexts:.required_status_checks.contexts, strict:.required_status_checks.strict, enforce_admins:.enforce_admins.enabled}'
 done
 ```
 
-⚠ **`enforce_admins: false` and `strict: false` are both deliberate.** The admin
-override is what lets jjg land a merge pushed to a contributor's fork; `strict`
-would force every PR to be up-to-date with `main` before merging, i.e. a rebase
-after every release — the exact churn that kept #443 dark for five days.
-⚠ Enabling protection also turned OFF force-push and deletion on `main`.
-⚠⚠ **This composes with the missing-status hazard and now FAILS CLOSED.** ANY
-new head — our push to a fork, or the contributor's own merge of `main` —
-arrives with `license/cla` absent, and with the check required that reads as
-`BLOCKED` until the bot posts on that SHA. Correct, and it will look like a new
-problem the first time.
-⚠⚠ **NOTHING IS ERASED AND THE WORD MATTERS — corrected 2026-08-24 on #535.**
-This entry said a push "wipes" the status, which frames a per-SHA reporting
-model as an act of destruction and sends you chasing the bot or the
-contributor's signature. **Measured:** `license/cla` is a **legacy commit
-status**, not a check run — every other check on the PR is a `check-run` from
-the `github-actions` app, which GitHub re-runs per head automatically; a legacy
-status is a record posted to ONE SHA by an external service, and a new commit
-starts life with zero of them. On #535 the old head `0db4478` still read
-`license/cla success` while the new head `ea12029` read `count=0`. **The old
-status was untouched, and the signature — stored per ACCOUNT at
-cla-assistant.io — was never in question.**
-⚠ **The consequence is the useful part: the gate cannot tell "not signed" from
-"not reported", so it fails closed to the same `BLOCKED` for both.** Absent
-still means DO NOT MERGE. But the remedy is to get a status posted on the
-current head, never to re-verify an agreement that did not change.
-⚠ **"Usually under a minute" was optimistic.** On #535 the bot had not posted
-30+ minutes after the new head, and it has never commented on that PR at all —
-it posted the status directly, which is what it does when the author signed on
-an earlier PR.
+⚠ `enforce_admins: false` and `strict: false` are both deliberate: the admin
+override lets jjg land a merge pushed to a contributor's fork, and `strict` would
+force a rebase after every release.
+⚠⚠ **NOTHING IS ERASED — `license/cla` is a legacy commit STATUS, not a check
+run.** Every other check is a check-run that GitHub re-runs per head; a legacy
+status is posted to ONE SHA, so a new commit starts with zero of them. The old
+head keeps its status and the signature (stored per ACCOUNT at cla-assistant.io)
+was never in question. **The gate cannot tell "not signed" from "not reported",
+so it fails closed to `BLOCKED` for both. Absent still means DO NOT MERGE — but
+the remedy is to get a status posted on the current head, never to re-verify an
+agreement that did not change.**
 
-⚠⚠ **THE RE-TRIGGER, AND IT IS OURS — no contributor action, ~25 seconds**
-(established 2026-08-24, #535). `license/cla` comes from a REPO WEBHOOK to
-`https://cla-assistant.io/github/webhook/<repo>` on `pull_request`, not from
-any in-repo workflow. **The event is not lost and the bot is not down** — the
-deliveries list showed his `synchronize` arriving and answering `200 OK`, with
-no status posted. **Redelivering that same event makes it post.**
+```bash
+# count=0 means NOT SIGNED or NOT REPORTED. Never merge on absence.
+GITHUB_TOKEN="" gh api "repos/jgravelle/<repo>/commits/<head-sha>/status" --jq '"state=\(.state) count=\(.statuses|length)"'
+```
+
+⚠⚠ **THE RE-TRIGGER IS OURS — no contributor action, ~25 seconds.** The status
+comes from a repo WEBHOOK to cla-assistant.io on `pull_request`, not an in-repo
+workflow. A delivery can arrive, answer `200 OK`, and post nothing; redelivering
+that same event makes it post.
 
 ```bash
 HID=$(GITHUB_TOKEN="" gh api repos/jgravelle/<repo>/hooks --jq '.[0].id')
@@ -668,157 +695,30 @@ python -c "import json;[print(x['delivered_at'][5:16],x['event']+'/'+str(x.get('
 GITHUB_TOKEN="" gh api --method POST "repos/jgravelle/<repo>/hooks/$HID/deliveries/<exact-id>/attempts"
 ```
 
-⚠ **Diagnose before reaching for it.** Both #535 deliveries were `synchronize`
-on a `draft: true` PR and only the later one stayed silent, so **draft is NOT
-the discriminator** — the distinguishing feature was a MERGE COMMIT pulling in
-commits authored by us. Check the deliveries list first; a delivery that never
-arrived is a different problem from one that arrived and did nothing.
-
+⚠ Diagnose first — a delivery that never arrived is a different problem from one
+that arrived and did nothing. ⚠ CLA Assistant can also fail to fire on PR OPEN,
+which reads identically and has the opposite cause; check comments as well as
+statuses. ⚠ Our own push to their branch is a `synchronize` and provokes a
+missing status.
 ⚠⚠ **NEVER POST THE STATUS OURSELVES.** We hold admin and the Status API would
 clear the gate in one call. `license/cla` is a legal assertion about an
-agreement, and a maintainer-authored `success` is a forged one — it would also
-be indistinguishable from the genuine article afterwards. **Redelivering makes
-CLA Assistant reach its OWN verdict, which is the whole difference.** If a
-redeliver does not produce a status, the answer is a `recheck` comment or a
-contributor push, never a hand-written status.
-⚠⚠ **It does NOT solve vendor time-wasting and must not be sold as if it does.**
-Signing costs a campaign nothing — #485's author has 748 merged PRs across
-GitHub, so they clear CLAs routinely. The only contributor this gate blocked in
-its first hour was **elfrost**, who found a real security defect. **Legal
-exposure and spam are different problems; this closes the first, 3c closes the
-second.**
-
-**3c. PROFILE THE AUTHOR BEFORE REVIEWING A VENDOR-SHAPED PR** (jjg,
-2026-08-17). Any PR adding a named third-party provider, gateway, SDK or
-endpoint gets three queries FIRST, before a line of the diff is read:
-
-```bash
-GITHUB_TOKEN="" gh api users/<login> --jq '"created=\(.created_at[0:10]) repos=\(.public_repos) company=\(.company) bio=\(.bio)"'
-GITHUB_TOKEN="" gh api "search/issues?q=is:pr+author:<login>&per_page=1" --jq .total_count
-GITHUB_TOKEN="" gh api "search/issues?q=is:pr+author:<login>+<vendor>+in:title&per_page=1" --jq .total_count
-```
-
-⚠⚠ **The discriminator is the RATIO, not the volume.** A prolific contributor
-is fine. #485's author had **3,089 PRs, 2,242 with "minimax" in the title
-alone (73%), ~19/day since March**, and a profile reading
-`company: Independent Developer`. #487's had 87 forks, 86 PRs, all OrcaRouter,
-on a 7-day-old account. **Both were found in under a minute; #485 was reviewed
-in depth twice before anyone looked.** That is the cost this rule removes.
-
-⚠ **Also check whether we have a DEMAND signal**, which is the actual #380 bar
-and is one query:
-`gh api "search/issues?q=repo:jgravelle/jcodemunch-mcp+<vendor>"`. MiniMax
-cleared it honestly as a summarizer (#184, a user asking); MiniMax TTS did not,
-and the only tracker mention was the PR itself.
-
-⚠⚠ **Quality is NOT the discriminator and must not be used as one.** #485's
-diff was better than most human PRs — a real `output_format`-versus-container
-finding, a three-point review addressed in hours, a self-corrected test count.
-**Good work aimed at something nobody asked for is still something nobody asked
-for.** Close on demand, credit the finding, and say plainly that quality was not
-the reason.
-
-⚠ **Do not assert employment you cannot prove.** State the numbers, ask the
-affiliation question on the thread, and let the ratio speak. #487's author
-volunteered their affiliation unprompted and it cost them nothing — that is the
-contrast worth drawing, not an accusation.
-
-⚠⚠ **A posted timebox's default can be RETRACTED IN THE OPEN when the facts
-change, but never silently.** #485's clock promised that at expiry "we implement
-the same change ourselves" and that the window "never decides whether the
-feature ships." The authorship-and-credit half was honoured; the feature half
-was withdrawn ON THE THREAD, with the reason, because it was written before the
-campaign was known. **Letting a promise lapse quietly is the failure mode;
-retracting it out loud is not.**
-
-**3b. A MERGEABLE contributor PR merges BEFORE any changelog-touching work of
-our own** (jjg, 2026-08-14). Not a courtesy and not a preference — a measured
-cost. Every entry we add lands in the same `[Unreleased]` block a contributor's
-entry occupies, so each of our merges puts their PR into conflict, and a
-CONFLICTING fork PR has **no `refs/pull/N/merge`** and therefore gets no CI at
-all. Their branch goes dark for a reason that has nothing to do with their
-change.
-
-⚠⚠ **Measured 2026-08-14: #443 conflicted FIVE TIMES IN ONE DAY** — twice from
-our own PR merges, twice from releases, once from the docs work — and every one
-was resolved by us pushing to their fork. **Five is not five incidents, it is
-one wrong merge order repeated.**
-
-⚠ **The boundary, or the rule fails on its first real case.** A BLOCKED
-contributor PR cannot go first: #443 was unsigned-CLA the whole time, so
-"contributor first" was never available. When it is blocked we ship anyway
-(policy 2 — a release is never blocked on an open issue) and **we own the
-resolution**: push the merge to their branch, resolve it ourselves, and say on
-the thread that the conflict was ours. **This rule is about ORDER when we have a
-choice, never about holding our work behind someone else's form.**
-
-⚠⚠ **RE-READ THE THREAD FOR THE OPERATIVE DATE; DO NOT QUOTE ONE FROM HERE OR
-FROM MEMORY.** Measured 2026-08-17 on #443: **2026-08-26 was posted 08-12
-18:19**, elfrost accepted it on 08-13 13:05 quoting that date, and **08-20 was
-posted 85 minutes later at 14:30** and reaffirmed thirteen times since. The
-contributor never acknowledged the change and may still be planning around the
-older date — which is the concrete harm, not the six days. **A thread can carry
-two dates; only the query settles which is in force:**
-
-```bash
-GITHUB_TOKEN="" gh api repos/jgravelle/<repo>/issues/<n>/comments \
-  --jq '.[] | select(.user.login=="jgravelle") | "\(.created_at[0:16])"' # then grep bodies for dates
-```
-
-⚠ The 08-12 wording also promised **"your authorship on the commit"** where the
-08-20 wording promises **"credit"** — a second, quieter downgrade in the same
-swap. When restating a default, restate the STRONGER posted version or say
-explicitly that it changed. jjg's call on 2026-08-17 was that **08-20 stands**;
-the lesson recorded here is the silent substitution, not the date.
-
-⚠ **Do not shorten a timebox already posted.** State the new window on new PRs.
-A public promise to a contributor outlives the policy that produced it, and
-retracting one to save six days costs more than the six days. ⚠⚠ **Reaffirmed by
-jjg when this rule widened: #447 (2026-08-20), #465 (2026-08-21) and #456
-(2026-08-27) stand AS POSTED.** The new ceiling applies to timeboxes offered
-after that date, and to nothing already promised.
-
-⚠⚠ **CLOSED OUT 2026-08-20, and 3a is now ABSOLUTE: 24 hours, no exceptions,
-never again.** jjg, on reading the 08-12 comment on #443 offering **2026-08-26**:
-"Not again. 24 hour. Tops. Ever." Every grandfathered window above has since
-expired or closed and there are no live long timeboxes; **the grandfathering
-clause is spent and must not be revived as precedent for a new one.** The next
-posted window that exceeds 24 hours is a mistake regardless of what produced it.
-
-⚠⚠ **The failure mode has a NAME now and naming it is the point: a CLA hostage
-negotiation.** #443 went eight days — a real security fix, reviewed and green,
-held behind a 30-second form, while SEVEN of our own merges conflicted its
-branch. Not one of those days bought anything. The window never decides whether
-the fix ships (the default action ships it) and never decides credit (the default
-preserves it), so **a window longer than 24 hours purchases exactly one thing:
-the chance the contributor's commit is theirs — and it pays for that chance in
-the user's exposure to an unfixed defect.** Twenty-four hours is already generous
-for that trade; eight days is not a trade at all.
-
-⚠⚠ **Do NOT answer "an issue is stuck" with aggregate stats.** Measured
-2026-07-28: jcm median 0 days to close (80 issues, 70 within a day, 2 ever past
-a week); jdoc median 1 day. **Those numbers are TRUE and they are NOT a
-response.** jjg: a fraction of an eyelash commands full attention and impairs
-binocularity; "it is a small fraction of your body" helps nobody. The cost of a
-blocked issue is CONCENTRATED, not distributed. Design the fix at the OUTLIER
-(policy 2), never at the median. See
-[[feedback_dont_answer_pain_with_aggregates]].
+agreement, and a maintainer-authored `success` is a forged one —
+indistinguishable from the genuine article afterwards. **Redelivering makes CLA
+Assistant reach its OWN verdict, which is the whole difference.**
+⚠ It does NOT solve vendor time-wasting and must not be sold as if it does;
+signing costs a campaign nothing. Legal exposure and spam are different problems.
+[[a-push-reprovokes-a-missing-cla-status]] [[org-forks-cannot-be-pushed-to]]
 
 Surfaces: `CONTRIBUTING.md` ("One issue, one verdict" + "A release is never
-blocked on an open issue") and `.github/ISSUE_TEMPLATE/` (bug_report,
-multi_finding_report, config.yml pointing parked design at ROADMAP.md).
-
-⚠ **CONTRIBUTING.md is now IDENTICAL suite-wide** (jcm/jdoc/jdata differ only by
-product name, repo slug, and jcm's extra quality-gates section). Two pre-existing
-bugs fell out of normalizing it: **the documented install command
-`pip install -e ".[test]"` was WRONG IN ALL THREE REPOS** — no repo declares a
-`test` extra; dev deps live in a PEP 735 `[dependency-groups]` block, so the
-FIRST command a new contributor ran failed. And jcm's
-`README.md#license-dual-use` anchor pointed at a heading that does not exist
-(`## License`). ⚠ **CI installs with `uv sync` and never runs the command the
-docs give a human**, which is why this survived: the thing we test is not the
-thing they do.
-
+blocked on an open issue") and `.github/ISSUE_TEMPLATE/`.
+⚠ **CONTRIBUTING.md is IDENTICAL suite-wide** (differing only by product name,
+repo slug, and jcm's quality-gates section). Two pre-existing bugs fell out of
+normalizing it: the documented `pip install -e ".[test]"` was WRONG IN ALL THREE
+REPOS (no repo declares a `test` extra; dev deps are a PEP 735
+`[dependency-groups]` block), and jcm's `README.md#license-dual-use` anchor
+pointed at a heading that does not exist. ⚠ **CI installs with `uv sync` and
+never runs the command the docs give a human**, which is why it survived: the
+thing we test is not the thing they do.
 ## Registry verification reads a NESTED row (2026-08-27)
 
 ⚠⚠ **The MCP registry API nests each row as `{server: {...}, _meta: {...}}`**
@@ -842,6 +742,42 @@ the matching sdist exclusion asserted by `tests/test_sdist_exclusions.py`). So
 corrections there are MACHINE-LOCAL: not in git, not in CI, gone on a fresh
 checkout. That is why this note is here instead. **Do not un-ignore `.claude/`
 to fix that** — it reintroduces the vector that got five releases yanked.
+
+## Reproducing CI's environment (release step 2c)
+
+⚠⚠ **The release checklist lives in `.claude/skills/release/SKILL.md`, which is
+GITIGNORED, so a correction there is machine-local and gone on a fresh
+checkout.** This is the copy that survives, and
+`tests/test_ci_env_reproduce_command.py` binds it to the workflow so the two
+cannot drift apart unnoticed.
+
+```bash
+uv sync --locked --group dev --extra watch --python 3.13
+uv run --python 3.13 pytest tests/ -q
+```
+
+⚠⚠ **Step 2c read `uv run --python 3.13 python -m pytest tests/ -q` until
+2026-08-28 and NEVER built CI's environment** — no `--extra watch`, no
+dev-group sync. It only looked correct while `.venv` happened to carry the
+extras from an earlier sync, i.e. **the command was inheriting a state it did
+not create**. CI runs `uv sync --locked --group dev --extra watch` first.
+
+⚠⚠ **Caught mid-release, and the near-miss is the lesson: it returned EXIT 0
+and the totals reconciled EXACTLY** (8,740 + 18 new tests = 8,758) — the two
+things "green" normally means here. Meanwhile `passed` fell 8,721 → 8,634 and
+`skipped` rose **19 → 124**: 105 tests silently did not execute, because
+`watchfiles` (the `[watch]` extra CI installs BY NAME) was absent.
+
+⚠ **READ THE SKIP COUNT, not just the exit code and the total.** Expect the
+documented 19–26 range; a jump means the environment, not the code. The
+before/after delta on the SAME job is the only signal.
+
+⚠ Third instance of one family, and CONTRIBUTING.md already carries the
+sentence: *CI installs with `uv sync` and never runs the command the docs give a
+human, so the thing we test is not the thing they do.* The first was
+`pip install -e ".[test]"` (an extra no repo declares); the second was
+`-n 4 --dist loadfile` under a bare `python -m pytest`, which collects nothing
+and exits 0. [[pipes-and-missing-xdist-both-report-exit-zero]]
 
 ## Maintenance Practices
 
@@ -891,6 +827,28 @@ to fix that** — it reintroduces the vector that got five releases yanked.
    ⚠ When an entry rotates out, ask what LESSON it earned and put that one line in
    **Standing lessons** with its date. An entry with no reusable lesson needs no
    line; an entry whose lesson is already there needs no second one.
+   ⚠⚠ **MEASURE THE SECTIONS BEFORE CHOOSING WHAT TO ROTATE — the answer has
+   twice been a section nobody suspected.** On 2026-08-28 at 139,184/140,000 I
+   proposed rotating **Standing lessons** and was wrong: it was 6.4% of the
+   file, where **Key Files was 40.1% (55,643 chars)** and the issue/release
+   policy 15.4%. Rotating what I proposed would have recovered almost nothing.
+   Split by heading and sort by size first; it is one script and it settles it.
+   ⚠ **Key Files at 40% is the NEXT rotation target and the hardest**, because
+   it is also the most load-bearing — the per-file ⚠⚠ warnings are what stop a
+   defect recurring. Rotate its dated INCIDENT prose, never its rules.
+   ⚠⚠ **MEASURED 2026-08-28: Key Files has almost NO rotatable narrative left.**
+   A scan of its 119 entries found FOUR provenance clauses (1,713 chars), three
+   of them rules; Standing lessons and Current State each duplicate NOTHING from
+   it. **It is 42% of the file because it is 119 modules of non-redundant
+   invariants, not because it is padded** — so documenting one release under
+   Practice 1 cost more than a full rotation pass recovered. **The next lever is
+   a SPLIT and it is jjg's call.** Do not raise `BUDGET` (the gate says its 10k
+   buffer is the last one) and do not buy room by deleting ⚠⚠ rules.
+   ⚠ The 2026-08-28 pass took the issue/release policy from 21,448 to 12,391 by
+   keeping every rule, every operational command and every prohibition, and
+   moving only the forensics — verified by asserting all nine policy numbers,
+   six commands and seven prohibitions still resolve. **Write that check as a
+   script; a rotation reviewed by eye is how a command goes missing.**
 6. **A CI step that produces a PUBLIC verdict is product surface — test its text.**
    `tests/test_health_radar_action.py` opened by asserting that the Action's shell
    and YAML steps "can only be exercised by running the Action in a real CI
@@ -954,3 +912,24 @@ to fix that** — it reintroduces the vector that got five releases yanked.
    it will dispatch" is the property. ⚠ A red suite invites fixing the tests; run
    the non-vacuity pass on the OLD test too — if it passes only against the
    pre-fix tree, it was the defect's witness, not its guard.
+10. **Run the touched test files BEFORE the full suite** (jjg, 2026-08-28). The
+   suite is a RELEASE gate, not an edit loop. Measured on #558: full suite 12:55
+   (6 failures) -> fix -> 10:47 -> CI 9:21 = **33 minutes of blocking wait**,
+   where `pytest` on the three affected files reproduces all six failures in
+   **3 seconds**. Order: touched files, then `uv run ruff check src/` (it catches
+   the syntax class without running anything), then the suite once as the gate.
+   ⚠ **The exception is narrow: a change whose blast radius cannot be named** —
+   a shared primitive like `PARSER_GENERATION`, a store schema, a skip-list
+   constant reaches files no import graph predicts, and there the suite IS the
+   first check. Say which case applies; `get_blast_radius` answers it directly.
+   ⚠⚠ **APPENDED as 10, not inserted at 8 where it fits by topic.** The first
+   attempt slotted it beside the other testing practices and renumbered the two
+   below it, which silently broke live cross-references in
+   `tests/test_build_tree_spellings.py`, `tests/test_hook_steering_fixes.py`
+   and `tests/test_hardening.py`, plus dated CHANGELOG and ISSUE-HISTORY
+   entries that were correct when written. **These numbers are an index, not a
+   ranking, and nothing fails a build when one drifts** — so a new practice
+   goes on the END.
+   ⚠ **Measure a wait, never estimate it.** I reported this as "two suite runs,
+   that's the whole 40 minutes"; 2x13 is 26, and jjg did the arithmetic.
+

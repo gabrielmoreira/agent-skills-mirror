@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 615 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 616 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 7 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 615 |
+| Files         | 616 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -621,65 +621,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 554 | ✓ | [`skills/copilotkit-upgrade/sources.md`](skills/copilotkit-upgrade/sources.md) |
 | 555 | ✓ | [`skills/inspector-docs/references/pane-map.md`](skills/inspector-docs/references/pane-map.md) |
 | 556 | ✓ | [`skills/inspector-docs/SKILL.md`](skills/inspector-docs/SKILL.md) |
-| 557 | ✓ | [`skills/react-core/references/agent-access.md`](skills/react-core/references/agent-access.md) |
-| 558 | ✓ | [`skills/react-core/references/attachments.md`](skills/react-core/references/attachments.md) |
-| 559 | ✓ | [`skills/react-core/references/capabilities.md`](skills/react-core/references/capabilities.md) |
-| 560 | ✓ | [`skills/react-core/references/chat-components.md`](skills/react-core/references/chat-components.md) |
-| 561 | ✓ | [`skills/react-core/references/client-side-tools.md`](skills/react-core/references/client-side-tools.md) |
-| 562 | ✓ | [`skills/react-core/references/custom-message-renderers.md`](skills/react-core/references/custom-message-renderers.md) |
-| 563 | ✓ | [`skills/react-core/references/debug-mode.md`](skills/react-core/references/debug-mode.md) |
-| 564 | ✓ | [`skills/react-core/references/human-in-the-loop.md`](skills/react-core/references/human-in-the-loop.md) |
-| 565 | ✓ | [`skills/react-core/references/provider-setup.md`](skills/react-core/references/provider-setup.md) |
-| 566 | ✓ | [`skills/react-core/references/rendering-activity-messages.md`](skills/react-core/references/rendering-activity-messages.md) |
-| 567 | ✓ | [`skills/react-core/references/rendering-tool-calls.md`](skills/react-core/references/rendering-tool-calls.md) |
-| 568 | ✓ | [`skills/react-core/references/suggestions.md`](skills/react-core/references/suggestions.md) |
-| 569 | ✓ | [`skills/react-core/references/switching-agents-recipes.md`](skills/react-core/references/switching-agents-recipes.md) |
-| 570 | ✓ | [`skills/react-core/references/switching-agents.md`](skills/react-core/references/switching-agents.md) |
-| 571 | ✓ | [`skills/react-core/references/threads.md`](skills/react-core/references/threads.md) |
-| 572 | ✓ | [`skills/react-core/SKILL.md`](skills/react-core/SKILL.md) |
-| 573 | ✓ | [`skills/runtime/references/agent-runners-custom.md`](skills/runtime/references/agent-runners-custom.md) |
-| 574 | ✓ | [`skills/runtime/references/agent-runners-in-memory.md`](skills/runtime/references/agent-runners-in-memory.md) |
-| 575 | ✓ | [`skills/runtime/references/agent-runners-sqlite.md`](skills/runtime/references/agent-runners-sqlite.md) |
-| 576 | ✓ | [`skills/runtime/references/agent-runners.md`](skills/runtime/references/agent-runners.md) |
-| 577 | ✓ | [`skills/runtime/references/built-in-agent-factory-modes.md`](skills/runtime/references/built-in-agent-factory-modes.md) |
-| 578 | ✓ | [`skills/runtime/references/built-in-agent-helper-utilities.md`](skills/runtime/references/built-in-agent-helper-utilities.md) |
-| 579 | ✓ | [`skills/runtime/references/built-in-agent-model-identifiers.md`](skills/runtime/references/built-in-agent-model-identifiers.md) |
-| 580 | ✓ | [`skills/runtime/references/built-in-agent.md`](skills/runtime/references/built-in-agent.md) |
-| 581 | ✓ | [`skills/runtime/references/intelligence-mode.md`](skills/runtime/references/intelligence-mode.md) |
-| 582 | ✓ | [`skills/runtime/references/middleware.md`](skills/runtime/references/middleware.md) |
-| 583 | ✓ | [`skills/runtime/references/server-side-tools.md`](skills/runtime/references/server-side-tools.md) |
-| 584 | ✓ | [`skills/runtime/references/setup-endpoint.md`](skills/runtime/references/setup-endpoint.md) |
-| 585 | ✓ | [`skills/runtime/references/transcription.md`](skills/runtime/references/transcription.md) |
-| 586 | ✓ | [`skills/runtime/references/wiring-a2a.md`](skills/runtime/references/wiring-a2a.md) |
-| 587 | ✓ | [`skills/runtime/references/wiring-adk.md`](skills/runtime/references/wiring-adk.md) |
-| 588 | ✓ | [`skills/runtime/references/wiring-ag2.md`](skills/runtime/references/wiring-ag2.md) |
-| 589 | ✓ | [`skills/runtime/references/wiring-agno.md`](skills/runtime/references/wiring-agno.md) |
-| 590 | ✓ | [`skills/runtime/references/wiring-aws-strands.md`](skills/runtime/references/wiring-aws-strands.md) |
-| 591 | ✓ | [`skills/runtime/references/wiring-crewai-crews.md`](skills/runtime/references/wiring-crewai-crews.md) |
-| 592 | ✓ | [`skills/runtime/references/wiring-crewai-flows.md`](skills/runtime/references/wiring-crewai-flows.md) |
-| 593 | ✓ | [`skills/runtime/references/wiring-external-agents.md`](skills/runtime/references/wiring-external-agents.md) |
-| 594 | ✓ | [`skills/runtime/references/wiring-langgraph.md`](skills/runtime/references/wiring-langgraph.md) |
-| 595 | ✓ | [`skills/runtime/references/wiring-llamaindex.md`](skills/runtime/references/wiring-llamaindex.md) |
-| 596 | ✓ | [`skills/runtime/references/wiring-mastra.md`](skills/runtime/references/wiring-mastra.md) |
-| 597 | ✓ | [`skills/runtime/references/wiring-mcp-apps-middleware.md`](skills/runtime/references/wiring-mcp-apps-middleware.md) |
-| 598 | ✓ | [`skills/runtime/references/wiring-ms-agent-framework.md`](skills/runtime/references/wiring-ms-agent-framework.md) |
-| 599 | ✓ | [`skills/runtime/references/wiring-pydantic-ai.md`](skills/runtime/references/wiring-pydantic-ai.md) |
-| 600 | ✓ | [`skills/runtime/SKILL.md`](skills/runtime/SKILL.md) |
-| 601 | ✓ | [`skills/setup-slack-channel/assets/slack-app-manifest.yaml`](skills/setup-slack-channel/assets/slack-app-manifest.yaml) |
-| 602 | ✓ | [`skills/setup-slack-channel/references/intelligence-channel.md`](skills/setup-slack-channel/references/intelligence-channel.md) |
-| 603 | ✓ | [`skills/setup-slack-channel/references/local-runtime.md`](skills/setup-slack-channel/references/local-runtime.md) |
-| 604 | ✓ | [`skills/setup-slack-channel/references/optional-e2e.md`](skills/setup-slack-channel/references/optional-e2e.md) |
-| 605 | ✓ | [`skills/setup-slack-channel/references/secrets-and-credentials.md`](skills/setup-slack-channel/references/secrets-and-credentials.md) |
-| 606 | ✓ | [`skills/setup-slack-channel/references/slack-workspace-and-app.md`](skills/setup-slack-channel/references/slack-workspace-and-app.md) |
-| 607 | ✓ | [`skills/setup-slack-channel/references/troubleshooting.md`](skills/setup-slack-channel/references/troubleshooting.md) |
-| 608 | ✓ | [`skills/setup-slack-channel/SKILL.md`](skills/setup-slack-channel/SKILL.md) |
-| 609 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 610 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
-| 611 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 612 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 613 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
-| 614 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 615 | → | [`README.md`](README.md) |
+| 557 | ✓ | [`skills/inspector-workbench/SKILL.md`](skills/inspector-workbench/SKILL.md) |
+| 558 | ✓ | [`skills/react-core/references/agent-access.md`](skills/react-core/references/agent-access.md) |
+| 559 | ✓ | [`skills/react-core/references/attachments.md`](skills/react-core/references/attachments.md) |
+| 560 | ✓ | [`skills/react-core/references/capabilities.md`](skills/react-core/references/capabilities.md) |
+| 561 | ✓ | [`skills/react-core/references/chat-components.md`](skills/react-core/references/chat-components.md) |
+| 562 | ✓ | [`skills/react-core/references/client-side-tools.md`](skills/react-core/references/client-side-tools.md) |
+| 563 | ✓ | [`skills/react-core/references/custom-message-renderers.md`](skills/react-core/references/custom-message-renderers.md) |
+| 564 | ✓ | [`skills/react-core/references/debug-mode.md`](skills/react-core/references/debug-mode.md) |
+| 565 | ✓ | [`skills/react-core/references/human-in-the-loop.md`](skills/react-core/references/human-in-the-loop.md) |
+| 566 | ✓ | [`skills/react-core/references/provider-setup.md`](skills/react-core/references/provider-setup.md) |
+| 567 | ✓ | [`skills/react-core/references/rendering-activity-messages.md`](skills/react-core/references/rendering-activity-messages.md) |
+| 568 | ✓ | [`skills/react-core/references/rendering-tool-calls.md`](skills/react-core/references/rendering-tool-calls.md) |
+| 569 | ✓ | [`skills/react-core/references/suggestions.md`](skills/react-core/references/suggestions.md) |
+| 570 | ✓ | [`skills/react-core/references/switching-agents-recipes.md`](skills/react-core/references/switching-agents-recipes.md) |
+| 571 | ✓ | [`skills/react-core/references/switching-agents.md`](skills/react-core/references/switching-agents.md) |
+| 572 | ✓ | [`skills/react-core/references/threads.md`](skills/react-core/references/threads.md) |
+| 573 | ✓ | [`skills/react-core/SKILL.md`](skills/react-core/SKILL.md) |
+| 574 | ✓ | [`skills/runtime/references/agent-runners-custom.md`](skills/runtime/references/agent-runners-custom.md) |
+| 575 | ✓ | [`skills/runtime/references/agent-runners-in-memory.md`](skills/runtime/references/agent-runners-in-memory.md) |
+| 576 | ✓ | [`skills/runtime/references/agent-runners-sqlite.md`](skills/runtime/references/agent-runners-sqlite.md) |
+| 577 | ✓ | [`skills/runtime/references/agent-runners.md`](skills/runtime/references/agent-runners.md) |
+| 578 | ✓ | [`skills/runtime/references/built-in-agent-factory-modes.md`](skills/runtime/references/built-in-agent-factory-modes.md) |
+| 579 | ✓ | [`skills/runtime/references/built-in-agent-helper-utilities.md`](skills/runtime/references/built-in-agent-helper-utilities.md) |
+| 580 | ✓ | [`skills/runtime/references/built-in-agent-model-identifiers.md`](skills/runtime/references/built-in-agent-model-identifiers.md) |
+| 581 | ✓ | [`skills/runtime/references/built-in-agent.md`](skills/runtime/references/built-in-agent.md) |
+| 582 | ✓ | [`skills/runtime/references/intelligence-mode.md`](skills/runtime/references/intelligence-mode.md) |
+| 583 | ✓ | [`skills/runtime/references/middleware.md`](skills/runtime/references/middleware.md) |
+| 584 | ✓ | [`skills/runtime/references/server-side-tools.md`](skills/runtime/references/server-side-tools.md) |
+| 585 | ✓ | [`skills/runtime/references/setup-endpoint.md`](skills/runtime/references/setup-endpoint.md) |
+| 586 | ✓ | [`skills/runtime/references/transcription.md`](skills/runtime/references/transcription.md) |
+| 587 | ✓ | [`skills/runtime/references/wiring-a2a.md`](skills/runtime/references/wiring-a2a.md) |
+| 588 | ✓ | [`skills/runtime/references/wiring-adk.md`](skills/runtime/references/wiring-adk.md) |
+| 589 | ✓ | [`skills/runtime/references/wiring-ag2.md`](skills/runtime/references/wiring-ag2.md) |
+| 590 | ✓ | [`skills/runtime/references/wiring-agno.md`](skills/runtime/references/wiring-agno.md) |
+| 591 | ✓ | [`skills/runtime/references/wiring-aws-strands.md`](skills/runtime/references/wiring-aws-strands.md) |
+| 592 | ✓ | [`skills/runtime/references/wiring-crewai-crews.md`](skills/runtime/references/wiring-crewai-crews.md) |
+| 593 | ✓ | [`skills/runtime/references/wiring-crewai-flows.md`](skills/runtime/references/wiring-crewai-flows.md) |
+| 594 | ✓ | [`skills/runtime/references/wiring-external-agents.md`](skills/runtime/references/wiring-external-agents.md) |
+| 595 | ✓ | [`skills/runtime/references/wiring-langgraph.md`](skills/runtime/references/wiring-langgraph.md) |
+| 596 | ✓ | [`skills/runtime/references/wiring-llamaindex.md`](skills/runtime/references/wiring-llamaindex.md) |
+| 597 | ✓ | [`skills/runtime/references/wiring-mastra.md`](skills/runtime/references/wiring-mastra.md) |
+| 598 | ✓ | [`skills/runtime/references/wiring-mcp-apps-middleware.md`](skills/runtime/references/wiring-mcp-apps-middleware.md) |
+| 599 | ✓ | [`skills/runtime/references/wiring-ms-agent-framework.md`](skills/runtime/references/wiring-ms-agent-framework.md) |
+| 600 | ✓ | [`skills/runtime/references/wiring-pydantic-ai.md`](skills/runtime/references/wiring-pydantic-ai.md) |
+| 601 | ✓ | [`skills/runtime/SKILL.md`](skills/runtime/SKILL.md) |
+| 602 | ✓ | [`skills/setup-slack-channel/assets/slack-app-manifest.yaml`](skills/setup-slack-channel/assets/slack-app-manifest.yaml) |
+| 603 | ✓ | [`skills/setup-slack-channel/references/intelligence-channel.md`](skills/setup-slack-channel/references/intelligence-channel.md) |
+| 604 | ✓ | [`skills/setup-slack-channel/references/local-runtime.md`](skills/setup-slack-channel/references/local-runtime.md) |
+| 605 | ✓ | [`skills/setup-slack-channel/references/optional-e2e.md`](skills/setup-slack-channel/references/optional-e2e.md) |
+| 606 | ✓ | [`skills/setup-slack-channel/references/secrets-and-credentials.md`](skills/setup-slack-channel/references/secrets-and-credentials.md) |
+| 607 | ✓ | [`skills/setup-slack-channel/references/slack-workspace-and-app.md`](skills/setup-slack-channel/references/slack-workspace-and-app.md) |
+| 608 | ✓ | [`skills/setup-slack-channel/references/troubleshooting.md`](skills/setup-slack-channel/references/troubleshooting.md) |
+| 609 | ✓ | [`skills/setup-slack-channel/SKILL.md`](skills/setup-slack-channel/SKILL.md) |
+| 610 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 611 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
+| 612 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 613 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 614 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 615 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 616 | → | [`README.md`](README.md) |
 
 ---
 

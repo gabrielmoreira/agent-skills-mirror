@@ -21,6 +21,7 @@ category: strategy
 Extract the following from the user's description:
 - **Instrument codes**: process them according to the normalization rules below
 - **Time range**: if the user does not specify dates, default to **10 years back from today** (for example, if today is `2026-03-18`, then `start_date=2016-03-18`, `end_date=2026-03-18`)
+- **Indicator warm-up**: a long lookback (MA200, a 252-day z-score) needs bars from *before* the requested period. Move `start_date` back to load them **and declare the boundary with `warmup_bars`** — the requested period is what gets graded, and undeclared warm-up bars are graded too. Silently backdating `start_date` by a year turns a 10-year backtest into an 11-year one that still calls itself 10 years: the extra year's trades, CAGR and benchmark all enter the report, the run succeeds, and the numbers look internally consistent
 - **Strategy logic**: entry / exit conditions and indicator parameters
 
 **If critical information is missing, you must ask the user instead of guessing:**
@@ -118,6 +119,7 @@ Self-check after writing `signal_engine.py`:
   "codes": ["000001.SZ"],
   "start_date": "2016-03-18",
   "end_date": "2026-03-18",
+  "warmup_bars": 0,
   "interval": "1D",
   "initial_cash": 1000000,
   "commission": 0.001,
@@ -138,6 +140,10 @@ Self-check after writing `signal_engine.py`:
 - `interval`: candlestick interval, default `"1D"`. Supported values: `"1m"` / `"5m"` / `"15m"` / `"30m"` / `"1H"` / `"4H"` / `"1D"`
   - The annualization factor for minute backtests is inferred automatically from `source` (252 trading days for China A-shares, 365 calendar days for crypto)
   - Minute backtests can be very data-heavy. Recommended limits are no more than 30 days for `1m`, or 1 year for `1H`
+- `warmup_bars`: how many leading bars exist only to prime the indicators. They are loaded and fed to `SignalEngine.generate()`, then excluded from trades, the equity curve, the benchmark and every metric. Default `0` grades the whole loaded window.
+  - Use it whenever you widen `start_date` for an indicator's lookback. `start_date` is the **data** window; `start_date` plus `warmup_bars` is the **evaluation** window, and the report describes the second one.
+  - Size it from the longest lookback in the strategy, plus a margin: MA200 needs at least 200 daily bars, a 252-day rolling z-score needs 252. Then set `start_date` far enough back to supply them.
+  - `evaluation_start_date` (`"YYYY-MM-DD"`) is the same instruction stated as a date, for when the user names the period rather than the lookback. Declare one or the other — declaring both is rejected.
 - `extra_fields`: China A-shares can use values such as `["pe", "pb", "roe"]`; other markets should use `null`
 - `fundamental_fields`: optional China A-share statement fields, such as `{"income": ["total_revenue", "n_income"], "fina_indicator": ["roe"]}`; use `null` unless the strategy needs financial statement pre-filtering
 - `optimizer`: optional, one of `"equal_volatility"` / `"risk_parity"` / `"mean_variance"` / `"max_diversification"` / `"turnover_aware"` / `null` (equal-weight by default)

@@ -41,6 +41,8 @@ Already organized by type — keep as-is. Plans are forward-looking implementati
 
 ## Root-Level Docs (do NOT move these)
 
+- [Who Minutes is for](personas.md) — the two personas and how to triage against them
+
 - **`docs/coach.md`** — Product guide for the live Coach copilot, controls, privacy, and graceful degradation
 - **`docs/live-assistance.md`** — User-facing guide to Coach, Terminal Sidekick, and the planned session-aware Native Recall surface
 - **`PLAN.md`** — Master project plan (architecture, vision, competitive landscape). Referenced as the "read this first" doc in CLAUDE.md.

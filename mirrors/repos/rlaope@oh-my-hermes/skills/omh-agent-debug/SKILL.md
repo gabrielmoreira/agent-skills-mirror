@@ -75,6 +75,11 @@ Quality bar:
 - Name the user-facing workflow objective, required context, next action, and stop condition.
 - Separate prepared guidance from observed platform, runtime, connector, file, memory, or delivery evidence.
 - Expose missing tools, credentials, targets, or observations as user-visible gaps.
+- Hold at least two competing failure hypotheses at once, each with observed evidence for and against; a diagnosis that never named a rival hypothesis is a guess.
+- Order probes cheapest-discriminating-first: run the cheapest check that splits the surviving hypotheses before any expensive capture, rerun, or restart.
+- When a run that used to work now fails, bisect from last-known-good to first-bad change (prompt, config, tool, model, or environment) instead of debugging the newest symptom.
+- Name a cause only after revert-verify: remove the suspect change and observe the failure disappear, or state that causation is unproven.
+- Reproduce the failure before preparing any recovery action; a fix without a reproduced failure first is a guess.
 
 Handoff policy:
 

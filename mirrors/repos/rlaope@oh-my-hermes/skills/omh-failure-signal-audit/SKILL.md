@@ -76,6 +76,11 @@ Quality bar:
 - Name the user-facing workflow objective, required context, next action, and stop condition.
 - Separate prepared guidance from observed platform, runtime, connector, file, memory, or delivery evidence.
 - Expose missing tools, credentials, targets, or observations as user-visible gaps.
+- Hold masked-failure and intended-fallback as competing hypotheses for each suspect site, each with observed evidence for and against, until one reading is discriminated.
+- Order evidence probes cheapest-discriminating-first: read the handler and its callers, then logs and traces, before demanding expensive reruns or instrumentation.
+- When a check went green without an observed fix, bisect from the last run that surfaced the failure to the first that swallowed it before naming the masking change.
+- Attribute a masked failure to a specific handler or fallback only with revert-verify evidence (the signal observed reappearing without it), or mark causation unproven.
+- Route remediation only against a reproduced failing signal; a remediation handoff without a reproduced failure first is a guess.
 
 Handoff policy:
 

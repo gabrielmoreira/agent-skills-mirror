@@ -19,7 +19,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 ---
 
-## Sponsored by NodeMaven
+## Sponsors
 
 <table>
 <tr>
@@ -49,15 +49,43 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 </td>
 </tr>
+<tr>
+<td align="center" width="200">
+
+<a href="https://www.rapidproxy.io/?ref=mcp"><img src="media/rapidproxy-sponsor.png" alt="RapidProxy" width="180"></a>
+
+</td>
+<td>
+
+[RapidProxy](https://www.rapidproxy.io/?ref=mcp) powers scraping and automation with 90M+ residential IPs across 200+ countries, supporting rotation, geo-targeting, and high concurrency to improve success rates and reduce bans.
+
+Get 500MB of free trial traffic, non-expiring bandwidth, and pricing as low as **$0.55/GB**.
+
+**Why RapidProxy?**
+
+- 90M+ clean residential IPs
+- Sticky sessions for up to 180 minutes
+- Geo-targeting by country and city
+- Unlimited concurrent sessions
+- Never-expiring traffic
+
+**Special offer**
+
+Use promo code `RAPID10` for **10% off**.
+
+[Explore RapidProxy →](https://www.rapidproxy.io/?ref=mcp)
+
+</td>
+</tr>
 </table>
 
-> Sponsored placement. NodeMaven is a paid sponsor of this project.
+> Sponsored placement. NodeMaven and RapidProxy are paid sponsors of this project.
 
 ---
 
 ## Table of Contents
 
-- [Sponsored by NodeMaven](#sponsored-by-nodemaven)
+- [Sponsors](#sponsors)
 - [Demo](#demo)
 - [Features](#features)
 - [Quickstart](#quickstart)

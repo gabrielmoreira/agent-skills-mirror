@@ -2,7 +2,7 @@
 
 Archon is a self-hostable, governed agentic automation engine. It runs workflows that mix deterministic steps, AI agents, human gates, and audit trails. Coding automation is its most mature surface, but the engine is intended for general business operations too.
 
-This file is the canonical project guidance for coding agents. Keep it short, durable, and about judgment. Put changing product direction in [`.archon/direction.md`](.archon/direction.md), workflow-language design in [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md), user documentation in the docs site, and machine-checkable rules in code, types, tests, lint, or CI.
+This file is the canonical project guidance for coding agents. Keep it short, durable, and about judgment. Put changing product direction in [`.archon/direction.md`](.archon/direction.md), workflow-language design in [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md), aspirational engineering craft and review values in [`.archon/engineering.md`](.archon/engineering.md), user documentation in the docs site, and machine-checkable rules in code, types, tests, lint, or CI.
 
 ## Read before changing code
 
@@ -137,12 +137,15 @@ The governing rule is: **YAML coordinates. Code computes. Agents judge.** Read [
 
 - Add tests for meaningful behavior and failure modes. Do not preserve deleted features through regression-test clutter.
 - Prefer deterministic, cheap tests. Remove accidental I/O and unnecessary subprocesses before increasing timeouts.
+- Remove test temp trees with `removeTempTree` or `trackTempRoots` from `@archon/paths/test-utils`.
+- Spawn a subprocess only when the subprocess is the subject under test. To suppress an inherited env key for a Bun child, pass it as `''`; deleting it allows `.env` loading to restore it.
 - Bun's module mocks pollute the process cache. Use the package test scripts that preserve isolation; do not run `bun test` from the repository root.
 - Always run lint through `bun run lint` or `bun run lint:fix`; the wrapper isolates packages to keep typed lint within its memory budget.
 - Run the narrow checks that prove the changed behavior while iterating.
 - Run `bun run validate` before opening a pull request. CI may contain additional environment-dependent checks; inspect changed-path workflows and run applicable checks when practical.
 - Schema changes also require the PostgreSQL upgrade check documented in the contributor docs and CI.
 - For visual or runtime behavior, add direct evidence when static tests cannot prove the outcome.
+- Destructive verification, including DDL, migrations, and data writes, runs only against a scratch database you create and drop. A configured live DSN is read-only at most; when only a live resource exists, stop and surface it to the operator.
 
 ## Pull requests
 
@@ -158,9 +161,7 @@ Do not expand this file with copied reference material. Use the owning source:
 
 - Product direction: [`.archon/direction.md`](.archon/direction.md)
 - Workflow-language design: [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md)
-- Contributor setup and checks: [`packages/docs-web/src/content/docs/contributing/index.md`](packages/docs-web/src/content/docs/contributing/index.md)
-- Architecture: [`packages/docs-web/src/content/docs/reference/architecture.md`](packages/docs-web/src/content/docs/reference/architecture.md) and package manifests
-- Configuration: [`packages/docs-web/src/content/docs/reference/configuration.md`](packages/docs-web/src/content/docs/reference/configuration.md) and the config schema
+- Engineering craft and review values: [`.archon/engineering.md`](.archon/engineering.md)
 - CLI: [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) and `archon --help`
 - Workflow authoring: [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) and workflow schemas
 - Database behavior: [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md), migrations, and adapter tests

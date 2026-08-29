@@ -42,6 +42,7 @@
 | 26 | Runtime 内部 lifecycle envelope 不得经通用 status fallback 原样出现在聊天中。已知成功/瞬态事件默认静默；真正影响能力的失败保留结构化诊断事实但只展示本地化人类提示；未知 Codex kind 降级为通用人类状态。双聊天入口均不得暴露 server id、payload JSON 或协议 kind | `codex/event-mapper.ts` + `useSSEStream.ts` + `chat/page.tsx` |
 | 27 | 持久化并重放给 AI SDK 的每个非 provider-executed tool-call，在下一条 user/system 或 transcript 结束前必须有匹配 tool-result。回合结束仍未收到结果时，只能补 app-owned、`is_error:true` 的“未收到结果”事实，不能伪造工具成功/执行失败；legacy history 同样修复。无调用来源的 orphan result 可留在 UI/DB 审计，但不得原样送进模型 prompt | `stream-session-manager.ts` + `message-builder.ts` + `tool-history-integrity.ts` + Native loops |
 | 28 | 由多个异步 callback 写入的 server-side `ReadableStream` 必须把 enqueue/close 的唯一所有权交给 `SingleOwnerStreamWriter`。consumer cancel 先原子宣告 terminal，再 kill/abort producer；producer 的 exit/error/data callback 只能调用 writer，取消后的迟到写入必须 no-op。stream attach 后禁止任何 callback 继续直接操作裸 `controller` | `single-owner-stream-writer.ts` + marketplace/CLI/media stream routes |
+| 29 | DB `token_usage` 是跨 Runtime/历史版本输入；历史消息展示前必须运行时验证 `input_tokens` / `output_tokens` 都是有限非负安全整数，缺失/非法时隐藏整项统计，不得补假 0。assistant `addMessage` 的 insert、session timestamp update 与 row read 必须在同一同步 SQLite transaction 中完成；读不到真实行时抛稳定产品错误并整体回滚，调用方不得依赖 `as Message` 后读取 `undefined.id` | `token-usage-display.ts` + `MessageItem.tsx` + `db.ts` |
 
 ## 关键文件 + 责任
 
@@ -53,6 +54,7 @@
 | `src/app/chat/page.tsx` | 首消息入口 |
 | `src/components/chat/ChatView.tsx` | 后续消息入口 |
 | `src/components/chat/MessageItem.tsx` | 历史 tool 配对；保持真实 tool id；子 Agent 分流 |
+| `src/lib/token-usage-display.ts` | 历史/跨 Runtime token usage 运行时 shape 验证；缺证据隐藏，不制造 0 |
 | `src/components/chat/StreamingMessage.tsx` | 流式子 Agent 卡片分流 |
 | `src/components/ai-elements/tool-actions-group.tsx` | 流式 reasoning 行与工具活动折叠展示 |
 | `src/lib/subagent-view.ts` | requested/effective/runtime/status 的诚实归一化 |
@@ -125,6 +127,8 @@
 - 不要同时转发 managed dynamic tool 的本地 side-channel lifecycle 与 app-server mirror lifecycle；同一次调用会出现两个 tool_use / tool_result。managed local tool 只保留一个事实流。
 - 不要假设 `turn/interrupt` 会打断正在等待本地 `item/tool/call` 的执行。Codex Account Stop 还必须 abort 该父 turn 的进程内 controller；terminal wrapper随后必须以 immutable durable record 为准。
 - 不要只在 SSE `done` 后 `addMessage`。页面刷新、renderer 重载或 dev 进程重启会让整个 Assistant 回复和 Sub-agent tool blocks 从历史消失；必须先 checkpoint，再原位收口。
+- 不要把 `JSON.parse(token_usage)` 的结果直接断言成 `TokenUsage`；数据库 JSON 可合法但缺字段，UI 会在 `toLocaleString()` 二次崩溃。缺真实输入/输出计数时隐藏统计。
+- 不要把 message insert、session timestamp 和回读拆成三个自动提交语句，再用 `as Message` 假定回读必有值；必须事务内验证真实 row，失败回滚并抛稳定产品错误。
 - 不要把 renderer fetch 的断连当成用户 Stop。页面切换会自然 abort 客户端请求，但 server collector 应继续完成并持久化；取消权必须来自显式 `/api/chat/interrupt`。
 - 不要假设 schema 模块初始化等于真正的进程启动；Next route/module duplication 会在活进程中重复执行初始化，restart recovery 必须由独立的进程 owner 守门。
 - 不要只把 parent sessionId 放进 child permission event；独立 subprocess 没有归属字段时，多个 child 的 Write/Bash 提示看起来完全相同。
@@ -170,6 +174,7 @@
 | 20px Thinking Orb 的 React 兼容、decorative 语义与 wait/reasoning state 接线 | `chat-thinking-orb.test.ts` |
 | terminal missing result、legacy repair 与真实 AI SDK `MissingToolResults` 正/反对照 | `codex-tool-only-completion.test.ts` + `agent-loop-messages.test.ts` + `tool-history-integrity.test.ts` |
 | subprocess stream cancel、迟到 data/exit/error 与单终态；marketplace install/remove、CLI install、media plan 四条 route 接线 | `single-owner-stream-writer.test.ts` |
+| token usage 非法/缺字段隐藏且不补 0；message insert/update/read 原子回滚与真实行返回 | `token-usage-display.test.ts` + `message-persistence.test.ts` |
 
 ## 设计决策日志
 
@@ -196,3 +201,4 @@
 - 2026-08-04：用户实机发现 Codex `mcpServerReady` 经 `unknown_item → status` 显示成原始 JSON。现将 ready/starting 在 mapper 静默，startup failed 仍保留结构化诊断，但由共享 resolver 在首轮与后续流转换为本地化人类提示；旧 server 发来的 ready envelope 也由 renderer 防御性消费。generic fallback 只允许普通人类字符串直通，结构化对象及以 `{` / `[` 开头的残缺 JSON 统一降级为本地化状态，防止同类问题换 Runtime 复发。
 - 2026-08-07：0.65 真实 Sentry stack 证明 `AI_MissingToolResultsError` 发生在下一轮 prompt conversion；根因是终止回合可持久化只有 tool_use 的 transcript。未来收口补诚实 missing-result，legacy replay 再防御性修复；真实 AI SDK 正/反对照证明修复前拒绝、修复后进入模型调用。
 - 2026-08-24：marketplace 与 CLI/media subprocess stream 的 cancel/exit 同时争抢 controller，生产出现 closed-controller Sentry。统一由 `SingleOwnerStreamWriter` 认领终态；cancel 先 close owner 再 kill，迟到 callback 只会 no-op。行为测试覆盖 writer 的迟到写入，并逐条钉住四个 route attach/cancel/no-raw-controller 接线；`safe-stream.ts` 仅保留给尚未迁移的 callback-heavy 旧流，不再宣称每个 ReadableStream 都必须使用。
+- 2026-08-27：生产 Sentry 暴露两条持久化边界：合法 JSON 但缺 `output_tokens` 会在历史 UI 崩溃；assistant insert 后非原子回读可能让 collector 访问 `saved.id`。UI 改为运行时 shape 验证且不补假 0，`addMessage` 改为 insert/update/select 同事务并以稳定错误回滚空读。

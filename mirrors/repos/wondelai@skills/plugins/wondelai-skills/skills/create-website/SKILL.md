@@ -1,10 +1,10 @@
 ---
 name: create-website
-description: 'Guided journey from a blank page to a live, high-converting website, built message-first, then design, then conversion. Orchestrates ten skills phase by phase - one-page-marketing, storybrand-messaging, made-to-stick, top-design, web-typography, refactoring-ui, ux-heuristics, cro-methodology, scorecard-marketing, steve-jobs-design-review - asking the user questions at every decision point and recording results in the project docs/ folder (POSITIONING.md, WEBSITE.md, DESIGN.md, CREATE-WEBSITE-PLAN.md) so the journey resumes across sessions. Use when the user wants to build a new website or landing page from scratch, turn a validated idea into a page that converts, or says ''build me a landing page for my SaaS''. Site already exists: use improve-website to fix conversion/UX or grow-website for more traffic; building a software product, not a marketing site: use create-app; no positioning yet: run create-business first or the positioning phase here. For one framework in isolation, invoke that skill directly.'
+description: 'Guided journey from a blank page to a live, high-converting website, built message-first, then design, then conversion. Orchestrates ten skills phase by phase - one-page-marketing, storybrand-messaging, made-to-stick, top-design, web-typography, refactoring-ui, ux-heuristics, cro-methodology, scorecard-marketing, steve-jobs-design-review - asking the user questions at every decision point and recording results in the project docs/ folder (POSITIONING.md, WEBSITE.md, CREATE-WEBSITE-PLAN.md) so the journey resumes across sessions. Use when the user wants to build a new website or landing page from scratch, turn a validated idea into a page that converts, or says ''build me a landing page for my SaaS''. Site already exists: use improve-website site-wide, conversion-optimization for one flow, or grow-website for traffic; building a software product, not a marketing site: create-app; no positioning yet: create-business first, or the positioning phase here. For one framework in isolation, invoke that skill directly.'
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Create a Website

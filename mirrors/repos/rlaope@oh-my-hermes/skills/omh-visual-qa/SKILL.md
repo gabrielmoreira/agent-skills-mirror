@@ -77,6 +77,7 @@ Reasoning demand: `standard`
 Quality bar:
 
 - List the exact pages, states, viewports, files, images, or TUI frames being checked.
+- For TUI surfaces, bind every capture to an explicit terminal size — 80x24 and 120x40 at minimum — and treat pasted rendered output at a named size as the screenshot-equivalent; a capture without its recorded size is not visual QA evidence.
 - Enumerate every page/state/viewport before capture and mark omitted surfaces as blockers rather than assumptions.
 - Require exact repository and revision equality between target_lineage and every capture source_lineage.
 - Combine objective capture/diff evidence, hotspot review, alpha/transparent-background checks, and human-readable visual findings.

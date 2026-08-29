@@ -1,10 +1,10 @@
 ---
 name: improve-code-quality
-description: 'Guided journey from a working-but-untested vibe-coded prototype to a production-ready product with tests, clean structure, a business-rules boundary, and resilience at scale. Orchestrates nine skills phase by phase - working-with-legacy-code, clean-code, refactoring-patterns, software-design-philosophy, clean-architecture, pragmatic-programmer, release-it, system-design, ddia-systems - asking the user questions at every decision point and recording results in the project docs/ folder (TESTING.md, TECH-DEBT.md, RELIABILITY.md, IMPROVE-CODE-QUALITY-PLAN.md) so the journey resumes across sessions. Use when the user wants to harden an AI-generated prototype, add tests before refactoring, make code safe to change, or says ''this works on my machine but I am scared to touch it''. For a large aged codebase, use remove-technical-debt; to decide structure before building, use design-code-architecture; for a product and UX pass, use improve-app. For one framework in isolation, invoke that skill directly.'
+description: 'Guided journey from a working-but-untested vibe-coded prototype to a production-ready product with tests, clean structure, a business-rules boundary, and resilience at scale. Orchestrates nine skills phase by phase - working-with-legacy-code, clean-code, refactoring-patterns, software-design-philosophy, clean-architecture, pragmatic-programmer, release-it, system-design, ddia-systems - asking the user questions at every decision point and recording results in the project docs/ folder (TESTING.md, TECH-DEBT.md, IMPROVE-CODE-QUALITY-PLAN.md) so the journey resumes across sessions. Use when the user wants to harden an AI-generated prototype, add tests before refactoring, make code safe to change, or says ''this works on my machine but I am scared to touch it''. For an aged codebase, remove-technical-debt; for greenfield structure, design-code-architecture; for a product and UX pass, improve-app; to optimize speed and structure, architecture-optimization. For one framework in isolation, invoke that skill directly.'
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Improve Code Quality

@@ -154,10 +154,54 @@ How it works:
 - `useResizableModal` (`src/renderer/hooks/ui/useResizableModal.ts`) owns the drag. Like `useResizablePanel` it writes to the DOM during the drag and commits React state once on mouseup. Deltas are doubled because the card is centered: growing the width by W moves the right edge by only W/2, so doubling keeps the grip under the pointer.
 - Sizes persist in one `modalSizes` map in `uiStore`, keyed by `resizeKey`, written through to settings and hydrated by `loadAllSettings` on startup.
 - Minimums default to `MODAL_MIN_WIDTH` (360) / `MODAL_MIN_HEIGHT` (300), never exceeding the modal's declared `width`. Pass higher values when a modal's content stops making sense below a given size - every resizable modal should have a floor that still looks right.
-- Sizes are clamped to 95% of the viewport both at drag time and at read time, so a modal sized on a large display still opens sanely on a laptop.
+- Sizes are clamped to `MODAL_MAX_VIEWPORT_RATIO` (90%) of the viewport both at drag time and at read time, so a modal sized on a large display still opens sanely on a laptop.
 - `ModalResizeGrip` renders the bottom-right grip; double-clicking it forgets the remembered size and returns the modal to its declared default.
 
 `resizeKey` must be stable across renders - it is the persistence key, not a label.
+
+**Sizing a canvas modal by the viewport.** A fixed pixel default is right for a
+form or a dialog: its content has a natural width and more room buys nothing.
+It is wrong for a surface the user pans around inside - a graph, a dashboard,
+a map - where the useful default is "as much of the screen as a modal may
+take". A default that reads as generous on a laptop is a postage stamp on a 5K
+display, and the user re-drags it on every machine. Pass
+`viewportModalSize({ width, height })` from `src/renderer/utils/modalSizing.ts`
+as the `defaultSize` instead of a literal (Document Graph is the reference
+caller). Memoize it once per mount rather than recomputing per render: the hook
+already re-clamps the live size on `resize`, and a default that moves under it
+fights that listener. The result still passes through `clampModalSize`, so the
+shared viewport cap and the modal's own `minSize` apply on top.
+
+### Resizable Panes Inside a Surface
+
+`useResizablePanel` (`src/renderer/hooks/ui/useResizablePanel.ts`) is the drag
+for a pane whose width the user sets: the Left Bar, the Right Bar, and the
+Document Graph's preview pane all ride it. It writes to the DOM during the drag
+and commits React state once on mouseup, so a drag costs one render rather than
+sixty.
+
+Who persists the width depends on where the pane lives:
+
+- **A top-level chrome pane** (Left Bar, Right Bar) is a real setting. Pass
+  `settingsKey` and back it with a `settingsStore` field, so it round-trips
+  through settings like any other preference.
+- **A pane inside another surface** (a preview inside a modal, a split inside a
+  panel) is a view preference, not a setting. Pair the hook with
+  `usePersistedPanelWidth(storageKey, { defaultWidth, minWidth, maxWidth })`
+  from `src/renderer/hooks/ui/usePersistedPanelWidth.ts` - the numeric
+  counterpart to `usePersistedToggle` - and **omit `settingsKey`**, or the hook
+  writes the same number a second time under a key nothing reads back.
+
+Stored bounds and the live clamp are two different questions, and conflating
+them is what lets a pane swallow its own container. The stored bounds decide
+what may be written to disk; the `maxWidth` handed to `useResizablePanel` folds
+in the container as it is right now, so a width that was legal on a maximized
+window narrows itself after the modal is resized down. See
+`previewPaneSizing.ts` in `src/renderer/components/DocumentGraph/` for the
+shape: constants plus one pure `previewMaxWidthForContainer()`, which also
+answers the unmeasured case (a `0` container width means the `ResizeObserver`
+has not reported, where clamping to the minimum would paint the remembered
+width narrow and then visibly jump).
 
 ### Modals Opened From Inside the Main Panel
 
@@ -391,7 +435,7 @@ Losing the whole pane while trying to reset a filter is the bug this prevents. T
 
 ### Keyboard Navigation in a `<DualPaneFileEditor>` List
 
-The shared list pane (`components/shared/DualPaneFileEditor.tsx`) handles keys once a row has focus - clicking a row is enough, since rows are real `<button>`s and the handler sits on the list container:
+The shared list pane (`components/shared/DualPaneFileEditor.tsx`) handles keys once a row has focus. Rows are real `<button>`s and the handler sits on the list container, so clicking one is enough - or pass `autoFocusList` and the surface opens with the list already focused:
 
 - **Up / Down** walk the **visible** rows. The order comes from `visibleOrder`, which skips collapsed categories: stepping into a collapsed group would move the selection somewhere the user cannot see. The ends do not wrap, and a selection the current filter hides means the keys enter the list from whichever end they point at.
 - **Backspace / Delete** raise `onDeleteItem(selectedId)`. The list only reports the intent; the consumer owns the confirmation. Both keys are ignored unless the event came from a row, so Backspace on the "+ New" button in the same container cannot delete anything.
@@ -399,6 +443,8 @@ The shared list pane (`components/shared/DualPaneFileEditor.tsx`) handles keys o
 Two focus rules the component exists to enforce:
 
 **Selection is chased, not assumed.** `onSelect` may be async or may refuse (unsaved changes), so arrow nav records the requested id and only moves DOM focus once `selectedId` actually lands on it.
+
+**`autoFocusList` claims focus once, and only if nothing else has it.** The list loads async, so it cannot fire on mount - it waits for the first selection, which means a fast user may already be typing in the filter box by then. Focus must stay where they put it, so the effect checks `document.activeElement` first (the same rule the layer stack uses when restoring focus) and gives up if anything outside the list holds it. Only turn it on for a surface whose primary job is walking the list; on an editor-first surface it steals the caret from the textarea.
 
 **After a consumer-driven delete, bump `listFocusToken`.** The row that had focus was just unmounted, so focus falls to `<body>` and the next Backspace does nothing - which reads as the keyboard dying halfway through a cleanup pass. Only the consumer knows when its own async delete settled, hence the token.
 
@@ -1259,6 +1305,31 @@ every edit and does exactly that. Wrap it in `useStableCallback()`
 (`hooks/utils/useStableCallback.ts`) and keep the component memo's dependencies
 off the content (depend on `file.path`, not `file`). `useAutoRunMarkdown` does
 the wrapping internally, so its callers cannot get this wrong.
+
+#### Preview/edit scroll sync rides the same `data-source-line` tags
+
+`rehypeSourceLine` stamps EVERY block, not just task checkboxes, and the second
+consumer is `lineSync.ts` (`components/FilePreview/lineSync.ts`):
+`domGetTopLineByAttr()` reads the tags to find the source line at the fold so
+the preview -> edit toggle lands where the reader was, and
+`domScrollToLineByAttr()` walks them back the other way.
+
+**A component override in `createMarkdownComponents()` must forward its props.**
+`p`, `li`, and `blockquote` were written as
+`React.createElement('p', null, children)`, which silently eats
+`data-source-line` along with everything else. Headings forwarded theirs, so the
+tags did not disappear - they thinned out to HEADINGS ONLY, and the walk could
+no longer tell "the top of the document" from "the first heading". Destructure
+`node` out (it is react-markdown's mdast node and React warns if it reaches the
+DOM) and spread the rest.
+
+**"Above the first tagged block" is line 1, not the first block's line.** The
+container's own leading padding puts even block one below the fold at
+`scrollTop` 0, so a `blocks[0]` fallback answers with the first block for a
+document scrolled to the very top. `domScrollToLineByAttr()` is the mirror
+image: for a line at or above the first block it writes a hard
+`scrollTop = 0` rather than aligning block one with the scroller edge, which
+would scroll that same padding away and land a few pixels short.
 
 #### Alert callouts
 

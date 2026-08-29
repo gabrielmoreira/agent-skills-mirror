@@ -4,6 +4,9 @@ description: "Extracts, retrieves, and applies CMS brand guidelines (voice, tone
 metadata:
   version: "1.0"
   domains: ["Experience"]
+  relatedSkills:
+    - "experience-cms-brand-create"
+    - "experience-content-media-search"
 ---
 
 # Applying CMS Brand
@@ -24,7 +27,7 @@ Universal skill for searching, extracting, and applying CMS brand guidelines to 
 
 **DO NOT use this skill when the user wants to:**
 - Search for images or media (use experience-content-media-search skill)
-- Create a new brand from scratch
+- Create a new brand from scratch (use experience-cms-brand-create skill)
 - Edit brand definitions in CMS
 - Generate logos or visual brand assets
 

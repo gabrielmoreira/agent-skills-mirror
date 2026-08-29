@@ -1,6 +1,6 @@
 ---
 name: "omh-context-budget-review"
-description: "[omh] Hermes Context Budget Review workflow: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work. Use when the user says: context-budget-review, context budget review, context budget, token budget review, token budget, prompt budget, context compaction, compact context."
+description: "[omh] Hermes Context Budget Review workflow: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work. Use when the user says: context-budget-review, context budget review, context budget, token budget review, token budget, prompt budget, prompt caching, prompt cache."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]
@@ -59,7 +59,7 @@ Bad example:
 
 Use before long-running research, coding, review, or multi-agent work when context, token, cost, or summary drift could break quality.
 
-    Strong routing signals: `context-budget-review`, `context budget review`, `context budget`, `token budget review`, `token budget`, `prompt budget`, `context compaction`, `compact context`, `too much context`, `summarization checkpoint`, `budget this task`, `컨텍스트 예산`, `토큰 예산`, `컨텍스트 압축`, `요약 체크포인트`
+    Strong routing signals: `context-budget-review`, `context budget review`, `context budget`, `token budget review`, `token budget`, `prompt budget`, `prompt caching`, `prompt cache`, `cache hygiene`, `context compaction`, `compact context`, `too much context`, `summarization checkpoint`, `budget this task`, `컨텍스트 예산`, `토큰 예산`, `컨텍스트 압축`, `요약 체크포인트`
 
 ## Catalog Metadata
 
@@ -75,6 +75,7 @@ Quality bar:
 - Separate durable requirements, volatile status, file refs, verification evidence, and open blockers.
 - Define checkpoint cadence, overflow recovery, and continuity verification.
 - Use bounded copy while preserving the full objective and evidence gaps.
+- Keep prompt-prefix placement cache-stable: fixed section order, volatile bytes never above the fold, mid-run changes as appended messages never system-prompt mutations — load `references/cache-placement.md` for the placement rules.
 
 Handoff policy:
 

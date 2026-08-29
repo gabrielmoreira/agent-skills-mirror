@@ -887,7 +887,11 @@ Optional settings live in `.claude/omc.jsonc` (project) or `~/.config/claude-omc
 - **ops.monitorIntervalMs** - How often to review TodoWrite or the active task-list surface (default: 30s)
 - **ops.shutdownTimeoutMs** - How long to wait for shutdown responses (default: 15s)
 
-> **Note:** Team members do not have a hardcoded model default. Each teammate is a separate Claude Code session that inherits the user's configured model. Since teammates can spawn their own subagents, the session model acts as the orchestration layer while subagents can use any model tier.
+> **Note:** Native Claude Code teammates do not have a hardcoded model default; each teammate inherits the lead session's configured model unless overridden per role. OMC's legacy CLI workers are separate processes: their provider and model come from OMC's team routing, not native teammate inheritance.
+>
+> **Nesting (Claude Code 2.1.217+):** Claude teammates are full, independent Claude Code sessions in the session's implicit team (see Phase 5). Do not assume a teammate can or cannot spawn nested subagents: Claude Code 2.1.217–2.1.218 defaulted `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` to 1, while 2.1.219+ defaults to 3, and the current setting controls subagent layers below the main conversation. Plan each teammate as the unit that does the work unless nested delegation is deliberate and supported by the active runtime. OMC CLI workers (`claude`, `codex`, `gemini`, `grok`, `cursor`, and `antigravity` via `ops.defaultAgentType`) are separate processes, not Claude Code subagents, and are unaffected by Claude's subagent depth setting.
+>
+> **Concurrency:** The current OMC team CLI caps worker fan-out at 20 (`MAX_WORKER_COUNT`); although `ops.maxAgents` exists in the config schema, the current launcher does not consult it. Claude Code's `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` also defaults to 20, but that limit applies to Agent-spawned subagents; Claude Code documents agent-team teammates as following their own limits. Do not treat the two values as a shared cap or assume a full-size OMC team leaves exactly zero headroom for ordinary subagents; size OMC teams conservatively when the lead also needs Agent-spawned work.
 
 ## Per-Role Provider & Model Routing
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 38 file(s) materialized.
+Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 38 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,32 +73,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/ci-cd-and-automation/SKILL.md`](skills/ci-cd-and-automation/SKILL.md) |
 | 11 | ✓ | [`skills/code-review-and-quality/SKILL.md`](skills/code-review-and-quality/SKILL.md) |
 | 12 | ✓ | [`skills/code-simplification/SKILL.md`](skills/code-simplification/SKILL.md) |
-| 13 | ✓ | [`skills/context-engineering/SKILL.md`](skills/context-engineering/SKILL.md) |
-| 14 | ✓ | [`skills/debugging-and-error-recovery/SKILL.md`](skills/debugging-and-error-recovery/SKILL.md) |
-| 15 | ✓ | [`skills/deprecation-and-migration/SKILL.md`](skills/deprecation-and-migration/SKILL.md) |
-| 16 | ✓ | [`skills/documentation-and-adrs/SKILL.md`](skills/documentation-and-adrs/SKILL.md) |
-| 17 | ✓ | [`skills/doubt-driven-development/SKILL.md`](skills/doubt-driven-development/SKILL.md) |
-| 18 | ✓ | [`skills/frontend-ui-engineering/SKILL.md`](skills/frontend-ui-engineering/SKILL.md) |
-| 19 | ✓ | [`skills/git-workflow-and-versioning/SKILL.md`](skills/git-workflow-and-versioning/SKILL.md) |
-| 20 | ✓ | [`skills/idea-refine/examples.md`](skills/idea-refine/examples.md) |
-| 21 | ✓ | [`skills/idea-refine/frameworks.md`](skills/idea-refine/frameworks.md) |
-| 22 | ✓ | [`skills/idea-refine/refinement-criteria.md`](skills/idea-refine/refinement-criteria.md) |
-| 23 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
-| 24 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
-| 25 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
-| 26 | ✓ | [`skills/interview-me/SKILL.md`](skills/interview-me/SKILL.md) |
-| 27 | ✓ | [`skills/observability-and-instrumentation/SKILL.md`](skills/observability-and-instrumentation/SKILL.md) |
-| 28 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
-| 29 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
-| 30 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
-| 31 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
-| 32 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
-| 33 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
-| 34 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 35 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
-| 36 | → | [`docs/agents.md`](docs/agents.md) |
-| 37 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 38 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
+| 13 | ✓ | [`skills/constraint-driven-development/references/floor-guard.md`](skills/constraint-driven-development/references/floor-guard.md) |
+| 14 | ✓ | [`skills/constraint-driven-development/SKILL.md`](skills/constraint-driven-development/SKILL.md) |
+| 15 | ✓ | [`skills/context-engineering/SKILL.md`](skills/context-engineering/SKILL.md) |
+| 16 | ✓ | [`skills/debugging-and-error-recovery/SKILL.md`](skills/debugging-and-error-recovery/SKILL.md) |
+| 17 | ✓ | [`skills/deprecation-and-migration/SKILL.md`](skills/deprecation-and-migration/SKILL.md) |
+| 18 | ✓ | [`skills/documentation-and-adrs/SKILL.md`](skills/documentation-and-adrs/SKILL.md) |
+| 19 | ✓ | [`skills/doubt-driven-development/SKILL.md`](skills/doubt-driven-development/SKILL.md) |
+| 20 | ✓ | [`skills/frontend-ui-engineering/SKILL.md`](skills/frontend-ui-engineering/SKILL.md) |
+| 21 | ✓ | [`skills/git-workflow-and-versioning/SKILL.md`](skills/git-workflow-and-versioning/SKILL.md) |
+| 22 | ✓ | [`skills/idea-refine/examples.md`](skills/idea-refine/examples.md) |
+| 23 | ✓ | [`skills/idea-refine/frameworks.md`](skills/idea-refine/frameworks.md) |
+| 24 | ✓ | [`skills/idea-refine/refinement-criteria.md`](skills/idea-refine/refinement-criteria.md) |
+| 25 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
+| 26 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
+| 27 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
+| 28 | ✓ | [`skills/interview-me/SKILL.md`](skills/interview-me/SKILL.md) |
+| 29 | ✓ | [`skills/observability-and-instrumentation/SKILL.md`](skills/observability-and-instrumentation/SKILL.md) |
+| 30 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
+| 31 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
+| 32 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
+| 33 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
+| 34 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
+| 35 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
+| 36 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 37 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
+| 38 | → | [`docs/agents.md`](docs/agents.md) |
+| 39 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 40 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
 
 ---
 

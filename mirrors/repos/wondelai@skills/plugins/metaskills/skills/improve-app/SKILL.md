@@ -1,10 +1,10 @@
 ---
 name: improve-app
-description: 'Guided journey from a shipped app that works but feels rough to a product that fits the job, flows without friction, reads clearly, and persuades honestly. Orchestrates nine skills phase by phase - jobs-to-be-done, ux-heuristics, design-everyday-things, refactoring-ui, microinteractions, made-to-stick, influence-psychology, high-perf-browser, steve-jobs-design-review - asking the user questions at every decision point and recording results in the project docs/ folder (CUSTOMER.md, DESIGN.md, POSITIONING.md, IMPROVE-APP-PLAN.md) so the journey resumes across sessions. Use when the user wants to fix a clunky product, cut UX friction, sharpen in-app copy and prompts, or says ''the app works but feels rough''. Do not use for code, tests, or production hardening - use improve-code-quality (fresh prototype) or remove-technical-debt (aged codebase); no app yet, create-app; needs growth loops, grow-app; marketing-site friction, improve-website. For one framework in isolation, invoke that skill directly.'
+description: 'Guided journey from a shipped app that works but feels rough to a product that fits the job, flows without friction, reads clearly, and persuades honestly. Orchestrates nine skills phase by phase - jobs-to-be-done, ux-heuristics, design-everyday-things, refactoring-ui, microinteractions, made-to-stick, influence-psychology, high-perf-browser, steve-jobs-design-review - asking the user questions at every decision point and recording results in the project docs/ folder (CUSTOMER.md, DESIGN.md, POSITIONING.md, IMPROVE-APP-PLAN.md) so the journey resumes across sessions. Use when the user wants to fix a clunky product, cut UX friction, sharpen in-app copy, or says ''the app works but feels rough''. Not for code, tests, or hardening - use improve-code-quality (fresh prototype) or remove-technical-debt (aged); no app yet, create-app; needs growth loops, grow-app; marketing-site friction, improve-website; one leaking flow, conversion-optimization. For one framework in isolation, invoke that skill directly.'
 license: MIT
 metadata:
   author: wondelai
-  version: "2.0.1"
+  version: "2.0.2"
 ---
 
 # Improve an App

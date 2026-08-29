@@ -1,10 +1,10 @@
 ---
 name: remove-technical-debt
-description: 'Guided journey from a large aged codebase everyone fears to touch to one that is safe to change, legible, bounded, and resilient - paid down in place without a rewrite. Orchestrates eight skills phase by phase - working-with-legacy-code, refactoring-patterns, clean-code, software-design-philosophy, clean-architecture, pragmatic-programmer, release-it, domain-driven-design - asking the user questions at every decision point and recording results in the project docs/ folder (TESTING.md, TECH-DEBT.md, REMOVE-TECHNICAL-DEBT-PLAN.md) so the journey resumes across sessions. Use when the user wants to tame a legacy codebase, pay down technical debt safely, avoid a big-bang rewrite, or says ''we are afraid to touch this code''. For a fresh prototype or vibe-coded app going to production, use improve-code-quality; for greenfield structure, use design-code-architecture; for a product-and-UX pass rather than code-only, use improve-app. For one framework in isolation, invoke that skill directly.'
+description: 'Guided journey from a large aged codebase everyone fears to touch to one that is safe to change, legible, bounded, and resilient - paid down in place without a rewrite. Orchestrates eight skills phase by phase - working-with-legacy-code, refactoring-patterns, clean-code, software-design-philosophy, clean-architecture, pragmatic-programmer, release-it, domain-driven-design - asking the user questions at every decision point and recording results in the project docs/ folder (TESTING.md, TECH-DEBT.md, REMOVE-TECHNICAL-DEBT-PLAN.md) so the journey resumes across sessions. Use when the user wants to tame a legacy codebase, pay down technical debt safely, avoid a big-bang rewrite, or says ''we are afraid to touch this code''. For a fresh vibe-coded prototype, improve-code-quality; for greenfield structure, design-code-architecture; for a product-and-UX pass, improve-app; to optimize a working codebase for speed, architecture-optimization. For one framework in isolation, invoke that skill directly.'
 license: MIT
 metadata:
   author: wondelai
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Remove Technical Debt

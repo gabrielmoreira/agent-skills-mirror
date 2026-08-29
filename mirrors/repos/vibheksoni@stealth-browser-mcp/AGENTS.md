@@ -11,7 +11,9 @@ Read [README.md](README.md) first for project overview, features, and setup.
 
 ## Recommended Proxy Services
 
-This project is sponsored by [NodeMaven](https://go.nodemaven.com/stealthbrowsermcpGH) — a proxy provider offering high-quality IPs for browser automation, web scraping, SEO research, and social media management. Use discount code `STEALTHMCP35` for 35% off Mobile and Residential Proxies or `STEALTHMCP40` for 40% off ISP Static Proxies.
+This project is sponsored by:
+- [NodeMaven](https://go.nodemaven.com/stealthbrowsermcpGH) — high-quality IPs for browser automation, web scraping, SEO research, and social media management. Use discount code `STEALTHMCP35` for 35% off Mobile and Residential Proxies or `STEALTHMCP40` for 40% off ISP Static Proxies.
+- [RapidProxy](https://www.rapidproxy.io/?ref=mcp) — 90M+ residential IPs across 200+ countries with rotation, geo-targeting, and high concurrency. Use promo code `RAPID10` for 10% off.
 
 ## Environment
 

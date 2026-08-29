@@ -157,6 +157,12 @@ After `SMAppService.mainApp.register/unregister` from the bridge (not via `Launc
 - **Mimo (mimocode) mirrors your Claude Code + claude-mem history into its own DB.** It's an OpenCode-fork SQLite (`~/.local/share/mimocode/mimocode.db`) but pulls `~/.claude` sessions in via `claude_import` AND a live observer/session sync — so >99% of rows are anthropic-endpoint turns the Claude parser already counts as `source=claude` (~3.9B mirrored vs ~22M genuine on the dev's box). `readMimoDbMessages()` keys off `providerID`: keep only `mimo`/`xiaomi` (mimo's own runtime); drop everything `anthropic`. That `anthropic` bucket includes mimo-named models the user ran *inside* Claude Code (e.g. `model=mimo-v2.5-pro`, logged in `~/.claude`) — so do NOT key off the model id (re-counts it) and do NOT rely on `claude_import` (misses the observer mirror).
 - **Data-migration releases**: stress-test `sync` twice consecutively after touching `sync.js` / cursor schema — second run exposes state pollution the first hides.
 
+### Cloud moderation (leaderboard bans / quarantine)
+
+- **Before any bulk quarantine / delete scoped by a heuristic `WHERE`**, run `node scripts/audit/blast-radius-check.mjs --table <t> --where "<clause>" --intended <uuids>`. It exits 1 when the clause touches accounts outside your list. 2026-07-21 skipped this step: a clause meant for 8 accounts matched 40, and 32 innocent users had 51.1B tokens withheld for five weeks (#534).
+- The hourly detector only asks "is this account cheating?". `leaderboard moderation audit` (daily workflow → `?quarantine_audit=1`) asks the complementary question — "is data withheld from anyone we never banned?" — and fails the job when so.
+- Re-review standing bans with `select * from leaderboard_ban_review(ARRAY[...]::uuid[])` (`scripts/audit/leaderboard-ban-review.sql`). Thresholds are read from `tokentracker_anticheat_config`, never hardcoded. **`cohort_ratio` ≤ 1 means an unbanned user out-ran them that day — treat as a likely false positive.** It yields candidates, not verdicts: a slow-drip injector stays below every peak gate and is still correctly banned.
+
 ### False-positive validators to ignore
 
 - `posttooluse-validate: nextjs` flagging "React hooks require `use client`" on `dashboard/src/**/*.jsx` — this is a **Vite SPA**, not Next.js.

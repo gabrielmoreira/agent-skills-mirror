@@ -29,27 +29,40 @@ src/notebooklm/
 ├── types.py             # Dataclasses and type definitions
 ├── _app/                # Transport-neutral business logic shared by adapters
 ├── _client_composed.py  # Client-owned composition holder
-├── _runtime/            # Runtime contracts, config, lifecycle, auth, transport
-├── _notebooks.py        # NotebooksAPI implementation
-├── _notebook_metadata.py # Private notebook metadata composition service
-├── _sources.py          # SourcesAPI implementation
-├── _source/             # Private source services
-├── _artifacts.py        # ArtifactsAPI implementation
-├── _artifact/           # Private artifact services
-├── _chat/               # ChatAPI implementation (facade + chat helpers)
-├── _research.py         # ResearchAPI implementation
-├── _notes.py            # NotesAPI implementation
-├── _mind_map.py         # Private note-backed mind-map service
-├── _mind_maps_api.py    # MindMapsAPI implementation
-├── _labels.py           # LabelsAPI implementation
-├── _settings.py         # SettingsAPI implementation
-├── _sharing.py          # SharingAPI implementation
-├── _sharing_manager.py  # Private legacy notebook share-link service
-├── rpc/                 # RPC protocol layer
+├── _runtime/            # Neutral runtime contracts, config, helpers, init, lifecycle
+├── _web/contracts.py    # Web-only Kernel and RpcCaller Protocols
+├── _web/transport/      # Web HTTP transport, executor, middleware, auth, persistence
+├── _web/wire/           # Web batchexecute codecs, overrides, and strict indexing
+├── _notebooks.py        # Backend-neutral NotebooksAPI + share-URL builder
+├── _web/notebooks.py    # WebNotebooksAPI implementation
+├── _sources.py          # Backend-neutral abstract SourcesAPI
+├── _web/sources/        # WebSourcesAPI + concrete web source services
+├── _web/params/         # Web batchexecute payload builders
+├── _notebook_metadata.py # Neutral metadata protocols + composition service
+├── _source/             # Neutral source polling/Markdown + lazy shims
+├── _artifacts.py        # Backend-neutral abstract ArtifactsAPI
+├── _artifact/           # Neutral artifact polling, formatting, validation, and asset transfer
+├── _web/artifacts.py    # WebArtifactsAPI implementation
+├── _web/artifact/       # Web artifact listing/generation/download-selection services
+├── _chat.py             # Backend-neutral ChatAPI orchestration
+├── _research.py         # Lazy ResearchAPI compatibility shim
+├── _web/research.py     # ResearchAPI web implementation
+├── _web/research_import.py # Research import/verification helpers
+├── _notes.py            # Backend-neutral abstract NotesAPI
+├── _web/notes.py        # WebNotesAPI + NoteService implementation
+├── _mind_maps_api.py    # Backend-neutral abstract MindMapsAPI
+├── _web/mind_maps.py    # WebMindMapsAPI + NoteBackedMindMapService
+├── _labels.py           # Backend-neutral abstract LabelsAPI
+├── _web/labels.py       # WebLabelsAPI implementation
+├── _collections.py      # Backend-neutral abstract CollectionsAPI
+├── _web/collections.py  # WebCollectionsAPI implementation
+├── _settings.py         # Backend-neutral abstract SettingsAPI
+├── _web/settings.py     # WebSettingsAPI + web settings helpers
+├── _sharing.py          # Backend-neutral abstract SharingAPI
+├── _web/sharing.py      # WebSharingAPI + legacy ShareManager
+├── rpc/                 # Public power-user and compatibility facade
 │   ├── __init__.py
-│   ├── types.py         # RPCMethod enum and constants
-│   ├── encoder.py       # Request encoding
-│   └── decoder.py       # Response parsing
+│   └── types.py         # RPCMethod enum, constants, and compatibility re-exports
 ├── cli/                 # Click adapter (`*_cmd.py`) plus `cli/services/`
 ├── mcp/                 # FastMCP adapter (optional `mcp` extra)
 └── server/              # FastAPI REST adapter (optional `server` extra)
@@ -80,8 +93,13 @@ src/notebooklm/
 └───────────────────────────┬─────────────────────────────────┘
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
-│                        RPC Layer                            │
-│        encoder.py, decoder.py, types.py (RPCMethod)         │
+│                Web Wire Layer (`_web/wire/`)                │
+│      encoder, decoder, overrides, strict safe_index         │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────┐
+│               Power-user RPC Facade (`rpc/`)               │
+│                __init__.py, types.py (RPCMethod)            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -92,14 +110,15 @@ src/notebooklm/
 | **Adapters** | `cli/`, `mcp/`, `server/` | User commands/tools/routes, transport-specific input/output, auth envelopes |
 | **App core** | `_app/*.py` | Transport-neutral workflows reused by adapters |
 | **Client** | `client.py`, `_*.py` | High-level Python API, returns typed dataclasses |
-| **Runtime** | `client.py`, `_client_composed.py`, `_runtime/init.py`, `_kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
-| **RPC** | `rpc/*.py` | Protocol encoding/decoding, method IDs |
+| **Runtime** | `client.py`, `_client_composed.py`, `_runtime/init.py`, `_web/transport/kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
+| **Web wire** | `_web/wire/*.py` | Batchexecute encoding/decoding, runtime ID overrides, strict positional access |
+| **RPC facade** | `rpc/*.py` | Public power-user compatibility exports and method IDs |
 
 #### Runtime seam modules
 
 The client runtime is split across `NotebookLMClient` (composition root),
 `ClientComposed` (holder), `_runtime/init.py` (construction helpers),
-`_kernel.py` (HTTP client owner), and single-responsibility collaborator
+`_web/transport/kernel.py` (HTTP client owner), and single-responsibility collaborator
 modules. (The legacy `_core.py` compatibility shim was deleted in v0.5.0;
 callers import directly from the canonical modules.) Each helper exposes
 a narrow Protocol surface so it can be unit-tested against a stub:
@@ -110,23 +129,24 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 | `_runtime/init.py` | `RuntimeCollaborators` helpers | Validates constructor args, builds collaborators, wires middleware, and binds `ClientComposed`. |
 | `_client_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
 | `_transport_drain.py` | `TransportDrainTracker` | In-flight transport counters, `_TransportOperationToken`, lazy `asyncio.Condition` powering `client.drain(...)`. |
-| `_reqid_counter.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
-| `_runtime/auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
-| `_runtime/contracts.py` | Runtime Protocols | Shared capability Protocols: `Kernel`, `RpcCaller`, and `LoopGuard`. Single-consumer capabilities stay local to their owner modules. |
+| `_web/transport/reqid_counter.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
+| `_web/transport/auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
+| `_runtime/contracts.py` | Neutral runtime Protocol | `LoopGuard`, used by transport-neutral orchestration. |
+| `_web/contracts.py` | Web transport Protocols | `Kernel` and `RpcCaller`, used only by batchexecute implementations. Single-consumer capabilities stay local to their owner modules. |
 | `_runtime/lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
-| `_runtime/transport.py` | `RuntimeTransport` | Authenticated transport leg used by `RpcExecutor` and the middleware chain terminal. |
-| `_rpc_executor.py` | `RpcExecutor` | RPC dispatch executor with direct collaborator dependencies. |
-| `_request_types.py` | `AuthSnapshot`, `BuildRequest`, request materialization | Shared request construction Interface. |
-| `_transport_errors.py` | transport exceptions, `parse_retry_after`, `raise_mapped_post_error` | Terminal `Kernel.post` error mapping for middleware retry/auth behavior. |
-| `_streaming_post.py` | `stream_post_with_size_cap` | Low-level POST streaming and response-size guard. |
+| `_web/transport/runtime.py` | `RuntimeTransport` | Authenticated transport leg used by `RpcExecutor` and the middleware chain terminal. |
+| `_web/transport/executor.py` | `RpcExecutor` | RPC dispatch executor with direct collaborator dependencies. |
+| `_web/transport/request_types.py` | `AuthSnapshot`, `BuildRequest`, request materialization | Shared request construction Interface. |
+| `_web/transport/errors.py` | transport exceptions, `parse_retry_after`, `raise_mapped_post_error` | Terminal `Kernel.post` error mapping for middleware retry/auth behavior. |
+| `_web/transport/streaming_post.py` | `stream_post_with_size_cap` | Low-level POST streaming and response-size guard. |
 | `_conversation_cache.py` | `ConversationCache` | Per-instance true-LRU conversation cache for `ChatAPI` continuity. Caps the conversation count (`MAX_CONVERSATION_CACHE_SIZE`) and the turns retained per conversation (`MAX_TURNS_PER_CONVERSATION`). |
 | `_polling_registry.py` | `PollRegistry` | Pending-poll registry shared by long-running artifact generations. |
-| `_cookie_persistence.py` | `CookiePersistence` | Per-path typed baselines, ordered `ProfileStore` cookie merges, `__Secure-1PSIDTS` rotation, and the concrete v0.x snapshot adapter. |
+| `_web/transport/cookie_persistence.py` | `CookiePersistence` | Per-path typed baselines, ordered `ProfileStore` cookie merges, `__Secure-1PSIDTS` rotation, and the concrete v0.x snapshot adapter. |
 
-The feature-facing surface is the set of **capability Protocols** in
-`notebooklm._runtime.contracts` — `Kernel`, `RpcCaller`, and
-`LoopGuard`. Single-consumer capability shapes stay in the owning
-feature module (`AuthMetadata` in `_source/upload.py`,
+Transport-neutral orchestration uses `LoopGuard` from
+`notebooklm._runtime.contracts`; batchexecute implementations use `Kernel`
+and `RpcCaller` from `notebooklm._web.contracts`. Single-consumer capability
+shapes stay in the owning feature module (`AuthMetadata` in `_web/sources/upload.py`,
 `OperationScopeProvider` in `_artifact/polling.py`), and the unused
 `AsyncWorkRuntime` composite was deleted. The broad `Session` Protocol
 that previously bundled these together was deleted in the final phase
@@ -143,8 +163,12 @@ production consumers) that still gates adding any new shared Protocol.
 Private service modules sit inside the client layer but below the public
 facades. They own cross-facade composition without importing sibling facades:
 `_notebook_metadata.py` composes notebook metadata through a narrow source
-lister, `_sharing_manager.py` owns legacy `SHARE_ARTIFACT` link behavior, and
-`_mind_map.py` owns note-backed mind-map rows shared by notes and artifacts.
+lister without importing a concrete transport or lister; `_web/notebooks.py`
+owns the direct-construction web fallback. `_web/sharing.py` owns legacy
+`SHARE_ARTIFACT` mutation behavior while `_notebooks.py` owns the
+transport-neutral URL builder, and
+`_web/mind_maps.py` owns the web note-backed mind-map rows shared by notes and artifacts;
+`_mind_maps_api.py` owns the transport-neutral unified workflows.
 Facade modules keep the public method surface stable and delegate to these
 services.
 
@@ -182,7 +206,7 @@ The architecture tests encode the current layer contract:
   construct `SourcesAPI`; artifact/source/notebook composition services must
   not runtime-import facade APIs. Add new private services to those guard
   lists when they take ownership of cross-facade behavior. The construction /
-  init-order behaviour tests — `NotebookLMClient` constructs `SourcesAPI`
+  init-order behaviour tests — `NotebookLMClient` constructs `WebSourcesAPI`
   before `NotebooksAPI` and passes it through the legacy `sources_api=` slot,
   plus the mind-map decoupling flows — stay in
   `tests/unit/test_init_order.py`.
@@ -214,12 +238,13 @@ from those catalogues rather than introducing parallel patterns.
 **New API Class:**
 1. Create `_newfeature.py` with `NewFeatureAPI` class.
 2. Type each constructor parameter against the **narrowest shared
-   capability Protocol** it actually uses (`RpcCaller`, `LoopGuard`,
-   `Kernel` — see
+   capability Protocol** it actually uses (`LoopGuard` from
+   `_runtime/contracts.py`, or web-only `RpcCaller` / `Kernel` from
+   `_web/contracts.py` — see
    [`docs/architecture.md`](./architecture.md) for the protocol
    catalog). If the capability has only one consumer, define the
-   Protocol locally beside that consumer instead of promoting it to
-   `_runtime/contracts.py`. Pass each collaborator by keyword-only
+   Protocol locally beside that consumer instead of promoting it to either
+   contracts module. Pass each collaborator by keyword-only
    argument; do not bundle them into a feature-local composite-runtime
    Protocol unless a second production consumer materialises. **Do NOT
    depend on a broad runtime facade for type annotations** — there is no
@@ -442,7 +467,7 @@ the writer when the source is invalid.
 `ClientLifecycle` alone owns the client `AuthTokens` mirror and refreshes `cookie_snapshot` after
 open and accepted canonical or compatibility saves. Tests inject a saver on the client when they
 intend to exercise the callback contract; canonical tests target the private typed seam.
-Measured owners are 457 lines in `_cookie_persistence.py`, 618 in `_runtime/init.py`, 628 in
+Measured owners are 457 lines in `_web/transport/cookie_persistence.py`, 618 in `_runtime/init.py`, 628 in
 `_runtime/lifecycle.py`, and 992 in `client.py`.
 
 - **In-process lock before OS lock.** `StorageLockManager` takes an in-process
@@ -806,7 +831,7 @@ A representative slice (run `ls tests/_guardrails/` for the full set):
 
 | Gate | Enforces |
 |---|---|
-| `test_no_raw_positional_rpc_indexing.py` | No chained positional indexing (`x[0][9][3]`) of `batchexecute` payloads outside the sanctioned `_row_adapters/` — the project's #1 fragility class |
+| `test_no_raw_positional_rpc_indexing.py` | No chained positional indexing (`x[0][9][3]`) of `batchexecute` payloads outside the sanctioned `_web/rows/` — the project's #1 fragility class |
 | `test_rpc_method_ids_only_in_types.py` | Obfuscated RPC IDs live only in `rpc/types.py` (the source of truth) |
 | `test_no_forbidden_monkeypatches.py` | The forbidden monkeypatch shapes under `tests/` (ADR-0007) |
 | `test_no_inline_deprecation_warnings.py` | No inline `warnings.warn(..., DeprecationWarning)` outside `_deprecation.py` (ADR-0018) |
@@ -1212,7 +1237,7 @@ Need network?
 
 ### Credential redaction
 
-The package handler installed by `configure_logging()` has a `RedactingFilter` attached. It runs for every record reaching the handler, including records originating in child loggers (`notebooklm._rpc_executor`, `notebooklm._transport_errors`, `notebooklm._chat`, etc.) via Python logging's default propagation. The filter scrubs:
+The package handler installed by `configure_logging()` has a `RedactingFilter` attached. It runs for every record reaching the handler, including records originating in child loggers (`notebooklm._rpc_executor`, `notebooklm._web.transport.errors`, `notebooklm._chat`, etc.) via Python logging's default propagation. The filter scrubs:
 
 - CSRF tokens (`at=...`)
 - Session IDs (`f.sid=...`)

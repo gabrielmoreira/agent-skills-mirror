@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `silverstein/minutes` — 26 default patterns, 3 followed patterns, 177 file(s) materialized.
+Mirror of `silverstein/minutes` — 26 default patterns, 3 followed patterns, 178 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `silverstein/minutes` — 26 default patterns, 3 followed patterns, 17
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 177 |
+| Files         | 178 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -165,79 +165,80 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 102 | ✓ | [`docs/coach.md`](docs/coach.md) |
 | 103 | ✓ | [`docs/development/desktop-development.md`](docs/development/desktop-development.md) |
 | 104 | ✓ | [`docs/live-assistance.md`](docs/live-assistance.md) |
-| 105 | ✓ | [`docs/release/channels.md`](docs/release/channels.md) |
-| 106 | ✓ | [`docs/release/platform-windows.md`](docs/release/platform-windows.md) |
-| 107 | ✓ | [`docs/release/trusted-publishing.md`](docs/release/trusted-publishing.md) |
-| 108 | ✓ | [`site/public/llms.txt`](site/public/llms.txt) |
-| 109 | ✓ | [`tooling/skills/goldens/claude/minutes-brief/SKILL.md`](tooling/skills/goldens/claude/minutes-brief/SKILL.md) |
-| 110 | ✓ | [`tooling/skills/goldens/claude/minutes-cleanup/SKILL.md`](tooling/skills/goldens/claude/minutes-cleanup/SKILL.md) |
-| 111 | ✓ | [`tooling/skills/goldens/claude/minutes-copilot/SKILL.md`](tooling/skills/goldens/claude/minutes-copilot/SKILL.md) |
-| 112 | ✓ | [`tooling/skills/goldens/claude/minutes-debrief/SKILL.md`](tooling/skills/goldens/claude/minutes-debrief/SKILL.md) |
-| 113 | ✓ | [`tooling/skills/goldens/claude/minutes-graph/SKILL.md`](tooling/skills/goldens/claude/minutes-graph/SKILL.md) |
-| 114 | ✓ | [`tooling/skills/goldens/claude/minutes-ideas/SKILL.md`](tooling/skills/goldens/claude/minutes-ideas/SKILL.md) |
-| 115 | ✓ | [`tooling/skills/goldens/claude/minutes-ingest/SKILL.md`](tooling/skills/goldens/claude/minutes-ingest/SKILL.md) |
-| 116 | ✓ | [`tooling/skills/goldens/claude/minutes-lint/SKILL.md`](tooling/skills/goldens/claude/minutes-lint/SKILL.md) |
-| 117 | ✓ | [`tooling/skills/goldens/claude/minutes-list/SKILL.md`](tooling/skills/goldens/claude/minutes-list/SKILL.md) |
-| 118 | ✓ | [`tooling/skills/goldens/claude/minutes-live-sidekick/SKILL.md`](tooling/skills/goldens/claude/minutes-live-sidekick/SKILL.md) |
-| 119 | ✓ | [`tooling/skills/goldens/claude/minutes-mirror/SKILL.md`](tooling/skills/goldens/claude/minutes-mirror/SKILL.md) |
-| 120 | ✓ | [`tooling/skills/goldens/claude/minutes-note/SKILL.md`](tooling/skills/goldens/claude/minutes-note/SKILL.md) |
-| 121 | ✓ | [`tooling/skills/goldens/claude/minutes-prep/SKILL.md`](tooling/skills/goldens/claude/minutes-prep/SKILL.md) |
-| 122 | ✓ | [`tooling/skills/goldens/claude/minutes-recap/SKILL.md`](tooling/skills/goldens/claude/minutes-recap/SKILL.md) |
-| 123 | ✓ | [`tooling/skills/goldens/claude/minutes-record/SKILL.md`](tooling/skills/goldens/claude/minutes-record/SKILL.md) |
-| 124 | ✓ | [`tooling/skills/goldens/claude/minutes-release-notes/SKILL.md`](tooling/skills/goldens/claude/minutes-release-notes/SKILL.md) |
-| 125 | ✓ | [`tooling/skills/goldens/claude/minutes-search/SKILL.md`](tooling/skills/goldens/claude/minutes-search/SKILL.md) |
-| 126 | ✓ | [`tooling/skills/goldens/claude/minutes-setup/SKILL.md`](tooling/skills/goldens/claude/minutes-setup/SKILL.md) |
-| 127 | ✓ | [`tooling/skills/goldens/claude/minutes-tag/SKILL.md`](tooling/skills/goldens/claude/minutes-tag/SKILL.md) |
-| 128 | ✓ | [`tooling/skills/goldens/claude/minutes-verify/SKILL.md`](tooling/skills/goldens/claude/minutes-verify/SKILL.md) |
-| 129 | ✓ | [`tooling/skills/goldens/claude/minutes-video-review/SKILL.md`](tooling/skills/goldens/claude/minutes-video-review/SKILL.md) |
-| 130 | ✓ | [`tooling/skills/goldens/claude/minutes-weekly/SKILL.md`](tooling/skills/goldens/claude/minutes-weekly/SKILL.md) |
-| 131 | ✓ | [`tooling/skills/goldens/codex/minutes-brief/SKILL.md`](tooling/skills/goldens/codex/minutes-brief/SKILL.md) |
-| 132 | ✓ | [`tooling/skills/goldens/codex/minutes-cleanup/SKILL.md`](tooling/skills/goldens/codex/minutes-cleanup/SKILL.md) |
-| 133 | ✓ | [`tooling/skills/goldens/codex/minutes-copilot/SKILL.md`](tooling/skills/goldens/codex/minutes-copilot/SKILL.md) |
-| 134 | ✓ | [`tooling/skills/goldens/codex/minutes-debrief/SKILL.md`](tooling/skills/goldens/codex/minutes-debrief/SKILL.md) |
-| 135 | ✓ | [`tooling/skills/goldens/codex/minutes-graph/SKILL.md`](tooling/skills/goldens/codex/minutes-graph/SKILL.md) |
-| 136 | ✓ | [`tooling/skills/goldens/codex/minutes-ideas/SKILL.md`](tooling/skills/goldens/codex/minutes-ideas/SKILL.md) |
-| 137 | ✓ | [`tooling/skills/goldens/codex/minutes-ingest/SKILL.md`](tooling/skills/goldens/codex/minutes-ingest/SKILL.md) |
-| 138 | ✓ | [`tooling/skills/goldens/codex/minutes-lint/SKILL.md`](tooling/skills/goldens/codex/minutes-lint/SKILL.md) |
-| 139 | ✓ | [`tooling/skills/goldens/codex/minutes-list/SKILL.md`](tooling/skills/goldens/codex/minutes-list/SKILL.md) |
-| 140 | ✓ | [`tooling/skills/goldens/codex/minutes-live-sidekick/SKILL.md`](tooling/skills/goldens/codex/minutes-live-sidekick/SKILL.md) |
-| 141 | ✓ | [`tooling/skills/goldens/codex/minutes-mirror/SKILL.md`](tooling/skills/goldens/codex/minutes-mirror/SKILL.md) |
-| 142 | ✓ | [`tooling/skills/goldens/codex/minutes-note/SKILL.md`](tooling/skills/goldens/codex/minutes-note/SKILL.md) |
-| 143 | ✓ | [`tooling/skills/goldens/codex/minutes-prep/SKILL.md`](tooling/skills/goldens/codex/minutes-prep/SKILL.md) |
-| 144 | ✓ | [`tooling/skills/goldens/codex/minutes-recap/SKILL.md`](tooling/skills/goldens/codex/minutes-recap/SKILL.md) |
-| 145 | ✓ | [`tooling/skills/goldens/codex/minutes-record/SKILL.md`](tooling/skills/goldens/codex/minutes-record/SKILL.md) |
-| 146 | ✓ | [`tooling/skills/goldens/codex/minutes-release-notes/SKILL.md`](tooling/skills/goldens/codex/minutes-release-notes/SKILL.md) |
-| 147 | ✓ | [`tooling/skills/goldens/codex/minutes-search/SKILL.md`](tooling/skills/goldens/codex/minutes-search/SKILL.md) |
-| 148 | ✓ | [`tooling/skills/goldens/codex/minutes-setup/SKILL.md`](tooling/skills/goldens/codex/minutes-setup/SKILL.md) |
-| 149 | ✓ | [`tooling/skills/goldens/codex/minutes-tag/SKILL.md`](tooling/skills/goldens/codex/minutes-tag/SKILL.md) |
-| 150 | ✓ | [`tooling/skills/goldens/codex/minutes-verify/SKILL.md`](tooling/skills/goldens/codex/minutes-verify/SKILL.md) |
-| 151 | ✓ | [`tooling/skills/goldens/codex/minutes-video-review/SKILL.md`](tooling/skills/goldens/codex/minutes-video-review/SKILL.md) |
-| 152 | ✓ | [`tooling/skills/goldens/codex/minutes-weekly/SKILL.md`](tooling/skills/goldens/codex/minutes-weekly/SKILL.md) |
-| 153 | ✓ | [`tooling/skills/goldens/opencode/minutes-brief/SKILL.md`](tooling/skills/goldens/opencode/minutes-brief/SKILL.md) |
-| 154 | ✓ | [`tooling/skills/goldens/opencode/minutes-cleanup/SKILL.md`](tooling/skills/goldens/opencode/minutes-cleanup/SKILL.md) |
-| 155 | ✓ | [`tooling/skills/goldens/opencode/minutes-copilot/SKILL.md`](tooling/skills/goldens/opencode/minutes-copilot/SKILL.md) |
-| 156 | ✓ | [`tooling/skills/goldens/opencode/minutes-debrief/SKILL.md`](tooling/skills/goldens/opencode/minutes-debrief/SKILL.md) |
-| 157 | ✓ | [`tooling/skills/goldens/opencode/minutes-graph/SKILL.md`](tooling/skills/goldens/opencode/minutes-graph/SKILL.md) |
-| 158 | ✓ | [`tooling/skills/goldens/opencode/minutes-ideas/SKILL.md`](tooling/skills/goldens/opencode/minutes-ideas/SKILL.md) |
-| 159 | ✓ | [`tooling/skills/goldens/opencode/minutes-ingest/SKILL.md`](tooling/skills/goldens/opencode/minutes-ingest/SKILL.md) |
-| 160 | ✓ | [`tooling/skills/goldens/opencode/minutes-lint/SKILL.md`](tooling/skills/goldens/opencode/minutes-lint/SKILL.md) |
-| 161 | ✓ | [`tooling/skills/goldens/opencode/minutes-list/SKILL.md`](tooling/skills/goldens/opencode/minutes-list/SKILL.md) |
-| 162 | ✓ | [`tooling/skills/goldens/opencode/minutes-live-sidekick/SKILL.md`](tooling/skills/goldens/opencode/minutes-live-sidekick/SKILL.md) |
-| 163 | ✓ | [`tooling/skills/goldens/opencode/minutes-mirror/SKILL.md`](tooling/skills/goldens/opencode/minutes-mirror/SKILL.md) |
-| 164 | ✓ | [`tooling/skills/goldens/opencode/minutes-note/SKILL.md`](tooling/skills/goldens/opencode/minutes-note/SKILL.md) |
-| 165 | ✓ | [`tooling/skills/goldens/opencode/minutes-prep/SKILL.md`](tooling/skills/goldens/opencode/minutes-prep/SKILL.md) |
-| 166 | ✓ | [`tooling/skills/goldens/opencode/minutes-recap/SKILL.md`](tooling/skills/goldens/opencode/minutes-recap/SKILL.md) |
-| 167 | ✓ | [`tooling/skills/goldens/opencode/minutes-record/SKILL.md`](tooling/skills/goldens/opencode/minutes-record/SKILL.md) |
-| 168 | ✓ | [`tooling/skills/goldens/opencode/minutes-release-notes/SKILL.md`](tooling/skills/goldens/opencode/minutes-release-notes/SKILL.md) |
-| 169 | ✓ | [`tooling/skills/goldens/opencode/minutes-search/SKILL.md`](tooling/skills/goldens/opencode/minutes-search/SKILL.md) |
-| 170 | ✓ | [`tooling/skills/goldens/opencode/minutes-setup/SKILL.md`](tooling/skills/goldens/opencode/minutes-setup/SKILL.md) |
-| 171 | ✓ | [`tooling/skills/goldens/opencode/minutes-tag/SKILL.md`](tooling/skills/goldens/opencode/minutes-tag/SKILL.md) |
-| 172 | ✓ | [`tooling/skills/goldens/opencode/minutes-verify/SKILL.md`](tooling/skills/goldens/opencode/minutes-verify/SKILL.md) |
-| 173 | ✓ | [`tooling/skills/goldens/opencode/minutes-video-review/SKILL.md`](tooling/skills/goldens/opencode/minutes-video-review/SKILL.md) |
-| 174 | ✓ | [`tooling/skills/goldens/opencode/minutes-weekly/SKILL.md`](tooling/skills/goldens/opencode/minutes-weekly/SKILL.md) |
-| 175 | → | [`docs/checklists/pre-commit.md`](docs/checklists/pre-commit.md) |
-| 176 | → | [`docs/README.md`](docs/README.md) |
-| 177 | → | [`docs/release/procedure.md`](docs/release/procedure.md) |
+| 105 | ✓ | [`docs/personas.md`](docs/personas.md) |
+| 106 | ✓ | [`docs/release/channels.md`](docs/release/channels.md) |
+| 107 | ✓ | [`docs/release/platform-windows.md`](docs/release/platform-windows.md) |
+| 108 | ✓ | [`docs/release/trusted-publishing.md`](docs/release/trusted-publishing.md) |
+| 109 | ✓ | [`site/public/llms.txt`](site/public/llms.txt) |
+| 110 | ✓ | [`tooling/skills/goldens/claude/minutes-brief/SKILL.md`](tooling/skills/goldens/claude/minutes-brief/SKILL.md) |
+| 111 | ✓ | [`tooling/skills/goldens/claude/minutes-cleanup/SKILL.md`](tooling/skills/goldens/claude/minutes-cleanup/SKILL.md) |
+| 112 | ✓ | [`tooling/skills/goldens/claude/minutes-copilot/SKILL.md`](tooling/skills/goldens/claude/minutes-copilot/SKILL.md) |
+| 113 | ✓ | [`tooling/skills/goldens/claude/minutes-debrief/SKILL.md`](tooling/skills/goldens/claude/minutes-debrief/SKILL.md) |
+| 114 | ✓ | [`tooling/skills/goldens/claude/minutes-graph/SKILL.md`](tooling/skills/goldens/claude/minutes-graph/SKILL.md) |
+| 115 | ✓ | [`tooling/skills/goldens/claude/minutes-ideas/SKILL.md`](tooling/skills/goldens/claude/minutes-ideas/SKILL.md) |
+| 116 | ✓ | [`tooling/skills/goldens/claude/minutes-ingest/SKILL.md`](tooling/skills/goldens/claude/minutes-ingest/SKILL.md) |
+| 117 | ✓ | [`tooling/skills/goldens/claude/minutes-lint/SKILL.md`](tooling/skills/goldens/claude/minutes-lint/SKILL.md) |
+| 118 | ✓ | [`tooling/skills/goldens/claude/minutes-list/SKILL.md`](tooling/skills/goldens/claude/minutes-list/SKILL.md) |
+| 119 | ✓ | [`tooling/skills/goldens/claude/minutes-live-sidekick/SKILL.md`](tooling/skills/goldens/claude/minutes-live-sidekick/SKILL.md) |
+| 120 | ✓ | [`tooling/skills/goldens/claude/minutes-mirror/SKILL.md`](tooling/skills/goldens/claude/minutes-mirror/SKILL.md) |
+| 121 | ✓ | [`tooling/skills/goldens/claude/minutes-note/SKILL.md`](tooling/skills/goldens/claude/minutes-note/SKILL.md) |
+| 122 | ✓ | [`tooling/skills/goldens/claude/minutes-prep/SKILL.md`](tooling/skills/goldens/claude/minutes-prep/SKILL.md) |
+| 123 | ✓ | [`tooling/skills/goldens/claude/minutes-recap/SKILL.md`](tooling/skills/goldens/claude/minutes-recap/SKILL.md) |
+| 124 | ✓ | [`tooling/skills/goldens/claude/minutes-record/SKILL.md`](tooling/skills/goldens/claude/minutes-record/SKILL.md) |
+| 125 | ✓ | [`tooling/skills/goldens/claude/minutes-release-notes/SKILL.md`](tooling/skills/goldens/claude/minutes-release-notes/SKILL.md) |
+| 126 | ✓ | [`tooling/skills/goldens/claude/minutes-search/SKILL.md`](tooling/skills/goldens/claude/minutes-search/SKILL.md) |
+| 127 | ✓ | [`tooling/skills/goldens/claude/minutes-setup/SKILL.md`](tooling/skills/goldens/claude/minutes-setup/SKILL.md) |
+| 128 | ✓ | [`tooling/skills/goldens/claude/minutes-tag/SKILL.md`](tooling/skills/goldens/claude/minutes-tag/SKILL.md) |
+| 129 | ✓ | [`tooling/skills/goldens/claude/minutes-verify/SKILL.md`](tooling/skills/goldens/claude/minutes-verify/SKILL.md) |
+| 130 | ✓ | [`tooling/skills/goldens/claude/minutes-video-review/SKILL.md`](tooling/skills/goldens/claude/minutes-video-review/SKILL.md) |
+| 131 | ✓ | [`tooling/skills/goldens/claude/minutes-weekly/SKILL.md`](tooling/skills/goldens/claude/minutes-weekly/SKILL.md) |
+| 132 | ✓ | [`tooling/skills/goldens/codex/minutes-brief/SKILL.md`](tooling/skills/goldens/codex/minutes-brief/SKILL.md) |
+| 133 | ✓ | [`tooling/skills/goldens/codex/minutes-cleanup/SKILL.md`](tooling/skills/goldens/codex/minutes-cleanup/SKILL.md) |
+| 134 | ✓ | [`tooling/skills/goldens/codex/minutes-copilot/SKILL.md`](tooling/skills/goldens/codex/minutes-copilot/SKILL.md) |
+| 135 | ✓ | [`tooling/skills/goldens/codex/minutes-debrief/SKILL.md`](tooling/skills/goldens/codex/minutes-debrief/SKILL.md) |
+| 136 | ✓ | [`tooling/skills/goldens/codex/minutes-graph/SKILL.md`](tooling/skills/goldens/codex/minutes-graph/SKILL.md) |
+| 137 | ✓ | [`tooling/skills/goldens/codex/minutes-ideas/SKILL.md`](tooling/skills/goldens/codex/minutes-ideas/SKILL.md) |
+| 138 | ✓ | [`tooling/skills/goldens/codex/minutes-ingest/SKILL.md`](tooling/skills/goldens/codex/minutes-ingest/SKILL.md) |
+| 139 | ✓ | [`tooling/skills/goldens/codex/minutes-lint/SKILL.md`](tooling/skills/goldens/codex/minutes-lint/SKILL.md) |
+| 140 | ✓ | [`tooling/skills/goldens/codex/minutes-list/SKILL.md`](tooling/skills/goldens/codex/minutes-list/SKILL.md) |
+| 141 | ✓ | [`tooling/skills/goldens/codex/minutes-live-sidekick/SKILL.md`](tooling/skills/goldens/codex/minutes-live-sidekick/SKILL.md) |
+| 142 | ✓ | [`tooling/skills/goldens/codex/minutes-mirror/SKILL.md`](tooling/skills/goldens/codex/minutes-mirror/SKILL.md) |
+| 143 | ✓ | [`tooling/skills/goldens/codex/minutes-note/SKILL.md`](tooling/skills/goldens/codex/minutes-note/SKILL.md) |
+| 144 | ✓ | [`tooling/skills/goldens/codex/minutes-prep/SKILL.md`](tooling/skills/goldens/codex/minutes-prep/SKILL.md) |
+| 145 | ✓ | [`tooling/skills/goldens/codex/minutes-recap/SKILL.md`](tooling/skills/goldens/codex/minutes-recap/SKILL.md) |
+| 146 | ✓ | [`tooling/skills/goldens/codex/minutes-record/SKILL.md`](tooling/skills/goldens/codex/minutes-record/SKILL.md) |
+| 147 | ✓ | [`tooling/skills/goldens/codex/minutes-release-notes/SKILL.md`](tooling/skills/goldens/codex/minutes-release-notes/SKILL.md) |
+| 148 | ✓ | [`tooling/skills/goldens/codex/minutes-search/SKILL.md`](tooling/skills/goldens/codex/minutes-search/SKILL.md) |
+| 149 | ✓ | [`tooling/skills/goldens/codex/minutes-setup/SKILL.md`](tooling/skills/goldens/codex/minutes-setup/SKILL.md) |
+| 150 | ✓ | [`tooling/skills/goldens/codex/minutes-tag/SKILL.md`](tooling/skills/goldens/codex/minutes-tag/SKILL.md) |
+| 151 | ✓ | [`tooling/skills/goldens/codex/minutes-verify/SKILL.md`](tooling/skills/goldens/codex/minutes-verify/SKILL.md) |
+| 152 | ✓ | [`tooling/skills/goldens/codex/minutes-video-review/SKILL.md`](tooling/skills/goldens/codex/minutes-video-review/SKILL.md) |
+| 153 | ✓ | [`tooling/skills/goldens/codex/minutes-weekly/SKILL.md`](tooling/skills/goldens/codex/minutes-weekly/SKILL.md) |
+| 154 | ✓ | [`tooling/skills/goldens/opencode/minutes-brief/SKILL.md`](tooling/skills/goldens/opencode/minutes-brief/SKILL.md) |
+| 155 | ✓ | [`tooling/skills/goldens/opencode/minutes-cleanup/SKILL.md`](tooling/skills/goldens/opencode/minutes-cleanup/SKILL.md) |
+| 156 | ✓ | [`tooling/skills/goldens/opencode/minutes-copilot/SKILL.md`](tooling/skills/goldens/opencode/minutes-copilot/SKILL.md) |
+| 157 | ✓ | [`tooling/skills/goldens/opencode/minutes-debrief/SKILL.md`](tooling/skills/goldens/opencode/minutes-debrief/SKILL.md) |
+| 158 | ✓ | [`tooling/skills/goldens/opencode/minutes-graph/SKILL.md`](tooling/skills/goldens/opencode/minutes-graph/SKILL.md) |
+| 159 | ✓ | [`tooling/skills/goldens/opencode/minutes-ideas/SKILL.md`](tooling/skills/goldens/opencode/minutes-ideas/SKILL.md) |
+| 160 | ✓ | [`tooling/skills/goldens/opencode/minutes-ingest/SKILL.md`](tooling/skills/goldens/opencode/minutes-ingest/SKILL.md) |
+| 161 | ✓ | [`tooling/skills/goldens/opencode/minutes-lint/SKILL.md`](tooling/skills/goldens/opencode/minutes-lint/SKILL.md) |
+| 162 | ✓ | [`tooling/skills/goldens/opencode/minutes-list/SKILL.md`](tooling/skills/goldens/opencode/minutes-list/SKILL.md) |
+| 163 | ✓ | [`tooling/skills/goldens/opencode/minutes-live-sidekick/SKILL.md`](tooling/skills/goldens/opencode/minutes-live-sidekick/SKILL.md) |
+| 164 | ✓ | [`tooling/skills/goldens/opencode/minutes-mirror/SKILL.md`](tooling/skills/goldens/opencode/minutes-mirror/SKILL.md) |
+| 165 | ✓ | [`tooling/skills/goldens/opencode/minutes-note/SKILL.md`](tooling/skills/goldens/opencode/minutes-note/SKILL.md) |
+| 166 | ✓ | [`tooling/skills/goldens/opencode/minutes-prep/SKILL.md`](tooling/skills/goldens/opencode/minutes-prep/SKILL.md) |
+| 167 | ✓ | [`tooling/skills/goldens/opencode/minutes-recap/SKILL.md`](tooling/skills/goldens/opencode/minutes-recap/SKILL.md) |
+| 168 | ✓ | [`tooling/skills/goldens/opencode/minutes-record/SKILL.md`](tooling/skills/goldens/opencode/minutes-record/SKILL.md) |
+| 169 | ✓ | [`tooling/skills/goldens/opencode/minutes-release-notes/SKILL.md`](tooling/skills/goldens/opencode/minutes-release-notes/SKILL.md) |
+| 170 | ✓ | [`tooling/skills/goldens/opencode/minutes-search/SKILL.md`](tooling/skills/goldens/opencode/minutes-search/SKILL.md) |
+| 171 | ✓ | [`tooling/skills/goldens/opencode/minutes-setup/SKILL.md`](tooling/skills/goldens/opencode/minutes-setup/SKILL.md) |
+| 172 | ✓ | [`tooling/skills/goldens/opencode/minutes-tag/SKILL.md`](tooling/skills/goldens/opencode/minutes-tag/SKILL.md) |
+| 173 | ✓ | [`tooling/skills/goldens/opencode/minutes-verify/SKILL.md`](tooling/skills/goldens/opencode/minutes-verify/SKILL.md) |
+| 174 | ✓ | [`tooling/skills/goldens/opencode/minutes-video-review/SKILL.md`](tooling/skills/goldens/opencode/minutes-video-review/SKILL.md) |
+| 175 | ✓ | [`tooling/skills/goldens/opencode/minutes-weekly/SKILL.md`](tooling/skills/goldens/opencode/minutes-weekly/SKILL.md) |
+| 176 | → | [`docs/checklists/pre-commit.md`](docs/checklists/pre-commit.md) |
+| 177 | → | [`docs/README.md`](docs/README.md) |
+| 178 | → | [`docs/release/procedure.md`](docs/release/procedure.md) |
 
 ---
 

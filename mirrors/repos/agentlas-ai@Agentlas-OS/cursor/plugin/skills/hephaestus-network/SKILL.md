@@ -16,6 +16,13 @@ Source scopes are exact:
 - `cloud`: the signed-in owner's Cloud packages only;
 - `hub`: public Hub packages only.
 
+Before an unpinned search uses the Local source, Core refreshes every active
+registered source folder and creates a new immutable release when its safe
+content snapshot changed. This is discovery freshness; a prepared or
+goal-bound roster remains pinned to its exact release. `network reindex` is a
+rebuildable card-cache operation and is not required to refresh a registered
+Local release. New folders still require explicit `local-register`.
+
 Public demos and distribution proof use explicit `hub` scope. They must not use
 private Local/Cloud inventory as evidence of public availability.
 
@@ -102,16 +109,21 @@ ontology version, validates the privacy boundary, and returns a one-hour
 on the host. Create one `roles` entry per materially distinct responsibility.
 Each role may identify:
 
-- role/community and required skill or knowledge concepts, written as plain
+- semantic role/community and required skill or knowledge concepts, written as plain
   English phrases when no ontology id is obvious — Core normalizes them into
-  schema-valid concept ids and reports every rewrite as `normalizedConcepts`;
-- required MCP/tool capabilities;
+  schema-valid concept ids and reports every rewrite as `normalizedConcepts`.
+  Only these semantic communities, roles, skills, and knowledge may narrow menu
+  fit;
+- execution requirements such as required MCP/tool capabilities, runtime,
+  language, modality, and required/forbidden authority. Include these only when
+  the requested action genuinely needs host proof. They never filter, rank, or
+  exclude semantic candidates; Core carries them into the ExecutionContext and the host
+  validates them against its actual tool inventory, capability binding plan,
+  permission policy, and invocation receipt after selection;
 - collaboration edges by 1-based role ordinal. An edge is a declaration of
-  handoff, never a qualification requirement: only what you actually write as a
-  required skill/role/tool filters candidates. Requiring an artifact almost no
+  handoff, never a qualification requirement. Requiring an artifact almost no
   published agent declares does not narrow a menu, it empties it;
-- runtime, language, modality, and entity-kind constraints;
-- required and forbidden authority;
+- executable entity-kind constraints;
 - cardinality, criticality, and collaboration edges;
 - the minimum evidence level: declared, checked, demonstrated, or attested.
 
@@ -123,7 +135,7 @@ an authoritative group execution contract exists.
 Omit unconstrained runtime, authority, language, and modality arrays. Never
 invent prefixed finite values such as `language:ko` or custom slot/artifact IDs;
 the draft schema exposes the finite values and Core owns mechanical IDs. Use the
-default candidate policy (2 minimum, 8 maximum per role) unless the task has a
+default candidate policy (2 minimum, 30 maximum per role) unless the task has a
 concrete recall reason to widen it. Protocol receipt verification is already an
 independent gate, so do not add a decorative verifier role merely to restate it.
 

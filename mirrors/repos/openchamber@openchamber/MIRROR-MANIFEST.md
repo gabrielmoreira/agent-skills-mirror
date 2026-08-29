@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,14 +80,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.agents/skills/theme-system/references/icons.md`](.agents/skills/theme-system/references/icons.md) |
 | 20 | ✓ | [`.agents/skills/theme-system/references/tokens-and-examples.md`](.agents/skills/theme-system/references/tokens-and-examples.md) |
 | 21 | ✓ | [`.agents/skills/theme-system/SKILL.md`](.agents/skills/theme-system/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
-| 23 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
-| 24 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
-| 25 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
-| 26 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
-| 27 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
-| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 22 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
+| 23 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
+| 24 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
+| 25 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
+| 26 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
+| 27 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

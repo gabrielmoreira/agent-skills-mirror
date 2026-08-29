@@ -95,10 +95,29 @@ negotiated capabilities differ from the contract. Adding an optional field keeps
 green (Rule 1); making a client depend on that field turns the new-client/old-host
 pairing red.
 
-The harness covers the terminal stream only. It does **not** cover the session-tab
-sync channel, agent-session publications, file or Git RPCs, mobile/E2EE framing, or
-the relay transport. A change on those paths still needs its own reasoning against
-the three rules above.
+`tests/e2e/cross-version-wire/cross-version-agent-session-wire.unit.test.ts` pairs the
+same two builds over the structured `agentSession.*` surface. Because a released build
+cannot name a capability string its own source never contains, the old side's advertised
+list and registered method names are read from the extracted checkout rather than
+hand-written. It covers the three skews that surface can fail on:
+
+- an old client — advertising only what the baseline build defines — is told the whole
+  surface does not exist and reaches no host method;
+- a new client against the old dispatcher gets `method_not_found` on every method, and
+  can see the absence during negotiation instead of by calling;
+- a cursor survives a host restart: the client's fence is refused as stale with the live
+  one attached, and resuming from the held cursor replays only what it missed.
+
+Run it with:
+
+```bash
+pnpm exec vitest run --config config/vitest.config.ts tests/e2e/cross-version-wire/cross-version-agent-session-wire.unit.test.ts
+```
+
+The harness covers the terminal stream and the structured agent-session surface. It does
+**not** cover the session-tab sync channel, legacy agent-session publications, file or Git
+RPCs, mobile/E2EE framing, or the relay transport. A change on those paths still needs its
+own reasoning against the three rules above.
 
 ## Worked example: `agentWait` on terminal and worker reads
 
@@ -113,7 +132,7 @@ getting that wrong turns a skew into a false "nothing is blocked".
   unverifiable, the pane was unreadable, or the agent probe did not answer in time.
 
 A new client against an old host sees the field absent, which is why absence must read as
-*unknown* and never as *not waiting*. Collapsing absent into `null` at any hop — including a
+_unknown_ and never as _not waiting_. Collapsing absent into `null` at any hop — including a
 convenience `?? null` in an RPC handler — makes an old or unreachable peer indistinguishable
 from a healthy idle worker, which is the exact failure the field exists to remove.
 
@@ -180,7 +199,7 @@ has to be there before the first snapshot is interpreted, which is earlier than 
 renderer could wait on. Every other viewer — a second desktop, the web client, which installs no
 page renderer at all, the dashboard pop-out, which is deliberately left unstamped — keeps tracking
 the host, which is the only reason a mirrored viewer shows anything but its first snapshot
-forever. Improving what a *second* client sees still means fixing the publish, not the carve-out;
+forever. Improving what a _second_ client sees still means fixing the publish, not the carve-out;
 the carve-out no longer stands in the way of it.
 
 The two failure fields above are deliberately left on the looser `placement?.kind !== 'client'`

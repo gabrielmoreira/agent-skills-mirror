@@ -390,6 +390,54 @@ curl -X POST https://localhost:20128/api/v1/audio/translations \
   -d '{}'
 ```
 
+### GET /api/v1/voices
+
+List ElevenLabs voices
+
+Proxies `GET https://api.elevenlabs.io/v1/voices` using the stored `elevenlabs` provider credentials (the caller never sends `xi-api-key`). The incoming query string is forwarded unchanged.
+
+```bash
+curl https://localhost:20128/api/v1/voices \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/speech-to-text
+
+ElevenLabs speech-to-text
+
+Streams the request body to `POST https://api.elevenlabs.io/v1/speech-to-text` using the stored `elevenlabs` provider credentials. `content-type` and `accept` are forwarded; the upstream body is relayed unchanged.
+
+```bash
+curl -X POST https://localhost:20128/api/v1/speech-to-text \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/text-to-speech/{voiceId}
+
+ElevenLabs text-to-speech
+
+Streams the request body to `POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}` using the stored `elevenlabs` provider credentials. `voiceId` must match `^[A-Za-z0-9_-]+$` or the request is rejected with 400 before any upstream call.
+
+```bash
+curl -X POST https://localhost:20128/api/v1/text-to-speech/{voiceId} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/explain/routing
+
+Routing explainability snapshot
+
+Returns the most recent routing events (bounded in-memory ring buffer) plus the per-provider/model quality snapshot from `open-sse/services/routing`. Routing metadata only — never prompts, bodies, headers or credentials. Auth mirrors `/api/v1/combos`: a valid Bearer API key or a dashboard session; with `REQUIRE_API_KEY=false` anonymous reads are allowed.
+
+```bash
+curl https://localhost:20128/api/v1/explain/routing \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
 ### GET /api/v1/providers/suggested-models
 
 Suggested media models

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 20 followed patterns, 31 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 21 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 20 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 31 |
+| Followed pats | 21 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,6 +64,7 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 20 follow
 - `docs/providers.md`
 - `docs/shared-memory.md`
 - `docs/checkpoint.md`
+- `docs/run-journal.md`
 - `docs/cli.md`
 - `docs/model-routing.md`
 - `docs/execution-routing.md`
@@ -104,11 +105,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | → | [`docs/observability.md`](docs/observability.md) |
 | 25 | → | [`docs/plan-replay.md`](docs/plan-replay.md) |
 | 26 | → | [`docs/providers.md`](docs/providers.md) |
-| 27 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 28 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
-| 29 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 30 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
-| 31 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 27 | → | [`docs/run-journal.md`](docs/run-journal.md) |
+| 28 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 29 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
+| 30 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 31 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
+| 32 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

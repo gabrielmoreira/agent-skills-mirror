@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 29 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,35 +59,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/commit/SKILL.md`](.agents/skills/commit/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/merge/SKILL.md`](.agents/skills/merge/SKILL.md) |
-| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 5 | ✓ | [`.github/instructions/appbuilder-review.instructions.md`](.github/instructions/appbuilder-review.instructions.md) |
-| 6 | ✓ | [`.github/instructions/data-migrations.instructions.md`](.github/instructions/data-migrations.instructions.md) |
-| 7 | ✓ | [`.github/instructions/event-action-remapping.instructions.md`](.github/instructions/event-action-remapping.instructions.md) |
-| 8 | ✓ | [`.github/instructions/frontend-typescript.instructions.md`](.github/instructions/frontend-typescript.instructions.md) |
-| 9 | ✓ | [`.github/instructions/server-widget-config-review.instructions.md`](.github/instructions/server-widget-config-review.instructions.md) |
-| 10 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
-| 11 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
-| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
-| 15 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
-| 16 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 17 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
-| 18 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
-| 19 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
-| 20 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
-| 21 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
-| 22 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
-| 23 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
-| 24 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
-| 25 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
-| 26 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
-| 27 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
-| 28 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
-| 29 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
+| 1 | ✓ | [`.agents/context/architecture-map.md`](.agents/context/architecture-map.md) |
+| 2 | ✓ | [`.agents/context/product-map.md`](.agents/context/product-map.md) |
+| 3 | ✓ | [`.agents/skills/commit/SKILL.md`](.agents/skills/commit/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/create-pr/SKILL.md`](.agents/skills/create-pr/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/merge/SKILL.md`](.agents/skills/merge/SKILL.md) |
+| 6 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 7 | ✓ | [`.github/instructions/appbuilder-review.instructions.md`](.github/instructions/appbuilder-review.instructions.md) |
+| 8 | ✓ | [`.github/instructions/data-migrations.instructions.md`](.github/instructions/data-migrations.instructions.md) |
+| 9 | ✓ | [`.github/instructions/event-action-remapping.instructions.md`](.github/instructions/event-action-remapping.instructions.md) |
+| 10 | ✓ | [`.github/instructions/frontend-typescript.instructions.md`](.github/instructions/frontend-typescript.instructions.md) |
+| 11 | ✓ | [`.github/instructions/server-widget-config-review.instructions.md`](.github/instructions/server-widget-config-review.instructions.md) |
+| 12 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
+| 13 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
+| 17 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
+| 18 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 19 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
+| 20 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
+| 21 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
+| 22 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
+| 23 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
+| 24 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
+| 25 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
+| 26 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
+| 27 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
+| 28 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
+| 29 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
+| 30 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
+| 31 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
 
 ---
 

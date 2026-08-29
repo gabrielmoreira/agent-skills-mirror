@@ -7,6 +7,10 @@ Turn an unbounded PR queue into a short list of maintainer decisions. The pipeli
 
 Companion: each substantive review inside phase 3 applies the `pr-review` skill; this skill owns only the batch mechanics around it.
 
+**The timeline outranks the snapshot.** Before any verdict or comment on a PR, read its existing comments: a prior maintainer verdict (a push-back list, a recorded product decision like a placement or scope call) is BINDING — a new sweep verifies whether it was addressed at the current HEAD and says so explicitly ("all three prior items resolved" / "item 2 still open"), never re-decides it or asks the maintainer the same product question again. And never post the generic rebase-request on a PR that already carries a substantive review comment — the author already has their instructions; a bare "please rebase" on top reads as the left hand not knowing the right.
+
+**Pickup mode.** A PR with human activity beyond the bot — a maintainer comment, an author reply, a trusted-reviewer thread — is a conversation in progress, not a fresh review target. Such PRs go into their own report bucket ("Розмова триває"), and each entry opens with the thread state: what the maintainer asked, what the author answered, which points are resolved at the current HEAD and which remain. The ready action *continues* the thread (a reply, a verdict on the author's answer, a merge if everything asked for was delivered) — it never restarts review from scratch. The maintainer may not remember their own comment from days ago; the sweep remembers for them.
+
 ## Phase 1 — Mechanical sweep (no judgment, no LLM verdicts)
 
 Fetch all open PRs with `gh` (the repo is `openchamber/openchamber`). Two measurement rules learned the hard way:
@@ -33,9 +37,21 @@ Execute the approved closes/comments with retries and ~1–2s spacing between ca
 
 ## Phase 3 — Verdict reviews
 
-Split the clean pool smallest-first (tiny diffs are fast wins and most likely mergeable). Fan out subagents in batches of ~10 PRs each; every subagent receives the full `pr-review` skill text as its instructions plus its PR numbers, reads real diffs (`gh pr view`, `gh pr diff`) and the local checkout, and returns per-PR verdict blocks in the skill's output format.
+**Trusted community reviewers.** `yulia-ivashko` is a core maintainer with merge rights — her review decisions carry maintainer weight (a PR she approved or merged needs no re-verdict; her open questions are the maintainer's questions). Comments and reviews from `patrick-motard` and `mattv8` are strong human signals: during any sweep, collect the PRs/issues they weighed in on, read their assessment, and carry it into the verdict — an approval from them upgrades confidence like a passing verifier; a concern from them is a finding to verify, never to ignore. They write free-form; map their conclusion onto the verdict ladder rather than expecting the format.
 
-Consolidate into a single report grouped by verdict — MERGE, MERGE-THEN-FIX, PUSH-BACK (with the drafted lists), DECLINE (with the drafted close comments), plus every "needs your hands" line — and stop for approval. After approval: post/merge per verdict, and queue MERGE-THEN-FIX follow-ups as in-house work.
+The review bot's `review:*` labels are a pre-sort, not a verdict: `review:ready` PRs go first (the bot found no code defects — likely MERGE/MERGE-THEN-FIX), `review:blocked` ones carry a bot comment whose findings the verdict review verifies rather than rediscovers. Bot labels never replace the pr-review pass — the bot cannot judge product fit or maintainability scope.
+
+Split the clean pool smallest-first (tiny diffs are fast wins and most likely mergeable). Fan out the `pr-reviewer` subagent (`.opencode/agent/pr-reviewer.md`, which loads the `pr-review` skill and carries the hard rules) — one PR per call, or ~10 PRs per general subagent that receives the full `pr-review` skill text when `pr-reviewer` is unavailable. The subagent inherits the chat's model; never hand verdicts to a smaller model to save quota — a verdict from a small model is a pre-sort, not a decision. Each returns per-PR verdict blocks in the skill's output format.
+
+**Report format.** The consolidated report is what the maintainer decides from — calibrate each entry so no follow-up question is needed, without ballooning:
+
+- Every PR/issue reference is a clickable link: `[#3177](https://github.com/openchamber/openchamber/pull/3177)` (issues: `/issues/N`) — never a bare number.
+- One entry per PR, 2–4 sentences: what it does for the user, whether the problem is real, why this verdict, the main risk or the thing the decision turns on. "Closes #N" links included.
+- A "needs your hands" line appears only when the check gates the merge (per the pr-review skill), and lives INSIDE the PR's own entry as its final line — never as a separate section repeating the numbers. A plain MERGE entry carries no checklist.
+- Thread-state line first for pickup-mode entries.
+- A one-line entry ("точковий фікс") is fine only for genuinely trivial diffs; a verdict the maintainer must weigh (product calls, larger features) gets the full 4 sentences.
+
+Consolidate into a single report grouped by verdict — MERGE, MERGE-THEN-FIX, PUSH-BACK (with the drafted lists), DECLINE (with the drafted close comments), plus every "needs your hands" line — and stop for approval. **Each entry carries the subagent's Ready action verbatim** — the comment or follow-up list exactly as it will be posted or executed, in a quote block under the entry. The consolidation summarizes the reasoning, never the artifact: a paraphrased push-back item loses the file, the cause, and the "done means" the subagent already found, and the maintainer approves what they can read, not a description of it. After approval: post/merge per verdict, and queue MERGE-THEN-FIX follow-ups as in-house work.
 
 If a batch subagent skips a PR, notice (count outputs against inputs) and re-dispatch the gap.
 

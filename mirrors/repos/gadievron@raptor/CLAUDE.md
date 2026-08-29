@@ -111,7 +111,7 @@ Activate with `/project use <name>` in-session, or at launch with `-p <name>` (a
                                #   last-activated default is untouched)
 ```
 
-**Trust markers** are operator assertions persisted on the project (never auto-set, never read from the scanned repo): `config` = the `--trust-repo` umbrella (cc_trust + codeql_trust), `build` = traced-build CodeQL extraction (`--traced-build`), `dynamic` = dynamic validation (`config.dynamic_validation`). `/agentic` and `/codeql` consume them at start alongside the persisted binaries; the audit pipeline consumes `dynamic`. Per-run flags always win in both directions (`--no-trust-repo` / `--no-traced-build` / `--no-dynamic` > positive flag > marker > off), a banner line prints whenever a marker affects a run, and `build` does NOT imply `config`.
+**Trust markers** are operator assertions persisted on the project (never auto-set, never read from the scanned repo): `config` = the `--trust-repo` umbrella (cc_trust + codeql_trust), `build` = traced-build CodeQL extraction (`--traced-build`), `dynamic` = dynamic validation (`config.dynamic_validation`). `/agentic` and `/codeql` consume them at start alongside the persisted binaries; the audit pipeline consumes `dynamic` and `config` (repo-trust arms its trust-gated refutation witnesses — no per-run audit flag, the marker is the only control). Per-run flags always win in both directions where they exist (`--no-trust-repo` / `--no-traced-build` / `--no-dynamic` > positive flag > marker > off), a banner line prints whenever a marker affects a run, and `build` does NOT imply `config`.
 
 See `/project help` for full command list.
 

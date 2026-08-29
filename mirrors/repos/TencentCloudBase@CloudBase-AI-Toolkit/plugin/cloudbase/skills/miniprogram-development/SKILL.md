@@ -1,7 +1,7 @@
 ---
 name: miniprogram-development
 description: WeChat Mini Program development skill for building, debugging, previewing, testing, publishing, optimizing, and promoting mini program projects. This skill should be used when users ask to create, develop, modify, debug, preview, test, deploy, publish, launch, review, optimize, or promote WeChat Mini Programs, mini program pages, components, `tabBar`, routing, navigation, icon assets, project structure, project configuration, `project.config.json`, `appid` setup, device preview, real-device validation, WeChat Developer Tools Nightly workflows, `wechatide` CLI, WeChat IDE Skills/MCP, console/network debugging, `miniprogram-ci` preview/upload flows, or mini program release processes. It should also be used when users ask about mini program SEO / search optimization / search promotion (小程序 SEO、搜索优化、微信搜索收录、搜索推广、页面收录、关键词排名、被搜索到) or page indexing by the WeChat search crawler (`mpcrawler`). when users explicitly mention CloudBase, `wx.cloud`, Tencent CloudBase, 腾讯云开发, 微信云开发, or 云开发 in a mini program project.
-version: 2.32.3
+version: 2.32.4
 alwaysApply: false
 ---
 
@@ -157,10 +157,10 @@ Keep the custom `tabBar` layout text-only, and use flex centering or matching `h
 
 > 微信生态专章：消息推送 / 客服自动回复细节以中文 reference 为准（术语保留英文 API 名）。
 
-- **Current only ops path:** WeChat Developer Tools IDE + wxide CLI. Do not teach low-level bypasses while `cloud_query_msg_push` / `cloud_manage_msg_push` are not yet exposed (track **9109db6b**).
+- **Current only ops path:** WeChat Developer Tools IDE + wxide CLI. Do not teach low-level bypasses while `cloud_query_msg_push` / `cloud_manage_msg_push` are not yet exposed (pending WeChat IDE CLI support).
 - Deploy receiver functions with `cloud_fn_deploy` **and** `--remote-npm-install`; bind (MsgType, Event) → one cloud function in the IDE message-push panel until CLI tools land.
 - Customer-service auto-reply requires `cloud.openapi.customerServiceMessage.send` plus `config.json` openapi permissions — function return values alone do not reply.
-- Function logs: IDE **云开发控制台 → 云函数 → 日志**; CLI log query is pending (**9109db6b** / **d5735473**).
+- Function logs: IDE **云开发控制台 → 云函数 → 日志**; the wxide CLI does not expose log query yet — do not teach low-level log CGI bypasses.
 - Full reference: [Message Push & Customer Service Auto-Reply](references/message-push-customer-service.md)
 
 ## Minimal project skeleton

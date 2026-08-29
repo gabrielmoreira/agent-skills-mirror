@@ -31,11 +31,15 @@ The slash command surfaces the libexec wrapper; run it as Bash. Lifecycle (outpu
 
 ```
 libexec/raptor-frida --target <pid|name|bundle-id|binary>
-                     (--template <name> | --script <path> | --sink-watch <file>)
+                     (--template <name>[+<name>] | --script <path> | --sink-watch <file>)
                      [--host HOST[:PORT]] [--usb]
                      [--duration N] [--stdin FILE] [--spawn] [--unsafe-attach]
                      [--follow-children]
 ```
+
+`--template a+b` combines bundled templates in one session (e.g.
+`seed-harvest+exec-and-load`, which also triggers the automatic
+post-run I/O correlation join → `io-correlation.json`).
 
 Equivalent CLI without a Claude session: `raptor frida ...`.
 
@@ -87,6 +91,9 @@ raptor frida --target Safari --script ./my-hook.js --duration 30
   metadata.json      # target, host info, timings, errors
   script.js          # copy of the script that ran
   frida-report.md    # short human-readable summary
+  seeds/ + seeds-manifest.json   # fuzz-ready corpus (data-carrying events, e.g. seed-harvest)
+  coverage.drcov     # bb-coverage template only
+  io-correlation.json  # ingest/later-call joins (combined-template sessions, only when matches found)
 ```
 
 `<run-dir>` is resolved by `libexec/raptor-run-lifecycle`:

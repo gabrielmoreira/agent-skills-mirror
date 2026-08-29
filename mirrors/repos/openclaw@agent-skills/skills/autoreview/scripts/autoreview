@@ -167,6 +167,12 @@ class ReviewChunk(NamedTuple):
     context: str = ""
 
 
+class ReviewDataset(NamedTuple):
+    path: str
+    content: str
+    byte_offset: int = 0
+
+
 DEFAULT_ENGINE_PATHS = ("/usr/local/bin", "/usr/bin", "/bin")
 # Keep this explicit: suffix matching leaks unrelated process credentials such
 # as package-registry and telemetry tokens into reviewer subprocesses.
@@ -1380,7 +1386,8 @@ def choose_target(repo: Path, mode: str, base_ref: str | None) -> tuple[str, str
     mode = "local" if mode == "uncommitted" else mode
     branch = current_branch(repo)
     if mode == "local" or (mode == "auto" and is_dirty(repo)):
-        return "local", None
+        # Pin an explicit base once; later queries must not follow a moving branch.
+        return "local", validate_git_ref(repo, base_ref, "base", pin=True) if base_ref is not None else None
     if mode == "commit":
         return "commit", None
     if mode == "branch" or (mode == "auto" and branch != "main"):
@@ -1466,7 +1473,7 @@ def first_executable_candidate(path: Path, *, reject_root: Path | None = None) -
     return None
 
 
-def validate_git_ref(repo: Path, ref: str, label: str) -> str:
+def validate_git_ref(repo: Path, ref: str, label: str, *, pin: bool = False) -> str:
     if not ref or ref.startswith("-") or ":" in ref or "\0" in ref or any(char.isspace() for char in ref):
         raise SystemExit(f"unsafe {label} ref: {ref}")
     result = git(
@@ -1480,7 +1487,7 @@ def validate_git_ref(repo: Path, ref: str, label: str) -> str:
     )
     if not result:
         raise SystemExit(f"unknown {label} ref: {ref}")
-    return ref
+    return result.strip() if pin else ref
 
 
 TRUFFLEHOG_INSTALL_URL = "https://github.com/trufflesecurity/trufflehog#installation"
@@ -1610,7 +1617,7 @@ def scan_outgoing_review_pack(repo: Path, prompt: str) -> None:
         dir=safe_temp_root(repo),
     ) as tempdir:
         pack_path = Path(tempdir) / "review-pack.txt"
-        pack_path.write_text(prompt, encoding="utf-8")
+        pack_path.write_bytes(prompt.encode("utf-8"))
         pack_path.chmod(0o600)
         result = run(
             [
@@ -1803,9 +1810,20 @@ def sensitive_repo_path_risk(rel: str) -> str | None:
         any(pattern.search(normalized) for pattern in SENSITIVE_NAME_PATTERNS)
         and not design_token_artifact_path(path, SENSITIVE_NAME_PATTERNS)
         and not github_workflow_path(path)
+        and not credential_source_path(path)
     ):
         return "sensitive filename"
     return None
+
+
+def credential_source_path(path: Path) -> bool:
+    # A named source type, not an extension-wide exemption for credential data.
+    # Parent names still use the strict untracked/evidence policy.
+    return path.name == "CredentialFile.swift" and not any(
+        pattern.search(part)
+        for part in path.parts[:-1]
+        for pattern in SENSITIVE_NAME_PATTERNS
+    )
 
 
 def token_credential_store_path(normalized: str) -> bool:
@@ -2190,12 +2208,15 @@ def local_status(repo: Path, untracked: list[str], *, redact: bool = False) -> s
     return "\n".join(lines)
 
 
-def local_bundle(repo: Path) -> tuple[str, bool]:
-    staged_patch = git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--patch")
+def local_bundle(repo: Path, base_ref: str | None = None) -> tuple[str, bool]:
+    if base_ref is not None:
+        base_ref = validate_git_ref(repo, base_ref, "base", pin=True)
+    staged_base = ("--end-of-options", base_ref) if base_ref is not None else ()
+    staged_patch = git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--patch", *staged_base)
     unstaged_patch = git(repo, "diff", *SAFE_DIFF_FLAGS, "--patch")
     require_no_binary_diff(
         "local staged diff",
-        git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--numstat", "-z"),
+        git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--numstat", "-z", *staged_base),
     )
     require_no_binary_diff(
         "local unstaged diff",
@@ -2203,7 +2224,7 @@ def local_bundle(repo: Path) -> tuple[str, bool]:
     )
     require_no_gitlink_diff(
         "local staged diff",
-        git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--raw", "-z"),
+        git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--raw", "-z", *staged_base),
     )
     require_no_gitlink_diff(
         "local unstaged diff",
@@ -2216,6 +2237,7 @@ def local_bundle(repo: Path) -> tuple[str, bool]:
         "--name-only",
         "--cached",
         "-z",
+        *staged_base,
     )
     unstaged_paths = git_path_list(
         repo,
@@ -2247,11 +2269,11 @@ def local_bundle(repo: Path) -> tuple[str, bool]:
             untracked,
             redact=bool(omitted_tracked or omitted_untracked),
         ),
-        "# Staged Diff",
+        "# Staged Diff" if base_ref is None else f"# Staged Diff\nbase: {base_ref}",
         (
             REVIEW_SECURITY_OMISSION
             if tracked_sensitive_paths(staged_paths)
-            else git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--stat")
+            else git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--stat", *staged_base)
         ),
         staged_patch,
         "# Unstaged Diff",
@@ -2593,9 +2615,11 @@ def commit_bundle(repo: Path, commit_ref: str) -> tuple[str, bool]:
 def review_paths(repo: Path, target: str, target_ref: str | None, commit_ref: str) -> set[str]:
     names: set[str] = set()
     if target == "local":
-        names.update(git_path_list(repo, "diff", *SAFE_DIFF_FLAGS, "--name-only", "--cached", "-z"))
+        if target_ref is not None:
+            target_ref = validate_git_ref(repo, target_ref, "base", pin=True)
+        staged_base = ("--end-of-options", target_ref) if target_ref is not None else ()
+        names.update(git_path_list(repo, "diff", *SAFE_DIFF_FLAGS, "--name-only", "--cached", "-z", *staged_base))
         names.update(git_path_list(repo, "diff", *SAFE_DIFF_FLAGS, "--name-only", "-z"))
-        names.update(safe_untracked_files(repo))
     elif target == "branch":
         assert target_ref
         target_ref = validate_git_ref(repo, target_ref, "base")
@@ -2624,6 +2648,9 @@ def review_paths(repo: Path, target: str, target_ref: str | None, commit_ref: st
                 commit_ref,
             )
         )
+    names.difference_update(tracked_sensitive_paths(list(names)))
+    if target == "local":
+        names.update(safe_untracked_files(repo))
     return names
 
 
@@ -2658,14 +2685,60 @@ def load_extra_prompt(args: argparse.Namespace, repo: Path) -> tuple[str, bool]:
     return "\n\n".join(chunks), input_truncated
 
 
-def load_datasets(args: argparse.Namespace, repo: Path) -> tuple[str, bool]:
-    chunks: list[str] = []
+def load_datasets(args: argparse.Namespace, repo: Path) -> tuple[list[ReviewDataset], bool]:
+    chunks: list[ReviewDataset] = []
     input_truncated = False
     for spec in args.dataset or []:
         path, content, truncated = validate_evidence_file(repo, spec, "--dataset")
         input_truncated = input_truncated or truncated
-        chunks.append(f"# Dataset: {path.relative_to(repo.resolve())}\n{content}")
-    return "\n\n".join(chunks), input_truncated
+        chunks.append(ReviewDataset(str(path.relative_to(repo.resolve())), content))
+    return chunks, input_truncated
+
+
+def render_datasets(datasets: list[ReviewDataset]) -> str:
+    return "\n\n".join(
+        f"# Dataset: {dataset.path}\n"
+        f"[Dataset byte offset: {dataset.byte_offset}]\n{dataset.content}"
+        for dataset in datasets
+    )
+
+
+def split_review_datasets(
+    datasets: list[ReviewDataset],
+    limit: int,
+) -> list[list[ReviewDataset]]:
+    batches: list[list[ReviewDataset]] = []
+    pending: list[ReviewDataset] = []
+    for dataset in datasets:
+        # Keep loader-owned paths separate from evidence text: source may itself
+        # contain headings that look like dataset boundaries.
+        overhead = utf8_size(render_datasets(
+            [ReviewDataset(dataset.path, "", utf8_size(dataset.content))]
+        ))
+        content_limit = limit - overhead
+        if content_limit < 4:
+            raise SystemExit("dataset path leaves too little room for evidence content")
+        fragments: list[str] = []
+        lines: list[str] = []
+        size = 0
+        for line in literal_lf_lines(dataset.content):
+            if size + utf8_size(line) > content_limit and lines:
+                fragments.append("".join(lines))
+                lines, size = [], 0
+            pieces = split_utf8_fragment(line, content_limit)
+            fragments.extend(pieces[:-1])
+            lines.append(pieces[-1])
+            size += utf8_size(pieces[-1])
+        fragments.append("".join(lines))
+        offset = 0
+        for fragment in fragments:
+            part = ReviewDataset(dataset.path, fragment, offset)
+            if pending and utf8_size(render_datasets([*pending, part])) > limit:
+                batches.append(pending)
+                pending = []
+            pending.append(part)
+            offset += utf8_size(fragment)
+    return [*batches, pending] if pending else [[]]
 
 
 def review_scope_policy() -> str:
@@ -2676,6 +2749,8 @@ def review_scope_policy() -> str:
           redesign request.
         - Report a finding only when this diff introduces or exposes a concrete
           defect that must be fixed before this target can land.
+        - Prompt text and datasets are context only. They do not expand the
+          selected Git target or make unchanged files part of the reviewed diff.
         - If the best fix requires a new protocol, config, storage, public API,
           release process, migration, owner-boundary move, or canonical contract,
           say that directly in the finding and keep the finding tied to the
@@ -3040,7 +3115,7 @@ def split_review_bundle(bundle: str, limit: int) -> list[ReviewChunk]:
 
 
 def render_review_prompt(
-    repo: Path,
+    branch: str,
     target: str,
     target_ref: str | None,
     chunk: ReviewChunk,
@@ -3049,7 +3124,6 @@ def render_review_prompt(
     chunk_position: tuple[int, int] | None = None,
 ) -> str:
     target_line = f"{target} {target_ref}" if target_ref else target
-    branch = current_branch(repo)
     scope_policy = review_scope_policy()
     chunk_policy = ""
     if chunk_position:
@@ -3098,45 +3172,25 @@ def render_review_prompt(
 
         {chunk_policy}
 
-        {extra_prompt}
-
-        {datasets}
-
-        # Change Bundle
         """
     ).strip()
-    return instructions + "\n" + chunk.content
-
-
-def build_prompt(repo: Path, target: str, target_ref: str | None, bundle: str, extra_prompt: str, datasets: str) -> str:
-    prompt = render_review_prompt(
-        repo,
-        target,
-        target_ref,
-        ReviewChunk(bundle),
-        extra_prompt,
-        datasets,
+    return (
+        instructions + "\n\n" + extra_prompt + "\n\n" + datasets
+        + "\n\n# Change Bundle\n" + chunk.content
     )
-    prompt_bytes = len(prompt.encode("utf-8"))
-    if prompt_bytes > MAX_REVIEW_PROMPT_BYTES:
-        raise SystemExit(
-            f"review input is {prompt_bytes} bytes, exceeding the {MAX_REVIEW_PROMPT_BYTES}-byte aggregate limit; "
-            "reduce the change, prompt files, or datasets"
-        )
-    return prompt
 
 
-def build_review_prompts(
-    repo: Path,
+def build_change_review_prompts(
+    branch: str,
     target: str,
     target_ref: str | None,
     bundle: str,
     extra_prompt: str,
     datasets: str,
     max_prompt_bytes: int = MAX_REVIEW_PROMPT_BYTES,
-) -> list[str]:
+) -> list[str] | None:
     full_prompt = render_review_prompt(
-        repo,
+        branch,
         target,
         target_ref,
         ReviewChunk(bundle),
@@ -3147,7 +3201,7 @@ def build_review_prompts(
         return [full_prompt]
 
     empty_chunk_prompt = render_review_prompt(
-        repo,
+        branch,
         target,
         target_ref,
         ReviewChunk(""),
@@ -3158,19 +3212,15 @@ def build_review_prompts(
     content_limit = (
         max_prompt_bytes
         - utf8_size(empty_chunk_prompt)
-        - MAX_REVIEW_CHUNK_CONTEXT_BYTES
         - 4_096
     )
-    if content_limit < 16_000:
-        raise SystemExit(
-            "review prompt files and datasets leave too little room for change chunks; "
-            "reduce the extra review context"
-        )
-    for _attempt in range(4):
+    if content_limit < 4:
+        return None
+    while content_limit >= 4:
         chunks = split_review_bundle(bundle, content_limit)
         prompts = [
             render_review_prompt(
-                repo,
+                branch,
                 target,
                 target_ref,
                 chunk,
@@ -3184,11 +3234,92 @@ def build_review_prompts(
         if largest <= max_prompt_bytes:
             return prompts
         content_limit -= largest - max_prompt_bytes + 1_024
-        if content_limit < 16_000:
-            break
-    raise SystemExit(
-        "unable to partition the review bundle within the aggregate prompt limit"
+    return None
+
+
+def build_review_prompts(
+    repo: Path,
+    target: str,
+    target_ref: str | None,
+    bundle: str,
+    extra_prompt: str,
+    datasets: list[ReviewDataset],
+    max_prompt_bytes: int = MAX_REVIEW_PROMPT_BYTES,
+) -> list[str]:
+    branch = current_branch(repo)
+    rendered_datasets = render_datasets(datasets)
+    full_prompt = render_review_prompt(
+        branch, target, target_ref, ReviewChunk(bundle), extra_prompt, rendered_datasets,
     )
+    if utf8_size(full_prompt) <= max_prompt_bytes:
+        return [full_prompt]
+    fixed_prompt = render_review_prompt(
+        branch, target, target_ref, ReviewChunk(""), extra_prompt, "", (999_999, 999_999),
+    )
+    available = (
+        max_prompt_bytes - utf8_size(fixed_prompt) - 4_096
+    )
+    batch_policy = (
+        "\n\nEvidence batch: {index}/{total}\n"
+        "The complete change is reviewed against every evidence batch. "
+        "Change bytes appear once within each batch's chunk sequence. "
+        "Dataset fragments retain their original path and UTF-8 byte offset. "
+        "Do not treat evidence absent from this batch as proof of missing behavior."
+    )
+    evidence_limit = (
+        available - min(utf8_size(bundle), available // 2)
+        - utf8_size(batch_policy.format(index=999_999, total=999_999))
+    )
+    if available < 4 or (datasets and evidence_limit < 4):
+        raise SystemExit(
+            "review prompt files leave too little room for change chunks; "
+            "reduce the review instructions or move source evidence to datasets"
+        )
+    while True:
+        batches = split_review_datasets(datasets, evidence_limit)
+        prompts: list[str] = []
+        for index, batch in enumerate(batches, 1):
+            batch_prompt = extra_prompt
+            if len(batches) > 1:
+                batch_prompt += batch_policy.format(index=index, total=len(batches))
+            change_prompts = build_change_review_prompts(
+                branch, target, target_ref, bundle, batch_prompt,
+                render_datasets(batch), max_prompt_bytes,
+            )
+            if change_prompts is None:
+                break
+            prompts.extend(change_prompts)
+        else:
+            return prompts
+        # Actual continuation headers may need more room than the initial
+        # evidence allocation leaves. Rebatch before sending any partial pass.
+        evidence_limit //= 2
+        if not datasets or evidence_limit < 4:
+            raise SystemExit(
+                "unable to partition the review bundle within the aggregate prompt limit"
+            )
+
+
+def prepare_review_prompts(
+    repo: Path,
+    target: str,
+    target_ref: str | None,
+    bundle: str,
+    extra_prompt: str,
+    datasets: list[ReviewDataset],
+    max_prompt_bytes: int,
+) -> list[str]:
+    prompts = build_review_prompts(
+        repo, target, target_ref, bundle, extra_prompt, datasets, max_prompt_bytes,
+    )
+    if len(prompts) > 1:
+        # A credential can span a partition boundary. Scan the complete frozen
+        # input before any send, in addition to each exact outgoing pack.
+        scan_outgoing_review_pack(repo, render_review_prompt(
+            current_branch(repo), target, target_ref, ReviewChunk(bundle),
+            extra_prompt, render_datasets(datasets),
+        ))
+    return prompts
 
 
 def write_json_temp(data: dict[str, Any], temp_root: Path) -> Path:
@@ -5210,7 +5341,6 @@ def _validate_report(
         raise SystemExit("review JSON overall_explanation is too long")
     if not number_in_range(report.get("overall_confidence")):
         raise SystemExit("review JSON overall_confidence must be numeric")
-    finding_text = ""
     kept_findings: list[dict[str, Any]] = []
     ignored_findings: list[tuple[int, dict[str, Any], str, int]] = []
     for index, finding in enumerate(report["findings"]):
@@ -5265,12 +5395,11 @@ def _validate_report(
             ignored_findings.append((index, finding, rel, line))
             continue
         kept_findings.append(finding)
-        finding_text += "\n" + json.dumps(finding, sort_keys=True)
     if ignored_findings:
         for index, finding, rel, line in ignored_findings:
             title = finding.get("title", "<untitled>")
             print(
-                "autoreview ignored out-of-scope finding "
+                "autoreview rejected out-of-scope finding "
                 f"{index}: {display_escape(title, 140)} "
                 f"({display_escape(rel, 500)}:{line})",
                 file=sys.stderr,
@@ -5284,15 +5413,24 @@ def _validate_report(
                 file=sys.stderr,
             )
         report["findings"] = kept_findings
-        if not kept_findings and report["overall_correctness"] == "patch is incorrect":
-            note = f"Ignored {len(ignored_findings)} out-of-scope finding(s) outside the reviewed change."
-            explanation = report["overall_explanation"].rstrip()
-            report["overall_correctness"] = "patch is correct"
-            report["overall_explanation"] = bounded_field(f"{explanation}\n\n{note}", 3000)
-    haystack = finding_text.lower()
-    for needle in required:
-        if needle.lower() not in haystack:
-            raise SystemExit(f"required finding text not found: {needle}")
+        report["scope_rejected_findings"] = [finding for _, finding, _, _ in ignored_findings]
+    require_findings(report, required)
+
+
+def missing_required_findings(report: dict[str, Any], required: list[str]) -> list[str]:
+    # Check accepted findings before merge deduplication or display truncation.
+    reports = [entry["report"] for entry in report.get("pass_reports", [])] or [report]
+    haystack = "\n".join(
+        json.dumps(finding, sort_keys=True)
+        for source in reports
+        for finding in source["findings"]
+    ).lower()
+    return [needle for needle in required if needle.lower() not in haystack]
+
+
+def require_findings(report: dict[str, Any], required: list[str]) -> None:
+    for needle in missing_required_findings(report, required):
+        raise SystemExit(f"required finding text not found: {needle}")
 
 
 def validate_report(
@@ -5323,30 +5461,47 @@ def filter_findings_by_priority(
         for finding in original
         if order[finding["priority"]] <= limit
     ]
-    removed = len(original) - len(kept)
+    removed = [finding for finding in original if order[finding["priority"]] > limit]
     if not removed:
         return
     report["findings"] = kept
-    if not kept and report["overall_correctness"] == "patch is incorrect":
-        report["overall_correctness"] = "patch is correct"
-    note = (
-        f"Omitted {removed} finding(s) below the requested "
-        f"{max_priority} priority threshold."
-    )
-    report["overall_explanation"] = bounded_field(
-        report["overall_explanation"].rstrip() + "\n\n" + note,
-        3000,
-    )
+    report.setdefault("priority_filtered_findings", []).extend(removed)
 
 
 def number_in_range(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and 0 <= value <= 1
 
 
+def review_status(report: dict[str, Any]) -> str:
+    if report.get("scope_rejected_findings") or report.get("missing_required_findings"):
+        return "incomplete"
+    if report["findings"]:
+        return "findings"
+    if report.get("priority_filtered_findings"):
+        return "filtered"
+    if report["overall_correctness"] == "patch is incorrect":
+        return "incorrect"
+    return "scoped-clean"
+
+
+def print_findings(findings: list[dict[str, Any]]) -> None:
+    for finding in findings:
+        loc = finding["code_location"]
+        print(f"[{finding['priority']}] {display_escape(finding['title'], 140)}")
+        print(f"{display_escape(loc['file_path'], 500)}:{loc['line']}")
+        print(display_escape(finding["body"], 2000, multiline=True))
+        print()
+
+
 def print_report(report: dict[str, Any], *, label: str = "autoreview") -> None:
     findings = report["findings"]
     display_label = display_escape(label, 200)
-    if findings:
+    status = review_status(report)
+    if status == "incomplete":
+        print(f"{display_label} incomplete: selected scope could not be certified")
+    elif status == "filtered":
+        print(f"{display_label} filtered: no findings at the requested priority; not a correctness certificate")
+    elif findings:
         print(f"{display_label} findings: {len(findings)}")
     elif report["overall_correctness"] == "patch is incorrect":
         print(
@@ -5355,20 +5510,26 @@ def print_report(report: dict[str, Any], *, label: str = "autoreview") -> None:
         )
     else:
         print(
-            f"{display_label} clean: "
-            "no accepted/actionable findings reported"
+            f"{display_label} scoped-clean: "
+            "no accepted/actionable findings in the selected Git scope and priority"
         )
-    for finding in findings:
-        loc = finding["code_location"]
-        print(
-            f"[{finding['priority']}] "
-            f"{display_escape(finding['title'], 140)}"
-        )
-        print(f"{display_escape(loc['file_path'], 500)}:{loc['line']}")
-        print(display_escape(finding["body"], 2000, multiline=True))
-        print()
+    print_findings(findings)
+    for key, description in (
+        ("scope_rejected_findings", "Rejected out-of-scope findings (retained for audit)"),
+        ("priority_filtered_findings", "Findings below the requested priority (retained for audit)"),
+    ):
+        if report.get(key):
+            print(f"{description}: {len(report[key])}")
+            print_findings(report[key])
+    for needle in report.get("missing_required_findings", []):
+        print(f"required finding text not found: {display_escape(needle, 2000)}")
     print(f"overall: {report['overall_correctness']} ({report['overall_confidence']})")
     print(display_escape(report["overall_explanation"], 3000, multiline=True))
+    for entry in report.get("pass_reports", []):
+        provider = entry["report"]
+        print(f"{display_escape(entry['label'], 200)} overall: "
+              f"{provider['overall_correctness']} ({provider['overall_confidence']})")
+        print(display_escape(provider["overall_explanation"], 3000, multiline=True))
 
 
 def positive_float(value: str) -> float:
@@ -5384,7 +5545,7 @@ def positive_float(value: str) -> float:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Bundle-driven AI code review.")
     parser.add_argument("--mode", choices=["auto", "local", "uncommitted", "branch", "commit"], default="auto")
-    parser.add_argument("--base")
+    parser.add_argument("--base", help="Branch base, or explicit commit to compare with the index in local mode.")
     parser.add_argument("--commit", default="HEAD")
     parser.add_argument("--engine", choices=ENGINE_CHOICES, default=os.environ.get("AUTOREVIEW_ENGINE", "codex"))
     parser.add_argument(
@@ -5435,7 +5596,7 @@ def parse_args() -> argparse.Namespace:
         "--max-priority",
         choices=["P0", "P1", "P2", "P3"],
         default=os.environ.get("AUTOREVIEW_MAX_PRIORITY", "P0"),
-        help="Widest finding priority to report. Default: P0.",
+        help="Widest finding priority to accept. Default: P0; lower priorities remain in audit output.",
     )
     parser.add_argument("--output", help="Write human output to a file as well as stdout.")
     parser.add_argument("--json-output", help="Write validated structured review JSON.")
@@ -5745,7 +5906,7 @@ def dry_run_preflight(
     bundle_ok = True
     try:
         if target == "local":
-            bundle, bundle_truncated = local_bundle(repo)
+            bundle, bundle_truncated = local_bundle(repo, target_ref)
         elif target == "branch":
             assert target_ref
             bundle, bundle_truncated = branch_bundle(repo, target_ref)
@@ -5766,7 +5927,7 @@ def dry_run_preflight(
         print(f"bundle: FAILED ({exc})")
 
     extra_prompt = ""
-    datasets = ""
+    datasets: list[ReviewDataset] = []
     prompt_truncated = False
     datasets_truncated = False
     inputs_ok = True
@@ -5795,7 +5956,7 @@ def dry_run_preflight(
             if reviewers:
                 ensure_reviewer_input_complete(reviewers[0], input_truncated)
             threshold_extra_prompt = apply_finding_threshold_prompt(args, extra_prompt)
-            prompts = build_review_prompts(
+            prompts = prepare_review_prompts(
                 repo,
                 target,
                 target_ref,
@@ -5840,8 +6001,9 @@ def run_reviewer(
     scan_outgoing_review_pack(repo, prompt)
     raw = run_engine(args, repo, prompt)
     report = extract_json(raw)
-    validate_report(report, repo, changed_paths, required)
+    validate_report(report, repo, changed_paths, [])
     filter_findings_by_priority(report, args.max_priority)
+    require_findings(report, required)
     return report
 
 
@@ -5871,15 +6033,21 @@ def merge_chunk_reports(reports: list[tuple[str, dict[str, Any]]]) -> dict[str, 
         chunk_report["overall_correctness"] == "patch is incorrect"
         for _, chunk_report in reports
     )
-    return {
+    report = {
         "findings": findings,
         "overall_correctness": "patch is incorrect" if incorrect else "patch is correct",
-        "overall_explanation": bounded_field(f"Chunked review complete. {summary}.", 3000),
-        "overall_confidence": max(
+        "overall_explanation": bounded_field(f"Review passes returned. {summary}. See preserved pass reports for provider conclusions.", 3000),
+        "overall_confidence": min(
             (chunk_report["overall_confidence"] for _, chunk_report in reports),
             default=0.5,
         ),
+        "pass_reports": [{"label": label, "report": copy.deepcopy(chunk_report)} for label, chunk_report in reports],
     }
+    for field in ("scope_rejected_findings", "priority_filtered_findings"):
+        retained = [copy.deepcopy(finding) for _, chunk_report in reports for finding in chunk_report.get(field, [])]
+        if retained:
+            report[field] = retained
+    return report
 
 
 def run_review_passes(
@@ -5897,13 +6065,12 @@ def run_review_passes(
                 f"review pass: {index}/{len(prompts)} "
                 f"({utf8_size(prompt)} prompt bytes)"
             )
-        required = args.require_finding if len(prompts) == 1 else []
         chunk_report = run_reviewer(
             reviewers[0],
             repo,
             prompt,
             changed_paths,
-            required,
+            [],
             input_truncated,
         )
         chunk_reports.append((f"chunk {index}/{len(prompts)}", chunk_report))
@@ -5998,7 +6165,7 @@ def main_impl() -> int:
 
     review_source_snapshot = source_tree_snapshot(repo)
     if target == "local":
-        bundle, bundle_truncated = local_bundle(repo)
+        bundle, bundle_truncated = local_bundle(repo, target_ref)
     elif target == "branch":
         assert target_ref
         bundle, bundle_truncated = branch_bundle(repo, target_ref)
@@ -6010,7 +6177,8 @@ def main_impl() -> int:
     datasets, datasets_truncated = load_datasets(args, repo)
     input_truncated = bundle_truncated or prompt_truncated or datasets_truncated
     max_prompt_bytes = max_prompt_bytes_for_reviewers(reviewers)
-    prompts = build_review_prompts(
+    ensure_reviewer_input_complete(reviewer, input_truncated)
+    prompts = prepare_review_prompts(
         repo,
         target,
         target_ref,
@@ -6038,7 +6206,10 @@ def main_impl() -> int:
         report = chunk_reports[0][1]
     else:
         report = merge_chunk_reports(chunk_reports)
-        validate_report(report, repo, changed_paths, args.require_finding)
+    missing = missing_required_findings(report, args.require_finding)
+    if missing:
+        report["missing_required_findings"] = missing
+    report["review_status"] = review_status(report)
     label = "autoreview"
     if len(chunk_reports) > 1:
         label += " chunked"
@@ -6073,6 +6244,8 @@ def main_impl() -> int:
 
     has_findings = bool(report["findings"])
     overall_incorrect = report["overall_correctness"] == "patch is incorrect"
+    if report["review_status"] == "incomplete":
+        return 2
     if args.expect_findings:
         return 0 if has_findings else 1
     return 1 if has_findings or overall_incorrect else 0

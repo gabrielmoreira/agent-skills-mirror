@@ -1,13 +1,13 @@
-<!-- registry-sync: version=16.2.0; skills=2074; stars=45467; updated_at=2026-08-26T18:31:49+00:00 -->
+<!-- registry-sync: version=16.3.0; skills=2098; stars=45569; updated_at=2026-08-28T08:40:20+00:00 -->
 # AAS Core — Agentic Awesome Skills
 
 > **Local, agent-owned skill stacks for coding agents—from complete catalog access to a reproducible, reviewable plan.**
 
-**Current release: V16.2.0.** This release includes AAS Core for complete local catalog search, agent-owned selection, manifest validation, planning, and diagnosis. Apply and recovery remain experimental and outside the supported preview path.
+**Current release: V16.3.0.** This release includes AAS Core for complete local catalog search, agent-owned selection, manifest validation, planning, and diagnosis. Apply and recovery remain experimental and outside the supported preview path.
 
 Codex or Claude inspects your project and chooses exact skills from the complete local AAS catalog. AAS Core does not rank or recommend them: its read-only `compose_stack` tool validates the agent-owned selection in memory, and a client or the `aas` CLI can persist it as `aas-stack.json` and produce an immutable plan before any target change.
 
-**[Read the AAS Core preview guide →](https://github.com/sickn33/agentic-awesome-skills/blob/v16.2.0/docs/users/aas-core.md)**
+**[Read the AAS Core preview guide →](https://github.com/sickn33/agentic-awesome-skills/blob/v16.3.0/docs/users/aas-core.md)**
 
 ```text
 Project
@@ -25,7 +25,7 @@ The reusable `SKILL.md` playbooks, specialized plugins, bundles, workflows, and 
 
 This is an independent community project. It is not affiliated with, sponsored by, endorsed by, or authorized by Google. Google, Antigravity, Gemini, and related product names are referenced only to describe compatibility and install targets. The GitHub repository is canonical; the hosted catalog and browser-local Workbench are companion discovery and review surfaces, not a hosted control plane.
 
-[![GitHub stars](https://img.shields.io/badge/⭐%2045%2C000%2B%20Stars-gold?style=for-the-badge)](https://github.com/sickn33/agentic-awesome-skills/stargazers)
+[![GitHub stars](https://img.shields.io/badge/⭐%2046%2C000%2B%20Stars-gold?style=for-the-badge)](https://github.com/sickn33/agentic-awesome-skills/stargazers)
 [![Follow @AASkills_ on X](https://img.shields.io/badge/Follow-%40AASkills__-black?style=for-the-badge&logo=x)](https://x.com/AASkills_)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Anthropic-purple)](https://claude.ai)
@@ -67,7 +67,7 @@ AAS Core gives the repository one product model:
 | Apply and recovery | Experimental, explicit opt-in, outside the supported safety claim |
 | Semantic suitability certification | Not provided |
 
-Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.2.0/docs/users/aas-core.md) for the exact trust boundaries, current preview status, Codex/Claude setup model, and CLI lifecycle.
+Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.3.0/docs/users/aas-core.md) for the exact trust boundaries, current preview status, Codex/Claude setup model, and CLI lifecycle.
 
 ## Why This Repo
 
@@ -76,7 +76,7 @@ Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob
 - **Approval before writes**: the durable artifacts are an approved stack and immutable plan, not an opaque one-shot install.
 - **Installable, not just inspirational**: use the compatible legacy installer or plugin distributions when direct delivery is the right path.
 - **Built for major agent workflows**: Claude Code, Cursor, Codex CLI, Autohand Code, Gemini CLI, Antigravity, Kiro, OpenCode, Copilot, and more.
-- **Broad coverage with real utility**: 2,074+ skills across development, testing, security, infrastructure, product, and marketing.
+- **Broad coverage with real utility**: 2,098+ skills across development, testing, security, infrastructure, product, and marketing.
 - **Inspect before installing**: the hosted [Skill Workbench](https://sickn33.github.io/agentic-awesome-skills/workbench) reviews agent-produced stack manifests and immutable plans without browser-side installation.
 - **Focused delivery remains available**: specialized plugins package proven sets for web, security, data, docs, DevOps, QA, OSS, or agent/MCP workflows.
 - **Useful whether you want breadth or curation**: install the full catalog, choose a specialized plugin, start with bundles, or compare alternatives before installing.
@@ -94,7 +94,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 - [Choose Your Tool](#choose-your-tool)
 - [Quick FAQ](#quick-faq)
 - [Bundles & Workflows](#bundles--workflows)
-- [Browse 2,074+ Skills](#browse-2074-skills)
+- [Browse 2,098+ Skills](#browse-2098-skills)
 - [Troubleshooting](#troubleshooting)
 - [Stable Skills Manifest v1](#stable-skills-manifest-v1)
 - [Support the Project](#support-the-project)
@@ -107,7 +107,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 
 ## Installation
 
-For Codex and Claude, start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.2.0/docs/users/aas-core.md): configure the local MCP, ask the agent to inspect the project and choose exact IDs from the full catalog, review the proposed `aas-stack.json`, then run CLI validation and planning. The MCP and validation are read-only. Planning writes only the requested plan artifact; it does not materialize skill payloads or AAS managed state in the target.
+For Codex and Claude, start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.3.0/docs/users/aas-core.md): configure the local MCP, ask the agent to inspect the project and choose exact IDs from the full catalog, review the proposed `aas-stack.json`, then run CLI validation and planning. The MCP and validation are read-only. Planning writes only the requested plan artifact; it does not materialize skill payloads or AAS managed state in the target.
 
 Use direct installation when your host does not yet have a native AAS Core adapter, when you already know the exact skill IDs, or when you deliberately prefer manual selection:
 
@@ -261,7 +261,7 @@ The supported path covers complete local catalog search and inspection, agent-ow
 
 ### How do I install it?
 
-For AAS Core, follow the [preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.2.0/docs/users/aas-core.md) and use only a package release whose notes explicitly state that it includes Core. Release 14.6.0 predates Core; Core-capable releases begin with the 15.x line.
+For AAS Core, follow the [preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.3.0/docs/users/aas-core.md) and use only a package release whose notes explicitly state that it includes Core. Release 14.6.0 predates Core; Core-capable releases begin with the 15.x line.
 
 For direct skill distribution, use a tool-specific flag such as `--codex`,
 `--cursor`, `--gemini`, or `--claude` to place skills in the directory your
@@ -339,7 +339,7 @@ Remove `--dry-run` only after reviewing the install, update, and removal plan. U
 
 The hosted [Skill Workbench](https://sickn33.github.io/agentic-awesome-skills/workbench) imports and reviews AAS Core stack manifests and immutable plans in browser memory. It does not access the filesystem, generate an approved plan, or install skills.
 
-## Browse 2,074+ Skills
+## Browse 2,098+ Skills
 
 Use the root repo as a landing page, then jump into the deeper surface that matches your intent.
 
@@ -377,7 +377,7 @@ Use the root repo as a landing page, then jump into the deeper surface that matc
 Keep the root README short; use the dedicated docs for recovery and platform-specific guidance.
 
 - If you are confused after installation, start with the [Usage Guide](docs/users/usage.md).
-- For Core setup, trust boundaries, stack manifests, and preview status, use the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.2.0/docs/users/aas-core.md).
+- For Core setup, trust boundaries, stack manifests, and preview status, use the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.3.0/docs/users/aas-core.md).
 - On native Windows, `AAS_ADAPTER_WINDOWS_ACL_FAILED` refers to the configuration path checked with PowerShell `Get-Acl`, not the cache and not `icacls`; do not approve until preview returns an approval digest.
 - If you integrate agentic-awesome-skills into a host, read the discovery contract first: [Stable Skills Manifest v1](docs/users/discovery-manifest.md).
 - For Windows truncation or context crash loops, use [docs/users/windows-truncation-recovery.md](docs/users/windows-truncation-recovery.md).
@@ -388,7 +388,7 @@ Keep the root README short; use the dedicated docs for recovery and platform-spe
 
 ## Stable Skills Manifest v1
 
-This is the stable **direct-host discovery manifest** for integrations that load individual `SKILL.md` files. It is not `aas-stack.json`, the verified AAS Core catalog, or the Core composition contract. Core users should start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.2.0/docs/users/aas-core.md); custom host integrations can continue using the manifest below.
+This is the stable **direct-host discovery manifest** for integrations that load individual `SKILL.md` files. It is not `aas-stack.json`, the verified AAS Core catalog, or the Core composition contract. Core users should start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.3.0/docs/users/aas-core.md); custom host integrations can continue using the manifest below.
 
 Host integrations should use:
 
@@ -450,6 +450,7 @@ Key source families include:
 
 ### Official Sources
 
+- **[sandbaseai/cli](https://github.com/sandbaseai/cli)**: Official source for the `sandbase-mcp` skill - discover, inspect, and invoke 2,000+ AI models and APIs through a local MCP bridge with explicit schema and cost checks (Apache-2.0).
 - **[vostride/agent-qa](https://github.com/vostride/agent-qa)**: Official Agent QA skills for authoring natural-language web and mobile tests, evidence-backed run triage, and scoped debug/fix workflows (FSL-1.1-ALv2, Apache-2.0 after two years).
 - **[uizze/uizze](https://github.com/uizze/uizze)**: Official UIZZE source for the free `anti-ui-slop` skill—product-specific UI references, design contracts, required states, and a hard finish gate grounded in 800,000+ real web and iOS screens (MIT).
 - **[anthropics/skills](https://github.com/anthropics/skills)**: Official Anthropic skills repository - Document manipulation (DOCX, PDF, PPTX, XLSX), Brand Guidelines, Internal Communications.
@@ -495,6 +496,7 @@ Key source families include:
 
 ### Community Contributors
 
+- **[263311487-ux/falsify](https://github.com/263311487-ux/falsify)**: Source for the `falsify` skill - a scientific reasoning protocol for explicit hypotheses, adversarial checks, evidence grading, and calibrated conclusions (MIT).
 - **[Ghost011118/project-state-governor](https://github.com/Ghost011118/project-state-governor)**: Source for the `project-state-governor` skill - evidence-backed canonical project state across sessions, branches, reviews, and research cycles (Apache-2.0).
 - **[sandbaseai/sandbase-skills](https://github.com/sandbaseai/sandbase-skills)**: Source for the `multi-source-search` skill - cross-validated research with explicit source diversity, confidence, conflicts, gaps, and an offline-checkable evidence ledger (Apache-2.0).
 - **[alexprivalov/boost-asio-skill](https://github.com/alexprivalov/boost-asio-skill)**: Source for the `boost-asio-pro` skill - version-aware async C++ networking with Boost.Asio and standalone Asio across coroutine, callback, and classic `io_service` styles (MIT).
@@ -506,6 +508,8 @@ Key source families include:
 - **[OJPalenzuela/agents-generator](https://github.com/OJPalenzuela/agents-generator)**: Source for the `agents-generator` skill - project-specific `AGENTS.md` and companion rule generation with package-manager detection, monorepo handling, dry-run/update modes, backups, and validated commands (MIT).
 - **[agentbody/skills](https://github.com/agentbody/skills)**: Source for the `people-data` skill - LinkedIn and YouTube professional-profile and public business-contact research via the Agent Body MCP server (MIT).
 - **[sudosubin/gh-attach](https://github.com/sudosubin/gh-attach)**: Source for the `gh-attach` skill - GitHub CLI uploads and downloads of `user-attachments` (screenshots, PDFs, zips, videos), producing repo-scoped URLs for PRs, issues, and READMEs, with GitHub Enterprise Server support (MIT).
+- **[amElnagdy/review-skills](https://github.com/amElnagdy/review-skills)**: Source for the `debate-review` and `babysit-pr` skills - two-model debate review of PRs/MRs with inline comments and automated babysitting of review rounds for GitHub, GitLab and Azure DevOps (MIT, docs-only — runtime not bundled).
+- **[amElnagdy/delegate-skills](https://github.com/amElnagdy/delegate-skills)**: Source for 18 delegation skills (`delegate-setup` + 17 implementer relays for Claude/Codex/Cursor/OpenCode and 13 more) — multi-agent delegation and fleet orchestration with Node built-ins only, relay never commits (MIT, docs-only — runtime not bundled).
 - **[zhaoxuya520/reverse-skill](https://github.com/zhaoxuya520/reverse-skill)**: Source for 43 security skills covering reverse engineering, binary analysis, offensive assessment orchestration, and threat-intelligence workflows, adapted with English metadata and upstream safety gates (MIT).
 - **[abhinaykrupa/cowork-to-code-bridge](https://github.com/abhinaykrupa/cowork-to-code-bridge)**: Source for the `cowork-to-code-bridge` skill - consent-bound execution on the user's own machine with pinned provenance, narrow scopes, and explicit local-agent limitations (MIT).
 - **[maleksaadi0109/hyprfedora](https://github.com/maleksaadi0109/hyprfedora)**: Source for the `fedora-hyprland-installer` skill - GPU-aware Fedora Hyprland installation, configuration, verification, repair, and removal workflows (MIT).
@@ -701,6 +705,7 @@ Key source families include:
 - **[thecsdoctor/brendangregg-use-tsa-skill](https://github.com/thecsdoctor/brendangregg-use-tsa-skill)**: Source for the `brendangregg-use-tsa` skill - methodical performance troubleshooting and root-cause analysis with Brendan Gregg's USE and TSA methods, plus evidence-backed RCA and postmortem reporting (MIT).
 - **[AntonioCardenas/generate-nanobanana](https://github.com/AntonioCardenas/generate-nanobanana)**: Source for the `generate-nanobanana` skill - image and video generation via Google's Gemini media models (Nano Banana 2 Lite/Standard/Pro, Gemini Omni Flash) with cost-approval gates before paid runs, real reference-image support, and a prompt/seed log beside every output (MIT).
 - **[alfredtech2026/shopify-app-review-brief](https://github.com/alfredtech2026/shopify-app-review-brief)**: Source for the `shopify-review-triage` skill - public-data-only P0–P3 triage of low-star Shopify App Store reviews into a source-linked brief, with an explicit needs-human-read bucket and first-pass vs. human-checked labeling (MIT).
+- **[unslothai/unsloth](https://github.com/unslothai/unsloth)**: Source for the `unsloth-finetuning` skill - single-GPU VRAM sizing, LoRA/QLoRA configuration, chat-template and loss-masking correctness, GRPO/DPO post-training, and GGUF/merged export paths (Apache-2.0).
 
 </details>
 

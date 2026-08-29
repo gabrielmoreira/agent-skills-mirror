@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 3 followed patterns, 9 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 3 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 3 followed patterns, 9 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 9 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,10 +66,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs-site/AGENTS.md`](docs-site/AGENTS.md) |
 | 4 | ✓ | [`gui/AGENTS.md`](gui/AGENTS.md) |
 | 5 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 6 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 7 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 8 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 9 | → | [`SECURITY.md`](SECURITY.md) |
+| 6 | ✓ | [`skills/ocx/references/01_management_surface.md`](skills/ocx/references/01_management_surface.md) |
+| 7 | ✓ | [`skills/ocx/references/02_json_shapes.md`](skills/ocx/references/02_json_shapes.md) |
+| 8 | ✓ | [`skills/ocx/references/03_recipes.md`](skills/ocx/references/03_recipes.md) |
+| 9 | ✓ | [`skills/ocx/references/04_failure_semantics.md`](skills/ocx/references/04_failure_semantics.md) |
+| 10 | ✓ | [`skills/ocx/SKILL.md`](skills/ocx/SKILL.md) |
+| 11 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 12 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 13 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 14 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

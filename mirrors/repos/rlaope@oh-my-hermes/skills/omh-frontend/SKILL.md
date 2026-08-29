@@ -1,6 +1,6 @@
 ---
 name: "omh-frontend"
-description: "[omh] Hermes frontend workflow: prepare design-system-driven web UI creation, redesign, polish, accessibility, performance, and visual QA handoffs. Use when the user says: frontend, front-end, front end, frontend skill, web ui, ui ux, landing page, web app layout."
+description: "[omh] Hermes frontend workflow: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs. Use when the user says: frontend, front-end, front end, frontend skill, web ui, ui ux, landing page, web app layout."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -62,9 +62,9 @@ Bad example:
 
 ## Use When
 
-Use when Hermes should shape or improve a web/frontend surface before implementation: layout, design system, responsive states, accessibility, performance, motion, and anti-generic visual quality.
+Use when Hermes should shape or improve a web/frontend or terminal (TUI) surface before implementation: layout, design system, responsive states, accessibility, performance, motion, and anti-generic visual quality.
 
-    Strong routing signals: `frontend`, `front-end`, `front end`, `frontend skill`, `web ui`, `ui ux`, `ui/ux`, `landing page`, `web app layout`, `responsive layout`, `responsive design`, `design system`, `component polish`, `layout polish`, `visual polish`, `styling`, `animation`, `motion design`, `accessibility`, `wcag`, `lighthouse`, `core web vitals`, `make it beautiful`, `make it premium`, `make it less ai`, `ai-looking ui`, `ai slop ui`, `generic ui`, `broken layout`, `layout broken`, `frontend qa`, `frontend layout`, `프론트엔드`, `웹 ui`, `웹 화면`, `랜딩페이지`, `레이아웃`, `레이아웃 깨짐`, `깨짐`, `디자인 자연스럽게`, `자연스러운 디자인`, `화려하게`, `고급스럽게`, `ai 티`, `ai틱`, `ai 틱`, `반응형`, `접근성`
+    Strong routing signals: `frontend`, `front-end`, `front end`, `frontend skill`, `web ui`, `ui ux`, `ui/ux`, `landing page`, `web app layout`, `responsive layout`, `responsive design`, `design system`, `component polish`, `layout polish`, `visual polish`, `styling`, `animation`, `motion design`, `accessibility`, `wcag`, `lighthouse`, `core web vitals`, `make it beautiful`, `make it premium`, `make it less ai`, `ai-looking ui`, `ai slop ui`, `generic ui`, `broken layout`, `layout broken`, `frontend qa`, `frontend layout`, `tui design`, `terminal ui design`, `tui layout`, `프론트엔드`, `웹 ui`, `웹 화면`, `랜딩페이지`, `레이아웃`, `레이아웃 깨짐`, `깨짐`, `디자인 자연스럽게`, `자연스러운 디자인`, `화려하게`, `고급스럽게`, `ai 티`, `ai틱`, `ai 틱`, `반응형`, `접근성`
 
 ## Catalog Metadata
 
@@ -78,10 +78,12 @@ Quality bar:
 
 - Name the product goal, audience, target surfaces, routes, states, and visual quality bar.
 - Hold the named bar: what a senior product designer at a top-tier product company (the Linear/Stripe/Supabase class) would sign off on — technically clean but flat output fails it. Load `references/taste-foundations.md`, name one primary taste direction, and reject the anti-slop patterns it lists.
+- When the target surface is a terminal UI (TUI), load `references/tui-craft.md` and hold the same bar there: default widgets are scaffolding, not finished UI; borders spent sparingly with spacing and a muted-color ladder doing the hierarchy; one named terminal aesthetic; verification rendered at 80x24 and 120x40 minimum with the pasted output as the screenshot-equivalent.
 - Use references and domain fit to avoid generic AI-looking frontend output; when the user supplies a visual reference, load `references/reference-token-extraction.md` and extract tokens into the contract instead of eyeballing.
 - Prepare a concrete design-system contract before implementation handoff: load `references/design-system-contract.md` and write DESIGN.md before the first component — no component code before the contract exists.
 - For first-time UI creation, name the initial generation branch, reference direction, reusable primitives, state coverage, and required visual QA path.
 - Cover responsive layout, empty/loading/error states, hover/focus/active states, CJK text, accessibility, and performance expectations.
+- After implementation lands on a web surface, load `references/screenshot-loop.md` and require the screenshot iteration loop live-environment-first: capture the running UI at 1440/768/375px, compare against the supplied target or DESIGN.md, list every difference triaged Blocker/High/Medium/Nit with its capture attached, fix, and recapture until the difference list is empty.
 - Prefer native UI controls, stable dimensions, and realistic content over decorative cards, blobs, and placeholder-heavy screens.
 - Keep implementation, browser verification, accessibility/performance checks, visual QA, and deployment as observed-only evidence.
 

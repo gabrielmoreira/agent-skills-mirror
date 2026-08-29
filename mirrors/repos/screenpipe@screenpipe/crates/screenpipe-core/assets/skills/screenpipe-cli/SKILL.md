@@ -1,6 +1,6 @@
 ---
 name: screenpipe-cli
-description: Set up and operate screenpipe from the terminal, including always-on recording, service modes, capture health, storage, local search, read-only SQLite access, pipes, and connections. Use when the user asks to install, run, inspect, query, automate, or debug screenpipe without relying on the desktop app.
+description: Set up and operate screenpipe from the terminal, including always-on recording, service modes, capture health, storage, local search, pipes, and connections. Use when the user asks to install, run, inspect, query, automate, or debug screenpipe without relying on the desktop app.
 ---
 
 # Screenpipe CLI
@@ -17,7 +17,7 @@ cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} <command>
 
 Works on macOS, Linux, and Windows: the CLI always runs under bash, and `mktemp` is present on all three (on Windows via the bundled git-portable `usr/bin`).
 
-Use `status`, `search`, and state-changing commands as the canonical terminal surface. For high-frequency read loops, the local REST API is faster (see the `screenpipe-api` skill), and advanced local workflows may query SQLite read-only.
+Use `status`, `search`, and state-changing commands as the terminal surface. For repeated or SQL reads, use MCP or the local API (see `screenpipe-api`). Never use an external SQLite client on the live database.
 
 > **Sandboxed shells:** some agents (e.g. Codex) block all shell network access, so `bun x` cannot fetch the package and CLI calls to `localhost:3030` fail instantly. If that happens, use the screenpipe MCP tools instead of the CLI.
 
@@ -85,7 +85,7 @@ cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} diagnose --dry-r
 
 ## Query local history
 
-`search` reads the local SQLite database directly and does not require the daemon. Prefer JSON Lines for agent workflows:
+`search` is Screenpipe's supported daemon-free fallback. Prefer JSON Lines; never replace it with a direct database command:
 
 ```bash
 cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} search --start "30m ago" --json
@@ -96,17 +96,18 @@ cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} search --app "Co
 
 Use `--limit`, `--offset`, `--end`, `--window`, `--browser-url`, `--speaker`, and `--max-content-length` to bound output. An empty result is not evidence that capture is healthy; check `status` and freshness separately.
 
-### Direct SQLite for advanced analysis
+### SQL analysis through Screenpipe
 
-The database path is intentionally discoverable through `status --json`. If the user prefers SQL, open that exact database read-only so SQLite can read the live WAL safely:
+When the daemon is running, use the MCP `query_recordings` tool. If MCP is unavailable but authenticated localhost requests work, use the daemon's read-only SQL endpoint:
 
 ```bash
-status_json="$(cd "$(mktemp -d)" && ${SCREENPIPE_CLI:-bun x screenpipe@latest} status --json)"
-db_path="$(printf '%s' "$status_json" | jq -r '.database_path')"
-sqlite3 "file:${db_path}?mode=ro" 'PRAGMA query_only=ON; SELECT COUNT(*) FROM frames;'
+curl -sS -X POST "${SCREENPIPE_LOCAL_API_URL:-http://localhost:3030}/raw_sql" \
+  -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"SELECT COUNT(*) AS frame_count FROM frames LIMIT 1"}'
 ```
 
-Never write to the live database, copy only `db.sqlite` while recording, use `immutable=1`, or delete `-wal`/`-shm` files. Prefer `screenpipe search --json` unless the analysis genuinely needs SQL.
+Never access live `db.sqlite`, `db.sqlite-wal`, or `db.sqlite-shm` directly. If MCP, API, and CLI are unavailable, report it. Run database checks or recovery only through Screenpipe with the recorder stopped.
 
 ## Shell
 

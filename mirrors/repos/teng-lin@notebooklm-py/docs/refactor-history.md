@@ -170,7 +170,7 @@ These modules did not exist before Tier 12 began:
 
 | Module | Purpose |
 |---|---|
-| `notebooklm._session_contracts` | Historical v0.5.0 home for `AuthMetadata`, `Kernel`, and the shared capability Protocols (`RpcCaller`, `LoopGuard`, `OperationScopeProvider`, `AsyncWorkRuntime`) added in the capability refactor (ADR-0013). Current home: `notebooklm._runtime.contracts`, exporting only `Kernel`, `RpcCaller`, and `LoopGuard`; `AuthMetadata` is local to `_source/upload.py`, `OperationScopeProvider` is local to `_artifact/polling.py`, and `AsyncWorkRuntime` was deleted. |
+| `notebooklm._session_contracts` | Historical v0.5.0 home for `AuthMetadata`, `Kernel`, and the shared capability Protocols (`RpcCaller`, `LoopGuard`, `OperationScopeProvider`, `AsyncWorkRuntime`) added in the capability refactor (ADR-0013). Current home: `notebooklm._runtime.contracts`, exporting only `Kernel`, `RpcCaller`, and `LoopGuard`; `AuthMetadata` is local to `_web/sources/upload.py`, `OperationScopeProvider` is local to `_artifact/polling.py`, and `AsyncWorkRuntime` was deleted. |
 | `notebooklm._kernel` | Concrete `Kernel` transport core (owns the `httpx.AsyncClient`, exposes `post` / `cookies` / `aclose`). Located at root (`src/notebooklm/_kernel.py`), not nested. |
 | `notebooklm._middleware` | Middleware chain primitives (`Middleware` Protocol, `NextCall` callable type, `RpcRequest` / `RpcResponse` envelope dataclasses, `build_chain` composer). |
 | `notebooklm._middleware_tracing` | Tier 12 PR 12.3 — request tracing middleware. |
@@ -271,7 +271,7 @@ class AsyncWorkRuntime(LoopGuard, OperationScopeProvider, Protocol):
 Current code has tightened that further: `_runtime/contracts.py`
 exports `Kernel`, `RpcCaller`, and `LoopGuard`; `OperationScopeProvider`
 is local to `_artifact/polling.py`; `AuthMetadata` is local to
-`_source/upload.py`; `AsyncWorkRuntime` was removed.
+`_web/sources/upload.py`; `AsyncWorkRuntime` was removed.
 
 The following were **not** globally promoted:
 
@@ -309,7 +309,7 @@ not on speculation.
 Those composite runtime Protocols were later removed. Current
 constructors take the direct collaborators they need by keyword:
 `ArtifactsAPI(rpc=..., drain=..., lifecycle=...)`,
-`ChatAPI(rpc=..., transport=..., reqid=..., loop_guard=...)`, and
+`WebChatAPI(rpc=..., transport=..., reqid=..., loop_guard=..., notebooks=...)`, and
 `SourceUploadPipeline(rpc=..., drain=..., lifecycle=..., kernel=...,
 auth=...)`.
 
@@ -342,6 +342,9 @@ These were factored apart:
   into `_chat/notes.py`, where `ChatAPI.save_answer_as_note(...)`
   owns the workflow. `NotesAPI.create_from_chat(...)` was a deprecated
   forwarder during the migration window and was removed in v0.7.0.
+  The later backend split kept citation preparation on the neutral
+  `ChatAPI` workflow and moved the positional encoder into
+  `_web/params/chat_note.py` with persistence in `WebChatAPI`.
 
 `NoteRowKind` stays private — it is an internal classification of
 rows returned by the undocumented `GET_NOTES_AND_MIND_MAPS` RPC, not
@@ -361,16 +364,16 @@ Feature APIs adopted consistent dependency-naming conventions:
 
 ```python
 SourcesAPI(rpc, *, uploader=source_uploader)
-NotebooksAPI(rpc, *, sources_api=sources)
-ChatAPI(rpc=rpc, transport=transport, reqid=reqid, loop_guard=lifecycle,
-        notebooks=notebooks)
+WebNotebooksAPI(rpc, *, sources_api=sources)
+WebChatAPI(rpc=rpc, transport=transport, reqid=reqid, loop_guard=lifecycle,
+           notebooks=notebooks)
 ArtifactsAPI(rpc=rpc, drain=drain, lifecycle=lifecycle,
              notebooks=notebooks, mind_maps=mind_maps,
              note_service=note_service)
 NotesAPI(*, notes=note_service, mind_maps=mind_maps)
 MindMapsAPI(rpc=rpc, mind_maps=mind_maps, artifacts=artifacts,
             notebooks=notebooks)
-LabelsAPI(rpc, list_sources=sources.list)
+WebLabelsAPI(rpc, list_sources=sources.list)
 ```
 
 Compatibility aliases and fallback constructors that read missing

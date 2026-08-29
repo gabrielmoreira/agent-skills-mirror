@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `coleam00/Archon` — 26 default patterns, 9 followed patterns, 39 file(s) materialized.
+Mirror of `coleam00/Archon` — 26 default patterns, 7 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coleam00/Archon` — 26 default patterns, 9 followed patterns, 39 fil
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 39 |
+| Followed pats | 7 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,10 +53,8 @@ Mirror of `coleam00/Archon` — 26 default patterns, 9 followed patterns, 39 fil
 
 - `.archon/direction.md`
 - `.archon/workflow-language-constitution.md`
+- `.archon/engineering.md`
 - `.github/pull_request_template.md`
-- `packages/docs-web/src/content/docs/contributing/index.md`
-- `packages/docs-web/src/content/docs/reference/architecture.md`
-- `packages/docs-web/src/content/docs/reference/configuration.md`
 - `packages/docs-web/src/content/docs/reference/cli.md`
 - `packages/docs-web/src/content/docs/guides/authoring-workflows.md`
 - `packages/docs-web/src/content/docs/reference/database.md`
@@ -98,14 +96,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 30 | ✓ | [`packages/docs-web/src/content/docs/guides/skills.md`](packages/docs-web/src/content/docs/guides/skills.md) |
 | 31 | → | [`.archon/direction.md`](.archon/direction.md) |
-| 32 | → | [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md) |
-| 33 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 34 | → | [`packages/docs-web/src/content/docs/contributing/index.md`](packages/docs-web/src/content/docs/contributing/index.md) |
+| 32 | → | [`.archon/engineering.md`](.archon/engineering.md) |
+| 33 | → | [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md) |
+| 34 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 | 35 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
-| 36 | → | [`packages/docs-web/src/content/docs/reference/architecture.md`](packages/docs-web/src/content/docs/reference/architecture.md) |
-| 37 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
-| 38 | → | [`packages/docs-web/src/content/docs/reference/configuration.md`](packages/docs-web/src/content/docs/reference/configuration.md) |
-| 39 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
+| 36 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
+| 37 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
 
 ---
 

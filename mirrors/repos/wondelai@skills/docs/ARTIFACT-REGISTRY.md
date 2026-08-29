@@ -1,6 +1,6 @@
 # Metaskill Artifact Registry
 
-Canonical skeletons for the `docs/` artifacts that the 12 metaskills (create/improve/grow × business/website/app, improve-code-quality, remove-technical-debt, design-code-architecture) create and extend in a **user's project**. This file is maintainer-facing: it prevents drift between the 12 skills. Each metaskill ships the skeletons it *creates* in its own `references/artifact-templates.md`; for artifacts it only *extends*, the section headings below are the contract.
+Canonical skeletons for the `docs/` artifacts that the 14 metaskills (create/improve/grow × business/website/app, improve-code-quality, remove-technical-debt, design-code-architecture, conversion-optimization, architecture-optimization) create and extend in a **user's project**. This file is maintainer-facing: it prevents drift between the 14 skills. Each metaskill ships the skeletons it *creates* in its own `references/artifact-templates.md`; for artifacts it only *extends*, the section headings below are the contract.
 
 Rules every metaskill follows:
 
@@ -43,7 +43,7 @@ Decision (proceed / revise / stop) and reasoning.
 
 ## docs/POSITIONING.md
 
-How the market should understand us — positioning canvas and messaging in one file. Creates: create-business, create-website. Extends: grow-website, grow-business, improve-website, improve-app.
+How the market should understand us — positioning canvas and messaging in one file. Creates: create-business, create-website. Extends: grow-website, grow-business, improve-website, improve-app, conversion-optimization.
 
 ```markdown
 # Positioning & Messaging
@@ -101,7 +101,7 @@ Target segment, scoring rationale.
 
 ## docs/OFFER.md
 
-What we sell and at what price. Creates: create-business. Extends: grow-business, grow-website, improve-business.
+What we sell and at what price. Creates: create-business. Extends: grow-business, grow-website, improve-business, conversion-optimization.
 
 ```markdown
 # Offer & Pricing
@@ -127,7 +127,7 @@ What we charge per, and why.
 
 ## docs/EXPERIMENTS.md
 
-Every test we run, with pre-committed criteria. Creates: create-business, create-app. Extends: improve-website, grow-website, grow-app, create-website, improve-app.
+Every test we run, with pre-committed criteria. Creates: create-business, create-app. Extends: improve-website, grow-website, grow-app, create-website, improve-app, conversion-optimization.
 
 ```markdown
 # Experiments
@@ -178,7 +178,7 @@ Roles, sequences, qualification, handoff.
 
 ## docs/METRICS.md
 
-What we measure and current baselines. Creates: improve-business, grow-app. Extends: grow-business, grow-website, improve-website.
+What we measure and current baselines. Creates: improve-business, grow-app. Extends: grow-business, grow-website, improve-website, conversion-optimization, architecture-optimization (optional high-perf-browser phase).
 
 ```markdown
 # Metrics
@@ -203,7 +203,7 @@ OMTM · counter-metric · why now.
 
 ## docs/PRODUCT.md
 
-What we build and why. Creates: create-app, create-business. Extends: grow-app, improve-app.
+What we build and why. Creates: create-app, create-business. Extends: grow-app, improve-app, conversion-optimization (optional hooked-ux phase).
 
 ```markdown
 # Product
@@ -233,7 +233,7 @@ Weekly touchpoint plan.
 
 ## docs/OPERATIONS.md
 
-How the company runs. Creates: improve-business. Extends: grow-business.
+How the company runs. Creates: improve-business. Extends: grow-business, architecture-optimization (optional team-topologies phase).
 
 ```markdown
 # Operations
@@ -262,7 +262,7 @@ Accountability chart / team topology; cognitive-load notes.
 
 ## docs/WEBSITE.md
 
-Site structure and page briefs. Creates: create-website. Extends: improve-website, grow-website.
+Site structure and page briefs. Creates: create-website. Extends: improve-website, grow-website, conversion-optimization (optional scorecard-marketing phase), architecture-optimization (optional high-perf-browser phase).
 
 ```markdown
 # Website
@@ -288,9 +288,40 @@ Site structure and page briefs. Creates: create-website. Extends: improve-websit
 Scorecard/quiz funnel design.
 ```
 
+## docs/FUNNEL.md
+
+One conversion flow end to end — its steps, why people drop, and what answers each doubt. Creates: conversion-optimization.
+
+```markdown
+# Conversion Flow
+
+## Flow Map & ONE Action
+Flow scope (entry → conversion), the single action each step drives, competing CTAs cut.
+| Step | ONE action | Current message/CTA | Proposed message/CTA | Notes |
+|---|---|---|---|---|
+
+## Leak Diagnosis
+Why each step loses people. METRICS.md `## Funnel` stays canonical for the conversion numbers; this
+table adds the researched reason and severity, and cites those numbers rather than restating them.
+| Stage | Baseline | Benchmark | Evidence for why | Severity |
+|---|---|---|---|---|
+
+## Objections & Counters (O/CO)
+| Objection (Big 5) | Evidence (customer words) | Counter | Placement | Status |
+|---|---|---|---|---|
+
+## Proof Inventory
+| Asset | Type | Placement | Status |
+|---|---|---|---|
+
+## Flow Friction Audit
+| Step | Issue | Severity (0-4) | Fix | Status |
+|---|---|---|---|---|
+```
+
 ## docs/DESIGN.md
 
-Visual and interaction system. Creates: create-website, create-app. Extends: improve-website, improve-app, grow-app.
+Visual and interaction system. Creates: create-website, create-app. Extends: improve-website, improve-app, grow-app, conversion-optimization.
 
 ```markdown
 # Design System
@@ -319,7 +350,7 @@ Spacing scale · color palette (shades, tinted grays) · shadows.
 
 ## docs/ARCHITECTURE.md
 
-System structure and decisions — includes domain model and data decisions (no separate DATA.md or DOMAIN.md). Creates: design-code-architecture, create-app. Extends: remove-technical-debt, improve-code-quality.
+System structure and decisions — includes domain model and data decisions (no separate DATA.md or DOMAIN.md). Creates: design-code-architecture, create-app. Extends: remove-technical-debt, improve-code-quality, architecture-optimization.
 
 ```markdown
 # Architecture
@@ -349,7 +380,7 @@ Data models, storage engines, isolation levels, replication, system-of-record vs
 
 ## docs/TECH-DEBT.md
 
-The debt ledger — single queue for all code journeys. Creates: remove-technical-debt, improve-code-quality. Extends: create-app, design-code-architecture (debt deliberately taken).
+The debt ledger — single queue for all code journeys. Creates: remove-technical-debt, improve-code-quality. Extends: create-app, design-code-architecture (debt deliberately taken), architecture-optimization.
 
 ```markdown
 # Technical Debt
@@ -373,7 +404,7 @@ Time per iteration; what gets fixed now vs boarded up with a ticket.
 
 ## docs/TESTING.md
 
-The safety net — what behavior is pinned, where the gaps are. Creates: remove-technical-debt, improve-code-quality, create-app. Extends: design-code-architecture.
+The safety net — what behavior is pinned, where the gaps are. Creates: remove-technical-debt, improve-code-quality, create-app. Extends: design-code-architecture, architecture-optimization.
 
 ```markdown
 # Testing
@@ -393,7 +424,7 @@ Pyramid, tooling, what "green" gates.
 
 ## docs/RELIABILITY.md
 
-Production hardening status. Creates: improve-code-quality, design-code-architecture. Extends: remove-technical-debt.
+Production hardening status. Creates: improve-code-quality, design-code-architecture, architecture-optimization (when no prior journey has). Extends: remove-technical-debt, architecture-optimization.
 
 ```markdown
 # Reliability
@@ -410,6 +441,29 @@ Deep health checks · RED metrics · symptom-based alerts.
 
 ## Deploy vs Release
 Feature flags, expand-contract migrations, rollback plan.
+```
+
+## docs/PERFORMANCE.md
+
+Measured performance state — baselines, budgets, findings, and the before/after ledger. Creates: architecture-optimization.
+
+```markdown
+# Performance
+
+## Baselines & Budgets
+| Metric (p50/p95, throughput, cost) | Baseline (date) | Budget | Gate |
+|---|---|---|---|
+
+## Load Reality
+Measured QPS average/peak, data volumes, growth rate.
+
+## Profile Findings
+| Hotspot | Evidence (profiler/APM) | Suspected cause | Fix | Status |
+|---|---|---|---|---|
+
+## Optimization Ledger
+| Change | Before | After | Verdict (keep/revert) | Date |
+|---|---|---|---|---|
 ```
 
 ## Tracker: docs/<SKILL-NAME>-PLAN.md

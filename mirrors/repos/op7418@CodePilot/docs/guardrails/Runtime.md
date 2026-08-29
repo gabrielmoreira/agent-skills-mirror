@@ -191,6 +191,7 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
   - send 路径前必须 gate `noCompatibleProvider` + `fetchState`
 - 改 Codex model discovery / transport：覆盖 frame chunk/CRLF/multibyte/exact-cap/oversize/no-newline、RPC deadline、10 caller single-flight、cooldown/force 与 unhealthy-idle recycle；日志 fixture 中不得出现 frame/prompt/path/token 内容。
 - 新增任何 Codex app-server 直达入口时必须复用 `getCodexAppServer()` 的 recovery-safe-mode gate，不得自行 spawn 绕过 Main owner。
+- 新增任何 Claude SDK query 或 Codex CLI/app-server spawn 入口时，还必须在真正 spawn 前经过 `assertCliProviderLaunchAllowed(provider)`；CLI maintenance lease 覆盖 update command、进程树清理与 post-verify 全窗口。不得绕过 `CliMaintenance.md` 的 provider gate，也不得在 gate active 时静默排队旧请求。
 - 新增 Composer 模型参数时必须先有 request wire + source breadcrumb，再进入 descriptor；UI 截图、模型容量或名字匹配不能作为 selectable 证据。
 - 新增 sub-agent adapter：必须定义 model allowlist / alias canonicalization / effective provenance，并消费共同 workflow/task/dependency compiler；未证明的能力 fail closed，不得实现第四套 queued/依赖等待语义
 
@@ -211,6 +212,7 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
 13. **CodePilot Provider 的 Codex effort 复用 Codex Account 模型缓存** → GLM 等第三方目录的 Max 会被静默夹成 High，Auto 也无法采用供应商默认档。Codex Account 只信当前账号 `model/list`；CodePilot Provider 必须信精确 preset/model catalog 的 `supportedEffortLevels/defaultEffortLevel`。`xhigh/max` 的语法兼容证据可来自当前 app-server `model/list` vocabulary，或在账号未登录/目录冷缓存时来自已初始化本机 binary 的保守版本门（当前实际验证下限为稳定版 `0.144.2`）。版本门必须复用严格、prerelease-aware 的 `codex --version` 解析器；`0.144.2-alpha.*` 和仅在任意 user-agent 中夹带三元组的字符串都不得放行。不得为了使用 CodePilot Provider 要求登录或刷新 Codex Account；旧/未知 binary 必须可见失败，禁止静默降级。
 14. **把“没有 effort allowlist”误判成“不是原生 Responses”** → 已验证 Responses transport 会退回 generic path，丢 reasoning summary 或错误附带 effort。transport 能力与可选 effort 档位是两个字段：前者建立 Responses context，后者为空时仍走原生 Responses，但 body 不得出现 `reasoning.effort`。历史 GLM-5-Turbo fixture 保留用于钉住这一通用不变量；它不再代表当前 GLM Coding Plan 目录。
 15. **把供应商标称的“1M”擅自换算成 1,048,576** → 若官方示例实际配置 1,000,000，会让接近满窗时的剩余比例被系统性高估。没有精确 token 数的第一方依据时使用供应商配置值或十进制标称值，并在 source breadcrumb 说明精度边界；不得把 MB/MiB 习惯套到 token 上。
+16. **CLI 更新只在开始前检查 idle** → 最长五分钟的安装窗口仍可启动并锁住正在被替换的 binary。Provider spawn 必须服从 TTL/heartbeat lease；utility recovery 必须先恢复 gate，再允许 Runtime 恢复。
 
 ## 6. 测试覆盖
 
@@ -221,6 +223,7 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
 | `src/__tests__/unit/env-models-single-source.test.ts` | canonical env 目录三方单一出口；SDK 五行 convenience cache 注入后 `opus-5` 仍保留、动态入口只追加、固定 alias 不被改名 |
 | `src/__tests__/unit/runtime-selection.test.ts` | inlined `predictNativeRuntime` (registry side effects 隔离) |
 | `src/__tests__/unit/sdk-availability.test.ts` | sdk-runtime 直接 import（被 barrel registerRuntime 调用前先 init），测 isAvailable 各路径 |
+| `src/__tests__/unit/cli-maintenance-contract.test.ts` + `cli-maintenance-security.test.ts` | provider lease TTL/recovery bootstrap 与 Claude/Codex spawn gate source contract |
 | `src/__tests__/unit/subagent-orchestration.test.ts` | Provider+Model route、三 Runtime 工具/权限继承、hosted search、requested/effective view |
 | `src/__tests__/unit/subagent-virtual-provider-routes.test.ts` | OAuth virtual Provider 的 picker/Sub-agent route 同源；xAI/OpenAI 正例、未认证/disabled/Claude Code 负例 |
 | `src/__tests__/unit/process-proxy-env.test.ts` | Electron/Codex 两道 child env、显式/system proxy 优先级、Windows casing、loopback bypass |

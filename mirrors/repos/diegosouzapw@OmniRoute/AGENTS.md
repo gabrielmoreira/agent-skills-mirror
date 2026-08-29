@@ -46,7 +46,7 @@ Repository map and Reference Documentation sections below.
 
 ## Project at a Glance
 
-**OmniRoute** — unified AI proxy/router. One endpoint, 357 LLM providers, auto-fallback.
+**OmniRoute** — unified AI proxy/router. One endpoint, 351 LLM providers, auto-fallback.
 
 | Layer         | Location                | Purpose                                                                                                                                                                   |
 | ------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,7 +56,7 @@ Repository map and Reference Documentation sections below.
 | Translators   | `open-sse/translator/`  | Format conversion (OpenAI↔Claude↔Gemini)                                                                                                                                  |
 | Transformer   | `open-sse/transformer/` | Responses API ↔ Chat Completions                                                                                                                                          |
 | Services      | `open-sse/services/`    | Combo routing, rate limits, caching, etc                                                                                                                                  |
-| Database      | `src/lib/db/`           | SQLite domain modules (160 migrations)                                                                                                                                    |
+| Database      | `src/lib/db/`           | SQLite domain modules (166 migrations)                                                                                                                                    |
 | Domain/Policy | `src/domain/`           | Policy engine, cost rules, fallback logic                                                                                                                                 |
 | MCP Server    | `open-sse/mcp-server/`  | 110 tools (44 canonical + memory/skill/GitHub/pool/gamification/plugin/Notion/Obsidian/local-corpus/RTK modules), 3 transports (stdio / SSE / Streamable HTTP), 33 scopes |
 | A2A Server    | `src/lib/a2a/`          | JSON-RPC 2.0 agent protocol                                                                                                                                               |
@@ -594,6 +594,18 @@ inside your feature branch (a base-red fix is its own freeze-gated `fix/release-
 PR); and if you must open a PR anyway, add `⚠️ base-red inherited: #<issue>` to the PR body so
 reviewers and CI babysitters do not chase ghosts.
 
+### Sync-back landings are fast-forward, never squash
+
+A `main → release/vX+1` sync-back (Phase 5 of `/generate-release`, or any later "bring main's
+post-release commits over" PR) must reach the release branch as the merge commit it already is:
+`git merge-base --is-ancestor origin/release/vX+1 <head>` then
+`git push origin <head>:refs/heads/release/vX+1` (GitHub marks the PR merged). Squash-merging it
+drops `main` from the release branch's ancestry and the next sync-back re-conflicts on every file
+main touched (551 conflicts on the v3.8.50 → v3.8.51 sync before the two-step merge). After
+landing, `git merge-base --is-ancestor origin/main origin/release/vX+1` must be true — and check
+that `config/quality/eslint-suppressions.json` / `quality-baseline.json` carried main's freezes
+(they merge as "ours" silently). Details: `.agents/skills/generate-release/phases/phase-5-next-cycle.md`.
+
 ---
 
 ## Upstream contributions
@@ -718,3 +730,13 @@ The dashboard is reachable at the operator's chosen URL/port (default `http://lo
 - **Local VPS / shared dev environments**: ask the operator for the URL and current credentials — they live in their personal vault, NOT in this repo.
 
 > Any credential observed in a previous version of this file was a non-production demo value; treat it as compromised and do not reuse it.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

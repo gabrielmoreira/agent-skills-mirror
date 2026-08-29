@@ -138,7 +138,7 @@ question and does NOT recommend the skill's solution where it doesn't apply.
 
 Write prompts based on real developer or AI confusion: evidenced in GitHub issues, Stack Overflow questions, or Slack threads where AI assistants are known to fail.
 
-**Important:** Let the YAML choose the provider on any run you record or cite. Passing `--providers` replaces the pinned generator, and unless the value matches a configured provider's `id` or `label`, Promptfoo builds a bare provider with none of `providers.yaml`'s config — no `temperature`, no `max_tokens`, no label — which brings back mid-answer truncation and mislabels the results. Ad-hoc probes are a different matter and the flag is useful there: `--providers echo` renders the prompts back to you without touching a key or spending a token.
+**Important:** Let the YAML choose the provider on any run you record or cite. Passing `--providers` replaces the pinned generator, and unless the value matches a configured provider's `id` or `label`, Promptfoo builds a bare provider with none of `providers.yaml`'s config — no `temperature`, no `max_tokens`, no label — which unpins the model on a run you are about to cite, and mislabels the results. Ad-hoc probes are a different matter and the flag is useful there: `--providers echo` renders the prompts back to you without touching a key or spending a token.
 
 ## Example results
 

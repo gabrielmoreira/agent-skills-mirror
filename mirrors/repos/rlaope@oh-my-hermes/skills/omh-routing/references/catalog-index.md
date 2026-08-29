@@ -45,7 +45,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-failure-signal-audit`: [omh] Failure Signal Audit workflow: find swallowed errors, unsafe fallbacks, hidden UI/runtime failures, and missing propagation before they become false green status.
 - `omh-feedback-triage`: [omh] Hermes Feedback Triage workflow: cluster customer signals and choose the next workflow.
 - `omh-finance-analysis`: [omh] Turn finance and accounting inputs into a decision-ready variance, cash, and close-risk brief.
-- `omh-frontend`: [omh] Hermes frontend workflow: prepare design-system-driven web UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
+- `omh-frontend`: [omh] Hermes frontend workflow: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
 - `omh-gateway-intent-card`: [omh] Hermes gateway intent workflow: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
 - `omh-github-event-ops`: [omh] Hermes GitHub event operations workflow: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
 - `omh-harness-session-inventory`: [omh] Hermes harness session inventory workflow: normalize Codex, Claude Code, Hermes, OpenCode, Cursor, MCP host, worktree, and wrapper session metadata into one drift-aware inventory.
@@ -57,6 +57,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-live-info`: [omh] Policy overlay for live lookups - add provider, freshness, units, and source-quality gates after preferring native live-data tools for ordinary weather, finance, sports, maps, and time-zone requests.
 - `omh-localization-review`: [omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance.
 - `ulw-loop`: [omh] Hermes Loop workflow: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate.
+- `ulw-maestro`: [omh] Maestro - prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself.
 - `omh-materials-package`: [omh] Hermes Materials Package workflow: decks, PDFs, spreadsheets, documents, HWP, Markdown, and binary export handoffs.
 - `omh-media-input`: [omh] User-sent media - audio, video, YouTube links, screenshots, receipts, OCR, meeting recordings, transcripts, timestamps, and clip summaries, gated for source, permission, and hallucination risk.
 - `omh-meeting-brief`: [omh] Hermes Meeting Brief workflow: agenda, prompts, decisions, and record template.
