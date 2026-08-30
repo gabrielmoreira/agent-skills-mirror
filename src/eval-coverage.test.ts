@@ -12,13 +12,14 @@
  *   deno task test
  */
 
-import { assertEquals, assertLess, assert } from "jsr:@std/assert";
+import { assert, assertEquals, assertLess } from "jsr:@std/assert";
 import { join } from "node:path";
 import { REAL_SEARCH_QUERIES } from "./app/config.ts";
 
 // ─── Reference target list ───────────────────────────────────────────────────
 // These are known high-signal repositories that the queries should discover.
-// Non-GitHub sources (docs.stripe.com, open.feishu.cn, smithery.ai, etc.) are
+// Non-GitHub sources (docs.stripe.com, open.feishu.cn/document/home/index,
+// smithery.ai, etc.) are
 // excluded — they are out of scope for GitHub search.
 // This list is used as an *evaluation fixture only* — it must not appear in
 // the production search config.
@@ -48,6 +49,7 @@ const GITHUB_TARGET_REPOS: string[] = [
   "apify/agent-skills",
   "apollographql/skills",
   "aradotso/trending-skills",
+  "aristoapp/hermes-membase",
   "arvindrk/extract-design-system",
   "asksurf-ai/surf-skills",
   "ast-grep/agent-skill",
@@ -168,6 +170,7 @@ const GITHUB_TARGET_REPOS: string[] = [
   "minimax-ai/skills",
   "molezzz/openclaw-stock-skill",
   "momentic-ai/skills",
+  "mrpeter2025/clawsocial-hermes-plugin",
   "msmps/opentui-skill",
   "mvanhorn/last30days-skill",
   "napoleond/clawdirect",
@@ -267,6 +270,7 @@ const GITHUB_TARGET_REPOS: string[] = [
   "xiaoyiv/douyin-skill",
   "xixu-me/skills",
   "xixu-me/xget",
+  "xquik-dev/hermes-tweet",
   "yizhiyanhua-ai/fireworks-tech-graph",
   "yusukebe/hono-skill",
   "zhanghandong/rust-skills",
@@ -503,7 +507,9 @@ Deno.test("coverage report: mirror vs target list", async (t) => {
 
   // Print a human-readable report to the test output
   await t.step("print report", () => {
-    console.log("\n── Discovery Coverage Report ──────────────────────────────");
+    console.log(
+      "\n── Discovery Coverage Report ──────────────────────────────",
+    );
     console.log(`  Total GitHub targets : ${coverage.total}`);
     console.log(`  Found in mirror      : ${coverage.found}`);
     console.log(`  Missed               : ${coverage.missed.length}`);
