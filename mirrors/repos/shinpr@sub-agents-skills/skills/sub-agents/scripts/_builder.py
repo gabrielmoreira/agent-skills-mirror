@@ -66,6 +66,17 @@ def build_command(cli: str, prompt: str) -> tuple[str, list[str]]:
     if cli == "opencode":
         return "opencode", ["run", "--format", "json", "--auto", prompt]
 
+    if cli == "command-code":
+        return "command-code", [
+            "--output-format",
+            "json",
+            "--trust",
+            "--no-session",
+            "--skip-onboarding",
+            "-p",
+            prompt,
+        ]
+
     if cli == "cursor-agent":
         # Cursor credentials stay out of argv.
         return "cursor-agent", ["--output-format", "json", "-p", prompt]
@@ -116,6 +127,12 @@ _OPENCODE_PERMISSIONS = {
     "read-only": (),
     "safe-edit": (),
     "yolo": (),
+}
+
+_COMMAND_CODE_PERMISSIONS = {
+    "read-only": ("--permission-mode", "plan"),
+    "safe-edit": ("--yolo", "--permission-mode", "auto-accept"),
+    "yolo": ("--yolo",),
 }
 
 
@@ -316,6 +333,7 @@ _BACKEND_SPECS = {
     "antigravity": BackendSpec(_build_concatenated_args, _ANTIGRAVITY_PERMISSIONS, "--effort"),
     "gemini": BackendSpec(_build_gemini_args, _GEMINI_PERMISSIONS, None),
     "opencode": BackendSpec(_build_opencode_args, _OPENCODE_PERMISSIONS, "--variant"),
+    "command-code": BackendSpec(_build_concatenated_args, _COMMAND_CODE_PERMISSIONS, "--effort"),
 }
 
 

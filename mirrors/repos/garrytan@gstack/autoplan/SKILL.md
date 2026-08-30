@@ -79,7 +79,7 @@ If `SKILL_PREFIX` is `"true"`, suggest/invoke `/gstack-*` names. Disk paths stay
 
 Branch on the skill-start STATUS lines, in this order:
 
-1. **`CONDUCTOR_SESSION: true` echoed** → do NOT call AskUserQuestion at all (neither native nor any `mcp__*__AskUserQuestion` variant): render EVERY decision brief as the **prose form** below and STOP. Proactive, not a failure reaction — Conductor disables native AUQ and its MCP variant is flaky (`[Tool result missing due to internal error]`). **Auto-decide preferences still apply first:** a surfaced `[plan-tune auto-decide] <id> → <option>` result means proceed with that option, no prose — enforced HERE since no tool call ever happens. Capture each Conductor prose brief with `bin/gstack-question-log` (the PostToolUse hook never fires on a prose path; `/plan-tune` learning depends on it).
+1. **`CONDUCTOR_SESSION: true` echoed** → do NOT call AskUserQuestion at all (neither native nor any `mcp__*__AskUserQuestion` variant): render EVERY decision brief as the **prose form** below and STOP. Proactive, not a failure reaction — Conductor disables native AUQ and its MCP variant is flaky (`[Tool result missing due to internal error]`). **Auto-decide preferences still apply first** (failure-fallback item 1 below): proceed with a surfaced auto-decide option, no prose — enforced HERE since no tool call ever happens. Capture each Conductor prose brief with `bin/gstack-question-log` (the PostToolUse hook never fires on a prose path; `/plan-tune` learning depends on it).
 2. **Any `mcp__*__AskUserQuestion` variant in your tool list** → prefer it (hosts may disable native via `--disallowedTools`; calling native there silently fails). Same shape, same decision-brief format.
 3. **Unavailable (no variant) OR a call fails** → do NOT silently auto-decide or write the decision to the plan file as a substitute; follow the **failure fallback** below.
 
@@ -88,7 +88,7 @@ Branch on the skill-start STATUS lines, in this order:
 Tell three outcomes apart:
 
 1. **Auto-decide denial (NOT a failure).** The result contains `[plan-tune auto-decide] <id> → <option>` — the preference hook working as designed. Proceed with that option. Do NOT retry, do NOT fall back to prose.
-2. **Genuine failure** — no variant in your tool list, OR the variant is present but the call returns an error / missing result (MCP transport error, empty result, host bug — e.g. Conductor's MCP AskUserQuestion is flaky and returns `[Tool result missing due to internal error]`).
+2. **Genuine failure** — no variant in your tool list, OR the variant is present but the call returns an error / missing result (MCP transport error, empty result, host bug — e.g. Conductor's flaky MCP variant, see Tool resolution above).
    - If it was present and **errored** (not absent), retry the SAME call **once** — but only if no answer could have surfaced (a missing-result error can arrive after the user already saw the question; retrying would double-prompt, so if it may have reached them, treat as pending, don't retry).
    - Then branch on `SESSION_KIND` (echoed by the preamble; empty/absent ⇒ `interactive`):
      - `spawned` → defer to the **Spawned session** block: auto-choose the recommended option. Never prose, never BLOCKED.
@@ -98,8 +98,8 @@ Tell three outcomes apart:
 **Prose fallback — render the decision brief as a markdown message, not a tool call.** Same information as the tool format below, different structure (paragraphs, not ✅/❌ bullets). It MUST surface this triad:
 
 1. **A clear ELI10 of the issue itself** — plain English on what's being decided and why it matters (the question, not per-choice), naming the stakes. Lead with it.
-2. **Completeness scores per choice** — explicit `Completeness: X/10` on EACH choice (10 complete, 7 happy-path, 3 shortcut); use the kind-note when options differ in kind not coverage, but never silently drop the score.
-3. **The recommendation and why** — a `Recommendation: <choice> because <reason>` line plus the `(recommended)` marker on that choice.
+2. **Completeness scores per choice** — explicit on EACH choice, per the Completeness rule in the Format section below; never silently drop the score.
+3. **The recommendation and why** — the `Recommendation: <choice> because <reason>` line plus the `(recommended)` marker on that choice.
 
 Layout: a `D<N>` title + a one-line note to reply with a letter (in Conductor this is the normal path; elsewhere it means AskUserQuestion was unavailable or errored); the issue ELI10; the Recommendation line; then ONE paragraph per choice carrying its `(recommended)` marker, its `Completeness: X/10`, and 2-4 sentences of reasoning — never a bare bullet list; a closing `Net:` line. Split chains / 5+ options: one prose block per per-option call, in sequence. Then STOP and wait — the user's typed answer is the decision. In plan mode this satisfies end-of-turn like a tool call.
 
@@ -133,6 +133,8 @@ D-numbering: first question in a skill invocation is `D1`; increment yourself. T
 ELI10 is always present, in plain English, not function names. Recommendation is ALWAYS present. Keep the `(recommended)` label; AUTO_DECIDE depends on it.
 
 Completeness: use `Completeness: N/10` only when options differ in coverage. 10 = complete, 7 = happy path, 3 = shortcut. If options differ in kind, write: `Note: options differ in kind, not coverage — no completeness score.`
+
+Accepted shortcuts leave a trail: when the user selects an option that is BOTH Completeness ≤ 7 AND a durable-scope call (architecture or scope-cut — never a turn-level choice), log it via `gstack-decision-log` with the ceiling and the upgrade trigger in the rationale, and — as part of implementing that option, same edit, no follow-up question — mark each cut corner in code with `gstack-shortcut(dec-<id>): <ceiling>, upgrade when <trigger>` in the language's comment syntax. Never agent-initiated: the marker exists only downstream of the user's explicit choice. /retro harvests these into a debt ledger, joined on the decision id.
 
 Pros / cons: use ✅ and ❌. Minimum 2 pros and 1 con per option when the choice is real; Minimum 40 characters per bullet. Hard-stop escape for one-way/destructive confirmations: `✅ No cons — this is a hard-stop choice`.
 
@@ -176,7 +178,7 @@ Before calling AskUserQuestion, verify:
 - [ ] (recommended) label on one option (even for neutral-posture)
 - [ ] Dual-scale effort labels on effort-bearing options (human / CC)
 - [ ] Net line closes the decision
-- [ ] You are calling the tool, not writing prose — unless `CONDUCTOR_SESSION: true` (then prose is the DEFAULT, not the tool) OR the documented failure fallback applies (then: prose with the mandatory triad — issue ELI10, per-choice Completeness, Recommendation + `(recommended)` — and a "reply with a letter" instruction, then STOP)
+- [ ] You are calling the tool, not writing prose — unless `CONDUCTOR_SESSION: true` (then prose is the DEFAULT, not the tool) OR the documented failure fallback applies (then: the prose fallback's mandatory triad + a "reply with a letter" instruction, then STOP)
 - [ ] Non-ASCII characters (CJK / accents) written directly, NOT \u-escaped
 - [ ] If you had 5+ options, you split (or batched into ≤4-groups) — did NOT drop any
 - [ ] If you split, you checked dependencies between options before firing the chain
@@ -227,6 +229,11 @@ GStack voice: Garry-shaped product and engineering judgment, compressed for runt
 
 Good: "auth.ts:47 returns undefined when the session cookie expires. Users hit a white screen. Fix: add a null check and redirect to /login. Two lines."
 Bad: "I've identified a potential issue in the authentication flow that may cause problems under certain conditions."
+
+**Bounded closer.** After completing work, report in at most a few short lines: what changed, what was skipped, what to watch. No feature tours, no unrequested design notes. If the explanation outgrows the change, cut the explanation. Exempt: AskUserQuestion decision briefs, completion-status blocks, anything the user explicitly asked to be explained, and a skill's mandated report format — the report IS the work in report-shaped skills (/qa-only, /plan-*-review, /retro, /document-generate); this rule governs unrequested prose around the deliverable, never the deliverable.
+
+Good closer: "Renamed the flag in 3 files, regenerated docs, tests green. Skipped the CLI alias (unused since v1.2); watch the Windows job."
+Bad closer: a tour of every edit, a restatement of the plan, and three paragraphs justifying choices nobody questioned.
 
 ## Context Recovery
 
@@ -356,6 +363,16 @@ Always flag anything that looks wrong — one sentence, what you noticed and its
 
 Before building anything unfamiliar, **search first.** See `~/.claude/skills/gstack/ETHOS.md`.
 - **Layer 1** (tried and true) — don't reinvent. **Layer 2** (new and popular) — scrutinize. **Layer 3** (first principles) — prize above all.
+
+**The reuse ladder — before writing new code, stop at the first rung that holds:**
+1. A helper, util, or pattern already in this repo — re-implementing what's a few files over is the most common slop.
+2. The standard library.
+3. A native platform feature (CSS over JS, DB constraint over app code, `<input type="date">` over a picker lib).
+4. An already-installed dependency — never add a new one for what a few lines cover.
+
+Then build the complete version of what remains.
+
+**Bug fixes hit root cause, not symptom:** one guard in the shared function beats a guard in every caller — grep the callers, fix it once where they all route through.
 
 **Eureka:** When first-principles reasoning contradicts conventional wisdom, name it and log:
 ```bash
@@ -544,7 +561,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 | starting Phase 1 (CEO review — always runs, after the Phase 0.5 preflight) | `sections/ceo-phase.md` |
 | starting Phase 2 (design review — ONLY if UI scope was detected in Phase 0; skip the read entirely otherwise) | `sections/design-phase.md` |
 | starting Phase 3 (eng review — always runs, after the Pre-Phase 3 checklist) | `sections/eng-phase.md` |
-| starting Phase 3.5 (DX review — ONLY if developer-facing scope was detected in Phase 0; skip the read entirely otherwise) | `sections/dx-phase.md` |
+| starting Phase 2.5 (DX review — ONLY if developer-facing scope was detected in Phase 0; skip the read entirely otherwise) | `sections/dx-phase.md` |
 | presenting the Final Approval Gate (Phase 4) — the aggregator computes $AGGREGATED_TASKS that the gate message substitutes | `sections/tasks-aggregator.md` |
 
 ---
@@ -605,9 +622,11 @@ preference." The user still decides, but the framing is appropriately urgent.
 
 ## Sequential Execution — MANDATORY
 
-Phases MUST execute in strict order: CEO → Design → Eng → DX.
-Each phase MUST complete fully before the next begins.
-NEVER run phases in parallel — each builds on the previous.
+Phases MUST execute in strict order: CEO → Design (if UI scope) → DX (if
+developer-facing scope) → Eng. Eng runs LAST, always: it is the required
+shipping gate, so it must review the FINAL amended plan — every other phase's
+amendments land before it. Each phase MUST complete fully before the next
+begins. NEVER run phases in parallel — each builds on the previous.
 
 Between each phase, emit a phase-transition summary and verify that all required
 outputs from the prior phase are written before starting the next.
@@ -619,13 +638,20 @@ outputs from the prior phase are written before starting the next.
 Auto-decide replaces the USER'S judgment with the 6 principles. It does NOT replace
 the ANALYSIS. Every section in the loaded skill files must still be executed at the
 same depth as the interactive version. The only thing that changes is who answers the
-AskUserQuestion: you do, using the 6 principles, instead of the user.
+AskUserQuestion: you do, instead of the user.
 
-**Two exceptions — never auto-decided:**
-1. Premises (Phase 1) — require human judgment about what problem to solve.
-2. User Challenges — when both models agree the user's stated direction should change
-   (merge, split, add, remove features/workflows). The user always has context models
-   lack. See Decision Classification above.
+**Default resolution: the recommended option.** Every AskUserQuestion in the loaded
+skills resolves to its `(recommended)` option; mode selections take the skill's
+context-dependent default. The 6 principles guide cases with no recommendation and
+break ties; when a principle argues AGAINST the recommended option, that is a Taste
+decision — take the recommendation and surface the disagreement at the final gate.
+
+**One exception class — never auto-decided:** User Challenges — when both models
+agree the user's stated direction should change (merge, split, add, remove
+features/workflows; reinterpret a settled decision), or a premise looks clearly
+wrong. These queue and surface at the Final Approval Gate — never as mid-run
+stops. The user is interrupted exactly once, at the gate. The user always has
+context models lack. See Decision Classification above.
 
 **You MUST still:**
 - READ the actual code, diffs, and files each section references
@@ -775,7 +801,7 @@ else
 fi
 ```
 
-If `_CODEX_AVAILABLE=false`, all Phase 1-3.5 Codex voices below degrade to
+If `_CODEX_AVAILABLE=false`, all Phase 1-3 Codex voices below degrade to
 `[codex-unavailable]` in the degradation matrix. /autoplan completes with
 Claude subagent only — saves token spend on Codex prompts we can't use.
 
@@ -792,7 +818,7 @@ Claude subagent only — saves token spend on Codex prompts we can't use.
 - [ ] CEO completion summary written to plan file
 - [ ] CEO dual voices ran (Codex + Claude subagent, or noted unavailable)
 - [ ] CEO consensus table produced
-- [ ] Premise gate passed (user confirmed)
+- [ ] Premises assessed (clearly-wrong ones queued as Final Gate items — no mid-run stop)
 - [ ] Phase-transition summary emitted
 
 ## Phase 2: Design Review (conditional — skip if no UI scope)
@@ -805,26 +831,29 @@ entirely — do NOT read its section. Log: "Phase 2 skipped — no UI scope dete
 
 ---
 
+## Phase 2.5: DX Review (conditional — skip if no developer-facing scope)
+
+**Skip condition:** If DX scope was NOT detected in Phase 0, skip this phase
+entirely — do NOT read its section. Log: "Phase 2.5 skipped — no developer-facing scope detected."
+
+> **STOP.** Before starting Phase 2.5 (DX review — ONLY if developer-facing scope was detected in Phase 0; skip the read entirely otherwise), Read `~/.claude/skills/gstack/autoplan/sections/dx-phase.md` and execute it
+> in full. Do not work from memory — that section is the source of truth for this step.
+
+---
+
 **Pre-Phase 3 checklist (verify before starting):**
 - [ ] All Phase 1 items above confirmed
 - [ ] Design completion summary written (or "skipped, no UI scope")
 - [ ] Design dual voices ran (if Phase 2 ran)
 - [ ] Design consensus table produced (if Phase 2 ran)
+- [ ] DX completion summary written (or "skipped, no developer-facing scope")
+- [ ] DX dual voices ran (if Phase 2.5 ran)
+- [ ] DX consensus table produced (if Phase 2.5 ran)
 - [ ] Phase-transition summary emitted
 
-## Phase 3: Eng Review + Dual Voices
+## Phase 3: Eng Review + Dual Voices (always runs, always LAST — the required gate reviews the final amended plan)
 
 > **STOP.** Before starting Phase 3 (eng review — always runs, after the Pre-Phase 3 checklist), Read `~/.claude/skills/gstack/autoplan/sections/eng-phase.md` and execute it
-> in full. Do not work from memory — that section is the source of truth for this step.
-
----
-
-## Phase 3.5: DX Review (conditional — skip if no developer-facing scope)
-
-**Skip condition:** If DX scope was NOT detected in Phase 0, skip this phase
-entirely — do NOT read its section. Log: "Phase 3.5 skipped — no developer-facing scope detected."
-
-> **STOP.** Before starting Phase 3.5 (DX review — ONLY if developer-facing scope was detected in Phase 0; skip the read entirely otherwise), Read `~/.claude/skills/gstack/autoplan/sections/dx-phase.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ---
@@ -869,7 +898,16 @@ produced. Check the plan file and conversation for each item.
 - [ ] Dual voices ran (or noted unavailable/skipped with phase)
 - [ ] Design litmus scorecard produced
 
-**Phase 3 (Eng) outputs:**
+**Phase 2.5 (DX) outputs — only if DX scope detected:**
+- [ ] All 8 DX dimensions evaluated with scores
+- [ ] Developer journey map produced
+- [ ] Developer empathy narrative written
+- [ ] TTHW assessment with target
+- [ ] DX Implementation Checklist produced
+- [ ] Dual voices ran (or noted unavailable/skipped with phase)
+- [ ] DX consensus table produced
+
+**Phase 3 (Eng — final phase) outputs:**
 - [ ] Scope challenge with actual code analysis (not just "scope is fine")
 - [ ] Architecture ASCII diagram produced
 - [ ] Test diagram mapping codepaths to test coverage
@@ -880,15 +918,6 @@ produced. Check the plan file and conversation for each item.
 - [ ] Completion Summary produced
 - [ ] Dual voices ran (Codex + Claude subagent, or noted unavailable)
 - [ ] Eng consensus table produced
-
-**Phase 3.5 (DX) outputs — only if DX scope detected:**
-- [ ] All 8 DX dimensions evaluated with scores
-- [ ] Developer journey map produced
-- [ ] Developer empathy narrative written
-- [ ] TTHW assessment with target
-- [ ] DX Implementation Checklist produced
-- [ ] Dual voices ran (or noted unavailable/skipped with phase)
-- [ ] DX consensus table produced
 
 **Cross-phase:**
 - [ ] Cross-phase themes section written
@@ -980,8 +1009,9 @@ AskUserQuestion options:
 **Option handling:**
 - A: mark APPROVED, write review logs, suggest /ship
 - B: ask which overrides, apply, re-present gate
+- B2: walk the User Challenges one at a time (accept or reject each). Rejected → note the user's direction stands, no plan change. Accepted → amend the plan for that challenge (a clearly-wrong premise accepted here reshapes scope the way a mid-run stop used to), then re-run Eng on the amended plan (same rule as D — the gate always reviews the final plan), then re-present the gate. Counts toward the same 3-cycle cap as D.
 - C: answer freeform, re-present gate
-- D: make changes, re-run affected phases (scope→1B, design→2, test plan→3, arch→3). Max 3 cycles.
+- D: make changes, re-run affected phases (scope→1B, design→2, dx→2.5, test plan→3, arch→3; a re-run of any earlier phase re-runs Eng after it — the gate always reviews the final plan). Max 3 cycles.
 - E: start over
 
 ---
@@ -1006,7 +1036,7 @@ If Phase 2 ran (UI scope):
 ~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-design-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
 ```
 
-If Phase 3.5 ran (DX scope):
+If Phase 2.5 ran (DX scope):
 ```bash
 ~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-devex-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","initial_score":N,"overall_score":N,"product_type":"TYPE","tthw_current":"TTHW","tthw_target":"TARGET","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
 ```
@@ -1023,7 +1053,7 @@ If Phase 2 ran (UI scope), also log:
 ~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"design","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
 ```
 
-If Phase 3.5 ran (DX scope), also log:
+If Phase 2.5 ran (DX scope), also log:
 ```bash
 ~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"autoplan-voices","timestamp":"'"$TIMESTAMP"'","status":"STATUS","source":"SOURCE","phase":"dx","via":"autoplan","consensus_confirmed":N,"consensus_disagree":N,"commit":"'"$COMMIT"'"}'
 ```
@@ -1038,8 +1068,8 @@ Suggest next step: `/ship` when ready to create the PR.
 ## Important Rules
 
 - **Never abort.** The user chose /autoplan. Respect that choice. Surface all taste decisions, never redirect to interactive review.
-- **Two gates.** The non-auto-decided AskUserQuestions are: (1) premise confirmation in Phase 1, and (2) User Challenges — when both models agree the user's stated direction should change. Everything else is auto-decided using the 6 principles.
+- **One gate.** The only non-auto-decided AskUserQuestions surface at the Final Approval Gate: User Challenges — including clearly-wrong premises queued from Phase 1. Everything else resolves to the recommended option (the 6 principles break ties), so the pipeline never stops mid-run.
 - **Log every decision.** No silent auto-decisions. Every choice gets a row in the audit trail.
 - **Full depth means full depth.** Do not compress or skip sections from the loaded skill files (except the skip list in Phase 0). "Full depth" means: read the code the section asks you to read, produce the outputs the section requires, identify every issue, and decide each one. A one-sentence summary of a section is not "full depth" — it is a skip. If you catch yourself writing fewer than 3 sentences for any review section, you are likely compressing.
 - **Artifacts are deliverables.** Test plan artifact, failure modes registry, error/rescue table, ASCII diagrams — these must exist on disk or in the plan file when the review completes. If they don't exist, the review is incomplete.
-- **Sequential order.** CEO → Design → Eng → DX. Each phase builds on the last.
+- **Sequential order.** CEO → Design (if UI scope) → DX (if developer-facing scope) → Eng, always last. Each phase builds on the last; the required gate reviews the final amended plan.

@@ -94,7 +94,7 @@ If `SKILL_PREFIX` is `"true"`, suggest/invoke `/gstack-*` names. Disk paths stay
 
 Branch on the skill-start STATUS lines, in this order:
 
-1. **`CONDUCTOR_SESSION: true` echoed** → do NOT call AskUserQuestion at all (neither native nor any `mcp__*__AskUserQuestion` variant): render EVERY decision brief as the **prose form** below and STOP. Proactive, not a failure reaction — Conductor disables native AUQ and its MCP variant is flaky (`[Tool result missing due to internal error]`). **Auto-decide preferences still apply first:** a surfaced `[plan-tune auto-decide] <id> → <option>` result means proceed with that option, no prose — enforced HERE since no tool call ever happens. Capture each Conductor prose brief with `bin/gstack-question-log` (the PostToolUse hook never fires on a prose path; `/plan-tune` learning depends on it).
+1. **`CONDUCTOR_SESSION: true` echoed** → do NOT call AskUserQuestion at all (neither native nor any `mcp__*__AskUserQuestion` variant): render EVERY decision brief as the **prose form** below and STOP. Proactive, not a failure reaction — Conductor disables native AUQ and its MCP variant is flaky (`[Tool result missing due to internal error]`). **Auto-decide preferences still apply first** (failure-fallback item 1 below): proceed with a surfaced auto-decide option, no prose — enforced HERE since no tool call ever happens. Capture each Conductor prose brief with `bin/gstack-question-log` (the PostToolUse hook never fires on a prose path; `/plan-tune` learning depends on it).
 2. **Any `mcp__*__AskUserQuestion` variant in your tool list** → prefer it (hosts may disable native via `--disallowedTools`; calling native there silently fails). Same shape, same decision-brief format.
 3. **Unavailable (no variant) OR a call fails** → do NOT silently auto-decide or write the decision to the plan file as a substitute; follow the **failure fallback** below.
 
@@ -103,7 +103,7 @@ Branch on the skill-start STATUS lines, in this order:
 Tell three outcomes apart:
 
 1. **Auto-decide denial (NOT a failure).** The result contains `[plan-tune auto-decide] <id> → <option>` — the preference hook working as designed. Proceed with that option. Do NOT retry, do NOT fall back to prose.
-2. **Genuine failure** — no variant in your tool list, OR the variant is present but the call returns an error / missing result (MCP transport error, empty result, host bug — e.g. Conductor's MCP AskUserQuestion is flaky and returns `[Tool result missing due to internal error]`).
+2. **Genuine failure** — no variant in your tool list, OR the variant is present but the call returns an error / missing result (MCP transport error, empty result, host bug — e.g. Conductor's flaky MCP variant, see Tool resolution above).
    - If it was present and **errored** (not absent), retry the SAME call **once** — but only if no answer could have surfaced (a missing-result error can arrive after the user already saw the question; retrying would double-prompt, so if it may have reached them, treat as pending, don't retry).
    - Then branch on `SESSION_KIND` (echoed by the preamble; empty/absent ⇒ `interactive`):
      - `spawned` → defer to the **Spawned session** block: auto-choose the recommended option. Never prose, never BLOCKED.
@@ -113,8 +113,8 @@ Tell three outcomes apart:
 **Prose fallback — render the decision brief as a markdown message, not a tool call.** Same information as the tool format below, different structure (paragraphs, not ✅/❌ bullets). It MUST surface this triad:
 
 1. **A clear ELI10 of the issue itself** — plain English on what's being decided and why it matters (the question, not per-choice), naming the stakes. Lead with it.
-2. **Completeness scores per choice** — explicit `Completeness: X/10` on EACH choice (10 complete, 7 happy-path, 3 shortcut); use the kind-note when options differ in kind not coverage, but never silently drop the score.
-3. **The recommendation and why** — a `Recommendation: <choice> because <reason>` line plus the `(recommended)` marker on that choice.
+2. **Completeness scores per choice** — explicit on EACH choice, per the Completeness rule in the Format section below; never silently drop the score.
+3. **The recommendation and why** — the `Recommendation: <choice> because <reason>` line plus the `(recommended)` marker on that choice.
 
 Layout: a `D<N>` title + a one-line note to reply with a letter (in Conductor this is the normal path; elsewhere it means AskUserQuestion was unavailable or errored); the issue ELI10; the Recommendation line; then ONE paragraph per choice carrying its `(recommended)` marker, its `Completeness: X/10`, and 2-4 sentences of reasoning — never a bare bullet list; a closing `Net:` line. Split chains / 5+ options: one prose block per per-option call, in sequence. Then STOP and wait — the user's typed answer is the decision. In plan mode this satisfies end-of-turn like a tool call.
 
@@ -148,6 +148,8 @@ D-numbering: first question in a skill invocation is `D1`; increment yourself. T
 ELI10 is always present, in plain English, not function names. Recommendation is ALWAYS present. Keep the `(recommended)` label; AUTO_DECIDE depends on it.
 
 Completeness: use `Completeness: N/10` only when options differ in coverage. 10 = complete, 7 = happy path, 3 = shortcut. If options differ in kind, write: `Note: options differ in kind, not coverage — no completeness score.`
+
+Accepted shortcuts leave a trail: when the user selects an option that is BOTH Completeness ≤ 7 AND a durable-scope call (architecture or scope-cut — never a turn-level choice), log it via `gstack-decision-log` with the ceiling and the upgrade trigger in the rationale, and — as part of implementing that option, same edit, no follow-up question — mark each cut corner in code with `gstack-shortcut(dec-<id>): <ceiling>, upgrade when <trigger>` in the language's comment syntax. Never agent-initiated: the marker exists only downstream of the user's explicit choice. /retro harvests these into a debt ledger, joined on the decision id.
 
 Pros / cons: use ✅ and ❌. Minimum 2 pros and 1 con per option when the choice is real; Minimum 40 characters per bullet. Hard-stop escape for one-way/destructive confirmations: `✅ No cons — this is a hard-stop choice`.
 
@@ -191,7 +193,7 @@ Before calling AskUserQuestion, verify:
 - [ ] (recommended) label on one option (even for neutral-posture)
 - [ ] Dual-scale effort labels on effort-bearing options (human / CC)
 - [ ] Net line closes the decision
-- [ ] You are calling the tool, not writing prose — unless `CONDUCTOR_SESSION: true` (then prose is the DEFAULT, not the tool) OR the documented failure fallback applies (then: prose with the mandatory triad — issue ELI10, per-choice Completeness, Recommendation + `(recommended)` — and a "reply with a letter" instruction, then STOP)
+- [ ] You are calling the tool, not writing prose — unless `CONDUCTOR_SESSION: true` (then prose is the DEFAULT, not the tool) OR the documented failure fallback applies (then: the prose fallback's mandatory triad + a "reply with a letter" instruction, then STOP)
 - [ ] Non-ASCII characters (CJK / accents) written directly, NOT \u-escaped
 - [ ] If you had 5+ options, you split (or batched into ≤4-groups) — did NOT drop any
 - [ ] If you split, you checked dependencies between options before firing the chain
@@ -242,6 +244,11 @@ GStack voice: Garry-shaped product and engineering judgment, compressed for runt
 
 Good: "auth.ts:47 returns undefined when the session cookie expires. Users hit a white screen. Fix: add a null check and redirect to /login. Two lines."
 Bad: "I've identified a potential issue in the authentication flow that may cause problems under certain conditions."
+
+**Bounded closer.** After completing work, report in at most a few short lines: what changed, what was skipped, what to watch. No feature tours, no unrequested design notes. If the explanation outgrows the change, cut the explanation. Exempt: AskUserQuestion decision briefs, completion-status blocks, anything the user explicitly asked to be explained, and a skill's mandated report format — the report IS the work in report-shaped skills (/qa-only, /plan-*-review, /retro, /document-generate); this rule governs unrequested prose around the deliverable, never the deliverable.
+
+Good closer: "Renamed the flag in 3 files, regenerated docs, tests green. Skipped the CLI alias (unused since v1.2); watch the Windows job."
+Bad closer: a tour of every edit, a restatement of the plan, and three paragraphs justifying choices nobody questioned.
 
 ## Context Recovery
 
@@ -777,6 +784,37 @@ If the time window is 14 days or more, use the `WEEK:` lines (w0 = the week cont
 `TEAM_STREAK` and `USER_STREAK` count consecutive days with at least 1 commit (full history, no cutoff), anchored at the **newest commit date** — not at today, because the script never trusts the system clock. Interpret against today from the session reminder:
 - If the anchor date is today or yesterday, the streak is live: "Team shipping streak: 47 consecutive days" / "Your shipping streak: 32 consecutive days"
 - If the anchor is older, the streak is broken: report 0 days and note the last shipping day.
+
+### Step 11.5: Shortcut Debt Ledger
+
+Harvest deliberate `gstack-shortcut(...)` markers — the trail left when the user
+accepted a Completeness ≤ 7 option (see the AskUserQuestion Format section). Zero
+matches is the healthy case, not a failure:
+
+```bash
+grep -rn "gstack-shortcut(" . \
+  --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=vendor \
+  --exclude-dir=.claude --exclude-dir=dist \
+  --exclude="SKILL.md" --exclude="*.md.tmpl" 2>/dev/null \
+  | grep -vE "gstack-shortcut\(dec-(<|\*)" || true
+```
+
+(The exclusions keep docs that merely document the convention — generated
+SKILL.md, templates, skill installs — out of the ledger, and the trailing
+filter drops placeholder forms like `dec-<id>` / `dec-*` that documentation
+uses. Judgment call on what survives: discard any hit that quotes or tests
+the convention itself — a sample marker in a checklist, resolver source, or
+convention test — rather than marking a real cut corner in this repo's code.)
+
+For each hit, one ledger row: `<file>:<line>, <what was simplified>. ceiling: <X>. upgrade: <Y>.`
+- Markers carry a decision id (`dec-<id>`): join against `gstack-decision-search`
+  output — the ledger entry is the source of truth; never double-count a marker
+  against its resurfaced decision.
+- Markers WITHOUT an id: tag `unlinked`.
+- Markers naming no upgrade trigger: tag `no-trigger` — those are the ones that
+  silently rot.
+
+End the section with: `N markers, M with no trigger.` If none: `No shortcut debt. Clean ledger.`
 
 ### Step 12: Load History & Compare
 

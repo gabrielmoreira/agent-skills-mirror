@@ -1,7 +1,7 @@
 ---
 name: transcript-fixer
 description: >-
-  Corrects speech-to-text transcription errors using dictionary rules and Claude's built-in AI (no external API key required — Native AI Correction is the DEFAULT). Stage 1 alone is not the job. Stage 3 API is a backup for automation without Claude Code. Builds personalized correction databases that learn from each fix, auto-loads person-name ASR variants from your people roster, and reads per-domain context files that prime the AI pass for context-dependent homophones. Triggers when working with ASR/STT output containing recognition errors, homophones, garbled technical terms, person-name errors, or Chinese/English mixed content. Also triggers on requests to clean up meeting notes, lecture transcripts, interview recordings, or any text produced by speech recognition. Use this skill even when the user just says "fix this transcript", "clean up these meeting notes", or mentions garbled names without invoking ASR specifically.
+  Corrects speech-to-text transcription errors with dictionary rules and Claude's built-in AI (no external API key required); Native AI Correction is the default, Stage 1 alone is incomplete, and Stage 3 API is only for automation without Claude Code. Builds personalized correction databases, loads person-name ASR variants from the configured global people roster, and reads per-domain contexts for homophones. Before correcting a person name, the agent must consult both the global roster and the owning project's identity roster; project rosters are not auto-loaded, and occurrence frequency is never identity evidence. Use for ASR/STT output with recognition errors, homophones, garbled technical terms, person-name errors, or mixed Chinese/English, and for cleaning meeting notes, lecture transcripts, interviews, or any speech-recognition text—even when the user only says “fix this transcript,” “clean up these meeting notes,” or mentions a garbled name.
 ---
 
 # Transcript Fixer
@@ -20,7 +20,9 @@ Use a two-phase loop:
 - In Claude Code or Codex, do not run Stage 3. Use Stage 1 plus the native workflow.
 - Never rewrite speech for fluency. A correction must explain a plausible ASR error and preserve who said what.
 - Never infer or reassign speaker identities. Preserve speaker-label lines; human-confirmed labels and user verdicts are authoritative.
+- Before correcting any person name, directly read both the configured global people roster and the owning project's explicit identity roster or alias ledger. Stage 1 auto-loads only global `ASR 变体` entries; it does not load project rosters or expose suppressed, disabled, and unlisted entries. If an expected source is missing or the sources conflict, leave the name unchanged and enqueue or ask once. Never use occurrence frequency as identity evidence. Read [references/dictionary_identity_and_context.md](references/dictionary_identity_and_context.md) before settling the name.
 - Leave unresolved text unchanged and enqueue it. A visible garble is safer than a fluent wrong guess.
+- Treat an unfamiliar token as unknown, not as an error. Exhaust the local evidence ladder first. For a load-bearing token that remains unresolved, use the clip-level cross-recognizer rung only when source audio and a permitted second engine are already available; otherwise enqueue or ask. Agreement from a genuinely different recognizer family strongly corroborates the sound, but never chooses between homophonic spellings or overrides the person-name gate. Read native workflow step 4, rung 7 before using it.
 - Treat a single-line `asr_note` value as correction provenance: it intentionally cites old forms and is excluded from matching. Multi-line YAML ledger values are not masked; keywords, titles, other ASR-derived metadata, and body text remain in correction scope.
 - Read [references/native_ai_full_workflow.md](references/native_ai_full_workflow.md) in full before performing a native pass. Read the task-specific references named below before their corresponding action.
 
@@ -232,6 +234,7 @@ Read [references/advanced_correction_evidence.md](references/advanced_correction
 
 - A number, bound, price, share, deadline, or magnitude drives a decision.
 - Two recordings exist for one meeting.
+- A load-bearing name or term survived the local ladder unresolved, source audio is available, and the current authorization already permits a second recognizer.
 - A whiteboard, slide, or photographed written artifact can independently settle a name/term.
 - Several related files should share one correction list.
 - A 10+ file batch is being delegated.
@@ -317,7 +320,7 @@ All references are one level from this file.
 | Dictionary, people roster, domain contexts | [dictionary_identity_and_context.md](references/dictionary_identity_and_context.md) |
 | False-positive policy | [false_positive_guide.md](references/false_positive_guide.md) |
 | Queue, dashboard, audio, re-anchor | [review_queue_dashboard.md](references/review_queue_dashboard.md) |
-| Numbers, photos, multi-recording, batches | [advanced_correction_evidence.md](references/advanced_correction_evidence.md) |
+| Numbers, photos, multi-recording, clip cross-check, batches | [advanced_correction_evidence.md](references/advanced_correction_evidence.md) |
 | Context-file grammar/template | [domain_context_guide.md](references/domain_context_guide.md) |
 | CLI flags and review-item schema | [script_parameters.md](references/script_parameters.md) |
 | Database schema and queries | [database_schema.md](references/database_schema.md), [sql_queries.md](references/sql_queries.md) |

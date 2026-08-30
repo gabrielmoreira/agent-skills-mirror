@@ -48,11 +48,15 @@ variants to force all tests. Run `eval:select` to preview which tests would run.
 
 **Two-tier system:** Tests are classified as `gate` or `periodic` in `E2E_TIERS`
 (in `test/helpers/touchfiles.ts` — a facade over `touchfiles-data.ts` +
-`test-selection.ts`). CI runs only gate tests (`EVALS_TIER=gate`); the free
+`test-selection.ts`). CI runs gate tests per PR via evals.yml's sliced lane
+(planner manifest → executors → fail-closed report; engine =
+scripts/test-paid-shards.ts, the same runner as local eval:bg:gate); the free
 suite runs on every PR via `.github/workflows/free-tests.yml` (a REQUIRED
-check, secretless — fork PRs get real signal);
-periodic tests run weekly via cron or manually. Use `EVALS_TIER=gate` or
-`EVALS_TIER=periodic` to filter. When adding new E2E tests, classify them:
+check, secretless — fork PRs get real signal); ALL periodic tests run weekly
+via evals-periodic.yml (EVALS_ALL, minus the reasoned exclusions in
+`test/helpers/periodic-exclude-data.ts` — reason + tracking required per
+entry), plus a weekly EVALS_ALL gate census. Use `EVALS_TIER=gate` or
+`EVALS_TIER=periodic` to filter locally. When adding new E2E tests, classify them:
 1. Safety guardrail or deterministic functional test? -> `gate`
 2. Quality benchmark, Opus model test, or non-deterministic? -> `periodic`
 3. Requires external service (Codex, Gemini)? -> `periodic`
@@ -71,11 +75,16 @@ bun run test:evals   # run before shipping — paid, diff-based (~$4.35/run max)
 ```
 
 `bun run test` routes through `scripts/test-free-shards.ts` (N concurrent
-shard processes, serial within each, plus a trailing serial tree-mutating
-shard — with strict-output classification per shard: a shard without bun's
-terminal summary line FAILS — silent truncation
-cannot report green). Never type bare `bun test` for the suite: it walks the
-whole repo, loading paid eval files and missing the strict classifier.
+shard processes, serial within each, packed by recorded per-file durations
+when `scripts/free-test-durations.json` exists — refresh occasionally with
+`bun run test:free --record-durations`; strict-output classification per
+shard: a shard without bun's terminal summary line FAILS — silent truncation
+cannot report green). The former trailing serial tree-mutating shard is
+gone: `TREE_MUTATING` is empty (gen-skill-docs has a main() guard and
+`--out-dir` renders every host, so tests render into mkdtemps — see
+docs/TESTING_INTERNALS.md). Never type bare `bun test` for the suite: it
+walks the whole repo, loading paid eval files and missing the strict
+classifier.
 It covers skill validation, gen-skill-docs quality checks, and browse
 integration tests. `bun run test:evals` runs LLM-judge quality evals and E2E
 tests via `claude -p`. Both must pass before creating a PR.
@@ -634,7 +643,7 @@ the run can also die to idle-sleep. `gstack-detach` fixes both: a fresh session
   (stray `claude`/`codex` grandchildren included), a per-shard
   `GSTACK_EVAL_DIR=<evalDir>/shards/<slug>/` honored by the `EvalCollector`
   constructor, and an aggregate that separates failed vs timed-out vs
-  never-started shards — the detach timeouts (25200s gate / 36000s periodic;
+  never-started shards — the detach timeouts (25200s gate / 37800s periodic;
   floor enforced against the live shard census by
   test/eval-detach-timeout-floor.test.ts)
   are sized against worst-case shard wall clock. `EVALS_JOBS` sets the shard

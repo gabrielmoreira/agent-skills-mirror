@@ -71,6 +71,7 @@ SKILL_ROOT="$(d="$(cd -P "${CLAUDE_SKILL_DIR}" && pwd)"; \
 
 1. cwd 기준 `_workspace/{run_id}/` 생성
 2. 입력 텍스트를 `01_input.txt`에 저장
+   - **챗봇 잔재 위생 (v2.6)**: 저장 전에 챗봇 프레임 문장이 섞여 있으면 벗겨낸다 — 머리("물론입니다!", "다음은 ~입니다:", "요청하신 내용을 정리하면"), 꼬리("도움이 되셨길 바랍니다", "추가 질문이 있으시면"), 지식 한계 면책("제 지식은 ~까지입니다"). 실사용자는 챗봇 출력을 그대로 붙여넣는 일이 많고, 이 문장들은 본문이 아니므로 제거해도 의미 손실이 0이다. 본문 안에 자연스럽게 녹아 있는 유사 표현은 건드리지 않는다.
 3. 첫 300자로 장르 자동 추정 (사용자 명시 시 우선)
 4. 사전 처리 shim을 Bash로 1회 실행:
    ```
@@ -173,7 +174,22 @@ python3 ${SKILL_ROOT}/scripts/restore_modality.py \
     --before _workspace/{run_id}/01_input.txt \
     --after  _workspace/{run_id}/final.md \
     --out    _workspace/{run_id}/final.md
+python3 ${SKILL_ROOT}/scripts/strip_injected_commas.py \
+    --before _workspace/{run_id}/01_input.txt \
+    --after  _workspace/{run_id}/final.md \
+    --out    _workspace/{run_id}/final.md
 ```
+
+두 번째 명령은 **C-11 역주입 제거** — 윤문이 새로 쓴 문장에서만 연결어미 뒤
+쉼표를 걷어낸다(원문에 있던 문장은 불가침 — 필자 쉼표 보호). light 실측에서
+윤문 후 연결어미 쉼표가 원문보다 늘어난 문서가 16/28이었다. LLM 콜 0회.
+
+**`--all` 격상 (standard·heavy 한정)**: `02_diagnosis.md`가 C-11(연결어미 뒤
+쉼표)을 탐지 티로 지목한 경우에만 두 번째 명령에 `--all`을 붙인다 — 전 문장
+(따옴표 안 제외)에서 제거해 원문에 실려 온 주입 쉼표(잔존분)까지 걷어낸다.
+근거: 사람 532편 실측에서 연결어미 쉼표는 사람 중앙값이 문장의 15%라
+**밀도만으로는 사람/주입을 못 가른다** — 그래서 격상 조건은 밀도 임계가
+아니라 경로+진단 판정이다. 진단이 없는 light 경로에서는 절대 쓰지 않는다.
 
 - **왜 필요한가**: 규칙(A-10·G-1)을 보존 쪽으로 고쳐도 프롬프트는 확률적이라 계속 샌다.
   스킬을 실제로 돌린 A/B에서 규칙 양쪽 버전 모두 "낮은 것으로 판단된다" → "낮은 수치다"

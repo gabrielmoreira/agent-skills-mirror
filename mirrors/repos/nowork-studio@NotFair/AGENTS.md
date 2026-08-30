@@ -98,7 +98,7 @@ Skills under `seo/`, `paid-ads/`, `google-ads/`, `meta-ads/`, `analytics/`, `gem
 
 ## External dependencies
 
-- **Universal NotFair MCP** — `https://notfair.co/api/mcp/notfair_ads`, OAuth. The plugin registers this single connection for Google Ads, Meta Ads, X Ads, LinkedIn Ads, Google Search Console, and Google Analytics. Its tools carry platform prefixes such as `google_ads_`, `meta_ads_`, and `search_console_`; verify the requested platform is connected before claiming live access.
+- **Universal NotFair MCP** — `https://notfair.co/api/mcp/notfair`, OAuth. The plugin registers this single connection for Google Ads, Meta Ads, X Ads, LinkedIn Ads, Google Search Console, Google Analytics, and GoHighLevel. Its tools carry platform prefixes such as `google_ads_`, `meta_ads_`, and `search_console_`; verify the requested platform is connected before claiming live access.
 - **Platform connections** — each live skill still requires its corresponding account or property to be connected inside the selected NotFair workspace. A universal MCP session does not imply that every platform is connected.
 - **Google Gemini API key** — required for `gemini`.
 

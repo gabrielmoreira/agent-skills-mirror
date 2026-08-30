@@ -34,8 +34,10 @@ Do not invoke Autoreview automatically before a commit, push, PR, merge, deploy,
 - Security perspective is always included, but it should not cripple legitimate functionality. Report security findings only when the change creates a concrete, actionable risk or removes an important safety check.
 - Reviewer subprocesses preserve engine authentication and non-credentialed proxy variables needed by headless or restricted-network environments while stripping process-injection, Git override, and credentialed proxy values.
 - Immediately before every provider call, autoreview writes the exact outgoing review pack to an owner-only temporary file and scans it with TruffleHog using `verified,unknown`. It uses the installed binary with `--no-update` to disable self-update checks and attempts. The scan covers prompt and dataset inputs, untracked content, and every diff line, including deleted lines. A finding, scanner error, or missing TruffleHog binary refuses the send and names the implicated repository file when it can be resolved; credentials are never redacted and forwarded. Security-sensitive paths remain omitted. Safe large diffs are sent as one pass while they fit the aggregate prompt limit, then partitioned into complete bounded passes without truncation.
-- For regression provenance, keep roles separate: blamed code author, blamed PR author, PR merger/committer, current PR author, and PR/date. If no blamed PR is traceable, use the blamed commit as the provenance: commit SHA, date, and author username. Do not guess a merger or frame missing PR metadata as a separate finding.
-- If the blamed PR was merged by `clawsweeper[bot]` or another automation, identify the human trigger when practical. Check timeline/comments first; if rate-limited, use gitcrawl/cache or public PR HTML. Look for maintainer commands such as `@clawsweeper automerge`, `/landpr`, or labels/status comments that armed automerge. Report `automerge triggered by @login`; if not found, say trigger unknown.
+- Regression provenance needs patch proof, not blame alone. `git log -S/-G`, `git blame`, commit subjects, and PR metadata locate candidates. Before saying `introduced by`, inspect raw parents with `git --no-replace-objects cat-file -p <sha>` and verify the implicated behavior changed in `git --no-replace-objects diff --no-ext-diff --no-textconv <raw-parent> <sha> -- <path>`; a genuine root needs raw-header proof that it has no parents.
+- Blame `^sha`, porcelain `boundary`, and shallow/grafted history alone are not introduction proof. `--root` can hide boundary markers; `git show` or `rev-list --parents` can make a shallow boundary look like a root. An available raw parent permits explicit comparison even at a shallow boundary; missing parents or an unverifiable patch require `unknown` with the gap. Use `carried forward` only for verified preexisting behavior and `made visible` only for a verified trigger. Apply the same bar to finding prose, summaries, and owner hints.
+- Keep code author, introducing PR author, merger, committer, automation trigger, and current PR author separate; none of those roles alone proves causation. Cite the verified commit/PR/date. If no PR is traceable, use the verified commit and known author identity; unknown identities stay unknown, and missing PR metadata is not a separate finding.
+- For automation merges, identify the human trigger only from explicit timeline/comment/event evidence, such as a maintainer automerge command or arming label. Report `automerge triggered by @login` only when verified; otherwise say trigger unknown. Triggering or merging is not proof of authorship or introduction.
 - Do not invoke built-in `codex review`, nested reviewers, or review panels from inside the review. The helper builds one validated bundle, calls the selected engine once for normal inputs or once per complete bounded chunk for oversized inputs, validates the structured results, and stops.
 - Stop as soon as the helper exits 0 with no accepted/actionable findings. Do not run an extra review just to get a nicer "clean" line, a second opinion, or clearer closeout wording.
 - Treat `scoped-clean` with exit 0 as clean only for the selected Git target and requested priority. `filtered` is not a correctness certificate; `incomplete` requires resolving the scope mismatch or missing required finding before claiming clean.
@@ -182,7 +184,10 @@ Committed single change:
 Use commit review for already-landed or already-pushed work on `main`. Reviewing
 clean `main` against `origin/main` is usually an empty diff after push. For a
 small stack, review each commit explicitly or review the branch before merging
-with `--base`.
+with `--base`. Commit review compares the raw recorded parent with the selected
+commit, ignoring replacement refs and legacy grafts. A genuine root compares
+against the empty tree. Missing parent objects stop review: explicitly deepen/fetch the needed
+history and rerun. The helper does not fetch it automatically.
 
 ## Oversized Bundles
 
@@ -208,6 +213,22 @@ There is no fixed pass-count ceiling: the complete frozen input determines the
 finite pass sequence. The helper prints its size and pass count before running
 passes serially. Each pass retains the same prompt-size limit, secret scan, and
 reviewer isolation; a failed pass aborts without publishing a partial verdict.
+
+Preparation prints immediate phase updates and periodic elapsed time to stderr,
+with file/byte counts during hashing and no filenames or contents. These updates
+are separate from provider heartbeats and do not count against engine deadlines.
+Bundle construction captures finding membership alongside validated text; normal
+and dry runs reuse that record without reopening untracked files for membership.
+
+Dry runs reuse capture and scanning without whole-tree integrity sweeps. Real
+reviews retain full fresh tree hashing before bundle construction, before review,
+and before publication, including unrelated tracked files, nonignored untracked files, index
+state, and initialized submodules. Explicit prompt files and datasets also retain
+their own frozen bytes and raw path identities, regardless of Git ignore status
+or finding scope. They are revalidated before sending each pass and before
+publication; content changes, replacements, and leaf or ancestor symlink swaps
+refuse stale results. These endpoint checks are not atomic filesystem snapshots
+and cannot guarantee detection of transient changes restored between checks.
 
 Evidence batches can multiply the pass count. Chunking cannot give one model
 call every cross-file implementation detail. For architecture-heavy changes, still prefer
@@ -356,7 +377,7 @@ The helper:
 - use `--mode commit --commit <ref>` for already-committed work, especially clean `main` after landing
 - validates complete Git patches, scans every outgoing review pack, reviews them in one pass up to the aggregate prompt limit, and automatically uses complete bounded passes above it
 - uses branch mode for committed-only PR work, or explicit local mode with a pinned merge base for a complete PR plus dirty candidate
-- writes only to stdout unless `--output`, `--json-output`, or live streamed engine stderr is set
+- writes reports to stdout and optionally to `--output` or `--json-output` files; preparation progress and provider heartbeats use stderr
 - supports `--dry-run` (validates bundle construction, reviewer CLI resolution, and local isolation startup with version/help probes without contacting a provider; exits nonzero if any check fails), an opt-in per-reviewer wall-clock bound via `--engine-timeout-seconds`, `--prompt`, repo-relative `--prompt-file`, repo-relative `--dataset`, `--no-tools`, `--no-web-search`, repeatable Codex-only safe model/response tuning with `--codex-config key=value`, Codex-only `--codex-speed fast|flex|default`, and commit refs
 - supports `--stream-engine-output` or `AUTOREVIEW_STREAM_ENGINE_OUTPUT=1` for live engine text while preserving structured validation; Codex and Claude hide tool/file event details, emit compact activity summaries, and report usage at turn completion
 - supports per-engine `--model`, `--thinking`, and Claude `--fallback-model`

@@ -102,6 +102,7 @@ The database has 18 tables, all prefixed with `remote_agent_`:
    - Stores workflow state, step progress, and parent conversation linkage
    - Nullable `user_id` records which user triggered the run
    - Nullable `parent_run_id` (#2121 Phase 2) — self-referential FK (`ON DELETE SET NULL`) linking a `workflow:` sub-run to the run that spawned it; null for top-level runs. Makes the run tree walkable (`findChildRuns`/`getRunAncestry`) for the abandon cascade and cost roll-up.
+   - `conversation_id` cascades on conversation delete: a hard `DELETE` of a conversation would erase its run rows and silently drop the live-run cleanup pin for their isolation environments (#2868). Soft delete is the only supported path — a future hard-delete must resolve live runs first.
 
 6. **`remote_agent_workflow_events`** - Step-level workflow event log
    - Records step transitions, artifacts, and errors per workflow run
@@ -135,6 +136,7 @@ The database has 18 tables, all prefixed with `remote_agent_`:
 11. **`remote_agent_workflow_node_sessions`** - Per-node provider session IDs persisted across workflow re-runs
     - Opt-in via `persist_session`; keyed by `(workflow_name, node_id, scope_key, provider)`
     - `scope_key` is typically the conversation UUID
+    - No FK on `scope_key`, so a conversation delete does not cascade here. Soft delete plus a never-reused UUID makes the leftovers harmless; a future hard-delete must delete by `scope_key` itself — the mirror of the cascade caveat on `remote_agent_workflow_runs` above.
 
 12. **`remote_agent_user_github_tokens`** - Per-user GitHub device-flow tokens
     - Encrypted at rest (AES-256-GCM); one row per Archon user (`UNIQUE(user_id)`), cascades on user deletion

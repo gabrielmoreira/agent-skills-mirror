@@ -63,20 +63,22 @@ Behavior evaluation is risk-scaled by `daymade-skill:skill-creator`: bounded fix
 
 Treat `daymade-skill/skill-creator/scripts/packaging_policy.py` as the shipping-policy SSOT. Add or remove shipping exclusions only there, require every consumer to import it, and do not copy its directory list into documentation or consumer-specific filters.
 
+Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
+
 ```bash
 # Quick validation of a skill
-cd daymade-skill/skill-creator && uv run --with PyYAML python -m scripts.quick_validate ../skill-name
+cd daymade-skill/skill-creator && uv run --frozen python -m scripts.quick_validate ../skill-name
 
 # Existing-skill old-vs-new audit (use git-ref:<ref> for a Git-reconstructed baseline)
-cd daymade-skill/skill-creator && uv run --with PyYAML python -m scripts.audit_skill_regression snapshot --source ../skill-name --output <old-bundle>
-cd daymade-skill/skill-creator && uv run --with PyYAML python -m scripts.audit_skill_regression compare --before <old-bundle> --after ../skill-name --output <review.json> --baseline-origin pre-edit-snapshot
-cd daymade-skill/skill-creator && uv run --with PyYAML python -m scripts.audit_skill_regression verify --before <old-bundle> --after ../skill-name --review <review.json>
+cd daymade-skill/skill-creator && uv run --frozen python -m scripts.audit_skill_regression snapshot --source ../skill-name --output <old-bundle>
+cd daymade-skill/skill-creator && uv run --frozen python -m scripts.audit_skill_regression compare --before <old-bundle> --after ../skill-name --output <review.json> --baseline-origin pre-edit-snapshot
+cd daymade-skill/skill-creator && uv run --frozen python -m scripts.audit_skill_regression verify --before <old-bundle> --after ../skill-name --review <review.json>
 
 # Package a skill (every existing skill requires the completed review; marker alone is insufficient)
-cd daymade-skill/skill-creator && uv run --with PyYAML python -m scripts.package_skill ../skill-name [output-dir] [--regression-review <review.json>]
+cd daymade-skill/skill-creator && uv run --frozen python -m scripts.package_skill ../skill-name [output-dir] [--regression-review <review.json>]
 
 # Initialize a new skill from template
-uv run python daymade-skill/skill-creator/scripts/init_skill.py <skill-name> --path <output-directory>
+cd daymade-skill/skill-creator && uv run --frozen python -m scripts.init_skill <skill-name> --path <output-directory>
 ```
 
 ### Automated Test Suites (CI)
@@ -126,6 +128,10 @@ legacy-compatibility surface. Change the manifest and run the bundled syncer—d
 not restore bulk links in either user root. Detailed topology and recovery rules
 remain in
 `daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`.
+The syncer's managed marketplace identities, conventional checkout candidates,
+and generated watch paths are owned by `sync-local-skill-sources.py`; derive them
+from its constants/functions and `--print-watch-paths` output instead of copying
+their current members or counts into `CLAUDE.md`, READMEs, or references.
 
 In Claude Code, use `/plugin ...` slash commands. In your terminal, use `claude plugin ...`.
 
@@ -179,6 +185,11 @@ change-authorized / inspect-only / excluded partition and the scoped-vs-exhausti
 do not copy its detailed commands here or treat a visible collaborator ref/worktree as a cleanup
 target merely because it appears in the inventory.
 
+For GitHub-hosted state — PRs, issues, Actions, repository or organization settings, permissions,
+and API/UI mutations — treat `github-ops/SKILL.md` as the canonical operating contract. A command
+receipt is not completion; use that Skill's operation-specific independent readback. Keep detailed
+GitHub SOPs there rather than copying them into this repository-level instruction file.
+
 **Closing a PR unmerged (declined, or superseded by another PR) → delete its head
 branch in the same action.** `gh pr merge --delete-branch` only covers merged PRs.
 ⚠️ Deleting the branch does NOT remove `refs/pull/<N>/head` — GitHub keeps serving
@@ -198,6 +209,16 @@ fix was written; the pull ref had to be moved via the reopen dance before deleti
 Squash-merged PRs rewrite commits under new SHAs, so every direct commit to
 local `main` guarantees divergence the moment its PR merges. Two rules keep
 `main` clean:
+
+`.githooks/pre-commit` and `.githooks/pre-push` dispatch to
+`scripts/git-mainline-guard.mjs`, which rejects direct local-main work and stale
+marketplace manifests or reused plugin versions against current main. The
+dispatchers preserve the shared PII guard when it is installed. Activate this
+repository **from the canonical primary main checkout** with
+`git config core.hooksPath "$(pwd -P)/.githooks"`. The absolute path matters:
+`core.hooksPath` is shared by linked worktrees, so a relative path would let a
+stale feature worktree select its own stale dispatcher. CI and the GitHub main
+ruleset independently require the same release checks on every PR.
 
 1. **Never commit directly to local `main`.** All work starts on a feature
    branch (`git checkout -b <topic>`), ships via PR, and lands by squash merge.
@@ -258,7 +279,7 @@ Skills for public distribution must NOT contain:
 4. **gitleaks** (`.gitleaks.toml`) — deep scan with custom rules for this repo
 5. **AI semantic read-through** (the gate the other four structurally cannot be) — layers 1-4 are keyword/regex/gitleaks: they only match patterns someone listed, and are blind to private content with **no keyword** — a real name in another language (gitleaks doesn't cover CJK), a verbatim line from a real transcript, a real example dropped into an illustration. Before publishing, **read the whole skill yourself and judge each concrete name/example/snippet semantically** ("generic placeholder / public entity, or lifted from a real project / person / transcript?"). A green scan is **not** a clean bill of health; "grep found nothing" only means your word list didn't fire. Method: [`daymade-skill/skill-creator/references/sanitization_checklist.md`](./daymade-skill/skill-creator/references/sanitization_checklist.md).
 
-PII Guard is enabled via `~/scripts/git-pii-guard/manage.sh enable <repo-path>`, which sets `core.hooksPath` to `~/scripts/git-pii-guard`.
+Most repositories enable PII Guard via `~/scripts/git-pii-guard/manage.sh enable <repo-path>`. This repository instead points `core.hooksPath` at the canonical primary checkout's absolute `.githooks` directory: its versioned dispatchers run the repository mainline guard and then delegate to the same shared PII guard when installed.
 For repo-specific additions:
 - `.pii-patterns` — extra content regexes
 - `.pii-path-patterns` — extra forbidden path regexes
@@ -378,8 +399,8 @@ For the full step-by-step guide with templates and examples, see [references/new
 # 1. Validate & package the skill itself
 SKILL_DIR="<repo-root>/<skill-directory>"
 cd <repo-root>/daymade-skill/skill-creator
-uv run --with PyYAML python -m scripts.security_scan "$SKILL_DIR" --verbose
-uv run --with PyYAML python -m scripts.package_skill "$SKILL_DIR" <output-dir>
+uv run --frozen python -m scripts.security_scan "$SKILL_DIR" --verbose
+uv run --frozen python -m scripts.package_skill "$SKILL_DIR" <output-dir>
 
 # 2. Update all files listed above (see references/new-skill-guide.md for the
 #    detailed step-by-step)

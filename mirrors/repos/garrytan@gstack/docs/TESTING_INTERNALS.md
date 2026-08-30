@@ -41,3 +41,73 @@ E2E tests stream progress in real-time (tool-by-tool via `--output-format stream
 fallback `~/.gstack-dev/evals/`) with auto-comparison
 against the previous finalized run (in-flight `_partial` files are never used as
 a baseline, so a run can't compare against itself).
+
+## Runners: how the suites execute (2026-08 overhaul)
+
+**Free suite (`bun run test:free`).** `scripts/test-free-shards.ts` runs N
+concurrent shard processes (serial within each) with strict-output
+classification per shard. Full-suite shards are packed by RECORDED PER-FILE
+DURATIONS (LPT, `packShardsByDuration`) when the committed seed
+`scripts/free-test-durations.json` exists — refresh it occasionally with
+`bun run test:free --record-durations` (each file timed in its own child;
+CI never records). Missing seed → silent hash-shard fallback; corrupt seed →
+one warning + fallback; unknown files get 75th-percentile pessimism. Packed
+shards get duration-aware walls (`max(base, predicted × 3)`); the `--shard`
+CI-matrix path keeps stable hash indices untouched. `TREE_MUTATING` is EMPTY:
+`gen-skill-docs.ts` has a `main()` guard (imports never regenerate; pinned by
+`test/gen-skill-docs-import-purity.test.ts`) and `--out-dir` renders every
+host, so all former mutators render into mkdtemps and the trailing serial
+shard is gone. The map remains a mechanism — a test that genuinely must write
+shared artifacts in place earns a reasoned entry and is serialized again.
+
+**Paid suite (sharded runner, local AND CI).** `scripts/test-paid-shards.ts`
+is the single selection engine: 1 file per shard, `EVALS_JOBS` shard
+processes × `EVALS_CONCURRENCY` within-shard, per-shard `GSTACK_EVAL_DIR`,
+full-stream spooling to per-shard log files (path printed at START and on
+failure), never-started/timed-out taxonomy, and parent-computed diff
+selection propagated to children via `EVALS_SELECTION_JSON` (fail-open: a
+child that can't parse it recomputes locally with one warning). Retry parity
+lives in `RETRY_OVERRIDES` (literals; old matrix rows' earned `retries: 2`).
+
+**CI planner/executor/report.** `--emit-plan <path> --slices K` computes
+selection + the slice plan ONCE (killing per-slice selector divergence);
+`--plan <path> --slice i` executors consume the manifest and write
+slice-result artifacts; `--report <dir>` reconciles them FAIL-CLOSED (a slice
+whose artifact never landed, or a planned shard nobody reported, is a
+failure). Under `EVALS_ALL` the hollow-shard guard marks exit-0 shards with
+ZERO executed tests `passed-empty` (a failure) — census-health, not just
+test runs. evals.yml runs the sliced gate lane per PR (parity phase:
+alongside the legacy matrix, `needs:`-sequenced so provider concurrency
+never doubles; the matrix and its `KNOWN_MATRIX_GAPS`/`KNOWN_TIER_UNSET`
+ratchets are deleted after demonstrated parity). evals-periodic.yml runs ALL
+periodic-tier files weekly (the coverage contract) minus the reasoned
+exclusions in `test/helpers/periodic-exclude-data.ts` (reason + tracking
+required per entry; removal re-activates the file), plus a weekly
+`EVALS_ALL` gate census, plus a tracking-issue UPSERT on red weeks.
+
+**Timeout policy.** Paid tests use the tiers in
+`test/helpers/eval-budgets.ts` (JUDGE/CAPTURE/CAPTURE_LONG/PTY/PTY_LONG);
+`test/eval-budgets-policy.test.ts` pins that every tier fits the shard wall
+minus overhead and ratchets raw literals. Budget above the wall is fiction.
+
+## Cloud sandboxes (Vercel / Conductor cloud workspaces)
+
+Syscall-supervised sandboxes need environment setup before `bun run test` can
+run green: run `scripts/sandbox-doctor.sh` once per boot. It documents and
+treats the full failure taxonomy (missing /dev/fd, 64M /dev/shm, spurious
+access(2) EACCES from the seccomp supervisor under load, full-capability
+processes defeating chmod-denial tests, no X server, no git identity, and
+Conductor's git-shim exit-code laundering). The doctor seeds `TMPDIR`,
+`DISPLAY`, and the runner knobs into `~/.bashrc`, so open a new shell (or
+`source ~/.bashrc`) before running the suite. Then:
+
+```bash
+setpriv --ambient-caps=-all --bounding-set=-all bun run test
+```
+
+Two runner knobs exist for these environments (both no-ops unless set):
+`GSTACK_FREE_JOBS` overrides the shard count in either direction (2 is the measured sweet spot — one
+serial mega-shard and 6-way sharding both saturate the per-process syscall
+supervisor), and `GSTACK_FREE_RETRY_FLAKY=1` re-runs attributed failures once
+serially, downgrading a clean retry to a loud FLAKY-PASS (capped at 5 files so
+a broken tree can't masquerade as flaky).

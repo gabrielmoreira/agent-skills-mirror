@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 25 file(s) materialized.
+Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 25 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,29 +65,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`ckpt/README.md`](ckpt/README.md) |
 | 2 | ✓ | [`data/README.md`](data/README.md) |
-| 3 | ✓ | [`docs/sleep/multi-skill-staging.md`](docs/sleep/multi-skill-staging.md) |
-| 4 | ✓ | [`docs/sleep/openai-compatible-endpoints.md`](docs/sleep/openai-compatible-endpoints.md) |
-| 5 | ✓ | [`docs/sleep/RESULTS.md`](docs/sleep/RESULTS.md) |
-| 6 | ✓ | [`plugins/claude-code/README.md`](plugins/claude-code/README.md) |
-| 7 | ✓ | [`plugins/claude-code/skills/skillopt-sleep/SKILL.md`](plugins/claude-code/skills/skillopt-sleep/SKILL.md) |
-| 8 | ✓ | [`plugins/codex/README.md`](plugins/codex/README.md) |
-| 9 | ✓ | [`plugins/codex/skills/skillopt-sleep/SKILL.md`](plugins/codex/skills/skillopt-sleep/SKILL.md) |
-| 10 | ✓ | [`plugins/copilot/README.md`](plugins/copilot/README.md) |
-| 11 | ✓ | [`plugins/copilot/skillopt/README.md`](plugins/copilot/skillopt/README.md) |
-| 12 | ✓ | [`plugins/cursor/README.md`](plugins/cursor/README.md) |
-| 13 | ✓ | [`plugins/cursor/skills/skillopt-sleep/SKILL.md`](plugins/cursor/skills/skillopt-sleep/SKILL.md) |
-| 14 | ✓ | [`plugins/devin/README.md`](plugins/devin/README.md) |
-| 15 | ✓ | [`plugins/dsh/README.md`](plugins/dsh/README.md) |
-| 16 | ✓ | [`plugins/dsh/skills/skillopt-sleep/SKILL.md`](plugins/dsh/skills/skillopt-sleep/SKILL.md) |
-| 17 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
-| 18 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
-| 19 | ✓ | [`plugins/README.md`](plugins/README.md) |
-| 20 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
-| 21 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 22 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
-| 23 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
-| 24 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
-| 25 | → | [`README.md`](README.md) |
+| 3 | ✓ | [`docs/sleep/evalkit.md`](docs/sleep/evalkit.md) |
+| 4 | ✓ | [`docs/sleep/multi-skill-staging.md`](docs/sleep/multi-skill-staging.md) |
+| 5 | ✓ | [`docs/sleep/openai-compatible-endpoints.md`](docs/sleep/openai-compatible-endpoints.md) |
+| 6 | ✓ | [`docs/sleep/RESULTS.md`](docs/sleep/RESULTS.md) |
+| 7 | ✓ | [`plugins/claude-code/README.md`](plugins/claude-code/README.md) |
+| 8 | ✓ | [`plugins/claude-code/skills/skillopt-sleep/SKILL.md`](plugins/claude-code/skills/skillopt-sleep/SKILL.md) |
+| 9 | ✓ | [`plugins/codex/README.md`](plugins/codex/README.md) |
+| 10 | ✓ | [`plugins/codex/skills/skillopt-sleep/SKILL.md`](plugins/codex/skills/skillopt-sleep/SKILL.md) |
+| 11 | ✓ | [`plugins/copilot/README.md`](plugins/copilot/README.md) |
+| 12 | ✓ | [`plugins/copilot/skillopt/README.md`](plugins/copilot/skillopt/README.md) |
+| 13 | ✓ | [`plugins/cursor/README.md`](plugins/cursor/README.md) |
+| 14 | ✓ | [`plugins/cursor/skills/skillopt-sleep/SKILL.md`](plugins/cursor/skills/skillopt-sleep/SKILL.md) |
+| 15 | ✓ | [`plugins/devin/README.md`](plugins/devin/README.md) |
+| 16 | ✓ | [`plugins/dsh/README.md`](plugins/dsh/README.md) |
+| 17 | ✓ | [`plugins/dsh/skills/skillopt-sleep/SKILL.md`](plugins/dsh/skills/skillopt-sleep/SKILL.md) |
+| 18 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
+| 19 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
+| 20 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 21 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
+| 22 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 23 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
+| 24 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
+| 25 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
+| 26 | → | [`README.md`](README.md) |
 
 ---
 

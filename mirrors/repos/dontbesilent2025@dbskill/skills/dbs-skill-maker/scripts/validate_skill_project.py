@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 
 
-NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+ASCII_NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_PATTERN = re.compile(r"\A---\s*\n(.*?)\n---(?:\s*\n|\Z)", re.DOTALL)
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 TEXT_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".py", ".sh", ".txt"}
@@ -19,6 +19,28 @@ SECRET_PATTERN = re.compile(
     r"(?i)(?:api[_-]?key|access[_-]?token|secret|password)\s*[:=]\s*['\"]?([A-Za-z0-9_\-]{16,})"
 )
 ALLOWED_ROOT_ENTRIES = {"SKILL.md", "agents", "references", "scripts", "assets", "evals"}
+
+
+def is_cjk(character: str) -> bool:
+    codepoint = ord(character)
+    return (
+        0x3400 <= codepoint <= 0x4DBF
+        or 0x4E00 <= codepoint <= 0x9FFF
+        or 0xF900 <= codepoint <= 0xFAFF
+    )
+
+
+def valid_skill_name(name: str) -> bool:
+    if not 1 <= len(name) < 64:
+        return False
+    if ASCII_NAME_PATTERN.fullmatch(name):
+        return True
+    if not any(is_cjk(character) for character in name):
+        return False
+    return all(
+        character.isalnum() or character in "-_：:（）()"
+        for character in name
+    )
 
 
 def read_scalar(frontmatter: str, field: str) -> str:
@@ -89,8 +111,11 @@ def main() -> int:
 
     name = read_scalar(frontmatter, "name")
     description = read_scalar(frontmatter, "description")
-    if not NAME_PATTERN.fullmatch(name) or len(name) >= 64:
-        errors.append("name 必须少于 64 个字符，并只使用小写英文、数字和连字符")
+    if not valid_skill_name(name):
+        errors.append(
+            "name 必须少于 64 个字符；纯英文名只使用小写英文、数字和连字符，"
+            "中文名可使用中文、字母、数字、连字符、下划线、冒号和括号"
+        )
     if name and name != root.name:
         errors.append(f"目录名 {root.name!r} 与 name {name!r} 不一致")
     if not 1 <= len(description) <= 1024:

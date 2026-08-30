@@ -8,6 +8,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 
 - `omh-accessibility-audit`: [omh] Hermes Accessibility Audit workflow: prepare WCAG, keyboard, focus, screen-reader, target-size, and reflow evidence gates for UI surfaces.
 - `omh-achievements`: [omh] Hermes achievements observation workflow: summarize hermes-achievements badges, tiers, recent unlocks, and progress from local plugin artifacts.
+- `omh-adversarial-consensus`: [omh] Hermes Adversarial Consensus workflow: independent perspectives attack a proposal, then distill into a bundle a separate planner consumes.
 - `omh-agent-board`: [omh] Hermes agent board workflow: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states.
 - `omh-agent-debug`: [omh] Agent Debug workflow: capture a stuck, looping, drifting, or repeatedly failing agent run, diagnose the likely failure pattern, and prepare the smallest safe recovery action.
 - `omh-agent-evaluation`: [omh] Hermes Agent Evaluation workflow: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics.

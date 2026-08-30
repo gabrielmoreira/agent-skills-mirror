@@ -1,6 +1,6 @@
 ---
 name: "omh-ask"
-description: "[omh] Hermes adaptation for consulting an external advisor when configured. Use when the user says: ask, external advisor, claude, gemini, ask claude, ask gemini, consult claude, consult gemini."
+description: "[omh] Hermes adaptation for consulting an external advisor when configured. Use when the user says: ask, external advisor, ask claude, ask gemini, consult claude, consult gemini, opinion from claude, opinion from gemini."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -58,7 +58,7 @@ Bad example:
 
 Use only when an external advisor is configured and would materially improve the answer.
 
-    Strong routing signals: `ask`, `$ask`, `external advisor`, `claude`, `gemini`, `ask claude`, `ask gemini`, `consult claude`, `consult gemini`, `opinion from claude`, `opinion from gemini`, `second opinion`, `claude 의견`, `gemini 의견`
+    Strong routing signals: `ask`, `$ask`, `external advisor`, `ask claude`, `ask gemini`, `consult claude`, `consult gemini`, `opinion from claude`, `opinion from gemini`, `second opinion`, `claude 의견`, `gemini 의견`
 
 ## Catalog Metadata
 

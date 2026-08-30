@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `koala73/worldmonitor` — 26 default patterns, 4 followed patterns, 35 file(s) materialized.
+Mirror of `koala73/worldmonitor` — 26 default patterns, 4 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 4 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 35 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,10 +93,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`public/api/llms.txt`](public/api/llms.txt) |
 | 30 | ✓ | [`public/developers/llms.txt`](public/developers/llms.txt) |
 | 31 | ✓ | [`public/llms.txt`](public/llms.txt) |
-| 32 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 33 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 34 | → | [`CONCEPTS.md`](CONCEPTS.md) |
-| 35 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 32 | ✓ | [`skills/assess-energy-shock/SKILL.md`](skills/assess-energy-shock/SKILL.md) |
+| 33 | ✓ | [`skills/check-airport-delays/SKILL.md`](skills/check-airport-delays/SKILL.md) |
+| 34 | ✓ | [`skills/check-chokepoint-status/SKILL.md`](skills/check-chokepoint-status/SKILL.md) |
+| 35 | ✓ | [`skills/check-country-risk/SKILL.md`](skills/check-country-risk/SKILL.md) |
+| 36 | ✓ | [`skills/check-forecast-signals/SKILL.md`](skills/check-forecast-signals/SKILL.md) |
+| 37 | ✓ | [`skills/check-sanctions-pressure/SKILL.md`](skills/check-sanctions-pressure/SKILL.md) |
+| 38 | ✓ | [`skills/fetch-country-brief/SKILL.md`](skills/fetch-country-brief/SKILL.md) |
+| 39 | ✓ | [`skills/fetch-news-digest/SKILL.md`](skills/fetch-news-digest/SKILL.md) |
+| 40 | ✓ | [`skills/fetch-resilience-score/SKILL.md`](skills/fetch-resilience-score/SKILL.md) |
+| 41 | ✓ | [`skills/get-market-quotes/SKILL.md`](skills/get-market-quotes/SKILL.md) |
+| 42 | ✓ | [`skills/get-prediction-markets/SKILL.md`](skills/get-prediction-markets/SKILL.md) |
+| 43 | ✓ | [`skills/monitor-energy-disruptions/SKILL.md`](skills/monitor-energy-disruptions/SKILL.md) |
+| 44 | ✓ | [`skills/monitor-health-alerts/SKILL.md`](skills/monitor-health-alerts/SKILL.md) |
+| 45 | ✓ | [`skills/monitor-internet-outages/SKILL.md`](skills/monitor-internet-outages/SKILL.md) |
+| 46 | ✓ | [`skills/monitor-supply-chain-stress/SKILL.md`](skills/monitor-supply-chain-stress/SKILL.md) |
+| 47 | ✓ | [`skills/monitor-webcams/SKILL.md`](skills/monitor-webcams/SKILL.md) |
+| 48 | ✓ | [`skills/scan-cyber-threats/SKILL.md`](skills/scan-cyber-threats/SKILL.md) |
+| 49 | ✓ | [`skills/trace-trade-flows/SKILL.md`](skills/trace-trade-flows/SKILL.md) |
+| 50 | ✓ | [`skills/track-climate-hazards/SKILL.md`](skills/track-climate-hazards/SKILL.md) |
+| 51 | ✓ | [`skills/track-conflict-events/SKILL.md`](skills/track-conflict-events/SKILL.md) |
+| 52 | ✓ | [`skills/track-earthquakes/SKILL.md`](skills/track-earthquakes/SKILL.md) |
+| 53 | ✓ | [`skills/track-military-flights/SKILL.md`](skills/track-military-flights/SKILL.md) |
+| 54 | ✓ | [`skills/track-tariff-trends/SKILL.md`](skills/track-tariff-trends/SKILL.md) |
+| 55 | ✓ | [`skills/track-unrest-events/SKILL.md`](skills/track-unrest-events/SKILL.md) |
+| 56 | ✓ | [`skills/track-vessel-traffic/SKILL.md`](skills/track-vessel-traffic/SKILL.md) |
+| 57 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 58 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 59 | → | [`CONCEPTS.md`](CONCEPTS.md) |
+| 60 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

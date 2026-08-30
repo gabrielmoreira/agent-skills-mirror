@@ -1,4 +1,4 @@
 interface:
   display_name: "dbs"
-  short_description: "根据用户当前问题，在 30 个正式业务 Skill 中选择并进入最合适的单步处理入口"
-  default_prompt: "使用 $dbs，根据当前问题选择并进入最合适的单步处理入口。"
+  short_description: "为一个真实任务判断单 Skill 或主辅组合，并生成可直接发送的执行提示词"
+  default_prompt: "使用 $dbs，根据当前任务编排一个正式 Skill，或 1 个主 Skill 和最多 2 个辅助 Skill。"

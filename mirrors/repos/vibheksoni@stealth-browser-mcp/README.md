@@ -23,39 +23,39 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 <table>
 <tr>
-<td align="center" width="200">
+<td align="center" width="50%">
 
-<a href="https://go.nodemaven.com/stealthbrowsermcpGH"><img src="media/nodemaven-sponsor.png" alt="NodeMaven" width="180"></a>
+<a href="https://go.nodemaven.com/stealthbrowsermcpreadaugust"><img src="media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
 
 </td>
-<td>
+<td align="center" width="50%">
 
-[NodeMaven](https://go.nodemaven.com/stealthbrowsermcpGH) is a proxy provider offering high-quality IPs for browser automation, web scraping, SEO research, and social media management.
-
-**Why NodeMaven?**
-
-- 99.9% uptime
-- Sticky sessions for up to 7 days
-- IP filtering with proxy fraud scores below 97%
-- No KYC required
-- Traffic cashback with up to 10% returned based on GB usage
-
-**Special discounts for stealth-browser-mcp users**
-
-- `STEALTHMCP35` — 35% off Mobile and Residential Proxies
-- `STEALTHMCP40` — 40% off ISP Static Proxies
-
-[Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpGH)
+<a href="https://www.rapidproxy.io/?ref=mcp"><img src="media/rapidproxy-sponsor.png" alt="RapidProxy" width="100%"></a>
 
 </td>
 </tr>
 <tr>
-<td align="center" width="200">
+<td valign="top">
 
-<a href="https://www.rapidproxy.io/?ref=mcp"><img src="media/rapidproxy-sponsor.png" alt="RapidProxy" width="180"></a>
+[NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadaugust) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
+
+**Why NodeMaven?**
+
+- ZIP targeting
+- 99.9% uptime
+- IP filtering: all proxies have fraud score <97%
+- No KYC required
+- Unique free tools: Proxy Bandwidth Checker, Meta Tag Checker, IP Lookup and others!
+
+**Special codes for Stealth-browser-mcp users**
+
+- `STEALTHMCP35` — 35% off to Mobile and Residential Proxies
+- `STEALTHMCP40` — 40% off to ISP (Static) Proxies
+
+[Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadaugust)
 
 </td>
-<td>
+<td valign="top">
 
 [RapidProxy](https://www.rapidproxy.io/?ref=mcp) powers scraping and automation with 90M+ residential IPs across 200+ countries, supporting rotation, geo-targeting, and high concurrency to improve success rates and reduce bans.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 16 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,14 +67,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agents/skills/autoreview/scripts/test-review-harness.ps1`](.agents/skills/autoreview/scripts/test-review-harness.ps1) |
 | 7 | ✓ | [`.agents/skills/autoreview/scripts/test-review-harness.py`](.agents/skills/autoreview/scripts/test-review-harness.py) |
 | 8 | ✓ | [`.agents/skills/autoreview/SKILL.md`](.agents/skills/autoreview/SKILL.md) |
-| 9 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-config-path-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-config-path-references.ts) |
-| 10 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts) |
-| 11 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts`](.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts) |
-| 12 | ✓ | [`.agents/skills/autoreview/tests/test_autoreview_hardening.py`](.agents/skills/autoreview/tests/test_autoreview_hardening.py) |
-| 13 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
-| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 16 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/autoreview/tests/fixtures/swift-benign-status-literals.swift`](.agents/skills/autoreview/tests/fixtures/swift-benign-status-literals.swift) |
+| 10 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-config-path-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-config-path-references.ts) |
+| 11 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts) |
+| 12 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts`](.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts) |
+| 13 | ✓ | [`.agents/skills/autoreview/tests/test_autoreview_hardening.py`](.agents/skills/autoreview/tests/test_autoreview_hardening.py) |
+| 14 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
+| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 17 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
 
 ---
 

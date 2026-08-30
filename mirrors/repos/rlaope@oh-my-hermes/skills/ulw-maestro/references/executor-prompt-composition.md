@@ -46,3 +46,12 @@ A steering message sent mid-dispatch is never a restated brief. State: the const
 ## 7. Attribution
 
 The role recipes, degradation ladder, and section contract are OMH's own; no external text is reproduced. The ten-section prompting contract and the six-section session summary shape are the existing `src/coding/prompting.py` and `src/coding/coding_contracts.py` contracts this reference points at, not new inventions.
+
+## 8. Result Integration
+
+Dispatch ends at spawn and exit -- it never merges (`docs/FANOUT.md`, `DISPATCH_CLAIM_BOUNDARY` in `src/coding/fanout_dispatch.py`). What happens after a unit's process exits is a separate, explicit phase the operator or reviewing agent owns, not something this engine or `omh coding fanout dispatch` performs on its own:
+
+1. **Collect each unit's result.** Read the unit's `fanout_unit_result/v1` evidence -- the sidecar file the unit wrote (`unit_result_source: sidecar`) or, when no sidecar exists, the validated stdout fenced block (`unit_result_source: stdout_fenced_block`) -- and note the unit's branch/worktree state (`<repo>-fanout-<unit>` on `agent/<unit>`, one per unit, never auto-deleted; `omh coding fanout show` joins the frozen contract with the per-unit run record).
+2. **Verify the integrated combination, not just each unit alone.** A unit's own `verification_commands` (`--run-verification`) only prove that one worktree in isolation; disjoint `file_scope`s can still conflict once units land together on the same base. Name that outcome an integration conflict -- a distinct failure class from a per-unit verification failure -- and re-run the goal's own verification commands against the combined result, with a review pass, before calling any of it ready.
+3. **The merge itself is an explicit operator or reviewing-agent action.** No OMH command merges branches -- not dispatch, not a status or brief command. Merging the unit branches, in the contract's `merge_order`, is a manual git operation the operator or reviewing agent performs after integration verification and review pass; a dispatch receipt is never merge evidence, the same boundary this engine already holds for dispatch itself.
+4. **Report merged/unmerged per unit in the closing brief.** State which units actually merged and which did not, alongside the run summary, rather than one aggregate "done" -- an integration-ready unit that has not yet been merged is not the same claim as a merged one.

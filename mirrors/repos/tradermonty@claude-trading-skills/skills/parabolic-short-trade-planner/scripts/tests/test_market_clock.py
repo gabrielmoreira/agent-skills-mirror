@@ -4,7 +4,7 @@ Coverage focus:
 - DST boundaries (EST/EDT switch in March + November). The ET offset
   shifts from -05:00 to -04:00 mid-March and back in early November;
   any naive offset arithmetic would silently break here.
-- Regular-session window (09:30 ≤ ts < 16:00 ET on weekdays only).
+- Calendar-defined regular-session window, including holidays and early closes.
 - session_date_for is anchored to ET wall-clock date, NOT UTC date,
   so a 21:00 UTC timestamp on a Tuesday must map to the same Tuesday.
 - minutes_until_close returns None outside the session and a positive
@@ -46,6 +46,10 @@ class TestRegularSession:
 
     def test_sunday_excluded(self):
         ts = datetime(2026, 5, 10, 12, 0, tzinfo=ET)  # Sunday
+        assert mc.is_regular_session(ts) is False
+
+    def test_good_friday_excluded(self):
+        ts = datetime(2026, 4, 3, 12, 0, tzinfo=ET)
         assert mc.is_regular_session(ts) is False
 
 
@@ -105,6 +109,10 @@ class TestMinutesUntilClose:
     def test_just_before_close(self):
         ts = datetime(2026, 5, 5, 15, 59, tzinfo=ET)
         assert mc.minutes_until_close(ts) == 1
+
+    def test_thanksgiving_friday_uses_early_close(self):
+        ts = datetime(2026, 11, 27, 12, 0, tzinfo=ET)
+        assert mc.minutes_until_close(ts) == 60
 
     def test_outside_session_returns_none(self):
         before = datetime(2026, 5, 5, 9, 0, tzinfo=ET)

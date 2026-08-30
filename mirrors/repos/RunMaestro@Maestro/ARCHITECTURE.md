@@ -1143,6 +1143,7 @@ Persistent PTY-backed terminal tabs that integrate into the unified tab bar alon
 - **State persistence**: `terminalTabs` array saved with the session; PTYs are re-spawned on restore
 - **Spawn failure UX**: `state === 'exited' && pid === 0` shows an error overlay with a Retry button
 - **Exit message**: PTY exit writes a yellow ANSI banner and new-terminal hint to the xterm buffer
+- **Font-swap hazard (no mitigation in `XTerminal` today)**: xterm measures its cell size ONCE, inside `term.open()`. The terminal fonts load from Google Fonts with `display=swap` (`src/renderer/index.html`), so a face that arrives after that leaves every glyph drawn at its own advance inside a cell sized for the fallback, which renders as `C l a u d e   C o d e` - correct letters, stretched spacing. Terminal tabs mask it by re-fitting on every show/hide; a terminal that mounts once inside a modal has nothing that re-measures it. `XTerminal` carried a `document.fonts.ready` re-measure for this and it was removed, so a new always-mounted terminal surface has to solve it itself.
 
 ### Terminal Tab Interface
 

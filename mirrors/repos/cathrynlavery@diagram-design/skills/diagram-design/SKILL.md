@@ -102,9 +102,9 @@ The pattern owns semantic primitives and its tighter budget; the type owns layou
 | Ranked hierarchy or conversion drop-off | **Pyramid / funnel** | [type-pyramid.md](references/type-pyramid.md) |
 | Quantitative comparison across categories | **Bar chart** | [type-bar.md](references/type-bar.md) |
 | Part-of-whole where the relative sizes are the story | **Treemap** | [type-treemap.md](references/type-treemap.md) |
-| Continuous trends over time, change between exactly two states (slopegraph), or one distribution per series (ridgeline) | **Line chart** | [type-line.md](references/type-line.md) |
+| Continuous trends over time, change between exactly two states (slopegraph), one distribution per series (ridgeline), or rank movement across several snapshots (bump) | **Line chart** | [type-line.md](references/type-line.md) |
 | Tasks and phases on a timeline | **Gantt** | [type-gantt.md](references/type-gantt.md) |
-| Distribution and correlation between two variables, or three with area-sized marks (bubble) | **Scatter plot** | [type-scatter.md](references/type-scatter.md) |
+| Distribution and correlation between two variables, three with area-sized marks (bubble), or one variable with a dot per item (beeswarm) | **Scatter plot** | [type-scatter.md](references/type-scatter.md) |
 | End-to-end data stack on a container cluster | **High-Level** | [type-high-level.md](references/type-high-level.md) |
 | Multi-actor sequential process with data handoffs | **Process** | [type-process.md](references/type-process.md) |
 | Multi-tier data storage with quality levels and access policies | **Medallion** | [type-medallion.md](references/type-medallion.md) |
@@ -199,10 +199,12 @@ Type-specific anti-patterns live in each type reference linked in the guide.
 - **Arrow label** — Geist Mono, 8px — annotation on arrows
 - **Editorial aside** — Instrument Serif *italic*, 14px — callouts only
 
+**Korean labels** — Geist and Instrument Serif carry no Hangul. Extend the family on that `<text>`, budget 1em per Unicode wide or full-width character and the Latin advance for every other, and never set Hangul below 12px. Full rules in [`style-guide.md`](references/style-guide.md#korean-labels).
+
 **Mono is for technical content only** — never as a blanket "dev" font, and never JetBrains Mono.
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
 ```
 
 ---

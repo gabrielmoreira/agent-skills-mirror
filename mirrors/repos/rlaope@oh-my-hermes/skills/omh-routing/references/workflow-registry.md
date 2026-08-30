@@ -26,7 +26,7 @@ These surfaces are generated command references, not installed Hermes workflow s
 - `handoff-guide`: `ultrawork`, `maestro`, `ai-slop-cleaner`, `executor-runtime-readiness`
 - `memory-keeper`: `rules-distill`, `wiki`, `memory-new`, `memory-sync`, `decision-recall`
 - `operator`: `strategy-brief`, `meeting-brief`, `feedback-triage`, `finance-analysis`, `people-ops`, `support-operations`, `sales-development`, `ops-review`, `operating-rhythm`, `report-package`, `materials-package`, `img-summary`, `design-orchestration`, `design-quality-gate`, `frontend`, `visual-qa`, `workspace-audit`, `agent-evaluation`, `automation-blueprint`, `reliability-review`, `idea-to-deploy`, `cto-loop`, `deploy-and-monitor`, `github-event-ops`, `deliverable-package`, `physical-device-readiness`, `agent-debug`, `skill-scout`, `skill-health`, `provider-profile-posture`
-- `planner`: `loop`, `context`, `deep-interview`, `curriculum-design`, `product-brief`, `codebase-onboarding`, `codegraph-refresh`, `plan`, `ralplan`
+- `planner`: `loop`, `context`, `deep-interview`, `curriculum-design`, `product-brief`, `codebase-onboarding`, `codegraph-refresh`, `plan`, `ralplan`, `adversarial-consensus`
 - `researcher`: `jit-learn`, `research`, `source-finder`, `research-brief`, `research-department`, `paper-learning`, `best-practice-research`, `autoresearch-goal`
 - `reviewer`: `legal-compliance-review`, `localization-review`, `accessibility-audit`, `build-failure-triage`, `production-audit`, `verification-gate`, `security-safety-review`, `ultraqa`, `code-review`, `ask`, `failure-signal-audit`
 - `tracker`: `context-budget-review`, `performance-goal`, `ultraperf`, `cancel`, `skill`, `doctor`, `capability-toggle`, `running-work-board`, `buzz`, `agent-board`, `toolbelt-readiness`, `harness-session-inventory`, `ops-observability-card`, `achievements`, `agent-ops-review`, `instinct-ledger`, `workflow-learning`, `run-efficiency`
@@ -87,6 +87,7 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `ultraqa`: `ultraqa`, `$ultraqa`, `adversarial qa`, `hostile scenarios`, `e2e qa`, `real-world qa`, `qa scenario`, `release qa`, `장애 상황`
 - `plan`: `plan`, `$plan`, `implementation plan`, `task breakdown`, `safe feature`, `safely add a feature`, `add a feature`, `feature request`, `new feature`
 - `ralplan`: `ralplan`, `$ralplan`, `consensus plan`, `reviewed plan`, `issue to PR`, `acceptance criteria`, `verification command`, `reviewable PR`, `risky planning`
+- `adversarial-consensus`: `adversarial-consensus`, `$adversarial-consensus`, `adversarial planning`, `adversarial plan review`, `red team this plan`, `red-team this plan`, `red team the proposal`, `multi-perspective review`, `multiple perspectives`
 - `code-review`: `code-review`, `$code-review`, `review`, `audit`, `find bugs`, `release gate`, `claim audit`, `evidence audit`, `README claim`
 - `ai-slop-cleaner`: `ai-slop-cleaner`, `$ai-slop-cleaner`, `cleanup`, `deslop`, `refactor`, `risky`, `behavior-preserving refactor`, `risk analysis`, `refactor workflow`
 - `best-practice-research`: `best-practice-research`, `best practice`, `official docs`, `upstream guidance`, `what do the docs say`, `check the docs`
@@ -94,7 +95,7 @@ When Hermes exposes installed skill descriptions to the model, use this registry
 - `performance-goal`: `performance-goal`, `performance goal`, `latency`, `throughput`, `benchmark`
 - `ultraperf`: `ultraperf`, `$ultraperf`, `ulw-perf`, `performance audit`, `performance bottleneck`, `find the bottleneck`, `profile the hot path`, `memory leak investigation`, `token cost hotspot`
 - `wiki`: `wiki`, `project wiki`, `build a wiki`, `start a wiki`, `organize my notes`, `external knowledge store`, `knowledge base`, `Obsidian`, `markdown vault`
-- `ask`: `ask`, `$ask`, `external advisor`, `claude`, `gemini`, `ask claude`, `ask gemini`, `consult claude`, `consult gemini`
+- `ask`: `ask`, `$ask`, `external advisor`, `ask claude`, `ask gemini`, `consult claude`, `consult gemini`, `opinion from claude`, `opinion from gemini`
 - `cancel`: `cancel`, `$cancel`, `stop the workflow`, `abort the run`, `cancel the loop`
 - `skill`: `skill`, `$skill`, `skills`, `manage skills`
 - `doctor`: `doctor`, `$doctor`, `diagnose omh`, `installation health`

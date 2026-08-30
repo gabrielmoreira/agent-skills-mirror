@@ -53,6 +53,23 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
     会自检一次，命中就打 `redaction.pii_patterns runs broad rules before specific ones` 并点名 id 对。
     看到这条告警时，按点名的顺序手工调整本目录的 `security_filters.yaml`，或备份后删除该文件让
     `init_config` 从镜像重新生成。
+  - **`redaction.pii_patterns` 的可选 `validator` 字段（校验位）**：`CARD` / `CN_ID` / `IBAN` 三条规则
+    是按**形状**匹配的（`CARD` 是任意 13–16 位数字串），一个 15 位订单号照样命中。给规则加
+    `validator: luhn | cn_id | iban_mod97` 之后，命中的值会再过一次校验位。
+    - **它只做观测，不改变任何脱敏结果**：校验失败的值**照旧脱敏**，只是在该请求的 filter report 里
+      多记一笔 `validator_failed: {规则 id: 个数}`（进 `audit.jsonl` 与统计，**不回给客户端**），
+      并计一个 `aegisgate_pii_validator_failures_total{validator=...}` 指标。用它先量出自己流量上的
+      误报量级，再决定要不要付「校验失败就不脱敏」的成本。
+    - **生效面**：目前只有 **V1 请求 pipeline**（`filters/redaction.py`）读它；responses sanitizer 与
+      V2 转发面忽略它但**继续脱敏**，所以不存在「某一面漏脱敏」的风险。无法识别的名字等同于没写。
+    - **注意路由差异**：`/v1/chat/completions`、`/v1/responses`、`/v1/messages` 使用低误报（relaxed）
+      规则集，其中**不含** `CARD` / `CN_ID` / `IBAN`，所以这三条主协议路由上校验器根本不会触发。
+      计数来自使用完整规则集的其它路由。
+    - **控制台不提供该字段的编辑入口**：已有规则上的 `validator` 在控制台编辑后会**保留**（写入只拷贝
+      白名单里的键），但控制台**新建**的规则不会有它，要加得手改 YAML。
+    - **已有部署不会自动升级**：`ensure_config_dir` 不覆盖已存在的 `config/security_filters.yaml`，
+      所以老环境的那份**不会自动获得 `validator`**，校验位在那里不生效（没有安全后果，照旧脱敏，
+      但量不到误报）。需要的话手工补上，或备份后删除该文件让它重新生成。
   - **控制台写入也建备份**：`core/rules_write.py` 在每一次成功写入前都会存一份 `.bak-<时间戳>`，并按
     `_MAX_BACKUPS` 保留最近若干份、自动清理更旧的。文档内容未变时不写、也不轮换备份。备份落在被编辑
     的那个文件旁边——Docker 下是挂载的配置目录，裸机下是包内策略目录，因此 `.gitignore` 里的
@@ -81,6 +98,7 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
 |------|------|------|
 | `AEGIS_LOG_LEVEL` | 日志等级 | `info` / `debug` |
 | `AEGIS_LOG_FULL_REQUEST_BODY` | DEBUG 下是否打印完整请求体 | `false` / `true` |
+| `AEGIS_LOG_JSON` | 日志按行输出 JSON 对象（OTel span 活跃时带 `trace_id` / `span_id`）。作用于 `aegisgate` logger 的**全部** handler，stderr 与 `logs/aegisgate/YY/MM/DD.log` **落盘格式同时改变**；支持热更新 | `false` / `true` |
 | `AEGIS_SECURITY_LEVEL` | 安全档位（`medium` 默认：宽松仅高危拦截；`low`：极宽松基本只脱敏；`high`：全量检测） | `low` / `medium` / `high` |
 | `AEGIS_ENABLE_SEMANTIC_MODULE` | 启用语义复核（灰区门控：仅当风险评分落在 `(AEGIS_SEMANTIC_GRAY_LOW, AEGIS_SEMANTIC_GRAY_HIGH)` 才触发） | `true` / `false` |
 | `AEGIS_SEMANTIC_SERVICE_URL` | 当前主链路使用的语义服务地址；留空时**仅灰区触发**会记录 `semantic_service_unconfigured` 并降级（不做语义风险抬升） | 语义服务 URL / 空 |
@@ -176,9 +194,9 @@ Docker 运行时挂载本目录。当前版本已支持对部分文件做轮询�
 热更新说明：
 - watcher 默认轮询以下文件：`config/.env`、`security_filters.yaml`、策略 YAML、`gw_tokens.json`。
 - `security_filters.yaml` 与策略 YAML 变更后，会清缓存并在下一次请求时重建 filter pipeline。
-- `.env` 仅支持**部分**参数热更新。以下 12 项安全关键参数在启动时固定，热更新不会生效（以 `aegisgate/core/hot_reload.py` 的 `_IMMUTABLE_FIELDS` 为准）：
-  `gateway_key`、`security_level`、`enforce_loopback_only`、`allow_public_numeric_tokens`、`allow_public_passthrough_mode`、`allow_public_upstream_whitelist`、`enable_request_hmac_auth`、`request_hmac_secret`、`trusted_proxy_ips`、`xff_strict_internal`、`v2_block_internal_targets`、`local_ui_allow_internal_network`。
-  控制台配置页开放其中 11 项（`gateway_key` 走密钥管理页），带 **需重启** 徽章，见 [WEBUI-QUICKSTART.md](../WEBUI-QUICKSTART.md) §4.1。
+- `.env` 仅支持**部分**参数热更新。以下 13 项安全关键参数在启动时固定，热更新不会生效（以 `aegisgate/core/hot_reload.py` 的 `_IMMUTABLE_FIELDS` 为准）：
+  `gateway_key`、`security_level`、`enforce_loopback_only`、`allow_public_numeric_tokens`、`allow_public_passthrough_mode`、`allow_public_upstream_whitelist`、`enable_request_hmac_auth`、`request_hmac_secret`、`trusted_proxy_ips`、`xff_strict_internal`、`v2_block_internal_targets`、`local_ui_allow_internal_network`、`stream_scan_interval_chunks`。
+  控制台配置页开放其中 12 项（`gateway_key` 走密钥管理页），带 **需重启** 徽章，见 [WEBUI-QUICKSTART.md](../WEBUI-QUICKSTART.md) §4.1。
 - **注意 Web UI 也受此限制**：配置页可以编辑 `AEGIS_SECURITY_LEVEL`、`AEGIS_ENFORCE_LOOPBACK_ONLY`、`AEGIS_TRUSTED_PROXY_IPS`，保存会写入 `config/.env` 并提示成功，但运行时取值要到**下次重启**才更新。改完这些项请用 UI 的「重启网关」或 `docker compose restart aegisgate`。`AEGIS_XFF_STRICT_INTERNAL` 同样需重启；设了 `AEGIS_TRUSTED_PROXY_IPS` 之后，仅把该开关改回 `false` **不能**撤销可信代理对 client IP 与限流键的影响，回退办法是清空该变量并重启。
 - `config/model_map.json` **不在** watcher 监听范围内：修改模型映射或 `allowed_models` 后必须重启网关。
 - 对于长连接、流式会话或 Compose 环境，仍建议在变更后执行一次 `docker compose restart aegisgate` 作为稳妥做法。

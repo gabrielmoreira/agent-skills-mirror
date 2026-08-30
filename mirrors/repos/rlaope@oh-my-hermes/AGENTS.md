@@ -101,15 +101,18 @@ PR without the chat history.
 - No LLM, API, Discord, Slack, GitHub, or network calls inside core `omh`
   features unless the user explicitly approves a scoped integration.
 - The approved scoped integration under that clause is the fanout dispatch
-  bridge (`omh coding fanout dispatch`, 2026-07 owner approval): an explicit
-  operator command that spawns LOCAL agent CLIs (the CLIs make their own
-  network calls; omh still makes none) in per-unit worktrees against a frozen
-  `fanout_contract/v2`, recording every spawn and exit as observed journal
-  evidence. It never runs by default, never merges branches, never persists
-  raw prompts under `.omh`, and never executes anything outside an explicit
-  `dispatch` invocation. Bridge dispatch is a separate axis from chat
-  prompt-handoff semantics: chat-prepared handoffs remain prompt-only for
-  prompt-only profiles.
+  bridge (`omh coding fanout dispatch`, 2026-07 owner approval, plus its
+  `omh coding run` single-run entry that builds and dispatches a one-unit
+  contract through the same engine in one call): an explicit operator command
+  that spawns LOCAL agent CLIs (the CLIs make their own network calls; omh
+  still makes none) in per-unit worktrees against a frozen `fanout_contract/v2`,
+  recording every spawn and exit as observed journal evidence. It never runs
+  by default, never merges branches, never persists raw prompts under `.omh`,
+  and never executes anything outside an explicit `dispatch`/`run` invocation
+  -- running one against an explicitly-named owner is itself the required
+  opt-in. Bridge dispatch is a separate axis from chat prompt-handoff
+  semantics: chat-prepared handoffs remain prompt-only for prompt-only
+  profiles.
 - The approved Hermes-native child boundary (`omh coding hermes-child dispatch`,
   2026-08 owner approval) is a second explicit operator/maintainer surface for
   one isolated local `hermes --oneshot` process. It requires

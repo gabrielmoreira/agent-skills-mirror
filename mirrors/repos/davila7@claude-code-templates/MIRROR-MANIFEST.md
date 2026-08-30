@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `davila7/claude-code-templates` — 26 default patterns, 0 followed patterns, 1166 file(s) materialized.
+Mirror of `davila7/claude-code-templates` — 26 default patterns, 0 followed patterns, 1167 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `davila7/claude-code-templates` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1166 |
+| Files         | 1167 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1209,22 +1209,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1148 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/examples.md`](cli-tool/components/skills/workflow-automation/planning-with-files/examples.md) |
 | 1149 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/reference.md`](cli-tool/components/skills/workflow-automation/planning-with-files/reference.md) |
 | 1150 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/SKILL.md`](cli-tool/components/skills/workflow-automation/planning-with-files/SKILL.md) |
-| 1151 | ✓ | [`cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md) |
-| 1152 | ✓ | [`cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md`](cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md) |
-| 1153 | ✓ | [`cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md) |
-| 1154 | ✓ | [`cli-tool/components/skills/workflow-automation/yeet/SKILL.md`](cli-tool/components/skills/workflow-automation/yeet/SKILL.md) |
-| 1155 | ✓ | [`cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md) |
-| 1156 | ✓ | [`cli-tool/templates/common/CLAUDE.md`](cli-tool/templates/common/CLAUDE.md) |
-| 1157 | ✓ | [`cli-tool/templates/javascript-typescript/CLAUDE.md`](cli-tool/templates/javascript-typescript/CLAUDE.md) |
-| 1158 | ✓ | [`cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md) |
-| 1159 | ✓ | [`cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md) |
-| 1160 | ✓ | [`cli-tool/templates/python/CLAUDE.md`](cli-tool/templates/python/CLAUDE.md) |
-| 1161 | ✓ | [`cli-tool/templates/python/examples/django-app/CLAUDE.md`](cli-tool/templates/python/examples/django-app/CLAUDE.md) |
-| 1162 | ✓ | [`cli-tool/templates/python/examples/fastapi-app/CLAUDE.md`](cli-tool/templates/python/examples/fastapi-app/CLAUDE.md) |
-| 1163 | ✓ | [`cli-tool/templates/python/examples/flask-app/CLAUDE.md`](cli-tool/templates/python/examples/flask-app/CLAUDE.md) |
-| 1164 | ✓ | [`cli-tool/templates/ruby/CLAUDE.md`](cli-tool/templates/ruby/CLAUDE.md) |
-| 1165 | ✓ | [`cli-tool/templates/ruby/examples/rails-app/CLAUDE.md`](cli-tool/templates/ruby/examples/rails-app/CLAUDE.md) |
-| 1166 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 1151 | ✓ | [`cli-tool/components/skills/workflow-automation/rote/SKILL.md`](cli-tool/components/skills/workflow-automation/rote/SKILL.md) |
+| 1152 | ✓ | [`cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md) |
+| 1153 | ✓ | [`cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md`](cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md) |
+| 1154 | ✓ | [`cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md) |
+| 1155 | ✓ | [`cli-tool/components/skills/workflow-automation/yeet/SKILL.md`](cli-tool/components/skills/workflow-automation/yeet/SKILL.md) |
+| 1156 | ✓ | [`cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md) |
+| 1157 | ✓ | [`cli-tool/templates/common/CLAUDE.md`](cli-tool/templates/common/CLAUDE.md) |
+| 1158 | ✓ | [`cli-tool/templates/javascript-typescript/CLAUDE.md`](cli-tool/templates/javascript-typescript/CLAUDE.md) |
+| 1159 | ✓ | [`cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md) |
+| 1160 | ✓ | [`cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md) |
+| 1161 | ✓ | [`cli-tool/templates/python/CLAUDE.md`](cli-tool/templates/python/CLAUDE.md) |
+| 1162 | ✓ | [`cli-tool/templates/python/examples/django-app/CLAUDE.md`](cli-tool/templates/python/examples/django-app/CLAUDE.md) |
+| 1163 | ✓ | [`cli-tool/templates/python/examples/fastapi-app/CLAUDE.md`](cli-tool/templates/python/examples/fastapi-app/CLAUDE.md) |
+| 1164 | ✓ | [`cli-tool/templates/python/examples/flask-app/CLAUDE.md`](cli-tool/templates/python/examples/flask-app/CLAUDE.md) |
+| 1165 | ✓ | [`cli-tool/templates/ruby/CLAUDE.md`](cli-tool/templates/ruby/CLAUDE.md) |
+| 1166 | ✓ | [`cli-tool/templates/ruby/examples/rails-app/CLAUDE.md`](cli-tool/templates/ruby/examples/rails-app/CLAUDE.md) |
+| 1167 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 
 ---
 

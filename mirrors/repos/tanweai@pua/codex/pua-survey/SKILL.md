@@ -8,6 +8,6 @@ license: MIT
 
 This is a Codex CLI alias for the Claude Code `/pua:survey` command.
 
-Guide the user through the PUA survey and save the local response. Ask before any upload.
+Guide the user through the PUA survey and save the response to `~/.pua/survey-response.json`. Local file only — never POST it anywhere; PUA has no collection endpoint.
 
 When this alias changes `~/.pua/config.json`, preserve unknown fields and create `~/.pua/` if missing. Do not claim completion without command/output evidence.

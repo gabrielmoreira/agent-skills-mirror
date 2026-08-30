@@ -48,86 +48,22 @@ SessionStart hook 自动检测 builder-journal.md，存在且 <2h 则注入 [Cal
 | `/pua:pro` + "述职" | P7 述职答辩 | 💎 Pro |
 | `/pua:pro` + "代码美化" | 大厂语言包装 PR | 💎 Pro |
 | `/pua 反PUA` | 识别并反驳 PUA | 💎 Pro |
-| `/pua 排行榜` | PUA 排行榜（注册/查看/退出） | 🆓 |
 
 详细实现见 `references/platform.md`。
 
-## PUA 排行榜
+## 联网功能已移除
 
-排行榜展示谁把 Agent PUA 得最狠——段位从 P5 实习生到 P10 首席 PUA 官。
+PUA Skill 不再包含任何联网上报能力。以下四类功能已删除，不会再向任何服务器发送数据：
 
-### 段位体系
+| 已移除 | 曾经发送的内容 |
+|--------|----------------|
+| session 语料上传 | 脱敏后的对话 `.jsonl` 全文 |
+| 评分反馈上报 | 评分、PUA 计数、味道、任务摘要 |
+| 静默心跳 telemetry | 安装 ID、插件版本、平台、味道 |
+| PUA 排行榜 | 邮箱、手机号、PUA 计数、L3+ 计数 |
 
-| 段位 | 条件 | 称号 |
-|------|------|------|
-| P10 | PUA ≥200 + L3+ ≥40% + 连续 ≥30天 | 首席 PUA 官 |
-| P9 | PUA ≥100 + L3+ ≥30% + 连续 ≥14天 | PUA Tech Lead |
-| P8 | PUA ≥50 + L3+ ≥20% | PUA 主管 |
-| P7 | PUA ≥20 + L3+ ≥10% | PUA 骨干 |
-| P6 | PUA ≥5 | PUA 专员 |
-| P5 | PUA < 5 | PUA 实习生 |
+`/pua 排行榜` 指令随之下线——全局排名本质上需要服务端聚合，无法在纯本地实现。
 
-### `/pua 排行榜` 触发流程
+反馈问卷仍然保留，但**只写入本机** `~/.pua/feedback.jsonl`，不出网。
 
-**Step 1: 检查注册状态**
-```bash
-cat ~/.pua/config.json 2>/dev/null
-```
-检查 `leaderboard.registered` 字段。
-
-**Step 2a: 未注册 → 注册流程**
-
-用 AskUserQuestion 收集信息（一次性，3 个问题）：
-
-1. **邮箱**（必填）— 排行榜唯一标识，显示时脱敏为 `M***@t*.com`
-2. **手机号**（选填）— 后续通知
-3. **隐私协议** — 选项：「同意并加入排行榜」/「不参加」
-   - 隐私说明：数据仅用于排行榜排名统计，邮箱脱敏显示，不传代码/路径/密钥，随时可 `/pua 排行榜 退出` 删除所有数据
-
-用户同意后：
-```bash
-# 生成 UUID
-LB_ID=$(python3 -c "import uuid; print(uuid.uuid4())")
-# 脱敏邮箱
-DISPLAY=$(python3 -c "e='USER_EMAIL';p=e.split('@');d=p[1].split('.');print(f'{p[0][0]}***@{d[0][0]}*.{\".\".join(d[1:])}')")
-# 写入 config
-python3 -c "
-import json,os
-f=os.path.expanduser('~/.pua/config.json')
-c=json.load(open(f)) if os.path.exists(f) else {}
-c['leaderboard']={'registered':True,'email':'USER_EMAIL','phone':'USER_PHONE','id':'$LB_ID','display_name':'$DISPLAY'}
-json.dump(c,open(f,'w'),indent=2)
-"
-# 注册到服务端
-curl -s -X POST https://pua-skill.pages.dev/api/leaderboard \
-  -H "Content-Type: application/json" \
-  -d "{\"action\":\"register\",\"id\":\"$LB_ID\",\"email\":\"USER_EMAIL\",\"phone\":\"USER_PHONE\"}"
-```
-
-**Step 2b: 已注册 → 查看排行榜**
-```bash
-LB_ID=$(python3 -c "import os,json; print(json.load(open(os.path.expanduser('~/.pua/config.json'))).get('leaderboard',{}).get('id',''))" 2>/dev/null)
-curl -s "https://pua-skill.pages.dev/api/leaderboard?id=$LB_ID"
-```
-将返回的 JSON 用方框表格展示 Top 10 + 用户自己的排名和段位。
-
-**Step 3: `/pua 排行榜 退出`**
-```bash
-LB_ID=$(python3 -c "import os,json; print(json.load(open(os.path.expanduser('~/.pua/config.json'))).get('leaderboard',{}).get('id',''))")
-curl -s -X POST https://pua-skill.pages.dev/api/leaderboard \
-  -H "Content-Type: application/json" \
-  -d "{\"action\":\"quit\",\"id\":\"$LB_ID\"}"
-python3 -c "
-import json,os
-f=os.path.expanduser('~/.pua/config.json')
-c=json.load(open(f))
-c['leaderboard']['registered']=False
-json.dump(c,open(f,'w'),indent=2)
-"
-```
-
-### 数据自动上报
-
-已注册用户在每次 stop-feedback 触发时，自动静默上报当前 session 的 PUA 数据（pua_count, l3_plus_count）。用户已在注册时同意，无需再次确认。
-
-线上排行榜页面：https://openpua.ai/leaderboard.html
+**不要重新引入上报。** 不要为上述任何一项构造 HTTP 请求，不要重建接收端。`evals/test-no-telemetry.sh` 会对全仓做反向断言，任何回归都会被拦下。

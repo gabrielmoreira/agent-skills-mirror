@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 411 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 412 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 411 |
+| Files         | 412 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -392,84 +392,85 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 331 | ✓ | [`skills/ce-riffrec-feedback-analysis/scripts/analyze_riffrec_zip.py`](skills/ce-riffrec-feedback-analysis/scripts/analyze_riffrec_zip.py) |
 | 332 | ✓ | [`skills/ce-riffrec-feedback-analysis/SKILL.md`](skills/ce-riffrec-feedback-analysis/SKILL.md) |
 | 333 | ✓ | [`skills/ce-setup/references/config-template.yaml`](skills/ce-setup/references/config-template.yaml) |
-| 334 | ✓ | [`skills/ce-setup/references/repo-fixes.md`](skills/ce-setup/references/repo-fixes.md) |
-| 335 | ✓ | [`skills/ce-setup/scripts/check-health`](skills/ce-setup/scripts/check-health) |
-| 336 | ✓ | [`skills/ce-setup/SKILL.md`](skills/ce-setup/SKILL.md) |
-| 337 | ✓ | [`skills/ce-simplify-code/references/personas/code-quality-reviewer.md`](skills/ce-simplify-code/references/personas/code-quality-reviewer.md) |
-| 338 | ✓ | [`skills/ce-simplify-code/references/personas/code-reuse-reviewer.md`](skills/ce-simplify-code/references/personas/code-reuse-reviewer.md) |
-| 339 | ✓ | [`skills/ce-simplify-code/references/personas/efficiency-reviewer.md`](skills/ce-simplify-code/references/personas/efficiency-reviewer.md) |
-| 340 | ✓ | [`skills/ce-simplify-code/SKILL.md`](skills/ce-simplify-code/SKILL.md) |
-| 341 | ✓ | [`skills/ce-strategy/references/grounding.md`](skills/ce-strategy/references/grounding.md) |
-| 342 | ✓ | [`skills/ce-strategy/references/interview.md`](skills/ce-strategy/references/interview.md) |
-| 343 | ✓ | [`skills/ce-strategy/references/strategy-template.md`](skills/ce-strategy/references/strategy-template.md) |
-| 344 | ✓ | [`skills/ce-strategy/references/update-run.md`](skills/ce-strategy/references/update-run.md) |
-| 345 | ✓ | [`skills/ce-strategy/SKILL.md`](skills/ce-strategy/SKILL.md) |
-| 346 | ✓ | [`skills/ce-sweep/references/agents/media-analyzer.md`](skills/ce-sweep/references/agents/media-analyzer.md) |
-| 347 | ✓ | [`skills/ce-sweep/references/interview.md`](skills/ce-sweep/references/interview.md) |
-| 348 | ✓ | [`skills/ce-sweep/references/model-tiers.md`](skills/ce-sweep/references/model-tiers.md) |
-| 349 | ✓ | [`skills/ce-sweep/references/plan-template.md`](skills/ce-sweep/references/plan-template.md) |
-| 350 | ✓ | [`skills/ce-sweep/references/run.md`](skills/ce-sweep/references/run.md) |
-| 351 | ✓ | [`skills/ce-sweep/references/sources/email.md`](skills/ce-sweep/references/sources/email.md) |
-| 352 | ✓ | [`skills/ce-sweep/references/sources/github-issues.md`](skills/ce-sweep/references/sources/github-issues.md) |
-| 353 | ✓ | [`skills/ce-sweep/references/sources/slack.md`](skills/ce-sweep/references/sources/slack.md) |
-| 354 | ✓ | [`skills/ce-sweep/references/state-schema.md`](skills/ce-sweep/references/state-schema.md) |
-| 355 | ✓ | [`skills/ce-sweep/references/subagent-template.md`](skills/ce-sweep/references/subagent-template.md) |
-| 356 | ✓ | [`skills/ce-sweep/scripts/analyze_riffrec_zip.py`](skills/ce-sweep/scripts/analyze_riffrec_zip.py) |
-| 357 | ✓ | [`skills/ce-sweep/scripts/sweep-state.py`](skills/ce-sweep/scripts/sweep-state.py) |
-| 358 | ✓ | [`skills/ce-sweep/SKILL.md`](skills/ce-sweep/SKILL.md) |
-| 359 | ✓ | [`skills/ce-test-browser/references/agent-browser-driver.md`](skills/ce-test-browser/references/agent-browser-driver.md) |
-| 360 | ✓ | [`skills/ce-test-browser/references/pipeline-orchestration.md`](skills/ce-test-browser/references/pipeline-orchestration.md) |
-| 361 | ✓ | [`skills/ce-test-browser/references/route-and-report.md`](skills/ce-test-browser/references/route-and-report.md) |
-| 362 | ✓ | [`skills/ce-test-browser/scripts/resolve-port.sh`](skills/ce-test-browser/scripts/resolve-port.sh) |
-| 363 | ✓ | [`skills/ce-test-browser/SKILL.md`](skills/ce-test-browser/SKILL.md) |
-| 364 | ✓ | [`skills/ce-test-xcode/references/setup-and-build.md`](skills/ce-test-xcode/references/setup-and-build.md) |
-| 365 | ✓ | [`skills/ce-test-xcode/references/test-and-report.md`](skills/ce-test-xcode/references/test-and-report.md) |
-| 366 | ✓ | [`skills/ce-test-xcode/SKILL.md`](skills/ce-test-xcode/SKILL.md) |
-| 367 | ✓ | [`skills/ce-work/references/agents/figma-design-sync.md`](skills/ce-work/references/agents/figma-design-sync.md) |
-| 368 | ✓ | [`skills/ce-work/references/agents/implementation-worker.md`](skills/ce-work/references/agents/implementation-worker.md) |
-| 369 | ✓ | [`skills/ce-work/references/cross-model-execution.md`](skills/ce-work/references/cross-model-execution.md) |
-| 370 | ✓ | [`skills/ce-work/references/cross-model-work-eval.md`](skills/ce-work/references/cross-model-work-eval.md) |
-| 371 | ✓ | [`skills/ce-work/references/execution-engines.md`](skills/ce-work/references/execution-engines.md) |
-| 372 | ✓ | [`skills/ce-work/references/execution-strategy.md`](skills/ce-work/references/execution-strategy.md) |
-| 373 | ✓ | [`skills/ce-work/references/implementation-loop.md`](skills/ce-work/references/implementation-loop.md) |
-| 374 | ✓ | [`skills/ce-work/references/implementation-result-schema.json`](skills/ce-work/references/implementation-result-schema.json) |
-| 375 | ✓ | [`skills/ce-work/references/input-triage.md`](skills/ce-work/references/input-triage.md) |
-| 376 | ✓ | [`skills/ce-work/references/non-code-execution.md`](skills/ce-work/references/non-code-execution.md) |
-| 377 | ✓ | [`skills/ce-work/references/return-to-caller.md`](skills/ce-work/references/return-to-caller.md) |
-| 378 | ✓ | [`skills/ce-work/references/review-findings-followup.md`](skills/ce-work/references/review-findings-followup.md) |
-| 379 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
-| 380 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
-| 381 | ✓ | [`skills/ce-work/references/work-intake.md`](skills/ce-work/references/work-intake.md) |
-| 382 | ✓ | [`skills/ce-work/references/workspace-setup.md`](skills/ce-work/references/workspace-setup.md) |
-| 383 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
-| 384 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
-| 385 | ✓ | [`skills/ce-work/scripts/unit_workspace_ignored.py`](skills/ce-work/scripts/unit_workspace_ignored.py) |
-| 386 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
-| 387 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
-| 388 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
-| 389 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
-| 390 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
-| 391 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
-| 392 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
-| 393 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
-| 394 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
-| 395 | ✓ | [`skills/lfg/references/plan-brief.md`](skills/lfg/references/plan-brief.md) |
-| 396 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
-| 397 | ✓ | [`skills/lfg/references/shipping-tail.md`](skills/lfg/references/shipping-tail.md) |
-| 398 | ✓ | [`skills/lfg/references/stage-routing.md`](skills/lfg/references/stage-routing.md) |
-| 399 | ✓ | [`skills/lfg/references/task-visibility.md`](skills/lfg/references/task-visibility.md) |
-| 400 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
-| 401 | ✓ | [`skills/lfg/references/work-return.md`](skills/lfg/references/work-return.md) |
-| 402 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
-| 403 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
-| 404 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
-| 405 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
-| 406 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
-| 407 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
-| 408 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
-| 409 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
-| 410 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
-| 411 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
+| 334 | ✓ | [`skills/ce-setup/references/legacy-codex-tool-map.md`](skills/ce-setup/references/legacy-codex-tool-map.md) |
+| 335 | ✓ | [`skills/ce-setup/references/repo-fixes.md`](skills/ce-setup/references/repo-fixes.md) |
+| 336 | ✓ | [`skills/ce-setup/scripts/check-health`](skills/ce-setup/scripts/check-health) |
+| 337 | ✓ | [`skills/ce-setup/SKILL.md`](skills/ce-setup/SKILL.md) |
+| 338 | ✓ | [`skills/ce-simplify-code/references/personas/code-quality-reviewer.md`](skills/ce-simplify-code/references/personas/code-quality-reviewer.md) |
+| 339 | ✓ | [`skills/ce-simplify-code/references/personas/code-reuse-reviewer.md`](skills/ce-simplify-code/references/personas/code-reuse-reviewer.md) |
+| 340 | ✓ | [`skills/ce-simplify-code/references/personas/efficiency-reviewer.md`](skills/ce-simplify-code/references/personas/efficiency-reviewer.md) |
+| 341 | ✓ | [`skills/ce-simplify-code/SKILL.md`](skills/ce-simplify-code/SKILL.md) |
+| 342 | ✓ | [`skills/ce-strategy/references/grounding.md`](skills/ce-strategy/references/grounding.md) |
+| 343 | ✓ | [`skills/ce-strategy/references/interview.md`](skills/ce-strategy/references/interview.md) |
+| 344 | ✓ | [`skills/ce-strategy/references/strategy-template.md`](skills/ce-strategy/references/strategy-template.md) |
+| 345 | ✓ | [`skills/ce-strategy/references/update-run.md`](skills/ce-strategy/references/update-run.md) |
+| 346 | ✓ | [`skills/ce-strategy/SKILL.md`](skills/ce-strategy/SKILL.md) |
+| 347 | ✓ | [`skills/ce-sweep/references/agents/media-analyzer.md`](skills/ce-sweep/references/agents/media-analyzer.md) |
+| 348 | ✓ | [`skills/ce-sweep/references/interview.md`](skills/ce-sweep/references/interview.md) |
+| 349 | ✓ | [`skills/ce-sweep/references/model-tiers.md`](skills/ce-sweep/references/model-tiers.md) |
+| 350 | ✓ | [`skills/ce-sweep/references/plan-template.md`](skills/ce-sweep/references/plan-template.md) |
+| 351 | ✓ | [`skills/ce-sweep/references/run.md`](skills/ce-sweep/references/run.md) |
+| 352 | ✓ | [`skills/ce-sweep/references/sources/email.md`](skills/ce-sweep/references/sources/email.md) |
+| 353 | ✓ | [`skills/ce-sweep/references/sources/github-issues.md`](skills/ce-sweep/references/sources/github-issues.md) |
+| 354 | ✓ | [`skills/ce-sweep/references/sources/slack.md`](skills/ce-sweep/references/sources/slack.md) |
+| 355 | ✓ | [`skills/ce-sweep/references/state-schema.md`](skills/ce-sweep/references/state-schema.md) |
+| 356 | ✓ | [`skills/ce-sweep/references/subagent-template.md`](skills/ce-sweep/references/subagent-template.md) |
+| 357 | ✓ | [`skills/ce-sweep/scripts/analyze_riffrec_zip.py`](skills/ce-sweep/scripts/analyze_riffrec_zip.py) |
+| 358 | ✓ | [`skills/ce-sweep/scripts/sweep-state.py`](skills/ce-sweep/scripts/sweep-state.py) |
+| 359 | ✓ | [`skills/ce-sweep/SKILL.md`](skills/ce-sweep/SKILL.md) |
+| 360 | ✓ | [`skills/ce-test-browser/references/agent-browser-driver.md`](skills/ce-test-browser/references/agent-browser-driver.md) |
+| 361 | ✓ | [`skills/ce-test-browser/references/pipeline-orchestration.md`](skills/ce-test-browser/references/pipeline-orchestration.md) |
+| 362 | ✓ | [`skills/ce-test-browser/references/route-and-report.md`](skills/ce-test-browser/references/route-and-report.md) |
+| 363 | ✓ | [`skills/ce-test-browser/scripts/resolve-port.sh`](skills/ce-test-browser/scripts/resolve-port.sh) |
+| 364 | ✓ | [`skills/ce-test-browser/SKILL.md`](skills/ce-test-browser/SKILL.md) |
+| 365 | ✓ | [`skills/ce-test-xcode/references/setup-and-build.md`](skills/ce-test-xcode/references/setup-and-build.md) |
+| 366 | ✓ | [`skills/ce-test-xcode/references/test-and-report.md`](skills/ce-test-xcode/references/test-and-report.md) |
+| 367 | ✓ | [`skills/ce-test-xcode/SKILL.md`](skills/ce-test-xcode/SKILL.md) |
+| 368 | ✓ | [`skills/ce-work/references/agents/figma-design-sync.md`](skills/ce-work/references/agents/figma-design-sync.md) |
+| 369 | ✓ | [`skills/ce-work/references/agents/implementation-worker.md`](skills/ce-work/references/agents/implementation-worker.md) |
+| 370 | ✓ | [`skills/ce-work/references/cross-model-execution.md`](skills/ce-work/references/cross-model-execution.md) |
+| 371 | ✓ | [`skills/ce-work/references/cross-model-work-eval.md`](skills/ce-work/references/cross-model-work-eval.md) |
+| 372 | ✓ | [`skills/ce-work/references/execution-engines.md`](skills/ce-work/references/execution-engines.md) |
+| 373 | ✓ | [`skills/ce-work/references/execution-strategy.md`](skills/ce-work/references/execution-strategy.md) |
+| 374 | ✓ | [`skills/ce-work/references/implementation-loop.md`](skills/ce-work/references/implementation-loop.md) |
+| 375 | ✓ | [`skills/ce-work/references/implementation-result-schema.json`](skills/ce-work/references/implementation-result-schema.json) |
+| 376 | ✓ | [`skills/ce-work/references/input-triage.md`](skills/ce-work/references/input-triage.md) |
+| 377 | ✓ | [`skills/ce-work/references/non-code-execution.md`](skills/ce-work/references/non-code-execution.md) |
+| 378 | ✓ | [`skills/ce-work/references/return-to-caller.md`](skills/ce-work/references/return-to-caller.md) |
+| 379 | ✓ | [`skills/ce-work/references/review-findings-followup.md`](skills/ce-work/references/review-findings-followup.md) |
+| 380 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
+| 381 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
+| 382 | ✓ | [`skills/ce-work/references/work-intake.md`](skills/ce-work/references/work-intake.md) |
+| 383 | ✓ | [`skills/ce-work/references/workspace-setup.md`](skills/ce-work/references/workspace-setup.md) |
+| 384 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
+| 385 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
+| 386 | ✓ | [`skills/ce-work/scripts/unit_workspace_ignored.py`](skills/ce-work/scripts/unit_workspace_ignored.py) |
+| 387 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
+| 388 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
+| 389 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
+| 390 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
+| 391 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
+| 392 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
+| 393 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
+| 394 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
+| 395 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
+| 396 | ✓ | [`skills/lfg/references/plan-brief.md`](skills/lfg/references/plan-brief.md) |
+| 397 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
+| 398 | ✓ | [`skills/lfg/references/shipping-tail.md`](skills/lfg/references/shipping-tail.md) |
+| 399 | ✓ | [`skills/lfg/references/stage-routing.md`](skills/lfg/references/stage-routing.md) |
+| 400 | ✓ | [`skills/lfg/references/task-visibility.md`](skills/lfg/references/task-visibility.md) |
+| 401 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
+| 402 | ✓ | [`skills/lfg/references/work-return.md`](skills/lfg/references/work-return.md) |
+| 403 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
+| 404 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
+| 405 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
+| 406 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
+| 407 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
+| 408 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
+| 409 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
+| 410 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
+| 411 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
+| 412 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
 
 ---
 

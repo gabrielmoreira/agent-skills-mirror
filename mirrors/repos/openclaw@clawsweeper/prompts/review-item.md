@@ -65,6 +65,15 @@ For PRs, read relevant maintainer review notes before reviewing the diff. If the
 
 This is a read-only review. Do not edit files, create notes, add commits, push branches, comment on GitHub, close items, or otherwise mutate the target repository. Only return the JSON decision.
 
+ClawSweeper owns this structured review and its mandatory TruffleHog admission
+scan. The host scans the exact explicit initial prompt and schema, and complete
+raw before/after blobs and diff for the introduced PR change, independently of
+display truncation and prompt budgets. This is the host-managed equivalent of
+the review/scan admission step; do not run target-bundled autoreview helpers or
+start another reviewer. Do not claim those helpers ran. This does not scan every
+later tool result, automatically loaded project instruction, resumed/steered
+conversation, provider request, or all repository history.
+
 The checkout must remain byte-for-byte clean. Use read-only inspection commands only, such as `rg`, `sed`, `nl`, `find`, `git log`, `git show`, `git diff`, `gh issue view`, `gh pr view`, and `gh api`. Do not run commands that install dependencies, generate files, update caches, run formatters, rewrite lockfiles, apply patches, create temp files inside the repo, or otherwise write to the checkout. Do not use `apply_patch`, redirection, `tee`, `cat >`, `touch`, `mkdir`, `pnpm install`, build commands, or tests that create artifacts.
 
 Review deeply before closing. High confidence means you read enough current code, docs, tests, comments, related reports, and git history to understand the real product boundary. Do not decide from the issue title, one exact `rg` hit, or one nearby file. Search for synonyms and old names from the issue, then inspect the implementation, call sites, tests/docs, and relevant history around the matching surface. Prefer several independent checks over a single brittle match. If the item is a PR, inspect the PR body/diff/files/comments plus current `main` behavior before deciding whether the work is obsolete or still useful.
@@ -130,6 +139,25 @@ signals. Do not include email addresses in `likelyOwners`, `person`, reasons,
 summaries, or public comments. Prefer GitHub handles from PR/commit metadata;
 otherwise use a display name without the `<email>` part.
 
+Blame identifies last modification, not feature introduction. `^SHA`, porcelain
+`boundary`, revision limits, or missing parent objects leave introduction unknown.
+`--root`/`blame.showRoot` can hide those markers; `git show --root` and graph-based
+`%P` can misrepresent a shallow commit as a root. Inspect `git cat-file commit
+<sha>` and compare the exact source line against the raw recorded parents. An
+unchanged line is carried forward, not introduced. Keep code author, committer,
+PR author, reviewer, and merger separate; one role never proves another.
+
+For at most five `likelyOwners`, supply `history` only for a concrete source-line
+change: full `commitSha`, `sourcePath` and `sourceLine` at the recorded review
+checkout, and `actor: author` or `committer`. A PR-head coordinate locates prior
+merged history; branch-only commits do not establish historical routing ownership.
+Use `history: null` for independent CODEOWNERS, review-context, or domain candidates. The host verifies Git facts and
+projects public actor names/roles itself; unverified history becomes unknown,
+and other candidates remain low-confidence routing suggestions without historical
+claims. Your free-form role/reason stays in the raw decision artifact, not the
+public related-people section. Do not move unsupported introduction claims into
+summaries, evidence prose, decision-owner reasons, or other public fields.
+
 For potential regressions, use the non-blaming `regressionAssessment` field.
 Set it to `null`, or choose `suspected` with one or more directly observed
 supporting evidence kinds, or `probable` with at least two. The only allowed
@@ -147,8 +175,9 @@ repository-relative source path plus positive line. The source path and line
 must identify the current target checkout's recorded review revision: current
 main, or the exact PR head in a local PR checkout. Never point at an arbitrary
 or unrecorded revision. Set it to `null` unless the candidate is direct and
-specific. The runtime independently validates the PR metadata and blames the
-exact line; only that result publishes a confirmed predecessor link. If the
+specific. The runtime independently validates PR metadata and the exact blamed
+line's patch against raw recorded parents; only that result publishes a verified
+predecessor link, not semantic responsibility for a regression. If the
 trail is incomplete or ambiguous, keep the assessment generic and do not name
 an automatically attributed predecessor PR.
 
@@ -555,7 +584,7 @@ expressly authorized production-path harnesses. Mocked transport clients and
 isolated unit tests remain `mock_only`; preserve existing browser-runtime, CSP,
 auth, and security safeguards.
 
-For PRs, always fill `telegramVisibleProof`. Use `status: "needed"` only when the PR touches Telegram behavior and the user-visible change can be demonstrated by the repository `telegram-e2e-userbot` skill, such as message formatting, slash-command output, reply text, attachments, reactions, threading, mentions, or other visible Telegram chat behavior. Use `status: "not_needed"` for non-Telegram PRs and for Telegram changes that are internal-only, test-only, docs-only, logging-only, retry/network reliability only, auth/secret plumbing only, or otherwise not meaningfully observable in a short Telegram Test Server run. A label, title, consumer, or example does not make internal shared retry/ordering work visible. For that work, set
+For PRs, always fill `telegramVisibleProof`. Use `status: "needed"` only when the PR changes user-visible Telegram behavior that Telegram's Test Server can observe, whether or not the repository `telegram-e2e-userbot` skill already covers that API path. Examples include message formatting, slash-command output, reply text, attachments, reactions, threading, mentions, and other visible Telegram chat behavior. Use `status: "not_needed"` for non-Telegram PRs and for Telegram changes that are internal-only, test-only, docs-only, logging-only, retry/network reliability only, auth/secret plumbing only, or otherwise not meaningfully observable in a short Telegram Test Server run. A label, title, consumer, or example does not make internal shared retry/ordering work visible. For that work, set
 `telegramVisibleProof.status: "not_needed"` and
 `mantisRecommendation.status: "not_recommended"`.
 
@@ -1075,7 +1104,8 @@ more tests or more security review are not enough.
 
 Always fill `telegramVisibleProof` using the changed-behavior classification
 above. The `proof: telegram-e2e` label tells the execution worker to use the
-repository `telegram-e2e-userbot` skill.
+repository `telegram-e2e-userbot` skill, exercise the exact changed behavior,
+and extend its harness or recipes when the current coverage cannot expose it.
 
 Always fill `liveProofPlan` with the fixed retired compatibility shape specified
 above. Do not derive commands, steps, or another demonstration plan from the

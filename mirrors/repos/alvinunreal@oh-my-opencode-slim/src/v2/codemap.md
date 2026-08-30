@@ -112,7 +112,9 @@ expanding the global v2 client surface.
 ## Integration Points
 
 - `src/index.ts`: imports `createV2Setup` for the dual `default` export
-  (`tui: true` marker included) and exports `OhMyOpenCodeLite` (named) for the
+  (`{ id, server, setup }` — no `tui` key; hosts validate that a server
+  module's `tui` field is a function and never coexists with `server`) and
+  exports `OhMyOpenCodeLite` (named) for the
   adapter to wrap. The `hostFlavor: 'v2'` marker from the shim gates the
   multiplexer off (`shouldEnableMultiplexer` /
   `sessionManagerMultiplexerConfig`).

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a collection of 64 agent skills for Claude, Claude Code, Claude Cowork, Codex, Cursor, OpenClaw, Hermes Agent and other agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.). Fourteen of them are **metaskills** — guided journeys that orchestrate the other skills step by step toward a goal.
+This is a collection of 65 agent skills for Claude, Claude Code, Claude Cowork, Codex, Cursor, OpenClaw, Hermes Agent and other agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.). Fourteen of them are **metaskills** — guided journeys that orchestrate the other skills step by step toward a goal.
 
 ## Repository Structure
 
@@ -32,7 +32,7 @@ skills/
 
 The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) and the [Agent Plugins](https://agent-plugins.org/) standard (root `plugin.json` in each `plugins/*` dir, plus the `plugins/wondelai-skills` all-in-one bundle) are **generated from `.claude-plugin/marketplace.json`** by `scripts/generate-plugins.sh` — same 10 collections, same skill membership, versions tracked automatically. The plugin trees contain **copies** of the skills, not symlinks (the Agent Plugins spec requires all paths to resolve inside the plugin root), so after editing any skill's `SKILL.md` or `references/`, re-run `scripts/sync-ide-skills.sh` to refresh them. Never hand-edit the generated trees.
 
-## Current Skills (64)
+## Current Skills (65)
 
 | Category | Skills |
 |----------|--------|
@@ -43,7 +43,7 @@ The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) and 
 | **Product/Innovation** | jobs-to-be-done, lean-startup, design-sprint, inspired-product, continuous-discovery, 37signals-way |
 | **Product/Strategy** | mom-test, negotiation, monetizing-innovation, lean-analytics |
 | **Strategy/Growth** | crossing-the-chasm, blue-ocean-strategy, traction-eos, obviously-awesome, good-strategy-bad-strategy, cold-start-problem |
-| **Code Quality** | clean-code, refactoring-patterns, software-design-philosophy, pragmatic-programmer, domain-driven-design, working-with-legacy-code |
+| **Code Quality** | clean-code, refactoring-patterns, software-design-philosophy, pragmatic-programmer, domain-driven-design, working-with-legacy-code, technical-documentation |
 | **Systems/Architecture** | ddia-systems, system-design, clean-architecture, release-it, high-perf-browser, team-topologies |
 | **Team/Management** | drive-motivation, high-output-management |
 
@@ -98,6 +98,8 @@ See [references/file.md](references/file.md) when <situation> — <what it adds>
 (Author bio)
 ```
 
+Skills adapted from a non-book source (a public style guide or standard, e.g. `technical-documentation`) replace `## About the Author` with `## About the Source` — the same 2-3 sentences plus the source's license and an attribution line; everything else in the template is unchanged.
+
 ### Required Fields
 - `name`: Unique identifier (lowercase, hyphens for spaces, max 64 chars)
 - `description`: What the skill does and when to use it (max 1024 chars). Use numbered use cases: `(1) ..., (2) ..., (3) ...`
@@ -139,7 +141,7 @@ The 14 metaskills (create/improve/grow × business/website/app, improve-code-qua
 /plugin install product-innovation@wondelai-skills  # Lean Startup, Design Sprint, Design of Everyday Things, Inspired, Continuous Discovery
 /plugin install strategy-growth@wondelai-skills     # Crossing the Chasm, Blue Ocean Strategy, Traction/EOS, Obviously Awesome, Good Strategy Bad Strategy, Cold Start Problem
 /plugin install team-motivation@wondelai-skills     # Drive (Autonomy, Mastery, Purpose), High Output Management
-/plugin install code-craftsmanship@wondelai-skills  # Clean Code, Refactoring Patterns, Software Design Philosophy, Pragmatic Programmer, DDD, Working with Legacy Code
+/plugin install code-craftsmanship@wondelai-skills  # Clean Code, Refactoring Patterns, Software Design Philosophy, Pragmatic Programmer, DDD, Working with Legacy Code, Google Docs Style
 /plugin install systems-architecture@wondelai-skills # DDIA, System Design, Clean Architecture, Release It!, High Performance Browser Networking, Team Topologies
 /plugin install metaskills@wondelai-skills           # 14 guided journeys: create/improve/grow × business/website/app + improve-code-quality, remove-technical-debt, design-code-architecture, conversion-optimization, architecture-optimization
 ```

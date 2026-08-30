@@ -7,7 +7,7 @@ user-invocable: true
 
 # llama.cpp Windows 多模型部署与优化集成技能
 
-> **版本**: v3.2 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10158+ | **更新**: 2026-08-16（新增 `--fit` 自动显存分层实测、CPU 工具调用新模型、参数知识库与启动脚本自动同步方法论、Router Mode 参考脚本）
+> **版本**: v3.4 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10448+ | **更新**: 2026-08-29（新增故障快速排查 30 秒清单、技能版本维护 SOP、detect 脚本连接诊断 [7/7]、make_auto qwen3.8 参数断言 guardrail）
 
 ## 一、When to Use（触发词）
 
@@ -25,6 +25,8 @@ user-invocable: true
 | 工具调用 | "工具调用", "tool calling", "function calling", "--tools all", "--jinja" |
 | 纯 CPU 推理 | "CPU工具调用", "纯CPU", "CPU-only", "不占GPU", "128K" |
 | BAT 脚本 | "脚本闪退", "乱码", "GBK", "UTF-8", "编码" |
+| Qwen3.8 部署 | "Qwen3.8", "qwen35", "reasoning_effort", "128K", "长上下文", "长会话" |
+| VS Code 模型接入 | "VS Code", "customendpoint", "chat-completions", "ECONNREFUSED", "8084" |
 
 ## 二、Prerequisites（前置条件）
 
@@ -295,6 +297,29 @@ pause
 - ✅ **MTP 在 CPU 上实测生效**：QwenPaw-heretic-MTP 27.3 vs 非 MTP 15.7 t/s（+74%），`draft acceptance = 0.725`；内置 MTP head 模型**不要**传 `--model-draft`
 - 完整实测见 [`./references/20260816-session-experience.md`](./references/20260816-session-experience.md)
 
+#### 3F：Qwen3.8-27B 专项（qwen35 架构 + 长会话 + 128K）⭐ 2026-08-29 实测
+
+**模型特性（GGUF 元数据实测）**：
+- arch=`qwen35`、**65 层**（blk.64 为 MTP/nextn 专用）、KV head 4×256、ctx_train=262144、**内置 MTP**（`nextn_predict_layers=1`，**勿传 `--model-draft`**）
+- **SWA 混合注意力**：`full_attention_interval=4`（每 4 层 1 层全注意力，其余滑动窗口 4096）→ KV 增长慢：**64K q8_0≈2.85GB / 128K≈5.28GB**
+- 官方采样：thinking `temp 1.0/top-p 0.95/top-k 20/min-p 0.0/presence 0.0/repeat 1.0`；non-thinking `temp 0.7/top-p 0.80/top-k 20/presence 1.5`
+- `reasoning_effort` 经 `--chat-template-kwargs "{\"reasoning_effort\":\"medium\"}"` 传递（cmd 已验证）
+
+**16GB 部署速度矩阵（实测）**：
+
+| 配置 | 上下文 | tg t/s |
+|------|--------|--------|
+| Q3_K_XL (13.15GB) | 64K fit | 22.0 |
+| IQ3_S (12.04GB) | 64K fit | 27.5–28.7 |
+| Q3_K_XL | 128K fit | 12.6 |
+| IQ3_S | 128K fit | 16.0 |
+| IQ3_S | 128K `-ngl 56` | 16.9 |
+| IQ3_S | 128K `-ngl 58` + `--batch-size 512` | **18.8** |
+
+**128K 提速方法论（关键）**：fit 在 128K 下偏保守；**手工 `-ngl` 扫描可显著超过 fit**（IQ3_S：fit 16.0 → ngl58+batch512 18.8，+17.5%）。ngl 过高会使显存打满（<200MB 余量）触发 CUDA graph 回退反而降速（ngl60=15.7）。流程：fit 基线 → `-ngl` 递减试探 → 取**显存余量 ≥400MB** 的最快档。
+
+**长会话稳定参数（实测 45K 上下文 5 轮零降速）**：`--reasoning-budget 8192` + `--reasoning-format deepseek`（防无限思考，Gemma 经验复用）+ `--reasoning-preserve` + `--metrics`；KV 保持 q8_0 不降精度；`--cache-reuse` **不支持**（当前 context 自动禁用，勿加）。
+
 ### Step 4：安全配置（WSL2 + Agent 对接）
 
 ```bat
@@ -317,6 +342,13 @@ llm = ChatOpenAI(
     model="Qwen3.5-2B-Q4_K_M",
 )
 ```
+
+**VS Code 自定义模型接入（customendpoint / chat-completions，2026-08-29 实测）**：
+- URL 用 `http://<宿主机IP>:8084/v1`：VS Code 跑在 **WSL 远程**时 `localhost` 指 WSL 内部，NAT 模式与 Windows 宿主隔离 → `ECONNREFUSED 127.0.0.1:8084`；或 `.wslconfig` 开 `networkingMode=mirrored`（Win11 22H2+）后可直接 `localhost`
+- **ECONNREFUSED 双根因排查**：① 端口无服务（先启动启动器，`netstat -ano | findstr :8084`）② 跨主机 localhost 隔离（URL 改宿主机 IP）
+- 宿主机 IP 获取：WSL 内 `cat /etc/resolv.conf | grep nameserver` 或 `ip route | grep default`
+- 配置要点：`maxInputTokens` 必须 ≤ 服务端 `-c`（64K→约 60000，128K→128000）；`settings` 键名须与模型 `id`/`name` 一致；`supportsReasoningEffort` 勿含 llama-server 不支持的 `"none"`（建议 low/medium/high）；`apiKey` 与启动器 `--api-key` 一致
+- 服务端须 `--host 0.0.0.0` + `--api-key`（见上表）
 
 ### Step 5：Tool Calling 工具调用（内置，无需安装）⭐ 2026-08-03 实测
 
@@ -353,13 +385,21 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 
 #### 6A：模型清单自动同步器 `update-launchers`（2026-08-16 新增）
 
-- **位置**：`D:\dev\projects\llama.cpp\` 下 `update-launchers.bat`（纯 ASCII 入口）+ `update_launchers.py`（Python 3.11 纯标准库，用现成 `.venv\Scripts\python.exe`）+ `launcher-models.json`（注册表，UTF-8）
-- **作用**：扫描 `D:\dev\models\chat`，自动同步 4 个工件——`start-CPU-Toolcall-Launcher.bat` / `start-Gemma4-Launcher.bat` / `start-Qwen-Launcher.bat` / `models-config.ini`（Router preset）
+- **位置**：`<llama-cpp-dir>\` 下 `update-launchers.bat`（纯 ASCII 入口）+ `update_launchers.py`（Python 3.11 纯标准库，用现成 `.venv\Scripts\python.exe`）+ `launcher-models.json`（注册表，UTF-8）
+- **作用**：扫描 `<models-dir>`，自动同步 4 个工件——`start-CPU-Toolcall-Launcher.bat` / `start-Gemma4-Launcher.bat` / `start-Qwen-Launcher.bat` / `models-config.ini`（Router preset）
   - 模型目录被删 → 自动移除对应变量/菜单/启动块并重编号菜单；ini 僵尸段同步清除
   - 新模型目录出现 → 按家族自动生成默认参数条目（菜单标 [NEW]）：gemma→Gemma4 启动器（自动配对 gemma4_mtp draft 生成 +MTP 条目）/ qwen→Qwen / lfm→CPU / 其他→Qwen
   - 每次写入前自动备份 `backup\<名>.bak-YYYYMMDD-HHMMSS`
 - **用法**：双击（报告+确认）| `--check` 干跑（预览写 `backup\preview\`）| `--yes` 全自动 | `--extract` 从 3 脚本重建注册表 | `--no-scan` 按注册表原样渲染（回归）
 - **要点**：手工调参改注册表 JSON 而非直接改 3 个启动脚本（会被覆盖）；生成器严格按各脚本编码写出（Gemma4/Qwen=GBK 无 BOM、CPU/ini=ASCII、CRLF）；ini 相比旧 generate_ini.bat 修复了「文件名含 mtp 即被排除」的 bug（内置 MTP heads 模型现在也能进 Router）
+
+**工程缺陷修复经验（2026-08-29 实测）**：
+- `make_auto` 生成 group **必须带 `"t":"group"`**；`build_varmap`/`render_launcher`/`main` 三处遍历 region 均须 `.get("t")` 防御——缺 `t` 键会 `KeyError: 't'`，**第二次同步必崩**（`--audit` 也在对应启动器前中断，掩盖后续所有问题）
+- 多行参数串（`layer_seg`/`extra`）内嵌 `\n` 与 CRLF join 混合 → body 产生**孤立 LF**（bat 字节级污染）→ 构造 body 时先 `s.split("\n")` 扁平化再 `"\r\n".join`
+- **字符串 replace 注入参数会静默失败**（行顺序假设错误时）：注入后必须断言验证（统计 `--reasoning-budget 8192` 出现次数）；曾仅 `--metrics` 落地、budget/format/ubatch 全部漏掉
+- `render_launcher` 增加**重复 goto 断言**（拦截手工漂移块/重复标签回归，goto 只命中第一个块导致旧参数生效）
+- `QUANT_RE` 需覆盖新量化名（`IQ\d_S` 等），否则菜单量化显示 `?`
+- mmproj dtype（F16/F32/BF16）编码在文件名：`--fix-mmproj` 把静态引用同步到磁盘最新文件；自动条目按 mtime 最新优先
 
 #### 6B：参数知识库 + 26B 长会话降速实测修复（2026-08-16）
 
@@ -418,6 +458,19 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 
 </details>
 
+## 故障快速排查（30 秒版）⭐ 2026-08-29 新增
+
+**连接失败 / 启动异常时按序执行**：
+
+| 步骤 | 检查 | 判定与处置 |
+|------|------|-----------|
+| ① | 端口是否有服务监听 | `netstat -ano | findstr :8084`（Windows）无输出 → 先启动启动器 |
+| ② | 客户端是否在 WSL 远程 | 错误含 `.vscode-server` / `$env:WSL_DISTRO_NAME` 存在 → URL 用宿主机 IP（`cat /etc/resolv.conf | grep nameserver`），勿用 `localhost`；或 `.wslconfig` 开 `networkingMode=mirrored` |
+| ③ | `apiKey` 是否匹配 | VS Code customendpoint 的 `apiKey` 须与服务端 `--api-key` 一致（否则 401） |
+| ④ | `maxInputTokens` 是否超限 | 必须 ≤ 服务端 `-c`（64K→60000；128K→128000） |
+| ⑤ | `reasoningEffort` 值域 | 勿含 `none`（llama-server 不支持），用 low/medium/high |
+| ⑥ | 参数是否 silent fail | 生成器注入后核对 `--reasoning-budget 8192` 等关键参数出现次数（见 6A 工程经验） |
+
 ## 七、Troubleshooting（常见故障排查）
 
 | 现象 | 根因 | 解决方案 |
@@ -442,6 +495,12 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 | 含中文 GBK 脚本被外部工具转 UTF-8 损坏（U+FFFD） | 编辑器/工具按 UTF-8 重存 | 用 skeleton+LCS 合并法从 backup 恢复中文（见 `references/20260816-session-experience.md` 六节） |
 | 128K 上下文加载崩溃 | 16GB 显存下权重 + 128K KV 超限 | 降 64K + 提 ngl（27B 实测反而更快） |
 | 模型不支持工具调用 | 模型能力限制（如 Phi-4-mini） | 换支持模型；菜单标注 `[!] NO tool calls` |
+| `invalid argument: --repetition-penalty` | llama.cpp 参数名是 `--repeat-penalty`（repetition 是模型/文档概念名） | 用 `--repeat-penalty` |
+| `--chat-template-kwargs` 报 JSON parse（PowerShell 手动启动） | PowerShell 里 `\"` 不转义引号，`"{\"...\"}"` 被拆散传成 `{\\` | **PowerShell 用单引号** `'{"reasoning_effort":"medium"}'`；bat(cmd) 里 `"{\"...\"}"` 正确（CommandLineToArgvW 解析） |
+| 思考型模型回答为空/截断 | 思考链（reasoning_content）先耗尽 `max_tokens` | 抽验时 `max_tokens ≥ 300`（或临时降 reasoning_effort） |
+| VS Code 调用 `ECONNREFUSED 127.0.0.1:<port>` | ① 端口无服务 ② VS Code 在 WSL 远程，localhost 指 WSL 内部 | 先启动服务；URL 改宿主机 IP（resolv.conf nameserver）或开 mirrored |
+| `--cache-reuse` 提示 not supported | 当前 context 类型不支持 | 移除该参数（自动禁用，无效） |
+| `--no-mmap`/`--defrag-thold` DEPRECATED | 新 build 弃用 | `--load-mode mmap`；KV 碎片已内建管理 |
 
 **参考脚本编码现状说明（2026-08-05 修订）**：`references/gemma4-menu-scripts.bat`、`qwen-scripts.bat`、`start-CPU-Toolcall-Launcher.bat` 已统一为 **UTF-8 + 全英文（纯 ASCII）+ 无 chcp**，任意 Windows cmd 可直接运行无乱码（方案 B）。实测教训：UTF-8 中文注释 + `chcp 65001` 的混合脚本在中文 Windows cmd 下会被 GBK 误解析导致命令错乱（如 `llama-server.exe` 被截断成 `erver.exe` 报错），因此参考脚本不再使用中文。用户自建脚本若需中文界面，请用方案 A（GBK 编码 + 删 chcp + 去 emoji）。
 
@@ -450,7 +509,7 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 | 目标版本 | 恢复/调整的参数 | 说明 |
 |---------|---------------|------|
 | b10070+ | `--verbose-prefill` | 验证 MTP Prefill 生效 |
-| b10070+ | `--defrag-thresh 0.1` | 优化长对话 KV Cache 碎片 |
+| b10070+ | `--defrag-thresh 0.1` | ⚠️ 新 build（b101xx+）已废弃为 `--defrag-thold (DEPRECATED)`，KV 碎片改由内建管理，可不加 |
 | 迁移到 `--draft-*` 命名 | 见下方「spec→draft 映射表」 | 参考脚本默认按 b10056 `--spec-*` 编写；新版 build 检测到 `--draft-*` 后按映射表切换 |
 | b10158+ | `--jinja` / `--tools all` | 工具调用内置功能；`--tools all` 需配合 `--jinja` |
 
@@ -477,6 +536,16 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 - [ ] **工具调用**：Phase 1 探测 + Phase 2 两轮工具循环（如适用；Phi-4-mini 预期不支持）
 - [ ] **脚本可启动**：双击 .bat 不闪退（中文 Windows 注意编码，见 Troubleshooting）
 - [ ] **CPU 模式**：`-ngl 0` 时 `nvidia-smi` 无 llama 进程（确认不占 GPU）
+
+## 十、技能版本维护 SOP（2026-08-29 新增）
+
+每次对技能内容做实质改动后，按序执行并勾选：
+
+- [ ] 1. 更新 SKILL.md 头部版本行（`**版本**: vX.Y`）与更新日期/一句话摘要
+- [ ] 2. 在 `CHANGELOG.md` 顶部追加版本条目（Added/Changed/Fixed 三段）
+- [ ] 3. 同步 `.agents` 部署副本：`Copy-Item` 覆盖 `~\.agents\skills\llama-cpp-windows-deployment\` 下的 `SKILL.md` 与新增 `references\*.md`
+- [ ] 4. 记录 one-line reason（可选写入 repo memory）
+- [ ] 5. 验证副本：确认新内容在 `.agents` 副本中可检索（`Get-Content -Raw ... | Select-String`）
 
 ---
 

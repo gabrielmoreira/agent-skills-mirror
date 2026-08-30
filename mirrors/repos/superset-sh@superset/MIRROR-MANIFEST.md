@@ -89,9 +89,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
 | 29 | ✓ | [`apps/docs/src/app/llms.txt/route.ts`](apps/docs/src/app/llms.txt/route.ts) |
 | 30 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts) |
-| 31 | ✓ | [`apps/marketing/src/app/api/llms.txt/route.ts`](apps/marketing/src/app/api/llms.txt/route.ts) |
-| 32 | ✓ | [`apps/marketing/src/app/blog/llms.txt/route.ts`](apps/marketing/src/app/blog/llms.txt/route.ts) |
-| 33 | ✓ | [`apps/marketing/src/app/compare/llms.txt/route.ts`](apps/marketing/src/app/compare/llms.txt/route.ts) |
+| 31 | ✓ | [`apps/marketing/src/app/[lang]/blog/llms.txt/route.ts`](apps/marketing/src/app/[lang]/blog/llms.txt/route.ts) |
+| 32 | ✓ | [`apps/marketing/src/app/[lang]/compare/llms.txt/route.ts`](apps/marketing/src/app/[lang]/compare/llms.txt/route.ts) |
+| 33 | ✓ | [`apps/marketing/src/app/api/llms.txt/route.ts`](apps/marketing/src/app/api/llms.txt/route.ts) |
 | 34 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
 | 35 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 36 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |

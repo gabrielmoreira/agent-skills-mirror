@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 95 |
+| Files         | 98 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -152,8 +152,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 91 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
 | 92 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
 | 93 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
-| 94 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
-| 95 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 94 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
+| 95 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
+| 96 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
+| 97 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
+| 98 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

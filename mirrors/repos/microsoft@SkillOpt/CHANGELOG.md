@@ -7,6 +7,11 @@ All notable changes to SkillOpt are documented here. This project adheres to
 ## [Unreleased]
 
 ### Added
+- **SkillOpt-Sleep paired A/B evalkit** (`python -m skillopt_sleep.evalkit`):
+  McNemar plus percentile-bootstrap CIs on a fixed task manifest, with
+  task-cluster multi-seed inference and seeded null calibration for exact-test
+  type-I error and bootstrap coverage. The nightly gate is unchanged
+  (thanks @bogdanbaciu21).
 - **SkillOpt-Sleep multi-skill fan-out and reviewed subset adoption**: each
   hinted skill is consolidated from its own pinned live baseline, staged as an
   independent proposal with per-skill gate evidence, and promoted only through

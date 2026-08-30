@@ -7,26 +7,26 @@ hooks:
   UserPromptSubmit:
     - hooks:
         - type: command
-          command: "SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=userprompt; exit 0"
+          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=userprompt; exit 0"
   PreToolUse:
     - matcher: "Write|Edit|Bash|Read|Glob|Grep"
       hooks:
         - type: command
-          command: "SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=pretool; exit 0"
+          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=pretool; exit 0"
   PostToolUse:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "if [ -f task_plan.md ] || [ -f .planning/.active_plan ] || ls .planning/*/task_plan.md >/dev/null 2>&1; then echo '[planning-with-files] Update progress.md with what you just did. If a phase is now complete, update task_plan.md status.'; fi"
+          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; if [ -f task_plan.md ] || [ -f .planning/.active_plan ] || ls .planning/*/task_plan.md >/dev/null 2>&1; then echo '[planning-with-files] Update progress.md with what you just did. If a phase is now complete, update task_plan.md status.'; fi"
   Stop:
     - hooks:
         - type: command
-          command: "PS1_T=\"${CLAUDE_SKILL_DIR}/scripts/check-complete.ps1\"; [ -f \"$PS1_T\" ] || PS1_T=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.ps1\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.ps1\" 2>/dev/null | head -1); SH_T=\"${CLAUDE_SKILL_DIR}/scripts/gate-stop.sh\"; [ -f \"$SH_T\" ] || SH_T=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/gate-stop.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/gate-stop.sh\" 2>/dev/null | head -1); case \"$(uname -s 2>/dev/null)\" in MINGW*|MSYS*|CYGWIN*) if [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" -Gate 2>/dev/null; elif [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; fi ;; *) if [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; elif [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" -Gate 2>/dev/null; fi ;; esac; exit 0"
+          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; PS1_T=\"${CLAUDE_SKILL_DIR}/scripts/check-complete.ps1\"; [ -f \"$PS1_T\" ] || PS1_T=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.ps1\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.ps1\" 2>/dev/null | head -1); SH_T=\"${CLAUDE_SKILL_DIR}/scripts/gate-stop.sh\"; [ -f \"$SH_T\" ] || SH_T=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/gate-stop.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/gate-stop.sh\" 2>/dev/null | head -1); case \"$(uname -s 2>/dev/null)\" in MINGW*|MSYS*|CYGWIN*) if [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" -Gate 2>/dev/null; elif [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; fi ;; *) if [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; elif [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" -Gate 2>/dev/null; fi ;; esac; exit 0"
   PreCompact:
     - matcher: "*"
       hooks:
         - type: command
-          command: "SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
+          command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
   version: "3.11.2"
 ---
@@ -278,13 +278,13 @@ Not every install path ships every surface in this section. Two distinct install
 | `/plugin marketplace add OthmanAdi/planning-with-files` then `/plugin install` | SKILL.md, scripts, templates, **plus `commands/` folder** | Yes, as `/plan-goal` and `/plan-loop` |
 | `npx skills add OthmanAdi/planning-with-files` (or ClawHub) | SKILL.md, scripts, templates only | No, follow the manual fallback below |
 
-The PreCompact hook is registered in the SKILL.md frontmatter and works for both routes. The `/plan-goal` and `/plan-loop` slash commands live in `commands/` at the repo root, which only the plugin route copies into `~/.claude/plugins/marketplaces/`. Skill-only installs land at `~/.claude/skills/planning-with-files/` and do not see `commands/`.
+Plugin installs register six lifecycle events from `hooks/hooks.json`, including quiet `SessionStart` recovery. Standalone skill installs register the five hooks in this SKILL.md frontmatter only after the skill is invoked for that session, so they have no startup recovery. The `/plan-goal` and `/plan-loop` slash commands live in `commands/` at the repository root and are available from the versioned plugin cache. Skill-only installs land at `~/.claude/skills/planning-with-files/` and do not include `commands/`.
 
-Both slash commands also carry `disable-model-invocation: true`, which means the model will not auto-trigger them. You type them. Per known Claude Code behavior (anthropics/claude-code issues #26251, #41417), some sessions interpret `disable-model-invocation: true` as "I cannot use the Skill tool for this entry at all" and refuse to fire even when you type the slash. If that happens, the manual fallback below produces the same effect.
+Both slash commands carry `disable-model-invocation: true`, so invoke them explicitly. If a command is unavailable on a skill-only install, the manual fallback below produces the same planning-file result.
 
 ### PreCompact hook (auto)
 
-The skill registers a `PreCompact` hook with matcher `"*"`. It fires on both `/compact` (manual) and autoCompact (context-full). When `task_plan.md` is present, the hook:
+Both supported routes register a `PreCompact` hook with matcher `"*"`. It fires for manual and automatic compaction after the relevant plugin or standalone hook route is active. When an active plan is present, the hook:
 
 - Reminds the agent to flush in-context progress to `progress.md` before compaction completes.
 - Prints `Plan-SHA256` if an attestation is set, so the post-compaction agent can verify the plan is still the one you approved.

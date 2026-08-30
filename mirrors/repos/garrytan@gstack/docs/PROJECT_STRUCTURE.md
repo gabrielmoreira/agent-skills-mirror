@@ -20,11 +20,14 @@ gstack/
 │   └── index.ts     # Registry: exports all, derives Host type
 ├── scripts/         # Build + DX tooling
 │   ├── gen-skill-docs.ts  # Template → SKILL.md generator (config-driven)
+│   ├── gen-agents-digest.ts  # Generates the budget-capped instruction-tier digest (agents-digest/)
 │   ├── host-config.ts     # HostConfig interface + validator
 │   ├── host-config-export.ts  # Shell bridge for setup script
 │   ├── resolvers/   # Template resolver modules (preamble, design, review, gbrain, etc.)
 │   ├── skill-check.ts     # Health dashboard
+│   ├── test-free-shards.ts  # Strict parallel free-suite runner (GSTACK_FREE_JOBS, opt-in flaky retry)
 │   ├── test-paid-shards.ts  # Sharded paid-tier runner (one Bun process per shard)
+│   ├── sandbox-doctor.sh  # One-command cloud-sandbox fixer: makes the free suite run green
 │   └── dev-skill.ts       # Watch mode
 ├── test/            # Skill validation + eval tests
 │   ├── helpers/     # skill-parser.ts, session-runner.ts, llm-judge.ts, eval-store.ts
@@ -40,7 +43,7 @@ gstack/
 ├── review/          # PR review skill
 ├── plan-ceo-review/ # /plan-ceo-review skill
 ├── plan-eng-review/ # /plan-eng-review skill
-├── autoplan/        # /autoplan skill (auto-review pipeline: CEO → design → eng)
+├── autoplan/        # /autoplan skill (auto-review pipeline: CEO → design → DX → eng, eng always last)
 ├── benchmark/       # /benchmark skill (performance regression detection)
 ├── canary/          # /canary skill (post-deploy monitoring loop)
 ├── codex/           # /codex skill (multi-AI second opinion via OpenAI Codex CLI)
@@ -61,6 +64,7 @@ gstack/
 │   ├── src/         # CLI + commands (generate, variants, compare, serve, etc.)
 │   ├── test/        # Integration tests
 │   └── dist/        # Compiled binary
+├── agents-digest/   # Committed 2KB instruction-tier rules digest (gstack-AGENTS.md) for rules-reading hosts
 ├── extension/       # Chrome extension (side panel + activity feed + CSS inspector)
 ├── lib/             # Shared libraries (worktree.ts, egress-receipt.ts, context-bill.ts, redact-engine.ts, tracker-guard.ts, version-source.ts, code-intelligence/)
 ├── patches/         # bun `patchedDependencies` patches (playwright-core windowsHide)

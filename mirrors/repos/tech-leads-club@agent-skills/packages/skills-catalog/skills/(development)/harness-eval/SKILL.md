@@ -4,7 +4,7 @@ description: "Evaluate a repo agent harness (AGENTS.md, rules, skills, skill ref
 license: CC-BY-4.0
 metadata:
   author: Tech Leads Club - github.com/tech-leads-club
-  version: 1.8.2
+  version: 1.8.3
 ---
 
 # Harness Eval

@@ -63,6 +63,8 @@ After the health report, decide Phase 2 from writable-checkout availability:
 - If this session has no writable checkout, but the user named a repository and the harness exposes a remote repo-work surface with a writable checkout, run Phase 2 on that surface instead and report the remote repo-local fixes in Phase 3.
 - Otherwise skip Phase 2 and go to Phase 3, saying repo-local writes were skipped because no writable checkout is available.
 
+If the report names a legacy Compound Codex tool map, offer to remove it following `references/legacy-codex-tool-map.md` from this skill's directory. That block lives in the user's Codex home, not the checkout, so the offer stands whether or not Phase 2 runs.
+
 Also remediate these project issues when the report names them:
 
 - obsolete `compound-engineering.local.md`
@@ -88,8 +90,8 @@ Display a brief summary:
 ```text
 ✅ Compound Engineering setup complete
 
-Fixed:     <repo-local fixes applied, or none>
-Skipped:   <repo-local fixes declined, or none>
+Fixed:     <fixes applied, or none>
+Skipped:   <fixes declined, or none>
 Optional:  <missing optional tools, or all available>
 
 Run `<rendered invocation>` anytime to re-check.

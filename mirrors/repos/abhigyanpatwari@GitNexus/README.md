@@ -179,7 +179,7 @@ flowchart TB
 | `group_list`     | List configured repository groups                                      |
 | `group_sync`     | Rebuild a group's Contract Registry and cross-repo links               |
 
-> Per-repo tools take an optional `repo` parameter (omit it when only one repo is indexed) and an optional `branch` for indexes pinned with `gitnexus analyze --branch`. Omitting `branch` queries the workspace index, which follows your checked-out working tree — switching branches and re-running `gitnexus analyze` updates it incrementally. `explain` and `pdg_query` need an index built with `gitnexus analyze --pdg`.
+> Per-repo read-only tools take an optional `repo` parameter. Omit it when only one repo is indexed, an MCP default is configured, or the GitNexus process cwd is inside a registered path without crossing into an unindexed nested Git checkout; otherwise pass it explicitly. Mutating tools require `repo` when multiple repos are indexed and no MCP default exists. Per-repo tools also take an optional `branch` for indexes pinned with `gitnexus analyze --branch`. Omitting `branch` queries the workspace index, which follows your checked-out working tree — switching branches and re-running `gitnexus analyze` updates it incrementally. `explain` and `pdg_query` need an index built with `gitnexus analyze --pdg`.
 
 ### Resources for instant context
 
@@ -384,6 +384,7 @@ Everyday commands:
 ```bash
 gitnexus setup                   # Configure MCP for detected editors (one-time; -c to select)
 gitnexus analyze [path]          # Index a repository (or update a stale index)
+gitnexus analyze [path] --watch  # Watch local files and serialize incremental refreshes
 gitnexus mcp                     # Start MCP server (stdio) — serves all indexed repos
 gitnexus serve                   # Start local HTTP server (multi-repo) for web UI connection
 gitnexus eval-server             # Start lightweight evaluation HTTP tools (loopback by default)
@@ -395,6 +396,28 @@ gitnexus uninstall               # Preview removal of GitNexus MCP/skills/hooks 
 ```
 
 You can also query the graph directly from the terminal — `gitnexus query`, `context`, `impact`, `trace`, `cypher`, `detect-changes`, and `check` mirror the MCP tools of the same names, and `gitnexus doctor` prints runtime platform capabilities.
+
+`gitnexus analyze --watch` requires a Git repository. It runs one initial
+analysis, then debounces scanner-admitted working-tree changes for 300 ms by
+default and applies serialized incremental refreshes. Events arriving during a
+refresh remain queued, and retryable failures retain the same batch with bounded
+backoff. Invalid `.gitnexusrc` or ignore-file reloads pause ordinary refreshes
+until the control file is fixed. Stop the watcher with Ctrl+C.
+
+Watch mode accepts `--debounce`, `--workers`, `--worker-timeout`,
+`--max-file-size`, `--branch`, `--pdg`, `--name`, `--allow-duplicate-name`, and
+`--verbose`. Explicit one-shot options such as `--force`, `--repair-fts`,
+embedding flags, `--skills`, `--self-commit`, `--index-only`, and `--skip-git`
+are rejected. Unsupported defaults from `.gitnexusrc` are ignored with a
+warning rather than making an otherwise valid repository unwatchable.
+
+POSIX requests clone-first copy-and-swap publication when the live index has no
+orphan sidecars. Windows and sidecar fallback runs update in place: failures
+known to occur before writes are retried, while a failure that may have mutated
+the live index stops the watcher. Watch mode does not pull remotes. Running MCP
+and `serve` processes reopen a newly published index automatically; MCP observes
+the replacement on its next tool call, typically within five seconds, so no
+restart is required.
 
 <details>
 <summary><strong>Authenticated <code>eval-server</code> binding</strong></summary>
@@ -589,7 +612,7 @@ GitNexus builds a complete knowledge graph of your codebase through a multi-phas
 
 GitNexus uses a **global registry** so one MCP server can serve multiple indexed repos. No per-project MCP config needed — set it up once and it works everywhere.
 
-Each `gitnexus analyze` stores the index in `.gitnexus/` inside the repo (portable, gitignored) and registers a pointer in `~/.gitnexus/registry.json`. When an AI agent starts, the MCP server reads the registry and can serve any indexed repo. LadybugDB connections are opened lazily on first query and evicted after 5 minutes of inactivity (max 5 concurrent). If only one repo is indexed, the `repo` parameter is optional on all tools — agents don't need to change anything.
+Each `gitnexus analyze` stores the index in `.gitnexus/` inside the repo (portable, gitignored) and registers a pointer in `~/.gitnexus/registry.json`. When an AI agent starts, the MCP server reads the registry and can serve any indexed repo. LadybugDB connections are opened lazily on first query and evicted after 5 minutes of inactivity (max 5 concurrent). Read-only tools can omit `repo` when only one repo is indexed, an MCP default is configured, or the GitNexus process cwd is inside a registered path without crossing into an unindexed nested Git checkout. Outside those paths—and for mutating tools with multiple indexed repos and no MCP default—pass `repo` explicitly.
 
 <details>
 <summary><strong>Architecture diagram</strong></summary>
@@ -767,6 +790,7 @@ gitnexus wiki
 # Use a custom model or provider (default model: minimax/minimax-m2.5)
 gitnexus wiki --model gpt-4o
 gitnexus wiki --base-url https://api.anthropic.com/v1
+gitnexus wiki --provider grok   # local Grok Build CLI (uses `grok login`, no API key)
 
 # Force full regeneration
 gitnexus wiki --force

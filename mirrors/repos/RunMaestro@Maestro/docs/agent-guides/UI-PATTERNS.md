@@ -118,6 +118,8 @@ function SettingsModal({ theme, onClose }: Props) {
 - `initialFocusRef` - element to auto-focus on mount
 - `layerOptions` - pass-through to `useModalLayer`
 
+**A modal body must never focus its own input.** `<Modal>` always claims focus on mount, inside a `requestAnimationFrame`: it focuses `initialFocusRef` when one is passed and its own overlay container when one is not. That frame lands AFTER the body's own effects, so a child that calls `inputRef.current.focus()` itself is silently handed back to a `div` one frame later and the surface swallows every keystroke - the failure looks like a dead text box, not a focus bug. Pass `initialFocusRef` and let Modal do it. A body effect stays correct for things focus does not undo, such as putting the caret at the end of a textarea (`QueuedItemEditModal`).
+
 `<ModalFooter>` provides a standard cancel/confirm button pair with optional `destructive` styling (red confirm button).
 
 ### Modal Sizing (max footprint)
@@ -142,10 +144,9 @@ A modal opts into drag-to-resize by passing `resizeKey` to `<Modal>`. Do NOT han
 	title="About Maestro"
 	priority={MODAL_PRIORITIES.ABOUT}
 	onClose={onClose}
-	width={560} // default size before any resize
-	resizeKey="about" // stable, unique; enables the corner grip
-	minWidth={460} // floor for this modal's layout
-	minHeight={420}
+	resizeKey="about" // stable, unique; enables the resize handles
+	defaultSize={{ width: 560, height: 480 }} // size before any resize
+	minSize={{ width: 460, height: 420 }} // floor for this modal's layout
 >
 ```
 
@@ -153,9 +154,11 @@ How it works:
 
 - `useResizableModal` (`src/renderer/hooks/ui/useResizableModal.ts`) owns the drag. Like `useResizablePanel` it writes to the DOM during the drag and commits React state once on mouseup. Deltas are doubled because the card is centered: growing the width by W moves the right edge by only W/2, so doubling keeps the grip under the pointer.
 - Sizes persist in one `modalSizes` map in `uiStore`, keyed by `resizeKey`, written through to settings and hydrated by `loadAllSettings` on startup.
-- Minimums default to `MODAL_MIN_WIDTH` (360) / `MODAL_MIN_HEIGHT` (300), never exceeding the modal's declared `width`. Pass higher values when a modal's content stops making sense below a given size - every resizable modal should have a floor that still looks right.
+- `defaultSize` is the size before any drag: its width falls back to the `width` prop and its height to 320, so a modal that opts in without declaring one opens far shorter than its old `maxHeight` let it grow. Declare both.
+- Minimums default to `DEFAULT_MODAL_MIN_SIZE` (320 x 240) in `src/renderer/utils/modalSizing.ts`. Pass a higher `minSize` when a modal's content stops making sense below a given size - every resizable modal should have a floor that still looks right.
 - Sizes are clamped to `MODAL_MAX_VIEWPORT_RATIO` (90%) of the viewport both at drag time and at read time, so a modal sized on a large display still opens sanely on a laptop.
-- `ModalResizeGrip` renders the bottom-right grip; double-clicking it forgets the remembered size and returns the modal to its declared default.
+- `ResizeHandles` renders all eight edges and corners; double-clicking any of them forgets the remembered size and returns the modal to its declared default.
+- The frame is a flex column with a fixed header and footer, so **the body must be told to fill it**: a scroll container still carrying `max-h-[400px]` (or any fixed height) leaves dead space below the list no matter how far the user drags. Pass `contentClassName="p-6 flex-1 min-h-0 flex flex-col"` and give the scrolling child `flex-1 min-h-0 overflow-y-auto` instead of a height cap. `ShortcutsHelpModal` is the reference caller.
 
 `resizeKey` must be stable across renders - it is the persistence key, not a label.
 
@@ -328,6 +331,12 @@ The `ESC` pill is that exit. Use `<EscCloseButton>` (`src/renderer/components/ui
 `onClose` must do **exactly** what pressing Escape does. When the Escape path lives in a `useModalLayer` / `registerLayer` callback, extract it into a named `useCallback` and pass the same function to both, rather than duplicating the body (see `TerminalOutput`'s `closeOutputSearch` and `QuickActionsModal`'s `handleEscape`).
 
 Tests: query the pill by role, not by index. It is a real `<button>` now, so `getAllByRole('button')[n]` in a modal test counts it - scope list assertions to the rows themselves (e.g. `[data-action-label]`).
+
+### Arrow-Key Navigation Inside a Modal Belongs on the Element, Not `window`
+
+A `useEventListener('keydown', ...)` on `window` never sees a key pressed inside a `<Modal>`: the overlay stops keydown before it reaches the window, and whatever held focus when the surface opened (a composer textarea, a tab strip) can swallow the key first. Put the handler on the scrolling container or the card itself with `onKeyDown`, give it `tabIndex={-1}` plus `outline-none`, and make sure something focuses it - `initialFocusRef` for a `<Modal>`, a mount effect for a card. `ExecutionQueueBrowser` handles rows on its card and menu items on the action list for exactly this reason.
+
+Two rules go with it. **Let a focused control keep its own keys**: bail out when the event target is inside an `input`, `textarea`, or `[contenteditable]`, and leave `Enter` to a focused `<button>`, or the list steals the key from the control the user is actually on. And **take focus back when a child surface closes** (`useFocusOnClose`), because the focused element was just unmounted, focus falls to `<body>`, and the next arrow key silently does nothing - which reads as the keyboard dying halfway through.
 
 ### Segmented Toolbars (`<SegmentedControl>`)
 
@@ -522,6 +531,8 @@ An inline arrow function is a new identity on every render, so React detaches th
 **No `behavior: 'smooth'` on a long list.** The animation to a distant index runs long enough for the user's next wheel gesture to arrive mid-flight, and the two fight over the scroll offset.
 
 The same identity trap applies to a non-virtualized list, minus the loop - the scroll just fires more often than the user changed anything. Use `useScrollIntoView` (`hooks/ui/useScrollIntoView.ts`) there, which keys on the value rather than on render count.
+
+**Smooth or instant is decided by how the user moves through the list**, not by taste. `useScrollIntoView(isOpen, selectedIndex, itemCount, behavior)` defaults to `'smooth'`, which is right for a short dropdown stepped one item at a time (the slash-command, tab-completion, and @-mention popovers in `InputArea`). Pass `'auto'` for a list the user HOLDS an arrow key on: key repeat fires faster than a smooth scroll animates, so each repeat cancels the animation in flight and the list lurches and stalls instead of stepping. An instant scroll per keypress is what reads as smooth under key repeat. `GroupChatHistoryPanel` is the first `'auto'` caller, and it pairs the hook with `scroll-p-2` on the scroll container so `block: 'nearest'` leaves a sliver of the next entry visible at the edges - without the padding the selection pins flat against the boundary and a held arrow looks like the list stopped moving.
 
 Testing it needs the virtualizer mocked: jsdom has no layout engine, so the real one measures a zero-height scroll element, yields zero items, and every assertion about row scrolling passes vacuously. `FileSearchModal.render.test.tsx` mocks `useVirtualizer` to emit a fixed window of rows, stubs `Element.prototype.scrollIntoView` (jsdom does not implement it), and asserts it is never called. Lead with a test that the rows exist, or the suite proves nothing.
 
@@ -731,6 +742,8 @@ Do NOT reach for it to add a global shortcut. Those belong in `constants/shortcu
 ### Keyboard Mastery Gamification
 
 Shortcut usage is tracked for a gamification system (`keyboardMasteryStats`). The `recordShortcutUsage` function in settings increments counters and can trigger level-up celebrations.
+
+The percentage is `countUsedBoundShortcuts(bound, used) / bound.length`, where `bound` comes from `collectBoundShortcuts()` in `src/renderer/constants/keyboardMastery.ts`. Every surface that shows a mastery figure (the help modal's bar, the Usage Dashboard ring and its Unused Shortcuts list, the leaderboard payload, the store's level-up check) runs its maps through that one helper, so they cannot disagree about the total. Unbound shortcuts are excluded from BOTH ends: they still appear in the help modal's list marked `Unassigned` (the user should know the action exists and can bind it), but they carry no progress circle, never appear as "unused", and never sit in the denominator. See [RENDERER-SERVICES.md -> keyboardMastery.ts](RENDERER-SERVICES.md#keyboardmasteryts-87-lines).
 
 ---
 
