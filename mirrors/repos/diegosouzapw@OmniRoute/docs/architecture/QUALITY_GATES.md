@@ -224,6 +224,72 @@ These run on a cron schedule (and `workflow_dispatch`), never on PRs. All are ad
 
 ---
 
+## Velocity phase (2026-08-30 → v4.0 LTS): every baseline loosened by 20%
+
+Owner decision (2026-08-30): until the v4.0 modularization, shipping speed matters more
+than holding the debt line. Every **numeric** ratchet baseline was loosened by 20% in one
+auditable pass, and the phase is declared in `config/quality/quality-baseline.json`:
+
+```json
+"_policy": { "phase": "velocity", "since": "2026-08-30", "until": "4.0.0",
+             "relaxPct": 20, "requireTighten": false }
+```
+
+| What changed                                                                                                                                                                                  | Where                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `metrics.*.value` — lower-is-better counts ×1.2, higher-is-better percentages ÷1.2 (coverage floor 60 kept, `eslintErrors` stays 0, `eslintWarnings` 0 → 20% of the frozen suppression count) | `quality-baseline.json` (`_relax_velocity_2026_08_30` note lists every before → after)                 |
+| `count` ×1.2 / `percentage` ×1.2                                                                                                                                                              | `complexity-baseline.json`, `duplication-baseline.json`                                                |
+| `cap`, `testCap`, every `frozen[*]` / `testFrozen[*]` line cap ×1.2                                                                                                                           | `file-size-baseline.json`                                                                              |
+| per-file / per-TS-code counts ×1.2                                                                                                                                                            | `api-typecheck-baseline.json`, `dashboard-typecheck-baseline.json`, `open-sse-typecheck-baseline.json` |
+| `THRESHOLD` 36 → 30                                                                                                                                                                           | `scripts/check/check-openapi-coverage.mjs`                                                             |
+| `--require-tighten` becomes advisory while `_policy.requireTighten === false`                                                                                                                 | `scripts/quality/check-quality-ratchet.mjs`                                                            |
+| nightly `bank-ratchet-shrinks` pauses (it would bank the measured shrink and undo the headroom)                                                                                               | `.github/workflows/nightly-release-green.yml`                                                          |
+
+Allowlists (`eslint-suppressions.json`, `test-masking-allowlist.json`, `test-discovery-baseline.json`,
+…) are **not** budgets and were not touched. Pass/fail policy gates (secrets, SQL rules,
+docs/env contract, i18n parity, unit tests) are unchanged — a red test is still a red test.
+
+**Tooling**
+
+- `npm run quality:relax-baselines -- --pct 20 --note velocity_YYYY_MM_DD [--dry-run]` — the
+  one-shot relaxation (`scripts/quality/relax-baselines.mjs`); refuses to run twice with the
+  same note.
+- `npm run quality:headroom [-- --only deadExports,fileSize] [--json out.json --md out.md]` —
+  measures every numeric gate the way CI does and prints the remaining headroom per gate
+  (`scripts/quality/baseline-headroom.mjs`). The nightly `baseline-headroom` job posts the
+  table to the living issue **📈 Baseline headroom (velocity phase)** and adds the
+  `headroom-alert` label when any gate is within 10% of its cap or already over it. That issue
+  is the early warning: a budget that fills in days means the relaxation is being consumed by
+  a few PRs, not by the whole team — look at the offending gate's `_rebaseline_*` notes.
+
+**New-code mode (Clean-as-You-Code) — since 2026-08-30, PR fast-path only**
+
+On `pull_request` events `quality.yml` passes `--base-ref <PR base SHA>` to `check:file-size`,
+`check:complexity-ratchets` and `check:dead-code`. In that mode the gate compares HEAD with the
+merge-base **restricted to the files the PR touched** (`scripts/check/newCodeMode.mjs`: the
+merge-base is materialized in a throwaway `git worktree`, ESLint/knip run there and on HEAD, the
+per-file counts are diffed):
+
+- **blocking** — the PR added cyclomatic/cognitive violations or dead exports in files it changed
+  (`complexityNewCode=`, `cognitiveComplexityNewCode=`, `deadExportsNewCode=` in the log);
+- **advisory** — the global total vs. the frozen baseline. Inherited drift never reds an
+  innocent PR; the drift is re-frozen at release reconciliation and watched by the headroom job.
+
+`workflow_dispatch` runs, the release-green sweep and the nightly headroom job have no PR base
+and keep the absolute (global) comparison. Coverage, duplication and type-coverage stay global
+for now (their tools do not produce a per-file diff cheaply) — candidates for the same treatment.
+
+**Closing the phase at v4.0 (LTS = tighter than before, not "back to normal")**
+
+1. On the pure `release/v4.0.0` tip: `npm run quality:headroom --json` for the record, then
+   `npm run quality:ratchet -- --update`, `check:file-size --update`,
+   `check:complexity-ratchets --update`, `check:dead-code --update`, each typecheck gate's
+   `--update` — every baseline drops to the measured value.
+2. Delete `_policy` from `quality-baseline.json` (re-arms `--require-tighten` and the nightly
+   banking), restore `THRESHOLD = 36` (or higher) in `check-openapi-coverage.mjs`.
+3. Tighten beyond measured where the modularization paid off: file-size `cap` back to 1000
+   (or 800), coverage floors +5, dead exports 0 for the modularized packages.
+
 ## Ratchet Baseline (`quality-baseline.json`)
 
 The ratchet engine (`scripts/quality/check-quality-ratchet.mjs`) reads `quality-baseline.json`

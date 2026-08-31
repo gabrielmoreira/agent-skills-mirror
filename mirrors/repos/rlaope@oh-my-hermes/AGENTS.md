@@ -237,6 +237,27 @@ for shared surfaces and run the full suite before claiming completion.
 For direction, docs, generated skill, wrapper contract, lifecycle, or runtime
 artifact changes, add or update tests that lock the public contract.
 
+### Reporting Our Own Numbers
+
+A rate OMH computes about itself is a claim, so it carries what it divided.
+Every percentage in a payload names the buckets its numerator summed, what its
+denominator counted, and every observation class excluded before either count
+was taken — `src/quality/reported_rate.py` is that shape, and
+`reported_rate_shape_errors()` is what checks it. Two specific traps:
+
+- **An empty denominator is not 0%.** `max(1, count)` in a divisor turns a
+  corpus with nothing in it into a confident zero, which claims that every case
+  was measured and every case failed. Report `percent: null` with basis
+  `no_observations` instead, and let an unmeasured rate fail its target rather
+  than pass it.
+- **A composed numerator says so.** When a rate sums more than one outcome
+  bucket, name them in the payload, not only in a text formatter — every
+  non-human consumer reads the JSON.
+
+The same rule governs prose: a headline number in a commit, PR, or report names
+the arm, the corpus, the selection rule, and the committed artifact it came
+from. A number without those is `prepared_not_observed`, not a result.
+
 ## Repository Maintenance Procedures
 
 Two maintainer sweeps are written down as executor-neutral procedures. Any

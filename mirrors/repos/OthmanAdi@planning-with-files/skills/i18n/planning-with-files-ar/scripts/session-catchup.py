@@ -2,10 +2,10 @@
 """
 سكريبت استئناف الجلسة لـ planning-with-files-ar
 
-يحلل الجلسة السابقة للعثور على سياق غير متزامن بعد آخر
-تحديث لملف التخطيط. مصمم للعمل عند بداية الجلسة.
+لا يفحص الاستدعاء التلقائي مخازن جلسات المضيف. يتطلب تقرير البيانات
+الوصفية أو إصدار مقتطفات المحادثة طلبًا صريحًا.
 
-الاستخدام: python3 session-catchup.py [مسار-المشروع]
+الاستخدام: python3 session-catchup.py [--no-history|--metadata|--replay] [مسار-المشروع]
 """
 
 import hashlib
@@ -382,7 +382,9 @@ def get_codex_sessions(project_path: str) -> Iterable[Path]:
             yield session
 
 
-def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
+def get_session_candidates(
+    project_path: str, *, emit_notices: bool = True
+) -> Tuple[str, Iterable[Path]]:
     if '/.codex/' in Path(__file__).resolve().as_posix().lower():
         return 'codex', get_codex_sessions(project_path)
 
@@ -391,7 +393,7 @@ def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
         sessions, notice = filter_sessions_by_cwd(
             get_sessions_sorted(claude_project_dir), project_path
         )
-        if notice:
+        if notice and emit_notices:
             print(notice)
         return 'claude', sessions
     return 'claude', []
@@ -591,8 +593,42 @@ def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> L
     return result
 
 
+def emit_metadata_report(runtime_name: str, unsynced_count: int) -> None:
+    """أصدر أعدادًا مجمعة دون كشف بايتات مشتقة من المحادثة."""
+    print("\n[planning-with-files-ar] يتوفر سياق جلسة غير متزامن")
+    print(f"بيئة التشغيل: {runtime_name}")
+    print(f"عدد المدخلات غير المتزامنة: {unsynced_count}")
+    print("لا يتضمن وضع البيانات الوصفية مقتطفات من المحادثة.")
+    print("استخدم session-catchup.py --replay لفحص مقتطفات محدودة من المشروع نفسه.")
+
+
+def parse_cli_args(argv: List[str]) -> Tuple[str, str]:
+    """أعد (الوضع، مسار المشروع)، مع منع قراءة سجل المضيف افتراضيًا."""
+    mode = 'no-history'
+    project_path: Optional[str] = None
+    for arg in argv[1:]:
+        if arg == '--no-history':
+            mode = 'no-history'
+        elif arg == '--metadata':
+            mode = 'metadata'
+        elif arg == '--replay':
+            mode = 'replay'
+        elif arg.startswith('-'):
+            raise SystemExit(f"خيار غير معروف: {arg}")
+        elif project_path is None:
+            project_path = arg
+        else:
+            raise SystemExit("يمكن تحديد مسار مشروع واحد فقط")
+    return mode, project_path or os.getcwd()
+
+
 def main():
-    project_path = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+    mode, project_path = parse_cli_args(sys.argv)
+
+    # يجب أن يكون الاستدعاء المجرد واستدعاء SessionStart بلا وصول إلى السجل.
+    # أبق هذا الشرط قبل فحص ملفات التخطيط أو مجلد المنزل أو مخازن الجلسات.
+    if mode == 'no-history':
+        return
 
     # Check if planning files exist (indicates active task)
     has_planning_files = any(
@@ -602,7 +638,9 @@ def main():
         # No planning files in this project; skip catchup to avoid noise.
         return
 
-    runtime_name, sessions = get_session_candidates(project_path)
+    runtime_name, sessions = get_session_candidates(
+        project_path, emit_notices=(mode == 'replay')
+    )
 
     # Find a substantial previous session
     target_session = None
@@ -626,6 +664,10 @@ def main():
     messages_after = extract_messages_after(messages, last_update_line)
 
     if not messages_after:
+        return
+
+    if mode != 'replay':
+        emit_metadata_report(runtime_name, len(messages_after))
         return
 
     # Output catchup report

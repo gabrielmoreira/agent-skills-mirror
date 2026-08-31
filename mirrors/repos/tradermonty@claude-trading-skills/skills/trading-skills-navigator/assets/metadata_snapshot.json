@@ -1471,6 +1471,51 @@
     },
     {
       "category": "core-portfolio",
+      "difficulty": "advanced",
+      "display_name": "US Undervalued Growth Screener",
+      "id": "us-undervalued-growth-screener",
+      "integrations": [
+        {
+          "id": "fmp",
+          "requirement": "recommended",
+          "type": "market_data"
+        },
+        {
+          "id": "alternate_market_data",
+          "requirement": "optional",
+          "type": "market_data"
+        },
+        {
+          "id": "sec_edgar",
+          "requirement": "required",
+          "type": "web"
+        },
+        {
+          "id": "company_ir",
+          "requirement": "required",
+          "type": "web"
+        },
+        {
+          "id": "official_macro",
+          "requirement": "required",
+          "type": "web"
+        },
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "operational_role": {
+        "rationale": "Executes an end-to-end US GARP screen from a minimal request. In Claude Code it runs a local direct-FMP pipeline that keeps bulk payloads out of model context, then completes selected SEC/IR underwriting and publishes only a scope-correct audited result.",
+        "type": "standalone"
+      },
+      "status": "beta",
+      "summary": "Screen and rank US-listed small- and mid-cap undervalued-growth stocks with a generated stable-first FMP client, persistent SQLite cache, adaptive listing enumeration, FY1 estimate normalization, verified 20-day liquidity, deterministic four-lane discovery, forward same-basis valuation, standard and SBC-adjusted FCF, dilution, peer, cycle and LOE controls, strict final evaluation, prepublication audit, and a self-contained evidence bundle.",
+      "timeframe": "weekly"
+    },
+    {
+      "category": "core-portfolio",
       "difficulty": "intermediate",
       "display_name": "Value Dividend Screener",
       "id": "value-dividend-screener",

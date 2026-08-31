@@ -63,6 +63,15 @@ Behavior evaluation is risk-scaled by `daymade-skill:skill-creator`: bounded fix
 
 Treat `daymade-skill/skill-creator/scripts/packaging_policy.py` as the shipping-policy SSOT. Add or remove shipping exclusions only there, require every consumer to import it, and do not copy its directory list into documentation or consumer-specific filters.
 
+For hook loop and reminder semantics, load
+`daymade-claude-code:claude-code-hooks` and follow rule 7. Keep recurring
+advisory injectors available for the whole session, using cadence/hysteresis
+and reset semantics to limit frequency; never add a lifetime session cap.
+Reserve repetition budgets for blocking remediation loops whose capped exit is
+explicitly blocked, unshipped, or pending. Test advisory liveness across later
+fully-due windows, and leave current thresholds in the owning implementation
+rather than copying them into this file.
+
 Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
 
 ```bash
@@ -175,6 +184,7 @@ the same worktree — a blanket stage piggybacks their work into your commit:
 ```bash
 git status
 git add path/to/file1 path/to/file2   # specific files only
+git diff --cached --name-status       # every staged entry (`D` lines included) must be one you intended; a `D` you never made = drift from a parallel session's index-bypassing commit — see git-safety-net Mode D
 git commit -m "message"
 git push
 ```
@@ -292,6 +302,7 @@ If it fires, fix the issue — do NOT use `--no-verify` to bypass.
 - Keep SKILL.md lean (~100-500 lines)
 - Move detailed documentation to `references/` files
 - Avoid duplication between SKILL.md and references
+- Keep `tunnel-doctor` environment-neutral: it may teach discovery and presence checks, but exact private node labels, billing identities, endpoints, credentials, and current chain state remain in the owning private configuration/Skill and must not be copied into this public repository.
 - Scripts must be executable with proper shebangs
 - All bundled resources must be referenced in SKILL.md
 

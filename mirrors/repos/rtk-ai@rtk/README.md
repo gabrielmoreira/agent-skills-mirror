@@ -211,6 +211,7 @@ rtk cargo clippy                # Cargo clippy (-80%)
 rtk ruff check                  # Python linting (JSON, -80%)
 rtk golangci-lint run           # Go linting (JSON, -85%)
 rtk rubocop                     # Ruby linting (JSON, -60%+)
+rtk mvnd verify                 # Maven Daemon (same filters as rtk mvn)
 rtk sbt test                    # ScalaTest output (-90%)
 rtk sbt compile                 # Compilation errors only (-75%)
 rtk sbt run                     # Strip SBT preamble noise

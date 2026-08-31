@@ -1,0 +1,42 @@
+{
+  "runtime": {
+    "skill_name": "us-undervalued-growth-screener",
+    "skill_version": "3.6.1",
+    "schema_version": 3,
+    "contract_revision": "3.5",
+    "runtime_fingerprint": "ug-v3.6.1-claude-code-direct-fmp-20260830"
+  },
+  "candidate_generation_mode": "full_universe_fundamentals",
+  "candidate_pool_status": "sufficient",
+  "selection_outcome": "selected",
+  "selected_symbols": [
+    "ACME",
+    "CYCLE",
+    "STALE"
+  ],
+  "deep_dive_plan": {
+    "selected_symbols": [
+      "ACME",
+      "CYCLE",
+      "STALE"
+    ],
+    "selected_count": 3,
+    "all_selected_must_be_resolved": true,
+    "budget_locked": true,
+    "budget_change_requires_rescreen": true,
+    "user_confirmation_required": false,
+    "user_continue_instruction_allowed": false,
+    "selected_set_is_committed": true,
+    "max_deep_dive_candidates": 3,
+    "selected_set_sha256": "3a45c382a4cdff829d63e0b378e7705866ca1d689de6ec7934381d30ba359065",
+    "commitment_payload": {
+      "analysis_as_of": "2026-08-22T14:00:00-07:00",
+      "max_deep_dive_candidates": 3,
+      "selected_symbols": [
+        "ACME",
+        "CYCLE",
+        "STALE"
+      ]
+    }
+  }
+}

@@ -313,7 +313,7 @@ table groups the actual directories and notable top-level files.
 
 Top-level files in `src/lib/`:
 
-- `localDb.ts` — re-export layer only. **Never** add logic here.
+- The old `localDb.ts` barrel was removed — consumers import specific `src/lib/db/*` modules directly.
 - `proxyHealth.ts`, `proxyLogger.ts`, `tokenHealthCheck.ts`, `localHealthCheck.ts`
 - `oneproxyRotator.ts`, `oneproxySync.ts`
 - `apiBridgeServer.ts`, `cacheLayer.ts`, `semanticCache.ts`, `settingsCache.ts`
@@ -759,7 +759,7 @@ See [RESILIENCE_GUIDE.md](./RESILIENCE_GUIDE.md) and the dedicated section in
 2. Export CRUD functions for your domain.
 3. If new tables: add a migration under `src/lib/db/migrations/`, numbered
    sequentially, idempotent, transactional.
-4. Re-export from `src/lib/localDb.ts` (re-export only — **no logic**).
+4. Importers use direct imports from `@/lib/db/yourModule` (no barrel — the old `localDb.ts` re-export layer was removed).
 5. Add tests under `tests/unit/`.
 
 ### Add a new MCP tool
@@ -790,7 +790,7 @@ See [A2A-SERVER.md § Adding a New Skill](../frameworks/A2A-SERVER.md). Skills l
 - **TypeScript**: `strict: false` (legacy posture). Prefer explicit types over
   inference for cross-module boundaries.
 - **Database**: never write raw SQL in routes or handlers — always go through
-  `src/lib/db/` modules. Never add logic to `src/lib/localDb.ts`.
+  `src/lib/db/` modules. Never barrel-import — use specific `src/lib/db/*` modules directly.
 - **DB-entity typing (#3512)**: a function that writes or reads a DB table's
   row shape should take/return a named TS interface mirroring that table's
   columns 1:1, not `any` or an inline anonymous type at the call site. Land
@@ -824,7 +824,7 @@ See [A2A-SERVER.md § Adding a New Skill](../frameworks/A2A-SERVER.md). Skills l
 ## 12. Hard Rules (from CLAUDE.md)
 
 1. Never commit secrets or credentials.
-2. Never add logic to `src/lib/localDb.ts`.
+2. Never barrel-import — use specific `src/lib/db/*` modules directly.
 3. Never use `eval()` / `new Function()` / implied eval.
 4. Never commit directly to `main`.
 5. Never write raw SQL in routes — always go through `src/lib/db/` modules.

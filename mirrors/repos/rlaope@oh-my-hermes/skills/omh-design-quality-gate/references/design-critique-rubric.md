@@ -30,6 +30,24 @@ axis explicitly; a PASS with no named evidence per axis is not a review.
 - **CJK and localization fit** — when the audience needs it: fallback
   stacks, line-height, and truncation behave in the heavy script. FAIL:
   Latin-tuned metrics breaking CJK text.
+- **Default-prior fit** — the surface does not silently inherit the model's
+  own house aesthetic (cream ground, serif display, terracotta accent) where
+  the brief is operational or data-dense. FAIL: an editorial prior applied to
+  a dashboard, fintech, or developer-tool surface with no stated reason.
+- **Chosen, not inherited** — framework blue, glass surfaces, gradient
+  accents, the default UI typeface, per-surface shadows, and uniform column
+  grids each carry a stated reason or are replaced. FAIL: a default present
+  with no rationale, checked against the review prompts in
+  `omh-frontend/references/taste-foundations.md`.
+
+## Scoring the axes
+
+The axes produce the deductions; the number and the stopping rule live in
+`omh-visual-qa/references/visual-verdict-contract.md`. Use them together —
+each FAIL named here becomes one entry in that contract's `differences` list,
+paired with the smallest change that would flip it, and the round carries an
+integer score with its verdict. 90 is the pass line; under it the verdict is
+REVISE and another edit-and-recapture round is owed, not a softer adjective.
 
 ## Verdict discipline
 

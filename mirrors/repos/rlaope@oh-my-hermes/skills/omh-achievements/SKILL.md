@@ -59,7 +59,7 @@ Bad example:
 
 Use when the user asks which achievements or badges they unlocked, badge progress or tiers, recent unlocks, or wants an achievements section prepared for a report.
 
-    Strong routing signals: `achievements`, `achievement`, `badges`, `badge`, `my badges`, `show achievements`, `achievement summary`, `unlocked badges`, `badge progress`, `achievement tier`, `recent unlocks`, `badge share card`, `업적`, `배지`, `뱃지`, `도전과제`, `업적 요약`, `実績`, `バッジ`, `成就`, `徽章`
+    Strong routing signals: `achievements`, `achievement`, `badges`, `badge`, `my badges`, `show achievements`, `achievement summary`, `unlocked badges`, `badge progress`, `achievement tier`, `recent unlocks`, `badge share card`, `実績`, `バッジ`, `成就`, `徽章`, `업적`, `배지`, `뱃지`, `도전과제`, `업적 요약`
 
 ## Catalog Metadata
 

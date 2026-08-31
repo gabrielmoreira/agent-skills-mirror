@@ -1,0 +1,85 @@
+{
+  "schema_version": 3,
+  "runtime": {
+    "skill_name": "us-undervalued-growth-screener",
+    "skill_version": "3.6.1",
+    "schema_version": 3,
+    "contract_revision": "3.5",
+    "runtime_fingerprint": "ug-v3.6.1-claude-code-direct-fmp-20260830"
+  },
+  "generated_at": "2026-08-28T14:42:38.687447+00:00",
+  "valid": true,
+  "input_row_count": 3,
+  "in_scope_row_count": 3,
+  "selected_count": 3,
+  "selection_method": "sector_market_cap_stratified_validated_liquidity",
+  "max_pool": 5,
+  "per_sector_bucket_limit": 2,
+  "market_cap_buckets": [
+    500000000,
+    2000000000,
+    5000000000,
+    10000000000,
+    20000000000
+  ],
+  "selected_symbols": [
+    "LISTA",
+    "LISTB",
+    "LISTC"
+  ],
+  "selected_by_sector": {
+    "Healthcare": 1,
+    "Industrials": 1,
+    "Technology": 1
+  },
+  "selected_by_market_cap_bucket": {
+    "2000000000-5000000000": 1,
+    "500000000-2000000000": 1,
+    "5000000000-10000000000": 1
+  },
+  "exclusion_counts": {},
+  "liquidity_validation": {
+    "basis_validated": true,
+    "minimum_window_days": 20,
+    "required_minimum_window_days": 20,
+    "selected_with_validated_liquidity": 3,
+    "unverified_reason_counts": {}
+  },
+  "coverage_plan": {
+    "method": "sector_market_cap_stratified_validated_liquidity",
+    "user_requested_range_spanned": true,
+    "market_cap_buckets_cover_user_requested_range": true,
+    "input_exchange_coverage": [
+      "NASDAQ",
+      "NYSE",
+      "NYSE AMERICAN"
+    ],
+    "required_exchange_families": [
+      "NYSE",
+      "NASDAQ",
+      "NYSE AMERICAN"
+    ],
+    "single_band_only": false,
+    "coverage_plan_valid": true,
+    "bounded_pool_disclosed": true
+  },
+  "scope": {
+    "user_requested_min_market_cap": 500000000.0,
+    "user_requested_max_market_cap": 20000000000.0,
+    "executed_min_market_cap": 500000000.0,
+    "executed_max_market_cap": 20000000000.0,
+    "scope_reduced": false,
+    "scope_reduction_authorized": false,
+    "scope_reduction_mode": "none",
+    "scope_reduction_disclosed": true,
+    "scope_reduction_reason": null,
+    "user_scope_evidence": null,
+    "user_requested_scope_complete": true,
+    "scope_valid": true
+  },
+  "source_ids": [
+    "universe-fmp-20260822"
+  ],
+  "artifact_path": "discovery-pool.example.jsonl",
+  "artifact_sha256": "e91fcff25394fafdd125c609885d0d3362d6c035c79c868953cabcc5ebd8bca4"
+}

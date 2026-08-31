@@ -58,6 +58,7 @@ __version__  # Package version string (read-only)
 # Client
 NotebookLMClient
 NotebookLMClient.from_storage()
+NotebookLMClient.backends
 NotebookLMClient.notebooks
 NotebookLMClient.sources
 NotebookLMClient.artifacts
@@ -450,7 +451,7 @@ When Google changes their internal APIs:
 
 ### Automated RPC Health Check
 
-A nightly GitHub Action (`rpc-health.yml`) monitors all 47 RPC methods for ID
+A nightly GitHub Action (`rpc-health.yml`) monitors all 48 RPC methods for ID
 changes on `main`. Release branches use the same workflow through manual
 dispatch.
 

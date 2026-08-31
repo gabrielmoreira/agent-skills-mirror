@@ -295,6 +295,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Trading Skills Navigator** | ❌ Not used | ❌ Not used | ❌ Not used | Reads local skills-index.yaml + workflows/*.yaml (or bundled snapshot); no network |
 | **US Market Bubble Detector** | ❌ Not used | ❌ Not used | ❌ Not used | User provides indicators |
 | **US Stock Analysis** | ❌ Not used | ❌ Not used | ❌ Not used | User provides data |
+| **US Undervalued Growth Screener** | 🟡 Optional (Recommended) | ❌ Not used | ❌ Not used | Claude Code-native direct REST path using FMP_API_KEY. Bulk responses are cached and written to local artifacts; only compact screening results are returned to the model. Plan-gated bulk endpoints use bounded per-symbol fallbacks. |
 | **Uptrend Analyzer** | ❌ Not used | ❌ Not used | ❌ Not used | Monty Uptrend Ratio Dashboard CSV; no API key required |
 | **VCP Screener** | ✅ Required | ❌ Not used | ❌ Not used | S&P 500 OHLCV via FMP |
 | **Value Dividend Screener** | ✅ Required | 🟡 Optional (Recommended) | ❌ Not used | Financial Modeling Prep API |

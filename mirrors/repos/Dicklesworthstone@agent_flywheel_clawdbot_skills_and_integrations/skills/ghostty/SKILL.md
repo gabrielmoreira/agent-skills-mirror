@@ -1,135 +1,145 @@
 ---
 name: ghostty
-description: "Control Ghostty terminal emulator via CLI. Manage windows, tabs, splits, and configuration."
+description: >-
+  Control Ghostty terminal emulator via CLI. Use when managing windows, tabs,
+  splits, fonts, or configuration for Ghostty.
 ---
 
-# Ghostty Skill
+<!-- TOC: Quick Start | THE EXACT PROMPT | Actions | Configuration | Troubleshooting | References -->
 
-Use the `ghostty` CLI to control and configure the Ghostty terminal emulator.
+# Ghostty CLI
 
-## CLI Location
+> **Core Capability:** Control and configure the Ghostty terminal emulator from the command line.
+
+## Quick Start
 
 ```bash
+# CLI location (or symlinked as `ghostty`)
 /Applications/Ghostty.app/Contents/MacOS/ghostty
-```
 
-Or if symlinked: `ghostty`
-
-## Actions (IPC Commands)
-
-Ghostty supports actions via `+action` flag. These control the running instance.
-
-List available actions:
-```bash
+# List available actions
 ghostty +list-actions
+
+# Check version
+ghostty --version
 ```
 
-Create new window:
-```bash
+---
+
+## THE EXACT PROMPT — Window/Tab Management
+
+```
+# New window
 ghostty +new-window
-```
 
-Create new tab:
-```bash
+# New tab
 ghostty +new-tab
-```
 
-Create splits:
-```bash
+# Splits
 ghostty +new-split:right
 ghostty +new-split:down
-```
 
-Navigate splits:
-```bash
-ghostty +goto-split:previous
-ghostty +goto-split:next
+# Navigate splits
 ghostty +goto-split:up
 ghostty +goto-split:down
 ghostty +goto-split:left
 ghostty +goto-split:right
-```
 
-Close current surface:
-```bash
+# Close current surface
 ghostty +close-surface
-```
 
-Toggle fullscreen:
-```bash
+# Toggle fullscreen
 ghostty +toggle-fullscreen
 ```
 
-Reload configuration:
-```bash
-ghostty +reload-config
+---
+
+## THE EXACT PROMPT — Font Management
+
 ```
-
-## Font Management
-
-Increase/decrease font size:
-```bash
+# Adjust font size
 ghostty +increase-font-size:1
 ghostty +decrease-font-size:1
-```
-
-Reset font size:
-```bash
 ghostty +reset-font-size
-```
 
-## Configuration
-
-Config file location:
-```
-~/.config/ghostty/config
-```
-
-Show current config:
-```bash
-ghostty +show-config
-```
-
-List available themes:
-```bash
-ghostty +list-themes
-```
-
-List available fonts:
-```bash
+# List available fonts
 ghostty +list-fonts
 ```
 
-List keybinds:
-```bash
+---
+
+## THE EXACT PROMPT — Configuration
+
+```
+# Config file: ~/.config/ghostty/config
+
+# Show current config
+ghostty +show-config
+
+# Validate config
+ghostty +validate-config
+
+# Reload config (live)
+ghostty +reload-config
+
+# List themes/keybinds
+ghostty +list-themes
 ghostty +list-keybinds
 ```
 
+---
+
 ## Launch Options
 
-Start with specific config:
 ```bash
+# Start with specific config
 ghostty --config-file=/path/to/config
-```
 
-Start with command:
-```bash
+# Start with command
 ghostty -e "htop"
-```
 
-Start in directory:
-```bash
+# Start in directory
 ghostty --working-directory=/path/to/dir
 ```
 
-## Debugging
+---
 
-Check version:
+## Essential Commands
+
+| Action | Command |
+|--------|---------|
+| New window | `ghostty +new-window` |
+| New tab | `ghostty +new-tab` |
+| Split right | `ghostty +new-split:right` |
+| Split down | `ghostty +new-split:down` |
+| Close | `ghostty +close-surface` |
+| Reload config | `ghostty +reload-config` |
+
+---
+
+## Troubleshooting: Remote SSH
+
+**Problem:** Seeing `[57414u` garbage when pressing numpad Enter over SSH.
+
+**Quick fix:**
+
 ```bash
-ghostty --version
+infocmp -x xterm-ghostty | ssh user@server 'mkdir -p ~/.terminfo && tic -x -o ~/.terminfo -'
 ```
 
-Validate config:
+**Fallback (no terminfo access):**
+
 ```bash
-ghostty +validate-config
+alias myserver='TERM=xterm-256color ssh user@myserver'
 ```
+
+Full guide: [REMOTE-TERMINFO.md](references/REMOTE-TERMINFO.md)
+
+---
+
+## References
+
+| Topic | Reference |
+|-------|-----------|
+| All commands | [COMMANDS.md](references/COMMANDS.md) |
+| Remote terminfo setup | [REMOTE-TERMINFO.md](references/REMOTE-TERMINFO.md) |

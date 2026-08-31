@@ -45,7 +45,7 @@ uv run clawbench-harbor-adapt \
 
 ## 2. Wire up the judge
 
-Harbor's verifier calls the same judge ClawBench uses. Export the four variables once, then forward them into each run with `--ve`:
+Harbor's verifier applies both ClawBench V2 judge rubrics to every intercepted request. `reward` and `reward_lenient` use the public leaderboard's no-explicit-contradiction rubric; `reward_strict` requires the payload to demonstrate complete fulfillment. The two judge calls run concurrently against the same request and use the model configured below. Export the four variables once, then forward them into each run with `--ve`:
 
 ```bash
 export CLAWBENCH_JUDGE_BASE_URL="https://your-judge-provider.example/v1"
@@ -140,7 +140,7 @@ uvx --from harbor==0.15.0 harbor run -p ./harbor-datasets/clawbench-v2-smoke \
 
 Each converted task directory carries its own `environment/` (Chromium, the ClawBench recorder/interceptor, noVNC, runtime helper scripts), a `run/` step with `instruction.md`, the original `task.json`, the `eval-schema.json`, and a verifier under `tests/`. It deliberately contains **no ClawBench-native harness** — Harbor installs and runs whatever agent you pass to `-a` inside the task container.
 
-Scoring is the same two-stage rule as the native runner: the interceptor must catch a request matching the task schema, and the judge must agree the payload fulfills the instruction.
+Scoring uses the same two-stage rule as the native runner: the interceptor must catch a request matching the task schema, then the verifier emits both the public lenient reward and the conservative strict reward. Harbor uses the lenient result as the primary `reward` metric and retains both verdicts and reasons in `clawbench-result.json`.
 
 ## Troubleshooting
 

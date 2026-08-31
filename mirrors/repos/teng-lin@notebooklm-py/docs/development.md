@@ -1,7 +1,7 @@
 # Contributing Guide
 
 **Status:** Active
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-08-28
 
 This guide covers everything you need to contribute to `notebooklm-py`: architecture overview, testing, and releasing.
 
@@ -52,6 +52,7 @@ src/notebooklm/
 ├── _web/notes.py        # WebNotesAPI + NoteService implementation
 ├── _mind_maps_api.py    # Backend-neutral abstract MindMapsAPI
 ├── _web/mind_maps.py    # WebMindMapsAPI + NoteBackedMindMapService
+├── _android/mind_maps.py # Selected mind-map artifact/note composition; generation seam documented
 ├── _labels.py           # Backend-neutral abstract LabelsAPI
 ├── _web/labels.py       # WebLabelsAPI implementation
 ├── _collections.py      # Backend-neutral abstract CollectionsAPI
@@ -110,7 +111,7 @@ src/notebooklm/
 | **Adapters** | `cli/`, `mcp/`, `server/` | User commands/tools/routes, transport-specific input/output, auth envelopes |
 | **App core** | `_app/*.py` | Transport-neutral workflows reused by adapters |
 | **Client** | `client.py`, `_*.py` | High-level Python API, returns typed dataclasses |
-| **Runtime** | `client.py`, `_client_composed.py`, `_runtime/init.py`, `_web/transport/kernel.py`, runtime collaborators | `NotebookLMClient` composition root plus seam-module helpers (HTTP client lifecycle, RPC dispatch, metrics, drain bookkeeping, request-id counter, auth refresh, conversation cache, polling registry, cookie persistence) |
+| **Runtime** | `client.py`, `_client_composed.py`, `_runtime/`, `_web/transport/`, runtime collaborators | `NotebookLMClient` composition root; protocol-neutral root lifecycle and call supervision; web resource lifecycle, RPC dispatch, auth, and HTTP transport; feature-owned polling/upload state |
 | **Web wire** | `_web/wire/*.py` | Batchexecute encoding/decoding, runtime ID overrides, strict positional access |
 | **RPC facade** | `rpc/*.py` | Public power-user compatibility exports and method IDs |
 
@@ -125,16 +126,18 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 
 | Module | Class | Responsibility |
 |---|---|---|
-| `_client_composed.py` | `ClientComposed` | Client-owned holder for transport, executor, chain host, middleware metadata, and session collaborator bundle. |
+| `_client_composed.py` | `ClientComposed` | Write-once holder for transport, executor, chain host, middleware metadata, and the runtime collaborator bundle. It owns no loop primitive or RPC semaphore. |
 | `_runtime/init.py` | `RuntimeCollaborators` helpers | Validates constructor args, builds collaborators, wires middleware, and binds `ClientComposed`. |
 | `_client_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
-| `_transport_drain.py` | `TransportDrainTracker` | In-flight transport counters, `_TransportOperationToken`, lazy `asyncio.Condition` powering `client.drain(...)`. |
+| `_transport_drain.py` | `TransportDrainTracker` | Transitional in-flight bookkeeping owned by `CallSupervisor`; it is not the public drain-policy or generation owner. |
+| `_runtime/call_supervisor.py` | `CallSupervisor` | Concrete client-wide admission authority: generation-bearing call/operation leases, drain hooks, admitted child tasks, terminal RPC metrics, and the global RPC semaphore. |
 | `_web/transport/reqid_counter.py` | `ReqidCounter` | Monotonic `_reqid` counter for chat backend (baseline 100000, step 100000). |
 | `_web/transport/auth.py` | `AuthRefreshCoordinator` | Refresh-task lifecycle, refresh lock, `AuthSnapshot` rotation. |
 | `_runtime/contracts.py` | Neutral runtime Protocol | `LoopGuard`, used by transport-neutral orchestration. |
 | `_web/contracts.py` | Web transport Protocols | `Kernel` and `RpcCaller`, used only by batchexecute implementations. Single-consumer capabilities stay local to their owner modules. |
-| `_runtime/lifecycle.py` | `ClientLifecycle` | Loop-affinity guard, `aclose` plumbing, keepalive task wiring. |
-| `_web/transport/runtime.py` | `RuntimeTransport` | Authenticated transport leg used by `RpcExecutor` and the middleware chain terminal. |
+| `_runtime/lifecycle.py` | `ClientLifecycle` | Protocol-neutral resource/admission state and transactional, coalesced open/drain/close waves over immutable transport and loop-participant tuples. |
+| `_web/transport/lifecycle.py` | `WebTransportLifecycle` | Web Kernel/auth epoch activation and fencing, keepalive, cookie persistence, and web resource teardown. |
+| `_web/transport/runtime.py` | `RuntimeTransport` | Authenticated transport leg: admission-only epoch proof for snapshot/materialization, then `CallSupervisor` terminal accounting/semaphore and the four-middleware web chain. |
 | `_web/transport/executor.py` | `RpcExecutor` | RPC dispatch executor with direct collaborator dependencies. |
 | `_web/transport/request_types.py` | `AuthSnapshot`, `BuildRequest`, request materialization | Shared request construction Interface. |
 | `_web/transport/errors.py` | transport exceptions, `parse_retry_after`, `raise_mapped_post_error` | Terminal `Kernel.post` error mapping for middleware retry/auth behavior. |
@@ -145,10 +148,11 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 
 Transport-neutral orchestration uses `LoopGuard` from
 `notebooklm._runtime.contracts`; batchexecute implementations use `Kernel`
-and `RpcCaller` from `notebooklm._web.contracts`. Single-consumer capability
-shapes stay in the owning feature module (`AuthMetadata` in `_web/sources/upload.py`,
-`OperationScopeProvider` in `_artifact/polling.py`), and the unused
-`AsyncWorkRuntime` composite was deleted. The broad `Session` Protocol
+and `RpcCaller` from `notebooklm._web.contracts`. The single-consumer
+`AuthMetadata` capability stays in `_web/sources/upload.py`. The supervisor-ownership refactor removed
+`OperationScopeProvider`; artifact polling and source workflows use the shared
+concrete `CallSupervisor` for operation scopes, admitted children, loop checks,
+and drain hooks. The unused `AsyncWorkRuntime` composite was deleted. The broad `Session` Protocol
 that previously bundled these together was deleted in the final phase
 of the capability refactor (see [`docs/refactor-history.md`](refactor-history.md)
 and ADR-0013); each feature now depends on the narrowest slice it needs
@@ -391,12 +395,21 @@ token persistence; a missing-storage leader remains shielded to settlement
 before its bootstrap lock is released. At the extraction freeze the coordinator
 is 373 lines and the compatibility adapter is 463 lines.
 
+`MintService.mint_oauth()` is the single typed OAuth mint seam. New protocol
+adapters supply an immutable `OAuthClientSpec` and consume a repr-safe
+`MintedOAuthToken`; they do not import `gpsoauth` or invent a TTL when its
+optional `Expiry` is absent or malformed. Oversized decimal expiry values are
+rejected before integer conversion. Fixed mint failures retain no raw response,
+dependency exception, credential-bearing cause, or traceback local, while
+`MissingDependencyError` remains distinct. The web `mint()` path is pinned to
+the existing Chromecast/OAuthLogin arguments and cookie-mint wire sequence.
+
 The current measured persistence boundary is 1,090 lines in `_auth/storage.py`, 602 in
 `_auth/profile_migration.py`, 876 in `_auth/profile_store.py`, 96 in
 `_auth/cookie_filter.py`, and 89 in `_auth/master_token_file.py` (2,753 total). `storage.py`
 remains the v0.x signature/result facade; the extracted owners do not create a second facade.
 
-`_auth/tokens.py` now owns the Phase 9 stored-auth composition: captured-inline/file sources,
+`_auth/tokens.py` now owns stored-auth composition: captured-inline/file sources,
 `LoadPolicy`, paired `SessionSeed`/`TokenAcquisition`, final-attempt `AccountRouteResolver`, the
 closed `LoadedAuth` result, and `StoredAuthLoader`. Its only structural test seam is
 `TokenAcquirer`; inject that seam for ladder-result tests, and patch the call-time
@@ -448,13 +461,13 @@ cancellation: the caller is cancelled immediately, while an already-dispatched w
 and commit. File auth alone constructs the store; inline env auth logs the existing skip and does
 not persist. Patch the private typed helper/store method for these tests, not the retired private
 `refresh.save_cookies_to_storage` alias. The public saver/facade and client/runtime saver-injection
-seams remain exact. Phase 12C measures **40 modules / 15,237 lines / 128 unique edges (117 module +
+seams remain exact. The completed ownership refactor measures **40 modules / 15,237 lines / 128 unique edges (117 module +
 11 function-local)**. Module-only and all-scope SCC sets are both empty. The final touched production
 LOC is: account 252, account-repair 132, account-types 50, cookie-types 396, cookies 961, keepalive
 438, master-token 455, master-token-types 68, PSIDTS recovery 1,222, recovery 530, refresh 1,184,
 single-flight 268, and storage 1,127. These are ratchet evidence, not a budget to spend.
 
-Phase 10 completes runtime ownership. `NotebookLMClient.from_storage` registers a
+Runtime ownership is complete. `NotebookLMClient.from_storage` registers a
 `FileLoadedAuth` result's exact `ProfileStore`/baseline pair with `CookiePersistence`, without a
 second disk read. A direct file client prepares its baseline once before transport construction;
 missing, malformed, or invalid input becomes a sticky typed failure for canonical saves. A
@@ -464,8 +477,11 @@ First-party `_from_store` persistence retains no `AuthTokens`. A missing saver r
 unconditionally through the private canonical merge. Only an explicit `cookie_saver=` routes
 through `_save_v0_callback`; it lazily initializes its own retryable adapter snapshot and suppresses
 the writer when the source is invalid.
-`ClientLifecycle` alone owns the client `AuthTokens` mirror and refreshes `cookie_snapshot` after
-open and accepted canonical or compatibility saves. Tests inject a saver on the client when they
+The former web-specific `ClientLifecycle` owned the client
+`AuthTokens` mirror and refreshed `cookie_snapshot` after open and accepted
+canonical or compatibility saves. The lifecycle split moved those responsibilities into
+`WebTransportLifecycle`; the current root `ClientLifecycle` owns only
+protocol-neutral lifecycle waves and state. Tests inject a saver on the client when they
 intend to exercise the callback contract; canonical tests target the private typed seam.
 Measured owners are 457 lines in `_web/transport/cookie_persistence.py`, 618 in `_runtime/init.py`, 628 in
 `_runtime/lifecycle.py`, and 992 in `client.py`.
@@ -890,8 +906,8 @@ into `docs/`:
 
 | file | what it pins |
 |---|---|
-| `mobile/schema.proto` | 282 messages / 767 fields with real names and tag numbers |
-| `mobile/enums.txt` | 77 enums / ~1900 values with exact integers |
+| `android/schema.proto` | 295 messages / 767 fields with real names and tag numbers |
+| `android/enums.txt` | 77 enums / ~1900 values with exact integers |
 
 Both come from the official Android app, which speaks the *same backend messages*
 over gRPC — where fields are tag-addressed rather than positional. The two line up

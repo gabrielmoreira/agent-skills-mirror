@@ -113,7 +113,7 @@ Safety rules:
 
 ## Structural Code Search
 
-When the target is a syntactic shape rather than a string, load `omh-routing/references/structural-code-search.md` before searching. If ast-grep is not on PATH, use grep/ripgrep exactly as today.
+When the target is a syntactic shape rather than a string, load `omh-routing/references/structural-code-search.md` before searching. If ast-grep is not on PATH, use grep/ripgrep exactly as today. Cap exploration to a few bounded, targeted queries before reading a full file, escalate to a wider query only when a bounded pass finds nothing or stays ambiguous, and stop once the target is found.
 
 ## Runtime Evidence
 

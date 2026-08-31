@@ -22,7 +22,7 @@ This file is the canonical, session-portable reference for how every agent worki
 4. Merge preserving contributor authorship: `git fetch origin pull/N/head:pr-N && git cherry-pick <pr-head-sha>`, or `gh pr merge --rebase`. Do NOT use `git merge --squash` — it collapses the contributor's commit and reassigns the `Author:` field to whoever runs the local commit, destroying their credit in `git log`.
 5. CHANGELOG — new version entry at top, `### Fixed`/`### Added`/`### Changed`, sachlich, no em-dashes.
 6. CONTRIBUTORS.md — add reporter/contributor, bump "Total Contributors: N+", update "Last updated" date.
-7. Version bump across all 18 tracked targets plus the local ClawHub staging target when present (see table below).
+7. Version bump across all 19 tracked targets plus the local ClawHub staging target when present (see table below). Then run `python scripts/build-clawhub-upload.py` and `python scripts/build-clawhub-upload.py --verify`; verification must report that the complete staging folder matches the canonical tracked inventory.
 8. README — update version badge and add row to releases table.
 9. `git commit`, `git tag vX.Y.Z`, `git push origin master`, `git push origin vX.Y.Z`.
 10. `gh release create vX.Y.Z --title "vX.Y.Z - <short description>" --notes "<release notes>"`.
@@ -33,7 +33,7 @@ This file is the canonical, session-portable reference for how every agent worki
 
 ## Version bump scope
 
-The maintained release set has 19 entries: 18 tracked files plus the gitignored `clawhub-upload/SKILL.md` publish stage. Every present entry must use the same version string. `scripts/bump-version.py` reports the ClawHub stage as optional when it is absent from a fresh clone, but updates and validates it when present. Maintainer releases must rebuild and verify that stage separately before the manual upload.
+The maintained version parity set has 20 entries: 19 tracked files plus the version-bearing `clawhub-upload/SKILL.md` inside the gitignored publish stage. Every present version target must use the same version string. `scripts/bump-version.py` reports the ClawHub stage as optional when it is absent from a fresh clone, but updates and validates its `SKILL.md` when present. Maintainer releases must rebuild the complete stage from the canonical tracked inventory with `python scripts/build-clawhub-upload.py`, then run `python scripts/build-clawhub-upload.py --verify` before manual upload.
 
 | File | Notes |
 |------|-------|
@@ -52,9 +52,10 @@ The maintained release set has 19 entries: 18 tracked files plus the gitignored 
 | `.opencode/skills/planning-with-files/SKILL.md` | OpenCode IDE |
 | `.pi/skills/planning-with-files/package.json` | npm package manifest |
 | `.agents/skills/planning-with-files/SKILL.md` | Agent Skills standard layout (Zed, Amp, Warp, Devin, Antigravity, Gemini CLI read this path natively; added v3.7.0) |
-| `clawhub-upload/SKILL.md` | Gitignored ClawHub marketplace staging; required for maintainer upload, optional in a fresh clone |
+| `clawhub-upload/SKILL.md` | Version-bearing file inside the complete gitignored ClawHub marketplace stage; optional in a fresh clone |
 | `.claude-plugin/plugin.json` | Plugin manifest |
 | `.claude-plugin/marketplace.json` | Marketplace metadata |
+| `.codex-plugin/plugin.json` | Codex plugin manifest |
 | `CITATION.cff` | Citation file |
 
 **NOT bumped automatically**: `scripts/bump-version.py`'s `LAGGING_FILES` list currently excludes four files, not two — this table only tracked two until this correction:
@@ -140,7 +141,9 @@ Thanks: @handle for reporting issue #N.
 ## ClawHub distribution
 
 - ClawHub does NOT auto-sync with GitHub.
-- After every release: manually upload `clawhub-upload/SKILL.md` at clawhub.io.
+- After every release, run `python scripts/build-clawhub-upload.py`.
+- Run `python scripts/build-clawhub-upload.py --verify` and require the complete folder to match the canonical tracked inventory.
+- Manually upload the entire `clawhub-upload/` folder at clawhub.io.
 - SSL cert on clawhub.io may be expired — proceed through the browser warning.
 - skills.sh / `npx skills`: pulls from GitHub master automatically on next crawl.
 - Anthropic plugin marketplace: requires ClawHub upload to reflect the new version.

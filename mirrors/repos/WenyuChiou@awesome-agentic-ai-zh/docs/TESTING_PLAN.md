@@ -1,26 +1,53 @@
 # Testing Plan — T3+ Verification Log
 
-> Updated 2026-08-29. The opening table is the historical T3+ baseline; later
+> Updated 2026-08-30. The opening table is the historical T3+ baseline; later
 > sections record the current chapter-by-chapter modernization layers separately.
 > The old branch `t3-stage-4-6-7-unverified` was merged into `main` and deleted,
 > but a newer layer is not called shipped until its own branch reaches `main`.
 
 ## Visible required-reading and resource contract
 
-Important reading, featured projects, and learning resources are part of the learner's path, so a
-closed `<details>` block cannot be their only landing place. A page may configure
+Important reading, featured projects, and complete rated learning-resource tables are part of the
+learner's path, so a closed `<details>` block cannot be their only landing place. The global
+`forbidden_closed_summary_terms` list blocks disclosure summaries such as “Required reading” or
+“Learning resources” in every enrolled locale. Each page also configures
 `visible_section_minimums` in `scripts/reader-ux-pages.yml` with `min_links` and `min_ratings` for
-any required visible section. The checker renders the visible Markdown, then counts real text links
+the relevant visible section. The checker renders the visible Markdown, then counts real text links
 and visible rating text. It accepts inline, reference-style, autolink, and HTML `<a href>` entries,
 but ignores closed disclosures, code examples, image-only links, image alt text, link destinations,
-fragment-only navigation, hidden HTML, and attributes that only look like entries. Long setup notes, alternatives, and
-troubleshooting may remain collapsed.
+fragment-only navigation, hidden HTML, and attributes that only look like entries. Long setup notes,
+alternatives, cost, and troubleshooting may remain collapsed. A dedicated very large catalog is the
+one deliberate exception: its category choices and safety boundaries remain visible while hundreds
+of individual entries may open by category on demand.
 
-The gate is optional until a chapter's content layer names the exact visible section and expected
-minimums. This tooling layer adds the reusable contract without silently changing existing pages;
-the following small stacked PRs activate it for Stage 1–2, Track A1–A3, and Stage 3–4.
+The closed-summary gate applies to all 25 enrolled pages. Exact section minimums protect the
+modernized chapter and role paths, including Stage 0–8, Stage 7.5, Track A1–A3, and the Researcher
+and Developer paths. This keeps the rule measurable: removing or re-hiding one rated row now fails
+before review instead of relying on memory.
 Install its pinned local dependencies with
 `pip install --require-hashes -r scripts/requirements-reader-ux.txt`.
+
+## Public entry-route contract
+
+`scripts/test_site_route_coherence.py` now treats the README and docs landing page as part of the
+curriculum, not decoration. The trilingual README must name eight topic stages plus the Stage 0
+readiness check and Stage 7.5 reading stop, show outcome-first route tables, and keep all duration
+figures inside one closed time-estimate disclosure. The test blocks the old stage-count shorthand,
+fixed frontier year windows, approximate code-line claims, and the old blank-file rewrite exercise.
+
+Each landing page must show ten cards in order from Stage 0 through Stage 8, including Stage 7.5.
+The banner trio must be three distinct PNG files on the same `1672×941` canvas and remain under
+2 MB each. The reproducibility contract records Track A as A1 → A2 → Stage 5 → A3 → Stage 8 and
+Track B as 3 → 4 → Stage 5 → 6 → 7 → 7.5 → Stage 8 before the role paths. It forbids mutable
+duration, price, version, year, and stars metrics. Human review still checks text rendering,
+alignment, and arrow／icon overlap.
+
+`scripts/test_main_readme_content.py` protects the README's progressive reading path. It requires
+the main route, role choices, important terms, required reading, and ten rated learning resources to
+stay visible. Only four secondary groups may start closed. The resource table must keep three real
+row groups (`3／3／4`), and the three locales must keep the same links, order, ratings, and meaning.
+The size limit prevents the entrance from slowly becoming crowded again. These checks protect the
+shape; final human review still confirms that simple wording has not removed an important idea.
 
 ## Historical T3+ baseline (on `main`)
 
@@ -54,7 +81,7 @@ Recognized late in the session: every `starter.py` is a **complete solution**, n
 v1 fix (doc-only, no code rename):
 
 - `docs/HOW_TO_USE.md` — full active-vs-passive learning method (~200 lines, zh-TW)
-- 22 exercise READMEs — 🎓 callout pointing to `mv starter.py starter_reference.py` shortcut + link to HOW_TO_USE
+- 22 exercise READMEs — 🎓 callout once taught a rename-and-rewrite shortcut and linked to HOW_TO_USE; the 2026-08-30 reader-UX layer replaced that shortcut with run → change one thing → retest
 - Main README × 3 langs — surface the meta-instruction at the top-level
 
 Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/d598e37) + [`2cf99fe`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/2cf99fe).
@@ -68,7 +95,7 @@ Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-
 3. ~~**Walkthrough Python never executed**~~ — **RESOLVED 2026-08-10**. All 9 python blocks (304 lines) of `walkthroughs/build-first-agent-in-7-steps.md` were extracted to the filenames the doc names and executed in a clean venv on Python 3.14, with `Anthropic` and `requests` mocked (no API key, no spend): Stage 1-6 (6 blocks) plus all of Stage 7 (7.1 `eval_provider`, 7.2 `step7_observability`, 7.3 `main.py`). **Four** real defects were found and fixed in all three locales, plus two zh-Hans blocks that did not even parse (`
 ` expanded into real newlines, so Stage 1 and `reflect` raised `unterminated f-string literal` — a Simplified-Chinese reader's very first script crashed): Stage 6's vector memory stored nothing at all (empty-DB early return meant `store_paper` was never reached, compounded by a hardcoded `"..."` id that `collection.add()` silently ignores); `compare_with_memory`'s `comparison` was dropped because `State` never declared it; and `import step2_paper_summary` issued a billed API call at module level, which every later stage inherited. Post-fix, measured: memory count goes 1→2→3, `comparison` survives in state, and the four imported modules make 0 API calls; and Stage 6 now stores each paper's own summary rather than three byte-identical `[Reviewer verdict: PASS]` strings — the `compare` node read `messages[-1]`, which is `reflect`'s verdict, not the summary. Completed 2026-08-10: 7.2's import path was corrected (`observe` moved to the top-level package in langfuse **3.0**, not 4.x — verified by installing 2.60.10, 3.0.0 and 4.14.2; only 2.x has `langfuse.decorators`. `@observe(name=…)` itself is unchanged across all four, signature checked) and 7.3 was run with fastapi 0.141.1 — `TestClient` gets HTTP 200 and a `{'summary': …}` body from `POST /summarize`, and HTTP 422 on a missing field. **Still open**: end-to-end output quality against a live API key is untested — every run so far has mocked the model.
 
-4. **starter.py = complete solution pedagogy gap** — flagged in `docs/HOW_TO_USE.md`. v2 would split into `starter_template.py` (TODO) + `starter_reference.py` (solution); v1 is doc-only meta-instruction.
+4. ~~**Complete-solution pedagogy gap**~~ — **RESOLVED 2026-08-30**. `docs/HOW_TO_USE.md` and 39 trilingual Stage 1–4 exercise READMEs now teach one small loop: run the provided starter, change exactly one thing, rerun the existing tests, then fix or undo that one change if it fails. The maintained examples stay directly runnable; learners are not asked to rename files or rebuild the whole solution before they can start.
 
 5. ~~**Trilingual mirror of 🎓 callout incomplete**~~ — **RESOLVED 2026-08-02**. The 🎓 callout and the 📚 deeper-material block are now in the `.en.md` + `.zh-Hans.md` mirrors of **21 of the 22** exercise READMEs (202 blockquote lines). The 22nd, `examples/stage-1/04-cross-provider`, is **not a callout gap** — it is the only example folder with **no mirror files at all**, so it needs a full trilingual translation first, not a callout port. A blocking CI gate (`scripts/check-mirror-parity.py`) now stops this class of gap reappearing.
 
@@ -111,7 +138,7 @@ Stage 4 keeps **Agent Frameworks** in the title and places **Workflow Graphs** f
 
 ### Stage 5 — reader path covered; meta-example hardening pending
 
-Stage 5 (`stages/05-claude-code-ecosystem.md`) has five cumulative exercises and eight reference sections (5.1–5.8). The first reader-UX layer keeps every exercise outcome and first copyable action visible, while longer setup and troubleshooting stay closed by default.
+Stage 5 (`stages/05-claude-code-ecosystem.md`) has five cumulative exercises and eight reference sections (5.1–5.8). It keeps every exercise outcome, first copyable action, the complete required-reading order, and all 35 rated learning resources visible. Fourteen disclosures hold setup, syntax, optional depth, and troubleshooting.
 
 | Area | Current evidence |
 |---|---|
@@ -122,15 +149,17 @@ Stage 5 (`stages/05-claude-code-ecosystem.md`) has five cumulative exercises and
 | 5.5 Subagents | Read-only review exercise with isolated output and a visible success condition |
 | 5.6–5.8 | Current Dynamic workflows／Worktree／Agent-loop／Agent SDK reference path; optional depth stays collapsed |
 
-`scripts/test_stage05_content.py` permanently executes the Hook logger against a synthetic `PreToolUse` event, asserts that only timestamp／event／tool metadata is written, locks the three locale code blocks together, and compiles the current Python Agent SDK `AssistantMessage.content`／`TextBlock` example. It also locks the three distinct `1672×941` 5.1–5.7 relationship diagrams, their visible position before 5.1, locale-correct references, and a linked first mention of the official `modelcontextprotocol/servers` repository. The diagrams keep context, action, event checks, context isolation, file-tree isolation, and packaging as separate roles; they do not turn Worktree into a complete sandbox, Plugin into a runtime step, or Plugin packaging into a connection with Worktree. These checks do not call a live model or claim live output quality.
+`scripts/test_stage05_content.py` permanently executes the Hook logger against a synthetic `PreToolUse` event, asserts that only timestamp／event／tool metadata is written, locks the three locale code blocks together, and compiles the current Python Agent SDK `AssistantMessage.content`／`TextBlock` example. It also requires the full reading and project sections to remain outside `<details>`, locks the three distinct `1672×941` 5.1–5.7 relationship diagrams, their visible position before 5.1, locale-correct references, and a linked first mention of the official `modelcontextprotocol/servers` repository. The diagrams keep context, action, event checks, context isolation, file-tree isolation, and packaging as separate roles; they do not turn Worktree into a complete sandbox, Plugin into a runtime step, or Plugin packaging into a connection with Worktree. These checks do not call a live model or claim live output quality.
 
 The 05B layer validates the `tool-calling-tutor` frontmatter, installed and repository-relative links, translations, eval contract, model／SDK wording, and offline behavior. It stays separate from 05A so the reader rewrite and executable-example migration can be reviewed and rolled back independently.
 
 ### Stage 6 — reader path covered; executable hardening stays in the next layer
 
-Stage 6 (`stages/06-memory-rag.md`) now keeps seven core terms, five cumulative exercise outcomes, the first copyable PowerShell action, one RAG + Memory mini-project, and the Stage 7 check visible. Time, setup, advanced RAG patterns, memory taxonomy, chunking, reflection, evaluation, and the 18-row resource table stay closed by default.
+Stage 6 (`stages/06-memory-rag.md`) now keeps seven core terms, four required readings, five cumulative exercise outcomes, the first copyable PowerShell action, one RAG + Memory mini-project, the 18-row rated resource table, and the Stage 7 check visible. Time, setup, advanced RAG patterns, memory taxonomy, chunking, reflection, and evaluation depth stay closed by default.
 
-`scripts/test_stage06_content.py` locks the three locales to the same freshness marker, concepts, five exercise headings, 109 legacy heading aliases, 18 resource URLs and ratings, five accessible rowgroups (`4／5／4／3／2`), distinct `1672×941` localized images, current project owners/statuses, the honest temporary-storage boundary in Exercise 5, and the absence of stale or mixed-language text. `scripts/check-reader-ux.py` excludes empty compatibility anchors because they render no reader-visible text, measures the collapsed mainline at `3,290／6,367／3,340` non-whitespace characters, and permits only 50 characters of growth per locale.
+`scripts/test_stage06_content.py` locks the three locales to the same freshness marker, concepts, five exercise headings, 109 legacy heading aliases, four visible required-reading URLs, 18 visible resource URLs and ratings, five accessible rowgroups (`4／5／4／3／2`), distinct `1672×941` localized images, current project owners/statuses, the honest temporary-storage boundary in Exercise 5, and the absence of stale or mixed-language text. `scripts/check-reader-ux.py` excludes empty compatibility anchors because they render no reader-visible text, measures the first-view path at `7,482／11,546／7,530` non-whitespace characters, permits only 50 characters of growth per locale, and blocks any attempt to hide the four readings or 18 rated resources in a disclosure.
+
+`scripts/test_stage06_rag_pipeline.py` separately locks the detailed closed-disclosure diagram: three distinct high-resolution locale images, exact locale references, two-lane wording, optional-step language, vector-database-independent retrieval, 2-step／Agentic／Hybrid RAG distinctions, current Qdrant／Weaviate URLs, and Microsoft GraphRAG's maintenance-mode caveat. The diagram's arrow geometry and localized glyphs still require visual inspection; the prompt log records the corrected retrieve landing point and the Simplified-Chinese cleanup.
 
 This reader layer does not claim that the five example folders are fully hardened. The next stacked layer will separately test the chunk-overlap boundary, isolate Chroma collections, replace ephemeral “long-term” memory with real persistence, preserve Ollama／Anthropic paths, and make the teaching tests offline and behavior-based.
 
@@ -152,22 +181,23 @@ All ten directly executable offline entrypoints pass in a clean `python:3.11-sli
 
 ### Stage 7.5 — progressive reading map covered; no example layer
 
-Stage 7.5 keeps six bold core terms, all 12 advanced concepts grouped by problem, a five-branch choice map, a directly copyable four-line work-boundary card, a visible Model–Harness Fit keep／simplify／remove decision, five priority readings, and a short self-check visible. Nine closed disclosures hold prerequisites, source limits, failure cases, cross-vendor and coding harness detail, benchmark discipline, Dynamic Workflows, Model–Harness Fit evidence／Bitter Lesson／human division, and the complete resource table.
+Stage 7.5 keeps six bold core terms, all 12 advanced concepts grouped by problem, a five-branch choice map, a directly copyable four-line work-boundary card, a visible Model–Harness Fit keep／simplify／remove decision, five priority readings, the complete 24-entry rated resource table, and a short self-check visible. Eight closed disclosures hold prerequisites, source limits, failure cases, cross-vendor and coding harness detail, benchmark discipline, Dynamic Workflows, and Model–Harness Fit evidence／Bitter Lesson／human division.
 
-`scripts/test_stage075_content.py` locks the three locales to 12 concepts in the same order, the visible evidence-based Model–Harness Fit table, four concept rowgroups (`3／3／3／3`), 24 resource URL/rating pairs, five resource rowgroups (`5／5／5／5／4`), one matching freshness marker, nine closed disclosures, and the legacy Dynamic Workflows anchors. It also rejects the old Replit/Voyager years, fixed context/code-size/throughput claims, empty-quote artifacts, untranslated English fragments, and current-status drift for AutoGen, Microsoft Agent Framework, Sandbox Agents, and Dynamic Workflows.
+`scripts/test_stage075_content.py` locks the three locales to 12 concepts in the same order, the visible evidence-based Model–Harness Fit table, four concept rowgroups (`3／3／3／3`), 24 visible resource URL/rating pairs, five resource rowgroups (`5／5／5／5／4`), one matching freshness marker, eight closed disclosures, and the legacy Dynamic Workflows anchors. A nesting-depth regression requires the resource heading, table, every URL, and document end to remain outside `<details>`. It also rejects the old Replit/Voyager years, fixed context/code-size/throughput claims, empty-quote artifacts, untranslated English fragments, and current-status drift for AutoGen, Microsoft Agent Framework, Sandbox Agents, and Dynamic Workflows.
 
-Nine distinct locale PNGs cover the four problem groups, the five-branch reading decision, and the parallel keep／simplify／remove Model–Harness Fit decision. The test requires nine distinct hashes and exact locale references; `scripts/check-image-locale.py` provides the whole-repository mirror check. `scripts/check-reader-ux.py` ratchets the collapsed mainline and keeps all six core terms before the work-boundary card. Stage 7.5 is a reading-map, so there is deliberately no runnable example-hardening layer.
+Nine distinct locale PNGs cover the four problem groups, the five-branch reading decision, and the parallel keep／simplify／remove Model–Harness Fit decision. The test requires nine distinct hashes and exact locale references; `scripts/check-image-locale.py` provides the whole-repository mirror check. `scripts/check-reader-ux.py` ratchets the progressive mainline, keeps all six core terms before the work-boundary card, and counts the visible resource table instead of hiding it from the reading budget. Stage 7.5 is a reading-map, so there is deliberately no runnable example-hardening layer.
 
 ### Stage 8 — interface choice and safety map covered
 
 Stage 8 keeps eight bold core terms, the four parallel interface choices, four safety checks,
-two immediately copyable first actions, all four exercise titles and outcomes, and a short self-check visible. Ten closed disclosures
+two immediately copyable first actions, all four exercise titles and outcomes, five featured entries,
+the complete 21-entry rated resource table, and a short self-check visible. Nine closed disclosures
 hold current Computer Use contracts, OSWorld benchmark discipline, Browser Use signals, Sandbox
-terminology, Track A／B depth, security cases, 21 resources, and future interfaces. The four choice
+terminology, Track A／B depth, security cases, and future interfaces. The four choice
 cards are alternatives chosen by task need; the test rejects wording that turns them into a ladder.
 
-`scripts/test_stage08_content.py` locks the three locales to the same eight terms, ten closed
-disclosures, 21 resource URL/rating pairs, five accessible rowgroups (`5／5／4／5／2`), one matching
+`scripts/test_stage08_content.py` locks the three locales to the same eight terms, nine closed
+disclosures, 21 visible resource URL/rating pairs, five accessible rowgroups (`5／5／4／5／2`), one matching
 freshness marker, all legacy H2／H3 anchors, safe `example.com` exercises, current tool and license
 facts, and identical official-source order. It rejects the old Computer Use preview contract,
 unsupported model rankings, volatile GitHub stars, fixed line/startup claims, blanket Gemini
@@ -176,11 +206,14 @@ also executes the copyable policy example: only explicit low-impact actions over
 allowlisted host pass; mixed-case high-impact actions ask, while unknown actions, userinfo, non-HTTPS
 schemes, and look-alike hosts fail closed. Resource checks require Cloudflare Sandbox SDK to remain
 labelled Beta with APIs that may change before v1.0, so a live repository cannot be mistaken for a stable product.
+A nesting-depth regression requires the resource heading, check date, table, every URL, and document end
+to remain outside `<details>`.
 
 Six locale-specific PNGs cover interface selection and the four safety checks. The test requires
 readable dimensions, six distinct hashes, and exact locale references; `scripts/check-image-locale.py`
-provides the whole-repository mirror check. `scripts/check-reader-ux.py` locks the collapsed mainline
-at `4,625／7,281／4,702` non-whitespace characters with only a 50-character allowance per locale,
+provides the whole-repository mirror check. `scripts/check-reader-ux.py` locks the progressive mainline,
+including the visible resource table, at `8,931／12,471／9,016` non-whitespace characters with only a
+50-character allowance per locale,
 and requires all eight core terms before Exercise 1. The freshness gate separately enforces
 the 90-day fact pack for Computer Use, Browser Use, sandboxes, availability, benchmarks, and security.
 
@@ -265,6 +298,21 @@ block; missing release metadata or older activity remains a human-review warning
 entry automatically. The ordinary URL checker continues to cover non-GitHub documentation and hosted
 service links.
 
+### Setup guide — choose one door and finish one result
+
+`resources/setup-guide*` keeps the five parallel entry choices, seven bold core terms, five rated
+required starting points, A–E headings, first actions, safety rules, completion check, and locale-correct
+next routes visible. Seven closed disclosures hold time and prerequisites, the full product catalog,
+Provider alternatives, platform-specific installation fallbacks, troubleshooting, `CLAUDE.md`, and the
+complete Skill example. The three HTML tables use accessible rowgroups `4／4／5／7`, `2／1／1／1`, and
+`7／1`; required reading remains visible even though the complete catalogs are secondary.
+
+`scripts/test_setup_guide_content.py` locks the exact freshness marker, external URL order, native Claude
+Code installers, Python 3.12／`uv`, `claude-sonnet-5`, copyable secret setup, real rowgroups, editorial
+ratings, and README routing. It rejects the old Node 18／npm-first path, fixed setup times, frozen prices,
+promotional credits, stale desktop availability, volatile GitHub stars, and empty-quote artifacts.
+Reader UX, strict anchors, mirror／locale checks, freshness, and the trilingual site build run beside it.
+
 ### Resource hub index — task-first navigation covered
 
 `resources/README*` is a router, not another long catalog. Its visible path now asks what the
@@ -323,12 +371,7 @@ in any locale.
 
 ## v2 path (deferred)
 
-Per `docs/HOW_TO_USE.md` "給維護者：v2 path":
-
-- Split each `starter.py` → `starter_template.py` (TODO skeleton) + `starter_reference.py` (solution)
-- Make `test.py` behavioral (input → output contract) instead of implementation-bound
-- ~20 folders × 3 file changes = ~60 file changes
-- Probably needs its own session
+The project-wide learner workflow is: run the provided starter first, change exactly one small thing, rerun the existing test command(s), and undo or fix that one change if the tests fail. Learner-facing exercise READMEs must not instruct renaming files or rewriting the whole solution. Keep the current runnable starter and test files as the maintained examples.
 
 ## Historical: what was on the unverified branch
 

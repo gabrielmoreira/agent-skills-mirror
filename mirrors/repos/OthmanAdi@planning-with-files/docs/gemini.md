@@ -122,10 +122,12 @@ Gemini CLI supports [hooks](https://geminicli.com/docs/hooks/) — lifecycle eve
 
 | Hook Event | What It Does |
 |------------|-------------|
-| **SessionStart** | Recovers context from previous session via `session-catchup.py` |
+| **SessionStart** | Recovers selected context from project planning files without reading agent session stores |
 | **BeforeTool** | Reads first 30 lines of `task_plan.md` before write/read/shell operations |
 | **AfterTool** | Reminds to update `progress.md` after file changes |
 | **BeforeModel** | Injects current phase awareness before every model call (unique to Gemini!) |
+
+Local agent session history is not part of automatic startup. Explicit `session-catchup.py --metadata <project>` reads same-project local session records and emits aggregate counts only. Use `--replay` for bounded nonce-framed excerpts. The catchup path contains no network request or upload operation.
 
 ### Installing Hooks
 

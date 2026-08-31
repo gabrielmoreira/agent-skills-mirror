@@ -16,13 +16,15 @@ All requests require a valid Bearer token or session cookie. Obtain a token via 
 
 ### POST /api/v1/session-leases
 
-Acquire, renew, or release an exclusive managed connection lease
+Acquire, inspect, renew, or release an exclusive managed connection lease
 
 Requires an API key with `lease:exclusive` and an explicit non-empty
 `allowedConnections` policy. The opaque owner is bound to the authenticated API key;
 the lease owns an eligible connection, not a provider or model. Managed inference
 requests present the owner and exact generation headers. Temporary foreign occupancy
-returns 429 `WAITING_FOR_CAPACITY` with `Retry-After`.
+returns 429 `WAITING_FOR_CAPACITY` with `Retry-After`. Acquire, renew, and release retain
+their connection-free response shapes. The explicit status action is owner-, key-, and
+generation-fenced and returns only privacy-safe display metadata for an active binding.
 
 
 ```bash

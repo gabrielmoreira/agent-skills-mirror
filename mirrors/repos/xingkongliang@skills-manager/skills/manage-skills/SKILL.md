@@ -215,6 +215,38 @@ When skills already live in an agent's directory (e.g. installed via `npx skills
 
 `adopt` auto-excludes anything already in the DB or already a sync target, so it's safe to re-run. `--git-url` requires either a URL with a subpath (`/tree/branch/path`) or an explicit `--git-subpath` — without that, future `update` would re-clone the wrong directory, so the CLI refuses to guess.
 
+`--git-url` only applies at the moment of adoption, while the directory is still unmanaged. Once a skill is in the library, use `set-source` below.
+
+## Re-point a skill at a git source
+
+```bash
+# Preview: resolves the source and reports whether content differs. It clones to
+# a temp dir, but writes nothing to the library or the DB.
+"$SM" --json skills set-source <skill> --git-url you/skills --subpath my-skill --dry-run
+
+# A GitHub /tree/ URL carries the branch and subpath already
+"$SM" skills set-source <skill> --git-url https://github.com/you/skills/tree/main/my-skill
+```
+
+This is how a `local` skill becomes git-backed so `update` works, and how a
+skill pointed at the wrong repo gets corrected. It updates the row **in place**,
+so the skill id survives and the tags, preset membership and per-agent
+deployments keyed to it all stay intact.
+
+- The flag is `--subpath` here, not `--git-subpath` — that one belongs to `adopt`. Pass `--subpath ""` when the skill is at the repo root, which must itself hold a `SKILL.md`.
+- `--branch` overrides a branch encoded in the URL.
+- The report carries `content_changed` — a single boolean, **not** a file list. It compares the new source against the hash currently recorded for the library copy, not a fresh hash of the directory on disk, so edits made inside the central copy afterwards do not register as a difference. When it is `false` the library copy is left untouched and those edits survive; copy-mode deployments are re-synced either way.
+
+**`--force` is destructive, and nothing stands between it and the user's files.**
+A content difference is refused without it. With it, the whole skill directory is
+replaced — staged, swapped in, and the old copy deleted — so anything in the
+library copy that the new source does not ship is gone. Unlike `skills update`,
+this path has **no** `held_back_removals` check: nothing is withheld, and nothing
+asks. `--dry-run` cannot tell you which files are at stake, only that something
+differs. Never pass `--force` on the user's behalf — report `content_changed:
+true`, say that proceeding overwrites the library copy wholesale, and let them
+decide.
+
 ## Tag
 
 ```bash
@@ -302,7 +334,7 @@ The `preset_ids`, `presets`, `deployed_to`, `tags`, and `source_type` fields are
 
 1. `skills adopt ~/.claude/skills --dry-run` (and any other agent dirs the user mentions) — show the candidate list.
 2. After user confirms: `skills adopt ~/.claude/skills`.
-3. For any adopted skill where the user knows the original repo, follow up with `skills adopt ... --git-url ... --git-subpath ...` to restore the update link.
+3. For any adopted skill where the user knows the original repo, restore the update link with `skills set-source <skill> --git-url ... --subpath ...`.
 
 ### "Update everything"
 
@@ -318,5 +350,5 @@ Report which skills actually refreshed (`refreshed: true` in the JSON) vs which 
 - **Install succeeded but skill doesn't appear in the agent** → install defaults to library-only. Use `skills deploy <skill> --agent <key>`.
 - **Preset membership changed but agent files did not** → membership is organization only. Follow with `presets deploy` or `skills deploy` when the user also asked to make it visible.
 - **No active preset** only affects legacy `skills sync` / `presets apply`; additive deploy commands do not require one.
-- **Adopted skills can't be `update`d from git** → `npx skills add` and manual `git clone` don't leave source metadata, so adopt has to treat them as `local`. Fix per-skill with `adopt ... --git-url ... --git-subpath ...`, or just `skills remove` + `skills install <git-ref>` to start clean with a real source.
+- **Adopted skills can't be `update`d from git** → `npx skills add` and manual `git clone` don't leave source metadata, so adopt has to treat them as `local`. Re-point them with `skills set-source`. Do **not** reach for `adopt --git-url` here: adopt only ever creates new library entries, and it fails *late* — `--dry-run` returns `ok: true` with the skill sitting in `skipped`, and only the real run errors with `--git-url requires exactly one adoptable skill, found 0`. Do **not** remove-then-reinstall either — that drops the skill id, and with it the tags, preset membership and every per-agent deployment.
 - Use `--dry-run` before bulk remove, tag delete, preset delete, deploy, or undeploy operations. Use `check` before `update`.

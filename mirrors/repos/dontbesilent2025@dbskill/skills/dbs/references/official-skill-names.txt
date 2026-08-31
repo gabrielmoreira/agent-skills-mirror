@@ -15,7 +15,6 @@ dbs-chatroom-austrian
 dbs-chatroom
 dbs-ai-check
 dbs-wechat-html
-dbs-slowisfast
 dbs-install-skill
 dbs-skill-maker
 dbs-agent-migration

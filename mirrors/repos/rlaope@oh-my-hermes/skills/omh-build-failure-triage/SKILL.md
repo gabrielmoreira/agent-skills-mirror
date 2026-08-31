@@ -1,6 +1,6 @@
 ---
 name: "omh-build-failure-triage"
-description: "[omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs. Use when the user says: build-failure-triage, build failure triage, build failure, 빌드 실패, 배포 파이프라인, 파이프라인 깨짐, 파이프라인 실패, 배포 실패."
+description: "[omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs. Use when the user says: build-failure-triage, build failure triage, build failure, build-failure, build fix, build failed, build failing, compile error."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -55,7 +55,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `ultrawork`, `+7 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+11 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -63,7 +63,7 @@ Bad example:
 
 Use when Hermes must inspect a failing build, typecheck, lint, test, CI, or DCO signal and prepare the smallest evidence-backed remediation handoff without redesigning the system.
 
-    Strong routing signals: `build-failure-triage`, `build failure triage`, `build failure`, `빌드 실패`, `배포 파이프라인`, `파이프라인 깨짐`, `파이프라인 실패`, `배포 실패`, `CI 실패`, `build-failure`, `build fix`, `build failed`, `build failing`, `compile error`, `compilation error`, `typecheck failed`, `typecheck failure`, `type check failed`, `tsc failed`, `lint failed`, `lint failure`, `test failed`, `test failure`, `tests failed`, `ci failed`, `ci failure`, `github actions failed`, `pr checks failed`, `pr check failure`, `dco failed`, `dco failure`, `pytest failed`, `pytest failure`, `cargo build failed`, `npm build failed`, `빌드 실패`, `빌드 고쳐`, `컴파일 에러`, `타입체크 실패`, `테스트 실패`, `CI 실패`, `체크 실패`, `DCO 실패`
+    Strong routing signals: `build-failure-triage`, `build failure triage`, `build failure`, `build-failure`, `build fix`, `build failed`, `build failing`, `compile error`, `compilation error`, `typecheck failed`, `typecheck failure`, `type check failed`, `tsc failed`, `lint failed`, `lint failure`, `test failed`, `test failure`, `tests failed`, `ci failed`, `ci failure`, `github actions failed`, `pr checks failed`, `pr check failure`, `dco failed`, `dco failure`, `pytest failed`, `pytest failure`, `cargo build failed`, `npm build failed`, `ビルド失敗`, `ビルドが失敗`, `コンパイルエラー`, `型チェック失敗`, `テストが落ちる`, `빌드 실패`, `배포 파이프라인`, `파이프라인 깨짐`, `파이프라인 실패`, `배포 실패`, `CI 실패`, `빌드 고쳐`, `컴파일 에러`, `타입체크 실패`, `테스트 실패`, `체크 실패`, `DCO 실패`, `构建失败`, `編譯錯誤`, `编译错误`, `类型检查失败`, `测试失败`
 
 ## Catalog Metadata
 

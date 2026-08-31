@@ -12,7 +12,9 @@ Write-Host "Inicializando archivos de planificación: $ProjectName"
 # Crear task_plan.md si no existe
 if (-not (Test-Path "task_plan.md")) {
     @"
-# Plan de Tarea: [descripción breve]
+# Plan de Tareas: [descripción breve]
+
+Esta es la hoja de ruta visible de toda la tarea y la memoria de trabajo persistente en disco. Actualízala al completar cada fase.
 
 ## Objetivo
 [describir el estado final en una frase]
@@ -55,6 +57,10 @@ Fase 1
 ## Errores Encontrados
 | Error | Solución |
 |------|---------|
+
+## Notas
+- Relee este plan antes de decisiones importantes para mantener presente el objetivo aprobado.
+- Registra todos los errores y cambia de enfoque cuando falle una acción.
 "@ | Out-File -FilePath "task_plan.md" -Encoding UTF8
     Write-Host "Creado task_plan.md"
 } else {

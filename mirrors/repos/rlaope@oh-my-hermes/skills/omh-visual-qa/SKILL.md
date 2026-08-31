@@ -64,7 +64,7 @@ Bad example:
 
 Use after or during visual surface work when Hermes must define the render evidence, viewport/state coverage, diff review, oracle review, and PASS/REVISE/BLOCK verdict without fabricating QA.
 
-    Strong routing signals: `visual-qa`, `visual qa`, `visual QA`, `visual quality assurance`, `visual check`, `web qa`, `web visual qa`, `screenshot qa`, `screenshot check`, `analyze this screenshot`, `screenshot layout problems`, `ui layout problems`, `pixel diff`, `image diff`, `visual diff`, `render qa`, `render check`, `browser screenshot`, `browser qa`, `browser interaction qa`, `click path`, `click-path audit`, `dead link check`, `console error check`, `network failure check`, `keyboard navigation check`, `viewport check`, `responsive check`, `ui looks wrong`, `looks broken`, `layout broken`, `broken layout`, `text clipping`, `cjk clipping`, `cjk layout`, `tui check`, `terminal ui check`, `비주얼 qa`, `비주얼QA`, `시각 qa`, `시각 검증`, `화면 검증`, `스크린샷 검증`, `스크린샷 ui 레이아웃`, `스크린샷 UI 레이아웃`, `스크린샷 레이아웃 문제`, `렌더 검증`, `픽셀 diff`, `픽셀 비교`, `화면 깨짐`, `레이아웃 깨짐`, `글자 잘림`, `한글 줄바꿈`, `터미널 ui`
+    Strong routing signals: `visual-qa`, `visual qa`, `visual QA`, `visual quality assurance`, `visual check`, `web qa`, `web visual qa`, `screenshot qa`, `screenshot check`, `analyze this screenshot`, `screenshot layout problems`, `ui layout problems`, `pixel diff`, `image diff`, `visual diff`, `render qa`, `render check`, `browser screenshot`, `browser qa`, `browser interaction qa`, `click path`, `click-path audit`, `dead link check`, `console error check`, `network failure check`, `keyboard navigation check`, `viewport check`, `responsive check`, `ui looks wrong`, `looks broken`, `layout broken`, `broken layout`, `text clipping`, `cjk clipping`, `cjk layout`, `tui check`, `terminal ui check`, `スクリーンショットで確認`, `レイアウト崩れ`, `画面崩れ`, `見た目のQA`, `비주얼 qa`, `비주얼QA`, `시각 qa`, `시각 검증`, `화면 검증`, `스크린샷 검증`, `스크린샷 ui 레이아웃`, `스크린샷 UI 레이아웃`, `스크린샷 레이아웃 문제`, `렌더 검증`, `픽셀 diff`, `픽셀 비교`, `화면 깨짐`, `레이아웃 깨짐`, `글자 잘림`, `한글 줄바꿈`, `터미널 ui`, `截图检查`, `页面错位`, `视觉验收`, `布局错乱`
 
 ## Catalog Metadata
 
@@ -85,6 +85,8 @@ Quality bar:
 - Record console/network health, keyboard navigation, accessibility scan boundaries, and mutating-flow safety for live browser QA claims.
 - Separate design-system consistency, functional integrity, visual fidelity, responsive behavior, accessibility visibility, and CJK/text precision.
 - Return PASS, REVISE, or BLOCK with concrete evidence IDs and missing-evidence gaps.
+- Score every round through `references/visual-verdict-contract.md`: one JSON object carrying an integer 0-100 score, the PASS/REVISE/BLOCK verdict, and a differences list whose every entry pairs the observed problem with the smallest suggested fix.
+- Hold 90 as the pass line: under it the verdict is REVISE and the named edits, a recapture of the same pages/states/viewports, and a fresh scored round are owed; rescoring the same captures is not a new round.
 - Keep implementation fixes and follow-up edits separate from the observed QA verdict.
 
 Handoff policy:
@@ -141,6 +143,7 @@ Artifact expectations:
 - motion_interaction_capture/v1 only when hover/focus/active/load/scroll motion frames are observed before, during, and after transition
 - visual_hotspot_review/v1 maps diff hotspots, TUI overflow lines, or screenshot regions to concrete visual causes
 - dual_oracle_visual_review/v1 only when independent read-only review evidence exists
+- visual_qa_verdict/v1 carries the scored round: an integer 0-100 score, PASS/REVISE/BLOCK, and difference/suggestion pairs, with the sub-90 rerun requirement stated rather than narrated away
 - PASS unavailable until capture repository/revision lineage exactly matches the package target, every required viewport is captured, and all supplied blocking findings are resolved
 
 Safety rules:
@@ -152,6 +155,7 @@ Safety rules:
 - Do not claim browser interaction PASS without observed click-path/state-transition traces for the touchpoints in scope.
 - Do not claim accessibility from automated scan output alone; keyboard navigation and focus-order evidence remain separate observed checks.
 - Objective diffs are evidence, not verdicts; review visual hierarchy, layout, CJK text, state coverage, and product intent separately.
+- Pixel diff localizes hotspots only; it never produces the round score or the verdict, and a low diff ratio is not evidence that the rubric axes pass.
 - Do not excuse diff hotspots as animation; capture settled frames and motion frames separately.
 - Run or request two read-only review perspectives when claiming high confidence: design-system/functional integrity and visual fidelity/CJK precision.
 - Recorded operator-supplied blocking criteria for CJK clipping, broken wrapping, overlapping UI, invisible text, unusable controls, or offscreen critical content block PASS until `_validate_pass` sees passing evidence refs.

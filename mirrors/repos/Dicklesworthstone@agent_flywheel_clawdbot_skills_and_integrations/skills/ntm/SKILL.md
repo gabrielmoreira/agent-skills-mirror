@@ -1,578 +1,289 @@
 ---
 name: ntm
-description: "Named Tmux Manager - Multi-agent orchestration for Claude Code, Codex, and Gemini in tiled tmux panes. Visual dashboards, command palette, context rotation, robot mode API, work assignment, safety system. Go CLI."
+description: >-
+  Orchestrates NTM tmux agent swarms and robot APIs. Use when spawning/sending
+  panes, robot state, triaging work, locks/mail, safety, pipelines, serve,
+  code-first/batch-verify waves, or NTM errors.
 ---
 
-# NTM — Named Tmux Manager
+# NTM
 
-A Go CLI that transforms tmux into a **multi-agent command center** for orchestrating Claude Code, Codex, and Gemini agents in parallel. Spawn, manage, and coordinate AI agents across tiled panes with stunning TUI, automated context rotation, and deep integrations with the Agent Flywheel ecosystem.
+<!-- TOC: Non-Negotiable Rule | Start Here | Action Loop | Action Card | Intent Router | Throughput Doctrine | Pane Targeting | Project Resolution | Automation Rules | Verification Matrix | Failure Handling | Completion | Quick Search | Reference Index | Related Skills -->
 
-## Why This Exists
+NTM is a tmux control plane for multi-agent work. This entrypoint is the
+operating kernel. Load one linked reference only when the current action needs
+it.
 
-Managing multiple AI coding agents is painful:
-- **Window chaos**: Each agent needs its own terminal
-- **Context switching**: Jumping between windows breaks flow
-- **No orchestration**: Same prompt to multiple agents requires manual copy-paste
-- **Session fragility**: Disconnecting from SSH loses all agent sessions
-- **No visibility**: Hard to see agent status at a glance
+## Non-Negotiable Rule
 
-NTM solves all of this with one session containing many agents, persistent across SSH disconnections.
+Discover the live contract, choose the smallest non-interactive surface, act,
+then verify on the read surface that owns the resulting state.
 
-## Quick Start
+Never infer success from command acceptance alone.
+
+## Start Here
+
+1. Read the target repository's `AGENTS.md` and `README.md`.
+2. Confirm project/session resolution.
+3. Discover only the catalog slice you need:
+   ```bash
+   ntm --robot-capabilities --capability-compact
+   ntm --robot-capabilities --capability-command=send --capability-compact
+   ntm --robot-capabilities --capability-search=interrupt --capability-compact
+   ```
+4. Bootstrap state:
+   ```bash
+   ntm --robot-snapshot
+   ```
+5. Name the authoritative postcondition before mutating anything.
+
+For older NTM builds without capability filters, use
+`ntm --robot-capabilities` and narrow locally.
+
+## Mandatory Action Loop
+
+```text
+DISCOVER -> SNAPSHOT -> SELECT -> SCOPE -> EXECUTE -> VERIFY -> CLEAN UP
+```
+
+- **Discover:** Live capability, schema, repo policy, and tool availability.
+- **Snapshot:** Session, panes, source health, work, mail, and locks.
+- **Select:** Least interactive command with a structured result.
+- **Scope:** Exact session, pane references, files, ownership, and blast radius.
+- **Execute:** Prefer robot mode for automation.
+- **Verify:** Owning state surface plus an independent artifact where useful.
+- **Clean up:** Release or hand off locks, claims, pipelines, and sessions.
+
+Re-snapshot after a cursor expiry, degraded-source recovery, or material state
+transition.
+
+## Action Card
+
+Before a state change, answer:
+
+```markdown
+- Target: <project/session and canonical pane refs>
+- Contract: <capability/schema checked>
+- Evidence before: <cursor, source health, state>
+- Ownership: <bead assignee and file reservations>
+- Safety: <user pane inclusion, approvals, blast radius>
+- Postcondition: <owning read surface>
+- Recovery: <retry, interrupt, smart restart, restore, handoff>
+```
+
+If any field is unknown, stay read-only.
+
+## Intent Router
+
+| Intent | First surface | Load |
+|---|---|---|
+| Install, configure, environment | `ntm deps`, config | [CONFIG](references/CONFIG.md), [ENV-VARS](references/ENV-VARS.md) |
+| Spawn/add/adopt agents | `ntm spawn`, `ntm add` | [SPAWN](references/SPAWN.md) |
+| Send or batch prompts | `--robot-send` | [SEND](references/SEND.md) |
+| Inspect state/output | snapshot, tail, inspect | [ROBOT-MODE](references/ROBOT-MODE.md) |
+| Pick and assign work | work triage, assign | [WORK-AND-ASSIGN](references/WORK-AND-ASSIGN.md) |
+| Coordinate files/agents | locks, mail, coordinator | [INTEGRATIONS](references/INTEGRATIONS.md) |
+| Recover or resume | diagnose, checkpoint, handoff | [TROUBLESHOOTING](references/TROUBLESHOOTING.md), [DURABILITY](references/DURABILITY.md) |
+| Run repeatable phases | pipeline | [PIPELINES](references/PIPELINES.md) |
+| Run reasoning ensembles | ensemble | [ENSEMBLE](references/ENSEMBLE.md) |
+| Operate HTTP/WebSocket API | serve | [SERVE](references/SERVE.md) |
+| Review policy/approvals | safety, policy, approve | [SAFETY](references/SAFETY.md) |
+| Use human dashboard | dashboard/palette | [DASHBOARD](references/DASHBOARD.md) |
+| Find exact CLI syntax | live capabilities first | [COMMANDS](references/COMMANDS.md) |
+| Run high-throughput coding waves | beads policy + orchestrator | [CODE-FIRST-BATCH-VERIFY](references/CODE-FIRST-BATCH-VERIFY.md) |
+
+For an already-running multi-pane swarm, use `/vibing-with-ntm` for the tending
+loop and return here for exact command contracts.
+
+## Swarm Throughput and Credit Doctrine
+
+When many panes share one repo and one expensive build path, run the
+two-phase pump: parallel code-first waves (real code + real tests, syntax
+gate max, commit immediately) followed by one central batch-verify pass that
+alone closes work with revision-bound evidence.
+
+```text
+PHASE 1 (all panes, parallel): claim -> code+tests -> syntax gate -> commit -> batch_pending -> next
+        |  trigger: ready-pool dry | debt ceiling | articulation point | scope frontier | time/risk | rate dip
+        v
+PHASE 2 (orchestrator, once): commit-flush -> ONE verify over git-derived scope
+        -> compile errors first -> cluster failures by file -> rework (same assignee)
+        -> re-run green -> gate + close with evidence -> dependents unblock -> next wave
+```
+
+Full mechanics, tracker policy shape, triggers, and enforcement:
+[CODE-FIRST-BATCH-VERIFY](references/CODE-FIRST-BATCH-VERIFY.md).
+
+The pump is only safe on top of honest credit: process artifacts gate named
+features or don't exist; refusal-only work never closes a positive-capability
+item; closures cite evidence; metrics predeclare denominators. That incentive
+layer — including how to encode it into the beads themselves so every swarm
+agent sees it at claim time — is the vibing-with-ntm skill's HONEST-CREDIT
+reference; its DOCTRINE-BOOTSTRAP reference is the step-by-step setup
+(AGENTS.md law, tracker policy, root doctrine bead, AC templates,
+enforcement canary). Encode both doctrines in the target repo's `AGENTS.md`
+before the first wave.
+
+## Pane Targeting
+
+Use canonical selectors returned by live robot state:
+
+- `%N`: stable tmux pane ID.
+- `W.P`: explicit window and pane.
+- Bare `N`: pane index in one-window sessions; window index in multi-window
+  sessions.
+
+Do not assume the user pane is index 0. Both dispatch surfaces exclude
+user-typed panes by default, but their `--all` flags differ: robot `--all`
+opts the user pane in, while shell `ntm send --all` broadens to all agent
+panes and reaches the user pane only with `--include-user`. Prefer `%N` or
+`W.P` for any state-changing single-pane action.
+
+A malformed, missing, or ambiguous selector is a command error, not an empty
+successful target set.
+
+## Project Resolution
+
+A session is a project name or `project--label`. The project directory must
+resolve to the repository NTM, Beads, and Agent Mail should share. Check
+`projects_base`, session labels, and the resolved absolute path before
+claiming work or reserving files.
+
+Do not repair resolution by guessing symlinks or moving repositories. Inspect
+configuration and follow repo policy.
+
+## Automation Rules
+
+- Avoid `ntm view`, dashboard, palette, and other TUIs in automation.
+- Prefer `--robot-*` output; use `--robot-format=toon` and
+  `--robot-verbosity=terse` when supported and context is tight.
+- Treat `success` as authoritative, then inspect `error_code` and `hint`.
+- Exit `0` means success, `1` means command error, and `2` means
+  unavailable/`NOT_IMPLEMENTED`.
+- Critical arrays must be present as `[]`, never inferred from omission.
+- A degraded source is evidence with limits, not permission to invent state.
+- Cursors are local to one attention store; checkpoint/handoff artifacts are
+  the portable continuity mechanism.
+
+## Spawn and Detached-Session Guardrails
+
+Treat the live capability catalog as the robot-surface count; do not copy a
+number into automation guidance:
 
 ```bash
-# Install
-curl -fsSL https://raw.githubusercontent.com/Dicklesworthstone/ntm/main/install.sh | bash
-
-# Add shell integration
-echo 'eval "$(ntm init zsh)"' >> ~/.zshrc && source ~/.zshrc
-
-# Interactive tutorial
-ntm tutorial
-
-# Check dependencies
-ntm deps -v
-
-# Create multi-agent session (agy = Antigravity CLI, NTM-pinned to "Gemini 3.1 Pro (High)")
-ntm spawn myproject --cc=2 --cod=1 --agy=1
-
-# Send prompt to all Claude agents
-ntm send myproject --cc "Explore this codebase and summarize its architecture."
-
-# Open command palette (or press F6 after `ntm bind`)
-ntm palette myproject
+ntm --robot-capabilities | jq '.commands | length'
 ```
 
-## Session Creation
+`ntm respawn <session>` and `ntm kill <session>` ask for confirmation. An
+orchestrator must use `--force` only after its target and blast radius are
+explicitly verified; otherwise the command will wait at a prompt and silently
+stall automation.
 
-### Spawn Agents
+For model-qualified launches, use `N:model:effort` where the agent supports an
+effort hint, for example `--cod=2:gpt-5.6-terra:high`. Before using either
+qualifier in a custom `[agents]` command, ensure the Go template contains
+`{{.Model}}` (or `{{.ModelAlias}}`) and, for effort, `{{.ReasoningEffort}}`.
+NTM rejects a requested qualifier that its template would ignore; fix the
+template rather than assuming the launch received the setting.
+
+A detached tmux session may begin at 80x24; a wide swarm can leave each pane
+too small for agent dialogs and even make dialog detection miss wrapped
+options. Before spawning or tending a large detached swarm, size the window:
 
 ```bash
-ntm spawn myproject --cc=3 --cod=2 --agy=1   # 3 Claude + 2 Codex + 1 Gemini (via agy)
-ntm quick myproject --template=go             # Full project scaffold + agents
-ntm create myproject --panes=10               # Empty panes only
-ntm spawn myproject --profiles=architect,implementer,tester
+tmux resize-window -t <session> -x 420 -y 110
 ```
 
-### Agent Flags
+Re-check the actual pane geometry after layout changes; this is an operator
+environment constraint, not an agent failure.
 
-| Flag | Agent | CLI Command |
-|------|-------|-------------|
-| `--cc=N` | Claude Code | `claude` |
-| `--cod=N` | Codex CLI | `codex` |
-| `--agy=N` | Antigravity CLI (pinned to "Gemini 3.1 Pro (High)") | `agy` |
-| `--gmi=N` | Gemini CLI (legacy, retiring — prefer `--agy=N`) | `gemini` |
+## Verification Matrix
 
-### Add More Agents
+| Mutation | Required read-back |
+|---|---|
+| Spawn/add/restart | session status plus pane PID/current command |
+| Send/interrupt | target receipt plus fresh pane capture |
+| Bead claim/assign/close | native `br show`/ready plus assignment state |
+| File reservation | Agent Mail reservation result/conflict list |
+| Pipeline run/resume/cancel | pipeline state/run ID |
+| Lock acquire/release | lock owner/lease state |
+| Checkpoint/handoff | artifact metadata and restore target |
+| Safety approval | policy/token state |
+| Event-producing action | events/digest/attention cursor movement |
+
+Use git, Beads, process state, or emitted artifacts as independent evidence when
+the action is meant to change them.
+
+## Failure Handling
+
+1. Preserve the structured error payload and exit code.
+2. Re-read the relevant capability/schema when `INVALID_FLAG` appears; its
+   `hint` field now carries a did-you-mean suggestion for near-miss flags.
+3. Re-resolve session and pane references for not-found errors.
+4. For dependency/source degradation, use the documented fallback once and
+   report reduced confidence.
+5. For a live agent that appears stuck, diagnose before interrupting or
+   restarting.
+6. Never loop indefinitely on mail, CASS, Beads, or provider failures.
+7. Never use destructive recovery without the repository's explicit approval
+   protocol.
+
+## Completion
+
+An NTM action is complete only when:
+
+- the authoritative read surface proves the intended transition;
+- target panes, user-pane policy, and ownership are unambiguous;
+- downstream git/Beads/mail/pipeline state agrees where applicable;
+- any opened lease, reservation, pipeline, or temporary session is released,
+  completed, or handed off;
+- no required command session is still running.
+
+## Quick Search
+
+Grep the references instead of loading them whole:
 
 ```bash
-ntm add myproject --cc=2              # Add 2 more Claude agents
-ntm add myproject --cod=1 --agy=1     # Add mixed agents
+REFS=.claude/skills/ntm/references
+
+# Find the exact flag/command contract
+grep -niE "<flag-or-subcommand>" "$REFS"/COMMANDS.md "$REFS"/ROBOT-MODE.md
+
+# Find pump mechanics by keyword
+grep -niE "trigger|commit-flush|rework|gate|build-kill|revision" \
+  "$REFS"/CODE-FIRST-BATCH-VERIFY.md
+
+# Find closure/claim discipline
+grep -niE "actor|close|ready|claim|dep add|cycles" "$REFS"/WORK-AND-ASSIGN.md
+
+# Find recovery for an error string
+grep -niE "<error-text>" "$REFS"/TROUBLESHOOTING.md "$REFS"/DURABILITY.md
 ```
 
-## Sending Prompts
-
-```bash
-ntm send myproject --cc "Implement user auth"     # To all Claude
-ntm send myproject --cod "Write unit tests"       # To all Codex
-ntm send myproject --agy "Review and document"    # To all Antigravity (Gemini 3.1 Pro)
-ntm send myproject --all "Review current state"   # To ALL agents
-ntm interrupt myproject                           # Ctrl+C to all
-```
-
-## Session Navigation
-
-| Command | Alias | Description |
-|---------|-------|-------------|
-| `ntm list` | `lnt` | List all tmux sessions |
-| `ntm attach` | `rnt` | Attach to session |
-| `ntm status` | `snt` | Show pane details with agent counts |
-| `ntm view` | `vnt` | Unzoom, tile layout, attach |
-| `ntm zoom` | `znt` | Zoom to specific pane |
-| `ntm dashboard` | `dash`, `d` | Interactive visual dashboard |
-| `ntm kill` | `knt` | Kill session (`-f` to force) |
-
-## Command Palette
-
-Fuzzy-searchable TUI with pre-configured prompts:
-
-```bash
-ntm palette myproject    # Open palette
-ntm bind                 # Set up F6 keybinding
-ntm bind --key=F5        # Use different key
-```
-
-### Palette Features
-
-- Animated gradient banner with Catppuccin themes
-- Fuzzy search with live filtering
-- Pin/favorite commands (`Ctrl+P` / `Ctrl+F`)
-- Live preview pane with metadata
-- Quick select with numbers 1-9
-- Visual target selector (All/Claude/Codex/Gemini)
-
-### Palette Navigation
-
-| Key | Action |
-|-----|--------|
-| `↑/↓` or `j/k` | Navigate |
-| `1-9` | Quick select |
-| `Enter` | Select command |
-| `Esc` | Back / Quit |
-| `?` | Help overlay |
-| `Ctrl+P` | Pin/unpin |
-| `Ctrl+F` | Favorite |
-
-## Interactive Dashboard
-
-```bash
-ntm dashboard myproject   # Or: ntm dash myproject
-```
-
-### Dashboard Features
-
-- Visual pane grid with color-coded agent cards
-- Live agent counts (Claude/Codex/Gemini/User)
-- Token velocity badges (tokens-per-minute)
-- Context usage indicators (green/yellow/orange/red)
-- Real-time refresh with `r`
-
-### Dashboard Navigation
-
-| Key | Action |
-|-----|--------|
-| `↑/↓` or `j/k` | Navigate panes |
-| `1-9` | Quick select |
-| `z` or `Enter` | Zoom to pane |
-| `r` | Refresh |
-| `c` | View context |
-| `m` | Open Agent Mail |
-| `q` | Quit |
-
-## Output Capture
-
-```bash
-ntm copy myproject:1              # Copy specific pane
-ntm copy myproject --all          # Copy all panes
-ntm copy myproject --cc           # Copy Claude panes only
-ntm copy myproject --pattern 'ERROR'  # Filter by regex
-ntm copy myproject --code         # Extract code blocks only
-ntm copy myproject --output out.txt   # Save to file
-ntm save myproject -o ~/logs      # Save all outputs
-```
-
-## Monitoring & Analysis
-
-```bash
-ntm activity myproject --watch    # Real-time activity
-ntm health myproject              # Health status
-ntm watch myproject --cc          # Stream output
-ntm extract myproject --lang=go   # Extract code blocks
-ntm diff myproject cc_1 cod_1     # Compare panes
-ntm grep 'error' myproject -C 3   # Search with context
-ntm analytics --days 7            # Session statistics
-ntm locks myproject --all-agents  # File reservations
-```
-
-### Activity States
-
-| State | Icon | Description |
-|-------|------|-------------|
-| WAITING | ● | Idle, ready for work |
-| GENERATING | ▶ | Producing output |
-| THINKING | ◐ | Processing (no output yet) |
-| ERROR | ✗ | Encountered error |
-| STALLED | ◯ | Stopped unexpectedly |
-
-## Checkpoints
-
-```bash
-ntm checkpoint save myproject -m "Before refactor"
-ntm checkpoint list myproject
-ntm checkpoint show myproject 20251210-143052
-ntm checkpoint delete myproject 20251210-143052 -f
-```
-
-## Context Window Rotation
-
-NTM monitors context usage and auto-rotates agents before exhausting context.
-
-### How It Works
-
-1. **Monitoring**: Token usage estimated per agent
-2. **Warning**: Alert at 80% usage
-3. **Compaction**: Try `/compact` or summarization first
-4. **Rotation**: Fresh agent with handoff summary if needed
-
-### Context Indicators
-
-| Color | Usage | Status |
-|-------|-------|--------|
-| Green | < 40% | Plenty of room |
-| Yellow | 40-60% | Comfortable |
-| Orange | 60-80% | Approaching threshold |
-| Red | > 80% | Needs attention |
-
-### Automatic Compaction Recovery
-
-When context is compacted, NTM sends a recovery prompt:
-
-```toml
-[context_rotation.recovery]
-enabled = true
-prompt = "Reread AGENTS.md so it's still fresh in your mind. Use ultrathink."
-include_bead_context = true   # Include project state from bv
-```
-
-## Robot Mode (AI Automation)
-
-Machine-readable JSON output for AI agents and automation.
-
-### State Inspection
-
-```bash
-ntm --robot-status              # Sessions, panes, agent states
-ntm --robot-context=SESSION     # Context window usage
-ntm --robot-snapshot            # Unified state: sessions + beads + mail
-ntm --robot-tail=SESSION        # Recent pane output
-ntm --robot-inspect-pane=SESS   # Detailed pane inspection
-ntm --robot-files=SESSION       # File changes with attribution
-ntm --robot-metrics=SESSION     # Session metrics
-ntm --robot-plan                # bv execution plan
-ntm --robot-dashboard           # Dashboard summary
-ntm --robot-health              # Project health
-```
-
-### Agent Control
-
-```bash
-ntm --robot-send=SESSION --msg="Fix auth" --type=claude
-ntm --robot-spawn=SESSION --spawn-cc=2 --spawn-wait
-ntm --robot-interrupt=SESSION
-ntm --robot-assign=SESSION --assign-beads=br-1,br-2
-ntm --robot-replay=SESSION --replay-id=ID
-```
-
-### Bead Management
-
-```bash
-ntm --robot-bead-claim=BEAD_ID --bead-assignee=agent
-ntm --robot-bead-create --bead-title="Fix bug" --bead-type=bug
-ntm --robot-bead-show=BEAD_ID
-ntm --robot-bead-close=BEAD_ID --bead-close-reason="Fixed"
-```
-
-### CASS Integration
-
-```bash
-ntm --robot-cass-search="auth error" --cass-since=7d
-ntm --robot-cass-context="how to implement auth"
-ntm --robot-cass-status
-```
-
-### Exit Codes
-
-| Code | Meaning |
-|------|---------|
-| `0` | Success |
-| `1` | Error |
-| `2` | Unavailable/Not implemented |
-
-## Work Distribution
-
-Integration with BV for intelligent work assignment:
-
-```bash
-ntm work triage               # Full triage with recommendations
-ntm work triage --by-label    # Group by domain
-ntm work triage --quick       # Quick wins only
-ntm work alerts               # Stale issues, priority drift, cycles
-ntm work search "JWT auth"    # Semantic search
-ntm work impact src/api/*.go  # Impact analysis
-ntm work next                 # Single best next action
-```
-
-### Intelligent Assignment
-
-```bash
-ntm --robot-assign=myproject --assign-strategy=balanced  # Default
-ntm --robot-assign=myproject --assign-strategy=speed     # Maximize throughput
-ntm --robot-assign=myproject --assign-strategy=quality   # Best agent-task match
-ntm --robot-assign=myproject --assign-strategy=dependency # Unblock downstream
-```
-
-### Agent Capability Matrix
-
-| Agent | Best At |
-|-------|---------|
-| **Claude** | Analysis, refactoring, documentation, architecture |
-| **Codex** | Feature implementation, bug fixes, quick tasks |
-| **Gemini** | Documentation, analysis, features |
-
-## Profiles & Personas
-
-```bash
-ntm profiles list                    # List profiles
-ntm profiles show architect          # Show details
-ntm spawn myproject --profiles=architect,implementer,tester
-ntm spawn myproject --profile-set=backend-team
-```
-
-### Built-in Profiles
-
-`architect`, `implementer`, `reviewer`, `tester`, `documenter`
-
-## Agent Mail Integration
-
-```bash
-ntm mail send myproject --to GreenCastle "Review API changes"
-ntm mail send myproject --all "Checkpoint: sync status"
-ntm mail inbox myproject
-ntm mail read myproject --agent BlueLake
-ntm mail ack myproject 42
-```
-
-### Pre-commit Guard
-
-```bash
-ntm hooks guard install    # Prevent conflicting commits
-ntm hooks guard uninstall
-```
-
-## Notifications
-
-Multi-channel notifications for events:
-
-```toml
-[notifications]
-enabled = true
-events = ["agent.error", "agent.crashed", "agent.rate_limit"]
-
-[notifications.desktop]
-enabled = true
-
-[notifications.webhook]
-enabled = true
-url = "https://hooks.slack.com/..."
-```
-
-### Event Types
-
-`agent.error`, `agent.crashed`, `agent.rate_limit`, `rotation.needed`, `session.created`, `session.killed`, `health.degraded`
-
-## Alerting System
-
-### Alert Types
-
-| Type | Severity | Description |
-|------|----------|-------------|
-| `unhealthy` | High | Agent enters unhealthy state |
-| `degraded` | Medium | Agent performance degrades |
-| `rate_limited` | Medium | API rate limit detected |
-| `restart_failed` | High | Restart attempt failed |
-| `max_restarts` | Critical | Restart limit exceeded |
-
-```bash
-ntm --robot-alerts
-ntm --robot-dismiss-alert=ALERT_ID
-```
-
-## Command Hooks
-
-```toml
-# ~/.config/ntm/hooks.toml
-
-[[command_hooks]]
-event = "post-spawn"
-command = "notify-send 'NTM' 'Agents spawned'"
-
-[[command_hooks]]
-event = "pre-send"
-command = "echo \"$(date): $NTM_MESSAGE\" >> ~/.ntm-send.log"
-```
-
-### Available Events
-
-`pre-spawn`, `post-spawn`, `pre-send`, `post-send`, `pre-add`, `post-add`, `pre-shutdown`, `post-shutdown`
-
-## Safety System
-
-Blocks dangerous commands from AI agents:
-
-```bash
-ntm safety status              # Protection status
-ntm safety check "git reset --hard"
-ntm safety install             # Install git wrapper + Claude hook
-ntm safety uninstall
-```
-
-### Protected Commands
-
-| Pattern | Risk | Action |
-|---------|------|--------|
-| `git reset --hard` | Loses uncommitted changes | Block |
-| `git push --force` | Overwrites remote history | Block |
-| `rm -rf /` | Catastrophic deletion | Block |
-| `DROP TABLE` | Database destruction | Block |
-
-## Multi-Agent Strategies
-
-### Divide and Conquer
-
-```bash
-ntm send myproject --cc "design the database schema"
-ntm send myproject --cod "implement the models"
-ntm send myproject --agy "write tests"
-```
-
-### Competitive Comparison
-
-```bash
-ntm send myproject --all "implement a rate limiter"
-ntm view myproject  # Compare side-by-side
-```
-
-### Review Pipeline
-
-```bash
-ntm send myproject --cc "implement feature X"
-ntm send myproject --cod "review Claude's code"
-ntm send myproject --agy "write tests for edge cases"
-```
-
-## Configuration
-
-```bash
-ntm config init          # Create ~/.config/ntm/config.toml
-ntm config show          # Show current config
-ntm config project init  # Create .ntm/config.toml in project
-```
-
-### Example Config
-
-```toml
-projects_base = "~/Developer"
-
-[agents]
-claude = 'claude --dangerously-skip-permissions'
-codex = "codex --dangerously-bypass-approvals-and-sandbox"
-gemini = "gemini --yolo"
-
-[tmux]
-default_panes = 10
-palette_key = "F6"
-
-[context_rotation]
-enabled = true
-warning_threshold = 0.80
-rotate_threshold = 0.95
-```
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `NTM_PROJECTS_BASE` | Base directory for projects |
-| `NTM_THEME` | Color theme: `auto`, `mocha`, `latte`, `nord`, `plain` |
-| `NTM_ICONS` | Icon set: `nerd`, `unicode`, `ascii` |
-| `NTM_REDUCE_MOTION` | Disable animations |
-| `NTM_PROFILE` | Enable performance profiling |
-
-## Themes & Display
-
-### Color Themes
-
-| Theme | Description |
-|-------|-------------|
-| `auto` | Detect light/dark |
-| `mocha` | Default dark, warm |
-| `latte` | Light variant |
-| `nord` | Arctic-inspired |
-| `plain` | No color |
-
-### Agent Colors
-
-| Agent | Color |
-|-------|-------|
-| Claude | Mauve (Purple) |
-| Codex | Blue |
-| Gemini | Yellow |
-| User | Green |
-
-### Display Width Tiers
-
-| Width | Behavior |
-|-------|----------|
-| <120 cols | Stacked layout |
-| 120-199 cols | List/detail split |
-| 200-239 cols | Wider gutters |
-| 240+ cols | Full detail |
-
-## Pane Naming Convention
-
-Pattern: `<project>__<agent>_<number>`
-
-- `myproject__cc_1` - First Claude
-- `myproject__cod_2` - Second Codex
-- `myproject__gmi_1` - First Gemini
-
-Status indicators: **C** = Claude, **X** = Codex, **G** = Gemini, **U** = User
-
-## Shell Aliases
-
-After `eval "$(ntm init zsh)"`:
-
-| Category | Aliases |
-|----------|---------|
-| Agent Launch | `cc`, `cod`, `agy` (`gmi` legacy) |
-| Session | `cnt`, `sat`, `qps` |
-| Agent Mgmt | `ant`, `bp`, `int` |
-| Navigation | `rnt`, `lnt`, `snt`, `vnt`, `znt` |
-| Dashboard | `dash`, `d` |
-| Output | `cpnt`, `svnt` |
-| Utilities | `ncp`, `knt`, `cad` |
-
-## Installation
-
-```bash
-# One-liner (recommended)
-curl -fsSL https://raw.githubusercontent.com/Dicklesworthstone/ntm/main/install.sh | bash
-
-# Homebrew
-brew install dicklesworthstone/tap/ntm
-
-# Go install
-go install github.com/Dicklesworthstone/ntm/cmd/ntm@latest
-
-# Docker
-docker pull ghcr.io/dicklesworthstone/ntm:latest
-```
-
-## Upgrade
-
-```bash
-ntm upgrade              # Check and install updates
-ntm upgrade --check      # Check only
-ntm upgrade --yes        # Auto-confirm
-```
-
-## Tmux Essentials
-
-| Keys | Action |
-|------|--------|
-| `Ctrl+B, D` | Detach |
-| `Ctrl+B, [` | Scroll/copy mode |
-| `Ctrl+B, z` | Toggle zoom |
-| `Ctrl+B, Arrow` | Navigate panes |
-| `F6` | Open NTM palette (after `ntm bind`) |
-
-## Integration with Flywheel
-
-| Tool | Integration |
-|------|-------------|
-| **Agent Mail** | Message routing, file reservations, pre-commit guard |
-| **BV** | Work distribution, triage, assignment strategies |
-| **CASS** | Search past sessions via robot mode |
-| **CM** | Procedural memory for agent handoffs |
-| **DCG** | Safety system integration |
-| **UBS** | Auto-scanning on file changes |
+## Reference Index
+
+- [CODE-FIRST-BATCH-VERIFY](references/CODE-FIRST-BATCH-VERIFY.md): two-phase swarm pump
+- [COMMANDS](references/COMMANDS.md): command catalog and syntax
+- [CONFIG](references/CONFIG.md): configuration and project resolution
+- [DASHBOARD](references/DASHBOARD.md): human dashboard behavior
+- [DURABILITY](references/DURABILITY.md): checkpoint, restore, handoff
+- [ENSEMBLE](references/ENSEMBLE.md): reasoning ensembles
+- [ENV-VARS](references/ENV-VARS.md): environment controls
+- [INTEGRATIONS](references/INTEGRATIONS.md): Beads, BV, mail, locks, CASS
+- [PIPELINES](references/PIPELINES.md): pipeline lifecycle
+- [ROBOT-MODE](references/ROBOT-MODE.md): robot envelopes and surfaces
+- [SAFETY](references/SAFETY.md): approvals and policy
+- [SELF-TEST](references/SELF-TEST.md): validation checks
+- [SEND](references/SEND.md): targeting and dispatch
+- [SERVE](references/SERVE.md): HTTP/WebSocket API
+- [SPAWN](references/SPAWN.md): session and agent creation
+- [TROUBLESHOOTING](references/TROUBLESHOOTING.md): diagnosis/recovery
+- [WORK-AND-ASSIGN](references/WORK-AND-ASSIGN.md): triage and assignment
+
+## Related Skills
+
+- `/vibing-with-ntm`: tend active swarms
+- `/beads-br`, `/beads-bv`: tracker mechanics and graph triage
+- `/agent-mail`: coordination primitives
+- `/brennerbot-with-ntm`: hypothesis research sessions
+- `/open-beads-weighted-tmux-agent-sessions`: backlog-weighted spawning

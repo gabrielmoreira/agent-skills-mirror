@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,11 +79,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/claude-certification/agents/openai.yaml`](skills/claude-certification/agents/openai.yaml) |
 | 19 | ✓ | [`skills/claude-certification/SKILL.md`](skills/claude-certification/SKILL.md) |
 | 20 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
-| 21 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
-| 22 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
-| 23 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
-| 24 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
-| 25 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
+| 21 | ✓ | [`skills/find-your-level/references/answer-key.md`](skills/find-your-level/references/answer-key.md) |
+| 22 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
+| 23 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
+| 24 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
+| 25 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 26 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
 
 ---
 

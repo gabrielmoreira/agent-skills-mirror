@@ -514,7 +514,7 @@ For the full stealth playbook and operational guidance, see
 Primary state DB (SQLite):
 
 - Core infra: `src/lib/db/core.ts` (better-sqlite3, migrations, WAL)
-- Re-export facade: `src/lib/localDb.ts` (thin compatibility layer for callers)
+- DB access: import specific `src/lib/db/*` modules directly (the old `localDb.ts` barrel was removed)
 - file: `${DATA_DIR}/storage.sqlite` (or `$XDG_CONFIG_HOME/omniroute/storage.sqlite` when set, else `~/.omniroute/storage.sqlite`)
 - entities (tables + KV namespaces): providerConnections, providerNodes, modelAliases, combos, apiKeys, settings, pricing, **customModels**, **proxyConfig**, **ipFilter**, **thinkingBudget**, **systemPrompt**
 
@@ -888,7 +888,7 @@ flowchart LR
 ### Persistence
 
 - `src/lib/db/*`: persistent config/state and domain persistence on SQLite
-- `src/lib/localDb.ts`: compatibility re-export for DB modules
+- `src/lib/db/*`: import specific modules directly — no barrel (the old `localDb.ts` re-export layer was removed)
 - `src/lib/usageDb.ts`: usage history/call logs facade on top of SQLite tables
 
 ## Provider Executor Coverage (Strategy Pattern)

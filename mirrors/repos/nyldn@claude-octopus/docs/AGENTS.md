@@ -1,6 +1,6 @@
 # Claude Octopus Agent Catalog
 
-> *32 specialized personas, infinite possibilities. But which one grabs YOUR problem?* 🐙
+> *31 specialized personas, infinite possibilities. But which one grabs YOUR problem?* 🐙
 
 **Note on Permissions:** Current releases prompt before background provider execution so you can approve Codex or Gemini usage explicitly.
 

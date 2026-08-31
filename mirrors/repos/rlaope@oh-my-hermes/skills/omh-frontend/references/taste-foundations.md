@@ -29,6 +29,77 @@ at all.
   type and hard contrast, breaking one grid rule at a time on purpose.
   Typical failure: every element shouting, so nothing leads.
 
+## The default aesthetic you already carry
+
+A coding model does not start neutral. Left to its own judgment it converges
+on one house style — cream and off-white grounds, a serif display face over a
+quiet sans, muted terracotta or clay accents, wide margins, an editorial
+rhythm. It is a real aesthetic and often a good one, but it is a prior, not a
+response to the brief, and it arrives whether or not anyone chose it.
+
+Say which case the brief is before using it:
+
+- **It suits** editorial and long-form reading, portfolio and studio sites,
+  hospitality, food, wellness, and print-adjacent marketing — briefs where
+  warmth and unhurried calm are the product.
+- **It is a failure mode** for dashboards, developer tools, admin consoles,
+  fintech, trading, analytics, and anything data-dense. Cream grounds wash out
+  status color, serif display faces fight tabular figures, and editorial
+  margins spend the width a dense table needs. An operational brief rendered
+  in the default prior reads as a blog that grew a table.
+
+## Overriding the default takes tokens, not negations
+
+"Don't make it look AI-generated", "make it minimal", "less generic", "more
+modern" — none of these move the output. They retire one default and leave the
+next-most-likely default in its place, which is usually the same house style
+with the serif swapped out. A negation names what to stop; it never names
+where to go.
+
+An override is actionable only when it carries concrete values:
+
+- a palette as hex — every background layer, every text level, the accent and
+  its budget;
+- a typeface stack — display family, text family, and fallbacks, including the
+  CJK stack when the audience needs one;
+- the geometry that travels with them: radius, border weight, spacing base.
+
+Those land in `DESIGN.md` sections 2 and 3 before implementation starts. When
+the direction arrives as negations only, convert it into tokens and state them
+back — a named palette and stack the user can reject is a decision; "less
+AI-looking" is not.
+
+## Review prompts — not bans
+
+The patterns below are not forbidden. They are the ones that show up when
+nothing chose them, so each is a question the review asks; a stated reason
+closes it and keeps the pattern.
+
+- **Framework blue** — is the primary `#3B82F6` (or a framework-default
+  neighbour) because the brand is blue, or because it was already there? A
+  default accent with no brand rationale is an unmade decision.
+- **Glass surfaces and cyan-to-purple gradients** — what do the blur and the
+  gradient communicate? Depth and brand can both justify them; "it looked
+  modern" cannot.
+- **Inter everywhere** — Inter and the system stack are good text faces and
+  poor signatures. Is anything on the page doing typographic work the default
+  UI face is not?
+- **Bounce easing** — does the overshoot describe a physical motion the user
+  initiated, or is it decoration on a menu that should settle?
+- **Shadows on every surface** — elevation is a hierarchy signal, and when
+  every card carries the same shadow it signals nothing. Which surfaces are
+  deliberately raised, and above what?
+- **Eyebrow, title, description, on every section** — does each section need
+  all three, or did the template supply them? Stacked labels above every
+  heading are padding wearing hierarchy's clothes.
+- **The uniform grid** — a perfect 3- or 4-column row is right when the items
+  are peers of equal weight. When they are not, an asymmetric or bento rhythm
+  says which one leads, and the uniform grid says nothing leads.
+- **CJK body under 14px** — Korean, Japanese, and Chinese glyphs carry more
+  strokes inside the same em. Copy that reads cleanly at 13px in Latin is
+  degraded in CJK: hold a 14px floor for Korean body text, and measure
+  captions against that floor instead of shrinking below it.
+
 ## Anti-slop checklist — reject on sight
 
 - Template gravity: rows of three equal cards, hero-icon-grid boilerplate,

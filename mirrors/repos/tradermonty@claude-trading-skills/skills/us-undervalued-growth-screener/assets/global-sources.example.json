@@ -1,0 +1,80 @@
+[
+  {
+    "id": "quote-20260821",
+    "tier": 3,
+    "kind": "market_data",
+    "title": "Synthetic regular-session closing quote snapshot",
+    "published_at": "2026-08-21T16:00:00-04:00",
+    "retrieved_at": "2026-08-22T09:00:00-07:00",
+    "url": "https://example.com/quote",
+    "supports": [
+      "identity.price",
+      "price_basis"
+    ]
+  },
+  {
+    "id": "macro-fed-20260822",
+    "tier": 1,
+    "kind": "official_macro",
+    "title": "Synthetic Federal Reserve policy-rate record",
+    "published_at": "2026-08-21T12:00:00-04:00",
+    "retrieved_at": "2026-08-22T09:05:00-07:00",
+    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "supports": [
+      "market_context.policy_rate_pct",
+      "market_context.summary"
+    ]
+  },
+  {
+    "id": "macro-treasury-20260822",
+    "tier": 1,
+    "kind": "official_macro",
+    "title": "Synthetic Treasury yield record",
+    "published_at": "2026-08-21T18:00:00-04:00",
+    "retrieved_at": "2026-08-22T09:06:00-07:00",
+    "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates",
+    "supports": [
+      "market_context.treasury_10y_yield_pct",
+      "market_context.summary"
+    ]
+  },
+  {
+    "id": "macro-bea-bls-20260822",
+    "tier": 1,
+    "kind": "official_statistics",
+    "title": "Synthetic GDP and inflation release set",
+    "published_at": "2026-08-20T08:30:00-04:00",
+    "retrieved_at": "2026-08-22T09:07:00-07:00",
+    "url": "https://www.bea.gov/news",
+    "supports": [
+      "market_context.real_gdp_growth_pct",
+      "market_context.inflation_yoy_pct"
+    ]
+  },
+  {
+    "id": "market-valuation-20260822",
+    "tier": 3,
+    "kind": "market_data",
+    "title": "Synthetic US market forward valuation snapshot",
+    "published_at": "2026-08-21T16:00:00-04:00",
+    "retrieved_at": "2026-08-22T09:08:00-07:00",
+    "url": "https://example.com/valuation",
+    "supports": [
+      "market_context.market_forward_pe",
+      "market_context.small_mid_cap_valuation_context"
+    ]
+  },
+  {
+    "id": "universe-fmp-20260822",
+    "tier": 3,
+    "kind": "market_data",
+    "title": "Synthetic screened US common-stock universe",
+    "published_at": "2026-08-21T16:00:00-04:00",
+    "retrieved_at": "2026-08-22T09:10:00-07:00",
+    "url": "https://example.com/universe",
+    "supports": [
+      "screening_audit",
+      "screening_funnel"
+    ]
+  }
+]

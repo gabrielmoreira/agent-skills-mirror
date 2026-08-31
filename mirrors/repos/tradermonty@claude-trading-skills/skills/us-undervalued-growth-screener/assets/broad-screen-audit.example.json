@@ -1,0 +1,222 @@
+{
+  "audit_schema_version": 3,
+  "contract_revision": "3.5",
+  "runtime": {
+    "skill_name": "us-undervalued-growth-screener",
+    "skill_version": "3.6.1",
+    "schema_version": 3,
+    "contract_revision": "3.5",
+    "runtime_fingerprint": "ug-v3.6.1-claude-code-direct-fmp-20260830"
+  },
+  "conclusion_scope": "full_listing_universe",
+  "generated_at": "2026-08-28T14:28:34.377069+00:00",
+  "analysis_as_of": "2026-08-22T14:00:00-07:00",
+  "candidate_generation_mode": "full_universe_fundamentals",
+  "candidate_pool_status": "sufficient",
+  "selection_outcome": "selected",
+  "selected_symbols": [
+    "ACME",
+    "CYCLE",
+    "STALE"
+  ],
+  "deep_dive_plan": {
+    "selected_symbols": [
+      "ACME",
+      "CYCLE",
+      "STALE"
+    ],
+    "selected_count": 3,
+    "all_selected_must_be_resolved": true,
+    "budget_locked": true,
+    "budget_change_requires_rescreen": true,
+    "user_confirmation_required": false,
+    "user_continue_instruction_allowed": false,
+    "selected_set_is_committed": true,
+    "max_deep_dive_candidates": 3,
+    "selected_set_sha256": "3a45c382a4cdff829d63e0b378e7705866ca1d689de6ec7934381d30ba359065",
+    "commitment_payload": {
+      "analysis_as_of": "2026-08-22T14:00:00-07:00",
+      "max_deep_dive_candidates": 3,
+      "selected_symbols": [
+        "ACME",
+        "CYCLE",
+        "STALE"
+      ]
+    }
+  },
+  "filters": {
+    "requested_min_market_cap": 500000000,
+    "requested_max_market_cap": 20000000000,
+    "min_market_cap": 500000000,
+    "max_market_cap": 20000000000,
+    "min_price": 5.0,
+    "min_average_daily_dollar_volume": 5000000,
+    "hard_min_average_daily_dollar_volume": 1000000,
+    "minimum_average_volume_period_days": 20,
+    "max_deep_dive_candidates": 3,
+    "preferred_forward_pe": 20.0,
+    "high_growth_exception_max_forward_pe": 30.0,
+    "near_miss_max_forward_pe": 22.0,
+    "preferred_ev_to_fcf": 20.0,
+    "preferred_fcf_yield_pct": 5.0,
+    "minimum_revenue_growth_pct": 8.0,
+    "minimum_per_share_growth_pct": 12.0,
+    "near_miss_min_per_share_growth_pct": 8.0,
+    "high_growth_exception_growth_pct": 20.0,
+    "minimum_roic_pct": 8.0,
+    "preferred_max_dilution_pct": 3.0,
+    "preferred_max_net_debt_to_ebitda": 2.5,
+    "hard_max_net_debt_to_ebitda": 4.0,
+    "maximum_forward_pe_for_economic_screen": 60.0,
+    "minimum_listing_data_coverage_pct": 95.0,
+    "minimum_discovery_analyst_count": 2,
+    "maximum_enrichment_attempts": 60,
+    "sector_review_selection_penalty": 5.0,
+    "near_miss_selection_penalty": 4.0,
+    "missing_deep_dive_field_penalty": 1.5,
+    "forward_pe_reconciliation_tolerance_pct": 5.0,
+    "maximum_forward_eps_dispersion_pct": 100.0,
+    "max_estimate_age_days": 45,
+    "maximum_fy1_horizon_days": 430
+  },
+  "scope": {
+    "requested_min_market_cap": 500000000.0,
+    "requested_max_market_cap": 20000000000.0,
+    "user_requested_scope": {
+      "min_market_cap": 500000000.0,
+      "max_market_cap": 20000000000.0,
+      "source": "skill_default"
+    },
+    "retrieval_min_market_cap": 500000000.0,
+    "retrieval_max_market_cap": 20000000000.0,
+    "retrieval_scope_explicit": true,
+    "scope_override_authorized": false,
+    "scope_reduced": false,
+    "scope_reduction_mode": "none",
+    "scope_reduction_disclosed": true,
+    "scope_reduction_reason": null,
+    "user_scope_evidence": null,
+    "user_requested_scope_complete": true,
+    "executed_scope_complete": true,
+    "bounded_sampling_ready": false,
+    "screening_scope_ready": true,
+    "executed_scope": {
+      "min_market_cap": 500000000.0,
+      "max_market_cap": 20000000000.0
+    },
+    "scope_complete": true,
+    "reasons": [],
+    "enumeration": {
+      "verified": true,
+      "provider_reported_total": 6,
+      "rows_fetched": 6,
+      "pages_fetched": 1,
+      "pagination_exhausted": true,
+      "band_audit": [],
+      "bands_well_formed": false,
+      "bands_cover_executed_range": false,
+      "bands_cover_requested_range": false,
+      "bands_verified": false
+    }
+  },
+  "universe": {
+    "row_count": 6,
+    "decision_counts": {
+      "in_scope": 4,
+      "excluded": 1,
+      "out_of_scope": 1
+    },
+    "listing_data_complete_count": 6,
+    "listing_data_complete_pct": 100.0,
+    "in_scope_count": 4,
+    "source_ids": [
+      "universe-fmp-20260822"
+    ],
+    "artifact_path": "universe-audit-results.example.jsonl",
+    "artifact_sha256": "24e07ba0d17aa88df007e6e42df33dc2cf329326b5732f3521f57f529f8dee58"
+  },
+  "candidate_pool": {
+    "row_count": 6,
+    "decision_counts": {
+      "selected": 3,
+      "screened_out": 1,
+      "excluded": 2
+    },
+    "discovery_evaluable_count": 4,
+    "discovery_evaluable_pct": 66.6667,
+    "selection_eligible_count": 3,
+    "selected_count": 3,
+    "in_scope_covered_count": 4,
+    "in_scope_missing_count": 0,
+    "in_scope_missing_symbols": [],
+    "coverage_complete": true,
+    "coverage_scope": "full_listing_universe",
+    "listing_coverage_complete": true,
+    "generation_audit": {
+      "valid": true,
+      "selection_method": "full_universe_fundamentals",
+      "input_row_count": 6,
+      "selected_count": 6,
+      "selected_symbols": [
+        "ACME",
+        "CYCLE",
+        "MNA",
+        "OTCX",
+        "SCREEN",
+        "STALE"
+      ],
+      "coverage_plan": {
+        "coverage_plan_valid": true,
+        "user_requested_range_spanned": true
+      }
+    },
+    "generation_review_reasons": [],
+    "fundamental_complete_count": 6,
+    "fundamental_complete_pct": 100.0,
+    "source_ids": [
+      "universe-fmp-20260822"
+    ],
+    "symbols_not_in_universe": [],
+    "artifact_path": "broad-screen-results.example.jsonl",
+    "artifact_sha256": "55847bd84f650acd74f3381b2c2e125ed2e505f593d66f06085952f681e7ae3f"
+  },
+  "enrichment": {
+    "status": "complete",
+    "next_action": "proceed_to_deep_dive",
+    "discovery_pool_required": false,
+    "attempted_count": 6,
+    "resolved_count": 6,
+    "unresolved_count": 0,
+    "resolution_pct": 100.0,
+    "all_rows_resolved": true,
+    "maximum_attempts": 60,
+    "candidate_pool_exhaustion_declared": true,
+    "candidate_pool_exhausted": true,
+    "candidate_pool_covers_in_scope": true,
+    "candidate_pool_scope_verified": true,
+    "conclusion_scope": "full_listing_universe",
+    "queue_count": 0,
+    "queue_symbols": [],
+    "artifact_path": "enrichment-queue.example.json",
+    "artifact_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "coverage_interpretation": {
+    "listing_universe_audited": true,
+    "universe_enumeration_verified": true,
+    "full_universe_fundamentals_claimed": true,
+    "candidate_pool_fundamentals_only": false,
+    "full_market_fundamental_coverage_is_not_a_completion_gate": true,
+    "no_candidates_requires_zero_unresolved_rows_and_exhausted_pool": true,
+    "bounded_pool_final_ranking_allowed_when_generation_is_audited": true,
+    "market_wide_no_candidates_requires_full_listing_universe_coverage": true
+  },
+  "row_count": 6,
+  "decision_counts": {
+    "selected": 3,
+    "screened_out": 1,
+    "excluded": 2
+  },
+  "source_ids": [
+    "universe-fmp-20260822"
+  ]
+}

@@ -5,8 +5,9 @@ description: "Crabbox/Testbox remote proof: portable provider routing, untrusted
 
 # Crabbox
 
-Remote repository proof. Heavy tests. Builds. Typecheck/lint fan-out. Docker.
-Packages. Live providers. Desktop. Cross-OS.
+Remote and clean-machine proof. Packages. Docker. Live providers. Desktop.
+Cross-OS. The consumer repository owns when its validation needs a remote
+environment; Crabbox availability alone is not a reason to offload local work.
 
 Backends:
 
@@ -35,11 +36,24 @@ an example:
 
 Never invent a missing command or copy a command from another consumer.
 
+## Authorization and Isolation
+
+Routine use of the configured Crabbox/Testbox environment is part of completing
+the requested task; do not ask for separate approval. This includes creating,
+reusing and stopping task-owned leases, temporary state, and clean checkouts or
+worktrees needed for proof or a task-required Crabbox repair.
+
+A dirty, missing or occupied checkout is a reason to use a clean task-owned
+checkout or worktree, not a permission blocker. Preserve existing checkouts,
+branches and unrelated edits. Keep source-trust, credential, production-access,
+budget and publication boundaries; routine-use approval does not waive them.
+
 ## Route First
 
 Source trust determines which providers are allowed. It does not select one.
 
-- Trusted + one/few focused tests + ready deps: local.
+- Trusted development tests/checks/builds: follow the consumer's local-first
+  policy; use remote when its environment is needed or explicitly requested.
 - Trusted + remote proof: inspect and preserve the resolved provider.
 - Blacksmith Testbox: use when already resolved or explicitly requested.
 - Direct AWS: use when AWS semantics are required or explicitly requested.
@@ -78,8 +92,10 @@ test -n "$CRABBOX"
 
 Read `.crabbox.yaml` and `config show`; the resolved provider can also come from
 user or environment configuration. If the binary is missing, follow the
-consumer's trusted install instructions or report the blocker. Do not clone,
-update, or build an assumed sibling checkout.
+consumer's trusted install instructions. For a source build or repair, verify
+the canonical upstream and use a clean task-owned checkout or worktree. Never
+assume a sibling checkout is trusted or overwrite its unrelated work. Keep
+task-specific builds separate from the operator's installed binary.
 
 ## Trusted Testbox
 
@@ -105,7 +121,10 @@ Several commands: warm once, save id, reuse, stop.
 Rules:
 
 - One lease, one active command. No sync/reclaim during run.
-- Sync current checkout every run. `--no-sync` only unchanged intentional rerun.
+- Native Testbox runs own sync, including reused `--id` runs. Never rely on
+  `--no-sync` to preserve a remote baseline: Blacksmith has no native bypass,
+  and released Crabbox versions can silently ignore the flag. An unchanged
+  intentional rerun is not a Testbox exception.
 - `--reclaim` only deliberate checkout-path ownership transfer.
 - Base/head change: stop. Rewarm. No stale-lease override.
 - Raw SHA unreliable for `warmup --ref`; use branch/tag.
@@ -257,8 +276,10 @@ Route:
 - Parser/config: focused tests enough only when OS/package/service cannot matter.
 
 Before/after: same Testbox when practical. Detached temp worktrees under `/tmp`.
-Never checkout refs in synced root. Full-screen CLI: real PTY. Interactive Clack:
-exact arrows/Enter; raw search typing can lie.
+Never checkout refs in synced root. For native Testbox, prepare and compare both
+revisions within one synced invocation; later runs sync the local checkout again.
+Full-screen CLI: real PTY. Interactive Clack: exact arrows/Enter; raw search
+typing can lie.
 
 Use the consumer's documented temporary state/config directory so proof cannot
 mutate the operator's normal installation.

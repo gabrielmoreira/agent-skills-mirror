@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 12 followed patterns, 19 file(s) materialized.
+Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 13 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 12 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 19 |
+| Followed pats | 13 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 12 followed patterns
 - `docs/browser-runtimes.md`
 - `docs/harbor.md`
 - `docs/cli.md`
+- `docs/trace-cookbook.md`
 - `eval/scoring.md`
 - `CHANGELOG.md`
 - `docs/news.md`
@@ -83,12 +84,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | → | [`docs/cli.md`](docs/cli.md) |
 | 12 | → | [`docs/harbor.md`](docs/harbor.md) |
 | 13 | → | [`docs/news.md`](docs/news.md) |
-| 14 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 15 | → | [`eval/README.md`](eval/README.md) |
-| 16 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 17 | → | [`README.md`](README.md) |
-| 18 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 19 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 14 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
+| 15 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 16 | → | [`eval/README.md`](eval/README.md) |
+| 17 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 18 | → | [`README.md`](README.md) |
+| 19 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
+| 20 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
 
 ---
 

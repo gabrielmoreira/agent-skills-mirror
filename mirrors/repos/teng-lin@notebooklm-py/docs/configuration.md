@@ -161,10 +161,39 @@ remains an unconditional forced re-mint.
 
 ## Environment Variables
 
+### Backend preference
+
+The client accepts `backend="web"` or `backend="android"` as an optional,
+keyword-only construction argument. The same preference is available as the
+root CLI flag `notebooklm --backend ...`, the `notebooklm-mcp --backend ...`
+option, and the `notebooklm-server --backend ...` option. Resolution is always:
+
+1. explicit SDK or frontend option;
+2. `NOTEBOOKLM_BACKEND`;
+3. `web`.
+
+The preference is fixed when a client is constructed. `backend="android"`
+installs an Android adapter for every public namespace; the read-only
+`client.backends` mapping therefore reports `android` for all eleven entries.
+Exactly three operations use documented, narrow Web compatibility collaborators:
+`notebooks.remove_from_recent`, CSV/DOCX `sources.add_file`, and
+`sharing.set_view_level`. The mapping describes the installed namespace adapters,
+not the transport of every internal operation.
+The root `client.rpc_call(...)` escape hatch is outside the namespace graph and
+remains Web-specific because `RPCMethod` contains `batchexecute` identifiers.
+Neither `auto` nor `mobile` is accepted.
+
+Selecting Android does not read credentials during construction. When an
+installed Android namespace needs a durable credential, validation occurs on
+`client.open()` / async-context entry. Use `NotebookLMClient.from_storage(...)`
+or provide the profile-backed `storage_path`; there is no public raw
+`master_token=` argument.
+
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `NOTEBOOKLM_HOME` | Base directory for all files | `~/.notebooklm` |
 | `NOTEBOOKLM_PROFILE` | Active profile name | `default` |
+| `NOTEBOOKLM_BACKEND` | Preferred namespace backend: `web` or `android`. Explicit SDK/CLI/MCP/REST options take precedence. | `web` |
 | `NOTEBOOKLM_AUTH_JSON` | Inline authentication JSON (for CI/CD) | - |
 | `NOTEBOOKLM_NOTEBOOK` | Default notebook ID for commands without `-n/--notebook` | - |
 | `NOTEBOOKLM_HL` | Default interface/output language code (e.g. `en`, `ja`, `zh_Hans`) | `en` |

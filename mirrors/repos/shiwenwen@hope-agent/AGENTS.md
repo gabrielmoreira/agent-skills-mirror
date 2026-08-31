@@ -10,6 +10,7 @@
 - **Server Owner Token 只许走 Bearer header 或同源登录 body，禁止进 URL**；同源浏览器换 HttpOnly Cookie，跨源 WebSocket / iframe 只用短时、scope 受限票据，资源票据入口必须保持只读 allowlist
 - `tauri.conf.json` CSP 不要放行外部域名
 - OAuth token 在 `~/.hope-agent/credentials/auth.json`，登出时必须 `clear_token()`
+- OAuth 保存只走安全目录与 `write_secure_file_outcome`，异步写经 `save_token_async`；写入未发布不得报登录成功，已发布的令牌轮换不得按旧凭据重试
 
 ## 提交前检查（强制）
 
@@ -21,6 +22,8 @@
 - **评测不进 CI / PR / pre-push**：完整专项评测只本地显式跑（`hope-agent-eval`），默认 `cargo test` 只留快速契约测试；GitHub CI 不构建 ha-eval、不跑评测 smoke。详见 [capability-eval](docs/architecture/agent/capability-eval.md)
 
 ## 分支与发布
+
+- 外部 Actions 固定完整提交摘要；R2 密钥只在读写步骤环境中可见，rclone 先验固定摘要再执行；守卫在 `scripts/check-workflow-supply-chain.mjs`（pre-push / CI 同源）
 
 `main` 开发下个 minor，已发布 minor 各有 `release/vX.Y` 维护分支；跨分支只许 cherry-pick、禁 merge（否则未发布功能漏进维护分支）。
 
@@ -158,6 +161,7 @@ Tauri 命令 → `invoke_handler!`；HTTP 端点 → `build_router_with_cors`；
 
 详见 [chat-engine](docs/architecture/core/chat-engine.md)；未读口径见 [session](docs/architecture/core/session.md)。
 
+- **侧聊是父会话拥有的一等隐藏会话**：恒用 `SessionKind::Side` + 独立 `TurnKernel` / 消息账本 / 审批与流状态，`forked_from_session_id` 记录归属，禁止伪装成普通 sidebar session 或复用主会话执行态；创建时只复制稳定历史并标 `messages.is_side_snapshot=1`，Dashboard 消息统计必须排除快照而保留之后的新活动。永久删除主会话须级联其全部侧聊，项目与工作目录始终按侧会话自己的持久化元数据解析。
 - **未读单一来源**：普通未读计**会话数**，资格只走 `regular_session_scope_sql` / `regular_unread_exists_sql`，禁止分页求和；Scheduled 是同一 regular watermark 的过滤投影（读普通会话即清 Scheduled 角标），IM Channel 仍是独立域、与普通未读互不清除，新专属对话空间须用独立 `SessionKind`
 - **Bundled HTTP UI 只作观察者**：非 incognito 主对话由服务端持有执行；页面、WebSocket 或反向代理断开不得取消 turn，前端须以 durable `turnId` 重连终态；会话删除导致 turn 404 时须终止本地等待并释放轮询 / 订阅
 - **Stop 须自证「还会不会有终态事件」**：`StopChatResult`（Tauri 与 `POST /api/chat/stop` 同一形状，禁各造）里 `terminal_event_pending` / `completion_sealed` / `latched` 三者全 false = 本次 Stop 一个事件都不会发（陈旧终态 turn、无活跃 turn 的 session-only Stop），调用方必须自行收敛、禁空等。Stop **只报本次做了什么**，权威状态恒由 `get_session_stream_state` 唯一提供，别在 Stop 里再算一份。前端收敛须双读 + 1.5s 确认 + 无 request owner；轮询兜底两次权威读都 `admissionActive=false` 时**必须无视 turn id 不匹配**（本地那个才是陈旧的，否则 15s 轮询永久 bail、只能重启），但不得越过 request-owner 守卫；Stop 按钮全窗口去重（targeted pause 每调一次新建一条回执并把上一条谎标 `resumed_at`）
@@ -305,6 +309,8 @@ Tauri 命令 → `invoke_handler!`；HTTP 端点 → `build_router_with_cors`；
 ### 本地 LLM 助手
 
 详见 [local-model-loading](docs/architecture/core/local-model-loading.md)。
+
+- Ollama 自动脚本安装当前关闭、所有平台引导手工下载；恢复须证明固定版本、大小、摘要及二阶段下载完整性，不能只验证脚本入口
 
 - 后端锁 Ollama（OpenAI 兼容端点），**App 不接管其进程**；模型目录与硬件预算算法见 `crates/ha-local-llm/src/local_llm/types.rs::model_catalog` / `RECOMMENDATION_BUDGET_PERCENT`（任务台账仍在 kernel `local_model_jobs`）
 - **Provider 写入 contract**：Provider 列表与 `active_model` 一切写入走 [`provider/crud.rs`](crates/ha-core/src/provider/crud.rs) helper（本地安装走 `upsert_known_local_provider_model`），**禁止 `providers.push` / `retain` / 手写 `active_model`**

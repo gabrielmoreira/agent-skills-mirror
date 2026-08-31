@@ -2,10 +2,11 @@
 """
 Sitzungs-Wiederaufnahmeskript für planning-with-files-de
 
-Analysiert die vorherige Sitzung, um nicht synchronisierten Kontext nach der letzten
-Aktualisierung der Planungsdateien zu finden. Zur Ausführung bei SessionStart konzipiert.
+Automatische Aufrufer verwenden den Modus ohne Verlauf und greifen nicht auf
+Sitzungsspeicher des Hosts zu. Zusammengefasste Metadaten und begrenzte
+Transkriptauszüge erfordern eine ausdrückliche Anforderung.
 
-Verwendung: python3 session-catchup.py [Projekt-Pfad]
+Verwendung: python3 session-catchup.py [--no-history|--metadata|--replay] [Projekt-Pfad]
 """
 
 import hashlib
@@ -383,7 +384,9 @@ def get_codex_sessions(project_path: str) -> Iterable[Path]:
             yield session
 
 
-def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
+def get_session_candidates(
+    project_path: str, *, emit_notices: bool = True
+) -> Tuple[str, Iterable[Path]]:
     if '/.codex/' in Path(__file__).resolve().as_posix().lower():
         return 'codex', get_codex_sessions(project_path)
 
@@ -392,7 +395,7 @@ def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
         sessions, notice = filter_sessions_by_cwd(
             get_sessions_sorted(claude_project_dir), project_path
         )
-        if notice:
+        if notice and emit_notices:
             print(notice)
         return 'claude', sessions
     return 'claude', []
@@ -508,6 +511,35 @@ def summarize_codex_tool(payload: Dict[str, Any]) -> str:
     return str(tool_name)
 
 
+def emit_metadata_report(runtime_name: str, unsynced_count: int) -> None:
+    """Melde Verfügbarkeit, ohne transkriptabgeleitete Bytes auszugeben."""
+    print("\n[planning-with-files-de] SITZUNGSABGLEICH VERFÜGBAR")
+    print(f"Laufzeitumgebung: {runtime_name}")
+    print(f"Nicht synchronisierte Einträge: {unsynced_count}")
+    print("Der Metadatenmodus gibt keine Transkript-, Befehls-, Pfad- oder Sitzungs-ID-Bytes aus.")
+    print("Führe session-catchup.py --replay aus, um begrenzte, gerahmte Auszüge desselben Projekts zu prüfen.")
+
+
+def parse_cli_args(argv: List[str]) -> Tuple[str, str]:
+    """Liefere (Modus, Projektpfad); Standard ist null Zugriff auf Verlauf."""
+    mode = 'no-history'
+    project_path: Optional[str] = None
+    for arg in argv[1:]:
+        if arg == '--no-history':
+            mode = 'no-history'
+        elif arg == '--metadata':
+            mode = 'metadata'
+        elif arg == '--replay':
+            mode = 'replay'
+        elif arg.startswith('-'):
+            raise SystemExit(f"Unbekannte Option: {arg}")
+        elif project_path is None:
+            project_path = arg
+        else:
+            raise SystemExit("Es darf nur ein Projektpfad angegeben werden.")
+    return mode, project_path or os.getcwd()
+
+
 def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> List[Dict[str, Any]]:
     """Extract conversation messages after a certain line number."""
     result = []
@@ -593,7 +625,12 @@ def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> L
 
 
 def main():
-    project_path = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+    mode, project_path = parse_cli_args(sys.argv)
+
+    # SessionStart und ein Aufruf ohne Modus greifen nie auf Host-Verläufe zu.
+    # Diese Schranke muss vor Planprüfung, IDE-Erkennung und Home-Probes bleiben.
+    if mode == 'no-history':
+        return
 
     # Check if planning files exist (indicates active task)
     has_planning_files = any(
@@ -603,7 +640,9 @@ def main():
         # No planning files in this project; skip catchup to avoid noise.
         return
 
-    runtime_name, sessions = get_session_candidates(project_path)
+    runtime_name, sessions = get_session_candidates(
+        project_path, emit_notices=(mode == 'replay')
+    )
 
     # Find a substantial previous session
     target_session = None
@@ -627,6 +666,10 @@ def main():
     messages_after = extract_messages_after(messages, last_update_line)
 
     if not messages_after:
+        return
+
+    if mode != 'replay':
+        emit_metadata_report(runtime_name, len(messages_after))
         return
 
     # Output catchup report

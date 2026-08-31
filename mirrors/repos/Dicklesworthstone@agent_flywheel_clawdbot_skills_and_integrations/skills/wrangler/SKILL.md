@@ -1,122 +1,204 @@
 ---
 name: wrangler
-description: "Deploy and manage Cloudflare Workers, Pages, KV, R2, D1, and other Cloudflare services using the `wrangler` CLI."
+description: >-
+  Deploy and manage Cloudflare Workers, Pages, R2, D1, KV.
+  Use when working with wrangler, Cloudflare Workers, or edge deployments.
 ---
 
-# Wrangler Skill
+# Using Wrangler
 
-Use the `wrangler` CLI to manage Cloudflare Workers and related services.
+<!-- TOC: Quick Start | THE EXACT PROMPT | Core Commands | Config | Auto-Provisioning | Common Patterns | AGENTS.md Blurb | Gotchas | References -->
 
-## Workers
+> **Version:** 4.59.2+ (Jan 2026). Config format: `wrangler.jsonc` recommended over `.toml`.
 
-List deployed workers:
+## Quick Start
+
 ```bash
-wrangler deployments list
-```
+# Create new project
+npx create-cloudflare@latest my-worker
 
-Deploy a worker:
-```bash
-wrangler deploy
-```
-
-Tail live logs from a worker:
-```bash
-wrangler tail <worker-name>
-```
-
-Run worker locally:
-```bash
+# Local dev
 wrangler dev
+
+# Deploy
+wrangler deploy
+
+# View logs
+wrangler tail
 ```
 
-## KV (Key-Value Storage)
+## THE EXACT PROMPT — Deploy a Worker
 
-List KV namespaces:
-```bash
-wrangler kv namespace list
+```
+Deploy Worker to Cloudflare:
+1. Check wrangler.jsonc exists with name, main, compatibility_date
+2. wrangler deploy (auto-provisions KV/R2/D1 bindings if IDs missing)
+3. wrangler tail to verify
 ```
 
-List keys in a namespace:
-```bash
-wrangler kv key list --namespace-id <namespace-id>
+## Core Commands
+
+| Task | Command |
+|------|---------|
+| Local dev | `wrangler dev` |
+| Deploy | `wrangler deploy` |
+| View logs | `wrangler tail` |
+| Add secret | `wrangler secret put NAME` |
+| List secrets | `wrangler secret list` |
+| Generate types | `wrangler types` |
+| Check config | `wrangler check startup` |
+
+## Config (wrangler.jsonc)
+
+```jsonc
+{
+  "name": "my-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+
+  // Routes
+  "routes": [
+    { "pattern": "example.com/*", "zone_name": "example.com" }
+  ],
+
+  // Bindings (IDs optional - auto-provisioned on deploy)
+  "kv_namespaces": [{ "binding": "KV", "id": "..." }],
+  "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "my-bucket" }],
+  "d1_databases": [{ "binding": "DB", "database_id": "..." }],
+
+  // Environment variables
+  "vars": { "ENV": "production" }
+}
 ```
 
-Get a value:
-```bash
-wrangler kv key get <key> --namespace-id <namespace-id>
+## Auto-Provisioning (v4.57+)
+
+Add bindings WITHOUT IDs — Wrangler creates resources on deploy:
+
+```jsonc
+{
+  "kv_namespaces": [{ "binding": "CACHE" }],  // No id - auto-created
+  "r2_buckets": [{ "binding": "ASSETS" }],    // No bucket_name - auto-created
+  "d1_databases": [{ "binding": "DB" }]       // No database_id - auto-created
+}
 ```
 
-Put a value:
-```bash
-wrangler kv key put <key> <value> --namespace-id <namespace-id>
+## Hidden/Experimental Flags
+
+| Flag | Purpose |
+|------|---------|
+| `--x-provision` | Force auto-provision resources |
+| `--x-auto-create` | Auto-create bindings with new resources |
+| `--x-autoconfig` | Auto-detect framework (Next.js, Remix, etc.) |
+
+## Environment Variables
+
+| Variable | Purpose |
+|----------|---------|
+| `CLOUDFLARE_API_TOKEN` | Auth for CI/CD |
+| `CLOUDFLARE_ACCOUNT_ID` | Override account |
+
+## Decision Tree
+
+```
+What to do?
+├─ New project → npx create-cloudflare@latest
+├─ Local dev → wrangler dev
+├─ Deploy → wrangler deploy
+├─ Add secret → wrangler secret put NAME
+├─ View logs → wrangler tail
+├─ Database ops → wrangler d1 ...
+├─ Storage ops → wrangler r2 ... or wrangler kv ...
+└─ Scheduled jobs → Add [triggers] to config
 ```
 
-## R2 (Object Storage)
+## Common Patterns
 
-List R2 buckets:
+### Add a Secret
 ```bash
+wrangler secret put API_KEY
+# Enter value when prompted (or pipe: echo "value" | wrangler secret put API_KEY)
+```
+
+### Multiple Environments
+```jsonc
+{
+  "name": "my-worker",
+  "env": {
+    "staging": {
+      "vars": { "ENV": "staging" },
+      "routes": [{ "pattern": "staging.example.com/*" }]
+    },
+    "production": {
+      "vars": { "ENV": "production" },
+      "routes": [{ "pattern": "example.com/*" }]
+    }
+  }
+}
+```
+
+```bash
+wrangler deploy --env staging
+wrangler deploy --env production
+```
+
+### D1 Database
+```bash
+wrangler d1 create my-db
+wrangler d1 execute my-db --file schema.sql
+wrangler d1 execute my-db --command "SELECT * FROM users"
+```
+
+### R2 Storage
+```bash
+wrangler r2 bucket create my-bucket
+wrangler r2 object put my-bucket/file.txt --file ./local.txt
+wrangler r2 object get my-bucket/file.txt
+```
+
+---
+
+## AGENTS.md Blurb
+
+Copy this to your project's AGENTS.md:
+
+```markdown
+### Cloudflare Wrangler
+
+Wrangler is installed and authenticated.
+
+R2 bucket: `<BUCKET_NAME>`
+Account ID: `<ACCOUNT_ID>`
+
+Common commands:
+
+\`\`\`bash
+wrangler r2 object put <BUCKET>/<path> --file ./local-file
+wrangler r2 object get <BUCKET>/<path> --file ./downloaded
 wrangler r2 bucket list
+wrangler d1 execute <DB> --command "SELECT * FROM users"
+wrangler deploy
+\`\`\`
 ```
 
-List objects in a bucket:
-```bash
-wrangler r2 object list <bucket-name>
-```
+---
 
-Upload a file:
-```bash
-wrangler r2 object put <bucket-name>/<key> --file <local-path>
-```
+## Reference Index
 
-## D1 (SQLite Database)
+| Topic | Reference |
+|-------|-----------|
+| All commands | [COMMANDS.md](references/COMMANDS.md) |
+| Config options | [CONFIG.md](references/CONFIG.md) |
+| Pages deployment | [PAGES.md](references/PAGES.md) |
 
-List D1 databases:
-```bash
-wrangler d1 list
-```
+## Gotchas
 
-Execute SQL query:
-```bash
-wrangler d1 execute <database-name> --command "SELECT * FROM users LIMIT 10"
-```
+- **Dashboard changes overwritten:** Add `"keep_vars": true` to preserve dashboard edits
+- **Secrets not in config:** Use `wrangler secret put`, never put secrets in config
+- **Types outdated:** Run `wrangler types` after config changes
+- **Old compatibility_date:** Update yearly for new features
 
-Run migrations:
-```bash
-wrangler d1 migrations apply <database-name>
-```
+## Sources
 
-## Pages
-
-List Pages projects:
-```bash
-wrangler pages project list
-```
-
-Deploy a directory to Pages:
-```bash
-wrangler pages deploy <directory> --project-name <project>
-```
-
-## Secrets
-
-Set a secret:
-```bash
-echo "secret-value" | wrangler secret put <SECRET_NAME>
-```
-
-List secrets:
-```bash
-wrangler secret list
-```
-
-## Configuration
-
-Check current authentication:
-```bash
-wrangler whoami
-```
-
-Login (opens browser):
-```bash
-wrangler login
-```
+- Repo: cloudflare/workers-sdk @ v4.59.2
+- Docs: [developers.cloudflare.com/workers/wrangler](https://developers.cloudflare.com/workers/wrangler/)

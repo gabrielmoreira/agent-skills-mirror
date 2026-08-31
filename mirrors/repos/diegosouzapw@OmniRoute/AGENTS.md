@@ -46,7 +46,7 @@ Repository map and Reference Documentation sections below.
 
 ## Project at a Glance
 
-**OmniRoute** — unified AI proxy/router. One endpoint, 351 LLM providers, auto-fallback.
+**OmniRoute** — unified AI proxy/router. One endpoint, 352 LLM providers, auto-fallback.
 
 | Layer         | Location                | Purpose                                                                                                                                                                   |
 | ------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,7 +56,7 @@ Repository map and Reference Documentation sections below.
 | Translators   | `open-sse/translator/`  | Format conversion (OpenAI↔Claude↔Gemini)                                                                                                                                  |
 | Transformer   | `open-sse/transformer/` | Responses API ↔ Chat Completions                                                                                                                                          |
 | Services      | `open-sse/services/`    | Combo routing, rate limits, caching, etc                                                                                                                                  |
-| Database      | `src/lib/db/`           | SQLite domain modules (166 migrations)                                                                                                                                    |
+| Database      | `src/lib/db/`           | SQLite domain modules (167 migrations)                                                                                                                                    |
 | Domain/Policy | `src/domain/`           | Policy engine, cost rules, fallback logic                                                                                                                                 |
 | MCP Server    | `open-sse/mcp-server/`  | 110 tools (44 canonical + memory/skill/GitHub/pool/gamification/plugin/Notion/Obsidian/local-corpus/RTK modules), 3 transports (stdio / SSE / Streamable HTTP), 33 scopes |
 | A2A Server    | `src/lib/a2a/`          | JSON-RPC 2.0 agent protocol                                                                                                                                               |
@@ -289,8 +289,7 @@ When creating _any_ validation tests or one-off logic scripts, default to `scrip
 ### Database
 
 - **Always** go through `src/lib/db/` domain modules — **never** write raw SQL in routes or handlers
-- **Never** add logic to `src/lib/localDb.ts` (re-export layer only)
-- **Never** barrel-import from `localDb.ts` — import specific `db/` modules instead
+- **Never** barrel-import from `localDb.ts` — import specific `src/lib/db/*` modules
 - DB singleton: `getDbInstance()` from `src/lib/db/core.ts` (WAL journaling)
 - Migrations: `src/lib/db/migrations/` — versioned SQL files, idempotent, run in transactions
 
@@ -355,8 +354,7 @@ Documentation must describe verified behavior, not plausible behavior.
 1. Create `src/lib/db/yourModule.ts` — import `getDbInstance` from `./core.ts`
 2. Export CRUD functions for your domain table(s)
 3. Add migration in `src/lib/db/migrations/` if new tables needed
-4. Re-export from `src/lib/localDb.ts` (add to the re-export list only)
-5. Write tests
+4. Write tests
 
 ### Adding a New MCP Tool
 
@@ -399,6 +397,9 @@ Documentation must describe verified behavior, not plausible behavior.
 - Eval suite: `src/lib/evals/` → docs: `docs/frameworks/EVALS.md`
 - Skill (sandbox): `src/lib/skills/` → docs: `docs/frameworks/SKILLS.md`
 - Webhook event: `src/lib/webhookDispatcher.ts` → docs: `docs/frameworks/WEBHOOKS.md`
+- Log-export destination: add `src/lib/logExport/destinations/<name>.ts` + one line in
+  `src/lib/logExport/registry.ts` → docs: `docs/frameworks/LOG-EXPORT.md`. The runner, REST layer
+  and dashboard form all read the registry, so nothing else changes.
 
 ---
 
@@ -424,6 +425,7 @@ For any non-trivial change, read the matching deep-dive first:
 | Evals                                         | `docs/frameworks/EVALS.md`                              |
 | Compliance / audit                            | `docs/security/COMPLIANCE.md`                           |
 | Webhooks                                      | `docs/frameworks/WEBHOOKS.md`                           |
+| Log export (call logs → BigQuery/…)           | `docs/frameworks/LOG-EXPORT.md`                         |
 | Authorization pipeline                        | `docs/architecture/AUTHZ_GUIDE.md`                      |
 | Stealth (TLS / fingerprint)                   | `docs/security/STEALTH_GUIDE.md`                        |
 | Agent protocols (A2A / ACP / Cloud)           | `docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`              |
@@ -657,6 +659,10 @@ procedures are in [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALI
   `npm run quality:ratchet -- --update` when a metric genuinely improves.
 - Job `test-vitest` runs `npm run test:vitest` (MCP tools, autoCombo, cache) — blocking.
   `test:vitest:ui` has been blocking since PR #7127.
+- **Velocity phase (2026-08-30 → v4.0)**: every numeric baseline is loosened by 20% and
+  `--require-tighten` is advisory (`quality-baseline.json` → `_policy`); the nightly
+  `baseline-headroom` job tracks how much of the budget is left in the issue
+  "📈 Baseline headroom". See `docs/architecture/QUALITY_GATES.md` → "Velocity phase".
 
 **Allowlist policy (short form):** Fix the cause; use the allowlist only for pre-existing
 violations you cannot fix in the same PR. Add a comment with justification + issue number.
@@ -668,7 +674,7 @@ the stale-enforcement added in Fase 6A.3.
 ## Hard Rules
 
 1. Never commit secrets or credentials
-2. Never add logic to `localDb.ts`
+2. Never barrel-import from `localDb.ts` — import specific `src/lib/db/*` modules
 3. Never use `eval()` / `new Function()` / implied eval
 4. Never commit directly to `main`
 5. Never write raw SQL in routes — use `src/lib/db/` modules

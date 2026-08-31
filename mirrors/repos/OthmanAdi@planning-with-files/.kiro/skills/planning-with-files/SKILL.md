@@ -1,11 +1,11 @@
 ---
 name: planning-with-files
-description: Manus-style file-based planning for complex tasks. Creates and maintains task_plan.md, findings.md, and progress.md under .kiro/plan/. Use when planning, breaking down work, resuming a multi-step task, tracking phases, or restoring context after compaction. Trigger phrases include start planning, continue task, resume work, current phase, restore context.
+description: "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; Kiro skill instructions and steering state read selected project planning context. Recovery reads project planning files and their timestamps only, not agent transcript stores. This adapter registers no Stop hook, never requests continuation, and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls."
 license: MIT
 compatibility: Requires a POSIX shell or PowerShell, Python 3 for session-catchup, and read/write access to the workspace. See Kiro Agent Skills — https://kiro.dev/docs/skills/
 allowed-tools: shell read write
 metadata:
-  version: "3.0.0-kiro"
+  version: "3.0.1-kiro"
   integration: kiro
 ---
 
@@ -65,9 +65,9 @@ If `.kiro/plan/` is missing, run STEP 0.
 
 ---
 
-## STEP 3 — Session catchup (after a long gap or suspected drift)
+## STEP 3: Project-file catchup (after a long gap or suspected drift)
 
-Summaries + file mtimes (compare with `git diff --stat` if needed):
+Summaries and planning-file mtimes (compare with `git diff --stat` if needed). This helper does not read Kiro or other agent transcript stores:
 
 ```bash
 $(command -v python3 || command -v python) \
@@ -190,7 +190,7 @@ AFTER 3 FAILURES: Escalate to User
 Helper scripts (under `assets/scripts/`):
 
 - `assets/scripts/bootstrap.sh` — Idempotent workspace bootstrap. Creates `.kiro/plan/` and `.kiro/steering/planning-context.md`.
-- `assets/scripts/session-catchup.py` — Recover context from a previous session (v2.2.0). For OpenCode (v2.38.0+), reads the SQLite store at `${XDG_DATA_HOME:-~/.local/share}/opencode/opencode.db` instead of legacy JSON.
+- `assets/scripts/session-catchup.py`: Reports Kiro planning-file timestamps and summaries. It does not read agent transcript stores.
 - `assets/scripts/check-complete.sh` -- Verify all phases in the active plan are complete.
 
 ## Advanced Topics

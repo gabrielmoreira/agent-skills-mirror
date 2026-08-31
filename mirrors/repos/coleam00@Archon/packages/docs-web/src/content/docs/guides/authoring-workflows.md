@@ -2275,7 +2275,7 @@ model: medium        # Tier, alias, or literal model override
 
 `model:` accepts three shapes:
 
-- `small`, `medium`, or `large` - portable tier refs resolved from built-in defaults plus `tiers:` in `~/.archon/config.yaml` and `.archon/config.yaml`
+- `small`, `medium`, or `large` - portable tier refs resolved from `tiers:` in `~/.archon/config.yaml` and `.archon/config.yaml`, with built-in defaults for claude and codex only
 - `@name` - custom aliases from `aliases:`; use these for project workflows, not bundled or global workflows, because aliases are project-specific
 - Any other string - a literal model id passed through to the resolved provider's SDK
 

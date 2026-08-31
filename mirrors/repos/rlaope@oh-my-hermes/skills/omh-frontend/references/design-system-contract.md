@@ -44,6 +44,23 @@ not a decision.
    (keyboard paths, focus order, contrast) and the debt knowingly accepted,
    each with its reason.
 
+## Local reference data
+
+`omh design data --kind palette|font|ux [--context <product context>]` prints
+curated local rows: palette role tokens with the product contexts they suit,
+display/body font stacks with fallbacks and CJK notes, and UX guidelines with
+the reason each one holds. Contexts include `dashboard`, `dev-tool`,
+`fintech`, `data-viz`, `editorial`, `docs`, `ecommerce`, `healthcare`,
+`landing`, `mobile`, `portfolio`, `public-sector`, `saas`, and `education`.
+Query it while filling sections 2, 3, and 5 so the starting tokens are a
+considered choice instead of a framework default, and while checking the
+review prompts in `references/taste-foundations.md`.
+
+The rows are input, not authority. Nothing is decided until it is written
+into `DESIGN.md`, and the contract — not the query — is what gates the code.
+The lookup is deterministic local data: no network call, no model call, and
+no rendered evidence.
+
 ## Workflow
 
 - Greenfield: design research is a build step, not optional exploration —

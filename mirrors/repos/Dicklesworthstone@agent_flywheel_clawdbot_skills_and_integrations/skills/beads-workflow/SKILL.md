@@ -1,7 +1,12 @@
 ---
 name: beads-workflow
-description: "Converting markdown plans into beads (tasks with dependencies) and polishing them until they're implementation-ready. The bridge between planning and agent swarm execution. Includes exact prompts used."
+description: >-
+  Convert markdown plans into beads with dependencies using br CLI. Use when
+  creating task graphs, polishing beads before implementation, or bridging
+  planning to agent swarm execution.
 ---
+
+<!-- TOC: Quick Start | THE EXACT PROMPT | Polishing | br Commands | bd → br Migration | Quality Checklist | Troubleshooting | References -->
 
 # Beads Workflow — From Plan to Actionable Tasks
 
@@ -9,51 +14,34 @@ description: "Converting markdown plans into beads (tasks with dependencies) and
 >
 > Beads are so detailed and polished that you can mechanically unleash a big swarm of agents to implement them, and it will come out just about perfectly.
 
----
+## Quick Start
 
-## What Are Beads?
+```bash
+# 1. Initialize beads in project
+br init
 
-Beads are **epics/tasks/subtasks with dependency structure**, optimized for AI coding agents. Think of them as Jira or Linear, but designed for machines.
+# 2. Convert plan to beads (see THE EXACT PROMPT below)
 
-Key properties:
-- **Self-contained** — Never need to refer back to the original markdown plan
-- **Self-documenting** — Include background, reasoning, justifications, considerations
-- **Dependency-aware** — Explicit structure of what blocks what
-- **Rich descriptions** — Long markdown comments, not short bullet points
+# 3. Polish iteratively
+# Run polish prompt 6-9 times until steady-state
 
----
+# 4. Validate
+br dep cycles        # Must be empty
+bv --robot-insights  # Check graph health
 
-## Why Beads Work
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ MARKDOWN PLAN (~3,500 lines)                                │
-│   └─► Fits in context window                                │
-│   └─► Models reason about entire system at once             │
-├─────────────────────────────────────────────────────────────┤
-│                    ↓ CONVERT TO BEADS ↓                     │
-├─────────────────────────────────────────────────────────────┤
-│ BEADS (distributed tasks)                                   │
-│   └─► Each bead is self-contained                           │
-│   └─► Any agent can pick up any bead                        │
-│   └─► BV (Beads Viewer) handles prioritization              │
-│   └─► Agent Mail handles coordination                       │
-└─────────────────────────────────────────────────────────────┘
+# 5. Begin implementation
+bv --robot-next      # Get first bead
 ```
 
 ---
 
-## Converting Plans to Beads
-
-### THE EXACT PROMPT — Plan to Beads Conversion (Claude Code + Opus 4.5)
+## THE EXACT PROMPT — Plan to Beads Conversion
 
 ```
-OK so now read ALL of PLAN_TO_CREATE_GH_PAGES_WEB_EXPORT_APP.md; please take ALL of that and elaborate on it and use it to create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed comments so that the whole thing is totally self-contained and self-documenting (including relevant background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to know about the goals and intentions and thought process and how it serves the over-arching goals of the project.). The beads should be so detailed that we never need to consult back to the original markdown plan document. Remember to ONLY use the `br` tool to create and modify the beads and add the dependencies. Use ultrathink.
+OK so now read ALL of [YOUR_PLAN_FILE].md; please take ALL of that and elaborate on it and use it to create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed comments so that the whole thing is totally self-contained and self-documenting (including relevant background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to know about the goals and intentions and thought process and how it serves the over-arching goals of the project.). The beads should be so detailed that we never need to consult back to the original markdown plan document. Remember to ONLY use the `br` tool to create and modify the beads and add the dependencies. Use ultrathink.
 ```
 
-**Note:** Replace `PLAN_TO_CREATE_GH_PAGES_WEB_EXPORT_APP.md` with your actual plan filename.
-
-### Alternative Shorter Version
+### Shorter Version
 
 ```
 OK so please take ALL of that and elaborate on it more and then create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed comments so that the whole thing is totally self-contained and self-documenting (including relevant background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to know about the goals and intentions and thought process and how it serves the over-arching goals of the project.)  Use only the `br` tool to create and modify the beads and add the dependencies. Use ultrathink.
@@ -62,28 +50,15 @@ OK so please take ALL of that and elaborate on it more and then create a compreh
 ### What This Creates
 
 - Tasks and subtasks with clear scope
-- Dependency links (what must complete before what)
-- Detailed descriptions with:
-  - Background context
-  - Reasoning and justification
-  - Technical considerations
-  - How it serves project goals
+- Dependency links (what blocks what)
+- Detailed descriptions with background, reasoning, considerations
+- Self-contained (never need to consult original plan)
 
 ---
 
 ## Polishing Beads
 
-### Why Polish?
-
-Even after initial conversion, beads continue to improve with review. You get incremental improvements even at round 6+.
-
-### THE EXACT PROMPT — Polish Beads (Full Version)
-
-```
-Reread AGENTS dot md so it's still fresh in your mind. Then read ALL of PLAN_TO_CREATE_GH_PAGES_WEB_EXPORT_APP.md . Use ultrathink. Check over each bead super carefully-- are you sure it makes sense? Is it optimal? Could we change anything to make the system work better for users? If so, revise the beads. It's a lot easier and faster to operate in "plan space" before we start implementing these things! DO NOT OVERSIMPLIFY THINGS! DO NOT LOSE ANY FEATURES OR FUNCTIONALITY! Also make sure that as part of the beads we include comprehensive unit tests and e2e test scripts with great, detailed logging so we can be sure that everything is working perfectly after implementation. It's critical that EVERYTHING from the markdown plan be embedded into the beads so that we never need to refer back to the markdown plan and we don't lose any important context or ideas or insights into the new features planned and why we are making them.
-```
-
-### THE EXACT PROMPT — Polish Beads (Standard Version)
+### THE EXACT PROMPT — Polish (Standard)
 
 ```
 Reread AGENTS dot md so it's still fresh in your mind. Check over each bead super carefully-- are you sure it makes sense? Is it optimal? Could we change anything to make the system work better for users? If so, revise the beads. It's a lot easier and faster to operate in "plan space" before we start implementing these things!
@@ -95,17 +70,17 @@ Also, make sure that as part of these beads, we include comprehensive unit tests
 
 ### Polishing Protocol
 
-1. Run the polishing prompt
+1. Run polish prompt
 2. Review changes
 3. Repeat until steady-state (typically 6-9 rounds)
 4. If it flatlines, start a fresh CC session
-5. Optionally have Codex with GPT 5.2 do a final round
+5. Optionally have Codex/GPT 5.5 do a final round
 
 ---
 
 ## Fresh Session Technique
 
-If polishing starts to flatline, start a brand new Claude Code session:
+If polishing flatlines, start a new Claude Code session:
 
 ### THE EXACT PROMPT — Re-establish Context
 
@@ -123,112 +98,112 @@ Then follow up with the standard polish prompt.
 
 ---
 
-## Cross-Model Review
+## br Commands
 
-For extra polish, have different models review the beads:
+### Issue Lifecycle
 
-| Model | Strength |
-|-------|----------|
-| **Claude Code + Opus 4.5** | Primary creation and refinement |
-| **Codex + GPT 5.2** | Final review pass |
-| **Gemini CLI** | Alternative perspective |
+```bash
+br init                              # Initialize workspace
+br create "Title" -t feature -p 1    # Create bead
+br update <id> --status in_progress
+br close <id> --reason "Done"
+br reopen <id>                       # If needed
+```
+
+### Dependencies
+
+```bash
+br dep add br-child br-parent        # child depends on parent
+br dep remove br-child br-parent
+br dep list <id>
+br dep tree <id>
+br dep cycles                        # MUST be empty!
+```
+
+### Querying
+
+```bash
+br list                              # All beads
+br ready                             # Actionable (not blocked)
+br blocked                           # Blocked beads
+br search "authentication"
+br list --json                       # Machine-readable
+```
+
+### Sync to Git
+
+```bash
+br sync --flush-only                 # Export DB → JSONL
+git add .beads/ && git commit -m "Update beads"
+```
 
 ---
 
-## Bead Quality Checklist
+## bd → br Migration (Docs)
+
+Use this when you see legacy `bd` references in AGENTS.md or docs.
+
+**Behavioral difference (only one):**
+- **`br sync` never runs git commands**. After `br sync --flush-only`, you must `git add .beads/` and `git commit` (and `git push`) yourself.
+
+**Transform checklist (order matters):**
+1. `bd` commands → `br` commands
+2. `bd sync` → `br sync --flush-only` + `git add .beads/` + `git commit`
+3. Do NOT assume issue IDs must change `bd-*` → `br-*` — the prefix is configurable (often remains `bd-*`).
+4. Remove daemon/auto-commit references
+
+**Verify:**
+```bash
+grep -c '`bd ' file.md        # must be 0
+grep -c 'bd sync' file.md     # must be 0
+grep -c 'br sync --flush-only' file.md  # must be > 0
+```
+
+---
+
+## BV Robot Mode
+
+**CRITICAL:** Never run bare `bv` — it launches interactive TUI.
+
+```bash
+bv --robot-triage                    # Full triage
+bv --robot-next                      # Single top pick
+bv --robot-plan                      # Parallel execution tracks
+bv --robot-insights | jq '.Cycles'   # Check for cycles
+bv --robot-insights | jq '.bottlenecks'
+```
+
+---
+
+## Quality Checklist
 
 Before implementation, verify each bead:
 
-- [ ] **Self-contained** — Can be understood without external context
+- [ ] **Self-contained** — Understandable without external context
 - [ ] **Clear scope** — One coherent piece of work
 - [ ] **Dependencies explicit** — Links to blocking/blocked beads
 - [ ] **Testable** — Clear success criteria
-- [ ] **Includes tests** — Unit tests and e2e tests in scope
-- [ ] **Preserves features** — Nothing from the plan was lost
+- [ ] **Includes tests** — Unit and e2e tests in scope
+- [ ] **Preserves features** — Nothing from plan was lost
 - [ ] **Not oversimplified** — Complexity preserved where needed
-
----
-
-## Using br (Beads CLI)
-
-### Basic Commands
-
-```bash
-# Initialize beads in project
-br init
-
-# Create a new bead
-br create "Implement user authentication" -t feature -p 1
-
-# Add dependencies
-br depend BR-123 BR-100  # BR-123 depends on BR-100
-
-# Update status
-br update BR-123 --status in_progress
-
-# Close a bead
-br close BR-123 --reason "Completed and tested"
-
-# List ready beads (no blockers)
-br ready --json
-```
-
-### Robot Mode for Agents
-
-```bash
-# Get triage recommendations
-bv --robot-triage
-
-# Get the single top pick
-bv --robot-next
-
-# Get parallel execution tracks
-bv --robot-plan
-
-# Get graph insights (PageRank, bottlenecks, cycles)
-bv --robot-insights
-```
-
-**CRITICAL:** Never run bare `bv` — it launches interactive TUI. Always use `--robot-*` flags.
+- [ ] **No cycles** — `br dep cycles` returns empty
 
 ---
 
 ## Integration with Agent Mail
 
-### Conventions
+Use bead ID as the coordination thread:
 
-- Use Beads issue ID as Mail `thread_id`: `send_message(..., thread_id="br-123")`
-- Prefix subjects: `[br-123] Starting auth refactor`
-- Include issue ID in file reservation `reason`: `file_reservation_paths(..., reason="br-123")`
+```python
+# Reserve files for bead
+file_reservation_paths(..., reason="br-123")
 
-### Typical Flow
+# Announce work in thread
+send_message(..., thread_id="br-123", subject="[br-123] Starting...")
 
-```bash
-# 1. Pick ready work
-br ready --json
-
-# 2. Reserve files
-file_reservation_paths(project_key, agent_name, ["src/**"], reason="br-123")
-
-# 3. Announce start
-send_message(..., thread_id="br-123", subject="[br-123] Starting work")
-
-# 4. Work on the bead
-# ...
-
-# 5. Complete
+# Close bead when done
 br close br-123 --reason "Completed"
-release_file_reservations(project_key, agent_name)
-```
-
----
-
-## Test Coverage Beads
-
-### THE EXACT PROMPT — Add Test Coverage
-
-```
-Do we have full unit test coverage without using mocks/fake stuff? What about complete e2e integration test scripts with great, detailed logging? If not, then create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid with detailed comments.
+release_file_reservations(...)
 ```
 
 ---
@@ -237,111 +212,61 @@ Do we have full unit test coverage without using mocks/fake stuff? What about co
 
 Your beads are ready for implementation when:
 
-1. **Steady-state reached** — Multiple polishing rounds yield minimal changes
-2. **Cross-model reviewed** — At least one alternative model has reviewed
-3. **No cycles** — `bv --robot-insights | jq '.Cycles'` returns empty
-4. **Tests included** — Each feature bead has associated test beads
+1. **Steady-state reached** — Multiple polish rounds yield minimal changes
+2. **Cross-model reviewed** — At least one alternative model reviewed
+3. **No cycles** — `br dep cycles` returns empty
+4. **Tests included** — Each feature has associated test beads
 5. **Dependencies clean** — Graph makes logical sense
 
 ---
 
-## Example Bead Structure
+## References
 
-A well-formed bead looks like:
-
-```
-ID: BR-123
-Title: Implement OAuth2 login flow
-Type: feature
-Priority: P1
-Status: open
-
-Dependencies: [BR-100 (User model), BR-101 (Session management)]
-Blocks: [BR-200 (Protected routes), BR-201 (User dashboard)]
-
-Description:
-Implement OAuth2 login flow supporting Google and GitHub providers.
-
-## Background
-This is the primary authentication mechanism for the application.
-Users should be able to sign in with existing Google/GitHub accounts
-to reduce friction.
-
-## Technical Approach
-- Use NextAuth.js for OAuth2 implementation
-- Store provider tokens encrypted in Supabase
-- Create unified user record on first login
-- Handle account linking for multiple providers
-
-## Success Criteria
-- User can click "Sign in with Google/GitHub"
-- OAuth flow completes and redirects to dashboard
-- User record created/updated in database
-- Session cookie set correctly
-- Logout clears session properly
-
-## Test Plan
-- Unit: Token encryption/decryption
-- Unit: User record creation
-- E2E: Full OAuth flow (mock provider)
-- E2E: Account linking scenario
-
-## Considerations
-- Handle provider API rate limits
-- Graceful degradation if provider is down
-- GDPR compliance for EU users
-```
+| Topic | Reference |
+|-------|-----------|
+| All prompts | [PROMPTS.md](references/PROMPTS.md) |
+| Bead structure | [BEAD-ANATOMY.md](references/BEAD-ANATOMY.md) |
+| Troubleshooting | [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) |
+| br command reference | See br --help or beads_rust README |
+| BV integration | See bv-graph-triage skill |
 
 ---
 
-## Complete Prompt Reference
+## Troubleshooting
 
-### Plan to Beads (Full)
-```
-OK so now read ALL of PLAN_TO_CREATE_GH_PAGES_WEB_EXPORT_APP.md; please take ALL of that and elaborate on it and use it to create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed comments so that the whole thing is totally self-contained and self-documenting (including relevant background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to know about the goals and intentions and thought process and how it serves the over-arching goals of the project.). The beads should be so detailed that we never need to consult back to the original markdown plan document. Remember to ONLY use the `br` tool to create and modify the beads and add the dependencies. Use ultrathink.
-```
+### Worktree Error Fix
 
-### Plan to Beads (Short)
-```
-OK so please take ALL of that and elaborate on it more and then create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed comments so that the whole thing is totally self-contained and self-documenting (including relevant background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to know about the goals and intentions and thought process and how it serves the over-arching goals of the project.)  Use only the `br` tool to create and modify the beads and add the dependencies. Use ultrathink.
-```
+If you get `failed to create worktree: 'main' is already checked out`:
 
-### Polish Beads (Full)
-```
-Reread AGENTS dot md so it's still fresh in your mind. Then read ALL of PLAN_TO_CREATE_GH_PAGES_WEB_EXPORT_APP.md . Use ultrathink. Check over each bead super carefully-- are you sure it makes sense? Is it optimal? Could we change anything to make the system work better for users? If so, revise the beads. It's a lot easier and faster to operate in "plan space" before we start implementing these things! DO NOT OVERSIMPLIFY THINGS! DO NOT LOSE ANY FEATURES OR FUNCTIONALITY! Also make sure that as part of the beads we include comprehensive unit tests and e2e test scripts with great, detailed logging so we can be sure that everything is working perfectly after implementation. It's critical that EVERYTHING from the markdown plan be embedded into the beads so that we never need to refer back to the markdown plan and we don't lose any important context or ideas or insights into the new features planned and why we are making them.
+```bash
+git branch beads-sync main
+git push -u origin beads-sync
+br config set sync-branch beads-sync
 ```
 
-### Polish Beads (Standard)
-```
-Reread AGENTS dot md so it's still fresh in your mind. Check over each bead super carefully-- are you sure it makes sense? Is it optimal? Could we change anything to make the system work better for users? If so, revise the beads. It's a lot easier and faster to operate in "plan space" before we start implementing these things!
+Always use a dedicated sync branch that you never check out directly.
 
-DO NOT OVERSIMPLIFY THINGS! DO NOT LOSE ANY FEATURES OR FUNCTIONALITY!
+### Quick Health Check
 
-Also, make sure that as part of these beads, we include comprehensive unit tests and e2e test scripts with great, detailed logging so we can be sure that everything is working perfectly after implementation. Remember to ONLY use the `br` tool to create and modify the beads and to add the dependencies to beads. Use ultrathink.
-```
-
-### Fresh Session — Context
-```
-First read ALL of the AGENTS dot md file and README dot md file super carefully and understand ALL of both! Then use your code investigation agent mode to fully understand the code, and technical architecture and purpose of the project.  Use ultrathink.
+```bash
+br config list        # All settings
+br dep cycles         # Must be empty
+which br              # Verify br is installed
 ```
 
-### Fresh Session — Review
-```
-We recently transformed a markdown plan file into a bunch of new beads. I want you to very carefully review and analyze these using `br` and `bv`.
-```
-
-### Add Test Coverage
-```
-Do we have full unit test coverage without using mocks/fake stuff? What about complete e2e integration test scripts with great, detailed logging? If not, then create a comprehensive and granular set of beads for all this with tasks, subtasks, and dependency structure overlaid with detailed comments.
-```
+See [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) for full diagnostics.
 
 ---
 
-## Common Mistakes
+## Validation
 
-1. **Oversimplifying** — Preserve complexity where it's needed
-2. **Losing features** — Every plan feature should become beads
-3. **Skipping tests** — Include unit and e2e test beads
-4. **Single review** — Keep polishing until truly steady-state
-5. **Missing dependencies** — Make all blocking relationships explicit
-6. **Short descriptions** — Beads should be verbose and self-documenting
+```bash
+# Check for cycles (must be empty)
+br dep cycles
+
+# Check graph health
+bv --robot-insights | jq '.Cycles'
+
+# Verify all beads have descriptions
+br list --json | jq '.issues[]? | select(.description == "")'
+```

@@ -17,6 +17,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-ask`: [omh] Hermes adaptation for consulting an external advisor when configured.
 - `omh-automation-blueprint`: [omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
 - `omh-autoresearch-goal`: [omh] Hermes adaptation for durable research-goal execution.
+- `omh-backend`: [omh] Hermes backend workflow: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation.
 - `omh-best-practice-research`: [omh] Hermes adaptation for bounded official/upstream best-practice research.
 - `omh-browser`: [omh] Policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions.
 - `omh-build-failure-triage`: [omh] Hermes Build Failure Triage workflow: classify build, typecheck, lint, test, CI, and DCO failures into minimal safe fix handoffs.
@@ -56,6 +57,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-jit-learn`: [omh] Just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
 - `omh-legal-compliance-review`: [omh] Surface contract and compliance risks, questions, and escalation points before a legal decision or action.
 - `omh-live-info`: [omh] Policy overlay for live lookups - add provider, freshness, units, and source-quality gates after preferring native live-data tools for ordinary weather, finance, sports, maps, and time-zone requests.
+- `omh-llm-app-dev`: [omh] Hermes LLM App Development workflow: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable.
 - `omh-localization-review`: [omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance.
 - `ulw-loop`: [omh] Hermes Loop workflow: agentic interviewer -> planner -> researcher -> builder -> reviewer cycles until a real gate.
 - `ulw-maestro`: [omh] Maestro - prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself.
@@ -67,6 +69,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-meta-router`: [omh] Meta-routing guidance for a leading /omh command: reason over the imperative task, consult the live workflow catalog, and select or chain the right workflow(s).
 - `omh-model-setup`: [omh] Hermes Model Setup workflow: diagnose role-slot model configuration, guide provider connection, and apply changes only after diff approval.
 - `omh-morning-brief`: [omh] Morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself.
+- `omh-native-debugging`: [omh] Hermes native-debugging workflow: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf.
 - `omh-routing`: [omh] Router guidance for using oh-my-hermes workflow skills inside Hermes Agent.
 - `omh-operating-rhythm`: [omh] Hermes Operating Rhythm workflow: meeting minutes, scrum/sprint records, retros, decisions, and follow-up history.
 - `omh-ops-observability-card`: [omh] Hermes ops observability workflow: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries.
@@ -90,6 +93,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-rules-distill`: [omh] Hermes Rules Distill workflow: extract repeated principles from skills, prompts, traces, reviews, and failures into reviewed rule candidates without auto-mutating guidance.
 - `omh-run-efficiency`: [omh] Report supplied local run efficiency while provider and host data stay unobserved.
 - `omh-running-work-board`: [omh] Hermes adaptation for showing which coding units are running right now, on which runtime and model, with observed tokens and elapsed time.
+- `omh-rust`: [omh] Hermes Rust workflow: prepare Rust changes with ownership, error, and API discipline, and escalate any unsafe, FFI, or lock-free change to the UB checklist.
 - `omh-sales-development`: [omh] Turn an account or market opportunity into a focused discovery, qualification, and next-step brief.
 - `omh-security-safety-review`: [omh] Hermes Security Safety Review workflow: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution.
 - `omh-skill`: [omh] Hermes adaptation for managing local skills.

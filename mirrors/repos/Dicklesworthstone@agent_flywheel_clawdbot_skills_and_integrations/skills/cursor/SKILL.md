@@ -1,188 +1,165 @@
 ---
 name: cursor
-description: "Control Cursor AI code editor via CLI. Open files, folders, diffs, and manage extensions."
+description: >-
+  Control Cursor AI code editor via CLI. Use when opening files, comparing diffs,
+  managing extensions, or configuring Cursor as git editor.
 ---
 
-# Cursor Skill
+<!-- TOC: Quick Start | THE EXACT PROMPT | Commands | Settings | References -->
 
-Use the `cursor` CLI to control the Cursor AI-powered code editor (VS Code fork).
+# Cursor CLI
 
-## CLI Location
+> **Core Capability:** Control the Cursor AI-powered code editor (VS Code fork) from the command line.
+
+## Quick Start
 
 ```bash
-/usr/local/bin/cursor
-```
-
-## Opening Files and Folders
-
-Open current directory:
-```bash
+# Open current directory
 cursor .
-```
 
-Open specific file:
-```bash
-cursor /path/to/file.ts
-```
-
-Open file at specific line:
-```bash
+# Open file at specific line
 cursor /path/to/file.ts:42
-```
 
-Open file at line and column:
-```bash
-cursor /path/to/file.ts:42:10
-```
-
-Open folder:
-```bash
-cursor /path/to/project
-```
-
-Open multiple files:
-```bash
-cursor file1.ts file2.ts file3.ts
-```
-
-## Window Options
-
-Open in new window:
-```bash
-cursor -n /path/to/project
-```
-
-Open in new window (alias):
-```bash
-cursor --new-window /path/to/project
-```
-
-Reuse existing window:
-```bash
-cursor -r /path/to/file
-```
-
-Reuse existing window (alias):
-```bash
-cursor --reuse-window /path/to/file
-```
-
-## Diff Mode
-
-Compare two files:
-```bash
-cursor -d file1.ts file2.ts
-```
-
-Diff (alias):
-```bash
+# Compare two files
 cursor --diff file1.ts file2.ts
-```
 
-## Wait Mode
-
-Wait for file to close (useful in scripts):
-```bash
-cursor --wait /path/to/file
-```
-
-Short form:
-```bash
-cursor -w /path/to/file
-```
-
-Use as git editor:
-```bash
+# Use as git editor
 git config --global core.editor "cursor --wait"
 ```
 
-## Adding to Workspace
+---
 
-Add folder to current workspace:
-```bash
-cursor --add /path/to/folder
+## THE EXACT PROMPT — Open Files
+
+```
+# Open file
+cursor /path/to/file.ts
+
+# Open at specific line
+cursor /path/to/file.ts:42
+
+# Open at line and column
+cursor /path/to/file.ts:42:10
+
+# Open multiple files
+cursor file1.ts file2.ts file3.ts
+
+# Open in new window
+cursor -n /path/to/project
+
+# Reuse existing window
+cursor -r /path/to/file
 ```
 
-## Extensions
+---
 
-List installed extensions:
-```bash
+## THE EXACT PROMPT — Diff and Wait
+
+```
+# Compare two files
+cursor --diff file1.ts file2.ts
+cursor -d file1.ts file2.ts
+
+# Wait for file to close (scripts/git)
+cursor --wait /path/to/file
+cursor -w /path/to/file
+
+# Use as git editor
+git config --global core.editor "cursor --wait"
+```
+
+---
+
+## THE EXACT PROMPT — Extensions
+
+```
+# List installed extensions
 cursor --list-extensions
-```
 
-Install extension:
-```bash
+# Install extension
 cursor --install-extension <extension-id>
-```
 
-Uninstall extension:
-```bash
+# Uninstall extension
 cursor --uninstall-extension <extension-id>
-```
 
-Disable all extensions:
-```bash
+# Disable all extensions
 cursor --disable-extensions
 ```
 
-## Verbose and Debugging
+---
 
-Show version:
+## Essential Commands
+
+| Command | Description |
+|---------|-------------|
+| `cursor .` | Open current directory |
+| `cursor file.ts:42` | Open file at line |
+| `cursor -n path` | Open in new window |
+| `cursor -r path` | Reuse existing window |
+| `cursor --diff a b` | Compare two files |
+| `cursor --wait file` | Wait for close (scripting) |
+| `cursor --add folder` | Add to current workspace |
+
+---
+
+## Settings Locations
+
+| File | macOS Path |
+|------|------------|
+| User settings | `~/Library/Application Support/Cursor/User/settings.json` |
+| Keybindings | `~/Library/Application Support/Cursor/User/keybindings.json` |
+
+| File | Linux Path |
+|------|------------|
+| User settings | `~/.config/Cursor/User/settings.json` |
+| Keybindings | `~/.config/Cursor/User/keybindings.json` |
+
+---
+
+## Portable Mode
+
 ```bash
-cursor --version
-```
-
-Show help:
-```bash
-cursor --help
-```
-
-Verbose output:
-```bash
-cursor --verbose /path/to/file
-```
-
-Open developer tools:
-```bash
-cursor --inspect-extensions
-```
-
-## Settings
-
-User settings location:
-```
-~/Library/Application Support/Cursor/User/settings.json
-```
-
-Keybindings location:
-```
-~/Library/Application Support/Cursor/User/keybindings.json
-```
-
-## Portable Mode / Profiles
-
-Specify user data directory:
-```bash
+# Custom user data directory
 cursor --user-data-dir /path/to/data
-```
 
-Specify extensions directory:
-```bash
+# Custom extensions directory
 cursor --extensions-dir /path/to/extensions
 ```
 
+---
+
 ## Piping Input
 
-Read from stdin:
 ```bash
+# Read from stdin
 echo "console.log('hello')" | cursor -
+
+# Pipe file contents
+cat script.ts | cursor -
 ```
 
-## Remote Development
+---
 
-Cursor supports remote development similar to VS Code. SSH remotes are configured in:
-```
-~/.ssh/config
+## Debugging
+
+```bash
+# Show version
+cursor --version
+
+# Show help
+cursor --help
+
+# Verbose output
+cursor --verbose /path/to/file
+
+# Inspect extensions
+cursor --inspect-extensions
 ```
 
-Then use command palette or remote explorer in the GUI.
+---
+
+## References
+
+| Topic | Reference |
+|-------|-----------|
+| Full command reference | [COMMANDS.md](references/COMMANDS.md) |

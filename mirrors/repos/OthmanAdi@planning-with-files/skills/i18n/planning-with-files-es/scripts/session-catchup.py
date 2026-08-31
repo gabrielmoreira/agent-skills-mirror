@@ -3,9 +3,13 @@
 Script de recuperación de sesión para planning-with-files-es
 
 Analiza la sesión anterior para encontrar contexto no sincronizado tras la
-última actualización de archivos de planificación. Diseñado para SessionStart.
+última actualización de archivos de planificación.
 
-Uso: python3 session-catchup.py [ruta-del-proyecto]
+Las llamadas automáticas usan el modo sin historial y nunca inspeccionan los
+almacenes de sesiones del host. Los metadatos agregados y los extractos de
+transcripciones requieren una solicitud explícita.
+
+Uso: python3 session-catchup.py [--no-history|--metadata|--replay] [ruta-del-proyecto]
 """
 
 import hashlib
@@ -383,7 +387,9 @@ def get_codex_sessions(project_path: str) -> Iterable[Path]:
             yield session
 
 
-def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
+def get_session_candidates(
+    project_path: str, *, emit_notices: bool = True
+) -> Tuple[str, Iterable[Path]]:
     if '/.codex/' in Path(__file__).resolve().as_posix().lower():
         return 'codex', get_codex_sessions(project_path)
 
@@ -392,7 +398,7 @@ def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
         sessions, notice = filter_sessions_by_cwd(
             get_sessions_sorted(claude_project_dir), project_path
         )
-        if notice:
+        if notice and emit_notices:
             print(notice)
         return 'claude', sessions
     return 'claude', []
@@ -592,8 +598,46 @@ def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> L
     return result
 
 
+def emit_metadata_report(runtime_name: str, unsynced_count: int) -> None:
+    """Informa de la disponibilidad sin revelar bytes derivados de transcripciones."""
+    print("\n[planning-with-files-es] HAY CONTEXTO DE SESIÓN DISPONIBLE")
+    print(f"Entorno de ejecución: {runtime_name}")
+    print(f"Entradas no sincronizadas: {unsynced_count}")
+    print("El modo de metadatos excluye los extractos de transcripciones.")
+    print(
+        "Ejecuta session-catchup.py --replay para inspeccionar extractos "
+        "limitados del mismo proyecto."
+    )
+
+
+def parse_cli_args(argv: List[str]) -> Tuple[str, str]:
+    """Devuelve (modo, ruta), sin acceso al historial de forma predeterminada."""
+    mode = 'no-history'
+    project_path: Optional[str] = None
+    for arg in argv[1:]:
+        if arg == '--no-history':
+            mode = 'no-history'
+        elif arg == '--metadata':
+            mode = 'metadata'
+        elif arg == '--replay':
+            mode = 'replay'
+        elif arg.startswith('-'):
+            raise SystemExit(f"opción desconocida: {arg}")
+        elif project_path is None:
+            project_path = arg
+        else:
+            raise SystemExit("solo se puede proporcionar una ruta de proyecto")
+    return mode, project_path or os.getcwd()
+
+
 def main():
-    project_path = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+    mode, project_path = parse_cli_args(sys.argv)
+
+    # SessionStart y la ejecución sin opciones no acceden al historial. Esta
+    # comprobación debe ocurrir antes de buscar el directorio personal o los
+    # almacenes de sesiones y antes de comprobar los archivos de planificación.
+    if mode == 'no-history':
+        return
 
     # Check if planning files exist (indicates active task)
     has_planning_files = any(
@@ -603,7 +647,9 @@ def main():
         # No planning files in this project; skip catchup to avoid noise.
         return
 
-    runtime_name, sessions = get_session_candidates(project_path)
+    runtime_name, sessions = get_session_candidates(
+        project_path, emit_notices=(mode == 'replay')
+    )
 
     # Find a substantial previous session
     target_session = None
@@ -627,6 +673,10 @@ def main():
     messages_after = extract_messages_after(messages, last_update_line)
 
     if not messages_after:
+        return
+
+    if mode != 'replay':
+        emit_metadata_report(runtime_name, len(messages_after))
         return
 
     # Output catchup report

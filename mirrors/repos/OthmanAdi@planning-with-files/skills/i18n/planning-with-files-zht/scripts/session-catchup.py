@@ -3,9 +3,10 @@
 planning-with-files 的工作階段接續腳本
 
 分析前一工作階段，找出上次規劃檔案更新後尚未同步的上下文。
-設計於 SessionStart 時執行。
+自動呼叫與未指定模式的呼叫不會檢查主機上的工作階段儲存區。
+彙總中繼資料與逐字稿摘錄都必須由使用者明確要求。
 
-用法：python3 session-catchup.py [專案路徑]
+用法：python3 session-catchup.py [--no-history|--metadata|--replay] [專案路徑]
 """
 
 import hashlib
@@ -381,7 +382,9 @@ def get_codex_sessions(project_path: str) -> Iterable[Path]:
             yield session
 
 
-def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
+def get_session_candidates(
+    project_path: str, *, emit_notices: bool = True
+) -> Tuple[str, Iterable[Path]]:
     if '/.codex/' in Path(__file__).resolve().as_posix().lower():
         return 'codex', get_codex_sessions(project_path)
 
@@ -390,7 +393,7 @@ def get_session_candidates(project_path: str) -> Tuple[str, Iterable[Path]]:
         sessions, notice = filter_sessions_by_cwd(
             get_sessions_sorted(claude_project_dir), project_path
         )
-        if notice:
+        if notice and emit_notices:
             print(notice)
         return 'claude', sessions
     return 'claude', []
@@ -506,6 +509,35 @@ def summarize_codex_tool(payload: Dict[str, Any]) -> str:
     return str(tool_name)
 
 
+def emit_metadata_report(runtime_name: str, unsynced_count: int) -> None:
+    """只報告可用性，不洩露由逐字稿衍生的位元組。"""
+    print("\n[planning-with-files] 可接續工作階段")
+    print(f"執行環境：{runtime_name}")
+    print(f"未同步項目數：{unsynced_count}")
+    print("中繼資料模式不包含逐字稿摘錄。")
+    print("若要檢視同一專案的限量摘錄，請執行 session-catchup.py --replay。")
+
+
+def parse_cli_args(argv: List[str]) -> Tuple[str, str]:
+    """傳回（模式、專案路徑）；預設完全不存取主機歷史記錄。"""
+    mode = 'no-history'
+    project_path: Optional[str] = None
+    for arg in argv[1:]:
+        if arg == '--no-history':
+            mode = 'no-history'
+        elif arg == '--metadata':
+            mode = 'metadata'
+        elif arg == '--replay':
+            mode = 'replay'
+        elif arg.startswith('-'):
+            raise SystemExit(f"不明選項：{arg}")
+        elif project_path is None:
+            project_path = arg
+        else:
+            raise SystemExit("只能指定一個專案路徑")
+    return mode, project_path or os.getcwd()
+
+
 def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> List[Dict[str, Any]]:
     """Extract conversation messages after a certain line number."""
     result = []
@@ -591,7 +623,12 @@ def extract_messages_after(messages: List[Dict[str, Any]], after_line: int) -> L
 
 
 def main():
-    project_path = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+    mode, project_path = parse_cli_args(sys.argv)
+
+    # SessionStart 與未指定模式的 CLI 呼叫必須完全不存取歷史記錄。
+    # 這項檢查必須位於規劃檔案、IDE、家目錄與逐字稿資料庫探查之前。
+    if mode == 'no-history':
+        return
 
     # Check if planning files exist (indicates active task)
     has_planning_files = any(
@@ -601,7 +638,9 @@ def main():
         # No planning files in this project; skip catchup to avoid noise.
         return
 
-    runtime_name, sessions = get_session_candidates(project_path)
+    runtime_name, sessions = get_session_candidates(
+        project_path, emit_notices=(mode == 'replay')
+    )
 
     # Find a substantial previous session
     target_session = None
@@ -625,6 +664,10 @@ def main():
     messages_after = extract_messages_after(messages, last_update_line)
 
     if not messages_after:
+        return
+
+    if mode != 'replay':
+        emit_metadata_report(runtime_name, len(messages_after))
         return
 
     # Output catchup report

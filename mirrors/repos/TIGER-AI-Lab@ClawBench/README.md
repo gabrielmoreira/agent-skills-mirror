@@ -185,7 +185,7 @@ git clone https://github.com/TIGER-AI-Lab/ClawBench.git && cd ClawBench && ./run
 uv tool install clawbench-eval
 ```
 
-`pipx install clawbench-eval` and `python -m pip install clawbench-eval` work too. The installed commands are `clawbench`, `clawbench-run`, `clawbench-batch`, `clawbench-rescore`, `clawbench-reproduce`, and `clawbench-harbor-adapt`.
+`pipx install clawbench-eval` and `python -m pip install clawbench-eval` work too. The installed commands are `clawbench`, `clawbench-run`, `clawbench-batch`, `clawbench-rescore`, `clawbench-analyze`, `clawbench-reproduce`, and `clawbench-harbor-adapt`.
 
 For more granular control — modifying the driver, the bundled test cases, or the container build — clone the repo and use the root `uv` package entrypoint instead:
 
@@ -298,6 +298,12 @@ clawbench-batch --models your-model --cases-suite v2 --all-cases
 ```
 
 `your-model` is a key you configured in step 1; `--cases-suite v2` runs the full V2 corpus (swap in `v1-lite` for the 20-task subset). Add `--max-concurrent N` to run tasks in parallel (default 2 locally, 1 with Kernel or Browserbase) and `--harness <name>` to pick an agent. Each task is intercepted and scored by the `deepseek-v4-pro` judge from step 1 — pass `--no-judge` to skip scoring. A `batch-summary.json` plus per-run recordings land under `./test-output/`.
+
+Analyze a completed batch's Stage-1/Stage-2 rates, failure taxonomy, per-category results, and self-report gap:
+
+```bash
+clawbench-analyze --runs-dir test-output/batch-<timestamp> --out report.md
+```
 
 **By hand, to produce a human reference run:**
 
@@ -419,6 +425,8 @@ ClawBench ships **three** Hugging Face datasets — task definitions plus full e
 | **[NAIL-Group/ClawBench](https://huggingface.co/datasets/NAIL-Group/ClawBench)** _(mirrored at [TIGER-Lab/ClawBench](https://huggingface.co/datasets/TIGER-Lab/ClawBench))_ | Task definitions, rubrics, and metadata for V1 and V2 — what to attempt and how it's judged. | `hf download --repo-type dataset NAIL-Group/ClawBench` |
 | **[NAIL-Group/ClawBenchV1Trace](https://huggingface.co/datasets/NAIL-Group/ClawBenchV1Trace)** | One directory per V1 model run: `recording.mp4`, `requests.jsonl`, `actions.jsonl`, `agent-messages.jsonl`, `interception.json`, `run-meta.json`. | `hf download --repo-type dataset NAIL-Group/ClawBenchV1Trace` |
 | **[TIGER-Lab/ClawBenchV2Trace](https://huggingface.co/datasets/TIGER-Lab/ClawBenchV2Trace)** | Same 5-layer bundle for **V2** runs. Rolling — new models added as they're evaluated. | `hf download --repo-type dataset TIGER-Lab/ClawBenchV2Trace` |
+
+> **Build with the traces:** See the [Trace Cookbook](docs/trace-cookbook.md) for download recipes, data schemas, and research directions.
 
 > The trace datasets are large; use `hf download --include "<pattern>"` to pull a single model or a single task.
 

@@ -1,0 +1,40 @@
+{
+  "min_market_cap": 500000000,
+  "max_market_cap": 20000000000,
+  "min_price": 5.0,
+  "hard_min_average_daily_dollar_volume": 1000000,
+  "min_average_daily_dollar_volume": 5000000,
+  "max_api_calls": 350,
+  "company_screener_limit": 1000,
+  "minimum_market_cap_band_width": 25000000,
+  "maximum_market_cap_band_depth": 12,
+  "bulk_estimate_years": 5,
+  "bulk_estimate_minimum_coverage_pct": 20.0,
+  "pre_enrichment_limit": 180,
+  "seed_limit_cap": 200,
+  "quality_probe_limit": 35,
+  "candidate_packet_reserve_calls": 30,
+  "retry_reserve_calls": 25,
+  "exact_liquidity_limit": 40,
+  "provider_prefilter_pool_size": 30,
+  "provider_prefilter_minimum_pool": 12,
+  "provider_prefilter_per_lane": 8,
+  "max_deep_dive_candidates": 3,
+  "minimum_discovery_analyst_count": 2,
+  "minimum_average_volume_period_days": 20,
+  "maximum_forward_eps_dispersion_pct": 100.0,
+  "maximum_fy1_horizon_days": 430,
+  "forward_pe_reconciliation_tolerance_pct": 5.0,
+  "compact_stdout_max_bytes": 20000,
+  "bulk_endpoints": {
+    "ratios_ttm": "ratios-ttm-bulk",
+    "key_metrics_ttm": "key-metrics-ttm-bulk",
+    "income_growth": "income-statement-growth-bulk",
+    "analyst_estimates": "analyst-estimates-bulk",
+    "eod": "eod-bulk"
+  },
+  "cache": {
+    "path": ".cache/us-garp/fmp-cache.sqlite3",
+    "raw_store_dir": ".cache/us-garp/raw"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "summary": "US small- and mid-cap valuations are below the large-cap market, while elevated Treasury yields make multiple expansion an unsuitable base-case assumption.",
+  "as_of": "2026-08-22T12:00:00-07:00",
+  "policy_rate_pct": 3.625,
+  "treasury_10y_yield_pct": 4.74,
+  "real_gdp_growth_pct": 1.5,
+  "inflation_yoy_pct": 3.4,
+  "market_forward_pe": 21.2,
+  "small_mid_cap_valuation_context": "Small and mid caps trade at a discount to mega caps, but financing-sensitive businesses require a higher margin of safety.",
+  "sector_cycle_notes": [
+    "Software demand is stable but selective.",
+    "Commercial biopharma requires product-concentration and LOE stress checks."
+  ],
+  "source_ids": [
+    "macro-fed-20260822",
+    "macro-treasury-20260822",
+    "macro-bea-bls-20260822",
+    "market-valuation-20260822"
+  ]
+}

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 5 followed patterns, 14 file(s) materialized.
+Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 5 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 5 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,14 +69,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/maplibre-mapbox-migration/SKILL.md`](skills/maplibre-mapbox-migration/SKILL.md) |
 | 5 | ✓ | [`skills/maplibre-pmtiles-patterns/SKILL.md`](skills/maplibre-pmtiles-patterns/SKILL.md) |
 | 6 | ✓ | [`skills/maplibre-skill-authoring/SKILL.md`](skills/maplibre-skill-authoring/SKILL.md) |
-| 7 | ✓ | [`skills/maplibre-terrain-patterns/SKILL.md`](skills/maplibre-terrain-patterns/SKILL.md) |
-| 8 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
-| 9 | ✓ | [`skills/maplibre-v6-migration/SKILL.md`](skills/maplibre-v6-migration/SKILL.md) |
-| 10 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 11 | → | [`evals/README.md`](evals/README.md) |
-| 12 | → | [`evals/results/maplibre-cartography.md`](evals/results/maplibre-cartography.md) |
-| 13 | → | [`evals/results/maplibre-v6-migration.md`](evals/results/maplibre-v6-migration.md) |
-| 14 | → | [`LICENSE.md`](LICENSE.md) |
+| 7 | ✓ | [`skills/maplibre-source-wiring/SKILL.md`](skills/maplibre-source-wiring/SKILL.md) |
+| 8 | ✓ | [`skills/maplibre-terrain-patterns/SKILL.md`](skills/maplibre-terrain-patterns/SKILL.md) |
+| 9 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
+| 10 | ✓ | [`skills/maplibre-v6-migration/SKILL.md`](skills/maplibre-v6-migration/SKILL.md) |
+| 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 12 | → | [`evals/README.md`](evals/README.md) |
+| 13 | → | [`evals/results/maplibre-cartography.md`](evals/results/maplibre-cartography.md) |
+| 14 | → | [`evals/results/maplibre-v6-migration.md`](evals/results/maplibre-v6-migration.md) |
+| 15 | → | [`LICENSE.md`](LICENSE.md) |
 
 ---
 

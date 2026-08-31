@@ -268,6 +268,18 @@ Where the full rule is deliberately relaxed. A documented exception is law; an u
 - **Kanban exception** (boards): board files are UI surfaces for the Kanban plugin - a `## For future agent` H2 would render as a phantom column. Boards carry `kanban-plugin: board` frontmatter only and are exempt from the preamble and rich-frontmatter rules; notes ABOUT board items (task notes) follow the full rule. The validate hook skips board files accordingly.
 - **Raw-source exception** (`raw/`): see `type: source` above - frontmatter yes, preamble no, body verbatim.
 - **Vault-surface exception**: root operating files (`_CLAUDE.md`, `Home.md`, `index.md`, `log.md`, `catchup.md`) and per-day operation logs (`Logs/YYYY-MM-DD.md`) are navigation/manual/append surfaces, not knowledge notes - exempt from the preamble and rich-frontmatter rules. The validate hook skips them accordingly.
+- **Redirect exception** (`/obsidian-merge`, #220): when two near-duplicate notes are merged, the retired note is never deleted (`references/write-rules.md` - the vault is a permanent record) but its content is replaced with a short pointer at the surviving note. No `## For future agent` preamble, no wikilinks-everywhere, no sources - the note's only remaining job is to keep old links resolving and tell future agent the merge happened. See the schema below.
+
+### `type: redirect`
+Written by `/obsidian-merge` in place of a note retired into a merge. The surviving ("canonical") note keeps its own path and absorbs the content; this note keeps ITS path too (so wikilinks pointing at it still resolve) but its body is replaced entirely.
+```yaml
+date: YYYY-MM-DD              # date of the merge
+type: redirect
+tags: [redirect]
+redirects_to: "[[Canonical Note]]"    # wikilink to the note that survived
+ai-first: true
+```
+Body is one line: `This note was merged into [[Canonical Note]] on YYYY-MM-DD. See the canonical note for current content.` Nothing else - a redirect note that grows a preamble or its own claims has stopped being a redirect.
 
 ### `type: podcast`
 ```yaml
@@ -283,7 +295,7 @@ source-url: ""                # the URL the user pasted (Apple, RSS, etc.)
 guid: ""                      # episode GUID from RSS
 published: ""                 # publisher-provided publish date string
 duration: ""                  # publisher-provided duration string
-transcript-source: rss-transcript-tag | whisper-api | show-notes
+transcript-source: rss-transcript-tag | groq-whisper-api | whisper-api | show-notes
 tags: [research, podcast, ...]
 cost-usd: 0.0
 ai-first: true

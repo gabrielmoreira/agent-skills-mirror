@@ -1,0 +1,3735 @@
+{
+  "schema_version": 3,
+  "analysis_as_of": "2026-08-22T14:00:00-07:00",
+  "run_metadata": {
+    "run_id": "example-20260822",
+    "status": "complete",
+    "base_repository_commit": "759151ee92e0eed9a7f2ddf4d6b0e4d6707df409",
+    "unprocessed_candidates": [],
+    "selected_symbols": [
+      "ACME",
+      "CYCLE",
+      "STALE"
+    ]
+  },
+  "price_basis": {
+    "as_of": "2026-08-21T16:00:00-04:00",
+    "session": "regular_close",
+    "timezone": "America/New_York",
+    "source_id": "quote-20260821"
+  },
+  "config": {
+    "min_market_cap": 500000000,
+    "max_market_cap": 20000000000,
+    "min_price": 5.0,
+    "min_average_daily_dollar_volume": 5000000,
+    "hard_min_average_daily_dollar_volume": 1000000,
+    "max_candidates": 10,
+    "minimum_data_quality_score": 70,
+    "minimum_constant_multiple_upside_pct": 30,
+    "minimum_stressed_upside_pct": 0,
+    "multiple_contraction_pct": 20,
+    "maximum_cyclicality_without_normalization": 2,
+    "allow_special_cases": true,
+    "require_minimum_upside": true,
+    "require_positive_stress_case": false,
+    "max_quote_age_days": 7,
+    "max_estimate_age_days": 45,
+    "max_corporate_action_check_age_days": 14,
+    "forecast_bridge_tolerance_pct": 2,
+    "gaap_reconciliation_tolerance_pct": 2,
+    "fcf_reconciliation_tolerance_pct": 5,
+    "max_deep_dive_candidates": 3,
+    "cash_consistency_tolerance_pct": 3,
+    "max_market_context_age_days": 14,
+    "minimum_analyst_count_for_ranked_horizon": 3,
+    "require_forward_current_metric": true,
+    "require_peer_set": true,
+    "require_market_context": true,
+    "require_screening_audit": true,
+    "biopharma_loe_stress_multiples": [
+      6,
+      8
+    ],
+    "require_full_scope": true,
+    "minimum_listing_data_coverage_pct": 95.0,
+    "discovery_pool_max_size": 120,
+    "discovery_pool_per_sector_market_cap_cell": 3,
+    "minimum_discovery_analyst_count": 2,
+    "maximum_enrichment_attempts": 60,
+    "max_discovery_pool_candidates": 120,
+    "discovery_per_sector_bucket_limit": 3,
+    "near_miss_max_forward_pe": 22.0,
+    "near_miss_min_per_share_growth_pct": 8.0,
+    "hard_max_net_debt_to_ebitda": 4.0,
+    "maximum_forward_pe_for_economic_screen": 60.0,
+    "sector_review_selection_penalty": 5.0,
+    "near_miss_selection_penalty": 4.0,
+    "missing_deep_dive_field_penalty": 1.5,
+    "max_policy_rate_source_age_days": 60,
+    "max_market_rate_source_age_days": 7,
+    "max_inflation_source_age_days": 45,
+    "max_gdp_source_age_days": 120,
+    "max_market_valuation_source_age_days": 14,
+    "max_small_mid_context_source_age_days": 14,
+    "minimum_final_score_for_eligible": 70.0,
+    "minimum_sbc_adjusted_fcf_yield_pct_for_eligible": 3.0,
+    "maximum_ev_to_fcf_for_eligible": 30.0,
+    "minimum_roic_pct_for_eligible": 8.0,
+    "maximum_net_debt_to_ebitda_for_eligible": 3.0,
+    "maximum_dilution_pct_for_eligible": 5.0,
+    "minimum_low_case_upside_pct_for_eligible": 15.0,
+    "maximum_quality_gate_failures_for_conditional": 2,
+    "severe_loe_stress_downside_pct": -25.0,
+    "final_three_minimum_score": 75.0,
+    "final_three_minimum_data_quality": 80,
+    "final_three_minimum_stress_upside_pct": 0.0,
+    "final_three_minimum_sbc_adjusted_fcf_yield_pct": 5.0,
+    "final_three_maximum_ev_to_fcf": 20.0,
+    "final_three_minimum_low_case_upside_pct": 20.0
+  },
+  "market_context": {
+    "summary": "US small- and mid-cap valuations are below the large-cap market, while elevated Treasury yields make multiple expansion an unsuitable base-case assumption.",
+    "as_of": "2026-08-22T12:00:00-07:00",
+    "policy_rate_pct": 3.625,
+    "treasury_10y_yield_pct": 4.74,
+    "real_gdp_growth_pct": 1.5,
+    "inflation_yoy_pct": 3.4,
+    "market_forward_pe": 21.2,
+    "small_mid_cap_valuation_context": "Small and mid caps trade at a discount to mega caps, but financing-sensitive businesses require a higher margin of safety.",
+    "sector_cycle_notes": [
+      "Software demand is stable but selective.",
+      "Commercial biopharma requires product-concentration and LOE stress checks."
+    ],
+    "source_ids": [
+      "macro-fed-20260822",
+      "macro-treasury-20260822",
+      "macro-bea-bls-20260822",
+      "market-valuation-20260822"
+    ]
+  },
+  "screening_funnel": {
+    "universe_count": 6,
+    "listing_in_scope_count": 4,
+    "candidate_pool_count": 6,
+    "discovery_evaluable_count": 4,
+    "deep_dive_selected_count": 3,
+    "preflight_passed_count": 3,
+    "deep_dive_completed_count": 3,
+    "notes": [
+      "Synthetic schema-3 / contract-3.5 strict-screen smoke universe."
+    ]
+  },
+  "candidates": [
+    {
+      "identity": {
+        "symbol": "ACME",
+        "company_name": "Acme Software, Inc.",
+        "exchange": "NASDAQ",
+        "sector": "Technology",
+        "industry": "Software - Application",
+        "currency": "USD",
+        "price": 40.0,
+        "price_source_id": "quote-20260821",
+        "market_cap": 5000000000,
+        "average_daily_dollar_volume": 45000000,
+        "special_case": "none",
+        "average_daily_dollar_volume_method": "provider_average_dollar_volume",
+        "average_volume_period_days": 20,
+        "liquidity_source_ids": [
+          "universe-fmp-20260822"
+        ],
+        "liquidity_valid_for_screen": true
+      },
+      "screening_decision": {
+        "status": "passed",
+        "reasons": [],
+        "source_ids": [
+          "consensus-20260822"
+        ]
+      },
+      "corporate_action_check": {
+        "checked_at": "2026-08-22T08:05:00-07:00",
+        "listing_status": "active",
+        "mna_status": "none",
+        "symbol_active": true,
+        "latest_material_event_at": "2026-08-10T16:05:00-04:00",
+        "source_ids": [
+          "corporate-action-check",
+          "acme-ir"
+        ]
+      },
+      "latest_earnings": {
+        "latest_report_type": "quarterly",
+        "quarter": {
+          "period": "FY2026 Q2",
+          "period_end": "2026-06-30",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "source_ids": [
+            "acme-10q",
+            "acme-ir"
+          ],
+          "growth_state": "accelerating_or_strong",
+          "metrics": {
+            "revenue": 270000000,
+            "revenue_yoy_pct": 14.0,
+            "gaap_operating_margin_pct": 19.0,
+            "gaap_eps": 0.78,
+            "adjusted_eps": 0.82,
+            "operating_cash_flow": 60000000,
+            "standard_fcf": 52000000
+          },
+          "guidance": [
+            "FY2026 revenue growth 12%-14%",
+            "GAAP operating margin 18%-20%"
+          ],
+          "key_kpis": [
+            "ARR +15%",
+            "NRR 110%"
+          ],
+          "one_time_items": [
+            "No material one-time item"
+          ],
+          "period_type": "quarter"
+        },
+        "full_year": null
+      },
+      "financials": {
+        "revenue_ttm": 1000000000,
+        "cash_flow_ttm": {
+          "method": "sum_4_discrete",
+          "operating_cash_flow": 210000000,
+          "capex_cash_outflow": 30000000,
+          "standard_fcf": 180000000,
+          "company_adjusted_fcf": 190000000,
+          "company_adjusted_fcf_definition": "Standard FCF plus restructuring cash payments",
+          "source_ids": [
+            "acme-10q"
+          ]
+        },
+        "cash_flow_periods": [
+          {
+            "period": "FY2025 Q3",
+            "period_end": "2025-09-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 45000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2025 Q4",
+            "period_end": "2025-12-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 50000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q1",
+            "period_end": "2026-03-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 55000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q2",
+            "period_end": "2026-06-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 60000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          }
+        ],
+        "sbc_ttm": 25000000,
+        "total_debt": 100000000,
+        "cash_classification": {
+          "corporate_cash": 160000000,
+          "marketable_securities": 20000000,
+          "customer_or_settlement_funds": 0,
+          "restricted_cash": 0
+        },
+        "ebitda_ttm": 190000000,
+        "roic_pct": 18.5,
+        "roe_pct": 24.0,
+        "histories": {
+          "revenue": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 650000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 760000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 880000000
+            }
+          ],
+          "gaap_eps": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.55
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 2.05
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 2.55
+            }
+          ],
+          "fcf_per_share": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.3
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 1.6
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 1.95
+            }
+          ],
+          "diluted_shares": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 130000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 128000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 125000000
+            }
+          ]
+        }
+      },
+      "valuation_case": {
+        "basis": "eps",
+        "periods": {
+          "current": {
+            "label": "FY2026E",
+            "period_kind": "fy1",
+            "metric": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 9,
+            "estimate_low": 2.9,
+            "estimate_high": 3.1,
+            "period_end": "2026-12-31",
+            "years": 0.35
+          },
+          "year_2": {
+            "label": "FY2028E",
+            "period_kind": "fy2",
+            "metric": 4.2,
+            "years": 2.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 8,
+            "estimate_low": 4.0,
+            "estimate_high": 4.4,
+            "period_end": "2028-12-31"
+          },
+          "year_3": {
+            "label": "FY2029E",
+            "period_kind": "fy3",
+            "metric": 5.0,
+            "years": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 6,
+            "estimate_low": 4.7,
+            "estimate_high": 5.3,
+            "period_end": "2029-12-31"
+          }
+        },
+        "supplied_current_multiple": 13.333333,
+        "peer_median_multiple": {
+          "value": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_ids": [
+            "peer-data"
+          ]
+        }
+      },
+      "forecast_bridge": {
+        "periods": {
+          "year_2": {
+            "metric_basis": "gaap",
+            "metric_numerator": 525000000.0,
+            "metric_denominator": 125000000.0,
+            "drivers": {
+              "revenue": 1300000000,
+              "gross_margin_pct": 80.0,
+              "operating_margin_pct": 50.350535540408956,
+              "net_interest_income": 10000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 125000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          },
+          "year_3": {
+            "metric_basis": "gaap",
+            "metric_numerator": 615000000.0,
+            "metric_denominator": 123000000.0,
+            "drivers": {
+              "revenue": 1480000000,
+              "gross_margin_pct": 81.0,
+              "operating_margin_pct": 51.78925761204242,
+              "net_interest_income": 12000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 123000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          }
+        }
+      },
+      "gaap_reconciliation": {
+        "periods": {}
+      },
+      "score_components": {
+        "growth_sustainability": 18,
+        "valuation_attractiveness": 18,
+        "financial_quality": 14,
+        "fcf_earnings_quality": 14,
+        "competitive_advantage": 9,
+        "capital_allocation": 9,
+        "catalyst_risk_balance": 8
+      },
+      "cyclicality": {
+        "score": 1,
+        "position": "non_cyclical",
+        "peak_profit_risk": false,
+        "normalization_required": false,
+        "normalization": null
+      },
+      "sector_profile": {
+        "type": "general",
+        "kpis": {}
+      },
+      "flags": {
+        "otc": false,
+        "penny_stock": false,
+        "spac_or_shell": false,
+        "pre_revenue_or_development_stage": false,
+        "repeated_equity_financing": false,
+        "pending_mna": false,
+        "unresolved_material_weakness": false,
+        "sec_investigation": false,
+        "meme_only": false,
+        "restatement_unresolved": false,
+        "extreme_illiquidity": false
+      },
+      "peers": [
+        {
+          "symbol": "PEER1",
+          "company_name": "Peer One",
+          "selection_reason": "Comparable recurring-revenue model",
+          "multiple": 16.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER2",
+          "company_name": "Peer Two",
+          "selection_reason": "Similar customer base and margins",
+          "multiple": 18.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER3",
+          "company_name": "Peer Three",
+          "selection_reason": "Similar growth stage and capital intensity",
+          "multiple": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        }
+      ],
+      "qualitative": {
+        "business_overview": "Synthetic recurring-revenue software company.",
+        "investment_thesis": "Revenue and GAAP EPS can compound at attractive rates without requiring multiple expansion.",
+        "growth_drivers": [
+          "ARR growth",
+          "Operating leverage",
+          "Net share reduction"
+        ],
+        "discount_reasons": [
+          "Recent growth normalization",
+          "Small-cap liquidity discount"
+        ],
+        "discount_classification": "Mostly temporary",
+        "market_may_be_right": "NRR could weaken and reduce the durability of the model.",
+        "rerating_conditions": [
+          "NRR remains above 105%",
+          "GAAP margin reaches 22%"
+        ],
+        "market_may_be_missing": "Per-share growth is stronger than headline revenue growth because diluted shares are declining.",
+        "catalysts": [
+          "New enterprise product launch in 6-12 months",
+          "Continued buybacks"
+        ],
+        "best_catalyst": "GAAP operating-margin expansion.",
+        "maximum_risk": "A sustained NRR decline below 100%.",
+        "do_not_buy_reason": "The next quarter could confirm a sharper growth slowdown.",
+        "bear_case": "EPS reaches only $3.50 and the multiple falls to 10x, implying $35.",
+        "invalidation_conditions": [
+          "Revenue growth below 8% for two quarters",
+          "FCF turns negative",
+          "Diluted shares rise more than 3% YoY"
+        ],
+        "next_earnings_kpis": [
+          "ARR growth",
+          "NRR",
+          "GAAP operating margin",
+          "Diluted shares"
+        ],
+        "ev_to_fcf": 26.8
+      },
+      "evidence": {
+        "identity.price": [
+          "quote-20260821"
+        ],
+        "latest_earnings": [
+          "acme-10q",
+          "acme-ir"
+        ],
+        "financials.revenue_ttm": [
+          "acme-10q"
+        ],
+        "financials.cash_flow_ttm": [
+          "acme-10q"
+        ],
+        "financials.sbc_ttm": [
+          "acme-10q"
+        ],
+        "financials.total_debt": [
+          "acme-10q"
+        ],
+        "financials.cash_classification": [
+          "acme-10q"
+        ],
+        "financials.histories.diluted_shares": [
+          "acme-10q"
+        ],
+        "corporate_action_check": [
+          "corporate-action-check",
+          "acme-ir"
+        ],
+        "financials.roic_pct": [
+          "acme-10q",
+          "analyst-model"
+        ],
+        "financials.ebitda_ttm": [
+          "acme-10q",
+          "analyst-model"
+        ]
+      },
+      "sources": [
+        {
+          "id": "acme-10q",
+          "tier": 1,
+          "kind": "sec_filing",
+          "title": "Synthetic Form 10-Q",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:05:00-07:00",
+          "url": "https://www.sec.gov/Archives/edgar/data/1000000/000100000026000010/acme-20260630.htm",
+          "supports": [
+            "financials.cash_classification",
+            "financials.cash_flow_ttm",
+            "financials.ebitda_ttm",
+            "financials.histories.diluted_shares",
+            "financials.revenue_ttm",
+            "financials.roic_pct",
+            "financials.sbc_ttm",
+            "financials.total_debt",
+            "latest_earnings",
+            "financials.cash_flow_periods.2025-09-30",
+            "financials.cash_flow_periods.2025-12-31",
+            "financials.cash_flow_periods.2026-03-31",
+            "financials.cash_flow_periods.2026-06-30"
+          ]
+        },
+        {
+          "id": "acme-ir",
+          "tier": 2,
+          "kind": "company_ir",
+          "title": "Synthetic earnings release",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:06:00-07:00",
+          "url": "https://investors.example.com/news/acme-q2-2026-results",
+          "supports": [
+            "latest_earnings",
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "corporate-action-check",
+          "tier": 3,
+          "kind": "exchange_status",
+          "title": "Synthetic active-listing and M&A status check",
+          "published_at": "2026-08-22T08:00:00-07:00",
+          "retrieved_at": "2026-08-22T08:05:00-07:00",
+          "url": "https://www.nasdaq.com/market-activity/stocks/acme",
+          "supports": [
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "consensus-20260822",
+          "tier": 3,
+          "kind": "consensus",
+          "title": "Synthetic GAAP EPS consensus",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/consensus",
+          "supports": [
+            "valuation_case.periods.current",
+            "valuation_case.periods.year_2",
+            "valuation_case.periods.year_3"
+          ]
+        },
+        {
+          "id": "analyst-model",
+          "tier": 4,
+          "kind": "analyst_calculation",
+          "title": "Synthetic forecast bridge",
+          "published_at": "2026-08-22T11:00:00-07:00",
+          "retrieved_at": "2026-08-22T11:00:00-07:00",
+          "url": "local://analyst-model",
+          "supports": [
+            "forecast_bridge"
+          ]
+        },
+        {
+          "id": "peer-data",
+          "tier": 3,
+          "kind": "market_data",
+          "title": "Synthetic peer forward GAAP P/E set",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/peers",
+          "supports": [
+            "peers"
+          ]
+        }
+      ]
+    },
+    {
+      "identity": {
+        "symbol": "CYCLE",
+        "company_name": "Cycle Equipment Corp.",
+        "exchange": "NASDAQ",
+        "sector": "Technology",
+        "industry": "Software - Application",
+        "currency": "USD",
+        "price": 40.0,
+        "price_source_id": "quote-20260821",
+        "market_cap": 5000000000,
+        "average_daily_dollar_volume": 45000000,
+        "special_case": "none",
+        "average_daily_dollar_volume_method": "provider_average_dollar_volume",
+        "average_volume_period_days": 20,
+        "liquidity_source_ids": [
+          "universe-fmp-20260822"
+        ],
+        "liquidity_valid_for_screen": true
+      },
+      "screening_decision": {
+        "status": "passed",
+        "reasons": [],
+        "source_ids": [
+          "consensus-20260822"
+        ]
+      },
+      "corporate_action_check": {
+        "checked_at": "2026-08-22T08:05:00-07:00",
+        "listing_status": "active",
+        "mna_status": "none",
+        "symbol_active": true,
+        "latest_material_event_at": "2026-08-10T16:05:00-04:00",
+        "source_ids": [
+          "corporate-action-check",
+          "acme-ir"
+        ]
+      },
+      "latest_earnings": {
+        "latest_report_type": "quarterly",
+        "quarter": {
+          "period": "FY2026 Q2",
+          "period_end": "2026-06-30",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "source_ids": [
+            "acme-10q",
+            "acme-ir"
+          ],
+          "growth_state": "accelerating_or_strong",
+          "metrics": {
+            "revenue": 270000000,
+            "revenue_yoy_pct": 14.0,
+            "gaap_operating_margin_pct": 19.0,
+            "gaap_eps": 0.78,
+            "adjusted_eps": 0.82,
+            "operating_cash_flow": 60000000,
+            "standard_fcf": 52000000
+          },
+          "guidance": [
+            "FY2026 revenue growth 12%-14%",
+            "GAAP operating margin 18%-20%"
+          ],
+          "key_kpis": [
+            "ARR +15%",
+            "NRR 110%"
+          ],
+          "one_time_items": [
+            "No material one-time item"
+          ],
+          "period_type": "quarter"
+        },
+        "full_year": null
+      },
+      "financials": {
+        "revenue_ttm": 1000000000,
+        "cash_flow_ttm": {
+          "method": "sum_4_discrete",
+          "operating_cash_flow": 210000000,
+          "capex_cash_outflow": 30000000,
+          "standard_fcf": 180000000,
+          "company_adjusted_fcf": 190000000,
+          "company_adjusted_fcf_definition": "Standard FCF plus restructuring cash payments",
+          "source_ids": [
+            "acme-10q"
+          ]
+        },
+        "cash_flow_periods": [
+          {
+            "period": "FY2025 Q3",
+            "period_end": "2025-09-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 45000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2025 Q4",
+            "period_end": "2025-12-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 50000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q1",
+            "period_end": "2026-03-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 55000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q2",
+            "period_end": "2026-06-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 60000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          }
+        ],
+        "sbc_ttm": 25000000,
+        "total_debt": 100000000,
+        "cash_classification": {
+          "corporate_cash": 160000000,
+          "marketable_securities": 20000000,
+          "customer_or_settlement_funds": 0,
+          "restricted_cash": 0
+        },
+        "ebitda_ttm": 190000000,
+        "roic_pct": 18.5,
+        "roe_pct": 24.0,
+        "histories": {
+          "revenue": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 650000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 760000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 880000000
+            }
+          ],
+          "gaap_eps": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.55
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 2.05
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 2.55
+            }
+          ],
+          "fcf_per_share": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.3
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 1.6
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 1.95
+            }
+          ],
+          "diluted_shares": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 130000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 128000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 125000000
+            }
+          ]
+        }
+      },
+      "valuation_case": {
+        "basis": "eps",
+        "periods": {
+          "current": {
+            "label": "FY2026E",
+            "period_kind": "fy1",
+            "metric": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 9,
+            "estimate_low": 2.9,
+            "estimate_high": 3.1,
+            "period_end": "2026-12-31",
+            "years": 0.35
+          },
+          "year_2": {
+            "label": "FY2028E",
+            "period_kind": "fy2",
+            "metric": 4.2,
+            "years": 2.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 8,
+            "estimate_low": 4.0,
+            "estimate_high": 4.4,
+            "period_end": "2028-12-31"
+          },
+          "year_3": {
+            "label": "FY2029E",
+            "period_kind": "fy3",
+            "metric": 5.0,
+            "years": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 6,
+            "estimate_low": 4.7,
+            "estimate_high": 5.3,
+            "period_end": "2029-12-31"
+          }
+        },
+        "supplied_current_multiple": 13.333333,
+        "peer_median_multiple": {
+          "value": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_ids": [
+            "peer-data"
+          ]
+        }
+      },
+      "forecast_bridge": {
+        "periods": {
+          "year_2": {
+            "metric_basis": "gaap",
+            "metric_numerator": 525000000.0,
+            "metric_denominator": 125000000.0,
+            "drivers": {
+              "revenue": 1300000000,
+              "gross_margin_pct": 80.0,
+              "operating_margin_pct": 50.350535540408956,
+              "net_interest_income": 10000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 125000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          },
+          "year_3": {
+            "metric_basis": "gaap",
+            "metric_numerator": 615000000.0,
+            "metric_denominator": 123000000.0,
+            "drivers": {
+              "revenue": 1480000000,
+              "gross_margin_pct": 81.0,
+              "operating_margin_pct": 51.78925761204242,
+              "net_interest_income": 12000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 123000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          }
+        }
+      },
+      "gaap_reconciliation": {
+        "periods": {}
+      },
+      "score_components": {
+        "growth_sustainability": 18,
+        "valuation_attractiveness": 18,
+        "financial_quality": 14,
+        "fcf_earnings_quality": 14,
+        "competitive_advantage": 9,
+        "capital_allocation": 9,
+        "catalyst_risk_balance": 8
+      },
+      "cyclicality": {
+        "score": 4,
+        "position": "late_cycle",
+        "peak_profit_risk": true,
+        "normalization_required": true,
+        "normalization": null
+      },
+      "sector_profile": {
+        "type": "general",
+        "kpis": {}
+      },
+      "flags": {
+        "otc": false,
+        "penny_stock": false,
+        "spac_or_shell": false,
+        "pre_revenue_or_development_stage": false,
+        "repeated_equity_financing": false,
+        "pending_mna": false,
+        "unresolved_material_weakness": false,
+        "sec_investigation": false,
+        "meme_only": false,
+        "restatement_unresolved": false,
+        "extreme_illiquidity": false
+      },
+      "peers": [
+        {
+          "symbol": "PEER1",
+          "company_name": "Peer One",
+          "selection_reason": "Comparable recurring-revenue model",
+          "multiple": 16.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER2",
+          "company_name": "Peer Two",
+          "selection_reason": "Similar customer base and margins",
+          "multiple": 18.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER3",
+          "company_name": "Peer Three",
+          "selection_reason": "Similar growth stage and capital intensity",
+          "multiple": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        }
+      ],
+      "qualitative": {
+        "business_overview": "Synthetic recurring-revenue software company.",
+        "investment_thesis": "Revenue and GAAP EPS can compound at attractive rates without requiring multiple expansion.",
+        "growth_drivers": [
+          "ARR growth",
+          "Operating leverage",
+          "Net share reduction"
+        ],
+        "discount_reasons": [
+          "Recent growth normalization",
+          "Small-cap liquidity discount"
+        ],
+        "discount_classification": "Mostly temporary",
+        "market_may_be_right": "NRR could weaken and reduce the durability of the model.",
+        "rerating_conditions": [
+          "NRR remains above 105%",
+          "GAAP margin reaches 22%"
+        ],
+        "market_may_be_missing": "Per-share growth is stronger than headline revenue growth because diluted shares are declining.",
+        "catalysts": [
+          "New enterprise product launch in 6-12 months",
+          "Continued buybacks"
+        ],
+        "best_catalyst": "GAAP operating-margin expansion.",
+        "maximum_risk": "A sustained NRR decline below 100%.",
+        "do_not_buy_reason": "The next quarter could confirm a sharper growth slowdown.",
+        "bear_case": "EPS reaches only $3.50 and the multiple falls to 10x, implying $35.",
+        "invalidation_conditions": [
+          "Revenue growth below 8% for two quarters",
+          "FCF turns negative",
+          "Diluted shares rise more than 3% YoY"
+        ],
+        "next_earnings_kpis": [
+          "ARR growth",
+          "NRR",
+          "GAAP operating margin",
+          "Diluted shares"
+        ],
+        "ev_to_fcf": 26.8
+      },
+      "evidence": {
+        "identity.price": [
+          "quote-20260821"
+        ],
+        "latest_earnings": [
+          "acme-10q",
+          "acme-ir"
+        ],
+        "financials.revenue_ttm": [
+          "acme-10q"
+        ],
+        "financials.cash_flow_ttm": [
+          "acme-10q"
+        ],
+        "financials.sbc_ttm": [
+          "acme-10q"
+        ],
+        "financials.total_debt": [
+          "acme-10q"
+        ],
+        "financials.cash_classification": [
+          "acme-10q"
+        ],
+        "financials.histories.diluted_shares": [
+          "acme-10q"
+        ],
+        "corporate_action_check": [
+          "corporate-action-check",
+          "acme-ir"
+        ],
+        "financials.roic_pct": [
+          "acme-10q",
+          "analyst-model"
+        ],
+        "financials.ebitda_ttm": [
+          "acme-10q",
+          "analyst-model"
+        ]
+      },
+      "sources": [
+        {
+          "id": "acme-10q",
+          "tier": 1,
+          "kind": "sec_filing",
+          "title": "Synthetic Form 10-Q",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:05:00-07:00",
+          "url": "https://www.sec.gov/Archives/edgar/data/1000000/000100000026000010/acme-20260630.htm",
+          "supports": [
+            "financials.cash_classification",
+            "financials.cash_flow_ttm",
+            "financials.ebitda_ttm",
+            "financials.histories.diluted_shares",
+            "financials.revenue_ttm",
+            "financials.roic_pct",
+            "financials.sbc_ttm",
+            "financials.total_debt",
+            "latest_earnings",
+            "financials.cash_flow_periods.2025-09-30",
+            "financials.cash_flow_periods.2025-12-31",
+            "financials.cash_flow_periods.2026-03-31",
+            "financials.cash_flow_periods.2026-06-30"
+          ]
+        },
+        {
+          "id": "acme-ir",
+          "tier": 2,
+          "kind": "company_ir",
+          "title": "Synthetic earnings release",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:06:00-07:00",
+          "url": "https://investors.example.com/news/acme-q2-2026-results",
+          "supports": [
+            "latest_earnings",
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "corporate-action-check",
+          "tier": 3,
+          "kind": "exchange_status",
+          "title": "Synthetic active-listing and M&A status check",
+          "published_at": "2026-08-22T08:00:00-07:00",
+          "retrieved_at": "2026-08-22T08:05:00-07:00",
+          "url": "https://www.nasdaq.com/market-activity/stocks/acme",
+          "supports": [
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "consensus-20260822",
+          "tier": 3,
+          "kind": "consensus",
+          "title": "Synthetic GAAP EPS consensus",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/consensus",
+          "supports": [
+            "valuation_case.periods.current",
+            "valuation_case.periods.year_2",
+            "valuation_case.periods.year_3"
+          ]
+        },
+        {
+          "id": "analyst-model",
+          "tier": 4,
+          "kind": "analyst_calculation",
+          "title": "Synthetic forecast bridge",
+          "published_at": "2026-08-22T11:00:00-07:00",
+          "retrieved_at": "2026-08-22T11:00:00-07:00",
+          "url": "local://analyst-model",
+          "supports": [
+            "forecast_bridge"
+          ]
+        },
+        {
+          "id": "peer-data",
+          "tier": 3,
+          "kind": "market_data",
+          "title": "Synthetic peer forward GAAP P/E set",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/peers",
+          "supports": [
+            "peers"
+          ]
+        }
+      ]
+    },
+    {
+      "identity": {
+        "symbol": "STALE",
+        "company_name": "Stale Quote Corp.",
+        "exchange": "NASDAQ",
+        "sector": "Technology",
+        "industry": "Software - Application",
+        "currency": "USD",
+        "price": 40.0,
+        "price_source_id": "quote-20260821",
+        "market_cap": 5000000000,
+        "average_daily_dollar_volume": 45000000,
+        "special_case": "none",
+        "average_daily_dollar_volume_method": "provider_average_dollar_volume",
+        "average_volume_period_days": 20,
+        "liquidity_source_ids": [
+          "universe-fmp-20260822"
+        ],
+        "liquidity_valid_for_screen": true
+      },
+      "screening_decision": {
+        "status": "passed",
+        "reasons": [],
+        "source_ids": [
+          "consensus-20260822"
+        ]
+      },
+      "corporate_action_check": {
+        "checked_at": "2026-08-22T08:05:00-07:00",
+        "listing_status": "active",
+        "mna_status": "none",
+        "symbol_active": true,
+        "latest_material_event_at": "2026-08-22T17:00:00-04:00",
+        "source_ids": [
+          "corporate-action-check",
+          "acme-ir"
+        ]
+      },
+      "latest_earnings": {
+        "latest_report_type": "quarterly",
+        "quarter": {
+          "period": "FY2026 Q2",
+          "period_end": "2026-06-30",
+          "published_at": "2026-08-22T17:00:00-04:00",
+          "source_ids": [
+            "acme-10q",
+            "acme-ir"
+          ],
+          "growth_state": "accelerating_or_strong",
+          "metrics": {
+            "revenue": 270000000,
+            "revenue_yoy_pct": 14.0,
+            "gaap_operating_margin_pct": 19.0,
+            "gaap_eps": 0.78,
+            "adjusted_eps": 0.82,
+            "operating_cash_flow": 60000000,
+            "standard_fcf": 52000000
+          },
+          "guidance": [
+            "FY2026 revenue growth 12%-14%",
+            "GAAP operating margin 18%-20%"
+          ],
+          "key_kpis": [
+            "ARR +15%",
+            "NRR 110%"
+          ],
+          "one_time_items": [
+            "No material one-time item"
+          ],
+          "period_type": "quarter"
+        },
+        "full_year": null
+      },
+      "financials": {
+        "revenue_ttm": 1000000000,
+        "cash_flow_ttm": {
+          "method": "sum_4_discrete",
+          "operating_cash_flow": 210000000,
+          "capex_cash_outflow": 30000000,
+          "standard_fcf": 180000000,
+          "company_adjusted_fcf": 190000000,
+          "company_adjusted_fcf_definition": "Standard FCF plus restructuring cash payments",
+          "source_ids": [
+            "acme-10q"
+          ]
+        },
+        "cash_flow_periods": [
+          {
+            "period": "FY2025 Q3",
+            "period_end": "2025-09-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 45000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2025 Q4",
+            "period_end": "2025-12-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 50000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q1",
+            "period_end": "2026-03-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 55000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q2",
+            "period_end": "2026-06-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 60000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          }
+        ],
+        "sbc_ttm": 25000000,
+        "total_debt": 100000000,
+        "cash_classification": {
+          "corporate_cash": 160000000,
+          "marketable_securities": 20000000,
+          "customer_or_settlement_funds": 0,
+          "restricted_cash": 0
+        },
+        "ebitda_ttm": 190000000,
+        "roic_pct": 18.5,
+        "roe_pct": 24.0,
+        "histories": {
+          "revenue": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 650000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 760000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 880000000
+            }
+          ],
+          "gaap_eps": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.55
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 2.05
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 2.55
+            }
+          ],
+          "fcf_per_share": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.3
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 1.6
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 1.95
+            }
+          ],
+          "diluted_shares": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 130000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 128000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 125000000
+            }
+          ]
+        }
+      },
+      "valuation_case": {
+        "basis": "eps",
+        "periods": {
+          "current": {
+            "label": "FY2026E",
+            "period_kind": "fy1",
+            "metric": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 9,
+            "estimate_low": 2.9,
+            "estimate_high": 3.1,
+            "period_end": "2026-12-31",
+            "years": 0.35
+          },
+          "year_2": {
+            "label": "FY2028E",
+            "period_kind": "fy2",
+            "metric": 4.2,
+            "years": 2.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 8,
+            "estimate_low": 4.0,
+            "estimate_high": 4.4,
+            "period_end": "2028-12-31"
+          },
+          "year_3": {
+            "label": "FY2029E",
+            "period_kind": "fy3",
+            "metric": 5.0,
+            "years": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 6,
+            "estimate_low": 4.7,
+            "estimate_high": 5.3,
+            "period_end": "2029-12-31"
+          }
+        },
+        "supplied_current_multiple": 13.333333,
+        "peer_median_multiple": {
+          "value": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_ids": [
+            "peer-data"
+          ]
+        }
+      },
+      "forecast_bridge": {
+        "periods": {
+          "year_2": {
+            "metric_basis": "gaap",
+            "metric_numerator": 525000000.0,
+            "metric_denominator": 125000000.0,
+            "drivers": {
+              "revenue": 1300000000,
+              "gross_margin_pct": 80.0,
+              "operating_margin_pct": 50.350535540408956,
+              "net_interest_income": 10000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 125000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          },
+          "year_3": {
+            "metric_basis": "gaap",
+            "metric_numerator": 615000000.0,
+            "metric_denominator": 123000000.0,
+            "drivers": {
+              "revenue": 1480000000,
+              "gross_margin_pct": 81.0,
+              "operating_margin_pct": 51.78925761204242,
+              "net_interest_income": 12000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 123000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          }
+        }
+      },
+      "gaap_reconciliation": {
+        "periods": {}
+      },
+      "score_components": {
+        "growth_sustainability": 18,
+        "valuation_attractiveness": 18,
+        "financial_quality": 14,
+        "fcf_earnings_quality": 14,
+        "competitive_advantage": 9,
+        "capital_allocation": 9,
+        "catalyst_risk_balance": 8
+      },
+      "cyclicality": {
+        "score": 1,
+        "position": "non_cyclical",
+        "peak_profit_risk": false,
+        "normalization_required": false,
+        "normalization": null
+      },
+      "sector_profile": {
+        "type": "general",
+        "kpis": {}
+      },
+      "flags": {
+        "otc": false,
+        "penny_stock": false,
+        "spac_or_shell": false,
+        "pre_revenue_or_development_stage": false,
+        "repeated_equity_financing": false,
+        "pending_mna": false,
+        "unresolved_material_weakness": false,
+        "sec_investigation": false,
+        "meme_only": false,
+        "restatement_unresolved": false,
+        "extreme_illiquidity": false
+      },
+      "peers": [
+        {
+          "symbol": "PEER1",
+          "company_name": "Peer One",
+          "selection_reason": "Comparable recurring-revenue model",
+          "multiple": 16.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER2",
+          "company_name": "Peer Two",
+          "selection_reason": "Similar customer base and margins",
+          "multiple": 18.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER3",
+          "company_name": "Peer Three",
+          "selection_reason": "Similar growth stage and capital intensity",
+          "multiple": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        }
+      ],
+      "qualitative": {
+        "business_overview": "Synthetic recurring-revenue software company.",
+        "investment_thesis": "Revenue and GAAP EPS can compound at attractive rates without requiring multiple expansion.",
+        "growth_drivers": [
+          "ARR growth",
+          "Operating leverage",
+          "Net share reduction"
+        ],
+        "discount_reasons": [
+          "Recent growth normalization",
+          "Small-cap liquidity discount"
+        ],
+        "discount_classification": "Mostly temporary",
+        "market_may_be_right": "NRR could weaken and reduce the durability of the model.",
+        "rerating_conditions": [
+          "NRR remains above 105%",
+          "GAAP margin reaches 22%"
+        ],
+        "market_may_be_missing": "Per-share growth is stronger than headline revenue growth because diluted shares are declining.",
+        "catalysts": [
+          "New enterprise product launch in 6-12 months",
+          "Continued buybacks"
+        ],
+        "best_catalyst": "GAAP operating-margin expansion.",
+        "maximum_risk": "A sustained NRR decline below 100%.",
+        "do_not_buy_reason": "The next quarter could confirm a sharper growth slowdown.",
+        "bear_case": "EPS reaches only $3.50 and the multiple falls to 10x, implying $35.",
+        "invalidation_conditions": [
+          "Revenue growth below 8% for two quarters",
+          "FCF turns negative",
+          "Diluted shares rise more than 3% YoY"
+        ],
+        "next_earnings_kpis": [
+          "ARR growth",
+          "NRR",
+          "GAAP operating margin",
+          "Diluted shares"
+        ],
+        "ev_to_fcf": 26.8
+      },
+      "evidence": {
+        "identity.price": [
+          "quote-20260821"
+        ],
+        "latest_earnings": [
+          "acme-10q",
+          "acme-ir"
+        ],
+        "financials.revenue_ttm": [
+          "acme-10q"
+        ],
+        "financials.cash_flow_ttm": [
+          "acme-10q"
+        ],
+        "financials.sbc_ttm": [
+          "acme-10q"
+        ],
+        "financials.total_debt": [
+          "acme-10q"
+        ],
+        "financials.cash_classification": [
+          "acme-10q"
+        ],
+        "financials.histories.diluted_shares": [
+          "acme-10q"
+        ],
+        "corporate_action_check": [
+          "corporate-action-check",
+          "acme-ir"
+        ],
+        "financials.roic_pct": [
+          "acme-10q",
+          "analyst-model"
+        ],
+        "financials.ebitda_ttm": [
+          "acme-10q",
+          "analyst-model"
+        ]
+      },
+      "sources": [
+        {
+          "id": "acme-10q",
+          "tier": 1,
+          "kind": "sec_filing",
+          "title": "Synthetic Form 10-Q",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:05:00-07:00",
+          "url": "https://www.sec.gov/Archives/edgar/data/1000000/000100000026000010/acme-20260630.htm",
+          "supports": [
+            "financials.cash_classification",
+            "financials.cash_flow_ttm",
+            "financials.ebitda_ttm",
+            "financials.histories.diluted_shares",
+            "financials.revenue_ttm",
+            "financials.roic_pct",
+            "financials.sbc_ttm",
+            "financials.total_debt",
+            "latest_earnings",
+            "financials.cash_flow_periods.2025-09-30",
+            "financials.cash_flow_periods.2025-12-31",
+            "financials.cash_flow_periods.2026-03-31",
+            "financials.cash_flow_periods.2026-06-30"
+          ]
+        },
+        {
+          "id": "acme-ir",
+          "tier": 2,
+          "kind": "company_ir",
+          "title": "Synthetic earnings release",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:06:00-07:00",
+          "url": "https://investors.example.com/news/acme-q2-2026-results",
+          "supports": [
+            "latest_earnings",
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "corporate-action-check",
+          "tier": 3,
+          "kind": "exchange_status",
+          "title": "Synthetic active-listing and M&A status check",
+          "published_at": "2026-08-22T08:00:00-07:00",
+          "retrieved_at": "2026-08-22T08:05:00-07:00",
+          "url": "https://www.nasdaq.com/market-activity/stocks/acme",
+          "supports": [
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "consensus-20260822",
+          "tier": 3,
+          "kind": "consensus",
+          "title": "Synthetic GAAP EPS consensus",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/consensus",
+          "supports": [
+            "valuation_case.periods.current",
+            "valuation_case.periods.year_2",
+            "valuation_case.periods.year_3"
+          ]
+        },
+        {
+          "id": "analyst-model",
+          "tier": 4,
+          "kind": "analyst_calculation",
+          "title": "Synthetic forecast bridge",
+          "published_at": "2026-08-22T11:00:00-07:00",
+          "retrieved_at": "2026-08-22T11:00:00-07:00",
+          "url": "local://analyst-model",
+          "supports": [
+            "forecast_bridge"
+          ]
+        },
+        {
+          "id": "peer-data",
+          "tier": 3,
+          "kind": "market_data",
+          "title": "Synthetic peer forward GAAP P/E set",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/peers",
+          "supports": [
+            "peers"
+          ]
+        }
+      ]
+    },
+    {
+      "identity": {
+        "symbol": "OTCX",
+        "company_name": "OTC Example Corp.",
+        "exchange": "OTC",
+        "sector": "Technology",
+        "industry": "Software - Application",
+        "currency": "USD",
+        "price": 40.0,
+        "price_source_id": "quote-20260821",
+        "market_cap": 5000000000,
+        "average_daily_dollar_volume": 45000000,
+        "special_case": "none",
+        "average_daily_dollar_volume_method": "provider_average_dollar_volume",
+        "average_volume_period_days": 20,
+        "liquidity_source_ids": [
+          "universe-fmp-20260822"
+        ],
+        "liquidity_valid_for_screen": true
+      },
+      "screening_decision": {
+        "status": "passed",
+        "reasons": [],
+        "source_ids": [
+          "consensus-20260822"
+        ]
+      },
+      "corporate_action_check": {
+        "checked_at": "2026-08-22T08:05:00-07:00",
+        "listing_status": "active",
+        "mna_status": "none",
+        "symbol_active": true,
+        "latest_material_event_at": "2026-08-10T16:05:00-04:00",
+        "source_ids": [
+          "corporate-action-check",
+          "acme-ir"
+        ]
+      },
+      "latest_earnings": {
+        "latest_report_type": "quarterly",
+        "quarter": {
+          "period": "FY2026 Q2",
+          "period_end": "2026-06-30",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "source_ids": [
+            "acme-10q",
+            "acme-ir"
+          ],
+          "growth_state": "accelerating_or_strong",
+          "metrics": {
+            "revenue": 270000000,
+            "revenue_yoy_pct": 14.0,
+            "gaap_operating_margin_pct": 19.0,
+            "gaap_eps": 0.78,
+            "adjusted_eps": 0.82,
+            "operating_cash_flow": 60000000,
+            "standard_fcf": 52000000
+          },
+          "guidance": [
+            "FY2026 revenue growth 12%-14%",
+            "GAAP operating margin 18%-20%"
+          ],
+          "key_kpis": [
+            "ARR +15%",
+            "NRR 110%"
+          ],
+          "one_time_items": [
+            "No material one-time item"
+          ],
+          "period_type": "quarter"
+        },
+        "full_year": null
+      },
+      "financials": {
+        "revenue_ttm": 1000000000,
+        "cash_flow_ttm": {
+          "method": "sum_4_discrete",
+          "operating_cash_flow": 210000000,
+          "capex_cash_outflow": 30000000,
+          "standard_fcf": 180000000,
+          "company_adjusted_fcf": 190000000,
+          "company_adjusted_fcf_definition": "Standard FCF plus restructuring cash payments",
+          "source_ids": [
+            "acme-10q"
+          ]
+        },
+        "cash_flow_periods": [
+          {
+            "period": "FY2025 Q3",
+            "period_end": "2025-09-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 45000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2025 Q4",
+            "period_end": "2025-12-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 50000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q1",
+            "period_end": "2026-03-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 55000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q2",
+            "period_end": "2026-06-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 60000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          }
+        ],
+        "sbc_ttm": 25000000,
+        "total_debt": 100000000,
+        "cash_classification": {
+          "corporate_cash": 160000000,
+          "marketable_securities": 20000000,
+          "customer_or_settlement_funds": 0,
+          "restricted_cash": 0
+        },
+        "ebitda_ttm": 190000000,
+        "roic_pct": 18.5,
+        "roe_pct": 24.0,
+        "histories": {
+          "revenue": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 650000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 760000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 880000000
+            }
+          ],
+          "gaap_eps": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.55
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 2.05
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 2.55
+            }
+          ],
+          "fcf_per_share": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.3
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 1.6
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 1.95
+            }
+          ],
+          "diluted_shares": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 130000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 128000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 125000000
+            }
+          ]
+        }
+      },
+      "valuation_case": {
+        "basis": "eps",
+        "periods": {
+          "current": {
+            "label": "FY2026E",
+            "period_kind": "fy1",
+            "metric": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 9,
+            "estimate_low": 2.9,
+            "estimate_high": 3.1,
+            "period_end": "2026-12-31",
+            "years": 0.35
+          },
+          "year_2": {
+            "label": "FY2028E",
+            "period_kind": "fy2",
+            "metric": 4.2,
+            "years": 2.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 8,
+            "estimate_low": 4.0,
+            "estimate_high": 4.4,
+            "period_end": "2028-12-31"
+          },
+          "year_3": {
+            "label": "FY2029E",
+            "period_kind": "fy3",
+            "metric": 5.0,
+            "years": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 6,
+            "estimate_low": 4.7,
+            "estimate_high": 5.3,
+            "period_end": "2029-12-31"
+          }
+        },
+        "supplied_current_multiple": 13.333333,
+        "peer_median_multiple": {
+          "value": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_ids": [
+            "peer-data"
+          ]
+        }
+      },
+      "forecast_bridge": {
+        "periods": {
+          "year_2": {
+            "metric_basis": "gaap",
+            "metric_numerator": 525000000.0,
+            "metric_denominator": 125000000.0,
+            "drivers": {
+              "revenue": 1300000000,
+              "gross_margin_pct": 80.0,
+              "operating_margin_pct": 50.350535540408956,
+              "net_interest_income": 10000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 125000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          },
+          "year_3": {
+            "metric_basis": "gaap",
+            "metric_numerator": 615000000.0,
+            "metric_denominator": 123000000.0,
+            "drivers": {
+              "revenue": 1480000000,
+              "gross_margin_pct": 81.0,
+              "operating_margin_pct": 51.78925761204242,
+              "net_interest_income": 12000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 123000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          }
+        }
+      },
+      "gaap_reconciliation": {
+        "periods": {}
+      },
+      "score_components": {
+        "growth_sustainability": 18,
+        "valuation_attractiveness": 18,
+        "financial_quality": 14,
+        "fcf_earnings_quality": 14,
+        "competitive_advantage": 9,
+        "capital_allocation": 9,
+        "catalyst_risk_balance": 8
+      },
+      "cyclicality": {
+        "score": 1,
+        "position": "non_cyclical",
+        "peak_profit_risk": false,
+        "normalization_required": false,
+        "normalization": null
+      },
+      "sector_profile": {
+        "type": "general",
+        "kpis": {}
+      },
+      "flags": {
+        "otc": true,
+        "penny_stock": false,
+        "spac_or_shell": false,
+        "pre_revenue_or_development_stage": false,
+        "repeated_equity_financing": false,
+        "pending_mna": false,
+        "unresolved_material_weakness": false,
+        "sec_investigation": false,
+        "meme_only": false,
+        "restatement_unresolved": false,
+        "extreme_illiquidity": false
+      },
+      "peers": [
+        {
+          "symbol": "PEER1",
+          "company_name": "Peer One",
+          "selection_reason": "Comparable recurring-revenue model",
+          "multiple": 16.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER2",
+          "company_name": "Peer Two",
+          "selection_reason": "Similar customer base and margins",
+          "multiple": 18.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER3",
+          "company_name": "Peer Three",
+          "selection_reason": "Similar growth stage and capital intensity",
+          "multiple": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        }
+      ],
+      "qualitative": {
+        "business_overview": "Synthetic recurring-revenue software company.",
+        "investment_thesis": "Revenue and GAAP EPS can compound at attractive rates without requiring multiple expansion.",
+        "growth_drivers": [
+          "ARR growth",
+          "Operating leverage",
+          "Net share reduction"
+        ],
+        "discount_reasons": [
+          "Recent growth normalization",
+          "Small-cap liquidity discount"
+        ],
+        "discount_classification": "Mostly temporary",
+        "market_may_be_right": "NRR could weaken and reduce the durability of the model.",
+        "rerating_conditions": [
+          "NRR remains above 105%",
+          "GAAP margin reaches 22%"
+        ],
+        "market_may_be_missing": "Per-share growth is stronger than headline revenue growth because diluted shares are declining.",
+        "catalysts": [
+          "New enterprise product launch in 6-12 months",
+          "Continued buybacks"
+        ],
+        "best_catalyst": "GAAP operating-margin expansion.",
+        "maximum_risk": "A sustained NRR decline below 100%.",
+        "do_not_buy_reason": "The next quarter could confirm a sharper growth slowdown.",
+        "bear_case": "EPS reaches only $3.50 and the multiple falls to 10x, implying $35.",
+        "invalidation_conditions": [
+          "Revenue growth below 8% for two quarters",
+          "FCF turns negative",
+          "Diluted shares rise more than 3% YoY"
+        ],
+        "next_earnings_kpis": [
+          "ARR growth",
+          "NRR",
+          "GAAP operating margin",
+          "Diluted shares"
+        ],
+        "ev_to_fcf": 26.8
+      },
+      "evidence": {
+        "identity.price": [
+          "quote-20260821"
+        ],
+        "latest_earnings": [
+          "acme-10q",
+          "acme-ir"
+        ],
+        "financials.revenue_ttm": [
+          "acme-10q"
+        ],
+        "financials.cash_flow_ttm": [
+          "acme-10q"
+        ],
+        "financials.sbc_ttm": [
+          "acme-10q"
+        ],
+        "financials.total_debt": [
+          "acme-10q"
+        ],
+        "financials.cash_classification": [
+          "acme-10q"
+        ],
+        "financials.histories.diluted_shares": [
+          "acme-10q"
+        ],
+        "corporate_action_check": [
+          "corporate-action-check",
+          "acme-ir"
+        ],
+        "financials.roic_pct": [
+          "acme-10q",
+          "analyst-model"
+        ],
+        "financials.ebitda_ttm": [
+          "acme-10q",
+          "analyst-model"
+        ]
+      },
+      "sources": [
+        {
+          "id": "acme-10q",
+          "tier": 1,
+          "kind": "sec_filing",
+          "title": "Synthetic Form 10-Q",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:05:00-07:00",
+          "url": "https://www.sec.gov/Archives/edgar/data/1000000/000100000026000010/acme-20260630.htm",
+          "supports": [
+            "financials.cash_classification",
+            "financials.cash_flow_ttm",
+            "financials.ebitda_ttm",
+            "financials.histories.diluted_shares",
+            "financials.revenue_ttm",
+            "financials.roic_pct",
+            "financials.sbc_ttm",
+            "financials.total_debt",
+            "latest_earnings",
+            "financials.cash_flow_periods.2025-09-30",
+            "financials.cash_flow_periods.2025-12-31",
+            "financials.cash_flow_periods.2026-03-31",
+            "financials.cash_flow_periods.2026-06-30"
+          ]
+        },
+        {
+          "id": "acme-ir",
+          "tier": 2,
+          "kind": "company_ir",
+          "title": "Synthetic earnings release",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:06:00-07:00",
+          "url": "https://investors.example.com/news/acme-q2-2026-results",
+          "supports": [
+            "latest_earnings",
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "corporate-action-check",
+          "tier": 3,
+          "kind": "exchange_status",
+          "title": "Synthetic active-listing and M&A status check",
+          "published_at": "2026-08-22T08:00:00-07:00",
+          "retrieved_at": "2026-08-22T08:05:00-07:00",
+          "url": "https://www.nasdaq.com/market-activity/stocks/acme",
+          "supports": [
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "consensus-20260822",
+          "tier": 3,
+          "kind": "consensus",
+          "title": "Synthetic GAAP EPS consensus",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/consensus",
+          "supports": [
+            "valuation_case.periods.current",
+            "valuation_case.periods.year_2",
+            "valuation_case.periods.year_3"
+          ]
+        },
+        {
+          "id": "analyst-model",
+          "tier": 4,
+          "kind": "analyst_calculation",
+          "title": "Synthetic forecast bridge",
+          "published_at": "2026-08-22T11:00:00-07:00",
+          "retrieved_at": "2026-08-22T11:00:00-07:00",
+          "url": "local://analyst-model",
+          "supports": [
+            "forecast_bridge"
+          ]
+        },
+        {
+          "id": "peer-data",
+          "tier": 3,
+          "kind": "market_data",
+          "title": "Synthetic peer forward GAAP P/E set",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/peers",
+          "supports": [
+            "peers"
+          ]
+        }
+      ]
+    },
+    {
+      "identity": {
+        "symbol": "SCREEN",
+        "company_name": "Screened Out Inc."
+      },
+      "screening_decision": {
+        "status": "screened_out",
+        "reasons": [
+          "Forward P/E 31x and FY2025 revenue declined 4%"
+        ],
+        "source_ids": [
+          "consensus-20260822"
+        ]
+      },
+      "sources": [
+        {
+          "id": "consensus-20260822",
+          "tier": 3,
+          "kind": "consensus",
+          "title": "Synthetic GAAP EPS consensus",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/consensus",
+          "supports": [
+            "valuation_case.periods.current",
+            "valuation_case.periods.year_2",
+            "valuation_case.periods.year_3"
+          ]
+        }
+      ]
+    },
+    {
+      "identity": {
+        "symbol": "MNA",
+        "company_name": "Acquired Company, Inc.",
+        "exchange": "NASDAQ",
+        "sector": "Technology",
+        "industry": "Software - Application",
+        "currency": "USD",
+        "price": 40.0,
+        "price_source_id": "quote-20260821",
+        "market_cap": 5000000000,
+        "average_daily_dollar_volume": 45000000,
+        "special_case": "none",
+        "average_daily_dollar_volume_method": "provider_average_dollar_volume",
+        "average_volume_period_days": 20,
+        "liquidity_source_ids": [
+          "universe-fmp-20260822"
+        ],
+        "liquidity_valid_for_screen": true
+      },
+      "screening_decision": {
+        "status": "passed",
+        "reasons": [],
+        "source_ids": [
+          "consensus-20260822"
+        ]
+      },
+      "corporate_action_check": {
+        "checked_at": "2026-08-22T08:05:00-07:00",
+        "listing_status": "delisted",
+        "mna_status": "completed",
+        "symbol_active": false,
+        "latest_material_event_at": "2026-08-10T16:05:00-04:00",
+        "source_ids": [
+          "corporate-action-check",
+          "acme-ir"
+        ]
+      },
+      "latest_earnings": {
+        "latest_report_type": "quarterly",
+        "quarter": {
+          "period": "FY2026 Q2",
+          "period_end": "2026-06-30",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "source_ids": [
+            "acme-10q",
+            "acme-ir"
+          ],
+          "growth_state": "accelerating_or_strong",
+          "metrics": {
+            "revenue": 270000000,
+            "revenue_yoy_pct": 14.0,
+            "gaap_operating_margin_pct": 19.0,
+            "gaap_eps": 0.78,
+            "adjusted_eps": 0.82,
+            "operating_cash_flow": 60000000,
+            "standard_fcf": 52000000
+          },
+          "guidance": [
+            "FY2026 revenue growth 12%-14%",
+            "GAAP operating margin 18%-20%"
+          ],
+          "key_kpis": [
+            "ARR +15%",
+            "NRR 110%"
+          ],
+          "one_time_items": [
+            "No material one-time item"
+          ],
+          "period_type": "quarter"
+        },
+        "full_year": null
+      },
+      "financials": {
+        "revenue_ttm": 1000000000,
+        "cash_flow_ttm": {
+          "method": "sum_4_discrete",
+          "operating_cash_flow": 210000000,
+          "capex_cash_outflow": 30000000,
+          "standard_fcf": 180000000,
+          "company_adjusted_fcf": 190000000,
+          "company_adjusted_fcf_definition": "Standard FCF plus restructuring cash payments",
+          "source_ids": [
+            "acme-10q"
+          ]
+        },
+        "cash_flow_periods": [
+          {
+            "period": "FY2025 Q3",
+            "period_end": "2025-09-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 45000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2025 Q4",
+            "period_end": "2025-12-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 50000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q1",
+            "period_end": "2026-03-31",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 55000000,
+            "capex_cash_outflow": 7000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          },
+          {
+            "period": "FY2026 Q2",
+            "period_end": "2026-06-30",
+            "period_type": "discrete_quarter",
+            "operating_cash_flow": 60000000,
+            "capex_cash_outflow": 8000000,
+            "source_ids": [
+              "acme-10q"
+            ]
+          }
+        ],
+        "sbc_ttm": 25000000,
+        "total_debt": 100000000,
+        "cash_classification": {
+          "corporate_cash": 160000000,
+          "marketable_securities": 20000000,
+          "customer_or_settlement_funds": 0,
+          "restricted_cash": 0
+        },
+        "ebitda_ttm": 190000000,
+        "roic_pct": 18.5,
+        "roe_pct": 24.0,
+        "histories": {
+          "revenue": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 650000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 760000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 880000000
+            }
+          ],
+          "gaap_eps": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.55
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 2.05
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 2.55
+            }
+          ],
+          "fcf_per_share": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 1.3
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 1.6
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 1.95
+            }
+          ],
+          "diluted_shares": [
+            {
+              "date": "2023-12-31",
+              "period": "FY2023",
+              "value": 130000000
+            },
+            {
+              "date": "2024-12-31",
+              "period": "FY2024",
+              "value": 128000000
+            },
+            {
+              "date": "2025-12-31",
+              "period": "FY2025",
+              "value": 125000000
+            }
+          ]
+        }
+      },
+      "valuation_case": {
+        "basis": "eps",
+        "periods": {
+          "current": {
+            "label": "FY2026E",
+            "period_kind": "fy1",
+            "metric": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 9,
+            "estimate_low": 2.9,
+            "estimate_high": 3.1,
+            "period_end": "2026-12-31",
+            "years": 0.35
+          },
+          "year_2": {
+            "label": "FY2028E",
+            "period_kind": "fy2",
+            "metric": 4.2,
+            "years": 2.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 8,
+            "estimate_low": 4.0,
+            "estimate_high": 4.4,
+            "period_end": "2028-12-31"
+          },
+          "year_3": {
+            "label": "FY2029E",
+            "period_kind": "fy3",
+            "metric": 5.0,
+            "years": 3.0,
+            "metric_basis": "gaap",
+            "source_type": "market_consensus",
+            "retrieved_at": "2026-08-22T09:00:00-07:00",
+            "source_ids": [
+              "consensus-20260822"
+            ],
+            "analyst_count": 6,
+            "estimate_low": 4.7,
+            "estimate_high": 5.3,
+            "period_end": "2029-12-31"
+          }
+        },
+        "supplied_current_multiple": 13.333333,
+        "peer_median_multiple": {
+          "value": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_ids": [
+            "peer-data"
+          ]
+        }
+      },
+      "forecast_bridge": {
+        "periods": {
+          "year_2": {
+            "metric_basis": "gaap",
+            "metric_numerator": 525000000.0,
+            "metric_denominator": 125000000.0,
+            "drivers": {
+              "revenue": 1300000000,
+              "gross_margin_pct": 80.0,
+              "operating_margin_pct": 50.350535540408956,
+              "net_interest_income": 10000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 125000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          },
+          "year_3": {
+            "metric_basis": "gaap",
+            "metric_numerator": 615000000.0,
+            "metric_denominator": 123000000.0,
+            "drivers": {
+              "revenue": 1480000000,
+              "gross_margin_pct": 81.0,
+              "operating_margin_pct": 51.78925761204242,
+              "net_interest_income": 12000000,
+              "tax_rate_pct": 21.0,
+              "diluted_shares": 123000000,
+              "other_pre_tax_income": 0.0
+            },
+            "source_ids": [
+              "consensus-20260822",
+              "analyst-model"
+            ],
+            "construction_method": "independent_driver_model",
+            "driver_provenance": {
+              "revenue": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "gross_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "operating_margin_pct": {
+                "origin": "historical_run_rate",
+                "source_ids": [
+                  "analyst-model",
+                  "acme-10q"
+                ],
+                "target_solved": false
+              },
+              "net_interest_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "tax_rate_pct": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              },
+              "diluted_shares": {
+                "origin": "market_consensus",
+                "source_ids": [
+                  "consensus-20260822"
+                ],
+                "target_solved": false
+              },
+              "other_pre_tax_income": {
+                "origin": "analyst_assumption",
+                "source_ids": [
+                  "analyst-model"
+                ],
+                "target_solved": false
+              }
+            }
+          }
+        }
+      },
+      "gaap_reconciliation": {
+        "periods": {}
+      },
+      "score_components": {
+        "growth_sustainability": 18,
+        "valuation_attractiveness": 18,
+        "financial_quality": 14,
+        "fcf_earnings_quality": 14,
+        "competitive_advantage": 9,
+        "capital_allocation": 9,
+        "catalyst_risk_balance": 8
+      },
+      "cyclicality": {
+        "score": 1,
+        "position": "non_cyclical",
+        "peak_profit_risk": false,
+        "normalization_required": false,
+        "normalization": null
+      },
+      "sector_profile": {
+        "type": "general",
+        "kpis": {}
+      },
+      "flags": {
+        "otc": false,
+        "penny_stock": false,
+        "spac_or_shell": false,
+        "pre_revenue_or_development_stage": false,
+        "repeated_equity_financing": false,
+        "pending_mna": false,
+        "unresolved_material_weakness": false,
+        "sec_investigation": false,
+        "meme_only": false,
+        "restatement_unresolved": false,
+        "extreme_illiquidity": false
+      },
+      "peers": [
+        {
+          "symbol": "PEER1",
+          "company_name": "Peer One",
+          "selection_reason": "Comparable recurring-revenue model",
+          "multiple": 16.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER2",
+          "company_name": "Peer Two",
+          "selection_reason": "Similar customer base and margins",
+          "multiple": 18.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        },
+        {
+          "symbol": "PEER3",
+          "company_name": "Peer Three",
+          "selection_reason": "Similar growth stage and capital intensity",
+          "multiple": 17.0,
+          "metric_basis": "gaap",
+          "multiple_period_kind": "fy1",
+          "source_id": "peer-data"
+        }
+      ],
+      "qualitative": {
+        "business_overview": "Synthetic recurring-revenue software company.",
+        "investment_thesis": "Revenue and GAAP EPS can compound at attractive rates without requiring multiple expansion.",
+        "growth_drivers": [
+          "ARR growth",
+          "Operating leverage",
+          "Net share reduction"
+        ],
+        "discount_reasons": [
+          "Recent growth normalization",
+          "Small-cap liquidity discount"
+        ],
+        "discount_classification": "Mostly temporary",
+        "market_may_be_right": "NRR could weaken and reduce the durability of the model.",
+        "rerating_conditions": [
+          "NRR remains above 105%",
+          "GAAP margin reaches 22%"
+        ],
+        "market_may_be_missing": "Per-share growth is stronger than headline revenue growth because diluted shares are declining.",
+        "catalysts": [
+          "New enterprise product launch in 6-12 months",
+          "Continued buybacks"
+        ],
+        "best_catalyst": "GAAP operating-margin expansion.",
+        "maximum_risk": "A sustained NRR decline below 100%.",
+        "do_not_buy_reason": "The next quarter could confirm a sharper growth slowdown.",
+        "bear_case": "EPS reaches only $3.50 and the multiple falls to 10x, implying $35.",
+        "invalidation_conditions": [
+          "Revenue growth below 8% for two quarters",
+          "FCF turns negative",
+          "Diluted shares rise more than 3% YoY"
+        ],
+        "next_earnings_kpis": [
+          "ARR growth",
+          "NRR",
+          "GAAP operating margin",
+          "Diluted shares"
+        ],
+        "ev_to_fcf": 26.8
+      },
+      "evidence": {
+        "identity.price": [
+          "quote-20260821"
+        ],
+        "latest_earnings": [
+          "acme-10q",
+          "acme-ir"
+        ],
+        "financials.revenue_ttm": [
+          "acme-10q"
+        ],
+        "financials.cash_flow_ttm": [
+          "acme-10q"
+        ],
+        "financials.sbc_ttm": [
+          "acme-10q"
+        ],
+        "financials.total_debt": [
+          "acme-10q"
+        ],
+        "financials.cash_classification": [
+          "acme-10q"
+        ],
+        "financials.histories.diluted_shares": [
+          "acme-10q"
+        ],
+        "corporate_action_check": [
+          "corporate-action-check",
+          "acme-ir"
+        ],
+        "financials.roic_pct": [
+          "acme-10q",
+          "analyst-model"
+        ],
+        "financials.ebitda_ttm": [
+          "acme-10q",
+          "analyst-model"
+        ]
+      },
+      "sources": [
+        {
+          "id": "acme-10q",
+          "tier": 1,
+          "kind": "sec_filing",
+          "title": "Synthetic Form 10-Q",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:05:00-07:00",
+          "url": "https://www.sec.gov/Archives/edgar/data/1000000/000100000026000010/acme-20260630.htm",
+          "supports": [
+            "financials.cash_classification",
+            "financials.cash_flow_ttm",
+            "financials.ebitda_ttm",
+            "financials.histories.diluted_shares",
+            "financials.revenue_ttm",
+            "financials.roic_pct",
+            "financials.sbc_ttm",
+            "financials.total_debt",
+            "latest_earnings",
+            "financials.cash_flow_periods.2025-09-30",
+            "financials.cash_flow_periods.2025-12-31",
+            "financials.cash_flow_periods.2026-03-31",
+            "financials.cash_flow_periods.2026-06-30"
+          ]
+        },
+        {
+          "id": "acme-ir",
+          "tier": 2,
+          "kind": "company_ir",
+          "title": "Synthetic earnings release",
+          "published_at": "2026-08-10T16:05:00-04:00",
+          "retrieved_at": "2026-08-22T10:06:00-07:00",
+          "url": "https://investors.example.com/news/acme-q2-2026-results",
+          "supports": [
+            "latest_earnings",
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "corporate-action-check",
+          "tier": 3,
+          "kind": "exchange_status",
+          "title": "Synthetic active-listing and M&A status check",
+          "published_at": "2026-08-22T08:00:00-07:00",
+          "retrieved_at": "2026-08-22T08:05:00-07:00",
+          "url": "https://www.nasdaq.com/market-activity/stocks/acme",
+          "supports": [
+            "corporate_action_check"
+          ]
+        },
+        {
+          "id": "consensus-20260822",
+          "tier": 3,
+          "kind": "consensus",
+          "title": "Synthetic GAAP EPS consensus",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/consensus",
+          "supports": [
+            "valuation_case.periods.current",
+            "valuation_case.periods.year_2",
+            "valuation_case.periods.year_3"
+          ]
+        },
+        {
+          "id": "analyst-model",
+          "tier": 4,
+          "kind": "analyst_calculation",
+          "title": "Synthetic forecast bridge",
+          "published_at": "2026-08-22T11:00:00-07:00",
+          "retrieved_at": "2026-08-22T11:00:00-07:00",
+          "url": "local://analyst-model",
+          "supports": [
+            "forecast_bridge"
+          ]
+        },
+        {
+          "id": "peer-data",
+          "tier": 3,
+          "kind": "market_data",
+          "title": "Synthetic peer forward GAAP P/E set",
+          "published_at": "2026-08-22T09:00:00-07:00",
+          "retrieved_at": "2026-08-22T09:00:00-07:00",
+          "url": "https://example.com/peers",
+          "supports": [
+            "peers"
+          ]
+        }
+      ]
+    }
+  ],
+  "global_sources": [
+    {
+      "id": "quote-20260821",
+      "tier": 3,
+      "kind": "market_data",
+      "title": "Synthetic regular-session closing quote snapshot",
+      "published_at": "2026-08-21T16:00:00-04:00",
+      "retrieved_at": "2026-08-22T09:00:00-07:00",
+      "url": "https://example.com/quote",
+      "supports": [
+        "identity.price",
+        "price_basis"
+      ]
+    },
+    {
+      "id": "macro-fed-20260822",
+      "tier": 1,
+      "kind": "official_macro",
+      "title": "Synthetic Federal Reserve policy-rate record",
+      "published_at": "2026-08-21T12:00:00-04:00",
+      "retrieved_at": "2026-08-22T09:05:00-07:00",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "supports": [
+        "market_context.policy_rate_pct",
+        "market_context.summary"
+      ]
+    },
+    {
+      "id": "macro-treasury-20260822",
+      "tier": 1,
+      "kind": "official_macro",
+      "title": "Synthetic Treasury yield record",
+      "published_at": "2026-08-21T18:00:00-04:00",
+      "retrieved_at": "2026-08-22T09:06:00-07:00",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates",
+      "supports": [
+        "market_context.treasury_10y_yield_pct",
+        "market_context.summary"
+      ]
+    },
+    {
+      "id": "macro-bea-bls-20260822",
+      "tier": 1,
+      "kind": "official_statistics",
+      "title": "Synthetic GDP and inflation release set",
+      "published_at": "2026-08-20T08:30:00-04:00",
+      "retrieved_at": "2026-08-22T09:07:00-07:00",
+      "url": "https://www.bea.gov/news",
+      "supports": [
+        "market_context.real_gdp_growth_pct",
+        "market_context.inflation_yoy_pct"
+      ]
+    },
+    {
+      "id": "market-valuation-20260822",
+      "tier": 3,
+      "kind": "market_data",
+      "title": "Synthetic US market forward valuation snapshot",
+      "published_at": "2026-08-21T16:00:00-04:00",
+      "retrieved_at": "2026-08-22T09:08:00-07:00",
+      "url": "https://example.com/valuation",
+      "supports": [
+        "market_context.market_forward_pe",
+        "market_context.small_mid_cap_valuation_context"
+      ]
+    },
+    {
+      "id": "universe-fmp-20260822",
+      "tier": 3,
+      "kind": "market_data",
+      "title": "Synthetic screened US common-stock universe",
+      "published_at": "2026-08-21T16:00:00-04:00",
+      "retrieved_at": "2026-08-22T09:10:00-07:00",
+      "url": "https://example.com/universe",
+      "supports": [
+        "screening_audit",
+        "screening_funnel"
+      ]
+    }
+  ],
+  "screening_audit": {
+    "audit_schema_version": 3,
+    "contract_revision": "3.5",
+    "runtime": {
+      "skill_name": "us-undervalued-growth-screener",
+      "skill_version": "3.6.1",
+      "schema_version": 3,
+      "contract_revision": "3.5",
+      "runtime_fingerprint": "ug-v3.6.1-claude-code-direct-fmp-20260830"
+    },
+    "conclusion_scope": "full_listing_universe",
+    "generated_at": "2026-08-28T14:28:34.377069+00:00",
+    "analysis_as_of": "2026-08-22T14:00:00-07:00",
+    "candidate_generation_mode": "full_universe_fundamentals",
+    "candidate_pool_status": "sufficient",
+    "selection_outcome": "selected",
+    "selected_symbols": [
+      "ACME",
+      "CYCLE",
+      "STALE"
+    ],
+    "deep_dive_plan": {
+      "selected_symbols": [
+        "ACME",
+        "CYCLE",
+        "STALE"
+      ],
+      "selected_count": 3,
+      "all_selected_must_be_resolved": true,
+      "budget_locked": true,
+      "budget_change_requires_rescreen": true,
+      "user_confirmation_required": false,
+      "user_continue_instruction_allowed": false,
+      "selected_set_is_committed": true,
+      "max_deep_dive_candidates": 3,
+      "selected_set_sha256": "3a45c382a4cdff829d63e0b378e7705866ca1d689de6ec7934381d30ba359065",
+      "commitment_payload": {
+        "analysis_as_of": "2026-08-22T14:00:00-07:00",
+        "max_deep_dive_candidates": 3,
+        "selected_symbols": [
+          "ACME",
+          "CYCLE",
+          "STALE"
+        ]
+      }
+    },
+    "filters": {
+      "requested_min_market_cap": 500000000,
+      "requested_max_market_cap": 20000000000,
+      "min_market_cap": 500000000,
+      "max_market_cap": 20000000000,
+      "min_price": 5.0,
+      "min_average_daily_dollar_volume": 5000000,
+      "hard_min_average_daily_dollar_volume": 1000000,
+      "minimum_average_volume_period_days": 20,
+      "max_deep_dive_candidates": 3,
+      "preferred_forward_pe": 20.0,
+      "high_growth_exception_max_forward_pe": 30.0,
+      "near_miss_max_forward_pe": 22.0,
+      "preferred_ev_to_fcf": 20.0,
+      "preferred_fcf_yield_pct": 5.0,
+      "minimum_revenue_growth_pct": 8.0,
+      "minimum_per_share_growth_pct": 12.0,
+      "near_miss_min_per_share_growth_pct": 8.0,
+      "high_growth_exception_growth_pct": 20.0,
+      "minimum_roic_pct": 8.0,
+      "preferred_max_dilution_pct": 3.0,
+      "preferred_max_net_debt_to_ebitda": 2.5,
+      "hard_max_net_debt_to_ebitda": 4.0,
+      "maximum_forward_pe_for_economic_screen": 60.0,
+      "minimum_listing_data_coverage_pct": 95.0,
+      "minimum_discovery_analyst_count": 2,
+      "maximum_enrichment_attempts": 60,
+      "sector_review_selection_penalty": 5.0,
+      "near_miss_selection_penalty": 4.0,
+      "missing_deep_dive_field_penalty": 1.5,
+      "forward_pe_reconciliation_tolerance_pct": 5.0,
+      "maximum_forward_eps_dispersion_pct": 100.0,
+      "max_estimate_age_days": 45,
+      "maximum_fy1_horizon_days": 430
+    },
+    "scope": {
+      "requested_min_market_cap": 500000000.0,
+      "requested_max_market_cap": 20000000000.0,
+      "user_requested_scope": {
+        "min_market_cap": 500000000.0,
+        "max_market_cap": 20000000000.0,
+        "source": "skill_default"
+      },
+      "retrieval_min_market_cap": 500000000.0,
+      "retrieval_max_market_cap": 20000000000.0,
+      "retrieval_scope_explicit": true,
+      "scope_override_authorized": false,
+      "scope_reduced": false,
+      "scope_reduction_mode": "none",
+      "scope_reduction_disclosed": true,
+      "scope_reduction_reason": null,
+      "user_scope_evidence": null,
+      "user_requested_scope_complete": true,
+      "executed_scope_complete": true,
+      "bounded_sampling_ready": false,
+      "screening_scope_ready": true,
+      "executed_scope": {
+        "min_market_cap": 500000000.0,
+        "max_market_cap": 20000000000.0
+      },
+      "scope_complete": true,
+      "reasons": [],
+      "enumeration": {
+        "verified": true,
+        "provider_reported_total": 6,
+        "rows_fetched": 6,
+        "pages_fetched": 1,
+        "pagination_exhausted": true,
+        "band_audit": [],
+        "bands_well_formed": false,
+        "bands_cover_executed_range": false,
+        "bands_cover_requested_range": false,
+        "bands_verified": false
+      }
+    },
+    "universe": {
+      "row_count": 6,
+      "decision_counts": {
+        "in_scope": 4,
+        "excluded": 1,
+        "out_of_scope": 1
+      },
+      "listing_data_complete_count": 6,
+      "listing_data_complete_pct": 100.0,
+      "in_scope_count": 4,
+      "source_ids": [
+        "universe-fmp-20260822"
+      ],
+      "artifact_path": "universe-audit-results.example.jsonl",
+      "artifact_sha256": "24e07ba0d17aa88df007e6e42df33dc2cf329326b5732f3521f57f529f8dee58"
+    },
+    "candidate_pool": {
+      "row_count": 6,
+      "decision_counts": {
+        "selected": 3,
+        "screened_out": 1,
+        "excluded": 2
+      },
+      "discovery_evaluable_count": 4,
+      "discovery_evaluable_pct": 66.6667,
+      "selection_eligible_count": 3,
+      "selected_count": 3,
+      "in_scope_covered_count": 4,
+      "in_scope_missing_count": 0,
+      "in_scope_missing_symbols": [],
+      "coverage_complete": true,
+      "coverage_scope": "full_listing_universe",
+      "listing_coverage_complete": true,
+      "generation_audit": {
+        "valid": true,
+        "selection_method": "full_universe_fundamentals",
+        "input_row_count": 6,
+        "selected_count": 6,
+        "selected_symbols": [
+          "ACME",
+          "CYCLE",
+          "MNA",
+          "OTCX",
+          "SCREEN",
+          "STALE"
+        ],
+        "coverage_plan": {
+          "coverage_plan_valid": true,
+          "user_requested_range_spanned": true
+        }
+      },
+      "generation_review_reasons": [],
+      "fundamental_complete_count": 6,
+      "fundamental_complete_pct": 100.0,
+      "source_ids": [
+        "universe-fmp-20260822"
+      ],
+      "symbols_not_in_universe": [],
+      "artifact_path": "broad-screen-results.example.jsonl",
+      "artifact_sha256": "55847bd84f650acd74f3381b2c2e125ed2e505f593d66f06085952f681e7ae3f"
+    },
+    "enrichment": {
+      "status": "complete",
+      "next_action": "proceed_to_deep_dive",
+      "discovery_pool_required": false,
+      "attempted_count": 6,
+      "resolved_count": 6,
+      "unresolved_count": 0,
+      "resolution_pct": 100.0,
+      "all_rows_resolved": true,
+      "maximum_attempts": 60,
+      "candidate_pool_exhaustion_declared": true,
+      "candidate_pool_exhausted": true,
+      "candidate_pool_covers_in_scope": true,
+      "candidate_pool_scope_verified": true,
+      "conclusion_scope": "full_listing_universe",
+      "queue_count": 0,
+      "queue_symbols": [],
+      "artifact_path": "enrichment-queue.example.json",
+      "artifact_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "coverage_interpretation": {
+      "listing_universe_audited": true,
+      "universe_enumeration_verified": true,
+      "full_universe_fundamentals_claimed": true,
+      "candidate_pool_fundamentals_only": false,
+      "full_market_fundamental_coverage_is_not_a_completion_gate": true,
+      "no_candidates_requires_zero_unresolved_rows_and_exhausted_pool": true,
+      "bounded_pool_final_ranking_allowed_when_generation_is_audited": true,
+      "market_wide_no_candidates_requires_full_listing_universe_coverage": true
+    },
+    "row_count": 6,
+    "decision_counts": {
+      "selected": 3,
+      "screened_out": 1,
+      "excluded": 2
+    },
+    "source_ids": [
+      "universe-fmp-20260822"
+    ]
+  },
+  "runtime": {
+    "skill_name": "us-undervalued-growth-screener",
+    "skill_version": "3.6.1",
+    "schema_version": 3,
+    "contract_revision": "3.5",
+    "runtime_fingerprint": "ug-v3.6.1-claude-code-direct-fmp-20260830"
+  }
+}

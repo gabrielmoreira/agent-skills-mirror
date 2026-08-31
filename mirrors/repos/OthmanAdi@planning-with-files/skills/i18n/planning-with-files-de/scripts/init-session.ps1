@@ -14,8 +14,13 @@ if (-not (Test-Path "task_plan.md")) {
     @"
 # Aufgabenplan: [Kurze Beschreibung]
 
+Nutzen Sie diese Datei als dauerhafte Roadmap und halten Sie sie bei jedem Phasenwechsel aktuell.
+
 ## Ziel
 [Ein-Satz-Beschreibung des Endzustands]
+
+## Nächster Schritt
+[Die nächste einzelne Aktion. Bei jedem Phasenwechsel aktualisieren.]
 
 ## Aktuelle Phase
 Phase 1
@@ -31,30 +36,43 @@ Phase 1
 ### Phase 2: Planung & Struktur
 - [ ] Technischen Ansatz festlegen
 - [ ] Projektstruktur bei Bedarf erstellen
+- [ ] Entscheidungen mit Begründung dokumentieren
 - **Status:** pending
 
 ### Phase 3: Implementierung
 - [ ] Schrittweise gemäß Plan ausführen
 - [ ] Code zuerst in Dateien schreiben, dann ausführen
+- [ ] Inkrementell testen
 - **Status:** pending
 
 ### Phase 4: Test & Validierung
 - [ ] Alle Anforderungen geprüft
 - [ ] Testergebnisse in progress.md dokumentieren
+- [ ] Gefundene Probleme beheben
 - **Status:** pending
 
 ### Phase 5: Auslieferung
 - [ ] Alle Ausgabedateien geprüft
+- [ ] Vollständigkeit der Lieferobjekte sicherstellen
 - [ ] An Benutzer ausgeliefert
 - **Status:** pending
+
+## Schlüsselfragen
+1. [Zu beantwortende Frage]
+2. [Zu beantwortende Frage]
 
 ## Getroffene Entscheidungen
 | Entscheidung | Begründung |
 |------|------|
 
 ## Aufgetretene Fehler
-| Fehler | Lösung |
-|------|---------|
+| Fehler | Versuch | Lösung |
+|------|---------|---------|
+
+## Hinweise
+- Aktualisieren Sie den Phasenstatus von `pending` zu `in_progress` und danach zu `complete`.
+- Prüfen Sie Ziel und nächsten Schritt vor wichtigen Entscheidungen erneut.
+- Protokollieren Sie Fehler zeitnah und ändern Sie den Ansatz vor einem erneuten Versuch.
 "@ | Out-File -FilePath "task_plan.md" -Encoding UTF8
     Write-Host "task_plan.md erstellt"
 } else {

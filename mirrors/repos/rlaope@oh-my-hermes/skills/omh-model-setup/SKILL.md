@@ -65,7 +65,7 @@ Bad example:
 
 Use when the user wants Hermes to inspect metadata-only model history, confirm active models, configure Hermes-native role aliases or providers, review editable recommendations for an external coding handoff, or switch a session model through the prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
 
-    Strong routing signals: `model-setup`, `hermes model setup`, `set up my models`, `set up my model`, `configure my models`, `configure model provider`, `connect my model provider`, `set up model role slots`, `switch my session model`, `switch provider account`, `provider quota exceeded`, `모델 설정 도와줘`, `모델 설정`, `모델 연결`, `모델 프로바이더 설정`, `모델 슬롯 설정`, `프로바이더 전환`, `다른 계정으로 로그인`, `model chains`, `모델 세팅`, `모델 체인`, `카테고리별 모델`
+    Strong routing signals: `model-setup`, `hermes model setup`, `set up my models`, `set up my model`, `configure my models`, `configure model provider`, `connect my model provider`, `set up model role slots`, `switch my session model`, `switch provider account`, `provider quota exceeded`, `model chains`, `모델 설정 도와줘`, `모델 설정`, `모델 연결`, `모델 프로바이더 설정`, `모델 슬롯 설정`, `프로바이더 전환`, `다른 계정으로 로그인`, `모델 세팅`, `모델 체인`, `카테고리별 모델`
 
 ## Catalog Metadata
 

@@ -1,427 +1,221 @@
 ---
 name: gcloud
-description: "Google Cloud Platform CLI - manage GCP resources including Compute Engine, Cloud Run, GKE, Cloud Functions, Storage, BigQuery, and more."
+description: >-
+  Google Cloud Platform CLI - manage GCP resources. Use when working with Compute
+  Engine, Cloud Run, GKE, Cloud Functions, Storage, BigQuery, or other GCP services.
 ---
 
-# GCloud Skill
+<!-- TOC: Quick Start | THE EXACT PROMPT | Services | Output Formatting | AGENTS.md Blurb | When to Use | References -->
 
-Use the `gcloud` CLI to manage Google Cloud Platform resources and services.
+# GCloud CLI
 
-## Authentication
+> **Core Capability:** Manage Google Cloud Platform resources and services from the command line.
 
-Check current auth:
+## Quick Start
+
 ```bash
+# Install
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
+
+# Verify
+gcloud version
+
+# Check auth
 gcloud auth list
-```
 
-Login interactively:
-```bash
-gcloud auth login
-```
-
-Login with service account:
-```bash
-gcloud auth activate-service-account --key-file=key.json
-```
-
-Application default credentials:
-```bash
-gcloud auth application-default login
-```
-
-## Project & Configuration
-
-List projects:
-```bash
-gcloud projects list
-```
-
-Set default project:
-```bash
+# Set project
 gcloud config set project PROJECT_ID
-```
 
-Show current config:
-```bash
+# Show current config
 gcloud config list
 ```
 
-Create named configuration:
-```bash
+---
+
+## THE EXACT PROMPT — Auth & Config
+
+```
+# Login interactively
+gcloud auth login
+
+# Service account auth
+gcloud auth activate-service-account --key-file=key.json
+
+# Application default credentials
+gcloud auth application-default login
+
+# Set project
+gcloud config set project PROJECT_ID
+
+# Set region/zone
+gcloud config set compute/region us-central1
+gcloud config set compute/zone us-central1-a
+
+# Named configurations
 gcloud config configurations create my-config
 gcloud config configurations activate my-config
 ```
 
-Set default region/zone:
-```bash
-gcloud config set compute/region us-central1
-gcloud config set compute/zone us-central1-a
+---
+
+## THE EXACT PROMPT — Compute Engine
+
 ```
-
-## Compute Engine (VMs)
-
-List instances:
-```bash
+# List VMs
 gcloud compute instances list
-```
 
-Create instance:
-```bash
+# Create VM
 gcloud compute instances create my-vm \
   --zone=us-central1-a \
   --machine-type=e2-medium \
   --image-family=debian-12 \
   --image-project=debian-cloud
-```
 
-SSH to instance:
-```bash
+# SSH to VM
 gcloud compute ssh my-vm --zone=us-central1-a
-```
 
-Stop/start instance:
-```bash
+# Stop/start
 gcloud compute instances stop my-vm --zone=us-central1-a
 gcloud compute instances start my-vm --zone=us-central1-a
 ```
 
-Delete instance:
-```bash
-gcloud compute instances delete my-vm --zone=us-central1-a
+---
+
+## THE EXACT PROMPT — Cloud Run
+
 ```
-
-## Cloud Run
-
-List services:
-```bash
+# List services
 gcloud run services list
-```
 
-Deploy from source:
-```bash
+# Deploy from source
 gcloud run deploy my-service --source . --region=us-central1
-```
 
-Deploy container:
-```bash
+# Deploy container
 gcloud run deploy my-service \
   --image=gcr.io/PROJECT/IMAGE \
   --region=us-central1 \
   --allow-unauthenticated
-```
 
-View logs:
-```bash
+# View logs
 gcloud run services logs read my-service --region=us-central1
 ```
 
-Update traffic split:
-```bash
-gcloud run services update-traffic my-service \
-  --to-revisions=LATEST=100 \
-  --region=us-central1
+---
+
+## THE EXACT PROMPT — Cloud Storage
+
 ```
-
-## Cloud Functions
-
-List functions:
-```bash
-gcloud functions list
-```
-
-Deploy function (2nd gen):
-```bash
-gcloud functions deploy my-function \
-  --gen2 \
-  --runtime=nodejs20 \
-  --region=us-central1 \
-  --trigger-http \
-  --entry-point=handler \
-  --source=.
-```
-
-View logs:
-```bash
-gcloud functions logs read my-function --region=us-central1
-```
-
-Delete function:
-```bash
-gcloud functions delete my-function --region=us-central1
-```
-
-## Google Kubernetes Engine (GKE)
-
-List clusters:
-```bash
-gcloud container clusters list
-```
-
-Get credentials for kubectl:
-```bash
-gcloud container clusters get-credentials my-cluster \
-  --zone=us-central1-a
-```
-
-Create cluster:
-```bash
-gcloud container clusters create my-cluster \
-  --zone=us-central1-a \
-  --num-nodes=3
-```
-
-Resize node pool:
-```bash
-gcloud container clusters resize my-cluster \
-  --node-pool=default-pool \
-  --num-nodes=5 \
-  --zone=us-central1-a
-```
-
-## Cloud Storage
-
-List buckets:
-```bash
+# List buckets
 gcloud storage buckets list
-```
 
-Create bucket:
-```bash
+# Create bucket
 gcloud storage buckets create gs://my-bucket --location=us-central1
-```
 
-List objects:
-```bash
-gcloud storage ls gs://my-bucket/
-```
-
-Copy files:
-```bash
-# Upload
+# Upload/download
 gcloud storage cp local-file.txt gs://my-bucket/
-
-# Download
 gcloud storage cp gs://my-bucket/file.txt ./
 
-# Recursive
-gcloud storage cp -r ./local-dir gs://my-bucket/
-```
-
-Sync directory:
-```bash
+# Sync directory
 gcloud storage rsync -r ./local-dir gs://my-bucket/remote-dir
 ```
 
-## Cloud SQL
+---
 
-List instances:
+## Essential Commands
+
+| Service | List | Create | Delete |
+|---------|------|--------|--------|
+| Compute | `gcloud compute instances list` | `gcloud compute instances create` | `gcloud compute instances delete` |
+| Cloud Run | `gcloud run services list` | `gcloud run deploy` | `gcloud run services delete` |
+| Functions | `gcloud functions list` | `gcloud functions deploy` | `gcloud functions delete` |
+| GKE | `gcloud container clusters list` | `gcloud container clusters create` | `gcloud container clusters delete` |
+| Storage | `gcloud storage buckets list` | `gcloud storage buckets create` | `gcloud storage rm` |
+
+---
+
+## Output Formatting
+
 ```bash
-gcloud sql instances list
-```
-
-Create instance:
-```bash
-gcloud sql instances create my-instance \
-  --database-version=POSTGRES_15 \
-  --tier=db-f1-micro \
-  --region=us-central1
-```
-
-Connect via proxy:
-```bash
-gcloud sql connect my-instance --user=postgres
-```
-
-Create database:
-```bash
-gcloud sql databases create mydb --instance=my-instance
-```
-
-## BigQuery
-
-List datasets:
-```bash
-bq ls
-```
-
-Run query:
-```bash
-bq query --use_legacy_sql=false 'SELECT * FROM dataset.table LIMIT 10'
-```
-
-Create dataset:
-```bash
-bq mk --dataset my_dataset
-```
-
-Load data:
-```bash
-bq load --source_format=CSV my_dataset.my_table gs://bucket/data.csv
-```
-
-## Pub/Sub
-
-List topics:
-```bash
-gcloud pubsub topics list
-```
-
-Create topic:
-```bash
-gcloud pubsub topics create my-topic
-```
-
-Publish message:
-```bash
-gcloud pubsub topics publish my-topic --message="Hello"
-```
-
-Create subscription:
-```bash
-gcloud pubsub subscriptions create my-sub --topic=my-topic
-```
-
-Pull messages:
-```bash
-gcloud pubsub subscriptions pull my-sub --auto-ack
-```
-
-## Secret Manager
-
-List secrets:
-```bash
-gcloud secrets list
-```
-
-Create secret:
-```bash
-echo -n "my-secret-value" | gcloud secrets create my-secret --data-file=-
-```
-
-Access secret:
-```bash
-gcloud secrets versions access latest --secret=my-secret
-```
-
-Add new version:
-```bash
-echo -n "new-value" | gcloud secrets versions add my-secret --data-file=-
-```
-
-## IAM
-
-List service accounts:
-```bash
-gcloud iam service-accounts list
-```
-
-Create service account:
-```bash
-gcloud iam service-accounts create my-sa \
-  --display-name="My Service Account"
-```
-
-Create key:
-```bash
-gcloud iam service-accounts keys create key.json \
-  --iam-account=my-sa@PROJECT.iam.gserviceaccount.com
-```
-
-Add IAM binding:
-```bash
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:my-sa@PROJECT.iam.gserviceaccount.com" \
-  --role="roles/storage.admin"
-```
-
-## Cloud Build
-
-Submit build:
-```bash
-gcloud builds submit --tag gcr.io/PROJECT/IMAGE
-```
-
-List builds:
-```bash
-gcloud builds list
-```
-
-View build logs:
-```bash
-gcloud builds log BUILD_ID
-```
-
-## Artifact Registry
-
-List repositories:
-```bash
-gcloud artifacts repositories list
-```
-
-Configure Docker:
-```bash
-gcloud auth configure-docker us-central1-docker.pkg.dev
-```
-
-## Logging
-
-Read logs:
-```bash
-gcloud logging read "resource.type=cloud_run_revision" --limit=50
-```
-
-Tail logs:
-```bash
-gcloud logging tail "resource.type=gce_instance"
-```
-
-## App Engine
-
-Deploy app:
-```bash
-gcloud app deploy
-```
-
-View logs:
-```bash
-gcloud app logs tail
-```
-
-Browse app:
-```bash
-gcloud app browse
-```
-
-## Useful Flags
-
-Format as JSON:
-```bash
+# JSON output
 gcloud compute instances list --format=json
-```
 
-Format as table with specific columns:
-```bash
+# Table with specific columns
 gcloud compute instances list --format="table(name,zone,status)"
-```
 
-Filter results:
-```bash
+# Filter results
 gcloud compute instances list --filter="status=RUNNING"
-```
 
-Quiet mode (no prompts):
-```bash
+# Quiet mode (no prompts)
 gcloud compute instances delete my-vm --quiet
 ```
 
-## Cheat Sheet
+---
 
-Quick reference:
+## Quick Reference
+
 ```bash
-gcloud cheat-sheet
+gcloud cheat-sheet      # Built-in cheat sheet
+gcloud interactive      # Interactive shell
+gcloud --help           # General help
+gcloud compute --help   # Service-specific help
 ```
 
-Interactive shell:
-```bash
-gcloud interactive
+---
+
+## AGENTS.md Blurb
+
+Copy this to your project's AGENTS.md:
+
+```markdown
+### Google Cloud CLI (gcloud)
+
+`gcloud` is installed and authenticated.
+
+Auth:
+
+\`\`\`bash
+gcloud auth login
+gcloud auth application-default login  # For API libraries
+\`\`\`
+
+Project:
+
+\`\`\`bash
+gcloud config set project <PROJECT_ID>
+\`\`\`
+
+Enable APIs:
+
+\`\`\`bash
+gcloud services enable aiplatform.googleapis.com
+gcloud services enable analyticsdata.googleapis.com
+\`\`\`
+
+Useful commands:
+
+\`\`\`bash
+gcloud projects list
+gcloud services list --enabled
+gcloud beta billing accounts list
+\`\`\`
 ```
+
+---
+
+## When to Use
+
+- Enabling APIs for Gemini, Vertex AI, or other Google services
+- Managing billing and cost alerts
+- Creating service accounts for CI/CD
+- Deploying containers to Cloud Run
+- Managing GKE clusters
+
+---
+
+## References
+
+| Topic | Reference |
+|-------|-----------|
+| All services | [SERVICES.md](references/SERVICES.md) |
+| IAM & Security | [IAM.md](references/IAM.md) |

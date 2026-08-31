@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 ### Added
 - Added Kernel as a managed remote browser runtime with live view and downloaded replay recordings. Thanks to @[rgarcia](https://github.com/rgarcia).
+- Added `clawbench-analyze` entrypoint for aggregate batch error analysis.
+
+### Changed
+- Updated the harbor adaptor to support the full V2 lenient & strict and reports numeric results.
+
+### Fixed
+- Fixed an issue where malformed per-run metadata could prevent `batch-summary.json` from being written and, when configured, uploaded.
+- Fixed the issue that an invalid judge model would lose the `run-meta.json` file.
 
 ## [0.9.2] - 2026-08-18
 ### Added

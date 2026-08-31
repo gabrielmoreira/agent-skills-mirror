@@ -602,6 +602,21 @@ Hybrid command backed by `scripts/eval/retrieval_eval.py`, which reuses the REAL
 
 ---
 
+### `/obsidian-merge <canonical> <retired> | --from-health`
+
+**Merges two near-duplicate notes that `/obsidian-health` found and stopped at. Dry run by default; the retired note becomes a redirect, never a deletion.**
+
+Health is read-only by contract, so the merge was the manual step everyone skipped and the same pairs came back every run. `scripts/merge_notes.py` does the mechanical half; you compose the merged body, because deciding what actually contradicts between two notes is judgment.
+
+Steps:
+1. Resolve the pair: two paths from the user (first survives, second retires; confirm if the richer note is the second), or `--from-health` to list the 2-file duplicate groups from a live `vault_health.check_duplicates()` run. A group of 3+ is never auto-paired.
+2. Read both notes in full. Compose the merged body per `references/ai-first-rules.md`: one `## For future agent` preamble naming both originals, both provenance trails kept, real contradictions listed with dates rather than resolved, every still-relevant `[[wikilink]]` from both sides carried over. Write it to a scratch file.
+3. Dry run: `uv run --directory "SKILL_ROOT" scripts/merge_notes.py --path <vault> --canonical <a> --retire <b> --merged-body-file <scratch>`. It prints the frontmatter conflicts (canonical wins, the retired value goes under `merged_from:`; list fields such as `tags` and `aliases` are unioned instead), the alias folded in, and the full text of both proposed notes. Show it verbatim.
+4. Ask for explicit confirmation, then re-run the identical command with `--apply`. Dry run and apply share one `compute_merge()`, so what was previewed is what gets written.
+5. Report which note survived, which became `type: redirect` (schema in `references/ai-first-rules.md`, Documented exceptions), the conflicts, and the contradictions the body documents. Log `merge | <retired> -> <canonical>` per the operation-log convention.
+
+---
+
 ### `/obsidian-reconcile`
 
 **Finds and resolves contradictions across the vault.**

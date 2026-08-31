@@ -1,7 +1,7 @@
 <p align="center">
   <img src="reverse-skill.png" alt="reverse-skill" width="140" />
 </p>
-
+<!-- GitAds-Verify: I9ICRQWDP8AZQ1O7PMFUBJ7AO9ULV9FV -->
 <h1 align="center">reverse-skill</h1>
 <h3 align="center">Cybersecurity Skills Router · 逆向技能路由包</h3>
 
@@ -43,7 +43,6 @@
 
 <br/>
 
-<a id="about"></a>
 
 ## About
 
@@ -79,7 +78,9 @@ PRIMARY ladder: [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · Full mat
 <br/>
 
 <div align="center">
-  <a href="https://afterglow.watch"><img src="https://afterglow.watch/badge/zhaoxuya520/reverse-skill" alt="star velocity"></a>
+  <a href="https://www.star-history.com/?repos=zhaoxuya520%2Freverse-skill&amp;type=date&amp;legend=top-left">
+    <img src="https://history.apivix.com/star-history.svg?v=hourly-v1" alt="Star History chart for zhaoxuya520/reverse-skill" width="650" />
+  </a>
 </div>
 
 <br/>
@@ -226,7 +227,8 @@ The routing core, regression suite, manifests, and case workflow do not depend o
 <a id="sponsors"></a>
 
 ## Sponsors
-
+<a id="about"></a>
+[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=zhaoxuya520/reverse-skill@github)](https://gitads.dev/v1/ad-track?source=zhaoxuya520/reverse-skill@github)
 <table>
   <tr>
     <td align="center" width="220">

@@ -1,12 +1,12 @@
 # RPC & UI Reference
 
 **Status:** Active
-**Last Updated:** 2026-08-12
-**Source of Truth:** `src/notebooklm/rpc/types.py` for method IDs; payload builders in `src/notebooklm/` and golden tests under `tests/unit/`
+**Last Updated:** 2026-08-27
+**Source of Truth:** `src/notebooklm/rpc/types.py` for method IDs; payload builders under `src/notebooklm/_web/` and golden tests under `tests/unit/`
 **Purpose:** Complete reference for RPC methods, UI selectors, and payload structures
 
 > **Note:** Payload structures are extracted from the implementation builders in
-> `src/notebooklm/` and pinned by golden unit tests. Each payload includes a
+> `src/notebooklm/_web/` and pinned by golden unit tests. Each payload includes a
 > reference to its owning source file. The CREATE_ARTIFACT payloads below were
 > re-verified against the live builders in `_web/params/artifacts.py` on
 > 2026-06-11 (AUDIO, VIDEO_EXPLAINER, VIDEO_BRIEF, VIDEO_CINEMATIC,
@@ -26,6 +26,7 @@
 |--------|--------|---------|----------------|
 | `wXbhsf` | LIST_NOTEBOOKS | List all notebooks | `_web/notebooks.py` |
 | `CCqFvf` | CREATE_NOTEBOOK | Create new notebook | `_web/notebooks.py` |
+| `te3DCe` | COPY_NOTEBOOK | Copy notebook sources and Studio artifacts | `_web/notebooks.py` |
 | `rLM1Ne` | GET_NOTEBOOK | Get notebook details + sources | `_web/notebooks.py` |
 | `s0tc2d` | RENAME_NOTEBOOK | Rename, chat config, share access | `_web/notebooks.py`, `_web/chat.py` |
 | `WWINqb` | DELETE_NOTEBOOK | Delete a notebook | `_web/notebooks.py` |
@@ -160,7 +161,7 @@ wire evidence rather than schema mappings.
 > `0` means the same thing, so the decoder normalizes it to `None` rather than
 > modelling it (recorded in `ENUM_GAPS`). Only `ACTIVE` has
 > been observed live; the degraded members come from the backend enum recovered
-> from the official Android app (`docs/mobile/enums.txt`) and are pinned in
+> from the official Android app (`docs/android/enums.txt`) and are pinned in
 > `tests/_guardrails/_wire_contract.py`. A populated-but-unmapped code decodes to
 > `DriveSourceStatus.UNKNOWN` (never `None`) and warns once (#2111).
 
@@ -302,6 +303,28 @@ params = [
             # 3: Shared request-options wrapper (`build_template_block()`)
 ]
 ```
+
+### RPC: COPY_NOTEBOOK (te3DCe)
+
+**Server method:** `CopyProject`
+
+**Source:** `_web/notebooks.py::WebNotebooksAPI.copy()` /
+`_web/params/notebooks.py::build_copy_notebook_params()`
+
+```python
+params = [
+    [2, None, None, [1, None, None, None, None, None, None, None, None, None, [1]]],
+    source_notebook_id,
+    destination_title,
+]
+```
+
+The response is a bare Project row and is decoded as the newly allocated
+`Notebook`. Live validation on 2026-08-27 copied a notebook containing 50
+sources and 5 Studio artifacts; all copied child IDs differed from the
+originals. The method has no caller-supplied idempotency token, so internal
+transport retry is disabled to avoid creating duplicate full copies after a
+lost response.
 
 ### RPC: DELETE_NOTEBOOK (WWINqb)
 
@@ -1690,7 +1713,7 @@ row[9][1][6]   # flashcards [quantity, difficulty] — null on a quiz row
 row[9][1][7]   # quiz       [quantity, difficulty] — null on a flashcards row
 ```
 
-Positions follow `AppArtifactGenerationOptions` in `docs/mobile/schema.proto`
+Positions follow `AppArtifactGenerationOptions` in `docs/android/schema.proto`
 (`flashcardsGenerationOptions` = tag 7, `quizGenerationOptions` = tag 8), and
 each pair is `[quantity, difficulty]` — the same order both builders send. Read
 them through `ArtifactRow.quiz_options` / `ArtifactRow.flashcards_options`, which
@@ -3013,7 +3036,7 @@ When a `batchexecute` RPC is rejected, the server answers with a `wrb.fr` frame
 whose *result* slot (index 2) is `null` and whose index 5 carries a
 JSON-array-encoded [`google.rpc.Status`](https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto).
 That is a **public** Google type, not a Tailwind message, so it is absent from
-`docs/mobile/schema.proto` and its positions are the proto tags minus one:
+`docs/android/schema.proto` and its positions are the proto tags minus one:
 
 | Index | `google.rpc.Status` field | Observed |
 |-------|---------------------------|----------|
@@ -3080,7 +3103,7 @@ at DEBUG, so the remaining cases are findable.
 
 ### Artifact failures have no reason at all
 
-`Artifact` in `docs/mobile/schema.proto` has **no error or failure field**. An
+`Artifact` in `docs/android/schema.proto` has **no error or failure field**. An
 artifact accepted at create time that later transitions to
 `ARTIFACT_STATUS_FAILED` therefore carries nothing to explain itself: no cassette
 contains a status-4 row, and a live sweep of 27 notebooks / 99 rows found index 3

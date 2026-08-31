@@ -1,0 +1,8 @@
+[
+  {
+    "min_market_cap": 500000000,
+    "max_market_cap": 20000000000,
+    "rows_fetched": 6,
+    "provider_exhausted": true
+  }
+]
