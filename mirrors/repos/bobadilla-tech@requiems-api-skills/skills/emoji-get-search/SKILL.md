@@ -3,13 +3,13 @@ name: emoji-get-search
 api: Emoji
 method: GET
 path: /v1/entertainment/emoji/search
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Search for emojis whose name or category contains the given query string (case-insensitive). Returns a list of all matches.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/emoji/search**
+**GET https://requiems.xyz/v1/entertainment/emoji/search**
 
 ## Search Emoji
 

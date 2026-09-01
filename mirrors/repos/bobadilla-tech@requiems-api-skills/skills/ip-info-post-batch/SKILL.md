@@ -3,13 +3,13 @@ name: ip-info-post-batch
 api: IP Geolocation
 method: POST
 path: /v1/networking/ip/info/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Look up geolocation data for up to 50 IP addresses in a single request. Results are returned in input order. Per-item errors are reported inline.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/networking/ip/info/batch**
+**POST https://requiems.xyz/v1/networking/ip/info/batch**
 
 ## Batch IP Geolocation
 

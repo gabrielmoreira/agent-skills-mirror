@@ -3,13 +3,13 @@ name: thesaurus-get-{word}
 api: Thesaurus
 method: GET
 path: /v1/text/thesaurus/{word}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns synonyms and antonyms for the given word.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/text/thesaurus/{word}**
+**GET https://requiems.xyz/v1/text/thesaurus/{word}**
 
 ## Thesaurus Lookup
 

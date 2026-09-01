@@ -3,13 +3,13 @@ name: developer-utilities-post-decode
 api: Developer Utilities
 method: POST
 path: /v1/technology/base64/decode
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Decode a Base64-encoded string back to plain text. Returns 422 for invalid or unpadded input.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/base64/decode**
+**POST https://requiems.xyz/v1/technology/base64/decode**
 
 ## Base64 Decode
 

@@ -3,13 +3,13 @@ name: data-integrity-post-batch
 api: Data Integrity System
 method: POST
 path: /v1/systems/input/validate/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validates and scores a batch of up to 50 contact records in a single request. Each record is processed independently — one item failing does not affect others. Returns per-item email, phone, and text validation results with quality scores, normalized values, plus batch-level aggregates including total, valid_count, invalid_count, and average_quality_score.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/systems/input/validate/batch**
+**POST https://requiems.xyz/v1/systems/input/validate/batch**
 
 ## Batch Input Validate
 

@@ -70,7 +70,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/maplibre-pmtiles-patterns/SKILL.md`](skills/maplibre-pmtiles-patterns/SKILL.md) |
 | 6 | ✓ | [`skills/maplibre-skill-authoring/SKILL.md`](skills/maplibre-skill-authoring/SKILL.md) |
 | 7 | ✓ | [`skills/maplibre-source-wiring/SKILL.md`](skills/maplibre-source-wiring/SKILL.md) |
-| 8 | ✓ | [`skills/maplibre-terrain-patterns/SKILL.md`](skills/maplibre-terrain-patterns/SKILL.md) |
+| 8 | ✓ | [`skills/maplibre-terrain-rendering/SKILL.md`](skills/maplibre-terrain-rendering/SKILL.md) |
 | 9 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
 | 10 | ✓ | [`skills/maplibre-v6-migration/SKILL.md`](skills/maplibre-v6-migration/SKILL.md) |
 | 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |

@@ -3,13 +3,13 @@ name: bin-lookup-get-{bin}
 api: BIN Lookup
 method: GET
 path: /v1/finance/bin/{bin}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns card metadata for the given 6–8 digit BIN prefix.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/bin/{bin}**
+**GET https://requiems.xyz/v1/finance/bin/{bin}**
 
 ## BIN Lookup
 

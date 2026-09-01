@@ -3,13 +3,13 @@ name: base64-post-batch
 api: Base64 Encode / Decode
 method: POST
 path: /v1/technology/base64/decode/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Decode multiple Base64 strings in a single request
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/base64/decode/batch**
+**POST https://requiems.xyz/v1/technology/base64/decode/batch**
 
 ## Decode Batch
 

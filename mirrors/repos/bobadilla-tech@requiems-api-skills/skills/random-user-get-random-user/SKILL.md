@@ -3,13 +3,13 @@ name: random-user-get-random-user
 api: Random User
 method: GET
 path: /v1/technology/random-user
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a randomly generated fake user profile.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/random-user**
+**GET https://requiems.xyz/v1/technology/random-user**
 
 ## Get Random User
 

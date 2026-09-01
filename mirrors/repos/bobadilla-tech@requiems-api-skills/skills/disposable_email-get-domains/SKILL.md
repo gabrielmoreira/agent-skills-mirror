@@ -3,13 +3,13 @@ name: disposable_email-get-domains
 api: Disposable Email Checker
 method: GET
 path: /v1/networking/disposable/domains
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Get a paginated list of all disposable domains in the blocklist
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/disposable/domains**
+**GET https://requiems.xyz/v1/networking/disposable/domains**
 
 ## List Domains (Paginated)
 

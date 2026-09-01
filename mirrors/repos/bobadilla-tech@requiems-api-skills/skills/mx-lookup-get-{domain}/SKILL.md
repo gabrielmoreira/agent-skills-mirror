@@ -3,13 +3,13 @@ name: mx-lookup-get-{domain}
 api: MX Lookup
 method: GET
 path: /v1/networking/mx/{domain}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Retrieve all MX records for a domain. Results are sorted by priority ascending (lowest numeric value has highest mail delivery priority per RFC 5321).
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/mx/{domain}**
+**GET https://requiems.xyz/v1/networking/mx/{domain}**
 
 ## MX Lookup
 

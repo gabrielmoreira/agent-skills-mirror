@@ -44,7 +44,7 @@ Each finding is a JSON object (schema is compatible with `ui-design` Audit mode 
 | `feature` | One of 4 playbooks: `agent-chat`, `agent-tool-execution`, `agent-config`, `agent-dashboard` |
 | `surface` | Component or page name the finding sits on (groups the report) |
 | `file`, `line` | Evidence location; required on every `fail`/`warn` |
-| `result` | `pass \| warn \| fail \| unknown`: `unknown` requires a reason in `observed` |
+| `result` | `pass \| warn \| fail \| unknown \| out-of-scope`. `unknown`: the evidence was reachable and no judgment could be reached, which counts against the self-check. `out-of-scope`: the layer the rule audits is not in this scope at all (no orchestrator in a UI-only diff, no connector code in a tool-handler slice), which does not. Both require a reason in `observed` |
 | `defaultTier`, `assignedTier`, `tierReason` | Tier from the rule file, tier after surface override, and one-sentence justification. Tier is the only ship-impact signal; no separate severity field |
 | `observed` | What the code actually does, in one sentence |
 | `evidence` | Array of `file:line: excerpt` strings backing the finding |
@@ -78,7 +78,7 @@ Produced after findings, only when agentic features are detected. Four fields na
 | Field | Description |
 |---|---|
 | `evolutionStage` | Which of the 4 stages (see `ax-evolution-curve.md`). Describe the behavior, not the label (label for JSON, behavior for the reader). |
-| `trustSignal` | `high \| moderate \| low` with one-sentence reasoning, based on how many trust-critical rules passed vs failed (escalation, escape hatch, confidence cues, approval gates). |
+| `trustSignal` | `high \| moderate \| low` with one-sentence reasoning, from the trust-critical rules that ran: escalation, escape hatch, approval gates and what they showed, access scope, unprompted action, confidence cues. |
 | `keyGap` | Single most important architectural or trust gap. One sentence, specific enough to act on. |
 | `trustQuestion` | One question for the designer/developer to answer before the next round; only prototyping or research can resolve it. |
 

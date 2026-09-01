@@ -3,13 +3,13 @@ name: profanity-post-batch
 api: Profanity Filter
 method: POST
 path: /v1/validation/profanity/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Check up to 50 texts for profanity in a single request. Results are returned in input order.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/validation/profanity/batch**
+**POST https://requiems.xyz/v1/validation/profanity/batch**
 
 ## Batch Check Profanity
 

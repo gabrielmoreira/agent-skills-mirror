@@ -3,13 +3,13 @@ name: swift-code-get-swift
 api: SWIFT Code
 method: GET
 path: /v1/finance/swift
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: List SWIFT records with optional filters and pagination.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/swift**
+**GET https://requiems.xyz/v1/finance/swift**
 
 ## List SWIFT Codes
 

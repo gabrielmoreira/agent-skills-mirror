@@ -3,13 +3,13 @@ name: quotes-post-batch
 api: Random Quotes
 method: POST
 path: /v1/entertainment/quotes/random/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns up to 50 random quotes in a single request. Each quote counts as one unit of usage.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/entertainment/quotes/random/batch**
+**POST https://requiems.xyz/v1/entertainment/quotes/random/batch**
 
 ## Get Random Quotes (Batch)
 

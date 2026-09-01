@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,7 +70,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`skill-data/protected-vercel-deployments/SKILL.md`](skill-data/protected-vercel-deployments/SKILL.md) |
 | 10 | ✓ | [`skill-data/slack/SKILL.md`](skill-data/slack/SKILL.md) |
 | 11 | ✓ | [`skill-data/vercel-sandbox/SKILL.md`](skill-data/vercel-sandbox/SKILL.md) |
-| 12 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 12 | ✓ | [`skill-data/webmcp-gen/SKILL.md`](skill-data/webmcp-gen/SKILL.md) |
+| 13 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
 
 ---
 

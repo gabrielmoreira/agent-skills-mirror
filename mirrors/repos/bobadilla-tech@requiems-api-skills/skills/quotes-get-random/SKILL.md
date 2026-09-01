@@ -3,13 +3,13 @@ name: quotes-get-random
 api: Random Quotes
 method: GET
 path: /v1/entertainment/quotes/random
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a random inspirational quote with author attribution
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/quotes/random**
+**GET https://requiems.xyz/v1/entertainment/quotes/random**
 
 ## Get Random Quote
 

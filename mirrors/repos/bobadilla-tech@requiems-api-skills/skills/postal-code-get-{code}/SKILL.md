@@ -3,13 +3,13 @@ name: postal-code-get-{code}
 api: Postal Code
 method: GET
 path: /v1/places/postal/{code}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns city, state, country, and coordinates for the given postal code.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/postal/{code}**
+**GET https://requiems.xyz/v1/places/postal/{code}**
 
 ## Lookup Postal Code
 

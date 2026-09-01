@@ -3,13 +3,13 @@ name: geocode-post-batch
 api: Geocoding
 method: POST
 path: /v1/places/reverse-geocode/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Convert up to 20 coordinate pairs to addresses in a single request. Processed concurrently; results are returned in input order. Per-item errors are reported inline.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/places/reverse-geocode/batch**
+**POST https://requiems.xyz/v1/places/reverse-geocode/batch**
 
 ## Batch Reverse Geocode
 

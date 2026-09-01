@@ -1,0 +1,16 @@
+{
+  "name": "sepia",
+  "interface": {
+    "displayName": "Sepia"
+  },
+  "plugins": [
+    {
+      "name": "sepia",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "category": "Writing"
+    }
+  ]
+}

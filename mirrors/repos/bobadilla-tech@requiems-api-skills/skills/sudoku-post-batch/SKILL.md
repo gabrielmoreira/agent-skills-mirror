@@ -3,13 +3,13 @@ name: sudoku-post-batch
 api: Sudoku
 method: POST
 path: /v1/entertainment/sudoku/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Generate up to 20 Sudoku puzzles in a single request. Results are returned in the same order as the input array. Each puzzle in the batch counts as one unit of API usage.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/entertainment/sudoku/batch**
+**POST https://requiems.xyz/v1/entertainment/sudoku/batch**
 
 ## Batch Generate Sudoku Puzzles
 

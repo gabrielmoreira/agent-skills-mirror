@@ -3,13 +3,13 @@ name: counter-get-{namespace}
 api: Counter
 method: GET
 path: /v1/technology/counter/{namespace}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Get the current value of a counter without incrementing it
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/counter/{namespace}**
+**GET https://requiems.xyz/v1/technology/counter/{namespace}**
 
 ## Get Counter Value
 

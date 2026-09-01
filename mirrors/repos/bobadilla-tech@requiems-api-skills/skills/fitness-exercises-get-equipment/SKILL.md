@@ -3,13 +3,13 @@ name: fitness-exercises-get-equipment
 api: Fitness Exercises
 method: GET
 path: /v1/health/equipment
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a sorted list of all distinct equipment types. Use these as valid values for the equipment filter.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/health/equipment**
+**GET https://requiems.xyz/v1/health/equipment**
 
 ## List Equipment
 

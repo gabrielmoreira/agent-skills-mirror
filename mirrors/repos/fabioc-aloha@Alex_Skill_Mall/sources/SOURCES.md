@@ -5,10 +5,10 @@
 | Store | Remote | Plugin Dir | Tier | Provenance | License | Plugins |
 | --- | --- | --- | --- | --- | --- | ---: |
 | [ai-research-skills](../catalog/stores/ai-research-skills.md) | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) | `.` | community-curated | false | - | 100 |
-| [alirezarezvani-claude-skills](../catalog/stores/alirezarezvani-claude-skills.md) | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | `.` | community-curated | false | - | 38 |
-| [antigravity-awesome-skills](../catalog/stores/antigravity-awesome-skills.md) | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | `skills` | community-curated | false | - | 1939 |
+| [alirezarezvani-claude-skills](../catalog/stores/alirezarezvani-claude-skills.md) | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | `.` | community-curated | false | - | 43 |
+| [antigravity-awesome-skills](../catalog/stores/antigravity-awesome-skills.md) | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | `skills` | community-curated | false | - | 2008 |
 | [awesome-claude-code-toolkit](../catalog/stores/awesome-claude-code-toolkit.md) | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | `.` | community-curated | false | - | 43 |
-| [awesome-copilot](../catalog/stores/awesome-copilot.md) | [github/awesome-copilot](https://github.com/github/awesome-copilot) | `.` | github-community | false | - | 508 |
+| [awesome-copilot](../catalog/stores/awesome-copilot.md) | [github/awesome-copilot](https://github.com/github/awesome-copilot) | `.` | github-community | false | - | 514 |
 | [awesome-copilot-agents](../catalog/stores/awesome-copilot-agents.md) | [Code-and-Sorts/awesome-copilot-agents](https://github.com/Code-and-Sorts/awesome-copilot-agents) | `.` | community-curated | false | - | 2 |
 | [azure-git-ape](../catalog/stores/azure-git-ape.md) | [Azure/git-ape](https://github.com/Azure/git-ape) | `.` | microsoft-official | false | MIT | 3 |
 | [buildwithclaude](../catalog/stores/buildwithclaude.md) | [davepoon/buildwithclaude](https://github.com/davepoon/buildwithclaude) | `plugins` | community-curated | false | - | 114 |
@@ -16,7 +16,7 @@
 | [claude-skills](../catalog/stores/claude-skills.md) | [anthropics/skills](https://github.com/anthropics/skills) | `.` | anthropic-official | false | - | 20 |
 | [context-engineering-kit](../catalog/stores/context-engineering-kit.md) | [NeoLabHQ/context-engineering-kit](https://github.com/NeoLabHQ/context-engineering-kit) | `plugins` | community-curated | false | - | 13 |
 | [copilot-agents-dojo](../catalog/stores/copilot-agents-dojo.md) | [andreaswasita/copilot-agents-dojo](https://github.com/andreaswasita/copilot-agents-dojo) | `skills` | domain | false | - | 28 |
-| [daymade-claude-code-skills](../catalog/stores/daymade-claude-code-skills.md) | [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | `.` | community-curated | false | - | 97 |
+| [daymade-claude-code-skills](../catalog/stores/daymade-claude-code-skills.md) | [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | `.` | community-curated | false | - | 105 |
 | [designer-skills](../catalog/stores/designer-skills.md) | [Owl-Listener/designer-skills](https://github.com/Owl-Listener/designer-skills) | `.` | community-curated | false | MIT | 9 |
 | [devexpress-agent-skills](../catalog/stores/devexpress-agent-skills.md) | [DevExpress/agent-skills](https://github.com/DevExpress/agent-skills) | `plugins` | devexpress-official | false | MIT | 7 |
 | [dotnet-maui-labs](../catalog/stores/dotnet-maui-labs.md) | [dotnet/maui-labs](https://github.com/dotnet/maui-labs) | `.` | dotnet-official | false | MIT | 17 |
@@ -27,7 +27,7 @@
 | [expo-skills](../catalog/stores/expo-skills.md) | [expo/skills](https://github.com/expo/skills) | `plugins/expo/skills` | expo-official | false | MIT | 24 |
 | [garden-skills](../catalog/stores/garden-skills.md) | [ConardLi/garden-skills](https://github.com/ConardLi/garden-skills) | `skills` | community-curated | false | - | 5 |
 | [github-copilot-plugins](../catalog/stores/github-copilot-plugins.md) | [github/copilot-plugins](https://github.com/github/copilot-plugins) | `plugins` | github-official | false | - | 2 |
-| [google-skills](../catalog/stores/google-skills.md) | [google/skills](https://github.com/google/skills) | `skills` | google-official | false | Apache-2.0 | 112 |
+| [google-skills](../catalog/stores/google-skills.md) | [google/skills](https://github.com/google/skills) | `skills` | google-official | false | Apache-2.0 | 127 |
 | [huggingface-skills](../catalog/stores/huggingface-skills.md) | [huggingface/skills](https://github.com/huggingface/skills) | `skills` | huggingface-official | false | Apache-2.0 | 25 |
 | [karpathy-skills](../catalog/stores/karpathy-skills.md) | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | `.` | reference | false | - | 1 |
 | [libukai-awesome-agent-skills](../catalog/stores/libukai-awesome-agent-skills.md) | [libukai/awesome-agent-skills](https://github.com/libukai/awesome-agent-skills) | `skills` | community-curated | false | - | 0 |
@@ -40,7 +40,7 @@
 | [microsoft-fasttrack](../catalog/stores/microsoft-fasttrack.md) | [microsoft/FastTrack](https://github.com/microsoft/FastTrack) | `.` | microsoft-official | false | MIT | 40 |
 | [microsoft-hve-core](../catalog/stores/microsoft-hve-core.md) | [microsoft/hve-core](https://github.com/microsoft/hve-core) | `.` | microsoft-official | false | MIT | 3 |
 | [microsoft-skills](../catalog/stores/microsoft-skills.md) | [microsoft/skills](https://github.com/microsoft/skills) | `.` | microsoft-official | false | MIT | 3 |
-| [microsoft-win-dev-skills](../catalog/stores/microsoft-win-dev-skills.md) | [microsoft/win-dev-skills](https://github.com/microsoft/win-dev-skills) | `plugins/winui/skills` | microsoft-official | false | MIT | 8 |
+| [microsoft-win-dev-skills](../catalog/stores/microsoft-win-dev-skills.md) | [microsoft/win-dev-skills](https://github.com/microsoft/win-dev-skills) | `plugins/winui/skills` | microsoft-official | false | MIT | 0 |
 | [microsoftdocs-agent-skills](../catalog/stores/microsoftdocs-agent-skills.md) | [MicrosoftDocs/Agent-Skills](https://github.com/MicrosoftDocs/Agent-Skills) | `.` | microsoft-official | false | CC-BY-4.0 | 202 |
 | [mongodb-agent-skills](../catalog/stores/mongodb-agent-skills.md) | [mongodb/agent-skills](https://github.com/mongodb/agent-skills) | `.` | mongodb-official | false | Apache-2.0 | 11 |
 | [n-skills](../catalog/stores/n-skills.md) | [numman-ali/n-skills](https://github.com/numman-ali/n-skills) | `skills` | community-curated | false | - | 5 |
@@ -54,4 +54,4 @@
 | [wshobson-agents](../catalog/stores/wshobson-agents.md) | [wshobson/agents](https://github.com/wshobson/agents) | `.` | community-quality | false | - | 91 |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-08-25T06:46:27.839Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-31T11:07:38.559Z*

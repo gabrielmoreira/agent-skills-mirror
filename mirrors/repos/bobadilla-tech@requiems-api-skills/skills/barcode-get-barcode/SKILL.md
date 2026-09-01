@@ -3,13 +3,13 @@ name: barcode-get-barcode
 api: Barcode Generator
 method: GET
 path: /v1/technology/barcode
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a raw PNG image of the barcode. Ideal for direct embedding or file download.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/barcode**
+**GET https://requiems.xyz/v1/technology/barcode**
 
 ## Generate Barcode (PNG)
 

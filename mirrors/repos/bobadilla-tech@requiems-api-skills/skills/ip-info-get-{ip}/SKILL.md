@@ -3,13 +3,13 @@ name: ip-info-get-{ip}
 api: IP Geolocation
 method: GET
 path: /v1/networking/ip/{ip}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Get geolocation and network information for a specific IP address.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/ip/{ip}**
+**GET https://requiems.xyz/v1/networking/ip/{ip}**
 
 ## Get IP Info for IP
 

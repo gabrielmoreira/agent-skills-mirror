@@ -1,7 +1,10 @@
 """HTTP utilities for last30days skill (stdlib only)."""
 
 import json
+from collections import OrderedDict
+import math
 import os
+import random
 import re
 import socket
 import sys
@@ -30,6 +33,54 @@ def log(msg: str):
 MAX_RETRIES = 5
 MAX_429_RETRIES = 2
 RETRY_DELAY = 2.0
+
+
+# Longest a 429 retry may sleep on any host. Reddit's x-ratelimit-reset can say
+# 540s and GitHub's is an epoch timestamp; neither is worth parking a worker
+# (or the main thread) for. Past this bound the retry is not worth taking, so
+# the caller's own fallback backoff applies and the request fails fast.
+MAX_RETRY_DELAY_SECONDS = 60.0
+# A reset value this large is an absolute epoch timestamp, not delta-seconds.
+_EPOCH_RESET_THRESHOLD = 100_000_000.0
+
+
+def retry_delay_from_headers(headers, fallback):
+    """Seconds to wait after a 429, read from whichever header the host sent.
+
+    ``Retry-After`` is the standard, but Reddit's search/RSS endpoints answer an
+    anonymous 429 with ``x-ratelimit-reset`` (seconds until the window rolls) and
+    no ``Retry-After`` at all::
+
+        HTTP/2 429
+        x-ratelimit-used: 1
+        x-ratelimit-remaining: 0.0
+        x-ratelimit-reset: 42
+
+    Reading only ``Retry-After`` means the caller falls back to exponential
+    backoff -- 3s, 5s, 9s -- every one of which is shorter than the ~42s Reddit
+    actually requires. Each retry re-429s, the budget drains, and the source is
+    reported dead when it was merely early. Honouring the reset header turns a
+    guaranteed zero into a result at the cost of one wait.
+
+    Returns ``fallback`` when neither header is present or parseable.
+    """
+    if not headers:
+        return fallback
+    for name in ("Retry-After", "x-ratelimit-reset"):
+        raw = headers.get(name)
+        if raw is None:
+            continue
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            continue
+        if value >= _EPOCH_RESET_THRESHOLD:
+            # GitHub-style absolute reset time.
+            value = value - time.time()
+        if value > 0:
+            return min(value, MAX_RETRY_DELAY_SECONDS)
+    return fallback
+
 # DNS resolution failures (gaierror) are transient — typically resolved by a
 # brief backoff and retry. Use a dedicated minimum attempt count + exponential
 # delays (1s, 2s, 4s) so callers that pass a small `retries` value still get a
@@ -737,15 +788,12 @@ def request(
             # failures get the widened `effective_retries` budget.
             if attempt < retries - 1:
                 if e.code == 429:
-                    # Respect Retry-After header, fall back to exponential backoff
-                    retry_after = e.headers.get("Retry-After") if hasattr(e, 'headers') else None
-                    if retry_after:
-                        try:
-                            delay = float(retry_after)
-                        except ValueError:
-                            delay = RETRY_DELAY * (2 ** attempt) + 1
-                    else:
-                        delay = RETRY_DELAY * (2 ** attempt) + 1  # 3s, 5s, 9s...
+                    # Respect Retry-After or x-ratelimit-reset (Reddit sends the
+                    # latter), falling back to exponential backoff: 3s, 5s, 9s...
+                    delay = retry_delay_from_headers(
+                        getattr(e, "headers", None),
+                        RETRY_DELAY * (2 ** attempt) + 1,
+                    )
                     log(f"Rate limited (429). Waiting {delay:.1f}s before retry {attempt + 2}/{retries}")
                 else:
                     delay = RETRY_DELAY * (2 ** attempt)
@@ -913,28 +961,161 @@ class RateLimiter:
         self._tokens = float(self.capacity)
         self._last = time.monotonic()
         self._lock = threading.Lock()
+        # Threads currently blocked in acquire(). Callers that wait on a batch
+        # of throttled futures size their timeouts from this queue depth.
+        self._waiting = 0
+
+    @property
+    def waiting(self) -> int:
+        """Threads currently blocked in :meth:`acquire`."""
+        with self._lock:
+            return self._waiting
 
     def acquire(self) -> None:
         """Consume one token, blocking only when the bucket is empty."""
-        while True:
-            with self._lock:
-                now = time.monotonic()
-                # Clamp elapsed to >= 0: a backward clock reading must never
-                # drive tokens negative (which would spin this loop forever).
-                elapsed = max(0.0, now - self._last)
-                self._tokens = min(self.capacity, self._tokens + elapsed * self.rate)
-                self._last = now
-                if self._tokens >= 1.0:
-                    self._tokens -= 1.0
-                    return
-                wait = (1.0 - self._tokens) / self.rate
-            time.sleep(wait)
+        queued = False
+        try:
+            while True:
+                with self._lock:
+                    now = time.monotonic()
+                    # Clamp elapsed to >= 0: a backward clock reading must never
+                    # drive tokens negative (which would spin this loop forever).
+                    elapsed = max(0.0, now - self._last)
+                    self._tokens = min(self.capacity, self._tokens + elapsed * self.rate)
+                    self._last = now
+                    if self._tokens >= 1.0:
+                        self._tokens -= 1.0
+                        return
+                    if not queued:
+                        self._waiting += 1
+                        queued = True
+                    wait = (1.0 - self._tokens) / self.rate
+                time.sleep(wait)
+        finally:
+            if queued:
+                with self._lock:
+                    self._waiting -= 1
 
 
 # Shared across all keyless Reddit tiers (RSS, listing, shreddit) so their
 # combined fan-out is throttled as one family. Burst lets the parallel
 # enrichment workers proceed; sustained rate caps the stampede.
-REDDIT_KEYLESS_LIMITER = RateLimiter(rate_per_sec=5.0, burst=5)
+# 1 req/sec is slow enough that home IPs survive RSS + listing + shreddit
+# fan-out; raise LAST30DAYS_REDDIT_KEYLESS_RATE to trade 429s for wall-clock.
+REDDIT_KEYLESS_RATE_ENV = "LAST30DAYS_REDDIT_KEYLESS_RATE"
+DEFAULT_REDDIT_KEYLESS_RATE = 1.0
+DEFAULT_REDDIT_KEYLESS_BURST = 2
+_REDDIT_429_RETRY_SLEEP_SEC = 1.0
+_REDDIT_429_RETRY_JITTER_SEC = 0.5
+
+
+def parse_reddit_keyless_rate(raw: Optional[str]) -> float:
+    """Parse LAST30DAYS_REDDIT_KEYLESS_RATE; invalid/non-positive -> default."""
+    text = (raw or "").strip()
+    if not text:
+        return DEFAULT_REDDIT_KEYLESS_RATE
+    try:
+        rate = float(text)
+    except (TypeError, ValueError):
+        return DEFAULT_REDDIT_KEYLESS_RATE
+    if not math.isfinite(rate) or rate <= 0:
+        return DEFAULT_REDDIT_KEYLESS_RATE
+    return rate
+
+
+def make_reddit_keyless_limiter(
+    environ: Optional[Dict[str, str]] = None,
+) -> RateLimiter:
+    envmap = os.environ if environ is None else environ
+    return RateLimiter(
+        rate_per_sec=parse_reddit_keyless_rate(envmap.get(REDDIT_KEYLESS_RATE_ENV)),
+        burst=DEFAULT_REDDIT_KEYLESS_BURST,
+    )
+
+
+REDDIT_KEYLESS_LIMITER = make_reddit_keyless_limiter()
+
+
+def _sync_reddit_keyless_rate() -> None:
+    """Apply a process-env override without resetting in-flight tokens."""
+    rate = parse_reddit_keyless_rate(os.environ.get(REDDIT_KEYLESS_RATE_ENV))
+    if REDDIT_KEYLESS_LIMITER.rate != rate:
+        REDDIT_KEYLESS_LIMITER.rate = rate
+
+
+def _failures_are_429(failures: list[HTTPError]) -> bool:
+    if not failures:
+        return False
+    last = failures[-1]
+    return last.status_code == 429 or last.outcome_state == health.RATE_LIMITED
+
+
+def _sleep_reddit_429_retry() -> None:
+    """Short jittered pause before the single in-lane 429 retry."""
+    time.sleep(
+        _REDDIT_429_RETRY_SLEEP_SEC
+        + random.uniform(0.0, _REDDIT_429_RETRY_JITTER_SEC)
+    )
+
+
+# Run-scoped memo for keyless Reddit GETs. Subreddit listing partials, listing
+# RSS feeds, arctic supplements, and shreddit comment pages depend only on the
+# subreddit and sort, and the Reddit lane is dispatched with the raw topic for
+# every subquery, so a four-subquery run requested each of them four times.
+# Memoizing successful bodies for the life of one command turns ~184 requests
+# into ~50 on the measured 2026-08-31 run shape. Concurrent requesters for the
+# same URL wait on the first fetch instead of issuing their own (all four
+# subquery streams start at once, so a result-only cache would miss).
+REDDIT_KEYLESS_MEMO_MAX = 512
+_REDDIT_KEYLESS_MEMO: "OrderedDict[str, str]" = OrderedDict()
+_REDDIT_KEYLESS_INFLIGHT: Dict[str, threading.Event] = {}
+_REDDIT_KEYLESS_MEMO_LOCK = threading.Lock()
+
+
+# Queue depth only counts threads already blocked in acquire(). The other
+# lanes' workers submit their requests as they go, so a batch's last fetch can
+# start well after the depth seen at wait time. This flat allowance covers
+# that (the 2026-08-31 smoke lost three feeds at ~35s with the depth term
+# alone; a full run's ~50 distinct keyless requests take ~50s at 1 req/s).
+REDDIT_KEYLESS_CONTENTION_SECONDS = 45.0
+
+
+def reddit_keyless_wait_allowance(batch_size: int) -> float:
+    """Seconds a batch of *batch_size* throttled fetches may spend waiting for tokens.
+
+    Every keyless Reddit lane in a run shares one bucket, so a lane's futures
+    can sit behind other lanes' requests before their own fetch starts. Size
+    per-future result timeouts as ``base + this`` instead of a fixed number;
+    at 1 req/s a fixed 20-second timeout expired on real runs while the fetch
+    was still queued (issue #985 follow-up).
+    """
+    _sync_reddit_keyless_rate()
+    limiter = REDDIT_KEYLESS_LIMITER
+    rate = limiter.rate if limiter.rate > 0 else 1.0
+    return (limiter.waiting + max(0, batch_size)) / rate + REDDIT_KEYLESS_CONTENTION_SECONDS
+
+
+def reset_reddit_keyless_memo() -> None:
+    """Forget memoized keyless Reddit bodies. Called once per command, and by tests."""
+    with _REDDIT_KEYLESS_MEMO_LOCK:
+        _REDDIT_KEYLESS_MEMO.clear()
+        _REDDIT_KEYLESS_INFLIGHT.clear()
+
+
+def _reddit_memo_get(url: str) -> Optional[str]:
+    with _REDDIT_KEYLESS_MEMO_LOCK:
+        text = _REDDIT_KEYLESS_MEMO.get(url)
+        if text is not None:
+            _REDDIT_KEYLESS_MEMO.move_to_end(url)
+        return text
+
+
+def _reddit_memo_put(url: str, text: str) -> None:
+    with _REDDIT_KEYLESS_MEMO_LOCK:
+        _REDDIT_KEYLESS_MEMO[url] = text
+        _REDDIT_KEYLESS_MEMO.move_to_end(url)
+        while len(_REDDIT_KEYLESS_MEMO) > REDDIT_KEYLESS_MEMO_MAX:
+            _REDDIT_KEYLESS_MEMO.popitem(last=False)
 
 
 def reddit_keyless_get_text(
@@ -944,14 +1125,98 @@ def reddit_keyless_get_text(
     accept: str = "*/*",
     headers: Optional[Dict[str, str]] = None,
 ) -> Optional[str]:
-    """get_text for the keyless Reddit tiers, throttled by a shared limiter.
+    """get_text for the keyless Reddit tiers, memoized per run and throttled.
 
-    Same contract as :func:`get_text` (returns None on any failure) but spaces
-    requests via :data:`REDDIT_KEYLESS_LIMITER` so a broad multi-query run does
-    not stampede Reddit's keyless endpoints and trip blocks.
+    Same contract as :func:`get_text` (returns None on any failure) but a URL
+    already fetched this command is served from the run memo without spending
+    a limiter token, concurrent requesters for one URL share the in-flight
+    fetch, and cold fetches are spaced via :data:`REDDIT_KEYLESS_LIMITER` so a
+    broad multi-query run does not stampede Reddit's keyless endpoints.
     """
-    REDDIT_KEYLESS_LIMITER.acquire()
-    return get_text(url, timeout=timeout, retries=retries, accept=accept, headers=headers)
+    cached = _reddit_memo_get(url)
+    if cached is not None:
+        return cached
+    # Elect one owner per URL. A waiter whose owner failed re-enters the
+    # election rather than fetching un-gated, so a failed fetch costs one
+    # retry for the whole group, not one per waiter.
+    for _round in range(3):
+        with _REDDIT_KEYLESS_MEMO_LOCK:
+            cached = _REDDIT_KEYLESS_MEMO.get(url)
+            if cached is not None:
+                return cached
+            gate = _REDDIT_KEYLESS_INFLIGHT.get(url)
+            owner = gate is None
+            if owner:
+                gate = threading.Event()
+                _REDDIT_KEYLESS_INFLIGHT[url] = gate
+        if owner:
+            break
+        # The owner may itself be queued in the shared bucket; wait for that
+        # queue, not just for one socket timeout.
+        gate.wait(
+            timeout=timeout * max(1, retries) + reddit_keyless_wait_allowance(1)
+        )
+        cached = _reddit_memo_get(url)
+        if cached is not None:
+            return cached
+    else:
+        # Three failed owners in a row: give up quietly rather than pile on.
+        return None
+    try:
+        _sync_reddit_keyless_rate()
+        REDDIT_KEYLESS_LIMITER.acquire()
+        text = get_text(url, timeout=timeout, retries=retries, accept=accept, headers=headers)
+        if text is not None:
+            _reddit_memo_put(url, text)
+        return text
+    finally:
+        with _REDDIT_KEYLESS_MEMO_LOCK:
+            _REDDIT_KEYLESS_INFLIGHT.pop(url, None)
+        gate.set()
+
+
+def reddit_keyless_get_text_retry_429(
+    url: str,
+    timeout: int = DEFAULT_TIMEOUT,
+    accept: str = "*/*",
+    headers: Optional[Dict[str, str]] = None,
+) -> tuple[Optional[str], Optional[str]]:
+    """Limiter-throttled GET with one extra limiter-respecting retry on 429.
+
+    Returns ``(body, error)``. The first attempt is captured locally so a
+    recovered 429 is not left in the pipeline sink. A second 429, or any
+    non-429 miss, is recorded as before. Internal ``get_text`` retries are
+    skipped (``retries=1``) so the in-lane retry is the one that re-acquires
+    the bucket.
+    """
+    # retries=1 on purpose: letting request() sleep out a 42-60s
+    # x-ratelimit-reset inside a lane worker starves the whole batch (the
+    # 2026-08-31 smoke lost 14 feeds to future timeouts with retries=2 versus
+    # 6 with 1). A keyless 429 fails fast, the lane retries once after a short
+    # jittered pause through the bucket, and the memo keeps the other streams
+    # from re-requesting the same URL.
+    kwargs: Dict[str, Any] = {
+        "timeout": timeout,
+        "retries": 1,
+        "accept": accept,
+        "headers": headers,
+    }
+    with capture_failures() as first:
+        text = reddit_keyless_get_text(url, **kwargs)
+    if text is not None:
+        return text, None
+    if _failures_are_429(first):
+        _sleep_reddit_429_retry()
+        with tee_failures() as second:
+            text = reddit_keyless_get_text(url, **kwargs)
+        if text is not None:
+            return text, None
+        err = second[-1] if second else (first[-1] if first else None)
+        return None, str(err) if err is not None else "no response"
+    for err in first:
+        _record_failure(err)
+    err = first[-1] if first else None
+    return None, str(err) if err is not None else "no response"
 
 
 def scrapecreators_headers(token: str) -> Dict[str, str]:

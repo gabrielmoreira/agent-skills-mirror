@@ -3,13 +3,13 @@ name: data-integrity-get-{domain}
 api: Data Integrity System
 method: GET
 path: /v1/systems/domain/trust/{domain}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Evaluate the trustworthiness of a domain by analyzing DNS records, WHOIS registration data, and MX configuration — in a single call.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/systems/domain/trust/{domain}**
+**GET https://requiems.xyz/v1/systems/domain/trust/{domain}**
 
 ## Domain Trust
 

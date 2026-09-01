@@ -3,13 +3,13 @@ name: profanity-post-profanity
 api: Profanity Filter
 method: POST
 path: /v1/validation/profanity
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Checks text for profanity, returning a censored version and the list of flagged words.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/validation/profanity**
+**POST https://requiems.xyz/v1/validation/profanity**
 
 ## Check Profanity
 

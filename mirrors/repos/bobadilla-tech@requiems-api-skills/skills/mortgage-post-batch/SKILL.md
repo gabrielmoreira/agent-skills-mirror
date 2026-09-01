@@ -3,13 +3,13 @@ name: mortgage-post-batch
 api: Mortgage Calculator
 method: POST
 path: /v1/finance/mortgage/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Calculate up to 50 mortgages in a single request. Results are returned in the same order as the input.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/finance/mortgage/batch**
+**POST https://requiems.xyz/v1/finance/mortgage/batch**
 
 ## Batch Calculate Mortgages
 

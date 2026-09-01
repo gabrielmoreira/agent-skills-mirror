@@ -4,6 +4,12 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.252](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2a3cec9)
+
+_+100 tokens_
+
+- System Reminder: Session context — Identifies when session context was re-read and includes the formatted refresh reason, while continuing to mark refreshed values as replacements for earlier ones.
+
 # [2.1.251](https://github.com/Piebald-AI/claude-code-system-prompts/commit/467bbfc)
 
 _-743,949 tokens_

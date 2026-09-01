@@ -3,13 +3,13 @@ name: mortgage-get-mortgage
 api: Mortgage Calculator
 method: GET
 path: /v1/finance/mortgage
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns the monthly payment, total cost, and full amortization schedule for a fixed-rate mortgage.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/mortgage**
+**GET https://requiems.xyz/v1/finance/mortgage**
 
 ## Calculate Mortgage
 

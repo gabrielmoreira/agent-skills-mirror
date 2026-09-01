@@ -3,13 +3,13 @@ name: geocode-get-reverse-geocode
 api: Geocoding
 method: GET
 path: /v1/places/reverse-geocode
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Converts geographic coordinates into a human-readable address.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/reverse-geocode**
+**GET https://requiems.xyz/v1/places/reverse-geocode**
 
 ## Reverse Geocode
 

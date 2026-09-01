@@ -124,7 +124,7 @@ the dashboard artifact validators in the same change.
 | PR | `approve` | Submit/choose approval for a review-clean PR. | Current `head_sha`, covered `source_updated_at`, no unresolved agent findings. | Native validation still pending, queued review, owned elsewhere, re-run prompt. |
 | PR | `post_review` | Post selected code suggestions or review comments. | Proposed comments pinned to the current head; inline comments use current RIGHT-side ranges when possible. | General "keep checking", "complete validation", or product-direction reminders without a publishable review body. |
 | PR | `request_changes` | Post selected blocking review comments as a request-changes review. | Same evidence and current-head requirements as `post_review`. | A standalone request to run the review loop again. |
-| Issue | `request_info` | Ask the reporter for specific missing evidence. | A concrete upstream issue comment body naming the exact logs, repro, screenshots, version, or confirmation needed. | "Not now", wait, monitor, or generic "needs info" with no concrete ask. |
+| Issue | `request_info` | Ask the reporter for specific missing evidence. | An issue-specific upstream comment that summarizes the relevant facts already supplied, explains why they are insufficient, asks for exact missing evidence, and gives the established collection method when one exists (for example, `/bugreport` for a fresh PowerToys diagnostic ZIP). | "Not now", wait, monitor, a generic checklist, or "send logs/more information" without explaining the gap. |
 | Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
 | Issue | `post_comment` | Post a close, duplicate, handled, out-of-scope, or maintainer-direction comment. | Specific rationale and linked duplicate/fix/ownership evidence when applicable. | Silent close, vague "won't fix", or no-op status comments. |
 | Issue | `open_upstream_pr` | Open the completed fork fix upstream. | Fork PR/head, implementation evidence, and approval gate. | Opening without explicit approval or without a reviewed fork fix. |
@@ -363,6 +363,50 @@ Each judgment must contain `rationale`, concrete `evidence`, a
 root cause during the fast pass. When evidence is insufficient, prefer
 `needs_information` over a speculative design.
 
+Every new or substantively refreshed issue artifact that exposes an action must
+use `schemaVersion: 4` and include display-only `issue_context`:
+
+- `summary` — a concise synthesis of the report and discussion, not a copy of
+  the title or issue body;
+- `known_information` — concrete facts already supplied by the reporter,
+  commenters, labels, attachments, linked work, or live repository state;
+- `inferences` — only conclusions supportable from those facts, phrased with
+  uncertainty and never presented as confirmed root cause;
+- `analysis` — the Copilot triage reasoning that connects the evidence to the
+  proposed maintainer action;
+- `initial_investigation` — focused code, history, duplicate, ownership, or
+  diagnostic findings gathered during the lightweight pass;
+- `information_gaps` — for each missing item, record `information`,
+  `why_needed`, and, when known, `how_to_collect`.
+
+This context is public, read-only decision support for the Pulse action window.
+It is not part of `actions[].comment.body`, is not editable, and must never be
+appended to the upstream comment automatically. Keep facts and inferences
+separate. Do not publish private notes, unsupported speculation, local paths,
+credentials, or sensitive diagnostic contents.
+
+For `needs_information`, read the entire issue body and discussion before
+drafting. The comment must acknowledge the useful issue-specific information
+already present, identify the exact ambiguity or decision it cannot resolve,
+then request only evidence that would change triage or implementation. Reuse
+established PowerToys collection conventions instead of inventing generic
+instructions:
+
+- when a fresh PowerToys diagnostic archive is needed, ask the reporter to
+  submit a comment containing `/bugreport`; explain that the generated ZIP
+  should be captured immediately after reproducing the problem;
+- ask for recordings, screenshots, Event Viewer entries, installer logs,
+  configuration exports, versions, or numbered reproduction steps only when
+  they address a specific recorded gap;
+- if an attachment or prior answer already supplies an item, do not ask for it
+  again;
+- do not paste a standard multi-item checklist into unrelated issues.
+
+The editable `request_info` comment and display-only context must agree:
+`actions[].comment.body` asks for the same gaps recorded under
+`issue_context.information_gaps`, and any gap whose `how_to_collect` names
+`/bugreport` must use `/bugreport` in the proposed comment.
+
 Older unchanged bugs do not need to be re-read every run, but they must retain
 their prior explicit judgment/action in the board. The 30-day window controls
 full-design priority, not whether changed issues receive a judgment.
@@ -552,6 +596,7 @@ Write these machine-readable fields into `data/items/<number>.json`:
 
 ```jsonc
 {
+  "schemaVersion": 4,
   "evaluated_at": "UTC ISO",
   "source_updated_at": "upstream updatedAt covered by this result",
   "judgment": {
@@ -559,6 +604,20 @@ Write these machine-readable fields into `data/items/<number>.json`:
     "rationale": "...",
     "evidence": ["..."],
     "recommended_action": "..."
+  },
+  "issue_context": {
+    "summary": "Concise synthesis of the report and discussion.",
+    "known_information": ["Confirmed fact already present in the issue."],
+    "inferences": ["Evidence-supported possibility, explicitly qualified."],
+    "analysis": "Why the evidence supports the proposed action.",
+    "initial_investigation": ["Focused code/history/duplicate finding."],
+    "information_gaps": [
+      {
+        "information": "Exact missing evidence",
+        "why_needed": "Decision this evidence will resolve",
+        "how_to_collect": "Comment /bugreport immediately after reproducing"
+      }
+    ]
   },
   "design": {
     "root_cause": "...",
@@ -691,7 +750,8 @@ new output:
 ```powershell
 pwsh -NoProfile -File `
   "$SkillRoot\scripts\Test-DashboardArtifacts.ps1" `
-  -Dashboard $Dashboard -Numbers $ProcessedNumbers -RequireDetailedDesign
+  -Dashboard $Dashboard -Numbers $ProcessedNumbers `
+  -RequireDetailedDesign -RequireIssueContext
 ```
 
 Do not publish when validation reports an error. Fix the artifact or honestly

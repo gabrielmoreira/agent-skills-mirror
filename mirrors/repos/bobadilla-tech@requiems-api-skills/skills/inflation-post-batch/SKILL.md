@@ -3,13 +3,13 @@ name: inflation-post-batch
 api: Inflation
 method: POST
 path: /v1/finance/inflation/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns inflation data for up to 50 countries in a single request. Results are in the same order as the input. Countries with no data return found: false instead of failing the whole request. Billing: 1 credit per country (not per HTTP request).
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/finance/inflation/batch**
+**POST https://requiems.xyz/v1/finance/inflation/batch**
 
 ## Batch Inflation Rates
 

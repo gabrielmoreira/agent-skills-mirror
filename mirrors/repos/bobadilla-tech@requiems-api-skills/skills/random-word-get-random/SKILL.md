@@ -3,13 +3,13 @@ name: random-word-get-random
 api: Random Word
 method: GET
 path: /v1/text/words/random
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a random word with its definition and part of speech
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/text/words/random**
+**GET https://requiems.xyz/v1/text/words/random**
 
 ## Get Random Word
 

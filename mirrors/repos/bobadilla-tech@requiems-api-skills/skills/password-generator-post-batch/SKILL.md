@@ -3,13 +3,13 @@ name: password-generator-post-batch
 api: Password Generator
 method: POST
 path: /v1/technology/password/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Generate up to 50 passwords in a single request. Each item can have its own length and character set options. Results are returned in input order.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/password/batch**
+**POST https://requiems.xyz/v1/technology/password/batch**
 
 ## Batch Generate Passwords
 

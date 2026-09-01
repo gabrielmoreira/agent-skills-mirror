@@ -61,11 +61,14 @@ Bad example:
 - **Claim extraction (추출)** - Break the `USER.md` and `MEMORY.md` material into claims. Quote only observed claims; never invent provenance.
 - **Provenance (출처)** - Ask for the source class and distinguish Hermes-native, provider, and vector material as `not_omh_reviewed`.
 - **Target (대상)** - Review existing native-memory claims only. Route a new project/product fact to `memory-new`.
-- **Per-entry confirmation (확인)** - Walk the inventory in order. For each entry, quote it back from your own memory file and state what you take it to mean, then ask the user to keep, revise, or archive it before moving on. Do not summarize the whole file and ask one question about all of it; a review the user cannot correct entry by entry is not a review.
+- **Candidate selection (후보)** - Default to a short interview, not a census: pick about five candidate entries per pass and say why each was picked. Rank by the signals already on hand — dreaming reminders (duplicate clusters, deadline, `stale_review_required`), the status bridge's OMH-record similarity rows (near-duplicates), and claims that look stale, conflicting, or overgeneralized. Walk the complete inventory only when the user asks for a full review.
+- **Per-entry confirmation (확인)** - Walk the selected candidates one at a time. For each entry, quote it back from your own memory file and state what you take it to mean, then ask the user to keep, revise, or archive it before moving on. Do not summarize the whole file and ask one question about all of it; a review the user cannot correct entry by entry is not a review.
+- **Cursor (이어하기)** - Close every pass by naming what was covered and what was not — reviewed entry indexes, remaining candidates, and the next entry a resumed review would start from — so an interrupted interview resumes instead of restarting. The resume point lives only in the conversation; no store persists it, so name it explicitly rather than assuming the system remembers.
 - **Review (검토)** - Prioritize stale, conflicting, duplicate, and overgeneralized claims. Offer keep, revise, or archive choices; do not describe an archive as removal.
 - **Attention (주의)** - For a reviewed OMH-local record, keep/archive is an attention tier: `active` leads the working context, `reference` stays recallable behind active peers, `archive` leaves default recall. Preview with `omh memory attention <record-id> --tier <tier>`, say which records stay in the working context and which leave it, then apply with `--apply` only after the user agrees. The preview writes nothing.
 - **Diff (차이)** - Prepare one concise native write diff with before/after claims and counts. Keep the caps: MEMORY.md about 2,200 characters and USER.md about 1,375 characters.
-- **Native-write boundary (쓰기)** - This skill can prepare guidance and a native write diff only. It never invokes, applies, or observes a `MEMORY.md`/`USER.md` write.
+- **Native-write boundary (쓰기)** - OMH prepares guidance and a native write diff only; no OMH surface invokes, applies, or observes a `MEMORY.md`/`USER.md` write.
+- **Apply after approval (적용)** - The interview does not end at a diff. Per-entry keep/revise/archive answers are input to the diff, not approval of it: ask for one explicit approval of the assembled diff. After that approval, apply the approved entries yourself through the Hermes-native memory tool — the same tool that owns these files — and report what the write observably changed; with the tool available, leaving an approved diff silently unapplied fails the interview. If the native memory tool is unavailable, report the approved diff and stop: that is a completed review with the write pending, never a failed interview and never a reason to edit the files directly. The OMH artifact stays `memory_curation_review/v1` metadata either way: the native write is Hermes's own act and never becomes OMH mutation evidence.
 
 ## Memory Boundaries
 
@@ -85,9 +88,9 @@ Normal users use natural-language Hermes chat. `omh memory ...` commands are age
 
 ## Use When
 
-Use when existing Hermes USER.md, MEMORY.md, or accumulated skill memories need an English-canonical, claim-by-claim review. It prepares native write guidance only; it never invokes, applies, or observes a native write. Do not use for new project or product candidates.
+Use when existing Hermes USER.md, MEMORY.md, or accumulated skill memories need an English-canonical, claim-by-claim review. It prepares native write guidance only; no OMH surface invokes, applies, or observes a native write — a user-approved diff is applied by Hermes's own native memory tool. Do not use for new project or product candidates.
 
-    Strong routing signals: `memory-sync`, `memory curation`, `memory review`, `memory inspect`, `memory check`, `memory update`, `context cleanup`, `curate memory`, `stale memory`, `hermes remembers`, `conflicting memory`, `duplicate skill`, `MEMORY.md`, `USER.md`, `what you remember about me`, `your memory about me`, `기억하고 있는`, `기억하고 있는 프로젝트 맥락`, `기억하는 맥락`, `현재 hermes가 기억하는 맥락`, `현재 헤르메스가 기억하는 맥락`, `헤르메스가 기억하는 맥락`, `오래된 맥락`, `오래된 기억`, `기억 점검`, `기억 정리`, `메모리 업데이트`, `메모리 검사`, `메모리 점검`, `메모리 정리`, `맥락 점검`, `맥락 정리`, `맥락 피드백`, `등록된 맥락`, `헤르메스 기억`, `중복 스킬`, `나에 대해 잘못 알고`, `저장된 내 정보`, `너한테 저장된`, `저장된 프로필`, `기억 바로잡`
+    Strong routing signals: `memory-sync`, `memory curation`, `memory review`, `memory inspect`, `memory check`, `memory update`, `context cleanup`, `curate memory`, `stale memory`, `hermes remembers`, `conflicting memory`, `duplicate skill`, `MEMORY.md`, `USER.md`, `what you remember about me`, `your memory about me`, `your memories`, `memory interview`, `memories still true`, `기억하고 있는`, `기억하고 있는 프로젝트 맥락`, `기억하는 맥락`, `현재 hermes가 기억하는 맥락`, `현재 헤르메스가 기억하는 맥락`, `헤르메스가 기억하는 맥락`, `오래된 맥락`, `오래된 기억`, `기억 점검`, `기억 정리`, `메모리 업데이트`, `메모리 검사`, `메모리 점검`, `메모리 정리`, `맥락 점검`, `맥락 정리`, `맥락 피드백`, `등록된 맥락`, `헤르메스 기억`, `중복 스킬`, `나에 대해 잘못 알고`, `저장된 내 정보`, `너한테 저장된`, `저장된 프로필`, `기억 바로잡`, `메모리 인터뷰`, `기억 인터뷰`
 
 ## Catalog Metadata
 
@@ -127,7 +130,7 @@ Artifact expectations:
 
 Safety rules:
 
-- A memory-sync review is prompt guidance only. It can prepare a native MEMORY.md or USER.md write diff but never invokes, applies, or observes that write. Hermes-native and external provider/vector context is not_omh_reviewed and never inherits OMH approval.
+- A memory-sync review is prompt guidance only: no OMH surface invokes, applies, or observes a MEMORY.md or USER.md write. Applying a user-approved diff is Hermes's own act through its native memory tool — report it as an observed native write, never as OMH mutation evidence. Hermes-native and external provider/vector context is not_omh_reviewed and never inherits OMH approval.
 - Do not claim connector, gateway, runtime, file generation, memory mutation, or host automation evidence from prepared guidance.
 - Keep English as the canonical protocol; Korean routing triggers and concise Korean help labels remain available.
 - Quote claims only when observed, do not invent provenance, and keep the prepared native diff separate from any native write.

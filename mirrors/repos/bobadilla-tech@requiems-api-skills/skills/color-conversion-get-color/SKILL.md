@@ -3,13 +3,13 @@ name: color-conversion-get-color
 api: Color Format Conversion
 method: GET
 path: /v1/technology/color
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Convert a color value from one format to another. The response always includes all four formats.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/color**
+**GET https://requiems.xyz/v1/technology/color**
 
 ## Convert Color
 

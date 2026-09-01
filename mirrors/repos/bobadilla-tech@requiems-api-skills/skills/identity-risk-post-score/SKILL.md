@@ -3,13 +3,13 @@ name: identity-risk-post-score
 api: Identity & Risk System
 method: POST
 path: /v1/systems/risk/score
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Score a user for risk without the full signal breakdown. Lower latency than /signup/protect, suited for background re-scoring and rate limiting.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/systems/risk/score**
+**POST https://requiems.xyz/v1/systems/risk/score**
 
 ## Score Risk
 

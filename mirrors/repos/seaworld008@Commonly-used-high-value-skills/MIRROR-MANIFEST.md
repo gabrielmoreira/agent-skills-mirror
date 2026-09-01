@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns, 6 followed patterns, 4811 file(s) materialized.
+Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns, 7 followed patterns, 4812 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 4811 |
+| Followed pats | 7 |
+| Files         | 4812 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns,
 - `docs/nlpm-audit-usage.md`
 - `CONTRIBUTING.md`
 - `docs/sources/reports/skill-curation-2026-04-25.md`
+- `docs/maintenance-2026-08-31.md`
 
 ## File Index
 
@@ -4871,10 +4872,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4805 | ✓ | [`skills/task-understanding-decomposition/scout/SKILL.md`](skills/task-understanding-decomposition/scout/SKILL.md) |
 | 4806 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 4807 | → | [`docs/client-install-guides.md`](docs/client-install-guides.md) |
-| 4808 | → | [`docs/nlpm-audit-usage.md`](docs/nlpm-audit-usage.md) |
-| 4809 | → | [`docs/sources/reports/skill-curation-2026-04-25.md`](docs/sources/reports/skill-curation-2026-04-25.md) |
-| 4810 | → | [`README.en.md`](README.en.md) |
-| 4811 | → | [`README.md`](README.md) |
+| 4808 | → | [`docs/maintenance-2026-08-31.md`](docs/maintenance-2026-08-31.md) |
+| 4809 | → | [`docs/nlpm-audit-usage.md`](docs/nlpm-audit-usage.md) |
+| 4810 | → | [`docs/sources/reports/skill-curation-2026-04-25.md`](docs/sources/reports/skill-curation-2026-04-25.md) |
+| 4811 | → | [`README.en.md`](README.en.md) |
+| 4812 | → | [`README.md`](README.md) |
 
 ---
 

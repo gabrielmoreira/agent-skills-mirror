@@ -3,13 +3,13 @@ name: barcode-post-batch
 api: Barcode Generator
 method: POST
 path: /v1/technology/barcode/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Generate up to 20 barcodes in a single request. Each barcode is processed independently and results are returned in the same order as the input. Invalid items do not fail the entire request.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/barcode/batch**
+**POST https://requiems.xyz/v1/technology/barcode/batch**
 
 ## Generate Barcodes (Batch)
 

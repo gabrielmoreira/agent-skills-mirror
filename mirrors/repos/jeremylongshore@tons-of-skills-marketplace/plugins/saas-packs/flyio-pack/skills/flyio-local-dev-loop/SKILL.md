@@ -10,7 +10,7 @@ description: 'Configure Fly.io local development with Docker, proxy, and SSH con
 
   '
 allowed-tools: Read, Write, Edit, Bash(fly:*), Bash(docker:*), Grep
-version: 1.6.0
+version: 1.7.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
@@ -67,7 +67,7 @@ curl http://localhost:3000/health
 fly proxy 5432 -a my-db &
 
 # Now use local tools against remote Fly Postgres
-psql postgres://postgres:password@localhost:5432/mydb
+psql "$DATABASE_URL"
 npx prisma studio  # Prisma GUI works against proxied DB
 
 # Proxy Redis

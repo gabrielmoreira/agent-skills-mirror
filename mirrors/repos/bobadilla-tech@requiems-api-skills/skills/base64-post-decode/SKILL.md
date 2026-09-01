@@ -3,13 +3,13 @@ name: base64-post-decode
 api: Base64 Encode / Decode
 method: POST
 path: /v1/technology/base64/decode
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Decode a Base64-encoded string back to plain text
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/base64/decode**
+**POST https://requiems.xyz/v1/technology/base64/decode**
 
 ## Decode
 

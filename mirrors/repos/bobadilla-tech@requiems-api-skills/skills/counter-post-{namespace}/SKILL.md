@@ -3,13 +3,13 @@ name: counter-post-{namespace}
 api: Counter
 method: POST
 path: /v1/technology/counter/{namespace}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Atomically increment a counter in the specified namespace and return the new value
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/counter/{namespace}**
+**POST https://requiems.xyz/v1/technology/counter/{namespace}**
 
 ## Increment Counter
 

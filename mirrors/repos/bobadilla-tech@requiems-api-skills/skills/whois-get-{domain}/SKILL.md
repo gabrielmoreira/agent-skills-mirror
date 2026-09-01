@@ -3,13 +3,13 @@ name: whois-get-{domain}
 api: WHOIS Lookup
 method: GET
 path: /v1/networking/whois/{domain}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns WHOIS registration information for a domain name.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/whois/{domain}**
+**GET https://requiems.xyz/v1/networking/whois/{domain}**
 
 ## WHOIS Lookup
 

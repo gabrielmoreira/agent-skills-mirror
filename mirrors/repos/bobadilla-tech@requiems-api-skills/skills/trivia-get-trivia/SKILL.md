@@ -3,13 +3,13 @@ name: trivia-get-trivia
 api: Trivia
 method: GET
 path: /v1/entertainment/trivia
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a random trivia question with multiple-choice answers. Use the optional category and difficulty query parameters to filter the question pool.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/trivia**
+**GET https://requiems.xyz/v1/entertainment/trivia**
 
 ## Get Trivia Question
 

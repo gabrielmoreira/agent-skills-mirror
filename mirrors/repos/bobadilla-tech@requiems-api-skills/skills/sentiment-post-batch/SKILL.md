@@ -3,13 +3,13 @@ name: sentiment-post-batch
 api: Sentiment Analysis
 method: POST
 path: /v1/text/sentiment/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Analyzes the sentiment of up to 50 texts in a single request. Results are returned in the same order as the input. Each text counts as one unit of usage.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/text/sentiment/batch**
+**POST https://requiems.xyz/v1/text/sentiment/batch**
 
 ## Analyze Sentiment (Batch)
 

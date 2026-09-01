@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 10 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/open-pr/SKILL.md`](.agents/skills/open-pr/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/review-architecture/SKILL.md`](.agents/skills/review-architecture/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`apps/editor/AGENTS.md`](apps/editor/AGENTS.md) |
-| 6 | ✓ | [`apps/editor/CLAUDE.md`](apps/editor/CLAUDE.md) |
-| 7 | ✓ | [`apps/ifc-converter/AGENTS.md`](apps/ifc-converter/AGENTS.md) |
-| 8 | ✓ | [`apps/ifc-converter/CLAUDE.md`](apps/ifc-converter/CLAUDE.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 2 | ✓ | [`.agents/skills/open-pr2/SKILL.md`](.agents/skills/open-pr2/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/review-architecture/SKILL.md`](.agents/skills/review-architecture/SKILL.md) |
+| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`apps/editor/AGENTS.md`](apps/editor/AGENTS.md) |
+| 7 | ✓ | [`apps/editor/CLAUDE.md`](apps/editor/CLAUDE.md) |
+| 8 | ✓ | [`apps/ifc-converter/AGENTS.md`](apps/ifc-converter/AGENTS.md) |
+| 9 | ✓ | [`apps/ifc-converter/CLAUDE.md`](apps/ifc-converter/CLAUDE.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

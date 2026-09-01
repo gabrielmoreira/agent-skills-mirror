@@ -3,13 +3,13 @@ name: whois-post-batch
 api: WHOIS Lookup
 method: POST
 path: /v1/networking/whois/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns WHOIS information for up to 50 domains in a single request. Results are returned in the same order as the input array. Domains without WHOIS data return found: false instead of failing the entire request.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/networking/whois/batch**
+**POST https://requiems.xyz/v1/networking/whois/batch**
 
 ## Batch WHOIS Lookup
 

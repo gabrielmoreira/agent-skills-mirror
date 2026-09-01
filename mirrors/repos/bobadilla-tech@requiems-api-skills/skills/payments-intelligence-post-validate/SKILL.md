@@ -3,13 +3,13 @@ name: payments-intelligence-post-validate
 api: Payments Intelligence System
 method: POST
 path: /v1/systems/payment/validate
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validate and cross-check BIN, IBAN, and SWIFT identifiers in one call. Returns per-field results and a consistency check that flags country and bank mismatches.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/systems/payment/validate**
+**POST https://requiems.xyz/v1/systems/payment/validate**
 
 ## Validate Payment
 

@@ -3,13 +3,13 @@ name: horoscope-get-{sign}
 api: Horoscope
 method: GET
 path: /v1/entertainment/horoscope/{sign}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a daily horoscope reading for the specified zodiac sign.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/horoscope/{sign}**
+**GET https://requiems.xyz/v1/entertainment/horoscope/{sign}**
 
 ## Get Daily Horoscope
 

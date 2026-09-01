@@ -3,13 +3,13 @@ name: iban-post-batch
 api: IBAN Validator
 method: POST
 path: /v1/finance/iban/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validates up to 50 iban numbers in a single request. Results are returned in the same order as the input.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/finance/iban/batch**
+**POST https://requiems.xyz/v1/finance/iban/batch**
 
 ## Batch Validate IBANs
 

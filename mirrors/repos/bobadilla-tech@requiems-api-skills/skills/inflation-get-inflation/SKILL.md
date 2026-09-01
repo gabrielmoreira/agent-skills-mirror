@@ -3,13 +3,13 @@ name: inflation-get-inflation
 api: Inflation
 method: GET
 path: /v1/finance/inflation
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns the latest annual CPI inflation rate for a country plus the previous 10 years of historical data.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/inflation**
+**GET https://requiems.xyz/v1/finance/inflation**
 
 ## Get Inflation Rate
 

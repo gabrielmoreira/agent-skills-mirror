@@ -3,13 +3,13 @@ name: number-base-conversion-post-batch
 api: Number Base Conversion
 method: POST
 path: /v1/technology/base/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Convert up to 50 numbers between bases in a single request. Results are returned in input order. Per-item errors are reported inline.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/base/batch**
+**POST https://requiems.xyz/v1/technology/base/batch**
 
 ## Batch Convert Base
 

@@ -167,6 +167,8 @@ python3 scripts/export_openclaw_skills.py
 
 ### 常见维护命令
 
+上游复核与客户端安装是独立步骤。翻译、扩写或上游消失都不能抹去原始许可证与来源；组合技能的依赖锁和 monitor-only 契约未完成复核时，维护 PR 应保持草稿，不得合并。
+
 如果你修改了仓库里的源码技能，推荐统一刷新生成视图：
 
 ```bash
@@ -417,7 +419,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `python-performance`：用于 Python 性能分析、内存优化、热点路径调优和并发模式评审。
 - `qa-expert`：用于质量保障、expert，支持开发、调试、评审和交付。
 - `react-native-engineering`：用于构建、审查、调试、测试、升级和发布 React Native 与 Expo 应用，覆盖新架构、原生模块、性能、EAS 和双平台验证。
-- `repomix-safe-mixer`：用于repomix、safe、mixer，支持开发、调试、评审和交付。
+- `repomix-safe-mixer`：打包代码前扫描凭据、输出脱敏报告，并在发现风险时阻止打包。
 - `rust-engineer`：用于 Rust 代码开发、所有权和生命周期调试、异步模式选择和系统性能优化。
 - `schema`：数据库模式设计、迁移规划、索引策略和关系建模。
 - `skill-tester`：用于技能、tester，支持开发、调试、评审和交付。
@@ -462,8 +464,8 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `nexus`：多智能体任务分解、链路编排、执行协调和结果整合。
 - `nlpm-audit`：审计 SKILL.md、AGENTS.md、CLAUDE.md、插件清单、hooks、commands 和提示词，检查安装一致性、质量评分、安全风险与版本漂移。
 - `observability-and-instrumentation`：为生产代码设计日志、指标、追踪和告警，使行为可观测、问题可诊断。
-- `performance-optimization`：用于性能、优化，支持任务规划、执行、评审和验证。
-- `planning-and-task-breakdown`：用于planning、任务、breakdown，支持任务规划、执行、评审和验证。
+- `performance-optimization`：基于测量优化前后端与数据库性能，并用 CI 预算和真实用户监测防止回退。
+- `planning-and-task-breakdown`：将需求拆成有依赖与验收标准的任务，并保护已有未完成计划。
 - `prompt-optimizer`：用于提示词、optimizer，支持任务规划、执行、评审和验证。
 - `rally`：多会话并行执行编排，协调多个智能体共同完成任务。
 - `receiving-code-review`：用于receiving、代码、评审，支持任务规划、执行、评审和验证。
@@ -605,7 +607,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `lark-drive`：用于搜索、读取和管理飞书云空间文件与权限。
 - `lark-event`：用于订阅、消费和处理飞书实时事件流，支持消息、任务、会议纪要和画板更新。
 - `lark-im`：用于发送、读取和处理飞书即时消息与群聊交互。
-- `lark-mail`：飞书邮箱：Use when user mentions 起草邮件、写邮件、草稿、发送/回复/转发邮件、查阅邮件、看邮。
+- `lark-mail`：用于飞书邮件起草、查询、回复、转发及经授权的发送与邮箱管理。
 - `lark-markdown`：飞书 Markdown：查看、创建、上传、编辑和比较 Markdown 文件。
 - `lark-meeting`：统一处理飞书会议、妙记、智能纪要、逐字稿和经授权的会中互动。
 - `lark-okr`：飞书 OKR：管理目标与关键结果。
@@ -752,6 +754,8 @@ rg -n "prompt|security|pdf|deploy" skills/**/SKILL.md
 ```
 
 ## 维护建议
+
+本次维护的接入、保留与拒绝理由见 [2026-08-31 精选维护决策](./docs/maintenance-2026-08-31.md)。
 
 - 新增技能时保持 `skills/<分类>/<skill-name>/SKILL.md` 结构。
 - OpenClaw 兼容目录通过 `python3 scripts/export_openclaw_skills.py` 生成，不直接手工维护 `openclaw-skills/`。

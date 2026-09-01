@@ -169,6 +169,8 @@ If you want client-specific examples instead of the generic setup above, continu
 
 ### Common Maintenance Commands
 
+Upstream review and client installation are separate steps. Translation, expansion, or an unavailable upstream must not erase original license provenance. Keep maintenance PRs in draft while composite dependency locks or monitor-only contracts remain unreviewed.
+
 If you change source skills in the repository, refresh generated views with:
 
 ```bash
@@ -691,6 +693,9 @@ These areas are good candidates for future expansion and replacement decisions:
 - Before replacing overlapping skills, compare usage frequency, quality score, and last synced time.
 
 Detailed curation context: [Skill Curation and Upgrade Report](./docs/sources/reports/skill-curation-2026-04-25.md).
+
+Accepted updates, preserved assets, and rejected candidates for this run:
+[2026-08-31 maintenance decisions](./docs/maintenance-2026-08-31.md).
 
 ## Quick Search Commands
 

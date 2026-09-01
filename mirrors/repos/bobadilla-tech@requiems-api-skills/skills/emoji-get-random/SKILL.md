@@ -3,13 +3,13 @@ name: emoji-get-random
 api: Emoji
 method: GET
 path: /v1/entertainment/emoji/random
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a randomly selected emoji with its full metadata.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/emoji/random**
+**GET https://requiems.xyz/v1/entertainment/emoji/random**
 
 ## Get Random Emoji
 

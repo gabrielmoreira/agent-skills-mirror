@@ -3,13 +3,13 @@ name: data-integrity-post-normalize
 api: Data Integrity System
 method: POST
 path: /v1/systems/text/normalize
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Apply a composable pipeline of normalization operations to a string. Trim whitespace, fix encoding, normalize unicode, strip HTML, and more — in a single call.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/systems/text/normalize**
+**POST https://requiems.xyz/v1/systems/text/normalize**
 
 ## Normalize Text
 

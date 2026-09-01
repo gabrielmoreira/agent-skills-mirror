@@ -3,13 +3,13 @@ name: data-format-conversion-post-format
 api: Data Format Conversion
 method: POST
 path: /v1/technology/format
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Convert content from one structured data format to another. Supported formats: json, yaml, csv, xml, toml.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/format**
+**POST https://requiems.xyz/v1/technology/format**
 
 ## Convert Format
 

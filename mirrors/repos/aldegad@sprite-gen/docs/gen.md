@@ -1,0 +1,139 @@
+# `sprite-gen gen` — provider-backed image generation (engine SSoT)
+
+Generation is a first-class engine module (`sprite_gen/gen/`), not an external
+skill. One call = a prompt (+ optional reference images) → one **verified** PNG on
+disk, with an optional deterministic transparent-chroma post-process. The general
+`image-gen` skill is a thin shuttle over this command.
+
+Providers (Gemini/OpenRouter/fal/BytePlus are intentionally **not** included):
+
+| Provider | Backend | Auth | Output truth |
+|---|---|---|---|
+| `codex` | codex `image_gen` | ChatGPT OAuth | inline base64 in the session rollout jsonl, decoded deterministically |
+| `grok` | grok Imagine `image_gen` / `image_edit` | xAI OAuth | file grok is told to write, verified by PNG magic |
+
+## Default provider selection
+
+`--provider` is **optional**. When omitted, the backend is resolved by a fixed
+precedence (maintainer 확정 2026-07-17):
+
+1. **`SPRITE_GEN_DEFAULT_PROVIDER`** env var (`codex` or `grok`) — the user override.
+   An unknown value fails loud.
+2. **`codex`** — the hard default (GPT `image_gen`).
+
+If the resolved default is `codex` but codex is unavailable here (CLI not on PATH,
+or `codex login status` reports not-logged-in), the resolution **falls back to
+`grok` — observably, never silently**: a stderr notice is printed and the report
+JSON records `provider_fallback` (`from`/`to`/`reason`/`default_source`). The
+grok default (`SPRITE_GEN_DEFAULT_PROVIDER=grok`) has no reverse fallback — a down
+grok fails loud at generation time.
+
+An **explicit `--provider`** is always honored verbatim — it is never overridden by
+the availability fallback. An explicitly named provider that is down fails loud
+(the provider adapter raises), preserving the operator's stated intent.
+
+Every generation reports which backend actually ran: `provider` (the real
+backend), `provider_resolved_from` (`explicit` / `SPRITE_GEN_DEFAULT_PROVIDER` /
+`hard-default` / `fallback-from-codex`), and `provider_fallback` when a fallback
+happened.
+
+## Provider and visible-worker topology
+
+Provider selection and user-facing worker/agent creation are orthogonal:
+
+| Layer | Canonical path | Responsibility |
+|---|---|---|
+| Generation request | `generate_sprite_image.py --provider grok` | Select the engine provider for one image request. |
+| Provider adapter | `GrokProvider` | Build the prompt, choose Imagine `image_gen` or `image_edit`, and verify the requested PNG. |
+| Headless provider process | `grok -p --sandbox workspace --always-approve` | Execute the xAI-authenticated Imagine tool call. |
+| Image model tool | Imagine `image_gen` / `image_edit` | Generate a new image, or edit from references. |
+| Visible worker/agent | (caller's orchestrator) | Creating a user-facing worker surface that may invoke the generation request is the orchestrator's own concern; it does not select or replace the provider. |
+
+Therefore the direct Grok chain is `generate_sprite_image.py --provider grok`
+→ `GrokProvider` → `grok -p --always-approve` → Imagine
+`image_gen`/`image_edit`. `GrokProvider` owns the headless agent process lifecycle;
+the chain does not require or route through a separate user-facing skill/task, and
+it is not a second visible-worker topology.
+
+## CLI
+
+```bash
+sprite-gen gen \
+  [--provider codex|grok] # optional; default = SPRITE_GEN_DEFAULT_PROVIDER env → codex (observable grok fallback if codex is down)
+  --prompt "…"            # or --prompt-file PROMPT.txt
+  --out DEST.png \
+  [--ref REF.png ...]     # repeatable; grok routes refs through image_edit
+  [--transparent [--chroma-key magenta|green]] \
+  [--white-check CHECK.png] \
+  [--aspect-ratio 1:1]    # grok only (1:1, 16:9, 9:16, 4:3, 3:4, auto)
+  [--model ID] \
+  [--report REPORT.json] \
+  [--keep-session]        # codex: keep the rollout jsonl instead of deleting it
+```
+
+Backward-compatible wrapper: `$SPRITE_GEN_ROOT/.venv/bin/python $SPRITE_GEN_ROOT/scripts/generate_sprite_image.py …` (same args).
+
+- **Non-transparent**: the raw PNG (chroma background included) is copied to `--out`.
+- **`--transparent`**: the raw is keyed to clean RGBA through the frame extractor's
+  canonical YCbCr matte (`remove_chroma_background_ycbcr`). Generate on a `#FF00FF`
+  (or `#00FF00`) background — pick the key by subject colour (magenta subjects →
+  green key). Gradients and texture within that chroma family are supported. A result
+  with `alpha_zero_pct: 0.0`, or any transparent pixel that still carries non-zero
+  RGB, **fails loudly before the output or success report is published** (No Silent Fallback).
+- The pre-chroma raw is preserved next to the destination as `<out>.raw.png` for audit.
+- `--report` writes a `sprite-gen-image-report` JSON: provider, prompt, out/raw paths,
+  `raw_bytes`, `elapsed_seconds`, `session_id` (codex), the chroma stats, and the
+  provider-resolution fields (`provider_resolved_from`, and `provider_fallback` when a
+  codex→grok default fallback occurred).
+
+## How each provider works
+
+- **codex** — spawns a fresh `codex exec --json` in an empty sandbox
+  (`--sandbox workspace-write`, `--add-dir <Codex state root>/generated_images`,
+  `--skip-git-repo-check`, no `--ephemeral`). A fresh session breaks OpenAI's prompt
+  cache so repeat prompts don't drag in a prior image. The session id comes from the
+  `thread.started` event (older codex: a `session id:` text line — both supported); the
+  inline base64 is decoded from the rollout jsonl (`image_generation_call` /
+  `image_generation_end` records — both supported). The model-reported path is never
+  trusted. The rollout jsonl (which holds the ~1–1.5 MB inline image) is deleted after
+  extraction unless `--keep-session`.
+  The adapter and child process share one Codex state root: when `CODEX_HOME` is set they use only that directory; when it is unset they use Codex's `~/.codex` default.
+  Rollouts are selected by an exact session-id filename suffix.
+  Missing, duplicate, or pre-existing stale matches fail rather than falling back to another root or choosing by modification time.
+  The transport prompt names the skill with codex's official `$imagegen` mention, which is how a codex skill is invoked explicitly. The adapter owns that trigger alone; the caller's sprite-request prompt is passed through verbatim.
+
+### When codex produces no image at all
+
+A run that reaches a rollout but finds zero `image_generation_call` /
+`image_generation_end` records means the built-in `image_gen` tool was never
+offered to the session, not that the model declined to use it. Built-in image
+generation is a **capability of the account behind the active Codex state root**.
+
+A session that is not offered the tool cannot be talked into it. The `$imagegen`
+mention names the skill, it does not create the tool; the model choice does not
+change it; and no `config.toml` feature toggle grants it. The remedy is to point
+`CODEX_HOME` at a Codex state root whose account provides image generation
+(`codex login status`), or to use `--provider grok`. The adapter fails loudly with
+exactly that, rather than falling back on its own.
+- **grok** — runs `grok -p … --sandbox workspace --always-approve` (media/shell must be
+  auto-approved; plain acceptEdits blocks tool execution and returns an empty answer).
+  grok is instructed to write the final PNG to an exact absolute path; we then verify
+  that file's PNG magic. No `--effort` is passed (the grok-build image model 400s on
+  `reasoningEffort`). With `--ref`, grok uses `image_edit` on the reference instead of
+  `image_gen`.
+
+## Sprite-row usage
+
+In the component-row pipeline (SKILL.md §2) generate each state row with
+`--provider codex` (or `grok`) using `prompts/<state>.txt`, writing `raw/<state>.png`.
+Keep the request chroma key on the background; frame extraction removes it downstream.
+The correction loop (`sprite-gen correction-loop --provider-command …`) can drive this
+`gen` command as its regeneration step so inspect → score → hint → regenerate closes
+against a real provider.
+
+## Speed
+
+On a 4-frame idle mushroom row, grok generated
+in ~18.4 s vs codex ~39.0 s (~2.1× faster). codex adhered better to negative constraints
+("no grid lines"); grok added faint cell dividers. Pick per need: grok for speed, codex
+for tighter prompt adherence.

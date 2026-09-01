@@ -39,18 +39,30 @@ Most requests land here. The short version; details in the running reference:
 
 1. Discover what exists: `archon workflow list`. Map the user's intent to a workflow
    by reading descriptions — never assume names from memory.
-2. Invoke detached by default (workflows are long-running):
+2. **Check the input before spending anything.** The message (or the issue, or the
+   document the run reads) is the contract the whole run is measured against. Hold it
+   against the six in `running-workflows.md` — problem, why it matters, why now,
+   outcome, invariants, acceptance. If any is missing, say which, propose a corrected
+   input, and get the user's agreement before launching. Do not silently improve it,
+   and do not launch anyway.
+3. Invoke detached by default (workflows are long-running):
 
    ```bash
    archon workflow run <workflow> --branch <branch-name> "<the work, as a clear message>" --detach
    ```
 
-3. Find the run id and monitor: `archon workflow runs --json`, then
-   `archon workflow get <run-id> --json`.
-4. When a run pauses at a gate, resolve it deliberately:
+4. Find the run id (`archon workflow runs --json`), then arm
+   `archon workflow wait <run-id> --json` as a background task of your harness —
+   it blocks until the run ends or needs a human decision, waking you at exactly
+   the right moment. `archon workflow get <run-id> --json` is for on-demand state,
+   not a polling loop.
+5. When a run pauses at a gate, resolve it deliberately:
    see `manage-run/manage-runs.md`.
 
-Three hard rules:
+Four hard rules:
+
+- Never launch against a thin brief. A weak input does not produce a weak result — it
+  produces a confident, well-formed answer to the wrong question, at full price.
 
 - A fresh launch of an interactive-class workflow refuses `--detach`. Run that
   launch in the foreground as a background *task* of your harness. Once the run

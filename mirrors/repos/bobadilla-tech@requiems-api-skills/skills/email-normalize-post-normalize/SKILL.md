@@ -3,13 +3,13 @@ name: email-normalize-post-normalize
 api: Email Normalizer
 method: POST
 path: /v1/text/normalize
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Normalizes a single email address and returns the canonical form together with a breakdown of all transformations applied.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/text/normalize**
+**POST https://requiems.xyz/v1/text/normalize**
 
 ## Normalize Email
 

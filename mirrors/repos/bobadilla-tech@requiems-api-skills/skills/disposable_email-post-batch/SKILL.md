@@ -3,13 +3,13 @@ name: disposable_email-post-batch
 api: Disposable Email Checker
 method: POST
 path: /v1/networking/disposable/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validate multiple email addresses in a single request (max 100 emails)
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/networking/disposable/batch**
+**POST https://requiems.xyz/v1/networking/disposable/batch**
 
 ## Check Batch Emails
 

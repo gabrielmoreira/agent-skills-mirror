@@ -3,13 +3,13 @@ name: dictionary-get-{word}
 api: Dictionary
 method: GET
 path: /v1/text/dictionary/{word}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns the definition, phonetics, examples, and synonyms for the given word.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/text/dictionary/{word}**
+**GET https://requiems.xyz/v1/text/dictionary/{word}**
 
 ## Dictionary Lookup
 

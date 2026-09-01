@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 5 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`examples/skills/skills/grocery-prices/SKILL.md`](examples/skills/skills/grocery-prices/SKILL.md) |
-| 4 | ✓ | [`examples/skills/skills/weather/SKILL.md`](examples/skills/skills/weather/SKILL.md) |
-| 5 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 1 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/adk-sample-creator/templates/main.go.tmpl`](.agents/skills/adk-sample-creator/templates/main.go.tmpl) |
+| 3 | ✓ | [`.agents/skills/adk-sample-creator/templates/README.md.tmpl`](.agents/skills/adk-sample-creator/templates/README.md.tmpl) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`examples/skills/skills/grocery-prices/SKILL.md`](examples/skills/skills/grocery-prices/SKILL.md) |
+| 7 | ✓ | [`examples/skills/skills/weather/SKILL.md`](examples/skills/skills/weather/SKILL.md) |
+| 8 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

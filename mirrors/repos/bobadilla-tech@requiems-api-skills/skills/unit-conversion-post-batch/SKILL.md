@@ -3,13 +3,13 @@ name: unit-conversion-post-batch
 api: Unit Conversion
 method: POST
 path: /v1/technology/convert/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: convert up to 50 unit conversion operations in a single request.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/convert/batch**
+**POST https://requiems.xyz/v1/technology/convert/batch**
 
 ## Batch Convert Units
 

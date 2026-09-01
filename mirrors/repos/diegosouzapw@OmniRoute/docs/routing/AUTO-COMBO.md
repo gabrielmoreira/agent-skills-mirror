@@ -25,6 +25,7 @@ lastUpdated: 2026-06-28
 | `auto/offline` | offline | Favors providers with highest quota availability                         |
 | `auto/smart`   | smart   | Quality-first + higher exploration rate (10%) for better model discovery |
 | `auto/lkgp`    | lkgp    | Explicit LKGP (same as default `auto`)                                   |
+| `auto/chaos`   | chaos   | Fault-injection weights for resilience testing (chaos engineering)       |
 
 ### Category × Tier Composition (`auto/<category>:<tier>`)
 
@@ -185,9 +186,9 @@ See [#7992](https://github.com/diegosouzapw/OmniRoute/issues/7992) and [#7111](h
 
 The Auto-Combo Engine dynamically selects the best provider/model for each request using a **15-factor scoring function** (defined in `open-sse/services/autoCombo/scoring.ts` → `DEFAULT_WEIGHTS`). The default weights sum to `1.0`; custom weights are renormalized by `normalizeScoringWeights()`. Two of the fifteen — `cacheAffinity` and `resetWindowAffinity` — carry a default weight of `0`: they are still computed for every candidate, and `cacheAffinity` gates prompt-cache deduplication outside the score, so they are declared factors that simply do not vote by default.
 
-![Auto-Combo 15-factor scoring](../diagrams/exported/auto-combo-12factor.svg)
+![Auto-Combo 15-factor scoring](../diagrams/exported/auto-combo-scoring.svg)
 
-> Source: [diagrams/auto-combo-12factor.mmd](../diagrams/auto-combo-12factor.mmd) (regenerate via `npm run docs:render-diagrams`). The filename is historical; the source and rendered diagram show all 15 factors declared in `DEFAULT_WEIGHTS`.
+> Source: [diagrams/auto-combo-scoring.mmd](../diagrams/auto-combo-scoring.mmd) (regenerate via `npm run docs:render-diagrams`). The filename is historical; the source and rendered diagram show all 15 factors declared in `DEFAULT_WEIGHTS`.
 
 | Factor                | Default Weight | Description                                                                                                                                                                                 |
 | :-------------------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -211,7 +212,7 @@ The Auto-Combo Engine dynamically selects the best provider/model for each reque
 
 ## Mode Packs
 
-Four pre-defined weight profiles in `open-sse/services/autoCombo/modePacks.ts`. Each pack overrides the default weights to bias selection toward a specific goal. Below are the **full weight tables per pack** (each row sums to 1.0).
+Six pre-defined weight profiles in `open-sse/services/autoCombo/modePacks.ts` — `ship-fast`, `cost-saver`, `quality-first`, `offline-friendly`, `reliability-first` and `chaos-mode` (fault-injection). Each pack overrides the default weights to bias selection toward a specific goal; the seed weights below are renormalized to sum 1.0 at runtime together with the session/context factors every pack also sets. The table shows the four original packs — see `modePacks.ts` for `reliability-first` and `chaos-mode`.
 
 | Factor       | ship-fast | cost-saver | quality-first | offline-friendly |
 | :----------- | :-------- | :--------- | :------------ | :--------------- |
@@ -225,7 +226,7 @@ Four pre-defined weight profiles in `open-sse/services/autoCombo/modePacks.ts`. 
 
 Notes:
 
-- `tierAffinity` and `specificityMatch` are not set in mode packs — `calculateScore()` treats them as `?? 0` when absent.
+- `tierAffinity` and `specificityMatch` are explicitly set to `0` in every mode pack.
 - Each pack's emphasis at a glance:
   - **ship-fast** → latencyInv 0.32 + health 0.28 (low-latency, healthy connections)
   - **cost-saver** → costInv 0.37 (cheapest tokens win)
@@ -413,6 +414,8 @@ Persisted `strategy: "auto"` combos can set `config.routerStrategy` (or legacy
 `config.auto.routerStrategy`) to one of:
 
 - `rules` — default weighted scoring
+- `score` — selects the highest configured weighted score. Exact ties preserve configured
+  candidate order; the existing `explorationRate` samples from the full ranked pool.
 - `cost` / `eco` — cheapest healthy provider
 - `latency` / `fast` — lowest p95 latency with reliability penalty
 - `sla-aware` / `sla` — prefer candidates that satisfy p95 latency, error-rate, and optional
@@ -421,7 +424,7 @@ Persisted `strategy: "auto"` combos can set `config.routerStrategy` (or legacy
 
 ### Router strategies in detail
 
-The auto-combo engine exposes 5 pluggable **RouterStrategy** implementations that
+The auto-combo engine exposes 6 pluggable **RouterStrategy** implementations that
 you can swap via `config.routerStrategy` (or the legacy `config.auto.routerStrategy`).
 Each strategy picks one provider from the candidate pool, given a `RoutingContext`
 (task type, tool/vision hints, token estimate, optional SLA policy, optional

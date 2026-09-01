@@ -3,13 +3,13 @@ name: qr-code-get-base64
 api: QR Code Generator
 method: GET
 path: /v1/technology/qr/base64
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a JSON envelope containing the QR code as a base64-encoded PNG string, along with its dimensions.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/qr/base64**
+**GET https://requiems.xyz/v1/technology/qr/base64**
 
 ## Generate QR Code (Base64 JSON)
 

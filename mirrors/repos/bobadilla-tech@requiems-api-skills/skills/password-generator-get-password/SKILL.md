@@ -3,13 +3,13 @@ name: password-generator-get-password
 api: Password Generator
 method: GET
 path: /v1/technology/password
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Generate a cryptographically secure random password with customizable character sets and length
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/password**
+**GET https://requiems.xyz/v1/technology/password**
 
 ## Generate Password
 

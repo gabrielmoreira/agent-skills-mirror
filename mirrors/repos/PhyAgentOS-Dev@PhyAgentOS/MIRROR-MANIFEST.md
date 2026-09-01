@@ -2,12 +2,12 @@
 repo: PhyAgentOS-Dev/PhyAgentOS
 repoUrl: https://github.com/PhyAgentOS-Dev/PhyAgentOS.git
 refType: branch
-ref: preview
+ref: main
 ---
 
 # Mirror Manifest
 
-Mirror of `PhyAgentOS-Dev/PhyAgentOS` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `PhyAgentOS-Dev/PhyAgentOS` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `PhyAgentOS-Dev/PhyAgentOS` — 26 default patterns, 0 followed patter
 |---------------|-------|
 | Repo          | `PhyAgentOS-Dev/PhyAgentOS` |
 | Ref Type      | `branch` |
-| Ref           | `preview` |
+| Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,20 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`PhyAgentOS/skills/agent-mode/SKILL.md`](PhyAgentOS/skills/agent-mode/SKILL.md) |
-| 2 | ✓ | [`PhyAgentOS/skills/benchmarking/SKILL.md`](PhyAgentOS/skills/benchmarking/SKILL.md) |
-| 3 | ✓ | [`PhyAgentOS/skills/clawhub/SKILL.md`](PhyAgentOS/skills/clawhub/SKILL.md) |
-| 4 | ✓ | [`PhyAgentOS/skills/cron/SKILL.md`](PhyAgentOS/skills/cron/SKILL.md) |
-| 5 | ✓ | [`PhyAgentOS/skills/github/SKILL.md`](PhyAgentOS/skills/github/SKILL.md) |
-| 6 | ✓ | [`PhyAgentOS/skills/image/SKILL.md`](PhyAgentOS/skills/image/SKILL.md) |
-| 7 | ✓ | [`PhyAgentOS/skills/memory/SKILL.md`](PhyAgentOS/skills/memory/SKILL.md) |
-| 8 | ✓ | [`PhyAgentOS/skills/pipergo2-demo/SKILL.md`](PhyAgentOS/skills/pipergo2-demo/SKILL.md) |
-| 9 | ✓ | [`PhyAgentOS/skills/rekep-robot-onboarding/SKILL.md`](PhyAgentOS/skills/rekep-robot-onboarding/SKILL.md) |
-| 10 | ✓ | [`PhyAgentOS/skills/robot-management-guideline/SKILL.md`](PhyAgentOS/skills/robot-management-guideline/SKILL.md) |
-| 11 | ✓ | [`PhyAgentOS/skills/skill-creator/SKILL.md`](PhyAgentOS/skills/skill-creator/SKILL.md) |
-| 12 | ✓ | [`PhyAgentOS/skills/summarize/SKILL.md`](PhyAgentOS/skills/summarize/SKILL.md) |
-| 13 | ✓ | [`PhyAgentOS/skills/tmux/SKILL.md`](PhyAgentOS/skills/tmux/SKILL.md) |
-| 14 | ✓ | [`PhyAgentOS/skills/weather/SKILL.md`](PhyAgentOS/skills/weather/SKILL.md) |
-| 15 | ✓ | [`PhyAgentOS/templates/AGENTS.md`](PhyAgentOS/templates/AGENTS.md) |
+| 2 | ✓ | [`PhyAgentOS/skills/clawhub/SKILL.md`](PhyAgentOS/skills/clawhub/SKILL.md) |
+| 3 | ✓ | [`PhyAgentOS/skills/cron/SKILL.md`](PhyAgentOS/skills/cron/SKILL.md) |
+| 4 | ✓ | [`PhyAgentOS/skills/github/SKILL.md`](PhyAgentOS/skills/github/SKILL.md) |
+| 5 | ✓ | [`PhyAgentOS/skills/image/SKILL.md`](PhyAgentOS/skills/image/SKILL.md) |
+| 6 | ✓ | [`PhyAgentOS/skills/memory/SKILL.md`](PhyAgentOS/skills/memory/SKILL.md) |
+| 7 | ✓ | [`PhyAgentOS/skills/skill-creator/SKILL.md`](PhyAgentOS/skills/skill-creator/SKILL.md) |
+| 8 | ✓ | [`PhyAgentOS/skills/summarize/SKILL.md`](PhyAgentOS/skills/summarize/SKILL.md) |
+| 9 | ✓ | [`PhyAgentOS/skills/tmux/SKILL.md`](PhyAgentOS/skills/tmux/SKILL.md) |
+| 10 | ✓ | [`PhyAgentOS/skills/weather/SKILL.md`](PhyAgentOS/skills/weather/SKILL.md) |
+| 11 | ✓ | [`PhyAgentOS/templates/AGENTS.md`](PhyAgentOS/templates/AGENTS.md) |
 
 ---
 

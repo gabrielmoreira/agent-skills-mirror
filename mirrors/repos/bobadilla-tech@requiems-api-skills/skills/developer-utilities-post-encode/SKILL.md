@@ -3,13 +3,13 @@ name: developer-utilities-post-encode
 api: Developer Utilities
 method: POST
 path: /v1/technology/base64/encode
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Encode a plain-text string to Base64. Supports standard (RFC 4648) and URL-safe (base64url) variants.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/technology/base64/encode**
+**POST https://requiems.xyz/v1/technology/base64/encode**
 
 ## Base64 Encode
 

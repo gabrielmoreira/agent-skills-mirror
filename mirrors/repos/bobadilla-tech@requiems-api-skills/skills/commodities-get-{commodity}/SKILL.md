@@ -3,13 +3,13 @@ name: commodities-get-{commodity}
 api: Commodity Prices
 method: GET
 path: /v1/finance/commodities/{commodity}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns the latest annual average price and up to 10 years of historical data for the requested commodity slug.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/commodities/{commodity}**
+**GET https://requiems.xyz/v1/finance/commodities/{commodity}**
 
 ## Get Commodity Price
 

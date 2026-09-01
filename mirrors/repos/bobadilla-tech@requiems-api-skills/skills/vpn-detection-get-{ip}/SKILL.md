@@ -3,13 +3,13 @@ name: vpn-detection-get-{ip}
 api: VPN & Proxy Detection
 method: GET
 path: /v1/networking/ip/vpn/{ip}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Analyze an IP address to determine if it's a VPN, proxy, Tor exit node, or hosting provider. Returns detailed threat indicators and scores.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/ip/vpn/{ip}**
+**GET https://requiems.xyz/v1/networking/ip/vpn/{ip}**
 
 ## Check IP Address
 

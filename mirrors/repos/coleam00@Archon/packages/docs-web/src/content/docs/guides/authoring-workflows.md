@@ -472,6 +472,7 @@ there is no prior output, so it resolves to `''` and the non-empty equality abov
 
 - `$nodeId.output` references the full output string of a completed node
 - `$nodeId.output.field` accesses a JSON field (for `output_format` nodes)
+- A field used in a scalar condition must resolve to a string, number, boolean, or null. A present object or array fails the gated node; expose a scalar decision field or inspect structured data in a script node.
 - `$INPUTS.<name>` references a declared input supplied by a caller's `with:` (or a direct
   run's `--input`). A name this run does not carry **fails the node** — it never quietly
   becomes an empty string. `INPUTS` is a reserved scope: a node cannot be given that id
@@ -519,8 +520,8 @@ than you asked. Declare the shape you are branching on instead:
 Unaffected: `bash:` and `script:` producers keep whole-output comparison
 (`when: "$check.output == 'true'"`) because their stdout is author-controlled and exact by
 construction, and so do `approval:` captures (a human typed them) and `workflow:` sub-run
-results (the callee owns that contract). A field access (`$analyze.output.status`) is
-always allowed.
+results (the callee owns that contract). A scalar field access (`$analyze.output.status`) is
+allowed.
 
 **A `loop:` opts out the same way a `prompt:` node does** — declare `output_format` on it
 and the loop's output becomes the validated JSON document, so `$loop.output.field` is
@@ -1545,7 +1546,8 @@ nodes:
 
 The condition resolves the name against the run's inputs at evaluation time; the value is
 never spliced into the expression, so an input containing a quote or an operator is
-compared as data and can never be re-read as syntax. An `$INPUTS.<name>` the run does not
+compared as data and can never be re-read as syntax. Present object and array inputs fail
+the node loudly rather than stringify-comparing. An `$INPUTS.<name>` the run does not
 carry **fails the node**, with the same message the prompt surface gives
 (`Unknown input '$INPUTS.mdoe'. Did you mean $INPUTS.mode?`) — it never resolves to an
 empty string, because a condition that quietly compares nothing is the silent-branch

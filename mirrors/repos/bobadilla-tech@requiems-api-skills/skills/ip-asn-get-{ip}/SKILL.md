@@ -3,13 +3,13 @@ name: ip-asn-get-{ip}
 api: ASN Lookup
 method: GET
 path: /v1/networking/ip/asn/{ip}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Look up ASN, organization, ISP, and network details for a specific IP address.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/ip/asn/{ip}**
+**GET https://requiems.xyz/v1/networking/ip/asn/{ip}**
 
 ## Lookup ASN for IP
 

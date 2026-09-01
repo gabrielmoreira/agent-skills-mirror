@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 59 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 59 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 16 |
-| Files         | 59 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,24 +115,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`docs/.style/style-guide/voice-and-tone.md`](docs/.style/style-guide/voice-and-tone.md) |
 | 40 | ✓ | [`docs/.style/style-guide/word-choice.md`](docs/.style/style-guide/word-choice.md) |
 | 41 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
-| 42 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 43 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
-| 44 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
-| 45 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
-| 46 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
-| 47 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
-| 48 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
-| 49 | → | [`.claude/docs/FRONTEND_PATTERNS.md`](.claude/docs/FRONTEND_PATTERNS.md) |
-| 50 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
-| 51 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
-| 52 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
-| 53 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
-| 54 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
-| 55 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
-| 56 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
-| 57 | → | [`coderd/x/chatd/ARCHITECTURE.md`](coderd/x/chatd/ARCHITECTURE.md) |
-| 58 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
-| 59 | → | [`docs/.style/style-guide/README.md`](docs/.style/style-guide/README.md) |
+| 42 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 43 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 44 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 45 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
+| 46 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
+| 47 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
+| 48 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
+| 49 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
+| 50 | → | [`.claude/docs/FRONTEND_PATTERNS.md`](.claude/docs/FRONTEND_PATTERNS.md) |
+| 51 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
+| 52 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
+| 53 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
+| 54 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
+| 55 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
+| 56 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
+| 57 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
+| 58 | → | [`coderd/x/chatd/ARCHITECTURE.md`](coderd/x/chatd/ARCHITECTURE.md) |
+| 59 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
+| 60 | → | [`docs/.style/style-guide/README.md`](docs/.style/style-guide/README.md) |
 
 ---
 

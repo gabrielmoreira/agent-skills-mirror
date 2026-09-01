@@ -281,9 +281,11 @@ invariants therefore keep one production lifecycle.
 ### Selected-text source scopes
 
 Selected-text runs always carry an explicit, durable `source_grounding` policy.
-Fixed actions keep `selection_only`, which limits the answer to the selected
-text. A free-form question may use `selection_context`, which permits intrinsic
-model knowledge and a bounded projection of earlier user/assistant dialogue so
+Fixed actions keep `selection_only`, which uses the selected text as the only
+page source while still allowing intrinsic model knowledge to explain terms
+named in that selection. A free-form question may use `selection_context`, which
+permits intrinsic model knowledge and a bounded projection of earlier
+user/assistant dialogue so
 references such as “the above” can be resolved. That projection is explicitly
 non-authoritative: wrapped page text, tool results, screenshots, attachments,
 and app-owned state are excluded. The current selection remains untrusted page

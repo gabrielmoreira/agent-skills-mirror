@@ -3,13 +3,13 @@ name: working-days-get-working-days
 api: Working Days Calculator
 method: GET
 path: /v1/places/working-days
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Calculate the number of working days between two dates, optionally accounting for country-specific holidays
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/working-days**
+**GET https://requiems.xyz/v1/places/working-days**
 
 ## Calculate Working Days
 

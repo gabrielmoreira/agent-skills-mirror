@@ -33,6 +33,7 @@
 | SHT-19 | reviewed_invariant | When a coverage audition is used, its approaches genuinely differ by knowledge timing, alignment, performance space, strongest image, landing, losses, or production fit; it uses no fixed option, grid, framing, or shot-count formula, and the selected approach is stated before formal shots are written. |
 | SHT-20 | reviewed_invariant | Shot revision identity follows directing responsibility rather than array position or text similarity: reorder preserves IDs, insertion creates one, split/merge retires replaced IDs and creates successors, and active coverage plus downstream refs are reconciled before delivery. |
 | SHT-21 | reviewed_invariant | A keyframe's copyable text carries only what will be visible; IDs, workflow notes, file paths and craft commentary stay outside the prompt. Two prompts that differ only by identifiers are a template, not two frames. |
+| SHT-22 | reviewed_invariant | After the frozen keyframe is written, every visible character, place, or prop whose identity, Look, or geography must remain recognizable is covered by a matching image-prompt item or textual visual-setting basis. Small/background subjects remain in scope when recognition matters; offscreen voices and unidentifiable fragments do not. |
 
 ### `CON`
 

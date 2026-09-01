@@ -3,13 +3,13 @@ name: data-integrity-post-validate
 api: Data Integrity System
 method: POST
 path: /v1/systems/input/validate
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validates and scores a single email address, phone number, or text input — or any combination of the three. Returns per-field quality scores, normalized values, risk flags, and an overall quality score for gating or enriching input data.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/systems/input/validate**
+**POST https://requiems.xyz/v1/systems/input/validate**
 
 ## Input Validate
 

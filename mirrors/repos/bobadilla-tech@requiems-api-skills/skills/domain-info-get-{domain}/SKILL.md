@@ -3,13 +3,13 @@ name: domain-info-get-{domain}
 api: Domain Info
 method: GET
 path: /v1/networking/domain/{domain}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns DNS records and availability status for the given domain.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/networking/domain/{domain}**
+**GET https://requiems.xyz/v1/networking/domain/{domain}**
 
 ## Get Domain Info
 

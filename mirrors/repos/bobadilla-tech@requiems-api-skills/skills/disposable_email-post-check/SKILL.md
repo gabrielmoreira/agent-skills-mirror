@@ -3,13 +3,13 @@ name: disposable_email-post-check
 api: Disposable Email Checker
 method: POST
 path: /v1/networking/disposable/check
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validate whether an email address uses a disposable domain
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/networking/disposable/check**
+**POST https://requiems.xyz/v1/networking/disposable/check**
 
 ## Check Single Email
 

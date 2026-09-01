@@ -218,6 +218,9 @@ design as structured data, not only Markdown. The orchestrator writes it to
 
 - `evaluated_at` and the upstream `source_updated_at` covered;
 - the prior fast `judgment`;
+- schema-version-4 `issue_context` with a concise discussion summary, known
+  facts, qualified inferences, Copilot analysis, initial investigation
+  findings, and any remaining information gaps;
 - `design.root_cause`, `design.evidence`, `design.affected_files`,
   `design.implementation_steps`, `design.verify`, `design.risks`, and
   `design.alternatives`;

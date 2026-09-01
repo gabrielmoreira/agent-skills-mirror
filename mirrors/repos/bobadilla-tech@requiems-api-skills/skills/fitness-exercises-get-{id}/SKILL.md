@@ -3,13 +3,13 @@ name: fitness-exercises-get-{id}
 api: Fitness Exercises
 method: GET
 path: /v1/health/exercises/{id}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a single exercise by its numeric ID.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/health/exercises/{id}**
+**GET https://requiems.xyz/v1/health/exercises/{id}**
 
 ## Exercise by ID
 

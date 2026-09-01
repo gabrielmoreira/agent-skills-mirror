@@ -3,13 +3,13 @@ name: payments-intelligence-post-risk
 api: Payments Intelligence System
 method: POST
 path: /v1/systems/transaction/risk
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Score a transaction for fraud risk by cross-checking the card BIN country against IP geolocation and billing country. Detects VPN, proxy, and TOR use.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/systems/transaction/risk**
+**POST https://requiems.xyz/v1/systems/transaction/risk**
 
 ## Score Transaction Risk
 

@@ -12,7 +12,7 @@ description: 'Apply Hootsuite security best practices for secrets and access con
 
   '
 allowed-tools: Read, Write, Grep
-version: 1.5.0
+version: 1.6.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
@@ -85,7 +85,7 @@ Public publishing is a high-impact boundary: credentials, profile scope, audienc
 
 ## Output
 
-Return a security receipt with environment, profile scope, secret-reference version, approval/audience validation, revocation state, correlation ID, and rollback action. Never include tokens, copy, media, or account identities.
+Return a security receipt with environment, profile scope, reference version, approval/audience validation, revocation state, correlation ID, and rollback action. Never include tokens, copy, media, or account identities.
 
 ## Error Handling
 
@@ -93,7 +93,7 @@ Stop for unknown profile/audience, absent approval, failed signature/validation,
 
 ## Examples
 
-`env=staging; profile=sandbox-brand; secret_ref=publisher-v12; approval=pass; audience=approved; public_posts=0; rollback=scheduler-disabled` is an auditable control result.
+`env=staging; profile=sandbox-brand; reference_version=version-12; approval=pass; audience=approved; public_posts=0; rollback=scheduler-disabled` is an auditable control result.
 
 ## Resources
 

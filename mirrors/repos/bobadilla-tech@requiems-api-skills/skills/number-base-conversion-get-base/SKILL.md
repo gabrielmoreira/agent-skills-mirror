@@ -3,13 +3,13 @@ name: number-base-conversion-get-base
 api: Number Base Conversion
 method: GET
 path: /v1/technology/base
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Convert an integer from one number base to another.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/base**
+**GET https://requiems.xyz/v1/technology/base**
 
 ## Convert Base
 

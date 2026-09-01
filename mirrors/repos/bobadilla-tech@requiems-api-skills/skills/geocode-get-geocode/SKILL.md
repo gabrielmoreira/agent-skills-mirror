@@ -3,13 +3,13 @@ name: geocode-get-geocode
 api: Geocoding
 method: GET
 path: /v1/places/geocode
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Converts a free-text address into latitude and longitude coordinates.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/geocode**
+**GET https://requiems.xyz/v1/places/geocode**
 
 ## Geocode Address
 

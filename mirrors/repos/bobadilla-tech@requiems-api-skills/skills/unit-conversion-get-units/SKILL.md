@@ -3,13 +3,13 @@ name: unit-conversion-get-units
 api: Unit Conversion
 method: GET
 path: /v1/technology/convert/units
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns all available unit conversion types grouped by measurement category
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/technology/convert/units**
+**GET https://requiems.xyz/v1/technology/convert/units**
 
 ## List Available Units
 

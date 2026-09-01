@@ -3,13 +3,13 @@ name: global-data-get-{country}
 api: Global Data System
 method: GET
 path: /v1/systems/business-calendar/{country}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Retrieve working days, public holidays, and next upcoming holiday for any country and optional year/month. Covers 100+ countries.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/systems/business-calendar/{country}**
+**GET https://requiems.xyz/v1/systems/business-calendar/{country}**
 
 ## Business Calendar
 

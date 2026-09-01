@@ -3,13 +3,13 @@ name: fitness-exercises-get-exercises
 api: Fitness Exercises
 method: GET
 path: /v1/health/exercises
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a paginated list of exercises. All filter parameters are optional and combinable.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/health/exercises**
+**GET https://requiems.xyz/v1/health/exercises**
 
 ## List Exercises
 

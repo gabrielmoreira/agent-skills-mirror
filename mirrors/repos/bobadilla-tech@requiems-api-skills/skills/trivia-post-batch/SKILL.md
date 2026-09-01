@@ -3,13 +3,13 @@ name: trivia-post-batch
 api: Trivia
 method: POST
 path: /v1/entertainment/trivia/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns up to 50 trivia questions in a single request.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/entertainment/trivia/batch**
+**POST https://requiems.xyz/v1/entertainment/trivia/batch**
 
 ## Get Batch Trivia Questions
 

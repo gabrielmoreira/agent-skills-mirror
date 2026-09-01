@@ -3,13 +3,13 @@ name: ip-asn-post-batch
 api: ASN Lookup
 method: POST
 path: /v1/networking/ip/asn/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Look up ASN data for up to 50 IP addresses in a single request. Results are returned in input order. Private and reserved IPs return an empty result with no error.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/networking/ip/asn/batch**
+**POST https://requiems.xyz/v1/networking/ip/asn/batch**
 
 ## Batch ASN Lookup
 

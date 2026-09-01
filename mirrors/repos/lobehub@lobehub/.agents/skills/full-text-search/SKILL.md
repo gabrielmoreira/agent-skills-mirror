@@ -28,8 +28,9 @@ router/service -> createFtsSearchRepo -> FtsSearchRepo -> selected backend -> ex
 - `packages/database/src/schemas/ftsSearchSyncOutbox.ts` and
   `packages/database/src/repositories/ftsSearchSyncOutbox/` own durable change capture, claims,
   retries, dead letters, leases, revision fences, and capture-definition validation.
-- `packages/database/src/repositories/ftsSearchReindex/` and `scripts/elasticsearchReindex/` own the
-  resumable full backfill. `apps/server/src/services/ftsSearchSync/` and
+- `scripts/elasticsearchReindex/` owns the resumable full-backfill command and its operational
+  runtime. Shared database source queries and document construction remain in
+  `packages/database/src/repositories/ftsSearchDocument/`. `apps/server/src/services/ftsSearchSync/` and
   `scripts/elasticsearchSync/` own continuous incremental draining.
 - `packages/env/src/ftsSearch.ts` owns generic Elasticsearch environment variables.
 
@@ -64,6 +65,11 @@ applicable item:
 
 Schema fields, mappings, builders, and fixed fixtures must agree exactly. A field that is not in the
 document schema must not appear in the mapping or query field list.
+
+Elasticsearch `multi_match` query length is bounded by a shared leaf-clause budget divided by the
+selected query-field count. Adding a field reduces that entity's safe query length, and changing a
+query analyzer to emit multiple terms per Unicode code point requires revisiting the budget and its
+field-count regression tests.
 
 ## Capture, Reindex, and Sync
 

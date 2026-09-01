@@ -940,13 +940,3 @@ See [LICENSE.md](LICENSE.md) for full terms.
 ### Individual Skill Licenses
 
 > ⚠️ **Important**: Each skill has its own license specified in the `license` metadata field within its `SKILL.md` file. These licenses may differ from the repository's MIT License and may include additional terms or restrictions. **Users are responsible for reviewing and adhering to the license terms of each individual skill they use.**
-
-## Star History
-
-<a href="https://star-history.dera.page/#K-Dense-AI/scientific-agent-skills">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=K-Dense-AI/scientific-agent-skills&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=K-Dense-AI/scientific-agent-skills" />
-   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=K-Dense-AI/scientific-agent-skills" />
- </picture>
-</a>

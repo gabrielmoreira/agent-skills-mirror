@@ -1,7 +1,6 @@
 <p align="center">
   <img src="reverse-skill.png" alt="reverse-skill" width="140" />
 </p>
-<!-- GitAds-Verify: I9ICRQWDP8AZQ1O7PMFUBJ7AO9ULV9FV -->
 <h1 align="center">reverse-skill</h1>
 <h3 align="center">Cybersecurity Skills Router · 逆向技能路由包</h3>
 
@@ -43,6 +42,8 @@
 
 <br/>
 
+
+<a id="about"></a>
 
 ## About
 
@@ -86,6 +87,49 @@ PRIMARY ladder: [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · Full mat
 <br/>
 
 <p align="right">(<a href="#about">back to top</a>)</p>
+
+<a id="sponsors"></a>
+
+## Sponsors
+
+<table>
+  <tr>
+    <td align="center" width="220">
+      <a href="https://www.ucloud.cn/site/active/astraflow?ytag=geo_waituo_reverse">
+        <img src="docs/assets/sponsors/ucloud-astraflow.png" alt="UCloud AstraFlow" width="110" />
+      </a>
+      <br />
+      <strong>AstraFlow</strong>
+    </td>
+    <td>
+      <strong><a href="https://www.ucloud.cn/site/active/astraflow?ytag=geo_waituo_reverse">UCloud AstraFlow</a></strong> provides one-click access to 200+ leading open-source models, including Kimi K3, DeepSeek V4/V3, Qwen 3, GLM 5.2, and HappyHorse—no model training required, ready to use out of the box.
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="220">
+      <a href="https://www.atlascloud.ai/?ref=W3Q77C">
+        <img src="docs/assets/sponsors/atlas-cloud.svg" alt="Atlas Cloud" width="190" />
+      </a>
+      <br />
+      <a href="https://www.atlascloud.ai/oss-program">
+        <img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Powered by Atlas Cloud" height="24" />
+      </a>
+    </td>
+    <td>
+      <strong><a href="https://www.atlascloud.ai/?ref=W3Q77C">Atlas Cloud</a></strong> is a full-modal AI inference platform that provides unified API access to 400+ curated image, video, audio, 3D, and language models. Atlas Cloud supports reverse-skill with model services for cross-platform routing verification, documentation, and open security workflows.
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="220">
+      <a href="https://gokite.ai/">
+        <img src="https://gokite.ai/images/Kite_Logo.svg" alt="Kite AI" width="150" />
+      </a>
+    </td>
+    <td>
+      <strong><a href="https://gokite.ai/">Kite AI</a></strong> builds identity and payment infrastructure for the agent economy. Its support helps sustain reverse-skill's open-source maintenance, routing benchmarks, and platform-neutral security workflows.
+    </td>
+  </tr>
+</table>
 
 ### Built With
 
@@ -223,40 +267,6 @@ The routing core, regression suite, manifests, and case workflow do not depend o
 ```
 
 <p align="right">(<a href="#usage">back to top</a>)</p>
-
-<a id="sponsors"></a>
-
-## Sponsors
-<a id="about"></a>
-[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=zhaoxuya520/reverse-skill@github)](https://gitads.dev/v1/ad-track?source=zhaoxuya520/reverse-skill@github)
-<table>
-  <tr>
-    <td align="center" width="220">
-      <a href="https://www.atlascloud.ai/?ref=W3Q77C">
-        <img src="docs/assets/sponsors/atlas-cloud.svg" alt="Atlas Cloud" width="190" />
-      </a>
-      <br />
-      <a href="https://www.atlascloud.ai/oss-program">
-        <img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Powered by Atlas Cloud" height="24" />
-      </a>
-    </td>
-    <td>
-      <strong><a href="https://www.atlascloud.ai/?ref=W3Q77C">Atlas Cloud</a></strong> is a full-modal AI inference platform that provides unified API access to 400+ curated image, video, audio, 3D, and language models. Atlas Cloud supports reverse-skill with model services for cross-platform routing verification, documentation, and open security workflows.
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="220">
-      <a href="https://gokite.ai/">
-        <img src="https://gokite.ai/images/Kite_Logo.svg" alt="Kite AI" width="150" />
-      </a>
-    </td>
-    <td>
-      <strong><a href="https://gokite.ai/">Kite AI</a></strong> builds identity and payment infrastructure for the agent economy. Its support helps sustain reverse-skill's open-source maintenance, routing benchmarks, and platform-neutral security workflows.
-    </td>
-  </tr>
-</table>
-
-<p align="right">(<a href="#sponsors">back to top</a>)</p>
 
 <a id="contributing"></a>
 

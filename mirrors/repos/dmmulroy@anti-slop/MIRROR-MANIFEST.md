@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dmmulroy/anti-slop` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `dmmulroy/anti-slop` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dmmulroy/anti-slop` — 26 default patterns, 0 followed patterns, 24 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,10 +79,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-widen-then-assert.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-widen-then-assert.ts) |
 | 19 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/require-safety-comment-for-type-assertion.ts`](skills/install-anti-slop/assets/anti-slop/rules/require-safety-comment-for-type-assertion.ts) |
 | 20 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/dictionary-types.ts`](skills/install-anti-slop/assets/anti-slop/shared/dictionary-types.ts) |
-| 21 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts) |
-| 22 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts`](skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts) |
-| 23 | ✓ | [`skills/install-anti-slop/scripts/install.mjs`](skills/install-anti-slop/scripts/install.mjs) |
-| 24 | ✓ | [`skills/install-anti-slop/SKILL.md`](skills/install-anti-slop/SKILL.md) |
+| 21 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/function-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/function-parameters.ts) |
+| 22 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts) |
+| 23 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts`](skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts) |
+| 24 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/type-alias-resolution.ts`](skills/install-anti-slop/assets/anti-slop/shared/type-alias-resolution.ts) |
+| 25 | ✓ | [`skills/install-anti-slop/scripts/install.mjs`](skills/install-anti-slop/scripts/install.mjs) |
+| 26 | ✓ | [`skills/install-anti-slop/SKILL.md`](skills/install-anti-slop/SKILL.md) |
 
 ---
 

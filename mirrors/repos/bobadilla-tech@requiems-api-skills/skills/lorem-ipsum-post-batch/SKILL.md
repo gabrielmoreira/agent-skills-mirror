@@ -3,13 +3,13 @@ name: lorem-ipsum-post-batch
 api: Lorem Ipsum Generator
 method: POST
 path: /v1/text/lorem/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Generate multiple Lorem Ipsum placeholder texts in a single request. Processes items in bulk and returns partial successes.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/text/lorem/batch**
+**POST https://requiems.xyz/v1/text/lorem/batch**
 
 ## Generate Lorem Ipsum (Batch)
 

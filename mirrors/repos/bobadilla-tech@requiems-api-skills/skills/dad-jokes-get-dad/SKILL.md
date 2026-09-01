@@ -3,13 +3,13 @@ name: dad-jokes-get-dad
 api: Dad Jokes
 method: GET
 path: /v1/entertainment/jokes/dad
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a randomly selected dad joke from the collection.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/jokes/dad**
+**GET https://requiems.xyz/v1/entertainment/jokes/dad**
 
 ## Get Random Dad Joke
 

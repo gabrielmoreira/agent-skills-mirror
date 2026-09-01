@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 68 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,10 +123,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`.github/instructions/studio-shortcuts.instructions.md`](.github/instructions/studio-shortcuts.instructions.md) |
 | 63 | ✓ | [`.github/instructions/studio-telemetry.instructions.md`](.github/instructions/studio-telemetry.instructions.md) |
 | 64 | ✓ | [`.github/instructions/studio-testing.instructions.md`](.github/instructions/studio-testing.instructions.md) |
-| 65 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
-| 66 | ✓ | [`apps/studio/.claude/skills/explorer/SKILL.md`](apps/studio/.claude/skills/explorer/SKILL.md) |
-| 67 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
-| 68 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
+| 65 | ✓ | [`apps/kb/AGENTS.md`](apps/kb/AGENTS.md) |
+| 66 | ✓ | [`apps/kb/CLAUDE.md`](apps/kb/CLAUDE.md) |
+| 67 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
+| 68 | ✓ | [`apps/studio/.claude/skills/explorer/SKILL.md`](apps/studio/.claude/skills/explorer/SKILL.md) |
+| 69 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
+| 70 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
 
 ---
 

@@ -3,13 +3,13 @@ name: cities-get-{city}
 api: Cities
 method: GET
 path: /v1/places/cities/{city}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns metadata for a city by name. Lookup is case-insensitive.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/cities/{city}**
+**GET https://requiems.xyz/v1/places/cities/{city}**
 
 ## Get City Info
 

@@ -3,13 +3,13 @@ name: emoji-get-{name}
 api: Emoji
 method: GET
 path: /v1/entertainment/emoji/{name}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a specific emoji by its CLDR snake_case name. The name is case-insensitive.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/entertainment/emoji/{name}**
+**GET https://requiems.xyz/v1/entertainment/emoji/{name}**
 
 ## Get Emoji by Name
 

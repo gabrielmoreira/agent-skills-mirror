@@ -3,13 +3,13 @@ name: detect-language-post-detect-language
 api: Language Detection
 method: POST
 path: /v1/text/detect-language
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Identifies the language of the provided text and returns the language name, ISO 639-1 code, and confidence score.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/text/detect-language**
+**POST https://requiems.xyz/v1/text/detect-language**
 
 ## Detect Language
 

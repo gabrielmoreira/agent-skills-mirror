@@ -14,6 +14,10 @@ Return the exact typed residual defined by the rubric: `type: "needs-human"`, `s
 
 ## 3. Non-convergence (wrong-approach cluster / treadmill)
 
-When the caller passes a `trajectory` (rising `unresolved_trend`, `new_threads_this_tick > 0` across passes), check whether the feedback is *not converging*: several nits that share a **root** — the approach itself is the problem (canonical: "your regex misses case X" repeated for X after X, an unbounded whack-a-mole) — or a bot re-posting fresh nits every commit without end. If so, raise **one** approach-level `needs-human` about the root decision (e.g. "regex is the wrong tool here — options: exhaustive table / a real parser / accept known limits; lean: …") and stop fixing the individual instances, rather than dutifully fixing nit after nit.
+When the caller passes a `trajectory` (rising `unresolved_trend`, `new_threads_this_tick > 0` across passes, or any `invariant_rounds[].rounds >= 2`), decide each root's standing before fixing anything on it:
 
-Hold the anti-cry-wolf line: this fires only on a *demonstrated* shared root or a *demonstrated* treadmill across passes — a normal batch of unrelated valid nits is just fixed, one pass, as usual.
+- **Escalate** — raise **one** approach-level `needs-human` about the root decision (e.g. "regex is the wrong tool here — options: exhaustive table / a real parser / accept known limits; lean: …") **before** any fix/commit/push — when the root's feedback is *demonstrably* not converging (several nits sharing one root, "your regex misses case X" repeated for X after X; or a bot re-posting fresh nits every commit without end), or when a fix would begin the root's third recorded round (`invariant_rounds[].rounds >= 2` for a key this pass would continue; rounds are recorded after a fix completes).
+- **Execute an answered escalation** — when the open thread already carries a human's decision on the root, that answer authorizes the next action; apply it. Re-raising the same `needs-human` is rejected by the persistence layer.
+- **Otherwise fix as usual** — a normal batch of unrelated valid nits is just fixed, one pass.
+
+On a **fix** outcome, return a stable `invariant_key` (1–120 chars of `A-Za-z0-9._:-`) for **each** root a fix resolved, associated with the threads/comments that root covered — unrelated roots fixed in one pass carry distinct keys, so each accumulates its own rounds. Do not run `pr-snapshot`; the caller persists each key on that item's dispatched mark.

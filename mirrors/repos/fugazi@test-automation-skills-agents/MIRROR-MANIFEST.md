@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 5 followed patterns, 148 file(s) materialized.
+Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 5 followed patterns, 153 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 5 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 148 |
+| Files         | 153 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -157,60 +157,65 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 92 | ✓ | [`skills/playwright-regression-testing/references/regression-selection.md`](skills/playwright-regression-testing/references/regression-selection.md) |
 | 93 | ✓ | [`skills/playwright-regression-testing/references/regression-strategy.md`](skills/playwright-regression-testing/references/regression-strategy.md) |
 | 94 | ✓ | [`skills/playwright-regression-testing/SKILL.md`](skills/playwright-regression-testing/SKILL.md) |
-| 95 | ✓ | [`skills/qa-manual-istqb/LICENSE.txt`](skills/qa-manual-istqb/LICENSE.txt) |
-| 96 | ✓ | [`skills/qa-manual-istqb/references/automation-playwright-best-practices.md`](skills/qa-manual-istqb/references/automation-playwright-best-practices.md) |
-| 97 | ✓ | [`skills/qa-manual-istqb/references/bug-report-quality.md`](skills/qa-manual-istqb/references/bug-report-quality.md) |
-| 98 | ✓ | [`skills/qa-manual-istqb/references/defect-lifecycle.md`](skills/qa-manual-istqb/references/defect-lifecycle.md) |
-| 99 | ✓ | [`skills/qa-manual-istqb/references/experience-based-techniques.md`](skills/qa-manual-istqb/references/experience-based-techniques.md) |
-| 100 | ✓ | [`skills/qa-manual-istqb/references/istqb-glossary.md`](skills/qa-manual-istqb/references/istqb-glossary.md) |
-| 101 | ✓ | [`skills/qa-manual-istqb/references/regression-suite-strategy.md`](skills/qa-manual-istqb/references/regression-suite-strategy.md) |
-| 102 | ✓ | [`skills/qa-manual-istqb/references/risk-based-testing.md`](skills/qa-manual-istqb/references/risk-based-testing.md) |
-| 103 | ✓ | [`skills/qa-manual-istqb/references/static-testing.md`](skills/qa-manual-istqb/references/static-testing.md) |
-| 104 | ✓ | [`skills/qa-manual-istqb/references/test-design-techniques.md`](skills/qa-manual-istqb/references/test-design-techniques.md) |
-| 105 | ✓ | [`skills/qa-manual-istqb/references/test-estimation.md`](skills/qa-manual-istqb/references/test-estimation.md) |
-| 106 | ✓ | [`skills/qa-manual-istqb/references/test-levels-types.md`](skills/qa-manual-istqb/references/test-levels-types.md) |
-| 107 | ✓ | [`skills/qa-manual-istqb/references/test-monitoring-metrics.md`](skills/qa-manual-istqb/references/test-monitoring-metrics.md) |
-| 108 | ✓ | [`skills/qa-manual-istqb/references/test-process-and-deliverables.md`](skills/qa-manual-istqb/references/test-process-and-deliverables.md) |
-| 109 | ✓ | [`skills/qa-manual-istqb/scripts/qa_artifacts.mjs`](skills/qa-manual-istqb/scripts/qa_artifacts.mjs) |
-| 110 | ✓ | [`skills/qa-manual-istqb/SKILL.md`](skills/qa-manual-istqb/SKILL.md) |
-| 111 | ✓ | [`skills/qa-manual-istqb/templates/bug-log.csv`](skills/qa-manual-istqb/templates/bug-log.csv) |
-| 112 | ✓ | [`skills/qa-manual-istqb/templates/bug-report.md`](skills/qa-manual-istqb/templates/bug-report.md) |
-| 113 | ✓ | [`skills/qa-manual-istqb/templates/exploratory-charter.md`](skills/qa-manual-istqb/templates/exploratory-charter.md) |
-| 114 | ✓ | [`skills/qa-manual-istqb/templates/playwright-spec.ts`](skills/qa-manual-istqb/templates/playwright-spec.ts) |
-| 115 | ✓ | [`skills/qa-manual-istqb/templates/regression-suite.md`](skills/qa-manual-istqb/templates/regression-suite.md) |
-| 116 | ✓ | [`skills/qa-manual-istqb/templates/risk-assessment-matrix.md`](skills/qa-manual-istqb/templates/risk-assessment-matrix.md) |
-| 117 | ✓ | [`skills/qa-manual-istqb/templates/test-cases.csv`](skills/qa-manual-istqb/templates/test-cases.csv) |
-| 118 | ✓ | [`skills/qa-manual-istqb/templates/test-conditions.md`](skills/qa-manual-istqb/templates/test-conditions.md) |
-| 119 | ✓ | [`skills/qa-manual-istqb/templates/test-environment-checklist.md`](skills/qa-manual-istqb/templates/test-environment-checklist.md) |
-| 120 | ✓ | [`skills/qa-manual-istqb/templates/test-plan.md`](skills/qa-manual-istqb/templates/test-plan.md) |
-| 121 | ✓ | [`skills/qa-manual-istqb/templates/test-summary-report.md`](skills/qa-manual-istqb/templates/test-summary-report.md) |
-| 122 | ✓ | [`skills/qa-manual-istqb/templates/traceability-matrix.csv`](skills/qa-manual-istqb/templates/traceability-matrix.csv) |
-| 123 | ✓ | [`skills/webapp-selenium-testing/LICENSE.txt`](skills/webapp-selenium-testing/LICENSE.txt) |
-| 124 | ✓ | [`skills/webapp-selenium-testing/references/file-map-template.md`](skills/webapp-selenium-testing/references/file-map-template.md) |
-| 125 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-debugging.md`](skills/webapp-selenium-testing/references/locator-strategies-debugging.md) |
-| 126 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-hierarchy.md`](skills/webapp-selenium-testing/references/locator-strategies-hierarchy.md) |
-| 127 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-patterns.md`](skills/webapp-selenium-testing/references/locator-strategies-patterns.md) |
-| 128 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-quick-reference.md`](skills/webapp-selenium-testing/references/locator-strategies-quick-reference.md) |
-| 129 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-selectors.md`](skills/webapp-selenium-testing/references/locator-strategies-selectors.md) |
-| 130 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-base-page.md`](skills/webapp-selenium-testing/references/page-object-model-base-page.md) |
-| 131 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-basics.md`](skills/webapp-selenium-testing/references/page-object-model-basics.md) |
-| 132 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-best-practices.md`](skills/webapp-selenium-testing/references/page-object-model-best-practices.md) |
-| 133 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-components.md`](skills/webapp-selenium-testing/references/page-object-model-components.md) |
-| 134 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-pages.md`](skills/webapp-selenium-testing/references/page-object-model-pages.md) |
-| 135 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-patterns.md`](skills/webapp-selenium-testing/references/page-object-model-patterns.md) |
-| 136 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-advanced.md`](skills/webapp-selenium-testing/references/wait-strategies-advanced.md) |
-| 137 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-basics.md`](skills/webapp-selenium-testing/references/wait-strategies-basics.md) |
-| 138 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-best-practices.md`](skills/webapp-selenium-testing/references/wait-strategies-best-practices.md) |
-| 139 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-custom-waits.md`](skills/webapp-selenium-testing/references/wait-strategies-custom-waits.md) |
-| 140 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-expected-conditions.md`](skills/webapp-selenium-testing/references/wait-strategies-expected-conditions.md) |
-| 141 | ✓ | [`skills/webapp-selenium-testing/scripts/pom-template.xml`](skills/webapp-selenium-testing/scripts/pom-template.xml) |
-| 142 | ✓ | [`skills/webapp-selenium-testing/scripts/setup-maven-project.ps1`](skills/webapp-selenium-testing/scripts/setup-maven-project.ps1) |
-| 143 | ✓ | [`skills/webapp-selenium-testing/SKILL.md`](skills/webapp-selenium-testing/SKILL.md) |
-| 144 | → | [`docs/getting-started.md`](docs/getting-started.md) |
-| 145 | → | [`docs/references/authoring-agents.md`](docs/references/authoring-agents.md) |
-| 146 | → | [`docs/references/authoring-skills.md`](docs/references/authoring-skills.md) |
-| 147 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 148 | → | [`references/testing-anti-patterns.md`](references/testing-anti-patterns.md) |
+| 95 | ✓ | [`skills/qa-investigation/LICENSE.txt`](skills/qa-investigation/LICENSE.txt) |
+| 96 | ✓ | [`skills/qa-investigation/references/examples.md`](skills/qa-investigation/references/examples.md) |
+| 97 | ✓ | [`skills/qa-investigation/references/flow.md`](skills/qa-investigation/references/flow.md) |
+| 98 | ✓ | [`skills/qa-investigation/references/templates.md`](skills/qa-investigation/references/templates.md) |
+| 99 | ✓ | [`skills/qa-investigation/SKILL.md`](skills/qa-investigation/SKILL.md) |
+| 100 | ✓ | [`skills/qa-manual-istqb/LICENSE.txt`](skills/qa-manual-istqb/LICENSE.txt) |
+| 101 | ✓ | [`skills/qa-manual-istqb/references/automation-playwright-best-practices.md`](skills/qa-manual-istqb/references/automation-playwright-best-practices.md) |
+| 102 | ✓ | [`skills/qa-manual-istqb/references/bug-report-quality.md`](skills/qa-manual-istqb/references/bug-report-quality.md) |
+| 103 | ✓ | [`skills/qa-manual-istqb/references/defect-lifecycle.md`](skills/qa-manual-istqb/references/defect-lifecycle.md) |
+| 104 | ✓ | [`skills/qa-manual-istqb/references/experience-based-techniques.md`](skills/qa-manual-istqb/references/experience-based-techniques.md) |
+| 105 | ✓ | [`skills/qa-manual-istqb/references/istqb-glossary.md`](skills/qa-manual-istqb/references/istqb-glossary.md) |
+| 106 | ✓ | [`skills/qa-manual-istqb/references/regression-suite-strategy.md`](skills/qa-manual-istqb/references/regression-suite-strategy.md) |
+| 107 | ✓ | [`skills/qa-manual-istqb/references/risk-based-testing.md`](skills/qa-manual-istqb/references/risk-based-testing.md) |
+| 108 | ✓ | [`skills/qa-manual-istqb/references/static-testing.md`](skills/qa-manual-istqb/references/static-testing.md) |
+| 109 | ✓ | [`skills/qa-manual-istqb/references/test-design-techniques.md`](skills/qa-manual-istqb/references/test-design-techniques.md) |
+| 110 | ✓ | [`skills/qa-manual-istqb/references/test-estimation.md`](skills/qa-manual-istqb/references/test-estimation.md) |
+| 111 | ✓ | [`skills/qa-manual-istqb/references/test-levels-types.md`](skills/qa-manual-istqb/references/test-levels-types.md) |
+| 112 | ✓ | [`skills/qa-manual-istqb/references/test-monitoring-metrics.md`](skills/qa-manual-istqb/references/test-monitoring-metrics.md) |
+| 113 | ✓ | [`skills/qa-manual-istqb/references/test-process-and-deliverables.md`](skills/qa-manual-istqb/references/test-process-and-deliverables.md) |
+| 114 | ✓ | [`skills/qa-manual-istqb/scripts/qa_artifacts.mjs`](skills/qa-manual-istqb/scripts/qa_artifacts.mjs) |
+| 115 | ✓ | [`skills/qa-manual-istqb/SKILL.md`](skills/qa-manual-istqb/SKILL.md) |
+| 116 | ✓ | [`skills/qa-manual-istqb/templates/bug-log.csv`](skills/qa-manual-istqb/templates/bug-log.csv) |
+| 117 | ✓ | [`skills/qa-manual-istqb/templates/bug-report.md`](skills/qa-manual-istqb/templates/bug-report.md) |
+| 118 | ✓ | [`skills/qa-manual-istqb/templates/exploratory-charter.md`](skills/qa-manual-istqb/templates/exploratory-charter.md) |
+| 119 | ✓ | [`skills/qa-manual-istqb/templates/playwright-spec.ts`](skills/qa-manual-istqb/templates/playwright-spec.ts) |
+| 120 | ✓ | [`skills/qa-manual-istqb/templates/regression-suite.md`](skills/qa-manual-istqb/templates/regression-suite.md) |
+| 121 | ✓ | [`skills/qa-manual-istqb/templates/risk-assessment-matrix.md`](skills/qa-manual-istqb/templates/risk-assessment-matrix.md) |
+| 122 | ✓ | [`skills/qa-manual-istqb/templates/test-cases.csv`](skills/qa-manual-istqb/templates/test-cases.csv) |
+| 123 | ✓ | [`skills/qa-manual-istqb/templates/test-conditions.md`](skills/qa-manual-istqb/templates/test-conditions.md) |
+| 124 | ✓ | [`skills/qa-manual-istqb/templates/test-environment-checklist.md`](skills/qa-manual-istqb/templates/test-environment-checklist.md) |
+| 125 | ✓ | [`skills/qa-manual-istqb/templates/test-plan.md`](skills/qa-manual-istqb/templates/test-plan.md) |
+| 126 | ✓ | [`skills/qa-manual-istqb/templates/test-summary-report.md`](skills/qa-manual-istqb/templates/test-summary-report.md) |
+| 127 | ✓ | [`skills/qa-manual-istqb/templates/traceability-matrix.csv`](skills/qa-manual-istqb/templates/traceability-matrix.csv) |
+| 128 | ✓ | [`skills/webapp-selenium-testing/LICENSE.txt`](skills/webapp-selenium-testing/LICENSE.txt) |
+| 129 | ✓ | [`skills/webapp-selenium-testing/references/file-map-template.md`](skills/webapp-selenium-testing/references/file-map-template.md) |
+| 130 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-debugging.md`](skills/webapp-selenium-testing/references/locator-strategies-debugging.md) |
+| 131 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-hierarchy.md`](skills/webapp-selenium-testing/references/locator-strategies-hierarchy.md) |
+| 132 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-patterns.md`](skills/webapp-selenium-testing/references/locator-strategies-patterns.md) |
+| 133 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-quick-reference.md`](skills/webapp-selenium-testing/references/locator-strategies-quick-reference.md) |
+| 134 | ✓ | [`skills/webapp-selenium-testing/references/locator-strategies-selectors.md`](skills/webapp-selenium-testing/references/locator-strategies-selectors.md) |
+| 135 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-base-page.md`](skills/webapp-selenium-testing/references/page-object-model-base-page.md) |
+| 136 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-basics.md`](skills/webapp-selenium-testing/references/page-object-model-basics.md) |
+| 137 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-best-practices.md`](skills/webapp-selenium-testing/references/page-object-model-best-practices.md) |
+| 138 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-components.md`](skills/webapp-selenium-testing/references/page-object-model-components.md) |
+| 139 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-pages.md`](skills/webapp-selenium-testing/references/page-object-model-pages.md) |
+| 140 | ✓ | [`skills/webapp-selenium-testing/references/page-object-model-patterns.md`](skills/webapp-selenium-testing/references/page-object-model-patterns.md) |
+| 141 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-advanced.md`](skills/webapp-selenium-testing/references/wait-strategies-advanced.md) |
+| 142 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-basics.md`](skills/webapp-selenium-testing/references/wait-strategies-basics.md) |
+| 143 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-best-practices.md`](skills/webapp-selenium-testing/references/wait-strategies-best-practices.md) |
+| 144 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-custom-waits.md`](skills/webapp-selenium-testing/references/wait-strategies-custom-waits.md) |
+| 145 | ✓ | [`skills/webapp-selenium-testing/references/wait-strategies-expected-conditions.md`](skills/webapp-selenium-testing/references/wait-strategies-expected-conditions.md) |
+| 146 | ✓ | [`skills/webapp-selenium-testing/scripts/pom-template.xml`](skills/webapp-selenium-testing/scripts/pom-template.xml) |
+| 147 | ✓ | [`skills/webapp-selenium-testing/scripts/setup-maven-project.ps1`](skills/webapp-selenium-testing/scripts/setup-maven-project.ps1) |
+| 148 | ✓ | [`skills/webapp-selenium-testing/SKILL.md`](skills/webapp-selenium-testing/SKILL.md) |
+| 149 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 150 | → | [`docs/references/authoring-agents.md`](docs/references/authoring-agents.md) |
+| 151 | → | [`docs/references/authoring-skills.md`](docs/references/authoring-skills.md) |
+| 152 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 153 | → | [`references/testing-anti-patterns.md`](references/testing-anti-patterns.md) |
 
 ---
 

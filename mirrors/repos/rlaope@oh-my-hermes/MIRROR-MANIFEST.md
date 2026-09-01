@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 158 file(s) materialized.
+Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 159 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rlaope/oh-my-hermes` — 26 default patterns, 0 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 158 |
+| Files         | 159 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -142,81 +142,82 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 81 | ✓ | [`skills/omh-memory-new/SKILL.md`](skills/omh-memory-new/SKILL.md) |
 | 82 | ✓ | [`skills/omh-memory-sync/SKILL.md`](skills/omh-memory-sync/SKILL.md) |
 | 83 | ✓ | [`skills/omh-meta-router/SKILL.md`](skills/omh-meta-router/SKILL.md) |
-| 84 | ✓ | [`skills/omh-model-setup/SKILL.md`](skills/omh-model-setup/SKILL.md) |
-| 85 | ✓ | [`skills/omh-morning-brief/SKILL.md`](skills/omh-morning-brief/SKILL.md) |
-| 86 | ✓ | [`skills/omh-native-debugging/references/native-debug-loop.md`](skills/omh-native-debugging/references/native-debug-loop.md) |
-| 87 | ✓ | [`skills/omh-native-debugging/SKILL.md`](skills/omh-native-debugging/SKILL.md) |
-| 88 | ✓ | [`skills/omh-operating-rhythm/SKILL.md`](skills/omh-operating-rhythm/SKILL.md) |
-| 89 | ✓ | [`skills/omh-ops-observability-card/SKILL.md`](skills/omh-ops-observability-card/SKILL.md) |
-| 90 | ✓ | [`skills/omh-ops-review/SKILL.md`](skills/omh-ops-review/SKILL.md) |
-| 91 | ✓ | [`skills/omh-paper-learning/SKILL.md`](skills/omh-paper-learning/SKILL.md) |
-| 92 | ✓ | [`skills/omh-parallel-tools/SKILL.md`](skills/omh-parallel-tools/SKILL.md) |
-| 93 | ✓ | [`skills/omh-people-ops/SKILL.md`](skills/omh-people-ops/SKILL.md) |
-| 94 | ✓ | [`skills/omh-performance-goal/SKILL.md`](skills/omh-performance-goal/SKILL.md) |
-| 95 | ✓ | [`skills/omh-physical-device-readiness/SKILL.md`](skills/omh-physical-device-readiness/SKILL.md) |
-| 96 | ✓ | [`skills/omh-plan/SKILL.md`](skills/omh-plan/SKILL.md) |
-| 97 | ✓ | [`skills/omh-product-brief/SKILL.md`](skills/omh-product-brief/SKILL.md) |
-| 98 | ✓ | [`skills/omh-production-audit/SKILL.md`](skills/omh-production-audit/SKILL.md) |
-| 99 | ✓ | [`skills/omh-prompt-import-readiness/SKILL.md`](skills/omh-prompt-import-readiness/SKILL.md) |
-| 100 | ✓ | [`skills/omh-provider-profile-posture/SKILL.md`](skills/omh-provider-profile-posture/SKILL.md) |
-| 101 | ✓ | [`skills/omh-reliability-review/SKILL.md`](skills/omh-reliability-review/SKILL.md) |
-| 102 | ✓ | [`skills/omh-report-package/SKILL.md`](skills/omh-report-package/SKILL.md) |
-| 103 | ✓ | [`skills/omh-research-brief/SKILL.md`](skills/omh-research-brief/SKILL.md) |
-| 104 | ✓ | [`skills/omh-research-department/SKILL.md`](skills/omh-research-department/SKILL.md) |
-| 105 | ✓ | [`skills/omh-routing/references/catalog-index.md`](skills/omh-routing/references/catalog-index.md) |
-| 106 | ✓ | [`skills/omh-routing/references/coding-handoff-progress-reporting.md`](skills/omh-routing/references/coding-handoff-progress-reporting.md) |
-| 107 | ✓ | [`skills/omh-routing/references/evidence-boundaries.md`](skills/omh-routing/references/evidence-boundaries.md) |
-| 108 | ✓ | [`skills/omh-routing/references/harness-registry.md`](skills/omh-routing/references/harness-registry.md) |
-| 109 | ✓ | [`skills/omh-routing/references/operator-maintenance.md`](skills/omh-routing/references/operator-maintenance.md) |
-| 110 | ✓ | [`skills/omh-routing/references/skill-common-rail.md`](skills/omh-routing/references/skill-common-rail.md) |
-| 111 | ✓ | [`skills/omh-routing/references/structural-code-search.md`](skills/omh-routing/references/structural-code-search.md) |
-| 112 | ✓ | [`skills/omh-routing/references/workflow-registry.md`](skills/omh-routing/references/workflow-registry.md) |
-| 113 | ✓ | [`skills/omh-routing/references/wrapper-routing.md`](skills/omh-routing/references/wrapper-routing.md) |
-| 114 | ✓ | [`skills/omh-routing/SKILL.md`](skills/omh-routing/SKILL.md) |
-| 115 | ✓ | [`skills/omh-rules-distill/SKILL.md`](skills/omh-rules-distill/SKILL.md) |
-| 116 | ✓ | [`skills/omh-run-efficiency/SKILL.md`](skills/omh-run-efficiency/SKILL.md) |
-| 117 | ✓ | [`skills/omh-running-work-board/SKILL.md`](skills/omh-running-work-board/SKILL.md) |
-| 118 | ✓ | [`skills/omh-rust/references/rust-discipline.md`](skills/omh-rust/references/rust-discipline.md) |
-| 119 | ✓ | [`skills/omh-rust/references/ub-escalation.md`](skills/omh-rust/references/ub-escalation.md) |
-| 120 | ✓ | [`skills/omh-rust/SKILL.md`](skills/omh-rust/SKILL.md) |
-| 121 | ✓ | [`skills/omh-sales-development/references/procedure.md`](skills/omh-sales-development/references/procedure.md) |
-| 122 | ✓ | [`skills/omh-sales-development/SKILL.md`](skills/omh-sales-development/SKILL.md) |
-| 123 | ✓ | [`skills/omh-security-safety-review/SKILL.md`](skills/omh-security-safety-review/SKILL.md) |
-| 124 | ✓ | [`skills/omh-skill-health/SKILL.md`](skills/omh-skill-health/SKILL.md) |
-| 125 | ✓ | [`skills/omh-skill-scout/SKILL.md`](skills/omh-skill-scout/SKILL.md) |
-| 126 | ✓ | [`skills/omh-skill/SKILL.md`](skills/omh-skill/SKILL.md) |
-| 127 | ✓ | [`skills/omh-source-finder/SKILL.md`](skills/omh-source-finder/SKILL.md) |
-| 128 | ✓ | [`skills/omh-support-operations/SKILL.md`](skills/omh-support-operations/SKILL.md) |
-| 129 | ✓ | [`skills/omh-terminal/SKILL.md`](skills/omh-terminal/SKILL.md) |
-| 130 | ✓ | [`skills/omh-toolbelt-readiness/SKILL.md`](skills/omh-toolbelt-readiness/SKILL.md) |
-| 131 | ✓ | [`skills/omh-verification-gate/SKILL.md`](skills/omh-verification-gate/SKILL.md) |
-| 132 | ✓ | [`skills/omh-visual-qa/references/visual-verdict-contract.md`](skills/omh-visual-qa/references/visual-verdict-contract.md) |
-| 133 | ✓ | [`skills/omh-visual-qa/SKILL.md`](skills/omh-visual-qa/SKILL.md) |
-| 134 | ✓ | [`skills/omh-voice-input/SKILL.md`](skills/omh-voice-input/SKILL.md) |
-| 135 | ✓ | [`skills/omh-websearch-setup/SKILL.md`](skills/omh-websearch-setup/SKILL.md) |
-| 136 | ✓ | [`skills/omh-wiki/references/wiki-blueprint.md`](skills/omh-wiki/references/wiki-blueprint.md) |
-| 137 | ✓ | [`skills/omh-wiki/references/wiki-ecosystem.md`](skills/omh-wiki/references/wiki-ecosystem.md) |
-| 138 | ✓ | [`skills/omh-wiki/references/wiki-operations.md`](skills/omh-wiki/references/wiki-operations.md) |
-| 139 | ✓ | [`skills/omh-wiki/references/wiki-patterns.md`](skills/omh-wiki/references/wiki-patterns.md) |
-| 140 | ✓ | [`skills/omh-wiki/SKILL.md`](skills/omh-wiki/SKILL.md) |
-| 141 | ✓ | [`skills/omh-workflow-learning/SKILL.md`](skills/omh-workflow-learning/SKILL.md) |
-| 142 | ✓ | [`skills/omh-workspace-audit/SKILL.md`](skills/omh-workspace-audit/SKILL.md) |
-| 143 | ✓ | [`skills/ulw-context/references/decision-frontier.md`](skills/ulw-context/references/decision-frontier.md) |
-| 144 | ✓ | [`skills/ulw-context/references/project-terms.md`](skills/ulw-context/references/project-terms.md) |
-| 145 | ✓ | [`skills/ulw-context/SKILL.md`](skills/ulw-context/SKILL.md) |
-| 146 | ✓ | [`skills/ulw-interview/SKILL.md`](skills/ulw-interview/SKILL.md) |
-| 147 | ✓ | [`skills/ulw-loop/references/goal-constraint-discipline.md`](skills/ulw-loop/references/goal-constraint-discipline.md) |
-| 148 | ✓ | [`skills/ulw-loop/references/measured-loop-discipline.md`](skills/ulw-loop/references/measured-loop-discipline.md) |
-| 149 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
-| 150 | ✓ | [`skills/ulw-maestro/references/executor-prompt-composition.md`](skills/ulw-maestro/references/executor-prompt-composition.md) |
-| 151 | ✓ | [`skills/ulw-maestro/SKILL.md`](skills/ulw-maestro/SKILL.md) |
-| 152 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
-| 153 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
-| 154 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
-| 155 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
-| 156 | ✓ | [`skills/ulw-work/references/dependency-topology.md`](skills/ulw-work/references/dependency-topology.md) |
-| 157 | ✓ | [`skills/ulw-work/references/tdd-red-green.md`](skills/ulw-work/references/tdd-red-green.md) |
-| 158 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
+| 84 | ✓ | [`skills/omh-model-optimization/SKILL.md`](skills/omh-model-optimization/SKILL.md) |
+| 85 | ✓ | [`skills/omh-model-setup/SKILL.md`](skills/omh-model-setup/SKILL.md) |
+| 86 | ✓ | [`skills/omh-morning-brief/SKILL.md`](skills/omh-morning-brief/SKILL.md) |
+| 87 | ✓ | [`skills/omh-native-debugging/references/native-debug-loop.md`](skills/omh-native-debugging/references/native-debug-loop.md) |
+| 88 | ✓ | [`skills/omh-native-debugging/SKILL.md`](skills/omh-native-debugging/SKILL.md) |
+| 89 | ✓ | [`skills/omh-operating-rhythm/SKILL.md`](skills/omh-operating-rhythm/SKILL.md) |
+| 90 | ✓ | [`skills/omh-ops-observability-card/SKILL.md`](skills/omh-ops-observability-card/SKILL.md) |
+| 91 | ✓ | [`skills/omh-ops-review/SKILL.md`](skills/omh-ops-review/SKILL.md) |
+| 92 | ✓ | [`skills/omh-paper-learning/SKILL.md`](skills/omh-paper-learning/SKILL.md) |
+| 93 | ✓ | [`skills/omh-parallel-tools/SKILL.md`](skills/omh-parallel-tools/SKILL.md) |
+| 94 | ✓ | [`skills/omh-people-ops/SKILL.md`](skills/omh-people-ops/SKILL.md) |
+| 95 | ✓ | [`skills/omh-performance-goal/SKILL.md`](skills/omh-performance-goal/SKILL.md) |
+| 96 | ✓ | [`skills/omh-physical-device-readiness/SKILL.md`](skills/omh-physical-device-readiness/SKILL.md) |
+| 97 | ✓ | [`skills/omh-plan/SKILL.md`](skills/omh-plan/SKILL.md) |
+| 98 | ✓ | [`skills/omh-product-brief/SKILL.md`](skills/omh-product-brief/SKILL.md) |
+| 99 | ✓ | [`skills/omh-production-audit/SKILL.md`](skills/omh-production-audit/SKILL.md) |
+| 100 | ✓ | [`skills/omh-prompt-import-readiness/SKILL.md`](skills/omh-prompt-import-readiness/SKILL.md) |
+| 101 | ✓ | [`skills/omh-provider-profile-posture/SKILL.md`](skills/omh-provider-profile-posture/SKILL.md) |
+| 102 | ✓ | [`skills/omh-reliability-review/SKILL.md`](skills/omh-reliability-review/SKILL.md) |
+| 103 | ✓ | [`skills/omh-report-package/SKILL.md`](skills/omh-report-package/SKILL.md) |
+| 104 | ✓ | [`skills/omh-research-brief/SKILL.md`](skills/omh-research-brief/SKILL.md) |
+| 105 | ✓ | [`skills/omh-research-department/SKILL.md`](skills/omh-research-department/SKILL.md) |
+| 106 | ✓ | [`skills/omh-routing/references/catalog-index.md`](skills/omh-routing/references/catalog-index.md) |
+| 107 | ✓ | [`skills/omh-routing/references/coding-handoff-progress-reporting.md`](skills/omh-routing/references/coding-handoff-progress-reporting.md) |
+| 108 | ✓ | [`skills/omh-routing/references/evidence-boundaries.md`](skills/omh-routing/references/evidence-boundaries.md) |
+| 109 | ✓ | [`skills/omh-routing/references/harness-registry.md`](skills/omh-routing/references/harness-registry.md) |
+| 110 | ✓ | [`skills/omh-routing/references/operator-maintenance.md`](skills/omh-routing/references/operator-maintenance.md) |
+| 111 | ✓ | [`skills/omh-routing/references/skill-common-rail.md`](skills/omh-routing/references/skill-common-rail.md) |
+| 112 | ✓ | [`skills/omh-routing/references/structural-code-search.md`](skills/omh-routing/references/structural-code-search.md) |
+| 113 | ✓ | [`skills/omh-routing/references/workflow-registry.md`](skills/omh-routing/references/workflow-registry.md) |
+| 114 | ✓ | [`skills/omh-routing/references/wrapper-routing.md`](skills/omh-routing/references/wrapper-routing.md) |
+| 115 | ✓ | [`skills/omh-routing/SKILL.md`](skills/omh-routing/SKILL.md) |
+| 116 | ✓ | [`skills/omh-rules-distill/SKILL.md`](skills/omh-rules-distill/SKILL.md) |
+| 117 | ✓ | [`skills/omh-run-efficiency/SKILL.md`](skills/omh-run-efficiency/SKILL.md) |
+| 118 | ✓ | [`skills/omh-running-work-board/SKILL.md`](skills/omh-running-work-board/SKILL.md) |
+| 119 | ✓ | [`skills/omh-rust/references/rust-discipline.md`](skills/omh-rust/references/rust-discipline.md) |
+| 120 | ✓ | [`skills/omh-rust/references/ub-escalation.md`](skills/omh-rust/references/ub-escalation.md) |
+| 121 | ✓ | [`skills/omh-rust/SKILL.md`](skills/omh-rust/SKILL.md) |
+| 122 | ✓ | [`skills/omh-sales-development/references/procedure.md`](skills/omh-sales-development/references/procedure.md) |
+| 123 | ✓ | [`skills/omh-sales-development/SKILL.md`](skills/omh-sales-development/SKILL.md) |
+| 124 | ✓ | [`skills/omh-security-safety-review/SKILL.md`](skills/omh-security-safety-review/SKILL.md) |
+| 125 | ✓ | [`skills/omh-skill-health/SKILL.md`](skills/omh-skill-health/SKILL.md) |
+| 126 | ✓ | [`skills/omh-skill-scout/SKILL.md`](skills/omh-skill-scout/SKILL.md) |
+| 127 | ✓ | [`skills/omh-skill/SKILL.md`](skills/omh-skill/SKILL.md) |
+| 128 | ✓ | [`skills/omh-source-finder/SKILL.md`](skills/omh-source-finder/SKILL.md) |
+| 129 | ✓ | [`skills/omh-support-operations/SKILL.md`](skills/omh-support-operations/SKILL.md) |
+| 130 | ✓ | [`skills/omh-terminal/SKILL.md`](skills/omh-terminal/SKILL.md) |
+| 131 | ✓ | [`skills/omh-toolbelt-readiness/SKILL.md`](skills/omh-toolbelt-readiness/SKILL.md) |
+| 132 | ✓ | [`skills/omh-verification-gate/SKILL.md`](skills/omh-verification-gate/SKILL.md) |
+| 133 | ✓ | [`skills/omh-visual-qa/references/visual-verdict-contract.md`](skills/omh-visual-qa/references/visual-verdict-contract.md) |
+| 134 | ✓ | [`skills/omh-visual-qa/SKILL.md`](skills/omh-visual-qa/SKILL.md) |
+| 135 | ✓ | [`skills/omh-voice-input/SKILL.md`](skills/omh-voice-input/SKILL.md) |
+| 136 | ✓ | [`skills/omh-websearch-setup/SKILL.md`](skills/omh-websearch-setup/SKILL.md) |
+| 137 | ✓ | [`skills/omh-wiki/references/wiki-blueprint.md`](skills/omh-wiki/references/wiki-blueprint.md) |
+| 138 | ✓ | [`skills/omh-wiki/references/wiki-ecosystem.md`](skills/omh-wiki/references/wiki-ecosystem.md) |
+| 139 | ✓ | [`skills/omh-wiki/references/wiki-operations.md`](skills/omh-wiki/references/wiki-operations.md) |
+| 140 | ✓ | [`skills/omh-wiki/references/wiki-patterns.md`](skills/omh-wiki/references/wiki-patterns.md) |
+| 141 | ✓ | [`skills/omh-wiki/SKILL.md`](skills/omh-wiki/SKILL.md) |
+| 142 | ✓ | [`skills/omh-workflow-learning/SKILL.md`](skills/omh-workflow-learning/SKILL.md) |
+| 143 | ✓ | [`skills/omh-workspace-audit/SKILL.md`](skills/omh-workspace-audit/SKILL.md) |
+| 144 | ✓ | [`skills/ulw-context/references/decision-frontier.md`](skills/ulw-context/references/decision-frontier.md) |
+| 145 | ✓ | [`skills/ulw-context/references/project-terms.md`](skills/ulw-context/references/project-terms.md) |
+| 146 | ✓ | [`skills/ulw-context/SKILL.md`](skills/ulw-context/SKILL.md) |
+| 147 | ✓ | [`skills/ulw-interview/SKILL.md`](skills/ulw-interview/SKILL.md) |
+| 148 | ✓ | [`skills/ulw-loop/references/goal-constraint-discipline.md`](skills/ulw-loop/references/goal-constraint-discipline.md) |
+| 149 | ✓ | [`skills/ulw-loop/references/measured-loop-discipline.md`](skills/ulw-loop/references/measured-loop-discipline.md) |
+| 150 | ✓ | [`skills/ulw-loop/SKILL.md`](skills/ulw-loop/SKILL.md) |
+| 151 | ✓ | [`skills/ulw-maestro/references/executor-prompt-composition.md`](skills/ulw-maestro/references/executor-prompt-composition.md) |
+| 152 | ✓ | [`skills/ulw-maestro/SKILL.md`](skills/ulw-maestro/SKILL.md) |
+| 153 | ✓ | [`skills/ulw-perf/SKILL.md`](skills/ulw-perf/SKILL.md) |
+| 154 | ✓ | [`skills/ulw-plan/SKILL.md`](skills/ulw-plan/SKILL.md) |
+| 155 | ✓ | [`skills/ulw-qa/SKILL.md`](skills/ulw-qa/SKILL.md) |
+| 156 | ✓ | [`skills/ulw-research/SKILL.md`](skills/ulw-research/SKILL.md) |
+| 157 | ✓ | [`skills/ulw-work/references/dependency-topology.md`](skills/ulw-work/references/dependency-topology.md) |
+| 158 | ✓ | [`skills/ulw-work/references/tdd-red-green.md`](skills/ulw-work/references/tdd-red-green.md) |
+| 159 | ✓ | [`skills/ulw-work/SKILL.md`](skills/ulw-work/SKILL.md) |
 
 ---
 

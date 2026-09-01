@@ -6,7 +6,7 @@ lastUpdated: 2026-06-28
 
 # OmniRoute Codebase Documentation
 
-> **Version:** v3.8.0
+> **Version:** v3.8.51
 > **Last updated:** 2026-06-28
 > **Audience:** Engineers contributing to OmniRoute or building integrations on top of it.
 >
@@ -64,7 +64,7 @@ OmniRoute/
 ├── _ideia/, _references/, _mono_repo/, _tasks/   Internal scratch / planning (not shipped)
 ├── CLAUDE.md             Repo rules for Claude Code
 ├── AGENTS.md             Deeper architecture reference for agents
-├── package.json          v3.8.0, workspace root
+├── package.json          v3.8.51, workspace root
 └── tsconfig.json         Path aliases + core compiler options
 ```
 
@@ -219,7 +219,7 @@ src/app/api/services/
 Corresponding dashboard UI:
 `src/app/(dashboard)/dashboard/providers/services/` — two-tab page (CLIProxyAPI + 9Router).
 Reverse proxy for 9Router embedded UI:
-`src/app/(dashboard)/dashboard/providers/services/[name]/embed/[...path]/route.ts`
+`src/app/(dashboard)/dashboard/providers/services/[name]/embed/[[...path]]/route.ts`
 
 Deep-dive: `docs/frameworks/EMBEDDED-SERVICES.md`
 
@@ -349,10 +349,10 @@ Domain modules (each owns one or more tables): `apiKeys.ts`, `backup.ts`,
 `syncTokens.ts`, `tierConfig.ts`, `upstreamProxy.ts`, `versionManager.ts`,
 `webhooks.ts`.
 
-`migrations/` holds 55 versioned `.sql` files (idempotent, transactional) and is
+`migrations/` holds 167 versioned `.sql` files (idempotent, transactional) and is
 executed by `migrationRunner.ts` at boot.
 
-Tables created across the migrations (52 total):
+Tables created across the migrations (123 total):
 
 `a`, `account_key_limits`, `api_keys`, `batches`, `call_logs`,
 `combo_adaptation_state`, `combos`, `command_code_auth_sessions`,
@@ -450,12 +450,12 @@ open-sse/
 ├── types.d.ts
 ├── config/                 Provider registries, header profiles, identity, …
 ├── handlers/               Request handlers (chat, embeddings, audio, image, …)
-├── executors/              108 provider-specific HTTP executors
+├── executors/              104 provider-specific HTTP executors
 ├── translator/             Format conversion (OpenAI ↔ Claude ↔ Gemini ↔ Cursor ↔ Kiro)
 ├── transformer/            Responses API ↔ Chat Completions stream transformer
 ├── services/               80+ service modules (combos, fallback, quotas, identity, …)
 ├── utils/                  Streaming helpers, TLS client, AWS SigV4, proxy fetch, …
-└── mcp-server/             MCP server (3 transports, 31 scopes, 105 tools)
+└── mcp-server/             MCP server (3 transports, 33 scopes, 110 tools)
 ```
 
 ### 4.1 `open-sse/handlers/`
@@ -489,7 +489,7 @@ open-sse/
 (shared identity helper) and `index.ts` (registry).
 
 > Note: providers not listed here are served by `default.ts` using the generic
-> OpenAI-compatible executor. The full provider catalog (351 providers) lives in
+> OpenAI-compatible executor. The full provider catalog (352 providers) lives in
 > `src/shared/constants/providers.ts`.
 
 ### 4.3 `open-sse/translator/`
@@ -538,11 +538,11 @@ Highlights (full list under `open-sse/services/`):
 
 ### 4.6 `open-sse/mcp-server/`
 
-- **31 registered tools** wired in `server.ts` (12 scoped under `schemas/tools.ts`,
-  5 compression tools, 3 memory tools, 4 skills tools, plus advanced tools added
-  through `advancedTools.ts`).
+- **110 unique tools** wired in `server.ts` (45 canonical in `schemas/tools.ts` +
+  memory, skills, GitHub-skills, pool, gamification, plugin, Notion, Obsidian,
+  local-corpus and compression modules — union counted by `countUniqueMcpTools`).
 - **3 transports**: stdio, HTTP Streamable, SSE.
-- **31 scopes** declared in `src/shared/constants/mcpScopes.ts`.
+- **33 scopes** enforced at runtime — base list in `src/shared/constants/mcpScopes.ts`, full set is the union of the scopes declared by each tool module.
 - Audit table: `mcp_tool_audit` (populated by `audit.ts`).
 - Files: `server.ts`, `index.ts`, `httpTransport.ts`, `audit.ts`, `scopeEnforcement.ts`,
   `runtimeHeartbeat.ts`, `descriptionCompressor.ts`, `schemas/{tools, a2a, audit, index}.ts`,
@@ -585,7 +585,7 @@ electron/
 ├── main.js                  Electron main process
 ├── preload.js               Preload bridge (contextIsolation enabled)
 ├── types.d.ts
-├── package.json             electron-builder config, version 3.8.0
+├── package.json             electron-builder config, version 3.8.51
 ├── README.md
 ├── assets/                  Build resources (icons, entitlements, …)
 ├── node_modules/            Dedicated node_modules (better-sqlite3, electron-updater)
@@ -637,7 +637,7 @@ Two binaries are exposed in `package.json` → `bin`:
 | `tests/unit/`                                        | Unit tests via Node native test runner (1821 files, plus `api/`, `auth/`, `authz/` subdirs) |
 | `tests/integration/`                                 | Cross-module + DB-state tests                                                               |
 | `tests/e2e/`                                         | Playwright UI tests                                                                         |
-| `tests/protocols-e2e/`                               | MCP/A2A protocol e2e                                                                        |
+| `tests/e2e/protocol-clients.test.ts`                 | MCP/A2A protocol e2e                                                                        |
 | `tests/translator/`                                  | Translator-specific tests                                                                   |
 | `tests/security/`                                    | Security regressions                                                                        |
 | `tests/load/`                                        | Load / stress tests                                                                         |

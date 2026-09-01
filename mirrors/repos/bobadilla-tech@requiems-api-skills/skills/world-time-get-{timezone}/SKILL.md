@@ -3,13 +3,13 @@ name: world-time-get-{timezone}
 api: World Time
 method: GET
 path: /v1/places/time/{timezone}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns the current time for the given IANA timezone identifier. The timezone is supplied as a path parameter (e.g. `America/New_York`, `Europe/London`, `UTC`).
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/time/{timezone}**
+**GET https://requiems.xyz/v1/places/time/{timezone}**
 
 ## Get Current Time by Timezone
 

@@ -3,13 +3,13 @@ name: sentiment-post-sentiment
 api: Sentiment Analysis
 method: POST
 path: /v1/text/sentiment
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Analyzes the sentiment of the provided text and returns a classification, confidence score, and a full breakdown across all three sentiment classes.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/text/sentiment**
+**POST https://requiems.xyz/v1/text/sentiment**
 
 ## Analyze Sentiment
 

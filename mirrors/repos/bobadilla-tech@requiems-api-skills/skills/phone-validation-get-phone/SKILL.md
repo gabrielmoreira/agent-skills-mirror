@@ -3,13 +3,13 @@ name: phone-validation-get-phone
 api: Phone Validation
 method: GET
 path: /v1/validation/phone
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validates a single phone number and returns its country, type, formatted representation, carrier, and VOIP/virtual risk flags.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/validation/phone**
+**GET https://requiems.xyz/v1/validation/phone**
 
 ## Validate Phone Number
 

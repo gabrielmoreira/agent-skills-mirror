@@ -3,13 +3,13 @@ name: global-data-get-{ip}
 api: Global Data System
 method: GET
 path: /v1/systems/timezone/from-ip/{ip}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Resolve the timezone, UTC offset, and DST status for any IPv4 or IPv6 address without needing an address string.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/systems/timezone/from-ip/{ip}**
+**GET https://requiems.xyz/v1/systems/timezone/from-ip/{ip}**
 
 ## Timezone from IP
 

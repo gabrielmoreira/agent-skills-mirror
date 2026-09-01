@@ -3,13 +3,13 @@ name: spell-check-post-spellcheck
 api: Spell Check
 method: POST
 path: /v1/text/spellcheck
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Checks the input text for spelling mistakes and returns a corrected version along with per-word corrections.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/text/spellcheck**
+**POST https://requiems.xyz/v1/text/spellcheck**
 
 ## Check Spelling
 

@@ -3,13 +3,13 @@ name: email-validate-post-batch
 api: Email Validator
 method: POST
 path: /v1/validation/email/batch
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validates up to 50 email addresses in a single request. Each email is processed independently and returns a full validation breakdown (syntax, MX record, disposable check, normalization, and typo suggestion). Invalid emails do not fail the request. Billing: 1 credit per email.
 ---
 
 ## Endpoint
 
-**POST https://api.requiems.xyz/v1/validation/email/batch**
+**POST https://requiems.xyz/v1/validation/email/batch**
 
 ## Validate Emails (Batch)
 

@@ -3,13 +3,13 @@ name: crypto-get-{symbol}
 api: Crypto Prices
 method: GET
 path: /v1/finance/crypto/{symbol}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns current price data for the given cryptocurrency symbol.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/crypto/{symbol}**
+**GET https://requiems.xyz/v1/finance/crypto/{symbol}**
 
 ## Get Crypto Price
 

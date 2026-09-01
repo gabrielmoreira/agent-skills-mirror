@@ -3,13 +3,13 @@ name: iban-get-{iban}
 api: IBAN Validator
 method: GET
 path: /v1/finance/iban/{iban}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Validates an IBAN and returns the country, bank code, and account number. Spaces in the input are stripped automatically. Always returns HTTP 200 — check the valid field to determine whether the IBAN is valid.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/iban/{iban}**
+**GET https://requiems.xyz/v1/finance/iban/{iban}**
 
 ## Validate IBAN
 

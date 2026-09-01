@@ -3,13 +3,13 @@ name: swift-code-get-{code}
 api: SWIFT Code
 method: GET
 path: /v1/finance/swift/{code}
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Look up bank metadata for a SWIFT/BIC code.
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/finance/swift/{code}**
+**GET https://requiems.xyz/v1/finance/swift/{code}**
 
 ## Get SWIFT Code
 

@@ -3,13 +3,13 @@ name: holidays-get-holidays
 api: Holidays
 method: GET
 path: /v1/places/holidays
-base_url: https://api.requiems.xyz
+base_url: https://requiems.xyz
 description: Returns a list of public holidays for the specified country and year
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/places/holidays**
+**GET https://requiems.xyz/v1/places/holidays**
 
 ## Get Holidays
 

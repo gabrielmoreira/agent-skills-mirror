@@ -17,27 +17,27 @@ It provides a single OpenAI-compatible endpoint (`/v1/*`) and routes traffic acr
 
 Core capabilities:
 
-- OpenAI-compatible API surface for CLI/tools (351 providers, 104 executors)
+- OpenAI-compatible API surface for CLI/tools (352 providers, 104 executors)
 - Request/response translation across provider formats
 - Model combo fallback (multi-model sequence)
 - Structured combo steps (`provider + model + connection`) with runtime ordering by `compositeTiers`
 - Account-level fallback (multi-account per provider)
 - Quota preflight and quota-aware P2C account selection in the main chat path
 - OAuth + API-key provider connection management (22 OAuth provider modules)
-- Embedding generation via `/v1/embeddings` (6 providers, 9 models)
+- Embedding generation via `/v1/embeddings` (18 providers)
 - Image generation via `/v1/images/generations` (10+ providers, 20+ models)
-- Audio transcription via `/v1/audio/transcriptions` (7 providers)
+- Audio transcription via `/v1/audio/transcriptions` (18 providers)
 - Text-to-speech via `/v1/audio/speech` (24 built-in providers)
 - Video generation via `/v1/videos/generations` (ComfyUI + SD WebUI)
 - Music generation via `/v1/music/generations` (ComfyUI)
-- Web search via `/v1/search` (5 providers)
+- Web search via `/v1/search` (20 providers)
 - Moderations via `/v1/moderations`
 - Reranking via `/v1/rerank`
 - Think tag parsing (`<think>...</think>`) for reasoning models
 - Response sanitization for strict OpenAI SDK compatibility
 - Role normalization (developer→system, system→user) for cross-provider compatibility
 - Structured output conversion (json_schema → Gemini responseSchema)
-- Local persistence for providers, keys, aliases, combos, settings, pricing (26 DB modules)
+- Local persistence for providers, keys, aliases, combos, settings, pricing (122 DB modules)
 - Usage/cost tracking and request logging
 - Optional cloud sync for multi-device/state sync
 - IP allowlist/blocklist for API access control
@@ -58,7 +58,7 @@ Core capabilities:
 - Compliance audit logging with opt-out per API key
 - Eval framework for LLM quality assurance
 - Health dashboard with real-time provider circuit breaker status
-- MCP Server (87 tools) with 3 transports (stdio/SSE/Streamable HTTP)
+- MCP Server (110 tools) with 3 transports (stdio/SSE/Streamable HTTP)
 - A2A Server (JSON-RPC 2.0 + SSE) with skills and task lifecycle
 - Memory system (extraction, injection, retrieval, summarization)
 - Skills system (registry, executor, sandbox, built-in skills)
@@ -330,14 +330,14 @@ OAuth provider modules (22 individual files under `src/lib/oauth/providers/`):
 ## 5) Embedded Services (v3.8.4)
 
 OmniRoute can install, supervise, and route to locally-running AI tool processes
-called **embedded services**. Two are shipped in v3.8.4: 9Router and CLIProxyAPI.
+called **embedded services**. Five are shipped: 9Router, CLIProxyAPI, Bifrost, Mux and Dario.
 
 Architecture layers:
 
 - **UI** (`/dashboard/providers/services`) — two-tab page with lifecycle controls,
   live log streaming, API key management, and (for 9Router) embedded native UI via
   an internal reverse proxy.
-- **API** (`/api/services/{name}/*`) — 8 endpoints for 9Router, 7 for CLIProxyAPI,
+- **API** (`/api/services/{name}/*`) — 11 endpoints for 9Router, 10 for CLIProxyAPI, 8 each for Bifrost / Mux / Dario,
   all classified **LOCAL_ONLY** (hard rule #17). A shared `GET /api/services/[name]/logs`
   SSE endpoint serves both services.
 - **Supervisor** (`src/lib/services/`) — generic `ServiceSupervisor` class wraps
@@ -879,8 +879,8 @@ flowchart LR
 
 - `open-sse/translator/index.ts`: translator registry and orchestration
 - Request translators: `open-sse/translator/request/*` (9 modules — `antigravity-to-openai`, `claude-to-gemini`, `claude-to-openai`, `gemini-to-openai`, `openai-responses`, `openai-to-claude`, `openai-to-cursor`, `openai-to-gemini`, `openai-to-kiro`)
-- Response translators: `open-sse/translator/response/*` (8 modules — `claude-to-openai`, `cursor-to-openai`, `gemini-to-claude`, `gemini-to-openai`, `kiro-to-openai`, `openai-responses`, `openai-to-antigravity`, `openai-to-claude`)
-- Helpers: `open-sse/translator/helpers/*` (8 modules — `claudeHelper`, `geminiHelper`, `geminiToolsSanitizer`, `maxTokensHelper`, `openaiHelper`, `responsesApiHelper`, `schemaCoercion`, `toolCallHelper`)
+- Response translators: `open-sse/translator/response/*` (11 modules — `claude-to-openai`, `cursor-to-openai`, `gemini-to-claude`, `gemini-to-openai`, `kiro-to-openai`, `openai-responses`, `openai-to-antigravity`, `openai-to-claude`, `openai-to-gemini`, `openai-to-gemini-sse`, `responsesToolItem`)
+- Helpers: `open-sse/translator/helpers/*` (12 modules — `claudeHelper`, `geminiHelper`, `geminiToolsSanitizer`, `jsonUtil`, `markdownBoundary`, `maxTokensHelper`, `openaiHelper`, `responsesApiHelper`, `schemaCoercion`, `strictSystemHoist`, `toolCallHelper`, `toolCallShim`)
 - Format constants: `open-sse/translator/formats.ts`
 - Bootstrap and registry: `open-sse/translator/bootstrap.ts`, `open-sse/translator/registry.ts`
 - Image-format helpers: `open-sse/translator/image/`
