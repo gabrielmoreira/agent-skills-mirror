@@ -53,6 +53,11 @@ request, or other GitHub side effect, confirm all of the following:
 
 ## B1 — Create worktree
 
+Concurrent workers sharing one clone: serialize every `fetch`/`merge
+--ff-only`/worktree add/remove call below (and F4 cleanup's own
+worktree removal) behind the
+[clone-scoped lock](../../../docs/idd-helper-scripts.md#clone-scoped-lock).
+
 1. On the primary worktree, run `git fetch origin main`.
 2. On the primary worktree, run `git log origin/main..main --oneline`.
 3. If step 2 outputs any lines, stop and report: local `main` has unpushed
@@ -215,42 +220,24 @@ requirements are satisfied, whether coverage is adequate, and whether any other
 problems exist. Every mechanism below answers those questions. They are what a
 pass asks, never a separate pass to run on top of the one that ran.
 
-1. Find the delegate configuration. Read `critiqueLoop.delegate` in
-   `.github/idd/config.json` first.
-   - Only when the repository config has no `critiqueLoop` key, or has one
-     whose `delegate` key is absent, may a local runtime read a user-global
-     file instead.
-   - Use `$XDG_CONFIG_HOME/idd-skill/config.json` only when
-     `XDG_CONFIG_HOME` is a qualified root **for the platform you are running
-     on**. On Windows that is a drive root (`C:\…` or `C:/…`) or a UNC root
-     (`\\server\…`); `\config` does not qualify. On POSIX it is a path
-     starting with `/` but not with `//`.
-   - A Windows-shaped value on POSIX, or a POSIX-shaped value on Windows, does
-     not qualify. Never join an unqualified value against the current
-     directory.
-   - Otherwise use `$HOME/.config/idd-skill/config.json`. If neither root
-     qualifies, use no user-global file.
-   - Treat a missing, unreadable, invalid-JSON, or non-object user-global file
-     as absent.
-2. Decide whether that configuration is **usable**. Each bullet below makes it
-   **unusable** — never merely failed.
-   - `critiqueLoop` is present but is not an object: a string, an array, or
-     `null`.
-   - `delegate` is `null`, the explicit disable.
-   - `delegate` is not an object, or is an array.
-   - `delegate` carries any key other than `command` and `mode`, a typo
-     included.
-   - `command` is not `delegate`'s own property, is not a string, or holds no
-     non-whitespace character.
-   - `mode` is present but is not one of the four values in step 5.
-
-   An absent `critiqueLoop` or `delegate` key is not unusable; it simply means
-   no delegate at this layer. Then apply the verdict:
-   - an unusable value in the repository config never runs, and it blocks the
-     user-global layer — nothing is inherited in its place;
-   - an unusable user-global fragment counts as absent instead;
-   - an unusable delegate never applies `mode` at all. This configuration
-     fail-safe is separate from the runtime failure in step 4.
+1. Resolve the delegate verdict with the profile-selected
+   `critique-delegate` helper (`node scripts/idd-critique-delegate.mjs`, or
+   the package-manager-profile `idd:critique-delegate` command — resolve
+   the exact command from `docs/idd-helper-scripts.md` if unsure). Read its
+   `usable` field as the step 2 verdict directly — never re-derive it — and,
+   when `usable` is `true`, its `source`/`command`/`mode` fields as the
+   delegate to run in step 4. This file is helper-enabled only — an
+   `instructions-only` repository never reaches this step, since it uses
+   `idd-work.instructions.md` instead (see Helper runtime contract above,
+   which is where that repository's own prose delegate contract lives): if
+   the helper is missing, fails, or disagrees with live state, stop and ask
+   per that contract instead of falling back to prose.
+2. `usable: false` means no delegate at this layer — go straight to step 3.
+   `usable: true` means the helper already applied every configuration
+   fail-safe (an unusable repository-local value never runs and blocks
+   user-global inheritance; an unusable user-global fragment counts as
+   absent; an unusable delegate never applies `mode`); use its `command`
+   and `mode` as-is in steps 4-5.
 3. If no usable delegate remains, run the per-agent critique pass on the branch
    diff and go to step 7.
 4. Otherwise run the delegate's `command` against the branch diff. It **failed**
@@ -269,7 +256,19 @@ pass asks, never a separate pass to run on top of the one that ran.
    this pass's whole output, which is the duplicate cost `never` exists to
    avoid.
 6. If both ran, union their reported issues.
-7. The floor (referenced in C2, C4, and C5) is `fix-validate` passing against
+7. These lenses apply only within a per-agent pass (step 3 or step 5) —
+   when only the delegate ran instead (a successful delegate under
+   `fallback`, or any delegate under `never`), it never sees them, and
+   do not apply them yourself in its place. When a per-agent pass did
+   run, also apply, composing when both fit: **Mutation / write-side**
+   (the diff implements a helper that mutates GitHub state, mutates git
+   state, or performs a merge) — Fail-closed inputs; Validate/execute
+   scope parity; Unsafe-output suppression; Schema strictness parity.
+   **Gate-mirroring** (the diff implements a helper that predicts,
+   mirrors, or pre-checks another gate's decision) — Validation-path
+   parity; Input completeness; Whole-identity comparison; Snapshot
+   identity; Point-in-time parity.
+8. The floor (referenced in C2, C4, and C5) is `fix-validate` passing against
    the branch's current HEAD. Re-run it after every new commit; it does not
    substitute for D2's `pre-push-validate` gate.
 

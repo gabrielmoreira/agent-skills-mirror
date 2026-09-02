@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `siteboon/claudecodeui` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `siteboon/claudecodeui` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `siteboon/claudecodeui` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/backend-module-standards/agents/openai.yaml`](.agents/skills/backend-module-standards/agents/openai.yaml) |
 | 2 | ✓ | [`.agents/skills/backend-module-standards/SKILL.md`](.agents/skills/backend-module-standards/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`.agents/skills/frontend-module-standards/agents/openai.yaml`](.agents/skills/frontend-module-standards/agents/openai.yaml) |
+| 4 | ✓ | [`.agents/skills/frontend-module-standards/SKILL.md`](.agents/skills/frontend-module-standards/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

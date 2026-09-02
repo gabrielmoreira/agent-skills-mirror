@@ -6,7 +6,36 @@
 
 ## 未发布
 
+- **稳定 CI 异步心跳回归**：保存同步 watchdog 与引导初始化 heartbeat 测试改为等待数据库终态和 detached 清理等真实可观测条件，不再用固定 wall-clock sleep 推断异步任务已经完成，避免高负载 runner 上的时序假失败。
+
+- **修复 Tailnet notices 的 CI 冷缓存校验**：生成脚本新增 `--prefetch`，主 CI 在离线生成跨平台第三方依赖清单前，按同一目标矩阵和构建 tags 精确预热所需 Go 模块，避免 Linux helper 测试只下载当前平台依赖后，Windows 专属模块因 `GOPROXY=off` 被误判为 notices 失败；新增目标遍历与工作流顺序回归测试。
+
 - **修复 YouTube / 知乎平台已收藏但 Web 误报同步失败**：原生保存发出点击后若页面选中态未在短轮询窗口内更新，扩展曾直接回传 `native_confirmation_not_observed`，后端因此持久化为失败。现在 runner 在导航前登记自有 task tab 并禁止普通行为采集；收到不确定结果后先终止并等待 mutation sender，再重载精确内容页，只有新 `document_instance_id` 完成 READY 握手才发送独立 `execution_id` 的 `verification_only`。真实 Chrome 复核进一步确认知乎桌面端已从命名收藏夹弹窗改成条目级全局 `收藏 / 已收藏` 开关：后端目标同步改为 `知乎收藏`、取消 named-collection capability，首次“收藏”只点击一次并等待“已收藏”，初始“已收藏”及所有 verification 路径严格只读，避免重复任务反向取消。YouTube 新版 `toggleable-list-item-view-model` 又把实际状态与点击点移到内层 `button[role=menuitem][aria-pressed]`，外层 `yt-list-item-view-model` 仅为 presentation；执行器现优先读取并点击内层按钮，同时保留旧 renderer 兼容，避免假点击无写入。YouTube verifier 继续只读检查 exact playlist；只有正面 persisted-state 证据才升级为 `already_synced`，其它结果保持原失败。扩展 callback 现要求 2xx、在独立 deadline 内以同一 payload 有界重试；后端只幂等确认完全相同的 canonical terminal replay，变化后的晚回调仍 409。临时 tab 删除结果会区分已删除、已不存在与未知失败，未知失败保留 MV3 恢复记录。新增 runner、平台 verifier、传输、canonical replay、零被动事件与零二次 mutation 回归测试。
+
+- **电脑端应用内 Tailnet 远程入口**：新增默认关闭的 `[tailnet]` 与 Go `tsnet` helper，由
+  Python supervisor 随后端生命周期托管，把用户自己 tailnet 内的 HTTP / WebSocket 固定反代到
+  `127.0.0.1:<本次启动的有效 server port>`；通常使用 `[api].port`，也跟随 `start` /
+  `serve-api --port` 与桌面 `OPENBILICLAW_PORT` 覆盖。电脑不再要求安装或全局开启系统 Tailscale，
+  已内嵌 tsnet 的 `OpenBiliClaw-mobile` Android / iOS 原生 App 可经
+  `App → tailnet → 电脑 helper → FastAPI` 在非局域网访问；Web / Linux / macOS / Windows Flutter
+  构建不在首版支持面。桌面安装包内置 helper，
+  源码安装提供 `tailnet build-helper`（Go 1.26.6）；Docker 首版不内置。节点身份保存在
+  `data/tailnet/` 并排除迁移包；`data/bin/` 的任意大小写变体也不允许随包迁移，导入只保留
+  目标机 exact native helper，POSIX 要求它原本可执行再恢复 `0700`；目标机器保留根含嵌套
+  symlink 时 fail closed，避免跟随链接复制目录外数据。首次登录 URL 自动展示 / 打开，非交互 Auth Key 只经 stdin
+  bootstrap 传递、不写配置、argv、状态或日志。入口仅限 tailnet 私网，不启用 Funnel/Serve，
+  并清洗重建转发头以保持 API 密码门禁的远程请求语义。`config.local.toml` 的 Tailnet 字段级
+  覆盖保留 provenance；`OPENBILICLAW_TAILNET_ENABLED/HOSTNAME` 显式环境覆盖优先于 local/base，
+  通用保存不会烘焙覆盖值，CLI 遇到 env/local shadowed 修改会明确拒绝；Auth Key / helper path
+  保持 runtime-only。helper 固定使用 `ts_omit_logtail,ts_omit_webclient`，不向
+  `log.tailscale.com` 上传自动诊断日志且不携带未用管理 Web UI，控制面 / DERP 边界仍照常披露；
+  完整依赖 notice 由生成脚本产出并由 CI / 桌面构建校验。Go 1.26.6 helper 的 macOS
+  `minos=12.0`，启动前单独 preflight；主应用仍支持 10.15+，旧 macOS 只降级 Tailnet。桌面 Web
+  与浏览器插件「设置 → 通用」现新增 Tailnet 控制和脱敏状态：可留空走网页登录、提交
+  `tskey-auth-…` Auth Key，或提交 `tskey-client-…` OAuth Client Secret + 已授权设备 tag。
+  入网凭据是只允许真实本机请求写入的 API write-only 字段，不进 TOML / 扩展存储 / 回显；以
+  私有权限原子暂存到下一次完整重启，成功写入 helper stdin 后删除。OAuth helper 注册为持久、
+  预授权、tag-owned 节点；环境输入仍可用于无人值守注册，且环境凭据优先于设置页暂存。
 
 - **README 下载与星标徽章**：中英文 README 顶部新增 GitHub Releases 总下载数与仓库 Star 动态徽章，点击可直达对应页面。
 

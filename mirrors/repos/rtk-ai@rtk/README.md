@@ -413,7 +413,7 @@ For per-agent setup details, override controls, and graceful degradation, see th
 
 ```toml
 [hooks]
-exclude_commands = ["curl", "playwright"]  # skip rewrite for these
+exclude_commands = ["curl", "playwright"]  # skip rewrite for these (matches `npx playwright` too)
 
 [tee]
 enabled = true          # save raw output on failure (default: true)

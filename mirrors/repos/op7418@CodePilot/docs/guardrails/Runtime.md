@@ -1,6 +1,17 @@
 # Runtime Compatibility Filtering — 护栏
 
-CodePilot 有两条 chat 运行路径：**Claude Code Runtime**（SDK 子进程）和 **CodePilot Runtime**（@ai-sdk/* 直连）。Provider / Model / Composer 三层过滤契约必须严格对齐，否则 picker 看到的、resolver 选中的、wire 上发出去的会出现三方不一致，长期看就是用户报"模型选了 A，实际请求 B"或者"切了 runtime 但 picker 还是老模型"。
+CodePilot 有三条 chat 运行路径：**Claude Code Runtime**（SDK 子进程）、**CodePilot Runtime**（@ai-sdk/* 直连）和 **Codex Runtime**（app-server thread）。Provider / Model / Composer 三层过滤契约必须严格对齐，否则 picker 看到的、resolver 选中的、wire 上发出去的会出现三方不一致。
+
+## 0. 会话 Runtime owner（2026-09-01）
+
+- `chat_sessions.runtime_pin` 在 `runtime_binding_state='bound'` 时是该聊天唯一 Runtime owner。第一次服务端接受真实 execution attempt 后即绑定；Provider 随后失败也不解锁。
+- 新聊天创建时一次保存 `runtimeId + providerInstanceId + modelId`。已有聊天只可通过 `/api/chat/sessions/:id/route` 和 `expected_route_revision` 原子改 route；通用 session PATCH 不再接受 route 字段。
+- `bound` 会话禁止原地跨 Runtime。普通 Composer Picker 必须将 Runtime lane 置灰，仍只允许 owner Runtime 内 capability 支持的 route 变化；不得因点击普通下拉而自动调用 handoff、创建聊天或跳转。Handoff API 只允许由未来独立、明确标注“在新聊天中继续”并带确认的入口调用，来源聊天、原生 session/thread ref 和 route revision 均不改变。
+- `legacy_unbound` 只能由用户显式 recovery；普通 `unbound` 的 auto/retry/queue fail closed。助理、heartbeat、task、bridge 等无人值守会话必须在创建时携带明确完整 route 并直接绑定。
+- 同 Runtime route 变化由 `RuntimeContinuationPolicy` 裁决：Claude/Native 当前为 `replay_context`，Codex model 为 `in_session`、Provider 变化为 `new_session`。UI 不得按模型名字猜。
+- managed child 只允许使用父 owner 对应 Runtime；child 的 Provider+Model route 不得绑定或修改父 session。
+- route CAS 的 409 `ROUTE_REVISION_CONFLICT` 响应必须携带权威 session 快照；客户端采用完整 route、binding state、owner 与 revision 后再让用户重试。不得只更新 revision（会让下一次发送带着旧 Provider/Model），也不得丢弃快照让窗口永久重复旧 revision。
+- Runtime wire id 只用于存储和 API。owner 横幅、handoff 卡片与 transcript marker 统一经 `runtimeDisplayLabelKey()` 显示产品名，不得把 `claude_code` / `codepilot_runtime` / `codex_runtime` 直出给用户。
 
 ## 1. 词汇表
 
@@ -8,7 +19,7 @@ CodePilot 有两条 chat 运行路径：**Claude Code Runtime**（SDK 子进程�
 |---|---|---|
 | `agent_runtime` setting | `'auto' \| 'native' \| 'claude-code-sdk'` | DB `settings` 表，用户在 Settings → CLI 设置 |
 | Concrete runtime | `'native' \| 'claude-code-sdk'` | `resolveRuntime()` 输出（`runtime/registry.ts`） |
-| `ChatRuntime` | `'claude_code' \| 'codepilot_runtime'` | `chat-runtime.ts` 把 concrete 映射到 chat-side 词汇 |
+| `RuntimeId` / `ChatRuntime` | `'claude_code' \| 'codepilot_runtime' \| 'codex_runtime'` | `runtime/runtime-id.ts` 注册表派生；`ChatRuntime` 是兼容别名 |
 | `ChatRuntimeParam` | `ChatRuntime \| 'auto'` | API query / hook 参数；`'auto'` = server 端用 `getActiveChatRuntime()` 自己解析 |
 | `ProviderRuntimeCompat` | `claude_code_ready` / `claude_code_verified` / `claude_code_experimental` / `codepilot_only` / `media_only` / `unknown` | `getProviderCompat()` (`runtime-compat.ts`) |
 | `ModelRuntimeCompat` | `{ chat?, tool_capable?, thinking_capable?, claude_code_compatible?, codepilot_runtime_compatible?, media? }` | `getModelCompat()` (`runtime-compat.ts`) |
@@ -203,7 +214,7 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
 4. **`fetchAll` 重新拉时不重置 `fetchState`** → `provider-changed` 事件 refetch 期间旧 groups 仍生效，runtime gate 短暂打开。每次 fetchAll 头部 `setFetchState('idle')`
 5. **没 abort 旧 fetch** → 慢的旧请求晚到覆盖新请求结果。`useRef<AbortController>` + 每次 fetchAll 头部 `controller.abort()`，`.then` / `.catch` 检查 `signal.aborted`
 6. **catch 合成 env synthetic 后下游 derivation 仍按"groups 空 = noCompatibleProvider"判** → 矛盾。`noCompatibleProvider = fetchState === 'loaded' && providerGroups.length === 0`，failed 状态里 groups.length=1 不算 noCompatibleProvider
-7. **MessageInput auto-correct fire `onProviderModelChange(currentProviderIdValue, fallback)` 时，`currentProviderIdValue` 是 hook 内部 fallback group 的 id 而非 prop providerId** → 写回 session 的是 fallback provider，正确。但 Composer 顶层那次 `useProviderModels` 必须返回**同步过的** resolved pair，不能让 ChatView 的 `currentProviderId` state 落后于 hook 的 resolved 信号 → ChatView 用 useEffect 监听 `providerWasFilteredOut` + PATCH session 同步
+7. **MessageInput auto-correct fire `onProviderModelChange(currentProviderIdValue, fallback, { isAuto: true })` 时，`currentProviderIdValue` 是 hook 内部 fallback group 的 id 而非 prop providerId** → Composer 本地显示应采用这对 resolved identity，但 `isAuto` 不得写 session route。unbound 会话由第一次手动 Send 原子保存完整 route；bound 会话若持久 route 已不可用则进入恢复面，不能由 catalog refetch 静默改写。
 8. **父模型在一个 turn 内同时生成 A/B tool input，SDK 随后按 A→B 串行执行** → B 的 prompt 仍在 A 结果产生前冻结，不能据此宣称 B 获得 A 输出。依赖必须走 `workflow_id/task_key/depends_on` 与 app-side durable handoff。
 9. **AI SDK 不认识第三方 Responses 模型就静默丢 reasoning** → 对 preset-verified transport 显式 `forceReasoning`，并用真实 outbound body 测试；不能只断言 providerOptions 内存对象。若同一模型在 Anthropic / Responses 上使用不同 ID（例如 GLM-5.3），override 必须来自 exact-model wire capability；effort alias 也必须 provider-scoped，禁止把 DeepSeek 的 `xhigh→high` 变成所有端点的全局规则。
 10. **把 OpenAI Responses 附加字段原样发给兼容端点** → 供应商只承诺的子集才保留。DeepSeek 当前不声明 reasoning summary，fetch 边界必须剥离 SDK 自动生成的 `reasoning.summary`。

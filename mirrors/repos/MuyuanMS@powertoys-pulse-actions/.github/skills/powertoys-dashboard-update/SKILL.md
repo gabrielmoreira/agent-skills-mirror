@@ -122,7 +122,7 @@ the dashboard artifact validators in the same change.
 | Item | Allowed action type | Dashboard meaning | Must contain | Not allowed as an action |
 | --- | --- | --- | --- | --- |
 | PR | `approve` | Submit/choose approval for a review-clean PR. | Current `head_sha`, covered `source_updated_at`, no unresolved agent findings. | Native validation still pending, queued review, owned elsewhere, re-run prompt. |
-| PR | `post_review` | Post selected code suggestions or review comments. | Proposed comments pinned to the current head; inline comments use current RIGHT-side ranges when possible. | General "keep checking", "complete validation", or product-direction reminders without a publishable review body. |
+| PR | `post_review` | Post selected code suggestions or non-blocking review comments. | Proposed comments pinned to the current head; inline comments use current RIGHT-side ranges when possible. Event must be `COMMENT`; inline-only reviews omit the overall review body. | `REQUEST_CHANGES`, a generic overall message for inline-only suggestions, general "keep checking", "complete validation", or product-direction reminders without a publishable review body. |
 | PR | `request_changes` | Post selected blocking review comments as a request-changes review. | Same evidence and current-head requirements as `post_review`. | A standalone request to run the review loop again. |
 | Issue | `request_info` | Ask the reporter for specific missing evidence. | An issue-specific upstream comment that summarizes the relevant facts already supplied, explains why they are insufficient, asks for exact missing evidence, and gives the established collection method when one exists (for example, `/bugreport` for a fresh PowerToys diagnostic ZIP). | "Not now", wait, monitor, a generic checklist, or "send logs/more information" without explaining the gap. |
 | Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
@@ -294,6 +294,15 @@ changes requirements, reveals a concern, resolves author-waiting state, or
 invalidates the prior decision. Otherwise advance `evaluated_at` and
 `source_updated_at` without pretending a new code review occurred.
 
+Do not classify a PR as waiting on author from "who commented last" or from a
+generic maintainer comment alone. Preserve `pending_author` only when current
+live evidence supports it: a needs-author-feedback label, a current
+changes-requested review after the author's latest activity, or posted Pulse
+review comments that have not been followed by an author commit/comment/review.
+If the author has pushed or replied after the author-wait signal, clear
+`pending_author`, mark the artifact `needs_revalidation`, and put the PR back
+in the review queue so the update agent makes a fresh decision.
+
 Never skip an eligible PR merely because it is old or absent from the recent
 activity query. Never re-review an unchanged, converged head with no newer
 relevant activity.
@@ -353,6 +362,7 @@ repository ownership signals, then emit one of:
 | `judgment.status` | Dashboard result |
 | --- | --- |
 | `actionable_design` | `Design fix` action; candidate for the bounded full-design batch |
+| `reproducible` | `Reproduce` action with maintainer-ready local verification steps |
 | `needs_information` | Draft a specific `request_info` action describing exactly what evidence is missing |
 | `duplicate_or_handled` | Link the duplicate/fix/owned work; no duplicate agent work |
 | `waiting_on_author` | Preserve the requested evidence and waiting-since timestamp |
@@ -362,6 +372,13 @@ Each judgment must contain `rationale`, concrete `evidence`, a
 `recommended_action`, `evaluated_at`, and `source_updated_at`. Do not claim a
 root cause during the fast pass. When evidence is insufficient, prefer
 `needs_information` over a speculative design.
+
+Before defaulting to a request for logs or `/bugreport`, perform a focused
+initial investigation using the issue body, discussion, labels, linked issues,
+linked PRs, likely owning code area, and recent history/duplicates that can be
+checked without a full implementation pass. If that investigation can identify
+a plausible root cause or fix plan with useful confidence, emit that as a
+design/fix path instead of only pushing the reporter for more information.
 
 Every new or substantively refreshed issue artifact that exposes an action must
 use `schemaVersion: 4` and include display-only `issue_context`:
@@ -407,6 +424,23 @@ The editable `request_info` comment and display-only context must agree:
 `issue_context.information_gaps`, and any gap whose `how_to_collect` names
 `/bugreport` must use `/bugreport` in the proposed comment.
 
+When the evidence supports it, emit multiple issue actions rather than a single
+default request-info path: an `approve_design` action for the best currently
+supportable fix plan with an explicit confidence score/rationale, plus a
+`request_info` action that asks only for evidence that would materially improve
+or disprove that plan. Prefer this split for vague or long issues where the
+discussion already narrows the component but still lacks a decisive diagnostic.
+
+When an issue is already clearly reproducible from the public report or
+attachments but does not yet justify a fix design, emit a `reproduce` action
+instead of asking the reporter for more logs. The action must include the
+PowerToys module, version/build requirement when relevant, prerequisites,
+numbered reproduction steps, expected result, and any setup requirements. If
+the repro needs external assets (for example, a file over a threshold size or a
+specific file shape), include `reproduce.setup_prompt` so Pulse can copy a
+prompt the maintainer can paste into a local agent to prepare those files, or
+link public issue attachments in `reproduce.attachments`.
+
 Older unchanged bugs do not need to be re-read every run, but they must retain
 their prior explicit judgment/action in the board. The 30-day window controls
 full-design priority, not whether changed issues receive a judgment.
@@ -421,9 +455,9 @@ that queued state instead.
 Do not emit placeholder issue controls. Issue artifacts should only include
 concrete maintainer actions that can be executed from Pulse: request a specific
 piece of information, post a close/dedupe/out-of-scope comment, approve/start a
-fix design, or open an upstream PR from a completed fork fix. Do not include
-`hold`/`Not now` actions, and do not publish issue artifacts whose only action
-is to wait.
+fix design, guide a maintainer through a local reproduction, or open an
+upstream PR from a completed fork fix. Do not include `hold`/`Not now` actions,
+and do not publish issue artifacts whose only action is to wait.
 
 For every artifact and mapped fork trace, also detect:
 
@@ -548,6 +582,14 @@ current RIGHT-side diff range and can contain one apply-ready `suggestion`
 block. Do not require an inline anchor to draft the review: architectural,
 cross-file, out-of-diff, validation, or coordination findings belong in normal
 body comments and must still produce a pinned `post_review` action.
+
+Emit `post_review` with review event `COMMENT`. When every proposed comment is
+inline, omit `review.body_prefix` so GitHub receives only the selected inline
+comments and no overall review message. Use `request_changes` only for a
+deliberate blocking review; never encode a request-changes event inside a
+`post_review` action. Pulse may let the maintainer explicitly change the final
+submission from Comment to Request changes, but the generated artifact remains
+non-blocking by default.
 
 Do not collapse every concrete code fix into broad companion notes. When the
 converged fork contains a localized fix on a current upstream diff line, emit

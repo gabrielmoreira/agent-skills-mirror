@@ -1,6 +1,6 @@
 # AGENTS.md - Godot AI
 
-This guide is for any AI assistant working in this repository. Keep Claude-specific files such as `CLAUDE.md` and `.claude/skills/*` as thin pointers to this shared guidance.
+This guide is for any AI assistant working in this repository. Keep Claude-specific files such as `.claude/CLAUDE.md` and `.claude/skills/*` as thin pointers to this shared guidance.
 
 ## What this project is
 
@@ -8,9 +8,9 @@ A production-grade MCP server for Godot. Python server (FastMCP v3) communicates
 
 ## Architecture
 
-- **Protocol**: JSON over WebSocket. Request/response with `request_id` correlation. Handshake on connect.
-- **WS trust boundary**: the editor↔server WebSocket (port 9500) is **effectively unauthenticated**; loopback-only binding is the whole boundary. Never bind it beyond loopback, and never add plugin-side logic that assumes the peer on 9500 is trusted. The handshake token is hardening, not authentication. Full contract, including the deliberately-accepted downgrades: [docs/plugin-architecture.md](docs/plugin-architecture.md#security-model).
-- **Session model**: Multiple Godot editors can connect. Tools route through active session.
+- **Protocol**: v4 protocol 2 uses mutual, transcript-bound HMAC over a private per-backend WebSocket capability. The editor reveals metadata only after verifying the server proof; the server publishes a reserved peer only after its final ACK succeeds. Missing/wrong capabilities, protocol-1 frames, duplicate keys, and downgrade attempts fail closed.
+- **Transport boundary**: WebSocket remains loopback-only and HTTP is localhost-first, but neither relies on loopback as authentication. HTTP/status/lease require a separate bearer capability; both transports have finite connection/body/frame/session budgets. Never add tokenless, bare-URL, or legacy-handshake fallback. Full contract: [docs/plugin-architecture.md](docs/plugin-architecture.md#security-model).
+- **Session model**: Multiple Godot editors connect through one authoritative `_entries` table. Public `Session` values are immutable snapshots; settlement/removal is bound to the exact peer and request reservation. Tools route through the active or explicitly pinned session.
 - **Handler/Runtime layer**: Shared handlers in `src/godot_ai/handlers/` contain tool logic. They depend on `DirectRuntime`, the in-process runtime adapter. Tools and resources are thin wrappers that create a runtime and delegate.
 - **Readiness gating**: writes check session readiness before executing — Python write handlers must `await require_writable_async()` (`handlers/_readiness.py`), and every new plugin response builder must stamp the envelope-level `readiness` field. `EDITOR_NOT_READY` is frozen as a top-level code; never promote a `data.sub_code` into `error.code`. Self-healing, the importing-hold, and the sub-code vocabulary: [docs/plugin-architecture.md](docs/plugin-architecture.md#session-and-readiness-model).
 
@@ -33,34 +33,32 @@ directory names say what they hold. The parts the layout does *not* tell you:
 - **Tools return `dict`**: Handlers call `runtime.send_command(command, params)` which returns a dict or raises. Tools create a `DirectRuntime` and delegate to handlers.
 - **Plugin runs on main thread**: All GDScript executes in `_process()` with a 4ms frame budget. Never block. Use `call_deferred` for scene tree mutations.
 - **Scene paths are clean**: `/Main/Camera3D` format, not raw Godot internal paths. Use `McpScenePath.from_node(node, scene_root)` in GDScript.
-- **Class naming**: classes that need a project-wide `class_name` (i.e. used as a type annotation across multiple files) carry the `Mcp*` prefix to avoid colliding with user-project classes. Internals only used inside the plugin (handlers, presets/values, test stubs) skip `class_name` entirely and load via `const X := preload("res://addons/godot_ai/...")` from their consumers — except handlers, which `plugin.gd` deliberately does NOT preload: they register by script path via `McpDispatcher.register_lazy_handler` / `register_lazy` and are `load()`ed at first dispatch, keeping the boot-time compile closure small (#736). Do not add a bare-name `class_name` for a new class — pick `Mcp*` or `preload`. The choice of `Mcp*` vs preload-only is stylistic, not a parse-safety measure; the #398 self-update parse-error class is fixed at the runner by writing one consistent snapshot before scan, and both forms are parse-safe across upgrades from the fixed release onward.
-- **Never delete a published `class_name` declaration**: removing `class_name X` from a class that was registered in any prior released version can trigger a "Could not resolve script" cascade during the self-update disable -> extract -> enable window. This is independent of the runner's single-phase install ordering. If a class_name must be retired, leave the original file path and `class_name` in place as a compatibility shim.
+- **Class naming**: classes that need a project-wide `class_name` (i.e. used as a type annotation across multiple files or exposed to third-party addons) carry the `Mcp*` prefix to avoid colliding with user-project classes. Internals only used inside the plugin (handlers, presets/values, test stubs) skip `class_name` and load by path. Handlers are registered lazily so `plugin.gd` does not preload their compile closure. V4 is a clean break from pre-v4 updater and wire compatibility, not a silent revocation of published addon APIs: any previously shipped `class_name` needs an explicit API decision before removal and may remain as a tiny path/UID-stable shim.
 - **MCP logging**: Plugin prints `MCP | [recv] command(params)` / `MCP | [send] command -> ok` to Godot console. Controlled by the dock's "Log" toggle, persisted via EditorSetting `godot_ai/mcp_logging` (routes to the dispatcher `mcp_logging` var and `McpLogBuffer.enabled` console echo). High-frequency `[event] readiness -> ...` lines record to the ring buffer only (`log(msg, echo=false)`) and never echo to the console (#626).
-- **Tool surface — ~18 named verbs + per-domain `<domain>_manage` rollups**: each domain exposes one rolled-up tool taking `op="<verb>"` + a `params` dict, alongside high-traffic verbs as named tools, so clients that ignore `defer_loading` stay under their tool-count caps. Core tools (`editor_state`, `scene_get_hierarchy`, `node_get_properties`, `session_activate`) stay non-deferred; everything else is tagged `meta={"defer_loading": True}`. When adding a verb, prefer an op on the existing `register_manage_tool(...)` call over a new top-level tool. Rationale and the full checklist: [docs/tool-surface.md](docs/tool-surface.md); op map: `docs/TOOLS.md`.
+- **Tool surface — 46 tools: 19 named tools + 27 `<domain>_manage` rollups**: each domain exposes one rolled-up tool taking `op="<verb>"` + a `params` dict, alongside high-traffic verbs as named tools, so clients that ignore `defer_loading` stay under their tool-count caps. Four of the named tools (`editor_state`, `scene_get_hierarchy`, `node_get_properties`, `session_activate`) stay non-deferred; the other 15 and all 27 rollups are tagged `meta={"defer_loading": True}`. When adding a verb, prefer an op on the existing `register_manage_tool(...)` call over a new top-level tool. Rationale and the full checklist: [docs/tool-surface.md](docs/tool-surface.md); op map: `docs/TOOLS.md`.
 - **Tool resources alongside tools**: Read-only `godot://...` URIs mirror the most-used reads (`godot://node/{path}/properties`, `godot://script/{path}`, `godot://materials`, …). Resources don't count against tool caps; tool forms are the fallback for clients that don't surface resources, and the only path that supports per-call `session_id` pinning. When a tool has a resource counterpart, its description appends `Resource form: godot://...` so aware clients can route the cheap reads through the URI.
 - **`batch_execute` uses plugin command names, not MCP tool names**: the MCP tool `node_create` dispatches the plugin command `create_node`. Inside `batch_execute`'s `commands[].command` field — and inside a `<domain>_manage` op — use the plugin name. The Python handlers in `src/godot_ai/handlers/` are the authoritative map: each calls `runtime.send_command("<plugin_cmd>", ...)`. [docs/tool-surface.md](docs/tool-surface.md)
-- **Session IDs**: format is `<project-slug>@<4hex>` (e.g. `godot-ai@a3f2`). The slug is derived from the project directory name so agents can recognize which editor they're targeting; the hex suffix disambiguates same-project twins. Server treats the ID as an opaque key.
+- **Session IDs**: format is `<project-slug>@<16hex>` (for example, `godot-ai@7f9c3a10d8e426b1`). The slug is recognizable; the 64-bit cryptographic suffix safely disambiguates same-project editors. Server treats the ID as an opaque key.
 - **Per-call session routing**: every Godot-talking tool accepts an optional `session_id` parameter. Empty (the default) resolves to the global active session. When supplied, that single call targets that session — `require_writable` and every handler inside the call see the pinned session, not the active one. Use this when multiple AI clients share one MCP server. For `<domain>_manage` rollups, `session_id` is a sibling of `op` and `params` (top-level), *not* nested inside `params`. Resources (`godot://...`) still resolve via the active session.
-- **FastMCP middleware order is load-bearing**: `src/godot_ai/server.py` registers, in this order, `PreserveGodotCommandErrorData → StripClientWrapperKwargs → ParseStringifiedParams → FoldFlatManageParams → HintOpTypoOnManage`. FastMCP composes the chain via `reversed(self.middleware)`, so first-added is **outermost** (sees response last) and last-added is **innermost** (sees response first). The five positions are reasoned out in the docstring above the `mcp.add_middleware(...)` calls in `server.py`; the order is locked by `tests/unit/test_server_middleware_order.py`. Adding new middleware: read that docstring, decide the position, update both the docstring and the test in lockstep.
+- **FastMCP middleware order is load-bearing**: `src/godot_ai/server.py` registers `PreserveGodotCommandErrorData → StripClientWrapperKwargs → ParseStringifiedParams → FoldFlatManageParams → HintOpTypoOnManage → TrackMcpSessions`. FastMCP composes the chain via `reversed(self.middleware)`, so first-added is **outermost** (sees response last) and last-added is **innermost** (sees response first). The first five transforms have load-bearing positions; `TrackMcpSessions` is observational and its position is conventional. The rationale is in the docstring above registration and the complete inventory is locked by `tests/unit/test_server_middleware_order.py`.
 - **Telemetry is wrap-once at server build time**: `src/godot_ai/server.py` calls `install_fastmcp_wraps(mcp)` right after constructing the FastMCP instance and before any `register_<domain>_tools(mcp)`. That call replaces `mcp.tool` / `mcp.resource` with auto-instrumenting versions, so every tool and resource (including the `<domain>_manage` rollups, whose `op` arg is captured as `sub_action`) gets one `tool_execution` / `resource_retrieval` record per call automatically. Adding a new tool, resource, or rollup op needs **no telemetry call**. Opt-out is `GODOT_AI_DISABLE_TELEMETRY=true` (also accepts `DISABLE_TELEMETRY=true`). The endpoint is configured via `GODOT_AI_TELEMETRY_ENDPOINT`; if unset, a baked-in production default endpoint is used, so telemetry sends by default — the only way to prevent sends is the opt-out env var. Session-id slugs are sha256-hashed before leaving the process so project directory names don't leak. Plugin-side events (dock startup, self-update outcome) ride the existing `send_event("plugin_event", …)` channel; the names allowlist lives in both `plugin/addons/godot_ai/telemetry.gd` and `src/godot_ai/transport/websocket.py::_PLUGIN_EVENT_NAMES` — keep them in sync. Full reference: `docs/TELEMETRY.md`.
 - **Client auto-configuration**: the plugin configures MCP clients from a registry of
   data-only descriptors — `_registry.gd::_CLIENT_SCRIPT_PATHS` is the authoritative
   list; adding one is a new `clients/<name>.gd` plus one script path there, with no
-  strategy edits for standard shapes. All descriptors are command-shape (`godot-ai
-  attach` stdio entries) except cherry_studio, which stays URL-mode by design.
+  strategy edits for standard shapes. Every advertised descriptor is command-shape
+  (`godot-ai attach` stdio); clients without verified stdio/dynamic-capability
+  support, including Cherry Studio, are not advertised in v4.
   [docs/client-configuration.md](docs/client-configuration.md)
 
-### Published `class_name` compatibility
+### Published `class_name` surface
 
-Treat a shipped `class_name` as compatibility surface for self-update. v2.4.0 -> v2.4.1 reproduced a 500+ error cascade when `class_name McpErrorCodes` was dropped; v2.4.2 restored it. Single-phase install fixes mixed-snapshot parse errors, but it does not make deleting a previously registered class safe.
-
-If a `class_name` needs to become a shim, keep the original file path and declaration:
-
-- Inheritance-shaped classes can usually `extends "res://addons/godot_ai/.../impl_file.gd"`.
-- Static-constants/static-method classes need explicit forwarding or duplicated constants; `extends` does not surface static members through class-name lookup.
-- Mixed classes should either keep the implementation in the original file or hand-write a shim that preserves every published static and instance shape.
-
-Practical rule: keeping the implementation in the original class_name file is usually simpler and safer than retiring it. If a class truly becomes obsolete, leave a no-op `class_name` stub in place so older projects can pass through the self-update window cleanly.
+Do not reintroduce private pre-v4 machinery merely to make old in-place updates
+work: the major migration swaps the entire tree while editors are closed.
+Published `Mcp*` classes used by third-party addons are a separate API contract.
+Prefer keeping their implementation at the original path; if an implementation
+is retired, a minimal path/UID-stable declaration is cheaper than an accidental
+source break. Removal requires an explicit API decision plus clean-install and
+class-cache evidence.
 
 ## Worktrees
 
@@ -130,15 +128,16 @@ Or in cmd: `mklink /J test_project\addons\godot_ai ..\..\plugin\addons\godot_ai`
 
 - Server start/adopt/teardown, discovery tiers, `editor_reload_plugin`: [docs/server-lifecycle.md](docs/server-lifecycle.md)
 - Cutting a release, and the self-update install path: [docs/releasing.md](docs/releasing.md).
-  **Any change touching `mcp_dock.gd` update paths, `update_reload_runner.gd`, plugin
-  disable/enable, `prepare_for_update_reload()`, or the release ZIP layout must run
-  `script/local-self-update-smoke`.**
+  **Any change touching update discovery, `update_manager.gd`,
+  `update_coordinator.gd`, `update_transaction.py`, `release_verify.py`, plugin
+  disable/enable or startup barriers, or the signed release layout must run
+  `python script/local-self-update-smoke`.**
 
 ## Testing
 
 ### Python tests
 ```bash
-pytest -v                    # ~1300 unit + integration tests
+pytest -v                    # full Python unit + integration suite
 ```
 
 ### Godot-side tests
@@ -168,8 +167,11 @@ A test that passes for the wrong reason is worse than a missing test: it ships a
 - **`assert_has_key` without a follow-up value check**. Presence of `"data"` in a response says nothing about correctness. Every `assert_has_key(result, "data")` should be paired with at least one `assert_eq` / `assert_true` on a field inside `result.data`.
 - **`editor_undo()` / `editor_redo()` without checking the return**. The helper returns `bool` — `false` means the undo silently no-oped. For tests that assert post-undo state, capture `var did_undo := editor_undo(_undo_redo); assert_true(did_undo, "undo should succeed")` before asserting the rolled-back value.
 - **Bare `except: pass` in Python tests**. Swallowing exceptions can let a half-failed operation still pass the downstream assertion. Catch specific exceptions, and if you truly want to ignore a cleanup failure, log it.
-- **CI scripts that drop `failures[]`**. When a `script/ci-*` parses a `test_run` response, it must iterate `content.get("failures", [])` and print `{suite}.{test}: {message}` on failure — not just the passed/failed counts. The reference pattern is in `script/ci-godot-tests:117-119`.
-- **Version-gated skips**. For a test that depends on future newer-engine behavior, call `if skip_on_godot_lt("4.6", "reason"): return` at the top (`McpTestSuite.skip_on_godot_lt` returns `bool`). CI runs a Godot 4.5 Linux canary (`Godot tests / Linux (Godot 4.5)`, pinned to `4.5.0`) in addition to the three 4.7.0 OS rows so the documented floor catches parse-cascade regressions. `ci-check-gdscript` is strict on every supported version; Logger-backed scripts are parsed normally now.
+- **CI scripts that drop `failures[]`**. When a `script/ci-*` parses a `test_run` response, it must iterate `content.get("failures", [])` and print `{suite}.{test}: {message}` on failure — not just the passed/failed counts. `script/ci-godot-tests` is the reference implementation.
+- **Unsupported-engine skips**. Do not version-gate v4 behavior inside the
+  supported suite: Godot 4.7 is the floor. CI runs separate 4.5 and 4.6
+  no-mutation refusal smokes; those versions must never enter normal tests or
+  make older-engine branches part of production behavior.
 
 ## Before you commit
 
@@ -232,23 +234,45 @@ through in [docs/plugin-architecture.md](docs/plugin-architecture.md#undo-contra
 
 ## Test coverage
 
-100% code coverage for core features, always. Every tool, handler, and protocol path must have both:
-- **Python tests** (`tests/unit/` and `tests/integration/`): protocol, WebSocket, client logic
-- **Godot-side tests** (`test_project/tests/`): handlers exercised against the live editor
+Security, protocol, ownership, and changed behavior need direct regression
+coverage at the layer that owns them. Python orchestration belongs in
+`tests/unit/` or `tests/integration/`; editor APIs and undo semantics belong in
+`test_project/tests/`. Cross-boundary behavior needs both sides or a live smoke.
+Coverage reports are diagnostic—CI does not claim or enforce a universal 100%
+line threshold.
 
 
-## Audit follow-up work
+## v4 architecture work
 
-A whole-codebase audit's Tier-1 cleanup merged as PR #684. The remaining work — issues #685–#691 plus a 115-item backlog — is tracked in [docs/audit-tier2-plan.md](docs/audit-tier2-plan.md). When picking up any of it, follow that file's workflow: one PR per theme, the full test gauntlet before every commit, verify each finding against current code before touching anything, and ask the maintainer before the flagged design decisions.
+The active rebuild is governed by
+[docs/architecture-simplification-plan.md](docs/architecture-simplification-plan.md)
+and its
+[verification companion](docs/architecture-simplification-verification-plan.md).
+The maximal hardening tree is preserved separately at
+`checkpoint/architecture-hardening-2026-08-30-draft1` as an oracle, not as the
+implementation base. The earlier [docs/audit-tier2-plan.md](docs/audit-tier2-plan.md)
+is archived point-in-time evidence, not a live backlog. Never implement or
+re-file one of its findings without verifying it against current code; paths,
+severity, and proposed fixes may already be stale or superseded. The full test
+gauntlet remains required before every commit.
 
-## Godot version support (4.5+)
+## Godot version support (4.7+)
 
-The plugin supports **Godot 4.5+** (4.7+ recommended). 4.5 is exercised by a CI canary (`Godot tests / Linux (Godot 4.5)` in `ci.yml`, pinned to `4.5.0`) so the parse-cascade class of regression cannot recur unnoticed at the documented floor.
+Godot AI v4 supports **Godot 4.7 and newer**. The plugin entry point checks the
+engine before constructing the lifecycle or any side-effecting owner. Godot
+4.5/4.6 emit one actionable refusal and remain inert.
 
-- **Forward-compat engine APIs go through `Engine.call(...)` / `OS.call(...)` when they are newer than the supported floor.** A direct call to a method that only exists in a newer Godot is type-checked by the older engine's GDScript parser against the native class and rejected at parse time, even when guarded by `has_method(...)` at runtime. That parse failure can cascade through preloads and brick the whole plugin. This was the #476 regression for `Engine.capture_script_backtraces()` on 4.3. The current floor makes that specific call safe, but the pattern still applies to future 4.6+ APIs until the floor moves again.
-- **CI GDScript validation**: `script/ci-check-gdscript` runs before Godot tests in CI. It scans the `--import` log for `SCRIPT ERROR` / `Parse Error` lines and fails the build early if any GDScript has syntax errors, before the test runner even starts. Strict on every supported Godot version, including the 4.5 canary.
-- **CI Linux runner**: Linux Godot CI uses `chickensoft-games/setup-godot@v2` on `ubuntu-latest` (not a Docker image). All three OS jobs (Linux, macOS, Windows) use the same chickensoft action for consistent Godot setup, pinned to `4.7.0`. A fourth `godot-tests` row runs the Linux 4.5 canary on `4.5.0` (the action wants 3-part semver — `4.5` / `4.5.stable` are rejected). Step timeouts are set on test and smoke steps to prevent CI hangs.
-- **Version-gated tests are for future floor bumps only.** Keep `McpTestSuite.skip_on_godot_lt(...)` available, but do not skip current-floor behavior; the 4.5 canary should exercise it.
+- **Newer APIs**: a direct engine API that postdates 4.7 is parsed against the
+  current floor even behind `has_method`. Use a dynamic `Engine.call(...)` /
+  `OS.call(...)` seam when forward compatibility genuinely requires it.
+- **Supported parse gate**: `script/ci-check-gdscript` scans the Godot 4.7
+  import log and fails on parse/load errors or an empty validation run.
+- **Unsupported floor gate**: `script/ci-unsupported-godot-smoke` runs against
+  official 4.5 and 4.6, requires the exact refusal, and proves byte-identical
+  add-on files and `project.godot`, with no capability record. Godot's generated
+  `.godot/` import cache is outside this mutation contract.
+- **Hosted matrix**: normal Godot tests run on Linux, macOS, and Windows at
+  4.7.0. Unsupported versions never run the behavioral suite.
 
 ## What NOT to do
 

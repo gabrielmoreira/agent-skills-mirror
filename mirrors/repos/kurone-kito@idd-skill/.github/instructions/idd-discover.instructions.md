@@ -153,6 +153,11 @@ Apply the configured policy before passing A0-O candidates to A3.5:
 - `public-disabled`: for private or internal repositories, behave the
   same as `none`.
 
+**Autopilot floor.** In autopilot runs, pass `--autopilot` to
+`discover-orphan-filter`; skip `routed_to_human` candidates (never
+reach A3.5). No helper: apply A4 Step 2's floor rule verbatim,
+including `enabled: false`, to each footer.
+
 At least one orphan issue remains after the policy is applied: pass the
 remaining set directly to **A3.5**, skipping A1–A3.
 
@@ -171,13 +176,10 @@ reached only when every active discovery path returns zero: both paths
 for `orphan-first` and `roadmap-first` (orphan + roadmap fallback,
 either order); just the roadmap path for `roadmap`.
 
-**Claim-state annotation (optional).** When helper support is enabled,
-`discover-orphan-filter` accepts an opt-in `--with-claim-state` flag
-(plus `--current-claim-id`) that annotates each candidate with
-active-claim eligibility, mirroring `discover-roadmap-graph`'s flag of
-the same name — see `docs/idd-helper-scripts.md`. This lets an A0-O
-caller fold live claim state into its output the same way the roadmap
-path already can.
+**Claim-state annotation (optional).** `discover-orphan-filter`
+accepts `--with-claim-state` (plus `--current-claim-id`), mirroring
+`discover-roadmap-graph`'s flag of the same name — see
+`docs/idd-helper-scripts.md`.
 
 ## A1 — Find the roadmap
 
@@ -565,8 +567,7 @@ band entry at index `selectDesyncedIndex(session-token, band-size)`
 instead of index 0 — FNV-1a 32-bit over the token's UTF-16 code units
 (offset basis `0x811c9dc5`, prime `0x01000193`, wrap to 32 bits after
 every multiply, then unsigned right-shift and modulo `band-size`) over
-the band ordered by ascending issue number. Worked example: token
-`copilot-8122ca35`, band-size `3` → index `1`.
+the band ordered by ascending issue number.
 
 `session-token` **must be per-session-unique**: the bare, session-shared
 `{agent-id}` from `idd-overview-core.instructions.md` alone is **not** a
@@ -599,6 +600,11 @@ score tie band, never across bands, and never bypasses A4.5/A5. With
 deterministic **lowest issue number** pick. See
 [rationale](../../docs/idd-design-rationale.md#a4-step-2--rationale-concurrent-selection-desync).
 
+**Configured milestone-scope preference.** `discover.milestoneScope`
+(`#2340`) prefers a same-score-band candidate whose OPEN milestone
+matches, after desync and before effort — see
+[rationale](../../docs/idd-design-rationale.md#a4-step-2--rationale-milestone-scope-preference).
+
 **Author-recorded effort hint (soft tie-breaker).** When candidates
 remain tied after the score and optional desync rules, prefer the
 **lower-effort** candidate before the lowest-issue-number tie-break.
@@ -609,18 +615,16 @@ rule: reorders only within a single score tie band, never skips,
 gates, or crosses a band; the `discover-roadmap-graph` union already
 emits this order.
 
-**High-contention shared-file overlap (advisory).** Concurrent
-autopilot sessions tend to edit the same F-phase bundle instruction
-files (`bundle-review` / `bundle-merge`) and `audit/sync-manifest.json`.
-As a **soft** tie-breaker evaluated after score / desync / effort but
-before the final lowest-issue-number tie-break, prefer a candidate
-whose `## Candidate files` do **not** overlap an
-actively-claimed or open-PR issue on one of those files; the optional
-`discover-shared-file-overlap` helper (see
-[IDD helper scripts](../../docs/idd-helper-scripts.md)) reports each
-candidate's `overlapFlag` and `recommendedOrder`. **Never a hard gate**
-— overlap never overrides the score or crosses a band. See the
-[high-contention shared-file convention](../../docs/policy-constants.md#high-contention-shared-files).
+**High-contention shared-file overlap (advisory).** Concurrent sessions
+tend to edit the same F-phase bundle files (`bundle-review` /
+`bundle-merge`, `audit/sync-manifest.json`). **Soft** tie-breaker after
+score/desync/milestone/effort: prefer a candidate whose `## Candidate
+files` do **not** overlap an actively-claimed or open-PR issue on one of
+those; `discover-shared-file-overlap` (see
+[IDD helper scripts](../../docs/idd-helper-scripts.md)) reports
+`overlapFlag`/`recommendedOrder`. Never overrides the score or crosses a
+band. See the
+[convention](../../docs/policy-constants.md#high-contention-shared-files).
 
 After picking, proceed to **A4.5** (`idd-suitability.instructions.md`).
 

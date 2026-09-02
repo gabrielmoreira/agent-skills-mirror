@@ -1,6 +1,6 @@
 # claude-agents — multi-harness agentic plugin marketplace
 
-Production-ready agentic-workflow building blocks: **93 plugins** (91 local + 2 external), **202 agents**, **181 skills**, **105 commands**. Native source-of-truth for Claude Code; also consumed by OpenAI Codex CLI, Cursor, OpenCode, and the Google Antigravity CLI (`agy`) from a single Markdown source.
+Production-ready agentic-workflow building blocks: **94 plugins** (92 local + 2 external), **202 agents**, **183 skills**, **105 commands**. Native source-of-truth for Claude Code; also consumed by OpenAI Codex CLI, Cursor, OpenCode, and the Google Antigravity CLI (`agy`) from a single Markdown source.
 
 This file is the canonical context file. Codex / Cursor / OpenCode / Antigravity CLI read it directly. Claude Code reads it via `CLAUDE.md`, a symlink to this file.
 
@@ -10,7 +10,7 @@ This file is the canonical context file. Codex / Cursor / OpenCode / Antigravity
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** — top-level architectural overview (adapter framework, source-of-truth invariant, capability matrix summary)
 - **[docs/architecture.md](docs/architecture.md)** — detailed design principles
-- **[docs/plugins.md](docs/plugins.md)** — full plugin catalog (93 plugins by category)
+- **[docs/plugins.md](docs/plugins.md)** — full plugin catalog (94 plugins by category)
 - **[docs/agents.md](docs/agents.md)** — agent reference (202 agents, model tiers)
 - **[docs/agent-skills.md](docs/agent-skills.md)** — skill reference (progressive disclosure model)
 - **[docs/usage.md](docs/usage.md)** — commands, workflows, examples
@@ -18,6 +18,7 @@ This file is the canonical context file. Codex / Cursor / OpenCode / Antigravity
 - **[docs/harnesses.md](docs/harnesses.md)** — per-harness capability matrix
 - **[docs/plugin-eval.md](docs/plugin-eval.md)** — three-layer quality evaluation framework
 - **[docs/round-trip-results.md](docs/round-trip-results.md)** — real-CLI verification recipes
+- **[docs/mlops.md](docs/mlops.md)** — MLOps lab pipeline (W&B, Hugging Face, model release)
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — how to contribute
 
 ## Working in this repo
@@ -52,13 +53,14 @@ The small per-harness registries are **committed** so each harness installs nati
 
 ## Skills (cross-harness)
 
-181 skills under `plugins/*/skills/<n>/SKILL.md` — discoverable by every harness:
+183 skills under `plugins/*/skills/<n>/SKILL.md` — discoverable by every harness:
 
 - **Claude Code**: auto-discovery via Anthropic's SKILL.md spec
 - **Codex CLI**: mirrored to `.codex/skills/<plugin>__<skill>/` (8 KB body cap; detail in `references/details.md`)
 - **OpenCode**: mirrored to `.opencode/skills/<plugin>-<skill>/` using hyphenated names for global install
 - **Cursor**: reads `.claude/skills/` directly (no re-emit)
 - **Antigravity CLI**: native plugins at `.antigravity/plugins/<p>/` — bare `skills/<skill>/SKILL.md` (no `<plugin>__` namespacing; the plugin dir already scopes it)
+- **Skills-only installers**: `gh skill install wshobson/agents` and `npx skills add wshobson/agents` read `plugins/*/skills/` from GitHub directly (see `docs/harnesses.md`); `make smoke-test` runs both plus the agentskills.io spec check
 
 ## Subagents (cross-harness)
 

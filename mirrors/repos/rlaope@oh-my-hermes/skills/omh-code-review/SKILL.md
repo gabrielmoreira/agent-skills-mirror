@@ -42,7 +42,9 @@ Bad example:
 
 - Findings come first and are ranked by severity before summary or praise.
 - Every finding cites file, diff, command output, artifact, or expected behavior evidence.
+- Both axes appear in the report: correctness/risk findings, and a spec-axis verdict naming its Claim source or the `not_assessed` reason.
 - No-issue reviews still name residual risk, missing tests, and independent review evidence if unavailable.
+- The closing carries the checked-and-clean list and the could-not-assess list, each naming its surfaces.
 - Fix implementation, architecture follow-up, and CI/merge claims stay separate from the review result.
 
 ## Recovery Notes
@@ -52,10 +54,11 @@ Bad example:
 - If independent review evidence is unavailable, say so directly instead of implying a second reviewer passed it.
 - To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule and the implementer status contract.
 - When findings arrive for work you own, load `omh-code-review/references/review-response.md` before changing anything.
+- For maintainability judgement calls, load `omh-code-review/references/smell-baseline.md`; it names the twelve baseline smells with their fixes and the repo-standards-override rule.
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+11 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+12 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -81,6 +84,9 @@ Quality bar:
 - Say clearly when no actionable issue is found and name remaining test gaps.
 - Report each finding with `priority` (`P0`-`P3`), `confidence`, `evidence`, `path`, and `line_range`, then close with one verdict of `ship` or `no_ship` plus its own `confidence`; a finding without a path and line range is an open question, not a finding.
 - `REVIEW.md` in the reviewed repository defines what blocks: map its blocking definitions onto `P0`/`P1` and let a `no_ship` verdict follow from that file rather than from reviewer preference. When the repository has no such file, say which blocking definition was used instead.
+- Review on two axes and report them side by side, never re-ranked against each other: the correctness/risk axis judges the code as it is, and the spec axis judges the diff against the dispatch's Claim and Requirements pointer. A clean diff that does not do what was asked is a spec-axis finding; when no Claim or spec pointer was supplied, report the spec axis as `not_assessed` with that reason instead of staying silent.
+- Judge maintainability findings against the named baseline in `omh-code-review/references/smell-baseline.md`: a baseline smell is a judgement call to argue from evidence, never an automatic finding, and the reviewed repository's own standards override the baseline wherever they conflict.
+- Close with two lists beside the verdict: what was checked and found clean, and what could not be assessed with the reason. An absent finding is evidence only when the closing says the surface was actually checked.
 
 Handoff policy:
 
@@ -91,12 +97,15 @@ Required inputs:
 - diff or files
 - expected behavior
 - test evidence
+- the dispatch Claim and Requirements pointer (issue, plan, or spec section) when intent is reviewable
 
 Expected outputs:
 
-- ranked findings
+- ranked findings per axis
+- spec-axis verdict or a named not-assessed reason
 - open questions
 - test gaps
+- checked-and-clean and could-not-assess lists
 
 Artifact expectations:
 

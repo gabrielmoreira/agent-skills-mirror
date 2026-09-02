@@ -7,7 +7,7 @@ ref: dev/v4/v4.0
 
 # Mirror Manifest
 
-Mirror of `kungfu-systems/kungfu` — 26 default patterns, 45 followed patterns, 228 file(s) materialized.
+Mirror of `kungfu-systems/kungfu` — 26 default patterns, 45 followed patterns, 229 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kungfu-systems/kungfu` — 26 default patterns, 45 followed patterns,
 | Ref           | `dev/v4/v4.0` |
 | Default pats  | 26 |
 | Followed pats | 45 |
-| Files         | 228 |
+| Files         | 229 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -277,60 +277,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 172 | ✓ | [`framework/maintainability/baseline-transitions/README.md`](framework/maintainability/baseline-transitions/README.md) |
 | 173 | ✓ | [`framework/maintainability/waivers/README.md`](framework/maintainability/waivers/README.md) |
 | 174 | ✓ | [`framework/project-cut/README.md`](framework/project-cut/README.md) |
-| 175 | ✓ | [`framework/site/README.md`](framework/site/README.md) |
-| 176 | ✓ | [`framework/skill/fixtures/minimal/SKILL.md`](framework/skill/fixtures/minimal/SKILL.md) |
-| 177 | ✓ | [`framework/skill/fixtures/runtime-audit-qualification/SKILL.md`](framework/skill/fixtures/runtime-audit-qualification/SKILL.md) |
-| 178 | ✓ | [`framework/skill/fixtures/with-frontmatter/SKILL.md`](framework/skill/fixtures/with-frontmatter/SKILL.md) |
-| 179 | ✓ | [`framework/skill/README.md`](framework/skill/README.md) |
-| 180 | ✓ | [`framework/spec/README.md`](framework/spec/README.md) |
-| 181 | ✓ | [`framework/storage/README.md`](framework/storage/README.md) |
-| 182 | ✓ | [`tests/fixtures/domain-product-adopter/README.md`](tests/fixtures/domain-product-adopter/README.md) |
-| 183 | ✓ | [`tests/qualification/layers/README.md`](tests/qualification/layers/README.md) |
-| 184 | → | [`ACCEPTABLE_USE.md`](ACCEPTABLE_USE.md) |
-| 185 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 187 | → | [`crates/xinfa/ARCHITECTURE.md`](crates/xinfa/ARCHITECTURE.md) |
-| 188 | → | [`docs/adr/README.md`](docs/adr/README.md) |
-| 189 | → | [`docs/architecture/agent-analysis-protocol.md`](docs/architecture/agent-analysis-protocol.md) |
-| 190 | → | [`docs/architecture/agent-supply-chain.md`](docs/architecture/agent-supply-chain.md) |
-| 191 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
-| 192 | → | [`docs/architecture/primitive-management-plane.md`](docs/architecture/primitive-management-plane.md) |
-| 193 | → | [`docs/concepts/runtime-surface-provenance.md`](docs/concepts/runtime-surface-provenance.md) |
-| 194 | → | [`docs/concepts/system-overview.md`](docs/concepts/system-overview.md) |
-| 195 | → | [`docs/concepts/vocabulary.md`](docs/concepts/vocabulary.md) |
-| 196 | → | [`docs/concepts/why-kungfu.md`](docs/concepts/why-kungfu.md) |
-| 197 | → | [`docs/development/alpha-attention-operations.md`](docs/development/alpha-attention-operations.md) |
-| 198 | → | [`docs/development/cpp-toolchain.md`](docs/development/cpp-toolchain.md) |
-| 199 | → | [`docs/development/document-metadata.md`](docs/development/document-metadata.md) |
-| 200 | → | [`docs/development/publication-closure.md`](docs/development/publication-closure.md) |
-| 201 | → | [`docs/development/rust-adoption.md`](docs/development/rust-adoption.md) |
-| 202 | → | [`docs/development/version-release-design.md`](docs/development/version-release-design.md) |
-| 203 | → | [`docs/evolution/candidates.md`](docs/evolution/candidates.md) |
-| 204 | → | [`docs/evolution/current-authority.md`](docs/evolution/current-authority.md) |
-| 205 | → | [`docs/evolution/README.md`](docs/evolution/README.md) |
-| 206 | → | [`docs/evolution/timeline.md`](docs/evolution/timeline.md) |
-| 207 | → | [`docs/guides/agent-work-lab.md`](docs/guides/agent-work-lab.md) |
-| 208 | → | [`docs/guides/alpha-status.md`](docs/guides/alpha-status.md) |
-| 209 | → | [`docs/guides/exit-and-version-compatibility.md`](docs/guides/exit-and-version-compatibility.md) |
-| 210 | → | [`docs/guides/installing-cli.md`](docs/guides/installing-cli.md) |
-| 211 | → | [`docs/guides/known-issues.md`](docs/guides/known-issues.md) |
-| 212 | → | [`docs/guides/upgrading.md`](docs/guides/upgrading.md) |
-| 213 | → | [`docs/guides/xinfa-agent-context.md`](docs/guides/xinfa-agent-context.md) |
-| 214 | → | [`docs/MAP.md`](docs/MAP.md) |
-| 215 | → | [`docs/qualification/auditable-demo-artifact-pipeline.md`](docs/qualification/auditable-demo-artifact-pipeline.md) |
-| 216 | → | [`docs/qualification/contracts.md`](docs/qualification/contracts.md) |
-| 217 | → | [`docs/qualification/invariant-verification.md`](docs/qualification/invariant-verification.md) |
-| 218 | → | [`docs/qualification/kfd-support-matrix.md`](docs/qualification/kfd-support-matrix.md) |
-| 219 | → | [`docs/qualification/known-limits.md`](docs/qualification/known-limits.md) |
-| 220 | → | [`docs/qualification/trademark-public-use.md`](docs/qualification/trademark-public-use.md) |
-| 221 | → | [`docs/README.md`](docs/README.md) |
-| 222 | → | [`docs/shifu/README.md`](docs/shifu/README.md) |
-| 223 | → | [`LICENSE-POLICY.md`](LICENSE-POLICY.md) |
-| 224 | → | [`PROVIDER_COMPLIANCE.md`](PROVIDER_COMPLIANCE.md) |
-| 225 | → | [`README.md`](README.md) |
-| 226 | → | [`SECURITY.md`](SECURITY.md) |
-| 227 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 228 | → | [`TRADEMARK.md`](TRADEMARK.md) |
+| 175 | ✓ | [`framework/README.md`](framework/README.md) |
+| 176 | ✓ | [`framework/site/README.md`](framework/site/README.md) |
+| 177 | ✓ | [`framework/skill/fixtures/minimal/SKILL.md`](framework/skill/fixtures/minimal/SKILL.md) |
+| 178 | ✓ | [`framework/skill/fixtures/runtime-audit-qualification/SKILL.md`](framework/skill/fixtures/runtime-audit-qualification/SKILL.md) |
+| 179 | ✓ | [`framework/skill/fixtures/with-frontmatter/SKILL.md`](framework/skill/fixtures/with-frontmatter/SKILL.md) |
+| 180 | ✓ | [`framework/skill/README.md`](framework/skill/README.md) |
+| 181 | ✓ | [`framework/spec/README.md`](framework/spec/README.md) |
+| 182 | ✓ | [`framework/storage/README.md`](framework/storage/README.md) |
+| 183 | ✓ | [`tests/fixtures/domain-product-adopter/README.md`](tests/fixtures/domain-product-adopter/README.md) |
+| 184 | ✓ | [`tests/qualification/layers/README.md`](tests/qualification/layers/README.md) |
+| 185 | → | [`ACCEPTABLE_USE.md`](ACCEPTABLE_USE.md) |
+| 186 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 187 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 188 | → | [`crates/xinfa/ARCHITECTURE.md`](crates/xinfa/ARCHITECTURE.md) |
+| 189 | → | [`docs/adr/README.md`](docs/adr/README.md) |
+| 190 | → | [`docs/architecture/agent-analysis-protocol.md`](docs/architecture/agent-analysis-protocol.md) |
+| 191 | → | [`docs/architecture/agent-supply-chain.md`](docs/architecture/agent-supply-chain.md) |
+| 192 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
+| 193 | → | [`docs/architecture/primitive-management-plane.md`](docs/architecture/primitive-management-plane.md) |
+| 194 | → | [`docs/concepts/runtime-surface-provenance.md`](docs/concepts/runtime-surface-provenance.md) |
+| 195 | → | [`docs/concepts/system-overview.md`](docs/concepts/system-overview.md) |
+| 196 | → | [`docs/concepts/vocabulary.md`](docs/concepts/vocabulary.md) |
+| 197 | → | [`docs/concepts/why-kungfu.md`](docs/concepts/why-kungfu.md) |
+| 198 | → | [`docs/development/alpha-attention-operations.md`](docs/development/alpha-attention-operations.md) |
+| 199 | → | [`docs/development/cpp-toolchain.md`](docs/development/cpp-toolchain.md) |
+| 200 | → | [`docs/development/document-metadata.md`](docs/development/document-metadata.md) |
+| 201 | → | [`docs/development/publication-closure.md`](docs/development/publication-closure.md) |
+| 202 | → | [`docs/development/rust-adoption.md`](docs/development/rust-adoption.md) |
+| 203 | → | [`docs/development/version-release-design.md`](docs/development/version-release-design.md) |
+| 204 | → | [`docs/evolution/candidates.md`](docs/evolution/candidates.md) |
+| 205 | → | [`docs/evolution/current-authority.md`](docs/evolution/current-authority.md) |
+| 206 | → | [`docs/evolution/README.md`](docs/evolution/README.md) |
+| 207 | → | [`docs/evolution/timeline.md`](docs/evolution/timeline.md) |
+| 208 | → | [`docs/guides/agent-work-lab.md`](docs/guides/agent-work-lab.md) |
+| 209 | → | [`docs/guides/alpha-status.md`](docs/guides/alpha-status.md) |
+| 210 | → | [`docs/guides/exit-and-version-compatibility.md`](docs/guides/exit-and-version-compatibility.md) |
+| 211 | → | [`docs/guides/installing-cli.md`](docs/guides/installing-cli.md) |
+| 212 | → | [`docs/guides/known-issues.md`](docs/guides/known-issues.md) |
+| 213 | → | [`docs/guides/upgrading.md`](docs/guides/upgrading.md) |
+| 214 | → | [`docs/guides/xinfa-agent-context.md`](docs/guides/xinfa-agent-context.md) |
+| 215 | → | [`docs/MAP.md`](docs/MAP.md) |
+| 216 | → | [`docs/qualification/auditable-demo-artifact-pipeline.md`](docs/qualification/auditable-demo-artifact-pipeline.md) |
+| 217 | → | [`docs/qualification/contracts.md`](docs/qualification/contracts.md) |
+| 218 | → | [`docs/qualification/invariant-verification.md`](docs/qualification/invariant-verification.md) |
+| 219 | → | [`docs/qualification/kfd-support-matrix.md`](docs/qualification/kfd-support-matrix.md) |
+| 220 | → | [`docs/qualification/known-limits.md`](docs/qualification/known-limits.md) |
+| 221 | → | [`docs/qualification/trademark-public-use.md`](docs/qualification/trademark-public-use.md) |
+| 222 | → | [`docs/README.md`](docs/README.md) |
+| 223 | → | [`docs/shifu/README.md`](docs/shifu/README.md) |
+| 224 | → | [`LICENSE-POLICY.md`](LICENSE-POLICY.md) |
+| 225 | → | [`PROVIDER_COMPLIANCE.md`](PROVIDER_COMPLIANCE.md) |
+| 226 | → | [`README.md`](README.md) |
+| 227 | → | [`SECURITY.md`](SECURITY.md) |
+| 228 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 229 | → | [`TRADEMARK.md`](TRADEMARK.md) |
 
 ---
 

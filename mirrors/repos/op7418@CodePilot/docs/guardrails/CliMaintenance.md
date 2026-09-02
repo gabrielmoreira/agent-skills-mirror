@@ -19,7 +19,7 @@
 | CLIM-01 | Renderer 的 IPC 只能传 `provider='claude'|'codex'`；path、installType、command、args、shell、package、registry/feed URL 全由 Main fresh resolve。旧 `/api/claude-upgrade` 永久保持非执行 tombstone。 |
 | CLIM-02 | channel path 只是候选证据。npm/bun/pnpm 必须对齐 package root 与 package `bin`；Windows `.cmd`/PowerShell shim 必须读出它确实指向该 package。Homebrew 必须命中 exact cask prefix。证明失败即 ambiguous/unknown、`canOneClickUpdate=false`。 |
 | CLIM-03 | Claude Windows native 与 WinGet 共用布局而无法唯一归属时保持 ambiguous/manual-only；`winget list` 只证明包存在，不能证明 selected binary 归它。禁止为了多一个按钮更新 PATH 中另一份 CLI。 |
-| CLIM-04 | latest 必须与渠道一致：npm/bun/pnpm 查 exact package；Homebrew 查 exact cask；Codex standalone 查官方 release；Claude native 为 `managed_auto`。`brew outdated <named-cask> --json=v2` 在 cask 过期时会以 1 退出，exit 0/1 只有 stdout 可解析且命中 exact cask/空集合时才是有效事实；其他退出、超时或解析失败一律 latest=null/unknown，不能回退 current 伪装“已是最新”。 |
+| CLIM-04 | latest 必须与渠道一致：npm/bun/pnpm 查 exact package；Homebrew 查 exact cask；Codex standalone 查官方 release；Claude native 为 `managed_auto`。ChatGPT/Codex Desktop bundle 必须在通用无扩展名/`.exe` standalone 判断前识别为 `desktop_bundle`，latest=null、`managed_auto`、无一键 CLI 更新；macOS 任意 `.app/Contents/**`、Windows Store/alias 及已知 ChatGPT/Codex desktop `Resources/**` 布局均视为 owner-app managed，不能依赖当前单一文件位置。`brew outdated <named-cask> --json=v2` 在 cask 过期时会以 1 退出，exit 0/1 只有 stdout 可解析且命中 exact cask/空集合时才是有效事实；其他退出、超时或解析失败一律 latest=null/unknown，不能回退 current 伪装“已是最新”。 |
 | CLIM-05 | 更新命令 allowlist 固定、`shell=false`、输出 64 KiB hard cap、probe 5 秒、update 5 分钟。Windows `.cmd` 解析到受证明 package 的 Node script，不拼 shell 字符串、不自动提权、不切换安装渠道。 |
 | CLIM-06 | update 前先查 chat/bridge/task、获取 Main latch 和 utility lease，再做第二次 target proof。binary、channel、package bin 或 update executable 任一漂移都返回 `update_target_mismatch`，不能复用旧 proof。 |
 | CLIM-07 | lease 从 command spawn 前持续到进程树清理、cache invalidation 和 post-verify 结束；Claude SDK query 与 Codex app-server spawn 必须在真正启动前检查 gate。TTL/heartbeat/release 均幂等，stale lease 不得永久阻断。 |
@@ -57,6 +57,7 @@
 
 - `winget list --id`、PATH 命中或目录名像 npm 都不是 selected-target ownership proof。
 - Windows npm shim 不是 symlink；realpath 不穿透不能直接判 unknown，也不能只凭 prefix 同目录判 proven。
+- macOS 任意 `.app/Contents/**/codex`，以及 Windows Store/alias、ChatGPT/Codex desktop `Resources/**/codex.exe` 都由桌面应用管理；文件形状像 standalone 或未来移动了子目录，也不能调用 `codex update` 或拿 standalone release 制造提醒。Windows 官方 standalone `.../OpenAI/Codex/bin/codex.exe` 必须保留为独立渠道反例。
 - package manager exit 0 不代表更新成功；Codex 可能只提示改用 npm，最终必须看 selected binary 的 after version。
 - Homebrew named cask 有更新时 `brew outdated` 的 exit 1 是结构化结果，不是普通命令失败；但不能因此接受任意 exit 1，stdout JSON、exact cask 与版本必须同时成立。
 - lifecycle owner 是子系统标签，不是锁 token；允许同 owner 重入会让先结束的一次提前释放另一条仍在运行的安装。
@@ -68,7 +69,7 @@
 
 - `cli-maintenance-contract.test.ts`：semver、Homebrew exit-0/1 JSON、lease competitor/TTL/recovery bootstrap、Main lifecycle same-owner 非重入、multi-provider retry remainder。
 - `cli-maintenance-concurrency.test.ts`：真实 `performUpdate` 同/异 Provider 并发入口；第二次不得触达 activity/target，且第一次结束前 latch 保持占用。
-- `cli-install-channel.test.ts`：Windows `.cmd`、WinGet/native ambiguity、跨平台 root containment。
+- `cli-install-channel.test.ts`：macOS 任意 bundle 子目录/realpath、Windows Store/alias/desktop Resources、独立 standalone 正例、Windows `.cmd`、WinGet/native ambiguity、跨平台 root containment。
 - `cli-maintenance-runner.test.ts`：output cap 与真实 child→grandchild cancel cleanup。
 - `cli-maintenance-security.test.ts`：Main/preload/Renderer 窄边界、旧 route tombstone、lease/latch/recovery source contract、无敏感 snapshot 字段。
 - `release-notes-rendering.test.ts`：Atom HTML/Markdown 与 XSS/追踪反例。
@@ -84,3 +85,5 @@
 - 2026-08-28：真实 Electron 截图验收后，卡片从 generic toast 排版改为独立紧凑布局；加入 Provider brand、primary button、大 hover target、说明文案和 locale/placeholder-version 修正。
 - 2026-08-28：按现场视觉反馈，更新 action 与正文左对齐；关闭按钮改为卡片右上角绝对定位，不再作为第三列挤压内容。
 - 2026-08-28：Claude Round 2 发现 `performUpdate` 在三段 await 后才占位且 lifecycle owner 可同名重入。入口现于首个 await 前同步占 `startingOperation` + strict non-reentrant latch；Homebrew named-cask exit 1 JSON 被视为有效 outdated 事实，其他失败归 unknown。更新中卡片不可关闭，Retry 只跑未完成 Provider，成功清 notification key；新增文案全部进入 en/zh i18n 表。
+- 2026-08-29：现场发现 Runtime 已把 `/Applications/ChatGPT.app/Contents/Resources/codex` 识别为 `desktop_bundle`，CLI maintenance 却按“无扩展名”误判为 proven standalone。桌面 bundle 现作为 owner-app managed 渠道 fail closed：不查 standalone latest、不执行 `codex update`、不生成更新卡片。
+- 2026-08-29：accepted 复审指出 exact `Resources/codex` 会在未来 bundle 布局漂移时重新 fail-open。macOS 已收紧为任意 `.app/Contents/**`；Windows 统一复用 Store/alias 与已知 ChatGPT/Codex desktop Resources owner proof，同时以官方 `.../OpenAI/Codex/bin` fixture 防止误伤 standalone。

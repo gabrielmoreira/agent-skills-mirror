@@ -18,7 +18,7 @@ Use this skill for a **live, served web app** — one that needs a running serve
 - User explicitly says "preview", "web view", "web app", or wants it running at a URL
 
 **Do NOT use if:**
-- User wants a **self-contained HTML report** — even an *interactive* one (sortable tables, tabs, hover/zoom charts) over a **data snapshot**. That's `.agents/skills/html-report/SKILL.md`: one file in `results/`, keepable, printable, PDF-exportable, share-linkable. Interactivity by itself does **not** require a dashboard.
+- User wants a **self-contained HTML report** — even an *interactive* one (sortable tables, tabs, hover/zoom charts) over a **data snapshot**. That's `.agents/skills/html-report/SKILL.md`: one file in the task directory, keepable, printable, PDF-exportable, share-linkable. Interactivity by itself does **not** require a dashboard.
 - User wants a **static chart image** → matplotlib/plotly `savefig`.
 - User wants an **in-chat figure** → `inline-widget` (`ShowWidget`).
 
@@ -28,7 +28,7 @@ Both can be interactive, so the divide is **live served app vs. self-contained s
 
 | | interactive-dashboard (this skill) | html-report |
 |---|---|---|
-| Delivery | A **running server**, exposed via `GetPreviewUrl` | One **`.html` file** in `results/` |
+| Delivery | A **running server**, exposed via `GetPreviewUrl` | One **`.html` file** in `work/<task_name>/` |
 | Data | **Live / refreshing**, fetched from a backend; large datasets OK | A **snapshot** embedded in the file |
 | Interactivity | Full app — routing, server-side filtering, live updates | Client-side over the snapshot — sort, filter, tabs, chart hover/zoom |
 | Keep / print / share | A URL, live only while the workspace runs | Downloadable, PDF-exportable, share-linkable as one artifact |

@@ -44,6 +44,10 @@
 | 24 | `SQLITE_BUSY`/`SQLITE_LOCKED` 只允许有界重试；耗尽后进入可重试状态、不创建 corruption backup，也不得进程级永久 cache。普通 restart/retry 必须保持可用；初始启动失败尚未赋值 `serverPort` 时，“再试一次”必须重新拉起 utility 并返回真实 accepted 状态，不能静默 no-op | `database-integrity.ts` + `src/lib/db.ts` + Electron offline recovery |
 | 25 | 用户确认“新建空库”且完整备份成功后，必须 fsync durable fresh-start intent（包含备份文件 size+SHA-256）。下一次 bootstrap 在 legacy copy 前验证 intent；若 DB/WAL/SHM 又出现，视为手工恢复或中断残留的歧义，绝不自动删除。离线页必须让用户明确选择“保留当前库并取消 intent”或“重新校验旧备份后继续空库”；空库成功打开后才清 marker | `database-recovery.ts` + `src/lib/db.ts` + Electron offline recovery |
 | 26 | Electron Main、Next utility 与所有持久资源必须共用 `resolveCodePilotDataDir()`；自定义 `CLAUDE_GUI_DATA_DIR` 不得让恢复动作指向另一个库。health 已返回 path-free DB marker 时 Main 必须立即展示恢复页，不等通用 30 秒 timeout。时间戳恢复备份只在完整验证成功后按名称/直系目录/非 symlink 规则保留最多 10 个不同内容世代；相同 DB/WAL/SHM identity 复用既有备份，当前已验证备份受 retention 保护，无关目录与链接不动 | `codepilot-data-dir.ts` + `database-recovery.ts` + Electron Main |
+| 27 | `chat_sessions.runtime_binding_state/runtime_bound_at/runtime_binding_source/route_revision` 与完整 route 是同一执行所有权合同。legacy backfill 只信合法 pin、唯一 Claude/Codex ref 和真实消息证据；双 ref/无证据保持 `legacy_unbound`，内部 switch marker 不算用户执行 | `thread-execution-binding.ts` + binding migration |
+| 28 | `route_revision` 只在 route/binding 真实变化时每 transaction 加一；title、message、runtime ref、handoff 等无关写入不递增。route mutation 必须 CAS，失败/no-op 零写入 | `updateSessionRouteWithCas` + `bindSessionForExecution` |
+| 29 | handoff 来源与目标、边界和 payload 必须同 transaction 创建；目标创建即 `bound`，来源零修改。目标唯一与幂等 key 防重复，busy/stale route/stale transcript 都不得留下孤儿 target | `chat_session_handoffs` + `createSessionHandoff` |
+| 30 | compaction summary、coverage boundary 与 `chat_session_compaction_events` 必须原子提交；事件记录真实触发方式、辅助 route、估算值和是否重建底层 session，估算值不得进入 billing usage | `commitSessionCompaction` |
 
 ## 关键文件 + 责任
 
@@ -88,6 +92,8 @@
 - [ ] busy/locked 是否有界重试、耗尽后可 retry/restart 且不缓存为永久 blocked；bare filesystem product fault 是否仍可诊断/上报
 - [ ] fresh-start intent 是否在 legacy copy 前验证、绑定完整备份 identity、成功打开空库后才清 marker；重现 DB 是否进入明确二选一而非自动删除
 - [ ] Main/utility/assets 是否共用 data-dir resolver；DB marker 是否立即展示恢复页；备份是否通过复制前后 generation envelope、相同世代去重，retention 是否不跟随 symlink、不删除无关目录或当前受保护备份
+- [ ] 改 session route/binding 时验证 legacy 分类、CAS 精确递增、跨 Runtime 零写入、自动会话创建即绑定和无关写入不 bump revision
+- [ ] 改 handoff/compaction 时验证目标/record 或 summary/boundary/event 全事务回滚，不留下孤儿或半套事实
 
 ## 常见坑
 

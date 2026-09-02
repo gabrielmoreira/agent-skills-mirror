@@ -163,6 +163,7 @@ This allows consumers to import directly from `src/config` rather than individua
 - `tmux`: Legacy tmux configuration (migrated to multiplexer)
 - `interview`: Interview feature configuration
 - `backgroundJobs`: Background job configuration
+- `backgroundJobs.concurrency`: Optional default, provider, and model caps for native background task admission
 - `fallback`: Failover/retry configuration
 - `council`: Council configuration with presets and execution modes
 - `companion`: Companion animation configuration

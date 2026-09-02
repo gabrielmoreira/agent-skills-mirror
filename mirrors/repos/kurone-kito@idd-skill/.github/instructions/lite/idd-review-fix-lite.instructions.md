@@ -107,7 +107,15 @@ other GitHub side effect, confirm all of the following:
 ## E10 — Validate fixes with critique pass
 
 1. Run a critique pass to verify the E9 fixes address the root causes
-   and are correct.
+   and are correct. Also apply these lenses when they fit, composing
+   when both do: **Mutation / write-side** (the diff implements a
+   helper that mutates GitHub state, mutates git state, or performs a
+   merge) — Fail-closed inputs; Validate/execute scope parity;
+   Unsafe-output suppression; Schema strictness parity.
+   **Gate-mirroring** (the diff implements a helper that predicts,
+   mirrors, or pre-checks another gate's decision) — Validation-path
+   parity; Input completeness; Whole-identity comparison; Snapshot
+   identity; Point-in-time parity.
 2. If the critique pass reports zero issues, continue to E11.
 3. If it reports additional issues, fix them, commit atomically, and
    run E10 again.
@@ -123,6 +131,12 @@ other GitHub side effect, confirm all of the following:
 6. Do not use step 5 to bypass a serious issue: unresolved High or
    Medium findings stay blockers until fixed or explicitly redirected
    by a maintainer.
+7. Heuristic: several new, non-repeated same-area findings across
+   rounds (3-4) may mean one structural fix converges faster than
+   another patch. If that fix keeps drawing new findings, prefer
+   simplifying/removing the mechanism over a second redesign -- only
+   once confirmed non-required by the issue's acceptance criteria or
+   contract; if required, stop for a maintainer decision.
 
 ## E11 — Resolve conflicts with main
 
@@ -188,6 +202,21 @@ other GitHub side effect, confirm all of the following:
    fresh primary-bot re-review after every push. The per-HEAD
    `review-watermark` still invalidates on this push.
 10. Apply the pre-mutation guard immediately before this push.
+11. Re-apply the pre-mutation guard immediately before this edit —
+    it is a separate mutation after the already-guarded push. If this
+    round's fix changes a claim the PR body makes (round count, a
+    residual limitation, a scope statement — wherever it appears),
+    fetch the current full body, edit only that claim in the fetched
+    copy, and post the full result back:
+
+    ```sh
+    gh pr edit {pr-number} --body-file <path>
+    ```
+
+    `--body-file` replaces the whole body, so never pass a partial
+    file (it would drop the closing-keyword line). After posting,
+    repeat the lite pr-submit doc's step 5 closing-set check — edited
+    prose can introduce a stray keyword-adjacent reference.
 
 ## E13 — Reply to feedback
 

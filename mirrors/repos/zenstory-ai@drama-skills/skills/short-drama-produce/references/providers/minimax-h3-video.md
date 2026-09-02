@@ -34,19 +34,41 @@ refused because there is no reference frame to adapt to.
 The prompt is compiled into one `text` item of the multimodal `content` array and is refused above
 7000 characters. Each declared reference becomes one further `content` item carrying an explicit
 `role`: `first_frame`, `last_frame`, `reference_image`, `reference_video`, or `reference_audio`.
-`first_frame` and `last_frame` may each appear once. Reference URLs must be HTTPS or `mm_file://`;
-local references fail closed, exactly as for Seedance, because the public contract does not prove
-that a local data URL is accepted. A deployment that needs image-to-video must add an external,
-authorized upload step and call `compile_minimax_h3_payload` with the resulting URI; do not put a
-temporary provider URL into the creator project.
+Set the job's `parameters.prompt_language` to the resolved video-prompt language; the compiler
+consumes it when appending reference semantics and does not send it as a MiniMax request field.
+`first_frame` and `last_frame` may each appear once. The published envelope also caps reference
+conditioning at 9 `reference_image`, 3 `reference_video` and 3 `reference_audio` items, with video and
+audio clips between 2 and 15 seconds each and at most 15 seconds in total per modality; the compiler
+does not count them, so a configuration that can exceed those numbers has to bound them itself.
+frame conditioning (`first_frame` / `last_frame`) and full-reference conditioning
+(`reference_image` / `reference_video` / `reference_audio`) are mutually exclusive in one request.
+For continuation, bind the previous actual video as `reference_video` and its actual tail as
+`reference_image`; the compiler labels them `<Video 1>` and `<Picture 1>` in its appended contract.
+Never relabel that tail as `first_frame` while a reference video is present. Reference URLs may be HTTPS, `mm_file://{file_id}`, or a `data:<mime>;base64,<...>` URI — all three
+are documented inputs. A project-relative reference in the confirmed job is read from disk and sent
+inline as a data URI, so binding an image in the creator documents is enough to run the job; no
+upload service is required. Each file's bytes must match the media type its extension claims, and
+the published per-modality caps apply: 30MB per image, 50MB per video, 15MB per audio clip, and 64MB
+for the whole request measured after base64 expansion. A reference past those caps fails closed with
+an explicit message; host it and bind an HTTPS URL instead of splitting it.
 
-The adapter creates an asynchronous task, polls `GET {base}/video_generation/{task_id}` until a
-terminal state, and downloads `task.content.url` into a private temporary directory. Any unknown
+Each reference takes its provider role from the confirmed job's `reference_bindings[].role`, which is
+where the creator document's `用途` is translated for this provider. A job that carries references
+without those bindings fails closed rather than guessing a role.
+
+The adapter creates an asynchronous task with `POST {base}/video_generation`, polls
+`GET {base}/query/video_generation/{task_id}` until a terminal state, and downloads `task.content.url` into a private temporary directory. Any unknown
 status fails closed.
 
 ## What this model changes for the prompt itself
 
-This release generates audio in the same pass as the picture. That is a **capability**, not a style:
+This release generates audio in the same pass as the picture. Its direct prompt dialect is also
+structured: base/first-frame/first-last-frame tasks use `integrated_multimodal_description`,
+`overall_soundscape`, and `non_diegetic_music`; full-reference tasks use the six-section H3 reference
+form. Chinese dialogue remains exact inside `<d>[Chinese] ...</d>`. Full details live in the
+video-prompt skill's `references/minimax-h3.md`.
+
+Audio generation is a **capability**, not a style:
 what changes upstream is only which axes of the target-model profile a project declares — see the
 video-prompt skill's target-model profile. Two consequences are worth stating here because they
 show up as production defects rather than as API errors:

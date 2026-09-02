@@ -408,7 +408,7 @@ The gate mechanism is host-aware. Not every host can hard-block a stop.
 | Tier | Hosts | Gate mechanism |
 |---|---|---|
 | 1: hard block | Claude Code, Codex CLI, OpenAI Codex API, Continue.dev | `{"decision":"block"}` / exit 2 |
-| 2: follow-up inject | Cursor, Pi, Kiro | agent_end follow-up message + own counter |
+| 2: follow-up inject | Cursor, Pi, Kiro, Hermes Agent | agent_end follow-up message + own counter; Hermes answers `pre_verify` with a bounded continuation |
 | 3: notify only | OpenCode, Gemini CLI, rest | systemMessage only, no enforcement |
 
 Hosts without a blocking Stop hook still get autonomous mode (low recitation + ledger). They do not get gate enforcement; the gate degrades to a notification. This is documented honestly: the gate is real enforcement only on Tier 1.

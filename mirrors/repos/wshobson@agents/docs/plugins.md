@@ -1,6 +1,6 @@
 # Complete Plugin Reference
 
-Browse all **93 marketplace plugins** organized by category: 91 local plugins plus 2 externally hosted `git-subdir` entries (`pensyve` and `hol-guard`).
+Browse all **94 marketplace plugins** organized by category: 92 local plugins plus 2 externally hosted `git-subdir` entries (`pensyve` and `hol-guard`).
 
 ## Quick Start - Essential Plugins
 
@@ -123,13 +123,13 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 
 | Plugin                       | Description                                                                                                                                     | Install                                    |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| **documentation-standards**  | HADS semantic tagging conventions for human- and AI-friendly documentation                                                                       | `/plugin install documentation-standards`  |
+| **documentation-standards**  | HADS semantic tagging conventions plus the grounded-vault pattern for provenance-linked, drift-checked knowledge stores                          | `/plugin install documentation-standards`  |
 | **code-documentation**       | Documentation generation and code explanation                                                                                                   | `/plugin install code-documentation`       |
 | **documentation-generation** | OpenAPI specs, Mermaid diagrams, tutorials                                                                                                      | `/plugin install documentation-generation` |
 | **c4-architecture**          | Comprehensive C4 architecture documentation workflow with bottom-up code analysis, component synthesis, container mapping, and context diagrams | `/plugin install c4-architecture`          |
 | **avoid-ai-writing**         | Audit and rewrite prose that reads as machine-generated across READMEs, changelogs, PR descriptions, and docs                                    | `/plugin install avoid-ai-writing`         |
 
-### 🔄 Workflows (7 plugins)
+### 🔄 Workflows (8 plugins)
 
 | Plugin                       | Description                                                                    | Install                                    |
 | ---------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------ |
@@ -140,6 +140,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **tdd-workflows**            | Test-driven development methodology                                            | `/plugin install tdd-workflows`            |
 | **agent-teams**              | Parallel code review, debugging, feature, and research teams                   | `/plugin install agent-teams`              |
 | **ship-mate**                | Story-file to reviewed, tested PR workflow orchestration                       | `/plugin install ship-mate`                |
+| **superself**                | Drive the Superself `self` CLI: project state (goals, decisions, work units, reports) outside the code repo, context at session start, done gated by evidence | `/plugin install superself`                |
 
 ### ✅ Testing (1 plugin)
 
@@ -364,7 +365,7 @@ plugins/python-development/
 /plugin marketplace add wshobson/agents
 ```
 
-This makes all 93 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
+This makes all 94 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
 
 ### Step 2: Install Specific Plugins
 
@@ -382,6 +383,17 @@ Install only the plugins you need:
 ```
 
 Each installed plugin loads **only its specific agents, commands, and skills** into Claude's context.
+
+### Skills Only (Any Agent)
+
+To take one skill without its plugin, use an Agent Skills installer. Both read `plugins/*/skills/` from GitHub directly and install into Claude Code or any other agent they support:
+
+```bash
+gh skill install wshobson/agents python-testing-patterns --agent claude-code   # GitHub CLI 2.90+
+npx skills add wshobson/agents --skill python-testing-patterns -a claude-code  # vercel-labs/skills
+```
+
+Selectors, install paths, and gotchas: [harnesses.md](./harnesses.md#skills-only-installers).
 
 ## Plugin Design Principles
 
@@ -407,7 +419,7 @@ Each installed plugin loads **only its specific agents, commands, and skills** i
 
 ## See Also
 
-- [Agent Skills](./agent-skills.md) - 181 specialized skills across plugins
+- [Agent Skills](./agent-skills.md) - 183 specialized skills across plugins
 - [Agent Reference](./agents.md) - Complete agent catalog
 - [Usage Guide](./usage.md) - Commands and workflows
 - [Architecture](./architecture.md) - Design principles

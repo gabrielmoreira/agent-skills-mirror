@@ -1,0 +1,1 @@
+cache/repos/github.com/career-ops-hq@career-ops/.claude/skills/career-ops/../../../.agents/skills/career-ops/SKILL.md

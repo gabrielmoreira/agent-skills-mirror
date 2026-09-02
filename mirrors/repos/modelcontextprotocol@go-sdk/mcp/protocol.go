@@ -1191,9 +1191,16 @@ func (c Cacheable) GetTTLMs() int { return c.TTLMs }
 // GetCacheScope returns the cache scope.
 func (c Cacheable) GetCacheScope() string { return c.CacheScope }
 
-// setDefaultCacheableValues sets the default values for the cacheable fields.
-func (c *Cacheable) setDefaultCacheableValues() {
-	c.CacheScope = "public"
+// normalize fills in the protocol default for any cache field left
+// unset. An absent cacheScope means "public", but the field is required on the
+// wire, so the default is materialized here rather than sent empty.
+//
+// Values already present are preserved: this must not undo a decision made by
+// a resource handler or by [ServerOptions.SetCacheable].
+func (c *Cacheable) normalize() {
+	if c.CacheScope == "" {
+		c.CacheScope = "public"
+	}
 }
 
 // The server's response to a prompts/list request from the client.
@@ -2246,7 +2253,7 @@ type PromptCapabilities struct {
 
 // ResourceCapabilities describes the server's support for resources.
 type ResourceCapabilities struct {
-	// ListChanged reports whether the client supports notifications for
+	// ListChanged reports whether this server supports notifications for
 	// changes to the resource list.
 	ListChanged bool `json:"listChanged,omitempty"`
 	// Subscribe reports whether this server supports subscribing to resource
@@ -2256,7 +2263,7 @@ type ResourceCapabilities struct {
 
 // ToolCapabilities describes the server's support for tools.
 type ToolCapabilities struct {
-	// ListChanged reports whether the client supports notifications for
+	// ListChanged reports whether this server supports notifications for
 	// changes to the tool list.
 	ListChanged bool `json:"listChanged,omitempty"`
 }

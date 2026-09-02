@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 102 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 96 |
+| Files         | 102 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,37 +124,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
 | 64 | ✓ | [`skills/dbs-script-flow/agents/openai.yaml`](skills/dbs-script-flow/agents/openai.yaml) |
 | 65 | ✓ | [`skills/dbs-script-flow/SKILL.md`](skills/dbs-script-flow/SKILL.md) |
-| 66 | ✓ | [`skills/dbs-skill-cleaner/agents/openai.yaml`](skills/dbs-skill-cleaner/agents/openai.yaml) |
-| 67 | ✓ | [`skills/dbs-skill-cleaner/scripts/skill_cleaner.py`](skills/dbs-skill-cleaner/scripts/skill_cleaner.py) |
-| 68 | ✓ | [`skills/dbs-skill-cleaner/SKILL.md`](skills/dbs-skill-cleaner/SKILL.md) |
-| 69 | ✓ | [`skills/dbs-skill-maker/agents/openai.yaml`](skills/dbs-skill-maker/agents/openai.yaml) |
-| 70 | ✓ | [`skills/dbs-skill-maker/references/evaluation.md`](skills/dbs-skill-maker/references/evaluation.md) |
-| 71 | ✓ | [`skills/dbs-skill-maker/references/github-publishing.md`](skills/dbs-skill-maker/references/github-publishing.md) |
-| 72 | ✓ | [`skills/dbs-skill-maker/references/problem-and-goal.md`](skills/dbs-skill-maker/references/problem-and-goal.md) |
-| 73 | ✓ | [`skills/dbs-skill-maker/references/skill-construction.md`](skills/dbs-skill-maker/references/skill-construction.md) |
-| 74 | ✓ | [`skills/dbs-skill-maker/references/theory-and-mechanism.md`](skills/dbs-skill-maker/references/theory-and-mechanism.md) |
-| 75 | ✓ | [`skills/dbs-skill-maker/scripts/init_skill_project.py`](skills/dbs-skill-maker/scripts/init_skill_project.py) |
-| 76 | ✓ | [`skills/dbs-skill-maker/scripts/prepare_github_repo.py`](skills/dbs-skill-maker/scripts/prepare_github_repo.py) |
-| 77 | ✓ | [`skills/dbs-skill-maker/scripts/validate_skill_project.py`](skills/dbs-skill-maker/scripts/validate_skill_project.py) |
-| 78 | ✓ | [`skills/dbs-skill-maker/scripts/verify_npx_install.sh`](skills/dbs-skill-maker/scripts/verify_npx_install.sh) |
-| 79 | ✓ | [`skills/dbs-skill-maker/SKILL.md`](skills/dbs-skill-maker/SKILL.md) |
-| 80 | ✓ | [`skills/dbs-spread/agents/openai.yaml`](skills/dbs-spread/agents/openai.yaml) |
-| 81 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
-| 82 | ✓ | [`skills/dbs-standard-answer/agents/openai.yaml`](skills/dbs-standard-answer/agents/openai.yaml) |
-| 83 | ✓ | [`skills/dbs-standard-answer/SKILL.md`](skills/dbs-standard-answer/SKILL.md) |
-| 84 | ✓ | [`skills/dbs-update/agents/openai.yaml`](skills/dbs-update/agents/openai.yaml) |
-| 85 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
-| 86 | ✓ | [`skills/dbs-wechat-html/agents/openai.yaml`](skills/dbs-wechat-html/agents/openai.yaml) |
-| 87 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
-| 88 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
-| 89 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
-| 90 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
-| 91 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
-| 92 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
-| 93 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
-| 94 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
-| 95 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
-| 96 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 66 | ✓ | [`skills/dbs-skill-maker/agents/openai.yaml`](skills/dbs-skill-maker/agents/openai.yaml) |
+| 67 | ✓ | [`skills/dbs-skill-maker/references/evaluation.md`](skills/dbs-skill-maker/references/evaluation.md) |
+| 68 | ✓ | [`skills/dbs-skill-maker/references/github-publishing.md`](skills/dbs-skill-maker/references/github-publishing.md) |
+| 69 | ✓ | [`skills/dbs-skill-maker/references/problem-and-goal.md`](skills/dbs-skill-maker/references/problem-and-goal.md) |
+| 70 | ✓ | [`skills/dbs-skill-maker/references/skill-construction.md`](skills/dbs-skill-maker/references/skill-construction.md) |
+| 71 | ✓ | [`skills/dbs-skill-maker/references/theory-and-mechanism.md`](skills/dbs-skill-maker/references/theory-and-mechanism.md) |
+| 72 | ✓ | [`skills/dbs-skill-maker/scripts/init_skill_project.py`](skills/dbs-skill-maker/scripts/init_skill_project.py) |
+| 73 | ✓ | [`skills/dbs-skill-maker/scripts/prepare_github_repo.py`](skills/dbs-skill-maker/scripts/prepare_github_repo.py) |
+| 74 | ✓ | [`skills/dbs-skill-maker/scripts/validate_skill_project.py`](skills/dbs-skill-maker/scripts/validate_skill_project.py) |
+| 75 | ✓ | [`skills/dbs-skill-maker/scripts/verify_npx_install.sh`](skills/dbs-skill-maker/scripts/verify_npx_install.sh) |
+| 76 | ✓ | [`skills/dbs-skill-maker/SKILL.md`](skills/dbs-skill-maker/SKILL.md) |
+| 77 | ✓ | [`skills/dbs-spread/agents/openai.yaml`](skills/dbs-spread/agents/openai.yaml) |
+| 78 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
+| 79 | ✓ | [`skills/dbs-standard-answer/agents/openai.yaml`](skills/dbs-standard-answer/agents/openai.yaml) |
+| 80 | ✓ | [`skills/dbs-standard-answer/SKILL.md`](skills/dbs-standard-answer/SKILL.md) |
+| 81 | ✓ | [`skills/dbs-update/agents/openai.yaml`](skills/dbs-update/agents/openai.yaml) |
+| 82 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
+| 83 | ✓ | [`skills/dbs-video-extract/agents/openai.yaml`](skills/dbs-video-extract/agents/openai.yaml) |
+| 84 | ✓ | [`skills/dbs-video-extract/references/api-setup.md`](skills/dbs-video-extract/references/api-setup.md) |
+| 85 | ✓ | [`skills/dbs-video-extract/references/qingdou-api.md`](skills/dbs-video-extract/references/qingdou-api.md) |
+| 86 | ✓ | [`skills/dbs-video-extract/references/tikhub-api.md`](skills/dbs-video-extract/references/tikhub-api.md) |
+| 87 | ✓ | [`skills/dbs-video-extract/scripts/configure_api_key.py`](skills/dbs-video-extract/scripts/configure_api_key.py) |
+| 88 | ✓ | [`skills/dbs-video-extract/scripts/extract_video_transcript.py`](skills/dbs-video-extract/scripts/extract_video_transcript.py) |
+| 89 | ✓ | [`skills/dbs-video-extract/scripts/extract_video.py`](skills/dbs-video-extract/scripts/extract_video.py) |
+| 90 | ✓ | [`skills/dbs-video-extract/scripts/tikhub_api.py`](skills/dbs-video-extract/scripts/tikhub_api.py) |
+| 91 | ✓ | [`skills/dbs-video-extract/SKILL.md`](skills/dbs-video-extract/SKILL.md) |
+| 92 | ✓ | [`skills/dbs-wechat-html/agents/openai.yaml`](skills/dbs-wechat-html/agents/openai.yaml) |
+| 93 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
+| 94 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
+| 95 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
+| 96 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
+| 97 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
+| 98 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
+| 99 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
+| 100 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
+| 101 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
+| 102 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

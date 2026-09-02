@@ -43,6 +43,9 @@
 | 27 | 持久化并重放给 AI SDK 的每个非 provider-executed tool-call，在下一条 user/system 或 transcript 结束前必须有匹配 tool-result。回合结束仍未收到结果时，只能补 app-owned、`is_error:true` 的“未收到结果”事实，不能伪造工具成功/执行失败；legacy history 同样修复。无调用来源的 orphan result 可留在 UI/DB 审计，但不得原样送进模型 prompt | `stream-session-manager.ts` + `message-builder.ts` + `tool-history-integrity.ts` + Native loops |
 | 28 | 由多个异步 callback 写入的 server-side `ReadableStream` 必须把 enqueue/close 的唯一所有权交给 `SingleOwnerStreamWriter`。consumer cancel 先原子宣告 terminal，再 kill/abort producer；producer 的 exit/error/data callback 只能调用 writer，取消后的迟到写入必须 no-op。stream attach 后禁止任何 callback 继续直接操作裸 `controller` | `single-owner-stream-writer.ts` + marketplace/CLI/media stream routes |
 | 29 | DB `token_usage` 是跨 Runtime/历史版本输入；历史消息展示前必须运行时验证 `input_tokens` / `output_tokens` 都是有限非负安全整数，缺失/非法时隐藏整项统计，不得补假 0。assistant `addMessage` 的 insert、session timestamp update 与 row read 必须在同一同步 SQLite transaction 中完成；读不到真实行时抛稳定产品错误并整体回滚，调用方不得依赖 `as Message` 后读取 `undefined.id` | `token-usage-display.ts` + `MessageItem.tsx` + `db.ts` |
+| 30 | 每个父聊天第一次 execution 必须先完成 Runtime binding，再 resolve Provider 或启动 child。bound 后请求 Runtime 只能与 owner 一致；legacy/unbound 的自动执行必须在任何 transcript、工具调用和费用发生前 fail closed | `/api/chat` + `thread-execution-binding.ts` |
+| 31 | 跨 Runtime 只能以新 session handoff 继续。目标首轮从 `runtime_handoff` fragment 消费同一份有边界、可截断、已脱敏事实；不得复制原生 SDK/thread ref，也不得把 handoff card 写成用户消息 | handoff API + `handoff-payload.ts` + `ChatView.tsx` |
+| 32 | v2 usage 中 missing cache/cost 是 unknown，不是 0。Native 必须核对 provider raw usage，不能接受 AI SDK 合成的缓存零；聚合与 UI 只有在每轮 denominator/source 完整时才显示 rate/金额 | `turn-usage.ts` + collector + usage UI |
 
 ## 关键文件 + 责任
 
@@ -109,6 +112,8 @@
 - [ ] 新增 Runtime status kind 时明确 quiet / human-copy / actionable-UI 三选一，并同时覆盖 `/chat` 首轮和 `/chat/[id]` 后续流；禁止落入原始 JSON 展示
 - [ ] 改 tool persistence/replay 时覆盖正常 pair、Stop 后 missing result、多 call、provider-executed call 与 orphan result；synthetic marker 只能陈述“CodePilot 未收到结果”，不得冒充工具执行结论。
 - [ ] 新增 subprocess/callback 驱动的 `ReadableStream` 时使用 `SingleOwnerStreamWriter`；cancel 必须先终止 writer，再 kill/abort，所有迟到 callback 都要有行为断言。
+- [ ] 改 chat execution 入口时确认 binding 在 Provider/child 之前完成；auto/retry/queue/bridge 不能重新读取全局 Runtime
+- [ ] 改 usage producer 时用 raw provider 事实区分真实 0 与缺失；unknown 不得经 `?? 0`、SQL `COALESCE` 或图表补点变成 0
 
 ## 常见坑
 

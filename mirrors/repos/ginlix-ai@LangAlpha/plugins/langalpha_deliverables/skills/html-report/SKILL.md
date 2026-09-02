@@ -1,11 +1,11 @@
 ---
 name: html-report
-description: "Self-contained styled HTML reports written to results/: PDF-exportable research documents with inline data, charts, and theme-aware CSS"
+description: "Self-contained styled HTML reports written to the task directory: PDF-exportable research documents with inline data, charts, and theme-aware CSS"
 ---
 
 # HTML Report
 
-Author a styled, self-contained HTML **document** and write it to `results/` (e.g. `results/report.html`). The file panel renders it with full browser semantics — JavaScript runs, CDN libraries load, relative assets resolve, and the user can view it fullscreen, open it in a new tab, download it, or export it to PDF.
+Author a styled, self-contained HTML **document** and write it into the task directory (e.g. `work/amd_analysis/report.html`). The file panel renders it with full browser semantics — JavaScript runs, CDN libraries load, relative assets resolve, and the user can view it fullscreen, open it in a new tab, download it, or export it to PDF.
 
 This is the right output when the user wants a **deliverable they can keep, share, or print** — an equity research note, an earnings recap, a screen writeup — not a throwaway answer.
 
@@ -19,7 +19,7 @@ A report from this skill **can be interactive** (sortable tables, tab/filter con
 
 | Want | Use | Why |
 |---|---|---|
-| A document the user keeps, shares, or exports to PDF — even one that's interactive within itself | **html-report** (this skill) — `.html` in `results/` | One file on disk, served with real semantics, PDF-exportable. Interactivity runs client-side over an embedded data snapshot. |
+| A document the user keeps, shares, or exports to PDF — even one that's interactive within itself | **html-report** (this skill) — `.html` in `work/<task_name>/` | One file on disk, served with real semantics, PDF-exportable. Interactivity runs client-side over an embedded data snapshot. |
 | A quick visualization *inside the chat* (one chart, a metric row, a table) | **inline-widget** (`ShowWidget`) | Appears inline between text; no file, no panel |
 | A **live served app** — refreshing data, server-side compute, multi-page routing, or a dataset too large to embed | **interactive-dashboard** (`GetPreviewUrl`) | A running app with a backend, not a static file. Needed when the data must be fetched live, not embedded. |
 | A simple, short answer | **plain markdown** | A styled HTML document is overkill for a one-paragraph reply |
@@ -48,7 +48,7 @@ html = f"""<!DOCTYPE html>
 </body>
 </html>"""
 
-with open("results/report.html", "w", encoding="utf-8") as f:
+with open("work/<task_name>/report.html", "w", encoding="utf-8") as f:
     f.write(html)
 ```
 
@@ -63,12 +63,15 @@ Rules:
 The viewer serves files with **real relative-path semantics**, so a report can reference sibling assets and they resolve correctly:
 
 ```
-results/
+work/amd_analysis/
   report.html              # references charts/revenue.png as a relative path
   charts/
     revenue.png
     margins.png
 ```
+
+The charts are already there: `work/<task_name>/charts/` is where you saved them
+during the analysis, and the report sits beside that directory. Nothing is copied.
 
 ```html
 <img src="charts/revenue.png" alt="Quarterly revenue" style="width:100%;max-width:720px;">
@@ -77,8 +80,8 @@ results/
 Use multi-file for **image-heavy reports** — e.g. when you've generated high-quality static charts with matplotlib/plotly `savefig` and want to embed them rather than redraw client-side.
 
 Rules:
-- Keep all asset paths **relative** (`charts/revenue.png`, not `/results/...` and not absolute filesystem paths).
-- Keep every asset **inside the workspace** and under `results/` (or a subdir of it). Do not reference files outside the workspace.
+- Keep all asset paths **relative** (`charts/revenue.png`, never a leading slash, never an absolute filesystem path).
+- Keep every asset **inside the workspace** and under the report's own task directory. Do not reference files outside the workspace.
 - Prefer self-contained when the charts can reasonably be drawn client-side from embedded `DATA`; reach for multi-file when raster images give materially better output.
 
 ## CDN Allowlist
@@ -265,7 +268,7 @@ Aim for 10–11pt body text — the register of a printed research note. Keep ta
 1. **Fetch and validate data** first (check for empty/None); sample or aggregate to a sensible size.
 2. **Read `.agents/skills/ui-design/SKILL.md`** and commit to a typographic pairing + color direction.
 3. **Build** the full document — inline CSS/JS, embed `DATA`, draw charts from it; add the `@media print` block.
-4. **Write to `results/report.html`** (UTF-8). Image-heavy → write assets to `results/charts/*.png` and reference them relatively.
+4. **Write to `work/<task_name>/report.html`** (UTF-8). Image-heavy → reference the charts already in `work/<task_name>/charts/*.png` relatively as `charts/*.png`.
 5. **Open it and print-preview**, then cite the report to the user as a clickable link.
 
 Use the Quality Checklist below to verify before delivering.
@@ -274,11 +277,11 @@ Use the Quality Checklist below to verify before delivering.
 
 - [ ] Full `<!DOCTYPE html>` document; CSS and JS inline; only allowlisted CDNs referenced
 - [ ] Data embedded via `<script>const DATA = {json.dumps(..., ensure_ascii=False)}</script>`; large datasets sampled/aggregated
-- [ ] Multi-file (if used): all asset paths relative, all assets under `results/`
+- [ ] Multi-file (if used): all asset paths relative, all assets under the report's task directory
 - [ ] Every color in `var(--color-role, #literalFallback)` form — no bare `var()`, no unvariabled hardcodes
 - [ ] Charts: wrapper-div heights, `maintainAspectRatio: false`, `getComputedStyle` + literal fallback for canvas colors
 - [ ] `@media print` block present: hides chrome, `break-inside: avoid`, sane `@page` margins, animations/opacity neutralized
 - [ ] Interactivity (if any): events via `addEventListener` (no inline `on*=`), runs on embedded `DATA` (no live `fetch`), default state is meaningful, controls `.no-print` and collapsed content expands when printing
 - [ ] User's stated preferences (this chat / long-term memory / saved prefs) honored wherever they differ from this skill's defaults
 - [ ] Design follows `.agents/skills/ui-design/SKILL.md` (typography, single accent, profit/loss color discipline, no AI slop)
-- [ ] Written to `results/`; numbers correctly formatted; opened and print-previewed; cited to the user as a link
+- [ ] Written to `work/<task_name>/`; numbers correctly formatted; opened and print-previewed; cited to the user as a link

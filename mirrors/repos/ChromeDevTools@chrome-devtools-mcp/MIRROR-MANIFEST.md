@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,14 +65,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/chrome-devtools-cli/references/installation.md`](skills/chrome-devtools-cli/references/installation.md) |
 | 5 | ✓ | [`skills/chrome-devtools-cli/SKILL.md`](skills/chrome-devtools-cli/SKILL.md) |
 | 6 | ✓ | [`skills/chrome-devtools/SKILL.md`](skills/chrome-devtools/SKILL.md) |
-| 7 | ✓ | [`skills/debug-optimize-lcp/references/elements-and-size.md`](skills/debug-optimize-lcp/references/elements-and-size.md) |
-| 8 | ✓ | [`skills/debug-optimize-lcp/references/lcp-breakdown.md`](skills/debug-optimize-lcp/references/lcp-breakdown.md) |
-| 9 | ✓ | [`skills/debug-optimize-lcp/references/lcp-snippets.md`](skills/debug-optimize-lcp/references/lcp-snippets.md) |
-| 10 | ✓ | [`skills/debug-optimize-lcp/references/optimization-strategies.md`](skills/debug-optimize-lcp/references/optimization-strategies.md) |
-| 11 | ✓ | [`skills/debug-optimize-lcp/SKILL.md`](skills/debug-optimize-lcp/SKILL.md) |
-| 12 | ✓ | [`skills/memory-leak-debugging/references/common-leaks.md`](skills/memory-leak-debugging/references/common-leaks.md) |
-| 13 | ✓ | [`skills/memory-leak-debugging/SKILL.md`](skills/memory-leak-debugging/SKILL.md) |
-| 14 | ✓ | [`skills/troubleshooting/SKILL.md`](skills/troubleshooting/SKILL.md) |
+| 7 | ✓ | [`skills/cookie-debugging/SKILL.md`](skills/cookie-debugging/SKILL.md) |
+| 8 | ✓ | [`skills/debug-optimize-lcp/references/elements-and-size.md`](skills/debug-optimize-lcp/references/elements-and-size.md) |
+| 9 | ✓ | [`skills/debug-optimize-lcp/references/lcp-breakdown.md`](skills/debug-optimize-lcp/references/lcp-breakdown.md) |
+| 10 | ✓ | [`skills/debug-optimize-lcp/references/lcp-snippets.md`](skills/debug-optimize-lcp/references/lcp-snippets.md) |
+| 11 | ✓ | [`skills/debug-optimize-lcp/references/optimization-strategies.md`](skills/debug-optimize-lcp/references/optimization-strategies.md) |
+| 12 | ✓ | [`skills/debug-optimize-lcp/SKILL.md`](skills/debug-optimize-lcp/SKILL.md) |
+| 13 | ✓ | [`skills/memory-leak-debugging/references/common-leaks.md`](skills/memory-leak-debugging/references/common-leaks.md) |
+| 14 | ✓ | [`skills/memory-leak-debugging/SKILL.md`](skills/memory-leak-debugging/SKILL.md) |
+| 15 | ✓ | [`skills/troubleshooting/SKILL.md`](skills/troubleshooting/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: "ulw-research"
-description: "[omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use best-practice-research. Aliases: web-research. Use when the user says: web research, web search, search the web, internet search, fresh sources, current sources, current web evidence, source-backed research."
+description: "[omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use best-practice-research. Use when the user says: research plan, literature review, research literature, review recent papers, deep research, deep-research, exhaustive research, saturation research."
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -28,6 +28,7 @@ This is a Hermes-native `research` workflow skill.
 - The user needs a market, customer, or pricing decision brief with evidence-versus-inference treatment; use `research-brief`.
 - The user asks for recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations; use `research-department`.
 - Correctness is a bounded, versioned official or upstream guidance question; use `best-practice-research`.
+- One cited retrieval round settles the question and no reference implementation needs reading; use `web-research`.
 
 ## Examples
 
@@ -55,10 +56,11 @@ Bad example:
 - If the evidence stays thin or contested, lower the stated confidence and keep the unresolved claims in the annex rather than flattening them.
 - If leads keep expanding past the declared budget, stop, record open leads in the dossier, and ask whether to extend the budget.
 - If enough evidence already exists and the real request is planning, hand off to ralplan with the recorded dossier.
+- If the audience answer arrives after retrieval started, keep the evidence and re-render rather than re-running: the dossier feeds both branches.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`source-finder`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `research-brief`, `strategy-brief`, `feedback-triage`, `+14 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`source-finder`, `web-research`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `inference-serving`, `research-brief`, `+16 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -66,7 +68,7 @@ Bad example:
 
 Use for research before planning, deciding, or handoff - from current web evidence and citations to exhaustive grounding with studied reference implementations and verified contested claims.
 
-    Strong routing signals: `web-research`, `web research`, `web search`, `search the web`, `internet search`, `fresh sources`, `current sources`, `current web evidence`, `source-backed research`, `source search`, `find sources`, `find citations`, `citation check`, `evidence scan`, `source diversity`, `retrieval gap`, `look up`, `look up sources`, `latest sources`, `research plan`, `literature review`, `research literature`, `review recent papers`, `deep research`, `deep-research`, `exhaustive research`, `saturation research`, `pre-spec research`, `research before spec`, `research before planning`, `reference implementation`, `reference implementations`, `reference implementation study`, `prior art`, `prior art research`, `study existing implementations`, `comparable implementations`, `compare open source implementations`, `decision-grounding research`, `ディープリサーチ`, `深く調査`, `出典付きで調査`, `OSS実装を調査`, `웹서치`, `웹 서치`, `웹 검색`, `인터넷 검색`, `검색해줘`, `검색해서`, `최신 자료`, `최신 출처`, `자료 찾아`, `조사`, `근거`, `출처`, `고객 피드백`, `문헌 검토`, `논문들 검토`, `딥리서치`, `딥 리서치`, `심층 리서치`, `레퍼런스 구현`, `오픈소스 깊게 참고`, `深度调研`, `深入调研`, `带出处的调研`, `调研开源实现`
+    Strong routing signals: `research plan`, `literature review`, `research literature`, `review recent papers`, `deep research`, `deep-research`, `exhaustive research`, `saturation research`, `pre-spec research`, `research before spec`, `research before planning`, `reference implementation`, `reference implementations`, `reference implementation study`, `prior art`, `prior art research`, `study existing implementations`, `comparable implementations`, `compare open source implementations`, `decision-grounding research`, `ディープリサーチ`, `深く調査`, `出典付きで調査`, `OSS実装を調査`, `조사`, `근거`, `고객 피드백`, `문헌 검토`, `논문들 검토`, `딥리서치`, `딥 리서치`, `심층 리서치`, `레퍼런스 구현`, `오픈소스 깊게 참고`, `深度调研`, `深入调研`, `带出处的调研`, `调研开源实现`
 
 ## Catalog Metadata
 
@@ -79,6 +81,9 @@ Reasoning demand: `standard`
 Quality bar:
 
 - Ask for the research question, source boundaries, freshness, jurisdiction, and version assumptions before retrieval.
+- Ask who the output is for before retrieval and never infer it: a human reader gets a briefing document, a coding agent gets the dense handoff of findings, exact symbols, and file paths. The answer changes what the run records, not only how it is written up.
+- On the human branch ask the output format (markdown, a print-ready page, or both) and the output language before writing, then hold the document to `references/briefing-format.md` - noun-phrase titles carrying a role label from its closed vocabulary, cause before effect, terms defined at first use, figures drawn in code blocks, and the fixed chapter-and-appendix structure.
+- Keep the coding-agent branch dense: findings, exact symbols, file paths, and the plan-feed block, with no narrative framing and no briefing structure.
 - Use official or primary sources first when current or external facts matter, then add source diversity when the topic is contested.
 - Revise the search plan when new evidence exposes a gap or contradiction instead of stopping at the first pass.
 - Gate contested claims: require at least two independent source domains, one counter-search for disconfirming evidence, and a primary source, or move the claim to the unresolved annex.
@@ -102,6 +107,9 @@ Run as a Hermes-side research lane when web or repository access is available; H
 Required inputs:
 
 - research question
+- output audience - a human reader or a coding agent - asked before retrieval and never inferred
+- output format when the reader is human - markdown, a print-ready page, or both
+- output language when the reader is human - declared, never inferred from the request
 - target user/task if usability matters
 - usability/quality dimension if applicable
 - source boundaries
@@ -120,6 +128,7 @@ Expected outputs:
 - confidence and residual uncertainty
 - product_evidence_loop/v1
 - deep_research_dossier/v1
+- research_briefing/v1 with its markdown and print-ready page when the reader is human
 
 Artifact expectations:
 
@@ -139,6 +148,7 @@ Safety rules:
 - State retrieval limits, dates, and missing-source gaps for unstable facts.
 - product_evidence_loop/v1 is prepared-only opaque references, not observed evidence or execution.
 - deep_research_dossier/v1 is prepared decision context, not observed evidence, execution, review, CI, or merge evidence.
+- research_briefing/v1 is prepared decision context; a rendered page is a page, and calling it a PDF needs observed file evidence.
 
 ## Runtime Evidence
 

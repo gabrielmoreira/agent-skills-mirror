@@ -53,7 +53,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+11 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+12 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 
@@ -74,8 +74,11 @@ Reasoning demand: `heavy`
 Quality bar:
 
 - Lock current behavior with regression checks before non-trivial cleanup.
+- Classify before deleting: every finding names one category from the slop taxonomy - duplication, dead code, needless abstraction, boundary violation, missing tests, or templated defaults - so the pass order below can own it.
+- Run single-smell passes in fixed order, re-verifying between passes and never bundling categories: dead-code deletion, then duplicate removal, then naming and error handling, then test reinforcement; the full contract is `omh-ai-slop-cleaner/references/cleanup-passes.md`.
+- When the user names no target smell, run detection first and hand back the inventory: prepared linter and dead-code commands are named per stack in the reference and stay prepared_not_observed until run.
 - Prefer deletion, reuse, and boundary repair over new abstractions.
-- Rerun verification after cleanup before claiming behavior is preserved.
+- Rerun verification after cleanup before claiming behavior is preserved, and close with the four-part report: changed files, simplifications, behavior lock, remaining risks.
 
 Handoff policy:
 
@@ -96,15 +99,16 @@ Delegation transparency:
 
 Required inputs:
 
-- target smell
+- target smell, or a scoped file list when the user has not named one
 - current behavior
 - regression checks
 
 Expected outputs:
 
-- small cleanup diff
+- smell inventory naming each finding's category before any edit
+- small cleanup diff, one pass at a time
 - before/after verification
-- residual risk
+- closing report: changed files, simplifications, behavior lock, remaining risks
 
 Artifact expectations:
 
@@ -115,6 +119,7 @@ Safety rules:
 - Lock behavior with tests before risky cleanup.
 - Prefer deletion and existing utilities over new layers.
 - Do not add dependencies for cleanup unless explicitly requested.
+- A scoped file list is a boundary: never widen it silently; out-of-scope findings are reported, not edited.
 
 ## Runtime Evidence
 

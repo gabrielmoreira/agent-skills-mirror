@@ -47,7 +47,7 @@ The maintained version parity set has 20 entries: 19 tracked files plus the vers
 | `.codex/skills/planning-with-files/SKILL.md` | Codex IDE |
 | `.cursor/skills/planning-with-files/SKILL.md` | Cursor IDE |
 | `.factory/skills/planning-with-files/SKILL.md` | Factory IDE |
-| `.hermes/skills/planning-with-files/SKILL.md` | Hermes adapter |
+| `.hermes/skills/planning-with-files/SKILL.md` | Hermes Agent skill bundle (the native plugin with tools, `/pwf`, hooks and the `pre_verify` gate lives in `.hermes/plugins/planning-with-files/`, versioned separately in its `plugin.yaml`) |
 | `.mastracode/skills/planning-with-files/SKILL.md` | Mastra Code |
 | `.opencode/skills/planning-with-files/SKILL.md` | OpenCode IDE |
 | `.pi/skills/planning-with-files/package.json` | npm package manifest |

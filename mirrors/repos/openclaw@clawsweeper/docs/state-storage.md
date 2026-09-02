@@ -40,6 +40,11 @@ Jobs that need operational Git state receive a sparse checkout containing only
 the retained paths above. Canonical-only lanes set `hydrate-git-state: "false"`
 and never mint or use a state-repository token.
 
+State-blob publication gives each signed Worker request, including multipart
+operations, a 15-second deadline. Requests retain their existing retry policy
+of at most four attempts, so a stalled upload eventually fails and releases the
+review worker.
+
 Remaining Git writers use the Durable Object state-writer coordinator and one
 ordinary fetch/commit/push. The former Git lease refs, atomic multi-ref pushes,
 shallow-history deepening, remote-head rebuilds, record reconciliation, and

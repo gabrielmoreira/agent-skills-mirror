@@ -315,7 +315,6 @@ Top-level files in `src/lib/`:
 
 - The old `localDb.ts` barrel was removed — consumers import specific `src/lib/db/*` modules directly.
 - `proxyHealth.ts`, `proxyLogger.ts`, `tokenHealthCheck.ts`, `localHealthCheck.ts`
-- `oneproxyRotator.ts`, `oneproxySync.ts`
 - `apiBridgeServer.ts`, `cacheLayer.ts`, `semanticCache.ts`, `settingsCache.ts`
 - `cloudSync.ts`, `initCloudSync.ts`
 - `cloudflaredTunnel.ts`, `ngrokTunnel.ts`, `tailscaleTunnel.ts`
@@ -422,12 +421,12 @@ Split into focused subdirectories:
   `bodySize.ts`, `colors.ts`, `appConfig.ts`, `config.ts`,
   `sidebarVisibility.ts`, `visionBridgeDefaults.ts`.
 - `validation/` — `schemas.ts` (~80 Zod schemas), `compressionConfigSchemas.ts`,
-  `oneproxySchemas.ts`, `providerSchema.ts`, `settingsSchemas.ts`, `helpers.ts`.
+  `providerSchema.ts`, `settingsSchemas.ts`, `helpers.ts`.
 - `contracts/` — public API contracts shipped to npm.
 - `types/` — shared TS types.
 - `utils/` — `circuitBreaker.ts`, `apiAuth.ts`, `apiKey.ts`, `apiKeyPolicy.ts`,
-  `apiResponse.ts`, `api.ts`, `classify429.ts`, `cliCompat.ts`, `clipboard.ts`,
-  `cloud.ts`, `cn.ts`, `cors.ts`, `costEstimator.ts`, `featureFlags.ts`,
+  `api.ts`, `classify429.ts`, `cliCompat.ts`, `clipboard.ts`, `cloud.ts`, `cn.ts`,
+  `cors.ts`, `featureFlags.ts`,
   `fetchTimeout.ts`, `formatting.ts`, `inputSanitizer.ts`, `logger.ts`,
   `machine.ts`, `machineId.ts`, `maskEmail.ts`, `modelCatalogSearch.ts`,
   `nodeRuntimeSupport.ts`, `parseApiKeys.ts`, `providerHints.ts`,
@@ -450,7 +449,7 @@ open-sse/
 ├── types.d.ts
 ├── config/                 Provider registries, header profiles, identity, …
 ├── handlers/               Request handlers (chat, embeddings, audio, image, …)
-├── executors/              104 provider-specific HTTP executors
+├── executors/              106 provider-specific HTTP executors
 ├── translator/             Format conversion (OpenAI ↔ Claude ↔ Gemini ↔ Cursor ↔ Kiro)
 ├── transformer/            Responses API ↔ Chat Completions stream transformer
 ├── services/               80+ service modules (combos, fallback, quotas, identity, …)
@@ -480,7 +479,7 @@ open-sse/
 
 ### 4.2 `open-sse/executors/`
 
-104 provider executors, each extending `BaseExecutor` (`base.ts`):
+106 provider executors, each extending `BaseExecutor` (`base.ts`):
 
 `antigravity`, `azure-openai`, `blackbox-web`, `cliproxyapi`,
 `chatgpt-web-codex`, `cloudflare-ai`, `codex`, `commandCode`, `cursor`, `default`, `devin-cli`,

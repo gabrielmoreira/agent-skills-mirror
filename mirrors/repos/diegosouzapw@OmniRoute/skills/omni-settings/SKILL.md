@@ -383,6 +383,981 @@ curl -X POST https://localhost:20128/api/settings/purge-usage-history \
   -d '{}'
 ```
 
+### GET /api/settings/authz-inventory
+
+GET settings › authz inventory
+
+```bash
+curl https://localhost:20128/api/settings/authz-inventory \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/auto-disable-accounts
+
+GET settings › auto disable accounts
+
+```bash
+curl https://localhost:20128/api/settings/auto-disable-accounts \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/auto-disable-accounts
+
+PUT settings › auto disable accounts
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/auto-disable-accounts \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/background-degradation
+
+GET settings › background degradation
+
+```bash
+curl https://localhost:20128/api/settings/background-degradation \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/background-degradation
+
+POST settings › background degradation
+
+```bash
+curl -X POST https://localhost:20128/api/settings/background-degradation \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/settings/background-degradation
+
+PUT settings › background degradation
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/background-degradation \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/cache-config
+
+GET settings › cache config
+
+```bash
+curl https://localhost:20128/api/settings/cache-config \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/cache-config
+
+PUT settings › cache config
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/cache-config \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/cache-metrics
+
+GET settings › cache metrics
+
+```bash
+curl https://localhost:20128/api/settings/cache-metrics \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### DELETE /api/settings/cache-metrics
+
+DELETE settings › cache metrics
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/cache-metrics \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/cc-discovery-metrics
+
+GET settings › cc discovery metrics
+
+```bash
+curl https://localhost:20128/api/settings/cc-discovery-metrics \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/compression/rules
+
+GET settings › compression › rules
+
+```bash
+curl https://localhost:20128/api/settings/compression/rules \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/compression/run-telemetry
+
+GET settings › compression › run telemetry
+
+```bash
+curl https://localhost:20128/api/settings/compression/run-telemetry \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/database
+
+GET settings › database
+
+```bash
+curl https://localhost:20128/api/settings/database \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/database
+
+PUT settings › database
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/database \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PATCH /api/settings/database
+
+PATCH settings › database
+
+```bash
+curl -X PATCH https://localhost:20128/api/settings/database \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/database/refresh-stats
+
+POST settings › database › refresh stats
+
+```bash
+curl -X POST https://localhost:20128/api/settings/database/refresh-stats \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/database/vacuum
+
+GET settings › database › vacuum
+
+```bash
+curl https://localhost:20128/api/settings/database/vacuum \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/database/vacuum
+
+POST settings › database › vacuum
+
+```bash
+curl -X POST https://localhost:20128/api/settings/database/vacuum \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/export-json
+
+GET settings › export json
+
+```bash
+curl https://localhost:20128/api/settings/export-json \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/favicon
+
+GET settings › favicon
+
+```bash
+curl https://localhost:20128/api/settings/favicon \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/feature-flags
+
+GET settings › feature flags
+
+```bash
+curl https://localhost:20128/api/settings/feature-flags \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/feature-flags
+
+PUT settings › feature flags
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/feature-flags \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/feature-flags
+
+DELETE settings › feature flags
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/feature-flags \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/free-proxies
+
+GET settings › free proxies
+
+```bash
+curl https://localhost:20128/api/settings/free-proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### DELETE /api/settings/free-proxies
+
+DELETE settings › free proxies
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/free-proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/free-proxies/{id}/add-to-pool
+
+POST settings › free proxies › <id> › add to pool
+
+```bash
+curl -X POST https://localhost:20128/api/settings/free-proxies/{id}/add-to-pool \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/free-proxies/bulk-add-to-pool
+
+POST settings › free proxies › bulk add to pool
+
+```bash
+curl -X POST https://localhost:20128/api/settings/free-proxies/bulk-add-to-pool \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/free-proxies/stats
+
+GET settings › free proxies › stats
+
+```bash
+curl https://localhost:20128/api/settings/free-proxies/stats \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/free-proxies/sync
+
+POST settings › free proxies › sync
+
+```bash
+curl -X POST https://localhost:20128/api/settings/free-proxies/sync \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/import-json
+
+POST settings › import json
+
+```bash
+curl -X POST https://localhost:20128/api/settings/import-json \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/lkgp-cache
+
+DELETE settings › lkgp cache
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/lkgp-cache \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/local-corpus
+
+GET settings › local corpus
+
+```bash
+curl https://localhost:20128/api/settings/local-corpus \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/local-corpus
+
+POST settings › local corpus
+
+```bash
+curl -X POST https://localhost:20128/api/settings/local-corpus \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/local-corpus
+
+DELETE settings › local corpus
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/local-corpus \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/mitm
+
+GET settings › mitm
+
+```bash
+curl https://localhost:20128/api/settings/mitm \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/mitm
+
+POST settings › mitm
+
+```bash
+curl -X POST https://localhost:20128/api/settings/mitm \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/settings/mitm
+
+PUT settings › mitm
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/mitm \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/model-aliases
+
+GET settings › model aliases
+
+```bash
+curl https://localhost:20128/api/settings/model-aliases \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/model-aliases
+
+POST settings › model aliases
+
+```bash
+curl -X POST https://localhost:20128/api/settings/model-aliases \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/settings/model-aliases
+
+PUT settings › model aliases
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/model-aliases \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/model-aliases
+
+DELETE settings › model aliases
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/model-aliases \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/models-dev
+
+GET settings › models dev
+
+```bash
+curl https://localhost:20128/api/settings/models-dev \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/models-dev
+
+POST settings › models dev
+
+```bash
+curl -X POST https://localhost:20128/api/settings/models-dev \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/notion
+
+GET settings › notion
+
+```bash
+curl https://localhost:20128/api/settings/notion \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/notion
+
+POST settings › notion
+
+```bash
+curl -X POST https://localhost:20128/api/settings/notion \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/notion
+
+DELETE settings › notion
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/notion \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/obsidian
+
+GET settings › obsidian
+
+```bash
+curl https://localhost:20128/api/settings/obsidian \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/obsidian
+
+POST settings › obsidian
+
+```bash
+curl -X POST https://localhost:20128/api/settings/obsidian \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/obsidian
+
+DELETE settings › obsidian
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/obsidian \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/obsidian/webdav
+
+GET settings › obsidian › webdav
+
+```bash
+curl https://localhost:20128/api/settings/obsidian/webdav \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/obsidian/webdav
+
+POST settings › obsidian › webdav
+
+```bash
+curl -X POST https://localhost:20128/api/settings/obsidian/webdav \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/obsidian/webdav
+
+DELETE settings › obsidian › webdav
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/obsidian/webdav \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/settings/oneproxy
+
+GET settings › oneproxy
+
+```bash
+curl https://localhost:20128/api/settings/oneproxy \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/oneproxy
+
+POST settings › oneproxy
+
+```bash
+curl -X POST https://localhost:20128/api/settings/oneproxy \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/oneproxy
+
+DELETE settings › oneproxy
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/oneproxy \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/oneproxy/rotate
+
+POST settings › oneproxy › rotate
+
+```bash
+curl -X POST https://localhost:20128/api/settings/oneproxy/rotate \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/proxies
+
+GET settings › proxies
+
+```bash
+curl https://localhost:20128/api/settings/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/proxies
+
+POST settings › proxies
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PATCH /api/settings/proxies
+
+PATCH settings › proxies
+
+```bash
+curl -X PATCH https://localhost:20128/api/settings/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/proxies
+
+DELETE settings › proxies
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/proxies/{id}/repair-relay
+
+POST settings › proxies › <id> › repair relay
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/{id}/repair-relay \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/proxies/assignments
+
+GET settings › proxies › assignments
+
+```bash
+curl https://localhost:20128/api/settings/proxies/assignments \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/proxies/assignments
+
+PUT settings › proxies › assignments
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/proxies/assignments \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/proxies/auto-test
+
+POST settings › proxies › auto test
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/auto-test \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/proxies/batch-activate
+
+POST settings › proxies › batch activate
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/batch-activate \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/proxies/batch-delete
+
+POST settings › proxies › batch delete
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/batch-delete \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/settings/proxies/bulk-assign
+
+PUT settings › proxies › bulk assign
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/proxies/bulk-assign \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/proxies/bulk-import
+
+POST settings › proxies › bulk import
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/bulk-import \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/proxies/egress
+
+GET settings › proxies › egress
+
+```bash
+curl https://localhost:20128/api/settings/proxies/egress \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/proxies/egress
+
+POST settings › proxies › egress
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/egress \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/proxies/health
+
+GET settings › proxies › health
+
+```bash
+curl https://localhost:20128/api/settings/proxies/health \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/proxies/migrate
+
+POST settings › proxies › migrate
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxies/migrate \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/proxies/pool
+
+GET settings › proxies › pool
+
+```bash
+curl https://localhost:20128/api/settings/proxies/pool \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/proxies/pool
+
+PUT settings › proxies › pool
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/proxies/pool \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PATCH /api/settings/proxies/pool
+
+PATCH settings › proxies › pool
+
+```bash
+curl -X PATCH https://localhost:20128/api/settings/proxies/pool \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/proxies/pool
+
+DELETE settings › proxies › pool
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/proxies/pool \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/proxy/cloudflare-deploy
+
+POST settings › proxy › cloudflare deploy
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxy/cloudflare-deploy \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/proxy/deno-deploy
+
+POST settings › proxy › deno deploy
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxy/deno-deploy \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/proxy/vercel-deploy
+
+POST settings › proxy › vercel deploy
+
+```bash
+curl -X POST https://localhost:20128/api/settings/proxy/vercel-deploy \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/purge-call-logs
+
+POST settings › purge call logs
+
+```bash
+curl -X POST https://localhost:20128/api/settings/purge-call-logs \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/purge-detailed-logs
+
+POST settings › purge detailed logs
+
+```bash
+curl -X POST https://localhost:20128/api/settings/purge-detailed-logs \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/purge-logs
+
+POST settings › purge logs
+
+```bash
+curl -X POST https://localhost:20128/api/settings/purge-logs \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/settings/purge-quota-snapshots
+
+POST settings › purge quota snapshots
+
+```bash
+curl -X POST https://localhost:20128/api/settings/purge-quota-snapshots \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/quota/state
+
+GET settings › quota › state
+
+```bash
+curl https://localhost:20128/api/settings/quota/state \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/quota/state
+
+POST settings › quota › state
+
+```bash
+curl -X POST https://localhost:20128/api/settings/quota/state \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/reasoning-routing-rules
+
+GET settings › reasoning routing rules
+
+```bash
+curl https://localhost:20128/api/settings/reasoning-routing-rules \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/reasoning-routing-rules
+
+POST settings › reasoning routing rules
+
+```bash
+curl -X POST https://localhost:20128/api/settings/reasoning-routing-rules \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/reasoning-routing-rules/{id}
+
+GET settings › reasoning routing rules › <id>
+
+```bash
+curl https://localhost:20128/api/settings/reasoning-routing-rules/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PATCH /api/settings/reasoning-routing-rules/{id}
+
+PATCH settings › reasoning routing rules › <id>
+
+```bash
+curl -X PATCH https://localhost:20128/api/settings/reasoning-routing-rules/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/settings/reasoning-routing-rules/{id}
+
+DELETE settings › reasoning routing rules › <id>
+
+```bash
+curl -X DELETE https://localhost:20128/api/settings/reasoning-routing-rules/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/reasoning-routing-rules/simulate
+
+POST settings › reasoning routing rules › simulate
+
+```bash
+curl -X POST https://localhost:20128/api/settings/reasoning-routing-rules/simulate \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/task-routing
+
+GET settings › task routing
+
+```bash
+curl https://localhost:20128/api/settings/task-routing \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/settings/task-routing
+
+POST settings › task routing
+
+```bash
+curl -X POST https://localhost:20128/api/settings/task-routing \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/settings/task-routing
+
+PUT settings › task routing
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/task-routing \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/settings/tier-config
+
+GET settings › tier config
+
+```bash
+curl https://localhost:20128/api/settings/tier-config \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/settings/tier-config
+
+PUT settings › tier config
+
+```bash
+curl -X PUT https://localhost:20128/api/settings/tier-config \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.

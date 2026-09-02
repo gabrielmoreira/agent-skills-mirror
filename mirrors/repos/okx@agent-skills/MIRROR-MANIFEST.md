@@ -7,7 +7,7 @@ ref: github-main
 
 # Mirror Manifest
 
-Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 64 file(s) materialized.
+Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `okx/agent-skills` — 26 default patterns, 4 followed patterns, 64 fi
 | Ref           | `github-main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 64 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,21 +111,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`skills/okx-cex-trade/references/templates.md`](skills/okx-cex-trade/references/templates.md) |
 | 48 | ✓ | [`skills/okx-cex-trade/references/workflows.md`](skills/okx-cex-trade/references/workflows.md) |
 | 49 | ✓ | [`skills/okx-cex-trade/SKILL.md`](skills/okx-cex-trade/SKILL.md) |
-| 50 | ✓ | [`skills/okx-outcomes/references/account-commands.md`](skills/okx-outcomes/references/account-commands.md) |
-| 51 | ✓ | [`skills/okx-outcomes/references/clob-commands.md`](skills/okx-outcomes/references/clob-commands.md) |
-| 52 | ✓ | [`skills/okx-outcomes/references/ctf-commands.md`](skills/okx-outcomes/references/ctf-commands.md) |
-| 53 | ✓ | [`skills/okx-outcomes/references/data-commands.md`](skills/okx-outcomes/references/data-commands.md) |
-| 54 | ✓ | [`skills/okx-outcomes/references/setup-auth.md`](skills/okx-outcomes/references/setup-auth.md) |
-| 55 | ✓ | [`skills/okx-outcomes/references/workflows.md`](skills/okx-outcomes/references/workflows.md) |
-| 56 | ✓ | [`skills/okx-outcomes/SKILL.md`](skills/okx-outcomes/SKILL.md) |
-| 57 | ✓ | [`skills/okx-sentiment-tracker/references/workflows.md`](skills/okx-sentiment-tracker/references/workflows.md) |
-| 58 | ✓ | [`skills/okx-sentiment-tracker/SKILL.md`](skills/okx-sentiment-tracker/SKILL.md) |
-| 59 | ✓ | [`skills/README.md`](skills/README.md) |
-| 60 | ✓ | [`skills/README.zh-CN.md`](skills/README.zh-CN.md) |
-| 61 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 62 | → | [`README.md`](README.md) |
-| 63 | → | [`REVIEWING.md`](REVIEWING.md) |
-| 64 | → | [`SECURITY.md`](SECURITY.md) |
+| 50 | ✓ | [`skills/okx-sentiment-tracker/references/workflows.md`](skills/okx-sentiment-tracker/references/workflows.md) |
+| 51 | ✓ | [`skills/okx-sentiment-tracker/SKILL.md`](skills/okx-sentiment-tracker/SKILL.md) |
+| 52 | ✓ | [`skills/README.md`](skills/README.md) |
+| 53 | ✓ | [`skills/README.zh-CN.md`](skills/README.zh-CN.md) |
+| 54 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 55 | → | [`README.md`](README.md) |
+| 56 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 57 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

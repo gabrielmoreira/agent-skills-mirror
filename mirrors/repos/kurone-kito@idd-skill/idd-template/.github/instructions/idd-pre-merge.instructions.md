@@ -206,6 +206,13 @@ nonce was recorded for the active claim.
   [Terminal routing](idd-advisory-wait.instructions.md#terminal-routing-1570);
   an unwaived `copilot-terminal-unavailable` in `blockers[]` stops here
   with that section's hold regardless.
+- **Secondary advisory bot quiet window** (opt-in, off by default): when
+  `advisoryWait.secondaryQuietWindow` (#2335) is configured, the readiness
+  report's `secondaryQuietWindow.elapsed` must be `true` before this check
+  is satisfied — a `secondary-quiet-window` entry in `blockers[]` means the
+  window has not yet elapsed since the last substantive review activity;
+  wait (poll per `advisoryWait.pollInterval`), then re-evaluate F2. Unset
+  (the off default) never adds this blocker.
 - **CI**: Current PR head SHA has all required CI checks generated and
   all passing (→ run CI wait per `idd-ci.instructions.md` using the
   same resolved `ciWait.runningTimeout`, `ciWait.generationTimeout`, and
@@ -235,6 +242,16 @@ nonce was recorded for the active claim.
   or claim ownership. Non-empty `waiverEvidence.wrongHead`, `wrongClaim`,
   `unauthorized`, `expired`, or `malformed` are suspicious context, never
   valid permissions.
+
+  **Local validation evidence** (#2323): `pre-merge-readiness`'s
+  `localValidationEvidence` field reports whether HEAD-pinned local
+  evidence exists for an active `ciGate` outage
+  ([`docs/idd-helper-scripts.md`](../../docs/idd-helper-scripts.md#local-validation-evidence-helper)).
+  It is informational only — never treat it as a passing check or a
+  waiver: an unavailable required check stays a CI-gate blocker exactly
+  as above regardless of this field. With required checks unavailable,
+  merges queue; restoring the platform check rollup is an out-of-band
+  privileged operation outside this loop.
 - **Required reviews**: required approvals count is satisfied and all
   CODEOWNER approvals are obtained. If helper evidence includes
   `reviewerStates.codeownerSelfApproval`, include that diagnostic

@@ -17,7 +17,10 @@ already done for you. Check before concluding anything is unavailable:
 command -v godot                          # engine on PATH?
 ls -d /Applications/Godot*.app 2>/dev/null # ...or a macOS app bundle (not on PATH)
 pgrep -af 'godot.*--editor'               # editor already running, and against which --path?
-curl -sf -o /dev/null http://127.0.0.1:8000/mcp -X POST \
+source script/_ci_env.sh
+ci_load_http_auth                         # reads the private record for the target port
+curl -sf -o /dev/null "$MCP_SERVER_URL" -X POST \
+  "${HTTP_AUTH_HEADERS[@]}" \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"check","version":"1"}}}'
@@ -56,7 +59,7 @@ sharing port 8000 is a supported setup (see [worktrees](worktrees.md)), so the
 runners refuse to guess and list the connected sessions. Pick one with
 
 ```bash
-GODOT_AI_SESSION_ID='<project-slug>@<4hex>' script/ci-godot-tests
+GODOT_AI_SESSION_ID='<project-slug>@<16hex>' script/ci-godot-tests
 ```
 
 which intentionally bypasses the checkout-path match for cross-worktree smoke
@@ -71,8 +74,22 @@ editor to *look at* — the step 6 smoke test — or when nothing is running yet
 
 **Always do this before every commit.** Python mocks don't catch GDScript bugs, editor API regressions, or undo/redo issues.
 
-1. `ruff check src/ tests/` — lint passes
-2. `pytest -v` — all Python tests pass
+1. Run the same Ruff scope as CI — production, tests, the `script/` Python
+   package, and the executable Python release/smoke scripts:
+   ```bash
+   ruff check src/ tests/ script/ \
+     script/ci-game-capture-smoke script/ci-stale-server-smoke \
+     script/ci-unsupported-godot-smoke script/generate-star-history \
+     script/local-game-capture-diag script/local-self-update-smoke \
+     script/v4-release
+   ```
+   Lint must pass.
+2. `pytest -v` — all environment-independent Python tests pass. Then run the
+   Godot-backed updater row explicitly; those tests otherwise skip:
+   ```bash
+   GODOT_BIN=/absolute/path/to/Godot pytest -v \
+     tests/integration/test_self_update_upgrade_paths.py
+   ```
 3. Open `test_project/` in Godot. Skip if one is already running (see above). Both forms occupy the shell, so background them or use a second terminal — you need this one for steps 4–5:
    ```bash
    # macOS GUI
@@ -94,7 +111,9 @@ editor to *look at* — the step 6 smoke test — or when nothing is running yet
    - For write tools: verify the change is visible in the editor, and verify undo works (Ctrl+Z in Godot)
    - For read tools: compare response against what you see in the editor
    - Check `editor_state` to confirm readiness field is present
-7. If the change touches self-update, plugin reload handoff, or install/extract logic, run `script/local-self-update-smoke` and click Update in the launched fixture.
+7. If the change touches self-update, plugin reload handoff, or install/extract
+   logic, run `python script/local-self-update-smoke` and click Update in the
+   launched fixture.
 8. Only commit when all of the above are green
 
 ## Testing against Godot
@@ -102,7 +121,9 @@ editor to *look at* — the step 6 smoke test — or when nothing is running yet
 1. Open `test_project/` in Godot, enable plugin in Project Settings > Plugins
 2. Open a scene (e.g. `main.tscn`)
 3. Plugin starts the server automatically; logs should show `Session connected`
-4. Use your MCP client's server connection flow to connect (for example, `/mcp` in Claude Code)
+4. In the dock, use **Configure** for your MCP client, then restart that client
+   so it launches the authenticated `godot-ai attach` stdio bridge. Do not add
+   the backend's bare `/mcp` URL directly.
 
 **Worktree gotcha**: each working tree (main checkout or git worktree) has its own
 `test_project/addons/godot_ai` symlink pointing to *that tree's* `plugin/`. If you

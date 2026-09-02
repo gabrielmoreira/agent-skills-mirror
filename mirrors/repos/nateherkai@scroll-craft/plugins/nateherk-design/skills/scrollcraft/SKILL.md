@@ -290,7 +290,7 @@ bash  <skill>/scripts/encode.sh out/01.mp4 assets/01.mp4
 bash  <skill>/scripts/encode.sh out/01.mp4 assets/01-m.mp4 mobile
 ```
 
-Three things that decide whether this looks premium or generated:
+Four things that decide whether this looks premium or generated:
 
 - **One style preamble, reused verbatim in every prompt.** This is what makes
   six separate images look like one shoot. Write it once, never paraphrase it.
@@ -299,6 +299,11 @@ Three things that decide whether this looks premium or generated:
 - **Encode for scrubbing, not playback.** `encode.sh` sets a dense GOP because
   seeking walks from the previous keyframe. A normal web encode plays perfectly
   and scrubs like mud.
+- **Layer the hero.** Cut the scene into planes that scroll at slightly
+  different rates, with the product parked between the mid and foreground
+  planes. Depth from differential movement is the cheapest premium signal on
+  the page. The recipe and its traps are under `parallax` in
+  [references/devices.md](references/devices.md).
 
 ## Step 4: Build the page
 

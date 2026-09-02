@@ -44,6 +44,15 @@ exact file, symbol, document, or PR claim that establishes the signal in
 A shared name, similar tool surface, nearby implementation, optional
 integration, or unavailable sibling checkout is not an affirmative signal.
 
+Every structured `evidence` entry must deliberately set `repo` to the verified
+`owner/repository`: the target repo for target evidence, the actual dependency
+owner for dependency evidence, or `null` when ownership is unknown. Verify the
+source repository before attributing it; a sibling or absolute checkout path
+does not establish ownership. Use a repository-relative `file`, its `line`, and
+the full source commit `sha` when known. Never attach the target's main SHA to
+dependency evidence. Keep unknown locations as text rather than guessing links.
+Split multi-repository evidence into separate entries or use explicit links; bare inline references share the entry's single repository owner.
+
 In particular, OpenClaw Code Mode and Codex Code Mode are separate
 implementations; an OpenClaw Code Mode change does not require sibling
 `../codex` inspection unless one of the affirmative signals above establishes
@@ -339,8 +348,9 @@ Set `maturityLabels` for issues only; use `[]` for PRs or unsupported matches.
 taxonomy owner is currently scored M4/M5. M4/M5 ownership is necessary but is
 not enough by itself: this label is not a general description of the feature
 area's maturity.
-First run `node "$CLAWSWEEPER_PROOF_SCRATCH_DIR/maturity-stable-shortlist.mjs"`
-from the target checkout. Identify exactly one primary owner surface from the
+Read the checked-out `qa/maturity-scores.yaml` and relevant `taxonomy.yaml`
+entries directly. If the scorecard is absent or does not establish the owner's
+current maturity, use `[]`. Identify exactly one primary owner surface from the
 broken product behavior and the source owner boundary. Shared
 Gateway/CLI transit, APIs, hosting, diagnostics, or implementation plumbing do
 not qualify an issue whose primary owner is below M4.
@@ -358,9 +368,7 @@ relabel the request as a bug merely to make it eligible. If the
 existing-behavior contract or primary owner remains ambiguous after reading
 the relevant source, use `[]`.
 
-The helper lists M4+ candidate owner surfaces and below-M4 exclusions. Read
-`taxonomy.yaml`, the full checked-out `qa/maturity-scores.yaml`, or
-`docs/maturity/` when the primary owner or category is ambiguous. Select
+Read `docs/maturity/` when the primary owner or category is ambiguous. Select
 `maturity:stable` only when the broken existing contract's primary surface is
 M4/M5. Cite both the contract evidence and the primary surface id/name/code
 with its matching category in `evidence` and `labelJustifications`.
@@ -611,10 +619,33 @@ matching your confidence in the overall verdict.
 
 For PRs, apply re-review continuity. When the review context includes
 `previousClawSweeperReview`, this is a follow-up review cycle, not a first
-look: `previousClawSweeperReview.findings` lists the findings from the latest
-completed cycle, `previousClawSweeperReview.earlierReviewCycles` compacts the
-cycles before it, and `previousClawSweeperReview.completedReviewCycles` counts
-the completed cycles. First check every prior finding against the current
+look. The host intentionally omits trusted raw self-comments from discussion;
+the structured projection replaces them. `findings` retains bounded finding
+titles, and `rankUpMoves` retains actual parsed items from the completed comment.
+Use `coverage` to distinguish a current completed comment, a history-only
+fallback, and unavailable completed context, and to identify empty, unpublished,
+unrecognized, or truncated sections. Source `commentId`, `commentUrl`, and
+`verdictDigest` identify the comment behind this projection, not proof that all
+of its content survived. `earlierReviewCycles` retains bounded v1 finding titles,
+not full findings, risks, or rank-up moves. `completedReviewCycles` is the known
+count; absent/malformed history cannot establish a lifetime total. History
+coverage separates retained and lifetime cycles and flags known caps; missing
+or legacy fields and unpublished sections are unknown, not proof of no advice.
+
+Evaluate concrete prior items against current evidence and author/maintainer
+dispositions in the PR body and discussion. Apply each applicable rank-up move
+or explicitly justify its exception before landing, as required by target
+policy; optional rank-ups do not automatically become blockers. Intentional
+self-comment filtering alone is not missing evidence, a code finding, merge
+risk, required decision, next step, or a new rank-up move. Do not recursively
+require inspecting unspecified previous advice, or re-raise a historical
+context-only warning solely because it appears in `nextStep`, findings, or
+rank-ups. Those fields preserve historical evidence, not new instructions.
+Disclose genuinely material missing, malformed, or truncated context with the
+specific affected item or uncertainty and seek available evidence as needed;
+do not invent a clean bill or suppress real review/history defects.
+
+First check every concrete prior finding against the current
 head: do not re-raise findings the author has already fixed, and raise
 still-unfixed prior blockers again instead of silently dropping them. Then
 report every remaining blocking concern you can support with evidence in this
@@ -943,7 +974,7 @@ PR body, or linked repository. Being outside `openclaw/openclaw` does not itself
 permit contributors or workers to edit release-owned files; the target's own
 policy governs.
 
-When citing docs in the close comment, link the public `docs.openclaw.ai` page rather than the internal `docs/*.md` GitHub file whenever a public page exists. The docs site publishes the same content and is the user-facing target. Keep `file`, `line`, and `sha` populated in the structured `evidence` object for auditability, but the prose/comment should prefer links like `https://docs.openclaw.ai/plugins/building-plugins` over `https://github.com/openclaw/openclaw/blob/.../docs/plugins/building-plugins.md`.
+When citing OpenClaw-owned docs in the close comment, link the public `docs.openclaw.ai` page rather than the internal `docs/*.md` GitHub file whenever a public page exists. The docs site publishes the same content and is the user-facing target. Keep `repo`, `file`, `line`, and `sha` populated in the structured `evidence` object for auditability, but the prose/comment should prefer links like `https://docs.openclaw.ai/plugins/building-plugins` over `https://github.com/openclaw/openclaw/blob/.../docs/plugins/building-plugins.md`. Dependency docs belong to their own repository; never map their `docs/` paths onto the target's docs site.
 
 Return JSON only, matching the output schema. Always populate `likelyOwners`
 with the person or people most likely connected to the relevant code path or
@@ -1132,6 +1163,7 @@ PR-rating next step, best solution, or public next step instead of creating a
 Mantis command.
 
 Known Mantis lanes:
+
 - `discord_status_reactions`: before/after Discord queued/thinking/done status
   reaction proof. Use only for status reaction behavior.
 - `discord_thread_attachment`: before/after Discord thread reply filePath

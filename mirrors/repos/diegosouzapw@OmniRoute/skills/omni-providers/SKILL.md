@@ -229,6 +229,526 @@ curl https://localhost:20128/api/provider-models \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
 ```
 
+### GET /api/providers/{id}/cc-alias
+
+GET providers › <id> › cc alias
+
+```bash
+curl https://localhost:20128/api/providers/{id}/cc-alias \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/providers/{id}/cc-alias
+
+PUT providers › <id> › cc alias
+
+```bash
+curl -X PUT https://localhost:20128/api/providers/{id}/cc-alias \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/{id}/chatgpt-web-codex-doctor
+
+GET providers › <id> › chatgpt web codex doctor
+
+```bash
+curl https://localhost:20128/api/providers/{id}/chatgpt-web-codex-doctor \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/{id}/claude-auth/apply-local
+
+POST providers › <id> › claude auth › apply local
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/claude-auth/apply-local \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/{id}/claude-auth/export
+
+POST providers › <id> › claude auth › export
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/claude-auth/export \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/{id}/codex-auth/apply-local
+
+POST providers › <id> › codex auth › apply local
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/codex-auth/apply-local \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/{id}/codex-auth/export
+
+POST providers › <id> › codex auth › export
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/codex-auth/export \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/{id}/interception-rules
+
+GET providers › <id> › interception rules
+
+```bash
+curl https://localhost:20128/api/providers/{id}/interception-rules \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/providers/{id}/interception-rules
+
+PUT providers › <id> › interception rules
+
+```bash
+curl -X PUT https://localhost:20128/api/providers/{id}/interception-rules \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/providers/{id}/interception-rules
+
+DELETE providers › <id> › interception rules
+
+```bash
+curl -X DELETE https://localhost:20128/api/providers/{id}/interception-rules \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/{id}/login
+
+POST providers › <id> › login
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/login \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/{id}/param-filters
+
+GET providers › <id> › param filters
+
+```bash
+curl https://localhost:20128/api/providers/{id}/param-filters \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/providers/{id}/param-filters
+
+PUT providers › <id> › param filters
+
+```bash
+curl -X PUT https://localhost:20128/api/providers/{id}/param-filters \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/providers/{id}/param-filters
+
+DELETE providers › <id> › param filters
+
+```bash
+curl -X DELETE https://localhost:20128/api/providers/{id}/param-filters \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/{id}/refresh
+
+POST providers › <id> › refresh
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/refresh \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/{id}/refresh-cursor
+
+POST providers › <id> › refresh cursor
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/refresh-cursor \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/{id}/refresh-token
+
+POST providers › <id> › refresh token
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/refresh-token \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/{id}/sync-models
+
+POST providers › <id> › sync models
+
+```bash
+curl -X POST https://localhost:20128/api/providers/{id}/sync-models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/bulk
+
+POST providers › bulk
+
+```bash
+curl -X POST https://localhost:20128/api/providers/bulk \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/bulk-web-session
+
+POST providers › bulk web session
+
+```bash
+curl -X POST https://localhost:20128/api/providers/bulk-web-session \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/claude-auth/import
+
+POST providers › claude auth › import
+
+```bash
+curl -X POST https://localhost:20128/api/providers/claude-auth/import \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/claude-auth/import-bulk
+
+POST providers › claude auth › import bulk
+
+```bash
+curl -X POST https://localhost:20128/api/providers/claude-auth/import-bulk \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/claude-auth/zip-extract
+
+POST providers › claude auth › zip extract
+
+```bash
+curl -X POST https://localhost:20128/api/providers/claude-auth/zip-extract \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/codex-auth/import
+
+POST providers › codex auth › import
+
+```bash
+curl -X POST https://localhost:20128/api/providers/codex-auth/import \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/codex-auth/import-bulk
+
+POST providers › codex auth › import bulk
+
+```bash
+curl -X POST https://localhost:20128/api/providers/codex-auth/import-bulk \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/codex-auth/zip-extract
+
+POST providers › codex auth › zip extract
+
+```bash
+curl -X POST https://localhost:20128/api/providers/codex-auth/zip-extract \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/command-code/auth/apply
+
+POST providers › command code › auth › apply
+
+```bash
+curl -X POST https://localhost:20128/api/providers/command-code/auth/apply \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/command-code/auth/callback
+
+POST providers › command code › auth › callback
+
+```bash
+curl -X POST https://localhost:20128/api/providers/command-code/auth/callback \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/command-code/auth/start
+
+POST providers › command code › auth › start
+
+```bash
+curl -X POST https://localhost:20128/api/providers/command-code/auth/start \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/command-code/auth/status
+
+GET providers › command code › auth › status
+
+```bash
+curl https://localhost:20128/api/providers/command-code/auth/status \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/command-code/auth/status
+
+POST providers › command code › auth › status
+
+```bash
+curl -X POST https://localhost:20128/api/providers/command-code/auth/status \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/expiration
+
+GET providers › expiration
+
+```bash
+curl https://localhost:20128/api/providers/expiration \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/providers/free-onboarding
+
+GET providers › free onboarding
+
+```bash
+curl https://localhost:20128/api/providers/free-onboarding \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/free-onboarding
+
+POST providers › free onboarding
+
+```bash
+curl -X POST https://localhost:20128/api/providers/free-onboarding \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/health-autopilot
+
+GET providers › health autopilot
+
+```bash
+curl https://localhost:20128/api/providers/health-autopilot \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/health-autopilot/actions
+
+POST providers › health autopilot › actions
+
+```bash
+curl -X POST https://localhost:20128/api/providers/health-autopilot/actions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/health-matrix
+
+GET providers › health matrix
+
+```bash
+curl https://localhost:20128/api/providers/health-matrix \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/import
+
+POST providers › import
+
+```bash
+curl -X POST https://localhost:20128/api/providers/import \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/openrouter-stats
+
+GET providers › openrouter stats
+
+```bash
+curl https://localhost:20128/api/providers/openrouter-stats \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/providers/quota-windows
+
+GET providers › quota windows
+
+```bash
+curl https://localhost:20128/api/providers/quota-windows \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/volcengine-plan/connect
+
+POST providers › volcengine plan › connect
+
+```bash
+curl -X POST https://localhost:20128/api/providers/volcengine-plan/connect \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/volcengine-plan/connect/{sessionId}/cancel
+
+POST providers › volcengine plan › connect › <sessionId> › cancel
+
+```bash
+curl -X POST https://localhost:20128/api/providers/volcengine-plan/connect/{sessionId}/cancel \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/volcengine-plan/connect/{sessionId}/code
+
+POST providers › volcengine plan › connect › <sessionId> › code
+
+```bash
+curl -X POST https://localhost:20128/api/providers/volcengine-plan/connect/{sessionId}/code \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/volcengine-plan/connect/{sessionId}/identity
+
+POST providers › volcengine plan › connect › <sessionId> › identity
+
+```bash
+curl -X POST https://localhost:20128/api/providers/volcengine-plan/connect/{sessionId}/identity \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/volcengine-plan/connect/{sessionId}/resend
+
+POST providers › volcengine plan › connect › <sessionId> › resend
+
+```bash
+curl -X POST https://localhost:20128/api/providers/volcengine-plan/connect/{sessionId}/resend \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/providers/volcengine-plan/connect/{sessionId}/status
+
+GET providers › volcengine plan › connect › <sessionId> › status
+
+```bash
+curl https://localhost:20128/api/providers/volcengine-plan/connect/{sessionId}/status \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/providers/web-session-contract
+
+GET providers › web session contract
+
+```bash
+curl https://localhost:20128/api/providers/web-session-contract \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/providers/zed/discover
+
+POST providers › zed › discover
+
+```bash
+curl -X POST https://localhost:20128/api/providers/zed/discover \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/zed/import
+
+POST providers › zed › import
+
+```bash
+curl -X POST https://localhost:20128/api/providers/zed/import \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/providers/zed/manual-import
+
+POST providers › zed › manual import
+
+```bash
+curl -X POST https://localhost:20128/api/providers/zed/manual-import \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.

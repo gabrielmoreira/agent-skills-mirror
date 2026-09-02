@@ -74,6 +74,9 @@ Quality bar:
 - Name the user-facing workflow objective, required context, next action, and stop condition.
 - Separate prepared guidance from observed platform, runtime, connector, file, memory, or delivery evidence.
 - Expose missing tools, credentials, targets, or observations as user-visible gaps.
+- For instrumentation-audit requests, grade against the tier ladder in `omh-agent-ops-review/references/instrumentation-ladder.md`: T0 foundation through T5 advanced, with every verdict PASS, FAIL, or PARTIAL and a file or config location attached.
+- Audit coverage in priority order - P0 (telemetry init, LLM-call capture, tool-call capture, error capture) before P1 (tokens, cost attribution, agent identity, multi-agent links) before P2 (memory/RAG spans, human-in-the-loop, evaluation runs) - and rank remediation as quick win (under an hour), medium, or larger.
+- Check the audited setup against the anti-pattern checklist in the same reference; an anti-pattern hit is a finding with its location and fix, never a style remark.
 
 Handoff policy:
 

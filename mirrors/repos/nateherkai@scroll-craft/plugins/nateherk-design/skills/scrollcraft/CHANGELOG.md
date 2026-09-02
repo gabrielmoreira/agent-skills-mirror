@@ -4,6 +4,46 @@ Dated notes on what changed in the skill and which build's finding drove it.
 Builds live in `OtherWorlds/Ultimate Websites/builds/`; each carries a
 `BUILD-REPORT.md`.
 
+## 2026-09-01: counters tick up on entry; fade-in documented properly
+
+Asked for directly: "numbers tick up when they come into view." The count
+device existed only inside pinned acts, scrubbed by act progress, so a stat
+row in an ordinary flow section could not count at all. The flow fade-in
+existed, but the devices.md example lacked the `data-sc-in` attribute that
+makes it fire.
+
+**Engine, `engine/scrollcraft.js`**
+
+- A `[data-sc-count]` outside any `data-sc-act` now ticks once on entry
+  (IntersectionObserver at half visibility, fires once) from the first value
+  to the second over `data-sc-count-ms` (default 1400ms), cubic ease-out, same
+  `formatNum` rules as the act counter. Reduced motion writes the final value.
+  Act counters are unchanged.
+
+**Docs**
+
+- `references/devices.md` §7 gains "Numbers that tick up when they come into
+  view", with the pairing rule (counter inside a `data-sc-in` stack).
+- §8 example fixed to carry `data-sc-in`, plus "What a premium fade-in is made
+  of".
+
+## 2026-09-01: layered scenes documented under `parallax`
+
+Driven by a live homepage rebuilt on a reference site's layered hero. Three
+cut-out planes plus the product, rates measured from the reference DOM (far
+lags 31%, mid 17%, product 20%, foreground and copy at 1x), and four rounds of
+fixes that are now rules: planes solid below their silhouette, a shaped
+foreground so the product's button survives the scroll, a faded section floor
+over the clip line, `max-width: none` on planes, no transform transition on a
+parallaxed element, new filenames for replaced art.
+
+**Docs**
+
+- `references/devices.md` §6 gains "Layered scenes: where the premium feel
+  actually comes from".
+- `SKILL.md` Step 3 lists "Layer the hero" among the things that decide premium
+  versus generated.
+
 ## 2026-08-23: iOS clip priming hardened; real-device diagnostic added
 
 Driven by a build whose hero clip sat frozen on the owner's actual iPhone

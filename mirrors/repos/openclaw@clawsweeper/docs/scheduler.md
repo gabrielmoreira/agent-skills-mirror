@@ -38,6 +38,11 @@ continuations: due items win first, and if fewer than 38 items are due, the
 planner fills the floor with the stalest currently-reviewed eligible items so
 review capacity stays warm around the clock.
 
+Scheduled reviews can reuse exact unchanged inputs through structural or
+content caches. Changed PR content goes to Codex, including source comments
+and formatting. See [Review Cache](review-cache.md) for admission, freshness,
+and runtime packaging rules.
+
 ## Workflow
 
 The receiver workflow is `.github/workflows/sweep.yml`.
@@ -83,6 +88,15 @@ current decision and revision through the ordinary finishing path.
 Queue-completion failures remain visible separately from Codex or content
 failures, using the logical generation result and typed deferral rather than
 the review process exit alone. The workflow failure gate is unchanged.
+Caught Codex failures in an exact-review job also upload a separate 14-day
+diagnostic artifact while the runner remains alive. Its `error.txt`,
+`stdout.error.txt`, and `stderr.tail.txt` files are sanitized for repository
+readers and total at most 24 KiB with the readiness `manifest.json`. The
+manifest retains a bounded failure stage, reason code, and the queue's computed
+retryability even when unsafe raw detail is omitted. Raw
+reports, unstructured stdout, and non-error prompt events are omitted. It is
+never a publication input; cancellation, runner loss, or job termination can
+still prevent upload. OpenClaw Bay and queue schemas are unchanged.
 
 Recoverable parked reviews use the nominal 5/10/20-minute retry ladder, but
 each item persists a schedule-time uniform jitter of 0.75-1.5x for every rung.
@@ -214,6 +228,8 @@ Generic `openclaw/*` and `steipete/*` repositories:
   the target dispatcher and GitHub App installation are present
 - scheduled review/audit: target fanout dispatches small cursor-based batches
   from `target_inventory.owners`
+- private and internal targets: local maintainer review only, using an
+  operator-provided checkout
 - generic OpenClaw issues may auto-close only when already implemented on the
   default branch; generic OpenClaw PRs may additionally use age-gated mostly
   implemented there
@@ -221,6 +237,8 @@ Generic `openclaw/*` and `steipete/*` repositories:
 
 Manual `workflow_dispatch` can override `target_repo`, `item_number`,
 `item_numbers`, `batch_size`, `shard_count`, `hot_intake`, and apply inputs.
+For batch input, `batch_size` controls items assigned per worker and
+`shard_count` controls requested parallelism within the configured hard cap.
 Exact item dispatches use a dedicated concurrency group and exact planner
 matrix rather than the broad normal-review queue.
 
@@ -859,8 +877,11 @@ To add a new target repository, add a repository profile, wire schedule target
 resolution and concurrency target resolution in `.github/workflows/sweep.yml`,
 then confirm the generated state paths remain flat under one repo slug.
 
-To add a new generic owner, add a `generic_fallbacks` entry and include that
-owner in `target_inventory.owners`; target fanout will dispatch explicit
-per-repository runs without adding owner-specific cron case blocks. Keep
-scheduled fanout public-only unless the generated records publish to a private
-state surface.
+Hosted owner fallback is limited to `openclaw/*` and `steipete/*`. To schedule
+another owner, add explicit repository profiles and include that owner in
+`target_inventory.owners`, then wire that owner's inventory token or explicit
+public-inventory fallback into the fanout workflow. Configuration alone does
+not activate a new owner. Fanout ignores every repository that is not admitted
+by the shared configured-profile-or-owner-fallback policy. Keep scheduled
+fanout public-only unless the generated records publish to a private state
+surface.

@@ -224,7 +224,7 @@ class PriceScraper(Spider):
 
 spider = PriceScraper()
 result = spider.start()
-result.items.to_json("results/prices.json")
+result.items.to_json("work/<task_name>/data/prices.json")
 ```
 
 ## Converting HTML to Markdown

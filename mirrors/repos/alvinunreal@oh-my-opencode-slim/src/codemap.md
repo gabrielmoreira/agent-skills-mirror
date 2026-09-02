@@ -22,6 +22,10 @@ This directory serves as the primary entry point for the plugin's runtime behavi
 - **Observer Pattern**: Event-driven architecture using OpenCode's event system for session lifecycle, message updates, and tool execution
 - **Strategy Pattern**: Runtime model selection and fallback via `ForegroundFallbackManager`
 - **Singleton Pattern**: `MultiplexerSessionManager` maintains single instance for task session management
+- **Admission runtime lease**: `admission-runtime.ts` scopes the background
+  scheduler and pending-call tracker per directory, retaining them across
+  immediate plugin-generation replacement and disposing them after the last
+  owner is gone.
 
 ### Data Flow
 
@@ -42,6 +46,7 @@ OpenCode Core → Plugin Initialization (index.ts)
 | File | Role | Dependencies |
 |------|------|--------------|
 | `index.ts` | Main plugin entry, orchestrates all subsystems; exports dual `server`/`setup` default | Config system, agent factories, tool creators, multiplexer, hooks, v2 adapter |
+| `admission-runtime.ts` | Per-directory scheduler/pending-call runtime lease | Background task concurrency, task-session pending calls |
 | `tui.ts` | TUI sidebar plugin for agent model display | tui-state.ts, config constants, tmux-pane-registry |
 | `tui-state.ts` | Persistent state management for TUI | Node.js fs/promises, os module |
 | `tui-preset.ts` | Three-level `/preset` manager (preset list → agents → agent edit) using `api.ui` dialogs | preset-switch.ts, config loader/constants |

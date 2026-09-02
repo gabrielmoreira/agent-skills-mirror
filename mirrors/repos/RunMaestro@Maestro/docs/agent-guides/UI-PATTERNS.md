@@ -289,6 +289,19 @@ Run it on the committed `value`, not inside `onChange`. An `onChange`/`onInput` 
 3. `closeTopLayer` checks `onBeforeClose` for dirty modals, then calls the top layer's `onEscape` handler from the handler ref map.
 4. The handler ref map (`handlerRefs`) is updated via `updateLayerHandler` without re-sorting the stack - this is a performance optimization.
 
+### Escape as a Ladder, Not a Close Button
+
+A surface with its own transient state - a focused search box, a query, a selected row - should climb OUT of that state one rung per Escape rather than closing on the first press. `DocumentGraphView` is the reference: caret in the search box hands focus back to the graph **with the query intact**, the next press clears the query, and only then does it close. Rung one is what makes "search, then arrow to a hit" work - the highlighted nodes have to survive the key that gets you out of the text box.
+
+**The ladder MUST live in the layer's `onEscape`, never in the input's `onKeyDown`.** `LayerStackProvider` listens at CAPTURE on `window` (step 1 above), so a handler on the input runs after the stack has already closed the surface, and its `stopPropagation` cannot un-run a listener that has already fired. An `onKeyDown` ladder is dead code that looks correct in review: every Escape goes straight to close. Same rule the `<FilterInput>` and `MemoryViewer` notes below state from the consumer's side.
+
+Two mechanical points when the ladder needs render-scope values (the live query, the node list, a `handleNodeSelect`):
+
+- Register a STABLE wrapper with the layer and assign the body to a ref during render (`escapeLadderRef.current = () => {...}`). A `useCallback` that closes over the search query re-registers the layer on every keystroke.
+- Read focus from `document.activeElement === searchInputRef.current` rather than tracking a `isSearchFocused` boolean. The key never reaches the input, so nothing is guaranteed to have updated that flag.
+
+A higher-priority overlay registered by the same surface (the graph's legend drawer) is an implicit rung above all of this - the stack closes the top layer first, so it needs no branch in the ladder.
+
 ### Querying the Stack
 
 Components that need to know whether modals are open (for example, to suppress global shortcuts) use `LayerStackAPI`:
@@ -1142,7 +1155,37 @@ const fontScale = useFontScale('filePreview.fontScale');
 - The percentage in the middle appears only once zoomed and doubles as the reset.
 - The file preview also binds bare `-` / `+` (and `=` / `_`) to the two steps and `0`
   to the reset, guarded on `canScaleFontForView()` and on `isTextInputTarget(e.target)`
-  so the find bar and the CM6 editor keep their keys.
+  so the find bar and the CM6 editor keep their keys. Any OTHER surface wanting those
+  keys uses `useScaleShortcuts()` (below) rather than a second copy of the branch; the
+  file preview keeps its inline version because it sits inside one guarded key chain
+  whose ordering decides which branch answers a key.
+
+### `useScaleShortcuts()` (`src/renderer/hooks/ui/useScaleShortcuts.ts`)
+
+Bare `+` / `-` / `0` zoom for any surface driven by `useScalePreference`. Pass the
+control and an `enabled` flag:
+
+```tsx
+const thumbnailScale = useScalePreference('stagedImages.thumbnailScale', RANGE);
+const isTopLayer = useIsTopLayer(MODAL_PRIORITIES.STAGED_IMAGES_ORGANIZER);
+useScaleShortcuts(thumbnailScale, { enabled: isTopLayer });
+```
+
+- **Modifier-free on purpose.** An event carrying Cmd / Ctrl / Alt is left alone,
+  because `Cmd+=` / `Cmd+-` is the application's own font zoom and must keep working
+  while a zoomable surface is open.
+- `=` and `_` are the unshifted and shifted twins of `+` and `-`, so the user never
+  has to think about Shift; `0` is the reset.
+- It listens on `window` in the capture phase, not on the surface's node: focus falls
+  to the body when a nested overlay closes, and `stopPropagation` keeps a bare `0` or
+  `-` out of the global shortcut handler. `isTextInputTarget(e.target)` keeps a filter
+  box typing normally.
+- **Gate it with `useIsTopLayer(priority)`** (`src/renderer/hooks/ui/useIsTopLayer.ts`),
+  or a surface underneath an open overlay answers the same keypress. That hook is also
+  the shared answer to "am I the top layer?" - `AutoRunExpandedModal` uses it to reclaim
+  focus.
+- Name the keys in the `ScaleControl` tooltips with `shortcutHint`. A shortcut the
+  button never mentions is one nobody finds.
 
 **Only render it where the zoom moves type.** A control that changes nothing reads
 as broken: Director's Notes hides it in Rich Mode (fixed-size widget chrome), and
@@ -1538,6 +1581,8 @@ This rule applies to **content containers** sized to wrap text. It does NOT appl
 
 The Left Bar header is a single row that neither wraps nor scrolls, and the user can drag the sidebar down to 256px. Every control added to it (the badge pill, the now-playing pill, the LIVE toggle) takes room from a fixed budget, so the row needs a declared yield order rather than whatever CSS happens to shrink first.
 
+**The row is three zones: identity, indicators, menu.** The wand and the wordmark sit in a `shrink-0` zone on the left, the hamburger in a `shrink-0` zone on the right, and every status control goes in the `flex-1 justify-center min-w-0` band between them (`data-testid="sidebar-header-indicators"`). `flex-1` is what centers the band: it takes whatever the two fixed zones leave and centers its contents in that, so the indicators read as their own group rather than as a tail on the wordmark. A new status control belongs in the band, not beside the wordmark.
+
 **The MAESTRO wordmark is drawn in full or not at all.** It used to carry `truncate`, which rendered the brand as "MAE..." on a narrow sidebar. A clipped brand reads as a rendering bug, not as a deliberate space saving, so `SessionList` gates it on a width instead:
 
 ```ts
@@ -1550,10 +1595,20 @@ The wand button stays at every width, so the header never loses its identity or 
 
 **The now-playing pill is the row's shrink target of last resort.** Something has to yield, and the filename inside that pill is the only thing in the row that can be clipped without looking broken. It is therefore `min-w-0` rather than `shrink-0` (a flex item defaults to `min-width: auto` and refuses to go below its content, so both the pill and the button inside it need `min-w-0`), while both transport buttons, both icons, and the divider stay `shrink-0` - they are the entire transport a minimized player has.
 
-Two rules for adding a control here:
+**The wordmark yields ahead of the indicators, so it stops charging them once it is gone.** The LIVE toggle's label threshold adds the badge's reserve only while `showWordmark` is true:
+
+```ts
+const showLiveLabel =
+	leftSidebarWidthState >= LIVE_LABEL_MIN_WIDTH + (showWordmark ? headerBadgeWidth : 0);
+```
+
+Charging for the badge either way is what left a 256px sidebar showing a bare radio dot while the ~110px the wordmark had just vacated sat empty. Above the wordmark threshold the sidebar is already wide enough for both, so the term is only ever a no-op there.
+
+Three rules for adding a control here:
 
 - **Reserve for the form the control is actually in, not its widest form.** The now-playing pill sheds its filename below `NOW_PLAYING_LABEL_MIN_WIDTH`, so `NOW_PLAYING_COMPACT_RESERVE` and `NOW_PLAYING_LABEL_RESERVE` are separate numbers. Reserving the wide figure at every width hides the wordmark to make room for a pill that is no longer that wide.
 - **Ask the store whether the control is on screen, once.** `selectNowPlayingVisible` in `mediaPlaybackStore` answers that for the pill, and both the pill and the header's reserve read it. Two copies of "is it visible" is how a width reserve ends up describing a header nobody is looking at.
+- **Charge a reserve only against what is still drawn.** A control that competes with the wordmark stops competing the moment the wordmark drops out; keeping its cost in a downstream threshold spends room nothing is occupying.
 
 Testing this drives `leftSidebarWidth` in `useSettingsStore` directly, the same way the LIVE-pill tests do; jsdom measures nothing, so a real-layout test is not available. Assert the wordmark's ABSENCE at narrow widths, not that `truncate` is gone - the latter passes on a wordmark that still renders clipped.
 

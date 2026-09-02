@@ -69,6 +69,24 @@ curl https://localhost:20128/api/auth/oidc/callback \
   -b cookie.jar
 ```
 
+### GET /api/auth/csrf
+
+GET auth › csrf
+
+```bash
+curl https://localhost:20128/api/auth/csrf \
+  -b cookie.jar
+```
+
+### GET /api/auth/status
+
+GET auth › status
+
+```bash
+curl https://localhost:20128/api/auth/status \
+  -b cookie.jar
+```
+
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.

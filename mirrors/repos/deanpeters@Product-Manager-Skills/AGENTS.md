@@ -76,6 +76,12 @@ No automated tests exist. Validate changes by:
 - Prefer small, maintainable Bash scripts over complex build systems.
 - Do not rename skills unless necessary.
 
+## Commercial Neutrality and Provider Boundaries
+- Canonical skills teach durable product-management practice. They must not become vendor-specific integration guides or a channel for commercial promotion.
+- A skill must complete its promised job without a named vendor, account, API key, or paid service. Do not add provider-specific setup, API calls, model identifiers, paid-request workflows, tracking or referral links, or promotional calls to action.
+- A named tool is acceptable only as a non-preferred example or comparison that materially helps a decision. State relevant cost, data-sharing, account, and lock-in implications.
+- Provider-specific integrations require an explicit maintainer request and belong in a separately approved integrations area or companion repository, never in a canonical skill by speculative contribution.
+
 ## Cross-Repo Boundary
 - This repository is the shared PM skills library, not the Productside playbook distribution repo.
 - Productside playbook skill content must be created/edited in `/Users/deanpeters/Code/productside_playbook_skills`.

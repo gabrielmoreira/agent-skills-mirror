@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 29 file(s) materialized.
+Mirror of `inkeep/open-knowledge` — 26 default patterns, 5 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 29 |
+| Followed pats | 5 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 
 
 - `README.md`
 - `CONTRIBUTING.md`
+- `lint-plugins/no-comments/README.md`
 - `CLA.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 
@@ -90,7 +91,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
 | 27 | → | [`CLA.md`](CLA.md) |
 | 28 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 29 | → | [`README.md`](README.md) |
+| 29 | → | [`lint-plugins/no-comments/README.md`](lint-plugins/no-comments/README.md) |
+| 30 | → | [`README.md`](README.md) |
 
 ---
 

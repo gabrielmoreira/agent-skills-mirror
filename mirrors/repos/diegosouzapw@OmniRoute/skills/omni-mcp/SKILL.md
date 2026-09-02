@@ -14,7 +14,91 @@ All requests require a valid Bearer token or session cookie. Obtain a token via 
 
 ## Endpoints
 
-_No endpoints mapped for this area yet._
+### GET /api/mcp/audit
+
+GET mcp › audit
+
+```bash
+curl https://localhost:20128/api/mcp/audit \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/mcp/audit/stats
+
+GET mcp › audit › stats
+
+```bash
+curl https://localhost:20128/api/mcp/audit/stats \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/mcp/sse
+
+GET mcp › sse
+
+```bash
+curl https://localhost:20128/api/mcp/sse \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/mcp/sse
+
+POST mcp › sse
+
+```bash
+curl -X POST https://localhost:20128/api/mcp/sse \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/mcp/status
+
+GET mcp › status
+
+```bash
+curl https://localhost:20128/api/mcp/status \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/mcp/stream
+
+GET mcp › stream
+
+```bash
+curl https://localhost:20128/api/mcp/stream \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/mcp/stream
+
+POST mcp › stream
+
+```bash
+curl -X POST https://localhost:20128/api/mcp/stream \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/mcp/stream
+
+DELETE mcp › stream
+
+```bash
+curl -X DELETE https://localhost:20128/api/mcp/stream \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/mcp/tools
+
+GET mcp › tools
+
+```bash
+curl https://localhost:20128/api/mcp/tools \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.

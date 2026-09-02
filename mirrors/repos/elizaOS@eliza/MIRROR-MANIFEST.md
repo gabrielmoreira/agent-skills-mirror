@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 9 followed patterns, 632 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 9 followed patterns, 633 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 9 followed patterns, 632 file
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 632 |
+| Files         | 633 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -628,77 +628,78 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 559 | ✓ | [`plugins/plugin-spotify/README.md`](plugins/plugin-spotify/README.md) |
 | 560 | ✓ | [`plugins/plugin-sql/AGENTS.md`](plugins/plugin-sql/AGENTS.md) |
 | 561 | ✓ | [`plugins/plugin-sql/CLAUDE.md`](plugins/plugin-sql/CLAUDE.md) |
-| 562 | ✓ | [`plugins/plugin-sql/README.md`](plugins/plugin-sql/README.md) |
-| 563 | ✓ | [`plugins/plugin-task-coordinator/AGENTS.md`](plugins/plugin-task-coordinator/AGENTS.md) |
-| 564 | ✓ | [`plugins/plugin-task-coordinator/CLAUDE.md`](plugins/plugin-task-coordinator/CLAUDE.md) |
-| 565 | ✓ | [`plugins/plugin-task-coordinator/README.md`](plugins/plugin-task-coordinator/README.md) |
-| 566 | ✓ | [`plugins/plugin-taskmarket/README.md`](plugins/plugin-taskmarket/README.md) |
-| 567 | ✓ | [`plugins/plugin-telegram/AGENTS.md`](plugins/plugin-telegram/AGENTS.md) |
-| 568 | ✓ | [`plugins/plugin-telegram/CLAUDE.md`](plugins/plugin-telegram/CLAUDE.md) |
-| 569 | ✓ | [`plugins/plugin-telegram/README.md`](plugins/plugin-telegram/README.md) |
-| 570 | ✓ | [`plugins/plugin-todos/AGENTS.md`](plugins/plugin-todos/AGENTS.md) |
-| 571 | ✓ | [`plugins/plugin-todos/CLAUDE.md`](plugins/plugin-todos/CLAUDE.md) |
-| 572 | ✓ | [`plugins/plugin-todos/README.md`](plugins/plugin-todos/README.md) |
-| 573 | ✓ | [`plugins/plugin-trajectory-logger/AGENTS.md`](plugins/plugin-trajectory-logger/AGENTS.md) |
-| 574 | ✓ | [`plugins/plugin-trajectory-logger/CLAUDE.md`](plugins/plugin-trajectory-logger/CLAUDE.md) |
-| 575 | ✓ | [`plugins/plugin-trajectory-logger/README.md`](plugins/plugin-trajectory-logger/README.md) |
-| 576 | ✓ | [`plugins/plugin-video/AGENTS.md`](plugins/plugin-video/AGENTS.md) |
-| 577 | ✓ | [`plugins/plugin-video/CLAUDE.md`](plugins/plugin-video/CLAUDE.md) |
-| 578 | ✓ | [`plugins/plugin-video/README.md`](plugins/plugin-video/README.md) |
-| 579 | ✓ | [`plugins/plugin-vision/AGENTS.md`](plugins/plugin-vision/AGENTS.md) |
-| 580 | ✓ | [`plugins/plugin-vision/CLAUDE.md`](plugins/plugin-vision/CLAUDE.md) |
-| 581 | ✓ | [`plugins/plugin-vision/native/doctr.cpp/README.md`](plugins/plugin-vision/native/doctr.cpp/README.md) |
-| 582 | ✓ | [`plugins/plugin-vision/native/mobilefacenet.cpp/README.md`](plugins/plugin-vision/native/mobilefacenet.cpp/README.md) |
-| 583 | ✓ | [`plugins/plugin-vision/native/movenet.cpp/README.md`](plugins/plugin-vision/native/movenet.cpp/README.md) |
-| 584 | ✓ | [`plugins/plugin-vision/native/retinaface.cpp/README.md`](plugins/plugin-vision/native/retinaface.cpp/README.md) |
-| 585 | ✓ | [`plugins/plugin-vision/native/yolo.cpp/README.md`](plugins/plugin-vision/native/yolo.cpp/README.md) |
-| 586 | ✓ | [`plugins/plugin-vision/README.md`](plugins/plugin-vision/README.md) |
-| 587 | ✓ | [`plugins/plugin-wallet/AGENTS.md`](plugins/plugin-wallet/AGENTS.md) |
-| 588 | ✓ | [`plugins/plugin-wallet/CLAUDE.md`](plugins/plugin-wallet/CLAUDE.md) |
-| 589 | ✓ | [`plugins/plugin-wallet/README.md`](plugins/plugin-wallet/README.md) |
-| 590 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md) |
-| 591 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md) |
-| 592 | ✓ | [`plugins/plugin-wallet/src/chains/evm/README.md`](plugins/plugin-wallet/src/chains/evm/README.md) |
-| 593 | ✓ | [`plugins/plugin-wallet/src/chains/solana/README.md`](plugins/plugin-wallet/src/chains/solana/README.md) |
-| 594 | ✓ | [`plugins/plugin-web-search/AGENTS.md`](plugins/plugin-web-search/AGENTS.md) |
-| 595 | ✓ | [`plugins/plugin-web-search/CLAUDE.md`](plugins/plugin-web-search/CLAUDE.md) |
-| 596 | ✓ | [`plugins/plugin-web-search/README.md`](plugins/plugin-web-search/README.md) |
-| 597 | ✓ | [`plugins/plugin-wechat/AGENTS.md`](plugins/plugin-wechat/AGENTS.md) |
-| 598 | ✓ | [`plugins/plugin-wechat/CLAUDE.md`](plugins/plugin-wechat/CLAUDE.md) |
-| 599 | ✓ | [`plugins/plugin-wechat/README.md`](plugins/plugin-wechat/README.md) |
-| 600 | ✓ | [`plugins/plugin-whatsapp/AGENTS.md`](plugins/plugin-whatsapp/AGENTS.md) |
-| 601 | ✓ | [`plugins/plugin-whatsapp/CLAUDE.md`](plugins/plugin-whatsapp/CLAUDE.md) |
-| 602 | ✓ | [`plugins/plugin-whatsapp/README.md`](plugins/plugin-whatsapp/README.md) |
-| 603 | ✓ | [`plugins/plugin-wifi/AGENTS.md`](plugins/plugin-wifi/AGENTS.md) |
-| 604 | ✓ | [`plugins/plugin-wifi/CLAUDE.md`](plugins/plugin-wifi/CLAUDE.md) |
-| 605 | ✓ | [`plugins/plugin-wifi/README.md`](plugins/plugin-wifi/README.md) |
-| 606 | ✓ | [`plugins/plugin-workflow/AGENTS.md`](plugins/plugin-workflow/AGENTS.md) |
-| 607 | ✓ | [`plugins/plugin-workflow/CLAUDE.md`](plugins/plugin-workflow/CLAUDE.md) |
-| 608 | ✓ | [`plugins/plugin-workflow/README.md`](plugins/plugin-workflow/README.md) |
-| 609 | ✓ | [`plugins/plugin-x/AGENTS.md`](plugins/plugin-x/AGENTS.md) |
-| 610 | ✓ | [`plugins/plugin-x/CLAUDE.md`](plugins/plugin-x/CLAUDE.md) |
-| 611 | ✓ | [`plugins/plugin-x/README.md`](plugins/plugin-x/README.md) |
-| 612 | ✓ | [`plugins/plugin-x/src/__tests__/README.md`](plugins/plugin-x/src/__tests__/README.md) |
-| 613 | ✓ | [`plugins/plugin-zai/AGENTS.md`](plugins/plugin-zai/AGENTS.md) |
-| 614 | ✓ | [`plugins/plugin-zai/CLAUDE.md`](plugins/plugin-zai/CLAUDE.md) |
-| 615 | ✓ | [`plugins/plugin-zai/README.md`](plugins/plugin-zai/README.md) |
-| 616 | ✓ | [`plugins/plugin-zerollama/AGENTS.md`](plugins/plugin-zerollama/AGENTS.md) |
-| 617 | ✓ | [`plugins/plugin-zerollama/CLAUDE.md`](plugins/plugin-zerollama/CLAUDE.md) |
-| 618 | ✓ | [`plugins/plugin-zerollama/README.md`](plugins/plugin-zerollama/README.md) |
-| 619 | ✓ | [`scripts/evidence-review/README.md`](scripts/evidence-review/README.md) |
-| 620 | ✓ | [`scripts/gpu-vision/README.md`](scripts/gpu-vision/README.md) |
-| 621 | ✓ | [`scripts/training-harvest/README.md`](scripts/training-harvest/README.md) |
-| 622 | ✓ | [`scripts/vast/README.md`](scripts/vast/README.md) |
-| 623 | ✓ | [`upstreams/electrobun-patches/README.md`](upstreams/electrobun-patches/README.md) |
-| 624 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
-| 625 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
-| 626 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
-| 627 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 628 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
-| 629 | → | [`packages/docs/security.md`](packages/docs/security.md) |
-| 630 | → | [`README.md`](README.md) |
-| 631 | → | [`SECURITY.md`](SECURITY.md) |
-| 632 | → | [`WINDOWS.md`](WINDOWS.md) |
+| 562 | ✓ | [`plugins/plugin-sql/drizzle/rollbacks/README.md`](plugins/plugin-sql/drizzle/rollbacks/README.md) |
+| 563 | ✓ | [`plugins/plugin-sql/README.md`](plugins/plugin-sql/README.md) |
+| 564 | ✓ | [`plugins/plugin-task-coordinator/AGENTS.md`](plugins/plugin-task-coordinator/AGENTS.md) |
+| 565 | ✓ | [`plugins/plugin-task-coordinator/CLAUDE.md`](plugins/plugin-task-coordinator/CLAUDE.md) |
+| 566 | ✓ | [`plugins/plugin-task-coordinator/README.md`](plugins/plugin-task-coordinator/README.md) |
+| 567 | ✓ | [`plugins/plugin-taskmarket/README.md`](plugins/plugin-taskmarket/README.md) |
+| 568 | ✓ | [`plugins/plugin-telegram/AGENTS.md`](plugins/plugin-telegram/AGENTS.md) |
+| 569 | ✓ | [`plugins/plugin-telegram/CLAUDE.md`](plugins/plugin-telegram/CLAUDE.md) |
+| 570 | ✓ | [`plugins/plugin-telegram/README.md`](plugins/plugin-telegram/README.md) |
+| 571 | ✓ | [`plugins/plugin-todos/AGENTS.md`](plugins/plugin-todos/AGENTS.md) |
+| 572 | ✓ | [`plugins/plugin-todos/CLAUDE.md`](plugins/plugin-todos/CLAUDE.md) |
+| 573 | ✓ | [`plugins/plugin-todos/README.md`](plugins/plugin-todos/README.md) |
+| 574 | ✓ | [`plugins/plugin-trajectory-logger/AGENTS.md`](plugins/plugin-trajectory-logger/AGENTS.md) |
+| 575 | ✓ | [`plugins/plugin-trajectory-logger/CLAUDE.md`](plugins/plugin-trajectory-logger/CLAUDE.md) |
+| 576 | ✓ | [`plugins/plugin-trajectory-logger/README.md`](plugins/plugin-trajectory-logger/README.md) |
+| 577 | ✓ | [`plugins/plugin-video/AGENTS.md`](plugins/plugin-video/AGENTS.md) |
+| 578 | ✓ | [`plugins/plugin-video/CLAUDE.md`](plugins/plugin-video/CLAUDE.md) |
+| 579 | ✓ | [`plugins/plugin-video/README.md`](plugins/plugin-video/README.md) |
+| 580 | ✓ | [`plugins/plugin-vision/AGENTS.md`](plugins/plugin-vision/AGENTS.md) |
+| 581 | ✓ | [`plugins/plugin-vision/CLAUDE.md`](plugins/plugin-vision/CLAUDE.md) |
+| 582 | ✓ | [`plugins/plugin-vision/native/doctr.cpp/README.md`](plugins/plugin-vision/native/doctr.cpp/README.md) |
+| 583 | ✓ | [`plugins/plugin-vision/native/mobilefacenet.cpp/README.md`](plugins/plugin-vision/native/mobilefacenet.cpp/README.md) |
+| 584 | ✓ | [`plugins/plugin-vision/native/movenet.cpp/README.md`](plugins/plugin-vision/native/movenet.cpp/README.md) |
+| 585 | ✓ | [`plugins/plugin-vision/native/retinaface.cpp/README.md`](plugins/plugin-vision/native/retinaface.cpp/README.md) |
+| 586 | ✓ | [`plugins/plugin-vision/native/yolo.cpp/README.md`](plugins/plugin-vision/native/yolo.cpp/README.md) |
+| 587 | ✓ | [`plugins/plugin-vision/README.md`](plugins/plugin-vision/README.md) |
+| 588 | ✓ | [`plugins/plugin-wallet/AGENTS.md`](plugins/plugin-wallet/AGENTS.md) |
+| 589 | ✓ | [`plugins/plugin-wallet/CLAUDE.md`](plugins/plugin-wallet/CLAUDE.md) |
+| 590 | ✓ | [`plugins/plugin-wallet/README.md`](plugins/plugin-wallet/README.md) |
+| 591 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/kamino/README.md) |
+| 592 | ✓ | [`plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md`](plugins/plugin-wallet/src/analytics/lpinfo/steer/README.md) |
+| 593 | ✓ | [`plugins/plugin-wallet/src/chains/evm/README.md`](plugins/plugin-wallet/src/chains/evm/README.md) |
+| 594 | ✓ | [`plugins/plugin-wallet/src/chains/solana/README.md`](plugins/plugin-wallet/src/chains/solana/README.md) |
+| 595 | ✓ | [`plugins/plugin-web-search/AGENTS.md`](plugins/plugin-web-search/AGENTS.md) |
+| 596 | ✓ | [`plugins/plugin-web-search/CLAUDE.md`](plugins/plugin-web-search/CLAUDE.md) |
+| 597 | ✓ | [`plugins/plugin-web-search/README.md`](plugins/plugin-web-search/README.md) |
+| 598 | ✓ | [`plugins/plugin-wechat/AGENTS.md`](plugins/plugin-wechat/AGENTS.md) |
+| 599 | ✓ | [`plugins/plugin-wechat/CLAUDE.md`](plugins/plugin-wechat/CLAUDE.md) |
+| 600 | ✓ | [`plugins/plugin-wechat/README.md`](plugins/plugin-wechat/README.md) |
+| 601 | ✓ | [`plugins/plugin-whatsapp/AGENTS.md`](plugins/plugin-whatsapp/AGENTS.md) |
+| 602 | ✓ | [`plugins/plugin-whatsapp/CLAUDE.md`](plugins/plugin-whatsapp/CLAUDE.md) |
+| 603 | ✓ | [`plugins/plugin-whatsapp/README.md`](plugins/plugin-whatsapp/README.md) |
+| 604 | ✓ | [`plugins/plugin-wifi/AGENTS.md`](plugins/plugin-wifi/AGENTS.md) |
+| 605 | ✓ | [`plugins/plugin-wifi/CLAUDE.md`](plugins/plugin-wifi/CLAUDE.md) |
+| 606 | ✓ | [`plugins/plugin-wifi/README.md`](plugins/plugin-wifi/README.md) |
+| 607 | ✓ | [`plugins/plugin-workflow/AGENTS.md`](plugins/plugin-workflow/AGENTS.md) |
+| 608 | ✓ | [`plugins/plugin-workflow/CLAUDE.md`](plugins/plugin-workflow/CLAUDE.md) |
+| 609 | ✓ | [`plugins/plugin-workflow/README.md`](plugins/plugin-workflow/README.md) |
+| 610 | ✓ | [`plugins/plugin-x/AGENTS.md`](plugins/plugin-x/AGENTS.md) |
+| 611 | ✓ | [`plugins/plugin-x/CLAUDE.md`](plugins/plugin-x/CLAUDE.md) |
+| 612 | ✓ | [`plugins/plugin-x/README.md`](plugins/plugin-x/README.md) |
+| 613 | ✓ | [`plugins/plugin-x/src/__tests__/README.md`](plugins/plugin-x/src/__tests__/README.md) |
+| 614 | ✓ | [`plugins/plugin-zai/AGENTS.md`](plugins/plugin-zai/AGENTS.md) |
+| 615 | ✓ | [`plugins/plugin-zai/CLAUDE.md`](plugins/plugin-zai/CLAUDE.md) |
+| 616 | ✓ | [`plugins/plugin-zai/README.md`](plugins/plugin-zai/README.md) |
+| 617 | ✓ | [`plugins/plugin-zerollama/AGENTS.md`](plugins/plugin-zerollama/AGENTS.md) |
+| 618 | ✓ | [`plugins/plugin-zerollama/CLAUDE.md`](plugins/plugin-zerollama/CLAUDE.md) |
+| 619 | ✓ | [`plugins/plugin-zerollama/README.md`](plugins/plugin-zerollama/README.md) |
+| 620 | ✓ | [`scripts/evidence-review/README.md`](scripts/evidence-review/README.md) |
+| 621 | ✓ | [`scripts/gpu-vision/README.md`](scripts/gpu-vision/README.md) |
+| 622 | ✓ | [`scripts/training-harvest/README.md`](scripts/training-harvest/README.md) |
+| 623 | ✓ | [`scripts/vast/README.md`](scripts/vast/README.md) |
+| 624 | ✓ | [`upstreams/electrobun-patches/README.md`](upstreams/electrobun-patches/README.md) |
+| 625 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
+| 626 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
+| 627 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
+| 628 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 629 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
+| 630 | → | [`packages/docs/security.md`](packages/docs/security.md) |
+| 631 | → | [`README.md`](README.md) |
+| 632 | → | [`SECURITY.md`](SECURITY.md) |
+| 633 | → | [`WINDOWS.md`](WINDOWS.md) |
 
 ---
 

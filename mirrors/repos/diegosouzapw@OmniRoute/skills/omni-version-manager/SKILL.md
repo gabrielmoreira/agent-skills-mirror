@@ -620,6 +620,46 @@ curl https://localhost:20128/api/services/{name}/logs \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
 ```
 
+### GET /api/services/9router/models
+
+GET services › 9router › models
+
+```bash
+curl https://localhost:20128/api/services/9router/models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/services/9router/provider-expose
+
+POST services › 9router › provider expose
+
+```bash
+curl -X POST https://localhost:20128/api/services/9router/provider-expose \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/services/cliproxy/accounts
+
+GET services › cliproxy › accounts
+
+```bash
+curl https://localhost:20128/api/services/cliproxy/accounts \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/services/cliproxy/provider-expose
+
+POST services › cliproxy › provider expose
+
+```bash
+curl -X POST https://localhost:20128/api/services/cliproxy/provider-expose \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.

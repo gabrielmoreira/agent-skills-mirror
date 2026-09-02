@@ -1,0 +1,65 @@
+# Refactor Phases
+
+The phase contract for a boundary-changing refactor whose direction is already
+decided. The plan is the deliverable; implementation starts only after the
+user approves it, phase by phase if they choose.
+
+## Reconnaissance before phases
+
+Map the territory before ordering the work:
+
+- **Affected files** - every file the change touches, from the actual import
+  graph (a codegraph handoff is the prepared input when available), not from
+  memory. Each file enters the plan's table as modify, create, or delete.
+- **Ownership boundaries** - which modules own the symbols that move, and who
+  else imports them. A consumer outside the mapped set found later is a plan
+  defect, not a surprise.
+- **Hidden coupling** - shared mutable state, import cycles, reflection or
+  string-keyed lookups, test fixtures that reach into internals. Each one is
+  named in the plan with the phase that unwinds it.
+- **Blast radius** - the observable surfaces that could change if a phase goes
+  wrong: public APIs, CLI output, generated artifacts, persisted schemas.
+  The radius decides the verification depth, not optimism.
+
+## The phase order
+
+Contracts precede implementations, implementations precede callers, callers
+precede tests, tests precede cleanup:
+
+1. **Types and interfaces** - introduce the target contracts beside the old
+   ones; nothing calls them yet. Verification: the build and typecheck gate.
+   Rollback: delete the additions.
+2. **Implementations** - fill the new contracts, old paths still live.
+   Verification: new-path unit tests plus the untouched existing suite.
+   Rollback: revert this phase alone; callers never moved.
+3. **Callers** - move call sites in reviewable groups; both paths stay green
+   until the last group lands. Verification: the full suite per group.
+   Rollback: revert the group, not the phase.
+4. **Tests** - retarget tests that asserted the old shape; add the boundary
+   locks the new shape needs. Verification: the full suite, plus a check that
+   coverage did not silently narrow.
+5. **Cleanup** - delete the old contracts and their shims; this is the first
+   phase that removes anything. Verification: the full suite plus a dead-code
+   sweep. Rollback: restore from the tag cut before cleanup.
+
+Every phase ends at a commit that could ship. A phase that cannot end green
+is split further or its plan is wrong.
+
+## The plan's table
+
+One row per file: path, action (modify/create/delete), phase, blocks /
+blocked-by. A row without a phase is unplanned work; a phase without rollback
+is a bet, not a plan.
+
+## The approval gate
+
+The plan stops here. State the phases, the table, the blast radius, and the
+per-phase verification, then wait for the user's go - whole plan or first
+phase. Implementation, however approved, is executor work under the coding
+lane's own evidence rules.
+
+## Boundary
+
+A refactor plan is prepared context: it is not implementation, migration,
+verification, review, CI, or merge evidence, and an approved plan does not
+make its phases' verification claims true in advance.

@@ -17,7 +17,7 @@ It provides a single OpenAI-compatible endpoint (`/v1/*`) and routes traffic acr
 
 Core capabilities:
 
-- OpenAI-compatible API surface for CLI/tools (352 providers, 104 executors)
+- OpenAI-compatible API surface for CLI/tools (352 providers, 106 executors)
 - Request/response translation across provider formats
 - Model combo fallback (multi-model sequence)
 - Structured combo steps (`provider + model + connection`) with runtime ordering by `compositeTiers`
@@ -370,14 +370,18 @@ Key capabilities:
   **auto**, lkgp, context-optimized, context-relay, **fusion**, plus a fallback path) —
   auto is the headline addition in v3.8.0; `fusion` (panel fan-out + judge synthesis,
   `open-sse/services/fusion.ts`) is new in v3.8.36.
-- **9-factor scoring**: cost, latency p95, success rate, quota headroom, lockout
-  proximity, breaker state, recent failures, model availability, and tag affinity.
+- **16-factor scoring**: quota, health, inverse cost, inverse latency, task fit and
+  ten more. The canonical table of factors and their default weights lives in
+  [`docs/routing/AUTO-COMBO.md`](../routing/AUTO-COMBO.md) — restating it here would
+  give it a second place to go stale.
 - **Virtual factory** materializes ephemeral combos when no matching named combo
   exists, sourcing candidates from healthy active provider connections.
 - **Auto prefixes**: `auto/coding`, `auto/cheap`, `auto/fast`, `auto/offline`,
   `auto/smart`, `auto/lkgp` — each backed by a tuned weight profile.
-- **4 mode packs**: coding, fast, cheap, smart — shipped as preset weight
-  configurations callable from the dashboard.
+- **6 mode packs**: `ship-fast`, `cost-saver`, `quality-first`, `offline-friendly`,
+  `reliability-first` and `chaos-mode` — preset weight configurations callable from
+  the dashboard. (Not to be confused with the `auto/*` prefixes above, which are
+  request-time variants.)
 
 For full algorithmic detail (factor formulas, weight tuning), see
 [`docs/routing/AUTO-COMBO.md`](../routing/AUTO-COMBO.md).

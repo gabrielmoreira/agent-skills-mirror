@@ -248,9 +248,51 @@ policy: `false` keeps observational tools such as X identity reads out of the
 durable mutation journal and permits concurrent batching; absence stays
 fail-closed for older Cloud versions. Cloud may also add `requires_approval`
 (trusted policy too): `true` routes the tool through the normal local approval
-flow — first-use approval card, "Always Allow" persistence, per-agent
-`always_allow_tools`, and `daemon.auto_approve` all behave exactly as for
-local approval-requiring tools, with no integration special-casing. The list
+flow — first-use approval card and `daemon.auto_approve` behave exactly as for
+local approval-requiring tools — EXCEPT that "Always Allow" persistence is
+refused at every layer: the approval card carries `always_allow_disabled`,
+`HandleAlwaysAllowDecision` / `PersistAgentAlwaysAllow` reject the write, the
+broker cache refuses the name, and the runtime gate in `loop.go` ignores an
+existing `always_allow_tools` entry (hand-edited or pre-policy). Two self-heal
+layers keep config from accumulating grants the runtime will never honor:
+full-replace agent config writes (create / `PUT /agents/{name}` / `PUT
+/agents/{name}/config` / the cloud agent-sync pull, `server.go
+dropRegistryDeniedAlwaysAllow`) DROP registry-denied entries — drop, not
+reject, for the same reason as the legacy GUI list (config writes are
+full-replace; rejecting would brick agents carrying a stale entry) — and a
+successful catalog rebuild prunes global + per-agent entries the rebuilt
+catalog denies (`integrations_handler.go pruneDeniedAlwaysAllowGrants`, run by
+both `RefreshIntegrationTools` and the verified-principal transition's
+`resetIntegrationToolsForPrincipal`; sign-out only clears the catalog and
+never prunes), covering grants persisted while the catalog was empty
+(key-rotation window, where the registry miss judges false). Both self-heals
+converge upstream: a pull-side sanitize drop (dynamic registry denial or the
+static legacy-GUI list inside `WriteAgentConfig`) skips the agent-sync LWW
+mirror stamp (local clock stays "now"), and the REFRESH-path prune fires
+`triggerAgentSync` when a removal actually wrote bytes, so the sanitized
+config passes Cloud's strict-newer upsert instead of leaving a stale row that
+reseeds other devices. The principal-transition prune deliberately does NOT
+push: `agentPullClean` is set-once by the startup-only pull and survives an
+account switch, so a `full_sync` push there would upload the previous
+account's local agents and soft-delete the new account's cloud-only agents.
+A registry miss never drops or prunes —
+fail-safe against mass deletion; the runtime gate backstops. The per-turn
+`ApprovalCache` also refuses these tools — a byte-identical repeated tool_use
+carries a fresh request id the idempotency journal cannot dedupe, so every
+repeat re-prompts. **BREAKING**: users who previously clicked Always Allow on
+such a tool are re-prompted on every call from now on; their persisted entry
+is silently ignored. Deliberately retained carve-outs (the refusal covers the
+persistence pathway, not every approval bypass): `daemon.auto_approve` and the
+no-approval-UI auto-approve on non-interactive channels
+(`IsNonInteractiveApprovalChannel`: WeChat/WeCom/Discord/Telegram/voice) still
+approve these tools per call — a user's real-time request on those channels
+must keep working, and Cloud retains its own access control. Cloud defines
+the requires_approval set as material outbound writes (gmail_send_email, X
+posts) needing per-call human approval, so one click must never become a
+standing unattended grant. The dynamic denial is schema-derived
+(`ServerTool.DisallowsAlwaysAllowPersistence` via
+`agent.AlwaysAllowPersistenceDenier` + `ServerDeps.ToolDisallowsAlwaysAllowPersistence`)
+— new provider write tools inherit it with no daemon change. The list
 request advertises `integration_requires_approval` on `X-Kocoro-Capabilities`;
 Cloud fails closed and withholds `requires_approval:true` schemas from daemons
 without the token, because an older daemon would register them approval-free.
@@ -499,7 +541,7 @@ Recovered runs are ALWAYS unattended (`IsUnattendedRun()==true` regardless of th
 
 Global and per-agent always-allow lists are **unioned at injection** in `SetAlwaysAllowTools` (called from runner.go / tui/app.go / cmd/root.go after `SwitchAgent`). `SwitchAgent` resets the field so reuse can't leak.
 
-**Two auto-approval deny-lists** (both rewritten by computer-use v1): `agent.DisallowsAutoApproval` refuses "always allow" persistence and now contains the four legacy GUI wrappers `computer` / `accessibility` / `applescript` / `ghostty`. `computer_use` is deliberately ABSENT from it, because its explicit persisted grant IS the product's single global Computer Use permission. `agent.DisallowsUnattendedAutoApproval` refuses unattended auto-approval and contains `computer_use`, the standalone `screenshot` tool, plus those same four legacy names.
+**Two auto-approval deny-lists** (both rewritten by computer-use v1): `agent.DisallowsAutoApproval` refuses "always allow" persistence and now contains the four legacy GUI wrappers `computer` / `accessibility` / `applescript` / `ghostty`. A DYNAMIC layer extends the persistence refusal beyond that static name list: integration tools whose Cloud schema carries `requires_approval` (see Integration tools above) — enforced via `agent.AlwaysAllowPersistenceDenier`, not by growing the name list. `computer_use` is deliberately ABSENT from it, because its explicit persisted grant IS the product's single global Computer Use permission. `agent.DisallowsUnattendedAutoApproval` refuses unattended auto-approval and contains `computer_use`, the standalone `screenshot` tool, plus those same four legacy names.
 
 **The one exception**: `loop.go checkPermissionAndApproval` honors a persisted GLOBAL `computer_use` grant even on unattended runs — that grant is what lets schedules and background tasks drive the Mac. Without it, unattended execution fails closed rather than inferring consent from `daemon.auto_approve` or the absence of an approval UI. Legacy GUI names can never use the global grant. The exception is scoped to `computer_use` BY NAME (`unattendedGrantHonored` in loop.go) — not to "any persisted always-allow" — because a blanket rule would silently re-open unattended desktop capture for `screenshot`.
 

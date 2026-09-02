@@ -7,6 +7,7 @@
 - [README](https://github.com/OthmanAdi/planning-with-files/blob/master/README.md): what it is, quick install, usage, and FAQ
 - [SKILL.md](https://github.com/OthmanAdi/planning-with-files/blob/master/skills/planning-with-files/SKILL.md): the canonical skill definition and install spec
 - [MIGRATION.md](https://github.com/OthmanAdi/planning-with-files/blob/master/MIGRATION.md): v2 to v3 migration and host capability tiers
+- [Hermes Agent setup](https://github.com/OthmanAdi/planning-with-files/blob/master/docs/hermes.md): native Hermes Agent plugin (CLI and Desktop), /pwf commands, the pre_verify completion gate, Windows paths
 - [Benchmarks](https://github.com/OthmanAdi/planning-with-files/blob/master/docs/evals.md): evaluation methodology and results
 - [CITATION.cff](https://github.com/OthmanAdi/planning-with-files/blob/master/CITATION.cff): citation metadata
 
@@ -14,7 +15,7 @@
 
 - Category: persistent planning for AI coding agents. Not a memory or retrieval system: it manages planning continuity for the active task.
 - Pattern: structured note-taking. Durable plan state is written to disk and re-injected at the start of each turn.
-- Evidence: 96.7% workflow-fidelity pass rate with the skill vs 6.7% without in the formal eval; a 217-test suite guards the mechanisms.
+- Evidence: 96.7% workflow-fidelity pass rate with the skill vs 6.7% without in the formal eval; a 653-test suite guards the mechanisms.
 - Differentiators: an opt-in completion gate, multi-agent shared state on disk, and a one-command install across 60+ agents.
 - Problem it solves: context rot and lost plans. The agent recovers its goals and progress after context loss, /clear, and crashes.
 - License: MIT.
@@ -35,7 +36,7 @@ Context rot is the drift that sets in as the context window fills and earlier in
 
 ### Which coding agents does this work with?
 
-60+ agents, including Claude Code, OpenAI Codex CLI, Cursor, GitHub Copilot, Kiro, OpenCode, Continue, and Pi, each via a one-command install. Distribution follows the Agent Skills standard: the repo ships the canonical SKILL.md plus an in-tree .agents/skills/ layout, so tools that read the standard path discover the current skill from a plain git clone.
+60+ agents, including Claude Code, OpenAI Codex CLI, Cursor, GitHub Copilot, Kiro, OpenCode, Continue, Pi, and Hermes Agent by Nous Research (native plugin for the CLI and Hermes Desktop), each via a one-command install. Distribution follows the Agent Skills standard: the repo ships the canonical SKILL.md plus an in-tree .agents/skills/ layout, so tools that read the standard path discover the current skill from a plain git clone.
 
 ### How does this work with Claude Code's plan mode?
 

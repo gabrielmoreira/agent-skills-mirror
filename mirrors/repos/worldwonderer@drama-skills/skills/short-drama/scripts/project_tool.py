@@ -13,6 +13,7 @@ import argparse
 import contextlib
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -202,10 +203,54 @@ def project_languages(project: Mapping[str, Any]) -> dict[str, str]:
         if isinstance(format_block, Mapping)
         else None
     )
+    authority = project.get("creator_authority")
+    production_profile = (
+        authority.get("production_profile")
+        if isinstance(authority, Mapping)
+        else None
+    )
+    choices = (
+        production_profile.get("choices")
+        if isinstance(production_profile, Mapping)
+        else None
+    )
+    video_prompt_language = (
+        choices.get("video_prompt_language") if isinstance(choices, Mapping) else None
+    )
     return {
         "language": str(project.get("language") or "zh-CN"),
         "prompt_language": str(prompt_language or DEFAULT_PROMPT_LANGUAGE),
+        "video_prompt_language": str(
+            video_prompt_language or prompt_language or DEFAULT_PROMPT_LANGUAGE
+        ),
     }
+
+
+def project_video_model_profile(project: Mapping[str, Any]) -> dict[str, Any]:
+    """Expose the accepted prompt-facing model choices without guessing defaults."""
+    authority = project.get("creator_authority")
+    production_profile = (
+        authority.get("production_profile")
+        if isinstance(authority, Mapping)
+        else None
+    )
+    if (
+        not isinstance(production_profile, Mapping)
+        or production_profile.get("status") != "accepted"
+    ):
+        return {}
+    choices = production_profile.get("choices")
+    if not isinstance(choices, Mapping):
+        return {}
+    fields = (
+        "target_video_model",
+        "video_prompt_dialect",
+        "video_prompt_language",
+        "native_duration_seconds",
+        "supported_generation_modes",
+        "audio_generation",
+    )
+    return {field: choices[field] for field in fields if field in choices}
 
 
 def initialize_project(
@@ -215,10 +260,25 @@ def initialize_project(
     language: str,
     aspect_ratio: str,
     prompt_language: str = DEFAULT_PROMPT_LANGUAGE,
+    episode_count: int | None = None,
+    target_seconds_per_episode: float | None = None,
     suite_root: Path | None = None,
 ) -> dict[str, Any]:
     language = normalize_language_tag(language, field="language")
     prompt_language = normalize_language_tag(prompt_language, field="prompt_language")
+    if episode_count is not None and (
+        isinstance(episode_count, bool)
+        or not isinstance(episode_count, int)
+        or episode_count <= 0
+    ):
+        raise ValueError("episode_count must be a positive integer")
+    if target_seconds_per_episode is not None and (
+        isinstance(target_seconds_per_episode, bool)
+        or not isinstance(target_seconds_per_episode, (int, float))
+        or not math.isfinite(target_seconds_per_episode)
+        or target_seconds_per_episode <= 0
+    ):
+        raise ValueError("target_seconds_per_episode must be a positive number of seconds")
     root = path.expanduser().resolve()
     project_path = root / PROJECT_FILE
     if project_path.exists():
@@ -242,6 +302,10 @@ def initialize_project(
     )
     project["format"]["aspect_ratio"] = aspect_ratio
     project["format"]["prompt_language"] = prompt_language
+    if episode_count is not None:
+        project["format"]["episode_count"] = episode_count
+    if target_seconds_per_episode is not None:
+        project["format"]["target_seconds_per_episode"] = target_seconds_per_episode
     state = {
         "schema_version": STATE_SCHEMA,
         "project_id": project["project_id"],
@@ -841,11 +905,14 @@ def _build_status(
                 if isinstance(output, str) and output:
                     ownership[output] = owner
     languages = project_languages(project)
+    video_model_profile = project_video_model_profile(project)
     return {
         "project_id": project.get("project_id"),
         "title": project.get("title"),
         "language": languages["language"],
         "prompt_language": languages["prompt_language"],
+        "video_prompt_language": languages["video_prompt_language"],
+        "video_model_profile": video_model_profile,
         "project_root": project_root,
         "last_action": state.get("last_action"),
         "layout": dict(layout),
@@ -2203,6 +2270,8 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--language", default="zh-CN")
     init.add_argument("--prompt-language", default=DEFAULT_PROMPT_LANGUAGE)
     init.add_argument("--aspect-ratio", default="9:16")
+    init.add_argument("--episode-count", type=int)
+    init.add_argument("--target-seconds", type=float, dest="target_seconds_per_episode")
 
     status = commands.add_parser("status", help="Print a creator-safe project summary.")
     status.add_argument("path", nargs="?", default=".")
@@ -2305,6 +2374,8 @@ def main(argv: list[str] | None = None) -> int:
                 language=args.language,
                 prompt_language=args.prompt_language,
                 aspect_ratio=args.aspect_ratio,
+                episode_count=args.episode_count,
+                target_seconds_per_episode=args.target_seconds_per_episode,
             )
         elif args.command == "status":
             result = project_status(Path(args.path))

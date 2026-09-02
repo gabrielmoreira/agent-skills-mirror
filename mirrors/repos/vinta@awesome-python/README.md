@@ -168,6 +168,7 @@ _Libraries for building AI applications, LLM integrations, and autonomous agents
   - [diffusers](https://github.com/huggingface/diffusers) - A library that provides pre-trained diffusion models for generating and editing images, audio, and video.
 - Fine-tuning
   - [unsloth](https://github.com/unslothai/unsloth) - A library for faster LLM fine-tuning and training with reduced memory usage.
+  - [axolotl](https://github.com/axolotl-ai-cloud/axolotl) - A framework for fine-tuning and post-training large language models.
 - Speech
   - [openai-whisper](https://github.com/openai/whisper) - A general-purpose automatic speech recognition model trained on 680k hours of multilingual and multitask supervised data.
   - [funasr](https://github.com/modelscope/FunASR) - Industrial-grade speech recognition toolkit with 170x realtime speed, 50+ languages, speaker diarization, and emotion detection.

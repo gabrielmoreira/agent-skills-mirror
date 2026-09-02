@@ -20,7 +20,8 @@ This is a Hermes-native `best-practice-research` workflow skill.
 
 ## Do Not Use When
 
-- The work needs multi-source current evidence, a market or literature comparison, or a business brief rather than one technology's upstream guidance; use `research`.
+- The work needs a market or literature comparison, or a decision-grounding dossier, rather than one technology's upstream guidance; use `research`.
+- The question is a current-facts lookup one cited retrieval round settles rather than a versioned guidance question; use `web-research`.
 
 ## Examples
 
@@ -49,7 +50,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`source-finder`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `research-brief`, `strategy-brief`, `feedback-triage`, `+14 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`source-finder`, `web-research`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `inference-serving`, `research-brief`, `+16 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

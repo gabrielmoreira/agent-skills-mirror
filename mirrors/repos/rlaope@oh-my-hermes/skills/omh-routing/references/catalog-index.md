@@ -26,6 +26,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-capability-toggle`: [omh] Hermes adaptation for turning one OMH capability family on or off so an install can be tailored instead of taken whole.
 - `omh-code-review`: [omh] Hermes Code Review workflow: bug-first review with evidence.
 - `omh-codebase-onboarding`: [omh] Hermes Codebase Onboarding workflow: create a repo map, reading path, glossary, risk map, and first-task runway for unfamiliar codebases.
+- `omh-codebase-uml`: [omh] OMH Codebase UML workflow: turn a repository into one readable, interface-level PlantUML architecture picture - packages or modules, the public symbols other units actually import, bounded import edges - and get it rendered to a single PNG a chat surface can show.
 - `omh-codegraph-refresh`: [omh] Hermes Codegraph Refresh workflow: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution.
 - `omh-terminal`: [omh] Policy overlay for terminal commands - add cwd, environment, safety, and result-evidence gates after preferring native shell tools for ordinary CLI, package-manager, and test runs.
 - `omh-apps`: [omh] External app actions - email, Slack, Discord, Notion, Linear, Jira, CRM, and similar providers, scoped with auth, payload, confirmation, and result-evidence gates.
@@ -48,11 +49,13 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-feedback-triage`: [omh] Hermes Feedback Triage workflow: cluster customer signals and choose the next workflow.
 - `omh-finance-analysis`: [omh] Turn finance and accounting inputs into a decision-ready variance, cash, and close-risk brief.
 - `omh-frontend`: [omh] Hermes frontend workflow: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs.
+- `omh-frontend-refactor`: [omh] Hermes frontend refactor workflow: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish.
 - `omh-gateway-intent-card`: [omh] Hermes gateway intent workflow: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
 - `omh-github-event-ops`: [omh] Hermes GitHub event operations workflow: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
 - `omh-harness-session-inventory`: [omh] Hermes harness session inventory workflow: normalize Codex, Claude Code, Hermes, OpenCode, Cursor, MCP host, worktree, and wrapper session metadata into one drift-aware inventory.
 - `omh-idea-to-deploy`: [omh] Hermes Idea-to-Deploy workflow: shape an app idea into decisions, delivery handoff, verification, release, and monitoring status.
 - `omh-image-cards`: [omh] Image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards.
+- `omh-inference-serving`: [omh] OMH Inference Serving workflow: choose the serving engine and quantization from decision tables, prepare deployment as an idempotent runbook with observed-only verification, and measure the endpoint with the standard TTFT/TPOT/goodput protocol.
 - `omh-instinct-ledger`: [omh] Instinct Ledger workflow: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries.
 - `omh-jit-learn`: [omh] Just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
 - `omh-legal-compliance-review`: [omh] Surface contract and compliance risks, questions, and escalation points before a legal decision or action.
@@ -86,6 +89,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-prompt-import-readiness`: [omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities.
 - `omh-provider-profile-posture`: [omh] Prepare provider-profile metadata without reading secrets or calling providers.
 - `ulw-plan`: [omh] Hermes Ralplan workflow: consensus planning with review gates.
+- `omh-refactor-plan`: [omh] Hermes refactor planning workflow: turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit.
 - `omh-reliability-review`: [omh] Hermes Reliability Review workflow: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence.
 - `omh-report-package`: [omh] Hermes Report Package workflow: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages.
 - `ulw-research`: [omh] Deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use best-practice-research.
@@ -110,6 +114,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-verification-gate`: [omh] Hermes Verification Gate workflow: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge.
 - `omh-visual-qa`: [omh] Hermes visual-qa workflow: prepare observed-only rendered QA gates for web, frontend, image, document, and TUI surfaces.
 - `omh-voice-input`: [omh] Terse voice and mobile-style requests - turn short spoken-style asks into clarify, plan, status, handoff, or confirmation actions.
+- `omh-web-research`: [omh] Web lookup lane - settle a current-facts question in one cited retrieval round with retrieval dates and source-quality notes; for pre-spec grounding across reference implementations use `research`.
 - `omh-websearch-setup`: [omh] Hermes Web Search Setup workflow: diagnose scraper and auxiliary extract-model configuration, guide account setup, and apply each change as its own diff approval.
 - `omh-wiki`: [omh] Hermes adaptation for wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance.
 - `omh-workflow-learning`: [omh] Hermes workflow learning workflow: classify and review self-improvement store routes as an auxiliary review lane before durable writes, then record workflow attempts as metadata-only traces, evals, review queues, patch proposals, regression cases, audits, indexes, and exports.

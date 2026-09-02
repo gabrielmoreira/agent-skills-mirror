@@ -462,6 +462,898 @@ curl https://localhost:20128/api/v1/provider-plugin-manifest \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
 ```
 
+### GET /api/v1/{omnirouteCatchAll}
+
+GET <omnirouteCatchAll>
+
+```bash
+curl https://localhost:20128/api/v1/{omnirouteCatchAll} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/{omnirouteCatchAll}
+
+POST <omnirouteCatchAll>
+
+```bash
+curl -X POST https://localhost:20128/api/v1/{omnirouteCatchAll} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/v1/{omnirouteCatchAll}
+
+PUT <omnirouteCatchAll>
+
+```bash
+curl -X PUT https://localhost:20128/api/v1/{omnirouteCatchAll} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PATCH /api/v1/{omnirouteCatchAll}
+
+PATCH <omnirouteCatchAll>
+
+```bash
+curl -X PATCH https://localhost:20128/api/v1/{omnirouteCatchAll} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/v1/{omnirouteCatchAll}
+
+DELETE <omnirouteCatchAll>
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/{omnirouteCatchAll} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/accounts/{id}/limits
+
+GET accounts › <id> › limits
+
+```bash
+curl https://localhost:20128/api/v1/accounts/{id}/limits \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/v1/accounts/{id}/limits
+
+PUT accounts › <id> › limits
+
+```bash
+curl -X PUT https://localhost:20128/api/v1/accounts/{id}/limits \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/agents/credentials
+
+GET agents › credentials
+
+```bash
+curl https://localhost:20128/api/v1/agents/credentials \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/agents/credentials
+
+POST agents › credentials
+
+```bash
+curl -X POST https://localhost:20128/api/v1/agents/credentials \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/agents/health
+
+GET agents › health
+
+```bash
+curl https://localhost:20128/api/v1/agents/health \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/agents/tasks
+
+GET agents › tasks
+
+```bash
+curl https://localhost:20128/api/v1/agents/tasks \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/agents/tasks
+
+POST agents › tasks
+
+```bash
+curl -X POST https://localhost:20128/api/v1/agents/tasks \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/v1/agents/tasks
+
+DELETE agents › tasks
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/agents/tasks \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/agents/tasks/{id}
+
+GET agents › tasks › <id>
+
+```bash
+curl https://localhost:20128/api/v1/agents/tasks/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/agents/tasks/{id}
+
+POST agents › tasks › <id>
+
+```bash
+curl -X POST https://localhost:20128/api/v1/agents/tasks/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/v1/agents/tasks/{id}
+
+DELETE agents › tasks › <id>
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/agents/tasks/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/antigravity
+
+POST antigravity
+
+```bash
+curl -X POST https://localhost:20128/api/v1/antigravity \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/auto-combo/{channel}/candidates
+
+GET auto combo › <channel> › candidates
+
+```bash
+curl https://localhost:20128/api/v1/auto-combo/{channel}/candidates \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/batches
+
+GET batches
+
+```bash
+curl https://localhost:20128/api/v1/batches \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/batches
+
+POST batches
+
+```bash
+curl -X POST https://localhost:20128/api/v1/batches \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/batches/{id}
+
+GET batches › <id>
+
+```bash
+curl https://localhost:20128/api/v1/batches/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### DELETE /api/v1/batches/{id}
+
+DELETE batches › <id>
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/batches/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/batches/{id}/cancel
+
+POST batches › <id> › cancel
+
+```bash
+curl -X POST https://localhost:20128/api/v1/batches/{id}/cancel \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/v1/batches/delete-completed
+
+DELETE batches › delete completed
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/batches/delete-completed \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/classify
+
+POST classify
+
+```bash
+curl -X POST https://localhost:20128/api/v1/classify \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/combos
+
+GET combos
+
+```bash
+curl https://localhost:20128/api/v1/combos \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/completions
+
+POST completions
+
+```bash
+curl -X POST https://localhost:20128/api/v1/completions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/files
+
+GET files
+
+```bash
+curl https://localhost:20128/api/v1/files \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/files
+
+POST files
+
+```bash
+curl -X POST https://localhost:20128/api/v1/files \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/files/{id}
+
+GET files › <id>
+
+```bash
+curl https://localhost:20128/api/v1/files/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### DELETE /api/v1/files/{id}
+
+DELETE files › <id>
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/files/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/files/{id}/content
+
+GET files › <id> › content
+
+```bash
+curl https://localhost:20128/api/v1/files/{id}/content \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/images/edits
+
+POST images › edits
+
+```bash
+curl -X POST https://localhost:20128/api/v1/images/edits \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/images/upscale
+
+GET images › upscale
+
+```bash
+curl https://localhost:20128/api/v1/images/upscale \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/images/upscale
+
+POST images › upscale
+
+```bash
+curl -X POST https://localhost:20128/api/v1/images/upscale \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/issues/report
+
+POST issues › report
+
+```bash
+curl -X POST https://localhost:20128/api/v1/issues/report \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/management/proxies
+
+GET management › proxies
+
+```bash
+curl https://localhost:20128/api/v1/management/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/management/proxies
+
+POST management › proxies
+
+```bash
+curl -X POST https://localhost:20128/api/v1/management/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PATCH /api/v1/management/proxies
+
+PATCH management › proxies
+
+```bash
+curl -X PATCH https://localhost:20128/api/v1/management/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### DELETE /api/v1/management/proxies
+
+DELETE management › proxies
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/management/proxies \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/management/proxies/assignments
+
+GET management › proxies › assignments
+
+```bash
+curl https://localhost:20128/api/v1/management/proxies/assignments \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/v1/management/proxies/assignments
+
+PUT management › proxies › assignments
+
+```bash
+curl -X PUT https://localhost:20128/api/v1/management/proxies/assignments \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### PUT /api/v1/management/proxies/bulk-assign
+
+PUT management › proxies › bulk assign
+
+```bash
+curl -X PUT https://localhost:20128/api/v1/management/proxies/bulk-assign \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/management/proxies/health
+
+GET management › proxies › health
+
+```bash
+curl https://localhost:20128/api/v1/management/proxies/health \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/me/status
+
+GET me › status
+
+```bash
+curl https://localhost:20128/api/v1/me/status \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/muse-code/models
+
+GET muse code › models
+
+```bash
+curl https://localhost:20128/api/v1/muse-code/models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/music/generations
+
+GET music › generations
+
+```bash
+curl https://localhost:20128/api/v1/music/generations \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/music/generations
+
+POST music › generations
+
+```bash
+curl -X POST https://localhost:20128/api/v1/music/generations \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/providers/{provider}/limits
+
+GET providers › <provider> › limits
+
+```bash
+curl https://localhost:20128/api/v1/providers/{provider}/limits \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### PUT /api/v1/providers/{provider}/limits
+
+PUT providers › <provider> › limits
+
+```bash
+curl -X PUT https://localhost:20128/api/v1/providers/{provider}/limits \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/quotas/check
+
+GET quotas › check
+
+```bash
+curl https://localhost:20128/api/v1/quotas/check \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/registered-keys
+
+GET registered keys
+
+```bash
+curl https://localhost:20128/api/v1/registered-keys \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/registered-keys
+
+POST registered keys
+
+```bash
+curl -X POST https://localhost:20128/api/v1/registered-keys \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/registered-keys/{id}
+
+GET registered keys › <id>
+
+```bash
+curl https://localhost:20128/api/v1/registered-keys/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### DELETE /api/v1/registered-keys/{id}
+
+DELETE registered keys › <id>
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/registered-keys/{id} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/registered-keys/{id}/revoke
+
+POST registered keys › <id> › revoke
+
+```bash
+curl -X POST https://localhost:20128/api/v1/registered-keys/{id}/revoke \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/relay/chat/completions
+
+POST relay › chat › completions
+
+```bash
+curl -X POST https://localhost:20128/api/v1/relay/chat/completions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/relay/chat/completions/bifrost
+
+POST relay › chat › completions › bifrost
+
+```bash
+curl -X POST https://localhost:20128/api/v1/relay/chat/completions/bifrost \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/responses/{path}
+
+POST responses › <path>
+
+```bash
+curl -X POST https://localhost:20128/api/v1/responses/{path} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/search/analytics
+
+GET search › analytics
+
+```bash
+curl https://localhost:20128/api/v1/search/analytics \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/segment
+
+POST segment
+
+```bash
+curl -X POST https://localhost:20128/api/v1/segment \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/video-bridge/drilldown
+
+GET video bridge › drilldown
+
+```bash
+curl https://localhost:20128/api/v1/video-bridge/drilldown \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### DELETE /api/v1/video-bridge/drilldown
+
+DELETE video bridge › drilldown
+
+```bash
+curl -X DELETE https://localhost:20128/api/v1/video-bridge/drilldown \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/videos/generations
+
+GET videos › generations
+
+```bash
+curl https://localhost:20128/api/v1/videos/generations \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/videos/generations
+
+POST videos › generations
+
+```bash
+curl -X POST https://localhost:20128/api/v1/videos/generations \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/{token}
+
+GET vscode › <token>
+
+```bash
+curl https://localhost:20128/api/v1/vscode/{token} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/{token}/api/chat
+
+POST vscode › <token> › api › chat
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/{token}/api/chat \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/vscode/{token}/api/show
+
+POST vscode › <token> › api › show
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/{token}/api/show \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/{token}/api/tags
+
+GET vscode › <token> › api › tags
+
+```bash
+curl https://localhost:20128/api/v1/vscode/{token}/api/tags \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/vscode/{token}/api/version
+
+GET vscode › <token> › api › version
+
+```bash
+curl https://localhost:20128/api/v1/vscode/{token}/api/version \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/{token}/chat/completions
+
+POST vscode › <token> › chat › completions
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/{token}/chat/completions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/{token}/combos
+
+GET vscode › <token> › combos
+
+```bash
+curl https://localhost:20128/api/v1/vscode/{token}/combos \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/vscode/{token}/models
+
+GET vscode › <token> › models
+
+```bash
+curl https://localhost:20128/api/v1/vscode/{token}/models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/{token}/responses
+
+POST vscode › <token> › responses
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/{token}/responses \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/vscode/{token}/v1/chat/completions
+
+POST vscode › <token> › v1 › chat › completions
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/{token}/v1/chat/completions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/{token}/v1/models
+
+GET vscode › <token> › v1 › models
+
+```bash
+curl https://localhost:20128/api/v1/vscode/{token}/v1/models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/vscode/combos/{token}/{{slug}}
+
+GET vscode › combos › <token> › <{slug>}
+
+```bash
+curl https://localhost:20128/api/v1/vscode/combos/{token}/{{slug}} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/combos/{token}/{{slug}}
+
+POST vscode › combos › <token> › <{slug>}
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/combos/{token}/{{slug}} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/raw/{token}
+
+GET vscode › raw › <token>
+
+```bash
+curl https://localhost:20128/api/v1/vscode/raw/{token} \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/raw/{token}/api/chat
+
+POST vscode › raw › <token> › api › chat
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/raw/{token}/api/chat \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/vscode/raw/{token}/api/show
+
+POST vscode › raw › <token> › api › show
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/raw/{token}/api/show \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/raw/{token}/api/tags
+
+GET vscode › raw › <token> › api › tags
+
+```bash
+curl https://localhost:20128/api/v1/vscode/raw/{token}/api/tags \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/vscode/raw/{token}/api/version
+
+GET vscode › raw › <token> › api › version
+
+```bash
+curl https://localhost:20128/api/v1/vscode/raw/{token}/api/version \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/raw/{token}/chat/completions
+
+POST vscode › raw › <token> › chat › completions
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/raw/{token}/chat/completions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/raw/{token}/combos
+
+GET vscode › raw › <token> › combos
+
+```bash
+curl https://localhost:20128/api/v1/vscode/raw/{token}/combos \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### GET /api/v1/vscode/raw/{token}/models
+
+GET vscode › raw › <token> › models
+
+```bash
+curl https://localhost:20128/api/v1/vscode/raw/{token}/models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/vscode/raw/{token}/responses
+
+POST vscode › raw › <token> › responses
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/raw/{token}/responses \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### POST /api/v1/vscode/raw/{token}/v1/chat/completions
+
+POST vscode › raw › <token> › v1 › chat › completions
+
+```bash
+curl -X POST https://localhost:20128/api/v1/vscode/raw/{token}/v1/chat/completions \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### GET /api/v1/vscode/raw/{token}/v1/models
+
+GET vscode › raw › <token> › v1 › models
+
+```bash
+curl https://localhost:20128/api/v1/vscode/raw/{token}/v1/models \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN"
+```
+
+### POST /api/v1/web/fetch
+
+POST web › fetch
+
+```bash
+curl -X POST https://localhost:20128/api/v1/web/fetch \
+  -H "Authorization: Bearer $OMNIROUTE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
 ## Payloads
 
 See the full OpenAPI specification at `GET /api/openapi/spec` or `docs/openapi.yaml` for detailed request/response schemas.

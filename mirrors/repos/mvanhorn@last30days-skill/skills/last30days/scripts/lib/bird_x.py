@@ -54,6 +54,29 @@ DEPTH_CONFIG = {
 # Module-level credentials injected from .env config
 _credentials: Dict[str, str] = {}
 
+# The vendored bird-search client reads exactly this env surface, and the
+# node subprocess it spawns needs the node-runtime env (platform, locale,
+# TLS/proxy config) to run in every environment it runs in today. Ambient
+# BIRD_* vars pass through as well. Everything else in os.environ - unrelated
+# API keys, tokens, .env contents - must not reach the scan-excluded vendored
+# client (issue #1063). Mirrors the platform-var surface grok_x keeps for its
+# node child (grok_x._subprocess_env).
+_SUBPROCESS_ENV_ALLOWLIST = (
+    # Runtime / platform vars the node subprocess needs (mirrors grok_x)
+    "PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "SystemRoot",
+    "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "SystemDrive", "COMSPEC",
+    "PATHEXT", "TEMP", "TMP",
+    # Node TLS / proxy / CA config for custom-CA and proxied environments
+    "NODE_ENV", "NODE_OPTIONS", "NODE_EXTRA_CA_CERTS",
+    "NODE_TLS_REJECT_UNAUTHORIZED", "NODE_USE_ENV_PROXY",
+    "SSL_CERT_FILE", "SSL_CERT_DIR", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+    "http_proxy", "https_proxy", "no_proxy",
+    # X session cookies the vendored client reads from the environment
+    "AUTH_TOKEN", "CT0", "TWITTER_AUTH_TOKEN", "TWITTER_CT0",
+    # Browser-cookie disable flag the client reads (cookies.js envFlagEnabled)
+    "LAST30DAYS_DISABLE_BROWSER_COOKIES",
+)
+
 
 def set_credentials(auth_token: Optional[str], ct0: Optional[str]):
     """Inject AUTH_TOKEN/CT0 from .env config so Node subprocesses can use them."""
@@ -74,8 +97,22 @@ def _has_process_credentials() -> bool:
 
 
 def _subprocess_env() -> Dict[str, str]:
-    """Build env dict for Node subprocesses, merging injected credentials."""
-    env = os.environ.copy()
+    """Build env dict for Node subprocesses, merging injected credentials.
+
+    The child env is limited to the vendored client's env surface (see
+    ``_SUBPROCESS_ENV_ALLOWLIST``) plus injected credentials, so unrelated
+    ambient secrets never reach scan-excluded vendored code (issue #1063).
+    The ambient-credential lane behaves exactly as before.
+    """
+    env = {
+        name: os.environ[name]
+        for name in _SUBPROCESS_ENV_ALLOWLIST
+        if name in os.environ
+    }
+    env.update({
+        key: value for key, value in os.environ.items()
+        if key.startswith("BIRD_")
+    })
     env.update(_credentials)
     # Hard-disable browser-cookie fallback so normal pipeline runs never hit
     # Safari/Chrome Keychain prompts during source detection or search.

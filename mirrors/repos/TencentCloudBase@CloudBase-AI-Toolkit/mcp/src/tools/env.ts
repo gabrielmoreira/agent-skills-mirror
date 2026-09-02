@@ -25,6 +25,7 @@ import {
   getCloudBaseManager,
   listAvailableEnvCandidates,
   logCloudBaseResult,
+  probeApiKeyCamCapability,
   resetCloudBaseManagerCache,
   resolveEnvCandidateByEnvId,
   type EnvCandidate,
@@ -34,6 +35,7 @@ import { debug } from "../utils/logger.js";
 import {
   getSite,
   normalizeSite,
+  resolveApiKeyExchangeRegion,
   resolveSiteAndRegion,
   TCB_QUERY_REGIONS,
 } from "../utils/site-map.js";
@@ -686,17 +688,27 @@ function isApiKeyCredentialMode(): boolean {
   return Boolean(getCloudBaseApiKeyFromEnv() && process.env.CLOUDBASE_ENV_ID);
 }
 
-function getCredentialScope(): CredentialScope {
+function getCredentialScope(cloudBaseOptions?: {
+  credentialScope?: string;
+}): CredentialScope {
+  // 只认宿主的显式声明 credentialScope: 'env'（如 tcb-bff hosted OAuth 签发的
+  // 环境级 federated STS）。账号级 DescribeEnvs（不带 EnvId）会被后端拒绝（invalid token）。
+  // 注意：不能用 token 字段的有无推断范围——sessionToken 本身不携带权限范围语义。
+  if (cloudBaseOptions?.credentialScope === "env") return "single_env";
   return isApiKeyCredentialMode() ? "single_env" : "account";
 }
 
-function buildCredentialBoundaryPayload(cloudBaseOptions?: { region?: string; envId?: string }) {
-  const credentialScope = getCredentialScope();
+function buildCredentialBoundaryPayload(cloudBaseOptions?: {
+  region?: string;
+  envId?: string;
+  credentialScope?: string;
+}) {
+  const credentialScope = getCredentialScope(cloudBaseOptions);
   const currentRegion = resolveSiteAndRegion(cloudBaseOptions ?? {}).region;
   const pinnedEnvId = process.env.CLOUDBASE_ENV_ID || cloudBaseOptions?.envId || null;
   const scopeNote =
     credentialScope === "single_env"
-      ? `当前为环境级 API Key 登录（单环境权限）。只能访问已绑定的 envId${pinnedEnvId ? ` ${pinnedEnvId}` : ""}，看不到账号下其他环境或其他地域。这是凭据权限边界，不是环境不存在。`
+      ? `当前为环境级凭证登录（单环境权限，API Key 或托管授权 token）。只能访问已绑定的 envId${pinnedEnvId ? ` ${pinnedEnvId}` : ""}，看不到账号下其他环境或其他地域。这是凭据权限边界，不是环境不存在。queryEnv(action="list") 会自动降级为仅返回绑定环境的信息。`
       : `当前为账号级登录。DescribeEnvs 按地域查询；未传 region 时使用当前地域 ${currentRegion}。其他地域请用 queryEnv(action="list", region="ap-singapore")，或 CLI: tcb env list -r ap-singapore。`;
 
   return {
@@ -880,6 +892,29 @@ function buildAuthEnvSetupPayload(preparation: AuthEnvPreparationResult) {
       : {}),
     ...buildEnvCandidatePayload(preparation.envCandidates),
   };
+}
+
+// API Key 登录态 CAM 能力受限时的用户提示（实测：部分 API Key 换出的 STS 不带 CAM 策略）
+const API_KEY_CAM_LIMITATION_WARNING =
+  "\n\n⚠️ 注意：该 API Key 换取的临时凭据无法调用管理面 API（CAM 鉴权不通过），管理类工具（queryEnv、queryAppAuth、manageAppAuth 等）将不可用。如需完整能力，请改用长期密钥 TENCENTCLOUD_SECRETID / TENCENTCLOUD_SECRETKEY 认证。";
+
+/**
+ * API Key 登录态 AUTH_READY 出口统一追加 CAM 能力探测警告。
+ * 仅在探测明确返回 limited（CAM 拒绝）时追加；capable/unknown 静默通过。
+ */
+async function appendApiKeyCamWarningIfNeeded(
+  loginState: any,
+  message: string,
+): Promise<string> {
+  try {
+    const probe = await probeApiKeyCamCapability(loginState);
+    return probe === "limited" ? message + API_KEY_CAM_LIMITATION_WARNING : message;
+  } catch (e) {
+    debug("appendApiKeyCamWarningIfNeeded: probe threw", {
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return message;
+  }
 }
 
 async function prepareAuthEnvironment(params: {
@@ -2217,7 +2252,10 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 return buildJsonToolResult({
                   ok: true,
                   code: "AUTH_READY",
-                  message: "当前使用 API Key 认证模式，已自动完成登录，无需手动授权。",
+                  message: await appendApiKeyCamWarningIfNeeded(
+                    existingLoginState,
+                    "当前使用 API Key 认证模式，已自动完成登录，无需手动授权。",
+                  ),
                   auth_mode: "api_key",
                   envId: process.env.CLOUDBASE_ENV_ID,
                 });
@@ -2228,16 +2266,22 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             }
 
             // API Key exchange failed: return diagnostic details
+            const exchangeRegion = resolveApiKeyExchangeRegion();
             let diagMessage = "当前配置了 API Key 认证模式，但换取临时密钥失败。";
-            const endpoint = process.env.CLOUDBASE_API_ENDPOINT || `https://${process.env.CLOUDBASE_ENV_ID}.ap-shanghai.tcb-api.tencentcloudapi.com`;
+            const endpoint =
+              process.env.CLOUDBASE_API_ENDPOINT ||
+              `https://${process.env.CLOUDBASE_ENV_ID}.${exchangeRegion ?? "ap-shanghai"}.tcb-api.tencentcloudapi.com`;
             diagMessage += `\n\n诊断信息：`;
             diagMessage += `\n- CLOUDBASE_ENV_ID: ${process.env.CLOUDBASE_ENV_ID}`;
             diagMessage += `\n- CLOUDBASE_API_KEY: ${apiKeyFromEnv.slice(0, 20)}...（已截断）`;
+            diagMessage += `\n- TCB_SITE: ${process.env.TCB_SITE || "(未设置)"}`;
+            diagMessage += `\n- 换取网关地域: ${exchangeRegion ?? "ap-shanghai（国内站默认，多地域环境均经其路由）"}`;
             diagMessage += `\n- Endpoint: ${endpoint}`;
             diagMessage += `\n\n可能原因：`;
             diagMessage += `\n1. API Key 已过期或被删除`;
             diagMessage += `\n2. Endpoint 不可达（网络/DNS 问题）`;
             diagMessage += `\n3. CLOUDBASE_ENV_ID 与 API Key 所属环境不匹配`;
+            diagMessage += `\n4. API Key 与站点不匹配：国际站环境的 Key 需配置 TCB_SITE=intl（走 ap-singapore 网关）；国内站环境（含 ap-guangzhou/ap-singapore 地域）不要配置 intl`;
             diagMessage += `\n\n建议：检查 MCP 配置中的 CLOUDBASE_API_KEY（或兼容的 CLOUDBASE_APIKEY）和 CLOUDBASE_ENV_ID 环境变量是否正确。`;
 
             return buildJsonToolResult({
@@ -2468,7 +2512,10 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               return buildJsonToolResult({
                 ok: true,
                 code: "AUTH_READY",
-                message: "API Key 认证成功，已获取临时密钥。",
+                message: await appendApiKeyCamWarningIfNeeded(
+                  loginState,
+                  "API Key 认证成功，已获取临时密钥。",
+                ),
                 auth_mode: "api_key",
                 ...buildAuthEnvSetupPayload(envPreparation),
                 next_step: envPreparation.nextStep,
@@ -2483,10 +2530,12 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             diagMessage += `\n\n诊断信息：`;
             diagMessage += `\n- CLOUDBASE_ENV_ID: ${toolApiKeyEnvId}`;
             diagMessage += `\n- CLOUDBASE_API_KEY: ${toolApiKey.slice(0, 20)}...（已截断）`;
+            diagMessage += `\n- TCB_SITE: ${process.env.TCB_SITE || "(未设置)"}`;
             diagMessage += `\n\n可能原因：`;
             diagMessage += `\n1. API Key 已过期或被删除`;
             diagMessage += `\n2. CLOUDBASE_ENV_ID 与 API Key 所属环境不匹配`;
-            diagMessage += `\n3. 网络连接问题`;
+            diagMessage += `\n3. API Key 与站点不匹配：国际站环境的 Key 需配置 TCB_SITE=intl（走 ap-singapore 网关）；国内站环境（含 ap-guangzhou/ap-singapore 地域）不要配置 intl`;
+            diagMessage += `\n4. 网络连接问题`;
             diagMessage += `\n\n建议：请检查 API Key 和环境 ID 是否正确。`;
 
             return buildJsonToolResult({
@@ -2768,10 +2817,22 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               // API Key / env-var pin: skip DescribeEnvs (STS often cannot list).
               // Account-level sessions that only pinned CLOUDBASE_ENV_ID via set_env
               // can still pass region/alias/envId to list other environments.
-              const envIdFromEnv = !cloudBaseOptions?.requestFn && process.env.CLOUDBASE_ENV_ID;
+              // Hosted OAuth: 宿主（tcb-bff）显式声明 credentialScope: 'env'，签发的
+              // 环境级 federated STS 调账号级 DescribeEnvs 会被拒（"invalid token"），
+              // 同样 pin 到绑定 envId 降级为 describeEnvInfo。
+              const isEnvScopedCredential =
+                cloudBaseOptions?.credentialScope === "env" &&
+                typeof cloudBaseOptions?.envId === "string" &&
+                cloudBaseOptions.envId.length > 0;
+              const envIdFromEnv =
+                !cloudBaseOptions?.requestFn &&
+                (process.env.CLOUDBASE_ENV_ID ||
+                  (isEnvScopedCredential ? cloudBaseOptions.envId : undefined));
               const shouldPinToEnvVar = Boolean(
                 envIdFromEnv &&
-                (isApiKeyCredentialMode() || (!region && !alias && !envId)),
+                (isApiKeyCredentialMode() ||
+                  isEnvScopedCredential ||
+                  (!region && !alias && !envId)),
               );
               if (shouldPinToEnvVar && envIdFromEnv) {
                 try {
@@ -2791,6 +2852,13 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 } catch (envInfoError) {
                   debug("DescribeEnvInfo 失败，返回基础环境信息:", envInfoError instanceof Error ? envInfoError : new Error(String(envInfoError)));
                   result = { EnvList: [{ EnvId: envIdFromEnv }] };
+                }
+                // 给调用方 AI 说明降级原因，避免误判为"账号只有一个环境"
+                if (isEnvScopedCredential) {
+                  result = {
+                    ...result,
+                    scope_note: `当前凭证为环境级（托管授权凭证绑定 ${envIdFromEnv}），账号级环境列表接口无权限，已降级为仅返回绑定环境的信息。如需查看账号下全部环境，请用有账号级权限的凭证登录。`,
+                  };
                 }
               } else {
                 // Use commonService to call DescribeEnvs with filter parameters

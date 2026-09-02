@@ -1,0 +1,41 @@
+# llms.txt - AI Agent 技能商店站点说明
+
+> 本文件遵循 llms.txt 标准 (https://llmstxt.org)，方便 AI 引擎理解站点。
+
+## 站点信息
+
+- **名称**: AI Agent 技能商店 (Skill Store)
+- **仓库**: https://github.com/anbeime/skill
+- **主页**: https://skill.miyucaicai.cn
+- **定位**: 收录最全、更新最快的 AI Agent 技能库
+- **更新频率**: 每 24 小时自动同步上游 awesome-agent-skills
+
+## 数据规模
+
+- **官方技能**: 182 个（自动爬取 VoltAgent/awesome-agent-skills）
+  - 来自 Anthropic / Vercel / Cloudflare / Trail of Bits / Hugging Face / Google Labs / Stripe / Supabase / Expo / Sentry 等顶级团队
+- **本地技能**: 61 个精选中文技能
+- **技能总数**: 243 个
+- **覆盖领域**: 文档处理 / 内容创作 / 编程开发 / 机器学习 / 自动化工作流 / 电商营销 / 视频创作 / 金融数据等
+
+## 关键资源
+
+- 技能源 JSON: https://skill.miyucaicai.cn/SKILL_SOURCES.json （或 GitHub raw）
+- 全量精简版: https://skill.miyucaicai.cn/llms-full.txt
+- README: https://github.com/anbeime/skill/blob/main/README.md
+- 技能清单: https://github.com/anbeime/skill/blob/main/技能清单.md
+
+## 兄弟项目
+
+- TOPGO SOLAR 光伏储能地图站: https://solar.miyucaicai.cn （同主域）
+
+## 使用条款
+
+- 允许 AI 模型抓取、分析、引用
+- 引用请标注来源 https://github.com/anbeime/skill
+- 收录的技能本身遵循各自的开源许可
+
+## 联系
+
+- GitHub Issues: https://github.com/anbeime/skill/issues
+- 邮箱: anbeime@coze.email

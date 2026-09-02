@@ -1,6 +1,15 @@
 # Agent Skills
 
-Agent Skills are modular packages that extend Claude's capabilities with specialized domain knowledge, following Anthropic's [Agent Skills Specification](https://github.com/anthropics/skills/blob/main/agent_skills_spec.md). This plugin ecosystem includes **181 local specialized skills** across 50 plugins, enabling progressive disclosure and efficient token usage.
+Agent Skills are modular packages that extend Claude's capabilities with specialized domain knowledge, following Anthropic's [Agent Skills Specification](https://github.com/anthropics/skills/blob/main/agent_skills_spec.md). This plugin ecosystem includes **183 local specialized skills** across 51 plugins, enabling progressive disclosure and efficient token usage.
+
+Install any skill on its own, into any agent, with the Agent Skills installers:
+
+```bash
+gh skill install wshobson/agents <skill>              # GitHub CLI 2.90+
+npx skills add wshobson/agents --skill <skill>        # vercel-labs/skills
+```
+
+Naming, pinning, and gotchas: [harnesses.md](./harnesses.md#skills-only-installers).
 
 ## Overview
 
@@ -189,6 +198,12 @@ Skills provide Claude with deep expertise in specific domains without loading ev
 | -------------------- | ----------------------------------------------------------------------------------------------------------- |
 | **avoid-ai-writing** | Audit and rewrite prose that reads as machine-generated, with detect-only, rewrite, and edit-in-place modes   |
 
+### Superself (1 skill)
+
+| Skill         | Description                                                                                                                   |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **superself** | Drive the Superself `self` CLI: read `self context` at session start, attach work to a unit, report with evidence, close with proof |
+
 ### Data Engineering (4 skills)
 
 | Skill                           | Description                                                                 |
@@ -318,11 +333,12 @@ Skills provide Claude with deep expertise in specific domains without loading ev
 | ----------------------------- | ----------------------------------------------------------------- |
 | **postgresql-table-design**   | Design and review PostgreSQL-specific schemas with proper modeling |
 
-### Documentation Standards (1 skill)
+### Documentation Standards (2 skills)
 
 | Skill    | Description                                                                                   |
 | -------- | --------------------------------------------------------------------------------------------- |
 | **hads** | HADS (Human-AI Document Standard) — semantic Markdown tagging for token-efficient AI reading |
+| **grounded-vault** | raw/wiki/archive knowledge store with per-claim source links and git fingerprints for zero-token drift checks |
 
 ### .NET Contribution (1 skill)
 
@@ -431,7 +447,7 @@ fastapi-templates skill → Supplies production-ready templates
 
 ## Specification Compliance
 
-All 181 skills follow the [Agent Skills Specification](https://agentskills.io/specification):
+All 183 skills follow the [Agent Skills Specification](https://agentskills.io/specification):
 
 - ✓ Required `name` field (hyphen-case)
 - ✓ Required `description` field with "Use when" clause

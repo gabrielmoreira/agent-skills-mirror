@@ -64,13 +64,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/debug-ima/agents/openai.yaml`](.agents/skills/debug-ima/agents/openai.yaml) |
-| 2 | ✓ | [`.agents/skills/debug-ima/SKILL.md`](.agents/skills/debug-ima/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/kernel-microbenchmark/agents/openai.yaml`](.agents/skills/kernel-microbenchmark/agents/openai.yaml) |
-| 4 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py`](.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py) |
-| 5 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py`](.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py) |
-| 6 | ✓ | [`.agents/skills/kernel-microbenchmark/SKILL.md`](.agents/skills/kernel-microbenchmark/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/ci-fails-buildkite/SKILL.md`](.claude/skills/ci-fails-buildkite/SKILL.md) |
+| 1 | ✓ | [`.agents/skills/ci-fails-buildkite/SKILL.md`](.agents/skills/ci-fails-buildkite/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/debug-ima/agents/openai.yaml`](.agents/skills/debug-ima/agents/openai.yaml) |
+| 3 | ✓ | [`.agents/skills/debug-ima/SKILL.md`](.agents/skills/debug-ima/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/kernel-microbenchmark/agents/openai.yaml`](.agents/skills/kernel-microbenchmark/agents/openai.yaml) |
+| 5 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py`](.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py) |
+| 6 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py`](.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py) |
+| 7 | ✓ | [`.agents/skills/kernel-microbenchmark/SKILL.md`](.agents/skills/kernel-microbenchmark/SKILL.md) |
 | 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 10 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |

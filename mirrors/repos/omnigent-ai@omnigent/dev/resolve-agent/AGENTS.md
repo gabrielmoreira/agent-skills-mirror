@@ -272,9 +272,10 @@ reproduction test is your objective instrument.
    Use the same lanes as 2B.5 — see [`dev/recording-lanes.md`](../recording-lanes.md)
    (build the SPA first, record via `OMNIGENT_E2E_RECORD_DIR`, per-surface `web` /
    `mobile` / `terminal` / `cli` / `desktop` mechanics) — saving to
-   `recordings/<slug>/after-<facet>.<ext>` with a `caption` for what the clip shows. A passing run's footage is the "after" half (the bug resolved); a
-   failing run's footage shows the PR author exactly what still breaks — either
-   way you record it. When the handoff *does* carry a before clip, carry it
+   `recordings/<slug>/after-<facet>.<ext>` with a `caption` for what the clip
+   shows. The test result determines the verdict separately; the footage must
+   show the product journey and its visible outcome, never the test runner. When
+   the handoff *does* carry a before clip, carry it
    through **and** produce the after; when it carries none, still produce the
    after and note the missing before. Only omit the after clip when it is
    genuinely unobtainable (recorder tooling missing, or the fixture can't come
@@ -350,19 +351,12 @@ comment-only outcome. Say precisely why the existing approach won't do (in a
 review comment on that PR, so the author knows), then **switch to the author path
 (Step 2B) and open your own PR** that resolves the bug correctly. In your PR,
 reference the existing one and summarize why a fresh approach was warranted.
-Record `mode: "authored_fix"` and put the reviewed PR's number in your prose so
-the two are linked. **Close the superseded PR the instant yours is open — before
-you emit the interim handoff (Step 3.5) and before you start Step 4** (same reason
-as the fork take-over: two open PRs on one issue trip the duplicate-PR automation,
-which auto-closes the newer one — yours, and a cleanup left for the end of Step 4
-is what a mid-turn SSE drop strands): `gh pr comment <old> --body 'Superseded by
-#<yours> — a different approach was needed; see there.'` then `gh pr close <old>`.
-Closing a PR is a base-repo operation (it flips `state` on the PR object in
-`omnigent-ai/omnigent`), so `pull_requests: write` covers it **even for a
-contributor's fork PR** — expect the close to succeed; run it. Only if it returns
-a real error, record that error in `maintainer_review` and ask the maintainer to
-close it — never leave both open. Use this escape hatch deliberately, not for
-style preferences — a working,
+Record `mode: "authored_fix"`, put `Supersedes #<old>` on its own line in the new
+PR body, and keep the reviewed PR open while the replacement is under review.
+The trusted post-merge workflow closes the old PR only after the replacement
+actually merges. Comment on the old PR immediately with the replacement link so
+the contributor understands the handoff, but **do not close it yourself**. Use
+this escape hatch deliberately, not for style preferences — a working,
 root-cause-sound PR should be reviewed and improved in place, not replaced.
 
 When you keep the PR, you drive it to landable per Step 4 — pushing fixes directly
@@ -495,9 +489,11 @@ per-surface mechanics for `web` / `mobile` / `terminal` / `cli` / `desktop`, plu
 empty-recordings and caption rules. This step states only *which clip resolve
 produces*:
 
-- After the fix, re-run the recovered test on the fixed tree so it **PASSES**; that
-  passing run is the **after-fix clip** (`kind: "after"`) — the human-visible half
-  of your fail→pass proof. Move it to a stable `recordings/<slug>/after-<facet>.<ext>`.
+- After the fix, use the recovered test on the fixed tree to drive and verify the
+  passing journey; the **after-fix clip** (`kind: "after"`) must show only the
+  product surface and corrected user-visible behavior, never pytest, assertions,
+  logs, or test source. Move it to a stable
+  `recordings/<slug>/after-<facet>.<ext>`.
 - If the repro handoff carried a **before** clip (recover it from the repro
   session's `workspace` or the CI artifact bundle), carry it through unchanged
   alongside your after clip; when it carried none, produce the after clip anyway and
@@ -609,6 +605,12 @@ gh auth setup-git   # route git pushes through gh's credential helper with this 
   the command output. **Never** substitute a guess like "token expired" or "PAT
   is read-only" — those are false and drop the hand-off silently. Only a real,
   quoted failure goes in `maintainer_review`.
+- CI may also configure `omnigent.forkPushTokenFile`. That is a separate
+  maintainer credential for one purpose only: pushing a fix to an existing fork
+  PR whose author enabled maintainer edits. Never export it as `GH_TOKEN` and
+  never pass it to `gh`; PR creation, comments, reviews, labels, and every other
+  visible action must continue using the App token so GitHub attributes them to
+  `omni-resolve-agent[bot]`.
 
 Once the set is genuinely green:
 
@@ -676,10 +678,10 @@ Once the set is genuinely green:
      CI-green gate (see 4.1); label it now so the preview builds while you drive
      Step 4. (Review-path fork PRs still wait for green — 4.1.)
    - **If you opened this PR to supersede another** (fork take-over, or the
-     "approach is wrong" escape hatch), you already commented on and closed that PR
-     *before* this handoff — see Step 4's fork-take-over and Step 2A's escape hatch.
-     Set `reviewed_pr_url` to the superseded PR here so the workflow can verify it's
-     closed as a backstop.
+     "approach is wrong" escape hatch), you already commented on that PR but left
+     it open. Ensure the replacement body contains `Supersedes #<old>` on its own
+     line, and set `reviewed_pr_url` so workflow reconciliation can preserve and
+     inform the original PR until the replacement merges.
 6. You do **not** merge. Opening the PR is not the finish line — go to Step 4 and
    drive it to a green, reviewed, ready-for-a-human state.
 
@@ -704,12 +706,25 @@ can land a fix depends on where its branch lives:
   → you have write access. Push fixes the same as the author path, then re-check.
   Say in your review comments that you pushed, so the author isn't surprised.
 - **Fork PR** (the head branch is on a contributor's fork, `head.repo.fork ==
-  true`) → you **cannot** push to it. An App installation token is scoped to
-  `omnigent-ai/omnigent` only; GitHub does not honor "allow edits from maintainers"
-  for an App token (that grant is for maintainer *users*), so a push to the fork
-  branch is rejected. **Do not attempt the push** — it will always fail. Instead:
-  - **If the fork PR needs a fix** (repro test fails against it, CI is red from its
-    diff, or Polly flags a real blocking defect) → **take over: open your own PR**
+  true`) → the App token cannot push there, but CI may provide an isolated
+  maintainer credential specifically for that transport. Read
+  `maintainerCanModify`, `headRepositoryOwner`, `headRepository`, and
+  `headRefName` from `gh pr view`.
+  - If `maintainerCanModify` is true and
+    `git config --get omnigent.forkPushTokenFile` names a readable file, preserve
+    the contributor's branch. Keep the App token exported as `GH_TOKEN` for all
+    visible actions. For the push only, use CI's credential-isolating helper:
+    ```bash
+    omnigent-push-fork --repo <owner>/<repo> --branch <head-branch>
+    ```
+    The helper uses `GIT_ASKPASS`, clears the checkout's App-token extraheader
+    only for that push, and keeps the maintainer token out of command arguments,
+    remote URLs, and git's failure output. Never read or copy the token file
+    yourself, and never use it for `gh pr comment`/`review`/`create`; those
+    commands must remain bot-attributed through the App token.
+  - **If the fork PR needs a fix** and maintainer edits are disabled, the token
+    file is absent, or the isolated push returns a real permission error →
+    **take over: open your own PR**
     that includes their work plus your fix. This is the same mechanic as the
     "approach is wrong" escape hatch (Step 2A), but the reason is different — the
     approach is fine, you just can't push the fix to a fork. Build it so the
@@ -718,29 +733,17 @@ can land a fix depends on where its branch lives:
       then replay onto your branch, or `git cherry-pick`), then add your fix on top.
     - Credit the original author on the commits (`Co-authored-by: <name> <email>`,
       read from `gh pr view <pr> --json commits`).
-    - In your PR body, link the fork PR (`Builds on #<pr> by @<author>`) and say
-      why you re-opened it (couldn't push to the fork).
-    - **Close the fork PR the instant yours is open — before anything else.**
-      Two open PRs that fix the same issue trip the repo's duplicate-PR automation,
-      which will auto-close the **newer** one — i.e. *yours*. So the moment
-      `gh pr create` returns your PR number, comment on the fork PR pointing to
-      yours and close it **as the very next commands — before you emit the interim
-      handoff (Step 3.5) and before you start driving Step 4**:
+    - In your PR body, put `Supersedes #<pr>` on its own line, credit
+      `@<author>`, and say why you re-opened it (couldn't push to the fork). The
+      duplicate-PR workflow exempts trusted resolve-agent replacement PRs.
+    - Comment on the fork PR as soon as yours opens, but leave it open while the
+      replacement is being reviewed:
       ```
-      gh pr comment <fork-pr> --body 'Superseded by #<your-pr> — I took this over to add a fix I could not push to your fork (App tokens can’t push to forks). Your commits are carried over with credit. Thanks @<author>!'
-      gh pr close <fork-pr>
+      gh pr comment <fork-pr> --body 'Replacement #<your-pr> is open because maintainer fork updates were unavailable. Your commits are carried over with credit. This PR will remain open until the replacement merges. Thanks @<author>!'
       ```
-      Do **not** defer this to the end of Step 4: the session can drop mid-turn
-      (the `--server` SSE stream ends the Run step abruptly), and a cleanup left for
-      last is exactly what gets lost — stranding two open PRs. Close first, then
-      hand off. This both keeps the contributor informed and stops the dedup bot
-      from closing your PR as the duplicate. Closing a PR is a base-repo operation
-      (it flips `state` on the PR object in `omnigent-ai/omnigent`), so
-      `pull_requests: write` covers it **even though the head branch is on a fork**
-      — the fork-push restriction does not apply to a close. Expect it to succeed;
-      run it. Only if the close returns a real error, **record that error in
-      `maintainer_review`** and ask the maintainer to close `#<fork-pr>` in favor of
-      yours — never leave both silently open.
+      The trusted post-merge workflow reads the `Supersedes #<pr>` marker and
+      closes the contributor PR only after your replacement is merged. Never
+      close a contributor PR merely because a replacement was opened.
     - Set `mode: "authored_fix"`, record the fork PR's number in `reviewed_pr_url`,
       and drive **your** PR through the rest of Step 4 (you can push to it).
   - **If the fork PR needs no fix** (repro passes against it, CI green, review
@@ -1209,10 +1212,13 @@ the message. Same discipline as repro-agent:
   },
   "recordings": [
     {"surface": "web", "kind": "before", "path": "recordings/1234/before-picker.webm", "format": "webm",
+     "capture_mode": "playwright_ui",
      "caption": "open the model picker → select the catalog → picker shows raw IDs"},
     {"surface": "web", "kind": "after", "path": "recordings/1234/after-picker.webm", "format": "webm",
+     "capture_mode": "playwright_ui",
      "caption": "open the model picker → select the catalog → picker now shows friendly names"}
   ],
+  "recording_unavailable_reason": "",
   "test_audit": "repro e2e was behavioral (failed on raw IDs); no rewrite needed",
   "hermetic_check": "test_picker_label re-run with ambient env vars set — still passes",
   "cross_review": "codex reviewer: no blocking findings; noted a null-guard, addressed",
@@ -1254,7 +1260,8 @@ Field meanings:
   of targeted tests you wrote (empty in review mode).
 - `recordings` — your after-fix footage (`kind: "after"`), plus any before-fix
   footage carried through from the repro handoff, same
-  `{surface, kind, path, format, caption}` shape as repro-agent's field. You
+  `{surface, kind, path, format, capture_mode, caption}` shape as repro-agent's
+  field. You
   produce an `after` clip on **every** author/review run — it is driven off the
   reproduction test, not off an upstream file, so it does not depend on the repro
   handoff carrying footage. When a before clip was recovered, carry its `caption`
@@ -1264,8 +1271,11 @@ Field meanings:
   review mode, the "after" entries are the drivers recorded against the reviewed
   PR head. The list is empty **only** when recording is genuinely blocked — the
   recorder tooling is missing, or the fixture can't come online after the SPA
-  build — never merely because the upstream run left no footage; say which in
-  prose.
+  build — never merely because the upstream run left no footage.
+- `recording_unavailable_reason` — empty when every expected clip is present;
+  otherwise name the concrete blocker. For API-only evidence, say it is textual.
+  Missing or rejected footage never blocks the fix or PR, and must never be
+  replaced with a synthetic fallback or a video of the test runner.
 - `test_audit` — the result of the Step 2B.1 audit (author mode). In review mode,
   note whether the repro test was behavioral as-is.
 - `hermetic_check` — the result of the Step 2B.5 hostile-env re-run when the diff

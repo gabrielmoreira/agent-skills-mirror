@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 13 followed patterns, 20 file(s) materialized.
+Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 13 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 13 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 20 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 13 followed patterns
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `CHANGELOG.md`
 - `src/clawbench/runtime/runtime-server/README.md`
 - `CONTRIBUTING.md`
 - `eval/README.md`
@@ -61,7 +62,6 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 13 followed patterns
 - `docs/cli.md`
 - `docs/trace-cookbook.md`
 - `eval/scoring.md`
-- `CHANGELOG.md`
 - `docs/news.md`
 - `src/clawbench/runtime/chrome-extension/README.md`
 
@@ -73,24 +73,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`docs/edgebench.md`](docs/edgebench.md) |
-| 3 | ✓ | [`docs/scoring.md`](docs/scoring.md) |
-| 4 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
-| 5 | ✓ | [`llms.txt`](llms.txt) |
-| 6 | ✓ | [`src/clawbench/runtime/harnesses/webbrain/README.md`](src/clawbench/runtime/harnesses/webbrain/README.md) |
-| 7 | ✓ | [`src/README.md`](src/README.md) |
-| 8 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
-| 11 | → | [`docs/cli.md`](docs/cli.md) |
-| 12 | → | [`docs/harbor.md`](docs/harbor.md) |
-| 13 | → | [`docs/news.md`](docs/news.md) |
-| 14 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
-| 15 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 16 | → | [`eval/README.md`](eval/README.md) |
-| 17 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 18 | → | [`README.md`](README.md) |
-| 19 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 20 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 3 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
+| 4 | ✓ | [`llms.txt`](llms.txt) |
+| 5 | ✓ | [`src/clawbench/runtime/harnesses/webbrain/README.md`](src/clawbench/runtime/harnesses/webbrain/README.md) |
+| 6 | ✓ | [`src/README.md`](src/README.md) |
+| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
+| 10 | → | [`docs/cli.md`](docs/cli.md) |
+| 11 | → | [`docs/harbor.md`](docs/harbor.md) |
+| 12 | → | [`docs/news.md`](docs/news.md) |
+| 13 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
+| 14 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 15 | → | [`eval/README.md`](eval/README.md) |
+| 16 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 17 | → | [`README.md`](README.md) |
+| 18 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
+| 19 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
 
 ---
 

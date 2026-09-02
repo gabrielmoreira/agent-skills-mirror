@@ -72,11 +72,60 @@ Convergence guardrails:
   redirected by a maintainer.
 - If the critique pass reports zero issues, proceed to E11.
 
-## E11 — Resolve conflicts with main
+**Round-count heuristic for genuinely-new findings.** The guard above
+covers a _repeating_ finding; a different pattern is each round
+surfacing a genuinely new, real finding — that is convergence, not
+stagnation, so the no-progress guard never fires. This is a heuristic,
+not a hard cap: after several consecutive rounds (roughly 3-4) each
+finding something new in the _same area_, treat it as a signal that a
+shared root cause may be producing each new instance, and check
+whether one structural fix (e.g., auditing every caller of a helper
+against its contract, instead of patching one caller per round) would
+converge the loop faster than another incremental patch. Worked
+example: five review rounds each flag a different call site missing a
+validation check that a shared helper added — the fix that ends the
+loop is auditing every caller against the helper's contract once, not
+a sixth per-call-site patch. Once fixes materially address the
+finding's root cause and further comments are speculative or
+non-blocking hardening, treat them as PATH B (disposition-only,
+E4-E7) rather than opening another E9-E10 round.
 
-Check for conflicts between the feature branch and `main`. If conflicts
-exist, merge `main` into the feature branch (`git fetch origin main &&
-git merge origin/main`), resolve them, and complete the merge. On a
+**Second escalation tier (heuristic, not a hard rule): when the
+structural fix itself doesn't converge.** The heuristic above names
+one escalation (patch-by-patch → one structural fix); it does not say
+what to do when that structural fix keeps drawing new same-area
+findings for a further few rounds. The natural default — a second,
+more elaborate structural redesign — tends to cost more rounds, not
+fewer, since the same race or defect class often regenerates at each
+added layer of recovery machinery. Prefer removing or substantially
+simplifying the fragile mechanism instead — replacing an
+automatic-recovery path with a simpler fail-closed behavior plus
+actionable manual-recovery guidance, rather than a second redesign —
+**but only once confirmed safe**: before removing or simplifying away
+any part of the mechanism's behavior, check the issue's acceptance
+criteria and any established external contract for whether that
+behavior was actually required; if so, stop for a maintainer decision
+instead of dropping it to converge review. Worked example:
+kurone-kito/idd-skill#2223's clone-scoped lock
+(kurone-kito/idd-skill#2389) kept drawing new P1 concurrency findings
+across several rounds even after replacing mtime-based staleness with
+PID-liveness-based staleness; convergence only happened once automatic
+stale-lock takeover was removed entirely, replaced with a timeout that
+reports the lock path and the recorded holder's PID for manual
+recovery — the same shape
+`git`'s own `index.lock` uses on collision. Removal was safe there
+specifically because the issue's acceptance criteria only ever
+required an acquire/release interface, never automatic stale-lock
+recovery.
+
+## E11 — Resolve conflicts with {development-branch}
+
+Check for conflicts between the feature branch and `{development-branch}`
+(the value resolved in `idd-work.instructions.md`'s B1
+[Resolve the development branch](idd-work.instructions.md#b1--create-worktree-with-branch)
+step). If conflicts exist, merge `{development-branch}` into the feature
+branch (`git fetch origin {development-branch} && git merge
+origin/{development-branch}`), resolve them, and complete the merge. On a
 signed-commit repo with non-interactive-hostile primary signing (GPG
 pinentry / hardware-touch), use the
 [signed-commit merge wrapper](../../docs/idd-helper-scripts.md#signed-commit-merge-wrapper-shared-git-procedure)
@@ -133,6 +182,19 @@ per-HEAD `review-watermark` still invalidates on push, each E6 reply
 stays individual, and the
 [claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate)
 still runs immediately before push.
+
+**PR body sync.** If this round's fix changes a claim the PR body
+makes (round count, a documented residual limitation, a scope
+statement — wherever in the body it appears), re-run the claim
+revalidation gate immediately before this edit — it is a separate
+mutation after the already-gated push — then fetch the current full
+body, edit only that claim in the fetched copy, and post the full
+result back (`gh pr edit {pr-number} --body-file <path>` replaces the
+whole body, so never pass a partial file, which would drop the
+closing-keyword line and other sections). After posting, repeat
+D3.5's closing-set check (step 6) to confirm `closingIssuesReferences`
+still matches the deliberate set exactly — edited prose can introduce
+a stray keyword-adjacent reference.
 
 ## E13 — Reply to feedback
 
@@ -222,7 +284,21 @@ login).
    E14 advisory-bot processing is done; proceed to E15.
 3. Run **AW2** to fetch markers.
 4. Apply the **AW3** decision table:
-   - **SATISFIED** → proceed to E15.
+   - **SATISFIED**, `COPILOT_PENDING` `"false"`, `COPILOT_PENDING_COVERS_HEAD`
+     `"false"` (settled by elapsed time alone, never proven the request
+     reached Copilot — `#2327`): consult **`AW3-S`**'s `staleRequestRecovery`
+     first. `"attempt"` runs its bounded cycle (non-pending entry: skip
+     **Remove**, start at **Request**; a proven failure-to-register
+     completes the cycle per the entry's inverted step 4/5 disposition),
+     then proceed to E15 either way (accumulates recovery-cycle evidence
+     toward `COPILOT_UNAVAILABLE`; `outcome` itself is unaffected).
+     `"cap-exhausted"` honors `advisoryWait.capExhaustedRoute` exactly
+     like the ordinary `CAP_EXHAUSTED` row below — `hold` posts AW4's
+     **Cap exhausted** hold and stops; `phase-specific` (default)
+     proceeds to E15 unchanged (`#2327` follow-up: cycle exhaustion from
+     this entry must not silently bypass a configured hold policy).
+     `"not-applicable"` → proceed to E15 unchanged.
+   - **SATISFIED** (otherwise) → proceed to E15.
    - **HOLD** → post the hold comment from **AW4** and stop.
    - **RECOVERY_NEEDED** (`COPILOT_PENDING` `"true"`, no same-head
      marker): post the recovery marker from **AW3-R**; do not
@@ -301,8 +377,9 @@ Poll every `POLL_INTERVAL_MINUTES` minutes:
    immediately.
 3. Run **AW1**/**AW2** (refresh `COPILOT_PENDING`, `LAST_COPILOT_COMMIT`,
    `EARLIEST_SAME_HEAD_AT`; apply **AW5** if the latter is empty), then
-   **AW3**: **SATISFIED** → exit, proceed to E15; **HOLD** → post
-   **AW4**/**AW5** hold and stop; **WAIT** → keep polling.
+   **AW3**: **SATISFIED** → apply step 4's same non-pending
+   `staleRequestRecovery` consultation before exiting, then proceed to E15;
+   **HOLD** → post **AW4**/**AW5** hold and stop; **WAIT** → keep polling.
 
 Note: "advisory" means the agent need not accept every suggestion — not
 that it may skip a review it explicitly requested. Human
@@ -332,15 +409,16 @@ proceeding to F — do not skip triage.
 - **On success** → return to `idd-review-snapshot.instructions.md` (E1)
 - **On failure / code-caused**: fix, run **fix-validate**, commit
   atomically, then return to E11
-- **On failure / infra-flaky or pre-existing** (failure also present on
-  `main`, unrelated to this branch): apply `ciWait.rerunPolicy` (default
-  `rerun-once`) — rerun once and resume polling if it authorizes the
-  current rerun; otherwise, or if the failure persists after that
+- **On failure / infra-flaky or pre-existing** (also failing on
+  `{development-branch}`, unrelated to this branch): apply
+  `ciWait.rerunPolicy` (default `rerun-once`) — rerun once and resume
+  polling if it authorizes the current rerun; otherwise, or if the
+  failure persists after that
   rerun, post a hold comment documenting it and stop. A maintainer must
   resolve or bypass the failing check; never auto-continue or treat as
   passed without human confirmation. Phrase the resume condition per
-  the invariant-first guidance in `idd-overview-appendix.instructions.md`
-  (Hold / suspend).
+  the invariant-first guidance in
+  `idd-overview-appendix.instructions.md` (Hold / suspend).
 - **On cancelled / timed_out / code-caused**: fix, run **fix-validate**,
   commit, return to E11
 - **On cancelled / timed_out / infra**: apply `ciWait.rerunPolicy` —

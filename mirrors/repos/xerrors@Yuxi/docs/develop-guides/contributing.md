@@ -49,7 +49,7 @@ docker compose ps
 docker compose logs --tail=100 api
 ```
 
-`api` 和 `web` 服务默认支持热重载；容器名分别是 `api-dev` 和 `web-dev`。修改本地代码后通常不需要手动重启。
+`api` 和 `web` 服务默认支持热重载。容器名由 Compose project 生成；使用 `docker compose logs api web` 查看当前槽位日志。修改本地代码后通常不需要手动重启。
 
 只改聊天、工作区或 Skills 而不需要知识库时，可以使用：
 

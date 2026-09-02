@@ -23,6 +23,10 @@ The **plugin** is the unit of installation; skills and agents come along with it
    matches a skill's description. You never select skills by hand.
 4. `AGENTS.md` and the `docs/` catalogs are for browsing what exists; reading
    them installs nothing.
+5. **Skills only, any agent.** `gh skill install wshobson/agents <skill>` and
+   `npx skills add wshobson/agents --skill <skill>` install one skill, without
+   its plugin's agents or commands, into Claude Code or any other agent the
+   installer supports. See [harnesses.md](./harnesses.md#skills-only-installers).
 
 ## Slash Commands
 
@@ -403,11 +407,11 @@ User: "Implement Kubernetes deployment with Helm"
 → Result: Production-grade K8s manifests with Helm charts
 ```
 
-See [Agent Skills](./agent-skills.md) for details on the 181 specialized skills.
+See [Agent Skills](./agent-skills.md) for details on the 183 specialized skills.
 
 ## See Also
 
 - [Agent Skills](./agent-skills.md) - Specialized knowledge packages
 - [Agent Reference](./agents.md) - Complete agent catalog
-- [Plugin Reference](./plugins.md) - All 93 marketplace plugins
+- [Plugin Reference](./plugins.md) - All 94 marketplace plugins
 - [Architecture](./architecture.md) - Design principles

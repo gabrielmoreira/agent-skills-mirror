@@ -71,7 +71,7 @@ in sync.
 ## Testing
 
 ```bash
-bun run test         # run before every commit — free, ~90-100s for the full ~7,000-test suite
+bun run test         # run before every commit — free, ~90-100s for the full ~8,700-test suite
 bun run test:evals   # run before shipping — paid, diff-based (~$4.35/run max)
 ```
 

@@ -1,213 +1,207 @@
-# Godot AI — Packaging & Distribution
+# Godot AI v4 — Packaging and Distribution
 
-*Updated 2026-04-13*
+*Updated 2026-09-01*
 
-This document collects the install, packaging, publishing, and release mechanics that used to be scattered through the implementation plan.
+This document defines the supported v4 install surfaces and artifact shape.
+Release operation and self-update details live in [releasing.md](releasing.md);
+the user migration procedure lives in [v4-migration.md](v4-migration.md).
 
-For the current roadmap, use [implementation-plan.md](implementation-plan.md).
+## Package identities
 
----
+- Repository: `hi-godot/godot-ai`
+- Python distribution and CLI: `godot-ai`
+- Python import package: `godot_ai`
+- Godot install root: `addons/godot_ai/`
+- Canonical v4 plugin archive: `godot-ai-v4-plugin.zip`
+- Signed inventory: `godot-ai-v4-plugin.manifest.json`
+- Manifest signature: `godot-ai-v4-plugin.manifest.sig`
+- V3 migration capsule: `godot-ai-plugin.zip`
+- Capsule checksum/signature: `godot-ai-plugin.zip.sha256` and
+  `godot-ai-plugin.zip.sha256.sig`
 
-## Distribution Goals
+There is exactly one v4 plugin ZIP shape. It contains only regular files below
+`addons/godot_ai/`, in sorted order, with canonical timestamps, modes, and
+uncompressed ZIP metadata. The signed manifest binds repository, channel, tag,
+version, source commit, archive size/hash, and every path/size/hash in the
+expanded tree.
 
-The project should support these practical usage modes:
+The legacy-named ZIP is intentionally not an alias. It contains a temporary
+bridge plus the canonical signed triple. Historical updaters overlay the
+bridge, which immediately delegates to the exact-tree v4 actor; the capsule is
+never accepted as the committed v4 tree.
 
-- dev checkout with local `.venv`
-- published Python package via PyPI and `uvx`
-- standalone binary path for users who do not want a Python install
-- plugin discoverable and installable from the Godot AssetLib
+## Supported install paths
 
-The goal is not “many install methods” for its own sake. The goal is:
+### Signed GitHub release
 
-- low-friction onboarding
-- predictable client configuration
-- easy upgrades
-- low support burden
+This is the v4 plugin distribution surface. A fresh project verifies the
+canonical triple and extracts the exact archive into an absent
+`addons/godot_ai` path. A project on the final signed v3 line clicks **Update**
+once. The signed capsule then moves the complete old tree to external recovery
+before renaming the verified canonical v4 tree into place.
 
----
+Do not publish or document an overlay-copy shortcut.
 
-## Naming And Package Identity
+### Python package through `uvx`
 
-- repo: `godot-ai`
-- Python package / CLI: `godot-ai`
-- Python import path: `godot_ai`
-- Godot plugin path: `plugin/addons/godot_ai/`
+The Dock renders exact-version client commands such as:
 
-These names should stay aligned in docs and install examples.
-
----
-
-## Preferred User Install Paths
-
-### Path A: Published Package Via `uvx`
-
-This should be the default install path for most users.
-
-Target experience:
-
-1. install `uv`
-2. enable the plugin in Godot
-3. let the plugin discover and run `uvx godot-ai`
-4. connect the MCP client to `http://127.0.0.1:8000/mcp`
-
-### Path B: Dev Checkout
-
-This should stay easy for contributors.
-
-Typical flow:
-
-1. clone repo
-2. run `script/setup-dev`
-3. enable plugin in `test_project/`
-4. plugin prefers the local `.venv` and runs `python -m godot_ai`
-
-### Path C: Standalone Binary
-
-This is useful for:
-
-- users who do not want Python installed
-- cleaner release artifacts
-- stricter support boundaries
-
-This path is worth building, but only if it stays reliable.
-
-### Path D: Godot AssetLib
-
-Godot's built-in AssetLib is the most natural discovery surface for the plugin. A user who already has Godot open should be able to find Godot AI there without ever visiting GitHub.
-
-Target experience:
-
-1. open Godot, go to the AssetLib tab
-2. search for "Godot AI" or "MCP"
-3. download and install into the current project
-4. enable the plugin; it handles server startup (via `uvx` or a local `.venv`) from there
-
-Publishing checklist:
-
-- [ ] claim the AssetLib entry under a stable author account
-- [ ] decide what the AssetLib package actually ships: plugin folder only, or plugin folder + bundled server resources
-- [ ] confirm the plugin keeps working when installed from AssetLib rather than a symlinked dev checkout (paths, UID files, autoload registrations)
-- [ ] tag versions so AssetLib submissions point at immutable commits
-- [ ] figure out the update story — AssetLib does not push updates, so the dock should surface "a newer version is available" when appropriate
-- [ ] include AssetLib install in the release-smoke tier of CI once it is live
-
-The AssetLib path does not replace PyPI/`uvx` — the Python server still has to come from somewhere — but it dramatically lowers the "how do I even find this" friction for Godot users who are not already Python-fluent.
-
----
-
-## User Install Flow
-
-The install flow should be understandable without repo archaeology.
-
-### Godot Side
-
-1. copy `plugin/addons/godot_ai/` into the project’s `addons/`
-2. enable the plugin in Project Settings
-3. let the dock show server status and client configuration state
-
-### MCP Client Side
-
-Either:
-
-- use the Godot dock’s configure buttons
-
-Or:
-
-- point the client at `http://127.0.0.1:8000/mcp`
-
-The install docs should explicitly cover:
-
-- Claude Code
-- Codex
-- Grok Build
-- at least one more MCP client
-
----
-
-## PyPI / `uvx` Publishing Work
-
-- [ ] verify `godot-ai` package availability and ownership
-- [x] finalize metadata in `pyproject.toml` — authors, keywords, classifiers, project URLs, markdown readme content-type
-- [ ] publish to PyPI
-- [ ] verify `uvx godot-ai --help`
-- [ ] verify the plugin can discover and launch the published package cleanly
-
-CI release-smoke builds the wheel and sdist on every push, installs each into a clean venv, and invokes `godot-ai --version` / `--help` to catch entry-point and packaging regressions before publishing.
-
-The published package path should be treated as first-class, not as a fallback for people who “know Python.”
-
----
-
-## Binary Packaging Work
-
-### Build Command
-
-```bash
-pyinstaller --onefile \
-    --name godot-ai \
-    --add-data "src/godot_ai:godot_ai" \
-    src/godot_ai/__main__.py
+```text
+uvx --isolated --no-config --no-env-file --no-sources --no-build \
+  --index https://pypi.org/simple \
+  --default-index https://pypi.org/simple \
+  --find-links https://pypi.org/simple/godot-ai/ \
+  --index-strategy first-index --keyring-provider disabled \
+  --link-mode copy --from godot-ai==4.0.0 godot-ai attach ...
 ```
 
-### What To Verify
+The attach bridge starts or adopts the matching local backend, reads its private
+capability record, and proxies MCP over stdio. A persistent bare HTTP URL is not
+a v4 client configuration because it cannot safely discover or rotate the
+bearer capability.
 
-- [ ] binary starts without Python installed
-- [ ] binary exposes MCP and WebSocket listeners correctly
-- [ ] plugin can connect to the binary-backed server
-- [ ] at least one tool roundtrip succeeds
-- [ ] startup time and artifact size stay within reason
+CI builds both wheel and sdist, installs them into clean environments on Linux,
+macOS, and Windows, and executes the installed CLI. Publication still requires
+the exact-candidate qualification and digest-bound approval in
+[releasing.md](releasing.md).
 
-### Platform Targets
+### Development checkout
 
-- macOS arm64
-- macOS x86_64
-- Windows
-- Linux x86_64
+Contributors run `script/setup-dev`; the plugin prefers the nearby `.venv` and
+captures the worktree `src/` path in its immutable lifecycle plan. The linked
+`test_project/addons/godot_ai` tree is development-only and is rejected as a
+self-update target.
 
-The binary path is only worth keeping if it remains boring and supportable.
+### Marketplace transition
 
----
+The Godot Asset Store and legacy Asset Library remain on the last v3 listing
+during qualification. That final signed v3 line can consume the release
+capsule through its existing updater once publication opens. A future v4 store
+listing must still preserve the canonical signed tree and must not overlay an
+unknown existing add-on as its final state.
 
-## CI Tiers
+### Standalone binary
 
-### Tier 1: Python Tests
+A standalone server executable remains deferred. It is not a v4 release
+artifact until all supported platforms prove startup, authenticated capability
+publication, attach, one tool roundtrip, and lifecycle cleanup without Python
+installed.
 
-- run on every push / PR
-- all supported OSes
-- multiple Python versions as needed
-- `pytest` + `ruff`
+## Verification bootstrap
 
-### Tier 2: Godot-Side Tests
+`script/v4-release` deliberately loads the exact sibling
+`src/godot_ai/release_verify.py` by file path. It does not trust an installed
+`godot-ai` package. GitHub release notes are mutable and cannot authenticate
+assets against a release publisher who can replace those notes. Before
+publication, the [owner-approved, separately permissioned attestation channel](releasing.md#attestation-channel-and-approved-threat-boundary)
+must bind:
 
-- run headless Godot where possible
-- verify the plugin-backed test harness
-- include reload or reconnect smoke where useful
+- both verifier file SHA-256 values;
+- their exact source commit;
+- the exported RSA SPKI SHA-256 fingerprint;
+- all six plugin/migration asset names, sizes, hashes, and identity;
+- the `godot-ai` wheel and sdist names, sizes, hashes, version, and source
+  identity; and
+- for every qualification OS/Python row, the complete resolved distribution
+  inventory (normalized name, version, artifact filename, size, and SHA-256).
 
-### Tier 3: Release-Surface Smoke
+The behavior-defining runtime packages declared in `pyproject.toml` are exact
+pins and are checked again by `godot_ai.runtime_dependencies` before CLI
+dispatch. The full per-row distribution inventory also captures less critical
+transitive packages; changing any resolved artifact invalidates that row and
+requires requalification while candidate/publication evidence is being built,
+rather than silently widening the environment that evidence describes.
 
-- [ ] verify `uvx godot-ai` path
-- [x] verify package install path — `release-smoke` job in `.github/workflows/ci.yml` builds wheel + sdist, installs both into a fresh venv on Linux/macOS/Windows, and runs the CLI entry point
-- [ ] verify binary startup path
-- [ ] verify AssetLib-installed plugin loads and connects to the server
+Every production `uvx` server, attach, prewarm, and transaction-actor command
+uses the one resolver policy shown above. Godot-owned spawns also temporarily
+clear inherited `UV_*` source/override/interpreter/cache controls under the
+global spawn mutex. Only
+`GODOT_AI_QUALIFICATION_PYTHON_INDEX=1`, set in the launching process together
+with an explicit `UV_INDEX`/`UV_DEFAULT_INDEX`, authorizes the private
+qualification index. The switch and any credentials are never written into a
+client command, project file, transaction record, log, or telemetry.
 
-This tier is about install confidence, not deep correctness.
+This prevents a user/project uv configuration or already-installed uv tool
+from silently selecting an alternate `godot-ai` package. It is not wheel-byte
+binding. The package/protocol identity response is a compatibility check, not
+authentication, and a later public resolution does not compare the selected
+wheel or every dependency to the qualification digests. PyPI's index/artifact
+integrity and TLS delivery, the selected `uv` executable/cache, and same-user
+local-machine integrity are therefore runtime trust roots. A PyPI compromise
+capable of serving counterfeit bytes under the exact version remains able to
+compromise both the server and transaction actor. Closing that residual needs
+a hash-enforced, signed actor/runtime artifact that remains addressable across
+the live-tree rename (or a bundled runtime), which is a separate delivery
+architecture rather than another self-reported hash. Exact critical pins still
+fail before FastMCP import when resolution merely drifts; noncritical
+transitive drift remains an accepted packaging risk.
 
----
+The channel authenticates approval through the known canonical attestation
+repository and the `dsarno` account, not a second cryptographic signing key.
+Compromise of that account or GitHub is outside the approved guarantee.
+Its bootstrap record is published; exact-candidate approval and verification
+of the permission boundary in retained qualification evidence remain required.
+Publication and public migration remain closed until those gates pass.
 
-## Release Readiness Checklist
+The v4 SPKI fingerprint compiled into both standalone and in-plugin verification
+is:
 
-- [ ] package path works
-- [ ] plugin install docs are accurate
-- [ ] client configuration docs are accurate
-- [ ] CI covers the install surfaces users will actually hit
-- [ ] compatibility guidance exists
-- [ ] no shipped `class_name` declaration was deleted; any retired global class
-      remains at its published file path as a compatibility shim
-- [ ] self-update release shape is compatible with old two-phase runners:
-      new files in `addons/godot_ai/` do not reference constants, methods,
-      or static-ness changes added to existing load-surface scripts in the
-      same release. This applies to both `class_name` scripts and
-      preload-only scripts; old runners fail on stale Script-object content,
-      not just class registry skew.
-- [ ] the first-run experience is clear enough that a new user can succeed without direct help
+```text
+84ebbd811f3a12c09ff4e236bbbbb9310fc23e03fcfc3717ba546747d0d21072
+```
 
+The verifier rejects duplicate JSON keys, non-canonical manifests, unexpected
+identity fields, unsafe/colliding paths, links, non-canonical ZIP metadata,
+oversized files/trees/archives, signature failure, and any exact-tree mismatch.
+
+## CI and qualification tiers
+
+1. Python unit/integration/lint on Python 3.11, 3.12, 3.13, and 3.14 across
+   Linux, macOS, and Windows.
+2. Godot 4.7 editor tests on Linux, macOS, and Windows; separate Linux-only
+   inert-refusal rows on 4.5 and 4.6.
+3. Clean wheel/sdist install smoke on all three operating systems.
+4. Retained one-time historical boundary evidence: all 104 tags were
+   source-classified into 24 behavior classes, with 29 selected runtime rows on
+   macOS/Godot 4.7. This is not a recurring candidate or cross-platform tier.
+5. Signed plugin packaging, verifier, one-click bridge migration, v4-to-v4 transactional
+   update, crash/failpoint, two-editor, reload, stale-server, and stress proof.
+6. Exact private source-A/source-B candidate qualification on all required
+   platform/version rows, bound to immutable plugin, Python-package, and
+   resolved-dependency artifact digests.
+
+The existence of Tier-6 tooling does not mean Tier 6 has run. Hosted rows and
+publication remain unqualified until their retained evidence is reviewed.
+
+## Release readiness
+
+- [ ] Source A and the minimal qualification child B are frozen.
+- [ ] Both plugin triples, wheel, and sdist are built once and
+      their identities, sizes, and digests recorded.
+- [ ] Every qualification row records the complete resolved distribution
+      artifact set; startup proves the exact behavior-defining dependency pins.
+- [ ] The embedded updater key and standalone verifier key are identical; the
+      SPKI fingerprint matches the separately permissioned attestation surface.
+- [ ] One-click final-v3-to-v4 migration proves both signature layers, an
+      external retained backup, graceful editor restart/lease transfer,
+      automatic client repin/server start, and the exact signed live tree.
+- [ ] V4-to-v4 self-update proves prepare-before-quiesce, signed stage identity,
+      install/editor leases, durable journal reduction, rollback/quarantine,
+      startup barrier, and repeat-update behavior.
+- [x] Retained one-time evidence classifies the historical updater boundary;
+      the new signed bridge path is qualified separately against the final v3
+      line.
+- [ ] All mandatory Windows, macOS, Linux, Godot, and Python rows pass with no
+      required skip.
+- [ ] Approval names the exact digest set. No source, docs, workflow, or artifact
+      is rebuilt after approval.
+- [ ] Publication uploads approved Python bytes first, verifies their public
+      hashes, then uploads the already-approved plugin bytes.
+- [ ] Public redownload attestation proves every released byte and every
+      dependency artifact selected by each publication-smoke row equals its
+      approved digest.
+
+The packaging, signing, and verification primitives are implemented. The
+Phase-7 qualification-and-promotion workflow is not: release remains
+fail-closed until that workflow exists, the exact evidence above is reviewed,
+and publication is explicitly authorized.

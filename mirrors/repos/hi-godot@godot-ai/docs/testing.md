@@ -102,7 +102,6 @@ failure message.
 | `skip(reason := "") -> void` | Mark the current test skipped (unmet precondition — no scene open, etc.). Skips count separately from passed/failed; a prior failed assertion always beats a later `skip()`. |
 | `fail_setup(reason: String) -> void` | Call inside `suite_setup()` to abort the suite with a single suite-level failure (reported as test `<suite_setup>`) instead of N zero-assertion failures. |
 | `skip_suite(reason: String) -> void` | Call inside `suite_setup()` to skip the whole suite with a single suite-level skip (reported as test `<suite_setup>`). |
-| `skip_on_godot_lt(min_version: String, reason := "") -> bool` | Skip the current test when the running Godot is older than `"major.minor"`. Returns `true` when skipped, so: `if skip_on_godot_lt("4.6", "..."): return`. |
 | `expect_script_error_containing(substring: String) -> void` | Allow one captured `SCRIPT ERROR` whose text contains `substring`. Only for negative-path tests that intentionally run invalid GDScript; any unexpected script error fails the test (`Aborted by SCRIPT ERROR: ...`). |
 | `editor_undo(undo_redo: EditorUndoRedoManager) -> bool` | Undo the most recent action across the scene and global undo histories. Returns `false` when nothing was undone — assert on the return value. |
 | `editor_redo(undo_redo: EditorUndoRedoManager) -> bool` | Redo mirror of `editor_undo`. |
@@ -163,7 +162,7 @@ test_run suite=player                 # one suite (exact match on suite_name())
 test_run test_name=speed              # only tests whose name contains "speed"
 test_run exclude_test_name=slow,flaky # skip tests matching any comma-separated substring
 test_run verbose=true                 # include every individual test result
-test_run session_id=mygame@1a2b       # pin to one editor when several are connected
+test_run session_id=mygame@7f9c3a10d8e426b1 # pin to one editor when several are connected
 ```
 
 Re-fetch the last results without re-running: `test_manage(op="results_get")`
@@ -205,14 +204,14 @@ Live `test_run` calls service the WebSocket transport between tests, suite
 phases, and discovery script-loads, so a long suite no longer starves the
 server's keepalive and drops the MCP session. Three consequences:
 
-- **Budget**: the server grants each run a 300 s budget (sent to the plugin
-  in the command envelope). The plugin aborts between tests ~10 s before the
-  budget expires and replies with a `TEST_RUN_TIMEOUT` error carrying the
-  partial summary; full partial results stay available via
-  `test_manage(op="results_get")`. Against an older server (which sends no
-  budget) the plugin uses a conservative 110 s ceiling. The ceiling is
-  **best-effort**: it is only checked between atomic phases, so a test that
-  starts just before it can overshoot.
+- **Budget**: the v4 server grants each run a 300 s budget in the authenticated
+  command envelope. The plugin aborts between tests ~10 s before the budget
+  expires and replies with a `TEST_RUN_TIMEOUT` error carrying the partial
+  summary; full partial results stay available via
+  `test_manage(op="results_get")`. V4 does not accept pre-v4 protocol peers,
+  so there is no legacy no-budget fallback. The ceiling is **best-effort**:
+  it is only checked between atomic phases, so a test that starts just before
+  it can overshoot.
 - **Concurrent clients**: commands arriving from other MCP clients while a
   run holds the editor are rejected immediately with a retryable
   `EDITOR_NOT_READY` (`sub_code: EDITOR_TEST_RUNNING`) instead of timing

@@ -7,6 +7,7 @@ dbs-action
 dbs-content
 dbs-content-risk-check
 dbs-content-system
+dbs-video-extract
 dbs-knowledge
 dbs-hook
 dbs-xhs-title
@@ -29,4 +30,3 @@ dbs-learning
 dbs-spread
 dbs-resonate
 dbs-script-flow
-dbs-skill-cleaner

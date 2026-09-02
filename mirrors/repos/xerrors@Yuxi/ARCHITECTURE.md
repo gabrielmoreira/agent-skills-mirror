@@ -12,9 +12,9 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 
 核心开发服务包括：
 
-- `web-dev`：Vue 3 / Vite 前端，挂载 `web/src` 并热重载。
-- `api-dev`：FastAPI API 服务，挂载 `backend/server`、`backend/package` 和测试目录并热重载。
-- `worker-dev`：ARQ worker，执行已经派发的 AgentRun，通过 attempt ownership 与 heartbeat 维护运行租约，并周期收敛失联 Run。
+- `web`：Vue 3 / Vite 前端，挂载 `web/src` 并热重载。
+- `api`：FastAPI API 服务，挂载 `backend/server`、`backend/package` 和测试目录并热重载。
+- `worker`：ARQ worker，执行已经派发的 AgentRun，通过 attempt ownership 与 heartbeat 维护运行租约，并周期收敛失联 Run。
 - `storage-migrator`：Compose 中唯一修改 Yuxi 数据库 Schema 的一次性迁移进程，同时处理受支持的历史存储切换；API 与 worker 等待其成功后只校验 Schema 版本。
 - `sandbox-provisioner`：为智能体工具执行提供隔离沙盒。
 - `postgres`：业务数据、知识库元数据、请求队列、AgentRun 与 LangGraph checkpoint。
@@ -56,7 +56,7 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 
 项目中存在两套用途不同的后台执行机制，不应混用：
 
-- AgentRun：通过 PostgreSQL 保存事实状态，使用 Redis/ARQ 投递到 `worker-dev`，支持运行事件、取消、恢复和线程请求队列。
+- AgentRun：通过 PostgreSQL 保存事实状态，使用 Redis/ARQ 投递到 `worker`，支持运行事件、取消、恢复和线程请求队列。
 - `services/task_service.py` 中的 Tasker：运行在 API 进程内，用于知识库解析、评估和图谱构建等通用后台任务；任务摘要持久化到 PostgreSQL，但可执行 coroutine 和内存队列不具备跨进程重建能力。
 
 测试代码位于 `backend/test`，按 `unit`、`integration`、`e2e` 分层。新增或修改后端行为时，测试应放在最能覆盖真实风险的层级。
@@ -84,11 +84,11 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 3. `server/routers/agent_router.py` 校验用户和智能体，将请求交给 `agent_request_queue_service`。
 4. 服务在同一数据库事务中创建用户消息和 AgentRunRequest，并按用户、智能体和线程检查活跃 Run 与 FIFO 队头。
 5. 请求可以立即派发、进入等待队列或按 `reject` 策略拒绝；只有数据库提交成功后才向 ARQ 投递 Run。
-6. `worker-dev` 中的 `run_worker` 使用进程 identity 与 job-attempt token 取得 AgentRun lease；未取得 ownership 的重复任务不会执行。执行期间 heartbeat 在独立事务中续租，再加载智能体配置和运行上下文执行对应 LangGraph。
+6. `worker` 中的 `run_worker` 使用进程 identity 与 job-attempt token 取得 AgentRun lease；未取得 ownership 的重复任务不会执行。执行期间 heartbeat 在独立事务中续租，再加载智能体配置和运行上下文执行对应 LangGraph。
 7. 智能体通过 middleware 组合 UserWorkspace 中的当前 Workdir、只读共享 Skills、MCP、SubAgent、审批、摘要和工具能力。根 Agent 与子 Agent 共享同一个 runtime 和 Workdir；知识库能力主要由内置 `knowledge-base` Skill 及其依赖工具按需开放。
 8. Run 事件写入 Redis Stream，取消通过 Redis key/pubsub 传递；AgentRun、消息投递状态和最终结果写入 PostgreSQL。任何 assistant Message 发布前先在 Run 行锁内验证当前 attempt；正常输出、绑定和 `completed` 同事务提交。worker 失联后，过期 lease 会幂等收敛为带 `worker_lease_expired` 原因的 `failed`。该失败只证明执行 ownership 已丢失，外部副作用仍需按 at-least-once 语义核对。
 9. 前端在排队阶段消费 Request SSE，派发后切换到 Run SSE，并根据数据库状态处理断线恢复和终态补偿。
-10. Conversation 保存不可变 `project_id`，每个 Project 一期绑定一个 `workdir_path`，多个 Project 可以共享同一路径。v0.7.1 Conversation 在一次性迁移中直接获得 implicit Project，不形成 Conversation 路径中间态。managed Project 使用服务端创建的 `projects/<uuid>`；linked Project 可绑定当前 uid UserWorkspace 下除根目录外任意经过 no-follow 校验的已有目录。Workspace tree 仅展示 `/projects` 下属于 selectable Project 的目录子树，隐藏 implicit 与尚未归属 Project 的匿名目录。`yuxi.workspace` 唯一拥有宿主路径和 fd-relative 文件访问，统一 Workdir resolver 通过 Project 为 Viewer、附件、Artifact、Run 和 SubAgent 提供同一持久路径。Agent Backend 单独把该路径映射为 `/home/gem/user-data/...` runtime 路径。目录的持久 POSIX 字节是 Agent 文件、附件、Viewer 和 artifact 的实时事实源，`uploads/outputs` 只是按需创建的目录约定。Run 终态清理 runtime 进程但保留 Workdir。
+10. Conversation 保存不可变 `project_id`，每个 Project 一期绑定一个 `workdir_path`，多个 Project 可以共享同一路径。v0.7.1 Conversation 在一次性迁移中直接获得 implicit Project，不形成 Conversation 路径中间态。managed Project 使用服务端创建的 `projects/<uuid>`；linked Project 可绑定当前 uid UserWorkspace 下除根目录外任意经过 no-follow 校验的已有目录。selectable Project 支持重命名；删除在同一事务中软删除 Project 与全部 Conversation，但不删除或修改 Workdir 字节。Workspace tree 仅展示 `/projects` 下属于 active selectable Project 的目录子树，隐藏 implicit、deleted 与尚未归属 Project 的匿名目录。`yuxi.workspace` 唯一拥有宿主路径和 fd-relative 文件访问，统一 Workdir resolver 通过 Project 为 Viewer、附件、Artifact、Run 和 SubAgent 提供同一持久路径。Agent Backend 单独把该路径映射为 `/home/gem/user-data/...` runtime 路径。目录的持久 POSIX 字节是 Agent 文件、附件、Viewer 和 artifact 的实时事实源，`uploads/outputs` 只是按需创建的目录约定。Run 终态清理 runtime 进程但保留 Workdir。
 
 审批或人机输入产生的 resume 请求会从 LangGraph checkpoint 恢复，并创建新的 AgentRun；它不重新进入普通消息 FIFO 接入流程。
 
@@ -119,4 +119,4 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 - **权限**：前端路由和页面标签提供体验级约束，FastAPI 认证依赖和 repository 可见性查询提供最终授权。
 - **状态与存储**：PostgreSQL 保存请求、Run、消息、Conversation 的 `project_id` 与 Project 的 `workdir_path`、业务和知识库元数据，也是 LangGraph checkpoint 的唯一 Owner。Redis 保存短期事件、取消信号、ARQ 和跨进程缓存；每个用户的 UserWorkspace 拥有 Workdir 与个人 Skill 字节，MinIO 继续拥有知识库与临时上传对象。
 - **文档处理**：Agent 附件确认后进入实时 Project Workdir；知识库上传仍先进入对象存储和文件元数据边界，再经过解析、分块和知识库实现。解析器、分块策略和知识库连接器保持可替换。
-- **观测与调试**：优先查看 `api-dev`、`worker-dev` 和相关依赖日志；Langfuse 集中在服务层和 AgentRun 上下文；SSE 问题同时检查 Redis 事件与 PostgreSQL 终态。
+- **观测与调试**：优先通过 Compose service 查看 `api`、`worker` 和相关依赖日志；Langfuse 集中在服务层和 AgentRun 上下文；SSE 问题同时检查 Redis 事件与 PostgreSQL 终态。

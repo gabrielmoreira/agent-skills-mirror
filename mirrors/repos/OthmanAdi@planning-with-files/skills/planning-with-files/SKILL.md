@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
-  version: "3.12.1"
+  version: "3.13.0"
 ---
 
 # Planning with Files
@@ -410,7 +410,7 @@ The gate mechanism is host-aware. Not every host can hard-block a stop.
 | Tier | Hosts | Gate mechanism |
 |---|---|---|
 | 1: hard block | Claude Code, Codex CLI, OpenAI Codex API, Continue.dev | `{"decision":"block"}` / exit 2 |
-| 2: follow-up inject | Cursor, Pi, Kiro | agent_end follow-up message + own counter |
+| 2: follow-up inject | Cursor, Pi, Kiro, Hermes Agent | agent_end follow-up message + own counter; Hermes answers `pre_verify` with a bounded continuation |
 | 3: notify only | OpenCode, Gemini CLI, rest | systemMessage only, no enforcement |
 
 Hosts without a blocking Stop hook still get autonomous mode (low recitation + ledger). They do not get gate enforcement; the gate degrades to a notification. This is documented honestly: the gate is real enforcement only on Tier 1.

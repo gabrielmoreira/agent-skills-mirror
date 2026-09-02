@@ -50,6 +50,25 @@ OmniRoute has three distinct but related resilience mechanisms. Each has a diffe
 
 ---
 
+### Opt-in global Provider Cooldown (window gate)
+
+A fourth, **opt-in** layer (`PROVIDER_COOLDOWN_ENABLED`, default **off**) keeps a
+cross-request memory of failing providers in
+`open-sse/services/providerCooldownTracker.ts`, consulted by combo target
+resolution so consecutive combo requests stop re-walking a provider that just
+failed. Provider-level entries honor the `PROVIDER_PROFILES` window gate:
+
+| Profile | trips after (`providerFailureThreshold`) | inside (`providerFailureWindowMs`) | cools for (`providerCooldownMs`) |
+| ------- | ---------------------------------------: | ---------------------------------: | -------------------------------: |
+| OAuth   |                                     `10` |                            `15min` |                           `5min` |
+| API key |                                     `15` |                            `30min` |                          `10min` |
+
+Below the threshold the provider is **not** considered cooling; a success clears
+the window. Connection-level entries (`provider:connectionId`) keep the
+exponential `minRetryCooldownMs → maxRetryCooldownMs` backoff instead. Overrides:
+`OMNIROUTE_PROVIDER_BREAKER_{OAUTH,API_KEY}_{FAILURE_THRESHOLD,FAILURE_WINDOW_MS,COOLDOWN_MS}`.
+Regression guard: `tests/unit/provider-cooldown-window-gate.test.ts`.
+
 ## 2. Connection Cooldown
 
 **Scope:** single provider connection/account/key.
@@ -633,4 +652,4 @@ default `test:integration`, chaos and heap self-skip (without `RUN_CHAOS_INT`/`-
 
 - [Architecture Guide](./ARCHITECTURE.md) — System architecture and internals
 - [User Guide](../guides/USER_GUIDE.md) — Providers, combos, CLI integration
-- [Auto-Combo Engine](../routing/AUTO-COMBO.md) — 13-factor scoring, mode packs
+- [Auto-Combo Engine](../routing/AUTO-COMBO.md) — 16-factor scoring, mode packs

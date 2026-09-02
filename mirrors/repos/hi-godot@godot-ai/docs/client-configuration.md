@@ -18,7 +18,7 @@ rules are not visible in the code:
 - **No per-client branching inside strategies.** Non-standard entry shapes are
   expressed declaratively on the descriptor (`entry_url_field`, `entry_extra_fields`,
   `command_shape`, `command_initial_fields`, `command_legacy_keys`,
-  `command_supports_url_fallback`, `config_path_candidates`). Adding a client
+  `config_path_candidates`). Adding a client
   with a shape one of the existing strategies already writes means exactly two
   things: write `clients/<name>.gd` extending `McpClient`, then append its
   script path to `_CLIENT_SCRIPT_PATHS` in `_registry.gd`. No edits to the
@@ -49,11 +49,10 @@ what failed to resolve.
 MCP tools `client_configure`, `client_remove`, and `client_status` expose this to
 AI clients.
 
-Client-owned attach entries carry a launch command rather than only an HTTP
-URL. As of #838 every registered client is command-shape except
-`cherry_studio` (its `mcp_servers.json` path is not read by the app at all —
-servers live in an internal database — so a file-based migration would be a
-no-op; it stays URL-mode pending a deep-link design). The dock captures
+Client-owned attach entries carry an authenticated stdio launch command rather
+than a persistent HTTP URL. Cherry Studio is not advertised in v4 because its
+servers live in an internal database and it has no verified dynamic-capability
+or stdio configuration surface. The dock captures
 ports, canonical excluded domains, plugin version, dev/user mode, and the
 telemetry preference on the main thread, then workers resolve the same three
 launch tiers used by server startup (dev venv → exact-version uvx → matching
@@ -61,23 +60,60 @@ system install). A disabled telemetry preference renders as
 `--disable-telemetry` on the attach argv — the env-injection path that covers
 plugin-spawned servers never runs for a client-spawned bridge or its backend
 (see docs/TELEMETRY.md). Package pins, command paths, ports, exclusions,
-telemetry, and required uv options are verified as launch drift;
-**Configure all** is the repair path after a self-update, port change,
-telemetry toggle, or tool-domain change. Never silently fall back to a bare `uvx`
-command for these entries—report ERROR and leave the config untouched when no
-verified tier exists.
+telemetry, and required uv options are verified as launch drift. A normal v4
+self-update repins configured clients automatically before it records durable
+migration completion. **Configure all** is manual remediation when that repair
+reports drift or failure, and remains the explicit repair path after a port
+change, telemetry toggle, or tool-domain change. Never silently fall back to a
+bare `uvx` command for these entries—report ERROR and leave the config untouched
+when no verified tier exists.
 
-Configure pre-builds the pinned `godot-ai==X` uv environment before it
-returns (`prewarm_attach_plan` / `prewarm_attach_launch`), so the first
-client spawn is a warm cache hit. Without it the *client* pays for building
-~67 packages on its own critical path, which flashes a terminal window on
-Windows (#851) and can overrun an MCP client's default 30s connect timeout —
-the tools then appear to vanish until a restart. Only the `uvx` tier is
-warmed; dev-venv and system launches run an already-installed package. The
-warm is best-effort and never downgrades a successful Configure: the config
-file is already written, and a failure only restores the old cold-start cost.
-The dock relabels the button `Installing…` while it runs so a cold build does
+The uvx tier is isolated/no-config/no-build and names official PyPI explicitly.
+Godot-owned server/prewarm spawns also clear inherited uv resolution controls;
+client-owned bridges carry the same resolver policy in their persisted argv.
+Only the process-local qualification switch documented in the release plan may
+omit the public-index options, and it never persists its private endpoint or
+credentials. This removes ambient alternate-index authority; it does not bind
+the bytes later returned by public PyPI. PyPI/TLS, the selected uv executable
+and cache, and same-user machine integrity remain runtime trust roots.
+
+Dock-initiated Configure attempts to pre-build the pinned `godot-ai==X` uv
+environment before the Dock reports completion (`prewarm_attach_plan` /
+`prewarm_attach_launch`). When that best-effort prewarm succeeds, the first
+client spawn is a warm cache hit.
+Without it the *client* pays for building ~67 packages on its own critical
+path, which flashes a terminal window on Windows (#851) and can overrun an MCP
+client's default 30s connect timeout—the tools then appear to vanish until a
+restart. Only the `uvx` tier is warmed; dev-venv and system launches run an
+already-installed package. The warm is best-effort and never rewrites or rolls
+back a successfully verified config entry. MCP `client_configure` keeps its
+mutation-only deferred contract and deliberately skips this Dock convenience.
+The Dock relabels the button `Installing…` while it runs so a cold build does
 not read as a hang.
+
+### Global mutation lock and recovery
+
+Every automatic Configure or Remove operation—JSON, TOML, YAML, CLI, DSH, and
+post-update client repinning (the M6 migration gate)—acquires one account-wide
+durable lock at the exact path reported by
+`McpClientMutationLock.recovery_message()`. It lives below the OS config
+directory rather than `user://`, because global client configuration is shared
+by every Godot project for the account. The claim stays held through post-write
+status verification. Status probes and manual instructions remain lock-free.
+
+An existing or malformed lock fails closed. If a timed-out CLI mutation cannot
+prove that its process tree terminated, the lock deliberately survives plugin
+reload, editor restart, and crashes. Stop the relevant client processes—or
+reboot—then explicitly remove the **entire exact lock directory printed in the
+error** before retrying. Restarting Godot alone is not proof that a descendant
+stopped, and deleting only `owner.json` leaves the deny marker in place.
+
+The lock serializes each mutation and its readback; it does not make a
+multi-client M6 batch or the earlier lock-free status/drift probes atomic. The
+migration fails closed on observed non-version drift, but another project can
+complete a serialized write between that observation and a later per-client
+claim. Treat that probe-to-write interval as an explicit P2 last-writer
+limitation rather than claiming batch-wide compare-and-mutate semantics.
 
 Per-strategy command rendering (`CommandShape` docs in `_base.gd`):
 
@@ -164,10 +200,9 @@ is not a preservation whitelist: unknown future fields survive too.
 `command_env_legacy_keys` removes only named legacy values inside `env` and
 preserves every other user environment variable.
 
-Manual URL fallback is an explicit client capability, not an implication of a
-command shape. Set `command_supports_url_fallback = true` only when the client
-accepts that URL form in the same native config file. Codex does; Claude
-Desktop's local `claude_desktop_config.json` entries do not.
+Manual instructions expose only authenticated stdio attach. A bare HTTP URL
+cannot carry the private rotating bearer and must never be persisted as a v4
+client configuration.
 
 Packaged applications may expose a different effective config file to the app
 than an unpackaged editor sees at the conventional path. Descriptors express

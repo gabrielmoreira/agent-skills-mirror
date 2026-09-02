@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 20 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 20 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 20 |
+| Followed pats | 7 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 20 file(s
 - `docs/develop-guides/engineering-trust.md`
 - `docs/develop-guides/testing-guidelines.md`
 - `docs/develop-guides/contributing.md`
+- `docs/develop-guides/parallel-worktree-environments.md`
 - `docs/develop-guides/decisions/README.md`
 
 ## File Index
@@ -82,8 +83,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
 | 17 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
 | 18 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
-| 19 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
-| 20 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 19 | → | [`docs/develop-guides/parallel-worktree-environments.md`](docs/develop-guides/parallel-worktree-environments.md) |
+| 20 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
+| 21 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

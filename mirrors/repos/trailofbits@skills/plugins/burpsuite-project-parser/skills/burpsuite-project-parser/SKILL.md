@@ -39,6 +39,66 @@ The script uses environment variables for platform compatibility:
 - `BURP_JAVA`: Path to Java executable
 - `BURP_JAR`: Path to burpsuite_pro.jar
 
+**Check the exit code. Empty output is not a clean result.** Burp ignores flags it does not recognise, so
+without the parser extension it starts normally and drops the query — which looks exactly like a search that
+matched nothing.
+
+| Exit | Meaning | What to do |
+|------|---------|------------|
+| 0 | Output produced | Proceed |
+| 1 | Bad usage, or a missing file, Java or JAR | Read the message; fix the path |
+| 3 | No output at all | **Do not report this as "nothing found".** An empty result set and an unloaded extension are indistinguishable from here. Run the control query below to tell them apart |
+| 4 | Output was not JSON | The extension is not loaded and Burp ignored the flags. Install it before trusting any result |
+
+Anything other than 0 means the search result is unverified, and saying "no matching traffic" on the strength
+of it is a false negative reported as a clean finding.
+
+### Resolving Exit 3: the control query
+
+Exit 3 is the common case — most narrowly-scoped regexes legitimately match nothing — so it needs a resolution
+you can carry out yourself. You have `Bash` and `Read`; Burp runs headless here, so there is no Extensions tab
+to open and no GUI to inspect. Re-running the same query just returns 3 again.
+
+Run a **control query** instead: a selector broad enough that it must return rows if the parser is working at
+all, against the same project file. Use the sub-component filter, not the bare selector — a control is still a
+query, and the rules above apply to it unchanged.
+
+```bash
+{baseDir}/scripts/burp-search.sh project.burp proxyHistory.request.headers | head -c 2000
+```
+
+`proxyHistory.request.headers` is the right control precisely because it is broad but bounded: it covers every
+record in the project, at under 1KB each. Bare `proxyHistory` would answer the same question and is banned
+above for a reason — one record with bodies can be megabytes, and `head -n 1` does not stop that, it delivers
+exactly one of them in full.
+
+| Control result | What it means | What to do |
+|---|---|---|
+| Rows on stdout | The parser works | Your narrower query genuinely matched nothing. Report that as a result |
+| Exit 3 again | Nothing comes back at all | Either the extension is not loaded, or this project holds no proxy history. Check you named the right project file and that it is non-empty, then ask the user to confirm `burpsuite-project-file-parser` under Burp Suite → Extensions |
+| Exit 4 | Burp started and dropped the flags | The extension is not loaded. Say so; do not report on traffic |
+
+**Run the control before concluding anything about the project's traffic.** Assuming the extension is loaded is
+exactly how an unverified empty result becomes a clean bill of health — and asking the user to check the GUI is
+a legitimate answer where the control is inconclusive. Guessing is not.
+
+**Through a pipe the exit code is not yours to read.** A pipeline reports the status of its *last* command, and
+nearly every example here ends in `| jq`, `| head` or `| wc -cl` — so `$?` is `head`'s 0, not the script's 3.
+Two reliable signals:
+
+- **stderr**, which reaches you regardless of piping. `Error: the parser produced no output.` or
+  `Error: Burp produced output, but not one JSON object` is the answer; no such block means the run was fine.
+- **`set -o pipefail`** when you want the code itself, or read `${PIPESTATUS[0]}`:
+
+```bash
+set -o pipefail
+{baseDir}/scripts/burp-search.sh project.burp auditItems | jq -c 'select(.severity == "High")'
+echo "exit: $?"
+```
+
+Non-JSON output never reaches stdout, so a downstream `grep` or `jq` cannot match a Burp startup banner and
+mistake it for data.
+
 See [Platform Configuration](#platform-configuration) for setup instructions.
 
 ## Sub-Component Filters (USE THESE)
@@ -162,6 +222,9 @@ The `wc -cl` output shows: `<bytes> <lines>` (e.g., `524288 42` means 512KB acro
 
 **A single 10MB response on one line will show high byte count but only 1 line - the byte check catches this.**
 
+`0 0` from `wc -cl` is not a size to act on — the script exited 3 and nothing was verified. Piping hides that,
+so re-run the query on its own and read the exit code before concluding the project holds no matching traffic.
+
 ### Step 2: Refine Broad Searches
 
 If count/size is too high:
@@ -284,6 +347,7 @@ Common shortcuts that lead to missed vulnerabilities or false reports:
 | "All audit items are relevant" | Filter by actual threat model; not every finding matters for every app |
 | "Proxy history is complete" | May be filtered by Burp scope/intercept settings; you see only what Burp captured |
 | "Burp found it, so it's a vuln" | Burp findings require manual verification—they indicate potential issues, not proof |
+| "The search returned nothing, so the traffic isn't there" | Check the exit code first. Exit 3 means the script could not tell an empty result from an unloaded extension, and exit 4 means the query never ran. Only a 0 makes "nothing found" a statement about the project rather than about the tooling |
 
 ## Output Format
 

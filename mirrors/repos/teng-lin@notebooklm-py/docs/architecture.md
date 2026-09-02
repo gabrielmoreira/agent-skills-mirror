@@ -546,7 +546,7 @@ Beyond the client-owned runtime graph, several feature APIs are implemented via 
 | `_web/artifact/listing` | [`_web/artifact/listing.py`](../src/notebooklm/_web/artifact/listing.py) | Web artifact listing, raw-row decoding, and note-backed mind-map composition. |
 | `_web/artifact/table` | [`_web/artifact/table.py`](../src/notebooklm/_web/artifact/table.py) | Web positional data-table row extraction. |
 | `_web/` | [`_web/`](../src/notebooklm/_web) | Private home for the batchexecute web backend. Web-wire codecs, row decoding, request construction, and concrete namespace implementations live here while public namespace classes remain transport-neutral bases. Direct imports are constrained by `tests/_guardrails/test_backend_boundaries.py`. |
-| `_web/rows/*` | [`_web/rows/`](../src/notebooklm/_web/rows) | Web wire-shape adapters for artifacts, chat, collections, documents, labels, notebooks, notes, research, sharing, and sources. Public notebook/sharing/collection factories stay on their dataclasses as lazy shims into this package; deep-research task parsing and conversation-role decoding live here too. Strict decode behavior is pinned in the row-adapter, chat-history, research-parser, and wire-contract tests. |
+| `_web/rows/*` | [`_web/rows/`](../src/notebooklm/_web/rows) | Web wire-shape adapters for artifacts, chat, collections, documents, labels, notebooks, notes, research, sharing, sources, and ranked source chunks. Public notebook/sharing/collection factories stay on their dataclasses as lazy shims into this package; deep-research task parsing and conversation-role decoding live here too. Strict decode behavior is pinned in the row-adapter, chat-history, research-parser, and wire-contract tests. |
 | `_web/wire/*` | [`_web/wire/`](../src/notebooklm/_web/wire) | Batchexecute envelope encoding, response/status decoding, strict positional access, and runtime RPC-ID overrides. `notebooklm.rpc` preserves the public power-user path and legacy root attributes as identity re-exports; no former deep `notebooklm.rpc.*` implementation modules remain. |
 | `_types/` | [`_types/`](../src/notebooklm/_types) | Private package holding the transport-neutral enum, dataclass, and `Protocol` implementations behind the public `types.py` / per-feature public schemas. Split per domain (`artifacts.py`, `artifact_content.py`, `chat.py`, `documents.py`, `enums.py`, `labels.py`, `mind_maps.py`, `notebooks.py`, `notes.py`, `research.py`, `sharing.py`, `sources.py`, plus `common.py` for shared shapes like `ConnectionLimits`). |
 
@@ -978,6 +978,8 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/transport/seams.py` | Constructor-only injectable seams used by tests and collaborator construction. |
 | `_android/` | Android backend package. Its package marker and selected adapter imports are dependency-free; generated protobuf modules remain lazy. Explicit Android preference installs Android adapters for all eleven public namespaces, with operation-level Web compatibility seams only where the admitted mobile contract has no usable equivalent. |
 | `_android/auth.py` | Generation-fenced `BearerProvider`: off-loop typed profile reads, shared mint waves, bounded expiry caching, compare-and-clear invalidation, and secret-safe teardown. |
+| `_android/phenotype.py` | Headless GMS Phenotype token provider: mints the per-account Play Books experiment `serverToken` via a single-package `getExperimentsAndConfigs` POST, TTL-caches it, and wraps it into the `x-goog-ext-202964622-bin` add-path metadata (#2302). |
+| `_android/play_books.py` | Android Play Books wire codecs plus the exact tentative-state and static-metadata helpers used by its guarded one-time stale-token retry. |
 | `_android/codecs/` | Typed protobuf-to-public-dataclass projection package for Android adapters. |
 | `_android/codecs/account.py` | Strict frozen account-flag projection; missing account/user/premium message blocks fail closed. |
 | `_android/codecs/notebooks.py` | Android project and notebook-guide projections plus bounded notebook decode/status errors. |
@@ -994,6 +996,8 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_android/session.py` | Lazy Google-TLS gRPC transport participating in root loop/lifecycle supervision, aggregate deadlines, per-call bearer metadata, status mapping, safe-read replay, and full stream leases. |
 | `_android/write_safety.py` | Shared non-idempotent write helper that marks only transport-ambiguous Android outcomes as unconfirmed while preserving confirmed authentication, validation, and backend rejections. |
 | `_android/sources.py` | Selected Android source adapter: `GetProject` reads, exact URL/text/YouTube/Drive adds, freshness checks, native stale-Drive-source refresh, maintenance/content methods, generic file uploads, and Android-bearer Drive-file download followed by Android registration/upload. |
+| `_android/source_search.py` | Native replay-safe `RetrieveRelevantChunks` dispatch and protobuf-to-`RelevantChunk` projection for `sources.search`. |
+| `_android/source_transfers.py` | `AndroidSourceTransferMixin`: `AddSourcesAsync` (queued stub rows + acknowledgements), `AppendSource` (in-place text append) and `CopySourcesAsync` (original→copy mapping) over native gRPC (#2283); kept out of `sources.py` for the module-size budget. |
 | `_android/drive_staging.py` | `DriveStagingTransfer`: stages a local file in the caller's own Drive, imports it, and deletes the staged copy. Used for the file types the mobile upload frontend will not parse (the OOXML containers `.docx`/`.pptx`), so an Android-selected client needs no Web collaborator. Built over the upload pipeline's transport, so it shares its epoch/deadline/client-tracking discipline. |
 | `_android/upload.py` | Selected `AndroidUploadPipeline`: epoch-fenced generic tentative registration, strict bearer-authenticated Scotty start/finalize, and a bounded exact-origin Drive v3 metadata/media downloader for `add_drive_file`; it uses one aggregate operation deadline, independent download/upload admission, restricted temporary files, and secret-safe teardown. |
 | `_android/evidence.py` | One pinned Android evidence profile for the captured app version and distinct registration/finalize user agents. |
@@ -1004,6 +1008,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_android/artifact_note_mind_maps.py` | Native `ActOnSources` plus `CreateNote` workflow for note-backed mind-map generation within one Android transport epoch. |
 | `_android/artifact_outputs.py` | Bounded local representation decoding and atomic text publication: progressive media selection, typed/exact-protobuf prefetch, typed note-backed mind-map prefetch, app/tree parsing, TailwindDoc Markdown rendering, and BOM-prefixed data-table CSV rendering. |
 | `_android/artifact_reads.py` | Notebook-scoped ownership preflights, exact Studio artifact reads, and safe selection of completed or caller-prefetched Android artifact metadata. |
+| `_android/artifact_transfers.py` | `AndroidArtifactTransferMixin`: `CopyArtifactsAsync` (original→new artifact row mapping) and the account-level `GetArtifactCustomizationChoices` option tables over native gRPC (#2283). |
 | `_android/artifact_proto.py` | Lazy handles for exact artifact/read protobuf modules and repository-local evidence overlays so public Android backend construction does not eagerly import generated descriptors. |
 | `_android/note_backed.py` | Narrow adapter projecting the selected typed note-backed mind-map reader into aggregate Android artifact rows. |
 | `_android/assets.py` | Publicly selected, lifecycle-drained Android asset transport. It validates canonical hosts and every hop, clears ambient cookies, performs the APK-evidenced bearer-authenticated `GET` with `alr=yes` only on exact admitted entry hosts, strips credentials after leaving the allowlist, enforces representation-specific length/stream/signature limits, corrects verified WAV destinations to `.wav`, and publishes through same-directory staging atomically. PDF and PPTX slide transfer are live-proven. |
@@ -1024,7 +1029,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_android/proto/google/internal/labs/tailwind/orchestration/v1/read_pb2_grpc.py` | Deterministic service-free companion for the read message overlay. |
 | `_android/proto/google/internal/labs/tailwind/orchestration/v1/notebooks_pb2.py` | Durable exact-package notebook mutation/guide messages imported by the cumulative service; local parser overrides remain only for live-only fields. |
 | `_android/proto/google/internal/labs/tailwind/orchestration/v1/notebooks_pb2_grpc.py` | Deterministic service-free companion for the exact notebook message overlay. |
-| `_android/proto/google/internal/labs/tailwind/orchestration/v1/orchestration_service_pb2.py` | Sole exact-package cumulative orchestration descriptor: 47 implemented methods, including exact `RemoveRecentlyViewedProject`, live APK-exact `DeriveArtifact`, and ten conventional-name signatures explicitly tracked as current-web-bundle inferences; the separate sharing descriptor adds two exact paths and the exception manifest is empty. |
+| `_android/proto/google/internal/labs/tailwind/orchestration/v1/orchestration_service_pb2.py` | Sole exact-package cumulative orchestration descriptor: 55 implemented methods, including exact `RemoveRecentlyViewedProject`, live APK-exact `DeriveArtifact`, and sixteen conventional-name signatures explicitly tracked as Web-derived inferences; the separate sharing descriptor adds two exact paths and the exception manifest is empty. |
 | `_android/proto/google/internal/labs/tailwind/orchestration/v1/orchestration_service_pb2_grpc.py` | Generated `LabsTailwindOrchestrationServiceStub` exposing the cumulative exact unary and unary-stream methods. |
 | `_android/proto/google/internal/labs/tailwind/orchestration/v1/sources_pb2.py` | Source-operation and `UploadFileRequest` descriptors plus the explicitly web-derived `MutateSource` request/response wrapper. |
 | `_android/proto/google/internal/labs/tailwind/orchestration/v1/artifacts_pb2.py` | Artifact request/response and projection overlay, including the explicitly web-derived report-suggestion closure. |
@@ -1101,7 +1106,9 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/rows/artifacts.py` | `ArtifactRow` typed view over raw positional artifact RPC rows, plus `ReportSuggestionRow` over `GET_SUGGESTED_REPORTS` rows |
 | `_web/rows/chat.py` | Shared Web chat row adapters (`AnswerRow` / `CitationRow` / `CitationDetail` / `ConversationTurnRow` / `SavedChatNoteRow` / `StreamFrameRow` / `ErrorPayloadRow`). `AnswerRow.document` and `CitationDetail.fragment_elements` delegate the document tree to `_web/rows/documents.py` (#2120) |
 | `_web/rows/chat_stream.py` | Streamed-chat envelope parsing, answer/citation extraction, error-frame rejection, and UUID helpers over the typed chat/document rows |
+| `_web/rows/chunks.py` | Strict `RetrieveRelevantChunks` source-group/chunk row views and `RelevantChunk` projection |
 | `_web/rows/collections.py` | Strict collection-tuple decoding behind `Collection.from_api_response`'s lazy shim |
+| `_web/rows/customization.py` | `GetArtifactCustomizationChoices` row views (`CustomizationChoicesRow` / `CustomizationChoiceRow` / `ReportPresetRow`) — the four Studio option families behind `ArtifactCustomizationChoices` |
 | `_web/rows/documents.py` | `TailwindDoc` tree adapters (`DocumentBodyRow` / `StructuralElementRow` / `ParagraphRow` / `ParagraphElementRow` / `TextRunRow` / `TableRow` / `BulletInfoRow` / `AnnotationEntryRow`) plus the `build_document` / `build_blocks` builders. One decoder for all three carriers of the tree — source fulltext, chat-answer `responseDoc`, and a citation's `TailwindDocFragment` — so citation offsets on both sides share a coordinate space (#2128, #2120) |
 | `_web/rows/labels.py` | `LabelRow` strict typed view over the raw positional label tuple `[name, sources, id, emoji]` (fails loud on schema drift) |
 | `_web/rows/notebooks.py` | Notebook `Project` decoding behind `Notebook.from_api_response`'s lazy shim, plus the `SUGGEST_PROMPTS` suggestion-row view |
@@ -1110,8 +1117,9 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/rows/research_task.py` | Internal parser for research task result-type selection |
 | `_web/rows/sharing.py` | `SharedUserRow` / `ShareStatusRow` decoding behind the public sharing models' lazy shims |
 | `_web/rows/sources.py` | `SourceRow` / `SourceRowShape` typed views over raw positional source RPC rows |
+| `_web/rows/transfers.py` | Mapping-row views for the #2283 transfer replies (`CopiedSourceRow` / `CopiedArtifactRow` / `AddSourcesAsyncResponseRow` / `SourceAckRow`) plus the shared `unwrap_mapping_rows` envelope probe |
 | `_web/notebooks.py` | `WebNotebooksAPI`, the concrete `batchexecute` notebook backend; preserves the shared executor identity and web-only decoding/quota/session-hint behavior, and owns the direct-construction `SourceLister` fallback |
-| `_web/sources/` | `WebSourcesAPI` and the concrete web source services: add/batch orchestration, source listing/content decoding, Drive import, and the resumable upload pipeline |
+| `_web/sources/` | `WebSourcesAPI` and the concrete web source services: add/batch orchestration, source listing/content/search decoding, Drive import, and the resumable upload pipeline |
 | `_web/artifacts.py` | `WebArtifactsAPI`, the concrete `batchexecute` artifact backend; owns web listing, mutation, generation-hook, raw selection, export, and suggestion operations |
 | `_web/artifact/` | Web artifact services for listing, generation dispatch, raw download selection, and positional data-table decoding |
 | `_web/chat.py` | `WebChatAPI`, the concrete streamed-query and `batchexecute` chat backend; owns request IDs, streamed transport, positional history/turn decoding, chat RPCs, and saved-chat note persistence |
@@ -1131,7 +1139,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/wire/safe_index.py` | Strict bounds-checked positional access for decoded web payloads, compatibility-re-exported as `notebooklm.rpc.safe_index` |
 | `artifacts.py`, `research.py`, `utils.py` | Public helper modules for artifact retry, research citation/report utilities, and common async helpers |
 | `_notebooks.py` | Backend-neutral abstract `NotebooksAPI`; owns shared create idempotency, lookup/update conveniences, metadata composition, and share-URL semantics |
-| `_sources.py` | Backend-neutral abstract `SourcesAPI`; owns source identity lookup and the four polling workflows over neutral `SourcePoller` |
+| `_sources.py` | Backend-neutral abstract `SourcesAPI`; owns source identity lookup, search validation/global ranking, and the four polling workflows over neutral `SourcePoller` |
 | `_artifacts.py` | Backend-neutral abstract `ArtifactsAPI`; owns artifact generation orchestration, decoded polling, family lists, lookup, neutral formatting, and asset transfer |
 | `_chat.py` | Backend-neutral abstract `ChatAPI`; owns locks, cache, deleted-conversation tracking, ID recovery, authoritative turn counting, modes, and shared ask/delete/save-note orchestration over three protected adapter hooks plus the typed `_list_turn_roles` read boundary |
 | `_research.py` | Thin lazy compatibility shim for the moved `ResearchAPI` implementation |
@@ -1157,10 +1165,12 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/params/artifacts.py` | Stable web artifact RPC request payload builders |
 | `_web/sources/add.py` | Core service layer for adding text, URL, or Google Drive sources |
 | `_web/sources/batch.py` | True-batch URL `ADD_SOURCE` service for the existing MCP/REST batch endpoints: typed positional outcomes, omitted-row reconciliation, and fail-closed transport/duplicate ambiguity policy |
+| `_web/sources/transfers.py` | `SourceTransferService`: `AddSourcesAsync` (non-blocking batch add), `AppendSource` (in-place text append) and `CopySourcesAsync` (cross-notebook copy) — unconfirmed-on-transport-loss writes behind `WebSourcesAPI.add_urls_async` / `append_text` / `copy` (#2283) |
 | `_web/sources/drive_import.py` | Auto-route add-from-Drive (#1884): download + upload the upload-only Drive types (epub/docx/txt/…); native import (`add_drive`) instead takes Docs/Slides/Sheets + PDF by reference; header-first cookie-authed streaming fetch behind injected seams |
 | `_web/sources/content.py` | Core service layer for fetching source HTML/markdown content |
 | `_source/markdown.py` | Source fulltext HTML-to-Markdown conversion policy, including Markdown-source and LaTeX/table handling |
 | `_web/sources/listing.py` | Core service layer for listing notebook sources |
+| `_web/sources/search.py` | Replay-safe `ASU5Oe` dispatch for ranked source-passage search |
 | `_source/polling.py` | Poll coordination service for active source conversions |
 | `_web/sources/upload.py` | Concurrency-gated upload pipeline for source files |
 | `_web/sources/_upload_decode.py` | Pure decode/validation helpers for the upload pipeline (URL redaction, ADD_SOURCE_FILE source-id extraction, content-type policy), extracted from `upload.py` |
@@ -1286,6 +1296,7 @@ src/notebooklm/
 │   ├── source_content.py        # Click-free read-only source-content fetchers for get/fulltext/guide/stale (typed plan/result pairs)
 │   ├── source_listing.py        # Click-free `source list` fetch core: fetch_sources (label_filter resolution; label_resolver injected)
 │   ├── source_mutations.py      # Click-free source delete/delete-by-title/rename/refresh/add-drive core: resolvers + SourceMutationError + typed results (validate_id/resolve_source_id injected; confirmer injected)
+│   ├── source_play_books.py     # Click-free backend-neutral Google Play Books core (#2292/#2302): fetch_play_books + execute_source_add_play_book over client.sources.list_play_books/add_play_book
 │   ├── source_research.py       # Click-free `source add-research` start/wait/import workflow + validate_add_research_flags (importer injected; SourceAddResearchPlan/Result)
 │   ├── source_wait.py           # Click-free `source wait` readiness-poll core: execute_source_wait + typed SourceWaitOutcome (wait_context injected) + wait_all_sources (single-snapshot loop via client.sources.wait_all_until_ready — one notebook poll per tick, order-preserving; #1870) shared by the MCP tool + REST route (#1871) + the MAX_WAIT_TIMEOUT / MAX_WAIT_SOURCE_IDS caps
 │   └── views.py                 # Transport-neutral output-projection views: share_status_view (access/permission/view_level enum→label), source_view (kind/status_label/drive_status_label + is_drive_degraded added), notebook_view (role_label added), notebook_viewed_keys (last_viewed_at + its deprecated modified_at alias, for hand-built CLI JSON envelopes), ask_result_view (raw_response debug blob stripped); shared by the MCP tools + REST routes so both emit the identical enriched shape (Option B)
@@ -1293,6 +1304,8 @@ src/notebooklm/
 │   ├── __init__.py              # Dependency-free package marker
 │   ├── auth.py                  # Epoch-aware short-lived bearer provider
 │   ├── account.py               # Private non-replayed account bootstrap adapter
+│   ├── phenotype.py             # Headless GMS Phenotype token acquisition for Play Books
+│   ├── play_books.py            # Play Books wire codecs and guarded retry helpers
 │   ├── codecs/                  # Android protobuf projections
 │   │   ├── __init__.py          # Codec package marker
 │   │   ├── account.py           # Strict frozen account projection
@@ -1310,6 +1323,7 @@ src/notebooklm/
 │   ├── session.py               # Supervised lazy gRPC transport
 │   ├── write_safety.py          # Shared ambiguous-write outcome marker
 │   ├── sources.py               # Selected source surface (fully native)
+│   ├── source_search.py         # Native RetrieveRelevantChunks search service
 │   ├── upload.py                # Epoch-fenced generic Android Scotty transaction
 │   ├── drive_staging.py         # Drive round-trip for types the mobile upload frontend rejects
 │   ├── evidence.py              # Pinned captured app/UA evidence profile
@@ -1320,10 +1334,12 @@ src/notebooklm/
 │   ├── artifact_note_mind_maps.py # Native note-backed map generation/persistence
 │   ├── artifact_outputs.py       # Local output decoders/renderers + atomic publication
 │   ├── artifact_reads.py         # Notebook-scoped exact reads and safe prefetch selection
+│   ├── artifact_transfers.py     # CopyArtifactsAsync + customization-choice table mixin (#2283)
 │   ├── artifact_proto.py         # Lazy artifact/read protobuf handles
 │   ├── note_backed.py            # Typed note-backed map → aggregate artifact adapter
 │   ├── assets.py                # Lifecycle-drained, bearer-safe typed asset transfer
 │   ├── chat.py                  # Selected Android chat reads/delete/stream/settings
+│   ├── source_transfers.py      # AddSourcesAsync / AppendSource / CopySourcesAsync mixin (#2283)
 │   ├── notes.py                 # Selected 8-method Notes manifest + saved-response seam
 │   ├── settings.py              # Selected settings wrapper over the evidence-bounded Web seam
 │   ├── sharing.py               # Selected native public-link + Web collaborator/view adapter
@@ -1344,7 +1360,7 @@ src/notebooklm/
 │           │   ├── notebooks_pb2.py         # Exact notebook messages/descriptors
 │           │   ├── notebooks_pb2_grpc.py    # Deterministic service-free companion
 │           │   ├── orchestration_service_pb2.py      # Cumulative exact service descriptor
-│           │   ├── orchestration_service_pb2_grpc.py # 47-method generated stub
+│           │   ├── orchestration_service_pb2_grpc.py # 55-method generated stub
 │           │   ├── sources_pb2.py               # Source and generic-upload descriptors
 │           │   ├── sources_pb2_grpc.py          # Deterministic service-free companion
 │           │   ├── artifacts_pb2.py         # Exact artifact message overlay
@@ -1368,6 +1384,9 @@ src/notebooklm/
 │           ├── sharing_pb2_grpc.py               # Deterministic service-free companion
 │           ├── organization_mutations_pb2.py     # Repository-local organization wire
 │           └── organization_mutations_pb2_grpc.py # Deterministic service-free companion
+│       ├── notebooklm/experiments/v1/
+│           ├── exptsandconfigs_pb2.py      # Minimal Phenotype/Heterodyne messages
+│           └── exptsandconfigs_pb2_grpc.py # Deterministic service-free companion
 │       ├── notebooklm/internal/android/wire/v1/
 │           ├── notebooks_pb2.py       # Repository-local notebook wire messages
 │           ├── notebooks_pb2_grpc.py  # Deterministic service-free companion
@@ -1457,7 +1476,9 @@ src/notebooklm/
 │   ├── artifacts.py             # Artifact + GET_SUGGESTED_REPORTS row adapters (ArtifactRow / ReportSuggestionRow)
 │   ├── chat.py                  # Streamed-chat row adapters (AnswerRow / CitationRow / CitationDetail / StreamFrameRow / ErrorPayloadRow) — closes the chat positional-decode perimeter (#1491); the document tree is delegated to documents.py (#2120)
 │   ├── chat_stream.py           # Streamed-chat envelope, answer, citation, and error-frame parsing
+│   ├── chunks.py                # RetrieveRelevantChunks source-group/chunk row adapters
 │   ├── collections.py           # Strict collection tuple decoder behind the public lazy shim
+│   ├── customization.py         # GetArtifactCustomizationChoices option-table row adapters (#2283)
 │   ├── documents.py             # TailwindDoc tree adapters (DocumentBodyRow / StructuralElementRow / ParagraphRow / ParagraphElementRow / TextRunRow / TableRow / BulletInfoRow / AnnotationEntryRow) + build_document/build_blocks — one decoder for source fulltext, chat responseDoc, and citation fragments (#2128, #2120)
 │   ├── labels.py                # Source-label row adapter
 │   ├── notebooks.py             # Notebook Project decoder + SUGGEST_PROMPTS suggestion-row adapter
@@ -1465,7 +1486,9 @@ src/notebooklm/
 │   ├── research.py              # POLL_RESEARCH row adapters (ResearchTaskRow / ResearchTaskInfoRow / ResearchResultRow) — drains the research parser's single-level positional reads (#1501)
 │   ├── research_task.py         # Deep-research task parser
 │   ├── sharing.py               # Shared-user and share-status row decoders behind public lazy shims
-│   └── sources.py               # Source row adapter
+│   ├── sources.py               # Source row adapter
+│   ├── play_books.py            # ListExpertIntelligenceContent row adapter (#2292): decode_play_books_response → PlayBook list
+│   └── transfers.py             # CopySourcesAsync / CopyArtifactsAsync / AddSourcesAsync mapping-row adapters (#2283)
 ├── _chat.py                     # Abstract ChatAPI + shared locks/cache/ask/delete/save-note orchestration and lazy private turn-helper shim
 ├── _auth/                       # Auth subpackage (forwarded through auth.py facade)
 │   ├── __init__.py
@@ -1540,6 +1563,9 @@ src/notebooklm/
 │   │   ├── content.py           # Source content fetcher
 │   │   ├── drive_import.py      # Cookie-authenticated Drive download + upload route
 │   │   ├── listing.py           # GET_NOTEBOOK source listing decoder
+│   │   ├── play_books.py        # Web PlayBooksService (#2292): mVtEUb list + X1snv Play Books add; Android has native parity
+│   │   ├── search.py            # ASU5Oe ranked source-passage search service
+│   │   ├── transfers.py         # AddSourcesAsync / AppendSource / CopySourcesAsync service (#2283)
 │   │   ├── upload.py            # Gated resumable source upload pipeline
 │   │   └── _upload_decode.py    # Upload URL/source-id/content-type validation
 │   ├── artifacts.py             # WebArtifactsAPI
@@ -1589,7 +1615,8 @@ src/notebooklm/
 │   ├── _filelink.py             # HMAC-signed self-describing file-transfer tokens (ADR-0024): FileLinkSigner.sign(payload, ttl→injects exp)/verify(token, op) (stdlib hmac/base64/json; pre-decode length cap, base64url re-pad, compare_digest, exp+op check) + FileTransferConfig(signer, base_url).upload_url(ttl=UPLOAD_TTL 15m; WIDGET_UPLOAD_TTL 1h for the ADR-0027 widget pool)/download_url (DOWNLOAD_TTL 30m); FileLinkError
 │   ├── _fileroutes.py           # register_file_routes(mcp, config): the /files/{dl,ul} custom routes mounted on the FastMCP http app (ADR-0024). GET /files/dl streams the artifact (download core → FileResponse, meaningful filename, inside-tempdir assert, BackgroundTask cleanup); GET /files/ul = minimal upload page (file picker + raw-body fetch POST); POST|PUT /files/ul streams request.stream() into a 0600 temp under a running byte cap (real DoS guard) + Content-Length early 413 → neutral source_add core. Signed token is the sole auth (custom routes bypass the bearer gate); HTML pages set no-referrer/no-store/DENY; local _safe_upload_name (no server/ import)
 │   ├── _uploadwidget.py         # register_upload_widget(mcp, config): OPT-IN in-app MCP-App upload widget (ADR-0027, NOTEBOOKLM_MCP_UPLOAD_WIDGET=1 → also auto-enables stateless HTTP). ONE ui:// resource (file-picker HTML, profile=mcp-app mime) + source_add_widget tool; both ui/resourceUri (claude.ai) and openai/outputTemplate (ChatGPT) point at it. Emits the render gates via FastMCP meta=/app=: _meta.ui.domain = sha256("<public-url>/mcp")[:32] + ".claudemcpcontent.com", flat ui/resourceUri, ui.csp; the widget POSTs bytes to /files/ul (reuses ADR-0024). Off the default surface unless enabled
-│   ├── _context.py              # AppState dataclass (client + optional file_transfer) + get_client(ctx) / get_file_transfer(ctx) (lifespan-bound) + get_client_from_app(request) (the guarded private-attr accessor for the bare-Request custom routes)
+│   ├── _chattasks.py            # Detached chat asks for chat_start/chat_status (ADR-0024-shaped in-process state): ChatTaskRegistry (bounded + TTL-swept; idempotency-keyed via compute_chat_task_key; asyncio.create_task detachment so the remote transport's ~60s watchdog cancelling the start call cannot kill the generation; lifespan aclose) + ChatTaskEntry/ChatTaskCapacityError
+│   ├── _context.py              # AppState dataclass (client + optional file_transfer + cancelled_research + chat_tasks) + get_client(ctx) / get_file_transfer(ctx) / get_cancelled_research(ctx) / get_chat_tasks(ctx) (lifespan-bound) + get_client_from_app(request) (the guarded private-attr accessor for the bare-Request custom routes)
 │   ├── _errors.py               # Structured tool-error projection (CATEGORY_TABLE/ERROR_CODES/mcp_errors/to_tool_error/tool_error_payload) over _app.errors.classify
 │   ├── _resolve.py              # resolve_notebook/resolve_source/resolve_note/resolve_artifact — name + partial-id resolution over _app.resolve plus exact-title matching
 │   ├── _confirm.py              # needs_confirmation() both-mode envelope + READ_ONLY/DESTRUCTIVE ToolAnnotations
@@ -1608,6 +1635,7 @@ src/notebooklm/
 │       ├── notebooks.py         # notebook_list/create/describe/rename/delete over _app.notebooks
 │       ├── sources.py           # source_list/read/rename/delete/wait/add over _app.source_* (add: url/text/file/youtube via source_add, drive via source_mutations); source_add folds in wait=True (single-mode add + wait composed via _waitagg) and bytes_base64/filename (in-channel small-file byte upload via _fileupload) — #1890
 │       ├── sources_drive.py     # source_add_drive_file tool (#1884): discrete verb over _app.source_mutations.execute_source_add_drive_file — downloads + uploads the upload-only Drive types (kept out of the ceiling'd sources.py; own register())
+│       ├── sources_playbooks.py # source_list_play_books + source_add_play_book tools (#2292/#2302): backend-neutral discrete verbs over _app.source_play_books — Google Play Books (Expert Intelligence) (own register())
 │       ├── chat.py              # chat_ask (client.chat.ask + get_history recall + suggest_followups) + chat_configure (_app.chat.execute_configure) + suggest_prompts (client.notebooks.suggest_prompts surface selector)
 │       ├── notes.py             # note_save (create-or-update upsert) over _app.notes; note reading/renaming/deleting fold into the cross-type Studio tools
 │       ├── studio.py            # hosts the Studio tools: studio_list (merges notes+artifacts via _studio_items.studio_items; surfaces each artifact's generation_prompt in the summary listing / the item= single-fetch — folded studio_get_prompt in #1896) / generate / status / download (via _studio_download) / rename / retry / studio_delete — both rename and delete are cross-type via _studio_items.resolve_studio_item (note→_app.notes.execute_note_rename/execute_note_delete, artifact→_app.artifacts kind-aware core); enum dispatch over _app.generate + _app.download; stateless poll via _app.artifacts.poll_artifact

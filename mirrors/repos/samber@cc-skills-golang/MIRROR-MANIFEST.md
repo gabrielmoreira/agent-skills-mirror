@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `samber/cc-skills-golang` — 26 default patterns, 0 followed patterns, 294 file(s) materialized.
+Mirror of `samber/cc-skills-golang` — 26 default patterns, 0 followed patterns, 299 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `samber/cc-skills-golang` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 294 |
+| Files         | 299 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -321,38 +321,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 260 | ✓ | [`skills/golang-stretchr-testify/references/mock.md`](skills/golang-stretchr-testify/references/mock.md) |
 | 261 | ✓ | [`skills/golang-stretchr-testify/SKILL.md`](skills/golang-stretchr-testify/SKILL.md) |
 | 262 | ✓ | [`skills/golang-structs-interfaces/evals/evals.json`](skills/golang-structs-interfaces/evals/evals.json) |
-| 263 | ✓ | [`skills/golang-structs-interfaces/SKILL.md`](skills/golang-structs-interfaces/SKILL.md) |
-| 264 | ✓ | [`skills/golang-swagger/evals/evals.json`](skills/golang-swagger/evals/evals.json) |
-| 265 | ✓ | [`skills/golang-swagger/references/swag-cli.md`](skills/golang-swagger/references/swag-cli.md) |
-| 266 | ✓ | [`skills/golang-swagger/SKILL.md`](skills/golang-swagger/SKILL.md) |
-| 267 | ✓ | [`skills/golang-testing/evals/evals.json`](skills/golang-testing/evals/evals.json) |
-| 268 | ✓ | [`skills/golang-testing/references/helpers.md`](skills/golang-testing/references/helpers.md) |
-| 269 | ✓ | [`skills/golang-testing/references/http-testing.md`](skills/golang-testing/references/http-testing.md) |
-| 270 | ✓ | [`skills/golang-testing/references/integration-testing.md`](skills/golang-testing/references/integration-testing.md) |
-| 271 | ✓ | [`skills/golang-testing/references/mocking.md`](skills/golang-testing/references/mocking.md) |
-| 272 | ✓ | [`skills/golang-testing/SKILL.md`](skills/golang-testing/SKILL.md) |
-| 273 | ✓ | [`skills/golang-troubleshooting/evals/evals.json`](skills/golang-troubleshooting/evals/evals.json) |
-| 274 | ✓ | [`skills/golang-troubleshooting/references/code-review-flags.md`](skills/golang-troubleshooting/references/code-review-flags.md) |
-| 275 | ✓ | [`skills/golang-troubleshooting/references/common-go-bugs.md`](skills/golang-troubleshooting/references/common-go-bugs.md) |
-| 276 | ✓ | [`skills/golang-troubleshooting/references/compilation.md`](skills/golang-troubleshooting/references/compilation.md) |
-| 277 | ✓ | [`skills/golang-troubleshooting/references/concurrency-debug.md`](skills/golang-troubleshooting/references/concurrency-debug.md) |
-| 278 | ✓ | [`skills/golang-troubleshooting/references/diagnostic-tools.md`](skills/golang-troubleshooting/references/diagnostic-tools.md) |
-| 279 | ✓ | [`skills/golang-troubleshooting/references/methodology.md`](skills/golang-troubleshooting/references/methodology.md) |
-| 280 | ✓ | [`skills/golang-troubleshooting/references/performance-debug.md`](skills/golang-troubleshooting/references/performance-debug.md) |
-| 281 | ✓ | [`skills/golang-troubleshooting/references/pprof.md`](skills/golang-troubleshooting/references/pprof.md) |
-| 282 | ✓ | [`skills/golang-troubleshooting/references/production-debug.md`](skills/golang-troubleshooting/references/production-debug.md) |
-| 283 | ✓ | [`skills/golang-troubleshooting/references/testing-debug.md`](skills/golang-troubleshooting/references/testing-debug.md) |
-| 284 | ✓ | [`skills/golang-troubleshooting/SKILL.md`](skills/golang-troubleshooting/SKILL.md) |
-| 285 | ✓ | [`skills/golang-uber-dig/evals/evals.json`](skills/golang-uber-dig/evals/evals.json) |
-| 286 | ✓ | [`skills/golang-uber-dig/references/advanced.md`](skills/golang-uber-dig/references/advanced.md) |
-| 287 | ✓ | [`skills/golang-uber-dig/references/recipes.md`](skills/golang-uber-dig/references/recipes.md) |
-| 288 | ✓ | [`skills/golang-uber-dig/references/testing.md`](skills/golang-uber-dig/references/testing.md) |
-| 289 | ✓ | [`skills/golang-uber-dig/SKILL.md`](skills/golang-uber-dig/SKILL.md) |
-| 290 | ✓ | [`skills/golang-uber-fx/evals/evals.json`](skills/golang-uber-fx/evals/evals.json) |
-| 291 | ✓ | [`skills/golang-uber-fx/references/advanced.md`](skills/golang-uber-fx/references/advanced.md) |
-| 292 | ✓ | [`skills/golang-uber-fx/references/recipes.md`](skills/golang-uber-fx/references/recipes.md) |
-| 293 | ✓ | [`skills/golang-uber-fx/references/testing.md`](skills/golang-uber-fx/references/testing.md) |
-| 294 | ✓ | [`skills/golang-uber-fx/SKILL.md`](skills/golang-uber-fx/SKILL.md) |
+| 263 | ✓ | [`skills/golang-structs-interfaces/references/struct-fields.md`](skills/golang-structs-interfaces/references/struct-fields.md) |
+| 264 | ✓ | [`skills/golang-structs-interfaces/references/type-assertions.md`](skills/golang-structs-interfaces/references/type-assertions.md) |
+| 265 | ✓ | [`skills/golang-structs-interfaces/SKILL.md`](skills/golang-structs-interfaces/SKILL.md) |
+| 266 | ✓ | [`skills/golang-swagger/evals/evals.json`](skills/golang-swagger/evals/evals.json) |
+| 267 | ✓ | [`skills/golang-swagger/references/swag-cli.md`](skills/golang-swagger/references/swag-cli.md) |
+| 268 | ✓ | [`skills/golang-swagger/SKILL.md`](skills/golang-swagger/SKILL.md) |
+| 269 | ✓ | [`skills/golang-testing/evals/evals.json`](skills/golang-testing/evals/evals.json) |
+| 270 | ✓ | [`skills/golang-testing/references/benchmarks.md`](skills/golang-testing/references/benchmarks.md) |
+| 271 | ✓ | [`skills/golang-testing/references/coverage.md`](skills/golang-testing/references/coverage.md) |
+| 272 | ✓ | [`skills/golang-testing/references/examples.md`](skills/golang-testing/references/examples.md) |
+| 273 | ✓ | [`skills/golang-testing/references/helpers.md`](skills/golang-testing/references/helpers.md) |
+| 274 | ✓ | [`skills/golang-testing/references/http-testing.md`](skills/golang-testing/references/http-testing.md) |
+| 275 | ✓ | [`skills/golang-testing/references/integration-testing.md`](skills/golang-testing/references/integration-testing.md) |
+| 276 | ✓ | [`skills/golang-testing/references/mocking.md`](skills/golang-testing/references/mocking.md) |
+| 277 | ✓ | [`skills/golang-testing/SKILL.md`](skills/golang-testing/SKILL.md) |
+| 278 | ✓ | [`skills/golang-troubleshooting/evals/evals.json`](skills/golang-troubleshooting/evals/evals.json) |
+| 279 | ✓ | [`skills/golang-troubleshooting/references/code-review-flags.md`](skills/golang-troubleshooting/references/code-review-flags.md) |
+| 280 | ✓ | [`skills/golang-troubleshooting/references/common-go-bugs.md`](skills/golang-troubleshooting/references/common-go-bugs.md) |
+| 281 | ✓ | [`skills/golang-troubleshooting/references/compilation.md`](skills/golang-troubleshooting/references/compilation.md) |
+| 282 | ✓ | [`skills/golang-troubleshooting/references/concurrency-debug.md`](skills/golang-troubleshooting/references/concurrency-debug.md) |
+| 283 | ✓ | [`skills/golang-troubleshooting/references/diagnostic-tools.md`](skills/golang-troubleshooting/references/diagnostic-tools.md) |
+| 284 | ✓ | [`skills/golang-troubleshooting/references/methodology.md`](skills/golang-troubleshooting/references/methodology.md) |
+| 285 | ✓ | [`skills/golang-troubleshooting/references/performance-debug.md`](skills/golang-troubleshooting/references/performance-debug.md) |
+| 286 | ✓ | [`skills/golang-troubleshooting/references/pprof.md`](skills/golang-troubleshooting/references/pprof.md) |
+| 287 | ✓ | [`skills/golang-troubleshooting/references/production-debug.md`](skills/golang-troubleshooting/references/production-debug.md) |
+| 288 | ✓ | [`skills/golang-troubleshooting/references/testing-debug.md`](skills/golang-troubleshooting/references/testing-debug.md) |
+| 289 | ✓ | [`skills/golang-troubleshooting/SKILL.md`](skills/golang-troubleshooting/SKILL.md) |
+| 290 | ✓ | [`skills/golang-uber-dig/evals/evals.json`](skills/golang-uber-dig/evals/evals.json) |
+| 291 | ✓ | [`skills/golang-uber-dig/references/advanced.md`](skills/golang-uber-dig/references/advanced.md) |
+| 292 | ✓ | [`skills/golang-uber-dig/references/recipes.md`](skills/golang-uber-dig/references/recipes.md) |
+| 293 | ✓ | [`skills/golang-uber-dig/references/testing.md`](skills/golang-uber-dig/references/testing.md) |
+| 294 | ✓ | [`skills/golang-uber-dig/SKILL.md`](skills/golang-uber-dig/SKILL.md) |
+| 295 | ✓ | [`skills/golang-uber-fx/evals/evals.json`](skills/golang-uber-fx/evals/evals.json) |
+| 296 | ✓ | [`skills/golang-uber-fx/references/advanced.md`](skills/golang-uber-fx/references/advanced.md) |
+| 297 | ✓ | [`skills/golang-uber-fx/references/recipes.md`](skills/golang-uber-fx/references/recipes.md) |
+| 298 | ✓ | [`skills/golang-uber-fx/references/testing.md`](skills/golang-uber-fx/references/testing.md) |
+| 299 | ✓ | [`skills/golang-uber-fx/SKILL.md`](skills/golang-uber-fx/SKILL.md) |
 
 ---
 

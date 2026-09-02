@@ -118,7 +118,7 @@ Save all deliverables to `$WORK_DIR/work/{task}/`:
 - Comparison table across all ideas
 - Prioritized list: which ideas to research first
 
-Move final deliverables to `$WORK_DIR/work/{task}/results/`.
+Final deliverables stay in `$WORK_DIR/work/{task}/`.
 
 ## Important Notes
 

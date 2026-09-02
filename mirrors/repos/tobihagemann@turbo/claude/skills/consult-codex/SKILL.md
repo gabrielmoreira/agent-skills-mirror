@@ -15,6 +15,8 @@ Identify the 2-5 files most relevant to the problem. Formulate a clear, specific
 
 Run `codex exec` with `-o` to capture the response cleanly. Default to `-s read-only` for safety. Use `-s workspace-write` when the consultation requires running code or reading files outside the workspace.
 
+Omit `-m`, leaving the consultation on codex's configured model. When the user named a model for this consultation, add `-m <model>` to every `codex exec` command in this skill, resume turns included, and pass the name verbatim.
+
 **All `codex` Bash calls require `dangerouslyDisableSandbox: true`** (network access to OpenAI API). Use `.turbo/` as the temp directory — it is in the working directory (sandbox-writable), gitignored, and avoids `$TMPDIR` path mismatches between sandbox and non-sandbox mode.
 
 **Non-piped `codex exec` invocations require `< /dev/null`** to avoid hanging on stdin. Codex reads from stdin whenever stdin is non-TTY, and in subprocess contexts the harness leaves stdin connected to a pipe that never EOFs — codex blocks forever, printing only `Reading additional input from stdin...`. The piped form (`cat file | codex exec "..."`) is safe — `cat` closes the pipe after the file.
@@ -123,6 +125,7 @@ When the consultation rewrote prose rather than answering a question, check the 
 - a rule promoted into an enforcement claim
 - a narrowing that recasts an absence of information as a limitation of what it describes
 - a figure or claim re-attributed to a different subject than the source gave it, the predicate left intact
+- a claim with no counterpart in the source, asserted as if it were there
 - an inverted direction in a described mapping
 - a term renamed in prose, drifting from the identifier it documents
 - a precise word swapped for a vaguer one, or a dropped modifier that carried the argument

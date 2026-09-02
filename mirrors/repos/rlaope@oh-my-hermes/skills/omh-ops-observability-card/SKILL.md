@@ -74,6 +74,9 @@ Quality bar:
 - Name the user-facing workflow objective, required context, next action, and stop condition.
 - Separate prepared guidance from observed platform, runtime, connector, file, memory, or delivery evidence.
 - Expose missing tools, credentials, targets, or observations as user-visible gaps.
+- When advising what to record per model call, require the five answers - which model, how long, how many tokens in and out, whether it succeeded, and why it failed - with streaming calls adding time-to-first-token; the attribute tiers live in `omh-agent-ops-review/references/instrumentation-ladder.md`.
+- Aggregate cost at the four levels - per call, per agent run, per session, per user - and name the budget threshold each level checks against before recommending any optimization signal.
+- Never recommend logging raw prompts, responses, or secret values into telemetry; counts, lengths, hashes, and key-set booleans carry the signal without the leak.
 
 Handoff policy:
 

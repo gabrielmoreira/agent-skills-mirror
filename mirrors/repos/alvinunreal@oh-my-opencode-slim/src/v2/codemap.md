@@ -124,8 +124,10 @@ expanding the global v2 client surface.
   (logged) — the v2 shim has no `session.create`/`tool.ids`, so the v1
   session pipeline cannot substitute.
 - Build: `build:v2` bundles `src/index.ts` (which pulls in `src/v2/`) into
-  `dist/server.js` (self-contained except `jsdom`); `build:tui` bundles
-  `src/v2/tui.ts` into `dist/tui2.js`.
+  `dist/server/index.js` (self-contained except `jsdom`) — the directory
+  entrypoint v2 hosts ≥ beta-18743 require, also served via the
+  `./server` package subpath (the exports map resolves it directly);
+  `build:tui` bundles `src/v2/tui.ts` into `dist/tui2.js`.
 
 ## Limitations (see `docs/opencode-v2-compatibility.md`)
 

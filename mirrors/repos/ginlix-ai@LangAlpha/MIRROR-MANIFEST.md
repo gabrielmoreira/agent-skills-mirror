@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 50
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,14 +101,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`plugins/langalpha_service/skills/secretary/SKILL.md`](plugins/langalpha_service/skills/secretary/SKILL.md) |
 | 41 | ✓ | [`plugins/langalpha_service/skills/self-improve/SKILL.md`](plugins/langalpha_service/skills/self-improve/SKILL.md) |
 | 42 | ✓ | [`plugins/langalpha_service/skills/user-profile/SKILL.md`](plugins/langalpha_service/skills/user-profile/SKILL.md) |
-| 43 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
-| 44 | ✓ | [`tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md`](tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md) |
-| 45 | ✓ | [`tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md`](tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md) |
-| 46 | ✓ | [`tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md`](tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md) |
-| 47 | ✓ | [`tests/fixtures/plugins/skill-defects/skills/good/SKILL.md`](tests/fixtures/plugins/skill-defects/skills/good/SKILL.md) |
-| 48 | ✓ | [`tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md`](tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md) |
-| 49 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 50 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 43 | ✓ | [`src/ptc_agent/agent/prompts/templates/AGENTS.md`](src/ptc_agent/agent/prompts/templates/AGENTS.md) |
+| 44 | ✓ | [`src/ptc_agent/agent/tools/AGENTS.md`](src/ptc_agent/agent/tools/AGENTS.md) |
+| 45 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
+| 46 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 47 | ✓ | [`tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md`](tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md) |
+| 48 | ✓ | [`tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md`](tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md) |
+| 49 | ✓ | [`tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md`](tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md) |
+| 50 | ✓ | [`tests/fixtures/plugins/skill-defects/skills/good/SKILL.md`](tests/fixtures/plugins/skill-defects/skills/good/SKILL.md) |
+| 51 | ✓ | [`tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md`](tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md) |
+| 52 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 53 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

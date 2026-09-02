@@ -1,36 +1,127 @@
-# Server lifecycle, discovery, and plugin reload
+# Server lifecycle, authority, and plugin reload
 
-Part of the Godot AI agent guide — see [AGENTS.md](../AGENTS.md) for the always-loaded rules.
+Part of the Godot AI agent guide — see [AGENTS.md](../AGENTS.md) for the
+always-loaded rules.
 
+Godot AI v4 has one lifecycle owner:
+`plugin/addons/godot_ai/utils/server_lifecycle.gd`. The plugin root captures an
+immutable launch plan on the main thread, configures the owner without side
+effects, completes composition, and only then activates it. An active update
+transaction blocks composition before normal settings capture or construction
+of client/lifecycle/transport workers, sockets, or server objects. A successful
+claim with unfinished M6 client migration is different: the root may construct
+inert owners and UI, but keeps
+`_normal_start_released == false`. Lifecycle start/restart/recover and all other
+normal client, update, transport, and telemetry effects remain barred until the
+exact actor publishes `migration-complete.json`. Stop remains available so
+shutdown cannot be trapped behind the release gate.
 
-How the plugin starts, adopts, and tears down the Python server in development.
+## One serialized episode
 
-## Server lifecycle in dev
+The lifecycle stores one tagged episode with these states:
 
-The plugin manages the server process:
-- On startup, plugin checks if port 8000 is already in use. If yes, uses existing server. If no, spawns `.venv/bin/python -m godot_ai --transport streamable-http --port 8000`.
-- The plugin prefers the local `.venv` over system-installed `godot-ai` so dev checkouts always use source code.
-- **External adoption does not transfer process ownership**: when the plugin adopts an externally started server (CI's `script/ci-start-server`, a hand-started dev server, or an attach-owned backend), `server_lifecycle.gd::adopt_compatible_server` sets `_server_pid = -1` and clears the managed record/pid file. Normal editor teardown therefore has no PID authority to kill and leaves that external server running. Plugin-spawned servers remain managed and follow their normal stop/`keep_server_on_exit` policy. Status fields such as `owner_type` are diagnostic only and never sufficient kill proof. **One deliberate, bounded exception**: during a stale-recovery episode — armed only by an explicit user action (the Update click via the post-update marker, or the dock's Restart click) — a brand-verified godot-ai occupant whose *version differs* from the plugin's may be killed on the weak `status_name` proof tier, for a bounded number of rounds (`_stale_recovery_budget`, see [docs/releasing.md](releasing.md)). The startup walk and WS version verdict share one single-flight recovery owner; automatic verdicts re-probe for the exact stale version before accepting kill proof. This intentionally covers a hand-started *previous-version* server too: a stale-version backend on the configured port is incompatible with the plugin either way, and the user's click chose replacement. Same-version and foreign occupants remain protected in all cases.
-- **Bridge leases bound crash survival for plugin-spawned servers**: the Python owner-PID watchdog and idle backstop both defer shutdown while an attach bridge holds a live lease. A plugin-spawned backend can therefore outlive a crashed editor until its last client lease expires, extending the same tokenless-loopback trust window as `keep_server_on_exit`, but only for the lease TTL. That bound depends on the lease registry refusing to grow without limit: the `/godot-ai/lease/*` routes are loopback-guarded but **not authenticated**, and the `instance_id` they require is published by the unauthenticated `/godot-ai/status` probe, so any local process can register. `LeaseRegistry` therefore caps concurrent leases (`DEFAULT_MAX_ACTIVE_LEASES`, 429 `LEASE_LIMIT_EXCEEDED` past it) and prunes through an expiry heap rather than a full scan — the old full-dict scan ran on every register/heartbeat/release/`active_count`, so N registrations cost O(N²) CPU *on the event loop serving all MCP traffic*. Keep both properties: a bridge holds exactly one lease, so neither constrains real use. This does not yet cover a normal editor exit: the GDScript `_exit_tree` path still stops a plugin-managed backend without consulting leases, so that clean-exit case churns the backend and is tracked separately from #822.
-- **Attach response-stream limitation**: the bridge deliberately has no post-dispatch read deadline. A same-instance network stream loss, or a server-side request task that dies without producing a response, can therefore wait until the MCP client cancels the call. FastMCP 3.0 exposes `event_store`, but the real cut-and-resume flow hangs at that supported floor (while working on 3.4), so resumability remains a compatibility follow-up rather than a version-dependent feature. Cancellation is cleanup-safe and never replays an ambiguously dispatched mutation.
-- **Attach runtime files**: `godot-ai attach` keeps its per-port advisory lock and backend log in a private per-user runtime directory. Override it with `GODOT_AI_RUNTIME_DIR`; otherwise Windows uses `%LOCALAPPDATA%\godot-ai\runtime`, POSIX uses `$XDG_RUNTIME_DIR/godot-ai` when available, and the final fallback is a user-specific temporary directory. On POSIX the selected directory is rejected if it is a symlink, is not owned by the current user, or cannot be enforced as mode 0700; the predictable `/tmp` fallback is therefore not vulnerable to another user's pre-created directory or log-target symlink. A backend crash-loop diagnostic points to `backend-<HTTP-port>.log` there; each spawn retains one previous generation as `.old`. Future client-config rollout must pass the same `--exclude-domains` selection used by the plugin; differing exclusions intentionally fail compatibility with `NEW_CLIENT_SESSION_REQUIRED` rather than replacing the running backend.
-- **HTTP access-log lines are opt-in**: uvicorn's per-request `INFO: 127.0.0.1:... "POST /mcp HTTP/1.1" 200 OK` lines are disabled by default on both the plugin-spawned path and `--reload` — every tool call, `/godot-ai/status` probe, and lease heartbeat would otherwise print one, drowning the server's real log lines. Set `GODOT_AI_HTTP_ACCESS_LOG=1` before starting the server to re-enable them when debugging HTTP traffic. Application logs (WebSocket startup, reaper arming, session events) are unaffected and stay at INFO.
-- In `--headless` / headless-display launches, the plugin returns early and does not start/adopt the server, open a WebSocket, add the dock, attach loggers, register the debugger plugin, instantiate handlers, or write the game-helper autoload. Set `GODOT_AI_ALLOW_HEADLESS=1` only for intentional headless MCP sessions such as CI handler tests.
-
-For Python auto-reload during dev (no need to touch Godot):
-```bash
-python -m godot_ai --transport streamable-http --port 8000 --reload
+```text
+DORMANT -> STARTING -> READY
+                    -> BLOCKED
+READY   -> STOPPING -> DORMANT
+BLOCKED -> RECOVERING -> STARTING
 ```
-This uses `src/godot_ai/asgi.py` to run uvicorn with its factory reload path. Uvicorn watches `src/` for changes and restarts the server process automatically. The plugin auto-reconnects.
 
-## Server discovery (3-tier)
+Startup effects are `PROBE`, `LAUNCH`, and `PROVE`; control effects are
+`REPLACE` and `STOP`. Every effect carries the active episode ID. Completion
+for an older or cancelled episode is discarded, so a late worker cannot revive
+state from a superseded start/stop/replacement attempt. The lifecycle exposes
+copied snapshots and narrow effect signals; it does not retain the plugin or
+Dock and has no generic `_host.*` callback surface.
 
-1. `.venv/bin/python -m godot_ai` — dev checkout (venv near project)
-2. `uvx --from godot-ai==VERSION godot-ai` — user install (PyPI via uvx, exact version pin)
-3. `godot-ai` CLI — system install fallback
+## Capabilities are not process authority
+
+The three authority values are deliberately separate:
+
+- `TransportAuthority` contains the HTTP/WS ports, server instance ID, and the
+  two independent private capabilities. Its public snapshot omits both
+  secrets. It permits authenticated communication, not process control.
+- `OwnedProcessGrant` binds a PID to a process fingerprint captured after the
+  launched backend publishes and proves its capability record. Stop/restart
+  rechecks that exact identity before killing anything.
+- `ReplacementAuthorization` is created only from an explicit Dock intent. It
+  is short-lived, bound to one instance/version/port tuple, and spend-once.
+  Re-probing must match that tuple before replacement proceeds.
+
+Possessing transport metadata, seeing a branded status response, or occupying
+the expected port never upgrades into kill authority. A foreign,
+unauthenticated, changed, or otherwise unproven occupant leaves the lifecycle
+in `BLOCKED`.
+
+## Startup and adoption
+
+1. Read the private per-port capability record.
+2. Probe `/godot-ai/status` with its HTTP bearer and enforce the 8 KiB response
+   bound.
+3. If the authenticated endpoint has the expected version and WS port, adopt
+   its transport authority. Adoption deliberately carries no process grant.
+4. If the port is free, launch the configured command with fresh independent
+   HTTP and WebSocket capabilities.
+5. Wait for the new capability record, authenticate status, and bind the live
+   process fingerprint before publishing `READY`.
+
+The Python server owns the private record and a per-port launch claim. HTTP,
+status, and lease routes require the HTTP bearer. The editor WebSocket stays on
+IPv4 loopback and uses a transcript-bound challenge/response before the editor
+reveals project metadata. There is no v3 parser, tokenless retry, or bare URL
+fallback in v4.
+
+An adopted backend remains external. Ordinary teardown drops the transport and
+leaves it running. A plugin-launched backend is stopped only with its matching
+owned-process grant, except when `keep_server_on_exit` is enabled or a live
+attach lease requires continuity; in either case the plugin deliberately
+detaches. Lease counts are finite and authenticated like every other HTTP
+route.
+
+## Command discovery
+
+The immutable plan uses one three-tier command order:
+
+1. `.venv/bin/python -m godot_ai` for a nearby development checkout;
+2. isolated/no-config/no-build `uvx --from godot-ai==VERSION godot-ai` with
+   official PyPI explicit for an exact user version;
+3. a matching `godot-ai` executable as the system fallback.
+
+`PYTHONPATH`, ports, exclusions, allow-host ranges, telemetry preference,
+keep-alive policy, PID-file path, and command argv are captured on the main
+thread. Worker effects consume those copied values and do not read mutable
+EditorSettings or environment state.
+
+For Python auto-reload during development, start one explicit external server
+from the intended worktree:
+
+```bash
+script/serve-this-worktree
+```
+
+The script prepends that worktree's `src/` and starts Uvicorn with `--reload`;
+the editor adopts it through the same authenticated capability boundary. The
+Dock does not own or kill this external reload supervisor.
+
+## Headless and unsupported editors
+
+Normal headless launches return before server composition. Set
+`GODOT_AI_ALLOW_HEADLESS=1` only for intentional CI/editor sessions. Godot 4.5
+and 4.6 are below the v4 floor and return even earlier: they emit the Godot 4.7
+requirement and construct no lifecycle, exporter, updater, transport, or client
+worker.
 
 ## Plugin reload
 
-The `editor_reload_plugin` MCP tool triggers a live plugin reload inside Godot (`EditorInterface.set_plugin_enabled` off/on). It works with both an externally-run server and the plugin-managed server (the handler special-cases the plugin-managed path, where the reload tears down and respawns the server process). The Python handler waits for the new session via `SessionRegistry.wait_for_session()`.
+`editor_reload_plugin` disables and re-enables the plugin in the same editor.
+All client threads are realized, dispatcher references are cleared, transport
+is torn down, and the lifecycle either stops its exact owned process or detaches
+according to the rules above. The Python handler waits for a distinct
+authenticated replacement session; it never treats the old session entry as a
+successful reload.
 
-The Godot dock also has a **Start/Stop Dev Server** button for convenience (visible in developer mode).
+The Dock's managed-server control is visible only in developer mode. It starts,
+restarts, or stops only the lifecycle's exact fingerprinted child. If the port
+belongs to any external process—including `serve-this-worktree`—the control
+reads **External Server Running** and is disabled; stop that process at its
+owner rather than transferring kill authority to the Dock.

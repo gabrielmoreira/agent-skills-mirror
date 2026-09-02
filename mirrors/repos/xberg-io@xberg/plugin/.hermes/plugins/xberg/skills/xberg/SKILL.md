@@ -1,7 +1,7 @@
 ---
 name: xberg
 description: >-
-  Extract text, tables, metadata, and images from 106 document formats
+  Extract text, tables, metadata, and images from 107 document formats
   (PDF, Office, images, HTML, email, archives, academic) using Xberg.
   Use when writing code that calls Xberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
@@ -15,14 +15,14 @@ metadata:
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:df701ffeceb35bec24d339a9ea715fca5a26475da3c28b25342034ba3bdcca2a
-Source-Hash: blake3:a92a53795b15c1bfb0f4ee65d2ec8e7475ff291f9271b5bbf404957b82eb790a
+Content-Hash: blake3:a350cdaa08f8e82becd82ed51d10fc81771a4cf74c1b619e65b424101f0a612c
+Source-Hash: blake3:507ff4ef87c97ddf9faebfcfc38c84181b8633bbb5b8ec3575c0ebc75be35179
 Schema-Version: v1
 -->
 
 # Xberg Document Extraction
 
-Xberg is a document intelligence library with a Rust core and bindings for Python, TypeScript/Node.js, Ruby, PHP, Go, Java, C#, Elixir, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C. It extracts text, tables, metadata, and images from 106 formats across 140 unique file extensions and accepts 53 compatibility MIME aliases, including PDF, Office documents, images, HTML, email, archives, and academic formats.
+Xberg is a document intelligence library with a Rust core and bindings for Python, TypeScript/Node.js, Ruby, PHP, Go, Java, C#, Elixir, WebAssembly, Dart, Kotlin Android, Swift, Zig, and C. It extracts text, tables, metadata, and images from 107 formats across 140 unique file extensions and accepts 53 compatibility MIME aliases, including PDF, Office documents, images, HTML, email, archives, and academic formats.
 
 Use this skill when writing code that:
 
