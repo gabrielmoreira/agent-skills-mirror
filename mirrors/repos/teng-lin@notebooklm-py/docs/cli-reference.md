@@ -1,9 +1,14 @@
 # CLI Reference
 
 **Status:** Active
-**Last Updated:** 2026-08-12
+**Last Updated:** 2026-09-02
 
 Complete command reference for the `notebooklm` CLI—providing full programmatic access to all NotebookLM features, including capabilities not exposed in the web UI.
+
+The [CLI subsystem diagram](https://teng-lin.github.io/notebooklm-py/diagrams/16-cli-subsystem.html) explains how commands,
+services, the transport-neutral application layer, and output rendering fit together. The
+[selection workflow](https://teng-lin.github.io/notebooklm-py/diagrams/28-profile-auth-backend-selection.workflow.html) shows how profile,
+credential, and backend options are resolved.
 
 > **Exit codes:** every command follows the convention documented in [CLI Exit-Code Convention](cli-exit-codes.md) (`0` success, `1` user/app error, `2` system/unexpected, `130` SIGINT). Two commands intentionally deviate for shell control-flow use (`source stale --exit-on-stale` opts into an inverted predicate; `source wait` is three-way); see the doc for details.
 
@@ -17,7 +22,7 @@ notebooklm [-p PROFILE] [--storage PATH] [--backend web|android] [--version] [-v
 
 - `-p, --profile NAME` - Use a named profile (overrides `NOTEBOOKLM_PROFILE` env var)
 - `--storage PATH` - Override the default storage location
-- `--backend web|android` - Select the namespace backend graph (overrides `NOTEBOOKLM_BACKEND`; default `web`)
+- `--backend web|android` - Select the API backend (overrides `NOTEBOOKLM_BACKEND`; default `web`). Android requires `pip install "notebooklm-py[android]"` and a profile bootstrapped with `notebooklm login --master-token --account EMAIL`; browser cookies and `NOTEBOOKLM_AUTH_JSON` are Web-only credentials.
 - `-v, --verbose` - Increase verbosity (`-v` for INFO, `-vv` for DEBUG)
 - `--quiet` - Suppress status output and INFO/WARN log records (only errors survive). Structured `--json` payloads are still emitted. Mutually exclusive with `-v`/`-vv`; combining the two raises `UsageError` (exit `2`).
 - `--version` - Show version and exit
@@ -108,6 +113,9 @@ See [Configuration](configuration.md) for full env-var precedence and CI/CD setu
 | `create <title>` | Create notebook (does not change active context) | `notebooklm create "Research"` |
 | `create <title> --use` | Create notebook and make it the active context | `notebooklm create "Research" --use` |
 | `create <title> --json` | JSON envelope; with `--use` includes `active_notebook_id` | `notebooklm create "X" --use --json` |
+| `copy <title>` | Copy the current notebook, including sources and Studio artifacts | `notebooklm copy "Research — Copy"` |
+| `copy <title> -n <id>` | Copy a specific notebook (partial IDs accepted) | `notebooklm copy "Research — Copy" -n abc123` |
+| `copy <title> --use --json` | Make the copy active and emit `{source_notebook_id, notebook, active_notebook_id}` | `notebooklm copy "Research — Copy" --use --json` |
 | `delete -n <id>` | Delete notebook (uses current notebook if `-n` omitted) | `notebooklm delete -n abc123` |
 | `delete -n <id> -y` | Skip confirmation | `notebooklm delete -n abc123 -y` |
 | `delete -n <id> --json` | Emit `{notebook_id, success}` envelope (plus `context_cleared: true` when deleting the active notebook); requires `-y` (refuses to prompt in JSON mode) | `notebooklm delete -n abc123 -y --json` |
@@ -158,6 +166,7 @@ Supported source types: URLs, YouTube videos, files (PDF, text, Markdown, Word, 
 | Command | Arguments | Options | Example |
 |---------|-----------|---------|---------|
 | `list` | - | `--json`, `--limit N`, `--no-truncate`, `--label`, `--status` | `source list --limit 20 --no-truncate` |
+| `search <query>` | Passage-search query | `-s/--source ID` (repeatable), `--limit N`, `--json` | `source search "revenue growth" --limit 5` |
 | `add <content>` | URL/file/text (use `-` for stdin) | `--title`, `--type`, `--timeout`, `--follow-symlinks`, `--allow-internal` (URL sources only), `--json` (file-source `--mime-type` overrides extension inference — see [detailed section](#source-add-mime-type-file-sources)) | `source add "https://..." --timeout 90` |
 | `add-drive <id> <title>` | Drive file ID, title | `--mime-type [google-doc\|google-slides\|google-sheets\|pdf]`, `--json` | `source add-drive abc123 "Doc" --mime-type google-slides` |
 | `add-drive-file <id>` | Drive file ID or share URL | `--title`, `--wait`, `--json` | `source add-drive-file abc123 --title "Notes" --wait` |
@@ -179,6 +188,27 @@ Supported source types: URLs, YouTube videos, files (PDF, text, Markdown, Word, 
 | `copy <id>... --to <notebook>` | Source IDs (or prefixes), target notebook id/prefix | `--to` (required), `--json` | `source copy src1 src2 --to 1a2b3c` — copies into another notebook; prints original → copy pairs. A partial copy lists the ids left behind (`not_copied` under `--json`) and exits 1 |
 
 All `source` subcommands also accept `-n/--notebook ID` (resolves via flag > `NOTEBOOKLM_NOTEBOOK` env > active context).
+
+`source search <query>` searches the indexed passages of every source in the
+notebook and orders matches by global relevance rank (lower is better). Repeat
+`-s/--source ID` to restrict the search; full IDs and unique prefixes are both
+accepted. The optional `--limit` is applied after global ranking. Text mode
+shows rank, source ID, source-relative span, and passage text. `--json` emits
+the full result array directly:
+
+```json
+[
+  {
+    "source_id": "source-uuid",
+    "text": "The matching passage text...",
+    "rank": 1,
+    "start": 14202,
+    "end": 14733
+  }
+]
+```
+
+`start` and `end` are `null` when the backend provides no usable span.
 
 `source delete <id>` accepts only full source IDs or unique partial-ID prefixes. To delete by exact source title, use `source delete-by-title "<title>"`.
 
@@ -486,7 +516,7 @@ By default, opens a Chromium browser with a persistent profile. Complete the Goo
 - `--storage PATH` - Where to save storage_state.json (default: `$NOTEBOOKLM_HOME/profiles/<profile>/storage_state.json`)
 - `--browser [chromium|msedge|chrome]` - Browser to use for login (default: `chromium`). Use `chrome` for system Google Chrome (workaround when bundled Chromium crashes, e.g. macOS 15+); use `msedge` for Microsoft Edge. **Note:** only `chromium` is auto-installed by the CLI on first login (~170 MB Chromium download); `--browser msedge` and `--browser chrome` require the corresponding browser to be already installed on your system.
 - `--browser-timeout SECONDS` - Human-interaction window for ordinary headed login and browser-assisted master-token bootstrap (default: `300`).
-- `--browser-cookies <auto|chrome|edge|firefox|safari|brave|arc|...>` - Read cookies from an installed browser instead of launching Playwright. Pass an explicit browser name, or `auto` to let rookiepy auto-detect. For Chromium-family user profiles, use `chrome::<profile-name-or-directory>` (for example `chrome::Profile 1` or `brave::Work`) to extract from one profile explicitly. For Firefox Multi-Account Containers, use `firefox::<container-name>` to extract from a single container, or `firefox::none` for the no-container default — unscoped `firefox` merges every container's cookies (and emits a warning when that's happening). Requires `pip install "notebooklm-py[cookies]"` (full extras matrix: [docs/installation.md#optional-extras-matrix](installation.md#optional-extras-matrix)).
+- `--browser-cookies <auto|chrome|edge|firefox|safari|brave|arc|...>` - Read cookies from an installed browser instead of launching Playwright. Pass an explicit browser name, or `auto` to let rookie-cookies auto-detect. For Chromium-family user profiles, use `chrome::<profile-name-or-directory>` (for example `chrome::Profile 1` or `brave::Work`) to extract from one profile explicitly. For Firefox Multi-Account Containers, use `firefox::<container-name>` to extract from a single container, or `firefox::none` for the no-container default — unscoped `firefox` merges every container's cookies (and emits a warning when that's happening). Requires `pip install "notebooklm-py[cookies]"` (full extras matrix: [docs/installation.md#optional-extras-matrix](installation.md#optional-extras-matrix)).
 - `--account EMAIL` - Pick a signed-in Google account by email when several are present in the browser. Saves to the active profile by default; use `--profile-name` for a separate named profile or `--storage` for an exact path. Only valid with `--browser-cookies`.
 - `--all-accounts` - Extract every Google account signed in to the browser into separate profiles named from each account email. Only valid with `--browser-cookies`.
 - `--update` - With `--all-accounts`: when an account's natural profile name (e.g. `alice` for `alice@gmail.com`) already exists but has no account metadata, update that profile in place instead of creating a suffixed `alice-2`. Profiles that already bind a different email still get a suffix to avoid clobbering. Only valid with `--all-accounts`.
@@ -494,7 +524,7 @@ By default, opens a Chromium browser with a persistent profile. Complete the Goo
 - `--fresh` - Start with a clean browser session (deletes the cached browser profile). Use to switch Google accounts. With explicit `--storage`, a pre-existing browser sidecar is deleted only when it carries NotebookLM's ownership marker or is the canonical legacy/named-profile layout; arbitrary unowned directories are refused. Has no effect with `--browser-cookies`.
 - `--include-domains LABEL[,LABEL...]` - Opt in to extracting sibling-product cookies (default: required Google auth/Drive cookies only). Supported labels: `youtube`, `docs`, `myaccount`, `mail`, `all`. Pass labels comma-separated or repeat the flag.
 
-**Master-token (headless) options** — mint/refresh web cookies from a durable Google master token, no per-session browser. Requires `pip install "notebooklm-py[headless]"`. Full guide: [installation.md#d-headless-server-or-ci](installation.md#d-headless-server-or-ci).
+**Master-token (headless) options** — mint/refresh web cookies from a durable Google master token, no per-session browser. Requires `gpsoauth`, included by `pip install "notebooklm-py[headless]"` or `pip install "notebooklm-py[android]"`. Full guide: [installation.md#d-headless-server-or-ci](installation.md#d-headless-server-or-ci).
 - `--master-token` - Bootstrap headless auth. Requires `--account EMAIL`. A visible browser opens Google's EmbeddedSetup to capture the single-use `oauth_token` (needs `[browser]`), or pass it with `--oauth-token`. Exchanges it for a durable master token (saved `0600` at `master_token.json`), mints cookies into `storage_state.json`, and verifies by listing notebooks.
 - `--master-token-refresh` - Legacy forced re-mint; prefer `notebooklm auth refresh`. It still unconditionally replaces `storage_state.json` from the stored master token and preserves CLI context.
 - `--oauth-token VALUE` - Provide the single-use EmbeddedSetup `oauth_token` manually (headless boxes without `[browser]`).
@@ -514,7 +544,7 @@ notebooklm login --browser msedge
 notebooklm login --browser-cookies chrome
 notebooklm login --browser-cookies 'chrome::Profile 1'  # one Chromium profile
 
-# Auto-detect any supported browser via rookiepy
+# Auto-detect any supported browser via rookie-cookies
 notebooklm login --browser-cookies auto
 
 # Firefox Multi-Account Containers: target one container
@@ -775,7 +805,10 @@ notebooklm label delete Papers -y
 
 ### Authentication: `auth check`
 
-Diagnose authentication issues by validating storage file, cookies, and optionally testing token fetch.
+Diagnose **Web** authentication by validating a storage file, its cookies, and
+optionally a Web token fetch. This command does not validate Android bearer
+authentication; for Android, confirm the `android` extra and a profile
+`master_token.json` (see [Configuration](configuration.md#backend-preference)).
 
 ```bash
 notebooklm auth check [OPTIONS]
@@ -830,7 +863,15 @@ table). To gate readiness on a real token fetch, run `notebooklm auth check
 
 ### Authentication: `auth refresh`
 
-One-shot keepalive and recovery: open a file-backed session, trigger the layer-1 SIDTS rotation poke against `accounts.google.com`, persist rotated cookies, and exit. If storage is absent but the exact sibling `master_token.json` exists, it mints the initial file and passively validates it once; `--verify` reuses that result. Existing cookies that redirect to Google sign-in automatically try a sibling master-token re-mint; `--allow-headless` permits layer-3 browser recovery first. Healthy storage stays on the cheap path. When a Playwright storage state lacks in-band `notebooklm.account` metadata, `auth refresh` also repairs it if account discovery is unambiguous. It does not replace existing metadata; use `login --browser-cookies <browser> --account EMAIL` to re-bind a profile that already points at the wrong account. Designed for direct use or OS scheduling (launchd / systemd / cron / Task Scheduler / k8s CronJob).
+One-shot **Web** keepalive and recovery: open a file-backed session, trigger the
+SIDTS rotation request against `accounts.google.com`, persist rotated cookies,
+and exit. If storage is absent but the exact sibling `master_token.json` exists,
+it mints the initial file and validates it once; `--verify` reuses that result.
+Existing cookies that redirect to Google sign-in can re-mint from a sibling
+master token; `--allow-headless` permits browser recovery first. This command
+refreshes Web cookie storage, not Android bearer credentials. Designed for
+direct use or OS scheduling (launchd / systemd / cron / Task Scheduler / k8s
+CronJob).
 
 ```bash
 notebooklm auth refresh [OPTIONS]
@@ -887,7 +928,7 @@ notebooklm auth inspect [OPTIONS]
 ```
 
 **Options:**
-- `--browser TEXT` - Browser to read cookies from (`chrome`, `firefox`, `brave`, `edge`, `safari`, `arc`, ...). `auto` picks the first one rookiepy can read. Use `chrome::<profile-name-or-directory>` for one Chromium profile, or `firefox::<container-name>` / `firefox::none` for one Firefox container. Requires `pip install "notebooklm-py[cookies]"`.
+- `--browser TEXT` - Browser to read cookies from (`chrome`, `firefox`, `brave`, `edge`, `safari`, `arc`, ...). `auto` picks the first one rookie-cookies can read. Use `chrome::<profile-name-or-directory>` for one Chromium profile, or `firefox::<container-name>` / `firefox::none` for one Firefox container. Requires `pip install "notebooklm-py[cookies]"`.
 - `--include-domains LABEL[,LABEL...]` - Opt in to enumerating accounts via sibling-product cookies (same syntax as `notebooklm login --include-domains`). By default this command consults only required Google auth cookies, which is sufficient for account discovery on every tested path.
 - `--json` - Output as JSON
 
@@ -1779,7 +1820,9 @@ notebooklm source add-drive-file 1AbcD...XyZ --title "Meeting Notes" --wait
 
 Add ebooks from your **Google Play Books** library as sources ("Expert Intelligence"; US only, 18+). `source books` lists the library — each row shows the volume `content id`, title, authors, and whether it can be added (a publisher can opt a title out of content export). `source add-book <content-id>` adds one; a non-exportable title is refused up front, and the source ingests as an `expert_intelligence` source you can chat over like any other.
 
-> **Web backend only.** Adding a Play Book on the Android backend requires a per-account experiment token the client cannot reproduce, so both commands run on the web tier; on an Android-backed client they report the operation as unsupported.
+> **Web and Android supported.** On Android, the client obtains the required
+> account-scoped experiment metadata itself; no emulator or Google Play
+> Services installation is needed.
 
 ```bash
 notebooklm source books [--json]

@@ -56,6 +56,10 @@ search(
 - When you don't know which system has the information
 - Fastest way to get results from multiple sources
 
+> **`search` is semantic search — pass natural language, never query syntax.** CQL or JQL in
+> `query` will silently return poor results instead of erroring. Use `searchConfluence` (CQL) or
+> `searchJiraIssuesUsingJql` (JQL) when you need a structured filter such as a title or type match.
+
 **Example:**
 ```
 search(
@@ -68,10 +72,10 @@ This returns results from both Confluence pages and Jira issues.
 
 #### Option B: Targeted Confluence Search
 
-Use **`searchConfluenceUsingCql`** when specifically searching Confluence:
+Use **`searchConfluence`** when specifically searching Confluence:
 
 ```
-searchConfluenceUsingCql(
+searchConfluence(
   cloudId="...",
   cql="text ~ 'search terms' OR title ~ 'search terms'"
 )
@@ -131,10 +135,11 @@ After identifying relevant sources, fetch full content for comprehensive answers
 When search results reference Confluence pages:
 
 ```
-getConfluencePage(
+getConfluenceContent(
   cloudId="...",
-  pageId="[page ID from search results]",
-  contentFormat="markdown"
+  content_id="[page ID from search results]",
+  content_format="markdown",
+  detail="full"
 )
 ```
 
@@ -156,7 +161,20 @@ getJiraIssue(
 )
 ```
 
-**Returns:** Full issue details including description, comments, status
+**Returns:** Full issue details including description and status.
+
+**`getJiraIssue` does not return comment bodies** — it only reports how many comments the issue
+has. When the discussion matters, fetch the comments separately. `listJiraIssueComments` is not a
+primary tool, so run it through `execute`, and paginate with `startAt`/`maxResults` until you have
+the comments you need:
+
+```
+executeRead(   # or execute(...) if your client exposes a single execute tool
+  name="listJiraIssueComments",
+  cloudId="...",
+  inputs={"issueIdOrKey": "PROJ-123", "maxResults": 50}
+)
+```
 
 **When to fetch:**
 - Need to understand a reported bug or issue
@@ -555,9 +573,9 @@ This skill is for **internal company knowledge only**. Do NOT use for:
 **Primary tool:** `search(cloudId, query)` - Use this first, always
 
 **Follow-up tools:**
-- `getConfluencePage(cloudId, pageId, contentFormat)` - Get full page content
+- `getConfluenceContent(cloudId, content_id, content_format, detail="full")` - Get full page content
 - `getJiraIssue(cloudId, issueIdOrKey)` - Get full issue details
-- `searchConfluenceUsingCql(cloudId, cql)` - Targeted Confluence search
+- `searchConfluence(cloudId, cql)` - Targeted Confluence search
 - `searchJiraIssuesUsingJql(cloudId, jql)` - Targeted Jira search
 
 **Answer structure:**

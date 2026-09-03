@@ -2366,3 +2366,49 @@ mregger by bx [aw=1/byse^2], gxse(bxse)                                         
 - **Paper drafting** after the analysis is done → the writing-oriented skills in this repo (`04-*-scientific-writer`, `08-*-web-latex`, etc.).
 
 This skill's remit **ends at Step 8** — polished `.tex` tables and `.pdf` figures. Paper drafting is out of scope.
+
+---
+
+## Step 8.5 — Handoff to the manuscript (exit contract)
+
+This skill's remit still ends at Step 8. "Ends" should not mean "dead-ends", though:
+the writing stage needs a machine-readable contract, not a folder of loose files.
+Before you stop, emit two artifacts next to the tables and figures.
+
+**1. `exhibits_index.md`** — one row per numbered exhibit:
+
+| Exhibit | Files | Claim it supports | Produced by |
+|---|---|---|---|
+| Table 2 | `tables/table2_main.{tex,docx,xlsx}` | Main effect of the policy on log output | `analysis.do` §baseline |
+| Figure 2 | `figures/fig2_event_study.{png,pdf}` | No differential pre-trend | `analysis.do` §event-study |
+
+**2. `results_summary.json`** — every headline estimate as a flat record:
+
+```json
+{"baseline": {"coef": 0.1234, "se": 0.0412, "p": 0.0031, "n": 12345, "spec": "TWFE + region-year FE"}}
+```
+
+Why both, and why in these shapes:
+
+- The manuscript stage cites exhibits by **include directive**, never by retyped
+  numbers — `\input{tables/table2_main}` in LaTeX, `{{ include: table2_main }}` in
+  Markdown. The index is what tells the writer which file backs which claim.
+- Every number a paper prints must trace back to a result file at the precision it is
+  displayed. `results_summary.json` is what makes that checkable instead of trusted.
+  A coefficient that exists only inside a rendered table cannot be verified against
+  the prose that cites it.
+
+**Then hand off:**
+
+- **Full paper → Word `.docx` / LaTeX, end to end** → `skills/69-Paper-WorkFlow/`. It
+  orchestrates Stage 5–9 (draft → polish → de-AIGC → review → submission) and its
+  `scripts/assemble_manuscript_docx.py` assembles `09_submission/main.docx` — body,
+  every exhibit above, figures and reference list in one file — from exactly these two
+  artifacts. Pick the body format at its Stage 0: **Markdown when the deliverable is
+  Word** (Markdown → `.docx` is high fidelity; LaTeX → `.docx` is lossy), LaTeX when
+  the venue takes `.tex`.
+- **Prose drafting only** → the writing skills in this repo (`04-*-scientific-writer`,
+  `35-*-academic-writing-skills`).
+- **LaTeX / Quarto typesetting only** → `08-ndpvt-web-latex-document-skill`,
+  `60-regisely-superpapers`.
+

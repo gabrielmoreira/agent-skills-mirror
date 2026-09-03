@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,10 +87,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
 | 27 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
 | 28 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
-| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 30 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 31 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 32 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 29 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
+| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 31 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 32 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 33 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
 
 ---
 

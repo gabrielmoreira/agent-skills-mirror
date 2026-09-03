@@ -1,9 +1,9 @@
 ---
 name: ai-mlops
-description: Operates production MLOps for ML, LLM, and agent systems. Use when designing deployment, monitoring, retraining, incident response, or GenAI security workflows.
+description: "Operates ML, LLM, responsible-AI, and multimodal systems. Use when deploying, monitoring, governing, or responding to production AI failures."
 compatibility: Portable core. Works on Claude Code and Codex.
-version: "1.1"
-last_validated: 2026-07-11
+version: "1.2"
+last_validated: 2026-08-21
 ---
 
 # MLOps & LLMOps - Production Operations Hub
@@ -30,6 +30,9 @@ Activate this skill when the user asks for:
 - Hardening an AI system against prompt injection, RAG poisoning, tool abuse, or data leakage
 - Building governance artifacts for privacy, auditability, or regulated rollout
 - Choosing how to operate prompts, model artifacts, feature definitions, or agent graphs safely
+- Diagnosing why changes to an ML system keep rippling: entanglement, correction cascades, undeclared consumers, pipeline jungles, or config sprawl
+- Operating fairness, privacy-budget, human-oversight, appeal, watermark/provenance, copyright/memorization, or environmental controls
+- Deploying multimodal image, document, audio, video, vision-language, or diffusion systems with bounded media ingestion, safety, latency, and cost
 
 ## Scope Boundaries
 
@@ -161,6 +164,7 @@ Need to operate an AI system in production:
 - **[Model Registry Patterns](references/model-registry-patterns.md)** - Use for metadata, artifact packaging, and promotion governance.
 - **[Feature Store Patterns](references/feature-store-patterns.md)** - Use for batch/online parity, latency budgets, and point-in-time correctness.
 - **[Multi-Region Patterns](references/multi-region-patterns.md)** - Use for residency, failover, disaster recovery, and regional rollback.
+- **[ML Technical Debt Taxonomy](references/ml-technical-debt-taxonomy.md)** - Use to diagnose boundary erosion/CACHE, correction cascades, undeclared consumers, data/config/pipeline debt, and feedback loops, each with a detection signal and mitigation.
 
 ### Observability, Evals & Cost
 
@@ -253,6 +257,8 @@ See [data/sources.json](data/sources.json) for curated references, including:
 - OWASP GenAI and agentic AI security references
 - Vendor docs for registries, feature stores, orchestration, serving, and observability
 
+For responsible and multimodal operations, start with [references/responsible-multimodal-operations.md](references/responsible-multimodal-operations.md): release evidence, privacy/fairness controls, poisoning response, oversight and appeals, provenance, environmental accounting, media ingestion, multimodal safety, capacity, and incidents.
+
 ## Related Skills
 
 - **[ai-ml-data-science](../ai-ml-data-science/SKILL.md)** - Build and validate the model or feature pipeline.
@@ -277,4 +283,3 @@ See [data/sources.json](data/sources.json) for curated references, including:
 Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
 
 After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
-

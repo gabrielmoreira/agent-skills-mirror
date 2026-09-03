@@ -82,8 +82,11 @@ Use this skill for platform, infrastructure, CI/CD, GitOps, observability, and i
 | DORA's five metrics and team archetypes (Elite/High/Medium/Low tiers are retired), AI-adoption instability tax, general DevOps best practices | [references/devops-best-practices.md](references/devops-best-practices.md) |
 | GitLab CI — parent/child pipelines, MR variable traps, env-export pattern | [references/gitlab-ci-patterns.md](references/gitlab-ci-patterns.md) |
 | choosing a tool (IaC, GitOps, CI, policy, observability) | [references/tool-landscape.md](references/tool-landscape.md) |
-| golden paths, internal developer portal, platform maturity, when NOT to build an IDP, platform-vs-product boundary, CI/IaC/GitOps adoption sequencing | [references/platform-engineering-patterns.md](references/platform-engineering-patterns.md) |
-| GitOps multi-env promotion, Argo CD / Flux patterns | [references/gitops-workflows.md](references/gitops-workflows.md) |
+| golden paths, internal developer portal, platform maturity, when NOT to build an IDP, platform-vs-product boundary, measuring team cognitive load (Weis four-cluster model, Teamperature, leadership load), CI/IaC/GitOps adoption sequencing | [references/platform-engineering-patterns.md](references/platform-engineering-patterns.md) |
+| GitOps multi-env promotion, Argo CD / Flux patterns, automation lag and why continuous apply beats apply-on-change | [references/gitops-workflows.md](references/gitops-workflows.md) |
+| Terraform state isolation, why `terraform workspace` is wrong for environments, stage/prod/mgmt/global layout, secrets-in-state and backend choice | [references/terraform-state-architecture.md](references/terraform-state-architecture.md) |
+| stack sizing (monolithic → application-group → service → micro), blast radius, "is my stack a monolith?" | [references/stack-sizing-patterns.md](references/stack-sizing-patterns.md) |
+| IaC testing rungs and their blind spots, infrastructure test diamond vs pyramid, Swiss-cheese layering | [references/infrastructure-testing-strategy.md](references/infrastructure-testing-strategy.md) |
 | on-call, severity model, escalation, postmortems | [references/sre-incident-management.md](references/sre-incident-management.md) |
 | day-2 operational runbooks, environment hygiene | [references/operational-patterns.md](references/operational-patterns.md) |
 | AIOps alert correlation, automated triage | [references/aiops-patterns.md](references/aiops-patterns.md) |

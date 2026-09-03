@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
-  version: "3.13.0"
+  version: "3.16.0"
 ---
 
 # Planning with Files
@@ -222,7 +222,7 @@ Helper scripts for automation:
 
 - `scripts/init-session.sh` — Initialize planning files. With a name arg, creates an isolated plan under `.planning/YYYY-MM-DD-<slug>/` for parallel task workflows. Without args, writes `task_plan.md` at project root (legacy mode, backward-compatible).
 - `scripts/set-active-plan.sh` — Switch the active plan pointer (`.planning/.active_plan`). Run with a plan ID to switch; run without args to show which plan is current.
-- `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. Checks `$PLAN_ID` env var first, then `.planning/.active_plan`, then newest plan dir by mtime, then falls back to project root (legacy). Used internally by hooks.
+- `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. A set `$PLAN_ID` is a binding: it resolves or resolution stops, never another plan (issue #237). With no `$PLAN_ID`, checks `.planning/.active_plan`, then newest plan dir by mtime, then falls back to project root (legacy). Used internally by hooks.
 - `scripts/check-complete.sh` — Verify all phases in the active plan are complete.
 - `scripts/session-catchup.py`: Explicit same-project session-record aggregation or bounded replay (`--metadata` / `--replay`); bare invocation does not access host history.
 - `scripts/attest-plan.sh` (and `.ps1`) — Lock the current `task_plan.md` content with a SHA-256 attestation (v2.37.0). Hooks then refuse to inject plan content if the file diverges from the attested hash. Use `--show` to print the stored hash, `--clear` to remove the attestation. See `/plan-attest` command.
@@ -410,8 +410,8 @@ The gate mechanism is host-aware. Not every host can hard-block a stop.
 | Tier | Hosts | Gate mechanism |
 |---|---|---|
 | 1: hard block | Claude Code, Codex CLI, OpenAI Codex API, Continue.dev | `{"decision":"block"}` / exit 2 |
-| 2: follow-up inject | Cursor, Pi, Kiro, Hermes Agent | agent_end follow-up message + own counter; Hermes answers `pre_verify` with a bounded continuation |
-| 3: notify only | OpenCode, Gemini CLI, rest | systemMessage only, no enforcement |
+| 2: follow-up inject | Cursor, Pi, Kiro, Hermes Agent, OpenCode (native plugin) | agent_end follow-up message + own counter; Hermes answers `pre_verify` with a bounded continuation |
+| 3: notify only | Gemini CLI, rest (OpenCode without the plugin) | systemMessage only, no enforcement |
 
 Hosts without a blocking Stop hook still get autonomous mode (low recitation + ledger). They do not get gate enforcement; the gate degrades to a notification. This is documented honestly: the gate is real enforcement only on Tier 1.
 

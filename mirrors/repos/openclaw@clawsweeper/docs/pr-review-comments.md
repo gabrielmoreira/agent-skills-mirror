@@ -31,6 +31,21 @@ Each synced comment includes the durable identity marker:
 ClawSweeper edits that comment in place instead of posting repeated comments.
 Report front matter stores the synced comment id, URL, hash, and sync time.
 
+Publication requires a trusted author, positive server comment ID, and the exact
+submitted body. A PATCH must return the targeted ID. An unusable acknowledgement
+can be recovered by one fresh scoped comment read; equivalent prose or different
+marker metadata is not a write receipt.
+
+ClawSweeper caps durable comment writes at 60 KiB. If a generated review exceeds
+that limit, it publishes a bounded blocked notice, records that notice's actual
+receipt, keeps the item open, and continues the batch within its processed limit.
+This is a verified guarded-open outcome, never a completed full review or repair
+permission. Publication releases the worker's owned lease; it does not sweep
+other workers' comments. A fresh review can replace the notice. When the failed
+review has no usable identity, the notice gets a new server comment ID, and only
+a review with a later owned lease can supersede it. Issue identities use
+`sha=na` with their source revision; they need no PR state marker.
+
 Trailing marker recovery stops at visible prose, including prose ending in
 `-->`. An already-closed HTML comment cannot extend across that prose into the
 final marker block; valid contiguous trailing markers remain recoverable.
@@ -105,6 +120,51 @@ PR comments use a human-first shape:
 8. `## Findings` appears only when actionable review or security findings need
    a little more visible detail.
 
+New reviewer output requires a producer-owned `nextStep` assessment. Issues use
+none and retain their existing next-action guidance in `workReason`. Canonical
+report frontmatter stores `next_step` as JSON: `{"kind":"none","text":""}` means
+no additional required next step; `{"kind":"required","text":"..."}` carries
+nonempty trimmed action text. Explanatory routing prose stays in `workReason`.
+One PR readiness calculation supplies the visible checklist, its count, the
+readiness state, and repair-loop pass eligibility. Explicit none suppresses only
+the derived next-step item, while required actions survive
+negation, contrast, routine-sounding prose, or lack of action keywords. Human-owned
+actions may be required even when `workCandidate` is none. Contributor changelog
+requests remain subject to OpenClaw's release-owned changelog normalization.
+
+Historical Decisions may omit the assessment, and reports are not migrated or
+rewritten. An unusable next-step field retains conservative legacy prose
+interpretation when the rest of the report is usable, never an inferred none.
+Ambiguous report frontmatter produces a bounded blocked notice requiring a fresh
+report; it cannot supply repair or merge permission. Only a unique valid
+value in leading canonical frontmatter counts; body or fenced examples cannot
+supply it. This compatibility limit means old false-positive prose needs a fresh
+producer assessment, not a guess from its summary, rating, or automation markers.
+Independent findings, security concerns, risks, contributor proof, historical
+verification, decisions, failed reviews, and low-quality remediation still render
+and count. Scores retain their existing policy. A required action prevents a pass,
+but never grants repair or merge authority: existing opt-ins, proof checks, and
+live source/lease guards still apply. OpenClaw Bay's observer contract is unchanged.
+
+PR comments also carry one additive readiness marker beside their durable review
+version:
+
+```html
+<!-- clawsweeper-review-state:ready item=<number> sha=<full-head-sha> v=1 -->
+```
+
+Its states are `ready`, `blocked`, and `needs-changes`. Human-owned blockers take
+precedence over repairable work. A valid exact item, head, review time, and owned
+lease are required before emitting the marker. Ready means no remaining review
+work; it does not grant merge permission or bypass normal maintainer review.
+Consumers must pair it with the matching durable identity, never infer authority
+from a standalone marker or visible prose. The compact producer contract is in
+[`test/fixtures/review-state-contract-v1.json`](../test/fixtures/review-state-contract-v1.json).
+
+The [next-step intent proof recipe](proof/review-next-step-intent/README.md)
+compares identical synthetic reports against pinned baseline and candidate
+renderers and exercises producer-to-report persistence without live publication.
+
 Everything primarily useful to agents or deep reviewers lives under one
 collapsed `Agent review details` section: security evidence, PR surface,
 review metrics, stored-data warnings, root-cause clusters, proof suggestions,
@@ -144,8 +204,9 @@ production source or documented storage contracts, not setup in test, fixture,
 or example source paths. Colocated `*.test-support.*` and Go `*_test.go` files
 are test code too, even when their guards or setup mention metadata,
 serialization, or SQL. Generic words such as `metadata`, `chunkId`, `documentId`,
-`collection`, and `dimension` alone do not establish vector storage. Known
-storage paths, explicit vector/embedding contracts, and same-hunk persistence
+`collection`, and `dimension` alone do not establish vector storage, including
+generic metadata or identifier filenames. Known storage paths, explicit
+vector/embedding contracts, and same-hunk persistence
 evidence still require review; diagnostic logging does not exempt real storage
 changes in the same patch.
 Markdown beside source is still documentation: ordinary
@@ -154,9 +215,12 @@ storage formats, SQL DDL, and structured storage keys (including frontmatter)
 remain evidence. Renames retain evidence from either production path. Missing,
 empty, or truncated patches on explicit production persistence paths or hook
 descriptors, and truncated file lists, still produce conservative unknown
-warnings. Generic `state`, `session`, and `history` path names and typed runtime
-parameters alone do not establish persistence, including when their patches are
-truncated. Explicit serialization, browser storage (local/session storage and
+warnings. Generic `state`, `session`, `history`, `worker`, and `cache` path names,
+cache keys, versions, namespaces, TTLs, and typed runtime fields alone do not
+establish persistence, including when their patches are missing or truncated.
+Cache-shaped objects need an explicit cache schema, storage path, or same-hunk
+persistence boundary; component-local maps, promises, and abort signals do not
+supply one. Explicit serialization, browser storage (local/session storage and
 IndexedDB), durable storage, and schema/migration evidence remain eligible in
 UI code too. Unchanged storage context in the same diff hunk can establish the
 boundary for changed stored fields; an in-memory map or display-only comment

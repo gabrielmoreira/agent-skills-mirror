@@ -40,6 +40,12 @@ resolve_plan_file() {
         printf "%s\n" "${plan_dir}/task_plan.md"
         return 0
     fi
+    # Explicit selectors are bindings, not hints (issue #237). This script
+    # WRITES a phase status into the plan it picks, so a cwd fallback after a
+    # rejected selector edits a different plan than the operator named.
+    if [ -n "${PLAN_ID:-}" ] || [ -n "${PWF_PLAN_ROOT:-}" ]; then
+        return 1
+    fi
     if [ -f "./task_plan.md" ]; then
         printf "%s\n" "./task_plan.md"
         return 0
@@ -73,7 +79,11 @@ case "${NEW_STATUS}" in
 esac
 
 PLAN_FILE="$(resolve_plan_file)" || {
-    printf "[phase-status] No task_plan.md found. Create a plan first.\n" >&2
+    if [ -n "${PLAN_ID:-}" ] || [ -n "${PWF_PLAN_ROOT:-}" ]; then
+        printf "[phase-status] An explicit PLAN_ID or PWF_PLAN_ROOT did not resolve to a plan; nothing was written and no other plan was substituted.\n" >&2
+    else
+        printf "[phase-status] No task_plan.md found. Create a plan first.\n" >&2
+    fi
     exit 1
 }
 

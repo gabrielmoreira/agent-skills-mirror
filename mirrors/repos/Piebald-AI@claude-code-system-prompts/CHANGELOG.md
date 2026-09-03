@@ -4,6 +4,23 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.259](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e81a031)
+
+_+1,335 tokens_
+
+- **NEW:** Data: `allowedMcpServers` setting — Documents the enterprise allowlist for user-added MCP servers across configuration, CLI, agents, plugins, and claude.ai connectors; exempts organization-delivered servers unless `managed-mcp.json` uses `${VAR}` expansion; and defines undefined, empty-array, and denylist-precedence behavior.
+- **NEW:** Data: SDK `user_message_uuids` fields (assistant, partial assistant, and error result) — Define ordered join-key lists for binding prompt-batched sends to reply frames, first non-ping stream events, and error results; extend error-result coverage to queued messages folded into the turn; and specify first-frame placement, 64-entry bounds, inclusion of `user_message_uuid`, delivery-failure/zeroed exclusions, and older-producer fallback.
+- **NEW:** Tool Description: Artifact pinning guidance — Defines the sidebar `pin` and `unpin` actions; offers pinning only for reusable artifacts and waits for confirmation; allows publish-time `pin: true` only when requested beforehand; and clarifies that pins are private and do not affect access.
+- Data: Plugin JSX runtime shim — Adds plugin render-hook support for leaf-only `<Svg>` elements with required string `source` (SVG markup) and `alt` properties and optional `width`, `height`, and `interactive` properties, including dedicated validation and dispatch.
+- Tool Description: Artifact action reference — Adds conditionally available `pin` and `unpin` calls to the Artifact action list.
+
+# [2.1.258](https://github.com/Piebald-AI/claude-code-system-prompts/commit/545894c)
+
+_+239 tokens_
+
+- Agent Prompt: Plan mode (enhanced) — Corrects CCSP's extracted agent metadata to include `ArtifactComments`, `ArtifactData`, and `ArtifactCheck` among the Plan subagent's disallowed tools; the restrictions already exist in both upstream versions, so Claude Code behavior is unchanged.
+- Tool Description: TaskCreate — Corrects the generated teammate-note placeholder from `CONDTIONAL_TEAMMATES_NOTE` to `CONDITIONAL_TEAMMATES_NOTE`; rendered prompt text and runtime behavior are unchanged.
+
 # [2.1.257](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9465ca1)
 
 _+4,226 tokens_

@@ -142,7 +142,8 @@ is absent or a cache event lands in another Cloudflare colo.
   queued and live counts only when both producer censuses are complete, plus a
   bounded verified-public repository/item/action reference sample used by Bay
   and Overview cards, search, overflow lists, and client-side public-reference
-  blades
+  blades; sampled queue and live references may additionally carry one
+  validated queue-start or public action-start clock with its closed kind
 - durable lifecycle inventory and six closed lane counts plus at most 24
   minimal cards for verified-public repository/item references
 - a budget-sized capacity rail plus aggregate counts for issue-to-PR, PR repair,
@@ -409,9 +410,19 @@ resets that recovery budget; after three unsuccessful recovery cycles the item
 stays parked for operator inspection. Publication dead-letter-capacity parks
 retain their separate operator-controlled recovery path.
 
+Every failed exact-review completion first records one durable, deduplicated
+attempt keyed by its claim tuple. The record contains only closed stage/reason,
+retryability, source and failure fingerprints, immutable source identifiers,
+and workflow coordinates; raw diagnostics and scanner findings are never
+stored. The public `review_failure_health` projection groups the last hour into
+fixed stage buckets and marks a repeated target/source/failure identity
+critical. The dashboard raises recent failures to amber and repeated failures
+or exhausted review retries to red. A signed operator inventory provides the
+corresponding target and run identities for investigation.
+
 `/api/exact-review-queue` is an explicit, closed aggregate projection. It
 contains `generated_at`, `ready_pending`, `admissible_pending`, `pressure`,
-`handoff_health`, and bounded counts and oldest timestamps or ages for the
+`handoff_health`, `review_failure_health`, and bounded counts and oldest timestamps or ages for the
 pending, dispatching, and leased phases. `ready_pending` excludes retry-delayed
 items. `admissible_pending` further excludes ready items blocked by their
 target's exact-review cap. `pressure` is a deterministic observation from that
@@ -459,6 +470,45 @@ publication with retry/batch fallback. These controls affect the aggregate
 counts but are not serialized by the public projector. Document effective
 production values from `dashboard/wrangler.toml`, not only fallback constants
 in `dashboard/exact-review-queue.ts`.
+
+Batch publication heartbeats and post-effect enqueue, router-receipt, and
+terminal-disposition POSTs retry network errors, timeouts, and HTTP 5xx responses
+(including `exact_review_queue_unavailable`) up to three attempts within 45
+seconds, with at most 20 seconds per attempt. Retries preserve the signed bytes,
+use jittered exponential backoff, and honor `Retry-After` up to 10 seconds;
+heartbeats additionally stop at the last confirmed lease expiry. Validation,
+authentication, and fence rejections are never retried, and receipt retries do
+not repeat the GitHub router dispatch.
+
+Lifecycle receipt replays are no-ops for the whole operation, including terminal
+transitions and acknowledgement drivers. Terminal-disposition requests from the
+batch workflow carry a stable `operation_id` derived from the run, attempt, and
+fence; applied IDs are retained with the lifecycle revision's receipt history.
+A replay after a newer requeue preserves that requeue. Older workflows without
+an operation ID retain their existing terminal-transition behavior. Failed
+queue requests report the HTTP status and, when present, a validated short
+server error code; raw response bodies are never included.
+
+Batch claims carrying the current dispatch reservation consume only the
+still-valid subset of the key/revision pairs checked before departure. Fresh
+arrivals wait for the next departure; changed or removed members are skipped.
+An empty subset retires that reservation and requests another preflight.
+
+Only signed intake (`/enqueue`, `/command-intake`, `/branch-authority`,
+`/source-authority`) may reuse durable KV public-admission observations;
+credential-bearing paths require live probes. `EXACT_REVIEW_HOSTED_TARGET_ADMISSION_FRESH_MS`
+(60,000 ms) permits intake without probing; retryable probes allow fallback until
+`EXACT_REVIEW_HOSTED_TARGET_ADMISSION_MAX_STALE_MS` (1,800,000 ms; zero disables caching).
+Terminal visibility or eligibility revokes admission with a unique token fencing
+older probes, including across tombstone expiry. Tombstones expire lazily after
+at least 30 minutes; probes outliving retention must retry.
+
+Alarms prune up to `EXACT_REVIEW_STALE_PUBLICATION_PRUNE_LIMIT` stale revisions
+(default 100), oldest first, without GitHub reads. Only pending/parked rows without
+active batch ownership, terminal finalization or command context qualify;
+duplicate-lineage and legacy terminal cleanup remains operator-owned.
+Successful queue handoff expires the workflow's review-start lease to permit
+another exact-head review; terminal publication still deletes the placeholder.
 
 The binding-only publication state retains additional diagnostics:
 

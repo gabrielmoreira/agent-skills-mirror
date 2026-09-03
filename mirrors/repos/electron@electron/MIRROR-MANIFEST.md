@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `electron/electron` — 26 default patterns, 0 followed patterns, 8 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 8 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 9 | ✓ | [`spec/CLAUDE.md`](spec/CLAUDE.md) |
 
 ---
 

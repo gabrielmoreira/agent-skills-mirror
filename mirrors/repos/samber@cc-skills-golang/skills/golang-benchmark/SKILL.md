@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code, Codex or similar harness, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.3.1"
+  version: "1.3.2"
   openclaw:
     emoji: "📊"
     homepage: https://github.com/samber/cc-skills-golang
@@ -41,7 +41,11 @@ This skill covers the full measurement workflow: write a benchmark, run it, prof
 
 ### File and Ordering Conventions
 
-Benchmark functions live in a `_bench_test.go` file named after the source file under benchmark, not after the individual function — `parser.go` -> `parser_bench_test.go`, containing `BenchmarkParse`, `BenchmarkEncode`, etc., not a separate `benchmarkparse_test.go` per function. Keeping benchmarks in their own file (instead of mixed into `parser_test.go`) keeps `go test -bench=. ./pkg/parser` output free of unrelated `Test*` noise, and separates fixtures sized for measurement (large inputs, long-lived setup) from those sized for correctness — the two rarely share the same shape. The file still follows Go's one-test-file-per-source-file convention (→ See `samber/cc-skills-golang@golang-testing` skill), just with the `_bench` suffix marking its narrower purpose.
+Benchmark functions live in a `_bench_test.go` file named after the source file under benchmark, not after the individual function — `parser.go` -> `parser_bench_test.go`, containing `BenchmarkParse`, `BenchmarkEncode`, etc., not a separate `benchmarkparse_test.go` per function.
+
+- Keeping benchmarks in their own file (instead of mixed into `parser_test.go`) keeps `go test -bench=. ./pkg/parser` output free of unrelated `Test*` noise.
+- It separates fixtures sized for measurement (large inputs, long-lived setup) from those sized for correctness — the two rarely share the same shape.
+- The file still follows Go's one-test-file-per-source-file convention (→ See `samber/cc-skills-golang@golang-testing` skill), just with the `_bench` suffix marking its narrower purpose.
 
 Order `Benchmark*` functions inside `parser_bench_test.go` to mirror the order of the functions/methods they measure in `parser.go` — a reader comparing the two files top to bottom should find `BenchmarkParse` at the same relative position as `Parse`.
 
@@ -59,6 +63,8 @@ func BenchmarkParse(b *testing.B) {
 ```
 
 Legacy `b.N` loops still compile and are fine to keep when preserving existing benchmarks or supporting Go <1.24. They are easier to get wrong: setup may need `b.ResetTimer()`, and results may need a sink if the compiler can eliminate the work. Go 1.26 fixed an earlier `b.Loop()` inlining limitation — benchmarks on 1.24–1.25 already benefit from `b.Loop()` but may miss inlining optimizations that 1.26 delivers.
+
+Go 1.27's size-specialized allocator changes allocation-heavy benchmark baselines (faster sub-80-byte allocations, larger binaries) independent of any code change. Treat a `benchstat` comparison that straddles the Go 1.26→1.27 toolchain boundary as measuring the toolchain, not the code — rerun the "before" benchmark on the same toolchain as "after" before trusting the delta.
 
 ### Memory tracking
 

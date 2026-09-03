@@ -59,8 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/nateherk-design/skills/scrollcraft/CHANGELOG.md`](plugins/nateherk-design/skills/scrollcraft/CHANGELOG.md) |
-| 2 | ✓ | [`plugins/nateherk-design/skills/scrollcraft/SKILL.md`](plugins/nateherk-design/skills/scrollcraft/SKILL.md) |
+| 1 | ✓ | [`plugins/nateherk-design/skills/scroll-craft/CHANGELOG.md`](plugins/nateherk-design/skills/scroll-craft/CHANGELOG.md) |
+| 2 | ✓ | [`plugins/nateherk-design/skills/scroll-craft/SKILL.md`](plugins/nateherk-design/skills/scroll-craft/SKILL.md) |
 
 ---
 

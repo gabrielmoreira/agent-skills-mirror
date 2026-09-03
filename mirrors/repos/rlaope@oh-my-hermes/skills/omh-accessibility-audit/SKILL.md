@@ -79,6 +79,9 @@ Quality bar:
 - Map findings to concrete WCAG 2.2 criteria and user impact instead of generic accessibility advice.
 - Separate semantic structure, focus/keyboard, screen-reader announcement, target-size/pointer, contrast/reflow, forms/errors, and dynamic status checks.
 - Require observed keyboard and assistive-tech or accessibility-tree evidence before PASS.
+- Give every finding a stable rule ID from `omh-accessibility-audit/references/a11y-rules.md` - category prefix plus number - beside its WCAG criterion and severity, so two audits of the same surface produce comparable findings and a rerun can say which are resolved, carried, or new.
+- Partition each fix by whether the markup determines the answer: `auto` when the correct output follows from the structure itself, `manual` whenever it requires knowing what the content means. A meaning-dependent fix marked `auto` is a defect - it produces confident, wrong alternative text - and a fix that is only half structural is split, never rounded to either side.
+- Read the surface fully and collect every finding before reporting one; report rule ID, severity, location, WCAG criterion, fix class, and the fix, so the `auto` rows can be handed to an executor as a batch while the `manual` rows go back carrying the question each one needs answered.
 - Route design-system or implementation changes back to frontend or the selected coding owner, then recheck with visual-qa/accessibility evidence.
 
 Handoff policy:
@@ -124,6 +127,7 @@ Safety rules:
 - Automated accessibility scans are useful evidence but do not replace keyboard traversal, focus order, semantic review, and critical-task observation.
 - Do not treat visual QA screenshots, source review, or old captures as current accessibility evidence after UI changes.
 - Keep accessibility audit, remediation implementation, browser proof, visual QA, Lighthouse, CI, release, and merge evidence separate.
+- A fix class is a property of the fix, never evidence it was applied: an `auto` row is an executor handoff, and the verdict still needs observed evidence gathered after the change.
 - For destructive or credentialed flows, require staging-safe or read-only paths before browser/accessibility walks.
 - Do not call external scanners, browsers, screen readers, LLMs, or platform services from OMH core.
 

@@ -1,9 +1,9 @@
 ---
 name: ai-ml-data-science
-description: "ML and data science workflows - EDA, feature engineering, modelling, evaluation, and production handoff. Use when exploring data or building models."
+description: "Builds ML, responsible-AI, and multimodal models. Use when doing data science or explaining fairness, privacy, speech, vision-language, or diffusion mechanics."
 compatibility: Portable core. Works on Claude Code and Codex.
-version: "1.1"
-last_validated: 2026-07-11
+version: "1.2"
+last_validated: 2026-08-21
 ---
 
 # Data Science Engineering Suite
@@ -41,6 +41,7 @@ handoff
 | data contracts | Pandera or GX Core at dataset boundaries |
 | tabular baseline | linear or logistic model plus tree-based candidate |
 | feature engineering | explicit train-serve-safe transforms |
+| unlabeled text corpus | embed -> UMAP -> HDBSCAN -> c-TF-IDF; LLM labels once per topic, never per document |
 | tuning | Optuna only after the baseline is stable |
 | evaluation | slices, threshold, calibration, uncertainty |
 | handoff | model card, evaluation report, failure modes, monitoring expectations |
@@ -50,9 +51,12 @@ handoff
 - exploring datasets and checking modelling feasibility
 - designing feature pipelines and leakage controls
 - choosing and comparing model families
+- clustering unlabeled text and discovering topics before a taxonomy or labeling effort exists
 - building reproducible experiment workflows
 - producing evaluation reports, model cards, and handoff artifacts
 - reviewing whether an experiment is genuinely ready for production handoff
+- explaining responsible-AI modelling mechanics: fairness and intersectionality, privacy, interpretability, poisoning, memorization, human oversight, and environmental trade-offs
+- designing general multimodal models: contrastive image-text learning, fusion, VQA/document/video systems, diffusion control, adaptation, and quality-latency trade-offs
 
 ## Route Elsewhere
 
@@ -108,9 +112,12 @@ handoff
 | tabular or relational | baseline plus tree-based comparison |
 | time-ordered forecasting | route to [ai-ml-timeseries](../ai-ml-timeseries/SKILL.md) |
 | classical text or embeddings plus classifier | stay here |
+| unlabeled text, unknown themes, topic discovery | stay here; see `references/text-clustering-topic-modeling.md` |
 | LLM workflow, prompting, or RAG | route to [ai-llm](../ai-llm/SKILL.md) or [ai-rag](../ai-rag/SKILL.md) |
 | deployment, monitoring, retraining | route to [ai-mlops](../ai-mlops/SKILL.md) |
 | ingestion or lakehouse architecture | route to [data-lake-platform](../data-lake-platform/SKILL.md) |
+| responsible-AI concepts and modelling trade-offs | stay here; route operational controls to [ai-mlops](../ai-mlops/SKILL.md) and measurement/red teaming to [ai-evals](../ai-evals/SKILL.md) |
+| multimodal representations, fusion, VQA/document/video, diffusion mechanics | stay here; route production and evaluation to [ai-mlops](../ai-mlops/SKILL.md) and [ai-evals](../ai-evals/SKILL.md) |
 
 ---
 
@@ -190,9 +197,14 @@ See [scripts/README.md](scripts/README.md) for the input format and leakage-chec
 - [references/evaluation-patterns.md](references/evaluation-patterns.md)
 - [references/class-imbalance-patterns.md](references/class-imbalance-patterns.md)
 - [references/hyperparameter-optimization.md](references/hyperparameter-optimization.md)
+- [references/text-clustering-topic-modeling.md](references/text-clustering-topic-modeling.md) — modular embed/UMAP/HDBSCAN/c-TF-IDF pipeline, representation-model reranking, per-topic (not per-document) LLM labeling, and when to prefer plain k-means
 - [references/interpretability-explainability.md](references/interpretability-explainability.md)
+- [references/responsible-ai-mechanics.md](references/responsible-ai-mechanics.md) — fairness/intersectionality, differential privacy, explainability, poisoning/federated learning, re-identification, watermarking, human oversight/appeals, copyright/memorization, and environmental trade-offs
+- [references/multimodal-modeling.md](references/multimodal-modeling.md) — CLIP/SigLIP objectives, fusion, VQA/document/video systems, diffusion control/diversity/acceleration, adaptation, latency, and cost
 - [references/reproducibility-checklist.md](references/reproducibility-checklist.md)
 - [references/llm-data-pipeline.md](references/llm-data-pipeline.md) — LLM-from-scratch data pipelines (dedup, quality filtering, synthetic mixing, decontamination); route here first for corpus curation work
+- [references/feature-freshness-streaming.md](references/feature-freshness-streaming.md)
+- [references/production-feedback-loops.md](references/production-feedback-loops.md)
 - [references/ml-diagrams.md](references/ml-diagrams.md) — Mermaid diagram catalog for classical ML (k-means, logistic regression, decision trees, collaborative filtering) and neural net architectures (MLP, RNN, CNN, Transformer); for embedding in docs, READMEs, PR descriptions
 
 ### Data and external references
@@ -222,4 +234,3 @@ See [scripts/README.md](scripts/README.md) for the input format and leakage-chec
 Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
 
 After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
-

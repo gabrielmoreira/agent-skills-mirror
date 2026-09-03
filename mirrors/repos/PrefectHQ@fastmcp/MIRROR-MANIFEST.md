@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 14 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,18 +61,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/python-tests/SKILL.md`](.claude/skills/python-tests/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/review-issue/SKILL.md`](.claude/skills/review-issue/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/review-security-report/SKILL.md`](.claude/skills/review-security-report/SKILL.md) |
-| 6 | ✓ | [`.cursor/rules/core-mcp-objects.mdc`](.cursor/rules/core-mcp-objects.mdc) |
-| 7 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`docs/.cursor/rules/mintlify.mdc`](docs/.cursor/rules/mintlify.mdc) |
-| 11 | ✓ | [`examples/skills/sample_skills/code-review/SKILL.md`](examples/skills/sample_skills/code-review/SKILL.md) |
-| 12 | ✓ | [`examples/skills/sample_skills/pdf-processing/reference.md`](examples/skills/sample_skills/pdf-processing/reference.md) |
-| 13 | ✓ | [`examples/skills/sample_skills/pdf-processing/SKILL.md`](examples/skills/sample_skills/pdf-processing/SKILL.md) |
-| 14 | ✓ | [`skills/fastmcp-client-cli/SKILL.md`](skills/fastmcp-client-cli/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/review-issue/SKILL.md`](.claude/skills/review-issue/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/review-security-report/SKILL.md`](.claude/skills/review-security-report/SKILL.md) |
+| 7 | ✓ | [`.cursor/rules/core-mcp-objects.mdc`](.cursor/rules/core-mcp-objects.mdc) |
+| 8 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`docs/.cursor/rules/mintlify.mdc`](docs/.cursor/rules/mintlify.mdc) |
+| 12 | ✓ | [`examples/skills/sample_skills/code-review/SKILL.md`](examples/skills/sample_skills/code-review/SKILL.md) |
+| 13 | ✓ | [`examples/skills/sample_skills/pdf-processing/reference.md`](examples/skills/sample_skills/pdf-processing/reference.md) |
+| 14 | ✓ | [`examples/skills/sample_skills/pdf-processing/SKILL.md`](examples/skills/sample_skills/pdf-processing/SKILL.md) |
+| 15 | ✓ | [`skills/fastmcp-client-cli/SKILL.md`](skills/fastmcp-client-cli/SKILL.md) |
 
 ---
 

@@ -3,11 +3,12 @@
 **Condensed mirror of `CLAUDE.md`** — rules + greppable symbols. If they
 disagree, `CLAUDE.md` and the code win.
 
-**Keep this file under 24 KB (CI asserts)** — cut prose, not rules.
+**Keep this file under 24 KB (CI asserts)** — cut prose, not rules. Within
+1 KB of the ceiling, adding bytes requires cutting at least as many from this
+file (CI asserts).
 
 Kocoro is the Go CLI/runtime (`shan`) for Shannon agents. Production: daemon +
-Desktop + Cloud (daemon holds the Cloud WS, runs the loop locally). Also TUI,
-one-shot CLI, MCP, schedules.
+Desktop + Cloud. Also TUI, one-shot CLI, MCP, schedules.
 
 Layout: `cmd/` (Cobra) + `internal/<pkg>/`; `daemon/` drives `agent/`.
 
@@ -82,8 +83,8 @@ the SAME PR. Desktop-only transport endpoints stay out; their contract lives in
   `always_allow_tools` entries ignored. Config writes (incl. agent-sync pull)
   drop denied entries (`dropRegistryDeniedAlwaysAllow`, registry miss keeps);
   `RefreshIntegrationTools` + `resetIntegrationToolsForPrincipal` prune after
-  rebuild (`pruneDeniedAlwaysAllowGrants`). Drop skips the LWW stamp; only the
-  refresh prune pushes. Absent=false; Cloud gates marked schemas on
+  rebuild (`pruneDeniedAlwaysAllowGrants`). Drop skips the LWW stamp; both
+  prunes push on write. Absent=false; Cloud gates marked schemas on
   `integration_requires_approval`.
 - Trusted `material_side_effect=false` permits observational batching without
   the journal; absent is fail-closed. Stable `request_id`; material calls add
@@ -149,11 +150,11 @@ hard-block -> denied commands -> compound splitting -> always-ask gates
   (`DisallowsAutoApproval`) = `computer`, `accessibility`, `applescript`,
   `ghostty`; `unattendedAutoApprovalDenyList` (`DisallowsUnattendedAutoApproval`)
   = those four plus `computer_use` and `screenshot`.
-- `computer_use` is deliberately absent from the FIRST list — its persisted
+- `computer_use` is NOT in the FIRST list — its persisted
   global grant IS the product's Computer Use permission, honored even unattended,
   scoped BY NAME via `unattendedGrantHonored`. Legacy GUI names never use the
-  global grant; per-agent `computer_use` is rejected
-  (`agents.ValidateAgentPermissionsConfig`) — the grant is global-only.
+  global grant; per-agent `computer_use` is rejected on API writes
+  (`ValidateAgentPermissionsConfig`), dropped on sync pull — global-only.
 
 ## Wire Contracts
 
@@ -391,8 +392,7 @@ SHANNON_E2E_LIVE=1 go test -tags=live ./test/e2e/ -v # live suite (tag required)
 go build ./...
 ```
 
-Koe tests link cgo audio deps: `brew install opus opusfile pkg-config`, and set
-`PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig` if pkg-config cannot find them.
+Koe tests link cgo audio deps: `brew install opus opusfile pkg-config`.
 Schedule tests use temp dirs and MUST NOT write to the real LaunchAgents directory.
 
 Live E2E uses the hidden foreground-only isolation flags in

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 347 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 346 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 347 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 347 |
+| Files         | 346 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -351,61 +351,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 290 | ✓ | [`skills/pyproject.toml`](skills/pyproject.toml) |
 | 291 | ✓ | [`skills/python-debugpy/SKILL.md`](skills/python-debugpy/SKILL.md) |
 | 292 | ✓ | [`skills/sag/SKILL.md`](skills/sag/SKILL.md) |
-| 293 | ✓ | [`skills/session-logs/SKILL.md`](skills/session-logs/SKILL.md) |
-| 294 | ✓ | [`skills/sherpa-onnx-tts/bin/sherpa-onnx-tts`](skills/sherpa-onnx-tts/bin/sherpa-onnx-tts) |
-| 295 | ✓ | [`skills/sherpa-onnx-tts/SKILL.md`](skills/sherpa-onnx-tts/SKILL.md) |
-| 296 | ✓ | [`skills/skill-creator/license.txt`](skills/skill-creator/license.txt) |
-| 297 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 298 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 299 | ✓ | [`skills/skill-creator/scripts/test_package_skill.py`](skills/skill-creator/scripts/test_package_skill.py) |
-| 300 | ✓ | [`skills/skill-creator/scripts/test_quick_validate.py`](skills/skill-creator/scripts/test_quick_validate.py) |
-| 301 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 302 | ✓ | [`skills/songsee/SKILL.md`](skills/songsee/SKILL.md) |
-| 303 | ✓ | [`skills/sonoscli/SKILL.md`](skills/sonoscli/SKILL.md) |
-| 304 | ✓ | [`skills/spike/SKILL.md`](skills/spike/SKILL.md) |
-| 305 | ✓ | [`skills/spotify-player/SKILL.md`](skills/spotify-player/SKILL.md) |
-| 306 | ✓ | [`skills/summarize/SKILL.md`](skills/summarize/SKILL.md) |
-| 307 | ✓ | [`skills/taskflow-inbox-triage/SKILL.md`](skills/taskflow-inbox-triage/SKILL.md) |
-| 308 | ✓ | [`skills/taskflow/examples/inbox-triage.lobster`](skills/taskflow/examples/inbox-triage.lobster) |
-| 309 | ✓ | [`skills/taskflow/examples/pr-intake.lobster`](skills/taskflow/examples/pr-intake.lobster) |
-| 310 | ✓ | [`skills/taskflow/SKILL.md`](skills/taskflow/SKILL.md) |
-| 311 | ✓ | [`skills/things-mac/SKILL.md`](skills/things-mac/SKILL.md) |
-| 312 | ✓ | [`skills/tmux/scripts/find-sessions.sh`](skills/tmux/scripts/find-sessions.sh) |
-| 313 | ✓ | [`skills/tmux/scripts/wait-for-text.sh`](skills/tmux/scripts/wait-for-text.sh) |
-| 314 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
-| 315 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
-| 316 | ✓ | [`skills/video-frames/scripts/frame.sh`](skills/video-frames/scripts/frame.sh) |
-| 317 | ✓ | [`skills/video-frames/SKILL.md`](skills/video-frames/SKILL.md) |
-| 318 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
-| 319 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
-| 320 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 321 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
-| 322 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
-| 323 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
-| 324 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
-| 325 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
-| 326 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
-| 327 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
-| 328 | ✓ | [`src/channels/plugins/contracts/test-helpers/AGENTS.md`](src/channels/plugins/contracts/test-helpers/AGENTS.md) |
-| 329 | ✓ | [`src/channels/plugins/contracts/test-helpers/CLAUDE.md`](src/channels/plugins/contracts/test-helpers/CLAUDE.md) |
-| 330 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
-| 331 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
-| 332 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
-| 333 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
-| 334 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
-| 335 | ✓ | [`src/infra/outbound/CLAUDE.md`](src/infra/outbound/CLAUDE.md) |
-| 336 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
-| 337 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
-| 338 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
-| 339 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
-| 340 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
-| 341 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
-| 342 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 343 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 344 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 345 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
-| 346 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 347 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 293 | ✓ | [`skills/sherpa-onnx-tts/bin/sherpa-onnx-tts`](skills/sherpa-onnx-tts/bin/sherpa-onnx-tts) |
+| 294 | ✓ | [`skills/sherpa-onnx-tts/SKILL.md`](skills/sherpa-onnx-tts/SKILL.md) |
+| 295 | ✓ | [`skills/skill-creator/license.txt`](skills/skill-creator/license.txt) |
+| 296 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 297 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 298 | ✓ | [`skills/skill-creator/scripts/test_package_skill.py`](skills/skill-creator/scripts/test_package_skill.py) |
+| 299 | ✓ | [`skills/skill-creator/scripts/test_quick_validate.py`](skills/skill-creator/scripts/test_quick_validate.py) |
+| 300 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 301 | ✓ | [`skills/songsee/SKILL.md`](skills/songsee/SKILL.md) |
+| 302 | ✓ | [`skills/sonoscli/SKILL.md`](skills/sonoscli/SKILL.md) |
+| 303 | ✓ | [`skills/spike/SKILL.md`](skills/spike/SKILL.md) |
+| 304 | ✓ | [`skills/spotify-player/SKILL.md`](skills/spotify-player/SKILL.md) |
+| 305 | ✓ | [`skills/summarize/SKILL.md`](skills/summarize/SKILL.md) |
+| 306 | ✓ | [`skills/taskflow-inbox-triage/SKILL.md`](skills/taskflow-inbox-triage/SKILL.md) |
+| 307 | ✓ | [`skills/taskflow/examples/inbox-triage.lobster`](skills/taskflow/examples/inbox-triage.lobster) |
+| 308 | ✓ | [`skills/taskflow/examples/pr-intake.lobster`](skills/taskflow/examples/pr-intake.lobster) |
+| 309 | ✓ | [`skills/taskflow/SKILL.md`](skills/taskflow/SKILL.md) |
+| 310 | ✓ | [`skills/things-mac/SKILL.md`](skills/things-mac/SKILL.md) |
+| 311 | ✓ | [`skills/tmux/scripts/find-sessions.sh`](skills/tmux/scripts/find-sessions.sh) |
+| 312 | ✓ | [`skills/tmux/scripts/wait-for-text.sh`](skills/tmux/scripts/wait-for-text.sh) |
+| 313 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
+| 314 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
+| 315 | ✓ | [`skills/video-frames/scripts/frame.sh`](skills/video-frames/scripts/frame.sh) |
+| 316 | ✓ | [`skills/video-frames/SKILL.md`](skills/video-frames/SKILL.md) |
+| 317 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
+| 318 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
+| 319 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 320 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
+| 321 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
+| 322 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
+| 323 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
+| 324 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
+| 325 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
+| 326 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
+| 327 | ✓ | [`src/channels/plugins/contracts/test-helpers/AGENTS.md`](src/channels/plugins/contracts/test-helpers/AGENTS.md) |
+| 328 | ✓ | [`src/channels/plugins/contracts/test-helpers/CLAUDE.md`](src/channels/plugins/contracts/test-helpers/CLAUDE.md) |
+| 329 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
+| 330 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
+| 331 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
+| 332 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
+| 333 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
+| 334 | ✓ | [`src/infra/outbound/CLAUDE.md`](src/infra/outbound/CLAUDE.md) |
+| 335 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
+| 336 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
+| 337 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
+| 338 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
+| 339 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
+| 340 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
+| 341 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 342 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 343 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 344 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 345 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 346 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
 
 ---
 

@@ -34,7 +34,7 @@ notably Voice Front-Brain Authority (`internal/koe`), Provider Architecture
 
 ### Doc Co-Maintenance
 
-Feature changes update README.md (user-facing), CLAUDE.md (this file, developer-facing), and AGENTS.md (external-agent-facing: the rules and the greppable symbols, not a second copy of this file).
+Feature changes update README.md (user-facing), CLAUDE.md (this file, developer-facing), and AGENTS.md (external-agent-facing: the rules and the greppable symbols, not a second copy of this file). AGENTS.md is capped at 24576 bytes (CI asserts — harnesses truncate it from the tail silently), and within 1 KiB of that ceiling any addition must cut at least as many bytes from AGENTS.md in the same PR (also CI-asserted).
 
 **Kocoro skill is the AI's source of truth for the daemon HTTP API** — `references/*.md` are injected into the **kocoro agent's** context, so the rule covers only endpoints the agent calls or must understand: every such `mux.HandleFunc(...)` in `internal/daemon/server.go` needs a matching `references/*.md` entry in the same PR. Maps:
 - agents/skills/schedules/config endpoints → `references/{agents,skills,schedules,config}.md`
@@ -186,6 +186,37 @@ One `####` per subsystem. Each names its code home first, then the invariant.
 
 A run that absorbed mid-run injected follow-ups completes + acks EACH inbound message under its OWN cloud id — superseded turns via `OnIntermediateAnswer(text, cloudMessageID)` (a real `SendReply`+ack, not a timeline segment); the final answer + co-acks via `RunAgentResult.{ReplyToMessageID,PendingAckMessageIDs}` -> `Client.SetReplyPlan`. Ack-after-delivery: `handleMessage` acks every absorbed id ONLY after the final reply lands. The injected follow-up's own handler suppresses BOTH its reply and ack via `Client.SuppressReply`; the owning run is solely responsible, so a crash replays it instead of losing the answer. Without this, Cloud collapses two logically-distinct replies (group-chat messages from different senders) into one channel message.
 
+#### Agent sync ownership
+
+`internal/agents/owner.go` + `internal/daemon/agentsync.go`. Agents carry a
+device-local `_owner` sidecar (verified Cloud user id; never synced, excluded
+from the LWW definition-file set). Push (`buildSyncItems`) excludes
+foreign-owned agents and grandfathers unstamped ones to the current verified
+principal on first push contact; the principal resync stamps everything it
+materializes/overwrites, and a pulled tombstone deletes only own/unstamped
+agents (account B's cloud delete cannot remove account A's same-key local
+agent). Create stamps the creator; definition edits (PUT agent / PUT+DELETE
+config) re-stamp to the editing principal (ownership follows content, same as
+the pull's LWW overwrite); delete removes the sidecar. The RUNTIME
+(listing/routing/execution) deliberately stays cross-account shared — only the
+sync boundary is principal-scoped, closing the cross-account upload of the
+previous account's local agents after a switch. No verified principal (legacy
+yaml-key platforms) = unstamped, unfiltered, historical device-shared behavior;
+an AuthManager with NO verified principal (optimistic sign-in) skips the push
+entirely instead — the gateway key is live there and an unfiltered push would
+leak. A push whose excluded foreign key COLLIDES with the account's cloud
+mirror (live-key snapshot taken by the resync pull) degrades to upsert-only —
+Cloud's full_sync SoftDeleteMissing would tombstone the account's own same-key
+row; disjoint foreign keys keep full_sync, since a blanket degrade would stop
+local deletes from ever reaching Cloud (deleted agents would resurrect on
+every multi-account device). Owner writes are atomic (temp+rename) so
+lock-free reads never see a torn value. Accepted residuals: an agent edited
+under A whose stamp never landed (push failed / daemon killed inside the
+debounce / pre-upgrade population) is grandfathered to whoever is signed in at
+first push contact; per-agent always-allow add/remove deliberately does NOT
+re-stamp yet still bumps the LWW clock (config.yaml is a definition file), so
+B's approval click on A's agent rides A's next push — small, known.
+
 #### Config revision state
 
 `internal/config/revision.go` + `internal/daemon/server.go`. The daemon records the exact global `~/.shannon/config.yaml` revision reflected in memory. GET `/config` and `/config/status` report a newer external revision as `reload_required`. Internal read-modify-write mutations preserve unknown external edits and MUST NOT mark bytes they did not load as applied. Project/local overlays are NOT watched by this signal. Capability `config_reload_state_v1`.
@@ -266,15 +297,24 @@ both `RefreshIntegrationTools` and the verified-principal transition's
 `resetIntegrationToolsForPrincipal`; sign-out only clears the catalog and
 never prunes), covering grants persisted while the catalog was empty
 (key-rotation window, where the registry miss judges false). Both self-heals
-converge upstream: a pull-side sanitize drop (dynamic registry denial or the
-static legacy-GUI list inside `WriteAgentConfig`) skips the agent-sync LWW
-mirror stamp (local clock stays "now"), and the REFRESH-path prune fires
+converge upstream: a pull-side sanitize drop (dynamic registry denial, or the
+pre-write static `SanitizeAgentPermissionsConfig` pass in
+`materializeAgentFromItem` — legacy GUI names AND per-agent `computer_use`,
+which `WriteAgentConfig`'s validator would otherwise reject into a permanent
+pull-retry loop) skips the agent-sync LWW mirror stamp (local clock stays
+"now"), and the REFRESH-path prune fires
 `triggerAgentSync` when a removal actually wrote bytes, so the sanitized
 config passes Cloud's strict-newer upsert instead of leaving a stale row that
-reseeds other devices. The principal-transition prune deliberately does NOT
-push: `agentPullClean` is set-once by the startup-only pull and survives an
-account switch, so a `full_sync` push there would upload the previous
-account's local agents and soft-delete the new account's cloud-only agents.
+reseeds other devices. The principal-transition prune now also fires
+`triggerAgentSync` on write, same as the REFRESH path — safe because every
+verified-principal transition FIRST resets `agentPullClean` to false
+(`beginAgentSyncPrincipalTransition` — the full-sync license was earned under
+the previous account, so post-switch pushes degrade to upsert-only, never
+destructive) and only the async pull-then-push resync for the new principal
+(`resyncAgentsAfterPrincipalChange`, serialized + principal-epoch-guarded on
+both sides of fetch AND apply, so a superseded transition's mirror never
+touches disk) restores the flag after a clean pull; the startup pull's restore
+is guarded the same way (`principalUnchangedGuard`).
 A registry miss never drops or prunes —
 fail-safe against mass deletion; the runtime gate backstops. The per-turn
 `ApprovalCache` also refuses these tools — a byte-identical repeated tool_use
@@ -573,7 +613,7 @@ Scalars override, lists merge+dedup, structs field-level merge. MCP server env-v
 
 ### File Paths
 
-- Agent: `~/.shannon/agents/<name>/{AGENT.md, MEMORY.md, config.yaml, commands/*.md, _attached.yaml}`
+- Agent: `~/.shannon/agents/<name>/{AGENT.md, MEMORY.md, config.yaml, commands/*.md, _attached.yaml, _owner}` (`_owner` = device-local sync-ownership sidecar, never synced)
 - Global skills: `~/.shannon/skills/<name>/SKILL.md`
 - Sessions: `~/.shannon/sessions/` (default) or `~/.shannon/agents/<name>/sessions/` (per-agent); SQLite FTS5 index at `<sessions-dir>/sessions.db` (auto-rebuilt)
 - Spill: `~/.shannon/tmp/tool_result_<session>_<call_id>.txt`

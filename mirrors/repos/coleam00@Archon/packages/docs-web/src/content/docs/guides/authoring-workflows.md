@@ -238,7 +238,7 @@ nodes:
 |-------|------|---------|-------------|
 | `provider` | string | inherited | Per-node provider override (any registered provider, e.g. `'claude'`, `'codex'`) |
 | `model` | string | inherited | Per-node model override |
-| `output_format` | object | — | JSON Schema for structured output. SDK-enforced on Claude/Codex/OpenCode; best-effort on Pi/Copilot (schema appended to prompt, JSON extracted + repaired). The parsed output is validated against the schema (every provider); a node that declares `output_format` but returns no schema-valid output **fails** rather than degrading silently. |
+| `output_format` | object | — | JSON Schema for structured output. SDK-enforced on Claude/Codex/OpenCode; best-effort on Pi/Copilot (schema appended to prompt, JSON extracted + repaired). The parsed output is validated against the schema (every provider); a node that declares `output_format` but returns no schema-valid output **fails** rather than degrading silently. Also valid on `bash:`/`script:` nodes, where the node's own stdout is the payload being certified — see [Result contracts](#result-contracts). |
 | `allowed_tools` | string[] | — | Whitelist of built-in tools. `[]` = no tools. All providers except Codex |
 | `denied_tools` | string[] | — | Tools to remove. Applied after `allowed_tools`. All providers except Codex |
 | `hooks` | object | — | Per-node SDK hook callbacks. Claude only. See [Hooks](/guides/hooks/) |
@@ -592,6 +592,8 @@ nodes:
 - Use `output_format` when downstream nodes need to branch on specific values via `when:`
 - **Validated + reask + fail-fast.** The parsed output is validated against your schema for *every* provider (a net for refusals / `max_tokens` truncation that bypass even SDK enforcement). On a miss, best-effort providers (Pi/Copilot) re-ask up to 3× with the schema errors appended; enforced providers fail immediately. A node that declares `output_format` but still has no schema-valid output **fails** — it no longer completes-with-prose and silently feeds `''` downstream.
 - **Field access is strict.** `$classify.output.type` resolves only when `type` is in the schema. A reference to a field **not declared** in the schema fails the consuming node (a typo no longer silently becomes `''`); a field you declared **optional** but the model omitted resolves to `''`. For schemaless `bash`/`script` nodes, a `.field` ref requires the output to be JSON containing that key — otherwise the consuming node fails, so always emit every key you reference (or use whole-text `$node.output`).
+
+`output_format` is not AI-only, and it is not only a branching aid: it is how *any* producing node declares the shape of the value it hands downstream, including a workflow's own result. [Result contracts](#result-contracts) is the one description of that ownership — who declares a schema, what an `include:` alias and a `workflow:` sub-run each guarantee, and how a small result points at a large file.
 
 ### `allowed_tools` and `denied_tools` for Tool Restrictions
 
@@ -1501,6 +1503,25 @@ return node's structured fixture value. Its existing `outcome` remains the simul
 continues to control CLI exit codes and fixture `expect` checks. Generated placeholder stubs never
 author a verdict.
 
+### Deterministic checks, authored outcomes, and evidence markers
+
+These are independent signals:
+
+- A deterministic check is an ordinary `bash:` or `script:` node. Exit zero completes the node;
+  any other exit fails it and therefore affects lifecycle status. A named script read from captured
+  source is also rejected if the run's full source capture no longer matches its pinned identity.
+- `outcome_field` records the workflow author's schema-declared boolean verdict. It does not control
+  lifecycle status. A succeeded outcome can remain on a run that later fails, and a failed outcome can
+  coexist with a completed run.
+- `evidence_policy: { required: true }` is only a terminal file-presence convention. It requires a
+  host file at `$ARTIFACTS_DIR/evidence.json` before lifecycle completion. Any contents, including a
+  self-asserted or unsupported claim, satisfy it. The marker proves neither that a check ran nor that
+  an outcome was authored.
+
+There is no special verification node or verification status. Put a check in a deterministic node
+when its execution must govern success, and use `outcome_field` only when the workflow must record its
+own conclusion. Use `evidence_policy` only when a conventionally named deliverable must exist.
+
 ### Binding time: includes resolve at load, runs at runtime
 
 `$INPUTS.<name>` is delivered by **two deliberately separate paths**, and the difference decides
@@ -2261,6 +2282,189 @@ reinterpreted.
 
 ---
 
+## Result contracts
+
+A node's output is a **value**, and the node that produces it owns that value's shape.
+`output_format` is the declaration, and it is the only one: there is no separate
+workflow-level result schema to keep in sync with the node that actually produces the
+result.
+
+| Question | Answer |
+|---|---|
+| What is a workflow's result? | The output of the node named by [`returns:`](#workflow-signature-inputs-returns-and-inputs) — or, with no `returns:`, the run's terminal output. |
+| Who declares its shape? | That node, through its own `output_format`. |
+| Which nodes can declare one? | Any node whose output is a value it computes: `prompt:`/`command:` AI nodes, `bash:`/`script:` nodes, and `loop:` nodes. |
+| What does declaring one buy? | The value is validated before anything downstream can read it, its JSON type survives the handoff, and `$node.output.<field>` becomes strict — an undeclared name fails the consuming node instead of resolving to `''`. |
+| Who repeats the declaration? | Nobody. A downstream node, an `include:` alias, and a `workflow:` caller all read the producer's contract. |
+
+A malformed schema is a **load error**. `archon validate workflows` and every run compile
+each declared `output_format` before a provider is called, so a contract can never silently
+stop being enforced after the money is spent.
+
+### A deterministic producer owns the same contract
+
+Declare `output_format` on a `bash:` or `script:` node and that node certifies its own
+stdout:
+
+```yaml
+nodes:
+  - id: plan
+    script: build-plan-result
+    runtime: uv
+    output_format:
+      type: object
+      properties:
+        ready: { type: boolean }
+        units: { type: array, items: { type: object } }
+      required: [ready, units]
+```
+
+The node's stdout must parse as **one strict JSON document** and satisfy the schema. There
+is no code-fence stripping, no repair pass and no reask — stdout that does not match its own
+declaration is a bug in the script, so the node fails, naming the offending JSON path and
+quoting the start of stdout. That failure is never retried: a `retry:` block re-runs
+subprocess and transient failures, not a script whose stdout is deterministically wrong. On
+success the canonical document becomes `$plan.output`, the logical value feeds bindings and
+`fan_out.items`, and `$plan.output.units` is strict in exactly the same way as an AI node's
+field access.
+
+This is what makes a script and an agent interchangeable as the producer behind a `returns:`
+node: the contract belongs to whichever node produces the result, not to its kind. A
+`bash:`/`script:` node with **no** `output_format` is unchanged — stdout stays raw text, and
+a `.field` reference falls back to parsing that text. See
+[Script nodes → Declaring a result contract](/guides/script-nodes/#declaring-a-result-contract)
+for the script-side detail.
+
+### What `include:` and `workflow:` each guarantee
+
+Both composition forms deliver the callee's contract to the caller. They differ only in
+where the value comes from.
+
+| | `include:` | `workflow:` |
+|---|---|---|
+| Where the producer runs | This run, after flattening | A governed child run |
+| What `$node.output.field` is authorized by | The included block's `returns:` node — the alias is rewritten to it at load time, so there is no boundary left | The child's `returns:` node, whose declared field names travel back with the result |
+| Caller-side `output_format` | Ignored with a load warning; there is nothing to assert against | A load error naming the child's `returns:` node; there is nothing to assert against |
+| After a cold resume | Re-derived from the loaded block, exactly like any other node | Restored from the persisted result, so a parent that declares nothing keeps full field access |
+
+A `workflow:` node cannot declare `output_format`. The loader rejects the file:
+
+```text
+Node 'sub' declares output_format on a workflow: node; the result contract belongs to the child's returns: node — declare it there
+```
+
+The child's contract is the only one. `$sub.output.field` is strict exactly when the child's
+`returns:` node declares a schema, and a schemaless child (no `output_format` on its selected
+node, or an older run) carries no field contract — the caller cannot add one.
+
+A fan-out node is the one exception to "the producer declares it". `$fan.output` is an
+engine-owned ordered array; the per-item contract belongs to each block or child, and field
+access on the aggregate is an error. Consume the whole array.
+
+### A small result that points at a large file
+
+Most useful workflows produce something too big to be a node output — a plan, a report, a
+diff. Write it under `$ARTIFACTS_DIR` and return a small result that **points** at it:
+
+```yaml
+nodes:
+  - id: plan
+    command: plan                    # writes $ARTIFACTS_DIR/plan.md
+    output_format:
+      type: object
+      properties:
+        ready: { type: boolean }
+        plan:
+          type: object
+          properties:
+            type: { const: archon_artifact }
+            run_id: { type: string }
+            path: { type: string }
+          required: [type, run_id, path]
+      required: [ready, plan]
+```
+
+```json
+{ "ready": true, "plan": { "type": "archon_artifact", "run_id": "$WORKFLOW_ID", "path": "plan.md" } }
+```
+
+`type: "archon_artifact"` is reserved. Before the value is persisted, the **producing node**
+proves each pointer names its own run (`run_id` is `$WORKFLOW_ID`) and addresses a regular
+file that exists under that run's artifacts directory. An absolute path, a `..` segment, a
+missing file, a directory, or any other run's id fails the producing node, naming the run,
+the path, and the rule. The check runs once, at the producer: a `workflow:` parent and a
+fan-out aggregate relay the child's value unchanged, because the child already certified it
+against the only run it may name.
+
+The value stays a run id plus a relative path everywhere — in events, in the API, and after a
+resume. The engine never expands it into an absolute path and never loads the file, and there
+is no in-workflow resolver: a pointer is for **machine readers**, and
+`GET /api/artifacts/<run_id>/<path>` serves exactly that file. The read side owns
+reachability and real-path checks by design; that route does lexical containment today, and
+real-path resolution at read time is not yet implemented (#3160). A prompt inside the
+producing run keeps using the `$ARTIFACTS_DIR/<path>` string, which is the same file on
+disk. See
+[Artifact pointers](/reference/variables/#artifact-pointers-in-a-result) for the full rule
+set.
+
+### One contract, end to end
+
+Everything above composes. A deterministic producer declares the contract; the block's
+`returns:` publishes it; the caller reads a declared field as a real array and fans a
+composed body out over it; each instance certifies its own per-item result:
+
+```yaml
+# plan-block.yaml — the callee. Its result IS the `build` node's declared value.
+name: plan-block
+returns: build
+nodes:
+  - id: build
+    script: build-plan-result
+    runtime: uv                      # writes $ARTIFACTS_DIR/plan.md, prints the JSON below
+    output_format:
+      type: object
+      properties:
+        units: { type: array, items: { type: object } }
+        plan:
+          type: object
+          properties:
+            type: { const: archon_artifact }
+            run_id: { type: string }
+            path: { type: string }
+          required: [type, run_id, path]
+      required: [units, plan]
+```
+
+```yaml
+# the caller — no schema of its own anywhere
+nodes:
+  - id: plan
+    include: plan-block              # $plan.output resolves to plan-block's `build` node
+
+  # unit-block is an ordinary composable block declaring `inputs: { unit: … }`.
+  # Its own `returns:` node declares the per-item contract, so $work.output is an
+  # ordered array of validated objects rather than an array of prose.
+  - id: work
+    include: unit-block
+    depends_on: [plan]
+    fan_out:
+      items: "$plan.output.units"    # a declared field, resolved as a real JSON array
+      as: unit
+      max_parallel: 2
+
+  - id: report
+    prompt: |
+      Per-unit results: $work.output
+      Full plan: $plan.output.plan
+    depends_on: [work]
+```
+
+Swapping `include: plan-block` for `workflow: plan-block` changes the governance boundary —
+a separate child run with its own artifacts, cost, and gates — and nothing else about the
+contract: `$plan.output.units` and the pointer read exactly the same.
+
+---
+
 ## Model Configuration
 
 Workflows can configure AI models and provider-specific options at the workflow level.
@@ -2960,7 +3164,7 @@ Before deploying a workflow:
 4. **`context: fresh`** — forces a fresh AI session for a node (works from artifacts only)
 5. **Parallel by default** — nodes in the same topological layer run concurrently
 6. **Conditional branching** — `when:` conditions and `trigger_rule` control which nodes run
-7. **`output_format`** — enforce structured JSON output from AI nodes for reliable branching
+7. **`output_format`** — enforce structured JSON output from an AI node, or from a `bash:`/`script:` node's stdout, for reliable branching
 8. **`allowed_tools` / `denied_tools`** — restrict tools per node (all providers except Codex)
 9. **`retry:`** — AI nodes auto-retry transient errors (default: 2 retries / 3 total attempts, 3 s backoff); `bash:`/`script:` retry only with an explicit `retry:` block
 10. **`hooks`** — attach SDK hook callbacks to Claude nodes for tool control and context injection

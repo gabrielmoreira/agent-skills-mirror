@@ -45,6 +45,7 @@ DATABASE_URL=postgresql://user:pass@replica:5432/db \
 | Monitoring and alerting | [references/monitoring-alerting-patterns.md](references/monitoring-alerting-patterns.md) | You need dashboards, baselines, or alerts for database performance |
 | Locking / deadlocks | [template-lock-analysis.md](assets/cross-platform/template-lock-analysis.md) | The issue is blocking, deadlocks, or long transactions rather than raw query cost |
 | Partitioning | [references/partition-strategies.md](references/partition-strategies.md) | Retention, pruning, or table growth is driving the change |
+| Backup and recovery design | [references/recovery-strategy-design.md](references/recovery-strategy-design.md) | You need a recovery capability mapped to failure scenarios, not just a backup job |
 | Security or RLS review | [template-security-audit.md](assets/cross-platform/template-security-audit.md) | You are reviewing least privilege, SQL injection controls, or tenant isolation |
 
 ## Coverage Model
@@ -200,7 +201,8 @@ Templates live under `assets/`. Reference guides — load on demand:
 - [references/partition-strategies.md](references/partition-strategies.md) — Load when table growth, retention, or vacuum pressure motivates partitioning; includes migration patterns and pg_partman guidance.
 - [references/connection-pooling-patterns.md](references/connection-pooling-patterns.md) — Load when the symptom is connection saturation, pooler misconfiguration, or cloud-managed pool selection (PgBouncer, RDS Proxy, Supavisor, Cloud SQL).
 - [references/monitoring-alerting-patterns.md](references/monitoring-alerting-patterns.md) — Load when setting up query stats, wait-event monitoring, or alert thresholds for PostgreSQL, MySQL, or SQL Server.
-- [references/operational-patterns.md](references/operational-patterns.md) — Load for the production tuning workflow, safe migration checklist, or engine-specific operational cautions.
+- [references/operational-patterns.md](references/operational-patterns.md) — Load for the production tuning workflow, safe migration checklist, engine-specific operational cautions, `work_mem` sizing, idle-in-transaction lock cascades, and online schema change tooling (gh-ost vs pt-osc).
+- [references/recovery-strategy-design.md](references/recovery-strategy-design.md) — Load when designing or reviewing backup and recovery: failure-scenario taxonomy, detection per failure class, storage tiering, recovery testing as a deliverable.
 
 ## Operating Rules
 

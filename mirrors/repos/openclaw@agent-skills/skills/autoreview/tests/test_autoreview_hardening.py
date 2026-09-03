@@ -418,10 +418,14 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                     self.assertTrue(any("Continuation" in chunk.context for chunk in splits))
 
     def test_staged_undone_add_remove_readd_and_modes(self):
-        for state in ("undone", "new", "removed", "readd", "unborn"):
+        for state in ("undone", "new", "removed", "readd", "unborn", "literal"):
+            if state == "literal" and os.name == "nt":
+                continue  # Windows filenames cannot contain a colon.
             with self.subTest(state=state), tempfile.TemporaryDirectory() as tempdir:
                 repo = init_repo(Path(tempdir))
-                path = repo / "source.py"
+                path = repo / (":source.py" if state == "literal" else "source.py")
+                if state == "literal":
+                    (repo / "source.py").write_bytes(b"unrelated base\n")
                 # These versions must be byte-identical even with Windows text translation.
                 if state != "unborn":
                     if state != "new":
@@ -431,19 +435,27 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                 if state == "readd":
                     git(repo, "rm", "source.py")
                 else:
-                    path.write_bytes(b"staged()\n")
+                    path.write_bytes(b"base()\nstaged()\n" if state == "literal" else b"staged()\n")
                     git(repo, "add", ".")
                 if state == "removed":
                     path.unlink()
+                elif state == "literal":
+                    path.write_bytes(b"base()\nstaged()\nworking()\n")
                 else:
                     path.write_bytes(b"base()\n" if state == "undone" else b"working()\n")
                 captured = self.helper["local_bundle"](repo)
                 record, = captured.mixed
-                self.assertIn("source.py", captured.paths)
+                self.assertEqual(captured.paths, {path.name})
                 self.assertEqual(record.index.mode is None, state == "readd")
                 self.assertEqual(record.base.mode is None, state in ("new", "unborn"))
                 self.assertEqual(record.working_tree.mode is None, state == "removed")
-                self.assertEqual(bool(record.working_tree_removed), state != "readd")
+                self.assertEqual(bool(record.working_tree_removed), state not in ("readd", "literal"))
+                if state == "literal":
+                    base_oid = git(repo, "rev-parse", f"HEAD:{path.name}").strip()
+                    self.assertEqual(record.base.identity, f"git:{base_oid}:100644")
+                    self.assertEqual(record.index.content, "base()\nstaged()\n")
+                    self.assertEqual(record.working_tree.content, "base()\nstaged()\nworking()\n")
+                    self.assertNotIn("unrelated base", captured.text)
                 if state == "readd":
                     self.assertIn("# Untracked File", record.unstaged)
                     self.assertEqual(record.index_removed, ((1, "base()"),))
@@ -451,7 +463,136 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                     self.assertEqual(record.base.content, record.working_tree.content)
                 self.helper["verify_mixed_sources"](repo, captured.mixed)
 
-    def test_nonmixed_large_tracked_paths_keep_existing_contract(self):
+    def test_file_to_directory_transitions_keep_staged_and_working_sources(self):
+        for state in ("staged", "untracked", "mixed-child", "mixed-parent", "committed",
+                      "restored-parent", "restored-parent-siblings"):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as tempdir:
+                repo = init_repo(Path(tempdir))
+                git(repo, "config", "core.autocrlf", "false")
+                path = repo / "foo"
+                path.write_bytes(b"base parent\n")
+                git(repo, "add", "foo")
+                git(repo, "commit", "-qm", "base file")
+                base = git(repo, "rev-parse", "HEAD").strip()
+                if state == "mixed-parent":
+                    path.write_bytes(b"staged parent\n")
+                    git(repo, "add", "foo")
+                    path.unlink()
+                else:
+                    git(repo, "rm", "foo")
+                path.mkdir()
+                child = path / "bar"
+                child.write_bytes(b"staged child\n")
+                restored = state in ("restored-parent", "restored-parent-siblings")
+                children = {"foo/bar": "staged child\n"}
+                if state == "restored-parent-siblings":
+                    (path / "baz").write_bytes(b"staged sibling\n")
+                    children["foo/baz"] = "staged sibling\n"
+                if state in ("staged", "mixed-child", "committed") or restored:
+                    git(repo, "add", "foo")
+                if state == "committed":
+                    git(repo, "commit", "-qm", "replace file with directory")
+                if state in ("mixed-child", "committed"):
+                    child.write_bytes(b"working child\n")
+                if state == "mixed-child":
+                    (path / "extra").write_bytes(b"untracked child\n")
+                    (path / "ignored.txt").write_bytes(b"ignored child content\n")
+                    (repo / ".git/info/exclude").write_text("foo/ignored.txt\n", encoding="utf-8")
+                if restored:
+                    for rel in children:
+                        (repo / rel).unlink()
+                    path.rmdir()
+                    path.write_bytes(b"working parent\n")
+                for ref in (None, base):
+                    with self.subTest(base=ref):
+                        snapshot = self.helper["source_tree_snapshot"](repo)
+                        captured = self.helper["local_bundle"](repo, ref)
+                        expected = set(children)
+                        if state != "committed" or ref is not None:
+                            expected.add("foo")
+                            self.assertIn("-base parent\n", captured.text)
+                        if state == "mixed-child":
+                            expected.add("foo/extra")
+                            self.assertIn("untracked child", captured.text)
+                            self.assertNotIn("ignored child content", captured.text)
+                        self.assertEqual(captured.paths, expected)
+                        self.assertIn("staged child", captured.text)
+                        mixed = {record.path: record for record in captured.mixed}
+                        expected_mixed = set()
+                        if restored:
+                            expected_mixed = {"foo", *children}
+                        elif state == "mixed-parent":
+                            expected_mixed.add("foo")
+                        elif state == "mixed-child" or (state == "committed" and ref is not None):
+                            expected_mixed.add("foo/bar")
+                        self.assertEqual(set(mixed), expected_mixed)
+                        if "foo" in mixed:
+                            self.assertEqual(mixed["foo"].base.content, "base parent\n")
+                            self.assertEqual(mixed["foo"].index.content, None if restored else "staged parent\n")
+                            self.assertEqual(mixed["foo"].working_tree.content, "working parent\n" if restored else None)
+                            absent = mixed["foo"].index if restored else mixed["foo"].working_tree
+                            self.assertEqual(absent, self.helper["SourceVersion"]("absent", None, None))
+                        for rel in set(children) & set(mixed):
+                            self.assertEqual(mixed[rel].index.content, children[rel])
+                            self.assertEqual(mixed[rel].working_tree.content, None if restored else "working child\n")
+                            if restored:
+                                self.assertEqual(mixed[rel].working_tree, self.helper["SourceVersion"]("absent", None, None))
+                        self.helper["verify_mixed_sources"](repo, captured.mixed)
+                        self.assertEqual(self.helper["source_tree_snapshot"](repo), snapshot)
+
+    def test_directory_to_file_transitions_preserve_snapshots_and_mixed_sources(self):
+        for state in ("staged", "mixed-child", "mixed-parent", "working-directory"):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as tempdir:
+                repo = init_repo(Path(tempdir))
+                git(repo, "config", "core.autocrlf", "false")
+                parent = repo / "foo"
+                parent.mkdir()
+                child = parent / "bar"
+                child.write_bytes(b"base child\n")
+                git(repo, "add", ".")
+                git(repo, "commit", "-qm", "base directory")
+                base = git(repo, "rev-parse", "HEAD").strip()
+                if state == "mixed-child":
+                    child.write_bytes(b"staged child\n")
+                    git(repo, "add", "foo/bar")
+                    child.unlink()
+                else:
+                    git(repo, "rm", "foo/bar")
+                if parent.exists():
+                    parent.rmdir()
+                parent.write_bytes(b"working parent\n" if state == "mixed-child" else b"staged parent\n")
+                if state != "mixed-child":
+                    git(repo, "add", "foo")
+                if state == "mixed-parent":
+                    parent.write_bytes(b"working parent\n")
+                elif state == "working-directory":
+                    parent.unlink()
+                    parent.mkdir()
+                    child.write_bytes(b"working child\n")
+                for ref in (None, base):
+                    with self.subTest(base=ref):
+                        snapshot = self.helper["source_tree_snapshot"](repo)
+                        captured = self.helper["local_bundle"](repo, ref)
+                        self.assertEqual(captured.paths, {"foo", "foo/bar"})
+                        self.assertIn("working parent" if state == "mixed-child" else "staged parent", captured.text)
+                        expected = {}
+                        if state in ("mixed-child", "working-directory"):
+                            expected["foo/bar"] = ("base child\n", "staged child\n", None) if state == "mixed-child" else (
+                                "base child\n", None, "working child\n",
+                            )
+                        if state in ("mixed-parent", "working-directory"):
+                            expected["foo"] = (None, "staged parent\n", "working parent\n" if state == "mixed-parent" else None)
+                        self.assertEqual({record.path for record in captured.mixed}, set(expected))
+                        for record in captured.mixed:
+                            for source, content in zip((record.base, record.index, record.working_tree), expected[record.path]):
+                                if content is None:
+                                    self.assertEqual(source, self.helper["SourceVersion"]("absent", None, None))
+                                else:
+                                    self.assertEqual(source.content, content)
+                        self.helper["verify_mixed_sources"](repo, captured.mixed)
+                        self.assertEqual(self.helper["source_tree_snapshot"](repo), snapshot)
+
+    def test_large_tracked_paths_keep_complete_mixed_sources(self):
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
             path = repo / "large.py"
@@ -475,8 +616,15 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
             path.write_bytes(("staged()\n" + content).encode("utf-8"))
             git(repo, "add", ".")
             path.write_bytes(("working()\n" + content).encode("utf-8"))
-            with self.assertRaisesRegex(SystemExit, r"large.py \(index\): \d+ bytes; limit 180000"):
-                self.helper["local_bundle"](repo)
+            captured = self.helper["local_bundle"](repo)
+            record, = captured.mixed
+            for source, expected in (
+                (record.base, "changed()\n" + content),
+                (record.index, "staged()\n" + content),
+                (record.working_tree, "working()\n" + content),
+            ):
+                self.assertEqual(source.content, expected)
+            self.helper["verify_mixed_sources"](repo, captured.mixed)
 
     def test_full_source_safeguards_and_sensitive_omission(self):
         for bad in (b"\0binary", b"\xffinvalid"):
@@ -484,7 +632,7 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                 repo = init_repo(Path(tempdir))
                 path = repo / "source.py"
                 (repo / ".gitattributes").write_text("source.py diff\n")
-                suffix = b"safe context\n" * 30 + bad + b"\n"
+                suffix = b"safe context\n" * 16_000 + bad + b"\n"
                 path.write_bytes(b"base()\n" + suffix)
                 git(repo, "add", ".")
                 git(repo, "commit", "-qm", "synthetic hidden tail")
@@ -503,8 +651,9 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
             self.assertNotIn("SYNTHETIC_", captured.text)
 
     def test_mixed_source_mutations_and_topology_refuse_later_sends(self):
-        for mutation in ("index", "content", "replace", "ancestor", "delete", "leaf symlink", "ancestor symlink"):
-            if "symlink" in mutation and os.name == "nt":
+        for mutation in ("index", "index conflict", "index symlink", "index gitlink", "content",
+                         "replace", "ancestor", "delete", "leaf symlink", "ancestor symlink"):
+            if mutation in ("leaf symlink", "ancestor symlink") and os.name == "nt":
                 continue
             with self.subTest(mutation=mutation), self.migration() as (repo, *_):
                 captured = self.helper["local_bundle"](repo)
@@ -513,6 +662,16 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                 source = path.read_bytes()
                 if mutation == "index":
                     git(repo, "add", str(path))
+                elif mutation.startswith("index "):
+                    oid = git(repo, "rev-parse", "HEAD" if mutation == "index gitlink" else ":src/migrate-0.py").strip()
+                    if mutation == "index conflict":
+                        git(repo, "update-index", "--force-remove", "--", "src/migrate-0.py")
+                        # Text-mode stdin on Windows adds a CR to Git's pathname.
+                        subprocess.run(["git", "update-index", "--index-info"], cwd=repo, check=True,
+                                       input=f"100644 {oid} 2\tsrc/migrate-0.py\n".encode(), capture_output=True)
+                    else:
+                        mode = "160000" if mutation == "index gitlink" else "120000"
+                        git(repo, "update-index", "--cacheinfo", f"{mode},{oid},src/migrate-0.py")
                 elif mutation == "content":
                     before = path.stat()
                     path.write_bytes(source.replace(b"corrected", b"different"))
@@ -538,7 +697,8 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                 with mock.patch.dict(self.helper["run_reviewer"].__globals__, {
                     "scan_outgoing_review_pack": lambda *_: None, "run_engine": provider,
                 }), contextlib.redirect_stderr(io.StringIO()):
-                    with self.assertRaisesRegex(SystemExit, "mixed source changed|symlinked mixed source"):
+                    refusal = "unsafe mixed source mode" if mutation.startswith("index ") else "mixed source changed|symlinked mixed source"
+                    with self.assertRaisesRegex(SystemExit, refusal):
                         self.helper["run_reviewer"](argparse.Namespace(engine="codex", max_priority="P0"),
                                                      repo, passes[0], captured, [])
                 provider.assert_not_called()
@@ -564,7 +724,7 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                 self.assertIn("SOURCE_ONLY_SCAN_SENTINEL\nMULTILINE_SCAN_CONTINUATION\n", scans[0])
                 self.assertIn(evidence[0].content, scans[0])
                 args = argparse.Namespace(engine="codex", max_priority="P0")
-                self.helper["run_review_passes"](args, [args], repo, passes, captured, False)
+                self.helper["run_review_passes"](args, [args], repo, passes, captured)
             self.assertEqual(scans[1:], sends)
             for item, scanned in zip(passes, scans[1:]):
                 self.assertEqual(item.prompt, scanned)
@@ -681,6 +841,54 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
                 self.assertEqual(record.base.mode, "100644")
                 self.assertEqual(record.index.mode, "100755")
 
+    def test_git_display_settings_preserve_mixed_sources_and_chunk_coordinates(self):
+        settings = (
+            (), (("diff.suppressBlankEmpty", "false"),),
+            (("diff.suppressBlankEmpty", "true"),),
+            (("diff.suppress-blank-empty", "true"),),
+            (("color.ui", "always"),), (("color.diff", "always"),),
+            (("diff.color", "always"),),
+            (("diff.suppressBlankEmpty", "true"), ("color.diff", "always")),
+        )
+        for config in settings:
+            for pinned in (False, True):
+                with self.subTest(config=config, pinned=pinned), tempfile.TemporaryDirectory() as tempdir:
+                    repo = init_repo(Path(tempdir))
+                    git(repo, "config", "core.autocrlf", "false")
+                    for key, value in config:
+                        git(repo, "config", key, value)
+                    path = repo / "source.py"
+                    path.write_bytes(b"one\n\nbase\n")
+                    git(repo, "add", ".")
+                    git(repo, "commit", "-qm", "base")
+                    base = git(repo, "rev-parse", "HEAD").strip()
+                    if pinned:
+                        path.write_bytes(b"one\n\nhead\n")
+                        git(repo, "commit", "-qam", "advance HEAD")
+                    path.write_bytes(b"one\n\nstaged\n")
+                    git(repo, "add", ".")
+                    path.write_bytes(b"one\n\nworking\n")
+                    original_config = (repo / ".git/config").read_bytes()
+                    captured = self.helper["local_bundle"](repo, base if pinned else None)
+                    record, = captured.mixed
+                    self.assertEqual(record.base.content, "one\n\nbase\n")
+                    self.assertEqual(record.index.content, "one\n\nstaged\n")
+                    self.assertEqual(record.working_tree.content, "one\n\nworking\n")
+                    self.assertEqual(record.index_removed, ((3, "base"),))
+                    self.assertEqual(record.working_tree_removed, ((3, "staged"),))
+                    self.helper["verify_mixed_sources"](repo, captured.mixed)
+                    for patch in (record.staged, record.unstaged):
+                        self.assertNotIn("\x1b", patch)
+                        context = []
+                        new_line = old_line = None
+                        in_hunk = False
+                        for line in self.helper["literal_lf_lines"](patch):
+                            new_line, old_line, in_hunk = self.helper["update_review_chunk_context"](
+                                context, line, new_line, old_line, in_hunk,
+                            )
+                        self.assertEqual((new_line, old_line), (4, 4))
+                    self.assertEqual((repo / ".git/config").read_bytes(), original_config)
+
     def test_readded_untracked_capture_is_reused_and_evidence_stays_separate(self):
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
@@ -690,8 +898,8 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
             git(repo, "commit", "-qm", "base")
             git(repo, "rm", "source.py")
             path.write_bytes(b"readded()\n")
-            read = mock.Mock(wraps=self.helper["read_prefix"])
-            with mock.patch.dict(self.helper["local_bundle"].__globals__, {"read_prefix": read}):
+            read = mock.Mock(wraps=self.helper["read_file_bytes"])
+            with mock.patch.dict(self.helper["local_bundle"].__globals__, {"read_file_bytes": read}):
                 captured = self.helper["local_bundle"](repo)
             self.assertEqual(sum(call.args[0] == path for call in read.call_args_list), 1)
             (repo / ".git/info/exclude").write_text("evidence/\n")
@@ -718,23 +926,34 @@ class AutoreviewMixedTargetTests(unittest.TestCase):
             provider.assert_not_called()
 
     def test_ignored_or_unsafe_readdition_cannot_bypass_mixed_capture(self):
-        for kind in ("ignored", "symlink"):
-            if kind == "symlink" and os.name == "nt":
+        for kind, name in (
+            ("ignored", "source.py"),
+            ("ignored", "line\rbreak.py"),
+            ("ignored", "line\r\nbreak.py"),
+            ("symlink", "source.py"),
+            ("directory symlink", "source.py"),
+            ("dangling symlink", "source.py"),
+        ):
+            if os.name == "nt" and (kind != "ignored" or "\r" in name):
                 continue
-            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as tempdir:
+            with self.subTest(kind=kind, name=name), tempfile.TemporaryDirectory() as tempdir:
                 repo = init_repo(Path(tempdir))
-                path = repo / "source.py"
+                path = repo / name
                 path.write_text("base()\n")
                 git(repo, "add", ".")
                 git(repo, "commit", "-qm", "base")
-                git(repo, "rm", "source.py")
+                git(repo, "rm", "--", name)
                 if kind == "ignored":
-                    (repo / ".git/info/exclude").write_text("source.py\n")
+                    (repo / ".git/info/exclude").write_text("*.py\n")
                     path.write_text("ignored content never sent\n")
                 else:
                     outside = repo.parent / "outside.py"
-                    outside.write_text("outside content never sent\n")
-                    path.symlink_to(outside)
+                    if kind == "directory symlink":
+                        outside.mkdir()
+                        (outside / "child.py").write_text("outside content never sent\n")
+                    elif kind == "symlink":
+                        outside.write_text("outside content never sent\n")
+                    path.symlink_to(outside, target_is_directory=kind == "directory symlink")
                 with self.assertRaisesRegex(SystemExit, "working_tree.*validated untracked membership"):
                     self.helper["local_bundle"](repo)
 
@@ -747,6 +966,8 @@ class AutoreviewHardeningTests(unittest.TestCase):
     def preparation_fixture(self, *options):
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
+            # Protected review reads ignore host Git config, including Windows autocrlf.
+            git(repo, "config", "core.autocrlf", "false")
             for index in range(24):
                 (repo / f"unchanged-{index}.txt").write_text("old\n")
             (repo / "source.md").write_text("before\n")
@@ -1053,7 +1274,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
                     captured = self.helper["build_bundle"](repo, target, "moving-base", "HEAD")
                 self.assertEqual(captured.paths, {"task.md"})
                 self.assertIn("+task change", captured.text)
-                self.assertFalse(captured.truncated)
 
     def test_outgoing_pack_scan_disables_installed_scanner_updates(self) -> None:
         prompt = "harmless review pack\npreserved CRLF\r\nfinal line\r"
@@ -1072,16 +1292,20 @@ args = sys.argv[1:]
 if "--no-update" not in args:
     print("updater: cannot move binary: permission denied", file=sys.stderr)
     raise SystemExit(1)
-assert args[0] == "filesystem"
-assert set(args[2:]) == {
+source = args[0]
+assert source in {"filesystem", "stdin"}
+pack = Path(args[1]) if source == "filesystem" else None
+assert set(args[2:] if pack else args[1:]) == {
     "--json", "--no-color", "--results=verified,unknown",
     "--fail", "--fail-on-scan-errors", "--no-update",
 }
-pack = Path(args[1])
-Path(__file__).with_name("scan.json").write_text(json.dumps({
-    "pack": str(pack),
-    "prompt": pack.read_bytes().decode("utf-8"),
-}))
+payload = pack.read_bytes() if pack else sys.stdin.buffer.read()
+with Path(__file__).with_name("scans.jsonl").open("a", encoding="utf-8") as records:
+    records.write(json.dumps({
+        "source": source,
+        "pack": str(pack) if pack else None,
+        "prompt": payload.decode("utf-8"),
+    }) + "\n")
 ''',
             )
             with mock.patch.dict(
@@ -1090,9 +1314,10 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             ):
                 self.helper["scan_outgoing_review_pack"](repo, prompt)
 
-            record = json.loads((root / "scan.json").read_text(encoding="utf-8"))
-            self.assertEqual(record["prompt"], prompt)
-            self.assertFalse(Path(record["pack"]).parent.exists())
+            records = [json.loads(line) for line in (root / "scans.jsonl").read_text(encoding="utf-8").splitlines()]
+            self.assertEqual([record["source"] for record in records], ["filesystem", "stdin"])
+            self.assertEqual([record["prompt"] for record in records], [prompt, prompt])
+            self.assertFalse(Path(records[0]["pack"]).parent.exists())
 
     def test_outgoing_pack_scan_reads_exact_prompt_including_deleted_lines(self) -> None:
         prompt = (
@@ -1106,14 +1331,20 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
+            sources = []
 
             def run_scanner(
                 command: list[str],
                 cwd: Path,
-                **_kwargs: object,
+                **kwargs: object,
             ) -> subprocess.CompletedProcess[str]:
-                self.assertEqual(command[1], "filesystem")
-                self.assertEqual(Path(command[2]).read_bytes(), prompt.encode("utf-8"))
+                sources.append(command[1])
+                if command[1] == "filesystem":
+                    payload = Path(command[2]).read_bytes()
+                else:
+                    self.assertEqual(command[1], "stdin")
+                    payload = kwargs["stdin"].read()
+                self.assertEqual(payload, prompt.encode("utf-8"))
                 self.assertIn("-const apiKey", prompt)
                 return subprocess.CompletedProcess(command, 0, "", "")
 
@@ -1125,8 +1356,9 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 },
             ):
                 self.helper["scan_outgoing_review_pack"](repo, prompt)
+            self.assertEqual(sources, ["filesystem", "stdin"])
 
-    def test_outgoing_pack_scan_refuses_and_names_deleted_file(self) -> None:
+    def test_deleted_input_scan_refusal_is_redacted_and_blocks_provider(self) -> None:
         prompt = (
             "# Change Bundle\n"
             "diff --git a/config.ts b/config.ts\n"
@@ -1149,21 +1381,39 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         }
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
+            packs = []
+            provider = mock.Mock()
+
+            def run_scanner(command, cwd, **_kwargs):
+                self.assertEqual(command[1], "filesystem")
+                pack = Path(command[2])
+                self.assertEqual(pack.parent, cwd)
+                self.assertEqual(pack.read_bytes(), prompt.encode("utf-8"))
+                packs.append(pack)
+                return subprocess.CompletedProcess(
+                    command, self.helper["TRUFFLEHOG_FINDINGS_EXIT_CODE"], json.dumps(finding) + "\n", "",
+                )
+
             with mock.patch.dict(
-                self.helper["scan_outgoing_review_pack"].__globals__,
+                self.helper["run_reviewer"].__globals__,
                 {
                     "find_command": lambda _name, _repo: "/trusted/trufflehog",
-                    "run": lambda command, _cwd, **_kwargs: subprocess.CompletedProcess(
-                        command,
-                        self.helper["TRUFFLEHOG_FINDINGS_EXIT_CODE"],
-                        json.dumps(finding) + "\n",
-                        "",
-                    ),
+                    "run": run_scanner,
+                    "run_engine": provider,
                 },
-            ):
-                with self.assertRaisesRegex(SystemExit, "config.ts") as error:
-                    self.helper["scan_outgoing_review_pack"](repo, prompt)
-        self.assertNotIn("must-not-be-printed", str(error.exception))
+            ), contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaisesRegex(SystemExit, "TruffleHog found credentials") as error:
+                    self.helper["run_reviewer"](
+                        argparse.Namespace(engine="codex", max_priority="P0"), repo, prompt, set(), [],
+                    )
+            self.assertEqual(len(packs), 1)
+            self.assertFalse(packs[0].parent.exists())
+            provider.assert_not_called()
+        self.assertEqual(
+            str(error.exception),
+            "refusing to send review pack: TruffleHog found credentials; "
+            "remove credential material from selected changes, prompt files, and datasets, then rerun",
+        )
 
     def test_outgoing_pack_scan_fails_closed_when_scanner_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1175,28 +1425,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 with self.assertRaisesRegex(SystemExit, "refusing to send review pack"):
                     self.helper["scan_outgoing_review_pack"](repo, "prompt")
 
-    def test_reviewer_scan_refusal_prevents_provider_call(self) -> None:
-        args = argparse.Namespace(engine="codex", max_priority="P0")
-        provider = mock.Mock()
-        with mock.patch.dict(
-            self.helper["run_reviewer"].__globals__,
-            {
-                "scan_outgoing_review_pack": mock.Mock(
-                    side_effect=SystemExit("refusing to send review pack: config.ts")
-                ),
-                "run_engine": provider,
-            },
-        ):
-            with self.assertRaisesRegex(SystemExit, "config.ts"):
-                self.helper["run_reviewer"](
-                    args,
-                    Path.cwd(),
-                    "prompt",
-                    set(),
-                    [],
-                )
-        provider.assert_not_called()
-
     def test_local_bundle_preserves_boundary_when_sensitive_diff_is_omitted(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
@@ -1207,20 +1435,14 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             path.write_text("TOKEN=changed-placeholder\n", encoding="utf-8")
             git(repo, "add", path.name)
 
-            bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
 
             self.assertIn(self.helper["REVIEW_SECURITY_OMISSION"], bundle)
-            self.assertFalse(truncated)
 
     def test_powershell_harness_exposes_runnable_engines_only(self) -> None:
         harness = SCRIPT.with_name("test-review-harness.ps1").read_text(encoding="utf-8")
 
         self.assertIn("[ValidateSet('codex', 'claude', 'amp', 'pi', 'kimi')]", harness)
-
-    def test_smoke_harness_validates_runtime_prompt_without_provider(self) -> None:
-        harness = runpy.run_path(str(SCRIPT.with_name("test-review-harness.py")))
-        with tempfile.TemporaryDirectory() as tempdir:
-            harness["validate_prompt_policy"](init_repo(Path(tempdir)), SCRIPT)
 
     def test_local_bundle_omits_sensitive_untracked_file_without_blocking(self) -> None:
         for rel in (".env", "tokens/session.dat", "secrets/local.py"):
@@ -1231,28 +1453,26 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 path.write_text("placeholder=true\n", encoding="utf-8")
                 (repo / "review.py").write_text("print('review me')\n", encoding="utf-8")
 
-                bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+                bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
 
                 self.assertIn("# Review Input Omissions", bundle)
                 self.assertIn(self.helper["REVIEW_SECURITY_OMISSION"], bundle)
                 self.assertNotIn(rel, bundle)
                 self.assertNotIn("placeholder=true", bundle)
                 self.assertIn("print('review me')", bundle)
-                self.assertFalse(truncated)
 
-    def test_local_bundle_marks_untracked_binary_input_incomplete(self) -> None:
+    def test_large_binary_and_non_utf8_tails_refuse_input_capture(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
-            (repo / "image.bin").write_bytes(b"\x89PNG\r\n\0binary-content")
-
-            bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
-
-            self.assertIn(
-                '# Untracked File\npath: "image.bin"\n'
-                'source-line 1: "[binary file omitted]"',
-                bundle,
-            )
-            self.assertTrue(truncated)
+            path = repo / "source.txt"
+            for bad, reason in ((b"\0", "binary file"), (b"\xff", "non-UTF-8 file")):
+                path.write_bytes(b"safe context\n" * 16_000 + bad)
+                with self.subTest(reason=reason):
+                    with self.assertRaisesRegex(SystemExit, reason):
+                        self.helper["local_bundle"](repo)
+                    for label in ("--prompt-file", "--dataset"):
+                        with self.subTest(label=label), self.assertRaisesRegex(SystemExit, reason):
+                            self.helper["validate_evidence_file"](repo, "source.txt", label)
 
     def test_local_bundle_rejects_non_utf8_untracked_text(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1266,21 +1486,21 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
             (repo / "notes.txt").write_text("review me\n", encoding="utf-8")
-            original_read_prefix = self.helper["read_prefix"]
+            original_read_file_bytes = self.helper["read_file_bytes"]
             reads = 0
 
-            def read_once(path: Path, limit: int) -> tuple[bytes, bool]:
+            def read_once(path: Path) -> bytes:
                 nonlocal reads
                 reads += 1
                 if reads > 1:
                     raise AssertionError("untracked file was reopened after validation")
-                return original_read_prefix(path, limit)
+                return original_read_file_bytes(path)
 
             with mock.patch.dict(
                 self.helper["local_bundle"].__globals__,
-                {"read_prefix": read_once},
+                {"read_file_bytes": read_once},
             ):
-                bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+                bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
 
             expected_record = json.dumps("review me" + os.linesep)
             self.assertIn(
@@ -1288,8 +1508,191 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 f"source-line 1: {expected_record}",
                 bundle,
             )
-            self.assertFalse(truncated)
             self.assertEqual(reads, 1)
+
+    @contextlib.contextmanager
+    def nested_worktree_fixture(self, *, linked_root=False, name="scratch/review branch"):
+        with self.preparation_fixture() as (main, sends, scans, out, err):
+            repo = main
+            if linked_root:
+                repo = main.parent / "reviewed checkout"
+                git(main, "worktree", "add", "--detach", str(repo), "HEAD")
+                (repo / "source.md").write_text("outer linked change\n", encoding="utf-8")
+            child = repo / name
+            git(main, "worktree", "add", "--detach", str(child), "HEAD")
+            yield repo, child, sends, scans, out, err
+
+    def test_nested_worktree_keeps_neighboring_untracked_files_in_outgoing_scans(self):
+        names = ["scratch/review branch"]
+        if os.name != "nt":
+            names.append("scratch/review\nbranch")
+        for name in names:
+            with self.subTest(name=name), self.nested_worktree_fixture(name=name) as (
+                repo, child, sends, scans, _out, _err,
+            ):
+                ordinary = {
+                    ".worktrees/notes.md": "OUTER_WORKTREE_DIRECTORY_NOTE\n",
+                    f"{name}-copy/notes.md": "OUTER_PREFIX_NEIGHBOR_NOTE\n",
+                }
+                for rel, content in ordinary.items():
+                    path = repo / rel
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(content, encoding="utf-8")
+                (child / "source.md").write_text("CHILD_SOURCE_NOT_REVIEWED\n", encoding="utf-8")
+                (child / "child-only.md").write_text("CHILD_UNTRACKED_NOT_REVIEWED\n", encoding="utf-8")
+
+                captured = self.helper["local_bundle"](repo)
+                self.assertEqual(captured.paths, {"source.md", *ordinary})
+                self.assertEqual(self.helper["main_impl"](), 0)
+                self.assertEqual(scans, sends)
+                self.assertTrue(scans)
+                for pack in scans:
+                    for marker in ordinary.values():
+                        self.assertIn(marker.strip(), pack)
+                    self.assertNotIn("CHILD_SOURCE_NOT_REVIEWED", pack)
+                    self.assertNotIn("CHILD_UNTRACKED_NOT_REVIEWED", pack)
+
+    def test_nested_worktree_alone_does_not_select_local_review(self):
+        with self.nested_worktree_fixture() as (repo, child, *_):
+            git(repo, "commit", "-qam", "finish outer changes")
+            git(repo, "branch", "-M", "main")
+            (child / "source.md").write_text("child dirty\n", encoding="utf-8")
+            (child / "new.md").write_text("child untracked\n", encoding="utf-8")
+
+            self.assertFalse(self.helper["is_dirty"](repo))
+            with self.assertRaisesRegex(SystemExit, "no review target: clean main checkout"):
+                self.helper["choose_target"](repo, "auto", None)
+            with self.assertRaisesRegex(SystemExit, "no local changes to review"):
+                self.helper["local_bundle"](repo)
+
+            (repo / ".worktrees").mkdir()
+            (repo / ".worktrees/notes.md").write_text("ordinary note\n", encoding="utf-8")
+            self.assertEqual(self.helper["choose_target"](repo, "auto", None), ("local", None))
+            self.assertEqual(self.helper["local_bundle"](repo).paths, {".worktrees/notes.md"})
+
+    def test_nested_worktree_snapshot_tracks_boundary_not_child_state(self):
+        for linked_root in (False, True):
+            with self.subTest(linked_root=linked_root), self.nested_worktree_fixture(
+                linked_root=linked_root,
+            ) as (repo, child, *_):
+                self.assertEqual(self.helper["local_bundle"](repo).paths, {"source.md"})
+                before = self.helper["source_tree_snapshot"](repo)
+                (child / "source.md").write_text("child staged change\n", encoding="utf-8")
+                git(child, "add", "source.md")
+                self.assertEqual(self.helper["source_tree_snapshot"](repo), before)
+                git(child, "commit", "-qm", "child-only commit")
+                (child / "untracked.md").write_text("child-only file\n", encoding="utf-8")
+                self.assertEqual(self.helper["source_tree_snapshot"](repo), before)
+
+                source = repo / "source.md"
+                original = source.read_bytes()
+                source.write_bytes(original + b"outer mutation\n")
+                self.assertNotEqual(self.helper["source_tree_snapshot"](repo), before)
+                source.write_bytes(original)
+                self.assertEqual(self.helper["source_tree_snapshot"](repo), before)
+
+                pointer = child / ".git"
+                replacement = child / "replacement-pointer"
+                replacement.write_bytes(pointer.read_bytes())
+                os.replace(replacement, pointer)
+                self.assertNotEqual(self.helper["source_tree_snapshot"](repo), before)
+
+    def test_nested_worktree_cannot_hide_indexed_descendants_or_base_readditions(self):
+        with self.nested_worktree_fixture() as (repo, child, *_):
+            source = child / "source.md"
+            rel = source.relative_to(repo).as_posix()
+            oid = git(repo, "hash-object", "-w", str(source)).strip()
+            git(repo, "update-index", "--add", "--cacheinfo", f"100644,{oid},{rel}")
+            source.write_text("PARENT_INDEXED_DESCENDANT\n", encoding="utf-8")
+            captured = self.helper["local_bundle"](repo)
+            self.assertIn(rel, captured.paths)
+            self.assertIn("PARENT_INDEXED_DESCENDANT", captured.text)
+            before = self.helper["source_tree_snapshot"](repo)
+            source.write_text("PARENT_INDEXED_DESCENDANT_CHANGED\n", encoding="utf-8")
+            self.assertNotEqual(self.helper["source_tree_snapshot"](repo), before)
+
+            git(repo, "commit", "-qm", "parent owns a descendant")
+            base = git(repo, "rev-parse", "HEAD").strip()
+            git(repo, "update-index", "--force-remove", rel)
+            source.write_text("RE_ADDED_PARENT_SOURCE\n", encoding="utf-8")
+            for base_ref in (None, base):
+                with self.subTest(base=base_ref), self.assertRaisesRegex(
+                    SystemExit, "cannot safely include untracked file.*not a regular file",
+                ):
+                    self.helper["local_bundle"](repo, base_ref)
+            git(repo, "commit", "-qm", "remove parent index entry")
+            with self.assertRaisesRegex(
+                SystemExit, "cannot safely include untracked file.*not a regular file",
+            ):
+                self.helper["local_bundle"](repo, base)
+
+    def test_nested_worktree_exclusion_rejects_unowned_repository_boundaries(self):
+        for kind in ("standalone", "foreign", "fake", "alias", "mismatched", "unregistered-admin"):
+            with self.subTest(kind=kind), self.preparation_fixture() as (repo, *_):
+                child = repo / "scratch" / "unowned boundary"
+                child.parent.mkdir()
+                if kind == "foreign":
+                    foreign = repo.parent / "foreign"
+                    foreign.mkdir()
+                    git(foreign, "init", "-q")
+                    git(foreign, "commit", "--allow-empty", "-qm", "foreign root")
+                    git(foreign, "worktree", "add", "--detach", str(child), "HEAD")
+                elif kind == "unregistered-admin":
+                    git(repo, "worktree", "add", "--detach", str(child), "HEAD")
+                    registered = Path(git(child, "rev-parse", "--absolute-git-dir").strip())
+                    common = Path(git(repo, "rev-parse", "--absolute-git-dir").strip())
+                    copied = repo.parent / "unregistered-admin"
+                    shutil.copytree(registered, copied)
+                    (copied / "commondir").write_text(f"{common}\n", encoding="utf-8")
+                    (copied / "gitdir").write_text(f"{child / '.git'}\n", encoding="utf-8")
+                    (child / ".git").unlink()
+                    (child / ".git").write_text(f"gitdir: {copied}\n", encoding="utf-8")
+                    self.assertEqual(
+                        Path(git(child, "rev-parse", "--git-common-dir").strip()).resolve(),
+                        common.resolve(),
+                    )
+                elif kind in {"alias", "mismatched"}:
+                    owner = repo / "registered owner"
+                    git(repo, "worktree", "add", "--detach", str(owner), "HEAD")
+                    if kind == "mismatched":
+                        git(repo, "worktree", "add", "--detach", str(child), "HEAD")
+                        (child / ".git").unlink()
+                    else:
+                        child.mkdir()
+                    (child / ".git").write_bytes((owner / ".git").read_bytes())
+                else:
+                    child.mkdir()
+                    if kind == "standalone":
+                        git(child, "init", "-q")
+                        git(child, "commit", "--allow-empty", "-qm", "standalone root")
+                    else:
+                        (child / ".git").write_text(f"gitdir: {repo / '.git'}\n", encoding="utf-8")
+                (child / "ordinary.md").write_text("must not silently disappear\n", encoding="utf-8")
+
+                with self.assertRaisesRegex(
+                    SystemExit, "cannot safely include untracked file.*not a regular file",
+                ):
+                    self.helper["local_bundle"](repo)
+
+    def test_nested_worktree_validation_keeps_parent_git_trust_anchor(self):
+        with self.nested_worktree_fixture() as (repo, _child, *_):
+            hostile_bin = repo / "host-bin"
+            hostile_bin.mkdir()
+            marker = repo.parent / "hostile-git-executed"
+            write_executable(
+                hostile_bin / "git",
+                "#!/usr/bin/env python3\nfrom pathlib import Path\n"
+                f"Path({str(marker)!r}).write_text('executed')\nraise SystemExit(91)\n",
+            )
+            exclude = repo / ".git/info/exclude"
+            with exclude.open("a", encoding="utf-8") as stream:
+                stream.write("\nhost-bin/\n")
+            with mock.patch.dict(os.environ, {
+                "PATH": f"{hostile_bin}{os.pathsep}{os.environ.get('PATH', '')}",
+            }):
+                self.assertEqual(self.helper["local_bundle"](repo).paths, {"source.md"})
+                self.helper["source_tree_snapshot"](repo)
+            self.assertFalse(marker.exists())
 
     def test_local_base_reviews_resolved_merge_without_upstream_binary(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1394,8 +1797,7 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             snapshot = self.helper["source_tree_snapshot"](repo)
             git(repo, "update-ref", "refs/heads/review-base", "HEAD")
             self.assertEqual(self.helper["source_tree_snapshot"](repo), snapshot)
-            bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo, pinned)
-            self.assertFalse(truncated)
+            bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo, pinned)
             self.assertIn("+committed task change", bundle)
             self.assertEqual(
                 self.helper["build_bundle"](repo, target, pinned, "HEAD").paths,
@@ -1417,14 +1819,12 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 if staged:
                     git(repo, "add", safe)
                 with self.subTest(staged=staged):
-                    bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
-                    self.assertFalse(truncated)
+                    bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
                     self.assertIn("struct CredentialFile", bundle)
                     self.assertIn(safe, self.helper["local_bundle"](repo).paths)
                     for label in ("--dataset", "--prompt-file"):
-                        _, content, truncated = self.helper["validate_evidence_file"](repo, safe, label)
+                        _, content = self.helper["validate_evidence_file"](repo, safe, label)
                         self.assertEqual(content, source.read_bytes().decode("utf-8"))
-                        self.assertFalse(truncated)
 
             blocked = (
                 "credentials.json", "config/prod-credentials.json", "credentials/store.json",
@@ -1611,26 +2011,32 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 dataset=[str(untracked.relative_to(repo))],
             ), repo)
             extra, datasets = evidence.prompt, evidence.datasets
-            bundle, _, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
             pack, = self.helper["build_review_prompts"](repo, "local", None, bundle, extra, datasets)
             provider = mock.Mock(return_value=json.dumps({
                 "findings": [], "overall_correctness": "patch is correct",
                 "overall_explanation": "Synthetic review.", "overall_confidence": 0.8,
             }))
-            self.assertIn("Report every suspected real credential as a P0 security finding", pack)
             for marker in (None, "DELETED_SCAN_MARKER", "STAGED_SCAN_MARKER", "UNTRACKED_SCAN_MARKER", "PROMPT_SCAN_MARKER"):
                 events = []
 
-                def scanner(command, _repo, **_kwargs):
-                    outgoing = Path(command[2])
-                    self.assertEqual(outgoing.read_bytes(), pack.encode("utf-8"))
+                def scanner(command, _repo, **kwargs):
+                    source_kind = command[1]
+                    if source_kind == "filesystem":
+                        outgoing = Path(command[2])
+                        payload = outgoing.read_bytes()
+                    else:
+                        self.assertEqual(source_kind, "stdin")
+                        outgoing = Path(kwargs["stdin"].name)
+                        payload = kwargs["stdin"].read()
+                    self.assertEqual(payload, pack.encode("utf-8"))
                     if os.name != "nt":
                         self.assertEqual(stat.S_IMODE(outgoing.stat().st_mode), 0o600)
                     self.assertIn("--results=verified,unknown", command)
                     self.assertIn("--no-update", command)
                     for token in ("-// DELETED_SCAN_MARKER", "+// STAGED_SCAN_MARKER", "UNTRACKED_SCAN_MARKER", "PROMPT_SCAN_MARKER", "# Dataset:", "# Prompt file:"):
                         self.assertIn(token, pack)
-                    events.append("scan")
+                    events.append(source_kind)
                     if marker:
                         line = next(i for i, text in enumerate(pack.splitlines(), 1) if marker in text)
                         detected = {"SourceMetadata": {"Data": {"Filesystem": {"file": str(outgoing), "line": line}}}}
@@ -1649,7 +2055,7 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                     else:
                         self.helper["run_reviewer"](args, repo, pack, {source}, [])
                         provider.assert_called_once_with(args, repo, pack)
-                    self.assertEqual(events, ["scan"])
+                    self.assertEqual(events, ["filesystem"] if marker else ["filesystem", "stdin"])
 
     def test_tracked_binary_changes_are_blocked_in_all_modes(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1745,42 +2151,42 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
     def test_untracked_files_respect_trusted_global_excludes(self) -> None:
-        with tempfile.TemporaryDirectory() as tempdir:
-            root = Path(tempdir)
-            repo = init_repo(root)
-            home = root / "home"
-            home.mkdir()
-            excludes = root / "global-ignore"
-            excludes.write_text(
-                "ignored.local\n!settings.local\n",
-                encoding="utf-8",
-            )
-            (home / ".gitconfig").write_text(
-                f"[core]\n\texcludesFile = {excludes.as_posix()}\n",
-                encoding="utf-8",
-            )
-            (repo / "ignored.local").write_text("private notes\n", encoding="utf-8")
-            (repo / ".gitignore").write_text("settings.local\n", encoding="utf-8")
-            (repo / "settings.local").write_text("repo private\n", encoding="utf-8")
-            git(repo, "add", ".gitignore")
-            (repo / "visible.txt").write_text("review me\n", encoding="utf-8")
-            (repo / "hostile-gitconfig").write_text(
-                "[core]\n\texcludesFile = /does/not/exist\n",
-                encoding="utf-8",
-            )
-
-            with mock.patch.dict(
-                os.environ,
-                {
-                    "HOME": str(home),
-                    "USERPROFILE": str(home),
-                    "GIT_CONFIG_GLOBAL": str(repo / "hostile-gitconfig"),
-                },
-            ):
-                self.assertEqual(
-                    [rel for rel, _, _ in self.helper["collect_untracked_file_snapshots"](repo)[0]],
-                    ["hostile-gitconfig", "visible.txt"],
+        cases = [("external", "global-ignore"), ("missing", "global-ignore"),
+                 ("inside", "global-ignore")]
+        if os.name != "nt":
+            cases.extend([("external", "global\rignore"), ("external", "global-ignore ")])
+        for location, name in cases:
+            with self.subTest(location=location, name=name), tempfile.TemporaryDirectory() as tempdir:
+                root = Path(tempdir)
+                repo = init_repo(root)
+                home = root / "home"
+                home.mkdir()
+                excludes = (repo if location == "inside" else root) / name
+                if location != "missing":
+                    excludes.write_text("ignored.local\n!settings.local\n", encoding="utf-8")
+                if location == "inside":
+                    git(repo, "add", "--", name)
+                git(repo, "config", "--file", str(home / ".gitconfig"),
+                    "core.excludesFile", str(excludes))
+                (repo / "ignored.local").write_text("private notes\n", encoding="utf-8")
+                (repo / ".gitignore").write_text("settings.local\n", encoding="utf-8")
+                (repo / "settings.local").write_text("repo private\n", encoding="utf-8")
+                git(repo, "add", ".gitignore")
+                (repo / "visible.txt").write_text("review me\n", encoding="utf-8")
+                (repo / "hostile-gitconfig").write_text(
+                    "[core]\n\texcludesFile = /does/not/exist\n", encoding="utf-8",
                 )
+                with mock.patch.dict(os.environ, {
+                    "HOME": str(home), "USERPROFILE": str(home),
+                    "GIT_CONFIG_GLOBAL": str(repo / "hostile-gitconfig"),
+                }):
+                    expected = ["hostile-gitconfig", "visible.txt"]
+                    if location != "external":
+                        expected.insert(1, "ignored.local")
+                    self.assertEqual(
+                        [rel for rel, _ in self.helper["collect_untracked_file_snapshots"](repo)[0]],
+                        expected,
+                    )
 
     def test_dirty_check_respects_trusted_global_excludes(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1805,30 +2211,20 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             ):
                 self.assertFalse(self.helper["is_dirty"](repo))
 
-    def test_oversized_text_is_rejected_without_scanning_binary_tail(self) -> None:
+    def test_large_untracked_text_is_captured_completely(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
-            detector_tail = "\ntoken=" + "A" * 24 + "\n"
-            content = "x" * (64_000 * 3 - 4) + detector_tail
-
+            content = "界\r\n" * 50_000 + "COMPLETE_UNTRACKED_TAIL\n"
             untracked = repo / "untracked.txt"
-            untracked.write_text(content, encoding="utf-8")
-            with self.assertRaisesRegex(SystemExit, "file too large to scan safely"):
-                [rel for rel, _, _ in self.helper["collect_untracked_file_snapshots"](repo)[0]]
-
-            untracked.unlink()
-            binary = repo / "binary.bin"
-            binary.write_bytes(b"\0" + content.encode())
-            self.assertEqual(
-                [rel for rel, _, _ in self.helper["collect_untracked_file_snapshots"](repo)[0]],
-                ["binary.bin"],
+            untracked.write_bytes(content.encode("utf-8"))
+            captured = self.helper["local_bundle"](repo)
+            records = re.findall(r"^source-line \d+: (.*)$", captured.text, re.MULTILINE)
+            self.assertEqual("".join(json.loads(record) for record in records), content)
+            passes = self.helper["build_review_prompts"](
+                repo, "local", None, captured, "", [], 50_000,
             )
-
-            binary.unlink()
-            evidence = repo / "evidence.txt"
-            evidence.write_text(content, encoding="utf-8")
-            with self.assertRaisesRegex(SystemExit, "file too large to scan safely"):
-                self.helper["validate_evidence_file"](repo, "evidence.txt", "--dataset")
+            self.assertGreater(len(passes), 1)
+            self.assertEqual("".join(prompt.split("# Change Bundle\n", 1)[1] for prompt in passes), captured.text)
 
     def test_branch_bundle_rejects_unsafe_or_unknown_base_before_diff(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -1900,7 +2296,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                                 self.helper["build_bundle"](checkout, "commit", None, "HEAD")
                         continue
                     captured = self.helper["build_bundle"](checkout, "commit", None, "HEAD")
-                    self.assertFalse(captured.truncated)
                     self.assertIn(f"parent: {expected_parent}\n", captured.text)
                     self.assertIn(expected_patch, captured.text)
                     self.assertNotIn("behavior.py", captured.text)
@@ -1912,7 +2307,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             self.assertNotIn("behavior.py", captured.text)
             self.assertEqual(captured.paths, {"unrelated.txt"})
             captured = self.helper["build_bundle"](repo, "commit", None, initial)
-            self.assertFalse(captured.truncated)
             self.assertIn("parent: none (verified raw root)\n", captured.text)
             self.assertIn("+def behavior(): return 'preexisting'", captured.text)
             self.assertEqual(captured.paths, {"behavior.py"})
@@ -1939,7 +2333,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 self.assertIn(f"author {name}".encode(), raw)
                 self.assertNotIn(b"\nparent ", raw.partition(b"\n\n")[0])
                 captured = self.helper["build_bundle"](repo, "commit", None, "HEAD")
-                self.assertFalse(captured.truncated)
                 self.assertIn("parent: none (verified raw root)\n", captured.text)
                 self.assertIn("+root_content = True", captured.text)
                 self.assertEqual(captured.paths, {"code.py"})
@@ -1978,7 +2371,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                                 self.helper["build_bundle"](repo, "commit", None, commit)
                             continue
                         captured = self.helper["build_bundle"](repo, "commit", None, commit)
-                        self.assertFalse(captured.truncated)
                         if label == "late":
                             self.assertEqual(git(repo, "rev-list", "--parents", "-n", "1", commit).split(), [commit])
                             self.assertIn("parent: none (verified raw root)\n", captured.text)
@@ -1988,18 +2380,38 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                             self.assertIn(f"parent: {parent.decode()}\n", captured.text)
                             self.assertEqual(captured.paths, set())
 
+    def test_repo_root_preserves_exact_native_paths(self) -> None:
+        names = ["repo"]
+        if os.name != "nt":
+            names.extend(["repo\rname", "repo "])
+        for name in names:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as tempdir:
+                root = Path(tempdir)
+                repo = init_repo(root)
+                if name != repo.name:
+                    repo = repo.rename(root / name)
+                nested = repo / "nested"
+                nested.mkdir()
+                previous = Path.cwd()
+                try:
+                    os.chdir(nested)
+                    self.assertEqual(self.helper["repo_root"](), repo.resolve())
+                finally:
+                    os.chdir(previous)
+
     def test_git_path_list_preserves_newline_filenames(self) -> None:
         if os.name == "nt":
             self.skipTest("Windows filesystems do not support newline path components")
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
-            rel = "line\nbreak.txt"
-            (repo / rel).write_text("content\n", encoding="utf-8")
-            git(repo, "add", rel)
+            names = [f"line{separator}break.txt" for separator in ("\n", "\r", "\r\n", "\t")]
+            for rel in names:
+                (repo / rel).write_text("content\n", encoding="utf-8")
+                git(repo, "add", "--", rel)
 
             paths = self.helper["git_path_list"](repo, "ls-files", "-z")
 
-            self.assertIn(rel, paths)
+            self.assertCountEqual(paths, names)
 
     @unittest.skipUnless(sys.platform.startswith("linux"), "requires raw non-UTF-8 filename support")
     def test_git_path_list_rejects_non_utf8_output(self) -> None:
@@ -2012,14 +2424,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             with self.assertRaisesRegex(SystemExit, "non-UTF-8 Git output"):
                 self.helper["git_path_list"](repo, "ls-files", "-z")
 
-    def test_review_patch_rejects_oversized_content(self) -> None:
-        with self.assertRaisesRegex(SystemExit, "too large to review safely"):
-            self.helper["validate_review_patch"]("local staged diff", ["safe.txt"], "x" * 25, 10)
-
-    def test_review_patch_limit_counts_utf8_bytes(self) -> None:
-        with self.assertRaisesRegex(SystemExit, r"12 bytes; limit 10"):
-            self.helper["validate_review_patch"]("local staged diff", ["safe.txt"], "界" * 4, 10)
-
     def test_review_patch_accepts_large_content_without_explicit_limit(self) -> None:
         patch = (
             "diff --git a/safe.txt b/safe.txt\n"
@@ -2031,7 +2435,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
 
         self.assertEqual(
             self.helper["validate_review_patch"](
-                "local staged diff",
                 ["safe.txt"],
                 patch,
             ),
@@ -2322,7 +2725,7 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 path = f"evidence-{index}.txt"
                 lines = [
                     f"evidence-{index}-{line}: \U0001f99e{'x' * 70}"
-                    for line in range(1_400)
+                    for line in range(2_200)
                 ]
                 expected_lines.extend(lines)
                 (repo / path).write_bytes(("\n".join(lines) + "\n").encode("utf-8"))
@@ -2331,7 +2734,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 argparse.Namespace(prompt=[], prompt_file=[], dataset=paths), repo
             )
             datasets = evidence.datasets
-            self.assertFalse(evidence.truncated)
             bundle = "# Commit Diff\n" + "+changed line\n" * 40_000
             instructions = "Complete caller instructions must appear in every pass."
             for budget in (512_000, 120_000):
@@ -2420,7 +2822,7 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             self.assertGreater(len(prompts), 1)
             for prompt in prompts:
                 self.assertIn(
-                    "Report every suspected real credential as a P0 security finding",
+                    "Report suspected real credentials as P0 findings without reproducing their values.",
                     prompt,
                 )
 
@@ -2522,11 +2924,11 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                     if failure:
                         with self.assertRaisesRegex(SystemExit, f"late {failure} failure"):
                             self.helper["run_review_passes"](
-                                args, [args], repo, prompts, {"source.txt"}, False
+                                args, [args], repo, prompts, {"source.txt"}
                             )
                     else:
                         reports = self.helper["run_review_passes"](
-                            args, [args], repo, prompts, {"source.txt"}, False
+                            args, [args], repo, prompts, {"source.txt"}
                         )
                         report = self.helper["merge_chunk_reports"](reports)
                         self.helper["require_findings"](report, args.require_finding)
@@ -2545,7 +2947,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         path = ".env.\x1b]52;c;VEVTVA==\x07\udc9b"
 
         redacted = self.helper["validate_review_patch"](
-            "local staged diff",
             [path],
             "",
         )
@@ -2569,7 +2970,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted = self.helper["validate_review_patch"](
-            "branch diff",
             [".env"],
             patch,
         )
@@ -2591,7 +2991,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         ):
             with self.subTest(patch=patch):
                 validated = self.helper["validate_review_patch"](
-                    "commit diff",
                     ["src/runtime.ts"],
                     patch,
                 )
@@ -2608,15 +3007,14 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             (repo / ".env").write_text("placeholder=true\n", encoding="utf-8")
             (repo / "base.txt").write_text("base\nreview me\n", encoding="utf-8")
             git(repo, "add", ".env", "base.txt")
-            local, local_truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            local, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
             self.assertIn(self.helper["REVIEW_SECURITY_OMISSION"], local)
             self.assertNotIn(".env", local)
             self.assertNotIn("placeholder=true", local)
             self.assertIn("+review me", local)
-            self.assertFalse(local_truncated)
 
             git(repo, "commit", "-q", "-m", "sensitive path")
-            for bundle, truncated, paths, _mixed, _spans in (
+            for bundle, paths, _mixed, _spans in (
                 self.helper["branch_bundle"](repo, base),
                 self.helper["commit_bundle"](repo, "HEAD"),
             ):
@@ -2624,7 +3022,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 self.assertNotIn(".env", bundle)
                 self.assertNotIn("placeholder=true", bundle)
                 self.assertIn("+review me", bundle)
-                self.assertFalse(truncated)
 
     def test_secret_named_workflows_are_reviewable_in_all_modes(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -2637,16 +3034,16 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             workflow = repo / ".github" / "workflows" / "secret-scan.yml"
             workflow.parent.mkdir(parents=True)
             workflow.write_text("name: Secret scan\n", encoding="utf-8")
-            untracked_bundle, _, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            untracked_bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
             self.assertIn("secret-scan.yml", untracked_bundle)
 
             git(repo, "add", str(workflow.relative_to(repo)))
-            tracked_bundle, _, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            tracked_bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
             self.assertIn("secret-scan.yml", tracked_bundle)
 
             git(repo, "commit", "-q", "-m", "add secret scanner")
-            branch_bundle, _, _paths, _mixed, _spans = self.helper["branch_bundle"](repo, base)
-            commit_bundle, _, _paths, _mixed, _spans = self.helper["commit_bundle"](repo, "HEAD")
+            branch_bundle, _paths, _mixed, _spans = self.helper["branch_bundle"](repo, base)
+            commit_bundle, _paths, _mixed, _spans = self.helper["commit_bundle"](repo, "HEAD")
             self.assertIn("secret-scan.yml", branch_bundle)
             self.assertIn("secret-scan.yml", commit_bundle)
 
@@ -2714,10 +3111,9 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             path.parent.mkdir()
             path.write_text(source, encoding="utf-8")
 
-            bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
 
             self.assertIn("ordinary-hardcoded-value-12345", bundle)
-            self.assertFalse(truncated)
 
     def test_untracked_design_token_artifacts_remain_reviewable(self) -> None:
         for rel in (
@@ -2834,7 +3230,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
 
         self.assertEqual(
             self.helper["validate_review_patch"](
-                "branch diff",
                 ["provider.ts"],
                 safe_patch,
             ),
@@ -2855,7 +3250,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             + "".join(f"+{line}\n" for line in source.splitlines())
         )
         validated = self.helper["validate_review_patch"](
-            "typescript credential plumbing fixture",
             ["src/credential-plumbing.ts"],
             patch,
         )
@@ -2890,7 +3284,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
 
         self.assertEqual(
             self.helper["validate_review_patch"](
-                "branch diff",
                 ["apps/macos/MenuContentView.swift"],
                 patch,
             ),
@@ -2934,7 +3327,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         validated = self.helper["validate_review_patch"](
-            "typescript config path references",
             ["src/config-path-references.ts"],
             patch,
         )
@@ -2962,7 +3354,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
         self.assertEqual(
             self.helper["validate_review_patch"](
-                "typescript truncated credential calls fixture",
                 ["src/token.ts"],
                 truncated_call_patch,
             ),
@@ -2987,7 +3378,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 )
 
                 validated = self.helper["validate_review_patch"](
-                    "local unstaged diff",
                     ["fixture.py"],
                     patch,
                 )
@@ -3015,13 +3405,12 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             git(repo, "add", "-u")
             git(repo, "commit", "-q", "-m", "delete template")
 
-            bundle, truncated, _paths, _mixed, _spans = self.helper["branch_bundle"](repo, base)
+            bundle, _paths, _mixed, _spans = self.helper["branch_bundle"](repo, base)
 
             self.assertIn("deleted file mode 100644", bundle)
             self.assertIn("------BEGIN [A-Z ]+-----", bundle)
             self.assertIn("-{{ _body }}", bundle)
             self.assertIn("------END [A-Z ]+-----", bundle)
-            self.assertFalse(truncated)
 
     def test_review_patch_preserves_redaction_placeholder_fallback(self) -> None:
         patch = (
@@ -3035,7 +3424,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
 
         self.assertEqual(
             self.helper["validate_review_patch"](
-                "local unstaged diff",
                 ["runtime.py"],
                 patch,
             ),
@@ -3053,7 +3441,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["fixture.txt"],
             patch,
         )
@@ -3071,7 +3458,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["runtime.ts"],
             patch,
         )
@@ -3090,7 +3476,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["vendor"],
             patch,
         )
@@ -3109,7 +3494,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["runtime.ts"],
             patch,
         )
@@ -3127,7 +3511,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["runtime.ts"],
             patch,
         )
@@ -3145,7 +3528,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["runtime.ts"],
             patch,
         )
@@ -3167,7 +3549,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         )
 
         redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
             ["runtime.ts"],
             patch,
         )
@@ -3184,39 +3565,9 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
 
             path.write_text('const request = { token: String() };\n', encoding="utf-8")
 
-            bundle, truncated, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
+            bundle, _paths, _mixed, _spans = self.helper["local_bundle"](repo)
 
             self.assertIn('-const request = { token: "test-token" };', bundle)
-            self.assertFalse(truncated)
-
-    def test_pi_refuses_truncated_review_input(self) -> None:
-        reviewer = argparse.Namespace(engine="pi", tools=True)
-
-        with self.assertRaisesRegex(SystemExit, "pi engine refused truncated review input"):
-            self.helper["ensure_reviewer_input_complete"](
-                reviewer,
-                True,
-            )
-
-        self.helper["ensure_reviewer_input_complete"](
-            reviewer,
-            False,
-        )
-        with self.assertRaisesRegex(SystemExit, "codex engine refused truncated review input"):
-            self.helper["ensure_reviewer_input_complete"](
-                argparse.Namespace(engine="codex", tools=True),
-                True,
-            )
-        with self.assertRaisesRegex(SystemExit, "claude engine refused truncated review input"):
-            self.helper["ensure_reviewer_input_complete"](
-                argparse.Namespace(engine="claude", tools=True),
-                True,
-            )
-        with self.assertRaisesRegex(SystemExit, "kimi engine refused truncated review input"):
-            self.helper["ensure_reviewer_input_complete"](
-                argparse.Namespace(engine="kimi", tools=False),
-                True,
-            )
 
     def test_kimi_config_is_sanitized_without_losing_model_auth(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -3375,7 +3726,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             evidence = self.helper["capture_evidence_inputs"](args, repo)
 
             self.assertIn("# Prompt file: review.md", evidence.prompt)
-            self.assertFalse(evidence.truncated)
 
     def test_review_prompts_omit_absolute_repo_path_and_keep_instructions_whole(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -3389,14 +3739,9 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                     )
                     self.assertIn("Read-only tools cannot access unchanged repository files", prompt)
                     self.assertIn(
-                        "Do not report a missing import, symbol, definition, call site, config entry",
+                        "Missing context or omitted sensitive material is not evidence of a defect.",
                         prompt,
                     )
-                    for evidence_rule in (
-                        "raw commit parents", "^sha", "porcelain boundary", "missing parents",
-                        "parent-relative patch", "unknown", "carried forward", "merger",
-                    ):
-                        self.assertIn(evidence_rule, prompt)
                     self.assertNotIn(str(repo), prompt)
             with self.assertRaisesRegex(SystemExit, "too little room"):
                 self.helper["build_review_prompts"](
@@ -3407,26 +3752,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                     "x" * self.helper["MAX_REVIEW_PROMPT_BYTES"],
                     [],
                 )
-
-    def test_read_text_truncates_without_scanning_tail(self) -> None:
-        with tempfile.TemporaryDirectory() as tempdir:
-            path = Path(tempdir) / "large.txt"
-            path.write_bytes(b"x" * 200_000 + b"\0tail")
-
-            text = self.helper["read_text"](path)
-
-            self.assertIn("[truncated at 180000 characters]", text)
-            self.assertNotEqual(text, "[binary file omitted]")
-
-    def test_read_text_marks_unreadable_input_incomplete(self) -> None:
-        with mock.patch.dict(
-            self.helper["read_text_with_status"].__globals__,
-            {"read_prefix": lambda *_args: (_ for _ in ()).throw(SystemExit("denied"))},
-        ):
-            text, incomplete = self.helper["read_text_with_status"](Path("blocked"))
-
-        self.assertIn("[unreadable:", text)
-        self.assertTrue(incomplete)
 
     def test_evidence_file_must_be_repo_relative_and_not_symlinked(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -3727,16 +4052,17 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
         proc_b.wait.assert_called_once_with(timeout=0.5)
 
     def test_engine_interrupted_is_not_swallowed_by_except_system_exit(self) -> None:
-        # Regression: EngineInterrupted used to subclass SystemExit, so
-        # internal `except SystemExit` guards like read_text_with_status's
-        # converted an in-flight interrupt into an unreadable-file result
-        # and kept going instead of unwinding.
-        with mock.patch.dict(
-            self.helper["read_text_with_status"].__globals__,
-            {"read_prefix": mock.Mock(side_effect=self.helper["EngineInterrupted"](130))},
-        ):
-            with self.assertRaises(self.helper["EngineInterrupted"]) as ctx:
-                self.helper["read_text_with_status"](Path("irrelevant"))
+        # Input validation may translate unreadable-file errors, but an engine
+        # interrupt must unwind with its original exit code.
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            (repo / "evidence.txt").write_text("evidence\n")
+            with mock.patch.dict(
+                self.helper["validate_evidence_file"].__globals__,
+                {"read_file_bytes": mock.Mock(side_effect=self.helper["EngineInterrupted"](130))},
+            ):
+                with self.assertRaises(self.helper["EngineInterrupted"]) as ctx:
+                    self.helper["validate_evidence_file"](repo, "evidence.txt", "--dataset")
         self.assertEqual(ctx.exception.code, 130)
 
     def test_main_converts_engine_interrupted_to_exit_code(self) -> None:
@@ -3749,36 +4075,32 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
     def test_source_tree_snapshot_detects_mutations(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
-            source = repo / "source.txt"
-            source.write_text("before\n", encoding="utf-8")
-            git(repo, "add", "source.txt")
+            names = ["source.txt"]
+            if os.name != "nt":
+                names.extend(("source\r.txt", "source\r\n.txt"))
+            for name in names:
+                (repo / name).write_text("before\n", encoding="utf-8")
+                git(repo, "add", "--", name)
             git(repo, "commit", "-qm", "initial")
-            before = self.helper["source_tree_snapshot"](repo)
+            for name in names:
+                with self.subTest(name=name):
+                    source = repo / name
+                    before = self.helper["source_tree_snapshot"](repo)
+                    source.write_text("after\n", encoding="utf-8")
+                    self.assertNotEqual(self.helper["source_tree_snapshot"](repo), before)
+                    source.write_text("before\n", encoding="utf-8")
+                    self.assertEqual(self.helper["source_tree_snapshot"](repo), before)
 
-            source.write_text("after\n", encoding="utf-8")
-            self.assertNotEqual(
-                self.helper["source_tree_snapshot"](repo),
-                before,
-            )
-            source.write_text("before\n", encoding="utf-8")
-            self.assertEqual(
-                self.helper["source_tree_snapshot"](repo),
-                before,
-            )
+                    source.write_text("after\n", encoding="utf-8")
+                    git(repo, "add", "--", name)
+                    git(repo, "commit", "-qm", "mutated")
+                    self.assertNotEqual(self.helper["source_tree_snapshot"](repo), before)
 
-            source.write_text("after\n", encoding="utf-8")
-            git(repo, "add", "source.txt")
-            git(repo, "commit", "-qm", "mutated")
-            self.assertNotEqual(
-                self.helper["source_tree_snapshot"](repo),
-                before,
-            )
-
-            (repo / "generated.txt").write_text("generated\n", encoding="utf-8")
-            self.assertNotEqual(
-                self.helper["source_tree_snapshot"](repo),
-                before,
-            )
+                    generated = repo / ("generated-" + name)
+                    generated.write_text("generated\n", encoding="utf-8")
+                    generated_before = self.helper["source_tree_snapshot"](repo)
+                    generated.write_text("changed\n", encoding="utf-8")
+                    self.assertNotEqual(self.helper["source_tree_snapshot"](repo), generated_before)
 
     def test_rejects_output_paths_inside_reviewed_repository(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -3948,9 +4270,8 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
             tracked.write_bytes(b"\0tracked-before")
             git(repo, "add", "tracked.bin")
             git(repo, "commit", "-qm", "initial")
-            limit = self.helper["MAX_BUNDLE_TEXT_BYTES"]
             untracked = repo / "generated.bin"
-            untracked.write_bytes(b"\0" + b"a" * (limit + 16))
+            untracked.write_bytes(b"\0" + b"a" * 200_000)
             before = self.helper["source_tree_snapshot"](repo)
 
             tracked.write_bytes(b"\0tracked-after!")
@@ -4709,11 +5030,16 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 r"src\index.ts",
             )
 
-            report["findings"][0]["code_location"]["file_path"] = " "
-            with self.assertRaisesRegex(SystemExit, "invalid location"):
-                self.helper["validate_report"](report, repo, {"src/index.ts"}, [])
+            literal = copy.deepcopy(report)
+            literal["findings"][0]["code_location"]["file_path"] = " "
+            self.helper["validate_report"](literal, repo, {" "}, [])
+            self.assertEqual(literal["findings"][0]["code_location"]["file_path"], " ")
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.helper["validate_report"](literal, repo, {"src/index.ts"}, [])
+            self.assertEqual(literal["findings"], [])
+            self.assertEqual(self.helper["review_status"](literal), "incomplete")
 
-            for invalid_path in (123, None, True):
+            for invalid_path in ("", 123, None, True):
                 with self.subTest(invalid_path=invalid_path):
                     report["findings"][0]["code_location"] = {
                         "file_path": invalid_path,
@@ -4981,18 +5307,44 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
                 self.assertIn("retained-pipe-reviewer engine timed out", result.stderr)
                 self.assertLess(time.monotonic() - started, 2)
 
-    def test_large_repo_relative_evidence_file_is_rejected(self) -> None:
+    def test_large_prompt_and_dataset_files_are_captured_completely(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = init_repo(Path(tempdir))
             evidence = repo / "evidence.txt"
-            evidence.write_text("x" * 600_000, encoding="utf-8")
+            content = "界\r\n" * 120_000 + "COMPLETE_EVIDENCE_TAIL\n"
+            evidence.write_bytes(content.encode("utf-8"))
+            captured = self.helper["capture_evidence_inputs"](
+                argparse.Namespace(prompt=[], prompt_file=["evidence.txt"], dataset=["evidence.txt"]), repo,
+            )
+            self.assertEqual(captured.prompt, "# Prompt file: evidence.txt\n" + content)
+            self.assertEqual(captured.datasets[0].content, content)
+            self.helper["verify_evidence"](repo, captured.files)
 
-            with self.assertRaisesRegex(SystemExit, "file too large to scan safely"):
-                self.helper["validate_evidence_file"](
-                    repo,
-                    "evidence.txt",
-                    "--dataset",
-                )
+    def test_evidence_capture_rejects_files_changed_during_open_or_read(self) -> None:
+        for operation in ("open", "read"):
+            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as tempdir:
+                repo = init_repo(Path(tempdir))
+                path = repo / "evidence.txt"
+                path.write_bytes(b"review context\n" * 20_000)
+                original = getattr(os, operation)
+                changed = False
+
+                def mutate(*args, **kwargs):
+                    nonlocal changed
+                    if operation == "open" and not changed:
+                        replacement = repo / "replacement.txt"
+                        replacement.write_bytes(path.read_bytes())
+                        replacement.replace(path)
+                    result = original(*args, **kwargs)
+                    if operation == "read" and not changed:
+                        with path.open("ab") as stream:
+                            stream.write(b"new tail\n")
+                    changed = True
+                    return result
+
+                with mock.patch.object(os, operation, side_effect=mutate):
+                    with self.assertRaisesRegex(SystemExit, "file changed while opening|file changed while reading"):
+                        self.helper["capture_evidence_file"](repo, "evidence.txt", "--dataset")
 
     def test_claude_inventory_is_bundle_and_web_only(self) -> None:
         args = argparse.Namespace(
@@ -5039,7 +5391,6 @@ Path(__file__).with_name("scan.json").write_text(json.dumps({
 
         self.assertEqual(
             self.helper["validate_review_patch"](
-                "local unstaged diff",
                 ["safe.py"],
                 patch,
             ),
@@ -6099,16 +6450,8 @@ os.execv(target, [str(target), *sys.argv[1:]])
 
     @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
     def test_dry_run_flag_exits_nonzero_when_prompt_unpartitionable(self) -> None:
-        # The real run does not stop at capture_evidence_inputs()'s per-file
-        # checks: main() also builds the final prompt(s) via
-        # build_review_prompts() and rejects context that cannot fit the
-        # aggregate prompt budget even after partitioning (see
-        # build_review_prompts's "leave too little room for change chunks"
-        # branch). Use the Kimi engine's smaller aggregate budget
-        # (KIMI_MAX_PROMPT_BYTES) so a single --prompt-file well under the
-        # per-file 180000-byte scan cap (MAX_BUNDLE_TEXT_BYTES) still blows
-        # the aggregate limit; --dry-run must reuse that same check instead
-        # of reporting readiness for a prompt the real run would refuse.
+        # Instructions remain whole in each pass. Dry-run must enforce the
+        # engine's aggregate prompt budget just like a real review.
         with tempfile.TemporaryDirectory() as tempdir:
             root = Path(tempdir)
             repo = init_repo(root)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 19 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 19 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 19 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,18 +71,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py`](.agents/skills/kernel-microbenchmark/benchmarks/cupti_microbenchmark.py) |
 | 6 | ✓ | [`.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py`](.agents/skills/kernel-microbenchmark/benchmarks/multi_gpu_gemm_rs.py) |
 | 7 | ✓ | [`.agents/skills/kernel-microbenchmark/SKILL.md`](.agents/skills/kernel-microbenchmark/SKILL.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
-| 11 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
-| 12 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
-| 13 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
-| 14 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 15 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
-| 16 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 17 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 18 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 19 | → | [`SECURITY.md`](SECURITY.md) |
+| 8 | ✓ | [`.agents/skills/triton-kernel-writing/agents/openai.yaml`](.agents/skills/triton-kernel-writing/agents/openai.yaml) |
+| 9 | ✓ | [`.agents/skills/triton-kernel-writing/SKILL.md`](.agents/skills/triton-kernel-writing/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
+| 13 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
+| 14 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
+| 15 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
+| 16 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 17 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
+| 18 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 19 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 20 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 21 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

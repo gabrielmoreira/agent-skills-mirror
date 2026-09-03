@@ -7,7 +7,7 @@ ref: unstable
 
 # Mirror Manifest
 
-Mirror of `looplj/axonhub` — 26 default patterns, 10 followed patterns, 12 file(s) materialized.
+Mirror of `looplj/axonhub` — 26 default patterns, 11 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `looplj/axonhub` — 26 default patterns, 10 followed patterns, 12 fil
 | Ref Type      | `branch` |
 | Ref           | `unstable` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 12 |
+| Followed pats | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `looplj/axonhub` — 26 default patterns, 10 followed patterns, 12 fil
 
 - `.agent/rules/go-general.md`
 - `.agent/rules/ent-graphql.md`
+- `.agent/rules/database-indexes.md`
 - `.agent/rules/biz-services.md`
 - `.agent/rules/cache-compat.md`
 - `.agent/rules/frontend-general.md`
@@ -72,14 +73,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | → | [`.agent/rules/biz-services.md`](.agent/rules/biz-services.md) |
 | 4 | → | [`.agent/rules/cache-compat.md`](.agent/rules/cache-compat.md) |
-| 5 | → | [`.agent/rules/docs.md`](.agent/rules/docs.md) |
-| 6 | → | [`.agent/rules/e2e.md`](.agent/rules/e2e.md) |
-| 7 | → | [`.agent/rules/ent-graphql.md`](.agent/rules/ent-graphql.md) |
-| 8 | → | [`.agent/rules/frontend-general.md`](.agent/rules/frontend-general.md) |
-| 9 | → | [`.agent/rules/frontend-i18n.md`](.agent/rules/frontend-i18n.md) |
-| 10 | → | [`.agent/rules/frontend-ui.md`](.agent/rules/frontend-ui.md) |
-| 11 | → | [`.agent/rules/go-general.md`](.agent/rules/go-general.md) |
-| 12 | → | [`.agent/rules/workflows/add-channel.md`](.agent/rules/workflows/add-channel.md) |
+| 5 | → | [`.agent/rules/database-indexes.md`](.agent/rules/database-indexes.md) |
+| 6 | → | [`.agent/rules/docs.md`](.agent/rules/docs.md) |
+| 7 | → | [`.agent/rules/e2e.md`](.agent/rules/e2e.md) |
+| 8 | → | [`.agent/rules/ent-graphql.md`](.agent/rules/ent-graphql.md) |
+| 9 | → | [`.agent/rules/frontend-general.md`](.agent/rules/frontend-general.md) |
+| 10 | → | [`.agent/rules/frontend-i18n.md`](.agent/rules/frontend-i18n.md) |
+| 11 | → | [`.agent/rules/frontend-ui.md`](.agent/rules/frontend-ui.md) |
+| 12 | → | [`.agent/rules/go-general.md`](.agent/rules/go-general.md) |
+| 13 | → | [`.agent/rules/workflows/add-channel.md`](.agent/rules/workflows/add-channel.md) |
 
 ---
 

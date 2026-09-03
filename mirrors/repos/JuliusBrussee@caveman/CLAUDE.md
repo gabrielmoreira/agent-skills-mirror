@@ -26,7 +26,10 @@ Caveman makes AI coding agents respond in compressed caveman-style prose while p
 This repo is source of truth for Caveman skills, Engine, and MV3 directive
 extension. Agent SDK + initializer work belongs in
 `/Users/julb/Desktop/GitHub/caveman-agent-sdk`
-(`JuliusBrussee/caveman-agent-sdk`). Browse driver/MCP/benchmark/plugin work
+(`JuliusBrussee/agent-sdk`). Proprietary Pebble runtime, policy, sessions, TUI,
+distribution, and conformance work belongs in
+`/Users/julb/Desktop/GitHub/caveman-coding-agent`
+(intended `JuliusBrussee/caveman-coding-agent`). Browse driver/MCP/benchmark/plugin work
 belongs in `/Users/julb/Desktop/GitHub/caveman-browse`
 (`JuliusBrussee/caveman-browse`). Matching `packages/agent/`,
 `packages/create-caveman-agent/`, and `browse/` directories here are
@@ -35,8 +38,8 @@ or an explicitly requested cross-repo sync.
 
 Visibility is separate from ownership: this repo and `caveman-browse` are
 public now; `caveman-agent-sdk` is private during development and planned for
-public release after its release gates; Caveman-Cloud remains private
-commercial source.
+public release after its release gates; `caveman-coding-agent` and
+Caveman-Cloud remain private commercial source.
 
 ---
 
@@ -86,7 +89,7 @@ caveman/
 │   ├── subagent-tax/            # Local harness-prefix benchmark
 │   └── shared/                  # Contracts + binary installer
 ├── engine/ · proxy/             # BSL local compression runtime + provider proxy
-├── cacheengine/ · rewriter/     # Standalone cache planner + prompt rewriter
+├── rewriter/                    # Prompt rewriter
 ├── mcp/ · mem/ · shrink/        # Recovery tools, memory, output compression
 ├── browse/                      # consumer copy; source = caveman-browse
 ├── extension/                   # MV3 extension source

@@ -27,7 +27,7 @@ Treat estate modernization, platform engineering, and AI-native interoperability
 | Plan observability | SLIs/SLOs/SLAs, Distributed tracing, Metrics, Logs | [architecture-blueprint.md](assets/planning/architecture-blueprint.md) | Production readiness |
 | Migrate from monolith | Strangler fig, Database decomposition, Shadow traffic | [migration-modernization-guide.md](references/migration-modernization-guide.md) | Legacy modernization |
 | Design inter-service comms | API Gateway, Service mesh, BFF pattern | [api-gateway-service-mesh.md](references/api-gateway-service-mesh.md) | Microservices networking |
-| Design delivery platform | IDP, golden paths, fitness functions | [architecture-trends.md](references/architecture-trends.md) | Multi-team platforms, governance |
+| Design delivery platform | IDP, golden paths, fitness functions | [fitness-functions-governance.md](references/fitness-functions-governance.md) | Multi-team platforms, governance |
 | Rationalize service sprawl | Bounded-context platforms, repo-vs-runtime matrix, platform scorecards | [estate-modernization.md](references/estate-modernization.md) | 20+ repos, too many services, uneven platform maturity |
 | Plan estate modernization | Platform-first migration waves, consolidation, compatibility boundaries | [estate-modernization-blueprint.md](assets/planning/estate-modernization-blueprint.md) | Polyrepo estates, regulated migrations, legacy reduction |
 | Design AI-native systems | RAG boundaries, tool gateways, agent interoperability, MCP, A2A | [architecture-trends.md](references/architecture-trends.md) | LLM-powered products when architecture, not implementation, is the main question |
@@ -108,7 +108,14 @@ Primary question: [What kind of architecture problem is this?]
 - Operational maturity (monitoring, orchestration)
 - Interoperability needs (protocols, contracts, external systems)
 
-See [references/modern-patterns.md](references/modern-patterns.md) for detailed pattern descriptions.
+**Where to split: fracture planes** (Skelton and Pais, *Team Topologies*, 2nd ed., 2025). A fracture plane is "a natural seam in the software system that allows the system to be split easily into two or more parts" — the stonemason's analogy. Candidate planes: business domain bounded context (the default, and the one most splits should map to), regulatory compliance, change cadence, team location, risk, performance isolation, technology, and user personas.
+
+- **Litmus test**, quoted: "Does the resulting architecture support more autonomous teams (less dependent teams) with reduced cognitive load (less disparate responsibilities)?" Concretely: after the split, can each team build, test, and deploy its part without coordinating with another team?
+- **Composite rule**: real boundaries usually combine planes — "we can and should break down a monolith by combining different types of fracture planes," and "often, a combination of fracture planes will be required."
+- **Distributed-monolith warning**: splitting the software without aligning the boundaries to teams and their release paths buys distribution cost with none of the autonomy. The book quotes Amy Phillips: "If you have microservices but you wait and do end-to-end testing of a combination of them before a release, what you have is a distributed monolith." Coupling also creeps in below the service boundary — shared databases, coupled builds and releases.
+- Make segments team-sized: "it is essential to make software segments team sized so that teams can effectively own and evolve their software in a sustainable way."
+
+See [references/modern-patterns.md](references/modern-patterns.md) for detailed pattern descriptions, and [references/modern-patterns.md § Connascence](references/modern-patterns.md#connascence-a-finer-grained-coupling-vocabulary) to check whether a proposed seam leaves strong coupling crossing it.
 
 ## Output Guidelines
 
@@ -192,6 +199,7 @@ Read **at most 2–3 references** per question — pick the ones most relevant t
 | [data-architecture-patterns.md](references/data-architecture-patterns.md) | CQRS variants, event sourcing, data mesh, sagas, consistency | Data flow across services |
 | [migration-modernization-guide.md](references/migration-modernization-guide.md) | Strangler fig, DB decomposition, feature flags, risk assessment | Refactoring a monolith |
 | [api-gateway-service-mesh.md](references/api-gateway-service-mesh.md) | Gateway patterns, service mesh, mTLS, observability | Inter-service communication |
+| [fitness-functions-governance.md](references/fitness-functions-governance.md) | Fitness-function taxonomy (six axes), architectural-vs-domain and monitoring-vs-alarm litmus tests, ArchUnit/NetArchTest/linter rules, herding thresholds, coupling and complexity metrics | Automating architectural governance, making principles enforceable |
 | [architecture-trends.md](references/architecture-trends.md) | Platform engineering, ambient mesh, AI-native systems, MCP/A2A | Current trends only |
 | [estate-modernization.md](references/estate-modernization.md) | Runtime-vs-repo rationalization, bounded-context platforms, consolidation heuristics | Multi-repo estates and service sprawl |
 | [operational-playbook.md](references/operational-playbook.md) | Architecture questions framework, decomposition heuristics | Design discussion framing |

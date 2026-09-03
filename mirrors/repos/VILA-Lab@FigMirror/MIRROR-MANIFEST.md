@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `VILA-Lab/FigMirror` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `VILA-Lab/FigMirror` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `VILA-Lab/FigMirror` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/figmirror/SKILL.md`](.claude/skills/figmirror/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/openspec-apply-change/SKILL.md`](.claude/skills/openspec-apply-change/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/openspec-archive-change/SKILL.md`](.claude/skills/openspec-archive-change/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/openspec-explore/SKILL.md`](.claude/skills/openspec-explore/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/openspec-propose/SKILL.md`](.claude/skills/openspec-propose/SKILL.md) |
-| 6 | ✓ | [`.codex/AGENTS.md`](.codex/AGENTS.md) |
-| 7 | ✓ | [`.codex/skills/figmirror/SKILL.md`](.codex/skills/figmirror/SKILL.md) |
+| 1 | ✓ | [`.claude/retired-figmirror-20260817/skills-figmirror/SKILL.md`](.claude/retired-figmirror-20260817/skills-figmirror/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/figmirror/SKILL.md`](.claude/skills/figmirror/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/openspec-apply-change/SKILL.md`](.claude/skills/openspec-apply-change/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/openspec-archive-change/SKILL.md`](.claude/skills/openspec-archive-change/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/openspec-explore/SKILL.md`](.claude/skills/openspec-explore/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/openspec-propose/SKILL.md`](.claude/skills/openspec-propose/SKILL.md) |
+| 7 | ✓ | [`.codex/AGENTS.md`](.codex/AGENTS.md) |
+| 8 | ✓ | [`.codex/skills/figmirror/SKILL.md`](.codex/skills/figmirror/SKILL.md) |
 
 ---
 

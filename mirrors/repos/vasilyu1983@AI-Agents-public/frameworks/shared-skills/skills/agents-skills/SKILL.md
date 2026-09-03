@@ -45,7 +45,7 @@ Runtime extensions:
 
 Repo-local Codex metadata:
 
-- Treat `agents/openai.yaml` as adjunct metadata, not as part of the portable core.
+- Treat `agents/openai.yaml` as harness-facing config read natively by current Codex CLI (0.149.x), not as part of the portable core — `SKILL.md` must stay valid without it. Its `policy.allow_implicit_invocation: false` keeps explicit-only skills out of the per-session skills listing; see [references/frontmatter-reference.md](references/frontmatter-reference.md) §"Repo-Local Codex Notes".
 - Keep `SKILL.md` `description` trigger-rich and portable.
 - Keep `agents/openai.yaml` `short_description` brief enough for UI surfaces.
 - Keep `agents/openai.yaml` `default_prompt` focused on when Codex should load the skill.
@@ -123,6 +123,7 @@ Skill change request
 
 - claiming a skill is portable while relying on runtime-only fields, substitutions, or invocation semantics
 - packing reference material, examples, and policy prose into `SKILL.md` instead of progressive disclosure files
+- over-constraining strong models with dense rule lists where a judgment statement suffices — Claude 5-gen models perform as well with ~80% less always-loaded instruction text; reserve hard ALWAYS/NEVER rules for observed failure modes and safety-critical steps (Anthropic context-engineering guidance, 2026-07-24; see `data/sources.json`)
 - writing descriptions that sound broad but fail to trigger on the real user language
 - keeping `data/sources.json` present but stale, secondary-only, or disconnected from the actual workflow
 - copying frontmatter or examples from one runtime into another without re-verifying current official docs

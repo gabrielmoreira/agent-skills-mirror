@@ -23,6 +23,7 @@ This is a Hermes-native `ralplan` workflow skill.
 - The request is still too ambiguous to name requirements, non-goals, or acceptance criteria; use `deep-interview` first.
 - The user asks for one full research-plan-implementation-review-PR cycle; use `ultrawork` (its `delivery_boundary` capability) and keep ralplan as the planning stage.
 - The change is a small local refactor or cleanup with no architectural or regression risk; use `ultrawork`, or `ai-slop-cleaner` when observable behavior must stay identical.
+- The refactor's direction is already decided and what is missing is its execution shape - which files move in which phase, what verifies each phase, where each phase rolls back to; use `refactor-plan`.
 - The user wants a pure source lookup, citation check, or paper explanation with no implementation plan.
 - The unresolved work is repository terminology alignment or a project-language decision frontier; use `context` before planning.
 

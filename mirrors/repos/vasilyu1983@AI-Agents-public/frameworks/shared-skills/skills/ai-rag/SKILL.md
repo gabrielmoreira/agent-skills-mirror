@@ -75,6 +75,7 @@ answer quality loop
 | Provider-managed doc retrieval on AWS | AWS Bedrock Knowledge Bases | AWS-native, want managed ingestion + embedding + retrieval with IAM/residency controls | You need cross-cloud portability or custom ranking internals → references/aws-bedrock-knowledge-bases.md |
 | Source of truth is tools/APIs | Tool-first or MCP retrieval | Data lives in SQL, CRM, ticketing, SaaS APIs, or internal tools | You actually need semantic retrieval over large prose corpora |
 | Website or research ingestion | Crawl/extract first, then index | The source starts as websites, reports, or broad web research | You only need one-off browsing instead of a maintained retrieval system |
+| Whole-document or thematic questions | RAPTOR-style summary tree (recursive cluster + summarise, retrieve across levels) | Answers need synthesis across a long doc or many sections, no entity graph exists | Questions are passage-level lookups, or the corpus churns faster than the tree can be rebuilt → references/retrieval-patterns.md §6 |
 | Exact joins or aggregations | SQL/graph retrieval | Questions need filters, joins, counts, or relationship traversal | Natural-language corpus lookup is the main problem |
 | Standard knowledge retrieval | Hybrid search + rerank | Mixed lexical + semantic queries, high recall, controllable latency | A simpler hosted or tool-first option already solves the problem |
 | Generated repo/context hub corpus | Graph-bounded hybrid (graph scopes, vector recalls, rerank) | A compiled multi-repo/context hub with an existing knowledge/code graph | The corpus has no graph, or simple semantic lookup already passes eval |
@@ -202,7 +203,7 @@ See [references/research-and-ingestion-patterns.md](references/research-and-inge
 
 ## Scripts
 
-`check_sources.py` — validate sources.json · `retrieval_eval.py` — recall@k/MRR/nDCG · `check_citation_support.py` — evidence-ID verification · `generate_synthetic_rag_testset.py` — testset scaffolds · `late_interaction_eval.py` — ColBERT/ColPali offline eval (no inference runner) · `exact_search_baseline.py` — exact cosine/dot baseline · `hybrid_rrf_demo.py` — BM25-lite + vector + RRF smoke test
+`check_sources.py` — validate sources.json · `retrieval_eval.py` — recall@k/MRR/nDCG · `check_citation_support.py` — evidence-ID verification · `generate_synthetic_rag_testset.py` — testset scaffolds · `late_interaction_eval.py` — ColBERT/ColPali offline eval (no inference runner) · `exact_search_baseline.py` — exact cosine/dot baseline · `hybrid_rrf_demo.py` — BM25 (k1/b) + vector + RRF smoke test
 
 ## When To Use This Skill
 
@@ -218,11 +219,11 @@ Corpus & chunking: [chunking-strategies.md](references/chunking-strategies.md) �
 
 Retrieval patterns: [retrieval-patterns.md](references/retrieval-patterns.md) · [vector-search-patterns.md](references/vector-search-patterns.md) · [hybrid-fusion-patterns.md](references/hybrid-fusion-patterns.md) · [bm25-tuning.md](references/bm25-tuning.md) · [graph-rag-patterns.md](references/graph-rag-patterns.md) · [contextual-retrieval-guide.md](references/contextual-retrieval-guide.md) · [advanced-rag-patterns.md](references/advanced-rag-patterns.md) · [agentic-rag-patterns.md](references/agentic-rag-patterns.md)
 
-Ranking & query: [ranking-pipeline-guide.md](references/ranking-pipeline-guide.md) · [query-rewriting-patterns.md](references/query-rewriting-patterns.md) · [backend-comparison-fixtures.md](references/backend-comparison-fixtures.md)
+Ranking & query: [ranking-pipeline-guide.md](references/ranking-pipeline-guide.md) · [learning-to-rank-pipeline.md](references/learning-to-rank-pipeline.md) · [query-rewriting-patterns.md](references/query-rewriting-patterns.md) · [backend-comparison-fixtures.md](references/backend-comparison-fixtures.md)
 
 Grounding & eval: [grounding-checklists.md](references/grounding-checklists.md) · [confidence-scoring.md](references/confidence-scoring.md) · [abstention-recipe.md](references/abstention-recipe.md) · [rag-evaluation-guide.md](references/rag-evaluation-guide.md) · [search-evaluation-guide.md](references/search-evaluation-guide.md)
 
-Ops & debugging: [observability-tracing-contract.md](references/observability-tracing-contract.md) · [retrieval-debugging-runbook.md](references/retrieval-debugging-runbook.md) · [rag-troubleshooting.md](references/rag-troubleshooting.md) · [search-debugging.md](references/search-debugging.md) · [rag-caching-patterns.md](references/rag-caching-patterns.md) · [distributed-search-slos.md](references/distributed-search-slos.md) · [user-feedback-learning.md](references/user-feedback-learning.md) · [multilingual-domain-patterns.md](references/multilingual-domain-patterns.md) · [security-red-team-cases.md](references/security-red-team-cases.md)
+Ops & debugging: [observability-tracing-contract.md](references/observability-tracing-contract.md) · [retrieval-debugging-runbook.md](references/retrieval-debugging-runbook.md) · [rag-troubleshooting.md](references/rag-troubleshooting.md) · [search-debugging.md](references/search-debugging.md) · [rag-caching-patterns.md](references/rag-caching-patterns.md) · [distributed-search-slos.md](references/distributed-search-slos.md) · [user-feedback-learning.md](references/user-feedback-learning.md) · [click-models-and-bias-correction.md](references/click-models-and-bias-correction.md) · [multilingual-domain-patterns.md](references/multilingual-domain-patterns.md) · [security-red-team-cases.md](references/security-red-team-cases.md)
 
 Onboarding: [quick-start-guide.md](references/quick-start-guide.md) - workflow, full template index, detailed anti-patterns · [wiki-grounded-retrieval.md](references/wiki-grounded-retrieval.md)
 

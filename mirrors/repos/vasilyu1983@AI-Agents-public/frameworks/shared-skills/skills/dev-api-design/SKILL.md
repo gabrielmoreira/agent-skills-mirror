@@ -140,7 +140,7 @@ Hyrum's Law framing adapted from addyosmani/agent-skills (MIT), commit `7676817`
 - [references/webhook-patterns.md](references/webhook-patterns.md) — HMAC signing, replay protection, delivery guarantees
 - [references/real-time-api-patterns.md](references/real-time-api-patterns.md) — SSE, WebSocket, long-polling tradeoffs
 - [references/api-testing-patterns.md](references/api-testing-patterns.md) — contract tests, property-based testing, Schemathesis
-- [references/llm-agent-api-contracts.md](references/llm-agent-api-contracts.md) — MCP integration, AX design, agent-first patterns
+- [references/llm-agent-api-contracts.md](references/llm-agent-api-contracts.md) — MCP integration, AX design, agent-first patterns, LLM-consumer rules (summary-stat endpoints, language-first search, payload pruning as accuracy control)
 
 **Assets and templates:**
 - [assets/openapi-template.yaml](assets/openapi-template.yaml)

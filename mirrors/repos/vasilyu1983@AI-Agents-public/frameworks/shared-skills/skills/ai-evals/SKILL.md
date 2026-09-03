@@ -1,9 +1,9 @@
 ---
 name: ai-evals
-description: "Designs trustworthy LLM/agent evals and optimization loops. Use when building graders, calibrating judges, choosing eval/fine-tune methods, thresholds, or fixing noisy scores."
+description: "Designs trustworthy LLM, agent, responsible-AI, and multimodal evaluations. Use when measuring quality, fairness, privacy, grounding, safety, or judge reliability."
 compatibility: Portable core. Works on Claude Code and Codex.
-version: "1.3"
-last_validated: 2026-07-11
+version: "1.5"
+last_validated: 2026-08-24
 ---
 
 # AI Evaluation and Fine-Tuning Methodology Skill
@@ -65,16 +65,18 @@ trustworthy gate  ->  train / block / ship / rollback
 
 | Task | Read or Run | Outcome |
 |------|-------------|---------|
-| Build a (question, ideal-answer) set and tune it | `references/dataset-construction.md` | Sourcing, ideal-answer authoring, run→compare→tune loop |
+| Build a (question, ideal-answer) set and tune it | `references/dataset-construction.md` | Sourcing, ideal-answer authoring, run→compare→tune loop, robustness slice by perturbing memorized cases |
 | Stop a judge from rating its own output high | `references/llm-judge-bias.md` | Self-preference, position, length, verbosity controls |
 | Pick / wire an eval framework | `references/framework-integration.md` | inspect-ai, lighteval, Ragas, DeepEval, promptfoo, Braintrust integration snippets + when to use each |
 | Choose a pass threshold defensibly | `references/threshold-derivation.md` | Derive thresholds from a labeled set; inter-rater agreement; gate design |
-| Stop flaky runs reading as regressions | `references/flake-and-reproducibility.md` | pass@k, seeds, temperature, quarantine, contamination/leakage |
+| Stop flaky runs reading as regressions | `references/flake-and-reproducibility.md` | pass@k, seeds, temperature, quarantine, contamination/leakage, system-benchmark hazards (hardware lottery, thermal/background load, unreported CIs) |
 | Decide if "A beats B" is real, size the set | `references/eval-statistics.md` | Bootstrap CIs, McNemar, power/MDE sizing, FDR, variance reduction |
-| Get maximum from an LLM | `references/llm-optimization-technique-map.md` | Technique ladder across prompts, data, RAG/tools, test-time compute, SFT, preference/RFT, PEFT, distillation |
+| Get maximum from an LLM | `references/llm-optimization-technique-map.md` | Technique ladder across prompts, data, RAG/tools, test-time compute, SFT, preference/RFT, PEFT, distillation; measured case where a confidence scorer scored below no scorer |
 | Decide whether and how to fine-tune | `references/fine-tuning-eval-loop.md` | Prompt/RAG/tool baseline, SFT vs preference/RFT vs PEFT, split hygiene, promotion gates |
 | Evaluate on live/production traffic | `references/online-production-eval.md` | Offline-online correlation, A/B+guardrails, shadow/canary, drift, regression replay, HITL |
+| Turn user behavior into eval and preference data | `references/conversational-feedback-signals.md` | Implicit NL signals, action signals, edit→preference pairs, collection timing, feedback biases |
 | Evaluate refusals, jailbreaks, harm | `references/safety-redteam-eval.md` | Over/under-refusal, ASR per attack family, injection, harm rubrics, robustness |
+| Evaluate responsible or multimodal AI | `references/responsible-multimodal-evaluation.md` | Intersectional fairness, privacy/memorization/poisoning, oversight/appeals, provenance, grounding, diffusion, multimodal attacks, latency/cost |
 | Go beyond one judge | `references/advanced-judging.md` | Juries, fine-tuned judges, CoT/probability scoring, calibration (kappa/ECE), agentic reward |
 
 ## When to Use This Skill
@@ -93,6 +95,8 @@ Activate when the user asks for:
 - Getting maximum performance from an LLM using known techniques, including
   prompt/context/tool changes, test-time compute, reranking, distillation, or
   post-training
+- Testing fairness and intersectionality, differential privacy, explanations, poisoning, memorization, human oversight/appeals, watermarking/provenance, or environmental claims
+- Evaluating image-text retrieval, VQA, documents, video/audio, fusion, diffusion generation/control, multimodal safety, or multimodal latency and cost
 
 ## Scope Boundaries (Use These Skills for Depth)
 
@@ -224,13 +228,15 @@ Resources:
 - [references/llm-judge-bias.md](references/llm-judge-bias.md) - Judge bias taxonomy and controls
 - [references/framework-integration.md](references/framework-integration.md) - Framework selection and integration snippets
 - [references/threshold-derivation.md](references/threshold-derivation.md) - Deriving thresholds and gates from labeled data
-- [references/flake-and-reproducibility.md](references/flake-and-reproducibility.md) - Flake, seeds, contamination, leakage
+- [references/flake-and-reproducibility.md](references/flake-and-reproducibility.md) - Flake, seeds, contamination, leakage, system-benchmark hazards
 - [references/eval-statistics.md](references/eval-statistics.md) - Bootstrap CIs, McNemar, power/MDE, FDR, variance reduction
 - [references/llm-optimization-technique-map.md](references/llm-optimization-technique-map.md) - Maximum-performance technique ladder and eval gates
 - [references/fine-tuning-eval-loop.md](references/fine-tuning-eval-loop.md) - Eval-first fine-tuning decisions, SFT/preference/RFT/PEFT selection, split hygiene, promotion gates
 - [references/online-production-eval.md](references/online-production-eval.md) - Offline-online correlation, A/B+guardrails, drift, replay, HITL
+- [references/conversational-feedback-signals.md](references/conversational-feedback-signals.md) - Implicit/action user-feedback taxonomy, edit→preference pairs, collection timing, feedback biases
 - [references/safety-redteam-eval.md](references/safety-redteam-eval.md) - Refusal precision/recall, jailbreak/injection, harm rubrics, robustness
 - [references/advanced-judging.md](references/advanced-judging.md) - Juries, fine-tuned judges, scoring methods, calibration, agentic reward
+- [references/responsible-multimodal-evaluation.md](references/responsible-multimodal-evaluation.md) - Responsible-AI measurement and multimodal grounding, diffusion, safety/red-team, latency, and cost gates
 - [data/sources.json](data/sources.json) - Sources to verify against
 
 Related skills:

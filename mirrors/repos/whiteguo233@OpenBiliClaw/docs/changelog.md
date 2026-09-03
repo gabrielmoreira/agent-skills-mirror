@@ -6,6 +6,8 @@
 
 ## 未发布
 
+- **避免 Tailnet 测试夹具触发 Secret Scanning**：测试中的 Auth Key 模拟值不再使用形似有效凭据的连续 `tskey-auth-` 字面量；需要验证 OAuth 前缀分支的夹具改为源码中分段构造，并新增仓库回归检查，防止测试数据再次被 GitHub 误报为可能有效的 Tailscale Key。
+
 - **稳定 CI 异步心跳回归**：保存同步 watchdog 与引导初始化 heartbeat 测试改为等待数据库终态和 detached 清理等真实可观测条件，不再用固定 wall-clock sleep 推断异步任务已经完成，避免高负载 runner 上的时序假失败。
 
 - **修复 Tailnet notices 的 CI 冷缓存校验**：生成脚本新增 `--prefetch`，主 CI 在离线生成跨平台第三方依赖清单前，按同一目标矩阵和构建 tags 精确预热所需 Go 模块，避免 Linux helper 测试只下载当前平台依赖后，Windows 专属模块因 `GOPROXY=off` 被误判为 notices 失败；新增目标遍历与工作流顺序回归测试。

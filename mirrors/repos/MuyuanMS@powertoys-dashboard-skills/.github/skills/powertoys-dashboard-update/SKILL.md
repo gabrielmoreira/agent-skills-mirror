@@ -124,6 +124,7 @@ the dashboard artifact validators in the same change.
 | PR | `approve` | Submit/choose approval for a review-clean PR. | Current `head_sha`, covered `source_updated_at`, no unresolved agent findings. | Native validation still pending, queued review, owned elsewhere, re-run prompt. |
 | PR | `post_review` | Post selected code suggestions or non-blocking review comments. | Proposed comments pinned to the current head; inline comments use current RIGHT-side ranges when possible. Event must be `COMMENT`; inline-only reviews omit the overall review body. | `REQUEST_CHANGES`, a generic overall message for inline-only suggestions, general "keep checking", "complete validation", or product-direction reminders without a publishable review body. |
 | PR | `request_changes` | Post selected blocking review comments as a request-changes review. | Same evidence and current-head requirements as `post_review`. | A standalone request to run the review loop again. |
+| PR | `trigger_ci` | Post `/azp run` to request an Azure Pipelines run when live checks are failed, cancelled, timed out, stale, or missing. | Exact comment body `/azp run`; current live head/check state displayed to the maintainer; explicit confirmation before posting. | Posting while all checks pass, treating CI as a substitute for review/build evidence, or auto-posting without a maintainer click. |
 | Issue | `request_info` | Ask the reporter for specific missing evidence. | An issue-specific upstream comment that summarizes the relevant facts already supplied, explains why they are insufficient, asks for exact missing evidence, and gives the established collection method when one exists (for example, `/bugreport` for a fresh PowerToys diagnostic ZIP). | "Not now", wait, monitor, a generic checklist, or "send logs/more information" without explaining the gap. |
 | Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
 | Issue | `post_comment` | Post a close, duplicate, handled, out-of-scope, or maintainer-direction comment. | Specific rationale and linked duplicate/fix/ownership evidence when applicable. | Silent close, vague "won't fix", or no-op status comments. |
@@ -361,7 +362,7 @@ repository ownership signals, then emit one of:
 
 | `judgment.status` | Dashboard result |
 | --- | --- |
-| `actionable_design` | `Design fix` action; candidate for the bounded full-design batch |
+| `actionable_design` | Confidence-scored proposed fix plan and `Design fix` action; candidate for the bounded full-design batch |
 | `reproducible` | `Reproduce` action with maintainer-ready local verification steps |
 | `needs_information` | Draft a specific `request_info` action describing exactly what evidence is missing |
 | `duplicate_or_handled` | Link the duplicate/fix/owned work; no duplicate agent work |
@@ -369,9 +370,40 @@ repository ownership signals, then emit one of:
 | `not_actionable` | Explain feature/by-design/external/hardware/insufficient-scope reason |
 
 Each judgment must contain `rationale`, concrete `evidence`, a
-`recommended_action`, `evaluated_at`, and `source_updated_at`. Do not claim a
-root cause during the fast pass. When evidence is insufficient, prefer
-`needs_information` over a speculative design.
+`recommended_action`, `evaluated_at`, and `source_updated_at`. The fast pass
+may describe a root-cause hypothesis, but must distinguish it from confirmed
+evidence and score it honestly.
+
+Every new or substantively refreshed open bug must use `schemaVersion: 5` and
+include `fix_assessment`:
+
+- `status: proposed` when no existing fix attempt is present and a repository
+  change is applicable. Include at least one `proposed_fixes[]` entry with a
+  concrete root-cause hypothesis, ordered implementation plan, verification
+  steps, and numeric confidence.
+- `status: existing_fix` when an open/merged PR, active fork implementation, or
+  other concrete fix attempt already covers the issue. Include the public URLs
+  and explain the coverage; do not invent a competing plan.
+- `status: not_applicable` only when a PowerToys code fix is genuinely not
+  applicable, such as duplicate/handled work, expected behavior, unsupported
+  hardware/external ownership, or insufficiently scoped non-bug reports.
+
+Confidence is `0..100` and the level must match the score:
+
+- `green` (`85..100`) — the evidence almost certainly identifies the root
+  cause and fix.
+- `yellow` (`51..84`) — the plan is more likely than not, but targeted
+  reproduction or specific additional evidence would materially improve it.
+- `red` (`0..50`) — the best current hypothesis, with no more than even odds
+  that it is the correct root cause/fix.
+
+For a red plan, the updater may run a short investigator/adversary loop of one
+or two iterations before publication. Use it when focused code/history review
+can cheaply test the hypothesis. Stop after two iterations, keep the red score
+if uncertainty remains, and pair the plan with a targeted `request_info` or
+`reproduce` action when that evidence would distinguish competing causes. Do
+not force a full implementation-grade design or fabricate confidence merely to
+turn the plan yellow.
 
 Before defaulting to a request for logs or `/bugreport`, perform a focused
 initial investigation using the issue body, discussion, labels, linked issues,
@@ -381,7 +413,7 @@ a plausible root cause or fix plan with useful confidence, emit that as a
 design/fix path instead of only pushing the reporter for more information.
 
 Every new or substantively refreshed issue artifact that exposes an action must
-use `schemaVersion: 4` and include display-only `issue_context`:
+use `schemaVersion: 5` and include display-only `issue_context`:
 
 - `summary` — a concise synthesis of the report and discussion, not a copy of
   the title or issue body;
@@ -426,10 +458,11 @@ The editable `request_info` comment and display-only context must agree:
 
 When the evidence supports it, emit multiple issue actions rather than a single
 default request-info path: an `approve_design` action for the best currently
-supportable fix plan with an explicit confidence score/rationale, plus a
-`request_info` action that asks only for evidence that would materially improve
-or disprove that plan. Prefer this split for vague or long issues where the
-discussion already narrows the component but still lacks a decisive diagnostic.
+supportable fix plan, plus a `request_info` action that asks only for evidence
+that would materially improve or disprove that plan. The display-only
+`proposed_fixes[].confidence` is the canonical score shown by Pulse. Prefer
+this split for vague or long issues where the discussion already narrows the
+component but still lacks a decisive diagnostic.
 
 When an issue is already clearly reproducible from the public report or
 attachments but does not yet justify a fix design, emit a `reproduce` action
@@ -464,6 +497,13 @@ For every artifact and mapped fork trace, also detect:
 - upstream PR/issue closed, merged, superseded, or linked work appeared;
 - labels, assignee, author response, or reproduction evidence changed;
 - a fork mirror/PR was closed, merged, or replaced.
+
+For open PRs, query the current head's check runs when permissions allow.
+Classify the aggregate as passed, pending, failed, or unavailable/missing.
+Pulse may synthesize a `trigger_ci` action from this live state when the checks
+failed, were cancelled/timed out/stale, or no check run exists. Do not offer a
+rerun while checks are already pending, and never post `/azp run`
+automatically.
 
 Use focused API calls rather than downloading the whole repository:
 
@@ -638,7 +678,7 @@ Write these machine-readable fields into `data/items/<number>.json`:
 
 ```jsonc
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "evaluated_at": "UTC ISO",
   "source_updated_at": "upstream updatedAt covered by this result",
   "judgment": {
@@ -647,6 +687,29 @@ Write these machine-readable fields into `data/items/<number>.json`:
     "evidence": ["..."],
     "recommended_action": "..."
   },
+  "fix_assessment": {
+    "status": "proposed",
+    "rationale": "No existing fix attempt covers the likely failing path."
+  },
+  "proposed_fixes": [
+    {
+      "title": "Rebuild the stale activation target before launch",
+      "root_cause": "The cached target can outlive the source result and is reused during activation.",
+      "plan": [
+        "Locate the activation target cache and its invalidation boundary.",
+        "Re-resolve the target when the source result version changes.",
+        "Add focused coverage for stale-result activation."
+      ],
+      "verification": [
+        "Reproduce the original activation sequence and confirm the latest target launches."
+      ],
+      "confidence": {
+        "score": 72,
+        "level": "yellow",
+        "rationale": "The code path matches the symptom, but a reporter trace would confirm the stale-cache branch."
+      }
+    }
+  ],
   "issue_context": {
     "summary": "Concise synthesis of the report and discussion.",
     "known_information": ["Confirmed fact already present in the issue."],

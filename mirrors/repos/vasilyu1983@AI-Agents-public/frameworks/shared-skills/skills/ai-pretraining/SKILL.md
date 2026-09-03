@@ -45,7 +45,7 @@ LM Head (Linear, n_embd -> vocab_size, weight-tied to embedding)
   |
   v
 Cross-entropy loss -> Pretraining loop
-  (bf16/autocast, grad accumulation, cosine LR + warmup, checkpoint)
+  (bf16/autocast, grad accumulation, cosine or WSD LR + warmup, checkpoint)
 ```
 
 ## When to Use This Skill
@@ -69,7 +69,7 @@ Activate when the user asks about:
 - **Token/param budget, Chinchilla scaling, compute-optimal runs** -> [ai-scaling-laws](../ai-scaling-laws/SKILL.md)
 - **Dataset curation, deduplication, quality filtering for pretraining** -> [ai-data-curation-pretraining](../ai-data-curation-pretraining/SKILL.md)
 - **Evaluation harnesses, benchmark design, evals post-pretraining** -> [ai-evals](../ai-evals/SKILL.md)
-- **Mixture-of-Experts (MoE)**: swaps the dense FFN for a router + expert FFNs (DeepSeek-V2/V3, Mixtral). A frontier architectural variant, not a from-scratch fundamental. For training: [ai-distributed-training](../ai-distributed-training/SKILL.md); for serving/inference: [ai-llm-inference](../ai-llm-inference/SKILL.md).
+- **Mixture-of-Experts (MoE)**: swaps the dense FFN for a router + expert FFNs (DeepSeek-V3/V4, Qwen3-MoE, Kimi-K2, Mixtral). A frontier architectural variant, not a from-scratch fundamental. Build-time mechanics (top-k routing, load-balancing loss, expert granularity, failure modes) are taught in §5 of [Architecture Limitations and Workarounds](references/architecture-limitations-and-workarounds.md); distributed training stays with [ai-distributed-training](../ai-distributed-training/SKILL.md) and serving/inference with [ai-llm-inference](../ai-llm-inference/SKILL.md).
 - **Classification fine-tuning, instruction/SFT fine-tuning, LoRA/PEFT**: post-pretraining applications. Raschka's book covers these; this skill stops at pretraining. -> [ai-llm](../ai-llm/SKILL.md)
 
 ## Default Workflow
@@ -80,7 +80,7 @@ Activate when the user asks about:
 4. **Multi-head attention**: split heads, concatenate, project; match PyTorch `nn.MultiheadAttention` output exactly.
 5. **Transformer block**: add FFN (4x, GELU), pre-LayerNorm, residuals; match nanoGPT block.
 6. **GPT assembly**: stack N blocks, add LM head, tie weights with embedding; verify forward pass shape.
-7. **Pretraining loop**: DataLoader, cross-entropy, `torch.autocast(bf16)`, gradient accumulation, cosine LR, checkpoint.
+7. **Pretraining loop**: DataLoader, cross-entropy, `torch.autocast(bf16)`, gradient accumulation, cosine or WSD LR, checkpoint (weights *and* data position). Verify with `python3 scripts/check_loop.py` — it asserts step-0 loss ≈ `ln(vocab_size)`, that N accumulated micro-batch gradients equal the single large-batch gradient, and that causal attention rows sum to 1. Then take the throughput wins: `torch.set_float32_matmul_precision('high')` for TF32, pad `vocab_size` 50257 → 50304, and track MFU rather than tokens/sec. See [Pretraining Loop](references/pretraining-loop.md).
 8. **BPE tokenizer**: byte-level text encoding, count bigram frequencies, greedy merge loop, build vocab, encode/decode round-trip.
 9. **GPT-2 reproduction**: load OpenAI weights via HuggingFace, verify logits match, then train from scratch on FineWeb-Edu.
 9a. **Sampling**: implement temperature scaling and top-k sampling for generation; optionally add a KV-cache for inference speed (see Quick Reference).
@@ -98,6 +98,7 @@ Build GPT-2 first to understand the mechanics, then apply the deltas — the pre
 | MHA (KV heads = query heads) | GQA (fewer KV heads) | Shrinks KV cache for inference |
 | Hand-rolled softmax attention | `F.scaled_dot_product_attention` | FlashAttention kernel — `O(T)` memory, much faster |
 | AdamW for all params | Muon (2D matrices) + AdamW (embed/head/norms) | Newton-Schulz orthogonalized updates; large per-step speedup |
+| No q/k normalization | QK-Norm (RMSNorm on q/k before attention) | Bounds attention-logit growth — a stability default in new dense/MoE recipes, not just a speedrun trick (cf. Kimi K2's MuonClip QK-Clip) |
 
 Frontier reference: the `modded-nanoGPT` speedrun stacks Muon, QK-Norm, ReLU², logit softcap, and embedding-skip connections to drive GPT-2-grade FineWeb val loss to ~3.28 far below the original wall-clock on 8×H100 (record still ~3.28-target as of mid-2026, per the repo README). The record is a moving target — verify the current repo README, don't quote a fixed time. For the full from-scratch *pipeline* (tokenizer → pretrain → SFT → RL → serve), Karpathy's nanochat is the 2025 successor to nanoGPT; its headline benchmark shifted in 2026 to "time to GPT-2" (wall-clock to beat GPT-2 1.6B on DCLM CORE, 8×H100) — check the repo, not this doc, for the current number.
 
@@ -116,10 +117,10 @@ Frontier reference: the `modded-nanoGPT` speedrun stacks Muon, QK-Norm, ReLU², 
 | Gradient accumulation | accumulate N micro-batches, divide loss by N, step once | Forgetting to divide loss — effective LR N× too large |
 | bf16 autocast | `torch.autocast('cuda', dtype=torch.bfloat16)` | Using fp16 without loss scaling — NaN on older GPUs |
 | BPE merges | greedy highest-frequency pair; merge in-place, repeat | Not updating pair counts after each merge — wrong vocab |
-| Cosine LR | warmup linearly for ~1% of steps, then cosine decay to ~10% of peak | Skipping warmup — loss spike at start |
+| LR schedule | cosine: warmup linearly ~3.75% of steps (375M of 10B tokens), then cosine decay to ~10% of peak. WSD (trapezoidal) when the token budget is not fixed up front | Skipping warmup — loss spike at start |
 | Temperature | `logits / temperature` before softmax; `T<1` sharpens (more deterministic), `T>1` flattens (more random) | Applying temperature after softmax — has no effect on the distribution |
 | Top-k sampling | zero out all logits except the top-k before softmax; draw from the remaining distribution | Top-k=1 is greedy decoding; top-k=vocab_size is pure sampling |
-| KV-cache | at inference, cache K and V tensors for all past positions; on each new token only compute Q/K/V for the single new position and append to cache | Re-computing all K/V at each generation step — O(T²) cost; cache turns it O(T) |
+| KV-cache | at inference, cache K and V tensors for all past positions; on each new token only compute Q/K/V for the single new position and append to cache | Re-computing all K/V at each generation step; the cache removes the redundant *projection* work (O(T²) → O(T) for K/V), not the attention itself — scoring is still O(T) per step, so total generation stays O(T²) |
 
 ## Known Traps
 
@@ -130,7 +131,9 @@ Frontier reference: the `modded-nanoGPT` speedrun stacks Muon, QK-Norm, ReLU², 
 - **Weight tying in state_dict**: when saving checkpoints, the LM head weight is the same tensor as the embedding weight — loading requires care to avoid double-counting params.
 - **BPE encode-decode round-trip**: bytes, not characters — always encode text as UTF-8 bytes first before running BPE.
 - **DataLoader seeding**: fix random seeds for reproducibility across runs; DataLoader worker seeds need explicit `worker_init_fn`.
-- **`torch.compile` interaction**: `torch.compile` + gradient checkpointing can conflict in some PyTorch versions — test before enabling both.
+- **`torch.compile` interaction**: `torch.compile` + gradient checkpointing can conflict in some PyTorch versions — test before enabling both. A compiled model also prefixes `state_dict` keys with `_orig_mod.`, which breaks checkpoint loading into an uncompiled model.
+- **DDP gradient sync in the micro-loop**: `require_backward_grad_sync` is reset to `True` by DDP on every forward, so it must be re-assigned per micro-step (or use `model.no_sync()`). Setting it once outside the loop either all-reduces every micro-step or never syncs at all — both silent.
+- **Resuming without the data position**: restoring weights and optimizer but restarting the loader re-trains on seen shards with no error.
 
 ## Common Anti-Patterns
 
@@ -157,6 +160,12 @@ Frontier reference: the `modded-nanoGPT` speedrun stacks Muon, QK-Norm, ReLU², 
 - **[Pretraining Loop](references/pretraining-loop.md)** — training loop anatomy, mixed precision, gradient accumulation, cosine LR, checkpointing
 - **[Modern Architecture Deltas](references/modern-architecture-deltas.md)** — GPT-2 → 2026 baseline: RoPE, RMSNorm, SwiGLU, GQA, FlashAttention/SDPA, Muon and the speedrun frontier
 - **[Architecture Limitations and Workarounds](references/architecture-limitations-and-workarounds.md)** — failure-mode companion: each component's limitation → workaround → tradeoff (softmax pathologies/attention sinks, MHA→MQA→GQA→MLA + decoupled RoPE, positional design space + YaRN/NTK, MoE routing pitfalls, norm/residual/depth stability, fp8/fp4 precision, long-context, encoder/decoder/encoder-decoder contrast)
+- **[Adaptive Depth and Conditional Compute](references/adaptive-depth-and-conditional-compute.md)** — depth-axis conditional computation: Mixture-of-Depths, early exit (LayerSkip/TIDE), looped and recursive transformers (Mixture-of-Recursions, AdaPonderLM), cross-layer weight sharing (ALBERT, tied experts), modular-NN framing; lever-selection table
+- **[Structured and Low-Rank Parameterization](references/structured-and-low-rank-parameterization.md)** — replacing dense weights: low-rank, block-diagonal, butterfly, Monarch, Kronecker, BLAST; SVD-LLM/ASVD post-hoc factorization; MLA as low-rank KV; `MonarchLinear` and `BlockLowRankLinear` sketches; when it beats or composes with pruning/quantization
+
+## Scripts
+
+- **`scripts/check_loop.py`** — runnable assertions for the three claims this skill's Core Principles rest on: step-0 loss ≈ `ln(vocab_size)`, accumulated micro-batch gradient ≡ single large-batch gradient, causal attention rows sum to 1 with an all-zero strict upper triangle. Requires PyTorch (CPU is fine); exits non-zero on any failure.
 
 ## Fact-Checking
 

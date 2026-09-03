@@ -212,6 +212,7 @@ Cooperative multi-agent decision
 - Domain-agnostic primitives overview: [`references/primitives-overview.md`](references/primitives-overview.md)
 - Formal theory map and production boundaries: [`references/formal-theory-map.md`](references/formal-theory-map.md)
 - Patterns, scenarios, and traps for multi-agent / subagent design: [`references/patterns-scenarios-traps.md`](references/patterns-scenarios-traps.md)
+- Measuring the information structure you actually have — Westrum typology and the seven validated culture survey items (*Accelerate*, 2018): [`references/westrum-culture-measurement.md`](references/westrum-culture-measurement.md)
 - Sources: [`data/sources.json`](data/sources.json)
 
 ---

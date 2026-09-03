@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `atlassian/atlassian-mcp-server` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `atlassian/atlassian-mcp-server` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `atlassian/atlassian-mcp-server` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,14 +66,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/generate-status-report/scripts/jql_builder.py`](skills/generate-status-report/scripts/jql_builder.py) |
 | 6 | ✓ | [`skills/generate-status-report/SKILL.md`](skills/generate-status-report/SKILL.md) |
 | 7 | ✓ | [`skills/jira-sprint-dashboard/SKILL.md`](skills/jira-sprint-dashboard/SKILL.md) |
-| 8 | ✓ | [`skills/search-company-knowledge/SKILL.md`](skills/search-company-knowledge/SKILL.md) |
-| 9 | ✓ | [`skills/spec-to-backlog/references/breakdown-examples.md`](skills/spec-to-backlog/references/breakdown-examples.md) |
-| 10 | ✓ | [`skills/spec-to-backlog/references/epic-templates.md`](skills/spec-to-backlog/references/epic-templates.md) |
-| 11 | ✓ | [`skills/spec-to-backlog/references/ticket-writing-guide.md`](skills/spec-to-backlog/references/ticket-writing-guide.md) |
-| 12 | ✓ | [`skills/spec-to-backlog/SKILL.md`](skills/spec-to-backlog/SKILL.md) |
-| 13 | ✓ | [`skills/triage-issue/references/bug-report-templates.md`](skills/triage-issue/references/bug-report-templates.md) |
-| 14 | ✓ | [`skills/triage-issue/references/search-patterns.md`](skills/triage-issue/references/search-patterns.md) |
-| 15 | ✓ | [`skills/triage-issue/SKILL.md`](skills/triage-issue/SKILL.md) |
+| 8 | ✓ | [`skills/README.md`](skills/README.md) |
+| 9 | ✓ | [`skills/search-company-knowledge/SKILL.md`](skills/search-company-knowledge/SKILL.md) |
+| 10 | ✓ | [`skills/spec-to-backlog/references/breakdown-examples.md`](skills/spec-to-backlog/references/breakdown-examples.md) |
+| 11 | ✓ | [`skills/spec-to-backlog/references/epic-templates.md`](skills/spec-to-backlog/references/epic-templates.md) |
+| 12 | ✓ | [`skills/spec-to-backlog/references/ticket-writing-guide.md`](skills/spec-to-backlog/references/ticket-writing-guide.md) |
+| 13 | ✓ | [`skills/spec-to-backlog/SKILL.md`](skills/spec-to-backlog/SKILL.md) |
+| 14 | ✓ | [`skills/triage-issue/references/bug-report-templates.md`](skills/triage-issue/references/bug-report-templates.md) |
+| 15 | ✓ | [`skills/triage-issue/references/search-patterns.md`](skills/triage-issue/references/search-patterns.md) |
+| 16 | ✓ | [`skills/triage-issue/SKILL.md`](skills/triage-issue/SKILL.md) |
+| 17 | ✓ | [`skills/v1/capture-tasks-from-meeting-notes/references/action-item-patterns.md`](skills/v1/capture-tasks-from-meeting-notes/references/action-item-patterns.md) |
+| 18 | ✓ | [`skills/v1/capture-tasks-from-meeting-notes/SKILL.md`](skills/v1/capture-tasks-from-meeting-notes/SKILL.md) |
+| 19 | ✓ | [`skills/v1/generate-status-report/references/jql-patterns.md`](skills/v1/generate-status-report/references/jql-patterns.md) |
+| 20 | ✓ | [`skills/v1/generate-status-report/references/report-templates.md`](skills/v1/generate-status-report/references/report-templates.md) |
+| 21 | ✓ | [`skills/v1/generate-status-report/scripts/jql_builder.py`](skills/v1/generate-status-report/scripts/jql_builder.py) |
+| 22 | ✓ | [`skills/v1/generate-status-report/SKILL.md`](skills/v1/generate-status-report/SKILL.md) |
+| 23 | ✓ | [`skills/v1/jira-sprint-dashboard/SKILL.md`](skills/v1/jira-sprint-dashboard/SKILL.md) |
+| 24 | ✓ | [`skills/v1/search-company-knowledge/SKILL.md`](skills/v1/search-company-knowledge/SKILL.md) |
+| 25 | ✓ | [`skills/v1/spec-to-backlog/references/breakdown-examples.md`](skills/v1/spec-to-backlog/references/breakdown-examples.md) |
+| 26 | ✓ | [`skills/v1/spec-to-backlog/references/epic-templates.md`](skills/v1/spec-to-backlog/references/epic-templates.md) |
+| 27 | ✓ | [`skills/v1/spec-to-backlog/references/ticket-writing-guide.md`](skills/v1/spec-to-backlog/references/ticket-writing-guide.md) |
+| 28 | ✓ | [`skills/v1/spec-to-backlog/SKILL.md`](skills/v1/spec-to-backlog/SKILL.md) |
+| 29 | ✓ | [`skills/v1/triage-issue/references/bug-report-templates.md`](skills/v1/triage-issue/references/bug-report-templates.md) |
+| 30 | ✓ | [`skills/v1/triage-issue/references/search-patterns.md`](skills/v1/triage-issue/references/search-patterns.md) |
+| 31 | ✓ | [`skills/v1/triage-issue/SKILL.md`](skills/v1/triage-issue/SKILL.md) |
 
 ---
 

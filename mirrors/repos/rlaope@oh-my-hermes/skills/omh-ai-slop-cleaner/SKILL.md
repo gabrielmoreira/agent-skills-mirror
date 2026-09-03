@@ -21,7 +21,7 @@ This is a Hermes-native `ai-slop-cleaner` workflow skill.
 ## Do Not Use When
 
 - The goal is new or changed behavior rather than removing existing code; a plain refactor, feature, or fix request belongs to `ultrawork`.
-- The cleanup would change architecture, module boundaries, or carry regression risk that needs a reviewed plan first; use `ralplan`.
+- The cleanup would change architecture or module boundaries and needs its execution shaped into phases first; use `refactor-plan`, or `ralplan` when the direction itself is still contested.
 - The user wants existing code judged rather than changed; use `code-review` for a bug-first review and `failure-signal-audit` for swallowed failures.
 
 ## Examples
@@ -53,7 +53,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+12 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+13 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

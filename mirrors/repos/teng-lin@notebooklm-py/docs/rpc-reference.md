@@ -1,9 +1,16 @@
 # RPC & UI Reference
 
 **Status:** Active
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-09-02
 **Source of Truth:** `src/notebooklm/rpc/types.py` for method IDs; payload builders under `src/notebooklm/_web/` and golden tests under `tests/unit/`
-**Purpose:** Complete reference for RPC methods, UI selectors, and payload structures
+**Purpose:** Reference for the Web backend's batchexecute methods, UI selectors, and payload structures
+
+This reference is deliberately Web-specific: `RPCMethod` and
+`client.rpc_call(...)` describe the batchexecute transport even when an
+explicitly selected Android client installs native implementations for all 11
+typed namespaces. For Android gRPC method contracts, start with the
+[Android evidence index](android/README.md) and
+[`android/endpoints.md`](android/endpoints.md).
 
 > **Note:** Payload structures are extracted from the implementation builders in
 > `src/notebooklm/_web/` and pinned by golden unit tests. Each payload includes a
@@ -47,6 +54,8 @@
 | `Rytqqe` | RETRY_ARTIFACT | Retry a failed Studio artifact in place | `_web/artifacts.py` |
 | `hPTbtc` | GET_LAST_CONVERSATION_ID | Get most recent conversation ID | `_web/chat.py` |
 | `khqZz` | GET_CONVERSATION_TURNS | Get Q&A turns for a conversation | `_web/chat.py` |
+| `oXwmh` | GET_CHAT_SESSION_STATUS | Read idle/generating state and token for a chat session | `_web/chat.py` |
+| `XgrPMd` | CANCEL_GENERATION | Stop active generation for a chat session | `_web/chat.py` |
 | `J7Gthc` | DELETE_CONVERSATION | Delete a conversation (web UI's "Delete history") | `_web/chat.py` |
 | `otmP3b` | SUGGEST_PROMPTS | Get AI-suggested prompts for a notebook | `_web/notebooks.py` |
 | `CYK0Xb` | CREATE_NOTE | Create a note (placeholder) | `_web/notes.py` |
@@ -99,7 +108,9 @@
 
 ### Source Type Codes (file uploads & sources)
 
-Internal integer codes returned by `GET_NOTEBOOK` / `LIST_SOURCES` and consumed by `Source.from_api_response()` (mapped to `SourceType` in `src/notebooklm/types.py`).
+Internal integer codes returned by `GET_NOTEBOOK` / `LIST_SOURCES` and consumed by
+`Source.from_api_response()` (mapped to `SourceType` in
+`src/notebooklm/_types/sources.py`).
 
 | Code | `SourceType` | Used By |
 |------|--------------|---------|
@@ -109,19 +120,32 @@ Internal integer codes returned by `GET_NOTEBOOK` / `LIST_SOURCES` and consumed 
 | 4 | `PASTED_TEXT` | Inline pasted text |
 | 5 | `WEB_PAGE` | Web URL source |
 | 6 | `POWERPOINT` | PowerPoint upload (`.pptx`) |
+| 7 | `GOOGLE_SPREADSHEET` | Native Google Sheets source after MIME disambiguation |
 | 8 | `MARKDOWN` | Markdown file |
 | 9 | `YOUTUBE` | YouTube URL |
 | 10 | `MEDIA` | Audio / video upload |
 | 11 | `DOCX` | Word document |
+| 12 | `EXCEL` | Recovered-schema member; no reachable producer is known |
 | 13 | `IMAGE` | Image upload |
-| 14 | `GOOGLE_SPREADSHEET` | Google Sheets source **and** Drive-hosted binaries (see overload note) |
+| 14 | `GOOGLE_DRIVE` | Generic Drive source before MIME disambiguation (see note) |
+| 15 | `GMAIL` | Recovered-schema member; no reachable producer is known |
 | 16 | `CSV` | CSV upload |
 | 17 | `EPUB` | EPUB upload (added in v0.4.0) |
+| 18 | `GEMINI_CHAT` | Gemini chat source observed through Android `AddSources` |
+| 19 | `AI_MODE_CHAT` | Recovered-schema member; no reachable producer is known |
 | 20 | `EXPERT_INTELLIGENCE` | Google Play Books source added via `sources.add_play_book` (#2292); carries `ExpertIntelligenceSourceMetadata` at `metadata[18]` |
 
 > Codes outside this map are surfaced as `SourceType.UNKNOWN` and emit `UnknownTypeWarning` on first occurrence so unmapped types don't crash callers.
 
-> **Code `14` is overloaded** (live-captured #1828/#1832): the backend returns `14` for a native Google Sheet *and* for a Drive-hosted PDF. Drive sources carry no URL (`metadata[5]/[7]` are null and `metadata[0]` holds the Drive metadata block, not a URL — see `SourceRow.drive_document_id`), so the two are disambiguated by the original-content MIME at `source[7][2]`, falling back to the Drive-only MIME at `metadata[19]` / `metadata[9][2]`: `application/vnd.google-apps.spreadsheet` → `GOOGLE_SPREADSHEET`, `application/pdf` → `PDF`. See `_disambiguate_type_code` in `src/notebooklm/_types/sources.py`.
+> **Code `14` is a generic Drive code** (live-captured #1828/#1832): the backend
+> returns it for a native Google Sheet and for Drive-hosted binaries such as a
+> PDF. Drive sources carry no URL (`metadata[5]/[7]` are null and `metadata[0]`
+> holds the Drive metadata block, not a URL — see
+> `SourceRow.drive_document_id`), so recognized original-content MIME values at
+> `source[7][2]`, with a Drive-only metadata fallback, refine a Sheet to code 7
+> (`GOOGLE_SPREADSHEET`) and a PDF to code 3 (`PDF`). An absent or unrecognized
+> MIME remains `GOOGLE_DRIVE`; see `_disambiguate_type_code` in
+> `src/notebooklm/_types/sources.py`.
 
 ### Source Settings Block (`source[3]`)
 
@@ -192,7 +216,7 @@ or local convenience that has no stable web-control equivalent in the capture.
 | `SourcesAPI.get_guide/get_fulltext` | UI covered/read-derived | Opening a source exposes the source viewer, source guide toggle, title input, and source content; `get_fulltext()` is the programmatic extraction path. |
 | `SourcesAPI.wait_*`, `refresh`, `check_freshness` | Library-only/partial UI | Wait methods are polling helpers. Refresh/freshness RPCs are documented, but no stable refresh selector was captured in the current source-list/label-list state. |
 | `LabelsAPI.list/sources/generate/create/update/rename/set_emoji/add_sources/remove_sources/delete` | UI covered | Auto-label, Reorganize all sources, manual label creation, inline rename, emoji picker, delete, label panels, and source Move to label checkboxes are documented. |
-| `ChatAPI.ask/get_history/delete_conversation/configure/save_answer_as_note` | UI covered | Chat input/send, options/delete history, configure dialog, and `Save message to a note` buttons are documented. `get_conversation_id`, cache methods, and history parsing are backend/local conveniences. |
+| `ChatAPI.ask/get_history/session_status/cancel/delete_conversation/configure/save_answer_as_note` | UI covered | Chat input/send, live generation state/cancel, options/delete history, configure dialog, and `Save message to a note` buttons are documented. `get_conversation_id`, cache methods, and history parsing are backend/local conveniences. |
 | `ArtifactsAPI.generate_*`, `suggest_reports`, `list/get/get_prompt/delete/rename/share/export` | UI covered/partial | All live Studio generation tiles and option sets are documented. Artifact list/open/menu/view-prompt/share/delete selectors are covered; export/download/retry availability depends on artifact type/status. |
 | `ArtifactsAPI.download_*`, `wait_for_completion`, `poll_status`, `revise_slide`, `retry_failed` | Library-only/conditional UI | Downloads, polling, and slide revision are programmatic conveniences. Retry requires a failed artifact row; the RPC is documented but no failed-row retry selector was present in the probe. |
 | `NotesAPI.list/get/create/update/delete` | UI covered/partial | Add note, note row, note view close/title input, and note menu delete are documented. Rich body editing uses NotebookLM's internal editor; keep selectors conservative. |
@@ -1114,6 +1138,41 @@ params = [
 **Response turn structure:**
 - `turn[2] == 1`: User question — text is at `turn[3]`
 - `turn[2] == 2`: AI answer — text is at `turn[4][0][0]`
+
+---
+
+### RPC: GET_CHAT_SESSION_STATUS (oXwmh)
+
+**Source:** shared `_chat.py::ChatAPI.session_status()` selection and
+`_web/chat.py::WebChatAPI._get_session_status()` send/decode.
+
+```python
+params = [
+    None,  # 0: reserved
+    conversation_id,  # 1: chat session id
+]
+```
+
+**Response:** `[None, 1]` when idle; `[generation_token, 2]` while generating.
+Unknown status codes or a missing token in state 2 fail closed as wire drift.
+
+---
+
+### RPC: CANCEL_GENERATION (XgrPMd)
+
+**Source:** shared `_chat.py::ChatAPI.cancel()` selection and
+`_web/chat.py::WebChatAPI._cancel_generation()` send.
+
+```python
+params = [
+    None,  # 0: reserved
+    conversation_id,  # 1: chat session id
+]
+```
+
+**Response:** empty `[]`. Generation stops, but an already-open Web streaming
+HTTP response does not close; its owner must abandon the local stream after
+this RPC succeeds.
 
 ---
 
@@ -2505,10 +2564,12 @@ await rpc_call(
 
 **Source:** `_web/research.py::start()` with `mode="deep"`
 
-Start a deep research session (web only, more thorough).
+Start the Web batchexecute form of a deep research session. The public Android
+research namespace implements its native gRPC counterpart; this payload is only
+the Web wire contract.
 
 ```python
-# Deep research only supports Web (source_type=1)
+# This Web RPC's deep-research form supports only source_type=1 (Web research).
 params = [
     None,  # 0
     [1],  # 1: Fixed flag
@@ -3445,8 +3506,10 @@ params = [<context>, notebook_id]   # when a notebook id is supplied
 
 **Response:** `[[ <audio>, <video>, <slide-deck>, <report presets> ]]` — one
 `ArtifactCustomizationChoices` message whose four one-field families each hold
-`[[row, ...]]`. Format rows are `[code, title, description]` (codes match
-`AudioFormat` / `VideoFormat` / `SlideDeckFormat`); report rows are
+`[[row, ...]]`. Format rows are `[code, title, description]` (codes use
+`AudioFormat` / `VideoFormat` / `SlideDeckFormat` values), but this account/UI
+availability table is not an exhaustive enum manifest: dedicated options such
+as cinematic video may be omitted. Report rows are
 `[report_type, description, directive]`. The audio and video families (tags 1–2)
 are live-only — the APK schema declares only slides (3) and reports (4).
 Decoded via `_web/rows/customization.py`.

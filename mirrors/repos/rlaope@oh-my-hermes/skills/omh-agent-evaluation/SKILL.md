@@ -76,6 +76,9 @@ Quality bar:
 - Use the same inputs and success criteria across candidates unless the difference is the variable under test.
 - Require receipt-authenticated observed_at provenance before public parse or validation can return pass or fail.
 - Report quality, correctness, time, cost, tool coverage, verification, and review gaps separately.
+- When the question is an agent judging and improving its own output rather than comparing executors, load `omh-agent-evaluation/references/self-evaluation-loops.md` and pick the loop shape from it - reflection, evaluator-optimizer, or test-driven refinement - remembering that an executable check outranks a judge whenever one exists.
+- Declare all three stop rules before the loop runs - a maximum iteration count, a score threshold chosen in advance, and a no-improvement break - and report the iteration count, the final score, and which of the three ended the run. A loop whose only stop is that the output looks good now is a defect.
+- Write criteria before generation and score a rubric dimension by dimension beside its total: criteria derived from an output describe it instead of testing it, and a single number hides which dimension failed.
 - Recommend executor choice per scenario and confidence, not as a universal ranking.
 
 Handoff policy:
@@ -104,6 +107,7 @@ Safety rules:
 - Do not claim an executor is better from anecdotes, brand names, or unobserved runs.
 - Do not send secrets, credentials, private data, or production tasks into evaluation without explicit authority.
 - Keep benchmark design, observed run evidence, scoring, and executor selection separate.
+- A judge score is never correctness: it licenses no claim that the output is right, tested, reviewed, or shippable, and a model scoring its own output is the weakest evidence class - labelled as such, never reported as verification.
 - A signed local Hermes-child receipt proves that OMH recorded a process-sealed confirmed local dispatch event; it does not prove executor internals or protect evidence from the owning OS user.
 
 ## Runtime Evidence

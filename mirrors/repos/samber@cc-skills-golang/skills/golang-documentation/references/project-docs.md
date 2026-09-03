@@ -17,7 +17,7 @@
 
 ## README.md
 
-A LICENSE file MUST exist in every project. A README is the front page of your project. Make it simple, clear, and scannable. A copy-paste template with empty sections is available at [templates/README.md](./templates/README.md).
+A LICENSE file MUST exist in every project. The README is the project's front page — make it simple, clear, and scannable. A copy-paste template with empty sections is available at [templates/README.md](./templates/README.md).
 
 ### Section Order
 
@@ -58,7 +58,7 @@ If setup takes more than 10 minutes, add these improvements:
 
 ## Changelog
 
-CHANGELOG MUST be updated for every release. Track notable changes for each release. Use [Keep a Changelog](https://keepachangelog.com/) format. Copy the template from [templates/CHANGELOG.md](./templates/CHANGELOG.md).
+CHANGELOG MUST be updated for every release, tracking the notable changes it contains. Use [Keep a Changelog](https://keepachangelog.com/) format. Copy the template from [templates/CHANGELOG.md](./templates/CHANGELOG.md).
 
 ### Format
 
@@ -114,7 +114,7 @@ Use multi-stage builds with a minimal final image:
 
 ```dockerfile
 # Build stage
-FROM golang:1.26-alpine AS builder
+FROM golang:1.27-alpine AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download

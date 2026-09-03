@@ -358,6 +358,9 @@ and hot intake `14`. Existing repair lanes keep their
 
 ## Runtime Overrides
 
+- `EXACT_REVIEW_HOSTED_TARGET_ADMISSION_FRESH_MS`: intake's no-probe public-admission cache window (default 60,000 ms).
+- `EXACT_REVIEW_HOSTED_TARGET_ADMISSION_MAX_STALE_MS`: intake fallback after retryable probes (default 1,800,000 ms; zero disables caching; terminal probes revoke).
+- `EXACT_REVIEW_STALE_PUBLICATION_PRUNE_LIMIT`: stale-revision cleanup per alarm (default 100; zero disables).
 - `EXACT_REVIEW_PUBLICATION_RECOVERY_SUCCESSES` overrides how many consecutive
   clean publications raise the adaptive publication ceiling by one step; the
   default is 10 (clamped 1-1000). The former hardcoded 50 pinned the lane at

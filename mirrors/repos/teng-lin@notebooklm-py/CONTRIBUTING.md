@@ -31,7 +31,7 @@ playwright install chromium
 pre-commit install
 ```
 
-For full prerequisites, headless setup, optional extras (`[cookies]`, `[markdown]`, `[mcp]`, `[server]`), and platform notes, see [docs/installation.md#e-contributor](docs/installation.md#e-contributor).
+For full prerequisites, headless setup, optional extras (`[android]`, `[cookies]`, `[markdown]`, `[mcp]`, `[server]`), and platform notes, see [docs/installation.md#e-contributor](docs/installation.md#e-contributor).
 
 > **Install-doc parity.** `docs/installation.md` is the canonical install guide; this file mirrors a small contributor-focused subset. Every fenced ``bash`` block in `installation.md` must EITHER appear verbatim in `CONTRIBUTING.md`, OR be marked with `<!-- not mirrored: <reason> -->` on the line directly before its opening fence. CI enforces this via `scripts/check_ci_install_parity.py` so a stale block can't drift in unnoticed. When you edit `installation.md`, decide on the spot whether the new content also belongs in this file.
 
@@ -39,6 +39,11 @@ The `browser` extra is part of the contributor install because the default unit
 suite imports and patches `playwright.sync_api`. The command
 `uv sync --frozen --extra dev` is only the test/lint toolchain; it is not enough
 for `uv run pytest`.
+
+Android runtime work is opt-in. Add `--extra android` to the canonical
+contributor sync command when running Android tests or regenerating Android
+stubs; keep the existing `browser`, `dev`, and `markdown` extras. The `all`
+extra does not include the Android runtime.
 
 > **Architecture & testing context.** Once installed, read [docs/development.md](docs/development.md) for the layered RPC/Core/Client/CLI design, test-tree layout, and release workflow before touching `src/notebooklm/`.
 
@@ -68,7 +73,7 @@ pre-commit run --all-files                      # manual run on the whole tree (
 
 > **Caveat:** if `pre-commit install` errors with `Cowardly refusing to install hooks with core.hooksPath set`, your git is configured to use a custom hooks directory (common with Husky / nx / shared dev configs). Workaround: `git config --unset core.hooksPath` then re-run `pre-commit install`, or run `pre-commit run --all-files` manually before each commit. CI runs the same hook either way, so a clean local hook is convenience, not correctness.
 
-> **CI parity.** The local pre-commit one-liner above matches the CI **lint gate** (`uv run pre-commit run --all-files` in `.github/workflows/test.yml`). CI additionally runs the full test matrix on multiple Python versions (3.10–3.14) without coverage; the 90% coverage floor (`pytest --cov=src/notebooklm --cov-report=term-missing --cov-fail-under=90`) is asserted by the nightly workflow. The lint+test failure modes are caught locally; the multi-Python-version drift is not — `uv run pytest --cov=src/notebooklm --cov-report=term-missing --cov-fail-under=90` here uses your local Python version only.
+> **CI parity.** The local pre-commit one-liner above matches the CI **lint gate** (`uv run pre-commit run --all-files` in `.github/workflows/test.yml`). CI additionally runs a reduced 7-cell compatibility matrix on every PR — Python 3.10–3.14 on Ubuntu plus Python 3.12 on macOS and Windows — without coverage, and the nightly workflow runs the full 15-cell matrix (all three OSes across Python 3.10–3.14); the 90% coverage floor (`pytest --cov=src/notebooklm --cov-report=term-missing --cov-fail-under=90`) is asserted separately by the nightly workflow. Local tests cover only the extras you installed: MCP and REST adapter suites skip when the `mcp` and `server` extras are absent. Cross-OS and multi-Python-version drift also remains CI-only — `uv run pytest --cov=src/notebooklm --cov-report=term-missing --cov-fail-under=90` here uses only your local OS and Python version.
 
 ### Pull Request Process
 
@@ -239,7 +244,6 @@ Agents should ignore files marked `Deprecated`.
 docs/
 ├── adr/                   # Architectural Decision Records (ADRs)
 ├── architecture.md        # Layered architecture and repository map
-├── auth-cookie-lifecycle.md      # Cookie expiration mitigation strategies and keepalive loops
 ├── cli-exit-codes.md      # CLI exit-code convention (binding contract for scripts/CI)
 ├── cli-reference.md       # CLI command reference
 ├── configuration.md       # Storage, profiles, and settings

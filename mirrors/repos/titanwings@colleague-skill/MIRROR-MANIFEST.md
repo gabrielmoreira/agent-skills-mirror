@@ -2,12 +2,12 @@
 repo: titanwings/colleague-skill
 repoUrl: https://github.com/titanwings/colleague-skill.git
 refType: branch
-ref: dot-skill
+ref: distilly-plugin
 ---
 
 # Mirror Manifest
 
-Mirror of `titanwings/colleague-skill` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `titanwings/colleague-skill` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `titanwings/colleague-skill` — 26 default patterns, 0 followed patte
 |---------------|-------|
 | Repo          | `titanwings/colleague-skill` |
 | Ref Type      | `branch` |
-| Ref           | `dot-skill` |
+| Ref           | `distilly-plugin` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,38 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`prompts/celebrity/budget_unfriendly/audit.md`](prompts/celebrity/budget_unfriendly/audit.md) |
-| 2 | ✓ | [`prompts/celebrity/budget_unfriendly/persona_analyzer.md`](prompts/celebrity/budget_unfriendly/persona_analyzer.md) |
-| 3 | ✓ | [`prompts/celebrity/budget_unfriendly/persona_builder.md`](prompts/celebrity/budget_unfriendly/persona_builder.md) |
-| 4 | ✓ | [`prompts/celebrity/budget_unfriendly/research.md`](prompts/celebrity/budget_unfriendly/research.md) |
-| 5 | ✓ | [`prompts/celebrity/budget_unfriendly/synthesis.md`](prompts/celebrity/budget_unfriendly/synthesis.md) |
-| 6 | ✓ | [`prompts/celebrity/budget_unfriendly/validation.md`](prompts/celebrity/budget_unfriendly/validation.md) |
-| 7 | ✓ | [`prompts/celebrity/intake.md`](prompts/celebrity/intake.md) |
-| 8 | ✓ | [`prompts/celebrity/merger.md`](prompts/celebrity/merger.md) |
-| 9 | ✓ | [`prompts/celebrity/persona_analyzer.md`](prompts/celebrity/persona_analyzer.md) |
-| 10 | ✓ | [`prompts/celebrity/persona_builder.md`](prompts/celebrity/persona_builder.md) |
-| 11 | ✓ | [`prompts/celebrity/research.md`](prompts/celebrity/research.md) |
-| 12 | ✓ | [`prompts/correction_handler.md`](prompts/correction_handler.md) |
-| 13 | ✓ | [`prompts/intake.md`](prompts/intake.md) |
-| 14 | ✓ | [`prompts/merger.md`](prompts/merger.md) |
-| 15 | ✓ | [`prompts/persona_analyzer.md`](prompts/persona_analyzer.md) |
-| 16 | ✓ | [`prompts/persona_builder.md`](prompts/persona_builder.md) |
-| 17 | ✓ | [`prompts/relationship/intake.md`](prompts/relationship/intake.md) |
-| 18 | ✓ | [`prompts/relationship/merger.md`](prompts/relationship/merger.md) |
-| 19 | ✓ | [`prompts/relationship/persona_analyzer.md`](prompts/relationship/persona_analyzer.md) |
-| 20 | ✓ | [`prompts/relationship/persona_builder.md`](prompts/relationship/persona_builder.md) |
-| 21 | ✓ | [`prompts/work_analyzer.md`](prompts/work_analyzer.md) |
-| 22 | ✓ | [`prompts/work_builder.md`](prompts/work_builder.md) |
-| 23 | ✓ | [`SKILL.md`](SKILL.md) |
-| 24 | ✓ | [`skills/colleague/example_jiaxiu/meta.json`](skills/colleague/example_jiaxiu/meta.json) |
-| 25 | ✓ | [`skills/colleague/example_jiaxiu/persona.md`](skills/colleague/example_jiaxiu/persona.md) |
-| 26 | ✓ | [`skills/colleague/example_jiaxiu/work.md`](skills/colleague/example_jiaxiu/work.md) |
-| 27 | ✓ | [`skills/colleague/example_tianyi/meta.json`](skills/colleague/example_tianyi/meta.json) |
-| 28 | ✓ | [`skills/colleague/example_tianyi/persona.md`](skills/colleague/example_tianyi/persona.md) |
-| 29 | ✓ | [`skills/colleague/example_tianyi/work.md`](skills/colleague/example_tianyi/work.md) |
-| 30 | ✓ | [`skills/colleague/example_zhangsan/meta.json`](skills/colleague/example_zhangsan/meta.json) |
-| 31 | ✓ | [`skills/colleague/example_zhangsan/persona.md`](skills/colleague/example_zhangsan/persona.md) |
-| 32 | ✓ | [`skills/colleague/example_zhangsan/work.md`](skills/colleague/example_zhangsan/work.md) |
+| 1 | ✓ | [`plugins/claude-code/skills/distilly/SKILL.md`](plugins/claude-code/skills/distilly/SKILL.md) |
+| 2 | ✓ | [`plugins/codex/skills/distilly/SKILL.md`](plugins/codex/skills/distilly/SKILL.md) |
+| 3 | ✓ | [`plugins/shared/skills/distilly/SKILL.md`](plugins/shared/skills/distilly/SKILL.md) |
 
 ---
 

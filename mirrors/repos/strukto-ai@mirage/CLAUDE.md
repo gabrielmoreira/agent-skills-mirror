@@ -416,8 +416,9 @@ look wrong (a 6-byte file is `6` in bytes, `4` in 1 KiB blocks).
   `Mount(..., backend=MountBackend.FSKIT)` routes through macFUSE 5.x's FSKit
   shim (no kernel extension). Rules live in `fuse/backend.py` and are enforced
   at mount time: macOS-only, mountpoint must be under `/Volumes`, and every
-  mounted resource must set `SIZES_ALWAYS_KNOWN` (FSKit has no `direct_io`, so
-  a size-unknown resource would serve silent empty files). `resolve_backend`
+  mounted resource should set `SIZES_ALWAYS_KNOWN` (FSKit has no `direct_io`, so
+  a size-unknown resource serves silent empty files; `check_sizes` names such
+  mounts in a warning, it does not refuse them). `resolve_backend`
   rejects `vfs`: reaching it means a kernel mount was requested. In YAML the
   keys are `backend:` and `mountpoint:`.
   TypeScript serves fskit too: `fuse.node` links `/usr/local/lib/libfuse.2.dylib`

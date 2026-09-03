@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `flipped-aurora/gin-vue-admin` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `flipped-aurora/gin-vue-admin` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `flipped-aurora/gin-vue-admin` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursor/rules/project_rules.md`](.cursor/rules/project_rules.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

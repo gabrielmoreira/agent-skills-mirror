@@ -48,7 +48,7 @@ Use this skill when the user asks for:
 - LoRA or multi-adapter serving
 - cost reduction for self-hosted or API inference
 - benchmarking, profiling, or capacity planning
-- CPU or edge deployment with GGUF or llama.cpp
+- CPU or edge deployment with GGUF or llama.cpp, or on-device NPU (per-tensor scales, static shapes)
 
 ## Scope Boundaries
 
@@ -122,8 +122,18 @@ Need to improve inference:
     |   `- No -> continue
     |
     `- Does the model fit latency and cost targets at current precision?
-        |- No -> choose runtime-supported quantization and re-run evals
-        `- Yes -> keep the simpler stack
+        |- Yes -> keep the simpler stack
+        `- No -> walk the lever ladder in order, cheapest and least lossy first:
+            1. roofline diagnosis: memory-bandwidth-bound or compute-bound?
+               (the answer decides which of the rungs below can help at all)
+            2. batching / admission control      (lossless)
+            3. KV-cache quantization             (lossy -> eval gate)
+            4. speculative decoding              (lossless only with rejection-sampling
+                                                    verification; gate Medusa-style)
+            5. weight quantization               (lossy -> eval gate)
+            6. pruning / distillation            (lossy -> eval gate, retrain cost)
+            Each lossy rung gets its own eval gate and rollback window.
+            Change one rung at a time; stacking them hides the regression.
 ```
 
 ## Stack Guidance
@@ -163,6 +173,7 @@ Need to improve inference:
 - On TensorRT-LLM, select from the precision modes the engine documents for that stack: FP8, INT8 SmoothQuant, weight-only INT4 or INT8, GPTQ or AWQ, and NVFP4 for supported Blackwell flows.
 - On SGLang, verify model-specific quantizer support in current docs before committing to FP4, FP8, AWQ, GPTQ, or quantized KV cache.
 - For CPU or edge deployment, use GGUF with llama.cpp and tune quant level, thread count, and `n_gpu_layers` explicitly.
+- On-device NPU is not CPU/edge: most NPU runtimes want INT8/INT4 with per-tensor scales and static shapes, not group-scaled formats — see the NPU row in `references/quantization-patterns.md`.
 - After any quantization change, re-run latency, long-context, and structured-output validation before rollout.
 
 ### Expert Judgment: When Quantization Actually Hurts Quality
@@ -236,13 +247,15 @@ Need to improve inference:
 - [Serving Architectures](references/serving-architectures.md) - engine selection and serving patterns
 - [Routing And Control Planes](references/routing-and-control-planes.md) - placement, stickiness, cache-aware routing
 - [Disaggregated Inference](references/disaggregated-inference.md) - when to split prefill, encoder, or decode
-- [Quantization Patterns](references/quantization-patterns.md) - runtime-scoped precision choices
+- [Quantization Patterns](references/quantization-patterns.md) - runtime-scoped precision choices, NVFP4 vs MXFP4 (2026)
+- [Pruning and Sparsity](references/pruning-and-sparsity.md) - unstructured/N:M/structured pruning (SparseGPT, Wanda, Minitron), 2:4 hardware reality, activation sparsity, prune-vs-distill-vs-train-small, runtime support table
 - [KV Cache Optimization](references/kv-cache-optimization.md) - paging, reuse, cache dtypes, and reuse patterns
 - [Architecture and Attention Serving](references/architecture-and-attention-serving.md) - serving-time limitation→workaround for attention variants (MHA/MQA/GQA/MLA KV footprint), SSM/hybrid serving, roofline/arithmetic intensity, long-context (StreamingLLM/sliding-window/ring), RoPE-scaling-at-serve traps, SmoothQuant outliers, draft-free spec-decode, FlashAttention decode-vs-prefill
-- [MoE and Expert Parallelism](references/moe-expert-parallelism.md) - EP degree, EPLB, all-to-all topology for MoE models
+- [MoE and Expert Parallelism](references/moe-expert-parallelism.md) - precision-before-parallelism, EP degree, closed-form all-to-all volume, EPLB, routing health metrics (MaxVio, load CV, routing entropy), all-to-all topology
 - [Speculative Decoding Guide](references/speculative-decoding-guide.md) - EAGLE, MTP, draft model, Medusa algorithm families and deployment checklist
 - [Parallelism Patterns](references/parallelism-patterns.md) - TP, PP, DP, EP tradeoffs
 - [GPU Optimization Checklists](references/gpu-optimization-checklists.md) - hardware fit and production tuning
+- [GPU Node and Cluster Tuning](references/gpu-node-and-cluster-tuning.md) - decision criteria for NUMA affinity, THP, MPS vs MIG, CUDA/driver compatibility and PTX-JIT, NVLink-domain-aware Kubernetes allocation, QoS and jitter
 - [Profiling & Capacity Planning](references/profiling-and-capacity-planning.md) - benchmark design and sizing
 - [Streaming Patterns](references/streaming-patterns.md) - SSE, WebSocket, and client streaming
 - [Cost Optimization Patterns](references/cost-optimization-patterns.md) - routing, caching, batching, and FinOps

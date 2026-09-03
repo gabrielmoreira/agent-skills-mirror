@@ -320,7 +320,9 @@ Three identities are related but intentionally distinct:
 3. **CrabFleet action session**: one logical interactive session keyed by
    `<repo>:<cluster-id>`.
 
-A new Action attempt registers the same work key with CrabFleet. CrabFleet:
+A new Action attempt registers the same work key with CrabFleet. Register
+and work-state update fetches use a 15-second `AbortSignal` deadline so a
+hung CrabFleet host cannot stall the Action job. CrabFleet:
 
 - returns the existing logical session when one exists;
 - rotates the session-scoped agent token;

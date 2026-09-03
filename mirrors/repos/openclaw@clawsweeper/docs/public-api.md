@@ -74,13 +74,25 @@ reference sample contains canonical `repository`, positive `item_number`,
 closed `stage`, and closed `source` fields for repositories in
 `PUBLIC_BAY_REPOS`. It may also carry a validated action descriptor: canonical
 public repository/run/job identifiers, a canonical start timestamp, and a
-bounded ordered list of fixed step kinds and closed states. The same sample
-feeds Bay and Overview cards, search, overflow lists, and detail blades. Titles,
+bounded ordered list of fixed step kinds and closed states. A reference may
+carry a separate timing descriptor containing only `kind=queue` with the
+validated queue creation time or `kind=run` with the validated public action
+start time. These clocks are elapsed queue/run context, not inferred visual
+lane-entry times. The same sample feeds Bay and Overview cards, search,
+overflow lists, and detail blades. Titles,
 raw step names, source URLs, queries, opaque keys, failure payloads, credentials,
 tokens, and non-allowlisted repositories are not projected. The lifecycle
 route applies the same allowlist to its bounded 24-card sample and retains only
 the item reference, closed lane/state, current-revision boolean, and canonical
 timestamp.
+
+The queue response also includes `review_failure_health`, a closed one-hour
+aggregate of failed review attempts. It reports retryable and terminal counts,
+affected-target and repeated-source-identity counts, fixed stage buckets, and
+first/last timestamps. It never publishes repository, item, run, revision,
+fingerprint, path, detector, or scanner-output detail. The signed operator-only
+`/internal/exact-review/review-failures/list` route retains those bounded
+identities for incident investigation without storing raw failure text.
 
 The GitHub-egress response exposes only revision-independent closed dimensions
 and sanitized retention watermarks. `query_complete` describes retained

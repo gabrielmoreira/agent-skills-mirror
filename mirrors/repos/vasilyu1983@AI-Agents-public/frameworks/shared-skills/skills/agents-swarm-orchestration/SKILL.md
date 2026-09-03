@@ -3,7 +3,7 @@ name: agents-swarm-orchestration
 description: "Coordinates multi-agent execution across subagents, teams, and workflows. Use when planning dependency-aware fan-out, verifier passes, runtime selection, or Loop Engineering."
 compatibility: Claude Code + Codex. Claude Code Agent tool (renamed from Task in v2.1.63) plus Codex subagents — runtime-specific dispatch.
 version: "1.5"
-last_validated: 2026-08-15
+last_validated: 2026-08-27
 ---
 
 # Swarm Orchestration
@@ -18,7 +18,7 @@ Coordinate multiple workers without polluting the main thread. Use this skill af
 
 | Informal | Official primitive | Status (Aug 2026) |
 |----------|-------------------|-------------------|
-| "swarm of subagents" | **Subagents** | GA. Background by default since ~2026-07 (v2.1.195+); pin with `background` frontmatter. Can spawn their own subagents since June 2026 — chains capped at 5 levels |
+| "swarm of subagents" | **Subagents** | GA. Background behavior is mode-dependent; `background: true` forces background but `false` is not a documented foreground pin. Recursive spawn currently defaults to three layers below the main session |
 | "swarm with peer chat" | **Agent teams** | Experimental, env-gated `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Behavior churns weekly — re-verify before relying |
 | "scripted swarm" | **Dynamic workflows** | Shipped 2026-05. JS in `.claude/workflows/`; ≤1000 agents/run, 16 concurrent. The repeatable-orchestration artifact |
 | "swarm across terminals" | **Cross-session messaging** | Aug 2026, macOS/Linux. Sessions message each other without a team — lighter than teams for passing findings |
@@ -123,7 +123,7 @@ Name the pattern explicitly when proposing a design. Full detail: `../agents-sub
 | **Manager vs handoff** | Manager: lead keeps user ownership, specialists are tools. Handoff: ownership moves to specialist |
 | **Reflection / self-correction** | Dedicated evaluator is overkill; worker runs a second critique pass on its own output |
 | **Hierarchical swarm** | Portfolio-wide migrations; top-level lead coordinates sub-leads. Max depth 2; enforce interface contracts. Errors compound across levels — a sub-lead's misread of its brief propagates to every worker beneath it uncaught, so put verification at each level, not just the top |
-| **Debate-before-dispatch** | 2–4 perspective agents argue tradeoffs before interfaces freeze; output becomes part of each worker brief |
+| **Debate-before-dispatch** | 2–4 perspective agents argue tradeoffs before interfaces freeze; output becomes part of each worker brief. For contested high-stakes decisions where linear rounds stall, extend it into a **Graph of Debates** — see §Pre-Dispatch: Collaborative Debate |
 | **Planner → Generator → Evaluator** / **Blueprint** | Owned by `agents-subagents` — deterministic nodes alternating with agentic nodes |
 | **Loop-until-dry / budget-bounded loop** | Work of unknown extent where enumerating the task list *is* the job; terminates on K empty rounds or budget, never a fixed count. [references/loop-orchestration.md](references/loop-orchestration.md) |
 | **Scripted workflow** | Control flow is knowable in advance and intermediate volume is high; a script holds the loops and branching so the lead's context holds only the final answer. Claude Code only. [references/scripted-workflows.md](references/scripted-workflows.md) |
@@ -185,6 +185,31 @@ Use when: architecture affects multiple workers; tradeoffs are unclear; early di
 - Full pattern (Claude Code, Codex, Agent Teams): [`../agents-subagents/references/agent-patterns.md`](../agents-subagents/references/agent-patterns.md) §"Pattern 5: Debate Team"
 - Step-by-step setup: [`../agents-subagents/references/debate-quickstart.md`](../agents-subagents/references/debate-quickstart.md)
 - Wider method landscape: [`../ai-agents/references/agent-delivery-methods.md`](../ai-agents/references/agent-delivery-methods.md)
+
+### Extension: Graph of Debates (when linear rounds aren't enough)
+
+The default debate step is a **chain**: personas take turns, the last round is the conclusion. That shape fails when a decision is genuinely contested — one strand of argument gets buried under later rounds, and whoever speaks last effectively wins. **Graph of Debates (GoD)** is the non-linear extension of the same step, not a competing pattern: the same 2–4 personas, the same pre-freeze slot in the workflow, a different record structure.
+
+| | Linear debate (default) | Graph of Debates (extension) |
+|---|---|---|
+| Record | Ordered transcript of rounds | Arguments are **nodes**; edges are typed `supports` / `refutes` |
+| Lines of inquiry | One thread, sequential | Branch off, evolve independently, merge back when they converge |
+| Conclusion | End of the sequence | The **most well-supported cluster** in the graph, wherever it sits |
+| Cost | One session, cheap | Higher — graph upkeep plus per-node evidence grading |
+
+**Evidence-strength rubric.** "Well-supported" is not a vote count. Grade each supporting node into one of three tiers and let the tier, not the edge count, decide which cluster wins:
+
+1. **Ground truth** — firmly established and verifiable: the repo's own code, a passing test, a frozen interface contract, a spec.
+2. **Search-grounded factual evidence** — validated against an external source or real-world data (official docs, a release note, a benchmark someone actually ran).
+3. **Multi-model consensus** — several models agree during the debate. Real signal about confidence, but the weakest tier: agreement is not verification.
+
+A cluster resting entirely on tier 3 loses to a smaller cluster anchored in tier 1. This is the guardrail that stops GoD from becoming an expensive majority vote — and it pairs with the self-consistency caution above: converging drafts mean the cheap option would have done.
+
+**Use GoD when:** the decision is high-stakes and contested, an earlier linear debate ended in a stalemate or an obviously order-dependent answer, or several viable architectures each have real evidence behind them. **Stay linear when:** the interfaces are stable, the personas agree quickly, or the decision is reversible — the graph's bookkeeping is only worth it when the wrong answer is expensive to undo.
+
+**Output into the worker briefs** is unchanged: the winning cluster plus its evidence tiers becomes the decision log each worker receives. Carry the refuted branches too — a worker that rediscovers a rejected option needs to know it was considered and why it lost.
+
+Source: Gulli, *Agentic Design Patterns* (Springer, 2025), Ch. 17 — Reasoning Techniques, presenting GoD as the non-linear successor to Chain of Debates (CoD).
 
 ## Dispatch Workflow
 
@@ -250,7 +275,7 @@ For CI-safe dispatch, batch fan-out, and blueprint-style deterministic-plus-agen
 
 **3 edit-capable worker cap** applies to agents sharing a branch — tracks context-window contention and super-linear merge cost. Worktree isolation relaxes this for read-only workers but does not remove coordination overhead.
 
-**Background mode (Claude Code):** Subagents run in the background **by default** since ~July 2026 (v2.1.195+) — background is no longer the opt-in. Pin edit-capable workers to the foreground (`background: false`) so permission prompts pass through; leave read-only scans and audits on the default. Mix: edit wave foreground, read-only wave background.
+**Background mode (Claude Code):** Behavior depends on the active interaction mode. In agent-view fork mode, Claude-spawned subagents run in the background and the caller cannot request foreground execution. Pre-authorize the narrow permissions an edit worker needs, keep write ownership disjoint, and monitor completion notifications. If a blocking foreground dependency is essential, use a runtime mode that supports it and verify that surface before dispatch.
 
 Use exact model names from [references/platform-patterns.md](references/platform-patterns.md) — catalogs change faster than orchestration patterns.
 
@@ -302,8 +327,8 @@ Source: [Nav Toor — *30 Claude Code Sub-Agents I Actually Use*](https://x.com/
 | Retrying structural failures | Escalate after one retry; re-plan or involve the human |
 | Loading all tools for every worker by default | Use progressive tool loading; expand toolset only on demand |
 | Letting workers decide merge outcomes | The lead owns validation, merge order, and final synthesis |
-| Running edit-capable workers in background without pre-approving permissions | Pre-approve needed permissions at launch or use foreground for edit workers |
-| Codex `max_depth` > 1 | Keep at 1; Codex subagents must not recurse ([runtime-surfaces.md](../agents-subagents/references/runtime-surfaces.md)). Claude Code subagents *can* nest since June 2026 (chain cap 5) — keep to 2 by policy, not by platform limit |
+| Running edit-capable workers in background without pre-approving permissions | Pre-approve only the required permissions and keep file ownership disjoint; do not assume foreground can be forced on every Claude surface |
+| Relying on undocumented recursion keys or historical depth limits | Bound recursion in prompts and repository policy. Claude currently defaults to three subagent layers; Codex documents no universal `max_depth` key. Keep ordinary workers leaf-only |
 | No per-worker budget | Set token/time/tool caps at launch; budget breach → mandatory stop + escalation, not a warning log |
 | No structured telemetry | Assign run id or span id; log inputs, outputs, status, tokens, duration to one place |
 | No checkpoints on long runs | Snapshot task state, reports, and decisions at wave boundaries |
@@ -350,11 +375,11 @@ Source: [Nav Toor — *30 Claude Code Sub-Agents I Actually Use*](https://x.com/
 
 ## Fact-Checking
 
-Originally inspired by the Codex swarm playbook (am.will / LLMJunky); updated against primary platform docs. Adds per-worker budgets, structured telemetry, checkpoint/resume, and a named-patterns vocabulary. Last freshness pass: August 2026 — vocabulary aligned to the official primitives (see §Terminology), and three stale claims corrected: subagents are background by default (~2026-07, v2.1.195+), subagents can nest since June 2026 (chain cap 5), and cross-session messaging (Aug 2026) is now a distinct surface from agent teams.
+Originally inspired by the Codex swarm playbook (am.will / LLMJunky); updated against primary platform docs. Adds per-worker budgets, structured telemetry, checkpoint/resume, and a named-patterns vocabulary. Last freshness pass: 2026-08-27 — Claude background behavior is mode-dependent, recursive spawn defaults to three layers, Agent Team teammates share the lead checkout, and Codex concurrency/batch surfaces are capability-checked rather than hardcoded.
 
 Platform behavior, model names, permissions, and experimental flags change frequently — verify against official docs before final answers. Mark platform-specific guidance as unverified when web access is unavailable.
 
-Known-stale-risk items re-checked in the July 2026 pass: the Agent Teams lead-model floor (originally Opus 4.6+; current docs describe a configurable default teammate model instead — verify before assuming a hard gate still applies), and the assumption that Opus 4.7's conservative fan-out default is model-specific rather than a durable behavior carried into later frontier models (treat it as durable and re-check on every model swap; see §Explicit Fan-Out Is The Durable Default).
+Current Anthropic docs publish no Agent Teams lead-model floor. Teammate model selection is fixed at spawn; do not rely on the removed `teammateDefaultModel` setting. Re-check experimental team behavior and model fan-out behavior on every CLI or parent-model change.
 
 ## Learnings Loop
 

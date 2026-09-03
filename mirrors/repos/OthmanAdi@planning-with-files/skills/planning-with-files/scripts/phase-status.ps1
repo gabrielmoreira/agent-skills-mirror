@@ -42,10 +42,16 @@ $ErrorActionPreference = "Stop"
 function Resolve-PlanFile {
     $planRoot = Join-Path (Get-Location) ".planning"
 
+    # A set PLAN_ID is a BINDING, not a hint (issue #237). A selector that
+    # names no plan directory stops resolution instead of falling through to
+    # .active_plan and newest-by-mtime: this script reports phase state, and
+    # answering a mistyped pin with a DIFFERENT plan's phases is the same
+    # wrong-plan harm that let a typo attest the wrong file.
     if ($env:PLAN_ID) {
         $candidate = Join-Path $planRoot $env:PLAN_ID
         $planFile  = Join-Path $candidate "task_plan.md"
         if (Test-Path -LiteralPath $planFile) { return (Resolve-Path -LiteralPath $planFile).Path }
+        return $null
     }
 
     $activePointer = Join-Path $planRoot ".active_plan"
@@ -156,7 +162,11 @@ if ($validStatus -notcontains $Status) {
 
 $planFile = Resolve-PlanFile
 if (-not $planFile) {
-    Write-Error "[phase-status] No task_plan.md found. Create a plan first."
+    if ($env:PLAN_ID) {
+        Write-Error "[phase-status] PLAN_ID names no plan directory under .planning; nothing was written and no other plan was substituted."
+    } else {
+        Write-Error "[phase-status] No task_plan.md found. Create a plan first."
+    }
     exit 1
 }
 

@@ -73,6 +73,9 @@ Quality bar:
 - Name the decision, constraints, options, tradeoffs, and rejected alternatives.
 - Tie recommendations to observed evidence or mark them as assumptions.
 - Keep coding handoff disabled until strategy is accepted and code work is explicit.
+- Ask whether the decision deserves a durable record - hard to reverse, surprising without its context, and carrying a real trade-off; all three or no record, a decision note in chat is enough.
+- When a record is warranted, draft it per `omh-decide/references/decision-records.md` - the `docs/adr/` convention with Context, Drivers, Considered Options, Decision, Consequences with mitigations, and Related - and stop for the user's approval before any file is written.
+- Never edit an accepted record: status moves Proposed to Accepted to Deprecated or Superseded, supersession is a new record pointing back at the old one, and a Rejected record is kept - it is what `decision-recall` reads later.
 
 Handoff policy:
 
@@ -101,6 +104,7 @@ Safety rules:
 - Do not treat a draft recommendation as an accepted decision.
 - Keep unresolved assumptions visible.
 - Separate strategy from implementation planning unless the user asks for execution.
+- A drafted decision record stays a proposal: nothing is written under `docs/adr/` until the user approves the write.
 
 ## Runtime Evidence
 

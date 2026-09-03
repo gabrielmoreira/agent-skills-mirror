@@ -20,6 +20,18 @@ files are the run evidence for the `.do` demos.
 ## Other contents
 
 - `_lalonde_data.csv` — shared input data (LaLonde / NSW).
+- `manuscript_docx_demo.py` + `_manuscript_docx_demo/` — the **last hop**: raw
+  exhibits → a full-text Word manuscript. Every other demo here stops at tables
+  and figures, and the analysis-only export that shipped with them
+  (`_statspai_pipeline_outputs_5.2/replication/paper.docx`) is 5 tables, 0
+  figures and no prose — a table bundle, not a paper. This script feeds the same
+  committed exhibits through `skills/69-Paper-WorkFlow/scripts/assemble_manuscript_docx.py`
+  and produces `_manuscript_docx_demo/09_submission/main.docx`: body + Table 2 +
+  a figure + reference list in one file. It then runs all four Stage 9 gates
+  (deliverable contract, three-line tables, numeric anchoring, typeset drift) and
+  **exits non-zero if any fails**, so it is a gate rather than an illustration.
+  Needs the `69-Paper-WorkFlow` submodule; `pandoc` is optional (without it the
+  assembler uses its stdlib builtin writer).
 - `card-krueger-1994/` — Card & Krueger (1994) minimum-wage DiD, replicated
   from the official raw survey file (`tests/test_ck_replication.py`).
 - `card-1995-iv/` — Card (1995) returns to schooling, replicated from the

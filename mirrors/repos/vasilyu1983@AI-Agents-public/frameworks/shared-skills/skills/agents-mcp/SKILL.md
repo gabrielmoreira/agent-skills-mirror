@@ -334,6 +334,8 @@ Use:
 - do not pass MCP auth tokens through to upstream APIs
 - add server-side row limits, page sizes, timeouts, and logging
 - if deploying a hub product, rotate default credentials immediately
+- pin vetted tool definitions to a version or hash and re-verify the tool list on change — a server can add or reword tools after you approved it (dynamic capability injection, tool shadowing)
+- authorize against the invoking **user's** permissions, not only the server's, and require confirmation at sensitive sinks (external send, public write, delete, egress, production-data change) regardless of which tool invoked them
 
 Use [references/mcp-security.md](references/mcp-security.md) for the full checklist.
 

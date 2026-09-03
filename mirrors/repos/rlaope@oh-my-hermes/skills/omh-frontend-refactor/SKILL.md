@@ -23,7 +23,7 @@ This is a Hermes-native `frontend-refactor` workflow skill.
 - The target is not UI code, or the smell is generic slop, duplication, or dead code outside a component tree; use `ai-slop-cleaner`.
 - The user wants new UI built or redesigned rather than restructured; use `frontend`.
 - The user wants findings and a verdict without changing the code; use `code-review`.
-- The restructuring crosses module boundaries or changes architecture beyond the component tree; use `ralplan`.
+- The restructuring crosses module boundaries or changes architecture beyond the component tree; use `refactor-plan` for the phased execution shape, or `ralplan` first when the direction itself is still contested.
 
 ## Examples
 
@@ -54,7 +54,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+12 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+13 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

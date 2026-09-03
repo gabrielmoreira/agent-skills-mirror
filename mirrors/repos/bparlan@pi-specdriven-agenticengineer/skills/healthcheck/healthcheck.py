@@ -1,34 +1,47 @@
 #!/usr/bin/env python3
 """
-Skill Health Checker CLI Wrapper
+Healthcheck skill CLI wrapper.
 
 Entry point for the HealthCheck Skill modular architecture.
-This wrapper maintains backward compatibility while delegating to the new modular architecture.
+This wrapper maintains backward compatibility while delegating to the new modular CLI.
 """
 
 import sys
 from pathlib import Path
+import argparse
 
 # Add the script's directory to Python path to import modules from root
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-def main():
-    """Entry point that delegates to the root-level cli module."""
-    try:
-        from cli import parse_arguments, run_health_check, print_help, generate_all_reports
+# Import CLI functions directly at module level
+# from cli import (
+# parse_arguments,
+# run_health_check,
+#)
 
+# Import from the modular components
+from skills.healthcheck.cli import (
+    parse_arguments,
+    run_health_check,
+    print_help,
+    generate_all_reports,
+)
+
+def main():
+    """Entry point that delegates to the CLI module."""
+    try:
         # Parse command line arguments
         args = parse_arguments()
 
         # Check for help flag
-        if args.help_flag:
+        if getattr(args, "help_flag", False) or getattr(args, "help", False):
             print_help()
             return 0
 
         # Run health check based on arguments
         results = run_health_check(
             skill_name=args.skill_name if args.skill_name else None,
-            all_flag=args.all_flag
+            all_flag=args.all_flag,
         )
 
         # Generate all reports from the results

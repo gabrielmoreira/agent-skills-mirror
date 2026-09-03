@@ -1,6 +1,6 @@
 ---
 name: auto-empirical-research-skills
-description: Route empirical-research requests through the Auto-Empirical Research Skills catalog when this whole repository is installed as one skill in Codex, CodeBuddy, Claude Code, or another IDE. Use to choose and load the right vendored AERS skill for causal inference, econometrics, replication, data acquisition, manuscript writing, peer review and referee responses, citation checking, de-AIGC editing, or full empirical-paper workflows without reading the entire repository at once.
+description: Route empirical-research requests through the Auto-Empirical Research Skills catalog when this whole repository is installed as one skill in Codex, CodeBuddy, Claude Code, or another IDE. Use to choose and load the right vendored AERS skill for causal inference, econometrics, replication, data acquisition, manuscript writing, peer review and referee responses, citation checking, de-AIGC editing, or full empirical-paper workflows, or an end-to-end run from raw data all the way to a finished Word (.docx) manuscript, without reading the entire repository at once.
 license: CC-BY-SA-4.0
 ---
 
@@ -39,6 +39,8 @@ This table is a shortcut to the most common starting points, **not a complete in
 | Task / method | Start here |
 |---|---|
 | Full paper pipeline (orchestrator) | `skills/69-Paper-WorkFlow/` |
+| **Data → full Word `.docx` manuscript** (one run: analysis + writing + assembled deliverable) | `skills/69-Paper-WorkFlow/` — pick `manuscript.format = markdown` at its Stage 0 when the deliverable is Word; Stage 9 assembles `09_submission/main.docx` (body + tables + figures + references) and gates it |
+| Markdown / LaTeX → `.docx` conversion only (no analysis) | `skills/67-econfin-workflow-toolkit/md-to-docx/`, `skills/08-ndpvt-web-latex-document-skill/` |
 | Agent-native causal analysis (one call runs DiD / RD / IV / SCM / DML with automatic robustness gates) | `skills/00-Full-empirical-analysis-skill_StatsPAI/` |
 | DiD / staggered DiD / event study | `skills/50-brycewang-aer-skills/`, `skills/10-Jill0099-causal-inference-mixtape/`, `skills/13-scunning1975-MixtapeTools/` |
 | Instrumental variables (IV) | `skills/50-brycewang-aer-skills/`, `skills/40-py-econometrics-pyfixest/` |
@@ -85,12 +87,14 @@ Trigger phrases (any one is enough to dispatch to the orchestrator):
 - "end-to-end empirical paper"
 - "完整复现"
 - "from proposal to submission"
+- "从数据到 docx 论文全文" / "一条龙" / "出一份 Word 版论文"
+- "raw data to a finished Word manuscript"
 
 The orchestrator is **not** the right entry point for a single-task ask (e.g. "fit a DiD", "recode this variable", "write a referee report") — those are listed in the Method → where to start table above.
 
 ## Coverage Notes
 
-- `skills/69-Paper-WorkFlow/` is a **git submodule**. If its folder is empty, the copy or clone skipped submodules (`git submodule update --init` fixes a clone); fall back to the `skills/00*` flagship pipeline skills, which are vendored directly.
+- `skills/69-Paper-WorkFlow/` is a **git submodule**. If its folder is empty, the copy or clone skipped submodules (`git submodule update --init` fixes a clone); fall back to the `skills/00*` flagship pipeline skills, which are vendored directly. Those end at publication-ready tables and figures plus a Step 8.5 handoff contract (`exhibits_index.md` + `results_summary.json`); pair them with a writing skill for the manuscript itself, since assembling and gating the full `.docx` lives in the orchestrator.
 - The vendored ARIS collection (`skills/42-wanshuiyin-ARIS/`) also ships its skill set as OpenAI Codex CLI runtime ports (`skills-codex*` subtrees). Those stay on disk but are excluded from `catalog/skills.json` (see `scripts/skill_discovery.py`) — route Claude agents to the primary `skills/` tree only.
 
 ## Install Notes

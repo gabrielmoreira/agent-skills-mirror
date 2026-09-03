@@ -59,9 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`agents/curator.md`](agents/curator.md) |
-| 3 | ✓ | [`agents/reflector.md`](agents/reflector.md) |
+| 1 | ✓ | [`agents/curator.md`](agents/curator.md) |
+| 2 | ✓ | [`agents/reflector.md`](agents/reflector.md) |
+| 3 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
 
 ---
 

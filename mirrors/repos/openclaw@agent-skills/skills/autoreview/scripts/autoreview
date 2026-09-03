@@ -29,30 +29,11 @@ import time
 import unicodedata
 import urllib.parse
 from pathlib import Path, PurePosixPath
-from typing import Any, Callable, NamedTuple
+from typing import Any, BinaryIO, Callable, NamedTuple
 
 
 ENGINES = ("codex", "claude", "amp", "pi", "kimi")
 ENGINE_CHOICES = ENGINES
-SAFE_GIT_CONFIG_ARGS = (
-    "-c",
-    "core.fsmonitor=false",
-    "-c",
-    "core.pager=cat",
-    "-c",
-    "diff.external=",
-    "-c",
-    "diff.renames=false",
-    "-c",
-    "pager.diff=cat",
-    "-c",
-    "pager.log=cat",
-    "-c",
-    "pager.show=cat",
-)
-SAFE_DIFF_FLAGS = ("--no-ext-diff", "--no-textconv", "--no-renames")
-COMMIT_DIFF_FLAGS = (*SAFE_DIFF_FLAGS, "--root", "--no-commit-id", "-r")
-DIFF_HUNK_CONTENT_BOUNDARY = "\0autoreview-diff-hunk-boundary\0"
 ENGINE_GIT_CONFIG_OVERRIDES = (
     ("core.fsmonitor", "false"),
     ("core.pager", "cat"),
@@ -62,6 +43,13 @@ ENGINE_GIT_CONFIG_OVERRIDES = (
     ("pager.log", "cat"),
     ("pager.show", "cat"),
 )
+# Machine-parsed diffs require space-prefixed empty context lines.
+SAFE_GIT_CONFIG_ARGS = tuple(
+    arg for key, value in ENGINE_GIT_CONFIG_OVERRIDES for arg in ("-c", f"{key}={value}")
+) + ("-c", "diff.suppressBlankEmpty=false")
+SAFE_DIFF_FLAGS = ("--no-ext-diff", "--no-textconv", "--no-renames", "--no-color")
+COMMIT_DIFF_FLAGS = (*SAFE_DIFF_FLAGS, "--root", "--no-commit-id", "-r")
+DIFF_HUNK_CONTENT_BOUNDARY = "\0autoreview-diff-hunk-boundary\0"
 SENSITIVE_PATH_PARTS = {
     ".aws",
     ".azure",
@@ -153,7 +141,6 @@ TRACKED_TOKEN_CREDENTIAL_EXTENSIONS = {
     ".yaml",
     ".yml",
 }
-MAX_BUNDLE_TEXT_BYTES = 180_000
 MAX_REVIEW_PROMPT_BYTES = 512_000
 # Kimi takes the prompt as a single `--prompt` argv element (no stdin mode),
 # so its per-pass ceiling must respect platform argv limits: Linux caps one
@@ -179,10 +166,14 @@ class ReviewDataset(NamedTuple):
 
 class CapturedBundle(NamedTuple):
     text: str
-    truncated: bool
     paths: set[str]
     mixed: tuple[MixedPath, ...] = ()
     spans: tuple[SourceSpan, ...] = ()
+
+
+class UntrackedSources(NamedTuple):
+    files: list[str]
+    worktrees: tuple[tuple[str, object], ...] = ()
 
 
 class SourceVersion(NamedTuple):
@@ -227,14 +218,12 @@ class EvidenceFile(NamedTuple):
     label: str
     path: Path
     content: str
-    truncated: bool
     topology: tuple[tuple[int, int, int], ...]
 
 
 class EvidenceInputs(NamedTuple):
     prompt: str
     datasets: list[ReviewDataset]
-    truncated: bool
     files: list[EvidenceFile]
 
 
@@ -471,7 +460,7 @@ SCHEMA: dict[str, Any] = {
                                     "source_id": {"type": "string"},
                                     "side": {"type": "string", "enum": ["present", "removed"]},
                                     "column": {"type": "integer", "minimum": 1},
-                                    "excerpt": {"type": "string", "minLength": 1},
+                                    "excerpt": {"type": "string"},
                                 },
                             },
                         ],
@@ -494,6 +483,7 @@ def run(
     cwd: Path,
     *,
     input_text: str | None = None,
+    stdin: BinaryIO | None = None,
     check: bool = True,
     env: dict[str, str] | None = None,
     text_errors: str = SUBPROCESS_TEXT_ERRORS,
@@ -502,6 +492,7 @@ def run(
         args,
         cwd=cwd,
         input=input_text,
+        stdin=stdin,
         text=True,
         encoding=SUBPROCESS_TEXT_ENCODING,
         errors=text_errors,
@@ -545,24 +536,15 @@ def global_excludes_file(repo: Path) -> Path | None:
     home = Path(env["HOME"]).expanduser()
     if not external_env_path(repo, str(home)):
         return None
-    result = run(
-        [
-            resolve_command("git", repo),
-            "--no-optional-locks",
-            *SAFE_GIT_CONFIG_ARGS,
-            "config",
-            "--global",
-            "--path",
-            "--get",
-            "core.excludesFile",
-        ],
+    result = git_result(
         repo,
+        "config", "--global", "--path", "--get", "core.excludesFile",
         check=False,
         env=env,
     )
     if result.returncode != 0:
         return None
-    raw_path = result.stdout.strip()
+    raw_path = result.stdout.removesuffix("\n")
     if not raw_path:
         return None
     candidate = Path(raw_path).expanduser()
@@ -1447,14 +1429,16 @@ def git_result(
     repo: Path,
     *args: str,
     check: bool = True,
+    env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     try:
-        return run(
-            [resolve_command("git", repo), "--no-optional-locks", *SAFE_GIT_CONFIG_ARGS, *args],
-            repo,
-            check=check,
-            env=safe_git_env(repo),
-            text_errors="strict",
+        # Text-mode pipes alias CR/CRLF pathnames to LF and alter patch bytes.
+        # Decode the shared binary capture without newline translation.
+        result = git_bytes(repo, *args, check=check, env=env)
+        return subprocess.CompletedProcess(
+            result.args, result.returncode,
+            result.stdout.decode(SUBPROCESS_TEXT_ENCODING),
+            result.stderr.decode(SUBPROCESS_TEXT_ENCODING),
         )
     except UnicodeDecodeError as exc:
         raise SystemExit(
@@ -1474,24 +1458,12 @@ def git_path_list(repo: Path, *args: str, check: bool = True) -> list[str]:
 def repo_root() -> Path:
     start = Path.cwd().resolve()
     unsafe_root = discover_repo_root(start) or start
-    git_bin = find_command("git", unsafe_root)
-    if not git_bin:
+    if not find_command("git", unsafe_root):
         raise SystemExit("git executable not found. Install Git or add it to PATH.")
-    try:
-        result = subprocess.run(
-            [git_bin, "--no-optional-locks", *SAFE_GIT_CONFIG_ARGS, "rev-parse", "--show-toplevel"],
-            text=True,
-            encoding=SUBPROCESS_TEXT_ENCODING,
-            errors="strict",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=safe_git_env(unsafe_root),
-        )
-    except UnicodeDecodeError as exc:
-        raise SystemExit("repository root is not valid UTF-8") from exc
+    result = git_result(unsafe_root, "rev-parse", "--show-toplevel", check=False)
     if result.returncode != 0:
         raise SystemExit("autoreview must run inside a git repository")
-    return Path(result.stdout.strip()).resolve()
+    return Path(result.stdout.removesuffix("\n")).resolve()
 
 
 def discover_repo_root(start: Path) -> Path | None:
@@ -1510,12 +1482,8 @@ def current_branch(repo: Path) -> str:
 
 def is_dirty(repo: Path) -> bool:
     return bool(
-        git(
-            repo,
-            *global_excludes_git_args(repo),
-            "status",
-            "--porcelain",
-        ).strip()
+        git(repo, "status", "--porcelain", "--untracked-files=no").strip()
+        or untracked_sources(repo).files
     )
 
 
@@ -1635,6 +1603,7 @@ def git_bytes(
     repo: Path,
     *args: str,
     check: bool = True,
+    env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[bytes]:
     result = subprocess.run(
         [
@@ -1646,7 +1615,7 @@ def git_bytes(
         cwd=repo,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        env=safe_git_env(repo),
+        env=env if env is not None else safe_git_env(repo),
     )
     if check and result.returncode != 0:
         detail = (result.stderr or result.stdout).decode(
@@ -1684,78 +1653,6 @@ def safe_trufflehog_env(repo: Path) -> dict[str, str]:
     return env
 
 
-def review_pack_path_at_line(prompt: str, line_number: int) -> str:
-    current = "review pack"
-    pending_untracked = False
-    diff_header: list[str] = []
-    source_lines_remaining = 0
-    for index, raw_line in enumerate(literal_lf_lines(prompt), start=1):
-        line = raw_line.removesuffix("\n").removesuffix("\r")
-        if source_lines_remaining:
-            source_lines_remaining -= 1
-        elif line.startswith("# Prompt file: "):
-            current = line.removeprefix("# Prompt file: ").strip() or current
-        elif line.startswith("# Dataset: "):
-            current = line.removeprefix("# Dataset: ").strip() or current
-        elif line.startswith(("Source snapshot: ", "Removed source: ")):
-            try:
-                record = json.loads(line.partition(": ")[2])
-            except json.JSONDecodeError:
-                record = None
-            if isinstance(record, dict) and isinstance(record.get("path"), str):
-                current = record["path"] or current
-                count = record.get("line_count", 0)
-                if isinstance(count, int) and count > 0:
-                    source_lines_remaining = count
-        elif line == "# Untracked File":
-            pending_untracked = True
-            current = "review pack"
-        elif pending_untracked and line.startswith("path: "):
-            try:
-                path = json.loads(line.removeprefix("path: "))
-            except json.JSONDecodeError:
-                path = None
-            if isinstance(path, str) and path:
-                current = path
-            pending_untracked = False
-        elif line.startswith("diff --git "):
-            diff_header = [line]
-            current = "review pack"
-        elif diff_header and line.startswith(("--- ", "+++ ")):
-            diff_header.append(line)
-            old_path, new_path = diff_section_paths("\n".join(diff_header))
-            current = new_path or old_path or current
-        elif not diff_header and line.startswith(("--- ", "+++ ")):
-            path = diff_marker_path(line[4:])
-            if path:
-                current = path
-        elif diff_header and line.startswith("@@"):
-            old_path, new_path = diff_section_paths("\n".join(diff_header))
-            current = new_path or old_path or current
-            diff_header = []
-        if index == line_number:
-            return current
-    return current
-
-
-def trufflehog_review_pack_paths(prompt: str, output: str) -> list[str]:
-    paths: set[str] = set()
-    for line in output.splitlines():
-        try:
-            finding = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        filesystem = (
-            finding.get("SourceMetadata", {})
-            .get("Data", {})
-            .get("Filesystem", {})
-        )
-        line_number = filesystem.get("line", filesystem.get("Line"))
-        if isinstance(line_number, int) and line_number > 0:
-            paths.add(review_pack_path_at_line(prompt, line_number))
-    return sorted(paths or {"review pack"})
-
-
 def scan_outgoing_review_pack(repo: Path, prompt: str) -> None:
     trufflehog_bin = find_command("trufflehog", repo)
     if not trufflehog_bin:
@@ -1770,46 +1667,33 @@ def scan_outgoing_review_pack(repo: Path, prompt: str) -> None:
         pack_path = Path(tempdir) / "review-pack.txt"
         pack_path.write_bytes(prompt.encode("utf-8"))
         pack_path.chmod(0o600)
-        result = run(
-            [
-                trufflehog_bin,
-                "filesystem",
-                str(pack_path),
-                "--json",
-                "--no-color",
-                "--results=verified,unknown",
-                "--fail",
-                "--fail-on-scan-errors",
-                "--no-update",
-            ],
-            Path(tempdir),
-            check=False,
-            env=safe_trufflehog_env(repo),
-        )
-    if result.returncode == TRUFFLEHOG_FINDINGS_EXIT_CODE:
-        paths = trufflehog_review_pack_paths(prompt, result.stdout)
-        raise SystemExit(
-            "refusing to send review pack: TruffleHog found credentials in "
-            + ", ".join(paths)
-        )
-    if result.returncode != 0:
-        raise SystemExit(
-            "refusing to send review pack: TruffleHog could not complete the scan"
-        )
-
-
-def bounded(text: str, limit: int = 180_000) -> str:
-    if len(text) <= limit:
-        return text
-    return text[:limit] + f"\n\n[truncated at {limit} characters]\n"
-
-
-def ensure_reviewer_input_complete(reviewer: argparse.Namespace, input_truncated: bool) -> None:
-    if input_truncated:
-        raise SystemExit(
-            f"{reviewer.engine} engine refused truncated review input because it cannot recover omitted diff hunks; "
-            "reduce the change/input size"
-        )
+        scanner_env = safe_trufflehog_env(repo)
+        # Filesystem preserves read/extraction failures; stdin does not honor
+        # inline ignore tags, including decoded ones. Both must pass. A binary
+        # file descriptor preserves exact bytes and avoids stdin pipe buffering.
+        with pack_path.open("rb") as pack_input:
+            for source_args, scan_input in ((["filesystem", str(pack_path)], None), (["stdin"], pack_input)):
+                result = run(
+                    [
+                        trufflehog_bin, *source_args,
+                        "--json", "--no-color", "--results=verified,unknown",
+                        "--fail", "--fail-on-scan-errors", "--no-update",
+                    ],
+                    Path(tempdir),
+                    stdin=scan_input,
+                    check=False,
+                    env=scanner_env,
+                )
+                if result.returncode == TRUFFLEHOG_FINDINGS_EXIT_CODE:
+                    # Input headings, filenames, and scanner metadata can themselves contain credentials.
+                    raise SystemExit(
+                        "refusing to send review pack: TruffleHog found credentials; "
+                        "remove credential material from selected changes, prompt files, and datasets, then rerun"
+                    )
+                if result.returncode != 0:
+                    raise SystemExit(
+                        "refusing to send review pack: TruffleHog could not complete the scan"
+                    )
 
 
 def bounded_field(text: str, limit: int) -> str:
@@ -1850,7 +1734,9 @@ def stream_display_escape(text: str) -> str:
     )
 
 
-def read_prefix(path: Path, limit: int) -> tuple[bytes, bool]:
+def read_file_bytes(path: Path, limit: int | None = None) -> bytes:
+    # Review files are captured whole; only local auth validation supplies a
+    # limit. Prompt partitioning, not file reads, owns review capacity.
     descriptor: int | None = None
     try:
         # os.stat, not Path.stat: the follow_symlinks kwarg on pathlib needs
@@ -1872,13 +1758,12 @@ def read_prefix(path: Path, limit: int) -> tuple[bytes, bool]:
         ):
             raise OSError("file changed while opening")
         chunks: list[bytes] = []
-        remaining = limit + 1
-        while remaining:
-            chunk = os.read(descriptor, remaining)
-            if not chunk:
-                break
+        size = 0
+        while chunk := os.read(descriptor, 64 * 1024):
             chunks.append(chunk)
-            remaining -= len(chunk)
+            size += len(chunk)
+            if limit is not None and size > limit:
+                raise OSError(f"file exceeds {limit} bytes")
         after = os.fstat(descriptor)
         if (
             (opened.st_dev, opened.st_ino, opened.st_size, opened.st_mtime_ns)
@@ -1894,30 +1779,7 @@ def read_prefix(path: Path, limit: int) -> tuple[bytes, bool]:
     finally:
         if descriptor is not None:
             os.close(descriptor)
-    return data[:limit], len(data) > limit
-
-
-def read_text_with_status(path: Path, limit: int = MAX_BUNDLE_TEXT_BYTES) -> tuple[str, bool]:
-    try:
-        data, truncated = read_prefix(path, limit)
-    except SystemExit as exc:
-        return f"[unreadable: {exc}]", True
-    if b"\0" in data:
-        return "[binary file omitted]", True
-    try:
-        text = data.decode("utf-8")
-    except UnicodeDecodeError:
-        return "[non-UTF-8 file omitted]", True
-    if len(text) > limit:
-        text = text[:limit]
-        truncated = True
-    if truncated:
-        return text + f"\n\n[truncated at {limit} characters]\n", True
-    return text, False
-
-
-def read_text(path: Path, limit: int = MAX_BUNDLE_TEXT_BYTES) -> str:
-    return read_text_with_status(path, limit)[0]
+    return data
 
 
 def path_has_sensitive_part(rel: str | Path) -> bool:
@@ -2177,17 +2039,9 @@ def omit_tracked_sensitive_diff_units(
 
 
 def validate_review_patch(
-    label: str,
     paths: list[str],
     patch: str,
-    limit: int | None = None,
 ) -> str:
-    patch_bytes = len(patch.encode("utf-8"))
-    if limit is not None and patch_bytes > limit:
-        raise SystemExit(
-            f"{label} is too large to review safely "
-            f"({patch_bytes} bytes; limit {limit}); split the change into smaller review targets"
-        )
     blocked_paths = tracked_sensitive_paths(paths)
     return omit_tracked_sensitive_diff_units(patch, paths, blocked_paths)
 
@@ -2247,62 +2101,85 @@ def require_no_gitlink_diff(label: str, raw_diff: str) -> None:
         )
 
 
-def file_bundle_risk(
-    repo: Path,
-    path: Path,
-    rel: str,
-    *,
-    allow_binary_omission: bool = False,
-) -> str | None:
-    return file_bundle_snapshot(
-        repo,
-        path,
-        rel,
-        allow_binary_omission=allow_binary_omission,
-    )[2]
-
-
 def file_bundle_snapshot(
     repo: Path,
     path: Path,
     rel: str,
-    *,
-    allow_binary_omission: bool = False,
-) -> tuple[str, bool, str | None]:
+) -> tuple[str, str | None]:
     normalized = rel.replace(os.sep, "/")
     path_risk = sensitive_repo_path_risk(normalized)
     if path_risk:
-        return "", True, path_risk
+        return "", path_risk
     if path.is_symlink():
-        return "", True, "symlink"
+        return "", "symlink"
     try:
         resolved = path.resolve(strict=True)
     except OSError as exc:
-        return "", True, f"unreadable file: {exc}"
+        return "", f"unreadable file: {exc}"
     if not is_within(resolved, repo.resolve()):
-        return "", True, "path outside repository"
+        return "", "path outside repository"
     if not path.is_file():
-        return "", True, "not a regular file"
+        return "", "not a regular file"
     try:
-        data, truncated = read_prefix(path, MAX_BUNDLE_TEXT_BYTES)
+        data = read_file_bytes(path)
     except SystemExit as exc:
-        return "", True, str(exc)
+        return "", str(exc)
     if b"\0" in data:
-        if allow_binary_omission:
-            return "[binary file omitted]", True, None
-        return "", True, "binary file"
-    if truncated:
-        return "", True, "file too large to scan safely"
+        return "", "binary file"
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError:
-        return "", True, "non-UTF-8 file"
-    return text, False, None
+        return "", "non-UTF-8 file"
+    return text, None
 
 
-def collect_untracked_file_snapshots(
-    repo: Path,
-) -> tuple[list[tuple[str, str, bool]], int]:
+def linked_worktree_boundary(
+    repo: Path, path: Path, common_dir: Path, worktrees_dir: Path,
+) -> tuple[object, ...] | None:
+    git_file = path / ".git"
+    if git_file.is_symlink() or not git_file.is_file():
+        return None
+    relative_git_file = str(git_file.relative_to(repo.resolve()))
+    topology = mixed_source_topology(repo, relative_git_file)
+    before = source_file_fingerprint(git_file)
+    # Keep the original root as the executable/env trust anchor: using the
+    # child here could admit a parent-controlled bin/git from PATH.
+    results = [
+        git_result(repo, "-C", str(path), "rev-parse", flag, check=False)
+        for flag in ("--show-toplevel", "--absolute-git-dir", "--git-common-dir")
+    ]
+    if any(result.returncode != 0 for result in results):
+        return None
+    top, git_dir, child_common = (
+        (path / result.stdout.removesuffix("\n")).resolve() for result in results
+    )
+    # A listed path may be stale; its .git pointer must name a private owner
+    # from this repository's actual worktree registry, not a copied admin dir.
+    if top != path or child_common != common_dir or git_dir.parent != worktrees_dir:
+        return None
+    backlink = git_dir / "gitdir"
+    try:
+        if backlink.is_symlink():
+            return None
+        backlink_bytes = read_file_bytes(backlink)
+        target = backlink_bytes.decode("utf-8").rstrip("\r\n")
+        if (git_dir / target).resolve() != git_file:
+            return None
+        owner = git_dir.stat()
+    except (OSError, UnicodeDecodeError):
+        return None
+    if (source_file_fingerprint(git_file) != before
+            or mixed_source_topology(repo, relative_git_file) != topology):
+        raise SystemExit("worktree boundary changed while being captured")
+    # Only the boundary belongs to this snapshot. Child HEAD/index/content
+    # belong to its independent review; replacing its owner must still fence us.
+    return ("linked-worktree", str(git_dir), owner.st_dev, owner.st_ino,
+            topology, before, hashlib.sha256(backlink_bytes).hexdigest())
+
+
+def untracked_sources(
+    repo: Path, claimed_paths: list[str] | tuple[str, ...] = (),
+) -> UntrackedSources:
     files = git_path_list(
         repo,
         *global_excludes_git_args(repo),
@@ -2311,21 +2188,54 @@ def collect_untracked_file_snapshots(
         "--exclude-standard",
         "-z",
     )
+    directories = [
+        rel for rel in files
+        if rel.endswith("/") and not any(
+            claim == rel[:-1] or claim.startswith(rel) or rel.startswith(claim + "/")
+            for claim in claimed_paths
+        )
+    ]
+    if not directories:
+        return UntrackedSources(files)
+    registered = {
+        Path(record.removeprefix("worktree ")).resolve()
+        for record in git_path_list(repo, "worktree", "list", "--porcelain", "-z")
+        if record.startswith("worktree ")
+    }
+    root = repo.resolve()
+    common_dir = (root / git(repo, "rev-parse", "--git-common-dir").removesuffix("\n")).resolve()
+    worktrees_dir = (root / git(repo, "rev-parse", "--git-path", "worktrees").removesuffix("\n")).resolve()
+    worktrees = []
+    for rel in directories:
+        candidate = root / rel
+        path = candidate.resolve()
+        if (candidate.is_symlink() or path == root
+                or not is_within(path, root) or path not in registered):
+            continue
+        if boundary := linked_worktree_boundary(repo, path, common_dir, worktrees_dir):
+            worktrees.append((rel, boundary))
+    excluded = {rel for rel, _boundary in worktrees}
+    return UntrackedSources([rel for rel in files if rel not in excluded], tuple(sorted(worktrees)))
+
+
+def collect_untracked_file_snapshots(
+    repo: Path,
+    claimed_paths: list[str] | tuple[str, ...] = (),
+) -> tuple[list[tuple[str, str]], int]:
+    files = untracked_sources(repo, claimed_paths).files
     omitted = 0
-    included: list[tuple[str, str, bool]] = []
+    included: list[tuple[str, str]] = []
     for rel in files:
-        content, truncated, risk = file_bundle_snapshot(
+        content, risk = file_bundle_snapshot(
             repo,
             repo / rel,
             rel,
-            allow_binary_omission=True,
         )
         if risk:
             if (
                 sensitive_repo_path_risk(rel) is not None
                 or risk
                 in {
-                    "secret-like content",
                     "symlink",
                     "path outside repository",
                 }
@@ -2337,7 +2247,7 @@ def collect_untracked_file_snapshots(
                     f"{display_escape(rel, 500)}: {risk}"
                 )
         else:
-            included.append((rel, content, truncated))
+            included.append((rel, content))
     return included, omitted
 
 
@@ -2352,8 +2262,6 @@ def local_status(repo: Path, untracked: list[str], *, redact: bool = False) -> s
 
 def mixed_source_text(path: str, version: str, data: bytes) -> str:
     label = f"mixed source {display_escape(path, 500)} ({version})"
-    if len(data) > MAX_BUNDLE_TEXT_BYTES:
-        raise SystemExit(f"{label}: {len(data)} bytes; limit {MAX_BUNDLE_TEXT_BYTES}")
     if b"\0" in data:
         raise SystemExit(f"{label}: binary file")
     try:
@@ -2363,19 +2271,21 @@ def mixed_source_text(path: str, version: str, data: bytes) -> str:
 
 
 def git_source_version(repo: Path, path: str, ref: str | None) -> SourceVersion:
-    pathspec = f":(literal){path}"
-    if ref is None:
-        entries = git_path_list(repo, "ls-files", "--stage", "-z", "--", pathspec)
-    else:
-        entries = git_path_list(repo, "ls-tree", "-z", ref, "--", path)
+    command = ("ls-files", "--stage", "-z") if ref is None else ("ls-tree", "-z", ref)
+    entries = git_path_list(repo, "--literal-pathspecs", *command, "--", path)
+    # Directory queries return a tree or its descendants, not a blob here.
+    # Keep only exact entries, preserving their conflict stages and unsafe modes.
+    entries = [
+        metadata for metadata, actual in (entry.split("\t", 1) for entry in entries)
+        if actual == path and not (ref is not None and metadata.startswith("040000 tree "))
+    ]
     if not entries:
         return SourceVersion("absent", None, None)
     if len(entries) != 1:
         raise SystemExit(f"unmerged mixed source: {display_escape(path, 500)}")
-    metadata, actual = entries[0].split("\t", 1)
-    mode, middle, last = metadata.split()
+    mode, middle, last = entries[0].split()
     oid = middle if ref is None else last
-    if actual != path or (ref is None and last != "0") or mode not in {"100644", "100755"}:
+    if (ref is None and last != "0") or mode not in {"100644", "100755"}:
         raise SystemExit(f"unsafe mixed source mode: {display_escape(path, 500)} ({mode})")
     return SourceVersion(f"git:{oid}:{mode}", mode, None)
 
@@ -2384,12 +2294,6 @@ def read_git_source(repo: Path, path: str, version: str, source: SourceVersion) 
     if source.mode is None:
         return source
     oid = source.identity.split(":")[1]
-    size = int(git(repo, "cat-file", "-s", oid))
-    if size > MAX_BUNDLE_TEXT_BYTES:
-        raise SystemExit(
-            f"mixed source {display_escape(path, 500)} ({version}): "
-            f"{size} bytes; limit {MAX_BUNDLE_TEXT_BYTES}"
-        )
     content = mixed_source_text(path, version, git_bytes(repo, "cat-file", "blob", oid).stdout)
     return source._replace(content=content)
 
@@ -2401,7 +2305,7 @@ def mixed_source_topology(repo: Path, path: str) -> tuple[tuple[int, int, int], 
         current /= part
         try:
             info = os.stat(current, follow_symlinks=False)
-        except FileNotFoundError:
+        except (FileNotFoundError, NotADirectoryError):
             identities.append((0, 0, 0))
             break
         if stat.S_ISLNK(info.st_mode):
@@ -2410,29 +2314,29 @@ def mixed_source_topology(repo: Path, path: str) -> tuple[tuple[int, int, int], 
     return tuple(identities)
 
 
+def working_blob_stat(source: Path) -> os.stat_result | None:
+    try:
+        info = source.lstat()
+    except (FileNotFoundError, NotADirectoryError):
+        return None
+    # Directories are not Git blobs. Keep symlinks/nonregular files visible
+    # to the caller's unsafe-file checks instead of following their targets.
+    return None if stat.S_ISDIR(info.st_mode) else info
+
+
 def working_source_version(
-    repo: Path, path: str, untracked: dict[str, tuple[str, bool]] | None = None,
+    repo: Path, path: str, untracked: dict[str, str] | None = None,
 ) -> SourceVersion:
     source = repo / path
-    if not source.exists():
+    info = working_blob_stat(source)
+    if info is None:
         return SourceVersion("absent", None, None)
-    info = source.lstat()
     if not stat.S_ISREG(info.st_mode):
         raise SystemExit(f"nonregular mixed source: {display_escape(path, 500)}")
     if untracked is not None and path in untracked:
-        content, truncated = untracked[path]
-        if truncated:
-            raise SystemExit(f"incomplete mixed source: {display_escape(path, 500)} (working_tree)")
-        data = content.encode("utf-8")
+        data = untracked[path].encode("utf-8")
     else:
-        if info.st_size > MAX_BUNDLE_TEXT_BYTES:
-            raise SystemExit(
-                f"mixed source {display_escape(path, 500)} (working_tree): "
-                f"{info.st_size} bytes; limit {MAX_BUNDLE_TEXT_BYTES}"
-            )
-        data, truncated = read_prefix(source, MAX_BUNDLE_TEXT_BYTES)
-        if truncated:
-            raise SystemExit(f"mixed source grew beyond limit {MAX_BUNDLE_TEXT_BYTES}: {display_escape(path, 500)}")
+        data = read_file_bytes(source)
     content = mixed_source_text(path, "working_tree", data)
     mode = "100755" if info.st_mode & stat.S_IXUSR else "100644"
     return SourceVersion(f"sha256:{hashlib.sha256(data).hexdigest()}:{mode}", mode, content)
@@ -2464,7 +2368,7 @@ def local_patch_ownership(patch: str, paths: list[str]) -> list[tuple[str, str]]
 def capture_mixed_paths(
     repo: Path, base_ref: str | None, paths: set[str],
     staged: dict[str, str], unstaged: dict[str, str],
-    untracked: dict[str, tuple[str, bool]],
+    untracked: dict[str, str],
 ) -> tuple[MixedPath, ...]:
     records = []
     if base_ref is None:
@@ -2511,13 +2415,8 @@ def local_bundle(repo: Path, base_ref: str | None = None) -> CapturedBundle:
     if base_ref is not None:
         base_ref = validate_git_ref(repo, base_ref, "base", pin=True)
     staged_base = ("--end-of-options", base_ref) if base_ref is not None else ()
-    # Text-mode subprocess output normalizes CRLF, which cannot serve as an
-    # exact source anchor. Keep the original transition bytes in local capture.
-    try:
-        staged_patch = git_bytes(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--patch", *staged_base).stdout.decode("utf-8")
-        unstaged_patch = git_bytes(repo, "diff", *SAFE_DIFF_FLAGS, "--patch").stdout.decode("utf-8")
-    except UnicodeDecodeError:
-        raise SystemExit("refusing non-UTF-8 Git output in local patch") from None
+    staged_patch = git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--patch", *staged_base)
+    unstaged_patch = git(repo, "diff", *SAFE_DIFF_FLAGS, "--patch")
     require_no_binary_diff(
         "local staged diff",
         git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--numstat", "-z", *staged_base),
@@ -2548,8 +2447,10 @@ def local_bundle(repo: Path, base_ref: str | None = None) -> CapturedBundle:
         "--name-only",
         "-z",
     )
-    untracked_snapshots, omitted_untracked = collect_untracked_file_snapshots(repo)
-    untracked = [rel for rel, _content, _truncated in untracked_snapshots]
+    untracked_snapshots, omitted_untracked = collect_untracked_file_snapshots(
+        repo, staged_paths + unstaged_paths,
+    )
+    untracked = [rel for rel, _content in untracked_snapshots]
     omitted_tracked = len(
         tracked_sensitive_paths(staged_paths) | tracked_sensitive_paths(unstaged_paths)
     )
@@ -2567,7 +2468,7 @@ def local_bundle(repo: Path, base_ref: str | None = None) -> CapturedBundle:
         metadata = raw_records[index]
         if metadata.startswith(":") and metadata.split()[-1] == "D":
             path = raw_records[index + 1]
-            if (path not in staged_blocked_paths and os.path.lexists(repo / path)
+            if (path not in staged_blocked_paths and working_blob_stat(repo / path) is not None
                     and path not in untracked):
                 # An ignored or unsafe re-addition must not silently become an
                 # index-only review through the old untracked omission path.
@@ -2578,8 +2479,8 @@ def local_bundle(repo: Path, base_ref: str | None = None) -> CapturedBundle:
     mixed_paths = (set(staged_paths) & (set(unstaged_paths) | set(untracked))) - staged_blocked_paths - unstaged_blocked_paths
     staged_units = local_patch_ownership(staged_patch, staged_paths) if mixed_paths else []
     unstaged_units = local_patch_ownership(unstaged_patch, unstaged_paths) if mixed_paths else []
-    staged_patch = validate_review_patch("local staged diff", staged_paths, staged_patch)
-    unstaged_patch = validate_review_patch("local unstaged diff", unstaged_paths, unstaged_patch)
+    staged_patch = validate_review_patch(staged_paths, staged_patch)
+    unstaged_patch = validate_review_patch(unstaged_paths, unstaged_patch)
     parts = [
         "# Git Status",
         local_status(
@@ -2613,11 +2514,9 @@ def local_bundle(repo: Path, base_ref: str | None = None) -> CapturedBundle:
             ),
         ]
         owned_parts = {index + 3: value for index, value in owned_parts.items()}
-    input_truncated = False
     if untracked:
         parts.append("# Untracked Files")
-        for rel, content, truncated in untracked_snapshots:
-            input_truncated = input_truncated or truncated
+        for rel, content in untracked_snapshots:
             records = literal_lf_lines(content) or [""]
             parts.append(
                 "# Untracked File\n"
@@ -2649,10 +2548,10 @@ def local_bundle(repo: Path, base_ref: str | None = None) -> CapturedBundle:
         offset += utf8_size(part) + 2
     mixed = capture_mixed_paths(
         repo, base_ref, mixed_paths, transitions["index"], transitions["working_tree"],
-        {path: (content, truncated) for path, content, truncated in untracked_snapshots},
+        dict(untracked_snapshots),
     ) if mixed_paths else ()
     paths = (set(staged_paths) - staged_blocked_paths) | (set(unstaged_paths) - unstaged_blocked_paths)
-    return CapturedBundle("\n\n".join(parts), input_truncated, paths | set(untracked), mixed, tuple(spans))
+    return CapturedBundle("\n\n".join(parts), paths | set(untracked), mixed, tuple(spans))
 
 
 def source_file_fingerprint(
@@ -2660,7 +2559,7 @@ def source_file_fingerprint(
 ) -> tuple[str, int, int, str]:
     try:
         before = os.stat(path, follow_symlinks=False)
-    except FileNotFoundError:
+    except (FileNotFoundError, NotADirectoryError):
         return "missing", 0, 0, ""
     file_mode = stat.S_IMODE(before.st_mode)
     if stat.S_ISLNK(before.st_mode):
@@ -2790,16 +2689,9 @@ def source_tree_snapshot(
         if record and "\t" in record
         for metadata, rel in (record.split("\t", 1),)
     }
-    untracked = git_path_list(
-        repo,
-        *global_excludes_git_args(repo),
-        "ls-files",
-        "--others",
-        "--exclude-standard",
-        "-z",
-    )
-    fingerprints = []
-    for rel in sorted(set(tracked + untracked)):
+    untracked = untracked_sources(repo, tracked)
+    fingerprints = list(untracked.worktrees)
+    for rel in sorted(set(tracked + untracked.files)):
         fingerprints.append((
             rel,
             source_tree_snapshot(repo / rel, progress)
@@ -2809,7 +2701,7 @@ def source_tree_snapshot(
         ))
         if progress is not None:
             progress.advance(files=1)
-    return head, index_entries, tuple(fingerprints)
+    return head, index_entries, tuple(sorted(fingerprints))
 
 
 def branch_bundle(repo: Path, base_ref: str) -> CapturedBundle:
@@ -2860,7 +2752,6 @@ def branch_bundle(repo: Path, base_ref: str) -> CapturedBundle:
     )
     omitted_tracked = bool(tracked_sensitive_paths(branch_paths))
     branch_patch = validate_review_patch(
-        "branch diff",
         branch_paths,
         branch_patch,
     )
@@ -2882,7 +2773,7 @@ def branch_bundle(repo: Path, base_ref: str) -> CapturedBundle:
             ),
             branch_patch,
         ]
-    ), False, set(branch_paths) - tracked_sensitive_paths(branch_paths))
+    ), set(branch_paths) - tracked_sensitive_paths(branch_paths))
 
 
 def commit_diff_refs(repo: Path, commit_ref: str) -> tuple[str, ...]:
@@ -2926,7 +2817,7 @@ def commit_bundle(repo: Path, commit_ref: str) -> CapturedBundle:
         git(repo, "diff-tree", *COMMIT_DIFF_FLAGS, "--raw", "-z", *refs),
     )
     blocked_paths = tracked_sensitive_paths(commit_paths)
-    commit_patch = validate_review_patch("commit diff", commit_paths, commit_patch)
+    commit_patch = validate_review_patch(commit_paths, commit_patch)
     commit_summary = REVIEW_SECURITY_OMISSION
     if not blocked_paths:
         commit_summary = git(repo, "show", "--no-patch", "--format=fuller", refs[-1])
@@ -2942,7 +2833,7 @@ def commit_bundle(repo: Path, commit_ref: str) -> CapturedBundle:
         ]
     )
     paths = set(commit_paths) - blocked_paths
-    return CapturedBundle(text, False, paths)
+    return CapturedBundle(text, paths)
 
 
 def build_bundle(repo: Path, target: str, target_ref: str | None, commit_ref: str) -> CapturedBundle:
@@ -2954,7 +2845,7 @@ def build_bundle(repo: Path, target: str, target_ref: str | None, commit_ref: st
     return commit_bundle(repo, commit_ref)
 
 
-def validate_evidence_file(repo: Path, raw_path: str, label: str) -> tuple[Path, str, bool]:
+def validate_evidence_file(repo: Path, raw_path: str, label: str) -> tuple[Path, str]:
     original = Path(raw_path)
     if original.is_absolute() or ".." in original.parts or not original.parts:
         raise SystemExit(f"{label} must be a repo-relative path: {raw_path}")
@@ -2967,10 +2858,10 @@ def validate_evidence_file(repo: Path, raw_path: str, label: str) -> tuple[Path,
     if not is_within(path, repo.resolve()):
         raise SystemExit(f"{label} must be inside the reviewed repository: {raw_path}")
     rel = str(path.relative_to(repo.resolve()))
-    content, truncated, risk = file_bundle_snapshot(repo, path, rel)
+    content, risk = file_bundle_snapshot(repo, path, rel)
     if risk:
         raise SystemExit(f"refusing to include unsafe {label}: {rel} ({risk})")
-    return path, content, truncated
+    return path, content
 
 
 def evidence_topology(repo: Path, raw_path: str) -> tuple[tuple[int, int, int], ...]:
@@ -2996,10 +2887,10 @@ def capture_evidence_file(repo: Path, raw_path: str, label: str) -> EvidenceFile
     if original.is_absolute() or ".." in original.parts or not original.parts:
         raise SystemExit(f"{label} must be a repo-relative path: {raw_path}")
     before = evidence_topology(repo, raw_path)
-    path, content, truncated = validate_evidence_file(repo, raw_path, label)
+    path, content = validate_evidence_file(repo, raw_path, label)
     if evidence_topology(repo, raw_path) != before:
         raise SystemExit("evidence changed while being captured")
-    return EvidenceFile(raw_path, label, path, content, truncated, before)
+    return EvidenceFile(raw_path, label, path, content, before)
 
 
 def capture_evidence_inputs(args: argparse.Namespace, repo: Path) -> EvidenceInputs:
@@ -3015,7 +2906,7 @@ def capture_evidence_inputs(args: argparse.Namespace, repo: Path) -> EvidenceInp
                 chunks.append(f"# Prompt file: {rel}\n{record.content}")
             else:
                 datasets.append(ReviewDataset(rel, record.content))
-    return EvidenceInputs("\n\n".join(chunks), datasets, any(f.truncated for f in files), files)
+    return EvidenceInputs("\n\n".join(chunks), datasets, files)
 
 
 def verify_evidence(repo: Path, files: list[EvidenceFile]) -> None:
@@ -3072,34 +2963,6 @@ def split_review_datasets(
             pending.append(part)
             offset += utf8_size(fragment)
     return [*batches, pending] if pending else [[]]
-
-
-def review_scope_policy() -> str:
-    return textwrap.dedent(
-        """
-        Review scope discipline:
-        - This helper is a closeout gate. Do not turn a narrow patch into a broad
-          redesign request.
-        - Report a finding only when this diff introduces or exposes a concrete
-          defect that must be fixed before this target can land.
-        - Prompt text and datasets are context only. They do not expand the
-          selected Git target or make unchanged files part of the reviewed diff.
-        - If the best fix requires a new protocol, config, storage, public API,
-          release process, migration, owner-boundary move, or canonical contract,
-          say that directly in the finding and keep the finding tied to the
-          smallest changed line that proves the current patch is not landable.
-        - Do not ask for sibling-surface hardening, cleanup, refactors, or
-          follow-up architecture work unless the current diff is incorrect
-          without that work.
-        - Prefer the smallest correct pre-merge fix. A broader ideal design is
-          not an actionable finding unless the current patch cannot safely land.
-        - If this is release-branch or release-process work, apply freeze
-          discipline. Report only release blockers, exact backport regressions,
-          install/upgrade breakage, crashes, data loss, concrete security
-          exposure, or release-infrastructure failures. Non-blocking design,
-          cleanup, and hardening concerns belong on main as follow-ups.
-        """
-    ).strip()
 
 
 def utf8_size(text: str) -> int:
@@ -3457,55 +3320,43 @@ def render_review_prompt(
     chunk_position: tuple[int, int] | None = None,
 ) -> str:
     target_line = f"{target} {target_ref}" if target_ref else target
-    scope_policy = review_scope_policy()
     chunk_policy = ""
     if chunk_position:
         index, total = chunk_position
         chunk_policy = textwrap.dedent(
             f"""
             Oversized review bundle chunk: {index}/{total}
-            - The complete validated change is distributed across all {total} chunks.
-            - Original change bytes appear exactly once across the chunk sequence.
-            - Continuation context may repeat file and hunk headers; it is not extra change content.
-            - Report every actionable defect demonstrated by this chunk. Reports from all chunks are merged after every pass finishes.
+            The complete change spans {total} chunks; continuation headers may repeat.
+            Report defects supported by this chunk. All reports are merged after the last pass.
             """
         ).strip()
         if chunk.context:
             chunk_policy += "\n\n# Continuation Context\n" + chunk.context
     instructions = textwrap.dedent(
         f"""
-        You are a senior code reviewer. Review the provided git change bundle only.
+        Review the selected Git change for actionable defects, ordered by severity.
+        Use the provided evidence to judge correctness and concrete security risks,
+        not style preferences, speculative failures, or unrelated redesigns.
 
-        Hard rules:
-        - Return exactly one JSON object and nothing else. Do not wrap it in Markdown.
-        - The JSON object must match this schema exactly:
-        {json.dumps(SCHEMA, indent=2)}
-        - Do not modify files.
-        - Do not invoke nested reviewers or review tools.
-        - Forbidden nested review commands include: codex review, autoreview, claude review, oracle review.
-        - The review sandbox is intentionally empty. The change bundle and explicit prompt or datasets are the only reviewed-repository source. Read-only tools cannot access unchanged repository files.
-        - You may use read-only tools and web search to inspect external dependency contracts, upstream docs, current public behavior, and security implications.
-        - Do not report a missing import, symbol, definition, call site, config entry, or other unchanged context solely because it is absent from the change bundle. Such a finding requires direct proof in the bundle or explicit datasets.
-        - Shell commands, if available, must be read-only inspection commands. Do not run tests, formatters, package installs, generators, network mutation commands, git mutation commands, or commands that write files.
-        - Report only actionable defects introduced or exposed by this change.
-        - Historical attribution requires raw commit parents and a verified parent-relative patch that changed the implicated behavior before saying "introduced by". Blame, commit subjects, PR metadata, and ownership hints locate candidates; they are not introduction proof.
-        - Blame ^sha, porcelain boundary, and shallow/grafted history alone are not introduction proof; --root can hide boundary markers. Available raw parents permit explicit comparison, but missing parents or an unverifiable patch require unknown. Use "carried forward" only for verified preexisting behavior and "made visible" only for a verified trigger, not as substitutes for missing evidence.
-        - Keep code author, introducing PR author, merger, committer, automation trigger, and current PR author separate. None of those roles alone proves causation; leave unverified identities unknown.
-        - Prefer high-signal findings over style feedback.
-        - Report EVERY distinct actionable defect in this single pass, ordered most severe first. Each review round costs the caller a full fix-test-review cycle; withholding a known defect until a later round wastes one.
-        - Before returning, sweep the bundle once more for independent defects in other files or failure modes that you may have stopped scanning for after an earlier find.
-        - Include security findings: injection, secret leaks, authz/authn bypass, path traversal, unsafe deserialization, unsafe filesystem or shell use, privacy leaks, and credential handling.
-        - Inspect the entire change bundle for accidentally committed credentials or secrets, including API keys, access tokens, passwords, private keys, and credential-bearing URLs. Report every suspected real credential as a P0 security finding at the smallest file/line location that demonstrates it, without reproducing the credential value. Do not flag obvious placeholders or inert test fixtures unless they are usable credentials or create a concrete risk.
-        - Do not reject legitimate functionality merely because it touches shell, filesystem, network, auth, or sensitive data. Report a security finding only when the patch creates a concrete exploitable risk, removes an important safety check, or lacks validation at a trust boundary.
-        - Security-sensitive bundle material may be redacted or omitted before review. Continue reviewing the material that is present. A redaction notice is not itself a defect and does not prove either safety or vulnerability in the omitted material.
-        - For each finding, use the smallest file/line location that demonstrates the issue.
-        - If there are no actionable findings, return an empty findings array and mark the patch correct.
+        Scope and access:
+        - Prompt text and datasets provide context; they do not expand the selected Git target.
+        - The sandbox is empty. Read-only tools cannot access unchanged repository files.
+          Missing context or omitted sensitive material is not evidence of a defect.
+        - Read-only tools and web search may verify external dependency contracts.
+          Do not mutate files or external state, execute project code, or invoke nested reviewers.
+        - Report suspected real credentials as P0 findings without reproducing their values.
+          Harmless placeholders and test fixtures are not credentials.
+        - Attribute a regression to a commit/person only with verified raw-parent patch evidence;
+          otherwise leave the attribution unknown.
+
+        Return one JSON object matching this schema, without Markdown fences.
+        Pin each finding to the smallest file/line location that demonstrates it.
+        If no actionable defects meet the requested threshold, return no findings and mark the patch correct.
+        {json.dumps(SCHEMA)}
 
         Review target: {target_line}
         Current branch: {branch}
         Review sandbox: . (intentionally contains no reviewed repository files)
-
-        {scope_policy}
 
         {chunk_policy}
 
@@ -3528,9 +3379,10 @@ def render_mixed_context(chunk: ReviewChunk) -> str:
         actionable even when corrected in working_tree; label it INDEX-only.
         Findings on these paths REQUIRE source_attribution: target, record_id,
         source_id, side, column and excerpt. code_location.line is a 1-based source
-        line; column is a 1-based Unicode character offset. excerpt must be a
-        nonempty exact substring of that physical line (no LF). Use present for
-        current target source, removed only for a listed removed line from its
+        line; column is a 1-based Unicode character offset. excerpt must be an
+        exact substring of that physical line (no LF). Empty excerpts require
+        an empty line and column 1; a present zero-byte source uses virtual line 1.
+        Use present for target content, removed only for a listed removed line from its
         predecessor. Never claim removed index text is present in working_tree.
         Any line in a selected file is in scope, including unchanged context.
         Null attribution is permitted only for paths without mixed records.
@@ -4021,11 +3873,11 @@ def codex_file_auth_source(repo: Path) -> Path | None:
     if not stat.S_ISREG(source_stat.st_mode):
         return None
     try:
-        data, truncated = read_prefix(source_auth, 1_000_000)
+        data = read_file_bytes(source_auth, 1_000_000)
         parsed = json.loads(data)
     except (OSError, SystemExit, json.JSONDecodeError):
         return None
-    if truncated or not isinstance(parsed, dict):
+    if not isinstance(parsed, dict):
         return None
     return source_auth
 
@@ -5846,7 +5698,6 @@ def validate_attribution_shape(value: Any, index: int) -> None:
     if (value["target"] not in {"index", "working_tree"}
             or value["side"] not in {"present", "removed"}
             or not all(isinstance(value[key], str) for key in ("record_id", "source_id", "excerpt"))
-            or not value["excerpt"]
             or not isinstance(value["column"], int) or isinstance(value["column"], bool)
             or value["column"] < 1):
         raise SystemExit(f"finding {index} has invalid source_attribution")
@@ -5876,13 +5727,15 @@ def mixed_attribution_error(
             return "anchor is not a genuinely removed line of this transition"
         text = lines[line]
     else:
-        lines = literal_lf_lines(source.content or "")
+        # Present empty blobs still need a file-level anchor; absent sources were rejected above.
+        lines = literal_lf_lines(source.content or "") or [""]
         if line > len(lines):
             return "source anchor line is out of range"
         text = lines[line - 1].removesuffix("\n")
     column = attribution["column"] - 1
     excerpt = attribution["excerpt"]
-    if "\n" in excerpt or text[column:column + len(excerpt)] != excerpt:
+    if ((not excerpt and (text != "" or column != 0))
+            or "\n" in excerpt or text[column:column + len(excerpt)] != excerpt):
         return "source anchor excerpt does not match exactly at line/column"
     return None
 
@@ -5951,9 +5804,9 @@ def _validate_report(
                 f"{sorted(location)}"
             )
         raw_file_path = location.get("file_path")
-        if not isinstance(raw_file_path, str) or not raw_file_path.strip():
+        if not isinstance(raw_file_path, str) or not raw_file_path:
             raise SystemExit(f"finding {index} has invalid location: {location}")
-        raw_rel = raw_file_path.strip()
+        raw_rel = raw_file_path
         normalized_rel = raw_rel if raw_rel in changed_paths else raw_rel.replace("\\", "/")
         while normalized_rel.startswith("./"):
             normalized_rel = normalized_rel[2:]
@@ -6490,23 +6343,13 @@ def dry_run_preflight(
     target: str,
     target_ref: str | None,
 ) -> int:
-    """Validate what upstream can check before a real run without
-    contacting any review engine: that the review bundle can be built for
-    the chosen target, that --prompt-file and --dataset inputs resolve
-    and pass the same repo-relative/existence checks the real run applies
-    via capture_evidence_inputs, that the assembled prompt(s) pass
-    the same aggregate-size/partition and truncation-refusal checks the
-    real run applies via build_review_prompts/ensure_reviewer_input_complete
-    and the same fail-closed TruffleHog scan of each exact outgoing prompt
-    used by a real run, and that each configured reviewer's CLI binary resolves and
-    its configuration (including, for Kimi, load_kimi_review_config and
-    validate_kimi_runtime_auth_sources, and for Claude, the tool
-    inventory) is one a real run would actually accept. Returns the
-    process exit status: 0 when every check passes, 1 otherwise.
+    """Build, scan and verify real review inputs, then probe reviewer startup.
+
+    Never contact a review provider. Return 0 only when every check passes.
     """
     ok = True
     inputs_ok = True
-    evidence = EvidenceInputs("", [], False, [])
+    evidence = EvidenceInputs("", [], [])
     try:
         with PreparationProgress("evidence selection"):
             evidence = capture_evidence_inputs(args, repo)
@@ -6515,7 +6358,7 @@ def dry_run_preflight(
         ok = inputs_ok = False
         print(f"inputs: FAILED ({exc})", flush=True)
 
-    captured = CapturedBundle("", False, set())
+    captured = CapturedBundle("", set())
     bundle_ok = True
     try:
         with PreparationProgress("bundle preparation"):
@@ -6527,18 +6370,11 @@ def dry_run_preflight(
         ok = bundle_ok = False
         print(f"bundle: FAILED ({exc})", flush=True)
 
-    # The normal path (see main() below) does not stop at per-file
-    # validation: it also assembles the final prompt(s) and enforces the
-    # aggregate-size/partition limits and truncated-input refusal that
-    # build_review_prompts()/ensure_reviewer_input_complete() apply before
-    # any engine call. A dry run that skipped those would report OK for
-    # inputs a real run rejects once combined.
+    # Use the real prompt builder: individually valid inputs may exceed a
+    # pass's capacity once combined with intact instructions/source context.
     if bundle_ok and inputs_ok:
         try:
             with PreparationProgress("bundle/evidence preparation and scan"):
-                input_truncated = captured.truncated or evidence.truncated
-                if reviewers:
-                    ensure_reviewer_input_complete(reviewers[0], input_truncated)
                 threshold_extra_prompt = apply_finding_threshold_prompt(args, evidence.prompt)
                 prompts = prepare_review_prompts(
                     repo, target, target_ref, captured, threshold_extra_prompt,
@@ -6578,10 +6414,8 @@ def run_reviewer(
     prompt: str | ReviewPass,
     changed_paths: set[str] | CapturedBundle,
     required: list[str],
-    input_truncated: bool = False,
     evidence: list[EvidenceFile] | None = None,
 ) -> dict[str, Any]:
-    ensure_reviewer_input_complete(args, input_truncated)
     mixed = changed_paths.mixed if isinstance(changed_paths, CapturedBundle) else ()
     paths = changed_paths.paths if isinstance(changed_paths, CapturedBundle) else changed_paths
     available = {record.identity for record in prompt.chunk.sources} if isinstance(prompt, ReviewPass) else set()
@@ -6679,7 +6513,6 @@ def run_review_passes(
     repo: Path,
     prompts: list[str] | list[ReviewPass],
     changed_paths: set[str] | CapturedBundle,
-    input_truncated: bool,
     evidence: list[EvidenceFile] | None = None,
 ) -> list[tuple[str, dict[str, Any]]]:
     chunk_reports: list[tuple[str, dict[str, Any]]] = []
@@ -6695,7 +6528,6 @@ def run_review_passes(
             prompt,
             changed_paths,
             [],
-            input_truncated,
             evidence,
         )
         chunk_reports.append((f"chunk {index}/{len(prompts)}", chunk_report))
@@ -6799,8 +6631,6 @@ def main_impl() -> int:
         if target == "commit":
             target_ref = args.commit
         extra_prompt = apply_finding_threshold_prompt(args, evidence.prompt)
-        input_truncated = captured.truncated or evidence.truncated
-        ensure_reviewer_input_complete(reviewer, input_truncated)
         prompts = prepare_review_prompts(
             repo, target, target_ref, captured, extra_prompt, evidence.datasets,
             max_prompt_bytes_for_reviewers(reviewers),
@@ -6821,7 +6651,6 @@ def main_impl() -> int:
         repo,
         prompts,
         captured,
-        input_truncated,
         evidence.files,
     )
     if len(chunk_reports) == 1 and not captured.mixed:

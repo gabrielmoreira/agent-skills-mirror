@@ -260,19 +260,20 @@ from. A number without those is `prepared_not_observed`, not a result.
 
 ## Repository Maintenance Procedures
 
-Two maintainer sweeps are written down as executor-neutral procedures. Any
-coding agent runs them the same way — Codex, Claude Code, a Hermes handoff, or
-a generic executor profile. Both are manual and default to a dry run; neither
-runs in CI.
+Three maintainer procedures are written down as executor-neutral procedures.
+Any coding agent runs them the same way — Codex, Claude Code, a Hermes
+handoff, or a generic executor profile. The two sweeps are manual and default
+to a dry run; none of the three runs in CI.
 
 | Procedure | File | What it does |
 | --- | --- | --- |
 | Triage sweep | `docs/TRIAGE-SWEEP.md` | Labels issues and PRs that have no `area/` label, deriving a PR's areas from its changed files against `.github/labels.yml` |
 | Review sweep | `docs/REVIEW-SWEEP.md` | Reviews PRs carrying no review at their current head commit, against `REVIEW.md` |
+| Model onboarding | `docs/MODEL-ONBOARDING.md` | Moves a new model generation or sibling through recognition, research, calibration, both routing lanes, pricing, machine placement, gates, and the measurement close |
 
-When asked to triage, label, or review the backlog, read the matching file and
-follow it rather than improvising. Each states its own allowlist, dry-run
-default, and boundaries.
+When asked to triage, label, review the backlog, or onboard a model, read the
+matching file and follow it rather than improvising. Each states its own
+allowlist, dry-run default, and boundaries.
 
 Supporting contracts:
 

@@ -5,14 +5,14 @@ Use this when reviewing product pages, release notes, app strings, runtime notif
 ## Core Principles
 
 1. **Split surfaces before editing.** A release feed, website page, runtime catalog, help article, and legal page may intentionally support different locale sets. Do not force every surface to mirror the broadest one.
-2. **Keep product facts fixed.** Preserve versions, dates, item order, links, placeholders, keyboard shortcuts, product names, bundle IDs, and behavior claims unless the user asked to change them.
+2. **Keep product facts fixed.** Preserve versions, dates, item order, links, placeholders, keyboard shortcuts, product names, bundle IDs, behavior claims, and legal or privacy obligations (data collection boundaries, refund terms, third-party roles) unless the user asked to change them.
 3. **Use source files, not generated output, as the edit target.** Patch generated pages only when the project explicitly treats them as source. Otherwise find the template, locale JSON, string catalog, or content partial and rebuild.
 4. **Review the final rendered or generated surface.** A translation can look fine in a source file but break in a button, menu, release feed, notification, or generated HTML page.
 5. **Do not polish into generic marketing.** Native localization means the sentence sounds like a local product, not like a fluent sales page.
 
 ## High-Signal Failure Patterns
 
-- **Chinese**: Literal possessives such as "你的 Mac" or "你的设备" when plain "Mac" or "本机" is enough; machine-output verbs such as "检测到" when a result sentence would read better; mixed punctuation; English words with stable Chinese equivalents. Character-level half/full-width punctuation and CJK/Latin spacing are checked by `check_punctuation.py`; this list keeps the locale-voice judgment calls.
+- **Chinese**: Literal possessives such as "你的 Mac" or "你的设备" when plain "Mac" or "本机" is enough; machine-output verbs such as "检测到" when a result sentence would read better; mixed punctuation; English words with stable Chinese equivalents. Character-level half/full-width punctuation and CJK/Latin spacing are checked by `check-punctuation.sh`; this list keeps the locale-voice judgment calls.
 - **Traditional Chinese**: Mainland phrasing copied into Traditional copy; stale locale URLs; words that feel mainland-specific or overly colloquial for the target audience.
 - **Japanese**: English noun compounds translated too tightly; missing spaces around product terms when the project style uses them; UI strings that sound like a manual instead of a Mac app.
 - **Korean**: Inconsistent platform terms, especially menu bar / menu item wording; overly literal second-person sentences.
@@ -44,7 +44,6 @@ Language-agnostic shapes that survive translation review because each locale rea
 - Do not glue translated fragments with punctuation in code or copy. A full sentence or format string per locale is safer.
 - Avoid broad find-and-replace unless it is followed by residual scans. Broad accent fixes can produce broken words.
 - Leave product names and established UI names in English when the product itself uses them that way.
-- Legal and privacy copy should be plain and accurate. Do not make it friendlier by weakening obligations, data collection boundaries, refund terms, or third-party roles.
 - Release feed localization can be narrower than website localization. Respect the surface-specific product decision.
 
 ## Output Guidance

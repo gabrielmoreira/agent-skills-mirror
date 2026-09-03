@@ -75,6 +75,7 @@ Do not default to "local" just because privacy or cost was mentioned once. Decid
 - Local tends to win on data residency/offline requirements, steady high-volume traffic that amortizes hardware cost, sub-100ms latency needs, and narrow tasks where a well-evaluated 7–32B open model already matches frontier quality.
 - Hosted API tends to win on frontier-tier reasoning or long-context needs that no locally-runnable model size covers yet, spiky/low-volume traffic, or when local ops overhead (drivers, quant regressions, capacity planning) would cost more engineering time than the API bill.
 - Full frontier-scale open weights (DeepSeek-V3/R1-class, Mistral Large 3, Llama 4 Maverick) do not fit on a single consumer GPU or single H100 at usable quant — "open-weight" does not mean "runs on your laptop." Check the model-sizing matrix before promising local feasibility.
+- Local *inference* feasibility does not imply local *training* or fine-tuning feasibility. Training amplifies memory, bandwidth, and especially energy per sample well beyond inference, so the binding constraint often shifts from VRAM capacity to thermal/power budget. See [references/model-sizing-matrix.md](references/model-sizing-matrix.md#local-training-is-a-different-feasibility-question) before promising on-device adaptation.
 
 See [references/model-sizing-matrix.md](references/model-sizing-matrix.md#local-vs-api-the-real-tradeoff) for the full tradeoff and current family-by-family sizing (Llama, Qwen, DeepSeek, Mistral, Gemma, GPT-OSS).
 
@@ -143,7 +144,7 @@ Use this skill when the user asks:
 - [references/runtime-selection.md](references/runtime-selection.md) - runtime, UI, and packaging choice rules
 - [references/desktop-runtime-landscape.md](references/desktop-runtime-landscape.md) - Ollama vs LM Studio vs Microsoft Foundry Local: detailed comparison, decision heuristic, anti-patterns
 - [references/adaptation-and-packaging.md](references/adaptation-and-packaging.md) - lightweight adaptation, portable delivery, and evaluation handoff rules
-- [references/model-sizing-matrix.md](references/model-sizing-matrix.md) - Llama 4, Mixtral, Qwen 3, GPT-OSS across M3/M4/4090/H100 hardware tiers; MLX and Ollama Apple Silicon paths; throughput estimates
+- [references/model-sizing-matrix.md](references/model-sizing-matrix.md) - Llama 4, Mixtral, Qwen 3, GPT-OSS across M3/M4/4090/H100 hardware tiers; MLX and Ollama Apple Silicon paths; throughput estimates; why local training feasibility differs from local inference feasibility
 - [references/quantization-format-table.md](references/quantization-format-table.md) - GGUF Q4_K_M/Q5_K_M/Q8_0, AWQ, GPTQ, FP8, EXL2; KV-cache quantization; speculative decoding; NPU/accelerator tier; decision tree
 - [references/small-model-tier-table.md](references/small-model-tier-table.md) - Gemma, Phi, Qwen small-instruct capability tiers: footprint, strengths, selection heuristic (versions hedged — verify current release)
 - [data/sources.json](data/sources.json) - local-model tooling sources from the curated repo list

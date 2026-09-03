@@ -3,7 +3,7 @@
 `Agent.run()`, `Agent.stream()`, and `OpenMultiAgent.runAgent()` accept either a
 string or a complete `LLMMessage[]`. The string form is unchanged shorthand for
 one user text message. Use the message form when the application owns prior
-conversation turns or needs content blocks such as images:
+conversation turns or needs content blocks such as images and videos:
 
 ```ts
 import {
@@ -36,9 +36,41 @@ const result = await new OpenMultiAgent().runAgent(
 )
 ```
 
+A `video` block carries either inline base64 bytes or a remote reference:
+
+```ts
+{
+  type: 'video',
+  source: { type: 'url', media_type: 'video/mp4', url: 'https://example.com/clip.mp4' },
+}
+```
+
+Unlike an image, a `url` source is fetched by the provider rather than by OMA,
+so the reference leaves the process. Both source shapes are therefore validated
+at every public entry point under the same rules as tool-result media: an
+absolute `http:`/`https:` URL, or raw canonical base64 with a parameterless MIME
+type. Anything else — a `file:` path, a provider-private scheme, a data URL
+pasted into the `url` field — is rejected with `InvalidMessageError` before an
+adapter sees it. Providers that expose their own upload handles for large videos
+(MiniMax's `mm_file://`, for instance) are not reachable through this block
+today.
+
+## Which adapters accept which blocks
+
 The selected model/provider must support every supplied content block. OMA does
-not infer a vision-capability flag or silently remove unsupported blocks;
-provider errors follow the normal agent failure path.
+not infer a vision-capability flag or silently remove unsupported blocks. Two
+things follow from that, and they look different at the call site:
+
+- **OpenAI-shaped adapters forward and let the provider decide.** A `video`
+  block becomes a `video_url` content part on the Chat Completions route.
+  MiniMax accepts it; the other OpenAI-compatible providers reject it, and that
+  provider error follows the normal agent failure path.
+- **Adapters with a typed content union reject locally.** Anthropic, Bedrock,
+  Gemini, and the AI SDK bridge have no `video` mapping, so they raise
+  `UnsupportedContentBlockError` before the request is sent. That error is
+  terminal: retrying cannot add a wire-format capability, so orchestrator retry
+  skips it rather than spending the backoff ladder on it. Bedrock and Gemini do
+  have native video support upstream — the gap is OMA's mapping, not theirs.
 
 ## API boundaries
 

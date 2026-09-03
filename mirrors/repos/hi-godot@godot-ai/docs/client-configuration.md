@@ -193,6 +193,17 @@ Harness writes the loader `insert` row into `$DSH_HOME/cordis.patch.yml`
 command fields, rejects `url` next to them, and honors `$DSH_HOME` for the
 whole home root.
 
+`automatic_config_edits = false` marks a client whose settings file the dock
+never rewrites: Configure and Remove return the manual entry instead.
+`config_allows_comments = true` is its read-side companion for JSONC clients —
+Zed's `settings.json` opens with a `//` header that `JSON.parse` rejects, so
+without it a stock install shows a permanent parse error. Status, the manual
+instructions, and Open/Reveal strip `//` and `/* */` from a throwaway parse
+copy; markers inside JSON strings survive, and an unterminated block comment
+fails closed. No write path takes that branch, and the flag is honored only
+while `automatic_config_edits` is false, so a JSONC descriptor cannot pick up a
+comment-destroying rewrite by flipping one field.
+
 Command migrations deep-copy existing JSON entries before replacing pinned
 launch fields. `command_user_fields` documents known client-owned settings but
 is not a preservation whitelist: unknown future fields survive too.

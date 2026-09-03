@@ -31,4 +31,4 @@ Pie charts with more than 4 segments communicate nothing. Use a treemap or ranke
 
 ## Using a product as a benchmark
 
-When the user references a product for visual benchmark ("make it feel like Grafana" / "similar to Linear analytics"): extract 3-5 concrete data-visualization-specific properties from that product, not general aesthetic properties. Useful properties: chart color palette (exact values), grid line weight and opacity, axis label size and color, tooltip border-radius and shadow, empty-state treatment. Do not extract "minimal" or "clean" as properties; those are not actionable.
+When the user references a product for visual benchmark ("make it feel like Grafana" / "similar to Linear analytics"): run the three-property decomposition from direction question 2 in `SKILL.md` with data-visualization-specific properties, not general aesthetic ones. Useful properties: chart color palette (exact values), grid line weight and opacity, axis label size and color, tooltip border-radius and shadow, empty-state treatment. Do not extract "minimal" or "clean" as properties; those are not actionable.

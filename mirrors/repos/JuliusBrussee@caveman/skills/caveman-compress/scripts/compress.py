@@ -395,7 +395,10 @@ def call_claude(prompt: str) -> str:
                 max_tokens=8192,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return strip_llm_wrapper(msg.content[0].text.strip())
+            # Tool-heavy models can put a tool_use or thinking block first; take
+            # the first text block instead of trusting content[0].
+            text = next((block.text for block in msg.content if getattr(block, "type", None) == "text"), "")
+            return strip_llm_wrapper(text.strip())
         except ImportError:
             pass  # anthropic not installed, fall back to CLI
     # Fallback: use claude CLI (handles desktop auth).
@@ -663,35 +666,37 @@ def _compress_file_locked(filepath: Path) -> bool:
         except OSError:
             pass
         return False
-    _write_target(filepath, compressed, backup_path, newline)
-
-    # Step 2: Validate + Retry
+    # Step 2: Validate + Retry. Each candidate is staged and validated next
+    # to the source; the live file is written only once one passes (#544).
+    staging_path = filepath.with_name(filepath.name + ".caveman-staged")
     for attempt in range(MAX_RETRIES):
         print(f"\nValidation attempt {attempt + 1}")
 
-        result = validate(backup_path, filepath)
+        _write_target(staging_path, compressed, backup_path, newline)
+        result = validate(backup_path, staging_path)
 
         if result.is_valid:
             print("Validation passed")
-            break
+            _write_target(filepath, compressed, backup_path, newline)
+            staging_path.unlink(missing_ok=True)
+            return True
 
         print("❌ Validation failed:")
         for err in result.errors:
             print(f"   - {err}")
 
         if attempt == MAX_RETRIES - 1:
-            # Restore original on failure
-            _write_target(filepath, original_raw, backup_path, newline)
+            staging_path.unlink(missing_ok=True)
             backup_path.unlink(missing_ok=True)
-            print("❌ Failed after retries — original restored")
+            print("Failed after retries: original left untouched")
             return False
 
         print("Fixing with Claude...")
-        compressed = call_claude(
+        fixed = call_claude(
             build_fix_prompt(original_text, compressed, result.errors)
         )
 
-        if compressed is None or not compressed.strip():
+        if fixed is None or not fixed.strip():
             print("❌ Fix attempt aborted: Claude returned an empty response.")
             print("   Skipping this attempt.")
             continue
@@ -702,11 +707,11 @@ def _compress_file_locked(filepath: Path) -> bool:
         # first lines get legitimately rewritten by compression, and requiring
         # them verbatim would reject every valid fix.
         anchor = first_nonblank_line(original_text)
-        if anchor.startswith(("---", "#")) and first_nonblank_line(compressed) != anchor:
+        if anchor.startswith(("---", "#")) and first_nonblank_line(fixed) != anchor:
             print("❌ Fix attempt aborted: output does not start with the original's first line.")
             print("   Possible preamble leak. Skipping this attempt.")
             continue
 
-        _write_target(filepath, compressed, backup_path, newline)
+        compressed = fixed
 
-    return True
+    return False

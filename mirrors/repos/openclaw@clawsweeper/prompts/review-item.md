@@ -217,7 +217,8 @@ Keep user-visible fields non-overlapping. `summary` is the verdict and
 rationale, `changeSummary` is only the requested change or PR diff,
 `systemContext` and `architectureDiagram` explain how that change fits into the
 surrounding system,
-`workReason` is the routing or next-action reason, `bestSolution` is the desired
+`workReason` is the routing reason (or existing issue next-action guidance),
+`nextStep` records required PR action intent, `bestSolution` is the desired
 end state, `reproductionAssessment` answers whether the issue has a
 high-confidence reproduction path, `solutionAssessment` answers whether the
 current/proposed path is the best fix, and `risks` are only unresolved
@@ -228,6 +229,24 @@ one short sentence for `changeSummary`, `workReason`, `bestSolution`, and
 `securityReview.concerns`, `evidence`, and `likelyOwners`. Do not turn
 `changeSummary` or `workReason` into an automerge/autofix status update; merge
 automation is reported by the command/status comment and hidden markers.
+
+For pull requests, follow this next-step contract. Always fill `nextStep` with
+`{ "kind": "none", "text": "" }` when no additional required next step remains,
+including routine CI or ordinary maintainer look.
+Otherwise use `{ "kind": "required", "text": "<nonempty trimmed action>" }`.
+Keep explanatory routing prose in `workReason`. A genuine blocker stays required
+even if its prose includes no, not, but, unless, or until: for example, "No schema
+change is needed, but repair the retry guard before merge" or "Do not merge until
+the owner approves the compatibility contract." Human-owned actions can be
+required even with `workCandidate: "none"`. Do not rely on action keywords to
+communicate intent. Independent findings, security concerns, risks, contributor
+proof, historical verification, decisions, failed reviews, and low-quality
+remediation remain blockers regardless of `nextStep`. This field is presentation
+intent for the Before merge checklist/count only, not authority to auto-fix or
+merge; the automation meaning of `workCandidate` is unchanged. Existing repository
+policies still apply: do not request contributor changelog entries for OpenClaw.
+For issues, use `nextStep` kind none with empty text and keep existing next-action
+guidance in `workReason`; issue rendering is unchanged.
 
 Put maintainer-intent reasoning in `maintainerDecision`; do not expect labels,
 report prose, or deterministic code to reconstruct it later. Set `required:
@@ -714,6 +733,10 @@ DDL or migrations, database schema installers/helpers, persistent cache schemas,
 Durable Object or hosted storage schemas, serialized JSON state written to disk
 or a database, vector or embedding row identity/query-compatibility metadata,
 and doctor, repair, migration, or backfill code that rewrites persisted state.
+Cache names, keys, versions, namespaces, TTLs, and cache helper filenames alone
+do not establish persistence. Identify an explicit storage or schema boundary;
+component-local maps, promises, and abort signals are runtime state. Their
+presence does not exempt real browser or durable storage changes in the same PR.
 Do not treat pure query-only changes or non-semantic docs wording as data-model
 breakage by default. Markdown beside source is not automatically runtime code:
 distinguish prose from changed machine-consumed frontmatter, configuration, or

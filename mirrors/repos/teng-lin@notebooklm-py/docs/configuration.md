@@ -1,7 +1,7 @@
 # Configuration
 
 **Status:** Active
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-09-02
 
 This guide covers storage locations, environment settings, and configuration options for `notebooklm-py`.
 
@@ -15,10 +15,12 @@ All data is stored under `~/.notebooklm/` by default, organized by profile:
 ├── profiles/
 │   ├── default/          # Default profile (auto-created)
 │   │   ├── storage_state.json    # Authentication cookies and session
+│   │   ├── master_token.json     # Durable headless/Android credential (optional)
 │   │   ├── context.json          # CLI context (active notebook, conversation)
 │   │   └── browser_profile/      # Persistent Chromium profile
 │   ├── work/             # Named profile example
 │   │   ├── storage_state.json
+│   │   ├── master_token.json
 │   │   ├── context.json
 │   │   └── browser_profile/
 │   └── personal/
@@ -71,7 +73,7 @@ Contains the authentication data extracted from your browser session:
 
 **Cookie requirements** (empirically validated via single-, pair-, and three-way ablation; see [auth-cookie-lifecycle.md](auth-cookie-lifecycle.md#33-empirical-cookie-requirements); enforced by `_validate_required_cookies()` in `_auth/cookie_policy.py`):
 
-- **Tier 1 — strictly required (raises on absence):** `SID` AND `__Secure-1PSIDTS`. `SID` is the only individually-required cookie (`__Secure-1PSIDTS` is removable on its own because Google can re-mint it via `RotateCookies`), but the pair-wise check uncovered that as soon as `__Secure-1PSIDTS` and any one other auth cookie are both missing, Google rejects with `Authentication expired or invalid`. The library therefore enforces both up-front. Authoritative value: `MINIMUM_REQUIRED_COOKIES` in `_auth/cookie_policy.py`.
+- **Tier 1 — strictly required (raises on absence):** both `SID` and `__Secure-1PSIDTS`. Recovery may be able to re-mint `__Secure-1PSIDTS` before validation, but an input that reaches normal validation without either cookie is rejected. Authoritative value: `MINIMUM_REQUIRED_COOKIES` in `_auth/cookie_policy.py`.
 - **Tier 2 — secondary binding (logs a warning if absent):** either `OSID` is present, or `APISID` and `SAPISID` are present **together with bare `LSID`** (the `LSID` conjunct is required — the pair alone fails, per the three-way ablation in #1977). Without this, even valid Tier 1 cookies can't authenticate the homepage GET. Logged rather than raised so unverified edge-case flows (e.g. Workspace SSO) aren't broken by a too-strict client check.
 
 In practice: extract the full cookie set via `notebooklm login` and don't try to subset it. Partial extractions (a known failure mode of browser-cookies tooling under Chrome 127+ App-Bound Encryption) are the leading suspect for "auth expires immediately" reports — see [#371](https://github.com/teng-lin/notebooklm-py/issues/371).
@@ -143,8 +145,9 @@ directory does not count as a reusable L3 browser session.
 
 ### Master Token (`master_token.json`)
 
-Written only by `notebooklm login --master-token` (the `[headless]` extra). Holds
-a durable Google master token (mode `0600`) that mints/refreshes the profile's
+Written only by `notebooklm login --master-token --account EMAIL`. It needs `gpsoauth`, supplied
+by either the `[headless]` or `[android]` extra. It holds a durable Google master
+token (mode `0600`) that mints/refreshes the profile's
 `storage_state.json` cookies with no per-session browser. When present beside a
 profile's `storage_state.json`, an expired session re-mints from it
 automatically. If storage is absent, `notebooklm auth refresh` mints it from the
@@ -157,7 +160,7 @@ remains an unconditional forced re-mint.
 
 > ⚠️ **Full-account, durable credential** — larger blast radius than
 > `storage_state.json`; dedicated/throwaway account only. See
-> [installation.md#alternative-master-token-auth-no-cookie-file-to-ship-survives-expiry](installation.md#d-headless-server-or-ci).
+> [installation.md#alternative-master-token-auth-no-cookie-file-to-ship-survives-expiry](installation.md#alternative-master-token-auth-no-cookie-file-to-ship-survives-expiry).
 
 ## Environment Variables
 
@@ -173,21 +176,19 @@ option, and the `notebooklm-server --backend ...` option. Resolution is always:
 3. `web`.
 
 The preference is fixed when a client is constructed. `backend="android"`
-installs an Android adapter for every public namespace; the read-only
-`client.backends` mapping therefore reports `android` for all eleven entries.
-Exactly three operations use documented, narrow Web compatibility collaborators:
-`notebooks.remove_from_recent`, CSV/DOCX `sources.add_file`, and
-`sharing.set_view_level`. The mapping describes the installed namespace adapters,
-not the transport of every internal operation.
-The root `client.rpc_call(...)` escape hatch is outside the namespace graph and
-remains Web-specific because `RPCMethod` contains `batchexecute` identifiers.
-Neither `auto` nor `mobile` is accepted.
+installs Android adapters for every public namespace; the read-only
+`client.backends` mapping consequently reports `android` for all eleven entries.
+The root `client.rpc_call(...)` escape hatch remains Web-specific because its
+`RPCMethod` values are Web `batchexecute` identifiers. Neither `auto` nor
+`mobile` is accepted.
 
-Selecting Android does not read credentials during construction. When an
-installed Android namespace needs a durable credential, validation occurs on
-`client.open()` / async-context entry. Use `NotebookLMClient.from_storage(...)`
-or provide the profile-backed `storage_path`; there is no public raw
-`master_token=` argument.
+Selecting Android does not read credentials during construction. At
+`client.open()` / async-context entry it requires both the `android` extra and
+a profile-backed `master_token.json`, from which it mints short-lived Android
+bearer credentials. Bootstrap that profile with
+`notebooklm login --master-token --account EMAIL`; a cookie-only storage file
+or `NOTEBOOKLM_AUTH_JSON` is not sufficient for Android. There is no public raw
+`master_token=` constructor argument.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -283,8 +284,8 @@ be audited from one location.
 | `NOTEBOOKLM_REFRESH_STORAGE_PATH` | Child env var injected into `NOTEBOOKLM_REFRESH_CMD`; points to the `storage_state.json` file the command must rewrite before exiting `0`. Refresh scripts may read it, but setting it in the parent shell does not select storage. | Set by `auth` refresh-spawn helper from the explicit storage path or profile-aware storage path. | `auth._run_refresh_cmd` |
 | `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` | When `1`, disable the proactive `accounts.google.com/RotateCookies` poke that refreshes `__Secure-1PSIDTS` ahead of expiry. Useful when running behind a proxy that rejects the extra request, or in offline test fixtures. | Process env on every keepalive check. | `auth` keepalive guards (constant `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE_ENV` in `notebooklm.auth`) |
 | `NOTEBOOKLM_PROMOTION_EXIT_TIMEOUT` | Seconds the process waits at exit for an in-flight one-time migration of a pre-`v0.x` `context.json` account into `storage_state.json`. A ceiling shared by all outstanding writers, not a delay — a finished migration exits immediately. `0` never waits. Unset, empty, or whitespace-only falls back to the default; non-numeric, negative, and non-finite (`inf`/`nan`) values are refused with a `WARNING` and the default is used; a finite value above `threading.TIMEOUT_MAX` is clamped. An incomplete wait is always reported at `WARNING` (so `--quiet`, which forces `ERROR`, suppresses it). | Process env, read once per process at exit → `30.0` | `_auth.profile_migration._promotion_exit_timeout` |
-| `NOTEBOOKLM_HEADLESS_REAUTH` | Opt in to layer-3 headless re-auth for cold construction and automatic refresh paths. Explicit Python/CLI `allow_headless` flags do not require the env var. | Literal `1` enables; all other values disabled. | `_auth.headless_reauth.headless_reauth_env_enabled` |
-| `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` | Optional Chrome DevTools Protocol endpoint for layer-3 headless re-auth. Must be loopback (`127.0.0.1`, `::1`, or `localhost`); remote endpoints are ignored because CDP is account-equivalent. | Explicit function argument → env var → no CDP arm. | `_auth.headless_reauth.resolve_cdp_url` |
+| `NOTEBOOKLM_HEADLESS_REAUTH` | Opt in to layer-3 headless re-auth for cold construction and automatic refresh paths. Explicit Python/CLI `allow_headless` flags do not require the env var. | Literal `1` enables; all other values disabled. | `_browser.headless_reauth.headless_reauth_env_enabled` |
+| `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` | Optional Chrome DevTools Protocol endpoint for layer-3 headless re-auth. Must be loopback (`127.0.0.1`, `::1`, or `localhost`); remote endpoints are ignored because CDP is account-equivalent. | Explicit function argument → env var → no CDP arm. | `_browser.headless_reauth.resolve_cdp_url` |
 | `NOTEBOOKLM_MCP_TRANSPORT` | Default transport for `notebooklm-mcp`: `stdio` or `http`. CLI `--transport` wins. | `--transport` flag → env var → `stdio` | `mcp.__main__._build_parser` |
 | `NOTEBOOKLM_MCP_HOST` | HTTP bind host for `notebooklm-mcp --transport http`. Non-loopback refused unless `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND=1`. | `--host` flag → env var → `127.0.0.1` | `mcp.__main__._build_parser` / `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_MCP_PORT` | HTTP bind port for `notebooklm-mcp --transport http`. | `--port` flag → env var → `9420` | `mcp.__main__._build_parser` / `_resolve_port` |
@@ -857,6 +858,9 @@ Browser login opens in the Windows host browser. The storage file is saved in th
 
 ### Headless Servers & Containers
 
-**Playwright is only required for the `notebooklm login` command.** All other operations use standard HTTP requests via `httpx`.
+**Playwright is required only for interactive `notebooklm login` and the optional,
+explicitly enabled layer-3 browser recovery path.** Ordinary RPC operations use
+standard HTTP requests via `httpx`; a base install with supplied storage state
+does not import Playwright.
 
 For the install + auth-bootstrap recipe (run `notebooklm login` on a workstation, copy `storage_state.json` to the server, set `NOTEBOOKLM_AUTH_JSON`), see the canonical Persona D guide: [docs/installation.md#d-headless-server-or-ci](installation.md#d-headless-server-or-ci).

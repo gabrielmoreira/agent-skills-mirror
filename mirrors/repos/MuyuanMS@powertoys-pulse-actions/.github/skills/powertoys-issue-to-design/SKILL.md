@@ -109,7 +109,8 @@ Drive an **investigator** working thread over the local clone (`<CLONE_PATH>`). 
   be verified; state what must be discovered during implementation.
 - **Risks and alternatives** — blast radius, compatibility/migration concerns,
   and why plausible alternatives were rejected.
-- **Confidence** — High/Medium/Low that this root cause is correct.
+- **Confidence** — numeric `0..100`, the matching `green` (`85..100`),
+  `yellow` (`51..84`), or `red` (`0..50`) level, and a concise rationale.
 
 Keep these as a structured **design draft** (you will store it in the mirror
 issue in Phase 5). “Change X to handle Y” is not sufficient. Another engineer
@@ -144,6 +145,12 @@ Loop Phase 2 (investigator) ↔ Phase 3 (adversary):
 
 Guardrails:
 - **Cap rounds** (default 4). If not converged after the cap, stop and present the current design plus the unresolved objections to the user — do not loop forever.
+- When invoked by the dashboard to improve a red-confidence lightweight plan,
+  use a short mode capped at one or two investigator/adversary iterations.
+  Publish the best supported plan after that cap even if it remains red,
+  clearly preserving unresolved alternatives and the evidence needed to raise
+  confidence. Short mode does not create a fork mirror or claim convergence
+  unless the normal convergence criteria are actually met.
 - Track `rounds` and keep the adversary's final verdict + any non-blocking notes — these surface on the dashboard.
 - If the adversary keeps finding the root cause unproven because evidence is missing (e.g. no logs), say so: the honest outcome may be "needs more info / not confidently designable," which is a valid stop (report it; don't fabricate a root cause).
 
@@ -218,7 +225,8 @@ design as structured data, not only Markdown. The orchestrator writes it to
 
 - `evaluated_at` and the upstream `source_updated_at` covered;
 - the prior fast `judgment`;
-- schema-version-4 `issue_context` with a concise discussion summary, known
+- schema-version-5 `fix_assessment`, `proposed_fixes[]`, and `issue_context`
+  with a concise discussion summary, known
   facts, qualified inferences, Copilot analysis, initial investigation
   findings, and any remaining information gaps;
 - `design.root_cause`, `design.evidence`, `design.affected_files`,

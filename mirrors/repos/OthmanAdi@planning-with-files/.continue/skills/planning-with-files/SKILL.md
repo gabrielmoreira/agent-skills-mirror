@@ -181,7 +181,7 @@ Helper scripts for automation:
 
 - `scripts/init-session.sh` — Initialize planning files. With a name arg, creates an isolated plan under `.planning/YYYY-MM-DD-<slug>/` for parallel task workflows. Without args, writes `task_plan.md` at project root (legacy mode, backward-compatible).
 - `scripts/set-active-plan.sh` — Switch the active plan pointer (`.planning/.active_plan`). Run with a plan ID to switch; run without args to show which plan is current.
-- `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. Checks `$PLAN_ID` env var first, then `.planning/.active_plan`, then newest plan dir by mtime, then falls back to project root (legacy). Used internally by hooks.
+- `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. A set `$PLAN_ID` is a binding: it resolves or resolution stops, never another plan (issue #237). With no `$PLAN_ID`, checks `.planning/.active_plan`, then newest plan dir by mtime, then falls back to project root (legacy). Used internally by hooks.
 - `scripts/check-complete.sh` — Verify all phases in the active plan are complete.
 - `scripts/session-catchup.py`: Explicit same-project session-record aggregation or bounded replay (`--metadata` / `--replay`); bare invocation does not access host history. OpenCode uses its read-only SQLite store.
 - `scripts/attest-plan.sh` (and `.ps1`) — Lock the current `task_plan.md` content with a SHA-256 attestation (v2.37.0). Hooks then refuse to inject plan content if the file diverges from the attested hash. Use `--show` to print the stored hash, `--clear` to remove the attestation.

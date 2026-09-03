@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 12 followed patterns, 27 file(s) materialized.
+Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 12 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 27 |
+| Followed pats | 4 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,18 +51,10 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 12 followed 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `specification/v2_cli_tui_launcher.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
-- `clients/web/README.md`
-- `README.md`
-- `docs/v1-to-v2-migration.md`
-- `clients/cli/README.md`
-- `clients/tui/README.md`
-- `clients/launcher/README.md`
-- `docs/mcp-server-configuration.md`
-- `docs/mcp-app-review.md`
-- `docs/launcher-config-consolidation-plan.md`
+- `docs/skill-authoring.md`
+- `docs/quality-gate.md`
 
 ## File Index
 
@@ -70,33 +62,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`clients/cli/__tests__/README.md`](clients/cli/__tests__/README.md) |
-| 5 | ✓ | [`specification/README.md`](specification/README.md) |
-| 6 | ✓ | [`specification/v1_problems.md`](specification/v1_problems.md) |
-| 7 | ✓ | [`specification/v2_auth.md`](specification/v2_auth.md) |
-| 8 | ✓ | [`specification/v2_catalog_launch_config.md`](specification/v2_catalog_launch_config.md) |
-| 9 | ✓ | [`specification/v2_new_spec_impact.md`](specification/v2_new_spec_impact.md) |
-| 10 | ✓ | [`specification/v2_scope.md`](specification/v2_scope.md) |
-| 11 | ✓ | [`specification/v2_server.md`](specification/v2_server.md) |
-| 12 | ✓ | [`specification/v2_servers_file.md`](specification/v2_servers_file.md) |
-| 13 | ✓ | [`specification/v2_storage.md`](specification/v2_storage.md) |
-| 14 | ✓ | [`specification/v2_ux.md`](specification/v2_ux.md) |
-| 15 | ✓ | [`specification/v2_web_client.md`](specification/v2_web_client.md) |
-| 16 | → | [`clients/cli/README.md`](clients/cli/README.md) |
-| 17 | → | [`clients/launcher/README.md`](clients/launcher/README.md) |
-| 18 | → | [`clients/tui/README.md`](clients/tui/README.md) |
-| 19 | → | [`clients/web/README.md`](clients/web/README.md) |
-| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 21 | → | [`docs/launcher-config-consolidation-plan.md`](docs/launcher-config-consolidation-plan.md) |
-| 22 | → | [`docs/mcp-app-review.md`](docs/mcp-app-review.md) |
-| 23 | → | [`docs/mcp-server-configuration.md`](docs/mcp-server-configuration.md) |
-| 24 | → | [`docs/v1-to-v2-migration.md`](docs/v1-to-v2-migration.md) |
-| 25 | → | [`README.md`](README.md) |
-| 26 | → | [`SECURITY.md`](SECURITY.md) |
-| 27 | → | [`specification/v2_cli_tui_launcher.md`](specification/v2_cli_tui_launcher.md) |
+| 1 | ✓ | [`.claude/skills/board-ops/SKILL.md`](.claude/skills/board-ops/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/issue-create/SKILL.md`](.claude/skills/issue-create/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/issue-triage/SKILL.md`](.claude/skills/issue-triage/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/local-dev/SKILL.md`](.claude/skills/local-dev/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/pr-flow/SKILL.md`](.claude/skills/pr-flow/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/pre-push-gate/SKILL.md`](.claude/skills/pre-push-gate/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/project-structure/SKILL.md`](.claude/skills/project-structure/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/test-servers/SKILL.md`](.claude/skills/test-servers/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`docs/publishing.md`](docs/publishing.md) |
+| 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 15 | → | [`docs/quality-gate.md`](docs/quality-gate.md) |
+| 16 | → | [`docs/skill-authoring.md`](docs/skill-authoring.md) |
+| 17 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -157,6 +157,11 @@ Node.js version from `.nvmrc` and pnpm 10+.
 
 ## Implementation Expectations
 
+### Branch Freshness
+
+- Before starting non-trivial work on a feature branch, fetch the remote and check whether its base branch has advanced.
+- If the branch is stale, refresh only the current branch. Use `refresh-stale-branch` when available; otherwise perform the refresh directly. Do not update every worktree.
+
 ### Implementation Strategy
 
 - Inspect nearby existing abstractions before planning or implementing new helpers, modules, or UI patterns; prefer reuse or small extensions over parallel implementations.

@@ -48,7 +48,7 @@ synchronization itself runs through `idd-review-triage.instructions.md`'s
 E-phase branch-sync check (`Esync`), which uses the
 `branch-conflict-state` helper when helper runtime is enabled (a
 `gh pr view` fallback otherwise), and `idd-resume.instructions.md`
-already routes a content-conflicting branch there on restart.
+already routes a content-conflict branch there on restart.
 
 If D1 itself reveals content conflicts before the first push, resolve
 them and continue the rebase. After completing the rebase, if any files
@@ -438,9 +438,23 @@ confirmed condition above. Delegate polling mechanics to
   maintainer has since posted a valid external-check waiver for this
   HEAD** — that case still needs the rerun, to make the check reflect
   the waiver (a pre-existing F2/F3 concern this branch leaves unchanged;
-  see `idd-pre-merge.instructions.md`'s External-check waivers). Absent
-  a waiver, exit CI-wait and proceed directly to
+  see `idd-pre-merge.instructions.md`'s External-check waivers). A
+  waiver is effective only once `deadline.passed` is true or
+  `terminal.state` reaches `COPILOT_UNAVAILABLE` (check both fields in
+  the same run's output); posted earlier, it is valid but inert —
+  mechanically the same as no waiver until then. Absent a waiver, or
+  with one still inert, exit CI-wait and proceed directly to
   `idd-review-snapshot.instructions.md` (E1) instead, matching the phase
   routing table's "PR open, CI running, reviews exist" row. This does
   not relax the merge gate — the check stays required, and F2
   re-verifies it independently before merge.
+- **`idd-advisory-convergence` is the sole non-pass required check, and
+  its own verdict reports `pending: true`** (e.g. "Copilot has not
+  reviewed this pull request yet") → the literal opposite boolean value
+  from the carve-out above: the check evaluated before Copilot's
+  asynchronous review exists for this HEAD SHA at all. This is an
+  expected, self-resolving timing race, not a code-caused failure and
+  not the review-disposition state above — request a review if one
+  is not already outstanding, wait for Copilot's review to land for the
+  current HEAD SHA, then rerun via `rerun-advisory-convergence.mjs` (see
+  `idd-ci.instructions.md` §Rerun mechanics) and resume D4.

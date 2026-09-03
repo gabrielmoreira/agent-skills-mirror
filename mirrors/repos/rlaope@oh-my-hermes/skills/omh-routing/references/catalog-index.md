@@ -107,6 +107,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-source-finder`: [omh] Source candidate inventory - prepare typed source candidates and acquisition status before downstream work; use ulw-research to fetch and cite them, or research-brief to turn them into a decision-ready brief.
 - `omh-decide`: [omh] Decide between options: tradeoffs, a recommendation, and a decision note you can act on.
 - `omh-support-operations`: [omh] Turn a support case into a clear customer reply, severity path, and owned next step.
+- `omh-tech-debt-audit`: [omh] Hermes Tech Debt Audit workflow: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun.
 - `omh-toolbelt-readiness`: [omh] Toolbelt readiness - inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner.
 - `ulw-perf`: [omh] Ultraperf - find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget.
 - `ulw-qa`: [omh] Hermes UltraQA workflow: adversarial QA and fix loops.

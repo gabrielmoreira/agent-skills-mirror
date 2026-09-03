@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
+Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 13
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,8 +71,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 12 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 13 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 12 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 13 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 14 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

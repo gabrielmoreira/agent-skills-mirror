@@ -17,7 +17,7 @@ for (let i = 0; i < args.length; i++) {
   else if (args[i] === "--json") json = true;
   else if (args[i] === "--allow-newer") allowNewer = true;
   else {
-    process.stderr.write(`usage: node public/agents/probe-installed.mjs [--require <id>] [--all] [--json] [--allow-newer]\n`);
+    process.stderr.write(`usage: node agents/probe-installed.mjs [--require <id>] [--all] [--json] [--allow-newer]\n`);
     process.exit(2);
   }
 }

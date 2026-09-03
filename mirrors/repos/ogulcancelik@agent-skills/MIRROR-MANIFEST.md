@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ogulcancelik/agent-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `ogulcancelik/agent-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ogulcancelik/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,7 +84,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/web-search/test/fingerprint.test.js`](skills/web-search/test/fingerprint.test.js) |
 | 24 | ✓ | [`skills/web-search/test/search-cache.test.js`](skills/web-search/test/search-cache.test.js) |
 | 25 | ✓ | [`skills/web-search/test/search-ddg.test.js`](skills/web-search/test/search-ddg.test.js) |
-| 26 | ✓ | [`skills/web-search/web-search.js`](skills/web-search/web-search.js) |
+| 26 | ✓ | [`skills/web-search/test/search-google.test.js`](skills/web-search/test/search-google.test.js) |
+| 27 | ✓ | [`skills/web-search/web-search.js`](skills/web-search/web-search.js) |
 
 ---
 

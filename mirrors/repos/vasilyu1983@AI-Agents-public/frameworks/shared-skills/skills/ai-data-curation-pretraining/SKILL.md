@@ -66,6 +66,7 @@ CommonCrawl WARCs
 
 Activate when the task involves:
 
+- Finding existing high-quality datasets for pretraining or fine-tuning before building from scratch (see Dataset Discovery reference)
 - Sourcing and filtering CommonCrawl WARCs or other web-scale corpora
 - Implementing or debugging any stage of the curation pipeline above
 - Designing quality filters (heuristic or classifier-based)
@@ -225,6 +226,7 @@ Decrease b / increase r to tighten threshold (less aggressive, faster).
 
 ## Navigation: Core References
 
+- **[Dataset Discovery](references/dataset-discovery.md)** — where to find existing datasets (HF, Kaggle, Google Dataset Search, government portals, lm-evaluation-harness) and the license/contamination gates before using them
 - **[Web Curation Pipeline](references/web-curation-pipeline.md)** — datatrove stage-by-stage: WARC download, extraction, language ID, heuristic filter, dedup, decontamination
 - **[Synthetic Data Generation](references/synthetic-data-generation.md)** — Cosmopedia / Self-Instruct / Evol-Instruct recipes, verifier gating, collapse traps
 - **[Data Ablation Method](references/data-ablation-method.md)** — controlled-run protocol, proxy model setup, metric collection, datasheet

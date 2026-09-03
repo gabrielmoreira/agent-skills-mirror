@@ -252,6 +252,40 @@ completion whose `content` is parsed as the object. A text-only evidence check i
 Assert the round from three places together: the toast copy (a MutationObserver on
 `document.body`), the rows' `status`/`action`/`created_at`, and the card count.
 
+#### Structured generation crashes on the deepseek provider path — stub via openai instead
+
+**Situation:** driving a server-side `generateObject` scenario (e.g. `verify_plan_gen`)
+through `llm-stub.mjs` when the resolved model config is `deepseek` (the OSS default).
+
+**Doesn't work:** pointing the deepseek provider's keyVaults at the stub. The chat
+turn streams fine, but `generateObject` fails with `TypeError: Cannot read properties
+of undefined (reading '0')` (visible in `llm_generation_tracing.error_detail`), and
+the caller silently falls back (verify plan gen → holistic single check), which reads
+as "my feature didn't run".
+
+**Works:** route the generation through the openai protocol path — e.g. point the
+resolver's agent (for verify: `update agents set model='gpt-5.6-luna', provider='openai'
+where slug='verify-agent'`) at the stubbed openai provider. The server-side openai
+provider calls `/v1/responses`, which the stub answers correctly for `stream:false`
+structured generation (`llm_generation_tracing.success=t` is the confirmation probe).
+
+#### Forcing the goal frontier 失联 state needs >15 min, not the server's 5
+
+**Situation:** A/B-forcing the goal page's 失联 (lost-heartbeat) banner by backdating
+`goal_nodes.updated_at` / `agent_operations.updated_at` with SQL.
+
+**Doesn't work:** backdating by ~10 minutes because the server reclaim default
+(`resolveOperationLeaseTimeout`) is 5 minutes. The frontier still shows 运行中: the
+client view model has its own `DEFAULT_LEASE_TIMEOUT_MS = 15 min` and only honors
+`goal.config.recovery.operationLeaseTimeoutMs` when the goal sets one.
+
+**Works:** backdate past the client's window (25 min is comfortable), or create the
+goal with an explicit `--operation-lease-timeout-ms`. Liveness = the newer of the
+node row and `runHeartbeats` (the running operation's `updated_at` served by
+`goal.graph`), so the A/B is: node stale + op fresh → 运行中; both stale → 失联.
+Restore the forced rows (node/task/task_topics/operation status + timestamps) after
+capturing.
+
 #### A CLI-created topic has no trigger/status and is filtered out of the Agent paged view
 
 **Situation:** building a topic fixture with `lh topic create`, writing fields such as
@@ -433,6 +467,50 @@ renders. Seed the history and the ledger, but never assert on the live window's 
 percentage — read it back from `agent_quota_snapshots` and report what the run
 actually rendered.
 
+#### Shared-viewer (non-owner) evidence needs a second signed-in user — signed-out hits /signin
+
+**Situation:** capturing how a page renders for someone who is NOT the owner of the
+object (a shared acceptance link, a workspace-member view), on the local full stack.
+
+**Doesn't work:** a fresh storage-empty agent-browser session. The SPA's `/acceptance`
+(and the rest of the main layout) sits behind the client auth gate, so a signed-out
+context redirects to `/signin` before the route mounts — `location.pathname` lands on
+`/signin` and every "the notice never renders" reading is an artifact of the gate, not
+the change under test.
+
+**Works:** seed a second user directly (mirror what `seed-user` writes: a `users` row
+with `onboarding` finished + an `accounts` row with a bcryptjs password hash), then
+sign that user in from INSIDE the visitor session so the cookies land in it:
+
+```js
+await fetch('/api/auth/sign-in/email', {
+  body: JSON.stringify({ email, password }),
+  credentials: 'include',
+  headers: { 'Content-Type': 'application/json' },
+  method: 'POST',
+});
+```
+
+Reload and assert identity with `app-probe.sh auth` before capturing. Use a
+run-specific session name, never `lobehub-dev` (that one is the owner).
+
+#### Ambient `LOBEHUB_TOPIC_ID` hijacks a local CLI ingest — strip it for fixture creation
+
+**Situation:** creating a fixture acceptance on the LOCAL dev server with
+`bun src/index.ts acceptance run ingest` while running inside a LobeHub conversation
+(Claude Code sessions launched from a Topic export `LOBEHUB_TOPIC_ID` /
+`LOBEHUB_AGENT_ID` / `LOBEHUB_OPERATION_ID`).
+
+**Doesn't work:** plain ingest. The CLI auto-attaches to the ambient conversation, and
+that topic id belongs to PRODUCTION — the local server answers
+`topic "tpc_…" not found in the current workspace`, which reads like broken fixture
+data rather than an env leak.
+
+**Works:** strip the ambient ids only for the local fixture ingest
+(`env -u LOBEHUB_TOPIC_ID -u LOBEHUB_AGENT_ID -u LOBEHUB_OPERATION_ID …`) so it lands
+standalone. Keep them for the final PRODUCTION publish of the verification round —
+there the auto-attach to the current conversation is exactly what you want.
+
 ### Driving the UI
 
 #### The composer's slash menu needs real key events — `keyboard type` never opens it
@@ -549,6 +627,39 @@ items present with only the list area shimmering is ordinary data loading. Do NO
 identify the fallback by a row count — it is shaped per navKey now
 (`NAV_SKELETON_SHAPES`), so memory/discover render header plus a nav list and no body
 at all, while settings renders a search box plus four accordion groups.
+
+#### Hold a route's Suspense fallback by parking its data request
+
+**Situation:** the route skeleton is now held by data (`SWRConfig{ suspense: true }`
+at the layout), not only by the lazy module, so parking the chunk no longer keeps it
+on screen once the module is cached. The fallback lasts a few hundred ms.
+
+**Works:** park the route's own tRPC call with raw CDP `Fetch.enable` — the skeleton
+stays up until the request is released, so it can be measured and screenshotted at
+leisure. `.agents/acceptance/scripts/park-request.cjs <browser-ws> <urlPattern> <holdMs>`
+does this against an `agent-browser` session:
+
+```bash
+node .agents/acceptance/scripts/park-request.cjs \
+  "$(agent-browser --session lobehub-dev get cdp-url)" '*trpc/lambda/aiProvider*' 25000
+```
+
+Name the route's **own** query in the pattern (`aiProvider*` for the provider page).
+A broad `*trpc*` parks the shell's queries too and the route never mounts, which reads
+as a product hang. For the error state, prefer `agent-browser network route <pattern> --abort` — an aborted request settles, so the boundary renders instead of hanging.
+
+#### `SWRConfig` reaches hooks below it, never the component that renders it
+
+**Situation:** opting one page out of a subtree's suspense (a page whose sections are
+gated independently and must keep their own Retry).
+
+**Doesn't work:** wrapping that page's own JSX in `<SWRConfig value={{ suspense: false }}>`.
+The page's hooks run in its component body, which is _above_ the element it returns, so
+they still read the subtree's config and the page keeps suspending. The symptom is a
+whole route thrown to the error boundary the first time one section's fetch fails.
+
+**Works:** move the hooks into a child component and wrap that child. Verify by failing
+one section's request and confirming the rest of the page still renders.
 
 #### Park a route's lazy chunk to hold its pending sidebar on screen
 
@@ -1825,12 +1936,41 @@ unrelated dirty files, while the intended worktree change stays uncommitted. The
 only tell is an unexpected diffstat / parent commit; `push <branch>` then reports
 "Everything up-to-date" because the worktree branch ref never moved.
 
+The same reset has a second, harder-to-spot consequence: it also retargets
+`init-dev-env.sh dev`, so the dev server and its Vite serve the MAIN checkout while
+every health signal stays green — see `common-mistakes.md` L-S17.
+
 **Works:** in any worktree session, prefix every git/check command with an explicit
 `cd <worktree> &&`, and read the commit output's diffstat + `git log -1` parent
 before pushing. Recovery for a mistaken main-repo commit: `git reset --mixed HEAD~1`
 restores the user's branch and leaves their working tree as it was (verify against
 the session-start `gitStatus` snapshot); nothing needs force-pushing because the
 wrong-branch push was a no-op.
+
+#### Proving which prompt version the running server holds
+
+**Situation:** verifying a change to a prompt under `packages/prompts` — the assertion is
+about the model's behaviour, so the run is only meaningful if the server is executing the
+new prompt.
+
+**Doesn't work:** trusting the Vite HMR line (`page reload packages/prompts/src/...`).
+That is the client reloading; the Next server keeps the workspace package it started
+with, so it answers with the old prompt indefinitely. Reading the model's output and
+judging "this looks like the new behaviour" is circular — the whole point of the change
+is that the output should differ, so any difference confirms the hypothesis either way.
+
+**Works:** every traced generation records the version it ran. After one call, read it
+back:
+
+```bash
+docker exec lobehub-agent-testing-postgres psql -U postgres -d postgres -tAc \
+  "select prompt_version, model, created_at from llm_generation_tracing \
+   where scenario='<scenario>' order by created_at desc limit 1"
+```
+
+A stale version means the server needs a real process restart (PROJECT.md §6), not a
+reload. Gate the first evidence-bearing call on this row, not on the edit's timestamp —
+otherwise the round publishes new-prompt claims backed by old-prompt output.
 
 #### Server-side reads of local S3 evidence are blocked by SSRF protection — private IPs must be allowed explicitly
 
@@ -1853,6 +1993,31 @@ followed by `Error converting image to base64`. Production uses a real object-st
 domain and is unaffected, so this is purely a local verification-environment gate and
 not a product defect — do not report it as a bug, and do not work around it by
 switching to inline base64, which would verify a path the product never takes.
+
+#### Real web-search evidence needs local SearXNG — the on-disk search1api keys are dead
+
+**Situation:** a check needs the product's real web-search pipeline (builtin
+`lobe-web-browsing____search` executing an actual HTTP search and rendering result
+cards), e.g. "ask the agent a weather question".
+
+**Doesn't work:** `SEARCH_PROVIDERS=search1api` with any `SEARCH1API_SEARCH_API_KEY`
+found in sibling repo `.env` files — they all return 401 (verify with a direct
+`curl api.search1api.com/search` before blaming the product). Keyless fallbacks
+don't exist: with no `SEARCH_PROVIDERS` the impl list is empty and every search
+returns "all configured providers returned errors"; public SearXNG instances
+rate-limit (429) or ship JSON-disabled (HTML back).
+
+**Works:** run a local SearXNG:
+`docker run -d -p 8888:8080 -v <dir>:/etc/searxng searxng/searxng` with a
+`settings.yml` of `use_default_settings: true`, `server.limiter: false`, and
+`search.formats: [html, json]`, then start the dev server with
+`SEARCH_PROVIDERS=searxng SEARXNG_URL=http://localhost:8888`. It aggregates real
+engines, so the whole product path (server search impl → result cards → tool
+message persistence) is genuine. English queries return results more reliably
+than Chinese ones. One trap when the model is a tool_call-emitting stub AND a
+synthetic context injector is active (e.g. `getGoalContext`): "last message is a
+tool result → answer" fires on the injected pair and skips the search — key the
+stub's answer-mode off the NAME of the last `function_call` instead.
 
 ## Detailed references
 

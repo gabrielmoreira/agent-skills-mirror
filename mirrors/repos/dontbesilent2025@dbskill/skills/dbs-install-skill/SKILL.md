@@ -15,7 +15,7 @@ description: 将单个 Skill 或 Skill 集合安装到通用 Agents、Claude Cod
 
 ### 公共入口
 
-脚本始终把 Skill 软链写入：
+脚本始终把 Skill 链接写入：
 
 - 通用 Agents：`~/.agents/skills/<skill-name>`
 
@@ -34,7 +34,7 @@ description: 将单个 Skill 或 Skill 集合安装到通用 Agents、Claude Cod
 
 ### 专属入口
 
-以下客户端当前仍使用专属目录。只有对应主目录已经存在时，脚本才创建软链：
+以下客户端当前仍使用专属目录。只有对应主目录已经存在时，脚本才创建链接：
 
 - Claude Code：`~/.claude/skills/<skill-name>`；
 - WorkBuddy：`~/.workbuddy/skills/<skill-name>`；
@@ -42,6 +42,8 @@ description: 将单个 Skill 或 Skill 集合安装到通用 Agents、Claude Cod
 - Kiro：`~/.kiro/skills/<skill-name>`；
 - Qwen Code：`~/.qwen/skills/<skill-name>`；
 - Cline：`~/.cline/skills/<skill-name>`。
+
+Unix-like 系统使用符号链接；Windows 的 Bash／MSYS 环境使用目录 Junction，避免 `ln -s` 在部分配置下生成实体目录副本。
 
 ### Grok 薄适配层
 
@@ -55,11 +57,11 @@ description: 将单个 Skill 或 Skill 集合安装到通用 Agents、Claude Cod
 
 每次执行 `link` 时，脚本同时处理历史遗留项：
 
-1. 删除公共入口兼容客户端专属目录中指向同一真源的冗余软链；
-2. 删除旧版脚本曾写入、当前已停止维护的宿主软链；
+1. 删除公共入口兼容客户端专属目录中指向同一真源的冗余链接；
+2. 删除旧版脚本曾写入、当前已停止维护的宿主链接；
 3. 删除同一宿主中指向同一真源、且规范名称已经存在的旧别名；
-4. 集合安装时删除指向集合内已失效源目录的断裂软链和 Grok 适配层；
-5. 保留真实目录、真实文件以及指向其他来源的软链，并报告冲突；
+4. 集合安装时删除指向集合内已失效源目录的断裂链接和 Grok 适配层；
+5. 保留真实目录、真实文件以及指向其他来源的链接，并报告冲突；
 6. 不删除源 Skill。
 
 ---
@@ -67,13 +69,13 @@ description: 将单个 Skill 或 Skill 集合安装到通用 Agents、Claude Cod
 ## 核心原则
 
 1. **一个公共入口。** 支持通用 Agents 目录的客户端统一读取 `~/.agents/skills`。
-2. **必要时补专属入口。** 仅给当前仍依赖原生目录的客户端创建软链。
+2. **必要时补专属入口。** 仅给当前仍依赖原生目录的客户端创建链接。
 3. **用户无需选择模式。** 脚本不要求用户提供路由参数。
 4. **公共兼容客户端只保留一份。** Codex 等客户端不能同时存在公共入口和专属入口。
-5. **各宿主只使用软链。** Grok 是唯一使用薄适配层的宿主。
+5. **各宿主只使用链接。** Windows 使用目录 Junction，Unix-like 系统使用符号链接；Grok 是唯一使用薄适配层的宿主。
 6. **不创建不存在的 Agent 主目录。** `~/.agents` 是公共安装入口，可以由脚本创建；其他 Agent 主目录不存在时直接跳过。
-7. **不覆盖真实目录。** 目标位置已有真实目录或文件时，保留并报告。
-8. **卸载只删派生产物。** `unlink` 只删除指向指定真源的软链，以及本工具生成的 Grok 适配层。
+7. **不覆盖真实目录。** 目标位置已有真实目录或文件时，保留并报告；Windows 上提示它可能是旧版 MSYS 生成的实体副本。
+8. **卸载只删派生产物。** `unlink` 只删除指向指定真源的符号链接或 Junction，以及本工具生成的 Grok 适配层。
 9. **优先使用脚本。** 使用本 Skill 自带的 `scripts/install-skill.sh`，不要临场重写安装命令。
 
 ---
@@ -143,7 +145,7 @@ skills/dbs-install-skill/scripts/install-skill.sh status <skill-name-or-path>
 ✓ 未发现冗余入口
 ```
 
-公共兼容客户端的专属目录中仍有同源软链时，状态返回失败并报告：
+公共兼容客户端的专属目录中仍有同源链接时，状态返回失败并报告：
 
 ```text
 ✗ 发现冗余入口：<target> -> <source>
@@ -173,7 +175,7 @@ skills/dbs-install-skill/scripts/install-skill.sh unlink <skill-name-or-path>
 - 公共入口：`~/.agents/skills/<skill-name>`；
 - 专属入口：仅写入本机已安装且仍需要专属目录的 Agent；
 - Grok：`~/.grok/skills/<skill-name>/SKILL.md`（本机存在时）；
-- 去重：已清理指向同一真源的历史冗余软链。
+- 去重：已清理指向同一真源的历史冗余链接。
 ```
 
 遇到真实目录或其他来源时：
@@ -193,10 +195,10 @@ skills/dbs-install-skill/scripts/install-skill.sh unlink <skill-name-or-path>
 - 入口名与真源 frontmatter `name` 一致；缺失 `name` 时才使用源目录名；
 - 外部路径使用绝对路径，或能从当前工作目录解析；
 - `~/.agents/skills/<name>` 是公共规范入口；
-- Codex 等公共兼容客户端的专属目录中没有同源软链；
-- 专属宿主目标位置若存在，必须是软链才允许更新；
+- Codex 等公共兼容客户端的专属目录中没有同源链接；
+- 专属宿主目标位置若存在，必须是指向当前真源的符号链接或 Junction；
 - Grok 目标位置若存在，必须是本工具生成的 Grok 适配层才允许更新；
-- 真实目录、真实文件和其他来源软链没有被删除；
+- 真实目录、真实文件和其他来源链接没有被删除；
 - 源目录没有被删除；
 - `private/` 与 `.private/` 没有被读取、复制、暂存或安装。
 

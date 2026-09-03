@@ -3,14 +3,15 @@ CLI interface for healthcheck skill.
 Handles command-line argument parsing and user interaction orchestration.
 """
 
+from dataclasses import asdict
+from skills.healthcheck.core.validation import SkillValidator, ValidationOrchestrator
 import argparse
 import sys
-from pathlib import Path
 from typing import List, Optional, Dict, Any
+from dataclasses import asdict
 
-from discovery import get_skills_directory, discover_skills, discover_skill_by_name
-from core.validation import SkillValidator
-from reporting import (
+from .discovery import get_skills_directory, discover_skills, discover_skill_by_name
+from .reporting import (
     generate_badges,
     generate_health_report,
     generate_processed_skills,
@@ -19,13 +20,13 @@ from reporting import (
 def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(
-        description="AEF-OMP Skill Health Checker - validates SKILL.md files and checks -stable suffix",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  %(prog)s my_skill                    # Check specific skill
-  %(prog)s --all                       # Process all skills in 3 batches
-  %(prog)s --help                      # Show help
+        description="AEF-OMP Skill Health Checker",
+        usage="""healthcheck.py [skill_name] [--all] [--help]
+
+EXAMPLES:
+  healthcheck.py                    # Check all skills (default mode)
+  healthcheck.py my_skill           # Check specific skill
+  healthcheck.py --all              # Process all skills in 3 batches
         """
     )
 
@@ -37,33 +38,29 @@ Examples:
 
     parser.add_argument(
         '--all',
+        dest='all_flag',
         action='store_true',
         help='Process all skills in 3 batches'
-    )
-
-    parser.add_argument(
-        '--help',
-        action='store_true',
-        help='Show help message'
     )
 
     return parser.parse_args()
 def validate_single_skill(skill_name: str) -> Optional[Dict[str, Any]]:
     """Validate a single skill by name"""
-    validator = SkillValidator()
+    orchestrator = ValidationOrchestrator()
 
     # Discover the skill file
-    skill_file = discover_skill_by_name(skill_name)
+    skill_file_path = discover_skill_by_name(skill_name)
 
-    if not skill_file:
+    if not skill_file_path:
         print(f"Skill '{skill_name}' not found", file=sys.stderr)
         return None
 
     print(f"Checking {skill_name}...", end=" ")
-    result = validator.validate_skill_file(skill_file)
-    print(f"{result['status']} (score: {result['validation_score']:.2f})")
+    result = orchestrator.validate_skill_file(skill_file_path)
+    print(f"{result.status} (score: {result.validation_score:.2f})")
 
-    return result
+    return asdict(result)
+
 def process_all_skills() -> List[Dict[str, Any]]:
     """Process all skills in 3 batches"""
     print("Processing all skills in 3 batches...")
@@ -73,31 +70,31 @@ def process_all_skills() -> List[Dict[str, Any]]:
     # Batch 1: Core skills (first 3)
     print("\n=== BATCH 1: CORE SKILLS ===")
     batch1_results = []
-    validator = SkillValidator()
+    orchestrator = ValidationOrchestrator()
 
     for skill_file in skills[:3]:
         print(f"Checking {skill_file.parent.name}...", end=" ")
-        result = validator.validate_skill_file(skill_file)
-        print(f"{result['status']} (score: {result['validation_score']:.2f})")
-        batch1_results.append(result)
+        result = orchestrator.validate_skill_file(skill_file)
+        print(f"{result.status} (score: {result.validation_score:.2f})")
+        batch1_results.append(asdict(result))
 
     # Batch 2: Extension skills (next 3)
     print("\n=== BATCH 2: EXTENSION SKILLS ===")
     batch2_results = []
     for skill_file in skills[3:6]:
         print(f"Checking {skill_file.parent.name}...", end=" ")
-        result = validator.validate_skill_file(skill_file)
-        print(f"{result['status']} (score: {result['validation_score']:.2f})")
-        batch2_results.append(result)
+        result = orchestrator.validate_skill_file(skill_file)
+        print(f"{result.status} (score: {result.validation_score:.2f})")
+        batch2_results.append(asdict(result))
 
     # Batch 3: Edge cases (remaining)
     print("\n=== BATCH 3: EDGE CASES ===")
     batch3_results = []
     for skill_file in skills[6:]:
         print(f"Checking {skill_file.parent.name}...", end=" ")
-        result = validator.validate_skill_file(skill_file)
-        print(f"{result['status']} (score: {result['validation_score']:.2f})")
-        batch3_results.append(result)
+        result = orchestrator.validate_skill_file(skill_file)
+        print(f"{result.status} (score: {result.validation_score:.2f})")
+        batch3_results.append(asdict(result))
 
     all_results = batch1_results + batch2_results + batch3_results
 
@@ -145,7 +142,6 @@ AEF-OMP Skill Health Checker Help
 Usage:
   healthcheck.py [skill_name]           # Check specific skill
   healthcheck.py --all                 # Process all skills in 3 batches
-  healthcheck.py --help                # Show help
 
 Validates SKILL.md files for:
   - Required fields: name, version, description, tools, userInvocable
@@ -171,29 +167,28 @@ def generate_all_reports(results: List[Dict[str, Any]]) -> None:
 
     # Generate badges
     generate_badges(results)
-
-    # Generate health report
     generate_health_report(results)
-
-    # Generate processed skills report
     generate_processed_skills(results)
-
-    # Print summary
-    total = len(results)
-    healthy = len([r for r in results if r['status'] == 'healthy'])
-    needs_review = len([r for r in results if r['status'] == 'needs_review'])
-    errors = len([r for r in results if r['status'] == 'error'])
-
+    
+    summary = generate_skills_summary(results)
+    
     print(f"\n=== SUMMARY ===")
-    print(f"Total skills checked: {total}")
-    print(f"Healthy skills: {healthy} ({healthy/total*100:.1f}%)")
-    print(f"Skills needing review: {needs_review} ({needs_review/total*100:.1f}%)")
-    print(f"Skills with errors: {errors} ({errors/total*100:.1f}%)")
-
-    stable_ready = len([r for r in results if r['status'] == 'healthy' and r['has_stable_suffix']])
-    if stable_ready > 0:
-        print(f"\n=== SKILLS READY FOR -STABLE DESIGNATION ===")
-        print(f"{stable_ready} skills have -stable suffix")
+    print(f"Total skills checked: {summary['summary']['total_skills']}")
+    print(f"Healthy skills: {summary['summary']['healthy_count']}")
+    print(f"Skills needing review: {summary['summary']['needs_review_count']}")
+    print(f"Skills with errors: {summary['summary']['error_count']}")
+    
+    if summary['summary']['stable_ready_count'] > 0:
+        print(f"\n=== SKILLS WITH STABLE SUFFIX ===")
         stable_skills = [r for r in results if r['status'] == 'healthy' and r['has_stable_suffix']]
         for skill in sorted([s['name'] for s in stable_skills]):
             print(f"  - {skill}")
+            
+    if summary['summary']['error_count'] > 0:
+        print("\n=== SKILLS WITH ERRORS ===")
+        for skill in summary['status_distribution']['error']:
+            print(f"  - {skill['name']}")
+            for issue in skill.get('issues', []):
+                print(f"    [FAIL] {issue}")
+
+    return None

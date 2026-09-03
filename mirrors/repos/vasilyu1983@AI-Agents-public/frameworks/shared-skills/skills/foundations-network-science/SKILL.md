@@ -9,7 +9,7 @@ last_validated: 2026-08-14
 # Network Science Foundations
 
 
-11 canonical network-science primitives, each solving a distinct structural or dynamic analysis problem. Primitives are domain-agnostic: the same PageRank that ranks web pages ranks citation authority, package influence, and audience amplification. The same percolation threshold that governs epidemic spread governs cascading failure in dependency graphs.
+12 canonical network-science primitives, each solving a distinct structural or dynamic analysis problem. Primitives are domain-agnostic: the same PageRank that ranks web pages ranks citation authority, package influence, and audience amplification. The same percolation threshold that governs epidemic spread governs cascading failure in dependency graphs.
 
 ## When to Apply
 
@@ -28,6 +28,8 @@ last_validated: 2026-08-14
 - Question is about queue or flow through a single bottleneck — use foundations-queueing-theory or theory-of-constraints
 - Edges are weak proxies (e.g. "users who viewed both products") — centrality is unreliable; validate edge semantics first
 - "Network effects" is a marketing claim, not a measured viral coefficient — quantify R first or skip the analysis
+
+**The data is tabular but might still be a graph problem.** Three criteria (Broadwater & Stillman 2025, §1.4) — any one is grounds to reframe: *implicit relationships and interdependencies* (entities connected by undocumented influence, co-investment, or co-occurrence rather than a recorded relation); *high dimensionality and sparsity* (many entities, few direct interactions — recommender interaction data, molecules; also the cold-start motivation); *complex nonlocal interactions* (an entity's outcome depends on entities reachable only through intermediaries — supply-chain cascades, propagation through a network over time). Key indicators and the closing self-test questions are in [`10-graph-embeddings.md`](assets/templates/network-science/10-graph-embeddings.md#is-this-a-gnn-problem-at-all-data-not-obviously-graph-shaped). If a criterion holds, design the structure explicitly with #12 before ingest, and establish a tabular (non-GNN) baseline before attributing anything to the graph.
 
 ## Contents
 
@@ -61,6 +63,7 @@ last_validated: 2026-08-14
 | [Graph Clustering](#9-graph-clustering) | How to partition nodes by structural similarity? | Graph with optional edge weights |
 | [Graph Embeddings](#10-graph-embeddings) | How to represent nodes as dense vectors? | Graph structure + optional node features _(For cross-domain transfer with zero labels, see Graph Foundation Models: Liu et al. TPAMI 2025.)_ |
 | [Temporal Networks](#11-temporal-networks) | How does time ordering of edges change reachability? | Time-stamped edge list |
+| [Graph Schema Design](#12-graph-schema-design) | What should be a node, an edge, or a property — and is that choice testable? | Non-graph source data + use-case queries |
 
 ---
 
@@ -81,6 +84,7 @@ Each primitive has a full playbook: Definition / When to use / Inputs / Outputs 
 | 9 | [Graph Clustering](assets/templates/network-science/09-graph-clustering.md) | Treating clustering as unstructured k-means; ignoring conductance |
 | 10 | [Graph Embeddings](assets/templates/network-science/10-graph-embeddings.md) | One-hot node encodings lose all structural information |
 | 11 | [Temporal Networks](assets/templates/network-science/11-temporal-networks.md) | Aggregating time-stamped edges loses causal ordering |
+| 12 | [Graph Schema Design](assets/templates/network-science/12-graph-schema-design.md) | Graph structure chosen implicitly at ingest, then frozen as technical debt |
 
 ---
 
@@ -96,6 +100,7 @@ Load [`references/patterns-scenarios-traps.md`](references/patterns-scenarios-tr
 
 ## Decision Checklist
 
+- [ ] **Structure not yet fixed**: Is the source data non-graph, or does more than one node/edge/property split look plausible? → graph schema design (#12) *first* — write a conceptual schema, build an instance model on real data, and test the constraints before any algorithm runs. Tabular layout is unambiguous; graph layout is not, and the choice becomes technical debt once a pipeline sits on it.
 - [ ] **Influence / importance ranking**: Which single node matters most? → choose the right centrality (#1); if endorsement-weighted → PageRank (#2)
 - [ ] **Cluster structure**: Do nodes group into cohesive communities? → community detection (#3) — use Louvain/Leiden for descriptive partitioning; if the question is "does community structure exist?" or requires statistical model comparison → inferential SBM (#3, Failure Mode 7); if cut-minimization is the goal → graph clustering (#9)
 - [ ] **Navigation / reachability**: Is average path length short despite size? → small-world test (#4)
@@ -122,6 +127,9 @@ Load [`references/patterns-scenarios-traps.md`](references/patterns-scenarios-tr
 | Community detection applied to graphs with < 50 nodes | Modularity gains are trivially achievable on small graphs; results are statistically meaningless | Use visualisation and domain knowledge for small graphs; reserve community detection for N ≥ 100 |
 | SIR model run on a group-interaction network (e.g. household spread, team transmission) without higher-order correction | Group interaction models produce a dual epidemic threshold and potential bistable regime absent in pairwise SIR (Ferraz de Arruda 2024, Nat. Rev. Phys.); pairwise SIR systematically understates outbreak risk | If the dataset has documented group events, use a hypergraph contagion model; check for bistability before setting intervention thresholds |
 | Applying pairwise community detection to a high-degree-heterogeneity hypergraph | Reducibility analysis (Lucas 2026) shows co-authorship-style networks cannot be collapsed to pairwise edges without dynamical information loss | Run the reducibility test first; if degree heterogeneity is high (e.g. χ > 0.5 for the dataset's irreducibility score), use a higher-order community detection method |
+| GNN shipped without a non-GNN baseline | With no tabular baseline (logistic regression / gradient-boosted trees / MLP on the same node features) there is no counterfactual, so any claimed benefit of graph structure is unfalsifiable | Train non-GNN baselines first, then a GCN to isolate what graph structure adds, then any attention architecture (Broadwater & Stillman 2025, §4.3–4.4) |
+| GNN architecture selected on published Big-O complexity | GNNs mix heterogeneous operations with different complexities and do not all use the same operations; the literature typically compares one major operation, not whole algorithms, and implementation and hardware shift the result | Treat Big-O as an ordering hint only; benchmark candidate architectures on your own data and hardware (§7.6.1) |
+| Layers added to reach a distant influencing node | A large "problem radius" (long-range dependency task) is a second, distinct cause of over-smoothing — the depth that would solve the task is the depth that destroys the representation | Reduce the radius instead of adding depth: coarsening, global/virtual nodes, hierarchical message passing. Note the architecture ordering: GraphSAGE's fixed-size neighbour sampling mitigates; GCN is more at risk; GAT's attention only partially lowers it since aggregation stays local (§4.5.2) |
 | Assuming pairwise edges are sufficient for temporal network inference | >60% of real EEG dynamics are non-pairwise; pairwise temporal models can systematically underfit | Before committing to standard temporal edges, test higher-order fit using THIS (Arnaudon 2025) if time-series data is available |
 
 ---

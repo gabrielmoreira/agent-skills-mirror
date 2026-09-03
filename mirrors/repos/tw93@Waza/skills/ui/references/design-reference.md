@@ -21,7 +21,6 @@ Before writing the first component, name the single CSS strategy for the project
 
 Before submitting, check whether any of the following slipped in without intention:
 
-- A purple or blue gradient over white as the hero background
 - A three-part hero: large headline, one-line subtext, two CTA buttons side by side
 - A grid of cards with identical rounded corners, identical drop shadows, identical padding
 - A top navigation bar with logo left, links center, primary action far right
@@ -46,9 +45,9 @@ Placeholder copy that looks real but is not real breaks the illusion the moment 
 
 **UI copy:**
 - Sentence case on all headings. Title Case On Every Heading is the most common AI tell in body copy.
-- Remove exclamation marks from success states ("Saved!" → "Saved", "Done!" → "Done"). Reserve `!` for genuine urgency.
+- Remove exclamation marks from success states ("Saved!" becomes "Saved", "Done!" becomes "Done"). Reserve `!` for genuine urgency.
 - Never open an error message with "Oops!". It reads as condescending.
-- No passive voice in error messages ("Something went wrong" → "We couldn't load your data. Try refreshing.").
+- No passive voice in error messages ("Something went wrong" becomes "We couldn't load your data. Try refreshing.").
 - Banned AI marketing words in hero copy, CTAs, and feature descriptions: Elevate, Seamless, Unleash, Delve, Tapestry, Game-changer, Next-Gen, "In the world of...". These words communicate nothing about the product. Name the specific value instead.
 
 ## Placeholders Over Imitations
@@ -84,12 +83,11 @@ Once motion is earned, duration follows the element: press feedback 100-160ms, t
 - Staggered enter: split content into semantic chunks with ~100ms delay; titles into words at ~80ms; typical enter uses `opacity: 0 → 1`, `translateY(12px) → 0`, and `blur(4px) → 0`
 - Subtle exit: use a small fixed `translateY(-12px)` instead of full height; keep duration ~150ms `ease-in`, shorter and softer than enter. That short exit is the only place `ease-in` belongs; on an enter, hover, press, or anything the user is watching for a response, it delays the first frame and reads as lag
 - Contextual icon swaps: animate with `scale: 0.25 → 1`, `opacity: 0 → 1`, and `blur: 4px → 0px`. With a spring library: `{ type: "spring", duration: 0.3, bounce: 0 }`. Without: keep both icons in DOM (one absolute) and cross-fade with CSS using `cubic-bezier(0.2, 0, 0, 1)`. No rotation unless rotation is semantically meaningful (e.g. a chevron indicating direction change)
-- Scale on press: buttons use `scale(0.96)` on active/press via CSS transitions so the press can be interrupted; add a `static` prop to disable when motion would be distracting. Hover alone is not press feedback: a surface that lights up on hover but does not move on press leaves the click unacknowledged, and pointer-only hover states do not exist on touch at all
+- Scale on press: buttons use `scale(0.96)` on active/press via CSS transitions so the press can be interrupted; add a `static` prop to disable when motion would be distracting
 - Page-load guard: use `initial={false}` on animated presence wrappers for toggles, tabs, and icon swaps to prevent enter animations on first render; do not use it for intentional page-load entrance sequences
 - When a crossfade between two states still reads as two overlapping objects after trying other curves and durations, add `filter: blur(2px)` during the transition to blend them into one; keep blur under 20px, it is expensive in Safari
 
 ### Performance
-- Transition specificity: never `transition: all`; list exact properties (e.g., `transition-property: scale, opacity`). Tailwind's `transition-transform` covers `transform, translate, scale, rotate`; use `transition-[scale,opacity,filter]` for mixed properties
 - GPU compositing: only use `will-change` for `transform`, `opacity`, or `filter`. Never `will-change: all`. Add only when you notice first-frame stutter; do not apply preemptively to every element
 - Images: explicit `width` and `height` (prevents layout shift)
 - Below-fold images: `loading="lazy"`
@@ -113,7 +111,7 @@ Once motion is earned, duration follows the element: press feedback 100-160ms, t
 - Shadows over borders: use layered `box-shadow` for depth on cards, buttons, and elevated elements so the surface feels lifted, not fenced in; reserve actual `border` for dividers, table cells, and layout separation (applies primarily to light mode; on dark surfaces see the dark-mode surface hierarchy rule below)
 - Image outlines: add a subtle inset outline so images hold their own depth without altering layout dimensions: `outline: 1px solid rgba(0,0,0,0.1); outline-offset: -1px` (light) or `outline: 1px solid rgba(255,255,255,0.1); outline-offset: -1px` (dark)
 - Minimum hit area: keep every interactive target at least 40×40px so even small controls feel generous and precise; extend with a centered pseudo-element when the visible element is smaller, and never let hit areas of two interactive elements overlap
-- Multi-card alignment: in a card group, bottom-align all CTA buttons so height variations between cards don't create a ragged action row. In pricing or comparison cards, align feature list items to a shared Y origin across all columns. In side-by-side panels (testimonials, plans, feature breakdowns), title, description, price, and action button must share baselines across the row. Section top and bottom padding need not be symmetric: optical balance often requires bottom padding 20-25% larger than top. Constrain body paragraph width to approximately 65 characters (ch) to maintain comfortable reading line length.
+- Multi-card alignment: cards in one row share one height, and a shorter card gets another line of fact, not extra padding. Bottom-align all CTA buttons so height variations between cards don't create a ragged action row. In pricing or comparison cards, align feature list items to a shared Y origin across all columns. In side-by-side panels (testimonials, plans, feature breakdowns), title, description, price, and action button must share baselines across the row. Section top and bottom padding need not be symmetric: optical balance often requires bottom padding 20-25% larger than top. Constrain body paragraph width to approximately 65 characters (ch) to maintain comfortable reading line length.
 - Light-mode app surface hierarchy: adjacent nested surfaces must be visually distinguishable. Minimum: background-color step of at least 4% lightness between sidebar and main area, and between main area and cards; or a shadow of at least `0 1px 3px rgba(0,0,0,0.10)` on elevated cards. A white card on a near-white background with `box-shadow: 0 1px 2px rgba(0,0,0,0.05)` is invisible -- that is not depth, it is noise.
 - Dark-mode surface hierarchy: the page canvas is a near-black solid (e.g. `#08090a`). Elevation is communicated by adding semi-transparent white overlays on top of that canvas: cards at `rgba(255,255,255,0.02)`, elevated surfaces at `0.04`, prominent panels at `0.05`. Borders follow the same logic: `rgba(255,255,255,0.05)` for subtle, `0.08` for standard. Traditional drop shadows (dark on dark) are nearly invisible; luminance stepping through background opacity is the primary depth cue on dark surfaces.
 - Border radius system: define a named radius scale during direction lock instead of picking values ad-hoc. A minimal scale is 3–4 tiers (e.g. `{4px, 8px, 12px, pill}`); a richer system might run 6–8 tiers. The point is committing to a named set before the first component so that all surfaces speak the same spatial language -- not covering every possible radius value.
@@ -132,8 +130,8 @@ When extending an existing interface, first spend time understanding its visual 
 If swapping in different content would make the new component look out of place, the vocabulary was not matched closely enough.
 
 ### Responsive & Screen Verification
-- Verify the rendered surface, not a type check or CSS-balance read. Several regressions (early wraps, orphaned separator dots, table overflow) are invisible in source and only show in the render. Screenshot at phone (375px, plus 320px for buttons) and desktop (1280px), in every shipped locale.
-- Line widows: eliminate 1-2 word last lines by trimming the copy so the block rebalances, not by adding a `max-width` cap (a cap narrower than its container wraps early and leaves empty space on the right, which reads as a premature break). Detect objectively: flag any text block whose last line is under ~13% of its widest line; eyeballing misses them, and nested `<code>` hides them from greps.
+- Verify the rendered surface, not a type check or CSS-balance read. Several regressions (early wraps, orphaned separator dots, table overflow) are invisible in source and only show in the render. Screenshot at phone (375px, plus 320px for buttons) and desktop (1280px), in every shipped locale, with long words and localized strings inside buttons, tabs, nav, and compact cards.
+- Line widows: eliminate 1-2 word last lines by trimming the copy so the block rebalances, not by shrinking type and not by adding a `max-width` cap (a cap narrower than its container wraps early and leaves empty space on the right, which reads as a premature break). Detect objectively: flag any text block whose last line is under ~13% of its widest line; eyeballing misses them, and nested `<code>` hides them from greps.
 - Mobile CTA resting state: natural width, left-aligned to the surrounding text edge, height unchanged. Centering reads as floating; full-width `flex: 1` reads heavy; dropping button height to relieve a "too full" feel treats a width problem as a height one.
 - Spacing is a system, not a per-gap value. Run section spacing as one responsive ladder; when a page reads too airy or too tight, scale the whole set by a single factor across all breakpoints rather than tuning one gap. Asymmetry that survives tuning is structural.
 - Long-form and documentation surfaces stay light: a borderless prev/next text pager (not bordered cards), a sidebar active state as a thin rail rather than a filled block, and build-time zero-runtime-JS code highlighting (bake static spans, plain code stays the source) over a shipped highlighter.
@@ -144,7 +142,7 @@ For dashboards, analytics views, chart-heavy interfaces, or number-dense display
 
 ## Reflex Fonts to Reject
 
-LLMs default to these because they dominate training data. Using them signals "no decision was made." Pick from foundries with a clear voice instead. The ban is on reflex use as a display face; informed product-UI use (e.g. Inter for a dense data table) is allowed when justified. This list is not exhaustive -- any font used reflexively without a stated reason qualifies.
+LLMs default to these because they dominate training data. Using them signals "no decision was made." Pick from foundries with a clear voice instead. The ban is on reflex use as a display face; informed product-UI use (e.g. Inter for a dense data table) is allowed when justified.
 
 Reject: Inter, DM Sans, DM Serif Display, DM Serif Text, Outfit, Plus Jakarta Sans, Instrument Sans, Instrument Serif, Space Grotesk, Space Mono, IBM Plex Sans, IBM Plex Serif, IBM Plex Mono, Syne, Fraunces, Newsreader, Lora, Crimson Pro, Crimson Text, Playfair Display, Cormorant, Cormorant Garamond.
 
@@ -191,7 +189,7 @@ If the answer is not obvious from the context, default to light. If the user's c
 
 ## Absolute Bans (CSS-Pattern Level)
 
-These patterns appear in the majority of AI-generated interfaces. Each one has a specific rewrite. Not exhaustive -- any CSS pattern applied as a mindless default rather than an intentional choice belongs in the same category.
+These patterns appear in the majority of AI-generated interfaces. Each one has a specific rewrite.
 
 | Pattern | Why | Rewrite |
 |---|---|---|
@@ -201,31 +199,15 @@ These patterns appear in the majority of AI-generated interfaces. Each one has a
 | Purple-to-blue gradients or cyan-on-dark accent systems | The canonical "AI design" color palette; communicates nothing about the brand | Pick a palette from the brand words via the OKLCH rules above |
 | Generic rounded-rect card with `box-shadow` as the default container | Template thinking; applies the same container to every content type regardless of hierarchy | Default to cardless sections; only add card treatment when the content type requires it |
 | Modals as a lazy escape for overflow UI | Interrupts flow and breaks browser back navigation; used when an inline expansion, drawer, or separate page would be better | Inline expand, detail panel, or dedicated route; modals only when the action truly requires focus-lock |
-| `transition: all` or animating width/height/padding/margin | Forces the browser into layout recalculation on every frame | List exact properties (`transition-property: transform, opacity`); use `grid-template-rows: 0fr to 1fr` for height reveals |
+| `transition: all` or animating width/height/padding/margin | Forces the browser into layout recalculation on every frame | List exact properties (`transition-property: transform, opacity`; Tailwind's `transition-transform` covers `transform, translate, scale, rotate`, use `transition-[scale,opacity,filter]` for mixed properties); use `grid-template-rows: 0fr to 1fr` for height reveals |
 
 ## Reference-site Brand Presets (awesome-design-md)
 
-`VoltAgent/awesome-design-md` maintains 66+ curated DESIGN.md files extracted from real-world brand sites. Running `npx getdesign@latest add <brand>` drops the file into the project root, giving the agent concrete token values to decompose rather than reasoning from memory.
+`VoltAgent/awesome-design-md` maintains DESIGN.md files extracted from real-world brand sites. Running `npx getdesign@latest add <brand>` drops the file into the project root, giving the agent concrete token values to decompose rather than reasoning from memory.
 
-**Usage rule:** never auto-run the command. Offer it as an option during direction lock, run it only with explicit user approval, and treat the result as seed decomposition material, not a finished direction. After an approved run, read the generated `DESIGN.md` at project root and do the 3-property decomposition against that file rather than from memory; the user still names the aesthetic precisely.
-
-**Brands in the catalog** (recognize these when a user names a reference):
-
-| Category | Brands |
-|---|---|
-| AI & LLM | Claude, Cohere, ElevenLabs, Mistral, Ollama, Replicate, RunwayML, Together AI, xAI |
-| Dev Tools & IDEs | Cursor, Expo, Lovable, Raycast, Superhuman, Vercel, Warp |
-| Backend / DB / DevOps | ClickHouse, Composio, HashiCorp, MongoDB, PostHog, Sanity, Sentry, Supabase |
-| Productivity & SaaS | Cal.com, Intercom, Linear, Mintlify, Notion, Resend, Zapier |
-| Design & Creative | Airtable, Clay, Figma, Framer, Miro, Webflow |
-| Fintech & Crypto | Binance, Coinbase, Kraken, Revolut, Stripe, Wise |
-| E-commerce & Retail | Airbnb, Meta, Nike, Shopify |
-| Media & Consumer | Apple, IBM, NVIDIA, Pinterest, PlayStation, SpaceX, Spotify, Uber |
-| Automotive | BMW, Bugatti, Ferrari, Lamborghini, Tesla |
+**Usage rule:** never auto-run the command. Offer it as an option during direction lock, run it only with explicit user approval, and treat the result as seed decomposition material, not a finished direction. After an approved run, read the generated `DESIGN.md` at project root and do the three-property decomposition from direction question 2 in `SKILL.md` against that file rather than from memory; the user still names the aesthetic precisely.
 
 **Conflict resolution:** this skill's rules always win. If the preset recommends a font on the Reflex Fonts blocklist (e.g. Inter as a display face), discard it and apply the Font Selection Procedure. If it proposes a pattern in the Absolute Bans table (e.g. purple-to-blue gradient), discard it. State the override in the handoff summary.
-
-Source: [github.com/VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)
 
 ## Reference Material Priority
 
@@ -262,10 +244,6 @@ These are audit prompts, not automatic implementation scope. Run through them be
 
 These are product-readiness questions. A visual-polish request may surface them, but does not authorize building them.
 
-## AI Slop Test
-
-Would a stranger glancing at the first viewport say "an AI made this" immediately? If yes, the committed direction was not committed enough. The usual culprits: reflex font, default purple accent, centered hero with generic card grid beneath. Fix the typography, the color system, or the layout until the answer flips.
-
 ## App Shell Rules
 
 When building a sidebar + main workspace layout (Slack, Linear, Notion class):
@@ -286,4 +264,4 @@ When asked for design options, give at least 3 variations spread across genuinel
 
 ---
 
-*Rules in Reflex Fonts, Font Selection, OKLCH, Theme Matrix, Absolute Bans, the motion rules, and AI Slop Test adapted from [pbakaus/impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0). DESIGN.md Scaffold adapted from [getdesign.md](https://getdesign.md) (MIT); concept credited to Google Stitch. Brand preset catalog from [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) (MIT). Content Authenticity, Multi-Card Alignment, and Strategic Omissions inspired by [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).*
+*Rules in Reflex Fonts, Font Selection, OKLCH, Theme Matrix, Absolute Bans, the motion rules, and the AI Slop Test adapted from [pbakaus/impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0). DESIGN.md Scaffold adapted from [getdesign.md](https://getdesign.md) (MIT); concept credited to Google Stitch. Content Authenticity, Multi-Card Alignment, and Strategic Omissions inspired by [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill).*

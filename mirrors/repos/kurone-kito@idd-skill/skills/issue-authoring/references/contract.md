@@ -378,6 +378,14 @@ Ask these checks:
 1. When an issue reuses an existing identifier or field name, confirm the
    specified value matches that name's established semantics in the
    codebase — do not overload a name with a new shape or source.
+   **Remedy**: mint a new, distinctly named field instead of overloading
+   the existing one. Worked example: a candidate issue's acceptance
+   criterion reads "set `retryAttempts` to the elapsed wait time in
+   milliseconds" — `retryAttempts` already means a whole-pass apply
+   attempt _count_ in `audit-pr-cleanup.mts`'s `CleanupAuditReport`, so
+   reusing it for a duration overloads an established name with an
+   incompatible shape. Fix: mint a new field instead, e.g.
+   `retryWaitMs`, and leave `retryAttempts` untouched.
 2. Flag values that are mutable at runtime — specify a live read at the
    point of use rather than a one-time capture at construction.
 3. When an issue proposes to **delete, replace, or "align to upstream"**
@@ -607,11 +615,14 @@ Validation expectations:
 
 ### Candidate files format
 
-The optional `## Candidate files` section is not free-form prose: the
+The `## Candidate files` section is not free-form prose: the
 `discover-shared-file-overlap` evidence helper parses it as machine input
 for the A4 Step 2 high-contention shared-file check (see
 [High-contention shared-file overlap](https://github.com/kurone-kito/idd-skill/blob/main/docs/policy-constants.md#high-contention-shared-files)).
 Populate it accurately rather than as a loose reading aid for humans.
+Optional for an orphan or roadmap issue; required for a
+[child issue under a roadmap](#child-issue-under-a-roadmap) (see
+[Required draft content](#required-draft-content) below).
 
 - List each candidate file path inside backticks, one path (or one
   bullet) per line — for example `` - `src/scripts/idd-onboard.mts` ``.
@@ -687,6 +698,8 @@ Validation expectations:
 - `## Background`
 - `## Proposed change`
 - `## Acceptance criteria`
+- `## Candidate files` (see
+  [Candidate files format](#candidate-files-format) above)
 - optional dependency line or sequential roadmap marker when needed
 - an autopilot-suitability footer at the end of the body (visible
   line + `<!-- <marker-prefix>-autopilot-suitability: N -->` marker)
@@ -699,6 +712,10 @@ Validation expectations:
 
 - the issue is referenced from its parent roadmap task list
 - acceptance criteria are locally verifiable
+- `## Candidate files` lists the files the child is expected to touch,
+  so the A4 Step 2 high-contention shared-file check
+  (`discover-shared-file-overlap`) can actually engage instead of
+  silently no-opping for lack of input
 - any dependency marker is resolvable, intentionally chosen, and
   justified
 - the issue can be claimed independently without absorbing sibling work

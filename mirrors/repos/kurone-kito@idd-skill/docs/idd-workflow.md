@@ -19,6 +19,14 @@ Use it when you need to answer three questions quickly:
 - When does the workflow rely on GitHub Copilot review state rather than
   on my local CLI?
 
+This guide's `.github/` distribution, tooling, and Copilot-advisory
+review steps describe today's only implemented provider, GitHub. IDD
+defines a provider-neutral adapter boundary internally as a staged
+foundation for future non-GitHub adapters; see
+[Provider Portability](customization.md#provider-portability) for the
+capability-group model and staged rollout order. Nothing below assumes
+that boundary is exercised by a shipped adapter yet.
+
 ## Start sequence
 
 If you arrived here from your agent's entry file, pick up at step 2. If
@@ -380,19 +388,34 @@ standard file the same way a standard-tier session would.
 
 ## ReviewItems_snapshot lifecycle
 
-`ReviewItems_snapshot` is the immutable collection created from E1's
-activity-universe fetch.
+`ReviewItems_snapshot` is a session-local collection, scoped to the
+current claim, created from E1's activity-universe fetch — not a
+literally immutable value a later session may reuse as-is.
 
-| Phase | Operation                                                                                                   | State     |
-| ----- | ----------------------------------------------------------------------------------------------------------- | --------- |
-| E1    | Fetch threads/reviews/comments, exclude trusted operational markers, and freeze the current item universe   | created   |
-| E2    | Run critique pass and append newly found findings to the same snapshot scope                                | extended  |
-| E3    | Evaluate empty/non-empty routing based on the frozen snapshot plus E2 findings                              | evaluated |
-| E4-E8 | Classify, score, disposition, and verify each snapshot item (PATH A/PATH B) without redefining the snapshot | triaged   |
-| E9    | Fix Accepted PATH A items that were selected from the snapshot                                              | actioned  |
+| Phase   | Operation                                                                                                   | State     |
+| ------- | ----------------------------------------------------------------------------------------------------------- | --------- |
+| E1      | Fetch threads/reviews/comments, exclude trusted operational markers, and freeze the current item universe   | created   |
+| E2      | Run critique pass and append newly found findings to the same snapshot scope                                | extended  |
+| E3      | Evaluate empty/non-empty routing based on the frozen snapshot plus E2 findings                              | evaluated |
+| E4-E8   | Classify, score, disposition, and verify each snapshot item (PATH A/PATH B) without redefining the snapshot | triaged   |
+| E9-E11  | Fix Accepted PATH A items, validate with a critique pass, and resolve conflicts with `{development-branch}` | actioned  |
+| E12     | Lint, test, and push the commit(s) addressing the actioned items                                            | committed |
+| E13-E14 | Reply to each snapshot item with its disposition, resolve its thread, and request re-review                 | replied   |
+| E15     | CI resolves for the pushed commit(s) and the loop returns to E1, ending this snapshot's role for the round  | complete  |
 
 The name intentionally emphasizes snapshot semantics: E1-E3 builds and
-gates on a time-locked view, while E4-E8 triages that view.
+gates on a time-locked view, E4-E8 triages that view, and E9-E15 drives
+it to completion within the current session before the next E1 fetch
+supersedes it.
+
+**Cross-session hygiene**: because the snapshot is session-local, a
+resumed or forced-handoff session must not inherit a prior session's
+`ReviewItems_snapshot`, watermark, or baseline markers as still
+authoritative for its own review pass. Rebuild from a fresh E1 fetch
+instead, and treat prior-claim operational markers as non-reusable even
+when the branch and HEAD are unchanged — see
+`idd-resume.instructions.md`'s CI/review routing table and its
+forced-handoff recovery note for the authoritative rule.
 
 ## Artifact taxonomy and ownership
 
@@ -456,6 +479,33 @@ target directly before Claim. The shortcut avoids broad roadmap
 enumeration, but it still applies targeted readiness checks, the A4
 viability gate, and the A4.5 suitability gate before the normal A5 claim
 safety checks.
+
+## External-signal entry path
+
+The Discover -> Claim -> Work loop above only reads issues already
+present in the tracker. A repository fed by an external signal source
+(error tracker, alert, support intake) needs a distinct on-ramp into
+issue-authoring before that loop ever sees anything.
+
+1. **Triage** (optional, agent-local): classify the incoming signal and
+   dedupe it against existing open issues or roadmap nodes before
+   drafting anything new. IDD does not define this stage's tooling — a
+   webhook receiver, a scheduled poll, or a manual review are all
+   equally valid, repository- or agent-specific integrations.
+2. **Hand off to issue-authoring**: once a signal survives triage as a
+   genuinely new, actionable item, feed its content to
+   `skills/issue-authoring/` the same way a human-authored idea would
+   be (see
+   [Artifact taxonomy and ownership](#artifact-taxonomy-and-ownership)
+   above). The skill produces a normal, schema-conformant IDD issue.
+3. **Rejoin the normal loop**: the produced issue is claimable by
+   Discover like any other issue — nothing about its external origin is
+   visible to A0-A5.
+
+Because the triage stage is optional and agent-local, an issue produced
+this way must never cite the triage tooling itself as a completion
+dependency: its acceptance criteria stay implementable by any agent,
+including one lacking that specific integration.
 
 ## Issue-author approval contract
 
@@ -835,6 +885,11 @@ not sufficient waiver evidence. In solo-maintainer repositories, this
 helper-generated comment is the auditable authorization surface because
 self-approval cannot express the required claim, head, check, and expiry
 proof.
+
+A waiver posted before its own effectiveness precondition is met is
+valid but inert until then; see
+[`idd-pr-submit.instructions.md`'s D4](../.github/instructions/idd-pr-submit.instructions.md)
+for the mechanical check.
 
 ## Optional helper scripts
 

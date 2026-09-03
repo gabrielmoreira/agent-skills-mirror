@@ -3,7 +3,7 @@ name: software-search
 description: "Designs application search systems. Use when choosing engines, indexing, relevance tuning, facets, autocomplete, or search analytics."
 compatibility: Portable core. Works on Claude Code and Codex.
 version: "1.1"
-last_validated: 2026-07-11
+last_validated: 2026-08-24
 ---
 
 # Search Engineering
@@ -139,6 +139,54 @@ For most applications, PostgreSQL is good enough. Evaluate dedicated engines onl
 
 **Relevance tuning loop** — ship a baseline, measure with analytics, tune iteratively, repeat. Each iteration should move a measurable metric (zero-result rate, MRR, CTR at position 1) not just "feel better."
 
+### Query Classification Without a Trained Classifier
+
+Before reaching for a trained intent classifier or an LLM call, check whether the index
+itself can classify the query. If documents already carry a category or classification
+field, a semantic-knowledge-graph (SKG) traversal runs a k-nearest-neighbour search
+against that field and returns the categories most related to the query — no training
+set, no model to serve. Grainger et al. describe this as asking the graph to "find the
+category with the highest relatedness to my starting node," where the starting node is
+the user's query.
+
+**What it buys you**: classification at index-lookup latency and index-lookup cost,
+using the corpus you already have. Because the score is computed per query against
+whatever terms the query actually contains, added context shifts the classification
+without any retraining — the book's worked example moves `driver` from a travel
+reading to a devops reading once `install` is added to the query.
+
+**A second traversal disambiguates.** Traverse query → category → keywords and you get
+a contextualised related-terms list per sense, which separates polysemous terms
+("server" as restaurant staff vs. as a machine) into distinct meanings. Grainger et al.
+warn against the lazy fallback here: given multiple plausible senses, group results by
+meaning, pick the most likely one, interleave deliberately, or offer alternative query
+suggestions — an intentional choice beats lumping the senses together.
+
+**Where to apply the classification**: as an auto-applied filter, as a relevance boost,
+as a route to a context-specific ranking algorithm or landing page, or as input to term
+disambiguation.
+
+**Limits and guardrails**:
+
+- The graph is statistical, not curated — relationships exist only because terms
+  co-occur in the corpus, so expect noise. Set a minimum-occurrence threshold above 1
+  to suppress false positives.
+- Efficacy depends on how well user queries overlap the indexed content. If most
+  queries are for a vocabulary your corpus barely covers, content-derived
+  classification will misread them; user-signal-derived relationships are the
+  complement for that case.
+- Scores are comparative, not calibrated probabilities. Treat a negative or
+  near-zero relatedness score as "this category is not the sense," and prefer the
+  known user context over the top score whenever context is available.
+
+**The 2026 alternative**: an LLM call classifies query intent with no category field
+and no corpus overlap requirement, and handles queries whose vocabulary the index has
+never seen. It costs a model call on the query path. Where the latency budget is tight
+(autocomplete, high-QPS product search) or per-query cost matters, the index-side
+traversal is the cheaper leg; where budget permits and query vocabulary is open-ended,
+an LLM classifier is the more capable one. Measure both against the same judged-query
+set before choosing.
+
 ## Vector Search API Pattern
 
 Use this pattern when semantic search is a product feature, not just an LLM
@@ -189,6 +237,65 @@ Do not hand-pick weights from intuition. Calibrate weights against judged
 queries and analytics slices. If scores come from different systems and cannot
 be normalized safely, prefer rank-based fusion such as RRF before applying
 business boosts.
+
+### Index-Time vs Query-Time Signals Boosting
+
+Once popularity or engagement signals are part of the ranker, there is a second
+decision: where the boost is applied. Grainger et al. frame it as scale versus
+flexibility.
+
+**Query-time boosting** keeps signals in a separate sidecar collection. Each incoming
+query first looks up its boosts there, then the boosts are injected into the main
+query. Because the collections stay separate, signals for one query can be updated by
+touching one document, boosting can be switched off by simply skipping the lookup, and
+a different boosting algorithm can be swapped in at any time. That flexibility — and
+the ease of incorporating real-time signals and running ranking experiments — is the
+reason it is the more common implementation.
+
+Its costs are structural, not incidental:
+
+- Every search becomes two searches back-to-back; the main query waits on the lookup.
+- Only a top-N slice of boosted documents can be injected before query cost becomes
+  unreasonable, so relevance is traded against scalability. A query with hundreds of
+  documents carrying signals will boost only the handful that fit.
+- Paging degrades. Covering page 2 means loading more boosts than page 1 did, page 10
+  more still, so deep paging gets progressively slower and can time out. Worse, boost
+  is only one scoring factor: as the boost set grows between pages, documents can jump
+  onto a page the user already passed or reappear on a later one, producing skipped
+  and duplicated results.
+
+**Index-time boosting** inverts the problem — instead of boosting popular documents
+for a query at query time, it writes the popular queries and their boost values into a
+field on each document at indexing time, and the query simply searches that field. The
+same signals aggregation feeds both; only the final application step differs. This
+removes the second query, keeps query cost flat as the number of boosted documents
+grows, and fixes paging outright, because every matching document carries its boost
+rather than just the top-N that fit in a query string.
+
+Its costs land on the indexing side:
+
+- Adding or removing a keyword from the model requires reindexing every document
+  associated with that keyword. Incremental per-keyword updates can therefore mean
+  continuous reindexing; batch regeneration can mean reindexing the whole corpus.
+- Changing the boosting function needs a migration, not an edit. Reweighting click
+  versus purchase signals means writing a second boost field, reindexing into it, then
+  cutting the query over — otherwise scores fluctuate while the corpus is half-updated.
+- Under sustained indexing pressure, separate the servers that index from the servers
+  that serve queries, or indexing CPU and memory will degrade query latency. Several
+  engines expose a mechanism for this (replica types, follower indexes); confirm the
+  specific mechanism and its current behaviour in your engine's own docs.
+
+**Choosing**: take query-time boosting when the ranking function is still moving —
+active experimentation, real-time signals, boosts that need to be toggled per request.
+Take index-time boosting when the model has stabilised and scale is the constraint:
+deep paging matters, per-query boost sets are large, or query latency is the budget
+under pressure. The book's own summary of the tradeoff is that query-time is more
+flexible while index-time is more scalable and gives more consistent relevance ranking.
+
+For the full learning-to-rank pipeline that sits above these signal decisions — feature
+logging, judgment lists, model training, and reranking — see
+[ai-rag](../ai-rag/SKILL.md), whose `references/learning-to-rank-pipeline.md`
+covers it end to end.
 
 ### Vector Memory Sizing (Worked Example)
 

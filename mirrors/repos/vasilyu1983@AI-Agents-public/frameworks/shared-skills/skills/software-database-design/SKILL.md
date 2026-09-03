@@ -289,11 +289,13 @@ Full pattern (collection topology, vector index, memory schema, operational chec
 
 ### References
 
-- [schema-design-patterns.md](references/schema-design-patterns.md) — Common schema patterns (polymorphic, multi-tenant, audit trails)
-- [migration-strategies.md](references/migration-strategies.md) — Zero-downtime migrations, expand-contract, blue-green data
+- [schema-design-patterns.md](references/schema-design-patterns.md) — Common schema patterns (polymorphic, multi-tenant, audit trails), PostgreSQL type-choice forensics (MONEY/SERIAL/CHAR(n)), UUIDv4 PK costs, hierarchy storage models, partition rebalancing
+- [migration-strategies.md](references/migration-strategies.md) — Zero-downtime migrations, expand-contract, blue-green data, major-version upgrade regressions
+- [sharding-decision-framework.md](references/sharding-decision-framework.md) — When to shard (after vertical/read-pool/queuing options), ER-diagram method for choosing a partitioning key, what cross-shard joins and transactions cost
 - [orm-framework-guide.md](references/orm-framework-guide.md) — EF Core, SQLAlchemy, Prisma, Drizzle, Mongoose patterns
 - [nosql-modeling.md](references/nosql-modeling.md) — Document, key-value, and graph modeling patterns
 - [storage-paradigm-selection.md](references/storage-paradigm-selection.md) — Relational vs. graph vs. vector decision matrix and common polyglot combinations
+- [transactions-and-storage-engines.md](references/transactions-and-storage-engines.md) — Isolation anomaly taxonomy (write skew, phantoms), serializability implementations, LSM vs B-tree tradeoffs, LSM compaction strategies and tombstone rules, RUM conjecture, Bw-trees
 - [mongodb-atlas-ai-context.md](references/mongodb-atlas-ai-context.md) — MongoDB Atlas as an AI agent context layer (RAG, memory, hybrid search)
 
 ### Related Skills

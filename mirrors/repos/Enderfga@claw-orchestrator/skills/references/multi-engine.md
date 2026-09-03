@@ -272,6 +272,44 @@ await manager.startSession({
 });
 ```
 
+### Community engine presets
+
+`customEngine` accepts either an inline `CustomEngineConfig` or the id of a preset
+bundled in `configs/engines/`. The preset form exists so a third-party CLI is
+described once and shipped, rather than retyped by every caller.
+
+Presets are **community** entries, and the tier line is verification rather than
+code quality:
+
+| Tier          | Maintainer  | What this project claims                                                                          |
+| ------------- | ----------- | --------------------------------------------------------------------------------------------------- |
+| **core**      | Maintainers | Wrapped here, exercised live weekly, pinned to a version someone here ran                          |
+| **community** | Contributor | The schema is validated and the preset ships. Whether it runs is the maintainer's dated attestation |
+| **legacy**    | —           | Still wired, no longer tracked                                                                     |
+
+Core requires that a maintainer can obtain and run the binary, because that tier
+promises the weekly live turn. Most CLIs worth supporting are behind credentials
+this project does not hold — a bar nobody can clear would keep the community tier
+permanently empty, and an empty tier looks the same as never having done the work.
+So the bar is an attributable, dated, falsifiable claim: `provenance.maintainer`,
+`provenance.verifiedAgainst` (the engine version), `provenance.verifiedOn`, and a
+link to the captured smoke transcript.
+
+A preset never carries protocol translation. A CLI speaking its own wire format
+needs an adapter binary in its author's package, with the preset pointing `bin`
+at it — the split `@enderfga/dsh-clawo` already uses. That is what makes a preset
+something this project can ship without owning a protocol it cannot test.
+
+Over HTTP — which includes the `clawo` CLI — a custom engine may be given **only**
+as a preset id. An inline config names a binary and its arguments and is refused
+there; a preset id cannot introduce either, so it is the same class as naming a
+built-in engine, and `engine: 'codex'` already spawns an executable over that
+surface. Presets are therefore the supported way to reach a custom engine from
+the CLI: `clawo engines` lists what is bundled, and
+`clawo session-start <name> -e custom --custom-engine <id>` starts one.
+
+Contribution steps and the smoke script: [CONTRIBUTING.md](../../CONTRIBUTING.md#contributing-an-engine).
+
 ### OpenCode (`engine: 'opencode'`)
 
 Wraps the [sst/opencode](https://github.com/sst/opencode) CLI with `run --format json`. Each `send()` spawns a new process.

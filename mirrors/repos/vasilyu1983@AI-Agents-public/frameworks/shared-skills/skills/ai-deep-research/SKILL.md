@@ -107,6 +107,7 @@ Full catalog → [references/anti-patterns-catalog.md](references/anti-patterns-
 | A10 | Retrofitting citations | Writing first, citing later consistently inflates confidence in unsupported claims |
 | A11 | Overweighting recency | Newest is not most authoritative — prefer canonical primary sources |
 | A12 | Storing evidence with synthesis | Mixed buckets cause RAG follow-on to cite derived text as original evidence |
+| A13 | Treating the open-access corpus as the field | Paywalled prior work and unpublished negative results are silently absent; output skews toward hypotheses that only *look* promising |
 
 ## Decision Matrix: Native Agent vs Custom Pipeline
 
@@ -152,6 +153,29 @@ Full depth — planner / searcher / verifier / synthesizer subagent split, canon
 6. Check freshness windows; date-stamp all volatile claims.
 7. Synthesize into the requested artifact; every factual claim carries a citation back-pointer.
 8. Archive the ledger separately — see [assets/templates/source-ledger.template.md](assets/templates/source-ledger.template.md).
+
+## Hypothesis Generation: The Co-Scientist Role Taxonomy
+
+The planner / searcher / verifier / synthesizer split above answers a **question**. A different split is needed when the task is to *generate and rank candidate ideas* — research directions, product hypotheses, competing explanations for an observed effect — where there is no single retrievable answer to converge on.
+
+Google Research's AI co-scientist (2025) decomposes that job into six specialized roles under a supervisor agent, each a separate context:
+
+| Role | Job | Why it is separate |
+|------|-----|--------------------|
+| **Generation** | Produce initial hypotheses from literature exploration plus simulated scientific debate between personas | Generation optimizes for coverage; mixing in evaluation collapses the candidate space early (see A1) |
+| **Reflection** | Peer-review each hypothesis for correctness, novelty, and quality | A reviewer that also generated the idea cannot reject it — the same independence rule as P4 |
+| **Ranking** | Run an **Elo-based tournament**: hypotheses compete pairwise, ratings order the field | Pairwise comparison is more reliable than absolute scoring, and the rating is a live signal you can watch converge |
+| **Evolution** | Refine the top-ranked hypotheses — simplify the concept, synthesize two ideas, or push into unconventional reasoning | Refinement is a distinct move from generation; it operates on winners, not on a blank page |
+| **Proximity** | Compute a proximity graph clustering similar ideas | Surfaces where the field is crowded vs unexplored; prevents the tournament from ranking ten paraphrases of one idea |
+| **Meta-review** | Synthesize patterns across all reviews and debates, feed them back as guidance | The only role that improves the *system* rather than a hypothesis |
+
+**The loop is generate → debate → evolve**, run iteratively: new hypotheses enter the tournament, top-ranked ones are evolved and re-enter, meta-review tightens the criteria each pass. Termination is the same discipline as P8 — stop on rating saturation (no new hypothesis breaks into the top tier for N rounds), not on a fixed round count.
+
+**How this composes with the rest of this skill.** Generation and Reflection both need a ledger (P1) — a hypothesis grounded in nothing is a guess, and Reflection's novelty check requires knowing what already exists. Ranking is where evidence tiers (P6) do the work: a hypothesis supported by primary sources should outrank one supported by commentary, so feed the tier into the tournament rather than letting fluency decide. Meta-review is the natural place to catch A1 and A8 across a whole run.
+
+**Scope caution.** This is a hypothesis-*generation* architecture. It orders candidate ideas by plausibility; it does not establish that any of them are true. The output of a tournament is a ranked queue for verification, never a finding — and see A13 for the literature bias that shapes what enters the queue at all.
+
+Sources: Google Research, "AI co-scientist" (2025); described in Gulli, *Agentic Design Patterns* (Springer, 2025), Ch. 21 — Exploration and Discovery.
 
 ## Known Traps
 

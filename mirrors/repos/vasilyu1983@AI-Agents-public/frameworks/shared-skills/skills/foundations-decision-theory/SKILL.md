@@ -113,6 +113,7 @@ Use [`references/formal-theory-map.md`](references/formal-theory-map.md) when th
 | Applying EU under deep ambiguity | Unknown probabilities violate the input contract | Use minimax regret, maximin, or ambiguity-aware criteria; or use Wasserstein DRRO when sample data on states are available |
 | Treating bandits as free optimization | Exploration has opportunity cost and fairness/product constraints | Set regret budget, guardrails, and stopping rules |
 | Comparing only means | Distribution tails and dominance can reverse decisions | Check stochastic dominance and downside risk |
+| Treating a positive-EV recurring business (rake, spread, underwriting) as ergodic | Per-transaction EV is an ensemble statement; the operator lives one path and correlated exposures collapse into a single joint loss | Bound the worst joint loss against capital and separate collected from estimated edge — see [`finance-trading-investing`](../finance-trading-investing/references/alpha-and-edge-hunting.md#house-side-edge-fee-capture-vs-risk-warehousing) |
 
 Check [`references/patterns-scenarios-traps.md`](references/patterns-scenarios-traps.md) before using outputs as decision authority.
 

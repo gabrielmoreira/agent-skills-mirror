@@ -30,7 +30,7 @@ category: risk-analysis
 1. **所有财务/基本面/分红/审计/ST 状态数据，必须先调用 [tushare skill](../tushare/SKILL.md)**，按下表指定的接口名、`ts_code`、`period` 拉取。
 2. 当 tushare 接口因积分不足、token 缺失或返回空时，**回退到 [akshare skill](../akshare/SKILL.md)** 对应函数。
 3. **akshare 兜底数据必须在最终输出"备注"中显式标注**：`数据源：akshare（非官方聚合，不保证完整性，建议核对原始公告）`。**不允许只用 akshare 给出"高可信度"预测**——akshare 兜底的红线项可信度强制降一档（高→中高，中高→中，中→低）。
-4. 监管处罚（E2）走本 skill 自带的 [scripts/fetch_sina_penalties.py](ashare-pre-st-filter/scripts/fetch_sina_penalties.py)，不经过 tushare/akshare。
+4. 监管处罚（E2）走本 skill 自带的 [scripts/fetch_sina_penalties.py](scripts/fetch_sina_penalties.py)，不经过 tushare/akshare。
 
 ### 数据需求映射表
 
@@ -399,7 +399,7 @@ E2_综合等级 = max(E2_单条等级, E2_频次等级)
 
 ## 自带脚本
 
-- [scripts/fetch_sina_penalties.py](ashare-pre-st-filter/scripts/fetch_sina_penalties.py) — 抓取新浪财经 vGP_GetOutOfLine 处罚页，stdlib 实现，无外部依赖；reason / issuer 标准化。
+- [scripts/fetch_sina_penalties.py](scripts/fetch_sina_penalties.py) — 抓取新浪财经 vGP_GetOutOfLine 处罚页，stdlib 实现，无外部依赖；reason / issuer 标准化。
 
 调用方式：
 

@@ -526,7 +526,13 @@ A4 Step 2 de-prioritization order. Evidence-only: it claims nothing.
 - **Behavior boundary**: evidence-only and heuristic. `## Candidate files` are
   advisory cues, not an exhaustive manifest, so the overlap signal must stay a
   soft A4 Step 2 tie-breaker — never a claim gate. The written discover
-  instructions remain authoritative.
+  instructions remain authoritative. A candidate whose issue body carries no
+  `## Candidate files` section is a structural no-op for this check —
+  `candidateFiles` comes back `[]` and `overlapFlag` comes back `false`
+  regardless of real file contention, not a signal that no contention exists
+  (`#2462`); the
+  `issue-authoring` skill's roadmap-child contract requires the section for
+  exactly this reason.
 
 The exported template remains portable without a `scripts/` directory.
 Adopters can copy the helper separately when they want the same
@@ -1051,6 +1057,16 @@ Interpretation rules:
   marker body.
 - `check` may be an exact selector or a glob pattern, matching the
   `ciGate.externalChecks.*[].selector` plus `matchMode` contract.
+- `check:` and `reason:` hold single whitespace-free tokens in the raw
+  marker body: the authoring helper percent-encodes the check selector
+  and reason text with `encodeURIComponent` when writing the marker,
+  and decodes them back via `decodeURIComponent` on read (falling back
+  to an empty string -- which fails closed -- on a decode error). A
+  hand-written value containing a space or another character outside
+  the `check:\S+`/`reason:\S+` shape parses as malformed with no
+  automatic warning or reply unless percent-encoded first (a space
+  becomes `%20`); prefer the authoring helper below over hand-writing
+  the marker so this encoding is applied automatically.
 - Missing or unparseable body fields, unknown selectors, expired
   comments, wrong HEAD, wrong claim, or untrusted authors must fail
   closed.
@@ -2195,6 +2211,16 @@ reflexively as any other CLI option.
   does not match this exact shape — a different error, an ineligible
   topology, or the opt-in `hold-and-report` policy — falls through
   unchanged to the pre-#1521 hold-and-report path.
+- **Local-head-drift warning (#2453).** In both dry-run and `--apply`,
+  the helper best-effort reads the invoking process's local git branch
+  and HEAD. When that local branch equals the PR's own `headRefName`
+  and the local HEAD differs from `prHeadSha`, the verdict's
+  `localHeadDrift` field is set to `{ localHeadSha, remoteHeadSha }` and
+  a warning is also printed on stderr — the signature of an unpushed
+  commit about to be silently left behind. It is advisory only: `null`
+  whenever the check cannot run (no git repo, a different or detached
+  branch, or an unreadable local/remote read) or finds no divergence,
+  and it never gates `ready` or blocks the merge.
 - Fail closed: if helper execution fails, output is invalid JSON,
   required fields are missing, or helper evidence conflicts with live
   GitHub state, discard helper output and run the manual F3 gate +
