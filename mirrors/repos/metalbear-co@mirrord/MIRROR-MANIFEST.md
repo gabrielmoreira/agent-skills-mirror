@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`mirrord/operator/CLAUDE.md`](mirrord/operator/CLAUDE.md) |
 | 5 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
 | 6 | ✓ | [`mirrord/protocol/CLAUDE.md`](mirrord/protocol/CLAUDE.md) |
+| 7 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
 
 ---
 

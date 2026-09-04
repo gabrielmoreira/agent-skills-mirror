@@ -11,6 +11,14 @@
 Read when changing the Cloudflare status dashboard, status ingest contract, or
 operator-facing ClawSweeper observability.
 
+The signed internal canonical-record export route serves up to 200 records per
+page (also the Worker and hydration-client default), bounded by 2 MiB of source
+content and 4 MiB of serialized entries. Large-record pages stop early and resume
+from the last returned record; the existing first-record progress exception
+remains. See [canonical record export limits](limits.md#canonical-record-export).
+This changes hydration request volume only; OpenClaw Bay's observer projection
+and public data contract are unaffected.
+
 The live dashboard is observer-only. ClawSweeper still owns review, repair,
 apply, merge, comments, labels, and all GitHub mutations. The Cloudflare Worker
 reads GitHub workflow state, projects it into closed status and Bay views, and
@@ -446,6 +454,46 @@ so handoff recovery stays live. If the optional queue read fails or is malformed
 the public response uses an unavailable/unknown aggregate and a bounded
 `telemetry_unavailable` diagnostic; it never returns the underlying error text.
 
+The object memoizes its private stats response for 10 seconds by default
+(`EXACT_REVIEW_STATS_CACHE_MS`; set `0` to disable). Concurrent polls with the
+same Bay sample parameters share the computation and its original `generated_at`.
+Queue mutations and auxiliary SQLite writes invalidate the memo; a missing or
+overdue alarm also bypasses it so polling still repairs the queue heartbeat.
+Only completed snapshots whose mutation generation and storage change counter
+remain unchanged are memoized; polls waiting on invalidated work recompute.
+This only bounds observation freshness: the public projection's fields and
+meaning, admission, publication fences, and Bay behavior are unchanged.
+
+The object's lifecycle Bay response has a 30-second TTL-only memo
+(`EXACT_REVIEW_LIFECYCLE_BAY_CACHE_MS`; set `0` to disable). Production explicitly
+sets `EXACT_REVIEW_LIFECYCLE_BAY_CACHE_MS = "30000"`. Ordinary lifecycle, queue,
+and auxiliary writes do not invalidate it: this public, observer-only,
+closed-aggregate surface accepts staleness up to the TTL. Concurrent reads for
+the same normalized repository scope share one in-flight computation and its
+original `generated_at`. Only completed work enters the memo; disabling it
+resets pending work so an older computation cannot restore the cache. The stats
+memo retains its separate write-invalidation rules for admission diagnostics.
+
+The outer `/api/durable-lifecycle-bay` route caches the sanitized response for
+30 seconds at the edge, keyed by origin and verified-public repository scope.
+After expiry it serves a stale copy while coalescing one background refresh per
+scope per isolate, as the status route does. Both cache buckets are capped by
+the original snapshot's 60-second maximum age; neither layer renews
+`generated_at`. Without a background execution context, an expired fresh entry
+is refreshed synchronously. Edge caches are local to each colo, so cross-colo
+misses can still reach the object; its TTL memo absorbs those reads. Bay's
+public field set, freshness contract, and observer-only boundary are unchanged.
+
+An uncached Bay build still scans every retained projection in the requested
+repositories (all repositories for an unscoped internal request). It has no
+seven-day cutoff: seven-day telemetry retention and 30-day Bay event retention
+belong to separate telemetry tables. Each row's full `projection_json` passes
+through the existing parser and integrity validation, without a per-row
+parsed-object cache. This preserves malformed-data handling and avoids the
+extra SQL JSON validation, extraction, and serialization of the compact cursor.
+The remaining full-history scan is not a constant-size aggregate query; adding
+persisted counters requires a separate backfill and writer-compatibility change.
+
 For capacity displays, `/api/exact-review-queue` also exposes compatible
 `lanes.review` and `lanes.publication` objects. Each lane reports its own
 pending, ready, backoff, dispatching, leased, capacity, active, available-slot,
@@ -464,21 +512,111 @@ Production overrides publication minimum, base, and maximum capacity to 8, 32,
 and 40, while source fallback values are 4, 24, and 48. The controller records
 failure, cooldown, recovery, and demand telemetry and scales within the
 production range. The private publication state also tracks `batches`, `direct`,
-and adaptive capacity control: production enables up to 8 concurrent size-8
+and adaptive capacity control: production enables up to 4 concurrent size-8
 batches, reserves two fresh-lane members per batch, and enables direct
 publication with retry/batch fallback. These controls affect the aggregate
 counts but are not serialized by the public projector. Document effective
 production values from `dashboard/wrangler.toml`, not only fallback constants
 in `dashboard/exact-review-queue.ts`.
 
-Batch publication heartbeats and post-effect enqueue, router-receipt, and
-terminal-disposition POSTs retry network errors, timeouts, and HTTP 5xx responses
-(including `exact_review_queue_unavailable`) up to three attempts within 45
-seconds, with at most 20 seconds per attempt. Retries preserve the signed bytes,
-use jittered exponential backoff, and honor `Retry-After` up to 10 seconds;
-heartbeats additionally stop at the last confirmed lease expiry. Validation,
-authentication, and fence rejections are never retried, and receipt retries do
-not repeat the GitHub router dispatch.
+Canonical record snapshots for `openclaw/openclaw` are produced every six hours
+by `worker-records-ops.yml`, at minute 9 UTC. Manual dispatch remains available
+for a selected repository; scheduled and manual snapshots share a concurrency
+group so snapshot runs do not overlap. Full record hydration replays changes
+since the latest snapshot.
+
+The workflow runs `node scripts/worker-records.ts snapshot-upload --repo-slug
+<slug>`: it hydrates the latest snapshot plus export delta into a temporary tree,
+streams the same ustar/gzip layout to disk on the runner, then uploads and
+registers the archive. The temporary tree and archive are removed on success or
+failure. The snapshot watermark is `exportStartRevision`, the revision returned
+by the **first** delta page. Later pages may observe concurrent writes, so using
+the highest revision observed would risk claiming changes not present in the
+archive. As with object-side production, later record versions may be included;
+future hydration replays every change after the initial watermark.
+
+The outer Worker's signed `POST /internal/state/records/snapshots/upload/`
+`start`, `part`, `manifest`, `complete`, and `abort` routes reuse the blob upload pattern:
+bounded JSON/base64 requests, each HMAC-signed over the exact body with
+`CLAWSWEEPER_WEBHOOK_SECRET`. Every signed body includes `operation` matching
+its route; a mismatch returns 400 `upload_operation_mismatch`. Each body also
+includes ISO `issuedAt`: requests at least one hour old or more than five minutes
+in the future return 400 `upload_request_expired` before accessing upload state.
+Start receipts survive the entire validity window, including allowed clock skew,
+so an expired signed start cannot recreate an upload. `start` accepts
+`repoSlug`, `revisionWatermark`, `bytes`, gzip `sha256`, `fileCount`,
+`uncompressedBytes`, `identityDigest`, and a client-generated `operationId`;
+the runner uses `<repoSlug>:<GITHUB_RUN_ID>:<GITHUB_RUN_ATTEMPT>` or a UUID outside
+Actions. A dedicated instance of the existing StatusStore serializes metadata
+operations and deduplicates starts: an identical retry returns 200 and the
+original session, while conflicting metadata returns 409. A new start generates
+`createdAt`, an upload ID, and the R2 key
+`<repoSlug>/<revisionWatermark>/<createdAt>-<uuid>.tar.gz`. `part` accepts
+`uploadId`, `partNumber`, base64 `data`, and per-part `sha256`. Parts are 6 MiB
+decoded (above R2's 5 MiB minimum), except the final part. Requests are bounded
+before parsing, with at most 200 parts and 1 GiB per archive. Descriptors and
+part receipts use the existing StatusStore and expire after one hour (extended
+for an accepted future `issuedAt`). Multipart
+bytes pass from the outer Worker directly to R2. The
+runner retries transport failures with identical bytes and part numbers.
+Aborts and expiry alarms clean up unfinished multipart uploads and completed
+objects that have no snapshot descriptor. Cleanup failures retain the session
+and its part/manifest receipts. Explicit retry alarms back off from one minute
+to one hour; after eight failed cleanup attempts a bounded warning is logged and
+the receipt remains for the next upload-triggered cleanup. The bucket's multipart
+lifecycle policy remains a backstop.
+
+`complete` accepts `uploadId`, ordered `{partNumber, etag}` receipts, and the
+sorted packed `identities` as `[section, id]` pairs (at most 250,000). If the
+signed completion body would exceed the outer JSON cap, the runner first stages
+final signed `manifest` chunks of at most 10,000 identities in R2. Each chunk
+includes `uploadId`, sequential `partNumber`, and `identities`; StatusStore keeps
+only its digest receipt. Completion reads these chunks and registration checks
+the combined list. Manifest chunks are removed with session cleanup. The
+StatusStore assembles the R2 multipart upload, verifies the per-part
+SHA-256 receipts and total R2 object size, and calls the object's
+`/records/snapshots/register`. It does not download the entire object to
+recompute gzip SHA-256; R2 metadata marks that digest as a runner claim verified
+by parts and length. Registration checks the descriptor watermark against the
+current export revision, object key prefix, and R2 existence/size. A cheap aggregate
+SQL count rejects a smaller `fileCount` with 422 `snapshot_coverage_incomplete`.
+Registration then recomputes `identityDigest`, SHA-256 over the JSON encoding of
+the pair list sorted by `section/id`, and scans the live export index once for
+identities with `store_revision <= revisionWatermark`, reading ids only. Every
+required identity must appear in the supplied list, or registration returns 422
+`snapshot_coverage_incomplete`; extra entries are allowed because records may
+have been deleted after the watermark. Later updates can move identities above
+the watermark, so the required set is a lower bound. The verified digest is
+stored for audit; membership verifies the manifest claim, not archive content.
+Registration inserts into the
+existing snapshot table and retains the newest two snapshots. Retrying completion
+or registration after response loss is safe. Cleanup checks all descriptor
+references and serializes deletion with registration, preserving registered
+objects even after a lost completion response.
+
+The small signed `/internal/state/records/snapshots/register` route is also
+available for descriptor registration. The existing
+`/internal/state/records/snapshots/trigger` endpoint remains for explicit
+object-side production, but neither scheduled nor manual ops invokes it.
+Cold hydration retains its existing record bound; a large repository without
+any snapshot still needs an initial snapshot before normal hydration can run.
+No bindings or Durable Object migrations change. The existing descriptor table
+gains a nullable `identity_digest` column; existing snapshots remain readable.
+OpenClaw Bay is unaffected because its public observer contract does not use
+these internal maintenance routes.
+
+Batch publication heartbeats retry network errors, timeouts, and HTTP 5xx
+responses (including `exact_review_queue_unavailable`) up to three attempts
+within 45 seconds, with at most 20 seconds per attempt. Heartbeat retries
+preserve the signed bytes, use jittered exponential backoff, honor `Retry-After`
+up to 10 seconds, and stop at the last confirmed server lease expiry.
+Validation, authentication, and fence rejections are never retried.
+Periodic workflow heartbeats use `--tolerate-until-lease` to tolerate exhausted transport failures only while the confirmed lease has more than `EXACT_REVIEW_BATCH_HEARTBEAT_SAFETY_MS` (default 180,000 ms) remaining. Claim, fetch, and heartbeat responses include an internal `server_time`; the manifest saves `leaseTtlMs` as `lease_expires_at - server_time`, `leaseTtlSource: "server"`, and `leaseConfirmedAtLocal`. Retry deadlines and tolerance subtract only local elapsed time from that TTL, so a runner clock offset cannot extend or shorten the lease. Older Workers without `server_time` use the local clock at confirmation and mark `leaseTtlSource: "local"`; tolerance is forbidden once that confirmation is older than one safety margin. Manifests without confirmation metadata require a successful heartbeat before tolerance is available. Each pre-loop heartbeat stays strict to establish live ownership, and 4xx/fence rejections remain fatal. The public projection and OpenClaw Bay are unchanged.
+
+Post-effect enqueue, router-receipt, and terminal-disposition POSTs are
+deliberately one-shot until Worker replay ordering is repaired. An ambiguous
+failure ends the publication run so scheduled recovery can replay it without an
+in-process retry arriving after newer queue state.
 
 Lifecycle receipt replays are no-ops for the whole operation, including terminal
 transitions and acknowledgement drivers. Terminal-disposition requests from the

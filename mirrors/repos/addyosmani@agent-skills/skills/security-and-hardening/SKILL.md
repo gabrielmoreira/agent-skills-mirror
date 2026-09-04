@@ -1,6 +1,6 @@
 ---
 name: security-and-hardening
-description: Hardens code against vulnerabilities. Use when handling user input, authentication, data storage, or external integrations. Use when building any feature that accepts untrusted data, manages user sessions, or interacts with third-party services. Use when personal data or privacy compliance (GDPR, CCPA) is involved.
+description: Hardens code against vulnerabilities. Use when handling user input, authentication, data storage, or external integrations. Use when building any feature that accepts untrusted data, manages user sessions, or interacts with third-party services. Use when auditing dependencies for known vulnerabilities, triaging package-manager audit findings, or assessing supply-chain risk in a new package. Use when personal data or privacy compliance (GDPR, CCPA) is involved.
 ---
 
 # Security and Hardening
@@ -329,6 +329,20 @@ app.use('/api/auth/', rateLimit({
 }));
 ```
 
+**Count in a shared store once there is more than one process.** `express-rate-limit` keeps its counters in process memory by default. Behind a load balancer each instance holds its own count, so the effective limit is `max × instances`; on serverless or edge runtimes a fresh invocation starts from zero, so the auth limit above may never fire. Pass a shared `store` (Redis via `rate-limit-redis`), or use an HTTP-based limiter that works where a long-lived TCP connection does not (for example `@upstash/ratelimit`):
+
+```typescript
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const authLimiter = new Ratelimit({
+  redis: Redis.fromEnv(),                       // UPSTASH_REDIS_REST_URL + _TOKEN
+  limiter: Ratelimit.slidingWindow(10, '15 m'), // 10 attempts per 15 minutes, across all instances
+});
+const { success } = await authLimiter.limit(`login:${req.ip}`);
+if (!success) return res.status(429).end();
+```
+
 ## Secrets Management
 
 ```
@@ -472,7 +486,7 @@ For detailed security checklists and pre-commit verification steps, see `../../r
 - Secrets in source code or commit history
 - API endpoints without authentication or authorization checks
 - Missing CORS configuration or wildcard (`*`) origins
-- No rate limiting on authentication endpoints
+- No rate limiting on authentication endpoints, or an in-memory limiter in front of more than one instance
 - Stack traces or internal errors exposed to users
 - Dependencies with known critical vulnerabilities, competing lockfiles at one installation boundary, non-reproducible installs, or blanket-approved scripts
 - Server fetches user-supplied URLs without an allowlist (SSRF)
@@ -492,7 +506,7 @@ After implementing security-relevant code:
 - [ ] Authentication and authorization checked on every protected endpoint
 - [ ] Security headers present in response (check with browser DevTools)
 - [ ] Error responses don't expose internal details
-- [ ] Rate limiting active on auth endpoints
+- [ ] Rate limiting active on auth endpoints, backed by a shared store when more than one instance serves traffic
 - [ ] Server-side URL fetches validated against an allowlist (no SSRF)
 - [ ] LLM/model output validated and encoded before use (if AI features present)
 - [ ] Personal data is classified, minimized to a stated purpose, and has a retention limit

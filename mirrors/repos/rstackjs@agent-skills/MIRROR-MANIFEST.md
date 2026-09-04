@@ -129,7 +129,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`skills/rspack-split-chunks/SKILL.md`](skills/rspack-split-chunks/SKILL.md) |
 | 69 | ✓ | [`skills/rspack-tracing/references/bottlenecks.md`](skills/rspack-tracing/references/bottlenecks.md) |
 | 70 | ✓ | [`skills/rspack-tracing/references/tracing-guide.md`](skills/rspack-tracing/references/tracing-guide.md) |
-| 71 | ✓ | [`skills/rspack-tracing/scripts/analyze_trace.js`](skills/rspack-tracing/scripts/analyze_trace.js) |
+| 71 | ✓ | [`skills/rspack-tracing/scripts/analyze_trace.mjs`](skills/rspack-tracing/scripts/analyze_trace.mjs) |
 | 72 | ✓ | [`skills/rspack-tracing/SKILL.md`](skills/rspack-tracing/SKILL.md) |
 | 73 | ✓ | [`skills/rspack-v2-upgrade/SKILL.md`](skills/rspack-v2-upgrade/SKILL.md) |
 | 74 | ✓ | [`skills/rspress-best-practices/SKILL.md`](skills/rspress-best-practices/SKILL.md) |

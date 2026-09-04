@@ -97,6 +97,8 @@ Admin API key setup:
   Keychain access; selecting CLI or Web avoids the foreign-Keychain dependency.
 - When every live Auto source fails, CodexBar keeps the last captured session/weekly percentages from
   `history/claude.json` visible as stale data and shows their capture age instead of blanking the quota bars.
+  Restored history and CLI-scraped percentages both show “Limited usage detail”: the warning describes reduced
+  fidelity, not the source of a historical capture. It does not change sign-in or refresh recovery actions.
 - Plan inference: `subscriptionType` is preferred when present; `rate_limit_tier` falls back to
   Max/Pro/Team/Enterprise. When a Max `rate_limit_tier` carries a usage multiplier
   (`default_claude_max_5x` / `default_claude_max_20x`), it is surfaced in the label as "Max 5x" / "Max 20x".

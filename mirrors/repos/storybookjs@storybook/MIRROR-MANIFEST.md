@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `next` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 47 |
+| Followed pats | 1 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `storybookjs/storybook` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING/RELEASING.md`
 
 ## File Index
 
@@ -106,6 +106,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md) |
 | 46 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/stories/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/stories/SKILL.md) |
 | 47 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md) |
+| 48 | → | [`CONTRIBUTING/RELEASING.md`](CONTRIBUTING/RELEASING.md) |
 
 ---
 

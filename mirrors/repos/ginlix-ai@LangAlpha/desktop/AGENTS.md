@@ -143,10 +143,10 @@ and deleted again on an `oss` build: a tree that previously built `saas` cannot 
 those origins into an OSS package by accident.
 
 **Nor do the two share an output directory** (`directories.output: dist/${EDITION}`).
-The artifact filename carries the edition; nothing else written there does. The unpacked
+The artifact filename carries the edition tag; nothing else written there does. The unpacked
 bundle is named from `productName`, so both `.app`s land under one `mac-arm64`, and the
-update manifests are `latest-mac.yml` and `latest.yml`, fixed names with no edition in
-them at all, so whichever edition builds second overwrites the first's. `scripts/build.mjs`
+update manifests are named for the update channel and never the edition
+(`latest-mac.yml`, `latest.yml`), so whichever edition builds second overwrites the first's. `scripts/build.mjs`
 then searches that same directory for what it just produced, which is where one tree
 turns into a signing check verifying the other edition's stale bundle and a no-feed build
 whose sweep strips the other edition's baked `app-update.yml`.
@@ -340,10 +340,18 @@ A build learns where to look in one of two ways, and needs exactly one:
 `electron-builder.yml` carries `publish: null` because where a build looks for
 updates is deployment configuration, not source: the feed arrives as
 `DESKTOP_UPDATE_FEED` and `scripts/build.mjs` rewrites the config for that one
-build. **Supplying a feed is what makes electron-builder emit `latest-*.yml` at
-all.** Without it there is no manifest, and a build with no manifest installs
+build. **Supplying a feed is what makes electron-builder emit an update manifest
+at all.** Without it there is no manifest, and a build with no manifest installs
 perfectly and then never updates, which is why the build script fails hard when a
-feed was set but no manifest came out. That guard caught its own case the first time it ran.
+feed was set but no manifest came out.
+
+**The manifest is named for the update channel, which electron-builder reads off the
+version's prerelease tag** (`appInfo.channel`): `0.2.0` writes `latest-mac.yml`,
+`0.2.0-rc.1` writes `rc-mac.yml`. The guard derives that same name instead of globbing
+`latest*`, and so does every step of the release pipeline that collects or uploads a
+manifest. Getting this wrong is not a corner case: shipping a prerelease through the real
+pipeline is how that pipeline is meant to be rehearsed, and the first run to do it failed
+all three platforms on a guard demanding a filename the build had no reason to write.
 
 Distribution has two halves: the GitHub release is where a person downloads the
 app, and the feed host is the only thing an installed app reads. Publishing one
@@ -358,9 +366,55 @@ the same source, so a change here reaches both, and `scripts/` is shared: nothin
 under it is dead code merely because this repository's own workflow does not call
 it.
 
-Applying a macOS update needs a Developer ID signature, which does not exist yet.
-Everything up to that point is verified: the packaged app fetches its baked-in
-feed, recognises a newer version, downloads it and verifies the sha512.
+Applying a macOS update needs a Developer ID signature, and Squirrel.Mac checks
+the incoming build's against the running one's: a Team ID that differs is
+refused. So an unsigned install can never be updated into a signed one, and
+changing enrollment type later strands every install already out there.
+Everything up to the signature is verified: the packaged app fetches its
+baked-in feed, recognises a newer version, downloads it and verifies the sha512.
+
+**Signing and notarization are two switches and a release needs both.** The
+certificate is what makes `codesign --verify` pass, and it says nothing about
+whether Apple has ever seen the bundle; the notarization ticket is what
+Gatekeeper asks for on first launch, so a signed build without one is refused
+exactly like an unsigned one. `electron-builder.yml` commits `identity: null`
+and `notarize: false`, because someone with neither credential still has to be
+able to run `dist`, and `scripts/build.mjs` replaces each line when the
+credentials for it arrive: a certificate in `CSC_LINK` or `CSC_NAME` for the
+first, and a complete notarytool authentication for the second (an Apple ID with
+an app-specific password, an App Store Connect API key, or a keychain profile).
+A partial set counts as none, since `notarize: true` with nothing to authenticate
+with packages for twenty minutes and then fails at the submission.
+
+`CSC_NAME` takes the certificate's name **without** the `Developer ID
+Application:` prefix that `security find-identity` prints, which is the whole
+string a person naturally copies. electron-builder picks the type itself and
+rejects the prefixed form, and it does so after unpacking Electron rather than
+at startup, so the mistake costs a few minutes each time:
+
+```bash
+CSC_NAME="Your Company (TEAMID)" pnpm run dist
+```
+
+The check after the build splits the same way. `codesign --verify` passes on a
+bundle Apple has never seen, so a notarized build is also put through
+`xcrun stapler validate`, and the missing staple is the failure that otherwise
+reaches a user as an app that will not open.
+
+**The disk image needs the same two gates as the app it carries.**
+electron-builder notarizes the `.app` and then builds the DMG around it, so the
+image itself is never submitted; Gatekeeper assesses a downloaded image on its
+own signature, and refuses an unsigned one however well notarized its contents
+are. `dmg.sign: true` covers the first gate (it is off by default), and
+`scripts/build.mjs` submits and staples each image after electron-builder
+returns for the second. Only the first-time install was ever affected: the
+updater reads the `.zip`, which carries the stapled app, so auto-update looked
+healthy while every fresh download was refused.
+
+An image is assessed with a different question than an app: `-t open --context
+context:primary-signature` rather than `-t exec`. Ask the wrong one and a
+correctly notarized DMG reports a verdict that does not mean what it looks
+like.
 
 ## Conventions
 
@@ -387,6 +441,12 @@ feed, recognises a newer version, downloads it and verifies the sha512.
 macOS is built and verified, including the outage page and the update path up to
 the signature check. Windows and Linux targets are declared in
 `electron-builder.yml` and run in CI, but have not been exercised by hand.
+
+The signing and notarization switches above are wired, and a hosted build has
+been through Apple end to end: both `.app` bundles and both disk images came
+back notarized and stapled, verified with `stapler validate` and `spctl` rather
+than read off the build log. That run was local: no signed or notarized build has
+been produced on CI yet, which is the one part of the path still unexercised.
 
 Nothing has shipped a feed yet, so no released build can update itself until
 `DESKTOP_UPDATE_FEED` is set and the artifacts are uploaded there.

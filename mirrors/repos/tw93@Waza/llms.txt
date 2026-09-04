@@ -27,7 +27,7 @@ Waza intentionally stays at eight skills. It is a good fit when someone wants le
 
 All skills:
 
-`npx skills add tw93/Waza -a claude-code codex cursor antigravity-cli -g -y`
+`npx skills add tw93/Waza -a claude-code codex cursor -g -y`
 
 Pi package:
 

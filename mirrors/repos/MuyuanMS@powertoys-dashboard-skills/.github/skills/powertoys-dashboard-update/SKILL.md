@@ -121,10 +121,11 @@ the dashboard artifact validators in the same change.
 
 | Item | Allowed action type | Dashboard meaning | Must contain | Not allowed as an action |
 | --- | --- | --- | --- | --- |
-| PR | `approve` | Submit/choose approval for a review-clean PR. | Current `head_sha`, covered `source_updated_at`, no unresolved agent findings. | Native validation still pending, queued review, owned elsewhere, re-run prompt. |
+| PR | `approve` | Submit/choose approval for a review-clean PR. | Current `head_sha`, covered `source_updated_at`, no unresolved agent findings. | Native validation still pending, queued review, re-run prompt. |
 | PR | `post_review` | Post selected code suggestions or non-blocking review comments. | Proposed comments pinned to the current head; inline comments use current RIGHT-side ranges when possible. Event must be `COMMENT`; inline-only reviews omit the overall review body. | `REQUEST_CHANGES`, a generic overall message for inline-only suggestions, general "keep checking", "complete validation", or product-direction reminders without a publishable review body. |
 | PR | `request_changes` | Post selected blocking review comments as a request-changes review. | Same evidence and current-head requirements as `post_review`. | A standalone request to run the review loop again. |
 | PR | `trigger_ci` | Post `/azp run` to request an Azure Pipelines run when live checks are failed, cancelled, timed out, stale, or missing. | Exact comment body `/azp run`; current live head/check state displayed to the maintainer; explicit confirmation before posting. | Posting while all checks pass, treating CI as a substitute for review/build evidence, or auto-posting without a maintainer click. |
+| PR | `merge_pr` | Squash-merge an approved PR after review and CI are complete. | Current live head, at least one current approval, passing checks, clean GitHub merge state, and explicit confirmation immediately before merging. | Automatic merging, merging a draft, merging stale data, or merging without revalidating approval, CI, and mergeability. |
 | Issue | `request_info` | Ask the reporter for specific missing evidence. | An issue-specific upstream comment that summarizes the relevant facts already supplied, explains why they are insufficient, asks for exact missing evidence, and gives the established collection method when one exists (for example, `/bugreport` for a fresh PowerToys diagnostic ZIP). | "Not now", wait, monitor, a generic checklist, or "send logs/more information" without explaining the gap. |
 | Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
 | Issue | `post_comment` | Post a close, duplicate, handled, out-of-scope, or maintainer-direction comment. | Specific rationale and linked duplicate/fix/ownership evidence when applicable. | Silent close, vague "won't fix", or no-op status comments. |
@@ -284,8 +285,7 @@ Every open, non-draft PR must end the run in exactly one state:
 - **queued/running review** — no current clean result exists;
 - **waiting on author** — a posted/requested change is still outstanding and
   the author has not pushed or replied;
-- **owned elsewhere** — a recognized maintainer is actively reviewing it;
-- **excluded** — draft, closed, or otherwise outside this workflow.
+- **excluded** — draft or closed.
 
 A **full re-review is mandatory** when the live head SHA differs from
 `head_sha`, `head_sha` is missing, or there is no clean artifact. If the head is
@@ -318,9 +318,8 @@ pwsh -NoProfile -File `
   -Dashboard $Dashboard -Upstream $Upstream -AsJson
 ```
 
-The queue contains every open, non-draft PR that is not explicitly
-waiting on the author, owned elsewhere, dropped, awaiting a maintainer
-direction/close/takeover decision, or excluded, and that either:
+The queue contains every open, non-draft PR that is not explicitly waiting on
+the author and that either:
 
 - has no dashboard artifact with a current review action for the live upstream
   head (`post_review` for drafted findings, or `review_ready`/no-comment action
@@ -374,8 +373,9 @@ Each judgment must contain `rationale`, concrete `evidence`, a
 may describe a root-cause hypothesis, but must distinguish it from confirmed
 evidence and score it honestly.
 
-Every new or substantively refreshed open bug must use `schemaVersion: 5` and
-include `fix_assessment`:
+Every open bug must use `schemaVersion: 5` and include `fix_assessment`.
+Legacy artifacts without this coverage are stale and must not remain
+actionable; queue them for re-triage even when upstream activity is unchanged:
 
 - `status: proposed` when no existing fix attempt is present and a repository
   change is applicable. Include at least one `proposed_fixes[]` entry with a
@@ -474,9 +474,11 @@ specific file shape), include `reproduce.setup_prompt` so Pulse can copy a
 prompt the maintainer can paste into a local agent to prepare those files, or
 link public issue attachments in `reproduce.attachments`.
 
-Older unchanged bugs do not need to be re-read every run, but they must retain
-their prior explicit judgment/action in the board. The 30-day window controls
-full-design priority, not whether changed issues receive a judgment.
+Older unchanged bugs with valid schema-v5 fix coverage do not need to be
+re-read every run. Older schema-v4 or unversioned bugs must be migrated through
+the fast judgment pass before their actions can be shown again. The 30-day
+window controls full-design priority, not whether an open bug receives fix
+coverage.
 
 Issue action freshness is anchored to the latest upstream issue activity, with
 latest comments being the decisive signal. A proposed issue action is current
@@ -585,7 +587,8 @@ is empty or a published blocker remains. Report selected, completed,
 in-progress, and deferred counts. Run the `-FailOnStale` gate only in explicit
 drain mode after the drain attempt finishes.
 
-Issue **judgment** is exhaustive for new/changed bugs. Normal-mode full design
+Issue **judgment and fix coverage** are exhaustive for every open bug lacking a
+current schema-v5 assessment, as well as new/changed bugs. Normal-mode full design
 work is bounded: rank `actionable_design` judgments by confidence,
 reproducibility, scope, recency, and lack of existing ownership, then run at
 most `$DesignBatchSize` (default 4) through `powertoys-issue-to-design`; leave
@@ -763,9 +766,9 @@ Candidate rules:
 
 - Issues: consume the Phase 1 fast judgments. Only `actionable_design` enters
   the full-design queue; the other statuses already have explicit actions.
-- PRs: community-authored, non-draft, and no meaningful maintainer/reviewer
-  ownership or existing fork trace. If labels do not identify the area, inspect
-  the title, changed files, linked issue, and description before routing it.
+- PRs: every open non-draft PR. Existing fork traces are resume points, not
+  exclusion signals. If labels do not identify the area, inspect the title,
+  changed files, linked issue, and description before routing it.
 
 Rank candidates using:
 
@@ -801,7 +804,7 @@ looped review for its live head. Normal bounded runs therefore use
 `-AllowStaleReviewQueue` for both initial and final publication. In drain mode,
 use `-AllowStaleReviewQueue` for intermediate publishes while work remains, and
 omit it only for the final gate after all selected work has reached a durable
-completed, author-waiting, owned-elsewhere, excluded, or blocked state.
+completed or author-waiting state.
 
 In drain mode only, enforce the stale-review queue gate:
 
@@ -813,9 +816,8 @@ pwsh -NoProfile -File `
 
 In normal mode, rerun the queue command without `-FailOnStale`, publish the
 remaining queue, and finish successfully. Do not repair stale items by copying
-timestamps or head SHAs into artifacts; only a completed looped review,
-author-waiting classification, owned-elsewhere classification, or explicit
-exclusion clears a PR.
+timestamps or head SHAs into artifacts; only a completed looped review or a
+current author-waiting classification clears an open non-draft PR.
 
 For incremental publication while review workers are still running, run the
 same queue command without `-FailOnStale`, include the remaining stale/running

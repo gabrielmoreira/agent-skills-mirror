@@ -77,6 +77,14 @@
       ]
     },
     {
+      "name": "binaryninja",
+      "bootstrapKind": "manual",
+      "docsUrl": "https://binary.ninja/",
+      "canAutoInstall": false,
+      "verifyCommand": "binaryninja",
+      "manualInstallHint": "Binary Ninja is commercial software. Obtain a valid Vector 35 license and install it manually. Optional community MCP plugins must pass the skill-supply-chain review and remain bound to loopback by default."
+    },
+    {
       "name": "reqable-mcp",
       "bootstrapKind": "npm-mcp",
       "npmPackage": "reqable-mcp-server@1.0.1",

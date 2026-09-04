@@ -867,6 +867,16 @@
       "quick": false
     },
     {
+      "hint": "analyze this binary with Binary Ninja MCP and HLIL",
+      "expect": "R45",
+      "quick": true
+    },
+    {
+      "hint": "使用 Binja 查看 MLIL 和函数交叉引用",
+      "expect": "R45",
+      "quick": false
+    },
+    {
       "hint": "Twitter marketing sentiment for our product",
       "expect": "R0",
       "quick": false

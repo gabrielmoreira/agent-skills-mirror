@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from coverage_semantics import derive_ranking_scope_from_audit
+
 try:
     from skill_version import (
         CONTRACT_REVISION,
@@ -2933,56 +2935,9 @@ def _derive_ranking_scope(audit: Mapping[str, Any], *, deep_dive_count: int) -> 
     unresolved enrichment queue makes the output ``diagnostic``. Listing
     enumeration completeness alone never yields a market-wide ranking.
     """
-    universe_total = _integer(_mapping(audit.get("universe")).get("row_count")) or 0
-    generation = _mapping(_mapping(audit.get("candidate_pool")).get("generation_audit"))
-    bulk = _mapping(generation.get("bulk_estimate_audit"))
-    covered = _integer(bulk.get("covered_symbol_count")) or 0
-    mode = _text(generation.get("estimate_acquisition_mode"))
-    if mode == "analyst_estimates_bulk" and covered:
-        attempted: int | None = covered
-    else:
-        # Copy discovery's ACTUAL attempted count — never the configured
-        # seed LIMIT, which can exceed a narrow universe and fabricate
-        # >100% coverage. A missing or impossible count fails closed below.
-        attempted = _integer(generation.get("economic_attempt_count"))
-    probe_raw = _mapping(generation.get("quality_probe")).get("attempted")
-    if isinstance(probe_raw, list):
-        probe_count = len(probe_raw)
-    else:
-        probe_count = _integer(probe_raw) or 0
-    evaluable = _integer(generation.get("economically_evaluable_count")) or 0
-    queue_count = _integer(_mapping(audit.get("enrichment")).get("unresolved_count")) or 0
-    if (
-        queue_count > 0
-        or universe_total <= 0
-        or attempted is None
-        or attempted <= 0
-        or attempted > universe_total
-    ):
-        # Fail closed: an unresolved queue, no universe, a missing attempt
-        # count, zero attempts, or an attempt count exceeding the universe
-        # all make the output a diagnostic, not a scoped conclusion.
-        scope = "diagnostic"
-    elif mode == "analyst_estimates_bulk" and covered >= universe_total:
-        scope = "final_marketwide"
-    else:
-        scope = "final_scoped"
-
-    def _pct(count: int) -> float:
-        return round(count / universe_total * 100.0, 6) if universe_total else 0.0
-
-    return {
-        "ranking_scope": scope,
-        "listing_universe_count": universe_total,
-        "economic_attempt_count": attempted or 0,
-        "economic_attempt_coverage_pct": _pct(attempted or 0),
-        "economically_evaluable_count": evaluable,
-        "economically_evaluable_coverage_pct": _pct(evaluable),
-        "quality_probe_count": probe_count,
-        "quality_probe_coverage_pct": _pct(probe_count),
-        "deep_dive_count": deep_dive_count,
-        "deep_dive_coverage_pct": _pct(deep_dive_count),
-    }
+    # Delegated to the shared coverage-semantics module (used by discovery
+    # too) so the tri-state semantics cannot drift between the two sides.
+    return derive_ranking_scope_from_audit(audit, deep_dive_count=deep_dive_count)
 
 
 def _render_list(values: Any, missing: str) -> str:

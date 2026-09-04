@@ -160,10 +160,9 @@ the AI assistant: [uses renderMermaidDiagram tool]
 
 | File | Purpose |
 | ---- | ------- |
-| `markdown-light.css` | VS Code preview styling |
 | `polish-mermaid-setup.prompt.md` | Interactive Mermaid configuration helper |
 
-**Setup:** Copy CSS to `.vscode/`, add `"markdown.styles": [".vscode/markdown-light.css"]` to settings.
+**Markdown Preview:** Uses VS Code user-level defaults. Optional personal styling belongs in the user profile, not project configuration.
 
 **Mermaid Config:** Run the "Polish Mermaid Setup" prompt to configure Mermaid rendering for your VS Code environment.
 
@@ -909,7 +908,7 @@ This provides a clean white background for edge labels, ensuring readability on 
 
 **Problem**: Diagrams have dark backgrounds in VS Code preview
 
-**Solution 2**: Apply included `markdown-light.css` via settings
+**Solution 2**: Keep colors explicit in the Mermaid init directive (for example, `theme: 'base'` with `themeVariables`).
 
 ### Disproportionate Diagram Layouts (Too Wide/Too Tall)
 
@@ -1504,14 +1503,7 @@ flowchart TB
 
 **Problem**: Blockquotes render with excessive vertical padding
 
-**Solution**: Included in `markdown-light.css`:
-
-```css
-blockquote p {
-    margin: 0 !important;
-    line-height: 1.5 !important;
-}
-```
+**Solution**: Use normal Markdown blockquotes. Optional personal preview styling belongs in the VS Code user profile, not project configuration.
 
 ---
 

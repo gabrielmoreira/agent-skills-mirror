@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 44 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,11 +98,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`lime-rs/resources/default-skills/url_parse/SKILL.md`](lime-rs/resources/default-skills/url_parse/SKILL.md) |
 | 38 | ✓ | [`lime-rs/resources/default-skills/video_generate/SKILL.md`](lime-rs/resources/default-skills/video_generate/SKILL.md) |
 | 39 | ✓ | [`lime-rs/resources/default-skills/webpage_generate/SKILL.md`](lime-rs/resources/default-skills/webpage_generate/SKILL.md) |
-| 40 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
-| 41 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
-| 42 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
-| 43 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
-| 44 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
 
 ---
 

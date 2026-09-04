@@ -126,6 +126,19 @@ Get approval before proceeding.
 - Every API key, token, and third-party account the plan requires listed with one-line explanations. No credential requests mid-implementation.
 - Every MCP server, external API, and third-party CLI the plan depends on verified as reachable before approval.
 
+## Simplicity Gate
+
+Skip for one-file bug fixes or when the user explicitly chose the minimal option.
+
+When the plan adds files, abstractions, error layers, config knobs, or retries the user did not ask for:
+
+- **Minimal path:** the brute-force version in one line; the chosen plan must beat it on risk, rollback, or latency, not elegance.
+- **Defensive layers:** every try/catch, retry, fallback, or flag maps to one named failure mode; delete layers that only "might" fail.
+- **Surface delta:** list new commands, env vars, flags, or services; prefer +0 unless a user split needs a knob.
+- **Compensating complexity:** if the plan is mostly workaround machinery around a misbehaving API, stop and name a route change (anti-patterns #27).
+
+If the gate fails, shrink the plan or switch to the minimal option before asking for approval.
+
 ## Implementation Handoff
 
 A finished plan must be executable by another engineer or agent without re-deciding the direction. Include:

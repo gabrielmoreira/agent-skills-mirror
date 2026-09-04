@@ -111,12 +111,36 @@ directory (ComfyUI Manager, or a manual download into that folder), then ask aga
 | `prompt_builder.py` | `TopologySnapshot` → a bounded-length, role/count-summarized generation prompt |
 | `topology_renderer.py` | Deterministic (NOT AI) box/line structure diagram, fed to ComfyUI's Canny node as ControlNet conditioning — the structural-accuracy pipeline (research.md §10) |
 | `label_overlay.py` | Burns real, correct hostname labels onto the completed generation deterministically — Canny-conditioned text is too lossy for Flux to reproduce reliably (research.md §10) |
-| `generation.py` | Orchestrates the full call sequence and every failure classification; picks the structural ControlNet path when available, falls back to plain txt2img otherwise; enforces the single-in-flight-job guard |
-| `output.py` | Overlays labels (if structural path used) and copies the completed image into `workspace/output/comfyui-topology-viz/` with a timestamped name + sidecar JSON, never overwriting |
+| `generation.py` | Orchestrates the full call sequence and every failure classification; picks the structural ControlNet path when available, falls back to plain txt2img otherwise; enforces the single-in-flight-job guard — **unmodified since spec 120** (spec 121 FR-012) |
+| `output.py` | Overlays labels (if structural path used) and copies the completed image into `workspace/output/comfyui-topology-viz/` with a timestamped name + sidecar JSON, never overwriting — **unmodified since spec 120** |
+| `federated_generation.py` | **NEW (spec 121)** — the actual entry point `__init__.py` now calls. Routes each request between the federated path (below) and `generation.run_generation()`'s existing pipeline (called as-is, never modified) |
 
-See `contracts/comfyui-generation-contract.md` for the exact call sequence.
+See `contracts/comfyui-generation-contract.md` for spec 120's exact fallback call sequence, and
+`specs/121-federated-topology-viz/contracts/` for the two new federated-stage tool contracts.
 
-## Two generation paths
+## The federated path (spec 121)
+
+**Same entry point, no new command** — every "give me a stylized image" request goes through this
+skill exactly as before; which path actually produced the delivered image is now visible in the
+response as `generation_path`:
+
+| `generation_path` | Meaning |
+|---|---|
+| `federated` | Both stages ran on the `johns-risk/viz` federation member: a deterministic, correct-by-construction diagram (real role icons, real labels, real connections — no diffusion model involved), then a diffusion image-edit pass that restyled it without altering structure. This is the strongest correctness guarantee this skill can offer (spec 121 SC-001). |
+| `federated_partial` | The structural diagram (correct, unstyled) was produced on `johns-risk/viz`, but the styling stage failed or that half of the member was unreachable — you still get the correct diagram, not nothing, with `reason` telling you styling didn't complete. |
+| `fallback` | Spec 120's original Flux+ControlNet+Canny pipeline (unchanged) — used for a freeform request (no real device data for the structural stage to work from) or when `johns-risk/viz` itself is unreachable. `reason` says which. |
+
+Both new stages run as separate MCP servers (`mcp-servers/topology-diagram-mcp/`,
+`mcp-servers/image-style-mcp/`) invoked from Border via `n2n/tools/call` on the live
+`johns-risk/viz` member — Border never renders or diffuses anything itself for this path (FR-005).
+See `specs/121-federated-topology-viz/research.md` for the full design, including four real gaps
+found and fixed in the shared federation infrastructure itself (R10) to make this actually work —
+this was the first working internal `n2n/tools/call` in the codebase.
+
+**If `johns-risk/viz` is down**: `systemctl --user start netclaw-member-johns-risk-viz.service`
+(it's `enabled`, so a host reboot brings it back automatically).
+
+## Two generation paths (spec 120's fallback pipeline, used when the federated path isn't)
 
 - **Structural (preferred, when Flux + a ControlNet are installed)**: the topology is rendered as
   a plain geometric box/line diagram, ComfyUI's Canny node extracts edges from it, and Flux paints

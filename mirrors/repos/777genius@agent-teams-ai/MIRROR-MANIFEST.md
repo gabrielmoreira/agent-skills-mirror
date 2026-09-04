@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/agent-teams-ai` — 26 default patterns, 12 followed patterns, 29 file(s) materialized.
+Mirror of `777genius/agent-teams-ai` — 26 default patterns, 12 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `777genius/agent-teams-ai` — 26 default patterns, 12 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,18 +87,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`src/features/team-import/README.md`](src/features/team-import/README.md) |
 | 16 | ✓ | [`src/features/team-provisioning/README.md`](src/features/team-provisioning/README.md) |
 | 17 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
-| 18 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
-| 19 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 20 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 21 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
-| 22 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 23 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 24 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
-| 25 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 26 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
-| 27 | → | [`README.md`](README.md) |
-| 28 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
-| 29 | → | [`src/features/README.md`](src/features/README.md) |
+| 18 | ✓ | [`tools/opencode-console-wrapper/README.md`](tools/opencode-console-wrapper/README.md) |
+| 19 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 20 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 21 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 22 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
+| 23 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 24 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 25 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
+| 26 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 27 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
+| 28 | → | [`README.md`](README.md) |
+| 29 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
+| 30 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

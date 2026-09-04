@@ -22,7 +22,9 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+import estimate_snapshot as snapshot_store
 from build_provider_prefilter_pool import ALLOWED_LANES, _lane_score, build_pool
+from coverage_semantics import build_coverage_block, classify_ranking_scope
 from fmp_client import ApiCallBudgetExceeded, FMPClient
 from normalize_estimates import apply_verified_actual_eps, normalize_symbol
 from screen_universe import DEFAULTS as SCREEN_DEFAULTS
@@ -357,37 +359,8 @@ def _coverage_count(value: Any) -> int:
         return 0
 
 
-def classify_ranking_scope(
-    *,
-    economic_attempt_count: int,
-    listing_universe_count: int,
-    economic_scope_complete: bool,
-    unresolved_queue_count: int,
-) -> str:
-    """Classify how far a run's conclusion may be generalized.
-
-    Listing enumeration completeness never makes a market-wide ranking: only
-    attempting economic (estimate) acquisition for EVERY listed symbol does.
-
-    - ``final_marketwide``: estimate acquisition was attempted for every
-      listing-universe symbol (exact counts) and the run left no unresolved
-      queue — only then may the output be read as a market ranking.
-    - ``final_scoped``: a bounded, explicitly audited subset was fully
-      processed; conclusions bind only to that subset, never to the market.
-    - ``diagnostic``: even the intended scope was left partially processed
-      (unresolved enrichment queue), so the output is a pipeline diagnostic,
-      not a ranking of anything.
-    """
-    if unresolved_queue_count > 0:
-        return "diagnostic"
-    # Fail closed: a run that attempted nothing (or has no universe) proved
-    # nothing about any subset either — that is a diagnostic, not a scoped
-    # conclusion.
-    if listing_universe_count <= 0 or economic_attempt_count <= 0:
-        return "diagnostic"
-    if economic_scope_complete and economic_attempt_count >= listing_universe_count:
-        return "final_marketwide"
-    return "final_scoped"
+# classify_ranking_scope now lives in coverage_semantics (shared with the
+# evaluator so the tri-state semantics cannot drift); imported above.
 
 
 def collect_listing_universe(
@@ -1945,22 +1918,17 @@ def execute_pipeline(
         economic_scope_complete=economic_screen_scope_complete,
         unresolved_queue_count=len(queue),
     )
-    coverage_block = {
-        "ranking_scope": ranking_scope,
-        "economic_attempt_count": estimate_seed_count,
-        "economic_attempt_coverage_pct": round(estimate_seed_coverage_pct, 6),
-        "economically_evaluable_count": valid_estimate_count,
-        "economically_evaluable_coverage_pct": round(valid_estimate_coverage_pct, 6),
-        "quality_probe_count": quality_probe_count,
-        "quality_probe_coverage_pct": round(
-            quality_probe_count / listing_universe_count * 100.0 if listing_universe_count else 0.0,
-            6,
-        ),
-        "deep_dive_count": deep_dive_count,
-        "deep_dive_coverage_pct": round(
-            deep_dive_count / listing_universe_count * 100.0 if listing_universe_count else 0.0, 6
-        ),
-    }
+    coverage_block = build_coverage_block(
+        ranking_scope=ranking_scope,
+        listing_universe_count=listing_universe_count,
+        economic_attempt_count=estimate_seed_count,
+        economically_evaluable_count=valid_estimate_count,
+        quality_probe_count=quality_probe_count,
+        deep_dive_count=deep_dive_count,
+    )
+    # build_coverage_block also emits listing_universe_count; the summary
+    # already carries it at top level, which is harmless duplication.
+    coverage_block = {k: v for k, v in coverage_block.items() if k != "listing_universe_count"}
 
     pool_status = str(audit.get("candidate_pool_status") or "")
     selection_outcome = str(audit.get("selection_outcome") or "")
@@ -2056,6 +2024,204 @@ def execute_pipeline(
     return PipelineResult(summary=summary, exit_code=exit_code)
 
 
+def execute_collect_estimates(
+    client: FMPClient,
+    config: Mapping[str, Any],
+    *,
+    analysis_as_of: datetime,
+    snapshot_dir: Path,
+    shard_index: int,
+    shard_count: int,
+    resume: bool,
+) -> PipelineResult:
+    """Collect minimal FY1-FY3 estimates for one deterministic universe shard.
+
+    First invocation freezes the listing universe into ``snapshot_dir``
+    (``snapshot-manifest.json`` + ``universe.jsonl``); every later shard run
+    writes into that frozen snapshot only. Each attempted symbol is
+    normalized and classified (``evaluable / no_estimates / negative_eps /
+    unit_mismatch / excluded``) so that, once every shard is complete, the
+    classification counts sum exactly to the frozen universe — the
+    precondition ``screen-full-snapshot`` will demand before ever emitting
+    ``ranking_scope: final_marketwide``. Budget exhaustion mid-shard leaves
+    the shard honestly ``partial`` (exit code 3) and is resumable.
+    """
+    if shard_count <= 0 or not (0 <= shard_index < shard_count):
+        raise ValueError("shard_index must satisfy 0 <= shard_index < shard_count")
+    if (snapshot_dir / snapshot_store.MANIFEST_NAME).exists():
+        manifest = snapshot_store.load_manifest(snapshot_dir)
+        if int(manifest.get("shard_count") or 0) != shard_count:
+            raise ValueError(
+                f"snapshot at {snapshot_dir} was created with shard_count="
+                f"{manifest.get('shard_count')}; got {shard_count}"
+            )
+        # Re-verify the freeze before any API access or shard append: a
+        # swapped universe.jsonl must never collect under the frozen id.
+        universe_rows = snapshot_store.load_verified_universe(snapshot_dir, manifest)
+    else:
+        universe_rows, enumeration_audit = collect_listing_universe(
+            client,
+            min_market_cap=float(config["min_market_cap"]),
+            max_market_cap=float(config["max_market_cap"]),
+            min_price=float(config["min_price"]),
+            page_limit=int(config["company_screener_limit"]),
+            minimum_band_width=float(config["minimum_market_cap_band_width"]),
+            maximum_depth=int(config["maximum_market_cap_band_depth"]),
+        )
+        if not universe_rows:
+            raise ValueError("FMP company screener returned no normalized listing rows")
+        profile_overrides = {
+            str(key).upper(): str(value)
+            for key, value in (config.get("sector_profile_overrides") or {}).items()
+        }
+        for row in universe_rows:
+            pinned = profile_overrides.get(str(row.get("symbol", "")).upper())
+            if pinned:
+                row["sector_profile_type"] = pinned
+        manifest = snapshot_store.create_snapshot(
+            snapshot_dir, universe_rows, shard_count=shard_count, as_of=analysis_as_of
+        )
+        _write_json(snapshot_dir / "listing-enumeration-audit.json", enumeration_audit)
+
+    shard_listings = [
+        row
+        for row in universe_rows
+        if snapshot_store.stable_shard(_symbol(row), shard_count) == shard_index
+    ]
+    existing = snapshot_store.load_shard_rows(snapshot_dir, shard_index)
+    if existing and not resume:
+        raise ValueError(
+            f"shard {shard_index} already has {len(existing)} rows; pass --resume to continue"
+        )
+    done = {str(row.get("symbol")) for row in existing}
+    pending = [row for row in shard_listings if _symbol(row) not in done]
+
+    source_id = f"fmp-analyst-estimates-{analysis_as_of.date().isoformat()}"
+    calls_before = int(client.diagnostics().get("api_calls_made") or 0)
+    buffered: list[dict[str, Any]] = []
+    fetch_failed_symbols: list[str] = []
+    budget_exhausted = False
+    for listing in pending:
+        symbol = _symbol(listing)
+        try:
+            fetched = client.get_analyst_estimates_detailed(symbol, period="annual", limit=6)
+        except ApiCallBudgetExceeded:
+            budget_exhausted = True
+            break
+        if str(fetched.get("status")) == "failed":
+            # The client reports provider failures explicitly (HTTP errors,
+            # offline misses, HTTP-200 error payloads, schema failures);
+            # such a symbol stays UNCOLLECTED — a failure classified as
+            # no_estimates would satisfy the marketwide invariant without
+            # ever fetching anything.
+            fetch_failed_symbols.append(symbol)
+            continue
+        estimates = [dict(row) for row in (fetched.get("rows") or [])]
+        served_from_cache = bool(fetched.get("served_from_cache"))
+        epoch = fetched.get("retrieved_at")
+        # The stamp is the time the ADOPTED payload was actually fetched
+        # over HTTP (a cache hit keeps the entry's creation time, reported
+        # by the client for the exact response it returned). Unknown
+        # provenance stays null — never back-filled with "now" (fail closed
+        # for PR B's staleness gate).
+        retrieved_at = (
+            datetime.fromtimestamp(float(epoch), tz=timezone.utc).isoformat()
+            if isinstance(epoch, (int, float))
+            else None
+        )
+        [normalized] = normalize_estimate_frame(
+            [listing],
+            {symbol: estimates},
+            analysis_as_of=analysis_as_of,
+            source_id=source_id,
+            config=config,
+        )
+        record = dict(normalized)
+        record["snapshot_classification"] = snapshot_store.classify_symbol(
+            listing,
+            normalized,
+            requires_unit_reconciliation=requires_unit_reconciliation,
+            minimum_plausible_forward_pe=float(config.get("minimum_plausible_forward_pe", 2.0)),
+        )
+        record["snapshot_shard"] = shard_index
+        record["snapshot_retrieved_at"] = retrieved_at
+        record["snapshot_served_from_cache"] = served_from_cache
+        buffered.append(record)
+        if len(buffered) >= 25:
+            snapshot_store.append_shard_rows(snapshot_dir, shard_index, buffered)
+            buffered = []
+    if buffered:
+        snapshot_store.append_shard_rows(snapshot_dir, shard_index, buffered)
+
+    all_rows = snapshot_store.load_shard_rows(snapshot_dir, shard_index)
+    classified: dict[str, int] = {}
+    retrieved_stamps: list[str] = []
+    retrieval_time_unknown = 0
+    for row in all_rows:
+        name = str(row.get("snapshot_classification") or "no_estimates")
+        classified[name] = classified.get(name, 0) + 1
+        stamp = row.get("snapshot_retrieved_at")
+        if isinstance(stamp, str) and stamp:
+            retrieved_stamps.append(stamp)
+        else:
+            retrieval_time_unknown += 1
+    collected_this_run = len(all_rows) - len(existing)
+    shard_complete = (
+        len(all_rows) >= len(shard_listings) and not budget_exhausted and not fetch_failed_symbols
+    )
+    previous_entry = manifest.get("shards", {}).get(str(shard_index)) or {}
+    previous_calls = int(previous_entry.get("calls_used") or 0)
+    calls_delta = int(client.diagnostics().get("api_calls_made") or 0) - calls_before
+    if collected_this_run > 0 or not previous_entry.get("as_of"):
+        shard_as_of = analysis_as_of.astimezone(timezone.utc).isoformat()
+    else:
+        # A run that collected nothing must not refresh the shard's
+        # freshness stamp — PR B's staleness gate reads it.
+        shard_as_of = str(previous_entry.get("as_of"))
+    manifest = snapshot_store.update_shard(
+        snapshot_dir,
+        manifest,
+        shard_index,
+        status="complete" if shard_complete else "partial",
+        as_of=shard_as_of,
+        calls_used=previous_calls + calls_delta,
+        classified=classified,
+        attempted=len(all_rows),
+        expected=len(shard_listings),
+        fetch_failed=len(fetch_failed_symbols),
+        oldest_retrieved_at=min(retrieved_stamps) if retrieved_stamps else None,
+        newest_retrieved_at=max(retrieved_stamps) if retrieved_stamps else None,
+        retrieval_time_unknown=retrieval_time_unknown,
+    )
+    if shard_complete:
+        status_label = "shard_complete"
+    elif budget_exhausted:
+        status_label = "shard_partial_budget"
+    elif fetch_failed_symbols:
+        status_label = "shard_partial_fetch_failures"
+    else:
+        status_label = "shard_partial"
+    summary = {
+        "runtime": runtime_metadata(),
+        "status": status_label,
+        "stage": "collect-estimates",
+        "snapshot_dir": str(snapshot_dir),
+        "shard_index": shard_index,
+        "shard_count": shard_count,
+        "shard_symbol_count": len(shard_listings),
+        "collected_this_run": collected_this_run,
+        "shard_classified": dict(sorted(classified.items())),
+        "budget_exhausted": budget_exhausted,
+        "fetch_failed_count": len(fetch_failed_symbols),
+        "fetch_failed_symbols": fetch_failed_symbols[:50],
+        "retrieval_time_unknown": retrieval_time_unknown,
+        "snapshot": snapshot_store.snapshot_status(manifest),
+        "provider_diagnostics": client.diagnostics(),
+    }
+    _write_json(snapshot_dir / f"shard-{shard_index}-summary.json", summary)
+    return PipelineResult(summary=summary, exit_code=0 if shard_complete else 3)
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path)
@@ -2069,6 +2235,25 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-api-calls", type=int)
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--skip-candidate-packets", action="store_true")
+    parser.add_argument(
+        "--stage",
+        choices=("discover", "collect-estimates"),
+        default="discover",
+        help=(
+            "discover = the bounded pilot pipeline (default); collect-estimates = "
+            "one deterministic shard of the full-universe estimate snapshot (v3.7)"
+        ),
+    )
+    parser.add_argument("--shard-index", type=int, help="collect-estimates: shard to collect")
+    parser.add_argument("--shard-count", type=int, help="collect-estimates: total shards")
+    parser.add_argument(
+        "--snapshot-dir",
+        type=Path,
+        help="collect-estimates: snapshot directory (default <output-dir>/estimate-snapshot)",
+    )
+    parser.add_argument(
+        "--resume", action="store_true", help="collect-estimates: continue a partial shard"
+    )
     parser.add_argument("--version", action="store_true")
     return parser.parse_args(argv)
 
@@ -2102,13 +2287,28 @@ def main(argv: Sequence[str] | None = None) -> int:
             raw_store_dir=raw_store_dir,
             offline=args.offline,
         ) as client:
-            result = execute_pipeline(
-                client,
-                config,
-                analysis_as_of=analysis_as_of,
-                output_dir=output_dir,
-                include_packets=not args.skip_candidate_packets,
-            )
+            if args.stage == "collect-estimates":
+                if args.shard_index is None or args.shard_count is None:
+                    raise ValueError(
+                        "--shard-index and --shard-count are required for --stage collect-estimates"
+                    )
+                result = execute_collect_estimates(
+                    client,
+                    config,
+                    analysis_as_of=analysis_as_of,
+                    snapshot_dir=args.snapshot_dir or (args.output_dir / "estimate-snapshot"),
+                    shard_index=int(args.shard_index),
+                    shard_count=int(args.shard_count),
+                    resume=bool(args.resume),
+                )
+            else:
+                result = execute_pipeline(
+                    client,
+                    config,
+                    analysis_as_of=analysis_as_of,
+                    output_dir=output_dir,
+                    include_packets=not args.skip_candidate_packets,
+                )
         encoded = json.dumps(result.summary, ensure_ascii=False, sort_keys=True)
         max_bytes = int(config.get("compact_stdout_max_bytes", 20_000))
         if len(encoded.encode("utf-8")) > max_bytes:

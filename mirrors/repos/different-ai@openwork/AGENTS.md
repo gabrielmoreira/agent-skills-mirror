@@ -22,6 +22,12 @@ The app consumes OpenWork server surfaces (self-hosted or hosted) rather than
 inventing parallel behavior. Anything OpenCode can do is available in OpenWork,
 even before a dedicated UI exists.
 
+## Confidentiality (hard rule — this repo is public)
+
+Never let a branch name, commit, PR text, comment, fixture, or evidence identify
+a customer, prospect, partner, or outside person; use internal ticket IDs, and
+escalate any leak instead of rewriting history.
+
 ## Verification (every change)
 
 - The only proof path is `evals/specs/**/*.test.ts` with `test` from
@@ -53,7 +59,9 @@ even before a dedicated UI exists.
  `pnpm dev:headless-web` remains a compatibility alias with its prior foreground
  default (`--detach` still works). Read
  `tmp/dev-headless-web.json` for the owner-only runtime manifest.
- It does not use `~/.config/openwork/server.json`. Stop a running script with
+ It does not use `~/.config/openwork/server.json`, and its engine keeps its own
+ sessions database at `tmp/dev-headless-opencode.db` instead of the desktop
+ app's `~/.local/share/opencode/opencode.db`. Stop a running script with
  `pnpm world down dev-headless`; pass script options after `--`, for example
  `pnpm world up dev-headless --detach -- --replace --keep-tokens`. Cloud sign-in
  is copy/paste handoff (Den cannot redirect grants to localhost): Account → Sign

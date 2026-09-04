@@ -1,3 +1,13 @@
+---
+license: Apache-2.0
+metadata:
+  author: "Avi Hacker, J.D."
+  organization: "The AI Consulting Network"
+  homepage: https://www.theaiconsultingnetwork.com
+  source: https://github.com/ahacker-1/cre-agent-skills
+  copyright: "Copyright 2026 Avi Hacker, J.D. / The AI Consulting Network"
+---
+
 # Hold/Sell/Refi Analyst
 
 Compare four mid-hold outcomes — continued Hold, Refinance-and-Hold, Sell-at-Current, and Sell-at-Stabilization — on a side-by-side IRR / Equity-Multiple / cash-to-LP basis, using a Since-Inception XIRR framework that correctly handles partial holding periods, quarterly interim distributions, and refinance cash-out as a distribution event.
@@ -353,15 +363,15 @@ Same asset, same measurement date. The value-add plan originally called for inte
 
 ## Related Knowledge Bases
 
-- [Renewal Economics & Hold/Sell/Refi Decision Frameworks](../../knowledge/renewal-economics.md) — primary: Sections 6 (Hold Period Analytics), 7 (Refinance Economics), 8 (Disposition Timing), 9 (Capital Markets Snapshot)
-- [Underwriting Calculations](../../knowledge/underwriting-calc.md) — IRR (Worked Example 5), Equity Multiple (Worked Example 6), DSCR, debt-service, cap-rate formulas (cross-reference; do not redefine)
-- [Multifamily Benchmarks](../../knowledge/multifamily-benchmarks.md) — cap-rate ranges, submarket adjustments for exit-cap derivation, OpEx benchmarks for forward-NOI extrapolation
+- [Renewal Economics & Hold/Sell/Refi Decision Frameworks](knowledge/renewal-economics.md) — primary: Sections 6 (Hold Period Analytics), 7 (Refinance Economics), 8 (Disposition Timing), 9 (Capital Markets Snapshot)
+- [Underwriting Calculations](knowledge/underwriting-calc.md) — IRR (Worked Example 5), Equity Multiple (Worked Example 6), DSCR, debt-service, cap-rate formulas (cross-reference; do not redefine)
+- [Multifamily Benchmarks](knowledge/multifamily-benchmarks.md) — cap-rate ranges, submarket adjustments for exit-cap derivation, OpEx benchmarks for forward-NOI extrapolation
 
 ---
 
 ## Research Basis
 
-- [Hold/Sell/Refi Analyst Research](../../research/asset-management/hold-sell-refi-analyst-research.md) (R8)
+- [Hold/Sell/Refi Analyst Research](research/asset-management/hold-sell-refi-analyst-research.md) (R8)
 
 ---
 
@@ -400,3 +410,13 @@ Same asset, same measurement date. The value-add plan originally called for inte
   }
 }
 ```
+
+---
+
+## Attribution
+
+Built and maintained by [The AI Consulting Network](https://www.theaiconsultingnetwork.com/?utm_source=github&utm_medium=skill-file&utm_campaign=cre-agent-skills), the commercial real estate AI consulting practice of Avi Hacker, J.D., and part of [CRE Agent Skills](https://github.com/ahacker-1/cre-agent-skills), an open-source library of AI skills for commercial real estate.
+
+If this skill saved you time and you want systems like it built inside your firm, [reach out](https://www.theaiconsultingnetwork.com/contact?utm_source=github&utm_medium=skill-file&utm_campaign=cre-agent-skills). We would love to work with you.
+
+Copyright 2026 Avi Hacker, J.D. / The AI Consulting Network. Licensed under the [Apache License 2.0](https://github.com/ahacker-1/cre-agent-skills/blob/main/LICENSE). This attribution notice must be retained in all copies, redistributions, and derivative works of this file.

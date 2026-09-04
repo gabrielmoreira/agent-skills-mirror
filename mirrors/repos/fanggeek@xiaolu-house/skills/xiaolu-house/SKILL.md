@@ -1,7 +1,14 @@
 ---
 name: xiaolu-house
-version: 1.1.1
+slug: xiaolu-house
+displayName: 小鹿选房
+display_name: 小鹿选房
+display_name_en: Xiaolu House
+version: 1.1.2
 description: 小鹿选房是专业的涵盖全国的房产信息平台，当用户需要找房源（二手房、租房、新房、买房、找房）、选笋盘、比价格、查成交、看小区、查学区、查学校时使用。
+description_zh: 小鹿选房是专业的房产信息平台，提供二手房、新房、租房、成交、小区和学区查询。
+description_en: Xiaolu House is a property information service for finding homes, communities, transactions, and schools in China.
+author: 小鹿选房
 metadata: {"cliHelp":"npx -y xiaolu-house --help","openclaw":{"skillKey":"xiaolu-house","emoji":"🏠","os":["linux","darwin","win32"],"homepage":"https://github.com/fanggeek/xiaolu-house","requires":{"bins":["npx"]},"install":[{"kind":"node","package":"xiaolu-house","bins":["npx"]}]}}
 ---
 
@@ -17,7 +24,7 @@ metadata: {"cliHelp":"npx -y xiaolu-house --help","openclaw":{"skillKey":"xiaolu
 ---
 
 ## 支持城市
-目前支持以下城市：`安阳`、`保定`、`常州`、`成都`、`恩施`、`佛山`、`福州`、`广州`、`桂林`、`邯郸`、`衡水`、`衡阳`、`菏泽`、`吉安`、`金昌`、`荆州`、`金华`、`晋中`、`开封`、`昆明`、`连云港`、`聊城`、`辽源`、`临沂`、`六安`、`南充`、`南京`、`南通`、`南阳`、`宁波`、`宁德`、`莆田`、`潜江`、`泉州`、`三门峡`、`上海`、`绍兴`、`深圳`、`四平`、`宿迁`、`天津`、`通辽`、`温州`、`厦门`、`湘西`、`仙桃`、`西宁`、`许昌`、`徐州`、`伊犁`、`岳阳`、`运城`、`湛江`、`中山`、`舟山`、`珠海`
+目前支持以下城市：`安顺`、`安阳`、`保定`、`宝鸡`、`常德`、`常州`、`成都`、`东莞`、`恩施`、`佛山`、`福州`、`广州`、`桂林`、`贵阳`、`邯郸`、`衡水`、`衡阳`、`菏泽`、`吉安`、`金昌`、`荆州`、`金华`、`晋中`、`开封`、`可克达拉`、`昆明`、`连云港`、`聊城`、`辽源`、`临沂`、`六安`、`茂名`、`南充`、`南京`、`南通`、`南阳`、`宁波`、`宁德`、`莆田`、`潜江`、`泉州`、`三门峡`、`上海`、`绍兴`、`深圳`、`十堰`、`四平`、`宿迁`、`天津`、`通辽`、`吐鲁番`、`渭南`、`乌鲁木齐`、`厦门`、`湘西`、`仙桃`、`西宁`、`许昌`、`徐州`、`阳江`、`伊犁`、`岳阳`、`玉林`、`运城`、`漳州`、`湛江`、`中山`、`珠海`、`涿州`
 
 ---
 

@@ -2774,7 +2774,8 @@ Notes:
 
 ### RPC: IMPORT_RESEARCH (LBwxtb)
 
-**Source:** `_web/research.py::import_sources()`
+**Source:** `_research.py::BaseResearchAPI.import_sources()` (classification) and
+`_web/research.py::WebResearchAPI._send_import()` (Web encoding/decoding)
 
 Import selected research sources into the notebook.
 
@@ -2847,7 +2848,7 @@ await rpc_call(
 # - This call commonly runs long on large batches (the server fetches/parses/
 #   embeds every entry before responding), so the client sends a batch-scaled
 #   `read_timeout` here rather than the shared 30s default — see
-#   `_web/research_import.py::_import_research_read_timeout` (#2187).
+#   `_research_import.py::_import_research_read_timeout` (#2187).
 # - A client-side timeout can still land AFTER the server partially commits.
 #   Retrying with the same task_id then gets rejected with gRPC 9
 #   (FAILED_PRECONDITION) — documented backend behavior (#1926 item F2b), not
@@ -2857,12 +2858,12 @@ await rpc_call(
 #   immediately rather than retrying blindly against the same rejected
 #   task_id (unlike a timeout, this attempt's payload was rejected outright,
 #   so a filtered-subset retry isn't evidence-based) — see
-#   `_web/research_import.py::_is_import_research_failed_precondition`.
+#   `_research_import.py::_is_import_research_failed_precondition`.
 ```
 
 ### RPC: CANCEL_RESEARCH (Zbrupe)
 
-**Source:** `_web/research.py::ResearchAPI.cancel()`
+**Source:** `_web/research.py::WebResearchAPI.cancel()`
 
 Cancel an in-flight research (DiscoverSources) run. An IN_PROGRESS run
 transitions to a terminal `FAILED` state shortly after this call; cancelling an

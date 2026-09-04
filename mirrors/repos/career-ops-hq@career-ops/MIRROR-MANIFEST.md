@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `career-ops-hq/career-ops` — 26 default patterns, 2 followed patterns, 14 file(s) materialized.
+Mirror of `career-ops-hq/career-ops` — 26 default patterns, 2 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `career-ops-hq/career-ops` — 26 default patterns, 2 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,16 +64,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.antigravitycli/skills/career-ops/SKILL.md`](.antigravitycli/skills/career-ops/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/career-ops/SKILL.md`](.claude/skills/career-ops/SKILL.md) |
 | 4 | ✓ | [`.cursor/skills/career-ops/SKILL.md`](.cursor/skills/career-ops/SKILL.md) |
-| 5 | ✓ | [`.grok/skills/career-ops/SKILL.md`](.grok/skills/career-ops/SKILL.md) |
-| 6 | ✓ | [`.kimi/skills/career-ops/SKILL.md`](.kimi/skills/career-ops/SKILL.md) |
-| 7 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
-| 8 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 12 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 13 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 14 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 6 | ✓ | [`.grok/skills/career-ops/SKILL.md`](.grok/skills/career-ops/SKILL.md) |
+| 7 | ✓ | [`.kimi/skills/career-ops/SKILL.md`](.kimi/skills/career-ops/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
+| 9 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 13 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 14 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 15 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

@@ -75,9 +75,10 @@ is all-or-nothing for the eleven typed namespaces (`notebooks`, `sources`,
 `labels`, and `collections`); `client.backends` is the read-only installed-graph
 report. Explicit Android selection installs all eleven Android adapters, and
 the installed namespace objects retain no Web operation collaborators. The
-advanced `client.rpc_call(...)` escape hatch is deliberately different: its
-`RPCMethod` values are Web batchexecute IDs, so it remains Web-specific under
-either namespace selection.
+supported `client.raw` namespace is selected with the backend. The deprecated
+`client.rpc_call(...)` wrapper is deliberately different: its `RPCMethod`
+values are Web batchexecute IDs, so Android preserves it through a separate,
+lazy Web compatibility sidecar during the 0.x warning window.
 
 Use the [runtime and transport view](https://teng-lin.github.io/notebooklm-py/diagrams/03-client-runtime-and-transport.html)
 for ownership, the [RPC sequence](https://teng-lin.github.io/notebooklm-py/diagrams/07-rpc-call-path.html) for call order, and
@@ -159,14 +160,13 @@ On the default Web backend, public methods (`client.notebooks.list()`, `client.s
 ```
 
 Production wires `RpcExecutor` directly into each feature as its
-`RpcCaller` per ADR-0014 Rule 1; `NotebookLMClient.rpc_call` dispatches
-through the same `RpcExecutor` stored as `NotebookLMClient._rpc_executor`
-for the public raw-RPC escape hatch.
+`RpcCaller` per ADR-0014 Rule 1. A Web client's `raw.call` dispatches through
+the same `RpcExecutor` stored in `NotebookLMClient._web_runtime`.
 
-`NotebookLMClient.rpc_call(method, params)` is the public raw-RPC escape hatch.
-It skips feature-specific param builders and result parsers, but still enters
-the same `RpcExecutor.rpc_call → RuntimeTransport → Kernel`
-pipeline.
+`NotebookLMClient.rpc_call(method, params)` is the deprecated compatibility
+wrapper. It follows the same pipeline on Web. On Android, its first call enters
+a supervised operation and materialises the pre-registered Web sidecar before
+delegating; typed Android operations never use that sidecar.
 
 ### Android gRPC path
 
@@ -179,14 +179,26 @@ shows lazy bearer acquisition, channel creation, and result projection.
 
 ```text
 NotebookLMClient.<feature>.<method>()
+    → backend-neutral <Feature>API runs shared workflow orchestration
+    → Android<Feature>API._operation_scope(...) for multi-call workflows
+      → AndroidSession.operation_scope(...) + task-local workflow epoch
     → Android<Feature>API validates/builds a protobuf request
-    → AndroidSession.operation_scope(...) for multi-call workflows
     → AndroidSession.unary(...) or .unary_stream(...)
     → CallSupervisor terminal scope (drain, metrics, semaphore)
     → lazy bearer acquisition + lazy gRPC channel
     → notebooklm-pa.googleapis.com
     → strict protobuf/public-dataclass projection
 ```
+
+Every backend-neutral namespace base exposes the same non-abstract
+`_operation_scope(label)` template hook. Its default is an async-compatible
+no-op, while each Android namespace overrides it with the session's
+generation-bearing scope. The Android scope binds a module-level `ContextVar`
+tagged with that `AndroidSession`'s unique identity and lease epoch. Nested
+namespace calls therefore inherit the original workflow fence without adding
+epoch parameters to wire hooks; unrelated Android clients in the same task
+cannot consume each other's tag, and nested scopes restore the outer tag on
+exit.
 
 Android optional dependencies and the master-token credential are validated at
 async open; the channel itself remains lazy until the first Android RPC. Asset
@@ -265,7 +277,13 @@ For a new conversation, `ChatAPI.ask()` then calls its abstract
 that read through `GET_LAST_CONVERSATION_ID` on the normal `RpcExecutor` path.
 Other Web chat reads use the same executor, while shared
 `ChatAPI.delete_conversation()` delegates its one RPC send to
-`WebChatAPI._send_delete_conversation()`.
+`WebChatAPI._send_delete_conversation()`. `ChatAPI.configure()` owns defaults,
+custom-prompt validation, and normalization above `_send_configure()`, while
+`ChatAPI.get_settings()` constructs the public model from the typed
+`_read_settings()` carrier. Authoritative prior-turn counting is also shared;
+each `_list_turn_roles()` hook returns typed roles plus backend-specific
+exhaustion evidence, so Web keeps its row-count rule and Android keeps its
+native pagination-token rule.
 
 `AndroidChatAPI` reuses the same neutral `ChatAPI` locks, cache, source lookup,
 and result construction, but its send seam calls
@@ -284,10 +302,10 @@ the visual counterparts to the detailed ownership table below.
 
 | Flow | Runtime shape |
 |------|---------------|
-| Source file upload | `WebSourcesAPI.add_file()` delegates to `SourceUploadPipeline.add_file()`. The pipeline holds a generation-bearing `CallSupervisor.operation_scope`, takes its own upload semaphore, registers the file source through `runtime.rpc_call(ADD_SOURCE_FILE)`, then uses a dedicated `httpx.AsyncClient` and epoch-fenced live Kernel cookies for the Scotty resumable-upload start/finalize calls. Optional wait/rename steps remain inside the same admitted workflow and return to `rpc_call`. |
+| Source file upload | The backend-neutral `SourcesAPI.add_file()` normalizes the requested title and dispatches through one `_send_upload` hook. Web and Android hooks wrap their existing upload pipelines; those pipelines retain registration, byte transfer, admission, deadlines, and lifecycle fencing, then invoke the owner-neutral base finalizer before their operation scope exits. The finalizer chooses ready/registered/processing projection and applies the best-effort title rename without retaining backend owners. Web still takes its own upload semaphore and uses epoch-fenced live Kernel cookies for Scotty start/finalize; Android retains its aggregate control-plane deadline and workflow epoch through post-upload reads/mutation. |
 | Source URL/text/Drive add | `WebSourcesAPI` holds a `CallSupervisor.operation_scope` across URL workflows that combine create, optional wait, and optional rename. `SourceAddService` wraps URL and Drive mutating RPCs in `idempotent_create(...)` where those flows have stable probes. Text-source adds remain intentionally non-idempotent unless the caller handles dedupe externally. |
-| Artifact generation | The backend-neutral `ArtifactsAPI` owns validation and source/language resolution for ten Studio creation methods over `_send_create_artifact`. `generate_mind_map()` is the eleventh public `generate_*` method and has its own backend hook because it returns `MindMapResult` and may persist note-backed output. `WebArtifactsAPI` implements the shared creation hook with `ArtifactGenerationService` (`_web/artifact/generation.py`), whose positional `CREATE_ARTIFACT` builders live in `_web/params/artifacts.py`; Web revise, retry, and mind-map paths also use that service. When `backend="android"` is explicit, `AndroidArtifactsAPI` dispatches the evidence-admitted exact `CreateArtifact` families, including cinematic videos and data tables, plus live-proven `DeriveArtifact`. Retry and Drive export use web-derived mobile gRPC handlers; note-backed generation is native composition over current-bundle `ActOnSources` and exact `CreateNote`. `ArtifactPollingService` owns leader/follower polling over the abstract target-aware studio projection. |
-| Artifact download | Web `ArtifactDownloadService` (`_web/artifact/downloads.py`) selects artifacts and decodes raw rows/interactive HTML. The neutral `AssetDownloadService` (`_artifact/downloads.py`) owns byte transfer, rejection, staging, and atomic publication. Web supplies a storage-cookie jar. The publicly selected Android asset service validates canonical hosts, clears ambient cookies on every hop, uses the APK-evidenced bearer-authenticated `GET` plus `alr=yes` on the exact `lh3.googleusercontent.com` and slide `contribution.usercontent.google.com` entry hosts, strips credentials once a chain leaves the allowlist, applies representation byte/signature limits, corrects verified WAV output to `.wav`, and is drained with the client lifecycle. These transfers do not go through `RpcExecutor` or `Kernel.post`. |
+| Artifact generation | The backend-neutral `ArtifactsAPI` owns validation and source/language resolution for ten Studio creation methods over `_send_create_artifact`, Drive-export wrappers/target validation over `_send_export`, and artifact-copy validation/result policy over `_send_copy`. Customization choices remain an abstract typed read because the Web row and Android protobuf tables have no shared choreography. `generate_mind_map()` is the eleventh public `generate_*` method and has its own backend hook because it returns `MindMapResult` and may persist note-backed output. `WebArtifactsAPI` implements the shared creation hook with `ArtifactGenerationService` (`_web/artifact/generation.py`), whose positional `CREATE_ARTIFACT` builders live in `_web/params/artifacts.py`; Web revise, retry, and mind-map paths also use that service. When `backend="android"` is explicit, `AndroidArtifactsAPI` dispatches the evidence-admitted exact `CreateArtifact` families, including cinematic videos and data tables, plus live-proven `DeriveArtifact`. Retry and Drive export use web-derived mobile gRPC handlers; note-backed generation is native composition over current-bundle `ActOnSources` and exact `CreateNote`. `ArtifactPollingService` owns leader/follower polling over the abstract target-aware studio projection. |
+| Artifact download | Web `ArtifactDownloadService` (`_web/artifact/downloads.py`) selects artifacts and decodes raw rows/interactive HTML. The neutral `AssetDownloadService` (`_artifact/downloads.py`) owns byte transfer, rejection, staging, and atomic publication, while `_artifact/_guarded_transfer.py` owns the bounded redirect/content/signature plane shared by the Android adapter. Web supplies a storage-cookie jar. The publicly selected Android asset service validates canonical hosts, clears ambient cookies on every hop, re-acquires the APK-evidenced bearer for each eligible hop, uses `alr=yes` on the exact `lh3.googleusercontent.com` and slide `contribution.usercontent.google.com` entry hosts, strips credentials permanently once a chain leaves the allowlist, applies representation byte/signature limits, corrects verified WAV output to `.wav`, and is drained with the client lifecycle. These transfers do not go through `RpcExecutor` or `Kernel.post`. |
 | Notes and mind maps | `NoteService` owns Web note-row CRUD/classification through `RpcCaller`. `NoteBackedMindMapService` keeps Web row decoding and exact-content note-backed rename in `WebMindMapsAPI`; rename fetches the raw stored row and resends its content unchanged. The neutral `MindMapsAPI` composes unified list/lookup/rename/delete workflows over base-typed `ArtifactsAPI` and `NotesAPI` collaborators. For explicit Android selection, `AndroidMindMapsAPI` is publicly assembled over the Android artifact and note APIs: interactive generation/tree/mutation uses live artifact operations, while note-backed reads/rename/delete/tree and typed prefetch compose without fabricating Web rows. Note-backed generation uses the current-bundle `ActOnSources` request and persists its JSON through native `CreateNote`. |
 
 ## Cross-cutting policies
@@ -509,25 +527,22 @@ the executor on direct collaborator dependencies.
                            runtime callables           artifacts/chat/...
         |
         v
-  _collaborators: RuntimeCollaborators
-  metrics | drain_tracker | call_supervisor | reqid | auth_coord | kernel
-  | cookie_persistence | web_transport | root lifecycle
+  _collaborators: SharedRuntime
+  metrics | call_supervisor | root lifecycle
         |
         v
   ClientLifecycle orchestrates immutable transport/loop-participant tuples
-      |-- WebTransportLifecycle owns Kernel/auth/keepalive/cookie persistence
-      |-- SourceUploadPipeline owns Web upload clients/tasks and semaphores
-      `-- when Android is selected: AndroidSession, Android asset/upload/
-          Phenotype transports, and Android loop participants
+      |-- Web: WebTransportLifecycle + SourceUploadPipeline
+      `-- Android: AndroidRuntime participants + inert LazyWebSidecar proxy
 
-        +--------------------------+
-        | _composed: ClientComposed|
-        +--------------------------+
-        | transport: RuntimeTransport
-        | executor: RpcExecutor
-        | chain_host: MiddlewareChainHost
-        | chain_builder + middlewares
-        +--------------------------+
+        +----------------------------------+
+        | _web_runtime: WebRuntime | None  |
+        +----------------------------------+
+        | reqid | auth_coord | kernel      |
+        | cookie persistence | web transport|
+        | executor | source uploader       |
+        | composed: ClientComposed         |
+        +----------------------------------+
              |
              v
   RpcExecutor.rpc_call → CallSupervisor → RuntimeTransport.perform_authed_post
@@ -536,23 +551,31 @@ the executor on direct collaborator dependencies.
   Selected typed namespaces:
       web     → Web*API → RpcExecutor / Web upload and asset services
       android → Android*API → AndroidSession / Android transfer services
+
+  Supported raw namespace:
+      web     → WebRawAPI.call → installed WebRuntime
+      android → AndroidRawAPI.unary/unary_stream → AndroidSession
 ```
 
 | Collaborator | Module | Responsibility |
 |--------------|--------|----------------|
-| `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, `_composed`, `_collaborators`, `_rpc_executor`, backend preference/reporting, and the eleven feature API attributes (`notebooks`, `sources`, `artifacts`, `chat`, `notes`, `mind_maps`, `research`, `settings`, `sharing`, `labels`, `collections`). `__aenter__`, `close`, `drain`, `is_connected`, `metrics_snapshot`, and `rpc_call` route directly to the owning collaborator. Keep non-trivial additions in focused assembly/runtime/feature seams rather than accreting the composition root; the module-size ratchet in `tests/_guardrails/test_module_size_ratchet.py` is the enforceable ceiling, not a line count copied into this document. |
+| `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, the neutral `_collaborators`, exactly one primary backend runtime, backend preference/reporting, the backend-selected `raw` adapter, and the eleven feature API attributes (`notebooks`, `sources`, `artifacts`, `chat`, `notes`, `mind_maps`, `research`, `settings`, `sharing`, `labels`, `collections`). An Android client also owns an inert `LazyWebSidecar` lifecycle proxy solely for the deprecated `rpc_call` warning window. Keep non-trivial additions in focused assembly/runtime/feature seams rather than accreting the composition root; the module-size ratchet in `tests/_guardrails/test_module_size_ratchet.py` is the enforceable ceiling, not a line count copied into this document. |
 | `ClientSeams` | [`_web/transport/seams.py`](../src/notebooklm/_web/transport/seams.py) | Mutable holder for runtime callables that closures re-read after construction: `decode_response`, `sleep`, and `is_auth_error`. Construction-only seams such as `async_client_factory` stay on `compose_client_internals(...)` and the client-shell test helper, not on the public constructor. |
-| `ClientComposed` | [`_client_composed.py`](../src/notebooklm/_client_composed.py) | Write-once holder for the Web/raw-RPC composition (`transport`, `executor`, `chain_host`, `chain_builder`, and `middlewares`) plus the shared `runtime_collaborators`. RPC admission/semaphore policy lives on `CallSupervisor`. Pre-binding access raises a clear `RuntimeError`; the holder deliberately does not expose a broad `.collaborators` alias. |
-| `CallSupervisor` | [`_runtime/call_supervisor.py`](../src/notebooklm/_runtime/call_supervisor.py) | Protocol-neutral `Drain -> Metrics -> Semaphore` policy, generation-bearing call/operation leases, cancellation-safe retained settlement, race-free admitted child spawning, and lifecycle admission transitions. |
+| `SharedRuntime` | [`_runtime/init.py`](../src/notebooklm/_runtime/init.py) | Backend-neutral bundle containing metrics, the shared call supervisor, and the root lifecycle after assembly. `RuntimeCollaborators` remains a private compatibility alias. |
+| `WebRuntime` | [`_web/transport/init.py`](../src/notebooklm/_web/transport/init.py) | Web-only bundle containing request IDs, auth coordination, Kernel, cookie persistence, web lifecycle, composition holder, executor, and upload pipeline. |
+| `AndroidRuntime` | [`_android/runtime.py`](../src/notebooklm/_android/runtime.py) | Android-only bundle containing the bearer provider, gRPC session, upload/asset transports, and Phenotype token provider. |
+| `LazyWebSidecar` | [`_web/transport/sidecar.py`](../src/notebooklm/_web/transport/sidecar.py) | Pre-registered lifecycle proxy for deprecated Android `rpc_call`. It is inert at construction/open, materialises one Web runtime under a lock inside supervised admission, owns close/reopen and Web auth refresh, persists cookies after use, and never installs keepalive or a drain hook. |
+| `ClientComposed` | [`_web/transport/composed.py`](../src/notebooklm/_web/transport/composed.py) | Write-once holder for the Web/raw-RPC composition (`transport`, `executor`, `chain_host`, `chain_builder`, and `middlewares`) plus the shared `runtime_collaborators`. RPC admission/semaphore policy lives on `CallSupervisor`. Pre-binding access raises a clear `RuntimeError`; the holder deliberately does not expose a broad `.collaborators` alias. |
+| `CallSupervisor` | [`_runtime/call_supervisor.py`](../src/notebooklm/_runtime/call_supervisor.py) | Protocol-neutral `Admission -> Metrics -> Semaphore` policy, generation-bearing call/operation leases, cancellation-safe retained settlement, race-free admitted child spawning, and lifecycle admission transitions. Its generation counter is the single in-flight source. |
 | `RpcExecutor` | [`_web/transport/executor.py`](../src/notebooklm/_web/transport/executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Takes its `RuntimeTransport`, `AuthRefreshCoordinator`, `ClientMetrics`, and `CallSupervisor` collaborators directly via keyword-only constructor parameters (ADR-0014 Rule 5). Enters transport through `RuntimeTransport.perform_authed_post`. |
-| `RuntimeTransport` | [`_web/transport/runtime.py`](../src/notebooklm/_web/transport/runtime.py) | Authed POST collaborator. Holds an admission-only `CallSupervisor` operation lease before loop checking, auth snapshot, and request materialization; after preparation it enters the supervisor's terminal `Drain -> Metrics -> Semaphore` call scope and dispatches the four-middleware web chain. Owns `refresh_request_for_current_auth()` and `terminal()` (freshness rebuild + `Kernel.post`). Called directly by `RpcExecutor` and by `_web.transport.chat.chat_aware_authed_post`; the middleware chain leaf at `MiddlewareChainHost._authed_post_chain_terminal` continues to dispatch through `RuntimeTransport.terminal` per ADR-0014 Rule 4. |
-| `MiddlewareChainHost` | [`_web/transport/middleware/chain_host.py`](../src/notebooklm/_web/transport/middleware/chain_host.py) | Owns the wired middleware chain (`_authed_post_chain`), the chain leaf (`_authed_post_chain_terminal`), the three retry-budget tunables (`_rate_limit_max_retries`, `_server_error_max_retries`, `_refresh_retry_delay`), and the dynamic `await_refresh` delegate that the auth-refresh middleware captures. The chain's provider lambdas and the transport's `chain_provider` closure read the host's attributes live, so post-construction mutation (e.g. tests setting `client._composed.chain_host._rate_limit_max_retries = 0`) still steers the live chain. |
+| `RuntimeTransport` | [`_web/transport/runtime.py`](../src/notebooklm/_web/transport/runtime.py) | Authed POST collaborator. Holds an admission-only `CallSupervisor` operation lease before loop checking, auth snapshot, and request materialization; after preparation it enters the supervisor's terminal `Admission -> Metrics -> Semaphore` call scope and dispatches the four-middleware web chain. Owns `refresh_request_for_current_auth()` and `terminal()` (freshness rebuild + `Kernel.post`). Called directly by `RpcExecutor` and by `_web.transport.chat.chat_aware_authed_post`; the middleware chain leaf at `MiddlewareChainHost._authed_post_chain_terminal` continues to dispatch through `RuntimeTransport.terminal` per ADR-0014 Rule 4. |
+| `MiddlewareChainHost` | [`_web/transport/middleware/chain_host.py`](../src/notebooklm/_web/transport/middleware/chain_host.py) | Owns the wired middleware chain (`_authed_post_chain`), the chain leaf (`_authed_post_chain_terminal`), the three retry-budget tunables (`_rate_limit_max_retries`, `_server_error_max_retries`, `_refresh_retry_delay`), and the dynamic `await_refresh` delegate that the auth-refresh middleware captures. The chain's provider lambdas and the transport's `chain_provider` closure read the host's attributes live, so post-construction mutation (e.g. tests setting `client._web_runtime.composed.chain_host._rate_limit_max_retries = 0`) still steers the live chain. |
 | `AuthRefreshCoordinator` | [`_web/transport/auth.py`](../src/notebooklm/_web/transport/auth.py) | Owns the auth-snapshot lock and refresh task. Canonical implementation for `AuthRefreshCoordinator.snapshot(auth=...)`, `update_auth_tokens(auth=..., csrf=..., session_id=...)`, and `update_auth_headers(auth=..., kernel=...)`; callers pass explicit collaborators rather than a host object. |
 | `ClientLifecycle` | [`_runtime/lifecycle.py`](../src/notebooklm/_runtime/lifecycle.py) | Protocol-neutral root lifecycle. Owns resource state, generation allocation, transactional/coalesced open and close waves, pre-hook timeout validation, loop binding, phased transport ordering, rollback, and deterministic teardown failure precedence. It owns no HTTP client, auth state, keepalive task, cookie persistence, or RPC semaphore. |
-| `WebTransportLifecycle` | [`_web/transport/lifecycle.py`](../src/notebooklm/_web/transport/lifecycle.py) | Web resource participant installed in the root lifecycle. Activates/fences the Kernel and auth coordinator for one epoch, owns the web keepalive task and cookie-save routing, opens/closes the Kernel, and mirrors accepted cookie state into the client-owned `AuthTokens`. |
+| `WebTransportLifecycle` | [`_web/transport/lifecycle.py`](../src/notebooklm/_web/transport/lifecycle.py) | Web resource participant installed directly for Web selection and owned behind `LazyWebSidecar` only after deprecated Android `rpc_call` use. Activates/fences the Kernel and auth coordinator for one epoch, owns cookie-save routing, opens/closes the Kernel, and mirrors accepted cookie state into the client-owned `AuthTokens`; only the primary Web runtime can own a keepalive task. |
 | `AndroidSession` | [`_android/session.py`](../src/notebooklm/_android/session.py) | Selected-Android gRPC participant. Validates optional runtimes and activates bearer state at open, constructs its TLS channel lazily, maps gRPC status/deadline outcomes, and shares `CallSupervisor` admission/telemetry with Web calls. |
+| Android workflow epoch | [`_android/epoch.py`](../src/notebooklm/_android/epoch.py) | Session-tagged task-local epoch inherited by nested namespace calls inside one Android operation scope. |
 | `MiddlewareChainBuilder` | [`_web/transport/middleware/chain.py`](../src/notebooklm/_web/transport/middleware/chain.py) | Constructs the web-specific `Retry -> AuthRefresh -> ErrorInjection -> Tracing` chain; `CallSupervisor` owns the protocol-neutral outer policy. |
-| `TransportDrainTracker` | [`_transport_drain.py`](../src/notebooklm/_transport_drain.py) | Transitional in-flight bookkeeping owned by `CallSupervisor`. The supervisor, not the tracker, owns generation admission and public drain policy. |
 | `ClientMetrics` | [`_client_metrics.py`](../src/notebooklm/_client_metrics.py) | Per-instance counters (`ClientMetricsSnapshot`) + the `on_rpc_event` user callback. |
 | `ReqidCounter` | [`_web/transport/reqid_counter.py`](../src/notebooklm/_web/transport/reqid_counter.py) | Monotonic `_reqid` for the chat backend; lock-protected `next_reqid(...)`. |
 | `CookiePersistence` | [`_web/transport/cookie_persistence.py`](../src/notebooklm/_web/transport/cookie_persistence.py) | Per-canonical-path typed baseline state, ordered `ProfileStore` cookie merges, `__Secure-1PSIDTS` rotation, and the concrete v0.x snapshot adapter. First-party `_from_store` instances retain no `AuthTokens`; public-constructor instances preserve legacy save compatibility. |
@@ -560,9 +583,10 @@ the executor on direct collaborator dependencies.
 | `_web/transport/request_types.py` | [`_web/transport/request_types.py`](../src/notebooklm/_web/transport/request_types.py) | Owns `AuthSnapshot`, `BuildRequest`, and request materialization shapes shared by RPC, chat, auth refresh, and the chain terminal. |
 | `_web/transport/errors.py` | [`_web/transport/errors.py`](../src/notebooklm/_web/transport/errors.py) | Owns transport-level exceptions, `Retry-After` parsing, and raw `Kernel.post` error mapping consumed by `RetryMiddleware` and `AuthRefreshMiddleware`. |
 | `_web/transport/streaming_post.py` | [`_web/transport/streaming_post.py`](../src/notebooklm/_web/transport/streaming_post.py) | Low-level streaming POST helper with the response-size cap used by `Kernel.post`. |
-| `Kernel` | [`_web/transport/kernel.py`](../src/notebooklm/_web/transport/kernel.py) | Pure web transport core. Owns the epoch-fenced `httpx.AsyncClient` and cookie jar; exposes `post()`, cookie accessors, and `aclose()`. `WebTransportLifecycle`, not the root lifecycle, opens and closes it. Concrete class behind the `Kernel` Protocol in `_web/contracts.py`; constructed by `build_collaborators(...)` and called from the middleware leaf via `RuntimeTransport.terminal → Kernel.post`. |
-| `_runtime/init` | [`_runtime/init.py`](../src/notebooklm/_runtime/init.py) | Construction-time helpers for `NotebookLMClient`: validation, collaborator construction (including the shared `CallSupervisor`), web transport/chain wiring, and composition binding. |
-| `_loop_affinity` | [`_loop_affinity.py`](../src/notebooklm/_loop_affinity.py) | Tiny free-function `assert_bound_loop(bound_loop)` shared by the protocol-neutral helpers that directly capture a loop reference at `open()` time (`TransportDrainTracker`, `ReqidCounter`, `AuthRefreshCoordinator`, `CallSupervisor`, `ChatAPI`). `ArtifactPollingService` delegates loop checks through its shared `CallSupervisor`. Enforces ADR-0004 without coupling those helpers to the public client. |
+| `Kernel` | [`_web/transport/kernel.py`](../src/notebooklm/_web/transport/kernel.py) | Pure web transport core. Owns the epoch-fenced `httpx.AsyncClient` and cookie jar; exposes `post()`, cookie accessors, and `aclose()`. `WebTransportLifecycle`, not the root lifecycle, opens and closes it. Concrete class behind the `Kernel` Protocol in `_web/contracts.py`; constructed by the web runtime initializer and called from the middleware leaf via `RuntimeTransport.terminal → Kernel.post`. |
+| `_runtime/init` | [`_runtime/init.py`](../src/notebooklm/_runtime/init.py) | Transport-neutral constructor validation and shared metrics/supervisor construction. This module imports no backend implementation. |
+| `_web/transport/init` | [`_web/transport/init.py`](../src/notebooklm/_web/transport/init.py) | Web transport, persistence, middleware, executor, and uploader composition; returns the complete `WebRuntime`. |
+| `_loop_affinity` | [`_loop_affinity.py`](../src/notebooklm/_loop_affinity.py) | Tiny free-function `assert_bound_loop(bound_loop)` shared by the protocol-neutral helpers that directly capture a loop reference at `open()` time (`ReqidCounter`, `AuthRefreshCoordinator`, `CallSupervisor`, `ChatAPI`). `ArtifactPollingService` delegates loop checks through its shared `CallSupervisor`. Enforces ADR-0004 without coupling those helpers to the public client. |
 
 ### Shipped runtime invariants
 
@@ -897,16 +921,20 @@ Authed POST leaf             (RuntimeTransport.terminal → Kernel → httpx)
 ## Client as composition root
 
 `NotebookLMClient` is both the public surface and the composition root. It owns
-`ClientComposed`, the collaborator bundle, the Web/raw RPC executor, backend
-preference/reporting, and the feature API instances. The protocol-neutral `ClientLifecycle` owns resource state and
+the shared collaborator bundle, one primary backend runtime, backend
+preference/reporting, the backend-selected raw adapter, and the feature API instances. The protocol-neutral `ClientLifecycle` owns resource state and
 open/drain/close wave orchestration across the installed transport participants.
-`WebTransportLifecycle` owns the Kernel, web auth/keepalive preparation, and
-cookie persistence; `SourceUploadPipeline` is the second installed transport
-participant. Android selection extends the same frozen lifecycle graph with the
-bearer provider, `AndroidSession`, Android upload/asset services, and Phenotype
-transport while replacing all eleven public namespace adapters. `CallSupervisor` owns generation admission, drain policy, RPC
-metrics, and the client-wide RPC semaphore. `TransportDrainTracker` remains
-supervisor-owned transitional bookkeeping.
+Web selection builds `WebRuntime`; `WebTransportLifecycle` owns the Kernel,
+web auth/keepalive preparation, and cookie persistence, while
+`SourceUploadPipeline` is its second transport participant. Android selection
+does not build that bundle: it installs `AndroidRuntime` with the bearer provider,
+`AndroidSession`, Android upload/asset services, and Phenotype transport while
+replacing all eleven public namespace adapters. Its frozen lifecycle tuple also
+contains the inert `LazyWebSidecar` proxy required only by the deprecated root
+`rpc_call` compatibility window. Android stored-auth assembly uses the
+name-only, read-only load policy: it skips PSIDTS poke/recovery and never merges
+the homepage cookie observation into the profile. `CallSupervisor` owns generation admission, drain policy, RPC
+metrics, and the client-wide RPC semaphore through one generation-local in-flight counter.
 
 Concretely, the client-owned runtime retains:
 
@@ -929,11 +957,17 @@ Concretely, the client-owned runtime retains:
 3. **Lifecycle methods.** Public client `__aenter__`, `__aexit__`,
    `close`, `drain`, and `is_connected` call the root `ClientLifecycle`.
 
-`NotebookLMClient.rpc_call(method, params)` dispatches directly through
-`self._rpc_executor.rpc_call(...)` — the `RpcExecutor` captured during
-the shared `_client_assembly.py::_assemble_client(...)` construction path
-from `compose_client_internals(...)`. This method remains the Web batchexecute
-escape hatch even when the typed namespace graph is Android-selected.
+`client.raw` is the supported backend-selected escape hatch. On Web,
+`WebRawAPI.call` uses the primary bundle's `RpcExecutor`; on Android,
+`AndroidRawAPI.unary` and `unary_stream` use `AndroidSession`.
+`NotebookLMClient.rpc_call(method, params)` is deprecated for v1.0 removal. A
+Web client delegates through its installed executor. An Android client warns
+once, then materialises one Web runtime through `LazyWebSidecar` inside
+`operation_scope("rpc_call.sidecar")`. The proxy participates in root
+open/close so forced-close races are fenced and a later client reopen restores
+the already-materialised bundle. It deliberately has no drain hook and no Web
+keepalive; once materialised, its own Web auth ladder and cookie persistence are
+used.
 
 Feature APIs receive the collaborator they need (`RpcExecutor` for
 `RpcCaller`, `CallSupervisor` for admitted workflows/children/hooks and the
@@ -1035,7 +1069,7 @@ Vocabulary that recurs in this document and the surrounding code.
 | `batchexecute` | Google's internal RPC protocol over HTTPS. The wire is positional lists keyed by an obfuscated method id; see [`rpc/types.py`](../src/notebooklm/rpc/types.py). |
 | Capability Protocol | A narrow structural `Protocol` (e.g. `RpcCaller`, `LoopGuard`) a feature depends on instead of taking the deleted concrete `Session` class or a broad runtime facade. See [ADR-0013](./adr/0013-composable-session-capabilities.md). |
 | Chain / leaf / terminal | The middleware chain's ordering vocabulary. The chain wraps outermost-first; the **leaf** is the innermost middleware (`TracingMiddleware`); the **terminal** is the authed-POST function (`RuntimeTransport.terminal → Kernel.post`) that ends the chain. |
-| Drain | Graceful-shutdown waiting on admitted transport operations to complete. Policy and generation ownership live in `CallSupervisor`; `TransportDrainTracker` remains its transitional bookkeeping implementation. |
+| Drain | Graceful-shutdown waiting on admitted transport operations to complete. Policy, generation ownership, and in-flight accounting live in `CallSupervisor`. |
 | `idempotent_create(...)` | Caller-owned probe-then-create wrapper used by source-add / Drive-add flows. Distinct from the `IdempotencyRegistry` (which only classifies retry safety inside the executor). |
 | `operation_variant` | Optional kwarg on `rpc_call(...)` that selects a method-variant-specific idempotency policy from the registry (e.g. `ADD_SOURCE` `"url"` vs `"drive"`). Unknown variants raise `IdempotencyVariantError`. |
 | RPC method id | A short obfuscated identifier (`rpcids=`) Google uses to route batchexecute calls. Source of truth: `RPCMethod` enum in `rpc/types.py`. |
@@ -1050,8 +1084,10 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | File | Purpose |
 |------|---------|
 | `client.py` | Main `NotebookLMClient` class |
+| `raw.py` | Public raw descriptors, replay policy, and backend-selected escape-hatch APIs. |
 | `_client_assembly.py` | Single private assembly seam (`_assemble_client`) that wires every constructor-set attribute; shared by `NotebookLMClient.__init__` and the canonical test factory (`tests/_helpers/client_factory.py`) so the two construction paths cannot drift. |
-| `_client_composed.py` | Client-owned composition holder for transport, executor, chain host, middleware metadata, and runtime collaborator bundle. |
+| `_web/raw.py` | Thin Web raw adapter that preserves `RpcExecutor.rpc_call` behavior. |
+| `_web/transport/composed.py` | Web composition holder for transport, executor, chain host, middleware metadata, and the shared runtime bundle. |
 | `_web/transport/seams.py` | Constructor-only injectable seams used by tests and collaborator construction. |
 | `_android/` | Android backend package. Its package marker and selected adapter imports are dependency-free; generated protobuf modules remain lazy. Explicit Android preference installs Android adapters for all eleven public namespaces. The installed namespace graph has no Web operation collaborators; native gRPC/Scotty/asset paths and local composition cover the public contract. |
 | `_android/auth.py` | Generation-fenced `BearerProvider`: off-loop typed profile reads, shared mint waves, bounded expiry caching, compare-and-clear invalidation, and secret-safe teardown. |
@@ -1069,9 +1105,10 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_android/codecs/organization.py` | Strict heterogeneous organization decoder: wrapped exact `SourceId` members for labels and bare UTF-8 notebook UUID members for collections. |
 | `_android/codecs/research.py` | Strict research discovery job/result projection with exact mode/status mapping and bounded drift errors. |
 | `_android/errors.py` | Sanitized gRPC-status projection plus the pre-I/O unsupported-operation helper; raw transport exceptions and details never cross this boundary. |
-| `_android/notebooks.py` | Selected Android notebook adapter: reads and evidence-admitted notebook create/delete/title-and-emoji update/copy/guide operations. Recent-removal uses the native route; its `INTERNAL` response for owned notebooks is folded into the same already-absent no-op the Web frontend exposes, while genuinely shared notebooks are removed natively. |
+| `_android/notebooks.py` | Selected Android notebook adapter: reads and evidence-admitted notebook create/delete/title-and-emoji update/copy/guide operations. Copy implements the neutral `_send_copy` boundary while retaining native decode validation and chat-session hints. Recent-removal uses the native route; its `INTERNAL` response for owned notebooks is folded into the same already-absent no-op the Web frontend exposes, while genuinely shared notebooks are removed natively. |
 | `_android/session.py` | Lazy Google-TLS gRPC transport participating in root loop/lifecycle supervision, aggregate deadlines, per-call bearer metadata, status mapping, safe-read replay, and full stream leases. |
-| `_android/write_safety.py` | Shared non-idempotent write helper that marks only transport-ambiguous Android outcomes as unconfirmed while preserving confirmed authentication, validation, and backend rejections. |
+| `_android/epoch.py` | Session-tagged task-local epoch propagation for Android namespace workflow scopes. |
+| `_idempotency.py` | Backend-neutral create probing and transport-loss outcome helpers; marks ambiguous non-idempotent writes unconfirmed while preserving confirmed authentication, validation, and backend rejections. |
 | `_android/sources.py` | Selected Android source adapter: `GetProject` reads, exact URL/text/YouTube/Drive adds, freshness checks, native stale-Drive-source refresh, maintenance/content methods, generic file uploads, and Android-bearer Drive-file download followed by Android registration/upload. |
 | `_android/source_search.py` | Native replay-safe `RetrieveRelevantChunks` dispatch and protobuf-to-`RelevantChunk` projection for `sources.search`. |
 | `_android/source_transfers.py` | `AndroidSourceTransferMixin`: `AddSourcesAsync` (queued stub rows + acknowledgements), `AppendSource` (in-place text append) and `CopySourcesAsync` (original→copy mapping) over native gRPC (#2283); kept out of `sources.py` for the module-size budget. |
@@ -1081,15 +1118,15 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_android/artifacts.py` | Publicly selected artifact adapter: aggregate listing/polling, all public generation families, live `DeriveArtifact` slide revision, retry, interactive and note-backed mind maps, strict media/slide transfers, local report/quiz/flashcard/mind-map/data-table saves, delete/rename, infographic download, report suggestions, and Drive export. |
 | `_android/artifact_creation.py` | Exact Android `CreateArtifact` option/request builders for video (including cinematic code 3), tailored reports/study guides/concept explanations, flashcards, quizzes, infographics, slide decks, data tables, and interactive mind maps. |
 | `_android/artifact_collaborators.py` | Narrow typed protocol for joining note-backed mind maps into Android artifact listing. |
-| `_android/artifact_mutations.py` | Web-derived mobile `GenerateArtifact` retry and `ExportToDrive` mutations with exact request/response types, lifecycle fencing, and bounded response validation. |
+| `_android/artifact_mutations.py` | Web-derived mobile `GenerateArtifact` retry and the `_send_export`-backed `ExportToDrive` mutation with exact request/response types, lifecycle fencing, and bounded response validation. |
 | `_android/artifact_note_mind_maps.py` | Native `ActOnSources` plus `CreateNote` workflow for note-backed mind-map generation within one Android transport epoch. |
 | `_android/artifact_outputs.py` | Bounded local representation decoding and atomic text publication: progressive media selection, typed/exact-protobuf prefetch, typed note-backed mind-map prefetch, app/tree parsing, TailwindDoc Markdown rendering, and BOM-prefixed data-table CSV rendering. |
 | `_android/artifact_reads.py` | Notebook-scoped ownership preflights, exact Studio artifact reads, and safe selection of completed or caller-prefetched Android artifact metadata. |
-| `_android/artifact_transfers.py` | `AndroidArtifactTransferMixin`: `CopyArtifactsAsync` (original→new artifact row mapping) and the account-level `GetArtifactCustomizationChoices` option tables over native gRPC (#2283). |
+| `_android/artifact_transfers.py` | `AndroidArtifactTransferMixin`: the `_send_copy` implementation for `CopyArtifactsAsync` (original→new artifact row mapping) and the abstract-read implementation for the account-level `GetArtifactCustomizationChoices` option tables over native gRPC (#2283). |
 | `_android/artifact_proto.py` | Lazy handles for exact artifact/read protobuf modules and repository-local evidence overlays so public Android backend construction does not eagerly import generated descriptors. |
 | `_android/note_backed.py` | Narrow adapter projecting the selected typed note-backed mind-map reader into aggregate Android artifact rows. |
 | `_android/assets.py` | Publicly selected, lifecycle-drained Android asset transport. It validates canonical hosts and every hop, clears ambient cookies, performs the APK-evidenced bearer-authenticated `GET` with `alr=yes` only on exact admitted entry hosts, strips credentials after leaving the allowlist, enforces representation-specific length/stream/signature limits, corrects verified WAV destinations to `.wav`, and publishes through same-directory staging atomically. PDF and PPTX slide transfer are live-proven. |
-| `_android/chat.py` | Selected Android chat adapter over settings, sessions, raw turns, history deletion, the cumulative server stream, and citation-rich saved-response notes; base `ChatAPI` retains locks/cache/follow-up orchestration and public result construction. |
+| `_android/chat.py` | Selected Android chat adapter over typed settings/turn-role reads, settings mutation, sessions, raw turns, history deletion, the cumulative server stream, and citation-rich saved-response notes. Base `ChatAPI` owns locks/cache/follow-up orchestration, configure/settings result construction, and exhaustion-aware prior-turn counting. |
 | `_android/notes.py` | Selected implementation of the eight-method Notes manifest: exact note CRUD write/read-back checks, bounded idempotent deletion polling, exact-kind note-backed mind-map list/delete, and rich saved-response creation with current-server citation fields. Unknown creation time remains `None`, raw map rows preserve the supported ID/content prefix, and genuine post-delete absence remains `None`. |
 | `_android/settings.py` | Native output-language and account-limit adapter over exact `GetOrCreateAccount` and `MutateAccount`; temporary live mutation/read-back was restored in `finally`. |
 | `_android/sharing.py` | Native `GetProjectDetails`/`ShareProject` adapter for status, public links, collaborator grants/updates/removals, and read-back. `set_view_level` uses the native `MutateProject` tag-9 branch and folds the written level into the fresh sharing projection. |
@@ -1135,7 +1172,8 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_android/proto/notebooklm/internal/android/wire/v1/source_content_pb2.py` | Repository-local `LoadSource` response overlay admitting the live exact `TailwindDoc #4` branch without a Google-package import cycle. |
 | `_android/proto/notebooklm/internal/android/wire/v1/source_content_pb2_grpc.py` | Deterministic service-free companion for the local source-content wire overlay. |
 | `_android/proto_src/` | Minimal compile-ready cumulative Android `.proto` closure. The evidence ledger is `docs/android/proto-evidence-ledger.md`; flattened `docs/android/schema.proto` is never a compile input. |
-| `_runtime/init.py` | Constructor helpers that validate client runtime kwargs, build collaborators (returning a `RuntimeCollaborators` bundle), wire middleware, and bind `ClientComposed`. |
+| `_runtime/init.py` | Backend-neutral constructor validation and `SharedRuntime` construction. |
+| `_web/transport/init.py` | Web runtime construction, middleware wiring, and `WebRuntime` assembly. |
 | `_web/transport/kernel.py` | Concrete `Kernel` transport core (owns `httpx.AsyncClient` + cookie jar) |
 | `_runtime/config.py` | `DEFAULT_*` knobs and module-level constants. `CORE_LOGGER_NAME = "notebooklm._core"` is intentionally preserved as a compatibility logging contract even though the `_core` module was deleted; renaming it silently breaks downstream `caplog`/logger filters. |
 | `_runtime/call_supervisor.py` | `CallSupervisor`, `CallLease`, and `OperationLease` — shared logical-call policy and generation-isolated admission. |
@@ -1144,17 +1182,16 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_secrets.py` | Canonical runtime registry of must-scrub bare session-cookie names (`RUNTIME_SESSION_COOKIES`), `__Secure-*` / `__Host-*` prefix umbrellas (`SECURE_HOST_UMBRELLA_PATTERNS`, fail-closed for future names), and carrier-agnostic Google credential shapes (`AUTH_TOKEN_SHAPE_PATTERNS` — `aas_et/` / `g.a000-` / `sidts-` / `ya29.` tokens + the `AIza…` API key) that `_logging.py` redaction and `exceptions.py` scrubbing DERIVE from. Runtime code cannot import from `tests/`, so this restates the cassette sanitizer's must-scrub shapes; `tests/_guardrails/test_runtime_secret_registry_parity.py` asserts lockstep with `tests/cassette_patterns.py` on every axis — bare-cookie superset, umbrella coverage, and regex-string shape equality (issues #1517/#1518). |
 | `_callbacks.py` | Sync-or-async callback invocation helper used by telemetry/retry hooks |
 | `_lookup.py` | `unwrap_or_raise(obj, exc)` — the shared single-row-lookup helper backing the public `get`/`get_or_none` pair (ADR-0019 Enforcement tier-2). The four `sources`/`artifacts`/`notes`/`mind_maps` `get()` methods call it directly to raise their `*NotFoundError` on a miss (the v0.8.0 flip, issue #1247); `notebooks.get()` already raised on its own path and does not route through it. |
-| `_loop_bound.py` | `LoopBoundPrimitive` — template-method base for the loop-affinity `set_bound_loop` protocol. Owns the `_bound_loop` field + a `set_bound_loop` that always stores the binding and fires the `_on_loop_rebind(old, new)` hook only on a real loop change (hook before store). Trivial owners (`TransportDrainTracker`/`ReqidCounter`/`AuthRefreshCoordinator`) use the default no-op hook; clear-on-rebind owners (`CallSupervisor`/`SourceUploadPipeline`/`ChatAPI`) override it to discard cached loop-bound primitives/locks. `ClientComposed` is now only a write-once holder and owns no loop state. The base owns only binding + rebind; the cross-loop *assert* stays in `_loop_affinity`, and each participant keeps its own `reset_after_open`. |
-| `_deprecation.py` | Deprecation helper, gated by `NOTEBOOKLM_QUIET_DEPRECATIONS`. The immutable `DEPRECATION_SPECS` table owns the two registered auth-storage messages, replacements, since/removal versions, categories, and public-boundary stacklevels; `warn_registered_deprecation` emits them through `warn_deprecated`. `scripts/check_deprecation_targets.py` parses the table and callsites without importing application code and fails closed on malformed, missing, stale, lapsed, or structurally unresolved entries. Unrelated one-off deprecations continue to use `warn_deprecated`; `deprecations_quiet` / `_deprecations_quiet` / `_QUIET_ENV_VAR` retain the live suppression gate. ADR-0018 forbids inline `warnings.warn(..., DeprecationWarning)` outside this module — `tests/_guardrails/test_no_inline_deprecation_warnings.py` enforces it (only for `DeprecationWarning`; inline `RuntimeWarning`/`UserWarning` remains allowed). The permanent `save_cookies_to_storage(original_snapshot=None)` race advisory is therefore still an ungated `RuntimeWarning`. See `docs/deprecations.md`. |
+| `_loop_bound.py` | `LoopBoundPrimitive` — template-method base for the loop-affinity `set_bound_loop` protocol. `EpochFenced` extends it with the shared `activate(epoch)`, `fence()`, and `assert_epoch(expected)` resource-generation state used by both backends. Owners supply stable diagnostic text and choose the standard epoch-detail suffix or an exact fixed message; clear-on-rebind owners still override `_on_loop_rebind` for cached loop-bound primitives. |
+| `_deprecation.py` | Deprecation helper, gated by `NOTEBOOKLM_QUIET_DEPRECATIONS`. The immutable `DEPRECATION_SPECS` table owns three auth-storage and two backend-specific root-`rpc_call` messages, replacements, since/removal versions, categories, and public-boundary stacklevels; `warn_registered_deprecation` emits them through `warn_deprecated`. `scripts/check_deprecation_targets.py` parses the table and callsites without importing application code and fails closed on malformed, missing, stale, lapsed, or structurally unresolved entries. Unrelated one-off deprecations continue to use `warn_deprecated`; `deprecations_quiet` / `_deprecations_quiet` / `_QUIET_ENV_VAR` retain the live suppression gate. ADR-0018 forbids inline `warnings.warn(..., DeprecationWarning)` outside this module — `tests/_guardrails/test_no_inline_deprecation_warnings.py` enforces it (only for `DeprecationWarning`; inline `RuntimeWarning`/`UserWarning` remains allowed). The permanent `save_cookies_to_storage(original_snapshot=None)` race advisory is therefore still an ungated `RuntimeWarning`. See `docs/deprecations.md`. |
 | `_runtime/helpers.py` | `is_auth_error`, `AUTH_ERROR_PATTERNS`, `_resolve_keepalive_interval` |
 | `_web/transport/error_injection.py` | Synthetic-error env-var resolver + startup guard |
 | `_client_metrics.py` | `ClientMetrics` — `ClientMetricsSnapshot` counters + `on_rpc_event` callback |
-| `_transport_drain.py` | `TransportDrainTracker` — in-flight transport counters + `_TransportOperationToken` |
-| `_deadline.py` | `RuntimeDeadline` helper shared by retry and polling loops so aggregate timeouts clamp sleep consistently |
+| `_deadline.py` | `RuntimeDeadline` plus `from_timeout(...)` and `await_with_deadline(...)`, shared by retry, polling, Android RPC, and upload paths so aggregate timeouts clamp consistently |
 | `_backoff.py` | Shared capped exponential-backoff calculation with deterministic test injection |
 | `_web/transport/reqid_counter.py` | `ReqidCounter` — monotonic `_reqid` for the chat backend |
 | `_web/transport/auth.py` | `AuthRefreshCoordinator` — refresh task + auth-snapshot lock |
-| `_web/transport/auth_refresh_retry.py` | Shared auth refresh-and-retry core for the two retry layers (HTTP-status `AuthRefreshMiddleware` + decoded-RPC `RpcExecutor`): the once-per-logical-call `RefreshBudget` token and the common `refresh_and_count` body (log/refresh/sleep/`rpc_auth_retries` metric). Unifies the previously-divergent copies per issue #1205; the two layers keep their distinct triggers and refresh-failure exception shapes. |
+| `_runtime/auth_refresh_retry.py` | Shared auth refresh-and-retry core for the web HTTP-status/decoded-RPC layers and Android gRPC: the once-per-logical-call `RefreshBudget` token and common `refresh_and_count` body (log/refresh/sleep/`rpc_auth_retries` metric). The old `_web/transport/auth_refresh_retry.py` path is a one-release compatibility re-export. |
 | `_runtime/lifecycle.py` | `ClientLifecycle` — protocol-neutral transactional root lifecycle and phased transport orchestration |
 | `_web/transport/lifecycle.py` | `WebTransportLifecycle` — Kernel/auth epoch fencing, keepalive, cookie persistence, and web resource teardown |
 | `_web/transport/runtime.py` | `RuntimeTransport` — authed-POST transport wrapper that drives the middleware chain and typed transport response handling |
@@ -1195,9 +1232,9 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/rows/sharing.py` | `SharedUserRow` / `ShareStatusRow` decoding behind the public sharing models' lazy shims |
 | `_web/rows/sources.py` | `SourceRow` / `SourceRowShape` typed views over raw positional source RPC rows |
 | `_web/rows/transfers.py` | Mapping-row views for the #2283 transfer replies (`CopiedSourceRow` / `CopiedArtifactRow` / `AddSourcesAsyncResponseRow` / `SourceAckRow`) plus the shared `unwrap_mapping_rows` envelope probe |
-| `_web/notebooks.py` | `WebNotebooksAPI`, the concrete `batchexecute` notebook backend; preserves the shared executor identity and web-only decoding/quota/session-hint behavior, and owns the direct-construction `SourceLister` fallback |
+| `_web/notebooks.py` | `WebNotebooksAPI`, the concrete `batchexecute` notebook backend; implements the shared create/copy hooks, preserves the executor identity and web-only decoding/quota/session-hint behavior, and owns the direct-construction `SourceLister` fallback |
 | `_web/sources/` | `WebSourcesAPI` and the concrete web source services: add/batch orchestration, source listing/content/search decoding, Drive import, and the resumable upload pipeline |
-| `_web/artifacts.py` | `WebArtifactsAPI`, the concrete `batchexecute` artifact backend; owns web listing, mutation, generation-hook, raw selection, export, and suggestion operations |
+| `_web/artifacts.py` | `WebArtifactsAPI`, the concrete `batchexecute` artifact backend; owns web listing, mutation, generation/copy/export hooks, raw selection, customization reads, and suggestion operations |
 | `_web/artifact/` | Web artifact services for listing, generation dispatch, raw download selection, and positional data-table decoding |
 | `_web/chat.py` | `WebChatAPI`, the concrete streamed-query and `batchexecute` chat backend; owns request IDs, streamed transport, positional history/turn decoding, chat RPCs, and saved-chat note persistence |
 | `_web/mind_maps.py` | `WebMindMapsAPI` plus `NoteBackedMindMapService`, the concrete `batchexecute` mind-map backend and shared web note-row adapter |
@@ -1216,21 +1253,22 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_web/wire/overrides.py` | Environment-driven runtime RPC-ID override policy, including the single cached parser and INFO-log deduplication state re-exported through `rpc/types.py` and `notebooklm.rpc` |
 | `_web/wire/safe_index.py` | Strict bounds-checked positional access for decoded web payloads, compatibility-re-exported as `notebooklm.rpc.safe_index` |
 | `artifacts.py`, `research.py`, `utils.py` | Public helper modules for artifact retry, research citation/report utilities, and common async helpers |
-| `_notebooks.py` | Backend-neutral abstract `NotebooksAPI`; owns shared create idempotency, lookup/update conveniences, metadata composition, and share-URL semantics |
-| `_sources.py` | Backend-neutral abstract `SourcesAPI`; owns source identity lookup, search validation/global ranking, and the four polling workflows over neutral `SourcePoller` |
-| `_artifacts.py` | Backend-neutral abstract `ArtifactsAPI`; owns artifact generation orchestration, decoded polling, family lists, lookup, neutral formatting, and asset transfer |
-| `_chat.py` | Backend-neutral abstract `ChatAPI`; owns locks, cache, deleted-conversation tracking, ID recovery, authoritative turn counting, modes, and shared ask/delete/save-note orchestration over three protected adapter hooks plus the typed `_list_turn_roles` read boundary |
-| `_research.py` | Thin lazy compatibility shim for the moved `ResearchAPI` implementation |
-| `_web/research.py` | Web implementation of `client.research`; keeps the historical `notebooklm._research` logger key |
-| `_web/research_import.py` | Web-only free-function helpers for `ResearchAPI` source import + verification: URL normalization, report-source predicates, imported-entry merging, and the #1961 idempotency pre-filter |
+| `_notebooks.py` | Backend-neutral abstract `NotebooksAPI`; owns shared create idempotency, copy validation/ambiguity policy, lookup/update conveniences, metadata composition, and share-URL semantics. Copy ambiguity uses a typed backend policy: Web explicitly chains the original transient error, while Android suppresses the capability-bearing cause. |
+| `_sources.py` | Backend-neutral abstract `SourcesAPI`; owns source identity lookup, search validation/global ranking, the `add_urls_async` / `append_text` / `copy` transfer workflows, file-upload title normalization/finalization over `_send_upload`, and the four polling workflows over neutral `SourcePoller` |
+| `_artifacts.py` | Backend-neutral abstract `ArtifactsAPI`; owns artifact generation orchestration, copy/export workflows, decoded polling, family lists, lookup, customization-choice delegation, neutral formatting, and asset transfer over protected backend hooks |
+| `_chat.py` | Backend-neutral abstract `ChatAPI`; owns locks, cache, deleted-conversation tracking, ID recovery, authoritative turn counting, modes, configure/settings result policy, and shared ask/delete/save-note orchestration over protected typed backend hooks |
+| `_research.py` | Backend-neutral abstract `BaseResearchAPI`; owns polling helpers, raw-import materialization/provenance/classification over one `_send_import` hook, and the Android-safe import-verification workflow over abstract backend reads/mutations |
+| `_research_import.py` | Backend-neutral research import classification and reconciliation helpers: immutable backend policy plus typed item/batch carriers, typed input coercion, structured-URL normalization, provenance checks, imported-result carriers, idempotency partitioning, probe outcomes, and read-timeout resolution |
+| `_web/research.py` | Web implementation of `client.research`; keeps Web import encoding/decoding behind `_send_import` and its distinct established import-verification policy; shared classification preserves the historical `notebooklm._research` logger key |
 | `_notes.py` | Backend-neutral abstract `NotesAPI` contract |
 | `_sharing.py` | Backend-neutral abstract `SharingAPI`; owns the shared `add_user` / `update_user` workflows |
 | `_labels.py`, `_collections.py` | Backend-neutral abstract `LabelsAPI` / `CollectionsAPI` contracts and their narrow membership-join callable types |
 | `_web/labels.py` | Concrete `WebLabelsAPI` implementation; keeps the historical `notebooklm._labels` logger key |
 | `_web/collections.py` | Concrete `WebCollectionsAPI` implementation over type-3 label RPCs; keeps the historical `notebooklm._collections` logger key |
 | `_settings.py` | Backend-neutral abstract `SettingsAPI` contract |
-| `_mind_maps_api.py` | Backend-neutral abstract `MindMapsAPI`; owns unified lookup/list/rename/delete composition over base-typed `ArtifactsAPI` and `NotesAPI` dependencies. `list_note_backed`, `generate`, `get_tree`, and the narrow exact-content `_send_rename_note_backed` hook remain frontend-specific (#1256). |
+| `_mind_maps_api.py` | Backend-neutral abstract `MindMapsAPI`; owns unified lookup/list/generate/get-tree/rename/delete composition over base-typed `ArtifactsAPI` and `NotesAPI` dependencies. `list_note_backed` and narrow typed read/write hooks remain frontend-specific (#1256). |
 | `_artifact/downloads.py` | Backend-neutral asset transfer service: guarded streaming, rejection, staging, and atomic publication |
+| `_artifact/_guarded_transfer.py` | Backend-neutral representation transfer loop: explicit redirect cap, application redirects, content/signature/byte limits, and atomic publication |
 | `_artifact/_redirect_guard.py` | Per-redirect-hop host/scheme revalidation and credential-policy application for downloads — rejects off-allowlist / non-HTTPS redirect targets before the request is sent (#1521) |
 | `_artifact/_download_client.py` | Download trusted-host allowlist + transport-aware client factory — wires redirect validation and per-hop credentials for httpx or opt-in curl_cffi |
 | `_artifact/formatters.py` | Markdown, HTML, and plain text formatters for artifacts |
@@ -1309,15 +1347,15 @@ src/notebooklm/
 ├── migration.py                 # Legacy flat-layout to profile migration
 ├── paths.py                     # Profile-aware path resolution
 ├── research.py                  # Public research citation/report helpers
+├── raw.py                       # Public backend-selected raw wire APIs and gRPC descriptors
 ├── urls.py                      # Public URL helper facade
 ├── utils.py                     # Public async utility helpers
 ├── _atomic_io.py                # Atomic JSON write/update helpers
 ├── _backoff.py                  # Shared retry backoff calculation
 ├── _callbacks.py                # Sync/async callback invocation helper
 ├── _client_assembly.py          # Shared client-assembly seam (constructor + test factory)
-├── _client_composed.py          # Client-owned composition holder
 ├── _deadline.py                 # RuntimeDeadline helper for aggregate timeouts
-├── _deprecation.py              # Immutable auth-storage specs + gated deprecation emitters
+├── _deprecation.py              # Immutable auth/raw-call specs + gated deprecation emitters
 ├── _env.py                      # Runtime environment/default endpoint helpers
 ├── _idempotency.py              # Transport-neutral create probe/retry helpers
 ├── _logging.py                  # Redaction + correlation logging internals
@@ -1325,11 +1363,10 @@ src/notebooklm/
 ├── _lookup.py                   # unwrap_or_raise — shared single-row-lookup helper for get/get_or_none
 ├── _serving.py                  # Shared bootstrap for both HTTP entry points: single-source loopback classification (IPv4-mapped-IPv6-aware) + non-loopback bind guard (mcp/server __main__ + server/_auth all route through it)
 ├── _loop_affinity.py            # Event-loop affinity guard helper (assert_bound_loop free function)
-├── _loop_bound.py               # LoopBoundPrimitive mixin — template-method set_bound_loop + _on_loop_rebind hook for the loop-bound collaborators
+├── _loop_bound.py               # LoopBoundPrimitive + EpochFenced runtime bases
 ├── _curl_cffi_transport.py      # Opt-in curl_cffi browser-impersonation transport (NOTEBOOKLM_TRANSPORT=curl_cffi)
 ├── _hop_credentials.py         # Typed per-hop cookie/header credentials for guarded asset requests
 ├── _client_metrics.py           # Telemetry / metrics seam
-├── _transport_drain.py          # In-flight transport drain coordinator
 ├── _conversation_cache.py       # Per-instance true-LRU conversation cache (bounded conversation count + per-conversation turns)
 ├── _polling_registry.py         # Artifact polling helpers
 ├── _mind_maps_api.py            # Backend-neutral abstract MindMapsAPI
@@ -1384,6 +1421,7 @@ src/notebooklm/
 │   ├── account.py               # Private non-replayed account bootstrap adapter
 │   ├── phenotype.py             # Headless GMS Phenotype token acquisition for Play Books
 │   ├── play_books.py            # Play Books wire codecs and guarded retry helpers
+│   ├── runtime.py               # AndroidRuntime owned-collaborator bundle
 │   ├── codecs/                  # Android protobuf projections
 │   │   ├── __init__.py          # Codec package marker
 │   │   ├── account.py           # Strict frozen account projection
@@ -1399,7 +1437,8 @@ src/notebooklm/
 │   ├── errors.py                # Sanitized gRPC status/error mapping
 │   ├── notebooks.py             # Selected Android notebook reads/mutations, incl. native recent-removal
 │   ├── session.py               # Supervised lazy gRPC transport
-│   ├── write_safety.py          # Shared ambiguous-write outcome marker
+│   ├── epoch.py                 # Session-tagged task-local workflow epoch propagation
+│   ├── retry_policy.py          # Web-registry-derived Android replay-safety manifest
 │   ├── sources.py               # Selected source surface (fully native)
 │   ├── source_search.py         # Native RetrieveRelevantChunks search service
 │   ├── upload.py                # Epoch-fenced generic Android Scotty transaction
@@ -1486,6 +1525,7 @@ src/notebooklm/
 ├── _web/                        # Private batchexecute web-backend implementation package
 │   ├── __init__.py              # Package boundary
 │   ├── contracts.py             # Web-only Kernel and RpcCaller Protocols
+│   ├── raw.py                   # Thin raw-RPC adapter over the shared Web executor
 │   ├── notebooks.py             # WebNotebooksAPI
 │   ├── artifacts.py             # WebArtifactsAPI
 │   ├── artifact/                # Web artifact services
@@ -1501,17 +1541,20 @@ src/notebooklm/
 │   └── transport/               # Web HTTP transport core
 │       ├── __init__.py
 │       ├── auth.py              # AuthRefreshCoordinator
-│       ├── auth_refresh_retry.py # Shared refresh budget + retry body
+│       ├── auth_refresh_retry.py # One-release compatibility re-export
 │       ├── chat.py              # Chat-specific error mapping
+│       ├── composed.py          # ClientComposed web composition holder
 │       ├── cookie_persistence.py # Cookie-jar persistence + __Secure-1PSIDTS rotation
 │       ├── error_injection.py   # Synthetic-error env-var resolver + startup guard
 │       ├── errors.py            # Transport exceptions and raw POST error mapping
 │       ├── executor.py          # Batchexecute RPC dispatcher
+│       ├── init.py              # WebRuntime construction + middleware wiring
 │       ├── kernel.py            # Concrete Kernel transport core
 │       ├── lifecycle.py         # Web resource open/prepare-close/close phases
 │       ├── reqid_counter.py     # Chat request-id counter
 │       ├── request_types.py     # AuthSnapshot, BuildRequest, and materializers
 │       ├── runtime.py           # Middleware-chain transport wrapper
+│       ├── sidecar.py           # Lazy deprecated-rpc_call Web compatibility owner
 │       ├── seams.py             # Constructor-only injectable seams
 │       ├── streaming_post.py    # Size-capped streaming POST helper
 │       └── middleware/          # ADR-0009 middleware chain
@@ -1521,18 +1564,16 @@ src/notebooklm/
 │           ├── chain_host.py
 │           ├── context.py
 │           ├── core.py
-│           ├── drain.py
 │           ├── error_injection.py
-│           ├── metrics.py
 │           ├── retry.py
-│           ├── semaphore.py
 │           └── tracing.py
 ├── _runtime/                    # Client-runtime subpackage (promoted from flat _runtime_*.py, #1328)
 │   ├── __init__.py              # Re-exports only transport-neutral runtime names
+│   ├── auth_refresh_retry.py    # Shared refresh budget + retry body
 │   ├── call_supervisor.py       # Shared call admission, metrics, semaphore, and generation leases
 │   ├── config.py                # DEFAULT_* knobs + module-level constants
 │   ├── contracts.py             # Transport-neutral LoopGuard Protocol
-│   ├── helpers.py               # is_auth_error / AUTH_ERROR_PATTERNS / keepalive helpers
+│   ├── helpers.py               # Auth classification, Google HTTP status, sleep, keepalive
 │   ├── init.py                  # Runtime collaborator construction + validation
 │   └── lifecycle.py             # Root lifecycle waves + phased transport orchestration
 ├── _source/                     # Neutral source services + lazy compatibility exports
@@ -1544,6 +1585,7 @@ src/notebooklm/
 ├── _artifact/                   # Artifact-feature subpackage (promoted from flat _artifact_*.py, #1328)
 │   ├── __init__.py              # Re-exports the cluster's public service classes/builders
 │   ├── _download_client.py      # Download trusted-host allowlist + transport-aware client factory with per-hop credentials
+│   ├── _guarded_transfer.py     # Neutral bounded representation transfer + redirect loop
 │   ├── _redirect_guard.py       # Per-redirect-hop host/scheme and credential-policy enforcement (#1521)
 │   ├── downloads.py             # Neutral guarded asset transfer and atomic publication
 │   ├── formatters.py            # Artifact formatting helpers
@@ -1567,7 +1609,7 @@ src/notebooklm/
 │   ├── sources.py               # Source row adapter
 │   ├── play_books.py            # ListExpertIntelligenceContent row adapter (#2292): decode_play_books_response → PlayBook list
 │   └── transfers.py             # CopySourcesAsync / CopyArtifactsAsync / AddSourcesAsync mapping-row adapters (#2283)
-├── _chat.py                     # Abstract ChatAPI + shared locks/cache/ask/delete/save-note orchestration and lazy private turn-helper shim
+├── _chat.py                     # Abstract ChatAPI + shared ask/configure/settings/turn-count orchestration over typed hooks
 ├── _auth/                       # Auth subpackage (forwarded through auth.py facade)
 │   ├── __init__.py
 │   ├── paths.py                 # Storage paths and filesystem helpers
@@ -1631,7 +1673,6 @@ src/notebooklm/
 │   ├── labels.py                # WebLabelsAPI (historical logger preserved)
 │   ├── collections.py           # WebCollectionsAPI (historical logger preserved)
 │   ├── research.py              # WebResearchAPI (historical logger preserved)
-│   ├── research_import.py       # Research import/verification helpers
 │   ├── sources/                 # WebSourcesAPI + web source services
 │   │   ├── __init__.py          # WebSourcesAPI facade
 │   │   ├── add.py               # Source addition coordinator
@@ -1674,7 +1715,8 @@ src/notebooklm/
 ├── _notebooks.py                # Backend-neutral NotebooksAPI + share-URL builder
 ├── _sources.py                  # Backend-neutral abstract SourcesAPI
 ├── _artifacts.py                # Backend-neutral abstract ArtifactsAPI
-├── _research.py                 # Lazy ResearchAPI compatibility shim
+├── _research.py                 # BaseResearchAPI + shared import classification/workflows
+├── _research_import.py          # Neutral import policies/classification/reconciliation
 ├── _notes.py                    # Backend-neutral abstract NotesAPI
 ├── _sharing.py                  # Backend-neutral abstract SharingAPI
 ├── _settings.py                 # Backend-neutral abstract SettingsAPI

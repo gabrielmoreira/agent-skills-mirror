@@ -146,6 +146,8 @@ Auto-generated from all feature plans. Last updated: 2026-08-30
 - N/A — stateless skill; each completed generation is written as an image file plus a (120-comfyui-topology-viz)
 - Bash (`scripts/peering-setup.sh`, matching its own existing style), Python + None new. Reuses the mesh daemon's existing enrollment/token-issuance (119-mobile-release-readiness)
 - N/A — no new persisted state. Enrollment continues to live in the existing federation (119-mobile-release-readiness)
+- Python 3.10+ (matches every existing NetClaw MCP server and skill; no new + FastMCP (both new MCP servers, matching repo convention), N2G (new — (121-federated-topology-viz)
+- N/A — no new persistent storage; images pass inline (base64) over the existing (121-federated-topology-viz)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -165,10 +167,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 121-federated-topology-viz: Added Python 3.10+ (matches every existing NetClaw MCP server and skill; no new + FastMCP (both new MCP servers, matching repo convention), N2G (new —
 - 120-comfyui-topology-viz: Added Python 3.10+ (skill logic, matching every other NetClaw skill); Node.js 18+ + The community `shawnrushefsky/comfyui-mcp` server (Node/TypeScript, MIT
 - 119-mobile-release-readiness: Added Bash (`scripts/peering-setup.sh`, matching its own existing style), Python + None new. Reuses the mesh daemon's existing enrollment/token-issuance
-- 118-zoom-meeting-intelligence: Added Python 3.10+ (`zoom-rtms-mcp`, `bgp/federation/zoom_channel.py` — matches every + FastMCP (MCP framework, matching repo convention), Zoom's official RTMS
-- 117-siri-voice-tuning: Added Dart 3.x / Flutter (SDK `^3.12.2` per `mobile/netclaw-mobile/pubspec.yaml`); + None new. Reuses `EdgeAskClient`/`EdgeRpcSource` (Dart, `edge_ask_client.dart`),
 
 
 <!-- MANUAL ADDITIONS START -->

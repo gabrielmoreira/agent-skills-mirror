@@ -1,7 +1,14 @@
 ---
 name: kaifeng-house
-version: 1.1.1
+slug: kaifeng-house
+displayName: 开封小鹿选房
+display_name: 开封小鹿选房
+display_name_en: Kaifeng Xiaolu House
+version: 1.1.2
 description: 小鹿选房是专业的涵盖全国的房产信息平台，当用户需要在开封找房源（二手房、租房、新房、买房、找房）、选笋盘、比价格、查成交、看小区、查学区、查学校时使用。
+description_zh: 小鹿选房是专业的房产信息平台，提供二手房、新房、租房、成交、小区和学区查询。
+description_en: Xiaolu House is a property information service for finding homes, communities, transactions, and schools in China.
+author: 小鹿选房
 metadata: {"cliHelp":"npx -y xiaolu-house --help","openclaw":{"skillKey":"kaifeng-house","emoji":"🏠","os":["linux","darwin","win32"],"homepage":"https://github.com/fanggeek/xiaolu-house","requires":{"bins":["npx"]},"install":[{"kind":"node","package":"xiaolu-house","bins":["npx"]}]}}
 ---
 

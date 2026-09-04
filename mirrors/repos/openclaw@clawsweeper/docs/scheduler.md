@@ -104,7 +104,13 @@ After the third automatic recovery, operator-only HMAC-signed routes provide a
 bounded parked-review inventory and guarded resolution/fresh-recovery path. The
 five-minute dead-letter reconcile workflow inspects at most 100 parked targets,
 resolves terminal or repository-gone targets with an audit note, and can queue
-at most five fresh reviews with replay-safe recovery keys. Manual runs remain
+at most five fresh reviews with replay-safe recovery keys. A fresh review now
+requires a changed source action, head, base, draft state, body/content revision, fallback
+source timestamp when no content digest exists, or retry policy epoch; a queue
+revision by itself cannot reset the budget. Bump
+`EXACT_REVIEW_RETRY_POLICY_EPOCH` when a scanner, policy, or deployment change
+should reopen unchanged inputs. Manual workflow dispatches may explicitly opt
+into `force_unchanged` for a bounded operator override. Manual runs remain
 read-only unless `execute` is enabled; scheduled runs execute. Their sanitized
 parked inventory is uploaded beside the publication dead-letter inventory.
 Parked records carrying maintainer-command context remain visible with an
@@ -133,6 +139,11 @@ travels as structured apply evidence; reason text is diagnostic only. Ambiguous
 or mixed results cannot terminalize the artifact, and legacy tupleless artifacts
 retain the existing fresh-review path.
 
+Legacy protocol-v1 review leases without lifecycle admission rows complete without
+writing lifecycle facts. Once a completion commits its queue transition, alarm
+scheduling runs even if the subsequent lifecycle update fails, so persisted
+retries retain their scheduled wake-up.
+
 Review publication and apply/comment sync use separate non-dropping queues.
 Apply treats a typed GitHub installation or abuse-rate-limit response as a
 bounded yield, not a failed scan. It checkpoints completed item work, records
@@ -148,7 +159,7 @@ a 403/429 or
 explicit rate-limit failure records a 15-minute cooldown, while GitHub 5xx
 failures record a 5-minute cooldown. Demand and recovery signals scale effective
 capacity within the production range. Production batch
-preparation is enabled for up to 8 concurrent size-8 batches, including 2
+preparation is enabled for up to 4 concurrent size-8 batches, including 2
 fresh-lane members per batch. Direct publication is also enabled and falls back
 to the retry/batch path when the direct result is retryable. Apply/comment sync
 remains per-target serialized. See [`docs/limits.md`](limits.md) for effective values and

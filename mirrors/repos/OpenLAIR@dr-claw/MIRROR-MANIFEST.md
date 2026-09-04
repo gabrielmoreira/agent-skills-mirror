@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenLAIR/dr-claw` — 26 default patterns, 0 followed patterns, 735 file(s) materialized.
+Mirror of `OpenLAIR/dr-claw` — 26 default patterns, 0 followed patterns, 736 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OpenLAIR/dr-claw` — 26 default patterns, 0 followed patterns, 735 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 735 |
+| Files         | 736 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -794,6 +794,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 733 | ✓ | [`skills/tokenization/sentencepiece/references/algorithms.md`](skills/tokenization/sentencepiece/references/algorithms.md) |
 | 734 | ✓ | [`skills/tokenization/sentencepiece/references/training.md`](skills/tokenization/sentencepiece/references/training.md) |
 | 735 | ✓ | [`skills/tokenization/sentencepiece/SKILL.md`](skills/tokenization/sentencepiece/SKILL.md) |
+| 736 | ✓ | [`skills/writing-style/SKILL.md`](skills/writing-style/SKILL.md) |
 
 ---
 

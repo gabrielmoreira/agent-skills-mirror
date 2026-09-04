@@ -17,6 +17,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-ask`: [omh] Hermes adaptation for consulting an external advisor when configured.
 - `omh-automation-blueprint`: [omh] Hermes Scheduled Ops Blueprint workflow: design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status.
 - `omh-autoresearch-goal`: [omh] Hermes adaptation for durable research-goal execution.
+- `omh-award-bar-score`: [omh] Hermes award-bar score workflow: score a web surface against published design-award judging axes and name the binding constraint.
 - `omh-backend`: [omh] Hermes backend workflow: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation.
 - `omh-best-practice-research`: [omh] Hermes adaptation for bounded official/upstream best-practice research.
 - `omh-browser`: [omh] Policy overlay for browser tasks - add auth, confirmation, and observed-trace gates after preferring the native browser for ordinary URL, click, login, and form actions.

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
+Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 10 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`package/official-site/docs/guide/install.md`](package/official-site/docs/guide/install.md) |
-| 4 | ✓ | [`package/official-site/en/docs/guide/install.md`](package/official-site/en/docs/guide/install.md) |
-| 5 | ✓ | [`package/official-site/public/install.md`](package/official-site/public/install.md) |
-| 6 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
-| 7 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
-| 8 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
-| 9 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
-| 10 | → | [`tests/README.md`](tests/README.md) |
+| 1 | ✓ | [`.agents/skills/release-publisher/SKILL.md`](.agents/skills/release-publisher/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/trailsnap-commit/SKILL.md`](.agents/skills/trailsnap-commit/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`package/official-site/docs/guide/install.md`](package/official-site/docs/guide/install.md) |
+| 6 | ✓ | [`package/official-site/en/docs/guide/install.md`](package/official-site/en/docs/guide/install.md) |
+| 7 | ✓ | [`package/official-site/public/install.md`](package/official-site/public/install.md) |
+| 8 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
+| 9 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
+| 10 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
+| 11 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
+| 12 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

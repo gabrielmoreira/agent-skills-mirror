@@ -66,6 +66,11 @@ risk **regardless of the dollar amount**:
 
 ### Guard Decision Handling
 
+State `confidence` (0-100) on every `dashclaw_guard` call — your honest odds that this
+action completes without a human stepping in, declared before you act. The Decisions
+ledger scores it against what actually happened (Predicted vs actual). Never restate it
+afterwards: a number written once the outcome is known is not a prediction.
+
 When you call `dashclaw_guard`, you will receive one of four decisions:
 
 **`allow`** — Proceed with the action. No restrictions.
@@ -109,7 +114,7 @@ Record all significant actions with `dashclaw_record`. This powers the audit tra
 in Approvals and the Decisions ledger.
 
 **Always record:**
-- Long-running actions (status: `running`) when you record up front; PATCH later with the final outcome
+- Long-running actions (status: `running`) when you record up front; close them later by calling `dashclaw_record` again with the returned `action_id` and the final `status` (plus `output_summary`). That call updates the record; it does not open a second one.
 - Completed actions (status: `completed`)
 - Failed actions (status: `failed`) — include error details in `output_summary`
 - Blocked actions (status: `failed`) — include the guard block reason (the server has no separate `blocked` status on records you create)
@@ -120,6 +125,17 @@ in Approvals and the Decisions ledger.
 - `reasoning` — Why you chose this action over alternatives.
 - `output_summary` — What was produced or what went wrong.
 - `risk_score` — Your honest assessment. Don't lowball to avoid guards.
+- `confidence` — 0-100 that this action completes without a human stepping in. State it on the
+  `dashclaw_guard` call, before the act: that is the primary place, and it lands on the record the
+  guard creates. When you record without a guard call, state it up front (status `running`), before
+  the outcome is known; never backfill it after the fact. The Decisions ledger scores stated
+  confidence against actual outcomes per agent (Predicted vs actual). The default of 50 means
+  "unstated" and is not scored, so an honest 50 should be 49 or 51.
+- `agent_id` — normally fixed by the server and not yours to choose. If you are one routine among
+  several behind a shared connector, you may name yourself under that identity as
+  `<configured id>/<routine>` (the configured id is the `agent_id` echoed in any guard response, e.g.
+  `claude-desktop/nightly-seo`) so your predictions are scored as your own. Anything else is
+  ignored and the configured id is used.
 
 **For LLM-driven actions, include token usage (cost is auto-derived):**
 - `tokens_in` / `tokens_out` — Total input and output tokens for the LLM call(s) attributed to this action.

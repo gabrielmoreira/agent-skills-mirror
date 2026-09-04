@@ -1,3 +1,13 @@
+---
+license: Apache-2.0
+metadata:
+  author: "Avi Hacker, J.D."
+  organization: "The AI Consulting Network"
+  homepage: https://www.theaiconsultingnetwork.com
+  source: https://github.com/ahacker-1/cre-agent-skills
+  copyright: "Copyright 2026 Avi Hacker, J.D. / The AI Consulting Network"
+---
+
 # Renewal Decision Analyst
 
 Run the per-lease retain-vs-replace economic comparison on every expiring multifamily lease and produce defensible, unit-level renewal recommendations.
@@ -283,16 +293,16 @@ The +3% renewal is the right recommendation on this unit. The skill would offer 
 
 ## Related Knowledge Bases
 
-- [Renewal Economics](../../knowledge/renewal-economics.md) — primary framework source; Retain-vs-Replace formula, rent-bump elasticity curve, tenant tier definitions, turnover cost components, seasonality modifiers
-- [Asset Management Benchmarks](../../knowledge/asset-management-benchmarks.md) — cross-reference for property-level retention/renewal-rate targets and turnover benchmarks
-- [Multifamily Benchmarks](../../knowledge/multifamily-benchmarks.md) — cost-of-living / vintage / catastrophe multipliers applied to turn capex; class-based turnover benchmarks
-- [Underwriting Calculations](../../knowledge/underwriting-calc.md) — canonical Loss-to-Lease, Effective Rent, and Concession formulas (cross-reference only; not redefined here)
+- [Renewal Economics](knowledge/renewal-economics.md) — primary framework source; Retain-vs-Replace formula, rent-bump elasticity curve, tenant tier definitions, turnover cost components, seasonality modifiers
+- [Asset Management Benchmarks](knowledge/asset-management-benchmarks.md) — cross-reference for property-level retention/renewal-rate targets and turnover benchmarks
+- [Multifamily Benchmarks](knowledge/multifamily-benchmarks.md) — cost-of-living / vintage / catastrophe multipliers applied to turn capex; class-based turnover benchmarks
+- [Underwriting Calculations](knowledge/underwriting-calc.md) — canonical Loss-to-Lease, Effective Rent, and Concession formulas (cross-reference only; not redefined here)
 
 ---
 
 ## Research Basis
 
-- [Renewal Decision Analyst Research](../../research/asset-management/renewal-decision-analyst-research.md) (R4) — sourced from AvalonBay / Essex / Equity Residential / MAA / Camden / UDR FY 2024 10-Ks and Q4 supplementals, NMHC Quarterly Apartment Markets, NAA 2024 "From Momentum to Management" survey, IREM Income/Expense IQ, RealPage multifamily renewal analytics, Yardi Matrix, ALN Apartment Data, J Turner retention research, RentCafe renter-intent survey, ResMan make-ready benchmarks, Multifamily Executive turnover-cost framework
+- [Renewal Decision Analyst Research](research/asset-management/renewal-decision-analyst-research.md) (R4) — sourced from AvalonBay / Essex / Equity Residential / MAA / Camden / UDR FY 2024 10-Ks and Q4 supplementals, NMHC Quarterly Apartment Markets, NAA 2024 "From Momentum to Management" survey, IREM Income/Expense IQ, RealPage multifamily renewal analytics, Yardi Matrix, ALN Apartment Data, J Turner retention research, RentCafe renter-intent survey, ResMan make-ready benchmarks, Multifamily Executive turnover-cost framework
 
 ---
 
@@ -316,3 +326,13 @@ The +3% renewal is the right recommendation on this unit. The skill would offer 
   "red_flags": []
 }
 ```
+
+---
+
+## Attribution
+
+Built and maintained by [The AI Consulting Network](https://www.theaiconsultingnetwork.com/?utm_source=github&utm_medium=skill-file&utm_campaign=cre-agent-skills), the commercial real estate AI consulting practice of Avi Hacker, J.D., and part of [CRE Agent Skills](https://github.com/ahacker-1/cre-agent-skills), an open-source library of AI skills for commercial real estate.
+
+If this skill saved you time and you want systems like it built inside your firm, [reach out](https://www.theaiconsultingnetwork.com/contact?utm_source=github&utm_medium=skill-file&utm_campaign=cre-agent-skills). We would love to work with you.
+
+Copyright 2026 Avi Hacker, J.D. / The AI Consulting Network. Licensed under the [Apache License 2.0](https://github.com/ahacker-1/cre-agent-skills/blob/main/LICENSE). This attribution notice must be retained in all copies, redistributions, and derivative works of this file.

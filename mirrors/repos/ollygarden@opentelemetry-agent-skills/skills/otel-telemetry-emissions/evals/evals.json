@@ -1,0 +1,17 @@
+{
+  "skill": "otel-telemetry-emissions",
+  "runtime": "Claude Code 2.1.258",
+  "model": "claude-sonnet-5",
+  "cases": [
+    {
+      "id": "prometheusremotewrite-v0159-metrics",
+      "prompt": "Which metrics does the OpenTelemetry Collector prometheusremotewriteexporter emit at v0.159.0? For each metric give the name, instrument type, unit, and attributes, and say which metrics are emitted only under a condition. Do not modify files or contact an endpoint.",
+      "expectations": [
+        "Names all 16 metrics under the otelcol_exporter_prometheusremotewrite_ prefix: consumers, failed_translations, sent_batches, translated_time_series, the nine wal_* metrics, and written_exemplars, written_histograms and written_samples.",
+        "States that the nine wal_* metrics are emitted only when the wal config block is set, and that v0.159.0 adds the exporter attribute to them where earlier versions emit them with no attributes.",
+        "States that written_samples, written_histograms and written_exemplars need Remote Write 2.0 — the exporter.prometheusremotewritexporter.enableSendingRW2 feature gate together with protobuf_message: io.prometheus.write.v2.Request.",
+        "Gives correct instrument types and units: consumers is a non-monotonic Sum in {consumer}, wal_lag is a Gauge, wal_read_latency and wal_write_latency are Histograms in ms, and the remaining counters are monotonic Sums."
+      ]
+    }
+  ]
+}

@@ -20,6 +20,8 @@ This note is a [type] about [topic] saved on [date]. It [main purpose].
 [Optional caveat about staleness, confidence, or scope.]
 ```
 
+The heading is the default form and what every command in this skill writes. An Obsidian callout carrying the same title is an accepted equivalent (#237): `> [!info]- For future agent`, any callout type, with the summary on the `> ` lines that follow. The `-` folds it so a human sees the note content first; it is plain text and needs no plugin. The write-time hook, `/obsidian-health`, and the MCP validator recognize both spellings. Nothing else counts as a preamble: not a bold line, not a paragraph without the title, not a heading at another level.
+
 ### 3. Rich, consistent frontmatter
 Filterable metadata. Different note types have different schemas (see below) but every note has machine-readable frontmatter.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,11 +66,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.codex/skills/add-platform-source/SKILL.md`](.codex/skills/add-platform-source/SKILL.md) |
 | 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`skills/browse/SKILL.md`](skills/browse/SKILL.md) |
-| 9 | ✓ | [`skills/comment_analysis/SKILL.md`](skills/comment_analysis/SKILL.md) |
-| 10 | ✓ | [`skills/openbiliclaw-adapter/SKILL.md`](skills/openbiliclaw-adapter/SKILL.md) |
-| 11 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
-| 12 | → | [`docs/changelog.md`](docs/changelog.md) |
+| 8 | ✓ | [`docs/platform-source-acceptance.github.md`](docs/platform-source-acceptance.github.md) |
+| 9 | ✓ | [`skills/browse/SKILL.md`](skills/browse/SKILL.md) |
+| 10 | ✓ | [`skills/comment_analysis/SKILL.md`](skills/comment_analysis/SKILL.md) |
+| 11 | ✓ | [`skills/openbiliclaw-adapter/SKILL.md`](skills/openbiliclaw-adapter/SKILL.md) |
+| 12 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
+| 13 | → | [`docs/changelog.md`](docs/changelog.md) |
 
 ---
 

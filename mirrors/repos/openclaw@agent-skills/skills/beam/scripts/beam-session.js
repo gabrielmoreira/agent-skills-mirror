@@ -576,9 +576,27 @@ export function sanitizeVisibleText(input, options = {}) {
   text = redact(text, stats).replace(/\n{3,}/g, "\n\n").trim();
   if (unsafePatterns(text).length) throw new Error("unsafe transcript text remains after redaction");
   const maxChars = Number(options.maxChars || DEFAULT_ENTRY_MAX_CHARS);
-  return text.length > maxChars
-    ? `${text.slice(0, maxChars).trimEnd()}\n...[truncated ${text.length - maxChars} chars]`
-    : text;
+  if (text.length <= maxChars) return text;
+  let omitted = text.length - maxChars;
+  while (true) {
+    const marker = `\n...[truncated ${omitted} chars]`;
+    if (marker.length >= maxChars) return marker.slice(0, maxChars);
+    let cutoff = maxChars - marker.length;
+    const lastCodeUnit = text.charCodeAt(cutoff - 1);
+    const nextCodeUnit = text.charCodeAt(cutoff);
+    if (
+      lastCodeUnit >= 0xd800 &&
+      lastCodeUnit <= 0xdbff &&
+      nextCodeUnit >= 0xdc00 &&
+      nextCodeUnit <= 0xdfff
+    ) {
+      cutoff--;
+    }
+    const visible = text.slice(0, cutoff).trimEnd();
+    const nextOmitted = text.length - visible.length;
+    if (nextOmitted === omitted) return `${visible}${marker}`;
+    omitted = nextOmitted;
+  }
 }
 
 function toolFamily(name) {
@@ -748,6 +766,7 @@ function parseCodex(rows, options) {
     }
     if (row.type !== "response_item") continue;
     const type = normalizedType(payload.type);
+    if (type === "agentmessage") continue;
     if (payload.role === "user" || payload.role === "assistant") {
       if (hasEventDialogue) continue;
       pushMessage(

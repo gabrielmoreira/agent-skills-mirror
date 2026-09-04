@@ -11,9 +11,98 @@ This document records the current decision on optional helper scripts for
 the IDD workflow. It exists so future reviews can reference the trade-off
 directly instead of re-evaluating the same suggestion from scratch.
 
+## Flag-name and field-name conventions
+
+Several helpers require a specific flag name that does not match
+instinct, and throw rather than defaulting to a same-named flag from a
+different helper. `--issue` is the sharpest trap: it is a genuine,
+functioning flag on several other helpers -- required outright on
+`forced-handoff-marker.mjs` and `claim-approval-gate.mjs`, and
+required as one of a small set of mutually exclusive input flags on
+`discover-viability-gate.mjs` (or `--issues`) and
+`suitability-triage.mjs` (or `--body-file` / `--stdin`) -- which primes
+the instinct to reach for it elsewhere. But the claim-revalidation flag
+on most mutation-capable helpers is named `--claim-issue` instead, and
+requiredness varies by helper:
+
+- **Unconditionally required** (modulo an explicit opt-out):
+  `pre-merge-readiness.mjs` throws without `--claim-issue` unless
+  `--claimless` is passed.
+- **Required only under `--apply`, with an explicit opt-out**:
+  `audit-pr-cleanup.mjs` and `live-status-digest.mjs` both accept
+  `--skip-claim-check` in place of `--claim-issue`/`--claim-id`.
+- **Required only under `--apply`, with no opt-out**:
+  `disposition-non-review-notices.mjs` and `resolve-review-thread.mjs`.
+  None of these four ever need the flag outside `--apply`.
+- **Optional, with auto-discovery when omitted**:
+  `advisory-convergence.mjs` (falls back to the PR's closing-issue
+  references) and `idd-roadmap-audit-execute.mjs` (the flag, when
+  given, is only cross-checked against `--roadmap`; the apply-mode
+  identity flag there is `--claim-id`, not `--claim-issue`).
+
+`live-status-digest.mjs` is the one helper where `--issue` and
+`--claim-issue` coexist as genuinely different flags: `--issue` is the
+digest's own target (mutually exclusive with `--pr`), and
+`--claim-issue` is the separate claim-revalidation flag -- the two are
+not interchangeable there either. (`idd-merge-execute.mjs` forwards
+any flag it does not recognize verbatim to `pre-merge-readiness.mjs`,
+so `--claim-issue` reaches it transitively even though it declares no
+such flag of its own.)
+
+No single top-level decision/verdict field name is consistent across
+the evidence-collector family. This reflects organic accretion across
+many independently authored helpers rather than a recorded design
+decision, and no normalization is currently planned. Read each
+helper's own `--help` output or its documented JSON shape rather than
+assuming a field name carries over -- a name that looks like a field in
+the source (a type or local-variable name) is not necessarily one of
+the printed object's own top-level keys. Representative examples:
+`advisory-convergence.mjs` and `pre-merge-readiness.mjs` both return a
+top-level `ready` boolean (the latter alongside `blockers`);
+`idd-roadmap-audit-execute.mjs` also returns `ready`;
+`discover-readiness-check.mjs` returns `ready` in its default
+per-issue mode, but a structurally different `{eligible,
+eligible_count, total}` shape under `--swarm-floor`;
+`discover-viability-gate.mjs` returns `viable` and `discarded` (not
+`passed` -- that name exists only on an internal per-issue helper,
+never copied into the printed output); `suitability-triage.mjs`
+returns `passed` for its live `--issue` invocation, but its offline
+`--body-file`/`--stdin` mode intentionally carries no aggregate
+`passed` value at all; `claim-approval-gate.mjs` returns `approved`.
+The mutation-style helpers overlap rather than cleanly splitting on
+one field: `audit-pr-cleanup.mjs` exposes both `mode`
+(`dry-run`/`apply`) and `status` (a seven-value vocabulary: `clean`,
+`needs-apply`, `permission-blocked`, `rescan-failed`, `failed`,
+`incomplete`, `applied`); `disposition-non-review-notices.mjs` prints
+no `status` key at all in its default dry-run mode, and only
+`applied`/`failed` under `--apply`; `resolve-review-thread.mjs`
+returns `mode` (`dry-run`/`apply`) alongside its own separate
+`status?` (`applied`/`failed`).
+
 ## Decision
 
 In the idd-skill source repository, the following optional helpers were adopted:
+
+### Helper contract classes
+
+Every helper below falls into one of two contract classes:
+
+- **Evidence collectors** — read-only. They never post comments, resolve
+  review threads, merge, or close anything; they emit machine-readable
+  evidence (usually JSON) for the calling phase to interpret.
+- **Dry-run-by-default authoring helpers** — capable of mutating GitHub
+  state (posting a comment, resolving a thread, merging, closing), but
+  only under an explicit `--apply` flag (plus interactive confirmation
+  where noted); the default invocation always prints what it would do
+  without acting.
+
+Going forward, a per-helper bullet should state only what doesn't
+already follow from its class — an additional confirmation step, a
+narrower evidence scope, an unusual flag name — not a restatement of
+the class itself; existing bullets are not retrofitted by this
+preamble. Whenever a helper cannot complete autonomously, its own
+bullet documents the fallback path beside the helper's invocation, not
+in this preamble, since the fallback differs per helper.
 
 **Discover & Claim Phase Helpers (Phase 1):**
 
@@ -23,7 +112,14 @@ In the idd-skill source repository, the following optional helpers were adopted:
   with opt-in `--with-claim-state` / `--current-claim-id` active-claim
   annotation parity with `discover-roadmap-graph`'s flag of the same name
   (referenced in
-  [kurone-kito/idd-skill#1395](https://github.com/kurone-kito/idd-skill/issues/1395))
+  [kurone-kito/idd-skill#1395](https://github.com/kurone-kito/idd-skill/issues/1395)).
+  Default-on (not opt-in): excludes a candidate whose most recent trusted
+  `A4.5 suitability gate rejection` comment carries a still-current
+  `<!-- {prefix}-triage-verdict: <outcome> -->` marker for one of the four
+  non-label outcomes, bucketed under `filtered.triage_verdict_rejected`
+  (referenced in
+  [kurone-kito/idd-skill#2243](https://github.com/kurone-kito/idd-skill/issues/2243);
+  see its `--help` for the fetch-scope and staleness details)
 - `scripts/discover-roadmap-graph.mjs` for A1.5/A2 recursive roadmap graph
   enumeration and classification
 - `scripts/idd-roadmap-audit-execute.mjs` for the A1.5 roadmap-completion
@@ -39,7 +135,12 @@ In the idd-skill source repository, the following optional helpers were adopted:
   [kurone-kito/idd-skill#1071](https://github.com/kurone-kito/idd-skill/issues/1071))
 - `scripts/discover-readiness-check.mjs` for A3 readiness criterion
   evaluation (referenced in
-  [kurone-kito/idd-skill#391](https://github.com/kurone-kito/idd-skill/issues/391))
+  [kurone-kito/idd-skill#391](https://github.com/kurone-kito/idd-skill/issues/391)).
+  Default-on (not opt-in): the same triage-verdict marker exclusion as
+  `discover-orphan-filter.mjs` above, surfaced as a
+  `triage_verdict:<outcome>` entry in `filteredOut[].reasons` (referenced
+  in
+  [kurone-kito/idd-skill#2243](https://github.com/kurone-kito/idd-skill/issues/2243))
 - `scripts/discover-viability-gate.mjs` for A4 viability gate evaluation
   across limited scope, clear verification, and autonomous completion
   criteria (referenced in
@@ -452,6 +553,12 @@ node scripts/discover-readiness-check.mjs --swarm-floor <N>
 - **Boundary**: read-only and advisory — selecting the next issue still runs
   the A3/A4/A4.5/A5 gates. Optional flags: `--owner` / `--repo` / `--policy`
   / `--now`.
+- **kurone-kito/idd-skill#2243 triage-verdict cost note**: the default-on
+  triage-verdict exclusion (see the `discover-readiness-check.mjs` bullet
+  above) runs for every candidate every cheaper check already lets
+  through, so a full repo-wide `--swarm-floor` sweep makes one extra
+  comments-plus-timeline API call pair per otherwise-ready candidate, not
+  just per swept issue.
 
 ### Discover Viability Gate Contract
 
@@ -840,6 +947,12 @@ The adopted helper boundaries are intentionally narrow:
   (dry-run); add `--apply --claim-issue <n> --claim-id <id>` to post.
   Pass `--advisory-bot-logins` / `--trusted-marker-logins` to override the
   defaults.
+- A rate-limit/usage-limit notice this helper dispositions can coexist
+  with a passing GitHub _check_ from the same bot -- the check is a
+  liveness signal only, not confirmation of a genuine review against
+  current HEAD;
+  see [re-trigger guidance](policy-constants.md#advisory-review-defaults)
+  (#2466).
 - Detects advisory-bot regular comments that the single-sourced
   `isAdvisoryNonReviewNotice` classifier (`protocol-helpers`) recognizes
   (rate-limit / usage-limit), and emits / posts the canonical
@@ -1897,15 +2010,31 @@ to post it is the consuming track's job.
   `runAttempt` already exhausted the `"rerun-once"` budget, withholds the
   corresponding plan entries with an explanatory `rerunPolicyHoldNotice`
   instead of silently omitting them
+- Also reports a `liveCoverageRecoveryPlan` (kurone-kito/idd-skill#2549):
+  a narrow, separately-bounded exception for an instance that is
+  BOTH the live-coverage-recovery case above AND itself
+  `rerun-budget-held` (its own `runAttempt` already exhausted the
+  `"rerun-once"` budget) AND has a sibling instance for the same check
+  that already classifies `pass` -- proof the rollup is otherwise
+  already resolved, so rerunning this one is bounded cleanup of a
+  redundant stale sibling on an already-covered HEAD, never a second
+  automated rerun-budget grant. Every other `rerun-budget-held`
+  instance (including the waiver-rebind case below) keeps the
+  unconditional withholding unchanged; each promoted instance's
+  original hold reason is named both in the plan document
+  (`originalHoldReason`) and in the `--apply` summary
 - Without `--apply`, it never calls `gh run rerun` (or any other mutating
   command) itself. Pass `--apply` (#1766) to execute the printed plan:
-  it reruns each rerun-eligible instance in order (recovery-refresh first
-  when one applies), waits for each to reach a genuinely new completed
-  attempt (polled via the actions/runs API, not `gh run watch`, to avoid
-  racing a just-issued rerun's stale pre-rerun status) before starting
-  the next, and stops early once the recomputed plan is fully resolved --
+  it reruns each rerun-eligible instance in order (recovery-refresh
+  first, then the sequential plan, then `liveCoverageRecoveryPlan`
+  last), waits for each to reach a genuinely new completed attempt
+  (polled via the actions/runs API, not `gh run watch`, to avoid racing
+  a just-issued rerun's stale pre-rerun status) before starting the
+  next, and stops early once the recomputed plan is fully resolved --
   a `bot-gated-skip`, `awaiting-fresh-review`, or rerun-budget-held
-  instance is never rerun
+  instance is never rerun outside the narrow `liveCoverageRecoveryPlan`
+  exception just above, and the same `MAX_APPLY_RERUNS` safety bound
+  covers all three plan sections together, not a second loop
 - `--check-name <name>` (#1935) overrides the check-run name searched for
   and reported, defaulting to `idd-advisory-convergence` when omitted
   (byte-identical output to before this flag existed). Use it when the
@@ -1925,7 +2054,12 @@ to post it is the consuming track's job.
 instance (see above) -- that withholding is correct and load-bearing
 on its own, and this section does not change it: the script keeps
 withholding these instances from its own plan, and gains no
-`--override-budget` flag or equivalent. A specific combination sits
+`--override-budget` flag or equivalent. `liveCoverageRecoveryPlan`
+above (#2549) is a separate, much narrower automated exception (a
+live-coverage-recovered instance with an already-passing sibling
+proving the rollup is otherwise resolved) -- it does not apply to the
+waiver-rebind case below, which still requires this manual procedure.
+A specific combination sits
 outside what the withholding alone can resolve: an
 `idd-advisory-convergence` instance already went `rerun-budget-held`
 from a genuinely-failed attempt, and only afterward does a maintainer

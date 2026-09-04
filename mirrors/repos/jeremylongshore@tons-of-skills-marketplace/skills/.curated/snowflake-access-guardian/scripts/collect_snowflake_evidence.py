@@ -6,10 +6,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -17,8 +19,19 @@ from typing import Any, Callable
 HERE = Path(__file__).resolve().parent
 SQL_DIR = HERE / "sql"
 SURFACES = {
-    "access": ("access.sql", ["SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_ROLES", "SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_USERS"]),
+    "access": (
+        "access.sql",
+        [
+            "SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_ROLES",
+            "SNOWFLAKE.ACCOUNT_USAGE.GRANTS_TO_USERS",
+            "SNOWFLAKE.ACCOUNT_USAGE.ROLES",
+        ],
+    ),
     "auth": ("auth.sql", ["SNOWFLAKE.ACCOUNT_USAGE.USERS"]),
+    "auth-login-history": (
+        "auth-login-history.sql",
+        ["SNOWFLAKE.ACCOUNT_USAGE.LOGIN_HISTORY"],
+    ),
     "cost": (
         "cost.sql",
         [
@@ -30,10 +43,7 @@ SURFACES = {
     ),
     "data-quality": (
         "data-quality.sql",
-        [
-            "SNOWFLAKE.LOCAL.DATA_QUALITY_MONITORING_EXPECTATION_STATUS",
-            "SNOWFLAKE.ACCOUNT_USAGE.DATA_QUALITY_MONITORING_USAGE_HISTORY",
-        ],
+        ["SNOWFLAKE.LOCAL.DATA_QUALITY_MONITORING_EXPECTATION_STATUS"],
     ),
     "pipeline": (
         "pipeline.sql",
@@ -51,6 +61,67 @@ SURFACES = {
         ],
     ),
     "replication": ("replication.sql", ["SNOWFLAKE.ACCOUNT_USAGE.REPLICATION_GROUP_REFRESH_HISTORY"]),
+}
+SUBSURFACES = {
+    "access-database-role-current": (
+        "access-database-role-current.sql",
+        ["SHOW GRANTS TO DATABASE ROLE"],
+        "database_role",
+    ),
+    "access-future-database": (
+        "access-future-database.sql",
+        ["SHOW FUTURE GRANTS IN DATABASE"],
+        "database",
+    ),
+    "access-future-schema": (
+        "access-future-schema.sql",
+        ["SHOW FUTURE GRANTS IN SCHEMA"],
+        "schema",
+    ),
+    "access-role-current": ("access-role-current.sql", ["SHOW GRANTS TO ROLE"], "role"),
+    "access-role-parents": ("access-role-parents.sql", ["SHOW GRANTS OF ROLE"], "role"),
+    "access-session": ("access-session.sql", ["Snowflake current-session context functions"], None),
+    "access-user-current": ("access-user-current.sql", ["SHOW GRANTS TO USER"], "user"),
+    "auth-current": ("auth-current.sql", ["SHOW USERS"], None),
+    "cost-adaptive": ("cost-adaptive.sql", ["SNOWFLAKE.ACCOUNT_USAGE.QUERY_METERING_HISTORY"], None),
+    "cost-ai-functions": ("cost-ai-functions.sql", ["SNOWFLAKE.ACCOUNT_USAGE.CORTEX_AI_FUNCTIONS_USAGE_HISTORY"], None),
+    "cost-budgets": ("cost-budgets.sql", ["SHOW SNOWFLAKE.CORE.BUDGET"], None),
+    "cost-internal-transfer": (
+        "cost-internal-transfer.sql",
+        ["SNOWFLAKE.ACCOUNT_USAGE.INTERNAL_DATA_TRANSFER_HISTORY"],
+        None,
+    ),
+    "cost-resource-monitors": ("cost-resource-monitors.sql", ["SHOW RESOURCE MONITORS"], None),
+    "cost-storage": ("cost-storage.sql", ["SNOWFLAKE.ACCOUNT_USAGE.STORAGE_USAGE"], None),
+    "cost-transfer": ("cost-transfer.sql", ["SNOWFLAKE.ACCOUNT_USAGE.DATA_TRANSFER_HISTORY"], None),
+    "data-quality-associations-current": (
+        "data-quality-associations-current.sql",
+        ["INFORMATION_SCHEMA.DATA_METRIC_FUNCTION_REFERENCES"],
+        "data_quality_object",
+    ),
+    "data-quality-expectations-current": (
+        "data-quality-expectations-current.sql",
+        ["INFORMATION_SCHEMA.DATA_METRIC_FUNCTION_EXPECTATIONS"],
+        "data_quality_object",
+    ),
+    "data-quality-notification-current": (
+        "data-quality-notification-current.sql",
+        ["INFORMATION_SCHEMA.DATA_METRIC_FUNCTION_REFERENCES"],
+        "data_quality_object",
+    ),
+    "pipeline-dynamic-table-current": (
+        "pipeline-dynamic-table-current.sql",
+        ["SHOW DYNAMIC TABLES IN ACCOUNT"],
+        None,
+    ),
+    "pipeline-pipe-current": ("pipeline-pipe-current.sql", ["SHOW PIPES IN ACCOUNT"], None),
+    "pipeline-pipe-status": (
+        "pipeline-pipe-status.sql",
+        ["SYSTEM$PIPE_STATUS"],
+        "pipe",
+    ),
+    "pipeline-stream-current": ("pipeline-stream-current.sql", ["SHOW STREAMS IN ACCOUNT"], None),
+    "pipeline-task-current": ("pipeline-task-current.sql", ["SHOW TASKS IN ACCOUNT"], None),
 }
 FORBIDDEN_SQL = {
     "ALTER",
@@ -75,6 +146,122 @@ FORBIDDEN_SQL = {
 }
 SAFE_START = {"DESCRIBE", "SELECT", "SHOW", "WITH"}
 PROFILE_RE = re.compile(r"^[A-Za-z0-9_.-]{1,128}$")
+IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_$]{0,254}$")
+QUALIFIED_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_$]{0,254}\.[A-Za-z_][A-Za-z0-9_$]{0,254}$")
+THREE_PART_IDENTIFIER_RE = re.compile(
+    r"^[A-Za-z_][A-Za-z0-9_$]{0,254}\.[A-Za-z_][A-Za-z0-9_$]{0,254}\.[A-Za-z_][A-Za-z0-9_$]{0,254}$"
+)
+SELECTOR_MARKERS = {
+    "database": "__DATABASE_IDENTIFIER__",
+    "database_role": "__DATABASE_ROLE_IDENTIFIER__",
+    "role": "__ROLE_IDENTIFIER__",
+    "schema": "__SCHEMA_IDENTIFIER__",
+    "user": "__USER_IDENTIFIER__",
+    "pipe": "__PIPE_IDENTIFIER__",
+    "data_quality_object": "__DATA_QUALITY_OBJECT_IDENTIFIER__",
+    "data_quality_domain": "__DATA_QUALITY_DOMAIN__",
+}
+WINDOW_SELECTOR_MARKERS = {
+    "window_start": "__WINDOW_START_UTC__",
+    "window_end": "__WINDOW_END_UTC__",
+}
+DATA_QUALITY_DATABASE_MARKER = "__DATA_QUALITY_DATABASE_IDENTIFIER__"
+DATA_QUALITY_SELECTOR_SURFACES = frozenset(
+    {
+        "data-quality-associations-current",
+        "data-quality-expectations-current",
+        "data-quality-notification-current",
+    }
+)
+COST_WINDOW_SURFACES = {
+    "cost",
+    "cost-adaptive",
+    "cost-ai-functions",
+    "cost-internal-transfer",
+    "cost-storage",
+    "cost-transfer",
+}
+PIPELINE_WINDOW_SURFACES = {"pipeline"}
+DATA_QUALITY_WINDOW_SURFACES = {"data-quality"}
+WINDOW_SURFACES = COST_WINDOW_SURFACES | PIPELINE_WINDOW_SURFACES | DATA_QUALITY_WINDOW_SURFACES
+INTRINSIC_ROW_LIMITS = {
+    "cost-resource-monitors": 10000,
+    "pipeline-dynamic-table-current": 10000,
+    "pipeline-pipe-current": 10000,
+    "pipeline-pipe-status": 1,
+    "pipeline-stream-current": 10000,
+    "pipeline-task-current": 10000,
+}
+UTC_TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$")
+RECEIPT_EXPECTED_DATASETS = {
+    "access": ("grants_to_roles", "grants_to_users", "roles"),
+    "access-database-role-current": ("execution_context", "rows"),
+    "access-future-database": ("execution_context", "rows"),
+    "access-future-schema": ("execution_context", "rows"),
+    "access-role-current": ("execution_context", "rows"),
+    "access-role-parents": ("execution_context", "rows"),
+    "access-session": ("session_context",),
+    "access-user-current": ("execution_context", "rows"),
+    "auth": ("execution_context", "historical_users"),
+    "auth-current": ("current_users", "execution_context"),
+    "auth-login-history": ("execution_context", "login_history"),
+    "cost": (
+        "execution_context",
+        "warehouse_metering",
+        "query_attribution",
+        "warehouse_load",
+        "serverless_usage",
+    ),
+    "cost-adaptive": ("adaptive_usage", "execution_context"),
+    "cost-ai-functions": ("ai_usage", "execution_context"),
+    "cost-budgets": ("budgets", "execution_context"),
+    "cost-internal-transfer": ("execution_context", "internal_transfer_usage"),
+    "cost-resource-monitors": ("execution_context", "resource_monitors"),
+    "cost-storage": ("execution_context", "storage_usage"),
+    "cost-transfer": ("data_transfer_usage", "execution_context"),
+    "data-quality": ("execution_context", "expectation_history"),
+    "data-quality-associations-current": ("current_associations", "execution_context"),
+    "data-quality-expectations-current": ("current_expectations", "execution_context"),
+    "data-quality-notification-current": ("execution_context", "notification_associations"),
+    "pipeline": ("copy_history", "dynamic_table_refresh_history", "execution_context", "task_history"),
+    "pipeline-dynamic-table-current": ("current_dynamic_tables", "execution_context"),
+    "pipeline-pipe-current": ("current_pipes", "execution_context"),
+    "pipeline-pipe-status": ("execution_context", "pipe_status"),
+    "pipeline-stream-current": ("current_streams", "execution_context"),
+    "pipeline-task-current": ("current_tasks", "execution_context"),
+}
+CAP_DATASET_BY_SURFACE = {
+    "auth": "historical_users",
+    "auth-current": "current_users",
+    "auth-login-history": "login_history",
+    **{surface: "rows" for surface in SUBSURFACES if surface.startswith("access-") and surface != "access-session"},
+    **{
+        surface: datasets[0] if datasets[0] != "execution_context" else datasets[1]
+        for surface, datasets in RECEIPT_EXPECTED_DATASETS.items()
+        if surface.startswith("cost-")
+    },
+    "pipeline-dynamic-table-current": "current_dynamic_tables",
+    "pipeline-pipe-current": "current_pipes",
+    "pipeline-stream-current": "current_streams",
+    "pipeline-task-current": "current_tasks",
+}
+CAP_DATASETS_BY_SURFACE = {
+    "cost": ("warehouse_metering", "query_attribution", "warehouse_load", "serverless_usage"),
+    "data-quality": ("expectation_history",),
+    "data-quality-associations-current": ("current_associations",),
+    "data-quality-expectations-current": ("current_expectations",),
+    "data-quality-notification-current": ("notification_associations",),
+    "pipeline": ("task_history", "dynamic_table_refresh_history", "copy_history"),
+}
+RECEIPT_NON_CLAIMS = (
+    "No Snowflake mutation was executed by the reviewed collector SQL.",
+    "Missing rows or permission-blocked views do not prove health.",
+    "Account Usage evidence can lag and must not be treated as real-time state.",
+    "The selected domain skill must evaluate freshness and completeness.",
+    "A row count at the reviewed SQL limit may indicate truncated evidence.",
+    "The embedded receipt SHA-256 is a self-checksum, not proof of origin or authenticity.",
+    "The collector does not attest to operations performed elsewhere in the surrounding session or workflow.",
+)
 SENSITIVE_KEYS = {
     "accesstoken",
     "apikey",
@@ -1292,7 +1479,7 @@ def is_sensitive_key(value: Any) -> bool:
 
 
 def is_safe_sensitive_metadata(key: Any, value: Any) -> bool:
-    return normalize_sensitive_key(key) in SAFE_SENSITIVE_METADATA_KEYS and isinstance(value, bool)
+    return normalize_sensitive_key(key) in SAFE_SENSITIVE_METADATA_KEYS and (isinstance(value, bool) or value is None)
 
 
 def _sanitize_output_tree(value: Any, depth: int, budget: list[int]) -> Any:
@@ -1333,6 +1520,22 @@ def sanitize_output_tree(value: Any) -> Any:
         return "[REDACTED_CREDENTIAL]"
 
 
+def redact_selector_values(value: Any, selector: dict[str, str] | None) -> Any:
+    """Remove customer identifiers from arbitrary CLI error structures."""
+    if not selector:
+        return value
+    raw_values = sorted(set(selector.values()), key=len, reverse=True)
+    if isinstance(value, dict):
+        return {key: redact_selector_values(child, selector) for key, child in value.items()}
+    if isinstance(value, list):
+        return [redact_selector_values(child, selector) for child in value]
+    if isinstance(value, str):
+        for raw in raw_values:
+            value = re.sub(re.escape(raw), "[REDACTED_SELECTOR]", value, flags=re.IGNORECASE)
+        return value
+    return value
+
+
 def reject_secret_fields(value: Any, path: str = "result", depth: int = 0, budget: list[int] | None = None) -> None:
     if budget is None:
         budget = [MAX_SANITIZE_TREE_NODES]
@@ -1342,7 +1545,7 @@ def reject_secret_fields(value: Any, path: str = "result", depth: int = 0, budge
     if isinstance(value, dict):
         for key, child in value.items():
             normalized = normalize_sensitive_key(key)
-            # Boolean metadata such as HAS_PASSWORD is safe; password material is not.
+            # Boolean/null posture metadata such as HAS_PASSWORD is safe; password material is not.
             if normalized in {"querytag", "username"}:
                 raise CollectionError(
                     f"raw identity/tag field is not accepted: {path}.{key}; use a Snowflake-side hash"
@@ -1387,11 +1590,17 @@ def validate_read_only_sql(sql: str) -> None:
             raise CollectionError("every SQL statement must start with SELECT, WITH, SHOW, or DESCRIBE")
 
 
-def load_surface(surface: str) -> tuple[Path, str, list[str]]:
-    try:
+def _surface_spec(surface: str) -> tuple[str, list[str], str | None]:
+    if surface in SURFACES:
         filename, sources = SURFACES[surface]
-    except KeyError as exc:
-        raise CollectionError(f"unsupported surface: {surface}") from exc
+        return filename, sources, None
+    if surface in SUBSURFACES:
+        return SUBSURFACES[surface]
+    raise CollectionError(f"unsupported surface: {surface}")
+
+
+def load_surface(surface: str) -> tuple[Path, str, list[str]]:
+    filename, sources, _ = _surface_spec(surface)
     path = SQL_DIR / filename
     if not path.is_file():
         raise CollectionError(f"surface is not bundled in this installed skill: {surface}")
@@ -1400,6 +1609,130 @@ def load_surface(surface: str) -> tuple[Path, str, list[str]]:
         raise CollectionError(f"NUL byte in SQL file: {path}")
     validate_read_only_sql(sql)
     return path, sql, sources
+
+
+def render_surface(
+    surface: str,
+    *,
+    database: str | None = None,
+    database_role: str | None = None,
+    role: str | None = None,
+    schema: str | None = None,
+    user: str | None = None,
+    pipe: str | None = None,
+    data_quality_object: str | None = None,
+    data_quality_domain: str | None = None,
+    window_start: str | None = None,
+    window_end: str | None = None,
+) -> tuple[Path, str, str, list[str], dict[str, str]]:
+    """Render a reviewed SQL template with a strictly validated selector."""
+
+    path, template_sql, sources = load_surface(surface)
+    _, _, selector_name = _surface_spec(surface)
+    supplied = {
+        name: value
+        for name, value in {
+            "database": database,
+            "database_role": database_role,
+            "role": role,
+            "schema": schema,
+            "user": user,
+            "pipe": pipe,
+            "data_quality_object": data_quality_object,
+            "data_quality_domain": data_quality_domain,
+        }.items()
+        if value is not None
+    }
+    selector: dict[str, str] = {}
+    if selector_name == "data_quality_object":
+        if set(supplied) != {"data_quality_object", "data_quality_domain"}:
+            raise CollectionError(
+                f"surface {surface} requires only the data_quality_object and data_quality_domain selectors"
+            )
+        if not THREE_PART_IDENTIFIER_RE.fullmatch(supplied["data_quality_object"]):
+            raise CollectionError(
+                "data_quality_object must be one validated three-part unquoted Snowflake identifier, not SQL or a fragment"
+            )
+        if supplied["data_quality_domain"] not in {"TABLE", "VIEW"}:
+            raise CollectionError("data_quality_domain must be TABLE or VIEW")
+        selector.update(
+            {
+                "data_quality_object": supplied["data_quality_object"].upper(),
+                "data_quality_domain": supplied["data_quality_domain"],
+            }
+        )
+    elif selector_name is None:
+        if supplied:
+            raise CollectionError(f"surface {surface} does not accept a selector")
+    else:
+        if set(supplied) != {selector_name}:
+            raise CollectionError(f"surface {surface} requires only the {selector_name} selector")
+        value = supplied[selector_name]
+        if selector_name == "pipe":
+            pattern = THREE_PART_IDENTIFIER_RE
+        elif selector_name in {"database_role", "schema"}:
+            pattern = QUALIFIED_IDENTIFIER_RE
+        else:
+            pattern = IDENTIFIER_RE
+        if not pattern.fullmatch(value):
+            qualification = (
+                "three-part"
+                if pattern is THREE_PART_IDENTIFIER_RE
+                else "two-part"
+                if pattern is QUALIFIED_IDENTIFIER_RE
+                else "one-part"
+            )
+            raise CollectionError(
+                f"{selector_name} must be one validated {qualification} unquoted Snowflake identifier, not SQL or a fragment"
+            )
+        selector[selector_name] = value
+
+    if surface in WINDOW_SURFACES:
+        if window_start is None or window_end is None:
+            raise CollectionError(f"surface {surface} requires both window_start and window_end")
+        for name, value in (("window_start", window_start), ("window_end", window_end)):
+            if not UTC_TIMESTAMP_RE.fullmatch(value):
+                raise CollectionError(f"{name} must be a canonical ISO-8601 UTC timestamp ending in Z")
+            try:
+                parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+            except ValueError as exc:
+                raise CollectionError(f"{name} must be a valid ISO-8601 UTC timestamp") from exc
+            selector[name] = value
+            selector[f"_{name}_parsed"] = parsed.isoformat()
+        start_parsed = datetime.fromisoformat(selector.pop("_window_start_parsed"))
+        end_parsed = datetime.fromisoformat(selector.pop("_window_end_parsed"))
+        if start_parsed >= end_parsed:
+            raise CollectionError("window_start must be before window_end")
+        if end_parsed - start_parsed > timedelta(days=7):
+            domain = (
+                "pipeline"
+                if surface in PIPELINE_WINDOW_SURFACES
+                else "data-quality"
+                if surface in DATA_QUALITY_WINDOW_SURFACES
+                else "cost"
+            )
+            raise CollectionError(f"{domain} collection windows cannot exceed seven days; partition longer audits")
+    elif window_start is not None or window_end is not None:
+        raise CollectionError(f"surface {surface} does not accept a time window")
+
+    rendered_sql = template_sql
+    if DATA_QUALITY_DATABASE_MARKER in rendered_sql:
+        selected_object = selector.get("data_quality_object")
+        if selected_object is None:
+            raise CollectionError(f"surface {surface} requires selector: data_quality_object")
+        rendered_sql = rendered_sql.replace(DATA_QUALITY_DATABASE_MARKER, selected_object.split(".", 1)[0])
+    for name, marker in SELECTOR_MARKERS.items():
+        if name in selector:
+            rendered_sql = rendered_sql.replace(marker, selector[name])
+        elif marker in rendered_sql:
+            raise CollectionError(f"surface {surface} requires selector: {name}")
+    for name, marker in WINDOW_SELECTOR_MARKERS.items():
+        if name in selector:
+            rendered_sql = rendered_sql.replace(marker, selector[name])
+        elif marker in rendered_sql:
+            raise CollectionError(f"surface {surface} requires selector: {name}")
+    validate_read_only_sql(rendered_sql)
+    return path, template_sql, rendered_sql, sources, selector
 
 
 def normalize_cli_json(raw: Any) -> tuple[dict[str, list[dict[str, Any]]], int]:
@@ -1442,43 +1775,169 @@ def build_receipt(
     collected_at: str | None = None,
     source_max_age_seconds: int | None = None,
     error: dict[str, Any] | None = None,
+    template_sql: str | None = None,
+    template_path: Path | None = None,
+    selector: dict[str, str] | None = None,
+    collection_mode: str = "offline-normalized",
+    collection_started_at: str | None = None,
+    collection_completed_at: str | None = None,
 ) -> dict[str, Any]:
+    # A live collection's observation timestamp is the instant collection
+    # completed.  Derive it from the supplied completion time before sampling a
+    # new clock value so collector-produced receipts cannot claim that they were
+    # collected after their own collection interval.
+    effective_collected_at = collected_at or collection_completed_at or utc_now()
+    effective_started_at = collection_started_at or effective_collected_at
+    effective_completed_at = collection_completed_at or effective_collected_at
     datasets: dict[str, list[dict[str, Any]]] = {}
     row_count = 0
     if raw is not None:
         datasets, row_count = normalize_cli_json(raw)
+    expected_datasets = list(RECEIPT_EXPECTED_DATASETS.get(surface, ()))
+    for dataset in expected_datasets:
+        datasets.setdefault(dataset, [])
+    datasets = dict(sorted(datasets.items()))
     limits = re.findall(r"\bLIMIT\s+(\d+)\b", sql, flags=re.IGNORECASE)
-    row_limit = int(limits[-1]) if limits else None
-    truncation_possible = row_limit is not None and row_count >= row_limit
+    row_limit = int(limits[-1]) if limits else INTRINSIC_ROW_LIMITS.get(surface)
+    cap_dataset = CAP_DATASET_BY_SURFACE.get(surface)
+    capped_row_count = len(datasets.get(cap_dataset, [])) if cap_dataset else row_count
+    cap_datasets = CAP_DATASETS_BY_SURFACE.get(surface)
+    if cap_datasets:
+        truncation_possible = row_limit is not None and any(
+            len(datasets.get(dataset, [])) >= row_limit for dataset in cap_datasets
+        )
+    else:
+        truncation_possible = row_limit is not None and capped_row_count >= row_limit
+    if surface == "pipeline-pipe-status":
+        # SYSTEM$PIPE_STATUS is invoked for exactly one validated named pipe;
+        # its one status row plus the context row are not a pageable result.
+        truncation_possible = False
     if surface == "query" and (
         not isinstance(source_max_age_seconds, int)
         or isinstance(source_max_age_seconds, bool)
         or source_max_age_seconds <= 0
     ):
         raise CollectionError("query collection requires a positive source_max_age_seconds")
-    sanitized_error = sanitize_output_tree(error) if error else None
+    sanitized_error = sanitize_output_tree(redact_selector_values(error, selector)) if error else None
+    canonical_template = template_sql if template_sql is not None else sql
+    template_hash = f"sha256:{hashlib.sha256(canonical_template.encode('utf-8')).hexdigest()}"
+    selector_binding: dict[str, str] | None = None
+    if surface == "pipeline-pipe-status":
+        status_rows = datasets.get("pipe_status", [])
+        object_key = status_rows[0].get("object_key_sha256") if len(status_rows) == 1 else None
+        if isinstance(object_key, str):
+            selector_binding = {"pipe_object_key_sha256": object_key}
+    if surface in DATA_QUALITY_SELECTOR_SURFACES and not error:
+        if len(context_rows := datasets.get("execution_context", [])) == 1:
+            object_key = context_rows[0].get("selected_object_key_sha256")
+            object_domain = context_rows[0].get("selected_object_domain")
+            if (
+                isinstance(object_key, str)
+                and re.fullmatch(r"[0-9a-f]{64}", object_key)
+                and object_domain in {"TABLE", "VIEW"}
+            ):
+                selector_binding = {
+                    "selected_object_key_sha256": object_key,
+                    "selected_object_domain": object_domain,
+                }
+    receipt_rendered_sql = sql
+    fingerprint_value: dict[str, str] | None = selector_binding or selector
+    if surface == "pipeline-pipe-status":
+        if selector_binding is not None:
+            receipt_rendered_sql = canonical_template.replace(
+                "__PIPE_IDENTIFIER__",
+                f"__PIPE_OBJECT_KEY_SHA256_{selector_binding['pipe_object_key_sha256']}__",
+            )
+            fingerprint_value = selector_binding
+        else:
+            # An error response has no Snowflake-produced scoped object hash.
+            # Hashing either the rendered SQL or the raw selector would make a
+            # private pipe name dictionary-testable, so retain only the public
+            # reviewed template proof and no selector fingerprint.
+            receipt_rendered_sql = canonical_template
+            fingerprint_value = None
+    if surface in DATA_QUALITY_SELECTOR_SURFACES:
+        if selector_binding is not None:
+            receipt_rendered_sql = (
+                canonical_template.replace(
+                    "__DATA_QUALITY_OBJECT_IDENTIFIER__",
+                    f"__DATA_QUALITY_OBJECT_KEY_SHA256_{selector_binding['selected_object_key_sha256']}__",
+                )
+                .replace(
+                    "__DATA_QUALITY_DOMAIN__",
+                    f"__DATA_QUALITY_DOMAIN_{selector_binding['selected_object_domain']}__",
+                )
+                .replace(
+                    DATA_QUALITY_DATABASE_MARKER,
+                    f"__DATA_QUALITY_DATABASE_BOUND_TO_OBJECT_KEY_SHA256_{selector_binding['selected_object_key_sha256']}__",
+                )
+            )
+            fingerprint_value = selector_binding
+        else:
+            # Without Snowflake-produced execution context, retain only public
+            # template proof so the raw object selector is not dictionary-testable.
+            receipt_rendered_sql = canonical_template
+            fingerprint_value = None
+    rendered_hash = f"sha256:{hashlib.sha256(receipt_rendered_sql.encode('utf-8')).hexdigest()}"
+    selector_fingerprint = (
+        f"sha256:{hashlib.sha256(canonical_json(fingerprint_value)).hexdigest()}" if fingerprint_value else None
+    )
+    context_rows = datasets.get("execution_context", [])
+    account_scope = (
+        context_rows[0].get("account_identifier_sha256")
+        if len(context_rows) == 1 and isinstance(context_rows[0], dict)
+        else None
+    )
     receipt = {
-        "schema_version": "2" if surface == "query" else "1",
+        "schema_version": "2"
+        if surface == "query" or surface.startswith(("access", "auth", "cost", "data-quality", "pipeline"))
+        else "1",
         "surface": surface,
         "status": "error" if error else "collected",
-        "collected_at": collected_at or utc_now(),
-        "connection_profile": connection,
-        "sql_sha256": f"sha256:{hashlib.sha256(sql.encode('utf-8')).hexdigest()}",
+        "collected_at": effective_collected_at,
+        "sql_sha256": template_hash,
+        "template_sha256": template_hash,
+        "rendered_sql_sha256": rendered_hash,
+        "selector_fingerprint": selector_fingerprint,
+        "source_metadata": {
+            "template": template_path.name if template_path is not None else None,
+            "source_views": list(sources),
+            "selector": {name: True for name in (selector or {})},
+        },
         "source_views": sources,
         "row_count": row_count,
         "row_limit": row_limit,
         "truncation_possible": truncation_possible,
+        "dataset_row_counts": {name: len(rows) for name, rows in datasets.items()},
+        "expected_datasets": expected_datasets,
         "datasets": datasets,
         "errors": [sanitized_error] if sanitized_error else [],
-        "non_claims": [
-            "No Snowflake mutation was executed.",
-            "Missing rows or permission-blocked views do not prove health.",
-            "Account Usage evidence can lag and must not be treated as real-time state.",
-            "The selected domain skill must evaluate freshness and completeness.",
-            "A row count at the reviewed SQL limit may indicate truncated evidence.",
-            "The embedded receipt SHA-256 is a self-checksum, not proof of origin or authenticity.",
-        ],
+        "non_claims": list(RECEIPT_NON_CLAIMS),
     }
+    if surface == "pipeline" and selector:
+        receipt["source_metadata"]["selector_values"] = dict(selector)
+    if surface == "data-quality" and selector:
+        receipt["source_metadata"]["selector_values"] = dict(selector)
+    if surface == "pipeline-pipe-status" and selector_binding:
+        receipt["source_metadata"]["selector_binding"] = selector_binding
+        receipt["source_metadata"]["rendered_sql_contract"] = "privacy-bound-selector-v1"
+    if surface in DATA_QUALITY_SELECTOR_SURFACES and selector_binding:
+        receipt["source_metadata"]["selector_binding"] = selector_binding
+        receipt["source_metadata"]["rendered_sql_contract"] = "privacy-bound-selector-v1"
+    if surface.startswith(("cost", "data-quality", "pipeline")):
+        receipt["cap_scope"] = "per_dataset" if cap_datasets else "single_dataset_or_result"
+        receipt["result_sha256"] = f"sha256:{hashlib.sha256(canonical_json(datasets)).hexdigest()}"
+        receipt["connection_profile_sha256"] = (
+            f"sha256:{hashlib.sha256(canonical_json([account_scope, connection])).hexdigest()}"
+        )
+        receipt["snowflake_query_id"] = None
+        receipt["snowflake_query_id_status"] = "not_exposed_by_snow_cli_json_ext"
+    else:
+        receipt["connection_profile"] = connection
+    if surface.startswith(("access", "auth", "cost", "data-quality", "pipeline")):
+        receipt["collection_mode"] = collection_mode
+        receipt["collection_started_at"] = effective_started_at
+        receipt["collection_completed_at"] = effective_completed_at
     if surface == "query":
         receipt["freshness"] = {
             "dataset": "query_history",
@@ -1495,68 +1954,144 @@ def execute_surface(
     connection: str,
     *,
     source_max_age_seconds: int | None = None,
+    database: str | None = None,
+    database_role: str | None = None,
+    role: str | None = None,
+    schema: str | None = None,
+    user: str | None = None,
+    pipe: str | None = None,
+    data_quality_object: str | None = None,
+    data_quality_domain: str | None = None,
+    window_start: str | None = None,
+    window_end: str | None = None,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> tuple[dict[str, Any], int]:
     if not PROFILE_RE.fullmatch(connection):
         raise CollectionError("connection profile must use only letters, digits, dot, underscore, or hyphen")
-    path, sql, sources = load_surface(surface)
-    command = [
-        "snow",
-        "sql",
-        "--filename",
-        str(path),
-        "--connection",
-        connection,
-        "--format",
-        "JSON_EXT",
-        "--silent",
-        "--enhanced-exit-codes",
-        "--local-only",
-    ]
+    path, template_sql, sql, sources, selector = render_surface(
+        surface,
+        database=database,
+        database_role=database_role,
+        role=role,
+        schema=schema,
+        user=user,
+        pipe=pipe,
+        data_quality_object=data_quality_object,
+        data_quality_domain=data_quality_domain,
+        window_start=window_start,
+        window_end=window_end,
+    )
+    temporary_path: Path | None = None
+    collection_started_at = utc_now()
     try:
-        completed = runner(command, capture_output=True, text=True, timeout=120, check=False)
-    except FileNotFoundError:
-        error = {"code": "SNOW_CLI_NOT_FOUND", "message": "Snowflake CLI executable 'snow' was not found"}
-        return build_receipt(
-            surface, connection, sql, sources, source_max_age_seconds=source_max_age_seconds, error=error
-        ), 2
-    except subprocess.TimeoutExpired:
-        error = {"code": "SNOW_CLI_TIMEOUT", "message": "Snowflake CLI collection exceeded 120 seconds"}
-        return build_receipt(
-            surface, connection, sql, sources, source_max_age_seconds=source_max_age_seconds, error=error
-        ), 5
-    if completed.returncode != 0:
-        error = {
-            "code": "SNOW_CLI_FAILED",
-            "exit_code": completed.returncode,
-            "message": sanitize_text(completed.stderr or completed.stdout or "Snowflake CLI failed"),
-        }
+        command_path = path
+        if sql != template_sql:
+            descriptor, temporary_name = tempfile.mkstemp(prefix=f"snowflake-{path.stem}-", suffix=".sql")
+            temporary_path = Path(temporary_name)
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                handle.write(sql)
+            command_path = temporary_path
+
+        command = [
+            "snow",
+            "sql",
+            "--filename",
+            str(command_path),
+            "--connection",
+            connection,
+            "--format",
+            "JSON_EXT",
+            "--silent",
+            "--enhanced-exit-codes",
+            "--local-only",
+        ]
+        try:
+            completed = runner(command, capture_output=True, text=True, timeout=120, check=False)
+        except FileNotFoundError:
+            error = {"code": "SNOW_CLI_NOT_FOUND", "message": "Snowflake CLI executable 'snow' was not found"}
+            return (
+                build_receipt(
+                    surface,
+                    connection,
+                    sql,
+                    sources,
+                    source_max_age_seconds=source_max_age_seconds,
+                    error=error,
+                    template_sql=template_sql,
+                    template_path=path,
+                    selector=selector,
+                    collection_mode="live-cli",
+                    collection_started_at=collection_started_at,
+                    collection_completed_at=utc_now(),
+                ),
+                2,
+            )
+        except subprocess.TimeoutExpired:
+            error = {"code": "SNOW_CLI_TIMEOUT", "message": "Snowflake CLI collection exceeded 120 seconds"}
+            return (
+                build_receipt(
+                    surface,
+                    connection,
+                    sql,
+                    sources,
+                    source_max_age_seconds=source_max_age_seconds,
+                    error=error,
+                    template_sql=template_sql,
+                    template_path=path,
+                    selector=selector,
+                    collection_mode="live-cli",
+                    collection_started_at=collection_started_at,
+                    collection_completed_at=utc_now(),
+                ),
+                5,
+            )
+        if completed.returncode != 0:
+            error = {
+                "code": "SNOW_CLI_FAILED",
+                "exit_code": completed.returncode,
+                "message": "Snowflake CLI collection failed; inspect local CLI diagnostics outside the receipt",
+            }
+            return (
+                build_receipt(
+                    surface,
+                    connection,
+                    sql,
+                    sources,
+                    source_max_age_seconds=source_max_age_seconds,
+                    error=error,
+                    template_sql=template_sql,
+                    template_path=path,
+                    selector=selector,
+                    collection_mode="live-cli",
+                    collection_started_at=collection_started_at,
+                    collection_completed_at=utc_now(),
+                ),
+                completed.returncode,
+            )
+        try:
+            raw = json.loads(completed.stdout)
+        except json.JSONDecodeError as exc:
+            raise CollectionError("Snowflake CLI did not return valid JSON_EXT output") from exc
         return (
             build_receipt(
                 surface,
                 connection,
                 sql,
                 sources,
+                raw=raw,
                 source_max_age_seconds=source_max_age_seconds,
-                error=error,
+                template_sql=template_sql,
+                template_path=path,
+                selector=selector,
+                collection_mode="live-cli",
+                collection_started_at=collection_started_at,
+                collection_completed_at=utc_now(),
             ),
-            completed.returncode,
+            0,
         )
-    try:
-        raw = json.loads(completed.stdout)
-    except json.JSONDecodeError as exc:
-        raise CollectionError("Snowflake CLI did not return valid JSON_EXT output") from exc
-    return (
-        build_receipt(
-            surface,
-            connection,
-            sql,
-            sources,
-            raw=raw,
-            source_max_age_seconds=source_max_age_seconds,
-        ),
-        0,
-    )
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def write_receipt(receipt: dict[str, Any], output: Path | None) -> None:
@@ -1572,7 +2107,9 @@ def write_receipt(receipt: dict[str, Any], output: Path | None) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    bundled_surfaces = sorted(surface for surface, (filename, _) in SURFACES.items() if (SQL_DIR / filename).is_file())
+    bundled_surfaces = sorted(
+        surface for surface in {**SURFACES, **SUBSURFACES} if (SQL_DIR / _surface_spec(surface)[0]).is_file()
+    )
     parser.add_argument("--surface", choices=bundled_surfaces, required=True)
     parser.add_argument("--connection", help="Existing Snowflake CLI profile name")
     parser.add_argument("--output", type=Path, help="JSON receipt path; stdout when omitted")
@@ -1582,15 +2119,54 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         help="Positive incident freshness bound; required for the query surface",
     )
+    parser.add_argument(
+        "--database",
+        help="One unquoted database identifier for access-future-database",
+    )
+    parser.add_argument(
+        "--database-role",
+        help="Two-part unquoted database-role identifier for access-database-role-current",
+    )
+    parser.add_argument("--role", help="One unquoted account-role identifier for role sub-surfaces")
+    parser.add_argument("--schema", help="Two-part unquoted schema identifier for access-future-schema")
+    parser.add_argument("--user", help="One unquoted user identifier for access-user-current")
+    parser.add_argument("--pipe", help="Three-part unquoted pipe identifier for pipeline-pipe-status")
+    parser.add_argument(
+        "--data-quality-object",
+        help="Three-part unquoted object identifier for selector-scoped data-quality current surfaces",
+    )
+    parser.add_argument(
+        "--data-quality-domain",
+        choices=("TABLE", "VIEW"),
+        help="Object domain for selector-scoped data-quality current surfaces",
+    )
+    parser.add_argument("--window-start", help="Canonical UTC lower bound for bounded history surfaces")
+    parser.add_argument("--window-end", help="Canonical UTC exclusive upper bound for bounded history surfaces")
     parser.add_argument("--validate-only", action="store_true", help="Validate the reviewed SQL and exit")
     args = parser.parse_args(argv)
     try:
-        _, sql, sources = load_surface(args.surface)
+        path, template_sql, sql, sources, selector = render_surface(
+            args.surface,
+            database=args.database,
+            database_role=args.database_role,
+            role=args.role,
+            schema=args.schema,
+            user=args.user,
+            pipe=args.pipe,
+            data_quality_object=args.data_quality_object,
+            data_quality_domain=args.data_quality_domain,
+            window_start=args.window_start,
+            window_end=args.window_end,
+        )
         if args.validate_only:
             return 0
         if args.surface == "query" and (args.source_max_age_seconds is None or args.source_max_age_seconds <= 0):
             raise CollectionError("--source-max-age-seconds must be positive for the query surface")
         if args.input_json:
+            if args.surface.startswith(("access", "auth", "cost", "data-quality", "pipeline")):
+                raise CollectionError(
+                    "offline normalization is diagnostic-only and is not accepted for access, authentication, cost, data-quality, or pipeline evidence; collect live so Snowflake execution context is bound to the result"
+                )
             raw = json.loads(args.input_json.read_text(encoding="utf-8"))
             receipt = build_receipt(
                 args.surface,
@@ -1599,6 +2175,9 @@ def main(argv: list[str] | None = None) -> int:
                 sources,
                 raw=raw,
                 source_max_age_seconds=args.source_max_age_seconds,
+                template_sql=template_sql,
+                template_path=path,
+                selector=selector,
             )
             code = 0
         else:
@@ -1608,6 +2187,16 @@ def main(argv: list[str] | None = None) -> int:
                 args.surface,
                 args.connection,
                 source_max_age_seconds=args.source_max_age_seconds,
+                database=args.database,
+                database_role=args.database_role,
+                role=args.role,
+                schema=args.schema,
+                user=args.user,
+                pipe=args.pipe,
+                data_quality_object=args.data_quality_object,
+                data_quality_domain=args.data_quality_domain,
+                window_start=args.window_start,
+                window_end=args.window_end,
             )
         write_receipt(receipt, args.output)
         return code

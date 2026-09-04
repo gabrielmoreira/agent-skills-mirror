@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alpic-ai/skybridge` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `alpic-ai/skybridge` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alpic-ai/skybridge` — 26 default patterns, 0 followed patterns, 37 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,18 +84,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/chatgpt-app-builder/references/discover.md`](skills/chatgpt-app-builder/references/discover.md) |
 | 24 | ✓ | [`skills/chatgpt-app-builder/references/download-file.md`](skills/chatgpt-app-builder/references/download-file.md) |
 | 25 | ✓ | [`skills/chatgpt-app-builder/references/ecommerce.md`](skills/chatgpt-app-builder/references/ecommerce.md) |
-| 26 | ✓ | [`skills/chatgpt-app-builder/references/fetch-and-render-data.md`](skills/chatgpt-app-builder/references/fetch-and-render-data.md) |
-| 27 | ✓ | [`skills/chatgpt-app-builder/references/migrate-to-v1.md`](skills/chatgpt-app-builder/references/migrate-to-v1.md) |
-| 28 | ✓ | [`skills/chatgpt-app-builder/references/oauth.md`](skills/chatgpt-app-builder/references/oauth.md) |
-| 29 | ✓ | [`skills/chatgpt-app-builder/references/open-external-links.md`](skills/chatgpt-app-builder/references/open-external-links.md) |
-| 30 | ✓ | [`skills/chatgpt-app-builder/references/prompt-llm.md`](skills/chatgpt-app-builder/references/prompt-llm.md) |
-| 31 | ✓ | [`skills/chatgpt-app-builder/references/publish.md`](skills/chatgpt-app-builder/references/publish.md) |
-| 32 | ✓ | [`skills/chatgpt-app-builder/references/run-locally.md`](skills/chatgpt-app-builder/references/run-locally.md) |
-| 33 | ✓ | [`skills/chatgpt-app-builder/references/state-and-context.md`](skills/chatgpt-app-builder/references/state-and-context.md) |
-| 34 | ✓ | [`skills/chatgpt-app-builder/references/ui-guidelines.md`](skills/chatgpt-app-builder/references/ui-guidelines.md) |
-| 35 | ✓ | [`skills/chatgpt-app-builder/SKILL.md`](skills/chatgpt-app-builder/SKILL.md) |
-| 36 | ✓ | [`skills/mcp-app-builder/SKILL.md`](skills/mcp-app-builder/SKILL.md) |
-| 37 | ✓ | [`skills/skybridge/SKILL.md`](skills/skybridge/SKILL.md) |
+| 26 | ✓ | [`skills/chatgpt-app-builder/references/evals.md`](skills/chatgpt-app-builder/references/evals.md) |
+| 27 | ✓ | [`skills/chatgpt-app-builder/references/fetch-and-render-data.md`](skills/chatgpt-app-builder/references/fetch-and-render-data.md) |
+| 28 | ✓ | [`skills/chatgpt-app-builder/references/migrate-to-v1.md`](skills/chatgpt-app-builder/references/migrate-to-v1.md) |
+| 29 | ✓ | [`skills/chatgpt-app-builder/references/oauth.md`](skills/chatgpt-app-builder/references/oauth.md) |
+| 30 | ✓ | [`skills/chatgpt-app-builder/references/open-external-links.md`](skills/chatgpt-app-builder/references/open-external-links.md) |
+| 31 | ✓ | [`skills/chatgpt-app-builder/references/prompt-llm.md`](skills/chatgpt-app-builder/references/prompt-llm.md) |
+| 32 | ✓ | [`skills/chatgpt-app-builder/references/publish.md`](skills/chatgpt-app-builder/references/publish.md) |
+| 33 | ✓ | [`skills/chatgpt-app-builder/references/run-locally.md`](skills/chatgpt-app-builder/references/run-locally.md) |
+| 34 | ✓ | [`skills/chatgpt-app-builder/references/state-and-context.md`](skills/chatgpt-app-builder/references/state-and-context.md) |
+| 35 | ✓ | [`skills/chatgpt-app-builder/references/ui-guidelines.md`](skills/chatgpt-app-builder/references/ui-guidelines.md) |
+| 36 | ✓ | [`skills/chatgpt-app-builder/SKILL.md`](skills/chatgpt-app-builder/SKILL.md) |
+| 37 | ✓ | [`skills/mcp-app-builder/SKILL.md`](skills/mcp-app-builder/SKILL.md) |
+| 38 | ✓ | [`skills/skybridge/SKILL.md`](skills/skybridge/SKILL.md) |
 
 ---
 

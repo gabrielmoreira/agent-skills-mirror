@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 3 followed patterns, 1033 file(s) materialized.
+Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 3 followed patterns, 1037 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 3 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 1033 |
+| Files         | 1037 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1013,87 +1013,91 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 950 | ✓ | [`skills/us-undervalued-growth-screener/references/checkpointing.md`](skills/us-undervalued-growth-screener/references/checkpointing.md) |
 | 951 | ✓ | [`skills/us-undervalued-growth-screener/references/claude-code-execution.md`](skills/us-undervalued-growth-screener/references/claude-code-execution.md) |
 | 952 | ✓ | [`skills/us-undervalued-growth-screener/references/data-contract.md`](skills/us-undervalued-growth-screener/references/data-contract.md) |
-| 953 | ✓ | [`skills/us-undervalued-growth-screener/references/methodology-ja.md`](skills/us-undervalued-growth-screener/references/methodology-ja.md) |
-| 954 | ✓ | [`skills/us-undervalued-growth-screener/references/methodology.md`](skills/us-undervalued-growth-screener/references/methodology.md) |
-| 955 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v1-to-v2.md`](skills/us-undervalued-growth-screener/references/migration-v1-to-v2.md) |
-| 956 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v2-to-v3.md`](skills/us-undervalued-growth-screener/references/migration-v2-to-v3.md) |
-| 957 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3-to-v3.1.md`](skills/us-undervalued-growth-screener/references/migration-v3-to-v3.1.md) |
-| 958 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.1-to-v3.2.md`](skills/us-undervalued-growth-screener/references/migration-v3.1-to-v3.2.md) |
-| 959 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.2-to-v3.3.md`](skills/us-undervalued-growth-screener/references/migration-v3.2-to-v3.3.md) |
-| 960 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.3-to-v3.4.md`](skills/us-undervalued-growth-screener/references/migration-v3.3-to-v3.4.md) |
-| 961 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.4-to-v3.5.md`](skills/us-undervalued-growth-screener/references/migration-v3.4-to-v3.5.md) |
-| 962 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.5-to-v3.6.md`](skills/us-undervalued-growth-screener/references/migration-v3.5-to-v3.6.md) |
-| 963 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.6-to-v3.6.1.md`](skills/us-undervalued-growth-screener/references/migration-v3.6-to-v3.6.1.md) |
-| 964 | ✓ | [`skills/us-undervalued-growth-screener/references/original-prompt-mapping.md`](skills/us-undervalued-growth-screener/references/original-prompt-mapping.md) |
-| 965 | ✓ | [`skills/us-undervalued-growth-screener/references/output-template.md`](skills/us-undervalued-growth-screener/references/output-template.md) |
-| 966 | ✓ | [`skills/us-undervalued-growth-screener/references/research-checklist.md`](skills/us-undervalued-growth-screener/references/research-checklist.md) |
-| 967 | ✓ | [`skills/us-undervalued-growth-screener/references/review-regression-matrix.md`](skills/us-undervalued-growth-screener/references/review-regression-matrix.md) |
-| 968 | ✓ | [`skills/us-undervalued-growth-screener/references/scoring-rubric.md`](skills/us-undervalued-growth-screener/references/scoring-rubric.md) |
-| 969 | ✓ | [`skills/us-undervalued-growth-screener/references/sector-kpis.md`](skills/us-undervalued-growth-screener/references/sector-kpis.md) |
-| 970 | ✓ | [`skills/us-undervalued-growth-screener/scripts/build_discovery_pool.py`](skills/us-undervalued-growth-screener/scripts/build_discovery_pool.py) |
-| 971 | ✓ | [`skills/us-undervalued-growth-screener/scripts/build_provider_prefilter_pool.py`](skills/us-undervalued-growth-screener/scripts/build_provider_prefilter_pool.py) |
-| 972 | ✓ | [`skills/us-undervalued-growth-screener/scripts/bundle_run_artifacts.py`](skills/us-undervalued-growth-screener/scripts/bundle_run_artifacts.py) |
-| 973 | ✓ | [`skills/us-undervalued-growth-screener/scripts/evaluate_candidates.py`](skills/us-undervalued-growth-screener/scripts/evaluate_candidates.py) |
-| 974 | ✓ | [`skills/us-undervalued-growth-screener/scripts/fmp_client.py`](skills/us-undervalued-growth-screener/scripts/fmp_client.py) |
-| 975 | ✓ | [`skills/us-undervalued-growth-screener/scripts/manage_run_state.py`](skills/us-undervalued-growth-screener/scripts/manage_run_state.py) |
-| 976 | ✓ | [`skills/us-undervalued-growth-screener/scripts/normalize_estimates.py`](skills/us-undervalued-growth-screener/scripts/normalize_estimates.py) |
-| 977 | ✓ | [`skills/us-undervalued-growth-screener/scripts/prepublish_audit.py`](skills/us-undervalued-growth-screener/scripts/prepublish_audit.py) |
-| 978 | ✓ | [`skills/us-undervalued-growth-screener/scripts/research_contract.py`](skills/us-undervalued-growth-screener/scripts/research_contract.py) |
-| 979 | ✓ | [`skills/us-undervalued-growth-screener/scripts/run_pipeline.py`](skills/us-undervalued-growth-screener/scripts/run_pipeline.py) |
-| 980 | ✓ | [`skills/us-undervalued-growth-screener/scripts/screen_universe.py`](skills/us-undervalued-growth-screener/scripts/screen_universe.py) |
-| 981 | ✓ | [`skills/us-undervalued-growth-screener/scripts/screening_semantics.py`](skills/us-undervalued-growth-screener/scripts/screening_semantics.py) |
-| 982 | ✓ | [`skills/us-undervalued-growth-screener/scripts/skill_version.py`](skills/us-undervalued-growth-screener/scripts/skill_version.py) |
-| 983 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_artifact_paths.py`](skills/us-undervalued-growth-screener/scripts/tests/test_artifact_paths.py) |
-| 984 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py`](skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py) |
-| 985 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py`](skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py) |
-| 986 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py`](skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py) |
-| 987 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py`](skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py) |
-| 988 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py`](skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py) |
-| 989 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py`](skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py) |
-| 990 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py`](skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py) |
-| 991 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py`](skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py) |
-| 992 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py`](skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py) |
-| 993 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py`](skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py) |
-| 994 | ✓ | [`skills/us-undervalued-growth-screener/SKILL.md`](skills/us-undervalued-growth-screener/SKILL.md) |
-| 995 | ✓ | [`skills/value-dividend-screener/references/fmp_api_guide.md`](skills/value-dividend-screener/references/fmp_api_guide.md) |
-| 996 | ✓ | [`skills/value-dividend-screener/references/screening_methodology.md`](skills/value-dividend-screener/references/screening_methodology.md) |
-| 997 | ✓ | [`skills/value-dividend-screener/scripts/screen_dividend_stocks.py`](skills/value-dividend-screener/scripts/screen_dividend_stocks.py) |
-| 998 | ✓ | [`skills/value-dividend-screener/scripts/tests/conftest.py`](skills/value-dividend-screener/scripts/tests/conftest.py) |
-| 999 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_fmp_stable.py`](skills/value-dividend-screener/scripts/tests/test_fmp_stable.py) |
-| 1000 | ✓ | [`skills/value-dividend-screener/SKILL.md`](skills/value-dividend-screener/SKILL.md) |
-| 1001 | ✓ | [`skills/vcp-screener/references/fmp_api_endpoints.md`](skills/vcp-screener/references/fmp_api_endpoints.md) |
-| 1002 | ✓ | [`skills/vcp-screener/references/scoring_system.md`](skills/vcp-screener/references/scoring_system.md) |
-| 1003 | ✓ | [`skills/vcp-screener/references/vcp_methodology.md`](skills/vcp-screener/references/vcp_methodology.md) |
-| 1004 | ✓ | [`skills/vcp-screener/scripts/_fmp_compat.py`](skills/vcp-screener/scripts/_fmp_compat.py) |
-| 1005 | ✓ | [`skills/vcp-screener/scripts/calculators/__init__.py`](skills/vcp-screener/scripts/calculators/__init__.py) |
-| 1006 | ✓ | [`skills/vcp-screener/scripts/calculators/execution_state.py`](skills/vcp-screener/scripts/calculators/execution_state.py) |
-| 1007 | ✓ | [`skills/vcp-screener/scripts/calculators/forward_outcome.py`](skills/vcp-screener/scripts/calculators/forward_outcome.py) |
-| 1008 | ✓ | [`skills/vcp-screener/scripts/calculators/pattern_classifier.py`](skills/vcp-screener/scripts/calculators/pattern_classifier.py) |
-| 1009 | ✓ | [`skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py`](skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py) |
-| 1010 | ✓ | [`skills/vcp-screener/scripts/calculators/relative_strength_calculator.py`](skills/vcp-screener/scripts/calculators/relative_strength_calculator.py) |
-| 1011 | ✓ | [`skills/vcp-screener/scripts/calculators/trend_template_calculator.py`](skills/vcp-screener/scripts/calculators/trend_template_calculator.py) |
-| 1012 | ✓ | [`skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py) |
-| 1013 | ✓ | [`skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py) |
-| 1014 | ✓ | [`skills/vcp-screener/scripts/fmp_client.py`](skills/vcp-screener/scripts/fmp_client.py) |
-| 1015 | ✓ | [`skills/vcp-screener/scripts/historical_report.py`](skills/vcp-screener/scripts/historical_report.py) |
-| 1016 | ✓ | [`skills/vcp-screener/scripts/historical_scanner.py`](skills/vcp-screener/scripts/historical_scanner.py) |
-| 1017 | ✓ | [`skills/vcp-screener/scripts/report_generator.py`](skills/vcp-screener/scripts/report_generator.py) |
-| 1018 | ✓ | [`skills/vcp-screener/scripts/scorer.py`](skills/vcp-screener/scripts/scorer.py) |
-| 1019 | ✓ | [`skills/vcp-screener/scripts/screen_vcp.py`](skills/vcp-screener/scripts/screen_vcp.py) |
-| 1020 | ✓ | [`skills/vcp-screener/scripts/tests/conftest.py`](skills/vcp-screener/scripts/tests/conftest.py) |
-| 1021 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
-| 1022 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py`](skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py) |
-| 1023 | ✓ | [`skills/vcp-screener/scripts/tests/test_historical_vcp.py`](skills/vcp-screener/scripts/tests/test_historical_vcp.py) |
-| 1024 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
-| 1025 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
-| 1026 | ✓ | [`skills/weekly-performance-digest/references/weekly-digest-metrics.md`](skills/weekly-performance-digest/references/weekly-digest-metrics.md) |
-| 1027 | ✓ | [`skills/weekly-performance-digest/scripts/generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/generate_weekly_digest.py) |
-| 1028 | ✓ | [`skills/weekly-performance-digest/scripts/tests/conftest.py`](skills/weekly-performance-digest/scripts/tests/conftest.py) |
-| 1029 | ✓ | [`skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py) |
-| 1030 | ✓ | [`skills/weekly-performance-digest/SKILL.md`](skills/weekly-performance-digest/SKILL.md) |
-| 1031 | → | [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md) |
-| 1032 | → | [`docs/dev/production-verification.md`](docs/dev/production-verification.md) |
-| 1033 | → | [`workflows/README.md`](workflows/README.md) |
+| 953 | ✓ | [`skills/us-undervalued-growth-screener/references/full-universe-snapshot.md`](skills/us-undervalued-growth-screener/references/full-universe-snapshot.md) |
+| 954 | ✓ | [`skills/us-undervalued-growth-screener/references/methodology-ja.md`](skills/us-undervalued-growth-screener/references/methodology-ja.md) |
+| 955 | ✓ | [`skills/us-undervalued-growth-screener/references/methodology.md`](skills/us-undervalued-growth-screener/references/methodology.md) |
+| 956 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v1-to-v2.md`](skills/us-undervalued-growth-screener/references/migration-v1-to-v2.md) |
+| 957 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v2-to-v3.md`](skills/us-undervalued-growth-screener/references/migration-v2-to-v3.md) |
+| 958 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3-to-v3.1.md`](skills/us-undervalued-growth-screener/references/migration-v3-to-v3.1.md) |
+| 959 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.1-to-v3.2.md`](skills/us-undervalued-growth-screener/references/migration-v3.1-to-v3.2.md) |
+| 960 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.2-to-v3.3.md`](skills/us-undervalued-growth-screener/references/migration-v3.2-to-v3.3.md) |
+| 961 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.3-to-v3.4.md`](skills/us-undervalued-growth-screener/references/migration-v3.3-to-v3.4.md) |
+| 962 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.4-to-v3.5.md`](skills/us-undervalued-growth-screener/references/migration-v3.4-to-v3.5.md) |
+| 963 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.5-to-v3.6.md`](skills/us-undervalued-growth-screener/references/migration-v3.5-to-v3.6.md) |
+| 964 | ✓ | [`skills/us-undervalued-growth-screener/references/migration-v3.6-to-v3.6.1.md`](skills/us-undervalued-growth-screener/references/migration-v3.6-to-v3.6.1.md) |
+| 965 | ✓ | [`skills/us-undervalued-growth-screener/references/original-prompt-mapping.md`](skills/us-undervalued-growth-screener/references/original-prompt-mapping.md) |
+| 966 | ✓ | [`skills/us-undervalued-growth-screener/references/output-template.md`](skills/us-undervalued-growth-screener/references/output-template.md) |
+| 967 | ✓ | [`skills/us-undervalued-growth-screener/references/research-checklist.md`](skills/us-undervalued-growth-screener/references/research-checklist.md) |
+| 968 | ✓ | [`skills/us-undervalued-growth-screener/references/review-regression-matrix.md`](skills/us-undervalued-growth-screener/references/review-regression-matrix.md) |
+| 969 | ✓ | [`skills/us-undervalued-growth-screener/references/scoring-rubric.md`](skills/us-undervalued-growth-screener/references/scoring-rubric.md) |
+| 970 | ✓ | [`skills/us-undervalued-growth-screener/references/sector-kpis.md`](skills/us-undervalued-growth-screener/references/sector-kpis.md) |
+| 971 | ✓ | [`skills/us-undervalued-growth-screener/scripts/build_discovery_pool.py`](skills/us-undervalued-growth-screener/scripts/build_discovery_pool.py) |
+| 972 | ✓ | [`skills/us-undervalued-growth-screener/scripts/build_provider_prefilter_pool.py`](skills/us-undervalued-growth-screener/scripts/build_provider_prefilter_pool.py) |
+| 973 | ✓ | [`skills/us-undervalued-growth-screener/scripts/bundle_run_artifacts.py`](skills/us-undervalued-growth-screener/scripts/bundle_run_artifacts.py) |
+| 974 | ✓ | [`skills/us-undervalued-growth-screener/scripts/coverage_semantics.py`](skills/us-undervalued-growth-screener/scripts/coverage_semantics.py) |
+| 975 | ✓ | [`skills/us-undervalued-growth-screener/scripts/estimate_snapshot.py`](skills/us-undervalued-growth-screener/scripts/estimate_snapshot.py) |
+| 976 | ✓ | [`skills/us-undervalued-growth-screener/scripts/evaluate_candidates.py`](skills/us-undervalued-growth-screener/scripts/evaluate_candidates.py) |
+| 977 | ✓ | [`skills/us-undervalued-growth-screener/scripts/fmp_client.py`](skills/us-undervalued-growth-screener/scripts/fmp_client.py) |
+| 978 | ✓ | [`skills/us-undervalued-growth-screener/scripts/manage_run_state.py`](skills/us-undervalued-growth-screener/scripts/manage_run_state.py) |
+| 979 | ✓ | [`skills/us-undervalued-growth-screener/scripts/normalize_estimates.py`](skills/us-undervalued-growth-screener/scripts/normalize_estimates.py) |
+| 980 | ✓ | [`skills/us-undervalued-growth-screener/scripts/prepublish_audit.py`](skills/us-undervalued-growth-screener/scripts/prepublish_audit.py) |
+| 981 | ✓ | [`skills/us-undervalued-growth-screener/scripts/research_contract.py`](skills/us-undervalued-growth-screener/scripts/research_contract.py) |
+| 982 | ✓ | [`skills/us-undervalued-growth-screener/scripts/run_pipeline.py`](skills/us-undervalued-growth-screener/scripts/run_pipeline.py) |
+| 983 | ✓ | [`skills/us-undervalued-growth-screener/scripts/screen_universe.py`](skills/us-undervalued-growth-screener/scripts/screen_universe.py) |
+| 984 | ✓ | [`skills/us-undervalued-growth-screener/scripts/screening_semantics.py`](skills/us-undervalued-growth-screener/scripts/screening_semantics.py) |
+| 985 | ✓ | [`skills/us-undervalued-growth-screener/scripts/skill_version.py`](skills/us-undervalued-growth-screener/scripts/skill_version.py) |
+| 986 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_artifact_paths.py`](skills/us-undervalued-growth-screener/scripts/tests/test_artifact_paths.py) |
+| 987 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py`](skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py) |
+| 988 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py`](skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py) |
+| 989 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py`](skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py) |
+| 990 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py`](skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py) |
+| 991 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py`](skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py) |
+| 992 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py`](skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py) |
+| 993 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py`](skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py) |
+| 994 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py`](skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py) |
+| 995 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py`](skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py) |
+| 996 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_collection.py`](skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_collection.py) |
+| 997 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py`](skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py) |
+| 998 | ✓ | [`skills/us-undervalued-growth-screener/SKILL.md`](skills/us-undervalued-growth-screener/SKILL.md) |
+| 999 | ✓ | [`skills/value-dividend-screener/references/fmp_api_guide.md`](skills/value-dividend-screener/references/fmp_api_guide.md) |
+| 1000 | ✓ | [`skills/value-dividend-screener/references/screening_methodology.md`](skills/value-dividend-screener/references/screening_methodology.md) |
+| 1001 | ✓ | [`skills/value-dividend-screener/scripts/screen_dividend_stocks.py`](skills/value-dividend-screener/scripts/screen_dividend_stocks.py) |
+| 1002 | ✓ | [`skills/value-dividend-screener/scripts/tests/conftest.py`](skills/value-dividend-screener/scripts/tests/conftest.py) |
+| 1003 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_fmp_stable.py`](skills/value-dividend-screener/scripts/tests/test_fmp_stable.py) |
+| 1004 | ✓ | [`skills/value-dividend-screener/SKILL.md`](skills/value-dividend-screener/SKILL.md) |
+| 1005 | ✓ | [`skills/vcp-screener/references/fmp_api_endpoints.md`](skills/vcp-screener/references/fmp_api_endpoints.md) |
+| 1006 | ✓ | [`skills/vcp-screener/references/scoring_system.md`](skills/vcp-screener/references/scoring_system.md) |
+| 1007 | ✓ | [`skills/vcp-screener/references/vcp_methodology.md`](skills/vcp-screener/references/vcp_methodology.md) |
+| 1008 | ✓ | [`skills/vcp-screener/scripts/_fmp_compat.py`](skills/vcp-screener/scripts/_fmp_compat.py) |
+| 1009 | ✓ | [`skills/vcp-screener/scripts/calculators/__init__.py`](skills/vcp-screener/scripts/calculators/__init__.py) |
+| 1010 | ✓ | [`skills/vcp-screener/scripts/calculators/execution_state.py`](skills/vcp-screener/scripts/calculators/execution_state.py) |
+| 1011 | ✓ | [`skills/vcp-screener/scripts/calculators/forward_outcome.py`](skills/vcp-screener/scripts/calculators/forward_outcome.py) |
+| 1012 | ✓ | [`skills/vcp-screener/scripts/calculators/pattern_classifier.py`](skills/vcp-screener/scripts/calculators/pattern_classifier.py) |
+| 1013 | ✓ | [`skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py`](skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py) |
+| 1014 | ✓ | [`skills/vcp-screener/scripts/calculators/relative_strength_calculator.py`](skills/vcp-screener/scripts/calculators/relative_strength_calculator.py) |
+| 1015 | ✓ | [`skills/vcp-screener/scripts/calculators/trend_template_calculator.py`](skills/vcp-screener/scripts/calculators/trend_template_calculator.py) |
+| 1016 | ✓ | [`skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py) |
+| 1017 | ✓ | [`skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py) |
+| 1018 | ✓ | [`skills/vcp-screener/scripts/fmp_client.py`](skills/vcp-screener/scripts/fmp_client.py) |
+| 1019 | ✓ | [`skills/vcp-screener/scripts/historical_report.py`](skills/vcp-screener/scripts/historical_report.py) |
+| 1020 | ✓ | [`skills/vcp-screener/scripts/historical_scanner.py`](skills/vcp-screener/scripts/historical_scanner.py) |
+| 1021 | ✓ | [`skills/vcp-screener/scripts/report_generator.py`](skills/vcp-screener/scripts/report_generator.py) |
+| 1022 | ✓ | [`skills/vcp-screener/scripts/scorer.py`](skills/vcp-screener/scripts/scorer.py) |
+| 1023 | ✓ | [`skills/vcp-screener/scripts/screen_vcp.py`](skills/vcp-screener/scripts/screen_vcp.py) |
+| 1024 | ✓ | [`skills/vcp-screener/scripts/tests/conftest.py`](skills/vcp-screener/scripts/tests/conftest.py) |
+| 1025 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
+| 1026 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py`](skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py) |
+| 1027 | ✓ | [`skills/vcp-screener/scripts/tests/test_historical_vcp.py`](skills/vcp-screener/scripts/tests/test_historical_vcp.py) |
+| 1028 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
+| 1029 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
+| 1030 | ✓ | [`skills/weekly-performance-digest/references/weekly-digest-metrics.md`](skills/weekly-performance-digest/references/weekly-digest-metrics.md) |
+| 1031 | ✓ | [`skills/weekly-performance-digest/scripts/generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/generate_weekly_digest.py) |
+| 1032 | ✓ | [`skills/weekly-performance-digest/scripts/tests/conftest.py`](skills/weekly-performance-digest/scripts/tests/conftest.py) |
+| 1033 | ✓ | [`skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py) |
+| 1034 | ✓ | [`skills/weekly-performance-digest/SKILL.md`](skills/weekly-performance-digest/SKILL.md) |
+| 1035 | → | [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md) |
+| 1036 | → | [`docs/dev/production-verification.md`](docs/dev/production-verification.md) |
+| 1037 | → | [`workflows/README.md`](workflows/README.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vivekchand/clawmetry` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
+Mirror of `vivekchand/clawmetry` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vivekchand/clawmetry` — 26 default patterns, 1 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,7 +63,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`clawhub-plugin/skills/clawmetry/SKILL.md`](clawhub-plugin/skills/clawmetry/SKILL.md) |
 | 4 | ✓ | [`docs/skills/clawmetry-selfcheck/SKILL.md`](docs/skills/clawmetry-selfcheck/SKILL.md) |
-| 5 | → | [`FLYWHEEL.md`](FLYWHEEL.md) |
+| 5 | ✓ | [`skills/agent-kill-switch/SKILL.md`](skills/agent-kill-switch/SKILL.md) |
+| 6 | → | [`FLYWHEEL.md`](FLYWHEEL.md) |
 
 ---
 

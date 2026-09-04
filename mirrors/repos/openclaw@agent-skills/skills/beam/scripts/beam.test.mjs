@@ -177,6 +177,23 @@ test("standalone sanitizer keeps ordinary AGENTS.md tasks", () => {
   );
 });
 
+test("standalone sanitizer keeps its truncation marker inside the receiver item limit", () => {
+  const input = "visible ".repeat(900).trim();
+  const value = sanitizeVisibleText(input, { maxChars: 6_000 });
+
+  assert.equal(value.length, 6_000);
+  assert.match(value, /\n\.\.\.\[truncated \d+ chars\]$/);
+});
+
+test("standalone sanitizer preserves astral characters at the truncation boundary", () => {
+  const value = sanitizeVisibleText("🦞".repeat(3_487), { maxChars: 6_000 });
+
+  assert.ok(value.length <= 6_000);
+  assert.match(value, /\n\.\.\.\[truncated \d+ chars\]$/);
+  assert.equal(Buffer.from(value, "utf8").toString("utf8"), value);
+  assert.equal(value.includes("\ufffd"), false);
+});
+
 test("standalone Claude discovery requires one exact session-id filename", () => {
   const configDir = tempDir();
   const projectDir = path.join(configDir, "projects", "demo");
@@ -384,6 +401,30 @@ test("standalone parser handles modern Codex items without reasoning or raw outp
   );
 });
 
+test("standalone parser ignores persisted Codex inter-agent messages", () => {
+  const session = path.join(tempDir(), "rollout.jsonl");
+  writeJsonl(session, [
+    { type: "session_meta", payload: { id: "33333333-4444-4555-8666-777777777777" } },
+    { type: "response_item", payload: { type: "function_call", name: "read_file" } },
+    {
+      type: "response_item",
+      payload: {
+        type: "agent_message",
+        author: "agent-a",
+        recipient: "agent-b",
+        content: [{ type: "input_text", text: "private inter-agent coordination" }],
+      },
+    },
+    { type: "response_item", payload: { type: "function_call", name: "exec_command" } },
+  ]);
+
+  const rendered = renderSession(session, { source: "codex" });
+  assert.deepEqual(rendered.items, [
+    { type: "other", text: "1 read, 1 execute; raw tool outputs dropped: 0" },
+  ]);
+  assert.doesNotMatch(JSON.stringify(rendered), /private inter-agent coordination/);
+});
+
 test("publish dry-run emits a sanitized versioned payload", async () => {
   const session = claudeSession();
   const result = await run([
@@ -460,7 +501,7 @@ test("publish honors the total max-chars disclosure limit", async () => {
   assert.doesNotMatch(payload.title, /^alpha/);
 });
 
-test("publish preserves a visible message when byte trimming drops tool summaries", async () => {
+test("publish keeps multibyte transcript items within receiver limits", async () => {
   const session = path.join(tempDir(), "multibyte.jsonl");
   writeJsonl(session, [
     { type: "user", message: { role: "user", content: "🦞".repeat(20_000) } },
@@ -474,8 +515,6 @@ test("publish preserves a visible message when byte trimming drops tool summarie
     session,
     "--max-chars",
     "48000",
-    "--entry-max-chars",
-    "48000",
     "--dry-run",
     "--quiet",
   ]);
@@ -483,8 +522,27 @@ test("publish preserves a visible message when byte trimming drops tool summarie
   assert.equal(result.code, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
   assert.equal(payload.items.some((item) => item.type === "userMessage"), true);
-  assert.equal(payload.items.every((item) => item.type !== "other"), true);
-  assert.equal(payload.truncated, true);
+  assert.equal(payload.items.some((item) => item.type === "other"), true);
+  assert.equal(payload.items.every((item) => item.text.length <= 6_000), true);
+  assert.ok(Buffer.byteLength(JSON.stringify(payload)) <= 52 * 1024);
+});
+
+test("publish rejects an entry limit above the receiver maximum", async () => {
+  const result = await run([
+    "publish",
+    "--endpoint",
+    "http://127.0.0.1:9/api/v1/beam/sessions",
+    "--session",
+    claudeSession(),
+    "--entry-max-chars",
+    "6001",
+    "--dry-run",
+    "--quiet",
+  ]);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /--entry-max-chars must be at most 6000/);
+  assert.equal(result.stdout, "");
 });
 
 test("publish accepts IPv6 loopback development endpoints", async () => {

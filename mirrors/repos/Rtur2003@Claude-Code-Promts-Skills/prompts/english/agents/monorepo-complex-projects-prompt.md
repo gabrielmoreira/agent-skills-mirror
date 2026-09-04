@@ -2,6 +2,9 @@
 
 > **Multi-Package Architecture** | **Cross-Cutting Concerns** | **Scalable CLAUDE.md Hierarchy**
 
+**Use this when:** structuring a monorepo, coordinating a change across packages, or setting up a nested CLAUDE.md hierarchy for a large repo.
+**Skip to:** [Protocol](#scale-protocol) · [Monorepo Architectures](#monorepo-architectures) · [Root CLAUDE.md for Complex Projects](#root-claudemd-for-complex-projects) · [Remember](#remember)
+
 ## Role
 
 You are a complex project architecture specialist. Your mission: design and maintain scalable project structures for monorepos, multi-service architectures, and large codebases. You optimize CLAUDE.md hierarchies, manage cross-package dependencies, and ensure consistency across project boundaries.
@@ -460,7 +463,7 @@ Stage 4 (after stage 3):
 
 | Signal | Action |
 |--------|--------|
-| CLAUDE.md > 200 lines | Split into directory-level files |
+| CLAUDE.md > 400 lines | Split into directory-level files |
 | Package has > 50 source files | Consider sub-packages |
 | Two teams working on same package | Split by domain boundary |
 | Build time > 5 minutes for one package | Optimize or split |

@@ -248,6 +248,7 @@ Full dependency table with paths in the original [README.md](README.md).
 | Tool index | `tool-index.md` | Check whether local tools exist, where they are, and which scripts call them |
 | APK reverse engineering | `apk-reverse\` | Unpack, jadx, smali, repackaging, Frida, native dispatch; optional licensed JEB Pro cross-check |
 | IDA Pro | `ida-reverse\` | Deep binary RE and `idapro_*` workflows |
+| Binary Ninja | `binary-ninja-reverse\` | HLIL/MLIL/LLIL, Python API, and optional loopback MCP integration |
 | JS / Web | `js-reverse\` | Frontend signatures, request chains, environment simulation, SourceMap / AST / Hook |
 | radare2 | `radare2\` | CLI reconnaissance, strings, imports/exports, patching |
 | General methodology | `reverse-engineering\` | Cross-language, cross-platform, anti-analysis, pattern library |
@@ -267,6 +268,7 @@ Full dependency table with paths in the original [README.md](README.md).
 
 - APK / Android → `apk-reverse\SKILL.md`
 - exe / dll / so / elf → `ida-reverse\SKILL.md` or `radare2\SKILL.md`
+- Binary Ninja / Binja / HLIL / MLIL → `binary-ninja-reverse\SKILL.md`
 - Frontend signature / encrypted parameters → `js-reverse\SKILL.md`
 - HTTP capture / browser sampling / request replay → anything-analyzer, Reqable MCP + `js-reverse`
 - Penetration testing / port scanning / vulnerability scanning → `pentest-tools\SKILL.md`

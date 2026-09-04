@@ -70,10 +70,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`skills/dbt-extras/skills/creating-mermaid-dbt-dag/references/using-manifest-json.md`](skills/dbt-extras/skills/creating-mermaid-dbt-dag/references/using-manifest-json.md) |
 | 10 | ✓ | [`skills/dbt-extras/skills/creating-mermaid-dbt-dag/SKILL.md`](skills/dbt-extras/skills/creating-mermaid-dbt-dag/SKILL.md) |
 | 11 | ✓ | [`skills/dbt-migration/.claude-plugin/plugin.json`](skills/dbt-migration/.claude-plugin/plugin.json) |
-| 12 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-fusion/references/classification-categories.md`](skills/dbt-migration/skills/migrating-dbt-core-to-fusion/references/classification-categories.md) |
-| 13 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-fusion/references/error-patterns-reference.md`](skills/dbt-migration/skills/migrating-dbt-core-to-fusion/references/error-patterns-reference.md) |
-| 14 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-fusion/references/README.md`](skills/dbt-migration/skills/migrating-dbt-core-to-fusion/references/README.md) |
-| 15 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-fusion/SKILL.md`](skills/dbt-migration/skills/migrating-dbt-core-to-fusion/SKILL.md) |
+| 12 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-v2/references/classification-categories.md`](skills/dbt-migration/skills/migrating-dbt-core-to-v2/references/classification-categories.md) |
+| 13 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-v2/references/error-patterns-reference.md`](skills/dbt-migration/skills/migrating-dbt-core-to-v2/references/error-patterns-reference.md) |
+| 14 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-v2/references/README.md`](skills/dbt-migration/skills/migrating-dbt-core-to-v2/references/README.md) |
+| 15 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-core-to-v2/SKILL.md`](skills/dbt-migration/skills/migrating-dbt-core-to-v2/SKILL.md) |
 | 16 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-project-across-platforms/references/generating-unit-tests.md`](skills/dbt-migration/skills/migrating-dbt-project-across-platforms/references/generating-unit-tests.md) |
 | 17 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-project-across-platforms/references/installing-dbt-fusion.md`](skills/dbt-migration/skills/migrating-dbt-project-across-platforms/references/installing-dbt-fusion.md) |
 | 18 | ✓ | [`skills/dbt-migration/skills/migrating-dbt-project-across-platforms/references/switching-targets.md`](skills/dbt-migration/skills/migrating-dbt-project-across-platforms/references/switching-targets.md) |

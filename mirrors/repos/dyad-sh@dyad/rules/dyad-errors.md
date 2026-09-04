@@ -30,6 +30,11 @@ Prefer **`DyadError`** over growing `FILTERED_EXCEPTION_MESSAGES` in `telemetry.
 
 The renderer PostHog `before_send` (in `src/renderer.tsx`) drops ~90% of events for **non-Pro** users. Any event whose audience is primarily free users (conversion funnels like `promo_click`, upgrade CTAs) must be added to `shouldBypassNonProTelemetrySampling` in `src/lib/posthogTelemetry.ts`, or it will be silently undercounted 10x. Errors, `app:initial-load`, and `sandbox.script.*` already bypass sampling.
 
+Do not treat PostHog's renderer-derived macOS version as the real OS version:
+Chromium caps the macOS user-agent token at `10.15.7`, including on Apple
+Silicon. Capture the actual version in the main process (for example with
+`app.getSystemVersion()`) when OS-version diagnosis matters.
+
 Keep cross-source error throttling in renderer `before_send`: PostHog's internal exception rate limiter does not uniformly cover manually captured IPC exceptions or custom error-shaped events. `PostHogErrorDeduper` applies the shared tier-aware policy there and persists only bounded fingerprint hashes and counters, never raw error payloads.
 
 Sampling exemptions and error deduplication serve different purposes. An error-shaped event such as `sandbox.script.failed` can bypass the non-Pro random sampler and still be deduplicated; use `dyad_error_suppressed_count` on the next admitted event when reconstructing its volume.
@@ -52,6 +57,10 @@ Most IPC/main paths and shared utilities (`git_utils`, Supabase admin, local age
 **Legacy:** `FILTERED_EXCEPTION_MESSAGES`, `RateLimitError` (429) handling in `telemetry.ts`, and bare `TypeError: fetch failed` (via `isGenericFetchFailedError` in `posthogTelemetry.ts`) remain for plain `Error` paths not yet migrated. Renderer PostHog `before_send` uses `shouldFilterPostHogExceptionEvent` for the same fetch noise from autocapture.
 
 When projecting raw main-process errors into renderer-visible text, treat the projection as a security-sensitive boundary and document the redaction tradeoff: a denylist preserves actionable unknown output but cannot guarantee removal of every identifier. Test known sensitive syntax variants, including authorization headers, identities, common secret/token shapes, quoted and unquoted paths with spaces or embedded delimiter characters, `--flag=/path`, bracketed paths, UNC paths, generic URL schemes, scheme-less/SCP Git remotes, and internal hostnames. Test public remediation URLs, source locations, and common filenames separately so redaction does not erase the guidance users need. Pre-bound both total untrusted text and individual lines before running regex-heavy sanitization, then apply the final length bound after composing prefixes or guidance so the serialized state can never exceed its codec limit. Audit every renderer site for bounded multiline presentation when increasing that limit.
+
+Never treat a diagnostic remaining unchanged after denylist sanitization as proof that it is safe for third-party telemetry. Arbitrary provider/tool errors can still contain prompts, source snippets, customer identifiers, or unknown credentials; emit fixed classification metadata or explicitly allowlisted machine-generated fields instead, and do not bypass an expected failure's `DyadErrorKind` by manually capturing a plain `Error`.
+
+Before projecting a stored `error` column, verify its semantic use by status: some lifecycle rows reuse error fields for partial-result or success notices that must remain intact. Apply renderer redaction at the IPC projection boundary rather than a shared in-process loader so trusted agent remediation paths retain actionable diagnostics.
 
 Truncation helpers with a caller-supplied bound must also handle bounds shorter than their truncation notice; never pass a negative slice endpoint through and return a value larger than the requested limit.
 

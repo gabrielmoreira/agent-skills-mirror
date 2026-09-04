@@ -388,7 +388,18 @@ currency gate already computes (`ackOnlyPostDisposition`), so it needs no
 extra persisted state: an unresolved item keeps the anchor fresh, and a
 disposition reply, a watermark, or a courtesy bot acknowledgement never
 reopens it. Distinct from `advisoryWait.settledWindow`, which bounds the
-PRIMARY bot's own pending state, not a late secondary-bot arrival.
+PRIMARY bot's own pending state, not a late secondary-bot arrival. **#2544**:
+once the secondary bot has already posted a genuine review for the current
+HEAD, only a short fixed confirmation buffer applies from that review's own
+timestamp instead of the full configured duration -- a HEAD the bot has not
+yet reviewed still waits the full period unchanged. **#2547**: a rate-limit
+/ skip-review notice for the current HEAD, with no later genuine comment,
+is a third outcome distinct from `#2544`'s pending/settled split -- a
+definitive decline, not "might still be reviewing" -- and skips the wait
+entirely (no buffer, no remaining window). A repository need not configure
+anything extra for this: it applies automatically whenever
+`advisoryWait.secondaryQuietWindow` and `advisoryWait.secondaryBotLogin`
+are both set.
 
 `advisoryWait.capExhaustedRoute` is intentionally fail-closed. The
 default `phase-specific` behavior keeps the current E14 skip / F2-F3
@@ -531,6 +542,31 @@ decoupled from any provider-health classifier verdict: an absent or
 `unknown` verdict never invalidates an otherwise-valid declaration. See
 [`docs/idd-helper-scripts.md`](idd-helper-scripts.md#provider-outage-declaration-helper)
 for the helper contract.
+
+A repository that also wants to shorten the 12h
+`advisoryWait.terminalWindow` (kurone-kito/idd-skill#1572) specifically
+while an outage declaration is active may additionally record
+`advisoryWait.providerOutage.terminalWindow`
+(kurone-kito/idd-skill#2554) — note this key nests under `advisoryWait`,
+not the top-level `providerOutage` block above:
+
+```json
+{
+  "advisoryWait": {
+    "providerOutage": {
+      "terminalWindow": "PT2H"
+    }
+  }
+}
+```
+
+This override applies only while `resolveProviderOutageDeclaration`
+confirms a currently-valid declaration is active for the
+`idd-advisory-convergence` selector; otherwise `advisoryWait.terminalWindow`
+applies unconditionally, unchanged. It is clamped to never exceed
+`advisoryWait.terminalWindow` itself, so a value configured longer than the
+base window has no effect — this is a shortening mechanism only.
+`advisoryWait.recoveryCycleCap` is never affected by this override.
 
 ## Phase ID Compatibility Contract
 

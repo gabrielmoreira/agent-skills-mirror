@@ -184,6 +184,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - Qoder 通过 `~/.qoder/settings.json` 做 **state-only** hook 集成。Clawd 只把 `PermissionRequest` / `PermissionDenied` 当 notification 观察，**不替 Qoder 做权限决策**，hook stdout 恒为 `{}`，由 Qoder 原生权限流程接管；Windows command 必须保持 `windowsWrapper:"portable"`，旧 PowerShell encoded 条目只做 Clawd-owned 原地迁移。session id 命名空间是 `qoder:<raw>`；启动恢复只认 CLI 进程 `qodercli` / `qoder-cli`，不认 IDE 进程 `qoder.exe`
 - TraeCode (Trae CN) 通过 `~/.trae-cn/hooks.json` 做 **hook-only / state-only** 集成。Windows command 必须保持 `windowsWrapper:"encoded"`：Trae 的 Windows Sandbox 会把 hook 命令作为 `trae-sandbox.exe --command-line` 的单个原生参数再次转发，普通引号或 `portable` 形态会在含空格路径处拆分；外层必须保持无引号的 PowerShell `-EncodedCommand`，POSIX 则继续使用普通 quoted command。该约束不适用于经 POSIX shell 执行 Windows hook 的 agent（如 Qoder / QwenWork）。
 - HTTP 服务端口范围固定为 `127.0.0.1:23333-23337`；运行时端口写入 `~/.clawd/runtime.json`
+- Mobile Preview 是独立的 LAN listener，候选范围为 `0.0.0.0:23334-23338`；它不写 `runtime.json`，不得把该范围误写成 hook / custom-agent HTTP ingress 范围
 - 自定义 HTTP Agent 的 sender 必须读取 `~/.clawd/runtime.json`，不能把 23333 写死；注册不等于已连接。custom v1 只支持 `/state`，不支持 `/permission`
 - CodeBuddy PermissionRequest hook 的所有权只认本机 managed URL 或 marker `clawd-on-desk.permission.v1`；纯 `name:"clawd"` 不能触发改写/删除。裸 CLI 和 WSL 默认 preserve，Settings/startup/repair 必须显式传 local/custom permission target
 - Remote SSH 的远端 Node 探测要求 Node >= 14；Node discovery/version validation 只在 `src/remote-ssh-node.js`，ordinary tunnel health 与 serialized readiness 在 `src/remote-ssh-runtime.js`，不得互相复制或从已停用脚本另起实现
@@ -218,7 +219,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 
 ## High-Risk Gotchas
 
-- `src/pet-window-runtime.js` 的 `hitWin` 必须在 Windows/macOS 保持 focusable（当前为 `focusable: !isLinux`），不要把 Windows 拖拽修复改回去
+- `src/pet-window-runtime.js` 的 `hitWin` 在 Windows 有原生 activation controller 时必须以 Electron `focusable:false` 创建，并只用 `src/win-hit-window-activation.js` 切换 `WS_EX_NOACTIVATE`；controller / Koffi 不可用时回退到旧的 `focusable:true` 构造以保住桌面点击与拖拽，但该降级不提供全屏防抢焦点保证。不得在运行时改回 `BrowserWindow.setFocusable(false)`，其 `Focus(false)` 副作用会打断前台全屏应用。Linux 保持 non-focusable；macOS 保持既有构造后 `setFocusable(false)` 路径
 - `miniTransitioning` 期间，所有窗口定位路径都必须先检查保护标志，否则 `setPosition()` 可能并发崩
 - DND 会屏蔽 hook 事件并压住 bubble，但**不应替用户做权限决定**：opencode 走 silent drop 回到 TUI 提示，Claude Code / CodeBuddy 走断连回到内置聊天/终端确认，Codex official hook 走 no-decision `{}` 回到原生审批提示；Pi 是 state-only，不进入权限审批链路
 - 隐藏桌宠（petHidden）≠ 免打扰：隐藏只收起宠物/HUD/update bubble/当时 pending 的权限气泡，**隐藏期间新到的权限请求仍照常弹气泡，这是有意设计、不要当 bug 修**；要静默权限气泡走 DND（见上条）。详见 `docs/project/theme-state-ui.md` State Machine 节
@@ -232,7 +233,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - 所有进程内对 `~/.claude/settings.json` 的 mutation（启动 reconcile、watcher 自动恢复、周期健康自愈、Settings Install/Enable、Doctor Fix、auto-start 开关、卸载、About 清理）必须经过 `src/claude-hook-operations.js` 的 server-owned 队列；不要绕开队列直接 `require("../hooks/install.js")` 写文件，否则会与其他来源的写入竞态
 - 周期健康巡检（`src/claude-settings-watcher.js`）只读判断用 `src/claude-hook-health.js`；同一 repair signature 连续 3 次修复+复验失败后必须停在 `manual-fix-required`，不再自动 mutation，只保留 5 分钟只读复查；suspicious-shrink 通知同一持续问题只弹一次，不要每轮重复
 - opencode 的 `permission.ask` hook 目前不可用，权限只能走 event hook + bridge
-- Codex CLI official hooks 已接入；JSONL 轮询仍是 fallback，用于 hook 不可用、hook 未覆盖事件（如 WebSearch / compaction / abort）和历史兼容。本机 `SessionStart` 冷启动还受 `autoStartWithCodex` 控制：新安装默认关闭，v17 升级保持原先的开启行为，损坏/非权威 prefs 在当前进程内 fail closed，WSL / WSL interop / Remote SSH 永不走冷启动。Windows `commandWindows` 由 PowerShell 解析：legacy 直接命令必须用 `& "node" ...` call operator；本机 stable 入口必须保持“固定内联 PowerShell dispatcher → UTF-8/Base64 `codex-hook.js.windows.run` 数据 sidecar → `& $node $target`”形态（JSON manifest 只供 Doctor），不得改回裸 `"node" "hook.js"`（会 exit 1）、二次 `powershell.exe -File` 或无 BOM `.ps1`
+- Codex CLI official hooks 已接入；JSONL 轮询仍是 fallback，用于 hook 不可用、hook 未覆盖事件（如 WebSearch / compaction / abort）和历史兼容。本机 `SessionStart` 冷启动还受 `autoStartWithCodex` 控制：新安装默认关闭，v17 升级保持原先的开启行为，损坏/非权威 prefs 在当前进程内 fail closed，WSL / WSL interop / Remote SSH 永不走冷启动。Windows `commandWindows` 由 PowerShell 解析：legacy 直接命令必须用 `& "node" ...` call operator；本机 Windows stable 入口使用 `& "node" "codex-hook.js" --clawd-windows-stable` 直连 call-operator 形态（2026-09-04 起：旧的内联 PowerShell dispatcher “解码并执行”命令行被 Windows Defender ML 判为 Trojan:Win32/Commando.A!ml，见 clawd-on-desk#986）；环境变量仅由该 stable 入口的 codex-hook.js 启动时自读 UTF-8/Base64 `codex-hook.js.windows.run` 数据 sidecar 原子注入，WSL interop / Remote 不读，JSON manifest 供安装器恢复与 Doctor 校验。不得改回裸 `"node" "hook.js"`（会 exit 1）、二次 `powershell.exe -File`、无 BOM `.ps1` 或内联 dispatcher
 - Kiro 没有 global hooks，只能注入到 `~/.kiro/agents/*.json`
 - `src/renderer.js` 里给 `<img>` SVG 追加的 `?_t=` cache-bust query 不能删；Chromium 会复用同 URL SVG 的动画时间线，一次性动画会停在末帧
 

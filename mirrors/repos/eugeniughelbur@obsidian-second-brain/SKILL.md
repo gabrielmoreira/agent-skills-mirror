@@ -1266,11 +1266,14 @@ A non-blocking validator that fires after every `Write` or `Edit` on a markdown 
 1. The file has frontmatter delimiters (`--- ... ---`)
 2. No tabs in frontmatter (YAML requires spaces)
 3. Required AI-first fields present: `date:`, `type:`, `tags:`, `ai-first: true`
-4. The body contains a `## For future agent` preamble (rule #2 of [`references/ai-first-rules.md`](references/ai-first-rules.md))
+4. The body contains a `## For future agent` preamble, or its Obsidian callout form `> [!info]- For future agent` (rule #2 of [`references/ai-first-rules.md`](references/ai-first-rules.md))
 
 **What it skips:**
 - Files outside `OBSIDIAN_VAULT_PATH`
 - Files under `raw/`, `templates/`, `_export/`, `.obsidian/`, `.git/`, `.trash/`
+- Payloads with no `tool_name` (nothing fired)
+
+**What it refuses to skip silently:** a payload that names a tool but carries no path key the hook knows (`file_path`, `filePath`, `notebook_path`). The matcher fired, so a write happened and went unchecked; the hook prints one stderr line naming the tool and the payload keys and exits 1 (non-blocking, the write stands) instead of exiting 0 and looking like "not a vault file".
 
 **Setup:**
 

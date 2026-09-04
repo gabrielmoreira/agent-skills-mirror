@@ -1,0 +1,450 @@
+"""Persistent full-universe estimate snapshot (v3.7 sharded collection).
+
+A snapshot freezes the listing universe at creation time and then accumulates
+per-symbol estimate rows shard by shard across multiple runs/days, within each
+run's API budget. ``screen-full-snapshot`` (a later stage) may only run once
+every shard is complete and every frozen symbol is classified — that is what
+finally justifies ``ranking_scope: final_marketwide``.
+
+Layout inside ``--snapshot-dir``::
+
+    snapshot-manifest.json   # id, frozen universe hash/count, shard states
+    universe.jsonl           # the frozen listing universe (normalized rows)
+    shard-<i>.jsonl          # per-symbol records: listing + estimates + class
+
+Design invariants (round-7 review additions to issue #345):
+
+- The universe is FROZEN by ``snapshot_id``; new listings/delistings go to
+  the next snapshot, never mixed in.
+- Every shard records its own ``as_of``; the spread between the oldest and
+  newest shard is bounded by ``max_shard_age_spread_days`` before screening.
+- Classification counts must sum exactly to the frozen universe count.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from collections.abc import Mapping, Sequence
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+MANIFEST_NAME = "snapshot-manifest.json"
+UNIVERSE_NAME = "universe.jsonl"
+SNAPSHOT_SCHEMA_VERSION = 1
+
+# Per-symbol classification buckets. Precedence when several apply:
+# excluded > unit_mismatch > no_estimates > negative_eps > evaluable.
+# unit_mismatch dominates the estimate-derived buckets because a row whose
+# listing/statement units cannot be reconciled is unusable even WITH
+# estimates (fail closed, round-8 semantics).
+CLASSIFICATIONS = ("evaluable", "no_estimates", "negative_eps", "unit_mismatch", "excluded")
+
+
+def stable_shard(symbol: str, shard_count: int) -> int:
+    """Deterministic shard assignment: the same symbol always lands together."""
+    if shard_count <= 0:
+        raise ValueError("shard_count must be positive")
+    digest = hashlib.sha256(symbol.strip().upper().encode("utf-8")).hexdigest()
+    return int(digest, 16) % shard_count
+
+
+def _universe_sha256(rows: Sequence[Mapping[str, Any]]) -> str:
+    hasher = hashlib.sha256()
+    for row in rows:
+        hasher.update(
+            json.dumps(row, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode(
+                "utf-8"
+            )
+        )
+        hasher.update(b"\n")
+    return hasher.hexdigest()
+
+
+def create_snapshot(
+    snapshot_dir: Path,
+    universe_rows: Sequence[Mapping[str, Any]],
+    *,
+    shard_count: int,
+    as_of: datetime,
+) -> dict[str, Any]:
+    """Freeze the universe and initialize an empty manifest."""
+    if shard_count <= 0:
+        raise ValueError("shard_count must be positive")
+    if not universe_rows:
+        raise ValueError("cannot freeze an empty universe")
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    if (snapshot_dir / MANIFEST_NAME).exists():
+        raise ValueError(f"snapshot already exists at {snapshot_dir}")
+    ordered = sorted(universe_rows, key=lambda row: str(row.get("symbol") or ""))
+    with (snapshot_dir / UNIVERSE_NAME).open("w", encoding="utf-8") as handle:
+        for row in ordered:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+    sha = _universe_sha256(ordered)
+    manifest = {
+        "schema_version": SNAPSHOT_SCHEMA_VERSION,
+        "snapshot_id": (
+            f"snap-{as_of.astimezone(timezone.utc).strftime('%Y%m%d-%H%M%S')}-{sha[:12]}"
+        ),
+        "created_at": as_of.astimezone(timezone.utc).isoformat(),
+        "universe_sha256": sha,
+        "universe_count": len(ordered),
+        "shard_count": shard_count,
+        "shards": {
+            str(index): {"status": "pending", "attempted": 0, "classified": {}}
+            for index in range(shard_count)
+        },
+    }
+    write_manifest(snapshot_dir, manifest)
+    return manifest
+
+
+def load_manifest(snapshot_dir: Path) -> dict[str, Any]:
+    return json.loads((snapshot_dir / MANIFEST_NAME).read_text(encoding="utf-8"))
+
+
+def write_manifest(snapshot_dir: Path, manifest: Mapping[str, Any]) -> None:
+    path = snapshot_dir / MANIFEST_NAME
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def load_universe(snapshot_dir: Path) -> list[dict[str, Any]]:
+    rows = [
+        json.loads(line)
+        for line in (snapshot_dir / UNIVERSE_NAME).read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    return rows
+
+
+def load_verified_universe(snapshot_dir: Path, manifest: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Load the frozen universe and verify it against the manifest.
+
+    Refuses — before any API access or shard append — when the manifest
+    schema is unknown, the row count differs, symbols are missing/duplicated,
+    or the canonical SHA-256 no longer matches: a silently swapped
+    ``universe.jsonl`` would otherwise break the freeze guarantee while
+    keeping ``classification_matches_universe`` true.
+    """
+    if int(manifest.get("schema_version") or 0) != SNAPSHOT_SCHEMA_VERSION:
+        raise ValueError(
+            f"unsupported snapshot manifest schema_version {manifest.get('schema_version')!r}"
+        )
+    rows = load_universe(snapshot_dir)
+    expected_count = int(manifest.get("universe_count") or -1)
+    if len(rows) != expected_count:
+        raise ValueError(
+            f"universe.jsonl has {len(rows)} rows but the manifest froze {expected_count}"
+        )
+    symbols = [str(row.get("symbol") or "") for row in rows]
+    if "" in symbols or len(set(symbols)) != len(symbols):
+        raise ValueError("universe.jsonl symbols are missing or not unique")
+    sha = _universe_sha256(rows)
+    if sha != manifest.get("universe_sha256"):
+        raise ValueError(
+            "universe.jsonl does not match the frozen universe_sha256 — the snapshot "
+            "universe may have been modified; create a new snapshot instead"
+        )
+    return rows
+
+
+def shard_path(snapshot_dir: Path, shard_index: int) -> Path:
+    return snapshot_dir / f"shard-{shard_index}.jsonl"
+
+
+def load_shard_rows(snapshot_dir: Path, shard_index: int) -> list[dict[str, Any]]:
+    path = shard_path(snapshot_dir, shard_index)
+    if not path.exists():
+        return []
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
+
+
+def append_shard_rows(
+    snapshot_dir: Path, shard_index: int, rows: Sequence[Mapping[str, Any]]
+) -> None:
+    with shard_path(snapshot_dir, shard_index).open("a", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def classify_symbol(
+    listing: Mapping[str, Any],
+    normalized: Mapping[str, Any],
+    *,
+    requires_unit_reconciliation: Any,
+    minimum_plausible_forward_pe: float = 2.0,
+) -> str:
+    """Classify one frozen-universe symbol after an estimate-acquisition attempt."""
+    if listing.get("is_actively_trading") is False or listing.get("is_common_stock") is False:
+        return "excluded"
+    if requires_unit_reconciliation(listing):
+        return "unit_mismatch"
+    forward_pe = normalized.get("forward_pe")
+    if isinstance(forward_pe, (int, float)) and 0 < forward_pe < minimum_plausible_forward_pe:
+        return "unit_mismatch"
+    # The normalizer NULLS a non-positive FY1 (reason non_positive_fy1_eps)
+    # before it ever reaches fy1_eps, so the raw candidate / reason list is
+    # the only way this bucket is reachable from real pipeline output.
+    reasons = normalized.get("estimate_normalization_reasons") or []
+    raw_candidate = normalized.get("raw_forward_candidate")
+    raw_eps = raw_candidate.get("eps") if isinstance(raw_candidate, Mapping) else None
+    if "non_positive_fy1_eps" in reasons or (isinstance(raw_eps, (int, float)) and raw_eps <= 0):
+        return "negative_eps"
+    periods = normalized.get("estimate_periods")
+    if not periods:
+        return "no_estimates"
+    fy1 = normalized.get("fy1_eps")
+    if isinstance(fy1, (int, float)) and fy1 <= 0:
+        return "negative_eps"
+    if fy1 is None:
+        return "no_estimates"
+    return "evaluable"
+
+
+def update_shard(
+    snapshot_dir: Path,
+    manifest: dict[str, Any],
+    shard_index: int,
+    *,
+    status: str,
+    as_of: str,
+    calls_used: int,
+    classified: Mapping[str, int],
+    attempted: int,
+    expected: int,
+    fetch_failed: int = 0,
+    oldest_retrieved_at: str | None = None,
+    newest_retrieved_at: str | None = None,
+    retrieval_time_unknown: int = 0,
+) -> dict[str, Any]:
+    if status not in {"pending", "partial", "complete"}:
+        raise ValueError(f"unknown shard status {status!r}")
+    path = shard_path(snapshot_dir, shard_index)
+    shard_sha256 = hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
+    entry = {
+        "status": status,
+        "as_of": as_of,
+        "attempted": attempted,
+        "expected": expected,
+        "calls_used": calls_used,
+        "fetch_failed": fetch_failed,
+        "oldest_retrieved_at": oldest_retrieved_at,
+        "newest_retrieved_at": newest_retrieved_at,
+        "retrieval_time_unknown": retrieval_time_unknown,
+        "shard_sha256": shard_sha256,
+        "classified": dict(sorted(classified.items())),
+    }
+    manifest["shards"][str(shard_index)] = entry
+    write_manifest(snapshot_dir, manifest)
+    return manifest
+
+
+def snapshot_status(manifest: Mapping[str, Any]) -> dict[str, Any]:
+    """Aggregate readiness: complete shards, totals, and the exact-count invariant."""
+    shards = manifest.get("shards") or {}
+    totals: dict[str, int] = {name: 0 for name in CLASSIFICATIONS}
+    complete = 0
+    attempted_total = 0
+    fetch_failed_total = 0
+    retrieval_time_unknown_total = 0
+    oldest_retrieved: str | None = None
+    newest_retrieved: str | None = None
+    for entry in shards.values():
+        if entry.get("status") == "complete":
+            complete += 1
+        attempted_total += int(entry.get("attempted") or 0)
+        fetch_failed_total += int(entry.get("fetch_failed") or 0)
+        retrieval_time_unknown_total += int(entry.get("retrieval_time_unknown") or 0)
+        oldest = entry.get("oldest_retrieved_at")
+        if (
+            isinstance(oldest, str)
+            and oldest
+            and (oldest_retrieved is None or oldest < oldest_retrieved)
+        ):
+            oldest_retrieved = oldest
+        newest = entry.get("newest_retrieved_at")
+        if (
+            isinstance(newest, str)
+            and newest
+            and (newest_retrieved is None or newest > newest_retrieved)
+        ):
+            newest_retrieved = newest
+        for name, count in (entry.get("classified") or {}).items():
+            totals[name] = totals.get(name, 0) + int(count or 0)
+    universe_count = int(manifest.get("universe_count") or 0)
+    classified_total = sum(totals.values())
+    all_shards_complete = complete == int(manifest.get("shard_count") or 0)
+    classification_matches_universe = classified_total == universe_count
+    # Round-4 review: collection completeness and freshness provenance are
+    # SEPARATE readiness axes — a shard full of unknown-provenance rows must
+    # never look screenable, and staleness is judged from the ACTUAL
+    # oldest/newest retrieval stamps, not the operator-supplied as_of.
+    freshness_provenance_complete = retrieval_time_unknown_total == 0 and (
+        attempted_total == 0 or (oldest_retrieved is not None and newest_retrieved is not None)
+    )
+    return {
+        "snapshot_id": manifest.get("snapshot_id"),
+        "shard_count": int(manifest.get("shard_count") or 0),
+        "complete_shards": complete,
+        "all_shards_complete": all_shards_complete,
+        "attempted_total": attempted_total,
+        "fetch_failed_total": fetch_failed_total,
+        "retrieval_time_unknown_total": retrieval_time_unknown_total,
+        "oldest_retrieved_at": oldest_retrieved,
+        "newest_retrieved_at": newest_retrieved,
+        "classified_totals": totals,
+        "classified_total": classified_total,
+        "universe_count": universe_count,
+        # The round-7 invariant: every frozen symbol is classified, exactly.
+        "classification_matches_universe": classification_matches_universe,
+        "freshness_provenance_complete": freshness_provenance_complete,
+        # Manifest-level aggregation ONLY: says nothing about the shard
+        # files' actual contents or staleness. ready_for_screening comes
+        # exclusively from verify_snapshot(), which re-reads and verifies
+        # every shard row against the frozen universe.
+        "collection_ready": (
+            all_shards_complete
+            and classification_matches_universe
+            and fetch_failed_total == 0
+            and freshness_provenance_complete
+        ),
+    }
+
+
+def verify_snapshot(
+    snapshot_dir: Path,
+    *,
+    screening_as_of: datetime,
+    max_staleness_days: float,
+    clock_skew_seconds: float = 300.0,
+) -> dict[str, Any]:
+    """Deep readiness verification against the ACTUAL snapshot contents.
+
+    ``snapshot_status`` trusts the manifest's own counters; a tampered,
+    truncated or swapped ``shard-*.jsonl`` would sail through it. This
+    function re-reads every shard file and verifies, symbol by symbol:
+
+    - the frozen universe itself (schema/count/uniqueness/SHA-256);
+    - each shard file's SHA-256 against the manifest;
+    - no duplicate symbols within or across shards;
+    - every symbol belongs to its shard per ``stable_shard``;
+    - every symbol is in the frozen universe, and the union of shard
+      symbols covers the frozen universe EXACTLY;
+    - every classification is an allowed value, and per-shard counts match
+      the manifest;
+    - retrieval stamps re-aggregated from the ROWS themselves and bounded on
+      BOTH sides: ``screening_as_of - max_staleness_days <= oldest`` and
+      ``newest <= screening_as_of + clock_skew_seconds`` — an historical
+      ``screening_as_of`` must never see data fetched after it (look-ahead).
+
+    ``ready_for_screening`` is true ONLY when all of the above hold and the
+    manifest-level ``collection_ready`` aggregation agrees.
+    """
+    if max_staleness_days <= 0:
+        raise ValueError("max_staleness_days must be positive")
+    manifest = load_manifest(snapshot_dir)
+    problems: list[str] = []
+    try:
+        universe = load_verified_universe(snapshot_dir, manifest)
+    except ValueError as exc:
+        universe = []
+        problems.append(str(exc))
+    expected_symbols = {str(row.get("symbol") or "") for row in universe}
+    shard_count = int(manifest.get("shard_count") or 0)
+    seen: dict[str, int] = {}
+    row_stamps: list[datetime] = []
+    unknown_stamp_rows = 0
+    for index in range(shard_count):
+        entry = (manifest.get("shards") or {}).get(str(index)) or {}
+        path = shard_path(snapshot_dir, index)
+        if not path.exists():
+            if int(entry.get("attempted") or 0) > 0:
+                problems.append(f"shard {index}: file missing but manifest records rows")
+            continue
+        recorded_sha = entry.get("shard_sha256")
+        actual_sha = hashlib.sha256(path.read_bytes()).hexdigest()
+        if not (isinstance(recorded_sha, str) and recorded_sha):
+            # A shard collected before SHA recording existed must be
+            # backfilled (a zero-collect --resume re-records it) or
+            # re-collected; readiness never accepts an unpinned shard.
+            problems.append(f"shard {index}: manifest lacks shard_sha256")
+        elif recorded_sha != actual_sha:
+            problems.append(f"shard {index}: file SHA-256 does not match the manifest")
+        recount: dict[str, int] = {}
+        for row in load_shard_rows(snapshot_dir, index):
+            symbol = str(row.get("symbol") or "")
+            if not symbol:
+                problems.append(f"shard {index}: row without a symbol")
+                continue
+            if symbol in seen:
+                problems.append(f"shard {index}: duplicate symbol {symbol}")
+                continue
+            seen[symbol] = index
+            if expected_symbols and symbol not in expected_symbols:
+                problems.append(f"shard {index}: {symbol} is not in the frozen universe")
+            if shard_count and stable_shard(symbol, shard_count) != index:
+                problems.append(f"shard {index}: {symbol} belongs to another shard")
+            name = str(row.get("snapshot_classification") or "")
+            if name not in CLASSIFICATIONS:
+                problems.append(f"shard {index}: {symbol} has classification {name!r}")
+            recount[name] = recount.get(name, 0) + 1
+            stamp = row.get("snapshot_retrieved_at")
+            if isinstance(stamp, str) and stamp:
+                try:
+                    stamp_dt = datetime.fromisoformat(stamp)
+                except ValueError:
+                    problems.append(f"shard {index}: {symbol} has unparsable snapshot_retrieved_at")
+                else:
+                    if stamp_dt.tzinfo is None:
+                        stamp_dt = stamp_dt.replace(tzinfo=timezone.utc)
+                    row_stamps.append(stamp_dt)
+            else:
+                unknown_stamp_rows += 1
+        recorded = {key: int(value or 0) for key, value in (entry.get("classified") or {}).items()}
+        if recorded != recount:
+            problems.append(f"shard {index}: manifest classification counts do not match the file")
+    missing = expected_symbols - set(seen)
+    if missing:
+        problems.append(
+            f"{len(missing)} frozen-universe symbols never collected (e.g. {sorted(missing)[:5]})"
+        )
+    if unknown_stamp_rows:
+        problems.append(f"{unknown_stamp_rows} rows carry no retrieval stamp (unknown provenance)")
+    status = snapshot_status(manifest)
+    # Freshness is judged from the stamps RE-AGGREGATED out of the shard
+    # rows themselves (the manifest's own bounds are informational only),
+    # and bounded on BOTH sides: old data is stale, and data fetched after
+    # screening_as_of is look-ahead — fatal for historical/as-of runs.
+    actual_oldest = min(row_stamps) if row_stamps else None
+    actual_newest = max(row_stamps) if row_stamps else None
+    staleness_ok = actual_oldest is not None and actual_oldest >= screening_as_of - timedelta(
+        days=float(max_staleness_days)
+    )
+    no_future_retrievals = actual_newest is not None and actual_newest <= (
+        screening_as_of + timedelta(seconds=float(clock_skew_seconds))
+    )
+    verified = not problems
+    return {
+        **status,
+        "screening_as_of": screening_as_of.astimezone(timezone.utc).isoformat(),
+        "max_staleness_days": float(max_staleness_days),
+        "clock_skew_seconds": float(clock_skew_seconds),
+        "verified_oldest_retrieved_at": actual_oldest.isoformat() if actual_oldest else None,
+        "verified_newest_retrieved_at": actual_newest.isoformat() if actual_newest else None,
+        "staleness_ok": staleness_ok,
+        "no_future_retrievals": no_future_retrievals,
+        "problem_count": len(problems),
+        "problems": problems[:50],
+        "contents_verified": verified,
+        "ready_for_screening": (
+            verified
+            and bool(status.get("collection_ready"))
+            and staleness_ok
+            and no_future_retrievals
+        ),
+    }

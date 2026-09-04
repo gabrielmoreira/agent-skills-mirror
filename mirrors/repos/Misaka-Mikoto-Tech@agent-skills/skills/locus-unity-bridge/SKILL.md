@@ -33,6 +33,21 @@ for authorization if setup changes are required.
        -Command probe -ProjectPath 'E:\Source\SomeUnityProject'
    ```
 
+## Multiple workspaces
+
+Locus can keep Unity connections for multiple projects and Git worktrees in
+one desktop instance. Select the target by passing its exact Unity root as
+`-ProjectPath` on **every** command; that root is the bridge identity.
+
+- Each distinct project or worktree derives a separate native pipe from its
+  normalized root path (or uses that project's marker-specified pipe).
+- Do not invent or send an `InstanceName`, editor-instance ID, or other
+  selector: the Unity bridge protocol exposes none. The client already targets
+  the intended workspace through `-ProjectPath`.
+- Two Unity Editors opened on the same project root are not independently
+  selectable by this bridge. Probe the intended root and operate only after it
+  reports `connected`.
+
 3. Read the returned `Status`:
 
    | Status | Meaning and next action |
@@ -72,6 +87,27 @@ Send a protocol message:
     -Command send -ProjectPath 'E:\Source\SomeUnityProject' `
     -MessageType status -Message ''
 ```
+
+## Read-only diagnostics
+
+Use a protocol query before `execute` when it directly answers the diagnostic
+question. These are the only internal message types this skill treats as a
+curated interface; do not enumerate or guess other plugin messages.
+
+| Need | Message type | Message |
+|---|---|---|
+| Confirm the Editor state and active scene | `status` | Empty string |
+| Diagnose Console errors or warnings | `unity_get_console_log` | `{"levels":["error","warn"],"limit":20}` |
+
+`unity_get_console_log` returns a JSON payload inside the response envelope's
+`message` field. Parse that payload before using it. It groups identical
+entries and reports their `count`, `matchedCount`, and `truncated` state; begin
+with the bounded error/warning query above and raise `limit` only when needed.
+
+`get_console_text` is a compatibility snapshot, not a default diagnostic
+route: it can contain a large volume of text and needlessly consume context.
+Use it only when the user needs the complete Console text and the structured
+query is insufficient.
 
 Request compilation and wait across domain reload:
 

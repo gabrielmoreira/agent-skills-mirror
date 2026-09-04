@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed patterns, 254 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed patterns, 269 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 254 |
+| Files         | 269 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -267,60 +267,75 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 198 | ✓ | [`docs/decisions/2026-08-14-build-the-hub-installed-filter-from-the-provider-registry.md`](docs/decisions/2026-08-14-build-the-hub-installed-filter-from-the-provider-registry.md) |
 | 199 | ✓ | [`docs/decisions/2026-08-14-collapse-the-engine-log-behind-a-toggle-in-the-model-load-toast.md`](docs/decisions/2026-08-14-collapse-the-engine-log-behind-a-toggle-in-the-model-load-toast.md) |
 | 200 | ✓ | [`docs/decisions/2026-08-14-keep-the-engine-version-out-of-the-latest-sentinel-trap.md`](docs/decisions/2026-08-14-keep-the-engine-version-out-of-the-latest-sentinel-trap.md) |
-| 201 | ✓ | [`docs/decisions/2026-08-14-open-the-hub-recommendations-with-a-promoted-head.md`](docs/decisions/2026-08-14-open-the-hub-recommendations-with-a-promoted-head.md) |
-| 202 | ✓ | [`docs/decisions/2026-08-14-recommend-our-own-gemma-4-e2b-build-in-onboarding.md`](docs/decisions/2026-08-14-recommend-our-own-gemma-4-e2b-build-in-onboarding.md) |
-| 203 | ✓ | [`docs/decisions/2026-08-14-restrict-the-local-model-scan-to-text-generation-models.md`](docs/decisions/2026-08-14-restrict-the-local-model-scan-to-text-generation-models.md) |
-| 204 | ✓ | [`docs/decisions/2026-08-14-show-the-streaming-code-while-an-html-artifact-generates.md`](docs/decisions/2026-08-14-show-the-streaming-code-while-an-html-artifact-generates.md) |
-| 205 | ✓ | [`docs/decisions/2026-08-17-rename-the-string-status-property-that-posthog-had-typed-numeric.md`](docs/decisions/2026-08-17-rename-the-string-status-property-that-posthog-had-typed-numeric.md) |
-| 206 | ✓ | [`docs/decisions/2026-08-17-track-llm-response-outcomes-and-close-onboarding-funnel-gaps.md`](docs/decisions/2026-08-17-track-llm-response-outcomes-and-close-onboarding-funnel-gaps.md) |
-| 207 | ✓ | [`docs/decisions/2026-08-18-add-deepseek-harness-as-a-launch-page-coding-agent.md`](docs/decisions/2026-08-18-add-deepseek-harness-as-a-launch-page-coding-agent.md) |
-| 208 | ✓ | [`docs/decisions/2026-08-18-delete-an-installed-model-from-the-hub-download-panel.md`](docs/decisions/2026-08-18-delete-an-installed-model-from-the-hub-download-panel.md) |
-| 209 | ✓ | [`docs/decisions/2026-08-19-delete-only-what-a-failed-download-wrote.md`](docs/decisions/2026-08-19-delete-only-what-a-failed-download-wrote.md) |
-| 210 | ✓ | [`docs/decisions/2026-08-19-disable-the-turboquant-provider-by-default-on-fresh-installs.md`](docs/decisions/2026-08-19-disable-the-turboquant-provider-by-default-on-fresh-installs.md) |
-| 211 | ✓ | [`docs/decisions/2026-08-19-do-not-preload-a-model-on-startup.md`](docs/decisions/2026-08-19-do-not-preload-a-model-on-startup.md) |
-| 212 | ✓ | [`docs/decisions/2026-08-19-leave-launch-at-startup-off-for-new-installs.md`](docs/decisions/2026-08-19-leave-launch-at-startup-off-for-new-installs.md) |
-| 213 | ✓ | [`docs/decisions/2026-08-19-let-onboarding-connect-a-cloud-provider.md`](docs/decisions/2026-08-19-let-onboarding-connect-a-cloud-provider.md) |
-| 214 | ✓ | [`docs/decisions/2026-08-19-offer-a-low-spec-model-tier-in-onboarding.md`](docs/decisions/2026-08-19-offer-a-low-spec-model-tier-in-onboarding.md) |
-| 215 | ✓ | [`docs/decisions/2026-08-20-narrow-atomic-chat-cli-to-models-serve-launch-and-server-status.md`](docs/decisions/2026-08-20-narrow-atomic-chat-cli-to-models-serve-launch-and-server-status.md) |
-| 216 | ✓ | [`docs/decisions/2026-08-21-edit-messages-inline-in-the-transcript-instead-of-a-modal.md`](docs/decisions/2026-08-21-edit-messages-inline-in-the-transcript-instead-of-a-modal.md) |
-| 217 | ✓ | [`docs/decisions/2026-08-21-gate-cuda-13-on-nvidia-compute-capability-not-driver-alone.md`](docs/decisions/2026-08-21-gate-cuda-13-on-nvidia-compute-capability-not-driver-alone.md) |
-| 218 | ✓ | [`docs/decisions/2026-08-21-keep-attachments-when-a-message-is-edited-in-a-chat-thread.md`](docs/decisions/2026-08-21-keep-attachments-when-a-message-is-edited-in-a-chat-thread.md) |
-| 219 | ✓ | [`docs/decisions/2026-08-21-never-list-turboquant-next-to-upstream-llama-cpp.md`](docs/decisions/2026-08-21-never-list-turboquant-next-to-upstream-llama-cpp.md) |
-| 220 | ✓ | [`docs/decisions/2026-08-21-strip-every-non-image-file-part-before-the-model-converter.md`](docs/decisions/2026-08-21-strip-every-non-image-file-part-before-the-model-converter.md) |
-| 221 | ✓ | [`docs/decisions/2026-08-25-add-atomic-agent-as-a-one-click-launch-page-assistant.md`](docs/decisions/2026-08-25-add-atomic-agent-as-a-one-click-launch-page-assistant.md) |
-| 222 | ✓ | [`docs/README.md`](docs/README.md) |
-| 223 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 224 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 225 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 226 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 227 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 228 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 229 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 230 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 231 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 232 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 233 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 234 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 235 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 236 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 237 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 238 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 239 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 240 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 241 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 242 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 243 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 244 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 245 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 246 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 247 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 248 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 249 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 250 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 251 | → | [`README.md`](README.md) |
-| 252 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 253 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 254 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 201 | ✓ | [`docs/decisions/2026-08-14-offer-a-thinking-level-only-where-the-chat-template-declares-one.md`](docs/decisions/2026-08-14-offer-a-thinking-level-only-where-the-chat-template-declares-one.md) |
+| 202 | ✓ | [`docs/decisions/2026-08-14-open-the-hub-recommendations-with-a-promoted-head.md`](docs/decisions/2026-08-14-open-the-hub-recommendations-with-a-promoted-head.md) |
+| 203 | ✓ | [`docs/decisions/2026-08-14-recommend-our-own-gemma-4-e2b-build-in-onboarding.md`](docs/decisions/2026-08-14-recommend-our-own-gemma-4-e2b-build-in-onboarding.md) |
+| 204 | ✓ | [`docs/decisions/2026-08-14-restrict-the-local-model-scan-to-text-generation-models.md`](docs/decisions/2026-08-14-restrict-the-local-model-scan-to-text-generation-models.md) |
+| 205 | ✓ | [`docs/decisions/2026-08-14-show-the-streaming-code-while-an-html-artifact-generates.md`](docs/decisions/2026-08-14-show-the-streaming-code-while-an-html-artifact-generates.md) |
+| 206 | ✓ | [`docs/decisions/2026-08-17-rename-the-string-status-property-that-posthog-had-typed-numeric.md`](docs/decisions/2026-08-17-rename-the-string-status-property-that-posthog-had-typed-numeric.md) |
+| 207 | ✓ | [`docs/decisions/2026-08-17-track-llm-response-outcomes-and-close-onboarding-funnel-gaps.md`](docs/decisions/2026-08-17-track-llm-response-outcomes-and-close-onboarding-funnel-gaps.md) |
+| 208 | ✓ | [`docs/decisions/2026-08-18-add-deepseek-harness-as-a-launch-page-coding-agent.md`](docs/decisions/2026-08-18-add-deepseek-harness-as-a-launch-page-coding-agent.md) |
+| 209 | ✓ | [`docs/decisions/2026-08-18-delete-an-installed-model-from-the-hub-download-panel.md`](docs/decisions/2026-08-18-delete-an-installed-model-from-the-hub-download-panel.md) |
+| 210 | ✓ | [`docs/decisions/2026-08-18-extend-agent-mode-to-mlx-and-cloud-tool-providers.md`](docs/decisions/2026-08-18-extend-agent-mode-to-mlx-and-cloud-tool-providers.md) |
+| 211 | ✓ | [`docs/decisions/2026-08-18-let-agent-turns-think-and-apply-the-thinking-level.md`](docs/decisions/2026-08-18-let-agent-turns-think-and-apply-the-thinking-level.md) |
+| 212 | ✓ | [`docs/decisions/2026-08-19-delete-only-what-a-failed-download-wrote.md`](docs/decisions/2026-08-19-delete-only-what-a-failed-download-wrote.md) |
+| 213 | ✓ | [`docs/decisions/2026-08-19-disable-the-turboquant-provider-by-default-on-fresh-installs.md`](docs/decisions/2026-08-19-disable-the-turboquant-provider-by-default-on-fresh-installs.md) |
+| 214 | ✓ | [`docs/decisions/2026-08-19-do-not-preload-a-model-on-startup.md`](docs/decisions/2026-08-19-do-not-preload-a-model-on-startup.md) |
+| 215 | ✓ | [`docs/decisions/2026-08-19-leave-launch-at-startup-off-for-new-installs.md`](docs/decisions/2026-08-19-leave-launch-at-startup-off-for-new-installs.md) |
+| 216 | ✓ | [`docs/decisions/2026-08-19-let-onboarding-connect-a-cloud-provider.md`](docs/decisions/2026-08-19-let-onboarding-connect-a-cloud-provider.md) |
+| 217 | ✓ | [`docs/decisions/2026-08-19-offer-a-low-spec-model-tier-in-onboarding.md`](docs/decisions/2026-08-19-offer-a-low-spec-model-tier-in-onboarding.md) |
+| 218 | ✓ | [`docs/decisions/2026-08-20-narrow-atomic-chat-cli-to-models-serve-launch-and-server-status.md`](docs/decisions/2026-08-20-narrow-atomic-chat-cli-to-models-serve-launch-and-server-status.md) |
+| 219 | ✓ | [`docs/decisions/2026-08-21-edit-messages-inline-in-the-transcript-instead-of-a-modal.md`](docs/decisions/2026-08-21-edit-messages-inline-in-the-transcript-instead-of-a-modal.md) |
+| 220 | ✓ | [`docs/decisions/2026-08-21-gate-cuda-13-on-nvidia-compute-capability-not-driver-alone.md`](docs/decisions/2026-08-21-gate-cuda-13-on-nvidia-compute-capability-not-driver-alone.md) |
+| 221 | ✓ | [`docs/decisions/2026-08-21-keep-attachments-when-a-message-is-edited-in-a-chat-thread.md`](docs/decisions/2026-08-21-keep-attachments-when-a-message-is-edited-in-a-chat-thread.md) |
+| 222 | ✓ | [`docs/decisions/2026-08-21-never-list-turboquant-next-to-upstream-llama-cpp.md`](docs/decisions/2026-08-21-never-list-turboquant-next-to-upstream-llama-cpp.md) |
+| 223 | ✓ | [`docs/decisions/2026-08-21-strip-every-non-image-file-part-before-the-model-converter.md`](docs/decisions/2026-08-21-strip-every-non-image-file-part-before-the-model-converter.md) |
+| 224 | ✓ | [`docs/decisions/2026-08-24-dictate-into-the-composer-with-a-local-voxtral-model.md`](docs/decisions/2026-08-24-dictate-into-the-composer-with-a-local-voxtral-model.md) |
+| 225 | ✓ | [`docs/decisions/2026-08-24-gaia-l1-answer-contract-and-harness.md`](docs/decisions/2026-08-24-gaia-l1-answer-contract-and-harness.md) |
+| 226 | ✓ | [`docs/decisions/2026-08-24-gaia-l1-media-tools-and-web-recovery.md`](docs/decisions/2026-08-24-gaia-l1-media-tools-and-web-recovery.md) |
+| 227 | ✓ | [`docs/decisions/2026-08-24-spill-oversized-observations-instead-of-compressing-them.md`](docs/decisions/2026-08-24-spill-oversized-observations-instead-of-compressing-them.md) |
+| 228 | ✓ | [`docs/decisions/2026-08-25-add-atomic-agent-as-a-one-click-launch-page-assistant.md`](docs/decisions/2026-08-25-add-atomic-agent-as-a-one-click-launch-page-assistant.md) |
+| 229 | ✓ | [`docs/decisions/2026-08-27-connect-a-chatgpt-subscription-as-a-model-provider.md`](docs/decisions/2026-08-27-connect-a-chatgpt-subscription-as-a-model-provider.md) |
+| 230 | ✓ | [`docs/decisions/2026-08-27-move-cloud-providers-into-a-cloud-page.md`](docs/decisions/2026-08-27-move-cloud-providers-into-a-cloud-page.md) |
+| 231 | ✓ | [`docs/decisions/2026-08-27-native-agent-rag-tools.md`](docs/decisions/2026-08-27-native-agent-rag-tools.md) |
+| 232 | ✓ | [`docs/decisions/2026-08-27-unify-chat-and-agent-on-the-agent-engine.md`](docs/decisions/2026-08-27-unify-chat-and-agent-on-the-agent-engine.md) |
+| 233 | ✓ | [`docs/decisions/2026-09-01-track-openclaw-2026-8-detect-the-app-installed-cli-widen.md`](docs/decisions/2026-09-01-track-openclaw-2026-8-detect-the-app-installed-cli-widen.md) |
+| 234 | ✓ | [`docs/decisions/2026-09-02-measure-and-surface-mcp-tool-cost-in-chat.md`](docs/decisions/2026-09-02-measure-and-surface-mcp-tool-cost-in-chat.md) |
+| 235 | ✓ | [`docs/decisions/2026-09-02-switch-single-mcp-tools-per-connector-from-a-tools-dialog.md`](docs/decisions/2026-09-02-switch-single-mcp-tools-per-connector-from-a-tools-dialog.md) |
+| 236 | ✓ | [`docs/README.md`](docs/README.md) |
+| 237 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 238 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 239 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 240 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 241 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 242 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 243 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 244 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 245 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 246 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 247 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 248 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 249 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 250 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 251 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 252 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 253 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 254 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 255 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 256 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
+| 257 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 258 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 259 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 260 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 261 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 262 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 263 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 264 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 265 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 266 | → | [`README.md`](README.md) |
+| 267 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 268 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 269 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 
