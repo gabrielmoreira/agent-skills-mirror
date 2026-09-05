@@ -1,0 +1,4 @@
+interface: openai
+display_name: Process Customer Return
+short_description: Process customer returns from request, order, item, condition, policy, authorization, receipt, disposition, and review boundaries.
+default_prompt: Use $process-customer-return to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

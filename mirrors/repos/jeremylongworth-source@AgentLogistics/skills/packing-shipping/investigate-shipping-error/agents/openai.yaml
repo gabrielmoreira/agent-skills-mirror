@@ -1,0 +1,4 @@
+interface:
+  display_name: "Investigate Shipping Error"
+  short_description: "Investigate shipping errors by tracing order, pick, pack, lab..."
+  default_prompt: "Use $investigate-shipping-error to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

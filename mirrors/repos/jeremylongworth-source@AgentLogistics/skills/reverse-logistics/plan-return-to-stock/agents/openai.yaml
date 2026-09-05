@@ -1,0 +1,4 @@
+interface: openai
+display_name: Plan Return To Stock
+short_description: Plan return-to-stock workflow from disposition, inventory status, inspection evidence, quality criteria, and release boundaries.
+default_prompt: Use $plan-return-to-stock to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

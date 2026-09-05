@@ -25,9 +25,11 @@ from fmp_client import ApiCallBudgetExceeded, FMPClient
 from report_generator import generate_json_report, generate_markdown_report
 from scorer import COMPONENT_WEIGHTS, calculate_composite_score
 from screen_pead import (
+    _get_candidates_mode_a,
     analyze_stock,
     calculate_price_gap,
     calculate_setup_quality,
+    profile_market_cap,
     validate_input_json,
 )
 
@@ -1382,3 +1384,94 @@ class TestAnalyzeStock:
             current_price=101.0,
         )
         assert result is None
+
+
+# ===========================================================================
+# TestModeACandidates (Issue #328: /stable profile returns marketCap, not mktCap)
+# ===========================================================================
+
+
+class TestProfileMarketCap:
+    def test_prefers_stable_key(self):
+        assert profile_market_cap({"marketCap": 10, "mktCap": 20}) == 10.0
+
+    def test_falls_back_to_legacy_key(self):
+        assert profile_market_cap({"mktCap": 5e9}) == 5e9
+
+    def test_none_stable_uses_legacy(self):
+        assert profile_market_cap({"marketCap": None, "mktCap": 5e9}) == 5e9
+
+    def test_missing_or_none_is_zero(self):
+        assert profile_market_cap({}) == 0.0
+        assert profile_market_cap({"marketCap": None}) == 0.0
+
+    def test_numeric_string_is_parsed(self):
+        assert profile_market_cap({"marketCap": "74687168040"}) == 74687168040.0
+
+    def test_garbage_is_zero_not_crash(self):
+        assert profile_market_cap({"marketCap": "n/a"}) == 0.0
+        assert profile_market_cap({"marketCap": "n/a", "mktCap": 5e9}) == 5e9
+
+    def test_negative_is_preserved(self):
+        assert profile_market_cap({"marketCap": -100}) == -100.0
+
+    def test_non_finite_is_zero(self):
+        """float("nan")/float("inf") parse cleanly but would bypass the `<` floor."""
+        assert profile_market_cap({"marketCap": "nan"}) == 0.0
+        assert profile_market_cap({"marketCap": "inf"}) == 0.0
+        assert profile_market_cap({"marketCap": float("nan")}) == 0.0
+        assert profile_market_cap({"marketCap": float("inf"), "mktCap": 5e9}) == 5e9
+
+
+class TestModeACandidates:
+    """_get_candidates_mode_a must keep candidates whose /stable profile has marketCap."""
+
+    @staticmethod
+    def _args(min_market_cap=1_000_000_000, lookback_days=5):
+        args = MagicMock()
+        args.min_market_cap = min_market_cap
+        args.lookback_days = lookback_days
+        return args
+
+    @staticmethod
+    def _client(profile):
+        client = MagicMock()
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-09-03", "time": "amc"}
+        ]
+        client.get_company_profiles.return_value = {"AAPL": profile}
+        return client
+
+    def test_issue_328_regression_stable_profile_is_kept(self):
+        client = self._client(
+            {"symbol": "AAPL", "marketCap": 3_500_000_000_000, "exchange": "NASDAQ"}
+        )
+        result = _get_candidates_mode_a(client, self._args())
+        assert len(result) == 1
+        assert result[0]["symbol"] == "AAPL"
+        assert result[0]["market_cap"] == 3_500_000_000_000
+        assert result[0]["earnings_timing"] == "amc"
+        assert result[0]["gap_pct"] is None
+
+    def test_legacy_v3_profile_is_kept(self):
+        client = self._client(
+            {"symbol": "AAPL", "mktCap": 3_500_000_000_000, "exchangeShortName": "NASDAQ"}
+        )
+        assert len(_get_candidates_mode_a(client, self._args())) == 1
+
+    def test_below_min_market_cap_is_dropped(self):
+        client = self._client({"symbol": "AAPL", "marketCap": 999_999_999})
+        assert _get_candidates_mode_a(client, self._args()) == []
+
+    def test_null_market_cap_is_dropped_not_crash(self):
+        client = self._client({"symbol": "AAPL", "marketCap": None})
+        assert _get_candidates_mode_a(client, self._args()) == []
+
+    def test_non_numeric_market_cap_is_dropped_not_crash(self):
+        client = self._client({"symbol": "AAPL", "marketCap": "n/a"})
+        assert _get_candidates_mode_a(client, self._args()) == []
+
+    def test_missing_profile_is_dropped(self):
+        client = self._client({"symbol": "AAPL", "marketCap": 3e12})
+        client.get_company_profiles.return_value = {}
+        assert _get_candidates_mode_a(client, self._args()) == []

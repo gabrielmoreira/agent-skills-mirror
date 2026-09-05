@@ -1,0 +1,4 @@
+interface:
+  display_name: "Classify Inventory"
+  short_description: "Classify inventory by demand, value, criticality, control req..."
+  default_prompt: "Use $classify-inventory to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

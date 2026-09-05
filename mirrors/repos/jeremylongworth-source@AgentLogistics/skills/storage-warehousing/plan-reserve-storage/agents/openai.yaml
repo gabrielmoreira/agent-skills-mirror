@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Reserve Storage"
+  short_description: "Plan reserve storage from inventory profile, storage requirem..."
+  default_prompt: "Use $plan-reserve-storage to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

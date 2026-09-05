@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Zone Picking"
+  short_description: "Plan zone picking from zones, order profiles, labor, handoff..."
+  default_prompt: "Use $plan-zone-picking to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

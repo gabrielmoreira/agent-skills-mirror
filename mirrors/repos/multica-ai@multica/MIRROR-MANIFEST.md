@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 0 followed patterns, 14 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,15 +64,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`examples/plugins/deploy-sentinel/skills/incident-response/SKILL.md`](examples/plugins/deploy-sentinel/skills/incident-response/SKILL.md) |
-| 6 | ✓ | [`server/internal/service/builtin_skills/multica-autopilots/SKILL.md`](server/internal/service/builtin_skills/multica-autopilots/SKILL.md) |
-| 7 | ✓ | [`server/internal/service/builtin_skills/multica-creating-agents/SKILL.md`](server/internal/service/builtin_skills/multica-creating-agents/SKILL.md) |
-| 8 | ✓ | [`server/internal/service/builtin_skills/multica-mentioning/SKILL.md`](server/internal/service/builtin_skills/multica-mentioning/SKILL.md) |
-| 9 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
-| 10 | ✓ | [`server/internal/service/builtin_skills/multica-projects-and-resources/SKILL.md`](server/internal/service/builtin_skills/multica-projects-and-resources/SKILL.md) |
-| 11 | ✓ | [`server/internal/service/builtin_skills/multica-runtimes-and-repos/SKILL.md`](server/internal/service/builtin_skills/multica-runtimes-and-repos/SKILL.md) |
-| 12 | ✓ | [`server/internal/service/builtin_skills/multica-skill-importing/SKILL.md`](server/internal/service/builtin_skills/multica-skill-importing/SKILL.md) |
-| 13 | ✓ | [`server/internal/service/builtin_skills/multica-squads/SKILL.md`](server/internal/service/builtin_skills/multica-squads/SKILL.md) |
-| 14 | ✓ | [`server/internal/service/builtin_skills/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills/multica-working-on-issues/SKILL.md) |
+| 6 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
+| 7 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
+| 8 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
 
 ---
 

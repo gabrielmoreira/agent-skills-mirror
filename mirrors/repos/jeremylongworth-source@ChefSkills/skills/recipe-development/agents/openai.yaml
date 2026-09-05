@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe Development"
+  short_description: "Create and refine usable, testable recipes."
+  default_prompt: "Use this skill to create, revise, test, and adapt recipes with quantities, sequence, cues, constraints, and iteration notes."

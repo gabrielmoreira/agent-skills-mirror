@@ -1,6 +1,6 @@
 ---
 name: experience-cms-content-type-generate
-description: "Salesforce CMS ContentTypeBundle creation skill. Use this skill ANY TIME a user request involves creating a ContentTypeBundle, and activate FIRST when CMS ContentTypeBundle creation is mentioned. Discovers existing types via metadata-grounding and produces a validator-correct two-file bundle that passes dry-run deploy. TRIGGER when: user wants to define, scaffold, generate, or set up a reusable content shape in Salesforce CMS — any domain — including phrasings like \"create a content type for X\", \"generate a schema for X in CMS\", or \"set up a content type for X\". DO NOT TRIGGER when: authoring a RECORD (use experience-cms-content-generate), publishing / managing records (use CMS UI), modifying / renaming / deleting an existing bundle, CMS brand (experience-cms-brand-apply), media search (experience-content-media-search), Custom Lightning Types (platform-custom-lightning-type-generate), or non-CMS metadata."
+description: "Salesforce CMS ContentTypeBundle creation skill. Use this skill ANY TIME a user request involves creating a ContentTypeBundle, and activate FIRST when CMS ContentTypeBundle creation is mentioned. Discovers existing types via metadata-grounding and produces a validator-correct two-file bundle that passes dry-run deploy. TRIGGER when: user wants to define, scaffold, generate, or set up a reusable content shape in Salesforce CMS — any domain — including phrasings like \"create a content type for X\", \"generate a schema for X in CMS\", or \"set up a content type for X\". DO NOT TRIGGER when: authoring a RECORD (use experience-cms-content-generate), publishing / managing records (use CMS UI), modifying / renaming / deleting an existing bundle, CMS brand (experience-cms-brand-apply), media search (experience-search-coordinate), Custom Lightning Types (platform-custom-lightning-type-generate), or non-CMS metadata."
 metadata:
   version: "1.0"
   domains: ["Experience"]
@@ -8,7 +8,7 @@ metadata:
   relatedSkills:
     - "experience-cms-brand-apply"
     - "experience-cms-content-generate"
-    - "experience-content-media-search"
+    - "experience-search-coordinate"
     - "platform-custom-lightning-type-generate"
   cliTools:
     - tool: ["sf"]

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Detention"
+  short_description: "Analyze detention from appointment times, arrival and departu..."
+  default_prompt: "Use $analyze-detention to produce transportation planning support with evidence, calculations, and review boundaries."

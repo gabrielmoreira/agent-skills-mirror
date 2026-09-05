@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Warehouse Zones"
+  short_description: "Plan warehouse zones from process needs, SKU groups, MHE, tra..."
+  default_prompt: "Use $plan-warehouse-zones to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

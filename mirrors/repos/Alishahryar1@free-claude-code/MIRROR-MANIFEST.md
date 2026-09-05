@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Alishahryar1/free-claude-code` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Alishahryar1/free-claude-code` — 26 default patterns, 4 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Alishahryar1/free-claude-code` — 26 default patterns, 0 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 4 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,10 @@ Mirror of `Alishahryar1/free-claude-code` — 26 default patterns, 0 followed pa
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `ARCHITECTURE.md`
+- `README.md`
+- `smoke/README.md`
+- `CONTRIBUTING.md`
 
 ## File Index
 
@@ -61,6 +64,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 5 | → | [`README.md`](README.md) |
+| 6 | → | [`smoke/README.md`](smoke/README.md) |
 
 ---
 

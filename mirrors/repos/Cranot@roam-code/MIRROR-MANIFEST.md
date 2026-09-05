@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Cranot/roam-code` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Cranot/roam-code` — 26 default patterns, 5 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 0 followed patterns, 3 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 5 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,11 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 0 followed patterns, 3 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/concepts/detector-evidence.md`
+- `CONTRIBUTING.md`
+- `docs/repository-maintenance.md`
+- `docs/README.md`
+- `docs/ci-integration.md`
 
 ## File Index
 
@@ -60,8 +64,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
-| 3 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
+| 2 | ✓ | [`docs/agent-cli.md`](docs/agent-cli.md) |
+| 3 | ✓ | [`docs/COMMANDS.md`](docs/COMMANDS.md) |
+| 4 | ✓ | [`docs/containers.md`](docs/containers.md) |
+| 5 | ✓ | [`docs/fresh-install-smoke.md`](docs/fresh-install-smoke.md) |
+| 6 | ✓ | [`docs/mcp-protocol-compatibility.md`](docs/mcp-protocol-compatibility.md) |
+| 7 | ✓ | [`docs/mcp-tools.md`](docs/mcp-tools.md) |
+| 8 | ✓ | [`docs/network-boundary.md`](docs/network-boundary.md) |
+| 9 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
+| 10 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
+| 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 12 | → | [`docs/ci-integration.md`](docs/ci-integration.md) |
+| 13 | → | [`docs/concepts/detector-evidence.md`](docs/concepts/detector-evidence.md) |
+| 14 | → | [`docs/README.md`](docs/README.md) |
+| 15 | → | [`docs/repository-maintenance.md`](docs/repository-maintenance.md) |
 
 ---
 

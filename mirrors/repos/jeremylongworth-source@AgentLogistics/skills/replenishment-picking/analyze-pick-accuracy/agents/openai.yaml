@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Pick Accuracy"
+  short_description: "Analyze pick accuracy from picked lines, order lines, audits..."
+  default_prompt: "Use $analyze-pick-accuracy to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

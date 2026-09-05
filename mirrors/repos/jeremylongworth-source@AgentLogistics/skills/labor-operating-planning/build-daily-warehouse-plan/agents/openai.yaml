@@ -1,0 +1,4 @@
+interface: openai
+display_name: Build Daily Warehouse Plan
+short_description: Build daily warehouse operating plans from inbound, outbound, inventory work, labor, constraints, priorities, and handoffs.
+default_prompt: Use $build-daily-warehouse-plan to produce a source-backed warehouse labor or operating-planning output with calculations where relevant, evidence boundaries, and qualified-review requirements.

@@ -1,0 +1,4 @@
+interface: openai
+display_name: Build Logistics Scorecard
+short_description: Build logistics scorecard designs with KPI definitions, targets, owners, cadence, sources, thresholds, and action rules.
+default_prompt: Use $build-logistics-scorecard to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

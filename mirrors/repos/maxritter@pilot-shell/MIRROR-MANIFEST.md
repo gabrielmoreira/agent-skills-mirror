@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `maxritter/pilot-shell` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `maxritter/pilot-shell` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `maxritter/pilot-shell` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`pilot/codex/AGENTS.md`](pilot/codex/AGENTS.md) |
+| 1 | ✓ | [`.agents/skills/upstream-audit/SKILL.md`](.agents/skills/upstream-audit/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/upstream-audit/SKILL.md`](.claude/skills/upstream-audit/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`pilot/codex/AGENTS.md`](pilot/codex/AGENTS.md) |
 
 ---
 

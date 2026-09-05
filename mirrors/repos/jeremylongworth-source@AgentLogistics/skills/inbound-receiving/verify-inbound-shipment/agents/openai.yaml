@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Inbound Shipment"
+  short_description: "Verify inbound shipment facts against PO, ASN, BOL, packing l..."
+  default_prompt: "Use $verify-inbound-shipment to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

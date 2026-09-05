@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Picking Strategy"
+  short_description: "Select a picking strategy from order profile, SKU velocity, l..."
+  default_prompt: "Use $select-picking-strategy to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

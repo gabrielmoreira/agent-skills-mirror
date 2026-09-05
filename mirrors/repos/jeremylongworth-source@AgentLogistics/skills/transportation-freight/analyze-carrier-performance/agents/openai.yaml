@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Carrier Performance"
+  short_description: "Analyze carrier performance from on-time service, tender acce..."
+  default_prompt: "Use $analyze-carrier-performance to produce transportation planning support with evidence, calculations, and review boundaries."

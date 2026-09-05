@@ -195,22 +195,31 @@ python3 scripts/verify-release-receipt.py "$AARON_RELEASE_RECEIPT" \
   --evidence-root "$AARON_RELEASE_EVIDENCE_ROOT"
 ```
 
-Every v19 live publisher requires all three variables and rapidly revalidates
-the receipt, the exact report bytes, and the original semantic event chain with
-the current verifier. Receipt issuance and `create-github-release.py --live`
-always enforce the strict 24-hour freshness gate for the receipt and semantic
-evidence.
-After the immutable final tag, non-draft Release, exact six assets, and owner
-workflow have all been verified, publisher entrypoints may internally use the
-explicit post-release-continuation verifier mode: it relaxes only the current
-wall-clock check, still proves issuance-time freshness and every
-receipt/report/raw-evidence/tool/source hash, and remains bounded by the
-committed semantic policy (currently 30 days). Do not invoke that mode to create
-or authorize a release. If the policy window expires, run fresh provider
+`create-github-release.py --live` still takes the private receipt, maturity
+report, and evidence root as CLI flags and rapidly revalidates the receipt, the
+exact report bytes, and the original semantic event chain with the current
+verifier. Live publishers do not require `AARON_RELEASE_RECEIPT`,
+`AARON_RELEASE_MATURITY_REPORT`, or `AARON_RELEASE_EVIDENCE_ROOT`
+(`sync-about.sh`, `sync-family.sh`, and the `publish-*.sh` family). They still
+require a clean worktree, a canonical `github.com` origin, no Git
+`url.*.insteadOf` rewrites, and — for v19 and later — an immutable final tag
+that resolves to HEAD, a non-draft/non-prerelease GitHub Release, exact
+downloaded assets, and a green owner-run release-validation workflow on that
+commit.
+Receipt issuance and `create-github-release.py --live` always enforce the
+strict 24-hour freshness gate for the receipt and semantic evidence.
+The verifier's `--post-release-continuation` mode remains available for
+owner-local receipt revalidation after the immutable final tag exists: it
+relaxes only the current wall-clock check, still proves issuance-time freshness
+and every receipt/report/raw-evidence/tool/source hash, and remains bounded by
+the committed semantic policy (currently 30 days). Live publishers do not
+invoke that mode and do not read the private bundle. Do not invoke that mode to
+create or authorize a release. If the policy window expires, run fresh provider
 evidence against the same immutable release commit and issue a new private
-report/receipt before resuming distribution. The evidence root may be a real
-directory outside the repository, or the repository's absolute root only when
-the bound `memory/runs/<run-id>` directory is Git-ignored and wholly untracked.
+report/receipt before calling `create-github-release.py --live` again. The
+evidence root may be a real directory outside the repository, or the
+repository's absolute root only when the bound `memory/runs/<run-id>` directory
+is Git-ignored and wholly untracked.
 Never upload the receipt, report, or raw evidence. The real-provider smoke run
 executes real models, but its cases are simulated semantic fixtures. It proves
 engineering conformance, not customer or real-project outcomes; the public
@@ -260,6 +269,16 @@ prior-release `aaron-marketing-skills-<ver>-agent-plugin-v1-lite.tar.gz` asset.
 
 Keep changes focused. Bump both top-level `version` and `metadata.version` together. Update `VERSIONS.md`. Put new reference docs in the skill's `references/` subdirectory.
 
+### Wiki-first evolution (path-safe)
+
+Do not rename, move, or re-slug an existing Skill. Do not add a 121st Skill.
+Compile the lesson into [`references/wiki/`](references/wiki/index.md) first
+(one atomic pattern + log row), then optionally open a Skill-body PR that
+cites the pattern id. Use
+[`references/wiki/skill-evolution-proposal.md`](references/wiki/skill-evolution-proposal.md).
+The wiki is maintenance-time only — never add it to `### Runtime Reads` or
+context-assembly defaults. Schema: [`references/wiki/SCHEMA.md`](references/wiki/SCHEMA.md).
+
 ## Craft Checklist
 
 Beyond the mechanical checks, every skill should pass the senior self-test from [skill-contract.md §Skill Authoring Discipline](https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/references/skill-contract.md):
@@ -288,6 +307,26 @@ Before submitting a PR:
 ## Submitting
 
 - Fork, create a `feature/your-skill-name` branch, and submit a PR.
+
+## Team conventions
+
+These sit on top of the authoring rules above; they do not replace the
+10-surface list, the validator, or wiki-first evolution.
+
+- **Branch naming:** `feature/<skill-or-topic>`, `fix/<skill-or-topic>`,
+  `docs/<description>` — lowercase, one concern. Matches the existing
+  `feature/your-skill-name` submitting rule.
+- **PR size:** Keep Staff/docs/smoke, skill-body, and connector work on
+  separate PRs when they do not share a single contract change.
+- **Merge:** Squash-merge after AaronMarketing.ai review. Do not merge a
+  contributor PR without that review.
+- **Skill path freeze:** Do not rename, move, or re-slug an existing Skill.
+  Do not add a 121st Skill. Compile lessons in `references/wiki/` first.
+- **AI Staff:** generate into a private directory outside the repository.
+  Phase 1 has no Usage Gateway, billing, Web UI, or cloud hosting.
+- **Wiki / maintenance scripts:** never add `references/wiki/` or
+  `scripts/check-wiki.py` to runtime assembly, `### Runtime Reads`, or the
+  plugin distribution allowlist.
 
 ## Code of Conduct
 

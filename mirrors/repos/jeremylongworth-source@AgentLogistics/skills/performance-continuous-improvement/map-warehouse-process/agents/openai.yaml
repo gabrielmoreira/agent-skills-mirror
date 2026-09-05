@@ -1,0 +1,4 @@
+interface: openai
+display_name: Map Warehouse Process
+short_description: Map warehouse processes from physical flow, roles, systems, queues, handoffs, controls, exceptions, and evidence.
+default_prompt: Use $map-warehouse-process to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

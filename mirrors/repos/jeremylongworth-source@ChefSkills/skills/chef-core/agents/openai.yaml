@@ -1,0 +1,4 @@
+interface:
+  display_name: "Chef Core"
+  short_description: "Apply core chef reasoning, state framing, and safety-first cooking behavior."
+  default_prompt: "Use this skill for broad culinary requests, recipe work, prep planning, state-framed troubleshooting, adaptation, and chef-like cooking decisions."

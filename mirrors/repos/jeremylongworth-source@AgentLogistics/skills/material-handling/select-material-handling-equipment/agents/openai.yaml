@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Material Handling Equipment"
+  short_description: "Compare material handling equipment classes from handling req..."
+  default_prompt: "Use $select-material-handling-equipment to produce material-handling planning support with evidence, assumptions, and review boundaries."

@@ -1,0 +1,4 @@
+interface: openai
+display_name: Validate Item Master Data
+short_description: Validate logistics item master data for UOM, pack hierarchy, dimensions, weights, identifiers, controls, statuses, and operational completeness.
+default_prompt: Use $validate-item-master-data to produce a source-backed logistics systems and data output with assumptions, evidence boundaries, validation notes, and qualified-review requirements.

@@ -1,0 +1,4 @@
+interface: openai
+display_name: Design Logistics Barcode Flow
+short_description: Design logistics barcode and scan-flow concepts for process steps, identifiers, labels, validation points, exceptions, and system handoffs.
+default_prompt: Use $design-logistics-barcode-flow to produce a source-backed logistics systems and data output with assumptions, evidence boundaries, validation notes, and qualified-review requirements.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Multi-Stop Shipment"
+  short_description: "Plan multi-stop shipments from stops, sequence constraints, s..."
+  default_prompt: "Use $plan-multi-stop-shipment to produce transportation planning support with evidence, calculations, and review boundaries."

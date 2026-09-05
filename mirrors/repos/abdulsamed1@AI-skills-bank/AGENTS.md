@@ -18,6 +18,20 @@ description: |
 
 When synced, hubs are also available via `skill` tool as 4 entries (business, code-quality, frontend, server-side) — 120 tokens, not 3840. Load hub via `skill`, then follow routing.csv.
 
+## Antigravity (AGY) Global Discovery
+
+When running AGY in sub-projects (e.g., inside a project folder with its own `.git` repo), AGY's workspace discovery stops at `.git` root and will not discover parent `.agent/skills` folders automatically.
+- To resolve, configure `~/.gemini/config/skills.json` globally:
+  ```json
+  {
+    "entries": [
+      {
+        "path": "/absolute/path/to/shared/.agent/skills"
+      }
+    ]
+  }
+  ```
+
 ## Anti-Patterns
 
 - NEVER `Glob **/SKILL.md` on repo root (hits `lib/` → 212k tokens)

@@ -1,1 +1,0 @@
-cache/repos/github.com/timescale@pg-aiguide/skills/postgres/references/../../ghost-database/SKILL.md

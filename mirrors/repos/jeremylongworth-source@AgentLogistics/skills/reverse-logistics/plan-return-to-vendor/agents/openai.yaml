@@ -1,0 +1,4 @@
+interface: openai
+display_name: Plan Return To Vendor
+short_description: Plan return-to-vendor workflow from vendor policy, item condition, quantities, documents, transport, and approval boundaries.
+default_prompt: Use $plan-return-to-vendor to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

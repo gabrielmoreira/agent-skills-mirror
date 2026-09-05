@@ -4,6 +4,22 @@ Dated notes on what changed in the skill and which build's finding drove it.
 Builds live in `OtherWorlds/Ultimate Websites/builds/`; each carries a
 `BUILD-REPORT.md`.
 
+## 2026-09-04: approved ten-site rebuild, public release 0.3.0
+
+Nate approved the rebuilt ten-site collection and requested that its process
+become the standard. Added `references/approved-collection.md`: authentic brand
+research, layer contracts, photographic/3D selection, complete compositing
+assets, meaningful pointer and scroll choreography, independent page structures,
+useful controls, compact-phone art direction, exact WebGL posters, and final
+package verification. All ten sites are documented as worked examples.
+
+Explicit creative delegation now supports an authored brief without a forced
+interview. Page length is a pacing guideline rather than a filler quota. The
+verification harness disables native pointer lock/capture before navigation.
+The public release also includes the Sonder hero-depth reference. No engine
+behavior or existing video-decoder fixes are changed in this release.
+
+
 ## 2026-09-01: skill renamed to `scroll-craft` to match the repo
 
 The repo, the skill and the invocation now share one spelling. The skill was

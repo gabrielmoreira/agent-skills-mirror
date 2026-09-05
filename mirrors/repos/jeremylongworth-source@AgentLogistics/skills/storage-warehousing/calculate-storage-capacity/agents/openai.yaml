@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Storage Capacity"
+  short_description: "Calculate storage capacity from usable space, storage method..."
+  default_prompt: "Use $calculate-storage-capacity to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

@@ -53,6 +53,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-frontend-refactor`: [omh] Hermes frontend refactor workflow: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish.
 - `omh-gateway-intent-card`: [omh] Hermes gateway intent workflow: normalize Discord, Slack, Telegram, and other gateway sessions into origin, thread, delivery, silent, attachment, and status-update policy.
 - `omh-github-event-ops`: [omh] Hermes GitHub event operations workflow: route PR, issue, CI, and review webhook events into triage, review, or fix handoff cards.
+- `omh-github-issue-intake`: [omh] GitHub issue intake workflow: turn a public chat report into a confirmed, verified issue package.
 - `omh-harness-session-inventory`: [omh] Hermes harness session inventory workflow: normalize Codex, Claude Code, Hermes, OpenCode, Cursor, MCP host, worktree, and wrapper session metadata into one drift-aware inventory.
 - `omh-idea-to-deploy`: [omh] Hermes Idea-to-Deploy workflow: shape an app idea into decisions, delivery handoff, verification, release, and monitoring status.
 - `omh-image-cards`: [omh] Image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards.
@@ -86,6 +87,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-physical-device-readiness`: [omh] Physical device readiness - gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools.
 - `omh-plan`: [omh] Hermes Plan workflow: structured planning before execution.
 - `omh-product-brief`: [omh] Turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief.
+- `omh-docs`: [omh] Current-source-first documentation for OMH itself: product identity, public capability catalog, model routing, local state, and long-term memory.
 - `omh-production-audit`: [omh] Hermes Production Audit workflow: evaluate release, deploy, security, observability, rollback, docs, and support readiness without claiming production access.
 - `omh-prompt-import-readiness`: [omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities.
 - `omh-provider-profile-posture`: [omh] Prepare provider-profile metadata without reading secrets or calling providers.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Transportation Mode"
+  short_description: "Select a transportation mode from shipment profile, service n..."
+  default_prompt: "Use $select-transportation-mode to produce transportation planning support with evidence, calculations, and review boundaries."

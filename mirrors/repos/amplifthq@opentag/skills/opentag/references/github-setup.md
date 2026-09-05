@@ -1,99 +1,76 @@
-# GitHub Setup
+# GitHub Project Target
 
-Use this path when the user wants GitHub comments to run a local OpenTag coding agent and reply back on GitHub.
+Use this branch to configure the local checkout, the Control Plane target, or
+governed publication/readback. Slack supplies every human request; GitHub
+supplies the bound target and publication evidence.
 
-Read the repository guide as the source of truth before giving credential steps:
+## Establish one exact target
 
-```text
-docs/platforms/github.en.md
-```
-
-## Current Product Path
-
-The CLI currently uses a repository webhook. GitHub sends comment events to a public tunnel, OpenTag receives them locally, runs the selected coding agent, and posts replies back to the same GitHub issue or pull request thread.
-
-GitHub App installation is the longer-term product direction, but it is not the default CLI setup yet.
-
-## What The User Needs
-
-- GitHub repository, usually `owner/repo`
-- A local checkout of that repository
-- A public tunnel to the local GitHub listener
-- A repository webhook pointing to that tunnel
-- A GitHub token for comments and pull request creation
-- Local git credentials that can push branches to `origin` if `apply 1` should create a PR
-
-Never invent tokens, owner names, repository names, webhook secrets, or project paths.
-
-## User Path
+Confirm the intended checkout before setup:
 
 ```bash
-npm install -g @opentag/cli@0.11.0
-opentag setup
+git -C /absolute/path/to/checkout status --short
+git -C /absolute/path/to/checkout remote get-url origin
 ```
 
-During setup, choose:
+Preserve unrelated changes. Confirm that `origin` names the intended
+`owner/repo`, the base branch is correct, and the local git identity can create
+the Runner-owned branch used for publication.
 
-```text
-Platform: GitHub
-Coding agent: Codex or Claude Code for real work; Echo only for dev/test
-Project: the local checkout OpenTag should operate on
-```
-
-OpenTag can generate the webhook secret and save the local runtime config. The user still needs to create the public tunnel and repository webhook because GitHub cannot call `localhost` directly.
-
-Then:
+Run paired setup without a token argument so the GitHub credential is entered
+through the local secret prompt:
 
 ```bash
-opentag start
+opentag setup \
+  --relay https://control.example.com \
+  --project /absolute/path/to/checkout \
+  --executor codex \
+  --github-repository owner/repo \
+  --project-target-id target_team
 ```
 
-Keep it running while testing GitHub comments.
+Use the repository guide at `docs/platforms/github.en.md` when selecting a
+fine-grained token. Limit it to the target repository and the readback and
+draft-pull-request operations the deployment enables.
 
-## PR Action Flow
+Completion: redacted Runner config names the exact GitHub repository, checkout,
+remote, base branch, and ACP executor without exposing the token.
 
-When the coding agent changes files, OpenTag prepares and pushes a run branch, then shows a `create_pull_request` action in the GitHub thread. The user creates the PR by replying:
+## Match the Control Plane binding
 
-```text
-apply 1
-```
+Pass the exact `OPENTAG_SLACK_PROJECT_TARGET_ID` from the bootstrapped Control
+Plane to setup. Pairing registers the target only when that ID is already
+referenced by an active Slack installation and binding, then verifies provider,
+owner, repository, default branch, executor, digest, and Runner through the
+authoritative Control Context readback.
 
-That requires:
+Completion: the Slack binding, Control Plane Project Target, and Runner local
+allowlist resolve to one target identity and current binding generation.
 
-- GitHub token saved in OpenTag config.
-- The run branch already pushed to the remote repository.
-- Local git remote credentials that can push the branch.
+## Publication authority
 
-If the token is missing, OpenTag may still run the agent but cannot post GitHub comments or create the final pull request.
+The ACP Agent may edit and verify only the assigned local checkout. OpenTag
+alone owns Slack delivery and GitHub access: it freezes the base revision, records the
+candidate and branch ownership, requires the configured approval, then performs
+each GitHub publication step through the paired publication protocol.
 
-## Verification
+Treat these as distinct facts:
 
-```bash
-opentag status
-opentag doctor
-opentag config show
-```
+- local files changed;
+- a publication candidate was recorded;
+- the exact candidate was approved;
+- branch publication began;
+- GitHub accepted a draft pull request;
+- the expected head and required evidence were read back.
 
-In GitHub, comment on an issue or pull request review thread:
+Completion: any published draft pull request matches the approved repository,
+base, branch, and head SHA, and the durable receipt records the exact provider
+outcome.
 
-```text
-@opentag investigate this
-```
+## Ambiguous outcomes
 
-Expected result:
-
-1. GitHub delivers the webhook to the tunnel.
-2. OpenTag creates a run.
-3. The local executor starts.
-4. OpenTag posts progress and final result comments.
-5. If files changed, `apply 1` creates a pull request.
-
-## First Checks When It Fails
-
-- The tunnel is running and points at the GitHub listener port from `opentag start`.
-- The repository webhook URL ends with `/github/webhooks`.
-- The webhook uses `application/json`.
-- The webhook secret matches the secret saved by OpenTag.
-- The webhook subscribes to issue comments and pull request review comments.
-- The GitHub token has write access to issues and pull requests.
-- The local `origin` remote can push branches.
+A generated URL, local process success, or queued intent is not provider proof.
+When a GitHub request may have reached the provider but the response is lost,
+retain `outcome_unknown`. Reconcile the remote branch or pull request by exact
+operation identity and expected head before deciding whether another attempt is
+safe.

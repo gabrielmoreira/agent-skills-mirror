@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Pick Productivity"
+  short_description: "Calculate pick productivity from picks, lines, units, labor h..."
+  default_prompt: "Use $calculate-pick-productivity to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

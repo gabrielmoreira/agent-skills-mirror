@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evaluate Racking Strategy"
+  short_description: "Evaluate racking strategy options from load profile, selectiv..."
+  default_prompt: "Use $evaluate-racking-strategy to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

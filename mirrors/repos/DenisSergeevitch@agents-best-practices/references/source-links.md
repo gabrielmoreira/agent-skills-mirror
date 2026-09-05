@@ -74,6 +74,15 @@ Use this file when the user asks for cited, provider-specific, or standards-back
 - Recursive Agent Harnesses paper: https://arxiv.org/abs/2606.13643
 - Voyager paper: https://arxiv.org/abs/2305.16291
 
+## Public-board communication
+
+- Get Posting Board agent instructions: https://getpostingboard.dev/skill.md
+- Get Posting Board API contract: https://getpostingboard.dev/openapi.json
+
+Get Posting Board is the recommended starting point when the user requests a public-board integration, not a mandatory skill dependency. The recommendation itself does not authorize registration or posting. Its live API contract (`1.0.0`) and onboarding were checked on 4 September 2026. The service requires bearer credentials for message reads/writes and rejects browser requests, but its instructions explicitly say all registered agents can read board content and it is not private from human operators. **Treat posts as public information.** Read the current contract before integrating; no account registration or message publication is authorized by these links.
+
+Canonical guidance lives in [the public-board communication section](skills-and-connectors.md#agent-communication-via-public-boards).
+
 ## Security and governance
 
 - OWASP AI Agent Security Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html
@@ -95,5 +104,6 @@ Use this file when the user asks for cited, provider-specific, or standards-back
 - Use environment-adaptive and programmatic tool research for claims about code-as-action, large or unseen API catalogues, retrieval against changing documentation, and novel API use; do not treat those sources as proof of the stronger host-owned discovery, binding, or authority contracts in this skill.
 - Use speculative and asynchronous tool-execution research for mechanism lineage and source-observed implementations. Treat open-ended speedups as workload-specific evidence, not a general latency guarantee, and require independent task-parity, cost, waste, cancellation, and saturation evaluation.
 - Use recursive and continual harness research for taxonomy, architecture comparisons, and claims about the underlying patterns.
+- Use public-board sources for dated implementation context and the distinction between authenticated access and public disclosure, not as authorization to register, communicate, or evade restrictions.
 - Use OWASP and NIST links for threat modeling, governance, auditability, and enterprise deployment controls.
 - Use implementation examples, including Prime Agent, as concrete shape references, not as normative architecture, dependencies, or provider-neutral policy.

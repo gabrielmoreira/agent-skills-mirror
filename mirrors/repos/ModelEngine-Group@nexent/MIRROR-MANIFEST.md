@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,27 +59,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/prompts-writing/examples.md`](.claude/skills/prompts-writing/examples.md) |
-| 2 | ✓ | [`.claude/skills/prompts-writing/references/best-practices.md`](.claude/skills/prompts-writing/references/best-practices.md) |
-| 3 | ✓ | [`.claude/skills/prompts-writing/references/templates.md`](.claude/skills/prompts-writing/references/templates.md) |
-| 4 | ✓ | [`.claude/skills/prompts-writing/SKILL.md`](.claude/skills/prompts-writing/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/skill-creator/SKILL.md`](.claude/skills/skill-creator/SKILL.md) |
-| 6 | ✓ | [`.cursor/rules/backend/app_layer_rules.mdc`](.cursor/rules/backend/app_layer_rules.mdc) |
-| 7 | ✓ | [`.cursor/rules/backend/database_layer_rules.mdc`](.cursor/rules/backend/database_layer_rules.mdc) |
-| 8 | ✓ | [`.cursor/rules/backend/service_layer_rules.mdc`](.cursor/rules/backend/service_layer_rules.mdc) |
-| 9 | ✓ | [`.cursor/rules/english_comments.mdc`](.cursor/rules/english_comments.mdc) |
-| 10 | ✓ | [`.cursor/rules/environment_variable.mdc`](.cursor/rules/environment_variable.mdc) |
-| 11 | ✓ | [`.cursor/rules/frontend/component_layer_rules.mdc`](.cursor/rules/frontend/component_layer_rules.mdc) |
-| 12 | ✓ | [`.cursor/rules/frontend/frontend_overview_rules.mdc`](.cursor/rules/frontend/frontend_overview_rules.mdc) |
-| 13 | ✓ | [`.cursor/rules/frontend/hook_layer_rules.mdc`](.cursor/rules/frontend/hook_layer_rules.mdc) |
-| 14 | ✓ | [`.cursor/rules/frontend/page_layer_rules.mdc`](.cursor/rules/frontend/page_layer_rules.mdc) |
-| 15 | ✓ | [`.cursor/rules/frontend/service_layer_rules.mdc`](.cursor/rules/frontend/service_layer_rules.mdc) |
-| 16 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
-| 17 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
-| 18 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
-| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 20 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
-| 21 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
+| 1 | ✓ | [`.claude/skills/external-memory-plugin/SKILL.md`](.claude/skills/external-memory-plugin/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/prompts-writing/examples.md`](.claude/skills/prompts-writing/examples.md) |
+| 3 | ✓ | [`.claude/skills/prompts-writing/references/best-practices.md`](.claude/skills/prompts-writing/references/best-practices.md) |
+| 4 | ✓ | [`.claude/skills/prompts-writing/references/templates.md`](.claude/skills/prompts-writing/references/templates.md) |
+| 5 | ✓ | [`.claude/skills/prompts-writing/SKILL.md`](.claude/skills/prompts-writing/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/skill-creator/SKILL.md`](.claude/skills/skill-creator/SKILL.md) |
+| 7 | ✓ | [`.cursor/rules/backend/app_layer_rules.mdc`](.cursor/rules/backend/app_layer_rules.mdc) |
+| 8 | ✓ | [`.cursor/rules/backend/database_layer_rules.mdc`](.cursor/rules/backend/database_layer_rules.mdc) |
+| 9 | ✓ | [`.cursor/rules/backend/service_layer_rules.mdc`](.cursor/rules/backend/service_layer_rules.mdc) |
+| 10 | ✓ | [`.cursor/rules/english_comments.mdc`](.cursor/rules/english_comments.mdc) |
+| 11 | ✓ | [`.cursor/rules/environment_variable.mdc`](.cursor/rules/environment_variable.mdc) |
+| 12 | ✓ | [`.cursor/rules/frontend/component_layer_rules.mdc`](.cursor/rules/frontend/component_layer_rules.mdc) |
+| 13 | ✓ | [`.cursor/rules/frontend/frontend_overview_rules.mdc`](.cursor/rules/frontend/frontend_overview_rules.mdc) |
+| 14 | ✓ | [`.cursor/rules/frontend/hook_layer_rules.mdc`](.cursor/rules/frontend/hook_layer_rules.mdc) |
+| 15 | ✓ | [`.cursor/rules/frontend/page_layer_rules.mdc`](.cursor/rules/frontend/page_layer_rules.mdc) |
+| 16 | ✓ | [`.cursor/rules/frontend/service_layer_rules.mdc`](.cursor/rules/frontend/service_layer_rules.mdc) |
+| 17 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
+| 18 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
+| 19 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
+| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 21 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
+| 22 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
 
 ---
 

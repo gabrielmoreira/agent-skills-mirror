@@ -1,22 +1,18 @@
 ---
 name: scroll-craft
 description: >
-  Build a premium, scroll-driven interactive landing page for any business:
-  a service company, a physical product, a food brand, a drink brand. Scroll
-  becomes the timeline. Video scrubs frame by frame under the wheel, sections
-  pin and advance, rails pan sideways, headlines assemble line by line, the page
-  ground shifts colour as you travel, and the pointer moves things that are not
-  scrolling. Interviews the human first (their vibe, their journey, one unbroken
-  world or distinct scenes, and what assets they already own), then picks a page
-  grammar and a signature move so no two builds share a skeleton, generates
-  photoreal assets through kie.ai or builds from the user's own footage and
-  photos, writes real semantic HTML on a design-system floor, and verifies the
-  result by screenshotting its own scroll. Use for
-  "scrollytelling", "scroll animation site", "a site where scrolling plays a
-  video", "Apple-style landing page", "3D scroll world", "interactive landing
-  page", "make my brand a scroll experience", "make it feel different", "this
-  looks like a template", "a unique scroll site", or any request for a site that
-  should feel like an experience rather than a document.
+  Build premium scroll-driven landing pages for service, product, food, and
+  drink brands. Plan the visitor journey, page grammar, emotional peak, and
+  bespoke signature move. Create dimensional heroes with independent visual
+  planes, restrained motion, and separate mobile composition. Use supplied
+  photos and footage or generate photoreal assets through kie.ai, write semantic
+  HTML, and verify desktop, mobile, and reduced-motion scroll states visually.
+  Use for "scrollcraft", "scroll craft", "layered hero", "premium hero",
+  "cinematic hero", "scrollytelling", "scroll animation site", "a site where
+  scrolling plays a video", "Apple-style landing page", "3D scroll world",
+  "interactive landing page", "make my brand a scroll experience", "this looks
+  like a template", or requests for a distinctive website that feels like an
+  experience rather than a document.
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion
 ---
 
@@ -57,12 +53,43 @@ Four rules follow from that, and they are the spine of this skill:
    deliberately or every build inherits the same skeleton. The first four builds
    did exactly that. Read [references/uniqueness.md](references/uniqueness.md).
 
-## Step 0: The interview
+## Nate's standing hero preference
 
-**Always interview the human before generating anything.** Not a brief you
-inferred from the brand name, not a plan you present for approval. Actual
-questions, asked, answered, written down. A page built from assumptions comes
-back looking like the last page built from assumptions.
+**Dimensional layering is a baseline requirement for a premium marketing hero.**
+Plan independently moving background, subject, foreground, and atmospheric
+planes before requesting assets. A beautiful single background with text fades
+does not satisfy this preference. Depth must come from visible separation,
+occlusion, and controlled differences in movement, while the headline stays
+readable and the scene tells one clear story.
+
+Read [references/hero-depth.md](references/hero-depth.md) before planning the hero
+or generating its assets. It covers clean plates, genuine alpha cutouts, shared
+contact anchors, typography between planes, restrained scroll choreography,
+mobile art direction, and visual acceptance, with the approved Sonder example.
+Use the composition that fits the chosen grammar; do not repeat Sonder's scene
+or impose pinning on a grammar that forbids it. Honor explicit static or simpler
+directions, and keep depth in the static composition when motion is reduced.
+
+## Approved collection standard
+
+Read [references/approved-collection.md](references/approved-collection.md)
+before planning a premium marketing site. It distills the ten-site rebuild Nate
+approved: real brand research, layer contracts, meaningful pointer/scroll depth,
+appropriate photographic or 3D rendering, distinct navigation and endings,
+useful interactions, mobile art direction, and evidence from the final package.
+These are execution principles and worked examples, not a reusable page skeleton.
+
+## Step 0: The brief and creative authority
+
+**Establish the brief before generating anything.** Reuse answers and assets
+already provided. When the user explicitly delegates creative direction (for
+example, "use your judgment" or "I want to get out of your way"), write a
+`Self-authored under explicit creative delegation` brief and proceed. Cover the
+eight topics below, distinguish evidence from assumptions, and do not invent
+user quotations or force another interview/approval checkpoint.
+
+Otherwise, interview for the missing decisions. Ask actual questions, record
+the answers, and avoid inferring an entire brand from its name.
 
 The skill is a range instrument, not a house style. The human brings intent and
 whatever assets they own; the interview is where that turns into the right kind
@@ -109,7 +136,7 @@ from that file.
 
 BRIEF.md must contain, at minimum:
 
-- The eight interview answers, verbatim.
+- The eight topics, with verbatim user answers where supplied and clearly labeled authored decisions where delegated.
 - **The feeling curve.** One line per act: the emotion, then what on screen
   causes it. Written before the acts exist, added to as the score fills in.
 - **The peak.** The one moment, written as the sentence a visitor would say to
@@ -123,7 +150,8 @@ BRIEF.md must contain, at minimum:
 **If the human is genuinely unreachable** and the run is fully autonomous, write
 BRIEF.md yourself: answer all eight questions in the brand's voice, mark the file
 `Self-authored, not interviewed` at the top, and say so in the final report. A
-self-authored brief is a fallback, never the plan.
+self-authored brief without delegation is a fallback. Explicit delegation above
+is a normal supported workflow and does not require the human to be unreachable.
 
 ## Bootstrap
 
@@ -213,17 +241,18 @@ shift in what the visitor knows or feels.
 ```
 
 Beats are the spine. Sections serve beats; a section that serves no beat is cut,
-however nice the shot is. Show the journey to the user and get it right before
-generating a single asset, because assets are the expensive part and the journey
-determines every one of them.
+however nice the shot is. Resolve the journey before generating assets. Show it
+to the user when their decisions are needed; under explicit creative delegation,
+record the chosen journey and proceed within the authorized scope.
 
 ## Step 2: Grammar, gate, then score
 
 Three things in order, and the first two come before any act planning. Full
 detail in [references/uniqueness.md](references/uniqueness.md).
 
-**Pick a grammar.** Eight of them, and they are mutually exclusive because each
-one forbids things the others require. Filmic one-shot is the one the first four
+**Pick a grammar.** Start with the eight defined grammars and their constraints.
+A new grammar is allowed when its navigation, sequence, ending, and explicit
+bans describe a different structure; a new label alone earns no credit. Filmic one-shot is the one the first four
 builds all used, so choosing it again means saying in the report why the other
 seven did not fit the interview. Nav, hero and close all follow from the
 grammar; they are not decided separately.
@@ -272,8 +301,10 @@ Checks before you build:
 - No two adjacent acts carry the same feeling. If they do, one is filler.
 - One act is the peak and it has the largest span by a visible margin. The act
   before it is quieter than it is.
-- Every act earns its scroll span. Total page length 8 to 14 viewport-heights.
-  Longer is not more immersive, it is slower.
+- Every act earns its scroll span. Eight to fourteen viewport-heights is a
+  pacing reference for longer cinematic pages, not a quota. Shorter editorial,
+  gallery, or working-surface grammars should stay short when the journey is
+  complete. Never add filler or empty pinning to hit a length target.
 - The act count and total length do not land in the 6-to-7 acts at 13.6-13.8vh
   band that all four prior builds hit. That band is a fingerprint dimension now.
 
@@ -331,6 +362,12 @@ Theme by overriding tokens, six values and two fonts:
 
 ## Step 5: Verify by scrolling it
 
+Apply the final-source and deployment checks in
+[approved-collection.md §7](references/approved-collection.md#7-require-visual-and-functional-evidence-before-delivery).
+Use safe headless automation with native pointer lock/capture disabled in every
+context. Inspect actual pixels, phone compositions, and intermediate states;
+test useful controls, downloads, and form outcomes in the final package.
+
 Not optional, and not "it should work." A scroll page has no single state:
 every position is a different frame, and the failures live between the two you
 happened to look at. Full procedure: [references/verify.md](references/verify.md).
@@ -387,7 +424,7 @@ machine-made.
 | Em dash anywhere visible | Period, comma, colon, or parentheses |
 | Centred copy in every act | Vary the anchor: lead, trail, centre, split |
 | The same device twice in a row | Score the journey properly in Step 2 |
-| Generating anything before the human has been interviewed | Run Step 0. Write `BRIEF.md`, or mark it self-authored |
+| Generating before the brief and creative authority are clear | Run Step 0. Record actual answers or explicitly delegated authored decisions in `BRIEF.md` |
 | A page with no engineered peak, or with three competing ones | One peak. It gets the asset budget, the silence before it, and the most scroll room. See feel.md §2 |
 | An ending that trails off, fades out, or just becomes a footer | The close resolves and holds. The last feeling is the one they carry |
 | Planning acts before the feeling curve exists | Curve first, devices second. See feel.md §1 |

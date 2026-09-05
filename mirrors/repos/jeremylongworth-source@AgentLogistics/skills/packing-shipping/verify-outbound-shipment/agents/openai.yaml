@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Outbound Shipment"
+  short_description: "Verify outbound shipments against order, pick, pack, label, d..."
+  default_prompt: "Use $verify-outbound-shipment to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

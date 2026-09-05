@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Freight Cost"
+  short_description: "Calculate freight cost from rate basis, shipment weight, dime..."
+  default_prompt: "Use $calculate-freight-cost to produce transportation planning support with evidence, calculations, and review boundaries."

@@ -1,0 +1,4 @@
+interface: openai
+display_name: Reconcile Returned Inventory
+short_description: Reconcile returned inventory from return receipt, system balance, disposition, quantities, holds, and source-system records.
+default_prompt: Use $reconcile-returned-inventory to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

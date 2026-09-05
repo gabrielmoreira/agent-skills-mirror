@@ -1,0 +1,4 @@
+interface:
+  display_name: "Classify Material Handling Requirements"
+  short_description: "Classify material handling requirements from load, dimensions..."
+  default_prompt: "Use $classify-material-handling-requirements to produce material-handling planning support with evidence, assumptions, and review boundaries."

@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Logistics Waste
+short_description: Analyze logistics waste from process maps, movement, waiting, rework, defects, excess inventory, overprocessing, and source evidence.
+default_prompt: Use $analyze-logistics-waste to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

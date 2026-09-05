@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Min Max Policy"
+  short_description: "Design inventory min-max replenishment policy from demand, le..."
+  default_prompt: "Use $design-min-max-policy to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

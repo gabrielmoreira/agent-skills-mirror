@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Expiration Controlled Inventory"
+  short_description: "Manage expiration-controlled inventory by tracing expiry date..."
+  default_prompt: "Use $manage-expiration-controlled-inventory to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

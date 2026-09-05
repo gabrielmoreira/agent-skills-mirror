@@ -2,8 +2,7 @@
 
 This skill can run standalone, without any other Education Cloud setup skill running first. Verify
 these before Step 1 — they are shared across the EDU skill family (also required by
-`education-cloud-domain-configure`, `education-cloud-academic-calendar-generate`,
-`education-cloud-course-catalog-migrate`). A gap here is a missing prerequisite to resolve, not a
+`education-cloud-domain-configure`). A gap here is a missing prerequisite to resolve, not a
 dead end — self-heal what's API-writable, ask/confirm before any write, otherwise instruct manual
 Setup and wait for confirmation.
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagnose Receiving Bottleneck"
+  short_description: "Diagnose receiving bottlenecks from inbound volume, dock capa..."
+  default_prompt: "Use $diagnose-receiving-bottleneck to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

@@ -6,6 +6,8 @@ metadata:
   minApiVersion: "65.0"
   domains:
     - "Education"
+  relatedSkills:
+    - "education-cloud-domain-configure"
   accessCheck:
     - type: "license"
       value: "Education Cloud"

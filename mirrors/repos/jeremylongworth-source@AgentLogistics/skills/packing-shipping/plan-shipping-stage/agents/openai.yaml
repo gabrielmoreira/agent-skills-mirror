@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Shipping Stage"
+  short_description: "Plan shipping staging from packed orders, carriers, routes, d..."
+  default_prompt: "Use $plan-shipping-stage to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Optimize Storage Density"
+  short_description: "Optimize storage density by comparing capacity, utilization..."
+  default_prompt: "Use $optimize-storage-density to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

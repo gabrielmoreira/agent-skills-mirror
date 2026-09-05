@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evaluate Conveyor Application"
+  short_description: "Evaluate conveyor applicability from throughput, product prof..."
+  default_prompt: "Use $evaluate-conveyor-application to produce material-handling planning support with evidence, assumptions, and review boundaries."

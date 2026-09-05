@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Cartonization"
+  short_description: "Plan cartonization from item dimensions, weights, order mix..."
+  default_prompt: "Use $plan-cartonization to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

@@ -1,0 +1,4 @@
+interface: openai
+display_name: Build Logistics Improvement Plan
+short_description: Build logistics improvement plans from root cause, constraints, actions, owners, metrics, expected effects, and measurement plans.
+default_prompt: Use $build-logistics-improvement-plan to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ingredient Substitution"
+  short_description: "Evaluate swaps by culinary function and tradeoffs."
+  default_prompt: "Use this skill for ingredient swaps, omissions, dietary adaptations, and unavailable ingredients where function and side effects matter."

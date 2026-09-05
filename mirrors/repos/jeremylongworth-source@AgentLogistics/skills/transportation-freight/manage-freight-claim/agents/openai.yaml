@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Freight Claim"
+  short_description: "Prepare freight claim support from damage or loss evidence, s..."
+  default_prompt: "Use $manage-freight-claim to produce transportation planning support with evidence, calculations, and review boundaries."

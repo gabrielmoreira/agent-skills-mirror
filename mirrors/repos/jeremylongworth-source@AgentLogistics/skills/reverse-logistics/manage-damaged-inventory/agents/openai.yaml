@@ -1,0 +1,4 @@
+interface: openai
+display_name: Manage Damaged Inventory
+short_description: Manage damaged-inventory workflow from damage type, quantity, status, location, cause evidence, and disposition boundaries.
+default_prompt: Use $manage-damaged-inventory to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

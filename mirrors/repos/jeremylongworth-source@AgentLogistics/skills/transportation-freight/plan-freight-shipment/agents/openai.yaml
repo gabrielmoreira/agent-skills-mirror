@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Freight Shipment"
+  short_description: "Plan freight shipments from origin, destination, goods, servi..."
+  default_prompt: "Use $plan-freight-shipment to produce transportation planning support with evidence, calculations, and review boundaries."

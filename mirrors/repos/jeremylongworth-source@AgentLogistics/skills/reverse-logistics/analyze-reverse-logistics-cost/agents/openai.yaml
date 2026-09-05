@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Reverse Logistics Cost
+short_description: Analyze reverse-logistics cost from returns handling, freight, labor, disposition value, recovery, and source evidence.
+default_prompt: Use $analyze-reverse-logistics-cost to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

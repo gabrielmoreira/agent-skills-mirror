@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Inventory Accuracy"
+  short_description: "Calculate inventory accuracy from system balances, counted qu..."
+  default_prompt: "Use $calculate-inventory-accuracy to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reconcile ASN"
+  short_description: "Reconcile advance ship notice data against purchase orders, s..."
+  default_prompt: "Use $reconcile-asn to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

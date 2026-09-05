@@ -61,6 +61,17 @@ The mental model:
 
 ## Worker Budget
 
+Audit hydration is bounded independently of review capacity:
+
+| Name | Current | Meaning |
+| ---- | ------: | ------- |
+| `audit.max_parallel_targets` | 3 | Target audits dispatched per wave; wait for every run to complete before the next wave. |
+
+The fanout reads this limit through `AUTOMATION_LIMITS` in `src/limits.ts`.
+The signed audit cursor checkpoints remaining targets and outstanding children;
+resumed batches drain those children before admitting a new wave.
+It does not alter worker budgets, exact-review admission, or target selection.
+
 | Name                                       | Current | Meaning                                                                                         |
 | ------------------------------------------ | ------: | ----------------------------------------------------------------------------------------------- |
 | `workers.max`                              |     128 | Maximum global Codex worker budget used to derive lane limits.                                  |
@@ -240,7 +251,7 @@ Codex and does not deduct these control-plane workflows from `workers.max`.
 
 Legacy state-repository publication once limited exact-review preparation to
 four concurrent size-8 batches. Canonical Worker publication removes that
-shared Git writer constraint, so production now admits 4 preparation
+shared Git writer constraint, so production now admits 8 preparation
 batches (up to 64 publication members) while retaining the Durable Object's
 transactional SQLite ownership boundaries.
 
@@ -300,12 +311,17 @@ immediately schedules a known newer revision. Failed and cancelled executors
 requeue their item with bounded retry backoff. Successful finalizer reports stay
 leased until a signed terminal-run reconciliation backstop confirms that exact
 GitHub attempt completed successfully; this backstop can also recover terminal
-failed or cancelled runs before lease expiry. Completion triggers share one
-running and one pending reconciler; each surviving run inspects every live claim
-against bounded workflow-run pages, then verifies only matching terminal attempts.
-Candidates absent from those pages fall back to exact run lookup. This keeps
-steady-state GitHub API work constant without losing an older claim, while a
-terminal burst does not consume one Actions runner per review. Unclaimed
+failed or cancelled runs before lease expiry. Event-triggered lease repair shares
+one running and one pending job in `exact-review-reconcile-workflow-run` with
+`cancel-in-progress: false`. A five-minute successful-reconciliation guard
+suppresses redundant scans; skipped and observer-only runs do not reset it.
+Per-run reliability observations retain their own jobs so no telemetry is lost.
+The independent `*/15` sweep reads `/internal/exact-review/claimed-runs`, checks
+exact GitHub attempts in batches of eight, and posts terminal tuples to
+`/internal/exact-review/reconcile`. It bypasses the event cooldown, providing an
+approximately 15-minute backstop for coalesced terminal events, subject to Actions
+scheduling and API availability. See [Scheduler](scheduler.md) for the bounded
+Actions history reads that implement the cooldown. Unclaimed
 dispatches expire after six minutes and receive a new opaque lease; delayed
 workflows holding the expired lease cannot claim it. The six-minute timer covers
 only the GitHub dispatch-to-claim handoff. Once the first workflow step claims

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Stockout"
+  short_description: "Analyze stockout causes from demand, inventory position, lead..."
+  default_prompt: "Use $analyze-stockout to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

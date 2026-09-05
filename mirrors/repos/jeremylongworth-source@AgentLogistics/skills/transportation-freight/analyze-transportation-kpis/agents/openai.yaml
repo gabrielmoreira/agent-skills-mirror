@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Transportation KPIs"
+  short_description: "Analyze transportation KPIs from shipment metrics, service, c..."
+  default_prompt: "Use $analyze-transportation-kpis to produce transportation planning support with evidence, calculations, and review boundaries."

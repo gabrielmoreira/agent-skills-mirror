@@ -1,0 +1,4 @@
+interface:
+  display_name: "Classify Storage Requirements"
+  short_description: "Classify storage requirements from SKU attributes, load units..."
+  default_prompt: "Use $classify-storage-requirements to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

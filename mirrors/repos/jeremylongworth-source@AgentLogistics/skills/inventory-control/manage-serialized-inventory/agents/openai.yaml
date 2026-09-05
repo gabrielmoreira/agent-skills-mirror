@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Serialized Inventory"
+  short_description: "Manage serialized inventory workflows by tracing unique seria..."
+  default_prompt: "Use $manage-serialized-inventory to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

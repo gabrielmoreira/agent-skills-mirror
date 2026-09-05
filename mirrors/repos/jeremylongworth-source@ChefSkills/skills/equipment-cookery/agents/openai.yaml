@@ -1,0 +1,4 @@
+interface:
+  display_name: "Equipment Cookery"
+  short_description: "Cooking equipment and heat-transfer guidance."
+  default_prompt: "Use $equipment-cookery to plan or troubleshoot cooking around appliances, vessels, heat transfer, capacity, microwaves, slow cookers, pressure equipment, and tool substitutions."

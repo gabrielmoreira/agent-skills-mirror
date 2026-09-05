@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Physical Inventory"
+  short_description: "Plan physical inventory events with freeze rules, count scope..."
+  default_prompt: "Use $plan-physical-inventory to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

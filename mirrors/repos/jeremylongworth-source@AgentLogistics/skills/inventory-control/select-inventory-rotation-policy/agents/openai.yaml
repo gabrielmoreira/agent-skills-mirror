@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Inventory Rotation Policy"
+  short_description: "Select inventory rotation policy from SKU attributes, age, ex..."
+  default_prompt: "Use $select-inventory-rotation-policy to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

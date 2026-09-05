@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Throughput
+short_description: Analyze logistics throughput from units, orders, lines, time, capacity, process scope, and source records.
+default_prompt: Use $analyze-throughput to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

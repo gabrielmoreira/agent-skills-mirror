@@ -92,7 +92,7 @@ Supported types: SQL schemas, OpenAPI/Protobuf API specs, Terraform/CloudFormati
 | `EMBEDDING_MODEL` | `nomic-embed-text` | Model name (provider-specific) |
 | `SEARCH_DEFAULT_LIMIT` | `10` | Default result limit for codebase_search (1-50) |
 | `SEARCH_MIN_SCORE` | `0.10` | Default minimum RRF score threshold (0-1) |
-| `MAX_FILE_SIZE_MB` | `5` | Maximum file size for indexing in MB |
+| `MAX_FILE_SIZE_MB` | `5` | Maximum file size for indexing in MB; must be a complete finite number |
 | `EXTRA_EXTENSIONS` | — | Additional file extensions to index (e.g. `.tpl,.blade,.hbs`) |
 
 For full parameter details on every tool, see [references/tool-reference.md](references/tool-reference.md).

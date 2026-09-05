@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate EOQ"
+  short_description: "Calculate economic order quantity from annual demand, orderin..."
+  default_prompt: "Use $calculate-eoq to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

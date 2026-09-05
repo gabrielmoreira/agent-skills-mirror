@@ -357,14 +357,25 @@ Distribution has two halves: the GitHub release is where a person downloads the
 app, and the feed host is the only thing an installed app reads. Publishing one
 without the other is a silent no-op.
 
-The workflow in this repository builds the OSS edition only, and ships it feed-less
-and unsigned. The hosted edition is built by a separate pipeline that holds the
-signing certificates and the key to the feed host; it consumes this directory but
-does not live in it, because a public repository is the wrong place to keep a
-credential that can replace the binary every installed app runs. Both editions are
-the same source, so a change here reaches both, and `scripts/` is shared: nothing
-under it is dead code merely because this repository's own workflow does not call
-it.
+The workflow in this repository builds the OSS edition unsigned and with no feed.
+That is what makes it useful to a fork: it takes no credentials and needs no
+setup, and its signing and feed steps activate on their own if a fork ever
+supplies them. It is not what cuts the published releases. Those come from a
+separate pipeline that holds the signing certificates and the key to the feed
+host, builds both editions, and consumes this directory without living in it,
+because a public repository is the wrong place to keep a credential that can
+replace the binary every installed app runs. Both editions are the same source,
+so a change here reaches both, and `scripts/` is shared: nothing under it is dead
+code merely because this repository's own workflow does not call it.
+
+**The two editions cannot share a feed.** electron-builder names a manifest for
+the channel and nothing else, so two editions publishing to one feed root both
+write `latest-mac.yml` and the second overwrites the first. Whichever wins then
+hands its own archives to both, and a self-hosted install updates itself into the
+hosted app: same version, same filename shape, different product. Each edition
+needs a feed root of its own, and the `extraMetadata.name` in
+`electron-builder.yml` for the same reason one layer down, since electron-updater
+names its download cache from the package name.
 
 Applying a macOS update needs a Developer ID signature, and Squirrel.Mac checks
 the incoming build's against the running one's: a Team ID that differs is
@@ -438,15 +449,16 @@ like.
 
 ## Status
 
-macOS is built and verified, including the outage page and the update path up to
-the signature check. Windows and Linux targets are declared in
-`electron-builder.yml` and run in CI, but have not been exercised by hand.
+macOS is built and verified end to end, including the outage page and the update
+path. Windows and Linux targets are declared in `electron-builder.yml` and run in
+CI, but are not signed and have not been exercised by hand.
 
-The signing and notarization switches above are wired, and a hosted build has
-been through Apple end to end: both `.app` bundles and both disk images came
-back notarized and stapled, verified with `stapler validate` and `spctl` rather
-than read off the build log. That run was local: no signed or notarized build has
-been produced on CI yet, which is the one part of the path still unexercised.
+The signing and notarization switches above are wired and exercised on CI: both
+`.app` bundles and both disk images come back notarized and stapled, verified
+with `stapler validate` and `spctl` rather than read off the build log. Windows
+builds are still unsigned, so SmartScreen warns on first run.
 
-Nothing has shipped a feed yet, so no released build can update itself until
-`DESKTOP_UPDATE_FEED` is set and the artifacts are uploaded there.
+Both editions ship a feed and update themselves, each from a root of its own. An
+install that predates its edition's feed carries no `app-update.yml` and so never
+polls: it takes one manual update to reach the feed, and everything after that is
+automatic.

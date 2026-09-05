@@ -20,6 +20,7 @@ Authoritative counts (AST-derived, env-independent): `command_count: 287 · cano
 - Getting started tutorial: `templates/distribution/landing-page/docs/getting-started.html`
 - Command reference with examples: `templates/distribution/landing-page/docs/command-reference.html`
 - Architecture guide and diagram: `templates/distribution/landing-page/docs/architecture.html`
+- Detector evidence and limitations: [docs/concepts/detector-evidence.md](docs/concepts/detector-evidence.md) — static graph coverage, language context, confidence semantics, and command-scope differences.
 - Live URL: https://roam-code.com/docs/
 
 ## Where files go (private vs public)
@@ -107,6 +108,14 @@ The single hardest-earned lesson from the 212-eval corpus. Three commands were m
 
 ### Adding-a-command checklist (informed by patterns 1-6 above)
 
+For detector corrections, add paired positive/negative controls: remove the
+reported false positive while retaining a genuine finding. Inspect matched
+source, receiver identity, loop placement, and language/framework applicability;
+method names alone do not establish database effects, recursion, or safe
+optimization. Reuse shared resolution helpers and document their limitations.
+Use the [detector evidence guide](docs/concepts/detector-evidence.md) as the
+cross-command interpretation reference; keep dated audit results in `internal/`.
+
 Before merging a new `cmd_X.py`:
 
 - [ ] JSON mode handles empty input cleanly — emit a non-empty envelope, never empty stdout (Pattern 1)
@@ -125,25 +134,31 @@ Before merging a new `cmd_X.py`:
 ## Quick reference
 
 ```bash
+# Reproduce the locked development and documentation environment
+uv sync --locked --no-default-groups --extra dev --group ci --python 3.12
+
 # Run tests
-pytest tests/
+uv run --no-sync pytest tests/
 
 # Run tests in parallel (requires pytest-xdist)
-pytest tests/ -n auto
+uv run --no-sync pytest tests/ -n 4 --dist loadgroup
 
 # Skip timing-sensitive perf tests
-pytest tests/ -m "not slow"
+uv run --no-sync pytest tests/ -m "not slow" -n 4 --dist loadgroup
 
 # Run a single test file
-pytest tests/test_comprehensive.py -x -v
-
-# Install in dev mode
-pip install -e .
+uv run --no-sync pytest tests/test_comprehensive.py -x -v -n 0
 
 # Index roam itself
-roam init
-roam health
+uv run --no-sync roam index
+uv run --no-sync roam doctor
+uv run --no-sync roam health --explain
 ```
+
+Use [CONTRIBUTING.md](CONTRIBUTING.md) for development and release procedures,
+[docs/repository-maintenance.md](docs/repository-maintenance.md) for Git,
+environment, and index checks, and [docs/README.md](docs/README.md) for the
+maintained documentation map.
 
 ## Architecture
 
@@ -624,7 +639,9 @@ Full typed surface lives in `src/roam/plugins/registry.py`. Tests live in
 ## Testing
 
 - All tests must pass before committing (run `pytest tests/` to verify)
-- **Parallel by default:** pytest-xdist runs auto workers (`-n auto --dist loadgroup`)
+- **CI parallelism:** the `roam.testing.ci_xdist` plugin enables auto workers
+  (`-n auto --dist loadgroup`) when `CI` is set. Local runs are sequential unless
+  `-n` is supplied; prefer `-n 4 --dist loadgroup` for bounded local parallelism.
 - Use `-n 0` to run sequentially when debugging
 - Use `-m "not slow"` to skip timing-sensitive performance tests
 - Tests create temporary project directories with fixture files
@@ -677,7 +694,7 @@ distinct object).
 - tree-sitter >= 0.23 (AST parsing)
 - tree-sitter-language-pack >= 1.13.3, < 1.14 (cross-process-safe parser cache)
 - networkx >= 3.0 (graph algorithms)
-- Optional: fastmcp >= 2.0 (MCP server — `pip install "roam-code[mcp]"`)
+- Optional: fastmcp >= 2.0, < 4 and mcp >= 1.28.1, < 2 (MCP server — `pip install "roam-code[mcp]"`; newer major APIs require migration)
 - Dev: pytest >= 7.0, pytest-xdist >= 3.0, ruff >= 0.4
 
 ## Release discipline — green BEFORE the push, always
@@ -690,7 +707,8 @@ bundles):
 1. **Any push that precedes a tag runs `python scripts/prepush_check.py
    --release` first.** The release tier = FULL gates + the ENTIRE test suite
    (`-m "not slow"`, exactly CI's surface) + commit-message leak scan +
-   doc-consistency + landing-page `linkcheck --strict` (~15-25 min). That is
+   doc-consistency + landing-page `linkcheck --strict`. Runtime varies with the
+   machine and suite; allow hours for a full local Windows run. That is
    CI's test, ruff and doc-hygiene surface — not every CI lane. **Read the
    note the tier prints on success; do not read a list from here.** The
    uncovered lanes are `_RELEASE_UNPROVEN_LANES` in `scripts/prepush_check.py`,
@@ -758,7 +776,7 @@ Additional commands: `roam health` (0-100 score), `roam impact <name>` (what bre
 Index-aware text search (added on top of grep / refs):
 - `roam grep <pattern> [--reachable-from <entry>] [--unreachable] [--co-occur] [--missing-pattern P] [--rank-by importance] [--group-by symbol] [--blame] [--heat]` — grep + reachability + PageRank + clones + bridges. Supports `-e` repeatable, `--patterns-from FILE`, `-g` repeatable, `-F`. Engine: ripgrep > git grep > fallback (pin via `ROAM_GREP_ENGINE`).
 - `roam refs-text <string>...` — string audit with verdict (SAFE-TO-REMOVE / REVIEW / LOAD-BEARING). Groups refs by surface (code/test/docs/config/dead) and annotates reachability.
-- `roam delete-check [--source working|staged|pr|head] [--ci]` — gates the diff on surviving references; exits 5 on BREAK-RISK with `--ci`.
+- `roam delete-check [--source working|staged|pr|head] [--ci]` — gates the diff on surviving references; exits 5 on BREAK-RISK or incomplete search with `--ci`.
 - `roam history-grep <pattern> [--polarity]` — git pickaxe (-S/-G) with author/date and introduced/removed annotation.
 
 Run `roam --help` for the 5-verb core; `roam --help-all` for all 287 command names; `roam surface --json` for the machine-readable inventory. Use `roam --json <cmd>` for structured output.

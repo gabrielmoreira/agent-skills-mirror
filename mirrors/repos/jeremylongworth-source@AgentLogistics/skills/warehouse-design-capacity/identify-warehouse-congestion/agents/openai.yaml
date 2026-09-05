@@ -1,0 +1,4 @@
+interface:
+  display_name: "Identify Warehouse Congestion"
+  short_description: "Identify warehouse congestion from layout, volume, queues, eq..."
+  default_prompt: "Use $identify-warehouse-congestion to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

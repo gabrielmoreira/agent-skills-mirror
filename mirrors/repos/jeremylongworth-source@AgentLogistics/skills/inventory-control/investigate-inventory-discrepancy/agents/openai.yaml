@@ -1,0 +1,4 @@
+interface:
+  display_name: "Investigate Inventory Discrepancy"
+  short_description: "Investigate inventory discrepancies by tracing receiving, WMS..."
+  default_prompt: "Use $investigate-inventory-discrepancy to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

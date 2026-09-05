@@ -1,0 +1,4 @@
+interface: openai
+display_name: Inspect Returned Goods
+short_description: Inspect returned goods from item condition, photos, reason code, packaging, quantity, controls, and review requirements.
+default_prompt: Use $inspect-returned-goods to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

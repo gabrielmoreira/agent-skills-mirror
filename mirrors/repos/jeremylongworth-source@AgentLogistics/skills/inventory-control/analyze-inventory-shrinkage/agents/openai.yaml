@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Inventory Shrinkage"
+  short_description: "Analyze inventory shrinkage from count losses, adjustments, t..."
+  default_prompt: "Use $analyze-inventory-shrinkage to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

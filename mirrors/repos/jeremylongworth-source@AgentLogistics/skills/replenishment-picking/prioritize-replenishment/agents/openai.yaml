@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prioritize Replenishment"
+  short_description: "Prioritize replenishment tasks from demand urgency, stock sta..."
+  default_prompt: "Use $prioritize-replenishment to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

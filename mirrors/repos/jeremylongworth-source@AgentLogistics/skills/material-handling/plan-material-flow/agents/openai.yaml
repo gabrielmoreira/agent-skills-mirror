@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Material Flow"
+  short_description: "Plan material flow from facility layout, product profile, equ..."
+  default_prompt: "Use $plan-material-flow to produce material-handling planning support with evidence, assumptions, and review boundaries."

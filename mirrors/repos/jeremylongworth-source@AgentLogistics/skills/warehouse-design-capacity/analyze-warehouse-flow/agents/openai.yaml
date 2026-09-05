@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Warehouse Flow"
+  short_description: "Analyze warehouse flow from layout, product movement, process..."
+  default_prompt: "Use $analyze-warehouse-flow to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

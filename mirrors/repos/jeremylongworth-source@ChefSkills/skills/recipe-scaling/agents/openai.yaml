@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recipe Scaling"
+  short_description: "Scale recipes with workflow, vessel, heat, and safety adjustments."
+  default_prompt: "Use this skill when portions, batch size, yield, vessel size, cooking time, or service scale changes."

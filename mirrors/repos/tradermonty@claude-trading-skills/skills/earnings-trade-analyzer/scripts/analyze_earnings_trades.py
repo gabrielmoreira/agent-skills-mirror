@@ -25,6 +25,7 @@ Usage:
 """
 
 import argparse
+import math
 import os
 import sys
 from datetime import datetime, timedelta
@@ -53,6 +54,52 @@ def normalize_timing(time_value):
         return "amc"
     else:
         return "unknown"
+
+
+def select_candidates(earnings, profiles, min_market_cap):
+    """Select unique US-listed earnings candidates from stable profile payloads."""
+    candidates = []
+    seen = set()
+
+    for earning in earnings:
+        if not isinstance(earning, dict):
+            continue
+
+        symbol = earning.get("symbol")
+        if not isinstance(symbol, str) or not symbol or symbol in seen:
+            continue
+
+        profile = profiles.get(symbol)
+        if not isinstance(profile, dict):
+            continue
+
+        market_cap = profile.get("marketCap")
+        if isinstance(market_cap, bool) or not isinstance(market_cap, (int, float)):
+            continue
+        if isinstance(market_cap, float) and not math.isfinite(market_cap):
+            continue
+        if market_cap < min_market_cap:
+            continue
+
+        exchange = profile.get("exchange")
+        if not isinstance(exchange, str) or exchange not in FMPClient.US_EXCHANGES:
+            continue
+
+        candidates.append(
+            {
+                "symbol": symbol,
+                "company_name": profile.get("companyName", symbol),
+                "earnings_date": earning.get("date"),
+                "earnings_timing": normalize_timing(earning.get("time")),
+                "market_cap": market_cap,
+                "sector": profile.get("sector", "N/A"),
+                "industry": profile.get("industry", "N/A"),
+                "price": profile.get("price", 0),
+            }
+        )
+        seen.add(symbol)
+
+    return candidates
 
 
 def analyze_stock(daily_prices, earnings_date, timing):
@@ -199,44 +246,8 @@ def main():
 
     print(f"Profiles retrieved: {len(profiles)}", file=sys.stderr)
 
-    # Filter by market cap and US exchange
-    candidates = []
-    for earning in earnings:
-        symbol = earning.get("symbol")
-        if not symbol or symbol not in profiles:
-            continue
-
-        profile = profiles[symbol]
-        market_cap = profile.get("mktCap", 0)
-        exchange = profile.get("exchangeShortName", "")
-
-        if market_cap < args.min_market_cap:
-            continue
-        if exchange not in FMPClient.US_EXCHANGES:
-            continue
-
-        timing = normalize_timing(earning.get("time"))
-        candidates.append(
-            {
-                "symbol": symbol,
-                "company_name": profile.get("companyName", symbol),
-                "earnings_date": earning.get("date"),
-                "earnings_timing": timing,
-                "market_cap": market_cap,
-                "sector": profile.get("sector", "N/A"),
-                "industry": profile.get("industry", "N/A"),
-                "price": profile.get("price", 0),
-            }
-        )
-
-    # Deduplicate by symbol (keep first occurrence)
-    seen = set()
-    unique_candidates = []
-    for c in candidates:
-        if c["symbol"] not in seen:
-            seen.add(c["symbol"])
-            unique_candidates.append(c)
-    candidates = unique_candidates
+    # Filter stable profile payloads by market cap and US exchange.
+    candidates = select_candidates(earnings, profiles, args.min_market_cap)
 
     print(f"Candidates after filtering: {len(candidates)}", file=sys.stderr)
 

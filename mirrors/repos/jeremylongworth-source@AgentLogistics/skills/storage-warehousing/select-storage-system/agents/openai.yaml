@@ -1,0 +1,4 @@
+interface:
+  display_name: "Select Storage System"
+  short_description: "Select storage systems by comparing SKU profile, load profile..."
+  default_prompt: "Use $select-storage-system to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

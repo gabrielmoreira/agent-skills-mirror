@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Warehouse Expansion"
+  short_description: "Plan warehouse expansion from capacity forecast, current cons..."
+  default_prompt: "Use $plan-warehouse-expansion to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

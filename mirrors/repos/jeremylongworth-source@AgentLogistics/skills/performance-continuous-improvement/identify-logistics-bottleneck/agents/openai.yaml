@@ -1,0 +1,4 @@
+interface: openai
+display_name: Identify Logistics Bottleneck
+short_description: Identify logistics bottlenecks from process flow, queues, capacity, cycle times, throughput, constraints, and evidence.
+default_prompt: Use $identify-logistics-bottleneck to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

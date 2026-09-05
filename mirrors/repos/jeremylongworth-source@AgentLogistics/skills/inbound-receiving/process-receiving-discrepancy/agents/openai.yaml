@@ -1,0 +1,4 @@
+interface:
+  display_name: "Process Receiving Discrepancy"
+  short_description: "Process receiving discrepancies by classifying variance type..."
+  default_prompt: "Use $process-receiving-discrepancy to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

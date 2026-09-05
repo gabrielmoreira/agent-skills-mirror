@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Safety Stock"
+  short_description: "Calculate safety stock using supplied demand variability, lea..."
+  default_prompt: "Use $calculate-safety-stock to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

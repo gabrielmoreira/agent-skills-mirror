@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 112 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -171,6 +171,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 110 | ✓ | [`plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md`](plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md) |
 | 111 | ✓ | [`plugins/dotnet/skills/setup-local-sdk/SKILL.md`](plugins/dotnet/skills/setup-local-sdk/SKILL.md) |
 | 112 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
+| 113 | ✓ | [`tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md`](tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md) |
 
 ---
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Dock Capacity"
+  short_description: "Plan dock capacity from inbound and outbound volume, dwell ti..."
+  default_prompt: "Use $plan-dock-capacity to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

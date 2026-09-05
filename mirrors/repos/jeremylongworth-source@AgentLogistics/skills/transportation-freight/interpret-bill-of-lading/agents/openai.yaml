@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interpret Bill of Lading"
+  short_description: "Interpret bill of lading fields from shipment context, partie..."
+  default_prompt: "Use $interpret-bill-of-lading to produce transportation planning support with evidence, calculations, and review boundaries."

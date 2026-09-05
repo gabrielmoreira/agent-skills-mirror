@@ -1,0 +1,4 @@
+interface:
+  display_name: "Investigate Picking Error"
+  short_description: "Investigate picking errors by tracing order, pick record, SKU..."
+  default_prompt: "Use $investigate-picking-error to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

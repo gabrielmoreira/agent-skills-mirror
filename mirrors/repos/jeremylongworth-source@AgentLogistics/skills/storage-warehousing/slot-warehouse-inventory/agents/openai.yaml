@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slot Warehouse Inventory"
+  short_description: "Slot warehouse inventory using SKU velocity, cube, weight, af..."
+  default_prompt: "Use $slot-warehouse-inventory to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

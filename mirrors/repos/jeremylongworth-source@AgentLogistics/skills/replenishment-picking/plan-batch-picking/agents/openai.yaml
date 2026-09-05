@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Batch Picking"
+  short_description: "Plan batch picking from order lines, common SKUs, container l..."
+  default_prompt: "Use $plan-batch-picking to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Freight Accessorials"
+  short_description: "Analyze freight accessorials from invoice lines, carrier rule..."
+  default_prompt: "Use $analyze-freight-accessorials to produce transportation planning support with evidence, calculations, and review boundaries."

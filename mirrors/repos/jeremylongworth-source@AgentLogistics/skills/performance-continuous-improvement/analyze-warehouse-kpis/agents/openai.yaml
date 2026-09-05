@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Warehouse KPIs
+short_description: Analyze warehouse KPI data, targets, trends, variance, exceptions, and operational implications with source and unit discipline.
+default_prompt: Use $analyze-warehouse-kpis to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

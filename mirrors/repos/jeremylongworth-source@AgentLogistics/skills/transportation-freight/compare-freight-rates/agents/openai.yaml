@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compare Freight Rates"
+  short_description: "Compare freight rates from quotes, lanes, service levels, wei..."
+  default_prompt: "Use $compare-freight-rates to produce transportation planning support with evidence, calculations, and review boundaries."

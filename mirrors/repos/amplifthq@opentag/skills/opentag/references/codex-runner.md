@@ -1,90 +1,64 @@
-# ACP Coding-Agent Runners
+# Local ACP Runner
 
-Use this path when the user wants OpenTag to run real coding work with Codex, Claude Code, Cursor, OpenCode, Hermes, or OpenClaw.
+Use this branch when choosing or diagnosing the ACP executor used by the paired
+Runner. Codex is the default when its local login is ready; the same custody
+rules apply to the other executors exposed by the current CLI.
 
-## Executor Choices
+## Prepare Codex
 
-- Codex uses the bundled `codex-acp` adapter and the user's existing Codex login.
-- Claude Code uses the bundled `claude-agent-acp` adapter and the user's existing Claude login.
-- Hermes uses the installed `hermes` ACP server with a fixed profile whose provider is already configured.
-- Cursor uses the installed `cursor-agent acp` command and an existing Cursor login.
-- OpenCode uses the pinned `opencode-ai` ACP server and an authenticated provider.
-- OpenClaw uses the installed Gateway ACP bridge. It currently reports `cancel=no`; inspect provider-owned processes after cancellation before starting conflicting work.
-- Echo is dev/test only and does not run a real coding agent.
+Keep the user's existing Codex authentication local. OpenTag launches the
+pinned `@agentclientprotocol/codex-acp` adapter. Codex authentication stays on
+the Runner host, separate from Slack and Control Plane credentials.
 
-Prefer the executor whose authentication or Hermes provider is already ready. Do not silently switch executors without telling the user.
+Before setup, confirm:
 
-## Prerequisites
+- `npx` is available;
+- the local Codex session is authenticated;
+- the intended checkout exists;
+- unrelated checkout changes have been reviewed with the user; and
+- the Runner host can create its isolated worktree and scratch directories.
 
-For Codex, Claude Code, Cursor, OpenCode, and OpenClaw:
-
-```bash
-opentag doctor
-```
-
-For Hermes:
+Configure Codex with paired setup:
 
 ```bash
-hermes profile list
+opentag setup \
+  --relay https://control.example.com \
+  --project /absolute/path/to/checkout \
+  --executor codex \
+  --github-repository owner/repo \
+  --project-target-id target_team
 ```
 
-The user also needs a local project checkout that the chosen executor can safely edit.
+Replace `target_team` with the exact Project Target ID configured for the
+active Slack binding in Control Plane Compose; no duplicate Runner environment
+variable is required.
 
-## User Path
+Enter the GitHub credential only in the local secret prompt.
 
-```bash
-npm install -g @opentag/cli@0.11.0
-opentag setup
-```
+Completion: `opentag doctor` reports the Codex ACP adapter and checkout ready,
+and `opentag status` identifies the paired Runner and expected target.
 
-During setup, choose Codex, Claude Code, Cursor, OpenCode, Hermes, or OpenClaw when asked:
+## Execution boundary
 
-```text
-Which coding agent should OpenTag use?
-```
+The ACP Agent receives the bounded task and local workspace context. It may edit
+and test only the assigned checkout. Its credential boundary excludes Slack,
+pairing, Runner, and GitHub secrets. Slack projection and GitHub publication
+remain OpenTag-owned operations.
 
-Then:
+The Runner must report the real Attempt result and artifacts. A successful ACP
+process is execution evidence only; it is not Slack delivery, GitHub
+publication, or provider-verified completion.
 
-```bash
-opentag start
-```
+Completion: a Slack mention is claimed by the intended Runner, one fenced ACP
+Attempt executes in the intended workspace, and the structured result returns
+to the Control Plane without secret material or provider authority.
 
-Keep it running while testing a real mention from Slack, GitHub, GitLab, Lark / Feishu, Telegram, or Discord.
+## Other supported ACP executors
 
-## Working Tree Rule
+Choose another executor only when the user selected it and its local
+authentication/runtime is ready. Use the exact executor ID reported by the
+current CLI. Do not silently fall back to a different agent or to a test
+executor when readiness fails.
 
-Before asking OpenTag to perform write-capable work, check the target repository:
-
-```bash
-git status --short
-```
-
-If there are unrelated dirty changes, ask the user how to proceed. Do not discard user changes.
-
-## GitHub Pull Requests
-
-Creating a pull request from a run needs more than a coding executor:
-
-- A GitHub repository target in OpenTag config.
-- A GitHub token for comments and pull requests.
-- Local git remote credentials that can push run branches.
-
-The normal flow is:
-
-1. The executor changes files.
-2. OpenTag prepares and pushes a run branch.
-3. OpenTag shows a `create_pull_request` action.
-4. The user replies `apply 1`.
-5. OpenTag creates the pull request.
-
-Do not promise PR creation unless those conditions are met.
-
-## Verification
-
-```bash
-opentag executors
-opentag status
-opentag doctor
-```
-
-Success means OpenTag can see the configured executor, start the local runtime, receive a real platform mention, and return either a completed result or a clear actionable error.
+Completion: the chosen executor, observed readiness, and executed Attempt all
+identify the same ACP integration.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evaluate AS/RS Application"
+  short_description: "Evaluate AS/RS applicability from SKU profile, cube, throughp..."
+  default_prompt: "Use $evaluate-asrs-application to produce material-handling planning support with evidence, assumptions, and review boundaries."

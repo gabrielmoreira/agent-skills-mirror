@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Lot Controlled Inventory"
+  short_description: "Manage lot-controlled inventory workflows by tracing lot IDs..."
+  default_prompt: "Use $manage-lot-controlled-inventory to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

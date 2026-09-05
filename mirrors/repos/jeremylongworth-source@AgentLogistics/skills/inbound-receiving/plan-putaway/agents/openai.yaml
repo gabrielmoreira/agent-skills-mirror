@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Putaway"
+  short_description: "Plan putaway from received goods, storage requirements, locat..."
+  default_prompt: "Use $plan-putaway to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

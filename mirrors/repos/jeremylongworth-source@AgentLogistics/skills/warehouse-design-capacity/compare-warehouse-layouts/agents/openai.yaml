@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compare Warehouse Layouts"
+  short_description: "Compare warehouse layout alternatives by capacity, travel, fl..."
+  default_prompt: "Use $compare-warehouse-layouts to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

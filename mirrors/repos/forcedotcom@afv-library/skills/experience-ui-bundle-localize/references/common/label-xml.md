@@ -1,0 +1,306 @@
+# Label XML: Custom Labels and translation metadata shapes
+
+This covers the two metadata XML files you author: the English base labels and the per-language translations.
+
+---
+
+## Custom Labels: `force-app/main/default/labels/CustomLabels.labels-meta.xml`
+
+This holds the **English base labels**: the source of truth for label content.
+
+### Structure
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+  <labels>
+    <fullName>Welcome_Text</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription>Welcome banner heading</shortDescription>
+    <value>Welcome</value>
+  </labels>
+  <labels>
+    <fullName>Save_Button</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription>Save button label</shortDescription>
+    <value>Save</value>
+  </labels>
+</CustomLabels>
+```
+
+### Fields
+
+| Field | Purpose | Notes |
+|---|---|---|
+| `<fullName>` | The label's API name | Used in translation calls (`"Key"`) and the manifest (`"c:Welcome_Text"`). PascalCase, descriptive, unique. |
+| `<language>` | Language code | Always `en_US` for the base label file. |
+| `<protected>` | Managed package protection | Always `false` for custom labels in your org (you can edit them). |
+| `<shortDescription>` | Internal description | For translators/developers, not shown to users. Describe what the label is for. |
+| `<value>` | The English text | What the user sees. Can include `{0}`, `{1}` placeholders for interpolation. |
+
+### Key naming conventions
+
+Choose keys that are:
+- **Descriptive**: `Welcome_Text` is better than `Label1`
+- **Context-aware**: `Save_Button` vs `Save_Failed_Message` (same verb, different role)
+- **Unique**: two labels shouldn't share a key even if the current text happens to match
+
+Format: `<Context>_<Role>` in PascalCase with underscores between parts.
+
+**Examples:**
+- `"Welcome"` → `Welcome_Text` or `Welcome_Heading`
+- `"Save"` → `Save_Button`
+- `"Failed to save {0}: {1}"` → `Save_Failed_Message`
+- `"Showing {0} of {1} records"` → `Record_Count_Display`
+
+---
+
+## Translations: `force-app/main/default/translations/<locale>.translation-meta.xml`
+
+One file per translated language (e.g., `es.translation-meta.xml` for Spanish, `fr.translation-meta.xml` for French, `ja.translation-meta.xml` for Japanese).
+
+🚫 **Custom Label translations use the `Translations` metadata type — never `CustomObjectTranslation`.**
+Write them to `force-app/main/default/translations/<locale>.translation-meta.xml` with a
+`<Translations>` root. Do **not** author them as
+`objectTranslations/CustomLabels-<locale>/CustomLabels-<locale>.objectTranslation-meta.xml` with a
+`<CustomObjectTranslation>` root — that type is for translating **custom-object components** (field
+labels, record types, picklist values), not org-level Custom Labels, and deploying labels that way
+fails. If you catch yourself reaching for `objectTranslations/` or `CustomObjectTranslation` for a
+Custom Label, stop: the correct target is the `translations/<locale>.translation-meta.xml` file
+described here.
+
+### Structure
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+  <customLabels>
+    <label>Bienvenido</label>
+    <name>Welcome_Text</name>
+  </customLabels>
+  <customLabels>
+    <label>Guardar</label>
+    <name>Save_Button</name>
+  </customLabels>
+</Translations>
+```
+
+⚠️ Inside `<Translations>`, the translated text goes in **`<label>`**, never `<value>`. `<value>` is the *CustomLabels* element (it belongs in `CustomLabels.labels-meta.xml`); using it inside a `<customLabels>` block here produces malformed metadata that fails validation. Each `<customLabels>` block contains exactly `<label>` and `<name>` — nothing else.
+
+Always write the whole document shown above, not a fragment: exactly one XML declaration, one `<Translations>` root with the Metadata API namespace, and one complete `<customLabels>` block per label. For an untranslated scaffold, copy the XML-escaped English source text into `<label>` and leave actual translation to the localization team. Preserve positional placeholders such as `{0}` and `{1}`.
+
+XML-escape text values: `&` becomes `&amp;`, `<` becomes `&lt;`, and `>` becomes `&gt;`. Before considering the file complete, parse both `CustomLabels.labels-meta.xml` and every generated `*.translation-meta.xml` with an XML parser. A fragment with balanced-looking inner tags is still invalid without its root document.
+
+### Fields
+
+| Field | Purpose | Notes |
+|---|---|---|
+| `<name>` | The label's API name | Must exactly match the `<fullName>` in `CustomLabels.labels-meta.xml`. |
+| `<label>` | The translated text | What the user sees in this language. Preserve `{0}`, `{1}` placeholders. |
+
+### File naming
+
+The filename is `<locale>.translation-meta.xml`, where `<locale>` is the Salesforce Language code:
+- `es.translation-meta.xml`: Spanish
+- `fr.translation-meta.xml`: French
+- `de.translation-meta.xml`: German
+- `ja.translation-meta.xml`: Japanese
+- `pt_BR.translation-meta.xml`: Portuguese (Brazil)
+- `zh_CN.translation-meta.xml`: Chinese (Simplified)
+- `zh_TW.translation-meta.xml`: Chinese (Traditional)
+
+See Salesforce's [Supported Languages](https://help.salesforce.com/s/articleView?id=sf.faq_getstart_what_languages_does.htm) for the full list.
+
+---
+
+## How translations are authored
+
+You have two options:
+
+### 1. Hand-edit the XML (for small apps)
+
+Create the complete `<locale>.translation-meta.xml` document and add one complete `<customLabels>` block per label. For this skill's scaffold, keep the English source text rather than inventing translations; translators can replace it later. Good for a handful of labels or prototyping.
+
+### 2. Use Translation Workbench (for scale)
+
+Salesforce's **Translation Workbench** is the in-org UI where translators enter translations, which you then pull down as deployable `.translation-meta.xml` files.
+
+**Workflow:**
+1. **Enable Translation Workbench**, Setup → Translation Workbench → Translation Settings → Enable
+2. **Add languages**, same Settings page → Add the languages you plan to support
+3. **Enter translations**, Setup → Translation Workbench → Translate → pick:
+   - **Setup Component:** Custom Label
+   - **Language:** the target language
+   - **Label:** the label to translate
+   - Type the translation, Save
+4. **Retrieve as metadata**, pull the translations into your project:
+   ```bash
+   sf project retrieve start --metadata Translations:es
+   sf project retrieve start --metadata Translations:fr
+   # etc., one per language
+   ```
+   The CLI writes the `.translation-meta.xml` files to `force-app/main/default/translations/`.
+
+Reference: [Translation Workbench overview](https://help.salesforce.com/s/articleView?id=sf.customize_wbench.htm)
+
+---
+
+## Namespace:Key format
+
+In the **manifest** (`src/i18n/label-manifest.ts`) and some SDK contexts, labels are written as `"namespace:Key"`:
+
+```typescript
+export const labelManifest = [
+  "c:Welcome_Text",
+  "c:Save_Button",
+];
+```
+
+- `c` = the custom label namespace (your org's labels)
+- `Welcome_Text` = the `<fullName>` from `CustomLabels.labels-meta.xml`
+
+Other namespaces exist (e.g., `LightningDatatable` for framework-shipped labels), but most bundles only use `c`.
+
+In component code the namespace is usually implicit (the init sets `c` as the default), so you call your framework's translation function with the bare key (`Welcome_Text`), not `c:Welcome_Text`. The exact call convention is in your framework reference's `localize.md`.
+
+---
+
+## Interpolation: `{0}`, `{1}` placeholders
+
+Labels can include **positional placeholders** for runtime substitution:
+
+```xml
+<labels>
+  <fullName>Save_Failed_Message</fullName>
+  <language>en_US</language>
+  <protected>false</protected>
+  <shortDescription>Error message when save fails</shortDescription>
+  <value>Failed to save {0}: {1}</value>
+</labels>
+```
+
+At call time, your framework's translation function substitutes the positional values:
+
+```text
+translate("Save_Failed_Message", { 0: "Account", 1: "Permission denied" })
+// → "Failed to save Account: Permission denied"
+```
+
+(The exact call syntax is framework-specific — see your framework reference's `interpolation.md`.)
+
+**Translations must preserve the placeholders:**
+
+```xml
+<!-- es.translation-meta.xml -->
+<customLabels>
+  <label>Error al guardar {0}: {1}</label>
+  <name>Save_Failed_Message</name>
+</customLabels>
+```
+
+The placeholders can move (Spanish grammar might flip the order), but they must stay as `{0}`, `{1}`; the i18n library does the substitution at render time.
+
+See your framework reference's `interpolation.md` for how this works under the hood.
+
+---
+
+## Deploy activation requirement
+
+Before you can deploy a `<locale>.translation-meta.xml` file, the language must be **activated** in the org:
+
+**Setup → Translation Workbench → Translation Settings → Add**
+
+If you deploy a translation file for an inactive language, the deploy is rejected:
+```text
+Not available for deploy for this organization
+```
+
+English (`en_US`) needs no activation; it's always available.
+
+---
+
+## Language vs Locale (a common confusion)
+
+Salesforce has two separate settings:
+- **Language** drives **translations**: the text the user sees (`en_US`, `en_GB`, `de`, `pt_BR`)
+- **Locale** drives **formatting only**: dates, numbers, currency (`de_DE`, `fr_CA`)
+
+A user can have Language = English, Locale = French: English text, French number formatting.
+
+When you "add a language" for localization, you're working in the **Language** dimension. The SDK's i18n context exposes both: `lang` (Language) picks the translation, and `locale`/`currency` (Locale) feed `Intl` formatters.
+
+To change a user's Language (to test translations), go to:
+**Setup → My Settings → Language & Time Zone → Language** → pick the language → Save.
+
+---
+
+## Example: full cycle for one label in two languages
+
+### 1. Add the English base label
+
+`force-app/main/default/labels/CustomLabels.labels-meta.xml`:
+```xml
+<labels>
+  <fullName>Welcome_Text</fullName>
+  <language>en_US</language>
+  <protected>false</protected>
+  <shortDescription>Welcome banner heading</shortDescription>
+  <value>Welcome</value>
+</labels>
+```
+
+### 2. Add the untranslated Spanish scaffold
+
+`force-app/main/default/translations/es.translation-meta.xml`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+  <customLabels>
+    <label>Welcome</label>
+    <name>Welcome_Text</name>
+  </customLabels>
+</Translations>
+```
+
+### 3. Register in the manifest
+
+`src/i18n/label-manifest.ts`:
+```typescript
+export const labelManifest = ["c:Welcome_Text"];
+```
+
+### 4. Use in a component
+
+Replace the hardcoded string with your framework's translation call (referencing the key by
+its bare `<fullName>`). The exact call convention — the import/injection and the function
+name — is in your framework reference's `localize.md`.
+
+### 5. Deploy
+
+```bash
+sf project deploy start \
+  --source-dir force-app/main/default/uiBundles/<your-bundle> \
+  --source-dir force-app/main/default/labels/CustomLabels.labels-meta.xml \
+  --source-dir force-app/main/default/translations/<locale>.translation-meta.xml \
+  --target-org <alias>
+```
+
+Review the exact paths and target org with the user before deploying. Repeat the translation path only for locale files changed by this task.
+
+### 6. Verify
+
+- User with Language = English sees "Welcome"
+- Before translator review, a user with Language = Spanish also sees the scaffold value "Welcome"
+- After a translator replaces the scaffold value with `Bienvenido` and the metadata is retrieved/deployed, a user with Language = Spanish sees "Bienvenido"
+
+---
+
+## Related
+
+- `platform-sdk-i18n.md` (this folder): the shared runtime engine that fetches these labels
+- [verifying.md](verifying.md): the serve/verify flow
+- [gotchas.md](gotchas.md): silent-fail traps
+- your framework reference's `i18n-setup.md`: the init file + manifest wiring
+- your framework reference's `interpolation.md`: how `{0}/{1}` substitution works

@@ -14,6 +14,8 @@ pnpm test         # vitest run;  test:e2e = Playwright
 pnpm lint         # ESLint 9 flat config (advisory — NOT gated in CI)
 ```
 
+Streaming perf benchmarks live in `e2e/perf/`, are gated behind `PERF=1`, and their flags and canonical invocations are in [`e2e/perf/README.md`](e2e/perf/README.md).
+
 ## Landmines (non-obvious)
 
 - **Dual-mode auth** (`contexts/AuthContext.tsx`), switched by `VITE_HOST_MODE` (`config/hostMode.ts`, default `oss`): `platform` → `SupabaseAuthProvider` (real session; the axios interceptor reads its Bearer token from `lib/authToken.ts`); `oss` → static local-dev context, always logged in as `VITE_AUTH_USER_ID` (default `local-dev-user`). `VITE_SUPABASE_URL`/`_KEY` only gate Supabase-*client* construction, NOT the mode — check `isPlatformMode`, never `VITE_SUPABASE_URL`.

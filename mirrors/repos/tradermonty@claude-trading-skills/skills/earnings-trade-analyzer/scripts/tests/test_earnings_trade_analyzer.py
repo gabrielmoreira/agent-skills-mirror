@@ -8,10 +8,12 @@ scorer, report generator, and FMP client edge cases.
 
 import json
 import os
+import sys
 import tempfile
 from unittest.mock import MagicMock, patch
 
-from analyze_earnings_trades import apply_entry_filter
+import pytest
+from analyze_earnings_trades import apply_entry_filter, main, select_candidates
 from calculators.gap_size_calculator import calculate_gap
 from calculators.ma50_calculator import calculate_ma50_position
 from calculators.ma200_calculator import calculate_ma200_position
@@ -143,6 +145,152 @@ def _make_earnings_prices(
     # Reverse to most-recent-first
     prices.reverse()
     return prices
+
+
+# ===========================================================================
+# Phase 1 Candidate Selection Tests
+# ===========================================================================
+
+
+class TestCandidateSelection:
+    """Test the stable profile contract used by the Phase 1 filter."""
+
+    def test_stable_fields_pass_at_market_cap_floor_and_keep_first_announcement(self):
+        earnings = [
+            {"symbol": "AAPL", "date": "2026-08-28", "time": "after market close"},
+            {"symbol": "AAPL", "date": "2026-08-29", "time": "bmo"},
+        ]
+        profiles = {
+            "AAPL": {
+                "companyName": "Apple Inc.",
+                "marketCap": 500_000_000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Consumer Electronics",
+                "price": 230.0,
+            }
+        }
+
+        candidates = select_candidates(earnings, profiles, min_market_cap=500_000_000)
+
+        assert candidates == [
+            {
+                "symbol": "AAPL",
+                "company_name": "Apple Inc.",
+                "earnings_date": "2026-08-28",
+                "earnings_timing": "amc",
+                "market_cap": 500_000_000,
+                "sector": "Technology",
+                "industry": "Consumer Electronics",
+                "price": 230.0,
+            }
+        ]
+
+    @pytest.mark.parametrize(
+        "market_cap",
+        [None, "500000000", True, float("nan"), float("inf"), float("-inf")],
+    )
+    def test_invalid_market_cap_is_rejected(self, market_cap):
+        earnings = [{"symbol": "AAPL", "date": "2026-08-28", "time": "bmo"}]
+        profiles = {"AAPL": {"marketCap": market_cap, "exchange": "NASDAQ"}}
+
+        assert select_candidates(earnings, profiles, min_market_cap=500_000_000) == []
+
+    @pytest.mark.parametrize(
+        "profile",
+        [
+            {"marketCap": 499_999_999, "exchange": "NASDAQ"},
+            {"marketCap": 500_000_000, "exchange": "TSX"},
+            {"marketCap": 500_000_000, "exchange": None},
+            {"marketCap": 500_000_000, "exchange": 123},
+            {"mktCap": 500_000_000, "exchangeShortName": "NASDAQ"},
+        ],
+    )
+    def test_noncanonical_or_out_of_scope_profile_is_rejected(self, profile):
+        earnings = [{"symbol": "AAPL", "date": "2026-08-28", "time": "bmo"}]
+
+        assert (
+            select_candidates(
+                earnings,
+                {"AAPL": profile},
+                min_market_cap=500_000_000,
+            )
+            == []
+        )
+
+    @patch("analyze_earnings_trades.generate_markdown_report")
+    @patch("analyze_earnings_trades.generate_json_report")
+    @patch("analyze_earnings_trades.analyze_stock")
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_main_routes_stable_profile_candidate_to_historical_fetch(
+        self,
+        mock_client_class,
+        mock_analyze_stock,
+        mock_json_report,
+        _mock_markdown_report,
+        capsys,
+    ):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.api_calls_made = 2
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-08-28", "time": "after market close"},
+            {"symbol": "LOW", "date": "2026-08-28", "time": "bmo"},
+            {"symbol": "SHOP", "date": "2026-08-28", "time": "bmo"},
+            {"symbol": "OLD", "date": "2026-08-28", "time": "bmo"},
+        ]
+        client.get_company_profiles.return_value = {
+            "AAPL": {
+                "companyName": "Apple Inc.",
+                "marketCap": 3_000_000_000_000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Consumer Electronics",
+                "price": 230.0,
+            },
+            "LOW": {"marketCap": 100_000_000, "exchange": "NYSE"},
+            "SHOP": {"marketCap": 100_000_000_000, "exchange": "TSX"},
+            "OLD": {"mktCap": 1_000_000_000, "exchangeShortName": "NYSE"},
+        }
+        client.get_historical_prices.return_value = [{"close": 231.0}] * 50
+        client.get_api_stats.return_value = {
+            "api_calls_made": 3,
+            "max_api_calls": 200,
+        }
+        mock_analyze_stock.return_value = {
+            "gap": {"gap_pct": 5.0},
+            "pre_earnings_trend": {},
+            "volume_trend": {},
+            "ma200_position": {},
+            "ma50_position": {},
+            "composite": {
+                "composite_score": 80.0,
+                "grade": "B",
+                "grade_description": "Good setup",
+                "guidance": "Monitor",
+                "weakest_component": "Volume Trend",
+                "strongest_component": "Gap Size",
+                "component_breakdown": {},
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            argv = [
+                "analyze_earnings_trades.py",
+                "--api-key",
+                "test-key",
+                "--output-dir",
+                tmpdir,
+            ]
+            with patch.object(sys, "argv", argv):
+                main()
+
+        assert "Candidates after filtering: 1" in capsys.readouterr().err
+        client.get_historical_prices.assert_called_once_with("AAPL", days=250)
+        results = mock_json_report.call_args.args[0]
+        assert len(results) == 1
+        assert results[0]["symbol"] == "AAPL"
+        assert results[0]["market_cap"] == 3_000_000_000_000
 
 
 # ===========================================================================

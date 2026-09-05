@@ -1,0 +1,4 @@
+interface: openai
+display_name: Compare Logistics Scenarios
+short_description: Compare logistics scenarios using assumptions, KPI, cost, service, capacity, risk, implementation, and measurement evidence.
+default_prompt: Use $compare-logistics-scenarios to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

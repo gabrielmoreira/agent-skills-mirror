@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Equipment Requirements"
+  short_description: "Calculate equipment requirements from volume, travel distance..."
+  default_prompt: "Use $calculate-equipment-requirements to produce material-handling planning support with evidence, assumptions, and review boundaries."

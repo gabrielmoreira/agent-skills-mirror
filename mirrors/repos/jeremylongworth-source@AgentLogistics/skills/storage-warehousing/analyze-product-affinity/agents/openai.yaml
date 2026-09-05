@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Product Affinity"
+  short_description: "Analyze product affinity from co-order, co-pick, SKU group, s..."
+  default_prompt: "Use $analyze-product-affinity to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

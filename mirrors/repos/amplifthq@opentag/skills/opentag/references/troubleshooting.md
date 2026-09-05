@@ -1,77 +1,87 @@
-# Troubleshooting
+# Paired-Route Troubleshooting
 
-Use this path when OpenTag setup, startup, platform delivery, or execution does
-not work.
+Use this branch when deployment, pairing, Runner readiness, a Slack mention, or
+GitHub publication does not complete. Check the supported route in order and
+stop at the first failed authority.
 
-## Start With The CLI
-
-Use these first:
+## 1. Control Plane
 
 ```bash
-opentag status
-opentag doctor
-opentag config path
-opentag config show
+docker compose --env-file deploy/compose/.env -f deploy/compose/compose.yaml ps
+curl --fail https://control.example.com/healthz
+curl --fail https://control.example.com/readyz
+docker compose --env-file deploy/compose/.env -f deploy/compose/compose.yaml logs --no-log-prefix control-plane jobs bootstrap-slack
 ```
 
-`opentag config show` redacts secrets. Do not ask the user to paste raw tokens unless a specific credential must be re-entered.
+Verify the public TLS origin, migrations, bootstraps, jobs process, PostgreSQL,
+and KEK mount. Read logs for state and identifiers only; never print a secret
+file.
 
-## Split The Failure
+Completion: `/readyz` succeeds and the intended Slack installation and binding
+exist without a bootstrap conflict.
 
-Check one layer at a time. Stop at the first failing layer and explain the concrete fix.
+## 2. Pairing and Runner
 
-1. CLI config exists and parses.
-2. The selected platform is configured.
-3. `opentag start` is still running.
-4. The local dispatcher is healthy.
-5. The platform listener is connected or reachable.
-6. The platform can deliver the mention or webhook.
-7. The runner is bound to the selected project.
-8. The selected executor is available.
-9. The exact provider-instance delivery adapter is active and authorized to
-   post the reply.
+```bash
+opentag config show
+opentag service status
+opentag service logs
+opentag doctor
+opentag status
+```
 
-## Common Platform Checks
+Confirm the canonical relay origin, paired registration and credential
+generation, fresh Runner heartbeat, target mapping, checkout, and ACP
+readiness. A healthy service controller alone is insufficient.
 
-Slack:
+If pairing stopped with an unknown mutation outcome, reuse the persisted
+operation through the CLI's reported recovery path. Do not generate another
+registration or reuse a bootstrap/recovery credential for a different purpose.
 
-- Socket Mode needs `xapp-` App-Level Token and `xoxb-` Bot User OAuth Token.
-- The Slack app must be invited to the target channel.
-- The app needs `app_mentions:read`, `chat:write`, and channel history permissions for the channel type.
+Completion: one paired Runner with a current runner-scoped credential is ready
+for the exact Control Plane Project Target.
 
-GitHub:
+## 3. Slack ingress
 
-- A tunnel must forward to the local GitHub listener port.
-- The webhook URL must end with `/github/webhooks`.
-- The webhook secret must match the OpenTag config.
-- The token needs write access to issues and pull requests.
-- `apply 1` PR creation also needs a pushed run branch and working local git remote credentials.
+Confirm that Slack's Events API and Interactivity URLs contain the exact current
+route identity. Check the team, app, bot, channel, installation state, binding
+generation, app membership, subscribed event, scopes, and signing-secret file
+reference.
 
-Lark / Feishu:
+Interpret common closed outcomes literally:
 
-- The Personal Agent QR scan must complete before setup can save the app credentials.
-- Saved Personal Agent details should show safe App ID and Bot Open ID prefixes.
-- The selected domain must match the tenant: Lark for larksuite.com, Feishu for feishu.cn.
+- `channel_binding_not_found`: the Slack conversation is not bound to the
+  configured Project Target.
+- setup required or temporarily unavailable: the target, Runner, or fresh
+  readiness fact is missing.
+- signature or route failure: fix the Slack endpoint/secret identity before
+  sending another test mention.
 
-## Common Errors
+Completion: one new signed mention is durably reserved and creates exactly one
+WorkThread/Run, or returns one explicit non-success without creating work.
 
-- `unauthorized`: pairing token mismatch or missing bearer token.
-- `repo_not_bound`: the project target is not bound to the local runner.
-- `channel_binding_not_found`: the platform conversation is not mapped to a project.
-- `actor_not_allowed_for_write`: the actor is not allowed to request write-capable work.
-- `No OpenTag run available`: no pending run is claimable by this runner.
+## 4. ACP execution
 
-## Delivery Debugging
+Use `opentag doctor` and Runner logs to distinguish missing local
+authentication, unavailable command, rejected checkout, stale target binding,
+and Attempt failure. Preserve the executor's actual conclusion and bounded
+diagnostic; do not substitute another executor silently.
 
-Execution success, durable enqueue, and provider acceptance are separate facts.
+Completion: the intended ACP executor claims and settles one fenced Attempt in
+the intended checkout.
 
-- `delivery.activation_blocked` means no provider I/O was attempted. Activate
-  the exact provider-instance adapter before retrying.
-- `delivery.intent.queued` proves only durable enqueue; inspect the delivery
-  journal for lease and settlement state.
-- Treat a provider result as accepted only when the journal or a signed
-  provider observation records it.
+## 5. GitHub publication and Slack projection
 
-If the executor completed but the platform did not receive a reply, inspect
-adapter activation, provider-instance identity, permissions, journal state, and
-listener logs rather than executor behavior.
+Check the durable publication and delivery records before looking at UI state.
+Separate candidate creation, approval, provider-I/O begin, provider result,
+exact-head readback, and Slack projection.
+
+- `delivery.intent.queued` means only that delivery was durably queued.
+- `provider_io_begun` means the external outcome may still be unknown.
+- `accepted` or `rejected` is the recorded provider result.
+- `outcome_unknown` requires reconciliation of the original operation before
+  any retry.
+
+Completion: the durable journal and provider readback support the exact status
+shown in Slack. If they do not, report the unresolved boundary rather than
+claiming success.

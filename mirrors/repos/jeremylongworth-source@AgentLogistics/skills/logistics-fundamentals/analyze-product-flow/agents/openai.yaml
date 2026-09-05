@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Product Flow"
+  short_description: "Analyze how products or load units move through receiving, st..."
+  default_prompt: "Use $analyze-product-flow to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

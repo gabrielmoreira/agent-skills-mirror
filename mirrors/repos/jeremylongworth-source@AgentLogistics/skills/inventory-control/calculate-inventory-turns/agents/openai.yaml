@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Inventory Turns"
+  short_description: "Calculate inventory turns using COGS or usage against average..."
+  default_prompt: "Use $calculate-inventory-turns to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

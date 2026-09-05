@@ -24,6 +24,7 @@ Output:
 import argparse
 import json
 import logging
+import math
 import os
 import sys
 from datetime import datetime, timedelta
@@ -598,6 +599,42 @@ def main():
     print()
 
 
+def _coerce_market_cap(value) -> Optional[float]:
+    """Return ``value`` as a number, or None when it is missing or non-numeric.
+
+    Native ints/floats pass through unchanged (so the JSON report keeps the
+    integer shape FMP sends); numeric strings are parsed; anything else is None.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        parsed = value
+    else:
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return None
+    # float("nan") / float("inf") parse without error but would bypass the
+    # `< min_market_cap` floor (both comparisons are False); reject them.
+    return parsed if math.isfinite(parsed) else None
+
+
+def profile_market_cap(profile: dict) -> float:
+    """Read market cap from an FMP profile dict.
+
+    ``/stable/profile`` returns ``marketCap``; the legacy ``/api/v3/profile``
+    returned ``mktCap``. The stable key wins when it holds a usable number;
+    otherwise fall back to the legacy key. Missing / null / non-numeric values
+    collapse to 0.0 so the caller's ``<`` comparison never raises and the
+    symbol simply fails the cap floor (Issue #328).
+    """
+    for key in ("marketCap", "mktCap"):
+        cap = _coerce_market_cap(profile.get(key))
+        if cap is not None:
+            return cap
+    return 0.0
+
+
 def _get_candidates_mode_a(client: FMPClient, args) -> list[dict]:
     """Get candidates from FMP earnings calendar (Mode A)."""
     # Calculate date range
@@ -631,8 +668,8 @@ def _get_candidates_mode_a(client: FMPClient, args) -> list[dict]:
         earning = grade_map.get(symbol, {})
         profile = profiles.get(symbol, {})
 
-        # Market cap filter
-        market_cap = profile.get("mktCap", 0) or 0
+        # Market cap filter (/stable returns marketCap; v3 returned mktCap)
+        market_cap = profile_market_cap(profile)
         if market_cap < args.min_market_cap:
             continue
 

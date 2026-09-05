@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Pallet Positions"
+  short_description: "Calculate pallet positions from rack, floor, pallet, clearanc..."
+  default_prompt: "Use $calculate-pallet-positions to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

@@ -168,7 +168,7 @@ Determine whether to run a full analysis or incremental update.
     - Split on commas, trim whitespace from each pattern, and filter out empty entries.
     - Store the patterns as `$EXCLUDE_PATTERNS` (comma-joined for passing to downstream scripts: `"tests/*,docs/*"`).
     - These patterns take highest priority — they are applied on top of default patterns and `.understandignore` rules. Use `!` prefix to force-include files that would otherwise be excluded.
-    - **Note:** Newly added `--exclude` patterns require a `--full` scan to take effect.
+    - Incremental preparation re-scans the current inventory, so newly supplied exclusions take effect immediately and remove any previously analyzed files they now cover.
 
 4. **Check for subdomain knowledge graphs to merge:**
    List all `*knowledge-graph*.json` files in `$UA_DIR/` **excluding** `knowledge-graph.json` itself (e.g. `frontend-knowledge-graph.json`, `backend-knowledge-graph.json`). If any subdomain graphs exist, run the merge script bundled with this skill (located next to this SKILL.md file — use the skill directory path, not the project root):
@@ -178,24 +178,51 @@ Determine whether to run a full analysis or incremental update.
    The script discovers subdomain graphs, loads the existing `knowledge-graph.json` as a base (if present), and merges everything into `knowledge-graph.json` (deduplicating nodes and edges). Report the merge summary to the user, then continue with the merged graph.
 
 5. Check if `$UA_DIR/knowledge-graph.json` exists. If it does, read it.
-6. Check if `$UA_DIR/meta.json` exists. If it does, read it to get `gitCommitHash`.
+6. Check if `$UA_DIR/meta.json` exists. If it does, read its `gitCommitHash` and store it as `$LAST_COMMIT_HASH`.
 7. **Decision logic:**
 
    | Condition | Action |
    |---|---|
    | `--full` flag in `$ARGUMENTS` | Full analysis (all phases) |
    | No existing graph or meta | Full analysis (all phases) |
+   | Existing graph + explicit `--exclude` | Run deterministic incremental preparation even when the commit hash is unchanged, so the new inventory rules take effect immediately |
    | `--review` flag + existing graph + unchanged commit hash | Skip to Phase 6 (review-only — reuse existing assembled graph) |
    | Existing graph + unchanged commit hash | Ask the user: "The graph is up to date at this commit. Would you like to: **(a)** run a full rebuild (`--full`), **(b)** run the LLM graph reviewer (`--review`), or **(c)** do nothing?" Then follow their choice. If they pick (c), STOP. |
-   | Existing graph + changed files | Incremental update (re-analyze changed files only) |
+   | Existing graph + changed files | Run deterministic incremental preparation below |
 
    **Review-only path:** Copy the existing `knowledge-graph.json` to `$UA_DIR/intermediate/assembled-graph.json`, then jump directly to Phase 6 step 3.
 
-   For incremental updates, get the changed file list:
+   For incremental updates, do **not** construct the changed-file list by hand. Run the bundled reconciliation helper with the previous analyzed commit. Pass `--exclude "$EXCLUDE_PATTERNS"` only when the option is non-empty:
    ```bash
-   git diff <lastCommitHash>..HEAD --name-only
+   node "<SKILL_DIR>/prepare-incremental.mjs" \
+     "$PROJECT_ROOT" \
+     "$LAST_COMMIT_HASH"
    ```
-   If this returns no files, report "Graph is up to date" and STOP.
+
+   With explicit exclusions:
+   ```bash
+   node "<SKILL_DIR>/prepare-incremental.mjs" \
+     "$PROJECT_ROOT" \
+     "$LAST_COMMIT_HASH" \
+     --exclude "$EXCLUDE_PATTERNS"
+   ```
+
+   The helper uses parameterized `git diff --name-status -z`, performs a fresh deterministic scan with the current `.understandignore` / `--exclude` rules, compares structural fingerprints, selectively refreshes imports, and atomically writes:
+   - `$UA_DIR/intermediate/incremental-plan.json`
+   - `$UA_DIR/intermediate/scan-result.json`
+   - `$UA_DIR/intermediate/changed-files.json`
+   - `$UA_DIR/intermediate/batch-existing.json` for partial/architecture updates
+
+   Read `incremental-plan.json` and store its `action`, `filesToReanalyze`, `deletedFiles`, `rerunArchitecture`, and `rerunTour` values. Follow this gate:
+
+   | Prepared action | Next step |
+   |---|---|
+   | `SKIP` | Run `node "<SKILL_DIR>/finalize-incremental.mjs" "$PROJECT_ROOT"`. It updates graph metadata, scan, fingerprints, and meta for cosmetic or irrelevant changes, but intentionally advances nothing for generated-artifact-only commits. Without `--review`, report zero LLM tokens spent and **STOP**. With explicit `--review`, copy `$UA_DIR/knowledge-graph.json` to `$UA_DIR/intermediate/assembled-graph.json` and jump to the `--review` graph-reviewer path in Phase 6 instead of stopping. |
+   | `PARTIAL_UPDATE` | Skip Phase 0.5 and Phase 1; continue with the incremental Phase 1.5/2 path. |
+   | `ARCHITECTURE_UPDATE` | Skip Phase 0.5 and Phase 1; continue with incremental analysis, then rerun Phase 4 and Phase 5. |
+   | `FULL_UPDATE` | Switch to the existing full pipeline beginning at Phase 0.5. Do not patch fingerprints or metadata from the incremental helper. |
+
+   `filesToReanalyze` contains only current, non-ignored files with structural changes. Deletions, newly ignored files, cosmetic changes, and generated artifacts are never passed to file-analyzer.
 
 8. **Collect project context for subagent injection:**
    - Read `README.md` (or `README.rst`, `readme.md`) from `$PROJECT_ROOT` if it exists. Store as `$README_CONTENT` (first 3000 characters).
@@ -209,9 +236,9 @@ Determine whether to run a full analysis or incremental update.
 
 ---
 
-## Phase 0.5 — Ignore Configuration
+## Phase 0.5 — Ignore Configuration (full analysis only)
 
-Set up and verify the `.understandignore` file before scanning.
+Set up and verify the `.understandignore` file before a full scan. Incremental preparation already applies the current ignore rules and must skip this confirmation phase.
 
 1. Check if `$UA_DIR/.understandignore` exists.
 2. **If it does NOT exist**, generate a starter file by invoking the bundled script (delegates to `generateStarterIgnoreFile` in `@understand-anything/core`, which reads `.gitignore`, deduplicates against built-in defaults, and emits language-grouped test-file suggestions). Pass `$PLUGIN_ROOT` via the env so the script doesn't have to re-derive it from its own path (which breaks for copied skill installs):
@@ -279,12 +306,22 @@ If the scan result includes `filteredByIgnore > 0`, report:
 
 Report: `[Phase 1.5/7] Computing semantic batches...`
 
-Run the bundled batching script:
+For a full analysis, run the bundled batching script:
 ```bash
 node "<SKILL_DIR>/compute-batches.mjs" "$PROJECT_ROOT"
 ```
 
-Reads `$UA_DIR/intermediate/scan-result.json`, writes `$UA_DIR/intermediate/batches.json`.
+For `PARTIAL_UPDATE` or `ARCHITECTURE_UPDATE`, inspect `filesToReanalyze` from the prepared plan:
+
+- If it is empty, skip batching and file-analyzer entirely. `batch-existing.json` already contains the deletion/ignore cleanup baseline; continue to the merge step in Phase 2. This is the zero-token deletion path.
+- Otherwise run batching against the helper-produced file, which contains only structurally changed current files:
+
+  ```bash
+  node "<SKILL_DIR>/compute-batches.mjs" "$PROJECT_ROOT" \
+    --changed-files="$UA_DIR/intermediate/changed-files.json"
+  ```
+
+Both forms read the freshly reconciled `$UA_DIR/intermediate/scan-result.json` and write `$UA_DIR/intermediate/batches.json`.
 
 Capture stderr. Append any line starting with `Warning:` to `$PHASE_WARNINGS` for the final report.
 
@@ -360,33 +397,23 @@ Include the script's warnings in `$PHASE_WARNINGS` for the reviewer.
 
 ### Incremental update path
 
-Write the changed-files list (one path per line) to a temp file:
-```bash
-git diff "<lastCommitHash>..HEAD" --name-only > "$UA_DIR/tmp/changed-files.txt"
-```
+`prepare-incremental.mjs` has already refreshed the complete file inventory and `importMap`, written the exact analyzer list, and pruned changed/deleted paths from the old graph into `batch-existing.json`.
 
-Run compute-batches with `--changed-files`:
-```bash
-node "<SKILL_DIR>/compute-batches.mjs" "$PROJECT_ROOT" \
-  --changed-files="$UA_DIR/tmp/changed-files.txt"
-```
+1. If `filesToReanalyze` is non-empty, dispatch file-analyzer only for the batches from the incremental `batches.json`, using the same prompt template as the full path. Never add `deletedFiles`, `cosmeticFiles`, `ignoredFiles`, or `generatedArtifactFiles` to a prompt.
+2. If `filesToReanalyze` is empty, dispatch no agent and create no new batch file.
+3. Run the merge script in both cases:
 
-This produces a `batches.json` that contains only batches with changed files, but neighborMap entries still reference unchanged files (with their full-graph batchIndex) so cross-batch edges remain emittable.
-
-Then dispatch file-analyzer subagents per the same template as the full path.
-
-After batches complete:
-1. Remove old nodes whose `filePath` matches any changed file from the existing graph
-2. Remove old edges whose `source` or `target` references a removed node
-3. Write the pruned existing nodes/edges as `batch-existing.json` in the intermediate directory
-4. Run the same merge script — it will combine `batch-existing.json` with the fresh `batch-*.json` files:
    ```bash
    python "<SKILL_DIR>/merge-batch-graphs.py" "$PROJECT_ROOT"
    ```
 
+The merge combines `batch-existing.json` with any fresh batch output. Its import recovery reads the already-refreshed `scan-result.json`, so added and removed imports are reflected during this same run. Verify `assembled-graph.json` exists before continuing.
+
 ---
 
 ## Phase 3 — ASSEMBLE REVIEW
+
+Run this phase for **full analysis only**. Both incremental actions skip assemble-reviewer: their deterministic merge/reconciliation checks replace this whole-graph LLM pass. The user-facing `--review` option is still honored later by the graph-reviewer in Phase 6.
 
 Report to the user: `[Phase 3/7] Reviewing assembled graph...`
 
@@ -414,6 +441,8 @@ After the subagent completes, read `$UA_DIR/intermediate/assemble-review.json` a
 ---
 
 ## Phase 4 — ARCHITECTURE
+
+Run this phase for full analysis and for incremental plans where `rerunArchitecture === true`. For `PARTIAL_UPDATE`, dispatch no architecture agent; `finalize-incremental.mjs` preserves surviving assignments, removes dangling/empty layers, and assigns new nodes deterministically by deepest common parent directory, then graph connectivity, then previous layer order.
 
 Report to the user: `[Phase 4/7] Identifying architectural layers...`
 
@@ -483,7 +512,7 @@ Each element of the final `layers` array MUST have this shape:
 
 All four fields (`id`, `name`, `description`, `nodeIds`) are required.
 
-**For incremental updates:** Always re-run architecture analysis on the full merged node set, since layer assignments may shift when files change.
+**For architecture incremental updates:** Re-run architecture analysis on the full merged node set. Ordinary partial updates use the deterministic placement described at the start of this phase.
 
 **Context for incremental updates:** When re-running architecture analysis, also inject the previous layer definitions:
 
@@ -497,6 +526,8 @@ All four fields (`id`, `name`, `description`, `nodeIds`) are required.
 ---
 
 ## Phase 5 — TOUR
+
+Run this phase for full analysis and for incremental plans where `rerunTour === true`. For `PARTIAL_UPDATE`, dispatch no tour agent and do not rewrite the narrative; finalization only removes dangling node IDs from the existing steps.
 
 Report to the user: `[Phase 5/7] Building guided tour...`
 
@@ -567,11 +598,26 @@ Each element of the final `tour` array MUST have this shape:
 
 Required fields: `order`, `title`, `description`, `nodeIds`. Preserve optional `languageLesson` when present.
 
+### Incremental deterministic save gate
+
+After the applicable Phase 4/5 work is complete, finalize either incremental action:
+
+```bash
+node "<SKILL_DIR>/finalize-incremental.mjs" "$PROJECT_ROOT"
+```
+
+This helper validates/deduplicates nodes and edges, reconciles layers/tour, atomically saves the graph, patches only changed fingerprints while preserving all others, removes deleted fingerprints, and only then advances `meta.json`.
+
+- Without `--review`, report the incremental summary and **STOP**. Do not run Phase 6 or the full-save Phase 7; this is what prevents the ordinary local update from paying for whole-graph review.
+- With `--review`, copy the newly saved `$UA_DIR/knowledge-graph.json` to `$UA_DIR/intermediate/assembled-graph.json`, then continue to the full graph-reviewer path in Phase 6. Do not run the inline default reviewer.
+
 ---
 
 ## Phase 6 — REVIEW
 
 Report to the user: `[Phase 6/7] Validating knowledge graph...`
+
+For incremental `--review`, the save gate already copied a complete KnowledgeGraph to `assembled-graph.json`. Do not reconstruct it from node/edge-only merge output; skip directly to the `--review` graph-reviewer path below. The default inline path is for full analysis only.
 
 Assemble the full KnowledgeGraph JSON object:
 
@@ -747,7 +793,7 @@ Report to the user: `[Phase 7/7] Saving knowledge graph...`
    const outputPath = process.argv[3];
    const input = {
      projectRoot,
-     sourceFilePaths: [<all source file paths from Phase 1, as JSON array>],
+     filePaths: [<all analyzed file paths from Phase 1, including non-code files, as JSON array>],
      gitCommitHash: "<current commit hash>",
    };
    fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
@@ -760,7 +806,7 @@ Report to the user: `[Phase 7/7] Saving knowledge graph...`
      "$UA_DIR/intermediate/fingerprint-input.json"
    ```
 
-   The script uses `TreeSitterPlugin + PluginRegistry` exactly like `extract-structure.mjs`, so the baseline matches the comparison logic used during auto-updates.
+   The script uses `TreeSitterPlugin + PluginRegistry` exactly like `extract-structure.mjs`, so the baseline matches incremental comparison. The baseline MUST include every file in `scan-result.json`, not only source-code files; unsupported formats receive conservative content-only fingerprints.
 
    **If the script exits non-zero or stdout does not include `Fingerprints baseline:`, abort Phase 7 and report the error. Do NOT proceed to step 3 (writing `meta.json`).**
 

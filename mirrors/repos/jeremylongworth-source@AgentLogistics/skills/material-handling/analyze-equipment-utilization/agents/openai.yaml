@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Equipment Utilization"
+  short_description: "Analyze equipment utilization from equipment hours, moves, do..."
+  default_prompt: "Use $analyze-equipment-utilization to produce material-handling planning support with evidence, assumptions, and review boundaries."

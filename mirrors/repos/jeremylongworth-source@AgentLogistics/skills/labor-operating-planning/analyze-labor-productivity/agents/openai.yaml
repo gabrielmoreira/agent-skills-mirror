@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Labor Productivity
+short_description: Analyze labor productivity from labor hours, output, process scope, standards, source records, and operational context.
+default_prompt: Use $analyze-labor-productivity to produce a source-backed warehouse labor or operating-planning output with calculations where relevant, evidence boundaries, and qualified-review requirements.

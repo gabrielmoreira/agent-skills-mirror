@@ -1,0 +1,4 @@
+interface: openai
+display_name: Manage Nonconforming Inventory
+short_description: Manage nonconforming-inventory workflow from nonconformance, hold status, owner, disposition, controls, and review boundaries.
+default_prompt: Use $manage-nonconforming-inventory to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

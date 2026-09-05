@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Reorder Point"
+  short_description: "Calculate unit-aware reorder points from demand, lead time, and safety stock."
+  default_prompt: "Use $calculate-reorder-point to calculate a reorder point with explicit units, assumptions, validation notes, and missing-input checks."

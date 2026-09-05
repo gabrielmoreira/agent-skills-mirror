@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Days On Hand"
+  short_description: "Calculate days on hand from on-hand inventory and average dai..."
+  default_prompt: "Use $calculate-days-on-hand to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

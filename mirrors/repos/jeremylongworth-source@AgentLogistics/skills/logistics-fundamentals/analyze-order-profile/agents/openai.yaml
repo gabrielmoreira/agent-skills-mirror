@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Order Profile"
+  short_description: "Analyze order volume, lines, units, channels, cutoffs, mix, a..."
+  default_prompt: "Use $analyze-order-profile to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

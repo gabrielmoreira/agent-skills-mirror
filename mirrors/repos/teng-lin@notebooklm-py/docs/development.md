@@ -809,30 +809,41 @@ variable at `NOTEBOOKLM_CI_ACCOUNT_SLOTS=A`. Release verification must dispatch 
 and `verify-package.yml` with `--ref main`; release and feature refs cannot reach their protected
 authenticated jobs.
 
-The canonical template describes only state the copy API promises to preserve: ready sources and
-Studio artifacts. Its checked-in shape is `tests/fixtures/e2e_template_contract.json`. Notes and
-chat history are deliberately absent from that contract. Provisioning creates and validates those
-on the disposable `reference` copy using
+The canonical template describes only state the copy API promises to preserve and both backends
+can identify consistently: ready sources plus completed audio, video, infographic, and slide-deck
+artifacts. Legacy quiz and flashcard rows in this public notebook have no Web variant metadata;
+report, data-table, and interactive mind-map artifacts are absent. Those optional read-only checks
+skip when unavailable, while the full E2E lanes generate and exercise every family on disposable
+notebooks. Copying is asynchronous: provisioning dispatches every physical copy first, then polls
+each copied source and artifact state for up to ten minutes before preparation. Full lanes use a
+stable reference copy plus one clean mutable workspace shared by generation and multi-source
+tests; RPC health uses one clean fallback copy. Waiting for inherited artifacts before deletion is
+required because artifact propagation can lag behind the initial copy response. The checked-in
+template shape is
+`tests/fixtures/e2e_template_contract.json`. Notes and chat history are deliberately absent from
+that contract. Provisioning creates and validates those on the disposable `reference` copy using
 `tests/fixtures/e2e_prepared_role_contract.json`.
+The configured template is the public notebook titled
+`Make Your Writing More Powerful and Persuasive`. Its title cannot be changed; replacing the
+template requires updating the title contract and template-ID secret together.
 
-To qualify a template locally, use a dedicated profile and keep the template ID in the documented
-environment variable so it never appears on the command line:
+The lifecycle manager defaults to the public template
+`a109ad5c-834d-4f3d-82a0-fe41aa72318e` when the environment variable is unset. Set
+`NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID` only to qualify a replacement template. To qualify the
+default locally, use a dedicated profile:
 
 ```bash
 export NOTEBOOKLM_PROFILE=agent-e2e-slot-A-web
-export NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID='<template-id>'
 export GITHUB_RUN_ID=1 GITHUB_RUN_ATTEMPT=1
 export GITHUB_REPOSITORY=teng-lin/notebooklm-py
 export RUNNER_TEMP="$(mktemp -d)"
 
 uv run python scripts/manage_ci_e2e_notebooks.py validate \
   --backend web \
-  --template-id-env NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID \
   --contract tests/fixtures/e2e_template_contract.json
 
 uv run python scripts/manage_ci_e2e_notebooks.py provision \
   --backend web \
-  --template-id-env NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID \
   --contract tests/fixtures/e2e_template_contract.json \
   --mode full --lane nightly-web-ubuntu --account-slot A \
   --manifest "$RUNNER_TEMP/notebooklm-e2e.json" \
@@ -841,13 +852,13 @@ uv run python scripts/manage_ci_e2e_notebooks.py provision \
 # Run pytest only after exporting the generated github-env entries.
 uv run python scripts/manage_ci_e2e_notebooks.py cleanup \
   --backend web \
-  --template-id-env NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID \
   --manifest "$RUNNER_TEMP/notebooklm-e2e.json"
 ```
 
-Cleanup is mandatory even when validation or pytest fails. Managed full mode publishes three
-distinct role IDs (`reference`, `generation`, and `multi-source`); managed read-only mode publishes
-only `reference`. Both publish the activation flag last. With that flag present, pytest never
+Cleanup is mandatory even when validation or pytest fails. Managed full mode publishes two
+physical IDs: a distinct `reference` ID and one mutable ID bound to both `generation` and
+`multi-source`; managed read-only mode publishes only `reference`. Both publish the activation flag
+last. With that flag present, pytest never
 consults profile cache files, creates a role notebook, cleans copied children on first use, or
 deletes a workflow-owned copy during teardown. `temp_notebook` and other function-level CRUD
 fixtures retain their existing lifecycle.
@@ -1466,8 +1477,8 @@ The `RedactingFilter` preserves `record.exc_info` (the live exception object) so
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | `test.yml` | Push/PR | Reduced 7-cell compatibility matrix (Ubuntu × Python 3.10–3.14, plus macOS/Windows on 3.12), linting, type checking |
-| `nightly.yml` | Daily 6 AM UTC (`main`), manual dispatch on `main` | Full compatibility/coverage plus managed-copy full Web/Ubuntu, full Android/macOS, and read-only Web/Windows E2E; the full Web lane settles its generation journal before cleanup |
-| `rpc-health.yml` | Daily 7 AM UTC (`main`), manual dispatch on `main` | RPC monitoring on a disposable fallback copy plus the template-read-only [Android gRPC canary](#android-grpc-canary) |
+| `nightly.yml` | Daily 6 AM UTC (`main`), manual dispatch on `main` | Full compatibility/coverage plus managed-copy full Web/Ubuntu, full Android/macOS, and read-only Web/Windows E2E; an owner may qualify an open same-repository PR at its pinned head SHA |
+| `rpc-health.yml` | Daily 7 AM UTC (`main`), manual dispatch on `main` | RPC monitoring on a disposable fallback copy plus the template-read-only [Android gRPC canary](#android-grpc-canary); an owner may qualify an open same-repository PR at its pinned head SHA |
 | `testpypi-publish.yml` | Manual dispatch | Publish to TestPyPI |
 | `verify-package.yml` | Manual dispatch on `main` | Verify TestPyPI or PyPI install plus managed-copy E2E; artifact inventory is advisory |
 | `publish.yml` | Tag push | Publish to PyPI |
@@ -1525,16 +1536,17 @@ baseline by hand, not something the canary fixes.
 
 Canonical CI never points pytest or full RPC health at the immutable template.
 Each authenticated lane selects one opaque account slot, materializes only that
-slot's master token, and creates role-specific copies. Full lanes prepare
-separate `reference`, `generation`, and `multi-source` copies; Web RPC health
-uses one `rpc` fallback copy. The Android RPC canary is the only lane that reads
-the template directly, and it performs no notebook mutation.
+slot's master token, and creates workload-isolated copies. Full lanes prepare a
+stable `reference` copy plus one mutable copy shared by `generation` and
+`multi-source`; Web RPC health uses one `rpc` fallback copy. The Android RPC
+canary is the only lane that reads the template directly, and it performs no
+notebook mutation.
 
 The contracts are checked in at `tests/fixtures/e2e_template_contract.json` and
 `tests/fixtures/e2e_prepared_role_contract.json`. Provisioning seeds the
 reference copy's note and persisted Q&A, removes inherited writable children
-from the other roles, and publishes the managed fixture bindings only after all
-roles pass. Cleanup runs under `always()` after verification, while the next
+from the mutable workspace, and publishes the managed fixture bindings only
+after both workspaces pass. Cleanup runs under `always()` after verification, while the next
 selected run also sweeps owned, reserved-prefix copies older than 24 hours.
 
 For a local managed-copy run, use an isolated profile and runner-style scratch
@@ -1543,18 +1555,17 @@ directory. Never use the template ID as a pytest fixture binding:
 ```bash
 export NOTEBOOKLM_PROFILE=agent-e2e-local
 export RUNNER_TEMP="$(mktemp -d)"
-export NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID=<template-id>
 export GITHUB_RUN_ID=1 GITHUB_RUN_ATTEMPT=1
 export GITHUB_REPOSITORY=teng-lin/notebooklm-py
 uv run python scripts/manage_ci_e2e_notebooks.py provision \
-  --backend web --template-id-env NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID \
+  --backend web \
   --contract tests/fixtures/e2e_template_contract.json --mode full \
   --lane verify-package --account-slot A \
   --manifest "$RUNNER_TEMP/notebooklm-e2e.json" --github-env "$RUNNER_TEMP/e2e.env"
 set -a; source "$RUNNER_TEMP/e2e.env"; set +a
 NOTEBOOKLM_E2E_GENERATION_JOURNAL_MODE=off uv run pytest tests/e2e -m "not variants"
 uv run python scripts/manage_ci_e2e_notebooks.py cleanup \
-  --backend web --template-id-env NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID \
+  --backend web \
   --manifest "$RUNNER_TEMP/notebooklm-e2e.json"
 ```
 
@@ -1564,7 +1575,7 @@ environment/profile-cache/auto-create behavior described above.
 #### Account pool setup
 
 The `protected-readonly` Environment contains one independent opaque token per
-enabled slot and one template handle:
+enabled slot. It may also contain a template handle to override the checked-in public default:
 
 ```text
 NOTEBOOKLM_MASTER_TOKEN_JSON_A
@@ -1574,7 +1585,8 @@ NOTEBOOKLM_E2E_TEMPLATE_NOTEBOOK_ID
 ```
 
 Bootstrap each authorized account in a separate local profile and upload its
-token without printing it. Upload the template ID through stdin as well:
+token without printing it. To override the public template, upload the replacement ID through
+stdin as well:
 
 ```bash
 NOTEBOOKLM_PROFILE=ci-bootstrap-a notebooklm login --master-token --account <account-a>
@@ -1607,6 +1619,36 @@ generation notebook are no longer part of CI.
 An unfiltered nightly run includes all three live lanes. A manual dispatch with
 `test_filter` runs the requested node only on the two full lanes and omits the Windows
 read-only lane, because an arbitrary node ID is not guaranteed to carry the `readonly` marker.
+The `e2e_lane` input can instead select only `web`, `android`, or `readonly`; `web` means the
+full Web/Ubuntu lane, while `all` preserves the scheduled matrix.
+
+To qualify code before merge, dispatch the workflow definition on `main` and pass the open PR
+number. Do **not** select the feature branch in the Actions ref picker. The resolver permits this
+mode only for actor `teng-lin`, verifies that the PR is open, targets `main`, and has a head branch
+inside `teng-lin/notebooklm-py`, then pins and verifies the returned 40-character head SHA. Fork
+PRs are deliberately ineligible because the candidate code runs with the protected live account.
+PR qualification reruns are rejected; use a fresh dispatch so a moved PR head is authorized again:
+
+```bash
+# Run both RPC backends against the PR head.
+gh workflow run rpc-health.yml --ref main \
+  -f qualification_pr=2353 -f account_rotation_base=auto
+
+# If RPC passes, run only the full Web E2E lane against the same PR.
+gh workflow run nightly.yml --ref main \
+  -f qualification_pr=2353 -f e2e_lane=web \
+  -f account_rotation_base=auto -f run_compatibility=false
+```
+
+Before merging, compare the run summary's resolved SHA with
+`gh pr view 2353 --json headRefOid`. Pushes to the PR after dispatch are not included; dispatch
+again to qualify the new head.
+
+The account planner and raw master-token consumer always execute from the immutable `main` SHA
+that supplied the workflow, not from the candidate checkout. This keeps slot-to-secret mapping and
+credential materialization outside PR control. Candidate code receives only the selected account's
+materialized profile, which is still a privileged credential: review the exact pinned diff before
+authorizing the dispatch.
 
 #### Operations runbooks
 
@@ -1638,14 +1680,15 @@ Every generic workflow secret is protected by an approved Environment or an
 allowlisted actor/ref gate. Pool credentials are stricter: every live job must
 simultaneously bind literal `environment: protected-readonly`, test
 `github.repository == 'teng-lin/notebooklm-py'`, and consume
-`needs.resolve-target.outputs.is_standard == 'true'`. The resolver accepts only
-`refs/heads/main`, publishes its immutable SHA, and every planner and
-secret-bearing checkout uses that SHA.
+`needs.resolve-target.outputs.is_standard == 'true'`. The resolver accepts a normal
+`refs/heads/main` run or an owner-authorized open same-repository PR requested from the trusted
+`main` workflow, publishes the immutable resolved SHA, and every planner and secret-bearing
+checkout uses that SHA.
 
 | Gate | Where | Mechanism |
 |------|-------|-----------|
 | `environment: protected-readonly` | Job-level | GitHub Environment hosting the canonical secret values. Bind it **unconditionally** (`environment: protected-readonly`) so every trigger — scheduled `cron` and `workflow_dispatch` alike — sees the same secret. **Note:** the earlier conditional form (`${{ github.event_name == 'workflow_dispatch' && 'protected-readonly' \|\| '' }}`) silently broke scheduled crons once the secrets stopped existing at repo level (issue #1009); the same env binding is now the single source of truth. If you want to block `workflow_dispatch` behind manual approval, add a **required reviewers** rule on the environment — but be aware scheduled runs will then queue at the same gate. |
-| `needs.resolve-target.outputs.is_standard == 'true'` plus canonical repository equality | Job-level `if:` | Pool jobs accept only a resolved `refs/heads/main`; releases, tags, and feature refs cannot reach the Environment job. |
+| `needs.resolve-target.outputs.is_standard == 'true'` plus canonical repository equality | Job-level `if:` | Pool jobs accept normal `main`, or the exact head SHA of an open same-repository PR explicitly authorized by the owner through a `main` workflow dispatch. Direct release, tag, feature-ref, fork, and non-owner dispatches cannot reach the Environment job. |
 | `github.event.sender.login == 'teng-lin'` | Job-level `if:` | Pin webhook-triggered workflows (e.g. `claude.yml`) to a specific maintainer actor. Any other actor's trigger never reaches the secret-bearing steps. |
 
 `scripts/check_workflow_secret_gates.py` (wired into the `test.yml` quality job)
@@ -1711,8 +1754,9 @@ their own.
 6. **Smoke-test the gate.** Dispatch one of the workflows above on `main` and
    verify the live job records a `protected-readonly` deployment. If required
    reviewers are configured, also confirm it pauses at "Waiting for review".
-   Dispatching a feature/tag ref must stop in `resolve-target` before any
-   Environment job is created. Do not enable the pool until both checks pass.
+   Dispatching a feature/tag ref directly must stop in `resolve-target` before any Environment job
+   is created. The only feature-code exception is a valid `qualification_pr` supplied while
+   dispatching the trusted workflow on `main`. Do not enable the pool until both checks pass.
 
 For automation-driven setup (e.g. infrastructure-as-code), the same configuration
 can be applied via the GitHub REST API:

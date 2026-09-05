@@ -1,0 +1,23 @@
+# Equipment Cookery Checklist
+
+- Food, target result, equipment available, missing equipment, vessel material, vessel size, heat source, direct-heat exposure, batch size, fill level, altitude, and service timing are identified.
+- Safety is handled before convenience or tool substitution.
+- Equipment feasibility is separated from food safety and culinary quality.
+- Browning problems check crowding, surface moisture, pan material/color, rack position, airflow, preheat, and batch size.
+- Stovetop substitutions check pan diameter, burner output, heat retention, moisture release, ingredient order, and batch recovery.
+- Oven, broiler, grill, and air-fryer guidance checks radiant heat, convective airflow, rack or basket load, fat flare-ups, smoke risk, vessel compatibility, and thermometer verification when raw animal products are involved.
+- Induction guidance checks pan compatibility, pan thickness, burner cycling, response speed, hot spots, and pan-to-burner size match.
+- Microwave reheating checks covering, stirring, rotation, standing time, cold spots, and internal temperature rather than plate temperature.
+- Slow cooker guidance checks thawed ingredients, fill level, liquid/steam, lid lifting, altitude or recipe timing, and thermometer verification for meat and poultry.
+- Pressure cooking guidance distinguishes pressure cookers and pressure canners and checks foaming foods, maximum fill, altitude, release method, vent blocking, and manufacturer limits; low-acid canning needs tested pressure-canner guidance and should not be converted to electric pressure cookers or small pressure cookers.
+- Damaged vessels, cracked glass, chipped glass, deeply scratched glass, non-food-safe materials, direct-heat-incompatible cookware, pressure-seal problems, unknown appliance behavior, and uncertain time-temperature history trigger conservative safety guidance.
+- Use these default U.S. references for source checks:
+  - FoodSafety.gov safe minimum internal temperatures: https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures
+  - USDA FSIS air fryers and food safety: https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/air-fryers-and-food-safety
+  - USDA FSIS grilling and food safety: https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/grilling-and-food-safety
+  - FDA safe food handling and microwave guidance: https://www.fda.gov/food/buy-store-serve-safe-food/safe-food-handling
+  - Colorado State University Extension slow cooker safety: https://extension.colostate.edu/resource/crockpot-and-slow-cooker-food-safety/
+  - Colorado State University Extension high elevation food preparation: https://extension.colostate.edu/resource/high-elevation-food-preparation-guide/
+  - Colorado State University Extension high-elevation pressure-cooker beans: https://extension.colostate.edu/resource/cooking-beans-at-high-elevation-using-an-electric-pressure-cooker-2/
+  - NCHFP canning in pressure cookers: https://nchfp.uga.edu/newsflash/canning-in-pressure-cookers
+- For brand-specific vessel compatibility, use current manufacturer use-and-care instructions and do not generalize one brand's limits to every material.

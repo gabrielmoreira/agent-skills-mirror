@@ -101,7 +101,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`docs/idd-review-policy-profiles.md`](docs/idd-review-policy-profiles.md) |
 | 40 | ✓ | [`docs/policy-constants.md`](docs/policy-constants.md) |
 | 41 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 42 | ✓ | [`idd-template/.github/instructions/idd-pre-merge.instructions.md`](idd-template/.github/instructions/idd-pre-merge.instructions.md) |
+| 42 | ✓ | [`idd-template/.github/instructions/idd-review-snapshot.instructions.md`](idd-template/.github/instructions/idd-review-snapshot.instructions.md) |
 | 43 | ✓ | [`idd-template/.github/instructions/idd-suitability.instructions.md`](idd-template/.github/instructions/idd-suitability.instructions.md) |
 | 44 | ✓ | [`idd-template/docs/customization.md`](idd-template/docs/customization.md) |
 | 45 | ✓ | [`idd-template/docs/idd-comment-minimization.md`](idd-template/docs/idd-comment-minimization.md) |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Owl-Listener/designer-skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
+Mirror of `Owl-Listener/designer-skills` — 26 default patterns, 0 followed patterns, 118 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Owl-Listener/designer-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 116 |
+| Files         | 118 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -132,49 +132,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 71 | ✓ | [`prototyping-testing/skills/a-b-test-design/SKILL.md`](prototyping-testing/skills/a-b-test-design/SKILL.md) |
 | 72 | ✓ | [`prototyping-testing/skills/accessibility-test-plan/SKILL.md`](prototyping-testing/skills/accessibility-test-plan/SKILL.md) |
 | 73 | ✓ | [`prototyping-testing/skills/click-test-plan/SKILL.md`](prototyping-testing/skills/click-test-plan/SKILL.md) |
-| 74 | ✓ | [`prototyping-testing/skills/heuristic-evaluation/SKILL.md`](prototyping-testing/skills/heuristic-evaluation/SKILL.md) |
-| 75 | ✓ | [`prototyping-testing/skills/prototype-strategy/SKILL.md`](prototyping-testing/skills/prototype-strategy/SKILL.md) |
-| 76 | ✓ | [`prototyping-testing/skills/test-scenario/SKILL.md`](prototyping-testing/skills/test-scenario/SKILL.md) |
-| 77 | ✓ | [`prototyping-testing/skills/user-flow-diagram/SKILL.md`](prototyping-testing/skills/user-flow-diagram/SKILL.md) |
-| 78 | ✓ | [`prototyping-testing/skills/wireframe-spec/SKILL.md`](prototyping-testing/skills/wireframe-spec/SKILL.md) |
-| 79 | ✓ | [`ui-design/skills/aesthetic-usability/SKILL.md`](ui-design/skills/aesthetic-usability/SKILL.md) |
-| 80 | ✓ | [`ui-design/skills/color-system/SKILL.md`](ui-design/skills/color-system/SKILL.md) |
-| 81 | ✓ | [`ui-design/skills/dark-mode-design/SKILL.md`](ui-design/skills/dark-mode-design/SKILL.md) |
-| 82 | ✓ | [`ui-design/skills/data-visualization/SKILL.md`](ui-design/skills/data-visualization/SKILL.md) |
-| 83 | ✓ | [`ui-design/skills/illustration-style/SKILL.md`](ui-design/skills/illustration-style/SKILL.md) |
-| 84 | ✓ | [`ui-design/skills/law-of-closure/SKILL.md`](ui-design/skills/law-of-closure/SKILL.md) |
-| 85 | ✓ | [`ui-design/skills/law-of-common-region/SKILL.md`](ui-design/skills/law-of-common-region/SKILL.md) |
-| 86 | ✓ | [`ui-design/skills/law-of-continuity/SKILL.md`](ui-design/skills/law-of-continuity/SKILL.md) |
-| 87 | ✓ | [`ui-design/skills/law-of-figure-ground/SKILL.md`](ui-design/skills/law-of-figure-ground/SKILL.md) |
-| 88 | ✓ | [`ui-design/skills/law-of-proximity/SKILL.md`](ui-design/skills/law-of-proximity/SKILL.md) |
-| 89 | ✓ | [`ui-design/skills/law-of-similarity/SKILL.md`](ui-design/skills/law-of-similarity/SKILL.md) |
-| 90 | ✓ | [`ui-design/skills/layout-grid/SKILL.md`](ui-design/skills/layout-grid/SKILL.md) |
-| 91 | ✓ | [`ui-design/skills/platform-conventions/SKILL.md`](ui-design/skills/platform-conventions/SKILL.md) |
-| 92 | ✓ | [`ui-design/skills/readable-measure/SKILL.md`](ui-design/skills/readable-measure/SKILL.md) |
-| 93 | ✓ | [`ui-design/skills/responsive-design/SKILL.md`](ui-design/skills/responsive-design/SKILL.md) |
-| 94 | ✓ | [`ui-design/skills/spacing-system/SKILL.md`](ui-design/skills/spacing-system/SKILL.md) |
-| 95 | ✓ | [`ui-design/skills/typography-scale/SKILL.md`](ui-design/skills/typography-scale/SKILL.md) |
-| 96 | ✓ | [`ui-design/skills/visual-hierarchy/SKILL.md`](ui-design/skills/visual-hierarchy/SKILL.md) |
-| 97 | ✓ | [`ui-design/skills/von-restorff-effect/SKILL.md`](ui-design/skills/von-restorff-effect/SKILL.md) |
-| 98 | ✓ | [`ux-strategy/skills/business-design/SKILL.md`](ux-strategy/skills/business-design/SKILL.md) |
-| 99 | ✓ | [`ux-strategy/skills/competitive-analysis/SKILL.md`](ux-strategy/skills/competitive-analysis/SKILL.md) |
-| 100 | ✓ | [`ux-strategy/skills/content-strategy/SKILL.md`](ux-strategy/skills/content-strategy/SKILL.md) |
-| 101 | ✓ | [`ux-strategy/skills/design-brief/SKILL.md`](ux-strategy/skills/design-brief/SKILL.md) |
-| 102 | ✓ | [`ux-strategy/skills/design-principles/SKILL.md`](ux-strategy/skills/design-principles/SKILL.md) |
-| 103 | ✓ | [`ux-strategy/skills/experience-map/SKILL.md`](ux-strategy/skills/experience-map/SKILL.md) |
-| 104 | ✓ | [`ux-strategy/skills/information-architecture/SKILL.md`](ux-strategy/skills/information-architecture/SKILL.md) |
-| 105 | ✓ | [`ux-strategy/skills/metrics-definition/SKILL.md`](ux-strategy/skills/metrics-definition/SKILL.md) |
-| 106 | ✓ | [`ux-strategy/skills/north-star-vision/SKILL.md`](ux-strategy/skills/north-star-vision/SKILL.md) |
-| 107 | ✓ | [`ux-strategy/skills/opportunity-framework/SKILL.md`](ux-strategy/skills/opportunity-framework/SKILL.md) |
-| 108 | ✓ | [`ux-strategy/skills/service-blueprint/SKILL.md`](ux-strategy/skills/service-blueprint/SKILL.md) |
-| 109 | ✓ | [`ux-strategy/skills/stakeholder-alignment/SKILL.md`](ux-strategy/skills/stakeholder-alignment/SKILL.md) |
-| 110 | ✓ | [`visual-critique/skills/critique-affordance/SKILL.md`](visual-critique/skills/critique-affordance/SKILL.md) |
-| 111 | ✓ | [`visual-critique/skills/critique-brand-consistency/SKILL.md`](visual-critique/skills/critique-brand-consistency/SKILL.md) |
-| 112 | ✓ | [`visual-critique/skills/critique-color/SKILL.md`](visual-critique/skills/critique-color/SKILL.md) |
-| 113 | ✓ | [`visual-critique/skills/critique-composition/SKILL.md`](visual-critique/skills/critique-composition/SKILL.md) |
-| 114 | ✓ | [`visual-critique/skills/critique-information-density/SKILL.md`](visual-critique/skills/critique-information-density/SKILL.md) |
-| 115 | ✓ | [`visual-critique/skills/critique-typography/SKILL.md`](visual-critique/skills/critique-typography/SKILL.md) |
-| 116 | ✓ | [`visual-critique/skills/critique-visual-hierarchy/SKILL.md`](visual-critique/skills/critique-visual-hierarchy/SKILL.md) |
+| 74 | ✓ | [`prototyping-testing/skills/concept-selection/SKILL.md`](prototyping-testing/skills/concept-selection/SKILL.md) |
+| 75 | ✓ | [`prototyping-testing/skills/heuristic-evaluation/SKILL.md`](prototyping-testing/skills/heuristic-evaluation/SKILL.md) |
+| 76 | ✓ | [`prototyping-testing/skills/parallel-concepts/SKILL.md`](prototyping-testing/skills/parallel-concepts/SKILL.md) |
+| 77 | ✓ | [`prototyping-testing/skills/prototype-strategy/SKILL.md`](prototyping-testing/skills/prototype-strategy/SKILL.md) |
+| 78 | ✓ | [`prototyping-testing/skills/test-scenario/SKILL.md`](prototyping-testing/skills/test-scenario/SKILL.md) |
+| 79 | ✓ | [`prototyping-testing/skills/user-flow-diagram/SKILL.md`](prototyping-testing/skills/user-flow-diagram/SKILL.md) |
+| 80 | ✓ | [`prototyping-testing/skills/wireframe-spec/SKILL.md`](prototyping-testing/skills/wireframe-spec/SKILL.md) |
+| 81 | ✓ | [`ui-design/skills/aesthetic-usability/SKILL.md`](ui-design/skills/aesthetic-usability/SKILL.md) |
+| 82 | ✓ | [`ui-design/skills/color-system/SKILL.md`](ui-design/skills/color-system/SKILL.md) |
+| 83 | ✓ | [`ui-design/skills/dark-mode-design/SKILL.md`](ui-design/skills/dark-mode-design/SKILL.md) |
+| 84 | ✓ | [`ui-design/skills/data-visualization/SKILL.md`](ui-design/skills/data-visualization/SKILL.md) |
+| 85 | ✓ | [`ui-design/skills/illustration-style/SKILL.md`](ui-design/skills/illustration-style/SKILL.md) |
+| 86 | ✓ | [`ui-design/skills/law-of-closure/SKILL.md`](ui-design/skills/law-of-closure/SKILL.md) |
+| 87 | ✓ | [`ui-design/skills/law-of-common-region/SKILL.md`](ui-design/skills/law-of-common-region/SKILL.md) |
+| 88 | ✓ | [`ui-design/skills/law-of-continuity/SKILL.md`](ui-design/skills/law-of-continuity/SKILL.md) |
+| 89 | ✓ | [`ui-design/skills/law-of-figure-ground/SKILL.md`](ui-design/skills/law-of-figure-ground/SKILL.md) |
+| 90 | ✓ | [`ui-design/skills/law-of-proximity/SKILL.md`](ui-design/skills/law-of-proximity/SKILL.md) |
+| 91 | ✓ | [`ui-design/skills/law-of-similarity/SKILL.md`](ui-design/skills/law-of-similarity/SKILL.md) |
+| 92 | ✓ | [`ui-design/skills/layout-grid/SKILL.md`](ui-design/skills/layout-grid/SKILL.md) |
+| 93 | ✓ | [`ui-design/skills/platform-conventions/SKILL.md`](ui-design/skills/platform-conventions/SKILL.md) |
+| 94 | ✓ | [`ui-design/skills/readable-measure/SKILL.md`](ui-design/skills/readable-measure/SKILL.md) |
+| 95 | ✓ | [`ui-design/skills/responsive-design/SKILL.md`](ui-design/skills/responsive-design/SKILL.md) |
+| 96 | ✓ | [`ui-design/skills/spacing-system/SKILL.md`](ui-design/skills/spacing-system/SKILL.md) |
+| 97 | ✓ | [`ui-design/skills/typography-scale/SKILL.md`](ui-design/skills/typography-scale/SKILL.md) |
+| 98 | ✓ | [`ui-design/skills/visual-hierarchy/SKILL.md`](ui-design/skills/visual-hierarchy/SKILL.md) |
+| 99 | ✓ | [`ui-design/skills/von-restorff-effect/SKILL.md`](ui-design/skills/von-restorff-effect/SKILL.md) |
+| 100 | ✓ | [`ux-strategy/skills/business-design/SKILL.md`](ux-strategy/skills/business-design/SKILL.md) |
+| 101 | ✓ | [`ux-strategy/skills/competitive-analysis/SKILL.md`](ux-strategy/skills/competitive-analysis/SKILL.md) |
+| 102 | ✓ | [`ux-strategy/skills/content-strategy/SKILL.md`](ux-strategy/skills/content-strategy/SKILL.md) |
+| 103 | ✓ | [`ux-strategy/skills/design-brief/SKILL.md`](ux-strategy/skills/design-brief/SKILL.md) |
+| 104 | ✓ | [`ux-strategy/skills/design-principles/SKILL.md`](ux-strategy/skills/design-principles/SKILL.md) |
+| 105 | ✓ | [`ux-strategy/skills/experience-map/SKILL.md`](ux-strategy/skills/experience-map/SKILL.md) |
+| 106 | ✓ | [`ux-strategy/skills/information-architecture/SKILL.md`](ux-strategy/skills/information-architecture/SKILL.md) |
+| 107 | ✓ | [`ux-strategy/skills/metrics-definition/SKILL.md`](ux-strategy/skills/metrics-definition/SKILL.md) |
+| 108 | ✓ | [`ux-strategy/skills/north-star-vision/SKILL.md`](ux-strategy/skills/north-star-vision/SKILL.md) |
+| 109 | ✓ | [`ux-strategy/skills/opportunity-framework/SKILL.md`](ux-strategy/skills/opportunity-framework/SKILL.md) |
+| 110 | ✓ | [`ux-strategy/skills/service-blueprint/SKILL.md`](ux-strategy/skills/service-blueprint/SKILL.md) |
+| 111 | ✓ | [`ux-strategy/skills/stakeholder-alignment/SKILL.md`](ux-strategy/skills/stakeholder-alignment/SKILL.md) |
+| 112 | ✓ | [`visual-critique/skills/critique-affordance/SKILL.md`](visual-critique/skills/critique-affordance/SKILL.md) |
+| 113 | ✓ | [`visual-critique/skills/critique-brand-consistency/SKILL.md`](visual-critique/skills/critique-brand-consistency/SKILL.md) |
+| 114 | ✓ | [`visual-critique/skills/critique-color/SKILL.md`](visual-critique/skills/critique-color/SKILL.md) |
+| 115 | ✓ | [`visual-critique/skills/critique-composition/SKILL.md`](visual-critique/skills/critique-composition/SKILL.md) |
+| 116 | ✓ | [`visual-critique/skills/critique-information-density/SKILL.md`](visual-critique/skills/critique-information-density/SKILL.md) |
+| 117 | ✓ | [`visual-critique/skills/critique-typography/SKILL.md`](visual-critique/skills/critique-typography/SKILL.md) |
+| 118 | ✓ | [`visual-critique/skills/critique-visual-hierarchy/SKILL.md`](visual-critique/skills/critique-visual-hierarchy/SKILL.md) |
 
 ---
 

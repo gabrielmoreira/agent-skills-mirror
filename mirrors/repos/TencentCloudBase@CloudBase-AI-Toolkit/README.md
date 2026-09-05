@@ -24,6 +24,12 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 
 ## Recent updates
 
+**v2.33.x** (2026-09)
+
+- Functions / Apps: custom container-image deploy for cloud functions with async status query; cloud upload channel (`getUploadUrl` + `deployApp` cosTimestamp)
+- Env binding: `cloudbaserc.json` as field-level fallback for envId / region / site (literal + `{{env.KEY}}`)
+- Errors / Skills: centralized error guidance by structured `Code`; virtual-pay reference; CodeBuddy IDE MCP upgrade skill; WorkBuddy experts
+
 **v2.32.x** (2026-08)
 
 - Auth / Security / IDE: international-site (`TCB_SITE=intl`) login routing; default env-var masking in queryFunctions/queryCloudRun; Kimi Code & Kimi Work support
@@ -259,6 +265,8 @@ Others: [IDE setup guide](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/ide
 ```
 
 Hosted URLs can use `site` (`domestic` / `intl`) to pick the login site (e.g. domestic-site Singapore needs `site=domestic`), plus `enable_plugins` / `disable_plugins` to trim tools. Canonical names live in `mcp/src/server.ts`.
+
+**Hosted MCP E2E** (official SDK client): `npm run test:hosted-mcp:e2e` — see [`tests/hosted-mcp-e2e/README.md`](tests/hosted-mcp-e2e/README.md) for apikey/OAuth modes, TLS-insecure staging, and env vars. Missing credentials skip (exit 0).
 
 **Self-hosted Cloud Mode**: set `CLOUDBASE_MCP_CLOUD_MODE=true` (or `MCP_CLOUD_MODE=true`) so local file and process tools are disabled for remote callers.
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Forward Pick Storage"
+  short_description: "Plan forward-pick storage from order profile, SKU velocity, p..."
+  default_prompt: "Use $plan-forward-pick-storage to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

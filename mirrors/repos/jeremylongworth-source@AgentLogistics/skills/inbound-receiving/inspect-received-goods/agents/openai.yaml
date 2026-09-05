@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inspect Received Goods"
+  short_description: "Inspect received goods for visible condition, identity, packa..."
+  default_prompt: "Use $inspect-received-goods to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

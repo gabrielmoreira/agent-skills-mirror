@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit Freight Charge"
+  short_description: "Audit freight charges from invoice, rate agreement, quote, BO..."
+  default_prompt: "Use $audit-freight-charge to produce transportation planning support with evidence, calculations, and review boundaries."

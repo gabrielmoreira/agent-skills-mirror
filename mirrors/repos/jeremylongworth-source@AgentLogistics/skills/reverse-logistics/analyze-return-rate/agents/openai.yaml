@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Return Rate
+short_description: Analyze return rate from returns, shipments or orders, products, channels, reasons, timeframes, and source data.
+default_prompt: Use $analyze-return-rate to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

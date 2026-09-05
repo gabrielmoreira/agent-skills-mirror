@@ -1,0 +1,259 @@
+---
+description: How to build OpenHuman from source - toolchain, vendored Tauri CLI, and local desktop builds.
+icon: wrench
+---
+
+# Building & Installing OpenHuman
+
+This guide covers the full desktop/source install path and release installers.
+
+If you only need the repo-root Rust crate on a fresh machine, use [Building the Rust Core](building-rust-core.md). That page documents the pinned Rust toolchain, OS package prerequisites, and the exact `cargo` commands for `openhuman-core`.
+
+This guide covers two paths:
+
+1. Build and compile OpenHuman from source
+2. Install the latest stable release binaries
+
+## Prerequisites
+
+- `git`
+- Node.js 24 or newer (see `app/package.json`)
+- `pnpm@10.10.0` (see the root `package.json` `packageManager` field)
+- Rust 1.93.0 through `rustup` with `rustfmt` and `clippy` (see `rust-toolchain.toml`)
+- CMake, required by native Rust dependencies
+- Git submodules under `app/src-tauri/vendor/`, required for the vendored CEF-aware Tauri CLI
+- Platform desktop build tools: Xcode Command Line Tools on macOS, or the Tauri GTK/WebKit/AppIndicator package set on Linux
+
+macOS Homebrew quick start:
+
+```bash
+brew install node@24 pnpm rustup-init cmake
+rustup toolchain install 1.93.0 --profile minimal
+rustup component add rustfmt clippy --toolchain 1.93.0
+```
+
+Arch Linux quick start:
+
+```bash
+sudo pacman -S --needed nodejs npm rustup cmake base-devel clang openssl \
+  alsa-lib xdotool libxtst libxi libevdev gtk3 webkit2gtk-4.1 \
+  libayatana-appindicator librsvg patchelf nss nspr at-spi2-core \
+  libcups libdrm libxkbcommon libxcomposite libxdamage libxfixes \
+  libxrandr mesa pango cairo libxshmfence
+npm install -g pnpm@10.10.0
+rustup toolchain install 1.93.0 --profile minimal
+rustup component add rustfmt clippy --toolchain 1.93.0
+```
+
+## Build from source (local compile)
+
+Run from the repository root:
+
+```bash
+# 1) Clone and enter the repo
+git clone https://github.com/tinyhumansai/openhuman.git
+cd openhuman
+
+# 2) Fetch vendored Tauri/CEF sources
+git submodule update --init --recursive
+
+# 3) Install JS deps (workspace)
+pnpm install
+
+# 4) Build desktop app artifacts
+pnpm build
+```
+
+For local development instead of production build:
+
+```bash
+# Web-only UI development
+pnpm dev
+
+# Desktop app development with the vendored Tauri/CEF CLI: run from the workspace root
+pnpm --filter openhuman-app dev:app
+```
+
+## Install latest stable release (macOS/Linux x64)
+
+Primary install command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.sh | bash
+```
+
+Installer behavior:
+
+- Resolves latest stable OpenHuman release for your platform
+- Validates artifact digest when available
+- Installs locally (no sudo by default)
+- macOS: installs `OpenHuman.app` into `~/Applications`
+- Linux x64: installs AppImage as `~/.local/bin/openhuman` and writes a desktop entry
+
+### Arch Linux package recipe
+
+The repository includes an `openhuman-bin` AUR recipe at
+[`packages/arch/openhuman-bin`](../../packages/arch/openhuman-bin/). It uses the
+official x86_64 AppImage as the binary source, extracts the bundled application
+tree during `makepkg`, installs a desktop entry, and exposes `/usr/bin/openhuman`.
+
+Until the package is published on AUR, build it locally on Arch:
+
+```bash
+cd packages/arch/openhuman-bin
+makepkg --syncdeps --install
+```
+
+After publication, Arch users can install it with:
+
+```bash
+yay -S openhuman-bin
+```
+
+Useful flags:
+
+```bash
+# Preview actions without writing files
+curl -fsSL https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.sh | bash -s -- --dry-run
+```
+
+## Windows (latest stable)
+
+Use PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.ps1 | iex
+```
+
+Windows installer behavior:
+
+- Resolves latest stable release
+- Downloads MSI/EXE for x64
+- Verifies digest when available
+- Runs per-user install where supported by installer package
+
+## ARM Linux Build (aarch64)
+
+The ARM Linux build requires special handling due to CEF and GTK dependencies.
+
+### Prerequisites
+
+```bash
+# Install xvfb for headless builds/testing
+sudo apt install xvfb
+```
+
+### Build
+
+```bash
+cd app
+pnpm tauri build --target aarch64-unknown-linux-gnu
+```
+
+### Running the ARM binary
+
+The binary requires the CEF library path to be set:
+
+### Option 1 - Direct invocation
+
+```bash
+REL_DIR=app/src-tauri/target/aarch64-unknown-linux-gnu/release
+CEF_DIR=$(ls -d "$REL_DIR"/build/cef-dll-sys-*/out/cef_linux_aarch64 2>/dev/null | head -n1)
+export LD_LIBRARY_PATH="$CEF_DIR:$REL_DIR/deps:$REL_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+"$REL_DIR/OpenHuman" --no-sandbox
+```
+
+### Option 2 - Wrapper script (recommended)
+
+Save to `~/bin/openhuman` and make it executable (`chmod +x ~/bin/openhuman`):
+
+```bash
+#!/bin/bash
+REL_DIR=/path/to/app/src-tauri/target/aarch64-unknown-linux-gnu/release
+CEF_DIR=$(ls -d "$REL_DIR"/build/cef-dll-sys-*/out/cef_linux_aarch64 2>/dev/null | head -n1)
+export LD_LIBRARY_PATH="$CEF_DIR:$REL_DIR/deps:$REL_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+exec "$REL_DIR/OpenHuman" --no-sandbox "$@"
+```
+
+### DEB package install
+
+```bash
+DEB_FILE=$(ls app/src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/OpenHuman_*_arm64.deb | head -n1)
+sudo dpkg -i "$DEB_FILE"
+```
+
+### GTK initialization fix
+
+The ARM build requires GTK to be initialized before Tauri creates the system tray. This is handled in `vendor/tauri-cef/crates/tauri-runtime-cef/src/lib.rs`:
+
+```rust
+// After CEF initialization, add:
+#[cfg(target_os = "linux")]
+{
+    gtk::init().ok();
+}
+```
+
+If the tray fails to initialize with "GTK has not been initialized", rebuild after ensuring this fix is in place.
+
+Manual download links (all platforms):
+
+- Website: https://tinyhuman.ai/openhuman
+- Latest release: https://github.com/tinyhumansai/openhuman/releases/latest
+
+## Troubleshooting
+
+### macOS: `pnpm dev:app` exits with "CEF cache is held by another OpenHuman instance"
+
+**Symptom**
+
+`pnpm dev:app` (or any debug build of the Tauri shell) exits before the window appears with a message like:
+
+```
+[openhuman] CEF cache at /Users/<you>/Library/Caches/com.openhuman.app/cef is held by another OpenHuman instance (host <hostname>, pid 12345).
+Quit the running instance and try again.
+Workaround:
+  pkill -f "OpenHuman.app/Contents"
+  pkill -f "openhuman-core"
+```
+
+**Cause**
+
+CEF (Chromium Embedded Framework) holds an exclusive lock on its user-data directory via a `SingletonLock` symlink under `~/Library/Caches/com.openhuman.app/cef`. Both the installed `.app` bundle and the dev binary use the same identifier (`com.openhuman.app`), so they cannot run side-by-side. Without the preflight, `cef::initialize` returns failure and the vendored `tauri-runtime-cef` panics with a Rust backtrace and no actionable message (this was issue #864 before the preflight landed).
+
+**Fix**
+
+Quit the other OpenHuman instance and re-run. Fastest path:
+
+```bash
+pkill -f "OpenHuman.app/Contents"
+pkill -f "openhuman-core"
+pnpm dev:app
+```
+
+If the lock is left behind by a crashed process (PID no longer alive), the preflight removes the stale `SingletonLock` automatically and dev startup proceeds, no manual cleanup required.
+
+**Known limitation**
+
+Dev and release builds still share `com.openhuman.app` as the cache identifier. Isolating dev to a separate `com.openhuman.app.dev` cache requires changes to the vendored `tauri-runtime-cef` (cache path is built inside the runtime from the bundle identifier, not exposed to the openhuman shell). Tracked as a follow-up to #864.
+
+### Stale `openhuman` RPC process on the core port
+
+**Symptom**
+
+A previous Tauri build or `openhuman-core run` harness left a process listening on `OPENHUMAN_CORE_PORT` (default `7788`). Until issue #1130 the new Tauri build would silently attach to that listener, leading to version drift and 401s when the new build's `OPENHUMAN_CORE_TOKEN` didn't match.
+
+**Current behavior (issue #1130)**
+
+`core_process::ensure_running` now probes the port at startup:
+
+- If `GET /` identifies the listener as an OpenHuman core (JSON body with `"name": "openhuman"`), it is treated as a stale process from a previous run and proactively terminated (`SIGTERM`, then `SIGKILL` after 750ms on Unix; `taskkill /F /T /PID` on Windows). The Tauri host then spawns its own fresh embedded core.
+- If the listener is something else (or doesn't speak HTTP), startup fails loudly with the conflict surfaced in the log instead of silently attaching.
+- Set `OPENHUMAN_CORE_REUSE_EXISTING=1` to opt back into the legacy attach-to-anything behavior, useful when running `openhuman-core run` as a manual debugging harness.
+
+**Manual cleanup (still works)**
+
+```bash
+pkill -f "OpenHuman.app/Contents"
+pkill -f "openhuman-core"
+```

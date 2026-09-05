@@ -233,8 +233,15 @@ design as structured data, not only Markdown. The orchestrator writes it to
   `design.implementation_steps`, `design.verify`, `design.risks`, and
   `design.alternatives`;
 - mirror issue, adversary rounds/sign-off, confidence, and approval actions.
+- an `approve_design` action for every proposed fix; yellow/red plans also
+  include a targeted `request_info` action whose comment matches the remaining
+  `issue_context.information_gaps`.
 
 Do not collapse the structured fields back into one `fix_plan` paragraph.
+Pulse uses these structured fields to build a self-contained local-agent fix
+prompt with the issue context, analyzed root cause, ordered implementation
+steps, verification, confidence rationale, and unresolved evidence. Do not
+duplicate that prompt as freeform artifact text.
 
 ---
 
@@ -249,7 +256,7 @@ Show:
 - the **fork mirror issue link** (`https://github.com/<FORK_REPO>/issues/F`) — the design is public there.
 
 Approval can arrive two ways:
-- **Dashboard:** the design surfaces on the triage board's public layer (root cause, fix plan, adversary status) with an **Approve design** button; the exported `approvals.json` carries an `approve_design` decision that the daily skill consumes.
+- **Dashboard:** the design surfaces on the triage board's public layer (root cause, fix plan, adversary status) with **Approve design** and **Copy fix prompt** controls. Approval writes the fork-side decision consumed by the daily skill. Copying the artifact-derived prompt is local-only and does not authorize or perform any GitHub action.
 - **Inline:** ask via `ask_user`: *"Approve this fix design for Issue M so I can build the PR, or do you have changes?"*
 
 On **changes requested**, feed them in as additional adversary objections and re-loop (Phase 4), then re-write the mirror (Phase 5) and re-brief.

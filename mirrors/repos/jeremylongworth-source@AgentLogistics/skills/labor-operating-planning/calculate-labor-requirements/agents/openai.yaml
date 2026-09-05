@@ -1,0 +1,4 @@
+interface: openai
+display_name: Calculate Labor Requirements
+short_description: Calculate warehouse labor requirements from workload, productivity, shifts, breaks, service windows, and capacity assumptions.
+default_prompt: Use $calculate-labor-requirements to produce a source-backed warehouse labor or operating-planning output with calculations where relevant, evidence boundaries, and qualified-review requirements.

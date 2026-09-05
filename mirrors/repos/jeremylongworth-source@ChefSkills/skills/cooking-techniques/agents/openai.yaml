@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cooking Techniques"
+  short_description: "Choose cooking methods, heat control, state cues, and failure prevention."
+  default_prompt: "Use this skill for cooking method selection, heat control, process sequencing, doneness cues, state-aware recovery, and technique troubleshooting."

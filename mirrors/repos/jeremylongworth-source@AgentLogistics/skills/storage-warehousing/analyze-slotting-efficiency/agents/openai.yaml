@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Slotting Efficiency"
+  short_description: "Analyze slotting efficiency from pick activity, travel distan..."
+  default_prompt: "Use $analyze-slotting-efficiency to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

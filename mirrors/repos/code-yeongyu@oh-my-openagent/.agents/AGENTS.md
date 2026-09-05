@@ -16,7 +16,7 @@ Loaded alongside `.opencode/` by [`packages/omo-opencode/src/features/opencode-s
 | `work-with-pr-workspace/` | yes | Iteration workspace + benchmark inputs |
 | `github-triage/` | yes | Read-only issue/PR triage with evidence reports |
 | `hyperplan/` | yes | Adversarial multi-agent planning |
-| `pre-publish-review/` | yes | 16-agent pre-publish release gate |
+| `pre-publish-review/` | yes | 12-agent pre-publish release gate |
 | `get-unpublished-changes/` | NEW | Skill form of the `/get-unpublished-changes` command |
 | `omomomo/` | NEW | Skill form of the `/omomomo` easter egg |
 | `publish/` | NEW | Skill form of the `/publish` command |

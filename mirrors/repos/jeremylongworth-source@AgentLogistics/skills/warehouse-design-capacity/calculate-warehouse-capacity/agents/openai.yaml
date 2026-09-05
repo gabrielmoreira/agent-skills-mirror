@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Warehouse Capacity"
+  short_description: "Calculate warehouse capacity from building dimensions, usable..."
+  default_prompt: "Use $calculate-warehouse-capacity to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

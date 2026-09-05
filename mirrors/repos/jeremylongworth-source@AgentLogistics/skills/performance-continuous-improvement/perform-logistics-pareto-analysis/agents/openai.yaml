@@ -1,0 +1,4 @@
+interface: openai
+display_name: Perform Logistics Pareto Analysis
+short_description: Perform logistics Pareto analysis from issue counts, costs, categories, timeframes, and operational impact.
+default_prompt: Use $perform-logistics-pareto-analysis to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

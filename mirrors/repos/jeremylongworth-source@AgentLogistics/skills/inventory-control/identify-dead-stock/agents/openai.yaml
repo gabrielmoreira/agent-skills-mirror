@@ -1,0 +1,4 @@
+interface:
+  display_name: "Identify Dead Stock"
+  short_description: "Identify dead stock candidates from demand history, inventory..."
+  default_prompt: "Use $identify-dead-stock to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

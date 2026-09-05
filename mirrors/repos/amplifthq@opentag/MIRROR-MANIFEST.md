@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `amplifthq/opentag` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `amplifthq/opentag` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `amplifthq/opentag` — 26 default patterns, 0 followed patterns, 12 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/hyperframes/opentag-cli-quickstart/AGENTS.md`](docs/hyperframes/opentag-cli-quickstart/AGENTS.md) |
-| 2 | ✓ | [`docs/hyperframes/opentag-cli-quickstart/CLAUDE.md`](docs/hyperframes/opentag-cli-quickstart/CLAUDE.md) |
-| 3 | ✓ | [`skills/opentag/agents/openai.yaml`](skills/opentag/agents/openai.yaml) |
-| 4 | ✓ | [`skills/opentag/references/codex-runner.md`](skills/opentag/references/codex-runner.md) |
-| 5 | ✓ | [`skills/opentag/references/completion-governance.md`](skills/opentag/references/completion-governance.md) |
-| 6 | ✓ | [`skills/opentag/references/control-plane.md`](skills/opentag/references/control-plane.md) |
-| 7 | ✓ | [`skills/opentag/references/github-setup.md`](skills/opentag/references/github-setup.md) |
-| 8 | ✓ | [`skills/opentag/references/local-echo.md`](skills/opentag/references/local-echo.md) |
-| 9 | ✓ | [`skills/opentag/references/slack-setup.md`](skills/opentag/references/slack-setup.md) |
-| 10 | ✓ | [`skills/opentag/references/teams-setup.md`](skills/opentag/references/teams-setup.md) |
-| 11 | ✓ | [`skills/opentag/references/troubleshooting.md`](skills/opentag/references/troubleshooting.md) |
-| 12 | ✓ | [`skills/opentag/SKILL.md`](skills/opentag/SKILL.md) |
+| 1 | ✓ | [`skills/opentag/agents/openai.yaml`](skills/opentag/agents/openai.yaml) |
+| 2 | ✓ | [`skills/opentag/references/codex-runner.md`](skills/opentag/references/codex-runner.md) |
+| 3 | ✓ | [`skills/opentag/references/control-plane.md`](skills/opentag/references/control-plane.md) |
+| 4 | ✓ | [`skills/opentag/references/github-setup.md`](skills/opentag/references/github-setup.md) |
+| 5 | ✓ | [`skills/opentag/references/slack-setup.md`](skills/opentag/references/slack-setup.md) |
+| 6 | ✓ | [`skills/opentag/references/troubleshooting.md`](skills/opentag/references/troubleshooting.md) |
+| 7 | ✓ | [`skills/opentag/SKILL.md`](skills/opentag/SKILL.md) |
 
 ---
 

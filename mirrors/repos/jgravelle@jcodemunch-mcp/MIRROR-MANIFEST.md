@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jgravelle/jcodemunch-mcp` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `jgravelle/jcodemunch-mcp` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jgravelle/jcodemunch-mcp` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/benchmark-methodology/SKILL.md`](.claude/skills/benchmark-methodology/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/changelog-format/SKILL.md`](.claude/skills/changelog-format/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/claude-md-budget/SKILL.md`](.claude/skills/claude-md-budget/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/mechanism-not-instance/SKILL.md`](.claude/skills/mechanism-not-instance/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/observatory/SKILL.md`](.claude/skills/observatory/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/pr-description/SKILL.md`](.claude/skills/pr-description/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/standard-axes/SKILL.md`](.claude/skills/standard-axes/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/tool-surface-discipline/SKILL.md`](.claude/skills/tool-surface-discipline/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/version-scheme/SKILL.md`](.claude/skills/version-scheme/SKILL.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

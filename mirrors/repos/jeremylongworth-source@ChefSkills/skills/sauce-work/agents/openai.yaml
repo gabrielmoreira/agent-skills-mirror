@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sauce Work"
+  short_description: "Handle sauce emulsions, reductions, thickening, finishing, scaling, and recovery."
+  default_prompt: "Use $sauce-work for sauce design, pan sauces, emulsions, reductions, gravies, starch thickening, finishing, and sauce recovery."

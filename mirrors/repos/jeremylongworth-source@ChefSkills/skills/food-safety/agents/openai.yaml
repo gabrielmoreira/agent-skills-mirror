@@ -1,0 +1,4 @@
+interface:
+  display_name: "Food Safety"
+  short_description: "Handle food-safety hazards with conservative guidance."
+  default_prompt: "Use this skill for safety, storage, spoilage, allergens, reheating, preservation, undercooking, cross-contamination, and vulnerable diners."

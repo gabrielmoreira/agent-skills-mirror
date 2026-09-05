@@ -1,0 +1,4 @@
+interface: openai
+display_name: Classify Return Disposition
+short_description: Classify return disposition from item condition, policy, value, safety concerns, inspection evidence, and review boundaries.
+default_prompt: Use $classify-return-disposition to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

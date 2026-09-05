@@ -1,0 +1,4 @@
+interface:
+  display_name: "Identify Logistics Constraints"
+  short_description: "Identify operational constraints across capacity, labor, equi..."
+  default_prompt: "Use $identify-logistics-constraints to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

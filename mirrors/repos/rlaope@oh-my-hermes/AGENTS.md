@@ -121,6 +121,32 @@ PR without the chat history.
   `routing_observation/v1` evidence, and never runs automatically. This
   boundary supports observed Hermes execution and the explicit benchmark
   controller; it does not make core OMH a provider client or hidden runtime.
+- `omh coding paired-run dispatch` may reuse that same Hermes-child boundary
+  for explicitly confirmed evaluation cells. The operator supplies one
+  digest-matching task file per frozen task, the repository/revision, and the
+  provider; OMH passes task bytes over child stdin, creates detached per-cell
+  worktrees under an atomically unique invocation-owned parent, verifies
+  signed evaluation bindings, removes only paths reserved by that invocation,
+  and persists no task body. This is a front door to the approved child boundary,
+  not a third subprocess authority. Executors without a receipt-capable
+  adapter are refused without substitution; caller-injected adapters remain
+  the executor-neutral extension seam.
+- `omh coding fanout dispatch --final-review` may also compose that existing
+  child boundary after dispatcher-observed integration GREEN. It requires the
+  explicit flag, a clean integrated worktree/tree revision, and named Hermes
+  provider/model settings; four read-only lenses run in disposable,
+  write-denied detached worktrees under fixed concurrency, parse only a closed
+  verdict token, and cannot merge or mutate the integrated checkout.
+- `omh coding fanout dispatch --diagnostics` may spawn only the closed local
+  diagnostic command set after producer verification GREEN. The default
+  adapter discovers supported binaries from `PATH`, passes no shell text or
+  user-selected executable, materializes detached fixed-revision worktrees,
+  strips messages and absolute paths, redacts the child environment, caps
+  concurrency/time/output, always reaps the provider's complete process tree,
+  and removes every temporary worktree. No provider is installed or started
+  unless the operator types the flag. On Windows the provider starts suspended,
+  enters a kill-on-close Job Object, and resumes only after ownership succeeds;
+  clean evidence requires the Job Object to report zero active processes.
 - No Hermes core patching.
 - Runtime artifacts are local, deterministic, schema-versioned, and
   metadata-only by default.

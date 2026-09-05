@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Logistics Operation"
+  short_description: "Assess a logistics operation's facilities, flows, constraints..."
+  default_prompt: "Use $analyze-logistics-operation to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

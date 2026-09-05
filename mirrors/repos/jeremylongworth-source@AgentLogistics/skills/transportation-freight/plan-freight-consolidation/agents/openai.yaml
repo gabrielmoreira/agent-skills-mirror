@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Freight Consolidation"
+  short_description: "Plan freight consolidation from shipments, lanes, timing, cos..."
+  default_prompt: "Use $plan-freight-consolidation to produce transportation planning support with evidence, calculations, and review boundaries."

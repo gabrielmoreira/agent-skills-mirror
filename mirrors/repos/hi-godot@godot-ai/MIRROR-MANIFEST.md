@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hi-godot/godot-ai` — 26 default patterns, 11 followed patterns, 23 file(s) materialized.
+Mirror of `hi-godot/godot-ai` — 26 default patterns, 12 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hi-godot/godot-ai` — 26 default patterns, 11 followed patterns, 23 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 23 |
+| Followed pats | 12 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `hi-godot/godot-ai` — 26 default patterns, 11 followed patterns, 23 
 - `docs/worktrees.md`
 - `docs/server-lifecycle.md`
 - `docs/releasing.md`
+- `docs/self-update.md`
 - `docs/testing.md`
 - `docs/STRESS_TESTING.md`
 - `docs/verification.md`
@@ -81,17 +82,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`docs/v4-local-implementation-checkpoint.md`](docs/v4-local-implementation-checkpoint.md) |
 | 11 | ✓ | [`docs/v4-migration.md`](docs/v4-migration.md) |
 | 12 | ✓ | [`docs/v4-pr-head-checkpoint.md`](docs/v4-pr-head-checkpoint.md) |
-| 13 | → | [`docs/architecture-simplification-plan.md`](docs/architecture-simplification-plan.md) |
-| 14 | → | [`docs/architecture-simplification-verification-plan.md`](docs/architecture-simplification-verification-plan.md) |
-| 15 | → | [`docs/audit-tier2-plan.md`](docs/audit-tier2-plan.md) |
-| 16 | → | [`docs/client-configuration.md`](docs/client-configuration.md) |
-| 17 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 18 | → | [`docs/server-lifecycle.md`](docs/server-lifecycle.md) |
-| 19 | → | [`docs/STRESS_TESTING.md`](docs/STRESS_TESTING.md) |
-| 20 | → | [`docs/testing.md`](docs/testing.md) |
-| 21 | → | [`docs/tool-surface.md`](docs/tool-surface.md) |
-| 22 | → | [`docs/verification.md`](docs/verification.md) |
-| 23 | → | [`docs/worktrees.md`](docs/worktrees.md) |
+| 13 | ✓ | [`docs/v4-release-review-followup.md`](docs/v4-release-review-followup.md) |
+| 14 | → | [`docs/architecture-simplification-plan.md`](docs/architecture-simplification-plan.md) |
+| 15 | → | [`docs/architecture-simplification-verification-plan.md`](docs/architecture-simplification-verification-plan.md) |
+| 16 | → | [`docs/audit-tier2-plan.md`](docs/audit-tier2-plan.md) |
+| 17 | → | [`docs/client-configuration.md`](docs/client-configuration.md) |
+| 18 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 19 | → | [`docs/self-update.md`](docs/self-update.md) |
+| 20 | → | [`docs/server-lifecycle.md`](docs/server-lifecycle.md) |
+| 21 | → | [`docs/STRESS_TESTING.md`](docs/STRESS_TESTING.md) |
+| 22 | → | [`docs/testing.md`](docs/testing.md) |
+| 23 | → | [`docs/tool-surface.md`](docs/tool-surface.md) |
+| 24 | → | [`docs/verification.md`](docs/verification.md) |
+| 25 | → | [`docs/worktrees.md`](docs/worktrees.md) |
 
 ---
 

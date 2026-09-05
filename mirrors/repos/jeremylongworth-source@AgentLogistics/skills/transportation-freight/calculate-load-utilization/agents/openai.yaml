@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Load Utilization"
+  short_description: "Calculate load utilization from trailer or container dimensio..."
+  default_prompt: "Use $calculate-load-utilization to produce transportation planning support with evidence, calculations, and review boundaries."

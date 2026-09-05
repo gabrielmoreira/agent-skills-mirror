@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Trailer Loading"
+  short_description: "Plan trailer loading from shipments, pallets, weights, stops..."
+  default_prompt: "Use $plan-trailer-loading to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

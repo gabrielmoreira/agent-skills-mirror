@@ -85,6 +85,31 @@ requeue plan to preserve one owed source-drift review. The terminal `requeue`
 disposition is recorded before completion and stays on the old fenced revision.
 A superseded receipt cannot authorize a requeue; a newer command keeps its
 current decision and revision through the ordinary finishing path.
+The terminal-run backstop retains its `*/15 * * * *` schedule. Event-triggered
+lease repair uses the reusable `exact-review-reconcile-run.yml` job with the
+`exact-review-reconcile-workflow-run` concurrency group and
+`cancel-in-progress: false`: one running job and one pending follow-up, with
+new events replacing superseded pending jobs. The lock covers both the cooldown
+check and reconciliation. Per-run reliability observations remain separate so
+coalescing does not drop telemetry; eligible events still create observer jobs.
+
+Before event repair, `scripts/exact-review-reconcile-guard.mjs` reads the latest
+30 runs of `exact-review-reconcile.yml` using
+`gh run list --json databaseId,updatedAt`. For runs updated within five minutes,
+`gh run view --json jobs` verifies that a lease-reconciliation job actually
+succeeded within that window, even if its observer job is still running.
+Observer-only runs, skipped repairs, and failed repairs do not extend the
+cooldown. A job-level output guard skips repair after a recent
+success; unavailable history or the 60-second aggregate history-read deadline
+allows repair to proceed. Each lookup is bounded by the remaining deadline,
+and a successful result is checked for freshness after the read. Scheduled and
+manual sweeps bypass the guard and inspect all claimed runs, so a terminal attempt
+whose event was coalesced or skipped is normally reconciled within about
+15 minutes worst case, plus Actions scheduling and execution delay. This is a
+cadence backstop, not a hard wall-clock guarantee during platform outages.
+OpenClaw Bay is unaffected: queue schemas, telemetry observations, and public
+observer data contracts do not change.
+
 Queue-completion failures remain visible separately from Codex or content
 failures, using the logical generation result and typed deferral rather than
 the review process exit alone. The workflow failure gate is unchanged.
@@ -159,7 +184,7 @@ a 403/429 or
 explicit rate-limit failure records a 15-minute cooldown, while GitHub 5xx
 failures record a 5-minute cooldown. Demand and recovery signals scale effective
 capacity within the production range. Production batch
-preparation is enabled for up to 4 concurrent size-8 batches, including 2
+preparation is enabled for up to 8 concurrent size-8 batches, including 2
 fresh-lane members per batch. Direct publication is also enabled and falls back
 to the retry/batch path when the direct result is retryable. Apply/comment sync
 remains per-target serialized. See [`docs/limits.md`](limits.md) for effective values and
@@ -267,6 +292,25 @@ manual workflow inputs. Scheduled fanout uses:
 - normal review: `41/10 * * * *`, 12 target repositories per cursor step
 - audit: `37 */6 * * *`, 12 target repositories per cursor step
 
+Audit fanout keeps at most 3 target audits in flight using
+`audit.max_parallel_targets` from `config/automation-limits.json`. It dispatches
+bounded waves and waits for every acknowledged run in a wave to become terminal
+before dispatching the next, including when a target fails or is cancelled.
+The dispatch API returns exact run IDs (`return_run_details=true`); a missing
+receipt, exhausted lookup retries, or 55-minute wave timeout stops further
+dispatch. The existing signed audit cursor stores remaining targets and
+outstanding run IDs after each dispatch and completion. The next invocation
+resumes that batch and drains the saved children before admitting another wave.
+Transient lookup errors retry twice with one- and two-second backoff. Audit
+dispatch requires available durable state; an unresolved dispatch receipt stays
+marked for operator investigation rather than freeing its slot. Run status is
+read once per minute. Coverage inventory tokens are minted again after the waves,
+immediately before the trailing coverage summary. The fanout job
+allows four hours for the twelve-target batch; ordinary review/hot fanout keeps
+its 30-minute timeout. The six-hour cadence, cursor selection, and twelve targets
+are unchanged. This bound covers the scheduled fleet fanout, not separate manual
+audits or the three dedicated core-repository audit schedules.
+
 [PR #1007](https://github.com/openclaw/clawsweeper/pull/1007) is directly
 relevant but was insufficient for the observed `openclaw/libterminal#41`
 path. It was intended to recognize structurally proven ClawSweeper-owned
@@ -301,9 +345,10 @@ match. This evidence does not attribute the remaining receipt mismatch to
 
 Each mode's cursor lives in the authenticated ExactReviewQueue Durable Object,
 not generated Git state. Reads and writes use a monotonic revision. If the
-canonical cursor endpoint is unavailable, fanout warns and continues dispatch
-from a safe default; cursor persistence failure after dispatch never fails the
-productive lane.
+canonical cursor endpoint is unavailable, normal and hot fanout warn and
+continue dispatch from a default cursor; persistence failure after dispatch
+does not fail those lanes. Audit fanout requires a batch-aware cursor store and
+stops on state failures so outstanding children cannot be forgotten.
 
 Normal fanout refreshes the same signed live-open inventory consumed by
 `GET /api/review-coverage`, and both normal and hot fanout skip repositories
@@ -531,6 +576,11 @@ observed planning average of 30 requests per completed review.
 The producer probes that field before its first enqueue and fails closed while
 an older Worker is still deployed, preventing a workflow-first rollout from
 bypassing the rate limiter.
+Scheduled review ingress requires
+`scheduled_feed.enqueue_replay: scheduled_disposition_v1` before retrying
+transient transport or HTTP 5xx failures with the same signed delivery bytes;
+legacy ambiguous receipts fail closed, and publication post-effects remain
+single-attempt.
 
 Normal fanout ordinarily divides one live queue-advertised candidate-capacity
 budget across the selected repositories; it does not grant 50 candidates to

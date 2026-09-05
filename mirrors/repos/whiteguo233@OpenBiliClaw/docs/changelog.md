@@ -4,9 +4,17 @@
 
 ---
 
+## v0.3.218：Latest Release 版本确认（2026-09-04）
+
+- **当前 Latest Release 以 `openbiliclaw-v0.3.218` 为准**：后端、浏览器插件、桌面安装包与聚合 Release 均使用同一版本号，避免此前文档同时出现 v0.3.215 / v0.3.218 造成混淆。
+- **Bilibili play-url 返回字幕轨道**：视频播放地址响应补充字幕轨道信息，便于移动端原生客户端与后续播放器集成。
+- **发布流程补强**：后端 Release 工作流增加手动触发入口，版本同步与发布元数据统一到 v0.3.218。
+
 ## v0.3.215：GitHub PAT 修复与 B 站移动端接口（2026-09-03）
 
 - **新增 Bilibili 移动端原生播放器与视频互动接口**：后端新增移动端播放器所需的登录态、播放地址、cookie 导入接口，并扩展视频关系查询、点赞、投币、三连、收藏、稍后再看、相关推荐和评论等接口，配套补充 `BilibiliAPIClient` 方法，供移动端原生客户端接入。
+
+- **修复惊喜推荐“后台 ACK 后 popup 重灌为空”**：扩展后台收到 `delight.candidate` 后会调 `/api/delight/sent` 确认送达，旧逻辑把该确认直接写成 `delight_notified=1`，导致 `pending-batch` 重灌时过滤掉所有已推送但用户实际还没看过的惊喜候选。现将“已送达”和“用户已看”拆开：新增 `delight_seen`，`/delight/sent` 只标记已送达并保留重灌可见性，`view / dismiss / dislike` 才真正标记已看/消费。`/api/delight/pending-batch` 改用 `include_delivered=True` 返回未看过候选，插件重开或 `delight.refreshed` 后不会再出现空队列。
 
 - **修复 GitHub PAT 模式下 starred 分页 Link 路径校验**：使用 PAT 时 GitHub 分页 Link 会返回 `/user/<id>/starred`，而原始请求路径是 `/users/<username>/starred`，此前会误判为不安全路径导致 `fetch-github` 失败；现已允许这两种安全的 canonical 路径，并补充回归测试。
 

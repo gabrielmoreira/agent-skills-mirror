@@ -1,6 +1,6 @@
 ---
 name: ultrawork
-description: Binding ultrawork mode directive for omo-senpi. When a prompt contains ultrawork or ulw, the omo input hook injects the full directive as a hidden custom message (customType omo-ultrawork:directive, display false) ahead of the user's text, which is left untouched; a prompt queued while the agent is streaming instead carries the directive appended inside that same message. The directive is present in the conversation context; on the idle path it is not shown in the visible prompt, while a queued prompt carries the directive visibly (exactly as before this change). When the directive is already present in the conversation, do not read this file again - this file is that same directive. Read this file only when ultrawork mode is requested and the directive is not already present in the conversation.
+description: "The binding ultrawork-mode directive. This file IS the directive; read it only when ultrawork mode is requested and the directive is not already in the conversation."
 metadata:
   short-description: Binding ultrawork mode directive
 ---
@@ -70,19 +70,21 @@ exercises the surface; capture the artifact.
      xterm.js web terminal (see the TUI visual QA note below). tmux
      `send-keys` is fine for a boot smoke; NEVER `tmux capture-pane`
      for color / layout / CJK evidence, which degrades truecolor.
-  3. Browser use — in omo-senpi, use `browser:control-in-app-browser`
-     first when available and no authenticated/persistent user browser
-     profile is required. Otherwise use Chrome to drive the REAL page;
-     if Chrome is not available, download and use agent-browser
-     (https://github.com/vercel-labs/agent-browser). Capture action
-     log + screenshot path. Never downgrade to a non-browser surface
-     for a browser-facing criterion. NEVER clear cookies, cache, or
-     site data (`Network.clearBrowserCookies`, `Storage.clearCookies`,
+  3. Browser use — drive the REAL page from the eval js kernel:
+     `new Bun.WebView()` (navigate / click / type / evaluate /
+     screenshot; bun-1-4 skill) is the default, `playwright-core`
+     when the criterion needs a real Chrome build or its trace, and
+     the `agent-browser` CLI
+     (https://github.com/vercel-labs/agent-browser) only when no
+     kernel path exists. Capture action log + screenshot path. Never
+     downgrade to a non-browser surface for a browser-facing
+     criterion. NEVER clear cookies, cache, or site data
+     (`Network.clearBrowserCookies`, `Storage.clearCookies`,
      `chrome.browsingData.remove`, "clear browsing data") on the user's
      real/main browser profile — it wipes their logged-in state. If you
      need that profile's login state, clone it first (`rsync -a
-     <profile>/ <tmp-clone>/`) and launch Chrome / agent-browser against
-     the clone as the user-data-dir; run any clearing there only.
+     <profile>/ <tmp-clone>/`) and point the browser at the clone as
+     its user-data-dir; run any clearing there only.
   4. Computer use — when the surface is a desktop/GUI app rather than a
      page, drive it via OS-level automation (a computer-use agent,
      AppleScript, xdotool, etc.) against the running app; capture
@@ -94,7 +96,7 @@ upfront: the literal command / API call / page action with its concrete
 inputs (URL, payload, keystrokes, selectors) and the single binary
 observable that decides PASS vs FAIL. "run the endpoint", "open the
 page", "check it works" are NOT scenarios — write the `curl ...`, the
-`send-keys ...`, the Browser plugin action, the `page.click(...)`, the
+`send-keys ...`, the `view.click(...)` / `page.click(...)`, the
 expected status/text.
 
 Auxiliary surfaces (CLI stdout / DB state diff / parsed config dump)
@@ -277,10 +279,10 @@ in background; keep working.
 
 # Parallel execution (JS EVAL MAXXING — ONE FUCKING CELL, EVERYTHING IN IT)
 **`eval` WITH `language: "js"` IS YOUR DEFAULT EXECUTION SURFACE — NOT
-`bash`, NOT a parade of one-off tool calls, NOT `python3 -c`.** The
-kernel is Bun 1.4: **READ THE `bun-1-4` SKILL BEFORE YOUR FIRST CELL**
-and use its builtins (`Bun.$` for shell, `Bun.Glob`, `fetch`) over
-shelling out. A step needing MORE THAN ONE call gets ONE GODDAMN PROGRAM: a
+`bash`, NOT a parade of one-off tool calls, NOT `python3 -c`.** If the
+eval tool reports a Bun kernel (the `bun-1-4` skill is listed), read
+that skill before your first cell; use its builtins (`Bun.$` for shell,
+`Bun.Glob`, `fetch`) over shelling out. A step needing MORE THAN ONE call gets ONE GODDAMN PROGRAM: a
 LONG cell with REAL control flow — `if`/`else` per case, `for` over
 every target, `try`/`catch` PER ITEM so one failure degrades only
 that item — firing every independent read, search, git/`lsp_*`/web

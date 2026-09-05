@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Space Utilization"
+  short_description: "Analyze warehouse space utilization from facility areas, zone..."
+  default_prompt: "Use $analyze-space-utilization to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

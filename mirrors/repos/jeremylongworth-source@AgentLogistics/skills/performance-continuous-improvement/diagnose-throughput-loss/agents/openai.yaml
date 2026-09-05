@@ -1,0 +1,4 @@
+interface: openai
+display_name: Diagnose Throughput Loss
+short_description: Diagnose logistics throughput loss from throughput gaps, queues, downtime, labor, equipment, process, and source evidence.
+default_prompt: Use $diagnose-throughput-loss to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

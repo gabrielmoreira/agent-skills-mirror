@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 100 file(s) materialized.
+Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 101 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 100 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 100 |
+| Files         | 101 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,66 +99,67 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`skills/cmux-cloud-vm/references/sidebar-parity.md`](skills/cmux-cloud-vm/references/sidebar-parity.md) |
 | 39 | ✓ | [`skills/cmux-cloud-vm/SKILL.md`](skills/cmux-cloud-vm/SKILL.md) |
 | 40 | ✓ | [`skills/cmux-cua/agents/openai.yaml`](skills/cmux-cua/agents/openai.yaml) |
-| 41 | ✓ | [`skills/cmux-cua/SKILL.md`](skills/cmux-cua/SKILL.md) |
-| 42 | ✓ | [`skills/cmux-custom-sidebar/SKILL.md`](skills/cmux-custom-sidebar/SKILL.md) |
-| 43 | ✓ | [`skills/cmux-customization/agents/openai.yaml`](skills/cmux-customization/agents/openai.yaml) |
-| 44 | ✓ | [`skills/cmux-customization/references/examples.md`](skills/cmux-customization/references/examples.md) |
-| 45 | ✓ | [`skills/cmux-customization/SKILL.md`](skills/cmux-customization/SKILL.md) |
-| 46 | ✓ | [`skills/cmux-debugging/agents/openai.yaml`](skills/cmux-debugging/agents/openai.yaml) |
-| 47 | ✓ | [`skills/cmux-debugging/references/debug-event-log.md`](skills/cmux-debugging/references/debug-event-log.md) |
-| 48 | ✓ | [`skills/cmux-debugging/references/runtime-pitfalls.md`](skills/cmux-debugging/references/runtime-pitfalls.md) |
-| 49 | ✓ | [`skills/cmux-debugging/SKILL.md`](skills/cmux-debugging/SKILL.md) |
-| 50 | ✓ | [`skills/cmux-dev-workflow/agents/openai.yaml`](skills/cmux-dev-workflow/agents/openai.yaml) |
-| 51 | ✓ | [`skills/cmux-dev-workflow/references/sidebar-extension-tagging.md`](skills/cmux-dev-workflow/references/sidebar-extension-tagging.md) |
-| 52 | ✓ | [`skills/cmux-dev-workflow/references/tagged-builds.md`](skills/cmux-dev-workflow/references/tagged-builds.md) |
-| 53 | ✓ | [`skills/cmux-dev-workflow/references/xcode-project-normalization.md`](skills/cmux-dev-workflow/references/xcode-project-normalization.md) |
-| 54 | ✓ | [`skills/cmux-dev-workflow/SKILL.md`](skills/cmux-dev-workflow/SKILL.md) |
-| 55 | ✓ | [`skills/cmux-diagnostics/agents/openai.yaml`](skills/cmux-diagnostics/agents/openai.yaml) |
-| 56 | ✓ | [`skills/cmux-diagnostics/scripts/cmux-diagnostics`](skills/cmux-diagnostics/scripts/cmux-diagnostics) |
-| 57 | ✓ | [`skills/cmux-diagnostics/SKILL.md`](skills/cmux-diagnostics/SKILL.md) |
-| 58 | ✓ | [`skills/cmux-ghostty/agents/openai.yaml`](skills/cmux-ghostty/agents/openai.yaml) |
-| 59 | ✓ | [`skills/cmux-ghostty/references/submodule-safety.md`](skills/cmux-ghostty/references/submodule-safety.md) |
-| 60 | ✓ | [`skills/cmux-ghostty/SKILL.md`](skills/cmux-ghostty/SKILL.md) |
-| 61 | ✓ | [`skills/cmux-keyboard-shortcuts/agents/openai.yaml`](skills/cmux-keyboard-shortcuts/agents/openai.yaml) |
-| 62 | ✓ | [`skills/cmux-keyboard-shortcuts/SKILL.md`](skills/cmux-keyboard-shortcuts/SKILL.md) |
-| 63 | ✓ | [`skills/cmux-localization/agents/openai.yaml`](skills/cmux-localization/agents/openai.yaml) |
-| 64 | ✓ | [`skills/cmux-localization/references/audit-workflow.md`](skills/cmux-localization/references/audit-workflow.md) |
-| 65 | ✓ | [`skills/cmux-localization/SKILL.md`](skills/cmux-localization/SKILL.md) |
-| 66 | ✓ | [`skills/cmux-markdown/agents/openai.yaml`](skills/cmux-markdown/agents/openai.yaml) |
-| 67 | ✓ | [`skills/cmux-markdown/references/commands.md`](skills/cmux-markdown/references/commands.md) |
-| 68 | ✓ | [`skills/cmux-markdown/references/live-reload.md`](skills/cmux-markdown/references/live-reload.md) |
-| 69 | ✓ | [`skills/cmux-markdown/SKILL.md`](skills/cmux-markdown/SKILL.md) |
-| 70 | ✓ | [`skills/cmux-release/agents/openai.yaml`](skills/cmux-release/agents/openai.yaml) |
-| 71 | ✓ | [`skills/cmux-release/references/release-checklist.md`](skills/cmux-release/references/release-checklist.md) |
-| 72 | ✓ | [`skills/cmux-release/SKILL.md`](skills/cmux-release/SKILL.md) |
-| 73 | ✓ | [`skills/cmux-settings/agents/openai.yaml`](skills/cmux-settings/agents/openai.yaml) |
-| 74 | ✓ | [`skills/cmux-settings/references/all-keys.md`](skills/cmux-settings/references/all-keys.md) |
-| 75 | ✓ | [`skills/cmux-settings/references/shortcut-actions.md`](skills/cmux-settings/references/shortcut-actions.md) |
-| 76 | ✓ | [`skills/cmux-settings/scripts/cmux-settings`](skills/cmux-settings/scripts/cmux-settings) |
-| 77 | ✓ | [`skills/cmux-settings/SKILL.md`](skills/cmux-settings/SKILL.md) |
-| 78 | ✓ | [`skills/cmux-shared-behavior/agents/openai.yaml`](skills/cmux-shared-behavior/agents/openai.yaml) |
-| 79 | ✓ | [`skills/cmux-shared-behavior/SKILL.md`](skills/cmux-shared-behavior/SKILL.md) |
-| 80 | ✓ | [`skills/cmux-socket-policy/agents/openai.yaml`](skills/cmux-socket-policy/agents/openai.yaml) |
-| 81 | ✓ | [`skills/cmux-socket-policy/references/threading-and-focus.md`](skills/cmux-socket-policy/references/threading-and-focus.md) |
-| 82 | ✓ | [`skills/cmux-socket-policy/SKILL.md`](skills/cmux-socket-policy/SKILL.md) |
-| 83 | ✓ | [`skills/cmux-testing/agents/openai.yaml`](skills/cmux-testing/agents/openai.yaml) |
-| 84 | ✓ | [`skills/cmux-testing/references/local-vs-ci-validation.md`](skills/cmux-testing/references/local-vs-ci-validation.md) |
-| 85 | ✓ | [`skills/cmux-testing/references/regression-and-quality.md`](skills/cmux-testing/references/regression-and-quality.md) |
-| 86 | ✓ | [`skills/cmux-testing/references/remote-tmux-sizing-e2e.md`](skills/cmux-testing/references/remote-tmux-sizing-e2e.md) |
-| 87 | ✓ | [`skills/cmux-testing/references/swift-testing-migration.md`](skills/cmux-testing/references/swift-testing-migration.md) |
-| 88 | ✓ | [`skills/cmux-testing/SKILL.md`](skills/cmux-testing/SKILL.md) |
-| 89 | ✓ | [`skills/cmux-workspace/agents/openai.yaml`](skills/cmux-workspace/agents/openai.yaml) |
-| 90 | ✓ | [`skills/cmux-workspace/references/commands.md`](skills/cmux-workspace/references/commands.md) |
-| 91 | ✓ | [`skills/cmux-workspace/SKILL.md`](skills/cmux-workspace/SKILL.md) |
-| 92 | ✓ | [`skills/cmux/agents/openai.yaml`](skills/cmux/agents/openai.yaml) |
-| 93 | ✓ | [`skills/cmux/references/handles-and-identify.md`](skills/cmux/references/handles-and-identify.md) |
-| 94 | ✓ | [`skills/cmux/references/panes-surfaces.md`](skills/cmux/references/panes-surfaces.md) |
-| 95 | ✓ | [`skills/cmux/references/trigger-flash-and-health.md`](skills/cmux/references/trigger-flash-and-health.md) |
-| 96 | ✓ | [`skills/cmux/references/windows-workspaces.md`](skills/cmux/references/windows-workspaces.md) |
-| 97 | ✓ | [`skills/cmux/SKILL.md`](skills/cmux/SKILL.md) |
-| 98 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 99 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
-| 100 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 41 | ✓ | [`skills/cmux-cua/link-policy.sh`](skills/cmux-cua/link-policy.sh) |
+| 42 | ✓ | [`skills/cmux-cua/SKILL.md`](skills/cmux-cua/SKILL.md) |
+| 43 | ✓ | [`skills/cmux-custom-sidebar/SKILL.md`](skills/cmux-custom-sidebar/SKILL.md) |
+| 44 | ✓ | [`skills/cmux-customization/agents/openai.yaml`](skills/cmux-customization/agents/openai.yaml) |
+| 45 | ✓ | [`skills/cmux-customization/references/examples.md`](skills/cmux-customization/references/examples.md) |
+| 46 | ✓ | [`skills/cmux-customization/SKILL.md`](skills/cmux-customization/SKILL.md) |
+| 47 | ✓ | [`skills/cmux-debugging/agents/openai.yaml`](skills/cmux-debugging/agents/openai.yaml) |
+| 48 | ✓ | [`skills/cmux-debugging/references/debug-event-log.md`](skills/cmux-debugging/references/debug-event-log.md) |
+| 49 | ✓ | [`skills/cmux-debugging/references/runtime-pitfalls.md`](skills/cmux-debugging/references/runtime-pitfalls.md) |
+| 50 | ✓ | [`skills/cmux-debugging/SKILL.md`](skills/cmux-debugging/SKILL.md) |
+| 51 | ✓ | [`skills/cmux-dev-workflow/agents/openai.yaml`](skills/cmux-dev-workflow/agents/openai.yaml) |
+| 52 | ✓ | [`skills/cmux-dev-workflow/references/sidebar-extension-tagging.md`](skills/cmux-dev-workflow/references/sidebar-extension-tagging.md) |
+| 53 | ✓ | [`skills/cmux-dev-workflow/references/tagged-builds.md`](skills/cmux-dev-workflow/references/tagged-builds.md) |
+| 54 | ✓ | [`skills/cmux-dev-workflow/references/xcode-project-normalization.md`](skills/cmux-dev-workflow/references/xcode-project-normalization.md) |
+| 55 | ✓ | [`skills/cmux-dev-workflow/SKILL.md`](skills/cmux-dev-workflow/SKILL.md) |
+| 56 | ✓ | [`skills/cmux-diagnostics/agents/openai.yaml`](skills/cmux-diagnostics/agents/openai.yaml) |
+| 57 | ✓ | [`skills/cmux-diagnostics/scripts/cmux-diagnostics`](skills/cmux-diagnostics/scripts/cmux-diagnostics) |
+| 58 | ✓ | [`skills/cmux-diagnostics/SKILL.md`](skills/cmux-diagnostics/SKILL.md) |
+| 59 | ✓ | [`skills/cmux-ghostty/agents/openai.yaml`](skills/cmux-ghostty/agents/openai.yaml) |
+| 60 | ✓ | [`skills/cmux-ghostty/references/submodule-safety.md`](skills/cmux-ghostty/references/submodule-safety.md) |
+| 61 | ✓ | [`skills/cmux-ghostty/SKILL.md`](skills/cmux-ghostty/SKILL.md) |
+| 62 | ✓ | [`skills/cmux-keyboard-shortcuts/agents/openai.yaml`](skills/cmux-keyboard-shortcuts/agents/openai.yaml) |
+| 63 | ✓ | [`skills/cmux-keyboard-shortcuts/SKILL.md`](skills/cmux-keyboard-shortcuts/SKILL.md) |
+| 64 | ✓ | [`skills/cmux-localization/agents/openai.yaml`](skills/cmux-localization/agents/openai.yaml) |
+| 65 | ✓ | [`skills/cmux-localization/references/audit-workflow.md`](skills/cmux-localization/references/audit-workflow.md) |
+| 66 | ✓ | [`skills/cmux-localization/SKILL.md`](skills/cmux-localization/SKILL.md) |
+| 67 | ✓ | [`skills/cmux-markdown/agents/openai.yaml`](skills/cmux-markdown/agents/openai.yaml) |
+| 68 | ✓ | [`skills/cmux-markdown/references/commands.md`](skills/cmux-markdown/references/commands.md) |
+| 69 | ✓ | [`skills/cmux-markdown/references/live-reload.md`](skills/cmux-markdown/references/live-reload.md) |
+| 70 | ✓ | [`skills/cmux-markdown/SKILL.md`](skills/cmux-markdown/SKILL.md) |
+| 71 | ✓ | [`skills/cmux-release/agents/openai.yaml`](skills/cmux-release/agents/openai.yaml) |
+| 72 | ✓ | [`skills/cmux-release/references/release-checklist.md`](skills/cmux-release/references/release-checklist.md) |
+| 73 | ✓ | [`skills/cmux-release/SKILL.md`](skills/cmux-release/SKILL.md) |
+| 74 | ✓ | [`skills/cmux-settings/agents/openai.yaml`](skills/cmux-settings/agents/openai.yaml) |
+| 75 | ✓ | [`skills/cmux-settings/references/all-keys.md`](skills/cmux-settings/references/all-keys.md) |
+| 76 | ✓ | [`skills/cmux-settings/references/shortcut-actions.md`](skills/cmux-settings/references/shortcut-actions.md) |
+| 77 | ✓ | [`skills/cmux-settings/scripts/cmux-settings`](skills/cmux-settings/scripts/cmux-settings) |
+| 78 | ✓ | [`skills/cmux-settings/SKILL.md`](skills/cmux-settings/SKILL.md) |
+| 79 | ✓ | [`skills/cmux-shared-behavior/agents/openai.yaml`](skills/cmux-shared-behavior/agents/openai.yaml) |
+| 80 | ✓ | [`skills/cmux-shared-behavior/SKILL.md`](skills/cmux-shared-behavior/SKILL.md) |
+| 81 | ✓ | [`skills/cmux-socket-policy/agents/openai.yaml`](skills/cmux-socket-policy/agents/openai.yaml) |
+| 82 | ✓ | [`skills/cmux-socket-policy/references/threading-and-focus.md`](skills/cmux-socket-policy/references/threading-and-focus.md) |
+| 83 | ✓ | [`skills/cmux-socket-policy/SKILL.md`](skills/cmux-socket-policy/SKILL.md) |
+| 84 | ✓ | [`skills/cmux-testing/agents/openai.yaml`](skills/cmux-testing/agents/openai.yaml) |
+| 85 | ✓ | [`skills/cmux-testing/references/local-vs-ci-validation.md`](skills/cmux-testing/references/local-vs-ci-validation.md) |
+| 86 | ✓ | [`skills/cmux-testing/references/regression-and-quality.md`](skills/cmux-testing/references/regression-and-quality.md) |
+| 87 | ✓ | [`skills/cmux-testing/references/remote-tmux-sizing-e2e.md`](skills/cmux-testing/references/remote-tmux-sizing-e2e.md) |
+| 88 | ✓ | [`skills/cmux-testing/references/swift-testing-migration.md`](skills/cmux-testing/references/swift-testing-migration.md) |
+| 89 | ✓ | [`skills/cmux-testing/SKILL.md`](skills/cmux-testing/SKILL.md) |
+| 90 | ✓ | [`skills/cmux-workspace/agents/openai.yaml`](skills/cmux-workspace/agents/openai.yaml) |
+| 91 | ✓ | [`skills/cmux-workspace/references/commands.md`](skills/cmux-workspace/references/commands.md) |
+| 92 | ✓ | [`skills/cmux-workspace/SKILL.md`](skills/cmux-workspace/SKILL.md) |
+| 93 | ✓ | [`skills/cmux/agents/openai.yaml`](skills/cmux/agents/openai.yaml) |
+| 94 | ✓ | [`skills/cmux/references/handles-and-identify.md`](skills/cmux/references/handles-and-identify.md) |
+| 95 | ✓ | [`skills/cmux/references/panes-surfaces.md`](skills/cmux/references/panes-surfaces.md) |
+| 96 | ✓ | [`skills/cmux/references/trigger-flash-and-health.md`](skills/cmux/references/trigger-flash-and-health.md) |
+| 97 | ✓ | [`skills/cmux/references/windows-workspaces.md`](skills/cmux/references/windows-workspaces.md) |
+| 98 | ✓ | [`skills/cmux/SKILL.md`](skills/cmux/SKILL.md) |
+| 99 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 100 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
+| 101 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

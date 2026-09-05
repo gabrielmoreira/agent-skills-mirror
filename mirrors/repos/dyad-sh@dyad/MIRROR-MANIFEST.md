@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 30 followed patterns, 58 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 30 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 30 followed patterns, 58 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 30 |
-| Files         | 58 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,37 +115,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`.github/prompts/claude-pr-review.txt`](.github/prompts/claude-pr-review.txt) |
 | 26 | ✓ | [`.github/prompts/claude-triage.txt`](.github/prompts/claude-triage.txt) |
 | 27 | ✓ | [`.github/prompts/codex-pr-review.txt`](.github/prompts/codex-pr-review.txt) |
-| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 29 | → | [`rules/adding-settings.md`](rules/adding-settings.md) |
-| 30 | → | [`rules/app-naming.md`](rules/app-naming.md) |
-| 31 | → | [`rules/app-operation-coordination.md`](rules/app-operation-coordination.md) |
-| 32 | → | [`rules/auto-update.md`](rules/auto-update.md) |
-| 33 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
-| 34 | → | [`rules/chat-mentions.md`](rules/chat-mentions.md) |
-| 35 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
-| 36 | → | [`rules/chat-modes.md`](rules/chat-modes.md) |
-| 37 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
-| 38 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
-| 39 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
-| 40 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
-| 41 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
-| 42 | → | [`rules/electron-workers.md`](rules/electron-workers.md) |
-| 43 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
-| 44 | → | [`rules/hybrid-testing.md`](rules/hybrid-testing.md) |
-| 45 | → | [`rules/i18n.md`](rules/i18n.md) |
-| 46 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
-| 47 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
-| 48 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 49 | → | [`rules/native-modules.md`](rules/native-modules.md) |
-| 50 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 51 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 52 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
-| 53 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
-| 54 | → | [`rules/state-machines.md`](rules/state-machines.md) |
-| 55 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 56 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
-| 57 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
-| 58 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
+| 28 | ✓ | [`.github/prompts/triage-playbook.md`](.github/prompts/triage-playbook.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 30 | → | [`rules/adding-settings.md`](rules/adding-settings.md) |
+| 31 | → | [`rules/app-naming.md`](rules/app-naming.md) |
+| 32 | → | [`rules/app-operation-coordination.md`](rules/app-operation-coordination.md) |
+| 33 | → | [`rules/auto-update.md`](rules/auto-update.md) |
+| 34 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
+| 35 | → | [`rules/chat-mentions.md`](rules/chat-mentions.md) |
+| 36 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
+| 37 | → | [`rules/chat-modes.md`](rules/chat-modes.md) |
+| 38 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
+| 39 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
+| 40 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
+| 41 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
+| 42 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
+| 43 | → | [`rules/electron-workers.md`](rules/electron-workers.md) |
+| 44 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
+| 45 | → | [`rules/hybrid-testing.md`](rules/hybrid-testing.md) |
+| 46 | → | [`rules/i18n.md`](rules/i18n.md) |
+| 47 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
+| 48 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 49 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 50 | → | [`rules/native-modules.md`](rules/native-modules.md) |
+| 51 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 52 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 53 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
+| 54 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
+| 55 | → | [`rules/state-machines.md`](rules/state-machines.md) |
+| 56 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 57 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 58 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 59 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
 
 ---
 

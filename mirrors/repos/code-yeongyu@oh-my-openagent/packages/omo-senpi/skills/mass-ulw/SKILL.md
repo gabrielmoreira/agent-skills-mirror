@@ -1,6 +1,6 @@
 ---
 name: mass-ulw
-description: Drive dependency-ordered child work through the native workflow tool, one run per phase, recovering inside a run with retry, amend, and send. Use when the user asks for mass-ulw, a DAG of tasks, fan-out/fan-in work, or multi-agent execution where some tasks must wait on others.
+description: "Drives dependency-ordered child work through the native workflow tool, one run per phase with retry/amend/send recovery. Use when the user asks for mass-ulw, a DAG of tasks, or fan-out work where some tasks must wait on others."
 metadata:
   short-description: Dependency-graph orchestration of child agents
 ---

@@ -1,0 +1,358 @@
+# Contributing to OpenHuman
+
+Thank you for your interest in contributing to OpenHuman. This guide is the fast path for getting a fresh checkout running locally, validating changes, and opening a pull request without having to piece together setup notes from multiple files.
+
+> **New to open source or coding?** Start with [`CONTRIBUTING-BEGINNERS.md`](CONTRIBUTING-BEGINNERS.md) — it walks you through every step from installing tools to opening your first PR.
+
+For deeper architecture and subsystem references, use the GitBook under [`gitbooks/developing/`](gitbooks/developing/). For coding-agent and repository-specific implementation rules, see [`AGENTS.md`](AGENTS.md) and [`CLAUDE.md`](CLAUDE.md).
+
+## Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [Getting Started](#getting-started)
+- [Development Setup](#development-setup)
+- [Project Layout](#project-layout)
+- [Git Workflow](#git-workflow)
+- [Making Changes](#making-changes)
+- [Submitting Changes](#submitting-changes)
+- [Project Conventions](#project-conventions)
+
+## Code of Conduct
+
+This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
+## Getting Started
+
+- Read the [README](README.md) for product context.
+- Use [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) for the current system architecture.
+- Check [open issues](https://github.com/tinyhumansai/openhuman/issues) and [Discussions](https://github.com/tinyhumansai/openhuman/discussions) before starting work.
+- Stuck rather than fixing something? [SUPPORT.md](SUPPORT.md) routes questions, install trouble, memory behavior, and model problems to the right category; [`docs/community/discussions.md`](docs/community/discussions.md) explains how those threads are triaged.
+- For security issues, follow [SECURITY.md](SECURITY.md) and do not file public issues.
+
+## Development Setup
+
+### 1. Prerequisites
+
+| Requirement | Version / source of truth | Notes |
+| --- | --- | --- |
+| Git | Current stable | Required for cloning and updating vendored submodules. |
+| Node.js | `>=24.0.0` from [`app/package.json`](app/package.json) | Install the current Node 24 release or newer. |
+| pnpm | `pnpm@10.10.0` from [`package.json`](package.json) | The repo enforces pnpm via the root `packageManager` field. |
+| Rust | `1.96.1` from [`rust-toolchain.toml`](rust-toolchain.toml) | Install with `rustup`; `rustfmt` and `clippy` are required components. |
+| CMake | Current stable | Required by native Rust dependencies such as Whisper bindings. |
+| Ninja | Current stable | Required on macOS and Windows to build the bundled CEF helper. CMake delegates the actual compile to Ninja; without it the `cef-dll-sys` build script aborts. |
+| ripgrep (`rg`) | Current stable | Used by the `lint:commands-tokens` pre-push step (scans `app/src/components/commands/`). Without it, `git push` fails the hook with `rg: command not found`. |
+| Tauri vendored sources | Git submodules under `app/src-tauri/vendor/` | Required for the CEF-aware Tauri CLI and notification plugin patches. |
+| macOS tools | Xcode Command Line Tools | Needed for local desktop builds on macOS. |
+| Linux desktop packages | System GTK/WebKit/AppIndicator build deps | Install the package set Tauri requires for your distro before attempting desktop builds. |
+
+#### Windows-specific setup
+
+Windows requires several additional tools that are not needed on macOS or Linux. Install them in the order listed below, restarting your terminal after each step so PATH changes take effect.
+
+**1. Visual Studio C++ Build Tools**
+
+Rust's `cargo` needs a linker on Windows. The easiest way to get one is during `rustup-init`: select option **1** (Default installation) when prompted, which includes MSVC v143 and the Windows 11 SDK. This is the full Visual Studio installer, not the VS Code lightweight editor — it lives only on `C:` and consumes ~5.4 GB.
+
+**2. Rust**
+
+Install the pinned toolchain and required components with `rustup`:
+
+```powershell
+rustup toolchain install 1.96.1 --profile minimal
+rustup component add rustfmt clippy --toolchain 1.96.1
+```
+
+**3. LLVM / Clang**
+
+`whisper-rs-sys` depends on `libclang`. Download the Windows x86_64 release from [github.com/llvm/llvm-project/releases](https://github.com/llvm/llvm-project/releases) (~822 MB). During install, check **"Add LLVM to system PATH for all users"**. If you see a "PATH too long" warning, skip the PATH step and set the environment variable manually:
+
+```powershell
+$env:LIBCLANG_PATH = "C:\Program Files\LLVM\bin"
+```
+
+**4. CMake**
+
+`whisper.cpp` requires CMake. Install via winget:
+
+```bash
+winget install Kitware.CMake
+```
+
+**5. Ninja**
+
+The CEF build uses Ninja as its CMake generator. Install it via winget:
+
+```powershell
+winget install --id Ninja-build.Ninja -e
+```
+
+**6. Node.js and pnpm**
+
+Install Node.js 24+ and pnpm@10.10.0 as usual.
+
+**Recommended install order**
+
+1. VS Build Tools → restart terminal
+2. Rust (`rustup`) → restart terminal
+3. LLVM → restart terminal
+4. CMake + Ninja → restart terminal
+5. Node.js + pnpm → restart terminal
+
+**Quick dependency check**
+
+```powershell
+# Verify all required tools are reachable
+rustc --version
+cargo --version
+clang --version
+cmake --version
+ninja --version
+node --version
+pnpm --version
+
+# Verify libclang is accessible (needed by whisper-rs-sys)
+$env:LIBCLANG_PATH = "C:\Program Files\LLVM\bin"
+clang -v
+```
+
+#### Platform notes
+
+- **Web-only development** needs Node, pnpm, and the Rust toolchain present in the repo. You can usually ignore desktop-only system packages.
+- **Desktop development** needs the vendored Tauri/CEF setup. Use `pnpm --filter openhuman-app dev:app` on macOS and `pnpm dev:app:win` on native Windows; both entrypoints configure the platform-specific CEF environment.
+- **Linux desktop builds** require extra system packages beyond Node/Rust. Follow the distro-specific Tauri dependency list before running desktop commands, then use the OpenHuman scripts below. For deeper platform troubleshooting, see [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md).
+- **Windows 10 WSL + classic X11 forwarding** is unsupported for the desktop app. The Tauri/CEF stack can hang, render blank windows, or crash before useful app logs are available. Use native Windows development, or Windows 11 WSLg if you need a Linux GUI workflow. OpenHuman logs a startup warning when it detects WSL with `DISPLAY` set but no `WAYLAND_DISPLAY`/WSLg markers.
+- **Windows desktop builds** additionally require Visual Studio C++ Build Tools (MSVC v143), LLVM/Clang, CMake, and Ninja. See [Windows-specific setup](#windows-specific-setup) for the full list and install order.
+- **macOS desktop builds** require a one-time codesigning cert. After cloning, run `bash scripts/setup-dev-codesign.sh` once to create the local "OpenHuman Dev Signer" self-signed certificate that Tauri uses when bundling dev builds. Without it, `pnpm --filter openhuman-app dev:app` fails at the bundle/sign step with `OpenHuman Dev Signer: no identity found`.
+- **Skills development** happens in the separate [`tinyhumansai/openhuman-skills`](https://github.com/tinyhumansai/openhuman-skills) repository. This repo consumes built skill bundles from GitHub or a local override path; it does not vendor the skills source as a submodule.
+
+Example macOS bootstrap with Homebrew:
+
+```bash
+brew install node@24 pnpm rustup-init cmake ninja ripgrep
+rustup toolchain install 1.96.1 --profile minimal
+rustup component add rustfmt clippy --toolchain 1.96.1
+# CEF builds a universal binary, so the x86_64 target is required even on Apple Silicon
+rustup target add x86_64-apple-darwin
+```
+
+### 2. Clone and install
+
+Fork the upstream repository on GitHub first if you plan to submit changes, then clone your fork:
+
+```bash
+git clone git@github.com:YOUR_USERNAME/openhuman.git
+cd openhuman
+git remote add upstream git@github.com:tinyhumansai/openhuman.git
+git submodule update --init --recursive
+pnpm install
+```
+
+Why submodules matter here:
+
+- `app/src-tauri/vendor/tauri-cef`
+- `app/src-tauri/vendor/tauri-plugin-notification`
+
+Those vendored trees are part of the current desktop toolchain. If they are missing, desktop builds and Tauri CLI setup will fail.
+
+### 3. Configure for development
+
+OpenHuman uses two environment templates:
+
+- Root [`.env.example`](.env.example): Rust core, Tauri shell, shared runtime settings.
+- [`app/.env.example`](app/.env.example): frontend `VITE_*` variables for the web app.
+
+Copy them to local-only files before editing:
+
+```bash
+cp .env.example .env
+cp app/.env.example app/.env.local
+```
+
+Minimal configuration guidance:
+
+- **Web UI / frontend work**: the defaults in `app/.env.local` are usually enough for local startup. Set `VITE_BACKEND_URL` only if you need a non-production backend in web mode.
+- **Desktop work**: leave `OPENHUMAN_CORE_TOKEN` blank for local child-mode development unless you are intentionally wiring an external core. The shell manages the embedded core token flow.
+- **Core RPC / standalone core work**: `OPENHUMAN_CORE_PORT=7788` and `OPENHUMAN_CORE_RPC_URL=http://127.0.0.1:7788/rpc` are already documented in the root template and are the normal local defaults.
+- **Skills development**: use `SKILLS_REGISTRY_URL` or `SKILLS_LOCAL_DIR` from the root template when pointing the app at a local built skills checkout.
+
+Never commit `.env`, `app/.env.local`, tokens, or other secrets.
+
+### 4. Bootstrap commands
+
+These commands cover the most common local workflows from the repository root:
+
+```bash
+# Install workspace dependencies
+pnpm install
+
+# Web-only development (Vite dev server)
+pnpm dev
+
+# Preferred macOS desktop development path (sets up vendored Tauri CLI + CEF env)
+pnpm --filter openhuman-app dev:app
+
+# Preferred native Windows desktop development path (run from PowerShell)
+pnpm dev:app:win
+
+# Lower-level Tauri command entrypoint
+pnpm tauri dev
+
+# Standalone Rust core
+cargo run --manifest-path Cargo.toml --bin openhuman-core
+```
+
+Which mode to choose:
+
+- `pnpm dev`: frontend-only iteration in the browser.
+- `pnpm --filter openhuman-app dev:app`: full desktop app flow with Tauri + CEF on macOS.
+- `pnpm dev:app:win`: full desktop app flow on native Windows. This invokes the repository's Git Bash bootstrap to configure MSVC, Ninja, the vendored Tauri CLI, and the Windows CEF runtime.
+- `cargo run --bin openhuman-core`: core/RPC work when you want the Rust server without the desktop shell.
+
+#### Windows desktop troubleshooting
+
+The default development port is `1420`. Hyper-V or WSL can reserve ranges that include this port. Check the excluded TCP ranges from an elevated PowerShell prompt:
+
+```powershell
+netsh interface ipv4 show excludedportrange protocol=tcp
+```
+
+If `1420` is excluded or already in use, choose a port `N` such that both `N` and `N + 1` are available and outside the listed ranges; use a value below `65535`. `dev:app:win` applies `OPENHUMAN_DEV_PORT` to both Vite and Tauri, so their URLs remain synchronized:
+
+```powershell
+$env:OPENHUMAN_DEV_PORT = "14320"
+pnpm dev:app:win
+```
+
+On systems using a non-UTF-8 code page, native CEF or Whisper compilation can fail with MSVC errors `C4819` and `C2220`. Opt into UTF-8 for the current PowerShell session before starting the app:
+
+```powershell
+$env:CL = "/utf-8"
+pnpm dev:app:win
+```
+
+### 5. Verify your setup
+
+If setup is correct, these commands should all succeed:
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm format:check
+cargo check --manifest-path Cargo.toml
+cargo check --manifest-path app/src-tauri/Cargo.toml
+```
+
+If you only changed docs in a normal local workflow, `pnpm format:check` is usually the only validation you need. AI-authored or remote-agent PRs must still fill in the AI Authored PR Metadata section of the PR template and report any blocked commands with the exact command and error.
+
+### 6. Run tests and checks
+
+| Goal | Command | Notes |
+| --- | --- | --- |
+| Frontend typecheck | `pnpm typecheck` | Runs the app workspace TypeScript compile check. |
+| Frontend lint | `pnpm lint` | ESLint over `app/`. |
+| Formatting | `pnpm format:check` | Runs Prettier plus Rust format checks. |
+| Frontend unit tests | `pnpm test` or `pnpm test:coverage` | Vitest in `app/`. |
+| Rust tests | `pnpm test:rust` | Uses the shared mock backend wrapper. |
+| Desktop E2E | `pnpm test:e2e` | Builds the app and runs the desktop flow suites. |
+| One-off Vitest debug runs | `pnpm debug unit ...` | Preferred for bounded logs during iteration. |
+| One-off Rust debug runs | `pnpm debug rust ...` | Preferred wrapper around focused Rust tests. |
+
+Merge-gate context:
+
+- PRs must meet the checks enforced by CI and keep changed-line coverage at or above 80%.
+- For code changes, run the smallest relevant local checks before you push.
+- For AI-authored or remote-agent PRs, also fill in the AI Authored PR Metadata section of the PR template.
+
+### 7. Local data and user-facing state
+
+Useful local paths during development:
+
+- `~/.openhuman/`: default workspace for the Rust core and local app data.
+- `~/.openhuman-staging/`: staging workspace when `OPENHUMAN_APP_ENV=staging`.
+- `app/.env.local`: browser-facing `VITE_*` overrides.
+- `.env`: Rust core, Tauri shell, and shared runtime overrides.
+
+Most contributor-visible configuration and state flows are documented in:
+
+- [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md)
+- [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md)
+- [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md)
+
+## Project Layout
+
+```text
+openhuman/
+├── app/                    # React app, Tauri shell, Vitest tests
+│   ├── src/
+│   ├── src-tauri/
+│   └── test/
+├── src/                    # Rust core crate and openhuman-core binary
+├── docs/                   # Internal and workflow docs
+├── gitbooks/developing/    # Contributor-facing architecture and setup guides
+├── scripts/                # Dev, test, debug, and automation scripts
+├── AGENTS.md               # Coding-agent repo rules
+└── CLAUDE.md               # Additional contributor and workflow guidance
+```
+
+Short version:
+
+- `app/` is the UI and desktop shell.
+- Root `src/` is the Rust core and JSON-RPC surface.
+- `gitbooks/developing/` is the canonical place for deeper subsystem docs.
+
+## Git Workflow
+
+- Fork [tinyhumansai/openhuman](https://github.com/tinyhumansai/openhuman) and push branches to your fork.
+- Pull requests target the upstream `main` branch.
+- Do not push directly to upstream unless you are explicitly authorized to do so.
+
+### Branch naming
+
+Use a short descriptive branch name, for example:
+
+- `fix/socket-reconnect`
+- `feat/settings-shortcuts`
+- `docs/contributing-setup`
+
+### Starting a branch
+
+```bash
+git fetch upstream
+git checkout main
+git pull --ff-only upstream main
+git checkout -b docs/your-change
+```
+
+## Making Changes
+
+1. Start from `main` and create a focused branch.
+2. Keep the diff small and scoped to the issue you are solving.
+3. Run the smallest relevant checks locally before pushing.
+4. Update docs with code whenever behavior, commands, or contributor workflow changes.
+
+### Workflow sanity checklist
+
+- Verify the command you are documenting exists in the current repo.
+- Prefer source-of-truth files such as `package.json`, `app/package.json`, `Cargo.toml`, `rust-toolchain.toml`, and the env templates over older prose docs.
+- Link to GitBook chapters for deeper architecture instead of duplicating large internal explanations.
+
+## Submitting Changes
+
+1. Push your branch to your fork.
+2. Open a pull request against `tinyhumansai/openhuman:main`.
+3. Fill in [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) completely.
+4. Link the issue using a closing keyword such as `Closes #1441`.
+5. Call out any blocked validation commands with the exact command and error.
+
+If you are contributing through a coding agent or remote environment, include the metadata required by the PR template and the Codex PR checklist.
+
+## Project Conventions
+
+- Use Redux and existing app state patterns instead of adding new ad hoc browser storage.
+- Treat Rust core logic as the source of truth; avoid re-implementing business rules in the Tauri shell.
+- Use the controller registry and domain module structure described in [`AGENTS.md`](AGENTS.md) for new Rust functionality.
+- Keep logs grep-friendly and avoid logging secrets, tokens, or full PII.
+- Follow ESLint, Prettier, and Rust formatting output as authoritative.
+
+Thank you for contributing to OpenHuman.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Culinary Reasoning"
+  short_description: "Diagnose cooking problems with state, mechanism, recovery, and cues."
+  default_prompt: "Use this skill to troubleshoot dishes, compare cooking techniques, analyze failures, and choose staged interventions from current state to target state."

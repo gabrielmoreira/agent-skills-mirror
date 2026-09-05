@@ -1,0 +1,4 @@
+interface: openai
+display_name: Measure Improvement Result
+short_description: Measure logistics improvement results from before-after metrics, implementation dates, baselines, controls, and review boundaries.
+default_prompt: Use $measure-improvement-result to produce a source-backed logistics performance or continuous-improvement output with evidence boundaries, calculations where relevant, and qualified-review requirements.

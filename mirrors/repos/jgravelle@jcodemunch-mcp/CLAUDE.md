@@ -2,12 +2,48 @@
 
 ## Current State
 - **Version:** 1.108.317 — **CI runs the harness on every change; publishing is a dispatched workflow.** Eight workflows are five (`pr-gate.yml`, `main.yml`, `nightly.yml`, `security.yml`, `release.yml`); every PR-gate job is a REQUIRED check on `main` by name; `enforce_admins` and `strict` are ON; a release is `release.yml` dispatched with a version, Test PyPI first, trusted publishing, post-publish smoke on both OSes. ⚠⚠ **The gate caught its own author four times before it merged** (unformatted scripts, a subprocess without `encoding=`, invalid YAML in `release.yml` found by CodeQL, a venv path uv cannot resolve on windows) and the release pre-flight was wrong twice about a MAIN commit (C-13, C-14: the PR gate's jobs live on the PR's merge ref; the witnesses on main are `main.yml`'s). ⚠ Windows runners are 3x this box on the full tier: a platform-scoped Floor `suite.full_seconds_ci_windows`, not a loosening. ⚠ Also in this release: tied `search_symbols` scores rank by symbol id (harness F-13), the token reference is captured on CI, `types.error_max` and `deps.vuln_max` Floors, `SECURITY.md` reporting policy. Forensics: `docs/cicd/`. [[the-cicd-pipeline-lives-in-docs-cicd]]
-- **Prior (1.108.316):** **A display preference edited the data it was displaying.** The SHARED result cache stored the caller's dict and handed that same dict back (#572, @rknighton), so the dispatcher's metadata step — `meta_fields`, a per-user DISPLAY setting — reached into the session cache and changed what every later caller was served. ⚠⚠ **`meta_fields: []` is the SHIPPED DEFAULT**, so out of the box the second `find_references`/`get_blast_radius` call came back `KeyError: '_meta'` — and the crash was the LOUD case. **`suppress_meta` is a per-CALL argument**, so on an ORDINARY config one call passing it emptied the shared entry and the next caller, who had asked for metadata, was served an empty `_meta`; a partial `meta_fields` does the same by replacement. ⚠⚠ **THE WINDOW IS THE MISS PATH**: both tools rebuild `_meta` from `dict(cached)` on a hit, so a repeat call survives and it is the call that FILLS the cache that hands the dispatcher the stored object — **which is why a two-call reproduction shows the crash and NEITHER quiet case**, and why reproducing the report's own second claim needed the suppressing call moved to position one. ⚠⚠ **FIXED IN THE CACHE, NOT AT THE TWO CALL SITES, and that was the reporter's argument**: `search_symbols` keeps its own cache and had already paid for this TWICE (#377 item 3 for `_meta.verdict`, then #404, also theirs, for the rows) and neither fix reached the shared one — a third per-consumer patch clears both tools today and arms the trap for the tool written next. ⚠ `_isolate` clones CONTAINERS ONLY at unbounded depth: leaves are JSON-serialisable immutables by then, and container-only measured **4.15 ms against `copy.deepcopy`'s 16.58 ms on an 800 KB response**; a rule shaped to today's two callers would be a guard written against a spelling. ⚠ **Identity was never the contract** — seven `is` assertions in `tests/test_result_cache.py` were the defect written down and are `==` now (Practice 9). ⚠ #570's `cached.get("_meta", {})` guard is merged and KEPT; it covers one tool, sees neither quiet case, and is why one non-vacuity arm stays green. [[a-cache-that-returns-its-stored-object]] [[a-guard-written-against-a-spelling]]
-- **Prior (1.108.315):** **A fix for a false positive can install a false negative, and suppression has no symptom.** `find_dead_code`'s `confidence: 1.0` is documented as PROVABLY UNREACHABLE — a claim about the TREE, computed from the INDEX with nothing in between. ⚠⚠ **`encoding/schemas/` is enumerated by `pkgutil.iter_modules(__path__)` at import time**, an edge no static graph can see, so TWELVE live encoders published at 1.0 — and **which three of fifteen escaped depended only on whether a test happened to import the module directly**, i.e. test-authoring habit, published as proof. ⚠⚠ **THE FIRST WORKING DRAFT INSTALLED A FALSE NEGATIVE AND EVERY ASSERTION STAYED GREEN**: matching any `__path__` made `pkgutil.iter_modules(schemas_pkg.__path__)` in a TEST file read as the test directory self-enumerating — **502 files went live**, suppressing every real finding under `tests/`. Only a BARE `__path__`/`__file__`, or a local alias bound to one, names the loader's own package; **the alias IS the motivating case** (`from . import __path__ as pkg_path` one line above the call), so reading only the call argument resolves nothing. ⚠ `_corpus_adequacy.py` reads the disclosures the index already carries and caps at **0.6**, below the 0.8 default, so the default call REFUSES — **`search_text` handled the identical situation correctly on the identical index in the same session**. UNKNOWN caps; NOT APPLICABLE (`no_source_root`, `complete is None`) does not. ⚠⚠ **THE THIRD SURFACE IS THE DESTRUCTIVE ONE**: `check_delete_safe` reaches `safe_to_delete` from a no-refs-at-all fallback **REGARDLESS of the dead-code confidence it just consulted**, then FLOORS it at 0.85 — so capping the report left the delete certified, and the twelve encoders each graded safe. `corpus_inadequate` is classified in `_stop_rule._BOUNDED` and never terminal; only ABSENCE verdicts are replaced. ⚠ `json_passthrough.py` survives as the one likely TRUE positive of the original thirteen — reported, not deleted. [[a-fix-for-a-false-positive-can-install-a-false-negative]] [[a-guard-covered-only-by-positive-tests-can-be-deleted]]
+- **Prior (1.108.316):** **A display preference edited the data it was displaying** (#572, @rknighton): the shared result cache handed back its stored dict, so `meta_fields` (the SHIPPED default `[]`) and per-call `suppress_meta` rewrote what every later caller was served; fixed in the cache, not at the two call sites. Rules: Key Files `storage/token_tracker.py`; forensics: `ISSUE-HISTORY.md` (rotated 2026-09-04).
+- **Prior (1.108.315):** **A fix for a false positive can install a false negative** (#569, #566): `encoding/schemas/` is enumerated at import time, so twelve live encoders published as dead at confidence 1.0, and the first draft of the fix revived 502 files under `tests/` with every assertion green; `check_delete_safe` certified the deletes regardless. Rules: Key Files `tools/_runtime_discovery.py`, `tools/_corpus_adequacy.py`, `tools/check_delete_safe.py`; forensics: `ISSUE-HISTORY.md` (rotated 2026-09-04).
 - **Older releases (1.108.314 and earlier):** see `CHANGELOG.md` (1.108.303-.310 and 1.108.314 in `ISSUE-HISTORY.md`). The 1.108.182 entry ("a stall has a name and a ceiling", #375) and the 1.108.177-.181 #377 hardening arc are there in full.
 - **Tests:** 9241 passed, 19 skipped, **0 failed** (1.108.317, `uv run pytest -n auto`; the skip count is 19 under `uv run` and 13 under `PYTHONPATH=src python -m pytest`, harness F-05) **+ `uv run ruff check src/` clean**, measured on the settled tree after the bump and the rotation. ⚠ **9260 TOTAL, +86 over the .316 line's 9174**: the CI/CD series' guard tests (`test_workflows_pinned`, `test_harness_summary`, `test_security_md_policy`, `test_release_preflight`, `test_search_symbols_tie_order`) plus the harness build's. ⚠ Prior (1.108.316): 9161 passed, 13 skipped, **0 failed** (9174 total **+ `uv run ruff check src/` clean**, measured on the settled tree after the bump and the rotation. ⚠ **9174 TOTAL, +26 over the .315 line's 9148**, and it reconciles EXACTLY: 11 from this release's `tests/test_result_cache_isolation.py`, 2 from @rknighton's merged #570, 7 from #571's `test_kind_enum_is_derived.py`, 5 from `test_savings_usd_basis.py` and 1 from the holdout-artifact gate — four of those five shipped between the two measurements. ⚠ **A delta is only readable when both ends name the same tree**; three commits sat between these two. ⚠ `ruff check tests/` reports 292 PRE-EXISTING errors and is NOT this project's gate; `src/` is. ⚠⚠ **THE ROTATION IS TWO EDITS, NOT ONE** — moving a release out of Current State also moves the "Older releases (X and earlier)" boundary, and `test_claude_md_rotation.py` fails naming both numbers; it caught .311's settled run at `1 failed`. ⚠⚠ **READ THE SKIP COUNT, NOT JUST THE EXIT CODE AND THE TOTAL** — a .305 reproduce came back exit 0 with the total reconciling exactly while 105 tests silently did not execute. Forensics and the correct command: **Reproducing CI's environment**. ⚠⚠ **Compare TOTALS, never passed counts, and NEVER a skip count ACROSS machines** — CI ubuntu skips 26 and windows 19 where this box skips 13, all pre-existing; **the before/after delta on the SAME job is the only signal**. ⚠⚠ **A BACKGROUND-TASK BANNER SAYING "exit code 0" IS NOT A GREEN SUITE** — one run reported exit 0 having never started pytest (`--timeout` plugin absent), and .306 had a banner say exit 0 over a log whose own `EXIT=` line said 1. **Redirect the exit code INTO the log (`{ pytest; echo "EXIT=$?"; } > log`) and grep that line**; a bare `&` does not survive the shell either. ⚠⚠ **A CONTRIBUTOR PR IS TRIAL-MERGED ONTO `main` AND RUN LOCALLY BEFORE THE MERGE** — branch-green is not merged-green and the merge base moves every release. ⚠⚠ **A reproduce that ERRORS in `tests/test_sdist_exclusions.py` is NOT environmental noise** — that file is the sdist CREDENTIAL-LEAK guard (v0.2.6), and it errors at setup when the scratch venv must fetch the build backend with DNS blocked. Re-run it explicitly; never wave it through. ⚠ Prior (1.108.315): 9135 passed, 13 skipped, **0 failed** (9148 total). ⚠ Prior (1.108.314): 9108 total. ⚠ Two full runs contend on the same `~/.code-index` process-lock scopes, the documented cause of .261's 47m outlier, so the 3.13 reproduce runs AFTER the local suite, never beside it.
 - **Python:** >=3.10
 - **Tool count:** 91 visible in `full` / 94 in catalog (front door hidden; counts verified 2026-07-30 from `jcodemunch-mcp surface`, which is the only place to get them — do NOT hand-type this; +1 v1.108.111 `get_parity_map`, +1 v1.108.112 `get_decorator_census`, +1 v1.108.113 `get_architecture_metrics`); `tool_surface=counter` exposes a 3-tool front door (`order`/`menu`/`route`) instead
+
+## How work is done here (2026-09-04)
+
+**Use these; do not improvise the process.** Each one runs the harness at
+the right moments, spawns an independent reviewer, and produces the
+Definition-of-Done checklist itself (`.claude/hooks/dod_checklist.py`), so
+a step cannot be skipped by forgetting it.
+`/feature <desc>` · `/fix-issue <n>` · `/release` · `/benchmark-compare [ref]`
+· `/review [pr|ref] [--merge-check]` · `/triage-issue <n>`.
+Authority, never restated in a command: `docs/standard/STANDARD.md` (what
+good means; the Definition of Done), `docs/harness/ARCHAEOLOGY.md` (why every
+test exists), `docs/cicd/RUNBOOK.md` (what a human does),
+`docs/workflows/DESIGN.md` (what each command does, step by step; §8 is how
+to add one). ⚠ Hooks (`.claude/hooks/`, wired in `.claude/settings.json`)
+refuse a `git commit` that fails the fast tier, a `gh pr create` without a
+full-tier run on THIS tree, and every publish, tag, merge or posting verb;
+those lines are handed to the human in cmd.exe form. ⚠⚠ **`.claude/` is
+TRACKED as of 2026-09-04** except `settings.local.json`, `*.bak` and
+`state/`; the sdist still excludes all of it (the v0.2.6 vector), asserted by
+`tests/test_build.py`, `tests/test_sdist_exclusions.py` and
+`tests/test_workflows_registered.py`. Open findings: `docs/workflows/FINDINGS.md`.
+
+## Inbound: headless work on issues and PRs (2026-09-04)
+
+**`docs/inbound/POLICY.md` is what a headless job may do; `DESIGN.md` is
+each job; `docs/cicd/RUNBOOK.md` section 9 is what a human does.** Nine
+`inbound-*.yml` workflows (DESIGN names each). ⚠⚠
+**Nothing runs until the variable `INBOUND_ENABLED` reads exactly
+`true`**; absent is OFF, read first and again before every first write.
+⚠⚠ **The model never holds a token that can write**: model jobs run on
+the read-only `GITHUB_TOKEN` and write a file; a no-model job verifies it
+and writes with the App, to be confined by a ruleset to `inbound/**` and
+`inbound-ledger` (RUNBOOK 9's once-only setup). Nothing headless merges, tags, publishes, closes, or
+touches POLICY 4.4's never-touch list (this file included); every drafted
+reply waits for a human `approved: true`. Open findings (the human setup
+steps IN-3/4/6/8; IN-15): `docs/inbound/FINDINGS.md`.
 
 ## CI/CD: the harness's judgment on every change (2026-09-04)
 
@@ -52,13 +88,7 @@ entry naming the lesson and the replacement assertion**, or
 design.** ⚠⚠ **Never copy a figure** from the standard, the archaeology or
 here: tool counts, ratios, token weights, latencies and test totals are
 recomputed by each block's Method line and stamped with commit and date.
-⚠ **Required status checks on `main` (2026-09-03): `license/cla`, `lint`,
-`Retrieval-quality gate`, `Harness fast tier` and all 8 `test (os, py)` legs.**
-A renamed job name silently stops being required; the protection query in
-policy 3d lists what is enforced, and **`uv run python scripts/release_preflight.py`
-is the release gate**: it reads those contexts against HEAD's check-runs and
-fails on a missing run, so a rename shows up there before it ships on red.
-Run it after the push in release step 3, before anything irreversible. Open findings: `docs/harness/FINDINGS.md`.
+⚠ **Required status checks on `main` are the PR gate's job names** (2026-09-04, RUNBOOK §8 is the one `gh api` call that lists them; the 2026-09-03 list of `lint`/`Retrieval-quality gate`/`test (os, py)` is retired). A renamed job silently stops being required; `uv run python scripts/release_preflight.py` reads the live contexts and fails on a missing run. Open findings: `docs/harness/FINDINGS.md`.
 
 ## Key Files
 
@@ -585,6 +615,21 @@ Each names a date to grep for in `ISSUE-HISTORY.md`.
   different properties**: `verify_package_integrity()` asks which distribution
   the running module came from and would certify a fourteen-release-old install.
   [[grep-a-persisted-field-for-its-readers]]
+- **A gate's exit status is never the left side of a pipe.** 09-04
+  (inbound item 6): `python gate.py ... | tee out; rc=$?` records tee's status
+  under Actions' default `bash -e`, so every decline the pre-flight computed
+  was ignored and the model would have run. The reviewer named one site; the
+  ratchet (`test_no_pipe_hides_a_gate_exit_status`) found four more across
+  the stack. ⚠ **Its first draft matched per PHYSICAL line and stayed green
+  with the pipe back**, because the invocation and `| tee` sat on different
+  `\`-continued lines; normalise the text the way the shell does before
+  scanning it. [[a-trailing-command-hides-pytests-exit-code]]
+- **A default argument bound at import pins the wrong repo.** 09-04 (inbound
+  items 5 and 6): `def f(cwd: Path = ROOT)` captured the module's own
+  checkout at `def`, so a test that patched `ROOT` to a scratch repo still
+  ran git in `C:\MCPs\jcodemunch-mcp`; bit twice in one afternoon and only
+  the end-to-end arm saw it. Default to `None`, resolve at call time.
+  [[a-default-argument-bound-at-import-pins-the-wrong-repo]]
 
 ## Issue + release policy (2026-07-28)
 
@@ -784,54 +829,36 @@ thing we test is not the thing they do.
 ## Registry verification reads a NESTED row (2026-08-27)
 
 ⚠⚠ **The MCP registry API nests each row as `{server: {...}, _meta: {...}}`**
-(schema `2025-12-11`). `name`, `version` and `packages[]` sit under `server`;
-`isLatest` and `publishedAt` sit under
-`_meta["io.modelcontextprotocol.registry/official"]`. **A flat `row["name"]`
-read returns ZERO rows on a publish that completely succeeded** — measured
-minutes after `mcp-publisher` confirmed 1.108.301, where the flat parse found
-0 of 45 rows and the nested parse found all 45 with `isLatest: 1.108.301`.
-
-⚠⚠ **This is a SECOND false negative on top of the known paging trap, and
-unlike that one it SURVIVES `&limit=100`** — so the documented remedy does not
-help and the symptom is indistinguishable from a failed publish. **Never
-re-publish on a zero-row read; fix the parse.** Also confirm
-`server.packages[].version` advanced, not only `server.version` — an entry can
-move one and not the other.
+(schema `2025-12-11`): `name`, `version`, `packages[]` under `server`;
+`isLatest`, `publishedAt` under `_meta["io.modelcontextprotocol.registry/official"]`.
+**A flat `row["name"]` read returns ZERO rows on a publish that completely
+succeeded**, and unlike the paging trap it SURVIVES `&limit=100`. **Never
+re-publish on a zero-row read; fix the parse.** Confirm
+`server.packages[].version` advanced, not only `server.version`.
+`scripts/registry_verify.py` is the parse (`release.yml` runs it; the
+2026-08-27 measurements are in `ISSUE-HISTORY.md`).
 
 ⚠⚠ **THE PUBLISH LINE IS HANDED OVER IN cmd.exe FORM. ONE FORM, NO MENU.**
-jjg is NEVER at a Bash prompt — stated flatly 2026-09-02 (*"We've danced this
-dance a thousand times"*) after the skill's `/c/...` "default route" was handed
-over and died on "The system cannot find the path specified". Literal paths
-only: no `~`, no `%USERPROFILE%`, no `$env:USERPROFILE`.
+jjg is NEVER at a Bash prompt (stated flatly 2026-09-02). Literal paths only:
+no `~`, no `%USERPROFILE%`, no `$env:USERPROFILE`. The `!` prefix runs Git
+Bash and that is not the rule: **a mechanism is not a habit.** A line that
+must run through `!` is a tool call to make, not a paste to hand over.
 
 ```
 cd /d C:\MCPs\jcodemunch-mcp && "C:\Users\j\mcp-publisher.exe" login github && "C:\Users\j\mcp-publisher.exe" publish
 ```
 
-⚠⚠ **The `!` prefix DOES run Git Bash, and that is not the rule.** The
-2026-09-01 revision reasoned from the mechanism — `!` is bash, so write bash —
-and inverted the practice, because the premise it needed was which prompt jjg
-ACTUALLY USES and nobody had asked. **A mechanism is not a habit.** A line that
-must genuinely run through `!` is a tool call to make, not a paste to hand over.
-⚠ Offering three labelled forms is not thoroughness; it is the indecision that
-picked the wrong one. ⚠ This lives HERE because the skill is gitignored and a
-correction there is gone on a fresh checkout — the same reason the registry note
-below does.
-
-⚠ **The release checklist itself lives at `.claude/skills/release/SKILL.md`,
-which is GITIGNORED** (`.gitignore:58`, the v0.2.6 credential-leak fix, with
-the matching sdist exclusion asserted by `tests/test_sdist_exclusions.py`). So
-corrections there are MACHINE-LOCAL: not in git, not in CI, gone on a fresh
-checkout. That is why this note is here instead. **Do not un-ignore `.claude/`
-to fix that** — it reintroduces the vector that got five releases yanked.
+⚠ The release skill (`.claude/skills/release/SKILL.md`) is TRACKED in this
+repo since 2026-09-04 (DESIGN D1/D2); its publish half is superseded by
+`release.yml` and says so at the top. Until then it was gitignored and every
+correction to it was machine-local, which is why the rules above live here.
 
 ## Reproducing CI's environment (release step 2c)
 
-⚠⚠ **The release checklist lives in `.claude/skills/release/SKILL.md`, which is
-GITIGNORED, so a correction there is machine-local and gone on a fresh
-checkout.** This is the copy that survives, and
-`tests/test_ci_env_reproduce_command.py` binds it to the workflow so the two
-cannot drift apart unnoticed.
+⚠ The full tier (`uv run python -m harness full`) is the command now; this
+block stays because `tests/test_ci_env_reproduce_command.py` binds it to
+`pr-gate.yml`'s install line, and because the lesson below is the one that
+made the tier necessary.
 
 ```bash
 uv sync --locked --group dev --extra watch --python 3.13

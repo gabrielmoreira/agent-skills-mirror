@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Storage Utilization"
+  short_description: "Analyze storage utilization from capacity, occupied inventory..."
+  default_prompt: "Use $analyze-storage-utilization to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

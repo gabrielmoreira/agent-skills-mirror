@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagnose Picking Bottleneck"
+  short_description: "Diagnose picking bottlenecks from productivity, travel, reple..."
+  default_prompt: "Use $diagnose-picking-bottleneck to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

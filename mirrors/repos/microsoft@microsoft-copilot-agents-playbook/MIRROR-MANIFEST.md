@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/microsoft-copilot-agents-playbook` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `microsoft/microsoft-copilot-agents-playbook` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/microsoft-copilot-agents-playbook` — 26 default patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`01-extend/demo-kitty-explain/kitty-explain/SKILL.md`](01-extend/demo-kitty-explain/kitty-explain/SKILL.md) |
+| 2 | ✓ | [`04-evaluate/demo-chef-agent/Chef-Agent-Initial/AGENTS.md`](04-evaluate/demo-chef-agent/Chef-Agent-Initial/AGENTS.md) |
+| 3 | ✓ | [`04-evaluate/demo-chef-agent/Chef-Agent-Initial/CLAUDE.md`](04-evaluate/demo-chef-agent/Chef-Agent-Initial/CLAUDE.md) |
+| 4 | ✓ | [`04-evaluate/demo-chef-agent/Chef-Agent-Simple/AGENTS.md`](04-evaluate/demo-chef-agent/Chef-Agent-Simple/AGENTS.md) |
+| 5 | ✓ | [`04-evaluate/demo-chef-agent/Chef-Agent-Simple/CLAUDE.md`](04-evaluate/demo-chef-agent/Chef-Agent-Simple/CLAUDE.md) |
 
 ---
 

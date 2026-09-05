@@ -1,0 +1,4 @@
+interface:
+  display_name: "Baking Structure"
+  short_description: "Diagnose baked texture, crumb, rise, hydration, gluten, leavening, binders, and doneness."
+  default_prompt: "Use $baking-structure for baked-good structure, quick breads, cakes, dough texture, crumb defects, hydration, gluten, leavening, binders, and bake-through troubleshooting."

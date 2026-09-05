@@ -72,14 +72,20 @@ explicitly blocked, unshipped, or pending. Test advisory liveness across later
 fully-due windows, and leave current thresholds in the owning implementation
 rather than copying them into this file.
 
-Synchronous Claude Code/Codex lifecycle hooks must call a fixed direct
-interpreter selected by the owning installer or wrapper. Do not register a
-Python hook through a package manager, generic interpreter dispatcher, or
-`.py` shebang lookup: a shared environment/cache lock can stall every prompt or
-tool boundary. Explicit maintenance, retrieval, validation, and test commands
-may still use their declared `uv` project; the runtime boundary is the rule.
-The concrete prior-work wrapper and profile-converger registration live in
-their respective Skills rather than being copied here.
+Synchronous Claude Code/Codex lifecycle hooks and background services
+(LaunchAgents included) must call a fixed direct interpreter **owned by the
+installer that writes it**. Do not register a Python entry point through a
+package manager, generic interpreter dispatcher, or `.py` shebang lookup: a
+shared environment/cache lock can stall every prompt or tool boundary, and a
+bare `python3` resolves under launchd's minimal PATH to the Developer Tools
+stub, which is old enough to reject syntax the script was written in. The
+opposite error costs the same: resolving `sys.executable` bakes in a versioned
+path another product owns, so the job dies silently when that product upgrades.
+Own the literal path, the way `SYSTEM_GIT` is owned. Explicit maintenance,
+retrieval, validation, and test commands may still use their declared `uv`
+project; the runtime boundary is the rule. The concrete prior-work wrapper and
+profile-converger registration live in their respective Skills rather than
+being copied here.
 
 Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
 
@@ -126,7 +132,10 @@ contract and `peer-message/SKILL.md` as the runtime router and owner of stable
 runtime prerequisites plus the peer-cannot-authorize safety boundary. Transport
 and discovery details belong in `peer-message/references/protocol-and-discovery.md`;
 current product availability, provenance, and inbound-control mechanics belong in
-`peer-message/references/official-feature.md`. Keep implementation, CLI help,
+`peer-message/references/official-feature.md`; reply addressing, payload structure,
+delivery-status language, and the two verification contracts that decide what a peer
+assertion or a peer denial is worth belong in
+`peer-message/references/coordination-and-learning-loop.md`. Keep implementation, CLI help,
 tests, and those owners aligned; README and changelog entries should point to
 them instead of restating volatile protocol facts. The repository-wide
 local-source activation contract below still applies—never hand-create Codex
@@ -370,6 +379,23 @@ This applies when you change ANY file under a skill directory:
 - Breaking changes (renamed commands, removed features) → bump **MAJOR** (1.0.1 → 2.0.0)
 
 **Pre-commit check:** Before committing, run `git diff --name-only` and verify: for every `skill-name/` directory that appears, `marketplace.json` also has a version bump for that skill's `plugins[].version`.
+
+**Read the baseline version from an immutable ref, never from the working tree.**
+In a shared checkout `marketplace.json` may already carry a parallel session's
+in-flight bump — staged or merely saved — and `git status` looks normal either
+way, so a version computed from the working copy silently inherits their number
+as its starting point:
+
+```bash
+git show origin/main:.claude-plugin/marketplace.json   # baseline to bump FROM
+```
+
+This is what makes the check above decidable. `git diff --name-only` tells you
+*which* skills changed; only an immutable ref tells you what their versions were
+before anyone started editing. (2026-09-04: a bump computed from the working
+tree adopted another session's staged `peer-message` 1.1.1→1.2.0 as its own
+baseline. Every status-shaped signal stayed green; a CHANGELOG anchor assertion
+was the only thing that caught it.)
 
 ## Available Skills
 

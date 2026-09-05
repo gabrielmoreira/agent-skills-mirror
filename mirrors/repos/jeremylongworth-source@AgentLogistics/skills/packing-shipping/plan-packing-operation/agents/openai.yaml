@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Packing Operation"
+  short_description: "Plan packing work from order profile, product attributes, pac..."
+  default_prompt: "Use $plan-packing-operation to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

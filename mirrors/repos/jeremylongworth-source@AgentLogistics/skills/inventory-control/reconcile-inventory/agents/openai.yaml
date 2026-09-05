@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reconcile Inventory"
+  short_description: "Reconcile inventory by comparing counts, system balances, tra..."
+  default_prompt: "Use $reconcile-inventory to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

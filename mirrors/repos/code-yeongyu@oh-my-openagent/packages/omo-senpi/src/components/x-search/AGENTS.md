@@ -24,9 +24,9 @@ Registration runs at **extension load**, not `session_start`. Senpi builtin exte
 - Missing file: `XAI_API_KEY` (trimmed, non-empty) is enough.
 - File present: the `xai` entry's `type` must be `oauth` or `api_key`. Invalid JSON, a missing `xai` object, or any other `type` fails closed **even when `XAI_API_KEY` is set**.
 
-On skip, the component logs `x-search skipped: no xAI credential` and registers nothing. On success it registers the tool and contributes the skill path via `pi.on("resources_discover", () => ({ skillPaths: [...] }))`, so a machine without xAI never pays for the skill in the skills index.
+Both outcomes are expected states, so they log on `ctx.logger.debug?.` (`x-search skipped: no xAI credential` / `x-search registered`), never `info`: the default `ComponentLogger` writes `info` to `console.info`, and components register before the TUI takes over stdout, so an `info` line greets the user on every startup. On success it registers the tool and contributes the skill path via `pi.on("resources_discover", () => ({ skillPaths: [...] }))`, so a machine without xAI never pays for the skill in the skills index.
 
-`resolveXSearchSkillPath` prefers `plugin/skills-conditional/x-search/SKILL.md` (from the bundled `plugin/extensions/omo.js` URL) and falls back to `./skill/SKILL.md` for source-tree runs. `plugin/scripts/stage-x-search-skill.mjs` copies the source into `skills-conditional/`; that directory is in the plugin `files` list but **must not** join `pi.skills`.
+`resolveXSearchSkillPath` prefers `plugin/skills-conditional/x-search/SKILL.md` (from the bundled `plugin/extensions/omo.js` URL), falls back to `./skill/SKILL.md` for source-tree runs, and returns `undefined` when neither exists — from the bundle the fallback would be `plugin/extensions/skill/SKILL.md`, which senpi reports as `skill path does not exist`. With no resolvable skill the tool still registers, no `resources_discover` handler is attached, and one `warn` names the broken payload. `plugin/scripts/stage-x-search-skill.mjs` copies the source into `skills-conditional/` (into `$OMO_SENPI_PLUGIN_OUTPUT` for staging builds); that directory is in the plugin `files` list, in the payload allowlists of `script/build-omo-native.ts` and `script/build-omo-binary.ts`, and in the required-artifact lists — but **must not** join `pi.skills`.
 
 Per-call auth is independent of the load-time gate: `execute` resolves the bearer through `ctx.modelRegistry` (store first, then `XAI_API_KEY`) so a mid-session OAuth refresh is picked up. Do not cache the token at register time.
 
@@ -86,5 +86,7 @@ Query recipes, lane parity, and cost accounting live in `packages/omo-senpi/scri
 - Do not add `omo.json` keys or a disable flag for this component; credential presence is the gate.
 - Do not register on `session_start`; tool_search would miss the tool for the first session.
 - Do not put `x-search` under `plugin/skills/` or `pi.skills`; that loads the skill on machines with no xAI account.
+- Do not log registration outcomes at `info`; they print to the terminal at extension load. Use `debug?.`.
+- Do not return an unchecked path from `resolveXSearchSkillPath`; an advertised missing path becomes a startup skill-conflict warning.
 - Do not log, print, or persist bearer tokens, `auth.json` bodies, or `XAI_API_KEY`.
 - Do not cache the bearer at registration; resolve it per call through the live registry.

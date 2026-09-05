@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Cycle Count Program"
+  short_description: "Design cycle count programs from inventory classes, risk, cou..."
+  default_prompt: "Use $design-cycle-count-program to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

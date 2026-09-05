@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Overtime Requirements
+short_description: Analyze overtime requirements from workload, staffing, capacity, deadlines, constraints, and supplied policy boundaries.
+default_prompt: Use $analyze-overtime-requirements to produce a source-backed warehouse labor or operating-planning output with calculations where relevant, evidence boundaries, and qualified-review requirements.

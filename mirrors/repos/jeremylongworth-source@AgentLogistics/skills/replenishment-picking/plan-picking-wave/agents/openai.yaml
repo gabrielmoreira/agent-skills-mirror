@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Picking Wave"
+  short_description: "Plan picking waves from orders, cutoffs, labor, equipment, zo..."
+  default_prompt: "Use $plan-picking-wave to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

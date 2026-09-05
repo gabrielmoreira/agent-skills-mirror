@@ -127,7 +127,7 @@ the dashboard artifact validators in the same change.
 | PR | `trigger_ci` | Post `/azp run` to request an Azure Pipelines run when live checks are failed, cancelled, timed out, stale, or missing. | Exact comment body `/azp run`; current live head/check state displayed to the maintainer; explicit confirmation before posting. | Posting while all checks pass, treating CI as a substitute for review/build evidence, or auto-posting without a maintainer click. |
 | PR | `merge_pr` | Squash-merge an approved PR after review and CI are complete. | Current live head, at least one current approval, passing checks, clean GitHub merge state, and explicit confirmation immediately before merging. | Automatic merging, merging a draft, merging stale data, or merging without revalidating approval, CI, and mergeability. |
 | Issue | `request_info` | Ask the reporter for specific missing evidence. | An issue-specific upstream comment that summarizes the relevant facts already supplied, explains why they are insufficient, asks for exact missing evidence, and gives the established collection method when one exists (for example, `/bugreport` for a fresh PowerToys diagnostic ZIP). | "Not now", wait, monitor, a generic checklist, or "send logs/more information" without explaining the gap. |
-| Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
+| Issue | `approve_design` | Approve/start a fork-side fix plan after design convergence. Pulse also derives a local-agent implementation prompt from the same public artifact. | Detailed design artifact and fork issue/trace for the fix workflow. | A speculative or incomplete design. |
 | Issue | `post_comment` | Post a close, duplicate, handled, out-of-scope, or maintainer-direction comment. | Specific rationale and linked duplicate/fix/ownership evidence when applicable. | Silent close, vague "won't fix", or no-op status comments. |
 | Issue | `open_upstream_pr` | Open the completed fork fix upstream. | Fork PR/head, implementation evidence, and approval gate. | Opening without explicit approval or without a reviewed fork fix. |
 
@@ -353,11 +353,28 @@ state.
 
 ### Fast issue judgment
 
-Every open `Issue-Bug` issue with no `judgment`, or with live `updatedAt` newer
-than `source_updated_at`, receives a lightweight judgment during the run. This
-pass is deliberately cheaper than `powertoys-issue-to-design`: inspect the
-body, latest comments, labels, assignees, linked PRs/issues, and obvious
-repository ownership signals, then emit one of:
+Before selecting issue work, enumerate the contract/freshness queue:
+
+```powershell
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Get-StaleIssueTriageQueue.ps1" `
+  -Dashboard $Dashboard -AsJson
+```
+
+Every returned issue must receive the lightweight correction pass during the
+run. Re-run the command before publication and report any remaining entries as
+explicitly deferred; do not count them as updated or action-ready.
+
+Every open `Issue-Bug` issue with no `judgment`, with live `updatedAt` newer
+than `source_updated_at`, or whose artifact fails the complete current
+schema-v5 contract receives a lightweight judgment during the run. Contract
+failure includes missing issue context, an invalid fix-assessment status,
+missing proposed fixes, missing confidence, a proposed fix without
+`approve_design`, or a yellow/red fix without matching `request_info` and
+information gaps. Recently generated timestamps never exempt these bugs from
+re-triage. This pass is deliberately cheaper than `powertoys-issue-to-design`:
+inspect the body, latest comments, labels, assignees, linked PRs/issues, and
+obvious repository ownership signals, then emit one of:
 
 | `judgment.status` | Dashboard result |
 | --- | --- |
@@ -456,13 +473,26 @@ The editable `request_info` comment and display-only context must agree:
 `issue_context.information_gaps`, and any gap whose `how_to_collect` names
 `/bugreport` must use `/bugreport` in the proposed comment.
 
-When the evidence supports it, emit multiple issue actions rather than a single
-default request-info path: an `approve_design` action for the best currently
-supportable fix plan, plus a `request_info` action that asks only for evidence
-that would materially improve or disprove that plan. The display-only
-`proposed_fixes[].confidence` is the canonical score shown by Pulse. Prefer
-this split for vague or long issues where the discussion already narrows the
-component but still lacks a decisive diagnostic.
+Every `fix_assessment.status=proposed` artifact must include an
+`approve_design` action so the maintainer can either approve the fork-side
+workflow or copy an artifact-specific implementation prompt for a local
+Copilot agent. Pulse derives that prompt from the issue identity,
+`issue_context`, `proposed_fixes`, and the implementation-grade `design` when
+present. Copying the prompt is display-only: it requires no PAT and performs no
+GitHub write.
+
+Every yellow or red proposed fix must additionally include a targeted
+`request_info` action and one or more matching
+`issue_context.information_gaps`. The request asks only for evidence that would
+materially improve or disprove the current plan. A green plan may omit
+`request_info` only when no material uncertainty remains. The display-only
+`proposed_fixes[].confidence` is the canonical score shown by Pulse.
+
+The emitter must apply this complete contract before marking an open bug
+artifact as publishable. A timestamped but partial artifact is not a valid
+result: hide its actions, mark it for re-triage, and keep it out of
+`artifact_numbers` until it passes schema-v5 context, fix-assessment, confidence,
+and paired-action validation.
 
 When an issue is already clearly reproducible from the public report or
 attachments but does not yet justify a fix design, emit a `reproduce` action
@@ -588,8 +618,11 @@ in-progress, and deferred counts. Run the `-FailOnStale` gate only in explicit
 drain mode after the drain attempt finishes.
 
 Issue **judgment and fix coverage** are exhaustive for every open bug lacking a
-current schema-v5 assessment, as well as new/changed bugs. Normal-mode full design
-work is bounded: rank `actionable_design` judgments by confidence,
+fully valid current schema-v5 artifact, as well as new/changed bugs. Build and
+report this invalid-artifact re-triage queue separately from the bounded
+full-design queue. The lightweight correction pass is not limited by
+`$DesignBatchSize`; only implementation-grade design expansion is bounded.
+Normal-mode full design work is bounded: rank `actionable_design` judgments by confidence,
 reproducibility, scope, recency, and lack of existing ownership, then run at
 most `$DesignBatchSize` (default 4) through `powertoys-issue-to-design`; leave
 the rest queued with explicit `Design fix` actions. Drain mode removes this
@@ -918,6 +951,8 @@ Return one concise report containing:
 1. PR coverage: total eligible, current, fully reviewed, context-revalidated,
    waiting/owned/excluded, and still queued;
 2. issue judgments by status and full designs completed/deferred;
+   include the number of contract-invalid bugs discovered, corrected, and
+   still queued so a recent but malformed artifact cannot be reported as done;
 3. stale workflows resumed/rerun and their resulting stages;
 4. closed/superseded/author-waiting items;
 5. counts in the regenerated board and the published Pages URL;

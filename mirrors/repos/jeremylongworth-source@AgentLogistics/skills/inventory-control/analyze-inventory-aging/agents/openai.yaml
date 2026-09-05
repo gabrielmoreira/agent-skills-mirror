@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Inventory Aging"
+  short_description: "Analyze inventory aging from receipt dates, movement history..."
+  default_prompt: "Use $analyze-inventory-aging to produce an inventory-control output with source records, checks, calculations, exceptions, and review boundaries."

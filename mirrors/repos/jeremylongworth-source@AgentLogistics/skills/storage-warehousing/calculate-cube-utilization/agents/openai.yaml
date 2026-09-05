@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Cube Utilization"
+  short_description: "Calculate cube utilization from usable cube, occupied cube, S..."
+  default_prompt: "Use $calculate-cube-utilization to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

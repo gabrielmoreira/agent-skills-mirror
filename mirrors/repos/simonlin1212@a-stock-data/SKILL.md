@@ -1,17 +1,23 @@
 ---
 name: a-stock-data
-description: 当任务需要写代码实际获取A股数据时使用——拉取行情/K线(mootdx+腾讯+百度)、研报(东财+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业)、资金面(融资融券/大宗/股东户数/分红/资金流)、新闻、财务三表/F10、公告(巨潮)、打板(涨停池/连板/炸板率/重点监控池/日内异动)、ETF期权(T型报价/希腊字母/IV)、舆情互动(互动易/热榜/人气榜)、筹码分布(获利比例/成本区间)、复权因子、估值历史(PE/PB/PS+换手率+ST)、申万行业变迁史、宏观(社融/PMI)等真实数据。十一层数据源·54端点(含3官方备胎)·内嵌全部可运行代码，自包含零依赖外部文件；优先用通达信(mootdx)/腾讯(不封IP)，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
+description: 当任务需要写代码实际获取A股数据时使用——拉取行情/K线(mootdx+腾讯+百度)、研报(东财+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业)、资金面(融资融券/大宗/股东户数/分红/资金流)、新闻、财务三表/F10、公告(巨潮)、打板(涨停池/连板/炸板率/重点监控池/日内异动)、ETF期权(T型报价/希腊字母/IV)、舆情互动(互动易/热榜/人气榜)、筹码分布(获利比例/成本区间)、复权因子、估值历史(PE/PB/PS+换手率+ST)、申万行业变迁史、宏观(社融/PMI)等真实数据。十二层数据源·60端点(含5备胎)·指数成分/权重/估值/交易日历/官方两融/北交所行情·内嵌全部可运行代码，自包含零依赖外部文件；优先用通达信(mootdx)/腾讯(不封IP)，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.7.2
+version: 3.8.0
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.7.2
+# A股全栈数据工具包 V3.8.0
 
-十一层数据架构，54 个端点实测可用（51 主端点 + 3 官方备胎，2026-08 验证），覆盖主板/中小板/科创板/ST。每类数据在「备用源速查」列有独立备胎，主源被封时可降级。
+十二层数据架构，60 个能力端点（55 主端点 + 5 备胎）、22 个来源。V3.8 新增的六个入口于 2026-09-05 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+
+> **V3.8.0（官方指数与交易基础数据，2026-09-05）：** 新增 §12 指数与交易日历层，
+> 中证/国证成分与权重、中证 PE/股息率、深交所整月日历，以及沪深官方两融、北交所行情两个备胎。
+> 11→12 层，54→60 个能力入口，19→22 个来源（新增中证、国证、北交所）；无新增安装依赖，保留 Python 3.9。
+> 国证当前文件是月末快照；历史调样、集合竞价、需 Key 的同花顺增强 API 暂不算已支持。
+> 实测记录、候选取舍和边界见 [本次数据源整合记录](docs/source-integration-v3.8.0.md)。
 
 > **V3.7.2（北交所号段判定对齐，2026-09-02）：**`_natural_market()`（`norm_ticker()` 校验显式前缀是否自相矛盾）与 §8.5 `_anomaly_market()`（异动记录→交易所）此前只枚举 `43/83/87` 三个前两位与 `920`，而 `get_prefix()` 用 `startswith(("4", "8"))` + `startswith("92")` 覆盖整个北交所号段——同一份文件两套规则（#51）。现统一为 `startswith(("4", "8", "92"))`。实测（2026-09-01）北交所在市代码只有 `43x/83x/87x/920x` 四段、`921` 段尚未启用，故**不改变任何现有标的的判定结果**，修的是一致性与前向兼容。
 >
@@ -150,6 +156,15 @@ ETF期权层 (V3.3 新增)
 宏观层 (V3.7 新增)
 ├── 人民银行社融   → 社会融资规模增量 月度12列 (pbc.gov.cn，三级跳取 xls 附件)
 └── 国家统计局PMI  → 制造业/非制造业/综合 + 大中小型企业分档 (stats.gov.cn)
+
+指数与交易日历层 (V3.8 新增)
+├── 中证指数       → 当前成分 / 月末权重 / 近期 PE 与股息率
+├── 国证指数       → 最近公布的成分与权重（月末快照）
+└── 深交所日历     → 官方整月交易标志（完整性校验）
+
+官方备胎扩展 (V3.8 新增)
+├── 上交所/深交所  → 两融明细（分交易所调用，金额元、余量股/份）
+└── 北交所         → 当前行情与五档快照（必须核对交易日）
 ```
 
 ## 端点路由速查（按需定位，不必通读全文）
@@ -204,6 +219,12 @@ ETF期权层 (V3.3 新增)
 | 10.2 | `ths_hot_list()` / `em_hot_rank()` / `em_hot_concept(code)` | 热榜/人气榜/概念命中 | 同花顺+东财 |
 | 11.1 | `pboc_social_financing(year)` | 社会融资规模增量（月度12列） | 人民银行 |
 | 11.2 | `nbs_pmi()` | 制造业/非制造业/综合 PMI + 大中小型企业 | 国家统计局 |
+| 12.1 | `index_constituents(index_code, provider)` | 最近公布的沪深北指数成分；csi/cni 显式选源 | 中证/国证 |
+| 12.2 | `index_weights(index_code, provider)` | 最近公布的指数权重（百分数），保留真实日期 | 中证/国证 |
+| 12.3 | `index_valuation(index_code)` | 两种口径 PE、股息率；不含 PB | 中证 |
+| 12.4 | `trading_calendar(year, month)` | 官方整月交易日历 | 深交所 |
+| 官方备胎扩展 | `margin_trading_backup(date, exchange, code=None)` | 单所两融明细（先执行 §12 helper） | 上交所/深交所 |
+| 官方备胎扩展 | `bse_quote_backup(date, code=None)` | 北交所全板/单票当前快照（先执行 §12 helper） | 北交所 |
 | 备用源速查 | `dragon_tiger_backup` / `fund_flow_backup` / `announcements_backup` | 龙虎榜/资金流/公告官方备胎（主源被封时降级） | 交易所官方+新浪+东财(沪市公告) |
 | 估值公式 | `forward_pe` / `pe_digestion` / `calc_peg` / `full_valuation(code)` | 前向PE / PE消化时间 / PEG / 单票估值全景 | 本地计算 |
 
@@ -222,7 +243,7 @@ ETF期权层 (V3.3 新增)
 
 ### 东财只用于它「独有、别处拿不到」的数据
 
-下列数据**只有东财有**，通达信/腾讯/新浪都没有，必须用东财（但要限流）：
+下列能力默认走东财（须限流）；已有交易所备胎的龙虎榜、两融可按文末速查表切换，不应视为东财独占：
 
 > 龙虎榜席位 · 全市场龙虎榜 · 限售解禁日历 · 融资融券 · 大宗交易 · 股东户数 · 分红送转 · 个股资金流向（分钟/日级）· 行业板块排名 · 研报列表/PDF · 个股新闻 · 全球资讯
 
@@ -276,6 +297,8 @@ ETF期权层 (V3.3 新增)
 
 ## When to Activate
 
+- 用户需要**指数成分、指数权重、指数 PE / 股息率、官方交易日历、沪深官方两融或北交所行情备份**（V3.8）。
+
 - 用户要查 A 股个股估值（一致预期 / PE / PEG / PE消化）
 - 用户要拉实时行情（价格 / 五档盘口 / K线 / 涨跌停价）
 - 用户要搜研报（按主题 / 按标的 / 按行业 / 下载PDF）
@@ -317,8 +340,8 @@ pip install mootdx requests pandas stockstats numpy baostock xlrd openpyxl
 | stockstats | any | 技术指标计算（RSI/MACD/BOLL等） |
 | numpy | any | §4.6 筹码分布的网格计算 |
 | baostock | >= 0.8 | §6.5/§6.6 估值历史·换手率·停牌·ST·退市日（TCP，免注册免 key；**不支持北交所**） |
-| xlrd | >= 2.0 | 读 `.xls`（§6.7 申万行业分类） |
-| openpyxl | any | 读 `.xlsx`（§11.1 人民银行社融） |
+| xlrd | >= 2.0 | 读 `.xls`（§6.7 申万行业分类、§12 中证） |
+| openpyxl | any | 读 `.xlsx`（§11.1 社融、§12 国证、深交所两融） |
 
 > **架构：** 除 mootdx 与 baostock（均为 TCP 客户端库）外，所有数据源均为直连 HTTP API，不经第三方数据封装。每个 HTTP 端点的底层 URL/参数完全暴露，方便调试和定制。
 
@@ -3705,6 +3728,228 @@ print(p["period"], "制造业", p["manufacturing_pmi"], "非制造业", p["non_m
 
 ---
 
+## Layer 12: 指数与交易日历（V3.8.0）
+
+补齐指数成分、权重、指数估值与官方交易日历。以下完整代码块可独立执行，仅使用已有的
+`requests pandas xlrd openpyxl`；不依赖前面章节的股票代码推断规则。指数代码必须是 **6 位纯数字**，
+`provider="csi"` 表示中证，`provider="cni"` 表示国证，不能把股票代码直接当指数查询。
+
+| 函数 | 契约 |
+|---|---|
+| `index_constituents(index_code, provider="csi")` | 官方最近发布的成分快照；中证日度文件、国证月末文件，真实日期在 `date` 列 |
+| `index_weights(index_code, provider="csi")` | 最近公布的权重；`weight_percent=0.433` 表示 **0.433%**，不是 43.3% |
+| `index_valuation(index_code)` | 仅中证公开估值文件：两种股本口径 PE、两种股息率；**不提供 PB、不承诺全历史** |
+| `trading_calendar(year, month)` | 深交所整月日历；逐日返回 `is_open`，不靠工作日推断，也不把未发布月份当休市 |
+
+**日期边界：** 当前成分与权重可能不同日，不能按行号拼接或将月末权重标成今天。
+这些快照不提供历史时点成分；国证的 `download-history` 名字虽带 history，本次接口实际返回
+单个月末快照。历史调样另有接口，暂不纳入本版。调用方应先检查 `date`，做历史回测时不能拿
+当前成分代替当时成分。网络失败、结构变化、重复记录或不完整日历均抛异常，不伪装为空结果。
+
+### 12.1–12.4 自包含实现
+
+<!-- official-data-core:start -->
+```python
+import calendar
+import math
+import re
+from datetime import datetime, timezone
+from io import BytesIO
+
+import pandas as pd
+import requests
+
+
+def _official_code(value):
+    value = str(value).strip()
+    if not re.fullmatch(r"[0-9]{6}", value):
+        raise ValueError("代码必须是 6 位纯数字；指数 provider 与证券交易所不是同一概念")
+    return value
+
+
+def _official_date(value):
+    value = str(value).strip()
+    fmt = "%Y%m%d" if re.fullmatch(r"[0-9]{8}", value) else "%Y-%m-%d"
+    return datetime.strptime(value, fmt).date().isoformat()
+
+
+def _official_number(value, required=False):
+    if pd.isna(value) or str(value).strip() in ("", "-", "--"):
+        if required:
+            raise RuntimeError("官方源缺少必需数值")
+        return None
+    number = float(str(value).replace(",", ""))
+    if not math.isfinite(number):
+        raise RuntimeError("官方源返回非有限数值")
+    return number
+
+
+def _official_get(url, params=None, referer=None):
+    response = requests.get(
+        url, params=params,
+        headers={"User-Agent": "Mozilla/5.0", "Referer": referer or url},
+        timeout=(10, 40),
+    )
+    response.raise_for_status()
+    return response
+
+
+def _official_excel(response):
+    try:
+        frame = pd.read_excel(BytesIO(response.content), dtype=str)
+    except (ValueError, OSError) as exc:
+        raise RuntimeError("官方源未返回可解析的 Excel；可能未发布或响应结构改变") from exc
+    # 两种中证文件的表头空格略有差异，按完整列名去空白后匹配。
+    frame.columns = [re.sub(r"\s+", "", str(c)) for c in frame.columns]
+    return frame
+
+
+def _official_columns(frame, names):
+    missing = set(names) - set(frame.columns)
+    if missing:
+        raise RuntimeError("官方数据列缺失: " + ", ".join(sorted(missing)))
+
+
+def _official_frame(rows, keys, source, url):
+    frame = pd.DataFrame(rows)
+    if frame.empty or frame.duplicated(keys).any():
+        raise RuntimeError("官方数据为空或主键重复，不能当成完整快照")
+    frame["source"] = source
+    frame["source_url"] = url
+    frame["fetched_at"] = datetime.now(timezone.utc).isoformat()
+    return frame.sort_values(keys).reset_index(drop=True)
+
+
+def _official_index_members(index_code, provider, weights):
+    index_code = _official_code(index_code)
+    if provider not in ("csi", "cni"):
+        raise ValueError("provider 必须是 csi（中证）或 cni（国证）")
+    if provider == "csi":
+        kind = "closeweight" if weights else "cons"
+        url = ("https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/file/"
+               f"autofile/{kind}/{index_code}{kind}.xls")
+        response = _official_get(url)
+        data = _official_excel(response)
+        cols = ["日期Date", "指数代码IndexCode", "成份券代码ConstituentCode",
+                "成份券名称ConstituentName", "交易所Exchange"]
+        if weights:
+            cols.append("权重(%)weight")
+    else:
+        url = "https://www.cnindex.com.cn/sample-detail/download-history"
+        response = _official_get(url, {"indexcode": index_code})
+        data = _official_excel(response)
+        cols = ["日期", "样本代码", "样本简称", "权重（%）"]
+    _official_columns(data, cols)
+    rows = []
+    for rec in data.to_dict("records"):
+        if provider == "csi":
+            if str(rec["指数代码IndexCode"]).zfill(6) != index_code:
+                raise RuntimeError("中证返回了不同指数的数据")
+            code = str(rec["成份券代码ConstituentCode"]).zfill(6)
+            exchanges = {"上海证券交易所": "SH", "深圳证券交易所": "SZ", "北京证券交易所": "BJ"}
+            exchange = exchanges.get(rec["交易所Exchange"])
+            if exchange is None:
+                raise ValueError("本端点仅支持沪深北成分，请使用相应市场的数据工具")
+            row = {"date": _official_date(rec["日期Date"]), "index_code": index_code,
+                   "code": _official_code(code), "name": rec["成份券名称ConstituentName"],
+                   "exchange": exchange}
+            weight = rec.get("权重(%)weight")
+        else:
+            # 国证没有交易所列；A 股文件保留六位文本。港股 00700 不能补成 000700/SZ。
+            code = _official_code(rec["样本代码"])
+            exchange = ("SH" if code.startswith("6") else "SZ" if code.startswith(("0", "3"))
+                        else "BJ" if code.startswith(("4", "8", "92")) else None)
+            if exchange is None:
+                raise ValueError("国证该指数包含本端点不支持的证券类型")
+            row = {"date": _official_date(rec["日期"]), "index_code": index_code,
+                   "code": code, "name": rec["样本简称"], "exchange": exchange}
+            weight = rec["权重（%）"]
+        if weights:
+            row["weight_percent"] = _official_number(weight, required=True)
+        rows.append(row)
+    frame = _official_frame(rows, ["date", "code", "exchange"], provider, response.url)
+    if frame["date"].nunique() != 1:
+        raise RuntimeError("成分文件混有多个日期，不能当作单日快照")
+    if weights and (not frame.weight_percent.between(0, 100).all()
+                    or not 99 <= frame.weight_percent.sum() <= 101):
+        raise RuntimeError("权重范围或合计异常；可能文件残缺或不是百分数口径")
+    return frame
+
+
+def index_constituents(index_code, provider="csi"):
+    """最近公布的沪深北成分；date 是源文件日期，不是抓取日。"""
+    return _official_index_members(index_code, provider, weights=False)
+
+
+def index_weights(index_code, provider="csi"):
+    """最近公布的指数权重，weight_percent 单位为百分数。"""
+    return _official_index_members(index_code, provider, weights=True)
+
+
+def index_valuation(index_code):
+    """中证近期 PE/股息率文件；不含 PB，两种股本口径不混用。"""
+    index_code = _official_code(index_code)
+    url = ("https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/file/"
+           f"autofile/indicator/{index_code}indicator.xls")
+    response = _official_get(url)
+    data = _official_excel(response)
+    mapping = {"市盈率1（总股本）P/E1": "pe_total",
+               "市盈率2（计算用股本）P/E2": "pe_calculation",
+               "股息率1（总股本）D/P1": "dividend_yield_total_percent",
+               "股息率2（计算用股本）D/P2": "dividend_yield_calculation_percent"}
+    _official_columns(data, ["日期Date", "指数代码IndexCode", *mapping])
+    rows = []
+    for rec in data.to_dict("records"):
+        if str(rec["指数代码IndexCode"]).zfill(6) != index_code:
+            raise RuntimeError("中证估值文件返回了不同指数")
+        rows.append({"date": _official_date(rec["日期Date"]), "index_code": index_code,
+                     **{dest: _official_number(rec[src]) for src, dest in mapping.items()}})
+    return _official_frame(rows, ["date", "index_code"], "csi", response.url)
+
+
+def trading_calendar(year, month):
+    """深交所完整自然月日历。未发布或缺日抛错，周末调休不视为交易日。"""
+    if type(year) is not int or type(month) is not int or not 1 <= month <= 12:
+        raise ValueError("year/month 必须为整数，month 在 1–12 之间")
+    last = calendar.monthrange(year, month)[1]
+    expected = {datetime(year, month, day).date().isoformat() for day in range(1, last + 1)}
+    url = "https://www.szse.cn/api/report/exchange/onepersistenthour/monthList"
+    response = _official_get(url, {"month": f"{year}-{month}"})
+    data = response.json().get("data")
+    if not isinstance(data, list) or not data:
+        raise RuntimeError("深交所尚未返回该月日历；不能推断全月休市")
+    rows = []
+    for rec in data:
+        if str(rec.get("jybz")) not in ("0", "1") or not rec.get("jyrq"):
+            raise RuntimeError("深交所日历字段异常")
+        rows.append({"date": _official_date(rec["jyrq"]), "is_open": str(rec["jybz"]) == "1"})
+    frame = _official_frame(rows, ["date"], "szse", response.url)
+    if set(frame.date) != expected:
+        raise RuntimeError("日历月份错位或日期不完整，不能继续调度")
+    return frame
+```
+<!-- official-data-core:end -->
+
+```python
+members = index_constituents("000300")
+weights = index_weights("399006", provider="cni")
+valuation = index_valuation("000300")
+days = trading_calendar(2026, 9)
+print(members[["date", "code", "name"]].head())
+print(weights[["date", "code", "weight_percent"]].head())
+print(valuation.tail(1))
+print(days.loc[days.is_open, "date"].tolist())
+```
+
+原始端点的发现与交叉核对参考：
+[AKShare 中证成分](https://github.com/akfamily/akshare/blob/main/akshare/index/index_cons.py)、
+[AKShare 中证估值](https://github.com/akfamily/akshare/blob/main/akshare/index/index_stock_zh_csindex.py)、
+[AKShare 国证](https://github.com/akfamily/akshare/blob/main/akshare/index/index_cni.py)、
+[Qlib 交易日历](https://github.com/microsoft/qlib/blob/main/scripts/data_collector/utils.py)。
+本实现直接读取官方文件/API，不调用上述项目的包装库。
+
+---
+
 ## 估值计算公式
 
 ### 前向PE
@@ -3941,6 +4186,166 @@ if holders:
 
 ---
 
+## 官方两融与北交所行情备胎（V3.8.0）
+
+先执行 Layer 12 的完整自包含代码块，再执行下列代码块。新增两个**能力入口**，按入口计数，
+不将同一函数的交易所路由重复算成端点。使用 `margin_trading_backup("2026-09-03", "SH")`
+或 `"SZ"` 分别取数，`code="600519"` 可在完整快照中筛选个股；未指定代码时包含源侧融资融券标的（也含 ETF）。
+两所发布进度可能不同，不能将单所结果标成沪深全市场。源未发布该日数据时抛错，完整列表中
+个股未命中则返回有列定义的空表。
+
+**单位及字段：** `margin_balance` / `margin_buy` / `short_balance` 为元；
+`short_volume` / `short_sell_volume` 为股或份。上交所 `short_balance` 源值为空时保留为空，
+不以余量乘价格冒充官方金额。该备胎并非东财所有字段的等价替代，深交所不含两种偿还字段。
+
+`bse_quote_backup("2026-09-04", code="920021")` 只接受沪深北中的 **北交所纯 6 位代码**；
+省略 `code` 拉全板。首参是调用方期望的交易日，必须与源侧每行日期一致，返回五档盘快照
+（价格元、量股）、OHLC、成交量额、`pe_source`（官网字段口径未细分，不称 PE-TTM）。
+**这是当前快照，没有历史回填，也未验证盘中更新延迟；不是逐笔 Level-2。**
+
+<!-- official-data-backups:start -->
+```python
+import json
+import time
+
+
+def _official_total(value):
+    if not re.fullmatch(r"[0-9]+", str(value)):
+        raise RuntimeError("官方分页总数必须为非负整数")
+    return int(value)
+
+
+def _official_margin_code(value, exchange):
+    code = _official_code(value)
+    prefixes = ("5", "6", "900") if exchange == "SH" else ("0", "1", "2", "3")
+    if not code.startswith(prefixes):
+        raise ValueError("两融证券代码与请求的交易所不符")
+    return code
+
+
+def margin_trading_backup(trade_date, exchange, code=None):
+    """一次只取一个交易所。未发布抛错；完整源中筛不到 code 才返回空表。"""
+    trade_date = _official_date(trade_date)
+    exchange = str(exchange).upper()
+    if exchange not in ("SH", "SZ"):
+        raise ValueError("exchange 必须为 SH 或 SZ；本函数不覆盖北交所两融")
+    if code is not None:
+        code = _official_margin_code(code, exchange)
+    if exchange == "SH":
+        url = "https://query.sse.com.cn/marketdata/tradedata/queryMargin.do"
+        response = _official_get(url, {
+            "isPagination": "true", "tabType": "mxtype", "detailsDate": trade_date.replace("-", ""),
+            "pageHelp.pageSize": 5000, "pageHelp.pageNo": 1, "pageHelp.beginPage": 1,
+            "pageHelp.cacheSize": 1, "pageHelp.endPage": 1,
+        }, "https://www.sse.com.cn/")
+        page = response.json().get("pageHelp") or {}
+        data = page.get("data")
+        if not isinstance(data, list) or not data or len(data) != _official_total(page.get("total")):
+            raise RuntimeError("上交所该日数据未发布或分页不完整")
+        fields = {"rzye": "margin_balance", "rzmre": "margin_buy", "rqylje": "short_balance",
+                  "rqyl": "short_volume", "rqmcl": "short_sell_volume"}
+        rows = []
+        for rec in data:
+            if _official_date(rec.get("opDate")) != trade_date:
+                raise RuntimeError("上交所两融数据日期不符")
+            if not set(fields).issubset(rec):
+                raise RuntimeError("上交所两融字段发生变化")
+            rows.append({"date": trade_date, "code": _official_margin_code(rec["stockCode"], exchange),
+                         "name": rec.get("securityAbbr"), "exchange": exchange,
+                         **{dest: _official_number(rec[src], required=(src != "rqylje"))
+                            for src, dest in fields.items()}})
+    else:
+        url = "https://www.szse.cn/api/report/ShowReport"
+        response = _official_get(url, {"SHOWTYPE": "xlsx", "CATALOGID": "1837_xxpl",
+                                      "TABKEY": "tab2", "txtDate": trade_date}, "https://www.szse.cn/")
+        data = _official_excel(response)
+        fields = {"融资余额(元)": "margin_balance", "融资买入额(元)": "margin_buy",
+                  "融券余额(元)": "short_balance", "融券余量(股/份)": "short_volume",
+                  "融券卖出量(股/份)": "short_sell_volume"}
+        _official_columns(data, ["证券代码", "证券简称", *fields])
+        rows = [{"date": trade_date, "code": _official_margin_code(str(rec["证券代码"]).zfill(6), exchange),
+                 "name": rec["证券简称"], "exchange": exchange,
+                 **{dest: _official_number(rec[src], required=True) for src, dest in fields.items()}}
+                for rec in data.to_dict("records")]
+    frame = _official_frame(rows, ["date", "code"], "sse" if exchange == "SH" else "szse", response.url)
+    return frame if code is None else frame.loc[frame.code == code].reset_index(drop=True)
+
+
+def bse_quote_backup(trade_date, code=None):
+    """北交所当前全板/单票快照；拒绝用当前数据回填其他交易日。"""
+    trade_date = _official_date(trade_date)
+    if code is not None:
+        code = _official_code(code)
+        if not code.startswith(("4", "8", "92")):
+            raise ValueError("请输入北交所代码（4/8/92 开头）")
+    page_url = "https://www.bse.cn/nq/quotation.html"
+    url = "https://www.bse.cn/nqhqController/nqhq_en.do"
+    raw_rows = []
+    total = None
+    with requests.Session() as session:
+        session.headers.update({"User-Agent": "Mozilla/5.0", "Referer": page_url,
+                                "Accept": "application/json, text/javascript, */*; q=0.01"})
+        # 官网有时设置匿名 Cookie 后 302 回自己；不跟随重定向，避免循环。
+        session.get(page_url, timeout=(10, 40), allow_redirects=False).raise_for_status()
+        for page_number in range(100):
+            form = {"page": page_number, "type_en": '["B"]', "sortfield": "hqzqdm",
+                    "sorttype": "asc", "xxfcbj_en": "[2]", "zqdm": code or ""}
+            response = session.post(url, data=form, timeout=(10, 40), allow_redirects=False)
+            if 300 <= response.status_code < 400:
+                session.get(page_url, timeout=(10, 40), allow_redirects=False).raise_for_status()
+                response = session.post(url, data=form, timeout=(10, 40), allow_redirects=False)
+            response.raise_for_status()
+            if response.status_code != 200:
+                raise RuntimeError("北交所匿名会话尚未建立")
+            payload = response.text.strip()
+            match = re.fullmatch(r"[A-Za-z_$][\w$]*\((.*)\);?", payload, re.S)
+            data = json.loads(match.group(1) if match else payload)
+            if not isinstance(data, list) or len(data) != 1 or not isinstance(data[0].get("content"), list):
+                raise RuntimeError("北交所行情响应结构异常")
+            current_total = _official_total(data[0].get("totalElements"))
+            if total is not None and total != current_total:
+                raise RuntimeError("分页期间北交所记录总数变化，请重试")
+            total = current_total
+            batch = data[0]["content"]
+            if total < 0 or not batch:
+                raise RuntimeError("北交所未返回目标行情或分页提前结束")
+            raw_rows.extend(batch)
+            if len(raw_rows) >= total:
+                break
+            time.sleep(0.2)
+        if len(raw_rows) != total:
+            raise RuntimeError("北交所分页不完整，不能标记全板成功")
+    fields = {"hqjrkp": "open", "hqzgcj": "high", "hqzdcj": "low", "hqzjcj": "close",
+              "hqzrsp": "previous_close", "hqcjsl": "volume", "hqcjje": "amount"}
+    rows = []
+    for rec in raw_rows:
+        if _official_date(rec.get("hqjsrq")) != trade_date:
+            raise RuntimeError("北交所快照不是请求的交易日；本接口不提供历史回填")
+        ticker = _official_code(rec.get("hqzqdm"))
+        if not ticker.startswith(("4", "8", "92")) or (code is not None and ticker != code):
+            raise RuntimeError("北交所返回了请求范围之外的标的")
+        row = {"date": trade_date, "code": ticker, "name": rec.get("hqzqjc"), "exchange": "BJ",
+               "quote_time": str(rec.get("hqgxsj", "")), "pe_source": _official_number(rec.get("hqsyl1")),
+               **{dest: _official_number(rec.get(src), required=True) for src, dest in fields.items()}}
+        for level in range(1, 6):
+            for src, dest in (("hqbjw", "bid_price"), ("hqbsl", "bid_volume"),
+                              ("hqsjw", "ask_price"), ("hqssl", "ask_volume")):
+                row[f"{dest}_{level}"] = _official_number(rec.get(f"{src}{level}"), required=True)
+        rows.append(row)
+    return _official_frame(rows, ["date", "code"], "bse", url)
+```
+<!-- official-data-backups:end -->
+
+```python
+sh_margin = margin_trading_backup("2026-09-03", "SH", code="600519")
+sz_margin = margin_trading_backup("2026-09-03", "SZ", code="000001")
+bj_quote = bse_quote_backup("2026-09-04", code="920021")
+```
+
+端点与字段交叉参考 [CNEquity 两融适配](https://github.com/rootSunc/CNEquity/blob/main/src/cnequity/adapters/exchange/margin_trading.py)
+及 [北交所适配](https://github.com/rootSunc/CNEquity/blob/main/src/cnequity/adapters/bse/daily_quotes.py)。
+本版只参考官方端点与字段契约，数据直接来自交易所。
+
 ## 数据源优先级
 
 | 优先级 | 数据源 | 用途 | 可靠性 | 封IP风险 |
@@ -3958,12 +4363,15 @@ if holders:
 | 11 | **同花顺 basic** (HTTP) | 一致预期EPS | 稳定(需UA) | 低 |
 | 12 | **财联社** (HTTP) | 全市场实时电报 | 稳定 | 低 |
 | 13 | **巨潮 cninfo** (HTTP) | 公告全文检索+下载 | 稳定 | 低 |
-| 14 | **上交所官方** (HTTP，备胎) | 龙虎榜全文/实时五档（主源被封时用） | 稳定（一手权威） | 极低（零鉴权） |
-| 15 | **深交所官方** (HTTP，备胎) | 龙虎榜/公告+PDF/实时五档（主源被封时用） | 稳定（一手权威） | 极低（零鉴权） |
+| 14 | **上交所官方** (HTTP，备胎) | 龙虎榜全文/实时五档/两融明细 | 一手官方源，两融须核对日期与完整性 | 零鉴权，避免高频请求 |
+| 15 | **深交所官方** (HTTP) | 龙虎榜/公告+PDF/实时五档/两融明细/交易日历 | 一手官方源，日历须完整、两融须已发布 | 零鉴权，避免高频请求 |
 | 16 | **baostock** (TCP，V3.7) | 估值历史PE/PB/PS/PCF+换手率+停牌+ST+上市退市日 | 稳定（免注册） | 极低；**不支持北交所** |
 | 17 | **申万研究** (HTTP，V3.7) | 行业分类变迁史（公开 XLS） | 稳定 | 极低（公开文件） |
 | 18 | **人民银行** (HTTP，V3.7) | 社会融资规模增量（月度，2021 年起） | 稳定（官方站） | 极低 |
 | 19 | **国家统计局** (HTTP，V3.7) | PMI 制造业/非制造业/综合+大中小型 | 稳定（官方站） | 极低 |
+| 20 | **中证指数** (HTTP，V3.8) | 指数成分/权重/两种口径 PE 与股息率 | 官方文件，2026-09-05 验证 | 零鉴权，避免高频重复下载 |
+| 21 | **国证指数** (HTTP，V3.8) | 最近公布的指数成分/权重 | 官方月末文件，2026-09-05 验证 | 零鉴权，避免高频重复下载 |
+| 22 | **北交所官方** (HTTP，V3.8，备胎) | 当前行情/五档/成交量额 | 当前快照，须核对日期 | 匿名 Cookie 会话，分页限速 |
 
 **原则：** 行情走 mootdx+腾讯（不封IP），研报走东财+iwencai，资金面走东财 datacenter+push2，**信号层走同花顺+百度+东财直连接口**。除 mootdx / baostock 两个 TCP 客户端外全部直连 HTTP。
 
@@ -3973,11 +4381,12 @@ if holders:
 
 ## 备用源速查 & 降级策略（东财/主源被封时用）
 
-**何时用：** 主源报错 403/连接重置（东财 IP 级风控）、返回空、或需权威一手数据交叉验证时。**东财系接口共用同一风控面，某台住宅 IP 被封会成片失联**——下表给**十类核心数据**各一条独立备胎（不同域名、不同风控面；打板/期权/舆情三层暂无独立备胎）。表内端点均经 2026-07-11 实测存活、零鉴权可用，其中 3 个备胎函数另以真实数据完整跑通。
+**何时用：** 主源报错 403/连接重置（东财 IP 级风控）、返回空、或需权威一手数据交叉验证时。**东财系接口共用同一风控面，某台住宅 IP 被封会成片失联**——下表列出部分核心数据的备胎（不同域名、不同风控面；打板/期权/舆情三层暂无独立备胎）。既有备胎的验证记录为 2026-07-11；新增的两融与北交所备胎在 2026-09-05 跑通真实数据。历史验证不代表今天全部接口仍然可用。
 
 | 数据类型 | 主源(本 skill) | 独立备胎 | 备胎端点 / 说明 |
 |---|---|---|---|
-| 实时行情+五档 | mootdx/腾讯 | 交易所官方 | 沪 `yunhq.sse.com.cn:32041/v1/sh1/snap/{code}`、深 `szse.cn/api/market/ssjjhq/getTimeData?marketId=1&code={code}`（一手五档） |
+| 实时行情+五档 | mootdx/腾讯 | 交易所官方 | 沪 `yunhq.sse.com.cn:32041/v1/sh1/snap/{code}`、深 `szse.cn/api/market/ssjjhq/getTimeData?marketId=1&code={code}`；北 `bse_quote_backup(date, code)` 是当前快照，盘中延迟未标定 |
+| 融资融券 | 东财 datacenter | 上交所/深交所官方 | `margin_trading_backup(date, "SH"/"SZ", code=None)`，按交易所分别取；上交所融券余额金额可能为空 |
 | K线(全历史) | mootdx/百度/腾讯 | 同花顺 | `d.10jqka.com.cn/v6/line/hs_{code}/01/last.js`（01日/11周/21月/30/60分；2001至今；JSONP剥壳） |
 | K线(分钟) | mootdx | 腾讯 | `ifzq.gtimg.cn/appstock/app/kline/mkline?param={pre}{code},m5,,320`（m1/m5/m15/m30/m60，≤320根，需头 `Referer: https://gu.qq.com/`；mootdx 一挂时唯一的 5 分钟源）|
 | 龙虎榜 | 东财 datacenter | 沪深交易所官方 | `dragon_tiger_backup()`（见下，含营业部席位） |

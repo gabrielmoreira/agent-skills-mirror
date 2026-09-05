@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fermentation"
+  short_description: "Plan and safety-gate home fermentation, brines, pH, spoilage, pressure, and storage."
+  default_prompt: "Use $fermentation for home fermentation planning, troubleshooting, brines, pH, salt, spoilage, kombucha pressure, storage, and safety-gated preservation guidance."

@@ -111,6 +111,7 @@ Safety rules:
 - Do not claim the image was rendered or attached without the observed render command result and file.
 - Do not present the picture as complete architecture: the legend's folded units, pruned edges, and hidden symbols are part of the answer.
 - Never send the diagram to a chat surface or repository the user did not name; the render is local and the attachment is the wrapper's observed action.
+- The render surface is the local Java CLI or `PLANTUML_JAR` invocation only; browser/TeaVM PlantUML render options are not part of this workflow.
 
 ## Runtime Evidence
 

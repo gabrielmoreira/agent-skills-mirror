@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Conceptual Warehouse Layout"
+  short_description: "Design conceptual warehouse layouts from building constraints..."
+  default_prompt: "Use $design-conceptual-warehouse-layout to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

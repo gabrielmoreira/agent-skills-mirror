@@ -1,0 +1,4 @@
+interface:
+  display_name: "Forecast Capacity Requirements"
+  short_description: "Forecast warehouse capacity requirements from growth, invento..."
+  default_prompt: "Use $forecast-capacity-requirements to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

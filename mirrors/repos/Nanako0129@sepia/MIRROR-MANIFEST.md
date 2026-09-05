@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nanako0129/sepia` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `Nanako0129/sepia` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nanako0129/sepia` — 26 default patterns, 0 followed patterns, 20 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,24 +61,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.agents/workflows/sepia.md`](.agents/workflows/sepia.md) |
-| 3 | ✓ | [`skills/sepia-recreate/SKILL.md`](skills/sepia-recreate/SKILL.md) |
-| 4 | ✓ | [`skills/sepia-refactor/SKILL.md`](skills/sepia-refactor/SKILL.md) |
-| 5 | ✓ | [`skills/sepia-review/SKILL.md`](skills/sepia-review/SKILL.md) |
-| 6 | ✓ | [`skills/sepia-write/SKILL.md`](skills/sepia-write/SKILL.md) |
-| 7 | ✓ | [`skills/sepia/agents/openai.yaml`](skills/sepia/agents/openai.yaml) |
-| 8 | ✓ | [`skills/sepia/references/discourse-pass.md`](skills/sepia/references/discourse-pass.md) |
-| 9 | ✓ | [`skills/sepia/references/domains/dev-replies.md`](skills/sepia/references/domains/dev-replies.md) |
-| 10 | ✓ | [`skills/sepia/references/domains/postmortems.md`](skills/sepia/references/domains/postmortems.md) |
-| 11 | ✓ | [`skills/sepia/references/domains/release-notes.md`](skills/sepia/references/domains/release-notes.md) |
-| 12 | ✓ | [`skills/sepia/references/domains/tech-articles.md`](skills/sepia/references/domains/tech-articles.md) |
-| 13 | ✓ | [`skills/sepia/references/domains/tickets.md`](skills/sepia/references/domains/tickets.md) |
-| 14 | ✓ | [`skills/sepia/references/model-fingerprints.md`](skills/sepia/references/model-fingerprints.md) |
-| 15 | ✓ | [`skills/sepia/references/narrative-pass.md`](skills/sepia/references/narrative-pass.md) |
-| 16 | ✓ | [`skills/sepia/references/professional-pass.md`](skills/sepia/references/professional-pass.md) |
-| 17 | ✓ | [`skills/sepia/references/rubric.md`](skills/sepia/references/rubric.md) |
-| 18 | ✓ | [`skills/sepia/references/style-pass.md`](skills/sepia/references/style-pass.md) |
-| 19 | ✓ | [`skills/sepia/references/voice-skills.md`](skills/sepia/references/voice-skills.md) |
-| 20 | ✓ | [`skills/sepia/SKILL.md`](skills/sepia/SKILL.md) |
+| 3 | ✓ | [`skills/sepia-hemingway/SKILL.md`](skills/sepia-hemingway/SKILL.md) |
+| 4 | ✓ | [`skills/sepia-recreate/SKILL.md`](skills/sepia-recreate/SKILL.md) |
+| 5 | ✓ | [`skills/sepia-refactor/SKILL.md`](skills/sepia-refactor/SKILL.md) |
+| 6 | ✓ | [`skills/sepia-review/SKILL.md`](skills/sepia-review/SKILL.md) |
+| 7 | ✓ | [`skills/sepia-write/SKILL.md`](skills/sepia-write/SKILL.md) |
+| 8 | ✓ | [`skills/sepia/agents/openai.yaml`](skills/sepia/agents/openai.yaml) |
+| 9 | ✓ | [`skills/sepia/references/discourse-pass.md`](skills/sepia/references/discourse-pass.md) |
+| 10 | ✓ | [`skills/sepia/references/domains/dev-replies.md`](skills/sepia/references/domains/dev-replies.md) |
+| 11 | ✓ | [`skills/sepia/references/domains/postmortems.md`](skills/sepia/references/domains/postmortems.md) |
+| 12 | ✓ | [`skills/sepia/references/domains/release-notes.md`](skills/sepia/references/domains/release-notes.md) |
+| 13 | ✓ | [`skills/sepia/references/domains/tech-articles.md`](skills/sepia/references/domains/tech-articles.md) |
+| 14 | ✓ | [`skills/sepia/references/domains/tickets.md`](skills/sepia/references/domains/tickets.md) |
+| 15 | ✓ | [`skills/sepia/references/languages/zh.md`](skills/sepia/references/languages/zh.md) |
+| 16 | ✓ | [`skills/sepia/references/model-fingerprints.md`](skills/sepia/references/model-fingerprints.md) |
+| 17 | ✓ | [`skills/sepia/references/narrative-pass.md`](skills/sepia/references/narrative-pass.md) |
+| 18 | ✓ | [`skills/sepia/references/professional-pass.md`](skills/sepia/references/professional-pass.md) |
+| 19 | ✓ | [`skills/sepia/references/rubric.md`](skills/sepia/references/rubric.md) |
+| 20 | ✓ | [`skills/sepia/references/style-pass.md`](skills/sepia/references/style-pass.md) |
+| 21 | ✓ | [`skills/sepia/references/voice-skills.md`](skills/sepia/references/voice-skills.md) |
+| 22 | ✓ | [`skills/sepia/references/voices/hemingway.md`](skills/sepia/references/voices/hemingway.md) |
+| 23 | ✓ | [`skills/sepia/references/voices/registry.md`](skills/sepia/references/voices/registry.md) |
+| 24 | ✓ | [`skills/sepia/SKILL.md`](skills/sepia/SKILL.md) |
 
 ---
 

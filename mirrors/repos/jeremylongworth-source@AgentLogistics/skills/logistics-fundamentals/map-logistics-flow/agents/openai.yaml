@@ -1,0 +1,4 @@
+interface:
+  display_name: "Map Logistics Flow"
+  short_description: "Map logistics process steps, nodes, roles, documents, system..."
+  default_prompt: "Use $map-logistics-flow to produce a warehouse-operator-ready output with inputs, checks, exceptions, and handoff notes."

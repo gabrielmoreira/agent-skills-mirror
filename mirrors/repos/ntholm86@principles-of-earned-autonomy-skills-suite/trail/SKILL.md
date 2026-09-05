@@ -1,6 +1,6 @@
 ---
 name: trail
-version: 2.5.2
+version: 2.5.3
 description: 'Automatic egress service for substantive work. Append a structured entry to .acm/audit-trail.md IN THE TARGET REPO ROOT — recording the interpretation, examination, decisions, actions, and reflection. Destination, Improve, Orient, and Probe apply Trail automatically; the operator should never need to invoke it separately. Direct use remains available for consequential work outside those workflows and independent-writer mode.'
 argument-hint: 'The target being worked on (repo, file, system) — used to populate the log entry header'
 ---
@@ -57,7 +57,7 @@ After appending to `audit-trail.md`, regenerate the derived artifacts and commit
 ```
 python <skills-repo>/harness/tools/record.py history --write
 python <skills-repo>/harness/tools/record.py learning --write
-git add .acm/audit-trail.md .acm/history.md .acm/learning.md
+git add .acm/audit-trail.md .acm/history.md .acm/learning.md .acm/learning-archive.md  # learning-archive.md only if it exists
 git commit -m "trail: <slug>"
 ```
 
@@ -280,14 +280,14 @@ iteration 1:
   1. append entry to .acm/audit-trail.md
   2. python <skills-repo>/harness/tools/record.py history --write    ← updates .acm/history.md
   3. python <skills-repo>/harness/tools/record.py learning --write   ← updates .acm/learning.md
-  4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md && git commit -m "trail: <slug>-1"
+  4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md .acm/learning-archive.md && git commit -m "trail: <slug>-1"
   ↓ only now begin iteration 2
 
 iteration 2:
   1. append entry to .acm/audit-trail.md
   2. python <skills-repo>/harness/tools/record.py history --write
   3. python <skills-repo>/harness/tools/record.py learning --write
-  4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md && git commit -m "trail: <slug>-2"
+  4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md .acm/learning-archive.md && git commit -m "trail: <slug>-2"
   ↓ only now begin iteration 3
 ...
 ```

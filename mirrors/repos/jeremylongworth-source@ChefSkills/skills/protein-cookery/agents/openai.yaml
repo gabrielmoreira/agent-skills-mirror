@@ -1,0 +1,4 @@
+interface:
+  display_name: "Protein Cookery"
+  short_description: "Guide protein doneness, carryover, searing, braising, moisture, resting, and safety-aware handling."
+  default_prompt: "Use $protein-cookery for meat, poultry, seafood, egg, and plant-protein cooking, doneness, carryover, searing, braising, moisture control, resting, and safety-aware texture troubleshooting."

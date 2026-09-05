@@ -1,0 +1,4 @@
+interface: openai
+display_name: Analyze Return Reason
+short_description: Analyze return reasons from reason codes, customer notes, item, order, channel, inspection, and process evidence.
+default_prompt: Use $analyze-return-reason to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

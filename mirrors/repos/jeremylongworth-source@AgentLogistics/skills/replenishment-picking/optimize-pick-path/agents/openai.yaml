@@ -1,0 +1,4 @@
+interface:
+  display_name: "Optimize Pick Path"
+  short_description: "Optimize pick paths from pick lists, locations, zones, travel..."
+  default_prompt: "Use $optimize-pick-path to produce a warehouse-planning output with source records, checks, calculations, options, constraints, and review boundaries."

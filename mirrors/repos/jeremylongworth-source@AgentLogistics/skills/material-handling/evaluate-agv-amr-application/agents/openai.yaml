@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evaluate AGV/AMR Application"
+  short_description: "Evaluate AGV and AMR applicability from flow, payloads, route..."
+  default_prompt: "Use $evaluate-agv-amr-application to produce material-handling planning support with evidence, assumptions, and review boundaries."

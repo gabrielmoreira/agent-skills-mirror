@@ -1,0 +1,22 @@
+# Fermentation Checklist
+
+- Ferment type, food, batch size, recipe source, container, weight or closure, temperature, time, and storage intent are identified.
+- Safety is handled before flavor, texture, or convenience.
+- Tested proportions are required for salt, vinegar, water, acidity, and canning or shelf-stable storage.
+- Required salt in fermented sauerkraut and brined pickles is not reduced without a tested recipe.
+- Produce remains submerged under brine when vegetable fermentation depends on brine coverage.
+- Cloudy brine, bubbles, and clean sour aromas are triaged against pH, temperature, time, submersion, mold, slime, and off odors instead of treated as automatic pass or discard signals.
+- Quality fixes such as salty kimchi recovery keep the batch refrigerated and do not use warm holding, untested dilution, or casual water additions as safety-neutral fixes.
+- Slow ferments are evaluated against temperature and acidification; low temperature may extend fermentation, but readiness still needs tested-recipe cues.
+- Sourdough starter troubleshooting separates weak activity from contamination and connects feeding, temperature, flour, hydration, and rise cues to bread leavening.
+- Soft, slimy, disagreeable-smelling, visibly spoiled, or unknown-history ferments trigger conservative discard guidance.
+- Kombucha and other carbonated ferments include pH/source guidance, refrigeration, and sealed-bottle pressure warnings.
+- Shelf-stable storage, canning, pH thresholds, reduced-salt adaptations, and vulnerable-diner guidance are source-checked. Flavor, smell, and casual vinegar additions are not proof of pantry-safe storage.
+- Use these default U.S. references for source checks:
+  - National Center for Home Food Preservation fermenting guidance: https://nchfp.uga.edu/how/ferment/general-information-on-fermenting/
+  - NCHFP fermenting containers and brine coverage: https://nchfp.uga.edu/how/ferment/general-information-on-fermenting/suitable-containers-covers-and-weights-for-fermenting-food/
+  - NCHFP fermented-pickle troubleshooting: https://nchfp.uga.edu/how/ferment/general-information-on-fermenting/causes-and-possible-solutions-for-problems-with-fermented-pickles/
+  - NCHFP kombucha recipe and safety factors: https://nchfp.uga.edu/how/ferment/recipes/kombucha-tea/
+  - University of Minnesota Extension produce fermentation guidance: https://extension.umn.edu/food/preparing/cooking-at-home/food-preservation/fermentation
+  - Colorado State University Extension kimchi guidance: https://extension.colostate.edu/resource/understanding-and-making-kimchi/
+  - Colorado State University Extension sourdough starter guidance: https://extension.colostate.edu/resource/sourdough-basics-caring-for-your-starter-and-making-bread/

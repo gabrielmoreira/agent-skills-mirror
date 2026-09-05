@@ -1,0 +1,4 @@
+interface: openai
+display_name: Design Reverse Logistics Flow
+short_description: Design reverse-logistics flow from return types, channels, facility process, disposition paths, systems, controls, and review boundaries.
+default_prompt: Use $design-reverse-logistics-flow to produce a source-backed returns or reverse-logistics output with evidence boundaries, calculations where relevant, and qualified-review requirements.

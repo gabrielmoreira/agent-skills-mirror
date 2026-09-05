@@ -1,0 +1,4 @@
+interface:
+  display_name: "Calculate Replenishment Demand"
+  short_description: "Calculate replenishment demand from order forecast, pick-face..."
+  default_prompt: "Use $calculate-replenishment-demand to produce a fulfillment-optimization output with source records, checks, calculations, constraints, and review boundaries."

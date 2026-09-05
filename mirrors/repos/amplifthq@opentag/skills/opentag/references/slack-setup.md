@@ -1,88 +1,69 @@
-# Slack Setup
+# Slack Source App
 
-Use this path when the user wants Slack mentions to run a local OpenTag coding agent and reply in the same Slack thread.
+Use this branch to configure the only supported source surface or diagnose a
+missing Slack mention. Slack sends signed HTTPS requests to the self-hosted
+Control Plane; the local Runner does not open a Slack connection.
 
-Read the repository guide as the source of truth before giving credential steps:
+## Configure the Slack app
 
-```text
-docs/platforms/slack.en.md
-```
+In the Slack app console:
 
-## Recommended Mode
+1. Enable the Events API.
+2. Set the Request URL to
+   `https://control.example.com/v1/providers/slack/events/<route-identity>`.
+3. Subscribe to `app_mention` and the message event required for replies in the
+   configured channel type.
+4. Enable Interactivity & Shortcuts and set its URL to
+   `https://control.example.com/v1/providers/slack/interactivity/<route-identity>`.
+5. Grant the app the minimum scopes needed to read the configured conversation,
+   post/update its thread projection, and add its receipt reaction.
+6. Install the app to the intended workspace and invite it to the intended
+   channel.
 
-Prefer Slack Socket Mode for local CLI users. It lets `opentag start` receive Slack events over a WebSocket, so the user does not need a public URL.
+Use the exact route identity, team ID, app ID, channel ID, bot user ID, and
+member/operator/approver/admin user IDs in the Compose bootstrap configuration.
+Do not substitute display names for Slack IDs.
 
-Use Public Events API only when the user intentionally wants a hosted endpoint or a tunnel-based setup.
+Completion: Slack accepts both HTTPS URLs, the app is installed and invited,
+and the configured IDs refer to the same workspace, app, bot, and channel.
 
-## What The User Needs
+## Keep credentials in the Control Plane
 
-For Socket Mode:
-
-- Slack App-Level Token, starts with `xapp-`
-- Slack Bot User OAuth Token, starts with `xoxb-`
-- Slack Team ID
-- Slack Channel ID
-- The app invited to the target channel
-
-For Public Events API:
-
-- Slack Signing Secret
-- Slack Bot User OAuth Token
-- A public URL that forwards to the local Slack listener
-- Slack Team ID
-- Slack Channel ID
-
-Never invent these values. Walk the user through Slack's app page and ask them to paste the values when ready.
-
-## User Path
-
-```bash
-npm install -g @opentag/cli@0.11.0
-opentag setup
-```
-
-During setup, choose:
+Write the signing secret and bot token into separate protected host files. Put
+only these paths in the Compose `.env`:
 
 ```text
-Platform: Slack
-Connection mode: Local Socket Mode, unless the user explicitly wants Public Events API
-Coding agent: Codex or Claude Code for real work; Echo only for dev/test
-Project: the local checkout OpenTag should operate on
+OPENTAG_SLACK_SIGNING_SECRET_SOURCE_FILE=...
+OPENTAG_SLACK_BOT_TOKEN_SOURCE_FILE=...
 ```
 
-Then:
+The credential values do not belong in the Runner config, ACP prompt, chat,
+shell arguments, Compose environment values, screenshots, or git. The
+`bootstrap-slack` service must store the mounted `file:/run/secrets/...`
+references.
 
-```bash
-opentag start
-```
+Completion: the running installation resolves both file references while
+rendered Compose config, logs, and `opentag config show` reveal no Slack secret.
 
-Keep it running and mention the Slack app in the configured channel.
+## Verify one mention
 
-## Verification
-
-```bash
-opentag status
-opentag doctor
-opentag config show
-```
-
-In Slack:
+Wait until the Control Plane target exists and the paired Runner reports fresh
+readiness. In the bootstrapped channel, send one bounded mention such as:
 
 ```text
-@OpenTag investigate this
+@OpenTag inspect the failing test and summarize the likely cause
 ```
 
-Use the app's actual Slack display name. If the app is not in the channel, invite it first:
+Use the installed app's actual display name. The Control Plane must verify the
+raw signature and exact route before parsing or admitting the event.
 
-```text
-/invite @OpenTag
-```
+Completion: one signed Slack delivery produces one WorkThread and Run, the
+paired Runner claims one fenced Attempt, and the same Slack thread receives a
+concise acknowledgement and truthful terminal or attention state.
 
-## Success Criteria
+## Truth boundary
 
-- Socket Mode connects, or Public Events API receives the Slack request.
-- A Slack `app_mention` creates a run.
-- The selected local executor starts.
-- OpenTag replies in the same Slack thread.
-
-If the reply includes a pull request action, GitHub PR creation needs a GitHub repository target and token too. Slack credentials alone prove Slack delivery, not GitHub write access.
+A Slack acknowledgement proves neither Runner completion nor GitHub
+publication. A final message must reflect durable Run and delivery evidence.
+If provider I/O began but its result cannot be reconciled, retain
+`outcome_unknown` and do not send the operation again automatically.

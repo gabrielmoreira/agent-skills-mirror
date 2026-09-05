@@ -7,8 +7,9 @@ import { CloudBaseOptions } from '../types.js';
 import { shouldRegisterTool } from './cloud-mode.js';
 import { debug } from './logger.js';
 import { reportToolCall, readMcpClientInfoFromServer } from './telemetry.js';
-import { isToolPayloadError, ToolPayloadError } from "./tool-result.js";
+import { isToolPayloadError, ToolPayloadError, withBusinessFailureIsError } from "./tool-result.js";
 import { applyRepeatGuardToPayload, resetRepeatGuard } from "./repeat-error-guard.js";
+import { enhanceErrorMessage, resolveRequestId } from "./error-guidance.js";
 
 
 /**
@@ -182,11 +183,18 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
             if (!isTestEnvironment) {
                 server.logger?.({ type: 'afterToolCall', toolName: name, args: sanitizeArgs(args), result: result, duration });
             }
-            return result;
+            // 业务失败（结构化 { success: false } 返回）必须带 MCP isError=true，
+            // 否则客户端会把失败误判为成功（实测 applyMigration / 知识库查询失败均踩坑）。
+            return withBusinessFailureIsError(result);
         } catch (error) {
             success = false;
-            errorMessage = error instanceof Error ? error.message : String(error);
-            requestId = (typeof error === 'object' && error && 'requestId' in error) ? (error as any).requestId : '';
+            // 在这里统一挂错误指引，而不是每个工具各自 catch 里做一次：
+            // 全部工具的失败都会经过这一处，新增指引只需往注册表里加一条。
+            errorMessage = enhanceErrorMessage(
+              error,
+              error instanceof Error ? error.message : String(error),
+            );
+            requestId = resolveRequestId(error);
             debug(`工具执行失败: ${name}`, {
                 error: errorMessage,
                 requestId: requestId || undefined,
@@ -213,7 +221,7 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
 
             // 生成 GitHub Issue 创建链接
             const issueLink = await generateGitHubIssueLink(name, errorMessage, args, server.cloudBaseOptions, {
-                requestId: (typeof error === 'object' && error && 'requestId' in error) ? (error as any).requestId : '',
+                requestId,
                 ide: server.ide || process.env.INTEGRATION_IDE || ''
             });
             const mcpVersion = typeof __MCP_VERSION__ !== 'undefined' ? __MCP_VERSION__ : 'unknown';
