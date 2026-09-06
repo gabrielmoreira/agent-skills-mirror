@@ -8,7 +8,11 @@ CodePilot 有三条 chat 运行路径：**Claude Code Runtime**（SDK 子进程�
 - 新聊天创建时一次保存 `runtimeId + providerInstanceId + modelId`。已有聊天只可通过 `/api/chat/sessions/:id/route` 和 `expected_route_revision` 原子改 route；通用 session PATCH 不再接受 route 字段。
 - `bound` 会话禁止原地跨 Runtime。普通 Composer Picker 必须将 Runtime lane 置灰，仍只允许 owner Runtime 内 capability 支持的 route 变化；不得因点击普通下拉而自动调用 handoff、创建聊天或跳转。Handoff API 只允许由未来独立、明确标注“在新聊天中继续”并带确认的入口调用，来源聊天、原生 session/thread ref 和 route revision 均不改变。
 - `legacy_unbound` 只能由用户显式 recovery；普通 `unbound` 的 auto/retry/queue fail closed。助理、heartbeat、task、bridge 等无人值守会话必须在创建时携带明确完整 route 并直接绑定。
-- 同 Runtime route 变化由 `RuntimeContinuationPolicy` 裁决：Claude/Native 当前为 `replay_context`，Codex model 为 `in_session`、Provider 变化为 `new_session`。UI 不得按模型名字猜。
+- 同 Runtime 必须支持已配置、兼容的 Provider+Model 切换，保持产品聊天 ID、消息和页面不变。`RuntimeContinuationPolicy` 中 Claude/Native 为 `replay_context`，Codex 同 Provider model 为 `in_session`、Provider 变化为 `replay_context`；不得因底层 thread 绑定 Provider 而要求新建产品聊天（2026-09-05 用户反馈修订）。
+- Codex 换 Provider、MCP fingerprint 变化或 resume 失败时，新底层 thread 首轮消费该聊天已有摘要和经过压缩边界过滤的最近 DB history。成功 resume 不重复注入历史；旧 ref 保留到新 thread 的 `turn/start` 被接受后再替换，启动/输入失败重试仍须带历史。切回先前 Provider 使用当前聊天最新历史，不能恢复旧分支。
+- Codex replacement 的历史选择由 `codex/continuation-context.ts` 按 token 预算驱动：从 caller history 的最早 rowid 向前分页，限定同 session、summary coverage boundary，排除 heartbeat ACK / 内部切换标记；不能将 API 的 200 条 seed 误当成完整历史，也不能提前按单条 5000/1000 字符截断。无 rowid 的合成历史不自行扩大查询；当前 prompt 和 snapshot 之后的新行不得重复重放。
+- replacement 恢复历史图片时，只解析 user 消息的前缀附件元数据，经真实项目根目录的 realpath/containment 校验后重放。目标模型明确支持视觉才附加历史 localImage；能力缺失/不支持时保留可用文件引用并明确 pixels 未附加，文件缺失/越界给 unavailable 事实。不得从 assistant/tool 文本解析附件，不得发送预算外历史的图片。预算含包装及图片估算余量，不冒充实际 token 用量；正常 resume 的本轮图片输入保持原样。回归：`codex-continuation-context.test.ts`。
+- route 校验使用 execution resolver 的 DB + 当前 catalog 模型视图，继续尊重手动隐藏、精确模型 identity、Runtime 兼容性和凭据检查；不能要求先访问 Settings 把模型落库。显式选择 Codex Account 时允许有 2500ms 上限的模型发现，不能把路由模块空缓存判成模型不存在；Main recovery safe mode 下仍只能读缓存，全局被动 feed 不因此启动 Codex。
 - managed child 只允许使用父 owner 对应 Runtime；child 的 Provider+Model route 不得绑定或修改父 session。
 - route CAS 的 409 `ROUTE_REVISION_CONFLICT` 响应必须携带权威 session 快照；客户端采用完整 route、binding state、owner 与 revision 后再让用户重试。不得只更新 revision（会让下一次发送带着旧 Provider/Model），也不得丢弃快照让窗口永久重复旧 revision。
 - Runtime wire id 只用于存储和 API。owner 横幅、handoff 卡片与 transcript marker 统一经 `runtimeDisplayLabelKey()` 显示产品名，不得把 `claude_code` / `codepilot_runtime` / `codex_runtime` 直出给用户。
@@ -275,3 +279,15 @@ Provider 或模型切换后，descriptor 必须从同一 runtime-filtered group 
 - **2026-08-15** 扩展 effort 版本门改为复用 app-server auto-review 已使用的严格 semver/prerelease 比较器；只接受 bare release、锚定的 `codex-cli <release>`，或锚定的 `Codex Desktop/<release>` app-server user agent，稳定版 `0.144.2` 可用但同 core 的 alpha 不可用，避免无关 user-agent 中的版本误命中。production smoke 进一步钉住 ChatGPT.app 当前 `Codex Desktop/0.147.0-alpha.6.5 (...)` 格式，防止严格化时误拒真实 bundle。
 - **2026-08-26** GLM-5.3-Flash 复用第一方 preset-scoped 双 transport：Claude 发 `glm-5.3-flash[1m]`，Codex Responses 发 `glm-5.3-flash`；两路径都只开放官方 Low/High/Max、默认 Max，Flash 额外开放 vision。ID override、effort alias 与 vision 都不能按名称泄漏到聚合 Provider；Codex 工具页示例目录尚未同步 Flash，真实套餐 turn 继续留在 Smoke Ledger，不用 synthetic body 冒充 entitlement。
 - **2026-08-26 review P3** GLM 文档只承诺 1M，官方配置使用 1,000,000；catalog 与 fallback 统一从 1,048,576 降为 1,000,000，并修正旧模型自动路由的 overview 引用。此变更宁可保守显示容量，也不允许无来源的 4.7% 余量。
+
+
+## 2026-09-05 Astra 上下文与模型发现
+
+- API 的 Astra 1050000 不能作为 Codex 默认窗口。`getContextWindow` 要有 `channel` 事实才返回 Astra 容量；Codex 默认有效窗口 258400、API 1050000，未给通道返回未知。
+- Codex Account 显式发送时，历史预算通过 `getCodexContextBudget` 在 2500ms 内读取 `config/read(cwd)` 的项目级配置和 CodePilot-owned home 的模型 metadata，按最大窗口限制 override 后乘 effective percent。未知/失败降为保守通道 fallback；被动模型 feed 不因此启动进程。实际 tokenUsage 的 modelContextWindow 仍是显示真源，预算不冒充用量。
+- `model/list` 消费全部分页、按 id 去重，重复 cursor 有界失败；视觉能力来自真实 inputModalities，不按型号名猜。回归在 `codex-models-dual-schema.test.ts`，包括 Astra 第二页、未知能力、覆盖至更大/更小窗口及最大值 clamp。
+
+## 2026-09-05 审查后续：冷缓存与 Fable 5.1
+
+- Codex replacement 在冷缓存时允许通过已经运行的 client 有界调用 model/list（2.5 秒），供历史图片与 effort 使用；不得借此从被动目录启动 app-server。失败继续 unknown 与显式图片降级。回归：codex-models-dual-schema。
+- Fable 5.1 使用精确 upstream `claude-fable-5-1`，作为独立选项保留旧 Fable/角色默认。adaptive 始终开启、effort low/medium/high/xhigh/max；Native 使用 auto/none 工具选择。不得为强制工具需求静默转换用户语义。多步 SDK 请求的 signed thinking 之前 system/tools/messages 必须保持不变；跨回合 DB 重建不携带过期 thinking，摘要/模型切换不得再混回旧签名。当前测试验证 Native 的真实 SDK wire，不能冒充 Anthropic 真签名校验；新增 per-message effort/turn system/progress beta 须另立协议验证。

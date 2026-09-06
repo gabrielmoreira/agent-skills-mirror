@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 7 followed patterns, 17 file(s) materialized.
+Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 9 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 7 followed p
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 17 |
+| Followed pats | 9 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,11 +52,13 @@ Mirror of `DougTrajano/pydantic-ai-skills` — 26 default patterns, 7 followed p
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/concepts.md`
+- `docs/comparison.md`
 - `docs/creating-skills.md`
 - `docs/programmatic-skills.md`
 - `docs/registries.md`
 - `docs/security.md`
 - `docs/advanced.md`
+- `docs/migration-v2.md`
 - `docs/contributing.md`
 
 ## File Index
@@ -65,23 +67,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/api/registries.md`](docs/api/registries.md) |
-| 4 | ✓ | [`docs/patterns.md`](docs/patterns.md) |
-| 5 | ✓ | [`docs/quick-start.md`](docs/quick-start.md) |
-| 6 | ✓ | [`docs/sandbox.md`](docs/sandbox.md) |
-| 7 | ✓ | [`examples/skills/arxiv-search/SKILL.md`](examples/skills/arxiv-search/SKILL.md) |
-| 8 | ✓ | [`examples/skills/data-analysis/SKILL.md`](examples/skills/data-analysis/SKILL.md) |
-| 9 | ✓ | [`examples/skills/pydanticai-docs/SKILL.md`](examples/skills/pydanticai-docs/SKILL.md) |
-| 10 | ✓ | [`examples/skills/web-research/SKILL.md`](examples/skills/web-research/SKILL.md) |
-| 11 | → | [`docs/advanced.md`](docs/advanced.md) |
-| 12 | → | [`docs/concepts.md`](docs/concepts.md) |
-| 13 | → | [`docs/contributing.md`](docs/contributing.md) |
-| 14 | → | [`docs/creating-skills.md`](docs/creating-skills.md) |
-| 15 | → | [`docs/programmatic-skills.md`](docs/programmatic-skills.md) |
-| 16 | → | [`docs/registries.md`](docs/registries.md) |
-| 17 | → | [`docs/security.md`](docs/security.md) |
+| 1 | ✓ | [`.claude/skills/sonarqube/SKILL.md`](.claude/skills/sonarqube/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/api/registries.md`](docs/api/registries.md) |
+| 5 | ✓ | [`docs/hooks.md`](docs/hooks.md) |
+| 6 | ✓ | [`docs/patterns.md`](docs/patterns.md) |
+| 7 | ✓ | [`docs/sandbox.md`](docs/sandbox.md) |
+| 8 | ✓ | [`examples/skills/arxiv-search/SKILL.md`](examples/skills/arxiv-search/SKILL.md) |
+| 9 | ✓ | [`examples/skills/data-analysis/SKILL.md`](examples/skills/data-analysis/SKILL.md) |
+| 10 | ✓ | [`examples/skills/pydanticai-docs/SKILL.md`](examples/skills/pydanticai-docs/SKILL.md) |
+| 11 | ✓ | [`examples/skills/web-research/SKILL.md`](examples/skills/web-research/SKILL.md) |
+| 12 | → | [`docs/advanced.md`](docs/advanced.md) |
+| 13 | → | [`docs/comparison.md`](docs/comparison.md) |
+| 14 | → | [`docs/concepts.md`](docs/concepts.md) |
+| 15 | → | [`docs/contributing.md`](docs/contributing.md) |
+| 16 | → | [`docs/creating-skills.md`](docs/creating-skills.md) |
+| 17 | → | [`docs/migration-v2.md`](docs/migration-v2.md) |
+| 18 | → | [`docs/programmatic-skills.md`](docs/programmatic-skills.md) |
+| 19 | → | [`docs/registries.md`](docs/registries.md) |
+| 20 | → | [`docs/security.md`](docs/security.md) |
 
 ---
 

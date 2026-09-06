@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `koala73/worldmonitor` — 26 default patterns, 5 followed patterns, 77 file(s) materialized.
+Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 5 followed patterns, 7
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 77 |
+| Followed pats | 3 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,10 +52,8 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 5 followed patterns, 7
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `ARCHITECTURE.md`
-- `CONTRIBUTING.md`
 - `CONCEPTS.md`
 - `docs/architecture/five-factor-scorecard-v1.md`
-- `CODE_OF_CONDUCT.md`
 
 ## File Index
 
@@ -136,10 +134,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 71 | ✓ | [`skills/track-unrest-events/SKILL.md`](skills/track-unrest-events/SKILL.md) |
 | 72 | ✓ | [`skills/track-vessel-traffic/SKILL.md`](skills/track-vessel-traffic/SKILL.md) |
 | 73 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 74 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 75 | → | [`CONCEPTS.md`](CONCEPTS.md) |
-| 76 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 77 | → | [`docs/architecture/five-factor-scorecard-v1.md`](docs/architecture/five-factor-scorecard-v1.md) |
+| 74 | → | [`CONCEPTS.md`](CONCEPTS.md) |
+| 75 | → | [`docs/architecture/five-factor-scorecard-v1.md`](docs/architecture/five-factor-scorecard-v1.md) |
 
 ---
 

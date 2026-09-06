@@ -1,6 +1,6 @@
 ---
 name: google-ads-audit
-description: Google Ads account audit and business context setup. Run this first — it gathers business information, analyzes account health, and saves context that all other ads skills reuse. Trigger on "audit my ads", "ads audit", "set up my ads", "onboard", "account overview", "how's my account", "ads health check", "what should I fix in my ads", or when the user is new to NotFair and hasn't run an audit before. Also trigger proactively when other ads skills detect that business-context.json is missing.
+description: Google Ads account audit and business context setup. Use for account-health audits and business-context setup. Trigger on "audit my ads", "ads audit", "set up my ads", "onboard", "account overview", "how's my account", "ads health check", "what should I fix in my ads", or when the user is new to NotFair and hasn't run an audit before.
 argument-hint: "<account name or 'audit my ads'>"
 ---
 
@@ -34,7 +34,7 @@ Read `../shared/policy-registry.json`. For each entry where `last_verified + sta
 
 ## Phase 1 — Pull the audit dataset
 
-Use a single `runScript` call with `ads.gaqlParallel` to fan out the queries an audit needs. The server's `notfair://playbooks/audit-account` resource has a battle-tested baseline; extend it with what your specific question needs.
+Choose available read capabilities for the requested audit scope. Batch related reads where useful and supported; consult current server guidance for schemas and limits.
 
 You decide the exact GAQL shape, but a defensible audit needs to see, at minimum:
 
@@ -52,9 +52,9 @@ You decide the exact GAQL shape, but a defensible audit needs to see, at minimum
 
 Aggregate inside the script. Return summarized JSON, not raw rows. The agent narrates; the script does the math.
 
-`getRecommendations` and `summarizeAccountSetup` are useful cross-checks against Google's own and the server's structural views — call them as a separate tool turn after the runScript pass when comparison would sharpen the report.
+Use platform recommendations or account-setup diagnostics as optional cross-checks when available and relevant to the question.
 
-If a critical query errors out (auth, schema), surface the error and stop — don't fall back to a degraded audit.
+If a read fails, follow actionable recovery guidance. Clearly report missing evidence; continue independent findings only when the available data supports them.
 
 **Skip scoring entirely if** `totalSpend == 0` or `activeCampaigns == 0`. Go straight to business context.
 
@@ -116,7 +116,7 @@ Structure: pulse metrics (3 lines, each with number + top contributor + fix poin
 
 End with a single closing line after the handoff to `/google-ads`:
 
-> *Your audit history is saved to your NotFair account — view it at https://notfair.co.*
+State where any audit artifacts were actually saved. Do not claim hosted audit history unless a live result confirms it.
 
 ## Guardrails
 

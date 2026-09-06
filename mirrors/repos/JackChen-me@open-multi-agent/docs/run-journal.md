@@ -1,4 +1,4 @@
-# Run Event Journal
+# Run event journal
 
 The run journal is an append-only log of what happened inside one run: which messages entered a conversation, which blocks the model actually saw, which tools ran and what they returned, what a context strategy replaced them with, how the plan and task states moved, and where checkpoints landed. It answers a question the other three records cannot — **why did the model see this?**
 
@@ -11,7 +11,7 @@ The journal is not the recovery mechanism. [Checkpoint snapshots](checkpoint.md)
 Pass a backend per call, or set a default for every run via `OrchestratorConfig.journal`. Per-call values override the config default, and `journal: false` disables it for one run.
 
 ```typescript
-import { OpenMultiAgent, Team, InMemoryRunJournal } from '@open-multi-agent/core'
+import { OpenMultiAgent, InMemoryRunJournal } from '@open-multi-agent/core'
 
 const journal = new InMemoryRunJournal()
 const orchestrator = new OpenMultiAgent()
@@ -141,7 +141,7 @@ One event per strategy application. Each replacement stores the derived block **
 
 Journaling follows the standard runner plumbing, so it covers `runAgent`, coordinator decomposition and synthesis, `runTeam` short-circuit runs, worker tasks, and delegated child runs. Delegated conversations journal under their own `agentName` within the same task scope, interleaved into one ordered stream — which is the correct reading of a run where several agents were live at once.
 
-Not journaled in this release: `runConsensus` and per-task consensus judges, the semantic execution-router profiler, and orchestrator decision events (`routing/decision`, `consensus/verdict`, `recovery/decision`). Plan repairs still land as `plan/set` with `source: 'recovery'`.
+Not journaled: `runConsensus` and per-task consensus judges, the semantic execution-router profiler, and orchestrator decision events (`routing/decision`, `consensus/verdict`, `recovery/decision`). Plan repairs still land as `plan/set` with `source: 'recovery'`.
 
 ## Lineage and the model-visible boundary
 
@@ -232,7 +232,7 @@ const journal = new JsonlRunJournal('./.oma/run.jsonl')
 await orchestrator.restore(team, { checkpoint: { store }, journal })
 ```
 
-The snapshot is still what recovery is anchored on. On top of it, restore replays the journal past what the snapshot already holds and folds the in-flight runner events it finds — most usefully, a tool that ran and returned in the window the snapshot never captured, which is then replayed as data instead of executed again. Task status, memory writes, and approvals are deliberately not folded; each already has its own durable record. A tail that does not fit the snapshot is discarded whole with an `onProgress` warning, and the run resumes exactly as it would with no journal at all. [Checkpoint & Resume](checkpoint.md#tail-replay) has the precise fold scope and the defensive checks.
+The snapshot is still what recovery is anchored on. On top of it, restore replays the journal past what the snapshot already holds and folds the in-flight runner events it finds — most usefully, a tool that ran and returned in the window the snapshot never captured, which is then replayed as data instead of executed again. Task status, memory writes, and approvals are deliberately not folded; each already has its own durable record. A tail that does not fit the snapshot is discarded whole with an `onProgress` warning, and the run resumes exactly as it would with no journal at all. [Checkpoint & resume](checkpoint.md#tail-replay) has the precise fold scope and the defensive checks.
 
 "What the snapshot already holds" is decided per task, not per snapshot. A v5 snapshot refreshes each in-flight entry at that task's own boundaries, so with concurrency above 1 an entry can be many events staler than the snapshot's `journalWatermarkSeq`. Each entry records its own `journalSeq`, the replay window opens at the stalest one, and events another task has already absorbed are recognised and skipped rather than folded twice.
 
@@ -254,6 +254,31 @@ new OpenMultiAgent({
 
 This holds at approval boundaries too, where ordinary checkpoint saves escalate. Durability there is the [durable approval ledger](durable-approvals.md)'s job; the journal only records that the boundary existed. Losing the audit trail must never roll back a run that actually happened.
 
+## Identity and integrity
+
+Two properties an audit reader tends to assume are not there, and both are worth stating before someone builds a compliance story on this file.
+
+**Journal events identify agents, not people.** Every event carries `agentName` where one applies, alongside `runId`, `attempt`, and `taskId`. There is no operator, user, actor, or principal field on any event type, and nothing populates one. The journal answers which agent produced a block, never which person authorized it.
+
+Human identity enters the record in exactly two places, both downstream of a [durable approval](durable-approvals.md):
+
+- **`approval/decision` events**, which carry the `ApprovalDecisionRecord` verbatim, including its `reviewer.id` and optional `reviewer.displayName`. That identity is whatever the application passed to `decideApproval`; OMA validates that `id` is a non-empty string and does not authenticate it.
+- **The execution receipt**, whose approval summary copies the same values as `reviewerId` and `reviewerDisplayName`.
+
+An unapproved run therefore has no human name in it at all, which is the correct reading: nobody was asked.
+
+**`verifyRun()` detects drift, not tampering.** It checks three things: sequence monotonicity, referential integrity of `sourceEventSeqs`, and per-block content hashes against the events a request names. What it does not check is the file's provenance:
+
+- **No hash chain.** No event carries a digest of its predecessor. Hashes cover one content block each and are recorded on the citing `llm/request`, so rewriting an event in place, or dropping one and renumbering what follows, leaves nothing structurally inconsistent to find; only a raw reorder or a duplicated `seq` trips the sequence check.
+- **No signature.** Nothing in the journal is signed. The subsystem uses SHA-256 for content identity only and holds no key material.
+- **No WORM storage.** `JsonlRunJournal` appends to an ordinary file with no lock, which anything with write access can rewrite afterwards. `InMemoryRunJournal` is a ring buffer in process memory and is not durable at all. Neither backend makes a written event immutable.
+
+A writer that can edit the journal can edit an event and recompute the `contentHash` that cites it in the same pass, and `verifyRun()` will return `ok`. This is the same trust boundary [durable approvals](durable-approvals.md#exact-content-binding) draws: integrity checking across OMA's own records, not a cryptographic claim against whoever controls the storage. If you need tamper-evidence, put the journal on storage that provides it, and treat `verifyRun()` as a check on what OMA wrote rather than on what is on disk now.
+
 ## Journal versus telemetry
 
-[Trace records](observability.md) and journal events describe the same run and deliberately do not depend on each other. Traces are **telemetry**: losing them must never roll back durable state, and they may be sampled, batched, exported, or dropped. Journal events are **execution state**: they record what the run did and what the model saw. The `journal/` module does not import from `observability/`, so trace loss cannot imply journal loss and neither can the reverse. Events carry `traceId`/`spanId` when a trace runtime is active, which is enough to join the two streams without coupling them.
+[Trace records](observability.md) and journal events describe the same run and deliberately do not depend on each other. Traces are **telemetry**: losing them must never roll back durable state, and they may be sampled, batched, exported, or dropped by retention deletion. Journal events are **execution state**: they record what the run did and what each model call saw, and `restore()` can fold them back into a conversation.
+
+The separation is structural, not conventional: the `journal/` module does not import from `observability/`, so trace loss cannot imply journal loss and neither can the reverse. It runs to the failure signals too. A trace delivery failure and a `journal_append_failed` progress event report on separate records, and neither implies the other.
+
+Events carry `traceId`/`spanId` when a trace runtime is active, which is enough to join the two streams after the fact without coupling them. Reach for traces when the question is where the time and tokens went, and for the journal when it is why the model saw what it saw.

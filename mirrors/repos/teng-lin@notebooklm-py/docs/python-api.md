@@ -168,15 +168,21 @@ async with NotebookLMClient.from_storage(profile="work", backend="android") as c
 
 Android reads the profile's `master_token.json` when the client opens and mints
 short-lived bearer credentials. It does not use `NOTEBOOKLM_AUTH_JSON` or a
-cookie-only storage file. Its `from_storage(...)` bootstrap does not poke,
-recover, or write profile cookies; any homepage `Set-Cookie` observation remains
-in memory unless the deprecated Web sidecar is later materialized. `client.raw` is backend-selected: use `raw.call(...)`
+cookie-only storage file for the primary runtime. Under the retained default
+v0.x policy, `from_storage(..., backend="android")` still sends one homepage GET
+while the wrapper builds the client, before Android open. Web-cookie, network,
+or homepage-token failure therefore still surfaces at that build step. The
+bootstrap does not poke, recover, or write profile cookies; any homepage
+`Set-Cookie` observation remains in memory unless the deprecated Web sidecar is
+later materialized. `client.raw` is backend-selected: use `raw.call(...)`
 for Web `RPCMethod` identifiers and `raw.unary(...)` / `raw.unary_stream(...)`
 for explicit Android gRPC descriptors. The root `client.rpc_call(...)` wrapper
 is deprecated for removal in v1.0. During the warning window it preserves the
 old behavior on Android by lazily opening a Web compatibility sidecar on first
-use; a master-token-only profile therefore fails as it did before, and the
-sidecar never starts Web keepalive.
+use. Typed Android methods and raw unary calls use the master token, but this
+deprecated wrapper uses the loaded Web cookies; a master-token-only profile
+therefore fails on `rpc_call` as it did before. Prefer typed namespace methods
+or Android raw unary calls. The sidecar never starts Web keepalive.
 
 `AuthTokens.from_storage(...)` remains available as a v0.x compatibility loader,
 but it is deprecated in v0.8.1 and emits `DeprecationWarning` when awaited. Use
@@ -1069,8 +1075,12 @@ replay.
 
 `client.rpc_call(method, params)` is a deprecated compatibility wrapper. On Web
 it forwards to `client.raw.call(...)`; on Android it warns that the call crosses
-into Web and lazily creates a Web sidecar. The wrapper warns once per client and
-is removed in v1.0. `read_timeout` (added in #2187) overrides the client-wide read
+into Web and lazily creates a Web sidecar using the `AuthTokens` Web cookies
+loaded at client build. It does not convert the Android master token into a Web
+session, so a master-token-only profile cannot use this wrapper. The wrapper
+warns once per client and is removed in v1.0; use typed Android methods or
+`raw.unary(...)` / `raw.unary_stream(...)` instead. `read_timeout` (added in
+#2187) overrides the client-wide read
 timeout for this one call — internal callers use it for RPCs known to run
 long (e.g. `ResearchAPI.import_sources`'s batch-scaled IMPORT_RESEARCH
 timeout); `None` (the default) inherits the client's configured `timeout`.
@@ -1085,7 +1095,7 @@ treats as successful — see
 **Android construction:** `cookie_saver`, `cookie_rotator`, `keepalive`,
 `keepalive_min_interval`, and HTTP `limits` remain accepted but are Web-only
 and are ignored (with a debug log) when `backend="android"` is selected. Normal
-Android construction/open/close does not create an HTTP client, recover
+direct Android construction/open/close does not create an HTTP client, recover
 `__Secure-1PSIDTS`, or write Web cookies. `get_account_email()` returns only the
 email already present on `AuthTokens`; it does not probe Web cookies or profile
 metadata.
@@ -2167,6 +2177,7 @@ await client.notes.delete_mind_map(nb_id, mind_map_id)
 |--------|------------|---------|-------------|
 | `get_output_language()` | none | `Optional[str]` | Get current output language setting |
 | `get_account_limits()` | none | `AccountLimits` | Get account-level limits such as max notebooks and sources per notebook |
+| `get_usage()` | none | `UsageSummary` | Get the current live compute-meter snapshot when the account is eligible |
 | `get_user_settings()` | none | `UserSettings` | Get account limits **and** output language in a single request (both share one server call) |
 | `set_output_language(language)` | `str` | `Optional[str]` | Set output language for artifact generation |
 
@@ -2184,12 +2195,17 @@ print(f"Notebook limit: {limits.notebook_limit}")
 settings = await client.settings.get_user_settings()
 print(settings.limits.notebook_limit, settings.output_language)
 
+# Live compute usage is distinct from static account limits.
+usage = await client.settings.get_usage()
+if usage.available:
+    print(usage.active_window, usage.is_exhausted)
+
 # Set language for artifact generation
 result = await client.settings.set_output_language("ja")  # Japanese
 print(f"Language set to: {result}")
 ```
 
-**Important:** Language is a **GLOBAL setting** that affects all notebooks in your account. Use `get_account_limits()` for quota decisions. Supported languages include:
+**Important:** Language is a **GLOBAL setting** that affects all notebooks in your account. Use `get_account_limits()` for static notebook/source limits and `get_usage()` for the live compute meter. Supported languages include:
 - `en` (English), `ja` (日本語), `zh_Hans` (中文简体), `zh_Hant` (中文繁體)
 - `ko` (한국어), `es` (Español), `fr` (Français), `de` (Deutsch), `pt_BR` (Português)
 - And [over 70 other languages](cli-reference.md#language-commands-notebooklm-language-cmd)
@@ -3209,6 +3225,40 @@ the value is absent/non-positive. (The pre-v0.8.0 promotions-based tier / `plan_
 label is **not** back — it could not distinguish free from paid; this reads the real
 quota block instead.) The full per-tier notebook/source/studio limits keyed to these
 ints are in [quota-limits.md](quota-limits.md).
+
+### UsageSummary
+
+Returned by `client.settings.get_usage()`. This is the server's live unified
+compute meter, distinct from published notebook/source limits. It reports
+percentages and authoritative reset timestamps, not a balance or a
+client-computed quota. `status` is `DISABLED` when the account does not enable
+the meter (the summary request is not made), `SKIPPED` when the server declines
+to provide a snapshot, or `READY` when windows and actions are available.
+
+```python
+@dataclass(frozen=True)
+class UsageSummary:
+    status: UsageSummaryStatus
+    windows: tuple[UsageWindow, ...] = ()
+    actions: tuple[UsageAction, ...] = ()
+
+    @property
+    def enabled(self) -> bool: ...  # False only for DISABLED
+
+    @property
+    def available(self) -> bool: ...  # True only for READY
+
+    @property
+    def active_window(self) -> UsageWindow | None: ...
+
+    @property
+    def is_exhausted(self) -> bool | None: ...
+```
+
+`window(UsageWindowKind.FIVE_HOUR)` and `action(UsageActionKind.DEEP_RESEARCH)`
+look up individual rows. Unknown future action codes remain visible with
+`UsageAction.kind is None`; callers should not infer a local debit from an
+action's estimated cost.
 
 ### UserSettings
 

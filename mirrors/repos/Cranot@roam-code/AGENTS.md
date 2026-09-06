@@ -56,7 +56,13 @@ From the dogfood synthesis notes — validated unchanged across 30 → 59 → 21
 
 ### Twelve agi-in-md laws applied to roam-code
 
-These are language-model behavioral laws (validated on Haiku/Sonnet/Opus 4.5/4.6, 1000+ experiments). Each translates directly to a roam-design constraint.
+The historical "LAW" labels below name prompt-design observations from the
+stated Haiku/Sonnet/Opus 4.5/4.6 experiments, not universal findings across
+models, tasks, or instruction carriers. Their translations are maintained
+Roam interface constraints. Historical comparisons do not establish current
+effect sizes or authorize routing, automatic promotion, or weaker verification.
+Use [verification evidence](docs/concepts/verification-evidence.md) to qualify
+changes against concrete outcomes and a simpler baseline.
 
 1. **[LAW] The prompt is the dominant variable.** (D13) — In roam: the **JSON envelope shape is the dominant variable** for agent integration. A 5-signal envelope (`preflight`'s blast/complexity/conventions/coupling/fitness) outperforms a 12-signal envelope on agent-decision speed. Quality of envelope > volume of fields.
 
@@ -107,6 +113,13 @@ The single hardest-earned lesson from the 212-eval corpus. Three commands were m
 **When adding tests / dogfooding / triaging: run every command at least once.** Empty output is itself signal; non-empty output on a "no X" project is the strongest signal of all. See `internal/dogfood/EVALS-HOW-TO.md` for the full lesson.
 
 ### Adding-a-command checklist (informed by patterns 1-6 above)
+
+For evidence and gate corrections, freeze a defect-specific regression test
+and inspect its failure against the unfixed implementation. Then run the same
+test on the repair, include valid-case controls, and exercise the real CLI or
+serialized producer/consumer path. A passing helper or a schema-valid artifact
+does not establish the whole boundary. Preserve incomplete observations and
+their denominator; do not upgrade claims merely by replacing source hashes.
 
 For detector corrections, add paired positive/negative controls: remove the
 reported false positive while retaining a genuine finding. Inspect matched
@@ -339,7 +352,7 @@ analysis core.
 src/roam/atomic_io.py     - atomic_write_text/bytes/json (os.replace; POSIX+Windows safe)
 src/roam/agents_md/       - AGENTS.md generator (compositional; consumes the rest)
 src/roam/constitution/    - capstone .roam/constitution.yml unifying laws+rules+memory+gates
-src/roam/db/findings.py   - cross-detector finding registry (roam findings list/show/count); USER_VERSION 18 schema
+src/roam/db/findings.py   - cross-detector finding registry (roam findings list/show/count); schema version: db.connection.USER_VERSION
 src/roam/laws/            - invariant mining (roam laws mine/check) - self-installing
 src/roam/leases/          - multi-agent coordination (roam lease claim/release/list)
 src/roam/memory/          - repo-local agent memory (.roam/memory.jsonl)
@@ -639,8 +652,9 @@ Full typed surface lives in `src/roam/plugins/registry.py`. Tests live in
 ## Testing
 
 - All tests must pass before committing (run `pytest tests/` to verify)
-- **CI parallelism:** the `roam.testing.ci_xdist` plugin enables auto workers
-  (`-n auto --dist loadgroup`) when `CI` is set. Local runs are sequential unless
+- **CI parallelism:** the `roam.testing.ci_xdist` plugin injects bounded workers
+  (`-n N --dist loadgroup`) when `CI` is set: two by default, overridden by
+  `ROAM_XDIST_WORKERS` (this repository's CI selects four). Local runs are sequential unless
   `-n` is supplied; prefer `-n 4 --dist loadgroup` for bounded local parallelism.
 - Use `-n 0` to run sequentially when debugging
 - Use `-m "not slow"` to skip timing-sensitive performance tests
@@ -740,8 +754,10 @@ bundles):
    start. Full standard: the ops durable-followthrough memo under the
    private planning folder.
 7. The CI matrix runs the suite in parallel via the `roam.testing.ci_xdist`
-   plugin (loaded from pyproject `addopts`; injects `-n auto --dist
-   loadgroup` only when `CI` is set). History: the 3.10 lane outgrew its
+   plugin (loaded from pyproject `addopts`; injects `-n N --dist
+   loadgroup` only when `CI` is set, with the workflow selecting four workers).
+   The local release gate passes explicit `-n`/`--dist` values so its
+   `--workers` budget is independent of the CI environment. History: the 3.10 lane outgrew its
    job timeout three times sequentially (20 → 30 → 45 min). New tests that
    are xdist-unsafe must carry an `xdist_group` marker.
 
@@ -838,10 +854,14 @@ route to `l1_probe` with embedded probe answers. See
   --judge`** — A/B harness. ALWAYS pin `--model claude-opus-4-8` (the
   `opus[1m]` SDK alias currently resolves to 4.7). `--ground-truth` routes
   outputs through `internal/benchmarks/oracle_pytest.py` / `oracle_fix_bug.py`.
-- **`python3 scripts/bench_analyze.py <out-dir>`** — re-aggregates any
-  bench-compile output with the HONEST per-dispatched view (timeouts
-  counted at the cap, not dropped). `bench-compile`'s own table drops
-  timeouts and understates the reliability win. Run this on every bench.
+- **`python3 scripts/bench_analyze.py <out-dir> --timeout-cap N [--json]`** —
+  account for every discovered saved cell, including invalid/unreadable results.
+  Set N to the run's actual cap. Metric means name their observed denominator;
+  timeout wall estimates are separate and missing costs remain unknown. Saved
+  artifacts do not prove assignment/dispatch counts or verified task success.
+  The live command separately reports assigned, dispatched, reused and parsed
+  counts; its metric table is conditional on parsed successful results. See
+  [the benchmark accounting guide](docs/concepts/verification-evidence.md#benchmark-accounting).
 
 ### Nightly crons (in `/etc/cron.d/roam-dogfood`)
 

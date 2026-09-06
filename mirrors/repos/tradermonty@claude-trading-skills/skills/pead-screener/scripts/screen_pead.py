@@ -420,13 +420,17 @@ def main():
     candidates = []
 
     if mode == "A":
-        candidates = _get_candidates_mode_a(client, args)
+        candidates, reason = _get_candidates_mode_a(client, args)
     else:
-        candidates = _get_candidates_mode_b(args)
+        candidates, reason = _get_candidates_mode_b(args)
 
     if not candidates:
-        print("  No candidates found. Exiting.")
-        sys.exit(0)
+        exit_code, level, message = _ZERO_RESULT_REASONS.get(
+            reason, (1, "ERROR", f"No candidates found (reason: {reason}).")
+        )
+        print(f"ZERO_RESULT_REASON={reason}", file=sys.stderr)
+        print(f"  {level}: {message}", file=sys.stderr)
+        sys.exit(exit_code)
 
     print(f"  Total candidates: {len(candidates)}")
     print()
@@ -635,8 +639,53 @@ def profile_market_cap(profile: dict) -> float:
     return 0.0
 
 
-def _get_candidates_mode_a(client: FMPClient, args) -> list[dict]:
-    """Get candidates from FMP earnings calendar (Mode A)."""
+# ZERO_RESULT_REASON -> (exit_code, level, one-line explanation). Both
+# `_get_candidates_mode_a` and `_get_candidates_mode_b` return `(candidates,
+# reason)`; `reason` is None when `candidates` is non-empty. See
+# docs/dev/provider-contracts.md.
+_ZERO_RESULT_REASONS = {
+    "no_earnings_rows": (
+        0,
+        "WARNING",
+        "The FMP earnings calendar returned no rows for the selected date range.",
+    ),
+    "profiles_budget_exhausted": (
+        0,
+        "WARNING",
+        "API budget was exhausted before any company profile could be fetched.",
+    ),
+    "no_profiles_returned": (
+        1,
+        "ERROR",
+        "The FMP API returned earnings symbols but no company profiles for any of them.",
+    ),
+    "profiles_missing_required_field:marketCap": (
+        1,
+        "ERROR",
+        "None of the returned profiles contain a marketCap or mktCap field; "
+        "the FMP response shape may have changed.",
+    ),
+    "all_below_market_cap_floor": (
+        0,
+        "INFO",
+        "All candidates were below the minimum market cap floor.",
+    ),
+    "no_input_candidates": (
+        0,
+        "INFO",
+        "No records in the input JSON met the minimum grade filter.",
+    ),
+}
+
+
+def _get_candidates_mode_a(client: FMPClient, args) -> tuple[list[dict], Optional[str]]:
+    """Get candidates from FMP earnings calendar (Mode A).
+
+    Returns:
+        ``(candidates, reason)`` where ``reason`` is ``None`` when
+        ``candidates`` is non-empty, else one of the keys in
+        ``_ZERO_RESULT_REASONS``.
+    """
     # Calculate date range
     to_date = datetime.now().strftime("%Y-%m-%d")
     from_date = (datetime.now() - timedelta(days=args.lookback_days)).strftime("%Y-%m-%d")
@@ -646,27 +695,40 @@ def _get_candidates_mode_a(client: FMPClient, args) -> list[dict]:
     earnings = client.get_earnings_calendar(from_date, to_date)
     if not earnings:
         print("  WARNING: No earnings data returned")
-        return []
+        return [], "no_earnings_rows"
 
     print(f"  Raw earnings events: {len(earnings)}")
 
     # Get unique symbols
     symbols = list(set(e.get("symbol", "") for e in earnings if e.get("symbol")))
     if not symbols:
-        return []
+        return [], "no_earnings_rows"
 
     # Fetch company profiles for market cap filtering
     print(f"  Fetching profiles for {len(symbols)} symbols...")
     profiles = client.get_company_profiles(symbols)
 
+    if not profiles:
+        api_stats = client.get_api_stats()
+        if api_stats.get("budget_remaining") == 0 or api_stats.get("rate_limit_reached"):
+            return [], "profiles_budget_exhausted"
+        return [], "no_profiles_returned"
+
     # Build candidates with market cap filter (gap filter deferred to Phase 2
     # where actual price data is available for accurate gap calculation)
     grade_map = {e.get("symbol"): e for e in earnings}
     candidates = []
+    any_usable_cap = False
 
     for symbol in symbols:
         earning = grade_map.get(symbol, {})
         profile = profiles.get(symbol, {})
+
+        if isinstance(profile, dict) and (
+            _coerce_market_cap(profile.get("marketCap")) is not None
+            or _coerce_market_cap(profile.get("mktCap")) is not None
+        ):
+            any_usable_cap = True
 
         # Market cap filter (/stable returns marketCap; v3 returned mktCap)
         market_cap = profile_market_cap(profile)
@@ -691,11 +753,21 @@ def _get_candidates_mode_a(client: FMPClient, args) -> list[dict]:
         )
 
     print(f"  Candidates after market cap filter: {len(candidates)}")
-    return candidates
+
+    if candidates:
+        return candidates, None
+    if not any_usable_cap:
+        return [], "profiles_missing_required_field:marketCap"
+    return [], "all_below_market_cap_floor"
 
 
-def _get_candidates_mode_b(args) -> list[dict]:
+def _get_candidates_mode_b(args) -> tuple[list[dict], Optional[str]]:
     """Get candidates from earnings-trade-analyzer JSON (Mode B).
+
+    Returns:
+        ``(candidates, reason)`` where ``reason`` is ``None`` when
+        ``candidates`` is non-empty, else one of the keys in
+        ``_ZERO_RESULT_REASONS``.
 
     Raises:
         SystemExit(1): On file not found, JSON parse error, or validation error.
@@ -735,7 +807,10 @@ def _get_candidates_mode_b(args) -> list[dict]:
             )
 
     print(f"  After grade filter (>= {args.min_grade}): {len(candidates)}")
-    return candidates
+
+    if candidates:
+        return candidates, None
+    return [], "no_input_candidates"
 
 
 if __name__ == "__main__":

@@ -592,9 +592,14 @@ several unrelated technical topics into one dense batch.
 
 **Apply the operator's answers back onto the issue**: update the score
 footer, remove or update the `triage:{outcome}` label, revise
-acceptance criteria to reflect the decision, and record the decision in
-a comment. The next ordinary Discover pass then picks the issue up
-normally -- grooming itself never claims or works the issue (see
+acceptance criteria to reflect the decision, and record the decision as
+inline prose in the issue body: `Maintainer decision (<provenance>,
+Groom hearing, <date>): <resolution text>` -- the shape
+`suitability-triage.mjs`'s Check 7 recognizes as a resolved
+decision (`#2661`); a comment may additionally note the decision, but the body
+itself is what re-triage reads. The next ordinary Discover pass then
+picks the issue up normally -- grooming itself never claims or works
+the issue (see
 [Mutation Policy and Coordination Rule](../.github/instructions/idd-suitability.instructions.md#mutation-policy-and-coordination-rule)).
 
 **Worked example.** An issue was rejected `needs-decision` at score
@@ -607,7 +612,9 @@ invalidation-on-write. After the operator picks TTL-based expiry, the
 acceptance criteria are rewritten to "cache reads for up to 60 seconds
 via TTL-based expiry; no explicit invalidation path is required", the
 score footer is raised to `4/5`, and the `triage:needs-decision` label
-is removed with a comment recording the decision and its rationale.
+is removed after the body records `Maintainer decision (Groom hearing,
+2026-06-27): TTL-based expiry, chosen over explicit
+invalidation-on-write for simplicity`.
 
 ## Roadmap completion audits
 
@@ -694,6 +701,20 @@ external scheduler.
 
 Running this variant safely requires:
 
+- **A non-context-inheriting delegation mechanism for the full
+  B-through-F4 worker role, when the calling tool offers one.** A
+  context-inheriting worker (e.g. Claude Code's `fork` subagent) can let
+  the orchestrator's own recent framing compete with, and sometimes
+  override, the delegation brief's own role statement — the same
+  problem [Critique pass invocation](#critique-pass-invocation) already
+  avoids for Claude Code's narrower critique-pass role, since that row
+  also picks a fresh `general-purpose` agent rather than a
+  context-inheriting one. Extend that same preference to this full
+  worker role, whenever the tool exposes the choice, and fall back to
+  the explicit role-statement wording in
+  [Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation)
+  as defense-in-depth when only a context-inheriting mechanism is
+  available (kurone-kito/idd-skill#2221, kurone-kito/idd-skill#2624).
 - **A small concurrency cap**, sized against CI-minute cost and
   shared-file contention rather than raised without bound. The optional
   `discover-shared-file-overlap` helper (see

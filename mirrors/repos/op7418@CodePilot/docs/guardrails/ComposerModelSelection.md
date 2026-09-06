@@ -18,6 +18,7 @@
 - Picker 左侧主体导航**只能是 Runtime**，顺序来自 `RUNTIME_IDS`。唯一例外是 Runtime 列表上方固定的 Favorites 快捷入口；Provider、最近使用不得成为左侧一级导航。
 - 点击左侧 Runtime 是 binding-aware action：未绑定新聊天更新待创建完整 route；第一次真实执行被接受后，左侧 Runtime lane 必须 visibly disabled，普通 Picker 不得创建 handoff 或突然跳到另一个聊天。未来若开放跨 Runtime 交接，只能由独立、明确写明“在新聊天中继续”且带确认的入口调用；不得直接 PATCH `runtime_pin`，也不得只改前端过滤状态。
 - 右侧只显示所选 Runtime 当前可执行的 live route，并按 provider instance 小标题分组；Provider 图标/名称是分组身份，用于区分同名模型，不是选择器的第一层。
+- 已有聊天可在固定 Runtime 内切换不同 Provider 的兼容模型；普通模型选择必须保留当前 session ID、消息和页面，不能创建或导入另一个聊天。不要把“禁止换 Runtime”扩大为“禁止换服务商”。底层续接由 Runtime adapter 处理，详情见 `Runtime.md` §0。
 - Picker 的可执行 identity 是 `(providerInstanceId, modelId)`，不能只按 model id。两个渠道实例即使暴露同名模型也必须是两个独立 route。
 - 收藏以版本化 localStorage `codepilot:model-route-favorites:v2` 保存 `(runtimeId, providerInstanceId, modelId)` 精确组合；点击必须走一次完整 route action：同 owner Runtime 使用 CAS route mutation，bound 聊天中其它 Runtime 的收藏必须 disabled，不能借收藏绕过 Runtime lock。provider/model snapshot 绝不能据以猜一条可执行 route。
 - 未发布 V1 收藏缺 Runtime identity，当前 parser 必须 fail closed；不得用打开 picker 时的 Runtime 猜迁移。
@@ -265,6 +266,8 @@ if (!resolvedProviderId || !resolvedModel) return;
 |---|---|
 | `src/__tests__/unit/chat-runtime.test.ts` | 5 个 chat-runtime helper test，含 registry 注册副作用回归 |
 | `src/__tests__/unit/provider-resolver.test.ts` | resolveProvider 在 runtime opt 下的 hidden + runtime stack |
+| `src/__tests__/unit/runtime-route-validation.test.ts` | 未落库 catalog 模型、隐藏/不存在/不兼容模型、Codex 冷缓存发现与 recovery safe mode |
+| `src/__tests__/e2e/old-chat-model-route.spec.ts` | 三 Runtime 旧聊天同/跨 Provider 切模型，保留聊天 ID、页面、消息与聊天总数；跨 Runtime 仍拒绝 |
 | 待补 `useProviderModels.test.ts` | hook 单测：fetchState 转移 / providerWasFilteredOut / requestedProviderId 三层语义 / AbortController 竞态 |
 | 待补 `ChatView-send-gate.test.ts` | 三道 gate / append-before-gate 防御 |
 | `src/__tests__/unit/sdk-subprocess-env.test.ts` | toClaudeCodeEnv 不 leak hidden role default |

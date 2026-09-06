@@ -204,8 +204,8 @@ twenty-way fanout and caches error/recovery telemetry for 120 seconds. That leav
 enough distinct completed-item evidence to drive a 20-outcome tide despite
 repeated targets or excluded runs while still bounding telemetry pressure.
 This bounds
-telemetry pressure without exceeding the 128-worker fleet budget. Worker details
-paginate up to 300 jobs per workflow run so 89-shard runs contribute to a
+telemetry pressure without changing the 32-worker fleet budget. Worker details
+paginate up to 300 jobs per workflow run so retained large matrix runs contribute to a
 complete internal census. Titles, job names, raw URLs, opaque target keys, and
 raw errors are removed before the status snapshot is persisted or returned.
 Only the allowlisted canonical repository/item reference tuple and a validated
@@ -362,7 +362,7 @@ Do not move these into the dashboard:
 
 The dashboard Worker owns durable exact-review admission only: it deduplicates
 webhook deliveries, coalesces each repository/item pair, and leases at most
-128 Actions executors, with up to 120 active leases per target repository. It does
+32 Actions executors, with up to 24 active leases per target repository. It does
 not decide review outcomes or perform target repository mutations. For
 command-triggered reviews, the queue retains the bounded review prompt and
 command-status identifiers so the leased GitHub Actions executor can update the
@@ -512,7 +512,7 @@ required count or health value returns an unknown projection with HTTP 503
 instead of a plausible empty queue.
 
 Production overrides publication minimum, base, and maximum capacity to 8, 32,
-and 40, while source fallback values are 4, 24, and 48. The controller records
+and 32, while source fallback values are 4, 24, and 48. The controller records
 failure, cooldown, recovery, and demand telemetry and scales within the
 production range. The private publication state also tracks `batches`, `direct`,
 and adaptive capacity control: production enables up to 8 concurrent size-8
@@ -645,9 +645,17 @@ older probes, including across tombstone expiry. Tombstones expire lazily after
 at least 30 minutes; probes outliving retention must retry.
 
 Alarms prune up to `EXACT_REVIEW_STALE_PUBLICATION_PRUNE_LIMIT` stale revisions
-(default 100), oldest first, without GitHub reads. Only pending/parked rows without
-active batch ownership, terminal finalization or command context qualify;
+(default 100), oldest first, without GitHub reads. Pending/parked rows require no
+active batch ownership or terminal finalization. A command row with a missing
+terminal requires one exact authoritative successor and matching lifecycle
+admission: the same marker and comment requeues without a finalizer, while a
+changed address or non-command successor records superseded with an acknowledgement
+driver. Missing, ambiguous, or mismatched successor state stays retained fail-closed;
 duplicate-lineage and legacy terminal cleanup remains operator-owned.
+Authenticated reconciliation samples report `successor_fence_state` only for
+`stale_revision` rows whose acknowledgement is unavailable because the terminal
+disposition is missing. `verified` is diagnostic evidence, never mutation
+permission; other rows report `null`.
 Successful queue handoff expires the workflow's review-start lease to permit
 another exact-head review; terminal publication still deletes the placeholder.
 
@@ -729,6 +737,14 @@ cancellation clears the lease and requeues the item. Finalizer success remains
 provisional because GitHub can still cancel the run or fail a post-action; only
 the signed terminal-run backstop removes the item after GitHub confirms the
 exact attempt succeeded. A newer revision can requeue immediately. A signed
+`POST /internal/exact-review/publications/reconcile` defaults to `apply:false`.
+It classifies stale and legacy publication candidates without reconciliation-driven
+queue, lifecycle, batch, or Bay mutations; expired batches are excluded from active
+ownership without reclaiming their rows. Existing admission-cache revocation,
+request cleanup, and cold-start initialization still run. `apply:true` retains
+normal expiry recovery and terminalization. This is an authenticated operator
+route, not a Bay action.
+
 `POST /internal/exact-review/reconcile` backstop accepts at most 32 exact run IDs
 and intersects them with currently claimed leases. The Worker checks those IDs
 and attempts with an Actions-read GitHub App token and reconciles only runs

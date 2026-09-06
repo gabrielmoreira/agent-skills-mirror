@@ -16,7 +16,7 @@ Read `../shared/policy-registry.json` before PMax or policy-sensitive work. If i
 
 ## Build from evidence, not filler
 
-Pull the existing campaign, ad group, and asset coverage with `runScript` before recommending new assets. Use search terms, converting ads, landing-page content, approved offers, and customer language as source material. Do not infer ratings, pricing, guarantees, availability, or product attributes.
+Pull the existing campaign, ad group, and asset coverage using available read capabilities before recommending new assets. Use search terms, converting ads, landing-page content, approved offers, and customer language as source material. Do not infer ratings, pricing, guarantees, availability, or product attributes.
 
 For each proposed asset, produce this reviewable manifest:
 
@@ -35,9 +35,9 @@ Keep the brief deliberately varied: each concept should test a different motivat
 ## Platform-aware execution
 
 - Validate copy and destination fields against the current connected tool metadata before creating anything. Do not trust memorized limits or silently truncate assets.
-- Only create/link callouts, sitelinks, structured snippets, or image assets after the user approves the exact manifest. Use dedicated mutation tools, record the returned `changeId`, and read back the resulting entity.
+- Only create/link callouts, sitelinks, structured snippets, or image assets after the user approves the exact manifest. Use a supported capability, record any operation identifiers returned, and verify the resulting entity.
 - Verify image ownership, landing-page rights, and policy-sensitive claims before an image asset is uploaded. A generated image is a production input, not proof that the claim in it is allowed.
-- The current NotFair MCP surface can create/link supported asset-library types and can enable or pause PMax asset groups. It does **not** establish that it can compose or edit a PMax asset group. Check `tools/list` before promising that operation; otherwise deliver the PMax brief for completion in Google Ads.
+- Check the live connection for the requested asset-library or PMax asset-group operation. If it is unavailable, deliver a brief for completion in Google Ads without claiming it was applied.
 
 ## PMax brief
 
@@ -53,5 +53,5 @@ For a PMax request, produce a cross-placement production brief rather than a gen
 
 1. Never publish an unsupported claim, a destination you did not validate, or an asset with unknown rights.
 2. Never call a production brief an uploaded asset. Separate `ready_for_review` from `published`.
-3. Confirm scope and exact asset count before every write; mutations must be reversible through `undoChange` where supported.
+3. Confirm scope and exact asset count before every write; check and explain the available reversal path.
 4. Defer bid, budget, keyword, and campaign-structure changes to `/google-ads`; defer RSA testing to `/google-ads-copy`.

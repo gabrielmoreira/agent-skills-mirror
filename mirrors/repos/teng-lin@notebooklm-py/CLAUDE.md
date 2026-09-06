@@ -6,7 +6,7 @@ Guidance for Claude Code working in this repo. Also follow the file/naming conve
 
 `notebooklm-py` is an unofficial **async** Python client for Google NotebookLM. It drives Google's internal `batchexecute` RPC protocol to automate notebooks, sources, AI querying, and studio artifacts (podcasts, videos, quizzes, …).
 
-**Critical constraint:** the obfuscated RPC method IDs in `src/notebooklm/rpc/types.py` are undocumented and can break whenever Google changes them — the #1 breakage class.
+**Critical constraint:** the obfuscated RPC method IDs in `src/notebooklm/rpc/_identifiers.py` are undocumented and can break whenever Google changes them — the #1 breakage class. `rpc/types.py` is the compatibility-facing re-export.
 
 ## Development Commands
 
@@ -61,7 +61,7 @@ See **[docs/architecture.md](docs/architecture.md)** for the layered design, cal
 
 ## Common Pitfalls
 
-1. **RPC method IDs change** — re-capture network traffic and update `rpc/types.py`.
+1. **RPC method IDs change** — re-capture network traffic and update `rpc/_identifiers.py`.
 2. **Position-sensitive nested params** — copy the shape from an existing implementation; source-id nesting varies (`[id]` / `[[id]]` / `[[[id]]]` / `[[[[id]]]]`).
 3. **CSRF tokens expire** — call `client.refresh_auth()` or re-run `notebooklm login`.
 4. **Rate limiting** — add delays between bulk operations.

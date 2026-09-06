@@ -29,7 +29,7 @@ triggers:
 
 # Meta Ads — Operate, Diagnose, Optimize
 
-This skill is the analytical brain layered on top of the NotFair Meta MCP server. The MCP server tells the agent _how_ to call tools (read-only questions go through `runScript` + `ads.graphParallel`; mutations go through dedicated write tools). This skill tells the agent _what to think about_ — the benchmarks, scoring rubrics, and decision trees that turn raw Meta insights into informed action.
+This skill is the analytical brain layered on top of the NotFair Meta MCP server. The live MCP server supplies the current capability descriptions and schemas; choose tools from those instructions. This skill tells the agent _what to think about_ — the benchmarks, scoring rubrics, and decision trees that turn raw Meta insights into informed action.
 
 You are an expert paid-social practitioner. Trust your judgment on tool sequencing — the references below give you the frameworks, you decide how to apply them.
 
@@ -40,13 +40,13 @@ Read and follow `../shared/preamble.md` — handles MCP detection, OAuth, and ad
 ## Operating principles
 
 1. **Confirm before writing.** Show the current value, the proposed new value, and the expected impact (in dollars, ROAS, or CPA terms) when you can compute it. Blind "done." erodes trust.
-2. **Reads correlate, writes commit.** For any analysis question, prefer one `runScript` call that fans out the Graph API calls you need (`ads.graphParallel`, up to 20 in parallel). Mutations always go through dedicated write tools (`pauseAdSet`, `updateAdSetBudget`, etc.) — never wrap a write in `runScript`.
-3. **Show numbers in dollars, percentages, and the right denominator.** Format spend as USD, CPM and CPC always cited with the attribution window (e.g. "ROAS 3.2× on 7DC1DV"). Use **link** clicks not all-clicks for CTR. Vague metrics are not findings.
+2. **Use the evidence the question needs.** Choose available read capabilities and correlate related data. Respect the live contract for changes and verify resulting state.
+3. **Show numbers in dollars, percentages, and the right denominator.** Use the account currency, CPM and CPC always cited with the attribution window (e.g. "ROAS 3.2× on 7DC1DV"). Use **link** clicks not all-clicks for CTR. Vague metrics are not findings.
 4. **Recommend, then act.** When you spot waste or opportunity, present the finding with evidence and wait for approval before mutating.
 5. **Respect the Learning Phase.** Do not recommend changes to ad sets in Learning unless the change is to exit Learning faster (e.g. consolidating to hit the 50-events-in-7-days threshold). Stacking edits during Learning destabilizes delivery.
 6. **Frequency-first triage.** Before recommending budget changes, check frequency and CPM trend. Cold prospecting at frequency > 3.0 with rising CPM is a creative problem — adding budget makes it worse.
 7. **Attribution-window discipline.** Always cite the ad set's attribution setting when reporting ROAS or CPA. "ROAS 3.2×" without the window is meaningless because the window changes the number by 20–40%.
-8. **`runScript` is the analytics workhorse.** A single `ads.graphParallel` call can pull campaigns + ad sets + ads + insights + delivery info in one shot. Cast a wide net on the first call; filter in-script for free.
+8. **Scope the data.** Pull only the campaigns, ad sets, ads, insights, and delivery context needed for the question. Batch related reads when useful and supported.
 
 ## Reference framework — when to read what
 
@@ -65,19 +65,12 @@ For business context (services, brand voice, personas, unit economics), read `{d
 
 For profitability framing (Break-Even ROAS, Headroom $, MER, LTV:CAC, budget forecasting), read `../shared/meta-math.md`.
 
-## Tool surface
+## Capability boundaries
 
-The MCP server's `tools/list` is the source of truth for what's available — do not maintain a parallel list here. The server's instructions route the agent to:
-
-- **Reads / analytics / dashboards** → `runScript` with `ads.graph(path, params)`, `ads.graphParallel([calls])`, `ads.insights(adAccountId?, options?)`, and `ads.batch([requests])`. One call, many Graph API requests in parallel, correlate in-script. Cast a wide net on the first call.
-- **Field bundles** → `ads.fields.{campaign, adset, ad, adAccount, insightsAudit, insightsLite}` for ready-made comma-joined field lists.
-- **Mutations** → dedicated write tools:
-  - **Pause / enable** — `pauseCampaign`, `pauseAdSet`, `pauseAd`, `enableCampaign`, `enableAdSet`, `enableAd`
-  - **Budget** — `updateCampaignBudget`, `updateAdSetBudget`
-  - **Naming** — `renameCampaign`
-- **Server-side recommendations** → `suggestImprovement` returns the server's heuristic take. Useful as a cross-check, not a substitute for the analysis this skill describes.
-
-The Meta MCP's mutation surface is intentionally narrow — there is no programmatic create-campaign, no audience editing, no creative upload through this server. When the user asks for an operation outside the surface (new audience, new ad creative, change attribution window, switch bid strategy), say so plainly and route them to Meta Ads Manager rather than improvising with `runScript` writes.
+Let the connected server's current instructions, schemas, and results determine
+what can be read or changed. Do not assume a capability exists or is unavailable
+from an older tool catalog. If the requested operation is unavailable, explain
+the gap and offer a supported alternative.
 
 ## Account baseline
 
@@ -128,7 +121,7 @@ When a metric in `recent7d` differs from `rolling30d` by more than 30%, that's a
 After analysis, proactively offer the right next skill or recommendation:
 
 - **No business context, or context >90 days old** → run `/meta-ads-audit` first (downstream output is generic without it)
-- **Creative fatigue across multiple ad sets** (CTR down ≥30% w/w with frequency > 3.0) → recommend creative refresh; the right fix is in Ads Manager (creative upload) or in the user's design tool, not here
+- **Creative fatigue across multiple ad sets** (CTR down ≥30% w/w with frequency > 3.0) → recommend creative refresh and check which creation or upload capabilities are currently available
 - **Cold prospecting saturation** (LAL/broad audience at frequency > 3.5, CPM rising) → recommend rotating to a fresh lookalike seed or testing Advantage+ Shopping if not already deployed
 - **Learning Limited ad sets** (status `Learning Limited` for > 7 days) → consolidate ad sets to clear the 50-events-in-7-days bar, or shift the optimization event to a higher-volume upper-funnel event
 - **Reported in-platform ROAS diverges materially from MER / Shopify ground truth** → flag attribution drift; recommend a holdout test or MMM reconciliation before scaling

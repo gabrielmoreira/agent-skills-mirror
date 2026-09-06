@@ -6,17 +6,17 @@ argument-hint: "<account, campaign, date range, or X Ads goal>"
 
 # X Ads
 
-Read `../shared/operating-contract.md` and `../shared/measurement-framework.md` before acting. Use the `x_ads_` tools on the universal NotFair MCP as the source of truth.
+Read `../shared/operating-contract.md` and `../shared/measurement-framework.md` before acting. Use the live account data from the connected platform as the source of truth.
 
 ## Establish the live scope
 
-1. Resolve `~~x-ads` to the universal connector's `x_ads_` tool surface or a verified compatible connector. On the universal connector, call `listConnectedPlatforms` and require X Ads to be connected; do not infer X access from another platform's tools.
+1. Follow [`../../docs/mcp-connection.md`](../../docs/mcp-connection.md). Resolve `~~x-ads` to the live connection. Use its current instructions and capability descriptions to choose tools, and verify the requested platform and account from live data. Do not infer access from another connected platform.
 2. Confirm the selected account with a harmless account/setup read. If the connector is missing or unauthorized, direct the user to connect or re-authorize X Ads and stop before claiming live access.
 3. Record the account currency, timezone, objective, conversion definition, attribution basis, and requested date window. Treat tracking gaps as limitations, not zero performance.
 
 ## Diagnose with one broad read
 
-Use the connector's `runScript` analytics surface for audits and correlated reads. Pull campaigns, line items, funding/configuration, and performance in one pass when possible; use specialized point reads only for one narrow object or for capabilities outside the script sandbox.
+Pull the campaigns, line items, funding/configuration, and performance relevant to the question. Choose available read capabilities and batch related data when useful.
 
 Interpret the platform correctly:
 
@@ -30,7 +30,7 @@ Lead with the business decision: strongest contributor, largest material risk, l
 
 ## Execute approved changes safely
 
-Use dedicated mutation tools, never the read-only script surface. Show the exact account, entity, current value, proposed value, spend exposure, risk, and rollback before acting. Prefer a dry-run preview for budget, bid, targeting, optimization-event, and create operations when the connector offers it.
+Use a supported write capability and respect its current contract. Show the exact account, entity, current value, proposed value, spend exposure, risk, and rollback before acting. Prefer a dry-run preview for budget, bid, targeting, optimization-event, and create operations when the connector offers it.
 
 - Prefer pause/enable over irreversible deletion.
 - Create campaigns and line items paused, then verify configuration before activation.

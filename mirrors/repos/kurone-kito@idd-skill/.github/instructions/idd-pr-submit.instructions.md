@@ -176,6 +176,40 @@ follow-up is important enough to file in-repo now, invoke the
 `issue-authoring` skill (its Stage 1 hold) instead of improvising a
 body. Do not add a parallel "worker-lite authoring" contract.
 
+### D3.6 — Derive the IDD impact checklist
+
+Skip this sub-step and D3.7 below entirely when
+`.github/pull_request_template.md` does not exist or has no `IDD
+impact` heading — mirroring D3's own "If no template file exists, use
+the structure below directly" fallback, there is no checklist to
+derive or reconcile. When it exists, `.github/pull_request_template.md`'s
+IDD impact checklist (`Instruction files changed` / `Template files
+changed` / `Helper scripts changed` / `Config schema changed` /
+`Security / credential / merge behavior changed`) is drafted from the
+branch's actual changed-file list, not from memory. Before drafting the
+body, list the branch's changes
+(`git diff --name-only origin/{development-branch}...HEAD`) and derive
+each checkbox mechanically, using a root-anchored path-prefix match
+(the path starts with the glob's literal prefix, not merely contains
+it):
+
+- **Instruction files changed** — any path starting with
+  `.github/instructions/` (excludes `idd-template/.github/instructions/`
+  paths, which count only under Template files below).
+- **Template files changed** — any path starting with `idd-template/`.
+- **Helper scripts changed** — any path starting with `src/scripts/`,
+  `scripts/`, or `bin/`.
+- **Config schema changed** — `audit/sync-manifest.json`,
+  `.github/idd/config.json`, or another repository-designated
+  config-schema-bearing file.
+- **Security / credential / merge behavior changed** stays a judgment
+  call — leave it to ordinary self-review discretion; it is not
+  mechanically derivable from paths alone.
+
+D3.7 below re-derives this same checklist against the final HEAD before
+merge — later commits (a review-fix round, a critique-pass fix landed
+before the first push) can change the answer.
+
 ### PR body language
 
 The PR body's prose sections above (summary, background/rationale,
@@ -414,6 +448,38 @@ completion.
    merge — are not automatically covered; re-run this step against the final HEAD
    before F3 merges.
 
+### D3.7 — Re-verify the IDD impact checklist before merge
+
+Immediately before F3 merge (the same "re-run before merge" point as
+D3.5 step 7 above), re-derive D3.6's checklist against the final HEAD's
+full changed-file list and compare it against the PR body's current
+checked boxes. When a ratchet-rule-bearing file (for example,
+`audit/sync-manifest.json`'s own ratchet-rule comment) raises a
+documented budget or limit anywhere in the branch's commits, also
+confirm the file's required PR-description callout is actually present
+in the body now, not only in a commit message — a callout only
+promised at draft time and never landed is the same drift this step
+exists to catch.
+
+On any mismatch: re-run the claim revalidation gate immediately before
+editing (a separate mutation, not covered by an earlier gated push),
+fetch the PR's current full body, edit only the checklist section (and
+the accompanying file-list prose, when present) in the fetched copy,
+and post the complete result back — `gh pr edit {pr-number} --body-file
+<path>` replaces the whole body, so never pass a partial file, which
+would drop the closing-keyword line and every other section. After
+posting, repeat D3.5 step 6's closing-set check when D3.5 applies to
+this branch (skip it on the same non-default-`{development-branch}`
+condition D3.5 itself skips under, where `closingIssuesReferences`
+never populates and the check would be meaningless) — edited prose can
+otherwise introduce a stray keyword-adjacent reference.
+
+**Known gap**: no phase file currently re-invokes D3.5 or this step by
+name from F1-F3, so this re-check depends on the same implicit trigger
+D3.5 step 7 already relies on rather than an explicit F-phase call —
+out of this step's own scope to close; recommend a follow-up issue to
+wire an explicit F2/F3 trigger if this gap is not already tracked.
+
 ## D4 — Wait for CI
 
 Schedule a wake, or background this wait only if the
@@ -461,7 +527,21 @@ confirmed condition above. Delegate polling mechanics to
   from the carve-out above: the check evaluated before Copilot's
   asynchronous review exists for this HEAD SHA at all. This is an
   expected, self-resolving timing race, not a code-caused failure and
-  not the review-disposition state above — request a review if one
-  is not already outstanding, wait for Copilot's review to land for the
-  current HEAD SHA, then rerun via `rerun-advisory-convergence.mjs` (see
-  `idd-ci.instructions.md` §Rerun mechanics) and resume D4.
+  not the review-disposition state above — but "not already outstanding"
+  is the wrong test on its own: `SATISFIED`, `WAIT`, and `CAP_EXHAUSTED`
+  can all read as "not outstanding" too (`idd-skill#2622`). Run the
+  [canonical `advisory-wait-state`
+  invocation](idd-advisory-wait.instructions.md#1-canonical-path-helper-first)
+  for this PR first and read `outcome`: only `REQUEST_NEEDED` means
+  request a review now. `SATISFIED` (`lastCopilotCommit` already
+  matches this HEAD SHA — Copilot's review already covers it) or `WAIT`
+  (a same-head request already exists, still inside its settle window)
+  both mean request nothing — wait for Copilot's review to land for the
+  current HEAD SHA (already true in the `SATISFIED` case), then rerun
+  via `rerun-advisory-convergence.mjs` (see `idd-ci.instructions.md`
+  §Rerun mechanics) and resume D4. `CAP_EXHAUSTED` (the request cap is
+  already spent) or `RECOVERY_NEEDED` (a proven same-head request
+  exists but needs its marker, not a new request) both need the fuller
+  AW3 handling this bullet does not reimplement — exit CI-wait and
+  proceed directly to `idd-review-snapshot.instructions.md` (E1)
+  instead, the same carve-out the pending-disposition case above takes.

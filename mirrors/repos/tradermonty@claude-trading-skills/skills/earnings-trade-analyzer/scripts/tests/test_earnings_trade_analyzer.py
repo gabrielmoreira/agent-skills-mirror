@@ -13,7 +13,12 @@ import tempfile
 from unittest.mock import MagicMock, patch
 
 import pytest
-from analyze_earnings_trades import apply_entry_filter, main, select_candidates
+from analyze_earnings_trades import (
+    apply_entry_filter,
+    explain_empty_selection,
+    main,
+    select_candidates,
+)
 from calculators.gap_size_calculator import calculate_gap
 from calculators.ma50_calculator import calculate_ma50_position
 from calculators.ma200_calculator import calculate_ma200_position
@@ -291,6 +296,293 @@ class TestCandidateSelection:
         assert len(results) == 1
         assert results[0]["symbol"] == "AAPL"
         assert results[0]["market_cap"] == 3_000_000_000_000
+
+
+# ===========================================================================
+# Zero-Result Reason Tests (Issue #332)
+# ===========================================================================
+
+
+class TestExplainEmptySelection:
+    """explain_empty_selection() ZERO_RESULT_REASON codes, evaluated in order."""
+
+    FIXTURE_EARNINGS = [{"symbol": "AAPL", "date": "2026-09-04", "time": "amc"}]
+    FIXTURE_PROFILE = {
+        "symbol": "AAPL",
+        "price": 319.97,
+        "marketCap": 4699513299320,
+        "beta": 1.086,
+        "lastDividend": 1.06,
+        "exchangeFullName": "NASDAQ Global Select",
+        "exchange": "NASDAQ",
+        "industry": "Consumer Electronics",
+        "sector": "Technology",
+        "country": "US",
+    }
+
+    @staticmethod
+    def _api_stats(budget_remaining=50, rate_limit_reached=False):
+        return {"budget_remaining": budget_remaining, "rate_limit_reached": rate_limit_reached}
+
+    def test_profiles_budget_exhausted_when_budget_zero(self):
+        reason = explain_empty_selection(
+            self.FIXTURE_EARNINGS, {}, 2e9, self._api_stats(budget_remaining=0)
+        )
+        assert reason == "profiles_budget_exhausted"
+
+    def test_profiles_budget_exhausted_when_rate_limit_reached(self):
+        reason = explain_empty_selection(
+            self.FIXTURE_EARNINGS,
+            {},
+            2e9,
+            self._api_stats(budget_remaining=5, rate_limit_reached=True),
+        )
+        assert reason == "profiles_budget_exhausted"
+
+    def test_no_profiles_returned_when_budget_remains(self):
+        reason = explain_empty_selection(self.FIXTURE_EARNINGS, {}, 2e9, self._api_stats())
+        assert reason == "no_profiles_returned"
+
+    def test_missing_required_field_marketcap_when_renamed(self):
+        renamed = dict(self.FIXTURE_PROFILE)
+        renamed["mktCap"] = renamed.pop("marketCap")
+        reason = explain_empty_selection(
+            self.FIXTURE_EARNINGS, {"AAPL": renamed}, 2e9, self._api_stats()
+        )
+        assert reason == "profiles_missing_required_field:marketCap"
+
+    def test_missing_required_field_exchange_when_absent(self):
+        profile = dict(self.FIXTURE_PROFILE)
+        del profile["exchange"]
+        reason = explain_empty_selection(
+            self.FIXTURE_EARNINGS, {"AAPL": profile}, 2e9, self._api_stats()
+        )
+        assert reason == "profiles_missing_required_field:exchange"
+
+    def test_all_below_market_cap_floor(self):
+        reason = explain_empty_selection(
+            self.FIXTURE_EARNINGS,
+            {"AAPL": self.FIXTURE_PROFILE},
+            10_000_000_000_000,
+            self._api_stats(),
+        )
+        assert reason == "all_below_market_cap_floor"
+
+    def test_all_non_us_exchange(self):
+        profile = dict(self.FIXTURE_PROFILE)
+        profile["exchange"] = "TSX"
+        reason = explain_empty_selection(
+            self.FIXTURE_EARNINGS, {"AAPL": profile}, 2e9, self._api_stats()
+        )
+        assert reason == "all_non_us_exchange"
+
+    def test_mixed_filters_rejected_all_is_benign_not_drift(self):
+        """P1 fails the exchange filter, P2 fails the cap floor: an ordinary
+        empty day (different candidates rejected by different filters), not
+        drift. Must not be misclassified as "unknown" (Issue #332 review)."""
+        earnings = [
+            {"symbol": "P1", "date": "2026-09-04", "time": "amc"},
+            {"symbol": "P2", "date": "2026-09-04", "time": "amc"},
+        ]
+        profiles = {
+            "P1": {"marketCap": 5e9, "exchange": "LSE"},
+            "P2": {"marketCap": 1e9, "exchange": "NASDAQ"},
+        }
+        reason = explain_empty_selection(earnings, profiles, 2e9, self._api_stats())
+        assert reason == "mixed_filters_rejected_all"
+
+    def test_no_earnings_rows_is_benign_empty_window(self):
+        """Rows without a symbol (or no rows at all) are a genuine empty window:
+        exit 0, never the fail-closed ``unknown`` fallback (PR #353 review)."""
+        assert explain_empty_selection([], {}, 2e9, self._api_stats()) == "no_earnings_rows"
+        rows_without_symbol = [{"date": "2026-09-04", "time": "amc"}]
+        assert (
+            explain_empty_selection(rows_without_symbol, {}, 2e9, self._api_stats())
+            == "no_earnings_rows"
+        )
+
+    def test_fixture_select_candidates_yields_one_then_zero_on_rename(self):
+        """D4: pin select_candidates + explain_empty_selection against the live fixture."""
+        candidates = select_candidates(self.FIXTURE_EARNINGS, {"AAPL": self.FIXTURE_PROFILE}, 2e9)
+        assert len(candidates) == 1
+
+        renamed = dict(self.FIXTURE_PROFILE)
+        renamed["mktCap"] = renamed.pop("marketCap")
+        assert select_candidates(self.FIXTURE_EARNINGS, {"AAPL": renamed}, 2e9) == []
+        assert (
+            explain_empty_selection(
+                self.FIXTURE_EARNINGS, {"AAPL": renamed}, 2e9, self._api_stats()
+            )
+            == "profiles_missing_required_field:marketCap"
+        )
+
+
+class TestMainZeroResultExitCodes:
+    """Drive main() end-to-end with a mocked FMPClient for each exit code."""
+
+    @staticmethod
+    def _argv(tmpdir):
+        return [
+            "analyze_earnings_trades.py",
+            "--api-key",
+            "test-key",
+            "--output-dir",
+            str(tmpdir),
+        ]
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_no_profiles_returned_exits_1(self, mock_client_class, tmp_path, capsys):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-09-04", "time": "amc"}
+        ]
+        client.get_company_profiles.return_value = {}
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=no_profiles_returned" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_profiles_budget_exhausted_exits_0(self, mock_client_class, tmp_path, capsys):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-09-04", "time": "amc"}
+        ]
+        client.get_company_profiles.return_value = {}
+        client.get_api_stats.return_value = {
+            "budget_remaining": 0,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=profiles_budget_exhausted" in err  # pragma: allowlist secret
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_missing_marketcap_field_exits_1(self, mock_client_class, tmp_path, capsys):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-09-04", "time": "amc"}
+        ]
+        client.get_company_profiles.return_value = {"AAPL": {"exchange": "NASDAQ"}}
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=profiles_missing_required_field:marketCap" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_all_below_market_cap_floor_exits_0(self, mock_client_class, tmp_path, capsys):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-09-04", "time": "amc"}
+        ]
+        client.get_company_profiles.return_value = {
+            "AAPL": {"marketCap": 1_000, "exchange": "NASDAQ"}
+        }
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=all_below_market_cap_floor" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_all_non_us_exchange_exits_0(self, mock_client_class, tmp_path, capsys):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-09-04", "time": "amc"}
+        ]
+        client.get_company_profiles.return_value = {
+            "AAPL": {"marketCap": 3_000_000_000_000, "exchange": "TSX"}
+        }
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=all_non_us_exchange" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_no_earnings_rows_exits_0(self, mock_client_class, tmp_path, capsys):
+        """Calendar rows that carry no symbol reach the zero-result path and exit 0."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [{"date": "2026-09-04", "time": "amc"}]
+        client.get_company_profiles.return_value = {}
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=no_earnings_rows" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_mixed_filters_rejected_all_exits_0(self, mock_client_class, tmp_path, capsys):
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "P1", "date": "2026-09-04", "time": "amc"},
+            {"symbol": "P2", "date": "2026-09-04", "time": "amc"},
+        ]
+        client.get_company_profiles.return_value = {
+            "P1": {"marketCap": 5_000_000_000, "exchange": "LSE"},
+            "P2": {"marketCap": 1_000_000_000, "exchange": "NASDAQ"},
+        }
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path) + ["--min-market-cap", "2000000000"]):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=mixed_filters_rejected_all" in err
 
 
 # ===========================================================================

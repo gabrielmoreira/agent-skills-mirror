@@ -255,7 +255,7 @@ Even with only the following subscriptions, `ultrawork` works well (this project
 
 **Sisyphus** (`claude-opus-5` / **`kimi-k3`** / **`gpt-5.6-sol`** / **`glm-5.2`** ) is your main orchestrator. He plans, delegates to specialists, and drives tasks to completion with aggressive parallel execution. He does not stop halfway. Claude Opus 5 and Kimi K3 are the recommended defaults.
 
-**Hephaestus** (`gpt-5.6-sol` through OpenAI, GitHub Copilot, Vercel, or OpenCode at medium effort) is your autonomous deep worker. Give him a goal, not a recipe. He explores the codebase, researches patterns, and executes end-to-end without hand-holding. *The Legitimate Craftsman.*
+**Hephaestus** (`gpt-5.6-sol` through OpenAI, OpenAI Codex, GitHub Copilot, or OpenCode at medium effort) is your autonomous deep worker. Give him a goal, not a recipe. He explores the codebase, researches patterns, and executes end-to-end without hand-holding. Point him at `gpt-6-astra`, OpenAI's most capable model, when you want the strongest GPT available. *The Legitimate Craftsman.*
 
 **Prometheus** (`claude-fable-5` / **`kimi-k3`**) is your strategic planner. Interview mode: he asks questions, identifies scope, and builds a detailed plan before a single line of code is touched.
 
@@ -295,12 +295,12 @@ When Sisyphus delegates to a subagent, it doesn't pick a model. It picks a **cat
 
 | Category             | What it's for                      |
 | :------------------- | :--------------------------------- |
-| `visual-engineering` | Frontend, UI/UX, design            |
-| `deep`               | Autonomous research + execution    |
+| `visual-engineering` | Visual design, UI/UX, frontend     |
+| `deep`               | Deep work across visual and technical domains |
 | `quick`              | Single-file changes, typos         |
 | `ultrabrain`         | Hard logic, architecture decisions |
 
-The agent says what kind of work it needs; the harness picks the right model. `ultrabrain` routes to GPT-5.6 Sol max (OpenAI / Vercel, then GitHub Copilot, then OpenCode). You touch nothing.
+The agent says what kind of work it needs; the harness picks the right model. `ultrabrain` routes to GPT-6 Astra max and `deep` to GPT-6 Astra high (OpenAI / OpenAI Codex, then GitHub Copilot, then OpenCode); both fall back to GPT-5.6 Sol. You touch nothing.
 
 ### Claude Code Compatibility
 

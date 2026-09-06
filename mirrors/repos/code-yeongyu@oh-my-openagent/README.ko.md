@@ -196,7 +196,7 @@ Read this and tell me why it's not just another boilerplate: https://raw.githubu
 
 **Sisyphus** (`claude-opus-5` / **`kimi-k3`** / **`gpt-5.6-sol`** / **`glm-5.2`**)는 메인 오케스트레이터입니다. 계획을 세우고, 전문가에게 위임하고, 공격적인 병렬 실행으로 작업을 끝까지 밀어붙입니다. 중간에 멈추지 않습니다. Claude Opus 5와 Kimi K3가 권장 기본값입니다.
 
-**Hephaestus** (OpenAI, GitHub Copilot, Vercel 또는 OpenCode에서 medium effort의 `gpt-5.6-sol`만 사용하는)는 자율적으로 깊게 파는 작업자입니다. 레시피가 아니라 목표를 주세요. 코드베이스를 탐색하고, 패턴을 조사하고, 손을 잡아주지 않아도 엔드투엔드로 실행합니다. *The Legitimate Craftsman.*
+**Hephaestus** (OpenAI, OpenAI Codex, GitHub Copilot 또는 OpenCode에서 medium effort의 `gpt-5.6-sol`만 사용하는)는 자율적으로 깊게 파는 작업자입니다. 레시피가 아니라 목표를 주세요. 코드베이스를 탐색하고, 패턴을 조사하고, 손을 잡아주지 않아도 엔드투엔드로 실행합니다. 가장 강력한 GPT를 쓰고 싶다면 OpenAI의 최상위 모델인 `gpt-6-astra`를 지정하세요. *The Legitimate Craftsman.*
 
 **Prometheus** (`claude-fable-5` / **`kimi-k3`**)는 전략 플래너입니다. 인터뷰 모드: 질문으로 스코프를 파악하고, 코드에 손대기 전에 상세한 계획을 만듭니다.
 
@@ -236,12 +236,12 @@ Sisyphus가 서브에이전트에 위임할 때는 모델을 직접 고르지 �
 
 | 카테고리               | 용도                                 |
 | :------------------- | :--------------------------------- |
-| `visual-engineering` | 프론트엔드, UI/UX, 디자인            |
-| `deep`               | 자율 리서치 + 실행                   |
+| `visual-engineering` | 비주얼 디자인, UI/UX, 프론트엔드     |
+| `deep`               | 시각·기술 전반의 심층 작업            |
 | `quick`              | 단일 파일 변경, 오타 수정            |
 | `ultrabrain`         | 어려운 로직, 아키텍처 결정           |
 
-에이전트는 필요한 작업 종류만 말하고, 하네스가 적합한 모델을 고릅니다. `ultrabrain`은 GPT-5.6 Sol max로 라우팅됩니다(OpenAI / Vercel, 그다음 GitHub Copilot, 그다음 OpenCode). 당신이 건드릴 건 없습니다.
+에이전트는 필요한 작업 종류만 말하고, 하네스가 적합한 모델을 고릅니다. `ultrabrain`은 GPT-6 Astra max로, `deep`은 GPT-6 Astra high로 라우팅되고(OpenAI / OpenAI Codex, 그다음 GitHub Copilot, 그다음 OpenCode), 없으면 GPT-5.6 Sol로 넘어갑니다. 당신이 건드릴 건 없습니다.
 
 ### Claude Code 호환성
 

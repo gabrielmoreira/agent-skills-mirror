@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 490 file(s) materialized.
+Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 494 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 490 |
+| Files         | 494 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -507,48 +507,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 446 | ✓ | [`skills/research/grounded-citations/scripts/sources.py`](skills/research/grounded-citations/scripts/sources.py) |
 | 447 | ✓ | [`skills/research/grounded-citations/SKILL.md`](skills/research/grounded-citations/SKILL.md) |
 | 448 | ✓ | [`skills/research/llm-wiki/SKILL.md`](skills/research/llm-wiki/SKILL.md) |
-| 449 | ✓ | [`skills/social-media/DESCRIPTION.md`](skills/social-media/DESCRIPTION.md) |
-| 450 | ✓ | [`skills/social-media/xurl/SKILL.md`](skills/social-media/xurl/SKILL.md) |
-| 451 | ✓ | [`skills/software-development/codebase-inspection/SKILL.md`](skills/software-development/codebase-inspection/SKILL.md) |
-| 452 | ✓ | [`skills/software-development/dogfood/references/issue-taxonomy.md`](skills/software-development/dogfood/references/issue-taxonomy.md) |
-| 453 | ✓ | [`skills/software-development/dogfood/SKILL.md`](skills/software-development/dogfood/SKILL.md) |
-| 454 | ✓ | [`skills/software-development/dogfood/templates/dogfood-report-template.md`](skills/software-development/dogfood/templates/dogfood-report-template.md) |
-| 455 | ✓ | [`skills/software-development/github/references/auth.md`](skills/software-development/github/references/auth.md) |
-| 456 | ✓ | [`skills/software-development/github/references/ci-troubleshooting.md`](skills/software-development/github/references/ci-troubleshooting.md) |
-| 457 | ✓ | [`skills/software-development/github/references/code-review.md`](skills/software-development/github/references/code-review.md) |
-| 458 | ✓ | [`skills/software-development/github/references/conventional-commits.md`](skills/software-development/github/references/conventional-commits.md) |
-| 459 | ✓ | [`skills/software-development/github/references/github-api-cheatsheet.md`](skills/software-development/github/references/github-api-cheatsheet.md) |
-| 460 | ✓ | [`skills/software-development/github/references/issue-to-pr.md`](skills/software-development/github/references/issue-to-pr.md) |
-| 461 | ✓ | [`skills/software-development/github/references/issues.md`](skills/software-development/github/references/issues.md) |
-| 462 | ✓ | [`skills/software-development/github/references/pr-workflow.md`](skills/software-development/github/references/pr-workflow.md) |
-| 463 | ✓ | [`skills/software-development/github/references/repo-management.md`](skills/software-development/github/references/repo-management.md) |
-| 464 | ✓ | [`skills/software-development/github/references/review-output-template.md`](skills/software-development/github/references/review-output-template.md) |
-| 465 | ✓ | [`skills/software-development/github/scripts/gh-env.sh`](skills/software-development/github/scripts/gh-env.sh) |
-| 466 | ✓ | [`skills/software-development/github/scripts/git-credential-token.py`](skills/software-development/github/scripts/git-credential-token.py) |
-| 467 | ✓ | [`skills/software-development/github/SKILL.md`](skills/software-development/github/SKILL.md) |
-| 468 | ✓ | [`skills/software-development/github/templates/bug-report.md`](skills/software-development/github/templates/bug-report.md) |
-| 469 | ✓ | [`skills/software-development/github/templates/feature-request.md`](skills/software-development/github/templates/feature-request.md) |
-| 470 | ✓ | [`skills/software-development/github/templates/pr-body-bugfix.md`](skills/software-development/github/templates/pr-body-bugfix.md) |
-| 471 | ✓ | [`skills/software-development/github/templates/pr-body-feature.md`](skills/software-development/github/templates/pr-body-feature.md) |
-| 472 | ✓ | [`skills/software-development/hermes-agent-skill-authoring/SKILL.md`](skills/software-development/hermes-agent-skill-authoring/SKILL.md) |
-| 473 | ✓ | [`skills/software-development/inspecting-hermes-desktop-dom/SKILL.md`](skills/software-development/inspecting-hermes-desktop-dom/SKILL.md) |
-| 474 | ✓ | [`skills/software-development/node-inspect-debugger/SKILL.md`](skills/software-development/node-inspect-debugger/SKILL.md) |
-| 475 | ✓ | [`skills/software-development/python-debugpy/SKILL.md`](skills/software-development/python-debugpy/SKILL.md) |
-| 476 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
-| 477 | ✓ | [`skills/software-development/simplify-code/SKILL.md`](skills/software-development/simplify-code/SKILL.md) |
-| 478 | ✓ | [`skills/software-development/spike/SKILL.md`](skills/software-development/spike/SKILL.md) |
-| 479 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
-| 480 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
-| 481 | ✓ | [`skills/web/blocked-page-recovery/scripts/recover_page.py`](skills/web/blocked-page-recovery/scripts/recover_page.py) |
-| 482 | ✓ | [`skills/web/blocked-page-recovery/SKILL.md`](skills/web/blocked-page-recovery/SKILL.md) |
-| 483 | ✓ | [`skills/web/DESCRIPTION.md`](skills/web/DESCRIPTION.md) |
-| 484 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
-| 485 | ✓ | [`tui_gateway/AGENTS.md`](tui_gateway/AGENTS.md) |
-| 486 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 487 | ✓ | [`website/docs/developer-guide/architecture.md`](website/docs/developer-guide/architecture.md) |
-| 488 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
-| 489 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md) |
-| 490 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md) |
+| 449 | ✓ | [`skills/research/rss-feeds/scripts/feed.py`](skills/research/rss-feeds/scripts/feed.py) |
+| 450 | ✓ | [`skills/research/rss-feeds/SKILL.md`](skills/research/rss-feeds/SKILL.md) |
+| 451 | ✓ | [`skills/social-media/DESCRIPTION.md`](skills/social-media/DESCRIPTION.md) |
+| 452 | ✓ | [`skills/social-media/reddit-reading/scripts/reddit.py`](skills/social-media/reddit-reading/scripts/reddit.py) |
+| 453 | ✓ | [`skills/social-media/reddit-reading/SKILL.md`](skills/social-media/reddit-reading/SKILL.md) |
+| 454 | ✓ | [`skills/social-media/xurl/SKILL.md`](skills/social-media/xurl/SKILL.md) |
+| 455 | ✓ | [`skills/software-development/codebase-inspection/SKILL.md`](skills/software-development/codebase-inspection/SKILL.md) |
+| 456 | ✓ | [`skills/software-development/dogfood/references/issue-taxonomy.md`](skills/software-development/dogfood/references/issue-taxonomy.md) |
+| 457 | ✓ | [`skills/software-development/dogfood/SKILL.md`](skills/software-development/dogfood/SKILL.md) |
+| 458 | ✓ | [`skills/software-development/dogfood/templates/dogfood-report-template.md`](skills/software-development/dogfood/templates/dogfood-report-template.md) |
+| 459 | ✓ | [`skills/software-development/github/references/auth.md`](skills/software-development/github/references/auth.md) |
+| 460 | ✓ | [`skills/software-development/github/references/ci-troubleshooting.md`](skills/software-development/github/references/ci-troubleshooting.md) |
+| 461 | ✓ | [`skills/software-development/github/references/code-review.md`](skills/software-development/github/references/code-review.md) |
+| 462 | ✓ | [`skills/software-development/github/references/conventional-commits.md`](skills/software-development/github/references/conventional-commits.md) |
+| 463 | ✓ | [`skills/software-development/github/references/github-api-cheatsheet.md`](skills/software-development/github/references/github-api-cheatsheet.md) |
+| 464 | ✓ | [`skills/software-development/github/references/issue-to-pr.md`](skills/software-development/github/references/issue-to-pr.md) |
+| 465 | ✓ | [`skills/software-development/github/references/issues.md`](skills/software-development/github/references/issues.md) |
+| 466 | ✓ | [`skills/software-development/github/references/pr-workflow.md`](skills/software-development/github/references/pr-workflow.md) |
+| 467 | ✓ | [`skills/software-development/github/references/repo-management.md`](skills/software-development/github/references/repo-management.md) |
+| 468 | ✓ | [`skills/software-development/github/references/review-output-template.md`](skills/software-development/github/references/review-output-template.md) |
+| 469 | ✓ | [`skills/software-development/github/scripts/gh-env.sh`](skills/software-development/github/scripts/gh-env.sh) |
+| 470 | ✓ | [`skills/software-development/github/scripts/git-credential-token.py`](skills/software-development/github/scripts/git-credential-token.py) |
+| 471 | ✓ | [`skills/software-development/github/SKILL.md`](skills/software-development/github/SKILL.md) |
+| 472 | ✓ | [`skills/software-development/github/templates/bug-report.md`](skills/software-development/github/templates/bug-report.md) |
+| 473 | ✓ | [`skills/software-development/github/templates/feature-request.md`](skills/software-development/github/templates/feature-request.md) |
+| 474 | ✓ | [`skills/software-development/github/templates/pr-body-bugfix.md`](skills/software-development/github/templates/pr-body-bugfix.md) |
+| 475 | ✓ | [`skills/software-development/github/templates/pr-body-feature.md`](skills/software-development/github/templates/pr-body-feature.md) |
+| 476 | ✓ | [`skills/software-development/hermes-agent-skill-authoring/SKILL.md`](skills/software-development/hermes-agent-skill-authoring/SKILL.md) |
+| 477 | ✓ | [`skills/software-development/inspecting-hermes-desktop-dom/SKILL.md`](skills/software-development/inspecting-hermes-desktop-dom/SKILL.md) |
+| 478 | ✓ | [`skills/software-development/node-inspect-debugger/SKILL.md`](skills/software-development/node-inspect-debugger/SKILL.md) |
+| 479 | ✓ | [`skills/software-development/python-debugpy/SKILL.md`](skills/software-development/python-debugpy/SKILL.md) |
+| 480 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
+| 481 | ✓ | [`skills/software-development/simplify-code/SKILL.md`](skills/software-development/simplify-code/SKILL.md) |
+| 482 | ✓ | [`skills/software-development/spike/SKILL.md`](skills/software-development/spike/SKILL.md) |
+| 483 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
+| 484 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
+| 485 | ✓ | [`skills/web/blocked-page-recovery/scripts/recover_page.py`](skills/web/blocked-page-recovery/scripts/recover_page.py) |
+| 486 | ✓ | [`skills/web/blocked-page-recovery/SKILL.md`](skills/web/blocked-page-recovery/SKILL.md) |
+| 487 | ✓ | [`skills/web/DESCRIPTION.md`](skills/web/DESCRIPTION.md) |
+| 488 | ✓ | [`tools/AGENTS.md`](tools/AGENTS.md) |
+| 489 | ✓ | [`tui_gateway/AGENTS.md`](tui_gateway/AGENTS.md) |
+| 490 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 491 | ✓ | [`website/docs/developer-guide/architecture.md`](website/docs/developer-guide/architecture.md) |
+| 492 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
+| 493 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md) |
+| 494 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md) |
 
 ---
 

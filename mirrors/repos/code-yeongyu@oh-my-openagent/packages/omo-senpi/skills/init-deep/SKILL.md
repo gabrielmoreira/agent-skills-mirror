@@ -36,7 +36,7 @@ Generate hierarchical AGENTS.md files: root + complexity-scored subdirectories, 
 
 Measure and compute in ONE eval cell - code, not mental arithmetic:
 
-```python
+```js
 # Measure (tracked files minus vendored/generated: node_modules, .git, dist,
 # build, out, vendor, target, coverage, lockfiles, minified and binary files)
 S        = total source bytes after exclusions

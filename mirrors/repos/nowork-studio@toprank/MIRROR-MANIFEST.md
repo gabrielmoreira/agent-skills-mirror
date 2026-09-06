@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
+Mirror of `nowork-studio/toprank` — 26 default patterns, 1 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 93 |
+| Followed pats | 1 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/mcp-connection.md`
 
 ## File Index
 
@@ -152,6 +152,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 91 | ✓ | [`skills/sitemap-audit/SKILL.md`](skills/sitemap-audit/SKILL.md) |
 | 92 | ✓ | [`skills/sxo/SKILL.md`](skills/sxo/SKILL.md) |
 | 93 | ✓ | [`skills/upgrade/SKILL.md`](skills/upgrade/SKILL.md) |
+| 94 | → | [`docs/mcp-connection.md`](docs/mcp-connection.md) |
 
 ---
 

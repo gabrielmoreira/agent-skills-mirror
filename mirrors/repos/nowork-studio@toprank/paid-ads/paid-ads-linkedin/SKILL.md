@@ -6,11 +6,11 @@ argument-hint: "<B2B goal, audience, account, or date range>"
 
 # LinkedIn Ads
 
-Read `../shared/operating-contract.md` and `../shared/measurement-framework.md` before acting. Prefer the `linkedin_ads_` tools on the universal NotFair MCP; use a supplied export only when no verified connector is available.
+Read `../shared/operating-contract.md` and `../shared/measurement-framework.md` before acting. Use live account data from the connected platform; use a supplied export when no verified connector is available.
 
 ## Establish access and qualified-demand context
 
-1. Resolve `~~linkedin-ads` to the universal connector's `linkedin_ads_` tool surface or a verified compatible connector. Call `listConnectedPlatforms` when using NotFair, then confirm the selected account with a harmless account/setup read. Do not infer LinkedIn access from another platform's tools.
+1. Follow [`../../docs/mcp-connection.md`](../../docs/mcp-connection.md). Resolve `~~linkedin-ads` to the live connection. Use its current instructions and capability descriptions to choose tools, and verify the requested platform and account from live data. Do not infer access from another connected platform.
 2. If the connector is missing or unauthorized, request re-authorization or a current export and keep the result plan/review-only.
 3. Define the sales-qualified conversion, CRM feedback loop, account currency, attribution basis, target CPA or pipeline outcome, and complete date window before diagnosing performance.
 
@@ -18,7 +18,7 @@ Keep lead quantity separate from lead quality. Build targeting hypotheses from j
 
 ## Read and diagnose
 
-Use `runScript` for correlated read-only work across campaign groups, campaigns, creatives, and analytics. Prefer a single broad read. Use specialized point tools for individual objects, conversion rules, lead forms, targeting lookup, or lead-form responses.
+Correlate campaign groups, campaigns, creatives, and analytics as needed. Choose available capabilities for individual objects, conversion rules, lead forms, targeting information, or lead responses; retrieve only what the question needs.
 
 Interpret the platform correctly:
 

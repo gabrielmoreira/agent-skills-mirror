@@ -138,7 +138,7 @@ The block may also appear at the shared top level or in profile layers and follo
 
 ### `memory` (Senpi harness)
 
-The optional `memory` block configures the Senpi memory subsystem (`schema/memory.ts` `OmoMemorySettingsSchema`). Keys: `enabled` (default `true`), `agent` (default `"auto"`), `tool_exposure` (`"direct"` or `"search"`, default `"direct"`), the sub-blocks `reflection`, `nudge`, `facts`, `dream`, `people`, `soul`, `write_notice`, `sync`, `search`, plus `compile_warn_tokens` and per-agent overrides under `agents`.
+The optional `memory` block configures the Senpi memory subsystem (`schema/memory.ts` `OmoMemorySettingsSchema`). Keys: `enabled` (default `true`), `agent` (default `"auto"`), the sub-blocks `reflection`, `nudge`, `facts`, `dream`, `people`, `soul`, `write_notice`, `sync`, `search`, plus `compile_warn_tokens` and per-agent overrides under `agents`.
 
 ### `git_master` (Senpi harness)
 
@@ -330,7 +330,7 @@ Profiles are inert until activated (see [Profile activation](#profile-activation
 
 ### Model references and model strings
 
-`model` accepts either a catalog alias or a provider-prefixed string. Reasoning levels can be written inline with a `:level` suffix, for example `openai/gpt-5.6-sol:xhigh`. The suffix is canonical; the older `model(xhigh)` and `model xhigh` forms remain accepted during the back-compat window and are normalized by migration.
+`model` accepts either a catalog alias or a provider-prefixed string. Reasoning levels can be written inline with a `:level` suffix, for example `openai/gpt-6-astra:xhigh`. The suffix is canonical; the older `model(xhigh)` and `model xhigh` forms remain accepted during the back-compat window and are normalized by migration.
 
 `models` is the shared ordered chain shape used by categories, agents, and harness blocks. Each entry may be a string or a model object. Object entries use the canonical fields documented above, including `reasoning` and `provider_options`.
 

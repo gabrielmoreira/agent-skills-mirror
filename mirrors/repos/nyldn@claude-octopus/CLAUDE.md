@@ -240,11 +240,11 @@ Providers:
 ## Cost Awareness
 
 Always be mindful that external CLIs cost money:
-- 🔴 Codex: ~$0.01-0.30 per query depending on model (GPT-5.6 Sol $5/$30 MTok — frontier default, Terra $2.50/$15, Luna $1/$6)
+- 🔴 Codex: ~$0.01-0.30 per query depending on model (GPT-5.6 Sol $4/$20 MTok — frontier default, Terra $2/$12, Luna $0.20/$1.20). Explicit-only GPT-6 Astra costs $10/$50; above 272K input tokens its full request uses 2x input and 1.5x output pricing.
 - 🧭 Antigravity CLI (`agy`): Included with the user's Antigravity access/subscription; backend cost depends on selected `OCTOPUS_AGY_MODEL`. Because Antigravity's model list is service-owned, explicit pins should use labels returned by `agy models` (for example `Gemini 3.5 Flash (Low)`) or `default`/`agy/default` to use the CLI default.
 - 🟣 Perplexity: ~$0.01-0.05 per query (Sonar Pro $3/$15 MTok, Sonar $1/$1 MTok)
-- 🔵 Claude (Sonnet 5): Standard Claude seat, $3/$15 per MTok; included where the user's Claude Code subscription covers it
-- 🔵 Claude (Fable 5, Mythos-class, opt-in via `OCTOPUS_OPUS_MODEL=claude-fable-5`): **$10/$50 per MTok** — 2x Opus 5 cost. 1M context, 128K output. Never auto-selected. Note: Anthropic retains prompts/outputs up to 30 days for safety classifiers. When pinned, apply the dispatch profile in `skills/blocks/fable5-prompting.md` (prompt anti-patterns, effort discipline, refusal fallback, judgment routing).
+- 🔵 Claude (Sonnet 5): Standard Claude seat, $2/$10 per MTok; included where the user's Claude Code subscription covers it
+- 🔵 Claude (Fable 5.1, Mythos-class, opt-in via `OCTOPUS_OPUS_MODEL=claude-fable-5-1`): **$10/$50 per MTok** — 2x Opus 5 cost. 1M context, 128K output. Never auto-selected. The preserved `claude-fable-5` ID remains supported. Note: Anthropic retains prompts/outputs up to 30 days for safety classifiers. When pinned, apply the dispatch profile in `skills/blocks/fable5-prompting.md` (prompt anti-patterns, effort discipline, refusal fallback, judgment routing).
 - 🔵 Claude (Opus 5, default when `SUPPORTS_OPUS_5=true`): $5/$25 per MTok input/output. 1M context, 128K output. Use `high` effort by default; raise it only for a bounded capability-sensitive step.
 - 🔵 Claude (Opus 5 Fast): $10/$50 per MTok — 2x standard cost. Use only when latency matters.
 - 🔵 Claude (Opus 4.7, legacy/current-minus-one): $5/$25 per MTok input/output. Used automatically on Claude Code versions before 2.1.154 when supported.
@@ -252,7 +252,9 @@ Always be mindful that external CLIs cost money:
 - 🔵 Claude (Opus 4.6 Fast, legacy): **$30/$150 per MTok** (6x standard) — lower latency, extra-usage billing for pinned 4.6 sessions.
 - 🟤 OpenCode: Variable cost — free for native models, uses backend provider pricing when routing to OpenAI/Google
 
-Note: API availability and subscription/OAuth availability differ by model and account. GPT-5.6 routing requires Codex CLI v0.144.0+.
+Note: API availability and subscription/OAuth availability differ by model and account. GPT-5.6 routing requires Codex CLI v0.144.0+; Astra requires v0.153.1+ and fails closed when the installed version cannot be identified.
+
+Host-seat Fable 5.1 pins require Claude Code v2.1.255 or newer so the client recognizes the model and its 1M context window. The independent `claude-agent` SDK path instead requires `CLAUDE_SDK_API_KEY` and the `claude-agent` executable, with no Claude Code version floor. Its headless `claude` CLI fallback must be v2.1.255 or newer.
 
 For simple tasks that don't need multi-AI perspectives, suggest using Claude directly without orchestration.
 
@@ -267,13 +269,13 @@ Opus 5 defaults to `high` effort. The plugin keeps automatic phase routing at `h
 
 `xhigh` falls back to `high` on older models where Claude Code does not expose it. Override per-session with `OCTOPUS_EFFORT_OVERRIDE=low|medium|high|xhigh|max`.
 
-### Fable 5 Effort and Refusal Handling (opt-in pin only)
+### Fable 5.1 Effort and Refusal Handling (opt-in pin only)
 
-The phase table above is Opus 5 guidance and does not carry over to a `claude-fable-5` pin. On Fable 5, run `high` everywhere: effort applies per tool call, so `xhigh` does not extend runs — it makes each step overthink and widen scope, at 2x the cost. Raise effort only for a single capability-sensitive step.
+The phase table above is Opus 5 guidance and does not carry over to a `claude-fable-5-1` or preserved `claude-fable-5` pin. On Fable, run `high` everywhere: effort applies per tool call, so `xhigh` does not extend runs — it makes each step overthink and widen scope, at 2x the cost. Raise effort only for a single capability-sensitive step.
 
-When a `claude-fable-5` pin is detected (`OCTOPUS_OPUS_MODEL` or `OCTOPUS_CLAUDE_SDK_MODEL`), orchestrate.sh auto-enables three guards via `scripts/lib/fable5.sh` and prints a one-line banner (`OCTOPUS_FABLE5_MODE=off` disables; `=on` forces):
+When a Fable pin is detected through `OCTOPUS_OPUS_MODEL`, `OCTOPUS_CLAUDE_SDK_MODEL`, `OCTOPUS_CLAUDE_MODEL`, or `CLAUDE_MODEL`, orchestrate.sh auto-enables three guards via `scripts/lib/fable5.sh` and prints a one-line banner (`OCTOPUS_FABLE5_MODE=off` disables ordinary-pin guards; `=on` forces them):
 
-- **Security reroute** — security-audit dispatches (security-auditor role, squeeze workflow) never run on Fable 5; the model resolver and dispatch swap in `claude-opus-5`. Its safety classifiers can refuse offensive-security phrasing even in authorized audits.
+- **Security reroute** — by default, security-audit dispatches (security-auditor role, squeeze workflow) do not run on Fable; the model resolver and dispatch swap in `claude-opus-5`. `OCTOPUS_FABLE5_MODE=off` is an explicit exception for ordinary pins, while exact model-qualified Fable security seats still fail closed.
 - **Effort clamp** — `xhigh`/`max` clamp to `high` for opus-seat Fable dispatches, including explicit `OCTOPUS_EFFORT_OVERRIDE` values.
 - **Refusal retry** — the claude-sdk shim retries a refused/empty Fable 5 dispatch once on `claude-opus-5` (`OCTOPUS_FABLE5_NO_RETRY=1` to opt out, `OCTOPUS_FABLE5_FALLBACK_MODEL` to pin another fallback) instead of rewording the prompt toward the classifier.
 
@@ -338,14 +340,17 @@ providers, or public facts: run `make sync`. During development, run focused
 suites. Before an ordinary branch push, run `make ci-changed`; its checked-in
 manifest always runs sync, smoke, packaging, and reachability checks and fails
 closed to the full matrix for shared or unmapped changes. Before merge and
-release, run `make ci-local` (the complete required-check and CI-only matrix).
+release, run `make ci-local` for sync-check plus the local smoke, unit, and
+integration suites. Run the separate portability and symlink jobs in hosted CI.
 
 ### Hard rules (each one has broken a real PR)
 
 - Never hand-write component counts into `plugin.json`'s description; the marketplace generator appends its own counts and `--check` fails on the collision. The generator derives the marketplace blurb from `plugin.json`'s description — to change it, edit `plugin.json` and run `make sync`, never `marketplace.json` itself.
 - Shell scripts and Python helpers stay `100755`. Verify before push: `git diff origin/main...HEAD --summary | grep "mode change"` must be empty. CI enforces this (Portability Lint job; `allow-mode-change` PR label bypasses when intentional). Local test runs (`make ci-local`, some unit suites) chmod test fixtures as a side effect — recheck modes after every local test run, not just after editing.
 - Provider case globs are order-sensitive: `claude-sdk*` must appear before `claude*`. A shadowed arm fails silently.
-- `provider-routing.sh` has TWO provider whitelists (plus two matching error strings). Update all four sites or dispatch rejects the provider inconsistently.
+- Provider identity and capabilities belong in both registry tables. Keep the
+  rows in parity and let `octo_provider_validate_contracts` reject incomplete
+  registrations.
 - In shell, quote env assignments as whole arguments: `"SOME_API_KEY=${VAR}"`, not `SOME_API_KEY="${VAR}"`. The expert-review secret scanner false-positives on the latter.
 - Never put generated text or Markdown directly in shell GitHub-body arguments such as `--body` or `-f body=`. Stream it to `./scripts/safe-gh-comment.sh --repo OWNER/REPO ... -` on stdin (or pass a private file); the helper snapshots and validates outbound text before a silent write.
 - CI waiters must assert the named required checks (Smoke Tests, Unit Tests, Integration Tests) are PRESENT and terminal. `all(.bucket != "pending")` over an empty list is vacuously true and fires instantly.
@@ -353,6 +358,9 @@ release, run `make ci-local` (the complete required-check and CI-only matrix).
 - Tag releases on the squash-merge commit on `main`, never on the branch head. Full release procedure: `RELEASING.md`.
 - Fork PRs stall at `action_required` after every push; approve with `gh api -X POST repos/nyldn/claude-octopus/actions/runs/<id>/approve`.
 - Provider wiring is a 7-point checklist across 5 files: `docs/PROVIDERS.md`. Do not wing it from one example.
+- MCP and OpenClaw provider environment names share
+  `config/provider-env-allowlist.json`; keep both adapter tests green when it
+  changes.
 
 ### Memory ruling (single source of truth)
 

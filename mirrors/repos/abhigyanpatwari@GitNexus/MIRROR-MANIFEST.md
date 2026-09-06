@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patterns, 78 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 78 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -135,18 +135,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 64 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
 | 65 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
 | 66 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
-| 67 | ✓ | [`llms.txt`](llms.txt) |
-| 68 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 69 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 70 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 71 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
-| 72 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 73 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 74 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 75 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 76 | → | [`README.md`](README.md) |
-| 77 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 78 | → | [`TESTING.md`](TESTING.md) |
+| 67 | ✓ | [`gitnexus/vendor/tree-sitter-zig/README.md`](gitnexus/vendor/tree-sitter-zig/README.md) |
+| 68 | ✓ | [`llms.txt`](llms.txt) |
+| 69 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 70 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 71 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 72 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
+| 73 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 74 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 75 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 76 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 77 | → | [`README.md`](README.md) |
+| 78 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 79 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

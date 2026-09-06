@@ -1,6 +1,6 @@
 ---
 name: orient
-version: 2.7.1
+version: 2.7.2
 description: 'Automatic orientation service. Improve or Destination schedules it when accumulated evidence makes the current orientation stale; it reads the trail as a single document, forms arc-level claims, and refreshes .acm/orientation.md without changing the target. Manual invocation remains available for diagnostics or an explicit "how are we doing?" request.'
 argument-hint: 'The target and its trail, and optionally the specific arc-question to answer'
 ---
@@ -54,32 +54,12 @@ A scope statement prevents the arc-read from being undirected. It also makes the
 
 ### 1b. Freshness guard (derived artifacts)
 
-Before forming arc-claims, refresh the derived trail artifacts from the current `.acm/audit-trail.md`.
+`.acm/audit-trail.md` is the source of truth. `.acm/history.md`, `.acm/learning.md`, and `.acm/learning-archive.md` are optional derived surfaces (see [Trail](../trail/SKILL.md)); an arc-claim formed from a stale derived surface is a claim about a trail that no longer exists.
 
-- If the target repo has `tools/record.py`, run:
-	- `python tools/record.py history --write`
-	- `python tools/record.py learning --write`
-- If `tools/record.py` is not available, run the target's equivalent derivation commands.
-- Confirm `.acm/history.md` and `.acm/learning.md` are not older than `.acm/audit-trail.md` (via verify checks or file mtime).
+- **If the target uses derived artifacts**, regenerate them from the current trail before reading them. The helper lives in the skills clone, never in the target repo: `python <skills-repo>/harness/tools/record.py history --write` and `python <skills-repo>/harness/tools/record.py learning --write`, run from the target repo root. Confirm each derived file is no older than `.acm/audit-trail.md`. If regeneration is not possible, read `.acm/audit-trail.md` directly and say so in the run notes; do not form arc-claims from the stale derived files.
+- **If the target has no derived artifacts**, there is nothing to refresh. Read `.acm/audit-trail.md` directly and proceed.
 
-If the refresh cannot be completed, stop and report the blocker. Do not write arc-claims from stale derived artifacts.
-
-Use this execution checklist in the run notes:
-
-- [ ] `python tools/record.py history --write`
-- [ ] `python tools/record.py learning --write`
-- [ ] `python verify.py` (or target-equivalent integrity check)
-- [ ] Confirm there are no stale-artifact failures for `.acm/history.md` or `.acm/learning.md`
-- [ ] If any freshness check fails, stop and report the blocker; no arc-claims are allowed
-
-Minimal filled example:
-
-```markdown
-**Freshness check (run evidence):**
-- commands: `python tools/record.py history --write`; `python tools/record.py learning --write`; `python verify.py`
-- verify result: `OK — trail integrity checks pass`
-- gate: PASS (arc-claims allowed)
-```
+Record in the run notes which case applied and what evidence established it (commands run, or the absence of derived files).
 
 ### 2. Read the arc
 

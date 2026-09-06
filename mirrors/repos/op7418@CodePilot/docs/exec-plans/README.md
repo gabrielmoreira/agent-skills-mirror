@@ -12,6 +12,8 @@
 - 修改或新增文件后更新下方索引
 - 检索本目录前先读此文件
 
+当前新增：[TokenDance 接入](active/tokendance-integration.md)（已随 v0.67.15 Shipped；正式 CI、20 资产与包内接口/图标复核通过，真实生成与 packaged 授权 smoke 待执行）。
+
 ## 目录语义（四类目录）
 
 `docs/exec-plans/` 下的执行计划分四类，**AI 只从 `active/` 领任务**：
@@ -101,11 +103,12 @@
 
 | 文件 | 主题 | 状态 |
 |------|------|------|
+| [active/astra-openai-oauth-compatibility.md](active/astra-openai-oauth-compatibility.md) | **Astra / OpenAI OAuth / Fable 5.1 兼容修复**：刷新并发、非阻塞目录、恢复提示、冷缓存能力与 Fable 协议 | 🟡 Code complete + Tests pass：5518 pass / 1 skip、后续旧聊天 E2E 2 pass；真实账号 smoke 待验证 |
 | [active/cli-maintenance-and-release-notes-rendering-2026-08-28.md](active/cli-maintenance-and-release-notes-rendering-2026-08-28.md) | **CLI 更新提醒、一键升级与 Release Notes 安全渲染**：按 selected binary/package-root 证明 Claude/Codex 安装渠道，same-channel latest、Windows shim/WinGet/standalone 更新、provider maintenance lease、app-update/quit lifecycle latch 与 post-version 验证；GitHub Atom HTML 经 strict sanitize 渲染 | 🟡 Review accepted，已随 `v0.67.11` Shipped；正式 package/资产门禁通过，真实 UpdateDialog、CLI before→after 与 Windows clean VM smoke 待执行 |
 | [active/post-sentry-scan-remediation-2026-08-27.md](active/post-sentry-scan-remediation-2026-08-27.md) | **2026-08-27 Sentry 生产问题修复闭环**：修复 updater auto-download Promise、utility 生命周期误分类、token usage 非法结构、assistant 消息原子持久化、media expected-error 误报与本地路径后缀泄漏 | 🟡 已随 `v0.67.11` Shipped；Code/Tests/Build/Review/package 门禁通过，official stable Sentry cohort 停增待观察 |
 | [active/windows-unsigned-native-auto-update-2026-08-26.md](active/windows-unsigned-native-auto-update-2026-08-26.md) | **Windows 无签名原生自动更新与差分下载**：不申请 Microsoft/Azure/PFX 签名，固定 GitHub 单一信任根；stable 发布 `latest.yml` + NSIS blockmap，Linux 保持手动 | ✅ `v0.67.10` bootstrap 与 `v0.67.11` 后继 stable 均已 Shipped；20 资产 Latest immutable Release、Mac/Windows metadata、blockmap/checksum/provenance 已复核；Windows 真实差分/完整回退 smoke 待执行 |
 | [active/composer-model-route-permission-consolidation.md](active/composer-model-route-permission-consolidation.md) | **Composer 模型路线、能力参数与权限入口收口**：Favorites 精确组合 + Runtime 左栏、Provider 分组模型右栏、能力描述符、上下文/Send 末端布局与权限档位双向映射 | 🟡 本轮 UI/定向 unit/scoped E2E 通过；三 Runtime 真实 effective-wire smoke 待执行（Tier 2） |
-| [active/runtime-thread-ownership-and-handoff.md](active/runtime-thread-ownership-and-handoff.md) | **Runtime 会话所有权、交接与成本可见性（P0/P1）**：第一次真实执行后锁定 Runtime；完整路线原子写入；已开始聊天的 Runtime lane 置灰；handoff 后端保留但普通 Picker 不自动跳转；同 Runtime 变化走能力声明；缓存、费用与压缩影响诚实展示 | 🟡 P0/P1 代码、单测、guardrail/handover 已完成；完整测试通过，显式 handoff UX 与真实三 Runtime smoke 待跑 |
+| [active/runtime-thread-ownership-and-handoff.md](active/runtime-thread-ownership-and-handoff.md) | **Runtime 会话所有权、交接与成本可见性（P0/P1）**：首次执行锁定 Runtime；完整路线原子写入；同 Runtime 在原聊天跨服务商换模型并承接历史；目录校验对齐执行层；普通 Picker 不创建或跳转聊天 | 🟡 9 月 5 日两项 P2 续接修复 Tests pass：5485 pass / 1 skip、E2E 3/3；已有原聊天切换 Dev smoke；真实视觉 smoke、独立复审与原计划其他长历史 smoke 待跑 |
 | [active/workspace-surface-sidebar-pin-and-inspector.md](active/workspace-surface-sidebar-pin-and-inspector.md) | **Workspace Surface Sidebar**：Files/Git/Browser 等模块统一注册、项目级 pin、瞬时“+”与 tab own close、Primary + Inspector 双 lane、`canonicalWorkspaceKey` 与 v13 可逆迁移 | 🟡 Add/Pin/Unpin/own-close/reload scoped E2E 通过；Diff/Artifact → Inspector 人工验收仍待执行 |
 | [active/browser-webcontentsview-poc.md](active/browser-webcontentsview-poc.md) | **Browser WebContentsView 技术 POC**：验证三平台 bounds/IME/overlay/shortcut/zoom/crash/session/permission/download；只交付 Smoke Ledger、风险矩阵与 go/no-go，不合入产品代码 | 🧭 BLOCKED / INCONCLUSIVE，已被 `<webview>` MVP 路线取代；Windows/Linux 未跑，不伪造 GO |
 | [active/browser-surface-mvp.md](active/browser-surface-mvp.md) | **Browser Surface MVP**：hardened `<webview>`、Main attach gate、workspace partition、tabs/navigation/permission/download policy 与统一 Surface 接入 | 🟡 Code complete / macOS dev smoke passed；packaged、Windows/Linux、下载与 tab 恢复待执行 |
@@ -174,6 +177,7 @@
 
 | 文件 | 主题 | 完成日期 |
 |------|------|----------|
+| [completed/site-visual-refresh-2026-09-04.md](completed/site-visual-refresh-2026-09-04.md) | 官网与 README 视觉更新；Phase 8 恢复完整中英文 Dev 截图（接受系统标记）、两层连续贝塞尔圆角；typecheck/lint/UI smoke 通过，未部署 | 2026-09-05 |
 | [completed/windows-runtime-recovery-hardening.md](completed/windows-runtime-recovery-hardening.md) | **Windows Runtime 诊断、恢复与凭据加固**：统一 Path Identity 与三 Runtime Doctor，展示 Codex sandbox 真实阶段；desktop_only 恢复入口经 Windows DEV 用户验收；Provider key 从明文 SQLite 迁到 safeStorage 保护的版本化密文；跨机真实凭据与 standalone sandbox 矩阵保留为复查清单 | 2026-08-07 |
 | [completed/codex-thread-storage-isolation.md](completed/codex-thread-storage-isolation.md) | **Codex 会话存储隔离**：CodePilot-owned `CODEX_HOME` / SQLite、只迁移 `codex_codepilot` 历史、Harness live mirror 与凭据降级模式可观察；真实 app-server resume/索引 smoke 通过 | 2026-08-03 |
 | [completed/document-system-governance.md](completed/document-system-governance.md) | **文档体系治理**：基于 2026-06-05 文档健康审计清理 active 语义污染，建立 deferred / superseded 目录，归档合并与 preview 旧计划，升级 docs drift 防线（结构化 banner + 归档桶内部链接完整性），并修复归档桶 21 处失效相对链接 | 2026-06-05 |

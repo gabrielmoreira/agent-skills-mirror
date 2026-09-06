@@ -69,7 +69,8 @@ src/notebooklm/
 ├── _web/sharing.py      # WebSharingAPI + legacy ShareManager
 ├── rpc/                 # Public power-user and compatibility facade
 │   ├── __init__.py
-│   └── types.py         # RPCMethod enum, constants, and compatibility re-exports
+│   ├── _identifiers.py  # Dependency-bottom RPCMethod owner
+│   └── types.py         # Constants and exact-identity RPCMethod compatibility re-export
 ├── cli/                 # Click adapter (`*_cmd.py`) plus `cli/services/`
 ├── mcp/                 # FastMCP adapter (optional `mcp` extra)
 └── server/              # FastAPI REST adapter (optional `server` extra)
@@ -138,7 +139,7 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 | `_runtime/init.py` | `SharedRuntime` helpers | Validates constructor args and builds the backend-neutral metrics/supervisor bundle. It imports no backend implementation. |
 | `_web/transport/init.py` | `WebRuntime` helpers | Builds request-id/auth/kernel/persistence/transport only for Web selection or first deprecated sidecar use, wires middleware, and returns the web bundle including executor and uploader. |
 | `_android/runtime.py` | `AndroidRuntime` | Immutable owner bundle for the bearer provider, gRPC session, upload/asset transports, and Phenotype provider. |
-| `_web/transport/sidecar.py` | `LazyWebSidecar` | Pre-registered inert Android lifecycle proxy for deprecated root `rpc_call`; owns one-time Web materialisation, close-race serialization, reopen, and phase delegation without a drain hook or keepalive. |
+| `_client_compat.py` | `LazyWebSidecar`, `_install_android_web_compatibility` | Canonical root owner of the 0.x Android-to-Web bridge: installs one pre-registered inert lifecycle proxy and lazily builds the Web runtime for deprecated root `rpc_call`, with close-race serialization, reopen, and phase delegation but no drain hook or keepalive. `_web/transport/sidecar.py` is only the identity-stable compatibility re-export. |
 | `_web/transport/composed.py` | `ClientComposed` | Write-once holder for web transport, executor, chain host, middleware metadata, and the shared runtime bundle. It owns no loop primitive or RPC semaphore. |
 | `_client_metrics.py` | `ClientMetrics` | `ClientMetricsSnapshot` counters, queue-wait recorders, `on_rpc_event` async callback. |
 | `_runtime/call_supervisor.py` | `CallSupervisor` | Concrete client-wide admission authority: generation-bearing call/operation leases, drain hooks, admitted child tasks, terminal RPC metrics, and the global RPC semaphore. |
@@ -228,6 +229,11 @@ The architecture tests encode the current layer contract:
   before `NotebooksAPI` and passes it through the legacy `sources_api=` slot,
   plus the mind-map decoupling flows — stay in
   `tests/unit/test_init_order.py`.
+- `tests/_guardrails/test_client_composition.py` pins the temporary Android
+  bridge to `_client_compat.py`, permits its sole `_web.assembly` import only
+  inside the nested lazy builder, preserves sidecar-last lifecycle tuple
+  placement, and requires `rpc_call` materialisation to remain inside its root
+  operation lease.
 
 ### Key Design Decisions
 
@@ -244,7 +250,15 @@ installs Android adapters for all eleven typed namespaces together, and
 namespace objects have no Web operation collaborators. `client.rpc_call(...)`
 is deprecated and not backend-neutral: `RPCMethod` values are batchexecute IDs,
 so Android preserves it through a lazy, no-keepalive Web sidecar only during the
-0.x warning window. New code uses the backend-selected `client.raw` property:
+0.x warning window. Under the retained default 0.x policy,
+`NotebookLMClient.from_storage(backend="android")` still makes its homepage GET
+while the storage wrapper builds the client, so Web-cookie/network failures
+still occur before Android open; it does not poke/recover or persist the
+homepage cookie observation. The Android primary runtime then uses the sibling
+master token, while deprecated `rpc_call` uses the loaded Web cookies. A
+master-token-only profile can use typed Android methods and Android raw unary
+calls but cannot use that Web compatibility wrapper. New code uses the
+backend-selected typed namespaces or `client.raw` property:
 `raw.call(...)` on Web and `raw.unary(...)` / `unary_stream(...)` on Android.
 See the Android [entry point](android/README.md) and
 [architecture flow](architecture.md#android-grpc-path).
@@ -260,7 +274,7 @@ from those catalogues rather than introducing parallel patterns.
 
 **New RPC Method:**
 1. Capture traffic (see [RPC Development Guide](rpc-development.md))
-2. Add to `rpc/types.py`: `NEW_METHOD = "AbCdEf"`
+2. Add to `rpc/_identifiers.py`: `NEW_METHOD = "AbCdEf"`
 3. Implement in appropriate `_*.py` API class
 4. Add dataclass to `types.py` if needed
 5. Add CLI command if user-facing
@@ -443,7 +457,8 @@ closed `LoadedAuth` result, and `StoredAuthLoader`. Its only structural test sea
 `TokenAcquirer`; inject that seam for ladder-result tests, and patch the call-time
 `tokens._load_stored_auth` provider for `AuthTokens.from_storage`/client composition tests. Raw
 loads and PSIDTS heal, file-account resolution, and the initial `ProfileStore` merge remain worker
-offloads. `_auth/cookies.py` owns one-sample live/SameSite-preserving seed provenance.
+offloads. `_auth/cookie_types.py` owns one-sample live/SameSite-preserving seed provenance;
+`_auth/cookies.py` preserves the compatibility loader and conversion seams over that owner.
 `_auth/recovery.py` now owns the complete cold operation. A fresh, one-shot
 `ColdRecoveryCoordinator` spells L2.5 → L3 → L4 directly; its class-owned `_drive_cold` and
 `_coalesce_cold` methods are the sole ladder and flight bodies. `ColdRecoveryState` owns the
@@ -469,8 +484,10 @@ write/clear remain synchronous, only the frozen handled exception set becomes a 
 collaborators are scrubbed on every exit. Patch these services through constructor injection rather
 than adding module monkeypatch sites.
 
-PSIDTS load composition now receives the pure cookie loader as an explicit callable. Keep
-conversion in `CookieJar`, raw-row fidelity in `ProfileDocument`, and persistence in `ProfileStore`;
+PSIDTS load composition now receives the pure cookie loader as an explicit callable. Pure
+RFC 6265 routing and expiry helpers live in `cookie_types`; `psidts_recovery` retains thin
+endpoint-injecting compatibility wrappers over them. Keep conversion in `CookieJar`, raw-row
+fidelity in `ProfileDocument`, and persistence in `ProfileStore`;
 do not restore `psidts_recovery -> cookies` or `psidts_recovery -> storage`. Preserve the sentinel,
 contended-reread, acquired-full-reread, pre-POST observation, typed CAS, and post-save disk-live
 winner order. Its catches are intentionally narrow: cancellation, Unicode failures, and unlisted
@@ -489,12 +506,13 @@ cancellation: the caller is cancelled immediately, while an already-dispatched w
 and commit. File auth alone constructs the store; inline env auth logs the existing skip and does
 not persist. Patch the private typed helper/store method for these tests, not the retired private
 `refresh.save_cookies_to_storage` alias. The public saver/facade and client/runtime saver-injection
-seams remain exact. The completed ownership refactor's closing snapshot measured
-**40 modules / 15,237 lines / 128 unique edges (117 module +
-11 function-local)**. Module-only and all-scope SCC sets are both empty. The final touched production
-LOC is: account 252, account-repair 132, account-types 50, cookie-types 396, cookies 961, keepalive
-438, master-token 455, master-token-types 68, PSIDTS recovery 1,222, recovery 530, refresh 1,184,
-single-flight 268, and storage 1,127. These are ratchet evidence, not a budget to spend.
+seams remain exact. The current no-split auth graph measures
+**32 modules / 13,686 lines / 123 unique edges (111 module +
+12 function-local)**. Module-only and all-scope SCC sets are both empty. Current touched production
+LOC is: account 252, account-repair 132, account-types 50, cookie-types 672, cookies 833, keepalive
+438, master-token 469, master-token-types 70, profile-store 921, PSIDTS recovery 1,051, recovery 712,
+refresh 1,184, single-flight 268, and storage 1,089. These are ratchet evidence, not a budget to
+spend: the global module budget remains 1,500 lines, while PSIDTS recovery's shrink lock is 1,051.
 
 Runtime ownership is complete. `NotebookLMClient.from_storage` registers a
 `FileLoadedAuth` result's exact `ProfileStore`/baseline pair with `CookiePersistence`, without a
@@ -634,7 +652,7 @@ results:
 | `cli/services/playwright_login.py::ensure_chromium_installed` | The programmatic probe is checked against real Playwright, and a separate required Chromium launch smoke checks usability. |
 | Playwright launch/error classification | Synthetic classification tests remain valid; add a reality probe only when claiming a specific third-party message shape. |
 | `_auth/refresh.py` custom refresh command | Classification/security contract only; the command is operator-supplied, so there is no fixed third-party output contract. |
-| Auth refresh composition (`AuthRefreshCoordinator` → `NotebookLMClient.refresh_auth` → `_auth/session.py`) | `tests/unit/test_auth_refresh_seam.py` crosses the production assembly with a deterministic homepage response; the existing VCR test covers the stale-RPC → homepage-refresh → retry path. No live reality probe is used because it would require mutable authenticated external state and would not provide a stable CI contract. |
+| Auth refresh composition (`AuthRefreshCoordinator` → bound `WebSessionAuth.refresh_base` → `_web/transport/session_auth.py`) | `tests/unit/test_auth_refresh_seam.py` crosses the production assembly with a deterministic homepage response; the existing VCR test covers the stale-RPC → homepage-refresh → retry path. No live reality probe is used because it would require mutable authenticated external state and would not provide a stable CI contract. |
 | `_version_info.py` git lookup | Local-tool lookup with fallback behavior; synthetic and fallback tests are sufficient. |
 | `scripts/` subprocesses | Audited `audit_public_api_compat.py`, `regen_baselines.py`, `audit_test_suite.py`, and `check_base_wheel.py`: each invokes a local developer/CI tool, not a product boundary. The wheel check creates isolated environments and exercises real package installation/import behavior; wrappers and workflow placement are covered by the CI audit tests. |
 
@@ -953,7 +971,7 @@ A representative slice (run `ls tests/_guardrails/` for the full set):
 | Gate | Enforces |
 |---|---|
 | `test_no_raw_positional_rpc_indexing.py` | No chained positional indexing (`x[0][9][3]`) of `batchexecute` payloads outside the sanctioned `_web/rows/` — the project's #1 fragility class |
-| `test_rpc_method_ids_only_in_types.py` | Obfuscated RPC IDs live only in `rpc/types.py` (the source of truth) |
+| `test_rpc_method_ids_only_in_types.py` | Obfuscated RPC IDs live only in `rpc/_identifiers.py` (the source of truth) |
 | `test_no_forbidden_monkeypatches.py` | The forbidden monkeypatch shapes under `tests/` (ADR-0007) |
 | `test_no_inline_deprecation_warnings.py` | No inline `warnings.warn(..., DeprecationWarning)` outside `_deprecation.py` (ADR-0018) |
 | `test_cli_rpc_envelope.py` | Every *RPC-touching* Click leaf command (call graph reaches `NotebookLMClient`) routes its errors into the JSON envelope |
@@ -1011,7 +1029,7 @@ into `docs/`:
 
 | file | what it pins |
 |---|---|
-| `android/schema.proto` | 323 messages / 868 fields with real names and tag numbers |
+| `android/schema.proto` | 326 messages / 879 fields with real names and tag numbers |
 | `android/enums.txt` | 104 library-scoped enum blocks (94 class names) / 2180 values with exact integers |
 
 Both come from the official Android app, which speaks the *same backend messages*

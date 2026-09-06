@@ -17,6 +17,16 @@ beta2 延续 beta1 的存储与数据库迁移边界。从 v0.7.1 或更早版�
 - pnpm 升级到 11.24.0、uv 升级到 0.12.6，并刷新 Web、docs、backend 与 CLI 锁文件；生产依赖审计无已知漏洞。
 - Vue 图标依赖从已废弃的 `lucide-vue-next` 迁移到官方 `@lucide/vue` 1.34.0，现有图标名称、尺寸和样式保持兼容。
 - CLI 新增 `yuxi agent list` 与 `yuxi agent show <slug>`：登录用户可以列出服务端授权可见的主 Agent、描述和默认标识，并查看指定 Agent 的模型、Skills、系统提示词、工具等角色过滤后的配置；命令支持 remote 选择和 JSON 输出，服务端 discovery 同步声明对应能力。
+- AgentRun SSE 的 Redis 事件读取改为一百毫秒起步的自适应轮询，空闲时逐步退避并与五秒 PostgreSQL 终态兜底解耦；排队 Request SSE 保持原有一秒轮询。
+- AgentRun 持久保存 worker 准备完成与首个模型语义输出时间，并与创建、开工、终态时间统一派生调度等待、运行准备、模型首响、首次输出和总耗时；结果接口与对话历史返回同一口径，完成消息可按需展开查看，历史缺失值保持为空。并发容量、SSE、取消和 Sandbox 的相关工程决定同步收敛为一份记录。
+- AgentRun 取消移除每 Run 一个 Redis Pub/Sub 订阅，改为约 200ms Redis key 轮询和约 1 秒 PostgreSQL durable 兜底；100 个同时 Run 时 Redis 客户端峰值由 136 降至 36，取消实测 235ms 收敛到 PostgreSQL `cancelled` 终态。
+- Sandbox 改为在首个文件或命令操作时按 runtime scope 惰性创建，纯文本 Run 不再承担容器冷启动；provisioner 就绪探测从固定一秒轮询改为五十毫秒起步、最高一秒且带抖动的有界退避。首次工具调用仍可能承担镜像冷启动，Run 终态清理与 Workdir 持久化语义不变。
+- Agent 并发容量可以按 API 与 worker 角色分别配置 Redis、SQLAlchemy 和 LangGraph 连接池；Sandbox 默认使用固定版本的 core 运行规格，并支持专用 Docker 地址池、按实例加锁和有界并行回收。联合真实链路已覆盖 100 个同时执行的 Sandbox Run。
+
+## 0.7.3 （当前）
+
+- 删除 LITE 运行模式及其环境变量、Compose/Make 入口、后端条件装配、前端能力门控和专属测试；shipping 只保留统一知识能力拓扑。升级前须补齐 Milvus、etcd 与 Neo4j 资源，并在迁移后协调重启 API 与 worker，避免新旧 Durable Task 健康租约切换期间暂时 not ready。
+- 通用后台 Task 从 API 进程内 coroutine 队列迁至 PostgreSQL 执行意图与 ARQ worker：注册 Handler 通过 owner/heartbeat/lease 执行，数据库去重阻止并发重复提交，失联任务明确失败；容量释放时接力唤醒下一批 pending intent，worker 发布统一能力健康租约，迁移生成的 legacy v0 之外不复用未知版本 failure hook。知识执行器与 Milvus 同步 RPC 移出共享 worker 事件循环；business schema 从 0.7.2 的 v2 一次收敛 Durable Task、Project 生命周期与用户定时 Agent 结构。
 
 ## v0.7.2.beta1 (2026-08-23)
 

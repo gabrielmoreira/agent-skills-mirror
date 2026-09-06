@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 12 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 12 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,11 +66,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`package/official-site/docs/guide/install.md`](package/official-site/docs/guide/install.md) |
 | 6 | ✓ | [`package/official-site/en/docs/guide/install.md`](package/official-site/en/docs/guide/install.md) |
 | 7 | ✓ | [`package/official-site/public/install.md`](package/official-site/public/install.md) |
-| 8 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
-| 9 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
-| 10 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
-| 11 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
-| 12 | → | [`tests/README.md`](tests/README.md) |
+| 8 | ✓ | [`package/server/app/service/agent/skills/album-doctor/SKILL.md`](package/server/app/service/agent/skills/album-doctor/SKILL.md) |
+| 9 | ✓ | [`package/server/app/service/agent/skills/album-organizer/SKILL.md`](package/server/app/service/agent/skills/album-organizer/SKILL.md) |
+| 10 | ✓ | [`package/server/app/service/agent/skills/memory-detective/SKILL.md`](package/server/app/service/agent/skills/memory-detective/SKILL.md) |
+| 11 | ✓ | [`package/server/app/service/agent/skills/nine-grid-selection/SKILL.md`](package/server/app/service/agent/skills/nine-grid-selection/SKILL.md) |
+| 12 | ✓ | [`package/server/app/service/agent/skills/person-timeline/SKILL.md`](package/server/app/service/agent/skills/person-timeline/SKILL.md) |
+| 13 | ✓ | [`package/server/app/service/agent/skills/trailsnap-search/SKILL.md`](package/server/app/service/agent/skills/trailsnap-search/SKILL.md) |
+| 14 | ✓ | [`package/server/app/service/agent/skills/travel-album/SKILL.md`](package/server/app/service/agent/skills/travel-album/SKILL.md) |
+| 15 | ✓ | [`package/server/app/service/agent/skills/travel-story/SKILL.md`](package/server/app/service/agent/skills/travel-story/SKILL.md) |
+| 16 | ✓ | [`skills/trailsnap-agent/references/workflows.md`](skills/trailsnap-agent/references/workflows.md) |
+| 17 | ✓ | [`skills/trailsnap-agent/SKILL.md`](skills/trailsnap-agent/SKILL.md) |
+| 18 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
+| 19 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
+| 20 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
+| 21 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
+| 22 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

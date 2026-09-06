@@ -439,6 +439,29 @@ to be safe, the displaced original pair too — using each pair's exact
 recorded `{agent-id}` / `{claim-id}`, then post a fresh `claimed-by
 supersedes: none` with a self-chosen pair).
 
+### Same-agent live-claim branch correction
+
+A different case from the sticky-successor escape above:
+**this session's own** live, non-stale claim recorded the wrong
+`branch`. Neither existing mechanism fixes it: **supersede**
+([Claim-state parsing](#claim-state-parsing) rule 4) only activates
+when the current claim is already stale, so a live claim's supersede
+post is silently invalid; **heartbeat** (rule 3.5) treats a
+different-`{branch}` re-post as anomalous and never updates the
+branch.
+
+Use **release-then-fresh** instead: post `unclaimed-by` for your own
+pair (safe — you provably hold it, [Claim verification](#claim-verification)),
+then a fresh `claimed-by supersedes: none` with a new `{claim-id}` and
+the corrected `branch`, then a fresh
+[activation-nonce](#activation-nonce-format), verified the same way.
+Propagate the new `{claim-id}` into every later call (disposition
+replies, watermarks, F2/F3, cleanup) — the old one is dead once
+released. On an open issue, re-verify no competing claim landed in the
+release-to-fresh gap before posting. If one exists, stop and wait;
+do not post the fresh claim or continue. This is not a risk on a
+closed issue.
+
 ### Orchestrator delegation
 
 An orchestrating session that has posted and verified a claim's
@@ -473,7 +496,10 @@ recognizing the brief reassigns it to a single-issue worker role. The
 delegation brief must state explicitly that the delegate is the sole
 worker for the named issue, that no peer workers exist for it to
 coordinate with or wait on, and that it must perform the implementation
-work itself rather than re-delegate or wait for a reply (#2179).
+work itself rather than re-delegate or wait for a reply (#2179). Prefer
+a non-context-inheriting mechanism instead, when the tool offers one —
+see [docs/idd-workflow.md's Orchestrator fan-out
+variant](../../docs/idd-workflow.md#orchestrator-fan-out-variant).
 
 **Restate the CI/advisory-wait topology-safety condition; use the
 snapshot-then-stop pattern.** Carry — verbatim or by reference — the

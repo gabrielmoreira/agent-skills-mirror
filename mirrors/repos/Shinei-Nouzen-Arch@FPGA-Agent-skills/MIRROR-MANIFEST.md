@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Shinei-Nouzen-Arch/FPGA-Agent-skills` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `Shinei-Nouzen-Arch/FPGA-Agent-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Shinei-Nouzen-Arch/FPGA-Agent-skills` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`vitis-hls-synthesis/REFERENCE.md`](vitis-hls-synthesis/REFERENCE.md) |
-| 2 | ✓ | [`vitis-hls-synthesis/SKILL.md`](vitis-hls-synthesis/SKILL.md) |
-| 3 | ✓ | [`vivado-analysis/REFERENCE.md`](vivado-analysis/REFERENCE.md) |
-| 4 | ✓ | [`vivado-analysis/SKILL.md`](vivado-analysis/SKILL.md) |
-| 5 | ✓ | [`vivado-constraints/REFERENCE.md`](vivado-constraints/REFERENCE.md) |
-| 6 | ✓ | [`vivado-constraints/SKILL.md`](vivado-constraints/SKILL.md) |
-| 7 | ✓ | [`vivado-debug/REFERENCE.md`](vivado-debug/REFERENCE.md) |
-| 8 | ✓ | [`vivado-debug/SKILL.md`](vivado-debug/SKILL.md) |
-| 9 | ✓ | [`vivado-impl/REFERENCE.md`](vivado-impl/REFERENCE.md) |
-| 10 | ✓ | [`vivado-impl/SKILL.md`](vivado-impl/SKILL.md) |
-| 11 | ✓ | [`vivado-sim/REFERENCE.md`](vivado-sim/REFERENCE.md) |
-| 12 | ✓ | [`vivado-sim/SKILL.md`](vivado-sim/SKILL.md) |
-| 13 | ✓ | [`vivado-synth/REFERENCE.md`](vivado-synth/REFERENCE.md) |
-| 14 | ✓ | [`vivado-synth/SKILL.md`](vivado-synth/SKILL.md) |
-| 15 | ✓ | [`vivado-tcl/REFERENCE.md`](vivado-tcl/REFERENCE.md) |
-| 16 | ✓ | [`vivado-tcl/SKILL.md`](vivado-tcl/SKILL.md) |
+| 1 | ✓ | [`DSE-agent/AGENTS.md`](DSE-agent/AGENTS.md) |
+| 2 | ✓ | [`DSE-agent/SKILL.md`](DSE-agent/SKILL.md) |
+| 3 | ✓ | [`vitis-hls-synthesis/REFERENCE.md`](vitis-hls-synthesis/REFERENCE.md) |
+| 4 | ✓ | [`vitis-hls-synthesis/SKILL.md`](vitis-hls-synthesis/SKILL.md) |
+| 5 | ✓ | [`vivado-analysis/REFERENCE.md`](vivado-analysis/REFERENCE.md) |
+| 6 | ✓ | [`vivado-analysis/SKILL.md`](vivado-analysis/SKILL.md) |
+| 7 | ✓ | [`vivado-constraints/REFERENCE.md`](vivado-constraints/REFERENCE.md) |
+| 8 | ✓ | [`vivado-constraints/SKILL.md`](vivado-constraints/SKILL.md) |
+| 9 | ✓ | [`vivado-debug/REFERENCE.md`](vivado-debug/REFERENCE.md) |
+| 10 | ✓ | [`vivado-debug/SKILL.md`](vivado-debug/SKILL.md) |
+| 11 | ✓ | [`vivado-impl/REFERENCE.md`](vivado-impl/REFERENCE.md) |
+| 12 | ✓ | [`vivado-impl/SKILL.md`](vivado-impl/SKILL.md) |
+| 13 | ✓ | [`vivado-sim/REFERENCE.md`](vivado-sim/REFERENCE.md) |
+| 14 | ✓ | [`vivado-sim/SKILL.md`](vivado-sim/SKILL.md) |
+| 15 | ✓ | [`vivado-synth/REFERENCE.md`](vivado-synth/REFERENCE.md) |
+| 16 | ✓ | [`vivado-synth/SKILL.md`](vivado-synth/SKILL.md) |
+| 17 | ✓ | [`vivado-tcl/REFERENCE.md`](vivado-tcl/REFERENCE.md) |
+| 18 | ✓ | [`vivado-tcl/SKILL.md`](vivado-tcl/SKILL.md) |
+| 19 | ✓ | [`vivado-timing-closure/SKILL.md`](vivado-timing-closure/SKILL.md) |
 
 ---
 

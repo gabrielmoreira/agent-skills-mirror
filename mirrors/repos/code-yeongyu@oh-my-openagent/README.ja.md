@@ -195,7 +195,7 @@ Read this and tell me why it's not just another boilerplate: https://raw.githubu
 
 **Sisyphus** (`claude-opus-5` / **`kimi-k3`** / **`gpt-5.6-sol`** / **`glm-5.2`**) はあなたのメインオーケストレーターです。計画を立て、専門家に委任し、攻撃的な並列実行でタスクを完了まで推進します。途中で投げ出すことはありません。Claude Opus 5 と Kimi K3 が推奨デフォルトです。
 
-**Hephaestus** (OpenAI、GitHub Copilot、Vercel、または OpenCode 経由で medium effort の `gpt-5.6-sol` のみを使う) はあなたの自律的なディープワーカーです。レシピではなく、目標を与えてください。手取り足取り教えなくても、コードベースを探索し、パターンを調査し、エンドツーエンドで実行します。*正当なる職人 (The Legitimate Craftsman).*
+**Hephaestus** (OpenAI、OpenAI Codex、GitHub Copilot、または OpenCode 経由で medium effort の `gpt-5.6-sol` のみを使う) はあなたの自律的なディープワーカーです。レシピではなく、目標を与えてください。手取り足取り教えなくても、コードベースを探索し、パターンを調査し、エンドツーエンドで実行します。最強の GPT を使いたいなら、OpenAI の最上位モデル `gpt-6-astra` を指定してください。*正当なる職人 (The Legitimate Craftsman).*
 
 **Prometheus** (`claude-fable-5` / **`kimi-k3`**) はあなたの戦略プランナーです。インタビューモードで質問を投げ、スコープを特定し、コードに一行触れる前に詳細な計画を構築します。
 
@@ -240,7 +240,7 @@ Sisyphus がサブエージェントにタスクを委任する際、モデル�
 | `quick`              | 単一ファイルの変更、タイポの修正     |
 | `ultrabrain`         | ハードロジック、アーキテクチャの決定 |
 
-エージェントは作業の種類を伝えるだけで、ハーネスが適切なモデルを選びます。`ultrabrain` は GPT-5.6 Sol max にルーティングされます (OpenAI / Vercel、次に GitHub Copilot、次に OpenCode)。あなたが触るものは何もありません。
+エージェントは作業の種類を伝えるだけで、ハーネスが適切なモデルを選びます。`ultrabrain` は GPT-6 Astra max に、`deep` は GPT-6 Astra high にルーティングされ (OpenAI / OpenAI Codex、次に GitHub Copilot、次に OpenCode)、使えなければ GPT-5.6 Sol にフォールバックします。あなたが触るものは何もありません。
 
 ### Claude Code 互換性
 

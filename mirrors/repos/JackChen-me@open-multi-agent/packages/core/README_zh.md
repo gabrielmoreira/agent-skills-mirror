@@ -1,34 +1,25 @@
-<br />
-
-<p align="center">
+<h1 align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-light.svg">
-    <img alt="Open Multi-Agent" src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-light.svg" width="96">
+    <img alt="" src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-light.svg" width="72">
   </picture>
-</p>
-
-<br />
-
-<h1 align="center">Open Multi-Agent</h1>
+  <br>Open Multi-Agent
+</h1>
 
 <p align="center">
   <strong>只描述目标，不画任务图。</strong><br/>
-  运行在你自己环境中的多智能体编排。
+  多智能体自主分工协作，在自有环境中运行：关键操作经审批放行，每次运行留有可核验记录。
 </p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@open-multi-agent/core"><img src="https://img.shields.io/npm/v/@open-multi-agent/core" alt="npm version"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/node/v/@open-multi-agent/core" alt="Node.js version"></a>
   <a href="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/ci.yml"><img src="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/supply-chain-audit.yml"><img src="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/supply-chain-audit.yml/badge.svg" alt="Supply chain audit"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
   <a href="https://codecov.io/gh/open-multi-agent/open-multi-agent"><img src="https://codecov.io/gh/open-multi-agent/open-multi-agent/graph/badge.svg" alt="codecov"></a>
 </p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/demo-dashboard-hero.gif" alt="OMA Run Viewer 回放真实多智能体运行：任务 DAG 与 span 瀑布双视图，展示每个任务的状态、负责人、token 与工具调用" width="960" height="540" loading="eager">
-</p>
-
-<br />
 
 <p align="center">
   <a href="https://open-multi-agent.com/zh/?utm_source=github&utm_medium=package_readme">官网</a> ·
@@ -53,7 +44,7 @@
 
 ## 快速开始
 
-要求 Node.js 20 或更高版本。生产环境请使用仍处于维护期的 Node.js LTS 版本。
+要求 Node.js 20 或更高版本。生产环境请使用仍处于维护期的 Node.js LTS 版本。Node.js 20 上游已停止维护，OMA 仅将其保留为迁移过渡窗口，会在下一个 major 版本移除，最早不早于 2026-10-31。
 一条命令初始化并运行 starter：
 
 ```bash
@@ -92,6 +83,36 @@ const team = orchestrator.createTeam('research-team', {
 const result = await orchestrator.runTeam(team, 'Compare three approaches and recommend one.')
 console.log(result.agentResults.get('coordinator')?.output)
 ```
+
+<details>
+<summary>让有副作用的工具调用挂起等待审批</summary>
+
+```typescript
+import { FileStore, OpenMultiAgent } from '@open-multi-agent/core'
+
+// 密钥与端点都是你自己的：托管模型，或通过 baseURL 接本地服务。
+const oma = new OpenMultiAgent({
+  defaultProvider: 'openai',
+  defaultModel: 'gpt-5.4',
+  // 有实际副作用的工具调用（写文件、执行 shell）挂起，等待人工决定。
+  onToolCall: ({ consequential }) => (consequential ? { action: 'suspend' } : { action: 'allow' }),
+})
+
+const team = oma.createTeam('ops', {
+  name: 'ops',
+  agents: [{ name: 'operator', systemPrompt: '核对逾期发票。', toolPreset: 'readwrite' }],
+})
+
+// Coordinator 从目标规划任务 DAG；checkpoint store 让整次运行可持久化。
+const result = await oma.runTeam(team, '找出逾期发票并起草催款提醒。', {
+  checkpoint: { store: new FileStore('./.oma/run.json') },
+})
+
+// 在审批人处理 result.pendingApprovals 之前，result.status?.code 保持为 'suspended'；
+// 每条待审批请求都绑定审批人实际看到内容的哈希。
+```
+
+</details>
 
 该示例需要设置 `OPENAI_API_KEY`。其他云端或本地模型见 [Provider](#provider)。
 
@@ -166,7 +187,7 @@ Agent 可声明 `description`、`capabilities`、`costTier` 与 `latencyClass`�
 | **评测** | 对 EvalSet 做版本管理，运行参考 scorer，用离线报告把关 CI，持久化结果，或尽力而为地抽样生产运行。 |
 | **记忆与恢复** | 共享记忆可插拔；checkpoint 可在不重复已完成任务的前提下恢复运行。 |
 | **可观测性** | 无需托管服务即可使用稳定运行标识、trace、执行回执、脱敏、TraceStore 和离线 DAG/Waterfall Viewer。 |
-| **外部 Agent** | ACP 和进程后端让编码 CLI 加入团队，OMA 继续管理调度、记忆和预算。 |
+| **外部 Agent** | ACP 和进程后端让编码 CLI 加入团队，OMA 继续管理调度、记忆和预算；逐次工具 gate、文件沙箱与 LLM 出网策略不覆盖这类外部后端。 |
 
 ## 架构
 
@@ -202,7 +223,7 @@ Coordinator -> 任务 DAG -> Scheduler -> AgentPool
 | 嵌入真实后端 | [`integrations/express-customer-support`](examples/integrations/express-customer-support/) |
 | 导出离线 trace Viewer | [`integrations/observability-v2/run-viewer`](examples/integrations/observability-v2/run-viewer.ts) |
 
-[示例索引](examples/README.md)收录 50+ 个可运行示例，覆盖 basics、cookbook 流程、patterns、Provider 和 integrations。
+[示例索引](examples/README.md)收录全部可运行示例，覆盖 basics、cookbook 流程、patterns、Provider 和 integrations。
 
 ## Provider
 
@@ -217,7 +238,7 @@ Coordinator -> 任务 DAG -> Scheduler -> AgentPool
 
 可选集成只在使用时加载：core 直接安装的只有 `@anthropic-ai/sdk`、`openai` 和 `zod`，其余 SDK 都是按需懒加载的可选 peer，OpenTelemetry 完全归属 `@open-multi-agent/otel`。依赖变更按实际价值与安全、体积、维护、兼容成本权衡，不设固定数量上限。
 
-凭证、模型、AI SDK 桥接、推理设置、MCP、本地端点配置，以及出网管控的确切生效边界，见 [Provider](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md)、[框架级 LLM 出网策略](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/egress-policy.md)和[工具配置](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md)。
+凭证、模型、AI SDK 桥接、推理设置、MCP、本地端点配置、自托管部署，以及出网管控的确切生效边界，见 [Provider](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md)、[框架级 LLM 出网策略](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/egress-policy.md)、[自托管与数据驻留](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/self-hosting.md)和[工具配置](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md)。
 
 **Provider 赞助商**
 
@@ -229,16 +250,16 @@ Coordinator -> 任务 DAG -> Scheduler -> AgentPool
 
 | 目标 | 配置 |
 |---|---|
-| 限定工作量 | `maxTurns`、`timeoutMs`、`callTimeoutMs`、`contextStrategy`、`loopDetection` |
+| 限定工作量 | `maxTurns`、`timeoutMs`、`callTimeoutMs`、`contextStrategy`、[`loopDetection`](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/budgets-and-limits.md) |
 | 控制成本 | `maxTokenBudget`；`maxCostBudget` + 应用自有 `estimateCost` |
 | 限制工具 | `tools` / `toolPreset`、`cwd` / `defaultCwd`、工具输出上限 |
 | 故障恢复 | 任务重试、checkpoint、`restore()` 与可选的自适应计划修复 |
-| 人工把关 | `planOnly`、同步审批回调或[持久化审批 gate](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md) |
+| 人工把关 | `planOnly`、同步审批回调或[持久化审批 gate](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md)；审批界面与传递通道由应用自行实现 |
 | 统一观测 | Trace sink、TraceStore、执行回执、Run Viewer，或可选 OTel adapter |
 
-预算检查发生在 turn 和任务边界，因此单次运行最多可能超出一个模型 turn，不是分厘精确的截停。`estimateCost` 收到每次调用的 token 用量，以及 agent、生效的 `model`、`provider`、阶段和 `taskId`；价格表由应用自己维护。
+预算检查发生在 turn 和任务边界，因此单次运行最多可能超出一个模型 turn，不是分厘精确的截停。`estimateCost` 收到每次调用的 token 用量，以及 agent、生效的 `model`、`provider`、阶段和 `taskId`；价格表由应用自己维护。全部上限、各自的检查时机，以及触发后的行为见[预算与限制](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/budgets-and-limits.md)。
 
-内置工具默认拒绝，且每个对模型可见的工具结果都会发送给你的模型 provider，读取与执行权限应审慎授予。工具可通过 `modelOutput` 将应用自有数据与发送给模型的文本、图片或文件内容分开；完整契约见[工具配置指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#rich-image-and-file-results)。文件工具受配置的 `cwd` 限制；`bash` 一旦授权便不受该沙箱约束。其执行目标可通过 [`ShellExecutor`](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#shell-executors) 替换，而默认的 `LocalShellExecutor` 保持宿主执行，本身不构成安全边界。trace、shell 输出和 Viewer payload 默认自动脱敏，但结果消息与 checkpoint 属于各自独立的持久化边界。
+内置工具默认拒绝，且每个对模型可见的工具结果都会发送给你的模型 provider，读取与执行权限应审慎授予。工具可通过 `modelOutput` 将应用自有数据与发送给模型的文本、图片或文件内容分开；完整契约见[工具配置指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#rich-image-and-file-results)。文件工具受配置的 `cwd` 限制；`bash` 一旦授权便不受该沙箱约束。其执行目标可通过 [`ShellExecutor`](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/sandbox-and-shell.md#shell-executors) 替换，而默认的 `LocalShellExecutor` 保持宿主执行，本身不构成安全边界。trace、shell 输出和 Viewer payload 默认自动脱敏，但结果消息与 checkpoint 属于各自独立的持久化边界。
 
 ### 可观测性
 
@@ -246,20 +267,25 @@ Core 已提供运行标识、trace sink、执行回执、可查询的内存/文�
 
 [`@open-multi-agent/otel`](https://github.com/open-multi-agent/open-multi-agent/blob/main/packages/otel/README.md) 是面向已有集中式 OpenTelemetry 平台团队的**可选企业集成**。它把 OMA trace 转成标准 OTel span，让多 agent 运行接入企业统一监控、告警和故障处理流程。应用负责 provider 及其生命周期；telemetry 故障不会改变业务运行结果。
 
-详见[可观测性指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md)、[迁移指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability-migration.md)与[性能指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability-performance.md)。
+详见[可观测性指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md)与[迁移指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability-migration.md)。
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/demo-dashboard-hero.gif" alt="OMA Run Viewer 回放真实多智能体运行：任务 DAG 与 span 瀑布双视图，展示每个任务的状态、负责人、token 与工具调用" width="960" height="540" loading="lazy">
+</p>
+<p align="center"><em>内置离线 Run Viewer 基于 trace store 回放一次真实运行：任务 DAG、span 瀑布与逐任务证据，不依赖任何托管服务。</em></p>
 
 ### 运行事件日志
 
-长时间运行出问题时，最缺的记录往往是每个 Agent 在被调用那一刻究竟看到了什么。可选的运行事件日志会把这部分保留下来：每条消息和工具结果都作为追加事件写入，上下文策略替换掉若干轮次后放进去的那个块也原样保存，运行结束后可以直接读回，而不必靠推测还原。`verifyRun()` 随后离线校验模型看到的每个块都能从日志中复现，而不是采信日志对自身的陈述；`restore()` 也可以从最后一条追加事件恢复，而不再局限于最后一次快照。该能力默认关闭，关闭时没有额外开销，详见[运行事件日志指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md)。
+长时间运行出问题时，最缺的记录往往是每个 Agent 在被调用那一刻究竟看到了什么。可选的运行事件日志会把这部分保留下来：每条消息和工具结果都作为追加事件写入，上下文策略替换掉若干轮次后放进去的那个块也原样保存，运行结束后可以直接读回，而不必靠推测还原。`verifyRun()` 随后离线校验模型看到的每个块都能从日志中复现，而不是采信日志对自身的陈述，该校验确认的是执行顺序与血缘，并不使日志具备防篡改能力；`restore()` 也可以从最后一条追加事件恢复，而不再局限于最后一次快照。该能力默认关闭，关闭时没有额外开销，详见[运行事件日志指南](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md)。
 
 ## 文档
 
 | 主题 | 指南 |
 |---|---|
-| 构建 agent | [Provider](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md)、[结构化输入](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/structured-input.md)、[工具](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md)、[上下文](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/context-management.md) |
-| 稳定运行 | [评测](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/evaluation.md)、[Checkpoint & resume](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/checkpoint.md)、[持久化审批](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md)、[自适应恢复](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/adaptive-recovery.md)、[执行路由](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/execution-routing.md)、[模型路由](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/model-routing.md)、[Consensus](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/consensus.md) |
-| 控制流程 | [计划预览与回放](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/plan-replay.md)、[共享记忆](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/shared-memory.md)、[外部 agent](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/external-agents.md) |
-| 生产运维 | [可观测性](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md)、[CLI](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/cli.md)、[生产示例](examples/production/README.md) |
+| 构建 agent | [Provider](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md)、[结构化输入](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/structured-input.md)、[工具](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md)、[沙箱与 shell 执行](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/sandbox-and-shell.md)、[MCP](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/mcp.md)、[上下文](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/context-management.md) |
+| 稳定运行 | [评测](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/evaluation.md)、[CI 中的评测](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/evaluation-ci.md)、[Checkpoint & resume](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/checkpoint.md)、[持久化审批](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md)、[自适应恢复](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/adaptive-recovery.md)、[执行路由](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/execution-routing.md)、[模型路由](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/model-routing.md)、[Consensus](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/consensus.md)、[错误](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/errors.md) |
+| 控制流程 | [Coordinator](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/coordinator.md)、[计划预览与回放](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/plan-replay.md)、[共享记忆](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/shared-memory.md)、[Hook 与回调](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/hooks-and-callbacks.md)、[流式输出](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/streaming.md)、[预算与限制](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/budgets-and-limits.md)、[外部 agent](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/external-agents.md) |
+| 生产运维 | [可观测性](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md)、[Run Viewer](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-viewer.md)、[CLI](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/cli.md)、[生产检查清单](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/production-checklist.md)、[术语表](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/glossary.md)、[生产示例](examples/production/README.md) |
 
 ## 参与贡献
 

@@ -196,7 +196,7 @@ npx remotion still src/remotion/index.ts MyVideo videos/test.png --public-dir vi
 
 **Symptoms**: `timing.json` shows wrong durations for some sections (e.g., a short paragraph gets 52s, a long one gets 31s). Console shows `⚠ 估算, 未找到:` warnings.
 
-**Cause**: The section matcher tries to find each section's first text in the word-boundary stream. Some TTS backends return word boundaries in spoken form (e.g., MiniMax returns "三十七" for "37"), which won't match the written form in `podcast.txt`. The matcher falls back to estimation, which can be inaccurate.
+**Cause**: The section matcher tries to find each section's first text in the word-boundary stream. The backend reports spoken-form tokens for numbers/aliases (e.g. "三十七" for "37"), which the conversion layer maps back to display text — if that mapping is imperfect, a token may not match the written form in `podcast.txt`. The matcher falls back to estimation, which can be inaccurate.
 
 **Solution**: After TTS, always verify section timing alignment:
 
@@ -239,7 +239,7 @@ If durations don't match paragraph lengths, re-run with a different backend or a
 
 > **When to load:** When choosing voice/style for the Azure backend, or when debugging hoarse / missing / glitchy audio. Skip for other backends.
 >
-> Since v4.0.0 Azure synthesis (SSML building, phoneme tags, English-term wrapping) runs inside the **ttscn component skill** — but everything below still applies: voice choice, `TTS_STYLE`, and phoneme behavior ride through the bridge via env vars and `phonemes_resolved.json`.
+> Since v5.3.0 Azure synthesis (SSML building, phoneme tags, English-term wrapping) runs inside this skill's local backend — but everything below still applies: voice choice, `TTS_STYLE`, and phoneme behavior ride through the backend via env vars and `phonemes_resolved.json`.
 
 The Azure neural-TTS engine is excellent in the common path but has several deterministic failure modes that have wasted hours of iteration. This section documents the known traps and how to avoid them.
 
@@ -299,13 +299,13 @@ The `tts/voice_advisor.py` module analyses your script and prints a recommendati
 
 ### How English-term wrapping works
 
-English-term wrapping (`<lang xml:lang="en-US">` around brand phrases and, on Multilingual voices, longer English words) is performed by the ttscn azure adapter, not by this skill. The behavior to expect:
+English-term wrapping (`<lang xml:lang="en-US">` around brand phrases and, on Multilingual voices, longer English words) is a documented Azure behavior. The behavior to expect:
 
 | Voice | What gets wrapped |
 | --- | --- |
 | Standard `zh-CN-XiaoxiaoNeural` | Brand / proper-noun phrases only (Visual Studio Code, Andrew Ng, Apple Intelligence, …). Bare abbreviations (AI, ML, GPT, CLI, API) are left alone — standard voice reads them as natural Chinese letter pronunciations. |
 | `zh-CN-XiaoxiaoMultilingualNeural` | Brand phrases + single English words that look like real words (≥5 chars, lowercase letters, not common abbreviations like JSON/HTTPS). Bare abbreviations still skipped. |
-| Non-azure platforms | Nothing — they consume plain text; ttscn strips or ignores SSML for them. |
+| Non-azure platforms | Nothing — they consume plain text; the local backend strips or ignores SSML for them. |
 
 To force a one-off proper-noun pronunciation in a single script, hand-write `<lang xml:lang="en-US">…</lang>` directly in `podcast.txt` (azure platform only), or prefer an inline `[pinyin]` marker / `phonemes.json` entry, which works through the phoneme path.
 
@@ -479,26 +479,15 @@ Run `references list` — orphaned entries are auto-cleaned on list.
 
 **Symptoms**: Inline phoneme markers `执行器[zhí xíng qì]` and `phonemes.json` entries are ignored.
 
-**Explanation**: The phoneme dictionary is passed to ttscn, which applies it only on platforms with a pronunciation-override mechanism: `azure` (SSML `<phoneme>`) and `minimax` (pinyin annotations). All other platforms consume plain text and ignore the file.
+**Explanation**: The phoneme dictionary is applied by the local backend, which has a pronunciation-override mechanism on `azure` (SSML `<phoneme>`). The edge backend consumes plain text and ignores the file.
 
-**Workaround**: If pronunciation accuracy is critical, use `TTS_BACKEND=azure` or `TTS_BACKEND=minimax`.
+**Workaround**: If pronunciation accuracy is critical, use `TTS_BACKEND=azure`.
 
 ---
 
 ### Word-Boundary Precision by Platform
 
-- **Native per-word timings**: only platforms with boundary events (`edge`, `azure`, `doubao`, `minimax`, `cosyvoice` — ttscn ≥1.5.0 for doubao/minimax, ≥1.6.0 for cosyvoice) — ttscn returns them and the bridge shifts offsets per chunk
-- **All other platforms**: subtitle timing is estimated by distributing each measured chunk duration across its characters (chunks are capped at 400 chars to bound the error)
-- **Workaround**: If subtitle precision is critical, use one of the native-boundary platforms (`edge`, `azure`, `doubao`, `minimax`, `cosyvoice`)
+- **Native per-word timings**: both local backends (`edge`, `azure`) report boundary events — the backend shifts offsets per chunk
+- **Workaround**: If subtitle precision is critical, use `TTS_BACKEND=azure` or `edge` (both report native per-word timings).
 
 ---
-
-### Doubao TTS: API Error Codes
-
-**Symptoms**: `Doubao API error code=XXXX`
-
-**Common codes**:
-
-- `code != 3000`: Non-success response. Check VOLCENGINE_APPID and VOLCENGINE_ACCESS_TOKEN.
-- HTTP 401/403: Invalid or expired access token. Regenerate at [Volcengine Console](https://console.volcengine.com/speech/service/8).
-- Timeout: Increase via `VOLCENGINE_TIMEOUT_SEC` env var (default: 60s).

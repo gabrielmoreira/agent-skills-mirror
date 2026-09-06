@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 1 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 0 followed p
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 35 |
+| Followed pats | 1 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 0 followed p
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `references/patterns.md`
 
 ## File Index
 
@@ -82,18 +82,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/avoid-ai-writing/examples/prose.json`](skills/avoid-ai-writing/examples/prose.json) |
 | 22 | ✓ | [`skills/avoid-ai-writing/examples/README.md`](skills/avoid-ai-writing/examples/README.md) |
 | 23 | ✓ | [`skills/avoid-ai-writing/examples/technical.json`](skills/avoid-ai-writing/examples/technical.json) |
-| 24 | ✓ | [`skills/avoid-ai-writing/scripts/check-style.js`](skills/avoid-ai-writing/scripts/check-style.js) |
-| 25 | ✓ | [`skills/avoid-ai-writing/SKILL.md`](skills/avoid-ai-writing/SKILL.md) |
-| 26 | ✓ | [`skills/false-positive-reviewer/agents/openai.yaml`](skills/false-positive-reviewer/agents/openai.yaml) |
-| 27 | ✓ | [`skills/false-positive-reviewer/SKILL.md`](skills/false-positive-reviewer/SKILL.md) |
-| 28 | ✓ | [`skills/file-edit-in-place/agents/openai.yaml`](skills/file-edit-in-place/agents/openai.yaml) |
-| 29 | ✓ | [`skills/file-edit-in-place/SKILL.md`](skills/file-edit-in-place/SKILL.md) |
-| 30 | ✓ | [`skills/preservation-verifier/agents/openai.yaml`](skills/preservation-verifier/agents/openai.yaml) |
-| 31 | ✓ | [`skills/preservation-verifier/scripts/patterns.js`](skills/preservation-verifier/scripts/patterns.js) |
-| 32 | ✓ | [`skills/preservation-verifier/scripts/validate.js`](skills/preservation-verifier/scripts/validate.js) |
-| 33 | ✓ | [`skills/preservation-verifier/SKILL.md`](skills/preservation-verifier/SKILL.md) |
-| 34 | ✓ | [`skills/voice-preserving-rewriter/agents/openai.yaml`](skills/voice-preserving-rewriter/agents/openai.yaml) |
-| 35 | ✓ | [`skills/voice-preserving-rewriter/SKILL.md`](skills/voice-preserving-rewriter/SKILL.md) |
+| 24 | ✓ | [`skills/avoid-ai-writing/references/patterns.md`](skills/avoid-ai-writing/references/patterns.md) |
+| 25 | ✓ | [`skills/avoid-ai-writing/scripts/check-style.js`](skills/avoid-ai-writing/scripts/check-style.js) |
+| 26 | ✓ | [`skills/avoid-ai-writing/scripts/markdown-prose.js`](skills/avoid-ai-writing/scripts/markdown-prose.js) |
+| 27 | ✓ | [`skills/avoid-ai-writing/scripts/normalize-quotes.js`](skills/avoid-ai-writing/scripts/normalize-quotes.js) |
+| 28 | ✓ | [`skills/avoid-ai-writing/SKILL.md`](skills/avoid-ai-writing/SKILL.md) |
+| 29 | ✓ | [`skills/false-positive-reviewer/agents/openai.yaml`](skills/false-positive-reviewer/agents/openai.yaml) |
+| 30 | ✓ | [`skills/false-positive-reviewer/SKILL.md`](skills/false-positive-reviewer/SKILL.md) |
+| 31 | ✓ | [`skills/file-edit-in-place/agents/openai.yaml`](skills/file-edit-in-place/agents/openai.yaml) |
+| 32 | ✓ | [`skills/file-edit-in-place/SKILL.md`](skills/file-edit-in-place/SKILL.md) |
+| 33 | ✓ | [`skills/preservation-verifier/agents/openai.yaml`](skills/preservation-verifier/agents/openai.yaml) |
+| 34 | ✓ | [`skills/preservation-verifier/scripts/patterns.js`](skills/preservation-verifier/scripts/patterns.js) |
+| 35 | ✓ | [`skills/preservation-verifier/scripts/validate.js`](skills/preservation-verifier/scripts/validate.js) |
+| 36 | ✓ | [`skills/preservation-verifier/SKILL.md`](skills/preservation-verifier/SKILL.md) |
+| 37 | ✓ | [`skills/voice-preserving-rewriter/agents/openai.yaml`](skills/voice-preserving-rewriter/agents/openai.yaml) |
+| 38 | ✓ | [`skills/voice-preserving-rewriter/SKILL.md`](skills/voice-preserving-rewriter/SKILL.md) |
+| 39 | → | [`references/patterns.md`](references/patterns.md) |
 
 ---
 

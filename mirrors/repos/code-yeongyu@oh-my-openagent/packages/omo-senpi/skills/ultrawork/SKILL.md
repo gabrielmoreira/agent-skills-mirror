@@ -281,8 +281,10 @@ in background; keep working.
 **`eval` WITH `language: "js"` IS YOUR DEFAULT EXECUTION SURFACE — NOT
 `bash`, NOT a parade of one-off tool calls, NOT `python3 -c`.** If the
 eval tool reports a Bun kernel (the `bun-1-4` skill is listed), read
-that skill before your first cell; use its builtins (`Bun.$` for shell,
-`Bun.Glob`, `fetch`) over shelling out. A step needing MORE THAN ONE call gets ONE GODDAMN PROGRAM: a
+that skill before your first cell; use its builtins (`Bun.$` for a
+command that finishes inside the cell, `Bun.Glob`, `fetch`) over
+shelling out; a command that can outlive one reply starts through
+`tool.monitor` (Waiting discipline). A step needing MORE THAN ONE call gets ONE GODDAMN PROGRAM: a
 LONG cell with REAL control flow — `if`/`else` per case, `for` over
 every target, `try`/`catch` PER ITEM so one failure degrades only
 that item — firing every independent read, search, git/`lsp_*`/web
@@ -376,23 +378,32 @@ Within a step, follow Finding things; NEVER parallelise RED and GREEN of
 the same criterion.
 
 # Waiting discipline (MONITOR MAXXING — SUBSCRIBE TO EVERY FUCKING THING, NEVER SLEEP)
-**`monitor` IS THE FIRST TOOL YOU REACH FOR THE MOMENT ANY STATE CAN
-CHANGE WITHOUT YOU.** Blocking waits are gone: a background command,
-child task, team member, or slow eval cell completes as an injected
-notification carrying its payload (tail + exit code, child result,
-cell output). Every wait is a SUBSCRIPTION — `sleep`, timed retries,
-and empty re-polls are FORBIDDEN; each replays the whole context
-through the model. Register the `monitor` BEFORE the wait exists,
-then do root work or end the turn; an idle session is always woken.
+**EVERY CONDITION YOU WOULD OTHERWISE CHECK ON GETS A SUBSCRIPTION,
+REGISTERED IN THE SAME EVAL CELL THAT STARTS THE WORK:
+`tool.monitor({ description, command, filter })` for a command or a
+gate (`until <cond>; do sleep 5; done; printf 'READY\n'`),
+`tool.monitor({ description, path, event })` for a file.** `monitor`
+and `bash` are not in your direct tool list while `eval` exists;
+`tool.monitor` inside a cell is the only form there is. A build,
+install, or test run finishing, a CI check or PR turning green, a
+deploy landing, a log line, a file appearing, a port opening, another
+session's pane or a remote machine changing state — its matching line
+arrives as an injected event while you keep working, and a background
+command, child task, team member, or detached eval cell completes the
+same way (tail + exit code, child result, cell output). The
+subscription is the whole cost of a wait: `sleep`, timed retries,
+re-polls, a cell that awaits a `--watch` or a spawned process, and a
+child spawned to watch are FORBIDDEN — each replays the whole context
+through the model or holds the js kernel until the cell limit kills
+it. Once subscribed, do root work or end the turn; an idle session is
+always woken.
 **ARM MONITORS FROM THE USER'S INTENT, UNPROMPTED.** When the user
-names anything with observable state — a PR, CI run, deploy, another
-session or pane, a log, file, port, or machine — work out what they
-will want next and watch it RIGHT THEN: "check the deploy" = watch
-its status, "I pushed a fix" = watch that CI run, "the other session
-is doing X" = watch its output. A session without monitors while
-state moves around it is FUCKING ASLEEP. Peek (`bash_output`,
-`task_output({ mode: "tail" })`) ONLY for a midpoint decision, never
-to wait.
+names any such state, work out what they will want next and watch it
+RIGHT THEN: "check the deploy" = watch its status, "I pushed a fix" =
+watch that CI run, "the other session is doing X" = watch its output.
+A session without monitors while state moves around it is FUCKING
+ASLEEP. Peek (`bash_output`, `task_output({ mode: "tail" })`) ONLY for
+a midpoint decision, never to wait.
 
 # omo-senpi task + team tools
 Delegate through the `task` tool: `prompt` plus exactly ONE of
@@ -435,11 +446,9 @@ keep independent root work or end the turn; every child must reach
 terminal status (`completed`, `failed`, `blocked`, or recorded
 inconclusive) before dependent todo transitions, implementation,
 planning, approval gates, handoff, or final response. Silence is not
-terminal. Do not finalize while children remain open. If a child stays
-silent, peek once with `task_output({ mode: "tail" })`, then demand
-`TASK STILL ACTIVE: return <deliverable> or BLOCKED: <reason>`; after
-four silent or ack-only checks, close it as inconclusive and respawn
-smaller only if required.
+terminal: a running child is alive and its completion will wake you,
+so end the turn rather than poll it, and do not finalize while
+children remain open.
 
 # Verification gate (TRIGGERED, NOT OPTIONAL)
 

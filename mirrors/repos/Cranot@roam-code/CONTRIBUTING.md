@@ -135,6 +135,13 @@ On macOS / Linux the equivalent is `.venv/bin/pytest tests/...`.
 
 All tests must pass before submitting a PR.
 
+For a regression, establish a defect-specific failing case before the repair
+and a passing case afterward, retaining a valid-case control. Freeze the test
+between those runs; if it changes, repeat both. Exercise the actual downstream
+reader or CLI, not only a helper's output shape. See
+[verification evidence](docs/concepts/verification-evidence.md) for proof-bundle
+round trips, benchmark denominators, protected outcomes, and claim limits.
+
 ### Dogfood smoke (roam-on-roam)
 
 After a meaningful change, run roam on its own source tree to confirm
@@ -576,12 +583,22 @@ same commit as the original change, not a follow-up PR:
 
 Cloudflare Pages goes out by hand (`make site-deploy`; `make site-check`
 compares the live changelog against the declared version and fails on
-drift -- run it after any release cut):
+drift -- run it after any release cut). The deployment target refuses a dirty
+checkout and records its exact commit. The equivalent direct command is:
 
 ```bash
+set -eu
+site_status="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$site_status"
+site_sha="$(git rev-parse --verify HEAD)"
 wrangler pages deploy templates/distribution/landing-page \
-  --project-name roam-code --branch main --commit-dirty=true
+  --project-name roam-code --branch main --commit-dirty=false --commit-hash="$site_sha"
 ```
+
+Use a clean, reviewed revision whose required checks passed. After deployment,
+verify the served changelog/content and security headers, not just HTTP 200.
+The package tag, installed package, and Pages deployment are separate release
+surfaces; record each exact version or source commit.
 
 PyPI publishes from a tag (`.github/workflows/publish.yml`). Run the exact
 release gate before pushing the version-bump commit:

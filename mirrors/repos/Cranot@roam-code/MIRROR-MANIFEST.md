@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Cranot/roam-code` — 26 default patterns, 5 followed patterns, 15 file(s) materialized.
+Mirror of `Cranot/roam-code` — 26 default patterns, 6 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 5 followed patterns, 15 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 15 |
+| Followed pats | 6 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 5 followed patterns, 15 fi
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/concepts/detector-evidence.md`
+- `docs/concepts/verification-evidence.md`
 - `CONTRIBUTING.md`
 - `docs/repository-maintenance.md`
 - `docs/README.md`
@@ -71,13 +72,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs/mcp-protocol-compatibility.md`](docs/mcp-protocol-compatibility.md) |
 | 7 | ✓ | [`docs/mcp-tools.md`](docs/mcp-tools.md) |
 | 8 | ✓ | [`docs/network-boundary.md`](docs/network-boundary.md) |
-| 9 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
-| 10 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
-| 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 12 | → | [`docs/ci-integration.md`](docs/ci-integration.md) |
-| 13 | → | [`docs/concepts/detector-evidence.md`](docs/concepts/detector-evidence.md) |
-| 14 | → | [`docs/README.md`](docs/README.md) |
-| 15 | → | [`docs/repository-maintenance.md`](docs/repository-maintenance.md) |
+| 9 | ✓ | [`docs/website-maintenance.md`](docs/website-maintenance.md) |
+| 10 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
+| 11 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
+| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 13 | → | [`docs/ci-integration.md`](docs/ci-integration.md) |
+| 14 | → | [`docs/concepts/detector-evidence.md`](docs/concepts/detector-evidence.md) |
+| 15 | → | [`docs/concepts/verification-evidence.md`](docs/concepts/verification-evidence.md) |
+| 16 | → | [`docs/README.md`](docs/README.md) |
+| 17 | → | [`docs/repository-maintenance.md`](docs/repository-maintenance.md) |
 
 ---
 

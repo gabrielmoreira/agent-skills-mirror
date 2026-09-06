@@ -51,14 +51,6 @@ docker compose logs --tail=100 api
 
 `api` 和 `web` 服务默认支持热重载。容器名由 Compose project 生成；使用 `docker compose logs api web` 查看当前槽位日志。修改本地代码后通常不需要手动重启。
 
-只改聊天、工作区或 Skills 而不需要知识库时，可以使用：
-
-```bash
-make up-lite
-```
-
-LITE 模式不会注册知识库、图谱和评估能力。需要完整链路时先 `make down`，再使用完整 Compose 启动。
-
 ## 3. 实现原则
 
 - 用满足验收标准的最小实现，保持主路径线性可读。

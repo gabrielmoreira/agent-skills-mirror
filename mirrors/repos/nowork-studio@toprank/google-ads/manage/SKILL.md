@@ -51,29 +51,11 @@ You decide tool sequencing, GAQL shape, and analytical depth — your judgment i
 
 What does have to be true on every turn:
 
-- **Reads go through `runScript`** with `ads.gaql` / `ads.gaqlParallel` — fan out, correlate in-script, return summarized JSON. Cast a wide net on the first call.
-- **Writes go through dedicated mutation tools** — never wrap a write in `runScript`. Every write returns a `changeId` for `undoChange` within 7 days.
-- **Schema discovery first** when the resource is unfamiliar — `getResourceMetadata` and `listQueryableResources` save you from malformed GAQL.
-- **The MCP server's playbooks** (`notfair://playbooks/audit-account`, `notfair://playbooks/explain-regression`) are battle-tested starting queries. Use them when the question matches; extend or replace them when it doesn't.
-
-## Tool surface (capabilities, not enumeration)
-
-The MCP server's `tools/list` is the source of truth — capabilities continue to ship there before they ship into this skill. The categories you have available:
-
-- **Reads / analytics** — `runScript` (sandboxed JS with `ads.gaql`, `ads.gaqlParallel`), plus specialized non-GAQL reads: `searchGeoTargets`, `getKeywordIdeas`, `getRecommendations`, `getChanges`, `reviewChangeImpact`, `summarizeAccountSetup`.
-- **Schema** — `getResourceMetadata`, `listQueryableResources`.
-- **Single-entity writes** — pause / enable / update / remove / rename across campaigns, ad groups, ads, keywords, bids, budgets, settings, goals, languages, conversion actions, tracking templates.
-- **Bulk writes** — `bulkAddKeywords`, `bulkPauseKeywords`, `bulkUpdateBids`. Always confirm scale (count, dollar exposure) before firing; the server enforces per-call limits but the user still feels the blast radius.
-- **Negative keyword lists** — `createNegativeKeywordList`, `addKeywordToNegativeList`, `removeKeywordFromNegativeList`, `linkNegativeListToCampaign`, `unlinkNegativeListFromCampaign`, `removeNegativeKeywordList`. Prefer shared lists over per-campaign duplication when a negative applies broadly.
-- **Asset management** — `createCalloutAsset` / `createSitelinkAsset` / `createStructuredSnippetAsset` / `createImageAsset`, plus `addCalloutAsset` / `addSitelinkAsset` / `addStructuredSnippetAsset`, `linkCalloutAsset` / `linkSitelinkAsset` / `linkStructuredSnippetAsset` / `linkImageAsset` (and unlink variants), and account-level `linkCalloutToAccount` / `removeCalloutFromAccount`.
-- **Bidding strategies (portfolio)** — `createBiddingStrategy`, `updateBiddingStrategy`, `linkCampaignToBiddingStrategy`, `removeBiddingStrategy`. Read `references/bid-strategy-decision-tree.md` for the migration considerations.
-- **Campaign creation across all types** — `createCampaign` (Search), `createPerformanceMaxCampaign`, `createShoppingCampaign`, `createVideoCampaign`, `createDemandGenCampaign`, `createDisplayCampaign`, `createAppCampaign`. Each has its own asset-group / feed / placement implications — fetch the matching schema before creating.
-- **PMax asset groups** — `enablePmaxAssetGroup`, `pausePmaxAssetGroup`.
-- **Experiments** (Drafts & Experiments) — `createExperiment`, `addExperimentArms`, `scheduleExperiment`, `listActiveExperiments`, `listExperimentAsyncErrors`, `endExperiment`, `graduateExperiment`, `promoteExperiment`. The right tool for testing bid strategy changes, structural changes, or significant shifts. `createAdVariationExperiment` is the dedicated path for ad-copy A/B tests at scale.
-- **Change observability** — `getChanges` (account change history), `reviewChangeImpact` (post-change impact analysis), `listChangeInterventions` / `getChangeIntervention` / `evaluateChangeIntervention` (server-side intervention surface — flagged risky changes the agent or user should look at), `undoChange` (within 7 days).
-- **Guardrails** — `getGuardrails`, `setGuardrails`. Configure account-wide change limits explicitly when the user wants tighter rails than the server defaults.
-- **Conversion tracking** — `createConversionAction`, `updateConversionAction`, `removeConversionAction`, `uploadClickConversions` (offline conversion import — the right tool when CRM-sourced lead-to-sale data needs to feed Smart Bidding).
-- **Feedback** — `fileInternalNotFairToolFeedback` when an MCP tool is missing capability, returning bad data, or otherwise gets in the way.
+- Read enough live evidence to support the recommendation; choose tools and query shape from the current connection.
+- Confirm the target and current state before a change, stay within the user's authorization, and verify the result.
+- Consult the live schema when unfamiliar with a capability. Do not assume defaults, fixed limits, or rollback support.
+- Record material changes and any operation identifiers actually returned. Use `references/change-tracking.md` when a change merits a later impact review.
+- Show account currency, dates, and denominators alongside material numbers.
 
 ## Reference library
 
@@ -128,9 +110,9 @@ After analysis, proactively offer the next skill when the data clearly points th
 - **CTR persistently below benchmark across 2+ ad groups** → `/google-ads-copy`
 - **High CTR, low CVR across multiple ad groups** → `/google-ads-landing` (the page is the bottleneck, not the ad)
 - **No business context, or context >90 days old** → `/google-ads-audit` first
-- **Converting search terms not yet keywords (3+ conversions)** → offer to add them with `bulkAddKeywords`
+- **Converting search terms not yet keywords (3+ conversions)** → consider adding them through a currently supported capability
 - **Impression-share decline tied to new competitor pressure** → pull `auction_insight_*` resources via GAQL
-- **Significant structural / bidding change considered** → propose an experiment (`createExperiment` + `addExperimentArms`) instead of a direct mutation, and let real traffic decide
+- **Significant structural / bidding change considered** → consider a controlled experiment and verify what the live connection supports
 
 ## Recurring optimization posture
 

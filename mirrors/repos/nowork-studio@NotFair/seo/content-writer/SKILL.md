@@ -219,18 +219,12 @@ should be compressed to the displayed size before publishing.
 
 ### Image generation
 
-Generate the images during the writing step — don't leave them as TODO. Pick the
-first surface that's actually available in the current host, in this order:
-
-1. **Codex or other host with native image generation** (gpt-image, Imagen, etc.)
-   — generate the image inline. Save to `images/` or the path the user specifies.
-2. **NotFair MCP `generate_image`** — if the universal NotFair MCP is connected
-   (`mcp__NotFair__google_ads_generate_image` or `mcp__NotFair__meta_ads_generate_image`, subject to host sanitization),
-   it generates marketing-grade visuals from a prompt. Works for blog imagery too.
-3. **No image-gen surface available** — output the detailed prompt for each image
-   so the user can run it in their own tool (Midjourney, DALL·E, Figma AI, etc.),
-   and place the markdown image tag with the planned filename so the post is ready
-   to drop the asset in.
+Generate images using an appropriate image-generation capability available in
+the current host or a connected service. Follow its current instructions and
+save the outputs to the user's requested location. Do not infer image-generation
+support from an MCP server's name. If no such capability is available, provide
+the image prompts and clearly label the missing assets; do not claim generation
+succeeded.
 
 Every image prompt must be specific: subject, style (photographic / 3D render /
 flat illustration / data viz), composition, color palette, mood, and what to

@@ -6,17 +6,17 @@ argument-hint: "<property, date range, metric, or GA4 question>"
 
 # Google Analytics
 
-Read `../shared/operating-contract.md`. Use the `google_analytics_` tools on the universal NotFair MCP as the source of truth.
+Read `../shared/operating-contract.md`. Use the live connector's instructions and schemas to choose tools for the task.
 
 ## Select the property and question
 
-1. Resolve `~~google-analytics` to the actual GA4 connector and inspect its current tools. Confirm access with `listProperties` or the equivalent harmless property-list read.
+1. Resolve `~~google-analytics` to the actual GA4 connector and inspect its current tools. Confirm access and the available properties from live data.
 2. Select the exact `properties/123456789` resource returned by the connector. Never substitute a `G-` measurement ID or Google account ID.
 3. Define the business question, primary metric, conversion or key-event definition, property timezone, date range, and comparison window. If the platform is missing or unauthorized, direct the user to reconnect the universal NotFair plugin and stop before claiming live data.
 
 ## Pull decision-grade evidence
 
-Use `runScript` for multi-report analysis and correlation. Fan out the smallest useful set of reports across channel, source/medium, campaign, landing page, device, geography, or event; use the typed `runReport`, realtime, or metadata reads for a single narrow task.
+Pull the smallest useful set of reports across channel, source/medium, campaign, landing page, device, geography, or event. Choose available reporting capabilities and batch related reads when supported and useful.
 
 - Compare complete equivalent periods and show absolute values plus deltas.
 - Use metadata before guessing an unfamiliar dimension/metric pair. Respect the current API's dimension, metric, fan-out, and quota limits exposed by the tool.
@@ -29,11 +29,11 @@ Lead with what changed, where it changed, the evidence-backed likely driver, con
 
 ## Change measurement configuration
 
-Use only dedicated mutation tools for supported key-event and custom-dimension changes. Show the exact property, current state, proposed state, downstream reporting impact, and rollback before asking for approval.
+Use currently available capabilities for supported key-event and custom-dimension changes. Show the exact property, current state, proposed state, downstream reporting impact, and rollback before asking for approval.
 
 - Creating and deleting a key event are reversible counterparts when the same event definition is available.
 - Archiving a custom dimension is irreversible in GA4 and its parameter name cannot be reused. Require explicit approval that names the property and dimension before archiving.
-- Never wrap a mutation in `runScript`.
+- Respect the read/write boundary described by the live capability.
 - Confirm success from returned before/after evidence or a fresh configuration read; report partial failures without retrying blindly.
 
 Do not describe a report as saved or a dashboard as published unless the connected tool explicitly supports that operation and confirms it.

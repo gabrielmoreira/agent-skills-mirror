@@ -105,7 +105,12 @@ result = await skill.execute(input="test")
 
 Community skills can be found at:
 - GitHub topics: `openakita-skill`
-- Skills marketplace (coming soon)
+- [SkillHub](https://skillhub.cn), available from **Skills → Marketplace** in Setup Center
+
+Marketplace responses are normalized into OpenAkita's versioned internal contract before they
+reach the UI. The contract keeps provider identity, namespace and slug, display metadata,
+classification, metrics, trust metadata, source metadata, and an installation descriptor
+separate. Local installation state is overlaid by the client and is not part of provider data.
 
 ## Creating Skills
 
@@ -286,4 +291,3 @@ LOG_LEVEL=DEBUG openakita
 # Run skill in isolation
 openakita skills test my_skill
 ```
-

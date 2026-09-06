@@ -36,7 +36,7 @@ Ad strength optimizes for Google's diversity goals, not your conversion rate. Th
 
 ## Pulling what to write from
 
-Copy must be grounded in what already converts. One `runScript` with `ads.gaqlParallel` covers almost any copy job — fan out:
+Copy must be grounded in what already converts. Choose available read capabilities for the evidence relevant to the requested copy:
 
 - `ad_group_ad` — current headlines, descriptions, ad-strength, per-ad clicks/CTR/conversions (the baseline to beat)
 - `keyword_view` — what's converting and which QS components are weak
@@ -71,11 +71,11 @@ Google RSA: up to **15 headlines (30 chars max)** and **4 descriptions (90 chars
 
 ## A/B testing — use the experiments framework
 
-When the user wants to test, use the MCP server's experiment tooling rather than the old "deploy two paused ads side by side" pattern:
-
-- **Ad-copy A/B** — `createAdVariationExperiment` is the dedicated tool for variation testing at the ad level. It manages the split, the lift comparison, and the read-back.
-- **Larger creative shifts** (different angle, different persona target, different LP destination) — `createExperiment` + `addExperimentArms` + `scheduleExperiment`. Monitor with `listActiveExperiments` and `listExperimentAsyncErrors`. Decide endgame with `endExperiment`, `graduateExperiment`, or `promoteExperiment`.
-- **Single ad-group, two variants, no traffic split** — paused-then-enabled twin ads in the same ad group is still acceptable for low-stakes copy iteration, but it has no statistical engine behind it. Prefer the experiment path when the decision matters.
+When the user wants to test, define the hypothesis, traffic split, measurement,
+and decision rule, then check which experiment capabilities the live connection
+supports. Ad-copy tests and larger changes to audience or landing page may need
+different designs. Running two ads side by side without a controlled split is
+observational evidence; do not present it as a randomized experiment.
 
 Each variant must test a **meaningfully different angle** — not word swaps. "Trust & Expertise" vs. "Speed & Convenience" vs. "Price & Value" is a real test; "Call Today" vs. "Call Now" is noise.
 
@@ -89,6 +89,6 @@ After a winner: pause the loser, then iterate against the winner. Never stop tes
 
 1. **Business context is non-negotiable.** No `business-context.json` / `personas` → recommend `/google-ads-audit` before writing.
 2. **Confirm before deploying.** Show the exact copy, character counts per asset, and pin positions. Get a yes, then push.
-3. **Every write is undoable for 7 days** via `undoChange` (assuming the entity hasn't been modified since).
+3. **Check reversibility.** Record the original state and only promise rollback when the current capability supports it.
 4. **Differentiate, don't imitate.** Generic copy that could belong to any competitor is a wasted ad slot.
 5. **Defer to `/google-ads`** for bid / budget / keyword work — this skill writes copy and runs creative experiments only.

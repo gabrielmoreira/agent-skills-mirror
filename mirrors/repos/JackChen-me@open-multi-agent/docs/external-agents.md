@@ -1,4 +1,4 @@
-# External Agents
+# External agents
 
 OMA can orchestrate **external agents that run as local processes** alongside its
 LLM-backed agents. Two backend kinds are built in:
@@ -108,7 +108,7 @@ session. This avoids silently dropping image blocks or caller-owned history.
 `beforeRun.prompt` remains supported; changing `beforeRun.messages` is rejected
 for the same reason. `AgentConfig.history` does not seed a process or ACP
 session; it restores messages only for LLM-backed `prompt()` conversations. See
-[Structured Agent Input](structured-input.md).
+[Structured agent input](structured-input.md).
 
 For `process`, OMA starts a fresh subprocess per run. Use `input: 'stdin'` for
 commands that read a prompt from stdin, `input: 'argument'` when the command
@@ -205,6 +205,49 @@ at the run boundary, so an ACP usage delta can exhaust the remaining run budget.
 The process backend continues to contribute `{0, 0}` because it has no token
 signal.
 
+## Control boundary
+
+An external agent is a first-class team member at the orchestration layer and
+an opaque subprocess below it. The split is structural rather than a policy
+choice: when `AgentConfig.backend` is set, the agent resolves to the external
+backend and never constructs an `AgentRunner`, and the runner is where the tool
+registry, the tool executor, the filesystem sandbox, the context strategy, and
+the per-turn journal emission all live. Everything the orchestrator does around
+a task still happens; everything the runner does inside one does not.
+
+**Still applies.** These are enforced above the backend and are
+backend-agnostic:
+
+| Control | Where it acts |
+|---|---|
+| Task DAG placement, dependency ordering, and failure cascade to dependents | Task queue and scheduler; a failed external task skips its dependents like any other |
+| `onPlanReady`, `onApproval`, and `onTaskDispatch` gates | Orchestration level, so the assignee's backend kind is irrelevant to them. `onTaskDispatch` in particular runs immediately before dispatch and before the backend is resolved, so rejecting it means the subprocess is never spawned |
+| Token budget | The backend's reported usage aggregates into the run and is checked against `maxTokenBudget`. Read the [accounting caveat](#acp-token-accounting-caveat) first: an ACP agent that emits no `usage_update`, and every process-backend agent, contributes `{0, 0}` and is therefore not budget-gated in practice |
+| Shared memory | The orchestrator writes the completed task's output to shared memory under `task:<id>:result` after the task finishes |
+| Run and task journal events | `run/start`, `run/end`, `plan/set`, `task/status`, `memory/set`, `approval/request`, `approval/decision`, and `checkpoint/saved` are emitted by the orchestrator and task-execution layers |
+| Abort propagation | `RunOptions.abortSignal` reaches both backends. The process backend kills the child's process tree. The ACP backend sends `session/cancel` and relies on the agent to stop, so cancellation there is cooperative and the subprocess stays alive for the next turn |
+| Process stderr redaction | A non-zero exit or signal builds its error message through the shared credential redactor, so stderr is scrubbed before it reaches the task result |
+
+**Does not apply.** None of these reach an external backend, and no
+configuration makes them:
+
+| Control | Why not |
+|---|---|
+| `onToolCall` per-call gate | The gate is evaluated by the tool executor inside `AgentRunner`. An external agent's tool calls never pass through it. ACP `tool_call` updates still populate `result.toolCalls`, but that is reporting, not a gate |
+| Filesystem sandbox | `AgentConfig.cwd` scopes the built-in filesystem tools through that same runner. A backend's `cwd` is a plain working directory the subprocess reads and writes directly, with your process's permissions |
+| `egressPolicy` | Scoped to framework-owned LLM requests. External backends and tool code are outside it by design, and the child owns its own network behavior. See the [egress enforcement matrix](egress-policy.md#enforcement-matrix) |
+| Tool-level journal events | `turn/start`, `turn/end`, `user/message`, `assistant/message`, `llm/request`, `tool/call`, `tool/result`, and `context/replace` are emitted only by the runner. Neither backend reads the journal recorder it is handed, so a journaled run records that an external task ran, not what happened inside it |
+| Mid-task checkpoints | Neither backend calls the runner checkpoint hook, so an external task checkpoints at task boundaries only. A `suspend` tool decision fails closed there; see [durable approvals](durable-approvals.md#explicit-limits) |
+
+**ACP permissions default to auto-approve.** `permission` defaults to
+`'auto-approve'`, so unless the application sets it, every permission prompt
+the agent raises is answered yes. OMA picks the least-privilege option offered
+(`allow_once` before `allow_always`), which bounds the blast radius of one
+decision but does not change the default answer. `'reject'` or a callback is
+the only way to make a permission prompt a real gate. The process backend has
+no protocol-level permission prompts at all, so the configured `command`,
+`args`, `env`, and `cwd` are the entire control surface.
+
 ## Programmatic API
 
 Most users only touch `backend`. To construct a backend directly, import from the
@@ -222,20 +265,24 @@ const result = await backend.run([{ role: 'user', content: [{ type: 'text', text
 await backend.dispose() // close the connection and kill the subprocess
 ```
 
-## v1 scope
+## Current limits
 
-What this release does **not** do yet (open an issue with a real use case to pull any
+What the built-in backends do **not** do (open an issue with a real use case to pull any
 of these forward):
 
 - **Client role only.** OMA drives external agents; it does not expose OMA agents *as*
-  an ACP agent to editors.
-- **No `fs/*` proxying.** The agent does its own filesystem access within `cwd`; OMA
-  does not yet proxy ACP file operations through its sandbox. Agents that require the
-  client to serve files are not supported.
-- **Process backend is stateless.** It starts one subprocess per run and maps stdout
-  to output. Use ACP or a custom backend when you need sessions, structured tool
-  events, or protocol-level permission prompts.
-- **No cost-based budgets.** Budgeting is token-based; `usage_update.cost` is ignored.
+  an ACP agent to editors. The backend builds an ACP `client` and registers exactly one
+  handler on it, for `session/request_permission`.
+- **No `fs/*` proxying.** OMA advertises empty `clientCapabilities` on `initialize`, so
+  the agent does its own filesystem access within `cwd` rather than routing file
+  operations back through OMA's sandbox. Agents that require the client to serve files
+  are not supported.
+- **Process backend is stateless.** It starts one subprocess per run, holds no session
+  between runs, and maps stdout to output. Use ACP or a custom backend when you need
+  sessions, structured tool events, or protocol-level permission prompts.
+- **No cost-based budgets.** Budgeting is token-based. The ACP backend reads only
+  `usage_update.used`; `usage_update.cost` is ignored.
 - **ACP subprocess lifetime.** An orchestrated ACP agent's subprocess lives until the
-  process exits (there is no per-agent disposal hook in `runTeam` / `runTasks`).
-  Use the programmatic API + `dispose()` when you need explicit teardown.
+  process exits. `AcpBackend.dispose()` exists but nothing in `runTeam` / `runTasks`
+  calls it, so use the programmatic API and call `dispose()` yourself when you need
+  explicit teardown.

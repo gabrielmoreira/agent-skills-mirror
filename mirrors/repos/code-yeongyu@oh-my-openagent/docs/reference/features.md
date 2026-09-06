@@ -10,17 +10,17 @@ The category chains below are edition-aware. Senpi uses `kimi-coding` for Kimi r
 
 | Agent | Primary | Full fallback chain |
 | --- | --- | --- |
-| **sisyphus** | `claude-opus-5` | `anthropic\|github-copilot\|opencode\|vercel/claude-opus-5 (max)` → `opencode-go\|kimi-for-coding\|moonshotai\|opencode\|vercel\|bailian-coding-plan\|moonshotai-cn\|firmware\|ollama-cloud\|aihubmix/kimi-k3` → `openai\|github-copilot\|opencode\|vercel/gpt-5.6-sol (medium)` → `zai-coding-plan\|opencode\|bailian-coding-plan\|vercel/glm-5.2` → `opencode/big-pickle` |
-| **hephaestus** | `gpt-5.6-sol` | `openai\|github-copilot\|vercel\|opencode/gpt-5.6-sol (medium)` |
-| **oracle** | `gpt-5.6-sol` | `openai\|opencode\|vercel/gpt-5.6-sol (xhigh)` → `github-copilot/gpt-5.6-sol (high)` → `google\|github-copilot\|opencode\|vercel/gemini-3.1-pro (high)` → `anthropic\|github-copilot\|opencode\|vercel/claude-opus-5 (max)` → `opencode-go\|vercel/glm-5.2` |
-| **librarian** | `gpt-5.6-luna-fast` | `openai/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (max)` → `opencode-go\|bailian-coding-plan/qwen3.7-plus` → `vercel/minimax-m2.7-highspeed` → `opencode-go\|vercel/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go\|vercel/minimax-m2.7` → `anthropic\|github-copilot\|vercel/claude-haiku-4-5` → `openai\|vercel/gpt-5.4-nano` |
-| **explore** | `gpt-5.6-luna-fast` | `openai/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (max)` → `opencode-go\|bailian-coding-plan/qwen3.7-plus` → `vercel/minimax-m2.7-highspeed` → `opencode-go\|vercel/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go\|vercel/minimax-m2.7` → `anthropic\|github-copilot\|vercel/claude-haiku-4-5` → `openai\|vercel/gpt-5.4-nano` |
-| **multimodal-looker** | `gpt-5.6-sol` | `openai\|opencode\|vercel/gpt-5.6-sol (low)` → `opencode-go\|vercel/kimi-k3` → `zai-coding-plan\|vercel/glm-4.6v` → `openai\|github-copilot\|opencode\|vercel/gpt-5-nano` |
-| **prometheus** | `claude-fable-5` | `anthropic\|github-copilot\|opencode\|vercel/claude-fable-5 (xhigh)` → `opencode-go\|kimi-for-coding\|moonshotai\|opencode\|vercel/kimi-k3 (max)` |
-| **metis** | `claude-opus-5` | `anthropic\|github-copilot\|opencode\|vercel/claude-opus-5 (high)` → `opencode-go\|kimi-for-coding\|moonshotai\|opencode\|vercel/kimi-k3 (low)` |
-| **momus** | `gpt-5.6-terra` | `openai\|vercel/gpt-5.6-terra (high)` → `github-copilot/gpt-5.6-terra (high)` → `openai\|opencode\|vercel/gpt-5.6-sol (xhigh)` → `github-copilot/gpt-5.6-sol (high)` → `anthropic\|github-copilot\|opencode\|vercel/claude-opus-5 (max)` → `google\|github-copilot\|opencode\|vercel/gemini-3.1-pro (high)` → `opencode-go\|vercel/glm-5.2` |
-| **atlas** | `claude-sonnet-5` | `anthropic\|github-copilot\|opencode\|vercel/claude-sonnet-5` → `opencode-go\|vercel/kimi-k3` → `openai\|github-copilot\|opencode\|vercel/gpt-5.6-sol (medium)` → `opencode-go\|vercel/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go\|vercel/minimax-m2.7` |
-| **sisyphus-junior** | `claude-sonnet-5` | `anthropic\|github-copilot\|opencode\|vercel/claude-sonnet-5` → `opencode-go\|vercel/kimi-k3` → `openai\|github-copilot\|opencode\|vercel/gpt-5.6-sol (medium)` → `opencode-go\|vercel/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go\|vercel/minimax-m2.7` → `opencode/big-pickle` |
+| **sisyphus** | `claude-opus-5` | `anthropic\|github-copilot\|opencode/claude-opus-5 (max)` → `opencode-go\|kimi-for-coding\|moonshotai\|opencode\|bailian-coding-plan\|moonshotai-cn\|firmware\|ollama-cloud\|aihubmix/kimi-k3` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-sol (medium)` → `zai-coding-plan\|opencode\|bailian-coding-plan/glm-5.2` → `opencode/big-pickle`
+| **hephaestus** | `gpt-5.6-sol` | `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-sol (medium)`
+| **oracle** | `gpt-5.6-sol` | `openai\|openai-codex\|opencode/gpt-5.6-sol (xhigh)` → `github-copilot/gpt-5.6-sol (high)` → `google\|github-copilot\|opencode/gemini-3.1-pro (high)` → `anthropic\|github-copilot\|opencode/claude-opus-5 (max)` → `opencode-go/glm-5.2`
+| **librarian** | `gpt-5.6-luna-fast` | `openai\|openai-codex/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (max)` → `opencode-go\|bailian-coding-plan/qwen3.7-plus` → `opencode-go/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go/minimax-m2.7` → `anthropic\|github-copilot/claude-haiku-4-5` → `openai\|openai-codex/gpt-5.4-nano`
+| **explore** | `gpt-5.6-luna-fast` | `openai\|openai-codex/gpt-5.6-luna-fast (low)` → `deepseek/deepseek-v4-flash (max)` → `opencode-go\|bailian-coding-plan/qwen3.7-plus` → `opencode-go/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go/minimax-m2.7` → `anthropic\|github-copilot/claude-haiku-4-5` → `openai\|openai-codex/gpt-5.4-nano`
+| **multimodal-looker** | `gpt-5.6-sol` | `openai\|openai-codex\|opencode/gpt-5.6-sol (low)` → `opencode-go/kimi-k3` → `zai-coding-plan/glm-4.6v` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5-nano`
+| **prometheus** | `claude-fable-5` | `anthropic\|github-copilot\|opencode/claude-fable-5 (xhigh)` → `opencode-go\|kimi-for-coding\|moonshotai\|opencode/kimi-k3 (max)`
+| **metis** | `claude-opus-5` | `anthropic\|github-copilot\|opencode/claude-opus-5 (high)` → `opencode-go\|kimi-for-coding\|moonshotai\|opencode/kimi-k3 (low)`
+| **momus** | `gpt-6-astra` | `openai\|openai-codex/gpt-6-astra (xhigh)` → `github-copilot/gpt-6-astra (high)` → `openai\|openai-codex\|opencode/gpt-6-astra (high)` → `anthropic\|github-copilot\|opencode/claude-opus-5 (max)` → `google\|github-copilot\|opencode/gemini-3.1-pro (high)` → `opencode-go/glm-5.2`
+| **atlas** | `claude-sonnet-5` | `anthropic\|github-copilot\|opencode/claude-sonnet-5` → `opencode-go/kimi-k3` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-sol (medium)` → `opencode-go/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go/minimax-m2.7`
+| **sisyphus-junior** | `claude-sonnet-5` | `anthropic\|github-copilot\|opencode/claude-sonnet-5` → `opencode-go/kimi-k3` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-sol (medium)` → `opencode-go/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go/minimax-m2.7` → `opencode/big-pickle`
 
 ### Invoking Agents
 
@@ -63,7 +63,7 @@ review gates rather than relying on prose-only instructions.
 Run agents in the background and continue working:
 
 - Have GPT debug while Claude tries different approaches
-- Opus 5 handles visual work while GPT-5.6 Sol tackles deep reasoning
+- Opus 5 handles visual work while GPT-6 Astra tackles deep reasoning
 - Fire massive parallel searches, continue implementation, use results when ready
 
 ```
@@ -160,14 +160,14 @@ By combining these two concepts, you can generate optimal agents through `task`.
 
 | Category             | Default Model                   | Use Cases                                                                                                                   |
 | -------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `visual-engineering` | `anthropic/claude-opus-5` (max) | Frontend, UI/UX, design, styling, animation                                                                                |
-| `ultrabrain`         | `openai/gpt-5.6-sol` (xhigh)    | Deep logical reasoning, complex architecture decisions requiring extensive analysis                                         |
-| `deep`               | `openai/gpt-5.6-sol` (medium)   | Goal-oriented autonomous problem-solving on hairy problems requiring deep research. ONE goal + ONE deliverable per call — multiple goals must fan out as parallel `deep` calls, never bundled into one. |
+| `visual-engineering` | `anthropic/claude-fable-5-1` (max) → `anthropic/claude-opus-5` (max) → `kimi-for-coding/kimi-k3` (max) | Frontend, UI/UX, design, styling, animation                                                                                |
+| `ultrabrain`         | `openai/gpt-6-astra` (max)      | Deep logical reasoning, complex architecture decisions requiring extensive analysis. Falls back to `gpt-5.6-sol` (max).     |
+| `deep`               | `openai/gpt-6-astra` (high)     | Deep autonomous work for 3D graphics, computer use, browser use, backend, logic, algorithms, CAPTCHA solving, multimodal, and complex research. ONE goal + ONE deliverable per call — multiple goals must fan out as parallel `deep` calls, never bundled into one. |
 | `artistry`           | `anthropic/claude-fable-5` (xhigh) | Highly creative/artistic tasks, novel ideas                                                                                 |
 | `quick`              | `kimi-for-coding/kimi-for-coding-highspeed` | Trivial tasks - single file changes, typo fixes, simple modifications                                                  |
 | `unspecified-low`    | `xai/grok-4.6` (xhigh)          | Tasks that don't fit other categories, low effort required                                                                  |
-| `unspecified-high`   | `kimi-for-coding/kimi-k3` (max) | Tasks that don't fit other categories, high effort required                                                               |
-| `writing`            | `kimi-for-coding/kimi-k3` (low) | Documentation, prose, technical writing                                                                                     |
+| `unspecified-high`   | `openai/gpt-6-astra` (high)     | Tasks that don't fit other categories, high effort required. Falls back to Claude Opus 5, GLM 5.3, then Kimi K3.          |
+| `writing`            | `anthropic/claude-fable-5-1` (medium) | Documentation, prose, technical writing                                                                                     |
 
 ### Usage
 
@@ -600,7 +600,7 @@ You can create powerful specialized agents by combining Categories and Skills.
 
 - **Category**: `ultrabrain`
 - **load_skills**: `[]` (pure reasoning)
-- **Effect**: Uses GPT-5.6 Sol at xhigh effort through OpenAI or Vercel when available, at high effort through GitHub Copilot, and retains an xhigh Sol rung through OpenAI, OpenCode, or Vercel before non-GPT fallbacks.
+- **Effect**: Uses GPT-6 Astra at max effort through OpenAI or OpenAI Codex when available, then GitHub Copilot, then OpenCode. When Astra is unavailable it walks the same provider order on GPT-5.6 Sol at max effort. The chain is GPT-only.
 
 #### The Maintainer (Quick Fixes)
 
@@ -941,7 +941,7 @@ Current composition counts:
 | Hook                         | Event               | Description                                             |
 | ---------------------------- | ------------------- | ------------------------------------------------------- |
 | **claude-code-hooks**        | Message + PreToolUse + PostToolUse | Executes supported Claude Code hook handlers for `chat.message` and `tool.execute.before`/`tool.execute.after`; it does not run on every OMO hook event. |
-| **atlas**                    | Multiple            | Main orchestration logic for todo-driven work sessions. |
+| **atlas**                    | Multiple            | `anthropic\|github-copilot\|opencode/claude-sonnet-5` → `opencode-go/kimi-k3` → `openai\|openai-codex\|github-copilot\|opencode/gpt-5.6-sol (medium)` → `opencode-go/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go/minimax-m2.7`
 | **interactive-bash-session** | PostToolUse + Event | Manages tmux sessions for interactive CLI.              |
 | **non-interactive-env**      | PreToolUse          | Handles non-interactive environment constraints.        |
 

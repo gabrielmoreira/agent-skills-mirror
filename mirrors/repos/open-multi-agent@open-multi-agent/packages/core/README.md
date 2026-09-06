@@ -1,34 +1,25 @@
-<br />
-
-<p align="center">
+<h1 align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-light.svg">
-    <img alt="Open Multi-Agent" src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-light.svg" width="96">
+    <img alt="" src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/logo-mark-light.svg" width="72">
   </picture>
-</p>
-
-<br />
-
-<h1 align="center">Open Multi-Agent</h1>
+  <br>Open Multi-Agent
+</h1>
 
 <p align="center">
   <strong>Describe the goal, not the graph.</strong><br/>
-  Multi-agent orchestration that runs in your own environment.
+  A self-organizing team of agents that runs in your environment, pauses for approval on consequential actions, and leaves a verifiable record of every run.
 </p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@open-multi-agent/core"><img src="https://img.shields.io/npm/v/@open-multi-agent/core" alt="npm version"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/node/v/@open-multi-agent/core" alt="Node.js version"></a>
   <a href="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/ci.yml"><img src="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/supply-chain-audit.yml"><img src="https://github.com/open-multi-agent/open-multi-agent/actions/workflows/supply-chain-audit.yml/badge.svg" alt="Supply chain audit"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
   <a href="https://codecov.io/gh/open-multi-agent/open-multi-agent"><img src="https://codecov.io/gh/open-multi-agent/open-multi-agent/graph/badge.svg" alt="codecov"></a>
 </p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/demo-dashboard-hero.gif" alt="OMA Run Viewer replaying a real multi-agent run: task DAG and span waterfall views with per-task status, assignee, tokens, and tool calls" width="960" height="540" loading="eager">
-</p>
-
-<br />
 
 <p align="center">
   <a href="https://open-multi-agent.com/?utm_source=npm&utm_medium=package_readme">Website</a> ·
@@ -54,7 +45,9 @@ The runtime schedules dependencies, runs independent work in parallel, shares co
 ## Quick Start
 
 Requires Node.js 20 or newer. For production, use a currently maintained
-Node.js LTS release. Scaffold and run a starter in one command:
+Node.js LTS release. Node.js 20 is upstream-EOL and retained only as a
+migration compatibility window; OMA will remove it in the next major release,
+no earlier than 2026-10-31. Scaffold and run a starter in one command:
 
 ```bash
 npm create oma-app@latest my-oma
@@ -92,6 +85,36 @@ const team = orchestrator.createTeam('research-team', {
 const result = await orchestrator.runTeam(team, 'Compare three approaches and recommend one.')
 console.log(result.agentResults.get('coordinator')?.output)
 ```
+
+<details>
+<summary>Pause consequential tool calls for approval</summary>
+
+```typescript
+import { FileStore, OpenMultiAgent } from '@open-multi-agent/core'
+
+// Your keys and your endpoint: a hosted provider, or a local server through baseURL.
+const oma = new OpenMultiAgent({
+  defaultProvider: 'openai',
+  defaultModel: 'gpt-5.4',
+  // Consequential tool calls (file writes, shell) pause for a human decision.
+  onToolCall: ({ consequential }) => (consequential ? { action: 'suspend' } : { action: 'allow' }),
+})
+
+const team = oma.createTeam('ops', {
+  name: 'ops',
+  agents: [{ name: 'operator', systemPrompt: 'Reconcile overdue invoices.', toolPreset: 'readwrite' }],
+})
+
+// The coordinator plans the task DAG from the goal; the checkpoint store keeps the run durable.
+const result = await oma.runTeam(team, 'Find overdue invoices and draft the reminders.', {
+  checkpoint: { store: new FileStore('./.oma/run.json') },
+})
+
+// result.status?.code === 'suspended' until a reviewer decides result.pendingApprovals,
+// each bound to a hash of exactly what the reviewer was shown.
+```
+
+</details>
 
 Set `OPENAI_API_KEY` for this example. For other hosted or local models, see [Providers](#providers).
 
@@ -171,7 +194,7 @@ Agents may declare `description`, `capabilities`, `costTier`, and `latencyClass`
 | **Evaluation** | Version EvalSets, run reference scorers, gate CI with offline reports, persist results, or sample production runs on a best-effort path. |
 | **Memory and recovery** | Shared memory is pluggable; checkpoints resume interrupted runs without repeating completed tasks. |
 | **Observability** | Stable run identity, traces, execution receipts, redaction, TraceStore, and the offline DAG/Waterfall Viewer are available without a hosted service. |
-| **External agents** | ACP and process backends let coding CLIs participate while OMA keeps scheduling, memory, and budgets. |
+| **External agents** | ACP and process backends let coding CLIs participate while OMA keeps scheduling, memory, and budgets; the per-call tool gate, filesystem sandbox, and LLM egress policy do not cover them. |
 
 ## Architecture
 
@@ -207,7 +230,7 @@ Start with one example that matches the behavior you need:
 | Embed OMA in a backend | [`integrations/express-customer-support`](examples/integrations/express-customer-support/) |
 | Export an offline trace viewer | [`integrations/observability-v2/run-viewer`](examples/integrations/observability-v2/run-viewer.ts) |
 
-The [example index](examples/README.md) lists 50+ runnable examples across basics, cookbook workflows, patterns, providers, and integrations.
+The [example index](examples/README.md) lists every runnable example across basics, cookbook workflows, patterns, providers, and integrations.
 
 ## Providers
 
@@ -222,7 +245,7 @@ Change `provider`, `model`, and credentials; the agent shape stays the same.
 
 Optional integrations load only when used: core directly installs only `@anthropic-ai/sdk`, `openai`, and `zod`; other SDKs are lazy-loading opt-in peers, and OpenTelemetry lives entirely in `@open-multi-agent/otel`. Dependency changes are weighed on demonstrated value plus security, size, maintenance, and compatibility cost, not a fixed count.
 
-See [Providers](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md), [framework-owned LLM egress policy](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/egress-policy.md), and [Tool configuration](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md) for credentials, models, the AI SDK bridge, reasoning settings, MCP, local endpoints, and the exact network-enforcement boundary.
+See [Providers](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md), [framework-owned LLM egress policy](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/egress-policy.md), [Self-hosting and data residency](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/self-hosting.md), and [Tool configuration](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md) for credentials, models, the AI SDK bridge, reasoning settings, MCP, local endpoints, self-hosted deployment, and the exact network-enforcement boundary.
 
 **Provider sponsors**
 
@@ -234,14 +257,14 @@ Paid sponsors supporting `open-multi-agent`. Sponsorship does not affect technic
 
 | Goal | Configure |
 |---|---|
-| Bound work | `maxTurns`, `timeoutMs`, `callTimeoutMs`, `contextStrategy`, `loopDetection` |
+| Bound work | `maxTurns`, `timeoutMs`, `callTimeoutMs`, `contextStrategy`, [`loopDetection`](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/budgets-and-limits.md) |
 | Control spend | `maxTokenBudget`; `maxCostBudget` + application-owned `estimateCost` |
 | Limit tools | `tools` / `toolPreset`, `cwd` / `defaultCwd`, tool-output caps |
 | Recover | Task retries, checkpointing, `restore()`, and opt-in adaptive plan repair |
-| Review work | `planOnly`, inline approval callbacks, or [durable approval gates](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md) |
+| Review work | `planOnly`, inline approval callbacks, or [durable approval gates](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md); your application owns the approval surface and transport |
 | Observe | Trace sinks, TraceStore, execution receipts, Run Viewer, or the optional OTel adapter |
 
-Budget checks run at turn and task boundaries, so a run can overshoot by up to one model turn; they are not a cent-exact stop. `estimateCost` receives each call's token usage plus the agent, effective `model`, `provider`, phase, and `taskId`, and your application owns the price table.
+Budget checks run at turn and task boundaries, so a run can overshoot by up to one model turn; they are not a cent-exact stop. `estimateCost` receives each call's token usage plus the agent, effective `model`, `provider`, phase, and `taskId`, and your application owns the price table. [Budgets and limits](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/budgets-and-limits.md) covers every ceiling, where it is checked, and what happens when one trips.
 
 Built-in tools are default-deny, and every model-visible tool result is sent to
 your model provider, so grant read and exec access deliberately. Tools may keep
@@ -249,7 +272,7 @@ application-owned data separate while returning text, image, or file content
 through `modelOutput`; see the [tool configuration guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#rich-image-and-file-results).
 Filesystem tools stay within the configured `cwd`; granted `bash` is not
 sandboxed. Its execution target can be replaced through a
-[`ShellExecutor`](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md#shell-executors),
+[`ShellExecutor`](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/sandbox-and-shell.md#shell-executors),
 while the default `LocalShellExecutor` preserves host execution and is not a
 security boundary. Secrets are redacted from traces, shell output, and Viewer
 payloads by default, but result messages and checkpoints have their own
@@ -261,20 +284,25 @@ Core already provides run identity, trace sinks, execution receipts, queryable i
 
 [`@open-multi-agent/otel`](https://github.com/open-multi-agent/open-multi-agent/blob/main/packages/otel/README.md) is an **optional enterprise integration** for teams that already operate a centralized OpenTelemetry stack. It converts OMA traces into standard OTel spans so multi-agent runs can join company-wide monitoring, alerting, and incident workflows. The application owns the provider and its lifecycle; telemetry failures never change the run result.
 
-See the [observability guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md), [migration guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability-migration.md), and [performance guidance](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability-performance.md).
+See the [observability guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md) and the [migration guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability-migration.md).
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/open-multi-agent/open-multi-agent/main/.github/brand/demo-dashboard-hero.gif" alt="OMA Run Viewer replaying a real multi-agent run: task DAG and span waterfall views with per-task status, assignee, tokens, and tool calls" width="960" height="540" loading="lazy">
+</p>
+<p align="center"><em>The offline Run Viewer replaying a real run from the trace store: task DAG, span waterfall, and per-task evidence, with no hosted service involved.</em></p>
 
 ### Run journal
 
-When a long run goes wrong, the record usually missing is what each agent actually saw at the moment it was asked. The opt-in run journal keeps it: every message and tool result as an appended event, plus the exact block a context strategy put in place of the turns it dropped, so a finished run can be read back instead of reconstructed by guesswork. `verifyRun()` then checks offline that every block the model saw is reproducible from the log rather than trusting the log's own account of itself, and `restore()` can resume from the last appended event instead of the last snapshot. It is off by default, costs nothing when off, and is documented in the [run journal guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md).
+When a long run goes wrong, the record usually missing is what each agent actually saw at the moment it was asked. The opt-in run journal keeps it: every message and tool result as an appended event, plus the exact block a context strategy put in place of the turns it dropped, so a finished run can be read back instead of reconstructed by guesswork. `verifyRun()` then checks offline that every block the model saw is reproducible from the log rather than trusting the log's own account of itself, which establishes order and lineage rather than tamper-evidence, and `restore()` can resume from the last appended event instead of the last snapshot. It is off by default, costs nothing when off, and is documented in the [run journal guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-journal.md).
 
 ## Documentation
 
 | Area | Guides |
 |---|---|
-| Build agents | [Providers](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md), [structured input](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/structured-input.md), [tools](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md), [context](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/context-management.md) |
-| Run reliably | [Evaluation](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/evaluation.md), [checkpoint & resume](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/checkpoint.md), [durable approvals](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md), [adaptive recovery](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/adaptive-recovery.md), [execution routing](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/execution-routing.md), [model routing](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/model-routing.md), [consensus](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/consensus.md) |
-| Control workflows | [Plan preview & replay](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/plan-replay.md), [shared memory](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/shared-memory.md), [external agents](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/external-agents.md) |
-| Operate | [Observability](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md), [CLI](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/cli.md), [production examples](examples/production/README.md) |
+| Build agents | [Providers](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md), [structured input](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/structured-input.md), [tools](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md), [sandbox and shell](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/sandbox-and-shell.md), [MCP](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/mcp.md), [context](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/context-management.md) |
+| Run reliably | [Evaluation](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/evaluation.md), [evaluation in CI](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/evaluation-ci.md), [checkpoint & resume](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/checkpoint.md), [durable approvals](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/durable-approvals.md), [adaptive recovery](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/adaptive-recovery.md), [execution routing](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/execution-routing.md), [model routing](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/model-routing.md), [consensus](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/consensus.md), [errors](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/errors.md) |
+| Control workflows | [Coordinator](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/coordinator.md), [plan preview & replay](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/plan-replay.md), [shared memory](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/shared-memory.md), [hooks and callbacks](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/hooks-and-callbacks.md), [streaming](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/streaming.md), [budgets and limits](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/budgets-and-limits.md), [external agents](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/external-agents.md) |
+| Operate | [Observability](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md), [Run Viewer](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/run-viewer.md), [CLI](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/cli.md), [production checklist](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/production-checklist.md), [glossary](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/glossary.md), [production examples](examples/production/README.md) |
 
 ## Contributing
 

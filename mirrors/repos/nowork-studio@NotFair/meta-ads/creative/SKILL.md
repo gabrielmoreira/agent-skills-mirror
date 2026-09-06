@@ -12,7 +12,7 @@ Create a reviewable creative slate from real customer language and account evide
 
 Read and follow `../shared/preamble.md`. Read `{data_dir}/meta/business-context.json` and `{data_dir}/meta/personas/{accountId}.json` first. If either is missing or stale, recommend `/meta-ads-audit` before writing. The audit's creative inventory and personas are the baseline; do not invent an audience because a request is underspecified.
 
-Pull current ads and ad-level insights with `runScript` + `ads.graphParallel` when account access exists. Use link CTR, CPA or purchase value, frequency, attribution window, and a named time period. If the user has reviews, sales-call notes, or customer research, treat them as evidence only when the source is identifiable.
+Pull current ads and ad-level insights using available read capabilities when account access exists. Use link CTR, CPA or purchase value, frequency, attribution window, and a named time period. If the user has reviews, sales-call notes, or customer research, treat them as evidence only when the source is identifiable.
 
 ## Create a concept slate
 
@@ -44,6 +44,6 @@ Test one strategic variable at a time: angle, hook, proof, format, audience, or 
 
 ## Production and execution boundary
 
-The Meta MCP is intentionally read/operate-focused and does not provide creative upload or campaign-creation tools. Deliver a production-ready brief for the user's approved design or Ads Manager workflow; do not improvise Graph API writes. Before a human publishes, require review of claim evidence, rights/releases, destination, policy-sensitive targeting, and placement-safe crops.
+Deliver a production-ready brief for the user's approved workflow. If publication is requested, check whether the live connection supports the specific creation or upload operation and follow its current contract. Before a human publishes, require review of claim evidence, rights/releases, destination, policy-sensitive targeting, and placement-safe crops.
 
 Use `/meta-ads` to diagnose performance or act within its supported mutation surface. Use `/meta-ads-audit` when context, tracking, or creative inventory is missing.

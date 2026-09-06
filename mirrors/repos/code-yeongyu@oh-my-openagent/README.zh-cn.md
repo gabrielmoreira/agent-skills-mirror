@@ -201,7 +201,7 @@ Read this and tell me why it's not just another boilerplate: https://raw.githubu
 
 **Sisyphus** (`claude-opus-5` / **`kimi-k3`** / **`gpt-5.6-sol`** / **`glm-5.2`**) 是你的主指挥官。他负责制定计划、分配任务给专家团队，并以极其激进的并行策略推动任务直至完成。他从不半途而废。Claude Opus 5 和 Kimi K3 是推荐默认值。
 
-**Hephaestus** (仅通过 OpenAI、GitHub Copilot、Vercel 或 OpenCode 使用 medium effort 的 `gpt-5.6-sol`) 是你的自主深度工作者。你只需要给他目标，不要给他具体做法。他会自动探索代码库模式，从头到尾独立执行任务，绝不会中途要你当保姆。*名副其实的正牌工匠。*
+**Hephaestus** (仅通过 OpenAI、OpenAI Codex、GitHub Copilot 或 OpenCode 使用 medium effort 的 `gpt-5.6-sol`) 是你的自主深度工作者。你只需要给他目标，不要给他具体做法。他会自动探索代码库模式，从头到尾独立执行任务，绝不会中途要你当保姆。想用最强的 GPT，就把他指向 OpenAI 最顶级的模型 `gpt-6-astra`。*名副其实的正牌工匠。*
 
 **Prometheus** (`claude-fable-5` / **`kimi-k3`**) 是你的战略规划师。他通过访谈模式，在动一行代码之前，先通过提问确定范围并构建详尽的执行计划。
 
@@ -246,7 +246,7 @@ Read this and tell me why it's not just another boilerplate: https://raw.githubu
 | `quick`              | 单文件修改、修错字     |
 | `ultrabrain`         | 复杂硬核逻辑、架构决策 |
 
-智能体只需要说明要做什么类型的工作，框架就会挑选出最合适的模型去干。`ultrabrain` 路由到 GPT-5.6 Sol max（OpenAI / Vercel，其次 GitHub Copilot，再其次 OpenCode）。你完全不需要操心。
+智能体只需要说明要做什么类型的工作，框架就会挑选出最合适的模型去干。`ultrabrain` 路由到 GPT-6 Astra max，`deep` 路由到 GPT-6 Astra high（OpenAI / OpenAI Codex，其次 GitHub Copilot，再其次 OpenCode），不可用时回退到 GPT-5.6 Sol。你完全不需要操心。
 
 ### 完全兼容 Claude Code
 

@@ -11,6 +11,8 @@
 #   userprompt (default) — full plan head + progress/ledger summary. Once per turn.
 #   pretool              — short plan head only (head -30), no progress.
 #   precompact           — compaction reminder only (no plan body), matches v2.
+#   preflight            — fixed token after cheap selection/containment checks.
+#   validate             — fixed acceptance token after selection guards, no data.
 #
 # v3 behavior keys off explicit opt-in. With no .mode file present the output is
 # byte-equivalent to the v2.43 hook scalars (legacy invariant). Autonomous and
@@ -76,6 +78,13 @@ select_python() {
 # sessions that share a cwd with a plan but never opted into it.
 [ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
 
+CONTEXT="userprompt"
+for arg in "$@"; do
+    case "$arg" in
+        --context=*) CONTEXT="${arg#--context=}" ;;
+    esac
+done
+
 # --- PWF_PLAN_ROOT: absolute plan-root binding (issue #212). ---
 # A thread whose cwd is a shared PARENT of the real project (e.g. /workspace
 # holding /workspace/project with its own .planning/.active_plan) used to
@@ -98,17 +107,12 @@ if [ -n "${PWF_PLAN_ROOT:-}" ]; then
     if [ "$_pwf_pin_absolute" = "1" ] && [ -d "${PWF_PLAN_ROOT}" ]; then
         PLAN_PREFIX="${PWF_PLAN_ROOT}/"
     else
-        echo "[planning-with-files] PWF_PLAN_ROOT is not a supported absolute local directory: ${PWF_PLAN_ROOT} — nothing injected."
+        if [ "$CONTEXT" != "preflight" ]; then
+            echo "[planning-with-files] PWF_PLAN_ROOT is not a supported absolute local directory: ${PWF_PLAN_ROOT} — nothing injected."
+        fi
         exit 0
     fi
 fi
-
-CONTEXT="userprompt"
-for arg in "$@"; do
-    case "$arg" in
-        --context=*) CONTEXT="${arg#--context=}" ;;
-    esac
-done
 
 # --- Session-attachment guard (issue #212, parity with the Codex adapter). ---
 # Enforcement matches .codex/hooks/user-prompt-submit.sh: when the plan root
@@ -244,8 +248,9 @@ is_within_root() {
 
 # --- Resolution (matches resolve-plan-dir.sh order, kept inline so the hook
 #     dispatch needs only one script on disk to function). ---
-# EXPLICIT tracks WHO chose the plan (issue #212). A valid PLAN_ID, a valid
-# PWF_PLAN_ROOT pin, or an attached session all name the plan deliberately.
+# EXPLICIT tracks who selected the effective project root or plan for the
+# nested-root conflict check. A valid PLAN_ID names a plan deliberately and a
+# valid PWF_PLAN_ROOT chooses the project root deliberately.
 # The .active_plan pointer, the newest-by-mtime fallback, and the legacy root
 # task_plan.md are cwd GUESSES — only guesses are subject to the nested-root
 # conflict check below.
@@ -253,7 +258,6 @@ RESOLVED=""
 SCOPE=""
 EXPLICIT=0
 [ -n "$PLAN_PREFIX" ] && EXPLICIT=1
-[ "$SESSION_ATTACHED" = "1" ] && EXPLICIT=1
 if [ -n "${PLAN_ID:-}" ]; then
     # A set PLAN_ID is a BINDING, not a hint (issue #237). This inline resolver
     # is the one the hooks actually run, so it carries the same rule as
@@ -309,6 +313,15 @@ fi
 [ -L "$PRECHECK_PLAN_FILE" ] && exit 0
 PWF_PYTHON="$(select_explicit_python 2>/dev/null)" || PWF_PYTHON=""
 is_within_root "$PRECHECK_PLAN_FILE" || exit 0
+
+# Cheap eligibility probe for hook adapters that must reject bad project state
+# before parsing host JSON. It emits no project bytes, does not inspect session
+# identity, and never discovers an interpreter from PATH.
+if [ "$CONTEXT" = "preflight" ]; then
+    echo "PWF_PLAN_ELIGIBLE_V1"
+    exit 0
+fi
+
 [ -n "$PWF_PYTHON" ] || PWF_PYTHON="$(select_python 2>/dev/null)" || PWF_PYTHON=""
 
 # Session attachment is evaluated only after plan existence is proven. A
@@ -428,7 +441,29 @@ PY
         fi
         exit 0
     fi
-    EXPLICIT=1
+
+    # An attachment admits a session but does not select one of several plans.
+    # When isolation is armed, require PLAN_ID if more than one live same-root
+    # candidate exists. PWF_PLAN_ROOT selects the project root, not a plan
+    # within that root.
+    if [ -z "${PLAN_ID:-}" ]; then
+        SESSION_PLAN_N=0
+        [ -f "${PLAN_PREFIX}task_plan.md" ] && SESSION_PLAN_N=1
+        for candidate in "${PLAN_PREFIX}".planning/*/task_plan.md; do
+            [ -f "$candidate" ] || continue
+            candidate_dir="${candidate%/task_plan.md}"
+            candidate_slug="${candidate_dir##*/}"
+            slug_is_valid "$candidate_slug" || continue
+            SESSION_PLAN_N=$((SESSION_PLAN_N + 1))
+            [ "$SESSION_PLAN_N" -gt 1 ] && break
+        done
+        if [ "$SESSION_PLAN_N" -gt 1 ]; then
+            if [ "$CONTEXT" = "userprompt" ]; then
+                echo "[planning-with-files] Multiple plans are available while session isolation is armed. Set PLAN_ID=<slug> for this session; nothing injected."
+            fi
+            exit 0
+        fi
+    fi
 fi
 
 # --- Nested-root conflict detection (issue #212): fail CLOSED on ambiguity. ---
@@ -511,6 +546,14 @@ fi
 [ -f "$PLAN_FILE" ] || exit 0
 [ -L "$PLAN_FILE" ] && exit 0
 is_within_root "$PLAN_FILE" || exit 0
+
+# Selection-only probe for hook adapters. It deliberately emits no project
+# bytes and does not assert attestation integrity; callers compare this exact
+# fixed token before deciding whether to emit their own fixed reminder.
+if [ "$CONTEXT" = "validate" ]; then
+    echo "PWF_PLAN_ACCEPTED_V1"
+    exit 0
+fi
 
 # Read the plan once into a private snapshot. Attestation is checked against
 # these exact bytes and every plan-derived output below reads only this file.

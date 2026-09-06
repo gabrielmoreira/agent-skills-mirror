@@ -9,7 +9,14 @@ A suite of Claude Code skills for rigorous academic research, paper writing, pee
 | `deep-research` v2.12.1 | 13-agent research team | full, quick, socratic, review, lit-review, three-way-scan, fact-check, systematic-review |
 | `academic-paper` v3.3.1 | 12-agent paper writing | full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, disclosure, rebuttal-audit |
 | `academic-paper-reviewer` v1.11.1 | Multi-perspective paper review (5 reviewers + optional cross-model DA critique) | full, re-review, quick, methodology-focus, guided, calibration |
-| `academic-pipeline` v3.21.1 | Full pipeline orchestrator | (coordinates all above) |
+| `academic-pipeline` v3.21.2 | Full pipeline orchestrator | (coordinates all above) |
+
+## v3.21.2 Key Additions (model currency + checkpoint provenance + CJK title-matching repairs)
+
+- **Model currency follows the September 2026 system cards.** Docs name Claude Fable 5.1 as the current frontier model; `gpt-6-astra` is listed as a provisional cross-model verifier on both transports and becomes the recommended OpenAI verifier under the #783 generation-currency policy, while `gpt-5.6-sol` keeps its transport-qualified validated status. The contained Codex citation transport accepted `ultra` reasoning effort as part of its closed set at the 3.21.2 tag; #824 reverted that — `ultra` is a delegation request on the codex app-server, so the transport now rejects it with `REASONING_EFFORT_REQUIRES_DELEGATION`. No new bakeoff result is claimed.
+- **Two vendor-motivated guardrails, both prompt-level.** Checkpoint decision provenance (authority in the pipeline state machine, mirrored by the orchestrator, indexed as risk R11): only a user turn is a checkpoint decision, and decisions are re-transmitted to subagents verbatim. Provider-side monitoring and safety interventions are named as a transport-failure case that is never a verdict; model tiering records that the resolved tier is the declared model, not a per-call attestation.
+- **Harness-retirement audit retires nothing.** `audits/harness-retirement-2026-09-model-update.md` maps both cards' behavioral findings to the ARS mechanisms that assume them: 0 prompt-text retirements, 4 applied currency fixes, 2 deferred items, 8 keep-as-debt annotations now backed by a system-card citation.
+- **Matching and lint repairs.** CJK titles pass the shared exact-title gate in the four index resolvers, and wrapper marks are stripped only as one balanced unit (#798, #800); a skill-inventory parity lint (#809) requires set-equality across the skill directories, `skills/` symlinks, the CLAUDE.md table, and the marketplace manifest; the autolink round-trip test declares its dependency (#801); `check_surface_form_parity` names a broken environment instead of the manifest; the R10 residual gap and an MLA key-rules line are de-staled (#813, #805).
 
 ## v3.21.1 Key Additions (bounded workflow substrates + transport-qualified verification)
 
@@ -291,7 +298,7 @@ Spec: `docs/design/2026-05-17-ars-v3.9.0-cross-index-triangulation-measurement-s
 
 - **Anti-sycophancy protocols**: DA agents score rebuttals 1-5 before conceding. No concession below 4/5. Frame-lock detection.
 - **Intent detection**: Socratic Mentor classifies user intent as exploratory vs. goal-oriented. Exploratory mode disables auto-convergence.
-- **Cross-model verification** (optional): Set `ARS_CROSS_MODEL` env var to enable a non-Anthropic verifier (currently GPT-5.6 Sol (provisional) or Gemini 3.1 Pro; GPT-5.5 / GPT-5.5 Pro remain validated previous-generation options) for integrity sample checks, a blind and separately executed Devil's Advocate critique, and blind disagreement checkpoints at design freeze + final editorial decision (#518). The once-planned generic sixth reviewer is retired, not deferred — see the "Why there is no generic 6th reviewer" note in `shared/cross_model_verification.md`, which also carries the supported-model table. These execution facts are not a binary independence claim.
+- **Cross-model verification** (optional): Set `ARS_CROSS_MODEL` env var to enable a non-Anthropic verifier (currently GPT-6 Astra (provisional) or Gemini 3.1 Pro; per-transport statuses of every id live in the supported-model table) for integrity sample checks, a blind and separately executed Devil's Advocate critique, and blind disagreement checkpoints at design freeze + final editorial decision (#518). The once-planned generic sixth reviewer is retired, not deferred — see the "Why there is no generic 6th reviewer" note in `shared/cross_model_verification.md`, which also carries the supported-model table. These execution facts are not a binary independence claim.
 - **AI Self-Reflection Report**: Pipeline Stage 6 now includes AI behavioral self-assessment (concession rate, health alerts, sycophancy risk rating).
 
 ## Routing Discipline (v3.9.2)
@@ -365,7 +372,7 @@ Materials: Complete paper text. field_analyst_agent auto-detects domain and conf
 Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed comments
 
 ## Version Info
-- **Suite version**: 3.21.1 (per CHANGELOG.md)
-- **Last Updated**: 2026-08-24
+- **Suite version**: 3.21.2 (per CHANGELOG.md)
+- **Last Updated**: 2026-09-06
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0

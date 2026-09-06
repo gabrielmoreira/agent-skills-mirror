@@ -6,7 +6,7 @@ called `<name>`. For modifying an existing collector, see
 
 ## 0. Read first
 
-- `<repo>/.agents/skills/project-writing-collectors/SKILL.md`
+- `<repo>/.agents/skills/collectors-authoring/SKILL.md`
   -- the broader "how to write a collector" context (NIDL
   contexts, dashboard shaping, plugin landscape).
 - `<repo>/src/go/plugin/go.d/docs/how-to-write-a-collector.md`
@@ -140,13 +140,12 @@ modules:
                 - name: <dim>
 ```
 
-The first sentence of `metrics_description` is also used as the
-description in generated catalog-style pages such as
-`src/collectors/COLLECTORS.md`. It SHOULD stay product-facing and stable:
-start with an action phrase, describe the integration, and MUST NOT
-describe configuration variables, defaults, limits, or setup steps.
-Put those details in the setup, default-behavior, examples, or
-troubleshooting fields.
+What each field says and how it reads (the catalog sentence, the
+overview, permissions, auto-detection including service discovery,
+limits and cost, prerequisites, option rows, examples, known errors,
+metrics rows, alerts, identity) is owned by
+`.agents/skills/collectors-metadata-yaml/SKILL.md`; write the file
+with it open.
 
 Hit every REQUIRED field. The validator is strict (fatal on
 warnings). Refer to `../schema-reference.md` for the
@@ -311,7 +310,7 @@ separate generated-artifact PR.
   build.
 - The Learn site's per-integration page lands within a few
   hours -- Learn's `ingest.yml` workflow runs every 3 hours
-  (see the `learn-site-structure` skill for details).
+  (see the `docs-learn-site-structure` skill for details).
 
 ## Common mistakes
 

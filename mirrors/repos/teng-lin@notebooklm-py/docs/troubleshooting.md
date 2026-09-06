@@ -22,8 +22,21 @@ missing `grpcio`, `protobuf`, or `gpsoauth` module, install the `[android]`
 extra in the same environment as the `notebooklm` executable. Android uses the
 active profile's `master_token.json` to mint mobile bearer tokens; an ordinary
 browser-cookie login alone is not sufficient. Typed namespace operations stay
-on the Android transport. See the [Android backend guide](android/README.md)
-for credential and protocol diagnostics.
+on the Android transport; use them by default, or `client.raw.unary(...)` /
+`raw.unary_stream(...)` for advanced Android calls.
+
+The retained default v0.x compatibility policy still makes
+`NotebookLMClient.from_storage(backend="android")` send a homepage GET while
+the storage wrapper builds the client, before Android open. A stale/missing Web
+cookie, network failure, or homepage-token failure therefore still surfaces at
+that build step. The bootstrap does not run PSIDTS recovery or persist the
+homepage cookie observation. The deprecated root `client.rpc_call(...)` then
+crosses into a lazy Web sidecar and uses those Web cookies, not the Android
+master token. A master-token-only profile can run typed Android and raw unary
+operations but cannot use `rpc_call`; migrate that call instead of adding Web
+cookies solely for the compatibility path. See the
+[Android backend guide](android/README.md) for credential and protocol
+diagnostics.
 
 ### Authentication Errors
 
@@ -359,7 +372,7 @@ the `Found RPC IDs in response: [...]` line tells you what the server is
 now returning. Cross-reference against the call site that failed.
 
 Please also report the rotated IDs in a GitHub issue so the canonical
-mapping in `src/notebooklm/rpc/types.py` can be updated for everyone.
+mapping in `src/notebooklm/rpc/_identifiers.py` can be updated for everyone.
 
 #### How to get the full response preview from an RPCError
 

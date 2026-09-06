@@ -8,12 +8,12 @@ Eliminate predictable AI writing patterns. Write like a human: varied, imperfect
 
 1. **Cut filler phrases.** Remove throat-clearing openers ("It's worth noting", "Notably,", "Importantly,"), emphasis crutches, and adverbs that only signal emphasis. Keep adverbs that carry real meaning.
 2. **Break formulaic structures.** Avoid binary contrasts, negative listings, dramatic fragmentation, rhetorical setups, false agency.
-3. **Use active voice.** Every sentence needs a human subject doing something. No inanimate objects performing human actions (see False agency below).
+3. **Use concrete subjects.** People, software and physical objects can all do things. Remove agency that obscures who acted or how something works; do not force a human subject into every technical sentence.
 4. **No vague declaratives.** "The reasons are structural", "The reality is simpler", "History is clear": name the specific thing and show the evidence before the conclusion. No lazy extremes ("every," "always," "never") doing vague work.
-5. **Put the reader in the room.** No narrator-from-a-distance voice. "You" beats "People." Specifics beat abstractions.
-6. **Vary rhythm.** Mix sentence lengths. Two items beat three. End paragraphs differently.
-7. **Trust readers.** State facts directly. Skip softening, justification, hand-holding.
-8. **Cut quotables.** If it sounds like a pull-quote, rewrite it.
+5. **Preserve viewpoint.** An author's experience stays "I"; translating it as "you" can turn a personal account into unsolicited advice.
+6. **Keep natural rhythm.** Repair fragment-heavy or repetitive prose without quotas for sentence length, list size or paragraph endings.
+7. **Trust readers.** Cut hand-holding, but keep uncertainty, attribution and conditions that limit a claim.
+8. **Preserve emotional meaning.** A personal conviction or heartfelt ending can sound quotable and still belong. Keep its warmth and force; cut added stock morals, not the author's feelings. Translation must carry the emotion as well as the facts.
 9. **Do not replace one formula with another.** “Human” does not mean slangy, quirky, or performatively casual.
 10. **No emoji.** Remove any emoji from the text being edited.
 
@@ -80,9 +80,9 @@ Examples, not exhaustive -- any construction that performs insight rather than d
 > NO: "He published this. Openly. In a book. As a priest." / "These weren't just products. And the software side matched. Then it professionalised."
 > OK: Complete sentences. Trust content over presentation.
 
-**False agency**: inanimate objects performing human verbs:
-> NO: "the complaint becomes a fix" / "the decision emerges" / "the data tells us"
-> OK: Name the human. "Someone fixed it." "The team decided."
+**False agency**: a metaphor substitutes for the actual mechanism:
+> NO: "The data wants a cleaner narrative."
+> OK: Name what the data supports or who made the decision. "The tool reads the file" is ordinary technical English and stays.
 
 ### Tone Patterns to Avoid
 
@@ -108,7 +108,7 @@ Examples, not exhaustive -- any construction that performs insight rather than d
 
 **Pedagogical hand-holding**, including the sentence that announces a list or classification:
 > NO: "Let's break this down step by step." / "Let's unpack what this really means." / "Community data is an interesting piece. Diversity has to cover..." / "One detail is easy to miss. 'Output action' can mean..."
-> OK: Start with the content, not an announcement of the content: "Community data has a practical requirement: diversity has to cover..."
+> OK: Start with the content: "Community data needs to cover different lighting, camera angles and rooms."
 
 **Vague attributions:**
 > NO: "Experts argue..." / "Industry reports suggest..." / "Observers have cited..."
@@ -147,4 +147,4 @@ Examples, not exhaustive -- any construction that performs insight rather than d
 > OK: The image or timeline itself. Let the surrounding judgment or personal project anchor carry the weight. Keep creation-process details only if they are themselves part of the story.
 
 **Re-anchoring after cutting recaps (long-form articles):**
-After removing table re-reads and structural repetition, scan the remaining prose for places where a general explanation can be tied back to the author's concrete project or experience already mentioned in the piece. This is one of the strongest ways to restore human voice in technical long-form writing.
+Keep concrete project details when cutting recaps, but do not add another callback to the same project at every section ending. A callback earns its place only when it adds a consequence or limitation not already explained.

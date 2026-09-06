@@ -76,6 +76,14 @@ uv run --no-sync roam health --explain
 ignore file as well as the index. `roam index` refreshes an existing checkout
 without requesting new CI configuration.
 
+Initialization requires a valid Git marker at the resolved project root, not
+merely a file or directory named `.git`. Running from a nested directory uses
+the validated repository root; linked Git worktrees are supported. An invalid
+root is refused before bootstrap writes. In JSON mode, that refusal exits 2
+with `error_code: "FILE_NOT_FOUND"`, `summary.state: "not_initialized"`, and an
+empty `created` list. Check the intended checkout before running `git init`;
+an empty `.git` directory does not establish a repository.
+
 Normal indexing reuses unchanged source data, reprocesses changed files and
 affected neighbors, and refreshes Git metadata. A commit can change `HEAD`
 without changing any file contents. The full index path still checks Git
@@ -93,7 +101,21 @@ such as a forced rebuild are recorded separately, so running with `--force`
 does not itself imply configuration drift. Differences between successive
 manifests may still reflect real edits or environment changes.
 
+Doctor's index-manifest-history advisory compares successive runs. A `git_head`
+difference can simply record an expected commit advance; inspect the named
+fields and the current freshness checks before treating history drift as an
+indexing failure. Re-indexing solely to erase that comparison is not a repair.
+
 ## Recover from a writer or interrupted index
+
+`ROAM_DB_DIR` and the `db_dir` project setting keep the database and its
+`index.lock` / `index.state` control files together. They do not relocate project
+configuration, agent ledgers, or response evidence. Stop older indexers before
+upgrading or moving an existing store; mixed-version writers are not supported.
+For an explicit build policy, set `ROAM_NO_AUTO_INDEX=1`: analysis refuses a
+missing or incomplete index with exit 3, while `roam index` and `roam init`
+remain intentional build commands. JSON refusals distinguish those states
+without opening the index. `init` still creates project configuration.
 
 An ownership error means another writer is active, or Roam cannot prove that
 the recorded owner is stale. Wait for the writer, inspect the process that
@@ -117,11 +139,19 @@ rebuildable database does not make the whole directory disposable.
 | --- | --- |
 | `roam doctor` | Installation, environment, index, and cache checks; advisory-only results exit 0, blocking failures exit 2 |
 | `roam doctor --strict` | The same checks, with advisory failures promoted to exit 2 |
+| `roam db-check --ci` | Index consistency checks; failed checks or high-severity findings exit 5, while medium findings remain review advisories |
+| `roam syntax-check src/roam/db/connection.py` | Tree-sitter syntax checking of the named file; this is not compiler validation or proof of complete symbol extraction |
 | `roam health --explain` | An architectural score and its component contributions; it does not run the test suite |
 | `roam health --gate` | The configured architectural quality gate; a failed gate exits 5 |
 | Relevant pytest suites | Executable behavior covered by those tests |
 | `scripts/prepush_check.py --full` | The FAST structural checks plus additional documentation checks |
 | `scripts/prepush_check.py --release` | The FULL tier plus the non-slow suite and release checks; read its printed coverage limits |
+
+`--workers N` bounds both structural tests and the complete release suite to
+1-4 workers. Structural bundles use `loadfile`; the release suite uses
+`loadgroup` to preserve grouped-test isolation. Explicit arguments keep the
+budget stable whether or not `CI` or `ROAM_XDIST_WORKERS` is set. A single
+worker still runs through xdist; use `pytest -n 0` for direct serial debugging.
 
 The reference workflow [.github/workflows/roam.yml](../.github/workflows/roam.yml)
 is manually triggered and deliberately differs from an active generated
@@ -132,6 +162,12 @@ the file's stated purpose before regenerating it. Actual repository CI is
 Architectural findings are candidates for investigation. Check the named symbol,
 edge evidence, metric definition, and scope before refactoring. A low score, a
 parser warning, and a failing test describe different conditions.
+
+A zero-symbol-file advisory does not by itself establish a parser failure.
+Package markers, import-only entry points, markup, and styles can legitimately
+contribute no named symbols. Inspect the reported files before classifying the
+index as broken. For syntax checks, pass actual file paths or `--changed`;
+a result with zero checked files establishes no source validation.
 
 ## Documentation checks
 
@@ -169,6 +205,13 @@ registry-derived count gates above for the public product surface.
 
 ## Finish a change
 
+For evidence-sensitive changes, read the
+[verification evidence guide](concepts/verification-evidence.md). Keep the
+regression fixture fixed across the unfixed/fixed comparison and test the real
+consumer after serialization or dispatch. A valid record from the wrong
+subject, a failed prerequisite, or a test selector that ran no relevant cases
+does not establish the claimed repair.
+
 For a field report, reproduce each claim you intend to fix before editing.
 Use small positive and negative fixtures: the false positive must disappear
 while a genuine instance remains detectable. Then invoke the affected CLI
@@ -203,8 +246,11 @@ A successful FAST or FULL gate is not evidence that the entire test matrix
 passed. Record which checks completed and which remain pending. Follow
 [CONTRIBUTING.md](../CONTRIBUTING.md#deploys) for tagging and website publishing.
 
-The [container release path](containers.md) runs only after package/evidence
-verification. Check its exact digest, signature and anonymous pull as separate
+The [container release path](containers.md) is held by default and runs only
+with explicit `ROAM_CONTAINER_PUBLISH=true`, after package/evidence verification.
+Keep that opt-in disabled pending image-wide security review; package and site
+releases can proceed independently. A skipped container job means unpublished.
+Check its exact digest, signature and anonymous pull as separate
 release evidence; a green PyPI upload does not prove a public image exists.
 For issue triage, reproduce protocol claims against the installed advertised
 revision ([MCP compatibility](mcp-protocol-compatibility.md)) and CLI examples

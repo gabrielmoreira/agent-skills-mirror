@@ -181,6 +181,13 @@ notebooklm.auth.OPTIONAL_COOKIE_DOMAINS_BY_LABEL
 notebooklm.auth.LockUnavailableError  # canonical home: notebooklm.exceptions; also an OSError via TimeoutError (ADR-0029)
 ```
 
+The raw Web-row factories on `Artifact`, `Collection`, `Label`, `Notebook`,
+`ShareStatus`, `SharedUser`, and `Source` are retained only for the v0.x
+compatibility window and are scheduled for removal in v1. Use the corresponding
+typed client namespace (`client.artifacts`, `collections`, `labels`, `notebooks`,
+`sharing`, or `sources`) instead; there is no supported public raw-row decoder.
+See [Deprecations](deprecations.md) for the exact nine methods and warning window.
+
 Backend selection is also public: `backend="web"` (the default) or
 `backend="android"` on the client, and `--backend web|android` on the CLI.
 Android is opt-in; see the installation and Android guides for its dependency,
@@ -458,7 +465,7 @@ When Google changes their internal APIs:
    candidates are checked by manually dispatching the workflow on protected
    `main` after the release PR is merged (see below)
 2. **Investigation**: Identify changed method IDs using browser devtools
-3. **Fix**: Update `rpc/types.py` with new method IDs
+3. **Fix**: Update `rpc/_identifiers.py` with new method IDs
 4. **Release**: Push patch release as soon as possible
 
 ### Automated RPC Health Check
@@ -480,7 +487,7 @@ are intentionally rejected.
 **Why this design:**
 - Google's breaking change pattern is silent ID changes, not schema changes
 - Error responses still contain the method ID, so we detect mismatches even on API errors
-- A mismatch means `rpc/types.py` needs updating, triggering a patch release
+- A mismatch means `rpc/_identifiers.py` needs updating, triggering a patch release
 
 **On mismatch detection:**
 - GitHub Issue auto-created with `bug`, `rpc-breakage`, and `automated` labels

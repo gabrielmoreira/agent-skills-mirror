@@ -1,6 +1,6 @@
 ---
 name: dspy-gepa-optimizer
-description: Optimize DSPy programs with dspy.GEPA — the reflective/evolutionary optimizer that is the 2026 gold standard for DSPy (beats MIPROv2 on complex tasks with far fewer rollouts when the metric returns rich feedback). Use when the user says optimize, compile, GEPA, reflective optimization, or "make this program better" and a DSPy program + metric + trainset exist.
+description: Optimize DSPy programs with dspy.GEPA — a reflective/evolutionary optimizer to consider against task-specific baselines within an authorized evaluation budget. Use when the user says optimize, compile, GEPA, reflective optimization, or "make this program better" and a DSPy program + metric + trainset exist.
 when_to_use: User asks to optimize/compile/tune a DSPy program, mentions GEPA or reflective optimization, or has a working program with a non-trivial metric and wants to improve it.
 ---
 
@@ -13,7 +13,7 @@ GEPA (Genetic-Pareto) is a reflective optimizer: it mutates a program's instruct
 ## Prerequisites — do these first or GEPA wastes rollouts
 
 1. A `dspy.Module` that runs end-to-end (see `dspy-fundamentals`).
-2. A rich-feedback metric returning `dspy.Prediction(score=float, feedback=str)` (see `dspy-evaluation-harness`). **A float-only metric makes GEPA no better than MIPRO.** A dict with the same fields still crashes `dspy.Evaluate` under DSPy 3.2.1 — use `dspy.Prediction`.
+2. A rich-feedback metric returning `dspy.Prediction(score=float, feedback=str)` (see `dspy-evaluation-harness`). Informative feedback can support reflection; evaluate optimizer benefit on the task rather than assuming superiority. A dict with the same fields still crashes `dspy.Evaluate` under DSPy 3.2.1 — use `dspy.Prediction`.
 3. `trainset` and a **separate** `valset`. For GEPA, maximize training examples and keep validation just large enough to represent the downstream distribution; do not reuse the same examples for both.
 4. A `reflection_lm` — a strong LM (often the same or stronger than the task LM) set to `temperature=1.0` for creative proposals. Current DSPy docs use a GPT-5-class reflection model with a large output budget.
 

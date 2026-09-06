@@ -523,10 +523,12 @@ The values come from `LogEntry.turnModel` / `turnEffort`, copied in `useBatchedS
 
 The presence of the `turnSettings` OBJECT is the capture flag, not the presence of its fields. `undefined` model/effort inside a present object means "the agent's default was in force when I queued", which is a real choice - never write `item.turnSettings?.model ?? liveModel`, or an item queued on the default silently inherits whatever the user selected afterwards. The object is absent only on items restored from a build that predates the capture, which is the one case that falls back to live values.
 
+**The token-source half is opt-in.** The `showProviderModePill` display setting (Settings -> Display -> Provider Mode Pill, default OFF) suppresses the `claude -p` / `TUI Wrapper` pill everywhere it appears: the chat footer (`TerminalOutput`), the History list row (`HistoryEntryItem`), and the history detail view (`HistoryDetailModal`). The model and effort pills are NOT gated by it - they are separate facts about the turn. All three surfaces read the store field directly rather than threading a prop, so a new surface that renders `getTokenSourcePill()` has to remember the gate itself.
+
 Two traps when touching this row:
 
 - `collapsedLogs` in `TerminalOutput` merges consecutive non-user entries into one rendered entry built from `[0]`. A group can lead with a system banner that carries no stamp, so the merge lifts `turnModel` / `turnEffort` from the first grouped entry that has them - the same fix `renderStyle` needed.
-- `LogItem`'s memo comparator lists every field that affects rendering. A new pill field that is not in that list will not repaint when it changes.
+- `LogItem`'s memo comparator lists every field that affects rendering. A new pill field that is not in that list will not repaint when it changes. `showProviderModePill` is passed down as a primitive prop (not read from the store inside `LogItem`) for exactly this reason, and it is listed in the comparator.
 
 ### Queued Item Tab Labels (`resolveQueuedItemTabName`)
 
@@ -549,6 +551,25 @@ Reach for it whenever a box has BOTH a capped height and content that arrives ov
 It uses `useLayoutEffect`, not `useEffect`: the scroll has to land in the same frame as the new content, or the box paints once at the old position and the output visibly jumps afterwards. The 50px bottom threshold matches the transcript's own in `TerminalOutput`, so a card follows its output on the same terms the conversation around it does.
 
 Distinct from `useScrollIntoView` (brings ONE element into view inside a list, for keyboard navigation) and from `TerminalOutput`'s MutationObserver auto-scroll (owns the whole conversation pane). Pick by scope: one self-contained box, one element in a list, or the whole pane.
+
+### Restoring a Transcript's Scroll Position
+
+An AI tab is left in one of TWO states, and they restore differently. `TerminalOutput` takes both `initialScrollTop` (the tab's saved `scrollTop`) and `initialIsAtBottom` (the tab's saved `isAtBottom`), and it needs both.
+
+**Following the tail** (`isAtBottom` true, or unset). The saved `scrollTop` is only a snapshot of where the bottom HAPPENED TO BE at save time, and the transcript keeps growing while the tab is off screen. Restoring that number verbatim drops the user however far the agent wrote while they were away, and because the stale offset is then far above the new bottom, the restore ALSO pauses auto-scroll - so the transcript will not even follow the output that stranded them. Clicking a toast to read a finished reply landed thousands of pixels above it, with the tail switched off. Such a tab restores to the BOTTOM and ignores the saved number.
+
+**Parked mid-history** (`isAtBottom` false). The offset is exactly right and must be honored: new entries are appended BELOW, so what the user was reading has not moved. This restore pauses auto-scroll on purpose, or the MutationObserver yanks the view straight back down.
+
+`undefined` counts as at-bottom, which is the same default the unread gate in `useAgentDataListener` uses (`targetTab.isAtBottom !== false`). Keep the two spellings identical - a tab that is "at the bottom" for unread purposes and "parked" for scroll purposes is the bug above wearing a different hat.
+
+**Neither target is reached in one frame.** A single `requestAnimationFrame` proves the DOM is MOUNTED, not that its height has settled: images are still decoding, fonts still swapping, code blocks still re-highlighting. `scrollHeight` is short on that first frame and `maxScroll` with it, so the restore clamps to less than it was asked for and the tab opens above where the user left it. The restore therefore re-attempts across frames, and the two states latch differently:
+
+- A fixed offset latches as soon as the content is tall enough to hold it.
+- The bottom cannot, because `maxScroll` MOVES with every late image. "Landed on the bottom" is true on the first frame and wrong on the next, so a tail-following restore keeps chasing until the HEIGHT stops changing (`MAX_QUIET_FRAMES`).
+
+A genuine user scroll during the settle abandons the restore (`userScrolledDuringRestoreRef`); their input wins, because a restore that keeps yanking the view is worse than landing slightly high. An in-flight cross-tab search jump wins for the same reason.
+
+Do not "simplify" this back to a single saved offset. A pixel offset cannot express "wherever the newest message is", and that is the state most tabs are actually left in.
 
 ### Scrolling a Virtualized List to the Selection
 
@@ -1162,10 +1183,15 @@ const fontScale = useFontScale('filePreview.fontScale');
 - `variant="inline"` - bordered squares for a toolbar or stats bar (Director's Notes).
 - `variant="floating"` - frosted pill for overlaying a scrolling pane (file preview,
   pinned top-right as the mirror of the Table of Contents button at bottom-right).
+  The Auto Run panel uses the same treatment over its document, so zooming reads
+  identically whether a document is open in a file tab or in the Right Bar. Pin it
+  with a `sticky top-* z-20 h-0` row rather than `absolute`: sticky needs no
+  positioned ancestor and the zero height keeps the pill from displacing content.
 - `size` - `'md'` (default) or `'sm'`, which drops the buttons from `w-7 h-7` to
-  `w-6 h-6` and the icons from `w-4` to `w-3.5`. Use `'sm'` in a dense `text-xs`
-  button row (the Auto Run toolbar), where the default squares stand a couple of
-  pixels taller than the row and read heavier than the buttons beside them.
+  `w-6 h-6` and the icons from `w-4` to `w-3.5`. Use `'sm'` where the surface is
+  narrow (the Auto Run panel in the Right Bar) or in a dense `text-xs` button row,
+  where the default squares stand a couple of pixels taller than the row and read
+  heavier than the buttons beside them.
 - **A pane with a read mode and an edit mode gets two scales, not one.** Auto Run
   keeps `autoRun.previewFontScale` and `autoRun.editFontScale` and passes whichever
   matches the current mode; reading rendered prose and editing Markdown source are

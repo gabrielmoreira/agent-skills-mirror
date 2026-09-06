@@ -15,28 +15,28 @@ hooks:
   UserPromptSubmit:
     - hooks:
         - type: command
-          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; if [ -n \"$SH\" ]; then sh \"$SH\" --context=userprompt; else echo \"[planning-with-files] hook script not found; plan injection is off. Set PWF_SCRIPT_DIR to the skill's scripts directory, or install the skill to a user-level path.\"; fi; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; if [ -n \"$SH\" ]; then sh \"$SH\" --event=userprompt; else echo \"[planning-with-files] hook script not found; plan injection is off. Set PWF_SCRIPT_DIR to the skill's scripts directory, or install the skill to a user-level path.\"; fi; exit 0"
   PreToolUse:
     - matcher: "Write|Edit|Bash|Read|Glob|Grep"
       hooks:
         - type: command
-          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --context=pretool; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=pretool; exit 0"
   PostToolUse:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "if [ -f task_plan.md ] || [ -f .planning/.active_plan ] || ls .planning/*/task_plan.md >/dev/null 2>&1; then echo '[planning-with-files] Update progress.md with what you just did. If a phase is now complete, update task_plan.md status.'; fi"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=posttool; exit 0"
   Stop:
     - hooks:
         - type: command
-          command: "PS1_T=\"\"; for c in \"${PWF_SCRIPT_DIR}/check-complete.ps1\" \"${CLAUDE_SKILL_DIR}/scripts/check-complete.ps1\" \"$HOME/.mastracode/skills/planning-with-files/scripts/check-complete.ps1\" \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.ps1\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.ps1\"; do [ -f \"$c\" ] && { PS1_T=\"$c\"; break; }; done; SH_T=\"\"; for c in \"${PWF_SCRIPT_DIR}/check-complete.sh\" \"${CLAUDE_SKILL_DIR}/scripts/check-complete.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/check-complete.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.sh\"; do [ -f \"$c\" ] && { SH_T=\"$c\"; break; }; done; case \"$(uname -s 2>/dev/null)\" in MINGW*|MSYS*|CYGWIN*) if [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" 2>/dev/null; elif [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; fi ;; *) if [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; elif [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" 2>/dev/null; fi ;; esac; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=stop; exit 0"
   PreCompact:
     - matcher: "*"
       hooks:
         - type: command
-          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.mastracode/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.16.0"
+  version: "3.16.1"
 
 ---
 
@@ -46,7 +46,7 @@ Work like Manus: Use persistent markdown files as your "working memory on disk."
 
 ## FIRST: Restore Project State
 
-**Before starting work**, read the project planning files and run `git diff --stat`. Automatic recovery does not inspect agent session stores. The following optional command reads same-project local session records and emits aggregate counts only:
+**Before continuing**, resolve the plan this task owns. Use the installed `scripts/resolve-plan-dir.sh` (or `.ps1`) with the host's `PLAN_ID` and `PWF_PLAN_ROOT`, then read `task_plan.md`, `progress.md`, and `findings.md` from that selected directory. If an explicit selector is rejected, or session isolation is armed with multiple plans and no `PLAN_ID`, correct the pin and do not fall back to another task. Run `git diff --stat` for code changes not yet recorded there. All planning filenames below mean that selected directory. For parallel tasks, pin each host before it starts or use separate worktrees; a child process export does not change its host. One orchestrator owns a shared plan and summaries, while workers use assigned files or ledgers.
 
 ```bash
 # Linux/macOS
@@ -68,17 +68,16 @@ Use `--replay` instead of `--metadata` only for a deliberate bounded replay. Rep
 | Location | What Goes There |
 |----------|-----------------|
 | Skill directory | Templates, scripts, reference docs |
-| Your project directory | `task_plan.md`, `findings.md`, `progress.md` |
+| Selected task directory in your project | `task_plan.md`, `findings.md`, `progress.md` |
 
 ## Quick Start
 
-Before ANY complex task:
+Before a complex task:
 
-1. **Create `task_plan.md`** — Use [templates/task_plan.md](templates/task_plan.md) as reference
-2. **Create `findings.md`** — Use [templates/findings.md](templates/findings.md) as reference
-3. **Create `progress.md`** — Use [templates/progress.md](templates/progress.md) as reference
-4. **Re-read plan before decisions** — Refreshes goals in attention window
-5. **Update after each phase** — Mark complete, log errors
+1. **Resolve or initialize the task directory.** Reuse the selected plan when resuming. For a separate task, run `scripts/init-session.sh "Task Name"` and pin the host with its printed `PLAN_ID`.
+2. **Create missing planning files only.** Use the templates in that directory and preserve existing work.
+3. **Re-read the selected plan before decisions.** Update progress after each phase.
+4. **Assign one plan owner.** Workers report through their own ledgers or assigned files; they do not rewrite the shared planning files.
 
 > **Note:** Planning files go in your project root, not the skill installation folder.
 
@@ -102,7 +101,7 @@ Filesystem = Disk (persistent, unlimited)
 ## Critical Rules
 
 ### 1. Create Plan First
-Never start a complex task without `task_plan.md`. Non-negotiable.
+Never start a complex task without a selected or newly initialized `task_plan.md`. Non-negotiable.
 
 ### 2. The 2-Action Rule
 > "After every 2 view/browser/search operations, IMMEDIATELY save key findings to text files."

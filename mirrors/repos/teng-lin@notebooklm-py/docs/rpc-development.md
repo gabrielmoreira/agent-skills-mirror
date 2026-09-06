@@ -43,7 +43,7 @@ graph is Android-selected.
 
 ### Source of Truth
 
-- **RPC method IDs:** `src/notebooklm/rpc/types.py`
+- **RPC method IDs:** `src/notebooklm/rpc/_identifiers.py`
 - **Payload builders:** the owning implementation modules, for example
   `_web/params/notebooks.py::build_create_notebook_params`,
   `_web/params/artifacts.py`, `_web/params/sources.py`, `_web/sources/add.py`,
@@ -295,7 +295,7 @@ Key patterns:
 
 ### Step 3: Implement
 
-**Add RPC method ID** (`src/notebooklm/rpc/types.py`):
+**Add RPC method ID** (`src/notebooklm/rpc/_identifiers.py`):
 ```python
 class RPCMethod(str, Enum):
     NEW_METHOD = "AbCdEf"  # 6-char ID from capture
@@ -449,7 +449,7 @@ print(f"DEBUG: {result}")  # See actual structure
 ## Checklist
 
 - [ ] Captured RPC ID and params structure
-- [ ] Added to `RPCMethod` enum in `rpc/types.py`
+- [ ] Added to `RPCMethod` enum in `rpc/_identifiers.py`
 - [ ] Implemented method in appropriate `_*.py` file
 - [ ] Added dataclass if needed in `types.py`
 - [ ] Added CLI command if needed
@@ -477,7 +477,7 @@ NotebookLM Protocol Facts:
 - Parameters are position-sensitive arrays
 
 Source of Truth:
-- Canonical RPC IDs: src/notebooklm/rpc/types.py
+- Canonical RPC IDs: src/notebooklm/rpc/_identifiers.py
 - Payload structures: docs/rpc-reference.md
 ```
 

@@ -27,9 +27,9 @@ When the question is about ad-to-page fit, high CTR / low CVR, LPX, or testing a
 Figure out which URLs to score. In priority order:
 
 1. **User supplied a URL** — score that page, skip discovery.
-2. **User supplied an ad group or campaign name** — `runScript` a GAQL query against `ad_group_ad` filtered to that ad group; extract unique `final_urls`. Normalize (strip tracking params, preserve path + query that affects routing).
+2. **User supplied an ad group or campaign name** — retrieve the ads for that ad group or campaign using an available read capability and extract their final URLs. Normalize (strip tracking params, preserve path + query that affects routing).
 3. **Auto-handoff from `/google-ads-audit`** — the handoff passes the specific ad groups flagged. Pull their final URLs the same way.
-4. **No arguments** — `runScript` an `ad_group_ad` query across the account ranking final URLs by last-30-day spend, propose the top 3, ask the user to confirm.
+4. **No arguments** — retrieve account ad URLs and rank them by spend over an appropriate recent period, propose the top 3, ask the user to confirm.
 
 **De-duplicate aggressively.** Many ads point to the same final URL — score each unique URL once, then map back to every ad group that uses it.
 
@@ -39,7 +39,7 @@ Do all of these in a single tool-use turn:
 
 1. **WebFetch the landing page** — capture visible headline, subheadline, primary CTA text, form fields, trust signals, body copy tone. Capture the full HTML so we can spot script bloat and above-the-fold content.
 2. **PageSpeed Insights API call** — `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={url}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo` via WebFetch. No API key needed for single-URL queries. Extract LCP, CLS, INP, TTI, performance score, and the top 3 opportunities from `lighthouseResult.audits`.
-3. **Pull the referring ad copy and the ad group's conversion metrics** — one `runScript` call with `ads.gaqlParallel` against `ad_group_ad` (for headline/description text — the message-match baseline) and `ad_group` or `keyword_view` (for clicks, conversions, CVR — used to ground the dollar-impact estimate). One call covers both.
+3. **Pull the referring ad copy and the ad group's conversion metrics** — retrieve headline/description text for message match and the associated clicks, conversions, and conversion rate for the impact estimate. Choose the available reads and batch them when useful.
 4. **Read `{data_dir}/business-context.json`** — for brand voice, differentiators, offers, target audience. If missing, point the user to `/google-ads-audit` first. Don't guess the business.
 
 If any single call fails, continue — note the gap in the report rather than blocking. PageSpeed Insights can rate-limit; if it does, fall back to a manual timing annotation ("PSI unavailable — could not score Page Speed") and deflate the final report's confidence rather than skipping the dimension.

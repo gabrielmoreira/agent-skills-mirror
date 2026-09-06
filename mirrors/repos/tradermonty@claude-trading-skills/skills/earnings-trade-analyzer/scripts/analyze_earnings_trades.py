@@ -56,6 +56,112 @@ def normalize_timing(time_value):
         return "unknown"
 
 
+# ZERO_RESULT_REASON -> (exit_code, one-line explanation). Evaluated in
+# `explain_empty_selection` in this fixed order; see docs/dev/provider-contracts.md.
+_ZERO_RESULT_MESSAGES = {
+    "no_earnings_rows": (
+        0,
+        "The earnings calendar carried no rows with a symbol for the lookback window.",
+    ),
+    "profiles_budget_exhausted": (
+        0,
+        "API budget was exhausted before any company profile could be fetched.",
+    ),
+    "no_profiles_returned": (
+        1,
+        "The FMP API returned earnings symbols but no company profiles for any of them.",
+    ),
+    "profiles_missing_required_field:marketCap": (
+        1,
+        "None of the returned profiles contain a usable marketCap field; "
+        "the FMP response shape may have changed.",
+    ),
+    "profiles_missing_required_field:exchange": (
+        1,
+        "None of the returned profiles contain a string exchange field; "
+        "the FMP response shape may have changed.",
+    ),
+    "all_below_market_cap_floor": (
+        0,
+        "All candidates were below the minimum market cap floor.",
+    ),
+    "all_non_us_exchange": (
+        0,
+        "All candidates trade on non-US exchanges.",
+    ),
+    "mixed_filters_rejected_all": (
+        0,
+        "Every candidate was rejected, but by different filters (cap floor for some, "
+        "exchange for others) rather than a uniform cause; this looks like an "
+        "ordinary empty day, not a schema drift.",
+    ),
+}
+
+
+def explain_empty_selection(earnings, profiles, min_market_cap, api_stats):
+    """Explain why ``select_candidates(...)`` returned no candidates.
+
+    Called only when ``select_candidates`` returns ``[]``. Conditions are
+    evaluated in the fixed order below (each returns the first matching
+    ``ZERO_RESULT_REASON`` code); see docs/dev/provider-contracts.md.
+
+    Codes, in evaluation order: ``no_earnings_rows`` (no calendar row carried a
+    symbol -- a genuine empty window), ``profiles_budget_exhausted``,
+    ``no_profiles_returned``, ``profiles_missing_required_field:marketCap``,
+    ``profiles_missing_required_field:exchange``, ``all_below_market_cap_floor``
+    (every usable profile fails the same cap-floor filter),
+    ``all_non_us_exchange`` (every usable profile fails the same exchange
+    filter), ``mixed_filters_rejected_all`` (usable profiles exist but are
+    rejected by a *mix* of the cap-floor and exchange filters -- an ordinary
+    empty day, not a schema-drift signal), and ``unknown`` as a last-resort
+    fallback for a case not covered above.
+    """
+    symbols = [e.get("symbol") for e in earnings if isinstance(e, dict) and e.get("symbol")]
+    if not symbols:
+        return "no_earnings_rows"
+
+    budget_exhausted = api_stats.get("budget_remaining") == 0 or api_stats.get(
+        "rate_limit_reached", False
+    )
+    if budget_exhausted and not profiles:
+        return "profiles_budget_exhausted"
+
+    if symbols and not profiles:
+        return "no_profiles_returned"
+
+    usable = []  # (symbol, market_cap, exchange)
+    any_profile = False
+    for symbol, profile in profiles.items():
+        if not isinstance(profile, dict):
+            continue
+        any_profile = True
+        cap = profile.get("marketCap")
+        if isinstance(cap, bool) or not isinstance(cap, (int, float)):
+            continue
+        if isinstance(cap, float) and not math.isfinite(cap):
+            continue
+        usable.append((symbol, cap, profile.get("exchange")))
+
+    if any_profile and not usable:
+        return "profiles_missing_required_field:marketCap"
+
+    if usable and not any(isinstance(exch, str) for _, _, exch in usable):
+        return "profiles_missing_required_field:exchange"
+
+    if usable and all(cap < min_market_cap for _, cap, _ in usable):
+        return "all_below_market_cap_floor"
+
+    if usable and all(
+        isinstance(exch, str) and exch not in FMPClient.US_EXCHANGES for _, _, exch in usable
+    ):
+        return "all_non_us_exchange"
+
+    if usable:
+        return "mixed_filters_rejected_all"
+
+    return "unknown"
+
+
 def select_candidates(earnings, profiles, min_market_cap):
     """Select unique US-listed earnings candidates from stable profile payloads."""
     candidates = []
@@ -252,8 +358,14 @@ def main():
     print(f"Candidates after filtering: {len(candidates)}", file=sys.stderr)
 
     if not candidates:
-        print("No candidates found matching criteria.", file=sys.stderr)
-        sys.exit(0)
+        api_stats = client.get_api_stats()
+        reason = explain_empty_selection(earnings, profiles, args.min_market_cap, api_stats)
+        exit_code, message = _ZERO_RESULT_MESSAGES.get(
+            reason, (1, f"No candidates found (reason: {reason}).")
+        )
+        print(f"ZERO_RESULT_REASON={reason}", file=sys.stderr)
+        print(message, file=sys.stderr)
+        sys.exit(exit_code)
 
     # Phase 1.5: Budget check
     print("\n--- Phase 1.5: Budget Check ---", file=sys.stderr)

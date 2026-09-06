@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 46 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,8 +103,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
 | 43 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
 | 44 | ✓ | [`packages/core/src/skills/bundled/workflow-creator/SKILL.md`](packages/core/src/skills/bundled/workflow-creator/SKILL.md) |
-| 45 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 46 | ✓ | [`packages/desktop-shell/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop-shell/.agents/skills/desktop-brand-builder/SKILL.md) |
+| 45 | ✓ | [`packages/core/src/skills/bundled/zvec-grep-install/SKILL.md`](packages/core/src/skills/bundled/zvec-grep-install/SKILL.md) |
+| 46 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 47 | ✓ | [`packages/desktop-shell/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop-shell/.agents/skills/desktop-brand-builder/SKILL.md) |
 
 ---
 

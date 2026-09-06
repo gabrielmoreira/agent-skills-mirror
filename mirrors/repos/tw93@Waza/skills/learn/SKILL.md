@@ -28,7 +28,7 @@ Check whether `/read` and `/write` skills are installed (look for their SKILL.md
 
 ## Choose Mode
 
-Ask the user to confirm the mode, using the environment's native question or approval mechanism if it has one:
+Infer the mode from the requested artifact and supplied materials. Ask only when plausible modes would change the scope or deliverable and the user's intent does not resolve the choice:
 
 | Mode | Goal | Entry | Exit |
 |------|------|-------|------|
@@ -119,4 +119,4 @@ When it reads clean from start to finish, the draft is ready for the user to pub
 
 ## Output
 
-The artifact is the mode's exit from the table above. Report the saved path when files were written, then stop at the user's publish confirmation.
+The artifact is the mode's exit from the table above. Report the saved path when files were written and complete the authorized handoff; publication requires an explicit request as stated in Hard Rules.

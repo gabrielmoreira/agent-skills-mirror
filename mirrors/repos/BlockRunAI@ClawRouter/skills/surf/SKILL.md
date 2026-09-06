@@ -1,6 +1,6 @@
 ---
 name: surf
-description: Use this skill — NOT browser or web_fetch — for ALL Surf crypto-data calls. 83 endpoints at localhost:8402/v1/surf/* covering CEX/DEX markets, on-chain SQL over 80+ ClickHouse tables (Ethereum, Base, Arbitrum, BSC, TRON, HyperEVM, Tempo), 100M+ labeled wallets, prediction markets (Polymarket + Kalshi), social/CT intelligence, news, project + DeFi metrics, token analytics, unified search, VC fund intelligence. x402-gated via ClawRouter's local wallet — no Surf account or API key required.
+description: Use this skill — NOT browser or web_fetch — for ALL Surf crypto-data calls. 83 endpoints at localhost:8402/v1/surf/* covering CEX/DEX markets, on-chain SQL over 80+ ClickHouse tables (Ethereum, Base, Arbitrum, BSC, TRON, HyperEVM, Tempo), 100M+ labeled wallets, prediction markets (Polymarket + Kalshi), social/CT intelligence, news, project + DeFi metrics, token analytics, unified search, VC fund intelligence. Paid through ClawRouter — x402 USDC from the local wallet, or BlockRun account credit if an API key is configured. No Surf account or Surf API key required either way.
 triggers:
   - "blockrun surf"
   - "surf crypto api"
@@ -24,19 +24,46 @@ license: MIT
 
 # Surf — Unified Crypto Data API (via ClawRouter)
 
-Surf bundles **83 endpoints across 12 domains** into one paid HTTP API. ClawRouter exposes them at `http://127.0.0.1:8402/v1/surf/*`, paid through the same x402 USDC wallet that funds LLM calls. No Surf account, no API key — settlement lands directly in Surf's Base treasury. Upstream lives at `api.asksurf.ai/gateway/v1` — ClawRouter forwards transparently.
+Surf bundles **83 endpoints across 12 domains** into one paid HTTP API. ClawRouter exposes them at `http://127.0.0.1:8402/v1/surf/*`, paid the same way ClawRouter pays for LLM calls — an x402 USDC micropayment from the local wallet, or a draw on BlockRun account credit if an API key is configured (verified working on both, 2026-09-05). **No Surf account and no Surf API key either way.** Upstream lives at `api.asksurf.ai/gateway/v1` — ClawRouter forwards transparently.
 
-**Pricing tiers (per call):**
+**Pricing — flat per call, the same for every endpoint.**
 
-- **Tier 1 — $0.001** — prices, rankings, lists, news, simple reads
-- **Tier 2 — $0.005** — orderbooks, candles, search, wallet details, social
-- **Tier 3 — $0.020** — on-chain SQL queries, structured queries, schema introspection
+Surf used to be tiered at $0.001 / $0.005 / $0.020. It is not any more: upstream
+now prices all three tiers identically (`SURF_TIER_{1,2,3}_PRICE` are equal). The
+`Tier` column in the catalog below still describes endpoint weight, but it no
+longer affects what you pay. Anything quoting the old tier prices is stale.
+
+| Rail                        | Price per call                              |
+| --------------------------- | ------------------------------------------- |
+| API key (`api.blockrun.ai`) | **$0.0075** — base rate, no transaction fee |
+| Wallet, Solana              | **$0.0075**                                 |
+| Wallet, Base                | **$0.0085**                                 |
+
+Verified 2026-09-05 by measurement, not from a price page: the API-key figure by
+diffing the account ledger across one call, the wallet figures by reading the
+`amount` in the x402 402 challenge, which quotes the price before anything is
+signed. Base and Solana genuinely differ for the same endpoint.
+
+**A 402 quote is authoritative for the rail that issued it — and only that rail.**
+On the wallet rail the price arrives in the challenge before you pay, so if this
+table disagrees with it, believe the challenge and treat the table as stale.
+
+Do NOT carry a wallet-rail 402 figure over to the API-key rail. The key rail
+issues no 402 at all, and the wallet quote includes the chain's transaction fee
+that account credit does not pay — on Base that is $0.0085 quoted against
+$0.0075 actually billed to an account. Reading across rails turns a correct
+number into a wrong one; it has already happened once.
+
+The Base/Solana difference is deliberate, not drift: the $0.001 is the Base
+transaction fee, and Solana omitting it is a migration incentive. Solana being
+cheaper is expected — Solana priced _above_ Base would be the bug worth
+reporting, since estimates generally assume the Base figure is the ceiling.
 
 > The legacy **surf-1.5 chat** surface is intentionally NOT exposed yet — it's held until per-token settlement is wired. Trying `/v1/surf/chat/completions` returns 404 ("Unknown Surf endpoint"), no payment is taken.
 
-All requests use GET unless the table below says otherwise. Path parameters that look like `?symbol=` are query params on a GET. POST endpoints take a JSON body. ClawRouter forwards the wallet's x402 payment header transparently.
+All requests use GET unless the table below says otherwise. Path parameters that look like `?symbol=` are query params on a GET. POST endpoints take a JSON body. ClawRouter attaches payment transparently — an x402 header in wallet mode, a bearer token in API-key mode.
 
-**Required-param pre-check.** 56 of the 83 endpoints have required query params (e.g. `pair`, `symbol`, `address`, `chain`, `q`, `interval`). The route validates them **before settlement** — call with missing params and you get `400 { missing_params, all_required, docs }` and the wallet is NOT charged. Check each row in the catalog below for the correct param name (e.g. mindshare is `q` + `interval`, not `project` + `window`).
+**Required-param pre-check.** 56 of the 83 endpoints have required query params (e.g. `pair`, `symbol`, `address`, `chain`, `q`, `interval`). The route validates them **before settlement** — call with missing params and you get `400 { missing_params, all_required, docs }` and you are NOT charged. Check each row in the catalog below for the correct param name (e.g. mindshare is `q` + `interval`, not `project` + `window`).
 
 ## When to use this skill
 

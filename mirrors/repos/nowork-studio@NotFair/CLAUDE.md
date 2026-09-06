@@ -48,7 +48,7 @@ This code ships to real users. Sycophancy and rubber-stamping cost us credibilit
 
 ## Branding: NotFair
 
-The product is **NotFair**. All user-facing text, documentation, skill descriptions, and config namespaces use NotFair / `notfair.co` / `.notfair/` / `mcp__NotFair__*`. The prior brand has been fully removed from this repo — do not reintroduce any of its strings (names, config paths, MCP prefixes, URI schemes, or domains) in new code, new docs, or rewrites of existing files. Dedicated platform-prefixed NotFair namespaces may remain in compatibility guidance, but the installed plugin's current default is the universal `NotFair` server.
+The product is **NotFair**. All user-facing text, documentation, skill descriptions, and config namespaces use NotFair / `notfair.co` / `.notfair/`. The prior brand has been fully removed from this repo — do not reintroduce any of its strings (names, config paths, MCP prefixes, URI schemes, or domains) in new code, new docs, or rewrites of existing files. The installed plugin uses one compact `NotFair` server at `https://notfair.co/api/mcp/notfair`. Follow `docs/mcp-connection.md` for connection guidance. Keep skills focused on the user's objective and domain knowledge; use the live server's instructions and schemas for tool selection rather than maintaining tool catalogs or forced call sequences.
 
 ## When adding or modifying a skill
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/openai-agents-python` — 26 default patterns, 1 followed patterns, 77 file(s) materialized.
+Mirror of `openai/openai-agents-python` — 26 default patterns, 2 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 1 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 77 |
+| Followed pats | 2 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 1 followed patt
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `.github/RELEASING.md`
+- `tests/README.md`
 
 ## File Index
 
@@ -90,12 +91,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.agents/skills/final-release-review/scripts/find_latest_release_tag.sh`](.agents/skills/final-release-review/scripts/find_latest_release_tag.sh) |
 | 30 | ✓ | [`.agents/skills/final-release-review/SKILL.md`](.agents/skills/final-release-review/SKILL.md) |
 | 31 | ✓ | [`.agents/skills/implementation-final-review/agents/openai.yaml`](.agents/skills/implementation-final-review/agents/openai.yaml) |
-| 32 | ✓ | [`.agents/skills/implementation-final-review/references/reviewer-brief.md`](.agents/skills/implementation-final-review/references/reviewer-brief.md) |
-| 33 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_protocol.py`](.agents/skills/implementation-final-review/scripts/review_protocol.py) |
-| 34 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_state.py`](.agents/skills/implementation-final-review/scripts/review_state.py) |
-| 35 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_protocol.py`](.agents/skills/implementation-final-review/scripts/test_review_protocol.py) |
-| 36 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_state.py`](.agents/skills/implementation-final-review/scripts/test_review_state.py) |
-| 37 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_skill_contract.py`](.agents/skills/implementation-final-review/scripts/test_skill_contract.py) |
+| 32 | ✓ | [`.agents/skills/implementation-final-review/references/high-risk-review.md`](.agents/skills/implementation-final-review/references/high-risk-review.md) |
+| 33 | ✓ | [`.agents/skills/implementation-final-review/references/reviewer-brief.md`](.agents/skills/implementation-final-review/references/reviewer-brief.md) |
+| 34 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_protocol.py`](.agents/skills/implementation-final-review/scripts/review_protocol.py) |
+| 35 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_state.py`](.agents/skills/implementation-final-review/scripts/review_state.py) |
+| 36 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_protocol.py`](.agents/skills/implementation-final-review/scripts/test_review_protocol.py) |
+| 37 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_state.py`](.agents/skills/implementation-final-review/scripts/test_review_state.py) |
 | 38 | ✓ | [`.agents/skills/implementation-final-review/SKILL.md`](.agents/skills/implementation-final-review/SKILL.md) |
 | 39 | ✓ | [`.agents/skills/implementation-kickoff/agents/openai.yaml`](.agents/skills/implementation-kickoff/agents/openai.yaml) |
 | 40 | ✓ | [`.agents/skills/implementation-kickoff/scripts/test_validate_handoff.py`](.agents/skills/implementation-kickoff/scripts/test_validate_handoff.py) |
@@ -136,6 +137,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md`](examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md) |
 | 76 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
 | 77 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 78 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

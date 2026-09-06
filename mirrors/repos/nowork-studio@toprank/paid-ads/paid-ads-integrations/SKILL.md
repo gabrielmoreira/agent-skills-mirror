@@ -10,7 +10,7 @@ Read `../shared/operating-contract.md`. Treat tool discovery as the source of tr
 
 ## Verify before promising
 
-1. Inspect the available tool list. On the universal NotFair MCP, call `listConnectedPlatforms` first. Use the Google or Meta shared preamble when that surface is requested; for X Ads and LinkedIn Ads, resolve the platform-prefixed tools and require a harmless account/setup read before claiming access.
+1. Follow [`../../docs/mcp-connection.md`](../../docs/mcp-connection.md). Use its current instructions and capability descriptions to choose tools, and verify the requested platform and account from live data. Do not infer access from another connected platform.
 2. Confirm OAuth/account access with a harmless account-list or read operation when the connector exposes one.
 3. Record the exact platform, selected account, accessible date range, and whether the surface is read-only or mutation-capable.
 4. If authorization fails, state the error and give the documented connection path. Do not retry a destructive operation or fall back to another account.

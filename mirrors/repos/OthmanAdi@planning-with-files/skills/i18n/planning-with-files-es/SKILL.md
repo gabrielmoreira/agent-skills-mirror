@@ -15,28 +15,28 @@ hooks:
   UserPromptSubmit:
     - hooks:
         - type: command
-          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; if [ -n \"$SH\" ]; then sh \"$SH\" --context=userprompt; else echo \"[planning-with-files] hook script not found; plan injection is off. Set PWF_SCRIPT_DIR to the skill's scripts directory, or install the skill to a user-level path.\"; fi; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; if [ -n \"$SH\" ]; then sh \"$SH\" --event=userprompt; else echo \"[planning-with-files] hook script not found; plan injection is off. Set PWF_SCRIPT_DIR to the skill's scripts directory, or install the skill to a user-level path.\"; fi; exit 0"
   PreToolUse:
     - matcher: "Write|Edit|Bash|Read|Glob|Grep"
       hooks:
         - type: command
-          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --context=pretool; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=pretool; exit 0"
   PostToolUse:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "if [ -f task_plan.md ] || [ -f .planning/.active_plan ] || ls .planning/*/task_plan.md >/dev/null 2>&1; then echo '[planning-with-files] Update progress.md with what you just did. If a phase is now complete, update task_plan.md status.'; fi"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=posttool; exit 0"
   Stop:
     - hooks:
         - type: command
-          command: "PS1_T=\"\"; for c in \"${PWF_SCRIPT_DIR}/check-complete.ps1\" \"${CLAUDE_SKILL_DIR}/scripts/check-complete.ps1\" \"$HOME/.claude/skills/planning-with-files-es/scripts/check-complete.ps1\" \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.ps1\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.ps1\"; do [ -f \"$c\" ] && { PS1_T=\"$c\"; break; }; done; SH_T=\"\"; for c in \"${PWF_SCRIPT_DIR}/check-complete.sh\" \"${CLAUDE_SKILL_DIR}/scripts/check-complete.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/check-complete.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/check-complete.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/check-complete.sh\"; do [ -f \"$c\" ] && { SH_T=\"$c\"; break; }; done; case \"$(uname -s 2>/dev/null)\" in MINGW*|MSYS*|CYGWIN*) if [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" 2>/dev/null; elif [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; fi ;; *) if [ -n \"$SH_T\" ] && [ -f \"$SH_T\" ]; then sh \"$SH_T\" 2>/dev/null; elif [ -n \"$PS1_T\" ] && [ -f \"$PS1_T\" ]; then powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -File \"$PS1_T\" 2>/dev/null; fi ;; esac; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=stop; exit 0"
   PreCompact:
     - matcher: "*"
       hooks:
         - type: command
-          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/inject-plan.sh\" \"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/inject-plan.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
+          command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.16.0"
+  version: "3.16.1"
 ---
 
 # Sistema de Planificación con Archivos
@@ -45,10 +45,13 @@ Trabaja como Manus: usa archivos Markdown persistentes como tu «memoria de trab
 
 ## Paso 1: Recuperar el estado del proyecto
 
-**Antes de hacer nada**, verifica si existen los archivos de planificación y léelos:
+**Antes de continuar**, resuelve el directorio del plan que pertenece a esta tarea:
 
-1. Si `task_plan.md` existe, lee inmediatamente `task_plan.md`, `progress.md` y `findings.md`.
-2. Ejecuta `git diff --stat` para comprobar los cambios de código que todavía no estén registrados en los archivos de planificación.
+1. Usa el `scripts/resolve-plan-dir.sh` instalado (o `.ps1`) con el `PLAN_ID` y `PWF_PLAN_ROOT` del host, y lee `task_plan.md`, `progress.md` y `findings.md` desde ese único directorio seleccionado.
+2. Si se rechaza un selector explícito, o el aislamiento de sesión está activo con varios planes y sin `PLAN_ID`, corrige el anclaje y no vuelvas a otra tarea. Usa los archivos heredados de la raíz del proyecto solo cuando no aplique ningún selector ni plan con nombre.
+3. Ejecuta `git diff --stat` para comprobar cambios de código todavía no registrados.
+
+Todos los nombres de archivos de planificación siguientes se refieren a ese directorio seleccionado. Para tareas en paralelo, fija cada host antes de iniciarlo o usa worktrees separados; exportar una variable en un proceso hijo no cambia el entorno del host. Un orquestador es dueño del plan y de los resúmenes compartidos; los workers usan archivos o registros asignados.
 
 La recuperación automática termina aquí. La ejecución sin opciones de `session-catchup.py` y los hooks del ciclo de vida no inspeccionan los almacenes de sesiones del agente. Solo cuando el usuario solicite de forma explícita consultar el historial local de sesiones, elige uno de estos modos:
 
@@ -79,24 +82,23 @@ Si un informe solicitado de forma explícita muestra contexto no sincronizado:
 ## Importante: Ubicación de los archivos
 
 - Las **plantillas** están en `${CLAUDE_PLUGIN_ROOT}/templates/`
-- Tus **archivos de planificación** van en **tu directorio de proyecto**
+- Tus **archivos de planificación** van en **el directorio de tarea seleccionado dentro de tu proyecto**
 
 | Ubicación | Contenido |
 |------|---------|
 | Directorio del skill (`${CLAUDE_PLUGIN_ROOT}/`) | Plantillas, scripts, documentos de referencia |
-| Tu directorio de proyecto | `task_plan.md`, `findings.md`, `progress.md` |
+| Directorio de tarea seleccionado dentro de tu proyecto | `task_plan.md`, `findings.md`, `progress.md` |
 
 ## Inicio rápido
 
-Antes de cualquier tarea compleja:
+Antes de una tarea compleja:
 
-1. **Crear `task_plan.md`** — Consulta la plantilla [templates/task_plan.md](templates/task_plan.md)
-2. **Crear `findings.md`** — Consulta la plantilla [templates/findings.md](templates/findings.md)
-3. **Crear `progress.md`** — Consulta la plantilla [templates/progress.md](templates/progress.md)
-4. **Releer el plan antes de decidir** — Refresca los objetivos en la ventana de atención
-5. **Actualizar tras cada fase** — Marca completado, registra errores
+1. **Resuelve o inicializa el directorio de tarea.** Reutiliza el plan seleccionado al reanudar. Para una tarea distinta, ejecuta `scripts/init-session.sh "Task Name"` y fija el host con el `PLAN_ID` impreso.
+2. **Crea solo los archivos de planificación que falten.** Usa las plantillas en ese directorio y conserva el trabajo existente.
+3. **Vuelve a leer el plan seleccionado antes de decidir.** Actualiza el progreso tras cada fase.
+4. **Asigna un único propietario del plan.** Los workers informan mediante sus registros o archivos asignados; no reescriben los archivos de planificación compartidos.
 
-> **Nota:** Los archivos de planificación van en la raíz de tu proyecto, no en el directorio de instalación del skill.
+> **Nota:** Los archivos de planificación van en el directorio de tarea seleccionado dentro de tu proyecto, no en el directorio de instalación del skill.
 
 ## Patrón central
 
@@ -118,7 +120,7 @@ Sistema de archivos = Disco (persistente, ilimitado)
 ## Reglas clave
 
 ### 1. Crear el plan primero
-Nunca comiences una tarea compleja sin `task_plan.md`. Sin excepciones.
+Nunca comiences una tarea compleja sin una `task_plan.md` seleccionada o recién inicializada. Sin excepciones.
 
 ### 2. Regla de dos operaciones
 > "Tras cada 2 operaciones de inspección/navegador/búsqueda, guarda inmediatamente los hallazgos clave en un archivo."

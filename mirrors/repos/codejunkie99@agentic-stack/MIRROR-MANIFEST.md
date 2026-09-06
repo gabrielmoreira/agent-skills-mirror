@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `codejunkie99/agentic-stack` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `codejunkie99/agentic-stack` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `codejunkie99/agentic-stack` — 26 default patterns, 0 followed patte
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,17 +74,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`.agent/skills/memory-manager/SKILL.md`](.agent/skills/memory-manager/SKILL.md) |
 | 14 | ✓ | [`.agent/skills/skillforge/SKILL.md`](.agent/skills/skillforge/SKILL.md) |
 | 15 | ✓ | [`.agent/skills/tldraw/SKILL.md`](.agent/skills/tldraw/SKILL.md) |
-| 16 | ✓ | [`adapters/autohand-code/AGENTS.md`](adapters/autohand-code/AGENTS.md) |
-| 17 | ✓ | [`adapters/claude-code/CLAUDE.md`](adapters/claude-code/CLAUDE.md) |
-| 18 | ✓ | [`adapters/codex/AGENTS.md`](adapters/codex/AGENTS.md) |
-| 19 | ✓ | [`adapters/copilot-cli/AGENTS.md`](adapters/copilot-cli/AGENTS.md) |
-| 20 | ✓ | [`adapters/cursor/.cursor/rules/agentic-stack.mdc`](adapters/cursor/.cursor/rules/agentic-stack.mdc) |
-| 21 | ✓ | [`adapters/gemini/gemini.md`](adapters/gemini/gemini.md) |
-| 22 | ✓ | [`adapters/hermes/AGENTS.md`](adapters/hermes/AGENTS.md) |
-| 23 | ✓ | [`adapters/openclaw/AGENTS.md`](adapters/openclaw/AGENTS.md) |
-| 24 | ✓ | [`adapters/opencode/AGENTS.md`](adapters/opencode/AGENTS.md) |
-| 25 | ✓ | [`adapters/pi/AGENTS.md`](adapters/pi/AGENTS.md) |
-| 26 | ✓ | [`adapters/windsurf/.windsurfrules`](adapters/windsurf/.windsurfrules) |
+| 16 | ✓ | [`.cursor/agents/cavecrew-builder.md`](.cursor/agents/cavecrew-builder.md) |
+| 17 | ✓ | [`.cursor/agents/cavecrew-investigator.md`](.cursor/agents/cavecrew-investigator.md) |
+| 18 | ✓ | [`.cursor/agents/cavecrew-reviewer.md`](.cursor/agents/cavecrew-reviewer.md) |
+| 19 | ✓ | [`.cursor/rules/caveman.mdc`](.cursor/rules/caveman.mdc) |
+| 20 | ✓ | [`.cursor/rules/fable-grok-subagents.mdc`](.cursor/rules/fable-grok-subagents.mdc) |
+| 21 | ✓ | [`.cursor/skills/cavecrew/LICENSE`](.cursor/skills/cavecrew/LICENSE) |
+| 22 | ✓ | [`.cursor/skills/cavecrew/SKILL.md`](.cursor/skills/cavecrew/SKILL.md) |
+| 23 | ✓ | [`.cursor/skills/caveman/LICENSE`](.cursor/skills/caveman/LICENSE) |
+| 24 | ✓ | [`.cursor/skills/caveman/SKILL.md`](.cursor/skills/caveman/SKILL.md) |
+| 25 | ✓ | [`adapters/autohand-code/AGENTS.md`](adapters/autohand-code/AGENTS.md) |
+| 26 | ✓ | [`adapters/claude-code/CLAUDE.md`](adapters/claude-code/CLAUDE.md) |
+| 27 | ✓ | [`adapters/codex/AGENTS.md`](adapters/codex/AGENTS.md) |
+| 28 | ✓ | [`adapters/copilot-cli/AGENTS.md`](adapters/copilot-cli/AGENTS.md) |
+| 29 | ✓ | [`adapters/cursor/.cursor/rules/agentic-stack.mdc`](adapters/cursor/.cursor/rules/agentic-stack.mdc) |
+| 30 | ✓ | [`adapters/gemini/gemini.md`](adapters/gemini/gemini.md) |
+| 31 | ✓ | [`adapters/hermes/AGENTS.md`](adapters/hermes/AGENTS.md) |
+| 32 | ✓ | [`adapters/openclaw/AGENTS.md`](adapters/openclaw/AGENTS.md) |
+| 33 | ✓ | [`adapters/opencode/AGENTS.md`](adapters/opencode/AGENTS.md) |
+| 34 | ✓ | [`adapters/pi/AGENTS.md`](adapters/pi/AGENTS.md) |
+| 35 | ✓ | [`adapters/windsurf/.windsurfrules`](adapters/windsurf/.windsurfrules) |
 
 ---
 

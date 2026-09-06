@@ -69,7 +69,9 @@ Inline PSIDTS recovery keeps raw and typed responsibilities separate. `cookies.p
 network-free loaders. `psidts_recovery.py` receives a loader explicitly, reads raw rows through
 `ProfileStore`/`ProfileDocument`, records a value-only observation before the network POST,
 converts live jars through `CookieJar`, and persists through `ProfileStore`. It does not import the
-cookie module or the `storage.py` facade.
+cookie module or the `storage.py` facade. Pure RFC 6265 routing and expiry helpers are canonical in
+`cookie_types`; the recovery owner exposes compatibility aliases and injects the single
+`mint_service` RotateCookies endpoint through its thin routing wrappers.
 
 The sentinel, contention, full-reread, observation, POST, typed CAS, and disk-reread order is
 security-relevant. A write result is not proof that the desired cookie landed; the post-save disk
@@ -100,7 +102,7 @@ state identity views, result objects, messages, causes, and traceback projection
 The raw keepalive names are non-owning views into `RotationState`; rebinding them or introducing a
 second registry is unsupported.
 
-The measured auth graph is 40 modules / 15,237 lines / 128 unique edges (117 module + 11
+The measured auth graph is 32 modules / 13,686 lines / 123 unique edges (111 module + 12
 function-local). Module-only and all-scope SCC sets are empty; the former
 `cookies/master_token/psidts_recovery/storage` cycle has been removed. Exact touched production LOC
 is pinned in [development.md](development.md); those values are evidence and not spare capacity.

@@ -1,6 +1,6 @@
 ---
 name: meta-ads-audit
-description: Meta Ads (Facebook + Instagram) account audit and business context setup. Run this first — it gathers business information, analyzes account health, and saves context that all other Meta ads skills reuse. Trigger on "audit my Meta ads", "audit my Facebook ads", "Meta ads audit", "set up my Meta ads", "onboard Meta", "Meta account overview", "how's my Meta account", "Meta health check", "what should I fix in my Facebook ads", or when the user is new to NotFair Meta and hasn't run an audit before. Also trigger proactively when other Meta ads skills detect that meta business-context.json is missing.
+description: Meta Ads (Facebook + Instagram) account audit and business context setup. Use for account-health audits and business-context setup. Trigger on "audit my Meta ads", "audit my Facebook ads", "Meta ads audit", "set up my Meta ads", "onboard Meta", "Meta account overview", "how's my Meta account", "Meta health check", "what should I fix in my Facebook ads", or when the user is new to NotFair Meta and hasn't run an audit before.
 argument-hint: "<account name or 'audit my Meta ads'>"
 ---
 
@@ -42,7 +42,7 @@ The Meta platform changes faster than Google Ads (Advantage+, attribution, learn
 
 ## Phase 1 — Pull the audit dataset
 
-Use a single `runScript` call with `ads.graphParallel` to fan out the queries an audit needs. Build the fan-out from this rubric.
+Choose available read capabilities for the requested audit scope. Batch related reads where useful and supported; the rubric below describes evidence to consider, not a fixed call sequence.
 
 A complete audit needs at minimum:
 
@@ -51,7 +51,7 @@ A complete audit needs at minimum:
 - **Campaigns** (`/{accountId}/campaigns`) — id, name, objective, status, daily/lifetime budget, special_ad_categories, buying_type, bid_strategy, created_time. Last 90 days.
 - **Ad sets** (`/{accountId}/adsets`) — id, name, status, campaign_id, optimization_goal, billing_event, bid_strategy, daily_budget, lifetime_budget, attribution_spec, targeting (summary), promoted_object, learning_stage_info.
 - **Ads** (`/{accountId}/ads`) — id, name, status, ad set, creative summary (image/video, primary text, headline, description, CTA), effective_status.
-- **Insights at campaign level** (`ads.insights({level:"campaign", date_preset:"last_30d"})`) — spend, impressions, reach, frequency, cpm, link CTR, link clicks, purchases (or other primary action), purchase value, ROAS, CPA.
+- **Insights at campaign level** — spend, impressions, reach, frequency, cpm, link CTR, link clicks, purchases (or other primary action), purchase value, ROAS, CPA.
 - **Insights at ad set level** — same fields, last 30 days.
 - **Insights at ad level** — top 50 ads by spend; same fields plus video metrics (3-sec views, ThruPlays) for video creatives.
 - **Insights with breakdowns** — placement (`publisher_platform,platform_position`), age/gender, device. Use these to spot placement losers and audience composition.
@@ -59,9 +59,9 @@ A complete audit needs at minimum:
 
 Compute aggregates **in the script**, return summarized JSON. Don't return all rows — rank, slice, summarize. The agent narrates the result; the script does the math.
 
-`suggestImprovement` is a useful cross-check for the server's heuristic surface — call it as a separate tool after the runScript pass if you want to compare your findings.
+Use available platform recommendations as an optional cross-check when they would help the analysis.
 
-If a critical query errors out (auth, schema, API version), surface the error and stop — don't fall back to a degraded audit.
+If a read fails, follow actionable recovery guidance. Clearly report missing evidence; continue independent findings only when the available data supports them.
 
 **Skip scoring entirely if** `totalSpend == 0` or `activeCampaigns == 0`. Go straight to business context.
 
@@ -136,9 +136,7 @@ Discover 2–3 personas from creative performance (which angles convert), top-sp
 
 Lead with the verdict, then the top 3 actions (with dollar impact when possible), then the scorecard, then evidence for dimensions scoring 0–2 only. Cite specific campaigns, ad sets, ads, and dollar amounts. Cap at ~80 lines.
 
-End with a single closing line after the handoff to `/meta-ads`:
-
-> *Your audit history is saved to your NotFair account — view it at https://notfair.co.*
+State where any audit artifacts were actually saved. Do not claim hosted audit history unless a live result confirms it.
 
 ## Guardrails
 
