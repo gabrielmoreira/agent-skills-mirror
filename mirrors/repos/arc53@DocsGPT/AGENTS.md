@@ -29,9 +29,19 @@ Use these commands once the dev prerequisites above are satisfied.
 ```bash
 source .venv/bin/activate  # macOS/Linux
 uv pip install -r application/requirements.txt  # or: pip install -r application/requirements.txt
-# Optional docling parser engine (OCR / read_document structured output):
-# uv pip install -r application/requirements-docling.txt
+# Optional extras (not installed by default; each file = core + the extra):
+# uv pip install -r application/requirements-docling.txt   # docling parser engine (OCR backend, structured output)
+# uv pip install -r application/requirements-milvus.txt    # VECTOR_STORE=milvus
+# With uv alone: `uv sync --extra docling` (pyproject.toml + uv.lock are the source of truth).
+# `uv pip install -r application/requirements-docling.txt` needs UV_INDEX_STRATEGY=unsafe-best-match
+# (the file adds the PyTorch CPU index; prefer `uv sync --extra docling`).
 ```
+
+Dependencies are declared in `pyproject.toml` and locked in `uv.lock`; the
+`application/requirements*.txt` files are exported from the lock. To add or
+bump a package: edit `pyproject.toml`, run `uv lock`, then
+`bash scripts/export_requirements.sh` (CI fails if the exports are stale).
+Never edit the requirements files by hand.
 
 Run the API. For local dev, prefer the ASGI entrypoint under uvicorn — it
 serves the **whole** app, matches production, and hot-reloads:

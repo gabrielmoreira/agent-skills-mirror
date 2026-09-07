@@ -3,6 +3,11 @@
 Part of the Godot AI agent guide — see [AGENTS.md](../AGENTS.md) for the always-loaded rules.
 
 
+Normal CI runs the full handler suite once per OS, followed by a single
+`script/ci-reload-test` reload with session, scene-continuity, and log probes.
+Nightly diagnostics use `script/ci-reload-test --stress`: ten reloads followed
+by another handler-suite run, preserving the cumulative crash regression.
+
 The full pre-commit gauntlet. Run this before every commit — Python mocks do not
 catch GDScript bugs, editor API regressions, or undo/redo issues.
 

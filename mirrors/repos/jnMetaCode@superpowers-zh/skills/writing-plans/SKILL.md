@@ -58,7 +58,7 @@ metadata:
 ```markdown
 # [功能名称] 实现计划
 
-> **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
+> **面向 AI 代理的工作者：** 必需子技能：使用 subagent-driven-development（推荐）或 executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
 
 **目标：** [一句话描述要构建什么]
 
@@ -147,9 +147,9 @@ git commit -m "feat: add specific feature"
 **选哪种方式？"**
 
 **如果选择子代理驱动：**
-- **必需子技能：** 使用 superpowers:subagent-driven-development
+- **必需子技能：** 使用 subagent-driven-development
 - 每个任务一个新子代理 + 两阶段审查
 
 **如果选择内联执行：**
-- **必需子技能：** 使用 superpowers:executing-plans
+- **必需子技能：** 使用 executing-plans
 - 批量执行并设有检查点供审查

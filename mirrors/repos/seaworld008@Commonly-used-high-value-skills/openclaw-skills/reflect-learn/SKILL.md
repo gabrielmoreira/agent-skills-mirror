@@ -1,14 +1,14 @@
 ---
 name: reflect-learn
-description: 'Self-improvement through conversation analysis. Extracts learnings from corrections and success patterns, proposes updates to agent files or creates new skills. Philosophy: "Correct once, never again." Use when: (1) User explicitly corrects behavior ("never do X", "always Y"), (2) Session ending or context compaction, (3) User requests /reflect, (4) Successful pattern worth preserving.'
-zh_description: "用于reflect、learn，支持检索、拆解、反思和决策。"
-version: 2.0.0
+description: Review user corrections or session outcomes to propose durable workflow improvements. Persist memory or edit agent guidance only when requested.
+zh_description: "分析用户纠正和任务结果，提出可复用的改进建议。"
+version: "2.0.2"
 author: Claude Code Toolkit
 source: "in-house"
 source_url: ""
 tags: '["learn", "planning", "reflect", "workflow"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-09-07"
 quality: 5
 complexity: "intermediate"
 allowed-tools:
@@ -278,8 +278,8 @@ When a signal is LOW confidence and project-specific, prefer writing to MEMORY.m
 ## Safety Guardrails
 
 ### Human-in-the-Loop
-- NEVER apply changes without explicit user approval
-- Always show full diff before applying
+- Persist changes only when the user has requested or approved the specific memory or guidance update; existing authorization remains valid
+- Make proposed changes reviewable; include the relevant diff or resulting guidance when reporting an authorized update
 - Allow selective application
 
 ### Git Versioning
@@ -288,8 +288,8 @@ When a signal is LOW confidence and project-specific, prefer writing to MEMORY.m
 - Learning history preserved
 
 ### Incremental Updates
-- ONLY add to existing sections
-- NEVER delete or rewrite existing rules
+- Keep changes confined to the rules or sections covered by the requested update
+- Preserve unrelated rules; when the user requests cleanup, remove or rewrite the identified redundant or conflicting rules with a recorded rationale
 - Preserve original structure
 
 ### Conflict Detection

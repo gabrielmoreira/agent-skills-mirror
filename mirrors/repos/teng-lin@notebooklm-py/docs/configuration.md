@@ -1,7 +1,7 @@
 # Configuration
 
 **Status:** Active
-**Last Updated:** 2026-09-02
+**Last Updated:** 2026-09-06
 
 This guide covers storage locations, environment settings, and configuration options for `notebooklm-py`.
 
@@ -231,8 +231,11 @@ accepted for source compatibility but are ignored when Android is selected.
 | `NOTEBOOKLM_MCP_OAUTH_PASSWORD` | Password gating the self-hosted OAuth authorization server that lets claude.ai connect to the remote MCP server (≥16 chars). Set together with `NOTEBOOKLM_MCP_OAUTH_BASE_URL`; both unset → bearer-only. | - |
 | `NOTEBOOKLM_MCP_OAUTH_BASE_URL` | Bare public HTTPS origin (no path) the self-hosted OAuth endpoints (`/authorize`, `/token`, `/.well-known/*`) mount under. Required with `NOTEBOOKLM_MCP_OAUTH_PASSWORD`; partial/weak/non-HTTPS config refuses to start. | - |
 | `NOTEBOOKLM_MCP_PUBLIC_URL` | Public base URL for the remote MCP file upload/download signed-URL side-channel (falls back to `NOTEBOOKLM_MCP_OAUTH_BASE_URL`). Unset → `source_add type=file` / `artifact_download` return a "not configured" error. | - |
+| `NOTEBOOKLM_MCP_ALLOWED_ROOTS` | OS-pathsep list of directories stdio `source_add(source_type="file", path=...)` may read. Unset/empty → host-path file-add is off. `$HOME`, `~/.notebooklm` / `NOTEBOOKLM_HOME`, and `/` are ignored even if listed. Credential filenames (`storage_state.json`, `master_token.json`) and Playwright profile dirs are refused even inside a listed root. Remote HTTP never opens a server-host `path`. | (empty / off) |
 | `NOTEBOOKLM_MCP_TRUST_PROXY` | Trust the proxy-set `CF-Connecting-IP` header as the self-hosted-OAuth login-throttle key. Only enable behind a trusted proxy (e.g. the Cloudflare tunnel); default off keys on the socket peer. | `0` |
 | `NOTEBOOKLM_MCP_STRICT_IDS` | Strict IDs-only mode for MCP tools: require a full canonical id for every `notebook`/`source`/`note`/`artifact` reference and reject names, titles, and short id prefixes (fail-fast, deterministic automation). | `0` |
+| `NOTEBOOKLM_MCP_CHAT_CONCURRENCY` | Concurrent detached `chat_start` generations; later accepted jobs queue FIFO. Clamped to 1–16. | `3` |
+| `NOTEBOOKLM_MCP_CHAT_JOB_TIMEOUT` | Optional aggregate seconds from detached-chat acceptance through queue and generation. Unset keeps jobs unbounded. | - |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The REST server refuses to start without it. | - |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host; non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1` | `127.0.0.1` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port | `8000` |
@@ -260,7 +263,75 @@ re-exports only the supported endpoint/language helpers:
 from `notebooklm.config` remain supported; internal-only `_env` names should
 not be imported by downstream code.
 
+### Bound Web request policy (additive preview)
+
+Python clients retain dynamic environment resolution in 0.x when
+`WebBackendConfig.request` is omitted or `None`. To bind request and recovery
+policy to one client, supply `WebRequestOptions`:
+
+```python
+from notebooklm import NotebookLMClient
+from notebooklm.options import ClientConfig, WebBackendConfig, WebRequestOptions
+
+config = ClientConfig(
+    backend=WebBackendConfig(
+        request=WebRequestOptions(
+            base_url="https://notebook.google.com",
+            language="en",
+            # build_label, transport, and impersonate may also be supplied explicitly.
+        )
+    )
+)
+pending = NotebookLMClient.from_storage(profile="work", config=config)
+# Defaults were captured at the call above, before deferred authentication I/O.
+async with pending as client:
+    notebooks = await client.notebooks.list()
+```
+
+Direct `NotebookLMClient(auth, config=config)` captures at construction. Creating
+an options object alone does not capture environment defaults. Explicit option
+fields win; omitted fields resolve from the environment and built-in defaults
+once. The same policy survives deferred loading, authentication refresh, and
+close/reopen. First-party CLI, MCP, and REST default factories explicitly select
+this bound preview; injected factories retain control of their configuration.
+
+The captured settings are `NOTEBOOKLM_BASE_URL`, `NOTEBOOKLM_HL`, `NOTEBOOKLM_BL`,
+`NOTEBOOKLM_TRANSPORT`, `NOTEBOOKLM_IMPERSONATE`, `NOTEBOOKLM_REFRESH_CMD`,
+`NOTEBOOKLM_REFRESH_CMD_USE_SHELL`, `NOTEBOOKLM_REFRESH_CMD_MIDSESSION`,
+`NOTEBOOKLM_HEADLESS_REAUTH`, and `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL`.
+The existing HTTPS host allowlist still applies. Request routing, output language
+defaults, Web notebook/share links, homepage acquisition, refresh, RPC, chat,
+uploads, and asset transfers use the client's policy. Operation-specific language
+arguments retain precedence. Drive import's guarded streaming download continues
+to use its fixed httpx implementation and redirect/byte-limit checks; it has no
+ambient transport selector.
+
+Cookies, CSRF/session tokens, and account routing remain live. Concurrent clients
+with different policies may share profile storage but cannot share incompatible
+recovery execution or successful-recovery markers. Recovery child processes get
+only selected policy overrides (including Web backend selection) over their
+current environment, plus the resolved storage/profile destination and recursion
+guard. Inline auth and serving secrets are scrubbed. Recovery commands stay in
+private redacted state, outside public option reprs and diagnostic keys.
+
+Operational controls remain dynamic: RPC-ID overrides, logging/deprecation
+controls, explicit refresh-output logging, the refresh recursion guard, keepalive
+poke disabling, and unrelated process settings such as `PATH` and proxies. This
+is not a snapshot of all process environment. Standalone config/URL helpers remain
+dynamic outside a bound client operation. Android configuration is independent;
+its display links and 0.x Web compatibility sidecar retain legacy dynamic policy.
+
+The eventual change to the omitted/default Web policy is a separate migration,
+C4-01, with **no shipped notice yet**. This additive preview does not switch the
+Python default or borrow another deprecation's release date. A stable preview or
+warning release and its own interval must precede that change; legacy behavior
+must survive a major release if its gate has not matured.
+
 ### Env vars and precedence
+
+The timing below describes standalone helpers and legacy dynamic Web clients.
+For explicitly bound Web clients, the settings listed above resolve at client
+construction instead of at request/spawn time.
 
 Every `NOTEBOOKLM_*` variable read by the library and CLI, in one place. CLI
 flags always win over env vars; env vars win over persisted profile config /
@@ -300,6 +371,9 @@ be audited from one location.
 | `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND` | Allow MCP HTTP transport to bind a non-loopback host. Use only behind a trusted proxy. | Literal `1` enables; all other values disabled. | `mcp.__main__._check_http_bind_allowed` → `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_MCP_TRUST_PROXY` | Trust the proxy-set `CF-Connecting-IP` header as the self-hosted-OAuth login-throttle key. Enable only behind a trusted proxy (e.g. the Cloudflare tunnel); default off keys the throttle on the socket peer. | Literal `1` enables; all other values disabled. | `mcp._oauth.get_oauth_config` / `_client_ip` |
 | `NOTEBOOKLM_MCP_STRICT_IDS` | Strict IDs-only mode: MCP `notebook`/`source`/`note`/`artifact` references must be a full canonical id; names, titles, and short id prefixes are rejected before any list call (deterministic automation). Off by default → default name/prefix/title resolution is unchanged. | Literal `1` enables; all other values disabled. | `mcp._resolve._strict_ids_enabled` |
+| `NOTEBOOKLM_MCP_CHAT_CONCURRENCY` | Maximum concurrent detached chat generations; accepted excess work queues FIFO. | Env var → `3`, clamped to 1–16. | `mcp._chattasks._resolve_concurrency` |
+| `NOTEBOOKLM_MCP_CHAT_JOB_TIMEOUT` | Optional detached-chat aggregate deadline, anchored at registry acceptance and including queue time. | Positive finite seconds; unset/blank/invalid preserves unbounded behavior. | `mcp._chattasks._resolve_job_timeout` |
+| `NOTEBOOKLM_MCP_ALLOWED_ROOTS` | Directories stdio `source_add(source_type="file", path=...)` may read. OS pathsep-separated. Unset/empty disables host-path file-add. `$HOME`, NotebookLM home, and the filesystem root are dropped. Credential filenames and Playwright profile dirs are refused even inside a listed root. Remote HTTP never opens a server-host `path`. | Process env on each stdio host-path file-add → empty (off). | `mcp.tools._fileupload._spool_stdio_upload` / `_app.source_add.validate_upload_path` |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The server refuses to start when unset/empty. | `--token` flag → env var → startup failure | `server.__main__._check_token_configured` / `server._auth.require_auth` |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host. Non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1`. | `--host` flag → env var → `127.0.0.1` | `server.__main__._build_parser` / `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port. | `--port` flag → env var → `8000` | `server.__main__._build_parser` / `_resolve_port` |
@@ -492,6 +566,21 @@ effect.** Remove it from your environment / CI config. See
 
 ### Timeouts
 
+For Python construction, prefer the owner-grouped `ClientConfig` facade in
+`notebooklm.options`. `WebTransportOptions` owns independent read/write/pool
+timeouts (connect remains an internal fixed default), `AndroidBackendConfig`
+owns the aggregate logical-RPC timeout, and `TransferOptions` owns resumable
+start/finalize plus Drive HTTP phases. Legacy `timeout=` still maps to all three
+Web components or the Android RPC budget; legacy `upload_timeout=` maps to Web
+start/finalize and to all three Android transfer phases. These flat tuning
+keywords remain functional in v0.x but non-default uses warn for their v1
+removal.
+
+`TransferOptions.drive_timeout` affects only Drive metadata/media/staging HTTP
+legs. It never changes registration or readiness RPC budgets. A whole-field
+`None` preserves backend phase defaults; `TimeoutOptions(None, None, None,
+None)` explicitly disables local HTTP component timers.
+
 Most batchexecute RPCs issued by the client (whether through `NotebookLMClient`
 or any of the CLI commands) use a **30-second** HTTP request timeout by default,
 with a tighter **10-second** connection-establishment timeout. The shorter
@@ -546,19 +635,11 @@ compose. Both kwargs read identically:
 A non-positive or non-finite value for either raises `ValueError` at
 construction rather than silently producing a window that times out instantly.
 
-Independently, an IMPORT_RESEARCH attempt made by
-`import_sources_with_verification` is clamped to whatever is left of that call's
-own `max_elapsed` retry budget, so a late retry cannot be *granted* a window
-larger than the budget it has left. Note what that does and does not promise:
-every timeout here is an `httpx` slot, and the read slot is an inactivity limit
-between socket reads — so `max_elapsed` bounds when a new attempt may *start*,
-not the wall-clock duration of one already in flight. Enforcing the latter would
-mean cancelling an in-flight non-idempotent POST, which risks duplicated sources
-the client can no longer see. When less than 10 seconds of that budget remains — too little for an
-attempt to outlast connection establishment — the loop stops instead of sending
-one: `IMPORT_RESEARCH` is non-idempotent, so an attempt whose result the client
-cannot observe can still commit sources server-side and duplicate them. The
-first attempt is exempt, so `max_elapsed=0` still means "try once".
+`import_sources_with_verification` sends `IMPORT_RESEARCH` once. Its
+`max_elapsed` value bounds only the optional read-only inspection performed
+after an unknown outcome; it never grants a second import attempt. Every timeout
+here remains an `httpx` slot, and the read slot is an inactivity limit between
+socket reads rather than a hard wall-clock cancellation deadline.
 
 ### Decoder strictness
 

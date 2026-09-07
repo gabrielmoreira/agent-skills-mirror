@@ -86,19 +86,30 @@ gone: `TREE_MUTATING` is empty (gen-skill-docs has a main() guard and
 docs/TESTING_INTERNALS.md). Never type bare `bun test` for the suite: it
 walks the whole repo, loading paid eval files and missing the strict
 classifier.
-It covers skill validation, gen-skill-docs quality checks, and browse
-integration tests. `bun run test:evals` runs LLM-judge quality evals and E2E
-tests via `claude -p`. Both must pass before creating a PR.
+It covers skill validation, gen-skill-docs quality checks, browse
+integration tests, the Aside contract pins, and the render-wrapper pins.
+`bun run test:evals` runs LLM-judge quality evals and E2E tests via
+`claude -p`. Both must pass before creating a PR. Anything that needs Aside
+itself (`test/skill-e2e-aside.test.ts`, the Aside qa/design E2E cases, the
+live render in `test/aside-render.test.ts`) runs only on a Mac with the Aside
+app open and self-skips elsewhere (`asideAvailable()`). make-pdf's render
+gates and `test/skill-e2e-diagram.test.ts` run through whichever engine
+resolves (`browserAvailable()` — Aside, or the browse binary CI builds with
+`bun run build:gates`) and skip only when neither exists; the fallback
+engine's own tests run everywhere.
 
 ## Project structure
 
 Full annotated tree: [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md).
-Quick map: `browse/` headless-browser CLI, `design/` design binary,
-`hosts/` typed host configs, `scripts/` build+DX tooling (gen-skill-docs,
-resolvers), `test/` validation+evals, `lib/` shared libraries, `bin/` CLI
-utilities, `extension/` Chrome extension, one directory per skill
-(`ship/`, `review/`, `qa/`, ...), `.github/` CI, `contrib/` contributor
-tools, `docs/designs/` design documents.
+Quick map: `browse/` gstack's own headless-browser CLI (the fallback
+engine) plus the `/browse` skill, `design/` design binary, `make-pdf/` PDF
+binary, `hosts/` typed host configs, `scripts/` build+DX tooling
+(gen-skill-docs, resolvers — `resolvers/aside.ts` is the Aside contract),
+`test/` validation+evals, `lib/` shared libraries (`aside-render.ts` renders
+local HTML through Aside, falling back to the engine), `bin/` CLI utilities
+(`gstack-render.ts` is the render CLI skills call), `extension/` Chrome
+extension, one directory per skill (`ship/`, `review/`, `qa/`, ...),
+`.github/` CI, `contrib/` contributor tools, `docs/designs/` design documents.
 
 ## SKILL.md workflow
 
@@ -117,8 +128,14 @@ Codex config.toml pins a different model, rerun `./setup --host codex`
 afterwards to restore your profile (single-owner persistence is filed in
 TODOS.md).
 
-To add a new browse command: add it to `browse/src/commands.ts` and rebuild.
-To add a snapshot flag: add it to `SNAPSHOT_FLAGS` in `browse/src/snapshot.ts` and rebuild.
+Browser steps in skills are `aside repl` scripts per
+`scripts/resolvers/aside.ts`, each with its `$B` equivalent for the fallback
+engine. To add a new browse command: add it to `browse/src/commands.ts` and
+rebuild. To add a snapshot flag: add it to `SNAPSHOT_FLAGS` in
+`browse/src/snapshot.ts` and rebuild. Local-HTML rendering in a skill template
+is a `bun run ~/.claude/skills/gstack/bin/gstack-render.ts` call; new render
+options go into `lib/aside-render.ts` (which handles the fallback), never into
+a skill's own bash.
 
 **Token ceiling:** Generated SKILL.md files trip a warning above 160KB (~40K tokens).
 This is a "watch for feature bloat" guardrail, not a hard gate. Modern flagship
@@ -201,8 +218,23 @@ writing-style was extracted to V1.1 — see `docs/designs/PACING_UPDATES_V0.md`.
 
 ## Browser interaction
 
-When you need to interact with a browser (QA, dogfooding, cookie setup), use the
-`/browse` skill or run the browse binary directly via `$B <command>`. NEVER use
+gstack drives the Aside AI browser (macOS 15+) first and falls back to its own
+browser engine when Aside is absent. When you need to interact with a browser
+(QA, dogfooding, inspecting a page), use the `/browse` skill: it probes Aside
+and, on `READY`, drives it — the user's real browser with their real sessions —
+through `aside repl` scripts that follow the contract in
+`scripts/resolvers/aside.ts` (`{{ASIDE_SETUP}}`). Every browser skill (`/qa`,
+`/qa-only`, `/design-review`, `/canary`, `/benchmark`, `/scrape`) does the same,
+and web research in skills runs through Aside's agent (`{{ASIDE_RESEARCH}}`)
+before the WebSearch tool. When the probe says `NEEDS_ASIDE` or
+`ASIDE_NOT_RUNNING` (Linux, Windows, a closed Aside app), the skill resolves
+`$B` per `{{BROWSE_FALLBACK}}` and runs the browse binary instead — `$B <command>`
+is a legitimate tool in that context, and cookie import, GStack Browser headed
+mode, `/pair-agent`, and browser-skills/`/skillify` belong to it. Local HTML a
+skill generated itself (make-pdf, diagram, design previews) renders through
+`bin/gstack-render.ts` / `lib/aside-render.ts`, which serve the file on
+loopback and print or screenshot it in Aside, or in the engine when Aside is
+absent — never point the renderer at a site. NEVER use
 `mcp__claude-in-chrome__*` tools — they are slow, unreliable, and not what this
 project uses.
 
@@ -226,7 +258,10 @@ dashboards, git-class ops). The new-sink scanner in
 `git push` / `fetch` to a non-loopback host unless the file carries a reasoned
 entry in its `SCANNER_EXEMPT` list (user-directed page fetches, reachability
 probes, instruction strings, skill prose) — if you add a new off-machine sink,
-wire it through the helpers and add it to the enumerated sink list. Inspect with
+wire it through the helpers and add it to the enumerated sink list. `aside exec`
+(a gstack-composed prompt sent to Aside's agent) is a fail-open user-facing
+sink: skills call it through the `_aside_exec` wrapper that
+`scripts/resolvers/aside.ts` renders, never bare. Inspect with
 `bin/gstack-egress` (`list` | `verify`, exit 3 on tamper | `grants`). Threat
 model: forensic observability of ATTEMPTED egress, not an exfiltration control.
 
@@ -255,18 +290,28 @@ Names are either short (`qa`) or namespaced (`gstack-qa`), controlled by
 skip the interactive prompt.
 
 **Ownership gate (#2119):** `setup` writes a `.gstack-owned` marker into every
-skill directory it creates, and `setup` (the linker, the alias installer, and
-both prefix-flip cleanups) and `bin/gstack-relink` only delete or link over an
-entry they can prove is gstack's. Strong proof (a symlink resolving into gstack,
-or the marker) allows deleting or refreshing the whole directory. Weak proof (a
+skill directory it creates, and `setup` (the linker, the alias installer, both
+prefix-flip cleanups, and the retired-skill prune) and `bin/gstack-relink` only
+delete or link over an entry they can prove is gstack's. Strong proof (a
+symlink resolving into gstack, or the marker) allows deleting or refreshing the
+whole directory. Weak proof (a
 real SKILL.md byte-identical to the source, or carrying gen-skill-docs' two-line
 banner) covers only that one file, and a weakly-proven file that differs is
 moved to `~/.gstack/backups/skills/<ts>/<skill>/SKILL.md` before gstack links
 over it. Anything else is a foreign skill: skipped, and named in setup's final
 summary. The rule lives in two copies (`setup` and `bin/gstack-relink`); keep
-them in sync until the shared helper filed in TODOS.md lands. Pinned by
-`test/setup-link-ownership.test.ts`, `test/setup-cleanup-orphans.test.ts`, and
-`test/relink.test.ts`.
+them in sync until the shared helper filed in TODOS.md lands. The retired-skill
+prune (`_prune_stale_generated`) applies the same strong/weak split to renders
+of skills that no longer exist, through its own gate
+(`_owned_for_windows_refresh`: a real host directory is a candidate only when
+its SKILL.md carries the generated banner; the marker and byte identity are not
+consulted): it scans the render tree and every host skills dir,
+deletes a real render directory, removes a host symlink only when it resolves
+into gstack, cleans a bannered real directory through `_cleanup_weak_dir`,
+never follows a symlink inside the render tree, and recognizes a skill renamed
+through its frontmatter `name:`. Pinned by `test/setup-link-ownership.test.ts`,
+`test/setup-cleanup-orphans.test.ts`, `test/setup-prune-stale-generated.test.ts`,
+and `test/relink.test.ts`.
 
 **Note:** Vendoring gstack into a project's repo is deprecated. Use global install
 + `./setup --team` instead. See README.md for team mode instructions.
@@ -368,7 +413,7 @@ Before fixing any finding, read [docs/SLOP_SCAN.md](docs/SLOP_SCAN.md):
 it separates genuine quality fixes (empty catches around file ops → 
 `safeUnlink()`, process kills → `safeKill()`) from linter gaming we
 reject (string-matching error messages, tightening best-effort cleanup).
-Utilities live in `browse/src/error-handling.ts`. Don't chase the score.
+Utilities live in `lib/error-handling.ts`. Don't chase the score.
 
 ## Community PR guardrails
 
@@ -726,6 +771,7 @@ restore them across all your projects' Claude sessions. It's idempotent.
 Or copy the binaries directly:
 - `cp browse/dist/browse ~/.claude/skills/gstack/browse/dist/browse`
 - `cp design/dist/design ~/.claude/skills/gstack/design/dist/design`
+- `cp make-pdf/dist/pdf ~/.claude/skills/gstack/make-pdf/dist/pdf`
 
 ## Skill routing
 

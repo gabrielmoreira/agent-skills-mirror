@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 37 followed patterns, 48 file(s) materialized.
+Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 38 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 37 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 37 |
-| Files         | 48 |
+| Followed pats | 38 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 37 followed pa
 - `docs/tool-configuration.md`
 - `docs/context-management.md`
 - `docs/external-agents.md`
+- `docs/run-store.md`
 - `docs/observability.md`
 - `docs/evaluation.md`
 - `docs/providers.md`
@@ -133,16 +134,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | → | [`docs/providers.md`](docs/providers.md) |
 | 37 | → | [`docs/README.md`](docs/README.md) |
 | 38 | → | [`docs/run-journal.md`](docs/run-journal.md) |
-| 39 | → | [`docs/run-viewer.md`](docs/run-viewer.md) |
-| 40 | → | [`docs/sandbox-and-shell.md`](docs/sandbox-and-shell.md) |
-| 41 | → | [`docs/self-hosting.md`](docs/self-hosting.md) |
-| 42 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 43 | → | [`docs/streaming.md`](docs/streaming.md) |
-| 44 | → | [`docs/structured-input.md`](docs/structured-input.md) |
-| 45 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
-| 46 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 47 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
-| 48 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 39 | → | [`docs/run-store.md`](docs/run-store.md) |
+| 40 | → | [`docs/run-viewer.md`](docs/run-viewer.md) |
+| 41 | → | [`docs/sandbox-and-shell.md`](docs/sandbox-and-shell.md) |
+| 42 | → | [`docs/self-hosting.md`](docs/self-hosting.md) |
+| 43 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 44 | → | [`docs/streaming.md`](docs/streaming.md) |
+| 45 | → | [`docs/structured-input.md`](docs/structured-input.md) |
+| 46 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
+| 47 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 48 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
+| 49 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

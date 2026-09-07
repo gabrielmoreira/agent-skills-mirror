@@ -118,3 +118,19 @@ is pinned in [development.md](development.md); those values are evidence and not
 5. Rotate or revoke a master token immediately if its file may have been exposed.
 6. Preserve the canonical lock files and atomic writers; custom writers must retain the documented
    locking, permissions, and exact-path behavior.
+7. MCP stdio host-path file-add is off unless `NOTEBOOKLM_MCP_ALLOWED_ROOTS` is set to an
+   explicit upload directory — not `$HOME` and not `~/.notebooklm`. Allowed files are opened
+   without following symlinks or junctions and copied into a private temporary directory before
+   authentication or upload. Replacing a caller path cannot redirect the backend's later file
+   open; the copy is removed when the call completes, fails, or is cancelled. Remote HTTP never
+   opens a server-host `path`.
+
+## Hosted adapters (MCP / REST)
+
+`storage_state.json` and `master_token.json` remain account-equivalent when an
+experimental MCP or REST process opens them. The operator-facing threat model —
+MCP OAuth refresh tokens, signed `/files/dl` and `/files/ul` HMAC URLs, stdio
+`source_add(path=...)` server-host reads, loopback vs token, and `GET /healthz`
+liveness — lives in [SECURITY.md](../SECURITY.md). See also
+[mcp-guide.md](mcp-guide.md) and
+[ADR-0024](adr/0024-mcp-remote-file-transfer.md).

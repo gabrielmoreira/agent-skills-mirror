@@ -13,7 +13,7 @@ Start indexing a codebase in the background. Returns immediately.
 
 **Key behaviours:**
 - Runs asynchronously — does NOT block. Returns immediately.
-- Auto-starts file watcher upon completion (if not cancelled)
+- Auto-starts file watcher upon completion (if not cancelled and `SOCRATICODE_WATCHER=auto`)
 - Ensures Docker/Qdrant/Ollama infrastructure is running first
 - Concurrency guard: if already indexing, returns current progress instead of starting again
 - Auto-indexes context artifacts defined in `.socraticodecontextartifacts.json`
@@ -36,7 +36,7 @@ Incrementally update an existing index. Only re-indexes changed files.
 **Key behaviours:**
 - Runs synchronously (blocking), unlike `codebase_index`
 - Only processes files changed since last index (via content hash comparison)
-- Auto-starts file watcher if not already active
+- Auto-starts file watcher if not already active and `SOCRATICODE_WATCHER=auto`
 - Usually not needed if the file watcher is running
 
 ---
@@ -95,8 +95,9 @@ Start/stop/status of live file watching.
 - `stop`: Stops same-process watcher (cross-process watchers unaffected)
 - `status`: Lists all watched projects including cross-process watchers
 - Detects if another process already watches the same project
-- Auto-started after successful `codebase_index` or `codebase_update`
-- Debounced with ~500ms delay to batch rapid file changes
+- Auto-started after successful `codebase_index` or `codebase_update` in `auto` mode
+- `manual` suppresses automatic starts but permits `start`; `off` rejects `start` before catch-up or infrastructure work
+- Debounced with 2s delay to batch rapid file changes
 
 ---
 
@@ -233,11 +234,12 @@ List all projects that have been indexed.
 - Stale locks from crashed processes are auto-reclaimed
 
 ### Auto-features
-- File watcher auto-starts after indexing/updates
+- File watcher auto-starts after indexing/updates in `SOCRATICODE_WATCHER=auto`
 - Context artifacts auto-indexed on first `codebase_context_search`
 - Stale artifacts auto-detected and re-indexed
 - Code graph auto-built after indexing
-- Session resume: watcher restarts on first tool use for previously indexed projects
+- Session resume: watcher restarts on first tool use for previously indexed projects in `auto`
+- Snapshot mode: `SOCRATICODE_WATCHER=off` plus `SOCRATICODE_AUTO_RESUME=off` leaves existing code indexes and graphs readable but performs no implicit code-index update, embedding, or graph creation
 
 ### Supported file extensions
 **Built-in:** `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.py`, `.pyw`, `.pyi`, `.java`, `.kt`, `.kts`, `.scala`, `.c`, `.h`, `.cpp`, `.hpp`, `.cc`, `.hh`, `.cxx`, `.cs`, `.go`, `.rs`, `.rb`, `.php`, `.swift`, `.sh`, `.bash`, `.zsh`, `.html`, `.htm`, `.css`, `.scss`, `.sass`, `.less`, `.styl`, `.vue`, `.svelte`, `.json`, `.yaml`, `.yml`, `.toml`, `.xml`, `.ini`, `.cfg`, `.md`, `.mdx`, `.rst`, `.txt`, `.sql`, `.dart`, `.lua`, `.r`, `.R`, `.dockerfile`

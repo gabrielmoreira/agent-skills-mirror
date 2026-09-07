@@ -59,6 +59,8 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
 14. **Never post prose summaries as inline code suggestions.** An inline item must contain one non-empty, apply-ready `suggestion` block targeting an exact current RIGHT-side diff range. Split localized fixes out of broader multi-file findings instead of collapsing every concrete change into companion prose. Use a companion item only for the architectural, coordination, or out-of-diff remainder, and explicitly label companion-only reviews as general notes with no inline suggestions. Omit obsolete findings.
 15. **Never publish with ad-hoc `gh` commands.** Validate schema-version-2 data with `Test-ReviewData.ps1`, then publish approved decisions with `Publish-ApprovedReview.ps1`. The publisher stages a pending review, reads it back, and submits only after exact verification.
 16. **Score confidence per finding, but never expose it upstream.** Every drafted public item carries a 50–100 confidence score and evidence-based rationale as metadata. Scores below 50 stay internal. Pulse may show the score to maintainers; author-facing review bodies must contain severity and reasoning only.
+17. **Fork pushes are required review work, not upstream publication.** Workers may create/update branches and PRs in the configured personal fork, push review fixes, and resolve fork review threads. A coordinator instruction not to commit or push dashboard data must never be interpreted as prohibiting fork-side pushes. Only writes to `microsoft/PowerToys` remain approval-gated.
+18. **Resolve the writable fork from configuration and clone remotes, not only the active login.** `Get-ForkConfig.ps1` prefers `POWERTOYS_FORK_REPO`, then a non-Microsoft `PowerToys` remote in the local clone, and switches to the authenticated fork-owner account when the current account has read-only access. Do not substitute `<active-login>/PowerToys` when the durable review branches live in another configured account.
 
 ## Phase 0: Context & Process Review
 
@@ -94,7 +96,7 @@ Convergence (Definition of done for Steps 5–6): the most recent freshly-reques
 
 ## Fork Configuration
 
-Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1](./scripts/Get-ForkConfig.ps1); verify on first run. Nothing is tied to a specific account — `gh api user` resolves the current teammate.
+Auto-detect these at the start of each session with [scripts/Get-ForkConfig.ps1](./scripts/Get-ForkConfig.ps1); verify on first run. The resolver prefers `POWERTOYS_FORK_REPO`, then the clone's non-Microsoft PowerToys remote, and verifies write permission. It may switch `gh` to the authenticated fork-owner account so fork branches and review PRs remain writable.
 
 | Placeholder | Meaning | Example |
 | --- | --- | --- |

@@ -75,7 +75,9 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Color math and contrast:** `readableTextOn()`, `isReadableOn()` in `src/shared/colorContrast.ts`
 - **Agent display name:** `getAgentDisplayName()` in `src/shared/agentMetadata.ts`
 - **Whether an agent is working right now (main process):** `isAgentBusy(session, processManager)`, `isAiTabProcessActive(...)` in `src/main/utils/agent-busy.ts`
+- **Which provider account an agent runs as:** `resolveAgentAccountKey()`, `PROVIDER_PROFILE_CONFIGS` in `src/shared/providerProfiles.ts`
 - **SSH remote lookup:** `getSshRemoteById()` in `src/main/stores/getters.ts`
+- **Deferred main-process store persistence:** `deferStoreWrites()`, `flushPendingSessionWrites()` in `src/main/stores/deferred-writes.ts` / `src/main/stores/instances.ts`
 - **Toast notifications:** `notifyToast({ color, title, message, dismissible? })`, `theme` in `src/renderer/stores/notificationStore.ts`
 - **Center flash (rapid acks):** `notifyCenterFlash({ message, color, detail?, duration? })`, `flashCopiedToClipboard()` in `src/renderer/stores/centerFlashStore.ts`
 - **Opening a modal / dashboard by name:** `UI_SURFACES`, `resolveUiSurface()` in `src/shared/uiSurfaces.ts`
@@ -88,8 +90,10 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Session lookup:** `selectActiveSession()`, `selectSessionById()` in `src/renderer/stores/sessionStore.ts`
 - **Session mutation:** `updateSessionWith(sessionId, updater)` in `src/renderer/stores/sessionStore.ts`
 - **Per-agent git actions:** `useGitAgentActions(session)`, `buildGitWorktreeCommands` in `src/renderer/hooks/git/useGitAgentActions.ts`
+- **Whether a PR is being opened right now:** `usePRCreationActive(worktreePath)`, `startPRCreation()` in `src/renderer/stores/prCreationStore.ts`
 - **Focus an AI tab:** `aiTabFocusFields(tabId?)`, `activeFileTabId` in `src/renderer/utils/tabHelpers.ts`
 - **Focus a file tab:** `fileTabFocusFields(tabId)` in `src/renderer/utils/tabHelpers.ts`
+- **Ending a turn with no process exit:** `settleTabThinkingState(session, tabId)` in `src/renderer/utils/tabHelpers.ts`
 - **Audio/video playback:** `handleOpenFileTab()`, `enqueueMedia()` in `src/renderer/hooks/tabs/internal/useFilePreviewTabHandlers.ts`
 - **Run a shell command from the chat:** `dispatchShellCommand()`, `runShellCommand()` in `src/renderer/services/shellCommand.ts`
 - **Revealing output the user asked for, past a paused auto-scroll:** `requestTranscriptScrollToBottom(sessionId, tabId)`, `TRANSCRIPT_SCROLL_TO_BOTTOM_EVENT` in `src/renderer/services/transcriptScroll.ts`
@@ -106,6 +110,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Whether a surface is the topmost layer:** `useIsTopLayer(priority)`, `MODAL_PRIORITIES` in `src/renderer/hooks/ui/useIsTopLayer.ts`
 - **Who asked for this turn (interactive vs automation):** `QUERY_SOURCE_ENV_VAR`, `QuerySource` in `src/shared/querySource.ts`
 - **An agent's effective environment:** `resolveAgentEnvironment()`, `isSecretEnvKey()` in `src/shared/agentEnvironment.ts`
+- **Whether a configured env value means "unset":** `isBlankEnvValue()`, `stripBlankEnvVars()` in `src/shared/agentEnvironment.ts`
 - **Whether a login flow can fix an auth failure:** `classifyCredentialKind()`, `credentialKindBlocksLogin()` in `src/shared/providerAuthIdentity.ts`
 - **Typing a login command into a shell:** `formatAgentLoginCommand(login, syntax?)`, `loginShellSyntaxFor(shellId, isWindows)` in `src/shared/agentMetadata.ts`
 - **Bucketing Director's Notes bullets:** `bucketNarrativeItems()`, `shouldRenderBuckets()` in `src/shared/directorNotesGrouping.ts`
@@ -128,9 +133,13 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Following streaming output in a capped box:** `useStickToBottom(contentKey)`, `useScrollIntoView` in `src/renderer/hooks/ui/useStickToBottom.ts`
 - **Restoring an AI tab's scroll position:** `initialScrollTop` + `initialIsAtBottom` props on `src/renderer/components/TerminalOutput.tsx` (a tail-following tab restores to the BOTTOM, not its stale saved offset)
 - **Keeping a virtualized list on its selection:** `scrollToIndex`, `ref` in `src/renderer/hooks/ui/useScrollIntoView.ts`
+- **Sizing a virtualized row the user's font decides:** `virtualizer.measureElement` + `data-index` and NO inline `height`; `HistoryPanel`, `FileSearchModal`
 - **Adding a control to the Left Bar header:** three-zone row in `src/renderer/components/SessionList/SessionList.tsx`; see guide before touching
 - **Element width for JS-computed layout:** `useElementWidth(ref, enabled?)`, `ResizeObserver` in `src/renderer/hooks/ui/useElementWidth.ts`
 - **Usage Dashboard card tile:** `StatCard` in `src/renderer/components/UsageDashboard/EntityTile.tsx`
+- **A label that must not truncate:** `useOptionalLabelFits(rowRef)` in `src/renderer/hooks/ui/useOptionalLabelFits.ts`
+- **Usage Dashboard metric tile:** `MetricCard` in `src/renderer/components/UsageDashboard/MetricCard.tsx`
+- **Recording wizard usage:** `beginWizardRun()`, `recordWizardDocuments()` in `src/renderer/services/wizardStats.ts`
 - **Fixed-pitch font for shell text:** `resolveFixedPitchFontFamily()`, `resolveTerminalFontFamily()` in `src/renderer/utils/fixedPitchFont.ts`
 - **Rendering raw terminal output (ANSI):** `useAnsiConverter(theme)`, `getCachedAnsiHtml(text, theme.id, converter)` in `src/renderer/hooks/ui/useAnsiConverter.ts`
 - **Any CLI verb that can move the Maestro view:** `resolveBackgroundFlag()`, `readBackgroundField()` in `src/shared/focusPlacement.ts`
@@ -152,6 +161,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Debounce/throttle:** `useDebouncedValue()`, `useDebouncedCallback()` in `src/renderer/hooks/utils/useThrottle.ts`
 - **Identity-stable callback:** `useStableCallback()`, `createMarkdownComponents()` in `src/renderer/hooks/utils/useStableCallback.ts`
 - **Render markdown:** `components`, `MarkdownRenderer` in `src/renderer/components/Markdown/`
+- **Diagram content clipped at the SVG edge:** `expandSvgViewBoxToContent(svg, padding?)` in `src/renderer/utils/svgViewBox.ts`
 - **Clickable task checkboxes in rendered markdown:** `toggleTaskCheckboxAtLine(content, line)`, `rehypeSourceLine` in `src/renderer/utils/markdownTasks.ts`
 - **Model/effort badges on a finished turn:** `turnEffort`, `codifyTurnSettings()` in `src/renderer/components/ui/TurnSettingPills.tsx`
 - **The tab a queued item is going to:** `resolveQueuedItemTabName(session, item)`, `resolveQueuedItemTarget()` in `src/renderer/utils/executionQueue.ts`
@@ -478,9 +488,15 @@ if (sshStore && session.sshRemoteConfig?.enabled) {
 - Agent's `binaryName` is used for remote execution (not local paths)
 - When the user enabled SSH but the configured remote can't be resolved, **fail
   loudly** instead of silently running locally - the user explicitly opted into
-  SSH and their prompt shouldn't leak to the local machine (see
+  SSH and their prompt shouldn't leak to the local machine. `wrapSpawnWithSsh()`
+  does NOT throw in that case: it hands back the unmodified local config with
+  `sshRemoteUsed: null`, which still carries the REMOTE's `cwd`, so taking it
+  runs the agent on the user's machine against a path that is either missing or
+  (worse) the wrong files. Every caller must check `sshRemoteUsed` and throw
+  `sshUnresolvedRemoteMessage(sshConfig)` from `ssh-spawn-wrapper.ts`. See
+  `groomContext()` and `spawnGroupChatAgent()` for the pattern, and
   `sshUnresolvedFailure()` in `src/cli/services/agent-spawner.ts` for the CLI's
-  version of this).
+  version of this.
 
 **CLI parity:** The CLI (`src/cli/services/agent-spawner.ts`) spawns agent
 processes for batch/playbook automation and honors the same SSH wrapping and

@@ -967,6 +967,26 @@ Pre-scripts: if a task message has a `script` field, run it first. If `wakeAgent
 - PreCompact hook for transcript archiving (Claude provider)
 - Script execution for task-kind messages
 
+### Host Provider Contract
+
+Each agent provider tells the host, in plain data, what it needs on disk and in the container. This is the *host provider contract* (`src/provider-contracts/`). Claude's declaration is in `claude.ts`; a provider skill adds its own file and one import in `provider-contracts/index.ts`.
+
+A provider declares:
+
+- **Project document** — the file the host composes from every instruction source (for Claude, `CLAUDE.md`) and where it is mounted.
+- **State volumes** — provider-owned directories under `data/v2-sessions/<group>/` (group scope) or the session directory (session scope), with their container path and read/write mode.
+- **Skill backings and views** — where the provider's native skills directory lives and any extra bind mounts of it into the container. Core always keeps the shared-skill symlinks in every backing.
+- **Prepared files** — files core creates or reconciles inside a state volume (for Claude, `settings.json`). They are created with the process default mode; the contract does not pick one.
+
+Rules:
+
+- Contracts name only container paths and directory *names*; host paths are resolved by core. Every declared item is acted on — nothing is descriptive only.
+- The shape is validated when the contract registers, so a malformed provider skill fails when the host loads, not at first spawn.
+- A provider that also has a legacy host adapter (`src/providers/`) still gets that adapter's env passed through; its mounts are ignored because core now realizes the declared surfaces.
+- Mount order is fixed by core, not by the provider: state volumes, then skill views, then the project document.
+- The shipped base document (`container/CLAUDE.md`) is protected from operator mounts by core itself, not by any contract field.
+- A provider name with neither a contract nor an adapter spawns with the default (Claude) surfaces, plus a warning in the host log.
+
 ## Open Questions
 
 - **Approval routing** — how does the host find the admin's DM conversation? What if no DM channel exists? Is the approval list configurable per agent group or global?

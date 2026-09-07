@@ -29,7 +29,7 @@ Merge, auto-merge, and deployment require explicit authorization in the current 
 | Change | Code and guidance | Required verification |
 |---|---|---|
 | Browser behavior | `src/components/`, `src/app/`, `src/services/`, `src/config/`; [architecture](ARCHITECTURE.md) | Focused behavior check, `npm run typecheck`, `npm run lint:boundaries` |
-| API and handlers | `api/`, `server/`; [endpoint guide](docs/adding-endpoints.mdx) | Focused handler check, `npm run typecheck:api` |
+| API and handlers | `api/`, `server/`; [endpoint guide](docs/adding-endpoints.mdx) | Focused handler check, `npm run typecheck:api`; `npm run test:sidecar` owns the `api/` node suites |
 | Data workers and cache | `scripts/`, `server/_shared/`; [health contracts](docs/health-endpoints.mdx) | Producer and reader checks with fixtures; separately record live freshness evidence when required |
 | Proto and generated clients | `proto/`, `src/generated/`; [code generation](CONTRIBUTING.md#working-with-sebuf-rpc-framework) | `make generate` requires buf + sebuf v0.11.1 plugins; verify generated diff |
 | Desktop and sidecar | `src-tauri/`; [architecture](ARCHITECTURE.md) | Focused Rust checks or `npm run test:sidecar` |

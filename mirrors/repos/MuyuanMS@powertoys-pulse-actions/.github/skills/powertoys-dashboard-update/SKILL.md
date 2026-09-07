@@ -46,6 +46,17 @@ skills:
    generating data, or publishing, run
    `scripts/Assert-CanonicalDashboardTarget.ps1`. Never update or push
    `MuyuanMS/powertoys-triage-board`; it is a retired standalone prototype.
+8. Dashboard publication and fork review writes are separate permissions.
+   Workers must not emit, sanitize, commit, or push the dashboard repository,
+   but they are allowed and expected to push `pr-iterate/<number>` branches,
+   update fork review PRs, and resolve comments in the configured writable
+   PowerToys fork. Never give a worker an unqualified "do not push" instruction.
+9. Report checkpoint progress separately from concluded reviews. "Updated" or
+   "processed" means only that durable state advanced. A PR is "concluded" only
+   when it has a current allowed review action, is justified as waiting on the
+   author, or has a published unrecoverable blocker that names the exact manual
+   remediation. Do not tell the user that reviews are finished merely because
+   every selected artifact was rewritten.
 
 ## Configuration
 
@@ -159,6 +170,9 @@ default run budget instead of trying to drain an arbitrarily large review queue:
 - checkpoint every durable transition locally and publish after two transitions,
   after eight minutes, or at run completion, whichever comes first;
 - leave unselected or unfinished items explicitly queued for the next run;
+- count and report `checkpointed`, `concluded`, and `still_in_progress`
+  separately; a successful worker batch is not equivalent to concluded review
+  coverage;
 - ensure every open, non-draft PR that is not waiting on the author is either
   backed by an allowed PR action from the taxonomy above, explicitly marked as
   pending author feedback, or shown as queued/internal status without a
@@ -579,6 +593,10 @@ fork, mirror, review-request, finding, and build transition so a later run can
 resume from the fork branch or dashboard artifact after a crash. Do not keep
 polling simply to make the current run look complete. Do not launch nested
 agents from a PR worker.
+
+Every worker prompt must explicitly say that fork-side commits, pushes, fork PR
+updates, and fork thread resolution are allowed. Prohibit only dashboard
+emission/commit/push and all writes to `microsoft/PowerToys`.
 
 Use `Set-PrReviewCheckpoint.ps1` after each durable transition:
 

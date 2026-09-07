@@ -1,14 +1,16 @@
 # Python API Reference
 
 **Status:** Active
-**Last Updated:** 2026-09-02
+**Last Updated:** 2026-09-06
 
 Complete reference for the `notebooklm` Python library.
 
 See also:
 - [Architecture Guide](./architecture.md) for structural overview, capability protocols, and transport design.
 - [Architecture diagrams](./diagrams/README.md) for explorable call flows, lifecycles, and class models.
+- [Operation contracts](./architecture.md#operation-lifetime-deadlines-and-evidence) for aggregate deadlines, task/epoch ownership, mutation journals, and safe recovery.
 - [RPC Development Guide](./rpc-development.md) for custom RPC design, protocols, and mock assertions.
+- [Web vs Android public-behavior inventory](web-android-public-behavior.md) for classified remaining public backend splits.
 
 ## Quick Start
 
@@ -48,6 +50,96 @@ asyncio.run(main())
 ---
 
 ## Core Concepts
+
+### Typed client configuration
+
+New code can group construction values by their actual owner with the frozen,
+import-light types in `notebooklm.options`:
+
+```python
+from notebooklm import NotebookLMClient
+from notebooklm.options import (
+    ClientConfig,
+    RuntimeOptions,
+    TransferOptions,
+    WebBackendConfig,
+    WebSessionOptions,
+    WebTransportOptions,
+)
+
+config = ClientConfig(
+    backend=WebBackendConfig(
+        transport=WebTransportOptions(read_timeout=60.0),
+        session=WebSessionOptions(keepalive_interval=600.0),
+    ),
+    runtime=RuntimeOptions(max_concurrent_rpcs=16, operation_timeout=300.0),
+    transfers=TransferOptions(max_concurrent_uploads=4),
+)
+async with NotebookLMClient.from_storage(profile="work", config=config) as client:
+    notebooks = await client.notebooks.list()
+```
+
+`ClientConfig.backend=None` follows `NOTEBOOKLM_BACKEND` and then the Web
+default; an explicit `WebBackendConfig` or `AndroidBackendConfig` wins over the
+environment. The old flat tuning keywords remain compatible through v0.x but
+non-default values now emit one migration warning per construction. Do not mix
+`config=` with a non-default legacy tuning keyword. `auth`, `storage_path`,
+`path`, `profile`, and `allow_headless` remain credential inputs rather than
+configuration fields.
+
+`FeatureOptions.chat_timeout` and `import_research_timeout` accept `AUTO`
+(built-in scaling/floors), `None` (inherit the backend base), or a positive
+finite number. `TimeoutOptions` always names connect/read/write/pool explicitly;
+an all-`None` value disables those HTTP component timers while leaving any
+separate Android transfer aggregate intact. `notebooklm.config` remains the
+unrelated base-URL/host helper facade.
+
+The remaining exported vocabulary follows the same ownership split:
+`RetryOptions` owns retry ceilings, `WebSessionHooks` owns the advanced cookie
+callbacks, and `RpcEventCallback` names the neutral telemetry callback shape.
+`ReadWindow` is the public read-window type alias and `AutoReadWindow` is the
+enum type behind its exported `AUTO` member.
+
+### Aggregate operation deadlines
+
+`RuntimeOptions.operation_timeout` sets an optional whole-workflow default.
+`None` preserves the historical unbounded aggregate behavior; existing RPC,
+read, transfer, and polling budgets remain independent and can still expire
+first. Group several calls under one absolute budget with `client.operation`:
+
+```python
+from notebooklm import OperationTimeoutError
+
+try:
+    async with client.operation(timeout=30):
+        notebook = await client.notebooks.create("Quarterly review")
+        await client.sources.add_url(notebook.id, "https://example.com")
+except OperationTimeoutError as exc:
+    # Unknown writes carry inspect/reconcile metadata; do not blindly replay.
+    inspect(exc.operation_metadata)
+```
+
+Nested operation contexts inherit the original monotonic deadline and can only
+shorten it. The budget covers admission, queueing, auth waits, retry backoff,
+wire work, reconciliation, polling, and transfers. It prevents new dispatch
+after expiry but still permits required local settlement to finish; it does not
+cancel an already-accepted upstream artifact or research job.
+
+The explicit operation scope is task-owned. Arbitrary tasks created with
+`asyncio.create_task()` inside the block do not inherit its context; give each
+independent task its own explicit operation scope. Library-owned exclusive
+children inherit only through the supervisor, while shared polling leaders are
+detached so one waiter's timeout or cancellation cannot stop other waiters.
+Only the operation timer's own cancellation request becomes
+`OperationTimeoutError`; caller, `TaskGroup`, outer-timeout, and stale-epoch
+cancellation remain `CancelledError`. Python 3.10 cannot distinguish an external
+cancellation arriving in the same event-loop turn as the owned deadline; that
+specific race surfaces as `OperationTimeoutError`. When awaiting a cancelled task
+on Python 3.10, metadata stays on the original exception in `__context__` rather
+than the replacement `CancelledError`. See the
+[operation contracts](./architecture.md#operation-lifetime-deadlines-and-evidence) and the
+[deadline sequence](https://teng-lin.github.io/notebooklm-py/diagrams/36-operation-deadline-and-cancellation.html)
+for the exact ownership rules.
 
 ### Concurrency model
 
@@ -154,6 +246,13 @@ same profile the client will open:
 The [backend comparison](https://teng-lin.github.io/notebooklm-py/diagrams/06-backends-web-and-android.html) shows the shared
 public contract and separate wire graphs; the
 [selection workflow](https://teng-lin.github.io/notebooklm-py/diagrams/28-profile-auth-backend-selection.workflow.html) shows precedence.
+
+A few **public** methods still differ by backend (notes tombstone projection,
+raw escape-hatch types, tracked default flips, deliberate research-import
+policy, creation validation, and upload source kinds). Those splits are classified in the
+[Web vs Android public-behavior inventory](web-android-public-behavior.md) so
+callers do not treat every difference as a defect or every defect as "just the
+wire."
 
 ```bash
 pip install "notebooklm-py[android,browser]"
@@ -337,6 +436,7 @@ sit at the intersection — they're catchable as **any** of `NotFoundError`
 | `SourceTimeoutError` | `WaitTimeoutError`, `TimeoutError`, `SourceError`, `NotebookLMError` |
 | `ArtifactTimeoutError` | `WaitTimeoutError`, `TimeoutError`, `ArtifactError`, `NotebookLMError` |
 | `ResearchTimeoutError` | `WaitTimeoutError`, `TimeoutError`, `ResearchError`, `NotebookLMError` |
+| `OperationTimeoutError` | `WaitTimeoutError`, `TimeoutError`, `NotebookLMError` |
 
 `MindMapNotFoundError` is raised by `client.mind_maps.get(...)` and mutation
 paths such as `rename` on a missing target. `NoteNotFoundError` is raised by
@@ -538,82 +638,42 @@ async with NotebookLMClient.from_storage() as client:
 
 ### Idempotency
 
-**Probe-then-retry for create operations.** When a network or server error (5xx / 429 / connection drop) interrupts a create call, the client surfaces the failure immediately rather than blindly retrying. For the methods listed below, the client then probes the server to discover whether the resource was already created before attempting a retry. This prevents duplicate resources when the server accepted the request but the response was lost in transit. The probe runs automatically — no opt-in keyword is required.
+**Create operations are sent once.** `notebooks.create`, URL and Drive source
+adds, file-source registration, research imports, and collection creation do not
+have a server-issued idempotency key. A timeout or connection loss after bytes
+were transmitted can therefore mean either "committed" or "not committed";
+the client never treats a later list match as proof and never automatically
+re-sends the mutation.
 
-The following methods are idempotent under retry:
-
-| Method | Probe |
-|---|---|
-| `client.notebooks.create(title)` | Snapshot notebook IDs *before*, list *after* a transport failure, return the single **new** notebook with the matching title (or raise on ambiguity). Titles are not unique, so an unfiltered match could hand back a notebook that predates the call — and every later `sources.add_*` / `chat.ask` in the session would then target it ([#2232](https://github.com/teng-lin/notebooklm-py/issues/2232)). |
-| `client.sources.add_url(notebook_id, url)` | Snapshot source IDs *before*, list *after* a transport failure, return the single **new** source whose `url` exactly matches (or raise on ambiguity). The same URL can legitimately appear twice in one notebook, so an unfiltered match could hand back a source that predates the call ([#2204](https://github.com/teng-lin/notebooklm-py/issues/2204)). |
-| `client.sources.add_url(notebook_id, youtube_url)` | Same probe; the backend echoes the requested YouTube URL back verbatim, short (`youtu.be/…`) forms included. |
-
-`client.sources.add_text(notebook_id, title, content)` is **not** retry-safe: text sources lack a reliable server-side dedupe key (titles aren't unique; content isn't exposed in the source list). The default behavior is unchanged from previous releases. If you want explicit failure rather than possible silent duplication on retry, opt in:
-
-```python
-from notebooklm import NonIdempotentRetryError
-
-try:
-    await client.sources.add_text(nb_id, "Title", "Content", idempotent=True)
-except NonIdempotentRetryError:
-    # Embed a UUID in the title and dedupe client-side instead.
-    ...
-```
-
-`client.sources.add_file(...)` and `client.sources.add_drive(...)` are now also covered by the probe-then-create wrapper: the create RPC runs with `disable_internal_retries=True` and, on transport failure, the wrapper probes the server-side source list (via `idempotent_create`) before deciding whether to retry — so transient failures no longer produce duplicate sources. See `_web/sources/add.py` (`SourceAddService.add_drive`) and `_web/sources/upload.py` (`SourceUploadPipeline.register_file_source`) for the implementation.
-
-**When the probe itself fails, the call fails ([#2220](https://github.com/teng-lin/notebooklm-py/issues/2220)).** The probe is what makes the retry safe, so it is never allowed to guess. If its own list RPC fails for a non-transport reason — realistically, wire drift making the strict decoder raise `RPCError` — no **further** attempt is made, and you get `SourceAddError` (source paths) or `RPCError` (`notebooks.create`) saying the create could not be confirmed. Note "further": the wrapper allows two attempts, so if an *earlier* probe returned a clean "no match" one retry may already have gone out before this one failed — reconcile for more than one row.
-
-Such an error carries an **`unconfirmed` attribute**. Test that, not the message text and not the exception type — it is the supported discriminator, and the same one the MCP and REST adapters use to keep these out of the "retry me" and "just this item failed" buckets.
-
-**Type is the wrong discriminator here**, which is why the example below catches broadly. A probe whose list fails at the transport level re-raises that failure *unchanged*, so an unconfirmed create can reach you as `SourceAddError`, `RPCError`, `ServerError`, `NetworkError`, `RateLimitError`, or `AuthError`. Only the attribute is common to all of them.
+Mutation failures carry public `CommitState` evidence when the client can
+classify the outcome. `NOT_SENT` and `REJECTED` are the only states that permit
+an explicitly owned replay. `UNKNOWN` means the write may have committed, while
+`CONFIRMED` means a caller-correlated response proved it did. Absence of a
+`commit_state` value, including a present property that returns `None`, must be
+treated conservatively as unknown.
 
 ```python
-# Capture the ids BEFORE the add. A URL is not unique within a notebook, so a
-# post-hoc match alone cannot tell "my create landed" from "a copy was already
-# here" — adopting one blindly is the very bug #2204 fixed inside the library.
-before = {s.id for s in await client.sources.list(nb_id)}
+from notebooklm.outcomes import CommitState
 
 try:
     source = await client.sources.add_url(nb_id, url)
 except Exception as exc:
-    if not getattr(exc, "unconfirmed", False):
-        raise  # a rejection, an auth failure, a plain outage — handle as usual
-    # The create may or may not have landed. Only a source that is BOTH new
-    # since the snapshot and matching the URL is attributable to this call.
-    new = [s for s in await client.sources.list(nb_id) if s.id not in before and s.url == url]
-    if len(new) == 1:
-        source = new[0]  # attributable to this call
-    elif not new:
-        # NOT proof the create failed — the source list lags the write, so a
-        # committed source can be missing here and appear moments later. Re-read
-        # before concluding anything; see the caveat below.
-        raise
-    else:
-        raise  # several new matches — cannot attribute. Resolve by hand.
+    state = getattr(exc, "commit_state", None) or CommitState.UNKNOWN
+    if state is CommitState.UNKNOWN:
+        # Reconcile manually; do not blindly repeat the mutation.
+        candidates = getattr(exc, "reconciliation_candidates", ())
+        ...
+    raise
 ```
 
-Three caveats on that reconciliation, all inherent to a list-based probe rather than to this example:
-
-- **An empty result is not proof the create failed.** Source-list visibility lags the write: the library's own `test_add_url_probe_matches_on_the_second_attempt` models a committed source that is absent from the first post-create `GET_NOTEBOOK` and appears only on the next one. Re-issuing on a single empty read is how a duplicate gets made — poll the list a few times before deciding, and if it stays empty, prefer surfacing the situation over an automatic re-add.
-- **A single new match is *attributable*, not *proven*.** A snapshot establishes *when* a source appeared, not *who* created it. If another client adds the same URL after your snapshot while your own create never lands, you will see exactly one new match and adopt their source — the two-match branch never fires. `add_url`'s own docstring carries the same warning: the wire has no client-supplied idempotency key, so serialize concurrent adds of the same URL into one notebook if you need that guarantee, or treat the single-match case as unresolved too.
-- **The reconciling `sources.list()` can itself fail.** If the outage that broke the probe is still going, this whole block raises, which is the correct outcome — still unresolved.
-
-The attribute is set on more than just the "probe raised" case. It marks every way a probe fails to settle whether the create landed: a match it cannot attribute because the pre-create baseline was unavailable, several new matches it cannot choose between, or a create that returned success with no trustworthy id whose recovery probe then came up empty. Those raise without anything having thrown inside the probe, so they look like ordinary rejections — but the server may hold a row either way.
-
-It is absent on every other failure, so `getattr(exc, "unconfirmed", False)` is safe to call unconditionally.
-
-**The exception chain has three shapes** — worth knowing before diagnostic code goes looking in a fixed place:
-
-| how it arose | the exception you catch | the create's transport failure |
-|---|---|---|
-| probe failed with a non-transport error (e.g. a decode `RPCError`) | a wrapper naming the source, with the probe's failure as `__cause__` | at `__context__.__context__` |
-| probe failed with a transport/auth error (`ServerError`, `NetworkError`, `RateLimitError`, `AuthError`) | **that same error, re-raised unchanged and marked** | at `__context__` |
-| `add_file` only: the register RPC returned **200** but carried no trustworthy `SOURCE_ID`, so the recovery probe ran directly | a wrapper naming the file | **none — no create failure exists**; a probe error, if any, is at `__cause__` |
-
-The third shape breaks a fixed-depth assumption outright: `_create` calls the probe itself rather than being driven by the retry wrapper, so no transport failure exists anywhere in the chain, and a no-match or ambiguity yields a marked `SourceAddError` with no `__cause__` at all. In the second shape there is no wrapper either, so `__cause__` is whatever the transport layer already set (often absent). Walk the `__context__` chain rather than assuming a depth, and treat both `__cause__` and `__context__` as optional.
-
-The alternative — retrying on an unanswered probe — is what this replaced. It recovered silently in the common case, at the cost of occasionally handing back a duplicate, or the wrong source id, with nothing to signal it. A raised error is actionable; an unreported duplicate is not.
+For compatibility, unknown-outcome errors also carry `unconfirmed=True`.
+Adapters use the same metadata to avoid presenting an ambiguous write as a
+clean retryable failure. Diagnostic `reconciliation_candidates` are bounded and
+are never promoted into a success result. The original exception object and its
+cause chain are preserved wherever the underlying boundary can be propagated.
+For workflow aggregation, ordered attempts, complete batch settlement, and the
+four recovery actions, see [Operation deadlines, ownership, and recovery
+contracts](./architecture.md#operation-lifetime-deadlines-and-evidence).
 
 **Partial file uploads.** File registration creates the source row before the
 resumable HTTP upload starts. If session setup or the combined upload/finalize
@@ -626,9 +686,10 @@ dropped connection, `ValidationError` on a rejected file, or a bare
 `SourceAddError`. An existing `except ValidationError:` around `add_file()` keeps
 working unchanged — there is no new exception type to catch.
 
-To identify the retained row, read the `source_id` and `stage` attributes the
-client attaches to that exception. They are present *only* on a
-post-registration upload failure, so read them defensively:
+`source_id` and `stage` are declared on every `NotebookLMError`, but return
+`None` unless the operation has corresponding evidence. For `add_file()`, a
+non-`None` `source_id` identifies the retained row after registration, and a
+non-`None` `stage` identifies the failed upload phase. Read both defensively:
 
 ```python
 try:
@@ -645,7 +706,11 @@ except NotebookLMError as error:
 `stage` says **where** the failure happened, not whether any bytes were sent: it
 advances to `"upload_finalize"` before the body request is issued, so a
 connection that drops before the first byte still reports that stage.
-Cancellation still propagates as `CancelledError`, with no attributes attached.
+Cancellation still propagates as `CancelledError`. A direct low-level
+`add_file()` cancellation has no `source_id` or `stage` attributes. When the
+call runs inside public `client.operation()`, that outer scope may attach its
+aggregate journal metadata for adapter projection without changing the
+exception type or claiming upload-stage evidence.
 
 A raw transport failure is the one case where the raised exception is not the
 original object: an `httpx.RequestError` is normalised to a library
@@ -707,25 +772,20 @@ URL and the headers come from a single consistent auth tuple. (This
 obsoletes the warning in the older "Concurrency model" subsection
 above.)
 
-**Idempotent create RPCs**. The following calls are
-idempotent under retry via probe-then-create (when `idempotent=True`,
-which is the default):
-
-- `client.notebooks.create(title)`
-- `client.sources.add_url(notebook_id, url)` (YouTube URLs are auto-detected
-  and routed through the YouTube source pathway internally)
-
-`client.sources.add_text(notebook_id, title, content)` is **declared
-non-idempotent**: text sources lack a reliable server-side dedupe key
-(Google permits duplicate titles, and content is not exposed in source
-listings). With `idempotent=True` it raises `NonIdempotentRetryError`. If
-you set `disable_internal_retries=True` on the client, the probe-then-retry
-wrapper is skipped entirely and the caller is responsible for retry
-semantics.
+**Create RPCs are not replay-safe.** Notebook, URL/Drive/file source,
+collection, generation, and research-import mutations are sent once unless a
+specific outer owner has explicit `CommitState.NOT_SENT` or
+`CommitState.REJECTED` evidence. `add_text(..., idempotent=True)` retains its
+validation contract and raises `NonIdempotentRetryError`, since text sources do
+not expose a server-side dedupe key.
 
 **Cancellation safety.** Several paths are now shielded against
 cancellation:
 
+- **`client.operation()`** translates only its own aggregate-deadline
+  cancellation into `OperationTimeoutError`. External cancellation stays
+  `CancelledError`, and the attached mutation journal preserves evidence from
+  sends that already started.
 - **`close()`** is shielded; Ctrl-C during shutdown will not leak the
   underlying `httpx.AsyncClient`.
 - **`refresh_auth()`** runs the shared refresh task under `asyncio.shield`;
@@ -1010,11 +1070,13 @@ class NotebookLMClient:
         max_concurrent_rpcs: int | None = DEFAULT_MAX_CONCURRENT_RPCS,        # 16
         upload_timeout: httpx.Timeout | None = None,
         on_rpc_event: Callable[[RpcTelemetryEvent], object] | None = None,
-        chat_timeout: float | None = ...,      # unset -> max(180, timeout)
+        chat_timeout: ReadWindow = AUTO,       # AUTO -> max(180, timeout)
         chat_response_max_bytes: int | None = DEFAULT_CHAT_RESPONSE_MAX_BYTES, # 256 MiB
-        import_research_timeout: float | None = ...,  # unset -> batch-scaled
+        import_research_timeout: ReadWindow = AUTO,  # AUTO -> batch-scaled
         *,
         allow_headless: bool = False,
+        backend: Literal["web", "android"] | None = None,
+        config: ClientConfig | None = None,
     ) -> "_FromStorageContext":
         # Returns an awaitable async-context-manager wrapper. Use as
         # `async with NotebookLMClient.from_storage(...) as client:`.
@@ -1035,9 +1097,12 @@ class NotebookLMClient:
         on_rpc_event: Callable[[RpcTelemetryEvent], object] | None = None,
         cookie_saver: CookieSaver | None = None,
         cookie_rotator: CookieRotator | None = None,
-        chat_timeout: float | None = ...,      # unset -> max(180, timeout)
+        chat_timeout: ReadWindow = AUTO,       # AUTO -> max(180, timeout)
         chat_response_max_bytes: int | None = DEFAULT_CHAT_RESPONSE_MAX_BYTES, # 256 MiB
-        import_research_timeout: float | None = ...,  # unset -> batch-scaled
+        import_research_timeout: ReadWindow = AUTO,  # AUTO -> batch-scaled
+        *,
+        backend: Literal["web", "android"] | None = None,
+        config: ClientConfig | None = None,
     ):
 
     async def refresh_auth(self, *, allow_headless: bool = False) -> AuthTokens:
@@ -1142,11 +1207,9 @@ for the full layered story.
   schedule used for 5xx (`min(2 ** attempt, 30)` seconds with ±20%
   jitter) so the positive default is still useful when Google omits the
   hint. Set to `0` to raise `RateLimitError` immediately (e.g. when the
-  calling code implements its own bespoke back-off policy). Mutating
-  create RPCs (`notebooks.create`, `sources.add_url`) opt out of this
-  loop via `disable_internal_retries` so the API-layer
-  `idempotent_create` probe-then-retry wrapper can own recovery for
-  mutating calls.
+  calling code implements its own bespoke back-off policy). Retry-unsafe
+  mutations opt out of this loop. An outer owner may replay one only when
+  explicit commit evidence proves the request was `NOT_SENT` or `REJECTED`.
 - `limits` accepts a `ConnectionLimits` dataclass to tune the underlying
   `httpx` connection pool. The default (`ConnectionLimits()`) sets
   `max_connections=100`, `max_keepalive_connections=50`,
@@ -1212,7 +1275,7 @@ async with NotebookLMClient.from_storage(rate_limit_max_retries=0) as client:
 | `get_share_url(notebook_id, artifact_id=None)` | `notebook_id: str, str \| None` | `str` | Get a share URL |
 | `suggest_next_steps(notebook_id, *, source_ids=None)` | `str, list[str] \| None` | `list[NextStepSuggestion]` | Grounded follow-up **questions** for the notebook (`NextStepSuggestions`) — the block a chat answer carries as `AskResult.next_steps`, without needing a prior conversation. `source_ids=None` lets the server use all sources (no `GET_NOTEBOOK` round-trip). Distinct from `suggest_prompts`, which returns `(title, prompt)` steering pairs. |
 | `remove_from_recent(notebook_id)` | `notebook_id: str` | `None` | Remove from recently viewed |
-| `get_raw(notebook_id)` | `notebook_id: str` | `Any` | Get raw API response data |
+| `get_raw(notebook_id)` | `notebook_id: str` | `Any` | Get raw API response data. Web: batchexecute list. Android: known-field **dict** (`message_to_known_dict`), not a protobuf message. See [Web vs Android inventory](web-android-public-behavior.md). |
 
 **Example:**
 ```python
@@ -1267,6 +1330,7 @@ print(url)
 | `get_fulltext(notebook_id, source_id, *, output_format="text")` | `str, str, *, output_format: Literal["text", "markdown"]` | `SourceFulltext` | Get full content; `"markdown"` requires the optional `markdownify` extra |
 | `get_guide(notebook_id, source_id)` | `str, str` | `SourceGuide` | Get AI-generated `summary` + `keywords`; use attribute access (`guide.summary`) |
 | `add_url(notebook_id, url, *, wait=False, wait_timeout=120.0)` | `str, str, *, bool, float` | `Source` | Add URL source (autodetects YouTube URLs and routes them appropriately). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). |
+| `add_urls_batch(notebook_id, urls)` | `str, list[str]` | `list[SourceBatchItemOutcome]` | Add validated URL inputs in one non-replayed backend batch and return one ordered public outcome per input. Inspect `item.outcome.commit_state`: `confirmed` carries `item.source`, `rejected` is a definite refusal, `unknown` carries reconciliation guidance, and `not_sent` is positive zero-send evidence. An escaping whole-request error retains settled progress in its additive `batch_outcome` operation metadata. |
 | `add_text(notebook_id, title, content, *, wait=False, wait_timeout=120.0, idempotent=False)` | `str, str, str, *, bool, float, bool` | `Source` | Add text content. `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). |
 | `add_file(notebook_id, file_path, mime_type=None, *, wait=False, wait_timeout=120.0, title=None, on_progress=None)` | `str, str \| Path, str \| None, *, bool, float, str \| None, Callable \| None` | `Source` | Upload file. `mime_type` is a **supported** parameter — it overrides filename-extension inference to set the resumable-upload content-type header (omit it to infer from the extension). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). `title` sets the display name via a post-upload `UPDATE_SOURCE` and forces a brief registration wait even when `wait=False`. `on_progress(bytes_sent, total_bytes)` may be sync or async. |
 | `add_drive(notebook_id, file_id, title, mime_type="application/vnd.google-apps.document", *, wait=False, wait_timeout=120.0)` | `str, str, str, str, *, bool, float` | `Source` | Add Google Drive doc. `mime_type` defaults to Google Docs; override for Slides/Sheets/PDF via `DriveMimeType` (see `notebooklm.types`). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). NotebookLM's backend re-derives the display title from live Drive metadata for native Drive imports, discarding the requested `title`; the method now issues an automatic best-effort follow-up `rename()` so an explicit `title` still wins (non-fatal — a rename failure logs a warning and keeps the added source under its upstream title; issue #1960). |
@@ -1276,6 +1340,7 @@ print(url)
 | `refresh(notebook_id, source_id)` | `str, str` | `None` | Refresh URL/Drive source. `None` means the server accepted the call; a rejection raises `RPCError` (v0.9.0, #2290 — previously a server-side `INVALID_ARGUMENT` also returned `None`). |
 | `check_freshness(notebook_id, source_id)` | `str, str` | `bool` | Check if source needs refresh |
 | `delete(notebook_id, source_id)` | `str, str` | `None` | Delete source (idempotent; returns `None` whether or not it existed) |
+| `delete_many_with_outcomes(notebook_id, source_ids)` | `str, Sequence[str]` | `list[SourceDeleteOutcome]` | Supervised per-occurrence cleanup, preserving input order and duplicates, with at most ten active deletions and a pause between groups. Returns confirmed, rejected, unknown, or unattempted evidence per source. |
 | `wait_until_ready(notebook_id, source_id, timeout=120.0, ...)` | `str, str, float, ...` | `Source` | Poll until `status == READY` (fully processed). Raises `SourceTimeoutError`/`SourceProcessingError`/`SourceNotFoundError` — see [Processing failures vs. timeouts](#processing-failures-vs-timeouts). |
 | `add_urls_async(notebook_id, urls)` | `str, list[str]` | `list[Source]` | Queue URL sources with one non-blocking `AddSourcesAsync` call and return the queued stub rows (id, url, type; status still processing). Never replayed on a transport failure — the error is marked unconfirmed for the caller to reconcile against `list()`. |
 | `append_text(notebook_id, source_id, text, *, header="")` | `str, str, str, *, str` | `None` | Append a plain-text block to an existing source in place (`AppendSource`). `text` lands at the very end of the fulltext; `header` is accepted but not shown in the fulltext. |
@@ -1284,6 +1349,16 @@ print(url)
 | `wait_for_sources(notebook_id, source_ids, timeout=120.0, **kwargs)` | `str, list[str], float, ...` | `list[Source]` | Wait for multiple sources to become ready **in parallel**. Per-source timeout; `**kwargs` are forwarded to `wait_until_ready`. |
 | `wait_all_until_ready(notebook_id, source_ids, timeout=120.0, initial_interval=1.0, max_interval=10.0, backoff_factor=1.5, transient_error_types=None)` | `str, list[str], float, ...` | `list[SourceWaitResult]` | Wait for many sources with **one notebook snapshot per poll tick** (cheaper than `wait_for_sources`'s per-source polling for large batches). Terminal per-source failures (`SourceNotFoundError` / `SourceProcessingError` / `SourceTimeoutError`) are **returned**, not raised — one result per id, in input order. |
 
+`SourceDeleteOutcome` is imported from `notebooklm.types` or `notebooklm`. It carries
+`source_id`, a canonical `BatchItemOutcome`, and an optional original error.
+Cleanup accepts more than 20 sources. On cancellation or deadline expiry,
+`OperationMetadata.source_delete_outcomes` retains the complete ordered receipt;
+the canonical `batch_outcome` is absent above its 20-item cap. The adapter diagnostic
+projects at most 20 items and reports `total_items` and `omitted_items` when truncated.
+Commit/recovery guidance considers every member, including the omitted tail; the
+diagnostic prefix never authorizes a whole-request retry.
+See [supervised source cleanup](architecture.md#supervised-source-cleanup).
+
 **Example:**
 ```python
 from pathlib import Path
@@ -1291,6 +1366,11 @@ from pathlib import Path
 # Add various source types
 await client.sources.add_url(nb_id, "https://example.com/article")
 await client.sources.add_url(nb_id, "https://youtube.com/watch?v=...")  # YouTube URLs autodetected
+batch = await client.sources.add_urls_batch(
+    nb_id, ["https://example.com/a", "https://example.com/b"]
+)
+for item in batch:
+    print(item.input, item.outcome.commit_state, item.source and item.source.id)
 await client.sources.add_text(nb_id, "My Notes", "Content here...")
 await client.sources.add_file(nb_id, Path("./document.pdf"))
 
@@ -1423,10 +1503,12 @@ field 19.
 
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
-| `list(notebook_id, artifact_type=None)` | `str, ArtifactType \| None` | `list[Artifact]` | List artifacts |
-| `get(notebook_id, artifact_id)` | `str, str` | `Artifact` | Get artifact details; raises `ArtifactNotFoundError` on a miss |
-| `get_or_none(notebook_id, artifact_id)` | `str, str` | `Artifact \| None` | Optional lookup; returns `None` when absent |
-| `get_prompt(notebook_id, artifact_id)` | `str, str` | `str \| None` | Get the free-text prompt the artifact was generated from (any studio type). Returns `None` if the artifact has no stored prompt (e.g. a note-backed mind map); raises `ArtifactNotFoundError` for an unknown id |
+| `list(notebook_id, artifact_type=None)` | `str, ArtifactType \| None` | `list[Artifact]` | Compatibility best-effort list. A transient note-backed mind-map outage leaves successfully read Studio artifacts available. Use `list_with_status()` when completeness matters. |
+| `list_with_status(notebook_id, artifact_type=None)` | `str, ArtifactType \| None` | `ArtifactListing` | Aggregate artifacts plus `is_complete` and bounded `failures`. Primary failures and all `DecodingError`s raise directly. |
+| `lookup(notebook_id, artifact_id)` | `str, str` | `ArtifactLookup` | Authoritative exact lookup: `FOUND` for an exact hit, `MISSING` only after all relevant backings succeed, and `UNKNOWN` with bounded component failures after an incomplete no-hit. |
+| `get(notebook_id, artifact_id)` | `str, str` | `Artifact` | Legacy lookup; raises `ArtifactNotFoundError` on a miss. Until its independent migration gate matures, an incomplete no-hit preserves this projection and emits a targeted `DeprecationWarning`; use `lookup()` to distinguish it. |
+| `get_or_none(notebook_id, artifact_id)` | `str, str` | `Artifact \| None` | Legacy optional lookup. Complete misses and positive hits are warning-free; an incomplete no-hit preserves `None` and emits the targeted migration warning. |
+| `get_prompt(notebook_id, artifact_id, *, require_complete=False)` | `str, str, bool` | `str \| None` | Get the free-text generation prompt. `require_complete=True` makes Android use authoritative lookup; first-party consumers select it. The 0.x default stays `False`. Web retains its direct strict prompt decoder without an added preflight. |
 | `delete(notebook_id, artifact_id)` | `str, str` | `None` | Delete artifact (idempotent; returns `None` whether or not it existed) |
 | `rename(notebook_id, artifact_id, new_title, *, return_object=True)` | `str, str, str` | `Artifact \| None` | Rename artifact (re-fetched; raises `ArtifactNotFoundError` if missing). `return_object=False` skips the re-fetch and returns `None`. |
 | `poll_status(notebook_id, task_id)` | `str, str` | `GenerationStatus` | Check generation status |
@@ -1434,6 +1516,16 @@ field 19.
 | `retry_failed(notebook_id, artifact_id)` | `str, str` | `GenerationStatus` | Retry a failed Studio artifact in place (the UI "Retry"). Same `artifact_id` preserved; accepted → `status="pending"` (re-queued; advances to `in_progress` on a later poll); a synchronous refusal (rate limit / quota / not-retryable) **raises** `RateLimitError`/`RPCError`. See below. |
 | `copy(notebook_id, artifact_ids, target_notebook_id)` | `str, list[str], str` | `list[CopiedArtifact]` | Copy Studio artifacts into another notebook (`CopyArtifactsAsync`); each result pairs `original_id` with the full new `artifact` row. Raises `ArtifactNotFoundError` when nothing was copied; a partial result is returned with a warning. |
 | `get_customization_choices(notebook_id=None)` | `str \| None` | `ArtifactCustomizationChoices` | The Studio "Customize" option tables (`GetArtifactCustomizationChoices`): `audio` / `video` / `slide_deck` format choices (tuples; codes use `AudioFormat` / `VideoFormat` / `SlideDeckFormat` values) and `reports` presets with their full generation `directive`. This is an account/UI availability table, not an exhaustive enum manifest; dedicated options such as cinematic video may be omitted. Account-level — the server ignores the notebook id (it only fills the request's `project_id` slot). The server always serves the table, so a missing / re-shaped envelope raises `DecodingError` rather than returning empty families. |
+| `creation_capabilities` | — | `tuple[ArtifactCreationCapability, ...]` | Immutable client implementation metadata for supported creation options and known backend limitations. It is not an account entitlement or upstream availability probe. Web lists interactive mind maps separately because that protocol encodes `instructions` but has no language slot. |
+
+`ArtifactListingComponent` identifies the bounded backing (`studio_artifacts` or
+`note_backed_mind_maps`) named by each `ArtifactListingFailure`. Failure records
+contain a fixed sanitized message and an exception type name; they never retain
+response objects, raw exceptions, signed URLs, or credentials.
+
+`ArtifactLookupStatus` is a string enum with `FOUND`, `MISSING`, and `UNKNOWN`.
+An exact positive result can carry failures from another optional backing while
+remaining `FOUND`; only a no-hit needs complete reads to become `MISSING`.
 
 #### Type-Specific List Methods
 
@@ -1469,6 +1561,10 @@ field 19.
 | `generate_mind_map(...)` | See below | `MindMapResult` | Generate a note-backed mind map and persist it as a note; use attribute access (`result.mind_map`, `result.note_id`) |
 | `revise_slide(notebook_id, artifact_id, slide_index, prompt)` | `str, str, int, str` | `GenerationStatus` | Revise one slide in a completed slide deck |
 | `suggest_reports(notebook_id)` | `str` | `list[ReportSuggestion]` | Return suggested report formats/prompts for a notebook |
+
+Generation uses shared normalization with explicit backend compatibility policies. See the
+[creation contract](architecture.md#artifact-creation-contracts) for source selection, validation,
+and the Web/Android capability matrix.
 
 #### Retrying a Failed Artifact
 
@@ -1569,14 +1665,66 @@ path = await client.artifacts.download_flashcards(nb_id, "cards.md", output_form
 ```
 
 **Notes:**
-- If `artifact_id` is not specified, downloads the first completed artifact of that type
-- Raises `ValueError` if no completed artifact is found
-- Some URLs require browser-based download (handled automatically)
+
+- Omitting `artifact_id` retains each backend's existing per-kind selection order.
+- Missing or unavailable artifacts retain the per-kind method's existing error contract.
+- Authenticated media transfers use the owning client's download service.
 - Report downloads extract the markdown content from the artifact
 - Mind map downloads return a JSON tree structure with `name` and `children` fields
 - Data table downloads parse the complex rich-text format into CSV rows/columns
 - Quiz/flashcard formats: `json` (structured), `markdown` (readable), `html` (raw)
-- Downloads automatically use the storage path from `from_storage(path=...)` or the resolved profile for cookie authentication
+- Web downloads use the owning client's live cookie state; Android downloads use its asset service.
+
+##### Prepared artifact downloads
+
+```python
+from notebooklm.types import ArtifactDownloadRequest, ArtifactType
+
+listing = await client.artifacts.prepare_downloads(
+    ArtifactDownloadRequest(notebook_id, ArtifactType.AUDIO)
+)
+selection = next(item for item in listing.selections if item.artifact_id == artifact_id)
+await client.artifacts.download(selection, "overview.m4a")
+```
+
+`ArtifactDownloadListing` carries `selections`, `is_complete`, and bounded,
+sanitized component failures. A positive exact match remains usable when the
+secondary mind-map listing is unavailable. An incomplete listing cannot prove
+absence, the newest item, or that an all-items download is exhaustive. The
+application action rejects these uncertain selections before creating files.
+
+Preparation reads each required listing component once and keeps protocol data
+inside its backend. Download consumes the same selection object under an admitted
+operation scope. Android retains its native ownership verification and necessary
+note hydration; equivalent results do not imply identical Web and Android RPC
+counts. Client close/reopen invalidates earlier selections.
+
+The nine existing per-kind methods retain their signatures and defaults and
+delegate to backend compatibility adapters. First-party application actions use
+the additive preparation and typed download operations. Default mind-map selection
+retains note-backed priority; Android retains its last-modified ordering. Raw
+prefetch keywords remain accepted by compatibility adapters and emit the
+registered `artifact_raw_download_prefetch` warning only when supplied with non-`None`
+values. The new typed path emits no such warning. Retirement requires this warning's own shipped
+compatibility interval; a planned release date does not establish eligibility.
+
+Supported metadata imports are `DOWNLOAD_REGISTRY`, `DOWNLOAD_SPECS_BY_NAME`,
+`DOWNLOAD_FORMAT_NAMES`, `EXTENSION_MIME_TYPES`, `FORMAT_EXTENSIONS`,
+`DownloadFormatSpec`, `DownloadRegistryEntry`, `DownloadTypeSpec`, and
+`resolve_download_format` from `notebooklm.downloads`. They describe implemented
+representations, not account entitlement or a promise of upstream availability.
+Audio uses `.m4a` with `audio/mp4`; choosing another representation changes its
+extension and MIME type together. Unsupported formats raise `ValidationError`.
+
+`ArtifactDownloadRequest` and `ArtifactDownloadSelection` are public frozen
+values imported from `notebooklm.types`. A request identifies the notebook,
+artifact kind, and optional output format. Omitting the format selects the
+existing per-kind default. A prepared selection contains artifact identity,
+title, creation time, representation, extension, and MIME type for application
+selection and naming. Its identity belongs to one backend instance and client
+generation; copying its visible fields does not transfer download authority.
+
+See [download ownership](architecture.md#artifact-download-ownership) for cache lifetime and admission details.
 
 #### Export Methods
 
@@ -1745,7 +1893,8 @@ else:
 | `ask(notebook_id, question, ...)` | `str, str, ...` | `AskResult` | Ask a question |
 | `configure(notebook_id, ...)` | `str, ...` | `None` | Set chat persona. **Writes the whole chat-settings block with no merge** — an omitted `goal`/`response_length` resets that field to its default. For a partial, merge-preserving update use the CLI `configure` / MCP `chat_configure` (they read `get_settings` first). |
 | `get_settings(notebook_id)` | `str` | `ChatSettings` | Read the notebook's current chat configuration (`goal`, `response_length`, `custom_prompt`). A never-configured notebook reads back as `DEFAULT`/`DEFAULT`. |
-| `get_history(notebook_id, limit=100, conversation_id=None)` | `str, int, str` | `list[tuple[str, str]]` | Get Q&A pairs from most recent conversation |
+| `get_history(notebook_id, limit=100, conversation_id=None)` | `str, int, str` | `list[tuple[str, str]]` | Get Q&A pairs from most recent conversation. For a positive `limit`, empty means no conversation or no turns; turn-fetch failures raise. Android also returns `[]` for non-positive limits. |
+| `get_conversation_turns(notebook_id, conversation_id, limit=2)` | `str, str, int` | `Any` | Raw turn payload. Web: batchexecute rows. Android: protobuf `ListChatTurnsResponse`. Prefer `get_history` for typed Q&A pairs. |
 | `get_conversation_id(notebook_id)` | `str` | `str \| None` | Get most recent conversation ID from server |
 | `session_status(notebook_id, conversation_id=None)` | `str, str \| None` | `ChatSessionStatus` | Read the selected session's live generation state. Omitting `conversation_id` selects the most recent session; a notebook with no session is idle. |
 | `cancel(notebook_id, conversation_id=None)` | `str, str \| None` | `None` | Idempotently stop active generation for the selected session. Omitting `conversation_id` selects the most recent session. The caller holding a Web response stream must also abandon that stream after success. |
@@ -1854,7 +2003,7 @@ if result.references:
 | `poll(notebook_id, task_id=None)` | `str, str \| None = None` | `ResearchTask` | Check research status. If multiple tasks are in flight and `task_id` is omitted, raises `AmbiguousResearchTaskError` |
 | `wait_for_completion(notebook_id, task_id=None, *, timeout=1800, initial_interval=5)` | `str, str \| None, float, float` | `ResearchTask` | Wait for research to complete, pinning the discovered task ID between polls. Raises `ResearchTimeoutError` (a `WaitTimeoutError`/`TimeoutError`) and `AmbiguousResearchTaskError` when unpinned polling is ambiguous. |
 | `import_sources(notebook_id, task_id, sources)` | `str, str, Sequence[dict[str, Any] \| ResearchSource]` | `list[dict]` | Import findings. Accepts plain dicts **or** the typed `ResearchSource` objects from `poll().sources`. |
-| `import_sources_with_verification(notebook_id, task_id, sources, *, max_elapsed=1800, initial_delay=5, backoff_factor=2, max_delay=60, allow_duplicate=False)` | `str, str, Sequence[ResearchSourceInput], float, float, float, float, bool` | `list[dict[str, str]]` | **Preferred for deep research.** Timeout-tolerant: `IMPORT_RESEARCH` commonly outlives one client timeout on deep payloads, so on `RPCTimeoutError` it probes `sources.list` and reconciles what actually committed instead of raising as if nothing imported, retrying the remainder with backoff until `max_elapsed`. Also **idempotent**: requested sources whose URL already exists are skipped unless `allow_duplicate=True`, and are reported on the returned list's `already_present` attribute. |
+| `import_sources_with_verification(notebook_id, task_id, sources, *, max_elapsed=1800, initial_delay=5, backoff_factor=2, max_delay=60, allow_duplicate=False)` | `str, str, Sequence[ResearchSourceInput], float, float, float, float, bool` | `list[dict[str, str]]` | Sends one `IMPORT_RESEARCH` mutation. On an unknown outcome, it may perform bounded read-only inspection and attach reconciliation candidates to the original exception, but it never re-sends the import or converts an uncorrelated row into success. A pre-send URL snapshot can still skip inputs already present unless `allow_duplicate=True`. |
 | `cancel(notebook_id, run_id)` | `str, str` | `None` | Cancel an in-flight run. **Fire-and-forget** — returns `None`, never raises on an unknown id; confirm by polling. `run_id` is `poll().task_id` (for deep research the `report_id` from `start`, **not** the deep `start().task_id` sessionId). |
 
 > **Typed returns.** `start` / `poll` / `wait_for_completion` return the typed
@@ -1864,14 +2013,13 @@ if result.references:
 > still accepts `list[dict]` **or** `ResearchSource` objects, so feeding
 > `result.sources` straight back in works.
 
-**Which import to call.** `import_sources` is the one-shot RPC; a client-side
+**Which import to call.** Both forms send the import mutation once. A client-side
 timeout on a slow (usually deep) import raises even though the server may have
-committed. `import_sources_with_verification` wraps it with reconcile-and-retry
-plus URL-level idempotency, and is what the MCP `research_import` tool and the
-CLI `research import` / `research wait --import-all` drive. The REST route
-(`POST /v1/research/{run_id}/import`) deliberately stays on the one-shot form so
-a synchronous web request cannot block on a multi-minute reconcile loop. They are
-**not** interchangeable — pick by whether your caller can afford to wait.
+committed. `import_sources_with_verification` additionally filters sources that
+were already present before the send and performs bounded read-only inspection
+after an ambiguous failure. Candidate rows remain diagnostic only. The MCP
+`research_import` tool and CLI research import paths use that verified form; the
+REST route (`POST /v1/research/{run_id}/import`) uses the direct form.
 
 **Method Signatures:**
 
@@ -2081,7 +2229,7 @@ Each operation dispatches to the correct backend; you work with `MindMap` /
 | `list_note_backed(notebook_id)` | `str` | `list[MindMap]` | **Note-backed** entries only (every `kind` is `NOTE_BACKED`, `tree` populated, deleted rows excluded), via a single `GET_NOTES_AND_MIND_MAPS` RPC — no `LIST_ARTIFACTS`. Use `list()` for the union with interactive maps |
 | `get(notebook_id, mind_map_id)` | `str, str` | `MindMap` | Single mind map by id; raises `MindMapNotFoundError` on a miss |
 | `get_or_none(notebook_id, mind_map_id)` | `str, str` | `MindMap \| None` | Sanctioned `None`-on-miss lookup (silent — no deprecation warning) |
-| `generate(notebook_id, source_ids=None, *, kind, language="en", instructions=None, wait=True)` | … | `MindMap` | Note-backed (sync) or interactive (`CREATE_ARTIFACT` + poll). A null `CREATE_ARTIFACT` raises `ArtifactFeatureUnavailableError` (a subclass of `ArtifactError`) |
+| `generate(notebook_id, source_ids=None, *, kind, language="en", instructions=None, wait=True, failure_policy="legacy")` | … | `MindMap` | Note-backed (sync) or interactive (`CREATE_ARTIFACT` + poll). A null `CREATE_ARTIFACT` raises `ArtifactFeatureUnavailableError` (a subclass of `ArtifactError`) |
 | `rename(notebook_id, mind_map_id, new_title, *, kind=None, return_object=True)` | … | `MindMap \| None` | `UPDATE_NOTE` / `RENAME_ARTIFACT` by kind (re-fetched; raises `MindMapNotFoundError` if missing). `return_object=False` returns `None`. |
 | `delete(notebook_id, mind_map_id, *, kind=None)` | … | `None` | `DELETE_NOTE` / `DELETE_ARTIFACT` by kind (idempotent — deleting an already-absent map returns `None`, for both `kind=None` and a supplied `kind`) |
 | `get_tree(notebook_id, mind_map_id, *, kind=None)` | … | `dict \| None` | The `{"name","children"}` node tree; `None` for a missing or not-yet-populated map (derived read — does not police existence). The explicit `kind=INTERACTIVE` path delegates absence detection to the RPC (a missing id's value is server-dependent — `None` today) |
@@ -2110,6 +2258,30 @@ In the CLI, mind maps are handled as a **type** within the existing groups (matc
 > they are **not** deprecated. `client.mind_maps.*` is the unified surface that
 > also reaches the interactive kind; use whichever fits.
 
+#### Mind-map failure policy
+
+`mind_maps.generate(..., failure_policy="raise")` is an additive opt-in. For a
+waited interactive map, failed or removed completion raises `ArtifactNotReadyError`
+before fetching the tree. Completed maps hydrate normally; a timeout propagates.
+Non-waited interactive generation and synchronous note-backed generation retain
+their existing behavior. First-party generation orchestration selects `"raise"`.
+
+The Python default remains `"legacy"`. Web emits the registered
+`mind_map_legacy_terminal_hydration` `DeprecationWarning` only when it actually
+continues hydration after failed/removed completion. Android already raises in
+legacy mode and does not emit this warning. The normal deprecation suppression
+gate applies.
+
+Source registration is not a shipped notice. C5A-01 in the
+[release migration gates](deprecations.md#release-migration-gates) records **first shipped
+notice: None**. The v1.0 target is conditional on this warning's own stable release
+and migration interval; otherwise the default survives until a later breaking
+release. It does not borrow another deprecation's notice date.
+
+`tests/unit/test_creation_conformance.py` exercises the real artifact facades,
+normalized hook values, protocol terminals, compatibility differences, both
+concrete mind-map facades, and first-party strict orchestration.
+
 ### NotesAPI (`client.notes`)
 
 **CLI equivalent:** [Note Commands](cli-reference.md#note-commands-notebooklm-note-cmd) — `notebooklm note list`, `create`, `get`, `save`, `rename`, `delete`.
@@ -2118,11 +2290,11 @@ In the CLI, mind maps are handled as a **type** within the existing groups (matc
 |--------|------------|---------|-------------|
 | `list(notebook_id)` | `str` | `list[Note]` | List text notes (excludes mind maps) |
 | `create(notebook_id, title="New Note", content="")` | `str, str, str` | `Note` | Create plain-text note (no citation anchors) |
-| `get(notebook_id, note_id)` | `str, str` | `Note` | Get note by ID; raises `NoteNotFoundError` on a miss |
+| `get(notebook_id, note_id)` | `str, str` | `Note` | Get note by ID; raises `NoteNotFoundError` on a miss. After `delete`, Android projects absence; Web can still return a cleared tombstone `Note`. See [Web vs Android inventory](web-android-public-behavior.md). |
 | `get_or_none(notebook_id, note_id)` | `str, str` | `Note \| None` | Optional lookup; returns `None` when absent |
 | `update(notebook_id, note_id, content, title)` | `str, str, str, str` | `None` | Update note content and title |
 | `delete(notebook_id, note_id)` | `str, str` | `None` | Delete note (idempotent; returns `None` whether or not it existed) |
-| `list_mind_maps(notebook_id)` | `str` | `list[Any]` | List mind maps in the notebook |
+| `list_mind_maps(notebook_id)` | `str` | `list[Any]` | List mind maps in the notebook. Android returns minimal `[id, content]` compatibility rows; Web returns full note rows. See [Web vs Android inventory](web-android-public-behavior.md). |
 | `delete_mind_map(notebook_id, mind_map_id)` | `str, str` | `None` | Delete a mind map (idempotent; returns `None` whether or not it existed) |
 
 **Example:**
@@ -2165,7 +2337,7 @@ await client.notes.delete_mind_map(nb_id, mind_map_id)
 
 **Note:** Mind maps are detected by checking if the content contains `'"children":' or `'"nodes":'` keys, which indicate JSON mind map data structure.
 
-**Two mind-map kinds (issue #1256):** NotebookLM has two distinct mind-map objects — the **note-backed** kind above (`list_mind_maps()`), and the newer **interactive** kind the web GUI now creates (a studio artifact, internally `type 4 / variant 4`). Both are first-class: the interactive kind appears in `client.artifacts.list(ArtifactType.MIND_MAP)` (and `Artifact.is_interactive_mind_map` distinguishes the backing), `download_mind_map` exports either kind's JSON tree, and the unified [`client.mind_maps`](#mindmapsapi-clientmind-maps) surface generates/reads/renames/deletes both behind a `MindMapKind` discriminator. The `notes.*_mind_map` helpers here remain fully supported for the note-backed kind.
+**Two mind-map kinds (issue #1256):** NotebookLM has two distinct mind-map objects — the **note-backed** kind above (`list_mind_maps()`), and the newer **interactive** kind the web GUI now creates (a studio artifact, internally `type 4 / variant 4`). Both are first-class: the interactive kind appears in `client.artifacts.list(ArtifactType.MIND_MAP)` (and `Artifact.is_interactive_mind_map` distinguishes the backing), `download_mind_map` exports either kind's JSON tree, and the unified [`client.mind_maps`](#mindmapsapi-clientmind_maps) surface generates/reads/renames/deletes both behind a `MindMapKind` discriminator. The `notes.*_mind_map` helpers here remain fully supported for the note-backed kind.
 
 ---
 
@@ -2394,7 +2566,7 @@ label with a null notebook parent, so the same four label RPCs back it.
 | `get(collection_id)` | `str` | `Collection` | Get a collection by id; raises `CollectionNotFoundError` on a miss |
 | `get_or_none(collection_id)` | `str` | `Collection \| None` | Get a collection by id, returning `None` when absent |
 | `notebooks(collection_id)` | `str` | `list[Notebook]` | Expand a collection to its `Notebook` objects; raises `CollectionNotFoundError` if absent |
-| `create(name)` | `str` | `Collection` | Create an empty, named collection. Locates the new collection by id-diff; raises `CollectionError` on an ambiguous concurrent create |
+| `create(name)` | `str` | `Collection` | Send one empty collection create, then raise an unknown-outcome `CollectionError` with bounded candidate IDs. Current responses do not correlate any returned row to this caller; inspect `list()` before continuing. |
 | `rename(collection_id, name, *, return_object=True)` | `str, str, *, bool` | `Collection \| None` | Rename a collection (preserves the existing emoji). Raises `CollectionNotFoundError` if missing |
 | `add_notebooks(collection_id, notebook_ids, *, return_object=True)` | `str, list[str], *, bool` | `Collection \| None` | Add notebook(s) to a collection. **Appends** — existing members survive and a notebook may belong to multiple collections. One RPC per id (deduped); not atomic across ids. Raises `ValueError` on an empty list |
 | `remove_notebooks(collection_id, notebook_ids, *, return_object=True)` | `str, list[str], *, bool` | `Collection \| None` | Un-assign notebook(s) from a collection only — the notebooks are not deleted and stay in any other collection. One RPC per id (deduped). Raises `ValueError` on an empty list |
@@ -2413,20 +2585,27 @@ never turns into a cheaper existence-only check for `add_notebooks`/`remove_note
 
 **Example:**
 ```python
-from notebooklm import Collection
+from notebooklm import Collection, CollectionError
 
-# Create an account-level collection and group notebooks into it
-research = await client.collections.create("Research Q3")
-await client.collections.add_notebooks(research.id, [nb_id])
+# Send an account-level collection create. Current Web and Android responses do
+# not correlate a row to this call, so create raises with UNKNOWN evidence.
+try:
+    await client.collections.create("Research Q3")
+except CollectionError as error:
+    print(error.reconciliation_candidates)  # candidates only; inspect list()
+
+# Continue only with an independently verified collection id.
+research_id = "verified-collection-id"
+await client.collections.add_notebooks(research_id, [nb_id])
 
 # List collections and expand one to its member notebooks
 for coll in await client.collections.list():
     print(f"{coll.id}: {coll.emoji or ''}{coll.name} ({len(coll.notebook_ids)} notebooks)")
-members = await client.collections.notebooks(research.id)
+members = await client.collections.notebooks(research_id)
 
 # Un-assign a notebook (it is NOT deleted) then delete the collection
-await client.collections.remove_notebooks(research.id, [nb_id])
-await client.collections.delete(research.id)  # notebooks survive
+await client.collections.remove_notebooks(research_id, [nb_id])
+await client.collections.delete(research_id)  # notebooks survive
 ```
 
 ---
@@ -3807,6 +3986,39 @@ print(f"Context: {passage}")
 
 These helpers live in `notebooklm.artifacts` and can be used with any
 artifact-generation callable that returns `GenerationStatus`.
+
+### Mutation outcome evidence
+
+Typed mutation evidence is public from `notebooklm.outcomes`:
+
+```python
+from notebooklm.outcomes import (
+    BatchItemOutcome,
+    BatchOutcome,
+    CommitState,
+    LookupSuggestion,
+    OperationMetadata,
+    ReconciliationCandidate,
+    ReconciliationReport,
+    RecoveryAction,
+)
+```
+
+It distinguishes a request that was never sent (`NOT_SENT`), a decoded refusal
+(`REJECTED`), an outcome that cannot be confirmed (`UNKNOWN`), and a correlated
+success (`CONFIRMED`). Exceptions may expose this value as `commit_state`.
+`OperationMetadata` also retains the operation/send identity, per-attempt
+evidence, confirmed resource and prerequisite IDs, typed reconciliation
+candidates, and any ordered partial `BatchOutcome`. `RecoveryAction` tells
+adapters whether the safe next action is retrying, inspecting and reconciling,
+waiting, or no recovery action.
+
+`operation_metadata`, `commit_state`, and `batch_outcome` are read-only
+exception properties. The legacy `unconfirmed`, `source_id`, and `stage`
+attributes remain compatible projections of that carrier. Because these
+attributes are now declared on `NotebookLMError`, use
+`getattr(error, "source_id", None)` or compare `error.source_id is None`
+instead of using `hasattr` to detect a known source ID.
 
 #### `notebooklm.artifacts.with_rate_limit_retry`
 

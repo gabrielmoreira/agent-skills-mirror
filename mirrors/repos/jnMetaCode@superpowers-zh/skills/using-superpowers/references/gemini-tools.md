@@ -31,12 +31,12 @@ Skills 说的是动作（"分派一个子智能体"、"建一条待办"、"读�
 
 Gemini CLI 通过 `invoke_agent` 工具分派子智能体，该工具接收 `agent_name` 和 `prompt` 两个参数。同一个分派动作也有聊天语法快捷方式：输入 `@generalist <prompt>` 等价于以 `agent_name: "generalist"` 调用 `invoke_agent`。内置的 agent 名包括 `generalist`、`cli_help`、`codebase_investigator`，以及（启用浏览器工具后的）`browser_agent`。
 
-Skills 用 `Subagent (general-purpose):` 来分派，并且要么引用一个提示词模板文件（例如 `superpowers:subagent-driven-development` 的 `./implementer-prompt.md`），要么直接给出内联提示词。在 Gemini CLI 上：
+Skills 用 `Subagent (general-purpose):` 来分派，并且要么引用一个提示词模板文件（例如 `subagent-driven-development` 的 `./implementer-prompt.md`），要么直接给出内联提示词。在 Gemini CLI 上：
 
 | Skill 里的分派形式 | Gemini CLI 等价做法 |
 |------------------|-------------------|
 | 引用某个 `*-prompt.md` 模板（implementer、task-reviewer、code-reviewer 等） | 把模板填好，然后以 `agent_name: "generalist"` 和填好的提示词调用 `invoke_agent` |
-| 引用 `superpowers:requesting-code-review` 的 `./code-reviewer.md` | 以 `agent_name: "generalist"` 和填好的审查模板调用 `invoke_agent` |
+| 引用 `requesting-code-review` 的 `./code-reviewer.md` | 以 `agent_name: "generalist"` 和填好的审查模板调用 `invoke_agent` |
 | 内联提示词（没有引用模板） | 以 `agent_name: "generalist"` 和你的内联提示词调用 `invoke_agent` |
 
 ### 填写提示词

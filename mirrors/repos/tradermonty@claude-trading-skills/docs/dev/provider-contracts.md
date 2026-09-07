@@ -60,7 +60,7 @@ Location follows `config/ci-test-policy.yaml`'s convention: data lives under
     "mktCap": {"canonical": "marketCap"},
     "exchangeShortName": {"canonical": "exchange"}
   },
-  "known_gaps": [{"field": "time", "issue": 352, "note": "..."}],
+  "known_gaps": [],
   "non_empty": {"min_rows": 1, "reason": "AAPL profile must never be empty"},
   "fixture": [{"...sanitized real rows...": true}]
 }
@@ -80,7 +80,9 @@ Field semantics:
   canonical one, the provider silently reverted or the endpoint changed shape.
 - **`known_gaps`** — a documented, accepted gap between what the provider *used to*
   return (v3) and what `/stable` returns now, each tied to a follow-up issue number.
-  Only `earnings-calendar` carries one in slice 1 (see below).
+  Currently empty across all contracts; only `earnings-calendar` is allowed to
+  carry entries here (it previously recorded #352 — the `time` field — until
+  `includeReportTimes=true` restored it, see below).
 - **`non_empty`** — `min_rows` is the floor below which an empty/`None` response is
   itself an anomaly (`empty_response`), not just a shape mismatch.
 - **`fixture`** — real (sanitized) rows recorded live on `recorded_on`. Rules
@@ -93,7 +95,10 @@ Field semantics:
 **Versioning rule:** `contract_version` bumps only on a breaking change (a
 required field removed, renamed, or its type narrowed/changed). Adding a new
 `optional_fields` entry, widening a type set, or marking a field newly nullable is
-non-breaking and does not bump the version.
+non-breaking and does not bump the version. Adding a **new** required field that
+consumers start reading (e.g. `time` after #352) is consumer-compatible and does
+not bump the version; it tightens the canary only. If the addition needs a new
+query parameter, record it in `query` so the canary requests the same shape.
 
 ## Anomaly / severity table
 
@@ -124,12 +129,14 @@ exiting, so a CI/scheduler consumer can tell "an ordinary quiet day" apart from
 fixed exit code (and, for pead-screener, a log level); an unrecognized/`unknown`
 reason falls back to exit 1 in both scripts.
 
-**earnings-trade-analyzer** (`analyze_earnings_trades.py`, `_ZERO_RESULT_MESSAGES` /
-`explain_empty_selection`, evaluated in this order, first match wins):
+**earnings-trade-analyzer** (`analyze_earnings_trades.py`, `_ZERO_RESULT_MESSAGES`;
+falsy/non-list calendar bodies evaluated first in `classify_empty_calendar`,
+the rest in `explain_empty_selection` in fixed order, first match wins):
 
 | Code | Condition | Exit |
 |---|---|---|
-| `no_earnings_rows` | no earnings row carried a `symbol` (a genuine empty window; an entirely empty calendar response still exits 1 earlier in `main()`, unchanged from before) | 0 |
+| `no_earnings_rows` | the calendar returned `[]`, or rows none of which carried a `symbol` — a genuine empty window | 0 |
+| `calendar_fetch_failed` | the calendar fetch returned no usable body (`None` on transport/HTTP/rate-limit failure, or a non-list body) | 1 |
 | `profiles_budget_exhausted` | budget exhausted (`api_stats["budget_remaining"] == 0` or `rate_limit_reached`) and no profiles were returned at all | 0 |
 | `no_profiles_returned` | ≥1 earnings symbol, but `get_company_profiles` returned nothing | 1 |
 | `profiles_missing_required_field:marketCap` | ≥1 profile came back, but none has a usable numeric `marketCap` (non-bool `int`/`float`, finite) | 1 |
@@ -146,6 +153,7 @@ when `candidates` is non-empty):
 | Code | Condition | Exit | Level |
 |---|---|---|---|
 | `no_earnings_rows` | Mode A: the FMP earnings calendar returned no rows (or no rows carried a `symbol`) for the lookback window | 0 | WARNING |
+| `calendar_fetch_failed` | Mode A: the calendar fetch returned no usable body (`None` on transport/HTTP/rate-limit failure, or a non-list body); non-dict rows are ignored, never dereferenced | 1 | ERROR |
 | `profiles_budget_exhausted` | Mode A: profiles came back empty and the budget is exhausted (`budget_remaining == 0` or `rate_limit_reached`) | 0 | WARNING |
 | `no_profiles_returned` | Mode A: ≥1 symbol, but `get_company_profiles` returned nothing and the budget is not exhausted | 1 | ERROR |
 | `profiles_missing_required_field:marketCap` | Mode A: no candidate passed the cap filter **and** no profile has a coercible `marketCap` *or* `mktCap` — see the value-based nuance below | 1 | ERROR |
@@ -180,18 +188,42 @@ signal above.
 Owners are validated against `skills-index.yaml` by `check` — an owner naming a
 skill directory that does not exist there is a validation error.
 
-## Follow-up issue: `earnings-calendar` has no `time` field
+## Deliberately out of scope: session-aware empty suspicion
 
-Verified live 2026-09-05: `/stable/earnings-calendar` does not return a `time`
-field. The legacy v3 `earning_calendar` endpoint carried `time` (`bmo` / `amc` —
-before/after market open/close), which `earnings-trade-analyzer` and
-`pead-screener` used for timing logic; on `/stable` that information is simply
-gone, so any gap-direction or pre/post-earnings timing calculation derived from it
-is now unknown rather than wrong. Tracked as
-[Issue #352](https://github.com/tradermonty/claude-trading-skills/issues/352) and
-recorded in `earnings-calendar.v1.json`'s `known_gaps`. Fixing the gap (e.g. via a
-different endpoint, or documenting the timing calculation as best-effort) is out of
-scope for this slice.
+A clean HTTP 200 `[]` on a busy earnings weekday (silent drop) still exits 0
+with `no_earnings_rows`: the exit code distinguishes transport/shape failure
+(`None`/non-list) from an empty body, not a quiet window from a dropped one.
+Session-awareness was rejected for the CLI because a stdlib weekday heuristic
+false-positives on exchange holidays, and importing the shared XNYS calendar
+(`scripts/market_calendar/`) from a skill script would break clean-room
+installs (`package_skills.py` ships only the skill directory; vendoring would
+expand the #340 generator's consumer set). Async coverage stays with the
+weekly canary via the `earnings-calendar` `non_empty` contract. Session-aware
+suspicion is tracked as follow-up work in
+[Issue #356](https://github.com/tradermonty/claude-trading-skills/issues/356).
+
+## Follow-up issue: `earnings-calendar` `time` field — resolved (2026-09-06)
+
+Previously (verified live 2026-09-05): `/stable/earnings-calendar` with no query
+parameters did not return a `time` field, unlike the legacy v3 `earning_calendar`
+endpoint (`bmo` / `amc` — before/after market open/close), which
+`earnings-trade-analyzer` and `pead-screener` used for timing logic.
+
+Verified live 2026-09-06: the field is not gone — it is gated behind the
+`includeReportTimes=true` query parameter (the value must be the literal string
+`"true"` or `"false"`; any other value, including a JSON boolean, is HTTP 400).
+With that parameter, `/stable/earnings-calendar` returns `time` as `"bmo"`,
+`"amc"`, or `null`, plus `periodEnding`, `fiscalPeriod`, `fiscalYear`, and
+`confirmed`. About one third of rows on a typical trading day still carry
+`null` (the provider has not confirmed a session for that report), so
+`unknown` remains a real, expected outcome downstream — it is now backed by an
+explicit `null` from the provider rather than an always-missing key.
+[Issue #352](https://github.com/tradermonty/claude-trading-skills/issues/352) is
+resolved: the client template requests `includeReportTimes=true`,
+`earnings-calendar.v1.json` requires `time` (nullable) with an empty
+`known_gaps`, and `earnings-trade-analyzer` / `pead-screener` report a
+`timing_unknown_count` alongside their results so the residual `null` rate is
+visible rather than silently assumed away.
 
 ## Manual fixture refresh procedure
 
@@ -205,6 +237,17 @@ curl --get "https://financialmodelingprep.com/stable/profile" \
   --data-urlencode "symbol=AAPL" \
   --data-urlencode "apikey=$FMP_API_KEY" \
   | jq 'if type == "array" then map(del(.description, .website, .image, .ceo, .phone, .address, .city, .state, .zip)) else . end'
+```
+
+For `earnings-calendar`, the `includeReportTimes=true` query parameter is
+required to get the `time` field at all (see above):
+
+```bash
+curl --get "https://financialmodelingprep.com/stable/earnings-calendar" \
+  --data-urlencode "from=2026-09-04" \
+  --data-urlencode "to=2026-09-04" \
+  --data-urlencode "includeReportTimes=true" \
+  --data-urlencode "apikey=$FMP_API_KEY"
 ```
 
 Sanitization checklist before pasting the result into a `fixture` array:
@@ -264,6 +307,32 @@ stdout/stderr — so a captured exception never leaks the key either.
 PR on it) is explicitly deferred — see "Out of scope" below and the plan's
 resolved review notes. Promote only after a period of the canary running green
 (or with well-understood/acceptable anomalies) with no false positives.
+
+### Generated client stderr redaction (#357)
+
+The redaction above covers only the canary CLI. All 10 vendored `fmp_client.py`
+files (rendered from `scripts/fmp_client/core_template.py.tmpl` and the four
+`scripts/fmp_client/specials/*.py.tmpl`) mask `apikey=`/`api_key=` at every site
+that can echo provider text. The nine clients rendered from
+`core_template.py.tmpl`, `canslim.py.tmpl`, `macro.py.tmpl`, and
+`market_top.py.tmpl` mask a non-200 HTTP response body and a
+`requests.exceptions.RequestException` message before storing it in
+`self._last_error` (the six core-family clients only) and before printing it
+to stderr. The GARP client (`us-undervalued-growth-screener`) never reads
+`response.text` on a non-200 response — its non-200 `WARN` lines only
+interpolate the request `url`, which never carries the key since the client
+injects `apikey` into the request `params` dict rather than the `url` string
+— so it instead masks its request-exception `{exc}` interpolation and, for
+future-proofing, the `url` interpolation in every other `WARN` line, even
+though none of them can carry the key today. Because generated clients are
+vendored standalone (packaged without `scripts/`), they cannot import
+`scripts.provider_contracts.redact_url()`; each template instead carries a
+verbatim, module-level mirror (`_APIKEY_RE` + `_redact_key()`) with a comment
+naming that function as the source of truth. `scripts/tests/test_generate_fmp_client.py`
+asserts the regex literal is identical across all five templates' rendered
+output, so the five copies cannot silently drift apart, and
+`scripts/tests/test_fmp_client_redaction.py` exercises all 10 vendored clients
+at runtime to confirm a fake key never reaches stdout or stderr.
 
 ## FMP endpoint inventory (`/stable/...` paths found in `skills/*/scripts`)
 

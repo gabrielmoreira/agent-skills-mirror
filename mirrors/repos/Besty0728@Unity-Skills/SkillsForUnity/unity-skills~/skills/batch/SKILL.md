@@ -215,6 +215,8 @@ Get structured logs for a UnitySkills job.
 | `jobId` | string | Yes | - | Job identifier |
 | `limit` | int | No | 100 | Max log entries returned |
 
+> **Note**: Also exposed as HTTP `GET /jobs/{id}/logs?limit=N` (server clamps `limit` to `[1, 500]`) and Python `client.get_job_logs(job_id, limit)` — both are the lightweight route (bypasses the skill router and the main-thread skill queue), preferred over the `job_logs` skill for repeated polling. Response fields: `jobId`, `count`, `totalCount`, `logs[]` (`timestamp`, `level`, `stage`, `message`, `code`).
+
 ### job_list
 List recent UnitySkills jobs.
 

@@ -606,18 +606,20 @@ and the rule for adding one; each skill's frontmatter description is the authori
     permissions, auto-detection (including service discovery), limits and cost, prerequisites, option rows, examples,
     the known-errors troubleshooting catalog, metrics scopes, alerts, identity and keywords; a page that reads as a
     wall of text or claims something false
-  - `collectors-prometheus-profiles`: creating, reviewing, validating, iterating, or installing Prometheus chart
-    profiles from exposition dumps; selector/relabel/fallback policy, coverage, NIDL, live verification
+  - `collectors-prometheus-profiles`: creating, reviewing, validating, proving, iterating, or installing Prometheus
+    chart profiles; exporter dashboard design, selector/relabel/fallback policy, coverage and cardinality, stock proof
+    artifacts, live verification, the authoring scripts
   - `collectors-snmp-profiles`: SNMP profile YAMLs, topology SNMP profiles, ddsnmp profile parsing, profile-format
     docs; requires MIB `MAX-ACCESS` checks and index-derived extraction for `not-accessible` INDEX objects
-  - `collectors-snmp-trap-profiles`: SNMP trap profile YAMLs, trap profile-format docs, the `snmptrapprofilegen`
-    helper, OOB trap profile regeneration; closed 8-category / 8-severity taxonomy
+  - `collectors-snmp-trap-profiles`: SNMP trap profile YAMLs and their `metrics:`/`charts:` rules, the trap
+    `profile-format.md`, the generator `src/go/cmd/snmptrapprofilegen` (shipped as `snmp-trap-profile-gen`), stock
+    pack regeneration and compression, category/severity taxonomy changes
   - Also relevant: `integrations-lifecycle` (the pipeline that turns `metadata.yaml` into pages) and
     `health-alert-authoring` (alerts on a collector's contexts).
 - Integrations.
-  - `integrations-lifecycle`: the integrations pipeline: `metadata.yaml` and collector `taxonomy.yaml` schemas and
-    validation, `integrations/` generators, taxonomy registries, templates, generated outputs,
-    `COLLECTORS.md`/`SECRETS.md`/`SERVICE-DISCOVERY.md`; ibm.d `contexts.yaml`; the collector-consistency rule
+  - `integrations-lifecycle`: the integrations pipeline: `metadata.yaml` schemas and validation, `integrations/`
+    generators, templates, generated outputs, `COLLECTORS.md`/`SECRETS.md`/`SERVICE-DISCOVERY.md`; ibm.d
+    `contexts.yaml` and the NPM catalog generator; the collector-consistency rule
   - Also relevant: `collectors-metadata-yaml` (what the fields say) and `docs-learn-site-structure` (where the
     generated pages land).
 - Health.
@@ -668,8 +670,8 @@ Output/reference skill trees, updated when the related public/operator workflow 
 
 ### Collector Consistency
 
-When working on collectors, runtime behavior, metrics, charts, configuration, alerts, taxonomy, and authoritative
-documentation sources MUST stay consistent in the source PR. Generated integration and umbrella documentation is
+When working on collectors, runtime behavior, metrics, charts, configuration, alerts, and authoritative documentation
+sources MUST stay consistent in the source PR. Generated integration and umbrella documentation is
 validated locally, then committed by the post-merge generated-artifact PR. Checklist and CI notes:
 `.agents/skills/integrations-lifecycle/consistency.md`.
 
@@ -718,6 +720,7 @@ renames:
 | `triage-codeql` | `graphql/` | Code Scanning fetches and dismissals |
 | `triage-agent-events` | `query-agent-events/` | fetched event batches |
 | `repo-pr-reviews` | `pr-reviews/` | per-PR comment and review caches |
+| `collectors-prometheus-profiles` | `prometheus-profiles/` | captured exposition dumps |
 | `query-netdata-agents` (public) | `query-netdata-agents/` | output of the agent-query wrappers and the bearer cache |
 | `query-netdata-cloud` (public) | `query-netdata-cloud/` | saved Cloud API responses from its how-tos |
 | `query-snmp-traps` (public) | `query-snmp-traps/` | saved trap query results from its how-tos |

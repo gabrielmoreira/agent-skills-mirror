@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 0 followed patterns, 16 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 16 |
+| Followed pats | 3 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 0 followed patterns, 16 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `docs/internals/contributing.md`
+- `.github/pull_request_template.md`
 
 ## File Index
 
@@ -75,6 +77,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
 | 15 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
 | 16 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
+| 17 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
 
 ---
 

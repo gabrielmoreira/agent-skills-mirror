@@ -28,44 +28,44 @@ Before publishing:
 - Confirm version numbers, runtime gates, asset names, and download links.
 - Keep the body in this document identical to the GitHub release body.
 
-## Draft: v2.13.0 (2026-09-04)
+## Published: v2.13.0 (2026-09-07)
+
+GitHub release: [v2.13.0](https://github.com/777genius/agent-teams-ai/releases/tag/v2.13.0).
 
 Target branch: `main`.
 
 Runtime gate:
 
-- Agent Teams runtime: `v0.0.78`.
+- Agent Teams runtime: `v0.0.82`.
 - Terminal Platform runtime: `v0.3.3`.
 
 Draft body source for GitHub release:
 
 <!-- RELEASE_BODY_START v2.13.0 -->
-Edit live agent settings, stop teams from either team view, and review product news without leaving the app. Provider checks and mixed-team relaunches are now more reliable.
+This update makes mixed-provider teams easier to set up and manage, with clearer model checks and fixes for startup, task delivery, and duplicate messages.
 
 ### What's New
 
-- Edit teammate provider, model, effort, workflow, worktree, and MCP settings directly from their cards.
-- Change supported lead models and reasoning effort without relaunching healthy teammates.
-- Review product news in the app and dismiss announcements permanently across restarts.
-- Stop a team from Team List or Team Details with one shared progress state.
-- See task attachment mosaics on Kanban cards, with previews that refresh after changes.
+- Change teammate settings and supported lead models without restarting the whole team.
+- Read product news in the app and dismiss announcements you have already seen.
+- Preview task attachments directly on the board.
+- Stop teams from either the team list or the team details page.
 
 ### Improvements
 
-- Browse models from every connected OpenCode provider with pagination, freshness indicators, and safer refreshes.
-- Check provider readiness when launching, with clearer blockers and connection guidance.
-- See first-launch project trust warnings only when Anthropic or Codex needs them.
-- Reuse existing worktrees without resetting branches or local changes, with branch details shown before launch.
-- Team leads now coordinate delegated tasks instead of duplicating their teammates' work.
+- Find newly available models, including GPT-6 Astra, listed first and marked NEW.
+- Browse models from all connected OpenCode providers, not just its built-in free models.
+- See checks for each selected model before launch, with the option to skip optional checks.
+- Reuse existing Git worktrees without losing local changes or resetting branches.
 
 ### Bug Fixes
 
-- Codex teammates launch with ChatGPT or API-key authentication without refresh-token loops.
-- ChatGPT-incompatible Codex models are blocked before launch with a clear explanation.
-- Failed or superseded launches no longer leave teams stuck on `Launching...` or overwrite newer attempts.
-- Mixed Anthropic, Codex, and OpenCode teams recover from stale provider and session state.
-- Windows OpenCode teammates no longer flash console windows during tool calls.
-- Replayed agent turns no longer duplicate tasks, deleted-task notices, or final messages.
+- Fix Codex sign-in and mixed-team startup failures, and keep Codex updates downloading on slow connections.
+- Fix OpenCode teams getting stuck after a failed stop and needing manual data cleanup to launch again.
+- Deliver assignments during team startup and run new instructions when teams restart.
+- Prevent duplicate tasks and messages, and stop leads from repeating work they delegated.
+- Avoid repeating first-launch trust warnings for projects already trusted by Anthropic or Codex.
+- Stop OpenCode from flashing console windows on Windows.
 
 ### Downloads
 
@@ -970,6 +970,9 @@ gh run watch <RUN_ID> --repo 777genius/agent_teams_orchestrator
 After the runtime workflow succeeds, update this repo's `runtime.lock.json`:
 
 - `version`: the new runtime version, for example `0.0.52`
+- `cliVersion`: the exact first token of the released binary's `--version` output,
+  for example `2.1.251`. This can differ from the runtime release version for
+  Claude compatibility; when omitted, bootstrap expects `version`.
 - `sourceRef`: the matching runtime tag, for example `v0.0.52`
 - `releaseRepository`: the public repository that hosts runtime assets,
   `777genius/agent_teams_orchestrator_binaries`

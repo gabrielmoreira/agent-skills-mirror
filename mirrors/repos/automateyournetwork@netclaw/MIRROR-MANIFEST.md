@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `automateyournetwork/netclaw` — 26 default patterns, 4 followed patterns, 324 file(s) materialized.
+Mirror of `automateyournetwork/netclaw` — 26 default patterns, 4 followed patterns, 326 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `automateyournetwork/netclaw` — 26 default patterns, 4 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 324 |
+| Files         | 326 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -353,39 +353,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 289 | ✓ | [`workspace/skills/terraform-workspaces/SKILL.md`](workspace/skills/terraform-workspaces/SKILL.md) |
 | 290 | ✓ | [`workspace/skills/threejs-network-viz/SKILL.md`](workspace/skills/threejs-network-viz/SKILL.md) |
 | 291 | ✓ | [`workspace/skills/token-tracker/SKILL.md`](workspace/skills/token-tracker/SKILL.md) |
-| 292 | ✓ | [`workspace/skills/twilio-daily-briefing/SKILL.md`](workspace/skills/twilio-daily-briefing/SKILL.md) |
-| 293 | ✓ | [`workspace/skills/twilio-emergency-call/SKILL.md`](workspace/skills/twilio-emergency-call/SKILL.md) |
-| 294 | ✓ | [`workspace/skills/twilio-inbound-voice/SKILL.md`](workspace/skills/twilio-inbound-voice/SKILL.md) |
-| 295 | ✓ | [`workspace/skills/twilio-outbound-call/SKILL.md`](workspace/skills/twilio-outbound-call/SKILL.md) |
-| 296 | ✓ | [`workspace/skills/twitter-check/SKILL.md`](workspace/skills/twitter-check/SKILL.md) |
-| 297 | ✓ | [`workspace/skills/twitter-heartbeat/SKILL.md`](workspace/skills/twitter-heartbeat/SKILL.md) |
-| 298 | ✓ | [`workspace/skills/twitter-respond/SKILL.md`](workspace/skills/twitter-respond/SKILL.md) |
-| 299 | ✓ | [`workspace/skills/twitter-share/SKILL.md`](workspace/skills/twitter-share/SKILL.md) |
-| 300 | ✓ | [`workspace/skills/ue5-network-viz/SKILL.md`](workspace/skills/ue5-network-viz/SKILL.md) |
-| 301 | ✓ | [`workspace/skills/uml-diagram/SKILL.md`](workspace/skills/uml-diagram/SKILL.md) |
-| 302 | ✓ | [`workspace/skills/vault-mounts/SKILL.md`](workspace/skills/vault-mounts/SKILL.md) |
-| 303 | ✓ | [`workspace/skills/vault-pki/SKILL.md`](workspace/skills/vault-pki/SKILL.md) |
-| 304 | ✓ | [`workspace/skills/vault-secrets/SKILL.md`](workspace/skills/vault-secrets/SKILL.md) |
-| 305 | ✓ | [`workspace/skills/webex-incident-workflow/SKILL.md`](workspace/skills/webex-incident-workflow/SKILL.md) |
-| 306 | ✓ | [`workspace/skills/webex-network-alerts/SKILL.md`](workspace/skills/webex-network-alerts/SKILL.md) |
-| 307 | ✓ | [`workspace/skills/webex-report-delivery/SKILL.md`](workspace/skills/webex-report-delivery/SKILL.md) |
-| 308 | ✓ | [`workspace/skills/webex-user-context/SKILL.md`](workspace/skills/webex-user-context/SKILL.md) |
-| 309 | ✓ | [`workspace/skills/webex-voice-interface/SKILL.md`](workspace/skills/webex-voice-interface/SKILL.md) |
-| 310 | ✓ | [`workspace/skills/wikipedia-research/SKILL.md`](workspace/skills/wikipedia-research/SKILL.md) |
-| 311 | ✓ | [`workspace/skills/worldlabs-topology-viz/SKILL.md`](workspace/skills/worldlabs-topology-viz/SKILL.md) |
-| 312 | ✓ | [`workspace/skills/zabbix-availability/SKILL.md`](workspace/skills/zabbix-availability/SKILL.md) |
-| 313 | ✓ | [`workspace/skills/zabbix-metrics-history/SKILL.md`](workspace/skills/zabbix-metrics-history/SKILL.md) |
-| 314 | ✓ | [`workspace/skills/zabbix-problem-review/SKILL.md`](workspace/skills/zabbix-problem-review/SKILL.md) |
-| 315 | ✓ | [`workspace/skills/zoom-meeting-context/SKILL.md`](workspace/skills/zoom-meeting-context/SKILL.md) |
-| 316 | ✓ | [`workspace/skills/zscaler-identity/SKILL.md`](workspace/skills/zscaler-identity/SKILL.md) |
-| 317 | ✓ | [`workspace/skills/zscaler-insights/SKILL.md`](workspace/skills/zscaler-insights/SKILL.md) |
-| 318 | ✓ | [`workspace/skills/zscaler-zdx/SKILL.md`](workspace/skills/zscaler-zdx/SKILL.md) |
-| 319 | ✓ | [`workspace/skills/zscaler-zia/SKILL.md`](workspace/skills/zscaler-zia/SKILL.md) |
-| 320 | ✓ | [`workspace/skills/zscaler-zpa/SKILL.md`](workspace/skills/zscaler-zpa/SKILL.md) |
-| 321 | → | [`docs/ADDING-AN-MCP.md`](docs/ADDING-AN-MCP.md) |
-| 322 | → | [`docs/DEFENSECLAW.md`](docs/DEFENSECLAW.md) |
-| 323 | → | [`docs/SOUL-DEFENSE.md`](docs/SOUL-DEFENSE.md) |
-| 324 | → | [`docs/UPGRADE-TO-DEFENSECLAW.md`](docs/UPGRADE-TO-DEFENSECLAW.md) |
+| 292 | ✓ | [`workspace/skills/topolograph-bgp-analysis/SKILL.md`](workspace/skills/topolograph-bgp-analysis/SKILL.md) |
+| 293 | ✓ | [`workspace/skills/topolograph-igp-analysis/SKILL.md`](workspace/skills/topolograph-igp-analysis/SKILL.md) |
+| 294 | ✓ | [`workspace/skills/twilio-daily-briefing/SKILL.md`](workspace/skills/twilio-daily-briefing/SKILL.md) |
+| 295 | ✓ | [`workspace/skills/twilio-emergency-call/SKILL.md`](workspace/skills/twilio-emergency-call/SKILL.md) |
+| 296 | ✓ | [`workspace/skills/twilio-inbound-voice/SKILL.md`](workspace/skills/twilio-inbound-voice/SKILL.md) |
+| 297 | ✓ | [`workspace/skills/twilio-outbound-call/SKILL.md`](workspace/skills/twilio-outbound-call/SKILL.md) |
+| 298 | ✓ | [`workspace/skills/twitter-check/SKILL.md`](workspace/skills/twitter-check/SKILL.md) |
+| 299 | ✓ | [`workspace/skills/twitter-heartbeat/SKILL.md`](workspace/skills/twitter-heartbeat/SKILL.md) |
+| 300 | ✓ | [`workspace/skills/twitter-respond/SKILL.md`](workspace/skills/twitter-respond/SKILL.md) |
+| 301 | ✓ | [`workspace/skills/twitter-share/SKILL.md`](workspace/skills/twitter-share/SKILL.md) |
+| 302 | ✓ | [`workspace/skills/ue5-network-viz/SKILL.md`](workspace/skills/ue5-network-viz/SKILL.md) |
+| 303 | ✓ | [`workspace/skills/uml-diagram/SKILL.md`](workspace/skills/uml-diagram/SKILL.md) |
+| 304 | ✓ | [`workspace/skills/vault-mounts/SKILL.md`](workspace/skills/vault-mounts/SKILL.md) |
+| 305 | ✓ | [`workspace/skills/vault-pki/SKILL.md`](workspace/skills/vault-pki/SKILL.md) |
+| 306 | ✓ | [`workspace/skills/vault-secrets/SKILL.md`](workspace/skills/vault-secrets/SKILL.md) |
+| 307 | ✓ | [`workspace/skills/webex-incident-workflow/SKILL.md`](workspace/skills/webex-incident-workflow/SKILL.md) |
+| 308 | ✓ | [`workspace/skills/webex-network-alerts/SKILL.md`](workspace/skills/webex-network-alerts/SKILL.md) |
+| 309 | ✓ | [`workspace/skills/webex-report-delivery/SKILL.md`](workspace/skills/webex-report-delivery/SKILL.md) |
+| 310 | ✓ | [`workspace/skills/webex-user-context/SKILL.md`](workspace/skills/webex-user-context/SKILL.md) |
+| 311 | ✓ | [`workspace/skills/webex-voice-interface/SKILL.md`](workspace/skills/webex-voice-interface/SKILL.md) |
+| 312 | ✓ | [`workspace/skills/wikipedia-research/SKILL.md`](workspace/skills/wikipedia-research/SKILL.md) |
+| 313 | ✓ | [`workspace/skills/worldlabs-topology-viz/SKILL.md`](workspace/skills/worldlabs-topology-viz/SKILL.md) |
+| 314 | ✓ | [`workspace/skills/zabbix-availability/SKILL.md`](workspace/skills/zabbix-availability/SKILL.md) |
+| 315 | ✓ | [`workspace/skills/zabbix-metrics-history/SKILL.md`](workspace/skills/zabbix-metrics-history/SKILL.md) |
+| 316 | ✓ | [`workspace/skills/zabbix-problem-review/SKILL.md`](workspace/skills/zabbix-problem-review/SKILL.md) |
+| 317 | ✓ | [`workspace/skills/zoom-meeting-context/SKILL.md`](workspace/skills/zoom-meeting-context/SKILL.md) |
+| 318 | ✓ | [`workspace/skills/zscaler-identity/SKILL.md`](workspace/skills/zscaler-identity/SKILL.md) |
+| 319 | ✓ | [`workspace/skills/zscaler-insights/SKILL.md`](workspace/skills/zscaler-insights/SKILL.md) |
+| 320 | ✓ | [`workspace/skills/zscaler-zdx/SKILL.md`](workspace/skills/zscaler-zdx/SKILL.md) |
+| 321 | ✓ | [`workspace/skills/zscaler-zia/SKILL.md`](workspace/skills/zscaler-zia/SKILL.md) |
+| 322 | ✓ | [`workspace/skills/zscaler-zpa/SKILL.md`](workspace/skills/zscaler-zpa/SKILL.md) |
+| 323 | → | [`docs/ADDING-AN-MCP.md`](docs/ADDING-AN-MCP.md) |
+| 324 | → | [`docs/DEFENSECLAW.md`](docs/DEFENSECLAW.md) |
+| 325 | → | [`docs/SOUL-DEFENSE.md`](docs/SOUL-DEFENSE.md) |
+| 326 | → | [`docs/UPGRADE-TO-DEFENSECLAW.md`](docs/UPGRADE-TO-DEFENSECLAW.md) |
 
 ---
 

@@ -40,7 +40,7 @@ To wire it: `bash scripts/setup.sh "/path/to/vault"` or run `/obsidian-setup`.
 Use standard file tools (Read, Write, Edit, Glob) against the vault path. The vault is plain markdown, so every operation in this skill works this way with no setup. This is the normal path in Claude Code - the commands below use these tools directly.
 
 **Method B - MCP server (optional, mainly for non-Claude-Code clients):**
-This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --no-project --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package).
+This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --no-project --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package). Since the bookkeeping change, every write through the server also validates the note, adds the index entry, appends the operation-log line, and runs `OBSIDIAN_POST_WRITE_CMD` when set - see `integrations/obsidian-mcp-server/README.md`, "Bookkeeping after writes".
 
 ### 1. First time in a vault → read `_CLAUDE.md`
 
@@ -1270,7 +1270,7 @@ A non-blocking validator that fires after every `Write` or `Edit` on a markdown 
 
 **What it skips:**
 - Files outside `OBSIDIAN_VAULT_PATH`
-- Files under `raw/`, `templates/`, `_export/`, `.obsidian/`, `.git/`, `.trash/`
+- Files under `raw/`, `templates/`, `_export/`, `.obsidian/`, `.git/`, `.trash/`, `.claude/` (slash-command copies and settings are not notes - #249)
 - Payloads with no `tool_name` (nothing fired)
 
 **What it refuses to skip silently:** a payload that names a tool but carries no path key the hook knows (`file_path`, `filePath`, `notebook_path`). The matcher fired, so a write happened and went unchecked; the hook prints one stderr line naming the tool and the payload keys and exits 1 (non-blocking, the write stands) instead of exiting 0 and looking like "not a vault file".

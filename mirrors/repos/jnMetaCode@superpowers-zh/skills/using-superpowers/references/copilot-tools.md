@@ -27,7 +27,7 @@ Copilot CLI 的 `task` 工具接受 `agent_type` 参数：
 |-------------------|----------------------|
 | `general-purpose` | `"general-purpose"` |
 | `Explore` | `"explore"` |
-| 命名的插件智能体（如 `superpowers:code-reviewer`） | 从已安装的插件中自动发现 |
+| 命名的插件智能体（形如 `<插件名>:<智能体名>`） | 从已安装的插件中自动发现 |
 
 ## 异步 Shell 会话
 

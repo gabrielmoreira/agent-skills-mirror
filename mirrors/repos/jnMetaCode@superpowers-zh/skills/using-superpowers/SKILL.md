@@ -32,8 +32,8 @@ metadata:
 
 当多个技能都适用时，流程技能优先——它们决定处理方式，然后由实现技能（前端设计等）负责执行。头脑风暴和系统化调试是 Superpowers 中最常见的流程技能，但这条规则适用于任何流程技能。
 
-- "让我们构建 X" → 先用 superpowers:brainstorming，再用实现技能。
-- "修复这个 bug" → 先用 superpowers:systematic-debugging，再用领域技能。
+- "让我们构建 X" → 先用 brainstorming，再用实现技能。
+- "修复这个 bug" → 先用 systematic-debugging，再用领域技能。
 
 ## 红线
 
@@ -76,11 +76,11 @@ Gemini CLI 用户通过 GEMINI.md 自动获得 `references/gemini-tools.md` 的�
 
 | 场景 | 调用技能 |
 |------|---------|
-| 代码审查且团队使用中文沟通 | **superpowers:chinese-code-review** |
-| 使用 Gitee/Coding/极狐 GitLab | **superpowers:chinese-git-workflow** |
-| 编写中文技术文档或 README | **superpowers:chinese-documentation** |
-| 编写 git commit message（中文项目） | **superpowers:chinese-commit-conventions** |
-| 构建 MCP 服务器/工具 | **superpowers:mcp-builder** |
+| 代码审查且团队使用中文沟通 | **chinese-code-review** |
+| 使用 Gitee/Coding/极狐 GitLab | **chinese-git-workflow** |
+| 编写中文技术文档或 README | **chinese-documentation** |
+| 编写 git commit message（中文项目） | **chinese-commit-conventions** |
+| 构建 MCP 服务器/工具 | **mcp-builder** |
 
 **判断依据：**
 - 项目中有中文注释、中文 README、或 .gitee 目录 → 启用中文系列技能

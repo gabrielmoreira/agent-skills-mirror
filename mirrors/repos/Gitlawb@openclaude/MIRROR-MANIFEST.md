@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Gitlawb/openclaude` — 26 default patterns, 3 followed patterns, 4 file(s) materialized.
+Mirror of `Gitlawb/openclaude` — 26 default patterns, 3 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Gitlawb/openclaude` — 26 default patterns, 3 followed patterns, 4 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 4 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,9 +62,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 3 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 4 | → | [`SECURITY.md`](SECURITY.md) |
+| 2 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 3 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
+| 4 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

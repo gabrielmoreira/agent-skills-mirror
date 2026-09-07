@@ -59,8 +59,9 @@ Your conversation history contains:
 ## THE EXACT PROMPT — Discovery Workflow
 
 ```
-1. Bootstrap: Check health, refresh index, get project overview
-   cass status --json && cass index --json
+1. Bootstrap: Check health, refresh only if stale (capped, in the background), get project overview
+   cass status --json
+   # if .index.stale == true:  ( timeout 600 cass index --json >/tmp/cass-index.$$.log 2>&1 </dev/null & )
    cass search "*" --workspace /data/projects/PROJECT --aggregate agent,date --limit 1 --json
 
 2. Find prompts: Search for keywords, filter to user prompts (lines 1-3)
@@ -163,8 +164,9 @@ Real-world bugs we've hit (all observed in mined sessions). Walk top-down — **
 ## Quick Reference
 
 ```bash
-# Health + refresh (ALWAYS first)
-cass status --json && cass index --json
+# Health first; refresh only when stale, always with a wall-clock cap (see Two-Step Bootstrap)
+cass status --json
+[ "$(cass status --json | jq -r '.index.stale')" = "true" ] && ( timeout 600 cass index --json >/tmp/cass-index.$$.log 2>&1 </dev/null & )
 
 # Project overview: who did what, when?
 cass search "*" --workspace /path --aggregate agent,date --limit 1 --json
@@ -521,4 +523,4 @@ cass status --json | jq '.index.fresh'
 # Should return: true
 ```
 
-If `false`, run: `cass index --json`
+If `false`, check `.index.stale` against `.database.exists` (see Two-Step Bootstrap): a stale index is still searchable — search now and refresh with a cap, `timeout 600 cass index --json` (never an uncapped run); only `database.exists=false` or `documents=0` warrants `cass doctor --fix --json`.

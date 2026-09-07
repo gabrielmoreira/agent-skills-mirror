@@ -18,18 +18,20 @@ Set up, index, and manage SocratiCode codebase indexing, file watching, code gra
 2. **Start indexing**: `codebase_index` — runs in background, returns immediately
 3. **Poll progress**: `codebase_status` — call every ~60 seconds until 100% complete
    - This also keeps the MCP connection alive (some hosts disconnect idle connections)
-4. **Done**: Graph auto-builds after indexing. File watcher auto-starts. Ready to search.
+4. **Done**: Graph auto-builds after indexing. In the default watcher mode, the file watcher auto-starts. Ready to search.
 
 On first use, SocratiCode automatically pulls Docker images, starts containers, and downloads the embedding model (~5 min one-time setup).
 
 ## Incremental Updates & File Watching
 
-The file watcher keeps the index automatically updated. It auto-starts after indexing.
+The file watcher keeps the index automatically updated in the default `SOCRATICODE_WATCHER=auto` mode.
 
 - **`codebase_watch { action: "start" }`** — start the watcher (runs catch-up update first)
 - **`codebase_watch { action: "stop" }`** — stop the watcher
 - **`codebase_watch { action: "status" }`** — list watched projects (including cross-process)
 - **`codebase_update`** — manual incremental update (only changed files, synchronous). Usually not needed if watcher is active.
+
+For a deliberate code-index snapshot, configure every MCP process that uses the checkout with `SOCRATICODE_WATCHER=off` and `SOCRATICODE_AUTO_RESUME=off`. Search and graph tools keep reading the existing index and graph; run `codebase_update` and `codebase_graph_build` only when a refresh is wanted. Use watcher mode `manual` instead when explicit `codebase_watch { action: "start" }` should remain available. Never try to restart a watcher whose status says disabled.
 
 ## Managing Indexes
 
@@ -39,7 +41,7 @@ The file watcher keeps the index automatically updated. It auto-starts after ind
 
 ## Managing the Code Graph
 
-The dependency graph is auto-built after indexing. Manual management is rarely needed.
+The dependency graph is auto-built after indexing. In watcher modes `manual` and `off`, graph queries read an existing graph but will ask for an explicit build instead of creating a missing graph as a side effect.
 
 - **`codebase_graph_build`** — manually rebuild (background, async). Poll with `codebase_graph_status`.
 - **`codebase_graph_remove`** — delete graph (auto-rebuilds on next `codebase_index`)
@@ -74,7 +76,7 @@ Supported types: SQL schemas, OpenAPI/Protobuf API specs, Terraform/CloudFormati
 | Slow indexing on macOS/Windows | Docker can't use GPU. Install native Ollama from https://ollama.com/download for Metal/CUDA acceleration. Or use cloud embeddings. |
 | Want cloud embeddings instead | Set `EMBEDDING_PROVIDER=openai` + `OPENAI_API_KEY`, or `EMBEDDING_PROVIDER=google` + `GOOGLE_API_KEY` |
 | Search returns no results | Check `codebase_status` — project may not be indexed. Run `codebase_index`. |
-| Stale results | Check if watcher is active (`codebase_status`). Run `codebase_update` or `codebase_watch { action: "start" }`. |
+| Stale results | Check `codebase_status`. Run `codebase_update`; start the watcher only when status does not say it is disabled. |
 | Indexing was interrupted | Run `codebase_index` again — it resumes from the last checkpoint automatically. |
 | Another process is indexing | `codebase_status` detects cross-process indexing. Wait for it, or use `codebase_stop`. |
 
@@ -94,5 +96,7 @@ Supported types: SQL schemas, OpenAPI/Protobuf API specs, Terraform/CloudFormati
 | `SEARCH_MIN_SCORE` | `0.10` | Default minimum RRF score threshold (0-1) |
 | `MAX_FILE_SIZE_MB` | `5` | Maximum file size for indexing in MB; must be a complete finite number |
 | `EXTRA_EXTENSIONS` | — | Additional file extensions to index (e.g. `.tpl,.blade,.hbs`) |
+| `SOCRATICODE_WATCHER` | `auto` | `auto`, `manual` (explicit start only), or `off` (no watcher) |
+| `SOCRATICODE_AUTO_RESUME` | — | `all` resumes all stored projects; `off` disables startup catch-up and interrupted-index recovery |
 
 For full parameter details on every tool, see [references/tool-reference.md](references/tool-reference.md).

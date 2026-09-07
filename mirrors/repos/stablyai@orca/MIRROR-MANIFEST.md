@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 9 followed patterns, 22 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 11 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 9 followed patterns, 22 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 22 |
+| Followed pats | 11 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,7 +53,9 @@ Mirror of `stablyai/orca` — 26 default patterns, 9 followed patterns, 22 file(
 
 - `docs/STYLEGUIDE.md`
 - `docs/reference/windows-setup-shell.md`
+- `docs/reference/windows-cmd-shim-resolution.md`
 - `docs/reference/windows-process-enumeration.md`
+- `docs/reference/windows-daemon-host-relocation.md`
 - `docs/reference/windows-edr-posture.md`
 - `docs/reference/wsl-command-execution.md`
 - `docs/reference/linux-glibc-compatibility.md`
@@ -84,11 +86,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
 | 16 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
 | 17 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
-| 18 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
-| 19 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
-| 20 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 21 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 22 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 18 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
+| 19 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
+| 20 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
+| 21 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
+| 22 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
+| 23 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
+| 24 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

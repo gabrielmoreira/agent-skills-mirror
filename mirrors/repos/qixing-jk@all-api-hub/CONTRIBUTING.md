@@ -1,0 +1,364 @@
+# Contributing to All API Hub
+
+Thank you for considering contributing to All API Hub! This guide will help you get started with development and testing.
+
+## Contributor Licensing
+
+By submitting a pull request or other contribution to this repository, you agree that your contribution may be licensed under:
+
+- GNU Affero General Public License v3.0 (AGPL-3.0), and
+- commercial license terms granted by the All API Hub maintainers.
+
+You represent that you have the right to submit the contribution and that it does not infringe any third-party rights. If you do not agree to these terms, please do not submit the contribution.
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js from `.nvmrc`, satisfying `package.json` engines
+- pnpm satisfying `package.json` engines
+
+## Tech Stack
+
+All API Hub is built with the same stack highlighted in the in-app About page to ensure the docs match what you see in the UI:
+
+- **Framework**: [WXT](https://wxt.dev) drives the multi-browser extension tooling and build pipeline
+- **UI Layer**: [React](https://react.dev) powers the options UI and popup surfaces
+- **Language**: [TypeScript](https://www.typescriptlang.org) keeps the codebase type-safe end-to-end
+- **Styling**: [Tailwind CSS](https://tailwindcss.com) provides utility-first styling with theme tokens
+- **Components**: [Radix UI](https://www.radix-ui.com/) supplies accessible primitives layered with our design system
+
+### Getting Started
+
+1. **Fork and clone the repository**
+
+```bash
+git clone https://github.com/YOUR_USERNAME/all-api-hub.git
+cd all-api-hub
+```
+
+2. **Install dependencies**
+
+```bash
+pnpm install
+```
+
+3. **Start development server**
+
+For Chrome:
+```bash
+pnpm dev
+```
+
+For Firefox:
+```bash
+pnpm dev:firefox
+```
+
+4. **Load the extension in your browser**
+
+- Chrome: Navigate to `chrome://extensions/`, enable "Developer mode", click "Load unpacked", and select the `.output/chrome-mv3-dev` directory.
+- Firefox: Navigate to `about:debugging#/runtime/this-firefox`, click "Load Temporary Add-on", and select `manifest.json` inside the `.output/firefox-mv2-dev` directory.
+
+## Testing
+
+### Overview
+
+This project uses [Vitest](https://vitest.dev/) for unit and component testing. The `dom` project runs component and browser-dependent tests in jsdom through `tests/setup.ts`; the `node` project runs other TypeScript tests through `tests/setup.node.ts`. Choose the environment needed by the behavior under test; `vitest.config.ts` owns project selection and both setups provide the applicable shared mocks.
+
+### Running Tests
+
+```bash
+# Run tests related to the files you changed
+pnpm exec vitest related --run path/to/changed-file.ts
+
+# Run one or more focused test files
+pnpm exec vitest run tests/path/to/feature.test.ts
+
+# Run tests in watch mode (useful during development)
+pnpm test:watch
+
+# Run the full test suite locally when broad validation is justified
+pnpm test
+
+# Run the full suite with coverage (normally handled by CI)
+pnpm test:ci
+```
+
+During normal development, run the smallest relevant test set and let the pull request CI run the full sharded suite with coverage. Run `pnpm test` or `pnpm test:ci` locally when changing test infrastructure, Vitest or coverage configuration, widely shared runtime behavior, or when reproducing a CI-only failure. Documentation, copy, formatting, type-only, and similarly narrow changes do not require the full local suite unless they affect executable behavior.
+
+### Test Coverage
+
+Coverage reports are automatically generated when running `pnpm test:ci`. You can view detailed coverage reports in the `coverage/` directory after running tests.
+
+The repository enforces global Vitest coverage thresholds in CI. Treat `vitest.config.ts` as the source of truth for the current required values rather than copying them into this document.
+
+### Writing Tests
+
+Add or update tests when a change modifies meaningful executable behavior. A useful test should protect an observable behavior, regression, relevant edge case, or contract. Do not add tests solely to execute lines, mirror implementation details, or satisfy coverage. Documentation, copy, formatting, type-only, and mechanical changes generally do not need new tests.
+
+#### Choosing coverage
+
+- Reuse existing tests when they already protect the changed behavior. Cover relevant failure paths and direct consumers of changed shared APIs; behavior-preserving refactors still need regression evidence.
+- Assert meaningful results or boundary contracts rather than whole internal structures, mock sequences, or incidental styles. Exact shapes and mock calls are appropriate when that shape or external call is itself the contract.
+- Use Vitest/Testing Library for state, parsing, filtering, and isolated components. Reserve E2E for unresolved browser-extension runtime, cross-entrypoint, navigation, persistence, or interaction risks; one representative browser workflow usually complements focused state coverage better than a UI matrix.
+- Prefer semantic selectors; for workflow-critical E2E controls that need a stable copy-independent selector, use feature-local `testIds.ts` constants rather than position or DOM structure. Assert user-visible copy for outcomes where appropriate.
+- Keep temporary verification tests only when deterministic and valuable as regression coverage. Decide locally unless retention requires a material expansion in infrastructure, maintenance cost, or task scope.
+
+#### Unit Tests
+
+Unit tests should be placed under the repo-level `tests/` tree. Mirror the source area in the path when it helps readability:
+
+```
+src/utils/formatters.ts
+tests/utils/formatters.test.ts
+```
+
+Example unit test:
+
+```typescript
+import { describe, it, expect } from "vitest"
+import { formatTokenCount } from "~/utils/formatters"
+
+describe("formatTokenCount", () => {
+  it("should format large numbers with M suffix", () => {
+    expect(formatTokenCount(1500000)).toBe("1.5M")
+  })
+
+  it("should handle zero", () => {
+    expect(formatTokenCount(0)).toBe("0")
+  })
+})
+```
+
+#### Component Tests
+
+Component tests should also live under `tests/`. Use the custom render function from `tests/test-utils/render.tsx` which wraps components with required providers:
+
+```
+src/components/LinkCard.tsx
+tests/components/LinkCard.test.tsx
+```
+
+Example component test:
+
+```typescript
+import { describe, it, expect } from "vitest"
+import { render, screen } from "~~/tests/test-utils/render"
+import LinkCard from "~/components/LinkCard"
+
+describe("LinkCard", () => {
+  it("should render correctly with required props", async () => {
+    render(<LinkCard title="Test" description="Test description" href="https://example.com" buttonText="Click" Icon={TestIcon} />)
+    
+    expect(await screen.findByText("Test")).toBeInTheDocument()
+    expect(await screen.findByText("Test description")).toBeInTheDocument()
+  })
+})
+```
+
+#### i18n in Tests (Translation Key Assertions)
+
+By default, tests SHOULD assert **translation keys** (e.g. `ui:searchableSelect.noOptions`) instead of localized copy (English/Chinese strings). This keeps tests stable when translations change.
+
+The Vitest i18n test harness is configured so that **missing translations render as fully-qualified keys** (`<namespace>:<key>`). This lets you assert keys without loading any locale JSON.
+
+Recommended patterns:
+
+- Use `render` / `renderHook` from `~~/tests/test-utils/render` (they wrap `I18nextProvider`).
+- Prefer key assertions over copy assertions (e.g. `expect(screen.getByText("ui:...")).toBeInTheDocument()`).
+- Avoid `vi.mock("react-i18next")` / `vi.mock("i18next")` unless you are explicitly testing i18n edge cases.
+
+Mocks are acceptable when you need to:
+
+- Force error branches (e.g. make `t()` throw)
+- Test language-change flows (`changeLanguage`) or resource-loading behavior
+- Isolate unrelated third-party behavior
+
+If a test truly needs to assert localized copy, it MUST explicitly load the required resource bundles within that test (e.g. via `testI18n.addResourceBundle(...)`) so it’s clear the test is intentionally copy-coupled.
+
+If you add resource bundles to the shared `testI18n`, prefer cleaning them up in `afterAll` (e.g. `removeResourceBundle`) to avoid leaking translations into other test files running in the same worker.
+
+### Test Infrastructure
+
+#### Mocks
+
+The shared setup (`tests/setup.shared.ts`, loaded by both test environments) provides browser/storage and i18n support. The DOM setup adds browser-specific behavior; consult the applicable setup when a test needs a particular mock:
+
+- **Browser APIs + storage**: `wxt/testing/fake-browser` sets `globalThis.browser` / `globalThis.chrome`, including `browser.storage.*`. `@plasmohq/storage` works on top of this without extra mocks.
+- **i18next**: Lightweight test instance configured in `tests/test-utils/i18n.ts`
+- **MSW**: Mock Service Worker for API endpoint mocking
+
+#### MSW Handlers
+
+API mocks are defined in `tests/msw/handlers.ts`. Add or override handlers in individual test files as needed:
+
+```typescript
+import { http, HttpResponse } from "msw"
+import { server } from "~~/tests/msw/server"
+
+it("should handle API error", async () => {
+  server.use(
+    http.get("https://api.example.com/endpoint", () => {
+      return HttpResponse.json({ error: "Not found" }, { status: 404 })
+    })
+  )
+  
+  // Test code here
+})
+```
+
+#### Custom Render
+
+The `render` function from `tests/test-utils/render.tsx` wraps components with necessary providers:
+- DeviceProvider
+- UserPreferencesProvider  
+- ThemeProvider
+
+This ensures components have access to all required contexts during testing.
+
+## Code Style
+
+### Linting and Formatting
+
+```bash
+# Run ESLint
+pnpm lint
+
+# Fix linting issues automatically
+pnpm lint:fix
+
+# Format code with Prettier
+pnpm format
+
+# Check formatting without modifying files
+pnpm format:check
+```
+
+### Type Checking
+
+```bash
+# Run TypeScript compiler without emitting files
+pnpm compile
+```
+
+### Git Hooks
+
+This project uses [Husky](https://typicode.github.io/husky) to enforce code quality through Git hooks:
+
+- **pre-commit**: `validate:staged` formats and lints applicable staged files, runs staged Vitest test files, then runs extraction and completeness checks when staged inputs affect i18n. Staged test execution does not find related tests or replace affected-behavior validation.
+- **pre-push**: `validate:push:changed` examines every ref update supplied by Git. Known documentation-only ranges and ref deletions skip the extension gate; other changes and unknown ranges run `validate:push` (`compile` + `knip`). New remote refs conservatively run the full gate. Checks execute in the current checkout, so keep the checkout aligned with the code being delivered.
+
+The hooks are automatically set up when you run `pnpm install` (via the `prepare` script).
+Use `pnpm run validate:staged` or the unconditional `pnpm run validate:push` manually for troubleshooting or when the corresponding hook will not run. Let an imminent hook execute its gate once rather than pre-running it on unchanged state. Bare `pnpm lint-staged` is not the complete pre-commit flow. See [.husky/README.md](.husky/README.md) for trigger ownership and troubleshooting.
+
+#### Skipping Hooks (Not Recommended)
+
+Fix hook failures or report the blocked delivery. Bypassing a required gate needs an explicit authorized exception with the skipped validation and remaining risk disclosed; it is not an automatic fallback for a failed check.
+
+## Building
+
+### Development Build
+
+```bash
+pnpm build
+```
+
+### Production Build
+
+For Chrome:
+```bash
+pnpm build
+pnpm zip
+```
+
+For Firefox:
+```bash
+pnpm build:firefox
+pnpm zip:firefox
+```
+
+For all browsers:
+```bash
+pnpm build:all
+pnpm zip:all
+```
+
+## Continuous Integration
+
+GitHub Actions runs the test workflow for pull requests and for pushes to `main` or `develop` when configured source or tooling paths change. The workflow:
+
+1. Checks out the code
+2. Installs dependencies with pnpm
+3. Runs `pnpm compile` for full-repo type checking
+4. Runs `pnpm lint` for repository-wide lint validation
+5. Runs `pnpm knip` to catch unused files, exports, and dependencies
+6. Runs `pnpm run i18n:extract:ci` and `pnpm run i18n:status` to ensure locale files stay in sync with code and all secondary locales are complete
+7. Runs the Vitest suite in parallel shards with coverage
+8. Uploads coverage artifacts
+
+Before submitting a pull request, run the focused tests and local validation relevant to your change. The pull request CI is the authoritative full-suite and coverage check.
+
+CI evidence covers only workflows that actually ran for the relevant changes. The regular E2E workflow is path-triggered; browser-compatibility and real-site workflows are scheduled or manually dispatched, so ordinary PR success does not establish those results. Run additional focused checks when the task's unresolved risk requires them.
+
+## Pull Request Guidelines
+
+1. **Create a feature branch** from `main`
+2. **Add meaningful tests for behavior changes**: Protect observable behavior, regressions, relevant edge cases, or contracts; do not add tests only to increase coverage
+3. **Run affected tests**: Prefer `pnpm exec vitest related --run <changed files>` or focused test files; rely on CI for the full suite and coverage by default
+4. **Commit through the staged-file gate**: Stage only task-owned changes without disturbing unrelated index state and let pre-commit run `validate:staged`
+5. **Validate shared risks and requested pushes**: Broaden focused checks for shared contracts, consumers, dependencies, generated wiring, or repository structure. Let a requested push run its applicable hook checks; reuse valid evidence for unchanged relevant state
+6. **Write clear commit messages** describing your changes
+7. **Update documentation** if you're adding new features
+
+## Project Structure
+
+```
+all-api-hub/
+├── src/              # Extension/runtime source code (WXT srcDir)
+│   ├── assets/       # Runtime images/icons bundled by Vite
+│   ├── components/   # Shared React components (UI primitives in src/components/ui/)
+│   ├── constants/    # Shared constants
+│   ├── contexts/     # React context providers
+│   ├── entrypoints/  # WXT entry points (wiring-only: routing/bootstrapping/integration glue)
+│   ├── features/     # Canonical home for UI feature/page modules (components/hooks/utils)
+│   ├── hooks/        # Custom React hooks
+│   ├── lib/          # Shared low-level helpers (e.g. cn())
+│   ├── locales/      # UI i18n resources (i18next)
+│   ├── public/       # Extension public assets (manifest i18n: src/public/_locales/)
+│   ├── services/     # Business logic and API services
+│   ├── styles/       # Global CSS (Tailwind entry)
+│   ├── types/        # Shared TypeScript type definitions
+│   └── utils/        # Utility functions
+├── e2e/              # Playwright end-to-end tests (repo-root tooling)
+├── plugins/          # Repo-root tooling (e.g. Vite/WXT plugins)
+├── tests/            # Vitest setup and utilities (repo-root tooling)
+│   ├── msw/          # MSW handlers and server setup
+│   └── test-utils/   # Testing utilities (custom render, etc.)
+```
+
+## UI Module Taxonomy (Where Does UI Code Go?)
+
+To keep the options UI consistent and reusable, this repo follows a single module taxonomy:
+
+- `src/entrypoints/**` are **wiring-only**: routing, bootstrapping, and integration glue.
+  - Options pages under `src/entrypoints/options/pages/**` should be thin wrappers that render feature modules.
+  - Non-entrypoint code MUST NOT import from `~/entrypoints/options/pages/**`.
+- `src/features/<Feature>/**` are the **canonical home for UI modules** (page/feature code), including `components/`, `hooks/`, and `utils/`.
+- Shared layers:
+  - `src/components/**` / `src/components/ui/**`: shared UI primitives and reusable UI components
+  - `src/services/**`: business logic, storage, API clients, and background/runtime integrations
+  - `src/types/**`: shared domain types used across layers
+  - `src/utils/**`: shared non-UI helpers (keep UI concerns like toasts/i18n in features/entrypoints)
+
+Dependency direction should stay one-way: `src/entrypoints/**` → `src/features/**` → shared layers (`src/components/`, `src/services/`, `src/types/`, `src/utils/`).
+
+## Getting Help
+
+If you have questions or need help:
+
+- Check the [documentation](https://all-api-hub.qixing1217.top/)
+- Review [existing issues](https://github.com/qixing-jk/all-api-hub/issues)
+- Open a new issue with your question
+
+Thank you for contributing! 🎉

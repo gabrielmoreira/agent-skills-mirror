@@ -38,7 +38,7 @@ Use `codebase_graph_query` to see what a file imports and what depends on it **b
 - **`codebase_graph_circular`** — find circular dependencies (these cause subtle runtime bugs; check proactively when debugging unexpected behaviour)
 - **`codebase_graph_visualize`** — Mermaid diagram colour-coded by language, circular deps highlighted in red. Pass `mode: "interactive"` to open a self-contained HTML explorer (file + symbol views, blast-radius overlay, search, PNG export — works offline) instead.
 
-The graph is auto-built after indexing. Use `codebase_graph_status` to check if the graph is ready.
+The graph is auto-built after indexing. Use `codebase_graph_status` to check if the graph is ready. In `SOCRATICODE_WATCHER=manual` or `off`, graph queries do not create a missing graph; run `codebase_graph_build` explicitly when requested.
 
 ### 3. Read files only after narrowing via search
 
@@ -60,7 +60,8 @@ Run `codebase_context` early to see what's available. Use `codebase_context_sear
 
 - **`codebase_status`** — check index status, progress, watcher state, graph status
 - If search returns no results, the project may not be indexed yet
-- If the watcher is inactive, results may be stale — run `codebase_update` or start the watcher
+- If the watcher is inactive, results may be stale — run `codebase_update`; start the watcher only when status does not say it is disabled
+- In snapshot mode (`SOCRATICODE_WATCHER=off` plus `SOCRATICODE_AUTO_RESUME=off`), stale results are expected until an explicit update. Do not enable or start the watcher.
 
 ### 6. Get an overview of all tools
 

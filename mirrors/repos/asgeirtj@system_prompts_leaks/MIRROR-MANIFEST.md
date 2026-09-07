@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,6 +111,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md`](Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md) |
 | 51 | ✓ | [`Anthropic/claude-design/skills/web-research/SKILL.md`](Anthropic/claude-design/skills/web-research/SKILL.md) |
 | 52 | ✓ | [`Anthropic/claude-design/skills/wireframe/SKILL.md`](Anthropic/claude-design/skills/wireframe/SKILL.md) |
+| 53 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

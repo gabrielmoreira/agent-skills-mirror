@@ -112,7 +112,7 @@ Remove a track by name from a Timeline.
 | name | string | No | - | GameObject name with PlayableDirector |
 | instanceId | int | No | 0 | GameObject instance ID |
 | path | string | No | - | GameObject hierarchy path |
-| trackName | string | No | - | Name of the track to remove |
+| trackName | string | Yes | - | Name of the track to remove |
 
 **Returns:** `{ success, removed }`
 
@@ -135,7 +135,7 @@ Add a clip to a track by track name.
 | name | string | No | - | GameObject name with PlayableDirector |
 | instanceId | int | No | 0 | GameObject instance ID |
 | path | string | No | - | GameObject hierarchy path |
-| trackName | string | No | - | Name of the target track |
+| trackName | string | Yes | - | Name of the target track |
 | start | double | No | 0 | Clip start time in seconds |
 | duration | double | No | 1 | Clip duration in seconds |
 
@@ -174,8 +174,8 @@ Set the binding object for a track.
 | name | string | No | - | GameObject name with PlayableDirector |
 | instanceId | int | No | 0 | GameObject instance ID |
 | path | string | No | - | GameObject hierarchy path |
-| trackName | string | No | - | Name of the track |
-| bindingObjectName | string | No | - | Name of the object to bind |
+| trackName | string | Yes | - | Name of the track |
+| bindingObjectName | string | Yes | - | Name of the object to bind |
 
 **Returns:** `{ success, trackName, boundTo }`
 

@@ -179,7 +179,7 @@ metadata:
    - 尽可能用自动化测试
    - 没有测试框架就写一次性测试脚本
    - 修复前必须先有测试
-   - 使用 `superpowers:test-driven-development` 技能来编写规范的失败测试
+   - 使用 `test-driven-development` 技能来编写规范的失败测试
 
 2. **实施单一修复**
    - 修复已定位的根本原因
@@ -191,7 +191,7 @@ metadata:
    - 测试现在通过了吗？
    - 其他测试没有被破坏吧？
    - 问题真的解决了吗？
-   - 宣称成功之前，使用 `superpowers:verification-before-completion` 技能
+   - 宣称成功之前，使用 `verification-before-completion` 技能
 
 4. **如果修复不起作用**
    - 停下来

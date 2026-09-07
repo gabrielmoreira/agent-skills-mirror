@@ -16,13 +16,13 @@ metadata:
 
 **开始时宣布：** "我正在使用 executing-plans 技能来实现此计划。"
 
-**注意：** 告诉你的人类伙伴，Superpowers 在有子代理支持时效果好得多（Claude Code、Codex CLI、Codex App、Copilot CLI 与 Gemini CLI 都算；见 `../using-superpowers/references/` 下的各平台工具参考）。如果子代理可用，请使用 superpowers:subagent-driven-development 而非此技能。
+**注意：** 告诉你的人类伙伴，Superpowers 在有子代理支持时效果好得多（Claude Code、Codex CLI、Codex App、Copilot CLI 与 Gemini CLI 都算；见 `../using-superpowers/references/` 下的各平台工具参考）。如果子代理可用，请使用 subagent-driven-development 而非此技能。
 
 ## 流程
 
 ### 步骤 1：加载并审查计划
 
-1. 确保有一个隔离的工作区：用 superpowers:using-git-worktrees 创建一个，或者核实已有的那个
+1. 确保有一个隔离的工作区：用 using-git-worktrees 创建一个，或者核实已有的那个
 2. 读取计划文件
 3. 批判性审查——识别计划中的任何问题或疑虑
 4. 如果有疑虑：在开始之前向你的人类伙伴提出
@@ -94,7 +94,7 @@ $ git commit -m "feat: 添加用户输入验证（任务 2/5）"
 
 所有任务完成并验证后：
 - 宣布："我正在使用 finishing-a-development-branch 技能来完成此工作。"
-- **必需子技能：** 使用 superpowers:finishing-a-development-branch
+- **必需子技能：** 使用 finishing-a-development-branch
 - 按照该技能的指引验证测试、展示选项、执行选择
 
 **完成报告模板：**

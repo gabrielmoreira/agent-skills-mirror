@@ -86,6 +86,38 @@ already have a default pipeline.
 4. Use `list_*` tools to discover, then `get_*` / `create_*` / `update_*` /
    `delete_*` as needed.
 
+## ChatGPT / Codex subscription providers
+
+`list_model_providers` can return the `openai-codex` requester. Its OAuth
+credentials are server-only and are not provider API keys. Never ask a user
+to paste ChatGPT access tokens, refresh tokens, or a Codex auth cache into an
+MCP tool or model configuration.
+
+A human connects or disconnects the subscription through **Models → provider
+settings** in the LangBot web UI. The provider-scoped `/codex/*` authentication
+routes deliberately require a browser-user session and are not exposed as MCP
+tools or authorized by a LangBot API key. Once connected, models are managed
+and selected through the normal provider/model workflow. A disconnected
+provider must be reauthorized; do not silently replace it with API-key billing.
+
+See [ChatGPT / Codex subscription](../../../docs/CODEX_SUBSCRIPTION.md) for setup,
+usage limits, and the personal-account versus shared-service boundary.
+
+## Provider deletion
+
+The curated MCP surface currently lists providers but has no provider-deletion
+tool. In the web UI, **Edit Provider → Delete** asks for confirmation before
+removing that provider and all its LLM, embedding, and rerank models. This is
+irreversible; never interpret a request to edit a provider as authorization to
+delete it.
+
+The equivalent HTTP operation is
+`DELETE /api/v1/provider/providers/{uuid}?cascade=true`, requiring
+`resource.manage` in the authenticated Workspace. Omitting `cascade` preserves
+the existing refusal to delete providers that still have models. Cloud-managed
+providers remain protected. Cascade deletion removes stored Codex authorization
+state as well; it is not the same operation as disconnecting an account.
+
 ## Implementation & maintenance (for LangBot developers)
 
 - Server: `src/langbot/pkg/api/mcp/server.py` (FastMCP). Tools call the service

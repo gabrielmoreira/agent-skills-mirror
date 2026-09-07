@@ -14,7 +14,7 @@ Get a multi-round critical review of research work from an external LLM with max
 
 ## Constants
 
-- REVIEWER_MODEL = `gpt-5.6-sol` — Model used via a secondary Codex agent, reasoning effort `ultra` (deep-audit tier). Must be an OpenAI model (e.g., `gpt-5.6-sol`, `gpt-5.5`, `o3`)
+- REVIEWER_MODEL = `gpt-6-astra` — Model used via a secondary Codex agent, reasoning effort `ultra` (deep-audit tier). Must be an OpenAI model (e.g., `gpt-6-astra`, `gpt-5.5`, `o3`)
 - **REVIEWER_BACKEND = `codex`** — Default: Codex ultra reviewer (deep-audit tier). Use `--reviewer: oracle-pro` only when explicitly requested; if Oracle is unavailable, warn and fall back to Codex at this skill's declared tier (`ultra`). **Same-family note:** this default reviewer is a second Codex/GPT agent — valid for Type-A completeness/drive review, but not a cross-family Type-B verdict; install a `skills-codex-claude-review` / `skills-codex-gemini-review` overlay for a cross-family acquittal (see `shared-references/reviewer-routing.md`).
 
 ## Context: $ARGUMENTS
@@ -37,7 +37,7 @@ Send a detailed prompt with ultra reasoning:
 
 ```
 spawn_agent:
-  model: gpt-5.6-sol
+  model: gpt-6-astra
   reasoning_effort: ultra
   message: |
     [Full research context + specific questions]
@@ -134,7 +134,7 @@ Save a trace for every `spawn_agent`, `send_input`, or `oracle-pro` review call 
 
 ## Key Rules
 
-- ALWAYS use `model: gpt-5.6-sol` + `reasoning_effort: ultra` for reviews (deep-audit tier; capability fallback per `reviewer-routing.md`, never below `xhigh`)
+- ALWAYS use `model: gpt-6-astra` + `reasoning_effort: ultra` for reviews (deep-audit tier; capability fallback per `reviewer-routing.md`, never below `xhigh`)
 - Send comprehensive context in Round 1 — the external model cannot read your files
 - Be honest about weaknesses — hiding them leads to worse feedback
 - Push back on criticisms you disagree with, but accept valid ones

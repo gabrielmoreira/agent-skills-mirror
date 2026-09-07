@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 13 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 9 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 13 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 13 |
+| Followed pats | 9 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 13 file
 - `internal/docs/IMPLEMENTATION_SUMMARY.md`
 - `CODEX.md`
 - `CONTRIBUTING.md`
+- `internal/website/content/en/docs/guides/durability.md`
 - `internal/docs/CONTINUOUS_IMPROVEMENT.md`
 - `internal/website/README.md`
 - `.github/ISSUE_TEMPLATE/question.md`
@@ -77,8 +78,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 10 | → | [`internal/docs/CONTINUOUS_IMPROVEMENT.md`](internal/docs/CONTINUOUS_IMPROVEMENT.md) |
 | 11 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
-| 12 | → | [`internal/website/README.md`](internal/website/README.md) |
-| 13 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 12 | → | [`internal/website/content/en/docs/guides/durability.md`](internal/website/content/en/docs/guides/durability.md) |
+| 13 | → | [`internal/website/README.md`](internal/website/README.md) |
+| 14 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

@@ -35,7 +35,7 @@ End-to-end autonomous research workflow for: **$ARGUMENTS**
 - **ARXIV_DOWNLOAD = false** — When `true`, `/research-lit` downloads the top relevant arXiv PDFs during literature survey. When `false` (default), only fetches metadata via arXiv API. Passed through to `/idea-discovery` → `/research-lit`.
 - **HUMAN_CHECKPOINT = false** — When `true`, the auto-review loops (Stage 3) pause after each round's review to let you see the score and provide custom modification instructions before fixes are implemented. When `false` (default), loops run fully autonomously. Passed through to `/auto-review-loop`.
 - **REVIEWER_DIFFICULTY = medium** — How adversarial the reviewer is. `medium` (default): standard MCP review. `hard`: adds reviewer memory + debate protocol. `nightmare`: GPT reads repo directly via `codex exec` + memory + debate. Passed through to `/auto-review-loop`.
-- **CODE_REVIEW = true** — GPT-5.6-Sol xhigh reviews experiment code before deployment. Catches logic bugs before wasting GPU hours. Set `false` to skip. Passed through to `/experiment-bridge`.
+- **CODE_REVIEW = true** — GPT-6-Astra xhigh reviews experiment code before deployment. Catches logic bugs before wasting GPU hours. Set `false` to skip. Passed through to `/experiment-bridge`.
 - **BASE_REPO = false** — GitHub repo URL to use as base codebase. When set, `/experiment-bridge` clones the repo first and implements experiments on top of it. When `false` (default), writes code from scratch or reuses existing project files. Passed through to `/experiment-bridge`.
 - **COMPACT = false** — When `true`, generates compact summary files for short-context models and session recovery. Passed through to `/idea-discovery` and `/experiment-bridge`.
 - **AUTO_WRITE = false** — When `true`, automatically invoke Workflow 3 (`/paper-writing`) after Stage 4. `VENUE` is needed only when Stage 5 begins — a missing venue defers paper writing; it never blocks Stages 1-4. When `false` (default), Stage 4 generates `NARRATIVE_REPORT.md` and stops — user invokes `/paper-writing` manually.
@@ -106,9 +106,9 @@ Resolve the helper via the canonical chain (integration-contract §2):
 
   | phase | what sets `accepted` | record as reviewer |
   |-------|----------------------|--------------------|
-  | `idea-discovery` | Gate 1 cross-model jury / novelty-check passed | `codex-gpt-5.6-sol` + thread id |
+  | `idea-discovery` | Gate 1 cross-model jury / novelty-check passed | `codex-gpt-6-astra` + thread id |
   | `experiment-bridge` | experiments actually ran (jobs completed) — deterministic | `deterministic:experiment-bridge` |
-  | `auto-review-loop` | the loop hit its positive STOP (`score>=6 AND verdict∈{ready,almost}` — codex's verdict) | `codex-gpt-5.6-sol` + final review trace id |
+  | `auto-review-loop` | the loop hit its positive STOP (`score>=6 AND verdict∈{ready,almost}` — codex's verdict) | `codex-gpt-6-astra` + final review trace id |
   | `summary` | `NARRATIVE_REPORT.md` written (+ rendered if `RENDER_HTML`) — deterministic | `deterministic:summary` |
   | `paper-writing` | submission audits passed (`verify_paper_audits.sh` exit 0) — deterministic | `deterministic:verify_paper_audits.sh` |
 
@@ -214,7 +214,7 @@ Once the idea is selected (automatically or by the user), delegate implementatio
 **What this does (fully autonomous):**
 1. Parses `refine-logs/EXPERIMENT_PLAN.md` — extracts milestones, run order, compute budget
 2. Implements experiment code — extends pilot to full scale, follows existing codebase conventions
-3. **Cross-model code review** — GPT-5.6-Sol xhigh reviews the implementation for logic bugs, incorrect metrics, and ground-truth misuse before any GPU time is spent
+3. **Cross-model code review** — GPT-6-Astra xhigh reviews the implementation for logic bugs, incorrect metrics, and ground-truth misuse before any GPU time is spent
 4. **Sanity check** — runs the smallest experiment first to verify the environment; auto-debugs failures (up to 3 attempts, with `/codex:rescue` fallback)
 5. Deploys full experiments — auto-routes by job count (≤5 → `/run-experiment`, ≥10 → `/experiment-queue` with OOM retry, wave gating, crash-safe state)
 6. Collects initial results — parses outputs, updates `refine-logs/EXPERIMENT_TRACKER.md`, runs `/training-check` if W&B is configured
@@ -242,7 +242,7 @@ Once initial results are in, start the autonomous improvement loop:
 ```
 
 **What this does (up to 4 rounds):**
-1. GPT-5.6-Sol xhigh reviews the work (score, weaknesses, minimum fixes)
+1. GPT-6-Astra xhigh reviews the work (score, weaknesses, minimum fixes)
 2. Claude Code implements fixes (code changes, new experiments, reframing)
 3. Deploy fixes, collect new results
 4. Re-review → repeat until (score ≥ 6/10 AND verdict ∈ {ready, almost}) or 4 rounds reached

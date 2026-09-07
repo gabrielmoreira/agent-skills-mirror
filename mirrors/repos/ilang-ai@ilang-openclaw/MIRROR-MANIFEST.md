@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,18 +71,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/ilang-compress/prompt.md`](skills/ilang-compress/prompt.md) |
 | 11 | ✓ | [`skills/ilang-compress/skill.json`](skills/ilang-compress/skill.json) |
 | 12 | ✓ | [`skills/ilang-compress/SKILL.md`](skills/ilang-compress/SKILL.md) |
-| 13 | ✓ | [`skills/lazarus/prompt.md`](skills/lazarus/prompt.md) |
-| 14 | ✓ | [`skills/lazarus/SKILL.md`](skills/lazarus/SKILL.md) |
-| 15 | ✓ | [`skills/less-token/prompt.md`](skills/less-token/prompt.md) |
-| 16 | ✓ | [`skills/less-token/SKILL.md`](skills/less-token/SKILL.md) |
-| 17 | ✓ | [`skills/Niche-Awesome/prompt.md`](skills/Niche-Awesome/prompt.md) |
-| 18 | ✓ | [`skills/Niche-Awesome/SKILL.md`](skills/Niche-Awesome/SKILL.md) |
-| 19 | ✓ | [`skills/no-prompt/prompt.md`](skills/no-prompt/prompt.md) |
-| 20 | ✓ | [`skills/no-prompt/SKILL.md`](skills/no-prompt/SKILL.md) |
-| 21 | ✓ | [`skills/SEO-Awesome/prompt.md`](skills/SEO-Awesome/prompt.md) |
-| 22 | ✓ | [`skills/SEO-Awesome/SKILL.md`](skills/SEO-Awesome/SKILL.md) |
-| 23 | ✓ | [`skills/WeChat-Awesome/prompt.md`](skills/WeChat-Awesome/prompt.md) |
-| 24 | ✓ | [`skills/WeChat-Awesome/SKILL.md`](skills/WeChat-Awesome/SKILL.md) |
+| 13 | ✓ | [`skills/lazarus/lazarus.config.yaml`](skills/lazarus/lazarus.config.yaml) |
+| 14 | ✓ | [`skills/lazarus/prompt.md`](skills/lazarus/prompt.md) |
+| 15 | ✓ | [`skills/lazarus/SKILL.md`](skills/lazarus/SKILL.md) |
+| 16 | ✓ | [`skills/less-token/prompt.md`](skills/less-token/prompt.md) |
+| 17 | ✓ | [`skills/less-token/SKILL.md`](skills/less-token/SKILL.md) |
+| 18 | ✓ | [`skills/Niche-Awesome/prompt.md`](skills/Niche-Awesome/prompt.md) |
+| 19 | ✓ | [`skills/Niche-Awesome/SKILL.md`](skills/Niche-Awesome/SKILL.md) |
+| 20 | ✓ | [`skills/no-prompt/prompt.md`](skills/no-prompt/prompt.md) |
+| 21 | ✓ | [`skills/no-prompt/SKILL.md`](skills/no-prompt/SKILL.md) |
+| 22 | ✓ | [`skills/SEO-Awesome/prompt.md`](skills/SEO-Awesome/prompt.md) |
+| 23 | ✓ | [`skills/SEO-Awesome/SKILL.md`](skills/SEO-Awesome/SKILL.md) |
+| 24 | ✓ | [`skills/WeChat-Awesome/prompt.md`](skills/WeChat-Awesome/prompt.md) |
+| 25 | ✓ | [`skills/WeChat-Awesome/SKILL.md`](skills/WeChat-Awesome/SKILL.md) |
 
 ---
 

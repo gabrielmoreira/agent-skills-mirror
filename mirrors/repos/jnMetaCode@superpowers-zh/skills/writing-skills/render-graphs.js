@@ -15,7 +15,14 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
+// 注：上游 v6.3.0 把本文件整体改成了 ESM（import ...）。我们**刻意不跟** ——
+// 这个脚本会被拷进用户项目，Node 对 .js 的模块判定取决于用户项目最近的
+// package.json；Node 22.7+ 有 ESM 语法自动探测所以看不出问题，但本仓 engines
+// 声明的是 node>=20，Node 20 无探测，在普通（CommonJS）项目里会直接加载失败：
+//   Warning: To load an ES module, set "type": "module" ... + SyntaxError
+// 实测方式：node --no-experimental-detect-module ./render-graphs.js <dir>
+// 上游的另外两处改动（execFileSync 安全加固、用 dot -V 代替 which）已采纳。
 
 function extractDotBlocks(markdown) {
   const blocks = [];
@@ -69,7 +76,7 @@ ${bodies.join('\n\n')}
 
 function renderToSvg(dotContent) {
   try {
-    return execSync('dot -Tsvg', {
+    return execFileSync('dot', ['-Tsvg'], {
       input: dotContent,
       encoding: 'utf-8',
       maxBuffer: 10 * 1024 * 1024
@@ -107,9 +114,10 @@ function main() {
     process.exit(1);
   }
 
-  // Check if dot is available
+  // Check if dot is available. Run the binary directly rather than probing
+  // with `which`, which is not a command on Windows.
   try {
-    execSync('which dot', { encoding: 'utf-8' });
+    execFileSync('dot', ['-V'], { stdio: 'ignore' });
   } catch {
     console.error('Error: graphviz (dot) not found. Install with:');
     console.error('  brew install graphviz    # macOS');

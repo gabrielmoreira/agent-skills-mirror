@@ -1,6 +1,12 @@
 ---
 name: add-opencode
 description: Use OpenCode as an agent provider. OpenRouter, OpenAI, Google, DeepSeek, etc. via OpenCode config — not the Anthropic Agent SDK. Per group via `ncl groups config update --provider opencode`; host passes OPENCODE_* and XDG mount when spawning containers.
+metadata:
+  nanoclaw-provider: opencode
+  nanoclaw-provider-label: OpenCode
+  nanoclaw-provider-hint: Open-source provider router
+  nanoclaw-provider-offered: 'false'
+  nanoclaw-provider-image: local-required
 ---
 
 # OpenCode agent provider

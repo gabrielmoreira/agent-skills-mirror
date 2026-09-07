@@ -11,7 +11,7 @@ format*; copy one and edit it.
 ## Where encoded guides live
 
 For a real published guide, don't reach for a bare name or expect a bundled config: see the
-README's [**House style is a different job**](../README.md#house-style-is-a-different-job)
+README's [**House style is a different job**](https://github.com/conorbronsdon/avoid-ai-writing/blob/main/README.md#house-style-is-a-different-job)
 section, which points at [Vale](https://github.com/vale-cli/vale) (where licensed, attributed
 guide packages live) and records the licensing decision in
 [#88](https://github.com/conorbronsdon/avoid-ai-writing/issues/88). In short: Vale enforces a
@@ -110,3 +110,9 @@ verbatim. Dashes and heading case stay as written. This pass does not claim guid
 compliance. Curly education
 uses neighboring characters, so leading elisions such as `'twas` and `rock 'n' roll` need
 review. Straight marks after digits follow the checker's feet/inch carve-out.
+
+For a bare URL immediately surrounded by single quotes, a closing quote followed
+only by terminal punctuation ends the URL even if its parentheses are unbalanced.
+Internal apostrophes such as `O'Reilly` remain part of the URL. If a URL literally
+ends in an apostrophe or has ambiguous punctuation, use an explicit Markdown link
+or `<https://example.com/...>` autolink to keep its destination unchanged.

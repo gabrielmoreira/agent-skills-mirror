@@ -79,6 +79,7 @@ Admin API key setup:
   - `seven_day` → weekly window; also becomes the primary fallback when `five_hour` is absent or has no utilization.
   - `seven_day_sonnet` / `seven_day_opus` → model-specific weekly window.
   - `limits[].weekly_scoped` → model-specific weekly windows; generic `All models` scopes stay in the main weekly row.
+  - The menu localizes scoped titles as a model name plus weekly duration; canonical snapshot and CLI titles remain unchanged.
   - `seven_day_routines` / `seven_day_cowork` → Daily Routines extra window.
   - Claude Design/Omelette keys are ignored because Claude Design shares the main Claude usage limit.
   - `extra_usage` → Extra usage cost (monthly spend/limit).
@@ -89,6 +90,9 @@ Admin API key setup:
   rows in desktop widgets. It is off by default; turning it on displays every known Claude window with a
   `claude-weekly-scoped-` identifier (for example, Fable). Turning it back off also drops scoped rows that a previous
   snapshot persisted. It does not change fetching, the menu, history, notifications, hooks, or CLI output.
+- Refreshing credentials for the same identified account preserves quota-threshold warning history. Warnings re-arm
+  when remaining quota recovers above a threshold and fire again on a later downward crossing. Unknown account
+  ownership still retires the unowned warning state instead of sharing it across potentially different accounts.
 - Successful OAuth login enables Claude and preserves the selected usage source. With the default Auto source, OAuth
   remains preferred when readable, while CLI/Web fallback stays available when OAuth credentials are not usable.
 - Claude Code periodically rotates its `Claude Code-credentials` Keychain item and can replace the ACL grant that
@@ -255,7 +259,7 @@ Model-scoped weekly-window proof (synthetic data, no real accounts or credential
   - Matching assistant entry IDs within the same session are counted once across roots; distinct turns are retained.
 - Cache:
   - Native provider cache: `~/Library/Caches/CodexBar/cost-usage/claude-v6.json`
-  - pi-compatible session cache: `~/Library/Caches/CodexBar/cost-usage/pi-sessions-v7.json`
+  - pi-compatible session cache: `~/Library/Caches/CodexBar/cost-usage/pi-sessions-v8.json`
 
 ## Key files
 - OAuth: `Sources/CodexBarCore/Providers/Claude/ClaudeOAuth/*`

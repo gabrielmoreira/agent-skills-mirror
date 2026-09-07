@@ -26,7 +26,7 @@ Skills 使用 Claude Code 的工具名称。Qoder（阿里 AI IDE）大部分工
 | `Plan` | `Plan` | 同名。只读设计与规划 |
 | `claude-code-guide` | `qoder-guide` | 非 SDK 模式下可用 |
 
-文档另列出 `statusline-setup`（TUI 模式）。**没有内置的 `code-reviewer`** —— 文档里出现的 `api-reviewer` 是用户自建 subagent 的示例，不是内置项。需要专职审查者时，用 `general-purpose` 配 `superpowers:requesting-code-review` 的 `code-reviewer.md` 模板。
+文档另列出 `statusline-setup`（TUI 模式）。**没有内置的 `code-reviewer`** —— 文档里出现的 `api-reviewer` 是用户自建 subagent 的示例，不是内置项。需要专职审查者时，用 `general-purpose` 配 `requesting-code-review` 的 `code-reviewer.md` 模板。
 
 ### IDE 与 CLI 的差异
 

@@ -1,14 +1,14 @@
 ---
 name: observability-designer
-description: 'Description: Design comprehensive observability strategies for production systems including SLI/SLO frameworks, alerting optimization, and dashboard generation.'
-zh_description: "用于可观测性、设计，支持部署、监控、排障和发布管理。"
-version: "1.0.0"
+description: 'Design production observability with SLI/SLO definitions, actionable alerts, telemetry and dashboards.'
+zh_description: "设计日志、指标、链路追踪、告警和服务运行目标。"
+version: "1.0.2"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 tags: '["designer", "devops", "observability", "sre"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-09-07"
 quality: 5
 complexity: "intermediate"
 ---

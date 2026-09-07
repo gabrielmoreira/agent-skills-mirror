@@ -15,6 +15,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from analyze_earnings_trades import (
     apply_entry_filter,
+    classify_empty_calendar,
     explain_empty_selection,
     main,
     select_candidates,
@@ -297,6 +298,121 @@ class TestCandidateSelection:
         assert results[0]["symbol"] == "AAPL"
         assert results[0]["market_cap"] == 3_000_000_000_000
 
+    @patch("analyze_earnings_trades.generate_markdown_report")
+    @patch("analyze_earnings_trades.generate_json_report")
+    @patch("analyze_earnings_trades.analyze_stock")
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_main_reports_timing_unknown_count_in_metadata(
+        self,
+        mock_client_class,
+        mock_analyze_stock,
+        mock_json_report,
+        _mock_markdown_report,
+        capsys,
+    ):
+        """Issue #352: a `time: null` row must be counted as unknown, and the
+        candidate population that actually reaches analysis (post market-cap
+        filter) is the denominator, not the raw calendar row count."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.api_calls_made = 3
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2026-08-28", "time": "bmo"},
+            {"symbol": "MSFT", "date": "2026-08-28", "time": "amc"},
+            {"symbol": "GOOG", "date": "2026-08-28", "time": None},
+        ]
+        client.get_company_profiles.return_value = {
+            "AAPL": {"marketCap": 3_000_000_000_000, "exchange": "NASDAQ"},
+            "MSFT": {"marketCap": 2_000_000_000_000, "exchange": "NASDAQ"},
+            "GOOG": {"marketCap": 1_500_000_000_000, "exchange": "NASDAQ"},
+        }
+        client.get_historical_prices.return_value = [{"close": 100.0}] * 60
+        client.get_api_stats.return_value = {"api_calls_made": 4, "max_api_calls": 200}
+        mock_analyze_stock.return_value = {
+            "gap": {"gap_pct": 2.0},
+            "pre_earnings_trend": {},
+            "volume_trend": {},
+            "ma200_position": {},
+            "ma50_position": {},
+            "composite": {
+                "composite_score": 60.0,
+                "grade": "C",
+                "grade_description": "Neutral setup",
+                "guidance": "Monitor",
+                "weakest_component": "Volume Trend",
+                "strongest_component": "Gap Size",
+                "component_breakdown": {},
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            argv = [
+                "analyze_earnings_trades.py",
+                "--api-key",
+                "test-key",
+                "--output-dir",
+                tmpdir,
+            ]
+            with patch.object(sys, "argv", argv):
+                main()
+
+        metadata = mock_json_report.call_args.args[1]
+        assert metadata["timing_candidates_total"] == 3
+        assert metadata["timing_unknown_count"] == 1
+        assert metadata["timing_source"] == "fmp_stable_includeReportTimes"
+
+    @patch("analyze_earnings_trades.generate_markdown_report")
+    @patch("analyze_earnings_trades.generate_json_report")
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_main_end_to_end_bmo_timing_uses_bmo_gap_window(
+        self, mock_client_class, mock_json_report, _mock_markdown_report, capsys
+    ):
+        """Issue #352 end-to-end: a bmo-timed candidate flows unmocked through
+        select_candidates -> analyze_stock -> calculate_gap and lands on the
+        BMO gap window (open[earnings_date]/close[prev_day]), not AMC."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.api_calls_made = 1
+        client.get_earnings_calendar.return_value = [
+            {"symbol": "AAPL", "date": "2025-01-05", "time": "bmo"},
+        ]
+        client.get_company_profiles.return_value = {
+            "AAPL": {
+                "companyName": "Apple Inc.",
+                "marketCap": 3_000_000_000_000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Consumer Electronics",
+                "price": 230.0,
+            },
+        }
+        client.get_historical_prices.return_value = _make_earnings_prices(
+            earnings_date="2025-01-05",
+            pre_close=100.0,
+            earnings_open=106.0,
+            earnings_close=107.0,
+            post_open=108.0,
+        )
+        client.get_api_stats.return_value = {"api_calls_made": 2, "max_api_calls": 200}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            argv = [
+                "analyze_earnings_trades.py",
+                "--api-key",
+                "test-key",
+                "--output-dir",
+                tmpdir,
+            ]
+            with patch.object(sys, "argv", argv):
+                main()
+
+        results = mock_json_report.call_args.args[0]
+        assert len(results) == 1
+        gap = results[0]["components"]["gap_size"]
+        assert gap["timing_used"] == "bmo"
+        # BMO: open[earnings_date] / close[prev_day] - 1 = 106.0 / 100.0 - 1 = 6.0%
+        assert gap["gap_pct"] == 6.0
+
 
 # ===========================================================================
 # Zero-Result Reason Tests (Issue #332)
@@ -417,6 +533,22 @@ class TestExplainEmptySelection:
         )
 
 
+class TestClassifyEmptyCalendar:
+    """Only a clean empty list is benign; None and non-list bodies fail closed."""
+
+    def test_empty_list_is_benign(self):
+        assert classify_empty_calendar([]) == "no_earnings_rows"
+
+    def test_none_fails_closed(self):
+        assert classify_empty_calendar(None) == "calendar_fetch_failed"
+
+    def test_non_list_bodies_fail_closed(self):
+        assert classify_empty_calendar({}) == "calendar_fetch_failed"
+        assert classify_empty_calendar("") == "calendar_fetch_failed"
+        assert classify_empty_calendar(0) == "calendar_fetch_failed"
+        assert classify_empty_calendar({"error": "Bad Request"}) == "calendar_fetch_failed"
+
+
 class TestMainZeroResultExitCodes:
     """Drive main() end-to-end with a mocked FMPClient for each exit code."""
 
@@ -429,6 +561,26 @@ class TestMainZeroResultExitCodes:
             "--output-dir",
             str(tmpdir),
         ]
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_malformed_rows_are_ignored_not_crash(self, mock_client_class, tmp_path, capsys):
+        """Non-dict calendar rows are never dereferenced; symbols-empty stays benign."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = ["x", None, {"foo": 1}]
+        client.get_company_profiles.return_value = {}
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=no_earnings_rows" in err
 
     @patch("analyze_earnings_trades.FMPClient")
     def test_no_profiles_returned_exits_1(self, mock_client_class, tmp_path, capsys):
@@ -560,6 +712,65 @@ class TestMainZeroResultExitCodes:
         assert "ZERO_RESULT_REASON=no_earnings_rows" in err
 
     @patch("analyze_earnings_trades.FMPClient")
+    def test_empty_calendar_list_exits_0(self, mock_client_class, tmp_path, capsys):
+        """A clean empty calendar response exits 0 with api_stats observability."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = []
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 0
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=no_earnings_rows" in err
+        assert "budget_remaining=50" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_failed_calendar_fetch_exits_1(self, mock_client_class, tmp_path, capsys):
+        """A failed calendar fetch (None body) fails closed with exit 1."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = None
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=calendar_fetch_failed" in err
+        assert "rate_limit_reached=False" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
+    def test_truthy_non_list_body_exits_1_with_reason(self, mock_client_class, tmp_path, capsys):
+        """A truthy non-list body (wrong shape) fails closed with a reason line."""
+        client = mock_client_class.return_value
+        mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
+        client.get_earnings_calendar.return_value = {"error": "Bad Request"}
+        client.get_api_stats.return_value = {
+            "budget_remaining": 50,
+            "rate_limit_reached": False,
+        }
+
+        with patch.object(sys, "argv", self._argv(tmp_path)):
+            with pytest.raises(SystemExit) as exc_info:
+                main()
+
+        assert exc_info.value.code == 1
+        err = capsys.readouterr().err
+        assert "ZERO_RESULT_REASON=calendar_fetch_failed" in err
+
+    @patch("analyze_earnings_trades.FMPClient")
     def test_mixed_filters_rejected_all_exits_0(self, mock_client_class, tmp_path, capsys):
         client = mock_client_class.return_value
         mock_client_class.US_EXCHANGES = FMPClient.US_EXCHANGES
@@ -631,6 +842,21 @@ class TestGapSizeCalculator:
         result_amc = calculate_gap(prices, "2025-01-05", "amc")
         result_unknown = calculate_gap(prices, "2025-01-05", "unknown")
         assert result_amc["gap_pct"] == result_unknown["gap_pct"]
+
+    def test_unknown_timing_carries_a_timing_note(self):
+        """Issue #352: unknown timing must surface that the AMC window was
+        assumed, not measured, so a BMO reporter mismeasured as AMC is visible
+        in the output rather than silently blended into the score."""
+        prices = self._make_simple_prices()
+        result = calculate_gap(prices, "2025-01-05", "unknown")
+        assert "timing_note" in result
+        assert "unknown" in result["timing_note"].lower()
+        assert "amc" in result["timing_note"].lower()
+
+    def test_bmo_and_amc_timing_do_not_carry_a_timing_note(self):
+        prices = self._make_simple_prices()
+        assert "timing_note" not in calculate_gap(prices, "2025-01-05", "bmo")
+        assert "timing_note" not in calculate_gap(prices, "2025-01-05", "amc")
 
     def test_negative_gap(self):
         """Test negative (gap down) calculation."""
@@ -1255,6 +1481,35 @@ class TestReportGenerator:
             assert "Earnings Trade Analyzer Report" in content
             assert "AAPL" in content
             assert "Grade A & B Details" in content
+
+    def test_markdown_shows_timing_unknown_count_when_present_in_metadata(self):
+        """Issue #352: metadata carrying timing_unknown_count/timing_candidates_total
+        must render as a visible line so the residual FMP `time: null` rate is
+        never silently blended into the AMC-window gap assumption."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = self._make_result()
+            md_path = os.path.join(tmpdir, "test.md")
+            metadata = {
+                "generated_at": "2026-02-21T10:00:00",
+                "lookback_days": 2,
+                "total_screened": 1,
+                "timing_unknown_count": 3,
+                "timing_candidates_total": 9,
+            }
+            generate_markdown_report([result], metadata, md_path)
+            with open(md_path) as f:
+                content = f.read()
+            assert "**Timing unknown:** 3 of 9 (gap window assumed AMC)" in content
+
+    def test_markdown_omits_timing_unknown_line_when_metadata_lacks_it(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = self._make_result()
+            md_path = os.path.join(tmpdir, "test.md")
+            metadata = {"generated_at": "2026-02-21", "lookback_days": 2, "total_screened": 1}
+            generate_markdown_report([result], metadata, md_path)
+            with open(md_path) as f:
+                content = f.read()
+            assert "Timing unknown" not in content
 
     def test_markdown_handles_none_numeric_timing_and_breakdown_values(self):
         """Unavailable upstream values render as neutral values instead of crashing."""

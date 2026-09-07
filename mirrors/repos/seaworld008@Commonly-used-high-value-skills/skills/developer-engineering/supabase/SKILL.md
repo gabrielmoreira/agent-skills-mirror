@@ -1,15 +1,15 @@
 ---
 name: supabase
-description: 'Use when doing ANY task involving Supabase. Triggers: Supabase products (Database, Auth, Edge Functions, Realtime, Storage, Vectors, Cron, Queues); client libraries and SSR integrations (supabase-js, @supabase/ssr) in Next.js, React, SvelteKit, Astro, Remix; auth issues (login, logout, sessions, JWT, cookies, getSession, getUser, getClaims, RLS); Supabase CLI or MCP server; schema changes, migrations, declarative schemas, security audits, Postgres extensions (pg_graphql, pg_cron, pg_vector); debugging and troubleshooting errors or unexpected behavior on Supabase projects (HTTP errors, Postgres errors, RLS surprises, permission denied, schema cache issues, timeouts, Edge Function crashes, Realtime drops, Storage failures) and reading or querying logs (Logs Explorer, ClickHouse).'
-zh_description: "用于Supabase，支持开发、调试、评审和交付。"
-version: "1.0.2"
+description: 'Build or troubleshoot Supabase Database, Auth, Storage, Realtime, Edge Functions, and client/SSR integrations; use current platform documentation.'
+zh_description: "开发和排查 Supabase 数据库、认证、存储及应用集成。"
+version: "1.0.4"
 author: "seaworld008"
 source: "github:supabase/agent-skills"
 source_url: "https://skills.sh/supabase/agent-skills/supabase"
 license: MIT
 tags: '["development", "supabase"]'
 created_at: "2026-06-03"
-updated_at: "2026-08-20"
+updated_at: "2026-09-07"
 quality: 4
 complexity: "intermediate"
 metadata:
@@ -152,7 +152,7 @@ Do NOT use `apply_migration` to change a local database schema — it writes a m
 
 ## Debugging
 
-When you get an error on a Supabase-related request, for example an error code from the Supabase REST API, Postgres database, or PostgREST, an empty result, getting blocked by RLS unexpectedly, or an error from a Supabase service like Auth, Realtime, Edge Functions, or Storage, you **must** fetch Supabase's [Monitoring and Debugging](https://supabase.com/docs/guides/monitoring-and-debugging.md) documentation before diagnosing or proposing a fix, rather than working from memory. The same docs also cover performance optimizations, such as slow queries and missing indexes.
+When diagnosing Supabase REST API, Postgres, PostgREST, RLS, Auth, Realtime, Edge Functions, or Storage errors, consult the current [Observability](https://supabase.com/docs/guides/observability.md) documentation and follow its relevant diagnostic links. Use the same entry point for performance investigations such as slow queries and missing indexes.
 
 ## Reference Guides
 

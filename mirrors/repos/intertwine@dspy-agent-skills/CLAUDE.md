@@ -4,19 +4,9 @@ Guidance for Claude Code (or any agent) working inside this repo.
 
 ## What this repo is
 
-A pack of five agent skills that teaches coding agents to build, optimize, and ship DSPy 3.2.x programs. It is designed to install cleanly into both **Claude Code** (`~/.claude/skills/`) and **Codex CLI** (`~/.agents/skills/`).
+A pack of agent skills that teaches coding agents to build, optimize, and ship DSPy 3.2.x programs. It is designed to install cleanly into both Claude Code (`~/.claude/skills/`) and Codex CLI (`~/.agents/skills/`).
 
 The skills themselves are in `skills/<name>/SKILL.md`. The product is Markdown; Python files in `skills/*/example_*.py` are runnable smoke tests, not library code.
-
-## Repo layout
-
-```
-.claude-plugin/    # plugin.json + marketplace.json for Claude Code distribution
-skills/            # 5 skills; each dir has SKILL.md + reference.md + example_*.py
-scripts/           # install.sh (dual-target installer)
-tests/             # pytest validators for SKILL.md spec, JSON manifests, example AST
-docs/              # installation.md, usage.md, CHANGELOG.md
-```
 
 ## Commands you'll actually run
 
@@ -72,25 +62,19 @@ Every DSPy API claim must be verifiable against https://dspy.ai/ for DSPy 3.2.x.
 
 ### When adding a new skill
 
-1. Create `skills/<new-name>/SKILL.md` with spec-compliant frontmatter.
-2. Add `reference.md` for the longer-form API detail.
-3. Add at least one `example_*.py` with a `--dry-run` path that constructs the relevant DSPy objects without calling an LM.
-4. Run `uv run --with pytest python -m pytest tests/ -v` — all 80+ tests must pass. Frontmatter, correctness, and docs-completeness guards will catch drift automatically.
-5. Update the skill table in `README.md` and `docs/usage.md`.
-6. Bump `version` in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
-7. Add a `docs/CHANGELOG.md` entry describing what changed and why.
+New skill: spec-compliant `SKILL.md` + `reference.md` + a `--dry-run` example, then update the skill table in `README.md` and `docs/usage.md`, bump `version` in both `.claude-plugin/*.json`, and add a `docs/CHANGELOG.md` entry. The validators in `tests/` must pass.
 
 ### When fixing a bug
 
-Per the project-wide policy: grep for the same anti-pattern across all skills. If one SKILL.md has a wrong import path, others likely do too.
+If one SKILL.md has a wrong import path, others likely do too; check the sibling skills before closing the fix.
 
 ## Gotchas
 
-- **`dspy.GEPA` asserts `reflection_lm is not None` at construction time**, not compile time. Dry-run code paths must construct a stub `dspy.LM(...)` (no network call on construction).
-- **`dspy.RLM` needs Deno** for its default Pyodide/WASM interpreter.
-- **`SKILL.md` case is enforced** — `skill.md` or `Skill.md` won't be loaded by Claude Code.
-- **Plugin vs. skill metadata**: version/author metadata belongs in `.claude-plugin/plugin.json`, not in individual `SKILL.md` files.
-- **Symlink install** (`./scripts/install.sh`) means edits in this repo appear live in the installed skills — great for iteration, but means a broken edit immediately breaks the agent's skill invocation.
+- `dspy.GEPA` asserts `reflection_lm is not None` at construction time, not compile time. Dry-run code paths must construct a stub `dspy.LM(...)` (no network call on construction).
+- `dspy.RLM` needs Deno for its default Pyodide/WASM interpreter.
+- `SKILL.md` case is enforced — `skill.md` or `Skill.md` won't be loaded by Claude Code.
+- Plugin vs. skill metadata: version/author metadata belongs in `.claude-plugin/plugin.json`, not in individual `SKILL.md` files.
+- Symlink install (`./scripts/install.sh`) means edits in this repo appear live in the installed skills — great for iteration, but means a broken edit immediately breaks the agent's skill invocation.
 
 ## Testing philosophy
 

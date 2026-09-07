@@ -452,7 +452,7 @@ Configuration is read from `NOTEBOOKLM_SERVER_*` env vars (overridable by the ma
 
 The concurrency knobs are route-group backpressure for expensive work. They do not gate `/healthz` or cheap read/list/poll routes.
 
-**Surface:** every route is under `/v1` and requires `Authorization: Bearer <token>` plus a loopback `Host` header (a DNS-rebinding guard). `/healthz` is the one public, token-less route. The auto-generated `/docs` / `/openapi.json` schema UI is disabled (it would otherwise be reachable token-less).
+**Surface:** every `/v1` route requires `Authorization: Bearer <token>` plus a loopback `Host` header (a DNS-rebinding guard). `/healthz` is the one public, token-less **liveness** probe — it returns `{"ok": true}` even when the NotebookLM client failed to open. Readiness would be a separate contract. The auto-generated `/docs` / `/openapi.json` schema UI is disabled (it would otherwise be reachable token-less). Operator threat model: [SECURITY.md](../SECURITY.md).
 
 <!-- not mirrored: REST-server curl examples (end-user/automation tooling); not part of the contributor install flow. -->
 ```bash
@@ -470,7 +470,16 @@ curl -H "Authorization: Bearer $TOKEN" -d '{"question":"Summarize"}' \
 curl -H "Authorization: Bearer $TOKEN" $BASE/v1/notebooks/<id>/share # sharing status
 ```
 
-Endpoints: `/v1/notebooks` (list/get/create/delete); `/v1/notebooks/{id}/sources` (list/get/add via `url`·`text`·`file`/delete); `/v1/notebooks/{id}/notes` (list/get/create/update via `PUT`/delete); `/v1/notebooks/{id}/chat` (blocking ask, no streaming); `/v1/notebooks/{id}/artifacts` (list / generate / poll / download); `/v1/notebooks/{id}/share` (status / public link / users / view level). Long-running work (source ingest, artifact generation) is **poll-the-resource**: the create call returns immediately and the matching `GET` reports `pending` until the resource is ready (`200`), `404` for an id the server never created, `409`/`410` for a failed/removed artifact.
+Endpoints: `/v1/notebooks` (list/get/create/delete); `/v1/notebooks/{id}/sources` (list/get/add via `url`·`text`·`file`·`batch`/delete); `/v1/notebooks/{id}/notes` (list/get/create/update via `PUT`/delete); `/v1/notebooks/{id}/chat` (blocking ask, no streaming); `/v1/notebooks/{id}/artifacts` (list / generate / poll / download); `/v1/notebooks/{id}/share` (status / public link / users / view level). Long-running work (source ingest, artifact generation) is **poll-the-resource**: the create call returns immediately and the matching `GET` reports `pending` until the resource is ready (`200`), `404` for an id the server never created, `409`/`410` for a failed/removed artifact.
+
+Routes own Pydantic input, HTTP status, and JSON/error projection. REST and MCP use the same central
+builder and per-kind option table to construct exact frozen generation requests. The CLI constructs
+the same typed variants but maps most Click inputs directly; all three adapters reuse neutral domain
+validation, and the transport-neutral cores contain no HTTP or presentation policy. The batch source
+route validates local members, sends all valid URLs once, and returns one ordered result per input
+with `commit_state` `confirmed`, `rejected`, `unknown`, or `not_sent`. Continuation follows that
+typed evidence rather than the HTTP status. Inputs and titles are capped and credential-redacted
+before public and JSON projection.
 
 **Artifacts & uploads:**
 

@@ -110,6 +110,8 @@ gotcha that most often explains a failure. Open every DB read-only.
 
 ### Tools / Permissions / MCP / IM Channel / Skills / Logging / Background Jobs — `tool-system.md`, `permission-system.md`, `mcp.md`, `im-channel.md`, `skill-system.md`, `logging.md`, `background-jobs.md`
 
+- Skill installation: `skills/ha-skill-installer/scripts/install_skill.py` prepares a temporary snapshot, verifies its digest, and atomically publishes without replacement. The installed `.hope-skill-install.json` records source and file hashes. Use `skill({name, action:"inspect"})` to refresh the catalog and compare `baseDir` with the intended destination; inspect never activates the skill. Trace `category='skills'`, `source='inspect'`. Missing prerequisites or a different winning source are distinct from failed file installation.
+
 - Entry: `tools/dispatch.rs` (visibility), `tools/execution.rs`, `tool_defs/` (kernel-shared contract: `TOOL_*` names, `ToolDefinition`/tier, `ToolExecContext`, scope predicates), `permission/engine.rs` (`resolve_async`), `ha-mcp/src/invoke.rs` (runtime; kernel facade `ha-core/src/mcp/`), ha-channel 的 `channel/worker/dispatcher.rs`, ha-skills 的 `skills/discovery.rs`·`skills/author.rs`·`tools/skill/`（阶段 5 第七刀迁出；kernel 回调面 `skills_hooks.rs` 九槽，契约 `skills/types.rs` + 台账 `skills/activation.rs` 仍在 ha-core）, `logging/db.rs`, `async_jobs/manager.rs` (`JobManager`).
 - State: `sessions.db` (`channel_conversations`, `sessions.permission_mode`, `learning_events`), `background_jobs.db`, `permission/*.json`, `credentials/mcp/{id}.json`. Config: `mcp_global.enabled`, `permission.global_yolo`, `deferredTools.enabled`.
 - Grep: `category IN ('tool','mcp','channel','skills','permission','async_jobs')` (permission decisions log under `permission`; background-job lifecycle logs under `async_jobs`).
@@ -153,6 +155,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 
 ### Ask-user / Prompt system / Media generation — `ask-user.md`, `prompt-system.md`, `media-generation.md`
 
+- 问答超时排查：先查请求顶层 `timeout_mode`，显式 `inherit` / `never` / `after` 覆盖旧每题提示；用户关闭自动超时时 `after` 明确拒绝。事件中的 `timeoutAt` 才是有效截止时间。结果的 `answers` 只含用户回答，超时默认方案只进 `fallback`；旧 `timedOut` 结果也不能显示成已回答或通过确认门。当前仍是阻塞提问，没有异步回投。
 - Entry: `tools/ask_user_question.rs`, `ask_user/questions.rs`, ha-channel 的 `channel/worker/ask_user.rs`, `system_prompt/build.rs`, kernel `ha-core/src/media_gen/` (crud/resolve 配置面); 执行机器与工具 `ha-media/src/` (`media_gen/` executor+adapters+catalog, `{image_generate,audio_generate}/` chat-tool front-ends).
 - State: `sessions.db` (`ask_user_questions`). Config: `ask_user_question_timeout_enabled` (default false = wait forever) / `_secs`, `mediaGen` (`providers[]` + per-function `chains` — image / speech / music / sfx, each = primary model + fallbacks; an empty chain falls back to provider order — plus `imageDefaults` / `audioDefaults`).
 - Grep: `category='ask_user'`; media generation logs under `category='media_gen'` (source `resolve`/`execute`) plus tool-level `category='tool'` (source `image_generate`/`audio_generate`); IM ask_user uses `category='channel'` with an `ask_user:` prefix.

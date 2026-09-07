@@ -298,7 +298,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 237 | ✓ | [`docs/cli/skills.md`](docs/cli/skills.md) |
 | 238 | ✓ | [`docs/platforms/mac/skills.md`](docs/platforms/mac/skills.md) |
 | 239 | ✓ | [`docs/reference/templates/AGENTS.md`](docs/reference/templates/AGENTS.md) |
-| 240 | ✓ | [`docs/reference/templates/CLAUDE.md`](docs/reference/templates/CLAUDE.md) |
+| 240 | ✓ | [`docs/releases/2026.8.1/skills.md`](docs/releases/2026.8.1/skills.md) |
 | 241 | ✓ | [`docs/tools/skills.md`](docs/tools/skills.md) |
 | 242 | ✓ | [`extensions/acpx/AGENTS.md`](extensions/acpx/AGENTS.md) |
 | 243 | ✓ | [`extensions/acpx/CLAUDE.md`](extensions/acpx/CLAUDE.md) |

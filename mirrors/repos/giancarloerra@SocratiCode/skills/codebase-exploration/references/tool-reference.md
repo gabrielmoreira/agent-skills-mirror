@@ -18,7 +18,7 @@ Semantic search across an indexed codebase. Only use after `codebase_index` is c
 **Key behaviours:**
 - Uses hybrid semantic + keyword (BM25) search with Reciprocal Rank Fusion
 - Warns if indexing is in progress (results will be incomplete during full index)
-- Warns if file watcher is not active (results may be stale)
+- Reports inactive automatic watching as stale by default, or as a deliberate snapshot in `SOCRATICODE_WATCHER=manual`/`off`
 - Results below `minScore` are filtered out with a count of omitted results
 
 ---
@@ -37,7 +37,7 @@ Check index status: chunk count, indexing progress, last completed operation, fi
 - Last completed operation: type, files processed, chunks created, duration
 - Incomplete index detection (previous run interrupted)
 - Cross-process indexing detection (another process actively indexing)
-- File watcher status (active / watched by another process / inactive)
+- File watcher status (active / watched by another process / inactive / deliberately disabled)
 - Code graph status (files, edges, last built, cached in memory)
 - Context artifacts status
 
@@ -59,8 +59,8 @@ Query the dependency graph for a specific file.
 **Returns:** Two lists: what this file imports (→) and what depends on it (←).
 
 **Key behaviours:**
-- Requires graph to exist (auto-built after indexing, or use `codebase_graph_build`)
-- Auto-starts file watcher on query
+- Requires graph to exist (auto-built after indexing, or use `codebase_graph_build`); `manual`/`off` never create a missing graph as a query side effect
+- Auto-starts file watcher on query only in `SOCRATICODE_WATCHER=auto`
 - Use relative paths (not absolute)
 
 ---

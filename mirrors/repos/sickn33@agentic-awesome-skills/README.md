@@ -1,13 +1,13 @@
-<!-- registry-sync: version=16.8.0; skills=2113; stars=46013; updated_at=2026-09-05T14:34:40+00:00 -->
+<!-- registry-sync: version=16.9.1; skills=2113; stars=46059; updated_at=2026-09-06T14:45:34+00:00 -->
 # AAS Core — Agentic Awesome Skills
 
 > **Find reusable instructions for your project, inspect their complete files, and keep an exact skill set you can review and reuse.**
 
-**Current release: V16.8.0.** This release includes AAS Core for complete local catalog search, agent-owned selection, manifest validation, planning, and diagnosis. Apply and recovery remain experimental and outside the supported preview path.
+**Current release: V16.9.1.** This release includes AAS Core for complete local catalog search, agent-owned selection, manifest validation, planning, and diagnosis. Apply and recovery remain experimental and outside the supported preview path.
 
 Codex or Claude inspects your project and chooses exact skills from the complete local AAS catalog. AAS Core does not rank or recommend them: its read-only `compose_stack` tool validates the agent-owned selection in memory, and a client or the `aas` CLI can persist it as `aas-stack.json` and produce an immutable plan before any target change.
 
-**[Read the AAS Core preview guide →](https://github.com/sickn33/agentic-awesome-skills/blob/v16.8.0/docs/users/aas-core.md)**
+**[Read the AAS Core preview guide →](https://github.com/sickn33/agentic-awesome-skills/blob/v16.9.1/docs/users/aas-core.md)**
 
 This README tracks `main`. Changes under [Unreleased](CHANGELOG.md#unreleased), including complete bundle inspection, Workbench evidence import and sparse installer retrieval, require a subsequent release; the linked versioned guide describes the published package.
 
@@ -42,6 +42,20 @@ This is an independent community project. It is not affiliated with, sponsored b
 [![OpenCode](https://img.shields.io/badge/OpenCode-CLI-gray?style=for-the-badge)](https://github.com/opencode-ai/opencode)
 [![Antigravity](https://img.shields.io/badge/Antigravity-AI%20IDE-red?style=for-the-badge)](https://github.com/sickn33/agentic-awesome-skills)
 
+## Support the Project
+
+**We’re looking for sponsors to support Agentic Awesome Skills.** If you or your company would like to support the project, become a sponsor.
+
+### [♥ Sponsor AAS →](https://github.com/sponsors/sickn33)
+
+You can also [support AAS on Buy Me a Coffee](https://buymeacoffee.com/sickn33).
+
+<a href="https://buymeacoffee.com/sickn33">
+  <img src="assets/buy-me-a-coffee-banner.png" alt="Support Agentic Awesome Skills on Buy Me a Coffee" width="420" />
+</a>
+
+*Security tooling support: [Snyk](https://snyk.io/).*
+
 ## AAS Core: Agent-First Preview
 
 > **The agent composes. You control. AAS keeps the stack reproducible.**
@@ -69,7 +83,7 @@ AAS Core gives the repository one product model:
 | Apply and recovery | Experimental, explicit opt-in, outside the supported safety claim |
 | Semantic suitability certification | Not provided |
 
-Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.8.0/docs/users/aas-core.md) for the exact trust boundaries, current preview status, Codex/Claude setup model, and CLI lifecycle.
+Read the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.9.1/docs/users/aas-core.md) for the exact trust boundaries, current preview status, Codex/Claude setup model, and CLI lifecycle.
 
 ## Why This Repo
 
@@ -89,6 +103,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 
 ## Table of Contents
 
+- [Support the Project](#support-the-project)
 - [AAS Core: Agent-First Preview](#aas-core-agent-first-preview)
 - [Why This Repo](#why-this-repo)
 - [Installation](#installation)
@@ -99,7 +114,6 @@ Direct file search can find candidate prose, but it leaves the result in the con
 - [Browse 2,113+ Skills](#browse-2113-skills)
 - [Troubleshooting](#troubleshooting)
 - [Stable Skills Manifest v1](#stable-skills-manifest-v1)
-- [Support the Project](#support-the-project)
 - [Contributing](#contributing)
 - [Community](#community)
 - [Credits & Sources](#credits--sources)
@@ -109,7 +123,7 @@ Direct file search can find candidate prose, but it leaves the result in the con
 
 ## Installation
 
-For Codex and Claude, start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.8.0/docs/users/aas-core.md): configure the local MCP, ask the agent to inspect the project and choose exact IDs from the full catalog, review the proposed `aas-stack.json`, then run CLI validation and planning. The MCP and validation are read-only. Planning writes only the requested plan artifact; it does not materialize skill payloads or AAS managed state in the target.
+For Codex and Claude, start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.9.1/docs/users/aas-core.md): configure the local MCP, ask the agent to inspect the project and choose exact IDs from the full catalog, review the proposed `aas-stack.json`, then run CLI validation and planning. The MCP and validation are read-only. Planning writes only the requested plan artifact; it does not materialize skill payloads or AAS managed state in the target.
 
 Use direct installation when your host does not yet have a native AAS Core adapter, when you already know the exact skill IDs, or when you deliberately prefer manual selection:
 
@@ -118,6 +132,8 @@ Use direct installation when your host does not yet have a native AAS Core adapt
 - **Bundles and workflows** when you want role-based recommendations or ordered execution playbooks.
 
 ### From selection to use
+
+On unreleased `main`, `aas stack install-preview --manifest <file> --destination <skill-directory>` prepares a direct-installer dry run from the agent-selected IDs. It does not execute installation or choose skills; destination names must satisfy the installer's filename restrictions. See [the manifest handoff](docs/users/aas-core.md#use-the-reviewed-selection).
 
 1. Describe the project outcome to Codex or Claude with the local AAS MCP configured.
 2. Have the agent compare candidates and read the selected instructions and support files. Preserve the exact IDs in `aas-stack.json` and review their prerequisites.
@@ -280,7 +296,7 @@ The supported path covers complete local catalog search and inspection, agent-ow
 
 ### How do I install it?
 
-For AAS Core, follow the [preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.8.0/docs/users/aas-core.md) and use only a package release whose notes explicitly state that it includes Core. Release 14.6.0 predates Core; Core-capable releases begin with the 15.x line.
+For AAS Core, follow the [preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.9.1/docs/users/aas-core.md) and use only a package release whose notes explicitly state that it includes Core. Release 14.6.0 predates Core; Core-capable releases begin with the 15.x line.
 
 For direct skill distribution, use a tool-specific flag such as `--codex`,
 `--cursor`, `--gemini`, or `--claude` to place skills in the directory your
@@ -396,7 +412,7 @@ Use the root repo as a landing page, then jump into the deeper surface that matc
 Keep the root README short; use the dedicated docs for recovery and platform-specific guidance.
 
 - If you are confused after installation, start with the [Usage Guide](docs/users/usage.md).
-- For Core setup, trust boundaries, stack manifests, and preview status, use the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.8.0/docs/users/aas-core.md).
+- For Core setup, trust boundaries, stack manifests, and preview status, use the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.9.1/docs/users/aas-core.md).
 - On native Windows, `AAS_ADAPTER_WINDOWS_ACL_FAILED` refers to the configuration path checked with PowerShell `Get-Acl`, not the cache and not `icacls`; do not approve until preview returns an approval digest.
 - If you integrate agentic-awesome-skills into a host, read the discovery contract first: [Stable Skills Manifest v1](docs/users/discovery-manifest.md).
 - For Windows truncation or context crash loops, use [docs/users/windows-truncation-recovery.md](docs/users/windows-truncation-recovery.md).
@@ -407,7 +423,7 @@ Keep the root README short; use the dedicated docs for recovery and platform-spe
 
 ## Stable Skills Manifest v1
 
-This is the stable **direct-host discovery manifest** for integrations that load individual `SKILL.md` files. It is not `aas-stack.json`, the verified AAS Core catalog, or the Core composition contract. Core users should start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.8.0/docs/users/aas-core.md); custom host integrations can continue using the manifest below.
+This is the stable **direct-host discovery manifest** for integrations that load individual `SKILL.md` files. It is not `aas-stack.json`, the verified AAS Core catalog, or the Core composition contract. Core users should start with the [AAS Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v16.9.1/docs/users/aas-core.md); custom host integrations can continue using the manifest below.
 
 Host integrations should use:
 
@@ -416,22 +432,6 @@ Host integrations should use:
 - [`data/skills_index.json`](./data/skills_index.json) as the compatibility mirror.
 
 This keeps discovery stable (`id`, `path`, metadata) while ensuring hosts only load `SKILL.md` for requested `@skill-id` values.
-
-## Support the Project
-
-The immediate goal is **€100 per month** to help cover the AI tools used to maintain AAS, review contributions, and keep releases moving. Small recurring contributions add up: 20 people giving €5 per month would cover that goal.
-
-[Support AAS on Buy Me a Coffee](https://buymeacoffee.com/sickn33) and select **Make this monthly** for recurring support. One-time contributions are welcome too. Support is optional; the project stays free and open-source for everyone.
-
-[![Buy me a coffee](assets/buy-me-a-coffee-banner.png)](https://buymeacoffee.com/sickn33)
-
-- [Help maintain AAS on Buy Me a Coffee](https://buymeacoffee.com/sickn33)
-- Security tooling support: [Snyk](https://snyk.io/)
-- Star the repository
-- Open reproducible issues
-- Contribute docs, fixes, and skills
-
----
 
 ## Contributing
 
@@ -763,6 +763,22 @@ Made with [contrib.rocks](https://contrib.rocks). *(Image may be cached; [view l
 We officially thank the following contributors for their help in making this repository awesome!
 
 ## Star History
+
+<a href="https://www.star-history.com/sickn33/agentic-awesome-skills">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=sickn33/agentic-awesome-skills&amp;type=rank&amp;theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=sickn33/agentic-awesome-skills&amp;type=rank" />
+    <img alt="Agentic Awesome Skills global rank on Star History" src="https://api.star-history.com/badge?repo=sickn33/agentic-awesome-skills&amp;type=rank" />
+  </picture>
+</a>
+
+<a href="https://www.star-history.com/?repos=sickn33%2Fagentic-awesome-skills&amp;type=date&amp;legend=top-left">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=sickn33/agentic-awesome-skills&amp;type=date&amp;theme=dark&amp;legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=sickn33/agentic-awesome-skills&amp;type=date&amp;legend=top-left" />
+    <img alt="GitHub star growth over time for Agentic Awesome Skills" src="https://api.star-history.com/chart?repos=sickn33/agentic-awesome-skills&amp;type=date&amp;legend=top-left" />
+  </picture>
+</a>
 
 [View the live Star History chart](https://www.star-history.com/?repos=sickn33%2Fagentic-awesome-skills&type=date&legend=top-left).
 

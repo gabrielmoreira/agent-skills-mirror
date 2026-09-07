@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Cranot/roam-code` — 26 default patterns, 6 followed patterns, 17 file(s) materialized.
+Mirror of `Cranot/roam-code` — 26 default patterns, 7 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 6 followed patterns, 17 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 17 |
+| Followed pats | 7 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 6 followed patterns, 17 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/understanding-roam.md`
 - `docs/concepts/detector-evidence.md`
 - `docs/concepts/verification-evidence.md`
 - `CONTRIBUTING.md`
@@ -81,6 +82,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | → | [`docs/concepts/verification-evidence.md`](docs/concepts/verification-evidence.md) |
 | 16 | → | [`docs/README.md`](docs/README.md) |
 | 17 | → | [`docs/repository-maintenance.md`](docs/repository-maintenance.md) |
+| 18 | → | [`docs/understanding-roam.md`](docs/understanding-roam.md) |
 
 ---
 

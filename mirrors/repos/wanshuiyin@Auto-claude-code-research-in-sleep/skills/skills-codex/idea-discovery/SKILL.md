@@ -25,7 +25,7 @@ Each phase builds on the previous one's output. The final deliverables are a val
 - **MAX_PILOT_IDEAS = 3** — Run pilots for at most 3 top ideas in parallel. Additional ideas are validated on paper only.
 - **MAX_TOTAL_GPU_HOURS = 8** — Total GPU budget across all pilots. If exceeded, skip remaining pilots and note in report.
 - **AUTO_PROCEED = true** — When `true`, checkpoints are informational: report the selected option and continue in the same turn. Set to `false` to ask for explicit user confirmation and end the turn at each selection checkpoint.
-- **REVIEWER_MODEL = `gpt-5.6-sol`** — Model used via a secondary Codex agent. Must be an OpenAI model (e.g., `gpt-5.6-sol`, `o3`, `gpt-4o`). Passed to sub-skills.
+- **REVIEWER_MODEL = `gpt-6-astra`** — Model used via a secondary Codex agent. Must be an OpenAI model (e.g., `gpt-6-astra`, `o3`, `gpt-4o`). Passed to sub-skills.
 - **ARXIV_DOWNLOAD = false** — When `true`, `/research-lit` downloads the top relevant arXiv PDFs during Phase 1. When `false` (default), only fetches metadata. Passed through to `/research-lit`.
 - **COMPACT = false** — When `true`, generate compact summary files for short-context sessions and downstream skills. Writes `idea-stage/IDEA_CANDIDATES.md`.
 - **OUTPUT_DIR = `idea-stage/`** — All idea-stage outputs go here. Create the directory if it doesn't exist.
@@ -66,7 +66,7 @@ state record.
 
 For a new run, derive `<run_id>` from the direction slug and date, then start
 this ordered state record with `--executor <actual-Codex-model>
---provisional-advances` (for example, `codex-gpt-5.6-sol`):
+--provisional-advances` (for example, `codex-gpt-6-astra`):
 
 ```text
 research-lit,idea-creator,novelty-check,research-review,research-refine-pipeline
@@ -245,7 +245,7 @@ Invoke `/idea-creator` with the landscape context and `idea-stage/REF_PAPER_SUMM
 
 **What this does:**
 - If `idea-stage/REF_PAPER_SUMMARY.md` exists, include it as context so ideas explicitly build on, improve, or extend the reference paper
-- Brainstorm 8-12 concrete ideas via GPT-5.6-Sol xhigh
+- Brainstorm 8-12 concrete ideas via GPT-6-Astra xhigh
 - Filter by feasibility, compute cost, quick novelty search
 - Deep validate top ideas (full novelty check + devil's advocate)
 - Run parallel pilot experiments on available GPUs (top 2-3 ideas)
@@ -286,7 +286,7 @@ For each top idea (positive pilot signal), run a thorough novelty check:
 
 **What this does:**
 - Multi-source literature search (arXiv, Scholar, Semantic Scholar)
-- Cross-verify with GPT-5.6-Sol xhigh
+- Cross-verify with GPT-6-Astra xhigh
 - Check for concurrent work (last 3-6 months)
 - Identify closest existing work and differentiation points
 
@@ -301,7 +301,7 @@ For the surviving top idea(s), get a sharp outside read — strongest case, name
 ```
 
 **What this does:**
-- GPT-5.6-Sol xhigh acts as a senior reviewer (NeurIPS/ICML level)
+- GPT-6-Astra xhigh acts as a senior reviewer (NeurIPS/ICML level)
 - Scores the idea, identifies weaknesses, suggests minimum viable improvements
 - Provides concrete feedback on experimental design
 
@@ -323,7 +323,7 @@ After review, refine the top idea into a concrete proposal and plan experiments:
 
 **What this does:**
 - Freeze a **Problem Anchor** to prevent scope drift
-- Refine the method via GPT-5.6-Sol review — reviewer risks choose the next tests, they do not add components; the score is advisory, and preserving the core hypothesis outranks pleasing the reviewer
+- Refine the method via GPT-6-Astra review — reviewer risks choose the next tests, they do not add components; the score is advisory, and preserving the core hypothesis outranks pleasing the reviewer
 - Generate a claim-driven experiment roadmap with ablations, budgets, and run order
 - Output: `refine-logs/FINAL_PROPOSAL.md`, `refine-logs/EXPERIMENT_PLAN.md`, `refine-logs/EXPERIMENT_TRACKER.md`
 

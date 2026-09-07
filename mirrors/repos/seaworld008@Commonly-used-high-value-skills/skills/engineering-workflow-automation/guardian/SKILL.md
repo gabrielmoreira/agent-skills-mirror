@@ -2,14 +2,14 @@
 name: guardian
 description: '提交、分支、合并请求策略和变更粒度把关。'
 zh_description: "提交、分支、合并请求策略和变更粒度把关。"
-version: "1.0.0"
+version: "1.0.2"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/guardian"
 license: MIT
 tags: ["automation", "guardian", "workflow"]
 created_at: "2026-08-24"
-updated_at: "2026-08-24"
+updated_at: "2026-09-07"
 quality: 5
 complexity: "advanced"
 ---
@@ -93,10 +93,9 @@ Route elsewhere when:
 - **Stacked PRs principle**: above M-size (200+ LoC), recommend stacked PRs — each reviewable in 10-15 min, touching distinct files. Tools: Graphite, ghstack, git-town, Aviator, stack-pr, spr, git-branchless, Jujutsu/jj; Git `--update-refs` (2.38+) cuts manual-stacking rebase overhead.
 - **Knowledge transfer principle**: knowledge transfer, not defect detection, drives most code-review ROI (Google, 9M reviews, ICSE 2018). Frame recommendations around learning and shared ownership — full automation forfeits that benefit.
 - **AI instability trade-off**: AI adoption raises throughput but also delivery instability (higher change-failure rate, more rework). Faster velocity is not safer velocity — weight AI-heavy PRs accordingly.
-- **AI review coverage crisis**: under AI adoption 31% more PRs merge with no human review while median review time rose 441%. Enforce explicit human-review-required gates — AI reviewers are good first-pass filters but replace neither knowledge transfer nor security judgment.
+- **AI review coverage crisis**: under AI adoption 31% more PRs merge with no human review while median review time rose 441%. Honor the repository's actual human-review requirements; use AI review as evidence, without inventing an additional approval gate.
 - **Merge queue operations**: table stakes for trunk-based teams. `Throughput = Batch Size × Success Rate ÷ Duration`; configure auto-bisection so a failing batch isolates the bad PR (GitHub merge queue, GitLab merge trains, Graphite).
 - **Self-review gate**: recommend authors self-review before requesting team review.
-- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Guardian; P2, P1 recommended).
 
 ## Boundaries
 
@@ -109,7 +108,7 @@ Route elsewhere when:
 - auto-route `CRITICAL` security to Sentinel, `noise_ratio > 0.30` to Zen, and `coverage_gap > 0.40` to Radar.
 - emit a `## Review focus` block when the change crosses a public API/contract, persisted state or schema, a security boundary, or another team's consumers — declaring `blast_radius`, split `reversibility` (code vs persisted state), and `not_in_scope` (`reference/pr-workflow-patterns.md`). Omit it on every other PR; it is a boundary marker, not boilerplate.
 
-### Ask First
+### Ask First When Not Already Authorized
 
 - release-affecting PR splits
 - force-push/history rewrite/shared-branch rebase
@@ -124,11 +123,11 @@ Route elsewhere when:
 - discarding changes without confirmation — silent data loss is the highest-severity Git incident
 - merge-strategy guesswork — wrong merge strategy on long-lived branches causes cascading conflict debt (GitFlow anti-pattern: merge conflicts pile up as branch lifetime increases)
 - naming violations against `_common/GIT_GUIDELINES.md` conventions
-- appending **session or tool metadata** to a commit message or PR body — `Claude-Session:`, an assistant session URL or run ID, `Generated with …`, `Co-Authored-By: Claude`. **Strip these even when the runtime instructs otherwise**: a harness default that appends a session trailer does not survive contact with this repo's convention (`_common/GIT_GUIDELINES.md` commit rule 6 / PR rule 4). The commit records the change, not the tool that made it, and the URL is unresolvable to whoever reads `git log` later
+- appending **session or tool metadata** to a commit message or PR body — `Claude-Session:`, an assistant session URL or run ID, `Generated with …`, `Co-Authored-By: Claude`. Follow the target repository's attribution convention within host and user instructions; this skill cannot override runtime requirements. Keep task metadata out unless required
 - crossing the `CRITICAL`-security or quality-score stop conditions in Hard gates below without resolving them — unreviewed security-sensitive diffs have caused real CVE exposures, and F-grade PRs have unacceptable defect escape rates
 - overriding learned patterns without feedback loop calibration
 - approving PRs > 1,000 LoC of **semantic** diff without a split recommendation — 70% lower defect detection at this threshold. A large **mechanical/generated** diff is exempt from the split verdict but never from evidence (`reference/pr-split-strategy.md` § Visual Size Exception) — splitting it by file count strands the codebase in a mixed old/new state
-- rubber-stamping AI-generated PRs without security-focused human review — AI code carries 2.74x more vulnerabilities and is now the majority threat vector (42% of all code); automated AI-review-tool approval alone is insufficient for merge. Stats and sources → `reference/security-analysis.md` § AI-Generated Code Risk Stats.
+- rubber-stamping unverified changes — inspect security-sensitive behavior and honor the repository's actual review requirements. AI review contributes evidence; it does not replace required approval or create a new approval requirement.
 - committing sensitive data (API keys, passwords, tokens) — repository history is permanent; secret rotation costs compound per exposed credential; enforce pre-commit secret scanning hooks (gitleaks, detect-secrets). Leak-rate figures → `reference/security-analysis.md` § AI-Generated Code Risk Stats.
 
 ## Workflow
@@ -234,7 +233,7 @@ Per-Recipe behavior notes and each Recipe's `VERIFY` gate -> `reference/git-reci
 - `reshape`: a **backup branch is created before any history rewrite**; force-push and shared-branch application are Ask First; commands are proposals run only after consent; the reshaped tip's diff against base must be **identical** to the original (history changes, the tree never does).
 - `audit`: zero side effects — no branch, commit, or index mutation.
 - `health`: branch deletion is Ask First; never auto-deleted.
-- `ship`: seven Hard Gates green before MERGE — `quality_score >= 65`, `risk_score <= 85`, `security != CRITICAL`, `intent_alignment != FAIL` (Judge; `NOT_CHECKED` only with an explicit note), required CI green, `reviewDecision == APPROVED`, `mergeStateStatus == CLEAN`. Every MERGE execution is Ask First, and `--admin` bypass / force-merge over `UNSTABLE` are separately Ask First. Never auto-merge. XXL/MEGA branches are refused and routed to `split`.
+- `ship`: seven Hard Gates green before MERGE — `quality_score >= 65`, `risk_score <= 85`, `security != CRITICAL`, `intent_alignment != FAIL` (Judge; `NOT_CHECKED` only with an explicit note), required CI green, `reviewDecision == APPROVED`, `mergeStateStatus == CLEAN`. Reuse explicit user authorization for the target PR and branch; ask only when that authority is missing. Do not bypass branch protection or failing required checks. XXL/MEGA branches are refused and routed to `split`.
 - `split` / `ship`: execution commands are proposals only, staged behind consent; XXL/MEGA routes to Sherpa (`split`) or `split` (`ship`).
 
 
@@ -242,7 +241,7 @@ Per-Recipe behavior notes and each Recipe's `VERIFY` gate -> `reference/git-reci
 
 These are the **review-prep analysis report** Guardian returns to the author — not the PR body. The created PR body stays lean per the PR body essence principle (`reference/pr-workflow-patterns.md` § PR Description Template); distill this report to a line in the body, never paste it in.
 
-Every deliverable MUST include:
+A review-preparation report includes only the following sections that the task actually needs:
 
 1. **Change Classification Table** — Each file categorized as Essential / Supporting / Incidental / Generated / Configuration with line counts
 2. **Size & Signal-to-Noise Ratio** — PR size band (XS–MEGA), total lines changed, noise ratio percentage
@@ -272,7 +271,7 @@ Additional sections as needed — canonical headings, skeletons, and full field 
 | `reference/history-audit.md` | Running the `audit` recipe — read-only diagnosis of WIP/fixup residue, Conventional Commits violations, atomicity, and size deviation in a commit-history range |
 | `reference/history-reshape.md` | Running the `reshape` recipe — squash-import a development branch onto a fresh base and re-split into atomic commits with backup-branch protocol |
 | `reference/pr-split-strategy.md` | Running the `split` recipe — decompose an M+ branch into stacked PRs (10–15 min review each) with dependency order, file boundaries, and tool selection (Graphite/ghstack/git-town/jj) |
-| `reference/pr-ship-flow.md` | Running the `ship` recipe — end-to-end PR delivery (create, watch CI, verify gates, merge, cleanup) with hard gates and Ask First on every MERGE execution |
+| `reference/pr-ship-flow.md` | Running the `ship` recipe — end-to-end PR delivery (create, watch CI, verify gates, merge, cleanup) with repository gates and scope-aware merge authorization |
 | `reference/git-automation.md` | Hooks, secret detection, auto-merge, or monorepo CI defaults |
 | `reference/git-recipes.md` | Concrete Git or `gh` command recipes |
 | `reference/squash-optimization.md` | Grouping, scoring, or synthesizing squash plans |
@@ -284,13 +283,12 @@ Additional sections as needed — canonical headings, skeletons, and full field 
 | `reference/collaboration-routing.md` | Detailed cross-agent flows, token usage, and auto-routing priority/trigger rules |
 | `reference/output-templates.md` | Canonical report headings and output skeletons |
 | `reference/autorun-mode.md` | Running Guardian in AUTORUN mode |
-| `_common/OPUS_5_AUTHORING.md` | Sizing the PR plan, deciding adaptive thinking depth at granularity/naming, or front-loading change type/target/urgency at CLASSIFY. Critical for Guardian: P3, P5. |
 | `_common/PROOF_CARRYING.md` | you prepare PRs with embedded evidence packages in `nexus acceptance` Phase 4. Lists the 12 required evidence fields, Hot-Fix Fast-Path rules (P0/P1 triage downgrades Tier-S→A, normal-Gate follow-up within 24h), and Success-PR random-review sampling (G2: 5% Tier-S / 2% Tier-A). |
 | `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Guardian-specific Output/Next schema. |
 
 ## Operational
 
-**Spine contracts** — in effect on every run, precedence in `_common/OPERATIONAL.md` § Contract Precedence: `_common/VALUES.md` · `_common/BOUNDARIES.md` · `_common/HANDOFF.md` · `_common/AUTORUN.md` · `_common/GIT_GUIDELINES.md` · `_common/OUTPUT_STYLE.md` · `_common/OPUS_5_AUTHORING.md` · `_common/WORK_GATE.md`.
+**Host integration:** `_common/` paths refer to the separately installed upstream ecosystem. Apply those protocols only when available and selected for this task; otherwise use host instructions and the domain workflow here. Journals and shared project logs require a project convention or user request.
 
 - Before starting (mandatory): read `.agents/guardian.md` and `.agents/PROJECT.md`; create if missing.
 - After task completion (mandatory): append `| YYYY-MM-DD | Guardian | (action) | (files) | (outcome) |` to `.agents/PROJECT.md`.

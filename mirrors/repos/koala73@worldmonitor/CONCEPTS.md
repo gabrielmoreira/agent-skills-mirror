@@ -122,13 +122,19 @@ The project's rule for any panel that joins the grid asynchronously, in either t
 
 The interval between a Deferred Tier panel being constructed and its element entering the grid — routinely minutes on a phone, since the panel is built only as its shell nears the viewport while the boot data pass finished long before. Two things cross the window in opposite directions and both need somewhere to wait: data *pushed* to a panel that does not exist yet, and a render *emitted* by a panel whose element is not attached yet.
 
-The project's rule is that neither may be discarded. A push aimed at an absent panel is queued and replayed when the panel loads; a render emitted before attachment is deferred and flushed when the element joins the grid. Both failure modes read as defensive code and are silent — no error, no failed request, no telemetry — so they surface only as a panel that shows its initial placeholder for the whole session. The attachment check is the subtler of the two, because it is genuinely correct *after* attachment (a torn-down panel must not paint) and wrong *before* it; only checking ahead of the work distinguishes "never attached yet" from "detached again". See also: Deferred Tier, Deferred-Shell Contract, Viewport Prime.
+The project's rule is that neither may be discarded. A push aimed at an absent panel is queued and replayed when the panel loads; a render emitted before attachment is deferred and flushed when the element joins the grid. Both failure modes read as defensive code and are silent — no error, no failed request, no telemetry — so they surface only as a panel that shows its initial placeholder for the whole session. The attachment check is the subtler of the two, because it is genuinely correct *after* attachment (a torn-down panel must not paint) and wrong *before* it; only checking ahead of the work distinguishes "never attached yet" from "detached again". The deferral here is at attachment; the sibling deferral at the write itself is the Content Commit. See also: Deferred Tier, Deferred-Shell Contract, Viewport Prime, Content Commit.
 
 ### Viewport Prime
 
 The dashboard's demand-driven data pass: on boot, and again on every scroll and resize, it loads data for exactly the panels near the viewport, so a Deferred Tier panel receives its content only as the user approaches it. It re-runs constantly by design, which makes its safety contract the load-bearing part: the pass dedupes *concurrent* loads but does not remember *completed* ones, so every loader it can reach must be cheap to repeat — served from a real cache, or skipped outright when the panel already renders data. A loader that repeats expensively (an uncached network call, a teardown of already-rendered content) turns every scroll into user-visible churn.
 
 Refresh triggers divide into three classes that must not be conflated: input-driven passes (scroll, resize — arbitrarily frequent, carrying no information about data staleness), the staleness clock (each panel's scheduled refresh cadence), and explicit user requests (a retry affordance). Only the latter two justify refetching data a panel already shows; an input-driven pass exists to fill empty panels, never to refresh full ones. See also: Deferred Tier, Immediate Tier.
+
+### Content Commit
+
+The moment a panel's rendered markup actually lands in the document, which is later than the call that produced it: a panel's ordinary content write is coalesced through a short window so that a burst of renders lands once, and the document keeps showing the outgoing markup until the window closes. See also: Late-Mount Window, Viewport Prime, Vacuous Guard.
+
+Three rules follow from the deferral. Anything bound to the rendered rows (cached element handles, a timer that writes into them, an observer attached to them) must be registered from the commit callback the write accepts, never from the line after the render call, because a query issued at call time binds to the outgoing subtree and comes back empty. A write whose markup equals what is already committed runs its callback at once and cancels any write still queued, so a byte-identical re-render still rebinds. And the immediate paint paths (loading, error, locked states) discard a queued write together with its callback, so a stop or teardown the callback would have performed must be issued explicitly on those branches. The failure is silent by construction: an empty binding raises nothing, and the panel simply stops updating until an unrelated user gesture happens to re-render it. Only a DOM test that advances past the window before asserting can see it.
 
 ### Detached Data Sink
 
@@ -265,6 +271,32 @@ A term — an ordinary word, a vulnerability identifier, or a threat-group desig
 ### Sampled Span
 
 The stretch of time a derived statistic was *actually* computed over, as distinct from the retention horizon of the store it drew from. The two diverge whenever a bounded read — a row cap, a page size, a top-N — returns fewer rows than the horizon contains, and the divergence is silent: the read succeeds, the arithmetic runs, and only the result is wrong. Any rate, baseline, or per-unit-time figure must be divided by the span its rows demonstrably cover, and a consumer-facing statistic should report that measured span rather than the horizon constant, since a caller has no other way to tell the two apart. Truncation is also biased rather than random — a newest-first read starves the historical side of a recent-versus-baseline comparison, an oldest-first read starves the recent side. See also: Story Accumulator, Keyword Spike.
+
+## Crawlable Country Pages & Brief Grounding
+
+### Recent Developments
+
+The per-country section of a prerendered country page that carries dated, sourced, country-specific items: matched headlines, a generated country brief with the sources it cites, and timeline events, all taken from one weekly frozen capture rather than fetched live. A page with no such item renders no section at all rather than a placeholder, so the section's absence is itself the record of the enrichment gap. See also: Country Mention, Brief Grounding, Enrichment Tail, Feed Digest.
+
+### Country Mention
+
+The rule that decides whether a news item is about a country: its display name or a curated alias on a word boundary in normalized text, or a demonym matched as written (case-sensitive), after phrases that belong to a neighbouring country have been scrubbed. A bare ISO alpha-2 code token never counts, save a tiny allowlist, because every two-letter code is an English word or somebody else's acronym. One definition serves every surface that grounds a brief — the prerendered pages, the dashboard and the agent tool — so the three cannot drift apart again. See also: Brief Grounding, Recent Developments.
+
+### Brief Grounding
+
+The set of headlines a country brief is generated from and may cite — the week's digest rows that name the country, topped up from the Country Article Index where the digest leaves the country short; a brief's citations index that set and nothing else. Grounding is *thin* when its headlines come from fewer distinct Publisher Families than the publish floor requires, in which case no brief is requested or published and the page keeps only the dated headlines — a multi-horizon outlook synthesised from one outlet is not published on an indexed page. The dashboard's anonymous brief instead falls back to global stories when nothing names the country; the prerendered corpus refuses that fallback. See also: Publisher Family, Country Mention, Country Article Index, Feed Digest.
+
+### Publisher Family
+
+The newsroom behind one or more feed labels — several editions or regional feeds of one outlet are a single family, and an unmapped label is its own family so no feed can silently claim to corroborate another. Every rule that speaks of "N independent sources" counts families, never labels. For the brief floor, rows published on one site are also one publisher whatever their labels say, because an index row is labelled by its domain while a digest row is labelled by its feed. See also: Brief Grounding, Country Article Index.
+
+### Country Article Index
+
+A rolling, per-country index of GDELT GKG articles the bulk materializer keeps alongside its topic products: each article is filed under the countries its location mentions name (FIPS codes mapped to ISO-2), title mentions first and then primary mentions, and an article naming many countries is filed under its primary country only. Served through the GDELT search route's `country:` query form, it is the grounding pool for the countries the week's digest never names. A location mention alone never publishes a row: the title must pass the Country Mention rule, so an index row on a country page is about that country, not merely set in it. Index rows come from whatever host GDELT crawled rather than a curated feed, so a page renders them `nofollow`, and they corroborate a brief but never ground one alone — a published brief needs at least one curated row behind it. See also: Brief Grounding, Country Mention, Enrichment Tail.
+
+### Enrichment Tail
+
+The indexed country pages that carry no dated development in a given weekly capture. Its size is a property of the grounding pool — how many countries the week's digest and the Country Article Index actually name — not of whether the enrichment ran, and it is recorded as a count in the capture's coverage rather than gated to zero, because no article pool names every country every week. A capture whose freeze attempted the index — whatever the index answered — is held to a higher coverage floor at build time than one frozen before the index existed, so a tail the size of the digest-only era cannot ship as a green build, and a gate that relaxed when the index failed would be no gate. A measured-but-lower week can still publish through an operator override on the weekly workflow rather than by editing the floor. See also: Recent Developments, Brief Grounding, Country Article Index.
 
 ## Prediction Markets
 
@@ -437,6 +469,20 @@ The gate checks the state that will actually be published rather than trusting u
 A dependency advisory the security gate knowingly tolerates, recorded per-lockfile with written reasoning for why the vulnerable path is unreachable in this project — typically a build-time-only or dev-tooling chain, or a fix that is semver-major on a parent the project cannot yet move.
 
 The baseline is an exemption list, not a suppression: an advisory outside it fails the gate for every branch at once, which is why a newly published advisory blocks the whole repository until someone either patches or baselines it. Each entry carries its justification inline so a later reader can re-evaluate rather than inherit a bare allowlist, and an entry that no longer matches any live advisory is surfaced as stale so the list does not accrete dead exemptions. See also: Third-Party Rot, Acceptance Baseline.
+
+### Deploy Gate
+
+The single merge-blocking status that CI computes for a commit once the gated workflows finish, from a fixed list of check-run names. Each listed name resolves to the conclusion of its latest check run: a name no run has published holds the gate pending, a skipped conclusion counts as passing, and any other non-success fails it. A periodic sweep re-evaluates pending or stale statuses, so a status that arrived before its checks heals on its own. It is the CI counterpart of the Tiered Gate, which is a local pre-flight rather than the merge authority.
+
+Because a listed name must publish a run on every change, only a job inside a workflow that always triggers can be listed; a workflow behind a path filter publishes nothing when its paths do not match and would hold the gate forever. Conditional coverage is therefore expressed as an if-gated job, whose skip the gate accepts, and that job's change filter must name every input of the command it runs, including the manifest that defines the command. See also: Tiered Gate, Gate Contract, Advisory-Only Check.
+
+### Gate Contract
+
+The fingerprint of the Deploy Gate's required list, stamped onto every gate status it posts. Changing the list changes the stamp, so a status minted under the old list is treated as stale and re-evaluated rather than trusted: a branch approved under a narrower set cannot stay mergeable, and open branches read a newly required name as pending until they publish it. See also: Deploy Gate.
+
+### Advisory-Only Check
+
+A CI job that runs and reports on a change but is neither a branch-protection context nor a name on the Deploy Gate's required list, so a red result blocks nothing. It is the state a check falls into silently when it is moved out of a required job without being listed itself, and the reason a Wiring Guard fails the build whenever a gated workflow gains a job the required list does not name. See also: Deploy Gate, Wiring Guard, Vacuous Guard.
 
 ## Localization & First Paint
 
@@ -681,7 +727,10 @@ caught by freshness monitoring on the published data, never by the tick's exit
 status. A seeder running as its own cron handles the same failure the same way
 but exits non-zero on purpose, so the platform's crash badge is what surfaces a
 source that has stopped answering; a bundle member's tick absorbs that exit,
-which is the difference between the two.
+which is the difference between the two. That badge is only a signal while the
+platform will run the seeder again: a standalone seeder whose newest build has
+failed is ticking its previous Active Deployment, and there the same non-zero
+exit ends its schedule outright.
 
 ### Starved Tick
 
@@ -710,6 +759,25 @@ sides — above the sweep's own duration, or the head expires before the tail
 lands and the marker is never written; below the refresh interval, or every row
 still reads current when the member next comes due and the sweep completes
 having fetched nothing. See also: Section Deferral, Bundle Wall Budget.
+
+## Seeder Deployment Lifecycle
+
+### Active Deployment
+
+The build a Railway cron seeder actually starts on every scheduled tick, as
+distinct from the newest deployment record, which may be a build that failed or
+a push the watch paths declined. Ticks re-run the active build and leave no
+deployment record of their own, so a seeder with narrow watch paths can run the
+same active build for days while its record list fills with declined pushes.
+
+A failed build never becomes active; the seeder keeps ticking the previous
+active build. Once that build's tick exits non-zero it is a crashed deployment,
+and behind a failed build nothing is left to schedule: no further tick runs
+until a new successful build exists, which only a push that touches the watch
+paths or an explicit rebuild from source produces. A crashed deployment that is
+itself the newest is re-run on every tick, so the same non-zero exit is noisy
+but recoverable in one state and silent and permanent in the other. See also:
+Graceful Skip, Seed-Owned Key.
 
 ## Market Data Claims
 
@@ -792,3 +860,5 @@ The comparison needs enough accumulated history to be meaningful and is suppress
 - *"Pool"* had been used for both a labelled market category and the complete set of markets — these are distinct. A pool is always a labelled subset; the complete set has no pool and must be requested as an explicit union.
 - *"Variant"* resolves differently per surface — a served host on the web, a locally stored selection on desktop. Only the web sense is addressable by URL; a desktop artifact is never variant-specific, so a variant accompanying a desktop artifact request is an identity label rather than a selector.
 - *"wingbits"* as a publication source means different things across the two Theater Posture producers — the military-flights seeder's keyed regional supplement after adsb.lol, but the relay loop's last-resort fallback. The recorded producer disambiguates which reading applies; never compare the token across producers.
+- *"Crashed"* had been used for both a build that failed and a run that exited non-zero — these are distinct. A failed build never started a container and leaves the previous Active Deployment serving; a crash is a started run that exited non-zero. Only the second is a seeder outcome; the first is a platform outcome that decides whether the seeder will ever run again.
+- *"Gate"* had been used for both the local pre-push Tiered Gate and the CI Deploy Gate — these are distinct. The Tiered Gate is a cacheable pre-flight that can be scoped or escalated on one machine; only the Deploy Gate decides mergeability, and only names on its required list count toward it.

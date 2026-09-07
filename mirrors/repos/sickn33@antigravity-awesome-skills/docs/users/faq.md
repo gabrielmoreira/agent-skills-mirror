@@ -4,6 +4,8 @@
 
 ---
 
+On unreleased `main`, `aas stack install-preview --manifest <file> --destination <skill-directory>` prepares a direct-installer dry run from the agent-selected IDs. It does not execute installation or choose skills; destination names must satisfy the installer's filename restrictions. See [the manifest handoff](aas-core.md#use-the-reviewed-selection).
+
 ## General Questions
 
 ### What is AAS Core?
@@ -514,7 +516,7 @@ Maintainers regenerate and canonicalize those files on `main` after merge. If yo
 
 ### Can I update an "Official" skill?
 
-**No.** Official skills (in `skills/official/`) are mirrored from vendors. Open an issue instead.
+Check the provenance metadata and subtree instructions in `skills/<skill-id>/SKILL.md`. Vendor origin does not imply a shared `skills/official/` directory. Preserve attribution and licensing; open an issue first when a change needs upstream synchronization.
 
 ---
 

@@ -20,7 +20,7 @@ metadata:
 
 **核心原则：** 如果你没有观察到智能体在没有该技能时失败，你就不知道这个技能是否教了正确的东西。
 
-**必需背景：** 在使用此技能前，你必须理解 superpowers:test-driven-development。该技能定义了基本的红-绿-重构循环。本技能将 TDD 适配到文档编写中。
+**必需背景：** 在使用此技能前，你必须理解 test-driven-development。该技能定义了基本的红-绿-重构循环。本技能将 TDD 适配到文档编写中。
 
 **官方指南：** Anthropic 官方的技能编写最佳实践请参见 anthropic-best-practices.md。该文档提供了补充本技能 TDD 导向方法的额外模式和指南。
 
@@ -284,8 +284,8 @@ wc -w skills/path/SKILL.md
 **编写引用其他技能的文档时：**
 
 仅使用技能名称，带有明确的必需标记：
-- ✅ 好的：`**必需子技能：** 使用 superpowers:test-driven-development`
-- ✅ 好的：`**必需背景：** 你必须理解 superpowers:systematic-debugging`
+- ✅ 好的：`**必需子技能：** 使用 test-driven-development`
+- ✅ 好的：`**必需背景：** 你必须理解 systematic-debugging`
 - ❌ 差的：`参见 skills/testing/test-driven-development`（不清楚是否必需）
 - ❌ 差的：`@skills/testing/test-driven-development/SKILL.md`（强制加载，浪费上下文）
 
@@ -394,7 +394,7 @@ pptx/
 - 不要在运行测试时"调整"
 - 删除就是删除
 
-**必需背景：** superpowers:test-driven-development 技能解释了为什么这很重要。相同的原则适用于文档。
+**必需背景：** test-driven-development 技能解释了为什么这很重要。相同的原则适用于文档。
 
 ## 测试所有技能类型
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 60 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 60 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,21 +107,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`apps/emdash-desktop/src/core/primitives/subjects/README.md`](apps/emdash-desktop/src/core/primitives/subjects/README.md) |
 | 44 | ✓ | [`apps/emdash-desktop/src/core/primitives/view-scopes/README.md`](apps/emdash-desktop/src/core/primitives/view-scopes/README.md) |
 | 45 | ✓ | [`apps/emdash-desktop/src/core/primitives/views/README.md`](apps/emdash-desktop/src/core/primitives/views/README.md) |
-| 46 | ✓ | [`apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md`](apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md) |
-| 47 | ✓ | [`apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md`](apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md) |
-| 48 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 49 | ✓ | [`packages/core/docs/path/README.md`](packages/core/docs/path/README.md) |
-| 50 | ✓ | [`packages/core/docs/README.md`](packages/core/docs/README.md) |
-| 51 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
-| 52 | ✓ | [`packages/core/src/primitives/sqlite-store/README.md`](packages/core/src/primitives/sqlite-store/README.md) |
-| 53 | ✓ | [`packages/shared/README.md`](packages/shared/README.md) |
-| 54 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
-| 55 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
-| 56 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
-| 57 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
-| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 59 | → | [`LICENSE.md`](LICENSE.md) |
-| 60 | → | [`README.md`](README.md) |
+| 46 | ✓ | [`apps/emdash-desktop/src/core/services/hosts/node/testing/README.md`](apps/emdash-desktop/src/core/services/hosts/node/testing/README.md) |
+| 47 | ✓ | [`apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md`](apps/emdash-desktop/tooling/prototypes/cow-worktree/README.md) |
+| 48 | ✓ | [`apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md`](apps/emdash-desktop/tooling/prototypes/creation-baseline/README.md) |
+| 49 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 50 | ✓ | [`packages/core/docs/path/README.md`](packages/core/docs/path/README.md) |
+| 51 | ✓ | [`packages/core/docs/README.md`](packages/core/docs/README.md) |
+| 52 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
+| 53 | ✓ | [`packages/core/src/primitives/sqlite-store/README.md`](packages/core/src/primitives/sqlite-store/README.md) |
+| 54 | ✓ | [`packages/shared/README.md`](packages/shared/README.md) |
+| 55 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
+| 56 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
+| 57 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
+| 58 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
+| 59 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 60 | → | [`LICENSE.md`](LICENSE.md) |
+| 61 | → | [`README.md`](README.md) |
 
 ---
 
