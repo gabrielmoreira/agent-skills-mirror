@@ -238,6 +238,45 @@ func TestRunMissingPython(t *testing.T) {
 	}
 }
 
+func TestResolvePythonRejectsRelativePATH(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX executable fixture")
+	}
+	t.Chdir(t.TempDir())
+	if err := os.WriteFile(DefaultPythonBinary, []byte("#!/bin/sh\nexit 0\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", ".")
+	// Exercise our own guard even when Go's ErrDot protection is disabled.
+	t.Setenv("GODEBUG", "execerrdot=0")
+	if path, err := resolvePython(""); err == nil || path != "" {
+		t.Fatalf("resolvePython accepted relative executable: path=%q err=%v", path, err)
+	}
+}
+
+func TestResolvePythonAcceptsAbsolutePATH(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX executable fixture")
+	}
+	dir := t.TempDir()
+	want := filepath.Join(dir, DefaultPythonBinary)
+	if err := os.WriteFile(want, []byte("#!/bin/sh\nexit 0\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	if path, err := resolvePython(""); err != nil || path != want {
+		t.Fatalf("resolvePython = %q, %v; want %q", path, err, want)
+	}
+}
+
+func TestResolvePythonPreservesExplicitOverride(t *testing.T) {
+	t.Setenv("PATH", "")
+	want := filepath.Join("explicit", "python")
+	if path, err := resolvePython(want); err != nil || path != want {
+		t.Fatalf("resolvePython = %q, %v; want trusted override %q", path, err, want)
+	}
+}
+
 func TestRunMissingScript(t *testing.T) {
 	stub := makeStubPython(t)
 	// CacheDir exists but contains no last30days.py.

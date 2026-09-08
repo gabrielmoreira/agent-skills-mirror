@@ -12,6 +12,11 @@ house aesthetic — frame, font family, and sizes are all parameters of
 Multi-panel assembly is `figure-composer`'s job; deciding what each figure in
 a paper should argue is `paper-narrative`'s.
 
+Loading the Python helpers only defines them; it does not select a matplotlib
+backend or apply a style. Call `apply_figure_style(...)` explicitly for plotting.
+The optional `figure_style_self_check()` applies the defaults and checks font
+wiring when called; it is not a load-time check.
+
 Two tiers of rule live below. **Hard rules** — everything under *Tell the
 truth*, *Never do*, and *Prove the render*, plus any rule stating a
 perceptual or factual invariant (semantic-zero centring, colour-vision

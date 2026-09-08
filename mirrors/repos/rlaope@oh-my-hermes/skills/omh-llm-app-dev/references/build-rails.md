@@ -56,6 +56,22 @@ Named here for ordering; the shape of the deliverables and the comparison record
 
 The rule that belongs on this rail: the eval suite is part of the feature, not a follow-up ticket. A feature that ships without a golden set has no way to answer whether the next prompt edit helped, and the answer defaults to whoever tried it and liked the output.
 
+## Conditional Contracts: Records, Limits, Memory
+
+The five rails cover every LLM feature. Three further contracts apply only when the feature touches live state, and they are kept in `references/stateful-contracts.md` so an extractor or a RAG answerer does not carry requirements it cannot use. Load that reference when the feature has any of these properties:
+
+- It **presents or acts on business records**, which needs the record authority and presentation receipts contract.
+- It **enforces a cumulative business limit**, which needs the shared resulting-state limits contract.
+- It **stores facts about a person**, which needs the user-memory lifecycle contract.
+
+The short form of each, so the handoff can say which apply and which do not:
+
+- **Records.** A valid-looking record ID is a lookup candidate, not authority. The host tracks how each record entered scope, authorization is rechecked for the current operation, authoritative fields come from the owning backend, and follow-up references such as "the second one" resolve against a host-issued receipt of the final visible order. A missing or stale receipt means refresh or ask, never guess. A provisional render authorizes nothing and proves no delivery.
+- **Limits.** A business limit constrains the resulting state, so its scope is named (resource, person, account, tenant, or window) and the owning backend rechecks authorization, approval, policy, target version, live state, and idempotency inside one atomic apply boundary. A conflict means no partial write.
+- **Memory.** Only the user's own assertions or explicit confirmations are stored, person and tenant scope stay distinct, the user can inspect, correct, delete, and disable, and a delayed extractor checks fact versions and the deletion generation in the same transaction that writes.
+
+A feature with none of these properties records that fact in the handoff and moves on. Forcing these contracts onto a feature that never renders a record, never shares a limit, and never remembers a person is noise, and noise is what gets skipped when it matters.
+
 ## Evidence Boundary
 
 A rail decision, a schema, a prompt layout, or an eval design is prepared work. It is not implementation, an observed eval run, review, CI, or merge evidence. Token counts, latency, and cost belong to runs; a figure no run reported stays null and is never estimated from a pricing table.

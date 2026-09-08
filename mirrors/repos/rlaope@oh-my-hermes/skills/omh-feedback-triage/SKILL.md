@@ -23,6 +23,8 @@ This is a Hermes-native `feedback-triage` workflow skill.
 - The request already contains an accepted product decision and asks for implementation.
 - There are no feedback items, source boundary, or product area to classify.
 - The user wants current market research rather than triage of supplied signals.
+- The triage result asks for a retention or activation intervention rather than another cluster; use `lifecycle-growth`.
+- The supplied material is opportunity records and the request is portfolio health or forecast review; use `sales-pipeline-review`.
 
 ## Examples
 
@@ -51,7 +53,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `inference-serving`, `+17 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `best-practice-research`, `autoresearch-goal`, `model-optimization`, `inference-serving`, `+19 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

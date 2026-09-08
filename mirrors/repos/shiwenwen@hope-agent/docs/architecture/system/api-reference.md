@@ -510,7 +510,7 @@ KB 文件预览端点**仅面向用户本人，无 session 参数、无 owner fa
 
 写端点（write/delete/rename/mkdir/upload）在 HTTP handler 层读 `filesystem.allow_remote_writes`（默认 false）闸门，为 false 返 403；桌面 Tauri 不受限。`FilesystemConfig` 包含聊天附件、Workspace 上传、文本预览、文本编辑、文档预览五项 MiB 限制；`maxChatAttachmentMb` 同时约束用户聊天附件与 Agent `send_attachment`。配置读写：`get_filesystem_config` / `save_filesystem_config` / `patch_filesystem_config` ↔ `GET/PUT/PATCH /api/config/filesystem`；设置面使用 PATCH，避免不同风险面的字段互相覆盖。完整默认值与范围见 [file-operations.md](../core/file-operations.md#大小配置与硬上限)。
 
-`Project` 支持 `workingDir: string | null` 与 `linkedDirs: string[]`。设置 UI 将它们统一呈现为“源文件夹”：`workingDir` 是主文件夹，决定 cwd、相对路径与根 `AGENTS.md`；`linkedDirs` 是最多 32 个 canonical 辅助根，可供 Agent 和文件浏览器搜索、读取与编辑。将辅助目录设为主目录时，客户端一次 PATCH 同时交换两字段。运行时主目录合并优先级 `session.working_dir > project 显式 working_dir > 默认 workspace`，lazy ensure 创建——编辑项目工作目录后未单独设置的已有会话立即跟随。详见 [`AGENTS.md`](../../../AGENTS.md) 「项目（Project）容器」段与 [project.md](../core/project.md)。
+`Project` 支持 `workingDir: string | null` 与 `linkedDirs: string[]`。设置 UI 将它们统一呈现为“源文件夹”：`workingDir` 是主文件夹，决定 cwd、相对路径与根 `AGENTS.md`；`linkedDirs` 是最多 32 个 canonical 辅助根，可供 Agent 和文件浏览器搜索、读取与编辑。将辅助目录设为主目录时，客户端一次 PATCH 同时交换两字段。运行时主目录合并优先级 `session.working_dir > project 显式 working_dir > 默认 workspace`，lazy ensure 创建——编辑项目工作目录后未单独设置的已有会话立即跟随。详见 [项目工作目录解析链](../core/project.md#工作目录解析链)。
 
 **Project ↔ IM Channel 反向认领已废弃**。`Project.boundChannel` / `BoundChannel` 类型 + `projects.bound_channel_id` / `bound_channel_account_id` DB 列 + `idx_projects_bound_channel` 索引 + `find_by_bound_channel` API 全部删除；`UpdateProjectInput` 不再有 `boundChannel` 字段。IM 入站消息不再自动归属项目，新会话以 `project_id = NULL` 创建。要把会话归项目，从 IM chat 内 `/project <id>` 显式触发：handler 检测 `session.channel_info` 后发 `AssignProject` action，channel worker 调 `SessionDB::set_session_project` 直接 UPDATE 现有 `sessions.project_id`，**不创建新 session**。详见 [im-channel.md](../integration/im-channel.md) 「Session 路由」章节。
 
@@ -834,6 +834,8 @@ Loop owner API 管理 session-scoped 重复触发器：`create_loop_schedule` �
 | `update_task_status` | `PATCH /api/tasks/{id}/status` | ✅ TaskProgressPanel 用户控件 |
 | `delete_task` | `DELETE /api/tasks/{id}` | ✅ TaskProgressPanel 用户控件 |
 
+`get_session_stream_state` 和 `chat:stream_end` 的 `interruptReason` 共用 `ChatTurnInterruptReason`。其中 `provider_blocked`、`request_contract`、`retry_deferred` 分别表示服务商明确阻断、请求契约拒绝和服务端最短等待超出恢复预算；这三类原因独立于 `error` 文本持久化，客户端不得从错误消息重新推断。
+
 `chat` 的可选 `clientRequestId` 是前端生成的不透明请求 id。Bundled HTTP UI 把它和 payload
 指纹随 `chat_turn` 持久化（与 user message 同一 SQLite 事务），进程内 registry 只合并尚未提交的
 并发 waiter：相同 id + 相同 payload 即使服务重启或 registry 淘汰也返回原 `sessionId/turnId`，
@@ -914,6 +916,8 @@ turn），调用方必须据此自行收敛本地活动状态，不得继续空�
 这些是前端 Transport 层的桌面状态 / 权限 / 画面镜像入口；聊天里的 builtin tool 统一叫 `mac_control`，其 `wait/apps/windows/act/menu/dialog` 等动作在 ha-core 工具执行层分发，不按每个 op 增加 Tauri / HTTP command。HTTP/server 模式保持同形状响应，但本机桌面控制返回 `supported=false`。
 
 ### Providers
+
+`add_provider` / `POST /api/providers` 在同一次配置写入中补齐缺失默认，保留已有默认；响应仍为服务商配置。桌面端在默认模型变化时同步重建 Agent 缓存。
 
 | Tauri Command | HTTP | 状态 |
 |---|---|---|

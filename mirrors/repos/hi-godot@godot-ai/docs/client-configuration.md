@@ -259,3 +259,89 @@ actionable diagnostic, such as an ambiguous package path or unreadable config.
 The dock renders one row per client with a status dot, Configure/Remove buttons,
 and a per-row "Run this manually" fallback for cases when auto-configure cannot
 find a CLI.
+
+### Agents on another machine or in a container
+
+Every v4 HTTP request carries a bearer capability. The server generates it at
+each start and publishes it only in the private record on the editor machine
+(`~/.config/godot-ai/capabilities/http-<port>.json` on Linux,
+`~/Library/Application Support/godot-ai/capabilities/` on macOS,
+`%LOCALAPPDATA%\godot-ai\capabilities\` on Windows). The `godot-ai attach`
+bridge reads that record and presents the capability; it has no remote mode
+and talks only to loopback. An AI client that does not run on the editor
+machine (a coding agent in Docker, a WSL2 distribution against a Windows
+editor, another computer on the LAN) therefore runs the bridge **on the editor
+machine** and reaches it over SSH. That is the supported path. A bare HTTP URL
+cannot carry a rotating credential and must not be persisted (above), and
+pasting the record's current `http` value into an `Authorization: Bearer`
+header works only until the next server start.
+
+1. **On the editor machine:** install `uv`, enable an SSH server, and set up
+   key-based login for the **same user account that runs Godot**, because the
+   bridge reads that user's capability record. On Windows, OpenSSH Server is
+   an optional feature (`Add-WindowsCapability -Online -Name
+   OpenSSH.Server~~~~0.0.1.0`, then `Start-Service sshd` and `Set-Service sshd
+   -StartupType Automatic`; the feature adds its own firewall rule). Keys for
+   an administrator account belong in
+   `C:\ProgramData\ssh\administrators_authorized_keys`, not in the user's
+   `.ssh\authorized_keys`.
+2. **In the dock:** open the client row's **Run this manually** entry and copy
+   the command. It has the shape
+   `uvx --isolated --no-config ... --from godot-ai==<plugin version> godot-ai
+   attach --port <http port> --ws-port <ws port>` plus `--exclude-domains` and
+   `--disable-telemetry` when those settings apply.
+3. **On the client's machine:** configure the MCP server as a stdio command
+   that runs SSH with the copied command as the remote command. For a JSON
+   `mcpServers` map:
+
+   ```json
+   "godot-ai": {
+     "command": "ssh",
+     "args": [
+       "-T", "-o", "BatchMode=yes", "-o", "LogLevel=ERROR",
+       "you@host.docker.internal",
+       "uvx --isolated --no-config --no-env-file --no-sources --no-build --index-strategy first-index --keyring-provider disabled --index https://pypi.org/simple --default-index https://pypi.org/simple --find-links https://pypi.org/simple/godot-ai/ --link-mode copy --from godot-ai==4.0.2 godot-ai attach --port 8000 --ws-port 9500"
+     ]
+   }
+   ```
+
+   `-T` refuses a pseudo-terminal and `LogLevel=ERROR` silences banners, so
+   nothing but the MCP stream reaches stdout. `BatchMode=yes` makes SSH fail
+   instead of prompting, which a stdio MCP client could never answer. Before
+   persisting the entry, connect once by hand from the client machine
+   (`ssh -T you@<host> true`), check the host key fingerprint, and accept it so
+   `known_hosts` carries it; do not turn off host-key checking to skip that
+   step. Use the dock's command verbatim in place of the example; the version
+   pin must equal the installed plugin's version or the bridge refuses the
+   server.
+4. **Host name:** Docker Desktop on Windows or macOS resolves
+   `host.docker.internal` to the host; Docker Engine on Linux needs
+   `--add-host=host.docker.internal:host-gateway` on the container. From WSL2
+   in the default NAT mode, the Windows host is the address in
+   `/etc/resolv.conf`'s `nameserver` line; in mirrored networking mode it is
+   `localhost`. For another machine, use its name on a network you trust, or
+   a VPN such as Tailscale; do not expose the editor port itself.
+
+The bridge launched this way authenticates itself on every start, so a server
+restart needs no manual step. A Godot AI **update** does: the dock repins
+owned entries in config files on the editor machine but cannot see a file on
+another machine, so refresh the SSH command's version pin from **Run this
+manually** after each update. The Settings tab's **Allow remote hosts (CIDR)**
+allowlist is not needed for this recipe; it widens the HTTP bind for peers in
+the named ranges, and those peers still need the bearer.
+
+As of 4.0.2 this recipe is derived from the code rather than exercised by the
+maintainers on Windows with Docker Desktop; reports either way belong on
+[#1009](https://github.com/hi-godot/godot-ai/issues/1009), which also tracks
+whether a first-class remote mode is worth building.
+
+### CodeBuddy IDE
+
+CodeBuddy uses the standard `mcpServers` JSON map with `type: "stdio"` and
+`command`/`args`/`env` ([official MCP documentation](https://www.codebuddy.ai/docs/zh/ide/User-guide/MCP)).
+Configure writes the user-scoped `~/.codebuddy/mcp.json` (Windows:
+`%USERPROFILE%/.codebuddy/mcp.json`), whose location was verified by the
+reporter of #941. For project scope, use the file opened by CodeBuddy IDE's
+MCP settings and the dock's manual attach entry. Project paths vary between
+CodeBuddy IDE and CodeBuddy Code (CLI); automatic project-scope selection is
+not part of this descriptor.

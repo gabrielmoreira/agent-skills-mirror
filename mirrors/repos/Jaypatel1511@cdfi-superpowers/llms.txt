@@ -14,7 +14,7 @@ fair-lending inference, no CRA performance interpretation).
 ## Skills
 
 - [nmtc-eligibility](.agents/skills/nmtc-eligibility/SKILL.md): Is an address/tract NMTC eligible? Distress tier, LIC status, project feasibility. Backed by nmtc-mapper >=0.5.0 + nmtc-screener 0.1.0.
-- [cdfi-peer-benchmark](.agents/skills/cdfi-peer-benchmark/SKILL.md): Benchmark a bank CDFI against FDIC peers (NIM, ROAA, ROAE, efficiency, Tier 1, NPL). Bank CDFIs only. Backed by cdfi-benchmark 0.2.1.
+- [cdfi-peer-benchmark](.agents/skills/cdfi-peer-benchmark/SKILL.md): Benchmark a bank CDFI against FDIC peers (NIM, ROAA, ROAE, efficiency, Tier 1, NPL). Bank CDFIs only. Backed by cdfi-benchmark >=0.3.0 (resolves to 0.3.1).
 - [hmda-analysis](.agents/skills/hmda-analysis/SKILL.md): Pull HMDA LAR data and produce descriptive cuts + a CRA-proxy income distribution. Descriptive only. Backed by hmda-analyzer >=0.6.0 (resolves to 0.6.1; Python >=3.9).
 
 ## References

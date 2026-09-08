@@ -82,7 +82,7 @@ Workflow coordination is flat: the orchestrator issues every specialist call and
 
 ## Explicit Stop Points
 
-Autonomous execution MUST stop and wait for user input at these points.
+Apply these approval stops when producing or materially revising an artifact in the current workflow. A user instruction to proceed to a later phase accepts the preceding phases and authorizes entry into that phase; continue from that entry point rather than rechecking earlier review or approval records. In particular, a build instruction with an existing Work Plan grants batch approval for task materialization and implementation.
 **Use AskUserQuestion to present confirmations and questions.**
 
 Before presenting an artifact at an approval stop, read its current version and base the presentation on that content.
@@ -154,10 +154,9 @@ Rules:
 - An applied `unverified` discrepancy returns through a fresh owning technical-designer update invocation. Capability probing is reserved for the designer's review-triggered gate, with that fresh designer as the sole correction specialist
 - Fullstack layer sequencing is defined only in `references/monorepo-flow.md`
 - `design-sync` is required whenever multiple Design Docs exist
-- `task-decomposer` begins only after work plan review (document-reviewer, doc_type WorkPlan; Medium/Large) and batch approval
-- Work plan review runs Review Resolution through correction re-review, its parent requirement or authority exits, and convergence; batch approval is available only at its convergence condition
+- When creating or materially updating a Medium/Large Work Plan, run document-reviewer (doc_type WorkPlan) and Review Resolution through correction re-review, its parent requirement or authority exits, and convergence before presenting the plan for batch approval. Existing-plan build entry follows the phase acceptance rule in Explicit Stop Points.
 
-Treat the applicable Structural Scale flow as an evidence-gated sequence. Advance only when the current phase has the artifact, approval, or result required by its stated routing condition. Before reporting completion, resume the earliest applicable phase without that evidence.
+Start the applicable Structural Scale flow at the user-requested phase. Before reporting completion, verify the artifacts and results required by every applicable phase from that entry point through completion, and complete any missing work within those phases. Return to an earlier phase when a material change invalidates its outcome, using Handling Requirement Changes.
 
 ## Autonomous Execution Mode
 
@@ -168,7 +167,7 @@ Verify commit capability before autonomous mode. Let task-executor and quality-f
 Confirmed Small requirements or Medium/Large batch approval authorize task-executor implementation and quality-fixer corrections until completion or escalation.
 
 ### Autonomous Execution Summary
-For Medium/Large, after "batch approval for entire implementation phase" with work-planner, autonomously execute the following processes through completion or an escalation condition:
+For Medium/Large, after batch approval, including an existing-plan build instruction, autonomously execute the following processes through completion or an escalation condition:
 
 ```mermaid
 graph TD
@@ -196,7 +195,7 @@ For Small, execute one direct-scope 4-step cycle. Complete after `approved`, or 
 
 Reviewer findings are candidates. Create correction work only from the Review Resolution `apply` set.
 
-**Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
+**Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then branch on the executor result through the per-task cycle's step 2, including its conditional integration-test-reviewer path, and run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers. Post-implementation corrections stay uncommitted through this cycle: the reviewers read the current working tree, so run the applicable quality gate and re-run the originating reviewer on the uncommitted changes, and commit the applied corrections once through Commit Boundary Check after the complete review set reaches Review Resolution convergence.
 
 **Re-run rule**: After any applied post-implementation correction, re-run each reviewer with at least one correction applied from its latest result. Retain any other reviewer result completed by Post-Implementation Review Status Routing or Review Resolution only when repository evidence establishes that the correction preserved its review boundary; otherwise re-run that reviewer. After Specialist Result Acceptance recovers a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.
 

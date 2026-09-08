@@ -7,9 +7,9 @@
 - `src/main/core/dependencies/dependency-managers.ts`
 - `src/main/core/pty/`
 
-## Current Providers (36)
+## Current Providers (37)
 
-codex, claude, grok, devin, qwen, qoder, droid, antigravity, cursor, copilot, amp, commandcode, opencode, hermes, charm, auggie, goose, kimi, kilocode, kiro, rovo, cline, codebuddy, continue, codebuff, freebuff, mistral, jules, junie, oh-my-pi, pi, prime-agent, autohand, letta, mimocode, zero
+codex, claude, grok, devin, qwen, qoder, droid, antigravity, cursor, copilot, amp, commandcode, opencode, hermes, charm, auggie, goose, kimi, kilocode, kiro, rovo, cline, codebuddy, continue, codebuff, freebuff, mistral, muse, jules, junie, oh-my-pi, pi, prime-agent, autohand, letta, mimocode, zero
 
 ## Current ACP-Capable Providers (23)
 
@@ -45,7 +45,7 @@ The global roots used by the built-in integrations are:
 
 | Providers | Root behavior |
 | --- | --- |
-| Auggie, Command Code, Qoder, Grok, Amp, Kilo, Droid, Goose | Fixed home roots (`~/.augment`, `~/.commandcode`, `~/.qoder`, `~/.grok`, `~/.amp`, `~/.kilo`, `~/.factory`, `~/.agents`) |
+| Auggie, CodeBuddy, Command Code, Qoder, Grok, Amp, Kilo, Droid, Goose | Fixed home roots (`~/.augment`, `~/.codebuddy`, `~/.commandcode`, `~/.qoder`, `~/.grok`, `~/.amp`, `~/.kilo`, `~/.factory`, `~/.agents`) |
 | Claude, Codex, Copilot, Qwen, Kimi, Kiro, Mistral Vibe | Provider home env override with a home fallback |
 | OpenCode, MiMoCode, Devin | Provider override where supported, then XDG config on POSIX or APPDATA on Windows |
 | Pi | `$PI_CODING_AGENT_DIR` with `~/.pi/agent` fallback |
@@ -56,6 +56,17 @@ Kimi also keeps the legacy `~/.kimi/config.toml` root synchronized. Kiro maintai
 `agents/emdash.json` format and the standalone `hooks/emdash.json` v1 schema so classic and `--v3`
 sessions are covered. The agent details UI obtains read-only installed/pending status through the
 host's `agent-config` runtime for both local and remote hosts.
+
+## Provider API Keys
+
+Emdash passes provider API keys through to the agent CLIs it spawns. The allowlisted agent
+environment in `packages/core/src/primitives/agent-env/api/index.ts` is the single source of truth
+for which variables reach a spawned agent.
+
+[OrcaRouter](https://www.orcarouter.ai) is an OpenAI-compatible gateway that routes to models from
+OpenAI, Anthropic, Google, DeepSeek, Qwen, and more through one API key (`sk-orca-…`). OpenCode
+resolves `orcarouter/*` models through its models.dev catalog, so setting `ORCAROUTER_API_KEY` lets
+you select an OrcaRouter model from the OpenCode model picker.
 
 ## Provider Runtime Notes
 

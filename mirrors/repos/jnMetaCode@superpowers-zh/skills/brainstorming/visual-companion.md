@@ -77,6 +77,15 @@ scripts/start-server.sh --project-dir /path/to/project
 scripts/start-server.sh --project-dir /path/to/project --foreground
 ```
 
+**Copilot CLI：**
+```bash
+# 用 Copilot CLI 的非阻塞 / 后台 shell 机制启动，让服务器能跨会话轮次存活。
+# 保留 --foreground —— 由 harness 而不是脚本来负责放到后台。
+# 启动器是 .sh，所以要通过 bash 调用（Windows 上用 Git Bash 的 bash.exe，
+# 从 PowerShell 工具里调）。
+bash scripts/start-server.sh --project-dir /path/to/project --open --foreground
+```
+
 **其他环境：** 服务器必须在会话轮次之间持续在后台运行。如果你的环境会回收分离的进程，使用 `--foreground` 并通过平台的后台执行机制启动命令。
 
 如果浏览器无法访问该 URL（在远程/容器化环境中常见），绑定一个非回环主机：

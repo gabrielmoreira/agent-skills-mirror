@@ -22,6 +22,7 @@ This is a Hermes-native `context` workflow skill.
 
 - A safe one-term definition or source lookup can be answered directly; use the read-only lookup mode and do not enter the full context interview.
 - The request is broad ambiguity with no project-language conflict; use `deep-interview`.
+- The unresolved decision is empirical and a cheap isolated experiment can answer it; use `decision-prototype` and keep the frontier for the rest.
 - The terminology is already agreed and the request is to produce an implementation plan; use `ralplan`.
 - The user wants to capture or curate general retained memory rather than repository terminology; use `memory-new` or `memory-sync`.
 - The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch; preserve `oh-my-hermes` and ordinary protected-route behavior.
@@ -58,7 +59,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+7 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+9 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
 

@@ -24,8 +24,10 @@ test exists), `docs/cicd/RUNBOOK.md` (what a human does),
 `docs/workflows/DESIGN.md` (what each command does, step by step; §8 is how
 to add one). ⚠ Hooks (`.claude/hooks/`, wired in `.claude/settings.json`)
 refuse a `git commit` that fails the fast tier, a `gh pr create` without a
-full-tier run on THIS tree, and every publish, tag, merge or posting verb;
-those lines are handed to the human in cmd.exe form. ⚠⚠ **`.claude/` is
+full-tier run on THIS tree, and every IRREVERSIBLE verb (publish, tag,
+tag push, force-push, release, dispatch, merge, issue deletion); those
+lines are handed to the human in cmd.exe form. Posting (a PR, a comment,
+a body edit, an alert dismissal) is the session's since W-40 (2026-09-07). ⚠⚠ **`.claude/` is
 TRACKED as of 2026-09-04** except `settings.local.json`, `*.bak` and
 `state/`; the sdist still excludes all of it (the v0.2.6 vector), asserted by
 `tests/test_build.py`, `tests/test_sdist_exclusions.py` and

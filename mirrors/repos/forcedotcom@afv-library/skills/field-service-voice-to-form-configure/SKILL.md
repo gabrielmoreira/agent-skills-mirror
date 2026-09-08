@@ -29,7 +29,7 @@ This skill walks the complete setup for both, in the order Salesforce documents 
 The skill is idempotent. Re-running on an already-configured org applies zero changes.
 
 > **Runtime contract:** every org interaction in this skill is a REST call
-> dispatched through the Codey runtime (`execute_api` locally / the hosted
+> dispatched through the Codey runtime (`dispatch` locally / the hosted
 > Headless 360 MCP in shared surfaces). This skill has **no dependency on the
 > execution environment** — no `sf` CLI, no shell scripts, no local Python, no
 > `jq`, no temp files, no metadata deploy, no Apex. Detection is a set of REST
@@ -44,7 +44,7 @@ The skill is idempotent. Re-running on an already-configured org applies zero ch
 
 ## Platform Notes
 
-- All API paths use `vXX.0` — pin to the org's **current** API version (query `GET /services/data` and use the highest `version`), NOT a fixed floor. This matters for the Step 3 feature test specifically: the `PermissionsFieldServiceVoiceTo*` describe columns only surface at a recent API version. On a live org the columns were **absent** from the `PermissionSet` describe at v62.0/v64.0 but **present** at v68.0 — pinning to an old version produces a false "feature not licensed → Stop" negative. Use the org's latest version so the describe reflects the beta perms. v62.0 is a hard floor only (the V2F Beta assumes a recent release); it is not a safe version for the describe test.
+- All API paths use `vXX.0` — pin to the org's current API version (v62.0 or later; the V2F Beta assumes a recent release).
 - Endpoints marked **Tooling** dispatch to `/services/data/vXX.0/tooling/...`; the rest are the core Data API (`/services/data/vXX.0/...`).
 - The Codey runtime resolves and refreshes the connected org and mints tokens on demand — this skill never manages org aliases, instance URLs, or access tokens.
 - A few setup steps are genuinely clicks-only in **Setup** (the Einstein base-setup wizard org pref, the per-form LLM Targetable flag). For those the skill surfaces the exact Setup deeplink for the admin to click; it never tries to script them.
@@ -76,7 +76,7 @@ Before running the setup sequence, confirm all of the following:
 
 ## Setup Sequence
 
-Run steps in order. Each step reads the org state before it writes; if a precondition fails, the step surfaces the failure and stops without mutating the org. Every read and write below is a single `execute_api` call.
+Run steps in order. Each step reads the org state before it writes; if a precondition fails, the step surfaces the failure and stops without mutating the org. Every read and write below is a single `dispatch` call.
 
 ### Step 0: Detect provisioning state and route
 
@@ -196,10 +196,10 @@ If `Metadata.enableLsdkMode` is already `true`, LDS is on — skip to Step 1.5. 
 **1b. PATCH the full `Metadata` back with `enableLsdkMode: true`** — `PATCH /services/data/vXX.0/tooling/sobjects/FieldServiceSettings/{Id}`:
 
 ```json
-{ "FullName": "FieldService", "Metadata": { "...all sibling keys from the GET...", "enableLsdkMode": true } }
+{ "Metadata": { "...all sibling keys from the GET...", "enableLsdkMode": true } }
 ```
 
-`FullName` is **required** on a Tooling `Metadata` PATCH — omitting it 400s with `FIELD_INTEGRITY_EXCEPTION` "Full name must be specified to update metadata" (verified against a live org). For the `FieldServiceSettings` singleton `FullName` is the literal `"FieldService"`; echo back the `FullName` returned by the 1a read. Send the **entire** `Metadata` object read in 1a with only `enableLsdkMode` flipped — a partial body nulls the omitted org prefs (`fieldServiceOrgPref`, `enableWorkOrders`, the search-field arrays, etc.). A 204 is success.
+Send the **entire** `Metadata` object read in 1a with only `enableLsdkMode` flipped — a partial body nulls the omitted org prefs (`fieldServiceOrgPref`, `enableWorkOrders`, the search-field arrays, etc.). A 204 is success.
 
 **1c. Verify it actually flipped** — re-run the 1a Tooling read and confirm `Metadata.enableLsdkMode == true`. This guards the rare SDO/trial-org case where a write reports success but the flag stays false. If it did not flip, surface the Setup deeplink for the admin to toggle it by hand:
 
@@ -249,7 +249,7 @@ Most common SDO/trial-org symptom: PSLs all assigned, EinsteinSetup page exists,
 but the runtime entitlement was never turned on. 'Turn On Einstein' flips it.
 ```
 
-**1.5c. Re-probe after the admin completes the wizard.** Re-run the 1.5a `execute_api` call. Do not move on until it returns `promptRecords`.
+**1.5c. Re-probe after the admin completes the wizard.** Re-run the 1.5a `dispatch` call. Do not move on until it returns `promptRecords`.
 
 ### Step 2: Enable the Voice to Record Edit org switch
 
@@ -268,13 +268,13 @@ V2RE's org-level switch lives on `FieldServiceMobileSettings`, a **regular sObje
 
 A 201 returns the new row Id (which already satisfies Step 2b — skip the PATCH).
 
-**2b. Flip `IsShowEditFullRecord` to true** on the existing row — `PATCH /services/data/vXX.0/sobjects/FieldServiceMobileSettings/{Id}`:
+**2b. Flip `IsShowEditFullRecord` (and `IsDefault`) to true** on the existing row — `PATCH /services/data/vXX.0/sobjects/FieldServiceMobileSettings/{Id}`:
 
 ```json
-{ "IsShowEditFullRecord": true }
+{ "IsShowEditFullRecord": true, "IsDefault": true }
 ```
 
-A 204 is success. **Do NOT include `IsDefault` in the PATCH body** — `IsDefault` is a create-only field and is *not updateable* on an existing row; sending it 400s with `INVALID_FIELD_FOR_INSERT_UPDATE` on `IsDefault` (verified against a live org). Set `IsDefault` only at create time via the 2a POST. If the existing row you're patching is not already the default (`IsDefault = false`) and you need it to be, you cannot flip it in place — the toggle then takes effect only on profiles explicitly mapped to this settings row via `MobileSettingsAssignment`; the simplest path for a pilot is to create the default row via 2a instead. Re-read the row (Step 0 diagnostic 4) to confirm `IsShowEditFullRecord` is `true`. The PATCH is idempotent: re-sending the same value returns 204 and changes nothing.
+A 204 is success. Re-read the row (Step 0 diagnostic 4) to confirm both fields are `true`. Without `IsDefault = true`, the toggle takes effect only on profiles explicitly mapped to this settings row via `MobileSettingsAssignment` — `IsDefault = true` is the simplest path for a pilot. The PATCH is idempotent: re-sending the same values returns 204 and changes nothing.
 
 > **What the user sees on-device.** Per Salesforce help (`mfs_actions_order.xml`): once `IsShowEditFullRecord = true` and the user has Edit access to the object, **Edit Work Order**, **Edit Work Order Line Item**, and **Edit Service Appointment** appear in the Actions launcher on the Work Order Overview screen, after Quick Actions. The mobile app caches the settings — the technician must log out and back in for the new actions to appear.
 
@@ -372,7 +372,7 @@ Which forms do you want to enable Voice to Form on?
 
 There are two ways to flip it. Pick based on what's available in the runtime.
 
-**Path A (preferred — agent-native browser MCP drive).** Verified working end-to-end: V2F triggered correctly on the mobile app after this path enabled the flag on real forms. The browser MCP is part of the agent runtime (like `execute_api`), not a shell or an external tool the skill depends on.
+**Path A (preferred — agent-native browser MCP drive).** Verified working end-to-end: V2F triggered correctly on the mobile app after this path enabled the flag on real forms. The browser MCP is part of the agent runtime (like `dispatch`), not a shell or an external tool the skill depends on.
 
 The sequence per form is exactly these clicks:
 1. Open Flow Builder on the form. Resolve the Flow Id for each selected form from the Step 5a list, then navigate the browser MCP to `<instanceUrl>/builder_platform_interaction/flowBuilder.app?flowId=<FLOW_ID>`. (The runtime supplies the authenticated session; the skill does not build `frontdoor.jsp` URLs or handle tokens.)
@@ -587,7 +587,7 @@ Run before declaring Voice to Form enabled in production:
 
 ## Conventions
 
-- **REST-native, no execution-environment dependency.** Every org read and write is a single `execute_api` REST call dispatched through the Codey runtime. The skill uses no `sf` CLI, no shell, no local Python or `jq`, no temp files, no metadata deploy, and no Apex. The one non-REST step (LLM Targetable) uses the agent-native browser MCP or a Setup deeplink — never a shell.
+- **REST-native, no execution-environment dependency.** Every org read and write is a single `dispatch` REST call dispatched through the Codey runtime. The skill uses no `sf` CLI, no shell, no local Python or `jq`, no temp files, no metadata deploy, and no Apex. The one non-REST step (LLM Targetable) uses the agent-native browser MCP or a Setup deeplink — never a shell.
 - **Idempotent.** Re-running on an already-configured org applies zero changes. LDS/permset/PSL writes are safe to re-run (204/no-op or `DUPLICATE_VALUE` treated as success).
 - **Read API names back from the org.** PSL DeveloperName, the permset Id, the form API-name list, and the FSM Settings row Id are all read live, never hard-coded.
 - **Trust the runtime probe over Tooling settings probes.** `Ai4mSettings.enableEinsteinGPT` returns `<missing>` even on fully-enabled orgs. The only honest check is the live LLM call in Step 1.5a.

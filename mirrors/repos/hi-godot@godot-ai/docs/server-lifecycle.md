@@ -28,6 +28,13 @@ READY   -> STOPPING -> DORMANT
 BLOCKED -> RECOVERING -> STARTING
 ```
 
+An authenticated endpoint that drops moves `READY -> BLOCKED(endpoint_lost)`
+and revokes the connection, then re-probes on its own with a bounded backoff
+(1, 2, 4, 8, 16 s; five attempts per outage), each attempt running the same
+start path a dock Restart would, so the server must re-prove its capability.
+After the last attempt the block stays until Restart. A server that holds for
+a minute earns a fresh budget; one that flaps faster spends it and stops.
+
 Startup effects are `PROBE`, `LAUNCH`, and `PROVE`; control effects are
 `REPLACE` and `STOP`. Every effect carries the active episode ID. Completion
 for an older or cancelled episode is discarded, so a late worker cannot revive

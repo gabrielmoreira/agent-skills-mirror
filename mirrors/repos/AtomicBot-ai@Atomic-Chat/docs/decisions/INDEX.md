@@ -9,7 +9,7 @@ decision is reversed, add a new one that says which record it supersedes.
 2. Add one line to the right section of this index.
 3. Do **not** paste the record body into `AGENTS.md`.
 
-231 records, 2026-05-19 → 2026-09-02.
+234 records, 2026-05-19 → 2026-09-07.
 
 ---
 
@@ -232,8 +232,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-10** — [Throttle crashloop `model_load` failure spam client-side; confirm `model_load.status` / api 404-noise are already-fixed-pending-rollout, not code bugs (ATO-130: ATO-133 + ATO-131 + ATO-132)](2026-06-10-throttle-crashloop-model-load-failure-spam-client-side-confirm.md)
 - **2026-06-09** — [Add zero-PII Sentry crash/error tracking to both the React frontend and the Rust/Tauri desktop, gated behind `productAnalytic` (ATO-113)](2026-06-09-add-zero-pii-sentry-crash-error-tracking-to-both-the-react.md)
 
-## Packaging, installers, autostart & platform policy (13)
+## Packaging, installers, autostart & platform policy (14)
 
+- **2026-09-04** — [Sanitize the AppImage environment before launching host processes](2026-09-04-sanitize-appimage-environment-before-launching-host-processes.md)
 - **2026-08-19** — [Leave launch at startup off for new installs](2026-08-19-leave-launch-at-startup-off-for-new-installs.md)
 - **2026-08-05** — [Default autostart on only for clean desktop installs](2026-08-05-default-autostart-on-only-for-clean-desktop-installs.md)
 - **2026-08-05** — [Keep launch at startup opt-in and ignore development binaries](2026-08-05-keep-launch-at-startup-opt-in-and-ignore-development-binaries.md)
@@ -248,8 +249,10 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Pin static WiX `upgradeCode` to legacy Jan UUID for in-place MSI upgrades](2026-05-22-pin-static-wix-upgradecode-to-legacy-jan-uuid-for-in-place-msi.md)
 - **2026-05-19** — [Product identity is "Atomic Chat"; new code stops carrying Jan branding](2026-05-19-product-identity-is-atomic-chat-new-code-stops-carrying-jan.md)
 
-## UI / UX (30)
+## UI / UX (32)
 
+- **2026-09-07** — [Answer a blocked send with a widget, not a red line (ATO-453)](2026-09-07-answer-a-blocked-send-with-a-widget-not-a-red-line.md)
+- **2026-09-04** — [Do not estimate ChatGPT subscription token speed](2026-09-04-do-not-estimate-chatgpt-subscription-token-speed.md)
 - **2026-09-04** — [Bound streaming reasoning render cost](2026-09-04-bound-streaming-reasoning-render-cost.md)
 - **2026-09-02** — [Switch single MCP tools per connector from a tools dialog; a connector's per-chat on/off lives there too](2026-09-02-switch-single-mcp-tools-per-connector-from-a-tools-dialog.md)
 - **2026-09-02** — [Measure and surface MCP tool cost in chat; never trim or hide schemas](2026-09-02-measure-and-surface-mcp-tool-cost-in-chat.md)

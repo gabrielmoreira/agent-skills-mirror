@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 7 followed patterns, 114 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 9 followed patterns, 116 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 7 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 114 |
+| Followed pats | 9 |
+| Files         | 116 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 7 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`
+- `daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`
 - `daymade-skill/skill-creator/references/sanitization_checklist.md`
 - `youtube-downloader/references/internal-sop.md`
 - `references/new-skill-guide.md`
@@ -173,12 +175,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 106 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
 | 107 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
 | 108 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 109 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 110 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 111 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 112 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 113 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 114 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 109 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
+| 110 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
+| 111 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 112 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 113 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 114 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 115 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 116 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

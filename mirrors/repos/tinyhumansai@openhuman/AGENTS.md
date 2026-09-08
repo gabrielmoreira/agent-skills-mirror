@@ -1083,12 +1083,22 @@ Two survivals are deliberate and neither puts the engine back in the product:
   allow-listed in `INTENTIONALLY_NOT_FORWARDED`; neither feature is in
   `scripts/ci/product-features.txt`.
 
-The `[patch]` entries for `tinycortex` / `tinycortex-api` stay in both manifests
-and must not be removed with the dependencies. Dropping a direct dependency and
-dropping its patch are different things: the crates are unpublished and the
-engine crates still reached as dev-dependencies name them by version
-requirement, so removing a patch fails **resolution** ("no matching package
-named `tinycortex-api` found") before anything compiles.
+The `[patch]` entries for `tinycortex` / `tinycortex-api` stay in the **root**
+manifest and must not be removed with the dependencies. Dropping a direct
+dependency and dropping its patch are different things: `tinycortex-api` is
+unpublished (and the crates.io `tinycortex` is a stale 0.1.1 without the engine
+features), the engine crates still reached as dev-dependencies name both by
+version requirement, so removing a patch fails **resolution** ("no matching
+package named `tinycortex-api` found") before anything compiles. Both point into
+tinymemory's own vendored engine, `vendor/tinymemory/vendor/tinycortex` — there
+is no top-level `vendor/tinycortex` submodule any more — so the engine the tests
+link is the one the prebuilt module was built from, and a tinymemory re-pin
+moves it. The shell manifest (`app/src-tauri/Cargo.toml`) carries **no** such
+entries: dev-dependencies of a path dependency are never resolved there and
+nothing forwards `memory-engine-seams` / `rss-bench`, so its copies sat under
+`[[patch.unused]]` in `app/src-tauri/Cargo.lock` from #5560 until they were
+removed (`cargo tree --locked --all-features -e normal,dev,build --manifest-path
+app/src-tauri/Cargo.toml -i tinycortex` → not in the graph).
 
 `memory/direct_engine_refs_tests.rs` is still the ratchet over direct
 `tinymemory_core::` references, but **its non-empty list no longer implies a

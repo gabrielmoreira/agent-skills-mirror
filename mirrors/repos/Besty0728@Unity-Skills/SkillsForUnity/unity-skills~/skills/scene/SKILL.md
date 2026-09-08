@@ -87,7 +87,9 @@ Get the scene hierarchy tree, depth-limited.
 |-----------|------|----------|---------|-------------|
 | `maxDepth` | int | No | 3 | Maximum hierarchy depth to expand |
 
-**Returns**: `{sceneName, hierarchy: [node, ...]}` where each node is `{name, entityId, instanceId, components: [type, ...], childCount, children}`.
+**Returns**: `{sceneName, hierarchy: [node, ...]}` where each node is `{name, scene, entityId, instanceId, components: [type, ...], childCount, children}`. `scene` is the node's owning scene name.
+
+> **DontDestroyOnLoad**: in Play mode, roots of the `DontDestroyOnLoad` pseudo-scene are appended after the active-scene nodes, marked with `scene: "DontDestroyOnLoad"`. `scene_get_loaded` also lists it as `{name: "DontDestroyOnLoad", isPseudoScene: true}` when it has roots. These objects are found by `gameobject_find` like any other; the scene itself cannot be unloaded or activated.
 
 > **`childCount` vs `children` — how to tell a leaf from a truncation.** `childCount` is always the node's *real* number of children, independent of `maxDepth`; `children` is `null` once the depth limit is reached. So:
 >

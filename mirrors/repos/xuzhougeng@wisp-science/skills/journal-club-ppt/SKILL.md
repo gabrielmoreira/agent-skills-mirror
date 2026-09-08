@@ -27,7 +27,7 @@ Use Wisp's strengths rather than treating the PDF as static screenshots:
 - Use PDF text extraction / `pdf-explore`-style helpers when available to read abstract, introduction, results, methods, discussion, captions, author information, and references.
 - Use vision on rendered PDF pages to inspect figures, layouts, panel labels, legends, axes, scale bars, and multi-panel structure.
 - Use Python to render PDF pages at high DPI, crop selected figure panels, name crops consistently, and build a figure ledger.
-- Use Wisp's persistent Python runtime to keep intermediate objects: paper outline, figure inventory, selected crop paths, and slide plan.
+- Save the paper outline, figure inventory, crop paths, and slide plan in project files. Python work can run as standalone scripts or in Wisp's persistent runtime; choose according to the workflow and whether retaining loaded PDF/image objects or helpers benefits subsequent steps.
 - Use MCP/web/PubMed/ORCID/lab pages only for textual author/background verification when helpful. External visual assets remain forbidden.
 
 ## Phase 1 — Paper logic reconstruction

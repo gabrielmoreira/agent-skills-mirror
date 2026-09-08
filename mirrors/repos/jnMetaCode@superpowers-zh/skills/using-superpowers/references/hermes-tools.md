@@ -1,44 +1,57 @@
 # Hermes Agent 工具映射
 
-技能使用 Claude Code 的工具名称。当你在技能中遇到这些工具时，使用你平台的等价工具：
+## 工具
 
-| 技能中引用的工具 | Hermes Agent 等价工具 |
-|-----------------|----------------------|
-| `Read`（读取文件） | `read_file` |
-| `Write`（创建文件） | `write_file` |
-| `Edit`（编辑文件） | `patch` |
-| `Bash`（运行命令） | `terminal` |
-| `Grep`（搜索文件内容） | `search_files` |
-| `Glob`（按名称搜索文件） | `search_files` |
-| `Skill` 工具（调用技能） | `skill_view` |
-| `WebFetch` | `web_extract` |
-| `WebSearch` | `web_search` |
-| `Task` 工具（分派子智能体） | `delegate_task` |
-| 多个 `Task` 调用（并行） | 多个 `delegate_task` 调用 |
-| `TodoWrite`（任务跟踪） | `todo` |
-| `EnterPlanMode` / `ExitPlanMode` | 无等价工具 — 留在主会话中 |
+| Skill 里要做的动作 | Hermes 工具 |
+|------------------|------------|
+| 读取文件 | `read_file` |
+| 创建新文件 | `write_file` |
+| 编辑文件（定点补丁） | `patch` |
+| 运行 shell 命令 | `terminal` |
+| 搜索文件内容 | `search_files` |
+| 按文件名查找 | `terminal` 配合 `find` |
+| 抓取 URL / 读网页 | `web_extract(urls=[...])` |
+| 搜索网络 | `web_search(query=...)` |
+| 派遣子智能体 | `delegate_task(goal=..., context=..., toolsets=[...], role="leaf")` |
+| 任务跟踪 | `todo` 工具 |
+| 调用 skill | `skill_view("skill-name")` |
 
-## 技能管理
+## 指令文件
 
-Hermes Agent 使用三级渐进式技能加载：
+当某个 skill 提到「你的指令文件」时，在 Hermes Agent 上指的是项目目录里的 **`AGENTS.md`**，或全局的 **`~/.hermes/SOUL.md`**。
 
-| 操作 | 工具 |
-|------|------|
-| 列出所有可用技能 | `skills_list` |
-| 查看技能完整内容 | `skill_view(name)` |
-| 查看技能的引用文件 | `skill_view(name, path)` |
-| 管理技能（安装/更新） | `skill_manage` |
+> 🇨🇳 **本节是 superpowers-zh 的增量内容，上游 obra/superpowers 没有。**
+>
+> 补充一条实践区分：`SOUL.md` 是**身份/人格**文件（Hermes 官方文档明确说项目工作流指令不属于它），所以 `npx superpowers-zh --tool hermes` 的**项目级**安装只写 `AGENTS.md`；**全局**安装只装 skills、不写 bootstrap —— 往 SOUL.md 里塞技能清单是误用那个文件。
 
-## 额外的 Hermes Agent 工具
+## 调用 skill
 
-| 工具 | 用途 |
-|------|---------|
-| `memory` | 持久化知识供未来会话使用 |
-| `session_search` | 搜索历史会话记录 |
-| `execute_code` | 在沙箱中执行代码 |
-| `process` | 后台进程管理 |
-| `vision_analyze` | 图像分析 |
-| `image_generate` | 图像生成 |
-| `clarify` | 向用户提出澄清性问题 |
-| `browser_*` | 浏览器自动化工具集 |
-| `mixture_of_agents` | 多智能体高级推理 |
+Hermes Agent 有一个 `skills` 工具集，包含 `skill_view` 和 `skills_list` 两个工具。
+要调用某个 superpowers skill，使用：
+
+```
+skill_view("brainstorming")
+skill_view("test-driven-development")
+```
+
+如果 `skill_view` 找不到某个 superpowers skill（在插件完全注册之前，它可能还没出现在目录里），退回到直接读取 SKILL.md：
+
+```
+read_file(path="~/.hermes/plugins/superpowers/skills/<skill-name>/SKILL.md")
+```
+
+这个回退机制与其他没有原生 skill 加载能力的 harness 用的是同一套。
+
+## 子智能体派遣
+
+用 `delegate_task` 为并行或串行的工作流派生隔离的子智能体：
+
+```
+delegate_task(goal="...", context="...", toolsets=[...], role="leaf")
+```
+
+如果 `delegate_task` 不可用，就把工作内联做完，不要凭空编造工具调用。
+
+## 任务跟踪
+
+会话内的任务跟踪用 `todo` 工具。多智能体的任务看板，如果可用则使用 `hermes kanban` CLI。遇到旧文档里的 `TodoWrite` 引用，按「任务跟踪」这个动作理解即可。

@@ -59,21 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`orchestrator/SKILL.md`](orchestrator/SKILL.md) |
-| 2 | ✓ | [`skills/ai-native-agent-skill-design/SKILL.md`](skills/ai-native-agent-skill-design/SKILL.md) |
-| 3 | ✓ | [`skills/ai-native-audit-release/SKILL.md`](skills/ai-native-audit-release/SKILL.md) |
-| 4 | ✓ | [`skills/ai-native-business-model/SKILL.md`](skills/ai-native-business-model/SKILL.md) |
-| 5 | ✓ | [`skills/ai-native-context-engineering/SKILL.md`](skills/ai-native-context-engineering/SKILL.md) |
-| 6 | ✓ | [`skills/ai-native-direction-framing/SKILL.md`](skills/ai-native-direction-framing/SKILL.md) |
-| 7 | ✓ | [`skills/ai-native-experiment-engine/SKILL.md`](skills/ai-native-experiment-engine/SKILL.md) |
-| 8 | ✓ | [`skills/ai-native-knowledge-rag/SKILL.md`](skills/ai-native-knowledge-rag/SKILL.md) |
-| 9 | ✓ | [`skills/ai-native-marketing-growth/SKILL.md`](skills/ai-native-marketing-growth/SKILL.md) |
-| 10 | ✓ | [`skills/ai-native-memory-system/SKILL.md`](skills/ai-native-memory-system/SKILL.md) |
-| 11 | ✓ | [`skills/ai-native-pm-agent/SKILL.md`](skills/ai-native-pm-agent/SKILL.md) |
-| 12 | ✓ | [`skills/ai-native-product-needs/SKILL.md`](skills/ai-native-product-needs/SKILL.md) |
-| 13 | ✓ | [`skills/ai-native-production-ops/SKILL.md`](skills/ai-native-production-ops/SKILL.md) |
-| 14 | ✓ | [`skills/ai-native-system-building/SKILL.md`](skills/ai-native-system-building/SKILL.md) |
-| 15 | ✓ | [`skills/ai-native-user-experience/SKILL.md`](skills/ai-native-user-experience/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`orchestrator/SKILL.md`](orchestrator/SKILL.md) |
+| 3 | ✓ | [`skills/ai-native-agent-skill-design/SKILL.md`](skills/ai-native-agent-skill-design/SKILL.md) |
+| 4 | ✓ | [`skills/ai-native-audit-release/SKILL.md`](skills/ai-native-audit-release/SKILL.md) |
+| 5 | ✓ | [`skills/ai-native-business-model/SKILL.md`](skills/ai-native-business-model/SKILL.md) |
+| 6 | ✓ | [`skills/ai-native-context-engineering/SKILL.md`](skills/ai-native-context-engineering/SKILL.md) |
+| 7 | ✓ | [`skills/ai-native-direction-framing/SKILL.md`](skills/ai-native-direction-framing/SKILL.md) |
+| 8 | ✓ | [`skills/ai-native-experiment-engine/SKILL.md`](skills/ai-native-experiment-engine/SKILL.md) |
+| 9 | ✓ | [`skills/ai-native-knowledge-rag/SKILL.md`](skills/ai-native-knowledge-rag/SKILL.md) |
+| 10 | ✓ | [`skills/ai-native-marketing-growth/SKILL.md`](skills/ai-native-marketing-growth/SKILL.md) |
+| 11 | ✓ | [`skills/ai-native-memory-system/SKILL.md`](skills/ai-native-memory-system/SKILL.md) |
+| 12 | ✓ | [`skills/ai-native-pm-agent/SKILL.md`](skills/ai-native-pm-agent/SKILL.md) |
+| 13 | ✓ | [`skills/ai-native-product-needs/SKILL.md`](skills/ai-native-product-needs/SKILL.md) |
+| 14 | ✓ | [`skills/ai-native-production-ops/SKILL.md`](skills/ai-native-production-ops/SKILL.md) |
+| 15 | ✓ | [`skills/ai-native-system-building/SKILL.md`](skills/ai-native-system-building/SKILL.md) |
 | 16 | ✓ | [`skills/ai-native-ux-design/SKILL.md`](skills/ai-native-ux-design/SKILL.md) |
 | 17 | ✓ | [`skills/combo-business-to-growth/SKILL.md`](skills/combo-business-to-growth/SKILL.md) |
 | 18 | ✓ | [`skills/combo-needs-to-direction/SKILL.md`](skills/combo-needs-to-direction/SKILL.md) |

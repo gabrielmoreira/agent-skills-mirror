@@ -12,6 +12,14 @@ metadata:
       semver: ">=2.0.0"
 ---
 
+# Querying Fs Data Capture Reference
+
+## When to Use This Skill
+
+Build, edit, and deploy Salesforce Data Capture Flows (processType DataCaptureFlow) — Field Service mobile / offline forms. Use when authoring flow-meta.xml with runtime_service_fieldservice:dc* components, Repeater loops (.AllItems), master-detail child record persistence, visual polish (gradient banners, progress bars, callouts), supporting objects with FLS/permsets, debugging DataCaptureFlow deploy errors, or troubleshooting why a deployed form doesn't appear on the FSL Mobile Forms tab (DDC/WorkPlan OWD + AssignedResource sharing prerequisites).
+
+## Workflow
+
 # Salesforce Data Capture Flow Skill
 
 Build, edit, and deploy Salesforce Flows with `processType: DataCaptureFlow` (Field Service mobile / offline forms).
@@ -37,13 +45,6 @@ Optional `IsLlmTargetable` custom property — if you include it, it must be a J
 ```
 
 The `<booleanValue>false</booleanValue>` form deploys but blocks activation — error: `The value of the IsLlmTargetable custom property's value field must be a string in JSON format`. Omitting the property entirely is also fine.
-
-Required input variables:
-```xml
-<variables><name>recordId</name><dataType>String</dataType><isInput>true</isInput><isOutput>false</isOutput><isCollection>false</isCollection></variables>
-<variables><name>parentRecordId</name><dataType>String</dataType><isInput>true</isInput><isOutput>false</isOutput><isCollection>false</isCollection></variables>
-<variables><name>parentObjectType</name><dataType>String</dataType><isInput>true</isInput><isOutput>false</isOutput><isCollection>false</isCollection></variables>
-```
 
 ---
 
@@ -430,8 +431,6 @@ The same accessors are also used inside `recordCreates` / `recordUpdates` `input
 
 ### Conditionally-hidden required fields — use `validationRule`, not `isRequired`
 
-Never mark a field `isRequired=true` if it's behind a `visibilityRule`. The required check still fires while the field is hidden, so users can't proceed. Instead, set the field `isRequired=false` and wrap the rule:
-
 ```text
 IF(TriggerField.selectedChoiceValues = "Yes",
    AND(NOT(ISBLANK(value)), value >= 0, value <= 100000),
@@ -672,8 +671,6 @@ APEX
 
 ### 4. Tech must sign out and sign back in
 
-FSL Mobile caches the sharing snapshot at login. Pull-to-refresh does not pick up new sharing — only a fresh auth token will. Tell the user to **sign out completely** of the FSL Mobile app, then sign back in. After that, the Forms tab fetch succeeds and DDC records render.
-
 ### What is NOT the cause (don't waste time on these)
 
 - **Layout related-list naming** — `<relatedList>DynamicDataCapture</relatedList>` (singular) is the correct XML form. The UI API uses plural `DynamicDataCaptures` separately. Don't try to align them.
@@ -754,9 +751,25 @@ for f in r.get('details', {}).get('componentFailures', []):
 
 ## Reference examples
 
-Bundled alongside this skill at `examples/` — these are **human / IDE reference files for hand-authoring locally; they are not fetched at agent runtime.** The rules inlined in this skill body above are authoritative at runtime; the example files illustrate those same rules in a complete, deploy-ready flow for a person reading the bundle:
+Bundled alongside this skill at `examples/` (in this skill):
 
 - `Data_Capture_All_Components.flow-meta.xml` — every component in deployment-ready XML
-- `DataCapture_Showcase.flow-meta.xml` — full end-to-end flow: multi-screen form, continue-editing recordLookup, Repeater → Loop → child records via `.AllItems`, Create-or-Update CUD chain driven by a Decision, visual polish (banner, progress, callouts, review cards). The most complete worked example of the XML format; if you have the bundle open, use it to cross-check structure against the rules above.
-- `Repeater_with_prepopulation.flow-meta.xml` — validated worked example of the prepopulated-Repeater pattern: `recordLookups` (ServiceResource) → Repeater bound via `collection` inputParameter with nested field `value` defaults using `SourceCollection[$EachItem].FieldApiName` → post-Repeater Loop over `.AllItems` feeding a display screen that reads `{!LoopName.nestedField.value}` and `{!LoopName.UniqueField__Id}`. Mirrors the prepopulation + post-Repeater display rules documented above.
-- `DataCapture_Repeater_with_data_showcase.flow` (in the org, not committed) — `.AllItems` loop spike; also documents non-working cross-row validation formula syntaxes
+- `DataCapture_Showcase.flow-meta.xml` — full end-to-end flow: multi-screen form, continue-editing recordLookup, Repeater → Loop → child records via `.AllItems`, Create-or-Update CUD chain driven by a Decision, visual polish (banner, progress, callouts, review cards). **This is the canonical "truth" for XML format — when skill rules conflict with this file, the file wins.**
+- `Repeater_with_prepopulation.flow-meta.xml` — canonical prepopulated-Repeater pattern: `recordLookups` (ServiceResource) → Repeater bound via `collection` inputParameter with nested field `value` defaults using `SourceCollection[$EachItem].FieldApiName` → post-Repeater Loop over `.AllItems` feeding a display screen that reads `{!LoopName.nestedField.value}` and `{!LoopName.UniqueField__Id}`. **Validated example — treat as ground truth for prepopulation and post-Repeater display XML.**
+- `DataCapture_Repeater_with_data_showcase.flow` (in the org, not committed) — canonical `.AllItems` loop spike; also documents non-working cross-row validation formula syntaxes
+
+─────
+**Runtime context (Headless 360 / agentic):** When this skill runs in the Headless 360 / agentic context, prefer the platform dispatch tool (``dispatch`` in the hosted Headless 360 MCP; ``dispatch`` in the local-dev MCP) over CLI tools (``sf project deploy``, ``sfdx``, shell commands) when possible. The operations available to you are listed below in ``steps:``; each has been verified against the live org. Call the dispatch tool against the canonical paths. CLI fallback is acceptable only when no API path exists for a given capability.
+
+## Critical Constraints
+
+**Operational rules:**
+
+- Required input variables:
+```xml
+<variables><name>recordId</name><dataType>String</dataType><isInput>true</isInput><isOutput>false</isOutput><isCollection>false</isCollection></variables>
+<variables><name>parentRecordId</name><dataType>String</dataType><isInput>true</isInput><isOutput>false</isOutput><isCollection>false</isCollection></variables>
+<variables><name>parentObjectType</name><dataType>String</dataType><isInput>true</isInput><isOutput>false</isOutput><isCollection>false</isCollection></variables>
+```
+- Never mark a field `isRequired=true` if it's behind a `visibilityRule`. The required check still fires while the field is hidden, so users can't proceed. Instead, set the field `isRequired=false` and wrap the rule:
+- FSL Mobile caches the sharing snapshot at login. Pull-to-refresh does not pick up new sharing — only a fresh auth token will. Tell the user to **sign out completely** of the FSL Mobile app, then sign back in. After that, the Forms tab fetch succeeds and DDC records render.

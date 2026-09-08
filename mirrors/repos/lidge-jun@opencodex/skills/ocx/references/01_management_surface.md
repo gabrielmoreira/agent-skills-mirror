@@ -28,6 +28,22 @@ These answer in the CLI head and never reach the proxy, so they work with nothin
 
 Safe to run at any time; none of these change state.
 
+### `ocx models price`
+
+Read the saved manual price for an exact provider/model selector.
+
+| Method | Route |
+|---|---|
+| GET | `/api/providers/{provider}/model-costs` |
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--json` | boolean | Emit provider, modelId, and cost (null for automatic pricing). |
+
+JSON mode: `envelope`.
+
+- The provider must be configured; everything after the first slash is the exact upstream model ID.
+
 ### `ocx status`
 
 Proxy status, injection state, and version skew between this CLI and the running proxy.
@@ -67,6 +83,7 @@ Drives no management route.
 | Flag | Value | Meaning |
 |---|---|---|
 | `--json` | boolean | Emit the provider list as JSON. |
+| `--jsonl` | boolean | Emit one configured provider per JSON line. |
 
 JSON mode: `envelope`.
 
@@ -115,6 +132,8 @@ Token and estimated-cost report over a time range.
 | Flag | Value | Meaning |
 |---|---|---|
 | `--range` | string | today | 1d | 7d | 30d | all |
+| `--since` | string | Inclusive start: epoch milliseconds or full ISO datetime with timezone; requires --until and overrides --range. |
+| `--until` | string | Inclusive end: epoch milliseconds or full ISO datetime with timezone; requires --since. |
 | `--provider` | string | Restrict to one provider. |
 | `--model` | string | Restrict to one model id. |
 | `--json` | boolean | Emit the usage report as JSON. |
@@ -351,6 +370,27 @@ JSON mode: `payload`.
 ## State-changing capabilities
 
 Each of these writes. Check the flags column before running one unattended.
+
+### `ocx models set-price`
+
+Save four manual USD-per-1M-token rates, or restore automatic pricing for one model.
+
+| Method | Route |
+|---|---|
+| PUT | `/api/providers/{provider}/model-costs` |
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--input` | number | Input rate; required unless --auto is used. |
+| `--output` | number | Output rate; required unless --auto is used. |
+| `--cache-read` | number | Cache read rate; defaults to 0. |
+| `--cache-write` | number | Cache write rate; defaults to 0. |
+| `--auto` | boolean | Remove this model's override; cannot be combined with rates. |
+| `--json` | boolean | Emit the saved price or reset result as JSON. |
+
+JSON mode: `payload`.
+
+- Uses the exact upstream model ID after the first slash. Omitted cache rates default to zero; sibling model prices are preserved.
 
 ### `ocx connect rotate`
 
@@ -647,6 +687,6 @@ JSON mode: `payload`.
 
 ## Counts
 
-- declared capabilities: 35
-- of those, state-changing: 15
+- declared capabilities: 37
+- of those, state-changing: 16
 - head-resolved invocations: 2

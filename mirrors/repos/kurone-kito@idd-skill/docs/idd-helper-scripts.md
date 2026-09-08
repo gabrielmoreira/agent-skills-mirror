@@ -220,6 +220,13 @@ in this preamble, since the fallback differs per helper.
   `mode`, and a machine-readable `reason` when unusable, delegating
   entirely to the existing exported resolvers (referenced in
   [kurone-kito/idd-skill#2329](https://github.com/kurone-kito/idd-skill/issues/2329))
+- `scripts/idd-critique-telemetry-hook.mjs` for the C-phase effective
+  `critiqueLoop.telemetryHook` verdict (`usable`, `source`, `command`,
+  and a machine-readable `reason` when unusable), plus fire-and-forget
+  invocation via `--invoke`: pipe the per-round JSON payload on stdin
+  and it invokes the resolved hook, always exiting `0` regardless of
+  the hook's own success or failure (referenced in
+  [kurone-kito/idd-skill#2679](https://github.com/kurone-kito/idd-skill/issues/2679))
 
 **Review & Merge Phase Helpers:**
 
@@ -2956,6 +2963,65 @@ same as `AW4`/`AW5`.
   reimplemented validation rule (referenced in
   [kurone-kito/idd-skill#2329](https://github.com/kurone-kito/idd-skill/issues/2329))
 
+### Effective C-phase critique telemetry hook
+
+- Preferred command when helper runtime is enabled:
+  `idd-critique-telemetry-hook [--policy <path>] [--no-user-global]`
+- Source repository equivalent:
+  `node scripts/idd-critique-telemetry-hook.mjs [--policy <path>] [--no-user-global]`
+- Output schema (stable fields):
+
+  ```json
+  {
+    "usable": true,
+    "source": "repository-local",
+    "command": "notify-critique-telemetry --json",
+    "reason": null
+  }
+  ```
+
+- `source` values: `repository-local`, `user-global`, `none`
+- `reason` values (only when `usable` is `false`):
+  `repository-local-explicit-disable` (repo-local
+  `critiqueLoop.telemetryHook` is the JSON `null` sentinel),
+  `invalid-repository-local-telemetry-hook` (a malformed repo-local
+  value, which fails closed and never inherits a user-global hook),
+  `not-configured` (absent at every layer)
+- `usable: true` always carries a non-null `command` and a null
+  `reason`; `usable: false` always carries a null `command` and a
+  non-null `reason`
+- Resolution order matches
+  [User-global critique telemetry hook default](idd-workflow.md#user-global-critique-telemetry-hook-default)
+  exactly: a configured, disabled (`null`), or malformed repository-local
+  `critiqueLoop.telemetryHook` always wins outright and never inherits
+  the user-global layer; only when repository-local is entirely absent
+  does an optional `$XDG_CONFIG_HOME/idd-skill/config.json` (or
+  `$HOME/.config/idd-skill/config.json`) fragment apply
+- Under `GITHUB_ACTIONS=true` the user-global layer is always skipped
+  (repository-local resolution is unaffected), matching the documented
+  invariant that a GitHub-hosted or other remote agent surface never
+  consults it; `--no-user-global` skips it explicitly on any other
+  remote surface the caller recognizes but this helper cannot
+  auto-detect from a single provider variable
+- `--invoke` reads a JSON payload from stdin (see
+  [Repository-configurable critique telemetry hook](idd-workflow.md#repository-configurable-critique-telemetry-hook)
+  for the payload shape) and, only if a hook resolved as usable,
+  invokes its command with that payload on the child's stdin.
+  Fire-and-forget: a missing command, non-zero exit, timeout, or any
+  other failure is silently ignored; this mode always exits `0` and
+  never writes to stdout/stderr, unlike the plain resolution mode above
+  -- the whole point is that a caller never has to inspect this
+  process's own result
+- Deterministic and network-free for resolution; `--invoke` is the one
+  exception (it spawns the resolved command) and is bounded by a
+  default 5-second timeout plus a forced kill, so it can never block or
+  delay its caller; delegates resolution entirely to the existing
+  exported resolvers (`resolveEffectiveCritiqueLoopTelemetryHookFromEnv`
+  in `idd-config.mts`, `resolveEffectiveCritiqueLoopTelemetryHook` /
+  `inspectCritiqueLoopTelemetryHookLayer` in `policy-helpers.mts`) with
+  no reimplemented validation rule (referenced in
+  [kurone-kito/idd-skill#2679](https://github.com/kurone-kito/idd-skill/issues/2679))
+
 ### S2 quiet-window evidence
 
 - When helper runtime is enabled, Resume/S2 should call the
@@ -3099,6 +3165,62 @@ same as `AW4`/`AW5`.
     — decisions specific to this repository's own configuration, not a
     universal adopter policy — this sweep is a detection aid only: never
     an automatic recovery path or a retroactive merge gate.
+
+### Untrusted-labeler login sweep
+
+- Source repo / vendored-node command:
+
+  ```sh
+  node scripts/idd-suggest-untrusted-labelers.mjs [--owner <owner>] [--repo <repo>] [--format table|json]
+  ```
+
+- Package-manager / ephemeral-npx command: use the profile-selected
+  `idd:suggest-untrusted-labelers` command from the helper runtime
+  manifest wiring above; the literal invocation is:
+
+  ```sh
+  npx --yes --package <helper-package-spec> \
+    idd-suggest-untrusted-labelers [--owner <owner>] [--repo <repo>] [--format table|json]
+  ```
+
+- Automates the full-history sweep technique the
+  [Reserved-label guard recipe](customization.md#reserved-label-guard-recipe)
+  already documents in prose: paginates `GET
+  /repos/{owner}/{repo}/issues/events` to completion, keeping only
+  entries where `event == "labeled"` and the actor's `type == "Bot"`
+  (the REST Issue Event object's `actor` field — a nullable simple-user
+  object — not the webhook payload's `sender` field), deduplicates by
+  `actor.login`, and prints each distinct bot login with a count of
+  `labeled` events attributed to it (`--format table`, the default) or
+  the full result as JSON (`--format json`, including `scannedEventCount`
+  and `pageCount` completeness evidence). `--owner`/`--repo` default to
+  the current repository via `gh repo view` auto-detection.
+- Pages manually (`page=1,2,...` with `per_page=100`), not via `gh api
+  --paginate` in one subprocess call: the repository-level endpoint
+  embeds the full parent `issue` object in every event, and `gh`'s
+  synchronous execution path this repository's helpers share exposes no
+  `maxBuffer` override, so an unbounded repository-wide sweep pages one
+  request at a time instead of risking a single oversized buffered
+  response.
+- **Read-only, unconditionally**: performs no write operation of any
+  kind — no `.github/idd/config.json` edit, no GitHub mutation (no
+  label change, no comment, no other write call). It only proposes
+  candidates for a human to review; recording an accepted candidate's
+  login stays a manual, adopter-owned edit after judging each
+  candidate's event count. Add it to `labels.untrustedLabelerLogins` in
+  `.github/idd/config.json` and (re-)run the `idd-onboard` CLI's
+  `--substitute` stage to generate `strip-untrusted-labels.yml` (see the
+  [Reserved-label guard recipe](customization.md#reserved-label-guard-recipe)'s
+  "Preferred: generated guard" path for the exact invocation), or add it
+  as one of that recipe's `<labeler-bot-login-N>` placeholders when
+  following that recipe's manual fallback instead — see that recipe for
+  when each path applies.
+  Not a phase step in any
+  `idd-*.instructions.md` file — like the Merged-PR feedback sweep
+  above, this is a manually-invoked, operator-run spot-check, run once
+  when first building the reserved-label guard's bot-login list and
+  again after enabling new automation or after a long gap (a bot with
+  no history yet can still start labeling later).
 
 ## Signed-Commit Merge Wrapper (Shared Git Procedure)
 

@@ -21,6 +21,7 @@ This is a Hermes-native `design-quality-gate` workflow skill.
 ## Do Not Use When
 
 - Basic image prompt card only; use `img-summary`.
+- The artifact is a throwaway probe whose quality is irrelevant to the decision it answers; use `decision-prototype`.
 - Ordinary file packaging/export plan only; use `materials-package` or `deliverable-package`.
 - Pure backend, CLI, data, or text-only research with no visual surface.
 - The user asks to claim deployment, export, publication, or visual QA without evidence.

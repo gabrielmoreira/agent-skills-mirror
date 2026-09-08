@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Create, update, validate, and evaluate Wisp skills. Use when authoring a project-local or installable skill, refining its trigger description, adding deterministic scripts or Python sidecars, or testing whether another Agent can follow the workflow.
+description: Create, update, validate, and evaluate Wisp skills. Use when authoring a project-local or installable skill, refining its trigger description, adding deterministic scripts or Python/R runtime sidecars, or testing whether another Agent can follow the workflow.
 ---
 
 # Create Wisp skills
@@ -15,7 +15,8 @@ Agent file tools.
 ```text
 <skill-name>/
 ├── SKILL.md               # frontmatter trigger + procedure body
-├── kernel.py              # optional pure helper definitions
+├── runtime.py             # optional helpers for the persistent Python runtime
+├── runtime.r              # optional helpers for the persistent R runtime
 ├── scripts/               # optional standalone deterministic programs
 ├── references/            # optional detailed domain material
 └── assets/                # optional output templates or static inputs
@@ -34,10 +35,12 @@ one-level-deep references. Add only resources the workflow actually uses.
    `.wisp/skills/<name>/SKILL.md` with `write`.
 4. Add reusable scripts before writing long inline code examples. Execute every
    new script on representative local data.
-5. Add `kernel.py` only for small reusable Python helpers. Loading a skill does
-   not inject Wisp tools into Python. The rendered skill supplies a one-time
-   `exec(compile(open(...)))` instruction that defines the sidecar names in the
-   persistent `python` kernel.
+5. Add root-level `runtime.py` and/or `runtime.r` when helpers need to work with
+   persistent interpreter state. The rendered skill supplies a one-time loading
+   instruction for each file: `exec(compile(...))` through `python`, or
+   `source(..., local = TRUE)` through `r`. Skill loading itself does not execute
+   them or inject Wisp tools. These files run inside the selected runtime;
+   do not invoke them as standalone CLI scripts.
 6. Validate structure with this skill's
    `scripts/quick_validate.py <skill-directory>`.
 7. Refresh or reopen the project if the new skill does not yet appear, then find
@@ -63,7 +66,7 @@ description: Perform X. Use when the user asks for Y, Z, or related output.
 The folder name and `name` should match. The description is the primary trigger;
 state both what the skill does and when it should be selected.
 
-## Python sidecar rules
+## Runtime sidecar rules
 
 Keep top-level code definition-only:
 
@@ -72,10 +75,17 @@ Keep top-level code definition-only:
 - do not run work, access the network, or modify files at load time;
 - do not depend on injected Agent, Run, credential, artifact, or model objects;
 - pass paths and configuration explicitly;
-- use `python` to call helpers after the one-time loader instruction.
+- use the corresponding `python` or `r` tool after loading; reload when that
+  runtime restarts or the conversation/execution context changes;
+- Python and R retain separate state; use prefixed names to avoid collisions
+  with other helpers within each language's namespace;
+- Python loading runs in `__main__`, so put self-checks in explicitly called
+  functions rather than a `__main__` guard.
 
-Use `scripts/` instead when a helper is a standalone CLI, exceeds roughly one
-hundred lines, needs argument parsing, or should run through `run_in_context`.
+Use `scripts/` when a helper is a standalone CLI, needs argument parsing, or
+should run through `run_in_context`. Choose by state reuse and execution needs,
+not file length. `scripts/runtime.py` and `scripts/runtime.r` are ordinary
+scripts; only the reserved root-level filenames get runtime loading guidance.
 
 ## Bundled scripts
 

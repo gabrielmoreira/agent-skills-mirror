@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patt
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -142,35 +142,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 81 | ✓ | [`.agents/skills/jobnet-search/cli/src/helpers.ts`](.agents/skills/jobnet-search/cli/src/helpers.ts) |
 | 82 | ✓ | [`.agents/skills/jobnet-search/cli/tests/cli-contract.test.ts`](.agents/skills/jobnet-search/cli/tests/cli-contract.test.ts) |
 | 83 | ✓ | [`.agents/skills/jobnet-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/jobnet-search/cli/tests/cli-flag-validation.test.ts) |
-| 84 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts) |
-| 85 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-url-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-url-normalization.test.ts) |
-| 86 | ✓ | [`.agents/skills/jobnet-search/cli/tests/helpers.ts`](.agents/skills/jobnet-search/cli/tests/helpers.ts) |
-| 87 | ✓ | [`.agents/skills/jobnet-search/cli/tests/request-timeout.test.ts`](.agents/skills/jobnet-search/cli/tests/request-timeout.test.ts) |
-| 88 | ✓ | [`.agents/skills/jobnet-search/cli/tests/retry-backoff.test.ts`](.agents/skills/jobnet-search/cli/tests/retry-backoff.test.ts) |
-| 89 | ✓ | [`.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts) |
-| 90 | ✓ | [`.agents/skills/jobnet-search/cli/tests/user-agent.test.ts`](.agents/skills/jobnet-search/cli/tests/user-agent.test.ts) |
-| 91 | ✓ | [`.agents/skills/jobnet-search/cli/tsconfig.json`](.agents/skills/jobnet-search/cli/tsconfig.json) |
-| 92 | ✓ | [`.agents/skills/jobnet-search/SKILL.md`](.agents/skills/jobnet-search/SKILL.md) |
-| 93 | ✓ | [`.agents/skills/linkedin-search/cli/package.json`](.agents/skills/linkedin-search/cli/package.json) |
-| 94 | ✓ | [`.agents/skills/linkedin-search/cli/README.md`](.agents/skills/linkedin-search/cli/README.md) |
-| 95 | ✓ | [`.agents/skills/linkedin-search/cli/src/cli.ts`](.agents/skills/linkedin-search/cli/src/cli.ts) |
-| 96 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/detail.ts`](.agents/skills/linkedin-search/cli/src/commands/detail.ts) |
-| 97 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
-| 98 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
-| 99 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
-| 100 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
-| 101 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
-| 102 | ✓ | [`.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts`](.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts) |
-| 103 | ✓ | [`.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts`](.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts) |
-| 104 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
-| 105 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
-| 106 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
-| 107 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
-| 108 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
-| 109 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
-| 110 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
-| 111 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 112 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 84 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-fallback.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-fallback.test.ts) |
+| 85 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts) |
+| 86 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-url-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-url-normalization.test.ts) |
+| 87 | ✓ | [`.agents/skills/jobnet-search/cli/tests/helpers.ts`](.agents/skills/jobnet-search/cli/tests/helpers.ts) |
+| 88 | ✓ | [`.agents/skills/jobnet-search/cli/tests/request-timeout.test.ts`](.agents/skills/jobnet-search/cli/tests/request-timeout.test.ts) |
+| 89 | ✓ | [`.agents/skills/jobnet-search/cli/tests/retry-backoff.test.ts`](.agents/skills/jobnet-search/cli/tests/retry-backoff.test.ts) |
+| 90 | ✓ | [`.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts) |
+| 91 | ✓ | [`.agents/skills/jobnet-search/cli/tests/user-agent.test.ts`](.agents/skills/jobnet-search/cli/tests/user-agent.test.ts) |
+| 92 | ✓ | [`.agents/skills/jobnet-search/cli/tsconfig.json`](.agents/skills/jobnet-search/cli/tsconfig.json) |
+| 93 | ✓ | [`.agents/skills/jobnet-search/SKILL.md`](.agents/skills/jobnet-search/SKILL.md) |
+| 94 | ✓ | [`.agents/skills/linkedin-search/cli/package.json`](.agents/skills/linkedin-search/cli/package.json) |
+| 95 | ✓ | [`.agents/skills/linkedin-search/cli/README.md`](.agents/skills/linkedin-search/cli/README.md) |
+| 96 | ✓ | [`.agents/skills/linkedin-search/cli/src/cli.ts`](.agents/skills/linkedin-search/cli/src/cli.ts) |
+| 97 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/detail.ts`](.agents/skills/linkedin-search/cli/src/commands/detail.ts) |
+| 98 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
+| 99 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
+| 100 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
+| 101 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
+| 102 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
+| 103 | ✓ | [`.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts`](.agents/skills/linkedin-search/cli/tests/request-timeout.test.ts) |
+| 104 | ✓ | [`.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts`](.agents/skills/linkedin-search/cli/tests/retry-backoff.test.ts) |
+| 105 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
+| 106 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
+| 107 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
+| 108 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
+| 109 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
+| 110 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
+| 111 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
+| 112 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 113 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

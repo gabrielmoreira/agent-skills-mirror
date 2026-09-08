@@ -1,6 +1,6 @@
 ---
 name: guide
-description: 'Guide, workflow guide, 流程导航、我该用哪个 skill、下一步做什么。Use when: 需要扫描当前项目已有文档、实现 Candidate 和准出状态，判断 testany-eng 流程所处阶段，并推荐下一步最合适的 skill；也可路由到 Code Review 或 Testany 自动化落地分支。'
+description: 'Guide, workflow guide, 流程导航、我该用哪个 skill、下一步做什么。Use when: 需要按任务和决策层级区分正式设计、有限工程修复与源码复审，读取项目证据并推荐最小下一步；也可路由到 Testany 自动化落地分支。'
 ---
 
 # Guide
@@ -25,7 +25,15 @@ description: 'Guide, workflow guide, 流程导航、我该用哪个 skill、下�
 
 ## 主流程边界
 
-### 主流程（按默认顺序）
+### 先选入口，再检查前置条件
+
+必读 `../../references/review-boundaries.md`。先识别用户要的是正式新功能流程，还是已有系统的有限变更；再按 `references/workflow-map.yaml` 的 `review_routing` 分流。后面的“最早缺失主流程门”只适用于正式主流程，不能将历史项目 bugfix 倒推回 BRD。
+
+- HLD：职责、信任、外部依赖、数据/控制流及失败边界；LLD：批准边界内的方法、SQL、事务、重试与配置实现；Code：精确实现。不凭“技术方案”“Lead Dev”、跨仓数量或安全关键词选 HLD。
+- 混合请求只对真正的架构/契约增量分流，其余有限修复继续；不强制重写全套设计/测试/运维文档。
+- 批准来源须能回到有权 Owner 的具体决定。`APPROVED` 标签、自己的旧 review comment 及其转述不能自证新的授权。Guide 只识别该缺口，不代做产品或架构决定。
+
+### 正式新功能主流程（按默认顺序）
 
 `BRD -> User Journey -> PRD -> API Contract -> HLD -> Test Strategy -> LLD -> Test Spec -> Test Review -> Runbook`
 
@@ -119,7 +127,7 @@ LLD 准出后还存在一条与测试文档准备并行的实现门禁：
 
 ### 5. 先定位阻塞点，再推荐下一步
 
-- Guide 先找“最早缺失或未批准的关键基线”
+- Guide 先在所选入口内找“最早缺失或未批准的关键基线”，而非对所有任务补齐全链文档
 - 下一步推荐应该直接消除这个阻塞点
 - 如果阻塞点不唯一，先推荐更上游、更主链路、更确定的一步
 
@@ -129,6 +137,7 @@ LLD 准出后还存在一条与测试文档准备并行的实现门禁：
 
 - `references/workflow-map.yaml`
 - `references/artifact-detection.md`
+- `../../references/review-boundaries.md`
 
 该文件是 Guide 的**单一流程事实源**，包含：
 
@@ -169,38 +178,14 @@ LLD 准出后还存在一条与测试文档准备并行的实现门禁：
 
 ## 执行进度清单
 
-**执行时使用 TodoWrite 工具跟踪以下进度，完成一项后立即标记为 completed：**
+使用宿主可用的进度工具或简短清单，不依赖固定工具名：
 
 ```text
-□ Phase 0：确定范围
-  □ 0.1 读取 workflow-map.yaml
-  □ 0.2 确认是否有用户显式提供的路径/阶段/目标
-  □ 0.3 判定是否需要全仓扫描
-□ Phase 1：扫描与取证
-  □ 1.1 扫描候选文档与常见目录
-  □ 1.2 提取 TRACEABILITY-METADATA / 标题 / 状态字段
-  □ 1.3 识别审查报告与准出证书
-  □ 1.4 检查 Test Spec 是否包含 `Testany Automation Handoff`
-  □ 1.5 判定仓库是否属于前端原型适用场景
-  □ 1.6 检测是否存在 exact Implementation Candidate / Code Review 证据
-□ Phase 2：归一化状态
-  □ 2.1 为每类 artifact 选出当前有效候选
-  □ 2.2 归一化为 missing/draft/in_review/approved/unknown
-  □ 2.3 归一化 automation handoff readiness
-  □ 2.4 标记歧义与低置信度点
-  □ 2.5 归一化 Implementation Candidate 的 review 状态
-□ Phase 3：计算流程位置
-  □ 3.1 找到最早未满足的主流程门
-  □ 3.2 判断是否展示 Prototype 分支
-  □ 3.3 判断是否展示 Testany Automation Landing 分支
-  □ 3.4 判断是否提示 Guardrails 分支
-  □ 3.5 判断是否展示 Code Review 实现门禁
-  □ 3.6 生成 1-3 条下一步建议
-□ Phase 4：输出导航结果
-  □ 4.1 输出项目状态摘要
-  □ 4.2 输出 Mermaid DAG
-  □ 4.3 输出下一步建议与理由
-  □ 4.4 输出待确认项（如有）
+□ Phase 0：读取路由规则，识别正式/有限任务、决策层级与扫描范围
+□ Phase 1：扫描相关产物、批准来源和精确 Candidate，核实适用分支
+□ Phase 2：归一化状态、有效候选、来源与覆盖限制，标记歧义
+□ Phase 3：在适用路径内找真实缺口，生成 1–3 条最小下一步
+□ Phase 4：输出证据、路由理由、待确认项；流程复杂时再画图
 ```
 
 ## 工作流程
@@ -209,6 +194,7 @@ LLD 准出后还存在一条与测试文档准备并行的实现门禁：
 
 1. 先读取 `references/workflow-map.yaml`
 2. 再读取 `references/artifact-detection.md`
+   并按共享 `review-boundaries.md` 确认决策层级及权限来源。
 3. 如果用户已经提供：
    - 某个具体文档路径
    - 某个明确阶段（如“我已经有 PRD”）
@@ -270,10 +256,12 @@ LLD 准出后还存在一条与测试文档准备并行的实现门禁：
 判定规则：
 
 - 文档不存在 → `missing`
-- 有明确 `status: approved`，或存在对应准出证书 → `approved`
+- 有明确 `status: approved` 或对应准出证书，且适用范围、批准来源已核验 → `approved`
 - 有明确 `status: in_review` / `review` / `reviewing`，或存在审查报告但无通过证据 → `in_review`
 - 文档存在且能识别为该 artifact，但没有批准证据 → `draft`
 - 只有弱关键词命中，无法确认类型或状态 → `unknown`
+
+状态标签是待核实声明，不压过原始批准记录或已知撤回/漂移事实；批准了旧范围不表示新增边界继承批准。
 
 #### 1.4 有效候选选择规则
 
@@ -303,7 +291,7 @@ LLD 准出后还存在一条与测试文档准备并行的实现门禁：
 **注意**：
 
 - 仅有“审查报告”不等于“通过”
-- 只有“准出证书”或明确 `approved` 证据，才能视为 `approved`
+- 只有可核实对象/范围和授权来源的批准证据，才能视为 `approved`；有限回复也可提供该证据，不强制独立证书
 - 上述通用 certificate 优先级不适用于 Code Review terminal chain；Code Review 始终以可验证链上的最新 terminal 为准
 
 #### 1.6 Prototype 适用性判断
@@ -358,7 +346,8 @@ Guardrails 建议只在以下场景出现：
 
 ### Phase 2：计算流程位置
 
-1. 按 `workflow-map.yaml` 的主流程顺序检查每个门是否满足
+0. 先应用 `workflow-map.yaml.review_routing`。有限修复按实际问题直接进入 bounded HLD/LLD 或 Code Review；没有全套历史文档不自动补 Writer 链。真正缺少关键依据只列最小待确认项。
+1. 仅对正式主流程，按 `workflow-map.yaml` 的主流程顺序检查每个门是否满足
 2. 只要发现：
    - 上游 artifact 缺失
    - 或 artifact 已存在但未批准
@@ -389,7 +378,7 @@ Guardrails 建议只在以下场景出现：
 
 ## 输出格式
 
-输出必须包含以下 4 个部分。
+简单导航可用一段话给出对象/模式、证据、推荐与待确认项；复杂流程使用以下结构。不得为输出格式增加新文件或门禁。
 
 ### 1. 项目状态摘要
 
@@ -402,6 +391,7 @@ Guardrails 建议只在以下场景出现：
 
 ### 2. Mermaid DAG
 
+- 仅在多个依赖/分支关系难以用短文说明时使用
 - 只展示与当前项目相关的节点
 - 主流程必须清晰
 - Prototype 分支只在适用时展示
@@ -457,6 +447,7 @@ Guardrails 建议只在以下场景出现：
 - 不要根据 artifact 名脑补 slash command，例如把 User Journey 说成 `/user-journey`
 - 不要把任意 Git HEAD 当成 Implementation Candidate
 - 不要把 Code Review approval 解释成 CI、merge、deployment 或 release approval
+- 不要把新增机器授权/PDP 依赖当普通参数修复，也不要仅因已有 PDP 涉及安全就要求重新设计
 
 ## 使用示例
 
@@ -479,6 +470,10 @@ Guardrails 建议只在以下场景出现：
 **示例 5**
 
 > 开发已经给出 base/Candidate SHA 和 review request，帮我判断下一步是不是 Code Review。
+
+**示例 6**：三个仓库修复同一 nullable SQL，职责/契约不变且方案尚未实现 → `/lld-reviewer` 的有限修复评审，不补整份 HLD 或 Manifest。
+
+**示例 7**：修复计划同时含事务修正与机器任务改用用户 PDP → 事务部分 LLD；只有授权职责变化走 HLD 增量和对应 Owner 决策，必要契约变化单列 API review。详见 `references/guide-examples.md`。
 
 ## 参考文档
 

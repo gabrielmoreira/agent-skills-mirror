@@ -3,6 +3,7 @@ dbs-update
 dbs-diagnosis
 dbs-benchmark
 dbs-standard-answer
+dbs-theory-grounding
 dbs-action
 dbs-content
 dbs-content-risk-check

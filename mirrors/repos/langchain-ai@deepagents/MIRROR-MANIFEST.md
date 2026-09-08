@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 45 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 45 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,12 +103,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
 | 38 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
 | 39 | ✓ | [`libs/partners/AGENTS.md`](libs/partners/AGENTS.md) |
-| 40 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
-| 41 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 42 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 43 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
-| 44 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
-| 45 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
+| 40 | ✓ | [`libs/talon/deepagents_talon/defaults/AGENTS.md`](libs/talon/deepagents_talon/defaults/AGENTS.md) |
+| 41 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md) |
+| 42 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md) |
+| 43 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md) |
+| 44 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
+| 45 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 46 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 47 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
+| 48 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
+| 49 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
 
 ---
 

@@ -64,6 +64,7 @@ directory names say what they hold. The parts the layout does *not* tell you:
 - **Error codes**: Defined in `protocol/errors.py` (Python) and `utils/error_codes.gd` (GDScript). Keep in sync. Use Godot's built-in `error_string(err)` to translate numeric error codes in error messages — do not write a custom lookup table.
 - **Tools return `dict`**: Handlers call `runtime.send_command(command, params)` which returns a dict or raises. Tools create a `DirectRuntime` and delegate to handlers.
 - **Plugin runs on main thread**: All GDScript executes in `_process()` with a 4ms frame budget. Never block. Use `call_deferred` for scene tree mutations.
+- **Reloading the plugin frees the running instance**: the only safe shape is `PluginReload.reload_enabled_plugin.call_deferred()` — the static callable itself, deferred. Never call `reload_enabled_plugin()` from a `plugin.gd` method, including a deferred one: it returns into a freed script and crashes the editor. `tests/unit/test_plugin_reload_deferral.py` locks this.
 - **Scene paths are clean**: `/Main/Camera3D` format, not raw Godot internal paths. Use `McpScenePath.from_node(node, scene_root)` in GDScript.
 - **Class naming**: classes that need a project-wide `class_name` (i.e. used as a type annotation across multiple files or exposed to third-party addons) carry the `Mcp*` prefix to avoid colliding with user-project classes. Internals only used inside the plugin (handlers, presets/values, test stubs) skip `class_name` and load by path. Handlers are registered lazily so `plugin.gd` does not preload their compile closure. V4 is a clean break from pre-v4 updater and wire compatibility, not a silent revocation of published addon APIs: any previously shipped `class_name` needs an explicit API decision before removal and may remain as a tiny path/UID-stable shim.
 - **MCP logging**: Plugin prints `MCP | [recv] command(params)` / `MCP | [send] command -> ok` to Godot console. Controlled by the dock's "Log" toggle, persisted via EditorSetting `godot_ai/mcp_logging` (routes to the dispatcher `mcp_logging` var and `McpLogBuffer.enabled` console echo). High-frequency `[event] readiness -> ...` lines record to the ring buffer only (`log(msg, echo=false)`) and never echo to the console (#626).
@@ -159,7 +160,9 @@ Or in cmd: `mklink /J test_project\addons\godot_ai ..\..\plugin\addons\godot_ai`
 **When troubleshooting any dev-environment / setup / dependency / symlink issue, scan `script/` first** for an existing fixer before doing it by hand. The project ships scripts for a reason — bypassing them re-introduces the bugs they were written to handle.
 
 - Server start/adopt/teardown, discovery tiers, `editor_reload_plugin`: [docs/server-lifecycle.md](docs/server-lifecycle.md)
-- Cutting a release: [docs/releasing.md](docs/releasing.md).
+- Cutting a release: [docs/releasing.md](docs/releasing.md). The release
+  candidate's source commit carries the release's `CHANGELOG.md` entry; the
+  published notes link to that file at that commit.
 - Self-update, migration capsule, or release verification changes:
   [docs/self-update.md](docs/self-update.md). **Any change touching update
   discovery, `update_manager.gd`, `release_verifier.gd`, `update_installer.gd`,

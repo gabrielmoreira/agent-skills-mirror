@@ -16,7 +16,7 @@ This skill ingests a brand source and produces a 14-field color scheme that gets
 > Methodology, color tables, and contrast checks are unchanged from upstream — refresh from upstream when content changes there.
 
 > **Runtime contract:** every org interaction in this skill is a single REST
-> call dispatched through the Codey runtime (`execute_api` locally / the hosted
+> call dispatched through the Codey runtime (`dispatch` locally / the hosted
 > Headless 360 MCP in shared surfaces). This skill has **no dependency on the
 > execution environment** — no `sf` CLI, no shell scripts, no local Python, no
 > temp files. Colors are derived and validated by the agent inline, then

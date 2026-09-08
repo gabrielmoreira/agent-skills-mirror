@@ -680,6 +680,8 @@ flowchart LR
 - Desktop / HTTP 或 ParentInjection 正在执行时，不重放半截 snapshot，而是为该 exact turn/run generation 注册 `LateMirror`。若水位线前的 A 在第二次采样前结束（包括 A→B），仍按 A 的 exact `turn_id` / `run_id` anchor 补齐终态，B 留给正常 engine mirror；handover notice / user quote 在同一 provider prelude 先发，随后承接剩余 delta，终态读取在下一条 user 行前截断，不能混入后续回合。
 - catch-up 仍是 best-effort 消息层行为；失败只 warn，不回滚已经成功的 attach。
 
+延迟接管失败轮次时，`provider_blocked`、`request_contract`、`retry_deferred` 与溢出、发送结果不明原因都直接读取持久化枚举。错误正文缺失或包含 `403` 等其它分类提示时，也不能覆盖已保存的终态原因；仅旧式通用服务商失败沿用文本提示。
+
 ### GUI ↔ IM 实时镜像
 
 一个绑定了 IM chat 的会话，如果用户从桌面/HTTP 发起回合，回复应该**同时**实时流到 IM 端。这由 [`im_mirror.rs`](../../../crates/ha-channel/src/im_mirror.rs) 实现：
@@ -784,6 +786,8 @@ pub struct RoundTextAccumulator {
 ```
 
 事件处理走 `event.contains(...)` 的廉价短路（rarer-needle-first，规避全 JSON parse）：
+
+这里不能改成以 `{"type":...` 为前缀的 `starts_with`：`emit_tool_result` 的 `json!` 经 `BTreeMap` 按键名字母序输出，`call_id` 在 `type` 之前，前缀判断会漏掉工具结果。
 
 - `text_delta` → `current.text.push_str`；若 `in_tool_phase=true` 说明前 round 已闭、新 round 开始，先翻页再累加。
 - `tool_call`（round 边界） → `completed.push(take(current))`，`in_tool_phase=true`；**幂等**——一次 LLM round 多 tool 只关一次。

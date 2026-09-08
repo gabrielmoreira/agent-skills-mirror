@@ -21,6 +21,7 @@ This is a Hermes-native `frontend` workflow skill.
 ## Do Not Use When
 
 - The user needs a broad premium-quality gate across web, deck, PDF, poster, or publishing outputs; use `design-quality-gate`.
+- The user wants a disposable wireframe or mocked interaction to settle one interaction question before planning; use `decision-prototype`.
 - The user only needs a file, deck, PDF, spreadsheet, HWP, or attachment package; use `materials-package` or `deliverable-package`.
 - The user only needs an image card or infographic prompt; use `img-summary`.
 - The user asks to mark a UI as visually passed without fresh rendered evidence; use `visual-qa` and keep PASS blocked until observed.

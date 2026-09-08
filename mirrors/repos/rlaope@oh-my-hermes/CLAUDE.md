@@ -140,6 +140,12 @@ Rules:
   artifact families together.
 - Dropping `PYTHONPATH=tests` — imports of `_cli_harness` and friends fail with
   confusing errors.
+- Spawning `python -m omh.cli` (or `-c "import omh.cli"`) without `-P` — the
+  repo root ships a top-level `omh/` shim, so a run launched from inside a
+  checkout imports the checkout instead of the installed generation.
+  `tests/test_interpreter_spawn_policy.py` re-derives every such spawn from
+  `src/` and fails on one that lacks `-P`; route new spawns through
+  `_omh_cli()` in `src/install/self_update.py` or add `-P` yourself.
 - Making Codex the implicit default owner in wording, schemas, or reports —
   keep Codex, Claude Code, Hermes runtime, and generic executors
   executor-neutral (`AGENTS.md`, Implementation Boundaries).

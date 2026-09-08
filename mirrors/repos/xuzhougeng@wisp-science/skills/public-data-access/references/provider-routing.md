@@ -9,6 +9,12 @@ Choose a provider adapter only after the provider-neutral plan is valid.
 - Use series matrices for bounded expression reanalysis when available.
 - Use supplementary archives or SRA/ENA for raw data; do not pretend GEO itself
   guarantees FASTQ availability.
+- For SOFT/Series Matrix parsing or ExpressionSet acquisition in an R workflow,
+  read [geokit.md](geokit.md). Use geokit when available in the selected
+  execution context; keep basic discovery on the existing GEO connector.
+- Inspect files before calling geokit download helpers. `geo_suppl()` downloads
+  matches immediately, and `geo_matrix()` may fetch multiple platform matrices.
+  A URL constructed by `geo_url()` does not prove that a file exists.
 
 ## SRA and ENA
 
@@ -50,9 +56,10 @@ Choose a provider adapter only after the provider-neutral plan is valid.
 
 1. Installed Wisp connector/MCP for discovery and small results.
 2. Official provider API or bulk client.
-3. A versioned external CLI already installed in the execution environment.
+3. A versioned external CLI or language package already installed in the
+   execution environment, such as geokit for GEO in R.
 4. Manual instructions when no safe executable adapter exists.
 
 Do not silently fall through from one adapter to another after a partial
 transfer. Record the failure, preserve resumable state, and ask before changing
-transport.
+transport when the existing authorization does not cover that change.

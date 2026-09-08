@@ -51,7 +51,7 @@ select_python_candidates() {
         is_windowsapps_path "$_sp_candidate" && continue
         [ -f "$_sp_candidate" ] || continue
         [ -x "$_sp_candidate" ] || continue
-        if "$_sp_candidate" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 8) else 1)' >/dev/null 2>&1; then
+        if "$_sp_candidate" -I -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 8) else 1)' >/dev/null 2>&1; then
             printf '%s\n' "$_sp_candidate"
             return 0
         fi
@@ -201,7 +201,7 @@ canonicalize() {
             printf "%s\n" "${out}"; return 0; }
     fi
     if [ -n "${PWF_PYTHON:-}" ]; then
-        out="$("${PWF_PYTHON}" -c "import os,sys;print(os.path.realpath(sys.argv[1]))" "${target}" 2>/dev/null)" \
+        out="$("${PWF_PYTHON}" -I -c "import os,sys;print(os.path.realpath(sys.argv[1]))" "${target}" 2>/dev/null)" \
             && [ -n "${out}" ] && { printf "%s\n" "${out}"; return 0; }
     fi
     return 1
@@ -334,7 +334,7 @@ if [ -d "${PLAN_PREFIX}.planning/sessions" ]; then
         # A current session ID always determines its own portable digest.
         # Ambient PWF_SESSION_KEY may belong to a previous session and is
         # intentionally ignored. Safe legacy raw sentinels remain compatible.
-        SESSION_ATTACHED=$("$PWF_PYTHON" - "${PWF_PLAN_ROOT:-.}" "$SESSIONS_DIR" "$SESSION_ID" <<'PY' 2>/dev/null
+        SESSION_ATTACHED=$("$PWF_PYTHON" -I - "${PWF_PLAN_ROOT:-.}" "$SESSIONS_DIR" "$SESSION_ID" <<'PY' 2>/dev/null
 import ctypes
 import hashlib
 import os
@@ -605,7 +605,7 @@ cleanup_snapshot() {
 # resolved path remains inside the canonical root.
 safe_snapshot() {
     [ -n "$PWF_PYTHON" ] || return 1
-    "$PWF_PYTHON" - "$1" "$2" "${PWF_PLAN_ROOT:-.}" "$3" <<'PY'
+    "$PWF_PYTHON" -I - "$1" "$2" "${PWF_PLAN_ROOT:-.}" "$3" <<'PY'
 import ctypes
 import os
 import stat
@@ -754,7 +754,7 @@ PY
 # content, or non-private cache directories are rejected.
 secure_progress_marker() {
     [ -n "$PWF_PYTHON" ] || return 1
-    "$PWF_PYTHON" - "$1" "$2" "$3" "$4" <<'PY'
+    "$PWF_PYTHON" -I - "$1" "$2" "$3" "$4" <<'PY'
 import os
 import secrets
 import stat

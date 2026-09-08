@@ -25,6 +25,16 @@ beta2 延续 beta1 的存储与数据库迁移边界。从 v0.7.1 或更早版�
 
 ## 0.7.3 （当前）
 
+- 修复硅基流动、OpenCode 与 GLM Coding Plan 推理内容在模型解析、流式事件和历史回读中的丢失；项目自有适配器统一标准内容块并保留工具续答所需的原始推理，思考过程中可展开查看。旧历史仅尽力恢复已有内容，缺失不影响正文与工具，不修改上游 ChatOpenAI 或供应商思考开关。验证与配置差异见[推理适配决策](./decisions/implemented/2026-09-07-provider-reasoning-adapter.md)。
+- 修复首块直接返回工具调用时流式工具不显示：前端只消费当前语义事件，工具完整参数覆盖分片快照，结果按同一 Run 的工具调用关联；处理过程展开内容补齐 8px 间距，收起不留空白。
+- OpenCode/Go 模型请求附加 Yuxi User-Agent 与稳定的 `x-opencode-session`，主模型和摘要模型沿用当前 Thread ID，修复缺少会话头导致的 `MissingSessionID`；其他供应商与已保存模型配置不变。
+- 修复普通 HTTP 部署中点击创建 API Key 无响应的问题（[#998](https://github.com/xerrors/Yuxi/issues/998)）：使用浏览器安全随机源生成幂等请求 ID，失败重试保留 ID，成功或取消后清除，不改变服务端密钥生成规则。
+- 默认对话模型和快速响应模型改为硅基流动 `deepseek-ai/DeepSeek-V4-Flash`，管理员已保存的模型选择保持优先；同步中英文 README、部署示例和软件包版本到 0.7.3，定时任务入口标注 Beta。
+- 本版本包含知识库统计刷新绕过过期缓存的修复（[#997](https://github.com/xerrors/Yuxi/issues/997)），以及知识库带时区字段统一使用 UTC 的修复（[#988](https://github.com/xerrors/Yuxi/issues/988)）。
+- 优化 Agent 模型请求前的并发等待：Worker 更及时地领取任务，独立运行不再共享 checkpoint saver 实例锁；减少重复 Skill 投影复制、工具 Schema 推导、执行配置解析和最终状态读取，并将同步追踪 flush 移出事件循环。同线程 FIFO、权限与 lease ownership 保持不变。
+- AgentRun 新增首次模型请求时间及派生耗时，由 `agents/callbacks` 中的回调捕获并按当前 owner 写入。业务迁移从 `v0.7.2` tag 一次补齐当前结构，不维护未发布中间版本的逐级升级分支；升级时先停止 API/Worker、备份并执行迁移器，再协调重启。此指标从 Run 创建计时，与实验中的 API 接入→首次模型 HTTP 发送口径分开。
+- 完善正常完成、取消与恢复的执行关闭顺序：最终 checkpoint、消息和审计绑定同一 Run，执行流清理完成后再释放 owner，避免重复取消打断清理或后台执行遗留。
+- 并发评测统一为 `python -m backend.test.performance` 的 `matrix/load/report` 子命令，相关单测归入后端测试目录。报告同时提供 P50/P95、阶段耗时、有效样本数与实际轮数；失败或缺失阶段明确标注，不填零或计算虚假的增量。15 组、3150 请求的既有实测与取舍统一收录在[并发优化决策](./decisions/implemented/2026-09-07-agent-concurrency-optimization.md)，结构整理不作为新的性能测量。
 - 删除 LITE 运行模式及其环境变量、Compose/Make 入口、后端条件装配、前端能力门控和专属测试；shipping 只保留统一知识能力拓扑。升级前须补齐 Milvus、etcd 与 Neo4j 资源，并在迁移后协调重启 API 与 worker，避免新旧 Durable Task 健康租约切换期间暂时 not ready。
 - 通用后台 Task 从 API 进程内 coroutine 队列迁至 PostgreSQL 执行意图与 ARQ worker：注册 Handler 通过 owner/heartbeat/lease 执行，数据库去重阻止并发重复提交，失联任务明确失败；容量释放时接力唤醒下一批 pending intent，worker 发布统一能力健康租约，迁移生成的 legacy v0 之外不复用未知版本 failure hook。知识执行器与 Milvus 同步 RPC 移出共享 worker 事件循环；business schema 从 0.7.2 的 v2 一次收敛 Durable Task、Project 生命周期与用户定时 Agent 结构。
 

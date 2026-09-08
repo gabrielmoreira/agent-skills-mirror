@@ -59,8 +59,14 @@ Every output must have one producing script or recorded command. Use
 deterministic filenames that identify the analysis and content. Keep temporary
 files outside the final output directories or name them clearly as temporary.
 
-Script persistence and process lifetime are separate concerns. When a Python or
-R runtime already holds an expensive object in memory:
+Script persistence and process lifetime are separate concerns. Wisp's `python`
+and `r` runtimes retain variables and loaded objects across calls and can execute
+saved scripts. `shell` and `run_in_context` execute commands in fresh processes.
+Choose according to the user's workflow, state reuse, script requirements, and
+task lifecycle, using the selected environment in either case.
+
+When an analysis depends on an expensive object already loaded in a Python or R
+runtime:
 
 - keep the reproducible analysis in a project-local `.py` or `.R` file;
 - execute that file with the `python`/`r` tool's `script_path` in the same
@@ -70,7 +76,8 @@ R runtime already holds an expensive object in memory:
 - use `run_in_context`, `python file.py`, or `Rscript` only for a deliberately
   fresh, state-independent batch execution.
 
-Record the runtime script path and the returned source hash/runtime generation
+For standalone execution, record the script path and exact command. For runtime
+execution, record the script path and returned source hash/runtime generation
 in the module README. For clean-room replay, an optional batch wrapper may load
 the data once and then call the same analysis functions; it is not the default
 hot-iteration path.

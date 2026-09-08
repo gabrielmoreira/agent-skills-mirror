@@ -151,7 +151,7 @@ canonicalize() {
     fi
     _canonical_python="$(trusted_python)" || _canonical_python=""
     if [ -n "${_canonical_python}" ]; then
-        out="$("${_canonical_python}" -c "import os,sys;print(os.path.realpath(sys.argv[1]))" "${target}" 2>/dev/null)" \
+        out="$("${_canonical_python}" -I -c "import os,sys;print(os.path.realpath(sys.argv[1]))" "${target}" 2>/dev/null)" \
             && [ -n "${out}" ] && { printf "%s\n" "${out}"; return 0; }
     fi
     return 1
@@ -233,7 +233,7 @@ mtime_of() {
     if [ -n "${out}" ]; then printf "%s\n" "${out}"; return 0; fi
     _mtime_python="$(trusted_python)" || _mtime_python=""
     if [ -n "${_mtime_python}" ]; then
-        out="$("${_mtime_python}" -c "import os,sys;print(int(os.stat(sys.argv[1]).st_mtime))" "${target}" 2>/dev/null)"
+        out="$("${_mtime_python}" -I -c "import os,sys;print(int(os.stat(sys.argv[1]).st_mtime))" "${target}" 2>/dev/null)"
         if [ -n "${out}" ]; then printf "%s\n" "${out}"; return 0; fi
     fi
     printf "0\n"

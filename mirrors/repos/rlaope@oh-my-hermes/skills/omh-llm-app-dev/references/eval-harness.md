@@ -32,19 +32,52 @@ Prefer the most deterministic validator the task allows, and climb only when the
 
 A task-level verdict is pass or fail per case. Aggregate scores hide which case broke; keep the per-case results.
 
-## 3. The Comparison Record
+Grade with code wherever a field decides correctness: the arguments a write tool received, the business state after the run, and the identifiers and order of what was rendered. A rubric is for the semantic remainder. Pin a specific tool call or ordering only when it is part of the contract, such as a grounding read that must precede a write or an authorization check that must precede a side effect; otherwise accept any route that reaches the required outcome without breaking a safety invariant.
+
+## 3. Stateful Fixtures
+
+A case is a message list plus the state that made the decision. A stateless model API does not make the feature stateless, and a transcript alone must never be able to recreate authority.
+
+Each case restores, as committed fixture data with a fixture version:
+
+- the messages;
+- the record provenance in scope, meaning which records entered through which authorized read, under which principal and tenant, at which version;
+- the identity, tenant, and current permissions of the caller;
+- approval records and pending staged changes with their target versions;
+- stored user facts, their versions, and the current deletion generation;
+- the latest presentation receipt: the final visible ordering, the acknowledged revision, and omitted items.
+
+Restore these together, so no fixture grants a record the transcript mentions but the provenance store does not. Inject busy, long, or contradictory preconditions directly into the state rather than replaying turns to build them up, unless carrying state across turns is itself the behavior under test. A simulated conversation is a way to discover a failure; the committed case is the controlled reduction of it.
+
+For a feature that loaded `references/stateful-contracts.md`, the golden set contains these contract cases:
+
+- **Record access.** An invented ID, an ID copied from another session, an ID the caller saw before a permission was revoked, an ID that has expired from scope, and an ID that only a read-only delegate read. Each exercises a separate check, and no case may grant a write because the record was once visible. The only passing path is the parent's own scoped read followed by a current authorization check.
+- **Rendered references.** "The second one" after the host filtered an unauthorized record, after the client re-sorted, and after pagination. The expected answer is the item at that position in the acknowledged final order, with the authoritative fields and required disclosures that were rendered. With the receipt stale or missing, the expected behavior is a refresh or a clarifying question, never a positional guess.
+- **Resulting-state limits.** Two sequential requests each under the cap that together exceed it; two concurrent workers targeting the same resource; a staged change applied after the target moved; a staged change applied after the approval expired. Each must end in a conflict or limit result with no partial mutation, and the fixture asserts the final business state, not the tool's reply.
+- **Memory lifecycle.** A user assertion that is stored; a tool result, a retrieved document, and a third-party claim the assistant repeated, each rejected; the same fact requested from a different person on a shared account and from a different tenant, each isolated; a correction that supersedes; a deletion that removes the fact from every read path; a retention expiry; and a delayed extractor whose window predates a deletion or a newer correction, which must be fenced rather than applied.
+
+## 4. Paired And Cross-Capability Cases
+
+Every required behavior gets a neighbor where the behavior must be absent: serve beside refuse, act beside ask, load a skill beside skip it, save a fact beside reject one. A suite of only required behaviors rewards a feature that always acts; the pair is what catches it.
+
+Add cases that span two contracts in one request and assert both obligations in one outcome: a positional reference to a rendered item followed by a write against it, a stored preference that changes which record is recommended, a limit check on a record that entered scope through a delegate. Separate suites for records, limits, and memory can each pass while a single request that crosses them fails at the seam.
+
+## 5. The Comparison Record
 
 Run the regression **before** the swap, not after it.
 
 - **Same set, same validators, both sides.** Baseline and candidate run against the identical golden set. A comparison whose two sides ran different cases is not a comparison.
-- **Pin both sides.** Record the exact model ID and the prompt version for baseline and for candidate. This is the reason both rails exist.
+- **Pin both sides.** Record the exact model ID, the prompt version, the tool bundle, and the fixture version for baseline and for candidate. This is the reason both rails exist.
 - **Capture tokens and cost per run.** Prompt tokens, completion tokens, and cost belong in the record, because a candidate that is two points better and four times more expensive is a decision, not a win.
+- **Cost is per successful task.** When comparing models or effort settings, divide total cost including failed attempts by tasks that passed; a cheaper call that fails more often is not cheaper. Report time to first useful rendered output and full-task latency separately, with tail percentiles beside the median, and report difficult-task failures on their own line instead of averaging them away.
+- **Configuration first, then calibrated prompts.** Hold the harness and prompt fixed to isolate a model or effort change; only afterward allow comparable prompt tuning per candidate on separate tuning cases, and report the held-out result with each prompt version. Keeping the two comparisons distinct stops a prompt fitted to one model from settling the selection.
 - **Report per-case movement.** Which cases newly pass, which newly fail. A net-positive run that broke a case someone reported last month is not an improvement.
 - **Missing telemetry stays null.** If the harness did not report tokens, latency, or cost, the field is null and the report says the harness did not report it. Never reconstruct a token count from a pricing table or a character count; an estimate presented beside observed numbers reads as observed.
 
-## 4. What A Result Is Not
+## 6. What A Result Is Not
 
-- A designed comparison is not a result. Until the run happened and its output was observed, every number is absent, not zero.
+- A designed comparison is not a result.
+- A committed fixture is not a run. Restoring runtime state proves the case is replayable, not that it was replayed. Until the run happened and its output was observed, every number is absent, not zero.
 - A passing eval is not implementation, review, CI, or merge evidence.
 - A golden-set pass rate is a statement about the golden set. It bounds the claim to the cases in the file, and the honest report says so.
 
@@ -58,3 +91,6 @@ Run the regression **before** the swap, not after it.
 | Golden set written up front, never grown | It ossifies around the failures imagined on day one and misses every real one. |
 | Comparing a candidate against a remembered baseline | The baseline was a different prompt, a different model, or a different day. Re-run it. |
 | Estimating cost from a pricing page | An estimate placed beside observed metrics is read as observed. Leave it null. |
+| Fixtures that restore messages only | The transcript recreated authority the provenance store never granted, so the case passes for the wrong reason. |
+| Required behaviors with no paired absence | A feature that always acts passes every "should act" case and fails every user it should have asked. |
+| Comparing per-call price | Failed attempts are free in that arithmetic; cost per successful task is the number that decides. |

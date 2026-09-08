@@ -12,7 +12,7 @@ description: 'Code review, implementation review, 源码评审、实现复审。
 ## 使用边界
 
 - 默认只读。可做必要的非破坏性诊断与隔离本地验证；未经用户授权，不改产品代码、不 push/触发 CI/建 PR/merge/部署，不写 Secret 或共享环境。
-- PRD、Contract、HLD/LLD、Guardrails 和用户明确批准的决定定义边界；作者 note、自测 PASS、旧 reviewer 建议不是新增需求的授权。
+- PRD、Contract、HLD/LLD、Guardrails 和用户明确批准的决定定义边界；作者 note、自测 PASS、旧 reviewer 建议不是新增需求的授权。基线有 `APPROVED` 字样仍须核对具体批准来源，不能把本 Reviewer 的意见经文档转述后当成独立授权。
 - Code Review 通过仅表示源码可进入后续流程，不授予后续操作权限。源码、exact-SHA CI、环境/发布结论始终分层。
 - 不因审查轮数、发现数量或“安全起见”提高准出标准；P0/P1 关闭且必要证据完整时停止，P2 永不阻断。
 
@@ -27,12 +27,15 @@ description: 'Code review, implementation review, 源码评审、实现复审。
 | mutable snapshot 漂移、提交重绑或拟复用旧证据 | `references/evidence-reuse.md` |
 | 派发并行评审 | `../../references/subagent-result-contract.md` 与 `references/subagent-result-extension.md` |
 | 维护本 Skill，而非评审产品 | `tests/evaluation.md`（行为样本与盲测方法；评审产品时不要加载答案） |
+| 冻结批准基线；发现工程方案、架构/权限增量或批准来源争议 | `../../references/review-boundaries.md`（分层、有限变更、授权来源；不替代本 Skill 的机械 policy） |
 
 引用必须可读取并核验版本/摘要；只有 ID、摘要或作者总结不构成证据。记录可以内嵌在回复中，不强制新建报告文件、平台或数据库。机械绑定工具保留原职责，不代替行为判断。
 
 ## 1. 冻结边界与精确输入
 
 先读目标仓库 AGENTS/README 与相关批准基线。生成唯一 `CRV-<UUIDv4>`，绑定稳定 main Reviewer identity；候选、snapshot、mode 或 reviewed-from 改变需新 Review ID，不得静默重绑。
+
+冻结前沿新增/争议边界的 `approval_evidence` 回到原始决定，核对批准人、授权范围和对象；在既有基线引用内记录，不新增 ledger。历史工程细节可落在明确委托的预算内，但“Lead Dev”称谓本身不提供改架构权限。若发现旧 comment 被循环认证为基线，披露受影响来源和错误结论，按现有 SD/EB 与 reviewer-miss policy 处理，不偷偷改 Scope Lock 或继续要求实现错误决定。只有修复方案、尚无实现对象时路由 LLD；真实职责/信任/依赖增量单列 HLD/API，不替它们批准。
 
 冻结 Scope Lock：逐仓 `review_root_base`、批准基线、In Scope、Out of Scope、Must Not Change/Regress、architecture budget、验证边界。用本 Skill 的 `scripts/scope_lock_digest.py` 生成 closed canonical payload/digest；正常整改不改语义 Scope Lock。未能绑定的字段写 `NOT_BOUND`，未冻结时写 `NOT_FROZEN`，不得猜测；可得字段仍保留精确值。
 
@@ -47,6 +50,8 @@ description: 'Code review, implementation review, 源码评审、实现复审。
 ## 2. 不膨胀：要求、修复、建议分开
 
 Architecture surface 包括 service/workload、controller/runner、endpoint/RPC/event/wire、table/durable authority、queue/outbox、crypto purpose/key authority、Secret/RBAC、publisher/consumer 和部署拓扑。未在批准 budget 内的增改删均未授权。
+
+Surface 的语义变化同样在范围内：谁授权谁、机器/用户主体转换、外部 PDP/策略管理依赖、数据 owner、依赖失败时业务能否继续。没有新增资源也不能声明 `architecture_surface_delta: none`。`技术必要性`、行业惯例、复用已有服务或“更安全”不能补出授权；有明确已批准 PDP 时也不得以简化为由删除它。工程边界内实现由工程侧判断，真正涉及产品承诺才交产品 Owner，不把所有技术选择上交 PM。
 
 - Candidate 自行越界，删除/回退即可恢复明确基线：标准 `P1 scope violation`，最小修复只要求删除/回退；不诱导 Owner 批准扩张。
 - 基线含糊/冲突，或已批准能力的最小正确修复确需未批准 surface：`SCOPE_DECISION_REQUIRED`，给 Owner 最小问题，不能代替其批准。
@@ -69,6 +74,7 @@ Architecture surface 包括 service/workload、controller/runner、endpoint/RPC/
 3. **正反成对**：关键校验既要非法拒绝，也要合法接受；再核实错误分类与拒绝副作用。按实际语义考虑正常 RV/status 变化、rolling 窗口、历史终态 Pod、权限拒绝退出码等，不能照抄项目专用规则。不能把仍在工作的 terminating Pod 一概当历史终态忽略。
 4. **行为链闭合**：沿同一 invariant 查直接 consumers、普通/continuation 分支、全部获准 targets、retry/recovery/compensation。状态问题至少考虑相关连续尝试：第一次失败留下什么，第二次恢复/回滚读到什么；一行修复不等于整链关闭。
 5. **Parser 同源**：跨层比较编码/身份时采用拥有该字段的生产 parser 语义，检查其合法表示；不要为了审查另造一套 canonical authority，也不能只比字符串掩盖同字节不同表示。
+6. **管理入口可表达性**：修复依赖策略/配置生成时，检查生产管理 API/compiler 能否表达并生成实际执行器输入。自写 compiler 后直接交真实 PDP/OPA，只证明下游执行器，不证明生产管理链可用；真实入口拒绝拟议格式是源码/设计可行性证据，不是泛称“上线再补配置”。只补最小隔离证据，不要求现网写入或新测试平台。
 
 新风险假设必须有批准 invariant 与可定位路径才推进。未触达的域不扫描造问题。不能以“所有边界都应该测”要求新平台；优先复用现有命令，补最小能区分真实缺陷的实验。
 
@@ -127,6 +133,7 @@ Architecture surface 包括 service/workload、controller/runner、endpoint/RPC/
 - “对 commit `abc123` 相对 `main` 做 Lead Dev code review。”
 - “复审新 Candidate，闭合上一轮 P1；不扩大范围。”
 - “审查三个仓库本地实现，CI/环境状态单列。”
+- “旧 reviewer 要求机器任务增加用户 PDP，但唯一批准来源是那条 comment”：先核实原始授权，不能靠自签 APPROVED 或冻结摘要补票；也不能擅自删除真正已获批准的授权检查。
 
 ## 维护本 Skill 时的验证
 

@@ -38,6 +38,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-cto-loop`: [omh] Hermes CTO Loop workflow: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence.
 - `omh-curriculum-design`: [omh] Turn a learning goal into a teachable curriculum, assessment plan, and learner-ready sequence.
 - `omh-data-analysis`: [omh] Hermes data analysis workflow: scope supplied data with provenance, causal-claim, and hallucination guards.
+- `omh-decision-prototype`: [omh] Bounded decision prototype workflow: resolve one uncertain interaction, API, performance, or integration choice with a disposable, isolated experiment whose observed result feeds planning.
 - `omh-decision-recall`: [omh] Recall scoped reviewed rejected decisions without elevating them to approved memory.
 - `ulw-interview`: [omh] Hermes Deep Interview workflow: one-question-at-a-time clarification.
 - `omh-deliverable-package`: [omh] Hermes deliverable package workflow: track PPT, PDF, XLSX, DOCX, HWP, Markdown, and attachments through prepared, generated, QA, approved, and attached states.
@@ -62,6 +63,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-instinct-ledger`: [omh] Instinct Ledger workflow: turn repeated project or cross-project lessons into atomic, confidence-scored instinct candidates with scoped promotion and export boundaries.
 - `omh-jit-learn`: [omh] Just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking.
 - `omh-legal-compliance-review`: [omh] Surface contract and compliance risks, questions, and escalation points before a legal decision or action.
+- `omh-lifecycle-growth`: [omh] Turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision.
 - `omh-live-info`: [omh] Policy overlay for live lookups - add provider, freshness, units, and source-quality gates after preferring native live-data tools for ordinary weather, finance, sports, maps, and time-zone requests.
 - `omh-llm-app-dev`: [omh] Hermes LLM App Development workflow: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable.
 - `omh-localization-review`: [omh] Make a product or content release locale-ready with terminology, cultural-fit, and quality-review guidance.
@@ -88,6 +90,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-physical-device-readiness`: [omh] Physical device readiness - gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools.
 - `omh-plan`: [omh] Hermes Plan workflow: structured planning before execution.
 - `omh-product-brief`: [omh] Turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief.
+- `omh-product-discovery-validation`: [omh] Test whether a customer problem, segment, and business hypothesis deserve product investment, ending in kill, pivot, persevere, or inconclusive before any PRD.
 - `omh-docs`: [omh] Current-source-first documentation for OMH itself: product identity, public capability catalog, model routing, local state, and long-term memory.
 - `omh-production-audit`: [omh] Hermes Production Audit workflow: evaluate release, deploy, security, observability, rollback, docs, and support readiness without claiming production access.
 - `omh-prompt-import-readiness`: [omh] Prompt import readiness - review and normalize external CLI-agent prompt files before offering slash-command candidates; use external-connector-readiness for plugin or API adoption and toolbelt-readiness for missing runtime capabilities.
@@ -104,6 +107,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-running-work-board`: [omh] Hermes adaptation for showing which coding units are running right now, on which runtime and model, with observed tokens and elapsed time.
 - `omh-rust`: [omh] Hermes Rust workflow: prepare Rust changes with ownership, error, and API discipline, and escalate any unsafe, FFI, or lock-free change to the UB checklist.
 - `omh-sales-development`: [omh] Turn an account or market opportunity into a focused discovery, qualification, and next-step brief.
+- `omh-sales-pipeline-review`: [omh] Turn a supplied CRM export or pipeline snapshot into an evidence-bound pipeline health, forecast, and follow-up review.
 - `omh-security-safety-review`: [omh] Hermes Security Safety Review workflow: review prompt, tool, secret, dependency, destructive-action, and explicit local plugin risks before agent or code execution.
 - `omh-skill`: [omh] Hermes adaptation for managing local skills.
 - `omh-skill-health`: [omh] Skill Health workflow: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions.

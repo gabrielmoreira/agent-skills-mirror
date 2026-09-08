@@ -20,11 +20,11 @@ Before the first finding disposition, read `references/review-resolution.md` fro
 
 **Execution Protocol**:
 1. **Invoke named specialists for deliverable production** — pass deliverable paths between them and validate their results (see subagents-orchestration-guide "Orchestrator Execution Boundary")
-2. **Follow the 4-step task cycle exactly**: execute → branch on executor result → quality-fix → commit
-3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
+2. **Follow the 4-step task cycle exactly for each task in the Consumed Task Set**: execute → branch on executor result → quality-fix → commit. Corrections produced outside that cycle reuse its executor-result branching and quality gate, and defer only the commit to their own phase's rule
+3. **Enter autonomous mode** when the user provides execution instruction with an existing Work Plan or task files — this IS the batch approval
 4. **Scope**: Complete consumed task-set execution, post-implementation verification, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a valid user-owned escalation. Advance only when the current phase's stated transition condition is satisfied.
 
-**CRITICAL**: Run quality-fixer-frontend before every commit.
+**CRITICAL**: Commit only after quality-fixer-frontend returns `approved` or `verification_incomplete`. A quality-fixer-frontend pass authorizes a commit at a defined commit point; it does not create one.
 
 Work plan: $ARGUMENTS
 
@@ -53,8 +53,7 @@ Analyze the Consumed Task Set and determine the action required:
 | State | Criteria | Next Action |
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
-| No tasks + approved plan exists | Consumed Task Set is empty but the resolved work plan has batch approval | Run task-decomposer; the approval already authorizes mechanical task materialization |
-| No tasks + unapproved plan exists | Consumed Task Set is empty and the resolved work plan is not approved | Review it when needed, then present the plan approval gate before task materialization |
+| No tasks + plan exists | Consumed Task Set is empty and the resolved work plan exists | User's execution instruction serves as batch approval → Run task-decomposer |
 | Neither exists + Design Doc exists | No plan, no Consumed Task Set, but `docs/design/*.md` exists | Invoke work-planner to create a work plan, then run document-reviewer (`dev-workflows-fullstack:document-reviewer`, doc_type: WorkPlan). Run Review Resolution through correction re-review, its parent requirement or authority exits, and convergence, using work-planner for rerouted corrections; then present the resolved plan for batch approval before task materialization |
 | Neither exists | No plan, no Consumed Task Set, no Design Doc | Report missing prerequisites to user and stop |
 
@@ -62,17 +61,13 @@ Analyze the Consumed Task Set and determine the action required:
 
 When the Consumed Task Set is empty:
 
-### 1. Authorization Check
-
-Use the normal Work Plan review and approval gate when batch approval is absent. Existing batch approval authorizes task materialization directly.
-
-### 2. Task Materialization
+### 1. Task Materialization
 Invoke task-decomposer using Agent tool:
 - `subagent_type`: "dev-workflows-fullstack:task-decomposer"
 - `description`: "Materialize work plan tasks"
 - `prompt`: "Read work plan at docs/plans/[plan-name].md and output individual single-commit task files in docs/plans/tasks/."
 
-### 3. Verify Generation
+### 2. Verify Generation
 Recompute the Consumed Task Set using the same restricted pattern from the Consumed Task Set section above. When it remains empty, apply Specialist Result Acceptance: validate the invocation and returned artifacts, correct recoverable input or naming errors, and rerun.
 
 **Flow**: Task generation → Consumed Task Set recompute → Autonomous execution (in this order)
@@ -86,7 +81,7 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
   - Other environments (tests, quality tools) → Quality agents retain proof limitations while the task cycle continues
 
 ## Task Execution Cycle (4-Step Cycle)
-**MANDATORY EXECUTION CYCLE**: `execute → branch on executor result → quality-fix → commit`
+**MANDATORY EXECUTION CYCLE** (per task in the Consumed Task Set): `execute → branch on executor result → quality-fix → commit`
 
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: invoke Agent tool (subagent_type: "dev-workflows-fullstack:task-executor-frontend") → Record the current HEAD as `diffBase`, pass `task_file: [path]`, and receive the structured response
@@ -122,7 +117,7 @@ Apply subagents-orchestration-guide's Post-Implementation Review status-routing 
 
 ## Final Cleanup
 
-Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
+Before the completion report, commit the post-review corrections applied at Review Resolution convergence when any remain uncommitted, applying subagents-orchestration-guide Commit Boundary Check, then delete the implementation task files this recipe consumed. Their work is then committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 
 - Delete every file in the Consumed Task Set
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review

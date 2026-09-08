@@ -33,12 +33,115 @@ INJECT_PLAN="${SCRIPT_DIR}/inject-plan.sh"
 GATE_STOP="${SCRIPT_DIR}/gate-stop.sh"
 CHECK_COMPLETE="${SCRIPT_DIR}/check-complete.sh"
 
+FAST_PATH="${SCRIPT_DIR}/inject-plan.py"
+
+[ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
+[ -f "$INJECT_PLAN" ] || exit 0
+
+# No planning state where the resolver will look and no selector to validate:
+# every event below answers with nothing (and Stop is not consumed until a
+# plan is accepted), so answer with nothing now, before any fork. A set
+# PLAN_ID or PWF_PLAN_ROOT still gets its refusal notice from the injector.
+if [ -z "${PLAN_ID:-}" ] && [ -z "${PWF_PLAN_ROOT:-}" ] \
+    && [ ! -f task_plan.md ] && [ ! -d .planning ]; then
+    exit 0
+fi
+
+# Locate a CPython 3 without forking (v3.17.0). Every $(...) and every
+# pipeline is a fork, and under Git Bash on Windows a fork costs about 90 ms;
+# the old `$(command -v ...)` plus a `-c` version probe cost three of them on
+# every event. This walk is stat calls only. Explicit PWF_TRUSTED_PYTHON or
+# PYTHON_BIN wins; otherwise python3 is preferred over python across the whole
+# PATH so an old distro's Python 2 `python` is never picked while a python3
+# exists further down. Only absolute PATH entries are searched (a relative or
+# empty entry would let the current repository plant the interpreter) and the
+# Microsoft Store aliases are skipped by path: they are discoverable yet refuse
+# to run a script. Python stays optional: without it the payload is still
+# consumed to EOF, the session id is treated as absent, and the PostToolUse
+# throttle deliberately degrades to repeat output.
+select_python() {
+    for _fp_explicit in "${PWF_TRUSTED_PYTHON:-}" "${PYTHON_BIN:-}"; do
+        [ -n "$_fp_explicit" ] || continue
+        case "$_fp_explicit" in
+            /*|[A-Za-z]:[\\/]*) ;;
+            *) continue ;;
+        esac
+        case "$_fp_explicit" in
+            *[Ww][Ii][Nn][Dd][Oo][Ww][Ss][Aa][Pp][Pp][Ss]*) continue ;;
+        esac
+        if [ -f "$_fp_explicit" ] && [ -x "$_fp_explicit" ]; then
+            printf '%s\n' "$_fp_explicit"
+            return 0
+        fi
+    done
+    _fp_found=""
+    # set -u is active: an unset IFS or PATH must not kill the hook.
+    if [ "${IFS+set}" = set ]; then
+        _fp_saved_ifs="$IFS"
+        _fp_ifs_was_set=1
+    else
+        _fp_saved_ifs=""
+        _fp_ifs_was_set=0
+    fi
+    for _fp_name in python3 python; do
+        IFS=:
+        set -f
+        for _fp_dir in ${PATH-}; do
+            case "$_fp_dir" in
+                /*) ;;
+                *) continue ;;
+            esac
+            case "$_fp_dir" in
+                *[Ww][Ii][Nn][Dd][Oo][Ww][Ss][Aa][Pp][Pp][Ss]*) continue ;;
+            esac
+            if [ -f "${_fp_dir}/${_fp_name}" ] && [ -x "${_fp_dir}/${_fp_name}" ]; then
+                _fp_found="${_fp_dir}/${_fp_name}"
+                break
+            fi
+        done
+        set +f
+        if [ "$_fp_ifs_was_set" = 1 ]; then IFS="$_fp_saved_ifs"; else unset IFS; fi
+        if [ -n "$_fp_found" ]; then
+            printf '%s\n' "$_fp_found"
+            return 0
+        fi
+    done
+    return 1
+}
+
+PWF_PYTHON=""
+select_python_into_var() {
+    # Assign without a subshell: the walk above is the only work this costs.
+    _spv_out="$(select_python 2>/dev/null)" || _spv_out=""
+    PWF_PYTHON="$_spv_out"
+}
+select_python_into_var
+
+# Run the injector for one context. scripts/inject-plan.py is a byte-identical
+# twin of inject-plan.sh in one interpreter process (about 130 forks fewer per
+# event; see the header of hooks/claude-hook.sh). It exits 0 only when its
+# stdout is the complete answer, so any other status falls back to the
+# reference chain. PWF_FAST_PATH=0 forces the reference chain. -I keeps the
+# project directory off sys.path; -B never writes bytecode into the skill dir.
+# PWF_SHELL_PWD hands the twin this shell's $PWD spelling so both routes
+# derive the same cache slots; MSYS2_ENV_CONV_EXCL keeps Git Bash from
+# rewriting it on the way.
+run_inject() {
+    if [ "${PWF_FAST_PATH:-}" != "0" ] && [ -n "$PWF_PYTHON" ] && [ -f "$FAST_PATH" ]; then
+        if PWF_SHELL_PWD="$PWD" \
+            MSYS2_ENV_CONV_EXCL="${MSYS2_ENV_CONV_EXCL:+${MSYS2_ENV_CONV_EXCL};}PWF_SHELL_PWD" \
+            "$PWF_PYTHON" -I -B "$FAST_PATH" "--context=$1" 2>/dev/null; then
+            return 0
+        fi
+    fi
+    sh "$INJECT_PLAN" "--context=$1" 2>/dev/null
+}
+
 # Keep the injector's established no-probe boundary.  The preflight token is
 # emitted only after a plan exists as a regular contained file, but before
 # session admission needs stdin identity.  Rejected paths must not make this
-# wrapper execute a PATH interpreter merely to parse a payload it will ignore.
-[ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
-[ -f "$INJECT_PLAN" ] || exit 0
+# wrapper execute any interpreter, so the preflight and the refusal notices
+# stay on the shell chain; the twin runs only once the plan is accepted.
 _preflight="$(sh "$INJECT_PLAN" --context=preflight 2>/dev/null)" || exit 0
 if [ "$_preflight" != "PWF_PLAN_ELIGIBLE_V1" ]; then
     case "$EVENT" in
@@ -47,43 +150,6 @@ if [ "$_preflight" != "PWF_PLAN_ELIGIBLE_V1" ]; then
     esac
     exit 0
 fi
-
-# Select a runnable Python only for strict JSON parsing.  Python is optional:
-# without it the payload is still consumed to EOF, the session id is treated as
-# absent, and the PostToolUse throttle deliberately degrades to repeat output.
-select_python() {
-    if [ -n "${PWF_TRUSTED_PYTHON:-}" ]; then
-        set -- "$PWF_TRUSTED_PYTHON"
-    elif [ -n "${PYTHON_BIN:-}" ]; then
-        set -- "$PYTHON_BIN"
-    else
-        set -- "$(command -v python3 2>/dev/null)" "$(command -v python 2>/dev/null)"
-    fi
-    for _candidate in "$@"
-    do
-        [ -n "$_candidate" ] || continue
-        case "$_candidate" in
-            [A-Za-z]:[\\/]*)
-                _cygpath="/usr/bin/cygpath.exe"
-                [ -f "$_cygpath" ] && [ -x "$_cygpath" ] || continue
-                _candidate="$("$_cygpath" -u "$_candidate" 2>/dev/null)" || continue
-                ;;
-            /*) ;;
-            *) continue ;;
-        esac
-        case "$_candidate" in
-            *[Ww][Ii][Nn][Dd][Oo][Ww][Ss][Aa][Pp][Pp][Ss]*) continue ;;
-        esac
-        [ -f "$_candidate" ] && [ -x "$_candidate" ] || continue
-        if "$_candidate" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 8) else 1)' >/dev/null 2>&1; then
-            printf '%s\n' "$_candidate"
-            return 0
-        fi
-    done
-    return 1
-}
-
-PWF_PYTHON="$(select_python 2>/dev/null)" || PWF_PYTHON=""
 PARSED_IDENTITY=""
 HOOK_PAYLOAD=""
 if [ "$EVENT" = "stop" ]; then
@@ -94,7 +160,7 @@ if [ "$EVENT" = "stop" ]; then
     HOOK_PAYLOAD="$(cat 2>/dev/null)" || HOOK_PAYLOAD=""
 fi
 parse_identity() {
-    "$PWF_PYTHON" -c '
+    "$PWF_PYTHON" -I -c '
 import hashlib
 import json
 import re
@@ -190,7 +256,7 @@ clear_turn_marker() {
 cache_action() {
     _cache_action="$1"
     _cache_root="$2"
-    "$PWF_PYTHON" - "$_cache_action" "$_cache_root" "$TURN_KEY" "$PROMPT_ID" <<'PY'
+    "$PWF_PYTHON" -I - "$_cache_action" "$_cache_root" "$TURN_KEY" "$PROMPT_ID" <<'PY'
 import os
 import secrets
 import stat
@@ -328,10 +394,12 @@ claim_turn_marker() {
 
 # Encode the injector's bounded output without interpolating it into a command
 # or format string.  Walk characters directly because awk implementations do
-# not agree on how many escapes gsub replacement text consumes.
+# not agree on how many escapes gsub replacement text consumes.  LC_ALL=C
+# makes the walk byte-wise: in a UTF-8 locale gawk on Windows walks UTF-16
+# units and re-emits a character outside the BMP as a lone surrogate.
 json_string() {
     tr '\001-\011\013-\037' ' ' \
-        | awk 'BEGIN { first = 1 }
+        | LC_ALL=C awk 'BEGIN { first = 1 }
             {
                 if (!first) printf "\\n"
                 for (i = 1; i <= length($0); i++) {
@@ -359,15 +427,15 @@ case "$EVENT" in
         [ -f "$INJECT_PLAN" ] || exit 0
         # Plain stdout is explicitly model context for UserPromptSubmit.  Do
         # not capture or reframe it: preserve injector output byte-for-byte.
-        sh "$INJECT_PLAN" --context=userprompt 2>/dev/null || :
+        run_inject userprompt || :
         ;;
     pretool)
-        _context="$(sh "$INJECT_PLAN" --context=pretool 2>/dev/null)" || exit 0
+        _context="$(run_inject pretool)" || exit 0
         emit_context_json "PreToolUse" "$_context"
         ;;
     posttool)
         [ -f "$INJECT_PLAN" ] || exit 0
-        _decision="$(sh "$INJECT_PLAN" --context=validate 2>/dev/null)" || exit 0
+        _decision="$(run_inject validate)" || exit 0
         [ "$_decision" = "PWF_PLAN_ACCEPTED_V1" ] || exit 0
         claim_turn_marker || exit 0
         printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"[planning-with-files] Update progress.md with what you just did. If a phase is now complete, update task_plan.md status."}}'
@@ -376,10 +444,10 @@ case "$EVENT" in
         # PreCompact does not support additionalContext.  Preserve the current
         # plain diagnostic output and pass only the real session identity into
         # resolution; do not invent an unsupported event-specific JSON field.
-        sh "$INJECT_PLAN" --context=precompact 2>/dev/null || :
+        run_inject precompact || :
         ;;
     stop)
-        _decision="$(sh "$INJECT_PLAN" --context=validate 2>/dev/null)" || exit 0
+        _decision="$(run_inject validate)" || exit 0
         [ "$_decision" = "PWF_PLAN_ACCEPTED_V1" ] || exit 0
         if [ -f "$GATE_STOP" ]; then
             printf '%s' "$HOOK_PAYLOAD" | sh "$GATE_STOP" 2>/dev/null || :

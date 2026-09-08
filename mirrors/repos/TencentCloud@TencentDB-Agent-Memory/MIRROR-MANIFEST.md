@@ -7,7 +7,7 @@ ref: feat/server_team
 
 # Mirror Manifest
 
-Mirror of `TencentCloud/TencentDB-Agent-Memory` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `TencentCloud/TencentDB-Agent-Memory` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TencentCloud/TencentDB-Agent-Memory` — 26 default patterns, 0 follo
 | Ref           | `feat/server_team` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,27 +59,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents/asset-import.ts`](agents/asset-import.ts) |
-| 2 | ✓ | [`agents/claude-code/asset-import.md`](agents/claude-code/asset-import.md) |
-| 3 | ✓ | [`agents/claude-code/README.md`](agents/claude-code/README.md) |
-| 4 | ✓ | [`agents/codebuddy/asset-import.md`](agents/codebuddy/asset-import.md) |
-| 5 | ✓ | [`agents/codebuddy/README.md`](agents/codebuddy/README.md) |
-| 6 | ✓ | [`agents/codex/asset-import.md`](agents/codex/asset-import.md) |
-| 7 | ✓ | [`agents/codex/README.md`](agents/codex/README.md) |
-| 8 | ✓ | [`agents/dsh/asset-import.md`](agents/dsh/asset-import.md) |
-| 9 | ✓ | [`agents/dsh/README.md`](agents/dsh/README.md) |
-| 10 | ✓ | [`agents/hermes/asset-import.md`](agents/hermes/asset-import.md) |
-| 11 | ✓ | [`agents/hermes/README.md`](agents/hermes/README.md) |
-| 12 | ✓ | [`agents/openclaw/asset-import.md`](agents/openclaw/asset-import.md) |
-| 13 | ✓ | [`agents/openclaw/README.md`](agents/openclaw/README.md) |
-| 14 | ✓ | [`agents/opencode/README.md`](agents/opencode/README.md) |
-| 15 | ✓ | [`agents/README.md`](agents/README.md) |
-| 16 | ✓ | [`agents/setup-proxy.sh`](agents/setup-proxy.sh) |
-| 17 | ✓ | [`agents/skills/setup-proxy/setup-proxy.sh`](agents/skills/setup-proxy/setup-proxy.sh) |
-| 18 | ✓ | [`agents/skills/setup-proxy/SKILL.md`](agents/skills/setup-proxy/SKILL.md) |
-| 19 | ✓ | [`agents/workbuddy/asset-import.md`](agents/workbuddy/asset-import.md) |
-| 20 | ✓ | [`agents/workbuddy/README.md`](agents/workbuddy/README.md) |
-| 21 | ✓ | [`MemoryCore/SKILL.md`](MemoryCore/SKILL.md) |
+| 1 | ✓ | [`agents/adapter-agent-development.md`](agents/adapter-agent-development.md) |
+| 2 | ✓ | [`agents/asset-import.ts`](agents/asset-import.ts) |
+| 3 | ✓ | [`agents/claude-code/asset-import.md`](agents/claude-code/asset-import.md) |
+| 4 | ✓ | [`agents/claude-code/README.md`](agents/claude-code/README.md) |
+| 5 | ✓ | [`agents/codebuddy/asset-import.md`](agents/codebuddy/asset-import.md) |
+| 6 | ✓ | [`agents/codebuddy/README.md`](agents/codebuddy/README.md) |
+| 7 | ✓ | [`agents/codex/asset-import.md`](agents/codex/asset-import.md) |
+| 8 | ✓ | [`agents/codex/README.md`](agents/codex/README.md) |
+| 9 | ✓ | [`agents/dsh/asset-import.md`](agents/dsh/asset-import.md) |
+| 10 | ✓ | [`agents/dsh/README.md`](agents/dsh/README.md) |
+| 11 | ✓ | [`agents/hermes/asset-import.md`](agents/hermes/asset-import.md) |
+| 12 | ✓ | [`agents/hermes/README.md`](agents/hermes/README.md) |
+| 13 | ✓ | [`agents/openclaw/asset-import.md`](agents/openclaw/asset-import.md) |
+| 14 | ✓ | [`agents/openclaw/README.md`](agents/openclaw/README.md) |
+| 15 | ✓ | [`agents/opencode/README.md`](agents/opencode/README.md) |
+| 16 | ✓ | [`agents/README.md`](agents/README.md) |
+| 17 | ✓ | [`agents/setup-proxy.sh`](agents/setup-proxy.sh) |
+| 18 | ✓ | [`agents/skills/setup-proxy/setup-proxy.sh`](agents/skills/setup-proxy/setup-proxy.sh) |
+| 19 | ✓ | [`agents/skills/setup-proxy/SKILL.md`](agents/skills/setup-proxy/SKILL.md) |
+| 20 | ✓ | [`agents/workbuddy/asset-import.md`](agents/workbuddy/asset-import.md) |
+| 21 | ✓ | [`agents/workbuddy/README.md`](agents/workbuddy/README.md) |
+| 22 | ✓ | [`MemoryCore/SKILL.md`](MemoryCore/SKILL.md) |
 
 ---
 

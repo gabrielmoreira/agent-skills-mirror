@@ -44,6 +44,16 @@ documentation dependencies. CI tests the supported Python matrix; Python 3.12
 is the standard local choice. The setup-uv steps in
 [roam-ci.yml](../.github/workflows/roam-ci.yml) pin the CI uv version.
 
+Dependency updates must keep `pyproject.toml` and `uv.lock` in sync. Our
+[Dependabot configuration](../.github/dependabot.yml) uses the lock-aware `uv`
+ecosystem described in [uv's integration guide](https://docs.astral.sh/uv/guides/integration/dependabot/).
+A manifest-only update may stop at `uv sync --locked` before any tests run;
+that failure does not establish whether the proposed library version works.
+Review the regenerated lock diff and rerun qualification on the current base.
+Keep the existing cooldown and major-version holds when editing this policy.
+Changing the configuration locally does not repair already-open bot PRs or
+prove that a future hosted update will succeed.
+
 Use `uv run --no-sync` for commands after syncing. A global `python`, `pytest`,
 or `roam` may belong to another interpreter or installed release. On Windows,
 `Get-Command python, roam` shows PATH resolution; on a POSIX shell, use
@@ -64,6 +74,17 @@ If the environment remains inconsistent, recreate the virtual environment from
 the lockfile after preserving anything locally installed that you need. Avoid
 mixing manual package-file deletion with an active process using that install.
 
+Doctor's CI-environment advisory reads supported Python launcher bindings
+instead of assuming the launcher must sit beside Python. Standard scripts,
+shell trampolines, and supported Windows distlib/uv launchers can point into the
+same environment from another directory. A binding to a different interpreter
+is reported; a missing or unfamiliar wrapper remains unverified. Inspection is
+bounded and does not execute the PATH entry. Unsupported or damaged compressed
+launcher payloads remain unverified instead of crashing the diagnostic.
+The binding is useful provenance,
+not authentication of the launcher or proof that two installations have identical
+package contents. This check stays advisory unless you use `doctor --strict`.
+
 ## Refresh the index
 
 ```bash
@@ -83,6 +104,13 @@ root is refused before bootstrap writes. In JSON mode, that refusal exits 2
 with `error_code: "FILE_NOT_FOUND"`, `summary.state: "not_initialized"`, and an
 empty `created` list. Check the intended checkout before running `git init`;
 an empty `.git` directory does not establish a repository.
+
+Git-backed source discovery uses NUL-delimited filenames. Non-ASCII names,
+spaces and platform-supported control characters remain literal regardless of
+`core.quotePath`; changing global Git quoting settings is not a workaround you
+need to apply. Unreadable-directory warnings still disclose incomplete discovery.
+This qualifies file discovery and indexing, not every command's path rendering
+or Git-history parser.
 
 Normal indexing reuses unchanged source data, reprocesses changed files and
 affected neighbors, and refreshes Git metadata. A commit can change `HEAD`
@@ -105,6 +133,19 @@ Doctor's index-manifest-history advisory compares successive runs. A `git_head`
 difference can simply record an expected commit advance; inspect the named
 fields and the current freshness checks before treating history drift as an
 indexing failure. Re-indexing solely to erase that comparison is not a repair.
+
+A completed `roam index` is not independent proof of SQLite or search-index
+integrity. Run `roam doctor` afterward. Its SQLite check opens the database
+read-only, releases the connection on success or failure, and retains specific
+`PRAGMA integrity_check` messages in `integrity_errors`. The diagnostic list is
+bounded; `integrity_errors_truncated` names any omitted entries or shortened
+messages. An empty integrity result is not a pass.
+
+Matching symbol and FTS row counts only establish membership synchronization;
+they do not prove the full-text inverted index is intact. If doctor reports a
+malformed FTS index, preserve a consistent SQLite backup before recovery and
+keep the exact error for investigation. A successful derived-index rebuild is
+recovery evidence, not proof of the original cause or recurrence prevention.
 
 ## Recover from a writer or interrupted index
 
@@ -244,7 +285,8 @@ do not replace earlier results with current counts or sum overlapping test runs.
 Before a release, wait for all required CI jobs on the exact pushed commit.
 A successful FAST or FULL gate is not evidence that the entire test matrix
 passed. Record which checks completed and which remain pending. Follow
-[CONTRIBUTING.md](../CONTRIBUTING.md#deploys) for tagging and website publishing.
+[the release guide](releases.md#publish-the-verified-package) for tagging and
+[website maintenance](website-maintenance.md#publishing) for site publication.
 
 The [container release path](containers.md) is held by default and runs only
 with explicit `ROAM_CONTAINER_PUBLISH=true`, after package/evidence verification.

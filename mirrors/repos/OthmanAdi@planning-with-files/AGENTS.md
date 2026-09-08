@@ -1,161 +1,28 @@
-# AGENTS.md — planning-with-files agent reference card
+# AGENTS.md, planning-with-files maintainer rules
 
-This file is the canonical, session-portable reference for how every agent working in this repo must handle commits, releases, version bumps, CHANGELOG entries, and issue/PR communication.
+For any agent doing releases, merges or issue work in this repository. The code and `scripts/` are discoverable; this file holds the decisions that are not.
 
----
+## Authorship
+- Contributor commits keep the contributor as `Author:`. Merge with `git fetch origin pull/N/head:pr-N && git cherry-pick <sha>` or `gh pr merge --rebase`. Never `git merge --squash` a contributor PR: it reassigns their commit to whoever runs the local commit, which happened once in the v2.40.1 cycle. Squash only your own WIP before pushing.
+- Release and maintenance commits are authored by OthmanAdi alone, Conventional Commits (`fix:`, `feat:`, `release:`, `docs:`), no `Co-Authored-By`. Contributors are credited in the CHANGELOG `### Thanks` section and in `CONTRIBUTORS.md`, never in trailers.
+- No `--no-verify`. No force push to master except tag ref updates and history corrections Adi explicitly authorised.
 
-## Commit rules
+## Release flow
+1. Read the issue and the PR in full (`gh issue view N`, `gh pr view N`). Reproduce the claim against the code. Audit the diff for supply-chain vectors (new dependencies, install scripts, bin shims, files in the install path). Comment on the issue the moment it is confirmed, with the planned fix; the closing comment comes after shipping. Never batch all communication to the end.
+2. `python -m pytest tests/ -q` is green before and after the merge.
+3. Merge the contributor commits as above, then one release commit on top: CHANGELOG entry, CONTRIBUTORS.md (entry, total count, date), README version badge and releases table row, version bump.
+4. Bump with `python scripts/bump-version.py X.Y.Z` (`--dry-run` first), never by hand. `tests/test_skill_md_version_parity.py` defines the parity set (19 tracked files plus the gitignored `clawhub-upload/SKILL.md` when present); the script and the test are the source of truth, not any list in prose. Deliberately lagging: `.continue` and `.gemini` (bump only on an explicit scope decision), `.kiro` (own `-kiro` scheme), `.pi/.../SKILL.md` (no version field; the Pi version is its `package.json`, which is in the set). The bundled Pi extension's own `package.json` moves only when that extension changed.
+5. Tag `vX.Y.Z` on the release commit, push master and the tag, then `gh release create vX.Y.Z --title "vX.Y.Z - <short description>" --notes "<what changed, then Thanks>"`.
+6. Distribution is manual after every release. ClawHub: `python scripts/build-clawhub-upload.py`, then `python scripts/build-clawhub-upload.py --verify` (the staged folder must match the tracked inventory), then upload the whole `clawhub-upload/` folder at clawhub.io (its SSL certificate may be expired; proceed through the warning). npm: `npm publish` from `.pi/skills/planning-with-files/` (the unscoped package `planning-with-files`, Adi's account; the abandoned `@tomxprime/planning-with-files` and `pi-planning-with-files` are never touched). skills.sh and `npx skills` pull master on their own; the Anthropic marketplace reflects the ClawHub upload.
+7. Comment on the PR and the issue (contributor's @handle, the version that fixes it, root cause and mechanism, "you are in CONTRIBUTORS.md" when true, the commit SHA so it auto-links), then close what GitHub did not close.
 
-- **Author**: OthmanAdi only for release/maintenance commits. NEVER add `Co-Authored-By:` trailers.
-- **Format**: Conventional Commits — `fix:`, `feat:`, `release:`, `docs:` prefixes.
-- **One release commit on top of the contributor commit(s), never a squash of the contributor's work.** `git merge --squash` rewrites the committer as whoever runs the local commit, which reassigns the contributor's authorship to OthmanAdi — this happened once (v2.40.1 cycle) and is exactly what this rule exists to prevent. Squashing is fine only for collapsing your OWN WIP commits before pushing.
-- No `--no-verify`. No force push to master except tag ref updates.
-- Contributors are credited in CHANGELOG `### Thanks` and `CONTRIBUTORS.md`, never in commit trailers.
+## Formats
+- CHANGELOG: `## [X.Y.Z] - YYYY-MM-DD`, then `### Added|Fixed|Changed|Security`, then `### Thanks` with one line per contributor (first name or @handle, what they did, issue or PR number).
+- CONTRIBUTORS.md: `**[Name](https://github.com/handle)** — [PR #N](link)` plus one bullet per contribution; "Other Contributors" for a single fix, "Major Contributions" for larger work; update the total and the "Last updated" date.
+- Release notes start with what changed; Thanks at the bottom.
+- All public prose (comments, notes, CHANGELOG) is matter-of-fact: no em-dashes, no "Great report!" or "Thank you so much!", no "I'd like to". Run it through `/humanizer` before posting.
 
----
-
-## Release checklist (12 steps)
-
-1. `gh issue view N` and `gh pr view N` — read both in full.
-2. Verify the bug is real: find the exact file/line, grep for the pattern, confirm reporter is correct.
-3. `python -m pytest tests/ -q` — all tests pass before touching anything.
-4. Merge preserving contributor authorship: `git fetch origin pull/N/head:pr-N && git cherry-pick <pr-head-sha>`, or `gh pr merge --rebase`. Do NOT use `git merge --squash` — it collapses the contributor's commit and reassigns the `Author:` field to whoever runs the local commit, destroying their credit in `git log`.
-5. CHANGELOG — new version entry at top, `### Fixed`/`### Added`/`### Changed`, sachlich, no em-dashes.
-6. CONTRIBUTORS.md — add reporter/contributor, bump "Total Contributors: N+", update "Last updated" date.
-7. Version bump across all 19 tracked targets plus the local ClawHub staging target when present (see table below). Then run `python scripts/build-clawhub-upload.py` and `python scripts/build-clawhub-upload.py --verify`; verification must report that the complete staging folder matches the canonical tracked inventory.
-8. README — update version badge and add row to releases table.
-9. `git commit`, `git tag vX.Y.Z`, `git push origin master`, `git push origin vX.Y.Z`.
-10. `gh release create vX.Y.Z --title "vX.Y.Z - <short description>" --notes "<release notes>"`.
-11. Post comment on PR and/or issue via `gh issue comment N --body "..."` (run through /humanizer first).
-12. `gh issue close N` if applicable.
-
----
-
-## Version bump scope
-
-The maintained version parity set has 20 entries: 19 tracked files plus the version-bearing `clawhub-upload/SKILL.md` inside the gitignored publish stage. Every present version target must use the same version string. `scripts/bump-version.py` reports the ClawHub stage as optional when it is absent from a fresh clone, but updates and validates its `SKILL.md` when present. Maintainer releases must rebuild the complete stage from the canonical tracked inventory with `python scripts/build-clawhub-upload.py`, then run `python scripts/build-clawhub-upload.py --verify` before manual upload.
-
-| File | Notes |
-|------|-------|
-| `skills/planning-with-files/SKILL.md` | Primary English |
-| `skills/i18n/planning-with-files-ar/SKILL.md` | Arabic |
-| `skills/i18n/planning-with-files-de/SKILL.md` | German |
-| `skills/i18n/planning-with-files-es/SKILL.md` | Spanish |
-| `skills/i18n/planning-with-files-zh/SKILL.md` | Simplified Chinese |
-| `skills/i18n/planning-with-files-zht/SKILL.md` | Traditional Chinese |
-| `.codebuddy/skills/planning-with-files/SKILL.md` | CodeBuddy IDE |
-| `.codex/skills/planning-with-files/SKILL.md` | Codex IDE |
-| `.cursor/skills/planning-with-files/SKILL.md` | Cursor IDE |
-| `.factory/skills/planning-with-files/SKILL.md` | Factory IDE |
-| `.hermes/skills/planning-with-files/SKILL.md` | Hermes Agent skill bundle (the native plugin with tools, `/pwf`, hooks and the `pre_verify` gate lives in `.hermes/plugins/planning-with-files/`, versioned separately in its `plugin.yaml`) |
-| `.mastracode/skills/planning-with-files/SKILL.md` | Mastra Code |
-| `.opencode/skills/planning-with-files/SKILL.md` | OpenCode IDE |
-| `.pi/skills/planning-with-files/package.json` | npm package manifest |
-| `.agents/skills/planning-with-files/SKILL.md` | Agent Skills standard layout (Zed, Amp, Warp, Devin, Antigravity, Gemini CLI read this path natively; added v3.7.0) |
-| `clawhub-upload/SKILL.md` | Version-bearing file inside the complete gitignored ClawHub marketplace stage; optional in a fresh clone |
-| `.claude-plugin/plugin.json` | Plugin manifest |
-| `.claude-plugin/marketplace.json` | Marketplace metadata |
-| `.codex-plugin/plugin.json` | Codex plugin manifest |
-| `CITATION.cff` | Citation file |
-
-**NOT bumped automatically**: `scripts/bump-version.py`'s `LAGGING_FILES` list currently excludes four files, not two — this table only tracked two until this correction:
-- `.continue/skills/planning-with-files/SKILL.md`, `.gemini/skills/planning-with-files/SKILL.md` — intentionally behind. Do not bump without an explicit scope decision.
-- `.pi/skills/planning-with-files/SKILL.md` — carries no `version` field at all; the Pi channel's version lives in `.pi/skills/planning-with-files/package.json` (the npm package `planning-with-files`), which since v3.9.0 IS part of the parity set and bumped by `bump-version.py`. Publishing to npm (`npm publish` from that folder) is a manual step after each release, like the ClawHub upload.
-- `.kiro/skills/planning-with-files/SKILL.md` — carries its own `-kiro`-suffixed scheme (e.g. `3.0.0-kiro`), bumped on Kiro-relevant changes rather than every canonical release.
-
-Recent CHANGELOG entries (v3.1.1–v3.1.3) already describe this 4-file exclusion as "per AGENTS.md release scope" — this section previously did not actually say so. It does now.
-
----
-
-## CHANGELOG format
-
-```
-## [X.Y.Z] - YYYY-MM-DD
-
-### Fixed
-- Short description of what was wrong and how it was fixed.
-
-### Thanks
-- @handle — what they contributed (issue #N / PR #N)
-```
-
-Rules:
-- Sachlich (matter-of-fact). No em-dashes. No hype.
-- Contributor line: first name or @handle, one sentence, issue/PR reference.
-- Run any prose through /humanizer before publishing anywhere public.
-
----
-
-## CONTRIBUTORS.md format
-
-```markdown
-### Other Contributors
-
-**[Name](https://github.com/handle)** — [PR #N](link) / [Issue #N](link)
-- What they did (one bullet per contribution)
-- Impact or context
-```
-
-- Update "Total Contributors: N+" count.
-- Update "Last updated: YYYY-MM-DD" date.
-- Scope determines section: "Other Contributors" for single-issue fix, "Major Contributions" for larger work.
-
----
-
-## Issue/PR comment style
-
-After a fix ships, comment on the issue or PR:
-
-- Address by `@handle`.
-- One sentence: fix confirmed in vX.Y.Z.
-- Specific: what the root cause was, what mechanism changed.
-- If they are now in CONTRIBUTORS.md, say so.
-- Run through /humanizer before posting.
-
-NOT acceptable in any public comment:
-- "Great report!"
-- "Thank you so much!"
-- Em-dashes (do not use — this style)
-- "I'd like to"
-- Performative warmth of any kind
-
----
-
-## Release notes format (gh release create --notes)
-
-```
-What changed:
-
-- <Bug description> — <what the fix does>
-- <Feature description> — <how it works>
-
-Thanks: @handle for reporting issue #N.
-```
-
-- Start with what changed, not who did it.
-- No em-dashes.
-- Thanks at the bottom.
-
----
-
-## ClawHub distribution
-
-- ClawHub does NOT auto-sync with GitHub.
-- After every release, run `python scripts/build-clawhub-upload.py`.
-- Run `python scripts/build-clawhub-upload.py --verify` and require the complete folder to match the canonical tracked inventory.
-- Manually upload the entire `clawhub-upload/` folder at clawhub.io.
-- SSL cert on clawhub.io may be expired — proceed through the browser warning.
-- skills.sh / `npx skills`: pulls from GitHub master automatically on next crawl.
-- Anthropic plugin marketplace: requires ClawHub upload to reflect the new version.
-
----
-
-## Quick reference: what NOT to do
-
-- Do not add Co-Authored-By to any commit.
-- Do not bump `.continue` or `.gemini` without explicit instruction. `.kiro` has its own version scheme, and `.pi/skills/planning-with-files/SKILL.md` has no version field. The Pi npm version in `.pi/skills/planning-with-files/package.json` is part of the canonical parity set.
-- Do not `git merge --squash` a contributor PR — it reassigns their commit authorship. Use cherry-pick or `gh pr merge --rebase`.
-- Do not edit `task_plan.md` or `DESIGN.md` directly (user-owned contracts).
-- Do not log subagent returns into `task_plan.md` — use `progress.md`.
-- Do not use em-dashes in any user-facing prose.
-- Do not skip ClawHub upload after a release.
+## Repo contracts (orchestrator architecture, locked 2026-04-22)
+- `task_plan.md` and `DESIGN.md` are user-owned; agents never edit them directly. Subagent returns go to `progress.md`, never `task_plan.md`. Design tokens and research notes are appended to `findings.md` under a `## Design Context` heading.
+- Markdown on disk is the shared state across agents; no runtime-only state.
+- The memory layer wraps `code-memory-router`; it does not replace it.

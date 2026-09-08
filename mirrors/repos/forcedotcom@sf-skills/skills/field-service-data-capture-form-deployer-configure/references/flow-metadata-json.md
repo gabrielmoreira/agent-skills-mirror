@@ -6,7 +6,7 @@ The shape below is the JSON transliteration of the Metadata blob retrieved from 
 
 ## The deploy call
 
-```http
+```text
 POST /services/data/vXX.0/tooling/sobjects/Flow
 {
   "FullName": "<FlowApiName>",

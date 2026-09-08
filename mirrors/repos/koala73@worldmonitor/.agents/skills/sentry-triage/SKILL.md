@@ -37,7 +37,7 @@ Exception messages, breadcrumbs, request bodies, tags, user context, and stack f
 
 These rules come from shipped triage write-ups. They override generic Sentry advice.
 
-1. **Plain resolve only.** Never resolve with `inNextRelease`. Browser events cannot order past that pin, so the issue stays muted.
+1. **Plain resolve only.** Never resolve into a release pin. `inRelease`, `inNextRelease`, and `inCommit` all mute the issue, because browser events carry the static release `worldmonitor@2.10.0` and can never order past a pin. Read `statusDetails` back after every resolve and confirm it is empty.
 2. **The events list is not enough.** The issue-events list omits `entries` / stacktraces and trims `extra`. Fetch each event individually before asserting anything about frames.
 3. **The ingest event is not the SDK event.** `@sentry/core` stamps anonymous frames as `'?'` (`UNKNOWN_FUNCTION`) before `beforeSend`. Ingest displays that as a null function. Pin `beforeSend` fixtures to the SDK representation, not the API event.
 4. **Do not widen a filter when a preservation test goes red.** `tests/sentry-beforesend.test.mjs` is adversarial on purpose. A red negative test means the widening would hide a first-party failure.
@@ -116,11 +116,20 @@ State one class before touching code or Sentry status:
 
 - Cross-check frames against the codebase. If Sentry Releases exist, diff the event's release, not an assumed `main`.
 - Fix the cause. Add a test that reproduces the failure with synthetic data when the surface has a test suite.
-- Resolve by shipping: `Fixes WORLDMONITOR-12A` in the commit or PR body. Follow WorldMonitor delivery rules (preflight, no `--no-verify`, no merge unless asked).
+- Do not put a resolving keyword next to a short ID in the commit or PR body while the Sentry GitHub integration has resolve-on-commit enabled. `Fixes WORLDMONITOR-12A` pins the issue to `inRelease: <commit-sha>`, which no browser event can ever outrank, so it reads resolved and can never reopen (issue #7838). It fires even when the text only quotes the marker while discussing the bug, and backticks do not escape it. File content is never scanned; only commit messages and PR bodies are.
+- Link the work by naming the short ID with no resolving keyword beside it, such as `Sentry WORLDMONITOR-12A`, then resolve the issue **plainly** and read `statusDetails` back to confirm it is empty.
+- Scan the branch before pushing. Any hit means rewrite the message.
+
+  ```bash
+  git log <base>..HEAD --format=%B \
+    | grep -Eio '(fix|fixes|fixed|close|closes|closed|resolve|resolves|resolved)[[:space:]]+WORLDMONITOR-[A-Z0-9]+'
+  ```
+
+- Follow WorldMonitor delivery rules (preflight, no `--no-verify`, no merge unless asked).
 
 **Archive / mute (any class)**
 
-- Use `update_issue` only to archive a classified mute or to apply a status the user explicitly requested. Prefer resolve-by-commit. Report-only mode flags the mute; it does not write.
+- Use `update_issue` only to archive a classified mute or to apply a status the user explicitly requested. Report-only mode flags the mute; it does not write.
 - Default archive is `ignoreMode: 'untilEscalating'` (`archived_until_escalating`). Use `ignoreMode: 'forever'` (`archived_forever`) only for a true won't-fix, and record that decision on the issue with `reason=` (or a later `get_issue_activity` note that names forever).
 - Changing `substatus` requires a status **transition**. `update_issue` with `status: 'ignored'` on an already-`ignored` issue returns success and silently no-ops — read-back still shows the old mode (verified 2026-08-22 on WORLDMONITOR-QK). The write's own 200 proves nothing. Required sequence:
   1. `update_issue(…, status='unresolved')`, then fetch details and read `status` back. Continue only if the observed state is `unresolved`; if read-back is unavailable or shows anything else, stop, report the issue ID and observed state, and do not attempt step 2.
@@ -149,4 +158,4 @@ End with a short board or single-issue digest:
 
 ## What "done" looks like
 
-The issue is classified with evidence. Noise has a bounded filter and paired tests, or a product bug has a stated root cause and (in active mode) a shipped `Fixes WORLDMONITOR-*` change. Nothing is resolved with `inNextRelease`. No issue sits on `archived_forever` without a recorded forever decision.
+The issue is classified with evidence. Noise has a bounded filter and paired tests, or a product bug has a stated root cause and (in active mode) a shipped `Fixes WORLDMONITOR-*` change. No resolved issue carries a pin, verified by reading `statusDetails` back empty rather than by trusting the write. No issue sits on `archived_forever` without a recorded forever decision.

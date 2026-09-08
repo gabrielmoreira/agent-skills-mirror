@@ -45,6 +45,46 @@ and runtime packaging rules.
 
 ## Workflow
 
+Explicit `workflow_dispatch` `item_number`/`item_numbers` selections, excluding
+`apply_existing`, use `src/repair/manual-review-enqueue.ts` before review. They
+do not fall back to matrix publication. Admission is independently durable per
+item; the CLI reports failed members and continues the requested tail. Retries
+of the same workflow run reuse its run ID and item number, excluding attempt.
+Changed payloads conflict rather than borrowing an earlier delivery receipt.
+Admission preserves the resolved operator-selected `target_branch`; it discovers
+the repository default only when no resolved branch was supplied. The resolved
+`codex_timeout_ms` and one-off `additional_prompt` travel with that decision.
+Manual timeouts honor the requested positive duration up to the existing exact-review
+45-minute cap; ordinary adaptive timeout behavior is unchanged. Ordinary item
+events may refresh source facts but cannot replace the selected branch, timeout,
+or instructions. A new explicit manual request may replace those options or clear
+its one-off instructions.
+
+The queue advertises `manual_publication.policy=record_comment_only` and an
+explicit enabled bit. Admission defaults off until
+`EXACT_REVIEW_MANUAL_PUBLICATION_ENABLED=1` is configured after the consumer
+rollout described in [repair operations](repair/operations.md#manual-publication-rollout).
+Manual decisions carry `sourceAction=manual_explicit_review` and immutable
+`publicationPolicy=record_comment_only`. Their completed artifacts use existing
+direct and batch publication capacity, fences, and retries. Source drift ends
+as superseded; unusable artifacts exhaust publication retries into existing
+dead letters instead of starting another model review. Temporary authority-service
+transport failures and HTTP 429/5xx responses use the existing
+`retryable_failure` / `state_contention` disposition and coordinator retry budget.
+They never authorize a write, revive a lease, or enter GitHub's inline retry loop;
+actual ownership/authentication rejection remains fail-closed.
+
+Direct producers publish from the existing exact bundle's `review/` directory,
+not raw `artifacts/event` output. `EXACT_REVIEW_PUBLICATION_ARTIFACT_DIR` selects
+that input relative to `EXACT_REVIEW_WORK_ROOT`; other callers retain the
+`artifacts/event` default. Snapshot capture and application use that same work
+root even when the publisher is invoked from a separate code checkout. Relative
+`EXACT_REVIEW_BATCH_MUTATION_OUTPUT` paths also resolve under the work root,
+including refusals that happen before publication authority is accepted.
+Producer `selection.json`, `codex/`, `review-trees/`, and sibling reports stay
+outside the selected bundle. The importer still rejects
+unexpected files, symlinks, and directories in its publication input.
+
 The receiver workflow is `.github/workflows/sweep.yml`.
 
 Important source files:

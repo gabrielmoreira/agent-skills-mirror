@@ -12,7 +12,7 @@ metadata:
 This skill takes an intermediate JSON spec and produces a deployed Salesforce Flow with `processType=DataCaptureFlow`. It assumes the spec is already correct and approved — confirmation with the user happens upstream in the design skills.
 
 > **Runtime contract:** every org interaction in this skill is a REST call
-> dispatched through the Codey runtime (`execute_api` locally / the hosted
+> dispatched through the Codey runtime (`dispatch` locally / the hosted
 > Headless 360 MCP in shared surfaces). This skill has **no dependency on the
 > execution environment** — no `sf` CLI, no shell scripts, no local Python, no
 > temp files. Auth probes, record reads, and record writes are single REST

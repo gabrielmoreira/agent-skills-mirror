@@ -15,9 +15,11 @@ not advertised, treat it as unavailable.
 ## Python and R boundary
 
 Use `python` for persistent Python analysis and `r` for persistent R analysis.
-Their variables and imports persist per project and execution context. Pass a
-`context_id` such as `local`, `ssh:<alias>`, or `wsl:<distro>` when the work must
-run somewhere other than the default local context.
+Their variables and imports persist per conversation and execution context
+within the project/scope; parallel conversations do not share interpreter state.
+In the desktop, an omitted `context_id` uses the conversation's selected default
+context (falling back to local). Pass `local`, `ssh:<alias>`, or `wsl:<distro>`
+explicitly when needed. The CLI's language runtimes are local.
 
 The Python worker initializes an ordinary namespace with common standard-library
 modules and any available convenience packages. It does **not** inject a Wisp
@@ -33,7 +35,7 @@ corresponding Wisp tool instead.
 | Read, create, or patch project files | `read`, `write`, `edit` | Operate on normal filesystem paths within the granted workspace. |
 | Find files or text | `search`, `grep` | Use before broad manual inspection. |
 | Run a short command | `shell` | Use for bounded foreground commands, not as a long-running job manager. |
-| Interactive Python or R analysis | `python`, `r` | Persistent per project and execution context; no injected control-plane SDK. |
+| Interactive Python or R analysis | `python`, `r` | Persistent per conversation and execution context; no injected control-plane SDK. |
 | Inspect a local image | `view_image` | Explicit tool call for a supported local image; this is not a Python method. |
 | Track a multi-step plan | `update_plan` | Update task progress when a plan materially helps. |
 | Present the completed result | `attempt_completion` | Wisp's normal completion path; there is no separate structured-output submission SDK. |
@@ -57,16 +59,22 @@ corresponding Wisp tool instead.
 
 ## Choosing the right execution path
 
-1. Use `python` or `r` for interactive analysis whose next step depends on the
-   computed result.
-2. Use `run_in_context` for persisted, recoverable, or long-running work. Use
+1. `shell` executes short commands in fresh processes; `python` and `r` retain
+   interpreter state across calls. Choose based on the user's workflow, state
+   reuse, script requirements, and task lifecycle. Use the selected environment
+   and keep reproducible source in project files with either method.
+2. Persistent runtimes support interactive analysis and reuse of loaded objects.
+   Execute saved analysis with `script_path` and `required_objects` when it
+   consumes existing bindings. Do not move it to a fresh process merely because
+   it takes time. Match execution to the script's process requirements.
+3. Use `run_in_context` for standalone background, remote, or long-running work. Use
    `monitor_run` when the result is needed in the current task (again after
    `wait_interrupted`; do not resubmit), or return the Run id for fire-and-forget
    work.
-3. Use `explore` when codebase understanding requires more than a couple of
+4. Use `explore` when codebase understanding requires more than a couple of
    reads. Use `delegate_tasks` only when desktop delegation is currently
    advertised and the work benefits from independent or parallel Agents.
-4. Use ordinary project files for inputs and outputs. Never fabricate an
+5. Use ordinary project files for inputs and outputs. Never fabricate an
    artifact registry, lineage API, credential API, session database, or
    Python-side bridge for a capability that is not present.
 

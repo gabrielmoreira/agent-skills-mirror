@@ -65,6 +65,7 @@ history:
 
 ### Fixed
 
+- omo-senpi ulw-loop: the bundled agent toolkit is spawned with `BUN_BE_BUN=1` when the runtime is the packaged omo binary (omo-desktop, omob). Without it `process.execPath` ran the omo entrypoint instead of the toolkit, `ulw-loop status` exited 1, and every session with a plan read as inactive (no continuation).
 - Senpi engine pin `2026.8.28`: repairs the beta.23 shared interactive host regressions — Shift+Tab no longer prints `Thinking level: [object Promise]` and `/settings` thinking options render, user messages no longer render twice, resuming a session held by a live shared host attaches instead of failing with `session_path_in_use`, and the compiled JavaScript/Python eval kernels resolve their runtime assets again.
 
 - Windows DAP script paths with drive letters are no longer misclassified as `host:port` endpoints, and thread mailbox/receipt persistence now tolerates the Windows `fsync` behavior while retaining atomic writes.

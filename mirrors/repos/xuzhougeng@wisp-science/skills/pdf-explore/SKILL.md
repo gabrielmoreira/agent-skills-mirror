@@ -1,6 +1,6 @@
 ---
 name: pdf-explore
-description: "Use this skill when the user has attached a PDF, paper, report, or other document and the answer needs its content: summarize a section, compare sections, read specific pages, check the table of contents, or read a value off a figure. The `read` tool cannot parse PDF binary — python is the extraction path. Provides `pdf_pages` (pages as text or rendered PNGs, cached) and `pdf_outline` (embedded-bookmark TOC) in the persistent python kernel; load them once via the Kernel Sidecar exec line that `use_skill` appends. For PDF creation/manipulation, use reportlab/pypdf directly."
+description: "Use this skill when the user has attached a PDF, paper, report, or other document and the answer needs its content: summarize a section, compare sections, read specific pages, check the table of contents, or read a value off a figure. The `read` tool cannot parse PDF binary — python is the extraction path. Provides `pdf_pages` (pages as text or rendered PNGs, cached) and `pdf_outline` (embedded-bookmark TOC) in the persistent python kernel; load them once via the Runtime Sidecar exec line that `use_skill` appends. For PDF creation/manipulation, use reportlab/pypdf directly."
 fold_cue: "instead_of=read use=pdf_pages/pdf_outline for PDFs — read cannot parse PDF binary; print ≤5 pages, else write to a file and read that"
 license: Apache-2.0
 ---
@@ -12,7 +12,7 @@ tokens. The sidecar parses once into the persistent Python kernel (memory +
 disk cached), after which you pull exactly the pages the question needs.
 
 **Setup, once per session:** run the `exec(...)` line from the "Python
-Kernel Sidecar" section at the end of this skill's `use_skill` output.
+Runtime Sidecar" section at the end of this skill's `use_skill` output.
 Definitions survive across cells until the kernel restarts. `pypdfium2` is
 required (`pillow` too for image mode); if the first call raises
 ImportError, follow its hint and re-run.

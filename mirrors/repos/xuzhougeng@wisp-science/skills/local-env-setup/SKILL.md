@@ -248,7 +248,7 @@ Settings -> Credentials -> SCIMaster. Wisp will sync that key into
 
 ## Layer 3 — Bioinformatics: pixi
 
-**pixi** manages isolated per-project environments (conda + pip) — use for scanpy/single-cell, variant calling stacks, etc. The Wisp **`python` tool** uses the selected context interpreter. Run project bioinformatics commands via **`shell`**: `pixi run python …` or `pixi run …` in the project directory.
+**pixi** manages isolated per-project environments (conda + pip) — use for scanpy/single-cell, variant calling stacks, etc. The Wisp **`python` tool** uses the selected context interpreter. The same environment can run standalone commands through `pixi run python …` or `pixi run …`, or supply the interpreter for persistent `python`/`r` analysis. Choose process lifetime according to state reuse, script requirements, and task lifecycle; installing an environment does not select an execution method. Scripts consuming existing runtime objects can use `script_path` and `required_objects`.
 
 ### Workflow engines
 

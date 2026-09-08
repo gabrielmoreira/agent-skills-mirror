@@ -46,6 +46,31 @@ Tags declared in `SKILL.md` appear automatically. Tags edited in Settings are a
 user override and are also applied to Agent `search_skills` queries after the
 next idle-Agent rebuild.
 
+The Skills page has two levels. The catalog lists each Skill's name, scope,
+tags, and enable switch; search, tag filters, bulk enable/disable, reload, and
+import stay in the catalog. Select a row to open **Skills → Skill name**.
+The detail page shows the description and source directory, lets you edit tags,
+and offers deletion for user-installed global Skills. Plugin enablement and
+removal remain managed by the parent plugin; personal tags can be edited in
+the Skill detail page.
+
+In **Files**, select `SKILL.md`, a nested script, or another package resource.
+Markdown opens as a rendered preview; **Source** includes the original YAML
+frontmatter. Scripts and other UTF-8 text files open as read-only source and
+are never executed. Package HTML is escaped and remote images are not loaded.
+Hidden entries and symbolic links are omitted from the file list. Preview is
+limited to 1 MiB per text file; binary/non-UTF-8 files show an explanation.
+The browser supports up to 2,000 files and 32 directory levels, and reads are
+restricted to the selected package. Disabled Skills remain browsable.
+Use the breadcrumb/back button or Escape to return to the filtered catalog.
+If a delete confirmation is open, the first Escape closes only that dialog.
+
+Catalog and detail views (screenshots use test data):
+
+![Skills catalog with tags and enable switches](assets/skills/catalog.png)
+
+![Skill detail with package files and Markdown preview](assets/skills/detail.png)
+
 `search_skills` normalizes case and common separators before matching names,
 descriptions, and tags. Continuous CJK queries also contribute bounded 2–4
 character terms, so ordinary Chinese task descriptions do not have to contain
@@ -58,3 +83,92 @@ The **Capabilities** summary uses the same current enabled Skill inventory and
 splits it into bundled and project-added counts. Project-added includes project,
 global, extra-path, and project-enabled plugin Skills. MCP counts are split into
 bundled packages and enabled custom/plugin services available to the project.
+
+## Scripts and interactive analysis
+
+### Special runtime scripts: `runtime.py` and `runtime.r`
+
+A skill may place `runtime.py` (Python), `runtime.r` (R), or both directly beside
+`SKILL.md`. These reserved root-level filenames identify **runtime scripts**:
+their code runs inside the selected persistent `python` or `r` interpreter,
+so helpers and in-memory state remain available to subsequent calls. They
+must not be launched as standalone `python runtime.py` / `Rscript runtime.r`
+commands or as separate Runs. Use the lowercase filenames shown here for
+portable packages, including on case-sensitive filesystems.
+
+`use_skill` and explicit skill selection detect each file independently and
+append the corresponding loading instructions. Discovery, file preview, and
+skill loading itself do not execute the files. The Agent follows the instructions
+before using the helpers: Python uses `exec(compile(...))` in the persistent
+namespace; R uses `source(..., local = TRUE, encoding = "UTF-8")` in the
+runtime's persistent evaluation environment. If the runtime cannot access the
+package path, such as on SSH or WSL, the Agent reads the local file and submits
+its contents through the corresponding runtime tool's `code` argument instead.
+Sibling resources are not automatically transferred.
+
+Load each sidecar once in the runtime where it is needed. A runtime restart,
+different conversation, or different execution context requires loading it
+again. Persistence here means interpreter memory, not recovery across process
+restarts; save durable results to project files or artifacts.
+
+Authors should keep top-level loading lightweight: define helpers and defer
+expensive data loading, computation, dependency checks, and other side effects
+until explicit helper calls. Prefix helper/global names to avoid collisions in
+the shared language namespace. Python sidecars execute in `__main__`, so an
+`if __name__ == "__main__"` block also runs during loading; use an explicitly
+called function for demos or self-checks. Python and R retain separate state;
+shipping both files does not share objects between languages.
+
+Ordinary files under `scripts/`, such as `scripts/main.py`, have no special
+loading behavior, even if named `scripts/runtime.py` or `scripts/runtime.r`.
+Document their invocation in `SKILL.md`. Use these for standalone tasks that
+do not need persistent state; a skill can include both ordinary scripts and
+runtime sidecars. No sidecar is required for a skill.
+
+### Bundled helpers and execution choices
+
+The bundled `public-data-access` skill includes optional geokit guidance for
+GEO SOFT/Series Matrix acquisition and R ExpressionSet workflows. Basic GEO
+discovery continues through the existing connectors. geokit and Biobase must
+be available in the selected execution context when their operations are used;
+loading the skill does not install them or add an MCP server. The adapter
+guidance covers file selection, transfer limitations, multi-platform outputs,
+and provenance. See the [GEO adapter reference](../skills/public-data-access/references/geokit.md).
+The plan/manifest helper runs directly as `scripts/public_data_plan.py` with
+Python 3.10+; this skill does not need a runtime wrapper. Resolve the
+helper from the skill directory and run it with the project as the working
+directory.
+
+The `paper-narrative` helper carries each figure's supplied image path with its
+claim in both brief and review prompts. The `literature-review` Python OpenAlex
+helpers raise on failed or malformed retrieval instead of reporting an empty
+search or citation graph; DOI checks retain an explicit unverified state.
+Loading `figure-style` helpers leaves the current matplotlib backend and style
+alone. Apply the style explicitly with `apply_figure_style(...)`; the optional
+`figure_style_self_check()` runs only when called.
+
+The built-in execution guidance and analysis skills describe the available
+execution methods without assigning task categories to a default method.
+`shell` runs short commands in fresh processes; `run_in_context` manages
+standalone background, long-running, or remote work. The `python`/`r` runtimes
+retain interpreter state across calls. The Agent chooses according to the
+user's workflow, state reuse, script requirements, and task lifecycle, using
+the selected environment with either method.
+
+Persistent `python`/`r` tools are appropriate when interactive analysis is
+requested or retaining loaded data, models, or expensive intermediates benefits
+successive steps. Saved analysis scripts can consume existing objects through
+`script_path` with `required_objects`. Moving such work into a Run starts a
+fresh process and loses access to those objects, regardless of its duration.
+Resumed conversations refresh the built-in execution guidance when their Agent
+is constructed, preserving project rules and specialist instructions.
+
+Python `script_path` execution temporarily sets `__file__` to the source path
+resolved against the runtime working directory and restores the previous
+binding afterward. `sys.exit()` and `sys.exit(0)` complete the script without
+failing the cell or stopping the worker; other exit values remain errors.
+Variables remain in the conversation's runtime. This is not full command-line
+emulation: it does not configure script arguments or import paths. On SSH, the
+source path is logical: only source content is sent, and sibling files are not
+deployed. Use standalone execution for scripts requiring normal CLI behavior
+instead of adding REPL compatibility branches to the script.

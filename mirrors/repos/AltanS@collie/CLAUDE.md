@@ -121,6 +121,32 @@ that release lands and you push, **always push a matching annotated git tag with
 `git tag -a vX.Y.Z -m "Collie X.Y.Z" && git push origin vX.Y.Z` (or `git push --follow-tags` so the
 tag ships *with* the release). One `v<x.y.z>` tag per shipped version on the remote.
 
+**A release is published only from a commit whose CI run succeeded.** `release.yml` enforces it: its
+first job, `gate`, looks up the `ci.yml` run for the tagged commit, waits while that run is still in
+flight, and refuses the release when the run failed, was cancelled, or never existed. 1.5.5 was
+published from a red commit because nothing joined the two workflows; now they are joined, and the
+whole matrix waits behind the gate.
+
+**Push `main` first, watch CI, then push the tag.** That is the recipe:
+
+```
+git push origin main
+gh run watch                 # or: gh run list --commit "$(git rev-parse HEAD)"
+git push origin vX.Y.Z
+```
+
+`git push --follow-tags` in one go still works, because the gate waits rather than races. The
+two-step form is preferred anyway, because a red CI then costs nothing: no tag exists yet, so you fix
+it on `main` and the release commit can still be amended before anything is public. Once the tag is
+pushed and CI is red, that door is shut: the fix is a follow-up patch release with a new tag, never a
+moved or re-pointed tag.
+
+**This is why pushes are held while a release is being cut.** `ci.yml`'s concurrency group is
+`ci-<ref>` with `cancel-in-progress`, so a second push to `main` cancels the release commit's run
+mid-flight. The gate then sees `cancelled`, not `success`, and refuses. Re-running CI for that commit
+and then re-running the Release workflow clears it, but the cheaper move is the old rule: hold the
+push until the release is out.
+
 **The GitHub Release page is built, not written.** `release.yml` populates it with the update
 commands, a link to that version's section in `CHANGELOG.md`, and GitHub's generated notes:
 merged pull requests with their authors, new contributors, and the "Full Changelog" compare link
@@ -333,6 +359,13 @@ lint guard, the pack-wire guard or the `flake.lock` guard.
   row in the pane sheet). `MuxPane.focused` is a fact the snapshot reports, and the terminal never
   moves the phone in the other direction — that may not become a side effect of navigation
   ([ADR 0031](./.adr/0031-freshness-is-a-declared-promise.md)).
+- **The "Full reply" card is gated on an identity check, not a length check.** The pane view re-shows
+  the newest journal turn only when the tail probe proves that turn IS the message on screen and the
+  head probe shows its start is not. A failed tail probe means render nothing — don't relax it to "the
+  newest journal turn", which would present a stale or still-streaming reply as the one you're reading
+  (`web/src/lib/latest-reply.ts`). It **replaces** the rows it covers rather than sitting above them
+  (`hideLeadingLines`), and that hiding is render-only, applied after every grammar has run over the
+  whole screen — never trim the text a detector, guard or draft probe sees.
 - **The operator's rows in `commands.toml` replace the shipped command catalog on the panes they
   address, never merge into it** ([ADR 0018](./.adr/0018-operator-command-rows-replace-the-catalog.md));
   the bridge re-reads the file behind an mtime check, so edits are live and need no restart.

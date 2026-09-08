@@ -55,7 +55,7 @@ Clarify with the user only when the answer would change what you retrieve.
 
 Never write from recall. Recall chooses the framing and the search terms;
 retrieval supplies every citation. Start with `search_openalex` /
-`crossref_lookup` from this skill's `kernel.py`, a PubMed query, or any
+`crossref_lookup` from this skill's `runtime.py`, a PubMed query, or any
 literature connector advertised in the session (`search_skills` with
 `{"query":"literature PubMed Semantic Scholar bioRxiv ClinicalTrials"}` finds
 installed guidance; load matches with `use_skill`).
@@ -75,11 +75,18 @@ on-topic finds back into the working set before drafting. A survey-grade
 answer typically rests on fifteen or more distinct primary-paper DOIs; a
 handful of reviews is a reading list.
 
+The Python OpenAlex helpers raise on HTTP errors, timeouts, or malformed
+responses. Empty results are valid only after successful retrieval. If either
+citation direction fails, report the retrieval failure rather than treating
+the partial graph as complete. Do not convert an exception into an empty list.
+
 ## 4. Verify
 
-Run `verify_dois` on everything you intend to cite. A DOI either resolves to
-a paper that says what you claim, or it is a fabrication — there is no third
-state. When you have author/year/journal but no DOI, look it up; never
+Run `verify_dois` on everything you intend to cite. Distinguish registered,
+not resolving, and unverified (`ok=None`, e.g. network failure) results. A
+registered DOI still requires reading the paper to check whether it supports
+the claim; a failed request is not evidence of fabrication. When you have
+author/year/journal but no DOI, look it up; never
 pattern-complete one. For surprising or high-profile findings, check
 Crossref's `update-to` field: sensational papers are findable *because* they
 were sensational, and some were retracted. When the requested paper does not
@@ -121,7 +128,7 @@ file and link it at the *end* of the reply. Process narration — "all DOIs
 verified", "no retraction flags", "report saved" — belongs nowhere: not as
 opener, footer, or subtitle. Verification lives in the tool trace.
 
-Before saving, run `style_pass(draft)` from `kernel.py` once on the full
+Before saving, run `style_pass(draft)` from `runtime.py` once on the full
 markdown, fix what it lists in one editing pass, and save. It is a lint, not
 a gate — do not loop on it. If `style_pass` is not defined in the kernel,
-read this skill's `kernel.py` and exec it first.
+read this skill's `runtime.py` and exec it first.

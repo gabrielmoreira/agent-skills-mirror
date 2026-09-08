@@ -47,3 +47,22 @@ When using `batch_execute`'s `commands[].command` field, use the **plugin comman
 8. Write a description with natural-language keywords a user would search for (e.g. `screenshot`, `keybinding`, `asset`) alongside the Godot term. For ops inside a rollup, edit the `_DESCRIPTION` block of the domain's tool file so the rolled-up tool's docstring stays exhaustive.
 9. **Consider a resource form**: pure reads with no `session_id` filtering benefit from a matching `godot://...` resource (or template) in `src/godot_ai/resources/`. The tool form remains for `session_id`-pinned reads; clients that surface resources prefer the URI. When you add a resource form, append `Resource form: godot://...` to the tool's description so aware clients can route reads through the URI.
 10. Add tests: handler unit test, Python integration test, AND GDScript test in `test_project/tests/`. Migrate any integration tests for an existing verb when you move it under a rollup — the form changes from `client.call_tool("domain_verb", {...})` to `client.call_tool("domain_manage", {"op": "verb", "params": {...}, "session_id": ...})`.
+
+## Test-run freshness after dependency edits
+
+`test_run` reloads suite scripts, but **does not guarantee fresh preloaded
+GDScript dependencies** in an existing editor process (#938). Results and
+`test_manage(op="results_get")` include `cache_warning`: restart the editor
+before treating a rerun as validation of changes to a preloaded helper or its
+nested dependencies. A passing rerun can otherwise validate old code.
+
+`CACHE_MODE_IGNORE_DEEP` and `CACHE_MODE_REPLACE` do not invalidate the
+GDScript compile-time preload cache. #944 makes `script_patch` and
+`script_create(overwrite=true)` refresh the specific cached script they write
+using `source_code` and `reload(true)`; inspect `reloaded` / `reload_reason`.
+That targeted refresh is not a general dependency-graph freshness guarantee
+for filesystem writes, external edits, or already-compiled consumers. The
+runner does not recursively reload arbitrary live scripts, which may include
+its own executing plugin code and stateful script instances. A fresh editor
+process is the supported general workaround; a filesystem scan or plugin
+reload alone is insufficient.

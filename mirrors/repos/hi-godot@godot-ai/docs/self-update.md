@@ -56,7 +56,8 @@ All steps run inside the editor, on the main thread except the download.
      collisions, reserved names, directory entries or links, within the file
      count and size bounds; every entry's size and SHA-256 equal its inventory
      row.
-   Any failure discards the download and surfaces the reason in the dock.
+   Any failure discards the download, surfaces the reason in the dock, and
+   reports the install as over so the plugin releases the click-time lock.
 4. **Stage.** Extract into `res://addons/.godot_ai_update/stage/addons/godot_ai/`
    and re-hash the extracted files against the inventory. The dot-prefixed
    directory is ignored by Godot's filesystem scanner and carries a

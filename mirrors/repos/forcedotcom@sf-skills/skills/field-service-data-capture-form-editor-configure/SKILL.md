@@ -12,7 +12,7 @@ metadata:
 This skill patches a flow that already exists in a connected org. The source of truth is the deployed flow's `Metadata` JSON, retrieved live from the Tooling `Flow` sObject — there is no spec file, no `.flow-meta.xml`, no zip, no SFDX project. The skill retrieves the JSON, edits it in memory, and PATCHes it back.
 
 > **Runtime contract:** every org interaction in this skill is a REST call
-> dispatched through the Codey runtime (`execute_api` locally / the hosted
+> dispatched through the Codey runtime (`dispatch` locally / the hosted
 > Headless 360 MCP in shared surfaces). This skill has **no dependency on the
 > execution environment** — no `sf` CLI, no local Python, no temp files, no
 > scratch SFDX project. Auth probes, the flow retrieve, and the redeploy are

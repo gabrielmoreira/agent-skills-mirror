@@ -18,7 +18,9 @@ Agent or an explicitly delegated Wisp Agent, never inside Python.
    the brief may instead be assigned to one `reasoning` task with a structured
    output schema.
 3. Review the entire brief. Preserve supplied `composite_path` values and fix
-   unsupported claims before continuing.
+   unsupported claims before continuing. The brief and review instructions
+   include JSON figure records so each path stays associated with its claim;
+   keep those records when delegating, including paths with spaces or Unicode.
 4. If the deck is a PDF, use `pdf-explore` to render the relevant pages to local
    images. Pass their concrete paths to `narrative_review_task(...)`.
 5. Inspect the images with `view_image`. Optionally delegate one handling-editor

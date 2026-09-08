@@ -314,6 +314,11 @@ generic maintainer comment alone. Preserve `pending_author` only when current
 live evidence supports it: a needs-author-feedback label, a current
 changes-requested review after the author's latest activity, or posted Pulse
 review comments that have not been followed by an author commit/comment/review.
+For a specific upstream maintainer request that is not represented by one of
+those signals, record `author_wait_evidence` with the comment author, URL,
+`created_at`, and the exact requested evidence. A draft `post_review` or
+`request_changes` action is still owed by the maintainer and must never be
+treated as though it were already posted.
 If the author has pushed or replied after the author-wait signal, clear
 `pending_author`, mark the artifact `needs_revalidation`, and put the PR back
 in the review queue so the update agent makes a fresh decision.
@@ -333,13 +338,19 @@ pwsh -NoProfile -File `
 ```
 
 The queue contains every open, non-draft PR that is not explicitly waiting on
-the author and that either:
+the author, does not have a current terminal blocker, and that either:
 
 - has no dashboard artifact with a current review action for the live upstream
   head (`post_review` for drafted findings, or `review_ready`/no-comment action
   for a clean looped review); or
 - has a prior proposed review, but the live head SHA differs from the artifact
   or review action head SHA.
+
+A terminal blocker must be pinned to the live upstream head, use
+`stage: review_blocked`, and include one or more `blockers[]` entries whose
+`detail` explains the exact failure and whose `remediation` names the concrete
+manual step needed to resume. Generic checkpoints, missing validation, or a
+bare "blocked" label do not clear the queue.
 
 The queue is exhaustive. Build the run plan:
 
@@ -471,6 +482,17 @@ already present, identify the exact ambiguity or decision it cannot resolve,
 then request only evidence that would change triage or implementation. Reuse
 established PowerToys collection conventions instead of inventing generic
 instructions:
+
+- label the action with the evidence being requested, such as
+  `Request activation trace` or `Confirm affected shortcut`; never use a
+  generic label such as `Request information`;
+- make the request itself immediately scannable: state the exact evidence,
+  explain which decision it resolves, and give the collection method;
+- when requesting multiple items, use a short numbered or bulleted list rather
+  than hiding the asks inside a long paragraph;
+- use a direct request such as `Please provide`, `Could you confirm`, or
+  `Please reproduce and run /bugreport`; do not leave the reporter to infer
+  what response is needed from background analysis alone;
 
 - when a fresh PowerToys diagnostic archive is needed, ask the reporter to
   submit a comment containing `/bugreport`; explain that the generated ZIP
@@ -671,11 +693,13 @@ If a workflow is waiting on an author or user approval, do not rerun it just to
 make activity; preserve that status. A queued item must retain an explicit
 fork trace or dashboard action even when its execution is deferred.
 Draft every supported, current-head review finding as a proposed upstream
-review comment. Prefer an inline suggestion when the finding is localized to a
-current RIGHT-side diff range and can contain one apply-ready `suggestion`
-block. Do not require an inline anchor to draft the review: architectural,
-cross-file, out-of-diff, validation, or coordination findings belong in normal
-body comments and must still produce a pinned `post_review` action.
+review comment. When the finding targets a current RIGHT-side diff range, emit
+an `inline`/`in_diff: true` comment even when the author-facing text is
+explanatory and has no apply-ready replacement. Add one `suggestion` block only
+when the proposed edit is localized and safe to apply directly. Architectural,
+cross-file, out-of-diff, validation, or coordination findings belong in
+separate normal PR conversation comments and must still produce a pinned
+`post_review` action.
 
 Emit `post_review` with review event `COMMENT`. When every proposed comment is
 inline, omit `review.body_prefix` so GitHub receives only the selected inline
@@ -686,14 +710,16 @@ submission from Comment to Request changes, but the generated artifact remains
 non-blocking by default.
 
 Do not collapse every concrete code fix into broad companion notes. When the
-converged fork contains a localized fix on a current upstream diff line, emit
-an `inline`/`in_diff: true` item with the exact range and apply-ready
-`suggestion` block. For every other supported finding, emit a non-inline
-proposed comment that explains the concern, its impact, and the required
-follow-up; never replace it with a generic local `review_summary` action
-merely because an inline suggestion is unavailable. Label companion-only
-reviews `Post general review notes` and disclose `general review notes — no
-inline suggestions`.
+finding maps to a current upstream diff line, emit an `inline`/`in_diff: true`
+item with the exact range. Include an apply-ready `suggestion` block when one
+is justified, but do not downgrade a valid line comment to `companion` merely
+because prose is clearer than a patch. For every truly out-of-diff supported
+finding, emit a non-inline proposed comment that explains the concern, its
+impact, and the required follow-up; Pulse posts those findings as separate PR
+conversation comments rather than combining them into one review body. Never
+replace them with a generic local `review_summary` action. Label
+companion-only reviews `Post general review notes` and disclose `general
+review notes — separate PR conversation comments`.
 
 Use a local manual-review or validation action only when no defensible
 author-facing comment can be drafted from the current head—for example, the

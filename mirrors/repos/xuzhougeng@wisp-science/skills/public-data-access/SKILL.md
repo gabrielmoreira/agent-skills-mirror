@@ -1,6 +1,6 @@
 ---
 name: public-data-access
-description: "Plan, configure, validate, and document portable public-bioinformatics data acquisition. Use for GEO/GSE/GDS, SRA/ENA, TCGA/GDC, GTEx, DepMap, public expression matrices, raw reads, release files, manifests, resumable downloads, and reusable local caches. Keep the workflow provider-neutral: DepMap is one optional source, never the default architecture."
+description: "Plan, validate, and document public-bioinformatics data acquisition for GEO/GSE/GSM/GPL/GDS, SRA/ENA, TCGA/GDC, GTEx, and DepMap. Covers expression matrices, raw reads, download manifests, caches, and optional geokit SOFT/Series Matrix acquisition for R workflows."
 ---
 
 # Public Bioinformatics Data Access
@@ -20,8 +20,9 @@ workflow. Do not require a provider-specific toolkit or machine-specific checkou
 3. **Write a provider-neutral plan.** Run `scripts/public_data_plan.py init`.
    Store the plan next to the future dataset as `download-plan.json`.
 4. **Validate and review.** Run `validate`, show the user the resolved provider,
-   transport, filters, limits, output location, and known size. Wait for explicit
-   confirmation before a large, paid, authenticated, or overwrite-capable job.
+   transport, filters, limits, output location, and known size. For a large,
+   paid, authenticated, or overwrite-capable job, confirm that the user's
+   authorization covers this concrete transfer; ask only when it does not.
 5. **Select the adapter at runtime.** Prefer an already available Wisp MCP tool
    for metadata and small queries. Prefer official HTTPS/FTP or provider clients
    for bulk files. Use an external project only when it is installed and record
@@ -35,7 +36,7 @@ workflow. Do not require a provider-specific toolkit or machine-specific checkou
 
 | Provider | Discovery and small queries | Bulk acquisition | Typical products |
 |---|---|---|---|
-| GEO | GEO metadata connector, NCBI E-utilities | NCBI GEO HTTPS/FTP | series matrix, SOFT, supplementary files |
+| GEO | GEO metadata connector, NCBI E-utilities | NCBI GEO HTTPS/FTP; optional geokit in R | series matrix, SOFT, supplementary files |
 | SRA/ENA | RunInfo or ENA Portal API | ENA HTTPS/FTP or SRA Toolkit | FASTQ, run metadata |
 | GDC | GDC files/cases API | manifest + `gdc-client`, or HTTPS for bounded files | expression, mutation, CNV, clinical, methylation |
 | GTEx | GTEx expression connector/API | official release files for matrices | gene/tissue queries, median or sample expression |
@@ -46,7 +47,20 @@ Read `references/provider-routing.md` before implementing or changing a
 provider adapter. DepMap-specific flags or release semantics must stay inside
 the DepMap adapter; they must not shape the common plan schema.
 
+For GEO SOFT/Series Matrix parsing, sample metadata preparation, or
+ExpressionSet acquisition in an R workflow, read
+[references/geokit.md](references/geokit.md). geokit is optional; ordinary GEO
+discovery does not require R or package installation.
+
 ## Create and validate a plan
+
+Resolve `scripts/public_data_plan.py` against this skill's directory (the
+`use_skill` result lists its path), and invoke that resolved script with a
+Python 3.10+ interpreter. Keep the working directory at the project root so
+relative plan/output paths belong to the project. The examples below abbreviate
+the script path; quote the resolved path when it contains spaces. In an SSH/WSL
+context, stage the helper there or use an existing copy in that context; a
+desktop skill path is not automatically available remotely.
 
 ```bash
 python scripts/public_data_plan.py init \
@@ -76,7 +90,10 @@ python scripts/public_data_plan.py init \
 ```
 
 The planner does not download data. It produces a reviewable contract. See
-`references/download-plan-schema.md` for the complete schema.
+`references/download-plan-schema.md` for the complete schema. Validation checks
+the plan structure; it does not probe URLs, enforce transfer limits, verify
+installed packages, or approve a pending transfer. The selected adapter must
+honor the plan's limits and resume behavior.
 
 ## Generate a manifest
 
@@ -114,7 +131,7 @@ checksums or immutable object identifiers are recorded elsewhere.
 - Use connectors for discovery and bounded queries, then official transfer
   mechanisms for large files.
 - Keep outputs under the active project, normally `data/public/<provider>/...`.
-- The optional `kernel.py` sidecar exposes plan creation and validation helpers
-  in Wisp's persistent Python runtime.
+- Invoke the planner as a standalone CLI; no Python REPL helper loading is
+  required. R-based acquisition can use geokit independently of the planner.
 - Treat this skill as an acquisition/orchestration layer. Downstream QC,
   statistics, annotation, and visualization belong to other skills.

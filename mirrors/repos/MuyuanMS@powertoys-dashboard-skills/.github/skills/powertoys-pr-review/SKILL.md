@@ -61,6 +61,14 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
 16. **Score confidence per finding, but never expose it upstream.** Every drafted public item carries a 50–100 confidence score and evidence-based rationale as metadata. Scores below 50 stay internal. Pulse may show the score to maintainers; author-facing review bodies must contain severity and reasoning only.
 17. **Fork pushes are required review work, not upstream publication.** Workers may create/update branches and PRs in the configured personal fork, push review fixes, and resolve fork review threads. A coordinator instruction not to commit or push dashboard data must never be interpreted as prohibiting fork-side pushes. Only writes to `microsoft/PowerToys` remain approval-gated.
 18. **Resolve the writable fork from configuration and clone remotes, not only the active login.** `Get-ForkConfig.ps1` prefers `POWERTOYS_FORK_REPO`, then a non-Microsoft `PowerToys` remote in the local clone, and switches to the authenticated fork-owner account when the current account has read-only access. Do not substitute `<active-login>/PowerToys` when the durable review branches live in another configured account.
+19. **Use the dashboard terminal-stage contract.** Emit a clean current-head
+    review with zero proposed comments as `stage: review_ready`, never
+    `concluded`, `complete`, or another synonym. A review with findings must
+    instead include a current-head `post_review` or `request_changes` action.
+    When automation cannot proceed, emit `stage: review_blocked` only for a
+    current-head terminal blocker and include `blockers[]` entries with
+    non-empty `detail` and exact `remediation`; do not leave it as
+    `review_in_progress`.
 
 ## Phase 0: Context & Process Review
 

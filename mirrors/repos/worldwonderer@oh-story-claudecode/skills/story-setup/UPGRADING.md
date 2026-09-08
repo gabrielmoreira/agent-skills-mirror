@@ -3,9 +3,67 @@
 ## 当前版本
 
 - `setup_skill_version: 1.2.10`
-- `agents_version: 29`
+- `agents_version: 30`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `29`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `29`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v29 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `30`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `30`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v30 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+
+## 插件打包身份迁移（v0.7.9 同版本修复）
+
+Claude Code / ZCode 市场改为单一 `oh-story` 插件，仍包含全部 13 个 Skills。此修复仍为 `0.7.9`，旧插件用户需手动迁移；`npx skills` 安装无需迁移。卸载前备份要保留的插件数据，以下操作仅针对旧插件记录，保留写作项目及 story-setup 部署文件。
+
+### Claude Code
+
+1. 先在受影响的写作项目目录中列出已安装插件，按记录中的 `id` 与 `scope` 核对实际旧身份；`project` / `local` 记录属于各自项目，多个项目须分别核对：
+
+   ```bash
+   claude plugin list --json
+   ```
+
+   只处理列表中确实存在、marketplace 为 `oh-story-skills` 的以下旧 ID：
+
+   ```text
+   browser-cdp@oh-story-skills
+   story@oh-story-skills
+   story-cover@oh-story-skills
+   story-deslop@oh-story-skills
+   story-import@oh-story-skills
+   story-long-analyze@oh-story-skills
+   story-long-scan@oh-story-skills
+   story-long-write@oh-story-skills
+   story-review@oh-story-skills
+   story-setup@oh-story-skills
+   story-short-analyze@oh-story-skills
+   story-short-scan@oh-story-skills
+   story-short-write@oh-story-skills
+   ```
+
+2. **刷新 catalog 前**，逐个卸载实际存在的旧 ID，并使用列表中原有的 `user`、`project` 或 `local` scope。以下以 user-scope 的 `story` 插件为例：
+
+   ```bash
+   claude plugin uninstall story@oh-story-skills --scope user --keep-data
+   ```
+
+   `--keep-data` 保留该旧插件身份的数据，但不会把它迁移到新的 `oh-story` 身份。同一旧 ID 若出现在多个 scope，每个 scope 分别执行。
+
+3. 所有实际旧身份卸载完后，刷新已有 catalog；若本机尚未添加该 catalog，则添加仓库：
+
+   ```bash
+   claude plugin marketplace update oh-story-skills
+   # 仅在 catalog 尚不存在时：
+   claude plugin marketplace add https://github.com/zenstory-ai/oh-story-claudecode
+   ```
+
+4. 在原 scope 安装统一 bundle；多个 scope 分别安装：
+
+   ```bash
+   claude plugin install oh-story@oh-story-skills --scope user
+   ```
+
+5. 新开 Claude Code 会话，使用 `/oh-story:story-setup` 或 `/oh-story:story dashboard`。命令与 manifest 格式见 [Claude Code 插件参考](https://code.claude.com/docs/en/plugins-reference)。
+
+### ZCode
+
+在 Plugin Management 中卸载受影响的旧条目，刷新市场；必要时重新添加本仓库，再安装一个 `oh-story`。沿用界面中的市场名（`oh-story-skills` 或 `oh-story-zcode`），避免重复安装。若无法卸载，保留数据备份，附 ZCode 版本与界面现象联系官方支持，不要清空全部缓存或手改缓存 JSON。操作说明见 [ZCode 插件文档](https://zcode.z.ai/en/docs/plugin)。
 
 ## 升级策略
 
@@ -52,7 +110,16 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 - `{书名}/设定/`、`大纲/`、`追踪/`
 - `.active-book`
 
-## v29 当前契约
+## v30 当前契约
+
+- 默认保留一次 checkpoint；全章细纲供整体编排，用户可明确选择一次成文。
+- 写手 prompt 使用脚本组装；卷纲按作用域取段，旧卷纲未声明的段保守保留并告警。
+- 新增材料按后续影响分级；需作者裁定的章暂停提交和续写，避免正文事实漏进追踪。
+- 更新 narrative-writer 与参考资料，同时保留短篇格式、所选 Gate 范围及既有情绪表达规则。
+
+重新部署后新开会话，使新 agent 定义生效。
+
+## v29 历史契约
 
 - narrative-writer 模板去掉逐段配额：「展开子事件」改为「展开推进单元」，删除「详写的子事件合计 ≥100-150 字」；情弦理论不再要求「每节至少拨一次」，任务、推理、手艺或等待链可连续展开。三端（Claude / OpenCode / Codex）产物同步。
 - 短篇 reference bundle 改按场景功能判断篇幅与节奏：`short-genre-formulas.md` 去掉钩子密度的固定节距、「爽文章节 500-800 字/节」和「打脸密度每 3-5 节一次」；`short-emotional-methods.md` 去掉固定节距的情绪转向与打脸节拍；`short-suspense.md` 不再给每类小节设最低悬念等级；`short-reversal.md` 甜宠线不再要求每节一个甜点。
@@ -138,7 +205,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 ## 升级步骤
 
 1. 在项目根目录重新运行 story-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 29` 与 `setup_skill_version: 1.2.10`。
+2. 确认 `.story-deployed` 写入 `agents_version: 30` 与 `setup_skill_version: 1.2.10`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。

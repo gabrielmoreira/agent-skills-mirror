@@ -120,6 +120,25 @@ Wait for the user to reply "pick 1,3", "pick all", or "new keyword".
 Until the user confirms, NOT ONE candidate enters STEP:1.
 
 [STEP:1:VERIFY-DEATH]
+TARGET VALIDATION runs BEFORE any DNS or HTTP call. No exceptions, no user override.
+- Accept only http/https on a public registrable domain. Reject other schemes, bare IP
+  literals, userinfo (`user:pass@`), and any port other than 80/443 unless the user
+  documents a recovery reason.
+- Resolve A and AAAA records first, then reject the target if ANY resolved address is
+  loopback, RFC1918 private, link-local, carrier-grade NAT, multicast, reserved or
+  unspecified; IPv6 loopback, unique-local, link-local or IPv4-mapped private; or a cloud
+  metadata address or hostname (169.254.169.254, fd00:ec2::254, metadata.google.internal
+  and the equivalents on other platforms).
+- Do NOT auto-follow redirects. Resolve and re-validate every hop against these same rules
+  before following it. Re-validate after each DNS resolution, so a rebind between check and
+  connect cannot slip through. Pin the validated IP for the request where the runtime allows
+  it, keeping TLS hostname validation intact.
+- Set explicit connection, response-size and total-request time limits. No unbounded fetch.
+- Destination non-public or ambiguous → return a validation error, make NO request, tag the
+  candidate `blocked_non_public`, and tell the user which rule blocked it.
+- User approval (including an approved 301/302 chase) is a workflow gate, NOT a security
+  boundary. An approved hop to a non-public address is still refused.
+
 Run every check, record evidence, decide by matrix:
 
 | Check | Death signal | Note |
@@ -144,7 +163,7 @@ Hard policy:
 - Deduplicate by digest or urlkey first to control volume
 - Priority queue: /sitemap.xml, /blog, /posts, /articles, /docs, *.html.
   Deprioritize: /tag/, /page/N, tracking parameters
-- Cap entering grading at max_urls_to_grade default 2000 candidates pool;
+- Cap entering grading at max_urls_to_grade default 300 candidates pool;
   beyond cap, sample by path depth and keyword hits
 - Keep mimetype text/html and text/plain only (PDF behind assets flag)
 - One latest successful snapshot per URL enters STEP:3
@@ -160,13 +179,38 @@ unless the user connected an official data source (gsc_export).
 | GOLD | strong evidence of past indexing | yes |
 | SILVER | weak / heuristic evidence | if include_silver |
 | SKIP | no evidence | no |
+| UNVERIFIABLE_SANITIZED | not gradable externally: the URL looked like it carried credentials or personal data | no — but never silently dropped; reported as its own section for the user to judge |
+
+QUERY SANITIZATION runs BEFORE any external query, for methods B and C alike.
+- Sanitize the URL first: drop userinfo and fragment, drop the query string by default,
+  and normalize percent-encoded and double-encoded values before you scan.
+- Scan the surviving path for PII and secret-like segments: emails, phone numbers, national
+  IDs, session identifiers, reset tokens, api keys, tracking ids, high-entropy strings.
+  Redact what you find. This scan runs HERE, before grading. The STEP:7 gate is too late to
+  prevent or reverse a disclosure to a third-party search provider.
+- Never transmit a URL that still carries credentials, tokens, emails, phone numbers, IDs or
+  high-entropy values. If sanitizing destroys the URL's meaning, do not query it at all:
+  grade it from local evidence only, or mark it `UNVERIFIABLE_SANITIZED`. Missing a grade
+  beats leaking.
+- `UNVERIFIABLE_SANITIZED` is a visible outcome, never a silent drop. Record the URL in its
+  REDACTED form with `skip_reason` naming only the CATEGORY that blocked it
+  (`suspected_credential`, `suspected_pii`, `high_entropy_path`) — never the matched value,
+  so the bundle itself stays clean. These URLs are surfaced to the user as their own
+  section; never fold them into SKIP, where they would be indistinguishable from pages that
+  genuinely had no indexing evidence.
+- Send the minimum that still grades: `site:DOMAIN "non-sensitive title fragment"`, or the
+  origin plus a normalized sanitized path.
+- Keep sanitized query material out of local logs, generated reports and error messages too.
+- index_provider is a keyed provider (cse | serpapi | gsc_export) → display the provider name
+  and the exact sanitized query, and get explicit user consent before the first send. State
+  plainly that the provider logs and retains these queries against the user's own account.
 
 Allowed methods only, in degradation order:
 A. USER EXPORTS (strongest): Search Console export hit = GOLD.
    Old sitemap existed and was crawled repeatedly = SILVER heuristic only, not proof.
 B. PUBLIC SEARCH HEURISTIC (default, no key), per URL or sample:
    1. `site:DOMAIN "unique title fragment"`
-   2. exact URL in quotes
+   2. the SANITIZED URL in quotes — never the raw archived URL
    Judge: result points to exact URL → GOLD; same-path keyword hit but URL differs → SILVER;
    repeated misses → SKIP.
    Google captcha → same queries on Bing. Bing also blocked → stop and report; never force.
@@ -176,7 +220,9 @@ C. KEYED PROVIDERS (optional): Custom Search JSON API, SerpAPI-class, Search Con
 Quota: individual queries only for the top 300 priority URLs; the rest are batch-graded
 SILVER/SKIP by path rules. Low concurrency, sleep between queries.
 
-Output `graded_urls.jsonl`: url, grade, evidence[], confidence.
+Output `graded_urls.jsonl`: url, grade, evidence[], confidence, and `skip_reason`
+(UNVERIFIABLE_SANITIZED rows only). Report the UNVERIFIABLE_SANITIZED count to the user
+alongside the GOLD/SILVER/SKIP totals — never leave it out of the tally.
 
 [STEP:4:CONFIRM]
 Before writing ANY files:
@@ -256,7 +302,7 @@ Output `review_report.json`. Report every finding with exact file + location.
 [STEP:8:PACKAGE]
 ```
 lazarus-output/{domain}-{date}/
-  README.md                 # human summary + legal notice
+  README.md                 # human summary + legal notice + UNVERIFIABLE (SANITIZED) section
   candidates.json           # keyword mode only
   death_report.json
   url_index.jsonl
@@ -273,6 +319,13 @@ deploy-notes.md: directory conventions + generic SSG/CMS integration notes
 (Hugo, Astro, WordPress import). One line noting AutoCode one-command compatibility
 is fine. Never hard-bind any single deploy vendor.
 
+README.md carries a dedicated `UNVERIFIABLE (SANITIZED)` section, separate from the
+GOLD/SILVER/SKIP summary. List every UNVERIFIABLE_SANITIZED URL in redacted form with its
+skip_reason category, under one plain line: these pages were NOT graded externally because
+their URLs looked like they carried credentials or personal data, so decide for yourself
+whether any deserve a manual look. Nothing was sent to a third party on their behalf.
+Empty list → print the section and say it is empty. Never omit it.
+
 # ============================================================
 # RULES
 # ============================================================
@@ -284,6 +337,13 @@ is fine. Never hard-bind any single deploy vendor.
   unconfirmed candidates — you might hit a living site.
 - Respect archive.org and search engine terms. Rate-limit, sleep, and when walls
   appear: degrade or stop. Never bypass, never fake, never hammer.
+- Every network target passes STEP:1 TARGET VALIDATION first. Public registrable domains
+  only; loopback, private, link-local and cloud-metadata destinations are refused even when
+  the user approves them. Never let this skill become an internal-network probe.
+- Nothing reaches a search provider unsanitized. Strip userinfo, fragments and query strings,
+  redact PII and secrets, and drop the URL entirely when it cannot be sanitized. Dropping is
+  never silent: mark it `UNVERIFIABLE_SANITIZED` and list it for the user in redacted form.
+  Skipping a grade is the conservative choice; hiding the skip is not.
 - Wayback is a sample. Missing pages are normal, log them, not errors.
 - This file alone, pasted into any AI with internet access, must be able to run the
   whole flow manually. No local CLI required; scripts are an optional enhancement.

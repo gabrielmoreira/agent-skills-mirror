@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns, 23 file(s) materialized.
+Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 9 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 23 |
+| Followed pats | 9 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,7 +55,10 @@ Mirror of `teng-lin/notebooklm-py` — 26 default patterns, 6 followed patterns,
 - `CONTRIBUTING.md`
 - `docs/architecture.md`
 - `docs/cli-reference.md`
+- `docs/mcp-guide.md`
 - `docs/development.md`
+- `docs/python-api.md`
+- `docs/troubleshooting.md`
 - `docs/cli-exit-codes.md`
 
 ## File Index
@@ -69,24 +72,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/auth-cookie-lifecycle.md`](docs/auth-cookie-lifecycle.md) |
 | 4 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
 | 5 | ✓ | [`docs/conventions.md`](docs/conventions.md) |
-| 6 | ✓ | [`docs/fault-injection.md`](docs/fault-injection.md) |
-| 7 | ✓ | [`docs/mcp-guide.md`](docs/mcp-guide.md) |
-| 8 | ✓ | [`docs/python-api.md`](docs/python-api.md) |
-| 9 | ✓ | [`docs/quota-limits.md`](docs/quota-limits.md) |
-| 10 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
-| 11 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
-| 12 | ✓ | [`docs/rpc-reference.md`](docs/rpc-reference.md) |
-| 13 | ✓ | [`docs/security.md`](docs/security.md) |
-| 14 | ✓ | [`docs/stability.md`](docs/stability.md) |
-| 15 | ✓ | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 16 | ✓ | [`docs/web-android-public-behavior.md`](docs/web-android-public-behavior.md) |
-| 17 | ✓ | [`SKILL.md`](SKILL.md) |
-| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 19 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 20 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
-| 21 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
-| 22 | → | [`docs/development.md`](docs/development.md) |
-| 23 | → | [`docs/installation.md`](docs/installation.md) |
+| 6 | ✓ | [`docs/deprecations.md`](docs/deprecations.md) |
+| 7 | ✓ | [`docs/fault-injection.md`](docs/fault-injection.md) |
+| 8 | ✓ | [`docs/quota-limits.md`](docs/quota-limits.md) |
+| 9 | ✓ | [`docs/refactor-history.md`](docs/refactor-history.md) |
+| 10 | ✓ | [`docs/rpc-development.md`](docs/rpc-development.md) |
+| 11 | ✓ | [`docs/rpc-reference.md`](docs/rpc-reference.md) |
+| 12 | ✓ | [`docs/security.md`](docs/security.md) |
+| 13 | ✓ | [`docs/stability.md`](docs/stability.md) |
+| 14 | ✓ | [`docs/web-android-public-behavior.md`](docs/web-android-public-behavior.md) |
+| 15 | ✓ | [`SKILL.md`](SKILL.md) |
+| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 17 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 18 | → | [`docs/cli-exit-codes.md`](docs/cli-exit-codes.md) |
+| 19 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
+| 20 | → | [`docs/development.md`](docs/development.md) |
+| 21 | → | [`docs/installation.md`](docs/installation.md) |
+| 22 | → | [`docs/mcp-guide.md`](docs/mcp-guide.md) |
+| 23 | → | [`docs/python-api.md`](docs/python-api.md) |
+| 24 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
 
 ---
 

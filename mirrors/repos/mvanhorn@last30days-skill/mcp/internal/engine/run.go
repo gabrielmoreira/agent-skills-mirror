@@ -121,7 +121,9 @@ func resolvePython(override string) (string, error) {
 		return override, nil
 	}
 	path, err := exec.LookPath(DefaultPythonBinary)
-	if err == nil {
+	// Go normally rejects relative results with ErrDot. Keep this invariant
+	// even when that protection is disabled with GODEBUG=execerrdot=0.
+	if err == nil && filepath.IsAbs(path) {
 		return path, nil
 	}
 	return "", fmt.Errorf(

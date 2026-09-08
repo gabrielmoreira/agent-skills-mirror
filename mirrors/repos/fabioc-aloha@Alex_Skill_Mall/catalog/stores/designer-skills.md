@@ -2,22 +2,22 @@
 
 **Source:** [Owl-Listener/designer-skills](https://github.com/Owl-Listener/designer-skills)
 **Store trust:** 35/100
-**Signals:** maintenance 15 · adoption 10 · license 10 (MIT) · 2422 stars · 6 contributors
-**Scanned ref:** `20e34c4a587e`
+**Signals:** maintenance 15 · adoption 10 · license 10 (MIT) · 2558 stars · 6 contributors
+**Scanned ref:** `9a6930cf84a8`
 
 ## Plugins (9)
 
 | Trust | Plugin | Shape | Version | Description |
 | ---: | --- | --- | --- | --- |
-| 45 | [`design-ops`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/design-ops) | mixed | - | Streamline design operations with critique frameworks, handoff specs, sprint planning, review proce… |
-| 45 | [`design-research`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/design-research) | mixed | - | User research skills for designers: personas, empathy maps, journey maps, interview scripts, usabil… |
-| 45 | [`design-systems`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/design-systems) | mixed | - | Build, document, and maintain scalable design systems — from tokens and components to accessibility… |
-| 45 | [`designer-toolkit`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/designer-toolkit) | mixed | - | Essential designer utilities for writing rationale, building presentations, crafting case studies, … |
-| 45 | [`interaction-design`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/interaction-design) | mixed | - | Design meaningful interactions with micro-animations, state machines, gestures, error handling, and… |
-| 45 | [`prototyping-testing`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/prototyping-testing) | mixed | - | Plan and execute design validation through prototyping strategies, usability testing, heuristic eva… |
-| 45 | [`ui-design`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/ui-design) | mixed | - | Craft polished user interfaces with layout grids, color systems, typography scales, responsive patt… |
-| 45 | [`ux-strategy`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/ux-strategy) | mixed | - | Shape product direction through competitive analysis, design principles, experience mapping, and st… |
-| 45 | [`visual-critique`](https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/visual-critique) | mixed | - | Visual critique skills for designers. Analyse a screen across seven dimensions — hierarchy, brand c… |
+| 45 | [`design-ops`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/design-ops) | mixed | - | Streamline design operations with critique frameworks, handoff specs, sprint planning, review proce… |
+| 45 | [`design-research`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/design-research) | mixed | - | User research skills for designers: personas, empathy maps, journey maps, interview scripts, usabil… |
+| 45 | [`design-systems`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/design-systems) | mixed | - | Build, document, and maintain scalable design systems — from tokens and components to accessibility… |
+| 45 | [`designer-toolkit`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/designer-toolkit) | mixed | - | Essential designer utilities for writing rationale, building presentations, crafting case studies, … |
+| 45 | [`interaction-design`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/interaction-design) | mixed | - | Design meaningful interactions with micro-animations, state machines, gestures, error handling, and… |
+| 45 | [`prototyping-testing`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/prototyping-testing) | mixed | - | Plan and execute design validation through prototyping strategies, usability testing, heuristic eva… |
+| 45 | [`ui-design`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/ui-design) | mixed | - | Craft polished user interfaces with layout grids, color systems, typography scales, responsive patt… |
+| 45 | [`ux-strategy`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/ux-strategy) | mixed | - | Shape product direction through competitive analysis, design principles, experience mapping, and st… |
+| 45 | [`visual-critique`](https://github.com/Owl-Listener/designer-skills/tree/9a6930cf84a822eb458624bd11c61aac5bbdf224/visual-critique) | mixed | - | Visual critique skills for designers. Analyse a screen across seven dimensions — hierarchy, brand c… |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-09-03T18:51:08.677Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-09-07T11:06:59.791Z*

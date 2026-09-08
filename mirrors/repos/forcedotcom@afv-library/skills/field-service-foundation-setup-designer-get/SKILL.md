@@ -51,7 +51,7 @@ Never expose internal skill names, SOR IDs, or tool references to the user.
    - If not covered + no context: exact structured question
 
 4. **Question format** (three or four parts):
-   ```markdown
+   ```text
    **Recommendation:** [Only include when context is sufficient. Lead with the best-fit option given what's known, then briefly note alternatives with the condition under which they'd apply instead — not a flat menu of equal choices, but a ranked steer. Omit entirely when confidence is low.]
 
    **Question:** [The actual question — or a lighter "does this fit?" when a Recommendation is present]

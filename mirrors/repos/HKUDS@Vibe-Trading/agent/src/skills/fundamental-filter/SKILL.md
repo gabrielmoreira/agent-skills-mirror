@@ -157,6 +157,7 @@ results = screen_us_stocks(hk_tickers, criteria)  # Same function works
 
 - `extra_fields` columns may contain NaN (new listings, ST stocks) — must `fillna` or `dropna`
 - `fundamental_fields` columns are prefixed by table and may be NaN before the first statement is published in the backtest window
+- `fundamental_fields` is daily-only: an announcement date has no time of day, so an intraday interval is rejected rather than silently making a filing visible from the first bar of its own announcement day. `"fundamental_subdaily": "next_day"` opts in, with day D's filing visible from the first bar of D+1
 - Do not forward-fill statement rows manually before their `ann_date` / `f_ann_date`; the runner's merge already enforces point-in-time visibility
 - Negative PE means loss-making — always filter with `pe > 0`
 - ROE units differ: tushare uses percentage (e.g., 15 = 15%), yfinance uses decimal (e.g., 0.15 = 15%)

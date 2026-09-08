@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shinpr/mcp-local-rag` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `shinpr/mcp-local-rag` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shinpr/mcp-local-rag` — 26 default patterns, 0 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/mcp-local-rag/references/cli-reference.md`](skills/mcp-local-rag/references/cli-reference.md) |
 | 2 | ✓ | [`skills/mcp-local-rag/references/html-ingestion.md`](skills/mcp-local-rag/references/html-ingestion.md) |
-| 3 | ✓ | [`skills/mcp-local-rag/references/query-optimization.md`](skills/mcp-local-rag/references/query-optimization.md) |
-| 4 | ✓ | [`skills/mcp-local-rag/references/result-refinement.md`](skills/mcp-local-rag/references/result-refinement.md) |
-| 5 | ✓ | [`skills/mcp-local-rag/SKILL.md`](skills/mcp-local-rag/SKILL.md) |
+| 3 | ✓ | [`skills/mcp-local-rag/SKILL.md`](skills/mcp-local-rag/SKILL.md) |
 
 ---
 

@@ -2,31 +2,31 @@
 
 **Source:** [dotnet/skills](https://github.com/dotnet/skills)
 **Store trust:** 35/100
-**Signals:** maintenance 15 · adoption 10 · license 10 (MIT) · 5302 stars · 59 contributors
-**Scanned ref:** `d68dd7085707`
+**Signals:** maintenance 15 · adoption 10 · license 10 (MIT) · 5380 stars · 61 contributors
+**Scanned ref:** `fbeeafe261b0`
 
 ## Plugins (18)
 
 | Trust | Plugin | Shape | Version | Description |
 | ---: | --- | --- | --- | --- |
-| 48 | [`dotnet-advanced`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-advanced) | skill | 0.2.1 | Advanced .NET and C# skills for niche scenarios that are not part of the core dotnet plugin. |
-| 48 | [`dotnet-test`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-test) | mixed | 0.2.18 | Skills for running, generating, analyzing, and improving .NET tests: test execution, filtering, pla… |
-| 48 | [`dotnet-test-migration`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-test-migration) | mixed | 0.1.7 | Skills and an orchestrator agent for migrating .NET test frameworks and platforms: MSTest and xUnit… |
-| 48 | [`dotnet11`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet11) | skill | 0.1.1 | Skills for .NET 11 APIs and language features. |
-| 46 | [`dotnet`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet) | skill | 0.2.3 | C# language server (LSP) integration for coding agents and high-level .NET development skills. |
-| 45 | [`eval-quality`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/eng/eval-quality) | unknown | - | `check_eval_quality.py` blocks structural defects that can corrupt an eval |
-| 45 | [`vally-adapter`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/eng/vally-adapter) | unknown | - | This document explains how this repository evaluates skills, how it builds on |
-| 43 | [`dotnet-ai`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-ai) | skill | 0.1.6 | AI and ML skills for .NET: technology selection, LLM integration, agentic workflows, RAG pipelines,… |
-| 43 | [`dotnet-aspnetcore`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-aspnetcore) | skill | 0.1.1 | ASP.NET Core web development skills including middleware, endpoints, real-time communication, and A… |
-| 43 | [`dotnet-blazor`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-blazor) | skill | 0.1.1 | Skills for Blazor development: component authoring, interactivity, and web application patterns. |
-| 43 | [`dotnet-data`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-data) | skill | 0.1.5 | Skills for .NET data access and Entity Framework related tasks. |
-| 43 | [`dotnet-diag`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-diag) | mixed | 0.1.1 | Skills for .NET performance investigations, debugging, and incident analysis. |
-| 43 | [`dotnet-experimental`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-experimental) | skill | 0.1.1 | Experimental skills under active evaluation that may change or graduate to stable plugins. |
-| 43 | [`dotnet-maui`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-maui) | skill | 0.1.16 | Skills for .NET MAUI development: environment setup, diagnostics, troubleshooting, navigation, data… |
-| 43 | [`dotnet-msbuild`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-msbuild) | mixed | 0.1.8 | Comprehensive MSBuild and .NET build skills: failure diagnosis, performance optimization, code qual… |
-| 43 | [`dotnet-nuget`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-nuget) | skill | 0.1.1 | NuGet and .NET package management skills: dependency management and modernization. |
-| 43 | [`dotnet-template-engine`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-template-engine) | mixed | 0.1.3 | .NET Template Engine skills for dotnet new: create projects (console app, class library, web API, B… |
-| 43 | [`dotnet-upgrade`](https://github.com/dotnet/skills/tree/d68dd70857076a17d4b418649bbcd20a315d59c3/plugins/dotnet-upgrade) | skill | 0.1.1 | Skills for migrating and upgrading .NET projects across framework versions, language features, and … |
+| 48 | [`dotnet-advanced`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-advanced) | skill | 0.2.2 | Advanced .NET and C# skills for niche scenarios that are not part of the core dotnet plugin. |
+| 48 | [`dotnet-test`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-test) | mixed | 0.2.19 | Skills for running, generating, analyzing, and improving .NET tests: test execution, filtering, pla… |
+| 48 | [`dotnet-test-migration`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-test-migration) | mixed | 0.1.8 | Skills and an orchestrator agent for migrating .NET test frameworks and platforms: MSTest and xUnit… |
+| 48 | [`dotnet11`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet11) | skill | 0.1.1 | Skills for .NET 11 APIs and language features. |
+| 46 | [`dotnet`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet) | skill | 0.2.3 | C# language server (LSP) integration for coding agents and high-level .NET development skills. |
+| 45 | [`eval-quality`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/eng/eval-quality) | unknown | - | `check_eval_quality.py` blocks structural defects that can corrupt an eval |
+| 45 | [`vally-adapter`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/eng/vally-adapter) | unknown | - | This document explains how this repository evaluates skills, how it builds on |
+| 43 | [`dotnet-ai`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-ai) | skill | 0.1.6 | AI and ML skills for .NET: technology selection, LLM integration, agentic workflows, RAG pipelines,… |
+| 43 | [`dotnet-aspnetcore`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-aspnetcore) | skill | 0.1.1 | ASP.NET Core web development skills including middleware, endpoints, real-time communication, and A… |
+| 43 | [`dotnet-blazor`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-blazor) | skill | 0.1.1 | Skills for Blazor development: component authoring, interactivity, and web application patterns. |
+| 43 | [`dotnet-data`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-data) | skill | 0.1.5 | Skills for .NET data access and Entity Framework related tasks. |
+| 43 | [`dotnet-diag`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-diag) | mixed | 0.1.1 | Skills for .NET performance investigations, debugging, and incident analysis. |
+| 43 | [`dotnet-experimental`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-experimental) | skill | 0.1.2 | Experimental skills under active evaluation that may change or graduate to stable plugins. |
+| 43 | [`dotnet-maui`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-maui) | skill | 0.1.16 | Skills for .NET MAUI development: environment setup, diagnostics, troubleshooting, navigation, data… |
+| 43 | [`dotnet-msbuild`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-msbuild) | mixed | 0.1.9 | Comprehensive MSBuild and .NET build skills: failure diagnosis, performance optimization, code qual… |
+| 43 | [`dotnet-nuget`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-nuget) | skill | 0.1.1 | NuGet and .NET package management skills: dependency management and modernization. |
+| 43 | [`dotnet-template-engine`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-template-engine) | mixed | 0.1.4 | .NET Template Engine skills for dotnet new: create projects (console app, class library, web API, B… |
+| 43 | [`dotnet-upgrade`](https://github.com/dotnet/skills/tree/fbeeafe261b0fe704b9a95c58fd9fdbe34e96964/plugins/dotnet-upgrade) | skill | 0.1.1 | Skills for migrating and upgrading .NET projects across framework versions, language features, and … |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-09-03T18:51:08.677Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-09-07T11:06:59.791Z*
