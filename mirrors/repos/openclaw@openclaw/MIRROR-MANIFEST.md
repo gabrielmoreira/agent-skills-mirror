@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 376 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 374 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 0 followed patterns, 376 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 376 |
+| Files         | 374 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -403,38 +403,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 342 | ✓ | [`skills/tmux/scripts/wait-for-text.sh`](skills/tmux/scripts/wait-for-text.sh) |
 | 343 | ✓ | [`skills/tmux/SKILL.md`](skills/tmux/SKILL.md) |
 | 344 | ✓ | [`skills/trello/SKILL.md`](skills/trello/SKILL.md) |
-| 345 | ✓ | [`skills/video-frames/scripts/frame.sh`](skills/video-frames/scripts/frame.sh) |
-| 346 | ✓ | [`skills/video-frames/SKILL.md`](skills/video-frames/SKILL.md) |
-| 347 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
-| 348 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
-| 349 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
-| 350 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
-| 351 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
-| 352 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
-| 353 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
-| 354 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
-| 355 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
-| 356 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
-| 357 | ✓ | [`src/channels/plugins/contracts/test-helpers/AGENTS.md`](src/channels/plugins/contracts/test-helpers/AGENTS.md) |
-| 358 | ✓ | [`src/channels/plugins/contracts/test-helpers/CLAUDE.md`](src/channels/plugins/contracts/test-helpers/CLAUDE.md) |
-| 359 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
-| 360 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
-| 361 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
-| 362 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
-| 363 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
-| 364 | ✓ | [`src/infra/outbound/CLAUDE.md`](src/infra/outbound/CLAUDE.md) |
-| 365 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
-| 366 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
-| 367 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
-| 368 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
-| 369 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
-| 370 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
-| 371 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 372 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 373 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 374 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
-| 375 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 376 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 345 | ✓ | [`skills/weather/SKILL.md`](skills/weather/SKILL.md) |
+| 346 | ✓ | [`skills/xurl/SKILL.md`](skills/xurl/SKILL.md) |
+| 347 | ✓ | [`src/agents/AGENTS.md`](src/agents/AGENTS.md) |
+| 348 | ✓ | [`src/agents/CLAUDE.md`](src/agents/CLAUDE.md) |
+| 349 | ✓ | [`src/agents/embedded-agent-runner/run/AGENTS.md`](src/agents/embedded-agent-runner/run/AGENTS.md) |
+| 350 | ✓ | [`src/agents/embedded-agent-runner/run/CLAUDE.md`](src/agents/embedded-agent-runner/run/CLAUDE.md) |
+| 351 | ✓ | [`src/agents/tools/AGENTS.md`](src/agents/tools/AGENTS.md) |
+| 352 | ✓ | [`src/agents/tools/CLAUDE.md`](src/agents/tools/CLAUDE.md) |
+| 353 | ✓ | [`src/channels/AGENTS.md`](src/channels/AGENTS.md) |
+| 354 | ✓ | [`src/channels/CLAUDE.md`](src/channels/CLAUDE.md) |
+| 355 | ✓ | [`src/channels/plugins/contracts/test-helpers/AGENTS.md`](src/channels/plugins/contracts/test-helpers/AGENTS.md) |
+| 356 | ✓ | [`src/channels/plugins/contracts/test-helpers/CLAUDE.md`](src/channels/plugins/contracts/test-helpers/CLAUDE.md) |
+| 357 | ✓ | [`src/gateway/AGENTS.md`](src/gateway/AGENTS.md) |
+| 358 | ✓ | [`src/gateway/CLAUDE.md`](src/gateway/CLAUDE.md) |
+| 359 | ✓ | [`src/gateway/server-methods/AGENTS.md`](src/gateway/server-methods/AGENTS.md) |
+| 360 | ✓ | [`src/gateway/server-methods/CLAUDE.md`](src/gateway/server-methods/CLAUDE.md) |
+| 361 | ✓ | [`src/infra/outbound/AGENTS.md`](src/infra/outbound/AGENTS.md) |
+| 362 | ✓ | [`src/infra/outbound/CLAUDE.md`](src/infra/outbound/CLAUDE.md) |
+| 363 | ✓ | [`src/plugin-sdk/AGENTS.md`](src/plugin-sdk/AGENTS.md) |
+| 364 | ✓ | [`src/plugin-sdk/CLAUDE.md`](src/plugin-sdk/CLAUDE.md) |
+| 365 | ✓ | [`src/plugins/AGENTS.md`](src/plugins/AGENTS.md) |
+| 366 | ✓ | [`src/plugins/CLAUDE.md`](src/plugins/CLAUDE.md) |
+| 367 | ✓ | [`src/tui/AGENTS.md`](src/tui/AGENTS.md) |
+| 368 | ✓ | [`src/tui/CLAUDE.md`](src/tui/CLAUDE.md) |
+| 369 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 370 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 371 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 372 | ✓ | [`test/helpers/CLAUDE.md`](test/helpers/CLAUDE.md) |
+| 373 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 374 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
 
 ---
 

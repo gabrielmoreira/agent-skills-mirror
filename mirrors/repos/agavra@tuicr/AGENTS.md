@@ -61,6 +61,10 @@ src/
 │   ├── remote_comments.rs # RemoteReviewThread shape + visibility filter
 │   ├── submit.rs        # Submit pipeline: preflight mapping, resolver actions,
 │   │                    # InlineComment payload, build_review_body, SubmitEvent
+│   ├── gitea/           # Gitea backend via `tea` CLI
+│   │   ├── mod.rs       # GiteaTeaBackend: ForgeBackend impl
+│   │   ├── tea.rs       # TeaCommandRunner: spawn `tea api -i`, read HTTP status off stderr
+│   │   └── models.rs    # JSON parsing for Gitea REST v1 responses
 │   ├── github/          # GitHub backend via `gh` CLI
 │   │   ├── mod.rs       # GitHubGhBackend: ForgeBackend impl
 │   │   ├── gh.rs        # GhCommandRunner: spawn `gh`, parse output, error mapping
@@ -229,9 +233,9 @@ Repository-managed agent integrations:
 
 ## Forge integration
 
-Forge review (`tuicr pr <target>`, `tuicr mr <target>`, or their explicit `tuicr tui` forms) is the only feature in `src/forge/`. GitHub operations shell out to `gh`; GitLab operations shell out to `glab`; Bitbucket Cloud operations shell out to `bkt`.
+Forge review (`tuicr pr <target>`, `tuicr mr <target>`, or their explicit `tuicr tui` forms) is the only feature in `src/forge/`. GitHub operations shell out to `gh`; GitLab operations shell out to `glab`; Gitea operations shell out to `tea`; Bitbucket Cloud operations shell out to `bkt`.
 
-Forge selection is host-driven: `parse_any_remote_url` tries Bitbucket (`bitbucket.org` only), then GitLab (host contains `gitlab`, or matches `glab config get host`), then GitHub. GitHub must stay last — its parser accepts any host, so it would otherwise claim every Bitbucket and self-hosted GitLab remote. Bitbucket Data Center is deliberately unsupported: it speaks REST 1.0, so those remotes are not claimed at all.
+Forge selection is host-driven: `parse_any_remote_url` tries Bitbucket (`bitbucket.org` only), then GitLab (host contains `gitlab`, or matches `glab config get host`), then Azure, then Gitea (host contains `gitea`, or matches a login in `tea logins list --output json`; forks like Forgejo are deliberately not matched by name), then GitHub. GitHub must stay last — its parser accepts any host, so it would otherwise claim every Bitbucket, self-hosted GitLab, and self-hosted Gitea remote. Bitbucket Data Center is deliberately unsupported: it speaks REST 1.0, so those remotes are not claimed at all.
 
 ### ForgeBackend trait
 
@@ -316,6 +320,12 @@ These are non-obvious things the implementation chain hit. Worth preserving for 
 16. **GNU Linux release binaries must stay dynamically linked.** Static glibc binaries can crash when hostname lookup loads a host NSS module (for example Fedora's `libnss_myhostname`). The musl artifacts are the supported static Linux builds. Direct updates must preserve the running binary's GNU/musl target environment when selecting an asset.
 
 17. **The `[TYPE]` prefix uses the config-resolved `label`, not the `CommentType` id.** `CommentType` carries no label — it lives on `CommentTypeDefinition` (`App::comment_types`), so `as_str()` only ever yields the uppercased id. Four resolvers render this tag and must agree: `App::comment_type_label` (TUI), `export_comment_type_label` (`src/output/markdown.rs`), `SubmitContext::type_label` (`src/forge/submit.rs`), and `describe_row` (`src/ui/submit_modals.rs`). The last is easy to miss and previews the tag the user is deciding about, so disagreement means choosing Move-to-summary vs Omit against a tag that never gets posted. This is why the submit path takes a `SubmitContext` rather than a bare `&ForgeConfig`.
+
+18. **`tea api` exits 0 for every HTTP response.** It writes the body to stdout whether the status is 200 or 404, so a non-zero exit code never arrives and `run_command_output` would hand back an error page as if it were data. The Gitea backend passes `-i`, which puts the status line and headers on stderr, and reads the status from there — that is why it uses `run_command_streams` rather than `run_command_output`.
+
+19. **Gitea clamps `limit` to its `MaxResponseItems` setting** (default 50, instance-configurable). Requesting `limit=100` and stopping when fewer than 100 rows come back silently truncates at the first page. Pagination must drive off `X-Total-Count` and fall back to reading until a page comes up short *relative to the first page's size*, never relative to what was asked for. A truncated `/pulls/{n}/files` list is especially bad: it is paired positionally with the `.diff` text, so a short read turns into a hard "metadata records but N patch blocks" mismatch.
+
+20. **Gitea reports a mode-only change as file status `unchanged`.** It still emits a `diff --git` block, so the file must stay in the metadata list or every later file pairs against the wrong patch.
 
 ### Keeping Docs Updated
 

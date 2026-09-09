@@ -101,15 +101,14 @@ flowchart TB
     end
 
     subgraph RETRIEVE["⑤ Retrieval (shared)"]
-        Query["GET /v1/retrieval/query"] --> Pipeline["run_retrieval_query"]
+        Query["POST /v1|/v2 retrieval/query"] --> Pipeline["run_retrieval_query"]
         Pipeline --> Classic["classic_topk / small_corpus (use_agentic=False)"]
-        Pipeline --> MapNav["mapnav checklist (default / use_agentic≠False)"]
-        Classic --> Channels["3-Channel BM25 (path/content/term)"]
+        Pipeline --> Explore["agent_explore + cursor_sdk (default / use_agentic≠False)"]
+        Classic --> Channels["map_unit_discovery: path+content BM25 -> RRF"]
         Channels --> Rank["rank_retrieval_candidates"]
-        MapNav --> NavSnap["nav_snapshot + run_nav_episode"]
-        NavSnap --> Bridge["nav_bridge referenced_chunks"]
+        Explore --> Tools["corpus.* tools + harness.run_episode"]
         Rank --> Assemble["assemble_retrieval_results"]
-        Bridge --> Assemble
+        Tools --> Assemble
         Assemble --> Results["Cited Evidence Results"]
     end
 ```
@@ -493,8 +492,6 @@ debug CSVs (`preds_*.csv`) are saved alongside for troubleshooting.
 | `content_search_text` | `Text` | Pre-tokenized for BM25 content channel |
 | `path_search_text` | `Text` | Pre-tokenized for BM25 path channel |
 | `term_search_text` | `Text` | Pre-tokenized for term/grep channel |
-| `content_search_tsv` | `TSVECTOR` (computed) | PostgreSQL GIN index for full-text |
-| `path_search_tsv` | `TSVECTOR` (computed) | PostgreSQL GIN index for path |
 | `source_chunk_path` | `Text` | Original parser path |
 | `file_path` | `Text` | Asset reference (`images/x.jpg`) |
 | `chunk_metadata` | `JSON` | Keywords, tokens, connect_to, etc. |
@@ -545,38 +542,47 @@ debug CSVs (`preds_*.csv`) are saved alongside for troubleshooting.
 
 Core retrieval internals are grouped by ownership:
 
-- `execution/`: request shaping, route selection (classic / mapnav / small_corpus), and public response projection.
-- `search/`: lexical channels, scoring, section filters, candidate ranking, and classic `bottom_discovery`.
+- `execution/`: request shaping, route selection (classic / agent_explore / small_corpus), and public response projection.
+- `search/`: `map_unit_discovery` (persisted map-unit BM25 discovery; incomplete or incompatible indexes raise), scoring, section filters, candidate ranking.
 - `hydration/`: row/path/reference hydration, inline assets, and result assembly.
-- `nav/` + `nav_*.py`: map-nav checklist episode (PLANNER / HARVEST / CONTROL).
+- `agent_explore/` + `agent_tools/`: default agentic route (cursor_sdk harness). Map-nav is archived under `deprecated/mapnav/`.
 - `trace/`: `DecisionTraceStep` mapping and `TraceRecorder`.
 - `graph/`: document graph publication/query support.
 - `stats/`: retrieval hit recording.
 
 ### Two Retrieval Modes
 
-Per-request `use_agentic`: `False` → classic 3-channel top-K; `None`/`True` → map-nav (default).
+Per-request `use_agentic`: `False` → classic top-K (map-unit BM25); `None`/`True` → agent_explore (default harness `cursor_sdk`).
 
-#### Classic Mode (3-Channel RRF)
+#### Classic Mode (map-unit BM25)
+
+Primary path is `search.map_unit_discovery.map_unit_discovery`: Python BM25Okapi
+over the persisted `document_map_unit_tokens` index, path and content channels
+only, fused by RRF. An incomplete or incompatible map-unit index raises.
 
 ```mermaid
 flowchart LR
-    Q[Query] --> P[Path Channel: BM25 on path_search_text]
-    Q --> C[Content Channel: BM25 on content_search_text]
-    Q --> T[Term Channel: substring on term_search_text]
+    Q[Query] --> P["Path channel: BM25 over document_map_unit_tokens (channel=path)"]
+    Q --> C["Content channel: BM25 over document_map_unit_tokens (channel=content)"]
     P --> RRF["RRF Fusion (k=60)"]
     C --> RRF
-    T --> RRF
     RRF --> Rank[rank_retrieval_candidates]
     Rank --> Assemble[hydration.result_assembly]
 ```
 
-**Channel weights** (default): path=1.0, content=2.0, term=1.5
-**RRF formula**: `score = weight / (k + rank + 1)` per channel, summed across channels.
+**Channel weights** (default): path=1.0, content=2.0. **RRF formula**:
+`score = weight / (k + rank + 1)` per channel, summed across channels, `k=60`.
 
-#### Map-nav Mode (default)
+There is no scored term channel in this primary path. `term_search_text` /
+`term_search_text_lower` are persisted at publish time and are read by
+`corpus.recall`'s term channel, not by classic discovery.
 
-Default agentic path is checklist map-nav (`nav/`): PLANNER (`plan_query`) → HARVEST (`execute_plan` / `harvest`, recursive DISPATCH) → CONTROL (`plan_control`). Episode config lives in `nav_config.py`. Exit bridge expands kept chunks to `referenced_chunks`; `decision_trace` is mapped in `trace/mapnav.py`. Token hard-stop uses `NavConfig.token_limit`.
+#### Agent-explore Mode (default)
+
+Default agentic path is `agent_explore`: a `corpus.*` tool loop run by the
+resolved harness (`AGENT_EXPLORE_HARNESS`, default `cursor_sdk`). Finish refs
+are resolved to chunks, then assembled like classic. Map-nav is archived at
+`deprecated/mapnav/` and is no longer a live route.
 
 ### Result Assembly
 

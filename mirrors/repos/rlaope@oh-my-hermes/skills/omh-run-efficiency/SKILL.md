@@ -95,6 +95,7 @@ Expected outputs:
 Artifact expectations:
 
 - run_efficiency_report/v1 metadata-only report
+- supplied `session_activity_receipt/v1` when available; unavailable metrics stay unavailable, never zero
 
 Safety rules:
 

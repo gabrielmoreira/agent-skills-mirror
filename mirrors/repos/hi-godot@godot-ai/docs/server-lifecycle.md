@@ -68,16 +68,51 @@ in `BLOCKED`.
    bound.
 3. If the authenticated endpoint has the expected version and WS port, adopt
    its transport authority. Adoption deliberately carries no process grant.
-4. If the port is free, launch the configured command with fresh independent
-   HTTP and WebSocket capabilities.
+4. If the HTTP port is free, check the WebSocket port too: the server binds
+   both before it publishes anything, so a held WebSocket port (a server moved
+   off the HTTP port, another editor) blocks the start with `ws_occupied` and
+   names `godot_ai/ws_port` instead of dying at the server's preflight. The
+   dock's port picker moves both ports and keeps whichever one is free. Then
+   launch the configured command with fresh independent HTTP and WebSocket
+   capabilities.
 5. Wait for the new capability record, authenticate status, and bind the live
    process fingerprint before publishing `READY`.
+
+Two diagnostics sit around step 4. On Windows the plugin creates and probes
+the capability directory before it spawns: the server would otherwise create
+it with `mode=0o700`, which CPython renders as a DACL of SYSTEM, Administrators
+and OWNER RIGHTS only, and a directory first created by an elevated process is
+unusable from the user's unelevated editor, server and bridge (#988). A failed
+probe blocks the start with the directory path and the elevated `Remove-Item`
+repair; the server and the `attach` bridge report the same message from their
+side. The plugin also passes `--startup-report <user://...json>` beside
+`--pid-file` and removes any stale report before the spawn. A server that
+fails before publishing its record writes `{pid, error, message, hint}` there
+(a port already in use, an unwritable directory, an import error); the first
+report wins and the record's publication disarms it. The dock appends that
+text to "exited before publishing capabilities", to the proof timeout, and to
+a launch whose process identity could not be captured (the process usually
+died refusing to start, and the report says why). The report is quoted,
+bounded and never interpreted. When the HTTP port is held and a capability
+record exists for it but does not authenticate the occupant, the block names
+the reason (a probe timeout, a different instance, a non-godot-ai listener).
 
 The Python server owns the private record and a per-port launch claim. HTTP,
 status, and lease routes require the HTTP bearer. The editor WebSocket stays on
 IPv4 loopback and uses a transcript-bound challenge/response before the editor
-reveals project metadata. There is no v3 parser, tokenless retry, or bare URL
-fallback in v4.
+reveals project metadata. There is no legacy v3 protocol fallback, tokenless
+retry, or bare URL fallback in v4. One deliberately untrusted read exists
+beside the probe:
+when the port is bound and the authenticated probe finds no record, the
+lifecycle performs a single bounded, tokenless GET of `/godot-ai/status`
+and, only if the body claims `name: godot-ai` with a `3.x`
+`server_version`, words the BLOCKED message as a pre-v4 server kept
+alive by a client's old bridge. That result never enters the probe
+outcome, never becomes a transport, and grants no replacement or kill
+authority; the occupant stays `replaceable: false`. After an update the
+plugin re-probes such a block slowly for about three and a half minutes,
+long enough for the old bridge's lease and the server's idle backstop to
+run out once the user quits and relaunches that client.
 
 An adopted backend remains external. Ordinary teardown drops the transport and
 leaves it running. A plugin-launched backend is stopped only with its matching

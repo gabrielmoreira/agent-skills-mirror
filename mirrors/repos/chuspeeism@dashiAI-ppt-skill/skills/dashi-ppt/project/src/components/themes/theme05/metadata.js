@@ -8792,29 +8792,35 @@ export const pages = [
         "sheet": "CHART · 41 / 80",
         "layerCap": "安全防线分层",
         "layerUnit": "DEFENSE LAYERS",
+        "axisStart": "外层 · 通用防护",
+        "axisEnd": "内层 · 核心合规",
         "layers": [
           {
             "en": "EVALUATION",
             "zh": "模型评测",
             "v": 6,
+            "unit": "亿美元",
             "c": "#2c44a0"
           },
           {
             "en": "RED TEAM",
             "zh": "红队测试",
             "v": 4,
+            "unit": "亿美元",
             "c": "#d8402e"
           },
           {
             "en": "CONTENT",
             "zh": "内容安全",
             "v": 5,
+            "unit": "亿美元",
             "c": "#e2742c"
           },
           {
             "en": "COMPLIANCE",
             "zh": "合规监测",
             "v": 5,
+            "unit": "亿美元",
             "c": "#3c9a52"
           }
         ],

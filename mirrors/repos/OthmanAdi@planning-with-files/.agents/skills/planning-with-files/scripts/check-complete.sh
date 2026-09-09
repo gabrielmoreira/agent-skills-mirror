@@ -56,6 +56,9 @@ else
     RESOLVED_DIR=""
     if [ -f "${RESOLVER}" ]; then
         RESOLVED_DIR="$(sh "${RESOLVER}" 2>/dev/null)"
+        if [ -z "$RESOLVED_DIR" ] && [ "$(sh "${RESOLVER}" --check-ambiguity 2>/dev/null)" = "PWF_PLAN_AMBIGUOUS_V1" ]; then
+            exit 0
+        fi
     fi
     if [ -n "${RESOLVED_DIR}" ] && [ -f "${RESOLVED_DIR}/task_plan.md" ]; then
         PLAN_FILE="${RESOLVED_DIR}/task_plan.md"

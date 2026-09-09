@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 11 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/open-pr/SKILL.md`](.agents/skills/open-pr/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/open-pr2/SKILL.md`](.agents/skills/open-pr2/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/review-architecture/SKILL.md`](.agents/skills/review-architecture/SKILL.md) |
-| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`apps/editor/AGENTS.md`](apps/editor/AGENTS.md) |
-| 7 | ✓ | [`apps/editor/CLAUDE.md`](apps/editor/CLAUDE.md) |
-| 8 | ✓ | [`apps/ifc-converter/AGENTS.md`](apps/ifc-converter/AGENTS.md) |
-| 9 | ✓ | [`apps/ifc-converter/CLAUDE.md`](apps/ifc-converter/CLAUDE.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.agents/skills/open-pr/SKILL.md`](.agents/skills/open-pr/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/open-pr2/SKILL.md`](.agents/skills/open-pr2/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/review-architecture/SKILL.md`](.agents/skills/review-architecture/SKILL.md) |
+| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`apps/editor/AGENTS.md`](apps/editor/AGENTS.md) |
+| 8 | ✓ | [`apps/editor/CLAUDE.md`](apps/editor/CLAUDE.md) |
+| 9 | ✓ | [`apps/ifc-converter/AGENTS.md`](apps/ifc-converter/AGENTS.md) |
+| 10 | ✓ | [`apps/ifc-converter/CLAUDE.md`](apps/ifc-converter/CLAUDE.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 13 | ✓ | [`skills/evals/publishing-cases.json`](skills/evals/publishing-cases.json) |
+| 14 | ✓ | [`skills/evals/README.md`](skills/evals/README.md) |
+| 15 | ✓ | [`skills/furniture-fit/evals/evals.json`](skills/furniture-fit/evals/evals.json) |
+| 16 | ✓ | [`skills/furniture-fit/evals/trigger-evals.json`](skills/furniture-fit/evals/trigger-evals.json) |
+| 17 | ✓ | [`skills/furniture-fit/examples/clear-footprint.md`](skills/furniture-fit/examples/clear-footprint.md) |
+| 18 | ✓ | [`skills/furniture-fit/examples/insufficient-evidence.md`](skills/furniture-fit/examples/insufficient-evidence.md) |
+| 19 | ✓ | [`skills/furniture-fit/examples/rotated-footprint-fails.md`](skills/furniture-fit/examples/rotated-footprint-fails.md) |
+| 20 | ✓ | [`skills/furniture-fit/examples/unproven-height-metadata.md`](skills/furniture-fit/examples/unproven-height-metadata.md) |
+| 21 | ✓ | [`skills/furniture-fit/references/evidence-boundaries.md`](skills/furniture-fit/references/evidence-boundaries.md) |
+| 22 | ✓ | [`skills/furniture-fit/references/report-template.md`](skills/furniture-fit/references/report-template.md) |
+| 23 | ✓ | [`skills/furniture-fit/references/setup.md`](skills/furniture-fit/references/setup.md) |
+| 24 | ✓ | [`skills/furniture-fit/SKILL.md`](skills/furniture-fit/SKILL.md) |
+| 25 | ✓ | [`skills/pascal-3d/evals/evals.json`](skills/pascal-3d/evals/evals.json) |
+| 26 | ✓ | [`skills/pascal-3d/evals/trigger-evals.json`](skills/pascal-3d/evals/trigger-evals.json) |
+| 27 | ✓ | [`skills/pascal-3d/examples/autonomous-private-project.md`](skills/pascal-3d/examples/autonomous-private-project.md) |
+| 28 | ✓ | [`skills/pascal-3d/examples/hosted-existing-account.md`](skills/pascal-3d/examples/hosted-existing-account.md) |
+| 29 | ✓ | [`skills/pascal-3d/examples/local-project.md`](skills/pascal-3d/examples/local-project.md) |
+| 30 | ✓ | [`skills/pascal-3d/references/setup.md`](skills/pascal-3d/references/setup.md) |
+| 31 | ✓ | [`skills/pascal-3d/references/tool-workflows.md`](skills/pascal-3d/references/tool-workflows.md) |
+| 32 | ✓ | [`skills/pascal-3d/SKILL.md`](skills/pascal-3d/SKILL.md) |
+| 33 | ✓ | [`skills/README.md`](skills/README.md) |
+| 34 | ✓ | [`skills/VALIDATION.md`](skills/VALIDATION.md) |
 
 ---
 

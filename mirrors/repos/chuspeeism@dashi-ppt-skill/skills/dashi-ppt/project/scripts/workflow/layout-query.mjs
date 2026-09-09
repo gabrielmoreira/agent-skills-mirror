@@ -2,8 +2,10 @@
 // layout-query 域:按 role/关键词/媒体需求筛选并打分候选版式(listLayouts 的实现)。
 import {
   THEME_PAGES,
+  getLayoutRecord,
   isBodyContentCandidate,
   isCoverCandidate,
+  valueAtPath,
 } from './theme-registry.mjs';
 import {
   getMediaSlotsForLayout,
@@ -13,15 +15,23 @@ import {
   slotAcceptsKind,
 } from './media-slots.mjs';
 import {
+  ROLE_KEYWORDS,
+  hasAmbientBackground,
   inspectLayout,
+  normalizeProps,
+  pageMatches,
   pageSearchText,
 } from './inspect-fillplan.mjs';
 import { charLength } from './copy-contract.mjs';
-import { deriveTemplateItems } from '../../src/variant-contract.mjs';
 import {
-  plannerPresentationFieldForTarget as presentationFieldForTarget,
-  presentationTargetEntries,
-} from './presentation-field-semantics.mjs';
+  classifyPageIntent,
+  formatPageContentValue,
+  normalizePageContentPack,
+  pageContentProjectionItems,
+  requiredPageContentFacts,
+  resolveContentMap,
+  summarizePageChartData,
+} from '../../src/variant-contract.mjs';
 
 const ROLE_ALIASES = {
   agenda: 'breakdown',
@@ -59,112 +69,14 @@ const ROLE_ALIASES = {
   background: 'ambient',
   dynamic: 'ambient',
 };
-const LAYOUT_INSPECTION_CACHE = new Map();
-const EMPTY_REQUIRED_CONTENT_SHAPE = {
-  titleChars: 0,
-  itemCount: 0,
-  minItemCount: 0,
-  numericItemCount: 0,
-  valueItemCount: 0,
-  rawNumericItemCount: 0,
-  textualValueItemCount: 0,
-  unitItemCount: 0,
-  secondaryLabelItemCount: 0,
-  durationItemCount: 0,
-  pageLabelItemCount: 0,
-  nestedDepth: 0,
-  requiresValue: false,
-};
-const EMPTY_PREFERRED_CONTENT_SHAPE = {
-  summaryChars: 0,
-  takeawayChars: 0,
-  detailItemCount: 0,
-  chartPointCount: 0,
-  priority: '',
-};
 
-export function contentShapeFromPresentation(presentation = {}, hints = {}) {
-  const items = deriveTemplateItems(presentation);
-  const positive = key => {
-    const value = Number(hints?.[key]);
-    return Number.isFinite(value) && value > 0 ? Math.round(value) : 0;
-  };
-  const valueItemCount = items.filter(item => (
-    hasContentValue(item?.value) || hasContentValue(item?.displayValue)
-  )).length || positive('valueItemCount') || positive('numericItemCount');
-  const rawNumericItemCount = items.filter(item => (
-    Number.isFinite(item?.chartValue)
-  )).length || positive('rawNumericItemCount');
-  const textualValueItemCount = items.filter(item => (
-    hasContentValue(item?.displayValue)
-    && (
-      typeof item?.value !== 'number'
-      || !Number.isFinite(item.value)
-      || String(item.displayValue) !== String(item.value)
-    )
-  )).length || positive('textualValueItemCount');
-  const unitItemCount = items.filter(item => hasContentValue(item?.unit)).length
-    || positive('unitItemCount');
-  const secondaryLabelItemCount = items.filter(item => (
-    hasContentValue(item?.secondaryLabel)
-    || hasContentValue(item?.projectionSecondaryLabel)
-  )).length || positive('secondaryLabelItemCount');
-  const durationItemCount = items.filter(item => (
-    hasContentValue(item?.duration)
-    || hasContentValue(item?.projectionDuration)
-  )).length || positive('durationItemCount');
-  const pageLabelItemCount = items.filter(item => (
-    hasContentValue(item?.pageLabel)
-    || hasContentValue(item?.projectionPageLabel)
-  )).length || positive('pageLabelItemCount');
-  const itemCount = items.length || positive('itemCount');
-  const minimumProjectionSlots = items.length
-    ? Math.max(1, Math.ceil(items.length / 2))
-    : 0;
-  return {
-    required: {
-      titleChars: charLength(presentation?.titleShort || presentation?.title || '')
-        || positive('titleChars'),
-      itemCount,
-      minItemCount: items.length
-        ? Math.min(items.length, minimumProjectionSlots)
-        : positive('minItemCount') || itemCount,
-      numericItemCount: valueItemCount,
-      valueItemCount,
-      rawNumericItemCount,
-      textualValueItemCount,
-      unitItemCount,
-      secondaryLabelItemCount,
-      durationItemCount,
-      pageLabelItemCount,
-      nestedDepth: positive('requiredNestedDepth') || positive('nestedDepth'),
-      requiresValue: valueItemCount > 0,
-    },
-    preferred: {
-      summaryChars: charLength(presentation?.summaryShort || presentation?.summary || '')
-        || positive('summaryChars'),
-      takeawayChars: charLength(presentation?.takeaway || '')
-        || positive('takeawayChars'),
-      detailItemCount: items.filter(item => hasContentValue(item?.detail)).length
-        || positive('detailItemCount'),
-      chartPointCount: Array.isArray(presentation?.chartData)
-        ? presentation.chartData.length
-        : positive('chartPointCount'),
-      priority: String(hints?.priority || '').trim().toLowerCase(),
-    },
-  };
-}
-
-function hasContentValue(value) {
-  return value !== undefined && value !== null && value !== '';
-}
-
-/** @param {import('../../src/types').ListLayoutsOptions} [options] */
+/** @typedef {import('../../src/types').ListLayoutsOptions & {contentPack?: unknown}} ContentAwareListLayoutsOptions */
+/** @param {ContentAwareListLayoutsOptions} [options] */
 export function listLayouts({
   theme,
   role,
   keyword,
-  contentShape = null,
+  contentPack = null,
   needsMedia = false,
   plannedImages = false,
   providedImages = false,
@@ -179,76 +91,110 @@ export function listLayouts({
 } = {}) {
   const requestedRole = role ? String(role).trim().toLowerCase() : '';
   const normalizedRole = requestedRole ? ROLE_ALIASES[requestedRole] || requestedRole : '';
+  const keywords = normalizedRole ? ROLE_KEYWORDS[normalizedRole] || [normalizedRole] : [];
   const keywordText = String(keyword || '').trim().toLowerCase();
   const requestedMediaCount = getRequestedMediaCount({ plannedImages, providedImages, providedMedia, imageGen, needsVisual, mediaCount });
   const normalizedMediaKind = normalizeMediaKind(mediaKind);
   const needsInitialMedia = Boolean(requireInitialMedia || providedImages || providedMedia);
-  const requiresMedia = needsMedia || requestedMediaCount > 0 || needsInitialMedia || Boolean(normalizedMediaKind);
-  const normalizedContentShape = normalizeContentShape(contentShape);
+  const normalizedContentPack = contentPack ? normalizePageContentPack(contentPack) : null;
+  const requiresMedia = needsMedia || requestedMediaCount > 0 || (!normalizedContentPack && normalizedRole === 'image') || needsInitialMedia || Boolean(normalizedMediaKind);
 
-  const rows = listLayoutsForMediaCount({
-    theme,
-    normalizedRole,
-    keywordText,
-    contentShape: normalizedContentShape,
-    requiresMedia,
-    requestedMediaCount,
-    normalizedMediaKind,
-    needsInitialMedia,
-    seed,
-  });
-  return rows
-    .slice(0, Math.max(1, Math.min(200, Number(limit) || 12)))
-    .map(compactLayoutCandidate);
+  const rows = listLayoutsForMediaCount({ theme, normalizedRole, keywords, keywordText, contentPack: normalizedContentPack, requiresMedia, requestedMediaCount, normalizedMediaKind, needsInitialMedia, seed });
+  return rows.slice(0, Math.max(1, Math.min(50, Number(limit) || 12)));
 }
 
-function listLayoutsForMediaCount({ theme, normalizedRole, keywordText, contentShape, requiresMedia, requestedMediaCount, normalizedMediaKind, needsInitialMedia, seed }) {
-  const candidates = THEME_PAGES
+/** @param {{theme?: string, pages?: any[], limit?: number, seed?: string}} [options] */
+export function listLayoutsForContentPacks({ theme, pages, limit = 50, seed = 'deck-content' } = {}) {
+  if (!Array.isArray(pages)) throw new Error('pages must be an array of PageContentPack entries');
+  const themePages = THEME_PAGES.filter(page => !theme || page.themeKey === theme);
+  const bodyLayouts = new Set(themePages.filter(isBodyContentCandidate).map(page => page.key));
+  const inspected = themePages.map(page => inspectLayout(page.key)).filter(Boolean);
+  return pages.map((entry, pageIndex) => {
+    const contentPack = normalizePageContentPack(entry?.presentation || entry);
+    const normalizedIntent = classifyPageIntent(contentPack.pageIntent);
+    const normalizedRole = ROLE_ALIASES[normalizedIntent] || normalizedIntent;
+    const requestedMediaCount = contentPack.media?.length || 0;
+    const needsInitialMedia = requestedMediaCount > 0;
+    const rows = inspected
+      .filter(row => !requestedMediaCount || mediaSlotsCanFit(
+        getMediaSlotsForLayout(row.layout),
+        requestedMediaCount,
+        { requireInitialMedia: true, exactCount: true },
+      ))
+      .map(row => {
+        const projectionPlan = buildTemplateProjectionPlan(row, contentPack);
+        return { ...row, projectionPlan, structureFingerprint: projectionPlan.structureFingerprint };
+      })
+      .filter(row => row.projectionPlan.requiredFits)
+      .map(compactLayoutCandidate)
+      .map(row => ({
+        ...row,
+        queryScore: scoreLayout(row, {
+          normalizedRole,
+          keywordText: '',
+          contentPack,
+          requiresMedia: requestedMediaCount > 0,
+          requestedMediaCount,
+          normalizedMediaKind: '',
+          needsInitialMedia,
+        }),
+      }))
+      .sort((left, right) => (
+        right.queryScore - left.queryScore
+        || hashSeed(`${seed}:page-${pageIndex + 1}:${right.layout}`) - hashSeed(`${seed}:page-${pageIndex + 1}:${left.layout}`)
+      ));
+    const boundedLimit = Math.max(1, Math.min(50, Number(limit) || 50));
+    if (normalizedIntent !== 'cover') return rows.slice(0, boundedLimit);
+    const coverRows = rows.filter(row => isCoverCandidate(row.layout)).slice(0, boundedLimit);
+    const bodyRows = rows.filter(row => bodyLayouts.has(row.layout)).slice(0, boundedLimit);
+    return [...coverRows, ...bodyRows];
+  });
+}
+
+function listLayoutsForMediaCount({ theme, normalizedRole, keywords, keywordText, contentPack, requiresMedia, requestedMediaCount, normalizedMediaKind, needsInitialMedia, seed }) {
+  const rows = THEME_PAGES
     .filter(page => !theme || page.themeKey === theme)
     .filter(page => {
-      if (!normalizedRole) return true;
+      if (contentPack || !normalizedRole) return true;
       if (normalizedRole === 'cover') return isCoverCandidate(page.key);
       if (normalizedRole === 'content') return isBodyContentCandidate(page);
-      return true;
+      if (normalizedRole === 'image') return inspectLayout(page.key, { compact: true })?.mediaSlots.some(slot => slot.canPresetMedia);
+      if (normalizedRole === 'ambient') return hasAmbientBackground(page);
+      return pageMatches(page, keywords);
     })
     .filter(page => !keywordText || pageSearchText(page).includes(keywordText))
-    .map(page => inspectLayoutForQuery(page.key))
+    .map(page => inspectLayout(page.key))
     .filter(Boolean)
     .filter(row => !requiresMedia || mediaSlotsCanFit(
       getMediaSlotsForLayout(row.layout),
-      requestedMediaCount || 1,
+      requestedMediaCount || contentPack?.media?.length || 1,
       {
-        requireInitialMedia: needsInitialMedia,
+        requireInitialMedia: needsInitialMedia || Boolean(contentPack?.media?.length),
         mediaKind: normalizedMediaKind,
-        exactCount: requestedMediaCount > 0,
+        exactCount: requestedMediaCount > 0 || Boolean(contentPack?.media?.length),
       },
     ))
     .map(row => {
-      const projectionPlan = buildTemplateProjectionPlan(row, contentShape);
-      const structureFingerprint = layoutStructureFingerprint(row, projectionPlan);
+      if (!contentPack) return row;
+      const projectionPlan = buildTemplateProjectionPlan(row, contentPack);
       return {
         ...row,
         projectionPlan,
-        structureFingerprint,
-        queryScore: scoreLayout(row, {
-          normalizedRole,
-          keywordText,
-          contentShape,
-          structureFingerprint,
-          requiresMedia,
-          requestedMediaCount,
-          normalizedMediaKind,
-          needsInitialMedia,
-        }),
+        structureFingerprint: projectionPlan.structureFingerprint,
       };
     })
-    .filter(row => row.projectionPlan.requiredFits);
+    .filter(row => !contentPack || /** @type {any} */ (row).projectionPlan.requiredFits)
+    .map(compactLayoutCandidate);
 
   // 同分候选用 seed 随机打散:打分只表达"是否更匹配",同等匹配的页面之间没有天然
   // 优先级。历史上并列项按页码稳定排序,所有调用方(Agent 与 goal:scaffold)都贪婪
   // 取列表最前,导致不同用户生成的 deck 大量选中同一批"前面的页",成片雷同。
   const tieBreakSeed = seed === null || seed === undefined || seed === '' ? String(Math.floor(Math.random() * 0xffffffff)) : String(seed);
-  return candidates.sort((a, b) => {
+  const scored = rows.map(row => ({
+    ...row,
+    queryScore: scoreLayout(row, { normalizedRole, keywordText, contentPack, requiresMedia, requestedMediaCount, normalizedMediaKind, needsInitialMedia }),
+  }));
+  return scored.sort((a, b) => {
     const diff = b.queryScore - a.queryScore;
     if (diff !== 0) return diff;
     return hashSeed(`${tieBreakSeed}:${b.layout}`) - hashSeed(`${tieBreakSeed}:${a.layout}`);
@@ -275,19 +221,11 @@ function compactLayoutCandidate(row) {
   return {
     ...candidate,
     themeDisplayName,
-    capabilities: layoutCapabilities(row, row.projectionPlan?.contentShape),
     copyKeys,
     copyBudgets: compactCopyBudgets(row.copyBudgets, copyKeys),
     arrayMeta: (row.arrayMeta || []).map(compactCandidateArrayMeta),
     mediaSlots: (row.mediaSlots || []).map(compactQueryMediaSlot),
   };
-}
-
-function inspectLayoutForQuery(layout) {
-  if (!LAYOUT_INSPECTION_CACHE.has(layout)) {
-    LAYOUT_INSPECTION_CACHE.set(layout, inspectLayout(layout));
-  }
-  return LAYOUT_INSPECTION_CACHE.get(layout);
 }
 
 function compactCopyBudgets(copyBudgets = {}, copyKeys = []) {
@@ -319,7 +257,6 @@ function compactQueryMediaSlot(slot) {
     writableProp: slot.writableProp,
     countKey: slot.countKey,
     publicCountKey: slot.publicCountKey || slot.countKey,
-    defaultCount: slot.defaultCount,
     defaultVisibleCount: slot.defaultVisibleCount,
     max: slot.max,
     maxFromKey: slot.maxFromKey,
@@ -369,771 +306,1162 @@ export function hashSeed(value) {
 }
 
 /** @param {import('../../src/types').CompactLayoutCandidate} layout */
-export function scoreLayout(layout, {
-  normalizedRole,
-  keywordText,
-  contentShape,
-  structureFingerprint,
-  requiresMedia,
-  requestedMediaCount,
-  normalizedMediaKind,
-  needsInitialMedia,
-}) {
+export function scoreLayout(layout, { normalizedRole, keywordText, contentPack = null, requiresMedia, requestedMediaCount, normalizedMediaKind, needsInitialMedia }) {
   let score = 0;
-  if (normalizedRole && layout.roles.includes(normalizedRole)) score += 4;
-  if (keywordText && `${layout.label} ${layout.slot}`.toLowerCase().includes(keywordText)) score += 6;
+  if (normalizedRole && (
+    layout.roles.includes(normalizedRole)
+    || (normalizedRole === 'cover' && isCoverCandidate(layout.layout))
+  )) score += 20;
+  if (keywordText && `${layout.label} ${layout.slot}`.toLowerCase().includes(keywordText)) score += 10;
   if (requiresMedia && layout.mediaSlots.some(isWritableMediaSlot)) score += 8;
-  if (!requiresMedia && layout.mediaSlots.some(isWritableMediaSlot)) score -= 4;
   if (needsInitialMedia && layout.mediaSlots.some(slot => isWritableMediaSlot(slot) && slot.initialSrcSupported)) score += 6;
   if (normalizedMediaKind && layout.mediaSlots.some(slot => isWritableMediaSlot(slot) && slotAcceptsKind(slot, normalizedMediaKind))) score += 4;
   if (requestedMediaCount && layout.mediaSlots.some(slot => isWritableMediaSlot(slot) && Number(slot.defaultCount) === requestedMediaCount)) score += 3;
-  score += scoreContentShape(layout, contentShape);
-  score += scoreExpressionFit(
-    structureFingerprint,
-    normalizedRole,
-    contentShape?.preferred?.priority,
-  );
-  return score;
-}
-
-function scoreContentShape(layout, shape) {
-  if (!shape) return 0;
-  const normalized = normalizeContentShape(shape);
-  const required = normalized?.required || EMPTY_REQUIRED_CONTENT_SHAPE;
-  const preferred = normalized?.preferred || EMPTY_PREFERRED_CONTENT_SHAPE;
-  const capabilities = layoutCapabilities(layout, normalized);
-  const primary = capabilities.primaryContentContainer;
-
-  let score = 0;
-  if (required.titleChars) {
-    score += capacityFitScore(capabilities.titleMaxChars, required.titleChars, 12);
-  }
-  if (preferred.summaryChars) {
-    score += capacityFitScore(capabilities.summaryMaxChars, preferred.summaryChars, 8);
-  }
-  if (preferred.takeawayChars) {
-    score += capacityFitScore(capabilities.takeawayMaxChars, preferred.takeawayChars, 6);
-  }
-  if (required.itemCount) {
-    score += capacityFitScore(capabilities.itemCapacity, required.itemCount, 20);
-  }
-  if (required.valueItemCount || required.numericItemCount) {
-    score += primary?.supportsValue ? 10 : 0;
-  }
-  if (required.nestedDepth) {
-    score += capabilities.nestedDepth === required.nestedDepth ? 8 : 4;
-  }
-  if (preferred.detailItemCount && primary?.supportsDetail) score += 6;
-  if (preferred.chartPointCount) {
-    score += primary?.supportsNumericValue ? 8 : primary?.supportsValue ? 3 : 0;
-  }
-  if (preferred.priority && `${layout.label} ${layout.slot} ${layout.roles.join(' ')}`.toLowerCase().includes(preferred.priority)) {
-    score += 3;
+  if (contentPack) {
+    const candidate = /** @type {any} */ (layout);
+    const plan = candidate.projectionPlan || buildTemplateProjectionPlan(inspectLayout(layout.layout), contentPack);
+    score += plan.requiredFits ? 40 : -200;
+    score += Math.max(0, 12 - Number(plan.primaryContentContainer?.slack || 0));
+    if (plan.primaryContentContainer?.supportsDetail) score += 5;
+    if (contentPack.chartData?.length && plan.primaryContentContainer?.supportsValue) score += 10;
   }
   return score;
 }
 
-function normalizeContentShape(value) {
-  if (!value || typeof value !== 'object') return null;
-  const sourceRequired = value.required && typeof value.required === 'object' ? value.required : value;
-  const sourcePreferred = value.preferred && typeof value.preferred === 'object' ? value.preferred : value;
-  const number = (source, key) => {
-    const parsed = Number(source[key]);
-    return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : 0;
+
+export function contentShapeFromPageContentPack(value) {
+  const pack = normalizePageContentPack(value);
+  const items = pageContentProjectionItems(pack);
+  const authoredRequired = items.filter(item => item.authoredRequired);
+  const pinned = items.filter(item => item.pinned);
+  return {
+    titleChars: charLength(pack.title.short),
+    coreMessageChars: charLength(pack.coreMessage),
+    itemCount: items.length,
+    requiredItemCount: authoredRequired.length,
+    pinnedItemCount: pinned.length,
+    valueItemCount: items.filter(item => item.hasValue).length,
+    unitItemCount: items.filter(item => item.unit).length,
+    chartPointCount: pack.chartData?.length || 0,
+    mediaCount: pack.media?.length || 0,
   };
-  const legacyNumericItemCount = number(sourceRequired, 'numericItemCount');
-  const valueItemCount = number(sourceRequired, 'valueItemCount') || legacyNumericItemCount;
-  const rawNumericItemCount = number(sourceRequired, 'rawNumericItemCount')
-    || (sourceRequired.valueItemCount == null ? legacyNumericItemCount : 0);
-  const textualValueItemCount = number(sourceRequired, 'textualValueItemCount');
-  const unitItemCount = number(sourceRequired, 'unitItemCount');
-  const secondaryLabelItemCount = number(sourceRequired, 'secondaryLabelItemCount');
-  const durationItemCount = number(sourceRequired, 'durationItemCount');
-  const pageLabelItemCount = number(sourceRequired, 'pageLabelItemCount');
-  const normalized = {
-    deferred: value.deferred === true,
-    required: {
-      titleChars: number(sourceRequired, 'titleChars'),
-      itemCount: number(sourceRequired, 'itemCount'),
-      minItemCount: number(sourceRequired, 'minItemCount')
-        || number(sourceRequired, 'itemCount'),
-      numericItemCount: valueItemCount,
-      valueItemCount,
-      rawNumericItemCount,
-      textualValueItemCount,
-      unitItemCount,
-      secondaryLabelItemCount,
-      durationItemCount,
-      pageLabelItemCount,
-      nestedDepth: number(sourceRequired, 'nestedDepth'),
-      requiresValue: Boolean(sourceRequired.requiresValue || valueItemCount),
-    },
-    preferred: {
-      summaryChars: number(sourcePreferred, 'summaryChars'),
-      takeawayChars: number(sourcePreferred, 'takeawayChars'),
-      detailItemCount: number(sourcePreferred, 'detailItemCount')
-        || (sourcePreferred.requiresDetail ? number(sourceRequired, 'itemCount') : 0),
-      chartPointCount: number(sourcePreferred, 'chartPointCount'),
-      priority: String(sourcePreferred.priority || '').trim().toLowerCase(),
-    },
-  };
-  return [
-    normalized.deferred,
-    ...Object.values(normalized.required),
-    ...Object.values(normalized.preferred),
-  ].some(Boolean) ? normalized : null;
 }
 
-function layoutSupportsContentShape(layout, shape) {
-  return buildTemplateProjectionPlan(layout, shape).requiredFits;
-}
-
-function layoutCapabilities(layout, shape = null) {
-  const normalized = normalizeContentShape(shape);
-  const text = layout.fillPlan?.text || [];
-  const arrays = layout.fillPlan?.arrays || [];
-  const titleMaxChars = maxFieldChars(text.filter(field => field.role === 'title'));
-  const paragraphFields = text.filter(field => (
-    field.role === 'body'
-    || field.role === 'paragraph'
-    || /summary|subtitle|lead|intro|description|caption|note|sub/i.test(field.key)
-  ));
-  const paragraphMaxChars = paragraphFields
-    .map(field => Number(field.maxChars) || 0)
+export function buildTemplateProjectionPlan(layoutInput, value) {
+  const layout = layoutInput?.fillPlan ? layoutInput : inspectLayout(layoutInput?.layout || layoutInput);
+  const pack = normalizePageContentPack(value);
+  const shape = contentShapeFromPageContentPack(pack);
+  const canonicalItems = pageContentProjectionItems(pack);
+  const arrayFields = primaryArrayFields(layout);
+  const chartTarget = (pack.chartData?.length
+    ? arrayFields.map(field => chartArrayContainer(layout, field, pack.chartData)).filter(Boolean)
+    : [])
+    .sort((left, right) => right.score - left.score || left.key.localeCompare(right.key))[0] || null;
+  const chartMode = pack.chartData?.length ? (chartTarget ? 'full' : 'summary') : 'none';
+  const emptyItemsBodyProjection = !pack.items.length && !pack.chartData?.length && !isCoverCandidate(layout.layout)
+    && isBodyContentCandidate(getLayoutRecord(layout.layout).page);
+  const items = projectionItemsForPlan(pack, chartMode, emptyItemsBodyProjection);
+  const pinnedItems = items.filter(item => item.pinned);
+  const arrays = arrayFields
+    .filter(field => arrayRegionKey(field.key) !== arrayRegionKey(chartTarget?.key))
+    .map(field => arrayContainer(layout, field, pinnedItems, items));
+  const scalarItems = emptyItemsBodyProjection ? items : canonicalItems;
+  const scalarGroup = chartMode === 'summary'
+    ? null
+    : scalarGroupContainer(layout, scalarItems.filter(item => item.pinned), scalarItems);
+  const candidates = [...arrays, scalarGroup]
     .filter(Boolean)
-    .sort((left, right) => right - left);
-  const summaryMaxChars = Math.max(...paragraphMaxChars, 0);
-  const takeawayMaxChars = summaryMaxChars;
-  const primaryContentContainer = selectPrimaryContentContainer(layout, normalized);
-  const itemCapacity = primaryContentContainer?.capacity || 0;
-  const numericItemCapacity = primaryContentContainer?.numericCapacity || 0;
-  const nestedDepth = arrays.reduce((max, field) => Math.max(max, arrayNestedDepth(field)), 0);
-  const mediaCapacity = (layout.fillPlan?.media || []).reduce(
-    (max, field) => Math.max(max, Number(field.maxCount || field.visibleCount || 0)),
-    0,
-  );
-  return {
-    titleMaxChars,
-    summaryMaxChars,
-    takeawayMaxChars,
-    paragraphMaxChars,
-    itemCapacity,
-    numericItemCapacity,
-    primaryContentContainer,
-    nestedDepth,
-    mediaCapacity,
-  };
-}
+    .sort((left, right) => right.score - left.score || left.key.localeCompare(right.key));
+  const arrayRegions = businessArrayRegions(layout);
+  const chartRegion = arrayRegionKey(chartTarget?.key);
+  const needsPrimaryContent = pack.items.length > 0 || pinnedItems.length > 0;
+  const primaryContentContainer = needsPrimaryContent
+    ? candidates.find(item => item.requiredFits && arrayRegions.every(region => (
+      region.key === arrayRegionKey(item.kind === 'array' ? item.key : '')
+      || region.key === chartRegion
+      || region.visibleCount <= 0
+      || Boolean(disabledArrayProp(layout, region.field) && arrayFieldAcceptsEmptyValue(layout, region.field))
+    ))) || null
+    : null;
+  const reserved = new Set(primaryContentContainer?.targetPaths || []);
+  const textFields = (layout?.fillPlan?.text || []).filter(field => !field.type || field.type === 'string');
+  const titleTarget = textFields
+    .filter(field => !reserved.has(field.key))
+    .filter(field => projectionSemantic(field.key, field.type, field.role) === 'label')
+    .filter(field => Number(field.maxChars || 0) >= shape.titleChars)
+    .sort((left, right) => titleFieldScore(right) - titleFieldScore(left))[0] || null;
+  if (titleTarget) reserved.add(titleTarget.key);
+  const summaryTarget = textFields
+    .filter(field => !reserved.has(field.key))
+    .filter(field => ['label', 'detail'].includes(projectionSemantic(field.key, field.type, field.role)))
+    .filter(field => Number(field.maxChars || 0) >= shape.coreMessageChars)
+    .sort((left, right) => (
+      Number(isBodyTextField(right)) - Number(isBodyTextField(left))
+      || Number(right.maxChars || 0) - Number(left.maxChars || 0)
+    ))[0] || null;
+  if (summaryTarget) reserved.add(summaryTarget.key);
 
-function maxFieldChars(fields) {
-  return fields.reduce((max, field) => Math.max(max, Number(field.maxChars) || 0), 0);
-}
-
-function arrayCapacity(field) {
-  return Number(field.maxCount || field.visibleCount || field.fixedLength || 0);
-}
-
-function arrayNestedDepth(field) {
-  const nestedPaths = Object.keys(field.nestedArrays || {});
-  if (nestedPaths.length) {
-    return Math.max(...nestedPaths.map(pathName => (String(pathName).match(/\[\]/g) || []).length), 1);
-  }
-  return shapeArrayDepth(field.itemShape);
-}
-
-function shapeArrayDepth(value) {
-  if (Array.isArray(value)) return 1 + shapeArrayDepth(value[0]);
-  if (!value || typeof value !== 'object') return 0;
-  return Object.values(value).reduce((max, child) => Math.max(max, shapeArrayDepth(child)), 0);
-}
-
-function arraySupportsPresentation(field) {
-  if (field.itemShape === 'string') return true;
-  if (!field.itemShape || typeof field.itemShape !== 'object' || Array.isArray(field.itemShape)) return false;
-  const supported = new Set(presentationTargetEntries(field)
-    .map(({ key, type }) => presentationFieldForTarget(key, type, field))
-    .filter(Boolean));
-  return supported.has('label');
-}
-
-function arraySupportsNumericItems(field) {
-  if (!field.itemShape || typeof field.itemShape !== 'object' || Array.isArray(field.itemShape)) return false;
-  return presentationTargetEntries(field).some(({ key, type }) => (
-    ['value', 'displayValue'].includes(presentationFieldForTarget(key, type, field))
-  ));
-}
-
-function scalarPresentationFieldForTarget(key, type) {
-  const name = String(key || '').toLowerCase();
-  if (/body|detail|description|desc|note|summary|sub|caption|copy|text/.test(name)) return 'detail';
-  if (/value|amount|score|number|metric|stat|pct|percent|share|delta|rate|^v$/.test(name)) {
-    return type === 'number' ? 'value' : 'displayValue';
-  }
-  if (/label|name|title|heading|category|series|item|dim|^k$|^t$/.test(name)) return 'label';
-  if (/unit|suffix/.test(name)) return 'unit';
-  return null;
-}
-
-function scalarFieldDescriptor(field) {
-  const pathParts = String(field?.key || '').split('.');
-  const segment = pathParts.at(-1) || '';
-  const tokens = segment
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[_-]+/g, ' ')
-    .match(/[A-Za-z]+|\d+/g) || [];
-  const numericTokens = tokens.filter(token => /^\d+$/.test(token));
-  if (numericTokens.length !== 1 || Number(numericTokens[0]) <= 0) return null;
-  const indexToken = numericTokens[0];
-  const wordTokens = tokens.filter(token => token !== indexToken);
-  let semanticIndex = -1;
-  let source = null;
-  for (let index = wordTokens.length - 1; index >= 0; index -= 1) {
-    const candidate = scalarPresentationFieldForTarget(wordTokens[index], field?.type);
-    if (!candidate) continue;
-    semanticIndex = index;
-    source = candidate;
-    break;
-  }
-  if (!source) return null;
-  const familyTokens = wordTokens.filter((_, index) => index !== semanticIndex);
-  const parent = pathParts.slice(0, -1).join('.');
-  return {
-    family: `${parent}:${familyTokens.join('-').toLowerCase() || 'root'}`,
-    index: Number(indexToken),
-    source,
-    target: field.key,
-    maxChars: Number(field.maxChars) || 0,
-  };
-}
-
-function collectScalarContentContainers(layout, normalized) {
-  const required = normalized?.required || EMPTY_REQUIRED_CONTENT_SHAPE;
-  const preferred = normalized?.preferred || EMPTY_PREFERRED_CONTENT_SHAPE;
-  const families = new Map();
-  for (const field of layout.fillPlan?.text || []) {
-    if (field?.type && !['string', 'number', 'boolean'].includes(field.type)) continue;
-    const descriptor = scalarFieldDescriptor(field);
-    if (!descriptor) continue;
-    if (!families.has(descriptor.family)) families.set(descriptor.family, new Map());
-    const slots = families.get(descriptor.family);
-    if (!slots.has(descriptor.index)) slots.set(descriptor.index, {
-      fields: {},
-      budgets: {},
-    });
-    const slot = slots.get(descriptor.index);
-    if (!slot.fields[descriptor.source]) {
-      slot.fields[descriptor.source] = descriptor.target;
-      slot.budgets[descriptor.source] = descriptor.maxChars;
+  const supportingTargets = [];
+  const usedValues = new Set([pack.title.short, pack.coreMessage]);
+  const disabledProps = [];
+  for (const field of textFields.filter(item => !reserved.has(item.key))) {
+    const semantic = projectionSemantic(field.key, field.type, field.role);
+    const source = ['value', 'displayValue', 'unit'].includes(semantic)
+      ? null
+      : supportingTextSource(field, pack, items, usedValues);
+    if (source) {
+      supportingTargets.push({ target: field.key, ...source });
+      usedValues.add(String(source.value));
+    } else {
+      // Explicitly blank an unused authored string slot so component defaults never leak.
+      supportingTargets.push({ target: field.key, value: '' });
     }
   }
-  const containers = [];
-  for (const [family, indexedSlots] of families) {
-    const slots = [...indexedSlots.entries()]
-      .sort(([left], [right]) => left - right)
-      .map(([sourceIndex, slot]) => ({
-        sourceIndex,
-        fields: slot.fields,
-        budgets: slot.budgets,
-      }))
-      .filter(slot => slot.fields.label);
-    if (slots.length < 2) continue;
-    const itemCount = required.itemCount
-      ? Math.min(required.itemCount, slots.length)
-      : slots.length;
-    const activeSlots = slots.slice(0, itemCount);
-    const numericValueCapacity = activeSlots.filter(slot => slot.fields.value).length;
-    const inlineValueCapacity = activeSlots.filter(slot => slot.fields.label).length;
-    const textualValueCapacity = activeSlots.filter(slot => (
-      slot.fields.displayValue || slot.fields.label
-    )).length;
-    const valueCapacity = activeSlots.filter(slot => (
-      slot.fields.value || slot.fields.displayValue || slot.fields.label
-    )).length;
-    const requiredValueCount = Math.min(
-      required.valueItemCount
-        || required.numericItemCount
-        || (required.requiresValue ? itemCount : 0),
-      itemCount,
+
+  let auxiliaryFits = true;
+  const primaryRegion = arrayRegionKey(primaryContentContainer?.kind === 'array' ? primaryContentContainer.key : '');
+  for (const region of arrayRegions) {
+    if (region.key === primaryRegion || region.key === chartRegion || region.visibleCount <= 0) continue;
+    const disabled = disabledArrayProp(layout, region.field);
+    if (!disabled || !arrayFieldAcceptsEmptyValue(layout, region.field)) {
+      auxiliaryFits = false;
+      break;
+    }
+    disabledProps.push(
+      { prop: region.field.key, value: [] },
+      disabled,
     );
-    const requiredTextualValueCount = Math.min(required.textualValueItemCount, itemCount);
-    const requiredUnitCount = Math.min(required.unitItemCount, itemCount);
-    const valueSlots = activeSlots.filter(slot => (
-      slot.fields.value || slot.fields.displayValue
-    )).length;
-    const unitSlots = activeSlots.filter(slot => slot.fields.unit).length;
-    const requiredFits = (!required.itemCount || slots.length >= (required.minItemCount || itemCount))
-      && valueCapacity >= requiredValueCount
-      && textualValueCapacity >= requiredTextualValueCount
-      && requiredValueCount >= valueSlots
-      && requiredUnitCount >= unitSlots;
-    const slack = required.itemCount ? Math.max(0, slots.length - required.itemCount) : slots.length;
-    const fields = new Set(slots.flatMap(slot => Object.keys(slot.fields)));
-    const supportsDetail = fields.has('detail');
-    const supportsNumericValue = fields.has('value');
-    const supportsTextualValue = fields.has('displayValue');
-    const supportsInlineValue = fields.has('label');
-    const supportsValue = supportsNumericValue || supportsTextualValue || supportsInlineValue;
-    containers.push({
-      kind: 'scalar-group',
-      key: `scalar:${family}`,
-      role: supportsValue ? 'metric' : 'list-item',
-      capacity: slots.length,
-      fields: [...fields],
-      supportsLabel: true,
-      supportsValue,
-      supportsNumericValue,
-      supportsTextualValue,
-      supportsInlineValue,
-      supportsDetail,
-      numericCapacity: valueCapacity,
-      numericValueCapacity,
-      textualValueCapacity,
-      inlineValueCapacity,
-      valueCapacity,
-      slack,
-      requiredFits,
-      slots,
-      targetPaths: slots.flatMap(slot => Object.values(slot.fields)),
-      score: Number(requiredFits) * 100
-        + Number(supportsDetail && preferred.detailItemCount) * 16
-        + Number(supportsValue && requiredValueCount) * 8
-        + Number(supportsTextualValue && required.textualValueItemCount) * 8
-        + Math.max(0, 12 - slack),
-    });
   }
-  return containers;
+
+  const scalarFits = (layout?.fillPlan?.text || [])
+    .filter(field => field.type && field.type !== 'string')
+    .every(field => ['ordinal', 'decorative'].includes(projectionSemantic(field.key, field.type, field.role)) || reserved.has(field.key));
+  const contentCountKeys = new Set([
+    primaryContentContainer?.countKey,
+    chartTarget?.countKey,
+  ].filter(Boolean));
+  const mediaPlan = buildMediaProjectionPlan(layout, pack, contentCountKeys);
+  const requiredFits = Boolean(titleTarget && summaryTarget)
+    && (!needsPrimaryContent || Boolean(primaryContentContainer?.requiredFits))
+    && auxiliaryFits
+    && scalarFits
+    && mediaPlan.requiredFits;
+  const plan = {
+    requiredFits,
+    contentShape: shape,
+    titleTarget: titleTarget?.key || null,
+    summaryTarget: summaryTarget?.key || null,
+    primaryContentContainer,
+    chartTarget,
+    chartMode,
+    emptyItemsBodyProjection,
+    chartSummary: chartMode === 'summary' ? summarizePageChartData(pack) : '',
+    supportingTargets,
+    disabledProps: [...disabledProps, ...mediaPlan.disabledProps],
+    mediaTarget: mediaPlan.mediaTarget,
+  };
+  plan.structureFingerprint = structureFingerprint(layout, plan);
+  if (plan.requiredFits && !projectionPlanFitsPropContract(layout, pack, plan)) plan.requiredFits = false;
+  return plan;
 }
 
-function collectArrayContentContainers(layout, normalized) {
-  const required = normalized?.required || EMPTY_REQUIRED_CONTENT_SHAPE;
-  const preferred = normalized?.preferred || EMPTY_PREFERRED_CONTENT_SHAPE;
-  return (layout.fillPlan?.arrays || [])
-    .filter(field => arrayNestedDepth(field) === 0)
-    .filter(field => !isPageChromeArray(field))
-    .filter(arraySupportsPresentation)
-    .map(field => {
-      const capacity = arrayCapacity(field);
-      const countBinding = field.countKey
-        ? (layout.countBindings || []).find(item => (
-            item?.key === field.countKey || item?.publicKey === field.countKey
-          ))
-        : null;
-      const minimumCapacity = Number(countBinding?.min || 0);
-      const mappedFields = field.itemShape === 'string'
-        ? [{ key: field.key, type: 'string', semantic: 'label', source: 'label' }]
-        : presentationTargetEntries(field)
-          .map(({ key, type, decision }) => ({
-            key,
-            type,
-            semantic: decision.semantic,
-            source: presentationFieldForTarget(key, type, field),
-          }))
-          .filter(item => item.source);
-      const supported = new Set(mappedFields.map(item => item.source));
-      const numericTargetCount = mappedFields.filter(item => item.semantic === 'numericValue').length;
-      const supportsNumericValue = numericTargetCount > 0;
-      const supportsTextualValue = mappedFields.some(item => item.source === 'displayValue');
-      const requiresUnit = mappedFields.some(item => item.source === 'unit');
-      const requiresSecondaryLabel = mappedFields.some(item => item.source === 'secondaryLabel');
-      const requiresDuration = mappedFields.some(item => item.source === 'duration');
-      const requiresPageLabel = mappedFields.some(item => item.source === 'pageLabel');
-      const supportsInlineValue = supported.has('label');
-      const supportsValue = supportsNumericValue || supportsTextualValue || supportsInlineValue;
-      const supportsDetail = supported.has('detail');
-      const valueCapacity = supportsValue ? capacity : 0;
-      const textualValueCapacity = supportsTextualValue || supportsInlineValue ? capacity : 0;
-      const requiredValueCount = required.valueItemCount
-        || required.numericItemCount
-        || (required.requiresValue ? required.itemCount : 0);
-      const containerRoleScore = primaryContainerRoleScore(field);
-      const semanticFits = containerRoleScore > -24;
-      const canSupplementWithCanonicalText = !supportsNumericValue
-        && !supportsTextualValue
-        && !requiresUnit
-        && Boolean(preferred.summaryChars || preferred.takeawayChars);
-      const projectedItemCount = required.itemCount
-        ? Math.min(required.itemCount, capacity)
-        : capacity;
-      const effectiveProjectedItemCount = canSupplementWithCanonicalText
-        ? Math.min(capacity, Math.max(projectedItemCount, minimumCapacity))
-        : projectedItemCount;
-      const minimumItemCount = required.minItemCount || required.itemCount;
-      const projectedValueCount = Math.min(requiredValueCount, effectiveProjectedItemCount);
-      const projectedTextualValueCount = Math.min(
-        required.textualValueItemCount,
-        effectiveProjectedItemCount,
+export function materializeTemplateProjection(layoutInput, value, variantIndex = 0) {
+  const layout = layoutInput?.fillPlan ? layoutInput : inspectLayout(layoutInput?.layout || layoutInput);
+  const pack = normalizePageContentPack(value);
+  const plan = layoutInput?.projectionPlan?.requiredFits
+    ? layoutInput.projectionPlan
+    : buildTemplateProjectionPlan(layout, pack);
+  if (!plan.requiredFits) throw new Error(`Layout ${layout?.layout || layoutInput} cannot project the PageContentPack`);
+  return materializeProjectionWithPlan(layout, pack, variantIndex, plan);
+}
+
+function materializeProjectionWithPlan(layout, pack, variantIndex, plan) {
+  const props = {};
+  const contentMap = {
+    [plan.titleTarget]: 'presentation.title.short',
+    [plan.summaryTarget]: 'presentation.coreMessage',
+  };
+  const contentPaths = [];
+  const projectedItemIds = [];
+  const chartBindings = [];
+  const structureArrays = [];
+  const structureValues = [];
+  const canonicalItemIds = new Set(pack.items.map(item => item.id));
+  let ordered = orderProjectionItems(projectionItemsForPlan(pack, plan.chartMode, plan.emptyItemsBodyProjection), variantIndex);
+  const primary = plan.primaryContentContainer;
+  if (primary) {
+    const accepted = new Set(primary.acceptedItemIds || []);
+    if (accepted.size) ordered = ordered.filter(item => accepted.has(item.id));
+    const optionalCount = variantIndex === 1 ? 1 : variantIndex === 2 ? 2 : 0;
+    const count = primary.kind === 'scalar-group'
+      ? primary.capacity
+      : Math.min(
+        primary.capacity,
+        Math.max(
+          primary.minimumCapacity || 0,
+          ordered.filter(item => item.pinned).length + optionalCount,
+          (pack.items.length || plan.emptyItemsBodyProjection) ? 1 : 0,
+        ),
       );
-      const deferred = normalized?.deferred === true;
-      const canonicalNumericTargetFits = deferred
-        || !supportsNumericValue
-        || required.rawNumericItemCount >= effectiveProjectedItemCount;
-      const canonicalTextualValueTargetFits = deferred
-        || !supportsTextualValue
-        || required.valueItemCount >= effectiveProjectedItemCount;
-      const canonicalUnitTargetFits = deferred
-        || !requiresUnit
-        || required.unitItemCount >= effectiveProjectedItemCount;
-      const canonicalSecondaryLabelTargetFits = deferred
-        || !requiresSecondaryLabel
-        || required.secondaryLabelItemCount >= effectiveProjectedItemCount;
-      const canonicalDurationTargetFits = deferred
-        || !requiresDuration
-        || required.durationItemCount >= effectiveProjectedItemCount;
-      const canonicalPageLabelTargetFits = deferred
-        || !requiresPageLabel
-        || required.pageLabelItemCount >= effectiveProjectedItemCount;
-      const requiredFits = semanticFits && (!required.itemCount || (
-        capacity >= minimumItemCount
-        && effectiveProjectedItemCount >= minimumCapacity
-      ))
-        && valueCapacity >= projectedValueCount
-        && textualValueCapacity >= projectedTextualValueCount
-        && canonicalNumericTargetFits
-        && canonicalTextualValueTargetFits
-        && canonicalUnitTargetFits
-        && canonicalSecondaryLabelTargetFits
-        && canonicalDurationTargetFits
-        && canonicalPageLabelTargetFits;
-      const slack = required.itemCount ? Math.max(0, capacity - projectedItemCount) : capacity;
-      const shapeFieldCount = field.itemShape && typeof field.itemShape === 'object'
-        && !Array.isArray(field.itemShape)
-        ? Object.keys(field.itemShape).length
-        : 1;
-      const fieldCoverage = mappedFields.length / Math.max(1, shapeFieldCount);
+    const selected = takeProjectionItems(ordered, count);
+    projectedItemIds.push(...selected.map(item => item.id).filter(id => canonicalItemIds.has(id)));
+    if (primary.kind === 'scalar-group') {
+      selected.forEach((item, index) => {
+        const slot = primary.slots[index];
+        slot.fields.forEach(field => {
+          structureValues.push({ path: field.key, sourceId: item.id, semantic: field.semantic });
+          setObjectPath(props, field.key, projectionFieldValue(item, field.semantic, slot.fields, true));
+          contentPaths.push(field.key);
+        });
+        if (item.chartSourceIds?.length) {
+          const target = slot.fields.find(field => field.semantic === 'label')?.key || slot.fields[0].key;
+          chartBindings.push({ mode: 'summary', sourceIds: item.chartSourceIds, target });
+        }
+      });
+    } else {
+      selected.forEach((item, index) => {
+        if (!item.chartSourceIds?.length) return;
+        chartBindings.push({ mode: 'summary', sourceIds: item.chartSourceIds, target: `${primary.key}[${index}]` });
+      });
+      structureArrays.push(structuralArrayProjection(primary, selected));
+      setObjectPath(props, primary.key, selected.map((item, index) => materializeArrayItem(primary, item, index)));
+      contentPaths.push(primary.key);
+      if (primary.countKey) {
+        props[primary.countKey] = selected.length;
+        contentPaths.push(primary.countKey);
+      }
+    }
+  }
+  if (plan.chartTarget) {
+    const chartItems = chartProjectionItems(pack);
+    chartItems.forEach((item, index) => {
+      chartBindings.push({ mode: 'point', sourceIds: [pack.chartData[index].id], target: `${plan.chartTarget.key}[${index}]` });
+    });
+    structureArrays.push(structuralArrayProjection(plan.chartTarget, chartItems));
+    setObjectPath(props, plan.chartTarget.key, chartItems.map((item, index) => materializeArrayItem(plan.chartTarget, item, index)));
+    contentPaths.push(plan.chartTarget.key);
+    if (plan.chartTarget.countKey) {
+      props[plan.chartTarget.countKey] = chartItems.length;
+      contentPaths.push(plan.chartTarget.countKey);
+    }
+  }
+  for (const target of plan.supportingTargets) {
+    if (target.source) contentMap[target.target] = target.source;
+    else {
+      structureValues.push(target.sourceId
+        ? { path: target.target, sourceId: target.sourceId, semantic: target.semantic }
+        : { path: target.target, value: target.value });
+      setObjectPath(props, target.target, target.value);
+      contentPaths.push(target.target);
+    }
+  }
+  for (const item of plan.disabledProps) {
+    if (!item.prop) continue;
+    structureValues.push({ path: item.prop, value: item.value });
+    setObjectPath(props, item.prop, item.value);
+    contentPaths.push(item.prop);
+  }
+  if (plan.mediaTarget) {
+    setObjectPath(props, plan.mediaTarget.path, pack.media.map(item => ({
+      src: item.src,
+      ...(item.kind ? { kind: item.kind } : {}),
+      ...(item.type ? { type: item.type } : {}),
+    })));
+    contentPaths.push(plan.mediaTarget.path);
+    if (plan.mediaTarget.countKey) {
+      props[plan.mediaTarget.countKey] = pack.media.length;
+      contentPaths.push(plan.mediaTarget.countKey);
+    }
+  }
+  return {
+    props,
+    contentMap,
+    resolvedProps: resolveContentMap({ presentation: pack }, contentMap, props),
+    contentPaths: [...new Set([...contentPaths, ...Object.keys(contentMap)])],
+    projectedItemIds: [...new Set(projectedItemIds)],
+    chartBindings,
+    structure: {
+      arrays: structureArrays,
+      values: structureValues,
+      ...(plan.mediaTarget ? {
+        media: {
+          path: plan.mediaTarget.path,
+          ...(plan.mediaTarget.countKey ? { countPath: plan.mediaTarget.countKey } : {}),
+        },
+      } : {}),
+    },
+    projectionPlan: plan,
+  };
+}
+
+function structuralArrayProjection(container, items) {
+  return {
+    path: container.key,
+    fields: container.fields.map(({ key, semantic }) => ({ key, semantic })),
+    items: items.map((item, index) => ({
+      sourceId: item.id,
+      ...(item.chartSourceIds?.length ? { sourceIds: item.chartSourceIds } : {}),
+      ...(Object.keys(container.itemStructures?.[index] || {}).length
+        ? { structure: container.itemStructures[index] }
+        : {}),
+    })),
+    ...(container.countKey ? { countPath: container.countKey } : {}),
+  };
+}
+
+function projectionPlanFitsPropContract(layout, pack, plan) {
+  try {
+    return [0, 1, 2].every(variantIndex => {
+      const projection = materializeProjectionWithPlan(layout, pack, variantIndex, plan);
+      return normalizeProps(layout.layout, projection.resolvedProps).errors.length === 0;
+    });
+  } catch {
+    return false;
+  }
+}
+
+export function validateMaterializedTemplateProjection(layoutInput, value, props = {}, contentMap = {}, projection = null) {
+  const layout = layoutInput?.fillPlan ? layoutInput : inspectLayout(layoutInput?.layout || layoutInput);
+  const pack = normalizePageContentPack(value);
+  const resolved = resolveContentMap({ presentation: pack }, contentMap, props);
+  const normalized = normalizeProjectionText(JSON.stringify(resolved));
+  const normalizedRuns = projectionFactRuns(resolved).map(normalizeProjectionText);
+  const includesFact = fact => {
+    const normalizedFact = normalizeProjectionText(fact);
+    return normalized.includes(normalizedFact) || normalizedRuns.some(run => run.includes(normalizedFact));
+  };
+  const errors = [];
+  if (projection && typeof projection === 'object') {
+    const allowedChartModes = new Set(pack.chartData?.length ? ['full', 'summary'] : ['none']);
+    if (!allowedChartModes.has(projection.chartMode)) errors.push(`invalid recorded chartMode ${projection.chartMode}`);
+    for (const field of projection.contentPaths || []) {
+      if (!objectPathFound(resolved, field)) errors.push(`recorded projection path ${field} is missing`);
+    }
+  }
+  for (const fact of requiredPageContentFacts(pack)) {
+    if (!includesFact(fact)) errors.push(`missing canonical required fact "${fact}"`);
+  }
+  if (pack.chartData?.length) {
+    const full = pack.chartData.every(point => (
+      includesFact(point.label)
+      && includesFact(formatPageContentValue(point))
+    ));
+    const summary = normalizeProjectionText(summarizePageChartData(pack));
+    const summarized = normalized.includes(summary) || normalizedRuns.some(run => run.includes(summary));
+    if (!full && !summarized) errors.push('chartData must be projected in full or as the deterministic bounded summary');
+    if (projection?.chartMode === 'full' && !full) errors.push('recorded full chart projection is incomplete');
+    if (projection?.chartMode === 'summary' && !summarized) errors.push('recorded chart summary is missing');
+  }
+  for (const region of businessArrayRegions(layout)) {
+    if (region.visibleCount <= 0 || objectPathFound(resolved, region.key)) continue;
+    const disabled = disabledArrayProp(layout, region.field);
+    if (disabled && sameScalarValue(objectPathValue(resolved, disabled.prop), disabled.value)) continue;
+    errors.push(`visible business array ${region.key} is neither projected nor safely disabled`);
+  }
+  return errors;
+}
+
+export function layoutFamily(candidate) {
+  return candidate?.structureFingerprint?.family
+    || candidate?.projectionPlan?.structureFingerprint?.family
+    || 'editorial';
+}
+
+function projectionItemsForPlan(pack, chartMode, emptyItemsBodyProjection = false) {
+  const items = pageContentProjectionItems(pack);
+  const chartItems = chartMode === 'summary' ? chartSummaryProjectionItems(pack) : [];
+  const supporting = (emptyItemsBodyProjection ? [
+    { id: 'support:summary-short', label: pack.summary.short, detailFull: '', detailShort: '', sourceIndex: 19_999, pinned: true },
+    { id: 'support:core', label: pack.coreMessage, detailFull: '', detailShort: '', sourceIndex: 20_000 },
+    { id: 'support:title-short', label: pack.title.short, detailFull: '', detailShort: '', sourceIndex: 20_001 },
+  ] : [
+    { id: 'support:summary', label: pack.summary.short, detailFull: pack.summary.full, detailShort: '', sourceIndex: 20_000 },
+    ...(pack.title.full !== pack.title.short
+      ? [{ id: 'support:title', label: pack.title.full, detailFull: '', detailShort: '', sourceIndex: 20_001 }]
+      : []),
+  ]).map(item => ({ formattedValue: '', hasValue: false, authoredRequired: false, pinned: false, required: false, priority: 'low', chartFact: false, ...item }));
+  return [...items, ...chartItems, ...supporting]
+    .filter((item, index, all) => all.findIndex(candidate => candidate.id === item.id) === index);
+}
+
+function chartSummaryProjectionItems(pack) {
+  const points = pack.chartData || [];
+  const summary = summarizePageChartData(pack);
+  if (!summary) return [];
+  const rows = [
+    { id: 'chart-summary', label: summary, pinned: true, chartSourceIds: points.map(item => item.id) },
+    { id: 'chart-first', label: `首值｜${points[0].label}${formatPageContentValue(points[0])}`, pinned: false, chartSourceIds: [points[0].id] },
+    { id: 'chart-last', label: `末值｜${points.at(-1).label}${formatPageContentValue(points.at(-1))}`, pinned: false, chartSourceIds: [points.at(-1).id] },
+  ];
+  return rows.filter((item, index) => rows.findIndex(candidate => candidate.label === item.label) === index).map((item, index) => ({
+    ...item,
+    detailFull: '',
+    detailShort: '',
+    formattedValue: '',
+    hasValue: false,
+    authoredRequired: false,
+    required: false,
+    priority: item.pinned ? 'high' : 'low',
+    chartFact: true,
+    sourceIndex: 10_000 + index,
+  }));
+}
+
+function chartProjectionItems(pack) {
+  return (pack.chartData || []).map((item, index) => ({
+    id: `chart:${item.id}`,
+    label: item.label,
+    detailFull: '',
+    detailShort: '',
+    value: item.value,
+    ...(item.displayValue !== undefined ? { displayValue: item.displayValue } : {}),
+    ...(item.unit !== undefined ? { unit: item.unit } : {}),
+    formattedValue: formatPageContentValue(item),
+    hasValue: true,
+    authoredRequired: false,
+    pinned: true,
+    required: false,
+    priority: 'high',
+    chartFact: true,
+    sourceIndex: index,
+  }));
+}
+
+function scalarGroupContainer(layout, pinnedItems, allItems) {
+  const slots = scalarGroupSlots(layout);
+  if (!slots.length) return null;
+  const capacity = slots.length;
+  const acceptedItems = allItems.filter(item => slots.every(slot => scalarSlotFitsItem(item, slot.fields)));
+  const acceptedIds = new Set(acceptedItems.map(item => item.id));
+  const supportsValue = slots.some(slot => slot.fields.some(field => ['value', 'displayValue'].includes(field.semantic)));
+  const supportsDetail = slots.some(slot => slot.fields.some(field => field.semantic === 'detail'));
+  const requiredFits = pinnedItems.length <= capacity
+    && acceptedItems.length >= capacity
+    && pinnedItems.every(item => acceptedIds.has(item.id));
+  return {
+    kind: 'scalar-group',
+    key: `scalar:${slots.map(slot => slot.key).join('|')}`,
+    slots,
+    capacity,
+    minimumCapacity: capacity,
+    countKey: null,
+    supportsValue,
+    supportsDetail,
+    chartCapable: false,
+    hasBusinessFields: true,
+    acceptedItemIds: acceptedItems.map(item => item.id),
+    slack: Math.max(0, capacity - pinnedItems.length),
+    requiredFits,
+    targetPaths: slots.flatMap(slot => slot.fields.map(field => field.key)),
+    score: Number(requiredFits) * 120 + Number(supportsDetail) * 10 + Number(supportsValue) * 8 - Math.max(0, capacity - pinnedItems.length),
+  };
+}
+
+function scalarSlotFitsItem(item, fields) {
+  const semantics = new Set(fields.map(field => field.semantic));
+  if (item.hasValue && !semantics.has('value') && !semantics.has('displayValue')) return false;
+  if (item.unit && semantics.has('value') && !semantics.has('unit') && !semantics.has('displayValue')) return false;
+  return itemFitsFields(item, fields, true);
+}
+
+function scalarGroupSlots(layout) {
+  const fields = (layout?.fillPlan?.text || [])
+    .filter(field => !String(field?.key || '').includes('[]'))
+    .filter(field => ['string', 'number'].includes(field.type || 'string'))
+    .map(field => {
+      const pathName = String(field.key || '');
+      const parts = pathName.split('.');
+      const leaf = parts.pop() || '';
+      const semantic = projectionSemantic(leaf, field.type || 'string', field.role);
       return {
-        kind: 'array',
-        key: field.key,
-        role: field.role || 'misc',
-        capacity,
-        minimumCapacity,
-        fields: [...supported],
-        mappedFields,
-        supportsLabel: supported.has('label'),
-        supportsValue,
-        supportsNumericValue,
-        supportsTextualValue,
-        supportsInlineValue,
-        supportsDetail,
-        numericCapacity: supportsNumericValue || supportsTextualValue ? capacity : 0,
-        numericValueCapacity: supportsNumericValue ? capacity : 0,
-        textualValueCapacity,
-        inlineValueCapacity: supportsInlineValue ? capacity : 0,
-        valueCapacity,
-        fieldCoverage,
-        containerRoleScore,
-        semanticFits,
-        slack,
-        requiredFits,
-        field,
-        targetPaths: [field.key],
-        score: Number(requiredFits) * 100
-          + containerRoleScore
-          + Math.round(fieldCoverage * 12)
-          + Number(supportsDetail && preferred.detailItemCount) * 16
-          + Number(supportsValue && requiredValueCount) * 8
-          + Number(supportsTextualValue && required.textualValueItemCount) * 8
-          + Math.max(0, 12 - slack),
+        key: pathName,
+        parent: parts.join('.'),
+        leaf,
+        semantic,
+        type: field.type || 'string',
+        maxChars: field.maxChars || 0,
+        numericBounds: field.numericBounds || null,
+        role: field.role,
       };
     })
-    .filter(candidate => candidate.supportsLabel);
+    .filter(field => ['label', 'value', 'displayValue', 'unit', 'detail'].includes(field.semantic));
+  const slots = [...numberedScalarSlots(fields), ...nestedScalarSlots(fields)];
+  const usedPaths = new Set();
+  return slots
+    .sort((left, right) => left.key.localeCompare(right.key))
+    .filter(slot => {
+      if (slot.fields.some(field => usedPaths.has(field.key))) return false;
+      slot.fields.forEach(field => usedPaths.add(field.key));
+      return true;
+    });
 }
 
-function primaryContainerRoleScore(field) {
-  const role = String(field?.role || '').toLowerCase();
-  const key = String(field?.key || '').toLowerCase();
-  let score = 0;
-  if (['metric', 'step', 'list-item', 'distribution', 'relationship', 'chapter'].includes(role)) score += 24;
-  if (role === 'misc') score -= 4;
-  if (/header|legend|tick|axis|categor|label|marker|caption|callout/.test(key)) score -= 32;
-  if (/headline|segment|token|word|phrase|fragment/.test(key)) score -= 48;
-  if (/rows|items|cards|steps|stages|events|data|metrics|companies|records|entries/.test(key)) score += 14;
-  if (/sector/.test(key) && role === 'misc') score -= 18;
-  return score;
+function numberedScalarSlots(fields) {
+  const parents = new Map();
+  for (const field of fields) {
+    const match = /^(.*?)(\d+)$/.exec(field.leaf);
+    if (!match || !match[1]) continue;
+    const semantic = projectionSemantic(match[1], field.type, field.role);
+    if (!['label', 'value', 'displayValue', 'unit', 'detail'].includes(semantic)) continue;
+    const index = Number(match[2]);
+    const groups = parents.get(field.parent) || new Map();
+    groups.set(index, [...(groups.get(index) || []), { ...field, semantic }]);
+    parents.set(field.parent, groups);
+  }
+  const slots = [];
+  for (const [parent, groups] of parents) {
+    const indices = [...groups.keys()].sort((left, right) => left - right);
+    if (indices.length < 2 || indices.some((value, index) => index && value !== indices[index - 1] + 1)) continue;
+    const candidates = indices.map(index => scalarSlot(`${parent || '<root>'}#${index}`, groups.get(index)));
+    if (candidates.every(Boolean)) slots.push(...candidates);
+  }
+  return slots;
 }
 
-function collectContentContainers(layout, normalized) {
-  return [
-    ...collectArrayContentContainers(layout, normalized),
-    ...collectScalarContentContainers(layout, normalized),
-  ];
+function nestedScalarSlots(fields) {
+  const parents = new Map();
+  for (const field of fields) {
+    if (!field.parent) continue;
+    parents.set(field.parent, [...(parents.get(field.parent) || []), field]);
+  }
+  return [...parents.entries()].map(([parent, items]) => scalarSlot(parent, items)).filter(Boolean);
 }
 
-export function selectPrimaryContentContainer(layout, shape = null) {
-  const normalized = normalizeContentShape(shape);
-  const candidates = collectContentContainers(layout, normalized)
-    .sort((left, right) => (
-      right.score - left.score
-      || left.slack - right.slack
-      || left.key.localeCompare(right.key)
-    ));
-  return candidates.find(candidate => candidate.requiredFits) || candidates[0] || null;
+function scalarSlot(key, fields) {
+  const semantics = fields.map(field => field.semantic);
+  if (new Set(semantics).size !== semantics.length) return null;
+  if (!semantics.includes('label') || !semantics.some(value => ['value', 'displayValue', 'detail'].includes(value))) return null;
+  const order = { label: 0, value: 1, displayValue: 1, unit: 2, detail: 3 };
+  return { key, fields: [...fields].sort((left, right) => order[left.semantic] - order[right.semantic] || left.key.localeCompare(right.key)) };
 }
 
-export function buildTemplateProjectionPlan(layout, shape = null) {
-  const contentShape = normalizeContentShape(shape);
-  const required = contentShape?.required || EMPTY_REQUIRED_CONTENT_SHAPE;
-  const preferred = contentShape?.preferred || EMPTY_PREFERRED_CONTENT_SHAPE;
-  const text = layout.fillPlan?.text || [];
-  const contentContainers = collectContentContainers(layout, contentShape);
-  const contentContainerTargets = new Set(
-    contentContainers.flatMap(container => container.targetPaths || []),
-  );
-  const titleTarget = text
-    .filter(field => !contentContainerTargets.has(field.key))
-    .map(field => ({
-      field,
-      score: titleTargetScore(field),
-    }))
-    .filter(candidate => candidate.score > 0)
-    .sort((left, right) => (
-      right.score - left.score
-      || (Number(right.field.maxChars) || 0) - (Number(left.field.maxChars) || 0)
-      || left.field.key.localeCompare(right.field.key)
-    ))[0]?.field || null;
-  const paragraphs = text
-    .filter(field => field.role === 'body' || field.role === 'paragraph')
-    .sort((left, right) => (Number(right.maxChars) || 0) - (Number(left.maxChars) || 0));
-  const primaryContentContainer = required.itemCount
-    ? selectPrimaryContentContainer(layout, contentShape)
-    : null;
-  const primaryIdentity = primaryContentContainer
-    ? `${primaryContentContainer.kind}:${primaryContentContainer.key}`
-    : '';
-  const knownContainerKeys = new Set(contentContainers.map(container => (
-    `${container.kind}:${container.key}`
-  )));
-  const unclassifiedVisibleArrays = (layout.fillPlan?.arrays || [])
-    .filter(field => arrayHasVisibleBusinessData(field))
-    .filter(field => !knownContainerKeys.has(`array:${field.key}`))
-    .map(field => ({
-      kind: 'array',
-      key: field.key,
-      role: field.role || 'misc',
-      field,
-      targetPaths: [field.key],
-    }));
-  const auxiliaryContentContainers = [
-    ...contentContainers.filter(container => (
-      `${container.kind}:${container.key}` !== primaryIdentity
-      && !canTreatScalarGroupAsCoverText(layout, container, required)
-    )),
-    ...unclassifiedVisibleArrays,
-  ].filter(container => `${container.kind}:${container.key}` !== primaryIdentity)
-    .map(container => ({
-    ...container,
-    auxiliaryStrategy: auxiliaryContainerStrategy(layout, container, {
-      deferred: contentShape?.deferred === true,
-    }),
-  }));
-  const unsupportedAuxiliaryContainers = auxiliaryContentContainers.filter(container => (
-    !container.auxiliaryStrategy
+function primaryArrayFields(layout) {
+  return (layout?.fillPlan?.arrays || []).filter(field => (
+    !String(field?.key || '').includes('[]')
+    && arrayDepth(field?.itemShape) <= 1
   ));
-  const nestedDepth = (layout.fillPlan?.arrays || [])
-    .reduce((max, field) => Math.max(max, arrayNestedDepth(field)), 0);
-  const requiredFits = (!required.titleChars || Number(titleTarget?.maxChars || 0) >= required.titleChars)
-    && (!required.itemCount || (
-      primaryContentContainer?.requiredFits
-      && primaryContentContainer.capacity >= (required.minItemCount || required.itemCount)
-    ))
-    && (!required.nestedDepth || nestedDepth >= required.nestedDepth)
-    && (!required.itemCount || unsupportedAuxiliaryContainers.length === 0);
+}
+
+function arrayContainer(layout, field, pinnedItems, allItems) {
+  const fields = arrayProjectionFields(field);
+  if (!fields) return null;
+  const capacity = Number(field.maxCount || field.visibleCount || field.fixedLength || 0);
+  if (!capacity) return null;
+  const itemStructures = arrayItemStructures(layout, field, fields, capacity);
+  if (!itemStructures) return null;
+  const minimumCapacity = arrayMinimumCount(layout, field);
+  const acceptedItems = allItems.filter(item => itemFitsFields(item, fields));
+  const acceptedIds = new Set(acceptedItems.map(item => item.id));
+  const selectedCount = Math.max(pinnedItems.length, minimumCapacity, allItems.length ? 1 : 0);
+  const supportsValue = fields.some(item => ['value', 'displayValue'].includes(item.semantic));
+  const supportsDetail = fields.some(item => item.semantic === 'detail');
+  const allowsLabelOnly = Array.isArray(field.itemShape) && String(field.role || '').toLowerCase() === 'metric';
+  const requiredFits = pinnedItems.length <= capacity
+    && acceptedItems.length >= Math.max(minimumCapacity, allItems.length ? 1 : 0)
+    && (!supportsValue || pinnedItems.some(item => item.hasValue) || allowsLabelOnly)
+    && pinnedItems.every(item => acceptedIds.has(item.id));
   return {
-    contentShape,
+    kind: 'array',
+    key: field.key,
+    field,
+    fields,
+    itemStructures,
+    capacity,
+    minimumCapacity,
+    countKey: field.countKey || null,
+    supportsValue,
+    supportsDetail,
+    chartCapable: supportsValue && isChartDataContainer(layout, field),
+    hasBusinessFields: true,
+    acceptedItemIds: acceptedItems.map(item => item.id),
+    slack: Math.max(0, capacity - selectedCount),
     requiredFits,
-    titleTarget: titleTarget?.key || null,
-    summaryTarget: preferred.summaryChars ? paragraphs[0]?.key || null : null,
-    takeawayTarget: preferred.takeawayChars ? paragraphs[1]?.key || paragraphs[0]?.key || null : null,
-    primaryContentContainer,
-    reservedTargetPaths: contentContainers.flatMap(container => container.targetPaths || []),
-    auxiliaryContentContainers,
-    unsupportedAuxiliaryContainers,
+    targetPaths: [field.key],
+    score: Number(requiredFits) * 100 + Number(supportsDetail) * 10 + Number(supportsValue) * 8 - Math.max(0, capacity - selectedCount),
   };
 }
 
-function isPageChromeArray(field) {
-  const key = String(field?.key || '').toLowerCase().split('.').at(-1)?.replace(/\[\]$/g, '') || '';
-  return /^(navitems?|breadcrumbs?|tabs?)$/.test(key);
+function chartArrayContainer(layout, field, chartData) {
+  const fields = arrayProjectionFields(field);
+  if (!fields || !isChartDataContainer(layout, field)) return null;
+  const capacity = Number(field.maxCount || field.visibleCount || field.fixedLength || 0);
+  const itemStructures = arrayItemStructures(layout, field, fields, capacity);
+  if (!itemStructures) return null;
+  const minimumCapacity = arrayMinimumCount(layout, field);
+  const items = chartProjectionItems({ chartData });
+  if (!capacity || items.length < minimumCapacity || items.length > capacity) return null;
+  if (!fields.some(item => ['value', 'displayValue'].includes(item.semantic))) return null;
+  if (!items.every(item => itemFitsFields(item, fields))) return null;
+  return {
+    kind: 'chart-array',
+    key: field.key,
+    field,
+    fields,
+    itemStructures,
+    capacity,
+    minimumCapacity,
+    countKey: field.countKey || null,
+    supportsValue: true,
+    supportsDetail: fields.some(item => item.semantic === 'detail'),
+    chartCapable: true,
+    hasBusinessFields: true,
+    requiredFits: true,
+    targetPaths: [field.key],
+    score: 200 + Math.max(0, 20 - (capacity - items.length)),
+  };
 }
 
-function auxiliaryContainerStrategy(layout, container, { deferred = false } = {}) {
-  if (container?.kind !== 'array') return null;
-  if (isPageChromeArray(container.field)) return { type: 'navigation' };
-  const countKey = container.field?.countKey;
-  const binding = countKey
-    ? (layout.countBindings || []).find(item => (
-        item?.key === countKey || item?.publicKey === countKey
-      ))
-    : null;
-  if (Number(binding?.min) === 0) {
-    return { type: 'count', prop: countKey };
+function arrayProjectionFields(field) {
+  if (field.itemShape === 'string') {
+    return [{ key: null, semantic: 'label', type: 'string', maxChars: field.item?.maxChars || 0 }];
   }
-  const key = String(container.key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const toggle = (layout.controls || []).find(control => {
-    if (control?.type !== 'toggle') return false;
-    const publicKey = String(control.publicKey || control.key || '');
-    const normalized = publicKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!normalized.startsWith('show')) return false;
-    const subject = normalized.slice(4);
-    return subject && (key.startsWith(subject) || subject.startsWith(key));
-  });
-  if (toggle) {
-    return {
-      type: 'toggle',
-      prop: toggle.publicKey || toggle.key,
-      min: Number.isFinite(Number(binding?.min)) ? Number(binding.min) : null,
-      max: Number.isFinite(Number(binding?.max)) ? Number(binding.max) : null,
-    };
+  if (Array.isArray(field.itemShape)) {
+    if (String(field.role || '').toLowerCase() !== 'metric' || !field.itemShape.length) return null;
+    if (field.itemShape.some(type => !['string', 'number'].includes(type))) return null;
+    return field.itemShape.map((type, index) => ({
+      key: index,
+      semantic: index === 0 ? 'label' : index === 1 ? (type === 'number' ? 'value' : 'displayValue') : index === 2 ? 'unit' : 'optional',
+      type,
+      maxChars: field.item?.maxChars || 0,
+      numericBounds: null,
+    }));
   }
-  if ((isCoverCandidate(layout.layout) || deferred)
-    && arraySupportsCanonicalProjection(container.field, { allowNumeric: deferred })) {
-    return {
-      type: isCoverCandidate(layout.layout) ? 'cover-projection' : 'projection',
-      prop: countKey || null,
-      min: Number.isFinite(Number(binding?.min)) ? Number(binding.min) : null,
-      max: Number.isFinite(Number(binding?.max)) ? Number(binding.max) : null,
-    };
+  if (!field.itemShape || typeof field.itemShape !== 'object' || Array.isArray(field.itemShape)) return null;
+  const contracts = field.itemFields || {};
+  const fields = [];
+  for (const [key, typeValue] of Object.entries(field.itemShape)) {
+    if (typeValue && typeof typeValue === 'object') return null;
+    const type = contracts[key]?.type || typeValue;
+    if (!['string', 'number'].includes(type)) continue;
+    const role = contracts[key]?.role;
+    let semantic = projectionSemantic(key, type, role);
+    if (semantic === 'ordinal' && type === 'string' && role) semantic = 'label';
+    if (['decorative', 'ordinal'].includes(semantic)) continue;
+    if (!semantic) {
+      if (type !== 'string') return null;
+      semantic = 'optional';
+    }
+    if (['label', 'detail'].includes(semantic) && fields.some(item => item.semantic === semantic)) semantic = 'optional';
+    fields.push({
+      key,
+      semantic,
+      type,
+      maxChars: contracts[key]?.maxChars || 0,
+      numericBounds: contracts[key]?.numericBounds || null,
+    });
   }
+  if (fields.filter(item => item.semantic === 'value').length > 1) return null;
+  if (fields.filter(item => item.semantic === 'displayValue').length > 1) return null;
+  if (!fields.some(item => item.semantic === 'label')) {
+    const fallback = fields.find(item => item.semantic === 'optional' && item.type === 'string');
+    if (fallback) fallback.semantic = 'label';
+  }
+  return fields.some(item => item.semantic === 'label') ? fields : null;
+}
+
+function arrayItemStructures(layout, field, fields, capacity) {
+  if (field.itemShape === 'string' || Array.isArray(field.itemShape)) return [];
+  const projectedKeys = new Set(fields.map(item => item.key).filter(Boolean));
+  const structuralFields = Object.entries(field.itemShape || {})
+    .filter(([key]) => !projectedKeys.has(key))
+    .map(([key, shape]) => ({
+      key,
+      shape,
+      semantic: projectionSemantic(key, field.itemFields?.[key]?.type || shape, field.itemFields?.[key]?.role),
+    }));
+  if (!structuralFields.length) return Array.from({ length: capacity }, () => ({}));
+  const defaults = valueAtPath(getLayoutRecord(layout?.layout)?.defaultProps || {}, field.key);
+  if (!Array.isArray(defaults) || !defaults.length) return null;
+  const structures = [];
+  for (let index = 0; index < capacity; index += 1) {
+    const source = defaults[index] || defaults[index % defaults.length];
+    if (!source || typeof source !== 'object' || Array.isArray(source)) return null;
+    const structure = {};
+    for (const { key, shape, semantic } of structuralFields) {
+      const value = source[key];
+      const fallback = defaults.map(item => item?.[key]).find(item => scalarMatchesShape(item, shape));
+      const structuralValue = safeStructuralValue({ key, shape, semantic, value, fallback, index });
+      if (structuralValue === undefined) return null;
+      structure[key] = structuralValue;
+    }
+    structures.push(structure);
+  }
+  return structures;
+}
+
+function safeStructuralValue({ key, shape, semantic, value, fallback, index }) {
+  const type = String(shape || '');
+  if (type === 'boolean') return typeof value === 'boolean' ? value : false;
+  if (semantic === 'ordinal') return type === 'number' ? index + 1 : String(index + 1);
+  if (type === 'string') {
+    if (semantic !== 'decorative') return '';
+    if (!/^(?:align|alignment|icon|position|side|style)$/i.test(key)) return undefined;
+  }
+  if (scalarMatchesShape(value, shape)) return value;
+  if (scalarMatchesShape(fallback, shape)) return fallback;
+  return undefined;
+}
+
+function scalarMatchesShape(value, shape) {
+  if (value === undefined || value === null) return false;
+  return String(shape || '').split('|').map(item => item.trim()).includes(typeof value);
+}
+
+function projectionSemantic(key, type, role = '') {
+  const name = String(key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalizedRole = String(role || '').toLowerCase();
+  if (/color|colour|tone|icon|style|fill|stroke|accent|kind|type|align|position|side/.test(name)) return 'decorative';
+  if (isOrdinalKey(name)) return 'ordinal';
+  if (/unit|suffix/.test(name)) return 'unit';
+  if (type === 'number') return 'value';
+  if (/value|amount|score|rate|percent|pct|metric|stat|delta|count|axismax|axismin|target|baseline|bignumber|^v$|^big$/.test(name) || normalizedRole === 'metric') {
+    return 'displayValue';
+  }
+  if (/detail|desc|description|body|summary|sub|note|meta|explain|content|^ds$/.test(name) || ['body', 'paragraph'].includes(normalizedRole)) return 'detail';
+  if (/label|title|name|heading|topic|category|item|text|copy|statement|caption|tag|role|round|period|phase|stage|^t$|^e$|^en$|^cn$|^lb$|^q$/.test(name) || ['title', 'eyebrow', 'list-item'].includes(normalizedRole)) return 'label';
   return null;
 }
 
-function arraySupportsCanonicalProjection(field, { allowNumeric = false } = {}) {
-  if (!field || String(field.key || '').includes('[]') || arrayNestedDepth(field) > 0) {
+function isOrdinalKey(name) {
+  return /^(?:no|num|number|index|ordinal|rank|page|pg|date|year|month|day|n|navcurrent|pagecurrent)$/.test(name)
+    || /(?:index|ordinal|rank|pageno|pageindex|year|month|day)$/.test(name);
+}
+
+function itemFitsFields(item, fields, exact = false) {
+  return fields.every(field => projectionFieldAvailable(item, field, fields, exact));
+}
+
+function projectionFieldAvailable(item, target, fields = [], exact = false) {
+  const value = projectionFieldValue(item, target.semantic, fields, exact);
+  if (target.semantic === 'value') {
+    if (!(typeof value === 'number' && Number.isFinite(value))) return false;
+    const bounds = target.numericBounds;
+    if (bounds?.enforced && (
+      (Number.isFinite(bounds.min) && value < bounds.min)
+      || (Number.isFinite(bounds.max) && value > bounds.max)
+    )) return false;
+  } else if (target.semantic === 'label' && !String(value || '').trim()) {
+    return false;
+  } else if (target.semantic === 'displayValue' && item.hasValue && !String(value || '').trim()) {
     return false;
   }
-  const contractTypes = Object.values(field.itemFields || {})
-    .map(contract => contract?.type)
-    .filter(Boolean);
-  if (field.itemShape === 'string') {
-    return contractTypes.every(type => type === 'string');
+  return !value || !target.maxChars || charLength(String(value)) <= target.maxChars;
+}
+
+function projectionFieldValue(item, semantic, fields = [], exact = false) {
+  const hasSeparateValue = fields.some(field => ['value', 'displayValue'].includes(field.semantic));
+  const hasSeparateUnit = fields.some(field => field.semantic === 'unit');
+  const hasDetail = fields.some(field => field.semantic === 'detail');
+  if (semantic === 'label') {
+    if (exact) return item.label || '';
+    return [
+      item.label,
+      !hasDetail ? item.detailShort || item.detailFull : '',
+      item.hasValue && (!hasSeparateValue || (item.unit && !hasSeparateUnit)) ? item.formattedValue : '',
+    ].filter(Boolean).join(' · ');
   }
-  const types = [
-    ...Object.values(field.itemShape || {}),
-    ...contractTypes,
-  ].filter(Boolean);
-  return types.length > 0 && types.every(type => (
-    type === 'string' || type === 'boolean' || (allowNumeric && type === 'number')
-  ));
-}
-
-function arrayHasVisibleBusinessData(field) {
-  const includesBusinessValue = value => {
-    if (value === 'string' || value === 'number') return true;
-    if (Array.isArray(value)) return value.some(includesBusinessValue);
-    if (!value || typeof value !== 'object') return false;
-    return Object.values(value).some(includesBusinessValue);
-  };
-  return includesBusinessValue(field?.itemShape);
-}
-
-function canTreatScalarGroupAsCoverText(layout, container, required) {
-  if (required.itemCount !== 0
-    || container.kind !== 'scalar-group'
-    || !isCoverCandidate(layout.layout)) {
-    return false;
+  if (semantic === 'detail') return exact
+    ? item.detailShort || item.detailFull || ''
+    : item.detailShort || item.detailFull || (!hasSeparateValue ? item.formattedValue : '') || '';
+  if (semantic === 'unit') return item.unit || '';
+  if (semantic === 'value') return item.value;
+  if (semantic === 'displayValue') {
+    if (!item.hasValue) return '';
+    if (!hasSeparateUnit) return item.formattedValue;
+    let display = item.displayValue !== undefined ? String(item.displayValue) : String(item.value ?? '');
+    if (item.unit) while (display.endsWith(item.unit)) display = display.slice(0, -item.unit.length).trimEnd();
+    return display;
   }
-  return container.slots.every(slot => (
-    Object.keys(slot.fields || {}).every(field => field === 'label' || field === 'detail')
-  ));
+  return '';
 }
 
-function titleTargetScore(field) {
-  const pathName = String(field.key || '').toLowerCase();
-  const parts = pathName.split('.');
-  const leafKey = parts.at(-1)?.replace(/\[\]$/g, '') || pathName;
-  // Theme11's authored fields use semantic names such as headingHtml and
-  // headlineHtml. Strip only that renderer suffix; do not promote arbitrary
-  // nested *.title or generic root copy to page-title status.
-  const semanticLeaf = leafKey.replace(/html$/, '');
-  if (pathName.includes('[]')) return 0;
-  const pageScoped = parts.length === 1 || (parts.length === 2 && parts[0] === 'copy');
-  const role = String(field.role || '').toLowerCase();
-  let nameScore = 0;
-  if (/^(?:title|pagetitle|platetitle|decktitle|headline|heading|subject|topic)(?:line)?1?$/.test(semanticLeaf)) nameScore = 30;
-  else if (/^title(?:top|cn|zh|main|primary|l1|line1|a)$/.test(semanticLeaf)) nameScore = 26;
-  else if (/^title(?:bottom|en|sub|secondary|l2|line2|b)$/.test(semanticLeaf)) nameScore = 22;
-  else if (/^title(?:l|line)?\d+$|^title[a-z]+$/.test(semanticLeaf)) nameScore = 18;
-  if (role === 'title' && pageScoped && nameScore) return 200 + nameScore;
-  if (role === 'title') return 170;
-  if (pageScoped && nameScore) return 130 + nameScore;
-  if (pageScoped && /^(?:slogan(?:line)?1?|statement|claim|quote)$/.test(semanticLeaf)) return 80;
-  // Imported opaque themes expose their primary authored copy as copy.text001.
-  // Restrict the fallback to that first structured slot rather than promoting
-  // arbitrary copy.* or root fields (for example captions or axis labels).
-  if (parts.length === 2 && parts[0] === 'copy' && /^text0*1$/.test(semanticLeaf)) return 72;
-  return 0;
-}
-
-function layoutStructureFingerprint(layout, projectionPlan) {
-  const primary = projectionPlan.primaryContentContainer;
-  const label = `${layout.slot || ''} ${layout.label || ''} ${(layout.roles || []).join(' ')}`.toLowerCase();
-  const mediaCapacity = (layout.fillPlan?.media || []).reduce(
-    (max, field) => Math.max(max, Number(field.maxCount || field.visibleCount || 0)),
-    0,
-  );
-  let family = 'editorial';
-  if (/table|sheet|ranking|leaderboard|表|排行|清单/.test(label)) family = 'table';
-  else if (/bubble|scatter|气泡|散点/.test(label)) family = 'bubble-chart';
-  else if (/case|profile|spotlight|案例|档案|剖面/.test(label)) family = 'case-study';
-  else if (/matrix|heat|score|quadrant|矩阵|热力|评分|象限/.test(label)) family = 'matrix';
-  else if (/timeline|roadmap|process|path|step|sequence|时间|路线|流程|路径|阶段/.test(label)) family = 'sequence';
-  else if (/compare|versus|delta|comparison|对比|竞品|差异/.test(label)) family = 'comparison';
-  else if (/chart|trend|radar|donut|waterfall|curve|plot|图|趋势|雷达|瀑布|曲线/.test(label)) family = 'chart';
-  else if (/hero|statement|manifesto|quote|封面|宣言|观点|主张/.test(label)) family = 'hero';
-  else if (/card|grid|list|tile|卡|网格|列表/.test(label)) family = 'cards';
-  else if (primary?.role === 'metric') family = 'metrics';
-  else if ((primary?.capacity || 0) >= 3) family = 'cards';
-  else if (mediaCapacity > 0) family = 'media';
-  const valueMode = primary?.supportsNumericValue && primary?.supportsTextualValue
-    ? 'numeric+formatted'
-    : primary?.supportsTextualValue
-      ? 'formatted'
-      : primary?.supportsNumericValue
-        ? 'numeric'
-        : primary?.supportsInlineValue
-          ? 'inline'
-        : 'text';
-  const capacity = Number(primary?.capacity || 0);
+function materializeArrayItem(container, item, index) {
+  if (container.field.itemShape === 'string') return projectionFieldValue(item, 'label', container.fields);
+  if (Array.isArray(container.field.itemShape)) {
+    return container.fields.map(field => projectionFieldValue(item, field.semantic, container.fields));
+  }
   return {
-    family,
-    compositionType: family,
-    primaryRole: primary?.role || 'none',
-    primaryKind: primary?.kind || 'none',
-    primaryShape: primary
-      ? `${primary.kind}:${primary.supportsValue ? 'value' : 'text'}:${primary.supportsDetail ? 'detail' : 'compact'}:${primary.capacity}`
-      : 'none',
-    valueMode,
-    capacityBand: capacity >= 8 ? 'dense' : capacity >= 5 ? 'wide' : capacity >= 3 ? 'standard' : 'compact',
-    mediaMode: mediaCapacity > 0 ? 'media' : 'none',
+    ...(container.itemStructures?.[index] || {}),
+    ...Object.fromEntries(container.fields.map(field => [field.key, projectionFieldValue(item, field.semantic, container.fields)])),
   };
 }
 
-function scoreExpressionFit(fingerprint, role, priority) {
-  const family = fingerprint?.family || 'editorial';
-  const intents = [role, priority].map(value => String(value || '').toLowerCase()).filter(Boolean);
-  if (!intents.length) return 0;
-  const preferredFamilies = new Set();
-  for (const intent of intents) {
-    if (['comparison', 'risks'].includes(intent)) {
-      ['comparison', 'matrix', 'table', 'bubble-chart'].forEach(item => preferredFamilies.add(item));
-    } else if (['process', 'actions', 'trend'].includes(intent)) {
-      ['sequence', 'table', 'cards'].forEach(item => preferredFamilies.add(item));
-    } else if (['metrics', 'distribution', 'relationship'].includes(intent)) {
-      ['metrics', 'chart', 'bubble-chart', 'table', 'matrix'].forEach(item => preferredFamilies.add(item));
-    } else if (['breakdown', 'context'].includes(intent)) {
-      ['cards', 'table', 'editorial', 'case-study'].forEach(item => preferredFamilies.add(item));
-    } else if (['statement', 'result', 'closing', 'observation'].includes(intent)) {
-      ['hero', 'editorial', 'case-study'].forEach(item => preferredFamilies.add(item));
-    } else if (intent === 'case') {
-      ['case-study', 'media', 'cards'].forEach(item => preferredFamilies.add(item));
+function orderProjectionItems(items, variantIndex) {
+  const pinned = items.filter(item => item.pinned);
+  const optional = items.filter(item => !item.pinned);
+  if (variantIndex % 3 === 1) {
+    return [...pinned].sort((a, b) => Number(b.hasValue) - Number(a.hasValue) || b.sourceIndex - a.sourceIndex)
+      .concat([...optional].reverse());
+  }
+  if (variantIndex % 3 === 2) {
+    return [...pinned].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority) || a.label.localeCompare(b.label))
+      .concat(optional);
+  }
+  return [...pinned, ...optional].sort((a, b) => a.sourceIndex - b.sourceIndex);
+}
+
+function priorityRank(value) {
+  return ({ critical: 0, high: 1, medium: 2, low: 3 })[String(value || '').toLowerCase()] ?? 4;
+}
+
+function takeProjectionItems(items, count) {
+  const selected = items.slice(0, count);
+  const pinned = items.filter(item => item.pinned);
+  for (const item of pinned) {
+    if (selected.some(candidate => candidate.id === item.id)) continue;
+    const replaceIndex = selected.findLastIndex(candidate => !candidate.pinned);
+    if (replaceIndex < 0) throw new Error(`Projection capacity cannot preserve pinned fact ${item.id}`);
+    selected[replaceIndex] = item;
+  }
+  return selected;
+}
+
+function businessArrayRegions(layout) {
+  const regions = new Map();
+  for (const field of layout?.fillPlan?.arrays || []) {
+    const key = arrayRegionKey(field.key);
+    if (!key) continue;
+    const current = regions.get(key);
+    if (!current || String(field.key) === key) {
+      regions.set(key, { key, field, visibleCount: arrayVisibleCount(layout, field) });
     }
   }
-  return preferredFamilies.has(family) ? 12 : 0;
+  return [...regions.values()];
 }
 
-function capacityFitScore(capacity, required, weight) {
-  if (!required || capacity < required) return 0;
-  const excess = Math.max(0, capacity - required);
-  return Math.max(1, weight - Math.min(Math.floor(weight / 2), excess));
+function arrayRegionKey(value) {
+  return String(value || '').replace(/\[\]$/, '');
+}
+
+
+function arrayVisibleCount(layout, field) {
+  const control = (layout?.controls || []).find(item => (
+    item.key === field.countKey || item.publicKey === field.countKey
+  ));
+  return Number(field.visibleCount ?? field.fixedLength ?? control?.default ?? 0) || 0;
+}
+
+function objectPathFound(target, pathName) {
+  let cursor = target;
+  for (const part of String(pathName || '').split('.').filter(Boolean)) {
+    if (!cursor || typeof cursor !== 'object' || !Object.prototype.hasOwnProperty.call(cursor, part)) return false;
+    cursor = cursor[part];
+  }
+  return true;
+}
+
+function objectPathValue(target, pathName) {
+  let cursor = target;
+  for (const part of String(pathName || '').split('.').filter(Boolean)) {
+    if (!cursor || typeof cursor !== 'object') return undefined;
+    cursor = cursor[part];
+  }
+  return cursor;
+}
+
+function sameScalarValue(left, right) {
+  return String(left) === String(right);
+}
+
+function normalizeProjectionText(value) {
+  return String(value || '').normalize('NFKC').toLowerCase().replace(/[\s"'`，。；、,:;·｜]/g, '');
+}
+
+function projectionFactRuns(value, result = []) {
+  if (Array.isArray(value)) value.forEach(item => projectionFactRuns(item, result));
+  else if (value && typeof value === 'object') {
+    const fields = Object.entries(value).filter(([, item]) => ['string', 'number'].includes(typeof item));
+    fields.forEach(([, item]) => result.push(String(item)));
+    const values = fields.filter(([key, item]) => ['value', 'displayValue'].includes(projectionSemantic(key, typeof item)));
+    const units = fields.filter(([key, item]) => projectionSemantic(key, typeof item) === 'unit');
+    projectionFactPairs(values, units).forEach(([[, item], [, unit]]) => result.push(formatPageContentValue({ displayValue: String(item), unit: String(unit) })));
+    Object.values(value).forEach(item => {
+      if (item && typeof item === 'object') projectionFactRuns(item, result);
+    });
+  }
+  return result;
+}
+
+function projectionFactPairs(values, units) {
+  if (values.length === 1 && units.length === 1) {
+    const valueSlot = projectionFieldSlot(values[0][0], 'value');
+    const unitSlot = projectionFieldSlot(units[0][0], 'unit');
+    const bothUnslotted = valueSlot === '' && unitSlot === '';
+    const sameExplicitSlot = valueSlot !== '' && valueSlot === unitSlot;
+    return bothUnslotted || sameExplicitSlot ? [[values[0], units[0]]] : [];
+  }
+  const valueSlots = projectionFieldsBySlot(values, 'value');
+  const unitSlots = projectionFieldsBySlot(units, 'unit');
+  const pairs = [];
+  for (const [slot, candidates] of valueSlots) {
+    const matchingUnits = unitSlots.get(slot) || [];
+    if (candidates.length === 1 && matchingUnits.length === 1) {
+      pairs.push([candidates[0], matchingUnits[0]]);
+    }
+  }
+  return pairs;
+}
+
+function projectionFieldsBySlot(fields, semantic) {
+  const grouped = new Map();
+  for (const field of fields) {
+    const slot = projectionFieldSlot(field[0], semantic);
+    grouped.set(slot, [...(grouped.get(slot) || []), field]);
+  }
+  return grouped;
+}
+
+function projectionFieldSlot(key, semantic) {
+  const name = String(key || '').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const markers = semantic === 'unit'
+    ? ['suffix', 'unit']
+    : ['displayvalue', 'bignumber', 'axismax', 'axismin', 'baseline', 'percent', 'amount', 'score', 'metric', 'stat', 'delta', 'count', 'target', 'value', 'rate', 'pct', 'big', 'v'];
+  if (markers.includes(name)) return '';
+  for (const marker of markers) {
+    if (name.startsWith(marker) && name.length > marker.length) return name.slice(marker.length);
+    if (name.endsWith(marker) && name.length > marker.length) return name.slice(0, -marker.length);
+  }
+  return semantic === 'value' ? name : '';
+}
+
+function supportingTextSource(field, pack, items, usedValues) {
+  if (isOrdinalTextField(field)) return null;
+  const semantic = projectionSemantic(field.key, field.type, field.role);
+  if (!semantic || semantic === 'decorative') return null;
+  const itemFacts = pack.items.map((item, index) => ({
+    item,
+    projected: items.find(candidate => candidate.id === item.id),
+    root: `presentation.items[${index}]`,
+  }));
+  const chartFacts = (pack.chartData || []).map((item, index) => ({
+    item,
+    projected: items.find(candidate => candidate.id === item.id || candidate.id === `chart:${item.id}`),
+    root: `presentation.chartData[${index}]`,
+  }));
+  const facts = [...itemFacts, ...chartFacts];
+  /** @type {Array<
+   * | { source: string, value: string | number }
+   * | { sourceId: string, semantic: 'formattedValue', value: string }
+   * >} */
+  let candidates = [];
+  if (semantic === 'value') {
+    candidates = facts
+      .filter(({ item }) => typeof item.value === 'number' && Number.isFinite(item.value))
+      .map(({ item, root }) => ({ source: `${root}.value`, value: item.value }));
+  } else if (semantic === 'displayValue') {
+    candidates = facts.flatMap(({ item, projected, root }) => {
+      /** @type {typeof candidates} */
+      const matches = item.displayValue
+        ? [{ source: `${root}.displayValue`, value: item.displayValue }]
+        : projected?.formattedValue
+          ? [{ sourceId: projected.id, semantic: 'formattedValue', value: projected.formattedValue }]
+          : [];
+      return matches;
+    });
+  } else if (semantic === 'unit') {
+    candidates = facts
+      .filter(({ item }) => item.unit)
+      .map(({ item, root }) => ({ source: `${root}.unit`, value: item.unit }));
+  } else if (semantic === 'detail') {
+    candidates = [
+      { source: 'presentation.summary.short', value: pack.summary.short },
+      { source: 'presentation.summary.full', value: pack.summary.full },
+      ...itemFacts.flatMap(({ item, root }) => [
+        { source: `${root}.detail.short`, value: item.detail.short },
+        { source: `${root}.detail.full`, value: item.detail.full },
+      ]),
+    ];
+  } else {
+    candidates = [
+      { source: 'presentation.title.full', value: pack.title.full },
+      { source: 'presentation.summary.short', value: pack.summary.short },
+      { source: 'presentation.pageIntent', value: pack.pageIntent },
+      ...itemFacts.map(({ item, root }) => ({ source: `${root}.label`, value: item.label })),
+      ...chartFacts.map(({ item, root }) => ({ source: `${root}.label`, value: item.label })),
+    ];
+  }
+  const budget = Number(field.maxChars || 0);
+  return candidates.find(candidate => (
+    candidate.value !== undefined
+    && candidate.value !== null
+    && String(candidate.value).trim()
+    && !usedValues.has(String(candidate.value))
+    && (!budget || charLength(String(candidate.value)) <= budget)
+  )) || null;
+}
+
+function titleFieldScore(field) {
+  const key = String(field?.key || '').toLowerCase();
+  const role = String(field?.role || '').toLowerCase();
+  return Number(role === 'title') * 100 + Number(/title|headline|heading/.test(key)) * 30 + Number(field.maxChars || 0) / 100;
+}
+
+function isBodyTextField(field) {
+  return ['body', 'paragraph'].includes(String(field?.role || '').toLowerCase())
+    || /summary|body|desc|description|sub|takeaway/.test(String(field?.key || '').toLowerCase());
+}
+
+function isOrdinalTextField(field) {
+  const key = String(field?.key || '').split('.').at(-1)?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+  return isOrdinalKey(key);
+}
+
+function disabledTextProp(layout, field) {
+  const names = [field?.key, String(field?.key || '').split('.').at(-1)]
+    .map(value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''))
+    .filter(Boolean);
+  const toggle = (layout?.controls || []).find(control => {
+    if (control.type !== 'toggle') return false;
+    const key = String(control.publicKey || control.key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const subject = key.startsWith('show') ? key.slice(4) : '';
+    return subject && names.some(name => name.includes(subject) || subject.includes(name));
+  });
+  return toggle ? { prop: toggle.publicKey || toggle.key, value: false } : null;
+}
+
+function arrayMinimumCount(layout, field) {
+  if (!field.countKey) return Number(field.fixedLength || field.visibleCount || 0);
+  const binding = (layout?.countBindings || []).find(item => item.key === field.countKey || item.publicKey === field.countKey);
+  return Number(binding?.min || 0);
+}
+
+function isChartDataContainer(layout, field) {
+  const text = `${layout?.slot || ''} ${layout?.label || ''} ${(layout?.roles || []).join(' ')} ${field?.key || ''}`.toLowerCase();
+  return /chart|trend|distribution|relationship|comparison|ranking|treemap|radar|donut|waterfall|sankey|scatter|plot|bar|line|area|图|趋势|分布|关系|对比|排行|矩形树|雷达|瀑布/.test(text);
+}
+
+function arrayFieldAcceptsEmptyValue(layout, field) {
+  const pathName = String(field?.key || '');
+  if (!pathName || pathName.includes('[]')) return false;
+  if (field.fixedLength || field.fixedLengths || field.sameLengthAs) return false;
+  const binding = (layout?.countBindings || []).find(item => (
+    item.key === field.countKey || item.publicKey === field.countKey
+  ));
+  const minimum = field.min ?? binding?.min;
+  if (minimum != null && Number(minimum) > 0) return false;
+  return Array.isArray(objectPathValue(layout?.propShapes || {}, pathName));
+}
+
+function disabledArrayProp(layout, field) {
+  if (Number(field.visibleCount || 0) === 0) return { prop: field.countKey || '', value: 0 };
+  const binding = (layout?.countBindings || []).find(item => item.key === field.countKey || item.publicKey === field.countKey);
+  const minimum = field.min ?? binding?.min;
+  if (field.countKey && minimum != null && Number(minimum) === 0) return { prop: field.countKey, value: 0 };
+  return disabledArrayToggleProp(layout, field);
+}
+
+function disabledArrayToggleProp(layout, field) {
+  const names = [field?.key, String(field?.key || '').split('.').at(-1)]
+    .map(value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''))
+    .filter(Boolean);
+  const toggle = (layout?.controls || []).find(control => {
+    if (control.type !== 'toggle') return false;
+    const key = String(control.publicKey || control.key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const subject = key.startsWith('show') ? key.slice(4) : '';
+    return subject && names.some(name => name.startsWith(subject) || subject.startsWith(name));
+  });
+  return toggle ? { prop: toggle.publicKey || toggle.key, value: false } : null;
+}
+
+function buildMediaProjectionPlan(layout, pack, contentCountKeys = new Set()) {
+  const media = pack.media || [];
+  const slots = layout?.mediaSlots || [];
+  const disabledProps = [];
+  if (media.length) {
+    const slot = slots.find(item => (
+      item.canPresetMedia
+      && mediaCapacity(item) >= media.length
+      && media.every(mediaItem => slotAcceptsKind(item, pageContentMediaKind(mediaItem)))
+    ));
+    if (!slot) return { requiredFits: false, disabledProps, mediaTarget: null };
+    return {
+      requiredFits: true,
+      disabledProps,
+      mediaTarget: {
+        path: String(slot.presetProp || slot.writableProp || slot.fieldPath || '').replace(/^props\./, ''),
+        countKey: slot.publicCountKey || slot.countKey || null,
+      },
+    };
+  }
+  for (const slot of slots) {
+    if (Number(slot.defaultVisibleCount ?? slot.defaultCount ?? 0) <= 0) continue;
+    const countKey = slot.publicCountKey || slot.countKey || null;
+    const field = { key: slot.field, countKey, visibleCount: slot.defaultVisibleCount ?? slot.defaultCount, min: slot.min };
+    const disabled = countKey && contentCountKeys.has(countKey)
+      ? disabledArrayToggleProp(layout, field)
+      : disabledArrayProp(layout, field);
+    if (!disabled) return { requiredFits: false, disabledProps, mediaTarget: null };
+    disabledProps.push(disabled);
+  }
+  return { requiredFits: true, disabledProps, mediaTarget: null };
+}
+
+function pageContentMediaKind(item) {
+  const declared = normalizeMediaKind(item?.kind);
+  if (declared === 'image' || declared === 'video') return declared;
+  return String(item?.type || '').toLowerCase().startsWith('video/') ? 'video' : 'image';
+}
+
+function mediaCapacity(slot) {
+  return Number(slot.maxCount || slot.max || slot.defaultVisibleCount || slot.defaultCount || 0);
+}
+
+function structureFingerprint(layout, plan) {
+  const primary = plan.primaryContentContainer;
+  const label = `${layout?.slot || ''} ${layout?.label || ''} ${(layout?.roles || []).join(' ')}`.toLowerCase();
+  let family = 'editorial';
+  if (/table|ranking|leaderboard|表|排行|清单/.test(label)) family = 'table';
+  else if (/matrix|quadrant|矩阵|象限/.test(label)) family = 'matrix';
+  else if (/timeline|roadmap|process|step|sequence|时间|路线|流程|阶段/.test(label)) family = 'sequence';
+  else if (/compare|versus|comparison|对比|竞品|差异/.test(label)) family = 'comparison';
+  else if (/chart|trend|radar|donut|waterfall|plot|图|趋势|雷达|瀑布/.test(label)) family = 'chart';
+  else if (/hero|statement|quote|封面|宣言|观点/.test(label)) family = 'hero';
+  else if (/card|grid|list|tile|卡|网格|列表/.test(label)) family = 'cards';
+  else if (primary?.supportsValue) family = 'metrics';
+  else if ((primary?.capacity || 0) >= 3) family = 'cards';
+  else if (layout?.mediaSlots?.length) family = 'media';
+  const primaryShape = primary
+    ? `${primary.kind}:${primary.supportsValue ? 'value' : 'text'}:${primary.supportsDetail ? 'detail' : 'compact'}:${primary.capacity}`
+    : 'none';
+  const composition = primary || isCoverCandidate(layout.layout)
+    ? `${family}:${primary?.kind || 'none'}:${primary?.capacity || 0}`
+    : `${family}:empty:${layoutSkeletonShape(layout)}`;
+  return { family, primaryShape, composition };
+}
+
+function layoutSkeletonShape(layout) {
+  const text = (layout?.fillPlan?.text || []).map(field => {
+    const semantic = projectionSemantic(field.key, field.type || 'string', field.role);
+    if (!semantic || ['decorative', 'ordinal'].includes(semantic)) return null;
+    return `${semantic}:${String(field.role || 'copy').toLowerCase()}:${Math.ceil(Number(field.maxChars || 0) / 20)}`;
+  }).filter(Boolean).sort();
+  const arrays = businessArrayRegions(layout).map(({ field, visibleCount }) => {
+    const semantics = (arrayProjectionFields(field) || [])
+      .map(item => item.semantic).filter(value => value !== 'optional').sort().join('+');
+    return `${String(field.role || 'array').toLowerCase()}:${semantics || 'opaque'}:${visibleCount}`;
+  }).sort();
+  const scalars = scalarGroupSlots(layout)
+    .map(slot => slot.fields.map(field => field.semantic).sort().join('+')).sort();
+  const media = (layout?.mediaSlots || [])
+    .filter(slot => Number(slot.defaultVisibleCount ?? slot.defaultCount ?? 0) > 0)
+    .map(slot => `${String(slot.role || 'media').toLowerCase()}:${mediaCapacity(slot)}:${Array.from(slot.acceptedKinds || []).sort().join('+') || 'any'}`)
+    .sort();
+  return `t=${text.join(',') || 'none'};a=${arrays.join(',') || 'none'};s=${scalars.join(',') || 'none'};m=${media.join(',') || 'none'}`;
+}
+
+function setObjectPath(target, pathName, value) {
+  const parts = String(pathName || '').split('.').filter(Boolean);
+  let cursor = target;
+  parts.forEach((part, index) => {
+    if (index === parts.length - 1) cursor[part] = value;
+    else cursor = cursor[part] ||= {};
+  });
+}
+
+function arrayDepth(value) {
+  if (Array.isArray(value)) return 1 + arrayDepth(value[0]);
+  if (!value || typeof value !== 'object') return 0;
+  return Object.values(value).reduce((max, child) => Math.max(max, arrayDepth(child)), 0);
 }
 
 function getRequestedMediaCount({ plannedImages, providedImages, providedMedia, imageGen, needsVisual, mediaCount }) {

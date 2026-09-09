@@ -61,13 +61,15 @@ Name the few strengths and risks that actually determine the bottom line; do not
 
 ## Approach-set position contract
 
-An approach-set POV judges only the options the user or conversation supplied; generating a new option field belongs to `ce-ideate` or `ce-brainstorm`. Lead with a plain-language **Position**. Then state:
+An approach-set POV judges developed options supplied by the user, conversation, or calling skill. When comparison requires developing concrete solutions beyond their current form, route to `ce-bakeoff`; discovering an open field belongs to `ce-ideate`, and establishing goals or criteria belongs to `ce-brainstorm`. Lead with a plain-language **Position**. Then state:
 
 `Why` · `Tradeoffs by supplied approach` · `Verified facts (project + load-bearing external claims, kept distinct)` · `Conversation hypotheses (unverified — warm only)` · `Conditions` · `Handoff (optional separate continuation)`
 
 Choose an approach and recommend it when verified project facts and the material tradeoffs provide a real basis. When the options are genuinely viable either way, say **"Either is viable"** and lay out the pros and cons instead of forcing a pick. Never manufacture certainty with a scorecard or mechanically select the option with the most checked boxes. Proceeding with an approach is never part of the POV itself; an analysis-only request offers it and waits, while an originally authorized continuation still must pass the Phase 4 authority gate.
 
 ## Output economy
+
+Write the chat block through the `ce-noslop` skill. The rules in this section are what this skill adds on top.
 
 `ce-pov` writes no document, so the chat block *is* the whole deliverable — make it a tight POV, not a transcript of the investigation.
 

@@ -48,6 +48,7 @@ Bad example:
 
 - If required context is missing, ask one blocking question or route back to the narrower workflow.
 - If runtime or wrapper evidence is unavailable, keep the status as not_observed and expose the next observable action.
+- Native write policy `required` stops promotion as unsupported and `not_required` is not an approval; drift unlinks only the managed SKILL.md and keeps generations and receipts, and an incomplete promotion resumes only via explicit `retry --receipt-id`.
 
 ## Workflow Lane
 
@@ -95,6 +96,7 @@ Expected outputs:
 Artifact expectations:
 
 - workflow-learning/v1 metadata-only runtime or wrapper card when recorded
+- browser_skill_promotion_approval_receipt/v1 only through `omh web-qa promotion diff` then `approve --reviewed-diff-digest --reviewer` on an approved, replay-passing `omh web-qa trace`; every operation needs its own reviewed exact diff
 
 Safety rules:
 

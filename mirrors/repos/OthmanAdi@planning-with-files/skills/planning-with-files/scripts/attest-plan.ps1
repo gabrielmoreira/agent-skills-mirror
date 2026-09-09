@@ -404,6 +404,7 @@ function Resolve-PlanFile {
     $resolver = Join-Path $PSScriptRoot "resolve-plan-dir.ps1"
     if (-not (Test-Path -LiteralPath $resolver -PathType Leaf)) { return $null }
     $resolvedDir = @(& $resolver | Where-Object { $_ }) | Select-Object -First 1
+    if (-not $resolvedDir -and ((& $resolver -CheckAmbiguity) -eq "PWF_PLAN_AMBIGUOUS_V1")) { return $null }
     if ($resolvedDir) {
         $planFile = Join-Path $resolvedDir "task_plan.md"
         return (Resolve-ContainedPlanFile -Candidate $planFile -ExpectedDirectory $resolvedDir)

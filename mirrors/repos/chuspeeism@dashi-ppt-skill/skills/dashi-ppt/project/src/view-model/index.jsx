@@ -11,6 +11,10 @@ import {
   resolveContentMap,
 } from '../variant-contract.mjs';
 import {
+  materializeBespokeComposition,
+  materializeTemplateVariantProps,
+} from '../variant-materializer.mjs';
+import {
   SCHEMA_V2_LOGICAL_SLIDE_FIELDS,
   pickSchemaV2LogicalSlideFields,
 } from './schema-v2-canonical.mjs';
@@ -200,6 +204,9 @@ function serializeVariantViewModel(variant, toJson, canonicalContentOnly = false
     ...(variant.contentMap !== undefined
       ? { contentMap: toJson(variant.contentMap) }
       : {}),
+    ...(variant.projection !== undefined
+      ? { projection: toJson(variant.projection) }
+      : {}),
   };
   if (variant.variantKind === 'bespoke') {
     return {
@@ -212,10 +219,10 @@ function serializeVariantViewModel(variant, toJson, canonicalContentOnly = false
     ...shared,
     layout: variant.layout,
     dataLayout: variant.dataLayout,
-    props: toJson(variant.authoredProps ?? {}),
-    ...(canonicalContentOnly
-      ? {}
-      : { materializedProps: toJson(variant.sourceProps ?? variant.authoredProps ?? {}) }),
+    ...(canonicalContentOnly ? {} : {
+      props: toJson(variant.authoredProps ?? {}),
+      materializedProps: toJson(variant.sourceProps ?? variant.authoredProps ?? {}),
+    }),
   };
 }
 
@@ -310,9 +317,8 @@ function normalizeSlideModel(slide, index, schemaVersion) {
         variantIndex,
         variantCount: slide.variants.length,
         layout,
-        ...(variantKind === 'bespoke'
-          ? { key: createBespokeSlideKey(pageId, variantId) }
-          : { props: variant.props || {} }),
+        ...(variant.key || variant.slideKey ? { key: variant.key || variant.slideKey } : {}),
+        ...(variantKind === 'bespoke' ? {} : { props: variant.props || {} }),
         label: variant.label || slide.label,
         logicalIndex: variant.logicalIndex ?? slide.logicalIndex,
       };
@@ -408,6 +414,7 @@ function buildLogicalSlideViewModel(slide, index, slideKeys, registries) {
   return {
     ...selected,
     id: slide.id,
+    key: slide.key || slide.slideKey || slide.id,
     stateId: selected.stateId,
     variants,
     content: slide.content,
@@ -495,9 +502,12 @@ function buildSlideViewModel(
   }
   const slideThemePack = findLayoutThemePack(resolvedLayout, themePacks) || defaultThemePack;
   const authoredProps = slide.props || {};
-  const sourceProps = slide.contentMap
-    ? resolveContentMap(content, normalizeContentMapSources(slide.contentMap), authoredProps)
+  const projectedProps = slide.projection?.structure
+    ? materializeTemplateVariantProps(content?.presentation, slide.projection.structure)
     : authoredProps;
+  const sourceProps = slide.contentMap
+    ? resolveContentMap(content, normalizeContentMapSources(slide.contentMap), projectedProps)
+    : projectedProps;
   const label = slide.label || inferSlideLabel(slide, index) || option.label;
   const renderProps = mergeSparsePropsForRender(
     getLayoutContract(resolvedLayout)?.defaultProps || {},
@@ -522,6 +532,7 @@ function buildSlideViewModel(
     sourceProps,
     authoredProps,
     contentMap: slide.contentMap,
+    projection: slide.projection,
     media: slide.media || {},
     logicalIndex: slide.logicalIndex,
     context: {
@@ -554,9 +565,14 @@ function buildBespokeSlideViewModel(
   pageId,
 ) {
   const authoredComposition = slide.composition || {};
-  const composition = slide.contentMap
+  const mappedComposition = slide.contentMap
     ? resolveContentMap(content, normalizeContentMapSources(slide.contentMap), authoredComposition)
     : authoredComposition;
+  const composition = materializeBespokeComposition(
+    mappedComposition,
+    content?.presentation,
+    slide.projection,
+  );
   const themePack = slide.themePack || defaultThemePack;
   const label = slide.label || 'Agent 定制方案';
   return {
@@ -580,6 +596,7 @@ function buildBespokeSlideViewModel(
     composition,
     authoredComposition,
     contentMap: slide.contentMap,
+    projection: slide.projection,
     media: slide.media || {},
     logicalIndex: slide.logicalIndex,
     context: {
@@ -603,29 +620,17 @@ function buildBespokeSlideViewModel(
 }
 
 function normalizeContentMapSources(contentMap) {
-  return Object.fromEntries(Object.entries(contentMap || {}).map(([targetPath, sourceMapping]) => {
-    if (typeof sourceMapping === 'string') {
-      return [
-        targetPath,
-        sourceMapping.startsWith('content.')
-          ? sourceMapping.slice('content.'.length)
-          : sourceMapping,
-      ];
-    }
-    return [
-      targetPath,
-      {
-        ...sourceMapping,
-        source: sourceMapping?.source?.startsWith('content.')
-          ? sourceMapping.source.slice('content.'.length)
-          : sourceMapping?.source,
-      },
-    ];
-  }));
+  return Object.fromEntries(Object.entries(contentMap || {}).map(([targetPath, sourcePath]) => [
+    targetPath,
+    typeof sourcePath === 'string' && sourcePath.startsWith('content.')
+      ? sourcePath.slice('content.'.length)
+      : sourcePath,
+  ]));
 }
 
-function createBespokeSlideKey(sourceSlideId, variantId) {
-  return `bespoke-${encodeURIComponent(sourceSlideId)}-${encodeURIComponent(variantId)}`;
+function createVariantSlideKey(sourceSlideId, variantId, variantKind) {
+  const prefix = variantKind === 'bespoke' ? 'bespoke' : 'variant';
+  return `${prefix}-${encodeURIComponent(sourceSlideId)}-${encodeURIComponent(variantId)}`;
 }
 
 function mergeSparsePropsForRender(defaultProps, sparseProps) {
@@ -691,20 +696,49 @@ function inferSlideLabel(slide, index) {
 }
 
 function createSlideKeys(slides, layoutAliases = {}) {
+  const authoredOwners = new Map();
+  slides.forEach((slide, index) => {
+    if (!slide.key && !slide.slideKey) return;
+    const key = String(slide.key || slide.slideKey);
+    const existing = authoredOwners.get(key);
+    if (existing !== undefined) {
+      throw new Error(`Deck has duplicate authored text slide key "${key}" for renderable slides ${existing + 1} and ${index + 1}.`);
+    }
+    authoredOwners.set(key, index);
+  });
+
   const totals = new Map();
   slides.forEach((slide) => {
-    const base = layoutAliases[slide.layout] || slide.layout || slide.id;
+    if (slide.key || slide.slideKey) return;
+    const base = generatedSlideKeyBase(slide, layoutAliases);
     totals.set(base, (totals.get(base) || 0) + 1);
   });
 
   const seen = new Map();
+  const used = new Set();
+  const reservedKeys = new Set(authoredOwners.keys());
   return slides.map((slide) => {
-    if (slide.key || slide.slideKey) return slide.key || slide.slideKey;
-    const base = layoutAliases[slide.layout] || slide.layout || slide.id;
+    if (slide.key || slide.slideKey) {
+      const key = String(slide.key || slide.slideKey);
+      used.add(key);
+      return key;
+    }
+    const base = generatedSlideKeyBase(slide, layoutAliases);
     const count = (seen.get(base) || 0) + 1;
     seen.set(base, count);
-    return totals.get(base) > 1 ? `${base}-${count}` : base;
+    const initial = totals.get(base) > 1 ? `${base}-${count}` : base;
+    let key = initial;
+    for (let suffix = 2; reservedKeys.has(key) || used.has(key); suffix += 1) key = `${initial}-${suffix}`;
+    used.add(key);
+    return key;
   });
+}
+
+function generatedSlideKeyBase(slide, layoutAliases) {
+  if (slide.variantId && slide.variantKind === 'bespoke') {
+    return createVariantSlideKey(slide.pageId, slide.variantId, slide.variantKind);
+  }
+  return layoutAliases[slide.layout] || slide.layout || slide.id;
 }
 
 function normalizeTextState(text, slides, layoutAliases = {}) {
@@ -748,11 +782,12 @@ function normalizeTextState(text, slides, layoutAliases = {}) {
 }
 
 function parseTextKey(key) {
-  const match = /^text:([^:]+):(.+)$/.exec(key);
-  if (!match) return null;
+  if (typeof key !== 'string' || !key.startsWith('text:')) return null;
+  const separator = key.lastIndexOf(':');
+  if (separator <= 'text:'.length || separator === key.length - 1) return null;
   return {
-    target: match[1],
-    slot: match[2],
+    target: key.slice('text:'.length, separator),
+    slot: key.slice(separator + 1),
   };
 }
 

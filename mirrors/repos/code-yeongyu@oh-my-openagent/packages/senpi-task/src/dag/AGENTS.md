@@ -30,6 +30,12 @@ Compile a node definition into an execution graph, admit each node the moment ev
 - A node starts once EVERY node it dependsOn holds `completed` and a resident slot is free (dependency-frontier admission). Compiled waves NEVER gate execution; `dag.wave.started` groups the nodes one admission pass scheduled (one wave index can appear in several started events when its nodes become ready at different times) and `dag.wave.completed` fires once per index when the wave's FULL membership is terminal (skipped and failed nodes included in the listing).
 - The dependent skip cascade runs at frontier quiescence (nothing attached): a failed node stays revivable via `send` while siblings are mid-flight, so an eager cascade would strand revived-completable dependents as skipped.
 
+## Recovery launch boundary
+
+Recovery resolves the newest owned task before consulting the checkpoint's `taskId`: `dag.node.retried` retains the prior ID until the replacement's admission batch attaches it. That prior record must not override the replacement's launch evidence or terminal outcome. A recovery retry event names the selected task in `priorTaskId`, not the checkpoint's retained ID.
+
+`TaskRecord.started_at` is durable before normal start or lifecycle respawn invokes a runner. Respawn preserves an existing stamp without changing status or epoch; non-terminal reattachment stamps any absent value when writing `running`. A DAG node may remain `scheduled` after its child starts, so only a scheduled, lost task without this stamp is eligible for automatic readmission. Recovery uses `dag.node.retried` with `execAttempt + 1`, capped at three. Stamped lost work folds `task_lost`; legacy unstamped scheduled records remain eligible. A crash after stamping but before invocation conservatively folds `task_lost`. Reconciliation loss reduces the current stored record under its record lock, including when respawn fails after invoking the runner; it must preserve the launch stamp and other facts persisted during respawn.
+
 ## Conventions
 
 - Policy is fixed inside the definition fingerprint: `dependency-frontier` wave admission (was `strict-barrier` before 2026-08-25), `continue-independent` failure handling, filesystem-only dependency data.
@@ -47,6 +53,7 @@ Compile a node definition into an execution graph, admit each node the moment ev
 - NEVER put activity events or journal seq/lane metadata into boundary builders.
 - Missing skills never fail a run; they become `missing_skill` diagnostics. Resumed runs read creation-time materialization, never current `SKILL.md`.
 - Wait surfaces resolve (not reject) failed/cancelled runs; callers inspect `DagRunResult`.
+- A vanished `<stateDir>/dag/*` directory (worktree cleanup, `rm -rf .omo`) reads as empty through `readDagDirectory` and is recreated by the next checkpoint/event/lock write; it must never surface as an ENOENT from `list`, retention, or recovery. The omo-senpi rpc bridge additionally treats any store read fault on its timer paths as "nothing to publish" (one warning per distinct fault), because a throw there is an `uncaughtException` that ends the session.
 
 ## QA
 

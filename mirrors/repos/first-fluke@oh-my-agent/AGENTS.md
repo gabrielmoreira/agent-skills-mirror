@@ -15,11 +15,11 @@ Follow `.agents/skills/_shared/core/execution-policy.md` for authorization, clar
 
 ## Per-Agent Dispatch
 
-Resolve the target vendor for each agent from `.agents/oma-config.yaml`. Use native subagents when it matches the current runtime; otherwise, or when native dispatch is unavailable, use `oma agent spawn` for that agent.
+Resolve each agent from `.agents/oma-config.cue` or `.agents/oma-config.yaml`, overlaid by `.agents/oma-config.local.cue` or `.agents/oma-config.local.yaml` when present. With `model_preset: free`, always use `oma agent spawn` so the subprocess receives the FreeLLMAPI route; `free.model` replaces per-agent model pins. Otherwise, explicit `agents:` overrides take priority. With `model_preset: auto`, follow the current vendor's native agent/model settings; use `default_cli` only when the runtime is unknown. Use native subagents when the target matches the current runtime; otherwise, or when native dispatch is unavailable, use `oma agent spawn`.
 
 ## Code Search
 
-Serena MCP is required for code search and discovery. Load deferred tools before use. Use native search/read only when Serena is unavailable or times out, or for plain non-code content.
+Gortex is the selected code-intelligence provider (experimental). Use its MCP tools for code search, navigation, impact, contracts and edits. This selection overrides Serena-specific routing in installed skills. Load deferred tools before use. Use native search/read when Gortex is unavailable or times out; do not silently enable Serena. Never run gortex install/init or track additional repositories automatically; repository tracking requires explicit user consent. Context7 remains the documentation provider. OMA workflow state and verification stay in .agents/state/.
 
 ## Workflows
 

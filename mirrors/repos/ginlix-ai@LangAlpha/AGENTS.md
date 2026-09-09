@@ -3,7 +3,7 @@
 Core AI agent service of the Ginlix financial research platform. Two agents:
 
 - **PTC agent** (default) — the **worker**: does the R&D and produces deliverables. Wired with a full Daytona sandbox and the complete toolset (code execution, MCP financial-data tools, charts, subagent orchestration). PTC = **Programmatic Tool Calling** (see [PTC pattern](#ptc-pattern)).
-- **Flash agent** — a fast, lightweight **assistant**: quick lookups, and coordinating between the workspace and the PTC worker. No sandbox; external tools only.
+- **Flash agent** — a fast, lightweight **assistant**: quick lookups, and coordinating between the workspace and the PTC worker. No sandbox; external tools only, plus any MCP tool bound to the direct path (see [PTC pattern](#ptc-pattern)).
 
 > Single source of truth for AI coding agents. `CLAUDE.md` imports this via `@AGENTS.md`; Codex/Cursor/Copilot read it directly. Edit here, not there.
 
@@ -54,11 +54,13 @@ Electron wrapper around the hosted web app. It carries **no web bundle**, only a
 Built with `create_agent()` from **`langchain.agents`** (not a hand-written `StateGraph`), wrapped in a custom middleware stack (some middleware from `deepagents`). `PTCAgent.create_agent()` in `src/ptc_agent/agent/agent.py` assembles the tools (`execute_code`, `bash`, filesystem ops, `show_widget`, web search/fetch, SEC/market), the middleware, and a `BackgroundSubagentOrchestrator` for parallel background tasks.
 
 - **Subagents** (`agent/subagents/`): five built-in (`research`, `general-purpose`, `data-prep`, `equity-analyst`, `report-builder`), all enabled by default; more user-defined ones from `agent_config.yaml`.
-- **Flash agent** (`agent/flash/`): the assistant path — also skips MCP and subagents.
+- **Flash agent** (`agent/flash/`): the assistant path — skips subagents and the sandbox, so it reaches MCP only through directly bound tools.
 
 ### PTC pattern
 
-The core differentiator: the LLM does **not** call MCP tools directly. It writes Python via `execute_code` that imports generated wrapper modules and calls MCP-backed functions in the sandbox — enabling data manipulation, charting, and multi-step analysis in one execution. Financial-data MCP servers run as stdio subprocesses, each living in the `plugins/` bundle that declares it (see below); `ToolFunctionGenerator` builds the wrapper code uploaded to sandboxes.
+The core differentiator: by default the LLM does **not** call MCP tools directly. It writes Python via `execute_code` that imports generated wrapper modules and calls MCP-backed functions in the sandbox — enabling data manipulation, charting, and multi-step analysis in one execution. Financial-data MCP servers run as stdio subprocesses, each living in the `plugins/` bundle that declares it (see below); `ToolFunctionGenerator` builds the wrapper code uploaded to sandboxes.
+
+A tool may instead be bound to the **direct** path, where the model calls it as one JSON tool call and the sandbox is not involved. That is the shape a per-call policy can see and a UI can render, which is what a live order needs, so the `trading` capability group allows no other path. `src/server/services/tool_binding.py` resolves each tool's path and clamps it to what its group permits; a server reachable only over stdio is always a sandbox wrapper, because the direct path dials through the egress relay.
 
 ### Data, streaming & database
 

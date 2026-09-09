@@ -684,6 +684,8 @@ The evaluator compares each agent trajectory against a human reference trajector
 
 See [`eval/README.md`](eval/README.md) for the full evaluation guide and Claude Code prompt template.
 
+To export a rescored batch as an OpenEval / EvalPort `ResultSet`, run `uv run python scripts/export_openeval.py` with your batch directory, run ID, and start timestamp. See [export instructions](eval/README.md#export-results-to-openeval--evalport) for an example and available options.
+
 ## <img src="assets/icons/terminal.svg" width="20" height="20"> CLI
 
 ```bash

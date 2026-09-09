@@ -33,21 +33,6 @@ export interface ListLayoutsOptions {
   theme?: string;
   role?: string;
   keyword?: string;
-  contentShape?: {
-    required?: {
-      titleChars?: number;
-      itemCount?: number;
-      numericItemCount?: number;
-      nestedDepth?: number;
-      requiresValue?: boolean;
-    };
-    preferred?: {
-      summaryChars?: number;
-      takeawayChars?: number;
-      detailItemCount?: number;
-      priority?: string;
-    };
-  } | null;
   needsMedia?: boolean;
   plannedImages?: unknown;
   providedImages?: unknown;

@@ -7,22 +7,23 @@ import {
   BESPOKE_SCHEMA_VERSION,
   TEMPLATE_VARIANT_COUNT,
   TOTAL_VARIANT_COUNT,
-  normalizedChartValue,
+  pageContentProjectionItems,
+  requiredPageContentFacts,
   resolveContentMap,
   validateBespokeComposition,
   validateContentMap,
+  validatePageContentPack,
 } from '../src/variant-contract.mjs';
+import {
+  materializeBespokeComposition,
+  materializeTemplateVariantProps,
+} from '../src/variant-materializer.mjs';
+import { materializeTemplateProjection, validateMaterializedTemplateProjection } from './workflow/layout-query.mjs';
 // 与预算生成同一把尺:视觉宽度折算(全角=1、半角=0.5),见 copy-contract.mjs(issue #15)。
 import { charLength } from './workflow/copy-contract.mjs';
 import {
-  beginWorkflowStage,
-  workflowTelemetryPath,
-} from './workflow-telemetry.mjs';
-import {
   NEUTRAL_PLACEHOLDERS,
   THEME_PAGES,
-  buildTemplateProjectionPlan,
-  contentShapeFromPresentation,
   getCopyBudgetsForLayout,
   inspectLayout,
   getMediaSlotsForLayout,
@@ -47,7 +48,6 @@ export function validateGoalSpec(spec, options = {}) {
   const slides = Array.isArray(spec?.slides) ? spec.slides : [];
   const authoredSlides = Array.isArray(options.authoredSpec?.slides) ? options.authoredSpec.slides : null;
   const mediaUsages = new Map();
-  const layoutUsages = new Map();
   const deckCoreCopyUsages = new Map();
   const schemaVersion = spec?.schemaVersion == null ? 1 : Number(spec.schemaVersion);
   if (!Number.isInteger(schemaVersion) || ![1, BESPOKE_SCHEMA_VERSION].includes(schemaVersion)) {
@@ -108,10 +108,6 @@ export function validateGoalSpec(spec, options = {}) {
       errors.push(`slide ${slideNumber} layout ${layout} field layout: unknown layout`);
       return;
     }
-
-    const usages = layoutUsages.get(layout) || [];
-    usages.push(location);
-    layoutUsages.set(layout, usages);
 
     if (Object.prototype.hasOwnProperty.call(slide, 'media')) {
       errors.push(`slide ${slideNumber} layout ${layoutLabel} field media: slides[].media is not rendered; use props.images or props.media`);
@@ -179,7 +175,6 @@ export function validateGoalSpec(spec, options = {}) {
     errors.push(`slide ${item.slideNumber} layout ${item.layout} field layout: cover-like layouts must use themeXX_page001-page005`);
   }
 
-  if (schemaVersion !== BESPOKE_SCHEMA_VERSION) validateUniqueLayouts(layoutUsages, errors);
   validateDeckRepeatedCoreCopy(deckCoreCopyUsages, errors);
 
   if (spec?.allowMediaReuse !== true) validateUniqueMediaUsages(mediaUsages, errors);
@@ -291,28 +286,20 @@ function expandLayoutEntries(slides, authoredSlides, errors, options = {}) {
         errors.push(`slide ${logicalSlideNumber} field variants: duplicate layout "${layout}"`);
       }
       if (layout) layouts.add(layout);
-      if (!item?.props || typeof item.props !== 'object' || Array.isArray(item.props)) {
+      const hasStructureProjection = isPlainRecord(item?.projection?.structure);
+      if (!hasStructureProjection && (!item?.props || typeof item.props !== 'object' || Array.isArray(item.props))) {
         errors.push(`slide ${logicalSlideNumber} variant ${id || variantIndex + 1} field props: object is required`);
+      }
+      if (hasStructureProjection && isPlainRecord(item?.props) && Object.keys(item.props).length) {
+        errors.push(`slide ${logicalSlideNumber} variant ${id || variantIndex + 1} field props: structural projections must not persist materialized props`);
       }
       if (isV2Deck) {
         validateContentMapEnvelope(item, slide, logicalSlideNumber, id || variantIndex + 1, errors, options);
+        validateTemplateProjectionEnvelope(item, slide, logicalSlideNumber, id || variantIndex + 1, variantIndex, errors, options);
       }
     }
     if (typeof slide.selectedVariant !== 'string' || !ids.has(slide.selectedVariant)) {
       errors.push(`slide ${logicalSlideNumber} field selectedVariant: "${slide.selectedVariant ?? '<missing>'}" does not match a variant id`);
-    }
-    if (isV2Deck) {
-      validateCanonicalVariantContent(slide, logicalSlideNumber, errors, options);
-      const authoredLogicalSlide = authoredSlides?.[index];
-      if (authoredLogicalSlide) {
-        validateCanonicalVariantContent(
-          authoredLogicalSlide,
-          logicalSlideNumber,
-          errors,
-          options,
-          ' authored',
-        );
-      }
     }
     const templateVariants = isV2Deck ? slide.variants.slice(0, TEMPLATE_VARIANT_COUNT) : slide.variants;
     const coverCount = templateVariants.filter(item => isCoverCandidate(item?.layout)).length;
@@ -327,10 +314,9 @@ function expandLayoutEntries(slides, authoredSlides, errors, options = {}) {
         bespokeEntries.push({
           slide: {
             ...item,
-            composition: resolveMappedRenderData(
+            composition: resolveBespokeRenderData(
               slide?.content,
-              item?.contentMap,
-              item?.composition,
+              item,
               `slide ${logicalSlideNumber} variant ${variantId}`,
               errors,
               options,
@@ -339,10 +325,9 @@ function expandLayoutEntries(slides, authoredSlides, errors, options = {}) {
           authoredSlide: authoredVariant
             ? {
               ...authoredVariant,
-              composition: resolveMappedRenderData(
+              composition: resolveBespokeRenderData(
                 authoredLogicalSlide?.content,
-                authoredVariant?.contentMap,
-                authoredVariant?.composition,
+                authoredVariant,
                 `slide ${logicalSlideNumber} variant ${variantId} authored`,
                 errors,
                 options,
@@ -351,25 +336,24 @@ function expandLayoutEntries(slides, authoredSlides, errors, options = {}) {
             : null,
           slideNumber: `${logicalSlideNumber} variant ${variantId}`,
           logicalSlideNumber,
+          content: slide?.content,
           location: `slide ${logicalSlideNumber} variant ${variantId}`,
         });
         return;
       }
       const resolvedProps = isV2Deck
-        ? resolveMappedRenderData(
+        ? resolveTemplateRenderData(
           slide?.content,
-          item?.contentMap,
-          item?.props,
+          item,
           `slide ${logicalSlideNumber} variant ${variantId}`,
           errors,
           options,
         )
         : item?.props;
       const authoredProps = isV2Deck && authoredVariant
-        ? resolveMappedRenderData(
+        ? resolveTemplateRenderData(
           authoredLogicalSlide?.content,
-          authoredVariant?.contentMap,
-          authoredVariant?.props,
+          authoredVariant,
           `slide ${logicalSlideNumber} variant ${variantId} authored`,
           errors,
           options,
@@ -388,9 +372,6 @@ function expandLayoutEntries(slides, authoredSlides, errors, options = {}) {
 }
 
 function validateLogicalContent(slide, slideNumber, errors, options = {}) {
-  if (Object.prototype.hasOwnProperty.call(slide || {}, 'views')) {
-    errors.push(`slide ${slideNumber} field views: candidate-specific slide views are not allowed; keep one canonical slide.content source`);
-  }
   if (!isPlainRecord(slide?.content)) {
     if (!options.allowUnfilledContent) {
       errors.push(`slide ${slideNumber} field content: schemaVersion ${BESPOKE_SCHEMA_VERSION} requires a single content source object`);
@@ -403,500 +384,11 @@ function validateLogicalContent(slide, slideNumber, errors, options = {}) {
   validateNoSerializedReactElements(slide.content, `slide ${slideNumber}`, '<content>', 'content', errors);
   validateObjectStrings(slide.content, `slide ${slideNumber}`, '<content>', 'content', errors);
   validatePlaceholderCopy(slide.content, `slide ${slideNumber}`, '<content>', 'content', errors);
-  validatePresentationChartData(slide.content.presentation, slideNumber, errors);
-}
-
-function validatePresentationChartData(presentation, slideNumber, errors) {
-  if (!isPlainRecord(presentation) || presentation.chartData == null) return;
-  const pathName = `slide ${slideNumber} field content.presentation.chartData`;
-  if (!Array.isArray(presentation.chartData)) {
-    errors.push(`${pathName}: expected an array`);
-    return;
-  }
-  if (presentation.chartData.length > 12) {
-    errors.push(`${pathName}: expected at most 12 items`);
-  }
-  const ids = new Set();
-  presentation.chartData.forEach((item, index) => {
-    const itemPath = `${pathName}[${index}]`;
-    if (!isPlainRecord(item)) {
-      errors.push(`${itemPath}: expected an object`);
-      return;
-    }
-    const label = String(item.label ?? item.name ?? '').trim();
-    if (!label) errors.push(`${itemPath}.label: expected a non-empty string`);
-    const id = String(item.id || '').trim();
-    if (!id) {
-      errors.push(`${itemPath}.id: expected a stable non-empty string`);
-    } else if (ids.has(id)) {
-      errors.push(`${itemPath}.id: duplicate "${id}"`);
-    } else {
-      ids.add(id);
-    }
-    if (!Number.isFinite(normalizedChartValue(item))) {
-      errors.push(`${itemPath}.value: expected a finite or formatted numeric value`);
-    }
-  });
-}
-
-function validateCanonicalVariantContent(
-  slide,
-  slideNumber,
-  errors,
-  options = {},
-  scopeSuffix = '',
-) {
-  const variants = Array.isArray(slide?.variants) ? slide.variants.slice(0, TOTAL_VARIANT_COUNT) : [];
-  const variantIds = new Set(variants.map((variant, index) => String(variant?.id || `v${index + 1}`)));
-  validateCanonicalContentNamespaces(slide?.content, variantIds, slideNumber, errors, scopeSuffix);
-  if (options.allowUnfilledContent) return;
-
-  const traces = variants.map((variant, index) => (
-    index < TEMPLATE_VARIANT_COUNT
-      ? validateTemplateCanonicalContent(variant, slide?.content, slideNumber, errors, scopeSuffix)
-      : validateBespokeCanonicalContent(variant, slideNumber, errors, scopeSuffix)
-  ));
-  if (traces.length !== TOTAL_VARIANT_COUNT) return;
-
-  const templateTraces = traces.slice(0, TEMPLATE_VARIANT_COUNT);
-  const bespokeTrace = traces[TEMPLATE_VARIANT_COUNT];
-  const titleSets = templateTraces
-    .filter(trace => trace.titleTargetCount > 0)
-    .map(trace => new Set(
-      [...trace.titleSources].map(canonicalTitleSourceFamily),
-    ));
-  if (titleSets.length >= 2 && (titleSets.some(set => !set.size) || !intersectSets(titleSets).size)) {
-    errors.push(`slide ${slideNumber}${scopeSuffix} field contentMap: all three template variants must trace a title to the same canonical title family in slide.content`);
-  }
-
-  const coreRoots = canonicalCoreRoots(slide?.content);
-  if (coreRoots.size) {
-    const sharedSourceRoots = intersectSets(templateTraces.map(trace => trace.sourceRoots));
-    const sharedCoreRoots = new Set([...sharedSourceRoots].filter(root => coreRoots.has(root)));
-    if (!sharedCoreRoots.size) {
-      errors.push(`slide ${slideNumber}${scopeSuffix} field contentMap: all three template variants must trace core facts to at least one shared canonical slide.content root`);
-    }
-    const bespokeCoreRoots = new Set(
-      [...(bespokeTrace?.sourceRoots || [])].filter(root => coreRoots.has(root)),
-    );
-    if (!bespokeCoreRoots.size) {
-      errors.push(`slide ${slideNumber}${scopeSuffix} field contentMap: bespoke variant must stay traceable to canonical slide.content facts`);
+  if (Object.prototype.hasOwnProperty.call(slide.content, 'presentation')) {
+    for (const error of validatePageContentPack(slide.content.presentation)) {
+      errors.push(`slide ${slideNumber} field content.${error}`);
     }
   }
-}
-
-function validateCanonicalContentNamespaces(content, variantIds, slideNumber, errors, scopeSuffix = '') {
-  if (!isPlainRecord(content)) return;
-  const visit = (value, pathName, parentKey = '') => {
-    if (!value || typeof value !== 'object') return;
-    for (const [key, item] of Object.entries(value)) {
-      const itemPath = `${pathName}.${key}`;
-      const isNamespace = item != null && typeof item === 'object';
-      const variantNamespace = isNamespace && (
-        variantIds.has(key)
-        || isVariantNamedNamespace(key, variantIds)
-        || (parentKey === 'views' && variantIds.has(key))
-      );
-      if (key === 'variants' || variantNamespace) {
-        errors.push(`slide ${slideNumber}${scopeSuffix} field ${itemPath}: candidate-specific content namespace is not allowed; keep one canonical slide.content source`);
-      }
-      visit(item, itemPath, key);
-    }
-  };
-  visit(content, 'content');
-}
-
-function isVariantNamedNamespace(key, variantIds) {
-  const normalized = String(key || '').toLowerCase().replace(/[\s_-]+/g, '');
-  for (const id of variantIds) {
-    const variantId = String(id).toLowerCase().replace(/[\s_-]+/g, '');
-    if (!variantId) continue;
-    if (normalized === `view${variantId}`
-      || normalized === `variant${variantId}`
-      || normalized === `candidate${variantId}`) return true;
-  }
-  return false;
-}
-
-function validateTemplateCanonicalContent(variant, content, slideNumber, errors, scopeSuffix = '') {
-  const variantId = String(variant?.id || '<missing>');
-  const inspected = inspectLayout(variant?.layout, { compact: true }) || {};
-  const businessTargets = templateBusinessTargets(inspected);
-  const requiredTargets = templateRequiredTargets(
-    inspected,
-    content,
-    businessTargets,
-    variant?.props,
-  );
-  const titleTargets = templateTitleTargets(inspected, content);
-  const contentMap = isPlainRecord(variant?.contentMap) ? variant.contentMap : {};
-  validateContentMapTargetCoverage(
-    contentMap,
-    requiredTargets,
-    `slide ${slideNumber}${scopeSuffix} variant ${variantId}`,
-    errors,
-  );
-  // Hidden or currently disabled business fields still cannot carry candidate-
-  // local copy in props: a user may re-enable the real control later.  A safely
-  // disabled target may omit its mapping, but it must not retain stale payload.
-  validateNoIndependentVisibleValues(
-    variant?.props,
-    businessTargets,
-    'props',
-    `slide ${slideNumber}${scopeSuffix} variant ${variantId}`,
-    errors,
-  );
-  return {
-    titleSources: mappedSourcesForTargets(contentMap, titleTargets),
-    titleTargetCount: titleTargets.length,
-    sourceRoots: contentMapSourceRoots(contentMap),
-  };
-}
-
-function templateBusinessTargets(inspected) {
-  const contracts = inspected?.fieldContracts || [];
-  const explicitDecorativePaths = (inspected?.decorativeKeys || [])
-    .map(normalizeTemplateTargetPath)
-    .filter(Boolean);
-  const mediaPaths = (inspected?.mediaSlots || [])
-    .flatMap(slot => [
-      slot?.field,
-      slot?.fieldPath,
-      slot?.writableProp,
-      slot?.presetProp,
-    ])
-    .map(normalizeTemplateTargetPath)
-    .filter(Boolean);
-  const controlPaths = new Set(
-    (inspected?.controls || [])
-      .flatMap(control => [control?.key, control?.publicKey])
-      .map(normalizeTemplateTargetPath)
-      .filter(Boolean),
-  );
-  const explicitlyNonBusinessPaths = contracts
-    .filter(contract => (
-      contract?.businessContent === false
-      || ['decorative', 'media', 'control'].includes(String(contract?.role || '').toLowerCase())
-    ))
-    .map(contract => normalizeTemplateTargetPath(contract?.key))
-    .filter(Boolean);
-
-  const contractFor = key => contracts.find(contract => (
-    normalizeContractPath(contract?.key) === normalizeContractPath(key)
-    || reduceArrayTarget(normalizeTemplateTargetPath(contract?.key))
-      === reduceArrayTarget(normalizeTemplateTargetPath(key))
-  ));
-  const targets = new Set();
-  const add = (key, role) => {
-    const pathName = normalizeTemplateTargetPath(key);
-    const target = reduceArrayTarget(pathName);
-    if (!target) return;
-    const contract = contractFor(pathName);
-    const roles = [role, contract?.role].map(value => String(value || '').toLowerCase());
-    if (roles.some(value => ['decorative', 'media', 'control'].includes(value))) return;
-    if (contract?.businessContent === false) return;
-    if (controlPaths.has(target)) return;
-    if (explicitDecorativePaths.some(pathValue => templatePathOverlaps(pathValue, target))) return;
-    if (mediaPaths.some(pathValue => templatePathOverlaps(pathValue, target))) return;
-    if (explicitlyNonBusinessPaths.some(pathValue => templatePathOverlaps(pathValue, target))) return;
-    targets.add(target);
-  };
-
-  for (const field of inspected?.fillPlan?.text || []) add(field?.key, field?.role);
-  for (const field of inspected?.fillPlan?.arrays || []) add(field?.key, field?.role);
-  for (const contract of contracts) add(contract?.key, contract?.role);
-  return [...targets];
-}
-
-function templateRequiredTargets(inspected, content, businessTargets, props = {}) {
-  const contentShape = contentShapeFromPresentation(content?.presentation);
-  const projectionPlan = buildTemplateProjectionPlan(inspected, contentShape);
-  const primary = projectionPlan.primaryContentContainer;
-  const itemCount = contentShape.required.itemCount;
-  const primaryTargets = primary?.kind === 'scalar-group'
-    ? primary.slots
-      .slice(0, itemCount || primary.slots.length)
-      .flatMap(slot => Object.values(slot.fields))
-    : primary?.kind === 'array'
-      ? [primary.key]
-      : [];
-  return [...new Set([
-    ...businessTargets,
-    ...primaryTargets.map(reduceArrayTarget),
-  ].filter(Boolean))]
-    .filter(target => !templateTargetSafelyDisabled(target, inspected, props));
-}
-
-function templateTargetSafelyDisabled(target, inspected, props = {}) {
-  const arrayField = (inspected?.fillPlan?.arrays || []).find(field => (
-    reduceArrayTarget(normalizeTemplateTargetPath(field?.key)) === target
-  ));
-  if (arrayField && templateArrayCountIsSafelyZero(arrayField, inspected, props)) return true;
-
-  const toggle = templateToggleForTarget(target, inspected);
-  if (!toggle) return false;
-  const enabled = props?.[toggle.key]
-    ?? props?.[toggle.publicKey]
-    ?? toggle.default;
-  if (enabled !== false) return false;
-
-  // A hidden array whose real component contract requires items still needs a
-  // canonical projection.  Keeping that data is what makes re-enabling the
-  // control safe and avoids violating min/fixed-length contracts.
-  return !arrayField || templateArrayMinimum(arrayField, inspected) === 0;
-}
-
-function templateArrayCountIsSafelyZero(field, inspected, props) {
-  const binding = templateCountBindingForArray(field, inspected);
-  if (!binding && !field?.countKey) return false;
-  const control = (inspected?.controls || []).find(item => (
-    item?.key === binding?.key
-    || item?.publicKey === binding?.publicKey
-    || item?.key === field?.countKey
-    || item?.publicKey === field?.countKey
-  ));
-  const count = props?.[binding?.key]
-    ?? props?.[binding?.publicKey]
-    ?? props?.[field?.countKey]
-    ?? control?.default
-    ?? inspected?.defaultVisibleCounts?.[binding?.publicKey]
-    ?? inspected?.defaultVisibleCounts?.[binding?.key]
-    ?? inspected?.defaultVisibleCounts?.[field?.countKey]
-    ?? field?.visibleCount;
-  return Number(count) === 0 && templateArrayMinimum(field, inspected) === 0;
-}
-
-function templateArrayMinimum(field, inspected) {
-  const binding = templateCountBindingForArray(field, inspected);
-  const control = (inspected?.controls || []).find(item => (
-    item?.key === binding?.key
-    || item?.publicKey === binding?.publicKey
-    || item?.key === field?.countKey
-    || item?.publicKey === field?.countKey
-  ));
-  for (const value of [binding?.min, control?.min, field?.minCount, field?.fixedLength]) {
-    const number = Number(value);
-    if (Number.isFinite(number)) return Math.max(0, number);
-  }
-  if (!binding && !field?.countKey) {
-    const visible = Number(field?.visibleCount);
-    if (Number.isFinite(visible)) return Math.max(0, visible);
-  }
-  return 0;
-}
-
-function templateCountBindingForArray(field, inspected) {
-  const fieldKey = normalizeTemplateTargetPath(field?.key);
-  return (inspected?.countBindings || []).find(binding => (
-    (binding?.arrays || []).some(arrayPath => (
-      normalizeTemplateTargetPath(arrayPath) === fieldKey
-    ))
-    || binding?.key === field?.countKey
-    || binding?.publicKey === field?.countKey
-  ));
-}
-
-function templateToggleForTarget(target, inspected) {
-  const parts = normalizeTemplateTargetPath(target).split('.').filter(Boolean);
-  const root = normalizeToggleToken(parts[0]);
-  const leaf = normalizeToggleToken(parts.at(-1));
-  const full = normalizeToggleToken(parts.join(''));
-  const targetTokens = new Set([root, leaf, full].filter(Boolean));
-  return (inspected?.controls || []).find(control => {
-    if (control?.type !== 'toggle') return false;
-    const keys = [control?.key, control?.publicKey]
-      .map(normalizeToggleToken)
-      .filter(Boolean);
-    return keys.some(key => key.startsWith('show') && targetTokens.has(key.slice(4)));
-  });
-}
-
-function normalizeToggleToken(value) {
-  return String(value || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
-}
-
-function normalizeTemplateTargetPath(value) {
-  return String(value || '')
-    .replace(/^props\./, '')
-    .replace(/\[\d+\]/g, '[]')
-    .replace(/\.$/, '');
-}
-
-function templatePathOverlaps(left, right) {
-  const a = reduceArrayTarget(normalizeTemplateTargetPath(left));
-  const b = reduceArrayTarget(normalizeTemplateTargetPath(right));
-  return a === b || a.startsWith(`${b}.`) || b.startsWith(`${a}.`);
-}
-
-function hasContentValue(value) {
-  return value !== undefined && value !== null && value !== '';
-}
-
-function canonicalTitleSourceFamily(source) {
-  return source === 'presentation.titleShort' ? 'presentation.title' : source;
-}
-
-function templateTitleTargets(inspected, content) {
-  const projectionPlan = buildTemplateProjectionPlan(
-    inspected,
-    contentShapeFromPresentation(content?.presentation),
-  );
-  if (projectionPlan.titleTarget) return [projectionPlan.titleTarget];
-  const targets = [...new Set(Object.entries(inspected?.copyRoles || {})
-    .filter(([, role]) => role === 'title')
-    .map(([target]) => reduceArrayTarget(target))
-    .filter(Boolean))];
-  const primary = targets.filter(target => /(?:title|headline|heading|subject|topic)/i.test(target));
-  return primary.length ? primary : targets;
-}
-
-function reduceArrayTarget(pathName) {
-  const value = String(pathName || '');
-  const arrayIndex = value.indexOf('[]');
-  return arrayIndex === -1 ? value : value.slice(0, arrayIndex).replace(/\.$/, '');
-}
-
-function validateBespokeCanonicalContent(variant, slideNumber, errors, scopeSuffix = '') {
-  const variantId = String(variant?.id || '<missing>');
-  const composition = isPlainRecord(variant?.composition) ? variant.composition : {};
-  const { requiredTargets, visibleTargets, titleTargets } = bespokeContentTargets(composition);
-  const contentMap = isPlainRecord(variant?.contentMap) ? variant.contentMap : {};
-  validateContentMapTargetCoverage(
-    contentMap,
-    requiredTargets,
-    `slide ${slideNumber}${scopeSuffix} variant ${variantId}`,
-    errors,
-  );
-  validateNoIndependentVisibleValues(
-    composition,
-    visibleTargets,
-    'composition',
-    `slide ${slideNumber}${scopeSuffix} variant ${variantId}`,
-    errors,
-  );
-  return {
-    titleSources: mappedSourcesForTargets(contentMap, titleTargets),
-    titleTargetCount: titleTargets.length,
-    sourceRoots: contentMapSourceRoots(contentMap),
-  };
-}
-
-function bespokeContentTargets(composition) {
-  const requiredTargets = [];
-  const visibleTargets = [];
-  const titleTargets = [];
-  (composition?.elements || []).forEach((element, index) => {
-    const base = `elements[${index}]`;
-    const requiredFields = {
-      text: ['text'],
-      metric: ['value', 'label'],
-      list: ['items'],
-      quote: ['quote'],
-      media: ['src'],
-      chart: ['data'],
-    }[element?.type] || [];
-    const visibleFields = {
-      text: ['text'],
-      metric: ['value', 'label', 'detail', 'trend'],
-      list: ['items'],
-      quote: ['quote', 'attribution'],
-      media: ['src', 'alt'],
-      chart: ['data'],
-    }[element?.type] || [];
-    requiredTargets.push(...requiredFields.map(field => `${base}.${field}`));
-    visibleTargets.push(...visibleFields.map(field => `${base}.${field}`));
-    if (element?.type === 'text' && element?.role === 'title') {
-      titleTargets.push(`${base}.text`);
-    }
-  });
-  return { requiredTargets, visibleTargets, titleTargets };
-}
-
-function validateContentMapTargetCoverage(contentMap, requiredTargets, scope, errors) {
-  const mappedTargets = Object.keys(contentMap || {});
-  for (const target of requiredTargets) {
-    if (mappedTargets.some(mappedTarget => mappedTargetCovers(mappedTarget, target))) continue;
-    errors.push(`${scope} field contentMap: visible target "${target}" is not mapped from canonical slide.content`);
-  }
-}
-
-function mappedTargetCovers(mappedTarget, requiredTarget) {
-  const mapped = String(mappedTarget || '');
-  const required = String(requiredTarget || '');
-  return mapped === required
-    || required.startsWith(`${mapped}.`)
-    || required.startsWith(`${mapped}[`);
-}
-
-function validateNoIndependentVisibleValues(value, targets, fieldPrefix, scope, errors) {
-  for (const target of targets) {
-    const found = readSimplePath(value, target);
-    if (!found.found || !hasVisibleNarrativeValue(found.value)) continue;
-    errors.push(`${scope} field ${fieldPrefix}.${target}: visible copy/data must come from slide.content via contentMap`);
-  }
-}
-
-function readSimplePath(value, pathName) {
-  const tokens = [];
-  for (const match of String(pathName || '').matchAll(/([A-Za-z_$][A-Za-z0-9_$-]*)|\[(\d+)\]/g)) {
-    tokens.push(match[1] ?? Number(match[2]));
-  }
-  let current = value;
-  for (const token of tokens) {
-    if (current == null || typeof current !== 'object' || !Object.prototype.hasOwnProperty.call(current, token)) {
-      return { found: false, value: undefined };
-    }
-    current = current[token];
-  }
-  return { found: true, value: current };
-}
-
-function hasVisibleNarrativeValue(value) {
-  if (typeof value === 'string') return value.trim().length > 0;
-  if (typeof value === 'number') return Number.isFinite(value);
-  if (Array.isArray(value)) return value.some(hasVisibleNarrativeValue);
-  if (!value || typeof value !== 'object') return false;
-  return Object.values(value).some(hasVisibleNarrativeValue);
-}
-
-function mappedSourcesForTargets(contentMap, targets) {
-  const sources = new Set();
-  for (const requiredTarget of targets) {
-    const candidates = Object.entries(contentMap || {})
-      .filter(([mappedTarget]) => mappedTargetCovers(mappedTarget, requiredTarget))
-      .sort(([left], [right]) => right.length - left.length);
-    const [mappedTarget, sourceMapping] = candidates[0] || [];
-    const sourcePath = typeof sourceMapping === 'string'
-      ? sourceMapping
-      : sourceMapping?.source;
-    if (!mappedTarget || typeof sourcePath !== 'string') continue;
-    const suffix = requiredTarget.slice(mappedTarget.length);
-    sources.add(`${sourcePath}${suffix}`);
-  }
-  return sources;
-}
-
-function contentMapSourceRoots(contentMap) {
-  return new Set(Object.values(contentMap || {})
-    .map(value => typeof value === 'string' ? value : value?.source)
-    .filter(value => typeof value === 'string')
-    .map(sourcePathRoot)
-    .filter(Boolean));
-}
-
-function sourcePathRoot(pathName) {
-  return String(pathName || '').match(/^[A-Za-z_$][A-Za-z0-9_$-]*/)?.[0] || '';
-}
-
-function canonicalCoreRoots(content) {
-  if (!isPlainRecord(content)) return new Set();
-  const excluded = /^(?:title|titles|headline|heading|subject|topic|name|kicker|eyebrow|section|caption|footnote|unit|date|author|owner|source|locale|language|englishTitle)$/i;
-  return new Set(Object.keys(content).filter(key => !excluded.test(key)));
-}
-
-function intersectSets(sets) {
-  if (!sets.length) return new Set();
-  return new Set([...sets[0]].filter(value => sets.slice(1).every(set => set.has(value))));
 }
 
 function validateContentMapEnvelope(variant, logicalSlide, slideNumber, variantId, errors, options = {}) {
@@ -912,6 +404,136 @@ function validateContentMapEnvelope(variant, logicalSlide, slideNumber, variantI
   if (!isPlainRecord(logicalSlide?.content) && !options.allowUnfilledContent) {
     errors.push(`slide ${slideNumber} variant ${variantId} field contentMap: slide.content is required as the mapping source`);
   }
+}
+
+function validateTemplateProjectionEnvelope(variant, logicalSlide, slideNumber, variantId, variantIndex, errors, options = {}) {
+  const presentation = logicalSlide?.content?.presentation;
+  if (!isPlainRecord(presentation) || options.allowUnfilledContent || !variant?.layout) return;
+  try {
+    const actualMap = isPlainRecord(variant.contentMap) ? variant.contentMap : {};
+    const actualProjection = isPlainRecord(variant.projection) ? variant.projection : null;
+    const expected = materializeTemplateProjection(variant.layout, presentation, variantIndex);
+    const structural = isPlainRecord(actualProjection?.structure);
+    if (structural && !sameJson(actualProjection.structure, expected.structure)) {
+      errors.push(`slide ${slideNumber} variant ${variantId} field projection.structure: does not match deterministic structure projection`);
+    }
+    if (structural && !sameJson(actualMap, expected.contentMap)) {
+      errors.push(`slide ${slideNumber} variant ${variantId} field contentMap: does not match deterministic structure projection`);
+    }
+    const baseProps = structural
+      ? materializeTemplateVariantProps(presentation, actualProjection.structure)
+      : (isPlainRecord(variant.props) ? variant.props : {});
+    const actual = resolveContentMap(logicalSlide.content, actualMap, baseProps);
+    const expectedProps = resolveContentMap(
+      logicalSlide.content,
+      expected.contentMap,
+      materializeTemplateVariantProps(presentation, expected.structure),
+    );
+    for (const error of validateMaterializedTemplateProjection(
+      variant.layout,
+      presentation,
+      baseProps,
+      actualMap,
+      actualProjection,
+    )) errors.push(`slide ${slideNumber} variant ${variantId} field projection: ${error}`);
+    validateDeterministicTemplateProjection(
+      expected,
+      presentation,
+      actual,
+      actualProjection,
+      expectedProps,
+      `slide ${slideNumber} variant ${variantId}`,
+      errors,
+    );
+    validatePageContentFactCoverage(
+      actual,
+      presentation,
+      `slide ${slideNumber} variant ${variantId} layout ${variant.layout}`,
+      errors,
+    );
+  } catch (error) {
+    errors.push(`slide ${slideNumber} variant ${variantId} field projection: ${error.message}`);
+  }
+}
+
+function validateDeterministicTemplateProjection(expected, presentation, actual, projection, expectedProps, scope, errors) {
+  const items = pageContentProjectionItems(presentation);
+  const itemIds = items.map(item => item.id);
+  const chartIds = (presentation.chartData || []).map(item => item.id);
+  validateProjectedIds(projection?.projectedItemIds, expected.projectedItemIds, itemIds, items.filter(item => item.pinned).map(item => item.id), 'projectedItemIds', scope, errors);
+  validateTemplateChartBindings(projection?.chartBindings, expected.chartBindings, chartIds, actual, expectedProps, scope, errors);
+  for (const pathName of expected.contentPaths) {
+    const [actualValue, expectedValue] = [projectionPathValue(actual, pathName), projectionPathValue(expectedProps, pathName)];
+    if (!sameJson(actualValue, expectedValue)) {
+      errors.push(`${scope} field projection.${pathName}: does not match deterministic variant materialization`);
+    }
+  }
+}
+
+function validateTemplateChartBindings(actual, expected, chartIds, actualProps, expectedProps, scope, errors) {
+  if (!Array.isArray(actual)) {
+    errors.push(`${scope} field projection.chartBindings: array is required`);
+    return;
+  }
+  if (!sameJson(actual, expected)) {
+    errors.push(`${scope} field projection.chartBindings: does not match deterministic variant materialization`);
+  }
+  const knownIds = new Set(chartIds);
+  const coveredIds = new Set();
+  actual.forEach((binding, index) => {
+    const location = `${scope} field projection.chartBindings[${index}]`;
+    if (!isPlainRecord(binding) || !['point', 'summary'].includes(binding.mode)) {
+      errors.push(`${location}: mode must be point or summary`);
+      return;
+    }
+    if (!Array.isArray(binding.sourceIds) || !binding.sourceIds.length || new Set(binding.sourceIds).size !== binding.sourceIds.length) {
+      errors.push(`${location}.sourceIds: non-empty unique array is required`);
+      return;
+    }
+    if (binding.mode === 'point' && binding.sourceIds.length !== 1) {
+      errors.push(`${location}.sourceIds: point binding must contain exactly one source ID`);
+    }
+    for (const id of binding.sourceIds) {
+      if (!knownIds.has(id)) errors.push(`${location}.sourceIds: unknown canonical chart ID "${id}"`);
+      else coveredIds.add(id);
+    }
+    if (typeof binding.target !== 'string' || !binding.target.trim()) {
+      errors.push(`${location}.target: non-empty target path is required`);
+      return;
+    }
+    if (!projectionPathFound(actualProps, binding.target) || !projectionPathFound(expectedProps, binding.target)) {
+      errors.push(`${location}.target: actual deterministic target "${binding.target}" is missing`);
+      return;
+    }
+    if (!sameJson(projectionPathValue(actualProps, binding.target), projectionPathValue(expectedProps, binding.target))) {
+      errors.push(`${location}.target: resolved target does not match deterministic materialization`);
+    }
+  });
+  for (const id of chartIds) {
+    if (!coveredIds.has(id)) errors.push(`${scope} field projection.chartBindings: missing canonical chart ID "${id}"`);
+  }
+}
+
+function projectionPathParts(pathName) {
+  return String(pathName || '').replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean);
+}
+
+function projectionPathFound(value, pathName) {
+  let cursor = value;
+  for (const part of projectionPathParts(pathName)) {
+    if (!cursor || typeof cursor !== 'object' || !Object.prototype.hasOwnProperty.call(cursor, part)) return false;
+    cursor = cursor[part];
+  }
+  return true;
+}
+
+function projectionPathValue(value, pathName) {
+  let cursor = value;
+  for (const part of projectionPathParts(pathName)) {
+    if (!cursor || typeof cursor !== 'object') return undefined;
+    cursor = cursor[part];
+  }
+  return cursor;
 }
 
 function validateBespokeEnvelope(variant, logicalSlide, slideNumber, variantId, errors, options = {}) {
@@ -946,12 +568,53 @@ function resolveMappedRenderData(content, contentMap, base, location, errors, op
   }
 }
 
+
+function resolveTemplateRenderData(content, variant, location, errors, options = {}) {
+  if (!isPlainRecord(variant?.projection?.structure)) {
+    return resolveMappedRenderData(content, variant?.contentMap, variant?.props, location, errors, options);
+  }
+  if (!isPlainRecord(content?.presentation)) return {};
+  try {
+    return resolveMappedRenderData(
+      content,
+      variant?.contentMap,
+      materializeTemplateVariantProps(content.presentation, variant.projection.structure),
+      location,
+      errors,
+      options,
+    );
+  } catch (error) {
+    errors.push(`${location} field projection: ${error.message}`);
+    return {};
+  }
+}
+
+function resolveBespokeRenderData(content, variant, location, errors, options = {}) {
+  const composition = resolveMappedRenderData(
+    content,
+    variant?.contentMap,
+    variant?.composition,
+    location,
+    errors,
+    options,
+  );
+  const presentation = content?.presentation;
+  if (!isPlainRecord(presentation)) return composition;
+  try {
+    return materializeBespokeComposition(composition, presentation, variant?.projection);
+  } catch (error) {
+    errors.push(`${location} field projection: ${error.message}`);
+  }
+  return composition;
+}
+
 function validateBespokeEntry(entry, errors, mediaUsages, options = {}) {
   const {
     slide,
     authoredSlide,
     slideNumber,
     logicalSlideNumber,
+    content,
   } = entry;
   const composition = slide?.composition;
   const scope = `slide ${slideNumber}`;
@@ -963,6 +626,10 @@ function validateBespokeEntry(entry, errors, mediaUsages, options = {}) {
   if (!options.allowUnfilledBespoke) {
     for (const error of validateBespokeComposition(composition)) {
       errors.push(`${scope} bespoke field composition: ${error}`);
+    }
+    if (isPlainRecord(content?.presentation)) {
+      validateBespokeProjection(composition, content.presentation, slide.projection, scope, errors);
+      validateBespokeVisibleFactCoverage(composition, content.presentation, scope, errors);
     }
   }
   const authoredComposition = authoredSlide?.composition;
@@ -977,6 +644,207 @@ function validateBespokeEntry(entry, errors, mediaUsages, options = {}) {
     }
   }
   validateBespokeMedia(composition, slideNumber, logicalSlideNumber, mediaUsages, errors);
+}
+
+function validateBespokeProjection(composition, presentation, projection, scope, errors) {
+  const items = pageContentProjectionItems(presentation);
+  const knownItems = new Map(items.map(item => [item.id, item]));
+  const requiredItemIds = items.filter(item => item.pinned).map(item => item.id);
+  const knownChart = new Map((presentation.chartData || []).map(item => [item.id, item]));
+  const targets = bespokeBusinessTargets(composition);
+  const boundTargets = new Set();
+  const boundItemIds = new Set();
+  const boundChartIds = new Set();
+
+  const itemBindings = projection?.itemBindings;
+  if (!Array.isArray(itemBindings)) {
+    errors.push(`${scope} field projection.itemBindings: array is required`);
+  } else {
+    itemBindings.forEach((binding, index) => {
+      const location = `${scope} field projection.itemBindings[${index}]`;
+      if (!isPlainRecord(binding) || typeof binding.id !== 'string' || typeof binding.target !== 'string') {
+        errors.push(`${location}: {id,target} object is required`);
+        return;
+      }
+      const target = targets.get(binding.target);
+      if (!knownItems.has(binding.id)) errors.push(`${location}.id: unknown canonical item ID "${binding.id}"`);
+      if (!target || !['list', 'metric'].includes(target.kind)) errors.push(`${location}.target: must reference an existing list item or metric object`);
+      if (!knownItems.has(binding.id) || !target || !['list', 'metric'].includes(target.kind)) return;
+      if (boundItemIds.has(binding.id)) errors.push(`${location}.id: canonical item already has a target`);
+      if (boundTargets.has(binding.target)) errors.push(`${location}.target: business target already has a canonical owner`);
+      if (target.value?.sourceId !== binding.id) errors.push(`${location}.target: sourceId must equal canonical item ID "${binding.id}"`);
+      if (!sameJson(bespokeItemIdentity(target.value, target.kind), canonicalBespokeItemIdentity(knownItems.get(binding.id), target.kind))) {
+        errors.push(`${location}.target: displayed item content does not match canonical source "${binding.id}"`);
+      }
+      boundItemIds.add(binding.id);
+      boundTargets.add(binding.target);
+    });
+  }
+  for (const id of requiredItemIds) {
+    if (!boundItemIds.has(id)) errors.push(`${scope} field projection.itemBindings: missing required canonical item ID "${id}"`);
+  }
+
+  const chartBindings = projection?.chartBindings;
+  if (!Array.isArray(chartBindings)) {
+    errors.push(`${scope} field projection.chartBindings: array is required`);
+  } else {
+    chartBindings.forEach((binding, index) => {
+      const location = `${scope} field projection.chartBindings[${index}]`;
+      if (!isPlainRecord(binding) || !['point', 'summary'].includes(binding.mode) || typeof binding.target !== 'string') {
+        errors.push(`${location}: {mode,sourceIds,target} object is required`);
+        return;
+      }
+      if (!Array.isArray(binding.sourceIds) || binding.sourceIds.length !== 1) {
+        errors.push(`${location}.sourceIds: exactly one canonical chart ID is required`);
+        return;
+      }
+      const id = binding.sourceIds[0];
+      const source = knownChart.get(id);
+      const target = targets.get(binding.target);
+      const compatible = binding.mode === 'point' ? target?.kind === 'chart' : ['list', 'metric'].includes(target?.kind);
+      if (!source) errors.push(`${location}.sourceIds: unknown canonical chart ID "${id}"`);
+      if (!compatible) errors.push(`${location}.target: ${binding.mode} binding references an incompatible or missing business target`);
+      if (!source || !compatible) return;
+      if (boundChartIds.has(id)) errors.push(`${location}.sourceIds: canonical chart ID already has a target`);
+      if (boundTargets.has(binding.target)) errors.push(`${location}.target: business target already has a canonical owner`);
+      if (target.value?.sourceId !== id) errors.push(`${location}.target: sourceId must equal canonical chart ID "${id}"`);
+      if (binding.mode === 'point' && !sameJson(chartFactIdentity(target.value), chartFactIdentity(source))) {
+        errors.push(`${location}.target: chart datum does not match canonical source`);
+      }
+      boundChartIds.add(id);
+      boundTargets.add(binding.target);
+    });
+  }
+  for (const id of knownChart.keys()) {
+    if (!boundChartIds.has(id)) errors.push(`${scope} field projection.chartBindings: missing canonical chart ID "${id}"`);
+  }
+  for (const target of targets.keys()) {
+    if (!boundTargets.has(target)) errors.push(`${scope} field composition: unbound business target "${target}"`);
+  }
+}
+
+function bespokeItemIdentity(item, kind) {
+  return kind === 'metric'
+    ? [item?.label ?? null, item?.value ?? null, item?.detail ?? null]
+    : [item?.title ?? null, item?.body ?? null];
+}
+
+function canonicalBespokeItemIdentity(item, kind) {
+  return kind === 'metric'
+    ? [item.label, item.formattedValue, item.detailShort || item.detailFull || null]
+    : [item.label, [item.detailShort || item.detailFull, item.formattedValue].filter(Boolean).join(' · ')];
+}
+
+function chartFactIdentity(item) {
+  return [item?.sourceId ?? item?.id, item?.label, item?.value, item?.displayValue ?? null, item?.unit ?? null];
+}
+
+function bespokeBusinessTargets(composition) {
+  const targets = new Map();
+  (composition?.elements || []).forEach((element, elementIndex) => {
+    if (element?.type === 'metric') targets.set(`elements[${elementIndex}]`, { kind: 'metric', value: element });
+    if (element?.type === 'list') {
+      (element.items || []).forEach((item, itemIndex) => targets.set(`elements[${elementIndex}].items[${itemIndex}]`, { kind: 'list', value: item }));
+    }
+    if (element?.type === 'chart') {
+      (element.data || []).forEach((item, itemIndex) => targets.set(`elements[${elementIndex}].data[${itemIndex}]`, { kind: 'chart', value: item }));
+    }
+  });
+  return targets;
+}
+
+function validateProjectedIds(actual, expected, known, required, field, scope, errors) {
+  if (!Array.isArray(actual)) {
+    errors.push(`${scope} field projection.${field}: array is required`);
+    return;
+  }
+  const knownIds = new Set(known);
+  for (const id of actual) {
+    if (!knownIds.has(id)) errors.push(`${scope} field projection.${field}: unknown canonical ID "${id}"`);
+  }
+  for (const id of required) {
+    if (!actual.includes(id)) errors.push(`${scope} field projection.${field}: missing required canonical ID "${id}"`);
+  }
+  if (!sameJson(actual, expected)) {
+    errors.push(`${scope} field projection.${field}: does not match deterministic projection`);
+  }
+}
+
+function validatePageContentFactCoverage(composition, presentation, scope, errors) {
+  const values = coverageValues(composition);
+  for (const fact of requiredPageContentFacts(presentation)) {
+    if (!coverageFactPresent(values, fact)) {
+      errors.push(`${scope}: missing canonical required fact "${fact}"`);
+    }
+  }
+}
+
+function validateBespokeVisibleFactCoverage(composition, presentation, scope, errors) {
+  const runs = bespokeVisibleTextRuns(composition), items = pageContentProjectionItems(presentation);
+  const facts = [
+    { text: presentation.title.short, kind: 'text' }, { text: presentation.coreMessage, kind: 'text' },
+    ...items.filter(i => i.authoredRequired).map(i => ({ text: i.label, kind: 'text' })),
+    ...items.filter(i => i.hasValue).map(i => ({ text: i.formattedValue, kind: 'value' })),
+  ];
+  for (const f of facts) {
+    const n = normalizeCoverageText(f.text), eligible = f.kind === 'value' ? runs.filter(r => r.kind !== 'label') : runs;
+    if (!eligible.some(r => normalizeCoverageText(r.text).includes(n))) errors.push(`${scope}: missing visible canonical required fact "${f.text}"`);
+  }
+}
+
+function bespokeVisibleTextRuns(composition) {
+  const runs = [];
+  const plain = value => typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+  const add = (value, kind = 'text') => { const text = plain(value); if (text) runs.push({ text, kind }); };
+  const chartValue = item => { const display = item.displayValue || (Number.isInteger(item.value) ? String(item.value) : Number(item.value).toFixed(1));
+    return !item.unit || display.includes(item.unit) ? display : `${display}${/^[%‰°℃℉]/.test(item.unit) ? '' : ' '}${item.unit}`; };
+  for (const element of (composition?.elements || []).slice(0, 32)) {
+    if (element?.type === 'text') add(element.text);
+    if (element?.type === 'metric') { add(element.label, 'label'); add(element.value, 'value');
+      if (element.detail != null) add(element.detail); if (element.trend != null) add(element.trend); }
+    if (element?.type === 'list') for (const item of Array.isArray(element.items) ? element.items : []) {
+      if (typeof item === 'string' || typeof item === 'number') add(item, 'label');
+      else { add(item?.title, 'label'); add(item?.body); }
+    }
+    if (element?.type === 'quote') { add(element.quote); if (element.attribution != null) add(element.attribution, 'label'); }
+    if (element?.type !== 'chart') continue;
+    const type = ['bar', 'line', 'donut', 'progress'].includes(element.chartType) ? element.chartType : 'bar';
+    const data = (Array.isArray(element.data) ? element.data : []).map((item, index) => {
+      if (typeof item === 'number') return { label: String(index + 1), value: Number.isFinite(item) ? item : 0, displayValue: '', unit: '' };
+      const value = Number(item?.value);
+      return { label: plain(item?.label ?? item?.name ?? index + 1), value: Number.isFinite(value) ? value : 0,
+        displayValue: plain(item?.displayValue), unit: plain(item?.unit) };
+    });
+    for (const item of data) { const label = ['bar', 'line'].includes(type) && item.label.length > 10 ? `${item.label.slice(0, 9)}…` : item.label;
+      add(label, 'label'); if (element.showValues === true) add(chartValue(item), 'value'); }
+  }
+  return runs;
+}
+
+function coverageFactPresent(values, fact) {
+  const normalizedValues = values.map(normalizeCoverageText).filter(Boolean);
+  const normalized = normalizeCoverageText(fact);
+  const numericUnit = normalized.match(/^(-?\d+(?:\.\d+)?)([^\d.]+)$/);
+  return normalizedValues.join('').includes(normalized)
+    || normalizedValues.some(value => value.includes(normalized))
+    || Boolean(numericUnit
+      && normalizedValues.some(value => value === numericUnit[1])
+      && normalizedValues.some(value => value.includes(numericUnit[2])));
+}
+
+function coverageValues(value, result = []) {
+  if (typeof value === 'string' || typeof value === 'number') result.push(String(value));
+  else if (Array.isArray(value)) value.forEach(item => coverageValues(item, result));
+  else if (isPlainRecord(value)) Object.values(value).forEach(item => coverageValues(item, result));
+  return result;
+}
+
+function normalizeCoverageText(value) {
+  return String(value ?? '').normalize('NFKC').toLowerCase().replace(/[\s"'`，。；、,:;·]/g, '');
+}
+
+function sameJson(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function validatePlaceholderCopy(value, scope, layout, fieldPrefix, errors) {
@@ -1012,13 +880,6 @@ function isPlainRecord(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const proto = Object.getPrototypeOf(value);
   return proto === Object.prototype || proto === null;
-}
-
-function validateUniqueLayouts(layoutUsages, errors) {
-  for (const [layout, locations] of layoutUsages.entries()) {
-    if (locations.length <= 1) continue;
-    errors.push(`deck field slides: duplicate layout ${layout} used on ${locations.join(', ')}; choose a unique layout for every slide variant`);
-  }
 }
 
 function validateMediaIntent(slide, slideNumber, layout, props, errors, options = {}) {
@@ -1915,31 +1776,14 @@ function runCli() {
 
   // 相对路径按调用方目录解析:npm run(含 --prefix)会把脚本 cwd 切到项目根,INIT_CWD 才是用户所在目录。
   const callerCwd = process.env.INIT_CWD || process.cwd();
-  const specPath = path.resolve(callerCwd, parsed.file);
-  const telemetry = beginWorkflowStage({
-    goalPath: specPath,
-    telemetryFile: workflowTelemetryPath(specPath),
-    stage: 'validate-goal-spec',
-    kind: 'validate',
-    command: 'validate:goal-spec',
-  });
-  try {
-    const spec = JSON.parse(readFileSync(specPath, 'utf8'));
-    const errors = validateGoalSpec(spec);
-    if (errors.length) {
-      const error = new Error(errors.join('; '));
-      telemetry.finish({ ok: false, error });
-      console.error('Goal spec validation failed:');
-      for (const validationError of errors) console.error(`- ${validationError}`);
-      process.exitCode = 1;
-      return;
-    }
-    telemetry.finish({ ok: true });
-    console.log('Goal spec validation passed.');
-  } catch (error) {
-    telemetry.finish({ ok: false, error });
-    throw error;
+  const spec = JSON.parse(readFileSync(path.resolve(callerCwd, parsed.file), 'utf8'));
+  const errors = validateGoalSpec(spec);
+  if (errors.length) {
+    console.error('Goal spec validation failed:');
+    for (const error of errors) console.error(`- ${error}`);
+    process.exit(1);
   }
+  console.log('Goal spec validation passed.');
 }
 
 function parseCliArgs(argv) {

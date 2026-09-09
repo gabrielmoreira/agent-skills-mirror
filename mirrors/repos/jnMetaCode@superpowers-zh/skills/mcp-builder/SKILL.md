@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: MCP 服务器构建方法论 — 系统化构建生产级 MCP 工具，让 AI 助手连接外部能力
+description: 在构建 MCP 服务器或 MCP 工具时使用 —— 系统化的生产级 MCP 构建方法论，覆盖工具设计、错误处理、传输层选择与测试，让 AI 助手连接外部能力
 version: "1.0.0"
 license: MIT
 metadata:

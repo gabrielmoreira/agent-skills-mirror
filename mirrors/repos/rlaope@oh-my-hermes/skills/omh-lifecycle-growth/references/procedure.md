@@ -33,14 +33,14 @@ Declared checks:
   - Required result fields: `identity_key`, `canonical_events`, `event_semantics_status`, `entry_conditions`, `exit_conditions`, `exclusions`, `denominator_status`, `idempotency_key`, `reentry_policy`, `collision_policy`, `disposition`
   - Criterion: HOLD when the identity key, event semantics, or denominator is unknown; every eligible audience must carry entry and exit conditions, exclusions, an idempotency key, a re-entry policy, and a collision policy for overlapping campaigns.
 - `lifecycle_safety_eligibility_check`
-  - Required result fields: `consent_basis`, `suppression_precedence`, `legal_tenant_constraints`, `user_preferences`, `channel_eligibility`, `quiet_hours`, `locale`, `global_frequency_budget`, `campaign_frequency_budget`, `disposition`
-  - Criterion: Consent and suppression must come from supplied records, never from product usage or a missing opt-out; HOLD when consent, suppression precedence, channel eligibility, or either frequency budget is unknown.
+  - Required result fields: `consent_basis`, `suppression_precedence`, `legal_tenant_constraints`, `user_preferences`, `channel_eligibility`, `quiet_hours`, `locale`, `global_frequency_budget`, `campaign_frequency_budget`, `throttle_grouping`, `workflow_content_state`, `promotion_decision`, `disposition`
+  - Criterion: Consent and suppression must come from supplied records, never from product usage or a missing opt-out; HOLD when consent, suppression precedence, channel eligibility, or either frequency budget is unknown. The throttle grouping record keeps the configured key or expression apart from its resolved value and names the recipient or tenant scope, the fallback for a missing or empty value, and any window-reset consequence; production or published workflow content is read-only, and every edit routes through a development or draft copy plus an explicit promotion decision.
 - `lifecycle_experiment_validity_check`
   - Required result fields: `treatment_control`, `assignment_unit`, `assignment_stickiness`, `exposure_unit`, `exposure_definition`, `primary_metric`, `guardrail_metrics`, `holdout_rationale`, `minimum_runtime`, `data_health_checks`, `pause_rollback_conditions`, `approval_state`
   - Criterion: Require sticky assignment, exposure defined as actual treatment display or receipt rather than send or eligibility, exactly one primary metric, at least one guardrail, a holdout rationale, a minimum runtime, data-health checks, and pause/rollback conditions; approval_state stays unapproved until a named human approves.
 - `lifecycle_readout_evidence_check`
-  - Required result fields: `eligible_count`, `attempted_count`, `delivered_count`, `displayed_count`, `acted_count`, `outcome_count`, `denominator_status`, `freshness_status`, `sample_ratio_status`, `cross_exposure_status`, `instrumentation_status`, `overlap_status`, `evidence_refs`, `causal_claim_status`, `disposition`
-  - Criterion: Fill each funnel stage only from observed provider or data evidence and keep them separate; pause interpretation on sample-ratio mismatch, cross-exposure, stale data, broken instrumentation, or overlapping interventions; disposition must be exactly one of `ship`, `rollback`, `review`, or `insufficient_data`, and inconclusive data must not force `ship`.
+  - Required result fields: `eligible_count`, `attempted_count`, `delivered_count`, `displayed_count`, `acted_count`, `outcome_count`, `denominator_status`, `freshness_status`, `sample_ratio_status`, `cross_exposure_status`, `instrumentation_status`, `overlap_status`, `step_outcomes`, `step_trace_status`, `evidence_refs`, `causal_claim_status`, `disposition`
+  - Criterion: Fill each funnel stage only from observed provider or data evidence and keep them separate; pause interpretation on sample-ratio mismatch, cross-exposure, stale data, broken instrumentation, or overlapping interventions; disposition must be exactly one of `ship`, `rollback`, `review`, or `insufficient_data`, and inconclusive data must not force `ship`. Record every conditional step as `matched` or `skipped` with its own reason and status, never its evaluated values; a missing or failed best-effort step trace is not delivery evidence and must not turn a send into a failure.
 - `lifecycle_handoff_boundary_check`
   - Required result fields: `action_class`, `target_owner`, `approver`, `evidence_refs`, `timing`, `stop_conditions`, `approval_state`, `readiness`, `disposition`
   - Criterion: Each proposed action must name its class (`connector`, `content`, `analytics`, `product`, `implementation`), owner, approver, evidence refs, timing, and stop conditions; readiness is HOLD while any prior check holds or approval is missing, and no delivery, display, action, outcome, or causal claim may appear without observed evidence.
@@ -63,7 +63,7 @@ Define the stable identity key, canonical entry and exit events with their seman
 
 ### `lifecycle_check_safety_eligibility` (validation)
 
-Order suppression precedence above legal and tenant constraints, user preferences, channel eligibility, quiet hours, and locale, then set global and per-campaign frequency budgets; fail closed when any eligibility input is missing.
+Order suppression precedence above legal and tenant constraints, user preferences, channel eligibility, quiet hours, and locale, then set global and per-campaign frequency budgets; record the throttle grouping key, resolved value, scope, and fallback so distinct recipients or tenants never share one window; treat production workflow content as read-only and route edits to a draft with an explicit promotion decision; fail closed when any eligibility input is missing.
 
 - Input refs: `target segment`, `channels or product surfaces`, `consent and policy constraints`
 - Output refs: `lifecycle_safety_policy/v1`
@@ -79,7 +79,7 @@ Specify treatment and control, sticky assignment and exposure units, the actual-
 
 ### `lifecycle_prepare_measurement_readout` (validation)
 
-Lay out eligible, attempted, delivered, displayed, acted, and outcome stages with denominator and freshness checks; fill them only from observed evidence, keep causal-claim status separate, and record `ship`, `rollback`, `review`, or `insufficient_data` without forcing a decision on thin data.
+Lay out eligible, attempted, delivered, displayed, acted, and outcome stages with denominator and freshness checks; fill them only from observed evidence, keep causal-claim status separate, list each conditional step as matched or skipped with a redacted reason, and record `ship`, `rollback`, `review`, or `insufficient_data` without forcing a decision on thin data.
 
 - Input refs: `event schema and baseline`, `experiment budget`, `decision owner`
 - Output refs: `growth_measurement_readout/v1`

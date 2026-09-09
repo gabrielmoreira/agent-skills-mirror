@@ -678,7 +678,6 @@ function compactMediaSlot(slot) {
     publicCountKey: slot.publicCountKey || slot.countKey,
     defaultCount: slot.defaultCount,
     defaultVisibleCount: slot.defaultVisibleCount ?? slot.defaultCount,
-    min: slot.min,
     max: slot.max,
     maxFromKey: slot.maxFromKey,
     maxFromKeyOffset: slot.maxFromKeyOffset,

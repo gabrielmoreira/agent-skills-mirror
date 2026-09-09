@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 24 followed patterns, 177 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 25 followed patterns, 178 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 24 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 177 |
+| Followed pats | 25 |
+| Files         | 178 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 24 followed patterns, 1
 - `docs/OPENVIKING.md`
 - `backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`
 - `backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`
+- `docs/database-forward-revision-recovery.md`
 - `backend/docs/TUI.md`
 - `backend/README.md`
 
@@ -248,17 +249,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 164 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 165 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
 | 166 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 167 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
-| 168 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 169 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
-| 170 | → | [`Install.md`](Install.md) |
-| 171 | → | [`README_fr.md`](README_fr.md) |
-| 172 | → | [`README_ja.md`](README_ja.md) |
-| 173 | → | [`README_ru.md`](README_ru.md) |
-| 174 | → | [`README_zh.md`](README_zh.md) |
-| 175 | → | [`README.md`](README.md) |
-| 176 | → | [`RELEASING.md`](RELEASING.md) |
-| 177 | → | [`SECURITY.md`](SECURITY.md) |
+| 167 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
+| 168 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
+| 169 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 170 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
+| 171 | → | [`Install.md`](Install.md) |
+| 172 | → | [`README_fr.md`](README_fr.md) |
+| 173 | → | [`README_ja.md`](README_ja.md) |
+| 174 | → | [`README_ru.md`](README_ru.md) |
+| 175 | → | [`README_zh.md`](README_zh.md) |
+| 176 | → | [`README.md`](README.md) |
+| 177 | → | [`RELEASING.md`](RELEASING.md) |
+| 178 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

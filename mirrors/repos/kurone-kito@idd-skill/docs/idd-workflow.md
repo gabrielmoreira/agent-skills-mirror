@@ -40,14 +40,14 @@ you are reading this guide first, start at step 1.
 
 ## Entry points and auto-load expectations
 
-| Agent / surface         | Read first                        | Automatically available IDD context                                                                                                                                     | Open manually                                                                                                                                                                                                                       |
-| ----------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GitHub Copilot surfaces | `.github/copilot-instructions.md` | `.github/instructions/idd-overview-core.instructions.md` for execution surfaces; package-scoped `.instructions.md` files in VS Code Copilot when editing matching paths | The routed phase file when the current step changes                                                                                                                                                                                 |
-| Codex CLI               | `AGENTS.md`                       | None from `.github/instructions/`                                                                                                                                       | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file                                                                                                                                                  |
-| OpenCode                | `AGENTS.md`                       | `AGENTS.md` itself — OpenCode's native rules mechanism auto-loads it; none from `.github/instructions/`                                                                 | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file                                                                                                                                                  |
-| Grok Build              | `AGENTS.md`                       | `AGENTS.md` and `CLAUDE.md` when both exist (same contract; Grok Build loads every matching filename, unlike OpenCode's first-match); none from `.github/instructions/` | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file; see [B1's harness-native worktree tool caveat](../.github/instructions/idd-work.instructions.md#worktree-creation)                              |
-| Claude Code             | `CLAUDE.md`                       | None from `.github/instructions/` by default                                                                                                                            | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file; see [B1's harness-native worktree tool caveat](../.github/instructions/idd-work.instructions.md#worktree-creation) before using `EnterWorktree` |
-| Antigravity CLI         | `GEMINI.md`                       | None from `.github/instructions/`                                                                                                                                       | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file                                                                                                                                                  |
+| Agent / surface         | Read first                        | Automatically available IDD context                                                                                                                                                                                                                                                                                                                            | Open manually                                                                                                                                                                                                                       |
+| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub Copilot surfaces | `.github/copilot-instructions.md` | `.github/instructions/idd-overview-core.instructions.md` for execution surfaces; package-scoped `.instructions.md` files in VS Code Copilot when editing matching paths                                                                                                                                                                                        | The routed phase file when the current step changes                                                                                                                                                                                 |
+| Codex CLI               | `AGENTS.md`                       | None from `.github/instructions/`                                                                                                                                                                                                                                                                                                                              | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file                                                                                                                                                  |
+| OpenCode                | `AGENTS.md`                       | `AGENTS.md` itself — OpenCode's native rules mechanism auto-loads it; none from `.github/instructions/`                                                                                                                                                                                                                                                        | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file                                                                                                                                                  |
+| Grok Build              | `AGENTS.md`                       | `AGENTS.md` and `CLAUDE.md` when both exist (same contract; Grok Build loads every matching filename, unlike OpenCode's first-match — `CLAUDE.md`'s own `@AGENTS.md` line is harmless either way: at worst Grok reads it as plain text rather than an import, and at most it re-loads `AGENTS.md`'s already-loaded content); none from `.github/instructions/` | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file; see [B1's harness-native worktree tool caveat](../.github/instructions/idd-work.instructions.md#worktree-creation)                              |
+| Claude Code             | `CLAUDE.md`                       | None from `.github/instructions/` by default                                                                                                                                                                                                                                                                                                                   | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file; see [B1's harness-native worktree tool caveat](../.github/instructions/idd-work.instructions.md#worktree-creation) before using `EnterWorktree` |
+| Antigravity CLI         | `GEMINI.md`                       | None from `.github/instructions/`                                                                                                                                                                                                                                                                                                                              | `.github/instructions/idd-overview-core.instructions.md` and the routed phase file                                                                                                                                                  |
 
 OpenCode and Grok Build also discover the `issue-authoring` skill
 bundle in this repository through `.claude/skills/` compatibility,
@@ -428,9 +428,11 @@ ownership boundaries explicit:
 - **Exported template files**: `idd-template/` is the portable package
   copied into adopter repositories. When live IDD instruction files
   change, mirror the equivalent portable form into this template.
-- **Agent entry files**: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and
-  `.github/copilot-instructions.md` are lightweight compatibility entry
-  points that tell each agent where to start.
+- **Agent entry files**: `AGENTS.md` is the canonical, fully detailed
+  AI guide (see [AI tooling strategy](ai-strategy.md)); `CLAUDE.md`,
+  `GEMINI.md`, and `.github/copilot-instructions.md` are lightweight
+  adapters that import or point to it and tell each agent where to
+  start.
 - **Workflow docs**: files under `docs/` explain architecture, policy,
   and usage. They should avoid duplicating long operational rules that
   belong in `.github/instructions/`.
@@ -757,9 +759,22 @@ Running this variant safely requires:
 - **Resume-specific recovery when a worker dies mid-turn.** Re-verify
   claim ownership and worktree state before continuing; treat any
   uncommitted work found in the worktree as unverified input to check,
-  never as something to trust or silently discard; then delegate a fresh
-  subagent with a resume-specific briefing rather than resuming the dead
-  worker's own context.
+  never as something to trust or silently discard. Also check for a
+  stale clone-scoped lock before redelegating -- skip this check under
+  `instructions-only` running one worker at a time, which never
+  contends for the lock; see
+  [Clone-scoped lock](idd-helper-scripts.md#clone-scoped-lock) for that
+  profile's own multi-worker-one-clone caveat: run
+  `node scripts/clone-lock.mjs --check` (or the profile-selected
+  `idd:clone-lock` command with `--check`, per that same section, for
+  the literal per-profile invocation) and, if it reports the lock
+  present, follow that same section's manual-recovery procedure in
+  full -- by design this lock never auto-recovers a stale holder
+  (observed 2026-09-01, kurone-kito/idd-skill#2223,
+  kurone-kito/idd-skill#2389) -- before delegating a fresh subagent
+  with a resume-specific briefing rather than resuming the dead
+  worker's own
+  context.
 - **Independently verify a worker's reported terminal outcome before
   trusting it.** A worker's final-turn text describes what it
   _attempted_, not proof of what actually landed on the forge. Before

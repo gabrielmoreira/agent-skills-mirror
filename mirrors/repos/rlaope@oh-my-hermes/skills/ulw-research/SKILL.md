@@ -53,6 +53,7 @@ Bad example:
 ## Recovery Notes
 
 - If web or repository access is unavailable, name the retrieval gap and use only observed local context instead of inventing findings.
+- If no archive access exists or the capture provider's paid authority is exhausted, record a temporal retrieval gap with no network action and keep the as-of claim in the annex; never substitute the current page for it.
 - If the evidence stays thin or contested, lower the stated confidence and keep the unresolved claims in the annex rather than flattening them.
 - If leads keep expanding past the declared budget, stop, record open leads in the dossier, and ask whether to extend the budget.
 - If enough evidence already exists and the real request is planning, hand off to ralplan with the recorded dossier.
@@ -95,6 +96,7 @@ Quality bar:
 - Study reference implementations directly: read the core modules of the most relevant open-source repos, pin the exact version or commit, and record mechanism, tradeoffs, and license per reference.
 - Expand lead-by-lead: track open leads and dead ends, and continue until leads run dry or the declared budget is reached.
 - Mark every figure as measured, assumed, or derived, and carry retrieval dates for time-sensitive facts.
+- Keep historical-capture evidence and live-page evidence as two typed surfaces for a point-in-time or then-versus-now question; capture time, publication time, and retrieval time are independent clocks and none substitutes for another.
 - Distill the dossier into a plan-feed block - decision drivers, viable options with evidence, rejected candidates with reasons, risks, and open questions - so planning consumes conclusions, not raw notes.
 - Reserve the end of the run for synthesis; an interrupted run must still leave a partial dossier rather than lost context.
 - A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or name the armed wait it is waiting on -- handle, bound completion signal, deadline -- instead of re-reading status. Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it.
@@ -116,6 +118,7 @@ Required inputs:
 - candidate reference implementations or repos when relevant
 - declared depth or wave budget when exhaustive grounding is requested - never inferred from phrasing
 - freshness, jurisdiction, or version constraints
+- requested as-of date or interval when the question is point-in-time
 
 Expected outputs:
 
@@ -129,6 +132,7 @@ Expected outputs:
 - product_evidence_loop/v1
 - deep_research_dossier/v1
 - research_briefing/v1 with its markdown and print-ready page when the reader is human
+- temporal_source_receipt/v1 per historical claim and temporal_evidence_surfaces/v1 when the question is point-in-time
 
 Artifact expectations:
 
@@ -146,6 +150,7 @@ Safety rules:
 - Name the source class behind each claim - upstream official, practitioner heuristic, or unattributed - as an axis separate from measured/assumed/derived: a practitioner heuristic may inform approach but never enters as an established finding, and no source class settles completion.
 - Parallel lanes widen coverage, not authority: each lane's findings stay claims until merged and verified, and lane count or wave count never substitutes for the declared depth budget.
 - State retrieval limits, dates, and missing-source gaps for unstable facts.
+- Bind every as-of claim to an eligible temporal_source_receipt/v1 - a historical capture at or before the cutoff with a provider-attributed capture time and a stable capture id or digest; a live page or a self-reported publication date is current evidence, never historical evidence, and a claim with no eligible capture goes to the unresolved annex as a temporal_retrieval_gap/v1.
 - product_evidence_loop/v1 is prepared-only opaque references, not observed evidence or execution.
 - deep_research_dossier/v1 is prepared decision context, not observed evidence, execution, review, CI, or merge evidence.
 - research_briefing/v1 is prepared decision context; a rendered page is a page, and calling it a PDF needs observed file evidence.

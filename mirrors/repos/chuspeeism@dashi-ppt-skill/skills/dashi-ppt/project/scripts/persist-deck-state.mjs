@@ -7,19 +7,9 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { generateVideoPoster } from './stage-media.mjs';
+import { mediaFormatForMime } from './media-formats.mjs';
 
 const DECK_VIEW_MODEL_BLOCK = /<script id="deck-view-model" type="application\/json">([\s\S]*?)<\/script>/;
-
-const MIME_EXTENSIONS = {
-  'image/png': '.png',
-  'image/jpeg': '.jpg',
-  'image/webp': '.webp',
-  'image/gif': '.gif',
-  'image/svg+xml': '.svg',
-  'video/mp4': '.mp4',
-  'video/webm': '.webm',
-  'video/quicktime': '.mov',
-};
 
 // 运行时上报的 state 只允许这几个已知字段,形状必须匹配;其余一律视为畸形请求直接拒绝,
 // 不做"尽量兼容"的静默丢弃——写坏 index.html 比拒绝一次自动保存代价更大。
@@ -29,7 +19,7 @@ export function isValidDeckState(state) {
   for (const field of arrayFields) {
     if (state[field] !== undefined && !Array.isArray(state[field])) return false;
   }
-  const objectFields = ['text', 'media', 'props', 'variantSelection'];
+  const objectFields = ['text', 'props', 'variantSelection'];
   for (const field of objectFields) {
     if (state[field] !== undefined && !isPlainObject(state[field])) return false;
   }
@@ -60,11 +50,6 @@ function decodeDataUrl(value) {
   } catch {
     return null;
   }
-}
-
-function extensionForMime(mime) {
-  if (MIME_EXTENSIONS[mime]) return MIME_EXTENSIONS[mime];
-  return mime.startsWith('video/') ? '.mp4' : '.png';
 }
 
 // 深度遍历 state,把每个 data: 字符串交给 transform;非字符串/非 data: 值原样保留。
@@ -100,9 +85,11 @@ export function extractDataUrlMedia(state, deckDir) {
       cache.set(raw, raw);
       return raw;
     }
+    const format = mediaFormatForMime(decoded.mime);
+    if (!format) throw new Error(`Unsupported media MIME type: ${decoded.mime}. Convert the media before saving.`);
     fs.mkdirSync(mediaDir, { recursive: true });
     const hash = createHash('sha256').update(decoded.buffer).digest('hex').slice(0, 24);
-    const filename = `${hash}${extensionForMime(decoded.mime)}`;
+    const filename = `${hash}${format.extensions[0]}`;
     const target = path.join(mediaDir, filename);
     if (!fs.existsSync(target)) {
       fs.writeFileSync(target, decoded.buffer);

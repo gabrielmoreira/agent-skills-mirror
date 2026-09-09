@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.codex/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.17.0"
+  version: "3.17.1"
 
 ---
 
@@ -46,7 +46,7 @@ Work like Manus: Use persistent markdown files as your "working memory on disk."
 
 ## FIRST: Restore Project State
 
-**Before continuing**, resolve the plan this task owns. Use the installed `scripts/resolve-plan-dir.sh` (or `.ps1`) with the host's `PLAN_ID` and `PWF_PLAN_ROOT`, then read `task_plan.md`, `progress.md`, and `findings.md` from that selected directory. If an explicit selector is rejected, or session isolation is armed with multiple plans and no `PLAN_ID`, correct the pin and do not fall back to another task. Run `git diff --stat` for code changes not yet recorded there. All planning filenames below mean that selected directory. For parallel tasks, pin each host before it starts or use separate worktrees; a child process export does not change its host. One orchestrator owns a shared plan and summaries, while workers use assigned files or ledgers.
+**Before continuing**, resolve the plan this task owns. Use the installed `scripts/resolve-plan-dir.sh` (or `.ps1`) with the host's `PLAN_ID` and `PWF_PLAN_ROOT`, then read `task_plan.md`, `progress.md`, and `findings.md` from that selected directory. If an explicit selector is rejected, or multiple named plans exist without `PLAN_ID`, correct the pin and do not fall back to another task. Run `git diff --stat` for code changes not yet recorded there. All planning filenames below mean that selected directory. For parallel tasks, pin each host before it starts or use separate worktrees; a child process export does not change its host. One orchestrator owns a shared plan and summaries, while workers use assigned files or ledgers.
 
 ```bash
 # Linux/macOS (auto-detects python3 or python)

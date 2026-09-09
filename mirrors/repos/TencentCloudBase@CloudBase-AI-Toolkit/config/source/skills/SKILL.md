@@ -58,12 +58,14 @@ Only handle tasks that are part of building, integrating, or maintaining a Cloud
 
 - Minimal Web + database demo / Lovable-like BaaS fast path -> `./minimal-web-baas-demo/SKILL.md` (default for 最小前后端 demo; BaaS-first, no cloud functions)
 - Web app execution -> `./web-development/SKILL.md`
+- Declarative whole-project deploy from cloudbaserc (deployApply/deployPlan) -> `./cloudbase-declarative-deploy/SKILL.md`
 - Web auth provider readiness -> `./auth-tool-cloudbase/SKILL.md`
 - Web auth implementation -> `./auth-web-cloudbase/SKILL.md`
 - CloudBase PostgreSQL / PG app data -> `./postgresql-development-cloudbase/SKILL.md`
 - WeChat Pay / Official Account OAuth through CloudBase Integration Center -> `./cloudbase-wechat-integration/SKILL.md`
 - Browser-side document database CRUD -> `./cloudbase-document-database-web-sdk/SKILL.md`
 - Browser-side file upload -> `./cloud-storage-web/SKILL.md`
+- Manage/operate underlying Tencent Cloud resources via cloud APIs (monitoring & alarms, CLB, CAM roles, cross-product infra) when no dedicated MCP tool exists -> `./cloud-api-operations/SKILL.md`
 - Platform overview only when capability selection is still unclear -> `./cloudbase-platform/SKILL.md`
 - If using `searchKnowledgeBase(mode="skill")`, pass the reference directory id such as `postgresql-development-cloudbase` or `minimal-web-baas-demo`, not a guessed alias.
 

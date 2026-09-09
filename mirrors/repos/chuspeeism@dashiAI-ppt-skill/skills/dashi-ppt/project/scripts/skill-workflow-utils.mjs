@@ -44,9 +44,6 @@ export {
 } from './workflow/inspect-fillplan.mjs';
 
 export {
-  buildTemplateProjectionPlan,
-  contentShapeFromPresentation,
   listLayouts,
   scoreLayout,
-  selectPrimaryContentContainer,
 } from './workflow/layout-query.mjs';

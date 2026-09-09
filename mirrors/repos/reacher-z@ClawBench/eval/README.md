@@ -84,6 +84,23 @@ The evaluation produces two files at the project root:
 | `{model}-eval-results.csv` | CSV | Quick summary -- one row per task with PASS/FAIL and a brief justification |
 | `{model}-eval-results.json` | JSON | Detailed results with full justification and evidence references (file paths + line numbers) |
 
+## Export results to OpenEval / EvalPort
+
+[`scripts/export_openeval.py`](../scripts/export_openeval.py) exports a batch's `rescore-summary.json` as an [EvalPort](https://github.com/adhabnr-ux/evalport) `ResultSet`. It reads the summary produced by `clawbench-rescore` and enriches results with the batch's per-run `run-meta.json` files. The export preserves separate interception and judge results; a task passes when it was intercepted and the selected rubric's judge verdict is true.
+
+After rescoring the batch, run the Python script with uv from the repository root:
+
+```bash
+uv run python scripts/export_openeval.py ./my-run \
+  --run-id my-run \
+  --started-at 2026-09-07T14:00:00Z \
+  --rubric lenient
+```
+
+Replace `./my-run`, the run ID, and the timestamp with your batch's values. `--run-id` and `--started-at` are required because the summary does not record a batch ID or start timestamp. Choose a rubric present in the summary; omitting `--rubric` uses its first rubric.
+
+The script writes `./my-run/resultset.json` by default. Use `--out <path>` to choose another destination or `--stdout` to print the JSON. `--completed-at` and `--suite-id` optionally supply a completion timestamp and suite identifier. Run `uv run python scripts/export_openeval.py --help` for all options.
+
 ## Evaluation Rubric
 
 The full rubric is in [`agentic_eval.md`](agentic_eval.md). Key rules:

@@ -35,6 +35,7 @@ if ($PlanFile -ne "") {
         try {
             $resolvedDir = (& $resolver 2>$null | Select-Object -First 1)
             if ($null -eq $resolvedDir) { $resolvedDir = "" }
+            if (-not $resolvedDir -and ((& $resolver -CheckAmbiguity) -eq "PWF_PLAN_AMBIGUOUS_V1")) { exit 0 }
         } catch {
             $resolvedDir = ""
         }

@@ -756,13 +756,17 @@ def build_sentiment_factor(
         raw_data.groupby("date")["sentiment_score"]
         .transform(lambda x: (x - x.mean()) / (x.std() + 1e-8))
     )
+    factor_data = raw_data.assign(sentiment_norm=factor)
 
     # 2. Compute period-by-period IC
     ic_list = []
-    dates = raw_data["date"].unique()
-    for date in sorted(dates)[:-forward_days]:
-        fwd_date = dates[dates > date][:forward_days][-1]
-        f = raw_data[raw_data["date"] == date].set_index("ticker")["sentiment_norm"]
+    dates = np.sort(raw_data["date"].unique())
+    for date in dates[:-forward_days]:
+        fwd_dates = dates[dates > date]
+        if len(fwd_dates) < forward_days:
+            continue
+        fwd_date = fwd_dates[forward_days - 1]
+        f = factor_data[factor_data["date"] == date].set_index("ticker")["sentiment_norm"]
         r = raw_data[raw_data["date"] == fwd_date].set_index("ticker")["return"]
         ic_list.append((date, compute_ic(f, r)))
 
@@ -808,14 +812,20 @@ def orthogonalize_sentiment(
     from sklearn.linear_model import LinearRegression
     import numpy as np
 
-    # Regress on the traditional factors and keep the residual.
-    X = traditional_factors.fillna(0).values
-    y = sentiment_factor.fillna(0).values
+    # Regress on complete observations and keep missing rows missing.
+    factors = traditional_factors.reindex(sentiment_factor.index)
+    valid = sentiment_factor.notna() & factors.notna().all(axis=1)
+    residual = pd.Series(np.nan, index=sentiment_factor.index, name="sentiment_orthogonal")
+    if not valid.any():
+        return residual
+
+    X = factors.loc[valid].values
+    y = sentiment_factor.loc[valid].values
 
     reg = LinearRegression(fit_intercept=True).fit(X, y)
-    residual = y - reg.predict(X)
+    residual.loc[valid] = y - reg.predict(X)
 
-    return pd.Series(residual, index=sentiment_factor.index)
+    return residual
 ```
 
 ---

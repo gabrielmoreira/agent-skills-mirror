@@ -1,9 +1,16 @@
 export const BESPOKE_SCHEMA_VERSION = 2;
+export const BESPOKE_LIST_ITEM_LIMIT = 8;
+export const BESPOKE_CHART_POINT_LIMIT = 12;
 export const TEMPLATE_VARIANT_COUNT = 3;
 export const TOTAL_VARIANT_COUNT = 4;
 
 const TEMPLATE_KIND = 'template';
 const BESPOKE_KIND = 'bespoke';
+const PAGE_INTENT_ALIASES = new Map([
+  ...['cover', 'title', 'opening', 'opener', '封面', '首页', '开场'].map(value => [value, 'cover']),
+  ...['closing', 'close', 'ending', 'end', '封底', '结尾', '结束', '收尾'].map(value => [value, 'closing']),
+  ...['body', 'content', 'main', 'interior', '正文', '内容', '主体', '内页'].map(value => [value, 'body']),
+]);
 const UNSAFE_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
 const FORBIDDEN_COMPOSITION_KEYS = new Set(['html', 'jsx', 'style', 'classname', 'controls']);
 const PATH_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$-]*(?:\[(?:0|[1-9]\d*)\]|\.[A-Za-z_$][A-Za-z0-9_$-]*)*$/;
@@ -18,36 +25,12 @@ const TEXT_ALIGNS = new Set(['left', 'center', 'right']);
 const MEDIA_FITS = new Set(['cover', 'contain']);
 const SHAPES = new Set(['rect', 'circle', 'line', 'panel']);
 const CHART_TYPES = new Set(['bar', 'line', 'donut', 'progress']);
-
-export function chartTypeAllowsNegativeValues(chartType) {
-  return chartType === 'bar' || chartType === 'line';
-}
-
-export function isValidBespokeChartValue(chartType, value) {
-  return typeof value === 'number'
-    && Number.isFinite(value)
-    && (chartTypeAllowsNegativeValues(chartType) || value >= 0);
-}
-
-const REQUIRED_DESIGN_INTENT_FIELDS = ['objective', 'audience', 'narrativeRole', 'emphasis', 'rationale'];
-const OPTIONAL_DESIGN_INTENT_FIELDS = ['compositionFamily'];
-const DESIGN_INTENT_FIELDS = [...REQUIRED_DESIGN_INTENT_FIELDS, ...OPTIONAL_DESIGN_INTENT_FIELDS];
-const COMPOSITION_FAMILIES = new Set([
-  'hero',
-  'split',
-  'metric-spotlight',
-  'chart-led',
-  'timeline',
-  'matrix',
-  'editorial',
-  'comparison',
-  'process',
-]);
+const DESIGN_INTENT_FIELDS = ['objective', 'audience', 'narrativeRole', 'emphasis', 'rationale'];
 const GRID_FIELDS = ['column', 'row', 'width', 'height'];
 const COMMON_ELEMENT_FIELDS = new Set(['id', 'type', 'grid', 'tone']);
 const ELEMENT_FIELDS = {
   text: new Set([...COMMON_ELEMENT_FIELDS, 'text', 'role', 'align']),
-  metric: new Set([...COMMON_ELEMENT_FIELDS, 'value', 'unit', 'label', 'detail', 'trend']),
+  metric: new Set([...COMMON_ELEMENT_FIELDS, 'sourceId', 'value', 'label', 'detail', 'trend']),
   list: new Set([...COMMON_ELEMENT_FIELDS, 'items', 'ordered']),
   quote: new Set([...COMMON_ELEMENT_FIELDS, 'quote', 'attribution']),
   media: new Set([...COMMON_ELEMENT_FIELDS, 'src', 'alt', 'fit']),
@@ -100,11 +83,8 @@ export function validateContentMap(contentMap, content) {
     }
   }
 
-  for (const [targetPath, sourceMapping] of Object.entries(contentMap)) {
+  for (const [targetPath, sourcePath] of Object.entries(contentMap)) {
     const targetTokens = parseMappedPath(targetPath, `contentMap target "${targetPath}"`, errors);
-    const sourcePath = typeof sourceMapping === 'string'
-      ? sourceMapping
-      : sourceMapping?.source;
     if (typeof sourcePath !== 'string' || !sourcePath.trim()) {
       errors.push(`contentMap target "${targetPath}": source path must be a non-empty string`);
       continue;
@@ -127,667 +107,257 @@ export function resolveContentMap(content, contentMap, base = {}) {
     throw new Error('contentMap base: expected an object');
   }
 
-  for (const [targetPath, sourceMapping] of Object.entries(contentMap || {})) {
-    const sourcePath = typeof sourceMapping === 'string'
-      ? sourceMapping
-      : sourceMapping.source;
+  for (const [targetPath, sourcePath] of Object.entries(contentMap || {})) {
     const targetTokens = parsePath(targetPath);
     const sourceTokens = parsePath(sourcePath);
     const source = readPath(safeContent, sourceTokens);
     if (!source.found) {
       throw new Error(`contentMap target "${targetPath}": missing source path "${sourcePath}"`);
     }
-    const projectedValue = typeof sourceMapping === 'string'
-      ? source.value
-      : projectContentMapValue(source.value, sourceMapping);
-    const value = projectedValue === undefined
-      && typeof sourceMapping === 'object'
-      && Object.prototype.hasOwnProperty.call(sourceMapping, 'fallback')
-      ? sourceMapping.fallback
-      : projectedValue;
-    writePath(resolved, targetTokens, safeDeepClone(value, `content.${sourcePath}`), targetPath);
+    writePath(resolved, targetTokens, safeDeepClone(source.value, `content.${sourcePath}`), targetPath);
   }
   return resolved;
 }
 
-function projectContentMapValue(value, mapping) {
-  const limit = Number.isFinite(Number(mapping.limit)) && Number(mapping.limit) >= 0
-    ? Math.floor(Number(mapping.limit))
-    : null;
-  const group = Number.isFinite(Number(mapping.group)) && Number(mapping.group) > 0
-    ? Math.floor(Number(mapping.group))
-    : null;
-  const offset = Number.isFinite(Number(mapping.offset)) && Number(mapping.offset) >= 0
-    ? Math.floor(Number(mapping.offset))
-    : 0;
-  const at = Number.isFinite(Number(mapping.at)) && Number(mapping.at) >= 0
-    ? Math.floor(Number(mapping.at))
-    : null;
-  let projectedValue = deriveContentMapValue(value, mapping);
-  projectedValue = filterContentMapValue(projectedValue, mapping.filter);
-  if (group != null && Array.isArray(projectedValue)) {
-    projectedValue = condenseContentItems(projectedValue, group);
-  }
-  if (offset && Array.isArray(projectedValue)) projectedValue = projectedValue.slice(offset);
-  if (at != null && Array.isArray(projectedValue)) projectedValue = projectedValue[at];
-  if (mapping.select) {
-    const tokens = parsePath(mapping.select);
-    const selected = Array.isArray(projectedValue)
-      ? projectedValue.map(item => readPath(item, tokens).value)
-      : readPath(projectedValue, tokens).value;
-    return limit != null && Array.isArray(selected) ? selected.slice(0, limit) : selected;
-  }
-  if (!isPlainRecord(mapping.fields)) {
-    return limit != null && Array.isArray(projectedValue)
-      ? projectedValue.slice(0, limit)
-      : projectedValue;
-  }
-  const project = item => Object.fromEntries(
-    Object.entries(mapping.fields).map(([target, source]) => [
-      target,
-      readPath(item, parsePath(source)).value,
-    ]),
-  );
-  const projected = Array.isArray(projectedValue)
-    ? projectedValue.map(project)
-    : project(projectedValue);
-  return limit != null && Array.isArray(projected) ? projected.slice(0, limit) : projected;
-}
 
-function deriveContentMapValue(value, mapping) {
-  if (!mapping.derive) return value;
-  if (mapping.derive === 'template-items') return deriveTemplateItems(value, mapping);
-  if (mapping.derive === 'cover-decoration-labels') {
-    const maxChars = Math.max(0, Number(mapping.maxChars) || 0);
-    return [
-      ...(Array.isArray(value?.coverLabels) ? value.coverLabels : []),
-      value?.titleShort,
-      value?.title,
-      value?.summaryShort,
-      value?.takeaway,
-      value?.summary,
-    ]
-      .filter(hasMappedValue)
-      .map(String)
-      .map(label => (maxChars ? truncateProjectionText(label, maxChars) : label))
-      .filter(hasMappedValue)
-      .filter((label, index, labels) => labels.indexOf(label) === index);
+export function validatePageContentPack(value) {
+  const errors = [];
+  if (!isPlainRecord(value)) return ['presentation: expected a PageContentPack object'];
+  for (const field of ['pageIntent', 'coreMessage']) {
+    if (!isNonEmptyString(value[field])) errors.push(`presentation.${field}: expected a non-empty string`);
   }
-  if (mapping.derive === 'navigation-labels') {
-    return [
-      value?.titleShort,
-      value?.title,
-      value?.summaryShort,
-    ].filter(hasMappedValue).map(String);
-  }
-  if (mapping.derive === 'supporting-summary') return deriveSupportingSummary(value);
-  if (mapping.derive === 'projection-text') return deriveProjectionText(value, mapping);
-  throw new Error(`contentMap derive: unsupported projection "${mapping.derive}"`);
-}
+  validateTextPair(value.title, 'presentation.title', errors);
+  validateTextPair(value.summary, 'presentation.summary', errors);
 
-function filterContentMapValue(value, filter) {
-  if (!filter || !Array.isArray(value)) return value;
-  if (filter === 'value-bearing') {
-    return value.filter(item => (
-      typeof item?.chartValue === 'number' && Number.isFinite(item.chartValue)
-    ));
-  }
-  if (filter === 'chart-facts') {
-    return value.filter(item => item?.chartFact === true);
-  }
-  if (filter === 'supporting') {
-    return value.filter(item => (
-      item?.required !== true
-      && item?.chartFact !== true
-      && !isProjectionValueItem(item)
-    ));
-  }
-  throw new Error(`contentMap filter: unsupported projection "${filter}"`);
-}
-
-export function deriveTemplateItems(presentation = {}, options = {}) {
-  const authoredItems = options?.textFallbackOnly === true
-    ? []
-    : Array.isArray(presentation?.items)
-    ? presentation.items.map(normalizeProjectionItem)
-    : [];
-  const merged = authoredItems.map(item => ({ ...item }));
-  const authoredById = new Map(
-    merged
-      .map((item, index) => [String(item?.id || '').trim(), index])
-      .filter(([id]) => id),
-  );
-  for (const datum of options?.textFallbackOnly === true
-    ? []
-    : selectChartProjectionData(presentation?.chartData)) {
-    const id = String(datum?.id || '').trim();
-    const existingIndex = id ? authoredById.get(id) : null;
-    const projection = normalizeProjectionItem({
-      ...(existingIndex == null ? {} : merged[existingIndex]),
-      ...datum,
-      id: id || `chart-${Number(datum?.sourceIndex || 0) + 1}`,
-      label: String(datum?.label || ''),
-      detail: existingIndex == null ? String(datum?.detail || '') : merged[existingIndex]?.detail,
-      value: datum?.value,
-      displayValue: datum?.displayValue,
-      unit: datum?.unit,
-      required: Boolean(datum?.projectionRequired || datum?.required || merged[existingIndex]?.required),
-      priority: datum?.priority ?? merged[existingIndex]?.priority
-        ?? (datum?.projectionRequired ? 'high' : ''),
-      focus: Boolean(datum?.focus || merged[existingIndex]?.focus),
-      chartFact: true,
-      chartValue: Number(datum?.value),
-      chartUnit: datum?.chartUnit || chartUnitIdentity(datum),
+  const itemsById = new Map();
+  if (!Array.isArray(value.items)) {
+    errors.push('presentation.items: expected an array');
+  } else {
+    const ids = new Set();
+    value.items.forEach((item, index) => {
+      const path = `presentation.items[${index}]`;
+      if (!isPlainRecord(item)) {
+        errors.push(`${path}: expected an object`);
+        return;
+      }
+      if (!isNonEmptyString(item.id)) errors.push(`${path}.id: expected a stable non-empty string`);
+      else if (ids.has(item.id)) errors.push(`${path}.id: duplicate id "${item.id}"`);
+      else {
+        ids.add(item.id);
+        itemsById.set(item.id, item);
+      }
+      if (!isNonEmptyString(item.label)) errors.push(`${path}.label: expected a non-empty string`);
+      validateOptionalTextPair(item.detail, `${path}.detail`, errors);
+      validateFactValue(item, path, errors);
+      if (item.required != null && typeof item.required !== 'boolean') {
+        errors.push(`${path}.required: expected a boolean`);
+      }
+      if (item.priority != null && !isNonEmptyString(item.priority)) {
+        errors.push(`${path}.priority: expected a non-empty string`);
+      }
     });
-    if (existingIndex != null) {
-      merged[existingIndex] = projection;
+  }
+
+  if (value.chartData != null) {
+    if (!Array.isArray(value.chartData)) {
+      errors.push('presentation.chartData: expected an array');
     } else {
-      authoredById.set(projection.id, merged.length);
-      merged.push(projection);
+      const ids = new Set();
+      value.chartData.forEach((item, index) => {
+        const path = `presentation.chartData[${index}]`;
+        if (!isPlainRecord(item)) {
+          errors.push(`${path}: expected an object`);
+          return;
+        }
+        if (!isNonEmptyString(item.id)) errors.push(`${path}.id: expected a stable non-empty string`);
+        else if (ids.has(item.id)) errors.push(`${path}.id: duplicate id "${item.id}"`);
+        else ids.add(item.id);
+        if (!isNonEmptyString(item.label)) errors.push(`${path}.label: expected a non-empty string`);
+        if (typeof item.value !== 'number' || !Number.isFinite(item.value)) {
+          errors.push(`${path}.value: expected a finite number`);
+        }
+        validateFactValue(item, path, errors);
+        const matchingItem = itemsById.get(item.id);
+        if (matchingItem && !sameFactIdentity(matchingItem, item)) {
+          errors.push(`${path}.id: conflicts with presentation.items id "${item.id}"; label/value/unit must match exactly`);
+        }
+      });
     }
   }
-  if (options?.includeTextFallback === true
-    && (!merged.length || options?.supplementTextFallback === true)) {
-    const existingLabels = new Set(merged.map(item => String(item?.label || '')).filter(Boolean));
-    const fallbackValues = [
-      ...(Array.isArray(presentation?.coverLabels) ? presentation.coverLabels : []),
-      presentation?.titleShort,
-      presentation?.title,
-      presentation?.summaryShort,
-      presentation?.summary,
-      presentation?.takeaway,
-    ]
-      .filter(hasMappedValue)
-      .map(String)
-      .filter(value => !existingLabels.has(value))
-      .filter((value, index, values) => values.indexOf(value) === index);
-    const authoredCoverLabels = Array.isArray(presentation?.coverLabels)
-      ? presentation.coverLabels.filter(hasMappedValue).map(String)
-      : [];
-    const narrativeFallbackValues = [
-      presentation?.titleShort,
-      presentation?.title,
-      presentation?.summaryShort,
-      presentation?.summary,
-      presentation?.takeaway,
-    ]
-      .filter(hasMappedValue)
-      .map(String)
-      .filter((value, index, values) => values.indexOf(value) === index);
-    const fallbackStart = merged.length;
-    fallbackValues.slice(0, Math.max(0, 8 - fallbackStart)).forEach((label, index) => {
-      const coverIndex = authoredCoverLabels.indexOf(label);
-      const secondaryLabel = authoredCoverLabels.length > 1
-        ? authoredCoverLabels[
-            ((coverIndex >= 0 ? coverIndex : index) + 1) % authoredCoverLabels.length
-          ]
-        : (coverIndex < 0 ? authoredCoverLabels[0] || '' : '');
-      const detail = narrativeFallbackValues[index % narrativeFallbackValues.length]
-        || fallbackValues.find(value => value !== label && value !== secondaryLabel)
-        || '';
-      const coverValue = authoredCoverLabels.includes(label)
-        ? projectionValueFromCoverLabel(label)
-        : null;
-      merged.push(normalizeProjectionItem({
-        id: `text-${fallbackStart + index + 1}`,
-        label: coverValue?.label || label,
-        ...(secondaryLabel ? { secondaryLabel } : {}),
-        detail: detail === label ? '' : detail,
-        ...(coverValue ? { displayValue: coverValue.displayValue } : {}),
-        focus: index === 0,
-      }));
-    });
+
+  if (value.media != null) {
+    if (!Array.isArray(value.media)) {
+      errors.push('presentation.media: expected an array');
+    } else {
+      value.media.forEach((item, index) => {
+        const path = `presentation.media[${index}]`;
+        if (!isPlainRecord(item) || !isNonEmptyString(item.src)) {
+          errors.push(`${path}.src: expected a non-empty staged media source`);
+        }
+      });
+    }
   }
-  return merged.map((item, index) => withProjectionAliases(item, index));
+  return unique(errors);
 }
 
-function projectionValueFromCoverLabel(value) {
-  const match = String(value || '').trim().match(
-    /^([+-]?\d+(?:[.,]\d+)?(?:%|[KMBT]|万|亿)?)(?:(?:\s+|[·|/]\s*)(.*))?$/i,
-  );
-  if (!match) return null;
+export function classifyPageIntent(value) {
+  const normalized = String(value || '').normalize('NFKC').trim().toLowerCase();
+  return PAGE_INTENT_ALIASES.get(normalized) || 'body';
+}
+
+export function normalizePageContentPack(value) {
+  const errors = validatePageContentPack(value);
+  if (errors.length) throw new Error(errors.join('\n'));
   return {
-    displayValue: match[1],
-    label: String(match[2] || match[1]).trim(),
+    pageIntent: value.pageIntent.trim(),
+    coreMessage: value.coreMessage.trim(),
+    title: normalizeTextPair(value.title),
+    summary: normalizeTextPair(value.summary),
+    items: value.items.map(item => ({
+      id: item.id.trim(),
+      label: item.label.trim(),
+      detail: normalizeOptionalTextPair(item.detail),
+      ...(item.value !== undefined ? { value: item.value } : {}),
+      ...(item.displayValue !== undefined ? { displayValue: String(item.displayValue).trim() } : {}),
+      ...(item.unit !== undefined ? { unit: String(item.unit).trim() } : {}),
+      ...(item.required !== undefined ? { required: item.required } : {}),
+      ...(item.priority !== undefined ? { priority: item.priority.trim() } : {}),
+    })),
+    ...(Array.isArray(value.chartData) ? {
+      chartData: value.chartData.map(item => ({
+        id: item.id.trim(),
+        label: item.label.trim(),
+        value: item.value,
+        ...(item.displayValue !== undefined ? { displayValue: String(item.displayValue).trim() } : {}),
+        ...(item.unit !== undefined ? { unit: String(item.unit).trim() } : {}),
+      })),
+    } : {}),
+    ...(Array.isArray(value.media) ? {
+      media: value.media.map(item => ({
+        src: item.src.trim(),
+        ...(item.kind ? { kind: String(item.kind).trim() } : {}),
+        ...(item.type ? { type: String(item.type).trim() } : {}),
+        ...(item.alt ? { alt: String(item.alt).trim() } : {}),
+      })),
+    } : {}),
   };
 }
 
-function withProjectionAliases(item, index) {
-  const label = String(item?.label || '');
-  const detail = String(item?.detail || '');
-  const secondaryLabel = String(item?.secondaryLabel || '');
-  const duration = String(item?.duration || '');
-  const displayValue = String(item?.displayValue || '');
-  const unit = String(item?.unit || '');
-  const pageLabel = String(item?.pageLabel || '');
-  const ordinalNumber = index + 1;
-  const ordinal = String(ordinalNumber);
-  return {
-    ...item,
-    projectionOrdinal: ordinal,
-    projectionOrdinalNumber: ordinalNumber,
-    projectionLabel: [ordinal, label].filter(hasMappedValue).join('. '),
-    projectionDetail: [label, detail].filter(hasMappedValue).join('：') || label || ordinal,
-    projectionValue: displayValue,
-    projectionUnit: unit,
-    projectionTag: [label, displayValue].filter(hasMappedValue).join(' · ') || label || ordinal,
-    projectionSecondaryLabel: secondaryLabel,
-    projectionDuration: duration,
-    projectionPageLabel: pageLabel,
-    projectionInitial: label.trim().slice(0, 1),
-  };
+export function pageContentProjectionItems(value) {
+  const pack = normalizePageContentPack(value);
+  return pack.items.map((item, index) => projectionItem(item, index));
 }
 
-export function deriveSupportingSummary(presentation = {}) {
-  const supporting = deriveTemplateItems(presentation)
-    .filter(item => item?.required !== true && item?.chartFact !== true && !isProjectionValueItem(item))
-    .map(item => item?.labelWithSupporting || item?.labelWithValueAndSupporting || item?.label)
-    .filter(hasMappedValue)
-    .map(String);
-  if (supporting.length) return [...new Set(supporting)].join('；');
-  return [presentation?.summaryShort, presentation?.takeaway, presentation?.summary]
-    .find(hasMappedValue) || '';
+export function summarizePageChartData(value) {
+  const pack = normalizePageContentPack(value);
+  const points = pack.chartData || [];
+  if (!points.length) return '';
+  const ordered = [...points].sort((left, right) => left.value - right.value || left.label.localeCompare(right.label));
+  return `${points.length}点｜${formatPageContentValue(ordered[0])}–${formatPageContentValue(ordered.at(-1))}`;
 }
 
-export function deriveProjectionText(presentation = {}, mapping = {}) {
-  const preferred = Array.isArray(mapping.preferred) ? mapping.preferred : [];
-  const direct = preferred.map(pathName => readPath(
-    presentation,
-    parsePath(String(pathName || 'titleShort')),
-  ).value);
-  const itemText = deriveTemplateItems(presentation).flatMap(item => [
-    item?.labelWithValueAndSupporting,
-    item?.labelWithSupporting,
-    item?.labelWithValue,
-    item?.label,
-    item?.detail,
-  ]);
-  const candidates = [
-    ...direct,
-    presentation?.titleShort,
-    presentation?.title,
-    presentation?.summaryShort,
-    presentation?.summary,
-    presentation?.takeaway,
-    ...(Array.isArray(presentation?.coverLabels) ? presentation.coverLabels : []),
-    deriveSupportingSummary(presentation),
-    ...itemText,
-  ]
-    .filter(hasMappedValue)
-    .map(String)
-    .filter((value, index, values) => values.indexOf(value) === index);
-  const maxChars = Number(mapping.maxChars || 0);
-  const fitting = maxChars
-    ? candidates.filter(value => projectionCharLength(value) <= maxChars)
-    : candidates;
-  const projected = fitting.length
-    ? fitting
-    : mapping.truncate === true && maxChars
-      ? candidates
-        .map(value => truncateProjectionText(value, maxChars))
-        .filter(hasMappedValue)
-        .filter((value, candidateIndex, values) => values.indexOf(value) === candidateIndex)
-      : [];
-  if (!projected.length) return '';
-  const index = Math.max(0, Math.floor(Number(mapping.index) || 0));
-  return projected[index % projected.length];
-}
-
-function truncateProjectionText(value, maxChars) {
-  let width = 0;
-  let output = '';
-  for (const ch of String(value ?? '')) {
-    const next = projectionCharLength(ch);
-    if (width + next > maxChars) break;
-    output += ch;
-    width += next;
+export function requiredPageContentFacts(value) {
+  const pack = normalizePageContentPack(value);
+  const facts = [pack.title.short, pack.coreMessage];
+  for (const item of pageContentProjectionItems(pack)) {
+    if (item.authoredRequired) facts.push(item.label);
+    if (item.hasValue) facts.push(item.formattedValue);
   }
-  return output.trim();
+  return unique(facts.map(item => String(item || '').trim()).filter(Boolean));
 }
 
-function projectionCharLength(value) {
-  let width = 0;
-  for (const ch of String(value ?? '')) {
-    const code = ch.codePointAt(0);
-    const fullWidth = (code >= 0x1100 && code <= 0x115f)
-      || (code >= 0x2e80 && code <= 0xa4cf)
-      || (code >= 0xac00 && code <= 0xd7a3)
-      || (code >= 0xf900 && code <= 0xfaff)
-      || (code >= 0xfe30 && code <= 0xfe4f)
-      || (code >= 0xff00 && code <= 0xff60)
-      || (code >= 0xffe0 && code <= 0xffe6)
-      || (code >= 0x3000 && code <= 0x303e)
-      || (code >= 0x20000 && code <= 0x3fffd);
-    width += fullWidth ? 1 : 0.5;
-  }
-  return Math.ceil(width);
+export function requiredPageChartFacts(value) {
+  const pack = normalizePageContentPack(value);
+  return unique((pack.chartData || []).flatMap(item => [item.label, formatPageContentValue(item)]).filter(Boolean));
 }
 
-function firstMappedString(...values) {
-  const value = values.find(hasMappedValue);
-  return value === undefined ? '' : String(value);
-}
-
-function normalizeProjectionItem(item = {}) {
-  const label = hasMappedValue(item?.label) ? String(item.label) : '';
-  const detail = hasMappedValue(item?.detail) ? String(item.detail) : '';
-  const secondaryLabel = firstMappedString(
-    item?.secondaryLabel,
-    item?.englishLabel,
-    item?.english,
-    item?.en,
-    item?.subtitle,
-  );
-  const duration = firstMappedString(item?.duration, item?.durationLabel);
-  const pageLabel = firstMappedString(item?.pageLabel, item?.pageNumber);
-  const unit = hasMappedValue(item?.unit) ? String(item.unit) : '';
-  const displayValue = formatValueWithUnit(
-    item?.value,
-    unit,
-    item?.displayValue ?? item?.valueText ?? '',
-  );
-  const chartValue = Number.isFinite(Number(item?.chartValue))
-    ? Number(item.chartValue)
-    : normalizedChartValue({ ...item, displayValue });
-  const chartUnit = chartValue == null
-    ? null
-    : item?.chartUnit || chartUnitIdentity({ ...item, displayValue });
-  const labelWithValue = [displayValue, label].filter(hasMappedValue).join(' · ');
-  return {
-    ...item,
-    label,
-    detail,
-    secondaryLabel,
-    duration,
-    pageLabel,
-    unit,
-    emptyText: '',
-    focus: Boolean(item?.focus),
-    displayValue,
-    valueText: displayValue,
-    labelWithValue,
-    labelWithSupporting: [label, detail].filter(hasMappedValue).join('：'),
-    labelWithValueAndSupporting: [labelWithValue || label, detail]
-      .filter(hasMappedValue)
-      .join('｜'),
-    ...(chartValue == null ? {} : { chartValue }),
-    ...(chartUnit == null ? {} : { chartUnit }),
-  };
-}
-
-function selectChartProjectionData(chartData) {
-  if (!Array.isArray(chartData) || !chartData.length) return [];
-  const indexed = chartData
-    .map((item, index) => ({ ...item, sourceIndex: index }))
-    .filter(item => Number.isFinite(Number(item?.value)) && hasMappedValue(item?.label));
-  const prioritized = [...indexed].sort((left, right) => (
-    projectionPriorityScore(right, right.sourceIndex)
-    - projectionPriorityScore(left, left.sourceIndex)
-    || left.sourceIndex - right.sourceIndex
-  ));
-  const guaranteedIndex = prioritized.find(isHighPriorityProjectionItem)?.sourceIndex
-    ?? indexed[0]?.sourceIndex;
-  if (indexed.length <= 4) {
-    return indexed.map(item => ({
-      ...item,
-      projectionRequired: item.sourceIndex === guaranteedIndex,
-    }));
-  }
-  const selected = new Set();
-  for (const item of prioritized) {
-    if (!isHighPriorityProjectionItem(item)) continue;
-    selected.add(item.sourceIndex);
-    if (selected.size >= 4) break;
-  }
-  const byValue = [...indexed].sort((left, right) => (
-    Number(left.value) - Number(right.value) || left.sourceIndex - right.sourceIndex
-  ));
-  for (const index of [
-    0,
-    indexed.length - 1,
-    byValue[0]?.sourceIndex,
-    byValue.at(-1)?.sourceIndex,
-  ]) {
-    if (Number.isInteger(index)) selected.add(index);
-    if (selected.size >= 4) break;
-  }
-  for (let index = 0; selected.size < 4 && index < indexed.length; index += 1) {
-    selected.add(index);
-  }
-  return indexed
-    .filter(item => selected.has(item.sourceIndex))
-    .map(item => ({
-      ...item,
-      projectionRequired: item.sourceIndex === guaranteedIndex,
-    }));
-}
-
-export function condenseContentItems(items, targetCount) {
-  if (!Array.isArray(items) || items.length < 2) return items;
-  const count = Math.max(1, Math.min(items.length, Math.floor(Number(targetCount) || items.length)));
-  if (count >= items.length) return items;
-  const pinned = [];
-  const supporting = [];
-  items.forEach((item, index) => {
-    const entry = { item, index };
-    if (isPinnedProjectionItem(item)) pinned.push(entry);
-    else supporting.push(entry);
-  });
-  if (pinned.length > count) {
-    const selected = [...pinned, ...supporting]
-      .sort((left, right) => (
-        projectionPriorityScore(right.item, right.index)
-        - projectionPriorityScore(left.item, left.index)
-        || left.index - right.index
-      ))
-      .slice(0, count);
-    const selectedIndexes = new Set(selected.map(entry => entry.index));
-    const overflow = [...pinned, ...supporting].filter(entry => !selectedIndexes.has(entry.index));
-    return attachSupportingItems(selected, overflow);
-  }
-  if (supporting.length && pinned.length === count) {
-    return attachSupportingItems(pinned, supporting);
-  }
-  const supportingSlots = count - pinned.length;
-  const groupedSupporting = Array.from({ length: supportingSlots }, (_, index) => {
-    const start = Math.floor(index * supporting.length / supportingSlots);
-    const end = Math.floor((index + 1) * supporting.length / supportingSlots);
-    const entries = supporting.slice(start, Math.max(start + 1, end));
-    const group = entries.map(entry => entry.item);
-    const first = group[0] && typeof group[0] === 'object' ? group[0] : {};
-    const join = (key, separator = ' / ') => [...new Set(
-      group.map(item => item?.[key]).filter(hasMappedValue).map(String),
-    )].join(separator);
-    const label = join('label');
-    const displayValue = join('displayValue');
-    const labelWithValue = group.map(item => (
-      hasMappedValue(item?.labelWithValue)
-        ? String(item.labelWithValue)
-        : [item?.displayValue, item?.label].filter(hasMappedValue).join(' · ')
-    )).filter(Boolean).join(' / ');
-    const detail = join('detail', '；');
-    const supportingText = group.map(projectionItemSummary).filter(Boolean).join('；');
-    const merged = {
-      ...first,
-      id: join('id', '+'),
-      label,
-      detail,
-      displayValue,
-      valueText: join('valueText'),
-      labelWithValue: labelWithValue || label,
-      supportingText,
-      labelWithSupporting: supportingText || label,
-      labelWithValueAndSupporting: [labelWithValue || label, detail]
-        .filter(hasMappedValue)
-        .join('｜'),
-      hasCondensedSupporting: group.length > 1,
-      unit: join('unit'),
-      emptyText: '',
-      focus: group.some(item => Boolean(item?.focus)),
-      chartFact: group.some(item => item?.chartFact === true),
-    };
-    return {
-      item: {
-        ...merged,
-        required: group.some(item => item?.required === true),
-      },
-      index: entries[0]?.index ?? items.length,
-    };
-  });
-  return [
-    ...pinned,
-    ...groupedSupporting,
-  ].sort((left, right) => left.index - right.index)
-    .map(entry => entry.item);
-}
-
-function attachSupportingItems(selectedEntries, overflowEntries) {
-  const selected = [...selectedEntries].sort((left, right) => left.index - right.index);
-  if (!overflowEntries.length) return selected.map(entry => entry.item);
-  return selected.map((entry, index) => {
-    const start = Math.floor(index * overflowEntries.length / selected.length);
-    const end = Math.floor((index + 1) * overflowEntries.length / selected.length);
-    const assigned = overflowEntries.slice(start, end).map(item => item.item);
-    if (!assigned.length) return entry.item;
-    const supportingText = assigned.map(projectionItemSummary).filter(Boolean).join('；');
-    const label = String(entry.item?.label || '');
-    const labelWithValue = String(entry.item?.labelWithValue || label);
-    return {
-      ...entry.item,
-      detail: [entry.item?.detail, supportingText].filter(hasMappedValue).join('；'),
-      supportingText,
-      labelWithSupporting: [label, supportingText].filter(hasMappedValue).join('｜'),
-      labelWithValueAndSupporting: [labelWithValue, supportingText]
-        .filter(hasMappedValue)
-        .join('｜'),
-      hasCondensedSupporting: true,
-    };
-  });
-}
-
-function projectionItemSummary(item) {
-  return [item?.labelWithValue || item?.label, item?.detail]
-    .filter(hasMappedValue)
-    .join('：');
-}
-
-function isPinnedProjectionItem(item) {
-  return item?.required === true
-    || item?.chartFact === true
-    || isHighPriorityProjectionItem(item)
-    || isProjectionValueItem(item);
-}
-
-function isProjectionValueItem(item) {
-  return hasMappedValue(item?.value)
-    || hasMappedValue(item?.displayValue)
-    || (typeof item?.chartValue === 'number' && Number.isFinite(item.chartValue));
-}
-
-function isHighPriorityProjectionItem(item) {
-  if (item?.focus === true) return true;
-  const value = item?.priority;
-  if (typeof value === 'number' && Number.isFinite(value)) return value <= 2;
-  return ['high', 'highest', 'critical', 'required', 'primary', 'p0', 'p1']
-    .includes(String(value || '').trim().toLowerCase());
-}
-
-function projectionPriorityScore(item, index = 0) {
-  const priority = item?.priority;
-  const numericPriority = typeof priority === 'number' && Number.isFinite(priority)
-    ? Math.max(0, 1000 - priority * 100)
-    : 0;
-  const namedPriority = isHighPriorityProjectionItem(item) ? 900 : 0;
-  return Number(item?.chartFact === true) * 3500
-    + Number(item?.required === true) * 7000
-    + numericPriority
-    + namedPriority
-    + Number(item?.focus === true) * 500
-    + Number(isProjectionValueItem(item)) * 300
-    - index / 10000;
-}
-
-function hasMappedValue(value) {
-  return value !== undefined && value !== null && value !== '';
-}
-
-const VALUE_SCALES = new Map([
-  ['k', 1e3],
-  ['m', 1e6],
-  ['b', 1e9],
-  ['t', 1e12],
-  ['万', 1e4],
-  ['亿', 1e8],
-]);
-
-export function formatValueWithUnit(value, unit = '', displayValue = '') {
-  if (hasMappedValue(displayValue)) return String(displayValue);
-  if (!hasMappedValue(value)) return '';
-  const text = String(value);
-  const normalizedUnit = String(unit || '').trim();
-  if (!normalizedUnit) return text;
-  const trimmedText = text.trim();
-  const escapedUnit = normalizedUnit.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  if (/^[¥$€£]$/.test(normalizedUnit)) {
-    return new RegExp(`^${escapedUnit}`).test(trimmedText) ? text : `${normalizedUnit}${text}`;
-  }
-  if (/^(?:%|k|m|b|t|万|亿)$/i.test(normalizedUnit)) {
-    return new RegExp(`${escapedUnit}$`, 'i').test(trimmedText) ? text : `${text}${normalizedUnit}`;
-  }
-  if (new RegExp(`${escapedUnit}$`, 'i').test(trimmedText)) return text;
-  return `${text} ${normalizedUnit}`;
-}
-
-export function normalizedChartValue(item = {}) {
-  const displayValue = hasMappedValue(item?.displayValue)
-    ? String(item.displayValue)
-    : hasMappedValue(item?.valueText)
-      ? String(item.valueText)
+export function formatPageContentValue(item = {}) {
+  const unit = isNonEmptyString(item.unit) ? item.unit.trim() : '';
+  const raw = isNonEmptyString(item.displayValue)
+    ? item.displayValue.trim()
+    : isStringOrFiniteNumber(item.value)
+      ? String(item.value).trim()
       : '';
-  const parsedDisplay = parseFormattedValue(displayValue);
-  if (parsedDisplay && (
-    parsedDisplay.currency
-    || parsedDisplay.suffix
-    || typeof item?.value !== 'number'
-  )) {
-    return parsedDisplay.value;
-  }
-  if (typeof item?.value === 'number' && Number.isFinite(item.value)) {
-    const scale = VALUE_SCALES.get(String(item?.unit || '').trim().toLowerCase()) || 1;
-    return item.value * scale;
-  }
-  return parsedDisplay?.value ?? null;
+  if (!raw || !unit) return raw;
+  let normalized = raw;
+  while (normalized.endsWith(`${unit}${unit}`)) normalized = normalized.slice(0, -unit.length);
+  return normalized.endsWith(unit) ? normalized : `${normalized}${unit}`;
 }
 
-export function chartUnitIdentity(item = {}) {
-  const displayValue = hasMappedValue(item?.displayValue)
-    ? String(item.displayValue)
-    : hasMappedValue(item?.valueText)
-      ? String(item.valueText)
-      : '';
-  const parsedDisplay = parseFormattedValue(displayValue);
-  if (parsedDisplay?.suffix === '%') return 'percent';
-  if (parsedDisplay?.currency) return `currency:${parsedDisplay.currency}`;
-  const unit = String(item?.unit || '').trim();
-  if (!unit || VALUE_SCALES.has(unit.toLowerCase())) return 'number';
-  if (unit === '%') return 'percent';
-  if (/^[¥$€£]$/.test(unit)) return `currency:${unit}`;
-  return `unit:${unit.toLowerCase()}`;
-}
-
-function parseFormattedValue(value) {
-  const normalized = String(value || '').trim().replace(/,/g, '');
-  const match = normalized.match(/^([+-]?)([¥$€£]?)(\d+(?:\.\d+)?)(%|[KMBT]|万|亿)?$/i);
-  if (!match) return null;
-  const suffix = String(match[4] || '');
-  const scale = VALUE_SCALES.get(suffix.toLowerCase()) || 1;
-  const parsed = Number(`${match[1]}${match[3]}`) * scale;
-  if (!Number.isFinite(parsed)) return null;
+function projectionItem(item, sourceIndex) {
+  const formattedValue = formatPageContentValue(item);
   return {
-    value: parsed,
-    currency: match[2] || '',
-    suffix,
+    id: item.id,
+    label: item.label,
+    detailFull: item.detail?.full || '',
+    detailShort: item.detail?.short || '',
+    ...(item.value !== undefined ? { value: item.value } : {}),
+    ...(item.displayValue !== undefined ? { displayValue: item.displayValue } : {}),
+    ...(item.unit !== undefined ? { unit: item.unit } : {}),
+    formattedValue,
+    hasValue: Boolean(formattedValue),
+    authoredRequired: item.required === true,
+    pinned: item.required === true || Boolean(formattedValue) || String(item.priority || '').toLowerCase() === 'critical',
+    required: item.required === true,
+    priority: item.priority || '',
+    chartFact: false,
+    sourceIndex,
   };
+}
+
+function validateTextPair(value, path, errors) {
+  if (!isPlainRecord(value)) {
+    errors.push(`${path}: expected {full,short}`);
+    return;
+  }
+  for (const field of ['full', 'short']) {
+    if (!isNonEmptyString(value[field])) errors.push(`${path}.${field}: expected a non-empty string`);
+  }
+}
+
+function validateOptionalTextPair(value, path, errors) {
+  if (value == null) return;
+  if (!isPlainRecord(value)) {
+    errors.push(`${path}: expected {full,short} when provided`);
+    return;
+  }
+  for (const field of ['full', 'short']) {
+    if (value[field] != null && typeof value[field] !== 'string') {
+      errors.push(`${path}.${field}: expected a string when provided`);
+    }
+  }
+}
+
+function normalizeTextPair(value) {
+  return { full: value.full.trim(), short: value.short.trim() };
+}
+
+function normalizeOptionalTextPair(value) {
+  return {
+    full: typeof value?.full === 'string' ? value.full.trim() : '',
+    short: typeof value?.short === 'string' ? value.short.trim() : '',
+  };
+}
+
+function sameFactIdentity(left, right) {
+  return String(left?.label || '').trim() === String(right?.label || '').trim()
+    && formatPageContentValue(left) === formatPageContentValue(right)
+    && String(left?.unit || '').trim() === String(right?.unit || '').trim();
+}
+
+function validateFactValue(item, path, errors) {
+  if (item.value !== undefined && !isStringOrFiniteNumber(item.value)) {
+    errors.push(`${path}.value: expected a non-empty string or finite number`);
+  }
+  if (item.displayValue !== undefined && !isNonEmptyString(item.displayValue)) {
+    errors.push(`${path}.displayValue: expected a non-empty string`);
+  }
+  if (item.unit !== undefined && !isNonEmptyString(item.unit)) {
+    errors.push(`${path}.unit: expected a non-empty string`);
+  }
+  if (item.unit !== undefined && item.value === undefined && item.displayValue === undefined) {
+    errors.push(`${path}.unit: unit requires value or displayValue`);
+  }
 }
 
 export function validateBespokeComposition(composition) {
@@ -828,15 +398,10 @@ function validateDesignIntent(value, errors) {
     return;
   }
   rejectUnknownFields(value, new Set(DESIGN_INTENT_FIELDS), path, errors);
-  for (const field of REQUIRED_DESIGN_INTENT_FIELDS) {
+  for (const field of DESIGN_INTENT_FIELDS) {
     if (!isNonEmptyString(value[field])) {
       errors.push(`${path}.${field}: expected a non-empty string`);
     }
-  }
-  if (value.compositionFamily != null && !COMPOSITION_FAMILIES.has(value.compositionFamily)) {
-    errors.push(
-      `${path}.compositionFamily: expected one of ${[...COMPOSITION_FAMILIES].join(', ')}`,
-    );
   }
 }
 
@@ -921,11 +486,11 @@ function validateTextElement(element, path, errors) {
 }
 
 function validateMetricElement(element, path, errors) {
+  validateOptionalString(element.sourceId, `${path}.sourceId`, errors);
   if (!isStringOrFiniteNumber(element.value)) {
     errors.push(`${path}.value: expected a non-empty string or finite number`);
   }
   if (!isNonEmptyString(element.label)) errors.push(`${path}.label: expected a non-empty string`);
-  validateOptionalString(element.unit, `${path}.unit`, errors);
   validateOptionalString(element.detail, `${path}.detail`, errors);
   validateOptionalString(element.trend, `${path}.trend`, errors);
 }
@@ -938,6 +503,9 @@ function validateListElement(element, path, errors) {
     errors.push(`${path}.items: expected a non-empty array`);
     return;
   }
+  if (element.items.length > BESPOKE_LIST_ITEM_LIMIT) {
+    errors.push(`${path}.items: expected at most ${BESPOKE_LIST_ITEM_LIMIT} items`);
+  }
   element.items.forEach((item, index) => {
     const itemPath = `${path}.items[${index}]`;
     if (isNonEmptyString(item)) return;
@@ -945,7 +513,8 @@ function validateListElement(element, path, errors) {
       errors.push(`${itemPath}: expected a non-empty string or {title,body}`);
       return;
     }
-    rejectUnknownFields(item, new Set(['title', 'body']), itemPath, errors);
+    rejectUnknownFields(item, new Set(['sourceId', 'title', 'body']), itemPath, errors);
+    validateOptionalString(item.sourceId, `${itemPath}.sourceId`, errors);
     if (!isNonEmptyString(item.title) && !isNonEmptyString(item.body)) {
       errors.push(`${itemPath}: expected a non-empty title or body`);
     }
@@ -984,24 +553,29 @@ function validateChartElement(element, path, errors) {
     errors.push(`${path}.data: expected a non-empty array`);
     return;
   }
-  if (element.data.length > 12) {
-    errors.push(`${path}.data: expected at most 12 items`);
+  if (element.data.length > BESPOKE_CHART_POINT_LIMIT) {
+    errors.push(`${path}.data: expected at most ${BESPOKE_CHART_POINT_LIMIT} points`);
   }
+  const units = new Set();
   element.data.forEach((item, index) => {
     const itemPath = `${path}.data[${index}]`;
     if (!isPlainRecord(item)) {
-      errors.push(`${itemPath}: expected {label,value}`);
+      errors.push(`${itemPath}: expected {sourceId,label,value,displayValue,unit}`);
       return;
     }
-    rejectUnknownFields(item, new Set(['label', 'value', 'displayValue', 'unit']), itemPath, errors);
+    rejectUnknownFields(item, new Set(['sourceId', 'label', 'value', 'displayValue', 'unit']), itemPath, errors);
+    validateOptionalString(item.sourceId, `${itemPath}.sourceId`, errors);
     if (!isNonEmptyString(item.label)) errors.push(`${itemPath}.label: expected a non-empty string`);
-    const permitsNegative = chartTypeAllowsNegativeValues(element.chartType);
-    if (!isValidBespokeChartValue(element.chartType, item.value)) {
-      errors.push(`${itemPath}.value: expected a ${permitsNegative ? '' : 'non-negative '}finite number`);
+    if (typeof item.value !== 'number' || !Number.isFinite(item.value)) {
+      errors.push(`${itemPath}.value: expected a finite number`);
+    } else if (['donut', 'progress'].includes(element.chartType) && item.value < 0) {
+      errors.push(`${itemPath}.value: ${element.chartType} charts require non-negative values`);
     }
     validateOptionalString(item.displayValue, `${itemPath}.displayValue`, errors);
     validateOptionalString(item.unit, `${itemPath}.unit`, errors);
+    units.add(typeof item.unit === 'string' ? item.unit.normalize('NFKC').trim() : '');
   });
+  if (units.size > 1) errors.push(`${path}.data: all chart units must match or all be empty`);
 }
 
 function validateOptionalString(value, path, errors) {

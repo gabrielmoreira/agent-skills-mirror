@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `colbymchenry/codegraph` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `colbymchenry/codegraph` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `colbymchenry/codegraph` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,7 +62,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/add-lang/SKILL.md`](.claude/skills/add-lang/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/agent-eval/SKILL.md`](.claude/skills/agent-eval/SKILL.md) |
 | 3 | ✓ | [`.cursor/rules/codegraph.mdc`](.cursor/rules/codegraph.mdc) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 
 ---
 

@@ -190,7 +190,9 @@ PR without the chat history.
   `ROUTING_INTERVENTION_CASES` and `ROUTING_PRECISION_CASES`.
 - Treat exact-count fixtures as contracts. Update affected assertions in the
   same change, but do not copy mutable counts or source line numbers into
-  prose.
+  prose. When a rebase conflicts on those counts, re-derive them from the
+  producer instead of choosing a side: upstream's baseline moved and your
+  delta still has to land on top of it.
 
 ## Generated Artifact Discipline
 
@@ -249,6 +251,7 @@ PYTHONPATH=tests uv run python -m unittest discover -s tests -v
 uv run python -m compileall -q src tests
 uv run python -m omh.cli docs workflows --check
 uv run python -m omh.cli docs roles --check
+uv run python -m omh.cli docs claims --check --json
 uv run python -m omh.cli docs capability-families --check
 uv run python -m omh.cli docs ulw-inventory --check
 uv run python -m omh.cli docs ulw-site --check

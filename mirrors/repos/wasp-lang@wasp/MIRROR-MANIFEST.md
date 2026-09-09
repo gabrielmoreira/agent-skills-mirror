@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 29 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,16 +78,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`examples/websockets-realtime-voting/CLAUDE.md`](examples/websockets-realtime-voting/CLAUDE.md) |
 | 18 | ✓ | [`waspc/data/Cli/starters/skeleton/AGENTS.md`](waspc/data/Cli/starters/skeleton/AGENTS.md) |
 | 19 | ✓ | [`waspc/data/Cli/starters/skeleton/CLAUDE.md`](waspc/data/Cli/starters/skeleton/CLAUDE.md) |
-| 20 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md) |
-| 21 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md) |
-| 22 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md) |
-| 23 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md) |
-| 24 | ✓ | [`web/.claude/skills/crossposting/SKILL.md`](web/.claude/skills/crossposting/SKILL.md) |
-| 25 | ✓ | [`web/.claude/skills/geo-fundamentals/SKILL.md`](web/.claude/skills/geo-fundamentals/SKILL.md) |
-| 26 | ✓ | [`web/.claude/skills/notion-to-blog/SKILL.md`](web/.claude/skills/notion-to-blog/SKILL.md) |
-| 27 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
-| 28 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
-| 29 | ✓ | [`web/markdown-snapshots/llms.txt`](web/markdown-snapshots/llms.txt) |
+| 20 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/kitchen-sink-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/kitchen-sink-golden/wasp-app/AGENTS.md) |
+| 21 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-build-golden/wasp-app/AGENTS.md) |
+| 22 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-compile-golden/wasp-app/AGENTS.md) |
+| 23 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-migrate-golden/wasp-app/AGENTS.md) |
+| 24 | ✓ | [`waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md`](waspc/e2e-tests/test-outputs/snapshots/wasp-new-golden/wasp-app/AGENTS.md) |
+| 25 | ✓ | [`web/.claude/skills/crossposting/SKILL.md`](web/.claude/skills/crossposting/SKILL.md) |
+| 26 | ✓ | [`web/.claude/skills/geo-fundamentals/SKILL.md`](web/.claude/skills/geo-fundamentals/SKILL.md) |
+| 27 | ✓ | [`web/.claude/skills/notion-to-blog/SKILL.md`](web/.claude/skills/notion-to-blog/SKILL.md) |
+| 28 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
+| 29 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
+| 30 | ✓ | [`web/markdown-snapshots/llms.txt`](web/markdown-snapshots/llms.txt) |
 
 ---
 

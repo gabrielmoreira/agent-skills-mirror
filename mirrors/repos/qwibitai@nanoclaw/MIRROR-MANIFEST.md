@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qwibitai/nanoclaw` — 26 default patterns, 34 followed patterns, 138 file(s) materialized.
+Mirror of `qwibitai/nanoclaw` — 26 default patterns, 35 followed patterns, 139 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 34 followed patterns, 138
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 34 |
-| Files         | 138 |
+| Followed pats | 35 |
+| Files         | 139 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,6 +74,7 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 34 followed patterns, 138
 - `docs/templates.md`
 - `docs/hardened-image.md`
 - `docs/scheduled-tasks.md`
+- `docs/community-portal.md`
 - `CHANGELOG.md`
 - `docs/onecli-upgrades.md`
 - `docs/agent-mailbox-seam-migration.md`
@@ -206,30 +207,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 112 | → | [`docs/architecture.md`](docs/architecture.md) |
 | 113 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
 | 114 | → | [`docs/central-db-async-migration.md`](docs/central-db-async-migration.md) |
-| 115 | → | [`docs/customizing.md`](docs/customizing.md) |
-| 116 | → | [`docs/db-central.md`](docs/db-central.md) |
-| 117 | → | [`docs/db-session.md`](docs/db-session.md) |
-| 118 | → | [`docs/db.md`](docs/db.md) |
-| 119 | → | [`docs/hardened-image.md`](docs/hardened-image.md) |
-| 120 | → | [`docs/host-lifecycle-migration.md`](docs/host-lifecycle-migration.md) |
-| 121 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
-| 122 | → | [`docs/memory.md`](docs/memory.md) |
-| 123 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 124 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
-| 125 | → | [`docs/ollama.md`](docs/ollama.md) |
-| 126 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 127 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 128 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
-| 129 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 130 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
-| 131 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
-| 132 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 133 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 134 | → | [`docs/templates.md`](docs/templates.md) |
-| 135 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 136 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 137 | → | [`README.md`](README.md) |
-| 138 | → | [`RELEASING.md`](RELEASING.md) |
+| 115 | → | [`docs/community-portal.md`](docs/community-portal.md) |
+| 116 | → | [`docs/customizing.md`](docs/customizing.md) |
+| 117 | → | [`docs/db-central.md`](docs/db-central.md) |
+| 118 | → | [`docs/db-session.md`](docs/db-session.md) |
+| 119 | → | [`docs/db.md`](docs/db.md) |
+| 120 | → | [`docs/hardened-image.md`](docs/hardened-image.md) |
+| 121 | → | [`docs/host-lifecycle-migration.md`](docs/host-lifecycle-migration.md) |
+| 122 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
+| 123 | → | [`docs/memory.md`](docs/memory.md) |
+| 124 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
+| 125 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
+| 126 | → | [`docs/ollama.md`](docs/ollama.md) |
+| 127 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 128 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 129 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
+| 130 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 131 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
+| 132 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
+| 133 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 134 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 135 | → | [`docs/templates.md`](docs/templates.md) |
+| 136 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 137 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 138 | → | [`README.md`](README.md) |
+| 139 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

@@ -146,6 +146,7 @@ export function isCoverLikeLayout(layout) {
   return slot.startsWith('cover') || label.startsWith('封面') || /^cover/.test(label);
 }
 
+/** @param {import('../../src/types').PageRecord} page */
 export function isBodyContentCandidate(page) {
   return !isCoverCandidate(page.key)
     && !isCoverLikeLayout(page.key)

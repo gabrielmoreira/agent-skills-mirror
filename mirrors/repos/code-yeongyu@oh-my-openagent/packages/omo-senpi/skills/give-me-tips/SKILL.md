@@ -101,10 +101,10 @@ nudge self-cancels the moment Fable 5 becomes the active model again or senpi re
 fallback. One refusal triggers a coordinated downgrade in visibility with zero downgrade in
 reachable reasoning depth.
 
-## The Memorian "Aha moment!" notice specifically
+## The Memorian recollection notice specifically
 
-When the user asks about the `✦ Aha moment!` line that shows up mid-session ("just remembered:
-..."), or about the memory tip that promises stored memory can resurface on its own, explain the
+When the user asks about the `✦ Aha!` line that shows up mid-session
+("just remembered: ..."), or about the memory tip that promises stored memory can resurface on its own, explain the
 whole memorian recall gate, citing `packages/omo-senpi/src/components/memory/` and
 `packages/memory-core/src/recall/`. This is NOT the periodic save reminder: `memory.nudge` in
 `nudge-wiring.ts` asks the agent to WRITE memory every N user turns, while memorian only READS
@@ -142,8 +142,9 @@ memory and hands one hint back. Keep the two apart in the explanation.
    the compaction epoch and a compaction drops everything held.
 6. **The visible half** (`memorian-notice.ts`): because senpi draws nothing for the hidden message,
    the component appends an `omo-memorian:nudged` entry and renders it in the agent's own voice:
-   `✦ Aha moment!` with `just remembered: <hint>`, `also remembered: ...` for a second nudge, and the
-   source paths in dim text. Expanding the entry reveals the caveat that it's a hint, not current
+   a single fixed `Aha!` title (`✦ Aha!`, accent tone; opener-era records carry a retired
+   `opener` field that is ignored) over `just remembered: <hint>`,
+   `also remembered: ...` for a second nudge, and the source paths in dim text. Expanding the entry reveals the caveat that it's a hint, not current
    state. The record keeps `via` (`steer`, `wake`, or `prompt`) for forensics, but no provenance is
    ever drawn. It's a transcript entry, not a toast: nothing pops over the input, and the renderer
    is fail-closed, so a malformed record draws nothing rather than a half-formed notice.

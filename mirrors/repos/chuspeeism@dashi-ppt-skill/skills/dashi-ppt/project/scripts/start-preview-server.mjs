@@ -8,6 +8,7 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { ensureThemePreviewFresh } from './preview-freshness.mjs';
+import { isLoopbackHost } from './preview-export-auth.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 // 相对路径按调用方目录解析:npm run(含 --prefix)会把脚本 cwd 切到项目根,INIT_CWD 才是用户所在目录。
@@ -18,7 +19,7 @@ const serveRoot = serveRootArg
   ? path.resolve(CALLER_CWD, serveRootArg)
   : path.resolve(ROOT, 'output/theme-preview/ppt');
 const requestedPort = Number(process.env.DASHI_PPT_PREVIEW_PORT || process.argv[3] || 4178);
-const host = process.env.DASHI_PPT_PREVIEW_HOST || process.env.HOST || '0.0.0.0';
+const host = process.env.DASHI_PPT_PREVIEW_HOST || process.env.HOST || '127.0.0.1';
 const localName = process.env.DASHI_PPT_PREVIEW_NAME || os.hostname().split('.')[0] || 'localhost';
 const portScanLimit = Math.max(40, Number(process.env.DASHI_PPT_PREVIEW_PORT_SCAN || 240));
 const lockDir = process.env.DASHI_PPT_PREVIEW_LOCK_DIR || path.join(os.tmpdir(), 'dashi-ppt-preview-ports');
@@ -83,11 +84,11 @@ async function main() {
       throw error;
     }
 
-    const url = `https://${localName}.local:${port}/`;
     const localUrl = `https://localhost:${port}/`;
+    const url = isLoopbackHost(host) ? localUrl : `https://${localName}.local:${port}/`;
     const httpUrl = `http://127.0.0.1:${port}/`;
     const localHttpUrl = `http://localhost:${port}/`;
-    const lanHttpUrl = `http://${localName}.local:${port}/`;
+    const lanHttpUrl = isLoopbackHost(host) ? null : `http://${localName}.local:${port}/`;
     writeFileSync(path.join(serveRoot, '.preview-server.json'), `${JSON.stringify({
       pid: child.pid,
       port,
@@ -105,7 +106,8 @@ async function main() {
     console.log(`HTTPS preview URL: ${url}`);
     console.log(`Local HTTP URL: ${localHttpUrl}`);
     console.log(`Local HTTPS URL: ${localUrl}`);
-    console.log(`LAN HTTP URL (browse only, not export): ${lanHttpUrl}`);
+    if (lanHttpUrl) console.log(`LAN HTTP URL (browse only, not export): ${lanHttpUrl}`);
+    else console.log('Local-only preview. Set HOST=0.0.0.0 to share on the LAN.');
     console.log(`PID: ${child.pid}`);
   } finally {
     startLock.release();

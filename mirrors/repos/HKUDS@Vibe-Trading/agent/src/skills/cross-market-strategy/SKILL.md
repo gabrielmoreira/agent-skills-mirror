@@ -51,7 +51,7 @@ BTC daily vol ~ 5%, A-share daily vol ~ 1.5%. Without vol-adjustment, crypto eat
 def _vol_adjust(self, signals, data_map):
     vols = {}
     for code, df in data_map.items():
-        ret = df["close"].pct_change().dropna()
+        ret = df["close"].pct_change(fill_method=None).dropna()
         vols[code] = ret.rolling(20).std().iloc[-1] if len(ret) > 20 else ret.std()
 
     inv_vols = {c: 1.0 / (v + 1e-10) for c, v in vols.items()}

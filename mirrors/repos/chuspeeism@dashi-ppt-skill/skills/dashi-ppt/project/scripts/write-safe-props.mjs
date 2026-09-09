@@ -19,10 +19,6 @@ import {
 import { validateGoalSpec, validateHtmlStringBoundaries } from './validate-goal-spec.mjs';
 import { isMediaArrayKey } from '../src/prop-contract-core.mjs';
 import { getVariantKind, resolveContentMap } from '../src/variant-contract.mjs';
-import {
-  beginWorkflowStage,
-  workflowTelemetryPath,
-} from './workflow-telemetry.mjs';
 
 const ALLOWED_MEDIA_ITEM_FIELDS = new Set(['src', 'kind', 'type', 'ar', 'ratio', 'poster']);
 
@@ -144,93 +140,64 @@ function runGoal(goalArg, options = {}) {
     process.exit(2);
   }
   const goalPath = path.resolve(CALLER_CWD, goalArg);
-  const telemetry = beginWorkflowStage({
-    goalPath,
-    telemetryFile: workflowTelemetryPath(goalPath),
-    stage: 'props-safe',
-    kind: 'normalize',
-    command: 'props:safe',
-  });
   let spec;
   try {
     spec = JSON.parse(readFileSync(goalPath, 'utf8'));
   } catch (error) {
-    telemetry.finish({ ok: false, error });
     console.error(`Invalid goal JSON: ${error.message}`);
     process.exit(2);
   }
 
   const slides = Array.isArray(spec.slides) ? spec.slides : [];
-  const canonicalContentErrors = slides.map(canonicalContentError);
   const entries = slides.flatMap((slide, slideIndex) => (
     Array.isArray(slide?.variants)
       ? slide.variants.map((variant, variantIndex) => ({
           slide: variant,
           content: slide?.content || {},
-          canonicalContentError: variantIndex === 0 ? canonicalContentErrors[slideIndex] : null,
           slideIndex,
           variantIndex,
           variantId: variant?.id || `v${variantIndex + 1}`,
         }))
-      : [{
-          slide,
-          content: slide?.content || {},
-          canonicalContentError: canonicalContentErrors[slideIndex],
-          slideIndex,
-          variantIndex: null,
-          variantId: null,
-        }]
+      : [{ slide, content: slide?.content || {}, slideIndex, variantIndex: null, variantId: null }]
   ));
   // JAD-workflow-friction:layout 容量确定放不下作者媒体数组时(仅此一种、可客观判定的场景),
   // 换用同主题内能容纳的候选 layout,而不是把无解的媒体错误抛回作者。每次替换都记入
   // layoutChanges,绝不无声改写——调用方必须能在输出里看到 from/to/reason。
-  const usedLayoutsBySlide = new Map(slides.map((_slide, slideIndex) => [
-    slideIndex,
-    new Set(entries
-      .filter(item => item.slideIndex === slideIndex)
-      .map(item => item.slide?.layout)
-      .filter(Boolean)),
-  ]));
+  const usedLayouts = new Set(entries.map(item => item.slide?.layout).filter(Boolean));
   const layoutChanges = [];
   const normalizedEntries = entries.map((entry) => {
     const {
       slide,
       content,
-      canonicalContentError: contentError,
       slideIndex,
       variantIndex,
       variantId,
     } = entry;
-    const contentMap = slide?.contentMap || {};
-    const canonicalErrors = [
-      ...(contentError ? [contentError] : []),
-      ...canonicalContentMapErrors(contentMap),
-    ];
-    if (getVariantKind(slide) === 'bespoke') {
+    const kind = getVariantKind(slide);
+    // 结构投影的 props 由目标校验临时计算,不写回目标。
+    if (kind === 'bespoke' || slide?.projection?.structure) {
       return {
         ...entry,
         normalizedSlide: slide,
         result: {
           slide: slideIndex + 1,
           ...(variantIndex == null ? {} : { variant: variantId }),
-          kind: 'bespoke',
-          layout: null,
+          kind,
+          layout: kind === 'bespoke' ? null : slide?.layout || null,
           warningCount: 0,
-          errorCount: canonicalErrors.length,
-          ...(canonicalErrors.length ? { errors: canonicalErrors } : {}),
+          errorCount: 0,
         },
       };
     }
     const originalLayout = slide?.layout;
     let layout = originalLayout;
+    const contentMap = slide?.contentMap || {};
     let effectiveProps = slide?.props || {};
-    let contentMapError = canonicalErrors.length ? canonicalErrors.join('; ') : null;
-    if (!contentMapError) {
-      try {
-        effectiveProps = resolveContentMap(content, contentMap, effectiveProps);
-      } catch (error) {
-        contentMapError = `contentMap: ${error.message}`;
-      }
+    let contentMapError = null;
+    try {
+      effectiveProps = resolveContentMap(content, contentMap, effectiveProps);
+    } catch (error) {
+      contentMapError = `contentMap: ${error.message}`;
     }
     let normalized = contentMapError
       ? { warnings: [], errors: [contentMapError] }
@@ -241,7 +208,6 @@ function runGoal(goalArg, options = {}) {
       ? findLayoutMediaMismatch(layout, effectiveProps)
       : null;
     if (layout && normalized.errors?.length && !contentMapError) {
-      const usedLayouts = usedLayoutsBySlide.get(slideIndex);
       const safe = trySafeLayoutForSlide(layout, effectiveProps, usedLayouts);
       if (safe) {
         layoutChanges.push({
@@ -323,55 +289,11 @@ function runGoal(goalArg, options = {}) {
     ...(propErrors.length ? { propErrors } : {}),
     slides: slideResults,
   };
-  telemetry.finish({
-    ok,
-    error: ok ? null : new Error([...goalSpecErrors, ...propErrors].join('; ')),
-    metrics: {
-      layoutChangeCount: layoutChanges.length,
-      propErrorCount: propErrors.length,
-      goalSpecErrorCount: goalSpecErrors.length,
-    },
-  });
   process.stdout.write(compactJson(result));
   if (layoutChanges.length) {
     console.error(`${layoutChanges.length} 处 layout 被替换(核对输出 JSON 的 layoutChanges,不认可就改回并换页)`);
   }
   if (!result.ok) process.exit(1);
-}
-
-function canonicalContentError(slide) {
-  const content = slide?.content;
-  if (content && typeof content === 'object' && !Array.isArray(content)) {
-    const variantKey = Object.keys(content).find(key => /^v\d+$/i.test(key));
-    if (variantKey) {
-      return `slide.content.${variantKey}: variant-specific content is not allowed; keep one canonical presentation source in slide.content`;
-    }
-  }
-  const candidates = [
-    ['slide.views', slide?.views],
-    ['slide.variantContent', slide?.variantContent],
-    ['slide.content.views', content?.views],
-    ['slide.content.variants', content?.variants],
-    ['slide.content.variantContent', content?.variantContent],
-  ];
-  for (const [scope, value] of candidates) {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
-    const variantKey = Object.keys(value).find(key => /^v\d+$/i.test(key));
-    if (variantKey) {
-      return `${scope}.${variantKey}: variant-specific content is not allowed; keep one canonical presentation source in slide.content`;
-    }
-  }
-  return null;
-}
-
-function canonicalContentMapErrors(contentMap) {
-  if (!contentMap || typeof contentMap !== 'object' || Array.isArray(contentMap)) return [];
-  return Object.entries(contentMap).flatMap(([target, mapping]) => {
-    const source = typeof mapping === 'string' ? mapping : mapping?.source;
-    return typeof source === 'string' && /^(?:v\d+|(?:views|variants|variantContent)\.v\d+)(?:\.|\[|$)/i.test(source)
-      ? [`contentMap target "${target}": variant-specific source "${source}" is not allowed; map from canonical slide.content`]
-      : []
-  });
 }
 
 function stripContentMapTargets(props, contentMap) {

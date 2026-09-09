@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`laravel-cloud/skills/deploying-laravel-cloud/SKILL.md`](laravel-cloud/skills/deploying-laravel-cloud/SKILL.md) |
+| 1 | ✓ | [`laravel-cloud/skills/deploying-to-cloud/SKILL.md`](laravel-cloud/skills/deploying-to-cloud/SKILL.md) |
 | 2 | ✓ | [`laravel-nightwatch/skills/configure-nightwatch/reference.md`](laravel-nightwatch/skills/configure-nightwatch/reference.md) |
 | 3 | ✓ | [`laravel-nightwatch/skills/configure-nightwatch/SKILL.md`](laravel-nightwatch/skills/configure-nightwatch/SKILL.md) |
 | 4 | ✓ | [`laravel/skills/starter-kit-upgrade/SKILL.md`](laravel/skills/starter-kit-upgrade/SKILL.md) |

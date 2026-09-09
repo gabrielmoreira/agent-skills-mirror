@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aldegad/sprite-gen` — 26 default patterns, 15 followed patterns, 18 file(s) materialized.
+Mirror of `aldegad/sprite-gen` — 26 default patterns, 16 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aldegad/sprite-gen` — 26 default patterns, 15 followed patterns, 18
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 18 |
+| Followed pats | 16 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `aldegad/sprite-gen` — 26 default patterns, 15 followed patterns, 18
 - `docs/curation.md`
 - `docs/recolor.md`
 - `docs/layer-tracks.md`
+- `docs/video.md`
 - `docs/sheet-slicing.md`
 - `docs/directional-anchor-workflow.md`
 - `docs/gen.md`
@@ -91,6 +92,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | → | [`docs/sheet-slicing.md`](docs/sheet-slicing.md) |
 | 17 | → | [`docs/static-pose-recipe.md`](docs/static-pose-recipe.md) |
 | 18 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 19 | → | [`docs/video.md`](docs/video.md) |
 
 ---
 

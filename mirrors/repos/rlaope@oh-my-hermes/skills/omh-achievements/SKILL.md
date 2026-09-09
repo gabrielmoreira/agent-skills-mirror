@@ -96,6 +96,7 @@ Expected outputs:
 Artifact expectations:
 
 - hermes_achievements_observation/v1 metadata-only payload from `omh achievements` when recorded
+- supplied `session_activity_receipt/v1` when available; unavailable metrics stay unavailable, never zero
 
 Safety rules:
 

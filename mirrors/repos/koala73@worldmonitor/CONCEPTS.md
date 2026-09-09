@@ -42,7 +42,19 @@ The marker's value is that the grace it grants is *self-revoking on evidence* ra
 
 The three-way result a read is obliged to report — **hit**, **miss**, or **failure** — as against the two-way present/absent that a bare returned value can express. It applies to any store whose read can fail, not only a network cache: a browser-local store can be absent, present-but-unreadable, or present and empty, and a helper written to never throw collapses the first two into the third just as a network helper does. The distinction exists because it is observable only at the read itself: a helper that answers the same empty value for "the key genuinely holds nothing" and "the read did not complete" has destroyed the difference at its only observation point, and every caller downstream then decides on a fabricated fact.
 
-What makes the collapse expensive is that the two outcomes license opposite actions. A miss is a legitimate empty state — serve the computed fallback, render the empty panel, treat the day as having no records. A failure is an outage, and the correct response is almost always to abstain: skip the tick rather than publish a partial, keep the last good value rather than replace it with nothing, report the read as incomplete rather than as a finding. Collapsing them converts an outage into a confident empty answer, which then propagates as though it were data. The cost is worst when the fabricated absence flows into a WRITE rather than a display: a payload that replaces remote state wholesale drops the unreadable field as though the user had cleared it, a read-modify-write over state shared between tabs replaces a sibling's markers with an empty set, and a version or schema marker read as "never set" re-runs a one-shot operation over data that already had it applied. A read whose outcome is unknown should abstain — the caller fails closed rather than acting on a value it did not actually observe. In the network-cache substrate specifically, two properties of the store's REST interface make this easy to get wrong. A transport-level success status is not evidence the command ran — the store can answer a success status whose body carries a per-command error — so a reader that checks only the status and then reads the result field silently reclassifies every such rejection as a miss. And because the rejection is per command, one command in a batch can fail while its siblings succeed, so an outcome must be tracked per command rather than inferred once for the whole batch. See also: Seed-Owned Key, One-Shot Hydration.
+What makes the collapse expensive is that the two outcomes license opposite actions. A miss is a legitimate empty state — serve the computed fallback, render the empty panel, treat the day as having no records. A failure is an outage, and the correct response is almost always to abstain: skip the tick rather than publish a partial, keep the last good value rather than replace it with nothing, report the read as incomplete rather than as a finding. Collapsing them converts an outage into a confident empty answer, which then propagates as though it were data. The cost is worst when the fabricated absence flows into a WRITE rather than a display: a payload that replaces remote state wholesale drops the unreadable field as though the user had cleared it, a read-modify-write over state shared between tabs replaces a sibling's markers with an empty set, and a version or schema marker read as "never set" re-runs a one-shot operation over data that already had it applied. A read whose outcome is unknown should abstain — the caller fails closed rather than acting on a value it did not actually observe. The collapse is not confined to the read helper: a handler built over a faithful three-way read can flatten the outcome again at its own boundary (see Failure-Opaque Dependency), which is why a composing caller cannot treat an absent exception as evidence of health. In the network-cache substrate specifically, two properties of the store's REST interface make this easy to get wrong. A transport-level success status is not evidence the command ran — the store can answer a success status whose body carries a per-command error — so a reader that checks only the status and then reads the result field silently reclassifies every such rejection as a miss. And because the rejection is per command, one command in a batch can fail while its siblings succeed, so an outcome must be tracked per command rather than inferred once for the whole batch. See also: Seed-Owned Key, One-Shot Hydration, Failure-Opaque Dependency.
+
+### Failure-Opaque Dependency
+
+A handler that catches its own faults and answers them with a well-formed empty success, so that at its boundary an outage and a genuinely empty result are the same value — the Read Outcome collapse relocated one layer up, into something that reads correctly and then flattens the outcome on its way out. What distinguishes it from a careless read is that nothing is wrong *inside* it: it may consult a three-way read faithfully and still expose only two states to its callers, and the callers cannot tell, because the distinction was destroyed at a boundary they do not own and cannot inspect.
+
+The consequence is specific and easy to miss: a surface composing such a dependency cannot learn about the outage from its own error handling, because there is no error to catch. Wrapping the call in a `try` is not merely insufficient, it is unreachable for that whole class of fault, while looking exactly like diligence. Reachability must instead come from a signal *beneath* the swallowing layer — the underlying key's own read outcome, a globally-scoped query returning rows that prove the upstream answered, an explicit disabled-sentinel — and the proof differs per dependency, so there is no single mechanism to reach for. Two rules follow. A state meaning "reachable and genuinely empty" is a claim, and may be reported only when something actually proved reachability; where nothing did, the honest state is a distinct unconfirmed one, never the healthy-empty. And a freshness budget declared over a producer whose age cannot be observed is not a weak guarantee but a nonexistent one — dead configuration shaped like a promise. See also: Read Outcome, Constant Health Flag, Seed-Owned Key.
+
+### Constant Health Flag
+
+A status boolean whose definition admits states that are permanently true, so it reports trouble on every response and therefore reports nothing. It is the degenerate case of a summary flag: the moment its condition includes a structural fact — a capability this surface will never have, a dependency that can never prove itself — no realistic input makes it false, and a consumer that learns to ignore it has learned correctly.
+
+The fix is not to widen the definition but to narrow it to what can change: states a later request could plausibly clear, such as an upstream that failed or data past its freshness budget. Structural absences stay visible in the per-item detail rather than in the summary, because the summary's whole value is that it varies. This is why the flag is never the place a guarantee lives — the per-item states carry the truth, and the flag is only a shortcut for "something got worse". The design test is one question asked before shipping: what input makes this false? A flag with no such input is decoration. See also: Failure-Opaque Dependency, Read Outcome, Vacuous Guard.
 
 ### Source Tag
 
@@ -246,6 +258,12 @@ Two different proof contracts over the same output, and neither substitutes for 
 
 A claim that output "stayed byte-identical" must name which contract it leans on; citing the isolation control for a non-regression claim is the standard overreach, because the exact defect class that worries the reader is the one the isolation control is blind to. Regenerating a baseline is itself a methodology event, never a way to make a failing test pass. See also: Vacuous Guard, Mutation Proof.
 
+### Sample Point
+
+The moment in a subject's lifecycle at which a budget or threshold guard takes its measurement — a free variable, independent of the threshold and of the assertion, that decides which artefact the number actually constrains. Two guards can share a ceiling, a metric, and a correct assertion and still guard different things, because one samples a page before it hydrates and the other after.
+
+The sample point is the usual price paid for determinism, and paying it is not a defect — sampling earlier narrows a wildly variable measurement into a stable one. The defect is leaving the trade undeclared, because the ceiling's *name* keeps describing the artefact it was derived from while the guard quietly moves onto a different one, and the resulting slack reads as headroom rather than as lost coverage. Three rules follow. A guard must state where it samples, since a threshold is meaningless without it and no reviewer can infer it from the assertion. A sample point may only be chosen from measurements taken in the environment the guard runs in — a developer machine and CI can differ in both directions on the same tree, so a bound calibrated locally is a guess. And when the trade is taken deliberately, the region that fell outside it should still be measured and *recorded* beside the assertion rather than dropped: a diagnostic that is emitted but never asserted keeps the unguarded gap visible without letting a slow run redden the gate. Counter-intuitively the later, more meaningful sample is not always the noisier one — waiting on a real readiness signal can be steadier than sampling early at an arbitrary instant — so determinism should be measured rather than assumed when deciding. See also: Vacuous Guard, Mutation Proof, Isolation Control vs Golden Baseline.
+
 ## News Story Tracking & Trend Detection
 
 ### Feed Digest
@@ -303,6 +321,18 @@ A rolling, per-country index of GDELT GKG articles the bulk materializer keeps a
 ### Enrichment Tail
 
 The indexed country pages that carry no dated development in a given weekly capture. Its size is a property of the grounding pool — how many countries the week's digest and the Country Article Index actually name — not of whether the enrichment ran, and it is recorded as a count in the capture's coverage rather than gated to zero, because no article pool names every country every week. A capture whose freeze attempted the index — whatever the index answered — is held to a higher coverage floor at build time than one frozen before the index existed, so a tail the size of the digest-only era cannot ship as a green build, and a gate that relaxed when the index failed would be no gate. A measured-but-lower week can still publish through an operator override on the weekly workflow rather than by editing the floor. See also: Recent Developments, Brief Grounding, Country Article Index.
+
+## Source Catalog
+
+### Catalog Provider
+
+One addressable entry in the published source inventory, identified by its own catalog key. It takes three shapes: usually a single upstream host; sometimes several hosts of one operator collapsed under one declared identity; and sometimes a publisher with no editorial host at all, grouped across the transport its feeds arrive through. It is *not* one organisation, and host count predicts provider count in neither direction — one operator's several hosts may be one entry or several, depending on whether the inventory declares a shared identity for them.
+
+The load-bearing consequence is that neither a display name nor a host can identify a provider. The same display name legitimately appears more than once, so the provider count exceeds the number of distinct names. Anything that keys on the inventory — a filter, a citation, a published enumeration of it — must key on the provider's own identifier, and anything that publishes a per-provider count is counting hosts-and-groupings rather than newsrooms. Contrast Publisher Family, which groups the *same* underlying outlets the opposite way: a family collapses every edition and regional feed of one newsroom into a single unit so that independence counts cannot be inflated. Both groupings are correct for their own purpose, and neither substitutes for the other. See also: Publisher Family, Logical Provider.
+
+### Logical Provider
+
+A Catalog Provider that has no editorial host of its own because its feeds are delivered entirely through a syndication transport. It is grouped under the publisher's name rather than under the transport's host, so the inventory credits the newsroom that wrote the content instead of the service that shipped it — without which every such publisher would collapse into a single misleading entry named for the transport. Duplicate names within this grouping are rejected upstream by the validation that admits sources to the catalog at all, which is what lets consumers treat a provider identifier as unique. See also: Catalog Provider, Publisher Family.
 
 ## Prediction Markets
 
@@ -737,6 +767,19 @@ which is the difference between the two. That badge is only a signal while the
 platform will run the seeder again: a standalone seeder whose newest build has
 failed is ticking its previous Active Deployment, and there the same non-zero
 exit ends its schedule outright.
+
+Because the skip's whole alarm rests on freshness monitoring rather than on the
+exit status, extending last-good has a second obligation that is easy to miss:
+the freshness marker must be kept alive alongside the data it reports on. Only
+the marker's *value* is untouchable — advancing a success clock on a failed run
+would claim a success that never happened — while its lifetime must be extended
+with the data's. A skip that re-arms the payload every tick makes that payload's
+effective lifetime unbounded; if the marker keeps its own fixed lifetime it
+expires first, and a present payload with no marker is indistinguishable from a
+healthy one, so a sustained failure decays from warn back to green with frozen
+data behind it. The general form: whichever of the two expires first decides
+what is reported, so the reporting signal must outlive the value it reports on.
+See also: Seed-Owned Key, Content Clock.
 
 ### Starved Tick
 

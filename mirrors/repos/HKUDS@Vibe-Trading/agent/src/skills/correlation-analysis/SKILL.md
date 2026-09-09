@@ -707,11 +707,11 @@ def fx_adjusted_correlation(
         Raw correlation vs FX-adjusted correlation
     """
     # Domestic-currency foreign return = foreign return + FX return
-    foreign_ret = foreign_price.pct_change()
-    fx_ret = fx_rate.pct_change()
+    foreign_ret = foreign_price.pct_change(fill_method=None)
+    fx_ret = fx_rate.pct_change(fill_method=None)
     foreign_ret_cny = (1 + foreign_ret) * (1 + fx_ret) - 1
 
-    domestic_ret = domestic_price.pct_change()
+    domestic_ret = domestic_price.pct_change(fill_method=None)
 
     df = pd.concat([foreign_ret.rename("foreign_raw"),
                     foreign_ret_cny.rename("foreign_domestic"),
@@ -848,8 +848,8 @@ def generate_pair_signals(
         kf = kalman_hedge_ratio(y_price, x_price)
         spread = kf["spread"]
     else:
-        y_ret = y_price.pct_change()
-        x_ret = x_price.pct_change()
+        y_ret = y_price.pct_change(fill_method=None)
+        x_ret = x_price.pct_change(fill_method=None)
         res = bivariate_correlation_analysis(y_ret, x_ret, lookback)
         hedge_ratio = abs(res["beta"])
         spread = np.log(y_price) - hedge_ratio * np.log(x_price)

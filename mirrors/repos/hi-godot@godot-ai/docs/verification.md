@@ -88,7 +88,10 @@ editor to *look at* — the step 6 smoke test — or when nothing is running yet
      script/local-game-capture-diag script/v4-release
    ```
    Lint must pass.
-2. `pytest -v` — all environment-independent Python tests pass. Then run the
+2. `pytest -v` — all environment-independent Python tests pass. While
+   iterating, `pytest -m "not editor"` leaves out the rows that launch a
+   real editor (they take minutes each and skip anyway without
+   `GODOT_BIN`); the pre-commit run is the full `pytest -v`. Then run the
    Godot-backed updater row explicitly; those tests otherwise skip:
    ```bash
    GODOT_BIN=/absolute/path/to/Godot pytest -v \

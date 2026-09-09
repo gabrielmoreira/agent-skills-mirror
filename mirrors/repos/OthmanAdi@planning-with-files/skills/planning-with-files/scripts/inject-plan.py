@@ -59,12 +59,9 @@ Windows runs the shell chain through Git Bash and nothing else:
     one turn-marker slot and one progress-guard slot per plan.
 
 Known, accepted differences from the shell reference:
-  * Two plan directories with the same whole-second mtime, no .active_plan
-    and no PLAN_ID: the reference picks the first in the shell's glob order
-    (locale collation), this twin the first in code-point order. The same
-    collation difference can change which three of four or more nested
-    projects the ambiguity notice names. A machine runs one implementation,
-    so neither choice flips within a session.
+  * Shell glob order follows locale collation; this twin uses code-point
+    order. This can change which three of four or more nested projects the
+    ambiguity notice names.
   * BSD sed (macOS) appends a newline to a progress.md whose last line has
     none; GNU sed and this twin do not.
   * With PWF_PLAN_ROOT set under Git Bash the shell sees the pin as typed
@@ -837,6 +834,16 @@ class Injector(object):
         scope = ""
         explicit = bool(plan_prefix)
         plan_id = env.get("PLAN_ID", "")
+        ambiguous = plan_is_ambiguous(
+            plan_prefix + ".planning", plan_root_pin if plan_root_pin else ".", plan_id
+        )
+        if ambiguous and (context == "preflight" or not is_dir(plan_prefix + ".planning/sessions")):
+            if context == "userprompt":
+                self.echo(
+                    "[planning-with-files] Multiple plans are available. Set PLAN_ID=<slug> "
+                    "for this session; nothing injected."
+                )
+            raise Bail()
         if plan_id:
             if slug_is_valid(plan_id) and is_dir(plan_prefix + ".planning/" + plan_id):
                 resolved = plan_prefix + ".planning/" + plan_id
@@ -923,30 +930,14 @@ class Injector(object):
                         "single-session mode."
                     )
                 raise Bail()
-            if not plan_id:
-                plan_n = 1 if is_file(plan_prefix + "task_plan.md") else 0
-                try:
-                    names = sorted(os.listdir(plan_prefix + ".planning"))
-                except OSError:
-                    names = []
-                for name in names:
-                    if name.startswith("."):
-                        continue
-                    if not is_file(plan_prefix + ".planning/" + name + "/task_plan.md"):
-                        continue
-                    if not slug_is_valid(name):
-                        continue
-                    plan_n += 1
-                    if plan_n > 1:
-                        break
-                if plan_n > 1:
-                    if context == "userprompt":
-                        self.echo(
-                            "[planning-with-files] Multiple plans are available while session "
-                            "isolation is armed. Set PLAN_ID=<slug> for this session; nothing "
-                            "injected."
-                        )
-                    raise Bail()
+            if ambiguous:
+                if context == "userprompt":
+                    self.echo(
+                        "[planning-with-files] Multiple plans are available while session "
+                        "isolation is armed. Set PLAN_ID=<slug> for this session; nothing "
+                        "injected."
+                    )
+                raise Bail()
 
         if not explicit:
             nested = []
@@ -1326,6 +1317,23 @@ def inject(context, env=None):
 # Twin of resolve-plan-dir.sh (the shared resolver the dispatcher uses).
 # --------------------------------------------------------------------------
 
+def plan_is_ambiguous(plan_root, project_root, plan_id=""):
+    """A project pointer or mtime cannot bind a session to multiple plans."""
+    if plan_id:
+        return False
+    count = 1 if is_dir(plan_root + "/sessions") and is_file(project_root + "/task_plan.md") else 0
+    try:
+        names = os.listdir(plan_root)
+    except OSError:
+        names = []
+    for name in names:
+        if slug_is_valid(name) and is_file(plan_root + "/" + name + "/task_plan.md"):
+            count += 1
+            if count > 1:
+                return True
+    return False
+
+
 def resolve_plan_dir(env=None):
     """Return (spelled, filesystem) paths of the plan directory, or ("", "").
 
@@ -1358,6 +1366,9 @@ def resolve_plan_dir(env=None):
             candidate = fs_root + "/" + plan_id
             if is_dir(candidate) and within(candidate):
                 return found(plan_id)
+        return ("", "")
+
+    if plan_is_ambiguous(fs_root, pin if pin else "."):
         return ("", "")
 
     active_file = fs_root + "/.active_plan"
@@ -1440,6 +1451,8 @@ class ClaudeDispatcher(object):
         if spelled and is_file(fs + "/task_plan.md"):
             return (spelled, fs)
         if self.env.get("PLAN_ID", "") or self.env.get("PWF_PLAN_ROOT", ""):
+            return ("", "")
+        if plan_is_ambiguous(".planning", "."):
             return ("", "")
         if is_file("task_plan.md"):
             return (".", ".")

@@ -34,7 +34,12 @@ those exact bytes:
 
 `complete-qualification` requires every one of those rows to be present,
 passed, and bound to the same candidate pair; the runtime row's required case
-set is exactly `exact-a-to-b-hot-update`. The full contract is in the
+set is exactly `exact-a-to-b-hot-update`, and that case runs with a real
+`godot-ai attach` bridge, pinned to A and resolved from the retained index,
+attached through the whole update: the driver clicks Update only once the
+bridge has listed the session A serves, and the case passes only once the
+same bridge process has listed the session B serves (the row's
+`attached_bridge` evidence). The full contract is in the
 [verification plan](architecture-simplification-verification-plan.md); the
 [PR #949 follow-up](v4-release-review-followup.md) records the development
 evidence behind it.

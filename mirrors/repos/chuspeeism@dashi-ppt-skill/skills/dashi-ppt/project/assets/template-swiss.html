@@ -1814,6 +1814,7 @@
   .slide[data-runtime-prop-update] *,
   .slide[data-runtime-prop-update] *::before,
   .slide[data-runtime-prop-update] *::after{
+    animation:none!important;
     transition:none!important;
   }
   .page-transition-stage [data-transition-role="next"] *{animation-delay:0ms!important;animation-play-state:paused!important;animation-fill-mode:both!important;transition:none!important}
@@ -2340,6 +2341,7 @@
   vm.state.media = deepMergeJsonObjects(baseState.media, saved.media);
   vm.state.props = normalizeRestoredProps(mergePropsStates(baseState.props, saved.props));
   vm.state.__deckSignature = deckSignature;
+  syncInitialSlideVariantOwnership();
 
   writeJson(textEl, vm.state.text);
   writeVm();
@@ -2573,7 +2575,7 @@
     )) || variants.find(variant => variant.id === sourceSelected?.id) || variants[0];
     return canonicalizeSchemaV2LogicalSlide(logicalSource, {
       id:copyId,
-      key:selected.key,
+      key:String(record?.copyKey || copyId),
       stateId:selected.stateId,
       selectedVariant:selected.id,
       variants,
@@ -3034,7 +3036,20 @@
 
   function getSlideSourceProps(slideId){
     const source = findSlideSourceModel(slideId);
-    return source?.materializedProps || source?.props || {};
+    if(source?.kind !== 'template') return source?.props || {};
+    const logical = (vm.slides || []).find(item => (
+      item === source
+      || (Array.isArray(item?.variants) && item.variants.includes(source))
+    ));
+    const slide = [...document.querySelectorAll('#deck > .slide')].find(item => (
+      item.dataset.vmVariantStateId === slideId
+      || item.dataset.vmSlideId === slideId
+      || item.dataset.vmSourceSlideId === slideId
+    ));
+    return source.materializedProps
+      || window.__resolveRuntimeTemplateVariantProps?.(slide, source, logical)
+      || source.props
+      || {};
   }
 
   function getDefaultSlideProps(slideId){
@@ -3117,6 +3132,42 @@
       if(variant) return variant;
     }
     return null;
+  }
+
+  function syncInitialSlideVariantOwnership(){
+    const logicalSlides = Array.isArray(vm.slides) ? vm.slides : [];
+    const logicalById = new Map(logicalSlides
+      .filter(slide => slide?.id)
+      .map(slide => [String(slide.id), slide]));
+    const logicalByVariantStateId = new Map();
+    logicalSlides.forEach(logical => {
+      (Array.isArray(logical?.variants) ? logical.variants : []).forEach(variant => {
+        if(variant?.stateId) logicalByVariantStateId.set(String(variant.stateId), logical);
+      });
+    });
+    [...document.querySelectorAll('#deck > .slide')].forEach((slide, index) => {
+      const slideId = String(slide.dataset.vmSlideId || slide.id || renderedSlideOrder[index] || '');
+      const stateId = String(slide.dataset.vmVariantStateId || '');
+      const sourceToken = String(slide.dataset.vmSourceSlideId || slideId);
+      const logical = logicalById.get(sourceToken)
+        || logicalByVariantStateId.get(stateId)
+        || logicalByVariantStateId.get(slideId);
+      const logicalId = String(logical?.id || sourceToken);
+      if(!logicalId) return;
+      const variants = Array.isArray(logical?.variants) ? logical.variants : [];
+      const selectedToken = stateId
+        || vm.state.variantSelection?.[logicalId]
+        || logical?.stateId
+        || logical?.selectedVariant;
+      const variant = variants.find(item => item?.stateId === selectedToken)
+        || variants.find(item => item?.id === selectedToken)
+        || variants[0];
+      if(!slide.dataset.vmSourceSlideId) slide.dataset.vmSourceSlideId = logicalId;
+      if(!slide.dataset.vmVariantKind){
+        slide.dataset.vmVariantKind = variant?.kind || variant?.variantKind
+          || logical?.kind || logical?.variantKind || 'template';
+      }
+    });
   }
 
   function normalizeVariantSelections(source){
@@ -3947,7 +3998,8 @@ function namespaceDuplicatedRuntimeSlideDom(slide){
 
 function restorePersistedCatalogSlides(){
   const state = window.__deckViewModel?.getState?.() || {};
-  const records = Array.isArray(state.duplicatedSlides) ? state.duplicatedSlides : [];
+  const deleted = new Set((Array.isArray(state.deletedSlides) ? state.deletedSlides : []).map(String));
+  const records = (Array.isArray(state.duplicatedSlides) ? state.duplicatedSlides : []).filter(record => !deleted.has(String(record?.copyId || '')));
   if(!records.length) return;
   const slideById = new Map(collectDeckSlides().map((slide, index) => [getSlideVmId(slide, index), slide]));
   records.forEach(record => {
@@ -4111,8 +4163,9 @@ function clearRuntimeSlideErrorPlaceholder(slide){
 // 生成管线的 renderOverviewThumb)自己有更专用的外层 try/catch 和恢复 UI,这里必须让异常正常
 // 往外传,不能抢先吞掉,否则外层那套上下文更准确的错误处理和占位 UI 就都不会触发了。
 function renderRuntimeSlideWithIsolation(slide, props, opts={}){
+  const renderOpts = {...opts, trusted:true};
   if(!opts.isolated){
-    const rendered = !!window.__renderRuntimeSlide?.(slide, props);
+    const rendered = !!window.__renderRuntimeSlide?.(slide, props, renderOpts);
     delete slide.dataset.runtimeRenderError;
     clearRuntimeSlideErrorPlaceholder(slide);
     return rendered;
@@ -4120,7 +4173,7 @@ function renderRuntimeSlideWithIsolation(slide, props, opts={}){
   let rendered = false;
   let thrown = null;
   try{
-    rendered = !!window.__renderRuntimeSlide?.(slide, props);
+    rendered = !!window.__renderRuntimeSlide?.(slide, props, renderOpts);
   }catch(error){
     thrown = error;
   }
@@ -4218,6 +4271,7 @@ function materializeSlideVariant(slide, variant, opts={}){
     const rendered = ensureRuntimeSlideRendered(slide, undefined, {
       isolated:opts.isolated !== false,
       context,
+      suppressMotion:opts.suppressMotion === true,
     });
     if(rendered){
       window.__restoreEffectIframes?.(slide);
@@ -4251,6 +4305,7 @@ function applyDeckVariantSelections(opts={}){
     materializeSlideVariant(slide, variant, {
       isolated:opts.isolated !== false,
       context:opts.context || 'restore slide variant',
+      suppressMotion:opts.suppressMotion === true,
     });
   });
 }
@@ -4293,6 +4348,7 @@ window.__prepareSlideForTransition = prepareSlideForTransition;
 
 function startTransitionSlideEnter(slide){
   if(!slide) return false;
+  clearRuntimeMotionSuppression(slide);
   window.__transitionEnteredSlide = slide;
   slide.dataset.transitionEnterStarted = 'true';
   slide.setAttribute('data-deck-active', '');
@@ -4353,7 +4409,10 @@ function setActiveThemePack(themePack, opts={}){
   renderNav();
   layoutDeck();
   if(opts.navigate !== false) go(0, {animate:false, skipThumbPause:true});
-  else commitSlideIndex(idx, {fullActiveSync:true});
+  else commitSlideIndex(idx, {
+    fullActiveSync:true,
+    suppressMotion:opts.suppressMotion === true,
+  });
   if(isEditMode() && overviewGrid){
     refreshRailCatalog();
   }
@@ -4548,11 +4607,11 @@ function renderNav(){
 }
 restorePersistedCatalogSlides();
 applyPersistedSlideOrder();
-applyDeckVariantSelections({context:'initial slide variant restore'});
+applyDeckVariantSelections({force:true, suppressMotion:true, context:'initial slide variant restore'});
 allSlides=collectDeckSlides();
 deckPagePrev?.addEventListener('click', () => go(idx - 1));
 deckPageNext?.addEventListener('click', () => go(idx + 1));
-setActiveThemePack(activeThemePack, {navigate:false});
+setActiveThemePack(activeThemePack, {navigate:false, suppressMotion:true});
 
 function slideUsesDarkChrome(el){
   return !!el && (el.classList.contains('dark') || el.classList.contains('accent'));
@@ -4701,9 +4760,14 @@ function syncActiveEffects(activeSlide=getActiveSlide(), opts={}){
   if(opts.skipMotion) return;
   syncTheme10Motion(activeSlide);
 }
+
+function clearRuntimeMotionSuppression(slide){
+  slide?.querySelectorAll?.('[data-runtime-motion-suppressed]').forEach(root => root.removeAttribute('data-runtime-motion-suppressed'));
+}
 window.__syncActiveEffects = syncActiveEffects;
 window.__restoreEffectIframes = restoreEffectIframes;
 window.__syncTheme10Motion = syncTheme10Motion;
+window.__clearRuntimeMotionSuppression = clearRuntimeMotionSuppression;
 addEventListener('visibilitychange', () => syncActiveEffects());
 
 function blurActiveEditableText(){
@@ -4720,6 +4784,7 @@ function commitSlideIndex(nextIndex, opts={}){
     allSlides.forEach(slide => {
       slide.classList.remove('active');
       slide.classList.remove('cv-near');
+      clearRuntimeMotionSuppression(slide);
       slide.removeAttribute('data-deck-active');
     });
     syncNav();
@@ -4737,12 +4802,16 @@ function commitSlideIndex(nextIndex, opts={}){
       const active = slide === activeSlide;
       slide.classList.toggle('active', active);
       if(active) slide.setAttribute('data-deck-active', '');
-      else slide.removeAttribute('data-deck-active');
+      else {
+        clearRuntimeMotionSuppression(slide);
+        slide.removeAttribute('data-deck-active');
+      }
     });
   }else{
     const previousActive = deck.querySelector(':scope > .slide.active');
     if(previousActive && previousActive !== activeSlide){
       previousActive.classList.remove('active');
+      clearRuntimeMotionSuppression(previousActive);
       previousActive.removeAttribute('data-deck-active');
     }
     activeSlide.classList.add('active');
@@ -4751,7 +4820,11 @@ function commitSlideIndex(nextIndex, opts={}){
   applyAdjacentVisibility(idx);
   syncNav();
   const el=slides[idx];
-  ensureRuntimeSlideRendered(el, undefined, {isolated:true, context:'commit slide index'});
+  ensureRuntimeSlideRendered(el, undefined, {
+    isolated:true,
+    context:'commit slide index',
+    suppressMotion:opts.suppressMotion === true,
+  });
   syncDeckPageNumbers(el);
   window.__releaseInactiveRuntimeSlides?.(el);
   syncSlideTone(el);
@@ -4924,7 +4997,7 @@ function deleteCatalogSlide(catalogIndex){
   return true;
 }
 
-function collectLogicalVariantSyncTextNames(source, sourceModel, state){
+function collectLogicalVariantSyncTextNames(source, sourceModel, state, onRendered){
   const out = {};
   const variants = Array.isArray(sourceModel?.variants) ? sourceModel.variants : [];
   variants.forEach((variant, index) => {
@@ -4948,6 +5021,7 @@ function collectLogicalVariantSyncTextNames(source, sourceModel, state){
         {...sourceProps, ...savedProps},
         {trusted:true, suppressMotion:true},
       ) === false) return;
+      onRendered?.(probe, variant);
       const names = [...new Set(
         [...probe.querySelectorAll('[data-sync-text]')]
           .map(node => node.dataset.syncText)
@@ -4960,6 +5034,19 @@ function collectLogicalVariantSyncTextNames(source, sourceModel, state){
     }
   });
   return out;
+}
+
+function collectRenderedMediaStateKeys(root){
+  const keys = new Set();
+  root?.querySelectorAll?.(
+    'image-slot,.dslot,.acl-slot,.kx-imgslot,[data-slot-id],[data-dashi-slot-id],[data-media-key]',
+  ).forEach(node => {
+    [node.dataset?.mediaKey, node.dataset?.slotId, node.dataset?.dashiSlotId].forEach(value => {
+      const key = String(value || '');
+      if(key) keys.add(key);
+    });
+  });
+  return [...keys];
 }
 
 function duplicateCatalogSlide(catalogIndex){
@@ -6646,7 +6733,11 @@ const initialSlideParam = new URLSearchParams(location.search).get(VIEW_PARAM_PA
 const storedSlide = readStoredSlideIndex();
 const initialSlide = initialSlideParam ? Number(initialSlideParam) - 1 : (storedSlide ?? 0);
 layoutDeck();
-go(Number.isFinite(initialSlide) ? initialSlide : 0, {animate:false, skipThumbPause:true});
+go(Number.isFinite(initialSlide) ? initialSlide : 0, {
+  animate:false,
+  skipThumbPause:true,
+  suppressMotion:true,
+});
 refreshRailCatalog();
 
 </script>
@@ -7144,7 +7235,11 @@ refreshRailCatalog();
 
   function getSlideSourceProps(slide){
     const model = getPreviewActiveSlideModel(slide);
-    return model?.materializedProps || model?.props || {};
+    if(model?.kind !== 'template') return model?.props || {};
+    return model.materializedProps
+      || window.__resolveRuntimeTemplateVariantProps?.(slide, model)
+      || model.props
+      || {};
   }
 
   function renderPropControls(opts = {}){
@@ -7364,10 +7459,7 @@ refreshRailCatalog();
           };
           sync();
           input.addEventListener('input', () => { sync(); updateCurrentProp(renderControl, Number(input.value) - displayOffset, {render:false}); });
-          input.addEventListener('change', () => {
-            updateCurrentProp(renderControl, Number(input.value) - displayOffset);
-            releasePreviewControlFocus(input);
-          });
+          input.addEventListener('change', () => releasePreviewControlFocus(input));
           wrap.appendChild(track);
           wrap.appendChild(output);
           row.appendChild(wrap);
@@ -7736,7 +7828,7 @@ refreshRailCatalog();
     const renderRevision = String((Number(slide.dataset.runtimePropUpdate) || 0) + 1);
     const suppressMotion = opts.persist !== false;
     if(suppressMotion) slide.dataset.runtimePropUpdate = renderRevision;
-    const rendered = window.__renderRuntimeSlide?.(slide, next, {trusted:true, suppressMotion:true});
+    const rendered = window.__renderRuntimeSlide?.(slide, next, {trusted:true, suppressMotion});
     if(rendered){
       if(suppressMotion) settleRuntimePropAnimations(slide);
       window.__initEditableText?.(slide);
@@ -8444,9 +8536,13 @@ refreshRailCatalog();
         if(rect.width <= 1 || rect.height <= 1) return;
         try {
           const data = canvas.toDataURL('image/png');
+          const sourceSlideId=slide.dataset.vmSourceSlideId || slide.dataset.vmSlideId || slide.id || '';
+          const variantStateId=window.__getSlideStateId?.(slide) || slide.dataset.vmVariantStateId || slide.dataset.vmSlideId || '';
           out.push({
             slideIndex,
-            slideStateId:window.__getSlideStateId?.(slide) || slide.dataset.vmVariantStateId || slide.dataset.vmSlideId || '',
+            sourceSlideId,
+            variantStateId,
+            slideStateId:variantStateId,
             canvasIndex,
             data,
             left: (rect.left - slideRect.left) / slideRect.width * 100,
@@ -8625,6 +8721,7 @@ refreshRailCatalog();
     const retainedLogicalIds = new Set();
     const ownerRecordsByType = new Map();
     const retainedSyncKeys = new Set();
+    const retainedMediaKeys = new Set();
     const visibleById = new Map((visibleSlides || []).map(slide => [
       slide.dataset.vmSourceSlideId || slide.dataset.vmSlideId,
       slide,
@@ -8636,7 +8733,7 @@ refreshRailCatalog();
     );
     const runtimeSlides = window.__deckViewModel?.model?.slides || [];
     const liveSlides = new Map(runtimeSlides.map(slide => [String(slide?.id || ''), slide]));
-    const ordinaryTextOwnerTypes = ['variantKey', 'logicalKey', 'logicalId'];
+    const ordinaryTextOwnerTypes = ['renderableTextKey'];
     const syncTextOwnerTypes = ['variantStateId', 'variantKey', 'logicalId'];
     const mediaOwnerTypes = ['variantStateId', 'variantKey', 'logicalStateId', 'logicalKey', 'logicalId'];
     const propsOwnerTypes = ['variantStateId', 'logicalStateId'];
@@ -8656,6 +8753,10 @@ refreshRailCatalog();
       const syncName = String(name || '');
       if(syncName) retainedSyncKeys.add(`sync:${syncName}`);
     };
+    const rememberMediaKey = value => {
+      const mediaKey = String(value || '');
+      if(mediaKey) retainedMediaKeys.add(mediaKey);
+    };
 
     runtimeSlides.forEach(logical => {
       const logicalId = String(logical?.id || '');
@@ -8663,10 +8764,16 @@ refreshRailCatalog();
       registerOwner('logicalId', logicalId, logicalId);
       registerOwner('logicalStateId', logical?.stateId || logicalId, logicalId);
       registerOwner('logicalKey', logical?.key, logicalId);
-      (Array.isArray(logical?.variants) ? logical.variants : []).forEach(variant => {
-        registerOwner('variantStateId', variant?.stateId, logicalId);
-        registerOwner('variantKey', variant?.key, logicalId);
-      });
+      const variants = Array.isArray(logical?.variants) ? logical.variants : [];
+      if(variants.length){
+        variants.forEach(variant => {
+          registerOwner('renderableTextKey', variant?.key, logicalId);
+          registerOwner('variantStateId', variant?.stateId, logicalId);
+          registerOwner('variantKey', variant?.key, logicalId);
+        });
+      }else{
+        registerOwner('renderableTextKey', logical?.key, logicalId);
+      }
     });
 
     const sortedOwnerRecordsByType = new Map(
@@ -8676,38 +8783,52 @@ refreshRailCatalog();
           .sort(([left], [right]) => right.length - left.length || left.localeCompare(right)),
       ]),
     );
+    const matchesOwnerCandidate = (candidate, owner, exact) => exact
+      ? candidate === owner
+      : candidate === owner || (
+          candidate.startsWith(owner)
+          && candidate.charAt(owner.length) === ':'
+        );
+    const summarizeOwnerMatches = (matches, channel) => {
+      if(!matches.length) return null;
+      const owner = matches[0].owner;
+      const types = [...new Set(matches.map(match => match.type))];
+      const logicalIds = [...new Set(matches.flatMap(match => (
+        match.ownerRecords.map(record => record.logicalId)
+      )))];
+      const retained = logicalIds.filter(logicalId => retainedLogicalIds.has(logicalId));
+      const excluded = logicalIds.filter(logicalId => !retainedLogicalIds.has(logicalId));
+      if(retained.length && excluded.length){
+        throw new Error(
+          `[dashi-ppt] HTML export state closure ambiguous owner "${owner}" in ${channel} state channel: matching owner types [${types.join(', ')}]; retained logical slides [${retained.join(', ')}] conflict with excluded logical slides [${excluded.join(', ')}].`,
+        );
+      }
+      return {
+        owner,
+        type:types[0],
+        types,
+        logicalIds,
+        retained:retained.length > 0,
+      };
+    };
     const resolveOwner = (value, channel, ownerTypes, exact=false) => {
       const candidate = String(value || '');
       if(!candidate) return null;
+      const matches = [];
       for(const type of ownerTypes){
         const records = sortedOwnerRecordsByType.get(type) || [];
         for(const [owner, ownerRecords] of records){
-          const matchesOwner = exact
-            ? candidate === owner
-            : candidate === owner || (
-                candidate.startsWith(owner)
-                && candidate.charAt(owner.length) === ':'
-              );
-          if(!matchesOwner) continue;
-          const logicalIds = [...new Set(ownerRecords.map(record => record.logicalId))];
-          const retained = logicalIds.filter(logicalId => retainedLogicalIds.has(logicalId));
-          const excluded = logicalIds.filter(logicalId => !retainedLogicalIds.has(logicalId));
-          if(retained.length && excluded.length){
-            throw new Error(
-              `[dashi-ppt] HTML export state closure ambiguous owner "${owner}" in ${channel} state channel (${type}): retained logical slides [${retained.join(', ')}] conflict with excluded logical slides [${excluded.join(', ')}].`,
-            );
-          }
-          return {
-            owner,
-            type,
-            logicalIds,
-            retained:retained.length > 0,
-          };
+          if(!matchesOwnerCandidate(candidate, owner, exact)) continue;
+          matches.push({owner, type, ownerRecords});
         }
       }
-      return null;
+      if(!matches.length) return null;
+      const longestOwnerLength = Math.max(...matches.map(match => match.owner.length));
+      return summarizeOwnerMatches(
+        matches.filter(match => match.owner.length === longestOwnerLength),
+        channel,
+      );
     };
-
     (slides || []).forEach(logical => {
       const logicalId = String(logical?.id || '');
       if(!logicalId) return;
@@ -8717,7 +8838,9 @@ refreshRailCatalog();
       const runtimeSlide = visibleById.get(logicalId);
       if(!runtimeSlide) return;
       if(variants.length){
-        const namesByVariant = collectLogicalVariantSyncTextNames(runtimeSlide, logical, state || {});
+        const namesByVariant = collectLogicalVariantSyncTextNames(runtimeSlide, logical, state || {}, probe => {
+          collectRenderedMediaStateKeys(probe).forEach(rememberMediaKey);
+        });
         const duplicateRecord = duplicatedRecords.get(logicalId);
         const sourceLogical = duplicateRecord?.sourceId
           ? liveSlides.get(String(duplicateRecord.sourceId))
@@ -8743,6 +8866,7 @@ refreshRailCatalog();
         });
         return;
       }
+      collectRenderedMediaStateKeys(runtimeSlide).forEach(rememberMediaKey);
       runtimeSlide.querySelectorAll('[data-sync-text]').forEach(node => {
         const name = node.dataset.syncText || '';
         if(!name) return;
@@ -8768,13 +8892,21 @@ refreshRailCatalog();
         return;
       }
       if(key.startsWith('sync:')){
+        if(retainedSyncKeys.has(key)){
+          text[key] = value;
+          return;
+        }
         const owner = resolveOwner(key.slice(5), 'sync text', syncTextOwnerTypes);
-        if(owner ? owner.retained : retainedSyncKeys.has(key)) text[key] = value;
+        if(owner?.retained) text[key] = value;
       }
     });
 
     const media = {};
     Object.entries(state?.media || {}).forEach(([key, value]) => {
+      if(retainedMediaKeys.has(key)){
+        media[key] = value;
+        return;
+      }
       const owner = resolveOwner(key, 'media', mediaOwnerTypes);
       if(owner?.retained) media[key] = value;
     });
@@ -8830,7 +8962,6 @@ refreshRailCatalog();
         if(selected?.stateId) variantSelection[sourceId] = selected.stateId;
         const logical = {
           ...source,
-          key:selected?.key ?? source.key,
           stateId:selected?.stateId ?? source.stateId,
           selectedVariant:selected?.id ?? source.selectedVariant,
           variants,
@@ -9833,6 +9964,7 @@ refreshRailCatalog();
     const visibleSlides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
     const slide = visibleSlides[index ?? window.__currentSlideIndex ?? 0];
     if(!slide) return;
+    window.__clearRuntimeMotionSuppression?.(slide);
     slide.removeAttribute('data-deck-active');
     void slide.offsetWidth;
     slide.setAttribute('data-deck-active', '');

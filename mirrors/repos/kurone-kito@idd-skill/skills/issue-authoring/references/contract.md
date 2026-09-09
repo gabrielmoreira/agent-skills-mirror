@@ -513,6 +513,27 @@ Ask these checks:
    default (observed 2026-08-12/13 on an adopter repository,
    `setup.ubuntu`, kurone-kito/idd-skill#2012).
 
+## Live-observed claim citation
+
+When a drafted issue's Background section (or its `## Goal` / `## Why
+this matters` equivalent, per the schema in use) asserts a "live
+observed" runtime behavior claim (as opposed to a claim verifiable by
+reading static source), cite a concrete, checkable artifact for it — a
+permalink, a PR/comment/run ID, or an inline reproduction snippet —
+rather than only a prose description of the observed event. A drafting
+session that already has the artifact in hand (a PR review thread, a
+workflow run, an adopter's own report) should cite it directly instead
+of paraphrasing from memory; a worked example already exists elsewhere
+in this file: "(observed 2026-08-12/13 on an adopter repository,
+`setup.ubuntu`, kurone-kito/idd-skill#2012)".
+
+This is not a mechanical `audit-authored-issue` gate check: a
+live-observed claim is prose-level and not reliably machine-detectable
+without a high false-positive risk. Apply this discipline at drafting
+time instead, before an unsupported claim ships in one of these
+sections that another session or reviewer cannot independently
+re-verify.
+
 ## Dependency minimization
 
 Encode a dependency edge only when it reflects a true correctness,
@@ -782,6 +803,14 @@ authoring skill should catch these issues before publishing:
 | Actionability (Check 5)  | `ready` or escalated | Ensure the issue describes concrete work; escalate if blocked by human decision |
 | Autonomy (Check 6)       | `ready` or escalated | Ensure agent can complete without external coordination                         |
 | Verifiability (Check 7)  | `ready` or escalated | Ensure success is verifiable; escalate if it requires subjective approval       |
+
+**Check 7 escape-hatch pattern**: an either/or acceptance-criteria bullet
+where one branch is a substantive change and the other reads as "or
+document the gap/tradeoff" is not an automatic Check 7 PASS -- the
+documentation branch must itself name a concrete, checkable requirement,
+or evaluate it on its own merits and route to `needs-decision`. See
+`idd-suitability.instructions.md`'s Edge Cases section ("Escape-hatch
+acceptance criteria") for the full worked example.
 
 Pre-publish validation checklist:
 

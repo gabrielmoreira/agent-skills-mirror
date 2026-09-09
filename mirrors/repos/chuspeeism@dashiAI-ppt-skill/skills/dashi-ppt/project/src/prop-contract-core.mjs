@@ -595,9 +595,7 @@ function applyMediaVisibilityGates(props, authoredProps, contract) {
       || Object.prototype.hasOwnProperty.call(authoredProps || {}, key)
       || !Object.prototype.hasOwnProperty.call(defaultProps, key)) continue;
     const value = mediaVisibilityValue(control);
-    if (value === undefined) continue;
-    if (isMediaModeControl(control) && !hasPrimaryAuthoredMedia(authoredProps)) continue;
-    props[key] = value;
+    if (value !== undefined) props[key] = value;
   }
 }
 
@@ -606,7 +604,7 @@ export function mediaVisibilityValue(control) {
   const type = String(control?.type || '').toLowerCase();
   if (/^show(?:images?|media|photos?|pictures?|videos?|qr)$/i.test(key)
     && (type === 'toggle' || type === 'boolean')) return true;
-  if (!isMediaModeControl(control)) return undefined;
+  if (!/^(?:background|media|image|photo|picture|video)Mode$/i.test(key)) return undefined;
   const options = Array.isArray(control?.options) ? control.options : [];
   for (const wanted of ['media', 'image']) {
     const match = options.find(option => {
@@ -618,31 +616,14 @@ export function mediaVisibilityValue(control) {
   return undefined;
 }
 
-function isMediaModeControl(control) {
-  const key = String(control?.key || control?.publicKey || '');
-  return /^(?:background|media|image|photo|picture|video)Mode$/i.test(key);
-}
-
 function hasAuthoredMedia(props = {}) {
   return Object.entries(props || {}).some(([key, value]) => {
     if (!isMediaArrayKey(key)) return false;
-    return Array.isArray(value)
-      ? value.some(hasAuthoredMediaValue)
-      : hasAuthoredMediaValue(value);
+    if (typeof value === 'string') return value.trim() !== '';
+    if (Array.isArray(value)) return value.length > 0;
+    if (isPlainObject(value)) return typeof value.src === 'string' && value.src.trim() !== '';
+    return false;
   });
-}
-
-function hasPrimaryAuthoredMedia(props = {}) {
-  return Object.entries(props || {}).some(([key, value]) => {
-    if (!isMediaArrayKey(key)) return false;
-    return hasAuthoredMediaValue(Array.isArray(value) ? value[0] : value);
-  });
-}
-
-function hasAuthoredMediaValue(value) {
-  if (typeof value === 'string') return value.trim() !== '';
-  if (!isPlainObject(value)) return false;
-  return [value.src, value.url, value.u].some(item => typeof item === 'string' && item.trim() !== '');
 }
 
 export function neutralizeDefaultCopy(value, field = '') {

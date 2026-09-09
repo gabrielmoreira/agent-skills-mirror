@@ -15,6 +15,13 @@
 
 set -u
 
+# Optional probe distinguishes ambiguity from the empty legacy-root result.
+# Both modes keep stdout data-only and always exit zero.
+CHECK_AMBIGUITY=0
+if [ "${1:-}" = "--check-ambiguity" ]; then
+    CHECK_AMBIGUITY=1
+    shift
+fi
 PLAN_ROOT="${1:-${PWD}/.planning}"
 
 # --- PWF_PLAN_ROOT: absolute plan-root binding (issue #212). ---
@@ -321,6 +328,29 @@ resolve_latest_dir() {
 # the fail-closed signal on this channel, exactly as the PWF_PLAN_ROOT guard
 # above already does it; a non-zero status would kill callers running under
 # set -e for a condition that is not an internal error.
+# A shared pointer or mtime is not a per-session binding (issue #240).
+# Count conservatively, just like injection: slug-valid live plan files.
+# The legacy root joins the count only when session isolation is armed.
+PLAN_AMBIGUOUS=0
+if [ -z "${PLAN_ID:-}" ]; then
+    PLAN_COUNT=0
+    if [ -d "${PLAN_ROOT}/sessions" ] && [ -f "${PWF_ROOT_PIN:-.}/task_plan.md" ]; then
+        PLAN_COUNT=1
+    fi
+    for plan_candidate in "${PLAN_ROOT}"/*/task_plan.md; do
+        [ -f "$plan_candidate" ] || continue
+        plan_candidate_dir="${plan_candidate%/task_plan.md}"
+        slug_is_valid "${plan_candidate_dir##*/}" || continue
+        PLAN_COUNT=$((PLAN_COUNT + 1))
+        if [ "$PLAN_COUNT" -gt 1 ]; then PLAN_AMBIGUOUS=1; break; fi
+    done
+fi
+if [ "$CHECK_AMBIGUITY" = "1" ]; then
+    [ "$PLAN_AMBIGUOUS" = "1" ] && printf '%s\n' 'PWF_PLAN_AMBIGUOUS_V1'
+    exit 0
+fi
+[ "$PLAN_AMBIGUOUS" = "1" ] && exit 0
+
 if [ -n "${PLAN_ID:-}" ]; then
     resolve_from_env && exit 0
     exit 0

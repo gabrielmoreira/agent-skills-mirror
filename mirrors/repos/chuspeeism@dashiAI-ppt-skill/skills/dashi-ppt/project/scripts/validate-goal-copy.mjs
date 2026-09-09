@@ -373,7 +373,6 @@ function validateCoverCandidateUsage(html, errors) {
 function validateVariantCopyCompleteness(html, errors) {
   const model = readJsonScript(html, 'deck-view-model');
   if (!model?.slides?.length) return;
-  const sections = getSlideSections(html);
   for (const logicalSlide of model.slides) {
     if (!Array.isArray(logicalSlide?.variants)) continue;
     for (const candidate of logicalSlide.variants) {
@@ -381,17 +380,11 @@ function validateVariantCopyCompleteness(html, errors) {
       const fillPlan = inspectLayout(candidate.layout, { compact: true })?.fillPlan;
       if (!fillPlan) continue;
       const resolvedProps = resolveCandidateProps(logicalSlide, candidate, errors);
-      const controls = readCandidateControls(
-        logicalSlide,
-        { ...candidate, props: resolvedProps },
-        findSlideSection(sections, logicalSlide, candidate),
-      );
       const missing = [];
       for (const field of fillPlan.text || []) {
         if (!hasFilledPath(resolvedProps, field.key)) missing.push(field.key);
       }
       for (const field of fillPlan.arrays || []) {
-        if (isArrayHiddenByToggle(field, resolvedProps, controls)) continue;
         const arrays = readAuthoredArrays(resolvedProps, field.key);
         if (!arrays.length) {
           missing.push(field.key);
@@ -426,25 +419,6 @@ function validateVariantCopyCompleteness(html, errors) {
       }
     }
   }
-}
-
-function isArrayHiddenByToggle(field, props, controls = []) {
-  const key = String(field?.key || '')
-    .split('.')
-    .at(-1)
-    ?.replace(/\[\]$/, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '') || '';
-  if (!key) return false;
-  return controls.some(control => {
-    if (control?.type !== 'toggle') return false;
-    const prop = control.publicKey || control.key;
-    if (props?.[prop] !== false) return false;
-    const normalized = String(prop || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!normalized.startsWith('show')) return false;
-    const subject = normalized.slice(4);
-    return subject && (key.startsWith(subject) || subject.startsWith(key));
-  });
 }
 
 function hasFilledPath(value, pathName) {

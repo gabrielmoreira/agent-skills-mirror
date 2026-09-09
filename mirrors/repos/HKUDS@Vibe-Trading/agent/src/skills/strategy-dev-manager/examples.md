@@ -90,8 +90,8 @@ Then implement `signal_engine.py` using the factor template, filling in the mome
 # Inside generate():
 for symbol, df in data_map.items():
     # 12-month cumulative return, skip most recent month
-    ret_12m = df["close"].pct_change(12).shift(1)
-    ret_1m = df["close"].pct_change(1)
+    ret_12m = df["close"].pct_change(12, fill_method=None).shift(1)
+    ret_1m = df["close"].pct_change(1, fill_method=None)
     mom_signal = ret_12m - ret_1m  # skip the most recent month
     signals[symbol] = mom_signal
 ```

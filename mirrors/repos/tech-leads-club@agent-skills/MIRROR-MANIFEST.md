@@ -136,10 +136,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-astro/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-astro/SKILL.md) |
 | 76 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-lighthouse/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-lighthouse/SKILL.md) |
 | 77 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-web-optimization/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-web-optimization/SKILL.md) |
-| 78 | ✓ | [`packages/skills-catalog/skills/(quality)/pr-review/SKILL.md`](packages/skills-catalog/skills/(quality)/pr-review/SKILL.md) |
-| 79 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md`](packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md) |
-| 80 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md) |
-| 81 | ✓ | [`packages/skills-catalog/skills/(quality)/seo/SKILL.md`](packages/skills-catalog/skills/(quality)/seo/SKILL.md) |
+| 78 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md`](packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md) |
+| 79 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md) |
+| 80 | ✓ | [`packages/skills-catalog/skills/(quality)/seo/SKILL.md`](packages/skills-catalog/skills/(quality)/seo/SKILL.md) |
+| 81 | ✓ | [`packages/skills-catalog/skills/(quality)/the-judge/SKILL.md`](packages/skills-catalog/skills/(quality)/the-judge/SKILL.md) |
 | 82 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md) |
 | 83 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt) |
 | 84 | ✓ | [`packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md`](packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md) |

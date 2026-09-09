@@ -12,7 +12,13 @@ import {
   isCssColorLike,
 } from '../../prop-contract-core.mjs';
 import { resolveContentMap } from '../../variant-contract.mjs';
-import { BespokeSlideBody } from '@dashi/bespoke-runtime';
+import { resolvePublicPropAliases } from '../../control-naming.mjs';
+import {
+  materializeBespokeComposition,
+  materializeTemplateVariantProps,
+} from '../../variant-materializer.mjs';
+import { SlideViewModelProvider } from '../../view-model/context.jsx';
+import { BespokeSlide } from '../bespoke/BespokeSlide.jsx';
 import { canonicalizeThemePageRuntime } from './canonical-metadata.mjs';
 // JAD-201:主题注册表(runtimePages + 图片槽 Provider 包裹)从可注入模块取。
 // renderDeck 打包时把 `@dashi/theme-registry` 别名指向「全主题」或「按 deck 实际用到的主题裁剪版」。
@@ -31,6 +37,15 @@ const runtimeMetadataByKey = new Map(runtimePages.map(page => {
 const entriesByKey = new Map([...runtimeMetadataByKey].map(([key, metadata]) => [key, metadata.page]));
 const UNCHANGED_EXTERNAL_VALUE = Symbol('unchanged-external-value');
 const CONTRACT_VALUE_OMIT = Symbol('contract-value-omit');
+const RUNTIME_MOTION_SUPPRESSION_ATTR = 'data-runtime-motion-suppressed';
+
+function ensureRuntimeMotionSuppressionStyle() {
+  if (typeof document === 'undefined' || document.querySelector('style[data-dashi-runtime-motion-suppression]')) return;
+  const style = document.createElement('style');
+  style.dataset.dashiRuntimeMotionSuppression = 'true';
+  style.textContent = `[${RUNTIME_MOTION_SUPPRESSION_ATTR}],[${RUNTIME_MOTION_SUPPRESSION_ATTR}] *,[${RUNTIME_MOTION_SUPPRESSION_ATTR}] *::before,[${RUNTIME_MOTION_SUPPRESSION_ATTR}] *::after{animation:none!important;transition:none!important}`;
+  document.head.appendChild(style);
+}
 
 function readJson(value, fallback) {
   try {
@@ -43,9 +58,6 @@ function readJson(value, fallback) {
 function getRootApi(root) {
   let api = mountedRoots.get(root);
   if (!api) {
-    // The server-rendered fallback is replaced only on the first client
-    // takeover. Subsequent prop edits reuse this React root so finite entrance
-    // animations and component-local state are not restarted by a remount.
     root.replaceChildren();
     api = createRoot(root);
     mountedRoots.set(root, api);
@@ -336,7 +348,7 @@ function createMediaApi(slide, baseProps, entry, defaults) {
     window.__deckViewModel?.setProps?.(stateId, nextProps);
     window.__markOverviewThumbDirty?.(slide);
     if (getSlideStateId(slide) !== stateId) return;
-    renderRuntimeThemeSlide(slide, nextProps);
+    renderRuntimeThemeSlide(slide, nextProps, { suppressMotion: true });
     window.__initEditableText?.(slide);
     window.__syncActiveEffects?.(slide, { skipMotion: true });
   }
@@ -1125,6 +1137,12 @@ function renderRuntimeThemeSlide(slide, values = {}, options = {}) {
     const baseProps = withPaddedCountArrays(entry, mergedProps);
     const pageProps = withDeckPageProps(slide, entry, stripRuntimeProps(baseProps));
     const componentProps = withMediaHostProps(slide, pageProps, entry, defaults);
+    if (options.suppressMotion === true) {
+      ensureRuntimeMotionSuppressionStyle();
+      root.setAttribute(RUNTIME_MOTION_SUPPRESSION_ATTR, '');
+    } else {
+      root.removeAttribute(RUNTIME_MOTION_SUPPRESSION_ATTR);
+    }
     flushSync(() => {
       getRootApi(root).render(withImageProviders(
         React.createElement(entry.Component, componentProps),
@@ -1152,17 +1170,43 @@ function renderRuntimeBespokeSlide(slide) {
   try {
     const model = resolveRuntimeBespokeVariant(slide);
     if (!model) return false;
-    resetRuntimeRoot(slide);
+    let root = slide.querySelector?.(':scope > .bespoke-runtime-root');
+    if (!root) {
+      root = document.createElement('div');
+      root.className = 'bespoke-runtime-root';
+      root.style.width = '1920px';
+      root.style.height = '1080px';
+      slide.replaceChildren(root);
+    }
+    const sourceSlideId = slide.dataset.vmSourceSlideId || slide.dataset.vmSlideId;
+    const position = resolveVariantPosition(slide, model.variant);
+    const context = {
+      id: sourceSlideId,
+      pageId: sourceSlideId,
+      physicalId: sourceSlideId,
+      sourceSlideId,
+      stateId: model.variant.stateId,
+      variantId: model.variant.id,
+      variantKind: 'bespoke',
+      variantIndex: position.index,
+      variantCount: position.count,
+      key: model.variant.key || model.variant.stateId,
+      index: Number(slide.dataset.vmIndex || 0),
+      label: model.variant.label || 'Agent 定制方案',
+      dataLayout: 'bespoke',
+      themePack: model.variant.themePack || slide.dataset.themePack || 'theme01',
+      logicalIndex: Number(slide.dataset.logicalSlide || 0),
+      media: model.variant.media || {},
+      textKeyPrefix: `text:${model.variant.key || model.variant.stateId}:`,
+    };
     flushSync(() => {
-      getRootApi(slide).render(
-        <BespokeSlideBody
-          composition={model.composition}
-          themePack={model.variant.themePack || slide.dataset.themePack || 'theme01'}
-        />,
+      getRootApi(root).render(
+        <SlideViewModelProvider value={context}>
+          <BespokeSlide composition={model.composition} />
+        </SlideViewModelProvider>,
       );
     });
-    delete slide.dataset.layout;
-    delete slide.dataset.vmLayout;
+    root.dataset.importedBespokeRuntime = 'true';
     window.__syncDeckPageNumbers?.(slide);
     return true;
   } catch (error) {
@@ -1181,11 +1225,12 @@ function releaseRuntimeThemeSlide(slide) {
 }
 
 function releaseRuntimeBespokeSlide(slide) {
-  if (!slide?.classList?.contains('bespoke-slide') && slide?.dataset?.vmVariantKind !== 'bespoke') {
-    return false;
-  }
-  releaseRuntimeSlideVideos(slide);
-  resetRuntimeRoot(slide);
+  const root = slide?.querySelector?.(':scope > .bespoke-runtime-root');
+  if (!root) return false;
+  releaseRuntimeSlideVideos(root);
+  resetRuntimeRoot(root);
+  root.remove();
+  runtimeBespokeVariants.delete(slide);
   return true;
 }
 
@@ -1203,14 +1248,14 @@ function releaseRuntimeSlideVideos(root) {
 }
 
 function releaseInactiveRuntimeSlides(activeSlide, options = {}) {
-  // 缓存策略:只保留当前页与前后一页(cv-near)的渲染,其余全部卸载 ——
-  // 长 deck 逐页翻阅时,已渲染页的合成层/滤镜(玻璃卡 backdrop-filter)与 React 树
-  // 会线性堆积,这是「越翻越卡」的直接来源。卸载后翻回由惰性渲染即时重建。
   const keys = options.themeKeys ? new Set(options.themeKeys) : null;
   document.querySelectorAll?.('.slide.imported-theme-slide, .slide.bespoke-slide').forEach(slide => {
+    if (slide.parentElement?.id !== 'deck') return;
     if (slide === activeSlide) return;
     const bespoke = slide.classList?.contains('bespoke-slide');
-    const root = bespoke ? slide : slide.querySelector?.('.imported-theme-root');
+    const root = bespoke
+      ? slide.querySelector?.(':scope > .bespoke-runtime-root')
+      : slide.querySelector?.('.imported-theme-root');
     if (!root) return;
     const themeKey = bespoke ? slide.dataset.themePack : root.dataset.themeKey;
     if (keys && !keys.has(themeKey) && !hasLiveVideoElement(root)) return;
@@ -1224,6 +1269,7 @@ function releaseInactiveRuntimeSlides(activeSlide, options = {}) {
 
 function renderRuntimeThemeSlides(scope = document) {
   scope.querySelectorAll?.('.slide.imported-theme-slide').forEach(slide => {
+    if (slide.parentElement?.id !== 'deck') return;
     renderRuntimeThemeSlide(slide);
   });
 }
@@ -1242,6 +1288,7 @@ function materializeRuntimeSlideVariant(slide, variant) {
   const position = resolveVariantPosition(slide, variant);
   const sourceSlideId = slide.dataset.vmSourceSlideId || slide.dataset.vmSlideId;
   releaseRuntimeSlide(slide);
+  slide.replaceChildren();
 
   updateSlideBackgroundClass(
     slide,
@@ -1260,8 +1307,26 @@ function materializeRuntimeSlideVariant(slide, variant) {
   slide.dataset.vmVariantCount = String(position.count);
   slide.dataset.vmVariantKind = prepared.kind;
 
-  if (prepared.kind === 'bespoke') {
-    slide.replaceChildren();
+  if (prepared.kind === 'template') {
+    const { metadata, entry } = prepared;
+    const root = document.createElement('div');
+    root.className = 'imported-theme-root';
+    root.dataset.themeKey = entry.themeKey;
+    root.dataset.pageKey = entry.key;
+    root.dataset.propControls = JSON.stringify(metadata.controls);
+    root.dataset.propDefaults = JSON.stringify(metadata.defaults);
+    slide.appendChild(root);
+    slide.dataset.layout = entry.layout;
+    slide.dataset.vmLayout = entry.key;
+    slide.dataset.themePack = variant.themePack || entry.themeKey;
+    slide.dataset.label = variant.label || entry.label;
+    runtimeBespokeVariants.delete(slide);
+  } else {
+    const root = document.createElement('div');
+    root.className = 'bespoke-runtime-root';
+    root.style.width = '1920px';
+    root.style.height = '1080px';
+    slide.appendChild(root);
     delete slide.dataset.layout;
     delete slide.dataset.vmLayout;
     slide.dataset.themePack = variant.themePack || slide.dataset.themePack || 'theme01';
@@ -1270,20 +1335,6 @@ function materializeRuntimeSlideVariant(slide, variant) {
       variant,
       composition: prepared.composition,
     });
-  } else {
-    const { metadata, entry } = prepared;
-    const root = document.createElement('div');
-    root.className = 'imported-theme-root';
-    root.dataset.themeKey = entry.themeKey;
-    root.dataset.pageKey = entry.key;
-    root.dataset.propControls = JSON.stringify(metadata.controls);
-    root.dataset.propDefaults = JSON.stringify(metadata.defaults);
-    slide.replaceChildren(root);
-    slide.dataset.layout = entry.layout;
-    slide.dataset.vmLayout = entry.key;
-    slide.dataset.themePack = variant.themePack || entry.themeKey;
-    slide.dataset.label = variant.label || entry.label;
-    runtimeBespokeVariants.delete(slide);
   }
   slide.setAttribute('aria-label', slide.dataset.label);
   return true;
@@ -1325,41 +1376,37 @@ function resolveRuntimeBespokeVariant(slide) {
 }
 
 function resolveRuntimeBespokeComposition(slide, variant, logical = findRuntimeLogicalSlide(slide)) {
-  if (!variant.contentMap) return variant.composition;
-  const contentMap = normalizeRuntimeContentMap(variant.contentMap);
-  return resolveContentMap(logical?.content, contentMap, variant.composition);
+  const composition = resolveContentMap(
+    logical?.content,
+    normalizeRuntimeContentMap(variant.contentMap || {}),
+    variant.composition,
+  );
+  return materializeBespokeComposition(
+    composition,
+    logical?.content?.presentation,
+    variant.projection,
+  );
 }
 
 function resolveRuntimeTemplateVariantProps(slide, variant, logical = findRuntimeLogicalSlide(slide)) {
   if (variant?.materializedProps) return variant.materializedProps;
-  if (!variant?.contentMap) return variant?.props || {};
-  return resolveContentMap(
-    logical?.content,
-    normalizeRuntimeContentMap(variant.contentMap),
-    variant.props || {},
-  );
+  const props = variant?.projection?.structure
+    ? materializeTemplateVariantProps(logical?.content?.presentation, variant.projection.structure)
+    : variant?.props || {};
+  const sourceProps = variant?.contentMap
+    ? resolveContentMap(logical?.content, normalizeRuntimeContentMap(variant.contentMap), props)
+    : props;
+  const { controls } = runtimeMetadataByKey.get(variant.layout);
+  return resolvePublicPropAliases(sourceProps, controls).props;
 }
 
 function normalizeRuntimeContentMap(contentMap) {
-  return Object.fromEntries(Object.entries(contentMap || {}).map(([target, sourceMapping]) => {
-    if (typeof sourceMapping === 'string') {
-      return [
-        target,
-        sourceMapping.startsWith('content.')
-          ? sourceMapping.slice('content.'.length)
-          : sourceMapping,
-      ];
-    }
-    return [
-      target,
-      {
-        ...sourceMapping,
-        source: sourceMapping?.source?.startsWith('content.')
-          ? sourceMapping.source.slice('content.'.length)
-          : sourceMapping?.source,
-      },
-    ];
-  }));
+  return Object.fromEntries(Object.entries(contentMap || {}).map(([target, source]) => [
+    target,
+    typeof source === 'string' && source.startsWith('content.')
+      ? source.slice('content.'.length)
+      : source,
+  ]));
 }
 
 function findRuntimeLogicalSlide(slide) {
@@ -1392,7 +1439,7 @@ function updateSlideBackgroundClass(slide, previousClassName, nextClassName) {
 function renderRuntimeSlides(scope = document) {
   renderRuntimeThemeSlides(scope);
   scope.querySelectorAll?.('.slide.bespoke-slide').forEach(slide => {
-    renderRuntimeBespokeSlide(slide);
+    if (slide.parentElement?.id === 'deck') renderRuntimeBespokeSlide(slide);
   });
 }
 
@@ -1402,10 +1449,3 @@ window.__releaseRuntimeSlide = releaseRuntimeSlide;
 window.__releaseInactiveRuntimeSlides = releaseInactiveRuntimeSlides;
 window.__materializeRuntimeSlideVariant = materializeRuntimeSlideVariant;
 window.__resolveRuntimeTemplateVariantProps = resolveRuntimeTemplateVariantProps;
-
-const initialRuntimeSlide = document.querySelector(
-  '#deck > .slide.active, #deck > .slide[data-deck-active], #deck > .slide',
-);
-if (initialRuntimeSlide) {
-  renderRuntimeSlide(initialRuntimeSlide);
-}

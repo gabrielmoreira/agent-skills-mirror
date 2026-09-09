@@ -59,9 +59,16 @@ claude plugin install daymade-skill@daymade-skills
 
 ### Skill Validation and Packaging
 
-Behavior evaluation is risk-scaled by `daymade-skill:skill-creator`: bounded fixes use targeted deterministic checks and narrow instruction changes use at most one or two sampled replays. Tier 3 classifies broad/high-risk work but does not authorize paired baselines, agent fan-out, grading, benchmarking, or a viewer; an explicit user request or a decision-bearing plan plus opt-in passes the separate evidence-budget gate without changing the risk tier. A request to "optimize" an existing skill and a long preceding conversation do not by themselves trigger Tier 3 or conversation-mining. Before editing, classify each delta: only behavior-equivalent relocation/deduplication is compression; retirement, scope narrowing, workflow/safety redesign, and bug fixes are separate changes. Existing-skill regression, one bounded fresh-context review with a declared stopping rule, and packaging gates remain separate.
+Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
+changing a skill. It owns change classification, evidence selection, regression
+review, validation, initialization, and packaging.
 
-Treat `daymade-skill/skill-creator/scripts/packaging_policy.py` as the shipping-policy SSOT. Add or remove shipping exclusions only there, require every consumer to import it, and do not copy its directory list into documentation or consumer-specific filters.
+Treat [packaging_policy.py](daymade-skill/skill-creator/scripts/packaging_policy.py)
+as the canonical inclusion policy for packaging, security attestation, source
+audits, and version checks. Keep consumers on this shared implementation. Preserve the recorded policy
+when verifying an existing baseline; consult
+[source snapshot archives](daymade-skill/skill-creator/references/source-snapshot-archives.md)
+before archiving or restoring it.
 
 For hook loop and reminder semantics, load
 `daymade-claude-code:claude-code-hooks` and follow rule 7. Keep recurring
@@ -89,20 +96,12 @@ being copied here.
 
 Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
 
+From the repository root, enter the locked tool project once and validate the
+selected skill (replace `<skill-path>` with its absolute path):
+
 ```bash
-# Quick validation of a skill
-cd daymade-skill/skill-creator && uv run --frozen python -m scripts.quick_validate ../skill-name
-
-# Existing-skill old-vs-new audit (use git-ref:<ref> for a Git-reconstructed baseline)
-cd daymade-skill/skill-creator && uv run --frozen python -m scripts.audit_skill_regression snapshot --source ../skill-name --output <old-bundle>
-cd daymade-skill/skill-creator && uv run --frozen python -m scripts.audit_skill_regression compare --before <old-bundle> --after ../skill-name --output <review.json> --baseline-origin pre-edit-snapshot
-cd daymade-skill/skill-creator && uv run --frozen python -m scripts.audit_skill_regression verify --before <old-bundle> --after ../skill-name --review <review.json>
-
-# Package a skill (every existing skill requires the completed review; marker alone is insufficient)
-cd daymade-skill/skill-creator && uv run --frozen python -m scripts.package_skill ../skill-name [output-dir] [--regression-review <review.json>]
-
-# Initialize a new skill from template
-cd daymade-skill/skill-creator && uv run --frozen python -m scripts.init_skill <skill-name> --path <output-directory>
+cd daymade-skill/skill-creator
+uv run --frozen python -m scripts.quick_validate <skill-path> --audience public
 ```
 
 ### Automated Test Suites (CI)
@@ -117,6 +116,19 @@ deterministic, Linux-verified) and the runner types (`python-unittest` via
 check the registry before assuming otherwise, and note `unittest discover`
 only collects `unittest.TestCase` subclasses, not bare pytest-style functions.
 
+### Transcript Correction
+
+Use [transcript-fixer](daymade-audio/transcript-fixer/SKILL.md) for transcript
+correction. Its Native checklist owns the correction and finalization order;
+[Native review packets](daymade-audio/transcript-fixer/references/native_review_packets.md)
+owns split, batch, and resumed review instructions. Keep CLI parameters and
+validation behavior in
+[native_review.py](daymade-audio/transcript-fixer/scripts/native_review.py), and
+queue anchor behavior in
+[review_queue.py](daymade-audio/transcript-fixer/scripts/core/review_queue.py).
+When changing these paths, update their owning instructions together; keep
+review coverage, unresolved verdicts, and repository publication distinct.
+
 ### Prior Work Retrieval Boundary
 
 `prior-work-retrieval` creates an obligation only for an explicit prior-work,
@@ -129,8 +141,8 @@ already created by the current prompt. Detailed retrieval mechanics remain in
 
 For `peer-message`, treat `peer-message/scripts/peer.py` as the executable
 contract and `peer-message/SKILL.md` as the runtime router and owner of stable
-runtime prerequisites plus the peer-cannot-authorize safety boundary. Transport
-and discovery details belong in `peer-message/references/protocol-and-discovery.md`;
+runtime prerequisites plus the peer-cannot-authorize safety boundary. Reply lookup,
+transport and discovery details belong in `peer-message/references/protocol-and-discovery.md`;
 current product availability, provenance, and inbound-control mechanics belong in
 `peer-message/references/official-feature.md`; reply addressing, payload structure,
 delivery-status language, what to do when you find another session's in-flight work on a
@@ -141,6 +153,16 @@ tests, and those owners aligned; README and changelog entries should point to
 them instead of restating volatile protocol facts. The repository-wide
 local-source activation contract below still applies—never hand-create Codex
 Skill links.
+
+### Codex Quota and Account Checks
+
+For Codex reset announcements or account quota questions, enter
+[tibo-reset-codex](tibo-reset-codex/SKILL.md). Follow its
+[account usage SOP](tibo-reset-codex/references/account-usage.md) for authentication,
+per-account verification and browser restoration. Treat
+[query_usage.py](tibo-reset-codex/scripts/query_usage.py) as the executable authority
+for query parameters, supported response fields and exit behavior. Keep detailed
+commands and changing account state out of this file.
 
 ### WeCom Send Boundary
 
@@ -234,7 +256,8 @@ git push
 
 For recovery or repository convergence under concurrent work, treat
 `git-safety-net/SKILL.md` as the canonical authorization and evidence router. It owns the
-change-authorized / inspect-only / excluded partition and the scoped-vs-exhaustive audit boundary;
+change-authorized / inspect-only / excluded partition, the scoped-vs-exhaustive audit
+boundary, and authorized temporary-backup retirement;
 do not copy its detailed commands here or treat a visible collaborator ref/worktree as a cleanup
 target merely because it appears in the inventory.
 
@@ -377,9 +400,7 @@ The marketplace is configured in `.claude-plugin/marketplace.json`:
 ### ⚠️ Updating Existing Skills (MANDATORY)
 
 Changes to a skill's shipped files require a version bump in
-`marketplace.json`. Shipping exclusions are defined by
-`daymade-skill/skill-creator/scripts/packaging_policy.py` and consumed by the
-version gate; do not maintain a second exclusion list here.
+`marketplace.json`.
 
 **Version bump rules:**
 - Content/doc updates (new sections, rewritten principles) → bump **MINOR** (1.0.1 → 1.1.0)
@@ -427,6 +448,11 @@ All Python scripts in this repository:
 
 ## Quality Standards
 
+For changes to scripts, configuration, or operating procedures, use
+[docs-cleaner](daymade-docs/docs-cleaner/SKILL.md) for scoped documentation delivery:
+resolve implementation intent and authorization before updating the owning SOP,
+and validate the delivered command examples. Keep detailed governance in that Skill.
+
 Before submitting or modifying skills:
 - Valid YAML frontmatter with required fields
 - Description includes clear activation triggers
@@ -435,12 +461,6 @@ Before submitting or modifying skills:
 - No absolute paths or user-specific information
 - Comprehensive documentation
 - No TODOs or placeholders
-
-## Skill Creation Workflow
-
-Use [skill-creator](daymade-skill/skill-creator/SKILL.md) for authoring,
-behavior checks, regression review, and packaging. Its workflow is the authority;
-do not maintain a second sequence in this repository guide.
 
 ## Adding a New Skill to Marketplace
 

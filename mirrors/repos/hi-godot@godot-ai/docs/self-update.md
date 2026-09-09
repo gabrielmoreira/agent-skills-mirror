@@ -38,12 +38,20 @@ All steps run inside the editor, on the main thread except the download.
 
 1. **Check.** The dock polls the releases API; a candidate is a newer `4.x`
    release exposing the six-name asset set. Dev checkouts skip this. Clicking
-   Update asks first: the update saves the project, relaunches the editor,
-   and connected AI clients must be restarted afterwards.
+   Update asks first: the update saves the project and relaunches the
+   editor. AI clients connected during the update keep working when the
+   version they were attached through is 4.0.4 or newer (their bridge follows
+   a server of the same major version); from an older version they must be
+   quit and relaunched afterwards (a client that keeps its MCP configuration
+   in memory respawns the old bridge on a mere server restart).
 2. **Download** the three canonical assets into
    `user://godot_ai_update/download/`, enforcing the release-declared sizes and
    trusted asset URLs exactly as today.
-3. **Verify** (`McpReleaseVerifier`, pure, unit-testable):
+3. **Verify** (`McpReleaseVerifier`, pure, unit-testable). From here each
+   phase names itself in the dock ("Verifying signed update…", "Staging the
+   verified tree…", "Waiting for client workers…", "Activating verified
+   update…") and yields a frame before its main-thread work, so the dock
+   repaints instead of freezing on "Downloading…":
    - the manifest parses as canonical JSON with `schema_version` 1 and the
      fixed key set; the signature verifies over the manifest bytes with the
      embedded key (`Crypto.verify`, SHA-256, PKCS#1 v1.5, the same primitive
@@ -89,8 +97,13 @@ All steps run inside the editor, on the main thread except the download.
      stale-server recovery arm and the pin-only auto-repin gate already read),
      repin owned client configuration once and record `clients_migrated` in
      the marker, emit the `self_update` telemetry event, and continue normal
-     startup. A success marker that records its migration is the durable
-     record of the last update and is nothing pending on later starts;
+     startup. An entry the migration cannot prove as what Configure wrote
+     before the update (a hand-edited or v3-shaped entry, an unreadable
+     file) is never rewritten (#890) and never blocks the server either: it
+     is left unchanged, named in the completion banner, and left to the
+     dock's Configure (#999). A success marker that records its migration is
+     the durable record of the last update and is nothing pending on later
+     starts;
    - different: rename the live tree to `.godot_ai_update/quarantine/`, rename
      the backup back into place, mark `status: rolled_back` with the reason,
      and show it in the dock. If the backup is missing too, mark
@@ -102,16 +115,25 @@ All steps run inside the editor, on the main thread except the download.
     during the update loses server A at the swap. Its bridge then does what
     it always does without a backend: it spawns one, of the old version,
     into the restart window. The restarted editor replaces a godot-ai server
-    at exactly the version it just updated from without asking; any other
-    conflict keeps the dock's explicit Restart Server authority. Every
+    at the version it just updated from, or any older server of its own
+    major version, once and without asking; a newer server, another major,
+    or any other conflict keeps the dock's explicit Restart Server
+    authority. Every
     replacement launches our server before killing the occupant; that server
     waits for the port to free, binds and listens the instant it does, and
     hands that very socket to its HTTP and WebSocket servers, so the port is
     never free between the old backend's death and ours listening: a bridge
     polling for a free port to spawn again never sees one. The
-    old bridge itself refuses the new backend as incompatible, so the dock
-    tells the user to restart AI clients that were connected during the
-    update; the repinned client configuration launches the new version.
+    old bridge, when it predates 4.0.4, refuses the new backend as
+    incompatible, so the dock tells the user to quit and relaunch AI clients
+    that were connected during the update; the repinned client configuration
+    launches the new version. Quit, not restart: Claude Desktop keeps its MCP
+    configuration in memory and respawns the old bridge from it until the
+    application itself is relaunched. A 4.0.4+ bridge keeps serving a server
+    of the same major version and follows the replacement on its own, so the
+    dock says the clients keep working instead. That post-update replacement
+    probes with a longer timeout than an ordinary start, so a backend still
+    settling on the port is not mistaken for a foreign process.
 
 ## The v3-to-v4 capsule
 

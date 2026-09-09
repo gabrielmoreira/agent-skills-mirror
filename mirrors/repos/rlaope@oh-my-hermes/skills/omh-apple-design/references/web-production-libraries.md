@@ -27,6 +27,10 @@ libraries at runtime.
   standalone browser files with `Container` and `Button` WebGL classes and an
   optional `html2canvas` page-capture path. Its visual effect is a web effect,
   not Apple native material.
+- Smooth scroll and scroll-driven motion are recorded separately in
+  `omh-frontend/references/scroll-motion-libraries.md`, with the Lenis source
+  record and the native-first decision order. Read that reference rather than
+  growing a second scroll note here.
 
 ## Selection and integration
 

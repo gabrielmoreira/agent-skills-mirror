@@ -128,7 +128,7 @@ alertcondition(shortCondition, title="Short Signal", message="Short entry signal
 | `df['close'].rolling(n).std()` | `ta.stdev(close, n)` |
 | `df['high'].rolling(n).max()` | `ta.highest(high, n)` |
 | `df['low'].rolling(n).min()` | `ta.lowest(low, n)` |
-| `df['close'].pct_change()` | `(close - close[1]) / close[1]` |
+| `df['close'].pct_change(fill_method=None)` | `(close - close[1]) / close[1]` |
 | `df['volume'].rolling(n).mean()` | `ta.sma(volume, n)` |
 | `df['close'] > df['close'].shift(1)` | `close > close[1]` |
 | Bollinger Bands | `[mid, upper, lower] = ta.bb(close, length, mult)` |
@@ -234,7 +234,7 @@ DRAWTEXT(SELL,HIGH,'S'),COLORWHITE;
 | `max(a,b)` | `MAX(A,B)` |
 | `min(a,b)` | `MIN(A,B)` |
 | conditional | `IF(COND,A,B)` |
-| `df['close'].pct_change()` | `(CLOSE-REF(CLOSE,1))/REF(CLOSE,1)` |
+| `df['close'].pct_change(fill_method=None)` | `(CLOSE-REF(CLOSE,1))/REF(CLOSE,1)` |
 | count true in N bars | `COUNT(COND,N)` |
 | sum over N bars | `SUM(X,N)` |
 | std over N bars | `STD(CLOSE,N)` |

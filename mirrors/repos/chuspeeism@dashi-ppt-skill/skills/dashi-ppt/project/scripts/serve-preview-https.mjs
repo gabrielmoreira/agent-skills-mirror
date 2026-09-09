@@ -39,7 +39,7 @@ const SERVE_ROOT = SERVE_ROOT_ARG
   ? path.resolve(CALLER_CWD, SERVE_ROOT_ARG)
   : path.resolve(ROOT, 'output/theme-preview/ppt');
 const PORT = Number(process.env.PORT || process.argv[3] || 4178);
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = process.env.HOST || '127.0.0.1';
 const LOCAL_HOSTNAME = getLocalHostname();
 const LAN_IPS = getLanIps();
 const CERT_DIR = path.join(ROOT, 'output/https-preview');
@@ -245,7 +245,9 @@ const server = createHttpHttpsMuxServer(httpServer, secureContext);
 server.listen(PORT, HOST, () => {
   const httpPrimary = `http://${LOCAL_HOSTNAME}.local:${PORT}/`;
   const httpsPrimary = `https://${LOCAL_HOSTNAME}.local:${PORT}/`;
-  const urls = [httpPrimary, httpsPrimary, ...LAN_IPS.flatMap((ip) => [`http://${ip}:${PORT}/`, `https://${ip}:${PORT}/`])];
+  const urls = isLoopbackHost(HOST)
+    ? [`http://localhost:${PORT}/`, `https://localhost:${PORT}/`]
+    : [httpPrimary, httpsPrimary, ...LAN_IPS.flatMap((ip) => [`http://${ip}:${PORT}/`, `https://${ip}:${PORT}/`])];
   console.log(`HTTP/HTTPS preview serving ${displayPath(SERVE_ROOT)}`);
   console.log(`Open: ${urls.join(' or ')}`);
   if (!isLoopbackHost(HOST)) {

@@ -25,6 +25,7 @@ PYTHONPATH=tests uv run python -m unittest tests/test_cli.py -v   # one file
 uv run python -m compileall -q src tests                          # syntax gate
 uv run python -m omh.cli docs workflows --check                   # byte gate
 uv run python -m omh.cli docs roles --check                       # byte gate
+uv run python -m omh.cli docs claims --check --json               # selected claims
 uv run --group lint ruff check src tests                          # static-analysis gate
 git diff --check
 ```
@@ -78,6 +79,13 @@ Rules:
   (`normalized_phrase`, `routing_tokens`, `contains_cue_phrase`) — do not add
   raw substring checks. Phrase triggers for multi-word intents; token triggers
   only when a single token is unambiguous.
+- A multi-word trigger is also scored as its separate tokens, so a phrase
+  built from everyday words widens the skill far beyond the phrase. Before
+  shipping one, route a sentence that contains the generic word in an
+  unrelated sense and compare the score against `origin/main`; if it moved a
+  clarify into a dispatch, hold the word back in
+  `_WHOLE_PHRASE_ONLY_TRIGGER_TOKENS` (`src/routing/recommend.py`) so only the
+  complete phrase scores, and pin it with a negative case.
 - Guard patterns: routing and policy changes ship with negative cases
   alongside positive cases. Adding a trigger without a negative case is
   incomplete. Both corpora live in `src/quality/routing_precision.py` and each
@@ -130,8 +138,30 @@ Rules:
   `render.py` instead.
 - Adding a routing fixture or skill without updating exact-count assertions —
   breaks `tests/test_routing_precision.py`, `tests/test_cli.py`,
-  `tests/test_hermes_ux_quality.py`, and `tests/test_release_smoke.py`. Grep
-  those four for the old count when totals change.
+  `tests/test_hermes_ux_quality.py`, and `tests/test_release_smoke.py`, plus
+  the expected values in `src/maintenance/drift.py`. Grep those five for the
+  old count when totals change, and remember each test file pins the totals
+  twice: once in the payload assertions and once in the rendered CLI strings
+  (`NNN/NNN negative-control cases`, `Interventions: NNN/NNN ...`).
+- Resolving a routing-count rebase conflict by picking a side. Those same five
+  files conflict whenever main added a case while your branch was open, and
+  neither side is right: upstream's baseline moved and your delta still has to
+  land on top of it. Keep whichever side carries your reason comments, then
+  re-derive every number from the producer rather than doing the arithmetic by
+  hand:
+
+  ```py
+  from omh.quality.routing_precision import build_routing_precision_demo, routing_precision_errors
+  payload = build_routing_precision_demo(source="discord")
+  print(payload["summary"])          # case_count, intervention_case_count, total_case_count
+  print(routing_precision_errors(payload))  # must be []
+  ```
+
+  Confirm with `drift_report()["ok"]` before continuing the rebase. Two
+  adjacent budgets can fire in the same change and are raised the same way,
+  with the reason written at the entry: the per-skill Hangul freeze in
+  `tests/test_routing_language_policy.py` and
+  `FULL_PROFILE_SKILL_BODY_CHAR_LIMIT` in `src/maintenance/release.py`.
 - Grepping the repo and matching stale strings under `build/lib/` — it is a
   gitignored copy of old sources. Scope searches to `src/`, `tests/`, `docs/`,
   `skills/`.

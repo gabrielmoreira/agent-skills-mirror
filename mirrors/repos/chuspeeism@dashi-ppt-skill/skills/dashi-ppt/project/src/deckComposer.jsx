@@ -106,6 +106,7 @@ export function composeDeck(spec = {}) {
   return {
     ...(expandedVariants ? {
       schemaVersion: BESPOKE_SCHEMA_VERSION,
+      variantPresentation: 'expanded',
       variantOutputMode: spec.variantOutputMode ?? 'comparison',
     } : {}),
     themePack,
@@ -206,8 +207,10 @@ function composeExpandedTemplateVariant(variant, variantIndex, context) {
   ) {
     throw new Error(`schemaVersion ${BESPOKE_SCHEMA_VERSION} slide ${context.index + 1} variant ${variantIndex + 1} must be an explicit template variant with a layout.`);
   }
-  if (!isPlainRecord(variant.props)) {
-    throw new Error(`Slide ${context.index + 1} template variant ${variantIndex + 1} props must be an object.`);
+  if (variant.props === undefined
+    ? !isPlainRecord(variant.projection?.structure)
+    : !isPlainRecord(variant.props)) {
+    throw new Error(`Slide ${context.index + 1} template variant ${variantIndex + 1} requires object props or projection.structure.`);
   }
   if (!isPlainRecord(variant.contentMap)) {
     throw new Error(`Slide ${context.index + 1} template variant ${variantIndex + 1} contentMap must be an object.`);
@@ -215,13 +218,14 @@ function composeExpandedTemplateVariant(variant, variantIndex, context) {
 
   context.usedLayouts.add(variant.layout);
   return {
-    ...slide(variant.layout, variant.props),
+    ...slide(variant.layout, variant.props || {}),
     id: variant.id || `variant-${variantIndex + 1}`,
     kind: 'template',
     key: variant.key || variant.slideKey,
     label: variant.label,
     media: variant.media,
     contentMap: variant.contentMap,
+    projection: variant.projection,
   };
 }
 
@@ -253,6 +257,7 @@ function composeBespokeVariant(variant, variantIndex, context) {
     adjustable: false,
     composition: variant.composition,
     contentMap: variant.contentMap,
+    projection: variant.projection,
   };
 }
 

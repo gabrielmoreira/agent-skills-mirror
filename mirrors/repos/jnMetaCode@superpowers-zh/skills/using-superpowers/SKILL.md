@@ -70,24 +70,27 @@ Gemini CLI 用户通过 GEMINI.md 自动获得 `references/gemini-tools.md` 的�
 ## 中国特色技能路由
 
 > 🇨🇳 **本节是 superpowers-zh 的增量内容，上游 obra/superpowers 没有。**
-> 用于把中文场景路由到本 fork 原创的 chinese-* 系列 skill。其余各节均为逐节翻译。
+> 用于说明本 fork 原创的 chinese-* 系列 skill 何时使用。其余各节均为逐节翻译。
 
-当检测到以下场景时，**必须**优先调用对应的中国特色技能：
+这 4 个 chinese-* 是**参考资料，不是工作流** —— 话术模板、排版约定、平台配置差异。
+它们**只在用户显式调用时才加载**，不要根据上下文自动触发：上下文里多一份排版参考
+不会让你写得更好，只会挤掉真正需要的内容。
 
-| 场景 | 调用技能 |
-|------|---------|
-| 代码审查且团队使用中文沟通 | **chinese-code-review** |
-| 使用 Gitee/Coding/极狐 GitLab | **chinese-git-workflow** |
-| 编写中文技术文档或 README | **chinese-documentation** |
-| 编写 git commit message（中文项目） | **chinese-commit-conventions** |
-| 构建 MCP 服务器/工具 | **mcp-builder** |
+| 用户显式说 | 加载技能 | 里面是什么 |
+|------|---------|---------|
+| `/chinese-code-review` | **chinese-code-review** | 中文 review 话术模板、分级标注、国内团队常见反模式应对 |
+| `/chinese-git-workflow` | **chinese-git-workflow** | Gitee / Coding.net / 极狐 GitLab / CNB 的 SSH、凭据、CI 接入差异 |
+| `/chinese-documentation` | **chinese-documentation** | 中英文空格、全半角标点、术语保留、中文文案排版指北约定 |
+| `/chinese-commit-conventions` | **chinese-commit-conventions** | Conventional Commits 中文适配、commitlint / husky 中文模板 |
 
-**判断依据：**
-- 项目中有中文注释、中文 README、或 .gitee 目录 → 启用中文系列技能
-- commit 历史中有中文 → 使用中文提交规范
-- 用户用中文交流 → 所有输出使用中文，优先考虑中国特色技能
+用户没点名就不要主动拉进来。反过来，用户点名了就照它执行，不要因为"看起来只是格式问题"
+而跳过。
 
-中国特色技能与翻译技能**叠加使用**，不互斥。例如：做代码审查时，同时使用 requesting-code-review（流程）+ chinese-code-review（风格）。
+它们与翻译技能**叠加使用**，不互斥：用户要求做中文 review 时，是
+requesting-code-review（流程）**加上** chinese-code-review（风格），不是二选一。
+
+> 这个「只在显式调用时加载」是刻意决定，不是漏写（见 commit `392ff75`）。改动它需要
+> eval 证据 —— 参见 PR #123 与本仓 CLAUDE.md「Skill 改动需要 eval」。
 
 ## 用户指令
 

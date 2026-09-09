@@ -254,6 +254,29 @@ is_within_root() {
 # The .active_plan pointer, the newest-by-mtime fallback, and the legacy root
 # task_plan.md are cwd GUESSES — only guesses are subject to the nested-root
 # conflict check below.
+# Shared .active_plan and directory mtime cannot identify this session's plan.
+# Check before selection or preflight, even when isolation was never armed.
+PLAN_AMBIGUOUS=0
+if [ -z "${PLAN_ID:-}" ]; then
+    PLAN_COUNT=0
+    if [ -d "${PLAN_PREFIX}.planning/sessions" ] && [ -f "${PLAN_PREFIX}task_plan.md" ]; then
+        PLAN_COUNT=1
+    fi
+    for plan_candidate in "${PLAN_PREFIX}".planning/*/task_plan.md; do
+        [ -f "$plan_candidate" ] || continue
+        plan_candidate_dir="${plan_candidate%/task_plan.md}"
+        slug_is_valid "${plan_candidate_dir##*/}" || continue
+        PLAN_COUNT=$((PLAN_COUNT + 1))
+        if [ "$PLAN_COUNT" -gt 1 ]; then PLAN_AMBIGUOUS=1; break; fi
+    done
+fi
+if [ "$PLAN_AMBIGUOUS" = "1" ] && { [ "$CONTEXT" = "preflight" ] || [ ! -d "${PLAN_PREFIX}.planning/sessions" ]; }; then
+    if [ "$CONTEXT" = "userprompt" ]; then
+        echo "[planning-with-files] Multiple plans are available. Set PLAN_ID=<slug> for this session; nothing injected."
+    fi
+    exit 0
+fi
+
 RESOLVED=""
 SCOPE=""
 EXPLICIT=0
@@ -442,27 +465,13 @@ PY
         exit 0
     fi
 
-    # An attachment admits a session but does not select one of several plans.
-    # When isolation is armed, require PLAN_ID if more than one live same-root
-    # candidate exists. PWF_PLAN_ROOT selects the project root, not a plan
-    # within that root.
-    if [ -z "${PLAN_ID:-}" ]; then
-        SESSION_PLAN_N=0
-        [ -f "${PLAN_PREFIX}task_plan.md" ] && SESSION_PLAN_N=1
-        for candidate in "${PLAN_PREFIX}".planning/*/task_plan.md; do
-            [ -f "$candidate" ] || continue
-            candidate_dir="${candidate%/task_plan.md}"
-            candidate_slug="${candidate_dir##*/}"
-            slug_is_valid "$candidate_slug" || continue
-            SESSION_PLAN_N=$((SESSION_PLAN_N + 1))
-            [ "$SESSION_PLAN_N" -gt 1 ] && break
-        done
-        if [ "$SESSION_PLAN_N" -gt 1 ]; then
-            if [ "$CONTEXT" = "userprompt" ]; then
-                echo "[planning-with-files] Multiple plans are available while session isolation is armed. Set PLAN_ID=<slug> for this session; nothing injected."
-            fi
-            exit 0
+    # Attachment admits a session but does not select its plan. Preserve the
+    # attachment-first notice above for sessions that never opted in.
+    if [ "$PLAN_AMBIGUOUS" = "1" ]; then
+        if [ "$CONTEXT" = "userprompt" ]; then
+            echo "[planning-with-files] Multiple plans are available while session isolation is armed. Set PLAN_ID=<slug> for this session; nothing injected."
         fi
+        exit 0
     fi
 fi
 

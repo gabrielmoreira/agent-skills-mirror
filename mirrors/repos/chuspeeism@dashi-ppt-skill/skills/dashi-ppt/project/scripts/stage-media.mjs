@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { mediaFormatForExtension } from './media-formats.mjs';
 
 // 相对路径按调用方目录解析:npm run(含 --prefix)会把脚本 cwd 切到项目根,INIT_CWD 才是用户所在目录。
 const CALLER_CWD = process.env.INIT_CWD || process.cwd();
@@ -51,7 +52,7 @@ function runCli(argv) {
     const stat = fs.statSync(source);
     if (!stat.isFile()) throw new Error(`Media path is not a file: ${source}`);
     const ext = path.extname(source).toLowerCase();
-    const kind = mediaKindForExt(ext);
+    const kind = mediaFormatForExtension(ext)?.kind;
     if (!kind) throw new Error(`Unsupported media file type: ${source}`);
     const prepared = prepareMedia(source, ext, kind, outDir, stageContext);
     return {
@@ -239,12 +240,6 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-function mediaKindForExt(ext) {
-  if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.avif'].includes(ext)) return 'image';
-  if (['.mp4', '.webm', '.mov', '.m4v'].includes(ext)) return 'video';
-  return null;
-}
-
 function prepareMedia(source, ext, kind, outDir, context) {
   const base = slugify(path.basename(source, ext));
   const sourceId = sourceIdFor(source);
@@ -274,7 +269,7 @@ function prepareMedia(source, ext, kind, outDir, context) {
   const prepared = {
     relative,
     kind,
-    mime: mimeForExt(ext, kind),
+    mime: mediaFormatForExtension(ext).mime,
   };
   recordStageItem(context, sourceId, prepared);
   return prepared;
@@ -341,10 +336,10 @@ function generateVideoPoster(videoPath) {
 
 function convertAvif(source, outDir, base, context, sourceId, existingRelative = '') {
   const attempts = [
-    { ext: '.webp', mime: 'image/webp', command: 'magick', args: target => [source, target] },
-    { ext: '.webp', mime: 'image/webp', command: 'sips', args: target => ['-s', 'format', 'webp', source, '--out', target] },
-    { ext: '.png', mime: 'image/png', command: 'magick', args: target => [source, target] },
-    { ext: '.png', mime: 'image/png', command: 'sips', args: target => ['-s', 'format', 'png', source, '--out', target] },
+    { ext: '.webp', command: 'magick', args: target => [source, target] },
+    { ext: '.webp', command: 'sips', args: target => ['-s', 'format', 'webp', source, '--out', target] },
+    { ext: '.png', command: 'magick', args: target => [source, target] },
+    { ext: '.png', command: 'sips', args: target => ['-s', 'format', 'png', source, '--out', target] },
   ];
   const existingName = stagedNameFromRelative(existingRelative);
   if (existingName) {
@@ -362,7 +357,7 @@ function convertAvif(source, outDir, base, context, sourceId, existingRelative =
     if (result.status === 0 && fs.existsSync(target)) {
       return {
         relative,
-        mime: attempt.mime,
+        mime: mediaFormatForExtension(attempt.ext).mime,
       };
     }
     context.usedNames.delete(name);
@@ -380,26 +375,11 @@ function tryConvertAvif(source, outDir, relative, attempts) {
     if (result.status === 0 && fs.existsSync(target)) {
       return {
         relative,
-        mime: attempt.mime,
+        mime: mediaFormatForExtension(attempt.ext).mime,
       };
     }
   }
   return null;
-}
-
-function mimeForExt(ext, kind = null) {
-  return {
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.webp': 'image/webp',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.mp4': 'video/mp4',
-    '.webm': 'video/webm',
-    '.mov': 'video/quicktime',
-    '.m4v': 'video/mp4',
-  }[ext] || (kind === 'image' ? 'image/*' : 'application/octet-stream');
 }
 
 // Exposed for unit tests (the CLI body above is guarded by isMainModule) and for

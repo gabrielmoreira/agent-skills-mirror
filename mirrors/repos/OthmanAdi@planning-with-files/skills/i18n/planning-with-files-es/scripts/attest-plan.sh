@@ -45,6 +45,10 @@ resolve_plan_file() {
     plan_dir=""
     if [ -f "${RESOLVER}" ]; then
         plan_dir="$(sh "${RESOLVER}" 2>/dev/null)"
+        if [ -z "$plan_dir" ] && [ "$(sh "${RESOLVER}" --check-ambiguity 2>/dev/null)" = "PWF_PLAN_AMBIGUOUS_V1" ]; then
+            printf "[plan-attest] Multiple plans are available. Set PLAN_ID=<slug>; nothing was attested.\n" >&2
+            return 1
+        fi
     fi
     if [ -n "${plan_dir}" ] && [ -f "${plan_dir}/task_plan.md" ]; then
         printf "%s\n" "${plan_dir}/task_plan.md"

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `truffle-ai/dexto` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
+Mirror of `truffle-ai/dexto` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `truffle-ai/dexto` — 26 default patterns, 0 followed patterns, 79 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 79 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,16 +128,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 67 | ✓ | [`agents/triage-demo/triage-agent.yml`](agents/triage-demo/triage-agent.yml) |
 | 68 | ✓ | [`agents/workflow-builder-agent/workflow-builder-agent.yml`](agents/workflow-builder-agent/workflow-builder-agent.yml) |
 | 69 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 70 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
-| 71 | ✓ | [`examples/skills/echo-custom-mcp/SKILL.md`](examples/skills/echo-custom-mcp/SKILL.md) |
-| 72 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 73 | ✓ | [`packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md`](packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md) |
-| 74 | ✓ | [`packages/tui/src/AGENTS.md`](packages/tui/src/AGENTS.md) |
-| 75 | ✓ | [`packages/tui/src/CLAUDE.md`](packages/tui/src/CLAUDE.md) |
-| 76 | ✓ | [`packages/tui/src/GEMINI.md`](packages/tui/src/GEMINI.md) |
-| 77 | ✓ | [`packages/webui/AGENTS.md`](packages/webui/AGENTS.md) |
-| 78 | ✓ | [`packages/webui/CLAUDE.md`](packages/webui/CLAUDE.md) |
-| 79 | ✓ | [`packages/webui/GEMINI.md`](packages/webui/GEMINI.md) |
+| 70 | ✓ | [`docs/docs/architecture/skills.md`](docs/docs/architecture/skills.md) |
+| 71 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
+| 72 | ✓ | [`examples/skills/echo-custom-mcp/SKILL.md`](examples/skills/echo-custom-mcp/SKILL.md) |
+| 73 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 74 | ✓ | [`packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md`](packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md) |
+| 75 | ✓ | [`packages/tui/src/AGENTS.md`](packages/tui/src/AGENTS.md) |
+| 76 | ✓ | [`packages/tui/src/CLAUDE.md`](packages/tui/src/CLAUDE.md) |
+| 77 | ✓ | [`packages/tui/src/GEMINI.md`](packages/tui/src/GEMINI.md) |
+| 78 | ✓ | [`packages/webui/AGENTS.md`](packages/webui/AGENTS.md) |
+| 79 | ✓ | [`packages/webui/CLAUDE.md`](packages/webui/CLAUDE.md) |
+| 80 | ✓ | [`packages/webui/GEMINI.md`](packages/webui/GEMINI.md) |
 
 ---
 

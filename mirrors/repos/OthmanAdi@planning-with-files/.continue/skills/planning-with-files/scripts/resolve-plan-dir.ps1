@@ -13,7 +13,8 @@
 # junction/symlink escape; slug validation alone blocks textual traversal.
 
 param(
-    [string]$PlanRoot = (Join-Path (Get-Location) ".planning")
+    [string]$PlanRoot = (Join-Path (Get-Location) ".planning"),
+    [switch]$CheckAmbiguity
 )
 
 $projectRoot = (Get-Location).Path
@@ -137,6 +138,30 @@ $activeFile = Join-Path $PlanRoot ".active_plan"
 # at rc=0. Emptiness is the fail-closed signal on this channel, matching
 # resolve-plan-dir.sh and the PWF_PLAN_ROOT pin. An empty $env:PLAN_ID is
 # falsy here and still means "unset".
+# The optional probe distinguishes ambiguity from a legacy-root fallback.
+# Multiple named plans require PLAN_ID even without a sessions directory.
+$planCount = 0
+if (-not $env:PLAN_ID) {
+    if ((Test-Path -LiteralPath (Join-Path $PlanRoot "sessions") -PathType Container) -and
+        (Test-Path -LiteralPath (Join-Path $projectRoot "task_plan.md") -PathType Leaf)) {
+        $planCount = 1
+    }
+    if (Test-Path -LiteralPath $PlanRoot -PathType Container) {
+        foreach ($entry in (Get-ChildItem -LiteralPath $PlanRoot -Directory -ErrorAction SilentlyContinue)) {
+            if ((Test-ValidSlug $entry.Name) -and
+                (Test-Path -LiteralPath (Join-Path $entry.FullName "task_plan.md") -PathType Leaf)) {
+                $planCount++
+                if ($planCount -gt 1) { break }
+            }
+        }
+    }
+}
+if ($CheckAmbiguity) {
+    if ($planCount -gt 1) { Write-Output "PWF_PLAN_AMBIGUOUS_V1" }
+    exit 0
+}
+if ($planCount -gt 1) { exit 0 }
+
 if ($env:PLAN_ID) {
     if (Test-ValidSlug $env:PLAN_ID) {
         $candidate = Join-Path $PlanRoot $env:PLAN_ID

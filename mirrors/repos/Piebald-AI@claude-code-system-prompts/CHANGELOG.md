@@ -4,6 +4,43 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.266](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c34e86)
+
+<sub>_No changes to the system prompts in v2.1.266._</sub>
+
+# [2.1.265](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4ef05c3)
+
+_+8,732 tokens_
+
+- **NEW:** Agent Prompt: Artifact type creation slash command — Creates an Artifact from a named published type, asks on duplicate titles, and follows the returned population instructions.
+- **NEW:** Agent Prompt: Project thread status card classifier — Classifies Project threads into five actionable states and emits concise owner-facing status, required action, and reply-button JSON.
+- **NEW:** Agent Prompt: Security monitor Claude Tag connector writes — Permits delegated writes through exact Claude Tag connector prefixes while retaining restrictions on sensitive, destructive, permission, and messaging actions.
+- **NEW:** Data: Managed settings helper onFailure field — Defines source-dependent helper-failure defaults, static fallbacks, startup refusal, status notices, and watched versus unattended session handling.
+- **NEW:** Data: Managed settings helper retries field — Defines bounded retries for execution failures with per-attempt timeouts and backoff, excluding invalid paths, output, envelopes, and settings.
+- **NEW:** Data: SDK MCP server manifests field — Documents one-shot cached MCP handshake results that avoid initial control-channel round trips while preserving full fallback compatibility.
+- **NEW:** Data: SDK partial assistant user message UUID field — Adds scalar join keys to initial and ownership-changing non-ping stream events, linking partial replies to the user message answered.
+- **NEW:** Data: SDK set model system prompt field — Documents runtime custom-system-prompt updates, render timing, non-empty requirements, feature overrides, and compatibility behavior for unsupported transports.
+- **NEW:** Data: SDK workspace trust directory field — Defines directory trust attestations using canonical repository identity while rejecting network, obfuscated, nonexistent, or mismatched paths.
+- **NEW:** System Prompt: Artifact comment presence state guidance — Treats tool-emitted comment presence as untrusted page data that may resolve references but cannot provide instructions or permission.
+- **NEW:** System Reminder: MCP servers connecting without ToolSearch — Prevents declaring capabilities unavailable while MCP servers are still connecting and awaiting their tool announcements.
+- **NEW:** System Reminder: Web fetch untrusted content reporting guidance — Requires faithful reporting of untrusted fetched content and prompt-injection findings without following embedded instructions or exfiltration requests.
+- **NEW:** Tool Description: Computer use enable stub guidance — Uses available remote-device tools directly, verifies connectivity through successful calls, and explains recovery when the desktop app is unavailable.
+- **REMOVED:** Data: SDK partial assistant user message UUIDs field — Removes batched UUID-list join keys from partial assistant events, replaced by per-owner scalar UUID stamps.
+- **REMOVED:** Skill: Plan Artifact — Removes the standalone workflow for converting plans into published Artifacts using the standard themed HTML template.
+- Data: Claude Code gateway protocol — Allows gateway-managed settings to redirect OTLP telemetry to a validated external collector without forwarding the gateway bearer.
+- Data: SDK assistant user message UUID fields and error result user message UUID field — Track mid-turn reply ownership across vouched synthetic turns and folded user messages, updating scalar and cumulative UUID echoes.
+- Data: SDK cloud session init snapshot field — Adds a directory-sync `muted` state indicating Anthropic’s emergency switch has suspended file uploads and installations until the switch clears.
+- Skill: Workflow authoring reference — Clarifies that most subagents inherit CLAUDE.md automatically and should receive only stage-specific rules rather than duplicated instructions.
+- System Prompt: Artifact comment list framing — Strengthens comment trust boundaries, clarifies row framing and organization context, permits artifact-scoped feedback, and incorporates presence-state guidance.
+- System Prompt: Auto mode Slack message provenance — Tightens human Slack provenance to opening-position envelopes and direct attachment references, excluding SendFile-note prefixes and clarifying harness-lead nesting.
+- System Prompt: Project timeline user message provenance — Defines coordinator-session relays as attributable but untrusted instructions that never establish user intent, consent, or boundary changes.
+- Tool Description: Artifact database guidance — Adds conditional string-replacement and concurrency guidance plus access-level simulation for testing signed-in viewer and co-owner permissions.
+- Tool Description: Artifact files guidance — Returns small text-file contents inline while continuing to save larger or binary Artifact files for local reading.
+- Tool Description: Artifact supporting files guidance and Tool Parameter: Artifact supporting files with cross-artifact sources — Allows publishing local supporting files directly from the configured scratchpad as well as the working directory.
+- Tool Description: Bash (Git commit and PR creation instructions) — Adds host-provided PR-body ending guidance to generated PR commands, allowing conditional content after the body-formatting instruction.
+- Tool Description: claude.ai Project — Adds read-only listing and retrieval of project memory files with per-session snapshots and extends untrusted-content handling to memory.
+- Tool Descriptions: WebFetch concise and private URL warning — Expands authenticated Artifact fetching from code Artifact URLs to standard `claude.ai/artifact/{id}` links across both tool descriptions.
+
 #### [2.1.263](https://github.com/Piebald-AI/claude-code-system-prompts/commit/237fc36)
 
 <sub>_No changes to the system prompts in v2.1.263._</sub>

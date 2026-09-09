@@ -71,9 +71,8 @@ Reasoning demand: `light`
 Quality bar:
 
 - Name release scope, target environment, health signals, rollback criteria, and evidence owner.
-- Show pre-deploy, deploy decision, monitor, rollback, and post-deploy record as distinct stages.
+- Show pre-deploy, deploy decision, monitor, rollback, and post-deploy as distinct stages.
 - Mark health and rollback status unknown until observed evidence arrives.
-- Convert fix follow-ups into separate accepted plans or executor handoffs.
 
 Handoff policy:
 
@@ -97,6 +96,7 @@ Expected outputs:
 Artifact expectations:
 
 - release operation status record when the wrapper captures deploy or monitor observations
+- web_qa_comparison/v1 for a canary only with a trusted host_deployment_observation/v1 and a production baseline captured before it
 
 Artifact contracts:
 
@@ -109,6 +109,7 @@ Safety rules:
 - Do not claim deployment, health checks, rollback, or incident response happened from a prepared checklist.
 - Keep release readiness, deploy decision, monitor signals, and rollback as separate evidence steps.
 - Route code fixes discovered during monitoring as later executor handoffs.
+- A canary web-QA comparison never authorizes rollback; a missing deployment observation is BLOCK and a field regression beyond tolerance is REVISE.
 
 ## Runtime Evidence
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dmmulroy/anti-slop` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `dmmulroy/anti-slop` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dmmulroy/anti-slop` — 26 default patterns, 0 followed patterns, 26 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,28 +63,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`skills/install-anti-slop/assets/anti-slop/effect/index.ts`](skills/install-anti-slop/assets/anti-slop/effect/index.ts) |
 | 3 | ✓ | [`skills/install-anti-slop/assets/anti-slop/effect/rules/no-service-constructor-imports.ts`](skills/install-anti-slop/assets/anti-slop/effect/rules/no-service-constructor-imports.ts) |
 | 4 | ✓ | [`skills/install-anti-slop/assets/anti-slop/index.ts`](skills/install-anti-slop/assets/anti-slop/index.ts) |
-| 5 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-chained-type-assertions.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-chained-type-assertions.ts) |
-| 6 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-conditional-empty-object-spread.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-conditional-empty-object-spread.ts) |
-| 7 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-known-value-widening.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-known-value-widening.ts) |
-| 8 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-module-mocking.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-module-mocking.ts) |
-| 9 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-object-parameters.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-object-parameters.ts) |
-| 10 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-reflect-apply.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-reflect-apply.ts) |
-| 11 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-reflect-get.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-reflect-get.ts) |
-| 12 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-runtime-typeof.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-runtime-typeof.ts) |
-| 13 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-shape-in-symbol-names.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-shape-in-symbol-names.ts) |
-| 14 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unknown-parameters.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unknown-parameters.ts) |
-| 15 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unknown-returns.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unknown-returns.ts) |
-| 16 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unknown-type-aliases.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unknown-type-aliases.ts) |
-| 17 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unsafe-dictionary-type.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unsafe-dictionary-type.ts) |
-| 18 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-widen-then-assert.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-widen-then-assert.ts) |
-| 19 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/require-safety-comment-for-type-assertion.ts`](skills/install-anti-slop/assets/anti-slop/rules/require-safety-comment-for-type-assertion.ts) |
-| 20 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/dictionary-types.ts`](skills/install-anti-slop/assets/anti-slop/shared/dictionary-types.ts) |
-| 21 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/function-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/function-parameters.ts) |
-| 22 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts) |
-| 23 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts`](skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts) |
-| 24 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/type-alias-resolution.ts`](skills/install-anti-slop/assets/anti-slop/shared/type-alias-resolution.ts) |
-| 25 | ✓ | [`skills/install-anti-slop/scripts/install.mjs`](skills/install-anti-slop/scripts/install.mjs) |
-| 26 | ✓ | [`skills/install-anti-slop/SKILL.md`](skills/install-anti-slop/SKILL.md) |
+| 5 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-array-filter-map.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-array-filter-map.ts) |
+| 6 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-chained-type-assertions.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-chained-type-assertions.ts) |
+| 7 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-conditional-empty-object-spread.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-conditional-empty-object-spread.ts) |
+| 8 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-known-value-widening.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-known-value-widening.ts) |
+| 9 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-module-mocking.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-module-mocking.ts) |
+| 10 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-object-parameters.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-object-parameters.ts) |
+| 11 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-reduce-accumulator-copy.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-reduce-accumulator-copy.ts) |
+| 12 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-reflect-apply.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-reflect-apply.ts) |
+| 13 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-reflect-get.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-reflect-get.ts) |
+| 14 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-runtime-typeof.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-runtime-typeof.ts) |
+| 15 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-shape-in-symbol-names.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-shape-in-symbol-names.ts) |
+| 16 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unknown-parameters.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unknown-parameters.ts) |
+| 17 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unknown-returns.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unknown-returns.ts) |
+| 18 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unknown-type-aliases.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unknown-type-aliases.ts) |
+| 19 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-unsafe-dictionary-type.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-unsafe-dictionary-type.ts) |
+| 20 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/no-widen-then-assert.ts`](skills/install-anti-slop/assets/anti-slop/rules/no-widen-then-assert.ts) |
+| 21 | ✓ | [`skills/install-anti-slop/assets/anti-slop/rules/require-safety-comment-for-type-assertion.ts`](skills/install-anti-slop/assets/anti-slop/rules/require-safety-comment-for-type-assertion.ts) |
+| 22 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/array-method.ts`](skills/install-anti-slop/assets/anti-slop/shared/array-method.ts) |
+| 23 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/dictionary-types.ts`](skills/install-anti-slop/assets/anti-slop/shared/dictionary-types.ts) |
+| 24 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/function-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/function-parameters.ts) |
+| 25 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts`](skills/install-anti-slop/assets/anti-slop/shared/lexical-type-parameters.ts) |
+| 26 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts`](skills/install-anti-slop/assets/anti-slop/shared/reflect-method.ts) |
+| 27 | ✓ | [`skills/install-anti-slop/assets/anti-slop/shared/type-alias-resolution.ts`](skills/install-anti-slop/assets/anti-slop/shared/type-alias-resolution.ts) |
+| 28 | ✓ | [`skills/install-anti-slop/references/update.md`](skills/install-anti-slop/references/update.md) |
+| 29 | ✓ | [`skills/install-anti-slop/scripts/install.mjs`](skills/install-anti-slop/scripts/install.mjs) |
+| 30 | ✓ | [`skills/install-anti-slop/SKILL.md`](skills/install-anti-slop/SKILL.md) |
 
 ---
 

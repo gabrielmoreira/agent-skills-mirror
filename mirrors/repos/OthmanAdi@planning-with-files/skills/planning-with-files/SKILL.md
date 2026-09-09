@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "[ -n \"${CLAUDE_PLUGIN_ROOT:-}\" ] && exit 0; SH=\"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.17.0"
+  version: "3.17.1"
 ---
 
 # Planning with Files
@@ -40,7 +40,7 @@ Work like Manus: Use persistent markdown files as your "working memory on disk."
 **Before continuing**, resolve the plan this task owns:
 
 1. Use the installed `scripts/resolve-plan-dir.sh` (or `.ps1`) with the task's `PLAN_ID` and `PWF_PLAN_ROOT`. Read `task_plan.md`, `progress.md`, and `findings.md` from that one selected directory. A root `task_plan.md` must not override a selected `.planning/<id>/` plan.
-2. If an explicit selector is rejected, or session isolation is armed with multiple plans and no `PLAN_ID`, stop plan recovery and correct the pin. Do not fall back to another task. Use the legacy project-root files only when no selector or named plan applies.
+2. If an explicit selector is rejected, or multiple named plans exist without `PLAN_ID`, stop plan recovery and correct the pin. Do not fall back to another task. Use the legacy project-root files only when no selector or named plan applies.
 3. Run `git diff --stat` to see code changes that may not yet be recorded in the planning files.
 
 All planning filenames below refer to this selected directory, even when the shell runs elsewhere. For parallel tasks, pin each host before starting it or use separate worktrees. A worker joining an existing task uses its assigned plan; it must not create or overwrite a competing root plan.
@@ -224,7 +224,7 @@ Helper scripts for automation:
 
 - `scripts/init-session.sh` — Initialize planning files. With a name arg, creates an isolated plan under `.planning/YYYY-MM-DD-<slug>/` for parallel task workflows. Without args, writes `task_plan.md` at project root (legacy mode, backward-compatible).
 - `scripts/set-active-plan.sh` — Switch the active plan pointer (`.planning/.active_plan`). Run with a plan ID to switch; run without args to show which plan is current.
-- `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. A set `$PLAN_ID` is a binding: it resolves or resolution stops, never another plan (issue #237). With no `$PLAN_ID`, checks `.planning/.active_plan`, then newest plan dir by mtime, then falls back to project root (legacy). Used internally by hooks.
+- `scripts/resolve-plan-dir.sh` — Resolve the active plan directory. A set `$PLAN_ID` is a binding: it resolves or resolution stops, never another plan (issue #237). With no `$PLAN_ID`, multiple named plans refuse selection. A single named plan may use `.planning/.active_plan` or discovery by mtime; otherwise resolution falls back to the project root (legacy). Used internally by hooks.
 - `scripts/check-complete.sh` — Verify all phases in the active plan are complete.
 - `scripts/session-catchup.py`: Explicit same-project session-record aggregation or bounded replay (`--metadata` / `--replay`); bare invocation does not access host history.
 - `scripts/attest-plan.sh` (and `.ps1`) — Lock the current `task_plan.md` content with a SHA-256 attestation (v2.37.0). Hooks then refuse to inject plan content if the file diverges from the attested hash. Use `--show` to print the stored hash, `--clear` to remove the attestation. See `/plan-attest` command.

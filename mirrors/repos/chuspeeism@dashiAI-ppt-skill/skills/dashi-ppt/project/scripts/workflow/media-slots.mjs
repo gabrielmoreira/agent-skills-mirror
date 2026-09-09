@@ -1,6 +1,7 @@
 // @ts-check
 // 媒体判定域:媒体 slot 发现、容量与可写性判定、媒体类型归一化。
 import path from 'node:path';
+import { mediaFormatForExtension, mediaFormatForMime } from '../media-formats.mjs';
 import {
   MEDIA_ARRAY_KEYS,
   isMediaArrayKey,
@@ -341,25 +342,18 @@ export function normalizeMediaKind(kind) {
 }
 
 export function looksLikeVideoSrc(src) {
-  return /\.(mp4|m4v|mov|webm|ogv)(?:[?#].*)?$/i.test(String(src || '').trim())
-    || String(src || '').startsWith('data:video/');
+  const source = String(src || '').trim();
+  const extension = path.extname(source.split(/[?#]/)[0]);
+  return mediaFormatForExtension(extension)?.kind === 'video' || /^data:video\//i.test(source);
 }
 
 export function mimeForMediaSource(src, kind) {
-  const ext = path.extname(String(src || '').split(/[?#]/)[0]).toLowerCase();
-  return {
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.webp': 'image/webp',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.mp4': 'video/mp4',
-    '.m4v': 'video/mp4',
-    '.mov': 'video/quicktime',
-    '.webm': 'video/webm',
-    '.ogv': 'video/ogg',
-  }[ext] || (kind === 'video' ? 'video/mp4' : 'image/*');
+  const source = String(src || '').trim();
+  const dataMime = /^data:([^;,]+)/i.exec(source)?.[1];
+  const format = dataMime
+    ? mediaFormatForMime(dataMime)
+    : mediaFormatForExtension(path.extname(source.split(/[?#]/)[0]));
+  return format?.mime || (kind === 'video' ? '' : 'image/*');
 }
 
 export function slotAcceptsKind(slot, kind) {
@@ -371,7 +365,8 @@ export function slotAcceptsKind(slot, kind) {
 }
 
 export function isWritableMediaSlot(slot) {
-  return slot?.canPresetMedia === true
+  return slot?.role === 'media'
+    && slot.canPresetMedia === true
     && slot.initialSrcSupported === true
     && Boolean(slot.writableProp || slot.fieldPath || slot.presetProp);
 }

@@ -13,6 +13,7 @@ import { registerStorageTools } from "./tools/storage.js";
 import { SetLevelRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { registerCapiTools } from "./tools/capi.js";
 import { registerCloudRunTools } from "./tools/cloudrun.js";
+import { registerDeployTools } from "./tools/deploy.js";
 import { registerDataModelTools } from "./tools/dataModel.js";
 import { registerGatewayTools } from "./tools/gateway.js";
 import { registerAgentTools } from "./tools/agents.js";
@@ -28,6 +29,7 @@ import { info } from './utils/logger.js';
 import { resolveSiteAndRegion, SITE_REGION_MAP } from "./utils/site-map.js";
 import { buildJsonToolResult, isToolPayloadError } from "./utils/tool-result.js";
 import { wrapServerWithTelemetry, applyCategoryAnnotationMeta, type ToolAnnotations } from "./utils/tool-wrapper.js";
+import { normalizeClientName } from "./utils/telemetry.js";
 
 // 插件定义
 interface PluginDefinition {
@@ -48,6 +50,7 @@ const DEFAULT_PLUGINS = [
   "setup",
   "rag",
   "cloudrun",
+  "deploy",
   "gateway",
   "app-auth",
   "apps",
@@ -105,6 +108,7 @@ const AVAILABLE_PLUGINS: Record<string, PluginDefinition> = {
   agents: { name: "agents", register: registerAgentTools },
   apps: { name: "apps", register: registerAppTools },
   cloudrun: { name: "cloudrun", register: registerCloudRunTools },
+  deploy: { name: "deploy", register: registerDeployTools },
   capi: { name: "capi", register: registerCapiTools },
   "msg-push": { name: "msg-push", register: registerMsgPushTools },
 };
@@ -195,6 +199,8 @@ export interface ExtendedMcpServer extends McpServer {
   cloudBaseOptions?: CloudBaseOptions;
   authOptions?: AuthOptions;
   ide?: string;
+  /** MCP client 来源标识（hosted 场景由上游解析注入，如 cursor / claude-code） */
+  client?: string;
   logger?: Logger;
   enabledPlugins?: string[];
   pluginOptions?: PluginOptions;
@@ -242,6 +248,7 @@ export async function createCloudBaseMcpServer(options?: {
   authOptions?: AuthOptions;
   cloudMode?: boolean;
   ide?: string;
+  client?: string;
   logger?: Logger;
   pluginsEnabled?: string[];
   pluginsDisabled?: string[];
@@ -255,6 +262,7 @@ export async function createCloudBaseMcpServer(options?: {
     authOptions,
     cloudMode = false,
     ide,
+    client,
     logger,
     pluginsEnabled,
     pluginsDisabled,
@@ -334,6 +342,12 @@ export async function createCloudBaseMcpServer(options?: {
     server.ide = ide;
   }
 
+  // Store client in server instance for telemetry (normalized, invalid values dropped)
+  const normalizedClient = normalizeClientName(client);
+  if (normalizedClient) {
+    server.client = normalizedClient;
+  }
+
   // Store logger in server instance for tools to access
   if (logger) {
     server.logger = logger;
@@ -376,5 +390,6 @@ export { error, info, warn } from "./utils/logger.js";
 export {
   reportToolCall,
   reportToolkitLifecycle,
-  telemetryReporter
+  telemetryReporter,
+  normalizeClientName
 } from "./utils/telemetry.js";

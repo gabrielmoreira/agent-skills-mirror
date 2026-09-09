@@ -4,7 +4,15 @@
 
 ---
 
+## v0.3.219：四进程后台模式默认开启（2026-09-09）
+
+- **默认启动改为四进程后台模式**：`openbiliclaw start` / `serve-api` 以及桌面安装包现在默认拉起 `full worker`、`discovery worker`、独立推荐进程和独立图片代理；API 主进程不再承担重后台负载。仍可用 `OPENBILICLAW_WORKER=0`（`false` / `no` / `off`）回退到旧的单 API 进程模式。
+- **桌面安装包同步接入四进程模式**：PyInstaller 冻结版通过 `--openbiliclaw-worker` 子进程复用同一个 EXE 运行 worker 模块，子进程日志写入同一个 `logs/desktop.log`，并在启动时关闭子进程 splash。
+- **发布版本对齐**：后端、浏览器插件、桌面安装包统一为 `v0.3.219`；客户端配套版本为移动端 `v0.3.153+1`。
+
 ## v0.3.218：Latest Release 版本确认（2026-09-04）
+
+- **待聊确认列表扩容与去重（issue #233，2026-09-08）**：`/api/chat/pending-confirmations` 的列表上限从 3 条提高到 10 条，并新增 `total` 返回去重后的完整积压数；插件、桌面 Web、移动 Web 的角标改用 `total`，不再被“Top-3 补位”误导。列表按标题归一化相似度折叠近似重复的假设/疑惑，同 session 已打开未结算的条目不重复计入；已进入对象 72 小时冷却的最近问过条目也不会再次出现在待聊列表。同时在洞察生产阶段（`InsightAnalyzer.merge_insights` 与 `SoulEngine._save_insights`）就按归一化相似度合并近似重复假设，避免新的重复持续写入 `insight.json`；确认/拒绝/未评价等不同语义状态仍分开保留。生成 prompt 也会携带已有假设的 `validated / user_verdict` 和已有疑惑历史（open/clarifying/resolved/dismissed），让模型在源头就知道哪些方向已经问过/确认过/否决过，尽量避免换措辞重新生成重复内容。Awareness 生成疑惑时还会对比已有 open/clarifying 疑惑，绕过近似重复的 `topic / observation`，不再每轮重复创建同一条疑惑。手动 `open` 仍绕过冷却，不会影响用户主动打开。
 
 - **惊喜队列阻塞修复合并收尾（2026-09-08）**：`db9667ab` 合入 main；本机完整服务从 main 加载补修，验证接口就绪后清理本次 worktree，沿用原配置和数据。
 

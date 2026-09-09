@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -26,17 +25,12 @@ import {
   isFullThemeSet,
   normalizeThemeKeys,
 } from './components/themes/theme-registry-codegen.mjs';
-import { buildThemeRuntimeOverrideRegistrySource } from './components/themes/theme-overrides-registry-codegen.mjs';
-import { buildBespokeThemeProfileRegistrySource } from './components/bespoke/theme-profile-registry-codegen.mjs';
 import { normalizeDeckLanguage, buildDeckI18nDict } from './i18n.mjs';
 import {
   buildClientRuntime,
   buildClientRuntimeFromModules,
-  prebuiltBespokeModulePath,
   prebuiltBundlePath,
   prebuiltModulePath,
-  prebuiltThemeOverrideModulePath,
-  prebuiltThemeProfileModulePath,
 } from './components/themes/runtime-build.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -141,28 +135,28 @@ function injectDeckViewModel(html, viewModel) {
 function copyRuntimeAssets(outDir, { usedThemeKeys = [] } = {}) {
   const assetsDir = path.join(outDir, 'assets');
   const imagesDir = path.join(outDir, 'images');
-  const preservedUserMedia = preserveUserMediaDirs(outDir);
-  try {
-    [assetsDir, imagesDir, path.join(outDir, 'uploads'), path.join(outDir, 'screens'), path.join(outDir, 'screenshots')].forEach(dir => {
-      fs.rmSync(dir, { recursive: true, force: true });
-    });
-    fs.mkdirSync(assetsDir, { recursive: true });
-    copyRequiredFile(path.join(ROOT, 'node_modules/gsap/dist/gsap.min.js'), path.join(assetsDir, 'vendor/gsap.min.js'));
-    copyRequiredFile(path.join(ROOT, 'node_modules/pptxgenjs/dist/pptxgen.bundle.js'), path.join(assetsDir, 'vendor/pptxgen.bundle.js'));
-    copyRequiredFile(path.join(ROOT, 'node_modules/pdf-lib/dist/pdf-lib.min.js'), path.join(assetsDir, 'vendor/pdf-lib.min.js'));
-    copyRequiredFile(path.join(ROOT, 'node_modules/html-to-image/dist/html-to-image.js'), path.join(assetsDir, 'vendor/html-to-image.js'));
-    for (const assetPath of RUNTIME_ASSET_PATHS) {
-      if (assetPath === RUNTIME_TEMPLATE) continue;
-      copyRuntimeAsset(assetPath, outDir);
+  for (const dir of [assetsDir, imagesDir]) {
+    if (!fs.existsSync(dir)) continue;
+    for (const name of fs.readdirSync(dir)) {
+      if (name !== 'user-media') fs.rmSync(path.join(dir, name), { recursive: true, force: true });
     }
-    copyImportedThemeAssets(outDir, usedThemeKeys);
-    buildImportedThemeRuntime(path.join(assetsDir, 'imported-theme-runtime.js'), usedThemeKeys);
-    restoreUserMediaDirs(preservedUserMedia, outDir);
-    const imageSlotStateFile = path.join(outDir, '.image-slots.state.json');
-    if (!fs.existsSync(imageSlotStateFile)) fs.writeFileSync(imageSlotStateFile, '{}\n');
-  } finally {
-    cleanupPreservedUserMedia(preservedUserMedia);
   }
+  [path.join(outDir, 'uploads'), path.join(outDir, 'screens'), path.join(outDir, 'screenshots')].forEach(dir => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+  fs.mkdirSync(assetsDir, { recursive: true });
+  copyRequiredFile(path.join(ROOT, 'node_modules/gsap/dist/gsap.min.js'), path.join(assetsDir, 'vendor/gsap.min.js'));
+  copyRequiredFile(path.join(ROOT, 'node_modules/pptxgenjs/dist/pptxgen.bundle.js'), path.join(assetsDir, 'vendor/pptxgen.bundle.js'));
+  copyRequiredFile(path.join(ROOT, 'node_modules/pdf-lib/dist/pdf-lib.min.js'), path.join(assetsDir, 'vendor/pdf-lib.min.js'));
+  copyRequiredFile(path.join(ROOT, 'node_modules/html-to-image/dist/html-to-image.js'), path.join(assetsDir, 'vendor/html-to-image.js'));
+  for (const assetPath of RUNTIME_ASSET_PATHS) {
+    if (assetPath === RUNTIME_TEMPLATE) continue;
+    copyRuntimeAsset(assetPath, outDir);
+  }
+  copyImportedThemeAssets(outDir, usedThemeKeys);
+  buildImportedThemeRuntime(path.join(assetsDir, 'imported-theme-runtime.js'), usedThemeKeys);
+  const imageSlotStateFile = path.join(outDir, '.image-slots.state.json');
+  if (!fs.existsSync(imageSlotStateFile)) fs.writeFileSync(imageSlotStateFile, '{}\n');
 }
 
 function copyRuntimeAsset(assetPath, outDir) {
@@ -177,30 +171,6 @@ function copyRuntimeAsset(assetPath, outDir) {
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.copyFileSync(source, target);
   }
-}
-
-function preserveUserMediaDirs(outDir) {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'dashi-user-media-'));
-  const entries = [
-    ['assets/user-media', path.join(outDir, 'assets/user-media')],
-    ['images/user-media', path.join(outDir, 'images/user-media')],
-  ].filter(([, source]) => fs.existsSync(source));
-
-  entries.forEach(([relative, source]) => {
-    copyDirectoryIfExists(source, path.join(tempRoot, relative));
-  });
-
-  return { tempRoot, entries: entries.map(([relative]) => relative) };
-}
-
-function restoreUserMediaDirs(preserved, outDir) {
-  for (const relative of preserved.entries) {
-    copyDirectoryIfExists(path.join(preserved.tempRoot, relative), path.join(outDir, relative));
-  }
-}
-
-function cleanupPreservedUserMedia(preserved) {
-  fs.rmSync(preserved.tempRoot, { recursive: true, force: true });
 }
 
 // JAD-201/203:打包这份 deck 实际用到主题的浏览器运行时。两条等价路径(见 runtime-build.mjs):
@@ -244,21 +214,11 @@ function buildImportedThemeRuntime(outFile, usedThemeKeys = []) {
 
 // 源路径(JAD-201):别名指向全主题签入注册表或按 usedThemeKeys 裁剪的源注册表。
 function buildImportedThemeRuntimeFromSource(outFile, usedThemeKeys = []) {
-  const themeRegistry = resolveThemeRegistryEntry(usedThemeKeys);
-  const profileRegistry = resolveBespokeProfileRegistryEntry(usedThemeKeys);
-  const overrideRegistry = resolveThemeRuntimeOverrideRegistryEntry(usedThemeKeys);
+  const { registryPath, cleanup } = resolveThemeRegistryEntry(usedThemeKeys);
   try {
-    buildClientRuntime({
-      root: ROOT,
-      outFile,
-      registryPath: themeRegistry.registryPath,
-      bespokeProfilesPath: profileRegistry.registryPath,
-      themeOverridesPath: overrideRegistry.registryPath,
-    });
+    buildClientRuntime({ root: ROOT, outFile, registryPath });
   } finally {
-    themeRegistry.cleanup();
-    profileRegistry.cleanup();
-    overrideRegistry.cleanup();
+    cleanup();
   }
 }
 
@@ -269,13 +229,7 @@ function hasThemeSource(normalized) {
 }
 
 function prebuiltModulesAvailable(normalized) {
-  return normalized.length > 0
-    && fs.existsSync(prebuiltBespokeModulePath(ROOT))
-    && normalized.every(key => (
-      fs.existsSync(prebuiltModulePath(ROOT, key))
-      && fs.existsSync(prebuiltThemeProfileModulePath(ROOT, key))
-      && fs.existsSync(prebuiltThemeOverrideModulePath(ROOT, key))
-    ));
+  return normalized.length > 0 && normalized.every(key => fs.existsSync(prebuiltModulePath(ROOT, key)));
 }
 
 // 全主题(或主题集合无法识别时)→ 直接用签入的全主题注册表;
@@ -293,48 +247,6 @@ function resolveThemeRegistryEntry(usedThemeKeys) {
   const registryPath = path.join(
     cacheDir,
     `registry-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.jsx`,
-  );
-  fs.writeFileSync(registryPath, source);
-  return {
-    registryPath,
-    cleanup: () => { try { fs.rmSync(registryPath, { force: true }); } catch {} },
-  };
-}
-
-function resolveBespokeProfileRegistryEntry(usedThemeKeys) {
-  const normalized = normalizeThemeKeys(usedThemeKeys || []);
-  const fullRegistry = path.join(ROOT, 'src/components/bespoke/theme-profiles.mjs');
-  if (!normalized.length || isFullThemeSet(normalized)) {
-    return { registryPath: fullRegistry, cleanup: () => {} };
-  }
-  const importPrefix = `${path.join(ROOT, 'src/components/bespoke')}${path.sep}`;
-  const source = buildBespokeThemeProfileRegistrySource(normalized, { importPrefix });
-  const cacheDir = path.join(ROOT, 'node_modules/.cache/dashi-theme-registry');
-  fs.mkdirSync(cacheDir, { recursive: true });
-  const registryPath = path.join(
-    cacheDir,
-    `bespoke-profile-registry-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`,
-  );
-  fs.writeFileSync(registryPath, source);
-  return {
-    registryPath,
-    cleanup: () => { try { fs.rmSync(registryPath, { force: true }); } catch {} },
-  };
-}
-
-function resolveThemeRuntimeOverrideRegistryEntry(usedThemeKeys) {
-  const normalized = normalizeThemeKeys(usedThemeKeys || []);
-  const fullRegistry = path.join(ROOT, 'src/components/themes/theme-overrides.mjs');
-  if (!normalized.length || isFullThemeSet(normalized)) {
-    return { registryPath: fullRegistry, cleanup: () => {} };
-  }
-  const importPrefix = `${path.join(ROOT, 'src/components/themes')}${path.sep}`;
-  const source = buildThemeRuntimeOverrideRegistrySource(normalized, { importPrefix });
-  const cacheDir = path.join(ROOT, 'node_modules/.cache/dashi-theme-registry');
-  fs.mkdirSync(cacheDir, { recursive: true });
-  const registryPath = path.join(
-    cacheDir,
-    `theme-override-registry-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`,
   );
   fs.writeFileSync(registryPath, source);
   return {

@@ -621,8 +621,8 @@ def calc_tracking_error(
     aligned.columns = ['etf', 'index']
 
     # 计算日收益率差值
-    etf_ret = aligned['etf'].pct_change().dropna()
-    idx_ret = aligned['index'].pct_change().dropna()
+    etf_ret = aligned['etf'].pct_change(fill_method=None).dropna()
+    idx_ret = aligned['index'].pct_change(fill_method=None).dropna()
     daily_diff = etf_ret - idx_ret
 
     # 跟踪误差 = 差值的标准差
@@ -775,7 +775,7 @@ def etf_fund_flow_analysis(
     nav_df['scale'] = nav_df['unit_nav'] * nav_df['fund_share'] / 1e8
 
     # 净值变动引起的规模变化（被动）
-    nav_df['nav_return'] = nav_df['unit_nav'].pct_change()
+    nav_df['nav_return'] = nav_df['unit_nav'].pct_change(fill_method=None)
     nav_df['passive_change'] = nav_df['scale'].shift(1) * nav_df['nav_return']
 
     # 资金净流入 ≈ 规模变化 - 净值带来的被动变化

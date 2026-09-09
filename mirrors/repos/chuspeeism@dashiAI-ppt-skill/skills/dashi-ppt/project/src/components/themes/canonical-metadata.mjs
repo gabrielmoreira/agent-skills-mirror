@@ -8,7 +8,15 @@ import {
   clampDefaultCountProps,
   serializeValue,
 } from '../../prop-contract-core.mjs';
-import { getThemeRuntimeOverride } from '#dashi-theme-runtime-overrides';
+import { overrides as theme02Overrides } from './theme02/overrides.js';
+import { overrides as theme03Overrides } from './theme03/overrides.js';
+import { overrides as theme04Overrides } from './theme04/overrides.js';
+
+const THEME_OVERRIDES = {
+  theme02: theme02Overrides,
+  theme03: theme03Overrides,
+  theme04: theme04Overrides,
+};
 
 const REMOVED_CONTROL_TYPES = new Set(['text', 'string', 'input', 'url', 'email', 'textarea', 'multiline']);
 
@@ -26,7 +34,7 @@ export function canonicalizeThemePageRuntime(page) {
 }
 
 function applyThemePageDefaults(page) {
-  const override = getThemeRuntimeOverride(page.themeKey);
+  const override = THEME_OVERRIDES[page.themeKey];
   if (!override) return page;
   let next = page;
   if (override.removeControlTypes) {
@@ -100,7 +108,7 @@ function normalizeControls(controls, defaults, page) {
 }
 
 function isThemeSwatchControl(page, key) {
-  return (getThemeRuntimeOverride(page?.themeKey)?.swatchKeys || []).includes(key);
+  return (THEME_OVERRIDES[page?.themeKey]?.swatchKeys || []).includes(key);
 }
 
 function normalizeType(type) {

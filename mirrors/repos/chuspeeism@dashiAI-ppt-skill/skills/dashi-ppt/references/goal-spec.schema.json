@@ -26,9 +26,6 @@
     "randomSeed": {
       "type": "string"
     },
-    "workflowRunId": {
-      "type": "string"
-    },
     "pageCount": {
       "type": "number"
     },
@@ -110,41 +107,11 @@
     "contentMap": {
       "type": "object",
       "additionalProperties": {
-        "oneOf": [
-          {
-            "type": "string",
-            "minLength": 1,
-            "not": {
-              "pattern": "^content(?:\\.|\\[|$)"
-            }
-          },
-          {
-            "type": "object",
-            "required": [
-              "source"
-            ],
-            "properties": {
-              "source": {
-                "type": "string",
-                "minLength": 1,
-                "not": {
-                  "pattern": "^content(?:\\.|\\[|$)"
-                }
-              },
-              "select": {
-                "type": "string",
-                "minLength": 1
-              },
-              "fields": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              }
-            }
-          }
-        ]
+        "type": "string",
+        "minLength": 1,
+        "not": {
+          "pattern": "^content(?:\\.|\\[|$)"
+        }
       }
     },
     "legacyVariant": {
@@ -291,10 +258,7 @@
         "jsx": false,
         "className": false,
         "style": false,
-        "controls": false,
-        "profile": false,
-        "rawCss": false,
-        "css": false
+        "controls": false
       },
       "additionalProperties": true
     },
@@ -335,19 +299,6 @@
             "rationale": {
               "type": "string",
               "minLength": 1
-            },
-            "compositionFamily": {
-              "enum": [
-                "hero",
-                "split",
-                "metric-spotlight",
-                "chart-led",
-                "timeline",
-                "matrix",
-                "editorial",
-                "comparison",
-                "process"
-              ]
             }
           },
           "additionalProperties": false
@@ -517,13 +468,7 @@
           "minLength": 1
         },
         "content": {
-          "type": "object",
-          "properties": {
-            "views": false,
-            "variants": false,
-            "variantContent": false
-          },
-          "additionalProperties": true
+          "type": "object"
         },
         "selectedVariant": {
           "type": "string",
@@ -551,8 +496,7 @@
         },
         "layout": false,
         "props": false,
-        "media": false,
-        "views": false
+        "media": false
       },
       "additionalProperties": true
     }

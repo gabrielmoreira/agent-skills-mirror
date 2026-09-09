@@ -108,8 +108,8 @@ accrual_ratio = (net_income - cfo) / total_assets
 # accrual_ratio > 10% → 应计利润占比高，盈利质量差
 
 # 验证收入质量
-receivable_growth = accounts_receivable.pct_change()
-revenue_growth = revenue.pct_change()
+receivable_growth = accounts_receivable.pct_change(fill_method=None)
+revenue_growth = revenue.pct_change(fill_method=None)
 # receivable_growth > revenue_growth → 收入质量恶化
 
 # 验证资产负债表与现金流一致性

@@ -66,9 +66,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.changeset/README.md`](.changeset/README.md) |
 | 2 | ✓ | [`.github/composite-actions/share-contract-reader-gate/README.md`](.github/composite-actions/share-contract-reader-gate/README.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`biome-plugins/README.md`](biome-plugins/README.md) |
-| 5 | ✓ | [`docs/src/app/llms.txt/route.test.ts`](docs/src/app/llms.txt/route.test.ts) |
-| 6 | ✓ | [`docs/src/app/llms.txt/route.ts`](docs/src/app/llms.txt/route.ts) |
+| 4 | ✓ | [`docs/src/app/llms.txt/route.test.ts`](docs/src/app/llms.txt/route.test.ts) |
+| 5 | ✓ | [`docs/src/app/llms.txt/route.ts`](docs/src/app/llms.txt/route.ts) |
+| 6 | ✓ | [`lint-plugins/ok-rules/README.md`](lint-plugins/ok-rules/README.md) |
 | 7 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
 | 8 | ✓ | [`packages/server/assets/skills/discovery/SKILL.md`](packages/server/assets/skills/discovery/SKILL.md) |
 | 9 | ✓ | [`packages/server/assets/skills/packs/codebase-wiki/SKILL.md`](packages/server/assets/skills/packs/codebase-wiki/SKILL.md) |

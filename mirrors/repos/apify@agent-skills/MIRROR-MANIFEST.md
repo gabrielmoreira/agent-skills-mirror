@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `apify/agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `apify/agent-skills` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `apify/agent-skills` — 26 default patterns, 0 followed patterns, 34 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,24 +75,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`skills/apify-actorization/references/schemas-and-output.md`](skills/apify-actorization/references/schemas-and-output.md) |
 | 15 | ✓ | [`skills/apify-actorization/SKILL.md`](skills/apify-actorization/SKILL.md) |
 | 16 | ✓ | [`skills/apify-generate-output-schema/SKILL.md`](skills/apify-generate-output-schema/SKILL.md) |
-| 17 | ✓ | [`skills/apify-sdk-integration/SKILL.md`](skills/apify-sdk-integration/SKILL.md) |
-| 18 | ✓ | [`skills/apify-ultimate-scraper/references/actor-index.md`](skills/apify-ultimate-scraper/references/actor-index.md) |
-| 19 | ✓ | [`skills/apify-ultimate-scraper/references/gotchas.md`](skills/apify-ultimate-scraper/references/gotchas.md) |
-| 20 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/brand-monitoring.md`](skills/apify-ultimate-scraper/references/workflows/brand-monitoring.md) |
-| 21 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/company-research.md`](skills/apify-ultimate-scraper/references/workflows/company-research.md) |
-| 22 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/competitive-intel.md`](skills/apify-ultimate-scraper/references/workflows/competitive-intel.md) |
-| 23 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/contact-enrichment.md`](skills/apify-ultimate-scraper/references/workflows/contact-enrichment.md) |
-| 24 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/content-and-seo.md`](skills/apify-ultimate-scraper/references/workflows/content-and-seo.md) |
-| 25 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/ecommerce-price-monitoring.md`](skills/apify-ultimate-scraper/references/workflows/ecommerce-price-monitoring.md) |
-| 26 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/influencer-vetting.md`](skills/apify-ultimate-scraper/references/workflows/influencer-vetting.md) |
-| 27 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/job-market-and-recruitment.md`](skills/apify-ultimate-scraper/references/workflows/job-market-and-recruitment.md) |
-| 28 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/knowledge-base-and-rag.md`](skills/apify-ultimate-scraper/references/workflows/knowledge-base-and-rag.md) |
-| 29 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/lead-generation.md`](skills/apify-ultimate-scraper/references/workflows/lead-generation.md) |
-| 30 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/real-estate-and-hospitality.md`](skills/apify-ultimate-scraper/references/workflows/real-estate-and-hospitality.md) |
-| 31 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/review-analysis.md`](skills/apify-ultimate-scraper/references/workflows/review-analysis.md) |
-| 32 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/social-media-analytics.md`](skills/apify-ultimate-scraper/references/workflows/social-media-analytics.md) |
-| 33 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/trend-research.md`](skills/apify-ultimate-scraper/references/workflows/trend-research.md) |
-| 34 | ✓ | [`skills/apify-ultimate-scraper/SKILL.md`](skills/apify-ultimate-scraper/SKILL.md) |
+| 17 | ✓ | [`skills/apify-integration-development/references/ai-framework-package.md`](skills/apify-integration-development/references/ai-framework-package.md) |
+| 18 | ✓ | [`skills/apify-integration-development/references/ai-harness-plugin.md`](skills/apify-integration-development/references/ai-harness-plugin.md) |
+| 19 | ✓ | [`skills/apify-integration-development/references/sdk-integration.md`](skills/apify-integration-development/references/sdk-integration.md) |
+| 20 | ✓ | [`skills/apify-integration-development/references/workflow-automation.md`](skills/apify-integration-development/references/workflow-automation.md) |
+| 21 | ✓ | [`skills/apify-integration-development/SKILL.md`](skills/apify-integration-development/SKILL.md) |
+| 22 | ✓ | [`skills/apify-ultimate-scraper/references/actor-index.md`](skills/apify-ultimate-scraper/references/actor-index.md) |
+| 23 | ✓ | [`skills/apify-ultimate-scraper/references/gotchas.md`](skills/apify-ultimate-scraper/references/gotchas.md) |
+| 24 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/brand-monitoring.md`](skills/apify-ultimate-scraper/references/workflows/brand-monitoring.md) |
+| 25 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/company-research.md`](skills/apify-ultimate-scraper/references/workflows/company-research.md) |
+| 26 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/competitive-intel.md`](skills/apify-ultimate-scraper/references/workflows/competitive-intel.md) |
+| 27 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/contact-enrichment.md`](skills/apify-ultimate-scraper/references/workflows/contact-enrichment.md) |
+| 28 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/content-and-seo.md`](skills/apify-ultimate-scraper/references/workflows/content-and-seo.md) |
+| 29 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/ecommerce-price-monitoring.md`](skills/apify-ultimate-scraper/references/workflows/ecommerce-price-monitoring.md) |
+| 30 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/influencer-vetting.md`](skills/apify-ultimate-scraper/references/workflows/influencer-vetting.md) |
+| 31 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/job-market-and-recruitment.md`](skills/apify-ultimate-scraper/references/workflows/job-market-and-recruitment.md) |
+| 32 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/knowledge-base-and-rag.md`](skills/apify-ultimate-scraper/references/workflows/knowledge-base-and-rag.md) |
+| 33 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/lead-generation.md`](skills/apify-ultimate-scraper/references/workflows/lead-generation.md) |
+| 34 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/real-estate-and-hospitality.md`](skills/apify-ultimate-scraper/references/workflows/real-estate-and-hospitality.md) |
+| 35 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/review-analysis.md`](skills/apify-ultimate-scraper/references/workflows/review-analysis.md) |
+| 36 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/social-media-analytics.md`](skills/apify-ultimate-scraper/references/workflows/social-media-analytics.md) |
+| 37 | ✓ | [`skills/apify-ultimate-scraper/references/workflows/trend-research.md`](skills/apify-ultimate-scraper/references/workflows/trend-research.md) |
+| 38 | ✓ | [`skills/apify-ultimate-scraper/SKILL.md`](skills/apify-ultimate-scraper/SKILL.md) |
 
 ---
 
