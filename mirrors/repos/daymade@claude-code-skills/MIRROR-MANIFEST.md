@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 12 followed patterns, 119 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 14 followed patterns, 121 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 12 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 119 |
+| Followed pats | 14 |
+| Files         | 121 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 12 followed patt
 
 - `daymade-skill/skill-creator/references/source-snapshot-archives.md`
 - `daymade-audio/transcript-fixer/references/native_review_packets.md`
+- `feishu-doc-scraper/references/comments-and-feedback.md`
+- `feishu-doc-scraper/references/archive-storage-contract.md`
 - `tibo-reset-codex/references/account-usage.md`
 - `daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`
 - `daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`
@@ -183,12 +185,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 111 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
 | 112 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
 | 113 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
-| 114 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 115 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 116 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 117 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 118 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 119 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 114 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
+| 115 | → | [`feishu-doc-scraper/references/comments-and-feedback.md`](feishu-doc-scraper/references/comments-and-feedback.md) |
+| 116 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 117 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 118 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 119 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 120 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 121 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

@@ -6,10 +6,12 @@ import type { CliArgs } from "../types";
 const GOOGLE_MULTIMODAL_MODELS = [
   "gemini-3-pro-image",
   "gemini-3.1-flash-image",
+  "gemini-3.1-flash-lite-image",
   "gemini-3-pro-image-preview",
   "gemini-3-flash-preview",
   "gemini-3.1-flash-image-preview",
 ];
+const GOOGLE_1K_ONLY_MODELS = ["gemini-3.1-flash-lite-image"];
 const GOOGLE_IMAGEN_MODELS = [
   "imagen-3.0-generate-002",
   "imagen-3.0-generate-001",
@@ -40,6 +42,25 @@ function getGoogleApiKey(): string | null {
 export function getGoogleImageSize(args: CliArgs): "1K" | "2K" | "4K" {
   if (args.imageSize) return args.imageSize as "1K" | "2K" | "4K";
   return args.quality === "2k" ? "2K" : "1K";
+}
+
+export function is1KOnlyGoogleModel(model: string): boolean {
+  const normalized = normalizeGoogleModelId(model);
+  return GOOGLE_1K_ONLY_MODELS.some((m) => normalized.includes(m));
+}
+
+export function resolveGeminiImageSize(
+  model: string,
+  args: CliArgs,
+): "1K" | "2K" | "4K" {
+  const size = getGoogleImageSize(args);
+  if (size !== "1K" && is1KOnlyGoogleModel(model)) {
+    console.error(
+      `Warning: ${normalizeGoogleModelId(model)} only supports 1K output, using 1K instead of ${size}.`,
+    );
+    return "1K";
+  }
+  return size;
 }
 
 function getGoogleBaseUrl(): string {
@@ -252,7 +273,7 @@ async function generateWithGemini(
   parts.push({ text: promptWithAspect });
 
   const imageConfig: { imageSize: "1K" | "2K" | "4K" } = {
-    imageSize: getGoogleImageSize(args),
+    imageSize: resolveGeminiImageSize(model, args),
   };
 
   console.log("Generating image with Gemini...", imageConfig);
@@ -335,7 +356,7 @@ export async function generateImage(
   if (isGoogleImagen(model)) {
     if (args.referenceImages.length > 0) {
       throw new Error(
-        "Reference images are not supported with Imagen models. Use a Gemini multimodal model such as gemini-3-pro-image, gemini-3.1-flash-image, gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
+        "Reference images are not supported with Imagen models. Use a Gemini multimodal model such as gemini-3-pro-image, gemini-3.1-flash-image, gemini-3.1-flash-lite-image, gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
       );
     }
     return generateWithImagen(prompt, model, args);
@@ -343,7 +364,7 @@ export async function generateImage(
 
   if (!isGoogleMultimodal(model) && args.referenceImages.length > 0) {
     throw new Error(
-      "Reference images are only supported with Gemini multimodal models such as gemini-3-pro-image, gemini-3.1-flash-image, gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
+      "Reference images are only supported with Gemini multimodal models such as gemini-3-pro-image, gemini-3.1-flash-image, gemini-3.1-flash-lite-image, gemini-3-pro-image-preview, gemini-3-flash-preview, or gemini-3.1-flash-image-preview.",
     );
   }
 

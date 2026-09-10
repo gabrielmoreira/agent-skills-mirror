@@ -125,15 +125,97 @@ The JSON report includes these fields:
 
 ## Timing
 
-Run minimization only after one of these is true:
+F4 (merge-gated) cleanup is the default timing for every marker or
+comment kind not explicitly classified `wired` in `MARKER_HIDE_POLICY`
+(`src/scripts/marker-helpers.mts`). For those, run minimization only
+after one of these is true:
 
 - the PR has already merged
 - a maintainer explicitly starts a merged-PR audit
 
-Do not minimize comments during active E or F gates. In particular, do
-not minimize comments that still determine review currency, advisory
-wait state, unresolved-thread state, unreplied-comment state, hold
-state, or a pending maintainer decision.
+**Exception -- hide-at-post-time for `wired` families** (issue #731,
+issue #733, issue #2751, issue #2754, issue #2755). A `wired` family
+may be minimized immediately after its own new instance's POST+verify
+succeeds, pre-merge, using that family's documented
+supersession/grouping key -- never for any other reason during an
+active E or F gate. Six families ship this today, in two different
+mechanisms:
+
+- **Agent-followed instruction step** -- the calling phase's own
+  instructions direct the agent to run the minimize step by hand
+  (`node scripts/minimize-superseded-markers.mjs ... --apply`) after
+  posting: the claim chain
+  (`claimed-by:`/`unclaimed-by:`, grouped by
+  `supersedes:` lineage, `idd-claim.instructions.md`), `review-watermark:`/
+  `review-baseline:` (grouped by same claim-id,
+  `idd-review-snapshot.instructions.md`), and the `advisory-wait` family
+  (`advisory-wait:`/`advisory-wait-recovery:`/`<!-- advisory-wait:`/
+  `advisory-reroll:`, grouped by embedded HEAD SHA mismatch, AW3-H,
+  `idd-advisory-wait.instructions.md`).
+- **Code-automated inside the helper itself** (#2754, #2755) -- no
+  agent-followed instruction step exists or is needed for these
+  three, since their grouping keys are purely mechanical:
+  `review-ack:` (grouped by embedded HEAD SHA mismatch) and
+  `copilot-unavailable:` (grouped by the same `claim:` value and a
+  strictly lower `attempt:` number -- a same-or-higher attempt is left
+  alone) are both hidden by
+  `post-idd-marker.mjs` itself right after its own new marker POSTs
+  successfully (`--apply --type review-ack` / `--type
+  copilot-unavailable`); `<!-- idd-local-validation-evidence:`
+  (also grouped by embedded HEAD SHA mismatch, mirroring AW3-H) is
+  hidden by `local-validation-evidence.mjs` itself right after its own
+  `--record --apply` POST succeeds -- see
+  [this helper's doc](idd-helper-scripts.md#local-validation-evidence-helper).
+  All three scan the target's other comments for same-family comments
+  the new one supersedes and reuse
+  `scripts/minimize-superseded-markers.mjs`'s `runMinimize` for the
+  actual mutation -- best-effort: any failure there (a permission
+  error, an unreadable comment list) is swallowed and never blocks or
+  retries the marker post that already succeeded (preventive; no
+  observed incident yet — #2788). This mechanism lives
+  inside the built `.mjs` helpers, so it only runs where a helper
+  runtime is configured (`vendored-node`, `package-manager`, or
+  `ephemeral-npx`); under `instructions-only` (or wherever the helper
+  is otherwise unavailable), an agent posts these markers' plain-text
+  bodies by hand instead, and no equivalent manual minimize step
+  exists yet for them the way the agent-followed instruction step
+  above already gives the claim chain / review-watermark-baseline /
+  advisory-wait families -- these three markers accumulate like an
+  `f4-only` family until a future track adds one.
+
+A family classified `f4-only` has
+no such wiring yet and follows the default F4-only timing above until a
+future track adds it -- concretely, the post-merge F4 batch means
+`audit-pr-cleanup.mts`'s generic marker-prefix match
+(`operationalMarkerPrefix`) against comments on the merged PR itself,
+which recognizes the full `OPERATIONAL_MARKERS` set directly. The
+running code never parses this document, so the vendored helper's own
+dry run never depends on the Candidate Rules section below staying in
+sync with `MARKER_HIDE_POLICY`. Only the manual GraphQL fallback, which
+has no code behind it and uses that list as its literal operating
+procedure, was narrowed when that list fell behind (issue #2778
+reconciled the two and added a mechanical drift-guard test,
+`tests/marker-helpers-facade.test.mts`, so a future drift fails closed
+instead of recurring silently). A third `MARKER_HIDE_POLICY` kind,
+`excluded`, covers markers deliberately kept out of both groupings
+(each for the reason on its own
+entry in `MARKER_HIDE_POLICY`). Two of those are permanently outside F4's
+reach for different reasons: `<!-- forced-handoff:` carries its own
+explicit F4 exemption (`audit-pr-cleanup.mts` hardcodes a skip for that
+prefix regardless of merge state), and `<!-- activation-nonce:` is a
+related marker in the same claim exchange as the wired claim chain above
+but is posted to the claim **issue**, not the PR -- F4's PR-scoped
+`audit-pr-cleanup.mts` structurally never sees it, so it has no F4
+cleanup path even though it is not `wired` either. The remaining
+`excluded` entries carry no such exemption; whether F4's generic rule
+actually reaches each of them depends on where that family is posted.
+
+Do not minimize comments during active E or F gates for any other
+reason. In particular, do not minimize comments that still determine
+review currency, advisory wait state, unresolved-thread state,
+unreplied-comment state, hold state, or a pending maintainer decision --
+including a `wired` family's own comment outside the narrow
+POST+verify-triggered exception above.
 
 ### Server-side fallback (optional)
 
@@ -273,12 +355,42 @@ IDD operational marker comments may be minimized as `OUTDATED` only when
 the PR is merged and the marker is no longer needed for resume, advisory
 wait, or review-currency checks. Candidate prefixes are:
 
+- `<!-- claimed-by:`
+- `<!-- unclaimed-by:`
 - `<!-- review-watermark:`
 - `<!-- review-baseline:`
 - `advisory-wait:`
 - `advisory-wait-recovery:`
 - `<!-- advisory-wait:`
 - `advisory-reroll:`
+- `review-ack:`
+- `copilot-unavailable:`
+- `<!-- idd-local-validation-evidence:`
+
+This list tracks every `OPERATIONAL_MARKERS` prefix
+(`src/scripts/marker-helpers.mts`) classified `wired` or `f4-only` in
+`MARKER_HIDE_POLICY` -- i.e. everything except the `excluded` prefixes
+below (issue #2778). **Excluded from this list** -- these are also
+`OPERATIONAL_MARKERS` prefixes, but deliberately never candidates for
+this manual `OUTDATED` fallback (full reasoning in each entry's own
+`MARKER_HIDE_POLICY` record; see also "## Timing" above):
+
+- `<!-- activation-nonce:` -- issue-scoped (posted to the claim issue,
+  not the PR) and has no hide-at-post-time wiring yet (caught by
+  Copilot review on PR #2759).
+- `<!-- forced-handoff:` -- permanent maintainer-authority audit record
+  of a claim transfer; never minimize it.
+- `<!-- idd-external-check-waiver:` -- maintainer-authority marker; a
+  correct grouping key needs the embedded `check:` selector, and hiding
+  a still-relevant waiver for a different check would hide live
+  authorization (roadmap #2751 Background).
+- `<!-- idd-provider-outage-declaration:` and
+  `<!-- idd-provider-outage-advanced:` -- issue-scoped, cross-PR
+  declare/advance protocol with no clean single-PR grouping key
+  (roadmap #2751 Background).
+- `<!-- idd-provider-outage-park:` -- needs claim-lineage-aware
+  supersession the marker carries no reference for (roadmap #2751
+  Background).
 
 Always skip candidates when any of these are true:
 

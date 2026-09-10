@@ -287,7 +287,7 @@ Runtime hooks that integrate with the host AI agent:
 | Hook | Event | Purpose |
 |------|-------|---------|
 | `gsd-statusline.js` | `statusLine` | Displays model (long-context suffixes like `(1M context)` collapse to a compact `(1M)` badge), task, directory, and context usage bar |
-| `gsd-context-monitor.js` | `PostToolUse` / `AfterTool` | Injects agent-facing context warnings at 35%/25% remaining |
+| `gsd-context-monitor.js` | `PostToolUse` / `AfterTool` | Injects agent-facing context warnings at 35%/25% remaining by default (configurable — see [CONFIGURATION.md](CONFIGURATION.md)) |
 | `gsd-check-update.js` | `SessionStart` | Foreground trigger for the background update check |
 | `gsd-ensure-canonical-path.js` | `SessionStart` | For Claude Code plugin installs, symlinks `~/.claude/gsd-core/{bin,contexts,references,templates,workflows}` to the plugin's bundled tree so `@~/.claude/gsd-core/...` includes resolve; runs first in `SessionStart`, no-op in classic installs, self-heals after `claude plugin update` (#997) |
 | `gsd-check-update-worker.js` | (helper) | Background worker spawned by `gsd-check-update.js`; no direct event registration |
@@ -792,6 +792,22 @@ verification.
 `.planning/codebase/*.md` file; `bin/lib/drift.cjs` provides
 `readMappedCommit` and `writeMappedCommit` round-trip helpers.
 
+The baseline is written by `gsd-tools stamp-codebase-map`, a shell step in the
+map-codebase workflow, not by the mapper agent. The mapper's own freshness
+markers (`**Analysis Date:**`, `<!-- refreshed: ... -->`) are restamped
+unconditionally on an Update run, so an agent that rewrites only the dates still
+looks current to a reader; the machine-readable stamp is the one marker that
+cannot be satisfied by a date-only rewrite, which is exactly why it is not the
+agent's to write. `--files a.md,b.md` narrows the stamp to the documents a
+caller actually refreshed, as the auto-remap path does.
+
+An absent or unresolvable baseline is reported as `skipped` with reason
+`no-mapped-commit` or `unresolvable-mapped-commit`, never as drift. Diffing
+HEAD against the empty tree would report every tracked file as newly added,
+which makes a stale map indistinguishable from a fresh one. Files under
+`.planning/` are excluded from the diff: the map's own commit is a planning
+artifact, not codebase structure.
+
 ---
 
 ## Installer Architecture
@@ -887,6 +903,11 @@ Runtime Engine (Claude Code / Antigravity CLI)
 | > 35%             | Normal   | No warning injected                     |
 | ≤ 35%             | WARNING  | "Avoid starting new complex work"       |
 | ≤ 25%             | CRITICAL | "Context nearly exhausted, inform user" |
+
+The two fire-points are defaults. `hooks.context_warning_threshold` and
+`hooks.context_critical_threshold` in `.planning/config.json` move them per
+project; see [context-monitor.md](context-monitor.md) for the resolution and
+fallback rules.
 
 
 Debounce: 5 tool uses between repeated warnings. Severity escalation (WARNING→CRITICAL) bypasses debounce.

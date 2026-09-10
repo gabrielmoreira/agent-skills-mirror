@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,11 +85,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills-catalog/simulink-simulation/create-sdi-run/SKILL.md`](skills-catalog/simulink-simulation/create-sdi-run/SKILL.md) |
 | 25 | ✓ | [`skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md`](skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md) |
 | 26 | ✓ | [`skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md`](skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md) |
-| 27 | ✓ | [`skills-catalog/verification-validation-and-test/inject-faults/SKILL.md`](skills-catalog/verification-validation-and-test/inject-faults/SKILL.md) |
-| 28 | ✓ | [`skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md`](skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md) |
-| 29 | ✓ | [`skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md`](skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md) |
-| 30 | ✓ | [`skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md`](skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md) |
-| 31 | ✓ | [`skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md`](skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md) |
+| 27 | ✓ | [`skills-catalog/verification-validation-and-test/fix-sldv-incompatibility/SKILL.md`](skills-catalog/verification-validation-and-test/fix-sldv-incompatibility/SKILL.md) |
+| 28 | ✓ | [`skills-catalog/verification-validation-and-test/inject-faults/SKILL.md`](skills-catalog/verification-validation-and-test/inject-faults/SKILL.md) |
+| 29 | ✓ | [`skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md`](skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md) |
+| 30 | ✓ | [`skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md`](skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md) |
+| 31 | ✓ | [`skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md`](skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md) |
+| 32 | ✓ | [`skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md`](skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md) |
 
 ---
 

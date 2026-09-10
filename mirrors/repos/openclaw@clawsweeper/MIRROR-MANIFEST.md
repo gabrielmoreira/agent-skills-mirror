@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 45 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 45 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,33 +78,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`docs/openclaw-event-hooks.md`](docs/openclaw-event-hooks.md) |
 | 17 | ✓ | [`docs/operator-configuration.md`](docs/operator-configuration.md) |
 | 18 | ✓ | [`docs/orchestration.md`](docs/orchestration.md) |
-| 19 | ✓ | [`docs/pr-proof-triage-dashboard.md`](docs/pr-proof-triage-dashboard.md) |
-| 20 | ✓ | [`docs/pr-review-comments.md`](docs/pr-review-comments.md) |
-| 21 | ✓ | [`docs/product-direction-close-policy.md`](docs/product-direction-close-policy.md) |
-| 22 | ✓ | [`docs/public-api.md`](docs/public-api.md) |
-| 23 | ✓ | [`docs/queue-service-split-runbook.md`](docs/queue-service-split-runbook.md) |
-| 24 | ✓ | [`docs/related-issue-discovery.md`](docs/related-issue-discovery.md) |
-| 25 | ✓ | [`docs/review-cache.md`](docs/review-cache.md) |
-| 26 | ✓ | [`docs/scheduler.md`](docs/scheduler.md) |
-| 27 | ✓ | [`docs/spam-scanner.md`](docs/spam-scanner.md) |
-| 28 | ✓ | [`docs/sqlite-change-policy-proposal.md`](docs/sqlite-change-policy-proposal.md) |
-| 29 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
-| 30 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
-| 31 | ✓ | [`docs/steerable-repair-automation.md`](docs/steerable-repair-automation.md) |
-| 32 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
-| 33 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
-| 34 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
-| 35 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
-| 36 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
-| 37 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
-| 38 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
-| 39 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
-| 40 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
-| 41 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
-| 42 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 43 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
-| 44 | → | [`docs/limits.md`](docs/limits.md) |
-| 45 | → | [`docs/README.md`](docs/README.md) |
+| 19 | ✓ | [`docs/oversized-pr-close-policy.md`](docs/oversized-pr-close-policy.md) |
+| 20 | ✓ | [`docs/pr-proof-triage-dashboard.md`](docs/pr-proof-triage-dashboard.md) |
+| 21 | ✓ | [`docs/pr-review-comments.md`](docs/pr-review-comments.md) |
+| 22 | ✓ | [`docs/product-direction-close-policy.md`](docs/product-direction-close-policy.md) |
+| 23 | ✓ | [`docs/public-api.md`](docs/public-api.md) |
+| 24 | ✓ | [`docs/queue-service-split-runbook.md`](docs/queue-service-split-runbook.md) |
+| 25 | ✓ | [`docs/related-issue-discovery.md`](docs/related-issue-discovery.md) |
+| 26 | ✓ | [`docs/review-cache.md`](docs/review-cache.md) |
+| 27 | ✓ | [`docs/scheduler.md`](docs/scheduler.md) |
+| 28 | ✓ | [`docs/spam-scanner.md`](docs/spam-scanner.md) |
+| 29 | ✓ | [`docs/sqlite-change-policy-proposal.md`](docs/sqlite-change-policy-proposal.md) |
+| 30 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
+| 31 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
+| 32 | ✓ | [`docs/steerable-repair-automation.md`](docs/steerable-repair-automation.md) |
+| 33 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
+| 34 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
+| 35 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
+| 36 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
+| 37 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
+| 38 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
+| 39 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
+| 40 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
+| 41 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
+| 42 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
+| 43 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 44 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 45 | → | [`docs/limits.md`](docs/limits.md) |
+| 46 | → | [`docs/README.md`](docs/README.md) |
 
 ---
 

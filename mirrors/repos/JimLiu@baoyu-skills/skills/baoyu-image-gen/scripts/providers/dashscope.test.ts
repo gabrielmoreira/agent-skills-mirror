@@ -79,7 +79,9 @@ test("DashScope aspect-ratio parsing accepts numeric ratios only", () => {
 });
 
 test("DashScope model family routing distinguishes qwen-2.0, fixed-size qwen, wan2.7, and legacy models", () => {
+  assert.equal(getModelFamily("qwen-image-3.0-pro"), "qwen2");
   assert.equal(getModelFamily("qwen-image-2.0-pro"), "qwen2");
+  assert.equal(getModelFamily("qwen-image-2.0-pro-2026-04-22"), "qwen2");
   assert.equal(getModelFamily("qwen-image"), "qwenFixed");
   assert.equal(getModelFamily("wan2.7-image"), "wan27");
   assert.equal(getModelFamily("wan2.7-image-pro"), "wan27");

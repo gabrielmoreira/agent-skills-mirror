@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pascalorg/editor` — 26 default patterns, 0 followed patterns, 34 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,10 +71,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`apps/ifc-converter/CLAUDE.md`](apps/ifc-converter/CLAUDE.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 13 | ✓ | [`skills/evals/publishing-cases.json`](skills/evals/publishing-cases.json) |
-| 14 | ✓ | [`skills/evals/README.md`](skills/evals/README.md) |
-| 15 | ✓ | [`skills/furniture-fit/evals/evals.json`](skills/furniture-fit/evals/evals.json) |
-| 16 | ✓ | [`skills/furniture-fit/evals/trigger-evals.json`](skills/furniture-fit/evals/trigger-evals.json) |
+| 13 | ✓ | [`skills/furniture-fit/.clawhubignore`](skills/furniture-fit/.clawhubignore) |
+| 14 | ✓ | [`skills/furniture-fit/evals/evals.json`](skills/furniture-fit/evals/evals.json) |
+| 15 | ✓ | [`skills/furniture-fit/evals/trigger-evals.json`](skills/furniture-fit/evals/trigger-evals.json) |
+| 16 | ✓ | [`skills/furniture-fit/examples/all-tested-poses-fail.md`](skills/furniture-fit/examples/all-tested-poses-fail.md) |
 | 17 | ✓ | [`skills/furniture-fit/examples/clear-footprint.md`](skills/furniture-fit/examples/clear-footprint.md) |
 | 18 | ✓ | [`skills/furniture-fit/examples/insufficient-evidence.md`](skills/furniture-fit/examples/insufficient-evidence.md) |
 | 19 | ✓ | [`skills/furniture-fit/examples/rotated-footprint-fails.md`](skills/furniture-fit/examples/rotated-footprint-fails.md) |
@@ -83,16 +83,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/furniture-fit/references/report-template.md`](skills/furniture-fit/references/report-template.md) |
 | 23 | ✓ | [`skills/furniture-fit/references/setup.md`](skills/furniture-fit/references/setup.md) |
 | 24 | ✓ | [`skills/furniture-fit/SKILL.md`](skills/furniture-fit/SKILL.md) |
-| 25 | ✓ | [`skills/pascal-3d/evals/evals.json`](skills/pascal-3d/evals/evals.json) |
-| 26 | ✓ | [`skills/pascal-3d/evals/trigger-evals.json`](skills/pascal-3d/evals/trigger-evals.json) |
-| 27 | ✓ | [`skills/pascal-3d/examples/autonomous-private-project.md`](skills/pascal-3d/examples/autonomous-private-project.md) |
-| 28 | ✓ | [`skills/pascal-3d/examples/hosted-existing-account.md`](skills/pascal-3d/examples/hosted-existing-account.md) |
-| 29 | ✓ | [`skills/pascal-3d/examples/local-project.md`](skills/pascal-3d/examples/local-project.md) |
-| 30 | ✓ | [`skills/pascal-3d/references/setup.md`](skills/pascal-3d/references/setup.md) |
-| 31 | ✓ | [`skills/pascal-3d/references/tool-workflows.md`](skills/pascal-3d/references/tool-workflows.md) |
-| 32 | ✓ | [`skills/pascal-3d/SKILL.md`](skills/pascal-3d/SKILL.md) |
-| 33 | ✓ | [`skills/README.md`](skills/README.md) |
-| 34 | ✓ | [`skills/VALIDATION.md`](skills/VALIDATION.md) |
+| 25 | ✓ | [`skills/pascal-3d/.clawhubignore`](skills/pascal-3d/.clawhubignore) |
+| 26 | ✓ | [`skills/pascal-3d/evals/evals.json`](skills/pascal-3d/evals/evals.json) |
+| 27 | ✓ | [`skills/pascal-3d/evals/trigger-evals.json`](skills/pascal-3d/evals/trigger-evals.json) |
+| 28 | ✓ | [`skills/pascal-3d/examples/autonomous-private-project.md`](skills/pascal-3d/examples/autonomous-private-project.md) |
+| 29 | ✓ | [`skills/pascal-3d/examples/hosted-existing-account.md`](skills/pascal-3d/examples/hosted-existing-account.md) |
+| 30 | ✓ | [`skills/pascal-3d/examples/local-project.md`](skills/pascal-3d/examples/local-project.md) |
+| 31 | ✓ | [`skills/pascal-3d/references/setup.md`](skills/pascal-3d/references/setup.md) |
+| 32 | ✓ | [`skills/pascal-3d/references/tool-workflows.md`](skills/pascal-3d/references/tool-workflows.md) |
+| 33 | ✓ | [`skills/pascal-3d/SKILL.md`](skills/pascal-3d/SKILL.md) |
+| 34 | ✓ | [`skills/README.md`](skills/README.md) |
+| 35 | ✓ | [`skills/VALIDATION.md`](skills/VALIDATION.md) |
 
 ---
 

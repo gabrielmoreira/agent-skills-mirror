@@ -81,6 +81,7 @@ Quality bar:
 - Use long_scroll or extended rows when the card needs a document-style vertical canvas with more sections or denser text.
 - Keep visible card text readable and faithful to supplied source or structured sections; do not shrink paragraphs into tiny poster copy.
 - Separate prompt prepared, image generated, visual QA passed, and delivered states.
+- Bind an image result to the card digest, action, attempt, and content digest, then warn on route mismatch, unknown route, stale card, digest drift, and response reuse rather than resolving any of them.
 - For transformations, preserve requested identity, composition, text, and protected regions; verify the observed result against the edit brief before a PASS claim.
 - Prefer `img-summary` over `materials-package` only when the request asks for an image, visual card, or summary card.
 - Use materials/report workflows only after an observed generated file needs packaging.
@@ -116,18 +117,24 @@ Expected outputs:
 - negative prompt
 - quality checks
 - visual evidence boundary
+- visual_generation_receipt/v1 when a producer reports an image attempt
+- requested route separate from observed route
 
 Artifact expectations:
 
 - visual_prompt_card/v1 prompt card when prepared
 - image_generation_setup/v1 fallback when image_generation_capability/v1 is unknown or prompt_only
 - visual_observation/v1 only when a wrapper or user records generated image, visual QA, or delivery evidence
+- visual_generation_receipt/v1 only when a producer reports one image attempt, with unattested route fields left unknown
 
 Safety rules:
 
 - Do not call image providers, LLMs, APIs, or network services from OMH core.
 - Do not claim image generation, visual QA, posting, sharing, attachment, or delivery from a prepared prompt card.
 - Require visual_observation/v1 before claiming generated image, visual QA, or delivery evidence.
+- Report requested route apart from observed route; leave provider, model, quality, operation, dimensions, and credential class unknown unless visual_generation_receipt/v1 attests them.
+- Do not infer an observed provider, model, or quality from configuration, capability state, or a returned file.
+- A failed or partial visual_generation_receipt/v1 keeps its failure stage and is not generated-image evidence.
 - Raw source text may become only an extractive draft; do not fabricate summaries, owners, decisions, test results, or conclusions.
 - Show `generate_visual_image` only when wrapper context reports image_generation_capability/v1 as connected, and still treat it as wrapper-owned action rather than evidence.
 - When image_generation_capability/v1 is unknown or prompt_only, ask which image tool to use and route to image_generation_setup/v1 instead of pretending generation can start.

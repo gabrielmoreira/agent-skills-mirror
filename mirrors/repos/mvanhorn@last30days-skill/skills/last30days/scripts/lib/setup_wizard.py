@@ -61,6 +61,12 @@ def render_welcome() -> str:
     return _WELCOME_TEXT
 
 
+# Neutral note recorded on an official-only host instead of a cookie scan.
+# Deliberately names no cookie mechanism beyond the fact that none is used
+# (the vocabulary rule for Grok Bot onboarding output).
+OFFICIAL_HOST_COOKIE_NOTE = "browser sessions are not read on this host"
+
+
 def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = False) -> Dict[str, Any]:
     """Perform the auto-setup actions.
 
@@ -73,7 +79,10 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
     Returns:
         Dict with keys:
           cookies_found: {source_name: browser_name} for each source where cookies were found
-          browser_cookie_scan_attempted: bool (True only after explicit consent)
+          browser_cookie_scan_attempted: bool (True only after explicit consent
+              AND on a host whose X policy permits cookie discovery)
+          cookie_note: present only on an official-only host, where the scan
+              is skipped for every domain (neutral, relayable text)
           ytdlp_installed: bool
           ytdlp_action: already_installed | installed | install_failed | no_homebrew
           digg_installed: bool (True when the engine can resolve digg-pp-cli on PATH)
@@ -83,9 +92,19 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
           digg_stderr: present when digg_action is install_failed
           digg_path: present when digg_action is installed_off_path (binary on disk, not on PATH)
     """
-    from .env import COOKIE_DOMAINS, cookie_extraction_browsers
+    from .env import COOKIE_DOMAINS, cookie_extraction_browsers, x_policy
 
     cookies_found: Dict[str, str] = {}
+    cookie_note: Optional[str] = None
+
+    # Official-only host (LAST30DAYS_HOST=grok-bot): the consented
+    # cookie scan is skipped for EVERY domain (X and Truth Social alike) and
+    # recorded as not attempted, with a neutral note the caller can relay.
+    # The free CLI installs below still run. A LAST30DAYS_X_BACKEND=bird pin
+    # is the one path that re-enables discovery, via x_policy.
+    if allow_browser_cookies and not x_policy(config).cookie_discovery:
+        allow_browser_cookies = False
+        cookie_note = OFFICIAL_HOST_COOKIE_NOTE
 
     if allow_browser_cookies:
         from . import cookie_extract
@@ -164,13 +183,15 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
         # (arxiv, techmeme, trustpilot): {source: {installed, action, ...}}.
         "pp_sources": pp_sources,
         # Reported, never installed: this CLI spends the user's own metered
-        # credits, so acquiring it stays their decision (U5/R11). Passing
+        # credits, so acquiring it stays their decision. Passing
         # config matters: a user whose key lives in a .env file or the
         # keychain (rather than a `brightdata login` credentials file) is
         # active in the engine, and setup must not tell them otherwise.
         "brightdata": brightdata_status(config),
         "env_written": False,
     }
+    if cookie_note:
+        results["cookie_note"] = cookie_note
     if ytdlp_action == "install_failed":
         results["ytdlp_stderr"] = brew_stderr
     if digg_action == "install_failed":
@@ -505,6 +526,42 @@ def _open_secret_append(path: Path):
     return os.fdopen(fd, "a", encoding="utf-8")
 
 
+def _replace_env_line(env_path: Path, content: str, key_name: str, value: str) -> bool:
+    """Rewrite every ``key_name=`` line of ``content`` with ``value`` as a 0o600 secret.
+
+    The new file is written to a sibling temp path opened at 0o600 and moved
+    over the original, so the secret never has a readable window and a
+    crash mid-write leaves the old file intact.
+    """
+    new_line = f"{key_name}={_format_env_value(value)}"
+    lines = []
+    replaced = False
+    for line in content.splitlines():
+        stripped = line.strip()
+        is_key = (
+            stripped and not stripped.startswith("#") and "=" in stripped
+            and stripped.split("=", 1)[0].strip() == key_name
+        )
+        if is_key:
+            if not replaced:
+                lines.append(new_line)
+                replaced = True
+            continue
+        lines.append(line)
+    if not replaced:
+        lines.append(new_line)
+    tmp_path = env_path.with_name(env_path.name + ".tmp")
+    fd = os.open(tmp_path, os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    os.replace(tmp_path, env_path)
+    try:
+        os.chmod(env_path, 0o600)
+    except OSError:
+        pass
+    return True
+
+
 def _format_env_value(value: str) -> str:
     """Quote a value so it round-trips through env.load_env_file.
 
@@ -584,19 +641,28 @@ def write_setup_config(env_path: Path, from_browser: str | None = None) -> bool:
         return False
 
 
-def write_api_key(env_path: Path, api_key: str, key_name: str = "SCRAPECREATORS_API_KEY") -> bool:
+def write_api_key(
+    env_path: Path,
+    api_key: str,
+    key_name: str = "SCRAPECREATORS_API_KEY",
+    *,
+    replace: bool = False,
+) -> bool:
     """Append an API key to the .env file as a 0o600 secret.
 
     Reuses the same secret-safe write path as ``write_setup_config`` so the
     value lands with restrictive permissions and round-trips through
-    ``env.load_env_file``. Idempotent: if ``key_name`` is already present in
-    the file, nothing is written and the existing value is preserved (we never
-    clobber a key the user may have set by hand).
+    ``env.load_env_file``. Idempotent by default: if ``key_name`` is already
+    present in the file, nothing is written and the existing value is
+    preserved (we never clobber a key the user may have set by hand). With
+    ``replace=True`` an existing line is rewritten in place instead, so an
+    explicit ``setup --store-key`` can rotate a rejected credential.
 
     Args:
         env_path: Path to the .env file (e.g. ~/.config/last30days/.env).
         api_key: The raw key value to persist.
         key_name: The env var name to write (default SCRAPECREATORS_API_KEY).
+        replace: Rewrite an existing ``key_name`` line instead of keeping it.
 
     Returns:
         True if the key was written or already present, False on error or when
@@ -615,6 +681,8 @@ def write_api_key(env_path: Path, api_key: str, key_name: str = "SCRAPECREATORS_
                 stripped = line.strip()
                 if stripped and not stripped.startswith("#") and "=" in stripped:
                     if stripped.split("=", 1)[0].strip() == key_name:
+                        if replace:
+                            return _replace_env_line(env_path, existing_content, key_name, api_key)
                         return True  # Already configured; do not duplicate
 
         line = f"{key_name}={_format_env_value(api_key)}\n"
@@ -767,10 +835,19 @@ def get_setup_status_text(results: Dict[str, Any]) -> str:
             "requests/month). Install with: npm i -g @brightdata/cli && brightdata login"
         )
 
+    cookie_note = results.get("cookie_note")
+    if cookie_note:
+        # Official-only host: relay the neutral note; say nothing about
+        # browsers. The scan was not attempted, so nothing is "found".
+        lines.append(f"  - {cookie_note}")
+
     env_written = results.get("env_written", False)
     if env_written:
         lines.append("")
-        lines.append("Configuration saved. Future runs will auto-detect your browsers.")
+        if cookie_note:
+            lines.append("Configuration saved.")
+        else:
+            lines.append("Configuration saved. Future runs will auto-detect your browsers.")
 
     return "\n".join(lines)
 

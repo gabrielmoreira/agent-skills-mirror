@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kurone-kito/idd-skill` — 26 default patterns, 4 followed patterns, 58 file(s) materialized.
+Mirror of `kurone-kito/idd-skill` — 26 default patterns, 4 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 4 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 58 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -112,14 +112,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`idd-template/docs/idd-review-policy-profiles.md`](idd-template/docs/idd-review-policy-profiles.md) |
 | 49 | ✓ | [`idd-template/docs/permissions.md`](idd-template/docs/permissions.md) |
 | 50 | ✓ | [`idd-template/docs/policy-constants.md`](idd-template/docs/policy-constants.md) |
-| 51 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
-| 52 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
-| 53 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
-| 54 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
-| 55 | → | [`docs/ai-strategy.md`](docs/ai-strategy.md) |
-| 56 | → | [`docs/customization.md`](docs/customization.md) |
-| 57 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
-| 58 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
+| 51 | ✓ | [`skills/idd-spec-audit/references/report-template.md`](skills/idd-spec-audit/references/report-template.md) |
+| 52 | ✓ | [`skills/idd-spec-audit/SKILL.md`](skills/idd-spec-audit/SKILL.md) |
+| 53 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
+| 54 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
+| 55 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
+| 56 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
+| 57 | → | [`docs/ai-strategy.md`](docs/ai-strategy.md) |
+| 58 | → | [`docs/customization.md`](docs/customization.md) |
+| 59 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
+| 60 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
 
 ---
 

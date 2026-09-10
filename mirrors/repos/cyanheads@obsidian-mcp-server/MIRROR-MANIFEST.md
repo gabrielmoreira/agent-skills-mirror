@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,13 +101,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`skills/polish-docs-meta/references/server-json.md`](skills/polish-docs-meta/references/server-json.md) |
 | 41 | ✓ | [`skills/polish-docs-meta/SKILL.md`](skills/polish-docs-meta/SKILL.md) |
 | 42 | ✓ | [`skills/release-and-publish/SKILL.md`](skills/release-and-publish/SKILL.md) |
-| 43 | ✓ | [`skills/report-issue-framework/SKILL.md`](skills/report-issue-framework/SKILL.md) |
-| 44 | ✓ | [`skills/report-issue-local/SKILL.md`](skills/report-issue-local/SKILL.md) |
-| 45 | ✓ | [`skills/security-pass/SKILL.md`](skills/security-pass/SKILL.md) |
-| 46 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
-| 47 | ✓ | [`skills/techniques/references/outline-on-overflow.md`](skills/techniques/references/outline-on-overflow.md) |
-| 48 | ✓ | [`skills/techniques/SKILL.md`](skills/techniques/SKILL.md) |
-| 49 | ✓ | [`skills/tool-defs-analysis/SKILL.md`](skills/tool-defs-analysis/SKILL.md) |
+| 43 | ✓ | [`skills/release-pr-review/SKILL.md`](skills/release-pr-review/SKILL.md) |
+| 44 | ✓ | [`skills/report-issue-framework/SKILL.md`](skills/report-issue-framework/SKILL.md) |
+| 45 | ✓ | [`skills/report-issue-local/SKILL.md`](skills/report-issue-local/SKILL.md) |
+| 46 | ✓ | [`skills/security-pass/SKILL.md`](skills/security-pass/SKILL.md) |
+| 47 | ✓ | [`skills/setup/SKILL.md`](skills/setup/SKILL.md) |
+| 48 | ✓ | [`skills/techniques/references/outline-on-overflow.md`](skills/techniques/references/outline-on-overflow.md) |
+| 49 | ✓ | [`skills/techniques/SKILL.md`](skills/techniques/SKILL.md) |
+| 50 | ✓ | [`skills/tool-defs-analysis/SKILL.md`](skills/tool-defs-analysis/SKILL.md) |
 
 ---
 

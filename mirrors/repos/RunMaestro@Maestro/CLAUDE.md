@@ -64,13 +64,17 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Timestamp for a generated file name:** `fileTimestampSlug(dateOrTimestamp?)`, `saveImageToProject()` in `src/shared/formatters.ts`
 - **Summing a Codex session's tokens:** `CodexTokenCounts`, `token_count` in `src/shared/codexTokenUsage.ts`
 - **Path utilities:** `truncatePath()`, `getParentDir()` in `src/shared/formatters.ts`
+- **Reading a zip from disk:** `readZipArchive()`, `extractZipTo()`, `isUnsafeZipEntryName()` in `src/main/utils/zip-archive.ts`. Playbook import and Cue backup only need names and bytes. Do not bring back `adm-zip` (`extractAllTo` follows dest symlinks; no patched release).
 - **Referencing / thumbnailing a pasted transcript image:** `isSessionImageRef()`, `sessionImageThumbnailSrc()` in `src/shared/sessionImageRefs.ts`
 - **Loading an image for canvas compositing:** `loadImageElement(src)` in `src/renderer/utils/loadImage.ts`
+- **Saving generated image bytes to disk:** `saveImageDataUrlToDisk(dataUrl, defaultName?)` in `src/renderer/utils/imageExport.ts`
+- **Screenshotting a surface as it is painted:** `window.maestro.shell.capturePage(rect?)` in `src/main/preload/system.ts`
 - **Classifying a file by extension:** `getFileCategory()`, `isPreviewableFile()` in `src/shared/fileCategories.ts`
 - **Strip ANSI:** `stripAnsiCodes()` in `src/shared/stringUtils.ts`
 - **Shell escape:** `shellEscape()`, `shellEscapeArgs()` in `src/main/utils/shell-escape.ts`
 - **Platform detection:** `isWindows()`, `isMacOS()` in `src/shared/platformDetection.ts`
 - **Modifier-key display text:** `formatKey()`, `formatShortcutKeys()` in `src/renderer/utils/shortcutFormatter.ts`
+- **Advertising a shortcut next to the control that fires it:** `ShortcutHint`, `shortcutSuffix(keys)` in `src/renderer/components/ui/ShortcutHint.tsx`
 - **Whether a chord may be bound at all:** `findReservedShortcutCombo(keys)`, `RESERVED_SHORTCUT_COMBOS` in `src/shared/shortcutKeys.ts`
 - **How much of the keyboard the user has mastered:** `collectBoundShortcuts(...maps)`, `countUsedBoundShortcuts(bound, usedIds)` in `src/renderer/constants/keyboardMastery.ts`
 - **Naming the OS file manager in copy:** `getFileManagerName(platform)`, `fileManagerName()` in `src/renderer/utils/platformUtils.ts`
@@ -99,6 +103,8 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Focus an AI tab:** `aiTabFocusFields(tabId?)`, `activeFileTabId` in `src/renderer/utils/tabHelpers.ts`
 - **Focus a file tab:** `fileTabFocusFields(tabId)` in `src/renderer/utils/tabHelpers.ts`
 - **Ending a turn with no process exit:** `settleTabThinkingState(session, tabId)` in `src/renderer/utils/tabHelpers.ts`
+- **Leaving inline wizard mode:** `flattenWizardIntoTab(tab, { summary? })` in `src/renderer/utils/tabHelpers.ts` (never clear `tab.wizardState` by hand)
+- **Naming a tab from the user's message:** `requestTabAutoName()`, `collectNamingPrompt()`, `requestWizardTabAutoName()` in `src/renderer/services/tabAutoNaming.ts`
 - **Audio/video playback:** `handleOpenFileTab()`, `enqueueMedia()` in `src/renderer/hooks/tabs/internal/useFilePreviewTabHandlers.ts`
 - **Run a shell command from the chat:** `dispatchShellCommand()`, `runShellCommand()` in `src/renderer/services/shellCommand.ts`
 - **Revealing output the user asked for, past a paused auto-scroll:** `requestTranscriptScrollToBottom(sessionId, tabId)`, `TRANSCRIPT_SCROLL_TO_BOTTOM_EVENT` in `src/renderer/services/transcriptScroll.ts`
@@ -106,6 +112,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **Telling the Files panel a file appeared or vanished:** `requestFileTreeRefresh(sessionId)`, `nudgeFileTreeForPaths(paths)` in `src/renderer/utils/fileTreeRefresh.ts`
 - **Loading a LOCAL file tree:** `walkLocalFileTree()`, `loadFileTree()` in `src/main/utils/file-tree-walk.ts`
 - **Ask the model for a shell command (AI command mode):** `requestAiCommand()`, `acceptAiCommand()` in `src/renderer/services/aiCommand.ts`
+- **The system-prompt envelope for providers with no `--append-system-prompt`:** `embedSystemPromptInPrompt()`, `stripEmbeddedSystemPrompt()` in `src/shared/embeddedSystemPrompt.ts`
 - **Appending to a transcript entry:** `canAppendToLogEntry(entry, source)`, `isSelfContainedCard(entry)` in `src/renderer/utils/logEntries.ts`
 - **Command mode (`!`) is STATE, not a text prefix, and it is a LADDER:** `isShellCommandMode()`, `isAiCommandMode()` in `src/renderer/utils/shellCommandInput.ts`
 - **Shell tab completion:** `useTabCompletion()`, `commandMode` in `src/renderer/hooks/input/useTabCompletion.ts`

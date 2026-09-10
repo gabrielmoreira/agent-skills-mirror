@@ -43,6 +43,16 @@ param(
     [ValidateRange(1, 600)]
     [int] $TimeoutSeconds = 10,
 
+    [ValidateRange(1, 600)]
+    [int] $RecompileRequestTimeoutSeconds = 10,
+
+    [switch] $FollowProgress,
+
+    [switch] $AcceptCancel,
+
+    [ValidateRange(1, 60)]
+    [int] $ProgressIntervalSeconds = 2,
+
     [ValidateRange(1, 1800)]
     [int] $RecompileTimeoutSeconds = 120
 )
@@ -301,6 +311,305 @@ function Invoke-LocusRequest {
         throw "Timed out waiting for '$MessageType' response from '\\.\pipe\$bareName'."
     }
     finally {
+        if ($null -ne $reader) {
+            $reader.Dispose()
+        }
+        if ($null -ne $writer) {
+            $writer.Dispose()
+        }
+        $pipe.Dispose()
+    }
+}
+
+function Start-LocusConsoleInputReader {
+    [CmdletBinding()]
+    param(
+        [System.IO.TextReader] $SourceReader = [Console]::In
+    )
+
+    if (-not ('LocusUnityBridge.ConsoleLineReader' -as [type])) {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Threading;
+
+namespace LocusUnityBridge
+{
+    public sealed class ConsoleLineReader : IDisposable
+    {
+        private readonly TextReader input;
+        private readonly ConcurrentQueue<string> lines = new ConcurrentQueue<string>();
+        private readonly Thread worker;
+        private volatile bool disposed;
+
+        public ConsoleLineReader(TextReader input)
+        {
+            this.input = input ?? TextReader.Null;
+            worker = new Thread(ReadLoop);
+            worker.IsBackground = true;
+            worker.Name = "Locus console input reader";
+            worker.Start();
+        }
+
+        private void ReadLoop()
+        {
+            try
+            {
+                while (!disposed)
+                {
+                    string line = input.ReadLine();
+                    if (line == null)
+                        return;
+                    if (!disposed)
+                        lines.Enqueue(line);
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+        }
+
+        public bool TryDequeue(out string line)
+        {
+            return lines.TryDequeue(out line);
+        }
+
+        public void Dispose()
+        {
+            disposed = true;
+        }
+    }
+}
+'@
+    }
+
+    return [LocusUnityBridge.ConsoleLineReader]::new($SourceReader)
+}
+
+function Invoke-LocusExecute {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string] $PipeName,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyString()]
+        [string] $Code,
+
+        [Parameter(Mandatory)]
+        [ValidateRange(1, 600000)]
+        [int] $TimeoutMilliseconds,
+
+        [Parameter(Mandatory)]
+        [ValidateRange(1, 60)]
+        [int] $ProgressIntervalSeconds,
+
+        [switch] $FollowProgress,
+
+        [switch] $AcceptCancel
+    )
+
+    $bareName = ConvertTo-LocusBarePipeName -PipeName $PipeName
+    $executeRequestId = 'locus-skill-' + [guid]::NewGuid().ToString('N')
+    $executionId = 'locus-skill-execution-' + [guid]::NewGuid().ToString('N')
+    $source = $Code + [Environment]::NewLine + "//__LOCUS_EXECUTION_ID__:$executionId"
+    $executeRequest = [ordered]@{
+        id = $executeRequestId
+        type = 'execute_code'
+        message = $source
+    } | ConvertTo-Json -Compress -Depth 20
+    $pipe = [System.IO.Pipes.NamedPipeClientStream]::new(
+        '.',
+        $bareName,
+        [System.IO.Pipes.PipeDirection]::InOut,
+        [System.IO.Pipes.PipeOptions]::Asynchronous
+    )
+    $reader = $null
+    $writer = $null
+    $inputReader = $null
+
+    try {
+        try {
+            $pipe.ConnectAsync($TimeoutMilliseconds).GetAwaiter().GetResult()
+        }
+        catch {
+            throw "Locus pipe '\\.\pipe\$bareName' is unavailable: $($_.Exception.Message)"
+        }
+
+        $utf8 = [System.Text.UTF8Encoding]::new($false)
+        $reader = [System.IO.StreamReader]::new($pipe, $utf8, $false, 4096, $true)
+        $writer = [System.IO.StreamWriter]::new($pipe, $utf8, 4096, $true)
+        $writer.AutoFlush = $true
+        $writer.WriteLine($executeRequest)
+
+        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        $intervalMilliseconds = ([int64] $ProgressIntervalSeconds) * 1000
+        $nextProgressAt = if ($FollowProgress) { $intervalMilliseconds } else { $null }
+        $lastProgressSignature = $null
+        $readTask = $null
+        $inputReader = if ($AcceptCancel) { Start-LocusConsoleInputReader } else { $null }
+        $cancelRequested = $false
+        $cancelRequestId = $null
+
+        while ($stopwatch.ElapsedMilliseconds -lt $TimeoutMilliseconds) {
+            if ($null -ne $inputReader) {
+                $control = $null
+                while ($inputReader.TryDequeue([ref] $control)) {
+                    if ($null -ne $control -and
+                        [string]::Equals($control.Trim(), 'cancel', [StringComparison]::OrdinalIgnoreCase) -and
+                        -not $cancelRequested) {
+                        $cancelRequested = $true
+                        $cancelRequestId = 'locus-skill-' + [guid]::NewGuid().ToString('N')
+                        $cancelRequest = [ordered]@{
+                            id = $cancelRequestId
+                            type = 'cancel_execute_code'
+                            message = $executionId
+                        } | ConvertTo-Json -Compress -Depth 20
+                        $writer.WriteLine($cancelRequest)
+                    }
+                    $control = $null
+                }
+            }
+
+            $elapsed = $stopwatch.ElapsedMilliseconds
+            if ($FollowProgress -and $elapsed -ge $nextProgressAt) {
+                $progressRequest = [ordered]@{
+                    id = 'locus-skill-' + [guid]::NewGuid().ToString('N')
+                    type = 'execute_code_progress'
+                    message = $executionId
+                } | ConvertTo-Json -Compress -Depth 20
+                $writer.WriteLine($progressRequest)
+                $nextProgressAt = $elapsed + $intervalMilliseconds
+            }
+
+            if ($null -eq $readTask) {
+                $readTask = $reader.ReadLineAsync()
+            }
+
+            $remaining = [Math]::Max(1, $TimeoutMilliseconds - [int] $stopwatch.ElapsedMilliseconds)
+            $waitMilliseconds = $remaining
+            if ($FollowProgress) {
+                $untilProgress = [Math]::Max(1, [int] ($nextProgressAt - $stopwatch.ElapsedMilliseconds))
+                $waitMilliseconds = [Math]::Min($remaining, $untilProgress)
+            }
+            if ($null -ne $inputReader) {
+                # Keep draining the background console reader while no pipe frame arrives.
+                $waitMilliseconds = [Math]::Min($waitMilliseconds, 100)
+            }
+            $waitTasks = @(
+                [System.Threading.Tasks.Task] $readTask,
+                [System.Threading.Tasks.Task]::Delay($waitMilliseconds)
+            )
+            $completed = [System.Threading.Tasks.Task]::WhenAny(
+                [System.Threading.Tasks.Task[]] $waitTasks
+            ).GetAwaiter().GetResult()
+
+            if ($completed -ne $readTask) {
+                continue
+            }
+
+            $line = $readTask.GetAwaiter().GetResult()
+            $readTask = $null
+            if ($null -eq $line) {
+                throw "Locus pipe '\\.\pipe\$bareName' disconnected before replying to 'execute_code'."
+            }
+
+            try {
+                $envelope = $line | ConvertFrom-Json
+            }
+            catch {
+                throw "Locus pipe returned malformed JSON: $line"
+            }
+
+            if ($envelope.reply_to -eq $executeRequestId) {
+                if ($envelope.ok -ne $true) {
+                    $reason = if (-not [string]::IsNullOrWhiteSpace($envelope.error)) {
+                        $envelope.error
+                    }
+                    elseif (-not [string]::IsNullOrWhiteSpace($envelope.message)) {
+                        $envelope.message
+                    }
+                    else {
+                        'execute_code failed without an error message'
+                    }
+                    if ($cancelRequested -and $reason -match '^(?i)execute_code canceled$') {
+                        return [pscustomobject]@{
+                            Status = 'canceled'
+                            Message = $reason
+                            ExecutionId = $executionId
+                        }
+                    }
+                    throw "Locus 'execute_code' failed: $reason"
+                }
+                return $envelope
+            }
+
+            if ($envelope.reply_to -eq $cancelRequestId) {
+                if ($envelope.ok -ne $true) {
+                    $reason = if (-not [string]::IsNullOrWhiteSpace($envelope.error)) {
+                        $envelope.error
+                    }
+                    elseif (-not [string]::IsNullOrWhiteSpace($envelope.message)) {
+                        $envelope.message
+                    }
+                    else {
+                        'cancel_execute_code failed without an error message'
+                    }
+                    throw "Locus 'cancel_execute_code' failed: $reason"
+                }
+                continue
+            }
+
+            if ($FollowProgress -and $envelope.reply_to -and $envelope.ok -eq $true) {
+                try {
+                    $progress = $envelope.message | ConvertFrom-Json
+                    $progressOutput = [ordered]@{
+                        active = [bool] $progress.active
+                        title = [string] $progress.title
+                        info = [string] $progress.info
+                        progress = $progress.progress
+                        revision = $progress.revision
+                        source = [string] $progress.source
+                        waitKind = [string] $progress.waitKind
+                        waitTarget = [string] $progress.waitTarget
+                        waitCondition = [string] $progress.waitCondition
+                        sourceLine = $progress.sourceLine
+                        waitedMs = $progress.waitedMs
+                    }
+                    $progressSignature = [ordered]@{
+                        active = $progressOutput.active
+                        title = $progressOutput.title
+                        info = $progressOutput.info
+                        progress = $progressOutput.progress
+                        source = $progressOutput.source
+                        waitKind = $progressOutput.waitKind
+                        waitTarget = $progressOutput.waitTarget
+                        waitCondition = $progressOutput.waitCondition
+                        sourceLine = $progressOutput.sourceLine
+                    } | ConvertTo-Json -Compress -Depth 20
+                    if ($progressSignature -ne $lastProgressSignature) {
+                        $lastProgressSignature = $progressSignature
+                        $progressJson = $progressOutput | ConvertTo-Json -Compress -Depth 20
+                        Write-Host "<locus-execute-progress>$progressJson</locus-execute-progress>"
+                    }
+                }
+                catch {
+                    # Ignore non-progress replies and malformed progress snapshots;
+                    # the execute request remains authoritative.
+                }
+            }
+        }
+
+        throw "Timed out waiting for 'execute_code' response from '\\.\pipe\$bareName'."
+    }
+    finally {
+        if ($null -ne $inputReader) {
+            $inputReader.Dispose()
+        }
         if ($null -ne $reader) {
             $reader.Dispose()
         }
@@ -698,19 +1007,25 @@ if ($MyInvocation.InvocationName -ne '.') {
                 }
                 $project = Resolve-LocusUnityProject -Path $ProjectPath
                 $pipe = Get-LocusPipeInfo -ProjectPath $project
+                $execute = Invoke-LocusExecute `
+                    -PipeName $pipe.Name `
+                    -Code $source `
+                    -TimeoutMilliseconds $timeoutMilliseconds `
+                    -ProgressIntervalSeconds $ProgressIntervalSeconds `
+                    -FollowProgress:$FollowProgress `
+                    -AcceptCancel:$AcceptCancel
                 Write-LocusJson -InputObject (
-                    Invoke-LocusRequest `
-                        -PipeName $pipe.Name `
-                        -MessageType 'execute_code' `
-                        -Message $source `
-                        -TimeoutMilliseconds $timeoutMilliseconds
+                    $execute
                 )
             }
             'recompile' {
+                if ($PSBoundParameters.ContainsKey('TimeoutSeconds')) {
+                    throw '-TimeoutSeconds does not apply to recompile; use -RecompileRequestTimeoutSeconds.'
+                }
                 Write-LocusJson -InputObject (
                     Invoke-LocusRecompile `
                         -ProjectPath $ProjectPath `
-                        -RequestTimeoutMilliseconds $timeoutMilliseconds `
+                        -RequestTimeoutMilliseconds ($RecompileRequestTimeoutSeconds * 1000) `
                         -OverallTimeoutSeconds $RecompileTimeoutSeconds
                 )
             }

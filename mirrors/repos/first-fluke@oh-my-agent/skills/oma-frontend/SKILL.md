@@ -195,7 +195,7 @@ Project stack conventions live in dedicated files. **Read these before coding**;
 
 | File | Owns |
 |---|---|
-| `resources/tech-stack.md` | Framework versions, Next.js 16 `proxy.ts` + React Compiler conventions, Server Actions vs TanStack Query mutation policy, Serena shortcuts |
+| `resources/tech-stack.md` | Framework versions, Next.js 16 `proxy.ts` + React Compiler conventions, Server Actions vs TanStack Query mutation policy, optional provider examples |
 | `resources/tailwind-rules.md` | Design tokens, focus states, Tailwind v4 `@theme` syntax |
 | `resources/snippets.md` | React 19 hook patterns, TanStack Query/Form, a11y card |
 | `resources/angular-rules.md` | Angular standalone/OnPush/signals conventions, RxJS marble-test policy (MANDATORY for streams) |
@@ -203,21 +203,14 @@ Project stack conventions live in dedicated files. **Read these before coding**;
 To extend: add `resources/<name>.md` and append a row above.
 
 ## References
-
-1. Follow `resources/execution-protocol.md` step by step.
-2. Before submitting, run `resources/checklist.md`.
-Vendor-specific execution protocols are injected automatically by `oma agent spawn`.
-Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
+- Local code tools: `../_shared/core/code-intelligence.md` (code search/navigation)
 
 - Project frontend rules (MUST load before review/implementation): `../../rules/frontend.md`
-- Execution steps: `resources/execution-protocol.md`
-- Checklist: `resources/checklist.md`
+- Execution steps (follow for the selected task): `resources/execution-protocol.md`
+- Checklist (run before handoff): `resources/checklist.md`
 - Error recovery: `resources/error-playbook.md`
 - Context loading: `../_shared/core/context-loading.md`
 - Clarification: `../_shared/core/clarification-protocol.md`
 - Context budget: `../_shared/core/context-budget.md`
 - Lessons learned: `../_shared/core/lessons-learned.md`
 - Observability handoff: `../oma-observability/SKILL.md` §Integrations — Core Web Vitals, SSR→client trace propagation, INP profiling
-
-> [!IMPORTANT]
-> Treat `components/ui/*` as read-only. Create wrappers for customization.

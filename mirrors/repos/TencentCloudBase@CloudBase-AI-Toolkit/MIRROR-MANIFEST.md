@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TencentCloudBase/CloudBase-AI-Toolkit` — 26 default patterns, 4 followed patterns, 369 file(s) materialized.
+Mirror of `TencentCloudBase/CloudBase-AI-Toolkit` — 26 default patterns, 4 followed patterns, 371 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TencentCloudBase/CloudBase-AI-Toolkit` — 26 default patterns, 4 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 369 |
+| Files         | 371 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -351,86 +351,88 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 287 | ✓ | [`plugin/cloudbase/skills/ui-design/checklist.md`](plugin/cloudbase/skills/ui-design/checklist.md) |
 | 288 | ✓ | [`plugin/cloudbase/skills/ui-design/SKILL.md`](plugin/cloudbase/skills/ui-design/SKILL.md) |
 | 289 | ✓ | [`plugin/cloudbase/skills/web-development/SKILL.md`](plugin/cloudbase/skills/web-development/SKILL.md) |
-| 290 | ✓ | [`plugins/experts/cloudbase-webdev-expert/README.md`](plugins/experts/cloudbase-webdev-expert/README.md) |
-| 291 | ✓ | [`plugins/experts/miniprogram-clouddev-expert/README.md`](plugins/experts/miniprogram-clouddev-expert/README.md) |
-| 292 | ✓ | [`scripts/demo/README.md`](scripts/demo/README.md) |
-| 293 | ✓ | [`scripts/prompts/README.md`](scripts/prompts/README.md) |
-| 294 | ✓ | [`scripts/releases/README.md`](scripts/releases/README.md) |
-| 295 | ✓ | [`scripts/skills-repo-template/cloudbase-guidelines/SKILL.md`](scripts/skills-repo-template/cloudbase-guidelines/SKILL.md) |
-| 296 | ✓ | [`skills/api-contract-review/references/review-checklist.md`](skills/api-contract-review/references/review-checklist.md) |
-| 297 | ✓ | [`skills/api-contract-review/SKILL.md`](skills/api-contract-review/SKILL.md) |
-| 298 | ✓ | [`skills/codebase-audit/references/classification.md`](skills/codebase-audit/references/classification.md) |
-| 299 | ✓ | [`skills/codebase-audit/references/dependency-audit.md`](skills/codebase-audit/references/dependency-audit.md) |
-| 300 | ✓ | [`skills/codebase-audit/references/issue-workflow.md`](skills/codebase-audit/references/issue-workflow.md) |
-| 301 | ✓ | [`skills/codebase-audit/references/review-strategy.md`](skills/codebase-audit/references/review-strategy.md) |
-| 302 | ✓ | [`skills/codebase-audit/references/security-severity-checklist.md`](skills/codebase-audit/references/security-severity-checklist.md) |
-| 303 | ✓ | [`skills/codebase-audit/references/verification.md`](skills/codebase-audit/references/verification.md) |
-| 304 | ✓ | [`skills/codebase-audit/references/worktree-fix.md`](skills/codebase-audit/references/worktree-fix.md) |
-| 305 | ✓ | [`skills/codebase-audit/SKILL.md`](skills/codebase-audit/SKILL.md) |
-| 306 | ✓ | [`skills/codebuddy-ide-mcp-upgrade/scripts/render-html.mjs`](skills/codebuddy-ide-mcp-upgrade/scripts/render-html.mjs) |
-| 307 | ✓ | [`skills/codebuddy-ide-mcp-upgrade/SKILL.md`](skills/codebuddy-ide-mcp-upgrade/SKILL.md) |
-| 308 | ✓ | [`skills/doc-freshness-review/references/review-scope.md`](skills/doc-freshness-review/references/review-scope.md) |
-| 309 | ✓ | [`skills/doc-freshness-review/SKILL.md`](skills/doc-freshness-review/SKILL.md) |
-| 310 | ✓ | [`skills/docs-workflows/references/add_aiide.md`](skills/docs-workflows/references/add_aiide.md) |
-| 311 | ✓ | [`skills/docs-workflows/references/add_article_tutorial.md`](skills/docs-workflows/references/add_article_tutorial.md) |
-| 312 | ✓ | [`skills/docs-workflows/references/add_command.md`](skills/docs-workflows/references/add_command.md) |
-| 313 | ✓ | [`skills/docs-workflows/references/add_skill.md`](skills/docs-workflows/references/add_skill.md) |
-| 314 | ✓ | [`skills/docs-workflows/references/add_video_tutorial.md`](skills/docs-workflows/references/add_video_tutorial.md) |
-| 315 | ✓ | [`skills/docs-workflows/references/command-catalog.md`](skills/docs-workflows/references/command-catalog.md) |
-| 316 | ✓ | [`skills/docs-workflows/references/create_doc.md`](skills/docs-workflows/references/create_doc.md) |
-| 317 | ✓ | [`skills/docs-workflows/references/doc_type.md`](skills/docs-workflows/references/doc_type.md) |
-| 318 | ✓ | [`skills/docs-workflows/references/explanation.md`](skills/docs-workflows/references/explanation.md) |
-| 319 | ✓ | [`skills/docs-workflows/references/issue.md`](skills/docs-workflows/references/issue.md) |
-| 320 | ✓ | [`skills/docs-workflows/references/mcp_design_review.mdc`](skills/docs-workflows/references/mcp_design_review.mdc) |
-| 321 | ✓ | [`skills/docs-workflows/references/prototype.md`](skills/docs-workflows/references/prototype.md) |
-| 322 | ✓ | [`skills/docs-workflows/references/source-commands.md`](skills/docs-workflows/references/source-commands.md) |
-| 323 | ✓ | [`skills/docs-workflows/SKILL.md`](skills/docs-workflows/SKILL.md) |
-| 324 | ✓ | [`skills/git-workflows/references/command-catalog.md`](skills/git-workflows/references/command-catalog.md) |
-| 325 | ✓ | [`skills/git-workflows/references/source-commands.md`](skills/git-workflows/references/source-commands.md) |
-| 326 | ✓ | [`skills/git-workflows/SKILL.md`](skills/git-workflows/SKILL.md) |
-| 327 | ✓ | [`skills/manage-local-skills/references/cli-alignment.md`](skills/manage-local-skills/references/cli-alignment.md) |
-| 328 | ✓ | [`skills/manage-local-skills/references/install-workflow.md`](skills/manage-local-skills/references/install-workflow.md) |
-| 329 | ✓ | [`skills/manage-local-skills/references/mapping-extension.md`](skills/manage-local-skills/references/mapping-extension.md) |
-| 330 | ✓ | [`skills/manage-local-skills/references/migration-playbook.md`](skills/manage-local-skills/references/migration-playbook.md) |
-| 331 | ✓ | [`skills/manage-local-skills/references/source-classification.md`](skills/manage-local-skills/references/source-classification.md) |
-| 332 | ✓ | [`skills/manage-local-skills/scripts/inspect-source.mjs`](skills/manage-local-skills/scripts/inspect-source.mjs) |
-| 333 | ✓ | [`skills/manage-local-skills/scripts/install-skill.mjs`](skills/manage-local-skills/scripts/install-skill.mjs) |
-| 334 | ✓ | [`skills/manage-local-skills/scripts/lib/agent-mappings.mjs`](skills/manage-local-skills/scripts/lib/agent-mappings.mjs) |
-| 335 | ✓ | [`skills/manage-local-skills/scripts/lib/install-model.mjs`](skills/manage-local-skills/scripts/lib/install-model.mjs) |
-| 336 | ✓ | [`skills/manage-local-skills/scripts/lib/path-safety.mjs`](skills/manage-local-skills/scripts/lib/path-safety.mjs) |
-| 337 | ✓ | [`skills/manage-local-skills/scripts/validate-skill.mjs`](skills/manage-local-skills/scripts/validate-skill.mjs) |
-| 338 | ✓ | [`skills/manage-local-skills/SKILL.md`](skills/manage-local-skills/SKILL.md) |
-| 339 | ✓ | [`skills/mcp-attribution-worktree/references/evaluation-verification.md`](skills/mcp-attribution-worktree/references/evaluation-verification.md) |
-| 340 | ✓ | [`skills/mcp-attribution-worktree/references/iteration-loop.md`](skills/mcp-attribution-worktree/references/iteration-loop.md) |
-| 341 | ✓ | [`skills/mcp-attribution-worktree/references/report-api-workflow.md`](skills/mcp-attribution-worktree/references/report-api-workflow.md) |
-| 342 | ✓ | [`skills/mcp-attribution-worktree/references/subagent-orchestration.md`](skills/mcp-attribution-worktree/references/subagent-orchestration.md) |
-| 343 | ✓ | [`skills/mcp-attribution-worktree/references/value-triage.md`](skills/mcp-attribution-worktree/references/value-triage.md) |
-| 344 | ✓ | [`skills/mcp-attribution-worktree/references/worktree-repair.md`](skills/mcp-attribution-worktree/references/worktree-repair.md) |
-| 345 | ✓ | [`skills/mcp-attribution-worktree/SKILL.md`](skills/mcp-attribution-worktree/SKILL.md) |
-| 346 | ✓ | [`skills/planning-workflows/references/command-catalog.md`](skills/planning-workflows/references/command-catalog.md) |
-| 347 | ✓ | [`skills/planning-workflows/references/source-commands.md`](skills/planning-workflows/references/source-commands.md) |
-| 348 | ✓ | [`skills/planning-workflows/SKILL.md`](skills/planning-workflows/SKILL.md) |
-| 349 | ✓ | [`skills/pr-review-fix/references/ci-pipeline.md`](skills/pr-review-fix/references/ci-pipeline.md) |
-| 350 | ✓ | [`skills/pr-review-fix/references/discovery.md`](skills/pr-review-fix/references/discovery.md) |
-| 351 | ✓ | [`skills/pr-review-fix/references/fix-recipes.md`](skills/pr-review-fix/references/fix-recipes.md) |
-| 352 | ✓ | [`skills/pr-review-fix/references/fix-workflow.md`](skills/pr-review-fix/references/fix-workflow.md) |
-| 353 | ✓ | [`skills/pr-review-fix/references/triage.md`](skills/pr-review-fix/references/triage.md) |
-| 354 | ✓ | [`skills/pr-review-fix/SKILL.md`](skills/pr-review-fix/SKILL.md) |
-| 355 | ✓ | [`skills/review-automation-orchestrator/references/escalation-matrix.md`](skills/review-automation-orchestrator/references/escalation-matrix.md) |
-| 356 | ✓ | [`skills/review-automation-orchestrator/SKILL.md`](skills/review-automation-orchestrator/SKILL.md) |
-| 357 | ✓ | [`skills/skill-authoring/references/cloudbase-skill-review.md`](skills/skill-authoring/references/cloudbase-skill-review.md) |
-| 358 | ✓ | [`skills/skill-authoring/references/evaluation.md`](skills/skill-authoring/references/evaluation.md) |
-| 359 | ✓ | [`skills/skill-authoring/references/examples.md`](skills/skill-authoring/references/examples.md) |
-| 360 | ✓ | [`skills/skill-authoring/references/frontmatter-patterns.md`](skills/skill-authoring/references/frontmatter-patterns.md) |
-| 361 | ✓ | [`skills/skill-authoring/references/repo-skill-review.md`](skills/skill-authoring/references/repo-skill-review.md) |
-| 362 | ✓ | [`skills/skill-authoring/references/structure-patterns.md`](skills/skill-authoring/references/structure-patterns.md) |
-| 363 | ✓ | [`skills/skill-authoring/references/templates.md`](skills/skill-authoring/references/templates.md) |
-| 364 | ✓ | [`skills/skill-authoring/SKILL.md`](skills/skill-authoring/SKILL.md) |
-| 365 | ✓ | [`specs/plugin-marketplace-listing/README.md`](specs/plugin-marketplace-listing/README.md) |
-| 366 | → | [`doc/mcp-tools.md`](doc/mcp-tools.md) |
-| 367 | → | [`README.md`](README.md) |
-| 368 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 369 | → | [`tests/hosted-mcp-e2e/README.md`](tests/hosted-mcp-e2e/README.md) |
+| 290 | ✓ | [`plugins/experts/cloudbase-collect-form-expert/README.md`](plugins/experts/cloudbase-collect-form-expert/README.md) |
+| 291 | ✓ | [`plugins/experts/cloudbase-webdev-expert/README.md`](plugins/experts/cloudbase-webdev-expert/README.md) |
+| 292 | ✓ | [`plugins/experts/cloudbase-workbench-expert/README.md`](plugins/experts/cloudbase-workbench-expert/README.md) |
+| 293 | ✓ | [`plugins/experts/miniprogram-clouddev-expert/README.md`](plugins/experts/miniprogram-clouddev-expert/README.md) |
+| 294 | ✓ | [`scripts/demo/README.md`](scripts/demo/README.md) |
+| 295 | ✓ | [`scripts/prompts/README.md`](scripts/prompts/README.md) |
+| 296 | ✓ | [`scripts/releases/README.md`](scripts/releases/README.md) |
+| 297 | ✓ | [`scripts/skills-repo-template/cloudbase-guidelines/SKILL.md`](scripts/skills-repo-template/cloudbase-guidelines/SKILL.md) |
+| 298 | ✓ | [`skills/api-contract-review/references/review-checklist.md`](skills/api-contract-review/references/review-checklist.md) |
+| 299 | ✓ | [`skills/api-contract-review/SKILL.md`](skills/api-contract-review/SKILL.md) |
+| 300 | ✓ | [`skills/codebase-audit/references/classification.md`](skills/codebase-audit/references/classification.md) |
+| 301 | ✓ | [`skills/codebase-audit/references/dependency-audit.md`](skills/codebase-audit/references/dependency-audit.md) |
+| 302 | ✓ | [`skills/codebase-audit/references/issue-workflow.md`](skills/codebase-audit/references/issue-workflow.md) |
+| 303 | ✓ | [`skills/codebase-audit/references/review-strategy.md`](skills/codebase-audit/references/review-strategy.md) |
+| 304 | ✓ | [`skills/codebase-audit/references/security-severity-checklist.md`](skills/codebase-audit/references/security-severity-checklist.md) |
+| 305 | ✓ | [`skills/codebase-audit/references/verification.md`](skills/codebase-audit/references/verification.md) |
+| 306 | ✓ | [`skills/codebase-audit/references/worktree-fix.md`](skills/codebase-audit/references/worktree-fix.md) |
+| 307 | ✓ | [`skills/codebase-audit/SKILL.md`](skills/codebase-audit/SKILL.md) |
+| 308 | ✓ | [`skills/codebuddy-ide-mcp-upgrade/scripts/render-html.mjs`](skills/codebuddy-ide-mcp-upgrade/scripts/render-html.mjs) |
+| 309 | ✓ | [`skills/codebuddy-ide-mcp-upgrade/SKILL.md`](skills/codebuddy-ide-mcp-upgrade/SKILL.md) |
+| 310 | ✓ | [`skills/doc-freshness-review/references/review-scope.md`](skills/doc-freshness-review/references/review-scope.md) |
+| 311 | ✓ | [`skills/doc-freshness-review/SKILL.md`](skills/doc-freshness-review/SKILL.md) |
+| 312 | ✓ | [`skills/docs-workflows/references/add_aiide.md`](skills/docs-workflows/references/add_aiide.md) |
+| 313 | ✓ | [`skills/docs-workflows/references/add_article_tutorial.md`](skills/docs-workflows/references/add_article_tutorial.md) |
+| 314 | ✓ | [`skills/docs-workflows/references/add_command.md`](skills/docs-workflows/references/add_command.md) |
+| 315 | ✓ | [`skills/docs-workflows/references/add_skill.md`](skills/docs-workflows/references/add_skill.md) |
+| 316 | ✓ | [`skills/docs-workflows/references/add_video_tutorial.md`](skills/docs-workflows/references/add_video_tutorial.md) |
+| 317 | ✓ | [`skills/docs-workflows/references/command-catalog.md`](skills/docs-workflows/references/command-catalog.md) |
+| 318 | ✓ | [`skills/docs-workflows/references/create_doc.md`](skills/docs-workflows/references/create_doc.md) |
+| 319 | ✓ | [`skills/docs-workflows/references/doc_type.md`](skills/docs-workflows/references/doc_type.md) |
+| 320 | ✓ | [`skills/docs-workflows/references/explanation.md`](skills/docs-workflows/references/explanation.md) |
+| 321 | ✓ | [`skills/docs-workflows/references/issue.md`](skills/docs-workflows/references/issue.md) |
+| 322 | ✓ | [`skills/docs-workflows/references/mcp_design_review.mdc`](skills/docs-workflows/references/mcp_design_review.mdc) |
+| 323 | ✓ | [`skills/docs-workflows/references/prototype.md`](skills/docs-workflows/references/prototype.md) |
+| 324 | ✓ | [`skills/docs-workflows/references/source-commands.md`](skills/docs-workflows/references/source-commands.md) |
+| 325 | ✓ | [`skills/docs-workflows/SKILL.md`](skills/docs-workflows/SKILL.md) |
+| 326 | ✓ | [`skills/git-workflows/references/command-catalog.md`](skills/git-workflows/references/command-catalog.md) |
+| 327 | ✓ | [`skills/git-workflows/references/source-commands.md`](skills/git-workflows/references/source-commands.md) |
+| 328 | ✓ | [`skills/git-workflows/SKILL.md`](skills/git-workflows/SKILL.md) |
+| 329 | ✓ | [`skills/manage-local-skills/references/cli-alignment.md`](skills/manage-local-skills/references/cli-alignment.md) |
+| 330 | ✓ | [`skills/manage-local-skills/references/install-workflow.md`](skills/manage-local-skills/references/install-workflow.md) |
+| 331 | ✓ | [`skills/manage-local-skills/references/mapping-extension.md`](skills/manage-local-skills/references/mapping-extension.md) |
+| 332 | ✓ | [`skills/manage-local-skills/references/migration-playbook.md`](skills/manage-local-skills/references/migration-playbook.md) |
+| 333 | ✓ | [`skills/manage-local-skills/references/source-classification.md`](skills/manage-local-skills/references/source-classification.md) |
+| 334 | ✓ | [`skills/manage-local-skills/scripts/inspect-source.mjs`](skills/manage-local-skills/scripts/inspect-source.mjs) |
+| 335 | ✓ | [`skills/manage-local-skills/scripts/install-skill.mjs`](skills/manage-local-skills/scripts/install-skill.mjs) |
+| 336 | ✓ | [`skills/manage-local-skills/scripts/lib/agent-mappings.mjs`](skills/manage-local-skills/scripts/lib/agent-mappings.mjs) |
+| 337 | ✓ | [`skills/manage-local-skills/scripts/lib/install-model.mjs`](skills/manage-local-skills/scripts/lib/install-model.mjs) |
+| 338 | ✓ | [`skills/manage-local-skills/scripts/lib/path-safety.mjs`](skills/manage-local-skills/scripts/lib/path-safety.mjs) |
+| 339 | ✓ | [`skills/manage-local-skills/scripts/validate-skill.mjs`](skills/manage-local-skills/scripts/validate-skill.mjs) |
+| 340 | ✓ | [`skills/manage-local-skills/SKILL.md`](skills/manage-local-skills/SKILL.md) |
+| 341 | ✓ | [`skills/mcp-attribution-worktree/references/evaluation-verification.md`](skills/mcp-attribution-worktree/references/evaluation-verification.md) |
+| 342 | ✓ | [`skills/mcp-attribution-worktree/references/iteration-loop.md`](skills/mcp-attribution-worktree/references/iteration-loop.md) |
+| 343 | ✓ | [`skills/mcp-attribution-worktree/references/report-api-workflow.md`](skills/mcp-attribution-worktree/references/report-api-workflow.md) |
+| 344 | ✓ | [`skills/mcp-attribution-worktree/references/subagent-orchestration.md`](skills/mcp-attribution-worktree/references/subagent-orchestration.md) |
+| 345 | ✓ | [`skills/mcp-attribution-worktree/references/value-triage.md`](skills/mcp-attribution-worktree/references/value-triage.md) |
+| 346 | ✓ | [`skills/mcp-attribution-worktree/references/worktree-repair.md`](skills/mcp-attribution-worktree/references/worktree-repair.md) |
+| 347 | ✓ | [`skills/mcp-attribution-worktree/SKILL.md`](skills/mcp-attribution-worktree/SKILL.md) |
+| 348 | ✓ | [`skills/planning-workflows/references/command-catalog.md`](skills/planning-workflows/references/command-catalog.md) |
+| 349 | ✓ | [`skills/planning-workflows/references/source-commands.md`](skills/planning-workflows/references/source-commands.md) |
+| 350 | ✓ | [`skills/planning-workflows/SKILL.md`](skills/planning-workflows/SKILL.md) |
+| 351 | ✓ | [`skills/pr-review-fix/references/ci-pipeline.md`](skills/pr-review-fix/references/ci-pipeline.md) |
+| 352 | ✓ | [`skills/pr-review-fix/references/discovery.md`](skills/pr-review-fix/references/discovery.md) |
+| 353 | ✓ | [`skills/pr-review-fix/references/fix-recipes.md`](skills/pr-review-fix/references/fix-recipes.md) |
+| 354 | ✓ | [`skills/pr-review-fix/references/fix-workflow.md`](skills/pr-review-fix/references/fix-workflow.md) |
+| 355 | ✓ | [`skills/pr-review-fix/references/triage.md`](skills/pr-review-fix/references/triage.md) |
+| 356 | ✓ | [`skills/pr-review-fix/SKILL.md`](skills/pr-review-fix/SKILL.md) |
+| 357 | ✓ | [`skills/review-automation-orchestrator/references/escalation-matrix.md`](skills/review-automation-orchestrator/references/escalation-matrix.md) |
+| 358 | ✓ | [`skills/review-automation-orchestrator/SKILL.md`](skills/review-automation-orchestrator/SKILL.md) |
+| 359 | ✓ | [`skills/skill-authoring/references/cloudbase-skill-review.md`](skills/skill-authoring/references/cloudbase-skill-review.md) |
+| 360 | ✓ | [`skills/skill-authoring/references/evaluation.md`](skills/skill-authoring/references/evaluation.md) |
+| 361 | ✓ | [`skills/skill-authoring/references/examples.md`](skills/skill-authoring/references/examples.md) |
+| 362 | ✓ | [`skills/skill-authoring/references/frontmatter-patterns.md`](skills/skill-authoring/references/frontmatter-patterns.md) |
+| 363 | ✓ | [`skills/skill-authoring/references/repo-skill-review.md`](skills/skill-authoring/references/repo-skill-review.md) |
+| 364 | ✓ | [`skills/skill-authoring/references/structure-patterns.md`](skills/skill-authoring/references/structure-patterns.md) |
+| 365 | ✓ | [`skills/skill-authoring/references/templates.md`](skills/skill-authoring/references/templates.md) |
+| 366 | ✓ | [`skills/skill-authoring/SKILL.md`](skills/skill-authoring/SKILL.md) |
+| 367 | ✓ | [`specs/plugin-marketplace-listing/README.md`](specs/plugin-marketplace-listing/README.md) |
+| 368 | → | [`doc/mcp-tools.md`](doc/mcp-tools.md) |
+| 369 | → | [`README.md`](README.md) |
+| 370 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 371 | → | [`tests/hosted-mcp-e2e/README.md`](tests/hosted-mcp-e2e/README.md) |
 
 ---
 

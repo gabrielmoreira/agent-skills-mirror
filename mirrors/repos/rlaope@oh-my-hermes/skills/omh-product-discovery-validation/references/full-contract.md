@@ -34,7 +34,8 @@ Bad example:
 
 ## Completion Checklist
 
-- The problem gate state is recorded as validated, refuted, or inconclusive with the external-human or behavioral-data refs that decided it.
+- The problem gate state is recorded as validated, refuted, or inconclusive with the external-human or behavioral-data refs that decided it, all observed in the framed target segment.
+- The target segment is explicit enough to recruit or tied to observed behavioral data before any solution, PRD, prototype, or coding output leaves this workflow.
 - Every assumption test in the portfolio carries its precommitted success, failure, inconclusive, segment, deadline, cost, owner, and evidence re-entry fields.
 - The receipt names kill, pivot, persevere, or inconclusive, preserves rejected paths, and routes to `product-brief` only from an accepted persevere.
 - Every artifact is reported as prepared; interviews, tests, and prototypes stay not_observed until re-entered evidence exists.
@@ -43,6 +44,7 @@ Bad example:
 
 - If external-human or behavioral-data evidence is absent, hold the problem gate at inconclusive and hand the customer discovery plan to a human owner instead of filling the gap with personas.
 - If a test passes its deadline or budget without meeting a precommitted condition, record inconclusive with the residual risk and let the decision owner choose a new budget or a kill.
+- If the target segment is unknown, synthetic-only, or non-recruitable, keep the discovery frame and customer discovery plan and report defining a recruitable or behaviorally observed audience as the next evidence task.
 - If a pivot changes the problem or segment, open a new decision frame and carry the falsified hypotheses forward as rejected paths.
 
 ## Use When
@@ -96,5 +98,6 @@ Safety rules:
 - Synthetic personas, model-generated interview answers, secondary summaries, prototypes without representative-user observation, and unsupported market-size figures cannot satisfy a customer-validation gate.
 - Interview praise, stated purchase intent, a waitlist signup, a finished prototype, or one passed experiment is not product-market fit; state what each signal can and cannot establish.
 - Founder-market fit and strategic preference may inform the decision but never substitute for target-customer evidence.
+- An unknown, synthetic-only, or non-recruitable target segment blocks a solution, PRD, prototype-as-validation, or coding handoff; discovery framing, the customer discovery plan, and evidence work continue while it does.
 
 Detailed procedure steps: `references/procedure.md`.

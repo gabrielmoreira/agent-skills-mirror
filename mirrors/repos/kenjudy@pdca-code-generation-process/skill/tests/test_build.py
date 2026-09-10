@@ -239,10 +239,71 @@ CHANGELOG_FILE = REPO_ROOT / "CHANGELOG.md"
 
 
 EVAL_SCENARIOS_DIR = CLAUDE_SKILL_DIR / "eval" / "scenarios"
+EVAL_BASELINES_DIR = CLAUDE_SKILL_DIR / "eval" / "baselines"
 
 
 class TestEvalScenarios(unittest.TestCase):
     """Structural validation: every scenario JSON file must conform to the schema."""
+
+    def test_superpowers_tdd_precedence_skips_geval(self):
+        """#136: GEval on this scenario measures noise, so it is turned off.
+
+        Three measured rounds (34245608454, 34275465380, 34372905517) established that
+        the Phase 2 judge scores this scenario against criteria it does not declare, and
+        that saying so in the rubric makes it worse -- a "do not penalise X" clause became
+        "penalise X", and scores fell to 0.00-0.10. The two prose fixes were reverted.
+
+        What the scenario claims is that the called shot survives when superpowers' TDD
+        skill is active. The mechanical tier verifies exactly that, and did so at 17/18,
+        22/23 and 17/18 across those three runs -- rock steady while GEval swung from 0.00
+        to 0.90 on the same behaviour. Turning GEval off here keeps the signal and drops
+        the noise.
+
+        This is not hiding the fault. #147's divergence note reports mechanical/GEval
+        disagreement in the report itself, and #148 tracks the root cause: rubrics score
+        every criterion against every scenario, including ones it does not claim.
+        """
+        import json
+
+        scenarios = json.loads((EVAL_SCENARIOS_DIR / "2_scenarios.json").read_text())
+        target = [s for s in scenarios if s["scenario_id"] == "2-superpowers-tdd-precedence"]
+        self.assertEqual(len(target), 1, "2-superpowers-tdd-precedence not found")
+        self.assertTrue(
+            target[0]["expected_signals"].get("skip_geval"),
+            "2-superpowers-tdd-precedence still runs GEval, which was measured scoring the "
+            "same behaviour anywhere from 0.00 to 0.90 across three runs (#136)",
+        )
+
+    def test_skip_geval_scenarios_still_assert_something(self):
+        """A scenario with GEval off and no mechanical signal cannot fail.
+
+        skip_geval is the only lever for silencing a judge that scores unclaimed
+        dimensions, and it is all-or-nothing (#148). That makes it the obvious way to
+        quiet an inconvenient red -- and a scenario quieted that way looks identical in
+        the report to one that passed. This asserts the lever cannot be pulled that far.
+        """
+        import json
+
+        for path in sorted(EVAL_SCENARIOS_DIR.glob("*.json")):
+            scenarios = json.loads(path.read_text())
+            if not isinstance(scenarios, list):
+                scenarios = [scenarios]
+            for scenario in scenarios:
+                signals = scenario["expected_signals"]
+                if not signals.get("skip_geval"):
+                    continue
+                with self.subTest(scenario=scenario["scenario_id"]):
+                    has_mechanical = (
+                        signals.get("must_contain")
+                        or signals.get("must_not_contain")
+                        or signals.get("called_shot_required")
+                    )
+                    self.assertTrue(
+                        has_mechanical,
+                        f"{scenario['scenario_id']} skips GEval and defines no mechanical "
+                        "signal, so it asserts nothing and cannot fail -- it would report "
+                        "as a pass forever",
+                    )
 
     def test_scenario_files_valid_against_schema(self):
         """All JSON files in eval/scenarios/ must pass validate_scenario.
@@ -1458,3 +1519,107 @@ class TestBeadsWorkflowContent(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestEvalBaselines(unittest.TestCase):
+    """A tracked baseline must exist, and must be attributable (#122).
+
+    CLAUDE.md's Validating Prompt Changes step 1 says to "check skill/eval/results/ for
+    the baseline scores". That directory is gitignored (.gitignore:28) and `git log --all`
+    over it is empty -- it has never been tracked. The instruction has therefore been
+    inoperable on every fresh clone and in CI for as long as it has existed, and #122's
+    own closing procedure ("compare against the baselines in skill/eval/results/") had no
+    left-hand side.
+
+    eval/results/ cannot simply be un-ignored: every run writes a fresh timestamped report
+    there, so tracking it would leave the tree dirty after each run -- the churn pattern
+    uv.lock already produced. eval/baselines/ holds deliberately promoted reports only.
+    """
+
+    @staticmethod
+    def _scenario_ids() -> list[str]:
+        import json
+
+        ids: list[str] = []
+        for path in sorted(EVAL_SCENARIOS_DIR.glob("*.json")):
+            scenarios = json.loads(path.read_text())
+            if not isinstance(scenarios, list):
+                scenarios = [scenarios]
+            ids.extend(s["scenario_id"] for s in scenarios)
+        return ids
+
+    @staticmethod
+    def _baseline_texts():
+        if not EVAL_BASELINES_DIR.is_dir():
+            return []
+        return [p.read_text() for p in sorted(EVAL_BASELINES_DIR.glob("report_*.md"))]
+
+    def test_baseline_exists_for_every_scenario(self):
+        """Reuses check_eval_ran.scored_scenarios rather than re-parsing the Summary
+        table: that parser already distinguishes a scored row from a crashed run's empty
+        table, which is exactly the distinction a baseline must not blur."""
+        import sys
+
+        sys.path.insert(0, str(CLAUDE_SKILL_DIR))
+        from check_eval_ran import scored_scenarios
+
+        covered = set()
+        for text in self._baseline_texts():
+            covered.update(scored_scenarios(text))
+
+        missing = sorted(set(self._scenario_ids()) - covered)
+        self.assertEqual(
+            missing,
+            [],
+            f"{len(missing)} scenario(s) have no baseline in skill/eval/baselines/: "
+            f"{', '.join(missing)}",
+        )
+
+    def test_baselines_dir_is_not_gitignored(self):
+        """The mechanism that stops #122's defect recurring.
+
+        The whole problem was an instruction naming a path that git never tracked. Adding
+        eval/baselines/ to .gitignore later would reproduce it exactly, silently, and the
+        instruction would keep reading as though it worked.
+        """
+        result = subprocess.run(
+            ["git", "check-ignore", "-q", "skill/eval/baselines/"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+        )
+        # git check-ignore exits 0 when the path IS ignored.
+        self.assertNotEqual(
+            result.returncode,
+            0,
+            "skill/eval/baselines/ is gitignored, so the baselines the instructions point "
+            "at would not exist on a fresh clone or in CI -- the exact defect of #122",
+        )
+
+    def test_instruction_files_point_at_the_tracked_baselines_dir(self):
+        """CLAUDE.md and SUPERVISION-PROTOCOL.md both told readers to get baseline scores
+        from skill/eval/results/, which has never been tracked."""
+        for rel in ("CLAUDE.md", "skill/SUPERVISION-PROTOCOL.md"):
+            with self.subTest(instruction_file=rel):
+                text = (REPO_ROOT / rel).read_text()
+                self.assertIn(
+                    "skill/eval/baselines/",
+                    text,
+                    f"{rel} does not name the tracked baselines directory, so its "
+                    "baseline instruction points at gitignored output that is absent on "
+                    "any fresh clone and in CI (#122)",
+                )
+
+    def test_every_baseline_records_the_versions_that_produced_it(self):
+        """A baseline that does not say what produced it cannot be compared against --
+        the defect that made #122 unanswerable in retrospect. #145 made the reporter
+        record this; this asserts a promoted baseline actually carries it."""
+        texts = self._baseline_texts()
+        self.assertTrue(texts, "no baseline reports in skill/eval/baselines/")
+        for path, text in zip(sorted(EVAL_BASELINES_DIR.glob("report_*.md")), texts):
+            with self.subTest(baseline=path.name):
+                self.assertIn(
+                    "deepeval:",
+                    text,
+                    f"{path.name} records no deepeval version, so the scores in it cannot "
+                    "be attributed to a dependency set (#122)",
+                )

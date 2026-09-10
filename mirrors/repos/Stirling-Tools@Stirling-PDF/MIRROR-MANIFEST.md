@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Stirling-Tools/Stirling-PDF` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/feature-walkthrough/SKILL.md`](.claude/skills/feature-walkthrough/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/pr-quiz/SKILL.md`](.claude/skills/pr-quiz/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/ui-before-after/SKILL.md`](.claude/skills/ui-before-after/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/ui-walkthrough/SKILL.md`](.claude/skills/ui-walkthrough/SKILL.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/comment-review/SKILL.md`](.claude/skills/comment-review/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/feature-walkthrough/SKILL.md`](.claude/skills/feature-walkthrough/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/pr-quiz/SKILL.md`](.claude/skills/pr-quiz/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/ui-before-after/SKILL.md`](.claude/skills/ui-before-after/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/ui-walkthrough/SKILL.md`](.claude/skills/ui-walkthrough/SKILL.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

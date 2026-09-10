@@ -1,4 +1,4 @@
-# ðŸš€ Elite Technical Implementations (Batch 09)
+# 🚀 Elite Technical Implementations (Batch 09)
 
 ### 1. Greedy-Meshing Pattern (Quad Optimization)
 Rendering individual voxels is a bottleneck. Greedy meshing combines adjacent identical faces into single large quads. For maximum performance, bypass the SceneTree and submit generated arrays directly to the `RenderingServer`.

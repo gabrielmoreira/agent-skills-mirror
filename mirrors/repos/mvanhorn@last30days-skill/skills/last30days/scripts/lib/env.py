@@ -68,6 +68,7 @@ KEYCHAIN_KEYS = (
     "TRUTHSOCIAL_TOKEN", "BRAVE_API_KEY", "EXA_API_KEY", "SERPER_API_KEY",
     "OPENROUTER_API_KEY", "PERPLEXITY_API_KEY", "PARALLEL_API_KEY", "XQUIK_API_KEY",
     "XIAOHONGSHU_API_BASE", "GITHUB_TOKEN", "BRIGHTDATA_API_KEY",
+    "X_BEARER_TOKEN",
 )
 
 # pass(1) integration: Linux/Unix analog of the Keychain source. Each key in
@@ -614,9 +615,25 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         ('LAST30DAYS_YT_TRANSCRIPT_FAST_TIMEOUT', None),
         ('LAST30DAYS_YT_SEARCH_TIMEOUT', None),
         ('GITHUB_TOKEN', None),
+        # Host self-identification. `grok-bot` switches the X policy
+        # to official-only (see x_policy); the engine never sniffs the host
+        # any other way. Persisted by first-run setup and exported per
+        # invocation by the SKILL.md rule.
+        (X_HOST_VAR, None),
+        # App-only bearer token for the direct X API v2 backend (`xapi`).
+        ('X_BEARER_TOKEN', None),
+        # Per-session X connector lane signal. Read from the process
+        # environment ONLY: a .env line is deliberately ignored (a removed
+        # connector must never leave a stale declaration), so it is handled
+        # in the loop below rather than via merged_env.
+        (X_HOST_LANE_VAR, None),
     ]
 
     for key, default in keys:
+        if key == X_HOST_LANE_VAR:
+            # Process env only; the .env value never reaches config.
+            config[key] = os.environ.get(key) or default
+            continue
         if key == 'LAST30DAYS_YT_PLAYER_CLIENT':
             # Empty string is a valid disable; `or` would treat it as unset.
             if key in os.environ:
@@ -689,10 +706,21 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         config['_IGNORED_PROJECT_CONFIG'] = str(ignored_project_env_path)
         config['_IGNORED_PROJECT_CONFIG_KEYS'] = ignored_project_keys
     config['_BROWSER_COOKIE_MODE'] = policy.browser_cookies
+    # A LAST30DAYS_X_HOST_LANE line in a config file is ignored;
+    # remember that it was there so doctor can say so.
+    config['_X_HOST_LANE_FILE_IGNORED'] = bool(merged_env.get(X_HOST_LANE_VAR))
+    # Evaluated after the host and pin keys are merged: on an official-only
+    # host the browser list is empty unless bird is pinned (x_policy).
     config['_BROWSER_COOKIE_BROWSERS'] = cookie_extraction_browsers(config)
 
     if policy.browser_cookies == "read":
         _discover_and_apply_x_credentials(config)
+
+    # Fixture recording (--record-fixtures) must redact a credential that
+    # came from a file, Keychain, or pass, not only one exported in the
+    # shell. No-op outside a recording session.
+    from . import http as _http
+    _http.add_fixture_redactions(_http.config_secret_values(config))
 
     return config
 
@@ -806,7 +834,14 @@ def _discover_and_apply_x_credentials(config: dict[str, Any]) -> None:
     On a Mac mini that has already opted into browser reads (FROM_BROWSER set),
     the native extract runs BEFORE CDP (R19) — a local Keychain read beats a
     debug-port scrape. Never persists cookies; values are never logged.
+
+    On an official-only host (``x_policy``: ``LAST30DAYS_HOST=grok-bot``)
+    this returns before ANY leg, for every cookie domain, unless the pin is
+    ``bird`` (the one path that re-enables discovery for that run).
     """
+    if not x_policy(config).cookie_discovery:
+        return
+
     from . import agentcookie, chrome_cdp
 
     def have_pair() -> bool:
@@ -876,8 +911,11 @@ def cookie_extraction_browsers(config: dict[str, Any]) -> list[str]:
 
     Returning the browser list from one place keeps the setup wizard and the
     steady-state path on the same policy, so neither surprises the user with an
-    unrequested Keychain prompt.
+    unrequested Keychain prompt. On an official-only host (``x_policy``) the
+    list is empty regardless of ``FROM_BROWSER`` unless ``bird`` is pinned.
     """
+    if not x_policy(config).cookie_discovery:
+        return []
     silent_browsers = ["firefox", "safari"]
     chromium_browsers = ["chrome", "brave", "edge", "vivaldi", "opera", "arc", "chromium"]
     known_browsers = silent_browsers + chromium_browsers
@@ -945,23 +983,37 @@ def extract_browser_credentials(config: dict[str, Any]) -> dict[str, str]:
     return extracted
 
 
+# Auth-origin label per X backend for ``get_x_source_with_method`` (bird's
+# label is the cookie source recorded in ``_AUTH_TOKEN_SOURCE``).
+_X_METHOD_LABELS = {
+    "xai": "xai",
+    "xurl": "oauth2",  # xurl CLI (official X API v2, OAuth2, free developer app)
+    "xapi": "bearer",
+    "xquik": "api_key",
+}
+
+
 def get_x_source_with_method(config: dict[str, Any]) -> tuple[str | None, str]:
     """Return (source, method) for X search, where method describes the auth origin.
 
-    Order mirrors _X_BACKEND_ORDER: bird first (cookies beat XAI_API_KEY when
-    both are present), then xai, then xurl. Grok is opt-in only and is never
-    auto-selected here.
+    Walks the policy's unpinned auto chain (``x_auto_chain``): on a default
+    host bird first (cookies beat XAI_API_KEY when both are present), then
+    xai, xurl, xquik; on an official-only host xapi, xai, xurl. Opt-in
+    backends (grok, and xapi off Grok Bot) are never auto-selected here.
     """
-    # Bird first: cookies beat XAI_API_KEY when both are present.
-    if config.get("AUTH_TOKEN") and config.get("CT0"):
-        method = config.get("_AUTH_TOKEN_SOURCE", "env")
-        return "bird", method
-    if config.get("XAI_API_KEY"):
-        return "xai", "xai"
-    # Fall back to xurl CLI (official X API v2, OAuth2, free developer app)
-    from . import xurl_x
-    if xurl_x.is_available():
-        return "xurl", "oauth2"
+    has_bird_creds = bool(config.get("AUTH_TOKEN") and config.get("CT0"))
+    for backend in x_auto_chain(config):
+        if backend == "bird":
+            # Cookie presence only: the scraper install is not consulted
+            # here (unlike ``x_backend_chain``), so a fresh cookie-bearing
+            # config reports bird before the binary is checked.
+            if not has_bird_creds:
+                continue
+        elif not _x_backend_available(backend, config, has_bird_creds):
+            continue
+        if backend == "bird":
+            return "bird", config.get("_AUTH_TOKEN_SOURCE", "env")
+        return backend, _X_METHOD_LABELS.get(backend, "none")
     return None, "none"
 
 
@@ -996,13 +1048,29 @@ def get_reddit_source(config: dict[str, Any]) -> str | None:
 #   xquik — key-based REST X search (XQUIK_API_KEY)
 _X_BACKEND_ORDER = ("bird", "xai", "xurl", "xquik")
 
-# Opt-in backends: never in the unpinned auto chain; require explicit pin.
-# grok is here because a leftover ~/.grok/auth.json must never steal the X
-# lane. Pin LAST30DAYS_X_BACKEND=grok to enable it.
-_X_BACKEND_OPT_IN = ("grok",)
+# Opt-in backends: never in the default unpinned auto chain; require an
+# explicit pin. grok is here because a leftover ~/.grok/auth.json must never
+# steal the X lane. xapi (direct X API v2 with X_BEARER_TOKEN) is here so an
+# ambient bearer exported for some other tool never spends X API credits
+# every time the cookie scraper comes back empty; on an official-only
+# host it is the first rung of the auto chain instead (see _X_OFFICIAL).
+_X_BACKEND_OPT_IN = ("grok", "xapi")
 
 # All known backends (auto chain + opt-in): valid values for the pin var.
 _X_BACKEND_KNOWN = _X_BACKEND_ORDER + _X_BACKEND_OPT_IN
+
+# Licensed / official backends: the unpinned auto chain on an official-only
+# host. xapi = X API v2 with an app-only bearer, xai = xAI's licensed
+# X search, xurl = the X API through X's own CLI.
+_X_OFFICIAL = ("xapi", "xai", "xurl")
+
+# Host self-identification key and the one value that switches the X
+# policy. The engine trusts this key alone: it never infers the host from
+# the home directory, PATH, platform, or agent env vars.
+X_HOST_VAR = 'LAST30DAYS_HOST'
+GROK_BOT_HOST = 'grok-bot'
+# Per-session X connector lane signal: process env only.
+X_HOST_LANE_VAR = 'LAST30DAYS_X_HOST_LANE'
 
 # Public routing definitions for the doctor/backend-descriptor layer
 # (lib/backends.py). These are aliases for knowledge this module already
@@ -1011,9 +1079,76 @@ _X_BACKEND_KNOWN = _X_BACKEND_ORDER + _X_BACKEND_OPT_IN
 X_BACKEND_ORDER = _X_BACKEND_ORDER
 X_BACKEND_OPT_IN = _X_BACKEND_OPT_IN
 X_BACKEND_KNOWN = _X_BACKEND_KNOWN
+X_OFFICIAL = _X_OFFICIAL
 X_BACKEND_PIN_VAR = 'LAST30DAYS_X_BACKEND'
 REDDIT_BACKEND_PIN_VAR = 'LAST30DAYS_REDDIT_BACKEND'
 REDDIT_SC_MIN_ITEMS_VAR = 'LAST30DAYS_REDDIT_SC_MIN_ITEMS'
+
+
+@dataclass(frozen=True)
+class XPolicy:
+    """The host-conditional X routing rule, resolved once per config.
+
+    ``host`` is the normalized ``LAST30DAYS_HOST`` value; ``official_only``
+    is true on a Grok Bot host; ``auto_chain`` is the unpinned chain
+    (``_X_OFFICIAL`` when official-only, else ``_X_BACKEND_ORDER``);
+    ``cookie_discovery`` is false when official-only unless the pin is
+    ``bird``; ``hint_namespace`` (``official`` or ``default``) is derived
+    from ``official_only`` as a plain string so this module never imports
+    ``prescriptions``.
+    """
+
+    host: str
+    official_only: bool
+    auto_chain: tuple[str, ...]
+    cookie_discovery: bool
+
+    @property
+    def hint_namespace(self) -> str:
+        return 'official' if self.official_only else 'default'
+
+
+def x_backend_pin(config: dict[str, Any]) -> str:
+    """The normalized ``LAST30DAYS_X_BACKEND`` pin value ("" when unset)."""
+    return (config.get(X_BACKEND_PIN_VAR) or '').strip().lower()
+
+
+def x_policy(config: dict[str, Any]) -> XPolicy:
+    """Resolve the X policy from ``LAST30DAYS_HOST`` and the pin.
+
+    This is the ONLY place the Grok Bot host string is compared. It reads
+    just the host key, the pin, and the config dict: no platform, PATH, home
+    directory, or agent env-var inspection (the same rule ``x_extras_enabled``
+    follows), and nothing imported from ``lib``. The pin keeps its exclusive
+    semantics on every host and may name any known backend; a ``bird`` pin
+    is the one path that re-enables cookie discovery on an official-only host.
+    """
+    host = str(config.get(X_HOST_VAR) or '').strip().lower()
+    official_only = host == GROK_BOT_HOST
+    pin = x_backend_pin(config)
+    return XPolicy(
+        host=host,
+        official_only=official_only,
+        auto_chain=_X_OFFICIAL if official_only else _X_BACKEND_ORDER,
+        cookie_discovery=(not official_only) or pin == 'bird',
+    )
+
+
+def x_auto_chain(config: dict[str, Any]) -> list[str]:
+    """The unpinned X auto chain for this host, in failover order."""
+    return list(x_policy(config).auto_chain)
+
+
+def x_host_lane_declared(config: dict[str, Any]) -> bool:
+    """True when the hosting model declared the X connector lane.
+
+    ``get_config`` fills ``LAST30DAYS_X_HOST_LANE`` from the process
+    environment only, so a ``.env`` line never declares the lane.
+    Deliberately NOT ``x_pending_browser_auth``: that predicate is false in
+    cookie-read mode by contract, which would leave the envelope path dead at
+    research time. Host-independent: the envelope is accepted anywhere.
+    """
+    return _truthy(config.get(X_HOST_LANE_VAR))
 
 
 def _x_backend_available(
@@ -1042,6 +1177,9 @@ def _x_backend_available(
         return xurl_x.is_available()
     if backend == 'xquik':
         return is_xquik_available(config)
+    if backend == 'xapi':
+        # Key presence only (no network); local_only needs no branch.
+        return bool(config.get('X_BEARER_TOKEN'))
     return False
 
 
@@ -1066,25 +1204,34 @@ def x_backend_chain(config: dict[str, Any], local_only: bool = False) -> list[st
     answered from local evidence only (no subprocess spawns that reach the
     network — xurl's live `whoami` check is replaced by its on-disk token
     store). Research-time callers keep the default live semantics.
-    """
-    from . import bird_x
-    has_bird_creds = bool(config.get('AUTH_TOKEN') and config.get('CT0'))
-    if has_bird_creds:
-        bird_x.set_credentials(config.get('AUTH_TOKEN'), config.get('CT0'))
 
-    preferred = (config.get(X_BACKEND_PIN_VAR) or '').lower()
+    The unpinned walk is ``x_policy(config).auto_chain``: the default order
+    above on every host, or ``_X_OFFICIAL`` (xapi -> xai -> xurl) on an
+    official-only host. The scraper is primed with cookies only when bird
+    ends up in the resulting chain (never on an official-only host unless
+    bird is pinned).
+    """
+    has_bird_creds = bool(config.get('AUTH_TOKEN') and config.get('CT0'))
+
+    preferred = x_backend_pin(config)
     # Pin accepted from _X_BACKEND_KNOWN (auto chain + opt-in like grok).
     if preferred in _X_BACKEND_KNOWN:
         if _x_backend_available(preferred, config, has_bird_creds, local_only):
-            return [preferred]
-        return []
+            chain = [preferred]
+        else:
+            chain = []
+    else:
+        # Unpinned: walk the policy's auto chain. Opt-in backends (grok, and
+        # xapi off an official-only host) are never auto-selected.
+        chain = [
+            b for b in x_policy(config).auto_chain
+            if _x_backend_available(b, config, has_bird_creds, local_only)
+        ]
 
-    # Unpinned: walk only _X_BACKEND_ORDER (bird -> xai -> xurl -> xquik).
-    # Opt-in backends like grok are never auto-selected.
-    return [
-        b for b in _X_BACKEND_ORDER
-        if _x_backend_available(b, config, has_bird_creds, local_only)
-    ]
+    if 'bird' in chain:
+        from . import bird_x
+        bird_x.set_credentials(config.get('AUTH_TOKEN'), config.get('CT0'))
+    return chain
 
 
 def get_x_source(config: dict[str, Any], local_only: bool = False) -> str | None:
@@ -1128,6 +1275,10 @@ def x_pending_browser_auth(config: dict[str, Any], local_only: bool = False) -> 
     # Only meaningful in inspection modes that skip extraction; a real ``read``
     # run has already attempted extraction and must report its true state.
     if config.get('_BROWSER_COOKIE_MODE') == 'read':
+        return False
+    # Cookie-only predicate: on an official-only host no run-time cookie
+    # source exists unless bird is pinned (x_policy), so nothing is pending.
+    if not x_policy(config).cookie_discovery:
         return False
     if 'x' not in COOKIE_DOMAINS:
         return False
@@ -1444,10 +1595,24 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
     """
     from . import bird_x
 
-    if config.get('AUTH_TOKEN') and config.get('CT0'):
+    # Backends this host may run: the policy's auto chain plus a known pin.
+    # Bird is primed/probed and xquik is probed only when they are in that
+    # set, so an official-only host never touches the scraper or the
+    # third-party API unless the backend is pinned.
+    policy = x_policy(config)
+    pin = x_backend_pin(config)
+    considered = set(policy.auto_chain)
+    if pin in _X_BACKEND_KNOWN:
+        considered.add(pin)
+
+    if 'bird' in considered and config.get('AUTH_TOKEN') and config.get('CT0'):
         bird_x.set_credentials(config.get('AUTH_TOKEN'), config.get('CT0'))
-    bird_status = bird_x.get_bird_status()
+    bird_status = dict(bird_x.get_bird_status())
+    if 'bird' not in considered:
+        # Never report the scraper as usable where the policy forbids it.
+        bird_status["authenticated"] = False
     xai_available = bool(config.get('XAI_API_KEY'))
+    xapi_available = bool(config.get('X_BEARER_TOKEN'))
 
     # Report the TRUE auth lane (browser / env / keychain) rather than the static
     # "env AUTH_TOKEN" label — tokens usually come from live browser cookies, and
@@ -1468,7 +1633,7 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
     xquik_available = is_xquik_available(config)
     xquik_working: bool | None = None
     xquik_status = ""
-    if xquik_available:
+    if xquik_available and 'xquik' in considered:
         if probe:
             from . import xquik
             xquik_working = xquik.probe_works(get_xquik_token(config))
@@ -1492,36 +1657,24 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
 
     # Determine active source. A pin forces a single backend (R4): ANY known
     # pin is exclusive, mirroring x_backend_chain's [] semantics. Pinned
-    # backend available → that source. Pinned backend unavailable → None.
-    # Otherwise, order mirrors _X_BACKEND_ORDER: bird first (cookies beat
-    # XAI_API_KEY when both are present), then xai, then xurl, then xquik.
-    # Grok is opt-in only and never auto-selected; a leftover ~/.grok/auth.json
-    # must not steal the X lane.
-    pin = (config.get(X_BACKEND_PIN_VAR) or '').lower()
-    if pin and pin in _X_BACKEND_KNOWN:
+    # backend available -> that source. Pinned backend unavailable -> None.
+    # Otherwise walk the policy's auto chain (default: bird first, cookies
+    # beat XAI_API_KEY when both are present, then xai, xurl, xquik;
+    # official-only: xapi, xai, xurl). Opt-in backends are never
+    # auto-selected; a leftover ~/.grok/auth.json must not steal the X lane.
+    usable = {
+        'bird': bird_status["authenticated"],
+        'xai': xai_available,
+        'xurl': xurl_available,
+        'xquik': xquik_available and xquik_working is not False,
+        'grok': grok_available,
+        'xapi': xapi_available,
+    }
+    if pin in _X_BACKEND_KNOWN:
         # Pin is exclusive: pinned backend if available, else None (no fallback).
-        if pin == 'bird':
-            source = 'bird' if bird_status["authenticated"] else None
-        elif pin == 'xai':
-            source = 'xai' if xai_available else None
-        elif pin == 'xurl':
-            source = 'xurl' if xurl_available else None
-        elif pin == 'xquik':
-            source = 'xquik' if (xquik_available and xquik_working is not False) else None
-        elif pin == 'grok':
-            source = 'grok' if grok_available else None
-        else:
-            source = None
-    elif bird_status["authenticated"]:
-        source = 'bird'
-    elif xai_available:
-        source = 'xai'
-    elif xurl_available:
-        source = 'xurl'
-    elif xquik_available and xquik_working is not False:
-        source = 'xquik'
+        source = pin if usable.get(pin) else None
     else:
-        source = None
+        source = next((b for b in policy.auto_chain if usable.get(b)), None)
 
     return {
         "source": source,
@@ -1529,6 +1682,7 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
         "bird_authenticated": bird_status["authenticated"],
         "bird_username": bird_status["username"],
         "xai_available": xai_available,
+        "xapi_available": xapi_available,
         "grok_available": grok_available,
         "xurl_available": xurl_available,
         "xquik_available": xquik_available,

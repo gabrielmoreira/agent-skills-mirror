@@ -1,4 +1,4 @@
-# ðŸš€ Elite Technical Implementations (Batch 09)
+# 🚀 Elite Technical Implementations (Batch 09)
 
 ### 1. Dependency-Graph Pattern (Production Chains)
 Represent complex production chains (e.g., Raw Materials -> Intermediate -> Finished Goods) using nested `Resource` structures. This allows for deep, recursive data definitions that are fully editable in the Inspector.
@@ -91,4 +91,4 @@ func _run() -> void:
 
 
 - Master Skill: [godot-master](../SKILL.md)
-- Related: Validate economy ticks and CSVâ†’`.tres` balance with [godot-monte-carlo-balancer](../SKILL.md).
+- Related: Validate economy ticks and CSV→`.tres` balance with [godot-monte-carlo-balancer](../SKILL.md).

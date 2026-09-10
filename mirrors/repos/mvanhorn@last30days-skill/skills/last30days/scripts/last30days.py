@@ -51,7 +51,7 @@ if os.name == "nt":
 SCRIPT_DIR = Path(__file__).parent.resolve()
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from lib import competitors as competitors_mod, corpus, dates, discovery_handoff, env, freshness, html_render, http, permission_preflight, pipeline, registers, render, schema, ui
+from lib import competitors as competitors_mod, corpus, dates, discovery_handoff, env, freshness, html_render, http, permission_preflight, pipeline, registers, render, schema, ui, x_envelope
 
 _child_pids: set[int] = set()
 _child_pids_lock = threading.Lock()
@@ -755,6 +755,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--store", action="store_true", help="Persist ranked findings to the SQLite research store")
     parser.add_argument("--x-handle", help="X handle for targeted supplemental search")
     parser.add_argument("--x-related", help="Comma-separated related X handles (searched with lower weight)")
+    parser.add_argument(
+        "--x-posts",
+        dest="x_posts",
+        metavar="PATH",
+        help=(
+            "Path to a last30days-x-posts/1 JSON envelope of posts the hosting "
+            "model fetched through its X connector; replaces the engine's X "
+            "fetch for this run. A file path only (never inline JSON); on a "
+            "comparison run use the per-entity x_posts field of --competitors-plan."
+        ),
+    )
     parser.add_argument("--web-backend", default="auto",
                         choices=["auto", "brave", "exa", "serper", "parallel", "parallel-mcp", "keyless", "none"],
                         help="Web search backend (default: auto; parallel-mcp explicitly opts into the "
@@ -904,6 +915,7 @@ def parse_competitors_plan(raw: str | None) -> dict[str, dict]:
     known_fields = {
         "x_handle", "x_related", "subreddits",
         "github_user", "github_repos", "trustpilot_domain", "context",
+        "x_posts",
     }
     normalized: dict[str, dict] = {}
     for entity, entry in parsed.items():
@@ -1242,7 +1254,11 @@ def _write_last_run(
     topic: str,
     report: "schema.Report",
     entity_reports: list[tuple[str, schema.Report]] | None = None,
+    *,
+    x_envelope_sha256: str | None = None,
 ) -> bool:
+    # ``x_envelope_sha256`` binds the cached report to the --x-posts file it
+    # was built from; _load_last_report_cache misses on any mismatch.
     try:
         if env.CONFIG_DIR is None:
             return False
@@ -1268,6 +1284,7 @@ def _write_last_run(
             "topic": topic,
             "timestamp": payload["timestamp"],
             "comparison": bool(entity_reports),
+            "x_envelope_sha256": x_envelope_sha256 or None,
             "reports": [
                 {"entity": label, "report": schema.to_dict(cached_report)}
                 for label, cached_report in cached_reports
@@ -1288,6 +1305,8 @@ def _write_last_run(
 def _load_last_report_cache(
     topic: str | None,
     ttl_seconds: int = DEFAULT_REPORT_CACHE_TTL_SECONDS,
+    *,
+    x_envelope_sha256: str | None = None,
 ) -> tuple[schema.Report, list[tuple[str, schema.Report]] | None, Path] | None:
     cache_path = _last_report_cache_path()
     if cache_path is None or not cache_path.exists():
@@ -1299,6 +1318,12 @@ def _load_last_report_cache(
         if payload.get("schema") != REPORT_CACHE_VERSION:
             return None
         if not _is_report_cache_fresh(payload.get("timestamp"), ttl_seconds):
+            return None
+        # A report built from a --x-posts envelope is only reusable with the
+        # same envelope content; a digest on either side that does not match
+        # the other is a miss.
+        cached_digest = payload.get("x_envelope_sha256") or None
+        if (cached_digest or x_envelope_sha256) and cached_digest != x_envelope_sha256:
             return None
         cached_topic = str(payload.get("topic") or "").strip().lower()
         if topic is not None and cached_topic != topic.strip().lower():
@@ -2554,7 +2579,84 @@ SETUP_PASSTHROUGH_FLAGS = {
     "--github-start",
     "--github-poll",
     "--openclaw",
+    "--store-key",
 }
+
+STORE_KEY_FLAG = "--store-key"
+
+
+def _split_store_key(extra_argv: list[str]) -> tuple[bool, str, list[str]]:
+    """Pull ``--store-key <NAME>`` / ``--store-key=<NAME>`` out of ``extra_argv``.
+
+    Returns ``(present, name, remaining)``. ``name`` is "" when the flag has
+    no value; ``remaining`` is every other passthrough token, so the regular
+    allowlist check still applies to them.
+    """
+    present = False
+    name = ""
+    remaining: list[str] = []
+    i = 0
+    while i < len(extra_argv):
+        arg = extra_argv[i]
+        if arg == STORE_KEY_FLAG:
+            present = True
+            if i + 1 < len(extra_argv) and not extra_argv[i + 1].startswith("-"):
+                name = extra_argv[i + 1]
+                i += 2
+                continue
+            i += 1
+            continue
+        if arg.startswith(STORE_KEY_FLAG + "="):
+            present = True
+            name = arg[len(STORE_KEY_FLAG) + 1:]
+            i += 1
+            continue
+        remaining.append(arg)
+        i += 1
+    return present, name, remaining
+
+
+# One credential line: longer than any real token, short enough that a
+# misdirected stream on stdin cannot grow memory.
+STORE_KEY_MAX_BYTES = 64 * 1024
+
+
+def _run_store_key(name: str) -> int:
+    """``setup --store-key <NAME>``: persist one allowlisted credential from stdin.
+
+    Reads exactly one line from stdin (bounded to ``STORE_KEY_MAX_BYTES``),
+    strips whitespace, and writes it to the global ``.env`` as a 0o600 secret
+    through ``setup_wizard.write_api_key``. An existing line for the same
+    name is replaced, so a rejected credential can be rotated by running the
+    command again. The value never reaches stdout or stderr: stdout carries
+    ``NAME=****`` plus a JSON line ``{"persisted": bool, "key": NAME}``. A
+    name outside ``env.KEYCHAIN_KEYS`` or an empty value exits 2 without
+    echoing anything.
+    """
+    from lib import setup_wizard
+
+    if name not in env.KEYCHAIN_KEYS:
+        # Do not enumerate the allowlist here: on an official-only host a
+        # failure hint must not name the legacy credential keys.
+        sys.stderr.write(
+            "[last30days] setup --store-key: unknown or missing key name "
+            "(must be a credential name the engine loads from its .env; "
+            "see CONFIGURATION.md).\n"
+        )
+        return 2
+    value = sys.stdin.readline(STORE_KEY_MAX_BYTES).strip()
+    if not value:
+        sys.stderr.write(
+            f"[last30days] setup --store-key {name}: empty value on stdin; "
+            "pipe the credential as a single line.\n"
+        )
+        return 2
+    persisted = bool(
+        setup_wizard.write_api_key(env.CONFIG_FILE, value, key_name=name, replace=True)
+    )
+    print(f"{name}=****")
+    print(json.dumps({"persisted": persisted, "key": name}))
+    return 0 if persisted else 1
 
 SKILL_ONLY_FLAGS = {
     "--agent",
@@ -2572,10 +2674,107 @@ DOCTOR_PASSTHROUGH_FLAGS = {
 }
 
 
+def _looks_inline_json(value: str) -> bool:
+    """True when a --x-posts argument is JSON text rather than a path."""
+    stripped = value.strip()
+    return stripped.startswith(("{", "[")) or "\n" in value
+
+
+def _comparison_requested(args: argparse.Namespace, topic: str) -> bool:
+    """Whether this invocation is a comparison run (vs-topic or competitor flags)."""
+    from lib import planner as _planner
+
+    return any(
+        value is not None
+        for value in (args.competitors, args.competitors_list, args.competitors_plan)
+    ) or len(_planner._comparison_entities(topic, uncapped=True)) >= 2
+
+
+def _read_x_envelope(
+    path: str,
+    topic: str,
+    args: argparse.Namespace,
+    *,
+    x_handle: str | None,
+    x_related: list[str] | None,
+) -> x_envelope.Envelope:
+    """Validate a host-fetched X envelope against this run's window and topic."""
+    from_date, to_date = dates.get_date_range(
+        args.lookback_days or 30, as_of_date=args.as_of_date
+    )
+    return x_envelope.read(
+        path,
+        (from_date, to_date),
+        topic,
+        handles=[x_handle] if x_handle else [],
+        related=[h for h in (x_related or []) if h and h.strip()],
+    )
+
+
+def _attach_entity_envelopes(comp_plan: dict[str, dict], args: argparse.Namespace) -> None:
+    """Validate every per-entity ``x_posts`` path in a --competitors-plan.
+
+    Each envelope is checked against its own entity (topic) and that entry's
+    ``x_handle``/``x_related`` handles, and stored on the entry as
+    ``_x_envelope`` for the entity sub-run. Raises EnvelopeContractError.
+    """
+    for entry in comp_plan.values():
+        raw = entry.get("x_posts")
+        if not raw:
+            continue
+        if not isinstance(raw, str) or _looks_inline_json(raw):
+            raise x_envelope.EnvelopeContractError(
+                f"--competitors-plan entry {entry.get('_name', '')!r}: x_posts must "
+                "be a file path to a last30days-x-posts/1 envelope, never inline JSON. "
+                "Rewrite the plan entry, or drop its x_posts field."
+            )
+        related = entry.get("x_related") if isinstance(entry.get("x_related"), list) else None
+        entry["_x_envelope"] = _read_x_envelope(
+            raw, str(entry.get("_name") or ""), args,
+            x_handle=entry.get("x_handle") if isinstance(entry.get("x_handle"), str) else None,
+            x_related=[str(h) for h in related] if related else None,
+        )
+
+
+def _combine_envelope_digests(main_sha256: str | None, entity_sha256: dict[str, str]) -> str | None:
+    """One digest binding the last-report cache to every envelope a run uses.
+
+    A single top-level envelope is bound by its own file digest; per-entity
+    comparison envelopes are folded, name-sorted, into one digest. Both the
+    cache write (validated envelopes) and the cache lookup (planned paths)
+    must go through here so a comparison cache can be reused.
+    """
+    parts: list[str] = []
+    if main_sha256:
+        parts.append(main_sha256)
+    for name in sorted(entity_sha256):
+        parts.append(f"{name}:{entity_sha256[name]}")
+    if not parts:
+        return None
+    if len(parts) == 1 and main_sha256:
+        return main_sha256
+    return hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()
+
+
+def _x_envelope_digest(
+    main: x_envelope.Envelope | None, comp_plan: dict[str, dict] | None
+) -> str | None:
+    """Digest of the validated envelopes this run used (cache write side)."""
+    entity_sha256 = {
+        name: entry["_x_envelope"].sha256
+        for name, entry in (comp_plan or {}).items()
+        if entry.get("_x_envelope") is not None
+    }
+    return _combine_envelope_digests(main.sha256 if main is not None else None, entity_sha256)
+
+
 def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv: list[str]) -> None:
     if not extra_argv:
         return
     if topic.lower() == "setup":
+        # --store-key carries a value token; the name itself is allowlisted
+        # later in _run_store_key, not here.
+        _, _, extra_argv = _split_store_key(extra_argv)
         unsupported = [arg for arg in extra_argv if arg not in SETUP_PASSTHROUGH_FLAGS]
         if unsupported:
             parser.error(
@@ -2927,11 +3126,24 @@ def _main(
     topic = " ".join(args.topic).strip()
     original_topic = topic
     _validate_extra_argv(parser, topic, extra_argv)
+    if args.x_posts is not None and _looks_inline_json(args.x_posts):
+        sys.stderr.write(
+            "[last30days] --x-posts accepts a file path only (inline JSON is not "
+            "accepted); write the envelope to a .json file and pass its path.\n"
+        )
+        return 2
     if args.publish and topic.lower() != "library feed":
         sys.stderr.write(
             "[last30days] --publish is only supported by the 'library feed' command.\n"
         )
         return 2
+    if topic.lower() == "setup":
+        # Persisting a credential needs no config load (no Keychain / pass
+        # probes, no cookie policy), so it dispatches before get_config.
+        store_key_present, store_key_name, _ = _split_store_key(extra_argv)
+        if store_key_present:
+            return _run_store_key(store_key_name)
+
     config = env.get_config(policy=_config_policy_for_args(args, topic, extra_argv))
     # One memo per command: comparison mode runs pipeline.run per entity in
     # parallel, so the reset must not live inside the pipeline.
@@ -3285,6 +3497,14 @@ def _main(
                 "the remote API backend only supports --json-profile=raw.\n"
             )
             return 2
+        if args.x_posts is not None:
+            # The envelope is a local-engine contract; the remote API has no
+            # lane to receive it.
+            sys.stderr.write(
+                "[last30days] --x-posts is not supported by the hosted backend; "
+                "run locally or omit --x-posts.\n"
+            )
+            return 2
         from lib import hosted
         depth = "deep" if args.deep else "quick" if args.quick else "default"
         try:
@@ -3328,7 +3548,33 @@ def _main(
             requested_sources,
             channels=cli_telegram_sources,
         )
-    diag = pipeline.diagnose(config, requested_sources, safe=args.diagnose)
+    # Host-fetched X envelope: validated before diagnose so a present
+    # envelope plans X in (available_sources) and a bad one fails closed here.
+    x_posts_envelope: x_envelope.Envelope | None = None
+    if args.x_posts is not None:
+        if not topic:
+            sys.stderr.write("[last30days] --x-posts requires a research topic.\n")
+            return 2
+        if _comparison_requested(args, topic):
+            sys.stderr.write(
+                "[last30days] --x-posts applies to a single-topic run; on a "
+                "comparison run pass each entity's envelope through the "
+                "x_posts field of its --competitors-plan entry.\n"
+            )
+            return 2
+        try:
+            x_posts_envelope = _read_x_envelope(
+                args.x_posts, topic, args,
+                x_handle=args.x_handle,
+                x_related=args.x_related.split(",") if args.x_related else None,
+            )
+        except x_envelope.EnvelopeContractError as exc:
+            sys.stderr.write(f"[last30days] {exc.message}\n")
+            return 2
+    diag = pipeline.diagnose(
+        config, requested_sources, safe=args.diagnose,
+        x_envelope=x_posts_envelope is not None,
+    )
 
     if args.diagnose:
         print(json.dumps(diag, indent=2, sort_keys=True))
@@ -3338,6 +3584,17 @@ def _main(
     # paid Perplexity cap command-wide and thread-safe across that fanout. Keep
     # this runtime-only object out of the safe diagnose configuration contract.
     config["_perplexity_paid_budget"] = pipeline.PaidSourceBudget()
+
+    # Per-entity host-fetched X envelopes are validated here, on the main
+    # thread and BEFORE the report-cache lookup, so a bad or stale one fails
+    # closed (exit 2) instead of silently dropping that entity inside the
+    # fan-out or being served from a cache built while it was still valid.
+    comp_plan = parse_competitors_plan(args.competitors_plan)
+    try:
+        _attach_entity_envelopes(comp_plan, args)
+    except x_envelope.EnvelopeContractError as exc:
+        sys.stderr.write(f"[last30days] {exc.message}\n")
+        return 2
 
     if not topic:
         parser.print_usage(sys.stderr)
@@ -3368,6 +3625,7 @@ def _main(
         cached = _load_last_report_cache(
             topic,
             ttl_seconds=_report_cache_ttl_seconds(config),
+            x_envelope_sha256=_x_envelope_digest(x_posts_envelope, comp_plan),
         )
         if cached is not None:
             cached_report, cached_entity_reports, cache_path = cached
@@ -3508,7 +3766,8 @@ def _main(
         trustpilot_domain = args.trustpilot_domain.strip() if args.trustpilot_domain else None
 
         comp_enabled, comp_count, comp_explicit = resolve_competitors_args(args)
-        comp_plan = parse_competitors_plan(args.competitors_plan)
+        # comp_plan was parsed, and its per-entity envelopes validated, before
+        # the report-cache lookup above.
 
         # Plan-level trustpilot_domain pins are the same user intent as the CLI
         # flag (already activated above). Auto-resolve hints must not activate.
@@ -3628,6 +3887,10 @@ def _main(
                 save_dir=args.save_dir,
                 corpus_dirs=args.corpus,
                 corpus_all_time=args.corpus_all_time,
+                x_posts=(
+                    comp_plan.get(topic.strip().lower(), {}).get("_x_envelope")
+                    if comp_enabled else x_posts_envelope
+                ),
             )
             r.artifacts["resolved"] = {
                 "entity": topic,
@@ -3775,6 +4038,7 @@ def _main(
                     save_dir=args.save_dir,
                     corpus_dirs=args.corpus,
                     corpus_all_time=args.corpus_all_time,
+                    x_posts=plan_entry.get("_x_envelope"),
                 )
                 report.artifacts["resolved"] = resolved_effective
                 return report
@@ -3808,7 +4072,10 @@ def _main(
         report, progress, diag,
         suppress_web_promo=bool(external_plan or comp_plan),
     )
-    _write_last_run(original_topic, report, entity_reports=entity_reports)
+    _write_last_run(
+        original_topic, report, entity_reports=entity_reports,
+        x_envelope_sha256=_x_envelope_digest(x_posts_envelope, comp_plan),
+    )
     # LAST30DAYS_STORE env var = persistence default-on. Read both os.environ
     # (for shell-exported users) and config (for users who set it in
     # ~/.config/last30days/.env, which env.py loads but does not propagate

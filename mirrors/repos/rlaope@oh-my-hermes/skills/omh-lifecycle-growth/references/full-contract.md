@@ -41,6 +41,7 @@ Bad example:
 
 - If consent, suppression, identity, event semantics, denominator, or the decision owner is unknown, return HOLD with the missing fields and ask for the one input that unblocks the smallest next step.
 - If provider or data evidence for delivery, display, action, or outcome is unavailable, keep every readout stage not_observed and set the disposition to `insufficient_data` or `review` rather than `ship`.
+- If a readout is missing, ask for the analysis run state and its observation time before concluding anything: a queued or long-running analysis holds for reconciliation, while failed, canceled, and never-started runs each need a different next step.
 
 ## Use When
 
@@ -101,5 +102,9 @@ Safety rules:
 - A throttle window is identified by its configured key or expression plus the resolved value, scoped to a recipient or tenant; a resolved value is never re-read as a second key, a missing static value stays ungrouped, and an empty dynamic value falls back to the default window.
 - Per-step matched and skipped outcomes carry a reason and status but never evaluated values or secrets; a step trace is best-effort diagnostics, not delivery evidence, and its absence must not block or fail a send.
 - Production or published workflow content is view-only in prepared guidance; mutations go to a development or draft copy, then an explicit promotion decision, and only an observed provider result proves the promotion happened.
+- A missing analysis result is not proof that no analysis is running; name the run state and the time it was observed, and never report a queued or running analysis as failed, canceled, absent, or complete.
+- Elapsed time is a delay warning measured against a supplied service expectation, never evidence about a run; no fixed staleness cutoff may overwrite an observed in-flight state, and analysis-job runtime, experiment minimum runtime, and source-data freshness stay three separate questions.
+- While the latest observed run is queued or running, do not start or recommend another analysis; reconcile the existing work first, and select the newest in-flight run rather than the newest run of any kind.
+- A cancellation or status-reconciliation handoff is prepared, never performed: it names the exact run and scope, stays `prepared_not_observed`, and only an observed provider result may record acceptance or a terminal cancellation.
 
 Detailed procedure steps: `references/procedure.md`.

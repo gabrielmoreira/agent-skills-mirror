@@ -1,14 +1,14 @@
 ---
 name: recording
-description: Capture screen recordings and screenshots on any registered computer (macOS, Windows, Linux, HarmonyOS) and manage the recording library.
+description: Capture screenshots on registered computers, record on macOS or HarmonyOS, and manage saved captures. Probe capabilities before recording.
 ---
 
 # Recording and screenshots
 
 1. Pick the computer (`computer_list`, or pass `computer` — it switches).
-2. `recording_start` with optional `display` (macOS/Linux), `region` (Linux/
-   Windows), `fps` (Linux/Windows), `durationSec` (macOS auto-stop), and
-   `intervalMs` (HarmonyOS snapshot cadence).
+2. Check `request_access` when readiness is unknown. On a supported target,
+   use `recording_start` with optional `display`, `region`, `fps` and
+   `durationSec` (macOS auto-stop), or `intervalMs` (HarmonyOS snapshot cadence).
 3. Do the work (or let the user do it).
 4. `recording_stop` with the returned `id` → finalized file path + bytes.
 5. `recording_list` shows everything saved; `recording_status` checks one.
@@ -21,9 +21,8 @@ Platform truths:
   missing for whoever ran it: the Codewhale Computer Use app when
   `request_access` says `via: "app"`, else the terminal that hosts the
   server — tell the user which, do not retry.
-- **Windows**: ffmpeg gdigrab of the desktop or a region.
-- **Linux X11**: ffmpeg x11grab (honors $DISPLAY, region, fps). Wayland:
-  wf-recorder (per-output via CU_WAYLAND_OUTPUT).
+- **Windows and Linux**: recording is unavailable pending session-owned
+  recorder cleanup. Use screenshots; installing ffmpeg does not enable it.
 - **HarmonyOS**: no native CLI recorder; the backend captures
   `snapshot_display` frames at `intervalMs` and muxes with ffmpeg on stop.
   The receipt labels the mode `snapshot-series` — never call it real-time.

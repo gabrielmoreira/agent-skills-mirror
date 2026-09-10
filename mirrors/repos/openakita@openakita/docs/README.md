@@ -27,6 +27,7 @@ Welcome to the OpenAkita documentation.
 | [MCP Integration](mcp-integration.md) | Connect external services |
 | [Persona & Liveness](persona-and-liveness.md) | Persona system and proactive engine |
 | [Testing](testing.md) | Test framework and coverage |
+| [Account and Marketplace Sessions](openakita-account-pkce.md) | Desktop login, identity continuation, storage and installation behavior |
 
 ## Additional Resources
 
@@ -67,4 +68,3 @@ Found an error or want to improve the documentation?
 3. Submit a pull request
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
-

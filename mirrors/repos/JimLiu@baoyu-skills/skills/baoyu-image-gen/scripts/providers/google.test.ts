@@ -10,8 +10,10 @@ import {
   extractPredictedImageData,
   getGoogleImageSize,
   isGoogleImagen,
+  is1KOnlyGoogleModel,
   isGoogleMultimodal,
   normalizeGoogleModelId,
+  resolveGeminiImageSize,
 } from "./google.ts";
 
 function useEnv(
@@ -73,6 +75,20 @@ test("Google provider helpers normalize model IDs and select image size defaults
   assert.equal(isGoogleImagen("imagen-3.0-generate-002"), true);
   assert.equal(getGoogleImageSize(makeArgs({ imageSize: null, quality: "2k" })), "2K");
   assert.equal(getGoogleImageSize(makeArgs({ imageSize: "4K", quality: "normal" })), "4K");
+});
+
+test("Google clamps 1K-only models to 1K output", () => {
+  assert.equal(isGoogleMultimodal("gemini-3.1-flash-lite-image"), true);
+  assert.equal(is1KOnlyGoogleModel("gemini-3.1-flash-lite-image"), true);
+  assert.equal(is1KOnlyGoogleModel("gemini-3.1-flash-image"), false);
+  assert.equal(
+    resolveGeminiImageSize("gemini-3.1-flash-lite-image", makeArgs({ imageSize: "4K", quality: "2k" })),
+    "1K",
+  );
+  assert.equal(
+    resolveGeminiImageSize("gemini-3-pro-image", makeArgs({ imageSize: null, quality: "2k" })),
+    "2K",
+  );
 });
 
 test("Google URL builder appends v1beta when the base URL does not already include it", (t) => {

@@ -119,7 +119,9 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 | `src/permission.js` + `src/permission-automation-policy.js` + `src/session-automation-coordinator.js` | 权限气泡、自动化策略、per-session 授权与决策回包；远程 client 由 `main.js` 注入 |
 | `src/pet-window-runtime.js` + `src/floating-window-runtime.js` + `src/topmost-runtime.js` | 双窗口 owner、浮层重排、z-order / fullscreen / focusability |
 | `src/update-bubble.js` | 更新气泡创建、测高、跟随桌宠定位，避让 HUD / permission stack |
-| `src/dashboard.js` + `src/dashboard-renderer.js` | Sessions Dashboard 窗口、会话列表、别名编辑、终端跳转 |
+| `src/dashboard.js` + `src/dashboard-renderer.js` | Sessions Dashboard 唯一 owner：会话列表、别名编辑、终端跳转、几何持久化，以及同一页面的临时键盘模式 |
+| `src/dashboard-host.js` | Dashboard 普通宿主的平台封装：darwin/win32 用 `BaseWindow + WebContentsView`（无 `ready-to-show`），Linux 保留 `BrowserWindow` |
+| `src/dashboard-quick-mode.js` | 完整 Dashboard 的 1–9 键盘模式（**macOS/Windows only**）：quick 宿主、opacity/input parking、轮次栅栏与冻结数字映射；Windows 显式取消与页面失效的来源恢复在 `src/quick-select-origin-focus.js`，quick 宿主的退出清理挂在 `before-quit` |
 | `src/session-hud.js` + `src/session-hud-renderer.js` | 桌宠旁轻量会话 HUD、折叠行、点击跳转 |
 | `src/session-alias.js` | session alias key 规范化、TTL pruning、Kiro cwd scope |
 | `src/theme-loader.js` + `src/theme-runtime.js` | stateless 主题加载/消毒与唯一 active-theme owner |
@@ -197,6 +199,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - Remote SSH secure hook 必须同时携带 `CLAWD_REMOTE=1` 与 `CLAWD_SSH_REMOTE=1`，只读 layout identity 并 pin 精确端口；identity 缺失/损坏/不可读必须 fail closed，禁止回退端口扫描
 - Remote SSH deploy-lock acquisition 必须原子化；成功 acquire 后的每个 live mutation 都要在同一远端命令内 fencing 校验，cleanup 还必须锁内重读 installId/profileId/runtimeKey/layoutVersion 所有权。无身份、冲突、ownerless/corrupt lock 均不得自动接管
 - 默认 `account-default` 只支持不同 Unix 账号；同 Unix 账号冲突必须阻止。`profile-isolated` 在真实 SSH/CLI 矩阵完成前由 `CLAWD_ENABLE_EXPERIMENTAL_REMOTE_ISOLATION=1` 发布门隐藏；它只隔离用户级 CLI config/session/runtime 与 Clawd 路由，不代表完整 HOME 或同 UID 安全隔离，project 配置/部分 cache/macOS Claude Keychain auth 仍可能共享
+- Hermes Agent 的 Remote SSH 部署是 `secureDeploy` 内的 `hermes-files` → `install-hermes` 两个阶段，复用同一条 serialized transport、deploy lease、fencing 与所有权检查，没有独立的 Hermes SSH deployer：secure 模式由每个托管 `plugins/clawd-on-desk/` 内的 plugin-local marker `clawd-ssh-secure-v1` latch，latch 后 identity 必须在每次 state/probe/permission 请求时重新读取（禁止 `(mtime,size)` 缓存），且不得发送任何远端 PID / 进程树 metadata；plugin 资产走独立 staging 目录，清理只 `rm -f` 精确文件再 `rmdir`，禁止 `rm -rf`；`REMOTE_IDENTITY_STEP_NAMES` 保持冻结的 8 步不变，不得加入 `installHermes`；Clawd 绝不自动重启 Hermes gateway，托管模块被替换时只报告需要手动重启
 - 禁用 agent 不应卸载 hooks / plugins / extensions：只停止对应 monitor、清理 session / bubble、让 HTTP hook 入口快速 fallback；重新启用未安装 agent 不触发本机 integration sync。卸载集成必须走 Settings Agent 页的 Uninstall / 对应 uninstall 命令，并同时清掉 `integrationInstalled`
 - Kiro 的 `sessionId="default"` 会复用；session alias key 必须按 cwd scope 区分，同时保留旧 `local|kiro-cli|default` 只读 fallback
 - Windows NSIS release 必须产出明确架构的 x64 / ARM64 安装包：`win.artifactName` 保留 `${arch}`，`nsis.buildUniversalInstaller` 保持 `false`
@@ -206,6 +209,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - `assets/source/cloudling-pointer-bridge/` 是 Cloudling 指针桥素材的保留源文件目录；运行时逻辑已内联进主题 SVG，不要把这个 source 目录当临时文件清理
 - 主题状态、sleep/DND、mini mode、状态映射的细节在 `docs/project/theme-state-ui.md`
 - Settings 体系里，store 是唯一真相，controller 是唯一写入者；不要绕开 `settings-controller.js`
+- Dashboard 数字快选是**完整 Dashboard 同一页面的临时键盘模式，仅 macOS/Windows**；Linux 明确 NOT SUPPORTED（不是待验证）。平台 gate 的唯一真相是 `shortcut-actions.js` 的 `supportedPlatforms` + `isShortcutActionSupported()`，Settings 展示、globalShortcut 注册/录制、设置命令和冲突占用都必须服从它；遗留的不支持绑定只忽略执行，不删用户 prefs、不占其他快捷键。darwin/win32 的 Dashboard 页面活在 `WebContentsView` 里，`BrowserWindow.fromWebContents()` 对它返回 null、BaseWindow 不触发 `ready-to-show`；页面 WC 一律从 owner 取。禁止用 `hide()`+`showInactive()` 归还已显示的普通宿主（实测会遮挡来源窗口），只能 opacity/input parking 并幂等恢复捕获值。详见 `docs/project/theme-state-ui.md`
 
 ## Testing
 

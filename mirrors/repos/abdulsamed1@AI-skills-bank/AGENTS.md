@@ -8,7 +8,7 @@ description: |
 
 > **DO NOT scan `lib/` (2.1G, 10k SKILL.md, 122 repos). It is raw clone cache, not curated.**
 
-## Canonical Discovery (ponytail: 3 hops, not 122)
+## Canonical Discovery (: 3 hops, not 122)
 
 1. Open `skills-aggregated/AGENTS.md` — pick hub from 4 (business, code-quality, frontend, server-side)
 2. Open `skills-aggregated/<hub>/SKILL.md` — pick sub-hub (16 total, not 122)

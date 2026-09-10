@@ -49,6 +49,7 @@ Bad example:
 - If the media or transcript is missing, ask for the smallest source, file, transcript, or provider result needed.
 - If the request is broad current-source research about a video topic, route to research or source-finder before summary.
 - If the user wants a PPT/PDF/report generated from the media summary, route to materials-package after media input evidence is clear.
+- If the request is about whether a live duplex voice connector keeps whole spoken turns, route to external-connector-readiness for a realtime_voice_trial_receipt/v1 rather than treating a supplied recording as that evidence.
 
 ## Workflow Lane
 
@@ -109,6 +110,7 @@ Safety rules:
 
 - A media input card is not media access, file upload, download, transcript extraction, OCR output, screenshot text extraction, receipt fields, speech-to-text output, timestamp accuracy, copyright clearance, source retrieval, or summary correctness evidence unless observed media-result evidence records it.
 - Do not claim connector, gateway, runtime, file generation, memory mutation, or host automation evidence from prepared guidance.
+- A media_result_manifest/v1 describes a supplied recording or transcript. It is never a live duplex session, one-input-to-one-dispatch integrity, audible response behavior, or realtime voice readiness, and it cannot be promoted into one.
 
 ## Runtime Evidence
 

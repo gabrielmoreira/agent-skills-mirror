@@ -27,6 +27,16 @@ delta** (`idd-review-snapshot.instructions.md`), re-checked by the
 F2/F3 merge-readiness gate (`idd-pre-merge.instructions.md`), which
 forbids a bare CI-green merge without a fresh covering snapshot.
 
+**Do not build a substitute wait for a non-primary bot.** A polling
+loop, scheduled wakeup, or background monitor that blocks on a
+specific non-primary bot's review reaching current HEAD (any bot
+other than the configured `advisoryWait.primaryBotLogin` — for
+example, Codex, on a repository where it is not that configured bot)
+is not this protocol — it has none of this protocol's caps, timeouts,
+or hold routes, and the bot may never review the PR at all, so the
+wait has no bounded exit. Rely on the E1/review-watermark/F2/F3
+safety net above instead.
+
 ## Fast path — common case
 
 The advisory bot usually reviews current HEAD within minutes, reducing
@@ -319,12 +329,13 @@ verified HEAD within one pass).
 
 After a new `advisory-wait`/`advisory-wait-recovery` marker is verified
 for the current `PR_HEAD_SHA`, minimize every trusted prior marker of
-the `advisory-wait:`/`advisory-wait-recovery:`/`advisory-reroll:`
-family whose embedded HEAD SHA does **not** match, as `OUTDATED` (cuts
-F4 backlog and review-page noise — a stale-HEAD `advisory-reroll:`
-marker is exactly as much operational noise as a stale advisory-wait
-one). Find candidate IDs (trusted markers of that family with a
-differing embedded SHA), then call the minimize-markers command:
+the `advisory-wait:`/`advisory-wait-recovery:`/`<!-- advisory-wait:`/
+`advisory-reroll:` family whose embedded HEAD SHA does **not** match,
+as `OUTDATED` (cuts F4 backlog and review-page noise — a stale-HEAD
+`advisory-reroll:` marker is exactly as much operational noise as a
+stale advisory-wait one). Find candidate IDs (trusted markers of that
+family with a differing embedded SHA), then call the minimize-markers
+command:
 [shell fallback AW3-H](../../docs/idd-advisory-wait-shell-fallback.md#aw3-h).
 
 Skip entirely if the new marker was not verified, the candidate set is
@@ -383,7 +394,8 @@ hold.
 
 **`suppressedCount` unvalidated**: `#1511` is `itemCount`-only; reroll
 never zeroed it in `kurone-kito/lints-config` PRs `#243`/`#245`
-(2026-08-10/11). PR #2054 fixes it.
+(2026-08-10/11). The review-ack escape hatch below (PR `#2054`, issue
+`#2050`) covers it; the reroll itself still does not zero the count.
 
 **Already-handled escape hatch**: when the blocking suppressed
 finding(s) have already been read and handled, a reroll is
@@ -449,8 +461,10 @@ still needs a valid waiver), and F2/F3's `advisoryWait.copilotUnavailable`/
 > merging.
 
 **Waived**: rerun the existing `idd-advisory-convergence` run (never
-`workflow_dispatch` — see Rerun mechanics below); both fields recompute
-every call, so an expired/invalid marker reverts automatically.
+`workflow_dispatch` — see
+[rerun mechanics](idd-ci.instructions.md#rerun-mechanics)); both fields
+recompute every call, so an expired/invalid marker reverts
+automatically.
 
 **Sustained outage (`#2320`)**: when `providerOutage.declarationTarget`
 is configured and holds an active declaration for `idd-advisory-convergence`,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AltanS/collie` — 26 default patterns, 57 followed patterns, 67 file(s) materialized.
+Mirror of `AltanS/collie` — 26 default patterns, 59 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 57 followed patterns, 67 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 57 |
-| Files         | 67 |
+| Followed pats | 59 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,7 +80,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 57 followed patterns, 67 file
 - `.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md`
 - `.adr/0013-a-peer-listens-without-becoming-a-front-door.md`
 - `.adr/0001-one-managed-front-door.md`
-- `PACK_PROTOCOL.md`
+- `CREW_PROTOCOL.md`
 - `.adr/0027-the-deputy-is-named-ahead-of-time.md`
 - `.adr/0028-the-standby-door-is-a-second-listener.md`
 - `.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md`
@@ -91,7 +91,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 57 followed patterns, 67 file
 - `docs/deployment.md`
 - `docs/commands.md`
 - `docs/multiplexers.md`
-- `docs/pack.md`
+- `docs/crew.md`
 - `docs/voice-and-push.md`
 - `docs/upgrading.md`
 - `docs/troubleshooting.md`
@@ -103,6 +103,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 57 followed patterns, 67 file
 - `.adr/0022-the-mux-seam-is-a-port-collie-owns.md`
 - `web/src/fixtures/panes/README.md`
 - `web/src/lib/grammar/WIZARD_NOTES.md`
+- `.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md`
+- `.adr/0039-the-machine-says-crew-too.md`
 - `.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md`
 - `.adr/0014-promote-is-a-confirm-on-the-lead.md`
 - `.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`
@@ -156,32 +158,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | → | [`.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`](.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md) |
 | 40 | → | [`.adr/0035-a-packaged-install-is-not-ours-to-update.md`](.adr/0035-a-packaged-install-is-not-ours-to-update.md) |
 | 41 | → | [`.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`](.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md) |
-| 42 | → | [`.adr/README.md`](.adr/README.md) |
-| 43 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 44 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 45 | → | [`contrib/windows/README.md`](contrib/windows/README.md) |
-| 46 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 47 | → | [`DESIGN.md`](DESIGN.md) |
-| 48 | → | [`docs/commands.md`](docs/commands.md) |
-| 49 | → | [`docs/configure.md`](docs/configure.md) |
-| 50 | → | [`docs/deployment.md`](docs/deployment.md) |
-| 51 | → | [`docs/install.md`](docs/install.md) |
-| 52 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
-| 53 | → | [`docs/pack.md`](docs/pack.md) |
-| 54 | → | [`docs/security.md`](docs/security.md) |
-| 55 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 56 | → | [`docs/upgrading.md`](docs/upgrading.md) |
-| 57 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
-| 58 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
-| 59 | → | [`HERDR_API.md`](HERDR_API.md) |
-| 60 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
-| 61 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
-| 62 | → | [`PACK_PROTOCOL.md`](PACK_PROTOCOL.md) |
-| 63 | → | [`README.md`](README.md) |
-| 64 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
-| 65 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
-| 66 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
-| 67 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
+| 42 | → | [`.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md`](.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md) |
+| 43 | → | [`.adr/0039-the-machine-says-crew-too.md`](.adr/0039-the-machine-says-crew-too.md) |
+| 44 | → | [`.adr/README.md`](.adr/README.md) |
+| 45 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 46 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 47 | → | [`contrib/windows/README.md`](contrib/windows/README.md) |
+| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 49 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
+| 50 | → | [`DESIGN.md`](DESIGN.md) |
+| 51 | → | [`docs/commands.md`](docs/commands.md) |
+| 52 | → | [`docs/configure.md`](docs/configure.md) |
+| 53 | → | [`docs/crew.md`](docs/crew.md) |
+| 54 | → | [`docs/deployment.md`](docs/deployment.md) |
+| 55 | → | [`docs/install.md`](docs/install.md) |
+| 56 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
+| 57 | → | [`docs/security.md`](docs/security.md) |
+| 58 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 59 | → | [`docs/upgrading.md`](docs/upgrading.md) |
+| 60 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
+| 61 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
+| 62 | → | [`HERDR_API.md`](HERDR_API.md) |
+| 63 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
+| 64 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
+| 65 | → | [`README.md`](README.md) |
+| 66 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
+| 67 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
+| 68 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
+| 69 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
 
 ---
 

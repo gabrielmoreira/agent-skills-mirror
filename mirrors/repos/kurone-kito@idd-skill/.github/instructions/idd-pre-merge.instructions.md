@@ -205,11 +205,30 @@ turns an operator-visible failure into a silent stall.
   (`idd-advisory-wait.instructions.md`):
 
   1. Run **AW1**. If **SATISFIED** → this check is **satisfied**;
-     continue to the **CI** check.
+     continue to the **CI** check. (This short circuit is always the
+     proven-coverage case — `LAST_COPILOT_COMMIT == PR_HEAD_SHA` —
+     since AW1 alone has no marker data to evaluate the settled-window
+     sub-case below; it never consults **AW3-S**.)
   2. Run **AW2** to fetch markers.
   3. Apply the **AW3** decision table:
-     - **SATISFIED** → this check is **satisfied**; continue to the CI
-       check.
+     - **SATISFIED**, `COPILOT_PENDING` `"false"`, `COPILOT_PENDING_COVERS_HEAD`
+       `"false"` (settled by elapsed time alone, never proven the
+       request reached Copilot — `#2327`): consult **AW3-S**'s
+       `staleRequestRecovery.action` first, the same way E14 step 4
+       does. `"attempt"` runs its bounded cycle (non-pending entry:
+       skip **Remove**, start at **Request**; a proven
+       failure-to-register completes the cycle per the entry's
+       inverted step 4/5 disposition), **then** continue to the CI
+       check (this accumulates recovery-cycle evidence toward
+       `COPILOT_UNAVAILABLE`; the check's own satisfied status is
+       unaffected). `"cap-exhausted"` handles like **CAP_EXHAUSTED**
+       below instead — post the hold and **stop**; do not continue to
+       the CI check for this action (the mandatory stop from
+       **CAP_EXHAUSTED** below still applies; this recovery-cap
+       exhaustion does not waive it). `"not-applicable"` falls through
+       unchanged and continues to the CI check.
+     - **SATISFIED** (otherwise) → this check is **satisfied**;
+       continue to the CI check.
      - **HOLD** → post the hold comment from **AW4** and stop.
      - **RECOVERY_NEEDED** → post the recovery marker from **AW3-R**
        without requesting another Copilot review, then enter the normal
@@ -381,6 +400,27 @@ turns an operator-visible failure into a silent stall.
   rollup. The signal never changes `route` itself; any other blocking
   cause makes it `false`, and the gate still routes to E1/E4. Fails
   closed: an unusable check makes this condition unmet.
+- **Closing-set and impact-checklist re-verification** (D3.5/D3.7
+  re-run against current HEAD, #2749): confirm the local worktree is
+  checked out at the PR's current HEAD exactly (`git fetch` plus
+  `git checkout`/`git reset --hard` if a resumed or external-push
+  session left it stale) — D3.5 step 7's `git log` and D3.7's
+  inherited `git diff` both read local git state, not the remote PR
+  directly. Then re-run `idd-pr-submit.instructions.md`'s D3.5 steps
+  6-7 (the `closingIssuesReferences` set comparison and the
+  commit-message closing-keyword scan) and D3.7 (the
+  IDD-impact-checklist re-derivation) against that HEAD. Skip D3.5
+  steps 6-7 under the same non-default-`{development-branch}`
+  exemption D3.5 itself carries. On a mismatch: for a closing-set
+  drift, apply D3.5 step 6's own remediation (reusing step 4's
+  edit-and-recheck mechanism for a missing entry); for a stray
+  commit-message match, apply D3.5 step 7's own remediation (amend or
+  rebase); for a checklist drift, apply D3.7's own mismatch handling.
+  If the fix amended or rebased a commit (changing HEAD), return to
+  this list's first condition instead of only repeating this one — the
+  new HEAD invalidates the conditions already checked above. Otherwise,
+  repeat this condition once. If it still fails, post a hold note and
+  stop — do not proceed to F3.
 
 When any F2 condition routes to a hold/stop or back to E1/E14, update
 the digest after recording the blocking evidence and before

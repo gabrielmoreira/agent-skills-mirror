@@ -15,11 +15,15 @@ Example claim:
 {"status":"completed","changedFiles":["src/parser.ts"],"unresolved":[],"artifacts":[".agents/results/result-qa-s1.md",".agents/results/plan-s1.json",".agents/state/memories/session-ultrawork.md"]}
 ```
 
-Receipts live in `.agents/state/agent-runs/`. They contain session/task/run IDs, vendor, workspace, timestamps, actual command argv and exit codes, working tree hashes, artifact hashes, unresolved work, and final status. These records prevent accidental reuse of stale evidence; they are local files, not a security boundary against an agent that intentionally edits receipts.
+Receipts live in `.agents/state/agent-runs/`. They contain session/task/run IDs, vendor, workspace, timestamps, actual command argv and exit codes, working tree hashes, artifact hashes, unresolved work, and final status. These records prevent accidental reuse of stale evidence; they are local files, not a security boundary against an agent that intentionally edits receipts. Human-readable workflow reports are supplemental, flat compatibility files named `result-{agentId}-{taskId}-{runId}-{sessionId}.md`; the injected claim path and receipt schema remain unchanged.
 
 The Ralph gate requires QA and REFINE task IDs in a nonempty plan, current successful executable checks, and report/plan/phase artifacts bound to those runs. A waiver alone does not pass this gate. Record a justified REFINE exception as `REFINE skipped: <specific reason>` before QA finalizes its evidence. Old Markdown-only reports remain readable but must be reverified to pass the gate.
 
 Checks cover the Git working tree (HEAD, tracked contents/modes and nonignored untracked files). Generated `.agents/state`, `.agents/results`, and `.serena/memories`, and generated `.opencode/agents/oma-spawn-*.md` wrappers are excluded from the tree hash and artifacts are hashed separately. In an unversioned directory, all files except those generated directories, `.git`, and `node_modules` are covered. External services, ignored dependencies, and malicious receipt tampering require separate controls.
+
+## Coordination notes
+
+Use native file tools and `memoryConfig.basePath` (default `.agents/state/memories/`) at the project root for optional coordination notes. Read an assigned task board and report progress for long tasks. Use the unique progress/result names from [Memory Protocol](memory-protocol.md); keep the injected claim path unchanged. Human-facing deliverables may live in `.agents/results/`, but their presence alone does not prove completion. Include unresolved work in the claim even after failure.
 
 Read-only dispatch returns `OMA_RESULT_JSON: {claim}` as one final stdout line. The parent persists that inspection. A `verificationSkipped` inspection remains distinguishable from executable checks and does not pass Ralph.
 

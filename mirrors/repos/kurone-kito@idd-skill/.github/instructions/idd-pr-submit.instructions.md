@@ -176,6 +176,53 @@ follow-up is important enough to file in-repo now, invoke the
 `issue-authoring` skill (its Stage 1 hold) instead of improvising a
 body. Do not add a parallel "worker-lite authoring" contract.
 
+### Live-operator-directed immediate-fix carve-out
+
+The "never call `gh issue create`" rule immediately above assumes
+unattended execution with no live operator present. When a live
+operator is present during a claimed issue's own execution and directs
+an immediate fix for a blocking bug unrelated to the claimed work, the
+session may proceed with that fix under the operator's live authority
+instead of routing it through the `issue-authoring` skill first.
+Minimum provenance: the side-fix PR body must cross-reference the
+originating claimed issue using a **non-closing cross-reference** (for
+example, `Refs #<claimed-issue-number>` — never a closing keyword such
+as `Closes`/`Fixes`/`Resolves`, which would auto-close the originating
+issue on the side-fix's own merge). Formal `issue-authoring` tracking
+is still preferred when time allows, but it is not a start blocker for
+this carve-out.
+
+How the executing session obtains a branch, worktree, and claim for
+the side-fix while the originating claim stays active — and how the
+side-fix's own merge and cleanup avoid releasing that originating
+claim — is not yet defined. The shared claim revalidation gate
+(`idd-overview-core.instructions.md`) scopes its cwd-vs-claim check off
+the active claim's recorded `branch:` field, not the mutation's target
+branch, so no branch-naming convention alone exempts a same-session
+side-fix from it. Treat this as an open gap: this carve-out authorizes
+the _decision_ to proceed under live authority; the operator directing
+it owns the mechanics until a follow-up defines them.
+
+D3's closing-keyword requirement and D3.5's presence-detection and
+auto-injection (steps 1-5, including step 4) apply only to the
+side-fix PR's own deliberate closing set — its own linked issue, if
+any, or none otherwise — never to the originating claimed issue named
+above; do not let them treat the non-closing cross-reference above as
+missing, or rewrite it into a closing keyword. The originating claimed
+issue must not appear in the side-fix PR's `closingIssuesReferences`,
+and the side-fix branch's commit messages must not contain a closing
+keyword referencing it — still run D3.5 step 6's exact-set comparison
+and step 7's commit-message scan to confirm both, treating the
+originating issue as outside the side-fix PR's deliberate closing set.
+On a non-default `{development-branch}`, D3.5's own skip rule applies
+unchanged instead: skip all seven steps, since `closingIssuesReferences`
+never populates there regardless of this carve-out.
+
+While a side-fix PR that the claimed issue's PR depends on is in
+flight, periodically re-check the claimed issue's own PR review and CI
+state — unresolved review threads and failing checks — rather than
+discovering that backlog only after the side-fix merges.
+
 ### D3.6 — Derive the IDD impact checklist
 
 Skip this sub-step and D3.7 below entirely when
@@ -445,8 +492,12 @@ completion.
    **Re-run before merge**: this scan only covers commits present at
    D3.5 time. Later branch commits — accepted review fixes
    (`idd-review-fix.instructions.md` E9-E12) or a `{development-branch}`
-   merge — are not automatically covered; re-run this step against the final HEAD
-   before F3 merges.
+   merge — are not automatically covered; `idd-pre-merge.instructions.md`
+   F2's "Closing-set and impact-checklist re-verification" condition
+   names this step explicitly and re-runs it against the then-current
+   HEAD, and `idd-merge.instructions.md` F3's Gate checklist re-runs it
+   again immediately before merging — F2 can run before further HEAD
+   changes land, which is exactly why the F3 re-run also exists.
 
 ### D3.7 — Re-verify the IDD impact checklist before merge
 
@@ -474,11 +525,13 @@ condition D3.5 itself skips under, where `closingIssuesReferences`
 never populates and the check would be meaningless) — edited prose can
 otherwise introduce a stray keyword-adjacent reference.
 
-**Known gap**: no phase file currently re-invokes D3.5 or this step by
-name from F1-F3, so this re-check depends on the same implicit trigger
-D3.5 step 7 already relies on rather than an explicit F-phase call —
-out of this step's own scope to close; recommend a follow-up issue to
-wire an explicit F2/F3 trigger if this gap is not already tracked.
+**Wired to F2/F3**: `idd-pre-merge.instructions.md` F2's "Closing-set
+and impact-checklist re-verification" condition names this step
+explicitly and re-runs it against the then-current HEAD, and
+`idd-merge.instructions.md` F3's Gate checklist re-runs it again
+immediately before merging (#2749) — F2 can run before further HEAD
+changes land, which is exactly why the F3 re-run also exists; no
+longer an implicit, name-only cross-reference.
 
 ## D4 — Wait for CI
 
@@ -510,8 +563,8 @@ confirmed condition above. Delegate polling mechanics to
   `ciWait.rerunPolicy` rerun only reproduces the same red **unless a
   maintainer has since posted a valid external-check waiver for this
   HEAD** — that case still needs the rerun, to make the check reflect
-  the waiver (a pre-existing F2/F3 concern this branch leaves unchanged;
-  see `idd-pre-merge.instructions.md`'s External-check waivers). A
+  the waiver (see `idd-pre-merge.instructions.md`'s External-check
+  waivers for the F2/F3 handling). A
   waiver is effective only once `deadline.passed` is true or
   `terminal.state` reaches `COPILOT_UNAVAILABLE` (check both fields in
   the same run's output); posted earlier, it is valid but inert —
@@ -554,13 +607,24 @@ confirmed condition above. Delegate polling mechanics to
   mechanics) and resume D4. `SATISFIED` splits on `lastCopilotCommit`:
   when it already matches this HEAD SHA, Copilot's review already
   covers it — request nothing and take the same rerun-and-resume-D4
-  action as `WAIT` above. When it does **not** match this HEAD SHA,
-  `SATISFIED` instead means a same-head request's elapsed window ran
-  out with no review ever landing for this HEAD (see
-  `idd-advisory-wait.instructions.md`'s AW3 elapsed-window rows);
-  `idd-advisory-convergence` stays `pending: true` for this HEAD
-  regardless, so rerunning and resuming D4 would only reproduce the
-  same wait indefinitely — treat it like `CAP_EXHAUSTED`/
+  action as `WAIT` above (this proven-coverage sub-case is unchanged;
+  it never consults **AW3-S**). When it does **not** match this HEAD SHA,
+  `SATISFIED` may reflect either `COPILOT_PENDING` state (see
+  `idd-advisory-wait.instructions.md`'s AW3 elapsed-window rows):
+  `"true"`, settled by `PENDING_WINDOW_MINUTES` alone; or `"false"` — a
+  same-head request's elapsed window ran out with no review ever
+  landing for this HEAD, the settled-window (non-pending) sub-case E14
+  step 4 already consults **AW3-S** for. Consult **AW3-S**'s
+  `staleRequestRecovery` before exiting either way — its non-pending
+  entry requires `COPILOT_PENDING` `"false"`, so the `"true"` sub-case
+  reports `"not-applicable"` and falls through as a safe no-op:
+  `"attempt"` runs the bounded cycle (skip **Remove**, start at
+  **Request**; a proven failure-to-register completes the cycle per
+  the entry's inverted step 4/5 disposition); `"cap-exhausted"` handles
+  like **CAP_EXHAUSTED** below. Either way, `idd-advisory-convergence`
+  stays `pending: true` for this HEAD regardless, so rerunning and
+  resuming D4 would only reproduce the same wait indefinitely — treat
+  it like `CAP_EXHAUSTED`/
   `RECOVERY_NEEDED` below instead. `CAP_EXHAUSTED` (the request cap is
   already spent) or `RECOVERY_NEEDED` (a proven same-head request
   exists but needs its marker, not a new request) both need the fuller

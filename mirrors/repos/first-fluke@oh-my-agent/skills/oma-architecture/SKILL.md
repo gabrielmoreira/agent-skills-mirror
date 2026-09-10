@@ -125,7 +125,7 @@ outputs:
 - Optional stakeholder-agent consultation only when cross-cutting enough to justify cost
 
 ### Canonical workflow path
-Prefer symbol-aware tools (serena MCP) when available: `get_symbols_overview` for structure, `find_symbol` / `find_referencing_symbols` for ownership and coupling, `search_for_pattern` for integration points. Fall back to plain search only when serena is unavailable:
+Use the configured code-intelligence provider for structure, symbols, references, and integration points. If unavailable, use native search and scoped reads:
 
 ```bash
 ls .agents/results/architecture/   # prior decisions — read before deciding
@@ -173,13 +173,10 @@ Then choose Diagnostic, Recommendation, Design-Twice, ATAM-style, CBAM-style, or
 - **ADR Mode**: concise final decision record after analysis
 
 ## References
-Follow `resources/execution-protocol.md` step by step.
-Use `resources/methodology-selection.md` to select the right method.
-Use `resources/stakeholder-synthesis.md` when stakeholder consultation is needed.
-Use `resources/output-templates.md` to format the final artifact.
-Before submitting, run `resources/checklist.md`.
-- Execution steps: `resources/execution-protocol.md`
-- Checklist: `resources/checklist.md`
+- Local code tools: `../_shared/core/code-intelligence.md` (code search/navigation)
+
+- Execution steps (follow for the selected task): `resources/execution-protocol.md`
+- Checklist (run before handoff): `resources/checklist.md`
 - Method selection: `resources/methodology-selection.md`
 - Stakeholder protocol: `resources/stakeholder-synthesis.md`
 - Output templates: `resources/output-templates.md`

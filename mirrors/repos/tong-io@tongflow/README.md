@@ -133,7 +133,7 @@ Sign in with Google or WeChat and start creating — the cloud studio manages pl
 - ✅ **Speech synthesis**: text-to-speech — preset style, voice clone (reference audio), or instruction-driven.
 - ✅ **Speech recognition**: transcribe speech from audio or video.
 - ✅ **Noise reduction**: denoise audio.
-- ⬜ **Speaker diarization**: separate audio by speaker.
+- ✅ **Speaker diarization**: separate audio by speaker.
 - ⬜ **Voice / timbre replacement**: replace or clone a voice with a reference sample.
 - ✅ **Multi-track / vocal-accompaniment separation**: isolate vocals, drums, bass, guitar, and 8 more stems.
 - ✅ **Open-vocabulary sound separation**: describe any sound in words ("dog barking") and split the audio into that sound and everything else.
@@ -220,6 +220,7 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 text-to-speech
 - [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 emotive text-to-speech: zero-shot voice cloning (alternative) and emotion-controlled speech from a voice reference
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper speech recognition with timestamps (alternative)
+- [tongflow-modal-moss-transcribe-diarize](https://github.com/tong-io/tongflow-modal-moss-transcribe-diarize) — MOSS-Transcribe-Diarize 0.9B: long-form multi-speaker transcription with timestamps and speaker labels in one pass, plus per-speaker audio tracks (50+ languages, up to ~90 min)
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 music suite: text-to-music (sft / base / turbo selectable), repaint, cover, stem extraction, add-track, arrangement completion, music brief, and music understanding
 - [tongflow-modal-levo](https://github.com/tong-io/tongflow-modal-levo) — LeVo 2 / SongGeneration text-to-music (multilingual, commercial-grade)
 - [tongflow-modal-minimax-music3](https://github.com/tong-io/tongflow-modal-minimax-music3) — MiniMax-Music3 11B song generation: lyrics + description → complete song with vocals (up to ~5 min, 32 kHz stereo)

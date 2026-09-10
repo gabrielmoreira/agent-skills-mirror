@@ -7,7 +7,7 @@
 
 ---
 
-## ðŸš€ Elite Technical Implementations (Batch 09)
+## 🚀 Elite Technical Implementations (Batch 09)
 
 ### 1. Navigation-Path-Validation (Maze Sealing Prevention)
 In mazing TD games, players must not be able to block the exit. Use `AStarGrid2D` to simulate building placement and verify that a valid path still exists from spawn to core.

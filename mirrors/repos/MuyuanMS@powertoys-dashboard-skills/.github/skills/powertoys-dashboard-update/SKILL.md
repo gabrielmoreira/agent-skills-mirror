@@ -84,6 +84,7 @@ $IssueWindowDays = 30
 $DrainReviewQueue = $env:POWERTOYS_DASHBOARD_DRAIN_QUEUE -eq '1'
 $DesignBatchSize = if ($env:POWERTOYS_DESIGN_BATCH_SIZE) { [int]$env:POWERTOYS_DESIGN_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 4 }
 $PrReviewBatchSize = if ($env:POWERTOYS_PR_REVIEW_BATCH_SIZE) { [int]$env:POWERTOYS_PR_REVIEW_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 16 }
+$IssueRevalidationBatchSize = if ($env:POWERTOYS_ISSUE_REVALIDATION_BATCH_SIZE) { [int]$env:POWERTOYS_ISSUE_REVALIDATION_BATCH_SIZE } elseif ($DrainReviewQueue) { [int]::MaxValue } else { 50 }
 $PrReviewConcurrency = if ($env:POWERTOYS_PR_REVIEW_CONCURRENCY) { [int]$env:POWERTOYS_PR_REVIEW_CONCURRENCY } elseif ($DrainReviewQueue) { 6 } else { 3 }
 $RunBudgetMinutes = if ($env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES) { [int]$env:POWERTOYS_DASHBOARD_RUN_BUDGET_MINUTES } elseif ($DrainReviewQueue) { 0 } else { 50 }
 $RunStartedAt = (Get-Date).ToUniversalTime().ToString('o')
@@ -288,6 +289,38 @@ Do not limit PR discovery to `$Since`; `$Since` is only an optimization for
 activity queries. Join the live list to artifacts and fork traces by upstream
 number.
 
+Start with the exhaustive update inventory:
+
+```powershell
+pwsh -NoProfile -File `
+  "$SkillRoot\scripts\Get-DashboardUpdateCandidates.ps1" `
+  -Dashboard $Dashboard -Upstream $Upstream -AsJson
+```
+
+This inventory is the durable discovery boundary. It classifies every open PR
+and bug as `full_review`, `context_revalidation`, `issue_revalidation`,
+`waiting_author`, `blocked`, `no_action`, or `excluded`. Candidate discovery is
+never bounded by recency or batch size; only execution is bounded.
+
+Build the combined execution plan:
+
+```powershell
+$updatePlanArgs = @(
+  '-NoProfile', '-File', "$SkillRoot\scripts\Get-DashboardUpdateRunPlan.ps1",
+  '-Dashboard', $Dashboard, '-Upstream', $Upstream,
+  '-PrBatchSize', $PrReviewBatchSize,
+  '-IssueBatchSize', $IssueRevalidationBatchSize,
+  '-AsJson'
+)
+if ($DrainReviewQueue) { $updatePlanArgs += '-DrainQueue' }
+pwsh @updatePlanArgs
+```
+
+Normal runs process only `selected_prs` and `selected_issues`; all deferred
+entries remain in the exhaustive inventory for the next run. Drain mode selects
+all candidates. A targeted operator run may pass `-PrNumbers` and
+`-IssueNumbers` without changing discovery semantics.
+
 ### PR freshness
 
 Every open, non-draft PR must end the run in exactly one state:
@@ -348,9 +381,16 @@ the author, does not have a current terminal blocker, and that either:
 
 A terminal blocker must be pinned to the live upstream head, use
 `stage: review_blocked`, and include one or more `blockers[]` entries whose
-`detail` explains the exact failure and whose `remediation` names the concrete
-manual step needed to resume. Generic checkpoints, missing validation, or a
-bare "blocked" label do not clear the queue.
+`terminal` field is explicitly `true`, whose `detail` explains the exact
+failure, and whose `remediation` names the concrete manual step needed to
+resume. Waiting for Copilot, unresolved review findings, incomplete builds, a
+run-budget cutoff, generic checkpoints, missing validation, or a bare
+"blocked" label are resumable workflow states and do not clear the queue.
+Workers must publish those states as `waiting_copilot`,
+`reviewing_findings`, `building`, or `review_in_progress` rather than
+`review_blocked`. Existing `review_blocked` artifacts without an explicit
+`terminal: true` blocker are treated as legacy resumable work and selected by a
+later run.
 
 The queue is exhaustive. Build the run plan:
 
@@ -387,16 +427,18 @@ pwsh -NoProfile -File `
 ```
 
 Every returned issue must receive the lightweight correction pass during the
-run. Re-run the command before publication and report any remaining entries as
-explicitly deferred; do not count them as updated or action-ready.
+run when selected by the combined update plan. Re-run the command before
+publication and report any remaining entries as explicitly deferred; do not
+count them as updated or action-ready.
 
 Every open `Issue-Bug` issue with no `judgment`, with live `updatedAt` newer
 than `source_updated_at`, or whose artifact fails the complete current
 schema-v5 contract receives a lightweight judgment during the run. Contract
 failure includes missing issue context, an invalid fix-assessment status,
 missing proposed fixes, missing confidence, a proposed fix without
-`approve_design`, or a yellow/red fix without matching `request_info` and
-information gaps. Recently generated timestamps never exempt these bugs from
+`approve_design`, or a yellow/red fix without either a reporter-actionable
+`request_info` plus matching information gaps or a concrete maintainer-side
+`reproduce` action. Recently generated timestamps never exempt these bugs from
 re-triage. This pass is deliberately cheaper than `powertoys-issue-to-design`:
 inspect the body, latest comments, labels, assignees, linked PRs/issues, and
 obvious repository ownership signals, then emit one of:
@@ -483,9 +525,19 @@ then request only evidence that would change triage or implementation. Reuse
 established PowerToys collection conventions instead of inventing generic
 instructions:
 
+- follow the evidence taxonomy and comment patterns in the sibling
+  `powertoys-issue-to-design/references/requesting-information.md`;
+- classify every gap with `evidence_type`: `bugreport_zip`, `repro_steps`,
+  `screenshot_image`, `gif_video`, `sample_file`, `event_viewer`,
+  `crash_dump`, `module_trace`, `installer_log`, `powertoys_version`,
+  `windows_version`, `install_scope`, `settings_permissions`,
+  `configuration_export`, `keyboard_layout`, `monitor_topology`,
+  `other_software`, or `behavior_confirmation`;
 - label the action with the evidence being requested, such as
   `Request activation trace` or `Confirm affected shortcut`; never use a
-  generic label such as `Request information`;
+  generic label such as `Request information`, `Request targeted evidence`,
+  `Ask for focused repro details`, `Ask for a narrower repro and fresh
+  diagnostics`, or `Reply with the missing-info request`;
 - make the request itself immediately scannable: state the exact evidence,
   explain which decision it resolves, and give the collection method;
 - when requesting multiple items, use a short numbered or bulleted list rather
@@ -497,11 +549,23 @@ instructions:
 - when a fresh PowerToys diagnostic archive is needed, ask the reporter to
   submit a comment containing `/bugreport`; explain that the generated ZIP
   should be captured immediately after reproducing the problem;
+- if the issue says Settings, the tray icon, or the normal UI cannot open,
+  include the established `BugReportTool.exe` fallback rather than directing
+  the reporter to an inaccessible UI;
+- do not ask for raw PowerToys log files when `/bugreport` packages the needed
+  diagnostics; specialized module logs require an established repository or
+  maintainer collection path;
 - ask for recordings, screenshots, Event Viewer entries, installer logs,
   configuration exports, versions, or numbered reproduction steps only when
   they address a specific recorded gap;
 - if an attachment or prior answer already supplies an item, do not ask for it
   again;
+- do not treat removal of `Needs-Author-Feedback` as proof that the requested
+  evidence arrived; inspect the author reply and attachments, because the
+  policy service may clear the label after any author response;
+- after receiving evidence, quote or summarize what it established and ask
+  only the next discriminating question instead of repeating the original
+  request;
 - do not paste a standard multi-item checklist into unrelated issues.
 
 The editable `request_info` comment and display-only context must agree:
@@ -517,12 +581,16 @@ Copilot agent. Pulse derives that prompt from the issue identity,
 present. Copying the prompt is display-only: it requires no PAT and performs no
 GitHub write.
 
-Every yellow or red proposed fix must additionally include a targeted
-`request_info` action and one or more matching
-`issue_context.information_gaps`. The request asks only for evidence that would
-materially improve or disprove the current plan. A green plan may omit
-`request_info` only when no material uncertainty remains. The display-only
-`proposed_fixes[].confidence` is the canonical score shown by Pulse.
+Every yellow or red proposed fix must expose the next uncertainty-reducing
+action. Use a targeted `request_info` action with matching
+`issue_context.information_gaps` only when the reporter can reasonably supply
+evidence that would materially improve or disprove the plan. When the public
+report is already reproducible and the remaining discriminator requires
+maintainer-side profiling, tracing, or code inspection, emit a concrete
+`reproduce` action instead and do not ask the reporter to perform maintainer
+work. A green plan may omit both only when no material uncertainty remains.
+The display-only `proposed_fixes[].confidence` is the canonical score shown by
+Pulse.
 
 The emitter must apply this complete contract before marking an open bug
 artifact as publishable. A timestamped but partial artifact is not a valid
@@ -715,11 +783,19 @@ item with the exact range. Include an apply-ready `suggestion` block when one
 is justified, but do not downgrade a valid line comment to `companion` merely
 because prose is clearer than a patch. For every truly out-of-diff supported
 finding, emit a non-inline proposed comment that explains the concern, its
-impact, and the required follow-up; Pulse posts those findings as separate PR
+impact, and the required follow-up, and record a concrete
+`out_of_diff_reason`; Pulse posts those findings as separate PR
 conversation comments rather than combining them into one review body. Never
 replace them with a generic local `review_summary` action. Label
 companion-only reviews `Post general review notes` and disclose `general
 review notes — separate PR conversation comments`.
+
+Before emission, verify stage/action consistency. `stage: review_ready` is
+reserved for a clean current-head result with zero proposed comments and no
+`post_review` or `request_changes` action. Any drafted finding uses
+`awaiting_review_approval` or another explicit draft/pending stage. An action
+label may say `inline suggestion(s)` only when at least one proposed inline
+comment contains a valid apply-ready suggestion block.
 
 Use a local manual-review or validation action only when no defensible
 author-facing comment can be drafted from the current head—for example, the
@@ -798,6 +874,7 @@ Write these machine-readable fields into `data/items/<number>.json`:
     "initial_investigation": ["Focused code/history/duplicate finding."],
     "information_gaps": [
       {
+        "evidence_type": "bugreport_zip",
         "information": "Exact missing evidence",
         "why_needed": "Decision this evidence will resolve",
         "how_to_collect": "Comment /bugreport immediately after reproducing"

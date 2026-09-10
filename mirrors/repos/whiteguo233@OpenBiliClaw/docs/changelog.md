@@ -4,6 +4,12 @@
 
 ---
 
+## v0.3.220：Windows 推荐进程修复与保存键扩展（2026-09-09）
+
+- **修复 Windows 端 v0.3.219 启动崩溃（issue #234）**：Windows 的 asyncio/uvicorn 不支持 Unix socket，独立推荐进程改为监听 `127.0.0.1:8423` 回环 TCP，主 API 改用 HTTP 代理；POSIX 仍保留 Unix socket。同时为桌面 Web 的 `renderPoolStatus` 增加 `null` 状态保护。
+- **允许 Linux.do 主题类型内容 ID 保存**：saved-item key 校验新增 `linuxdo:topic:<positive-id>` 规范键，与既有知乎 / GitHub typed-content 规则保持一致。
+- **发布状态**：后端源码 / 浏览器插件 / 桌面安装包 / Docker 镜像与聚合 Release 均已发布为 `v0.3.220`；Chrome Web Store 已上传并提交 `0.3.220` 审核；Firefox AMO 已提交 listed `0.3.220`。
+
 ## v0.3.219：四进程后台模式默认开启（2026-09-09）
 
 - **默认启动改为四进程后台模式**：`openbiliclaw start` / `serve-api` 以及桌面安装包现在默认拉起 `full worker`、`discovery worker`、独立推荐进程和独立图片代理；API 主进程不再承担重后台负载。仍可用 `OPENBILICLAW_WORKER=0`（`false` / `no` / `off`）回退到旧的单 API 进程模式。
@@ -85,6 +91,14 @@
 - **README 下载与星标徽章**：中英文 README 顶部新增 GitHub Releases 总下载数与仓库 Star 动态徽章，点击可直达对应页面。
 
 - **桌面 Web 手机版二维码优先使用手动配置的后端地址**：校园网等存在 AP/客户端隔离或多网卡选错网卡的场景下，`/api/qr-info` 自动探测的局域网 IP 可能手机不可达，而桌面 Web 设置里手动填写的后端地址此前会被自动探测结果覆盖。现在二维码生成时显式配置的后端 host/port 始终优先，用户可填写手机可达的 IP、域名或内网穿透地址后再扫码；未填写时行为保持不变。更新 `tests/test_desktop_web_mobile_entry.py` 静态契约测试。
+
+## 未发布
+
+- **learned scorer 安全校准闭环（eval_scorer）**：`[discovery].eval_scorer` 默认 `"llm"` 保持既有行为，并在桌面 Web / 扩展「高级功能」中显示为 `Agent（默认）`；用户可显式切换 `Shadow（校准观察）` 或 `Learned（仅相关性，实验性）`，保存后经同一配置 API 热重载。注册策略与回填策略复用顶层 evaluator，直连发现、统一候选流水线和单条评估不再绕回默认 Agent。`shadow` 并跑 learned + 完整 LLM、由 LLM 决定产品 relevance 并落完整隐私安全对照，人工运行只读 gate 并确认通过后才应选择 `learned` hybrid relevance。learned 模式仍保留 LLM temporal / topic / style / franchise 元数据，且审计失败、非法分数 / 向量 / digest 或不完整 LLM 成员均 fail-open；gate 拒绝不完整 telemetry、零 admission 和缺失指标。切换只影响后续候选，不重算已有推荐；本版本不减少 LLM 调用。
+
+- **贡献者致谢**：该功能初始 PR 由 [@aweds13](https://github.com/aweds13) 提交（[PR #228](https://github.com/whiteguo233/OpenBiliClaw/pull/228)）；随后由 [@whiteguo233](https://github.com/whiteguo233) 接管完善并合入。
+
+## v0.3.220：Windows 推荐进程修复与保存键扩展（2026-09-09）
 
 - **修复 Windows 下高并发 JSON 原子写入偶发 WinError 5（issue #229）**：`_atomic_write_json()` 在 Windows 上多线程/多进程竞争替换同一状态文件时，`os.replace()` 会短暂抛出 `PermissionError: [WinError 5] 拒绝访问`，导致探索缓冲等状态更新丢失。现在替换阶段对瞬时 `PermissionError` 增加带随机抖动的指数退避重试，重试耗尽才向上抛出。
 

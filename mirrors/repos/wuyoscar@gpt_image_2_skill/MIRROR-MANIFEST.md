@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wuyoscar/gpt_image_2_skill` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `wuyoscar/gpt_image_2_skill` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wuyoscar/gpt_image_2_skill` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,9 +98,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/gpt-image/references/gallery-ui-ux-mockups.md`](skills/gpt-image/references/gallery-ui-ux-mockups.md) |
 | 38 | ✓ | [`skills/gpt-image/references/gallery-watercolor.md`](skills/gpt-image/references/gallery-watercolor.md) |
 | 39 | ✓ | [`skills/gpt-image/references/gallery.md`](skills/gpt-image/references/gallery.md) |
-| 40 | ✓ | [`skills/gpt-image/references/openai-cookbook.md`](skills/gpt-image/references/openai-cookbook.md) |
-| 41 | ✓ | [`skills/gpt-image/scripts/generate.py`](skills/gpt-image/scripts/generate.py) |
-| 42 | ✓ | [`skills/gpt-image/SKILL.md`](skills/gpt-image/SKILL.md) |
+| 40 | ✓ | [`skills/gpt-image/references/models.md`](skills/gpt-image/references/models.md) |
+| 41 | ✓ | [`skills/gpt-image/references/openai-cookbook.md`](skills/gpt-image/references/openai-cookbook.md) |
+| 42 | ✓ | [`skills/gpt-image/references/openai-image-2.5-editing.md`](skills/gpt-image/references/openai-image-2.5-editing.md) |
+| 43 | ✓ | [`skills/gpt-image/references/openai-image-2.5-generation.md`](skills/gpt-image/references/openai-image-2.5-generation.md) |
+| 44 | ✓ | [`skills/gpt-image/references/openai-image-2.5-layout-and-text.md`](skills/gpt-image/references/openai-image-2.5-layout-and-text.md) |
+| 45 | ✓ | [`skills/gpt-image/references/openai-image-2.5-migration.md`](skills/gpt-image/references/openai-image-2.5-migration.md) |
+| 46 | ✓ | [`skills/gpt-image/references/openai-image-2.5.md`](skills/gpt-image/references/openai-image-2.5.md) |
+| 47 | ✓ | [`skills/gpt-image/references/templates-gpt-image-2.5.md`](skills/gpt-image/references/templates-gpt-image-2.5.md) |
+| 48 | ✓ | [`skills/gpt-image/scripts/generate.py`](skills/gpt-image/scripts/generate.py) |
+| 49 | ✓ | [`skills/gpt-image/SKILL.md`](skills/gpt-image/SKILL.md) |
 
 ---
 

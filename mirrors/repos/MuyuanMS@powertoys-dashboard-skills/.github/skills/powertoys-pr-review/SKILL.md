@@ -56,7 +56,15 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
 11. **The fork Copilot loop (Steps 4–8) is not optional and is independent of the posting decision.** "Just show me" / "do not post" changes only **Step 10**. You must still drive the fork loop to convergence: fix valid issues, commit, push, reply-and-resolve every Copilot thread, and re-request review until a freshly-requested review returns **zero** new comments and there are **zero** unresolved Copilot threads. Final suggestions come from the *converged* net diff, never raw round-1 output.
 12. **For 2+ independent PRs, review them in parallel unless the user explicitly requests sequential execution.** Fan out one background worker per PR (cap 3–5 concurrent), with an isolated branch/worktree and independent convergence loop. If sub-agents are unavailable, pipeline all PRs in one agent so their review requests and waits remain concurrently in flight. Sync the base once, serialize local builds, and keep the orchestrator as the single writer of dashboard data. Never leave any PR stranded at round 1. See [batch-parallel.md](./references/batch-parallel.md).
 13. **Never mention a fork repository, fork PR, worktree, internal review loop, or private validation provenance in comments posted to the original PR.** Store that evidence only under `internalEvidence`; public payloads must be self-contained.
-14. **Never post prose summaries as inline code suggestions.** An inline item must contain one non-empty, apply-ready `suggestion` block targeting an exact current RIGHT-side diff range. Split localized fixes out of broader multi-file findings instead of collapsing every concrete change into companion prose. Use a companion item only for the architectural, coordination, or out-of-diff remainder, and explicitly label companion-only reviews as general notes with no inline suggestions. Omit obsolete findings.
+14. **Map every finding to the current diff before drafting.** An inline item
+    targets an exact current RIGHT-side diff range and may contain either
+    explanatory prose or one non-empty, apply-ready `suggestion` block. Use the
+    suggestion block whenever the localized replacement is safe to apply
+    directly; do not force architectural or coordinated multi-site changes
+    into one unsafe patch. Split localized edits out of broader findings
+    instead of collapsing them into companion prose. A companion item is
+    allowed only when no current RIGHT-side anchor exists and must include a
+    concrete `outOfDiffReason`. Omit obsolete findings.
 15. **Never publish with ad-hoc `gh` commands.** Validate schema-version-2 data with `Test-ReviewData.ps1`, then publish approved decisions with `Publish-ApprovedReview.ps1`. The publisher stages a pending review, reads it back, and submits only after exact verification.
 16. **Score confidence per finding, but never expose it upstream.** Every drafted public item carries a 50–100 confidence score and evidence-based rationale as metadata. Scores below 50 stay internal. Pulse may show the score to maintainers; author-facing review bodies must contain severity and reasoning only.
 17. **Fork pushes are required review work, not upstream publication.** Workers may create/update branches and PRs in the configured personal fork, push review fixes, and resolve fork review threads. A coordinator instruction not to commit or push dashboard data must never be interpreted as prohibiting fork-side pushes. Only writes to `microsoft/PowerToys` remain approval-gated.
@@ -65,10 +73,18 @@ If a prerequisite is missing, guide the user through setup ([references/prerequi
     review with zero proposed comments as `stage: review_ready`, never
     `concluded`, `complete`, or another synonym. A review with findings must
     instead include a current-head `post_review` or `request_changes` action.
-    When automation cannot proceed, emit `stage: review_blocked` only for a
-    current-head terminal blocker and include `blockers[]` entries with
-    non-empty `detail` and exact `remediation`; do not leave it as
+    Emit `stage: review_blocked` only for a current-head unrecoverable/manual
+    blocker and include a `blockers[]` entry with `terminal: true`, non-empty
+    `detail`, and exact `remediation`. A pending Copilot review, unresolved
+    findings, incomplete validation, or a run cutoff remains resumable as
+    `waiting_copilot`, `reviewing_findings`, `building`, or
     `review_in_progress`.
+20. **Consume an outstanding review request before making another one.** On
+    resume, read the checkpoint/request timestamp and inspect reviews already
+    submitted for that fork head. If the requested review is still pending,
+    preserve `waiting_copilot` and return; do not create duplicate requests. If
+    it arrived, process that result before deciding whether another review
+    round is needed.
 
 ## Phase 0: Context & Process Review
 

@@ -56,11 +56,17 @@ approval boundary that hands off to IDD execution.
 
   `journal` is the durable record location. For an existing set, use the
   verified originating Stage 1 hold; for a standalone set with no existing
-  issue or anchor, use a pre-existing repository-level authoring journal
-  target designated by repository policy. Do not create that journal as part
-  of the same set. If neither location exists or its identity cannot be
-  verified, stop with `blocked-by-human` before creating any target. On every
-  paginated replay, require `actor` to equal the API author and verify that
+  issue or anchor, use the repository-level authoring journal target
+  configured at `issueAuthoring.journalIssue` in `.github/idd/config.json`
+  (an `owner/repo#number` reference to a pre-existing, durable, comment-only
+  issue) -- an unset `issueAuthoring.journalIssue` only blocks a standalone
+  set; an existing set with a verified Stage 1 hold needs no journal
+  configuration at all. Do not create that journal as part of the same set.
+  If the applicable location cannot be resolved -- no verified Stage 1 hold
+  for an existing set, or `issueAuthoring.journalIssue` unset or
+  unverifiable for a standalone set -- stop with `blocked-by-human` before
+  creating any target. On every paginated replay, require `actor` to equal
+  the API author and verify that
   actor is a trusted marker login with the required write-level permission or
   configured bot/app trust. An untrusted, malformed, or conflicting
   exact-token record is not valid evidence; fail closed and retain the hold.
@@ -190,7 +196,19 @@ approval boundary that hands off to IDD execution.
   and matching prior owner token. A `release` marker must match the current
   owner and set, but remains provisional while its set release is in
   progress; an individual label removal never closes that target's
-  generation. Only after a fresh re-read verifies every target's release
+  generation. During the owning set's own Stage 2 (observed 2026-09-09,
+  kurone-kito/idd-skill#2791), the heartbeat renewal and the pre-removal
+  ownership recheck must treat that set's provisional `mode=release`
+  markers and the anchor's `mode=release-guard` as the expected state
+  rather than as a competing generation; the acquisition-time rule that
+  a target carrying a release marker cannot be re-acquired until that
+  release's `release-complete` is found applies to a later session's
+  fresh acquisition of the child, not to the releasing set's own
+  rechecks or to a resume of the exact interrupted set, which stays
+  the established recovery path when `release-complete` is missing;
+  the releasing set's own rechecks never change the current winner,
+  unlike a valid resume marker for that exact set, which does. Only
+  after a fresh re-read verifies every target's release
   marker and label removal and the anchor's `release-complete` marker does
   the set-level release close all target generations, after which a later
   `acquire` starts a new generation. The

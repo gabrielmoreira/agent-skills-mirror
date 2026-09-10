@@ -383,11 +383,16 @@ class OpenAIProvider(ImageProvider):
     def _save_results(result: dict, output_dir: str) -> list[str]:
         paths = []
         for item in result.get("data", []):
-            if "b64_json" in item:
-                raw = base64.b64decode(item["b64_json"])
+            # Check value non-emptiness rather than key presence: some backends
+            # (e.g. Agnes) return an empty `b64_json` alongside a valid `url` in
+            # URL output mode, which would otherwise decode to a 0-byte file.
+            b64 = item.get("b64_json")
+            url = item.get("url")
+            if b64:
+                raw = base64.b64decode(b64)
                 paths.append(_save_image(raw, output_dir))
-            elif "url" in item:
-                raw = _load_image(item["url"])
+            elif url:
+                raw = _load_image(url)
                 paths.append(_save_image(raw, output_dir))
         return paths
 
@@ -472,11 +477,13 @@ class LinkAIProvider(ImageProvider):
 
         paths = []
         for item in result.get("data", []):
-            if "url" in item:
-                raw = _load_image(item["url"])
+            url = item.get("url")
+            b64 = item.get("b64_json")
+            if url:
+                raw = _load_image(url)
                 paths.append(_save_image(raw, output_dir))
-            elif "b64_json" in item:
-                raw = base64.b64decode(item["b64_json"])
+            elif b64:
+                raw = base64.b64decode(b64)
                 paths.append(_save_image(raw, output_dir))
         return paths
 

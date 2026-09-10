@@ -10,8 +10,8 @@ note, or the ordinary POV contract's explicit grounding blocker.
 
 Resolve conversational shorthand before spending: "the approach," "these
 options," and "the three options presented" mean the single unambiguous
-referent in the active conversation. Ask one focused clarification only when
-multiple plausible referents would materially change the POV.
+subject identified by the active conversation. Return missing context to the caller when several possible subjects would
+materially change the POV and context cannot distinguish them.
 
 Keep four identities separate for the host and every peer:
 
@@ -477,7 +477,7 @@ The panel itself never mutates. After delivery, apply SKILL.md Phase 4's
 four-part conjunction: the original prompt explicitly authorized the named
 downstream action, the result is non-stalemated, the action stays in inherited
 scope, and it is non-destructive and otherwise authorized. All four must pass
-for handoff; otherwise offer one logical next step and wait.
+for handoff; otherwise return the judgment without starting downstream work. A calling workflow retains ownership of continuation.
 
 ## 7. Skeptic mode and degradation
 

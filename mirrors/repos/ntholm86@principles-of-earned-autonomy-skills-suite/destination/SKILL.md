@@ -1,6 +1,6 @@
 ---
 name: destination
-version: 2.8.0
+version: 2.9.0
 description: 'Automatic direction-consolidation service. Improve schedules it when accumulated work makes cross-run direction useful; it surfaces sourced guesses about durable direction as questions the operator can confirm, correct, or reject. Manual invocation remains available when the operator wants to explore or revise direction.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
@@ -52,12 +52,13 @@ Before forming any hunches, look at what is available in the **target repo's `.a
 - `.acm/destination.md` — what the operator has explicitly said (if it exists).
 - `.acm/orientation.md` — what the agent's last arc-read concluded about the target.
 - `.acm/audit-trail.md` — recent decisions, reversals, realisations.
-- `.acm/sessions/` — recent conversation transcripts, if present.
+- When the run's active scope is a task scope (`.acm/<task>/`, defined in [trail/SKILL.md](../trail/SKILL.md)), these paths mean that scope, and the file Destination writes is the task's `destination.md`. A task destination is layered under the repo destination: it may narrow it and never contradict it, because the higher-level `.acm/` always wins. Read the repo destination first.
+- Relevant prior conversation records, if available: `.acm/transcripts/`, linked host or harness capture, and `.acm/sessions/` (including legacy summaries). Distinguish independent capture from agent-authored summaries by provenance and fidelity markings, not directory name.
 - The current conversation — what the operator has been emphasising, dismissing, returning to.
 
 The point is not to summarise these. The point is to notice what the operator has *not* said directly but that the signal points to.
 
-When Improve scheduled this run, begin from its stated trigger evidence. Treat prior unopposed Intent narrations as accepted mandates for their completed runs and synthesize what they already establish. Do not ask the operator to restate the project from zero; ask only about direction that remains unresolved across those mandates.
+When Improve scheduled this run, begin from its stated trigger evidence. Synthesize prior run mandates whose acceptance is supported by recorded operator confirmation or explicit delegation; retain other Intent narrations as evidence for hunches, without treating lack of objection as acceptance. Do not ask the operator to restate the project from zero; ask only about direction that remains unresolved across those mandates.
 
 ### 2. Form sourced inferences
 
@@ -111,7 +112,7 @@ After the conversation, capture three things:
 
 Before writing, show the operator the complete durable meaning you intend to carry forward, clearly distinguishing their confirmed statements from implications you derived. Ask them to confirm or correct it, and wait. Earlier answers confirm only what they establish; they do not authorize unstated implications. If corrected, resynthesize and show it again. Without confirmation, do not write.
 
-**Before writing: create the `.acm/` directory in the target repo root if it does not already exist.** Then write `.acm/destination.md` with the agent's current understanding of the destination. Do not ask the operator to do this — write it as part of completing the run. The destination is operator-held in the sense that the *operator commits it to git* when it reads right, and revises it before committing if anything is off. The agent's job is to produce the file; the operator's job is to decide whether it is ready to commit.
+**Before writing: create the `.acm/` directory in the target repo root if it does not already exist.** Then write `.acm/destination.md` with the agent's current understanding of the destination. Do not ask the operator to do this — write it as part of completing the run. The operator's review and approval make the synthesized meaning a mandate, regardless of who drafted it or whether it is committed to git. Leave committing the destination file to the operator; it is never a side effect of an agent run.
 
 If `.acm/destination.md` already exists, update it in place rather than replacing it wholesale — preserve anything the operator has written that the current inferences do not change.
 

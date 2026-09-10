@@ -28,7 +28,7 @@ exportable to PDF, PNG, and PPTX.
 - Creating a new presentation from a topic or outline
 - Enhancing or reformatting an existing deck
 - Generating per-slide HTML with animations and design-doctrine aesthetics
-- Exporting a deck to PDF, PNG, or PPTX after generation
+- Exporting a deck to PDF, PNG, or image-backed PPTX after generation
 - Applying a named style preset or bold template to a deck
 - Exporting a generated deck to Canva as a presentation
 - Importing a Canva design as input for enhancement
@@ -47,6 +47,7 @@ exportable to PDF, PNG, and PPTX.
 - Optional: slide count, density preference (sparse/balanced/dense), target audience
 - Optional: named style preset or `oma slide style get <slug>` reference
 - Optional: Canva design ID or URL for import
+- Optional: acknowledgement that exported PPTX and Canva uploads are raster-backed when editable text is not required
 
 ### Expected outputs
 - Per-slide `slide-NN.html` fragments under `.agents/results/slides/<session-id>/`
@@ -57,6 +58,7 @@ exportable to PDF, PNG, and PPTX.
 - Optional: `viewer.html`, `out/deck.html` bundle, exports
 <!-- oma-docs:ignore-end -->
 - Optional: Canva design URL (when Canva export is requested)
+- PPTX export contains one raster image per slide; it has no editable text or shape layers.
 
 ```yaml
 outputs:
@@ -118,7 +120,7 @@ outputs:
    for bbox visual edits. Optional aesthetic review using chrome-devtools MCP screenshots (judgment,
    not the pass/fail gate).
 7. **DELIVER** (Phase 6): Run `oma slide bundle --workspace "$DECK_DIR"` (`--workspace` is required; the default output is `$DECK_DIR/out/deck.html`). Optionally export
-   PDF / PNG / PPTX on user request. Warn if deck contains video (bundle is not fully self-contained).
+   PDF / PNG / PPTX on user request. PPTX is image-backed and has no editable text or shape layers. Warn if deck contains video (bundle is not fully self-contained).
 
 ### Transitions
 - If `import-pptx` or `import-canva` is requested, skip Phase 1 (Discovery), run Phase 2 (Style), then proceed from Phase 3 with extracted fragments.
@@ -275,19 +277,13 @@ Env-var overrides: `OMA_CHROME_PATH` (Chrome binary for validate/export), `OMA_Y
 
 ## References
 
-Follow `resources/generation-protocol.md` phase by phase.
 Consult `resources/design-doctrine.md` for aesthetic guidelines before writing any slide HTML.
 Read `resources/fixed-stage.md` for stage rules, px-authoring conventions, and embed instructions.
-Use `resources/style-presets.md` (12 vendored) and `resources/selection-index.json` (34 bold templates) for style selection.
-Use `resources/animation-patterns.md` for effect-to-feeling pairing.
 Before delivery, run `resources/checklist.md`.
 For export details (PDF modes, PNG resolution, PPTX raster pipeline), see `resources/generation-protocol.md` §Phase 6 — Bundle and Export.
 For Canva export/import pipeline, see `resources/canva-integration.md`.
 For bbox visual editor usage, see `resources/generation-protocol.md` §Phase 5c — Visual Edit.
 For error recovery, see §Failure and recovery above.
-
-Vendor-specific execution protocols are injected automatically by `oma agent spawn`.
-Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
 
 - Stage rules + embed instructions: `resources/fixed-stage.md`
 - Generation lifecycle (Phase 0–6): `resources/generation-protocol.md`

@@ -19,6 +19,12 @@ This skill produces an **approved design captured in a fork mirror issue**. Its 
 6. **Two gates only.** Pause for explicit user approval (a) after triage if red flags are found (Phase 1), and (b) at the design-approval gate (Phase 6). Otherwise, in autopilot, proceed and state your assumptions.
 7. **Resume, don't duplicate.** Always run Phase 0 first: sync the fork's `main` and check whether a design/mirror issue already exists for Issue M, then pick up from the correct phase.
 8. **The design is public-safe.** Because it lives on the user's own fork (only plain-text `Issue M`, no upstream cross-ref), the root cause + fix plan may be shown **in full** on the triage dashboard's public layer.
+9. **Information requests are diagnostic and evidence-specific.** Before
+   asking the reporter, follow
+   [requesting-information.md](./references/requesting-information.md). Use the
+   established collection method, especially `/bugreport` for a fresh
+   PowerToys diagnostic ZIP, and never substitute “send logs” or a generic
+   checklist.
 
 ## Configuration & Prerequisites (verify on first run)
 
@@ -89,6 +95,13 @@ Produce an inferred **root cause** and a concrete **fix plan**, grounded in the 
 
 - Pull the issue body + comments (`gh issue view M --repo microsoft/PowerToys --json body,comments`).
 - **Download and analyze any attachments** (diagnostic bundle `PowerToysReport_*.zip`, logs, screenshots, repro files) — grep the issue/comment JSON for `user-attachments` URLs and `Invoke-WebRequest` them. These usually pin the real root cause; without them you are guessing.
+- If evidence is still missing after the initial investigation, classify each
+  gap with the taxonomy in
+  [requesting-information.md](./references/requesting-information.md), record
+  its `evidence_type`, and draft the smallest request that distinguishes the
+  remaining hypotheses. For PowerToys logs, ask the reporter to reproduce and
+  comment `/bugreport`; if Settings or the tray cannot open, include the
+  `BugReportTool.exe` fallback instead of giving impossible instructions.
 
 ### 2b. Investigate
 
@@ -234,8 +247,18 @@ design as structured data, not only Markdown. The orchestrator writes it to
   `design.alternatives`;
 - mirror issue, adversary rounds/sign-off, confidence, and approval actions.
 - an `approve_design` action for every proposed fix; yellow/red plans also
-  include a targeted `request_info` action whose comment matches the remaining
-  `issue_context.information_gaps`.
+  expose the next uncertainty-reducing action. Use `request_info` with matching
+  `issue_context.information_gaps` only for evidence the reporter can
+  reasonably provide. If the public report is already reproducible and the
+  remaining work is maintainer-side profiling, tracing, or code inspection,
+  use a concrete `reproduce` action instead.
+
+Each information gap must contain `evidence_type`, `information`,
+`why_needed`, and `how_to_collect`. Separate evidence that is **Needed** to
+decide the fix from evidence that is only **Helpful, if available**. Never use
+generic action labels such as `Request targeted evidence` or
+`Ask for focused repro details`; name the artifact or discriminator being
+requested.
 
 Do not collapse the structured fields back into one `fix_plan` paragraph.
 Pulse uses these structured fields to build a self-contained local-agent fix

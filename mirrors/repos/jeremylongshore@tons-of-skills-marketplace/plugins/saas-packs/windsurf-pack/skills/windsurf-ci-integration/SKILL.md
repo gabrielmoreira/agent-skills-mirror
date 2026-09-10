@@ -1,6 +1,6 @@
 ---
 name: windsurf-ci-integration
-description: 'Integrate Windsurf Cascade workflows into CI/CD pipelines and team automation.
+description: 'Analyze and integrate Devin Desktop (formerly Windsurf) Cascade workflows into CI/CD pipelines and team automation.
 
   Use when automating Cascade tasks in GitHub Actions, enforcing AI code quality gates,
 
@@ -11,8 +11,9 @@ description: 'Integrate Windsurf Cascade workflows into CI/CD pipelines and team
   "windsurf automation", "cascade CI", "windsurf pipeline".
 
   '
+argument-hint: "[repository or policy scope]"
 allowed-tools: Read, Write, Edit, Bash(gh:*)
-version: 1.11.0
+version: 1.12.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
@@ -27,13 +28,20 @@ compatibility: Designed for Claude Code
 
 ## Overview
 
-Integrate Windsurf configuration validation and AI code quality gates into CI/CD pipelines. Covers validating `.windsurfrules`, enforcing team policies for AI-generated code, and automating Windsurf config distribution.
+Integrate Windsurf configuration validation and AI code quality gates into CI/CD pipelines. Covers validating `.devin/rules/project.md`, enforcing team policies for AI-generated code, and automating Windsurf config distribution.
 
 ## Prerequisites
 
 - GitHub repository with Actions enabled
 - Windsurf configuration files in repository
 - Team agreement on AI code review policy
+
+## Tool Use
+
+- Use `Read` to inspect only the repository files and configuration needed for the request.
+- Use `Write` only for a new artifact the user requested; never write credentials or unreviewed production configuration.
+- Use `Edit` for bounded, reviewable changes and preserve unrelated user work.
+- Use only the command-scoped `Bash` entries declared in frontmatter, with non-destructive checks before mutations.
 
 ## Instructions
 
@@ -46,7 +54,7 @@ name: Windsurf Config Validation
 on:
   pull_request:
     paths:
-      - '.windsurfrules'
+      - '.devin/rules/project.md'
       - '.codeiumignore'
       - '.windsurf/**'
 
@@ -56,18 +64,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check .windsurfrules exists and is valid
+      - name: Check .devin/rules/project.md exists and is valid
         run: |
-          if [ ! -f .windsurfrules ]; then
-            echo "::error::.windsurfrules is missing"
+          if [ ! -f .devin/rules/project.md ]; then
+            echo "::error::.devin/rules/project.md is missing"
             exit 1
           fi
-          CHARS=$(wc -c < .windsurfrules)
-          if [ "$CHARS" -gt 6000 ]; then
-            echo "::error::.windsurfrules exceeds 6000 char limit ($CHARS chars)"
+          CHARS=$(wc -c < .devin/rules/project.md)
+          if [ "$CHARS" -gt 12000 ]; then
+            echo "::error::.devin/rules/project.md exceeds 12000 char limit ($CHARS chars)"
             exit 1
           fi
-          echo ".windsurfrules: $CHARS chars (limit: 6000)"
+          echo ".devin/rules/project.md: $CHARS chars (limit: 12000)"
 
       - name: Check .codeiumignore covers secrets
         run: |
@@ -84,7 +92,7 @@ jobs:
 
       - name: Validate workspace rules frontmatter
         run: |
-          for rule in .windsurf/rules/*.md; do
+          for rule in .devin/rules/*.md; do
             [ -f "$rule" ] || continue
             if ! head -1 "$rule" | grep -q "^---"; then
               echo "::error::$rule missing YAML frontmatter"
@@ -156,12 +164,13 @@ jobs:
         repo: [frontend, backend, mobile]
     steps:
       - uses: actions/checkout@v4
-      - name: Push config to child repos
+      - name: Open reviewed config update in child repos
         run: |
-          gh api repos/${{ github.repository_owner }}/${{ matrix.repo }}/contents/.windsurfrules \
-            --method PUT \
-            --field message="chore: sync windsurf config from monorepo" \
-            --field content="$(base64 -w0 windsurf-templates/.windsurfrules)"
+          echo "Use an organization-owned GitHub App or reusable workflow to create"
+          echo "a branch and PR in ${{ matrix.repo }}; do not write directly to its default branch."
+          gh workflow run sync-devin-rules.yml \
+            --repo "${{ github.repository_owner }}/${{ matrix.repo }}" \
+            --field source_sha="${{ github.sha }}"
         env:
           GH_TOKEN: ${{ secrets.REPO_SYNC_TOKEN }}
 ```
@@ -198,11 +207,15 @@ Enforce commit message conventions for AI-generated code:
     fi
 ```
 
+## Output
+
+Produce a reviewable CI change set containing the policy checks, protected-branch-safe workflow, local reproduction commands, expected pass and failure evidence, and rollback instructions. Never push directly to a protected default branch or embed repository credentials in generated files.
+
 ## Error Handling
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
-| .windsurfrules over limit | Too many rules | Split into workspace rules in `.windsurf/rules/` |
+| .devin/rules/project.md over limit | Too many rules | Split into workspace rules in `.devin/rules/` |
 | Secret detected in diff | AI generated hardcoded key | Remove, rotate, add to `.codeiumignore` |
 | Config sync fails | Token lacks repo access | Update `REPO_SYNC_TOKEN` permissions |
 | Frontmatter validation fails | Missing trigger field | Add `trigger: always_on` or appropriate mode |
@@ -219,23 +232,24 @@ required_status_checks:
   - "test"
 ```
 
-### Pre-Commit Hook for .windsurfrules
+### Pre-Commit Hook for .devin/rules/project.md
 
 ```bash
 #!/bin/bash
 # .git/hooks/pre-commit
-CHARS=$(wc -c < .windsurfrules 2>/dev/null || echo 0)
-if [ "$CHARS" -gt 6000 ]; then
-  echo "ERROR: .windsurfrules exceeds 6000 char limit ($CHARS chars)"
+CHARS=$(wc -c < .devin/rules/project.md 2>/dev/null || echo 0)
+if [ "$CHARS" -gt 12000 ]; then
+  echo "ERROR: .devin/rules/project.md exceeds 12000 char limit ($CHARS chars)"
   exit 1
 fi
 ```
 
 ## Resources
 
+- [Focused first-party references](references/official-docs.md)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Windsurf Admin Guide](https://docs.windsurf.com/windsurf/guide-for-admins)
+- [Windsurf Admin Guide](https://docs.devin.ai/desktop/guide-for-admins)
 
-## Next Steps
+## Related Skill
 
-For deployment patterns, see `windsurf-deploy-integration`.
+Continue with `windsurf-deploy-integration` to connect these validation gates to a reviewed preview and production deployment workflow.

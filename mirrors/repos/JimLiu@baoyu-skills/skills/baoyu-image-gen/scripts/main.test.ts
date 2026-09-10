@@ -144,7 +144,7 @@ default_image_size: 2K
 default_image_api_dialect: ratio-metadata
 default_model:
   google: gemini-3-pro-image
-  openai: gpt-image-2
+  openai: gpt-image-2.5-flare
   zai: glm-image
   azure: image-prod
   minimax: image-01
@@ -176,7 +176,7 @@ batch:
   assert.equal(config.default_image_size, "2K");
   assert.equal(config.default_image_api_dialect, "ratio-metadata");
   assert.equal(config.default_model?.google, "gemini-3-pro-image");
-  assert.equal(config.default_model?.openai, "gpt-image-2");
+  assert.equal(config.default_model?.openai, "gpt-image-2.5-flare");
   assert.equal(config.default_model?.zai, "glm-image");
   assert.equal(config.default_model?.azure, "image-prod");
   assert.equal(config.default_model?.minimax, "image-01");

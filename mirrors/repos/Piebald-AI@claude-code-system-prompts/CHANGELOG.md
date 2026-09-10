@@ -4,6 +4,23 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.267](https://github.com/Piebald-AI/claude-code-system-prompts/commit/45081e3)
+
+_+1,450 tokens_
+
+- **NEW:** Tool Description: Artifact database version pinning guidance and Tool Parameter: Artifact database version precondition — Require version-pinned writes for previously read documents, rejecting stale writes and directing re-read-and-retry rather than overwriting concurrent edits.
+- **NEW:** Tool Description: Artifact responsive page contract — Requires phone-width layouts with preserved side gutters, wrapping content, and horizontal scrolling confined to oversized tables, diagrams, and code blocks.
+- **NEW:** Tool Parameter: Artifact database batch writes — Documents batched writes with conditional version pinning: stale pinned entries reject the whole batch; unpinned batches may fall back to sequential writes.
+- Agent Prompt: Security monitor forwarded user turns — Credits server-attributed Project-owner timeline messages as action-and-target-specific consent, resolving conflicts by written time; excludes bare affirmations, permission-prompt answers, and configuration-edit authorization.
+- Data: Self-hosted runner command help — Warns that Anthropic-managed Git replaces home-level Git configuration without backup at startup and before every session; requires a dedicated account or container.
+- Skill: Plugin authoring — Adds settings and environment access to the engine interface description and includes inbound session deliveries among hook events.
+- Skill: Plugin authoring — Documents hook-failure `.catch` handlers, one-time transcript notices for failures and unloaded modules, and debug logging of every occurrence.
+- Skill: Plugin authoring — Clarifies that surface element constructors must be destructured into JSX tags rather than assumed global, and that keyed boxes scope hover styles.
+- System Prompt: Artifact comment thread framing — Separates tool-emitted comment headers onto standalone lines and prefixes every content line, preserving the distinction between trusted framing and untrusted viewer text.
+- Tool Description: Artifact database guidance — Adds conditional per-document version preconditions to the batch-write example so individual entries can guard against overwriting concurrent changes.
+- Tool Description: Updating existing artifacts — Explains that republishing automatically updates already-open views while preserving page state where possible, including games, queues, and unfinished replies.
+- Tool Parameter: Bash command description — Requires plain-language command summaries rather than repeating command text, flags, or file paths, since users may not see the command itself.
+
 #### [2.1.266](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c34e86)
 
 <sub>_No changes to the system prompts in v2.1.266._</sub>

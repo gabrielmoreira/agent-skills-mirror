@@ -96,7 +96,9 @@ const LEGACY_SPEC: DashScopeModelSpec = {
 };
 
 const MODEL_SPEC_ALIASES: Record<string, DashScopeModelSpec> = {
+  "qwen-image-3.0-pro": QWEN_2_SPEC,
   "qwen-image-2.0-pro": QWEN_2_SPEC,
+  "qwen-image-2.0-pro-2026-04-22": QWEN_2_SPEC,
   "qwen-image-2.0-pro-2026-03-03": QWEN_2_SPEC,
   "qwen-image-2.0": QWEN_2_SPEC,
   "qwen-image-2.0-2026-03-03": QWEN_2_SPEC,

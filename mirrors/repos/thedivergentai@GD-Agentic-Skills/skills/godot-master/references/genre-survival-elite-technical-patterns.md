@@ -28,7 +28,7 @@ Sample noise gradients → biome ids; keep generation off the main thread via `S
 
 ---
 
-# ðŸš€ Elite Technical Implementations (Batch 09)
+# 🚀 Elite Technical Implementations (Batch 09)
 
 ### 1. Grid-Map-Snap Pattern (Base-Building)
 For performant base-building in 3D, use the `GridMap` node. It uses octant-based optimization to handle thousands of structure pieces with minimal CPU overhead compared to standard `MeshInstance3D` nodes.

@@ -168,6 +168,17 @@ PR 正文按创建方式选择模板：
 
 模板复杂度不同，不改变非平凡或高风险变更的工程证据要求。来自 Fork 的 PR 默认无法读取主仓库 Secrets；不要通过修改工作流、打印环境变量或扩大权限绕过这一限制。如果验证必须依赖受保护凭证，应在 PR 中说明并由维护者执行对应检查。
 
+### 候选版本与正式发布
+
+维护者在发布前定稿版本号、changelog 和升级说明。功能更新以最近的正式 tag 为基线，例如 0.7.3 使用 `v0.7.2..HEAD`；候选版本之间的修复归并到对应功能，不单独替代完整发布说明。
+
+1. 在已审查的提交上创建候选 tag，例如 `v0.7.3-rc.1`，显式推送该 tag。需要对外试用时创建 GitHub Release 并标记 Pre-release。
+2. 在 Actions 核对该 tag 的工程契约、后端单测、Ruff、Web、运行链路、依赖审计和文档构建结果；tag 检查覆盖完整范围。真实 provider 与生产备份恢复演练按[测试规范](./testing-guidelines.md)和[升级指南](../advanced/deployment.md)补充，记录未验证范围。
+3. 修复产生新提交时创建下一个候选 tag；已推送的候选 tag 保留原指向。
+4. 最终候选通过后，在同一提交新增正式 tag，并发布正式 Release。Release 正文保留相对上一正式版本的完整功能更新及升级注意事项。应用 tag 触发检查，文档站只在 main 分支推送时部署。
+
+CLI 使用 `packages/yuxi-cli/pyproject.toml` 中的独立版本。需要发布 CLI 时先提交包版本和锁文件更新，再对明确的提交或 tag 手动运行 [Publish yuxi-cli](https://github.com/xerrors/Yuxi/actions/workflows/publish-yuxi-cli.yml)；应用 Release 不触发 PyPI 上传。CLI 版本未变时无需重复发布，上传失败须检查版本与 PyPI 状态。
+
 ## 7. 文档维护
 
 代码、配置、API、状态、权限或命令变化时，同一 PR 更新对应的 owning page：

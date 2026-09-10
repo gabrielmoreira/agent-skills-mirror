@@ -125,7 +125,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - ✅ **音声合成**: テキストから音声へ——プリセットスタイル、声のクローン（参照音声）、または指示駆動。
 - ✅ **音声認識**: 音声または動画中の発話を文字起こし。
 - ✅ **ノイズ除去**: 音声のノイズを除去。
-- ⬜ **話者分離**: 話者ごとに音声を分離。
+- ✅ **話者分離**: 話者ごとに音声を分離。
 - ⬜ **音色変換**: 参照サンプルを使って音色を置き換えまたはクローン。
 - ✅ **マルチトラック / ボーカル・伴奏分離**: ボーカル・ドラム・ベース・ギターなど 12 種のステムを分離。
 - ✅ **オープン語彙の音源分離**: 任意の音を言葉で指定（「犬の鳴き声」）し、その音とそれ以外の 2 トラックに分割。
@@ -212,6 +212,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-qwen3tts](https://github.com/tong-io/tongflow-modal-qwen3tts) — Qwen3 テキストから音声
 - [tongflow-modal-indextts2](https://github.com/tong-io/tongflow-modal-indextts2) — IndexTTS-2.5 感情表現テキスト読み上げ：ゼロショット音声クローン（代替）+ 参照音声による感情制御音声合成
 - [tongflow-modal-whisper](https://github.com/tong-io/tongflow-modal-whisper) — Whisper 音声認識（タイムスタンプ付き、代替）
+- [tongflow-modal-moss-transcribe-diarize](https://github.com/tong-io/tongflow-modal-moss-transcribe-diarize) — MOSS-Transcribe-Diarize 0.9B：長時間・複数話者の音声を一度の推論でタイムスタンプ＋話者ラベル付き文字起こしにし、話者ごとの音声トラックも出力（50+ 言語、最長約 90 分）
 - [tongflow-modal-ace-step](https://github.com/tong-io/tongflow-modal-ace-step) — ACE-Step 1.5 音楽スイート：テキストから音楽（sft / base / turbo 選択可）、リペイント、カバー、ステム抽出、トラック追加、編曲補完、音楽ブリーフ、音楽理解
 - [tongflow-modal-levo](https://github.com/tong-io/tongflow-modal-levo) — LeVo 2 / SongGeneration テキストから音楽生成（多言語・商用グレード）
 - [tongflow-modal-minimax-music3](https://github.com/tong-io/tongflow-modal-minimax-music3) — MiniMax-Music3 11B 楽曲生成：歌詞 + 説明 → ボーカル入り完全楽曲（最長約 5 分、32 kHz ステレオ）

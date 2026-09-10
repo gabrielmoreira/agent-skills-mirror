@@ -119,7 +119,8 @@ only collects `unittest.TestCase` subclasses, not bare pytest-style functions.
 ### Transcript Correction
 
 Use [transcript-fixer](daymade-audio/transcript-fixer/SKILL.md) for transcript
-correction. Its Native checklist owns the correction and finalization order;
+correction. Its Native workflow owns evidence selection, selective human escalation,
+and correction/finalization order;
 [Native review packets](daymade-audio/transcript-fixer/references/native_review_packets.md)
 owns split, batch, and resumed review instructions. Keep CLI parameters and
 validation behavior in
@@ -128,6 +129,16 @@ queue anchor behavior in
 [review_queue.py](daymade-audio/transcript-fixer/scripts/core/review_queue.py).
 When changing these paths, update their owning instructions together; keep
 review coverage, unresolved verdicts, and repository publication distinct.
+
+### Feishu Document Capture
+
+For Feishu document reads and archives, enter
+[feishu-doc-scraper](feishu-doc-scraper/SKILL.md). Its
+[comments and feedback SOP](feishu-doc-scraper/references/comments-and-feedback.md)
+owns discussion capture and interpretation; the bundled helper owns the CLI
+interface. For filing, use its
+[archive storage contract](feishu-doc-scraper/references/archive-storage-contract.md)
+alongside the destination repository's storage SOP.
 
 ### Prior Work Retrieval Boundary
 

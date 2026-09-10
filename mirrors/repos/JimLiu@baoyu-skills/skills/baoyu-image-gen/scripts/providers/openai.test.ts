@@ -41,7 +41,7 @@ function makeArgs(overrides: Partial<CliArgs> = {}): CliArgs {
 }
 
 test("OpenAI aspect-ratio parsing and size selection match model families", () => {
-  assert.equal(getDefaultModel(), "gpt-image-2");
+  assert.equal(getDefaultModel(), "gpt-image-2.5-flare");
   assert.deepEqual(parseAspectRatio("16:9"), { width: 16, height: 9 });
   assert.equal(parseAspectRatio("wide"), null);
   assert.equal(parseAspectRatio("0:1"), null);
@@ -55,6 +55,9 @@ test("OpenAI aspect-ratio parsing and size selection match model families", () =
   assert.equal(getOpenAISize("gpt-image-2", "9:16", "2k"), "1152x2048");
   assert.equal(getOpenAISize("gpt-image-2", "4:3", "2k"), "2048x1536");
   assert.equal(getOpenAISize("gpt-image-2", "2.35:1", "normal"), "1248x528");
+  assert.equal(getOpenAISize("gpt-image-2.5-flare", "16:9", "2k"), "2048x1152");
+  assert.equal(getOpenAISize("gpt-image-2.5-sunburst", "9:16", "normal"), "608x1088");
+  assert.equal(getOpenAISize("gpt-image-2.5-flare-2026-09-08", "1:1", "2k"), "2048x2048");
   assert.equal(inferAspectRatioFromSize("1536x1024"), "3:2");
   assert.equal(inferResolutionFromSize("1536x1024"), "2K");
   assert.equal(getOpenAIAspectRatio({ aspectRatio: null, size: "2048x1152" }), "16:9");
@@ -121,7 +124,7 @@ test("OpenAI generations body switches between native and ratio-metadata dialect
   );
 });
 
-test("OpenAI validates gpt-image-2 custom size constraints", () => {
+test("OpenAI validates GPT Image custom size constraints", () => {
   assert.doesNotThrow(() =>
     validateArgs("gpt-image-2", makeArgs({ size: "3840x2160" })),
   );
@@ -140,6 +143,16 @@ test("OpenAI validates gpt-image-2 custom size constraints", () => {
   assert.throws(
     () => validateArgs("gpt-image-2", makeArgs({ aspectRatio: "4:1" })),
     /must not exceed 3:1/,
+  );
+  assert.doesNotThrow(() =>
+    validateArgs("gpt-image-2.5-flare", makeArgs({ size: "3840x2160" })),
+  );
+  assert.throws(
+    () => validateArgs("gpt-image-2.5-sunburst", makeArgs({ aspectRatio: "4:1" })),
+    /gpt-image-2\.5-sunburst aspect ratio must not exceed 3:1/,
+  );
+  assert.doesNotThrow(() =>
+    validateArgs("gpt-image-1.5", makeArgs({ size: "1536x1024" })),
   );
 });
 

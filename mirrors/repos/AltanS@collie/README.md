@@ -1,7 +1,9 @@
 # Collie
 
 <p align="center">
-  <img src="assets/collie-hero.webp" alt="A collie herding a flock of sheep" width="640">
+  <!-- Baked by collie-brand's logo-ship.ts (collie-social-card-dark.png) and copied in whole, the
+       same file colliepwa.dev serves as its social card. Do not retouch it here: regenerate it there. -->
+  <img src="assets/social-card.png" alt="The Collie mark beside the ColliePWA wordmark and the line: your agent herd, from your phone." width="640">
 </p>
 
 <p align="center">
@@ -29,7 +31,7 @@ until explicitly configured.
 - **Output search** and full conversation history beyond standard terminal scrollback
 - **File attachments**: images from the camera roll, and markdown, text and code files
 - **Device pairing** as the write credential: once a device is paired, every write needs its token
-- **Packs**: several machines' Collies behind one URL, with operator-triggered failover
+- **Crews**: several machines' Collies behind one URL, with operator-triggered failover
 - **Six UI languages** and a per-device typeface setting
 - **Herdr session switching** managed from the web interface
 - **PWA support** running locally on loopback with no external accounts or cloud dependencies
@@ -118,18 +120,18 @@ requirements table, and what the initial run writes to the host.
 | [**Install**](./docs/install.md) | Requirements, the two ways in — fresh install or through Herdr — first run, and opening it on your phone |
 | [**Security**](./docs/security.md) | What a Collie exposes, the defenses, and pairing a device as the write credential |
 | [**Configure**](./docs/configure.md) | The `.env`, your own slash commands, keys, quick replies and typefaces; appearance, Zen mode, language |
-| [**Deployment**](./docs/deployment.md) | Front doors other than the default: an identity-aware proxy, a reverse proxy with no Tailscale, an off-host ingress, several Collies on one host (one per user, or several instances for one user), and a pack's standby door |
+| [**Deployment**](./docs/deployment.md) | Front doors other than the default: an identity-aware proxy, a reverse proxy with no Tailscale, an off-host ingress, several Collies on one host (one per user, or several instances for one user), and a crew's standby door |
 | [**Commands**](./docs/commands.md) | Every `collie` verb, putting `collie` on your PATH, and the Herdr actions that mirror the verbs on a Herdr-managed install |
 | [**Multiplexers**](./docs/multiplexers.md) | Pointing Collie at Herdr, tmux or zellij, what each backend can answer, and agent beacons. Experimental in 1.0 for tmux and zellij; bug reports wanted |
-| [**Packs**](./docs/pack.md) | Several machines' Collies behind one URL: invite, join, deputy, failover |
+| [**Crews**](./docs/crew.md) | Several machines' Collies behind one URL: invite, join, deputy, failover |
 | [**Voice input and Web Push**](./docs/voice-and-push.md) | The microphone in the composer, and notifications when an agent is waiting on you |
-| [**Manage & update**](./docs/upgrading.md) | Update from the phone or the terminal, roll back, update a pack, cross a major, stop, uninstall, and upgrading a 0.x install to 1.0 |
+| [**Manage & update**](./docs/upgrading.md) | Update from the phone or the terminal, roll back, update a crew, cross a major, stop, uninstall, and upgrading a 0.x install to 1.0 |
 | [**Troubleshooting**](./docs/troubleshooting.md) | Symptoms in the words you would actually search for |
 | **For an AI coding agent in your terminal** | `collie skill` prints a brief on how Collie works, and `collie docs` prints the pages above, both out of the binary and with no network |
 
 Repository-level specifications live at the root: [`ARCHITECTURE.md`](./ARCHITECTURE.md) ·
 [`docs/deployment.md`](./docs/deployment.md) · [`MUX_CONTRACT.md`](./MUX_CONTRACT.md) ·
-[`PACK_PROTOCOL.md`](./PACK_PROTOCOL.md) · [`HERDR_API.md`](./HERDR_API.md) ·
+[`CREW_PROTOCOL.md`](./CREW_PROTOCOL.md) · [`HERDR_API.md`](./HERDR_API.md) ·
 [`DESIGN.md`](./DESIGN.md) · [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## Deployment variants
@@ -220,7 +222,7 @@ reverse proxy replaces the `tailscale serve` box; everything below the front doo
 - **Polling is still the model** — the bridge takes one snapshot per tick from the adapter and the browser polls `/api/snapshot`; where the multiplexer offers an event stream (Herdr does) it only pokes the bridge's poll to go faster, it never replaces it. No resync logic.
 - **Actions are plain HTTP** — a reply or key `POST`s to `/api/pane/:id/{reply,keys}`, and the adapter types it into a real terminal (hence the security posture).
 - **The UI is a static PWA** — Vite builds `web/dist`, served from disk, so a rebuild is live with no restart.
-- **A second Collie is a peer, not a second bridge** — one machine's bridge mirrors one multiplexer, and a lead reads its peers over the pack link ([`PACK_PROTOCOL.md`](./PACK_PROTOCOL.md)).
+- **A second Collie is a peer, not a second bridge** — one machine's bridge mirrors one multiplexer, and a lead reads its peers over the crew link ([`CREW_PROTOCOL.md`](./CREW_PROTOCOL.md)).
 
 Full design rationale in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
@@ -250,7 +252,7 @@ in place.
 
 ### The states playground
 
-A development page that renders the web components across mock states (boot, idle, dashboard, pack,
+A development page that renders the web components across mock states (boot, idle, dashboard, crew,
 settings) without a running agent. This lets you inspect visual elements like banners, marks, boot
 screens, and lock states without manually reproducing each condition.
 
@@ -278,10 +280,10 @@ integration is documented in [`HERDR_API.md`](./HERDR_API.md).
 - Deployment variants B through E: [`docs/deployment.md`](./docs/deployment.md)
 - Architecture and design rationale: [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - Multiplexer query interface and capabilities: [`MUX_CONTRACT.md`](./MUX_CONTRACT.md)
-- Lead-to-peer pack protocol: [`PACK_PROTOCOL.md`](./PACK_PROTOCOL.md) (topology diagram in
-  [§2](./PACK_PROTOCOL.md#2-shape-of-the-thing))
-- Pack recovery from a phone after lead failure:
-  [`docs/deployment.md` → the standby door](./docs/deployment.md#the-standby-door--a-packs-failover-path)
+- Lead-to-peer crew protocol: [`CREW_PROTOCOL.md`](./CREW_PROTOCOL.md) (topology diagram in
+  [§2](./CREW_PROTOCOL.md#2-shape-of-the-thing))
+- Crew recovery from a phone after lead failure:
+  [`docs/deployment.md` → the standby door](./docs/deployment.md#the-standby-door--a-crews-failover-path)
 - Verified Herdr socket API: [`HERDR_API.md`](./HERDR_API.md)
 - Operations, versioning, and project conventions: [`CLAUDE.md`](./CLAUDE.md)
 - Contribution guidelines: [`CONTRIBUTING.md`](./CONTRIBUTING.md)

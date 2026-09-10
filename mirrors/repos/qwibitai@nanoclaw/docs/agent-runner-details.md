@@ -572,17 +572,22 @@ written by the host) resolves the name to routing fields.
   name: 'send_message',
   params: {
     text: string,    // message content (required)
-    to?: string,     // destination name (e.g. "family", "worker-1").
-                     // Optional when the agent has exactly one destination.
+    to: string,      // destination name (e.g. "family", "worker-1") (required —
+                     // the agent always addresses a destination explicitly)
   }
 }
 ```
 
-Implementation: `resolveRouting(to)` looks up the destination. With no `to`, it defaults to
-the session's own reply routing (`session_routing`); if the destination resolves to the same
-channel the session is bound to, the session's `thread_id` is preserved so the reply lands
-in-thread, otherwise `thread_id` is null. The tool then writes a `messages_out` row with
-`kind: 'chat'` and content `{ text }`, and returns the new `seq` as the message id.
+Implementation: `resolveRouting(to)` looks up the destination. A channel destination gets its
+`thread_id` from `resolveDestinationThread` (`db/session-routing.ts`): the thread of the message
+being answered (the reply stamp the poll loop publishes in `session_state` at batch start and again at
+every turn boundary, since the query stays open and later messages are pushed into it) when that message came from the destination channel; otherwise the latest
+`messages_in` row from that channel. The poll loop's `<message to>` deliveries use the same resolver with the batch's routing
+context, so all explicit sends thread identically, and a message arriving mid-turn from another
+thread cannot pull the reply away. `session_routing.thread_id` is never consulted — it is null for
+every session that isn't per-thread. An agent destination always gets a null `thread_id`. The tool
+then writes a `messages_out` row with `kind: 'chat'` and content `{ text }`, and returns the new
+`seq` as the message id.
 
 #### send_file
 
@@ -593,7 +598,7 @@ Send a file to a named destination (same destination model as `send_message`).
   name: 'send_file',
   params: {
     path: string,          // file path (relative to /workspace/agent/ or absolute) (required)
-    to?: string,           // destination name; optional if the agent has one destination
+    to: string,            // destination name (required)
     text?: string,         // optional accompanying message
     filename?: string,     // display name (default: basename of path)
   }
@@ -605,6 +610,11 @@ Implementation:
 2. Generate a message ID and create `/workspace/outbox/{messageId}/`
 3. Copy the file into that outbox directory
 4. Write a `messages_out` row (`kind: 'chat'`) with content `{ text, files: [filename] }`
+
+`send_card` and `ask_user_question` go to the chat the session is bound to (`session_routing`), threaded like
+`send_message` / `send_file`: `resolveDestinationThread` with the published reply stamp — the
+thread of the message being answered, else the chat's latest `messages_in` thread. The bound
+`thread_id` is the last resort, when that yields no thread (a per-thread session stays in it).
 
 #### send_card
 

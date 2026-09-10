@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `badlogic/pi-mono` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `badlogic/pi-mono` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `badlogic/pi-mono` — 26 default patterns, 0 followed patterns, 19 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 19 |
+| Followed pats | 2 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `badlogic/pi-mono` — 26 default patterns, 0 followed patterns, 19 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.pi/skills/interactive-testing.md`
+- `.pi/skills/release.md`
 
 ## File Index
 
@@ -78,6 +79,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`packages/coding-agent/test/fixtures/skills/root-skill-preferred/SKILL.md`](packages/coding-agent/test/fixtures/skills/root-skill-preferred/SKILL.md) |
 | 18 | ✓ | [`packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md`](packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md) |
 | 19 | ✓ | [`packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md`](packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md) |
+| 20 | → | [`.pi/skills/interactive-testing.md`](.pi/skills/interactive-testing.md) |
+| 21 | → | [`.pi/skills/release.md`](.pi/skills/release.md) |
 
 ---
 

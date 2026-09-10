@@ -1,6 +1,6 @@
 ---
 name: locus-unity-bridge
-description: Use when an agent needs to inspect or control a real Unity Editor through Locus, especially when Unity MCP is unavailable, a project may lack the Locus package, named-pipe discovery is needed, C# must be executed, or Unity scripts must be recompiled.
+description: Use when an agent needs to inspect or control a real Unity Editor through Locus, especially when Unity MCP is unavailable, named-pipe discovery is needed, C# must be executed, or Unity scripts must be recompiled.
 ---
 
 # Locus Unity Bridge
@@ -12,8 +12,9 @@ Do not rewrite its named-pipe client. Always pass the exact Unity root to
 ## Safety
 
 `execute` can run arbitrary C# in Unity. Use it only for the project and task
-the user authorized. Do not install Locus, create its marker, launch or close
-Unity, or modify a project merely to connect the bridge.
+the user authorized. A connected bridge requires Locus to already be installed
+and enabled in the target project. Do not install or repair Locus, create its
+marker, launch or close Unity, or modify a project merely to connect the bridge.
 
 ## Command map
 
@@ -27,8 +28,13 @@ message type as a value for `-Command`.
 | `send` | Send one approved protocol message listed below. |
 | `thumbnail` | Save an asset thumbnail as a local PNG. |
 | `render-preview` | Save a Prefab/model preview as a local PNG. |
-| `execute` | Run authorized C# from a file. |
+| `execute` | Run an authorized C# snippet. |
 | `recompile` | Request compilation and wait through domain reload. |
+
+All commands except `recompile` use `-TimeoutSeconds` (default `10`, range
+`1`–`600`) for their final pipe response. Increase it only for an operation
+that is expected to take longer. `recompile` instead uses its dedicated timeout
+options below.
 
 Resolve the client once:
 
@@ -46,13 +52,13 @@ $locusBridge = Join-Path $env:USERPROFILE '.agents\skills\locus-unity-bridge\scr
 | Status | Next action |
 |---|---|
 | `connected` | Continue with an operation. |
-| `package_missing` | Report the expected `Packages/com.farlocus.locus`; request approval before installation. |
-| `package_invalid` | Report the incomplete installation path. |
+| `package_missing` | Report the expected `Packages/com.farlocus.locus`; installation is outside this skill. |
+| `package_invalid` | Report the incomplete installation path; repair is outside this skill. |
 | `bridge_not_enabled` | Ask the user to enable/connect Locus for this project. |
 | `editor_unreachable` | Verify that the matching project is open in Unity and Locus is active. |
 
-The probe recognizes canonical and legacy package layouts, plus a live
-computed pipe when `LOCUS_UNITY_NATIVE_BRIDGE=1` is enabled.
+The probe recognizes canonical and legacy package layouts. It uses a bridge
+marker when present, otherwise it computes the project-specific pipe name.
 
 ## 2. Inspect with `send`
 
@@ -75,9 +81,7 @@ parse a nested JSON payload from the envelope's `message` field when noted.
 | Inspect one found scene/Prefab object | `read_yaml` | Use the `object_path` from search; see the same reference. |
 | Capture Game, Scene, or Editor window | `capture_viewport` | JSON below. |
 
-`property_tree_write` and `property_tree_apply` modify serialized data; never
-use them as diagnostics. `get_console_text` is a large compatibility snapshot,
-not a default query.
+`get_console_text` is a large compatibility snapshot, not a default query.
 
 For `capture_viewport`, set `target` to `game`, `scene`, or `editor_window`.
 `maxLongEdge` defaults to `1280`, accepts `0` for source size, and is capped at
@@ -115,23 +119,134 @@ necessary. Rendering does not modify the source asset.
 
 ### Execute authorized C# or recompile
 
-Use `execute` only when the curated operations do not answer the task. Prefer a
-multi-line `-CodeFile` and `print(...)` or `printJson(...)` for returned data.
+Use `execute` only when the curated operations do not answer the task. Use
+`-Code` for a short snippet or `-CodeFile` for multi-line/reusable code; provide
+exactly one. Prefer `print(...)` or `printJson(...)` for returned data.
+
+#### Snippet contract
+
+- The supplied code is the body of a Locus-generated entry method, not an
+  independent C# file. Write direct statements and local functions; do not
+  declare `Main`, `class`, `struct`, or `namespace`.
+- `print`, `printJson`, `clear`, `ctx`, and `ct` are injected. A non-null
+  `return` value is printed as text.
+- For structured output, use `printJson(new { key = value, items = values })`.
+  It serializes anonymous objects, dictionaries, and ordinary property-bearing
+  values to JSON; do not declare a DTO class solely to return data.
+
+#### Execute safety
+
+- Every loop in an execute snippet needs an explicit completion condition and an
+  iteration or time bound. Do not use unbounded `while`, `for`, or polling loops.
+- Long-running loops must call `ct.ThrowIfCancellationRequested()` regularly;
+  use `await ctx...` for waits that continue with Unity API access.
+- `-TimeoutSeconds` only stops this client from waiting; it does not stop Unity
+  code already running. Treat it as a wait limit, not a recovery mechanism.
+- Locus also has a 30-second inactivity watchdog. It requests cancellation and
+  returns a timeout, but cannot preempt code already blocking Unity's main
+  thread. Do not treat that watchdog as a hard stop.
+
+| Symbol | Purpose |
+|---|---|
+| `print` / `printJson` | Append plain text / JSON to the final result buffer. |
+| `clear` | Clear that buffer; rarely needed. |
+| `ctx` | Unity-aware waits and progress, such as `WaitFrames`, `WaitSeconds`, and `Progress`. |
+| `ct` | Cancellation token; check it in long loops or call `ThrowIfCancellationRequested()`. |
+
+#### Async work
+
+Top-level `await` is supported. For waits followed by Unity API access, use a
+`ctx` awaitable so the continuation resumes from `EditorApplication.update`.
+
+| Expression | Waits for |
+|---|---|
+| `await ctx.wait` / `await ctx.WaitFrame()` | The next editor update. |
+| `await ctx.WaitFrames(n)` | `n` editor updates. |
+| `await ctx.WaitSeconds(s)` | At least `s` seconds, then a later editor update. |
+| `await ctx.WaitUntil(() => condition, "description")` | A condition checked on each editor update. |
+
+Do not pass Unity yield objects to `ctx`. Await local async functions from the
+snippet. Each `await ctx...` checks cancellation before continuing. In long
+synchronous loops, or after an external await that does not accept `ct`, call
+`ct.ThrowIfCancellationRequested()`. The watchdog fires after 30 seconds of
+silence: emit `ctx.Progress(...)` more often than that. Do not use a single
+silent `await ctx.WaitSeconds(30)` or longer; split a longer wait into chunks
+under 30 seconds and report progress between them. `print(...)` also resets the watchdog,
+but does not check cancellation, so pair it with an explicit `ct` check in
+long-running loops. Set `-TimeoutSeconds` for the expected total duration.
+
+For a bounded scan, check cancellation on every iteration and periodically
+report progress before yielding the Unity main thread:
+
+```csharp
+var scene = SceneManager.GetActiveScene();
+var roots = scene.GetRootGameObjects();
+var rootNames = new List<string>(roots.Length);
+
+for (var i = 0; i < roots.Length; i++)
+{
+    // Limit cancellation latency within this 100-item batch.
+    ct.ThrowIfCancellationRequested();
+    rootNames.Add(roots[i].name);
+
+    if ((i + 1) % 100 == 0 || i == roots.Length - 1)
+    {
+        ctx.Progress("Inspecting roots", $"{i + 1}/{roots.Length}",
+            (float)(i + 1) / roots.Length);
+        await ctx.WaitFrame();
+    }
+}
+
+printJson(new { scene = scene.name, rootNames });
+```
+
+Use these `ctx` awaitables rather than `Task.Delay` when Unity API access must
+continue after the wait. For `execute`, `-TimeoutSeconds` is the maximum wait
+for the snippet's final response.
 
 ```powershell
 & pwsh.exe -NoLogo -NoProfile -NonInteractive -File $locusBridge `
     -Command execute -ProjectPath 'E:\Source\SomeUnityProject' `
     -CodeFile 'C:\Temp\inspect-scene.cs' -TimeoutSeconds 30
 
+# Opt in only when intermediate async progress is useful.
+& pwsh.exe -NoLogo -NoProfile -NonInteractive -File $locusBridge `
+    -Command execute -ProjectPath 'E:\Source\SomeUnityProject' `
+    -CodeFile 'C:\Temp\inspect-scene.cs' -TimeoutSeconds 60 `
+    -FollowProgress -ProgressIntervalSeconds 2 -AcceptCancel
+
 & pwsh.exe -NoLogo -NoProfile -NonInteractive -File $locusBridge `
     -Command recompile -ProjectPath 'E:\Source\SomeUnityProject' `
-    -TimeoutSeconds 10 -RecompileTimeoutSeconds 120
+    -RecompileRequestTimeoutSeconds 10 -RecompileTimeoutSeconds 120
 ```
+
+For `recompile`, `-RecompileRequestTimeoutSeconds` limits each pipe request;
+`-RecompileTimeoutSeconds` limits the complete compile, reload, and reconnect
+workflow. `-TimeoutSeconds` does not apply to `recompile`.
+
+#### Cancel a running execute
+
+Add `-AcceptCancel` only when the caller keeps the running PowerShell process's
+stdin writable. To stop the execution, write one line containing `cancel` to
+that stdin. The script sends the cancellation on its existing Locus connection,
+then returns `{ "Status": "canceled", ... }`. This works with or without
+`-FollowProgress`; progress merely gives the agent a basis for deciding. Do not
+start a second Locus client to cancel a running execution. Cancellation is
+cooperative: snippets must await `ctx` or check `ct` in long-running code.
+
+For progress-driven cancellation, the process runner must stream stdout while
+keeping stdin writable; a launcher that only redirects/captures stdout can delay
+`Write-Host` progress until exit. Use a streaming terminal or PTY session, then
+read progress and write `cancel` to that same session. Keep `-NonInteractive`.
+If cancellation input is unavailable, split the work into bounded execute calls.
 
 ## Transport notes
 
-- The pipe can emit `unity-editor-update` events before the matching response;
-  the client already waits for the envelope whose `reply_to` matches its request.
+- `execute -FollowProgress` is opt-in for long async snippets. It checks
+  progress every 2 seconds by default and writes only meaningful status changes
+  as compact `<locus-execute-progress>{...}</locus-execute-progress>` lines
+  before the usual final JSON response. The compact record excludes `sourceText`;
+  do not use it for short operations or as a substitute for final output.
 - Do not target the Locus source checkout when the requested Unity project is
   elsewhere.
 - Do not assume Unity MCP is required; this skill uses Locus directly.

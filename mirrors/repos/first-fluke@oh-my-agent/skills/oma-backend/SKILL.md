@@ -188,14 +188,10 @@ Router (HTTP) → Service (Business Logic) → Repository (Data Access) → Mode
 <!-- oma-docs:ignore-end -->
 
 ## References
+- Local code tools: `../_shared/core/code-intelligence.md` (code search/navigation)
 
-Follow `resources/execution-protocol.md` step by step.
-Use `resources/orm-reference.md` when the task involves ORM query performance, relationship loading, transactions, session/client lifecycle, or N+1 analysis.
-Before submitting, run `resources/checklist.md`.
-Vendor-specific execution protocols are injected automatically by `oma agent spawn`.
-Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
-- Execution steps: `resources/execution-protocol.md`
-- Checklist: `resources/checklist.md`
+- Execution steps (follow for the selected task): `resources/execution-protocol.md`
+- Checklist (run before handoff): `resources/checklist.md`
 - ORM reference: `resources/orm-reference.md`
 - Error recovery: `resources/error-playbook.md`
 - Context loading: `../_shared/core/context-loading.md`

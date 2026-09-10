@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/Codewhale` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
+Mirror of `Hmbown/Codewhale` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/Codewhale` — 26 default patterns, 0 followed patterns, 60 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 60 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,22 +103,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`crates/tui/locales/AGENTS.md`](crates/tui/locales/AGENTS.md) |
 | 43 | ✓ | [`crates/tui/plugins/computer-use/skills/computer-use/SKILL.md`](crates/tui/plugins/computer-use/skills/computer-use/SKILL.md) |
 | 44 | ✓ | [`crates/tui/plugins/computer-use/skills/recording/SKILL.md`](crates/tui/plugins/computer-use/skills/recording/SKILL.md) |
-| 45 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
-| 46 | ✓ | [`docs/skills/cw-dogfood/SKILL.md`](docs/skills/cw-dogfood/SKILL.md) |
-| 47 | ✓ | [`docs/skills/cw-gates/SKILL.md`](docs/skills/cw-gates/SKILL.md) |
-| 48 | ✓ | [`docs/skills/cw-handoff/SKILL.md`](docs/skills/cw-handoff/SKILL.md) |
-| 49 | ✓ | [`docs/skills/cw-land/SKILL.md`](docs/skills/cw-land/SKILL.md) |
-| 50 | ✓ | [`docs/skills/cw-orient/SKILL.md`](docs/skills/cw-orient/SKILL.md) |
-| 51 | ✓ | [`docs/skills/cw-slice/SKILL.md`](docs/skills/cw-slice/SKILL.md) |
-| 52 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
-| 53 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
-| 54 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
-| 55 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
-| 56 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
-| 57 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
-| 58 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
-| 59 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 60 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
+| 45 | ✓ | [`docs/examples/plugins/hello-codewhale/skills/hello/SKILL.md`](docs/examples/plugins/hello-codewhale/skills/hello/SKILL.md) |
+| 46 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
+| 47 | ✓ | [`docs/skills/cw-dogfood/SKILL.md`](docs/skills/cw-dogfood/SKILL.md) |
+| 48 | ✓ | [`docs/skills/cw-gates/SKILL.md`](docs/skills/cw-gates/SKILL.md) |
+| 49 | ✓ | [`docs/skills/cw-handoff/SKILL.md`](docs/skills/cw-handoff/SKILL.md) |
+| 50 | ✓ | [`docs/skills/cw-land/SKILL.md`](docs/skills/cw-land/SKILL.md) |
+| 51 | ✓ | [`docs/skills/cw-orient/SKILL.md`](docs/skills/cw-orient/SKILL.md) |
+| 52 | ✓ | [`docs/skills/cw-slice/SKILL.md`](docs/skills/cw-slice/SKILL.md) |
+| 53 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
+| 54 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
+| 55 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
+| 56 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
+| 57 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
+| 58 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
+| 59 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
+| 60 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 61 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
 
 ---
 

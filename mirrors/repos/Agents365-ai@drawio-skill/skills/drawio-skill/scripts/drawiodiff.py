@@ -134,7 +134,7 @@ def classify_rerouted(old_ek, new_ek, removed, added):
             if len(cands) == 1:
                 rerouted.add(cands[0])
         elif a in removed and b not in removed:
-            cands = [(c, b) for (s, t) in new_only if t == b and s in added]
+            cands = [(s, b) for (s, t) in new_only if t == b and s in added]
             if len(cands) == 1:
                 rerouted.add(cands[0])
     return rerouted

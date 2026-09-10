@@ -35,20 +35,41 @@ for refused inputs, the 256 MiB staging cap, deadline, and coverage limits.
 pnpm run build
 pnpm local-review -- --base main
 # reviews merge-base(<base>, HEAD)..HEAD as one unit
-# writes ~/.clawsweeper-local-reviews/run-<sha>-<ts>-<pid>/local-review.md
+# prints the review and retains no ClawSweeper output by default
 ```
 
 It is GitHub-isolated by contract, not air-gapped: it still calls the configured
 Codex model service and requires model authentication and network connectivity.
 On first use without a trusted host scanner, it also fetches the one pinned
 scanner release into the documented local cache before review admission. The
-review requires a clean checkout, uses a unique per-run output directory,
+review requires a clean checkout, uses private run-owned scratch,
 withholds all GitHub token env vars, skips `gh` API commit-metadata hydration,
 points `GH_CONFIG_DIR` at an empty directory, disables Codex web search, and
 forbids other review-time network lookups. Repositories without a configured
-profile are rejected (no foreign-profile fallback). It never writes to GitHub;
-after its scanner cache is provisioned, the local Markdown report is the only
-review output.
+profile are rejected (no foreign-profile fallback). It never writes to GitHub.
+Ordinary completion and caught failures remove the run-owned scratch. Signals
+retain their default operating-system termination behavior, so an unhandled
+signal or `SIGKILL` can leave that bounded private scratch behind.
+Use `--output-retention summary` to retain only `local-review.md`, or
+`--output-retention debug` for the existing per-run engine output. An explicit
+legacy `--report-dir` remains debug-compatible. `--result-format json` emits a
+valid JSON result with a nullable artifact path. Summary destinations are
+exclusive to the current invocation. Managed transient output is capped at 96 MiB/256
+files and debug output at 1 GiB/4,096 files, with at most 128 selected items per
+invocation. Required PR checkouts are isolated from retained output in private
+run scratch. Before materialization, ClawSweeper admits at most 200,000 tracked
+paths and conservatively doubles complete Git blob-size metadata for bounded EOL
+expansion. It refuses active filters, working-tree encodings, and ident expansion,
+disables checkout hooks, then requires the projected bytes plus a 1 GiB disk
+reserve. Missing-object acquisition is admitted against the real Git object
+store; checkout materialization is admitted against its workspace filesystem.
+When they share a filesystem, the combined requirement reserves space once.
+Projected and actual usage must stay within 200,000 files/2 GiB.
+When media preparation applies, debug items can use at most 64 MiB for downloads
+and 16 MiB for derived output, subject to the remaining run byte and file
+allowances. Non-debug items use at most 32 MiB and 8 MiB respectively.
+These limits bound retained managed output, not arbitrary model writes or peak
+child-process disk use. ClawSweeper does not prune older or unrelated retained runs.
 
 For `review --local-range`, per-file line counts come from complete Git numstat
 metadata for the resolved merge-base-to-HEAD range, independently of bounded

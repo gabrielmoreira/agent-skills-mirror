@@ -2590,6 +2590,8 @@ def _format_outcome(outcome: schema.SourceOutcome) -> str:
             summary += ", some requests rate-limited"
     elif state == schema.NO_RESULTS:
         summary = "no results"
+    elif state == schema.PAYMENT_REQUIRED:
+        summary = health.credits_exhausted_label(outcome.source)
     else:
         summary = state
     if detail:
@@ -3124,6 +3126,9 @@ def _render_stats(report: schema.Report) -> list[str]:
         actor_summary = _top_actor_summary(source, items)
         if actor_summary:
             parts.append(actor_summary)
+        if source == "x" and report.artifacts.get("x_provenance") == "connector":
+            # Host-fetched lane (--x-posts): name the provenance in the footer.
+            parts.append("via X connector")
         lines.append(f"- {_source_label(source)}: {' | '.join(parts)}")
     lines.append("")
     return lines

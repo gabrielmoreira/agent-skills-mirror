@@ -20,6 +20,21 @@ no-sync-required `clean`/`behind-no-conflict` exit applies the
 
 ## E4 — Classify and score ReviewItems_snapshot
 
+Once per triage pass (not per item), read the claimed issue's own body
+and note any explicit out-of-scope statement in it, trusted for the
+scope fence below only if it predates the B2 plan
+(`idd-work.instructions.md`) — an author keeps edit rights throughout
+the claim and could otherwise time an edit to force-reject a legitimate
+finding. Fetch `userContentEdits` (GraphQL; `updatedAt` also moves on
+unrelated activity, so it will not do) and find the entry with the
+latest `editedAt` at or before the plan's post time; that entry's
+`diff` (or the original creation content, if none predates the plan)
+is the trusted snapshot. A statement absent from it — added later, or
+present now but not there — needs independent corroboration (a
+maintainer comment, not another edit). Treat an unavailable or failed
+`userContentEdits` read the same way: fail closed, never assume no
+post-plan edit occurred.
+
 For each item in ReviewItems_snapshot, first classify it:
 
 - **PATH A — actionable feedback**: human reviewer threads and regular
@@ -52,6 +67,28 @@ Then apply path-specific scoring:
 - **PATH B**: no High/Medium/Low. Score only a _completed_ review of
   current HEAD as `Accepted` (confirmed/useful) or `Rejected`
   (noted, no action) — route a non-review notice to E6 instead.
+- **Scope fence (PATH A and PATH B).** A finding that asks to
+  introduce, or further broaden, a change class the claimed issue's own
+  body explicitly places out of scope scores `Low` (PATH A) or
+  `Rejected` (PATH B) and disposes **Reject forced**, regardless of
+  technical correctness or tractability, from the point that class is
+  introduced onward. A refinement or bug fix inside an
+  already-introduced instance of that class is still in-scope work and
+  scores normally. This fence
+  overrides PATH A's High-tier `Accept forced` rule: even a
+  correctness finding that would introduce or broaden a fenced class
+  does not reach `Accept forced` merely for being High-severity.
+  Record a rejected instance as a known limitation in the PR body's
+  follow-up-issues content (`idd-pr-submit.instructions.md` — mapped
+  onto the template's "Follow-up issues" section when one exists), not
+  a defect. Edit it under E12's "PR body sync" safeguards
+  (`idd-review-fix.instructions.md`: claim revalidation first, fetch
+  the full body, edit only this claim, post the full result back,
+  re-check `closingIssuesReferences`) even when E8's zero-Accepted-
+  PATH-A skip bypasses E9-E15, and E12 with it. This rule parallels
+  E10's "Round-count heuristic for genuinely-new findings" (same file):
+  that heuristic covers a shared root cause once PATH A work is
+  underway; this fence applies earlier, at PATH A/B scoring.
 
 ## E5 — Record Accept / Reject decisions
 
@@ -60,7 +97,8 @@ Record a path-specific disposition for every item:
 - **PATH A**: High-severity items reach Accepted only via "Verify
   before accept" below, or — when the actor-permission cap applies —
   an explicit maintainer confirmation reply; Medium/Low require an
-  explicit Accept or Reject decision.
+  explicit Accept or Reject decision, except a scope-fenced finding
+  (E4), which is Reject forced regardless of severity.
 - **PATH B** (a _completed_ review of the current HEAD): `Accepted`
   means the advisory confirms the implementation or captures useful
   context; `Rejected` means noted, no action required. An advisory
@@ -540,14 +578,27 @@ rollup: see [rerun mechanics](idd-ci.instructions.md#rerun-mechanics).
 ## Zero-Accepted-PATH-A advisory re-review gate
 
 Applies only from the branch-sync check's no-sync-required `clean` /
-`behind-no-conflict` exit, and only when the last non-empty
-`ReviewItems_snapshot` pass this episode had zero Accepted PATH A items
-**and** at least one PATH B item got a _completed-review_ disposition
-(never a notice-only rejection — see the E6 non-review-notice rule).
-Otherwise a no-op: a true-virgin empty snapshot (no PATH B ever
-dispositioned this episode) never fires it; a later-pass empty snapshot
-after a sync loop-back still does, since the lookback still finds the
-prior non-empty pass. (Rationale for the gap this closes:
+`behind-no-conflict` exit, and fires under either of two conditions:
+(a) the last non-empty `ReviewItems_snapshot` pass this episode had
+zero Accepted PATH A items **and** at least one PATH B item got a
+_completed-review_ disposition (never a notice-only rejection — see
+the E6 non-review-notice rule); or (b) the current HEAD is eligible
+for **AW3-S**'s settled-window (non-pending) entry (running
+`advisory-wait-state` reports `staleRequestRecovery.action` as
+`"attempt"` for that entry) — D4 and F2 each already consult **AW3-S**
+independently for this same settled-window entry (`#2726`), but a
+true-virgin empty snapshot otherwise never runs E14 through this gate
+specifically; condition (b) is a defense-in-depth backstop that
+guarantees this path also reaches the stale-request recovery cycle
+(and its route to `COPILOT_UNAVAILABLE`), rather than depending
+solely on D4/F2 revisits eventually accumulating enough AW3-S cycles
+on their own. Otherwise a no-op: a true-virgin empty snapshot with no
+entry eligible for AW3-S's settled-window (no PATH B ever
+dispositioned this episode, and no stale same-head request either)
+never fires it; a
+later-pass empty snapshot after a sync loop-back still fires via (a),
+since the lookback still finds the prior non-empty pass. (Rationale
+for the gap condition (a) closes:
 [design rationale](../../docs/idd-design-rationale.md#zero-accepted-path-a-advisory-re-review-gate).)
 Run this gate **after** any branch-sync merge settles — requesting
 first would let a later merge invalidate the review just obtained.

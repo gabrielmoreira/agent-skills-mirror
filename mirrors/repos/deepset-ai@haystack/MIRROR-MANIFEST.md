@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 2 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`docs-website/AGENTS.md`](docs-website/AGENTS.md) |
+| 4 | ✓ | [`docs-website/CLAUDE.md`](docs-website/CLAUDE.md) |
+| 5 | ✓ | [`docs-website/docs/AGENTS.md`](docs-website/docs/AGENTS.md) |
+| 6 | ✓ | [`docs-website/docs/CLAUDE.md`](docs-website/docs/CLAUDE.md) |
+| 7 | ✓ | [`haystack/hooks/compaction/AGENTS.md`](haystack/hooks/compaction/AGENTS.md) |
+| 8 | ✓ | [`haystack/hooks/compaction/CLAUDE.md`](haystack/hooks/compaction/CLAUDE.md) |
+| 9 | ✓ | [`releasenotes/notes/AGENTS.md`](releasenotes/notes/AGENTS.md) |
+| 10 | ✓ | [`releasenotes/notes/CLAUDE.md`](releasenotes/notes/CLAUDE.md) |
+| 11 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 12 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
 
 ---
 

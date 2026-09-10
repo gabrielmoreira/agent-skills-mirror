@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import type { CliArgs, OpenAIImageApiDialect } from "../types";
 
 export function getDefaultModel(): string {
-  return process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
+  return process.env.OPENAI_IMAGE_MODEL || "gpt-image-2.5-flare";
 }
 
 type OpenAIImageResponse = { data: Array<{ url?: string; b64_json?: string }> };
@@ -29,7 +29,7 @@ function isGptImageModel(model: string): boolean {
   return model.includes("gpt-image");
 }
 
-function isGptImage2Model(model: string): boolean {
+function isGptImageCustomSizeModel(model: string): boolean {
   return model.includes("gpt-image-2");
 }
 
@@ -37,7 +37,7 @@ function roundToMultiple(value: number, multiple: number): number {
   return Math.max(multiple, Math.round(value / multiple) * multiple);
 }
 
-function buildGptImage2SizeFromAspectRatio(
+function buildCustomSizeFromAspectRatio(
   ar: string | null,
   quality: CliArgs["quality"],
 ): string {
@@ -86,8 +86,8 @@ export function getOpenAISize(
     return "1024x1024";
   }
 
-  if (isGptImage2Model(model)) {
-    return buildGptImage2SizeFromAspectRatio(ar, quality);
+  if (isGptImageCustomSizeModel(model)) {
+    return buildCustomSizeFromAspectRatio(ar, quality);
   }
 
   const sizes: SizeMapping = isDalle3
@@ -237,16 +237,16 @@ export function buildOpenAIGenerationsBody(
 }
 
 export function validateArgs(model: string, args: CliArgs): void {
-  if (!isGptImage2Model(model)) return;
+  if (!isGptImageCustomSizeModel(model)) return;
 
   if (args.aspectRatio && !args.size) {
     const parsed = parseAspectRatio(args.aspectRatio);
     if (!parsed) {
-      throw new Error(`Invalid gpt-image-2 aspect ratio: ${args.aspectRatio}`);
+      throw new Error(`Invalid ${model} aspect ratio: ${args.aspectRatio}`);
     }
     const ratio = parsed.width / parsed.height;
     if (Math.max(ratio, 1 / ratio) > 3) {
-      throw new Error("gpt-image-2 aspect ratio must not exceed 3:1.");
+      throw new Error(`${model} aspect ratio must not exceed 3:1.`);
     }
   }
 
@@ -254,7 +254,7 @@ export function validateArgs(model: string, args: CliArgs): void {
 
   const parsedSize = parsePixelSize(args.size);
   if (!parsedSize) {
-    throw new Error(`Invalid gpt-image-2 --size: ${args.size}. Expected <width>x<height>.`);
+    throw new Error(`Invalid ${model} --size: ${args.size}. Expected <width>x<height>.`);
   }
 
   const { width, height } = parsedSize;
@@ -262,16 +262,16 @@ export function validateArgs(model: string, args: CliArgs): void {
   const ratio = Math.max(width, height) / Math.min(width, height);
 
   if (Math.max(width, height) > 3840) {
-    throw new Error("gpt-image-2 --size maximum edge length must be 3840px or less.");
+    throw new Error(`${model} --size maximum edge length must be 3840px or less.`);
   }
   if (width % 16 !== 0 || height % 16 !== 0) {
-    throw new Error("gpt-image-2 --size width and height must both be multiples of 16px.");
+    throw new Error(`${model} --size width and height must both be multiples of 16px.`);
   }
   if (ratio > 3) {
-    throw new Error("gpt-image-2 --size long edge to short edge ratio must not exceed 3:1.");
+    throw new Error(`${model} --size long edge to short edge ratio must not exceed 3:1.`);
   }
   if (totalPixels < 655_360 || totalPixels > 8_294_400) {
-    throw new Error("gpt-image-2 --size total pixels must be between 655,360 and 8,294,400.");
+    throw new Error(`${model} --size total pixels must be between 655,360 and 8,294,400.`);
   }
 }
 
@@ -303,7 +303,7 @@ export async function generateImage(
     }
     if (model.includes("dall-e-2") || model.includes("dall-e-3")) {
       throw new Error(
-        "Reference images with OpenAI in this skill require GPT Image models. Use --model gpt-image-2 (or another gpt-image model)."
+        "Reference images with OpenAI in this skill require GPT Image models. Use --model gpt-image-2.5-flare (or another gpt-image model)."
       );
     }
     const size = args.size || getOpenAISize(model, args.aspectRatio, args.quality);

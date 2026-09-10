@@ -1,6 +1,6 @@
 ---
 name: windsurf-load-scale
-description: 'Scale Windsurf adoption across large organizations with workspace strategies
+description: 'Scale Devin Desktop (formerly Windsurf) adoption across large organizations with workspace strategies
   and performance tuning.
 
   Use when rolling out Windsurf to 50+ developers, managing large monorepo workspaces,
@@ -12,8 +12,9 @@ description: 'Scale Windsurf adoption across large organizations with workspace 
   "windsurf monorepo", "windsurf organization", "windsurf 100 developers".
 
   '
+argument-hint: "[team size and repository topology]"
 allowed-tools: Read, Write, Edit
-version: 1.11.0
+version: 1.12.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
@@ -28,7 +29,7 @@ compatibility: Designed for Claude Code
 
 ## Overview
 
-Strategies for deploying Windsurf AI IDE across large organizations (50-1000+ developers). Covers workspace partitioning for monorepos, configuration distribution, credit budgeting, and performance at scale.
+Strategies for deploying Devin Desktop (formerly Windsurf) across large organizations. Covers workspace partitioning, policy distribution, quota governance, and performance at scale.
 
 ## Prerequisites
 
@@ -36,6 +37,12 @@ Strategies for deploying Windsurf AI IDE across large organizations (50-1000+ de
 - Admin dashboard access
 - Understanding of team structure and repository layout
 - Network/IT involvement for enterprise features
+
+## Tool Use
+
+- Use `Read` to inspect only the repository files and configuration needed for the request.
+- Use `Write` only for a new artifact the user requested; never write credentials or unreviewed production configuration.
+- Use `Edit` for bounded, reviewable changes and preserve unrelated user work.
 
 ## Instructions
 
@@ -47,7 +54,7 @@ Strategies for deploying Windsurf AI IDE across large organizations (50-1000+ de
 
 workspace_sizing:
   optimal: "<5,000 files — fast indexing, precise Cascade context"
-  acceptable: "5,000-20,000 files — add .codeiumignore, expect slower indexing"
+  acceptable: "Measure against available RAM and current indexing guidance"
   problematic: "20,000+ files — must partition into sub-workspaces"
   unworkable: "100,000+ files at root — Cascade context diluted, indexing very slow"
 
@@ -60,17 +67,17 @@ workspace_sizing:
 ```
 # Large monorepo (100K+ files)
 company-monorepo/
-├── .windsurfrules              # Brief shared conventions only
+├── .devin/rules/project.md              # Brief shared conventions only
 ├── .codeiumignore              # Aggressive: exclude EVERYTHING except src
 ├── apps/
 │   ├── web-app/                # Developer A opens this window
-│   │   ├── .windsurfrules      # Next.js-specific AI context
+│   │   ├── .devin/rules/project.md      # Next.js-specific AI context
 │   │   └── .codeiumignore      # Local exclusions
 │   ├── mobile-app/             # Developer B opens this window
-│   │   ├── .windsurfrules      # React Native context
+│   │   ├── .devin/rules/project.md      # React Native context
 │   │   └── .codeiumignore
 │   └── admin-portal/           # Developer C opens this window
-│       ├── .windsurfrules
+│       ├── .devin/rules/project.md
 │       └── .codeiumignore
 ├── services/
 │   ├── api-gateway/            # Backend team opens individual services
@@ -135,32 +142,26 @@ for service_dir in apps/*/  services/*/; do
 done
 ```
 
-### Step 4: Credit Budgeting at Scale
+### Step 4: Seat and Usage Governance at Scale
 
 ```yaml
-# Credit planning for large teams
-credit_budget:
+# Usage planning for large teams; populate values from the current contract
+usage_governance:
   team_size: 100
 
-  tier_allocation:
-    power_users: 20       # Pro: heavy Cascade users (senior devs, architects)
-    regular_users: 50     # Pro: daily Supercomplete + occasional Cascade
-    light_users: 20       # Free: reviewers, designers, PMs with code access
-    contractors: 10       # Free: temporary, limited AI needs
+  seat_allocation:
+    full_seats: 70        # regular users who require Desktop and included quota
+    flex_seats: 30        # occasional users, when permitted by current plan
 
-  monthly_cost:
-    pro_seats: 70 x $30 = $2,100
-    free_seats: 30 x $0 = $0
-    total: $2,100/month
-
-  vs_alternative:
-    cursor_equivalent: 70 x $20 = $1,400  # But fewer features
-    copilot_equivalent: 100 x $19 = $1,900  # No agentic features
+  controls:
+    contract_owner: finance-platform
+    on_demand_limit: "set in admin billing settings"
+    review_period: quarterly
 
   optimization:
-    quarterly_review: "Audit usage, downgrade inactive seats"
+    quarterly_review: "Confirm roles and right-size inactive seats"
     training_program: "Monthly 30-min workshop for new features"
-    workflow_investment: "Build team workflows to reduce per-user credit waste"
+    workflow_investment: "Build reusable skills and workflows for common tasks"
 ```
 
 ### Step 5: Enterprise Network Configuration
@@ -182,7 +183,7 @@ network_config:
   deployment_modes:
     cloud: "Standard — code context sent to Codeium cloud"
     hybrid: "Code stays local, only prompts sent to cloud"
-    self_hosted: "Everything on-prem (Enterprise plan required)"
+    negotiated_controls: "Document only the deployment and data controls in the current contract"
 ```
 
 ### Step 6: Onboarding Automation
@@ -231,8 +232,12 @@ echo ""
 echo "Complete. Next steps:"
 echo "1. Open your service directory in Windsurf (not monorepo root)"
 echo "2. Sign in with company SSO when prompted"
-echo "3. Verify .windsurfrules exists in your service directory"
+echo "3. Verify .devin/rules/project.md exists in your service directory"
 ```
+
+## Output
+
+Deliver a phased rollout plan with cohorts, repository and indexing boundaries, identity and seat ownership, policy distribution, adoption and reliability measures, support escalation, stop conditions, and rollback criteria. Include a pilot exit decision before broader deployment.
 
 ## Error Handling
 
@@ -240,9 +245,9 @@ echo "3. Verify .windsurfrules exists in your service directory"
 |-------|-------|----------|
 | Indexing slow across team | Large workspaces | Partition into sub-workspaces per service |
 | Config drift between services | No central templates | Implement sync-config.sh script |
-| Credit overspend | No budgeting | Implement tier allocation, quarterly review |
+| Variable usage overspend | No spending limit | Set an approved limit and review seat allocation quarterly |
 | Network blocking Windsurf | Firewall rules | Whitelist *.codeium.com and*.windsurf.com |
-| Inconsistent AI suggestions | Different .windsurfrules | Use central template repository |
+| Inconsistent AI suggestions | Different .devin/rules/project.md | Use central template repository |
 
 ## Examples
 
@@ -250,22 +255,23 @@ echo "3. Verify .windsurfrules exists in your service directory"
 
 ```bash
 echo "=== Team Windsurf Health ==="
-echo "Services with .windsurfrules:"
-find . -maxdepth 3 -name ".windsurfrules" | wc -l
+echo "Services with .devin/rules/project.md:"
+find . -maxdepth 3 -name ".devin/rules/project.md" | wc -l
 echo "Services with .codeiumignore:"
 find . -maxdepth 3 -name ".codeiumignore" | wc -l
 echo "Services without config (needs fix):"
 for d in apps/* services/*; do
   [ -d "$d" ] || continue
-  [ -f "$d/.windsurfrules" ] || echo "  MISSING: $d/.windsurfrules"
+  [ -f "$d/.devin/rules/project.md" ] || echo "  MISSING: $d/.devin/rules/project.md"
 done
 ```
 
 ## Resources
 
+- [Focused first-party references](references/official-docs.md)
 - [Windsurf Enterprise](https://windsurf.com/enterprise)
-- [Windsurf Admin Guide](https://docs.windsurf.com/windsurf/guide-for-admins)
+- [Windsurf Admin Guide](https://docs.devin.ai/desktop/guide-for-admins)
 
-## Next Steps
+## Related Skill
 
-For reliability patterns, see `windsurf-reliability-patterns`.
+Continue with `windsurf-reliability-patterns` to add checkpoints, validation gates, rollback paths, and failure containment to the scaled rollout.

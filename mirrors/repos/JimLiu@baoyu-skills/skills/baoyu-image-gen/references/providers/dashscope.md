@@ -4,7 +4,9 @@ Read when the user picks `--provider dashscope`, sets `default_model.dashscope`,
 
 ## Model Families
 
-**`qwen-image-2.0*`** — recommended modern family. Members: `qwen-image-2.0-pro`, `qwen-image-2.0-pro-2026-03-03`, `qwen-image-2.0`, `qwen-image-2.0-2026-03-03`.
+**`qwen-image-3.0*` / `qwen-image-2.0*`** — recommended modern family (identical sizing envelope). Members: `qwen-image-3.0-pro`, `qwen-image-2.0-pro`, `qwen-image-2.0-pro-2026-04-22`, `qwen-image-2.0-pro-2026-03-03`, `qwen-image-2.0`, `qwen-image-2.0-2026-03-03`.
+
+- `qwen-image-3.0-pro` is the newest flagship; `qwen-image-2.0-pro` remains the built-in default until the 3.0 request shape is verified end to end
 
 - Free-form `size` in `宽*高` format
 - Total pixels must be between `512*512` and `2048*2048`
@@ -33,12 +35,12 @@ Read when the user picks `--provider dashscope`, sets `default_model.dashscope`,
 ## Size Resolution
 
 - `--size` wins over `--ar`
-- For `qwen-image-2.0*`: prefer explicit `--size`; otherwise infer from `--ar` using the recommended table below
-- For `qwen-image-max/plus/image`: only use the five fixed sizes; if the requested ratio doesn't fit, switch to `qwen-image-2.0-pro`
+- For `qwen-image-3.0*` / `qwen-image-2.0*`: prefer explicit `--size`; otherwise infer from `--ar` using the recommended table below
+- For `qwen-image-max/plus/image`: only use the five fixed sizes; if the requested ratio doesn't fit, switch to `qwen-image-2.0-pro` or `qwen-image-3.0-pro`
 - For `wan2.7-image*`: explicit `--size` is validated against the per-mode pixel/ratio limits; otherwise the size is derived from `--ar` and `--quality` (`normal` ≈ 1K, `2k` ≈ 2K). To request 4K with `wan2.7-image-pro` text-to-image, pass `--size` explicitly (e.g. `4096*4096`, `3840*2160`)
-- `--quality` is a baoyu-image-gen preset, not an official DashScope field. The mapping of `normal`/`2k` onto the `qwen-image-2.0*` and `wan2.7-image*` tables is an implementation choice, not an API guarantee
+- `--quality` is a baoyu-image-gen preset, not an official DashScope field. The mapping of `normal`/`2k` onto the `qwen-image-3.0*` / `qwen-image-2.0*` and `wan2.7-image*` tables is an implementation choice, not an API guarantee
 
-### Recommended `qwen-image-2.0*` sizes
+### Recommended `qwen-image-3.0*` / `qwen-image-2.0*` sizes
 
 | Ratio | `normal` | `2k` |
 |-------|----------|------|
@@ -53,7 +55,7 @@ Read when the user picks `--provider dashscope`, sets `default_model.dashscope`,
 
 ## Reference Images
 
-- Only `wan2.7-image-pro` and `wan2.7-image` accept `--ref`. Other DashScope models (qwen-image-2.0*, qwen-image-max/plus/image, legacy) reject `--ref` and the user is steered to a different provider/model.
+- Only `wan2.7-image-pro` and `wan2.7-image` accept `--ref`. Other DashScope models (qwen-image-3.0*, qwen-image-2.0*, qwen-image-max/plus/image, legacy) reject `--ref` and the user is steered to a different provider/model.
 - Up to 9 reference images per request. Local files are inlined as base64 data URLs; `http(s)://` URLs are forwarded as-is.
 - Supplying any `--ref` automatically clamps the wan2.7-image-pro pixel ceiling from 4K to 2K (the API only supports 4K for pure text-to-image with no image input).
 

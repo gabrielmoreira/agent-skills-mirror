@@ -1,19 +1,12 @@
 ---
 name: windsurf-security-basics
-description: 'Apply Windsurf security best practices for workspace isolation, data
-  privacy, and secret protection.
-
-  Use when securing sensitive code from AI indexing, configuring telemetry,
-
-  or auditing Windsurf security posture.
-
-  Trigger with phrases like "windsurf security", "windsurf secrets",
-
-  "windsurf privacy", "windsurf data protection", "codeiumignore".
-
-  '
+description: 'Secure Devin Desktop (formerly Windsurf) with context boundaries,
+  repository controls, Rules, Hooks, and MCP review. Use when protecting secrets,
+  hardening a workspace, or assessing AI-editor risk. Trigger with "windsurf
+  security", "windsurf secrets", "codeiumignore", or "Cascade guardrails".'
 allowed-tools: Read, Write, Grep
-version: 1.11.0
+argument-hint: "[scope or requirements]"
+version: 1.12.0
 license: MIT
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 tags:
@@ -24,206 +17,94 @@ tags:
 - compliance
 compatibility: Designed for Claude Code
 ---
-# Windsurf Security Basics
+
+# Devin Desktop Security Basics
 
 ## Overview
 
-Security best practices for Windsurf AI IDE: controlling what code Cascade can see, preventing secrets from leaking into AI context, managing telemetry, and configuring workspace isolation for regulated environments.
+Devin Desktop is the current name for Windsurf. Secure it with layered controls: repository permissions and secret management are authoritative; `.codeiumignore`, Rules, and prompts reduce context exposure but do not replace access control.
 
 ## Prerequisites
 
-- Windsurf installed
-- Understanding of Codeium's data processing model
-- Repository with identified sensitive files
+- A version-controlled workspace and clean working tree
+- The organization's data-classification and secret-handling policy
+- Authorization to inspect configuration without collecting secret values
+
+## Tool Use
+
+- Use `Read` to inspect only the repository files and configuration needed for the request.
+- Use `Grep` to locate relevant settings, rules, logs, or code without broad collection.
+- Use `Write` only for a new artifact the user requested; never write credentials or unreviewed production configuration.
 
 ## Instructions
 
-### Step 1: Exclude Secrets from AI Indexing
+### Step 1: Map trust boundaries
 
-Create `.codeiumignore` at project root (gitignore syntax):
+Record repository sensitivity, connected organizations, enabled models, MCP servers, Hooks, terminal permissions, remote indexing, and deployment integrations. Identify which controls are local, repository-owned, or centrally administered.
+
+### Step 2: Configure context exclusions
+
+Create `.codeiumignore` at the repository root using gitignore syntax. Include only project-relevant patterns, for example:
 
 ```gitignore
-# .codeiumignore — files Codeium/Windsurf will NEVER index or read
-
-# Secrets and credentials
 .env
 .env.*
-.env.local
-credentials.json
-serviceAccountKey.json
 *.pem
 *.key
-*.p12
-*.pfx
-
-# Cloud provider configs
-.aws/
-.gcloud/
-.azure/
-
-# Infrastructure secrets
-terraform.tfstate
-terraform.tfstate.backup
-*.tfvars
-vault-config.*
-
-# Customer data
-data/customers/
-exports/
-backups/
-*.sql.gz
+credentials/
+secrets/
+customer-data/
+dist/
+node_modules/
 ```
 
-**Default exclusions (automatic):** Files in `.gitignore`, `node_modules/`, hidden directories (`.` prefix).
+Windsurf also honors `.gitignore`, and Enterprise administrators can add a global `.codeiumignore` under `~/.codeium/`. Verify behavior with a harmless canary filename; do not place a real secret in the test.
 
-**Enterprise:** Place a global `.codeiumignore` at `~/.codeium/` for org-wide exclusions.
+### Step 3: Enforce durable behavior
 
-### Step 2: Disable Telemetry (If Required)
+Use repository `AGENTS.md` or `.devin/rules/*.md` to require secure coding, validation, least privilege, and explicit approval for risky operations. Keep each workspace Rule within the documented 12,000-character limit and use the correct `trigger:` mode.
 
-```json
-// Windsurf Settings (settings.json)
-{
-  "codeium.enableTelemetry": false,
-  "codeium.enableSnippetTelemetry": false,
-  "telemetry.telemetryLevel": "off"
-}
-```
+### Step 4: Review tools and automation
 
-### Step 3: Configure AI Autocomplete Exclusions
+1. Disable unused MCP servers and tools.
+2. Prefer provider OAuth or environment-backed secrets over literal values in `mcp_config.json`.
+3. Review Hooks as executable policy code and fail closed where required.
+4. Keep protected branches, code owners, CI, and deployment approvals outside the model's discretion.
+5. Require human approval for production, destructive, identity, and billing mutations.
 
-Disable Supercomplete for file types that commonly contain secrets:
+### Step 5: Respond to exposure
 
-```json
-{
-  "codeium.autocomplete.languages": {
-    "plaintext": false,
-    "env": false,
-    "dotenv": false,
-    "properties": false,
-    "ini": false
-  }
-}
-```
+If a secret appears in a prompt, output, log, diff, or diagnostic bundle, treat it as exposed: stop sharing, revoke or rotate it through the provider, remove it from history where authorized, and document the incident. Adding an ignore rule alone is not remediation.
 
-### Step 4: Create Security-Focused .windsurfrules
+### Step 6: Verify
 
-```markdown
-<!-- .windsurfrules - security section -->
+Confirm ignored paths are absent from context, protected branches still require review, MCP tools match policy, Hooks run on representative success and failure paths, and no configuration file contains credential material.
 
-## Security Requirements
-- Never suggest hardcoded secrets, API keys, or passwords in code
-- Always use environment variables via process.env for secrets
-- Never log PII (email, phone, SSN, credit card numbers)
-- Use parameterized queries for all database operations
-- Never suggest wildcard CORS origins in production code
-- All user input must be validated before processing
-- Use constant-time comparison for secret/token validation
-```
+## Output
 
-### Step 5: Audit AI Workspace Access
-
-```bash
-#!/bin/bash
-set -euo pipefail
-echo "=== Windsurf Security Audit ==="
-
-# Check if .codeiumignore exists
-if [ ! -f .codeiumignore ]; then
-  echo "WARNING: No .codeiumignore — AI can index all non-gitignored files"
-fi
-
-# Check for secrets that AI could index
-echo "--- Potentially exposed secret files ---"
-find . -type f \
-  -not -path '*/node_modules/*' \
-  -not -path '*/.git/*' \
-  \( -name '*.env*' -o -name '*.key' -o -name '*.pem' \
-  -o -name 'credentials*' -o -name '*secret*' \
-  -o -name '*.tfvars' -o -name 'serviceAccount*' \) \
-  2>/dev/null | head -20
-
-# Check if found files are in .codeiumignore
-echo "--- Verify all above files are excluded ---"
-```
-
-### Step 6: Windsurf Data Processing Model
-
-```yaml
-# What Windsurf/Codeium processes:
-data_processing:
-  indexed_locally:
-    - File contents for Supercomplete context
-    - Codebase structure for Cascade awareness
-    stored: "Local machine only (not sent to cloud for indexing)"
-
-  sent_to_cloud:
-    - Cascade prompts (for AI model inference)
-    - Code snippets around cursor (for Supercomplete)
-    stored: "Zero-data retention for paid plans"
-
-  never_processed:
-    - Files in .codeiumignore
-    - Files in .gitignore (by default)
-    - Files in node_modules/
-
-  compliance:
-    - SOC 2 Type II certified
-    - FedRAMP High accredited
-    - HIPAA BAA available (Enterprise)
-    - Zero-data retention on paid plans
-```
-
-## Security Checklist
-
-- [ ] `.codeiumignore` exists with secret file patterns
-- [ ] `.env` files excluded from AI indexing
-- [ ] `.windsurfrules` includes security coding standards
-- [ ] Telemetry disabled (if required by policy)
-- [ ] Autocomplete disabled for secret-containing file types
-- [ ] No competing AI extensions installed (data exposure risk)
-- [ ] Team members trained on "never paste secrets into Cascade chat"
-- [ ] Enterprise: SSO configured, personal accounts blocked
+Deliver a security review with context boundaries, ignored paths, organization policy, MCP and Hook exposure, repository protections, detected secret locations without values, remediation owners, and verification evidence. Mark controls as preventive, detective, or corrective.
 
 ## Error Handling
 
-| Security Issue | Detection | Mitigation |
-|----------------|-----------|------------|
-| Secret in Cascade suggestion | Appears in AI output | Add source file to `.codeiumignore`, rotate secret |
-| AI indexing .env files | Check `.codeiumignore` | Add `.env*` pattern |
-| Telemetry sending code | Policy audit | Disable all telemetry settings |
-| Dev pastes secret in chat | Cannot detect after the fact | Training + enterprise data retention = 0 |
+| Issue | Response |
+|---|---|
+| Ignored file still appears | Check syntax, location, gitignore interaction, and current indexing state |
+| MCP requires a token | Use provider OAuth or an approved secret store; never commit the value |
+| Hook blocks legitimate work | Preserve the event, fix the narrow rule, and retest failure handling |
+| Compliance claim is uncertain | Link first-party evidence and route the decision to security or legal |
 
 ## Examples
 
-### Enterprise .codeiumignore
-
-```gitignore
-# ~/.codeium/.codeiumignore (global, all workspaces)
-*.pem
-*.key
-*.p12
-*.env*
-**/secrets/**
-**/credentials/**
-terraform.tfstate*
-*.tfvars
-```
-
-### Quick Privacy Check
-
-```bash
-# Verify critical files are excluded
-echo ".env" | while read f; do
-  [ -f "$f" ] && grep -q "\.env" .codeiumignore 2>/dev/null && echo "$f: PROTECTED" || echo "$f: EXPOSED"
-done
-```
+**Finding:** "`.env.production` was not excluded. Add `.env.*`, rotate any exposed credential, verify with a harmless canary, and retain protected-branch review as the enforcement boundary."
 
 ## Resources
 
-- [Windsurf Security](https://windsurf.com/security)
-- [Codeium Privacy Policy](https://codeium.com/privacy-policy)
-- [Windsurf Ignore Docs](https://docs.windsurf.com/context-awareness/windsurf-ignore)
+- [Focused first-party references](references/official-docs.md)
+- [Windsurf Ignore](https://docs.devin.ai/desktop/context-awareness/windsurf-ignore)
+- [Rules and `AGENTS.md`](https://docs.devin.ai/desktop/cascade/memories)
+- [Hooks](https://docs.devin.ai/desktop/cascade/hooks)
+- [MCP](https://docs.devin.ai/desktop/cascade/mcp)
 
-## Next Steps
+## Related Skill
 
-For production deployment, see `windsurf-prod-checklist`.
+Continue with `windsurf-data-handling` to build a regulated-data inventory, verify mutable vendor claims, and record control evidence without exposing sensitive values.

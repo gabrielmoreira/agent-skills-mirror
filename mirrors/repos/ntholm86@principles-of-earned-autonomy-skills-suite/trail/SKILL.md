@@ -1,6 +1,6 @@
 ---
 name: trail
-version: 2.5.3
+version: 2.6.0
 description: 'Automatic egress service for substantive work. Append a structured entry to .acm/audit-trail.md IN THE TARGET REPO ROOT — recording the interpretation, examination, decisions, actions, and reflection. Destination, Improve, Orient, and Probe apply Trail automatically; the operator should never need to invoke it separately. Direct use remains available for consequential work outside those workflows and independent-writer mode.'
 argument-hint: 'The target being worked on (repo, file, system) — used to populate the log entry header'
 ---
@@ -34,7 +34,29 @@ If you are improving `~/projects/myapp`, the trail is `~/projects/myapp/.acm/aud
 
 Every repo gets its own trail. The trail is local evidence for that project — it belongs with the project.
 
-One file: `.acm/audit-trail.md` in the target repo root. Append-only. One `##` entry per session, newest at the bottom.
+### Task scopes inside a repo
+
+One repo often carries several unrelated tasks. A single trail then grows past what any run can read and mixes arcs that share nothing but a directory. ACM §4 organizes memory by scope and discovers scopes as `.acm/` directories up the filesystem; a task that has no directory of its own gets a **named scope inside the repo's `.acm/`** instead:
+
+```
+.acm/
+  destination.md        — repo scope; governs every task scope below it
+  audit-trail.md        — repo-wide work
+  orientation.md
+  live-assist/          — task scope, named by the operator's mandate
+    audit-trail.md      — required; same format, same append-only rules
+    orientation.md      — optional, Orient-written, about this task's arc only
+    destination.md      — optional task mandate, layered under the repo destination
+    history.md, learning.md, learning-archive.md — optional, derived, as at repo scope
+```
+
+**The hierarchy is strict: the higher-level `.acm/` always wins.** Workspace governs repo; repo governs task. A task destination can narrow the repo destination and never contradict it; a task orientation describes only its task. This is ACM §4.3 applied one level further down, not a second rule.
+
+The **active scope** for a run is the repo `.acm/` unless the confirmed mandate names a task. Intent selects the scope and names it in its narration (see [intent/SKILL.md](../intent/SKILL.md)); every skill in the chain reads the parent scopes first and reads and writes only the active scope's files. Trail never merges or moves entries between scopes. A task scope is created only when a run's confirmed mandate names it — never as a silent side effect of an agent guessing a task boundary. When a task is finished, its scope stays as evidence; nothing is folded back into the repo trail.
+
+`record.py` addresses a task scope with `--scope <name>` (or the `ACM_SCOPE` environment variable); without it, it operates on the repo scope as before.
+
+One file per scope: `.acm/audit-trail.md` in the target repo root, or `.acm/<task>/audit-trail.md` for a task scope. Append-only. One `##` entry per session, newest at the bottom.
 
 **Before any write: create the `.acm/` directory in the target repo root if it does not already exist.** This applies whether the skill is run alone, as part of a chain, or for the first time on a fresh repo.
 
@@ -60,6 +82,10 @@ python <skills-repo>/harness/tools/record.py learning --write
 git add .acm/audit-trail.md .acm/history.md .acm/learning.md .acm/learning-archive.md  # learning-archive.md only if it exists
 git commit -m "trail: <slug>"
 ```
+
+In a task scope, add `--scope <task>` to both `record.py` commands and stage `.acm/<task>/...` instead.
+
+When the entry records a silence verdict, put the verdict and the evaluator in the commit subject — `git commit -m "trail: <slug> - bounded silence, <model family and version>"` — so the lease state is readable from `git log` without opening the trail.
 
 If `history.md`/`learning.md` are not in use for this target (see below — they are optional), the commit needs only `.acm/audit-trail.md`.
 
@@ -96,6 +122,8 @@ Trail does not routinely create agent-authored session summaries. See "Independe
 Destination and orientation.md are distinct: the destination is the goal the operator holds and rarely changes; orientation.md is the agent's current synthesis of where the target is, rewritten each Orient run. The destination is input to the loop; orientation.md is output.
 
 Both files are committed. `record.py` is **not** committed to the target repo — it stays in the skills install.
+
+The `agent:` field names the model family and version as precisely as the host exposes or the operator states (mark operator-stated identity as such, e.g. `Claude Fable 5.1; model identified by the operator`). The host product alone — `GitHub Copilot`, `Cursor` — is not a model family. Principle 3 counts same-family evaluators as one and needs fresh sessions on an unchanged artifact, so a silence entry whose `agent:` names only the host cannot be counted toward convergence.
 
 Each entry in `audit-trail.md` follows this shape:
 
@@ -141,7 +169,8 @@ Then, **every entry must record an across-trail trigger evaluation** — one
 short evidence-bearing line per trigger, drawn from the trail. Bare "N/A" is
 not allowed; the audit value is showing the check was made, not skipped. The
 four triggers are: recurring finding-class, about to declare silence, prior
-[!REALIZATION] contradicted, operator explicitly asked.
+[!REALIZATION] contradicted, operator explicitly asked for an arc-level
+reflection (a request to run the work is not this trigger).
 
 If any trigger fired, also include an across-trail macro-Hansei: an arc-claim
 about the target read from the trail as a whole. Mark material insights with

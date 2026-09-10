@@ -120,10 +120,15 @@ All steps run inside the editor, on the main thread except the download.
     or any other conflict keeps the dock's explicit Restart Server
     authority. Every
     replacement launches our server before killing the occupant; that server
-    waits for the port to free, binds and listens the instant it does, and
-    hands that very socket to its HTTP and WebSocket servers, so the port is
-    never free between the old backend's death and ours listening: a bridge
-    polling for a free port to spawn again never sees one. The
+    reports through its startup report the moment it reaches its port wait
+    (a launch through uvx may spend seconds installing the new version
+    first), and only then is the occupant killed. The server binds and
+    listens the instant the port frees and hands that very socket to its
+    HTTP and WebSocket servers, so the port is never free between the old
+    backend's death and ours listening: a bridge polling for a free port to
+    spawn again never sees one. A 4.0.4+ bridge whose backend vanishes with
+    the port free also waits five seconds for a replacement to answer before
+    it spawns one of its own. The
     old bridge, when it predates 4.0.4, refuses the new backend as
     incompatible, so the dock tells the user to quit and relaunch AI clients
     that were connected during the update; the repinned client configuration

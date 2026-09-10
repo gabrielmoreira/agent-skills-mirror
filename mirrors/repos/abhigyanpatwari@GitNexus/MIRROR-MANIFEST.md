@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patterns, 79 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 12 followed patterns, 82 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 79 |
+| Followed pats | 12 |
+| Files         | 82 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patter
 - `GUARDRAILS.md`
 - `CONTRIBUTING.md`
 - `ARCHITECTURE.md`
+- `docs/languages/objective-c-provider.md`
 - `pr-swarm-review/orchestration.md`
 - `pr-swarm-review/README.md`
 - `RUNBOOK.md`
@@ -131,23 +132,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`gitnexus/skills/gitnexus-review/SKILL.md`](gitnexus/skills/gitnexus-review/SKILL.md) |
 | 61 | ✓ | [`gitnexus/skills/gitnexus-work/README.md`](gitnexus/skills/gitnexus-work/README.md) |
 | 62 | ✓ | [`gitnexus/skills/gitnexus-work/SKILL.md`](gitnexus/skills/gitnexus-work/SKILL.md) |
-| 63 | ✓ | [`gitnexus/vendor/tree-sitter-c/README.md`](gitnexus/vendor/tree-sitter-c/README.md) |
-| 64 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
-| 65 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
-| 66 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
-| 67 | ✓ | [`gitnexus/vendor/tree-sitter-zig/README.md`](gitnexus/vendor/tree-sitter-zig/README.md) |
-| 68 | ✓ | [`llms.txt`](llms.txt) |
-| 69 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 70 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 71 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 72 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
-| 73 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 74 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 75 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 76 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 77 | → | [`README.md`](README.md) |
-| 78 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 79 | → | [`TESTING.md`](TESTING.md) |
+| 63 | ✓ | [`gitnexus/test/fixtures/lang-resolution/zig-monorepo/README.md`](gitnexus/test/fixtures/lang-resolution/zig-monorepo/README.md) |
+| 64 | ✓ | [`gitnexus/vendor/tree-sitter-c/README.md`](gitnexus/vendor/tree-sitter-c/README.md) |
+| 65 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
+| 66 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
+| 67 | ✓ | [`gitnexus/vendor/tree-sitter-objc/README.md`](gitnexus/vendor/tree-sitter-objc/README.md) |
+| 68 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
+| 69 | ✓ | [`gitnexus/vendor/tree-sitter-zig/README.md`](gitnexus/vendor/tree-sitter-zig/README.md) |
+| 70 | ✓ | [`llms.txt`](llms.txt) |
+| 71 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 72 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 73 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 74 | → | [`docs/languages/objective-c-provider.md`](docs/languages/objective-c-provider.md) |
+| 75 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
+| 76 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 77 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 78 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 79 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 80 | → | [`README.md`](README.md) |
+| 81 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 82 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

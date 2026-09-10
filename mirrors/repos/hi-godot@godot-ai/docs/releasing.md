@@ -141,16 +141,21 @@ list, the body carries the two links alone and the operator edits the notes by
 hand; notes are mutable and are not a trust anchor, so this is never a reason
 to refuse publication.
 
-Publishing the draft emits GitHub's `release: published` event, which runs
-`discord-changelog.yml`. That workflow posts the release name, URL, and notes
-to the Discord `#changelog` channel through the `DISCORD_CHANGELOG_WEBHOOK`
-repository secret, silently (no push notifications), and fails red when the
-post fails so a broken webhook is noticed. The v3 line posted from inside its
-release workflow; the v4 publishing jobs deliberately run nothing but the
-promotion, so the post moved to its own workflow. Dispatch it by hand with a
-`tag` input to re-post a release or to backfill one published before the
-workflow existed. The workflow file is read from the tagged commit, so v3 tags
-never trigger it.
+A successful promotion run starts `discord-changelog.yml` through its
+`workflow_run` trigger. That workflow downloads the promotion's
+`v4-publication-receipt` artifact, reads the released tag from it, and posts
+the release name, URL, and notes to the Discord `#changelog` channel through
+the `DISCORD_CHANGELOG_WEBHOOK` repository secret, silently (no push
+notifications). It fails red when the post fails so a broken webhook is
+noticed. A failed or cancelled promotion published nothing and is skipped.
+
+The workflow also listens for GitHub's `release: published` event, but the
+promotion publishes the draft with the workflow token, and GitHub never starts
+a workflow from an event the workflow token raised. That trigger only fires
+for a draft flipped live by hand. The v3 line posted from inside its release
+workflow; the v4 publishing jobs deliberately run nothing but the promotion,
+so the post lives in its own workflow. Dispatch it by hand with a `tag` input
+to re-post a release or to backfill one that neither trigger covered.
 
 ### Operator setup before candidate signing
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 31 followed patterns, 12634 file(s) materialized.
+Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 32 followed patterns, 12635 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 31 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 31 |
-| Files         | 12634 |
+| Followed pats | 32 |
+| Files         | 12635 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 31 followed 
 
 - `CHANGELOG.md`
 - `README.md`
+- `docs/users/funding-transparency.md`
 - `docs/users/bundles.md`
 - `docs/users/workflows.md`
 - `docs/users/aas-core.md`
@@ -12711,18 +12712,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12620 | → | [`docs/users/codex-cli-skills.md`](docs/users/codex-cli-skills.md) |
 | 12621 | → | [`docs/users/cursor-skills.md`](docs/users/cursor-skills.md) |
 | 12622 | → | [`docs/users/discovery-manifest.md`](docs/users/discovery-manifest.md) |
-| 12623 | → | [`docs/users/gemini-cli-skills.md`](docs/users/gemini-cli-skills.md) |
-| 12624 | → | [`docs/users/getting-started.md`](docs/users/getting-started.md) |
-| 12625 | → | [`docs/users/plugins.md`](docs/users/plugins.md) |
-| 12626 | → | [`docs/users/security-and-antivirus.md`](docs/users/security-and-antivirus.md) |
-| 12627 | → | [`docs/users/specialized-plugin-roadmap.md`](docs/users/specialized-plugin-roadmap.md) |
-| 12628 | → | [`docs/users/usage.md`](docs/users/usage.md) |
-| 12629 | → | [`docs/users/windows-truncation-recovery.md`](docs/users/windows-truncation-recovery.md) |
-| 12630 | → | [`docs/users/workflows.md`](docs/users/workflows.md) |
-| 12631 | → | [`PRIVACY.md`](PRIVACY.md) |
-| 12632 | → | [`README.md`](README.md) |
-| 12633 | → | [`SECURITY.md`](SECURITY.md) |
-| 12634 | → | [`TERMS.md`](TERMS.md) |
+| 12623 | → | [`docs/users/funding-transparency.md`](docs/users/funding-transparency.md) |
+| 12624 | → | [`docs/users/gemini-cli-skills.md`](docs/users/gemini-cli-skills.md) |
+| 12625 | → | [`docs/users/getting-started.md`](docs/users/getting-started.md) |
+| 12626 | → | [`docs/users/plugins.md`](docs/users/plugins.md) |
+| 12627 | → | [`docs/users/security-and-antivirus.md`](docs/users/security-and-antivirus.md) |
+| 12628 | → | [`docs/users/specialized-plugin-roadmap.md`](docs/users/specialized-plugin-roadmap.md) |
+| 12629 | → | [`docs/users/usage.md`](docs/users/usage.md) |
+| 12630 | → | [`docs/users/windows-truncation-recovery.md`](docs/users/windows-truncation-recovery.md) |
+| 12631 | → | [`docs/users/workflows.md`](docs/users/workflows.md) |
+| 12632 | → | [`PRIVACY.md`](PRIVACY.md) |
+| 12633 | → | [`README.md`](README.md) |
+| 12634 | → | [`SECURITY.md`](SECURITY.md) |
+| 12635 | → | [`TERMS.md`](TERMS.md) |
 
 ---
 

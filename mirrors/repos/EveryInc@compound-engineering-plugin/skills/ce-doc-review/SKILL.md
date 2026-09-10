@@ -6,10 +6,11 @@ argument-hint: "[mode:non-interactive] [path/to/document.{md,html}]"
 
 # Document Review
 
-Review a requirements or plan document with a team of reviewer personas. Dispatch generic subagents, each seeded with a skill-local reviewer prompt. Synthesis sorts the findings: apply and report the ones it routes to Apply, in the document's native format, and route the rest to the user.
+Help the author finish a sound document they can use to carry out the agreed work. Find problems that would change that work's outcome or materially hinder execution, and resolve them within the authority already given. Judge the document by whether it guides correct work, not by how much detail it contains. Serious consequences warrant attention even when the defect is small. An adequate document needs no changes.
 
-**Done when:** every dispatched reviewer returned or was named as failed in Coverage, the fixes routed to Apply are applied and reported, and the rest went through the four-option interaction (interactive) or came back as structured text with classifications intact (non-interactive).
+Reviewer personas supply evidence; you own the judgment. Investigate their claims against the whole document, project facts, and settled decisions. Correct proven errors that prevent an existing decision from being carried out, within the edit authority and reviewer requirements in synthesis. Return only worthwhile improvements still needing permission, consequential choices or essential information only the user can supply, and useful observations.
 
+**Done when:** every selected reviewer has returned or is named as failed in Coverage, retained findings have a verified consequence for the agreed work, and every authorized correction assigned to Apply has been made and checked. Report that final state through the interactive approval or decision process, or return it as structured text in non-interactive mode.
 
 ## Interactive mode rules
 
@@ -43,13 +44,15 @@ HTML unified artifacts take the same routes. Every fix lands in the document's n
 
 ## Phase 2: Announce and Dispatch Personas
 
+Skip dispatch only when the completed-review reuse condition in `references/document-intake.md` passes; continue with that evidence at Phase 3.
+
 **Read `references/persona-selection.md`** for each conditional persona's activation signals and the announcement format. Two of those signals over-activate on plausible evidence: the sensitive-data bound on `security-lens-reviewer`, and the challenge-surface bar on `adversarial-document-reviewer`. Then read **`references/dispatch.md`** for payload variables, slicing, model tiering, and reviewer-failure handling.
 
 The team is `coherence-reviewer` and `feasibility-reviewer` always, plus each activated conditional persona. Announce the team with a per-persona justification before any dispatch.
 
 Dispatch generic subagents with **bounded parallelism** through the platform's subagent primitive. Seed each one with the full content of its `references/personas/<reviewer-name>.md`. Never dispatch a standalone agent by type or name.
 
-A capacity rejection is backpressure, not reviewer failure. That reviewer stays queued and retries when a slot frees, and no reviewer is dropped because the harness cap is below the team size.
+A capacity rejection is backpressure, not reviewer failure. If capacity cannot recover and selected reviewers remain undispatched, finish any started cross-model jobs under `references/cross-model-review.md`'s terminal collection and cleanup contract, then stop as incomplete without synthesis, fixes, or a success handoff. Preserve collected outcomes and report which reviewers completed, failed, or could not run, and why.
 
 ### Cross-Model Judgment Pass
 
@@ -61,7 +64,7 @@ The pass is additive and non-blocking: a failure or timeout stops nothing and is
 
 Wait until every dispatched agent has returned, including any cross-model `<reviewer-name>-<provider>.json` returns. Then read `references/synthesis-and-presentation.md`. It owns the synthesis pipeline, the routing of each finding by confidence and fix class, fix application, the non-interactive envelope, and the handoff to the routing question. When promoting agreement, only an artifact with `independence_verified: true` counts as an independent reviewer.
 
-**Interactive mode only.** Read `references/walkthrough.md` for the grouped confirmation, the routing question, and the per-finding walk-through. Read `references/bulk-preview.md` for the bulk-action preview behind best-judgment routing, Append-to-Open-Questions, and auto-resolve. Load neither before dispatch completes, and a non-interactive run never loads them at all — it stops at the synthesis envelope.
+**Interactive mode only.** Read `references/walkthrough.md` for the grouped confirmation, the routing question, and the per-finding walk-through. Read `references/bulk-preview.md` for the bulk-action preview behind best-judgment routing, Append-to-Open-Questions, and auto-resolve. Load neither before review evidence is complete, whether newly collected or validly reused, and a non-interactive run never loads them at all — it stops at the structured review result.
 
 ---
 

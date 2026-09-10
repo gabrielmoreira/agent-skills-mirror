@@ -12,7 +12,7 @@ The bounded JSON result is `workflow_artifact_operation_result/v1`; the CLI is m
 
 - `decision-prototype`: `prepare`, `validate`, `observe`, `receipt`, `handoff`, `persist`
 - `lifecycle-growth`: `build`, `prepare`, `validate`, `evaluate`, `readout`
-- `product-discovery-validation`: `build`, `prepare`, `validate`, `evaluate`, `handoff`, `append`
+- `product-discovery-validation`: `build`, `prepare`, `validate`, `audience-gate`, `evaluate`, `handoff`, `append`
 - `sales-pipeline-review`: `prepare`, `validate`, `evaluate`, `handoff`
 
 Public contract and synthetic command inputs: [`docs/WORKFLOW-ARTIFACTS.md`](https://github.com/rlaope/oh-my-hermes/blob/main/docs/WORKFLOW-ARTIFACTS.md).

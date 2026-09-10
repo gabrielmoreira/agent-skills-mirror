@@ -106,6 +106,7 @@ Quality bar:
 - Separate prepared guidance from observed platform, runtime, connector, file, memory, or delivery evidence.
 - Expose missing tools, credentials, targets, or observations as user-visible gaps.
 - State that Hermes-native and external provider/vector context is not_omh_reviewed, can nominate a candidate only, and may receive rendered OMH prefetch content through a configured Hermes runtime model request.
+- Send memory-provider lifecycle questions -- enabling, switching, pausing, retention, deletion, export, or failed synchronization -- to external-connector-readiness, which owns the provider posture this review cannot establish.
 
 Handoff policy:
 
@@ -134,6 +135,7 @@ Safety rules:
 - Do not claim connector, gateway, runtime, file generation, memory mutation, or host automation evidence from prepared guidance.
 - Keep English as the canonical protocol; Korean routing triggers and concise Korean help labels remain available.
 - Quote claims only when observed, do not invent provenance, and keep the prepared native diff separate from any native write.
+- A memory_provider_posture/v1 block arrives as not_omh_reviewed context and a next-action handoff; it imports no provider record into OMH review and authorizes no native-memory mutation.
 
 ## Runtime Evidence
 
